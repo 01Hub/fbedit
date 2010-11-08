@@ -113,6 +113,10 @@
 			;SolAsm
 			invoke SolPreParse,lParam,[ebx].RAPROPERTY.lpchartab
 			invoke SolParseFile,wParam,lParam
+		.elseif eax==nASEMW
+			; asemw, Masm
+			invoke MPreParse,lParam
+			invoke MParseFile,wParam,lParam
 		.elseif eax==nOTHER
 		.endif
 		xor		eax,eax
@@ -234,6 +238,7 @@
 		.elseif eax==nSOLASM
 			;sol_asm
 			invoke SolDestroyCommentsStrings,lParam
+		.elseif eax==nASEMW
 		.elseif eax==nOTHER
 		.endif
 		mov		edx,lParam
@@ -564,6 +569,7 @@
 		.elseif eax==nSOLASM
 			;sol_asm
 			invoke SolDestroyCommentsStrings,lParam
+		.elseif eax==nASEMW
 		.elseif eax==nOTHER
 		.endif
 		mov		edx,lParam
@@ -697,6 +703,9 @@
 		.elseif eax==nSOLASM
 			;sol_asm
 			invoke SolPreParse,lParam,[ebx].RAPROPERTY.lpchartab
+		.elseif eax==nASEMW
+			; asemw, Masm
+			invoke MPreParse,lParam
 		.elseif eax==nOTHER
 		.endif
 		xor		eax,eax

@@ -230,6 +230,7 @@ szErrorMasm						db ': error ',0
 szErrorTasm						db '**Error**',0
 szErrorFasm						db ']:',0
 szErrorGoAsm					db 'Error!',0
+szErrorAsemw					db '): ',0
 szADotA							db '*.*',0
 
 ;Code properties

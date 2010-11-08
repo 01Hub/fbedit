@@ -199,6 +199,8 @@ FindErrors proc uses ebx esi edi
 				call	TestLineFasm
 			.elseif eax==nGOASM
 				call	TestLineGoAsm
+			.elseif eax==nASEMW
+				call	TestLineAsemw
 			.endif
 		.endif
 		pop		eax
@@ -304,6 +306,25 @@ TestLineGoAsm:
 
 TestLineMasm:
 	invoke iniInStr,addr buffer,addr szErrorMasm
+	.if eax!=-1
+		.while eax && byte ptr buffer[eax]!='('
+			dec		eax
+		.endw
+		mov		byte ptr buffer[eax],0
+		invoke DecToBin,addr buffer[eax+1]
+		dec		eax
+		mov		nLnErr,eax
+		invoke strlen,addr buffer
+		.while eax && word ptr buffer[eax+1]!='\:'
+			dec		eax
+		.endw
+		invoke strcpy,addr buffer,addr buffer[eax]
+		call	SetError
+	.endif
+	retn
+
+TestLineAsemw:
+	invoke iniInStr,addr buffer,addr szErrorAsemw
 	.if eax!=-1
 		.while eax && byte ptr buffer[eax]!='('
 			dec		eax
@@ -561,8 +582,13 @@ OutputMake proc uses ebx esi edi,nCommand:DWORD,fClear:DWORD
 		invoke strcpy,addr makeexe.buffer,addr da.szAssemble
 		invoke strcat,addr makeexe.buffer,addr szSpc
 		invoke strcat,addr makeexe.buffer,addr da.make.szAssemble[esi]
-		invoke InsertMain,addr da.szMainAsm,addr szDollarC
-		invoke strcpy,addr buffer,addr da.szMainAsm
+		.if da.szMainAsm
+			invoke InsertMain,addr da.szMainAsm,addr szDollarC
+			invoke strcpy,addr buffer,addr da.szMainAsm
+		.else
+			invoke InsertMain,addr da.szFileName,addr szDollarC
+			invoke strcpy,addr buffer,addr da.szFileName
+		.endif
 		invoke RemoveFileExt,addr buffer
 		invoke InsertMain,addr buffer,addr szDollarF
 		call	AddModules
@@ -572,7 +598,11 @@ OutputMake proc uses ebx esi edi,nCommand:DWORD,fClear:DWORD
 		.else
 			invoke InsertMain,addr szNULL,addr szDollarR
 		.endif
-		invoke SetOutputFile,addr da.make.szOutAssemble[esi],offset da.szMainAsm
+		.if da.szMainAsm
+			invoke SetOutputFile,addr da.make.szOutAssemble[esi],offset da.szMainAsm
+		.else
+			invoke SetOutputFile,addr da.make.szOutAssemble[esi],offset da.szFileName
+		.endif
 		invoke InsertMain,addr makeexe.output,addr szDollarO
 		invoke InsertMain,addr da.szAppPath,addr szDollarA
 		mov		eax,TRUE
@@ -643,8 +673,12 @@ OutputMake proc uses ebx esi edi,nCommand:DWORD,fClear:DWORD
 				.endif
 				invoke InsertMain,addr buffer,addr szDollarD
 			.endif
-			invoke SetOutputFile,addr da.make.szOutAssemble[esi],offset da.szMainAsm
-			invoke InsertMain,addr makeexe.output,addr szDollarC
+			.if da.szMainAsm
+				invoke SetOutputFile,addr da.make.szOutAssemble[esi],offset da.szMainAsm
+				invoke InsertMain,addr makeexe.output,addr szDollarC
+			.else
+				invoke InsertMain,addr szNULL,addr szDollarC
+			.endif
 			call	AddModules
 			.if da.szMainRC
 				invoke SetOutputFile,addr da.make.szOutCompileRC[esi],offset da.szMainRC
@@ -652,7 +686,11 @@ OutputMake proc uses ebx esi edi,nCommand:DWORD,fClear:DWORD
 			.else
 				invoke InsertMain,addr szNULL,addr szDollarR
 			.endif
-			invoke SetOutputFile,addr da.make.szOutLink[esi],offset da.szMainAsm
+			.if da.szMainAsm
+				invoke SetOutputFile,addr da.make.szOutLink[esi],offset da.szMainAsm
+			.else
+				invoke SetOutputFile,addr da.make.szOutLink[esi],offset da.szProjectFile
+			.endif
 			invoke InsertMain,addr makeexe.output,addr szDollarO
 			invoke InsertMain,addr da.szAppPath,addr szDollarA
 			mov		eax,TRUE
@@ -663,8 +701,12 @@ OutputMake proc uses ebx esi edi,nCommand:DWORD,fClear:DWORD
 			invoke strcat,addr makeexe.buffer,addr da.make.szLib[esi]
 			invoke iniInStr,addr makeexe.buffer,addr szDollarC
 			.if eax!=-1
-				invoke SetOutputFile,addr da.make.szOutAssemble[esi],offset da.szMainAsm
-				invoke InsertMain,addr makeexe.output,addr szDollarC
+				.if da.szMainAsm
+					invoke SetOutputFile,addr da.make.szOutAssemble[esi],offset da.szMainAsm
+					invoke InsertMain,addr makeexe.output,addr szDollarC
+				.else
+					invoke InsertMain,addr szNULL,addr szDollarC
+				.endif
 			.endif
 			.if da.fProject
 				invoke iniInStr,addr makeexe.buffer,addr szDollarM
@@ -707,7 +749,11 @@ OutputMake proc uses ebx esi edi,nCommand:DWORD,fClear:DWORD
 					.endif
 				.endif
 			.endif
-			invoke SetOutputFile,addr da.make.szOutLib[esi],offset da.szMainAsm
+			.if da.szMainAsm
+				invoke SetOutputFile,addr da.make.szOutLib[esi],offset da.szMainAsm
+			.else
+				invoke SetOutputFile,addr da.make.szOutLib[esi],offset da.szProjectFile
+			.endif
 			invoke InsertMain,addr makeexe.output,addr szDollarO
 			invoke InsertMain,addr da.szAppPath,addr szDollarA
 			mov		eax,TRUE
@@ -839,10 +885,15 @@ MakeIt:
 		invoke SetCursor,eax
 	.endw
 	invoke CloseHandle,makeexe.hThread
-	;Check if output file exists
-	invoke GetFileAttributes,addr makeexe.output
-	.if eax==INVALID_HANDLE_VALUE
+	.if da.nAsm==nASEMW
+		mov		eax,makeexe.uExit
 		mov		fExitCode,eax
+	.else
+		;Check if output file exists
+		invoke GetFileAttributes,addr makeexe.output
+		.if eax==INVALID_HANDLE_VALUE
+			mov		fExitCode,eax
+		.endif
 	.endif
 	retn
 

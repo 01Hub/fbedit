@@ -1148,7 +1148,11 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke OutputMake,IDM_MAKE_COMPILE,1
 				invoke PostAddinMessage,hWin,AIM_MAKEDONE,IDM_MAKE_COMPILE,addr da.szMainRC,0,HOOK_MAKEDONE
 			.elseif eax==IDM_MAKE_ASSEMBLE
-				invoke PostAddinMessage,hWin,AIM_MAKEBEGIN,IDM_MAKE_ASSEMBLE,addr da.szMainAsm,0,HOOK_MAKEBEGIN
+				.if da.szMainAsm
+					invoke PostAddinMessage,hWin,AIM_MAKEBEGIN,IDM_MAKE_ASSEMBLE,addr da.szMainAsm,0,HOOK_MAKEBEGIN
+				.else
+					invoke PostAddinMessage,hWin,AIM_MAKEBEGIN,IDM_MAKE_ASSEMBLE,addr da.szFileName,0,HOOK_MAKEBEGIN
+				.endif
 				.if eax
 					jmp		Ex
 				.endif

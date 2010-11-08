@@ -488,6 +488,9 @@ GetToolTip proc uses esi edi,lParam:DWORD,fNoCase:DWORD
 		; FreeBASIC
 		invoke FBPreParse,edi,fNoCase
 	.elseif eax==nFREEPASCAL
+	.elseif eax==nASEMW
+		; asemw, Masm
+		invoke MPreParse,edi
 	.elseif eax==nOTHER
 	.endif
 	xor		edi,edi

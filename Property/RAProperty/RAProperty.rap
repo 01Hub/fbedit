@@ -107,7 +107,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=18
+MilestoneOnDateDate=8
 MilestoneOnDateTimeYear=2006
 MilestoneOnDateTimeMonth=6
 MilestoneOnDateTimeDate=23
@@ -159,9 +159,9 @@ ProductVer4Range=0
 19=,,,
 20=,,
 [Size]
-2=0,0,699,490,3134
+2=0,0,699,490,3217
 <<<<<<< .mine
-1=0,0,699,490,18093
+1=0,0,699,490,9774
 =======
 1=0,0,699,490,13346
 >>>>>>> .r101
@@ -170,8 +170,8 @@ ProductVer4Range=0
 8=0,0,0,0,1542
 7=0,0,0,0,1035
 9=0,0,0,0,352
-10=0,0,0,0,35333
-11=0,0,746,498,9962
+10=0,0,0,0,33179
+11=0,0,746,498,15239
 12=0,0,0,0,2850
 13=0,0,0,0,2137
 14=0,0,0,0,8617
@@ -196,20 +196,20 @@ ProductVer4Range=0
 0=
 
 [AutoLoad]
-AutoLoad=1,11,13,2,7,9,20,17,14
+AutoLoad=1,11,13,2,7,9,20,17,14,10
 [PTimer]
-PTimer=344663773
+PTimer=345182383
 [Find]
-1="createsolidbrush"
-2="[esi]."
-3="assume"
-4="szfpword2"
-5="nSOLASM"
-6="szsol"
-7="Sol"
-8="szsoldword"
-9="buff"
-10="solbuffer"
+1="nMASM"
+2="createsolidbrush"
+3="[esi]."
+4="assume"
+5="szfpword2"
+6="nSOLASM"
+7="szsol"
+8="Sol"
+9="szsoldword"
+10="buff"
 
 [Exports]
 1=GetDefEx

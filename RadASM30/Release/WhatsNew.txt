@@ -4,6 +4,11 @@ Ini files, project files, template files, api files and addins are all incompati
 
 Do NOT install RadASM 3.0 in the same directory as an older version of RadASM.
 
+Version 3.0.0.7g 2010-11-08
+---------------------------
+o Updated donkey's Favourites addin.
+o RadASM should now handle library projects with modules only (no main file).
+
 Version 3.0.0.7f 2010-11-04
 ---------------------------
 o Updated donkey's Favourites addin.

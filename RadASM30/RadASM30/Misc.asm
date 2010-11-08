@@ -1412,6 +1412,7 @@ EnableMenu proc uses ebx esi edi,hMnu:HMENU,nPos:DWORD
 	LOCAL	chrg:CHARRANGE
 	LOCAL	ID:DWORD
 	LOCAL	fNoLink:DWORD
+	LOCAL	fHasModules:DWORD
 	LOCAL	mii:MENUITEMINFO
 
 	mov		mii.cbSize,sizeof MENUITEMINFO
@@ -1423,6 +1424,7 @@ EnableMenu proc uses ebx esi edi,hMnu:HMENU,nPos:DWORD
 		mov		ebx,ha.hEdt
 		xor		esi,esi
 		mov		fNoLink,esi
+		mov		fHasModules,esi
 		.if ebx
 			invoke GetWindowLong,ebx,GWL_ID
 			mov		esi,eax
@@ -1918,6 +1920,21 @@ EnableMenu proc uses ebx esi edi,hMnu:HMENU,nPos:DWORD
 			invoke iniInStr,addr da.make.szOutAssemble[edi],addr szDotExe
 			inc		eax
 			mov		fNoLink,eax
+			;Any modules
+			.if da.make.szAssemble[edi]
+				push	ebx
+				xor		ebx,ebx
+				.while TRUE
+					invoke SendMessage,ha.hProjectBrowser,RPBM_FINDNEXTITEM,ebx,0
+					.break .if !eax
+					mov		ebx,[eax].PBITEM.id
+					.if [eax].PBITEM.flag==FLAG_MODULE
+						mov		fHasModules,TRUE
+						.break
+					.endif
+				.endw
+				pop		ebx
+			.endif
 			xor		eax,eax
 			.if da.szMainRC && da.make.szOutCompileRC[edi]
 				mov		eax,TRUE
@@ -1925,13 +1942,13 @@ EnableMenu proc uses ebx esi edi,hMnu:HMENU,nPos:DWORD
 			push	eax
 			push	IDM_MAKE_COMPILE
 			xor		eax,eax
-			.if da.szMainAsm && da.make.szOutAssemble[edi]
+			.if da.make.szOutAssemble[edi] && (da.szMainAsm || (esi==ID_EDITCODE && fHasModules))
 				mov		eax,TRUE
 			.endif
 			push	eax
 			push	IDM_MAKE_ASSEMBLE
 			xor		eax,eax
-			.if da.szMainAsm && da.make.szAssemble[edi] && (da.make.szLink[edi] || da.make.szLib[edi])
+			.if da.make.szAssemble[edi] && (da.make.szLink[edi] || da.make.szLib[edi]) && (da.szMainAsm || (esi==ID_EDITCODE && fHasModules))
 				mov		eax,TRUE
 			.endif
 			push	eax
@@ -1946,7 +1963,7 @@ EnableMenu proc uses ebx esi edi,hMnu:HMENU,nPos:DWORD
 			push	eax
 			push	IDM_MAKE_GO
 			xor		eax,eax
-			.if da.szMainAsm && da.make.szAssemble[edi] && da.make.szLink[edi]
+			.if da.make.szAssemble[edi] && (da.make.szLink[edi] || da.make.szLib[edi]) && (da.szMainAsm || fHasModules)
 				mov		eax,TRUE
 			.endif
 			push	eax
@@ -1967,23 +1984,7 @@ EnableMenu proc uses ebx esi edi,hMnu:HMENU,nPos:DWORD
 			.endif
 			push	eax
 			push	IDM_MAKE_DEBUG
-			;Any modules
-			xor		eax,eax
-			.if da.make.szAssemble[edi]
-				push	ebx
-				xor		ebx,ebx
-				.while TRUE
-					invoke SendMessage,ha.hProjectBrowser,RPBM_FINDNEXTITEM,ebx,0
-					.break .if !eax
-					mov		ebx,[eax].PBITEM.id
-					.if [eax].PBITEM.flag==FLAG_MODULE
-						mov		eax,TRUE
-						.break
-					.endif
-				.endw
-				pop		ebx
-			.endif
-			push	eax
+			push	fHasModules
 			push	IDM_MAKE_MODULES
 			.if esi==ID_EDITCODE
 				push	TRUE
@@ -2205,6 +2206,7 @@ EnableContextMenu endp
 EnableToolBar proc uses ebx esi edi
 	LOCAL	chrg:CHARRANGE
 	LOCAL	fNoLink:DWORD
+	LOCAL	fHasModules:DWORD
 
 	mov		ebx,ha.hEdt
 	xor		esi,esi
@@ -2444,18 +2446,34 @@ EnableToolBar proc uses ebx esi edi
 	mov		edx,sizeof MAKE
 	mul		edx
 	mov		edi,eax
+	;Any modules
+	mov		fHasModules,FALSE
+	.if da.make.szAssemble[edi]
+		push	ebx
+		xor		ebx,ebx
+		.while TRUE
+			invoke SendMessage,ha.hProjectBrowser,RPBM_FINDNEXTITEM,ebx,0
+			.break .if !eax
+			mov		ebx,[eax].PBITEM.id
+			.if [eax].PBITEM.flag==FLAG_MODULE
+				mov		fHasModules,TRUE
+				.break
+			.endif
+		.endw
+		pop		ebx
+	.endif
 	invoke iniInStr,addr da.make.szOutAssemble[edi],addr szDotExe
 	inc		eax
 	mov		fNoLink,eax
 	xor		eax,eax
-	.if da.szMainAsm && da.make.szAssemble[edi]
+	.if da.make.szAssemble[edi] && (da.make.szLink[edi] || da.make.szLib[edi]) && (da.szMainAsm || (esi==ID_EDITCODE && fHasModules))
 		mov		eax,TRUE
 	.endif
 	push	eax
 	push	IDM_MAKE_ASSEMBLE
 	push	ha.hTbrMake
 	xor		eax,eax
-	.if da.szMainAsm && da.make.szAssemble[edi] && (da.make.szLink[edi] || da.make.szLib[edi])
+	.if da.make.szAssemble[edi] && (da.make.szLink[edi] || da.make.szLib[edi]) && (da.szMainAsm || (esi==ID_EDITCODE && fHasModules))
 		mov		eax,TRUE
 	.endif
 	push	eax
