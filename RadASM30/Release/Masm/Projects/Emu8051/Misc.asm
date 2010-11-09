@@ -1,4 +1,9 @@
 
+.const
+
+szACALL			db ' ACALL ',0
+szLCALL			db ' LCALL ',0
+
 .code
 
 DecToBin proc uses ebx esi,lpStr:DWORD
@@ -196,12 +201,24 @@ SetDbgLine endp
 
 ;If current line is ACALL, return 2
 ;If current line is LCALL, return 3
+;Else return 0
 IsLCALLACALL proc
 	LOCAL	buffer[256]:BYTE
 
 	mov		word ptr buffer,255
 	invoke SendMessage,hREd,EM_GETLINE,SingleStepLine,addr buffer
 	mov		buffer[eax],0
+	invoke lstrcpyn,addr buffer,addr buffer[47],8
+	invoke lstrcmpi,addr buffer,addr szACALL
+	.if !eax
+		mov		eax,2
+		ret
+	.endif
+	invoke lstrcmpi,addr buffer,addr szLCALL
+	.if !eax
+		mov		eax,3
+		ret
+	.endif
 	xor		eax,eax
 	ret
 
@@ -226,15 +243,15 @@ Find proc lpText:DWORD
 	.if eax!=-1
 		;Check for next occurance
 		mov		eax,ft.chrgText.cpMax
-		mov		ft2.chrgText.cpMin,eax
-		invoke SendMessage,hREd,EM_FINDTEXTEX,FR_DOWN,addr ft
+		mov		ft2.chrg.cpMin,eax
+		invoke SendMessage,hREd,EM_FINDTEXTEX,FR_DOWN,addr ft2
 		.if eax!=-1
 			mov		eax,ft2.chrgText.cpMin
 			mov		ft.chrgText.cpMin,eax
 			mov		eax,ft2.chrgText.cpMax
 			mov		ft.chrgText.cpMax,eax
 		.endif
-		invoke SendMessage,hREd,EM_EXLINEFROMCHAR,0,addr ft.chrgText.cpMin
+		invoke SendMessage,hREd,EM_EXLINEFROMCHAR,0,ft.chrgText.cpMin
 		push	eax
 		invoke SetDbgLine,eax
 		pop		eax

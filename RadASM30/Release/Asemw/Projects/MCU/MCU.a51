@@ -3,7 +3,7 @@ $PAGEWIDTH (250) ;250 columns per line
 $NOTABS          ;expand tabs
 $NOSYMBOLS
 
-DEVMODE		EQU 0
+DEVMODE		EQU 1
 DEBUG		EQU 0
 
 ;*****************************************************
@@ -2188,7 +2188,7 @@ ENDIF
 START0:		CLR	A
 		MOV	IE,A				;Disable all interrupts
 		MOV	MODE,A				;Set mode to RS232 Terminal
-		MOV	INTBITS,A			;RAM int routines (.0-.5, .7 Single step)
+		MOV	INTBITS,A			;RAM int routines (.0-.5 INTERRUPTS, .6=LCD OUT, .7 Single step)
 		MOV	P3,#0FFh			;All bits input
 		MOV	RCAP2L,#0D9h			;19200bps with 24MHz OSC
 		MOV	RCAP2H,#0FFh
@@ -2214,25 +2214,19 @@ START0:		CLR	A
 		MOV	ROMSIZE,#02h			;Size
 		MOV	ROMMODE,#01h			;Mode
 
-;		SETB	PS
-;		SETB	PT1
-;		CLR	PX1
-;		SETB	PT0
-;		SETB	PX0
-;		SETB	PT2
-
 		SETB	IT0				;Edge triggered
 		SETB	IT1				;Edge triggered
 		SETB	EX0				;Enable INT0
 		SETB	EX1				;Enable INT1
 		SETB	EA				;Enable interrupts
+		LCALL	LCDINIT
 
 IF DEVMODE=1
-		MOV	INTBITS,#3Fh			;Redirect all interrupts
+		MOV	INTBITS,#7Fh			;Redirect all interrupts, Output to terminal
 	IF DEBUG=1
 		SETB	INTBITS.7			;Set single step flag
-		CLR	IT1
-		CLR	P3.3				;Level triggered
+		CLR	IT1				;Level triggered
+		CLR	P3.3				;Pull INT1 low
 	ENDIF
 ENDIF
 
@@ -2334,87 +2328,73 @@ TERMINAL12:	CJNE	A,#0Dh,TERMINAL2
 ;OUT:	Nothing
 FREQENCYCOUNT:	PUSH	ACC
 		LCALL	FRQCOUNT
-		MOV	R0,#LCDLINE+4		;Decimal buffer
+		MOV	R0,#LCDLINE+4			;Decimal buffer
 		LCALL	BIN2DEC
-		MOV	R7,A			;Number of digits
+		MOV	R7,A				;Number of digits
 		POP	ACC
 		PUSH	ACC
 		LCALL	FRQFORMAT
-		MOV	R0,#LCDLINE
+		MOV	R0,#LCDLINE			;Output result
 		MOV	R7,#10h
 		ACALL	PRINTSTR
-		ACALL	PRNTCRLF
-		;ADC Channel 2
-		MOV	A,#02h
+		MOV	A,#02h				;ADC Channel 2
 		LCALL	ADCONVERT
 		MOV	A,#02h
 		MOV	R1,#LCDLINE+4
 		LCALL	ADOUTPUT
-		;ADC Channel 3
-		MOV	A,#03h
+		MOV	A,#03h				;ADC Channel 3
 		LCALL	ADCONVERT
 		MOV	A,#03h
 		MOV	R1,#LCDLINE+10
 		LCALL	ADOUTPUT
-		;Output result
-		MOV	LCDLINE,#'I'
+		MOV	LCDLINE,#'I'			;Output result
 		MOV	LCDLINE+1,#'N'
 		MOV	LCDLINE+2,#'T'
 		MOV	LCDLINE+3,#' '
 		MOV	R0,#LCDLINE
 		MOV	R7,#10h
 		LCALL	PRINTSTR
-		LCALL	PRNTCRLF
 		POP	ACC
 		AJMP	START
 
 ;AD Converter
 ;IN:	Nothing
 ;OUT:	Nothing
-ADCONVERTER:	;Channel 2
-		MOV	A,#02h
+ADCONVERTER:	MOV	A,#02h				;Channel 2
 		LCALL	ADCONVERT
 		MOV	A,#02h
 		MOV	R1,#LCDLINE+4
 		LCALL	ADOUTPUT
-		;Channel 3
-		MOV	A,#03h
+		MOV	A,#03h				;Channel 3
 		LCALL	ADCONVERT
 		MOV	A,#03h
 		MOV	R1,#LCDLINE+10
 		LCALL	ADOUTPUT
-		;Output result
-		MOV	LCDLINE,#'I'
+		MOV	LCDLINE,#'I'			;Output result
 		MOV	LCDLINE+1,#'N'
 		MOV	LCDLINE+2,#'T'
 		MOV	LCDLINE+3,#' '
 		MOV	R0,#LCDLINE
 		MOV	R7,#10h
 		LCALL	PRINTSTR
-		LCALL	PRNTCRLF
-		;Channel 0
-		MOV	A,#00h
+		MOV	A,#00h				;Channel 0
 		LCALL	ADCONVERT
 		MOV	A,#00h
 		MOV	R1,#LCDLINE+4
 		LCALL	ADOUTPUT
-		;Channel 1
-		MOV	A,#01h
+		MOV	A,#01h				;Channel 1
 		LCALL	ADCONVERT
 		MOV	A,#01h
 		MOV	R1,#LCDLINE+10
 		LCALL	ADOUTPUT
-		;Output result
-		MOV	LCDLINE,#'E'
+		MOV	LCDLINE,#'E'			;Output result
 		MOV	LCDLINE+1,#'X'
 		MOV	LCDLINE+2,#'T'
 		MOV	LCDLINE+3,#' '
 		MOV	R0,#LCDLINE
 		MOV	R7,#10h
 		LCALL	PRINTSTR
-		LCALL	PRNTCRLF
-		;Wait 1 Secod
-		LCALL	WAITASEC
+		LCALL	WAITASEC			;Wait 1 Secod
 		AJMP	START
 
 ;Inductance meter
@@ -2448,10 +2428,18 @@ PRNTCSTR2:	PUSH	DPL
 		MOV	DPH,DPHSAVE
 		RET
 
-PRINTSTR:	MOV	A,@R0
+PRINTSTR:	JNB	INTBITS.6,PRINTSTRLCD
+PRINTSTRTRM:	MOV	A,@R0
 		ACALL	TXBYTE
 		INC	R0
-		DJNZ	R7,PRINTSTR
+		DJNZ	R7,PRINTSTRTRM
+		ACALL	PRNTCRLF
+		RET
+
+PRINTSTRLCD:	MOV	A,@R0
+		LCALL	LCDCHROUT
+		INC	R0
+		DJNZ	R7,PRINTSTRLCD
 		RET
 
 PRINTDPTRSTR:	MOVX	A,@DPTR
@@ -2750,7 +2738,7 @@ EPROM3:		DEC	A
 		MOV	A,ROMMODE
 		DEC	A
 		JNZ	EPROM31
-		ACALL	BM_ROMDUMPS
+		LCALL	BM_ROMDUMPS
 		SJMP	EPROM
 EPROM31:	LCALL	PM_ROMDUMPS
 		SJMP	EPROM
@@ -3413,41 +3401,41 @@ WAITASEC1:	DJNZ	R7,WAITASEC1
 ;IN;	A holds channel (0 to 3).
 ;OUT:	32 Bit result in R7:R6:R5:R4
 ;------------------------------------------------------------------
-FRQCOUNT:	SETB	ACC.2			;D2	FRQ Gate active low
-		SETB	ACC.3			;D3	FRQ	Reset active high
-		SETB	ACC.4			;D4	ADC CS Active low
-		SETB	ACC.5			;D5	ADC CLK High to low transition
-		SETB	ACC.6			;D6	ADC DIN
-		SETB	ACC.7			;D7
+FRQCOUNT:	SETB	ACC.2				;D2	FRQ Gate active low
+		SETB	ACC.3				;D3	FRQ	Reset active high
+		SETB	ACC.4				;D4	ADC CS Active low
+		SETB	ACC.5				;D5	ADC CLK High to low transition
+		SETB	ACC.6				;D6	ADC DIN
+		SETB	ACC.7				;D7
 		MOV	DPTR,#8001h
-		MOVX	@DPTR,A			;Reset and gate off
+		MOVX	@DPTR,A				;Reset and gate off
 		PUSH	ACC
 		MOV	TL0,#00h
 		MOV	TH0,#00h
 		MOV	A,TMOD
-		SETB	ACC.0			;M00
-		CLR	ACC.1			;M01
-		SETB	ACC.2			;C/T0#
-		CLR	ACC.3			;GATE0
+		SETB	ACC.0				;M00
+		CLR	ACC.1				;M01
+		SETB	ACC.2				;C/T0#
+		CLR	ACC.3				;GATE0
 		MOV	TMOD,A
 		MOV	A,TCON
-		SETB	ACC.4			;TR0
-		CLR	ACC.5			;TF0
+		SETB	ACC.4				;TR0
+		CLR	ACC.5				;TF0
 		MOV	TCON,A
 		POP	ACC
-		CLR	ACC.2			;D2	FRQ Gate active low
-		CLR	ACC.3			;D3	FRQ Reset active high
-		MOVX	@DPTR,A			;Select internal ALE,Gate on(low),Reset inactive
+		CLR	ACC.2				;D2	FRQ Gate active low
+		CLR	ACC.3				;D3	FRQ Reset active high
+		MOVX	@DPTR,A				;Select internal ALE,Gate on(low),Reset inactive
 		ACALL	WAITASEC
-		SETB	ACC.2			;D2	FRQ Gate active low
-		MOVX	@DPTR,A			;Stop counting
+		SETB	ACC.2				;D2	FRQ Gate active low
+		MOVX	@DPTR,A				;Stop counting
 		MOVX	A,@DPTR
 		MOV	R4,A
 		MOV	A,TL0
 		MOV	R5,A
 		MOV	A,TH0
 		MOV	R6,A
-		CLR	A			;TF0 Is the 25th bit
+		CLR	A				;TF0 Is the 25th bit
 		MOV	C,TF0
 		MOV	ACC.0,C
 		MOV	R7,A
@@ -3624,65 +3612,65 @@ SINGLESTEP:	PUSH	PSW
 		DEC	R0
 		DEC	R0
 		DEC	R0
-		MOV	A,@R0			;MSB adress
+		MOV	A,@R0				;MSB adress
 		LCALL	TXBYTE
 		DEC	R0
-		MOV	A,@R0			;LSB adress
+		MOV	A,@R0				;LSB adress
 		LCALL	TXBYTE
-		INC	R0			;MSB adress
-		INC	R0			;PSW
-		MOV	A,@R0			;PSW
+		INC	R0				;MSB adress
+		INC	R0				;PSW
+		MOV	A,@R0				;PSW
 		LCALL	TXBYTE
-		INC	R0			;ACC
-		MOV	A,@R0			;ACC
+		INC	R0				;ACC
+		MOV	A,@R0				;ACC
 		LCALL	TXBYTE
-		MOV	A,B			;B
+		MOV	A,B				;B
 		LCALL	TXBYTE
-		MOV	A,SP			;SP
+		MOV	A,SP				;SP
 		LCALL	TXBYTE
-		MOV	A,DPL			;DPL
+		MOV	A,DPL				;DPL
 		LCALL	TXBYTE
-		MOV	A,DPH			;DPH
+		MOV	A,DPH				;DPH
 		LCALL	TXBYTE
-		INC	R0			;R0
-		MOV	A,@R0			;R0
+		INC	R0				;R0
+		MOV	A,@R0				;R0
 		LCALL	TXBYTE
 		MOV	R0,#01h
-SINGLESTEP1:	MOV	A,@R0			;31 Bytes
+SINGLESTEP1:	MOV	A,@R0				;31 Bytes
 		LCALL	TXBYTE
 		INC	R0
 		CJNE	R0,#20h,SINGLESTEP1
 		PUSH	DPL
 		PUSH	DPH
-		MOV	R0,#20h			;32 Bytes
+		MOV	R0,#20h				;32 Bytes
 SINGLESTEP2:	MOVX	A,@DPTR
 		LCALL	TXBYTE
 		INC	DPTR
 		DJNZ	R0,SINGLESTEP2
 SINGLESTEP3:	LCALL	RXBYTE
-		CJNE	A,#'R',SINGLESTEP4	;R Run
-		SETB	P3.3			;Set INT1 pin high
+		CJNE	A,#'R',SINGLESTEP4		;R Run
+		SETB	P3.3				;Set INT1 pin high
 		SJMP	SINGLESTEPEXIT
-SINGLESTEP4:	CJNE	A,#'S',SINGLESTEP5	;S Stop
-		SETB	P3.3			;Set INT1 pin high
+SINGLESTEP4:	CJNE	A,#'S',SINGLESTEP5		;S Stop
+		SETB	P3.3				;Set INT1 pin high
 		CLR	A
-		PUSH	ACC			;Force a software reset
+		PUSH	ACC				;Force a software reset
 		PUSH	ACC
-		RETI				;Return to reset vector
-SINGLESTEP5:	CJNE	A,#'i',SINGLESTEP6	;i Step into
+		RETI					;Return to reset vector
+SINGLESTEP5:	CJNE	A,#'i',SINGLESTEP6		;i Step into
 SINGLESTEPEXIT:	POP	DPH
 		POP	DPL
 		POP	00h
 		POP	ACC
 		POP	PSW
 		RETI
-SINGLESTEP6:	CJNE	A,#'A',SINGLESTEP7	;A Adress input
+SINGLESTEP6:	CJNE	A,#'A',SINGLESTEP7		;A Adress input
 		LCALL	INPDPTR
 		SJMP	SINGLESTEP3
-SINGLESTEP7:	CJNE	A,#'I',SINGLESTEP8	;Dump internal memory
+SINGLESTEP7:	CJNE	A,#'I',SINGLESTEP8		;Dump internal memory
 		LCALL	MEMDUMP
 		SJMP	SINGLESTEP3
-SINGLESTEP8:	CJNE	A,#'D',SINGLESTEP3	;Dump external memory
+SINGLESTEP8:	CJNE	A,#'D',SINGLESTEP3		;Dump external memory
 		LCALL	DUMP
 		SJMP	SINGLESTEP3
 

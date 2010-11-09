@@ -75,6 +75,7 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.if hCom
 			invoke CreateThread,NULL,0,addr DoComm,0,0,addr tid
 			mov		hThreadRD,eax
+			;invoke SetThreadPriority,hThreadRD,THREAD_PRIORITY_LOWEST
 			invoke WriteCom,0Dh
 			invoke SetTimer,hWin,1000,10,NULL
 		.endif
@@ -217,7 +218,10 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.if SingleStepLine!=-1
 				invoke IsLCALLACALL
 				.if eax
-					add		SingleStepAdr,eax
+					movzx	edx,dbg.lsb
+					mov		dh,dbg.msb
+					add		eax,edx
+					mov		SingleStepAdr,eax
 				.else
 					mov		SingleStepAdr,-1
 				.endif

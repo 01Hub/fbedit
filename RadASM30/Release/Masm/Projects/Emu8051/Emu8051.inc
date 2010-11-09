@@ -151,3 +151,10 @@ comopt					COM <>
 fDebug					DWORD ?
 SingleStepAdr			DWORD ?
 SingleStepLine			DWORD ?
+
+rdhead					DWORD ?
+rdtail					DWORD ?
+rdbuff					BYTE 16*1024 dup(?)
+wrhead					DWORD ?
+wrtail					DWORD ?
+wrbuff					BYTE 16*1024 dup(?)

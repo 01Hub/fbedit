@@ -7,12 +7,6 @@ nStop					DWORD 0,1,-1
 
 .data?
 
-rdhead					DWORD ?
-rdtail					DWORD ?
-rdbuff					BYTE 16384 dup(?)
-wrhead					DWORD ?
-wrtail					DWORD ?
-wrbuff					BYTE 16384 dup(?)
 hThreadRD				HANDLE ?
 
 .code
@@ -47,6 +41,7 @@ OpenCom proc
 		mov		hCom,eax
 		.if hCom
 			mov		dcb.DCBlength,sizeof DCB
+;			or		dcb.fbits,fBinary
 			mov		eax,comopt.nbaud
 			mov		dcb.BaudRate,eax
 			mov		eax,comopt.nbits
@@ -55,7 +50,7 @@ OpenCom proc
 			mov		dcb.Parity,al
 			mov		eax,comopt.nstop
 			mov		dcb.StopBits,al
-			mov		dcb.fbits,fOutxCtsFlow
+;			or		dcb.fbits,fOutxCtsFlow
 			invoke SetCommState,hCom,addr dcb
 			mov		to.ReadTotalTimeoutConstant,1
 			mov		to.WriteTotalTimeoutConstant,10
@@ -141,7 +136,7 @@ RxByte:
 	inc		edx
 	and		edx,sizeof rdbuff-1
 	.if edx!=rdtail
-		invoke ReadFile,hCom,addr rxbuff,16,addr nRead,NULL
+		invoke ReadFile,hCom,addr rxbuff,256,addr nRead,NULL
 		.if nRead
 			xor		ebx,ebx
 			mov		ecx,nRead
