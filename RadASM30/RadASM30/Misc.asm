@@ -1948,7 +1948,9 @@ EnableMenu proc uses ebx esi edi,hMnu:HMENU,nPos:DWORD
 			push	eax
 			push	IDM_MAKE_ASSEMBLE
 			xor		eax,eax
-			.if da.make.szAssemble[edi] && (da.make.szLink[edi] || da.make.szLib[edi]) && (da.szMainAsm || (esi==ID_EDITCODE && fHasModules))
+			.if fNoLink && da.szMainAsm
+				inc		eax
+			.elseif da.make.szAssemble[edi] && (da.make.szLink[edi] || da.make.szLib[edi]) && (da.szMainAsm || (esi==ID_EDITCODE && fHasModules))
 				mov		eax,TRUE
 			.endif
 			push	eax
@@ -2466,14 +2468,16 @@ EnableToolBar proc uses ebx esi edi
 	inc		eax
 	mov		fNoLink,eax
 	xor		eax,eax
-	.if da.make.szAssemble[edi] && (da.make.szLink[edi] || da.make.szLib[edi]) && (da.szMainAsm || (esi==ID_EDITCODE && fHasModules))
+	.if da.make.szAssemble[edi] && (da.szMainAsm || (esi==ID_EDITCODE && fHasModules))
 		mov		eax,TRUE
 	.endif
 	push	eax
 	push	IDM_MAKE_ASSEMBLE
 	push	ha.hTbrMake
 	xor		eax,eax
-	.if da.make.szAssemble[edi] && (da.make.szLink[edi] || da.make.szLib[edi]) && (da.szMainAsm || (esi==ID_EDITCODE && fHasModules))
+	.if fNoLink && da.szMainAsm
+		inc		eax
+	.elseif da.make.szAssemble[edi] && (da.make.szLink[edi] || da.make.szLib[edi]) && (da.szMainAsm || (esi==ID_EDITCODE && fHasModules))
 		mov		eax,TRUE
 	.endif
 	push	eax
