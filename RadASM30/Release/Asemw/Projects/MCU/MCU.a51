@@ -59,6 +59,8 @@ DEBUG		EQU 0
 ;57		DPLSAVE			Holds DPL during PRNTCSTR
 ;58		DPHSAVE			Holds DPH during PRNTCSTR
 ;59		MODE			Selected mode (0-7)
+;5A		SSADRLSB		Single step adress
+;5B		SSADRMSB		Single step adress
 
 ;C0-FF		48 Byte stack
 
@@ -163,6 +165,8 @@ ROMVERERR	EQU 56h			;Number of verify errors
 DPLSAVE		EQU 57h			;Holds DPL during PRNTCSTR
 DPHSAVE		EQU 58h			;Holds DPH during PRNTCSTR
 MODE		EQU 59h			;Selected mode (0-7)
+SSADRLSB	EQU 5Ah			;Single step adress LSB
+SSADRMSB	EQU 5Bh			;Single step adress MSB
 ;-----------------------------------------------------
 IF DEVMODE=0
 ;RESET:***********************************************
@@ -2189,7 +2193,10 @@ START0:		CLR	A
 		MOV	IE,A				;Disable all interrupts
 		MOV	MODE,A				;Set mode to RS232 Terminal
 		MOV	INTBITS,A			;RAM int routines (.0-.5 INTERRUPTS, .6=LCD OUT, .7 Single step)
-		MOV	P3,#0FFh			;All bits input
+		DEC	A
+		MOV	SSADRLSB,A			;Single step adress
+		MOV	SSADRMSB,A			;Single step adress
+		MOV	P3,A				;All bits input
 		MOV	RCAP2L,#0D9h			;19200bps with 24MHz OSC
 		MOV	RCAP2H,#0FFh
 		MOV	TL2,#0D9h
@@ -3606,12 +3613,21 @@ SINGLESTEP:	PUSH	PSW
 		CLR	RS0
 		CLR	RS1
 		PUSH	00h
-		MOV	A,#07h
-		LCALL	TXBYTE
 		MOV	R0,SP
 		DEC	R0
 		DEC	R0
 		DEC	R0
+		MOV	A,SSADRMSB
+		INC	A
+		JZ	SINGLESTEP0
+		MOV	A,@R0				;MSB adress
+		CJNE	A,SSADRMSB,SINGLESTEPEX2
+		DEC	R0
+		MOV	A,@R0				;MSB adress
+		INC	R0
+		CJNE	A,SSADRLSB,SINGLESTEPEX2
+SINGLESTEP0:	MOV	A,#07h
+		LCALL	TXBYTE
 		MOV	A,@R0				;MSB adress
 		LCALL	TXBYTE
 		DEC	R0
@@ -3650,27 +3666,35 @@ SINGLESTEP2:	MOVX	A,@DPTR
 SINGLESTEP3:	LCALL	RXBYTE
 		CJNE	A,#'R',SINGLESTEP4		;R Run
 		SETB	P3.3				;Set INT1 pin high
-		SJMP	SINGLESTEPEXIT
-SINGLESTEP4:	CJNE	A,#'S',SINGLESTEP5		;S Stop
+		SJMP	SINGLESTEPEX
+SINGLESTEP4:	CJNE	A,#'s',SINGLESTEP5		;s Stop
 		SETB	P3.3				;Set INT1 pin high
 		CLR	A
 		PUSH	ACC				;Force a software reset
 		PUSH	ACC
 		RETI					;Return to reset vector
 SINGLESTEP5:	CJNE	A,#'i',SINGLESTEP6		;i Step into
-SINGLESTEPEXIT:	POP	DPH
+SINGLESTEPEX:	MOV	SSADRLSB,#0FFh
+		MOV	SSADRMSB,#0FFh
+SINGLESTEPEX1:	POP	DPH
 		POP	DPL
-		POP	00h
+SINGLESTEPEX2:	POP	00h
 		POP	ACC
 		POP	PSW
 		RETI
-SINGLESTEP6:	CJNE	A,#'A',SINGLESTEP7		;A Adress input
+SINGLESTEP6:	CJNE	A,#'o',SINGLESTEP7		;o Step over / Run to caret
+		LCALL	RXBYTE
+		MOV	SSADRLSB,A
+		LCALL	RXBYTE
+		MOV	SSADRMSB,A
+		SJMP	SINGLESTEPEX1
+SINGLESTEP7:	CJNE	A,#'A',SINGLESTEP8		;A Adress input
 		LCALL	INPDPTR
 		SJMP	SINGLESTEP3
-SINGLESTEP7:	CJNE	A,#'I',SINGLESTEP8		;Dump internal memory
+SINGLESTEP8:	CJNE	A,#'I',SINGLESTEP9		;Dump internal memory
 		LCALL	MEMDUMP
 		SJMP	SINGLESTEP3
-SINGLESTEP8:	CJNE	A,#'D',SINGLESTEP3		;Dump external memory
+SINGLESTEP9:	CJNE	A,#'D',SINGLESTEP3		;Dump external memory
 		LCALL	DUMP
 		SJMP	SINGLESTEP3
 

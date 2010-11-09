@@ -37,6 +37,18 @@ SetHighlightWords proc hWin:HWND
 
 SetHighlightWords endp
 
+RAEditProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+
+	mov		eax,uMsg
+	.if eax==WM_CHAR
+		invoke SendMessage,hWnd,uMsg,wParam,lParam
+	.else
+		invoke CallWindowProc,lpOldRAEditProc,hWin,uMsg,wParam,lParam
+	.endif
+	ret
+
+RAEditProc endp
+
 WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	tid:DWORD
 	LOCAL	ofn:OPENFILENAME
@@ -48,7 +60,9 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	.if eax==WM_INITDIALOG
 		push	hWin
 		pop		hWnd
-		mov		SingleStepAdr,-1
+		;Load accelerators
+		invoke LoadAccelerators,hInstance,IDA_ACCEL1
+		mov		hAccel,eax
 		mov		SingleStepLine,-1
 		invoke GetDlgItem,hWin,IDC_TBR1
 		invoke DoToolBar,eax
@@ -67,6 +81,8 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		lpOldScreenProc,eax
 		invoke SendMessage,hREd,WM_SETFONT,hDbgFont,FALSE
 		invoke SendMessage,hDbg,WM_SETFONT,hFont,FALSE
+		invoke SendMessage,hDbg,REM_SUBCLASS,0,addr RAEditProc
+		mov		lpOldRAEditProc,eax
 		invoke ScreenCls
 		invoke CreateCaret,hScrn,NULL,BOXWT,BOXHT
 		invoke ShowCaret,hScrn
@@ -180,37 +196,43 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke ScreenCaret
 			invoke ShowCaret,hScrn
 		.elseif eax==IDM_FILE_UPLOAD
+			;Load .cmd file
 			invoke WriteCom,'L'
 		.elseif eax==IDM_FILE_GO
+			;Load .cmd file and run
 			invoke WriteCom,'G'
 		.elseif eax==IDM_FILE_DEBUG
 			.if fDebug
+				;Show terminal window
 				invoke ShowWindow,hScrn,SW_SHOW
 				invoke ShowWindow,hREd,SW_HIDE
+				invoke SetFocus,hWin
 				invoke CreateCaret,hScrn,NULL,BOXWT,BOXHT
 				invoke ShowCaret,hScrn
 			.else
+				;Show debug window
 				invoke HideCaret,hScrn
 				invoke ShowWindow,hREd,SW_SHOW
 				invoke ShowWindow,hScrn,SW_HIDE
+				invoke SetFocus,hREd
 			.endif
-			invoke SetFocus,hWin
 			xor		fDebug,1
 		.elseif eax==IDM_FILE_REFRESH
+			;Refresh the list file
 			invoke LoadLstFile
 		.elseif eax==IDM_DEBUG_RUN
-			mov		SingleStepAdr,-1
+			;Run
 			invoke SetDbgLine,-1
 			invoke WriteCom,'R'
 		.elseif eax==IDM_DEBUG_STOP
 			.if SingleStepLine!=-1
-				mov		SingleStepAdr,-1
+				;Stop
 				invoke SetDbgLine,-1
-				invoke WriteCom,'S'
+				invoke WriteCom,'s'
 			.endif
 		.elseif eax==IDM_DEBUG_INTO
 			.if SingleStepLine!=-1
-				mov		SingleStepAdr,-1
+				;Step into
 				invoke SetDbgLine,-1
 				invoke WriteCom,'i'
 			.endif
@@ -218,21 +240,35 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.if SingleStepLine!=-1
 				invoke IsLCALLACALL
 				.if eax
+					;Step over
+					invoke WriteCom,'o'
 					movzx	edx,dbg.lsb
 					mov		dh,dbg.msb
 					add		eax,edx
-					mov		SingleStepAdr,eax
+					push	eax
+					invoke WriteCom,eax
+					pop		eax
+					mov		al,ah
+					invoke WriteCom,eax
 				.else
-					mov		SingleStepAdr,-1
+					;Step into
+					invoke SetDbgLine,-1
+					invoke WriteCom,'i'
 				.endif
-				invoke SetDbgLine,-1
-				invoke WriteCom,'i'
 			.endif
 		.elseif eax==IDM_DEBUG_CARET
 			.if SingleStepLine!=-1
-				mov		SingleStepAdr,-1
-				invoke SetDbgLine,-1
-				invoke WriteCom,'i'
+				invoke GetCaretAdress
+				.if eax
+					push	eax
+					invoke WriteCom,'o'
+					pop		eax
+					push	eax
+					invoke WriteCom,eax
+					pop		eax
+					mov		al,ah
+					invoke WriteCom,eax
+				.endif
 			.endif
 		.elseif eax==IDM_FILE_INITCOM
 			.if hCom
@@ -253,6 +289,9 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.if eax==1Bh
 				;Esc
 				mov		eax,9Fh
+			.elseif eax>='a' && eax<='z'
+				;Convert to uppercase
+				and		eax,5Fh
 			.endif
 			invoke WriteCom,eax
 		.endif
@@ -288,6 +327,7 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke DeleteObject,hFont
 		invoke DeleteObject,hDbgFont
 		invoke ImageList_Destroy,hImlTbr
+		invoke DestroyAcceleratorTable,hAccel
 		invoke PostQuitMessage,NULL
 	.elseif eax==WM_NOTIFY
 		mov		ebx,lParam
@@ -330,9 +370,12 @@ WinMain proc hInst:HINSTANCE,hPrevInst:HINSTANCE,CmdLine:LPSTR,CmdShow:DWORD
 	invoke UpdateWindow,hWnd
 	.while TRUE
 		invoke GetMessage,addr msg,NULL,0,0
-	  .BREAK .if !eax
-		invoke TranslateMessage,addr msg
-		invoke DispatchMessage,addr msg
+	  .break .if !eax
+		invoke TranslateAccelerator,hWnd,hAccel,addr msg
+		.if !eax
+			invoke TranslateMessage,addr msg
+			invoke DispatchMessage,addr msg
+		.endif
 	.endw
 	mov		eax,msg.wParam
 	ret

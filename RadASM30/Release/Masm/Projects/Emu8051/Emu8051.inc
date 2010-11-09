@@ -42,6 +42,8 @@ IDC_CBOCOMBITS          equ 1405
 IDC_CBOCOMSTOP          equ 1407
 IDC_CHKCOMPARITY        equ 1403
 
+IDA_ACCEL1				equ 1
+
 IDM_MENU                equ 10000
 IDM_FILE_INITCOM        equ 10002
 IDM_FILE_EXIT           equ 10001
@@ -129,6 +131,7 @@ hWnd					HWND ?
 hScrn					HWND ?
 hREd					HWND ?
 hDbg					HWND ?
+hAccel					HACCEL ?
 hImlTbr					HIMAGELIST ?
 hFont					HFONT ?
 hDbgFont				HFONT ?
@@ -149,8 +152,8 @@ hrdblock				HANDLE ?
 hwrfile					HANDLE ?
 comopt					COM <>
 fDebug					DWORD ?
-SingleStepAdr			DWORD ?
 SingleStepLine			DWORD ?
+lpOldRAEditProc			DWORD ?
 
 rdhead					DWORD ?
 rdtail					DWORD ?

@@ -208,21 +208,89 @@ IsLCALLACALL proc
 	mov		word ptr buffer,255
 	invoke SendMessage,hREd,EM_GETLINE,SingleStepLine,addr buffer
 	mov		buffer[eax],0
-	invoke lstrcpyn,addr buffer,addr buffer[47],8
-	invoke lstrcmpi,addr buffer,addr szACALL
-	.if !eax
-		mov		eax,2
-		ret
-	.endif
-	invoke lstrcmpi,addr buffer,addr szLCALL
-	.if !eax
-		mov		eax,3
-		ret
+	.if eax>47+8
+		invoke lstrcpyn,addr buffer,addr buffer[47],8
+		invoke lstrcmpi,addr buffer,addr szACALL
+		.if !eax
+			mov		eax,2
+			ret
+		.endif
+		invoke lstrcmpi,addr buffer,addr szLCALL
+		.if !eax
+			mov		eax,3
+			ret
+		.endif
 	.endif
 	xor		eax,eax
 	ret
 
 IsLCALLACALL endp
+
+IsHex proc lpHex:DWORD
+
+	mov		edx,lpHex
+	xor		ecx,ecx
+	.while ecx<4
+		movzx	eax,byte ptr [edx+ecx]
+		.if !((eax>='0' && eax<='9') || (eax>='A' && eax<='F') || (eax>='a' && eax<='f'))
+			xor		eax,eax
+			ret
+		.endif  
+		inc		ecx
+	.endw
+	mov		eax,TRUE
+	ret
+
+IsHex endp
+
+HexToBin proc uses esi,lpAscii:DWORD
+
+	mov		esi,lpAscii
+	xor		edx,edx
+	xor		ecx,ecx
+	xor		eax,eax
+	.while ecx<8
+		shl		edx,4
+		mov		al,[esi+ecx]
+		.if al<='9'
+			and		al,0Fh
+		.elseif al>='A' && al<="F"
+			sub		al,41h-10
+		.elseif al>='a' && al<="f"
+			and		al,5Fh
+			sub		al,41h-10
+		.else
+			xor		eax,eax
+		.endif
+		or		edx,eax
+		inc		ecx
+	.endw
+	mov		eax,edx
+	ret
+
+HexToBin endp
+
+GetCaretAdress proc
+	LOCAL	chrg:CHARRANGE
+	LOCAL	buffer[256]:BYTE
+
+	invoke SendMessage,hREd,EM_EXGETSEL,0,addr chrg
+	invoke SendMessage,hREd,EM_EXLINEFROMCHAR,0,chrg.cpMin
+	mov		edx,eax
+	invoke SendMessage,hREd,EM_GETLINE,edx,addr buffer
+	mov		buffer[eax],0
+	.if eax>14
+		invoke lstrcpyn,addr buffer,addr buffer[10],5
+		invoke IsHex,addr buffer
+		.if eax
+			invoke HexToBin,addr buffer
+			ret
+		.endif
+	.endif
+	xor		eax,eax
+	ret
+
+GetCaretAdress endp
 
 Find proc lpText:DWORD
 	LOCAL	buffer[16]:BYTE

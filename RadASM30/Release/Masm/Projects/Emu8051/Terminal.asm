@@ -302,14 +302,14 @@ ScreenOut proc nChar:DWORD
 			.if !eax
 				;Addrss not found
 				invoke WriteCom,'i'
-			.else
-				movzx	edx,dbg.lsb
-				mov		dh,dbg.msb
-				.if SingleStepAdr!=-1
-					.if edx!=SingleStepAdr
-						invoke WriteCom,'i'
-					.endif
-				.endif
+;			.else
+;				movzx	edx,dbg.lsb
+;				mov		dh,dbg.msb
+;				.if SingleStepAdr!=-1
+;					.if edx!=SingleStepAdr
+;						invoke WriteCom,'i'
+;					.endif
+;				.endif
 			.endif
 			mov		nDebug,0
 		.else
