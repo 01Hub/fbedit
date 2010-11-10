@@ -280,6 +280,9 @@ ScreenOut proc nChar:DWORD
 		.if edx==72
 			mov		rdhead,0
 			mov		rdtail,0
+			.if !fDebug
+				invoke SendMessage,hWnd,WM_COMMAND,IDM_FILE_DEBUG,0
+			.endif
 			invoke SetDbgInfo
 			movzx	eax,dbg.lsb
 			push	eax
@@ -302,14 +305,6 @@ ScreenOut proc nChar:DWORD
 			.if !eax
 				;Addrss not found
 				invoke WriteCom,'i'
-;			.else
-;				movzx	edx,dbg.lsb
-;				mov		dh,dbg.msb
-;				.if SingleStepAdr!=-1
-;					.if edx!=SingleStepAdr
-;						invoke WriteCom,'i'
-;					.endif
-;				.endif
 			.endif
 			mov		nDebug,0
 		.else

@@ -249,7 +249,7 @@ HexToBin proc uses esi,lpAscii:DWORD
 	xor		edx,edx
 	xor		ecx,ecx
 	xor		eax,eax
-	.while ecx<8
+	.while ecx<4
 		shl		edx,4
 		mov		al,[esi+ecx]
 		.if al<='9'

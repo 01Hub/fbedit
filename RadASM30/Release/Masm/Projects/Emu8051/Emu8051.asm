@@ -241,9 +241,12 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke IsLCALLACALL
 				.if eax
 					;Step over
+					push	eax
+					invoke SetDbgLine,-1
 					invoke WriteCom,'o'
 					movzx	edx,dbg.lsb
 					mov		dh,dbg.msb
+					pop		eax
 					add		eax,edx
 					push	eax
 					invoke WriteCom,eax
@@ -261,6 +264,7 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke GetCaretAdress
 				.if eax
 					push	eax
+					invoke SetDbgLine,-1
 					invoke WriteCom,'o'
 					pop		eax
 					push	eax

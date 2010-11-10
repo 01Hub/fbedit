@@ -4,7 +4,7 @@ $NOTABS          ;expand tabs
 $NOSYMBOLS
 
 DEVMODE		EQU 1
-DEBUG		EQU 0
+DEBUG		EQU 1
 
 ;*****************************************************
 ;Interrupt vectors.
@@ -2234,6 +2234,8 @@ IF DEVMODE=1
 		SETB	INTBITS.7			;Set single step flag
 		CLR	IT1				;Level triggered
 		CLR	P3.3				;Pull INT1 low
+		NOP
+		NOP
 	ENDIF
 ENDIF
 
@@ -2244,8 +2246,18 @@ START:		MOV	SP,#0CFh			;Init stack pointer. The stack is 48 bytes
 IF DEVMODE=1
 		JNB	RI,START10
 		LJMP	0000h
-START10:	MOV	MODE,#2
+START10:	MOV	MODE,#5
 ENDIF
+
+;LCALL	LCDINIT
+;MOV	A,#41h
+;LCALL	LCDCHROUT
+;MOV	A,#42h
+;LCALL	LCDCHROUT
+;MOV	A,#43h
+;LCALL	LCDCHROUT
+;MOV	A,#41h
+;LCALL	LCDCHROUT
 
 		MOV	R7,MODE
 		INC	R7
@@ -2925,13 +2937,13 @@ BM_ROMDUMPF1:	LCALL	BM_ROMRDBYTE			;Read a byte from ROM
 		MOV	A,DPL
 		ANL	A,#0Fh
 		JNZ	BM_ROMDUMPF2			;Still on same line
-		ACALL	PRNTCRLF			;Output CRLF
+		LCALL	PRNTCRLF			;Output CRLF
 BM_ROMDUMPF2:	MOV	A,DPL
 		JNZ	BM_ROMDUMPF1			;Jump if more bytes in this page
 		MOV	A,DPH
 		CJNE	A,ROMPAGES,BM_ROMDUMPF1		;Jump if more pages
 		MOV	A,#04h
-		ACALL	TXBYTE				;End write to file
+		LCALL	TXBYTE				;End write to file
 		LCALL	ROMOFF				;Set RST low and turn off VCC
 BM_ROMDUMPF3:	RET
 
@@ -3317,26 +3329,34 @@ LCDDELAY:	PUSH	07h
 ;A CONTAINS NIBBLE
 LCDNIBOUT:	CLR	ACC.5				; | negative edge on E
 		MOVX	@DPTR,A				; |
+NOP
+NOP
+NOP
 		SETB	ACC.5				; | E
 		MOVX	@DPTR,A				; |
+NOP
+NOP
+NOP
 		CLR	ACC.5				; | negative edge on E
 		MOVX	@DPTR,A				; |
+NOP
+NOP
+NOP
 		RET
 
 ;A CONTAINS BYTE
 LCDCMDOUT:	PUSH	ACC
 		SWAP	A				;High nibble first
 		ANL	A,#0Fh
-		CLR	ACC.4				;RS
 		ACALL	LCDNIBOUT
 		POP	ACC
 		ANL	A,#0Fh
-		CLR	ACC.4				;RS
 		ACALL	LCDNIBOUT
+		ACALL	LCDDELAY			; wait for BF to clear
 		ACALL	LCDDELAY			; wait for BF to clear
 		RET
 
-;A CONTAINS BYTE
+;A contains byte
 LCDCHROUT:	PUSH	DPL
 		PUSH	DPH
 		MOV	DPTR,#8000h
@@ -3361,24 +3381,21 @@ LCDINIT:	PUSH	DPL
 		;Function set
 		MOV	A,#00000010b
 		ACALL	LCDNIBOUT
-		ACALL	LCDDELAY			; wait for BF to clear
-
-		;Function set
-			  ;0010NFXX
-		MOV	A,#00101000b
-		CLR	C
-		ACALL	LCDCMDOUT
+;		ACALL	LCDDELAY			; wait for BF to clear
 
 		;Function set
 			  ;0010NFXX
 		MOV	A,#00100000b
-		CLR	C
 		ACALL	LCDCMDOUT
 
 		;Display ON/OFF
 			  ;00001DCB
-		MOV	A,#00001110b
-		CLR	C
+		MOV	A,#00001111b
+		ACALL	LCDCMDOUT
+
+		;Function set
+			  ;0010NFXX
+		MOV	A,#00000001b
 		ACALL	LCDCMDOUT
 
 		;Cursor direction
@@ -3614,9 +3631,9 @@ SINGLESTEP:	PUSH	PSW
 		CLR	RS1
 		PUSH	00h
 		MOV	R0,SP
-		DEC	R0
-		DEC	R0
-		DEC	R0
+		DEC	R0				;Skip PSW
+		DEC	R0				;Skip ACC
+		DEC	R0				;Skip R0
 		MOV	A,SSADRMSB
 		INC	A
 		JZ	SINGLESTEP0
@@ -3643,6 +3660,8 @@ SINGLESTEP0:	MOV	A,#07h
 		MOV	A,B				;B
 		LCALL	TXBYTE
 		MOV	A,SP				;SP
+		CLR	C
+		SUBB	A,#05h
 		LCALL	TXBYTE
 		MOV	A,DPL				;DPL
 		LCALL	TXBYTE
