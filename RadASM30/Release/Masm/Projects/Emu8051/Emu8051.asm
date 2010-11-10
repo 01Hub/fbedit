@@ -274,6 +274,14 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					invoke WriteCom,eax
 				.endif
 			.endif
+		.elseif eax==IDM_DEBUG_SETDPTR
+			invoke WriteCom,'A'
+		.elseif eax==IDM_DEBUG_DUMPDPTR
+			invoke WriteCom,'D'
+		.elseif eax==IDM_DEBUG_DUMPINTERNAL
+			invoke WriteCom,'I'
+		.elseif eax==IDC_DEBUG_DUMPSFR
+			invoke WriteCom,'S'
 		.elseif eax==IDM_FILE_INITCOM
 			.if hCom
 				invoke CloseHandle,hCom

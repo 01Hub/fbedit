@@ -393,6 +393,9 @@ ScreenOut proc nChar:DWORD
 				mov		hrdfile,eax
 			.endif
 		.else
+			.if fDebug
+				invoke SendMessage,hWnd,WM_COMMAND,IDM_FILE_DEBUG,0
+			.endif
 			invoke ScreenChar,eax
 		.endif
 	.endif
