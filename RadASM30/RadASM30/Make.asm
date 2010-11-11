@@ -15,7 +15,7 @@ MAKEEXE ends
 
 MakeDone				BYTE 0Dh,'Make done.',0Dh,0
 Errors					BYTE 0Dh,'Error(s) occured.',0Dh,0
-Terminated				BYTE 0Dh,'Terminated by user.',0
+Terminated				BYTE 0Dh,'Terminated by user.',0Dh,0
 Exec					BYTE 0Dh,'Executing:',0
 Debug					BYTE 0Dh,'Debuging:',0
 NoDel					BYTE 0Dh,'Could not delete:',0Dh,0
@@ -876,6 +876,7 @@ MakeIt:
 		.if eax!=WM_CHAR
 			.if msg.wParam==VK_ESCAPE
 				invoke TerminateProcess,makeexe.pInfo.hProcess,1234
+				mov		fExitCode,-1
 			.endif
 		.elseif eax!=WM_KEYDOWN && eax!=WM_CLOSE && (eax<WM_MOUSEFIRST || eax>WM_MOUSELAST)
 			invoke TranslateMessage,addr msg

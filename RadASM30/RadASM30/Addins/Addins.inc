@@ -271,7 +271,7 @@ AIM_PROJECTCLOSE				equ WM_USER+122			;RadASM requestst closing a project. Retur
 AIM_PROJECTCLOSED				equ WM_USER+123			;RadASM has closed a project. Always retirn FALSE. hWin=Main window, wParam=0, lParam=0
 AIM_PROJECTOPEN					equ WM_USER+124			;RadASM requestst opening a project. Return TRUE to prevent RadASM from opening the project. hWin=Main window, wParam=0, lParam=lpProjectFileName
 AIM_PROJECTOPENED				equ WM_USER+125			;RadASM has opened a project. Always return FALSE. hWin=Main window, wParam=0, lParam=lpProjectFileName
-AIM_CODECOMPLETESHOW			equ WM_USER+126			;  The codecomplete listbox is about to be shown or hidden. Always return FALSE. hWin=Main window, wParam=-2 if list is shown,-1 or index if list is hidden,lParam=handle of codecomplete listbox
+AIM_CODECOMPLETESHOW			equ WM_USER+126			;The codecomplete listbox is about to be shown or hidden. Always return FALSE. hWin=Main window, wParam=-2 if list is shown,-1 or index if list is hidden,lParam=handle of codecomplete listbox
 
 
 ;HOOK flags returned in hook1 of HOOK structure
