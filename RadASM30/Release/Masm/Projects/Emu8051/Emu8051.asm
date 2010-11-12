@@ -6,6 +6,7 @@ include Emu8051.inc
 include Misc.asm
 include Terminal.asm
 include RS232.asm
+include HelpMenu.asm
 
 .code
 
@@ -13,7 +14,7 @@ DoToolBar proc hToolBar:HWND
 	LOCAL	tbab:TBADDBITMAP
 
 	;Create toolbar imagelist
-	invoke ImageList_LoadImage,hInstance,IDB_TOOLBAR,16,11,0FF00FFh,IMAGE_BITMAP,LR_CREATEDIBSECTION
+	invoke ImageList_LoadImage,hInstance,IDB_TOOLBAR,16,0,0FF00FFh,IMAGE_BITMAP,LR_CREATEDIBSECTION
 	mov		hImlTbr,eax
 	;Set toolbar struct size
 	invoke SendMessage,hToolBar,TB_BUTTONSTRUCTSIZE,sizeof TBBUTTON,0
@@ -49,12 +50,15 @@ RAEditProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
 RAEditProc endp
 
-WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	tid:DWORD
 	LOCAL	ofn:OPENFILENAME
 	LOCAL	buffer[MAX_PATH]:BYTE
+	LOCAL	buffer1[MAX_PATH]:BYTE
 	LOCAL	msg:MSG
 	LOCAL	sbParts[4]:DWORD
+	LOCAL	chrg:CHARRANGE
+	LOCAL	trng:TEXTRANGE
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
@@ -113,6 +117,9 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SetHighlightWords,hREd
 		invoke LoadLstFile
 		invoke SetDbgInfo
+		invoke GetMenu,hWin
+		mov		hMenu,eax
+		invoke SetHelpMenu
 	.elseif eax==WM_TIMER
 		.while TRUE
 			mov		edx,rdtail
@@ -159,14 +166,14 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					invoke lstrcpy,addr szlstfilename,addr buffer
 				.endif
 			.endif
-			.if !fDebug
-				invoke CreateCaret,hScrn,NULL,BOXWT,BOXHT
-				invoke ScreenCaret
-				invoke ShowCaret,hScrn
-			.else
-				invoke LoadLstFile
-			.endif
-			invoke SetFocus,hWin
+;			.if !fDebug
+;				invoke CreateCaret,hScrn,NULL,BOXWT,BOXHT
+;				invoke ScreenCaret
+;				invoke ShowCaret,hScrn
+;			.else
+;				invoke LoadLstFile
+;			.endif
+;			invoke SetFocus,hWin
 		.elseif eax==IDM_FILE_SAVE
 			invoke RtlZeroMemory,addr ofn,sizeof OPENFILENAME
 			invoke RtlZeroMemory,addr ofn,sizeof OPENFILENAME
@@ -191,10 +198,10 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				movzx	eax,ofn.nFileOffset
 				invoke SendDlgItemMessage,hWin,IDC_SBR1,SB_SETTEXT,1,addr szromfilename[eax]
 			.endif
-			invoke SetFocus,hWin
-			invoke CreateCaret,hScrn,NULL,BOXWT,BOXHT
-			invoke ScreenCaret
-			invoke ShowCaret,hScrn
+;			invoke SetFocus,hWin
+;			invoke CreateCaret,hScrn,NULL,BOXWT,BOXHT
+;			invoke ScreenCaret
+;			invoke ShowCaret,hScrn
 		.elseif eax==IDM_FILE_UPLOAD
 			;Load .cmd file
 			invoke WriteCom,'L'
@@ -282,18 +289,69 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke WriteCom,'I'
 		.elseif eax==IDC_DEBUG_DUMPSFR
 			invoke WriteCom,'S'
-		.elseif eax==IDM_FILE_INITCOM
-			.if hCom
-				invoke CloseHandle,hCom
-				mov		hCom,0
-			.endif
-			invoke OpenCom
-			.if hCom
-				invoke ScreenCls
-				invoke WriteCom,0Dh
-			.endif
 		.elseif eax==IDM_OPTION_COMPORT
 			invoke DialogBoxParam,hInstance,IDD_DLGCOMPORT,hWin,addr ComOptionProc,0
+		.elseif eax==IDM_OPTION_HELP
+			invoke DialogBoxParam,hInstance,IDD_DLGOPTMNU,hWin,addr MenuOptionProc,0
+		.elseif eax==IDM_HELPF1
+			.if fDebug
+				;Get first help file
+				mov		word ptr buffer,'0'
+				invoke GetPrivateProfileString,addr szHelpMenu,addr buffer,addr szNULL,addr buffer,sizeof buffer,addr szinifile
+				.if eax
+					invoke GetItemStr,addr buffer,addr szNULL,addr buffer1,sizeof buffer1
+					invoke FixPath,addr buffer,addr szapppath,addr szDollarA
+					xor		ebx,ebx
+					invoke SendMessage,hREd,EM_EXGETSEL,0,addr chrg
+					invoke SendMessage,hREd,EM_FINDWORDBREAK,WB_MOVEWORDLEFT,chrg.cpMin
+					.if eax
+						mov		trng.chrg.cpMax,eax
+						dec		eax
+						mov		trng.chrg.cpMin,eax
+						lea		eax,buffer1
+						mov		trng.lpstrText,eax
+						invoke SendMessage,hREd,EM_GETTEXTRANGE,0,addr trng
+						.if buffer1=='.'
+							mov		ebx,TRUE
+						.endif
+					.endif
+					invoke SendMessage,hREd,REM_GETWORD,sizeof buffer1-1,addr buffer1
+					.if buffer1
+						invoke DoHelp,addr buffer,addr buffer1
+					.else
+						mov		eax,dword ptr buffer
+						and		eax,5F5F5F5Fh
+						.if eax=='PTTH'
+							;Show internet browser
+							invoke ShellExecute,hWin,addr szOpen,addr buffer,NULL,NULL,SW_SHOWNORMAL;SW_SHOWDEFAULT
+						.else
+							;Show help file
+							invoke ParseCmnd,addr buffer,addr buffer,addr buffer1
+							invoke ShellExecute,hWin,addr szOpen,addr buffer,addr buffer1,NULL,SW_SHOWNORMAL;SW_SHOWDEFAULT
+						.endif
+					.endif
+				.endif
+			.endif
+		.elseif eax>=IDM_HELP_START && eax<=IDM_HELP_START+20
+			;Help
+			mov		edx,eax
+			sub		edx,IDM_HELP_START
+			invoke BinToDec,edx,addr buffer
+			invoke GetPrivateProfileString,addr szHelpMenu,addr buffer,addr szNULL,addr buffer1,sizeof buffer1,addr szinifile
+			.if eax
+				invoke GetItemStr,addr buffer1,addr szNULL,addr buffer,sizeof buffer
+				mov		eax,dword ptr buffer1
+				and		eax,5F5F5F5Fh
+				.if eax=='PTTH'
+					;Show internet browser
+					invoke ShellExecute,hWin,addr szOpen,addr buffer1,NULL,NULL,SW_SHOWNORMAL;SW_SHOWDEFAULT
+				.else
+					;Show help file
+					invoke FixPath,addr buffer1,addr szapppath,addr szDollarA
+					invoke ParseCmnd,addr buffer1,addr buffer,addr buffer1
+					invoke ShellExecute,hWin,addr szOpen,addr buffer,addr buffer1,NULL,SW_SHOWNORMAL;SW_SHOWDEFAULT
+				.endif
+			.endif
 		.endif
 	.elseif eax==WM_CHAR
 		.if hCom && !hrdfile
@@ -322,10 +380,23 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke WriteCom,94h
 			.endif
 		.endif
+	.elseif eax==WM_ACTIVATE
+		movzx	eax,word ptr wParam
+		.if eax!=WA_INACTIVE
+			.if !fDebug
+				;Terminal window
+				invoke SetFocus,hWin
+				invoke CreateCaret,hScrn,NULL,BOXWT,BOXHT
+				invoke ShowCaret,hScrn
+			.else
+				;Debug window
+				invoke SetFocus,hREd
+			.endif
+		.endif
 	.elseif eax==WM_SIZE
-		invoke MoveWindow,hScrn,0,28,80*BOXWT+4,25*BOXHT+4,TRUE
-		invoke MoveWindow,hREd,0,28,80*BOXWT+4,25*BOXHT+4,TRUE
-		invoke MoveWindow,hDbg,80*BOXWT+4,28,186,25*BOXHT+4,TRUE
+		invoke MoveWindow,hScrn,0,28,80*BOXWT+4,LINES*BOXHT+4,TRUE
+		invoke MoveWindow,hREd,0,28,80*BOXWT+4,LINES*BOXHT+4,TRUE
+		invoke MoveWindow,hDbg,80*BOXWT+4,28,186,LINES*BOXHT+4,TRUE
 	.elseif eax==WM_CLOSE
 		invoke DestroyWindow,hWin
 	.elseif uMsg==WM_DESTROY

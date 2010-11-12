@@ -1,9 +1,10 @@
 .const
 
 szCom1					BYTE 'COM1',0
-nBaud					DWORD 4800,9600,19200,38400,-1
+nBaud					DWORD 4800,9600,14400,19200,38400,57600,115200,-1
 nBits					DWORD 7,8,-1
-nStop					DWORD 0,1,-1
+nStop					DWORD 0,1,2,-1
+szStop					BYTE '1',0,'1.5',0,'2',0,0
 
 .data?
 
@@ -226,7 +227,7 @@ SaveComOption proc
 
 SaveComOption endp
 
-ComOptionProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+ComOptionProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	buffcom[16]:BYTE
 
 	mov		eax,uMsg
@@ -244,9 +245,11 @@ ComOptionProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			lea		esi,[esi+4]
 		.endw
 		mov		esi,offset nStop
+		mov		edi,offset szStop
 		.while dword ptr [esi]!=-1
-			invoke BinToDec,dword ptr [esi],addr buffcom
-			invoke SendDlgItemMessage,hWin,IDC_CBOCOMSTOP,CB_ADDSTRING,0,addr buffcom
+			invoke SendDlgItemMessage,hWin,IDC_CBOCOMSTOP,CB_ADDSTRING,0,edi
+			invoke lstrlen,edi
+			lea		edi,[edi+eax+1]
 			lea		esi,[esi+4]
 		.endw
 		.if comopt.active
@@ -262,9 +265,7 @@ ComOptionProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.if comopt.nparity
 			invoke CheckDlgButton,hWin,IDC_CHKCOMPARITY,BST_CHECKED
 		.endif
-		invoke BinToDec,comopt.nstop,addr buffcom
-		invoke SendDlgItemMessage,hWin,IDC_CBOCOMSTOP,CB_FINDSTRINGEXACT,-1,addr buffcom
-		invoke SendDlgItemMessage,hWin,IDC_CBOCOMSTOP,CB_SETCURSEL,eax,0
+		invoke SendDlgItemMessage,hWin,IDC_CBOCOMSTOP,CB_SETCURSEL,comopt.nstop,0
 	.elseif eax==WM_COMMAND
 		mov		edx,wParam
 		movzx	eax,dx
@@ -285,9 +286,6 @@ ComOptionProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke DecToBin,addr buffcom
 				mov		comopt.nbits,eax
 				invoke SendDlgItemMessage,hWin,IDC_CBOCOMSTOP,CB_GETCURSEL,0,0
-				mov		edx,eax
-				invoke SendDlgItemMessage,hWin,IDC_CBOCOMSTOP,CB_GETLBTEXT,edx,addr buffcom
-				invoke DecToBin,addr buffcom
 				mov		comopt.nstop,eax
 				invoke IsDlgButtonChecked,hWin,IDC_CHKCOMPARITY
 				mov		comopt.nparity,eax

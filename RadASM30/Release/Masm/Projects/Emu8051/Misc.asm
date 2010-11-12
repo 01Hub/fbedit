@@ -337,3 +337,179 @@ Find proc lpText:DWORD
 	ret
 
 Find endp
+
+iniInStr proc lpStr:DWORD,lpSrc:DWORD
+	LOCAL	buffer[256]:BYTE
+
+	push	esi
+	push	edi
+	mov		esi,lpSrc
+	lea		edi,buffer
+iniInStr0:
+	mov		al,[esi]
+	cmp		al,'a'
+	jl		@f
+	cmp		al,'z'
+	jg		@f
+	and		al,5Fh
+  @@:
+	mov		[edi],al
+	inc		esi
+	inc		edi
+	or		al,al
+	jne		iniInStr0
+	mov		edi,lpStr
+	dec		edi
+iniInStr1:
+	inc		edi
+	push	edi
+	lea		esi,buffer
+iniInStr2:
+	mov		ah,[esi]
+	or		ah,ah
+	je		iniInStr8;Found
+	mov		al,[edi]
+	or		al,al
+	je		iniInStr9;Not found
+	cmp		al,'a'
+	jl		@f
+	cmp		al,'z'
+	jg		@f
+	and		al,5Fh
+  @@:
+	inc		esi
+	inc		edi
+	cmp		al,ah
+	jz		iniInStr2
+	pop		edi
+	jmp		iniInStr1
+iniInStr8:
+	pop		eax
+	sub		eax,lpStr
+	pop		edi
+	pop		esi
+	ret
+iniInStr9:
+	pop		edi
+	mov		eax,-1
+	pop		edi
+	pop		esi
+	ret
+
+iniInStr endp
+
+FixPath proc lpStr:DWORD,lpPth:DWORD,lpSrc:DWORD
+	LOCAL	buffer[256]:BYTE
+
+	pushad
+  FixPath1:
+	invoke iniInStr,lpStr,lpSrc
+	.if eax!=-1
+		push	eax
+		invoke lstrcpy,addr buffer,lpStr
+		lea		esi,buffer
+		mov		edi,lpStr
+		pop		eax
+		.if eax!=0
+		  @@:
+			movsb
+			dec		eax
+			jne		@b
+		.endif
+		invoke lstrlen,lpSrc
+		add		esi,eax
+		push	esi
+		mov		esi,lpPth
+	  @@:
+		mov		al,[esi]
+		mov		[edi],al
+		inc		esi
+		inc		edi
+		or		al,al
+		jne		@b
+		dec		edi
+		pop		esi
+	  @@:
+		mov		al,[esi]
+		mov		[edi],al
+		inc		esi
+		inc		edi
+		or		al,al
+		jne		@b
+		jmp		FixPath1
+	.endif
+	popad
+	ret
+
+FixPath endp
+
+ParseCmnd proc uses esi edi,lpStr:DWORD,lpCmnd:DWORD,lpParam:DWORD
+
+	mov		esi,lpStr
+	call	SkipSpc
+	mov		edi,lpCmnd
+	mov		al,[esi]
+	.if al=='"'
+		inc		esi
+		call	CopyQuoted
+	.else
+		call	CopyToSpace
+	.endif
+	call	SkipSpc
+	mov		edi,lpParam
+	mov		al,[esi]
+	.if al=='"'
+		inc		esi
+		call	CopyQuoted
+	.else
+		call	CopyAll
+	.endif
+	ret
+
+SkipSpc:
+	.while byte ptr [esi]==' '
+		inc		esi
+	.endw
+	retn
+
+CopyQuoted:
+	mov		al,[esi]
+	.if al
+		inc		esi
+		.if al!='"'
+			mov		[edi],al
+			inc		edi
+			jmp		CopyQuoted
+		.endif
+		xor		al,al
+	.endif
+	mov		[edi],al
+	retn
+
+CopyToSpace:
+	mov		al,[esi]
+	.if al
+		inc		esi
+		.if al!=' '
+			mov		[edi],al
+			inc		edi
+			jmp		CopyToSpace
+		.endif
+		xor		al,al
+	.endif
+	mov		[edi],al
+	retn
+
+CopyAll:
+	mov		al,[esi]
+	.if al
+		inc		esi
+		mov		[edi],al
+		inc		edi
+		jmp		CopyAll
+		xor		al,al
+	.endif
+	mov		[edi],al
+	retn
+
+ParseCmnd endp

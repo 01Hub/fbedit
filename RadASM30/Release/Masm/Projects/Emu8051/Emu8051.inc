@@ -48,6 +48,7 @@ IDM_MENU                equ 10000
 IDM_FILE_INITCOM        equ 10002
 IDM_FILE_EXIT           equ 10001
 IDM_OPTION_COMPORT      equ 10007
+IDM_OPTION_HELP			equ 10005
 
 IDM_FILE_OPEN           equ 10003
 IDM_FILE_SAVE           equ 10004
@@ -64,9 +65,10 @@ IDM_DEBUG_SETDPTR		equ 10101
 IDM_DEBUG_DUMPDPTR		equ 10102
 IDM_DEBUG_DUMPINTERNAL	equ 10103
 IDC_DEBUG_DUMPSFR		equ 10104
+IDM_HELPF1				equ 10200
 
-IDM_HELP_INSTRUCTIONSET equ 10008
-IDM_HELP_HARDWARE		equ 10098
+IDM_HELP				equ 11000
+IDM_HELP_START			equ 11001
 
 IDB_TOOLBAR				equ 100
 
@@ -88,6 +90,11 @@ szDefCmdData			db 'CMDDATA.CMD',0
 szDefLstData			db 'CMDDATA.LST',0
 szDefRomData			db 'ROMDATA.HEX',0
 szNULL					db 0
+szHelpMenu				db 'HelpMenu',0
+szOpen					db 'Open',0
+szDollarA				db '$A',0
+szhhctrl				db 'hhctrl.ocx',0
+szHtmlHelpA				db 'HtmlHelpA',0
 
 tbrbtns				TBBUTTON <0,IDM_FILE_OPEN,TBSTATE_ENABLED,TBSTYLE_BUTTON,0,0>
 					TBBUTTON <1,IDM_FILE_SAVE,TBSTATE_ENABLED,TBSTYLE_BUTTON,0,0>
@@ -141,6 +148,7 @@ hWnd					HWND ?
 hScrn					HWND ?
 hREd					HWND ?
 hDbg					HWND ?
+hMenu					HMENU ?
 hAccel					HACCEL ?
 hImlTbr					HIMAGELIST ?
 hFont					HFONT ?
@@ -160,6 +168,8 @@ fblockmode				DWORD ?
 hrdfile					HANDLE ?
 hrdblock				HANDLE ?
 hwrfile					HANDLE ?
+hHtmlOcx				HANDLE ?
+pHtmlHelpProc			DWORD ?
 comopt					COM <>
 fDebug					DWORD ?
 SingleStepLine			DWORD ?

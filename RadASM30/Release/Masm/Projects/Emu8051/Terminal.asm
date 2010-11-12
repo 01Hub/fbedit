@@ -23,8 +23,9 @@
 ;-----------------------------------------------------
 ;*****************************************************
 
-BOXWT				equ 9
-BOXHT				equ 17
+BOXWT				equ 9			;Width of character
+BOXHT				equ 17			;Height of character
+LINES				equ 26			;Number of lines
 
 .const
 
@@ -59,31 +60,7 @@ nPos				DWORD ?
 nLocate				DWORD ?
 nDebug				DWORD ?
 
-scrn				WORD 80 dup(?)
-					WORD 80 dup(?)
-					WORD 80 dup(?)
-					WORD 80 dup(?)
-					WORD 80 dup(?)
-					WORD 80 dup(?)
-					WORD 80 dup(?)
-					WORD 80 dup(?)
-					WORD 80 dup(?)
-					WORD 80 dup(?)
-					WORD 80 dup(?)
-					WORD 80 dup(?)
-					WORD 80 dup(?)
-					WORD 80 dup(?)
-					WORD 80 dup(?)
-					WORD 80 dup(?)
-					WORD 80 dup(?)
-					WORD 80 dup(?)
-					WORD 80 dup(?)
-					WORD 80 dup(?)
-					WORD 80 dup(?)
-					WORD 80 dup(?)
-					WORD 80 dup(?)
-					WORD 80 dup(?)
-					WORD 80 dup(?)
+scrn				WORD LINES*80 dup(?)
 
 DEBUG struct
 	msb		db ?
@@ -107,7 +84,7 @@ ScreenCls proc
 
 	mov		ax,20h
 	mov		edx,offset scrn
-	mov		ecx,80*25
+	mov		ecx,80*LINES
 	.while ecx
 		mov		[edx],ax
 		inc		edx
@@ -125,7 +102,7 @@ ScreenScroll proc uses ebx esi edi
 
 	mov		edi,offset scrn
 	mov		esi,offset scrn+80*2
-	mov		ecx,24*80
+	mov		ecx,(LINES-1)*80
 	rep		movsw
 	mov		ecx,80
 	mov		ax,20h
@@ -169,9 +146,9 @@ ScreenChar proc nChar:DWORD
 	.if nPos==80
 		mov		nPos,0
 		inc		nLine
-		.if nLine==25
+		.if nLine==LINES
 			invoke ScreenScroll
-			mov		nLine,24
+			mov		nLine,LINES-1
 		.endif
 	.endif
 	invoke InvalidateRect,hScrn,NULL,TRUE
@@ -263,7 +240,7 @@ ScreenOut proc nChar:DWORD
 	mov		eax,nChar
 	.if nLocate==1
 		sub		eax,20h
-		.if eax<25
+		.if eax<LINES
 			mov		nLine,eax
 		.endif
 		inc		nLocate
@@ -333,9 +310,9 @@ ScreenOut proc nChar:DWORD
 		.elseif al==0Ah
 			;Lf
 			inc		nLine
-			.if nLine>24
+			.if nLine>=LINES
 				invoke ScreenScroll
-				mov		nLine,24
+				mov		nLine,LINES-1
 			.endif
 		.elseif al==08h
 			;BS
@@ -420,7 +397,7 @@ ScreenDraw proc uses ebx esi,hDC:HDC
 	mov		rect.top,0
 	xor		ebx,ebx
 	mov		esi,offset scrn
-	.while ebx<25
+	.while ebx<LINES
 		mov		rect.left,0
 		call	DrawLine
 		add		rect.top,BOXHT
