@@ -170,7 +170,7 @@ SaveCadAs proc hWin:DWORD,lpFileName:DWORD
 	push	hInstance
 	pop		ofn.hInstance
 	mov		ofn.lpstrFilter,NULL
-	mov		buffer[0],0
+	invoke lstrcpy,addr buffer,addr FileName
 	lea		eax,buffer
 	mov		ofn.lpstrFile,eax
 	mov		ofn.nMaxFile,sizeof buffer
@@ -270,12 +270,12 @@ OpenCad proc
 	push	hInstance
 	pop		ofn.hInstance
 	mov		ofn.lpstrFilter,offset CADFilterString
-	mov		buffer,0
+	invoke lstrcpy,addr buffer,addr FileName
 	lea		eax,buffer
 	mov		ofn.lpstrFile,eax
 	mov		ofn.nMaxFile,sizeof buffer
 	mov		ofn.lpstrDefExt,offset Cad
-	mov		ofn.Flags,OFN_FILEMUSTEXIST or OFN_HIDEREADONLY or OFN_PATHMUSTEXIST
+	mov		ofn.Flags,OFN_HIDEREADONLY or OFN_PATHMUSTEXIST; or OFN_FILEMUSTEXIST
 	;Show the Open dialog
 	invoke GetOpenFileName,addr ofn
 	.if eax
@@ -569,15 +569,6 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke MoveWindow,hWnd,wpos.x,wpos.y,wpos.wt,wpos.ht,FALSE
 		.endif
 		invoke SetToolBar
-		mov		edx,CommandLine
-		mov		al,[edx]
-		.if al
-			invoke OpenCadFile,hCad,edx
-		.else
-			;Set FileName to NewFile
-			invoke lstrcpy,offset FileName,offset NewFile
-			invoke SetWinCaption,offset FileName
-		.endif
 		invoke lstrcpy,addr buffer,addr AppPath
 		invoke lstrcat,addr buffer,addr szSymbols
 		mov		esi,offset pthsym
@@ -585,6 +576,16 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		xor		ebx,ebx
 		invoke ScanDir,addr buffer
 		invoke ShowSym
+		mov		edx,CommandLine
+		mov		al,[edx]
+		.if al
+			invoke lstrcpy,offset FileName,edx
+			invoke OpenCadFile,hCad,offset FileName
+		.else
+			;Set FileName to NewFile
+			invoke lstrcpy,offset FileName,offset NewFile
+		.endif
+		invoke SetWinCaption,offset FileName
 	.elseif eax==WM_INITMENUPOPUP
 		mov		eax,lParam
 		.if eax==0
