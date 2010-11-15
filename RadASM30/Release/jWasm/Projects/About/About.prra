@@ -3,13 +3,13 @@ Version=3000
 
 [Project]
 Assembler=jwasm
-Path=C:\Programing\Assembler\Compiladores\RadAsm\jWasm\Projects\About
-Group=2,-1,0,1,About,-2,-1,0,Assembly,-3,-1,0,Include,-5,-1,0,Resource
-F1=-2,2,1,86,54,626,526,20,About.Asm
+Path=C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\jWasm\Projects\About
+Group=2,-1,0,1,About,-2,-1,1,Assembly,-3,-1,1,Include,-5,-1,1,Resource
+F1=-2,2,1,86,54,626,526,10,About.Asm
 F4=
 F3=-5,2,4,-4,-23,765,504,0,About.rc
-F2=-3,0,1,-6,-25,769,508,4,About.Inc
-Open=0,1,2,3
+F2=-3,0,1,-6,-25,769,508,0,About.Inc
+Open=1,1,2,3
 C3=
 B3=
 M3=
@@ -29,4 +29,5 @@ Make=0
 0=Window Release,'/v "$R"',"$R.res",'/c /coff /Cp "$C"',"$C.obj",'/SUBSYSTEM:WINDOWS /RELEASE /VERSION:4.0 /OUT:$O $C $M $R',"$C.exe",'',
 1=Window Debug,'/v "$R"',"$R.res",'/c /coff /Cp /Zi /Zd "$C"',"$C.obj",'/SUBSYSTEM:WINDOWS /DEBUG /VERSION:4.0 /OUT:$O $C $M $R',"$C.exe",'',
 Delete=1
+IncBuild=0
 Run=0,'Cmd /k',''

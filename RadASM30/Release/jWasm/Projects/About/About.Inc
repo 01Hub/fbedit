@@ -1,8 +1,8 @@
 include		windows.inc
-;include		kernel32.inc
-;include		user32.inc
-;include		Comctl32.inc
-;include		shell32.inc
+include		kernel32.inc
+include		user32.inc
+include		Comctl32.inc
+include		shell32.inc
 
 includelib	kernel32.lib
 includelib	user32.lib
