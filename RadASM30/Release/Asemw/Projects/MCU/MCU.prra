@@ -2,26 +2,30 @@
 Version=3000
 [Project]
 Assembler=asemw
-Path=D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Asemw\Projects\MCU
+Path=C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Asemw\Projects\MCU
 Group=2,-1,0,1,AT89S52 MCU Board,-2,-1,1,Assembly,-3,-1,1,Include,-4,-1,1,Misc,-5,-1,1,Resource
-F1=-2,2,1,22,22,600,400,2028,MCU.a51
-F2=-2,0,2,22,22,838,361,84,ISPProg.txt
-Open=0,1,4,2,3
+F1=-2,2,1,22,22,600,400,2580,MCU.a51
+F2=-2,0,2,22,22,838,361,81,ISPProg.txt
+Open=0,1,4,2,3,5
 Api=
 C2=
 B2=
 M2=
 C1=0
 B1=
-M1=95,2131
+M1=2580
 F3=-3,0,2,66,66,735,353,77,89S52.MCU
 C3=
 B3=
 M3=
-F4=-3,0,1,-6,-25,1452,782,166,MCU.inc
+F4=-3,0,1,-6,-25,1452,782,175,MCU.inc
 C4=0
 B4=
 M4=
+F5=-2,0,2,88,88,1108,362,12,FloatingPoint.txt
+C5=
+B5=
+M5=
 [Make]
 Make=0
 0=Release,'',,'"$C"',"$C.hex",'"$C" "$O"',"$C.cmd",'',
