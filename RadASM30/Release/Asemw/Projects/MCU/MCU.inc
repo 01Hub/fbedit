@@ -179,4 +179,5 @@ LCF2		EQU 0068h		;LC Meter F2
 LCF3		EQU 0070h		;LC Meter F3
 LCCA		EQU 0078h		;((F1/F2)^2)-1
 LCCB		EQU 0080h		;((1/2*Pi*F1)^2)*LCCA
+LCCT		EQU 0088h		;Temp
 ;-----------------------------------------------------
