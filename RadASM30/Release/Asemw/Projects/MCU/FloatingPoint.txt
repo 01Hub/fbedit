@@ -21,3 +21,28 @@ POPAS					POP FP STACK TO R3:R1
 MOVAS					COPY FP STACK TO XRAM POINTED TO BY DPTR
 AINT					INT FUNCTION
 PUSHC					PUSH ARG IN DPTR TO STACK
+
+Formula to calculate Lx.
+------------------------------------------------------------------
+
+      -  /    \ 2    -     -  /    \ 2    -               /      \ 2
+     |  /  F1  \      |   |  /  F1  \      |     1       /    1   \
+Lx = | |--------| - 1 | x | |--------| - 1 | x ------ x |----------|
+     |  \  F3  /      |   |  \  F2  /      |    Ccal    \ 2xPixF1 /
+      -  \    /      -     -  \    /      -              \       /
+
+
+Formula to calculate Cx.
+------------------------------------------------------------------
+
+        /    \ 2    
+       /  F1  \     
+      |--------| - 1
+       \  F3  /     
+        \    /      
+Cx = --------------- x Ccal
+        /    \ 2    
+       /  F1  \     
+      |--------| - 1
+       \  F2  /     
+        \    /      

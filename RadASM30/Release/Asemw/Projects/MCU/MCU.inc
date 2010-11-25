@@ -98,7 +98,7 @@
 ;D3		LCD DB7
 ;D4		LCD RS
 ;D5		LCD E
-;D6		LC Meter	0=C, 1=L
+;D6		LC Meter	0=L, 1=C
 ;D7		LC Meter	0=F1, 1=F2 (Adding C Cal)
 ;-----------------------------------------------------
 ;8001h Output
