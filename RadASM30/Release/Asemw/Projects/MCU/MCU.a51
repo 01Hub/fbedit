@@ -41,17 +41,9 @@ IF DEVMODE=0
 ;*****************************************************
 IE0IRQ:		JB	INTBITS.0,IE0IRQ1
 		ACALL	DEBOUNCEINT0
-		INC	MODE
-		LJMP	START
-IE0IRQ1:	LJMP	2003h
-
-IE1IRQ:		JB	INTBITS.2,IE1IRQ1
-		JB	INTBITS.7,IE1IRQ2
-		ACALL	DEBOUNCEINT1
 		DEC	MODE
 		LJMP	START
-IE1IRQ1:	LJMP	2013h
-IE1IRQ2:	LJMP	SINGLESTEP
+IE0IRQ1:	LJMP	2003h
 
 DEBOUNCEINT0:	MOV	R6,#00h
 		MOV	R7,#00h
@@ -61,9 +53,17 @@ DEBOUNCEINT01:	JNB	P3.2,DEBOUNCEINT0
 		CLR	IE0
 		RETI
 
+IE1IRQ:		JB	INTBITS.2,IE1IRQ1
+		JB	INTBITS.7,IE1IRQ2
+		ACALL	DEBOUNCEINT1
+		INC	MODE
+		LJMP	START
+IE1IRQ1:	LJMP	2013h
+IE1IRQ2:	LJMP	SINGLESTEP
+
 DEBOUNCEINT1:	MOV	R6,#00h
 		MOV	R7,#00h
-DEBOUNCEINT11:	JNB	P3.2,DEBOUNCEINT1
+DEBOUNCEINT11:	JNB	P3.3,DEBOUNCEINT1
 		DJNZ	R6,DEBOUNCEINT11
 		DJNZ	R7,DEBOUNCEINT11
 		CLR	IE1
@@ -95,7 +95,7 @@ ELSE
 		RETI
 ;*****************************************************
 IE0IRQ:		ACALL	DEBOUNCEINT0
-		INC	MODE
+		DEC	MODE
 		LJMP	START
 
 DEBOUNCEINT0:	MOV	R6,#00h
@@ -108,7 +108,7 @@ DEBOUNCEINT01:	JNB	P3.2,DEBOUNCEINT0
 
 IE1IRQ:		JB	INTBITS.7,IE1IRQ2
 		ACALL	DEBOUNCEINT1
-		DEC	MODE
+		INC	MODE
 		LJMP	START
 IE1IRQ2:	LJMP	SINGLESTEP
 
@@ -268,15 +268,28 @@ LCCALC:		PUSH	01h
 ;Get LC meter frquency F1 and F2. Calculatr LCCA=((F1/F2)^2)-1 and LCCB=LCCA*((1/(2*Pi*F1))^2)*(1/Ccal)
 ;IN:	Nothing
 ;OUT:	Nothing
-LCMETERINIT:	MOV	A,#040h				;D6 LC Meter	0=L, 1=C
+LCMETERINIT:	MOV	A,#40h				;D6 LC Meter	0=L, 1=C
 							;D7 LC Meter	0=F1, 1=F2 (Adding C Cal)
 		MOV	DPTR,#8000h
 		MOVX	@DPTR,A				;D7, D6
+		LCALL	PRNTCSTR
+		DB	0Dh,'Calibrating ',0
 		LCALL	WAITASEC
+		MOV	A,#'.'
+		LCALL	TXBYTE
 		LCALL	WAITASEC
+		MOV	A,#'.'
+		LCALL	TXBYTE
 		LCALL	WAITASEC
+		MOV	A,#'.'
+		LCALL	TXBYTE
 		LCALL	WAITASEC
-		MOV	A,#040h				;D6 LC Meter	0=L, 1=C
+		MOV	A,#'.'
+		LCALL	TXBYTE
+		LCALL	WAITASEC
+		MOV	A,#'.'
+		LCALL	TXBYTE
+		MOV	A,#40h				;D6 LC Meter	0=L, 1=C
 							;D7 LC Meter	0=F1, 1=F2 (Adding C Cal)
 		MOV	R1,#LOW LCF1
 		MOV	R3,#HIGH LCF1
@@ -334,6 +347,10 @@ LCMETERINIT:	MOV	A,#040h				;D6 LC Meter	0=L, 1=C
 		CLR	A
 		MOV	DPTR,#8000h
 		MOVX	@DPTR,A				;D7, D6
+		MOV	A,#0Dh
+		LCALL	TXBYTE
+		MOV	A,#0Ah
+		LCALL	TXBYTE
 		RET
 
 ;Inductance meter Lx=((F1/F3)^2)-1)*((F1/F2)^2)-1)*((1/(2*Pi*F1))^2)*(1/Ccal)
@@ -401,7 +418,7 @@ LMETER3:	LCALL	PUSHC				;PUSH ARG IN DPTR TO STACK
 ;Capacitance meter: Cx=((F1/F3)^2)-1)/((F1/F2)^2)-1)*Ccal
 ;IN:	Nothing
 ;OUT:	Nothing
-CMETER:		MOV	A,#040h				;D6 LC Meter	0=L, 1=C
+CMETER:		MOV	A,#40h				;D6 LC Meter	0=L, 1=C
 							;D7 LC Meter	0=F1, 1=F2 (Adding C Cal)
 		MOV	R1,#LOW LCF3
 		MOV	R3,#HIGH LCF3
@@ -458,17 +475,263 @@ CMETER2:	LCALL	PUSHC				;PUSH ARG IN DPTR TO STACK
 
 ;------------------------------------------------------------------
 
+;Wait loop. Waits 1 second
+;-----------------------------------------------------
+WAITASEC:	MOV	R7,#0F8h
+		MOV	R6,#51
+		MOV	R5,#16
+WAITASEC1:	DJNZ	R7,WAITASEC1
+		DJNZ	R6,WAITASEC1
+		DJNZ	R5,WAITASEC1
+		RET
+
+;Frequency counter. LSB from 74LS393 read at 8001h, TL0, TH0, TF0 bit. 25 bits, max 33554431 Hz
+;IN;	A holds channel (0 to 3). ACC.7 FRQ TTL Active high
+;OUT:	32 Bit result in R7:R6:R5:R4
+;------------------------------------------------------------------
+FRQCOUNT:	ORL	A,#7Ch				;D0,D1	CHANNEL (0-3)
+							;D2     FRQ     Gate active low
+							;D3     FRQ     Reset active high
+							;D4     ADC     CS Active low
+							;D5     ADC     CLK High to Low transition
+							;D6     ADC     DIN
+							;D7	FRQ TTL	 Active high
+		MOV	DPTR,#8001h
+		MOVX	@DPTR,A				;Reset and gate off
+		PUSH	ACC
+		MOV	TL0,#00h
+		MOV	TH0,#00h
+		MOV	A,TMOD
+		SETB	ACC.0				;M00
+		CLR	ACC.1				;M01
+		SETB	ACC.2				;C/T0#
+		CLR	ACC.3				;GATE0
+		MOV	TMOD,A
+		MOV	A,TCON
+		SETB	ACC.4				;TR0
+		CLR	ACC.5				;TF0
+		MOV	TCON,A
+		POP	ACC
+		ANL	A,#0F3h				;D2	FRQ Gate active low
+							;D3	FRQ Reset active high
+		MOVX	@DPTR,A				;Gate on(low),Reset inactive (low)
+		ACALL	WAITASEC
+		SETB	ACC.2				;D2	FRQ Gate active low
+		MOVX	@DPTR,A				;Stop counting
+		MOVX	A,@DPTR
+		MOV	R4,A
+		MOV	A,TL0
+		MOV	R5,A
+		MOV	A,TH0
+		MOV	R6,A
+		CLR	A				;TF0 Is the 25th bit
+		MOV	C,TF0
+		RLC	A
+		MOV	R7,A
+		RET
+
+;Format frequency conter text line
+;IN:	A holds channel (0 to 3)
+;	LCDLINE+4 Decimal result
+;	R7 Number of digits
+;OUT:	Formatted LCDLINE
+FRQFORMAT:	MOV	LCDLINE,#'C'
+		MOV	LCDLINE+1,#'H'
+		ORL	A,#30h
+		MOV	LCDLINE+2,A
+		MOV	LCDLINE+3,#' '
+		MOV	R0,#LCDLINE+4
+		MOV	R1,#LCDLINE+6
+		CJNE	R7,#07h,$+3
+		JC	FRQFORMATKHZ
+		;MHz
+		MOV	R7,#08h
+FRQFORMATMHZ1:	MOV	A,@R1
+		CJNE	R7,#06h,FRQFORMATMHZ2
+		MOV	@R0,#'.'
+		INC	R0
+FRQFORMATMHZ2:	MOV	@R0,A
+		INC	R0
+		INC	R1
+		DJNZ	R7,FRQFORMATMHZ1
+		MOV	LCDLINE+13,#'M'
+		MOV	LCDLINE+14,#'H'
+		MOV	LCDLINE+15,#'z'
+		SJMP	FRQFORMATDONE
+FRQFORMATKHZ:	CJNE	R7,#04h,$+3
+		JC	FRQFORMATHZ
+		;KHz
+		MOV	R7,#08h
+FRQFORMATKHZ1:	MOV	A,@R1
+		CJNE	R7,#03h,FRQFORMATKHZ2
+		MOV	@R0,#'.'
+		INC	R0
+FRQFORMATKHZ2:	MOV	@R0,A
+		INC	R0
+		INC	R1
+		DJNZ	R7,FRQFORMATKHZ1
+		MOV	LCDLINE+13,#'K'
+		MOV	LCDLINE+14,#'H'
+		MOV	LCDLINE+15,#'z'
+		SJMP	FRQFORMATDONE
+FRQFORMATHZ:	;Hz
+		MOV	LCDLINE+4,#' '
+		INC	R0
+		MOV	R7,#08h
+FRQFORMATHZ1:	MOV	A,@R1
+		MOV	@R0,A
+		INC	R0
+		INC	R1
+		DJNZ	R7,FRQFORMATHZ1
+		MOV	LCDLINE+13,#'H'
+		MOV	LCDLINE+14,#'z'
+		MOV	LCDLINE+15,#' '
+FRQFORMATDONE:	RET
+
+;Frequency conter and AD Converter channel 0 and 4
+;IN:	Frequency cont channel (0-3)
+;OUT:	Nothing
+FREQENCYCOUNT:	PUSH	ACC
+		LCALL	FRQCOUNT
+		MOV	R0,#LCDLINE+4			;Decimal buffer
+		LCALL	BIN2DEC
+		MOV	R7,A				;Number of digits
+		POP	ACC
+		ANL	A,#03h
+		LCALL	FRQFORMAT
+		MOV	R0,#LCDLINE			;Output result
+		MOV	R7,#10h
+		LCALL	PRINTSTR
+		MOV	A,#00h				;ADC Channel 0
+		LCALL	ADCONVERT
+		MOV	A,#00h
+		MOV	R1,#LCDLINE+4
+		LCALL	ADOUTPUT
+		MOV	A,#04h				;ADC Channel 4
+		LCALL	ADCONVERT
+		MOV	A,#04h
+		MOV	R1,#LCDLINE+10
+		LCALL	ADOUTPUT
+		MOV	LCDLINE,#'V'			;Output result
+		MOV	LCDLINE+1,#'A'
+		MOV	LCDLINE+2,#'R'
+		MOV	LCDLINE+3,#' '
+		MOV	R0,#LCDLINE
+		MOV	R7,#10h
+		LCALL	PRINTSTR
+		LJMP	START
+
+;------------------------------------------------------------------
+
+;AD Converter.
+;IN:	A holds channel (0 to 7).
+;OUT:	R2:R0 Holds 16 Bit result
+;-----------------------------------------------------
+ADCONVERT:	ORL	A,#18h				;START, SINGLE ENDED
+		RL	A
+		RL	A
+		RL	A
+		MOV	R2,A
+		MOV	A,#7Ch				;D0,D1 FRQ SEL
+							;D2 FRQ GATE	ACTIVE LOW
+							;D3 FRQ RESET	ACTIVE HIGH
+							;D4 ADC CS	ACTIVE LOW
+							;D5 ADC CLK	HIGH TO LOW TRANSITION
+							;D6 ADC DIN	START,S/D,D2,D1,D0
+							;D7 FRQ TTL	ACTIVE HIGH
+		MOV	DPTR,#8001h
+		MOVX	@DPTR,A
+		;CS low
+		CLR	ACC.4				;D4 ADC CS	ACTIVE LOW
+		MOVX	@DPTR,A
+		;Clock in channel select and Single/Diff+2 clocks for sample
+		MOV	R7,#07h
+ADCONVERT1:	XCH	A,R2
+		RLC	A
+		XCH	A,R2
+		MOV	ACC.6,C	;ADC DIN
+		CLR	ACC.5
+		MOVX	@DPTR,A
+		SETB	ACC.5
+		MOVX	@DPTR,A
+		DJNZ	R7,ADCONVERT1
+		MOV	R2,#00h
+		;Clock in 5 bits, including null bit
+		MOV	R7,#05h
+ADCONVERT2:	PUSH	ACC
+		MOV	DPTR,#8000h
+		MOVX	A,@DPTR
+		RRC	A
+		XCH	A,R2
+		RLC	A
+		XCH	A,R2
+		MOV	DPTR,#8001h
+		POP	ACC
+		CLR	ACC.5
+		MOVX	@DPTR,A
+		SETB	ACC.5
+		MOVX	@DPTR,A
+		DJNZ	R7,ADCONVERT2
+		MOV	R0,#00h
+		;Clock in 8 bits
+		MOV	R7,#08h
+ADCONVERT3:	PUSH	ACC
+		MOV	DPTR,#8000h
+		MOVX	A,@DPTR
+		RRC	A
+		XCH	A,R0
+		RLC	A
+		XCH	A,R0
+		MOV	DPTR,#8001h
+		POP	ACC
+		CLR	ACC.5
+		MOVX	@DPTR,A
+		SETB	ACC.5
+		MOVX	@DPTR,A
+		DJNZ	R7,ADCONVERT3
+		RET
+
+;AD Converter output
+;IN:	A holds channel (0 to 7).
+;	R2:R0 adc result
+;	R1 pointer to buffer
+;OUT:	6 Characters
+;-----------------------------------------------------
+ADOUTPUT:	MOV	FPCHR_OUT,R1
+		PUSH	ACC
+		;Convert 16 bit integer in R2:R0 to float and push it to fp arg stack
+		LCALL	PUSHR2R0
+		;Push the channelS constant to fp arg stack
+		MOV	DPTR,#ADCMUL
+		POP	ACC
+		MOV	B,#FP_NUMBER_SIZE
+		MUL	AB
+		ADD	A,DPL
+		MOV	DPL,A
+		JNC	ADOUTPUT1
+		INC	DPH
+ADOUTPUT1:	LCALL	PUSHC
+		;Multiply
+		LCALL	FLOATING_MUL
+		MOV	FORMAT,#22h
+		MOV	A,ARG_STACK
+		CLR	C
+		SUBB	A,#05h
+		MOV	R0,A
+		LCALL	FLOATING_POINT_OUTPUT
+		RET
+
 ;AD Converter
 ;IN:	Nothing
 ;OUT:	Nothing
-ADCONVERTER:	MOV	A,#02h				;Channel 2
+ADCONVERTERINT:	MOV	A,#02h				;Channel 2
 		LCALL	ADCONVERT
 		MOV	A,#02h
 		MOV	R1,#LCDLINE+4
 		LCALL	ADOUTPUT
-		MOV	A,#03h				;Channel 3
+		MOV	A,#06h				;Channel 6
 		LCALL	ADCONVERT
-		MOV	A,#03h
+		MOV	A,#06h
 		MOV	R1,#LCDLINE+10
 		LCALL	ADOUTPUT
 		MOV	LCDLINE,#'I'			;Output result
@@ -478,14 +741,54 @@ ADCONVERTER:	MOV	A,#02h				;Channel 2
 		MOV	R0,#LCDLINE
 		MOV	R7,#10h
 		LCALL	PRINTSTR
-		MOV	A,#00h				;Channel 0
+		MOV	A,#03h				;Channel 3
+		LCALL	ADCONVERT
+		MOV	A,#03h
+		MOV	R1,#LCDLINE+4
+		LCALL	ADOUTPUT
+		MOV	A,#07h				;Channel 7
+		LCALL	ADCONVERT
+		MOV	A,#07h
+		MOV	R1,#LCDLINE+10
+		LCALL	ADOUTPUT
+		MOV	LCDLINE,#'I'			;Output result
+		MOV	LCDLINE+1,#'N'
+		MOV	LCDLINE+2,#'T'
+		MOV	LCDLINE+3,#' '
+		MOV	R0,#LCDLINE
+		MOV	R7,#10h
+		LCALL	PRINTSTR
+		MOV	R7,#14h
+ADCONVERTERINT1:MOV	A,#250
+		LCALL	WAIT				;Wait 25ms for relay to kick in / out
+		DJNZ	R7,ADCONVERTERINT1
+		LJMP	START
+
+ADCONVERTEREXT:	MOV	A,#00h				;Channel 0
 		LCALL	ADCONVERT
 		MOV	A,#00h
 		MOV	R1,#LCDLINE+4
 		LCALL	ADOUTPUT
+		MOV	A,#04h				;Channel 4
+		LCALL	ADCONVERT
+		MOV	A,#04h
+		MOV	R1,#LCDLINE+10
+		LCALL	ADOUTPUT
+		MOV	LCDLINE,#'V'			;Output result
+		MOV	LCDLINE+1,#'A'
+		MOV	LCDLINE+2,#'R'
+		MOV	LCDLINE+3,#' '
+		MOV	R0,#LCDLINE
+		MOV	R7,#10h
+		LCALL	PRINTSTR
 		MOV	A,#01h				;Channel 1
 		LCALL	ADCONVERT
 		MOV	A,#01h
+		MOV	R1,#LCDLINE+4
+		LCALL	ADOUTPUT
+		MOV	A,#05h				;Channel 5
+		LCALL	ADCONVERT
+		MOV	A,#05h
 		MOV	R1,#LCDLINE+10
 		LCALL	ADOUTPUT
 		MOV	LCDLINE,#'E'			;Output result
@@ -495,7 +798,10 @@ ADCONVERTER:	MOV	A,#02h				;Channel 2
 		MOV	R0,#LCDLINE
 		MOV	R7,#10h
 		LCALL	PRINTSTR
-		LCALL	WAITASEC			;Wait 1 Secod
+		MOV	R7,#14h
+ADCONVERTEREXT1:MOV	A,#250
+		LCALL	WAIT				;Wait 25ms for relay to kick in / out
+		DJNZ	R7,ADCONVERTEREXT1
 		LJMP	START
 
 ;------------------------------------------------------------------
@@ -503,6 +809,10 @@ ADCMUL:		DB 7Eh,00h,00h,07h,03h,52h		;CH0
 		DB 7Eh,00h,00h,07h,03h,16h		;CH1
 		DB 7Eh,00h,00h,00h,02h,36h		;CH2
 		DB 7Eh,00h,00h,07h,03h,16h		;CH3
+		DB 7Eh,00h,00h,07h,03h,16h		;CH4
+		DB 7Eh,00h,00h,07h,03h,16h		;CH5
+		DB 00h,00h,00h,00h,00h,00h		;CH6
+		DB 00h,00h,00h,00h,00h,00h		;CH7
 ;------------------------------------------------------------------
 FPONE:		DB 81h,00h,00h,00h,00h,10h		;1.0000000
 FPTWO:		DB 81h,00h,00h,00h,00h,20h		;2.0000000
@@ -555,6 +865,7 @@ START0:		CLR	A
 		SETB	EX0				;Enable INT0
 		SETB	EX1				;Enable INT1
 		SETB	EA				;Enable interrupts
+		MOV	INTBITS,#40h			;Output to terminal
 		LCALL	LCDINIT
 		LCALL	LCMETERINIT
 
@@ -567,32 +878,21 @@ IF DEVMODE=1
 		NOP
 		NOP
 	ENDIF
-;MOV	A,#0Eh
-;LCALL	TXBYTE
 ENDIF
 
 START:		MOV	SP,#0CFh			;Init stack pointer. The stack is 48 bytes
 		MOV	DPTR,#2000h
 IF DEVMODE=1
-		JNB	RI,START10
+		JNB	RI,START01
 		MOV	INTBITS,#00h			;Redirect no interrupts
 		LJMP	0000h
-START10:;	MOV	MODE,#08h
+START01:;	MOV	MODE,#08h
 ENDIF
 
-;TESTIT:		MOV	A,#01h
-;		LCALL	ADCONVERT
-;		MOV	A,R2
-;		ACALL	HEXOUT
-;		MOV	A,R0
-;		ACALL	HEXOUT
-;		ACALL	PRNTCRLF
-;		LCALL	WAITASEC
-;		AJMP	TESTIT
 		MOV	ARG_STACK,#80h
 		MOV	A,MODE
 		CJNE	A,#0FFh,START11
-		MOV	A,MODEMAX
+		MOV	A,#MODEMAX
 START11:	CJNE	A,#MODEMAX+1,START12
 		CLR	A
 START12:	MOV	MODE,A
@@ -615,13 +915,15 @@ START5:		DJNZ	R7,START6
 		MOV	A,#03h				;Frequency counter channel3. ALE
 		LJMP	FREQENCYCOUNT
 START6:		DJNZ	R7,START7
-		LJMP	ADCONVERTER			;AD Coverter External PSU
+		LJMP	ADCONVERTERINT			;AD Coverter External PSU
 START7:		DJNZ	R7,START8
-		LJMP	ADCONVERTER			;AD Coverter Internal PSU
+		LJMP	ADCONVERTEREXT			;AD Coverter Internal PSU
 START8:		DJNZ	R7,START9
 		LJMP	LMETER				;Inductance
-START9:		LJMP	CMETER				;Capacitance
-
+START9:		DJNZ	R7,START10
+		LJMP	CMETER				;Capacitance
+START10:	LCALL	LCMETERINIT			;Calibrate
+		SJMP	START
 
 ;------------------------------------------------------------------
 
@@ -693,43 +995,6 @@ TERMINAL13:	CJNE	A,#9Fh,TERMINAL14
 TERMINAL14:	CJNE	A,#0Dh,TERMINAL2
 		;CR
 		SJMP	TERMINAL1
-
-;------------------------------------------------------------------
-
-;Frequency conter and AD Converter channel 2 and 3
-;IN:	Frequency cont channel (0-3)
-;OUT:	Nothing
-FREQENCYCOUNT:	PUSH	ACC
-		LCALL	FRQCOUNT
-		MOV	R0,#LCDLINE+4			;Decimal buffer
-		LCALL	BIN2DEC
-		MOV	R7,A				;Number of digits
-		POP	ACC
-		PUSH	ACC
-		ANL	A,#03h
-		LCALL	FRQFORMAT
-		MOV	R0,#LCDLINE			;Output result
-		MOV	R7,#10h
-		LCALL	PRINTSTR
-		MOV	A,#02h				;ADC Channel 2
-		LCALL	ADCONVERT
-		MOV	A,#02h
-		MOV	R1,#LCDLINE+4
-		LCALL	ADOUTPUT
-		MOV	A,#03h				;ADC Channel 3
-		LCALL	ADCONVERT
-		MOV	A,#03h
-		MOV	R1,#LCDLINE+10
-		LCALL	ADOUTPUT
-		MOV	LCDLINE,#'I'			;Output result
-		MOV	LCDLINE+1,#'N'
-		MOV	LCDLINE+2,#'T'
-		MOV	LCDLINE+3,#' '
-		MOV	R0,#LCDLINE
-		MOV	R7,#10h
-		LCALL	PRINTSTR
-		POP	ACC
-		LJMP	START
 
 ;RS232 Functions
 ;------------------------------------------------------------------
@@ -923,7 +1188,7 @@ RX16BYTES1:	ACALL	RXBYTE
 		MOV	R0,#ROMBUFF
 		RET
 
-RXBYTE:		JB	EX1,RXBYTE1
+RXBYTE:		JB	20h.7,RXBYTE1
 		JNB	RI,$
 		CLR	RI
 		MOV	A,SBUF
@@ -936,7 +1201,7 @@ RXBYTE1:	CLR	EX1
 		SETB	EX1
 		RET
 
-TXBYTE:		JB	EX1,TXBYTE1
+TXBYTE:		JB	20h.7,TXBYTE1
 		MOV	SBUF,A
 		JNB	TI,$
 		CLR	TI
@@ -1843,217 +2108,6 @@ LCDINIT:	PUSH	DPL
 		ACALL	LCDCMDOUT
 		POP	DPH
 		POP	DPL
-		RET
-
-;Wait loop. Waits 1 second
-;-----------------------------------------------------
-WAITASEC:	MOV	R7,#0F8h
-		MOV	R6,#51
-		MOV	R5,#16
-WAITASEC1:	DJNZ	R7,WAITASEC1
-		DJNZ	R6,WAITASEC1
-		DJNZ	R5,WAITASEC1
-		RET
-
-;Frequency counter. LSB from 74LS393 read at 8001h, TL0, TH0, TF0 bit. 25 bits, max 33554431 Hz
-;IN;	A holds channel (0 to 3). ACC.7 FRQ TTL Active high
-;OUT:	32 Bit result in R7:R6:R5:R4
-;------------------------------------------------------------------
-FRQCOUNT:	ORL	A,#7Ch				;D0,D1	CHANNEL (0-3)
-							;D2     FRQ     Gate active low
-							;D3     FRQ     Reset active high
-							;D4     ADC     CS Active low
-							;D5     ADC     CLK High to Low transition
-							;D6     ADC     DIN
-							;D7	FRQ TTL	 Active high
-		MOV	DPTR,#8001h
-		MOVX	@DPTR,A				;Reset and gate off
-		PUSH	ACC
-		MOV	TL0,#00h
-		MOV	TH0,#00h
-		MOV	A,TMOD
-		SETB	ACC.0				;M00
-		CLR	ACC.1				;M01
-		SETB	ACC.2				;C/T0#
-		CLR	ACC.3				;GATE0
-		MOV	TMOD,A
-		MOV	A,TCON
-		SETB	ACC.4				;TR0
-		CLR	ACC.5				;TF0
-		MOV	TCON,A
-		POP	ACC
-		ANL	A,#0F3h				;D2	FRQ Gate active low
-							;D3	FRQ Reset active high
-		MOVX	@DPTR,A				;Gate on(low),Reset inactive (low)
-		ACALL	WAITASEC
-		SETB	ACC.2				;D2	FRQ Gate active low
-		MOVX	@DPTR,A				;Stop counting
-		MOVX	A,@DPTR
-		MOV	R4,A
-		MOV	A,TL0
-		MOV	R5,A
-		MOV	A,TH0
-		MOV	R6,A
-		CLR	A				;TF0 Is the 25th bit
-		MOV	C,TF0
-		RLC	A
-		MOV	R7,A
-		RET
-
-;Format frequency conter text line
-;IN:	A holds channel (0 to 3)
-;	LCDLINE+4 Decimal result
-;	R7 Number of digits
-;OUT:	Formatted LCDLINE
-FRQFORMAT:	MOV	LCDLINE,#'C'
-		MOV	LCDLINE+1,#'H'
-		ORL	A,#30h
-		MOV	LCDLINE+2,A
-		MOV	LCDLINE+3,#' '
-		MOV	R0,#LCDLINE+4
-		MOV	R1,#LCDLINE+6
-		CJNE	R7,#07h,$+3
-		JC	FRQFORMATKHZ
-		;MHz
-		MOV	R7,#08h
-FRQFORMATMHZ1:	MOV	A,@R1
-		CJNE	R7,#06h,FRQFORMATMHZ2
-		MOV	@R0,#'.'
-		INC	R0
-FRQFORMATMHZ2:	MOV	@R0,A
-		INC	R0
-		INC	R1
-		DJNZ	R7,FRQFORMATMHZ1
-		MOV	LCDLINE+13,#'M'
-		MOV	LCDLINE+14,#'H'
-		MOV	LCDLINE+15,#'z'
-		SJMP	FRQFORMATDONE
-FRQFORMATKHZ:	CJNE	R7,#04h,$+3
-		JC	FRQFORMATHZ
-		;KHz
-		MOV	R7,#08h
-FRQFORMATKHZ1:	MOV	A,@R1
-		CJNE	R7,#03h,FRQFORMATKHZ2
-		MOV	@R0,#'.'
-		INC	R0
-FRQFORMATKHZ2:	MOV	@R0,A
-		INC	R0
-		INC	R1
-		DJNZ	R7,FRQFORMATKHZ1
-		MOV	LCDLINE+13,#'K'
-		MOV	LCDLINE+14,#'H'
-		MOV	LCDLINE+15,#'z'
-		SJMP	FRQFORMATDONE
-FRQFORMATHZ:	;Hz
-		MOV	LCDLINE+4,#' '
-		INC	R0
-		MOV	R7,#08h
-FRQFORMATHZ1:	MOV	A,@R1
-		MOV	@R0,A
-		INC	R0
-		INC	R1
-		DJNZ	R7,FRQFORMATHZ1
-		MOV	LCDLINE+13,#'H'
-		MOV	LCDLINE+14,#'z'
-		MOV	LCDLINE+15,#' '
-FRQFORMATDONE:	RET
-
-;AD Converter.
-;IN:	A holds channel (0 to 7).
-;OUT:	R2:R0 Holds 16 Bit result
-;-----------------------------------------------------
-ADCONVERT:	ORL	A,#18h				;START, SINGLE ENDED
-		RL	A
-		RL	A
-		RL	A
-		MOV	R2,A
-		MOV	A,#7Ch				;D0,D1 FRQ SEL
-							;D2 FRQ GATE	ACTIVE LOW
-							;D3 FRQ RESET	ACTIVE HIGH
-							;D4 ADC CS	ACTIVE LOW
-							;D5 ADC CLK	HIGH TO LOW TRANSITION
-							;D6 ADC DIN	START,S/D,D2,D1,D0
-							;D7 FRQ TTL	ACTIVE HIGH
-		MOV	DPTR,#8001h
-		MOVX	@DPTR,A
-		;CS low
-		CLR	ACC.4				;D4 ADC CS	ACTIVE LOW
-		MOVX	@DPTR,A
-		;Clock in channel select and Single/Diff+2 clocks for sample
-		MOV	R7,#07h
-ADCONVERT1:	XCH	A,R2
-		RLC	A
-		XCH	A,R2
-		MOV	ACC.6,C	;ADC DIN
-		CLR	ACC.5
-		MOVX	@DPTR,A
-		SETB	ACC.5
-		MOVX	@DPTR,A
-		DJNZ	R7,ADCONVERT1
-		MOV	R2,#00h
-		;Clock in 5 bits, including null bit
-		MOV	R7,#05h
-ADCONVERT2:	PUSH	ACC
-		MOV	DPTR,#8000h
-		MOVX	A,@DPTR
-		RRC	A
-		XCH	A,R2
-		RLC	A
-		XCH	A,R2
-		MOV	DPTR,#8001h
-		POP	ACC
-		CLR	ACC.5
-		MOVX	@DPTR,A
-		SETB	ACC.5
-		MOVX	@DPTR,A
-		DJNZ	R7,ADCONVERT2
-		MOV	R0,#00h
-		;Clock in 8 bits
-		MOV	R7,#08h
-ADCONVERT3:	PUSH	ACC
-		MOV	DPTR,#8000h
-		MOVX	A,@DPTR
-		RRC	A
-		XCH	A,R0
-		RLC	A
-		XCH	A,R0
-		MOV	DPTR,#8001h
-		POP	ACC
-		CLR	ACC.5
-		MOVX	@DPTR,A
-		SETB	ACC.5
-		MOVX	@DPTR,A
-		DJNZ	R7,ADCONVERT3
-		RET
-
-;AD Converter output
-;IN:	A holds channel (0 to 7).
-;	R2:R0 adc result
-;	R1 pointer to buffer
-;OUT:	6 Characters
-;-----------------------------------------------------
-ADOUTPUT:	MOV	FPCHR_OUT,R1
-		PUSH	ACC
-		;Convert 16 bit integer in R2:R0 to float and push it to fp arg stack
-		LCALL	PUSHR2R0
-		;Push the channelS constant to fp arg stack
-		MOV	DPTR,#ADCMUL
-		POP	ACC
-		MOV	B,#FP_NUMBER_SIZE
-		MUL	AB
-		ADD	A,DPL
-		MOV	DPL,A
-		JNC	ADOUTPUT1
-		INC	DPH
-ADOUTPUT1:	LCALL	PUSHC
-		;Multiply
-		LCALL	FLOATING_MUL
-		MOV	FORMAT,#22h
-		MOV	A,ARG_STACK
-		CLR	C
-		SUBB	A,#05h
-		MOV	R0,A
-		LCALL	FLOATING_POINT_OUTPUT
 		RET
 
 ;Single step called when INT1 pin low and interupt is enabled
