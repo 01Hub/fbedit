@@ -268,7 +268,7 @@ LCCALC:		PUSH	01h
 ;Get LC meter frquency F1 and F2. Calculatr LCCA=((F1/F2)^2)-1 and LCCB=LCCA*((1/(2*Pi*F1))^2)*(1/Ccal)
 ;IN:	Nothing
 ;OUT:	Nothing
-LCMETERINIT:	MOV	A,#40h				;D6 LC Meter	0=L, 1=C
+LCMETERINIT:	MOV	A,#00h				;D6 LC Meter	0=C, 1=L
 							;D7 LC Meter	0=F1, 1=F2 (Adding C Cal)
 		MOV	DPTR,#8000h
 		MOVX	@DPTR,A				;D7, D6
@@ -289,12 +289,12 @@ LCMETERINIT:	MOV	A,#40h				;D6 LC Meter	0=L, 1=C
 		LCALL	WAITASEC
 		MOV	A,#'.'
 		LCALL	TXBYTE
-		MOV	A,#40h				;D6 LC Meter	0=L, 1=C
+		MOV	A,#00h				;D6 LC Meter	0=C, 1=L
 							;D7 LC Meter	0=F1, 1=F2 (Adding C Cal)
 		MOV	R1,#LOW LCF1
 		MOV	R3,#HIGH LCF1
 		LCALL	LCMETERGETFRQ			;Get F1
-		MOV	A,#0C0h				;D6 LC Meter	0=L, 1=C
+		MOV	A,#80h				;D6 LC Meter	0=C, 1=L
 							;D7 LC Meter	0=F1, 1=F2 (Adding C Cal)
 		MOV	R1,#LOW LCF2
 		MOV	R3,#HIGH LCF2
@@ -356,7 +356,7 @@ LCMETERINIT:	MOV	A,#40h				;D6 LC Meter	0=L, 1=C
 ;Inductance meter Lx=((F1/F3)^2)-1)*((F1/F2)^2)-1)*((1/(2*Pi*F1))^2)*(1/Ccal)
 ;IN:	Nothing
 ;OUT:	Nothing
-LMETER:		MOV	A,#00h				;D6 LC Meter	0=L, 1=C
+LMETER:		MOV	A,#40h				;D6 LC Meter	0=C, 1=L
 							;D7 LC Meter	0=F1, 1=F2 (Adding C Cal)
 		MOV	R1,#LOW LCF3
 		MOV	R3,#HIGH LCF3
@@ -418,7 +418,7 @@ LMETER3:	LCALL	PUSHC				;PUSH ARG IN DPTR TO STACK
 ;Capacitance meter: Cx=((F1/F3)^2)-1)/((F1/F2)^2)-1)*Ccal
 ;IN:	Nothing
 ;OUT:	Nothing
-CMETER:		MOV	A,#40h				;D6 LC Meter	0=L, 1=C
+CMETER:		MOV	A,#00h				;D6 LC Meter	0=C, 1=L
 							;D7 LC Meter	0=F1, 1=F2 (Adding C Cal)
 		MOV	R1,#LOW LCF3
 		MOV	R3,#HIGH LCF3
@@ -866,6 +866,9 @@ START0:		CLR	A
 		SETB	EX1				;Enable INT1
 		SETB	EA				;Enable interrupts
 		MOV	INTBITS,#40h			;Output to terminal
+		LCALL	LCDINIT
+		LCALL	LCDINIT
+		LCALL	LCDINIT
 		LCALL	LCDINIT
 		LCALL	LCMETERINIT
 
@@ -2093,19 +2096,72 @@ LCDINIT:	PUSH	DPL
 		PUSH	DPH
 		MOV	DPTR,#8000h
 		;Function set
-		MOV	A,#00000010b
+		MOV	A,#00000011b
 		ACALL	LCDNIBOUT
-		MOV	A,#00100000b
+		ACALL	LCDDELAY			;Wait for BF to clear
+
+		MOV	A,#00101100b
 		ACALL	LCDCMDOUT
-		;Display ON/OFF
-		MOV	A,#00001111b
+		MOV	A,#00101100b
 		ACALL	LCDCMDOUT
-		;Clear
-		MOV	A,#00000001b
-		ACALL	LCDCMDOUT
-		;Cursor direction
-		MOV	A,#00000110b
-		ACALL	LCDCMDOUT
+
+;		;Display ON/OFF
+;		MOV	A,#00001111b
+;		ACALL	LCDCMDOUT
+;		;Clear
+;		MOV	A,#00000001b
+;		ACALL	LCDCMDOUT
+;		;Cursor direction
+;		MOV	A,#00011100b
+;		ACALL	LCDCMDOUT
+		mov	a,#41h
+		acall	LCDCHROUT
+		mov	a,#41h
+		acall	LCDCHROUT
+		mov	a,#41h
+		acall	LCDCHROUT
+		mov	a,#41h
+		acall	LCDCHROUT
+		mov	a,#41h
+		acall	LCDCHROUT
+		mov	a,#41h
+		acall	LCDCHROUT
+		mov	a,#41h
+		acall	LCDCHROUT
+		mov	a,#41h
+		acall	LCDCHROUT
+		mov	a,#41h
+		acall	LCDCHROUT
+		mov	a,#41h
+		acall	LCDCHROUT
+		mov	a,#41h
+		acall	LCDCHROUT
+		mov	a,#41h
+		acall	LCDCHROUT
+		mov	a,#41h
+		acall	LCDCHROUT
+		mov	a,#41h
+		acall	LCDCHROUT
+		mov	a,#41h
+		acall	LCDCHROUT
+		mov	a,#41h
+		acall	LCDCHROUT
+		mov	a,#41h
+		acall	LCDCHROUT
+		mov	a,#41h
+		acall	LCDCHROUT
+		mov	a,#41h
+		acall	LCDCHROUT
+		mov	a,#41h
+		acall	LCDCHROUT
+		mov	a,#41h
+		acall	LCDCHROUT
+		mov	a,#41h
+		acall	LCDCHROUT
+		mov	a,#41h
+		acall	LCDCHROUT
+		mov	a,#41h
+		acall	LCDCHROUT
 		POP	DPH
 		POP	DPL
 		RET
