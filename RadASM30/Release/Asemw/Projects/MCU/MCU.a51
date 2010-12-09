@@ -588,7 +588,7 @@ FRQFORMATHZ1:	MOV	A,@R1
 		MOV	LCDLINE+15,#' '
 FRQFORMATDONE:	RET
 
-;Frequency conter and AD Converter channel 0 and 4
+;Frequency conter and AD Converter channel 0 and 5
 ;IN:	Frequency cont channel (0-3)
 ;OUT:	Nothing
 FREQENCYCOUNT:	PUSH	ACC
@@ -606,11 +606,23 @@ FREQENCYCOUNT:	PUSH	ACC
 		LCALL	ADCONVERT
 		MOV	A,#00h
 		MOV	R1,#LCDLINE+4
+		MOV	FORMAT,#22h
 		LCALL	ADOUTPUT
-		MOV	A,#04h				;ADC Channel 4
+		MOV	A,#05h				;ADC Channel 5
 		LCALL	ADCONVERT
-		MOV	A,#04h
+		MOV	A,R0
+		CLR	C
+		SUBB	A,#73h
+		MOV	R0,A
+		MOV	A,R2
+		SUBB	A,#00h
+		JNC	FREQENCYCOUNT1
+		CLR	A
+		MOV	R0,A
+FREQENCYCOUNT1:	MOV	R2,A
+		MOV	A,#05h
 		MOV	R1,#LCDLINE+10
+		MOV	FORMAT,#13h
 		LCALL	ADOUTPUT
 		MOV	LCDLINE,#'V'			;Output result
 		MOV	LCDLINE+1,#'A'
@@ -713,7 +725,6 @@ ADOUTPUT:	MOV	FPCHR_OUT,R1
 ADOUTPUT1:	LCALL	PUSHC
 		;Multiply
 		LCALL	FLOATING_MUL
-		MOV	FORMAT,#22h
 		MOV	A,ARG_STACK
 		CLR	C
 		SUBB	A,#05h
@@ -728,11 +739,13 @@ ADCONVERTERINT:	MOV	A,#02h				;Channel 2
 		LCALL	ADCONVERT
 		MOV	A,#02h
 		MOV	R1,#LCDLINE+4
+		MOV	FORMAT,#22h
 		LCALL	ADOUTPUT
 		MOV	A,#06h				;Channel 6
 		LCALL	ADCONVERT
 		MOV	A,#06h
 		MOV	R1,#LCDLINE+10
+		MOV	FORMAT,#13h
 		LCALL	ADOUTPUT
 		MOV	LCDLINE,#'I'			;Output result
 		MOV	LCDLINE+1,#'N'
@@ -745,11 +758,13 @@ ADCONVERTERINT:	MOV	A,#02h				;Channel 2
 		LCALL	ADCONVERT
 		MOV	A,#03h
 		MOV	R1,#LCDLINE+4
+		MOV	FORMAT,#22h
 		LCALL	ADOUTPUT
 		MOV	A,#07h				;Channel 7
 		LCALL	ADCONVERT
 		MOV	A,#07h
 		MOV	R1,#LCDLINE+10
+		MOV	FORMAT,#13h
 		LCALL	ADOUTPUT
 		MOV	LCDLINE,#'I'			;Output result
 		MOV	LCDLINE+1,#'N'
@@ -768,11 +783,23 @@ ADCONVERTEREXT:	MOV	A,#00h				;Channel 0
 		LCALL	ADCONVERT
 		MOV	A,#00h
 		MOV	R1,#LCDLINE+4
+		MOV	FORMAT,#22h
 		LCALL	ADOUTPUT
-		MOV	A,#04h				;Channel 4
+		MOV	A,#05h				;Channel 5
 		LCALL	ADCONVERT
-		MOV	A,#04h
+		MOV	A,R0
+		CLR	C
+		SUBB	A,#73h
+		MOV	R0,A
+		MOV	A,R2
+		SUBB	A,#00h
+		JNC	ADCONVEXT
+		CLR	A
+		MOV	R0,A
+ADCONVEXT:	MOV	R2,A
+		MOV	A,#05h
 		MOV	R1,#LCDLINE+10
+		MOV	FORMAT,#13h
 		LCALL	ADOUTPUT
 		MOV	LCDLINE,#'V'			;Output result
 		MOV	LCDLINE+1,#'A'
@@ -785,11 +812,23 @@ ADCONVERTEREXT:	MOV	A,#00h				;Channel 0
 		LCALL	ADCONVERT
 		MOV	A,#01h
 		MOV	R1,#LCDLINE+4
+		MOV	FORMAT,#22h
 		LCALL	ADOUTPUT
-		MOV	A,#05h				;Channel 5
+		MOV	A,#04h				;Channel 4
 		LCALL	ADCONVERT
-		MOV	A,#05h
+		MOV	A,R0
+		CLR	C
+		SUBB	A,#73h
+		MOV	R0,A
+		MOV	A,R2
+		SUBB	A,#00h
+		JNC	ADCONVEXT1
+		CLR	A
+		MOV	R0,A
+ADCONVEXT1:	MOV	R2,A
+		MOV	A,#04h
 		MOV	R1,#LCDLINE+10
+		MOV	FORMAT,#13h
 		LCALL	ADOUTPUT
 		MOV	LCDLINE,#'E'			;Output result
 		MOV	LCDLINE+1,#'X'
@@ -809,8 +848,8 @@ ADCMUL:		DB 7Eh,00h,00h,07h,03h,52h		;CH0
 		DB 7Eh,00h,00h,07h,03h,16h		;CH1
 		DB 7Eh,00h,00h,00h,02h,36h		;CH2
 		DB 7Eh,00h,00h,07h,03h,16h		;CH3
-		DB 7Eh,00h,00h,07h,03h,16h		;CH4
-		DB 7Eh,00h,00h,07h,03h,16h		;CH5
+		DB 7Dh,00h,00h,00h,50h,30h		;CH4
+		DB 7Dh,00h,00h,00h,50h,30h		;CH5
 		DB 00h,00h,00h,00h,00h,00h		;CH6
 		DB 00h,00h,00h,00h,00h,00h		;CH7
 ;------------------------------------------------------------------
@@ -867,9 +906,6 @@ START0:		CLR	A
 		SETB	EA				;Enable interrupts
 		MOV	INTBITS,#40h			;Output to terminal
 		LCALL	LCDINIT
-		LCALL	LCDINIT
-		LCALL	LCDINIT
-		LCALL	LCDINIT
 		LCALL	LCMETERINIT
 
 IF DEVMODE=1
@@ -918,9 +954,9 @@ START5:		DJNZ	R7,START6
 		MOV	A,#03h				;Frequency counter channel3. ALE
 		LJMP	FREQENCYCOUNT
 START6:		DJNZ	R7,START7
-		LJMP	ADCONVERTERINT			;AD Coverter External PSU
+		LJMP	ADCONVERTERINT			;AD Coverter Internal PSU
 START7:		DJNZ	R7,START8
-		LJMP	ADCONVERTEREXT			;AD Coverter Internal PSU
+		LJMP	ADCONVERTEREXT			;AD Coverter External PSU
 START8:		DJNZ	R7,START9
 		LJMP	LMETER				;Inductance
 START9:		DJNZ	R7,START10
@@ -2055,8 +2091,8 @@ LCDDELAY:	PUSH	07h
 		RET
 
 ;A contains nibble
-LCDNIBOUT:	CLR	ACC.5				;
-		MOVX	@DPTR,A				;
+LCDNIBOUT:;	CLR	ACC.5				;
+;		MOVX	@DPTR,A				;
 		SETB	ACC.5				;E
 		MOVX	@DPTR,A				;
 		CLR	ACC.5				;Negative edge on E
@@ -2096,71 +2132,70 @@ LCDINIT:	PUSH	DPL
 		PUSH	DPH
 		MOV	DPTR,#8000h
 		;Function set
-		MOV	A,#00000011b
+		MOV	A,#00000010b
 		ACALL	LCDNIBOUT
-		ACALL	LCDDELAY			;Wait for BF to clear
 
-		MOV	A,#00101100b
-		ACALL	LCDCMDOUT
-		MOV	A,#00101100b
+		MOV	A,#00101000b
 		ACALL	LCDCMDOUT
 
-;		;Display ON/OFF
-;		MOV	A,#00001111b
-;		ACALL	LCDCMDOUT
-;		;Clear
-;		MOV	A,#00000001b
-;		ACALL	LCDCMDOUT
-;		;Cursor direction
-;		MOV	A,#00011100b
-;		ACALL	LCDCMDOUT
-		mov	a,#41h
+		;Display ON/OFF
+		MOV	A,#00001110b
+		ACALL	LCDCMDOUT
+		;Clear
+		MOV	A,#00000001b
+		ACALL	LCDCMDOUT
+
+		;Cursor direction
+		MOV	A,#00000111b
+		ACALL	LCDCMDOUT
+
+		mov	a,#44h
 		acall	LCDCHROUT
-		mov	a,#41h
+		mov	a,#44h
 		acall	LCDCHROUT
-		mov	a,#41h
+		mov	a,#44h
 		acall	LCDCHROUT
-		mov	a,#41h
+		mov	a,#44h
 		acall	LCDCHROUT
-		mov	a,#41h
+		mov	a,#44h
 		acall	LCDCHROUT
-		mov	a,#41h
+		mov	a,#44h
 		acall	LCDCHROUT
-		mov	a,#41h
+		mov	a,#44h
 		acall	LCDCHROUT
-		mov	a,#41h
+		mov	a,#44h
 		acall	LCDCHROUT
-		mov	a,#41h
+		mov	a,#44h
 		acall	LCDCHROUT
-		mov	a,#41h
+		mov	a,#44h
 		acall	LCDCHROUT
-		mov	a,#41h
+		mov	a,#44h
 		acall	LCDCHROUT
-		mov	a,#41h
+		mov	a,#44h
 		acall	LCDCHROUT
-		mov	a,#41h
+		mov	a,#44h
 		acall	LCDCHROUT
-		mov	a,#41h
+		mov	a,#44h
 		acall	LCDCHROUT
-		mov	a,#41h
+		mov	a,#44h
 		acall	LCDCHROUT
-		mov	a,#41h
+		mov	a,#44h
 		acall	LCDCHROUT
-		mov	a,#41h
+		mov	a,#44h
 		acall	LCDCHROUT
-		mov	a,#41h
+		mov	a,#44h
 		acall	LCDCHROUT
-		mov	a,#41h
+		mov	a,#44h
 		acall	LCDCHROUT
-		mov	a,#41h
+		mov	a,#44h
 		acall	LCDCHROUT
-		mov	a,#41h
+		mov	a,#44h
 		acall	LCDCHROUT
-		mov	a,#41h
+		mov	a,#44h
 		acall	LCDCHROUT
-		mov	a,#41h
+		mov	a,#44h
 		acall	LCDCHROUT
-		mov	a,#41h
+		mov	a,#44h
 		acall	LCDCHROUT
 		POP	DPH
 		POP	DPL
