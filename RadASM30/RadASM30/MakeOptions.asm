@@ -24,6 +24,7 @@ tmpmake			MAKE 32 dup(<>)
 
 MakeOptionsProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	buffer[MAX_PATH]:BYTE
+	LOCAL	ofn:OPENFILENAME
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
@@ -140,6 +141,26 @@ MakeOptionsProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:L
 					.endif
 				.endif
 			.elseif eax==IDC_BTNEXTDEBUG
+				;Zero out the ofn struct
+				invoke RtlZeroMemory,addr ofn,sizeof ofn
+				;Setup the ofn struct
+				mov		ofn.lStructSize,sizeof ofn
+				push	hWin
+				pop		ofn.hwndOwner
+				push	ha.hInstance
+				pop		ofn.hInstance
+				mov		ofn.lpstrFilter,offset da.szANYString
+				invoke GetDlgItemText,hWin,IDC_EDTEXTDEBUG,addr buffer,sizeof buffer
+				lea		eax,buffer
+				mov		ofn.lpstrFile,eax
+				mov		ofn.nMaxFile,sizeof buffer
+				mov		ofn.lpstrDefExt,NULL
+				mov		ofn.Flags,OFN_FILEMUSTEXIST or OFN_HIDEREADONLY or OFN_PATHMUSTEXIST
+				;Show the Open dialog
+				invoke GetOpenFileName,addr ofn
+				.if eax
+					invoke SetDlgItemText,hWin,IDC_EDTEXTDEBUG,addr buffer
+				.endif
 			.endif
 		.elseif edx==EN_CHANGE
 			.if eax==IDC_EDTMAKEOPTNEW
