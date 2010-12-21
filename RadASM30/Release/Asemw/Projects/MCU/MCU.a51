@@ -410,6 +410,8 @@ LMETER3:	LCALL	PUSHC				;PUSH ARG IN DPTR TO STACK
 		SUBB	A,#05h
 		MOV	R0,A
 		LCALL	FLOATING_POINT_OUTPUT
+		MOV	A,#00h
+		LCALL	LCDSETADR
 		MOV	R0,#LCDLINE
 		MOV	R7,#10h
 		LCALL	PRINTSTR
@@ -468,6 +470,8 @@ CMETER2:	LCALL	PUSHC				;PUSH ARG IN DPTR TO STACK
 		SUBB	A,#05h
 		MOV	R0,A
 		LCALL	FLOATING_POINT_OUTPUT
+		MOV	A,#00h
+		LCALL	LCDSETADR
 		MOV	R0,#LCDLINE
 		MOV	R7,#10h
 		LCALL	PRINTSTR
@@ -599,6 +603,8 @@ FREQENCYCOUNT:	PUSH	ACC
 		POP	ACC
 		ANL	A,#03h
 		LCALL	FRQFORMAT
+		MOV	A,#00h
+		LCALL	LCDSETADR
 		MOV	R0,#LCDLINE			;Output result
 		MOV	R7,#10h
 		LCALL	PRINTSTR
@@ -628,6 +634,8 @@ FREQENCYCOUNT1:	MOV	R2,A
 		MOV	LCDLINE+1,#'A'
 		MOV	LCDLINE+2,#'R'
 		MOV	LCDLINE+3,#' '
+		MOV	A,#40h
+		LCALL	LCDSETADR
 		MOV	R0,#LCDLINE
 		MOV	R7,#10h
 		LCALL	PRINTSTR
@@ -751,6 +759,8 @@ ADCONVERTERINT:	MOV	A,#02h				;Channel 2
 		MOV	LCDLINE+1,#'N'
 		MOV	LCDLINE+2,#'T'
 		MOV	LCDLINE+3,#' '
+		MOV	A,#00h
+		LCALL	LCDSETADR
 		MOV	R0,#LCDLINE
 		MOV	R7,#10h
 		LCALL	PRINTSTR
@@ -770,6 +780,8 @@ ADCONVERTERINT:	MOV	A,#02h				;Channel 2
 		MOV	LCDLINE+1,#'N'
 		MOV	LCDLINE+2,#'T'
 		MOV	LCDLINE+3,#' '
+		MOV	A,#40h
+		LCALL	LCDSETADR
 		MOV	R0,#LCDLINE
 		MOV	R7,#10h
 		LCALL	PRINTSTR
@@ -805,6 +817,8 @@ ADCONVEXT:	MOV	R2,A
 		MOV	LCDLINE+1,#'A'
 		MOV	LCDLINE+2,#'R'
 		MOV	LCDLINE+3,#' '
+		MOV	A,#00h
+		LCALL	LCDSETADR
 		MOV	R0,#LCDLINE
 		MOV	R7,#10h
 		LCALL	PRINTSTR
@@ -834,6 +848,8 @@ ADCONVEXT1:	MOV	R2,A
 		MOV	LCDLINE+1,#'X'
 		MOV	LCDLINE+2,#'T'
 		MOV	LCDLINE+3,#' '
+		MOV	A,#40h
+		LCALL	LCDSETADR
 		MOV	R0,#LCDLINE
 		MOV	R7,#10h
 		LCALL	PRINTSTR
@@ -904,12 +920,12 @@ START0:		CLR	A
 		SETB	EX0				;Enable INT0
 		SETB	EX1				;Enable INT1
 		SETB	EA				;Enable interrupts
-		MOV	INTBITS,#40h			;Output to terminal
+		MOV	INTBITS,#00h			;Output to LCD
 		LCALL	LCDINIT
 		LCALL	LCMETERINIT
 
 IF DEVMODE=1
-		MOV	INTBITS,#7Fh			;Redirect all interrupts, Output to terminal
+		MOV	INTBITS,#3Fh			;Redirect all interrupts, Output to LCD
 	IF DEBUG=1
 		SETB	INTBITS.7			;Set single step flag
 		CLR	IT1				;Level triggered
@@ -2091,9 +2107,7 @@ LCDDELAY:	PUSH	07h
 		RET
 
 ;A contains nibble
-LCDNIBOUT:;	CLR	ACC.5				;
-;		MOVX	@DPTR,A				;
-		SETB	ACC.5				;E
+LCDNIBOUT:	SETB	ACC.5				;E
 		MOVX	@DPTR,A				;
 		CLR	ACC.5				;Negative edge on E
 		MOVX	@DPTR,A				;
@@ -2108,6 +2122,16 @@ LCDCMDOUT:	PUSH	ACC
 		ANL	A,#0Fh
 		ACALL	LCDNIBOUT
 		ACALL	LCDDELAY			;Wait for BF to clear
+		RET
+
+;A contais address
+LCDSETADR:	PUSH	DPL
+		PUSH	DPH
+		MOV	DPTR,#8000h
+		ORL	A,#10000000b
+		ACALL	LCDCMDOUT
+		POP	DPH
+		POP	DPL
 		RET
 
 ;A contains byte
@@ -2132,15 +2156,18 @@ LCDINIT:	PUSH	DPL
 		PUSH	DPH
 		MOV	DPTR,#8000h
 		;Function set
-		MOV	A,#00000010b
+		MOV	A,#00000011b
 		ACALL	LCDNIBOUT
-
+		ACALL	LCDDELAY			;Wait for BF to clear
+		MOV	A,#00101000b
+		ACALL	LCDCMDOUT
 		MOV	A,#00101000b
 		ACALL	LCDCMDOUT
 
 		;Display ON/OFF
-		MOV	A,#00001110b
+		MOV	A,#00001100b
 		ACALL	LCDCMDOUT
+
 		;Clear
 		MOV	A,#00000001b
 		ACALL	LCDCMDOUT
@@ -2149,54 +2176,6 @@ LCDINIT:	PUSH	DPL
 		MOV	A,#00000111b
 		ACALL	LCDCMDOUT
 
-		mov	a,#44h
-		acall	LCDCHROUT
-		mov	a,#44h
-		acall	LCDCHROUT
-		mov	a,#44h
-		acall	LCDCHROUT
-		mov	a,#44h
-		acall	LCDCHROUT
-		mov	a,#44h
-		acall	LCDCHROUT
-		mov	a,#44h
-		acall	LCDCHROUT
-		mov	a,#44h
-		acall	LCDCHROUT
-		mov	a,#44h
-		acall	LCDCHROUT
-		mov	a,#44h
-		acall	LCDCHROUT
-		mov	a,#44h
-		acall	LCDCHROUT
-		mov	a,#44h
-		acall	LCDCHROUT
-		mov	a,#44h
-		acall	LCDCHROUT
-		mov	a,#44h
-		acall	LCDCHROUT
-		mov	a,#44h
-		acall	LCDCHROUT
-		mov	a,#44h
-		acall	LCDCHROUT
-		mov	a,#44h
-		acall	LCDCHROUT
-		mov	a,#44h
-		acall	LCDCHROUT
-		mov	a,#44h
-		acall	LCDCHROUT
-		mov	a,#44h
-		acall	LCDCHROUT
-		mov	a,#44h
-		acall	LCDCHROUT
-		mov	a,#44h
-		acall	LCDCHROUT
-		mov	a,#44h
-		acall	LCDCHROUT
-		mov	a,#44h
-		acall	LCDCHROUT
-		mov	a,#44h
-		acall	LCDCHROUT
 		POP	DPH
 		POP	DPL
 		RET
