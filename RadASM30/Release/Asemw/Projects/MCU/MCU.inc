@@ -33,7 +33,8 @@
 ;		D5			If set TIMER2 interrupt jumps to 202Bh
 ;		D6			If set output is to terminal instead of LCD
 ;		D7			If set single stepping is enabled
-
+;21		D6			OUTPUT PORT #8000
+;		D7
 ;24		ARG_STACK		ARGUMENT STACK POINTER
 ;25		FORMAT			LOCATION OF OUTPUT FORMAT BYTE
 ;26.1		INTGRC			BIT SET IF INTEGER ERROR
@@ -147,6 +148,7 @@ PT2		BIT 0BDh
 MODEMAX		EQU 10
 ;-----------------------------------------------------
 INTBITS		EQU 20h			;Interrupt jump control
+OUTD7D6		EQU 21h			;Output port #8000h
 ROMBUFF		EQU 40h			;16 Bytes
 LCDLINE		EQU 40h			;16 Bytes
 FPCHR_OUT	EQU 50h			;Holds addrss to next byte during FP number convertion
