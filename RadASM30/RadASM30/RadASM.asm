@@ -1950,7 +1950,9 @@ endif
 		mov		edx,eax
 		shr		eax,16
 		.if !eax
-			invoke EnableMenu,wParam,edx
+			.if edx || !da.win.fcldmax
+				invoke EnableMenu,wParam,edx
+			.endif
 		.endif
 	.elseif eax==WM_CONTEXTMENU
 		mov		eax,lParam
@@ -2057,6 +2059,7 @@ endif
 		.if ha.hMdi
 			invoke SetFocus,ha.hEdt
 		.endif
+		invoke PostAddinMessage,hWin,AIM_ACTIVATE,wParam,lParam,0,HOOK_ACTIVATE
 	.elseif eax==WM_DROPFILES
 		xor		ebx,ebx
 	  @@:

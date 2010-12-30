@@ -4,6 +4,11 @@ Ini files, project files, template files, api files and addins are all incompati
 
 Do NOT install RadASM 3.0 in the same directory as an older version of RadASM.
 
+Version 3.0.0.7i 2010-12-30
+---------------------------
+o Fixed a menu draw bug.
+o Added AIM_ACTIVATE addin message. Sendt when RadASM is activated or deactivated. Same parameters as WM_ACTIVATE.
+
 Version 3.0.0.7h 2010-12-09
 ---------------------------
 o Adjusted the size of some dialogs.
