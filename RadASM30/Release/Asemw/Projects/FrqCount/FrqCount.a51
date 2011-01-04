@@ -1,14 +1,14 @@
-		ORG	0000h
 
 LCDLINE		EQU	40h				;16 Bytes
 
-START:		CLR	P0.5				;R/W
+		ORG	0000h
+
+START:		MOV	P2,#0FFh
 		MOV	SP,#0CFh			;Init stack pointer. The stack is 48 bytes
 		CLR	A
 		MOV	IE,A				;Disable all interrupts
 		ACALL	WAITASEC
 		ACALL	LCDINIT
-		ACALL	WAITASEC
 		CLR	A
 		ACALL	LCDSETADR
 		ACALL	LCDPRNTCSTR
@@ -115,7 +115,7 @@ BINDEC:		DB 000h,0CAh,09Ah,03Bh			;1000000000
 
 ;Wait loop. Waits 1 second
 ;-----------------------------------------------------
-WAITASEC:	MOV	R7,#0F8h
+WAITASEC:	MOV	R7,#0F9h
 		MOV	R6,#51
 		MOV	R5,#16
 WAITASEC1:	DJNZ	R7,WAITASEC1
@@ -178,15 +178,14 @@ FRQCOUNT:	CLR	P3.5				;DISABLE COUNT
 ;	R7 Number of digits
 ;OUT:	Formatted LCDLINE
 FRQFORMAT:	MOV	LCDLINE+0,#'F'
-		MOV	LCDLINE+1,#' '
-		MOV	LCDLINE+2,#'='
-		MOV	LCDLINE+3,#' '
-		MOV	R0,#LCDLINE+4
-		MOV	R1,#LCDLINE+6
+		MOV	LCDLINE+1,#'='
+		MOV	LCDLINE+2,#' '
+		MOV	R0,#LCDLINE+3
+		MOV	R1,#LCDLINE+5
 		CJNE	R7,#07h,$+3
 		JC	FRQFORMATKHZ
 		;MHz
-		MOV	R7,#08h
+		MOV	R7,#09h
 FRQFORMATMHZ1:	MOV	A,@R1
 		CJNE	R7,#06h,FRQFORMATMHZ2
 		MOV	@R0,#'.'
@@ -202,7 +201,7 @@ FRQFORMATMHZ2:	MOV	@R0,A
 FRQFORMATKHZ:	CJNE	R7,#04h,$+3
 		JC	FRQFORMATHZ
 		;KHz
-		MOV	R7,#08h
+		MOV	R7,#09h
 FRQFORMATKHZ1:	MOV	A,@R1
 		CJNE	R7,#03h,FRQFORMATKHZ2
 		MOV	@R0,#'.'
@@ -216,9 +215,8 @@ FRQFORMATKHZ2:	MOV	@R0,A
 		MOV	LCDLINE+15,#'z'
 		SJMP	FRQFORMATDONE
 FRQFORMATHZ:	;Hz
-		MOV	LCDLINE+4,#' '
 		INC	R0
-		MOV	R7,#08h
+		MOV	R7,#09h
 FRQFORMATHZ1:	MOV	A,@R1
 		MOV	@R0,A
 		INC	R0
@@ -237,16 +235,10 @@ LCDDELAY:	PUSH	07h
 		POP	07h
 		RET
 
-;A contains nibble
-LCDNIBOUT:	CLR	ACC.5				;R/W
-		SETB	ACC.6				;E
-		MOV	P0,A
-		NOP
-		NOP
-		CLR	P0.6				;Negative edge on E
-		NOP
-		NOP
-		SETB	P0.6				;Negative edge on E
+;A contains nibble, ACC.4 contains RS
+LCDNIBOUT:	SETB	ACC.5				;E
+		MOV	P2,A
+		CLR	P2.5				;Negative edge on E
 		RET
 
 ;A contains byte
@@ -256,6 +248,19 @@ LCDCMDOUT:	PUSH	ACC
 		ACALL	LCDNIBOUT
 		POP	ACC
 		ANL	A,#0Fh
+		ACALL	LCDNIBOUT
+		ACALL	LCDDELAY			;Wait for BF to clear
+		RET
+
+;A contains byte
+LCDCHROUT:	PUSH	ACC
+		SWAP	A				;High nibble first
+		ANL	A,#0Fh
+		SETB	ACC.4				;RS
+		ACALL	LCDNIBOUT
+		POP	ACC
+		ANL	A,#0Fh
+		SETB	ACC.4				;RS
 		ACALL	LCDNIBOUT
 		ACALL	LCDDELAY			;Wait for BF to clear
 		RET
@@ -270,19 +275,6 @@ LCDCLEAR1:	ACALL	LCDDELAY
 ;A contais address
 LCDSETADR:	ORL	A,#10000000b
 		ACALL	LCDCMDOUT
-		RET
-
-;A contains byte
-LCDCHROUT:	PUSH	ACC
-		SWAP	A				;High nibble first
-		ANL	A,#0Fh
-		SETB	ACC.4				;RS
-		ACALL	LCDNIBOUT
-		POP	ACC
-		ANL	A,#0Fh
-		SETB	ACC.4				;RS
-		ACALL	LCDNIBOUT
-		ACALL	LCDDELAY			;Wait for BF to clear
 		RET
 
 LCDPRINTSTR:	MOV	A,@R0
@@ -310,7 +302,7 @@ LCDINIT:	MOV	A,#00000011b			;Function set
 		ACALL	LCDCMDOUT
 		MOV	A,#00101000b
 		ACALL	LCDCMDOUT
-		MOV	A,#00001111b			;Display ON/OFF
+		MOV	A,#00001100b			;Display ON/OFF
 		ACALL	LCDCMDOUT
 		ACALL	LCDCLEAR			;Clear
 		MOV	A,#00000110b			;Cursor direction
