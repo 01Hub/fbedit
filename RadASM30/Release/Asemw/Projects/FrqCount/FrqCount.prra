@@ -2,9 +2,9 @@
 Version=3000
 [Project]
 Assembler=asemw
-Path=D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Asemw\Projects\FrqCount
+Path=C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Asemw\Projects\FrqCount
 Group=2,-1,0,1,130 MHz Frequency counter,-2,-1,1,Assembly,-4,-1,1,Misc
-F1=-2,2,1,22,22,600,400,217,FrqCount.a51
+F1=-2,2,1,22,22,600,400,24,FrqCount.a51
 Open=0,1
 Api=
 C1=0

@@ -15,13 +15,49 @@ START:		MOV	P2,#0FFh
 		DB	'Welcome Ketil',0
 		ACALL	WAITASEC
 START1:		ACALL	FRQCOUNT
+		CPL	P3.0				;Toggle Output
 		MOV	R0,#LCDLINE+4			;Decimal buffer
 		ACALL	BIN2DEC
 		MOV	R7,A				;Number of digits
 		ACALL	FRQFORMAT
-		MOV	A,#00h
+		CLR	A				;Output result
 		ACALL	LCDSETADR
-		MOV	R0,#LCDLINE			;Output result
+		MOV	R0,#LCDLINE
+		MOV	R7,#10h
+		ACALL	LCDPRINTSTR
+		MOV	R0,#LCDLINE			;Get logic levels
+		MOV	R7,#10h
+		MOV	A,#20H
+START2:		MOV	@R0,A
+		INC	R0
+		DJNZ	R7,START2
+		MOV	LCDLINE+0,#'O'
+		MOV	LCDLINE+1,#'u'
+		MOV	LCDLINE+2,#'t'
+		MOV	LCDLINE+3,#'='
+		MOV	LCDLINE+4,#' '
+		MOV	A,P3
+		ANL	A,#01h
+		ORL	A,#30h
+		MOV	LCDLINE+5,A
+		MOV	LCDLINE+8,#'I'
+		MOV	LCDLINE+9,#'n'
+		MOV	LCDLINE+10,#'='
+		MOV	LCDLINE+11,#' '
+		MOV	R0,#LCDLINE+15
+		MOV	R7,#04h
+		MOV	A,P0
+START3:		PUSH	ACC
+		ANL	A,#01h
+		ORL	A,#30h
+		MOV	@R0,A
+		DEC	R0		
+		POP	ACC
+		RR	A
+		DJNZ	R7,START3
+		MOV	A,#40h				;Output result
+		ACALL	LCDSETADR
+		MOV	R0,#LCDLINE
 		MOV	R7,#10h
 		ACALL	LCDPRINTSTR
 		SJMP	START1
