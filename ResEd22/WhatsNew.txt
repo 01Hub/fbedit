@@ -1,5 +1,9 @@
 ResEd
 
+2.2.0.6d - 2011-01-12
+---------------------
+o Fixed an include file bug. File browser would not show.
+
 2.2.0.6c - 2010-07-03
 ---------------------
 o Fixed accelerator table bug. The editcombo control in the grid

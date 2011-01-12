@@ -210,7 +210,8 @@ IncludeEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke SendMessage,hGrd,GM_COLUMNSORT,[esi].GRIDNOTIFY.col,SORT_INVERT
 			.elseif eax==GN_BUTTONCLICK
 				;Cell button clicked
-				mov		ofn.lpstrInitialDir,offset szProjectPath
+				;Zero out the ofn struct
+				invoke RtlZeroMemory,addr ofn,sizeof ofn
 				mov		eax,[esi].GRIDNOTIFY.lpdata
 				.if byte ptr [eax]
 					invoke strcpy,addr buffer,[esi].GRIDNOTIFY.lpdata
@@ -235,28 +236,19 @@ IncludeEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 							invoke strcpy,addr buffer,addr buffer1
 							mov		ofn.lpstrInitialDir,offset szSystemPath
 						.endif
-					.else
-						invoke strcpy,addr buffer1,addr szProjectPath
-						invoke strcat,addr buffer1,addr szBS
-						invoke strcat,addr buffer1,addr buffer
-						invoke strcpy,addr buffer,addr buffer1
 					.endif
 				.else
 					mov		buffer,0
 				.endif
-				;Zero out the ofn struct
-				invoke RtlZeroMemory,addr ofn,sizeof ofn
 				;Setup the ofn struct
 				mov		ofn.lStructSize,sizeof ofn
 				push	hWin
 				pop		ofn.hwndOwner
 				push	hInstance
 				pop		ofn.hInstance
-				mov		ofn.lpstrFilter,NULL
 				lea		eax,buffer
 				mov		ofn.lpstrFile,eax
 				mov		ofn.nMaxFile,sizeof buffer
-				mov		ofn.lpstrDefExt,NULL
 				mov		ofn.Flags,OFN_FILEMUSTEXIST or OFN_HIDEREADONLY or OFN_PATHMUSTEXIST
 				;Show the Open dialog
 				invoke GetOpenFileName,addr ofn
