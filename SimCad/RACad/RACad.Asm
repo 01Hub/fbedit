@@ -405,6 +405,26 @@ CadDrawObject proc uses ebx esi edi,hDC:HDC,xofs:DWORD,yofs:DWORD,hMem:DWORD,lpO
 	.endif
 	ret
 
+MakePen:
+	movzx	eax,[esi].OBJECT.wdt
+	call	ZoomMul
+	.if fWhite
+			mov		edx,0FFFFFFh
+	.else
+		mov		edx,[esi].OBJECT.color
+		.if [esi].OBJECT.hsel
+			mov		edx,0C0C000h
+		.endif
+	.endif
+	invoke CreatePen,PS_SOLID,eax,edx
+	invoke SelectObject,hDC,eax
+	retn
+
+DelPen:
+	invoke SelectObject,hDC,eax
+	invoke DeleteObject,eax
+	retn
+
 DrawLine:
 	mov		eax,[esi].OBJECT.rc.top
 	call	ZoomMul
@@ -420,21 +440,8 @@ DrawLine:
 		neg		eax
 	.endif
 	invoke MoveToEx,hDC,eax,edx,NULL
-
-	movzx	eax,[esi].OBJECT.wdt
-	call	ZoomMul
-	.if fWhite
-			mov		edx,0FFFFFFh
-	.else
-		mov		edx,[esi].OBJECT.color
-		.if [esi].OBJECT.hsel
-			mov		edx,0C0C000h
-		.endif
-	.endif
-	invoke CreatePen,PS_SOLID,eax,edx
-	invoke SelectObject,hDC,eax
+	call	MakePen
 	push	eax
-
 	mov		eax,[esi].OBJECT.rc.bottom
 	call	ZoomMul
 	sub		eax,yofs
@@ -449,12 +456,8 @@ DrawLine:
 		neg		eax
 	.endif
 	invoke LineTo,hDC,eax,edx
-	mov		edx,eax
 	pop		eax
-	push	edx
-	invoke SelectObject,hDC,eax
-	invoke DeleteObject,eax
-	pop		eax
+	call	DelPen
 	retn
 
 DrawRect:
@@ -472,6 +475,8 @@ DrawRect:
 		neg		eax
 	.endif
 	invoke MoveToEx,hDC,eax,edx,NULL
+	call	MakePen
+	push	eax
 	mov		eax,[esi].OBJECT.rc.top
 	call	ZoomMul
 	sub		eax,yofs
@@ -528,6 +533,8 @@ DrawRect:
 		neg		eax
 	.endif
 	invoke LineTo,hDC,eax,edx
+	pop		eax
+	call	DelPen
 	retn
 
 DrawCircle:
@@ -593,6 +600,8 @@ DrawPolyLine:
 		neg		eax
 	.endif
 	invoke MoveToEx,hDC,eax,edx,NULL
+	call	MakePen
+	push	eax
 	mov		ecx,[esi].OBJECT.npt
 	dec		ecx
 	lea		edi,[esi].OBJECT.rc.right
@@ -616,9 +625,13 @@ DrawPolyLine:
 		pop		ecx
 		dec		ecx
 	.endw
+	pop		eax
+	call	DelPen
 	retn
 
 DrawHText:
+	call	MakePen
+	push	eax
 	mov		eax,[esi].OBJECT.rc.top
 	call	ZoomMul
 	sub		eax,yofs
@@ -696,9 +709,13 @@ DrawHText:
 		pop		edx
 		inc		edx
 	.endw
+	pop		eax
+	call	DelPen
 	retn
 
 DrawVText:
+	call	MakePen
+	push	eax
 	mov		eax,[esi].OBJECT.rc.top
 	call	ZoomMul
 	sub		eax,yofs
@@ -782,9 +799,13 @@ DrawVText:
 		pop		edx
 		inc		edx
 	.endw
+	pop		eax
+	call	DelPen
 	retn
 
 DrawDimension:
+	call	MakePen
+	push	eax
 	mov		eax,[esi].OBJECT.rc.top
 	call	ZoomMul
 	sub		eax,yofs
@@ -988,6 +1009,8 @@ DrawDimension:
 		neg		eax
 	.endif
 	invoke LineTo,hDC,eax,edx
+	pop		eax
+	call	DelPen
 	retn
 
 CadDrawObject endp
