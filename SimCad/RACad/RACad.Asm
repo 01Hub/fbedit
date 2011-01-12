@@ -365,7 +365,7 @@ CadInvalidateObject proc uses ebx esi edi,hWin:HWND,lpObject:DWORD
 
 CadInvalidateObject endp
 
-CadDrawObject proc uses ebx esi edi,hDC:HDC,xofs:DWORD,yofs:DWORD,hMem:DWORD,lpObject:DWORD,fSwapxy:DWORD
+CadDrawObject proc uses ebx esi edi,hDC:HDC,xofs:DWORD,yofs:DWORD,hMem:DWORD,lpObject:DWORD,fSwapxy:DWORD,fWhite:DWORD
 	LOCAL	pt1:POINT
 	LOCAL	pt2:POINT
 	LOCAL	dwVal:DWORD
@@ -396,7 +396,7 @@ CadDrawObject proc uses ebx esi edi,hDC:HDC,xofs:DWORD,yofs:DWORD,hMem:DWORD,lpO
 		lea		esi,[esi+sizeof OBJECT]
 		.while ecx
 			push	ecx
-			invoke CadDrawObject,hDC,xofs,yofs,hMem,esi,fSwapxy
+			invoke CadDrawObject,hDC,xofs,yofs,hMem,esi,fSwapxy,fWhite
 			mov		eax,[esi].OBJECT.cbsize
 			lea		esi,[esi+eax]
 			pop		ecx
@@ -420,6 +420,21 @@ DrawLine:
 		neg		eax
 	.endif
 	invoke MoveToEx,hDC,eax,edx,NULL
+
+	movzx	eax,[esi].OBJECT.wdt
+	call	ZoomMul
+	.if fWhite
+			mov		edx,0FFFFFFh
+	.else
+		mov		edx,[esi].OBJECT.color
+		.if [esi].OBJECT.hsel
+			mov		edx,0C0C000h
+		.endif
+	.endif
+	invoke CreatePen,PS_SOLID,eax,edx
+	invoke SelectObject,hDC,eax
+	push	eax
+
 	mov		eax,[esi].OBJECT.rc.bottom
 	call	ZoomMul
 	sub		eax,yofs
@@ -434,6 +449,12 @@ DrawLine:
 		neg		eax
 	.endif
 	invoke LineTo,hDC,eax,edx
+	mov		edx,eax
+	pop		eax
+	push	edx
+	invoke SelectObject,hDC,eax
+	invoke DeleteObject,eax
+	pop		eax
 	retn
 
 DrawRect:
@@ -989,22 +1010,10 @@ CadDraw proc uses ebx esi,hWin:HWND,hDC:HDC,xofs:DWORD,yofs:DWORD,wt:DWORD,ht:DW
 	lea		esi,[ebx+sizeof CADMEM]
 	.while byte ptr [esi].OBJECT.tpe
 		.if sbyte ptr [esi].OBJECT.tpe>0
-			movzx	eax,[esi].OBJECT.wdt
-			call	ZoomMul
-			mov		edx,[esi].OBJECT.color
-			.if [esi].OBJECT.hsel
-				mov		edx,0C0C000h
-			.endif
-			invoke CreatePen,PS_SOLID,eax,edx
-			invoke SelectObject,hDC,eax
-			push	eax
-			invoke CadDrawObject,hDC,xofs,yofs,ebx,esi,fSwapxy
+			invoke CadDrawObject,hDC,xofs,yofs,ebx,esi,fSwapxy,FALSE
 			.if !fNosel
 				call	MoveSel
 			.endif
-			pop		eax
-			invoke SelectObject,hDC,eax
-			invoke DeleteObject,eax
 		.endif
 		mov		eax,[esi].OBJECT.cbsize
 		lea		esi,[esi+eax]
@@ -1411,15 +1420,7 @@ CadSelectObject proc uses ebx esi edi,hWin:HWND,fCtrl:DWORD
 		.if sbyte ptr [esi].OBJECT.tpe>0
 			invoke GetStockObject,BLACK_BRUSH
 			invoke FillRect,hDC,addr rect,eax
-			movzx	eax,[esi].OBJECT.wdt
-			call	ZoomMul
-			invoke CreatePen,PS_SOLID,eax,0FFFFFFh
-			invoke SelectObject,hDC,eax
-			push	eax
-			invoke CadDrawObject,hDC,xofs,yofs,ebx,esi,FALSE
-			pop		eax
-			invoke SelectObject,hDC,eax
-			invoke DeleteObject,eax
+			invoke CadDrawObject,hDC,xofs,yofs,ebx,esi,FALSE,TRUE
 			;Get the destination bitmap bits
 			invoke GetBitmapBits,hBmp,nbits,edi
 			movzx	eax,byte ptr [edi]
@@ -1515,15 +1516,7 @@ CadSelectRect proc uses ebx esi edi,hWin:HWND,fCtrl:DWORD,lpRect:DWORD
 		.if sbyte ptr [esi].OBJECT.tpe>0
 			invoke GetStockObject,BLACK_BRUSH
 			invoke FillRect,hDC,addr rect,eax
-			movzx	eax,[esi].OBJECT.wdt
-			call	ZoomMul
-			invoke CreatePen,PS_SOLID,eax,0FFFFFFh
-			invoke SelectObject,hDC,eax
-			push	eax
-			invoke CadDrawObject,hDC,xofs,yofs,ebx,esi,FALSE
-			pop		eax
-			invoke SelectObject,hDC,eax
-			invoke DeleteObject,eax
+			invoke CadDrawObject,hDC,xofs,yofs,ebx,esi,FALSE,TRUE
 			;Get the destination bitmap bits
 			invoke GetBitmapBits,hBmp,nbits,edi
 			push	edi
