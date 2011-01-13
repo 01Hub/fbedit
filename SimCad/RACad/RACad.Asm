@@ -1064,7 +1064,7 @@ DrawGrid:
 					sub		eax,xofs
 					.if sdword ptr eax>=0
 						.break .if sdword ptr eax>wt
-						invoke SetPixel,hDC,eax,edi,0A0A0A0h
+						invoke SetPixel,hDC,eax,edi,0404040h
 					.endif
 					add		esi,GRID_SIZE
 				.endw
