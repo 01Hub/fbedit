@@ -408,6 +408,56 @@ ShowSym proc uses ebx esi
 
 ShowSym endp
 
+AddSymbol proc uses ebx esi edi,x:DWORD,y:DWORD
+
+	invoke GetWindowLong,hSymSel,0
+	lea		esi,[eax+sizeof CADMEM]
+	invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,64*1024
+	push	eax
+	push	eax
+	mov		edi,eax
+	mov		ebx,eax
+	lea		edi,[edi+sizeof OBJECT]
+	mov		[ebx].OBJECT.cbsize,sizeof OBJECT
+	mov		[ebx].OBJECT.tpe,TPE_SYMBOL
+	mov		[ebx].OBJECT.layer,0
+	mov		[ebx].OBJECT.wdt,1
+	mov		[ebx].OBJECT.rc.right,0
+	mov		[ebx].OBJECT.rc.bottom,0
+	mov		eax,x
+	mov		[ebx].OBJECT.rc.left,eax
+	mov		eax,y
+	mov		[ebx].OBJECT.rc.top,eax
+	.while sbyte ptr [esi].OBJECT.tpe>0
+		mov		eax,[esi].OBJECT.rc.right
+		add		eax,x
+		.if eax>[ebx].OBJECT.rc.right
+			mov		[ebx].OBJECT.rc.right,eax
+		.endif
+		mov		eax,[esi].OBJECT.rc.bottom
+		add		eax,y
+		.if eax>[ebx].OBJECT.rc.bottom
+			mov		[ebx].OBJECT.rc.bottom,eax
+		.endif
+		mov		ecx,[esi].OBJECT.cbsize
+		add		[ebx].OBJECT.cbsize,ecx
+		inc		[ebx].OBJECT.npt
+		rep movsb
+		mov		eax,x
+		add		[edi-sizeof OBJECT].OBJECT.rc.left,eax
+		add		[edi-sizeof OBJECT].OBJECT.rc.right,eax
+		mov		eax,y
+		add		[edi-sizeof OBJECT].OBJECT.rc.top,eax
+		add		[edi-sizeof OBJECT].OBJECT.rc.bottom,eax
+	.endw
+	pop		edi
+	invoke SendMessage,hCad,CM_ADDOBJECTS,0,edi 
+	pop		eax
+	invoke GlobalFree,eax
+	ret
+
+AddSymbol endp
+
 SymDlgProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	y:DWORD
 	LOCAL	pt:POINT
@@ -481,38 +531,7 @@ SymDlgProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		sub		edx,32
 		shr		edx,5		
 		.if edx<16
-			invoke GetWindowLong,hSymSel,0
-			lea		esi,[eax+sizeof CADMEM]
-			invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,64*1024
-			push	eax
-			push	eax
-			mov		edi,eax
-			mov		ebx,eax
-			lea		edi,[edi+sizeof OBJECT]
-			mov		[ebx].OBJECT.cbsize,sizeof OBJECT
-			mov		[ebx].OBJECT.tpe,TPE_SYMBOL
-			mov		[ebx].OBJECT.layer,0
-			mov		[ebx].OBJECT.wdt,1
-			mov		[ebx].OBJECT.rc.right,0
-			mov		[ebx].OBJECT.rc.bottom,0
-			.while sbyte ptr [esi].OBJECT.tpe>0
-				mov		eax,[esi].OBJECT.rc.right
-				.if eax>[ebx].OBJECT.rc.right
-					mov		[ebx].OBJECT.rc.right,eax
-				.endif
-				mov		eax,[esi].OBJECT.rc.bottom
-				.if eax>[ebx].OBJECT.rc.bottom
-					mov		[ebx].OBJECT.rc.bottom,eax
-				.endif
-				mov		ecx,[esi].OBJECT.cbsize
-				add		[ebx].OBJECT.cbsize,ecx
-				inc		[ebx].OBJECT.npt
-				rep movsb
-			.endw
-			pop		edi
-			invoke SendMessage,hCad,CM_ADDOBJECTS,0,edi 
-			pop		eax
-			invoke GlobalFree,eax
+			invoke AddSymbol,10,10
 		.endif
 	.elseif eax==WM_CLOSE
 		invoke EndDialog,hWin,NULL
@@ -528,6 +547,7 @@ SymDlgProc endp
 WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	ht:DWORD
 	LOCAL	rect:RECT
+	LOCAL	pt:POINT
 	LOCAL	buffer[MAX_PATH]:BYTE
 	LOCAL	cc:CHOOSECOLOR
 
@@ -586,37 +606,12 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke lstrcpy,offset FileName,offset NewFile
 		.endif
 		invoke SetWinCaption,offset FileName
+		invoke CheckDlgButton,hWin,IDC_RBNSCHEMA,BST_CHECKED
 	.elseif eax==WM_INITMENUPOPUP
 		mov		eax,lParam
 		.if eax==0
 		.elseif eax==1
-			invoke SendMessage,hCad,CM_CANUNDO,0,0
-			mov		edx,IDM_EDIT_UNDO
-			call	EnableDisable
-			invoke SendMessage,hCad,CM_CANREDO,0,0
-			mov		edx,IDM_EDIT_REDO
-			call	EnableDisable
-			invoke SendMessage,hCad,CM_GETSELCOUNT,0,0
-			mov		edx,IDM_EDIT_CUT
-			call	EnableDisable
-			mov		edx,IDM_EDIT_COPY
-			call	EnableDisable
-			mov		edx,IDM_EDIT_DELETE
-			call	EnableDisable
-			mov		edx,IDM_EDIT_COLOR
-			call	EnableDisable
-			mov		edx,IDM_EDIT_WIDTH
-			call	EnableDisable
-			invoke SendMessage,hCad,CM_CANPASTE,0,0
-			mov		edx,IDM_EDIT_PASTE
-			call	EnableDisable
-			invoke SendMessage,hCad,CM_GETSNAP,0,0
-			.if eax
-				mov		eax,MF_BYCOMMAND or MF_CHECKED
-			.else
-				mov		eax,MF_BYCOMMAND or MF_UNCHECKED
-			.endif
-			invoke CheckMenuItem,wParam,IDM_EDIT_SNAP,eax
+			call	EnableDisableEdit
 		.elseif eax==2
 			test	wpos.fView,1
 			.if !ZERO?
@@ -634,8 +629,32 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke CheckMenuItem,wParam,IDM_VIEW_GRID,eax
 		.endif
 	.elseif eax==WM_CONTEXTMENU
-		.if sdword ptr rpobj>=0
-			;PrintHex rpobj
+		mov		eax,wParam
+		.if eax==hCad
+			mov		eax,lParam
+			.if eax!=-1
+				movsx	eax,ax
+				mov		pt.x,eax
+				mov		eax,lParam
+				shr		eax,16
+				movsx	eax,ax
+				mov		pt.y,eax
+			.else
+				invoke GetWindowRect,hRACad,addr rect
+				mov		eax,rect.left
+				add		eax,10
+				mov		pt.x,eax
+				mov		eax,rect.top
+				add		eax,10
+				mov		pt.y,eax
+			.endif
+			;Edit menu
+			invoke GetMenu,hWin
+			mov		wParam,eax
+			call	EnableDisableEdit
+			invoke GetMenu,hWin
+			invoke GetSubMenu,eax,1
+			invoke TrackPopupMenu,eax,TPM_LEFTALIGN or TPM_RIGHTBUTTON,pt.x,pt.y,0,hWin,0
 		.endif
 	.elseif eax==WM_COMMAND
 		mov		edx,wParam
@@ -740,6 +759,10 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			and		eax,1
 			xor		eax,1
 			invoke SendMessage,hCad,CM_SETSNAP,eax,0
+		.elseif eax==IDM_EDIT_ADDSYM
+			.if hSymSel
+				invoke AddSymbol,curx,cury
+			.endif
 		.elseif eax==IDM_VIEW_STATUSBAR
 			xor		wpos.fView,1
 			call	SizeIt
@@ -765,6 +788,9 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke SendMessage,hCad,CM_FLIPOBJECT,0,0
 		.elseif eax==IDC_ROTATE
 			invoke SendMessage,hCad,CM_ROTATEOBJECT,0,0
+		.elseif eax>=IDC_RBNSCHEMA && eax<=IDC_RBNPCBBOTTOM
+			sub		eax,IDC_RBNSCHEMA
+			invoke SendMessage,hCad,CM_SETLAYER,eax,0
 		.elseif edx==CBN_SELCHANGE && eax==IDC_CBO1
 			invoke SendMessage,hCbo,CB_GETCURSEL,0,0
 			inc		eax
@@ -802,10 +828,12 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		rpobj,eax
 			.else
 				mov		edx,[ebx].CADNOTIFY.cur.x
+				mov		curx,edx
 				invoke DwToAscii,edx,addr buffer
 				invoke lstrlen,addr buffer
 				mov		word ptr buffer[eax],','
 				mov		edx,[ebx].CADNOTIFY.cur.y
+				mov		cury,edx
 				invoke DwToAscii,edx,addr buffer[eax+1]
 				.if [ebx].CADNOTIFY.nmhdr.code==CN_SIZE
 					invoke lstrlen,addr buffer
@@ -879,6 +907,39 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	xor    eax,eax
 	ret
 
+EnableDisableEdit:
+	invoke SendMessage,hCad,CM_CANUNDO,0,0
+	mov		edx,IDM_EDIT_UNDO
+	call	EnableDisable
+	invoke SendMessage,hCad,CM_CANREDO,0,0
+	mov		edx,IDM_EDIT_REDO
+	call	EnableDisable
+	invoke SendMessage,hCad,CM_GETSELCOUNT,0,0
+	mov		edx,IDM_EDIT_CUT
+	call	EnableDisable
+	mov		edx,IDM_EDIT_COPY
+	call	EnableDisable
+	mov		edx,IDM_EDIT_DELETE
+	call	EnableDisable
+	mov		edx,IDM_EDIT_COLOR
+	call	EnableDisable
+	mov		edx,IDM_EDIT_WIDTH
+	call	EnableDisable
+	invoke SendMessage,hCad,CM_CANPASTE,0,0
+	mov		edx,IDM_EDIT_PASTE
+	call	EnableDisable
+	invoke SendMessage,hCad,CM_GETSNAP,0,0
+	.if eax
+		mov		eax,MF_BYCOMMAND or MF_CHECKED
+	.else
+		mov		eax,MF_BYCOMMAND or MF_UNCHECKED
+	.endif
+	invoke CheckMenuItem,wParam,IDM_EDIT_SNAP,eax
+	mov		eax,hSymSel
+	mov		edx,IDM_EDIT_ADDSYM
+	call	EnableDisable
+	retn
+
 EnableDisable:
 	push	eax
 	.if		eax
@@ -911,11 +972,26 @@ SizeIt:
 	sub		ecx,edx
 	invoke MoveWindow,hEdt,edx,3,ecx,21,TRUE
 	.if nObj==TPE_HTEXT || nObj==TPE_VTEXT || nObj==TPE_DIMENSION
-		mov		edx,SW_SHOW
+		invoke GetDlgItem,hWin,IDC_RBNSCHEMA
+		invoke ShowWindow,eax,SW_HIDE
+		invoke GetDlgItem,hWin,IDC_RBNCOMP
+		invoke ShowWindow,eax,SW_HIDE
+		invoke GetDlgItem,hWin,IDC_RBNPCBTOP
+		invoke ShowWindow,eax,SW_HIDE
+		invoke GetDlgItem,hWin,IDC_RBNPCBBOTTOM
+		invoke ShowWindow,eax,SW_HIDE
+		invoke ShowWindow,hEdt,SW_SHOW
 	.else
-		mov		edx,SW_HIDE
+		invoke GetDlgItem,hWin,IDC_RBNSCHEMA
+		invoke ShowWindow,eax,SW_SHOW
+		invoke GetDlgItem,hWin,IDC_RBNCOMP
+		invoke ShowWindow,eax,SW_SHOW
+		invoke GetDlgItem,hWin,IDC_RBNPCBTOP
+		invoke ShowWindow,eax,SW_SHOW
+		invoke GetDlgItem,hWin,IDC_RBNPCBBOTTOM
+		invoke ShowWindow,eax,SW_SHOW
+		invoke ShowWindow,hEdt,SW_HIDE
 	.endif
-	invoke ShowWindow,hEdt,edx
 	mov		eax,wpos.fView
 	and		eax,1
 	.if eax

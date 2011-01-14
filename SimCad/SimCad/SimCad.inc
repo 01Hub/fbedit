@@ -38,6 +38,11 @@ IDC_CBO1						equ 1006
 IDC_EDT1						equ 1007
 IDC_STC1						equ 1008
 
+IDC_RBNSCHEMA					equ 1009
+IDC_RBNCOMP						equ 1010
+IDC_RBNPCBTOP					equ 1011
+IDC_RBNPCBBOTTOM				equ 1012
+
 IDD_DLGSYM						equ 2000
 IDC_BTNNEXT						equ 1001
 IDC_BTNPREV						equ 1002
@@ -61,6 +66,7 @@ IDM_EDIT_SELECTALL				equ 10109
 IDM_EDIT_COLOR					equ 10120
 IDM_EDIT_WIDTH					equ 10121
 IDM_EDIT_SNAP					equ 10119
+IDM_EDIT_ADDSYM					equ 10122
 IDM_VIEW_GRID					equ 10111
 IDM_VIEW_STATUSBAR				equ 10113
 IDM_VIEW_ZOOM_IN				equ 10115
@@ -201,3 +207,5 @@ symfiles			db MAX_PATH*32*16 dup(?)
 inxsym				dd ?
 sym					SYMBOLS 32 dup(<>)
 hSymSel				dd ?
+curx				dd ?
+cury				dd ?

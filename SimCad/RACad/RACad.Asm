@@ -294,10 +294,10 @@ CadInvalidateObject proc uses ebx esi edi,hWin:HWND,lpObject:DWORD
 		call	ZoomMul
 		sub		eax,[ebx].CADMEM.scroll.y
 		mov		rect.bottom,eax
-		sub		rect.left,8
-		sub		rect.top,8
-		add		rect.right,8
-		add		rect.bottom,8
+		sub		rect.left,24
+		sub		rect.top,24
+		add		rect.right,24
+		add		rect.bottom,24
 		invoke InvalidateRect,hWin,addr rect,TRUE
 	.else
 		mov		ecx,[esi].OBJECT.npt
@@ -375,6 +375,25 @@ CadDrawObject proc uses ebx esi edi,hDC:HDC,xofs:DWORD,yofs:DWORD,hMem:DWORD,lpO
 
 	mov		ebx,hMem
 	mov		esi,lpObject
+	mov		eax,[ebx].CADMEM.layer
+	movzx	edx,[esi].OBJECT.layer
+	.if eax==0
+		.if eax!=edx
+			jmp		Ex
+		.endif
+	.elseif eax==1
+		.if edx==0
+			jmp		Ex
+		.endif
+	.elseif eax==2
+		.if edx!=2 && edx!=3
+			jmp		Ex
+		.endif
+	.elseif eax==3
+		.if edx!=2 && edx!=3
+			jmp		Ex
+		.endif
+	.endif
 	movzx	eax,[esi].OBJECT.tpe
 	.if eax==TPE_LINE
 		call	DrawLine
@@ -392,10 +411,11 @@ CadDrawObject proc uses ebx esi edi,hDC:HDC,xofs:DWORD,yofs:DWORD,hMem:DWORD,lpO
 		call	DrawDimension
 	.elseif eax==TPE_SYMBOL
 		mov		ecx,[esi].OBJECT.npt
-		mov		edi,esi
+		mov		edi,[esi].OBJECT.hsel
 		lea		esi,[esi+sizeof OBJECT]
 		.while ecx
 			push	ecx
+			mov		[esi].OBJECT.hsel,edi
 			invoke CadDrawObject,hDC,xofs,yofs,hMem,esi,fSwapxy,fWhite
 			mov		eax,[esi].OBJECT.cbsize
 			lea		esi,[esi+eax]
@@ -403,18 +423,26 @@ CadDrawObject proc uses ebx esi edi,hDC:HDC,xofs:DWORD,yofs:DWORD,hMem:DWORD,lpO
 			dec		ecx
 		.endw
 	.endif
+  Ex:
 	ret
 
 MakePen:
 	movzx	eax,[esi].OBJECT.wdt
 	call	ZoomMul
 	.if fWhite
-			mov		edx,0FFFFFFh
+		mov		edx,0FFFFFFh
 	.else
-		mov		edx,[esi].OBJECT.color
+		push	eax
+		movzx	eax,[esi].OBJECT.layer
+		.if eax==[ebx].CADMEM.layer
+			mov		edx,[esi].OBJECT.color
+		.else
+			mov		edx,0E0E0E0h
+		.endif
 		.if [esi].OBJECT.hsel
 			mov		edx,0C0C000h
 		.endif
+		pop		eax
 	.endif
 	invoke CreatePen,PS_SOLID,eax,edx
 	invoke SelectObject,hDC,eax
@@ -582,7 +610,11 @@ DrawCircle:
 		mov		pt2.x,eax
 		mov		pt2.y,edx
 	.endif
+	call	MakePen
+	push	eax
 	invoke Arc,hDC,pt1.x,pt1.y,pt2.x,pt2.y,0,0,0,0
+	pop		eax
+	call	DelPen
 	retn
 
 DrawPolyLine:
@@ -1316,34 +1348,39 @@ CadSelect proc uses ebx esi,hWin:HWND,lpObject:DWORD,fSel:DWORD
 	mov		esi,lpObject
 	xor		eax,eax
 	.if fSel && ![esi].OBJECT.hsel
-		movzx	eax,[esi].OBJECT.tpe
-		.if eax==TPE_LINE
-			mov		ecx,[esi].OBJECT.npt
-			call	CreateSel
-		.elseif eax==TPE_RECT
-			mov		ecx,[esi].OBJECT.npt
-			call	CreateSel
-		.elseif eax==TPE_CIRCLE
-			mov		ecx,[esi].OBJECT.npt
-			call	CreateSel
-		.elseif eax==TPE_POLYLINE
-			mov		ecx,[esi].OBJECT.npt
-			call	CreateSel
-		.elseif eax==TPE_HTEXT
-			mov		ecx,1
-			call	CreateSel
-		.elseif eax==TPE_VTEXT
-			mov		ecx,1
-			call	CreateSel
-		.elseif eax==TPE_DIMENSION
-			mov		ecx,[esi].OBJECT.npt
-			call	CreateSel
-		.elseif eax==TPE_SYMBOL
-			mov		ecx,1
-			call	CreateSel
+		mov		eax,[ebx].CADMEM.layer
+		.if al==[esi].OBJECT.layer
+			movzx	eax,[esi].OBJECT.tpe
+			.if eax==TPE_LINE
+				mov		ecx,[esi].OBJECT.npt
+				call	CreateSel
+			.elseif eax==TPE_RECT
+				mov		ecx,[esi].OBJECT.npt
+				call	CreateSel
+			.elseif eax==TPE_CIRCLE
+				mov		ecx,[esi].OBJECT.npt
+				call	CreateSel
+			.elseif eax==TPE_POLYLINE
+				mov		ecx,[esi].OBJECT.npt
+				call	CreateSel
+			.elseif eax==TPE_HTEXT
+				mov		ecx,1
+				call	CreateSel
+			.elseif eax==TPE_VTEXT
+				mov		ecx,1
+				call	CreateSel
+			.elseif eax==TPE_DIMENSION
+				mov		ecx,[esi].OBJECT.npt
+				call	CreateSel
+			.elseif eax==TPE_SYMBOL
+				mov		ecx,1
+				call	CreateSel
+			.endif
+			invoke CadInvalidateObject,hWin,esi
+			mov		eax,TRUE
+		.else
+			xor		eax,eax
 		.endif
-		invoke CadInvalidateObject,hWin,esi
-		mov		eax,TRUE
 	.elseif !fSel && [esi].OBJECT.hsel
 		invoke CadDestroySel,hWin,esi
 		invoke CadInvalidateObject,hWin,esi
@@ -1440,7 +1477,8 @@ CadSelectObject proc uses ebx esi edi,hWin:HWND,fCtrl:DWORD
 	mov		edi,eax
 	lea		esi,[ebx+sizeof CADMEM]
 	.while byte ptr [esi].OBJECT.tpe
-		.if sbyte ptr [esi].OBJECT.tpe>0
+		mov		eax,[ebx].CADMEM.layer
+		.if sbyte ptr [esi].OBJECT.tpe>0 && al==[esi].OBJECT.layer
 			invoke GetStockObject,BLACK_BRUSH
 			invoke FillRect,hDC,addr rect,eax
 			invoke CadDrawObject,hDC,xofs,yofs,ebx,esi,FALSE,TRUE
@@ -1864,7 +1902,8 @@ CadAddObject proc uses ebx esi,hWin:HWND,nObject:DWORD
 
 AddDefObj:
 	mov		[esi].OBJECT.cbsize,sizeof OBJECT
-	mov		[esi].OBJECT.layer,0
+	mov		eax,[ebx].CADMEM.layer
+	mov		[esi].OBJECT.layer,al
 	mov		al,[ebx].CADMEM.wdt
 	mov		[esi].OBJECT.wdt,al
 	mov		eax,[ebx].CADMEM.color
@@ -1911,7 +1950,8 @@ AddPolyLine:
 
 AddHText:
 	mov		[esi].OBJECT.tpe,TPE_HTEXT
-	mov		[esi].OBJECT.layer,0
+	mov		eax,[ebx].CADMEM.layer
+	mov		[esi].OBJECT.layer,al
 	mov		al,[ebx].CADMEM.wdt
 	mov		[esi].OBJECT.wdt,al
 	mov		eax,[ebx].CADMEM.color
@@ -1949,7 +1989,8 @@ AddHText:
 
 AddVText:
 	mov		[esi].OBJECT.tpe,TPE_VTEXT
-	mov		[esi].OBJECT.layer,0
+	mov		eax,[ebx].CADMEM.layer
+	mov		[esi].OBJECT.layer,al
 	mov		al,[ebx].CADMEM.wdt
 	mov		[esi].OBJECT.wdt,al
 	mov		eax,[ebx].CADMEM.color
@@ -3467,15 +3508,24 @@ CadProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke CadAddObjects,hWin,lParam
 	.elseif eax==CM_FLIPOBJECT
 		invoke CadGetSelCount,hWin
-		.if eax;==1
+		.if eax
 			invoke CadFlip,hWin
 		.endif
 	.elseif eax==CM_ROTATEOBJECT
 		invoke CadGetSelCount,hWin
-		.if eax;==1
+		.if eax
 			invoke CadRotate,hWin
 			invoke CadFlip,hWin
 		.endif
+	.elseif eax==CM_SETLAYER
+		invoke GetWindowLong,hWin,0
+		mov		ebx,eax
+		invoke CadSelectAll,hWin,FALSE
+		mov		eax,wParam
+		mov		[ebx].CADMEM.layer,eax
+		invoke InvalidateRect,hWin,NULL,TRUE
+		xor		eax,eax
+		jmp		Ex
 	.elseif eax==WM_USER+9999
 		invoke SendMessage,hWin,CM_SETWIDTH,2,0
 		mov		ncadbox,TPE_HTEXT

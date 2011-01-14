@@ -7,6 +7,7 @@ CADMEM struct
 	hUndo		dd ?
 	rpUndo		dd ?
 	rpFree		dd ?
+	layer		dd ?
 
 	ver			dd ?
 	grid		dd ?
@@ -95,6 +96,7 @@ CM_SETBACKCOLOR		equ CM_START+36
 CM_ADDOBJECTS		equ CM_START+37
 CM_FLIPOBJECT		equ CM_START+38
 CM_ROTATEOBJECT		equ CM_START+39
+CM_SETLAYER			equ CM_START+40
 
 ;Notification messages
 CN_CHANGE			equ 1
