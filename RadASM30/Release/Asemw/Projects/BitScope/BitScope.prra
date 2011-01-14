@@ -1,0 +1,22 @@
+[Version]
+Version=3000
+[Project]
+Assembler=asemw
+Path=D:\RadASM30\Asemw\Projects\BitScope
+Group=2,-1,0,1,BitScope,-2,-1,1,Assembly,-4,-1,1,Misc
+F1=-2,2,1,22,22,600,400,568,BitScope.a51
+F2=-2,0,2,44,44,735,343,16,BitScope.inc
+Open=0,1,2
+Api=
+C2=
+B2=
+M2=
+C1=0
+B1=
+M1=
+[Make]
+Make=0
+0=Release,'',,'"$C"',"$C.hex",'"$C" "$O"',"$C.cmd",'',
+Delete=0
+IncBuild=0
+Run=0,'',''
