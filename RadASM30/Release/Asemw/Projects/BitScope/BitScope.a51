@@ -3,8 +3,9 @@ $PAGEWIDTH (250) ;250 columns per line
 $NOTABS          ;expand tabs
 $NOSYMBOLS
 
-DEVMODE		EQU 0
-DEBUG		EQU 0
+DEVMODE		EQU 1
+DEBUG		EQU 1
+USB		EQU 1
 
 $INCLUDE	(BitScope.inc)
 
@@ -109,6 +110,8 @@ IF DEVMODE=1
 	IF DEBUG=1
 		SETB	INTBITS.7			;Set single step flag
 		CLR	IT1				;Level triggered
+		SETB	EX1				;Enable INT1
+		SETB	EA				;Enable interrupts
 		CLR	P3.3				;Pull INT1 low
 		NOP
 		NOP
@@ -327,6 +330,8 @@ RX16BYTES1:	ACALL	RXBYTE
 		MOV	R0,#ROMBUFF
 		RET
 
+IF USB=0
+
 RXBYTE:		JB	20h.7,RXBYTE1
 		JNB	RI,$
 		CLR	RI
@@ -352,6 +357,28 @@ TXBYTE1:	CLR	EX1
 		CLR	TI
 		SETB	EX1
 		RET
+
+ELSE
+
+RXBYTE:		JB	USBRXF,$
+		PUSH	DPL
+		PUSH	DPH
+		MOV	DPTR,#USBIO
+		MOVX	A,@DPTR
+		POP	DPH
+		POP	DPL
+		RET
+
+TXBYTE:		JB	USBtxe,TXBYTE
+		PUSH	DPL
+		PUSH	DPH
+		MOV	DPTR,#USBIO
+		MOVX	@DPTR,A
+		POP	DPH
+		POP	DPL
+		RET
+
+ENDIF
 
 ;Functions
 ;------------------------------------------------------------------
