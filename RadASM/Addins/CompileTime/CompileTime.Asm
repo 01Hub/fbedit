@@ -1,4 +1,4 @@
-#Include "C:\RadASM\GoAsm\Inc\RadAsm.inc"
+#Include "D:\RadASM\GoAsm\Inc\RadAsm.inc"
 
 wsprintf = wsprintfA
 SendMessage = SendMessageA
