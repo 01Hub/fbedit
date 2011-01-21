@@ -209,3 +209,4 @@ sym					SYMBOLS 32 dup(<>)
 hSymSel				dd ?
 curx				dd ?
 cury				dd ?
+layer				dd ?

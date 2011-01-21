@@ -292,6 +292,8 @@ OpenCad proc
 			dec		eax
 			invoke SendMessage,hCbo,CB_SETCURSEL,eax,0
 			invoke SetToolBar
+			invoke CheckRadioButton,hWnd,IDC_RBNSCHEMA,IDC_RBNPCBBOTTOM,IDC_RBNSCHEMA
+			mov		layer,0
 		.endif
 	.endif
 	ret
@@ -414,7 +416,6 @@ AddSymbol proc uses ebx esi edi,x:DWORD,y:DWORD
 	lea		esi,[eax+sizeof CADMEM]
 	invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,64*1024
 	push	eax
-	push	eax
 	mov		edi,eax
 	mov		ebx,eax
 	lea		edi,[edi+sizeof OBJECT]
@@ -443,6 +444,8 @@ AddSymbol proc uses ebx esi edi,x:DWORD,y:DWORD
 		add		[ebx].OBJECT.cbsize,ecx
 		inc		[ebx].OBJECT.npt
 		rep movsb
+		mov		eax,layer
+		mov		[edi-sizeof OBJECT].OBJECT.layer,al
 		mov		eax,x
 		add		[edi-sizeof OBJECT].OBJECT.rc.left,eax
 		add		[edi-sizeof OBJECT].OBJECT.rc.right,eax
@@ -452,8 +455,7 @@ AddSymbol proc uses ebx esi edi,x:DWORD,y:DWORD
 	.endw
 	pop		edi
 	invoke SendMessage,hCad,CM_ADDOBJECTS,0,edi 
-	pop		eax
-	invoke GlobalFree,eax
+	invoke GlobalFree,edi
 	ret
 
 AddSymbol endp
@@ -532,6 +534,7 @@ SymDlgProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		shr		edx,5		
 		.if edx<16
 			invoke AddSymbol,10,10
+			invoke SetToolBar
 		.endif
 	.elseif eax==WM_CLOSE
 		invoke EndDialog,hWin,NULL
@@ -668,6 +671,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke SendMessage,hCbo,CB_SETCURSEL,0,0
 				invoke SendMessage,hTbr2,TB_CHECKBUTTON,IDC_MOVE,TRUE
 				invoke SetToolBar
+				invoke CheckRadioButton,hWin,IDC_RBNSCHEMA,IDC_RBNPCBBOTTOM,IDC_RBNSCHEMA
 				;Set FileName to NewFile
 				invoke lstrcpy,offset FileName,offset NewFile
 				invoke SetWinCaption,offset FileName
@@ -790,6 +794,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke SendMessage,hCad,CM_ROTATEOBJECT,0,0
 		.elseif eax>=IDC_RBNSCHEMA && eax<=IDC_RBNPCBBOTTOM
 			sub		eax,IDC_RBNSCHEMA
+			mov		layer,eax
 			invoke SendMessage,hCad,CM_SETLAYER,eax,0
 		.elseif edx==CBN_SELCHANGE && eax==IDC_CBO1
 			invoke SendMessage,hCbo,CB_GETCURSEL,0,0

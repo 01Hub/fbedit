@@ -1771,12 +1771,21 @@ CadAddObjects proc uses ebx esi edi,hWin:HWND,lpObjects:DWORD
 
 	invoke GetWindowLong,hWin,0
 	mov		ebx,eax
+	mov		eax,[ebx].CADMEM.rpFree
+	lea		eax,[eax+sizeof CADMEM]
+	add		[ebx].CADMEM.rpUndo,sizeof UNDO
+	mov		edx,[ebx].CADMEM.hUndo
+	add		edx,[ebx].CADMEM.rpUndo
+	mov		[edx].UNDO.rpObject,eax
+	mov		[edx+sizeof UNDO].UNDO.rpObject,0
 	mov		esi,lpObjects
 	.while [esi].OBJECT.tpe
 		call	CopyObject
 		mov		eax,[esi].OBJECT.cbsize
 		lea		esi,[esi+eax]
 	.endw
+
+
 	ret
 
 CopyObject:
@@ -1789,6 +1798,8 @@ CopyObject:
 	rep movsb
 	pop		edi
 	pop		esi
+	mov		eax,[ebx].CADMEM.layer
+	mov		[edi].OBJECT.layer,al
 	mov		[edi].OBJECT.hsel,0
 	invoke CadSelect,hWin,edi,TRUE
 	invoke CadInvalidateObject,hWin,edi
