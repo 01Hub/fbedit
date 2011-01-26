@@ -1,0 +1,40 @@
+
+Setting up for sample.
+================================================================================
+ADC Clock setup.
+--------------------------------------------------------------------------------
+1. Select sample rate (ADCCTLWR D0, D1 and D2).
+2. Select CLK1 phase (ADCCTLWR D5).
+   For dual channel set to LOW (0 deg phase shift).
+   For single channel set to HIGH (180 deg phase shift).
+
+ADC Level setup.
+--------------------------------------------------------------------------------
+1. Select level divisor by writing D0 an D1 to WR1.
+2. Select level magnifyer by writing D2 and D3 to WR1.
+3. Select DACB by writing a HIGH to D4 WR1.
+4. Set the level shifter by writing the value (0-255) to WR0.
+
+Manual trigger setup.
+--------------------------------------------------------------------------------
+1. Reset adress counter by setting ADCMR (ADCCTLWR D7) LOW.
+2. Remove reset signal by setting  ADCMR (ADCCTLWR D7) HIGH.
+3. Make a read from RD0 to set trigger FF2 which in turn sets trigger FF1.
+4. Set ADC/MCU  (ADCCTLWR D6) LOW and the sampling starts.
+
+Logic analyser trigger setup.
+--------------------------------------------------------------------------------
+1. Reset adress counter by setting ADCMR (ADCCTLWR D7) LOW.
+2. Remove reset signal by setting  ADCMR (ADCCTLWR D7) HIGH.
+3. Make a read from RD0 to set trigger FF2 which in turn sets trigger FF1.
+4. Poll RD1 or RD3 until conditions are met.
+5. Set ADC/MCU  (ADCCTLWR D6) LOW and the sampling starts.
+
+ADC CHA trigger setup.
+--------------------------------------------------------------------------------
+1. Select DACA by writing a LOW to D4 WR1.
+2. Set the trigger level by writing the value (0-255) to WR0.
+3. Set the trigger edge(ADCCTLWR D3). LOW=Rising edge.
+4. Reset adress counter by setting ADCMR (ADCCTLWR D7) LOW.
+5. Remove reset signal by setting  ADCMR (ADCCTLWR D7) HIGH.
+6. Set ADC/MCU  (ADCCTLWR D6) LOW. The sampling starts when conditions are met.
