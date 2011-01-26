@@ -4,7 +4,7 @@ $NOTABS          ;expand tabs
 $NOSYMBOLS
 
 DEVMODE		EQU 1
-DEBUG		EQU 1
+DEBUG		EQU 0
 USB		EQU 1
 
 $INCLUDE	(BitScope.inc)
@@ -369,7 +369,7 @@ RXBYTE:		JB	USBRXF,$
 		POP	DPL
 		RET
 
-TXBYTE:		JB	USBtxe,TXBYTE
+TXBYTE:		JB	USBTXE,TXBYTE
 		PUSH	DPL
 		PUSH	DPH
 		MOV	DPTR,#USBIO
@@ -701,5 +701,27 @@ SINGLESTEP10:	CJNE	A,#'S',SINGLESTEP3		;Dump SFR's
 		PUSH	DPH
 		LCALL	DUMPSFR
 		SJMP	SINGLESTEP3
+
+;BitScope
+;------------------------------------------------------------------
+
+;In	A Contains ram page
+;Out	Nothing
+READADCRAM:	MOV	R0,#LOW ADCCTLWR
+		MOV	P2,#HIGH ADCRD
+		ORL	A,#ADCMCU
+		MOVX	@R0,A			;Select MCU and reset ADC
+		ORL	A,#ADCMR
+		MOVX	@R0,A			;Remove reset
+		MOV	R0,#LOW ADCRD
+		MOV	R1,#LOW USBIO
+		MOV	R6,#00h
+		MOV	R7,#80h
+READADCRAM1:	MOVX	A,@R0			;Read a byte
+		JB	USBTXE,$		;Wait until USB ready
+		MOVX	@R1,A			;Send it
+		DJNZ	R6,READADCRAM1
+		DJNZ	R7,READADCRAM1
+		RET
 
 		END
