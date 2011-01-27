@@ -705,15 +705,65 @@ SINGLESTEP10:	CJNE	A,#'S',SINGLESTEP3		;Dump SFR's
 ;BitScope
 ;------------------------------------------------------------------
 
-;In	A Contains ram page
+;Set DAC value, first call SETDACCMD then call SETDACVAL
+;------------------------------------------------------------------
+;In	A Contains DAC command
+;	B Contains DAC value
 ;Out	Nothing
-READADCRAM:	MOV	R0,#LOW ADCCTLWR
-		MOV	P2,#HIGH ADCRD
-		ORL	A,#ADCMCU
-		MOVX	@R0,A			;Select MCU and reset ADC
-		ORL	A,#ADCMR
-		MOVX	@R0,A			;Remove reset
-		MOV	R0,#LOW ADCRD
+SETDACVAL:	MOV	R7,A			;Save DAC CMD
+		MOV	R0,#LOW ADCCTLRDWR	;Select MCU and RDWR3
+		MOV	P2,#HIGH ADCCTLRDWR
+		CLR	A
+		SETB	ADCMCU
+		SETB	ADCMR
+		ORL	A,#RDWR3
+		MOVX	@R0,A
+		MOV	R0,#LOW ADCRDWR
+		CLR	A			;DACCS=0, DACCLK=0, DACBIT=0
+		SETB	TRIGSET
+		SETB	TRIGRESET
+		MOVX	@R0,A
+		MOV	A,R7			;Restore DAC CMD
+		MOV	R7,#04h
+SETDACVAL1:	ACALL	CLOCKDACBIT
+		DJNZ	R7,SETDACVAL1
+		MOV	R7,#08h
+		MOV	A,B
+SETDACVAL2:	ACALL	CLOCKDACBIT
+		DJNZ	R7,SETDACVAL2
+		CLR	A			;DACCS=0, DACCLK=0, DACBIT=0
+		SETB	TRIGSET
+		SETB	TRIGRESET
+		SETB	DACCS			;ADCCS=1
+		MOVX	@R0,A
+		RET
+
+CLOCKDACBIT:	RLC	A
+		PUSH	ACC
+		CLR	A
+		SETB	TRIGSET
+		SETB	TRIGRESET
+		MOV	DACBIT,C
+		MOVX	@R0,A
+		SETB	DACCLK
+		MOVX	@R0,A
+		CLR	DACCLK
+		MOVX	@R0,A
+		POP	ACC
+		RET
+
+;Read ADC or LA RAM
+;------------------------------------------------------------------
+;In	A Contains wich ram to read (RDWR0 to RDWR3)
+;Out	Nothing
+READADCRAM:	MOV	R0,#LOW ADCCTLRDWR	;Select MCU and reset ADC
+		MOV	P2,#HIGH ADCCTLRDWR
+		SETB	ADCMCU
+		CLR	ADCMR
+		MOVX	@R0,A
+		SETB	ADCMR
+		MOVX	@R0,A
+		MOV	R0,#LOW ADCRDWR
 		MOV	R1,#LOW USBIO
 		MOV	R6,#00h
 		MOV	R7,#80h

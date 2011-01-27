@@ -33,528 +33,557 @@
    18: 1        N      00CB     RCAP2H          EQU 0CBh
    19: 1        N      00CC     TL2             EQU 0CCh
    20: 1        N      00CD     TH2             EQU 0CDh
-   21: 1        N      8000     ADCCTLRD        EQU 8000h
-   22: 1        N      8000     ADCCTLWR        EQU 8000h               ;D0 | ADCCLKSEL
-   23: 1                                                                ;D1 |
-   24: 1                                                                ;D2 |
-   25: 1                                                                ;D3 | RAMPAGE
-   26: 1                                                                ;D4 |
-   27: 1                                                                ;D5   CLK1PHASE
-   28: 1                                                                ;D6   ADC/MCU
-   29: 1                                                                ;D7   ADCMR
-   30: 1        N      8001     ADCRD           EQU 8001h
-   31: 1        N      8001     ADCWR           EQU 8001h
-   32: 1        N      8003     USBIO           EQU 8003h
-   33: 1        B      00B2     USBRXF          EQU P3.2
-   34: 1        B      00B4     USBTXE          EQU P3.4
-   35: 1                        ;-----------------------------------------------------
-   36: 1                        ;Adresses in internal ram
-   37: 1        N      0020     INTBITS         EQU 20h                 ;Interrupt jump control
-   38: 1        N      0021     ADCCTL          EQU 21h                 ;Byte written at ADCCTLWR
-   39: 1        N      0000     RAMPAGE0        EQU 00h                 ;ADC CHA
-   40: 1        N      0008     RAMPAGE1        EQU 08h                 ;LA CHA
-   41: 1        N      0010     RAMPAGE2        EQU 10h                 ;ADC CHB
-   42: 1        N      0018     RAMPAGE3        EQU 18h                 ;LA CHB
-   43: 1        N      0020     CLK1PHASE       EQU 20h                 ;CLK1PHASE
-   44: 1        N      0040     ADCMCU          EQU 40h                 ;ADC/MCU L=ADC, H=MCU
-   45: 1        N      0080     ADCMR           EQU 80h                 ;ADCMR L=RESET
-   46: 1
-   47: 1        N      0040     BUFFER          EQU 40h                 ;16 Bytes
-   48: 1        N      0050     DPLSAVE         EQU 50h                 ;Holds DPL during PRNTCSTR
-   49: 1        N      0051     DPHSAVE         EQU 51h                 ;Holds DPH during PRNTCSTR
-   50: 1        N      0052     SSADRLSB        EQU 52h                 ;Single step adress LSB
-   51: 1        N      0053     SSADRMSB        EQU 53h                 ;Single step adress MSB
-   52:
-   53:          N      0000     IF DEVMODE=0
-   54:                          ;RESET:***********************************************
-   55:                                          ORG     0000h
-   56:                                          LJMP    START0
-   57:                          ;IE0IRQ:**********************************************
-   58:                                          ORG     0003h
-   59:                                          JB      INTBITS.0,$+4
-   60:                                          RETI
-   61:                                          LJMP    2003h
-   62:                          ;TF0IRQ:**********************************************
-   63:                                          ORG     000Bh
-   64:                                          JB      INTBITS.1,$+4
-   65:                                          RETI
-   66:                                          LJMP    200Bh
-   67:                          ;IE1IRQ:**********************************************
-   68:                                          ORG     0013h
-   69:                                          JB      INTBITS.2,$+4
-   70:                                          RETI
-   71:                                          LJMP    2013h
-   72:                          ;TF1IRQ:**********************************************
-   73:                                          ORG     001Bh
-   74:                                          JB      INTBITS.3,$+4
-   75:                                          RETI
-   76:                                          LJMP    201Bh
-   77:                          ;RITIIRQ:*********************************************
-   78:                                          ORG     0023h
-   79:                                          JB      INTBITS.4,$+4
-   80:                                          RETI
-   81:                                          LJMP    2023h
-   82:                          ;TF2EXF2IRQ:******************************************
-   83:                                          ORG     002Bh
-   84:                                          JB      INTBITS.5,$+4
-   85:                                          RETI
-   86:                                          LJMP    202Bh
-   87:                          ;*****************************************************
-   88:
-   89:                          ELSE
-   90:                          ;RESET:***********************************************
-   91:          N      2000                     ORG     2000h
-   92:    2000  02 20 40                        LJMP    START0
-   93:                          ;IE0IRQ:**********************************************
-   94:          N      2003                     ORG     2003h
-   95:    2003  32                              RETI
-   96:                          ;TF0IRQ:**********************************************
-   97:          N      200B                     ORG     200Bh
-   98:    200B  32                              RETI
-   99:                          ;IE1IRQ:**********************************************
-  100:          N      2013                     ORG     2013h
-  101:    2013  02 24 7C                        LJMP    SINGLESTEP
-  102:                          ;TF1IRQ:**********************************************
-  103:          N      201B                     ORG     201Bh
-  104:    201B  32                              RETI
-  105:                          ;RITIIRQ:*********************************************
-  106:          N      2023                     ORG     2023h
-  107:    2023  32                              RETI
-  108:                          ;TF2EXF2IRQ:******************************************
-  109:          N      202B                     ORG     202Bh
-  110:    202B  32                              RETI
-  111:                          ;*****************************************************
-  112:
-  113:                          ENDIF
-  114:
-  115:
-  116:          N      0000     IF DEVMODE=0
-  117:                                          ORG     0040h
+   21: 1
+   22: 1                        ;BitScope
+   23: 1                        ;-----------------------------------------------------
+   24: 1        N      8000     ADCCTLRDWR      EQU 8000h               ;RD D0  ENDSAMPLE
+   25: 1                                                                ;RD D1
+   26: 1                                                                ;RD D2
+   27: 1                                                                ;RD D3
+   28: 1                                                                ;RD D4
+   29: 1                                                                ;RD D5
+   30: 1                                                                ;RD D6
+   31: 1                                                                ;RD D7
+   32: 1                                                                ;WR D0 | ADCCLKSEL
+   33: 1                                                                ;WR D1 |
+   34: 1                                                                ;WR D2 |
+   35: 1                                                                ;WR D3 | RD0-RD3 or WR0-WR3
+   36: 1                                                                ;WR D4 |
+   37: 1                                                                ;WR D5   CLK1PHASE
+   38: 1                                                                ;WR D6   ADC/MCU
+   39: 1                                                                ;WR D7   ADCMR
+   40: 1
+   41: 1        N      8001     ADCRDWR         EQU 8001h               ;RD0 ADC CHA RAM
+   42: 1                                                                ;RD1 LA CHA RAM
+   43: 1                                                                ;RD2 ADC CHB RAM
+   44: 1                                                                ;RD3 LA CHB RAM
+   45: 1                                                                ;WR0 DIVIDE/MAGNIFY ADC CHA
+   46: 1                                                                ;WR1 DIVIDE/MAGNIFY ADC CHB
+   47: 1                                                                ;WR2
+   48: 1                                                                ;WR3 TRIGGER AND DAC CONTROL
+   49: 1
+   50: 1        N      00F8     ADCCLKMASK      EQU 0F8h
+   51: 1        N      00E7     RDWRMASK        EQU 0E7h
+   52: 1        N      0000     RDWR0           EQU 00h                 ;RD0 ADC CHA, WR0 DIVIDE/MAGNIFY ADC CHA
+   53: 1        N      0008     RDWR1           EQU 08h                 ;RD1 LA CHA, WR1 DIVIDE/MAGNIFY ADC CHB
+   54: 1        N      0010     RDWR2           EQU 10h                 ;RD2 ADC CHB, WR2
+   55: 1        N      0018     RDWR3           EQU 18h                 ;RD3 LA CHB, WR3 TRIGGER AND DAC CONTROL
+   56: 1        B      00E5     CLK1PHASE       EQU ACC.5               ;CLK1PHASE
+   57: 1        B      00E6     ADCMCU          EQU ACC.6               ;ADC/MCU L=ADC, H=MCU
+   58: 1        B      00E7     ADCMR           EQU ACC.7               ;ADCMR L=RESET
+   59: 1
+   60: 1        B      00E0     TRIGEDGE        EQU ACC.0
+   61: 1        B      00E1     TRIGSET         EQU ACC.1
+   62: 1        B      00E2     TRIGRESET       EQU ACC.2
+   63: 1
+   64: 1        B      00E3     DACCS           EQU ACC.3
+   65: 1        B      00E4     DACCLK          EQU ACC.4
+   66: 1        B      00E5     DACBIT          EQU ACC.5
+   67: 1
+   68: 1                        ;USB
+   69: 1                        ;-----------------------------------------------------
+   70: 1        N      8003     USBIO           EQU 8003h
+   71: 1        B      00B2     USBRXF          EQU P3.2
+   72: 1        B      00B4     USBTXE          EQU P3.4
+   73: 1                        ;-----------------------------------------------------
+   74: 1                        ;Adresses in internal ram
+   75: 1        N      0020     INTBITS         EQU 20h                 ;Interrupt jump control
+   76: 1        N      0040     BUFFER          EQU 40h                 ;16 Bytes
+   77: 1        N      0050     DPLSAVE         EQU 50h                 ;Holds DPL during PRNTCSTR
+   78: 1        N      0051     DPHSAVE         EQU 51h                 ;Holds DPH during PRNTCSTR
+   79: 1        N      0052     SSADRLSB        EQU 52h                 ;Single step adress LSB
+   80: 1        N      0053     SSADRMSB        EQU 53h                 ;Single step adress MSB
+   81:
+   82:          N      0000     IF DEVMODE=0
+   83:                          ;RESET:***********************************************
+   84:                                          ORG     0000h
+   85:                                          LJMP    START0
+   86:                          ;IE0IRQ:**********************************************
+   87:                                          ORG     0003h
+   88:                                          JB      INTBITS.0,$+4
+   89:                                          RETI
+   90:                                          LJMP    2003h
+   91:                          ;TF0IRQ:**********************************************
+   92:                                          ORG     000Bh
+   93:                                          JB      INTBITS.1,$+4
+   94:                                          RETI
+   95:                                          LJMP    200Bh
+   96:                          ;IE1IRQ:**********************************************
+   97:                                          ORG     0013h
+   98:                                          JB      INTBITS.2,$+4
+   99:                                          RETI
+  100:                                          LJMP    2013h
+  101:                          ;TF1IRQ:**********************************************
+  102:                                          ORG     001Bh
+  103:                                          JB      INTBITS.3,$+4
+  104:                                          RETI
+  105:                                          LJMP    201Bh
+  106:                          ;RITIIRQ:*********************************************
+  107:                                          ORG     0023h
+  108:                                          JB      INTBITS.4,$+4
+  109:                                          RETI
+  110:                                          LJMP    2023h
+  111:                          ;TF2EXF2IRQ:******************************************
+  112:                                          ORG     002Bh
+  113:                                          JB      INTBITS.5,$+4
+  114:                                          RETI
+  115:                                          LJMP    202Bh
+  116:                          ;*****************************************************
+  117:
   118:                          ELSE
-  119:          N      2040                     ORG     2040h
-  120:                          ENDIF
-  121:
-  122:    2040  E4              START0:         CLR     A
-  123:    2041  F5 A8                           MOV     IE,A                            ;Disable all interrupts
-  124:    2043  F5 20                           MOV     INTBITS,A                       ;RAM int routines (.0-.5 INTERRUPTS, .6=LCD OUT, .7 Single step)
-  125:    2045  14                              DEC     A
-  126:    2046  F5 52                           MOV     SSADRLSB,A                      ;Single step adress
-  127:    2048  F5 53                           MOV     SSADRMSB,A                      ;Single step adress
-  128:    204A  75 CA D9                        MOV     RCAP2L,#0D9h                    ;19200bps with 24MHz OSC
-  129:    204D  F5 CB                           MOV     RCAP2H,A
-  130:    204F  75 CC D9                        MOV     TL2,#0D9h
-  131:    2052  F5 CD                           MOV     TH2,A
-  132:    2054  75 C8 34                        MOV     T2CON,#34h                      ;TF2=l
-  133:                                                                                  ;EXF2=l
-  134:                                                                                  ;RCLK=h
-  135:                                                                                  ;TCLK=h
-  136:                                                                                  ;EXEN2=l
-  137:                                                                                  ;TR2=h
-  138:                                                                                  ;C/T2#=l
-  139:                                                                                  ;CP/RL2#=l
-  140:    2057  75 98 50                        MOV     SCON,#50h                       ;SM0=l
-  141:                                                                                  ;SM1=h
-  142:                                                                                  ;SM2=l
-  143:                                                                                  ;REN=h
-  144:                                                                                  ;TB8=l
-  145:                                                                                  ;RB8=l
-  146:                                                                                  ;TI=l
-  147:                                                                                  ;RI=l
-  148:
-  149:          N      FFFF     IF DEVMODE=1
-  150:    205A  75 20 3F                        MOV     INTBITS,#3Fh                    ;Redirect all interrupts
-  151:          N      0000             IF DEBUG=1
-  152:                                          SETB    INTBITS.7                       ;Set single step flag
-  153:                                          CLR     IT1                             ;Level triggered
-  154:                                          SETB    EX1                             ;Enable INT1
-  155:                                          SETB    EA                              ;Enable interrupts
-  156:                                          CLR     P3.3                            ;Pull INT1 low
-  157:                                          NOP
-  158:                                          NOP
-  159:                                  ENDIF
-  160:                          ENDIF
-  161:
-  162:    205D  75 81 CF        START:          MOV     SP,#0CFh                        ;Init stack pointer. The stack is 48 bytes
-  163:    2060  90 20 00                        MOV     DPTR,#2000h
-  164:          N      FFFF     IF DEVMODE=1
-  165:    2063  30 98 06                        JNB     RI,START01
-  166:    2066  75 20 00                        MOV     INTBITS,#00h                    ;Redirect no interrupts
-  167:    2069  02 00 00                        LJMP    0000h
-  168:    206C                  START01:
-  169:                          ENDIF
-  170:
-  171:    206C  01 6E                           AJMP    TERMINAL                        ;RS232 Terminal
-  172:
-  173:                          ;------------------------------------------------------------------
-  174:
-  175:                          ;RS232 Terminal
-  176:                          ;IN:    Nothing
-  177:                          ;OUT:   Nothing
-  178:    206E  31 D5           TERMINAL:       ACALL   HELPMENU
-  179:    2070  31 0B           TERMINAL1:      ACALL   PRNTCRLF
-  180:    2072  74 3E                           MOV     A,#3Eh
-  181:    2074  31 C5                           ACALL   TXBYTE
-  182:    2076  31 B5           TERMINAL2:      ACALL   RXBYTE
-  183:    2078  B4 41 06                        CJNE    A,#41h,TERMINAL3
-  184:                                          ;Address input
-  185:    207B  31 06                           ACALL   PRNTCMND
-  186:    207D  31 94                           ACALL   INPDPTR
-  187:    207F  80 EF                           SJMP    TERMINAL1
-  188:    2081  B4 44 06        TERMINAL3:      CJNE    A,#44h,TERMINAL4
-  189:                                          ;Dump
-  190:    2084  31 06                           ACALL   PRNTCMND
-  191:    2086  51 71                           ACALL   DUMP
-  192:    2088  80 E4                           SJMP    TERMINAL
-  193:    208A  B4 45 06        TERMINAL4:      CJNE    A,#45h,TERMINAL5
-  194:                                          ;Enter hex
-  195:    208D  31 06                           ACALL   PRNTCMND
-  196:    208F  51 9D                           ACALL   ENTERHEX
-  197:    2091  80 DB                           SJMP    TERMINAL
-  198:    2093  B4 47 06        TERMINAL5:      CJNE    A,#47h,TERMINAL6
-  199:                                          ;Go
-  200:    2096  31 06                           ACALL   PRNTCMND
-  201:    2098  91 78                           ACALL   GO
-  202:    209A  80 D2                           SJMP    TERMINAL
-  203:    209C  B4 48 04        TERMINAL6:      CJNE    A,#48h,TERMINAL7
-  204:                                          ;Help
-  205:    209F  31 06                           ACALL   PRNTCMND
-  206:    20A1  80 CB                           SJMP    TERMINAL
-  207:    20A3  B4 49 06        TERMINAL7:      CJNE    A,#49h,TERMINAL8
-  208:                                          ;Internal memory
-  209:    20A6  31 06                           ACALL   PRNTCMND
-  210:    20A8  51 B2                           ACALL   MEMDUMP
-  211:    20AA  80 C4                           SJMP    TERMINAL1
-  212:    20AC  B4 4C 06        TERMINAL8:      CJNE    A,#4Ch,TERMINAL9
-  213:                                          ;Load
-  214:    20AF  31 06                           ACALL   PRNTCMND
-  215:    20B1  91 4B                           ACALL   LOAD
-  216:    20B3  80 BB                           SJMP    TERMINAL1
-  217:    20B5  B4 52 06        TERMINAL9:      CJNE    A,#52h,TERMINAL11
-  218:                                          ;Run
-  219:    20B8  31 06                           ACALL   PRNTCMND
-  220:    20BA  91 7A                           ACALL   RUN
-  221:    20BC  80 B0                           SJMP    TERMINAL
-  222:    20BE  B4 53 07        TERMINAL11:     CJNE    A,#53h,TERMINAL12
-  223:                                          ;SFR dump
-  224:    20C1  12 21 06                        LCALL   PRNTCMND
-  225:    20C4  51 D5                           ACALL   DUMPSFR
-  226:    20C6  80 A8                           SJMP    TERMINAL1
-  227:    20C8  B4 9F 03        TERMINAL12:     CJNE    A,#9Fh,TERMINAL13
-  228:                                          ;Esc
-  229:    20CB  02 00 00                        LJMP    0000h
-  230:    20CE  B4 0D A5        TERMINAL13:     CJNE    A,#0Dh,TERMINAL2
-  231:                                          ;CR
-  232:    20D1  80 9D                           SJMP    TERMINAL1
-  233:
-  234:                          ;RS232 Functions
-  235:                          ;------------------------------------------------------------------
-  236:
-  237:    20D3  85 82 50        PRNTCSTR:       MOV     DPLSAVE,DPL
-  238:    20D6  85 83 51                        MOV     DPHSAVE,DPH
-  239:    20D9  D0 83                           POP     DPH
-  240:    20DB  D0 82                           POP     DPL
-  241:    20DD  E4              PRNTCSTR1:      CLR     A
-  242:    20DE  93                              MOVC    A,@A+DPTR
-  243:    20DF  A3                              INC     DPTR
-  244:    20E0  60 04                           JZ      PRNTCSTR2
-  245:    20E2  31 C5                           ACALL   TXBYTE
-  246:    20E4  80 F7                           SJMP    PRNTCSTR1
-  247:    20E6  C0 82           PRNTCSTR2:      PUSH    DPL
-  248:    20E8  C0 83                           PUSH    DPH
-  249:    20EA  85 50 82                        MOV     DPL,DPLSAVE
-  250:    20ED  85 51 83                        MOV     DPH,DPHSAVE
-  251:    20F0  22                              RET
-  252:
-  253:    20F1                  PRINTSTR:;      JNB     INTBITS.6,PRINTSTRLCD
-  254:    20F1  E6              PRINTSTRTRM:    MOV     A,@R0
-  255:    20F2  31 C5                           ACALL   TXBYTE
-  256:    20F4  08                              INC     R0
-  257:    20F5  DF FA                           DJNZ    R7,PRINTSTRTRM
-  258:    20F7  31 0B                           ACALL   PRNTCRLF
-  259:    20F9  22                              RET
-  260:
-  261:    20FA  E0              PRINTDPTRSTR:   MOVX    A,@DPTR
-  262:    20FB  31 C5                           ACALL   TXBYTE
-  263:    20FD  A3                              INC     DPTR
-  264:    20FE  B4 0D F9                        CJNE    A,#0Dh,PRINTDPTRSTR
-  265:    2101  74 0A                           MOV     A,#0Ah
-  266:    2103  31 C5                           ACALL   TXBYTE
-  267:    2105  22                              RET
-  268:
-  269:    2106  31 C5           PRNTCMND:       ACALL   TXBYTE
-  270:    2108  31 0B                           ACALL   PRNTCRLF
-  271:    210A  22                              RET
-  272:
-  273:    210B  74 0D           PRNTCRLF:       MOV     A,#0Dh
-  274:    210D  31 C5                           ACALL   TXBYTE
-  275:    210F  74 0A                           MOV     A,#0Ah
-  276:    2111  31 C5                           ACALL   TXBYTE
-  277:    2113  22                              RET
-  278:
-  279:    2114  C0 E0           HEXOUT:         PUSH    ACC
-  280:    2116  C4                              SWAP    A
-  281:    2117  31 1B                           ACALL   HEXOUT1
-  282:    2119  D0 E0                           POP     ACC
-  283:    211B  54 0F           HEXOUT1:        ANL     A,#0Fh
-  284:    211D  C3                              CLR     C
-  285:    211E  94 0A                           SUBB    A,#0Ah
-  286:    2120  40 02                           JC      HEXOUT2
-  287:    2122  24 07                           ADD     A,#07h
-  288:    2124  24 3A           HEXOUT2:        ADD     A,#3Ah
-  289:    2126  31 C5                           ACALL   TXBYTE
-  290:    2128  22                              RET
-  291:
-  292:    2129  78 08           BINOUT:         MOV     R0,#08h
-  293:    212B  33              BINOUT1:        RLC     A
-  294:    212C  C0 E0                           PUSH    ACC
-  295:    212E  74 20                           MOV     A,#20h
-  296:    2130  12 21 C5                        LCALL   TXBYTE
-  297:    2133  74 20                           MOV     A,#20h
-  298:    2135  12 21 C5                        LCALL   TXBYTE
-  299:    2138  74 30                           MOV     A,#30H
-  300:    213A  50 01           BINOUT2:        JNC     BINOUT3
-  301:    213C  04                              INC     A
-  302:    213D  12 21 C5        BINOUT3:        LCALL   TXBYTE
-  303:    2140  D0 E0                           POP     ACC
-  304:    2142  D8 E7                           DJNZ    R0,BINOUT1
-  305:    2144  12 21 0B                        LCALL   PRNTCRLF
-  306:    2147  22                              RET
+  119:                          ;RESET:***********************************************
+  120:          N      2000                     ORG     2000h
+  121:    2000  02 20 40                        LJMP    START0
+  122:                          ;IE0IRQ:**********************************************
+  123:          N      2003                     ORG     2003h
+  124:    2003  32                              RETI
+  125:                          ;TF0IRQ:**********************************************
+  126:          N      200B                     ORG     200Bh
+  127:    200B  32                              RETI
+  128:                          ;IE1IRQ:**********************************************
+  129:          N      2013                     ORG     2013h
+  130:    2013  02 24 7C                        LJMP    SINGLESTEP
+  131:                          ;TF1IRQ:**********************************************
+  132:          N      201B                     ORG     201Bh
+  133:    201B  32                              RETI
+  134:                          ;RITIIRQ:*********************************************
+  135:          N      2023                     ORG     2023h
+  136:    2023  32                              RETI
+  137:                          ;TF2EXF2IRQ:******************************************
+  138:          N      202B                     ORG     202Bh
+  139:    202B  32                              RETI
+  140:                          ;*****************************************************
+  141:
+  142:                          ENDIF
+  143:
+  144:
+  145:          N      0000     IF DEVMODE=0
+  146:                                          ORG     0040h
+  147:                          ELSE
+  148:          N      2040                     ORG     2040h
+  149:                          ENDIF
+  150:
+  151:    2040  E4              START0:         CLR     A
+  152:    2041  F5 A8                           MOV     IE,A                            ;Disable all interrupts
+  153:    2043  F5 20                           MOV     INTBITS,A                       ;RAM int routines (.0-.5 INTERRUPTS, .6=LCD OUT, .7 Single step)
+  154:    2045  14                              DEC     A
+  155:    2046  F5 52                           MOV     SSADRLSB,A                      ;Single step adress
+  156:    2048  F5 53                           MOV     SSADRMSB,A                      ;Single step adress
+  157:    204A  75 CA D9                        MOV     RCAP2L,#0D9h                    ;19200bps with 24MHz OSC
+  158:    204D  F5 CB                           MOV     RCAP2H,A
+  159:    204F  75 CC D9                        MOV     TL2,#0D9h
+  160:    2052  F5 CD                           MOV     TH2,A
+  161:    2054  75 C8 34                        MOV     T2CON,#34h                      ;TF2=l
+  162:                                                                                  ;EXF2=l
+  163:                                                                                  ;RCLK=h
+  164:                                                                                  ;TCLK=h
+  165:                                                                                  ;EXEN2=l
+  166:                                                                                  ;TR2=h
+  167:                                                                                  ;C/T2#=l
+  168:                                                                                  ;CP/RL2#=l
+  169:    2057  75 98 50                        MOV     SCON,#50h                       ;SM0=l
+  170:                                                                                  ;SM1=h
+  171:                                                                                  ;SM2=l
+  172:                                                                                  ;REN=h
+  173:                                                                                  ;TB8=l
+  174:                                                                                  ;RB8=l
+  175:                                                                                  ;TI=l
+  176:                                                                                  ;RI=l
+  177:
+  178:          N      FFFF     IF DEVMODE=1
+  179:    205A  75 20 3F                        MOV     INTBITS,#3Fh                    ;Redirect all interrupts
+  180:          N      0000             IF DEBUG=1
+  181:                                          SETB    INTBITS.7                       ;Set single step flag
+  182:                                          CLR     IT1                             ;Level triggered
+  183:                                          SETB    EX1                             ;Enable INT1
+  184:                                          SETB    EA                              ;Enable interrupts
+  185:                                          CLR     P3.3                            ;Pull INT1 low
+  186:                                          NOP
+  187:                                          NOP
+  188:                                  ENDIF
+  189:                          ENDIF
+  190:
+  191:    205D  75 81 CF        START:          MOV     SP,#0CFh                        ;Init stack pointer. The stack is 48 bytes
+  192:    2060  90 20 00                        MOV     DPTR,#2000h
+  193:          N      FFFF     IF DEVMODE=1
+  194:    2063  30 98 06                        JNB     RI,START01
+  195:    2066  75 20 00                        MOV     INTBITS,#00h                    ;Redirect no interrupts
+  196:    2069  02 00 00                        LJMP    0000h
+  197:    206C                  START01:
+  198:                          ENDIF
+  199:
+  200:    206C  01 6E                           AJMP    TERMINAL                        ;RS232 Terminal
+  201:
+  202:                          ;------------------------------------------------------------------
+  203:
+  204:                          ;RS232 Terminal
+  205:                          ;IN:    Nothing
+  206:                          ;OUT:   Nothing
+  207:    206E  31 D5           TERMINAL:       ACALL   HELPMENU
+  208:    2070  31 0B           TERMINAL1:      ACALL   PRNTCRLF
+  209:    2072  74 3E                           MOV     A,#3Eh
+  210:    2074  31 C5                           ACALL   TXBYTE
+  211:    2076  31 B5           TERMINAL2:      ACALL   RXBYTE
+  212:    2078  B4 41 06                        CJNE    A,#41h,TERMINAL3
+  213:                                          ;Address input
+  214:    207B  31 06                           ACALL   PRNTCMND
+  215:    207D  31 94                           ACALL   INPDPTR
+  216:    207F  80 EF                           SJMP    TERMINAL1
+  217:    2081  B4 44 06        TERMINAL3:      CJNE    A,#44h,TERMINAL4
+  218:                                          ;Dump
+  219:    2084  31 06                           ACALL   PRNTCMND
+  220:    2086  51 71                           ACALL   DUMP
+  221:    2088  80 E4                           SJMP    TERMINAL
+  222:    208A  B4 45 06        TERMINAL4:      CJNE    A,#45h,TERMINAL5
+  223:                                          ;Enter hex
+  224:    208D  31 06                           ACALL   PRNTCMND
+  225:    208F  51 9D                           ACALL   ENTERHEX
+  226:    2091  80 DB                           SJMP    TERMINAL
+  227:    2093  B4 47 06        TERMINAL5:      CJNE    A,#47h,TERMINAL6
+  228:                                          ;Go
+  229:    2096  31 06                           ACALL   PRNTCMND
+  230:    2098  91 78                           ACALL   GO
+  231:    209A  80 D2                           SJMP    TERMINAL
+  232:    209C  B4 48 04        TERMINAL6:      CJNE    A,#48h,TERMINAL7
+  233:                                          ;Help
+  234:    209F  31 06                           ACALL   PRNTCMND
+  235:    20A1  80 CB                           SJMP    TERMINAL
+  236:    20A3  B4 49 06        TERMINAL7:      CJNE    A,#49h,TERMINAL8
+  237:                                          ;Internal memory
+  238:    20A6  31 06                           ACALL   PRNTCMND
+  239:    20A8  51 B2                           ACALL   MEMDUMP
+  240:    20AA  80 C4                           SJMP    TERMINAL1
+  241:    20AC  B4 4C 06        TERMINAL8:      CJNE    A,#4Ch,TERMINAL9
+  242:                                          ;Load
+  243:    20AF  31 06                           ACALL   PRNTCMND
+  244:    20B1  91 4B                           ACALL   LOAD
+  245:    20B3  80 BB                           SJMP    TERMINAL1
+  246:    20B5  B4 52 06        TERMINAL9:      CJNE    A,#52h,TERMINAL11
+  247:                                          ;Run
+  248:    20B8  31 06                           ACALL   PRNTCMND
+  249:    20BA  91 7A                           ACALL   RUN
+  250:    20BC  80 B0                           SJMP    TERMINAL
+  251:    20BE  B4 53 07        TERMINAL11:     CJNE    A,#53h,TERMINAL12
+  252:                                          ;SFR dump
+  253:    20C1  12 21 06                        LCALL   PRNTCMND
+  254:    20C4  51 D5                           ACALL   DUMPSFR
+  255:    20C6  80 A8                           SJMP    TERMINAL1
+  256:    20C8  B4 9F 03        TERMINAL12:     CJNE    A,#9Fh,TERMINAL13
+  257:                                          ;Esc
+  258:    20CB  02 00 00                        LJMP    0000h
+  259:    20CE  B4 0D A5        TERMINAL13:     CJNE    A,#0Dh,TERMINAL2
+  260:                                          ;CR
+  261:    20D1  80 9D                           SJMP    TERMINAL1
+  262:
+  263:                          ;RS232 Functions
+  264:                          ;------------------------------------------------------------------
+  265:
+  266:    20D3  85 82 50        PRNTCSTR:       MOV     DPLSAVE,DPL
+  267:    20D6  85 83 51                        MOV     DPHSAVE,DPH
+  268:    20D9  D0 83                           POP     DPH
+  269:    20DB  D0 82                           POP     DPL
+  270:    20DD  E4              PRNTCSTR1:      CLR     A
+  271:    20DE  93                              MOVC    A,@A+DPTR
+  272:    20DF  A3                              INC     DPTR
+  273:    20E0  60 04                           JZ      PRNTCSTR2
+  274:    20E2  31 C5                           ACALL   TXBYTE
+  275:    20E4  80 F7                           SJMP    PRNTCSTR1
+  276:    20E6  C0 82           PRNTCSTR2:      PUSH    DPL
+  277:    20E8  C0 83                           PUSH    DPH
+  278:    20EA  85 50 82                        MOV     DPL,DPLSAVE
+  279:    20ED  85 51 83                        MOV     DPH,DPHSAVE
+  280:    20F0  22                              RET
+  281:
+  282:    20F1                  PRINTSTR:;      JNB     INTBITS.6,PRINTSTRLCD
+  283:    20F1  E6              PRINTSTRTRM:    MOV     A,@R0
+  284:    20F2  31 C5                           ACALL   TXBYTE
+  285:    20F4  08                              INC     R0
+  286:    20F5  DF FA                           DJNZ    R7,PRINTSTRTRM
+  287:    20F7  31 0B                           ACALL   PRNTCRLF
+  288:    20F9  22                              RET
+  289:
+  290:    20FA  E0              PRINTDPTRSTR:   MOVX    A,@DPTR
+  291:    20FB  31 C5                           ACALL   TXBYTE
+  292:    20FD  A3                              INC     DPTR
+  293:    20FE  B4 0D F9                        CJNE    A,#0Dh,PRINTDPTRSTR
+  294:    2101  74 0A                           MOV     A,#0Ah
+  295:    2103  31 C5                           ACALL   TXBYTE
+  296:    2105  22                              RET
+  297:
+  298:    2106  31 C5           PRNTCMND:       ACALL   TXBYTE
+  299:    2108  31 0B                           ACALL   PRNTCRLF
+  300:    210A  22                              RET
+  301:
+  302:    210B  74 0D           PRNTCRLF:       MOV     A,#0Dh
+  303:    210D  31 C5                           ACALL   TXBYTE
+  304:    210F  74 0A                           MOV     A,#0Ah
+  305:    2111  31 C5                           ACALL   TXBYTE
+  306:    2113  22                              RET
   307:
-  308:    2148  E5 83           HEXDPTR:        MOV     A,DPH
-  309:    214A  31 14                           ACALL   HEXOUT
-  310:    214C  E5 82                           MOV     A,DPL
-  311:    214E  31 14                           ACALL   HEXOUT
-  312:    2150  74 20                           MOV     A,#20h
-  313:    2152  31 C5                           ACALL   TXBYTE
-  314:    2154  22                              RET
-  315:
-  316:    2155  31 61           HEXINPBYTE:     ACALL   HEXINP
-  317:    2157  40 07                           JC      HEXINPBYTE1
-  318:    2159  C4                              SWAP    A
-  319:    215A  FB                              MOV     R3,A
-  320:    215B  31 61                           ACALL   HEXINP
-  321:    215D  40 01                           JC      HEXINPBYTE1
-  322:    215F  2B                              ADD     A,R3
-  323:    2160  22              HEXINPBYTE1:    RET
-  324:
-  325:    2161  31 6D           HEXINP:         ACALL   HEXINP2
-  326:    2163  40 07                           JC      HEXINP1
-  327:    2165  C0 E0                           PUSH    ACC
-  328:    2167  EA                              MOV     A,R2
-  329:    2168  31 C5                           ACALL   TXBYTE
-  330:    216A  D0 E0                           POP     ACC
-  331:    216C  22              HEXINP1:        RET
-  332:
-  333:    216D  31 B5           HEXINP2:        ACALL   RXBYTE
-  334:    216F  B4 9F 02                        CJNE    A,#9Fh,HEXINP3                  ;Esc
-  335:    2172  D3                              SETB    C
-  336:    2173  22                              RET
-  337:    2174  B4 0D 02        HEXINP3:        CJNE    A,#0Dh,HEXINP4                  ;Cr
-  338:    2177  D3                              SETB    C
-  339:    2178  22                              RET
-  340:    2179  FA              HEXINP4:        MOV     R2,A
-  341:    217A  B4 3A 00                        CJNE    A,#3Ah,HEXINP40
-  342:    217D  50 08           HEXINP40:       JNC     HEXINP5
-  343:    217F  B4 30 00                        CJNE    A,#30h,HEXINP41
-  344:    2182  40 E9           HEXINP41:       JC      HEXINP2
-  345:    2184  94 30                           SUBB    A,#30h
-  346:    2186  22                              RET
-  347:    2187  B4 47 00        HEXINP5:        CJNE    A,#47h,HEXINP50
-  348:    218A  50 E1           HEXINP50:       JNC     HEXINP2
-  349:    218C  B4 41 00                        CJNE    A,#41h,HEXINP51
-  350:    218F  40 DC           HEXINP51:       JC      HEXINP2
-  351:    2191  94 37                           SUBB    A,#37h
-  352:    2193  22                              RET
+  308:    2114  C0 E0           HEXOUT:         PUSH    ACC
+  309:    2116  C4                              SWAP    A
+  310:    2117  31 1B                           ACALL   HEXOUT1
+  311:    2119  D0 E0                           POP     ACC
+  312:    211B  54 0F           HEXOUT1:        ANL     A,#0Fh
+  313:    211D  C3                              CLR     C
+  314:    211E  94 0A                           SUBB    A,#0Ah
+  315:    2120  40 02                           JC      HEXOUT2
+  316:    2122  24 07                           ADD     A,#07h
+  317:    2124  24 3A           HEXOUT2:        ADD     A,#3Ah
+  318:    2126  31 C5                           ACALL   TXBYTE
+  319:    2128  22                              RET
+  320:
+  321:    2129  78 08           BINOUT:         MOV     R0,#08h
+  322:    212B  33              BINOUT1:        RLC     A
+  323:    212C  C0 E0                           PUSH    ACC
+  324:    212E  74 20                           MOV     A,#20h
+  325:    2130  12 21 C5                        LCALL   TXBYTE
+  326:    2133  74 20                           MOV     A,#20h
+  327:    2135  12 21 C5                        LCALL   TXBYTE
+  328:    2138  74 30                           MOV     A,#30H
+  329:    213A  50 01           BINOUT2:        JNC     BINOUT3
+  330:    213C  04                              INC     A
+  331:    213D  12 21 C5        BINOUT3:        LCALL   TXBYTE
+  332:    2140  D0 E0                           POP     ACC
+  333:    2142  D8 E7                           DJNZ    R0,BINOUT1
+  334:    2144  12 21 0B                        LCALL   PRNTCRLF
+  335:    2147  22                              RET
+  336:
+  337:    2148  E5 83           HEXDPTR:        MOV     A,DPH
+  338:    214A  31 14                           ACALL   HEXOUT
+  339:    214C  E5 82                           MOV     A,DPL
+  340:    214E  31 14                           ACALL   HEXOUT
+  341:    2150  74 20                           MOV     A,#20h
+  342:    2152  31 C5                           ACALL   TXBYTE
+  343:    2154  22                              RET
+  344:
+  345:    2155  31 61           HEXINPBYTE:     ACALL   HEXINP
+  346:    2157  40 07                           JC      HEXINPBYTE1
+  347:    2159  C4                              SWAP    A
+  348:    215A  FB                              MOV     R3,A
+  349:    215B  31 61                           ACALL   HEXINP
+  350:    215D  40 01                           JC      HEXINPBYTE1
+  351:    215F  2B                              ADD     A,R3
+  352:    2160  22              HEXINPBYTE1:    RET
   353:
-  354:    2194  31 48           INPDPTR:        ACALL   HEXDPTR
-  355:    2196  31 55                           ACALL   HEXINPBYTE
-  356:    2198  40 08                           JC      INPDPTR1
-  357:    219A  F5 83                           MOV     DPH,A
-  358:    219C  31 55                           ACALL   HEXINPBYTE
-  359:    219E  40 02                           JC      INPDPTR1
-  360:    21A0  F5 82                           MOV     DPL,A
-  361:    21A2  31 0B           INPDPTR1:       ACALL   PRNTCRLF
-  362:    21A4  22                              RET
-  363:
-  364:    21A5  74 05           RX16BYTES:      MOV     A,#05h
-  365:    21A7  31 C5                           ACALL   TXBYTE
-  366:    21A9  78 40                           MOV     R0,#BUFFER
-  367:    21AB  31 B5           RX16BYTES1:     ACALL   RXBYTE
-  368:    21AD  F6                              MOV     @R0,A
-  369:    21AE  08                              INC     R0
-  370:    21AF  B8 50 F9                        CJNE    R0,#BUFFER+10h,RX16BYTES1
-  371:    21B2  78 40                           MOV     R0,#BUFFER
-  372:    21B4  22                              RET
-  373:
-  374:          N      0000     IF USB=0
-  375:
-  376:                          RXBYTE:         JB      20h.7,RXBYTE1
-  377:                                          JNB     RI,$
-  378:                                          CLR     RI
-  379:                                          MOV     A,SBUF
-  380:                                          RET
-  381:
-  382:                          RXBYTE1:        CLR     EX1
-  383:                                          JNB     RI,$
-  384:                                          CLR     RI
-  385:                                          MOV     A,SBUF
-  386:                                          SETB    EX1
-  387:                                          RET
-  388:
-  389:                          TXBYTE:         JB      20h.7,TXBYTE1
-  390:                                          MOV     SBUF,A
-  391:                                          JNB     TI,$
-  392:                                          CLR     TI
-  393:                                          RET
-  394:
-  395:                          TXBYTE1:        CLR     EX1
-  396:                                          MOV     SBUF,A
-  397:                                          JNB     TI,$
-  398:                                          CLR     TI
-  399:                                          SETB    EX1
-  400:                                          RET
-  401:
-  402:                          ELSE
-  403:
-  404:    21B5  20 B2 FD        RXBYTE:         JB      USBRXF,$
-  405:    21B8  C0 82                           PUSH    DPL
-  406:    21BA  C0 83                           PUSH    DPH
-  407:    21BC  90 80 03                        MOV     DPTR,#USBIO
-  408:    21BF  E0                              MOVX    A,@DPTR
-  409:    21C0  D0 83                           POP     DPH
-  410:    21C2  D0 82                           POP     DPL
-  411:    21C4  22                              RET
-  412:
-  413:    21C5  20 B4 FD        TXBYTE:         JB      USBTXE,TXBYTE
-  414:    21C8  C0 82                           PUSH    DPL
-  415:    21CA  C0 83                           PUSH    DPH
-  416:    21CC  90 80 03                        MOV     DPTR,#USBIO
-  417:    21CF  F0                              MOVX    @DPTR,A
-  418:    21D0  D0 83                           POP     DPH
-  419:    21D2  D0 82                           POP     DPL
-  420:    21D4  22                              RET
-  421:
-  422:                          ENDIF
+  354:    2161  31 6D           HEXINP:         ACALL   HEXINP2
+  355:    2163  40 07                           JC      HEXINP1
+  356:    2165  C0 E0                           PUSH    ACC
+  357:    2167  EA                              MOV     A,R2
+  358:    2168  31 C5                           ACALL   TXBYTE
+  359:    216A  D0 E0                           POP     ACC
+  360:    216C  22              HEXINP1:        RET
+  361:
+  362:    216D  31 B5           HEXINP2:        ACALL   RXBYTE
+  363:    216F  B4 9F 02                        CJNE    A,#9Fh,HEXINP3                  ;Esc
+  364:    2172  D3                              SETB    C
+  365:    2173  22                              RET
+  366:    2174  B4 0D 02        HEXINP3:        CJNE    A,#0Dh,HEXINP4                  ;Cr
+  367:    2177  D3                              SETB    C
+  368:    2178  22                              RET
+  369:    2179  FA              HEXINP4:        MOV     R2,A
+  370:    217A  B4 3A 00                        CJNE    A,#3Ah,HEXINP40
+  371:    217D  50 08           HEXINP40:       JNC     HEXINP5
+  372:    217F  B4 30 00                        CJNE    A,#30h,HEXINP41
+  373:    2182  40 E9           HEXINP41:       JC      HEXINP2
+  374:    2184  94 30                           SUBB    A,#30h
+  375:    2186  22                              RET
+  376:    2187  B4 47 00        HEXINP5:        CJNE    A,#47h,HEXINP50
+  377:    218A  50 E1           HEXINP50:       JNC     HEXINP2
+  378:    218C  B4 41 00                        CJNE    A,#41h,HEXINP51
+  379:    218F  40 DC           HEXINP51:       JC      HEXINP2
+  380:    2191  94 37                           SUBB    A,#37h
+  381:    2193  22                              RET
+  382:
+  383:    2194  31 48           INPDPTR:        ACALL   HEXDPTR
+  384:    2196  31 55                           ACALL   HEXINPBYTE
+  385:    2198  40 08                           JC      INPDPTR1
+  386:    219A  F5 83                           MOV     DPH,A
+  387:    219C  31 55                           ACALL   HEXINPBYTE
+  388:    219E  40 02                           JC      INPDPTR1
+  389:    21A0  F5 82                           MOV     DPL,A
+  390:    21A2  31 0B           INPDPTR1:       ACALL   PRNTCRLF
+  391:    21A4  22                              RET
+  392:
+  393:    21A5  74 05           RX16BYTES:      MOV     A,#05h
+  394:    21A7  31 C5                           ACALL   TXBYTE
+  395:    21A9  78 40                           MOV     R0,#BUFFER
+  396:    21AB  31 B5           RX16BYTES1:     ACALL   RXBYTE
+  397:    21AD  F6                              MOV     @R0,A
+  398:    21AE  08                              INC     R0
+  399:    21AF  B8 50 F9                        CJNE    R0,#BUFFER+10h,RX16BYTES1
+  400:    21B2  78 40                           MOV     R0,#BUFFER
+  401:    21B4  22                              RET
+  402:
+  403:          N      0000     IF USB=0
+  404:
+  405:                          RXBYTE:         JB      20h.7,RXBYTE1
+  406:                                          JNB     RI,$
+  407:                                          CLR     RI
+  408:                                          MOV     A,SBUF
+  409:                                          RET
+  410:
+  411:                          RXBYTE1:        CLR     EX1
+  412:                                          JNB     RI,$
+  413:                                          CLR     RI
+  414:                                          MOV     A,SBUF
+  415:                                          SETB    EX1
+  416:                                          RET
+  417:
+  418:                          TXBYTE:         JB      20h.7,TXBYTE1
+  419:                                          MOV     SBUF,A
+  420:                                          JNB     TI,$
+  421:                                          CLR     TI
+  422:                                          RET
   423:
-  424:                          ;Functions
-  425:                          ;------------------------------------------------------------------
-  426:
-  427:    21D5  11 D3           HELPMENU:       ACALL   PRNTCSTR
-  428:    21D7  0E                              DB      0Eh
-  429:          N      FFFF     IF DEVMODE=1
-  430:    21D8  2A 2A 2A 20                     DB      '*** DEVMODE ***',0Dh,0Ah
+  424:                          TXBYTE1:        CLR     EX1
+  425:                                          MOV     SBUF,A
+  426:                                          JNB     TI,$
+  427:                                          CLR     TI
+  428:                                          SETB    EX1
+  429:                                          RET
+  430:
+  431:                          ELSE
+  432:
+  433:    21B5  20 B2 FD        RXBYTE:         JB      USBRXF,$
+  434:    21B8  C0 82                           PUSH    DPL
+  435:    21BA  C0 83                           PUSH    DPH
+  436:    21BC  90 80 03                        MOV     DPTR,#USBIO
+  437:    21BF  E0                              MOVX    A,@DPTR
+  438:    21C0  D0 83                           POP     DPH
+  439:    21C2  D0 82                           POP     DPL
+  440:    21C4  22                              RET
+  441:
+  442:    21C5  20 B4 FD        TXBYTE:         JB      USBTXE,TXBYTE
+  443:    21C8  C0 82                           PUSH    DPL
+  444:    21CA  C0 83                           PUSH    DPH
+  445:    21CC  90 80 03                        MOV     DPTR,#USBIO
+  446:    21CF  F0                              MOVX    @DPTR,A
+  447:    21D0  D0 83                           POP     DPH
+  448:    21D2  D0 82                           POP     DPL
+  449:    21D4  22                              RET
+  450:
+  451:                          ENDIF
+  452:
+  453:                          ;Functions
+  454:                          ;------------------------------------------------------------------
+  455:
+  456:    21D5  11 D3           HELPMENU:       ACALL   PRNTCSTR
+  457:    21D7  0E                              DB      0Eh
+  458:          N      FFFF     IF DEVMODE=1
+  459:    21D8  2A 2A 2A 20                     DB      '*** DEVMODE ***',0Dh,0Ah
           21DC  44 45 56 4D
           21E0  4F 44 45 20
           21E4  2A 2A 2A 0D
           21E8  0A
-  431:                          ENDIF
-  432:    21E9  41 20 41 64                     DB      'A Address input',0Dh,0Ah
+  460:                          ENDIF
+  461:    21E9  41 20 41 64                     DB      'A Address input',0Dh,0Ah
           21ED  64 72 65 73
           21F1  73 20 69 6E
           21F5  70 75 74 0D
           21F9  0A
-  433:    21FA  44 20 44 75                     DB      'D Dump as hex',0Dh,0Ah
+  462:    21FA  44 20 44 75                     DB      'D Dump as hex',0Dh,0Ah
           21FE  6D 70 20 61
           2202  73 20 68 65
           2206  78 0D 0A
-  434:    2209  45 20 45 6E                     DB      'E Enter hex',0Dh,0Ah
+  463:    2209  45 20 45 6E                     DB      'E Enter hex',0Dh,0Ah
           220D  74 65 72 20
           2211  68 65 78 0D
           2215  0A
-  435:    2216  47 20 47 6F                     DB      'G Go (Load and Run)',0Dh,0Ah
+  464:    2216  47 20 47 6F                     DB      'G Go (Load and Run)',0Dh,0Ah
           221A  20 28 4C 6F
           221E  61 64 20 61
           2222  6E 64 20 52
           2226  75 6E 29 0D
           222A  0A
-  436:    222B  48 20 48 65                     DB      'H Help',0Dh,0Ah
+  465:    222B  48 20 48 65                     DB      'H Help',0Dh,0Ah
           222F  6C 70 0D 0A
-  437:    2233  49 20 49 6E                     DB      'I Internal memory dump',0Dh,0Ah
+  466:    2233  49 20 49 6E                     DB      'I Internal memory dump',0Dh,0Ah
           2237  74 65 72 6E
           223B  61 6C 20 6D
           223F  65 6D 6F 72
           2243  79 20 64 75
           2247  6D 70 0D 0A
-  438:    224B  4C 20 4C 6F                     DB      'L Load cmd file',0Dh,0Ah
+  467:    224B  4C 20 4C 6F                     DB      'L Load cmd file',0Dh,0Ah
           224F  61 64 20 63
           2253  6D 64 20 66
           2257  69 6C 65 0D
           225B  0A
-  439:    225C  52 20 52 75                     DB      'R Run',0Dh,0Ah
+  468:    225C  52 20 52 75                     DB      'R Run',0Dh,0Ah
           2260  6E 0D 0A
-  440:    2263  53 20 53 46                     DB      'S SFR dunp',0Dh,0Ah,00h
+  469:    2263  53 20 53 46                     DB      'S SFR dunp',0Dh,0Ah,00h
           2267  52 20 64 75
           226B  6E 70 0D 0A
           226F  00
-  441:    2270  22                              RET
-  442:
-  443:    2271  C0 82           DUMP:           PUSH    DPL
-  444:    2273  C0 83                           PUSH    DPH
-  445:    2275  C0 02                           PUSH    02h
-  446:    2277  C0 03                           PUSH    03h
-  447:    2279  7B 10           DUMP1:          MOV     R3,#10h
-  448:    227B  7A 10           DUMP2:          MOV     R2,#10h
-  449:    227D  31 48                           ACALL   HEXDPTR
-  450:    227F  E0              DUMP3:          MOVX    A,@DPTR
-  451:    2280  31 14                           ACALL   HEXOUT
-  452:    2282  74 20                           MOV     A,#20h
-  453:    2284  31 C5                           ACALL   TXBYTE
-  454:    2286  A3                              INC     DPTR
-  455:    2287  DA F6                           DJNZ    R2,DUMP3
-  456:    2289  31 0B                           ACALL   PRNTCRLF
-  457:    228B  DB EE                           DJNZ    R3,DUMP2
-  458:    228D  31 0B                           ACALL   PRNTCRLF
-  459:    228F  31 B5                           ACALL   RXBYTE
-  460:    2291  B4 9F E5                        CJNE    A,#9Fh,DUMP1                    ;Esc
-  461:    2294  D0 03                           POP     03h
-  462:    2296  D0 02                           POP     02h
-  463:    2298  D0 83                           POP     DPH
-  464:    229A  D0 82                           POP     DPL
-  465:    229C  22                              RET
-  466:
-  467:    229D  C0 82           ENTERHEX:       PUSH    DPL
-  468:    229F  C0 83                           PUSH    DPH
-  469:    22A1  31 48           ENTERHEX1:      ACALL   HEXDPTR
-  470:    22A3  31 55                           ACALL   HEXINPBYTE
-  471:    22A5  40 06                           JC      ENTERHEX2
-  472:    22A7  F0                              MOVX    @DPTR,A
-  473:    22A8  A3                              INC     DPTR
-  474:    22A9  31 0B                           ACALL   PRNTCRLF
-  475:    22AB  80 F4                           SJMP    ENTERHEX1
-  476:    22AD  D0 83           ENTERHEX2:      POP     DPH
-  477:    22AF  D0 82                           POP     DPL
-  478:    22B1  22                              RET
-  479:
-  480:    22B2  C0 00           MEMDUMP:        PUSH    00h
-  481:    22B4  78 00                           MOV     R0,#00h
-  482:    22B6  E4              MEMDUMP1:       CLR     A
-  483:    22B7  31 14                           ACALL   HEXOUT
-  484:    22B9  E8                              MOV     A,R0
-  485:    22BA  31 14                           ACALL   HEXOUT
-  486:    22BC  74 20                           MOV     A,#20h
-  487:    22BE  31 C5                           ACALL   TXBYTE
-  488:    22C0  E6              MEMDUMP2:       MOV     A,@R0
-  489:    22C1  31 14                           ACALL   HEXOUT
-  490:    22C3  74 20                           MOV     A,#20h
-  491:    22C5  31 C5                           ACALL   TXBYTE
-  492:    22C7  08                              INC     R0
-  493:    22C8  E8                              MOV     A,R0
-  494:    22C9  54 0F                           ANL     A,#0Fh
-  495:    22CB  70 F3                           JNZ     MEMDUMP2
-  496:    22CD  31 0B                           ACALL   PRNTCRLF
-  497:    22CF  E8                              MOV     A,R0
-  498:    22D0  70 E4                           JNZ     MEMDUMP1
-  499:    22D2  D0 00                           POP     00h
-  500:    22D4  22                              RET
-  501:
-  502:    22D5  C0 D0           DUMPSFR:        PUSH    PSW
-  503:    22D7  C2 D3                           CLR     RS0
-  504:    22D9  C2 D4                           CLR     RS1
-  505:    22DB  C0 E0                           PUSH    ACC
-  506:    22DD  C0 00                           PUSH    00h
-  507:    22DF  C0 E0                           PUSH    ACC
-  508:    22E1  12 20 D3                        LCALL   PRNTCSTR
-  509:    22E4  0D 0A 53 46                     DB 0Dh,0Ah,'SFR  D7 D6 D5 D4 D3 D2 D1 D0',0Dh,0Ah
+  470:    2270  22                              RET
+  471:
+  472:    2271  C0 82           DUMP:           PUSH    DPL
+  473:    2273  C0 83                           PUSH    DPH
+  474:    2275  C0 02                           PUSH    02h
+  475:    2277  C0 03                           PUSH    03h
+  476:    2279  7B 10           DUMP1:          MOV     R3,#10h
+  477:    227B  7A 10           DUMP2:          MOV     R2,#10h
+  478:    227D  31 48                           ACALL   HEXDPTR
+  479:    227F  E0              DUMP3:          MOVX    A,@DPTR
+  480:    2280  31 14                           ACALL   HEXOUT
+  481:    2282  74 20                           MOV     A,#20h
+  482:    2284  31 C5                           ACALL   TXBYTE
+  483:    2286  A3                              INC     DPTR
+  484:    2287  DA F6                           DJNZ    R2,DUMP3
+  485:    2289  31 0B                           ACALL   PRNTCRLF
+  486:    228B  DB EE                           DJNZ    R3,DUMP2
+  487:    228D  31 0B                           ACALL   PRNTCRLF
+  488:    228F  31 B5                           ACALL   RXBYTE
+  489:    2291  B4 9F E5                        CJNE    A,#9Fh,DUMP1                    ;Esc
+  490:    2294  D0 03                           POP     03h
+  491:    2296  D0 02                           POP     02h
+  492:    2298  D0 83                           POP     DPH
+  493:    229A  D0 82                           POP     DPL
+  494:    229C  22                              RET
+  495:
+  496:    229D  C0 82           ENTERHEX:       PUSH    DPL
+  497:    229F  C0 83                           PUSH    DPH
+  498:    22A1  31 48           ENTERHEX1:      ACALL   HEXDPTR
+  499:    22A3  31 55                           ACALL   HEXINPBYTE
+  500:    22A5  40 06                           JC      ENTERHEX2
+  501:    22A7  F0                              MOVX    @DPTR,A
+  502:    22A8  A3                              INC     DPTR
+  503:    22A9  31 0B                           ACALL   PRNTCRLF
+  504:    22AB  80 F4                           SJMP    ENTERHEX1
+  505:    22AD  D0 83           ENTERHEX2:      POP     DPH
+  506:    22AF  D0 82                           POP     DPL
+  507:    22B1  22                              RET
+  508:
+  509:    22B2  C0 00           MEMDUMP:        PUSH    00h
+  510:    22B4  78 00                           MOV     R0,#00h
+  511:    22B6  E4              MEMDUMP1:       CLR     A
+  512:    22B7  31 14                           ACALL   HEXOUT
+  513:    22B9  E8                              MOV     A,R0
+  514:    22BA  31 14                           ACALL   HEXOUT
+  515:    22BC  74 20                           MOV     A,#20h
+  516:    22BE  31 C5                           ACALL   TXBYTE
+  517:    22C0  E6              MEMDUMP2:       MOV     A,@R0
+  518:    22C1  31 14                           ACALL   HEXOUT
+  519:    22C3  74 20                           MOV     A,#20h
+  520:    22C5  31 C5                           ACALL   TXBYTE
+  521:    22C7  08                              INC     R0
+  522:    22C8  E8                              MOV     A,R0
+  523:    22C9  54 0F                           ANL     A,#0Fh
+  524:    22CB  70 F3                           JNZ     MEMDUMP2
+  525:    22CD  31 0B                           ACALL   PRNTCRLF
+  526:    22CF  E8                              MOV     A,R0
+  527:    22D0  70 E4                           JNZ     MEMDUMP1
+  528:    22D2  D0 00                           POP     00h
+  529:    22D4  22                              RET
+  530:
+  531:    22D5  C0 D0           DUMPSFR:        PUSH    PSW
+  532:    22D7  C2 D3                           CLR     RS0
+  533:    22D9  C2 D4                           CLR     RS1
+  534:    22DB  C0 E0                           PUSH    ACC
+  535:    22DD  C0 00                           PUSH    00h
+  536:    22DF  C0 E0                           PUSH    ACC
+  537:    22E1  12 20 D3                        LCALL   PRNTCSTR
+  538:    22E4  0D 0A 53 46                     DB 0Dh,0Ah,'SFR  D7 D6 D5 D4 D3 D2 D1 D0',0Dh,0Ah
           22E8  52 20 20 44
           22EC  37 20 44 36
           22F0  20 44 35 20
@@ -562,7 +591,7 @@
           22F8  33 20 44 32
           22FC  20 44 31 20
           2300  44 30 0D 0A
-  510:    2304  2D 2D 2D 2D                     DB '----------------------------',0Dh,0Ah
+  539:    2304  2D 2D 2D 2D                     DB '----------------------------',0Dh,0Ah
           2308  2D 2D 2D 2D
           230C  2D 2D 2D 2D
           2310  2D 2D 2D 2D
@@ -570,287 +599,337 @@
           2318  2D 2D 2D 2D
           231C  2D 2D 2D 2D
           2320  0D 0A
-  511:    2322  41 43 43 20                     DB 'ACC ',0
+  540:    2322  41 43 43 20                     DB 'ACC ',0
           2326  00
-  512:    2327  D0 E0                           POP     ACC
-  513:    2329  12 21 29                        LCALL   BINOUT
-  514:    232C  12 20 D3                        LCALL   PRNTCSTR
-  515:    232F  42 20 20 20                     DB 'B   ',0
+  541:    2327  D0 E0                           POP     ACC
+  542:    2329  12 21 29                        LCALL   BINOUT
+  543:    232C  12 20 D3                        LCALL   PRNTCSTR
+  544:    232F  42 20 20 20                     DB 'B   ',0
           2333  00
-  516:    2334  E5 F0                           MOV     A,B
-  517:    2336  12 21 29                        LCALL   BINOUT
-  518:    2339  12 20 D3                        LCALL   PRNTCSTR
-  519:    233C  44 50 48 20                     DB 'DPH ',0
+  545:    2334  E5 F0                           MOV     A,B
+  546:    2336  12 21 29                        LCALL   BINOUT
+  547:    2339  12 20 D3                        LCALL   PRNTCSTR
+  548:    233C  44 50 48 20                     DB 'DPH ',0
           2340  00
-  520:    2341  E5 83                           MOV     A,DPH
-  521:    2343  12 21 29                        LCALL   BINOUT
-  522:    2346  12 20 D3                        LCALL   PRNTCSTR
-  523:    2349  44 50 4C 20                     DB 'DPL ',0
+  549:    2341  E5 83                           MOV     A,DPH
+  550:    2343  12 21 29                        LCALL   BINOUT
+  551:    2346  12 20 D3                        LCALL   PRNTCSTR
+  552:    2349  44 50 4C 20                     DB 'DPL ',0
           234D  00
-  524:    234E  E5 82                           MOV     A,DPL
-  525:    2350  12 21 29                        LCALL   BINOUT
-  526:    2353  12 20 D3                        LCALL   PRNTCSTR
-  527:    2356  49 45 20 20                     DB 'IE  ',0
+  553:    234E  E5 82                           MOV     A,DPL
+  554:    2350  12 21 29                        LCALL   BINOUT
+  555:    2353  12 20 D3                        LCALL   PRNTCSTR
+  556:    2356  49 45 20 20                     DB 'IE  ',0
           235A  00
-  528:    235B  E5 A8                           MOV     A,IE
-  529:    235D  12 21 29                        LCALL   BINOUT
-  530:    2360  12 20 D3                        LCALL   PRNTCSTR
-  531:    2363  49 50 20 20                     DB 'IP  ',0
+  557:    235B  E5 A8                           MOV     A,IE
+  558:    235D  12 21 29                        LCALL   BINOUT
+  559:    2360  12 20 D3                        LCALL   PRNTCSTR
+  560:    2363  49 50 20 20                     DB 'IP  ',0
           2367  00
-  532:    2368  E5 B8                           MOV     A,IP
-  533:    236A  12 21 29                        LCALL   BINOUT
-  534:    236D  12 20 D3                        LCALL   PRNTCSTR
-  535:    2370  50 30 20 20                     DB 'P0  ',0
+  561:    2368  E5 B8                           MOV     A,IP
+  562:    236A  12 21 29                        LCALL   BINOUT
+  563:    236D  12 20 D3                        LCALL   PRNTCSTR
+  564:    2370  50 30 20 20                     DB 'P0  ',0
           2374  00
-  536:    2375  E5 80                           MOV     A,P0
-  537:    2377  12 21 29                        LCALL   BINOUT
-  538:    237A  12 20 D3                        LCALL   PRNTCSTR
-  539:    237D  50 31 20 20                     DB 'P1  ',0
+  565:    2375  E5 80                           MOV     A,P0
+  566:    2377  12 21 29                        LCALL   BINOUT
+  567:    237A  12 20 D3                        LCALL   PRNTCSTR
+  568:    237D  50 31 20 20                     DB 'P1  ',0
           2381  00
-  540:    2382  E5 90                           MOV     A,P1
-  541:    2384  12 21 29                        LCALL   BINOUT
-  542:    2387  12 20 D3                        LCALL   PRNTCSTR
-  543:    238A  50 32 20 20                     DB 'P2  ',0
+  569:    2382  E5 90                           MOV     A,P1
+  570:    2384  12 21 29                        LCALL   BINOUT
+  571:    2387  12 20 D3                        LCALL   PRNTCSTR
+  572:    238A  50 32 20 20                     DB 'P2  ',0
           238E  00
-  544:    238F  E5 A0                           MOV     A,P2
-  545:    2391  12 21 29                        LCALL   BINOUT
-  546:    2394  12 20 D3                        LCALL   PRNTCSTR
-  547:    2397  50 33 20 20                     DB 'P3  ',0
+  573:    238F  E5 A0                           MOV     A,P2
+  574:    2391  12 21 29                        LCALL   BINOUT
+  575:    2394  12 20 D3                        LCALL   PRNTCSTR
+  576:    2397  50 33 20 20                     DB 'P3  ',0
           239B  00
-  548:    239C  E5 B0                           MOV     A,P3
-  549:    239E  12 21 29                        LCALL   BINOUT
-  550:    23A1  12 20 D3                        LCALL   PRNTCSTR
-  551:    23A4  50 43 4F 4E                     DB 'PCON',0
+  577:    239C  E5 B0                           MOV     A,P3
+  578:    239E  12 21 29                        LCALL   BINOUT
+  579:    23A1  12 20 D3                        LCALL   PRNTCSTR
+  580:    23A4  50 43 4F 4E                     DB 'PCON',0
           23A8  00
-  552:    23A9  E5 87                           MOV     A,PCON
-  553:    23AB  12 21 29                        LCALL   BINOUT
-  554:    23AE  12 20 D3                        LCALL   PRNTCSTR
-  555:    23B1  50 53 57 20                     DB 'PSW ',0
+  581:    23A9  E5 87                           MOV     A,PCON
+  582:    23AB  12 21 29                        LCALL   BINOUT
+  583:    23AE  12 20 D3                        LCALL   PRNTCSTR
+  584:    23B1  50 53 57 20                     DB 'PSW ',0
           23B5  00
-  556:    23B6  E5 D0                           MOV     A,PSW
-  557:    23B8  12 21 29                        LCALL   BINOUT
-  558:    23BB  12 20 D3                        LCALL   PRNTCSTR
-  559:    23BE  53 42 55 46                     DB 'SBUF',0
+  585:    23B6  E5 D0                           MOV     A,PSW
+  586:    23B8  12 21 29                        LCALL   BINOUT
+  587:    23BB  12 20 D3                        LCALL   PRNTCSTR
+  588:    23BE  53 42 55 46                     DB 'SBUF',0
           23C2  00
-  560:    23C3  E5 99                           MOV     A,SBUF
-  561:    23C5  12 21 29                        LCALL   BINOUT
-  562:    23C8  12 20 D3                        LCALL   PRNTCSTR
-  563:    23CB  53 43 4F 4E                     DB 'SCON',0
+  589:    23C3  E5 99                           MOV     A,SBUF
+  590:    23C5  12 21 29                        LCALL   BINOUT
+  591:    23C8  12 20 D3                        LCALL   PRNTCSTR
+  592:    23CB  53 43 4F 4E                     DB 'SCON',0
           23CF  00
-  564:    23D0  E5 98                           MOV     A,SCON
-  565:    23D2  12 21 29                        LCALL   BINOUT
-  566:    23D5  12 20 D3                        LCALL   PRNTCSTR
-  567:    23D8  53 50 20 20                     DB 'SP  ',0
+  593:    23D0  E5 98                           MOV     A,SCON
+  594:    23D2  12 21 29                        LCALL   BINOUT
+  595:    23D5  12 20 D3                        LCALL   PRNTCSTR
+  596:    23D8  53 50 20 20                     DB 'SP  ',0
           23DC  00
-  568:    23DD  E5 81                           MOV     A,SP
-  569:    23DF  12 21 29                        LCALL   BINOUT
-  570:    23E2  12 20 D3                        LCALL   PRNTCSTR
-  571:    23E5  54 43 4F 4E                     DB 'TCON',0
+  597:    23DD  E5 81                           MOV     A,SP
+  598:    23DF  12 21 29                        LCALL   BINOUT
+  599:    23E2  12 20 D3                        LCALL   PRNTCSTR
+  600:    23E5  54 43 4F 4E                     DB 'TCON',0
           23E9  00
-  572:    23EA  E5 88                           MOV     A,TCON
-  573:    23EC  12 21 29                        LCALL   BINOUT
-  574:    23EF  12 20 D3                        LCALL   PRNTCSTR
-  575:    23F2  54 48 30 20                     DB 'TH0 ',0
+  601:    23EA  E5 88                           MOV     A,TCON
+  602:    23EC  12 21 29                        LCALL   BINOUT
+  603:    23EF  12 20 D3                        LCALL   PRNTCSTR
+  604:    23F2  54 48 30 20                     DB 'TH0 ',0
           23F6  00
-  576:    23F7  E5 8C                           MOV     A,TH0
-  577:    23F9  12 21 29                        LCALL   BINOUT
-  578:    23FC  12 20 D3                        LCALL   PRNTCSTR
-  579:    23FF  54 48 31 20                     DB 'TH1 ',0
+  605:    23F7  E5 8C                           MOV     A,TH0
+  606:    23F9  12 21 29                        LCALL   BINOUT
+  607:    23FC  12 20 D3                        LCALL   PRNTCSTR
+  608:    23FF  54 48 31 20                     DB 'TH1 ',0
           2403  00
-  580:    2404  E5 8D                           MOV     A,TH1
-  581:    2406  12 21 29                        LCALL   BINOUT
-  582:    2409  12 20 D3                        LCALL   PRNTCSTR
-  583:    240C  54 4C 30 20                     DB 'TL0 ',0
+  609:    2404  E5 8D                           MOV     A,TH1
+  610:    2406  12 21 29                        LCALL   BINOUT
+  611:    2409  12 20 D3                        LCALL   PRNTCSTR
+  612:    240C  54 4C 30 20                     DB 'TL0 ',0
           2410  00
-  584:    2411  E5 8A                           MOV     A,TL0
-  585:    2413  12 21 29                        LCALL   BINOUT
-  586:    2416  12 20 D3                        LCALL   PRNTCSTR
-  587:    2419  54 4C 31 20                     DB 'TL1 ',0
+  613:    2411  E5 8A                           MOV     A,TL0
+  614:    2413  12 21 29                        LCALL   BINOUT
+  615:    2416  12 20 D3                        LCALL   PRNTCSTR
+  616:    2419  54 4C 31 20                     DB 'TL1 ',0
           241D  00
-  588:    241E  E5 8B                           MOV     A,TL1
-  589:    2420  12 21 29                        LCALL   BINOUT
-  590:    2423  12 20 D3                        LCALL   PRNTCSTR
-  591:    2426  54 4D 4F 44                     DB 'TMOD',0
+  617:    241E  E5 8B                           MOV     A,TL1
+  618:    2420  12 21 29                        LCALL   BINOUT
+  619:    2423  12 20 D3                        LCALL   PRNTCSTR
+  620:    2426  54 4D 4F 44                     DB 'TMOD',0
           242A  00
-  592:    242B  E5 89                           MOV     A,TMOD
-  593:    242D  12 21 29                        LCALL   BINOUT
-  594:    2430  D0 00                           POP     00h
-  595:    2432  D0 E0                           POP     ACC
-  596:    2434  D0 D0                           POP     PSW
-  597:    2436  22                              RET
-  598:
-  599:    2437  7B 40           LOAD1K:         MOV     R3,#40h
-  600:    2439  31 A5           LOAD1K1:        ACALL   RX16BYTES                       ;Read 16 bytes from cmd file
-  601:    243B  E6              LOAD1K2:        MOV     A,@R0
-  602:    243C  F0                              MOVX    @DPTR,A
-  603:    243D  A3                              INC     DPTR
-  604:    243E  08                              INC     R0
-  605:    243F  E8                              MOV     A,R0
-  606:    2440  64 50                           XRL     A,#50h
-  607:    2442  70 F7                           JNZ     LOAD1K2                         ;Not 16 bytes yet
-  608:    2444  DB F3                           DJNZ    R3,LOAD1K1                      ;Not 1K yet
-  609:    2446  74 2E                           MOV     A,#'.'
-  610:    2448  31 C5                           ACALL   TXBYTE
-  611:    244A  22                              RET
-  612:
-  613:    244B  C0 82           LOAD:           PUSH    DPL
-  614:    244D  C0 83                           PUSH    DPH
-  615:    244F  C0 00                           PUSH    00h
-  616:    2451  C0 03                           PUSH    03h
-  617:    2453  C0 04                           PUSH    04h
-  618:    2455  11 D3                           ACALL   PRNTCSTR
-  619:    2457  4C 6F 61 64                     DB      'Loading .',0
+  621:    242B  E5 89                           MOV     A,TMOD
+  622:    242D  12 21 29                        LCALL   BINOUT
+  623:    2430  D0 00                           POP     00h
+  624:    2432  D0 E0                           POP     ACC
+  625:    2434  D0 D0                           POP     PSW
+  626:    2436  22                              RET
+  627:
+  628:    2437  7B 40           LOAD1K:         MOV     R3,#40h
+  629:    2439  31 A5           LOAD1K1:        ACALL   RX16BYTES                       ;Read 16 bytes from cmd file
+  630:    243B  E6              LOAD1K2:        MOV     A,@R0
+  631:    243C  F0                              MOVX    @DPTR,A
+  632:    243D  A3                              INC     DPTR
+  633:    243E  08                              INC     R0
+  634:    243F  E8                              MOV     A,R0
+  635:    2440  64 50                           XRL     A,#50h
+  636:    2442  70 F7                           JNZ     LOAD1K2                         ;Not 16 bytes yet
+  637:    2444  DB F3                           DJNZ    R3,LOAD1K1                      ;Not 1K yet
+  638:    2446  74 2E                           MOV     A,#'.'
+  639:    2448  31 C5                           ACALL   TXBYTE
+  640:    244A  22                              RET
+  641:
+  642:    244B  C0 82           LOAD:           PUSH    DPL
+  643:    244D  C0 83                           PUSH    DPH
+  644:    244F  C0 00                           PUSH    00h
+  645:    2451  C0 03                           PUSH    03h
+  646:    2453  C0 04                           PUSH    04h
+  647:    2455  11 D3                           ACALL   PRNTCSTR
+  648:    2457  4C 6F 61 64                     DB      'Loading .',0
           245B  69 6E 67 20
           245F  2E 00
-  620:    2461  7C 08                           MOV     R4,#08h
-  621:    2463  91 37           LOAD10:         ACALL   LOAD1K
-  622:    2465  DC FC                           DJNZ    R4,LOAD10
-  623:    2467  74 06                           MOV     A,#06h
-  624:    2469  31 C5                           ACALL   TXBYTE                          ;End read 16 bytes from cmd file
-  625:    246B  31 0B                           ACALL   PRNTCRLF
-  626:    246D  D0 04                           POP     04h
-  627:    246F  D0 03                           POP     03h
-  628:    2471  D0 00                           POP     00h
-  629:    2473  D0 83                           POP     DPH
-  630:    2475  D0 82                           POP     DPL
-  631:    2477  22                              RET
-  632:
-  633:    2478  91 4B           GO:             ACALL   LOAD
-  634:    247A  E4              RUN:            CLR     A
-  635:    247B  73                              JMP     @A+DPTR
-  636:
-  637:                          ;Single step called when INT1 pin low and interupt is enabled
-  638:                          ;------------------------------------------------------------------
-  639:    247C  C0 D0           SINGLESTEP:     PUSH    PSW
-  640:    247E  C0 E0                           PUSH    ACC
-  641:    2480  C2 D3                           CLR     RS0
-  642:    2482  C2 D4                           CLR     RS1
-  643:    2484  C0 00                           PUSH    00h
-  644:    2486  A8 81                           MOV     R0,SP
-  645:    2488  18                              DEC     R0                              ;Skip PSW
-  646:    2489  18                              DEC     R0                              ;Skip ACC
-  647:    248A  18                              DEC     R0                              ;Skip R0
-  648:    248B  E5 53                           MOV     A,SSADRMSB
-  649:    248D  04                              INC     A
-  650:    248E  60 0A                           JZ      SINGLESTEP0
-  651:    2490  E6                              MOV     A,@R0                           ;MSB adress
-  652:    2491  B5 53 74                        CJNE    A,SSADRMSB,SINGLESTEPEX2
-  653:    2494  18                              DEC     R0
-  654:    2495  E6                              MOV     A,@R0                           ;MSB adress
-  655:    2496  08                              INC     R0
-  656:    2497  B5 52 6E                        CJNE    A,SSADRLSB,SINGLESTEPEX2
-  657:    249A  74 07           SINGLESTEP0:    MOV     A,#07h
-  658:    249C  12 21 C5                        LCALL   TXBYTE
-  659:    249F  E6                              MOV     A,@R0                           ;MSB adress
-  660:    24A0  12 21 C5                        LCALL   TXBYTE
-  661:    24A3  18                              DEC     R0
-  662:    24A4  E6                              MOV     A,@R0                           ;LSB adress
-  663:    24A5  12 21 C5                        LCALL   TXBYTE
-  664:    24A8  08                              INC     R0                              ;MSB adress
-  665:    24A9  08                              INC     R0                              ;PSW
-  666:    24AA  E6                              MOV     A,@R0                           ;PSW
-  667:    24AB  12 21 C5                        LCALL   TXBYTE
-  668:    24AE  08                              INC     R0                              ;ACC
-  669:    24AF  E6                              MOV     A,@R0                           ;ACC
-  670:    24B0  12 21 C5                        LCALL   TXBYTE
-  671:    24B3  E5 F0                           MOV     A,B                             ;B
-  672:    24B5  12 21 C5                        LCALL   TXBYTE
-  673:    24B8  E5 81                           MOV     A,SP                            ;SP
-  674:    24BA  C3                              CLR     C
-  675:    24BB  94 05                           SUBB    A,#05h
-  676:    24BD  12 21 C5                        LCALL   TXBYTE
-  677:    24C0  E5 82                           MOV     A,DPL                           ;DPL
-  678:    24C2  12 21 C5                        LCALL   TXBYTE
-  679:    24C5  E5 83                           MOV     A,DPH                           ;DPH
-  680:    24C7  12 21 C5                        LCALL   TXBYTE
-  681:    24CA  08                              INC     R0                              ;R0
-  682:    24CB  E6                              MOV     A,@R0                           ;R0
-  683:    24CC  12 21 C5                        LCALL   TXBYTE
-  684:    24CF  78 01                           MOV     R0,#01h
-  685:    24D1  E6              SINGLESTEP1:    MOV     A,@R0                           ;31 Bytes
-  686:    24D2  12 21 C5                        LCALL   TXBYTE
-  687:    24D5  08                              INC     R0
-  688:    24D6  B8 20 F8                        CJNE    R0,#20h,SINGLESTEP1
-  689:    24D9  C0 82                           PUSH    DPL
-  690:    24DB  C0 83                           PUSH    DPH
-  691:    24DD  78 20                           MOV     R0,#20h                         ;32 Bytes
-  692:    24DF  E0              SINGLESTEP2:    MOVX    A,@DPTR
-  693:    24E0  12 21 C5                        LCALL   TXBYTE
-  694:    24E3  A3                              INC     DPTR
-  695:    24E4  D8 F9                           DJNZ    R0,SINGLESTEP2
-  696:    24E6  12 21 B5        SINGLESTEP3:    LCALL   RXBYTE
-  697:    24E9  B4 52 04                        CJNE    A,#'R',SINGLESTEP4              ;R Run
-  698:    24EC  D2 B3                           SETB    P3.3                            ;Set INT1 pin high
-  699:    24EE  80 0E                           SJMP    SINGLESTEPEX
-  700:    24F0  B4 73 08        SINGLESTEP4:    CJNE    A,#'s',SINGLESTEP5              ;s Stop
-  701:    24F3  D2 B3                           SETB    P3.3                            ;Set INT1 pin high
-  702:    24F5  E4                              CLR     A
-  703:    24F6  C0 E0                           PUSH    ACC                             ;Force a software reset
-  704:    24F8  C0 E0                           PUSH    ACC
-  705:    24FA  32                              RETI                                    ;Return to reset vector
-  706:    24FB  B4 69 11        SINGLESTEP5:    CJNE    A,#'i',SINGLESTEP6              ;i Step into
-  707:    24FE  75 52 FF        SINGLESTEPEX:   MOV     SSADRLSB,#0FFh
-  708:    2501  75 53 FF                        MOV     SSADRMSB,#0FFh
-  709:    2504  D0 83           SINGLESTEPEX1:  POP     DPH
-  710:    2506  D0 82                           POP     DPL
-  711:    2508  D0 00           SINGLESTEPEX2:  POP     00h
-  712:    250A  D0 E0                           POP     ACC
-  713:    250C  D0 D0                           POP     PSW
-  714:    250E  32                              RETI
-  715:    250F  B4 6F 0C        SINGLESTEP6:    CJNE    A,#'o',SINGLESTEP7              ;o Step over / Run to caret
-  716:    2512  12 21 B5                        LCALL   RXBYTE
-  717:    2515  F5 52                           MOV     SSADRLSB,A
-  718:    2517  12 21 B5                        LCALL   RXBYTE
-  719:    251A  F5 53                           MOV     SSADRMSB,A
-  720:    251C  80 E6                           SJMP    SINGLESTEPEX1
-  721:    251E  B4 41 05        SINGLESTEP7:    CJNE    A,#'A',SINGLESTEP8              ;A Adress input
-  722:    2521  12 21 94                        LCALL   INPDPTR
-  723:    2524  80 C0                           SJMP    SINGLESTEP3
-  724:    2526  B4 49 05        SINGLESTEP8:    CJNE    A,#'I',SINGLESTEP9              ;Dump internal memory
-  725:    2529  12 22 B2                        LCALL   MEMDUMP
-  726:    252C  80 B8                           SJMP    SINGLESTEP3
-  727:    252E  B4 44 05        SINGLESTEP9:    CJNE    A,#'D',SINGLESTEP10             ;Dump external memory
-  728:    2531  12 22 71                        LCALL   DUMP
-  729:    2534  80 B0                           SJMP    SINGLESTEP3
-  730:    2536  B4 53 AD        SINGLESTEP10:   CJNE    A,#'S',SINGLESTEP3              ;Dump SFR's
-  731:    2539  D0 83                           POP     DPH
-  732:    253B  D0 82                           POP     DPL
-  733:    253D  D0 00                           POP     00h
-  734:    253F  D0 E0                           POP     ACC
-  735:    2541  D0 D0                           POP     PSW
-  736:    2543  C0 D0                           PUSH    PSW
-  737:    2545  C0 E0                           PUSH    ACC
-  738:    2547  C2 D3                           CLR     RS0
-  739:    2549  C2 D4                           CLR     RS1
-  740:    254B  C0 00                           PUSH    00h
-  741:    254D  C0 82                           PUSH    DPL
-  742:    254F  C0 83                           PUSH    DPH
-  743:    2551  12 22 D5                        LCALL   DUMPSFR
-  744:    2554  80 90                           SJMP    SINGLESTEP3
-  745:
-  746:                          ;BitScope
-  747:                          ;------------------------------------------------------------------
-  748:
-  749:                          ;In     A Contains ram page
-  750:                          ;Out    Nothing
-  751:    2556  78 00           READADCRAM:     MOV     R0,#LOW ADCCTLWR
-  752:    2558  75 A0 80                        MOV     P2,#HIGH ADCRD
-  753:    255B  44 40                           ORL     A,#ADCMCU
-  754:    255D  F2                              MOVX    @R0,A                   ;Select MCU and reset ADC
-  755:    255E  44 80                           ORL     A,#ADCMR
-  756:    2560  F2                              MOVX    @R0,A                   ;Remove reset
-  757:    2561  78 01                           MOV     R0,#LOW ADCRD
-  758:    2563  79 03                           MOV     R1,#LOW USBIO
-  759:    2565  7E 00                           MOV     R6,#00h
-  760:    2567  7F 80                           MOV     R7,#80h
-  761:    2569  E2              READADCRAM1:    MOVX    A,@R0                   ;Read a byte
-  762:    256A  20 B4 FD                        JB      USBTXE,$                ;Wait until USB ready
-  763:    256D  F3                              MOVX    @R1,A                   ;Send it
-  764:    256E  DE F9                           DJNZ    R6,READADCRAM1
-  765:    2570  DF F7                           DJNZ    R7,READADCRAM1
-  766:    2572  22                              RET
-  767:
-  768:                                          END
+  649:    2461  7C 08                           MOV     R4,#08h
+  650:    2463  91 37           LOAD10:         ACALL   LOAD1K
+  651:    2465  DC FC                           DJNZ    R4,LOAD10
+  652:    2467  74 06                           MOV     A,#06h
+  653:    2469  31 C5                           ACALL   TXBYTE                          ;End read 16 bytes from cmd file
+  654:    246B  31 0B                           ACALL   PRNTCRLF
+  655:    246D  D0 04                           POP     04h
+  656:    246F  D0 03                           POP     03h
+  657:    2471  D0 00                           POP     00h
+  658:    2473  D0 83                           POP     DPH
+  659:    2475  D0 82                           POP     DPL
+  660:    2477  22                              RET
+  661:
+  662:    2478  91 4B           GO:             ACALL   LOAD
+  663:    247A  E4              RUN:            CLR     A
+  664:    247B  73                              JMP     @A+DPTR
+  665:
+  666:                          ;Single step called when INT1 pin low and interupt is enabled
+  667:                          ;------------------------------------------------------------------
+  668:    247C  C0 D0           SINGLESTEP:     PUSH    PSW
+  669:    247E  C0 E0                           PUSH    ACC
+  670:    2480  C2 D3                           CLR     RS0
+  671:    2482  C2 D4                           CLR     RS1
+  672:    2484  C0 00                           PUSH    00h
+  673:    2486  A8 81                           MOV     R0,SP
+  674:    2488  18                              DEC     R0                              ;Skip PSW
+  675:    2489  18                              DEC     R0                              ;Skip ACC
+  676:    248A  18                              DEC     R0                              ;Skip R0
+  677:    248B  E5 53                           MOV     A,SSADRMSB
+  678:    248D  04                              INC     A
+  679:    248E  60 0A                           JZ      SINGLESTEP0
+  680:    2490  E6                              MOV     A,@R0                           ;MSB adress
+  681:    2491  B5 53 74                        CJNE    A,SSADRMSB,SINGLESTEPEX2
+  682:    2494  18                              DEC     R0
+  683:    2495  E6                              MOV     A,@R0                           ;MSB adress
+  684:    2496  08                              INC     R0
+  685:    2497  B5 52 6E                        CJNE    A,SSADRLSB,SINGLESTEPEX2
+  686:    249A  74 07           SINGLESTEP0:    MOV     A,#07h
+  687:    249C  12 21 C5                        LCALL   TXBYTE
+  688:    249F  E6                              MOV     A,@R0                           ;MSB adress
+  689:    24A0  12 21 C5                        LCALL   TXBYTE
+  690:    24A3  18                              DEC     R0
+  691:    24A4  E6                              MOV     A,@R0                           ;LSB adress
+  692:    24A5  12 21 C5                        LCALL   TXBYTE
+  693:    24A8  08                              INC     R0                              ;MSB adress
+  694:    24A9  08                              INC     R0                              ;PSW
+  695:    24AA  E6                              MOV     A,@R0                           ;PSW
+  696:    24AB  12 21 C5                        LCALL   TXBYTE
+  697:    24AE  08                              INC     R0                              ;ACC
+  698:    24AF  E6                              MOV     A,@R0                           ;ACC
+  699:    24B0  12 21 C5                        LCALL   TXBYTE
+  700:    24B3  E5 F0                           MOV     A,B                             ;B
+  701:    24B5  12 21 C5                        LCALL   TXBYTE
+  702:    24B8  E5 81                           MOV     A,SP                            ;SP
+  703:    24BA  C3                              CLR     C
+  704:    24BB  94 05                           SUBB    A,#05h
+  705:    24BD  12 21 C5                        LCALL   TXBYTE
+  706:    24C0  E5 82                           MOV     A,DPL                           ;DPL
+  707:    24C2  12 21 C5                        LCALL   TXBYTE
+  708:    24C5  E5 83                           MOV     A,DPH                           ;DPH
+  709:    24C7  12 21 C5                        LCALL   TXBYTE
+  710:    24CA  08                              INC     R0                              ;R0
+  711:    24CB  E6                              MOV     A,@R0                           ;R0
+  712:    24CC  12 21 C5                        LCALL   TXBYTE
+  713:    24CF  78 01                           MOV     R0,#01h
+  714:    24D1  E6              SINGLESTEP1:    MOV     A,@R0                           ;31 Bytes
+  715:    24D2  12 21 C5                        LCALL   TXBYTE
+  716:    24D5  08                              INC     R0
+  717:    24D6  B8 20 F8                        CJNE    R0,#20h,SINGLESTEP1
+  718:    24D9  C0 82                           PUSH    DPL
+  719:    24DB  C0 83                           PUSH    DPH
+  720:    24DD  78 20                           MOV     R0,#20h                         ;32 Bytes
+  721:    24DF  E0              SINGLESTEP2:    MOVX    A,@DPTR
+  722:    24E0  12 21 C5                        LCALL   TXBYTE
+  723:    24E3  A3                              INC     DPTR
+  724:    24E4  D8 F9                           DJNZ    R0,SINGLESTEP2
+  725:    24E6  12 21 B5        SINGLESTEP3:    LCALL   RXBYTE
+  726:    24E9  B4 52 04                        CJNE    A,#'R',SINGLESTEP4              ;R Run
+  727:    24EC  D2 B3                           SETB    P3.3                            ;Set INT1 pin high
+  728:    24EE  80 0E                           SJMP    SINGLESTEPEX
+  729:    24F0  B4 73 08        SINGLESTEP4:    CJNE    A,#'s',SINGLESTEP5              ;s Stop
+  730:    24F3  D2 B3                           SETB    P3.3                            ;Set INT1 pin high
+  731:    24F5  E4                              CLR     A
+  732:    24F6  C0 E0                           PUSH    ACC                             ;Force a software reset
+  733:    24F8  C0 E0                           PUSH    ACC
+  734:    24FA  32                              RETI                                    ;Return to reset vector
+  735:    24FB  B4 69 11        SINGLESTEP5:    CJNE    A,#'i',SINGLESTEP6              ;i Step into
+  736:    24FE  75 52 FF        SINGLESTEPEX:   MOV     SSADRLSB,#0FFh
+  737:    2501  75 53 FF                        MOV     SSADRMSB,#0FFh
+  738:    2504  D0 83           SINGLESTEPEX1:  POP     DPH
+  739:    2506  D0 82                           POP     DPL
+  740:    2508  D0 00           SINGLESTEPEX2:  POP     00h
+  741:    250A  D0 E0                           POP     ACC
+  742:    250C  D0 D0                           POP     PSW
+  743:    250E  32                              RETI
+  744:    250F  B4 6F 0C        SINGLESTEP6:    CJNE    A,#'o',SINGLESTEP7              ;o Step over / Run to caret
+  745:    2512  12 21 B5                        LCALL   RXBYTE
+  746:    2515  F5 52                           MOV     SSADRLSB,A
+  747:    2517  12 21 B5                        LCALL   RXBYTE
+  748:    251A  F5 53                           MOV     SSADRMSB,A
+  749:    251C  80 E6                           SJMP    SINGLESTEPEX1
+  750:    251E  B4 41 05        SINGLESTEP7:    CJNE    A,#'A',SINGLESTEP8              ;A Adress input
+  751:    2521  12 21 94                        LCALL   INPDPTR
+  752:    2524  80 C0                           SJMP    SINGLESTEP3
+  753:    2526  B4 49 05        SINGLESTEP8:    CJNE    A,#'I',SINGLESTEP9              ;Dump internal memory
+  754:    2529  12 22 B2                        LCALL   MEMDUMP
+  755:    252C  80 B8                           SJMP    SINGLESTEP3
+  756:    252E  B4 44 05        SINGLESTEP9:    CJNE    A,#'D',SINGLESTEP10             ;Dump external memory
+  757:    2531  12 22 71                        LCALL   DUMP
+  758:    2534  80 B0                           SJMP    SINGLESTEP3
+  759:    2536  B4 53 AD        SINGLESTEP10:   CJNE    A,#'S',SINGLESTEP3              ;Dump SFR's
+  760:    2539  D0 83                           POP     DPH
+  761:    253B  D0 82                           POP     DPL
+  762:    253D  D0 00                           POP     00h
+  763:    253F  D0 E0                           POP     ACC
+  764:    2541  D0 D0                           POP     PSW
+  765:    2543  C0 D0                           PUSH    PSW
+  766:    2545  C0 E0                           PUSH    ACC
+  767:    2547  C2 D3                           CLR     RS0
+  768:    2549  C2 D4                           CLR     RS1
+  769:    254B  C0 00                           PUSH    00h
+  770:    254D  C0 82                           PUSH    DPL
+  771:    254F  C0 83                           PUSH    DPH
+  772:    2551  12 22 D5                        LCALL   DUMPSFR
+  773:    2554  80 90                           SJMP    SINGLESTEP3
+  774:
+  775:                          ;BitScope
+  776:                          ;------------------------------------------------------------------
+  777:
+  778:                          ;Set DAC value, first call SETDACCMD then call SETDACVAL
+  779:                          ;------------------------------------------------------------------
+  780:                          ;In     A Contains DAC command
+  781:                          ;       B Contains DAC value
+  782:                          ;Out    Nothing
+  783:    2556  FF              SETDACVAL:      MOV     R7,A                    ;Save DAC CMD
+  784:    2557  78 00                           MOV     R0,#LOW ADCCTLRDWR      ;Select MCU and RDWR3
+  785:    2559  75 A0 80                        MOV     P2,#HIGH ADCCTLRDWR
+  786:    255C  E4                              CLR     A
+  787:    255D  D2 E6                           SETB    ADCMCU
+  788:    255F  D2 E7                           SETB    ADCMR
+  789:    2561  44 18                           ORL     A,#RDWR3
+  790:    2563  F2                              MOVX    @R0,A
+  791:    2564  78 01                           MOV     R0,#LOW ADCRDWR
+  792:    2566  E4                              CLR     A                       ;DACCS=0, DACCLK=0, DACBIT=0
+  793:    2567  D2 E1                           SETB    TRIGSET
+  794:    2569  D2 E2                           SETB    TRIGRESET
+  795:    256B  F2                              MOVX    @R0,A
+  796:    256C  EF                              MOV     A,R7                    ;Restore DAC CMD
+  797:    256D  7F 04                           MOV     R7,#04h
+  798:    256F  B1 84           SETDACVAL1:     ACALL   CLOCKDACBIT
+  799:    2571  DF FC                           DJNZ    R7,SETDACVAL1
+  800:    2573  7F 08                           MOV     R7,#08h
+  801:    2575  E5 F0                           MOV     A,B
+  802:    2577  B1 84           SETDACVAL2:     ACALL   CLOCKDACBIT
+  803:    2579  DF FC                           DJNZ    R7,SETDACVAL2
+  804:    257B  E4                              CLR     A                       ;DACCS=0, DACCLK=0, DACBIT=0
+  805:    257C  D2 E1                           SETB    TRIGSET
+  806:    257E  D2 E2                           SETB    TRIGRESET
+  807:    2580  D2 E3                           SETB    DACCS                   ;ADCCS=1
+  808:    2582  F2                              MOVX    @R0,A
+  809:    2583  22                              RET
+  810:
+  811:    2584  33              CLOCKDACBIT:    RLC     A
+  812:    2585  C0 E0                           PUSH    ACC
+  813:    2587  E4                              CLR     A
+  814:    2588  D2 E1                           SETB    TRIGSET
+  815:    258A  D2 E2                           SETB    TRIGRESET
+  816:    258C  92 E5                           MOV     DACBIT,C
+  817:    258E  F2                              MOVX    @R0,A
+  818:    258F  D2 E4                           SETB    DACCLK
+  819:    2591  F2                              MOVX    @R0,A
+  820:    2592  C2 E4                           CLR     DACCLK
+  821:    2594  F2                              MOVX    @R0,A
+  822:    2595  D0 E0                           POP     ACC
+  823:    2597  22                              RET
+  824:
+  825:                          ;Read ADC or LA RAM
+  826:                          ;------------------------------------------------------------------
+  827:                          ;In     A Contains wich ram to read (RDWR0 to RDWR3)
+  828:                          ;Out    Nothing
+  829:    2598  78 00           READADCRAM:     MOV     R0,#LOW ADCCTLRDWR      ;Select MCU and reset ADC
+  830:    259A  75 A0 80                        MOV     P2,#HIGH ADCCTLRDWR
+  831:    259D  D2 E6                           SETB    ADCMCU
+  832:    259F  C2 E7                           CLR     ADCMR
+  833:    25A1  F2                              MOVX    @R0,A
+  834:    25A2  D2 E7                           SETB    ADCMR
+  835:    25A4  F2                              MOVX    @R0,A
+  836:    25A5  78 01                           MOV     R0,#LOW ADCRDWR
+  837:    25A7  79 03                           MOV     R1,#LOW USBIO
+  838:    25A9  7E 00                           MOV     R6,#00h
+  839:    25AB  7F 80                           MOV     R7,#80h
+  840:    25AD  E2              READADCRAM1:    MOVX    A,@R0                   ;Read a byte
+  841:    25AE  20 B4 FD                        JB      USBTXE,$                ;Wait until USB ready
+  842:    25B1  F3                              MOVX    @R1,A                   ;Send it
+  843:    25B2  DE F9                           DJNZ    R6,READADCRAM1
+  844:    25B4  DF F7                           DJNZ    R7,READADCRAM1
+  845:    25B6  22                              RET
+  846:
+  847:                                          END
 
 
 
