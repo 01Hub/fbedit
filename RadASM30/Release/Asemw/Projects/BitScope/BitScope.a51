@@ -703,7 +703,7 @@ SINGLESTEP10:	CJNE	A,#'S',SINGLESTEP3		;Dump SFR's
 		SJMP	SINGLESTEP3
 
 ;BitScope
-;------------------------------------------------------------------
+;==================================================================
 
 ;Set DAC value, first call SETDACCMD then call SETDACVAL
 ;------------------------------------------------------------------
@@ -713,8 +713,7 @@ SINGLESTEP10:	CJNE	A,#'S',SINGLESTEP3		;Dump SFR's
 SETDACVAL:	MOV	R7,A			;Save DAC CMD
 		MOV	R0,#LOW ADCCTLRDWR	;Select MCU and RDWR3
 		MOV	P2,#HIGH ADCCTLRDWR
-		CLR	A
-		SETB	ADCMCU
+		CLR	A			;ADCMCU LOW
 		SETB	ADCMR
 		ORL	A,#RDWR3
 		MOVX	@R0,A
@@ -758,9 +757,7 @@ CLOCKDACBIT:	RLC	A
 ;Out	Nothing
 READADCRAM:	MOV	R0,#LOW ADCCTLRDWR	;Select MCU and reset ADC
 		MOV	P2,#HIGH ADCCTLRDWR
-		SETB	ADCMCU
-		CLR	ADCMR
-		MOVX	@R0,A
+		MOVX	@R0,A			;ADCMCU and ADCMR LOW
 		SETB	ADCMR
 		MOVX	@R0,A
 		MOV	R0,#LOW ADCRDWR
@@ -772,6 +769,58 @@ READADCRAM1:	MOVX	A,@R0			;Read a byte
 		MOVX	@R1,A			;Send it
 		DJNZ	R6,READADCRAM1
 		DJNZ	R7,READADCRAM1
+		RET
+
+;Frequency counter
+;------------------------------------------------------------------
+FRQCOUNT:	MOV	R0,#LOW ADCCTLRDWR	;Select MCU and reset ADC
+		MOV	P2,#HIGH ADCCTLRDWR
+		MOV	A,#RDWR3		;RDWR3 selected
+		MOVX	@R0,A			;ADCMCU and ADCMR LOW
+		SETB	ADCMR
+		MOVX	@R0,A
+		MOV	DPTR,#0000h
+		MOV	R1,#LOW ADCRDWR
+		MOV	R4,#00h
+		MOV	R5,#00h
+		MOV	R6,#00h
+		MOV	R7,#00h
+		CLR	A
+		SETB	TRIGSET
+		SETB	TRIGRESET
+		SETB	DACCS
+		MOV	R3,A
+		SETB	FRQCNT
+		MOVX	@R1,A
+FRQCOUNT1:	MOVX	A,@R0
+		ANL	A,#01h
+		XRL	A,R4
+		JZ	FRQCOUNT2
+		MOV	R4,A
+		INC	DPTR
+		SJMP	FRQCOUNT3
+FRQCOUNT2:	NOP
+		NOP
+		NOP
+		NOP
+FRQCOUNT3:	DJNZ	R5,FRQCOUNT1
+		DJNZ	R6,FRQCOUNT1
+		DJNZ	R7,FRQCOUNT1
+		MOV	A,R3
+		MOVX	@R1,A
+		MOVX	A,@R0
+		ANL	A,#01h
+		XRL	A,R4
+		JZ	FRQCOUNT4
+		MOV	R4,A
+		INC	DPTR
+FRQCOUNT4:	CLR	C		;DPTR contains high 16 bits of frequency*2
+		MOV	A,DPH
+		RRC	A
+		MOV	57h,A
+		MOV	A,DPL
+		RRC	A
+		MOV	56h,A
 		RET
 
 		END

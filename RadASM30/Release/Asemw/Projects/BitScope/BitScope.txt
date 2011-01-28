@@ -30,7 +30,7 @@ ADC CHA trigger setup.
 3. Select the trigger edge by writing D0 to RDWR3. LOW=Rising edge.
 4. Remove trigger FF set signal by writing D1 HIGH to RDWR3.
 5. Reset trigger FF by toggling D2 LOW/HIGH to RDWR3.
-6. Init sampling by writing D6 LOW to ADCCTLRDWR (ADC/MCU).
+6. Init sampling by writing D6 HIGH to ADCCTLRDWR (ADC/MCU).
    The sampling starts when conditions are met.
 
 Manual trigger setup.
@@ -38,7 +38,7 @@ Manual trigger setup.
 1. Reset adress counter by toggling D7 LOW/HIGH to ADCCTLRDWR (ADCMR).
 2. Remove trigger FF reset signal by writing D2 HIGH to RDWR3.
 3. Set trigger FF by writing D2 LOW to RDWR3.
-4. Start sampling by writing D6 LOW to ADCCTLRDWR (ADC/MCU).
+4. Start sampling by writing D6 HIGH to ADCCTLRDWR (ADC/MCU).
 
 Logic analyser trigger setup.
 --------------------------------------------------------------------------------
@@ -46,14 +46,14 @@ Logic analyser trigger setup.
 2. Remove trigger FF reset signal by writing D2 HIGH to RDWR3.
 3. Set trigger FF by writing D2 LOW to RDWR3.
 4. Poll RDWR1 or RDWR3 until conditions are met.
-5. Start sampling by writing D6 LOW to ADCCTLRDWR (ADC/MCU).
+5. Start sampling by writing D6 HIGH to ADCCTLRDWR (ADC/MCU).
 
 Reading the sampled data.
 ================================================================================
 
 Selecting RAM to read.
 --------------------------------------------------------------------------------
-1. Select RAM by setting D3 and D4 in ADCCTLRDWR.
+1. Select RAM by setting D3 and D4 in ADCCTLRDWR to RDWR0, RDWR1, RDWR2 or RDWR3.
 
 Read the selected RAM.
 --------------------------------------------------------------------------------
@@ -61,3 +61,16 @@ Read the selected RAM.
 2. Read the data by a read from ADCRDWR. The adress counter is auto incremented.
 3. Send the byte to USB.
 4. Repeat steps 2 and 3 until 32K are read.
+
+Frequency counter.
+================================================================================
+1. Reset adress counter by toggling D7 LOW/HIGH to ADCCTLRDWR (ADCMR).
+2. Set FRQCNT by writing D& HIGH to RDWR3.
+3. Cont LOW to HIGH transitions on DI3 by incrementing DPTR.
+4. Repeat step 3 until 1 second is elapsed.
+5. Save DPTR. It will be the higher 16 bits of the frequency.
+6. Reset FRQCNT by writing D& LOW to RDWR3.
+7. Read RDWR0 and increment DPTR to keep track of number of reads
+8. Repeat step 6 until adress counter rolls over. A rollower is detected when
+   D0 of ADCCTLRDWR goes from HIGH to LOW.
+9. Negate DPTR and it will be the lower 16 bits of the frequency.

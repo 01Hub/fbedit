@@ -54,6 +54,7 @@ TRIGRESET	EQU ACC.2
 DACCS		EQU ACC.3
 DACCLK		EQU ACC.4
 DACBIT		EQU ACC.5
+FRQCNT		EQU ACC.6
 
 ;USB
 ;-----------------------------------------------------
@@ -68,3 +69,4 @@ DPLSAVE		EQU 50h			;Holds DPL during PRNTCSTR
 DPHSAVE		EQU 51h			;Holds DPH during PRNTCSTR
 SSADRLSB	EQU 52h			;Single step adress LSB
 SSADRMSB	EQU 53h			;Single step adress MSB
+FRQ		EQU 54h			;4 byte frequency.
