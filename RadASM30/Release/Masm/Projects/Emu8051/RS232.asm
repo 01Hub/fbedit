@@ -39,10 +39,9 @@ OpenCom proc
 	.endif
 	.if comopt.active
 		invoke CreateFile,addr comopt.szcom,GENERIC_READ or GENERIC_WRITE,NULL,NULL,OPEN_EXISTING,NULL,NULL
-		mov		hCom,eax
-		.if hCom
+		.if eax!=INVALID_HANDLE_VALUE
+			mov		hCom,eax
 			mov		dcb.DCBlength,sizeof DCB
-;			or		dcb.fbits,fBinary
 			mov		eax,comopt.nbaud
 			mov		dcb.BaudRate,eax
 			mov		eax,comopt.nbits
@@ -51,13 +50,16 @@ OpenCom proc
 			mov		dcb.Parity,al
 			mov		eax,comopt.nstop
 			mov		dcb.StopBits,al
-;			or		dcb.fbits,fOutxCtsFlow
 			invoke SetCommState,hCom,addr dcb
 			mov		to.ReadTotalTimeoutConstant,1
 			mov		to.WriteTotalTimeoutConstant,10
 			invoke SetCommTimeouts,hCom,addr to
+			invoke WriteCom,9Fh
 		.else
-			invoke MessageBox,hWnd,addr szComFailed,addr szCOM,MB_OK
+			invoke MessageBox,hWnd,addr szComFailed,addr szCOM,MB_ICONERROR or MB_YESNO
+			.if eax==IDNO
+				invoke SendMessage,hWnd,WM_CLOSE,0,0
+			.endif
 		.endif
 	.endif
 	ret
@@ -84,9 +86,9 @@ WriteCom proc uses edi nChr:DWORD
 WriteCom endp
 
 DoComm proc Param:DWORD
-	LOCAL	buffer[32]:BYTE
-	LOCAL	txbuff[32]:BYTE
-	LOCAL	rxbuff[32]:BYTE
+	LOCAL	buffer[256]:BYTE
+	LOCAL	txbuff[256]:BYTE
+	LOCAL	rxbuff[256]:BYTE
 	LOCAL	nRead:DWORD
 	LOCAL	nWrite:DWORD
 
@@ -138,18 +140,24 @@ RxByte:
 	and		edx,sizeof rdbuff-1
 	.if edx!=rdtail
 		invoke ReadFile,hCom,addr rxbuff,256,addr nRead,NULL
-		.if nRead
-			xor		ebx,ebx
-			mov		ecx,nRead
-			.while ecx
-				mov		edx,rdhead
-				movzx	eax,rxbuff[ebx]
-				mov		rdbuff[edx],al
-				inc		edx
-				and		edx,sizeof rdbuff-1
-				mov		rdhead,edx
-				inc		ebx
-				dec		ecx
+		.if eax
+			.if nRead
+				xor		ebx,ebx
+				mov		ecx,nRead
+				.while ecx
+					mov		edx,rdhead
+					movzx	eax,rxbuff[ebx]
+					mov		rdbuff[edx],al
+					inc		edx
+					and		edx,sizeof rdbuff-1
+					mov		rdhead,edx
+					inc		ebx
+					dec		ecx
+				.endw
+			.endif
+		.else
+			mov		hCom,0
+			.while !hCom
 			.endw
 		.endif
 	.endif

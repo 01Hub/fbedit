@@ -51,7 +51,6 @@ RAEditProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 RAEditProc endp
 
 WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
-	LOCAL	tid:DWORD
 	LOCAL	ofn:OPENFILENAME
 	LOCAL	buffer[MAX_PATH]:BYTE
 	LOCAL	buffer1[MAX_PATH]:BYTE
@@ -90,15 +89,15 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke ScreenCls
 		invoke CreateCaret,hScrn,NULL,BOXWT,BOXHT
 		invoke ShowCaret,hScrn
-		invoke InitCom
-		invoke OpenCom
-		.if hCom
-			invoke CreateThread,NULL,0,addr DoComm,0,0,addr tid
-			mov		hThreadRD,eax
-			;invoke SetThreadPriority,hThreadRD,THREAD_PRIORITY_LOWEST
-			invoke WriteCom,0Dh
-			invoke SetTimer,hWin,1000,10,NULL
-		.endif
+;		invoke InitCom
+;;		invoke OpenCom
+;		invoke CreateThread,NULL,0,addr DoComm,0,0,addr tid
+;		mov		hThreadRD,eax
+;		.if hCom
+;			;invoke SetThreadPriority,hThreadRD,THREAD_PRIORITY_LOWEST
+;			invoke WriteCom,0Dh
+;		.endif
+;		invoke SetTimer,hWin,1000,10,NULL
 		mov [sbParts+0],200				; pixels from left
 		mov [sbParts+4],400				; pixels from left
 		mov [sbParts+8],450				; pixels from left
@@ -121,15 +120,21 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		hMenu,eax
 		invoke SetHelpMenu
 	.elseif eax==WM_TIMER
-		.while TRUE
-			mov		edx,rdtail
-			.break .if edx==rdhead
-			movzx	eax,rdbuff[edx]
-			inc		edx
-			and		edx,sizeof rdbuff-1
-			mov		rdtail,edx
-			invoke ScreenOut,eax
-		.endw
+		.if hCom
+			.while TRUE
+				mov		edx,rdtail
+				.break .if edx==rdhead
+				movzx	eax,rdbuff[edx]
+				inc		edx
+				and		edx,sizeof rdbuff-1
+				mov		rdtail,edx
+				invoke ScreenOut,eax
+			.endw
+		.else
+			invoke KillTimer,hWin,1000
+			invoke OpenCom
+			invoke SetTimer,hWin,1000,10,NULL
+		.endif
 	.elseif eax==WM_COMMAND
 		mov		eax,wParam
 		and		eax,0FFFFh
@@ -451,6 +456,13 @@ WinMain proc hInst:HINSTANCE,hPrevInst:HINSTANCE,CmdLine:LPSTR,CmdShow:DWORD
 	invoke CreateDialogParam,hInstance,IDD_DIALOG,NULL,addr WndProc,NULL
 	invoke ShowWindow,hWnd,SW_SHOWNORMAL
 	invoke UpdateWindow,hWnd
+	invoke InitCom
+	.while !hCom
+		invoke OpenCom
+	.endw
+	invoke CreateThread,NULL,0,addr DoComm,0,0,addr tid
+	mov		hThreadRD,eax
+	invoke SetTimer,hWnd,1000,10,NULL
 	.while TRUE
 		invoke GetMessage,addr msg,NULL,0,0
 	  .break .if !eax

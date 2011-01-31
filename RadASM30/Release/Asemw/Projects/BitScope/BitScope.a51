@@ -127,6 +127,8 @@ IF DEVMODE=1
 START01:
 ENDIF
 
+ACALL	TESTDAC
+
 		AJMP	TERMINAL			;RS232 Terminal
 
 ;------------------------------------------------------------------
@@ -705,24 +707,30 @@ SINGLESTEP10:	CJNE	A,#'S',SINGLESTEP3		;Dump SFR's
 ;BitScope
 ;==================================================================
 
+TESTDAC:	MOV	A,#00110000b
+		ACALL	SETDACVAL
+		INC	B
+		JB	USBRXF,TESTDAC
+		RET
+
 ;Set DAC value, first call SETDACCMD then call SETDACVAL
 ;------------------------------------------------------------------
 ;In	A Contains DAC command
 ;	B Contains DAC value
 ;Out	Nothing
-SETDACVAL:	MOV	R7,A			;Save DAC CMD
-		MOV	R0,#LOW ADCCTLRDWR	;Select MCU and RDWR3
+SETDACVAL:	MOV	R7,A				;Save DAC CMD
+		MOV	R0,#LOW ADCCTLRDWR		;Select MCU and RDWR3
 		MOV	P2,#HIGH ADCCTLRDWR
-		CLR	A			;ADCMCU LOW
+		CLR	A				;ADCMCU LOW
 		SETB	ADCMR
 		ORL	A,#RDWR3
 		MOVX	@R0,A
 		MOV	R0,#LOW ADCRDWR
-		CLR	A			;DACCS=0, DACCLK=0, DACBIT=0
+		CLR	A				;DACCS=0, DACCLK=0, DACBIT=0
 		SETB	TRIGSET
 		SETB	TRIGRESET
 		MOVX	@R0,A
-		MOV	A,R7			;Restore DAC CMD
+		MOV	A,R7				;Restore DAC CMD
 		MOV	R7,#04h
 SETDACVAL1:	ACALL	CLOCKDACBIT
 		DJNZ	R7,SETDACVAL1
@@ -730,10 +738,10 @@ SETDACVAL1:	ACALL	CLOCKDACBIT
 		MOV	A,B
 SETDACVAL2:	ACALL	CLOCKDACBIT
 		DJNZ	R7,SETDACVAL2
-		CLR	A			;DACCS=0, DACCLK=0, DACBIT=0
+		CLR	A				;DACCS=0, DACCLK=0, DACBIT=0
 		SETB	TRIGSET
 		SETB	TRIGRESET
-		SETB	DACCS			;ADCCS=1
+		SETB	DACCS				;ADCCS=1
 		MOVX	@R0,A
 		RET
 
@@ -755,28 +763,28 @@ CLOCKDACBIT:	RLC	A
 ;------------------------------------------------------------------
 ;In	A Contains wich ram to read (RDWR0 to RDWR3)
 ;Out	Nothing
-READADCRAM:	MOV	R0,#LOW ADCCTLRDWR	;Select MCU and reset ADC
+READADCRAM:	MOV	R0,#LOW ADCCTLRDWR		;Select MCU and reset ADC
 		MOV	P2,#HIGH ADCCTLRDWR
-		MOVX	@R0,A			;ADCMCU and ADCMR LOW
+		MOVX	@R0,A				;ADCMCU and ADCMR LOW
 		SETB	ADCMR
 		MOVX	@R0,A
 		MOV	R0,#LOW ADCRDWR
 		MOV	R1,#LOW USBIO
 		MOV	R6,#00h
 		MOV	R7,#80h
-READADCRAM1:	MOVX	A,@R0			;Read a byte
-		JB	USBTXE,$		;Wait until USB ready
-		MOVX	@R1,A			;Send it
+READADCRAM1:	MOVX	A,@R0				;Read a byte
+		JB	USBTXE,$			;Wait until USB ready
+		MOVX	@R1,A				;Send it
 		DJNZ	R6,READADCRAM1
 		DJNZ	R7,READADCRAM1
 		RET
 
 ;Frequency counter
 ;------------------------------------------------------------------
-FRQCOUNT:	MOV	R0,#LOW ADCCTLRDWR	;Select MCU and reset ADC
+FRQCOUNT:	MOV	R0,#LOW ADCCTLRDWR		;Select MCU and reset ADC
 		MOV	P2,#HIGH ADCCTLRDWR
-		MOV	A,#RDWR3		;RDWR3 selected
-		MOVX	@R0,A			;ADCMCU and ADCMR LOW
+		MOV	A,#RDWR3			;RDWR3 selected
+		MOVX	@R0,A				;ADCMCU and ADCMR LOW
 		SETB	ADCMR
 		MOVX	@R0,A
 		MOV	DPTR,#0000h
@@ -814,13 +822,30 @@ FRQCOUNT3:	DJNZ	R5,FRQCOUNT1
 		JZ	FRQCOUNT4
 		MOV	R4,A
 		INC	DPTR
-FRQCOUNT4:	CLR	C		;DPTR contains high 16 bits of frequency*2
+FRQCOUNT4:	CLR	C				;DPTR contains high 16 bits of frequency*2
 		MOV	A,DPH
 		RRC	A
 		MOV	57h,A
 		MOV	A,DPL
 		RRC	A
 		MOV	56h,A
+		MOV	DPTR,#0FFFFh			;Get the lower 16 bytes
+		MOVX	A,@R0
+		ANL	A,#01h
+		MOV	R3,A
+		JNZ	FRQCOUNT5
+		MOV	DPTR,#7FFFh
+FRQCOUNT5:	INC	DPTR
+		MOVX	A,@R1				;Increment adress counter
+		MOVX	A,@R0
+		ANL	A,#01h
+		CJNE	A,03h,FRQCOUNT5			;Compare to R3
+		CLR	A
+		SUBB	A,DPL
+		MOV	54h,A
+		CLR	A
+		SUBB	A,DPH
+		MOV	55h,A
 		RET
 
 		END

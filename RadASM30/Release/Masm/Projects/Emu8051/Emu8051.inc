@@ -85,7 +85,7 @@ COM ends
 
 ClassName				db 'DLGCLASS',0
 szCOM					db 'COM1',0
-szComFailed				db 'Opening com port failed',0
+szComFailed				db 'Opening com port failed.',0Dh,'Retry?',0
 szDefCmdData			db 'CMDDATA.CMD',0
 szDefLstData			db 'CMDDATA.LST',0
 szDefRomData			db 'ROMDATA.HEX',0
@@ -181,3 +181,4 @@ rdbuff					BYTE 16*1024 dup(?)
 wrhead					DWORD ?
 wrtail					DWORD ?
 wrbuff					BYTE 16*1024 dup(?)
+tid						DWORD ?

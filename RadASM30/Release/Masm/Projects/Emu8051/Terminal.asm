@@ -232,7 +232,7 @@ SetDbgInfo proc uses esi edi
 SetDbgInfo endp
 
 ScreenOut proc nChar:DWORD
-	LOCAL	tid:DWORD
+;	LOCAL	tid:DWORD
 	LOCAL	nRead:DWORD
 	LOCAL	nWrite:DWORD
 	LOCAL	buffer[32]:BYTE
