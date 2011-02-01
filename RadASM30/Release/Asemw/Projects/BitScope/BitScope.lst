@@ -920,7 +920,7 @@
   835:                          ;------------------------------------------------------------------
   836:                          ;In     A Contains wich ram to read (RDWR0 to RDWR3)
   837:                          ;Out    Nothing
-  838:    25A2  78 00           READADCRAM:     MOV     R0,#LOW ADCCTLRDWR              ;Select MCU and reset ADC
+  838:    25A2  78 00           READADCRAM:     MOV     R0,#LOW ADCCTLRDWR              ;Select MCU and reset address counter
   839:    25A4  75 A0 80                        MOV     P2,#HIGH ADCCTLRDWR
   840:    25A7  F2                              MOVX    @R0,A                           ;ADCMCU and ADCMR LOW
   841:    25A8  D2 E7                           SETB    ADCMR
@@ -938,7 +938,7 @@
   853:
   854:                          ;Frequency counter
   855:                          ;------------------------------------------------------------------
-  856:    25BD  78 00           FRQCOUNT:       MOV     R0,#LOW ADCCTLRDWR              ;Select MCU and reset ADC
+  856:    25BD  78 00           FRQCOUNT:       MOV     R0,#LOW ADCCTLRDWR              ;Select MCU and reset address counter
   857:    25BF  75 A0 80                        MOV     P2,#HIGH ADCCTLRDWR
   858:    25C2  74 18                           MOV     A,#RDWR3                        ;RDWR3 selected
   859:    25C4  F2                              MOVX    @R0,A                           ;ADCMCU and ADCMR LOW
@@ -947,65 +947,68 @@
   862:    25C8  90 00 00                        MOV     DPTR,#0000h
   863:    25CB  79 01                           MOV     R1,#LOW ADCRDWR
   864:    25CD  7C 00                           MOV     R4,#00h
-  865:    25CF  7D 00                           MOV     R5,#00h
-  866:    25D1  7E 00                           MOV     R6,#00h
-  867:    25D3  7F 00                           MOV     R7,#00h
+  865:    25CF  7D A0                           MOV     R5,#0A0h
+  866:    25D1  7E 86                           MOV     R6,#86h
+  867:    25D3  7F 02                           MOV     R7,#02h
   868:    25D5  E4                              CLR     A
   869:    25D6  D2 E1                           SETB    TRIGSET
   870:    25D8  D2 E2                           SETB    TRIGRESET
   871:    25DA  D2 E3                           SETB    DACCS
   872:    25DC  FB                              MOV     R3,A
   873:    25DD  D2 E6                           SETB    FRQCNT
-  874:    25DF  F3                              MOVX    @R1,A
-  875:    25E0  E2              FRQCOUNT1:      MOVX    A,@R0
-  876:    25E1  54 01                           ANL     A,#01h
-  877:    25E3  6C                              XRL     A,R4
-  878:    25E4  60 04                           JZ      FRQCOUNT2
-  879:    25E6  FC                              MOV     R4,A
-  880:    25E7  A3                              INC     DPTR
-  881:    25E8  80 04                           SJMP    FRQCOUNT3
-  882:    25EA  00              FRQCOUNT2:      NOP
-  883:    25EB  00                              NOP
-  884:    25EC  00                              NOP
-  885:    25ED  00                              NOP
-  886:    25EE  DD F0           FRQCOUNT3:      DJNZ    R5,FRQCOUNT1
-  887:    25F0  DE EE                           DJNZ    R6,FRQCOUNT1
-  888:    25F2  DF EC                           DJNZ    R7,FRQCOUNT1
-  889:    25F4  EB                              MOV     A,R3
-  890:    25F5  F3                              MOVX    @R1,A
-  891:    25F6  E2                              MOVX    A,@R0
-  892:    25F7  54 01                           ANL     A,#01h
-  893:    25F9  6C                              XRL     A,R4
-  894:    25FA  60 02                           JZ      FRQCOUNT4
-  895:    25FC  FC                              MOV     R4,A
-  896:    25FD  A3                              INC     DPTR
-  897:    25FE  C3              FRQCOUNT4:      CLR     C                               ;DPTR contains high 16 bits of frequency*2
-  898:    25FF  E5 83                           MOV     A,DPH
-  899:    2601  13                              RRC     A
-  900:    2602  F5 57                           MOV     57h,A
-  901:    2604  E5 82                           MOV     A,DPL
-  902:    2606  13                              RRC     A
-  903:    2607  F5 56                           MOV     56h,A
-  904:    2609  90 FF FF                        MOV     DPTR,#0FFFFh                    ;Get the lower 16 bytes
-  905:    260C  E2                              MOVX    A,@R0
-  906:    260D  54 01                           ANL     A,#01h
-  907:    260F  FB                              MOV     R3,A
-  908:    2610  70 03                           JNZ     FRQCOUNT5
-  909:    2612  90 7F FF                        MOV     DPTR,#7FFFh
-  910:    2615  A3              FRQCOUNT5:      INC     DPTR
-  911:    2616  E3                              MOVX    A,@R1                           ;Increment adress counter
-  912:    2617  E2                              MOVX    A,@R0
-  913:    2618  54 01                           ANL     A,#01h
-  914:    261A  B5 03 F8                        CJNE    A,03h,FRQCOUNT5                 ;Compare to R3
-  915:    261D  E4                              CLR     A
-  916:    261E  95 82                           SUBB    A,DPL
-  917:    2620  F5 54                           MOV     54h,A
-  918:    2622  E4                              CLR     A
-  919:    2623  95 83                           SUBB    A,DPH
-  920:    2625  F5 55                           MOV     55h,A
-  921:    2627  22                              RET
-  922:
-  923:                                          END
+  874:    25DF  F3                              MOVX    @R1,A                           ;Enable address counter
+  875:    25E0  E2              FRQCOUNT1:      MOVX    A,@R0                           ;2 Test address counter bit 16
+  876:    25E1  54 01                           ANL     A,#01h                          ;1
+  877:    25E3  6C                              XRL     A,R4                            ;1
+  878:    25E4  60 04                           JZ      FRQCOUNT2                       ;2
+  879:    25E6  FC                              MOV     R4,A                            ;1
+  880:    25E7  A3                              INC     DPTR                            ;2
+  881:    25E8  80 05                           SJMP    FRQCOUNT3                       ;2
+  882:    25EA  00              FRQCOUNT2:      NOP                                     ;1
+  883:    25EB  00                              NOP                                     ;1
+  884:    25EC  00                              NOP                                     ;1
+  885:    25ED  00                              NOP                                     ;1
+  886:    25EE  00                              NOP                                     ;1
+  887:    25EF  00              FRQCOUNT3:      NOP                                     ;1
+  888:    25F0  00                              NOP                                     ;1
+  889:    25F1  DD ED                           DJNZ    R5,FRQCOUNT1                    ;2 Total 20 cycles, 10us
+  890:    25F3  DE EB                           DJNZ    R6,FRQCOUNT1                    ;2
+  891:    25F5  DF E9                           DJNZ    R7,FRQCOUNT1                    ;2
+  892:    25F7  EB                              MOV     A,R3                            ;1
+  893:    25F8  F3                              MOVX    @R1,A                           ;2 Disableaddress counter
+  894:    25F9  E2                              MOVX    A,@R0
+  895:    25FA  54 01                           ANL     A,#01h
+  896:    25FC  6C                              XRL     A,R4
+  897:    25FD  60 02                           JZ      FRQCOUNT4
+  898:    25FF  FC                              MOV     R4,A
+  899:    2600  A3                              INC     DPTR
+  900:    2601  C3              FRQCOUNT4:      CLR     C                               ;DPTR contains high 16 bits of frequency*2
+  901:    2602  E5 83                           MOV     A,DPH
+  902:    2604  13                              RRC     A
+  903:    2605  F5 57                           MOV     57h,A
+  904:    2607  E5 82                           MOV     A,DPL
+  905:    2609  13                              RRC     A
+  906:    260A  F5 56                           MOV     56h,A
+  907:    260C  90 FF FF                        MOV     DPTR,#0FFFFh                    ;Get the lower 16 bytes
+  908:    260F  E2                              MOVX    A,@R0
+  909:    2610  54 01                           ANL     A,#01h
+  910:    2612  FB                              MOV     R3,A
+  911:    2613  70 03                           JNZ     FRQCOUNT5
+  912:    2615  90 7F FF                        MOV     DPTR,#7FFFh
+  913:    2618  A3              FRQCOUNT5:      INC     DPTR
+  914:    2619  E3                              MOVX    A,@R1                           ;Increment address counter
+  915:    261A  E2                              MOVX    A,@R0
+  916:    261B  54 01                           ANL     A,#01h
+  917:    261D  B5 03 F8                        CJNE    A,03h,FRQCOUNT5                 ;Compare to R3
+  918:    2620  E4                              CLR     A
+  919:    2621  95 82                           SUBB    A,DPL
+  920:    2623  F5 54                           MOV     54h,A
+  921:    2625  E4                              CLR     A
+  922:    2626  95 83                           SUBB    A,DPH
+  923:    2628  F5 55                           MOV     55h,A
+  924:    262A  22                              RET
+  925:
+  926:                                          END
 
 
 

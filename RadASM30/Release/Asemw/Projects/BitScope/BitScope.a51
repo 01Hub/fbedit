@@ -763,7 +763,7 @@ CLOCKDACBIT:	RLC	A
 ;------------------------------------------------------------------
 ;In	A Contains wich ram to read (RDWR0 to RDWR3)
 ;Out	Nothing
-READADCRAM:	MOV	R0,#LOW ADCCTLRDWR		;Select MCU and reset ADC
+READADCRAM:	MOV	R0,#LOW ADCCTLRDWR		;Select MCU and reset address counter
 		MOV	P2,#HIGH ADCCTLRDWR
 		MOVX	@R0,A				;ADCMCU and ADCMR LOW
 		SETB	ADCMR
@@ -781,7 +781,7 @@ READADCRAM1:	MOVX	A,@R0				;Read a byte
 
 ;Frequency counter
 ;------------------------------------------------------------------
-FRQCOUNT:	MOV	R0,#LOW ADCCTLRDWR		;Select MCU and reset ADC
+FRQCOUNT:	MOV	R0,#LOW ADCCTLRDWR		;Select MCU and reset address counter
 		MOV	P2,#HIGH ADCCTLRDWR
 		MOV	A,#RDWR3			;RDWR3 selected
 		MOVX	@R0,A				;ADCMCU and ADCMR LOW
@@ -790,32 +790,35 @@ FRQCOUNT:	MOV	R0,#LOW ADCCTLRDWR		;Select MCU and reset ADC
 		MOV	DPTR,#0000h
 		MOV	R1,#LOW ADCRDWR
 		MOV	R4,#00h
-		MOV	R5,#00h
-		MOV	R6,#00h
-		MOV	R7,#00h
+		MOV	R5,#0A0h
+		MOV	R6,#86h
+		MOV	R7,#02h
 		CLR	A
 		SETB	TRIGSET
 		SETB	TRIGRESET
 		SETB	DACCS
 		MOV	R3,A
 		SETB	FRQCNT
-		MOVX	@R1,A
-FRQCOUNT1:	MOVX	A,@R0
-		ANL	A,#01h
-		XRL	A,R4
-		JZ	FRQCOUNT2
-		MOV	R4,A
-		INC	DPTR
-		SJMP	FRQCOUNT3
-FRQCOUNT2:	NOP
-		NOP
-		NOP
-		NOP
-FRQCOUNT3:	DJNZ	R5,FRQCOUNT1
-		DJNZ	R6,FRQCOUNT1
-		DJNZ	R7,FRQCOUNT1
-		MOV	A,R3
-		MOVX	@R1,A
+		MOVX	@R1,A				;Enable address counter
+FRQCOUNT1:	MOVX	A,@R0				;2 Test address counter bit 16
+		ANL	A,#01h				;1
+		XRL	A,R4				;1
+		JZ	FRQCOUNT2			;2
+		MOV	R4,A				;1
+		INC	DPTR				;2
+		SJMP	FRQCOUNT3			;2
+FRQCOUNT2:	NOP					;1
+		NOP					;1
+		NOP					;1
+		NOP					;1
+		NOP					;1
+FRQCOUNT3:	NOP					;1
+		NOP					;1
+		DJNZ	R5,FRQCOUNT1			;2 Total 20 cycles, 10us
+		DJNZ	R6,FRQCOUNT1			;2
+		DJNZ	R7,FRQCOUNT1			;2
+		MOV	A,R3				;1
+		MOVX	@R1,A				;2 Disableaddress counter 
 		MOVX	A,@R0
 		ANL	A,#01h
 		XRL	A,R4
@@ -836,7 +839,7 @@ FRQCOUNT4:	CLR	C				;DPTR contains high 16 bits of frequency*2
 		JNZ	FRQCOUNT5
 		MOV	DPTR,#7FFFh
 FRQCOUNT5:	INC	DPTR
-		MOVX	A,@R1				;Increment adress counter
+		MOVX	A,@R1				;Increment address counter
 		MOVX	A,@R0
 		ANL	A,#01h
 		CJNE	A,03h,FRQCOUNT5			;Compare to R3
