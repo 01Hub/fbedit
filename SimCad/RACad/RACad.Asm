@@ -310,11 +310,16 @@ CadInvalidateObject proc uses ebx esi edi,hWin:HWND,lpObject:DWORD
 			mov		eax,pt.y
 			mov		rect.top,eax
 			mov		eax,[edi].OBJECT.rc.right
-			.if [esi].OBJECT.tpe==TPE_HTEXT || [esi].OBJECT.tpe==TPE_VTEXT
+			.if [esi].OBJECT.tpe==TPE_HTEXT
 				sub		eax,[edi].OBJECT.rc.left
 				movzx	ecx,[esi].OBJECT.wdt
 				mul		ecx
-				;shr		eax,1
+				add		eax,[edi].OBJECT.rc.left
+			.elseif [esi].OBJECT.tpe==TPE_VTEXT
+				sub		eax,[edi].OBJECT.rc.left
+				movzx	ecx,[esi].OBJECT.wdt
+				mul		ecx
+				shr		eax,1
 				add		eax,[edi].OBJECT.rc.left
 			.endif
 			call	ZoomMul
@@ -322,11 +327,16 @@ CadInvalidateObject proc uses ebx esi edi,hWin:HWND,lpObject:DWORD
 			mov		pt.x,eax
 			mov		rect.right,eax
 			mov		eax,[edi].OBJECT.rc.bottom
-			.if [esi].OBJECT.tpe==TPE_HTEXT || [esi].OBJECT.tpe==TPE_VTEXT
+			.if [esi].OBJECT.tpe==TPE_HTEXT
 				sub		eax,[edi].OBJECT.rc.top
 				movzx	ecx,[esi].OBJECT.wdt
 				mul		ecx
 				shr		eax,1
+				add		eax,[edi].OBJECT.rc.top
+			.elseif [esi].OBJECT.tpe==TPE_VTEXT
+				sub		eax,[edi].OBJECT.rc.top
+				movzx	ecx,[esi].OBJECT.wdt
+				mul		ecx
 				add		eax,[edi].OBJECT.rc.top
 			.endif
 			call	ZoomMul
@@ -2492,6 +2502,19 @@ CadSelSetColor proc uses ebx esi,hWin:HWND,nColor:DWORD
 	lea		esi,[ebx+sizeof CADMEM]
 	.while [esi].OBJECT.tpe
 		.if [esi].OBJECT.hsel
+			.if [esi].OBJECT.tpe==TPE_SYMBOL
+				push	esi
+				mov		ecx,[esi].OBJECT.npt
+				lea		esi,[esi+sizeof OBJECT]
+				.while ecx
+					mov		eax,nColor
+					mov		[esi].OBJECT.color,eax
+					mov		eax,[esi].OBJECT.cbsize
+					lea		esi,[esi+eax]
+					dec		ecx
+				.endw
+				pop		esi
+			.endif
 			mov		eax,nColor
 			mov		[esi].OBJECT.color,eax
 			invoke CadInvalidateObject,hWin,esi
