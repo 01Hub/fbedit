@@ -2,17 +2,17 @@
 Version=3000
 [Project]
 Assembler=Masm
-Path=D:\FbEdit\Projects\Applications\FbEdit\RadASM30\RadASM30\Addins\ConvertProject
+Path=C:\FbEdit\Projects\Applications\FbEdit\RadASM30\RadASM30\Addins\ConvertProject
 Group=2,-1,0,1,Convert project from 2.x to 3.0,-2,-1,1,Assembly,-3,-1,1,Include,-4,-1,1,Misc,-5,-1,1,Resource
-F1=-2,2,1,22,22,600,400,0,ConvertProject.asm
+F1=-2,2,1,22,22,600,400,629,ConvertProject.asm
 F2=-3,0,1,44,44,600,400,58,ConvertProject.inc
 F3=-5,2,4,66,66,600,400,0,ConvertProject.rc
 F4=-4,0,2,132,132,902,405,15,..\Help\ConvertProject.txt
-F5=-4,0,2,-6,-25,1452,845,2,ConvertProject.def
+F5=-4,0,2,-6,-25,1452,845,0,ConvertProject.def
 C5=
 B5=
 M5=
-Open=0,1,2,6,5,3,7,4
+Open=3,1,2,6,5,3,7,4
 Api=
 C3=
 B3=
