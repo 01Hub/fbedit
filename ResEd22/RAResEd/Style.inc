@@ -4,6 +4,9 @@ BS_DEFSPLITBUTTON		equ 0Dh
 BS_COMMANDLINK			equ 0Eh
 BS_DEFCOMMANDLINK		equ 0Fh
 
+ES_NOIME				equ 00080000h
+ES_SELFIME				equ 00040000h
+
 LWS_TRANSPARENT			equ 1
 LWS_IGNORERETURN		equ 2
 LWS_NOPREFIX			equ 4
@@ -786,11 +789,12 @@ rsexstyledef	dd WS_EX_ACCEPTFILES
 				db 0
 
 editnot			db 'ES_DISABLENOSCROLL',0
+				db 'ES_NOIME',0
+				db 'ES_SELFIME',0
 				db 0
 richednot		db 'ES_LOWERCASE',0
 				db 'ES_OEMCONVERT',0
 				db 'ES_UPPERCASE',0
-				db 'ES_NUMBER',0
 				db 0
 
 .data
@@ -1017,6 +1021,9 @@ rsstyledef		dd ACS_CENTER
 				dd ES_NUMBER
 				dd ES_NUMBER
 				db 'ES_NUMBER',0
+				dd ES_NOIME
+				dd ES_NOIME or ES_SELFIME
+				db 'ES_NOIME',0
 				dd ES_OEMCONVERT
 				dd ES_OEMCONVERT
 				db 'ES_OEMCONVERT',0
@@ -1035,6 +1042,9 @@ rsstyledef		dd ACS_CENTER
 				dd ES_SELECTIONBAR
 				dd ES_SELECTIONBAR
 				db 'ES_SELECTIONBAR',0
+				dd ES_SELFIME
+				dd ES_NOIME or ES_SELFIME
+				db 'ES_SELFIME',0
 				dd ES_SUNKEN
 				dd ES_SUNKEN
 				db 'ES_SUNKEN',0
