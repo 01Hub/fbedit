@@ -793,6 +793,7 @@ editnot			db 'ES_DISABLENOSCROLL',0
 				db 'ES_SELFIME',0
 				db 0
 richednot		db 'ES_LOWERCASE',0
+				db 'ES_NUMBER',0
 				db 'ES_OEMCONVERT',0
 				db 'ES_UPPERCASE',0
 				db 0
@@ -1021,9 +1022,9 @@ rsstyledef		dd ACS_CENTER
 				dd ES_NUMBER
 				dd ES_NUMBER
 				db 'ES_NUMBER',0
-				dd ES_NOIME
-				dd ES_NOIME or ES_SELFIME
-				db 'ES_NOIME',0
+;				dd ES_NOIME
+;				dd ES_NOIME or ES_SELFIME
+;				db 'ES_NOIME',0
 				dd ES_OEMCONVERT
 				dd ES_OEMCONVERT
 				db 'ES_OEMCONVERT',0
@@ -1042,9 +1043,9 @@ rsstyledef		dd ACS_CENTER
 				dd ES_SELECTIONBAR
 				dd ES_SELECTIONBAR
 				db 'ES_SELECTIONBAR',0
-				dd ES_SELFIME
-				dd ES_NOIME or ES_SELFIME
-				db 'ES_SELFIME',0
+;				dd ES_SELFIME
+;				dd ES_NOIME or ES_SELFIME
+;				db 'ES_SELFIME',0
 				dd ES_SUNKEN
 				dd ES_SUNKEN
 				db 'ES_SUNKEN',0

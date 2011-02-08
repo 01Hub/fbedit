@@ -154,18 +154,18 @@ Options=52
 5=0,0,0,0,4212
 3=0,0,0,0,0
 4=0,0,0,0,8
-1=0,0,718,485,40766
+1=0,0,718,485,78
 7=0,0,718,485,2137
 6=0,0,0,0,407
 9=0,0,718,485,22074
 2=0,0,584,498,8911
 8=0,0,0,0,27000
-10=0,0,0,0,12259
+10=0,0,0,0,0
 16=0,0,718,485,14069
 15=0,0,0,0
 17=0,0,0,0,32329
 18=0,0,0,0,25794
-21=0,0,0,0,21320
+21=0,0,0,0,25550
 23=0,0,0,0
 24=0,0,0,0,5826
 26=0,0,0,0,18499
@@ -203,36 +203,36 @@ Options=52
 
 
 [Find]
-1="syslink"
-2="Name already"
-3="SysLnk"
-4="PRO_INCVERSION"
-5="IsNameDefault"
-6="PRO_EXPORTNAMES"
-7="szIDC_ST"
-8="szIDOK"
-9="lpPtr"
-10="SetWindowLong,hPrpLstDlgCld"
+1="ES_DISABLENOSCROLL"
+2="ES_NUMBER"
+3="syslink"
+4="Name already"
+5="SysLnk"
+6="PRO_INCVERSION"
+7="IsNameDefault"
+8="PRO_EXPORTNAMES"
+9="szIDC_ST"
+10="szIDOK"
 
 [AutoLoad]
 AutoLoad=1,8,2,10,18,6,9,21,7,13,16,17,51,24,26
 [VerInf]
 Nme=VERINF1
 ID=1
-FV=2.1.0.146
-PV=2.1.0.146
+FV=2.1.0.148
+PV=2.1.0.148
 VerOS=0x00000004
 VerFT=0x00000002
 VerLNG=0x00000409
 VerCHS=0x000004E4
-ProductVersion=2.1.0.146
+ProductVersion=2.1.0.148
 ProductName=
 OriginalFilename=RAResEd.dll
 LegalTrademarks=
 LegalCopyright=KetilO (C) 2003-2007
 InternalName=RAResEd
 FileDescription=Resource editor custom control
-FileVersion=2.1.0.146
+FileVersion=2.1.0.148
 CompanyName=
 
 [VersionControl]
@@ -260,7 +260,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=7
+MilestoneOnDateDate=8
 MilestoneOnDateTimeYear=2003
 MilestoneOnDateTimeMonth=10
 MilestoneOnDateTimeDate=16
@@ -359,7 +359,7 @@ Group=Assembly,Resources,Misc,Include
 36=
 51=,,
 [PTimer]
-PTimer=1088474596
+PTimer=1088926625
 
 [Exports]
 1=ResEdInstall
