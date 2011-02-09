@@ -49,7 +49,7 @@ o Fixed bug where hiding the output window would consumes all CPU cycles.
 --------------------
 o Improved dialog editor control selection and moving with snap to grid.
 o Fixed menu editor bug if enter key was pressed.
-o Fixed dialog editor bug if a control was partially outside the tialog.
+o Fixed dialog editor bug if a control was partially outside the dialog.
 
 2.2.0.3c - 2009-09-01
 ---------------------
