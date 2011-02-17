@@ -1543,6 +1543,12 @@ ParseControlType proc uses esi edi,nType:DWORD,nStyle:DWORD,nExStyle:DWORD,lpRCM
 		add		esi,eax
 		invoke UnQuoteWord,offset wordbuff
 		invoke strcpyn,addr [edi].DIALOG.caption,offset wordbuff,sizeof DIALOG.caption
+	.elseif nType==17
+		;ICON
+		invoke GetWord,offset wordbuff,esi
+		add		esi,eax
+		lea		eax,[edi].DIALOG.caption
+		invoke strcpyn,addr [edi].DIALOG.caption,offset wordbuff,sizeof DIALOG.caption
 	.endif
 	;Name / ID
 	invoke GetWord,offset wordbuff,esi
