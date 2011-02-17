@@ -79,7 +79,7 @@ Options=52
 [Size]
 4=0,0,0,0,58
 2=0,0,0,0,2883
-1=0,0,0,0,2458
+1=0,0,0,0,39731
 3=0,0,0,0,49
 6=0,0,0,0,4698
 7=0,0,0,0,2613
@@ -172,7 +172,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=12
+MilestoneOnDateDate=17
 MilestoneOnDateTimeYear=2004
 MilestoneOnDateTimeMonth=11
 MilestoneOnDateTimeDate=19
@@ -211,7 +211,7 @@ ProductVer4Range=0
 13=,
 3=
 [PTimer]
-PTimer=8751802
+PTimer=8983355
 [Exports]
 1=GetDef
 2=GetDefEx

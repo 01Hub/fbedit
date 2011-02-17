@@ -1649,6 +1649,9 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		eax,wParam
 		shl		eax,5
 		jmp		Ex
+	.elseif eax==WM_GETTEXTLENGTH
+		mov		eax,[ebx].EDIT.nbytes
+		jmp		Ex
 	.elseif eax==WM_CLEAR
 		;wParam=0
 		;lParam=0

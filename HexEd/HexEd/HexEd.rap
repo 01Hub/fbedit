@@ -119,7 +119,7 @@ Options=52
 1=0,0,0,0,16625
 14=0,0,0,0
 15=0,0,0,0,333
-10=0,0,0,0,3741
+10=0,0,0,0,3233
 11=0,0,0,0,1117
 9=0,0,0,0,2242
 13=0,0,0,0,1497
@@ -155,7 +155,7 @@ Options=52
 9="lstrlen"
 10="GM_SETCURSEL"
 [AutoLoad]
-1=1
+AutoLoad=1,10
 [Group]
 Group=Added files,Assembly,Resources,Misc,Modules
 1=2
@@ -189,7 +189,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=6
+MilestoneOnDateDate=17
 MilestoneOnDateTimeYear=2004
 MilestoneOnDateTimeMonth=2
 MilestoneOnDateTimeDate=5
@@ -217,9 +217,11 @@ ProductVer4Range=0
 2=
 13=
 20=0
-10=0
+10=
 11=0
 21=
 3=0
 [PTimer]
-PTimer=4525781
+PTimer=19474936
+[GroupExpand]
+GroupExpand=0,1,0,0,0,0
