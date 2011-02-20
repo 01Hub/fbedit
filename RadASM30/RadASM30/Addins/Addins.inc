@@ -243,6 +243,7 @@ AIM_GETHANDLES					equ WM_USER+50			;Returns a poiner to a struct containing all
 AIM_GETPROCS					equ WM_USER+51			;Returns a poiner to a struct containing some procs in RadASM. See ADDINPROCS structure below.
 AIM_GETDATA						equ WM_USER+52			;Returns a poiner to a struct comtaining data pointers. See ADDINDATA structure below.
 AIM_GETMENUID					equ WM_USER+53			;Returns a free menu id. If you need more than one, wParam contains the number of id's to reserve.
+AIM_DEBUGGETWIN					equ WM_USER+54			;Shows output window and returns a hanfle to it.
 
 ;Messages sendt to addins
 AIM_ADDINSLOADED				equ WM_USER+100			;This message is sendt to the addins after all addins are loaded. hWin=Main window, wParam=0, lParam=0

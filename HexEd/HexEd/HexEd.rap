@@ -116,7 +116,7 @@ Options=52
 17=0,0,0,0
 16=0,0,0,0
 6=0,0,0,0
-1=0,0,0,0,16625
+1=0,0,0,0,690
 14=0,0,0,0
 15=0,0,0,0,333
 10=0,0,0,0,3233
@@ -155,7 +155,7 @@ Options=52
 9="lstrlen"
 10="GM_SETCURSEL"
 [AutoLoad]
-AutoLoad=1,10
+AutoLoad=1,10,2
 [Group]
 Group=Added files,Assembly,Resources,Misc,Modules
 1=2
@@ -183,13 +183,13 @@ Group=Added files,Assembly,Resources,Misc,Modules
 Settings=1278
 Milestones=129
 MilestoneEvery=10
-MilestoneEveryCurrent=9
+MilestoneEveryCurrent=1
 MilestoneOnBuild=0.0.0.0
 MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=17
+MilestoneOnDateDate=19
 MilestoneOnDateTimeYear=2004
 MilestoneOnDateTimeMonth=2
 MilestoneOnDateTimeDate=5
@@ -222,6 +222,8 @@ ProductVer4Range=0
 21=
 3=0
 [PTimer]
-PTimer=19474936
+PTimer=19544606
 [GroupExpand]
 GroupExpand=0,1,0,0,0,0
+[RADebugBP]
+1=

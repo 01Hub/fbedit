@@ -2211,6 +2211,11 @@ endif
 		mov		eax,MenuIDAddins
 		add		MenuIDAddins,edx
 		jmp		ExRet
+	.elseif eax==AIM_DEBUGGETWIN
+		invoke SetOutputTab,0
+		invoke ShowOutput,TRUE
+		mov		eax,ha.hOutput
+		jmp		ExRet
 	.else
   ExDef:
 		invoke DefFrameProc,hWin,ha.hClient,uMsg,wParam,lParam
