@@ -443,6 +443,7 @@ EDTOPT_LINENR					equ 16
 EDTOPT_SESSION					equ 32
 EDTOPT_BRACE					equ 64
 EDTOPT_SHOWTIP					equ 128
+EDTOPT_CASECONVERT				equ 256
 
 EDTOPT struct
 	tabsize				DWORD ?

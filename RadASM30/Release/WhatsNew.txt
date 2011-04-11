@@ -4,6 +4,12 @@ Ini files, project files, template files, api files and addins are all incompati
 
 Do NOT install RadASM 3.0 in the same directory as an older version of RadASM.
 
+Version 3.0.0.7l 2011-04-11
+---------------------------
+o Added option to turn on / off auto case convert (Option / Code Editor / Auto Case Convert).
+o Fixed an MASM structure code complete bug in .if statements.
+o Fixed an asemw bug where RadASM could crash on an new empty project.
+
 Version 3.0.0.7k 2011-02-20
 ---------------------------
 o Added support for vkim debug macros with result to RadASM's output window.

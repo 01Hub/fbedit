@@ -33,7 +33,7 @@ IDC_CHKSESSION		equ 4006
 IDC_CHKAUTOBRACE	equ 4034
 IDC_CHKCODETIP		equ 4035
 IDC_CHKMULTITAB		equ 4037
-
+IDC_CHKAUTOCASE		equ 4038
 IDC_BTNCODEFONT		equ 4024
 IDC_STCCODEFONT		equ 4022
 IDC_BTNLNRFONT		equ 4025
@@ -500,6 +500,9 @@ KeyWordsProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 		and		eax,EDTOPT_INDENT
 		invoke CheckDlgButton,hWin,IDC_CHKAUTOINDENT,eax
 		mov		eax,da.edtopt.fopt
+		and		eax,EDTOPT_CASECONVERT
+		invoke CheckDlgButton,hWin,IDC_CHKAUTOCASE,eax
+		mov		eax,da.edtopt.fopt
 		and		eax,EDTOPT_LINEHI
 		invoke CheckDlgButton,hWin,IDC_CHKHILITELINE,eax
 		mov		eax,da.edtopt.fopt
@@ -691,6 +694,10 @@ KeyWordsProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 				mov		edx,TRUE
 				call	EnButton
 			.elseif eax==IDC_CHKAUTOINDENT
+				mov		eax,IDC_BTNKWAPPLY
+				mov		edx,TRUE
+				call	EnButton
+			.elseif eax==IDC_CHKAUTOCASE
 				mov		eax,IDC_BTNKWAPPLY
 				mov		edx,TRUE
 				call	EnButton
@@ -1185,6 +1192,10 @@ Update:
 		invoke IsDlgButtonChecked,hWin,IDC_CHKCODETIP
 		.if eax
 			or		da.edtopt.fopt,EDTOPT_SHOWTIP
+		.endif
+		invoke IsDlgButtonChecked,hWin,IDC_CHKAUTOCASE
+		.if eax
+			or		da.edtopt.fopt,EDTOPT_CASECONVERT
 		.endif
 		and		da.win.fView,-1 xor VIEW_MULTITAB
 		invoke IsDlgButtonChecked,hWin,IDC_CHKMULTITAB

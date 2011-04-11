@@ -411,19 +411,21 @@ IsWordType proc uses esi,lpszTypes:DWORD,lpszWord:DWORD,fNoCase:DWORD,lpStart:DW
 	.if lpStart
 		mov		esi,lpStart
 	.endif
-	.while [esi].PROPERTIES.nSize
-		movzx	eax,[esi].PROPERTIES.nType
-		invoke IsType,lpszTypes,eax
-		.if eax
-			call	TestWord
+	.if esi
+		.while [esi].PROPERTIES.nSize
+			movzx	eax,[esi].PROPERTIES.nType
+			invoke IsType,lpszTypes,eax
 			.if eax
-				mov		eax,esi
-				jmp		Ex
+				call	TestWord
+				.if eax
+					mov		eax,esi
+					jmp		Ex
+				.endif
 			.endif
-		.endif
-		mov		eax,[esi].PROPERTIES.nSize
-		lea		esi,[esi+eax+sizeof PROPERTIES]
-	.endw
+			mov		eax,[esi].PROPERTIES.nSize
+			lea		esi,[esi+eax+sizeof PROPERTIES]
+		.endw
+	.endif
 	xor		eax,eax
   Ex:
 	ret

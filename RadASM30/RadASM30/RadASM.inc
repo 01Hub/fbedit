@@ -185,8 +185,8 @@ szHtmlHelpA						db 'HtmlHelpA',0
 
 DisplayName						db 'RadASM',0
 RadASMVersion					equ 3007
-szVersion						db 'RadASM version 3.0.0.7',0
-szAboutMsg						db 'RadASM (C) KetilO 2010',13,10,13,10,'radasmide@hotmail.com',0
+szVersion						db 'RadASM version 3.0.0.7l',0
+szAboutMsg						db 'RadASM (C) KetilO 2011',13,10,13,10,'radasmide@hotmail.com',0
 szAboutUrl1						db 'http://radasm.cherrytree.at/',0
 szBS							db '\',0
 szPipe							db '|',0

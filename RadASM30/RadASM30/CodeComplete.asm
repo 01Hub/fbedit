@@ -321,7 +321,8 @@ UpdateApiList proc uses ebx esi edi,lpWord:DWORD,lpApiType:DWORD
 					invoke strcpy,edi,addr [esi+1]
 					jmp		NxMASM0
 				.endif
-				.break .if byte ptr [esi+eax-1]==',' || byte ptr [esi+eax-1]==' ' || byte ptr [esi+eax-1]=='(' || byte ptr [esi+eax-1]=='=' || byte ptr [esi+eax-1]=='>' || byte ptr [esi+eax-1]=='<'
+				lea		edx,[esi+eax-1]
+				.break .if byte ptr [edx]==',' || byte ptr [edx]==' ' || byte ptr [edx]=='(' || byte ptr [edx]=='=' || byte ptr [edx]=='>' || byte ptr [edx]=='<' || byte ptr [edx]=='!' || byte ptr [edx]=='|' || byte ptr [edx]=='&'
 				dec		eax
 			.endw
 			lea		esi,[esi+eax]
@@ -1253,28 +1254,30 @@ ApiListBox endp
 
 CaseConvertWord proc uses ebx,wParam:DWORD,cp:DWORD
 
-	invoke GetCharType,wParam
-	.if eax!=1
-		invoke SendMessage,ha.hEdt,REM_ISCHARPOS,cp,0
-		.if !eax
-			invoke SendMessage,ha.hEdt,REM_SETCHARTAB,'.',CT_CHAR
-			invoke SendMessage,ha.hEdt,REM_GETWORDFROMPOS,cp,addr tmpbuff
-			.if eax
-				invoke SendMessage,ha.hProperty,PRM_FINDFIRST,addr szCaseTypes,addr tmpbuff
-				mov		ebx,eax
-				.while ebx
-					invoke strcmpi,ebx,addr tmpbuff
-					.if !eax
-						invoke SendMessage,ha.hEdt,REM_CASEWORD,cp,ebx
-						invoke SendMessage,ha.hEdt,EM_LINEFROMCHAR,cp,0
-						invoke SendMessage,ha.hEdt,REM_INVALIDATELINE,eax,0
-						.break
-					.endif
-					invoke SendMessage,ha.hProperty,PRM_FINDNEXT,0,0
+	.if da.edtopt.fopt & EDTOPT_CASECONVERT
+		invoke GetCharType,wParam
+		.if eax!=1
+			invoke SendMessage,ha.hEdt,REM_ISCHARPOS,cp,0
+			.if !eax
+				invoke SendMessage,ha.hEdt,REM_SETCHARTAB,'.',CT_CHAR
+				invoke SendMessage,ha.hEdt,REM_GETWORDFROMPOS,cp,addr tmpbuff
+				.if eax
+					invoke SendMessage,ha.hProperty,PRM_FINDFIRST,addr szCaseTypes,addr tmpbuff
 					mov		ebx,eax
-				.endw
+					.while ebx
+						invoke strcmpi,ebx,addr tmpbuff
+						.if !eax
+							invoke SendMessage,ha.hEdt,REM_CASEWORD,cp,ebx
+							invoke SendMessage,ha.hEdt,EM_LINEFROMCHAR,cp,0
+							invoke SendMessage,ha.hEdt,REM_INVALIDATELINE,eax,0
+							.break
+						.endif
+						invoke SendMessage,ha.hProperty,PRM_FINDNEXT,0,0
+						mov		ebx,eax
+					.endw
+				.endif
+				invoke SendMessage,ha.hEdt,REM_SETCHARTAB,'.',CT_HICHAR
 			.endif
-			invoke SendMessage,ha.hEdt,REM_SETCHARTAB,'.',CT_HICHAR
 		.endif
 	.endif
 	ret
