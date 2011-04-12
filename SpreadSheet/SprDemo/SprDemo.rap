@@ -67,11 +67,11 @@ Menu=1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0
 8=
 9=
 [Size]
-1=0,0,698,624,7806
-2=0,0,752,624,2773
+1=0,0,698,624,8743
+2=0,0,752,624,799
 4=0,0,0,0
 3=0,0,0,0,29
-6=0,0,0,0,3338
+6=0,0,0,0,9
 7=0,0,0,0
 8=0,0,0,0,7846
 9=0,0,0,0
@@ -95,7 +95,7 @@ Menu=1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0
 4="SPRM_SETCELLDATA"
 5="OpenFile"
 [AutoLoad]
-14=0
+AutoLoad=1,2,6
 [Version-Inc]
 Options=52
 [Colref]
@@ -109,23 +109,23 @@ Options=52
 7=00FFFFFF
 
 [Group]
-Group=Added files,Assembly,Resources,Misc,Modules
-1=2
-2=2
-3=3
-4=3
-5=3
-6=2
-7=3
-8=2
-9=3
-10=3
-11=3
-12=3
-13=3
-14=3
-15=2
-16=2
+Group=Assembly,Resources
+1=1
+2=1
+3=2
+4=2
+5=2
+6=1
+7=2
+8=1
+9=2
+10=2
+11=2
+12=2
+13=2
+14=2
+15=1
+16=1
 17=
 
 [VerInf]
@@ -157,7 +157,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=15
+MilestoneOnDateDate=12
 MilestoneOnDateTimeYear=2004
 MilestoneOnDateTimeMonth=5
 MilestoneOnDateTimeDate=1
@@ -188,4 +188,8 @@ ProductVer4Range=0
 15=,,
 16=
 [PTimer]
-PTimer=45437
+PTimer=1995715
+[RADebugBP]
+6=
+[GroupExpand]
+GroupExpand=1,1,0

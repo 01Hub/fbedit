@@ -302,6 +302,9 @@ WndProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke SendMessage,hSht,SPRM_NEWSHEET,0,0
 		.elseif eax==IDM_FILE_EXIT
 			invoke SendMessage,hWin,WM_CLOSE,0,0
+		.elseif eax==IDM_EDIT_CUT
+		.elseif eax==IDM_EDIT_COPY
+		.elseif eax==IDM_EDIT_PASTE
 		.elseif eax==IDM_EDIT_DELETE_ROW
 			invoke SendMessage,hSht,SPRM_GETCURRENTCELL,0,0
 			shr		eax,16
