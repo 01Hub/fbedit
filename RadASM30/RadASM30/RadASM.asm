@@ -26,7 +26,7 @@ include ExceptionHandler.asm
 include Sniplets.asm
 include Print.asm
 include Debug.asm
-include Test.asm
+;include Test.asm
 
 .code
 
@@ -60,12 +60,6 @@ TimerProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					invoke SendMessage,ha.hStatus,SB_SETTEXT,1,addr szNULL
 				.endif
 			.endif
-ifdef DBG
-			.if fCutPaste
-				invoke LogTimeString,addr szTIMER,0,0
-			.endif
-			mov		fCutPaste,0
-endif
 		.elseif da.fTimer==98
 			.if ha.hMdi
 				invoke GetWindowLong,ha.hMdi,GWL_USERDATA
@@ -1326,23 +1320,6 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					.endif
 					mov		da.fTimer,1
 				.endif
-ifdef DBG
-			.elseif eax==32767
-				.if fTest
-					mov		fBreak,TRUE
-					mov		fTest,FALSE
-				.else
-					mov		fBreak,FALSE
-					mov		fTest,TRUE
-					.if ha.hMdi
-						invoke GetWindowLong,ha.hEdt,GWL_ID
-						.if eax==ID_EDITCODE
-							invoke SetFocus,ha.hEdt
-							invoke CreateThread,NULL,NULL,addr TestProc,0,NORMAL_PRIORITY_CLASS,addr nNewer
-						.endif
-					.endif
-				.endif
-endif
 			.elseif eax==IDM_DEBUG_CLEAR
 				.if ha.hMdi
 					invoke GetWindowLong,ha.hEdt,GWL_ID
@@ -1950,7 +1927,7 @@ endif
 		mov		edx,eax
 		shr		eax,16
 		.if !eax
-			.if edx || !da.win.fcldmax
+			.if edx || !da.win.fcldmax || !ha.hEdt
 				invoke EnableMenu,wParam,edx
 			.endif
 		.endif
@@ -2219,11 +2196,6 @@ endif
 	.else
   ExDef:
 		invoke DefFrameProc,hWin,ha.hClient,uMsg,wParam,lParam
-ifdef DBG
-		.if fCutPaste
-			invoke LogTimeMessage,addr szMAIN,hWin,uMsg,wParam,lParam
-		.endif
-endif
 		ret
 	.endif
   Ex:
@@ -2578,25 +2550,6 @@ RAEditCodeProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LP
 				invoke ShowWindow,ha.hTT,SW_HIDE
 			.endif
 			mov		da.cctype,CCTYPE_NONE
-		.elseif edx=='X' || edx=='V' || edx=='Z' || edx=='Y'
-			invoke GetKeyState,VK_CONTROL
-			test		eax,80h
-			.if !ZERO?
-				;Cut, Paste. Undo, Redo
-				mov		eax,wParam
-				mov		fCutPaste,eax
-ifdef DBG
-				.if eax=='X'
-					invoke LogTimeString,addr szCTRLX,0,0
-				.else
-					invoke LogTimeString,addr szCTRLV,0,0
-				.endif
-endif
-			.endif
-		.elseif edx==2Eh && eax==153h
-			;Delete
-			mov		eax,wParam
-			mov		fCutPaste,eax
 		.endif
 	.elseif eax==WM_SETFOCUS
 		;Add the tooltip
@@ -2718,11 +2671,6 @@ endif
 		.endif
 	.endif
 	invoke CallWindowProc,lpOldRAEditCodeProc,hWin,uMsg,wParam,lParam
-ifdef DBG
-	.if fCutPaste
-		invoke LogTimeMessage,addr szRAE,hWin,uMsg,wParam,lParam
-	.endif
-endif
   Ex:
 	ret
 
@@ -3074,14 +3022,6 @@ MdiChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 						invoke SendMessage,[ebx].TABMEM.hedt,REM_SETBOOKMARK,edi,0
 					.endif
 				.elseif [esi].RASELCHANGE.seltyp==SEL_TEXT
-ifdef DBG
-					mov		eax,fCutPaste
-					.if eax=='X'
-						invoke LogTimeString,addr szCUT,[esi].RASELCHANGE.chrg.cpMin,[esi].RASELCHANGE.chrg.cpMax
-					.elseif eax=='V'
-						invoke LogTimeString,addr szPASTE,[esi].RASELCHANGE.chrg.cpMin,[esi].RASELCHANGE.chrg.cpMax
-					.endif
-endif
 					invoke SendMessage,[ebx].TABMEM.hedt,REM_BRACKETMATCH,0,0
 					mov		eax,[esi].RASELCHANGE.fchanged
 					mov		da.fChanged,eax
@@ -3155,7 +3095,7 @@ endif
 						.endif
 						.if ![esi].RASELCHANGE.nWordGroup
 							mov		[ebx].TABMEM.fupdate,1
-							.if !da.inprogress && da.cctype!=CCTYPE_ALL && !fCutPaste
+							.if !da.inprogress && da.cctype!=CCTYPE_ALL
 								invoke ApiListBox,esi
 							.endif
 						.endif
@@ -3176,7 +3116,7 @@ endif
 							.endif
 						.endif
 					.endif
-					.if da.cctype==CCTYPE_ALL && !fCutPaste
+					.if da.cctype==CCTYPE_ALL
 						.if !da.inprogress
 							invoke ApiListBox,esi
 						.endif
@@ -3184,7 +3124,6 @@ endif
 				.endif
 				mov		eax,[esi].RASELCHANGE.line
 				mov		da.nLastLine,eax
-				mov		fCutPaste,0
 				mov		da.fTimer,1
 			.endif
 		.elseif eax==ID_EDITTEXT
@@ -3299,11 +3238,6 @@ endif
 		jmp		Ex
 	.endif
 	invoke DefMDIChildProc,hWin,uMsg,wParam,lParam
-ifdef DBG
-	.if fCutPaste
-		invoke LogTimeMessage,addr szMDI,hWin,uMsg,wParam,lParam
-	.endif
-endif
   Ex:
 	ret
 

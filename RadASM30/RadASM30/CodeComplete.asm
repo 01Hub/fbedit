@@ -19,6 +19,15 @@ CodeCompleteProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke ShowWindow,hWin,SW_HIDE
 			jmp		Ex
 		.endif
+	.elseif eax==WM_MOUSEWHEEL
+		mov		eax,wParam
+		shr		eax,16
+		xor		ecx,ecx ;LINEUP
+		cmp		ax,0
+		jge		@F
+		inc		ecx ; LINEDOWN 
+	   @@:
+		invoke SendMessage,hWin,WM_VSCROLL,ecx,0
 	.elseif eax==WM_LBUTTONDBLCLK
 		invoke SendMessage,ha.hEdt,WM_CHAR,VK_TAB,0
 		jmp		Ex

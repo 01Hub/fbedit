@@ -4,6 +4,11 @@ Ini files, project files, template files, api files and addins are all incompati
 
 Do NOT install RadASM 3.0 in the same directory as an older version of RadASM.
 
+Version 3.0.0.7m 2011-04-30
+---------------------------
+o Fixed a menu draw bug.
+o Added support for mouse wheel in code complete list (thanks ragdog).
+
 Version 3.0.0.7l 2011-04-11
 ---------------------------
 o Added option to turn on / off auto case convert (Option / Code Editor / Auto Case Convert).
