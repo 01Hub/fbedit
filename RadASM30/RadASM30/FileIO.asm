@@ -919,7 +919,7 @@ OpenInclude proc uses ebx esi edi,hWin:HWND
 		.else
 			mov		ah,0
 		.endif
-		.while ah!=byte ptr [esi] && byte ptr [esi]
+		.while ah!=byte ptr [esi] && byte ptr [esi] && byte ptr [esi]!= ';' && word ptr [esi] != "//" && word ptr [esi] != "/*"
 			mov		al,[esi]
 			mov		[edi],al
 			inc		esi

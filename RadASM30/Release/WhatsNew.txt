@@ -4,8 +4,10 @@ Ini files, project files, template files, api files and addins are all incompati
 
 Do NOT install RadASM 3.0 in the same directory as an older version of RadASM.
 
-Version 3.0.0.7m 2011-04-30
+Version 3.0.0.7m 2011-05-03
 ---------------------------
+o Fixed bug where Open Include did not work (thanks qWord).
+o Fixed dialog control sizes (thanks remus2k / ragdog) 
 o Fixed a menu draw bug.
 o Added support for mouse wheel in code complete list (thanks ragdog).
 
