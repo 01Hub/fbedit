@@ -4,8 +4,11 @@ Ini files, project files, template files, api files and addins are all incompati
 
 Do NOT install RadASM 3.0 in the same directory as an older version of RadASM.
 
-Version 3.0.0.7m 2011-05-03
+Version 3.0.0.7m 2011-05-05
 ---------------------------
+o Changed tool windows caption text colors. The color is now from the currently selected windows theme.
+o Added Debug to view menu. Shows hides debug tool window.
+o Fixed bug with debug tool window colors.
 o Fixed bug where Open Include did not work (thanks qWord).
 o Fixed dialog control sizes (thanks remus2k / ragdog) 
 o Fixed a menu draw bug.
@@ -15,7 +18,7 @@ Version 3.0.0.7l 2011-04-11
 ---------------------------
 o Added option to turn on / off auto case convert (Option / Code Editor / Auto Case Convert).
 o Fixed an MASM structure code complete bug in .if statements.
-o Fixed an asemw bug where RadASM could crash on an new empty project.
+o Fixed an asemw bug where RadASM could crash on a new empty project.
 
 Version 3.0.0.7k 2011-02-20
 ---------------------------

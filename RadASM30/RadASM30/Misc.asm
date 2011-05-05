@@ -1320,6 +1320,9 @@ CheckMenu proc uses ebx esi edi,hMnu:HMENU,nPos:DWORD
 		invoke SendMessage,ha.hTool,TLM_GETVISIBLE,0,ha.hToolTab
 		push	eax
 		push	IDM_VIEW_TAB
+		invoke SendMessage,ha.hTool,TLM_GETVISIBLE,0,ha.hToolDebug
+		push	 eax
+		push	 IDM_VIEW_DEBUG
 	.elseif eax==3
 		;Format
 		invoke UpdateAll,UAM_ISRESOPEN,0

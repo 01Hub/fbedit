@@ -495,10 +495,12 @@ ToolMsg proc uses ebx esi,hCld:DWORD,uMsg:UINT,lpRect:DWORD
 			invoke FillRect,hDC,addr [esi].TOOL.rr,COLOR_BTNFACE+1
 			;Draw Caption
 			.if [esi].TOOL.dFocus
-				invoke SetTextColor,hDC,0FFFFFFh
+				invoke GetSysColor,COLOR_CAPTIONTEXT
+				invoke SetTextColor,hDC,eax
 				mov		eax,COLOR_ACTIVECAPTION+1
 			.else
-				invoke SetTextColor,hDC,0C0C0C0h
+				invoke GetSysColor,COLOR_INACTIVECAPTIONTEXT
+				invoke SetTextColor,hDC,eax
 				mov		eax,COLOR_INACTIVECAPTION+1
 			.endif
 			mov		ebx,eax

@@ -337,6 +337,10 @@ GetColors proc uses ebx
 	mov		racolor.txtcol,eax
 	invoke SendMessage,ha.hOutput,REM_SETCOLOR,0,addr racolor
 	invoke SendMessage,ha.hImmediate,REM_SETCOLOR,0,addr racolor
+	invoke SendMessage,ha.hREGDebug,REM_SETCOLOR,0,addr racolor
+	invoke SendMessage,ha.hFPUDebug,REM_SETCOLOR,0,addr racolor
+	invoke SendMessage,ha.hMMXDebug,REM_SETCOLOR,0,addr racolor
+	invoke SendMessage,ha.hWATCHDebug,REM_SETCOLOR,0,addr racolor
 	invoke SendMessage,ha.hFileBrowser,FBM_SETBACKCOLOR,0,da.radcolor.toolback
 	invoke SendMessage,ha.hFileBrowser,FBM_SETTEXTCOLOR,0,da.radcolor.tooltext
 	invoke SendMessage,ha.hProjectBrowser,RPBM_SETBACKCOLOR,0,da.radcolor.toolback

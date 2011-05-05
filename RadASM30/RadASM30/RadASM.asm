@@ -888,6 +888,8 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke SendMessage,ha.hTool,TLM_HIDE,0,ha.hToolProperties
 			.elseif eax==IDM_VIEW_TAB
 				invoke SendMessage,ha.hTool,TLM_HIDE,0,ha.hToolTab
+			.elseif eax==IDM_VIEW_DEBUG
+				invoke SendMessage,ha.hTool,TLM_HIDE,0,ha.hToolDebug
 			.elseif eax==IDM_FORMAT_LOCK
 				.if ha.hMdi
 					invoke GetWindowLong,ha.hEdt,GWL_ID
