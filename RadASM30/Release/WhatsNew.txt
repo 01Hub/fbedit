@@ -4,8 +4,10 @@ Ini files, project files, template files, api files and addins are all incompati
 
 Do NOT install RadASM 3.0 in the same directory as an older version of RadASM.
 
-Version 3.0.0.7m 2011-05-05
+Version 3.0.0.7m 2011-05-06
 ---------------------------
+o The number of environment entries has been changed from max 8 to max 16.
+o The size of each environment entry has been chaged from max 384 to max 1024.
 o Changed tool windows caption text colors. The color is now from the currently selected windows theme.
 o Added Debug to view menu. Shows hides debug tool window.
 o Fixed bug with debug tool window colors.

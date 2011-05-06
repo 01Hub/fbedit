@@ -292,16 +292,16 @@ SetVar proc uses edi,lpSave:DWORD,lpName:DWORD,lpValue:DWORD
 SetVar endp
 
 SetEnvironment proc uses ebx edi
-	LOCAL	buffer[512]:BYTE
-	LOCAL	buffname[64]:BYTE
+	LOCAL	buffer[1536]:BYTE
+	LOCAL	buffname[128]:BYTE
 
 	;Environment
 	invoke ResetEnvironment
-	invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,16384
+	invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,256*1024
 	mov		hEnv,eax
 	mov		edi,eax
 	xor		ebx,ebx
-	.while ebx<8
+	.while ebx<16
 		invoke BinToDec,ebx,addr buffname
 		invoke GetPrivateProfileString,addr szIniEnvironment,addr buffname,addr szNULL,addr buffer,sizeof buffer,addr da.szAssemblerIni
 		.if eax

@@ -14,25 +14,25 @@ pNextVal	dd ?
 .code
 
 EnvironmentOptionsProc proc uses ebx edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
-	LOCAL	buffer[512]:BYTE
+	LOCAL	buffer[1536]:BYTE
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
 		invoke GetWindowText,hWin,addr buffer,sizeof buffer
 		invoke strcat,addr buffer,addr da.szAssembler
 		invoke SetWindowText,hWin,addr buffer
-		invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,64*1024
+		invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,256*1024
 		mov		hEnvMem,eax
 		mov		edi,eax
 		xor		ebx,ebx
 		.while TRUE
 			invoke BinToDec,ebx,addr buffer
-			invoke GetPrivateProfileString,addr szIniEnvironment,addr buffer,NULL,edi,384,addr da.szAssemblerIni
+			invoke GetPrivateProfileString,addr szIniEnvironment,addr buffer,NULL,edi,1024,addr da.szAssemblerIni
 		  .break .if !eax
 			invoke GetItemStr,edi,addr szNULL,addr buffer,sizeof buffer
 			invoke SendDlgItemMessage,hWin,IDC_LSTENVIRONMENT,LB_ADDSTRING,0,addr buffer
 			invoke SendDlgItemMessage,hWin,IDC_LSTENVIRONMENT,LB_SETITEMDATA,eax,edi
-			add		edi,384
+			add		edi,1024
 			inc		ebx
 		.endw
 		mov		pNextVal,edi
@@ -76,7 +76,7 @@ EnvironmentOptionsProc proc uses ebx edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lPara
 				invoke SendDlgItemMessage,hWin,IDC_LSTENVIRONMENT,LB_SETITEMDATA,eax,pNextVal
 				pop		eax
 				invoke SendDlgItemMessage,hWin,IDC_LSTENVIRONMENT,LB_SETCURSEL,eax,0
-				add		pNextVal,384
+				add		pNextVal,1024
 				call	SetEdit
 			.elseif eax==IDC_BTNENVIRONMENTDEL
 				invoke SendDlgItemMessage,hWin,IDC_LSTENVIRONMENT,LB_GETCURSEL,0,0
@@ -105,7 +105,7 @@ EnvironmentOptionsProc proc uses ebx edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lPara
 				invoke SendDlgItemMessage,hWin,IDC_LSTENVIRONMENT,LB_SETCURSEL,ebx,0
 			.elseif eax==IDC_EDTENVIRONMENTVALUE
 				invoke SendDlgItemMessage,hWin,IDC_LSTENVIRONMENT,LB_GETITEMDATA,ebx,0
-				invoke GetDlgItemText,hWin,IDC_EDTENVIRONMENTVALUE,eax,384
+				invoke GetDlgItemText,hWin,IDC_EDTENVIRONMENTVALUE,eax,1024
 			.endif
 		.elseif edx==LBN_SELCHANGE
 			call	SetEdit
