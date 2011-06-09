@@ -1,0 +1,82 @@
+
+C:\STM32\Projects\Sonar\stm32f10x_flash.o:     file format elf32-littlearm
+C:\STM32\Projects\Sonar\stm32f10x_flash.o
+
+
+Disassembly of section .text.FLASH_SetLatency:
+
+00000000 <FLASH_SetLatency>:
+FLASH_SetLatency():
+C:\STM32\Projects\Sonar/stm32f10x_flash.c:92
+{
+  /* Check the parameters */
+  assert_param(IS_FLASH_LATENCY(FLASH_Latency));
+  
+  /* Sets the Latency value */
+  FLASH->ACR &= ACR_LATENCY_Mask;
+   0:	f44f 5300 	mov.w	r3, #8192	; 0x2000
+   4:	f2c4 0302 	movt	r3, #16386	; 0x4002
+   8:	681a      	ldr	r2, [r3, #0]
+   a:	f002 0238 	and.w	r2, r2, #56	; 0x38
+   e:	601a      	str	r2, [r3, #0]
+C:\STM32\Projects\Sonar/stm32f10x_flash.c:93
+  FLASH->ACR |= FLASH_Latency;
+  10:	681a      	ldr	r2, [r3, #0]
+  12:	ea40 0202 	orr.w	r2, r0, r2
+  16:	601a      	str	r2, [r3, #0]
+C:\STM32\Projects\Sonar/stm32f10x_flash.c:94
+}
+  18:	4770      	bx	lr
+  1a:	bf00      	nop
+
+Disassembly of section .text.FLASH_HalfCycleAccessCmd:
+
+00000000 <FLASH_HalfCycleAccessCmd>:
+FLASH_HalfCycleAccessCmd():
+C:\STM32\Projects\Sonar/stm32f10x_flash.c:112
+{
+  /* Check the parameters */
+  assert_param(IS_FLASH_HALFCYCLEACCESS_STATE(FLASH_HalfCycleAccess));
+  
+  /* Enable or disable the Half cycle access */
+  FLASH->ACR &= ACR_HLFCYA_Mask;
+   0:	f44f 5300 	mov.w	r3, #8192	; 0x2000
+   4:	f2c4 0302 	movt	r3, #16386	; 0x4002
+   8:	681a      	ldr	r2, [r3, #0]
+   a:	f022 0208 	bic.w	r2, r2, #8
+   e:	601a      	str	r2, [r3, #0]
+C:\STM32\Projects\Sonar/stm32f10x_flash.c:113
+  FLASH->ACR |= FLASH_HalfCycleAccess;
+  10:	681a      	ldr	r2, [r3, #0]
+  12:	ea40 0202 	orr.w	r2, r0, r2
+  16:	601a      	str	r2, [r3, #0]
+C:\STM32\Projects\Sonar/stm32f10x_flash.c:114
+}
+  18:	4770      	bx	lr
+  1a:	bf00      	nop
+
+Disassembly of section .text.FLASH_PrefetchBufferCmd:
+
+00000000 <FLASH_PrefetchBufferCmd>:
+FLASH_PrefetchBufferCmd():
+C:\STM32\Projects\Sonar/stm32f10x_flash.c:132
+{
+  /* Check the parameters */
+  assert_param(IS_FLASH_PREFETCHBUFFER_STATE(FLASH_PrefetchBuffer));
+  
+  /* Enable or disable the Prefetch Buffer */
+  FLASH->ACR &= ACR_PRFTBE_Mask;
+   0:	f44f 5300 	mov.w	r3, #8192	; 0x2000
+   4:	f2c4 0302 	movt	r3, #16386	; 0x4002
+   8:	681a      	ldr	r2, [r3, #0]
+   a:	f022 0210 	bic.w	r2, r2, #16
+   e:	601a      	str	r2, [r3, #0]
+C:\STM32\Projects\Sonar/stm32f10x_flash.c:133
+  FLASH->ACR |= FLASH_PrefetchBuffer;
+  10:	681a      	ldr	r2, [r3, #0]
+  12:	ea40 0202 	orr.w	r2, r0, r2
+  16:	601a      	str	r2, [r3, #0]
+C:\STM32\Projects\Sonar/stm32f10x_flash.c:134
+}
+  18:	4770      	bx	lr
+  1a:	bf00      	nop

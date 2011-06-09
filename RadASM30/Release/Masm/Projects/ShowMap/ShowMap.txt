@@ -1,0 +1,99 @@
+Poor mans navigation system.
+----------------------------
+
+Navigation systems to use in a boat is very expensive if you want a decent screen size and a nice user interface.
+Example: GPSMAP® 720/720s https://buy.garmin.com/shop/shop.do?pID=37719#specsTab
+In addition I would need a svinger for the sonar and a map covering my area, an additional $400 or so.
+Total cost: $1800
+
+For me the solution is obvious: Buy a cheap chart plotter / sonar and hook it up with a small cheap netbook via a RS232 to USB converter. And then make a chart plotter program.
+
+Cuda 350 chart plotter / sonar, svinger included: http://www.cabelas.com/p-0065672020560a.shtml
+I could probably get a cheap netbook for around $250, and a RS232 to USB for $20.
+The maps I can grab for free.
+Total cost: $480
+
+Actually this is both cheaper and a better solution for me as I will bring the netbook with me and dont have to sit in my boat to do trip planning and plot waypoints.
+
+The Cuda sends GPS data using the NMEA 0183 protocol: http://www.tronico.fi/OH6NT/docs/NMEA0183.pdf
+Longitude, Latitude is WGS 84, Degrees, Minutes and fractions of a minute. In my program I convert it to degrees and fractions of a degree and then convert it to an integer by ignoring the decimal point. The number of decimals is constant.
+
+So far so good. But I ran into problems when trying to figure out how to calculate the distance between two Longitude, Latitude coordinates.
+My math skills are really getting rusty.
+
+I found this on Wikipedia: http://en.wikipedia.org/wiki/Great-circle_distance
+Looking at the 'distance between two airports' example.
+The degrees to radians part is easy, but the second formula is Greek to me.
+
+Does anyone know what this formula means, example please?
+
+Currently I assume the earth is flat (back to the middelages), but uses coordinates of the nearest place to reduce the error.
+
+You can get what I have so far here: https://fbedit.svn.sourceforge.net/svnroot/fbedit/RadASM30/Release/Masm/Projects/ShowMap/ShowMap.zip
+Note that the map tiles has been blured as they are copyrighted material.
+Use the Trip Log / Replay Trip to see me race around my neighbourhood with my car. Actually the replay is x10 so I am not driving very fast. The speed shown is in knots.
+
+If there is any interest in this project I will post the sources when I am done.
+
+KetilO
+
+Spherical law of cosines: d = acos(sin(lat1).sin(lat2)+cos(lat1).cos(lat2).cos(long2-long1)).R
+R = earth’s radius (mean radius = 6,371km)
+
+Description
+===========
+A short ping at 200 KHz is transmitted at intervals depending on depth range (200 to 500 ms).
+From the time it takes for the echo to return we can calculate the depth.
+The adc measures the strenght of the echo at intervalls depending on range
+and stores it in a 512 byte array.
+
+Speed of sound in water
+=======================
+Temp (C)    Speed (m/s)
+  0             1403
+  5             1427
+ 10             1447
+ 20             1481
+ 30             1507
+ 40             1526
+
+1450 m/s is probably a good estimate.
+Time for sound to travel 100 cm: 1000000 / 1450 = 689,66 ~ 690 us
+Since it is the echo we are measuring: 690 * 2 = 1380 us
+
+Two timers are needed:
+1. Timer in PWM mode to generate the 200 KHz two phase ping signal.
+   The number of pulses is variable (1 to 256).
+2. Timer to generate an interrupt for every pixel. The interval depends
+   on range.
+
+Time needed for the different ranges:
+========================================================================
+Range		Time for echo to return		Pixel time
+========================================================================
+  4 m		1380 *   4 =   5520 us		  5520 / 512 =  10,8 us
+  6 m		1380 *   6 =   8280 us		  8280 / 512 =  16,1 us
+ 10 m		1380 *  10 =  13800 us		 13800 / 512 =  27,0 us
+ 20 m		1380 *  20 =  27600 us		 27600 / 512 =  53,9 us
+ 30 m		1380 *  30 =  41400 us		 41400 / 512 =  80,0 us
+ 50 m		1380 *  50 =  69000 us		 69000 / 512 = 134,8 us
+ 70 m		1380 *  70 =  96600 us		 96600 / 512 = 188,7 us
+100 m		1380 * 100 = 138000 us		138000 / 512 = 269,5 us
+150 m		1380 * 150 = 207000 us		207000 / 512 = 404,3 us
+200 m		1380 * 200 = 276000 us		276000 / 512 = 539,1 us
+250 m		1380 * 250 = 345000 us		345000 / 512 = 673,8 us
+300 m		1380 * 300 = 414000 us		414000 / 512 = 808,6 us
+350 m		1380 * 350 = 483000 us		483000 / 512 = 943,4 us
+
+Hardware environment
+====================
+Runs on STM32 Discovery.
+
+Additional hardware
+===================
+Output amplifier capable of delivering at least 800 watts peak to the swinger.
+For the swinger I am using 800 Vpp is needed to generate 800 watts peak.
+Input amplifier and filter tuned at 200 KHz.
+Gain control.
+Amplifier measuring amplitude.
+

@@ -1,0 +1,1198 @@
+
+C:\STM32\Projects\Sonar\stm32f10x_rcc.o:     file format elf32-littlearm
+C:\STM32\Projects\Sonar\stm32f10x_rcc.o
+
+
+Disassembly of section .text.RCC_DeInit:
+
+00000000 <RCC_DeInit>:
+RCC_DeInit():
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:127
+* Return         : None
+*******************************************************************************/
+void RCC_DeInit(void)
+{
+  /* Set HSION bit */
+  RCC->CR |= (u32)0x00000001;
+   0:	f44f 5380 	mov.w	r3, #4096	; 0x1000
+   4:	f2c4 0302 	movt	r3, #16386	; 0x4002
+   8:	681a      	ldr	r2, [r3, #0]
+   a:	f042 0201 	orr.w	r2, r2, #1
+   e:	601a      	str	r2, [r3, #0]
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:130
+
+  /* Reset SW[1:0], HPRE[3:0], PPRE1[2:0], PPRE2[2:0], ADCPRE[1:0] and MCO[2:0] bits */
+  RCC->CFGR &= (u32)0xF8FF0000;
+  10:	6859      	ldr	r1, [r3, #4]
+  12:	f04f 0200 	mov.w	r2, #0
+  16:	f6cf 02ff 	movt	r2, #63743	; 0xf8ff
+  1a:	ea01 0202 	and.w	r2, r1, r2
+  1e:	605a      	str	r2, [r3, #4]
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:133
+  
+  /* Reset HSEON, CSSON and PLLON bits */
+  RCC->CR &= (u32)0xFEF6FFFF;
+  20:	681a      	ldr	r2, [r3, #0]
+  22:	f022 7284 	bic.w	r2, r2, #17301504	; 0x1080000
+  26:	f422 3280 	bic.w	r2, r2, #65536	; 0x10000
+  2a:	601a      	str	r2, [r3, #0]
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:136
+
+  /* Reset HSEBYP bit */
+  RCC->CR &= (u32)0xFFFBFFFF;
+  2c:	681a      	ldr	r2, [r3, #0]
+  2e:	f422 2280 	bic.w	r2, r2, #262144	; 0x40000
+  32:	601a      	str	r2, [r3, #0]
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:139
+
+  /* Reset PLLSRC, PLLXTPRE, PLLMUL[3:0] and USBPRE bits */
+  RCC->CFGR &= (u32)0xFF80FFFF;
+  34:	685a      	ldr	r2, [r3, #4]
+  36:	f422 02fe 	bic.w	r2, r2, #8323072	; 0x7f0000
+  3a:	605a      	str	r2, [r3, #4]
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:142
+
+  /* Disable all interrupts */
+  RCC->CIR = 0x00000000;
+  3c:	f04f 0200 	mov.w	r2, #0
+  40:	609a      	str	r2, [r3, #8]
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:143
+}
+  42:	4770      	bx	lr
+
+Disassembly of section .text.RCC_HSEConfig:
+
+00000000 <RCC_HSEConfig>:
+RCC_HSEConfig():
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:166
+  /* Check the parameters */
+  assert_param(IS_RCC_HSE(RCC_HSE));
+
+  /* Reset HSEON and HSEBYP bits before configuring the HSE ------------------*/
+  /* Reset HSEON bit */
+  RCC->CR &= CR_HSEON_Reset;
+   0:	f44f 5380 	mov.w	r3, #4096	; 0x1000
+   4:	f2c4 0302 	movt	r3, #16386	; 0x4002
+   8:	681a      	ldr	r2, [r3, #0]
+   a:	f422 3280 	bic.w	r2, r2, #65536	; 0x10000
+   e:	601a      	str	r2, [r3, #0]
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:169
+
+  /* Reset HSEBYP bit */
+  RCC->CR &= CR_HSEBYP_Reset;
+  10:	681a      	ldr	r2, [r3, #0]
+  12:	f422 2280 	bic.w	r2, r2, #262144	; 0x40000
+  16:	601a      	str	r2, [r3, #0]
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:172
+
+  /* Configure HSE (RCC_HSE_OFF is already covered by the code section above) */
+  switch(RCC_HSE)
+  18:	f5b0 3f80 	cmp.w	r0, #65536	; 0x10000
+  1c:	d003      	beq.n	26 <RCC_HSEConfig+0x26>
+  1e:	f5b0 2f80 	cmp.w	r0, #262144	; 0x40000
+  22:	d111      	bne.n	48 <RCC_HSEConfig+0x48>
+  24:	e008      	b.n	38 <RCC_HSEConfig+0x38>
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:176
+  {
+    case RCC_HSE_ON:
+      /* Set HSEON bit */
+      RCC->CR |= CR_HSEON_Set;
+  26:	f44f 5380 	mov.w	r3, #4096	; 0x1000
+  2a:	f2c4 0302 	movt	r3, #16386	; 0x4002
+  2e:	681a      	ldr	r2, [r3, #0]
+  30:	f442 3280 	orr.w	r2, r2, #65536	; 0x10000
+  34:	601a      	str	r2, [r3, #0]
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:177
+      break;
+  36:	4770      	bx	lr
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:181
+      
+    case RCC_HSE_Bypass:
+      /* Set HSEBYP and HSEON bits */
+      RCC->CR |= CR_HSEBYP_Set | CR_HSEON_Set;
+  38:	f44f 5380 	mov.w	r3, #4096	; 0x1000
+  3c:	f2c4 0302 	movt	r3, #16386	; 0x4002
+  40:	681a      	ldr	r2, [r3, #0]
+  42:	f442 22a0 	orr.w	r2, r2, #327680	; 0x50000
+  46:	601a      	str	r2, [r3, #0]
+  48:	4770      	bx	lr
+  4a:	bf00      	nop
+
+Disassembly of section .text.RCC_AdjustHSICalibrationValue:
+
+00000000 <RCC_AdjustHSICalibrationValue>:
+RCC_AdjustHSICalibrationValue():
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:240
+  u32 tmpreg = 0;
+
+  /* Check the parameters */
+  assert_param(IS_RCC_CALIBRATION_VALUE(HSICalibrationValue));
+
+  tmpreg = RCC->CR;
+   0:	f44f 5380 	mov.w	r3, #4096	; 0x1000
+   4:	f2c4 0302 	movt	r3, #16386	; 0x4002
+   8:	681a      	ldr	r2, [r3, #0]
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:243
+
+  /* Clear HSITRIM[4:0] bits */
+  tmpreg &= CR_HSITRIM_Mask;
+   a:	f022 02f8 	bic.w	r2, r2, #248	; 0xf8
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:246
+
+  /* Set the HSITRIM[4:0] bits according to HSICalibrationValue value */
+  tmpreg |= (u32)HSICalibrationValue << 3;
+   e:	ea42 02c0 	orr.w	r2, r2, r0, lsl #3
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:249
+
+  /* Store the new value */
+  RCC->CR = tmpreg;
+  12:	601a      	str	r2, [r3, #0]
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:250
+}
+  14:	4770      	bx	lr
+  16:	bf00      	nop
+
+Disassembly of section .text.RCC_HSICmd:
+
+00000000 <RCC_HSICmd>:
+RCC_HSICmd():
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:267
+void RCC_HSICmd(FunctionalState NewState)
+{
+  /* Check the parameters */
+  assert_param(IS_FUNCTIONAL_STATE(NewState));
+
+  *(vu32 *) CR_HSION_BB = (u32)NewState;
+   0:	f04f 0300 	mov.w	r3, #0
+   4:	f2c4 2342 	movt	r3, #16962	; 0x4242
+   8:	6018      	str	r0, [r3, #0]
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:268
+}
+   a:	4770      	bx	lr
+
+Disassembly of section .text.RCC_PLLConfig:
+
+00000000 <RCC_PLLConfig>:
+RCC_PLLConfig():
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:295
+
+  /* Check the parameters */
+  assert_param(IS_RCC_PLL_SOURCE(RCC_PLLSource));
+  assert_param(IS_RCC_PLL_MUL(RCC_PLLMul));
+
+  tmpreg = RCC->CFGR;
+   0:	f44f 5380 	mov.w	r3, #4096	; 0x1000
+   4:	f2c4 0302 	movt	r3, #16386	; 0x4002
+   8:	685a      	ldr	r2, [r3, #4]
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:298
+
+  /* Clear PLLSRC, PLLXTPRE and PLLMUL[3:0] bits */
+  tmpreg &= CFGR_PLL_Mask;
+   a:	f422 127c 	bic.w	r2, r2, #4128768	; 0x3f0000
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:301
+
+  /* Set the PLL configuration bits */
+  tmpreg |= RCC_PLLSource | RCC_PLLMul;
+   e:	ea40 0202 	orr.w	r2, r0, r2
+  12:	430a      	orrs	r2, r1
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:304
+
+  /* Store the new value */
+  RCC->CFGR = tmpreg;
+  14:	605a      	str	r2, [r3, #4]
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:305
+}
+  16:	4770      	bx	lr
+
+Disassembly of section .text.RCC_PLLCmd:
+
+00000000 <RCC_PLLCmd>:
+RCC_PLLCmd():
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:321
+void RCC_PLLCmd(FunctionalState NewState)
+{
+  /* Check the parameters */
+  assert_param(IS_FUNCTIONAL_STATE(NewState));
+
+  *(vu32 *) CR_PLLON_BB = (u32)NewState;
+   0:	f04f 0360 	mov.w	r3, #96	; 0x60
+   4:	f2c4 2342 	movt	r3, #16962	; 0x4242
+   8:	6018      	str	r0, [r3, #0]
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:322
+}
+   a:	4770      	bx	lr
+
+Disassembly of section .text.RCC_SYSCLKConfig:
+
+00000000 <RCC_SYSCLKConfig>:
+RCC_SYSCLKConfig():
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:342
+  u32 tmpreg = 0;
+
+  /* Check the parameters */
+  assert_param(IS_RCC_SYSCLK_SOURCE(RCC_SYSCLKSource));
+
+  tmpreg = RCC->CFGR;
+   0:	f44f 5380 	mov.w	r3, #4096	; 0x1000
+   4:	f2c4 0302 	movt	r3, #16386	; 0x4002
+   8:	685a      	ldr	r2, [r3, #4]
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:345
+
+  /* Clear SW[1:0] bits */
+  tmpreg &= CFGR_SW_Mask;
+   a:	f022 0203 	bic.w	r2, r2, #3
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:348
+
+  /* Set SW[1:0] bits according to RCC_SYSCLKSource value */
+  tmpreg |= RCC_SYSCLKSource;
+   e:	ea40 0202 	orr.w	r2, r0, r2
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:351
+
+  /* Store the new value */
+  RCC->CFGR = tmpreg;
+  12:	605a      	str	r2, [r3, #4]
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:352
+}
+  14:	4770      	bx	lr
+  16:	bf00      	nop
+
+Disassembly of section .text.RCC_GetSYSCLKSource:
+
+00000000 <RCC_GetSYSCLKSource>:
+RCC_GetSYSCLKSource():
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:367
+*                       - 0x04: HSE used as system clock
+*                       - 0x08: PLL used as system clock
+*******************************************************************************/
+u8 RCC_GetSYSCLKSource(void)
+{
+  return ((u8)(RCC->CFGR & CFGR_SWS_Mask));
+   0:	f44f 5380 	mov.w	r3, #4096	; 0x1000
+   4:	f2c4 0302 	movt	r3, #16386	; 0x4002
+   8:	6858      	ldr	r0, [r3, #4]
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:368
+}
+   a:	f000 000c 	and.w	r0, r0, #12
+   e:	4770      	bx	lr
+
+Disassembly of section .text.RCC_HCLKConfig:
+
+00000000 <RCC_HCLKConfig>:
+RCC_HCLKConfig():
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:395
+  u32 tmpreg = 0;
+
+  /* Check the parameters */
+  assert_param(IS_RCC_HCLK(RCC_SYSCLK));
+
+  tmpreg = RCC->CFGR;
+   0:	f44f 5380 	mov.w	r3, #4096	; 0x1000
+   4:	f2c4 0302 	movt	r3, #16386	; 0x4002
+   8:	685a      	ldr	r2, [r3, #4]
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:398
+
+  /* Clear HPRE[3:0] bits */
+  tmpreg &= CFGR_HPRE_Reset_Mask;
+   a:	f022 02f0 	bic.w	r2, r2, #240	; 0xf0
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:401
+
+  /* Set HPRE[3:0] bits according to RCC_SYSCLK value */
+  tmpreg |= RCC_SYSCLK;
+   e:	ea40 0202 	orr.w	r2, r0, r2
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:404
+
+  /* Store the new value */
+  RCC->CFGR = tmpreg;
+  12:	605a      	str	r2, [r3, #4]
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:405
+}
+  14:	4770      	bx	lr
+  16:	bf00      	nop
+
+Disassembly of section .text.RCC_PCLK1Config:
+
+00000000 <RCC_PCLK1Config>:
+RCC_PCLK1Config():
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:428
+  u32 tmpreg = 0;
+
+  /* Check the parameters */
+  assert_param(IS_RCC_PCLK(RCC_HCLK));
+
+  tmpreg = RCC->CFGR;
+   0:	f44f 5380 	mov.w	r3, #4096	; 0x1000
+   4:	f2c4 0302 	movt	r3, #16386	; 0x4002
+   8:	685a      	ldr	r2, [r3, #4]
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:431
+
+  /* Clear PPRE1[2:0] bits */
+  tmpreg &= CFGR_PPRE1_Reset_Mask;
+   a:	f422 62e0 	bic.w	r2, r2, #1792	; 0x700
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:434
+
+  /* Set PPRE1[2:0] bits according to RCC_HCLK value */
+  tmpreg |= RCC_HCLK;
+   e:	ea40 0202 	orr.w	r2, r0, r2
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:437
+
+  /* Store the new value */
+  RCC->CFGR = tmpreg;
+  12:	605a      	str	r2, [r3, #4]
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:438
+}
+  14:	4770      	bx	lr
+  16:	bf00      	nop
+
+Disassembly of section .text.RCC_PCLK2Config:
+
+00000000 <RCC_PCLK2Config>:
+RCC_PCLK2Config():
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:461
+  u32 tmpreg = 0;
+
+  /* Check the parameters */
+  assert_param(IS_RCC_PCLK(RCC_HCLK));
+
+  tmpreg = RCC->CFGR;
+   0:	f44f 5380 	mov.w	r3, #4096	; 0x1000
+   4:	f2c4 0302 	movt	r3, #16386	; 0x4002
+   8:	685a      	ldr	r2, [r3, #4]
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:464
+
+  /* Clear PPRE2[2:0] bits */
+  tmpreg &= CFGR_PPRE2_Reset_Mask;
+   a:	f422 5260 	bic.w	r2, r2, #14336	; 0x3800
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:467
+
+  /* Set PPRE2[2:0] bits according to RCC_HCLK value */
+  tmpreg |= RCC_HCLK << 3;
+   e:	ea42 02c0 	orr.w	r2, r2, r0, lsl #3
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:470
+
+  /* Store the new value */
+  RCC->CFGR = tmpreg;
+  12:	605a      	str	r2, [r3, #4]
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:471
+}
+  14:	4770      	bx	lr
+  16:	bf00      	nop
+
+Disassembly of section .text.RCC_ITConfig:
+
+00000000 <RCC_ITConfig>:
+RCC_ITConfig():
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:495
+{
+  /* Check the parameters */
+  assert_param(IS_RCC_IT(RCC_IT));
+  assert_param(IS_FUNCTIONAL_STATE(NewState));
+
+  if (NewState != DISABLE)
+   0:	b139      	cbz	r1, 12 <RCC_ITConfig+0x12>
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:498
+  {
+    /* Perform Byte access to RCC_CIR[12:8] bits to enable the selected interrupts */
+    *(vu8 *) CIR_BYTE2_ADDRESS |= RCC_IT;
+   2:	f241 0309 	movw	r3, #4105	; 0x1009
+   6:	f2c4 0302 	movt	r3, #16386	; 0x4002
+   a:	781a      	ldrb	r2, [r3, #0]
+   c:	4310      	orrs	r0, r2
+   e:	7018      	strb	r0, [r3, #0]
+  10:	4770      	bx	lr
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:503
+  }
+  else
+  {
+    /* Perform Byte access to RCC_CIR[12:8] bits to disable the selected interrupts */
+    *(vu8 *) CIR_BYTE2_ADDRESS &= (u8)~RCC_IT;
+  12:	f241 0309 	movw	r3, #4105	; 0x1009
+  16:	f2c4 0302 	movt	r3, #16386	; 0x4002
+  1a:	781a      	ldrb	r2, [r3, #0]
+  1c:	ea22 0000 	bic.w	r0, r2, r0
+  20:	7018      	strb	r0, [r3, #0]
+  22:	4770      	bx	lr
+
+Disassembly of section .text.RCC_USBCLKConfig:
+
+00000000 <RCC_USBCLKConfig>:
+RCC_USBCLKConfig():
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:525
+void RCC_USBCLKConfig(u32 RCC_USBCLKSource)
+{
+  /* Check the parameters */
+  assert_param(IS_RCC_USBCLK_SOURCE(RCC_USBCLKSource));
+
+  *(vu32 *) CFGR_USBPRE_BB = RCC_USBCLKSource;
+   0:	f04f 03d8 	mov.w	r3, #216	; 0xd8
+   4:	f2c4 2342 	movt	r3, #16962	; 0x4242
+   8:	6018      	str	r0, [r3, #0]
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:526
+}
+   a:	4770      	bx	lr
+
+Disassembly of section .text.RCC_ADCCLKConfig:
+
+00000000 <RCC_ADCCLKConfig>:
+RCC_ADCCLKConfig():
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:548
+  u32 tmpreg = 0;
+
+  /* Check the parameters */
+  assert_param(IS_RCC_ADCCLK(RCC_PCLK2));
+
+  tmpreg = RCC->CFGR;
+   0:	f44f 5380 	mov.w	r3, #4096	; 0x1000
+   4:	f2c4 0302 	movt	r3, #16386	; 0x4002
+   8:	685a      	ldr	r2, [r3, #4]
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:551
+
+  /* Clear ADCPRE[1:0] bits */
+  tmpreg &= CFGR_ADCPRE_Reset_Mask;
+   a:	f422 4240 	bic.w	r2, r2, #49152	; 0xc000
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:554
+
+  /* Set ADCPRE[1:0] bits according to RCC_PCLK2 value */
+  tmpreg |= RCC_PCLK2;
+   e:	ea40 0202 	orr.w	r2, r0, r2
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:557
+
+  /* Store the new value */
+  RCC->CFGR = tmpreg;
+  12:	605a      	str	r2, [r3, #4]
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:558
+}
+  14:	4770      	bx	lr
+  16:	bf00      	nop
+
+Disassembly of section .text.RCC_LSEConfig:
+
+00000000 <RCC_LSEConfig>:
+RCC_LSEConfig():
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:579
+  /* Check the parameters */
+  assert_param(IS_RCC_LSE(RCC_LSE));
+
+  /* Reset LSEON and LSEBYP bits before configuring the LSE ------------------*/
+  /* Reset LSEON bit */
+  *(vu8 *) BDCR_ADDRESS = RCC_LSE_OFF;
+   0:	f44f 5381 	mov.w	r3, #4128	; 0x1020
+   4:	f2c4 0302 	movt	r3, #16386	; 0x4002
+   8:	f04f 0200 	mov.w	r2, #0
+   c:	701a      	strb	r2, [r3, #0]
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:582
+
+  /* Reset LSEBYP bit */
+  *(vu8 *) BDCR_ADDRESS = RCC_LSE_OFF;
+   e:	701a      	strb	r2, [r3, #0]
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:585
+
+  /* Configure LSE (RCC_LSE_OFF is already covered by the code section above) */
+  switch(RCC_LSE)
+  10:	2801      	cmp	r0, #1
+  12:	d002      	beq.n	1a <RCC_LSEConfig+0x1a>
+  14:	2804      	cmp	r0, #4
+  16:	d10f      	bne.n	38 <RCC_LSEConfig+0x38>
+  18:	e007      	b.n	2a <RCC_LSEConfig+0x2a>
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:589
+  {
+    case RCC_LSE_ON:
+      /* Set LSEON bit */
+      *(vu8 *) BDCR_ADDRESS = RCC_LSE_ON;
+  1a:	f44f 5381 	mov.w	r3, #4128	; 0x1020
+  1e:	f2c4 0302 	movt	r3, #16386	; 0x4002
+  22:	f04f 0201 	mov.w	r2, #1
+  26:	701a      	strb	r2, [r3, #0]
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:590
+      break;
+  28:	4770      	bx	lr
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:594
+      
+    case RCC_LSE_Bypass:
+      /* Set LSEBYP and LSEON bits */
+      *(vu8 *) BDCR_ADDRESS = RCC_LSE_Bypass | RCC_LSE_ON;
+  2a:	f44f 5381 	mov.w	r3, #4128	; 0x1020
+  2e:	f2c4 0302 	movt	r3, #16386	; 0x4002
+  32:	f04f 0205 	mov.w	r2, #5
+  36:	701a      	strb	r2, [r3, #0]
+  38:	4770      	bx	lr
+  3a:	bf00      	nop
+
+Disassembly of section .text.RCC_LSICmd:
+
+00000000 <RCC_LSICmd>:
+RCC_LSICmd():
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:616
+void RCC_LSICmd(FunctionalState NewState)
+{
+  /* Check the parameters */
+  assert_param(IS_FUNCTIONAL_STATE(NewState));
+
+  *(vu32 *) CSR_LSION_BB = (u32)NewState;
+   0:	f44f 6390 	mov.w	r3, #1152	; 0x480
+   4:	f2c4 2342 	movt	r3, #16962	; 0x4242
+   8:	6018      	str	r0, [r3, #0]
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:617
+}
+   a:	4770      	bx	lr
+
+Disassembly of section .text.RCC_RTCCLKConfig:
+
+00000000 <RCC_RTCCLKConfig>:
+RCC_RTCCLKConfig():
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:639
+{
+  /* Check the parameters */
+  assert_param(IS_RCC_RTCCLK_SOURCE(RCC_RTCCLKSource));
+
+  /* Select the RTC clock source */
+  RCC->BDCR |= RCC_RTCCLKSource;
+   0:	f44f 5380 	mov.w	r3, #4096	; 0x1000
+   4:	f2c4 0302 	movt	r3, #16386	; 0x4002
+   8:	6a1a      	ldr	r2, [r3, #32]
+   a:	ea40 0202 	orr.w	r2, r0, r2
+   e:	621a      	str	r2, [r3, #32]
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:640
+}
+  10:	4770      	bx	lr
+  12:	bf00      	nop
+
+Disassembly of section .text.RCC_RTCCLKCmd:
+
+00000000 <RCC_RTCCLKCmd>:
+RCC_RTCCLKCmd():
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:657
+void RCC_RTCCLKCmd(FunctionalState NewState)
+{
+  /* Check the parameters */
+  assert_param(IS_FUNCTIONAL_STATE(NewState));
+
+  *(vu32 *) BDCR_RTCEN_BB = (u32)NewState;
+   0:	f240 433c 	movw	r3, #1084	; 0x43c
+   4:	f2c4 2342 	movt	r3, #16962	; 0x4242
+   8:	6018      	str	r0, [r3, #0]
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:658
+}
+   a:	4770      	bx	lr
+
+Disassembly of section .text.RCC_GetClocksFreq:
+
+00000000 <RCC_GetClocksFreq>:
+RCC_GetClocksFreq():
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:669
+*                    will hold the clocks frequencies.
+* Output         : None
+* Return         : None
+*******************************************************************************/
+void RCC_GetClocksFreq(RCC_ClocksTypeDef* RCC_Clocks)
+{
+   0:	b410      	push	{r4}
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:673
+  u32 tmp = 0, pllmull = 0, pllsource = 0, presc = 0;
+
+  /* Get SYSCLK source -------------------------------------------------------*/
+  tmp = RCC->CFGR & CFGR_SWS_Mask;
+   2:	f44f 5380 	mov.w	r3, #4096	; 0x1000
+   6:	f2c4 0302 	movt	r3, #16386	; 0x4002
+   a:	685b      	ldr	r3, [r3, #4]
+   c:	f003 030c 	and.w	r3, r3, #12
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:675
+
+  switch (tmp)
+  10:	2b04      	cmp	r3, #4
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:682
+    case 0x00:  /* HSI used as system clock */
+      RCC_Clocks->SYSCLK_Frequency = HSI_Value;
+      break;
+
+    case 0x04:  /* HSE used as system clock */
+      RCC_Clocks->SYSCLK_Frequency = HSE_Value;
+  12:	bf02      	ittt	eq
+  14:	f44f 5390 	moveq.w	r3, #4608	; 0x1200
+  18:	f2c0 037a 	movteq	r3, #122	; 0x7a
+  1c:	6003      	streq	r3, [r0, #0]
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:675
+  u32 tmp = 0, pllmull = 0, pllsource = 0, presc = 0;
+
+  /* Get SYSCLK source -------------------------------------------------------*/
+  tmp = RCC->CFGR & CFGR_SWS_Mask;
+
+  switch (tmp)
+  1e:	d036      	beq.n	8e <RCC_GetClocksFreq+0x8e>
+  20:	2b08      	cmp	r3, #8
+  22:	d006      	beq.n	32 <RCC_GetClocksFreq+0x32>
+  24:	bb73      	cbnz	r3, 84 <RCC_GetClocksFreq+0x84>
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:678
+  {
+    case 0x00:  /* HSI used as system clock */
+      RCC_Clocks->SYSCLK_Frequency = HSI_Value;
+  26:	f44f 5390 	mov.w	r3, #4608	; 0x1200
+  2a:	f2c0 037a 	movt	r3, #122	; 0x7a
+  2e:	6003      	str	r3, [r0, #0]
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:679
+      break;
+  30:	e02d      	b.n	8e <RCC_GetClocksFreq+0x8e>
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:687
+      RCC_Clocks->SYSCLK_Frequency = HSE_Value;
+      break;
+
+    case 0x08:  /* PLL used as system clock */
+      /* Get PLL clock source and multiplication factor ----------------------*/
+      pllmull = RCC->CFGR & CFGR_PLLMull_Mask;
+  32:	f44f 5380 	mov.w	r3, #4096	; 0x1000
+  36:	f2c4 0302 	movt	r3, #16386	; 0x4002
+  3a:	685a      	ldr	r2, [r3, #4]
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:688
+      pllmull = ( pllmull >> 18) + 2;
+  3c:	f3c2 4283 	ubfx	r2, r2, #18, #4
+  40:	f102 0202 	add.w	r2, r2, #2
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:690
+
+      pllsource = RCC->CFGR & CFGR_PLLSRC_Mask;
+  44:	685b      	ldr	r3, [r3, #4]
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:692
+
+      if (pllsource == 0x00)
+  46:	f413 3f80 	tst.w	r3, #65536	; 0x10000
+  4a:	d107      	bne.n	5c <RCC_GetClocksFreq+0x5c>
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:694
+      {/* HSI oscillator clock divided by 2 selected as PLL clock entry */
+        RCC_Clocks->SYSCLK_Frequency = (HSI_Value >> 1) * pllmull;
+  4c:	f44f 6310 	mov.w	r3, #2304	; 0x900
+  50:	f2c0 033d 	movt	r3, #61	; 0x3d
+  54:	fb03 f202 	mul.w	r2, r3, r2
+  58:	6002      	str	r2, [r0, #0]
+  5a:	e018      	b.n	8e <RCC_GetClocksFreq+0x8e>
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:699
+      }
+      else
+      {/* HSE selected as PLL clock entry */
+
+        if ((RCC->CFGR & CFGR_PLLXTPRE_Mask) != (u32)RESET)
+  5c:	f44f 5380 	mov.w	r3, #4096	; 0x1000
+  60:	f2c4 0302 	movt	r3, #16386	; 0x4002
+  64:	685b      	ldr	r3, [r3, #4]
+  66:	f413 3f00 	tst.w	r3, #131072	; 0x20000
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:702
+        {/* HSE oscillator clock divided by 2 */
+
+          RCC_Clocks->SYSCLK_Frequency = (HSE_Value >> 1) * pllmull;
+  6a:	bf19      	ittee	ne
+  6c:	f44f 6310 	movne.w	r3, #2304	; 0x900
+  70:	f2c0 033d 	movtne	r3, #61	; 0x3d
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:706
+        }
+        else
+        {
+          RCC_Clocks->SYSCLK_Frequency = HSE_Value * pllmull;
+  74:	f44f 5390 	moveq.w	r3, #4608	; 0x1200
+  78:	f2c0 037a 	movteq	r3, #122	; 0x7a
+  7c:	fb03 f202 	mul.w	r2, r3, r2
+  80:	6002      	str	r2, [r0, #0]
+  82:	e004      	b.n	8e <RCC_GetClocksFreq+0x8e>
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:712
+        }
+      }
+      break;
+
+    default:
+      RCC_Clocks->SYSCLK_Frequency = HSI_Value;
+  84:	f44f 5390 	mov.w	r3, #4608	; 0x1200
+  88:	f2c0 037a 	movt	r3, #122	; 0x7a
+  8c:	6003      	str	r3, [r0, #0]
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:718
+      break;
+  }
+
+  /* Compute HCLK, PCLK1, PCLK2 and ADCCLK clocks frequencies ----------------*/
+  /* Get HCLK prescaler */
+  tmp = RCC->CFGR & CFGR_HPRE_Set_Mask;
+  8e:	f44f 5280 	mov.w	r2, #4096	; 0x1000
+  92:	f2c4 0202 	movt	r2, #16386	; 0x4002
+  96:	6851      	ldr	r1, [r2, #4]
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:720
+  tmp = tmp >> 4;
+  presc = APBAHBPrescTable[tmp];
+  98:	f240 0300 	movw	r3, #0
+  9c:	f2c0 0300 	movt	r3, #0
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:719
+  }
+
+  /* Compute HCLK, PCLK1, PCLK2 and ADCCLK clocks frequencies ----------------*/
+  /* Get HCLK prescaler */
+  tmp = RCC->CFGR & CFGR_HPRE_Set_Mask;
+  tmp = tmp >> 4;
+  a0:	f3c1 1103 	ubfx	r1, r1, #4, #4
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:720
+  presc = APBAHBPrescTable[tmp];
+  a4:	5c59      	ldrb	r1, [r3, r1]
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:723
+
+  /* HCLK clock frequency */
+  RCC_Clocks->HCLK_Frequency = RCC_Clocks->SYSCLK_Frequency >> presc;
+  a6:	6804      	ldr	r4, [r0, #0]
+  a8:	fa24 f101 	lsr.w	r1, r4, r1
+  ac:	6041      	str	r1, [r0, #4]
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:726
+
+  /* Get PCLK1 prescaler */
+  tmp = RCC->CFGR & CFGR_PPRE1_Set_Mask;
+  ae:	6854      	ldr	r4, [r2, #4]
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:727
+  tmp = tmp >> 8;
+  b0:	f3c4 2402 	ubfx	r4, r4, #8, #3
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:728
+  presc = APBAHBPrescTable[tmp];
+  b4:	5d1c      	ldrb	r4, [r3, r4]
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:731
+
+  /* PCLK1 clock frequency */
+  RCC_Clocks->PCLK1_Frequency = RCC_Clocks->HCLK_Frequency >> presc;
+  b6:	fa21 f404 	lsr.w	r4, r1, r4
+  ba:	6084      	str	r4, [r0, #8]
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:734
+
+  /* Get PCLK2 prescaler */
+  tmp = RCC->CFGR & CFGR_PPRE2_Set_Mask;
+  bc:	6854      	ldr	r4, [r2, #4]
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:735
+  tmp = tmp >> 11;
+  be:	f3c4 24c2 	ubfx	r4, r4, #11, #3
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:736
+  presc = APBAHBPrescTable[tmp];
+  c2:	5d1c      	ldrb	r4, [r3, r4]
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:739
+
+  /* PCLK2 clock frequency */
+  RCC_Clocks->PCLK2_Frequency = RCC_Clocks->HCLK_Frequency >> presc;
+  c4:	fa21 f104 	lsr.w	r1, r1, r4
+  c8:	60c1      	str	r1, [r0, #12]
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:742
+
+  /* Get ADCCLK prescaler */
+  tmp = RCC->CFGR & CFGR_ADCPRE_Set_Mask;
+  ca:	6852      	ldr	r2, [r2, #4]
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:743
+  tmp = tmp >> 14;
+  cc:	f3c2 3281 	ubfx	r2, r2, #14, #2
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:744
+  presc = ADCPrescTable[tmp];
+  d0:	189b      	adds	r3, r3, r2
+  d2:	7c1b      	ldrb	r3, [r3, #16]
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:747
+
+  /* ADCCLK clock frequency */
+  RCC_Clocks->ADCCLK_Frequency = RCC_Clocks->PCLK2_Frequency / presc;
+  d4:	fbb1 f1f3 	udiv	r1, r1, r3
+  d8:	6101      	str	r1, [r0, #16]
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:748
+}
+  da:	bc10      	pop	{r4}
+  dc:	4770      	bx	lr
+  de:	bf00      	nop
+
+Disassembly of section .text.RCC_AHBPeriphClockCmd:
+
+00000000 <RCC_AHBPeriphClockCmd>:
+RCC_AHBPeriphClockCmd():
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:774
+{
+  /* Check the parameters */
+  assert_param(IS_RCC_AHB_PERIPH(RCC_AHBPeriph));
+  assert_param(IS_FUNCTIONAL_STATE(NewState));
+
+  if (NewState != DISABLE)
+   0:	b139      	cbz	r1, 12 <RCC_AHBPeriphClockCmd+0x12>
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:776
+  {
+    RCC->AHBENR |= RCC_AHBPeriph;
+   2:	f44f 5380 	mov.w	r3, #4096	; 0x1000
+   6:	f2c4 0302 	movt	r3, #16386	; 0x4002
+   a:	695a      	ldr	r2, [r3, #20]
+   c:	4310      	orrs	r0, r2
+   e:	6158      	str	r0, [r3, #20]
+  10:	4770      	bx	lr
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:780
+  }
+  else
+  {
+    RCC->AHBENR &= ~RCC_AHBPeriph;
+  12:	f44f 5380 	mov.w	r3, #4096	; 0x1000
+  16:	f2c4 0302 	movt	r3, #16386	; 0x4002
+  1a:	695a      	ldr	r2, [r3, #20]
+  1c:	ea22 0000 	bic.w	r0, r2, r0
+  20:	6158      	str	r0, [r3, #20]
+  22:	4770      	bx	lr
+
+Disassembly of section .text.RCC_APB2PeriphClockCmd:
+
+00000000 <RCC_APB2PeriphClockCmd>:
+RCC_APB2PeriphClockCmd():
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:807
+{
+  /* Check the parameters */
+  assert_param(IS_RCC_APB2_PERIPH(RCC_APB2Periph));
+  assert_param(IS_FUNCTIONAL_STATE(NewState));
+
+  if (NewState != DISABLE)
+   0:	b139      	cbz	r1, 12 <RCC_APB2PeriphClockCmd+0x12>
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:809
+  {
+    RCC->APB2ENR |= RCC_APB2Periph;
+   2:	f44f 5380 	mov.w	r3, #4096	; 0x1000
+   6:	f2c4 0302 	movt	r3, #16386	; 0x4002
+   a:	699a      	ldr	r2, [r3, #24]
+   c:	4310      	orrs	r0, r2
+   e:	6198      	str	r0, [r3, #24]
+  10:	4770      	bx	lr
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:813
+  }
+  else
+  {
+    RCC->APB2ENR &= ~RCC_APB2Periph;
+  12:	f44f 5380 	mov.w	r3, #4096	; 0x1000
+  16:	f2c4 0302 	movt	r3, #16386	; 0x4002
+  1a:	699a      	ldr	r2, [r3, #24]
+  1c:	ea22 0000 	bic.w	r0, r2, r0
+  20:	6198      	str	r0, [r3, #24]
+  22:	4770      	bx	lr
+
+Disassembly of section .text.RCC_APB1PeriphClockCmd:
+
+00000000 <RCC_APB1PeriphClockCmd>:
+RCC_APB1PeriphClockCmd():
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:841
+{
+  /* Check the parameters */
+  assert_param(IS_RCC_APB1_PERIPH(RCC_APB1Periph));
+  assert_param(IS_FUNCTIONAL_STATE(NewState));
+
+  if (NewState != DISABLE)
+   0:	b139      	cbz	r1, 12 <RCC_APB1PeriphClockCmd+0x12>
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:843
+  {
+    RCC->APB1ENR |= RCC_APB1Periph;
+   2:	f44f 5380 	mov.w	r3, #4096	; 0x1000
+   6:	f2c4 0302 	movt	r3, #16386	; 0x4002
+   a:	69da      	ldr	r2, [r3, #28]
+   c:	4310      	orrs	r0, r2
+   e:	61d8      	str	r0, [r3, #28]
+  10:	4770      	bx	lr
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:847
+  }
+  else
+  {
+    RCC->APB1ENR &= ~RCC_APB1Periph;
+  12:	f44f 5380 	mov.w	r3, #4096	; 0x1000
+  16:	f2c4 0302 	movt	r3, #16386	; 0x4002
+  1a:	69da      	ldr	r2, [r3, #28]
+  1c:	ea22 0000 	bic.w	r0, r2, r0
+  20:	61d8      	str	r0, [r3, #28]
+  22:	4770      	bx	lr
+
+Disassembly of section .text.RCC_APB2PeriphResetCmd:
+
+00000000 <RCC_APB2PeriphResetCmd>:
+RCC_APB2PeriphResetCmd():
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:873
+{
+  /* Check the parameters */
+  assert_param(IS_RCC_APB2_PERIPH(RCC_APB2Periph));
+  assert_param(IS_FUNCTIONAL_STATE(NewState));
+
+  if (NewState != DISABLE)
+   0:	b139      	cbz	r1, 12 <RCC_APB2PeriphResetCmd+0x12>
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:875
+  {
+    RCC->APB2RSTR |= RCC_APB2Periph;
+   2:	f44f 5380 	mov.w	r3, #4096	; 0x1000
+   6:	f2c4 0302 	movt	r3, #16386	; 0x4002
+   a:	68da      	ldr	r2, [r3, #12]
+   c:	4310      	orrs	r0, r2
+   e:	60d8      	str	r0, [r3, #12]
+  10:	4770      	bx	lr
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:879
+  }
+  else
+  {
+    RCC->APB2RSTR &= ~RCC_APB2Periph;
+  12:	f44f 5380 	mov.w	r3, #4096	; 0x1000
+  16:	f2c4 0302 	movt	r3, #16386	; 0x4002
+  1a:	68da      	ldr	r2, [r3, #12]
+  1c:	ea22 0000 	bic.w	r0, r2, r0
+  20:	60d8      	str	r0, [r3, #12]
+  22:	4770      	bx	lr
+
+Disassembly of section .text.RCC_APB1PeriphResetCmd:
+
+00000000 <RCC_APB1PeriphResetCmd>:
+RCC_APB1PeriphResetCmd():
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:906
+{
+  /* Check the parameters */
+  assert_param(IS_RCC_APB1_PERIPH(RCC_APB1Periph));
+  assert_param(IS_FUNCTIONAL_STATE(NewState));
+
+  if (NewState != DISABLE)
+   0:	b139      	cbz	r1, 12 <RCC_APB1PeriphResetCmd+0x12>
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:908
+  {
+    RCC->APB1RSTR |= RCC_APB1Periph;
+   2:	f44f 5380 	mov.w	r3, #4096	; 0x1000
+   6:	f2c4 0302 	movt	r3, #16386	; 0x4002
+   a:	691a      	ldr	r2, [r3, #16]
+   c:	4310      	orrs	r0, r2
+   e:	6118      	str	r0, [r3, #16]
+  10:	4770      	bx	lr
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:912
+  }
+  else
+  {
+    RCC->APB1RSTR &= ~RCC_APB1Periph;
+  12:	f44f 5380 	mov.w	r3, #4096	; 0x1000
+  16:	f2c4 0302 	movt	r3, #16386	; 0x4002
+  1a:	691a      	ldr	r2, [r3, #16]
+  1c:	ea22 0000 	bic.w	r0, r2, r0
+  20:	6118      	str	r0, [r3, #16]
+  22:	4770      	bx	lr
+
+Disassembly of section .text.RCC_BackupResetCmd:
+
+00000000 <RCC_BackupResetCmd>:
+RCC_BackupResetCmd():
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:929
+void RCC_BackupResetCmd(FunctionalState NewState)
+{
+  /* Check the parameters */
+  assert_param(IS_FUNCTIONAL_STATE(NewState));
+
+  *(vu32 *) BDCR_BDRST_BB = (u32)NewState;
+   0:	f44f 6388 	mov.w	r3, #1088	; 0x440
+   4:	f2c4 2342 	movt	r3, #16962	; 0x4242
+   8:	6018      	str	r0, [r3, #0]
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:930
+}
+   a:	4770      	bx	lr
+
+Disassembly of section .text.RCC_ClockSecuritySystemCmd:
+
+00000000 <RCC_ClockSecuritySystemCmd>:
+RCC_ClockSecuritySystemCmd():
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:945
+void RCC_ClockSecuritySystemCmd(FunctionalState NewState)
+{
+  /* Check the parameters */
+  assert_param(IS_FUNCTIONAL_STATE(NewState));
+
+  *(vu32 *) CR_CSSON_BB = (u32)NewState;
+   0:	f04f 034c 	mov.w	r3, #76	; 0x4c
+   4:	f2c4 2342 	movt	r3, #16962	; 0x4242
+   8:	6018      	str	r0, [r3, #0]
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:946
+}
+   a:	4770      	bx	lr
+
+Disassembly of section .text.RCC_MCOConfig:
+
+00000000 <RCC_MCOConfig>:
+RCC_MCOConfig():
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:967
+{
+  /* Check the parameters */
+  assert_param(IS_RCC_MCO(RCC_MCO));
+
+  /* Perform Byte access to MCO[2:0] bits to select the MCO source */
+  *(vu8 *) CFGR_BYTE4_ADDRESS = RCC_MCO;
+   0:	f241 0307 	movw	r3, #4103	; 0x1007
+   4:	f2c4 0302 	movt	r3, #16386	; 0x4002
+   8:	7018      	strb	r0, [r3, #0]
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:968
+}
+   a:	4770      	bx	lr
+
+Disassembly of section .text.RCC_GetFlagStatus:
+
+00000000 <RCC_GetFlagStatus>:
+RCC_GetFlagStatus():
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:999
+
+  /* Check the parameters */
+  assert_param(IS_RCC_FLAG(RCC_FLAG));
+
+  /* Get the RCC register index */
+  tmp = RCC_FLAG >> 5;
+   0:	ea4f 1350 	mov.w	r3, r0, lsr #5
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:1001
+
+  if (tmp == 1)               /* The flag to check is in CR register */
+   4:	2b01      	cmp	r3, #1
+   6:	d105      	bne.n	14 <RCC_GetFlagStatus+0x14>
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:1003
+  {
+    statusreg = RCC->CR;
+   8:	f44f 5380 	mov.w	r3, #4096	; 0x1000
+   c:	f2c4 0302 	movt	r3, #16386	; 0x4002
+  10:	681b      	ldr	r3, [r3, #0]
+  12:	e007      	b.n	24 <RCC_GetFlagStatus+0x24>
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:1005
+  }
+  else if (tmp == 2)          /* The flag to check is in BDCR register */
+  14:	2b02      	cmp	r3, #2
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:1007
+  {
+    statusreg = RCC->BDCR;
+  16:	f44f 5380 	mov.w	r3, #4096	; 0x1000
+  1a:	f2c4 0302 	movt	r3, #16386	; 0x4002
+  1e:	bf0c      	ite	eq
+  20:	6a1b      	ldreq	r3, [r3, #32]
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:1011
+  }
+  else                       /* The flag to check is in CSR register */
+  {
+    statusreg = RCC->CSR;
+  22:	6a5b      	ldrne	r3, [r3, #36]	; 0x24
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:1015
+  }
+
+  /* Get the flag position */
+  tmp = RCC_FLAG & FLAG_Mask;
+  24:	f000 001f 	and.w	r0, r0, #31
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:1017
+
+  if ((statusreg & ((u32)1 << tmp)) != (u32)RESET)
+  28:	fa23 f000 	lsr.w	r0, r3, r0
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:1028
+    bitstatus = RESET;
+  }
+
+  /* Return the flag status */
+  return bitstatus;
+}
+  2c:	f000 0001 	and.w	r0, r0, #1
+  30:	4770      	bx	lr
+  32:	bf00      	nop
+
+Disassembly of section .text.RCC_WaitForHSEStartUp:
+
+00000000 <RCC_WaitForHSEStartUp>:
+RCC_WaitForHSEStartUp():
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:199
+* Return         : An ErrorStatus enumuration value:
+*                         - SUCCESS: HSE oscillator is stable and ready to use
+*                         - ERROR: HSE oscillator not yet ready
+*******************************************************************************/
+ErrorStatus RCC_WaitForHSEStartUp(void)
+{
+   0:	b510      	push	{r4, lr}
+   2:	b082      	sub	sp, #8
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:200
+  vu32 StartUpCounter = 0;
+   4:	f04f 0300 	mov.w	r3, #0
+   8:	9301      	str	r3, [sp, #4]
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:207
+  FlagStatus HSEStatus = RESET;
+  
+  /* Wait till HSE is ready and if Time out is reached exit */
+  do
+  {
+    HSEStatus = RCC_GetFlagStatus(RCC_FLAG_HSERDY);
+   a:	f04f 0431 	mov.w	r4, #49	; 0x31
+   e:	4620      	mov	r0, r4
+  10:	f7ff fffe 	bl	0 <RCC_WaitForHSEStartUp>
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:208
+    StartUpCounter++;  
+  14:	9b01      	ldr	r3, [sp, #4]
+  16:	f103 0301 	add.w	r3, r3, #1
+  1a:	9301      	str	r3, [sp, #4]
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:209
+  } while((HSEStatus == RESET) && (StartUpCounter != HSEStartUp_TimeOut));
+  1c:	b918      	cbnz	r0, 26 <RCC_WaitForHSEStartUp+0x26>
+  1e:	9b01      	ldr	r3, [sp, #4]
+  20:	f5b3 6fa0 	cmp.w	r3, #1280	; 0x500
+  24:	d1f3      	bne.n	e <RCC_WaitForHSEStartUp+0xe>
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:212
+
+
+  if (RCC_GetFlagStatus(RCC_FLAG_HSERDY) != RESET)
+  26:	f04f 0031 	mov.w	r0, #49	; 0x31
+  2a:	f7ff fffe 	bl	0 <RCC_WaitForHSEStartUp>
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:222
+  {
+    status = ERROR;
+  }  
+
+  return (status);
+}
+  2e:	3800      	subs	r0, #0
+  30:	bf18      	it	ne
+  32:	2001      	movne	r0, #1
+  34:	b002      	add	sp, #8
+  36:	bd10      	pop	{r4, pc}
+
+Disassembly of section .text.RCC_ClearFlag:
+
+00000000 <RCC_ClearFlag>:
+RCC_ClearFlag():
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:1043
+* Return         : None
+*******************************************************************************/
+void RCC_ClearFlag(void)
+{
+  /* Set RMVF bit to clear the reset flags */
+  RCC->CSR |= CSR_RMVF_Set;
+   0:	f44f 5380 	mov.w	r3, #4096	; 0x1000
+   4:	f2c4 0302 	movt	r3, #16386	; 0x4002
+   8:	6a5a      	ldr	r2, [r3, #36]	; 0x24
+   a:	f042 7280 	orr.w	r2, r2, #16777216	; 0x1000000
+   e:	625a      	str	r2, [r3, #36]	; 0x24
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:1044
+}
+  10:	4770      	bx	lr
+  12:	bf00      	nop
+
+Disassembly of section .text.RCC_GetITStatus:
+
+00000000 <RCC_GetITStatus>:
+RCC_GetITStatus():
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:1068
+
+  /* Check the parameters */
+  assert_param(IS_RCC_GET_IT(RCC_IT));
+
+  /* Check the status of the specified RCC interrupt */
+  if ((RCC->CIR & RCC_IT) != (u32)RESET)
+   0:	f44f 5380 	mov.w	r3, #4096	; 0x1000
+   4:	f2c4 0302 	movt	r3, #16386	; 0x4002
+   8:	689b      	ldr	r3, [r3, #8]
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:1070
+  {
+    bitstatus = SET;
+   a:	4218      	tst	r0, r3
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:1079
+    bitstatus = RESET;
+  }
+
+  /* Return the RCC_IT status */
+  return  bitstatus;
+}
+   c:	bf0c      	ite	eq
+   e:	2000      	moveq	r0, #0
+  10:	2001      	movne	r0, #1
+  12:	4770      	bx	lr
+
+Disassembly of section .text.RCC_ClearITPendingBit:
+
+00000000 <RCC_ClearITPendingBit>:
+RCC_ClearITPendingBit():
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:1102
+  /* Check the parameters */
+  assert_param(IS_RCC_CLEAR_IT(RCC_IT));
+
+  /* Perform Byte access to RCC_CIR[23:16] bits to clear the selected interrupt
+     pending bits */
+  *(vu8 *) CIR_BYTE3_ADDRESS = RCC_IT;
+   0:	f241 030a 	movw	r3, #4106	; 0x100a
+   4:	f2c4 0302 	movt	r3, #16386	; 0x4002
+   8:	7018      	strb	r0, [r3, #0]
+C:\STM32\Projects\Sonar/stm32f10x_rcc.c:1103
+}
+   a:	4770      	bx	lr
