@@ -97,3 +97,12 @@ Input amplifier and filter tuned at 200 KHz.
 Gain control.
 Amplifier measuring amplitude.
 
+Port pins used
+==============
+PA.08		Ping out phase 0
+PA.09		Ping out phase 1
+
+PA.02		ADC Echo
+PA.03		ADC Battery
+PA.03		ADC Water temprature
+

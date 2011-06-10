@@ -300,27 +300,35 @@ SetRange:
 	invoke wsprintf,addr sonardata.options.text,addr szFmtDec,eax
 	invoke RangeToTimer,range
 	mov		sonardata.Timer,ax
+	mov		eax,range
+	lea		eax,[eax+eax*2]
+	mov		eax,sonarrange.skip[eax*4]
+	mov		sonardata.Skip,ax
 	retn
 
 TestRangeChange:
-	;Test range decrement
-	mov		eax,range
-	mov		ebx,dptinx
-	.if eax && ebx<MAXYECHO/5 && ebx
-		dec		range
-		dec		sonardata.Range
-		invoke SendDlgItemMessage,hWnd,IDC_TRBRANGE,TBM_SETPOS,TRUE,sonardata.Range
-		call	SetRange
-		invoke UpdateBitmap
-	.endif
-	;Test range increment
-	mov		eax,sonardata.Range
-	.if eax<(MAXRANGE-1) && (ebx>(MAXYECHO-MAXYECHO/5) || !ebx)
-		inc		range
-		inc		sonardata.Range
-		invoke SendDlgItemMessage,hWnd,IDC_TRBRANGE,TBM_SETPOS,TRUE,sonardata.Range
-		call	SetRange
-		invoke UpdateBitmap
+mov		eax,sonardata.AutoRange
+PrintHex eax
+	.if sonardata.AutoRange
+		;Test range decrement
+		mov		eax,range
+		mov		ebx,dptinx
+		.if eax && ebx<MAXYECHO/5 && ebx
+			dec		range
+			dec		sonardata.Range
+			invoke SendDlgItemMessage,hWnd,IDC_TRBRANGE,TBM_SETPOS,TRUE,sonardata.Range
+			call	SetRange
+			invoke UpdateBitmap
+		.endif
+		;Test range increment
+		mov		eax,sonardata.Range
+		.if eax<(MAXRANGE-1) && (ebx>(MAXYECHO-MAXYECHO/5) || !ebx)
+			inc		range
+			inc		sonardata.Range
+			invoke SendDlgItemMessage,hWnd,IDC_TRBRANGE,TBM_SETPOS,TRUE,sonardata.Range
+			call	SetRange
+			invoke UpdateBitmap
+		.endif
 	.endif
 	retn
 
@@ -420,12 +428,14 @@ Update:
 	invoke UpdateWindow,hSonar
 	pop		eax
 	.if !eax
-		.if sonardata.Range<MAXRANGE-1
-			inc		range
-			inc		sonardata.Range
-			invoke SendDlgItemMessage,hWnd,IDC_TRBRANGE,TBM_SETPOS,TRUE,sonardata.Range
-			call	SetRange
-			invoke UpdateBitmap
+		.if sonardata.AutoRange && dptinx
+			.if sonardata.Range<MAXRANGE-1
+				inc		range
+				inc		sonardata.Range
+				invoke SendDlgItemMessage,hWnd,IDC_TRBRANGE,TBM_SETPOS,TRUE,sonardata.Range
+				call	SetRange
+				invoke UpdateBitmap
+			.endif
 		.endif
 	.else
 		.if sonardata.AutoRange && dptinx
