@@ -77,8 +77,8 @@ int main(void)
     if (STM32_Sonar.Start == 1)
     {
       STM32_Sonar.Start = 2;
-      /* Set the gain */
-      GPIO_Write(GPIOC, (u16)STM32_Sonar.Gain);
+      /* Set the lowest gain */
+      GPIO_Write(GPIOC, (u16)0x1F);
       /* Toggle blue led */
       if (BlueLED)
       {
@@ -128,6 +128,8 @@ void TIM1_UP_IRQHandler(void)
   TIM1->SR = (u16)~TIM_IT_Update;
   /* Disable TIM1 */
   TIM_Cmd(TIM1, DISABLE);
+  /* Set the gain */
+  GPIO_Write(GPIOC, (u16)STM32_Sonar.Gain);
   /* Enable TIM2 */
   TIM_Cmd(TIM2, ENABLE);
 }
@@ -142,24 +144,53 @@ void TIM1_UP_IRQHandler(void)
 void TIM2_IRQHandler(void)
 {
   /* Clear TIM2 Update interrupt pending bit */
-  TIM2->SR = (u16)~TIM_IT_Update;
-  if (STM32_Sonar.Skip)
-  {
-    STM32_Sonar.Skip--;
-    STM32_Sonar.Echo[STM32_Sonar.EchoIndex] = 0;
-  }
-  else
-  {
-    STM32_Sonar.Echo[STM32_Sonar.EchoIndex] = (ADC_GetInjectedConversionValue(ADC1, ADC_InjectedChannel_1) >> 4);
-  }
-  STM32_Sonar.EchoIndex++;
-  if (STM32_Sonar.EchoIndex == MAXECHO)
-  {
-    /* Disable TIM2 */
-    TIM2->CR1 = 0;
-    /* Done */
-    STM32_Sonar.Start = 0;
-  }
+  asm("mov    r0,#0x40000000");       // TIM2
+  asm("movw   r2,#0xFFFE");
+  asm("strh   r2,[r0,#0x10]");
+  asm("mov    r1,#0x20000000");       // STM32_Sonar
+  asm("ldrh   r2,[r1,#0x6]");         // STM32_Sonar.Skip
+  asm("cbz    r2,TIM2_IRQHandler1");
+  asm("add    r2,#0xFFFFFFFF");
+  asm("strh   r2,[r1,#0x6]");         // STM32_Sonar.Skip
+  asm("movw   r2,#0x0");
+  asm("b      TIM2_IRQHandler2");
+  asm("TIM2_IRQHandler1:");
+  asm("movw   r2,#0x243C");
+  asm("movt   r2,#0x4100");           // ADC1->ADC_InjectedChannel_1
+  asm("ldr    r2,[r2]");
+  asm("uxth   r2,r2");
+  asm("lsr    r2,#0x4");
+  asm("TIM2_IRQHandler2:");
+  asm("ldrh   r3,[r1,#0x8]");         // STM32_Sonar.EchoIndex
+  asm("add    r3,r3,r1");
+  asm("strb   r2,[r3,#0x10]");        // STM32_Sonar.Echo[STM32_Sonar.EchoIndex]
+  asm("ldrh   r3,[r1,#0x8]");         // STM32_Sonar.EchoIndex
+  asm("add    r3,#0x1");
+  asm("strh   r3,[r1,#0x8]");
+  asm("sub    r3,#0x200");            // MAXECHO
+  asm("cbnz   r3,TIM2_IRQHandler3");
+  asm("strh   r3,[r0]");              // TIM2->CR1
+  asm("strb   r3,[r1]");              // STM32_Sonar.Start
+  asm("TIM2_IRQHandler3:");
+  // /* Clear TIM2 Update interrupt pending bit */
+  // TIM2->SR = (u16)~TIM_IT_Update;
+  // if (STM32_Sonar.Skip)
+  // {
+    // STM32_Sonar.Skip--;
+    // STM32_Sonar.Echo[STM32_Sonar.EchoIndex] = 0;
+  // }
+  // else
+  // {
+    // STM32_Sonar.Echo[STM32_Sonar.EchoIndex] = (ADC_GetInjectedConversionValue(ADC1, ADC_InjectedChannel_1) >> 4);
+  // }
+  // STM32_Sonar.EchoIndex++;
+  // if (STM32_Sonar.EchoIndex == MAXECHO)
+  // {
+    // /* Disable TIM2 */
+    // TIM2->CR1 = 0;
+    // /* Done */
+    // STM32_Sonar.Start = 0;
+  // }
 }
 
 /*******************************************************************************

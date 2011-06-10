@@ -9,12 +9,30 @@ rseed				DWORD ?
 
 .code
 
+Random proc uses ecx edx,range:DWORD
+
+	mov		eax,rseed
+	mov		ecx,23
+	mul		ecx
+	add		eax,7
+	and		eax,0FFFFFFFFh
+	ror		eax,1
+	xor		eax,rseed
+	mov		rseed,eax
+	mov		ecx,range
+	xor		edx,edx
+	div		ecx
+	mov		eax,edx
+	ret
+
+Random endp
+
 ;Description
 ;===========
-;A short ping at 200KHz is transmitted every 0,5 second.
+;A short ping at 200KHz is transmitted at intervalls depending on range.
 ;From the time it takes for the echo to return we can calculate the depth.
-;The adc measures the strenght of the echo at regular intervalls and stores
-;it in a 1024 byte array.
+;The adc measures the strenght of the echo at intervalls depending on range
+;and stores it in a 512 byte array.
 ;
 ;Speed of sound in water
 ;=======================
@@ -33,18 +51,18 @@ rseed				DWORD ?
 
 ;Timer value calculation
 ;=======================
-;Example 3m range
+;Example 2m range
 ;Timer period Tp=1/48MHz
-;Each pixel is Px=3m/512.
+;Each pixel is Px=2m/512.
 ;Time for each pixel is t=Px/1450/2
 ;Timer ticks Tt=t/Tp
 
 ;Formula T=((Range/512)/(1450/2))*48000000
 
-RangeToTimer proc nRange:DWORD
+RangeToTimer proc RangeInx:DWORD
 	LOCAL	tmp:DWORD
 
-	mov		eax,nRange
+	mov		eax,RangeInx
 	lea		eax,[eax+eax*2]
 	mov		eax,sonarrange.range[eax*4]
 	mov		tmp,eax
@@ -65,23 +83,22 @@ RangeToTimer proc nRange:DWORD
 
 RangeToTimer endp
 
-Random proc uses ecx edx,range:DWORD
+SetRange proc uses ebx esi edi,RangeInx:DWORD
 
-	mov		eax,rseed
-	mov		ecx,23
-	mul		ecx
-	add		eax,7
-	and		eax,0FFFFFFFFh
-	ror		eax,1
-	xor		eax,rseed
-	mov		rseed,eax
-	mov		ecx,range
-	xor		edx,edx
-	div		ecx
-	mov		eax,edx
+	mov		ebx,RangeInx
+	mov		sonardata.RangeInx,ebx
+	lea		ebx,[ebx+ebx*2]
+	mov		eax,sonarrange.skip[ebx*4]
+	mov		sonardata.Skip,ax
+	mov		eax,sonarrange.range[ebx*4]
+	mov		sonardata.RangeVal,eax
+	invoke wsprintf,addr sonardata.options.text,addr szFmtDec,eax
+	invoke RangeToTimer,RangeInx
+	mov		sonardata.Timer,ax
+	invoke SendDlgItemMessage,hWnd,IDC_TRBRANGE,TBM_SETPOS,TRUE,RangeInx
 	ret
 
-Random endp
+SetRange endp
 
 UpdateBitmap proc uses ebx esi edi
 	LOCAL	rect:RECT
@@ -95,9 +112,7 @@ UpdateBitmap proc uses ebx esi edi
 	invoke FillRect,sonardata.mDC,addr rect,eax
 	pop		eax
 	invoke DeleteObject,eax
-	mov		ebx,sonardata.Range
-	lea		ebx,[ebx+ebx*2]
-	mov		ebx,sonarrange.range[ebx*4]
+	mov		ebx,sonardata.RangeVal
 	xor		esi,esi
 	.while esi<MAXXECHO
 		xor		edi,edi
@@ -117,13 +132,6 @@ UpdateBitmap proc uses ebx esi edi
 				invoke ImageList_Draw,hIml,18,sonardata.mDC,addr [esi-14],addr [ecx-8],ILD_TRANSPARENT
 			.else
 				.if eax>sonardata.Noise
-;					.if sonardata.Noise
-;						sub		eax,sonardata.Noise
-;						shl		eax,8
-;						mov		ecx,sonardata.Noise
-;						xor		edx,edx
-;						div		ecx
-;					.endif
 					.if eax<40
 						mov		eax,40h
 					.endif
@@ -158,13 +166,11 @@ SonarThreadProc proc uses ebx esi edi,lParam:DWORD
 	LOCAL	buffer[16]:BYTE
 	LOCAL	dptinx:DWORD
 	LOCAL	dwwrite:DWORD
-	LOCAL	range:DWORD
 
 	.if sonardata.hReply
-		invoke ReadFile,sonardata.hReply,addr sonardata.Range,1,addr dwwrite,NULL
+		invoke ReadFile,sonardata.hReply,addr sonardata.RangeInx,1,addr dwwrite,NULL
 		.if dwwrite==1
-			mov		eax,sonardata.Range
-			mov		range,eax
+			mov		eax,sonardata.RangeInx
 			call	ScrollEchoArray
 			invoke ReadFile,sonardata.hReply,addr sonardata.sonar[MAXXECHO*MAXYECHO-MAXYECHO],MAXYECHO,addr dwwrite,NULL
 			.if dwwrite==MAXYECHO
@@ -178,8 +184,7 @@ SonarThreadProc proc uses ebx esi edi,lParam:DWORD
 			mov		sonardata.hReply,0
 		.endif
 	.elseif fSTLink && fSTLink!=IDIGNORE
-		mov		eax,sonardata.Range
-		mov		range,eax
+		mov		eax,sonardata.RangeInx
 	 	;Upload Start, PingPulses, Gain, Timer and Skip
 	 	mov		sonardata.Start,0
 		invoke STLinkWrite,hWnd,STM32_Sonar,addr sonardata.Start,8
@@ -201,8 +206,7 @@ SonarThreadProc proc uses ebx esi edi,lParam:DWORD
 			mov		fSTLink,0
 		.endif
 	.elseif fSTLink==IDIGNORE
-		mov		eax,sonardata.Range
-		mov		range,eax
+		mov		eax,sonardata.RangeInx
 		call	ScrollEchoArray
 		invoke RtlZeroMemory,offset sonardata.sonar[(MAXXECHO*MAXYECHO)-MAXYECHO],MAXYECHO
 		.if !(pixcnt & 255)
@@ -229,9 +233,7 @@ SonarThreadProc proc uses ebx esi edi,lParam:DWORD
 		mov		eax,ebx
 		mov		ecx,1024
 		mul		ecx
-		mov		ecx,range
-		lea		ecx,[ecx+ecx*2]
-		mov		ecx,sonarrange.range[ecx*4]
+		mov		ecx,sonardata.RangeVal
 		xor		edx,edx
 		div		ecx
 		mov		ecx,100
@@ -267,7 +269,7 @@ ScrollEchoArray:
 	mov		edi,offset sonardata.sonarrange
 	mov		ecx,MAXXECHO-1
 	rep movsb
-	mov		eax,range
+	mov		eax,sonardata.RangeInx
 	mov		[edi],al
 	mov		esi,offset sonardata.sonar+MAXYECHO
 	mov		edi,offset sonardata.sonar
@@ -276,9 +278,7 @@ ScrollEchoArray:
 	retn
 
 CalculateDepth:
-	mov		eax,range
-	lea		eax,[eax+eax*2]
-	mov		eax,sonarrange.range[eax*4]
+	mov		eax,sonardata.RangeVal
 	mov		ecx,10
 	mul		ecx
 	mul		ebx
@@ -293,40 +293,21 @@ CalculateDepth:
 	invoke lstrcpy,addr sonardata.options.text[1*sizeof OPTIONS],addr buffer
 	retn
 
-SetRange:
-	mov		eax,range
-	lea		eax,[eax+eax*2]
-	mov		eax,sonarrange.range[eax*4]
-	invoke wsprintf,addr sonardata.options.text,addr szFmtDec,eax
-	invoke RangeToTimer,range
-	mov		sonardata.Timer,ax
-	mov		eax,range
-	lea		eax,[eax+eax*2]
-	mov		eax,sonarrange.skip[eax*4]
-	mov		sonardata.Skip,ax
-	retn
-
 TestRangeChange:
-mov		eax,sonardata.AutoRange
-PrintHex eax
 	.if sonardata.AutoRange
 		;Test range decrement
-		mov		eax,range
+		mov		eax,sonardata.RangeInx
 		mov		ebx,dptinx
 		.if eax && ebx<MAXYECHO/5 && ebx
-			dec		range
-			dec		sonardata.Range
-			invoke SendDlgItemMessage,hWnd,IDC_TRBRANGE,TBM_SETPOS,TRUE,sonardata.Range
-			call	SetRange
+			dec		eax
+			invoke SetRange,eax
 			invoke UpdateBitmap
 		.endif
 		;Test range increment
-		mov		eax,sonardata.Range
+		mov		eax,sonardata.RangeInx
 		.if eax<(MAXRANGE-1) && (ebx>(MAXYECHO-MAXYECHO/5) || !ebx)
-			inc		range
-			inc		sonardata.Range
-			invoke SendDlgItemMessage,hWnd,IDC_TRBRANGE,TBM_SETPOS,TRUE,sonardata.Range
-			call	SetRange
+			inc		eax
+			invoke SetRange,eax
 			invoke UpdateBitmap
 		.endif
 	.endif
@@ -397,13 +378,6 @@ Update:
 			mov		sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO],253
 		.endif
 		.if eax>sonardata.Noise
-;			.if sonardata.Noise
-;				sub		eax,sonardata.Noise
-;				shl		eax,8
-;				mov		ecx,sonardata.Noise
-;				xor		edx,edx
-;				div		ecx
-;			.endif
 			.if eax<40
 				mov		eax,40h
 			.endif
@@ -418,7 +392,7 @@ Update:
 		inc		ebx
 	.endw
 	.if sonardata.hLog
-		invoke WriteFile,sonardata.hLog,addr range,1,addr dwwrite,NULL
+		invoke WriteFile,sonardata.hLog,addr sonardata.RangeInx,1,addr dwwrite,NULL
 		invoke WriteFile,sonardata.hLog,addr sonardata.sonar[MAXXECHO*MAXYECHO-MAXYECHO],MAXYECHO,addr dwwrite,NULL
 	.endif
 	call	FindDepth
@@ -429,11 +403,10 @@ Update:
 	pop		eax
 	.if !eax
 		.if sonardata.AutoRange && dptinx
-			.if sonardata.Range<MAXRANGE-1
-				inc		range
-				inc		sonardata.Range
-				invoke SendDlgItemMessage,hWnd,IDC_TRBRANGE,TBM_SETPOS,TRUE,sonardata.Range
-				call	SetRange
+			mov		eax,sonardata.RangeInx
+			.if eax<MAXRANGE-1
+				inc		eax
+				invoke SetRange,eax
 				invoke UpdateBitmap
 			.endif
 		.endif
@@ -571,9 +544,7 @@ ShowScale:
 	invoke LineTo,hDC,5,ebx
 	invoke MoveToEx,hDC,1,ebx,NULL
 	invoke LineTo,hDC,9,ebx
-	mov		edi,sonardata.Range
-	lea		edi,[edi+edi*2]
-	mov		edi,sonarrange.range[edi*4]
+	mov		edi,sonardata.RangeVal
 	invoke wsprintf,addr buffer,addr szFmtDec,edi
 	invoke lstrlen,addr buffer
 	invoke TextOut,hDC,11,addr [ebx-9],addr buffer,eax
@@ -597,9 +568,7 @@ ShowScale:
 	invoke LineTo,hDC,7,ebx
 	invoke MoveToEx,hDC,3,ebx,NULL
 	invoke LineTo,hDC,11,ebx
-	mov		edi,sonardata.Range
-	lea		edi,[edi+edi*2]
-	mov		edi,sonarrange.range[edi*4]
+	mov		edi,sonardata.RangeVal
 	invoke wsprintf,addr buffer,addr szFmtDec,edi
 	invoke lstrlen,addr buffer
 	invoke TextOut,hDC,13,addr [ebx-11],addr buffer,eax
@@ -629,9 +598,7 @@ ShowScale:
 	invoke LineTo,hDC,6,ebx
 	invoke MoveToEx,hDC,2,ebx,NULL
 	invoke LineTo,hDC,10,ebx
-	mov		edi,sonardata.Range
-	lea		edi,[edi+edi*2]
-	mov		edi,sonarrange.range[edi*4]
+	mov		edi,sonardata.RangeVal
 	invoke wsprintf,addr buffer,addr szFmtDec,edi
 	invoke lstrlen,addr buffer
 	invoke TextOut,hDC,12,addr [ebx-10],addr buffer,eax
@@ -678,7 +645,7 @@ SonarProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke DeleteObject,eax
 		invoke ReleaseDC,hWin,hDC
 		mov		pixdpt,250
-		mov		eax,sonardata.Range
+		mov		eax,sonardata.RangeInx
 		lea		eax,[eax+eax*2]
 		mov		eax,sonarrange.interval[eax*4]
 		invoke SetTimer,hWin,1000,eax,NULL
@@ -700,7 +667,7 @@ SonarProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke CreateThread,NULL,NULL,addr SonarThreadProc,hWin,0,addr tid
 			invoke CloseHandle,eax
 			invoke KillTimer,hWin,1000
-			mov		eax,sonardata.Range
+			mov		eax,sonardata.RangeInx
 			lea		eax,[eax+eax*2]
 			mov		eax,sonarrange.interval[eax*4]
 			invoke SetTimer,hWin,1000,eax,NULL
@@ -727,9 +694,7 @@ SonarProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke DeleteObject,eax
 		mov		ecx,MAXXECHO
 		sub		ecx,rect.right
-		mov		eax,sonardata.Range
-		lea		eax,[eax+eax*2]
-		mov		eax,sonarrange.range[eax*4]
+		mov		eax,sonardata.RangeVal
 		mov		edx,10
 		mul		edx
 		sub		rect.bottom,12

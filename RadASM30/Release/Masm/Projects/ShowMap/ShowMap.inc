@@ -138,7 +138,7 @@ MAXSONAROPTION			equ 3								;Max number of overlays on sonar scteen
 MAXXECHO				equ 512								;Max number of sonar X-echos
 MAXYECHO				equ 512								;Max number of sonar Y-echos
 MINYECHO				equ 100
-MAXRANGE				equ 13								;Number of depth ranges
+MAXRANGE				equ 14								;Number of depth ranges
 STM32_Sonar				equ 20000000h						;STM32 ram address
 SONARBACKCOLOR			equ 0FFFF80h						;Back color of sonar
 
@@ -274,8 +274,9 @@ SONAR struct
 	hBmpOld			HBITMAP ?
 	wt				DWORD ?									;Width of sonar screen
 	options			OPTIONS MAXSONAROPTION dup(<>)			;Options for overlays on sonar screen
-	Range			DWORD ?									;Range (0 to 12)
 	AutoRange		DWORD ?									;If TRUE autorange is on
+	RangeInx		DWORD ?									;Range (0 to 13)
+	RangeVal		DWORD ?									;Range in meters
 	FishDetect		DWORD ?									;If TRUE fish detect is on
 	minyecho		DWORD ?
 	Noise			DWORD ?									;Noise reject level (0 to 255)
@@ -284,7 +285,6 @@ SONAR struct
 	Gain			WORD ?									;Gain level (0 to 31)
 	Timer			WORD ?									;Time between each echo reading
 	Skip			WORD ?									;Number of echo readings to skip
-;	EchoIndex		WORD ?
 	ADCBattery		WORD ?									;Battery level
 	ADCWaterTemp	WORD ?									;Water temprature
 	ADCAirTemp		WORD ?									;Air temprature
@@ -295,9 +295,9 @@ SONAR struct
 SONAR ends
 
 RANGE struct
-	range		DWORD ?
-	interval	DWORD ?
-	skip		DWORD ?
+	range		DWORD ?										;Range in meters
+	interval	DWORD ?										;Update rate
+	skip		DWORD ?										;Number of pixels to skip
 RANGE ends
 
 .const
@@ -357,13 +357,13 @@ szIcons				BYTE 'None',0							;Icon selection descriptions
 					BYTE 'Red dot',0
 					BYTE 'Blue dot',0,0
 
-sonarrange			RANGE <4,200,10>,<6,200,10>,
-						  <10,250,10>,<20,250,10>,
-						  <30,300,10>,<50,300,10>,
-						  <70,350,10>,<100,350,10>,
-						  <150,400,10>,<200,400,10>,
-						  <250,450,10>,<300,450,10>,
-						  <350,500,10>
+sonarrange			RANGE <2,200,10>,<4,200,10>,
+						  <6,200,10>,<10,250,10>,
+						  <20,250,10>,<30,300,10>,
+						  <50,300,10>,<70,350,10>,
+						  <100,350,10>,<150,400,10>,
+						  <200,400,10>,<250,450,10>,
+						  <300,450,10>,<350,500,10>
 
 szFmtDec			BYTE '%u',0
 szFmtDepth			BYTE '%02u',0

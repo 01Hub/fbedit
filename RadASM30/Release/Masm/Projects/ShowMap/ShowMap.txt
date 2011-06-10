@@ -71,6 +71,7 @@ Time needed for the different ranges:
 ========================================================================
 Range		Time for echo to return		Pixel time
 ========================================================================
+  2 m		1380 *   2 =   2760 us		  2760 / 512 =   5,4 us
   4 m		1380 *   4 =   5520 us		  5520 / 512 =  10,8 us
   6 m		1380 *   6 =   8280 us		  8280 / 512 =  16,1 us
  10 m		1380 *  10 =  13800 us		 13800 / 512 =  27,0 us
@@ -92,7 +93,7 @@ Runs on STM32 Discovery.
 Additional hardware
 ===================
 Output amplifier capable of delivering at least 800 watts peak to the swinger.
-For the swinger I am using 800 Vpp is needed to generate 800 watts peak.
+For the swinger I am using, 800 Vpp is needed to generate 800 watts peak.
 Input amplifier and filter tuned at 200 KHz.
 Gain control.
 Amplifier measuring amplitude.

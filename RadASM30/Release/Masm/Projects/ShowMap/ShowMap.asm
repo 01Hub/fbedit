@@ -724,12 +724,13 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke LoadCursor,hInstance,101
 		mov		hSplittV,eax
 		mov		sonardata.wt,250
-		mov		sonardata.Range,2
-		mov		sonardata.Gain,7
+		mov		sonardata.RangeInx,2
+		mov		sonardata.Gain,15
 		mov		sonardata.AutoRange,TRUE
 		mov		sonardata.FishDetect,TRUE
-		invoke SendDlgItemMessage,hWin,IDC_TRBGAIN,TBM_SETRANGE,FALSE,(15 SHL 16)+0
+		invoke SendDlgItemMessage,hWin,IDC_TRBGAIN,TBM_SETRANGE,FALSE,(31 SHL 16)+0
 		movzx	eax,sonardata.Gain
+		xor		eax,31
 		invoke SendDlgItemMessage,hWin,IDC_TRBGAIN,TBM_SETPOS,TRUE,eax
 		mov		sonardata.Noise,128
 		invoke SendDlgItemMessage,hWin,IDC_TRBNOISE,TBM_SETRANGE,FALSE,(255 SHL 16)+0
@@ -740,37 +741,29 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		movzx	eax,sonardata.PingPulses
 		invoke SendDlgItemMessage,hWin,IDC_TRBPULSES,TBM_SETPOS,TRUE,eax
 		invoke SendDlgItemMessage,hWin,IDC_TRBRANGE,TBM_SETRANGE,FALSE,((MAXRANGE-1) SHL 16)+0
-		mov		eax,sonardata.Range
-		invoke SendDlgItemMessage,hWin,IDC_TRBRANGE,TBM_SETPOS,TRUE,eax
 		.if sonardata.AutoRange
 			invoke CheckDlgButton,hWin,IDC_CHKRANGE,BST_CHECKED
 		.endif
 		.if sonardata.FishDetect
 			invoke CheckDlgButton,hWin,IDC_CHKFISHDETECT,BST_CHECKED
 		.endif
-		invoke RangeToTimer,sonardata.Range
-		mov		sonardata.Timer,ax
+		invoke SetRange,sonardata.RangeInx
 	.elseif eax==WM_HSCROLL
 		invoke SendMessage,lParam,TBM_GETPOS,0,0
 		mov		ebx,eax
 		invoke GetDlgCtrlID,lParam
 		.if eax==IDC_TRBGAIN
+			xor		ebx,31
 			mov		sonardata.Gain,bx
 		.elseif eax==IDC_TRBNOISE
 			mov		sonardata.Noise,ebx
 		.elseif eax==IDC_TRBPULSES
 			mov		sonardata.PingPulses,bl
 		.elseif eax==IDC_TRBRANGE
-			.if ebx!=sonardata.Range
-				mov		sonardata.Range,ebx
+			.if ebx!=sonardata.RangeInx
+				invoke SetRange,ebx
 				invoke UpdateBitmap
-				mov		eax,ebx
-				lea		eax,[eax+eax*2]
-				mov		eax,sonarrange.range[eax*4]
-				invoke wsprintf,addr sonardata.options.text,addr szFmtDec,eax
 				invoke InvalidateRect,hSonar,NULL,TRUE
-				invoke RangeToTimer,ebx
-				mov		sonardata.Timer,ax
 			.endif
 		.endif
 	.elseif eax==WM_COMMAND
