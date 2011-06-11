@@ -730,7 +730,6 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		sonardata.FishDetect,TRUE
 		invoke SendDlgItemMessage,hWin,IDC_TRBGAIN,TBM_SETRANGE,FALSE,(31 SHL 16)+0
 		movzx	eax,sonardata.Gain
-		xor		eax,31
 		invoke SendDlgItemMessage,hWin,IDC_TRBGAIN,TBM_SETPOS,TRUE,eax
 		mov		sonardata.Noise,128
 		invoke SendDlgItemMessage,hWin,IDC_TRBNOISE,TBM_SETRANGE,FALSE,(255 SHL 16)+0
@@ -753,7 +752,6 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		ebx,eax
 		invoke GetDlgCtrlID,lParam
 		.if eax==IDC_TRBGAIN
-			xor		ebx,31
 			mov		sonardata.Gain,bx
 		.elseif eax==IDC_TRBNOISE
 			mov		sonardata.Noise,ebx
