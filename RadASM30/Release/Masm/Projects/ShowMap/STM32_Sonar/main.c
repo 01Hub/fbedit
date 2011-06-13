@@ -145,6 +145,17 @@ void TIM1_UP_IRQHandler(void)
   tmp = tmp | (u16)STM32_Sonar.Gain;
   tmp = tmp | (u16)0x80;
   GPIO_Write(GPIOC, (u16)tmp);
+  /* Setup injected channels */
+  ADC_InjectedSequencerLengthConfig(ADC1,1);
+  /* Sonar echo */
+  ADC_InjectedChannelConfig(ADC1,ADC_Channel_2,1,ADC_SampleTime_1Cycles5);
+  // /* Battery */
+  // ADC_InjectedChannelConfig(ADC1,ADC_Channel_3,2,ADC_SampleTime_1Cycles5);
+  // /* Water temprature */
+  // ADC_InjectedChannelConfig(ADC1,ADC_Channel_4,3,ADC_SampleTime_1Cycles5);
+  // /* Air temprature */
+  // ADC_InjectedChannelConfig(ADC1,ADC_Channel_16,4,ADC_SampleTime_1Cycles5);
+  ADC_AutoInjectedConvCmd(ADC1, ENABLE);
   /* Enable TIM2 */
   TIM_Cmd(TIM2, ENABLE);
 }
@@ -203,6 +214,7 @@ void TIM2_IRQHandler(void)
   {
     /* Disable TIM2 */
     TIM2->CR1 = 0;
+    ADC_AutoInjectedConvCmd(ADC1, DISABLE);
     /* Done */
     STM32_Sonar.Start = 0;
   }
@@ -266,17 +278,17 @@ void ADC_Configuration(void)
   /* ADC1 single channel configuration -----------------------------*/
   ADC_InitStructure.ADC_NbrOfChannel = 1;
   ADC_Init(ADC1, &ADC_InitStructure);
-  /* Setup injected channels */
-  ADC_InjectedSequencerLengthConfig(ADC1,4);
-  /* Sonar echo */
-  ADC_InjectedChannelConfig(ADC1,ADC_Channel_2,1,ADC_SampleTime_1Cycles5);
-  /* Battery */
-  ADC_InjectedChannelConfig(ADC1,ADC_Channel_3,2,ADC_SampleTime_1Cycles5);
-  /* Water temprature */
-  ADC_InjectedChannelConfig(ADC1,ADC_Channel_4,3,ADC_SampleTime_1Cycles5);
-  /* Air temprature */
-  ADC_InjectedChannelConfig(ADC1,ADC_Channel_16,4,ADC_SampleTime_1Cycles5);
-  ADC_AutoInjectedConvCmd(ADC1, ENABLE);
+  // /* Setup injected channels */
+  // ADC_InjectedSequencerLengthConfig(ADC1,4);
+  // /* Sonar echo */
+  // ADC_InjectedChannelConfig(ADC1,ADC_Channel_2,1,ADC_SampleTime_1Cycles5);
+  // /* Battery */
+  // ADC_InjectedChannelConfig(ADC1,ADC_Channel_3,2,ADC_SampleTime_1Cycles5);
+  // /* Water temprature */
+  // ADC_InjectedChannelConfig(ADC1,ADC_Channel_4,3,ADC_SampleTime_1Cycles5);
+  // /* Air temprature */
+  // ADC_InjectedChannelConfig(ADC1,ADC_Channel_16,4,ADC_SampleTime_1Cycles5);
+  // ADC_AutoInjectedConvCmd(ADC1, ENABLE);
 }
 
 /*******************************************************************************

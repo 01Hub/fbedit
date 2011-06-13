@@ -285,6 +285,8 @@ SONAR struct
 	Gain			WORD ?									;Gain level (0 to 31)
 	Timer			WORD ?									;Time between each echo reading
 	Skip			WORD ?									;Number of echo readings to skip
+	nCount			DWORD ?
+	dmy1			WORD ?
 	ADCBattery		WORD ?									;Battery level
 	ADCWaterTemp	WORD ?									;Water temprature
 	ADCAirTemp		WORD ?									;Air temprature
@@ -357,16 +359,17 @@ szIcons				BYTE 'None',0							;Icon selection descriptions
 					BYTE 'Red dot',0
 					BYTE 'Blue dot',0,0
 
-sonarrange			RANGE <2,200,10>,<4,200,10>,
-						  <6,200,10>,<10,250,10>,
-						  <20,250,10>,<30,300,10>,
-						  <50,300,10>,<70,350,10>,
-						  <100,350,10>,<150,400,10>,
-						  <200,400,10>,<250,450,10>,
-						  <300,450,10>,<350,500,10>
+sonarrange			RANGE <2,200,0>,<4,200,0>,
+						  <6,200,0>,<10,250,0>,
+						  <20,250,0>,<30,300,0>,
+						  <50,300,0>,<70,350,0>,
+						  <100,350,0>,<150,400,0>,
+						  <200,400,0>,<250,450,0>,
+						  <300,450,0>,<350,500,0>
 
 szFmtDec			BYTE '%u',0
 szFmtDepth			BYTE '%02u',0
+szVolts				BYTE 'V',0
 
 .data?
 
