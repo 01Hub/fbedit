@@ -31,6 +31,7 @@ typedef struct
 static STM32_SonarTypeDef STM32_Sonar;         // 0x20000000
 vu8 BlueLED;
 vu8 GreenLED;
+GPIO_InitTypeDef GPIO_InitStructure;
 
 /* Private function prototypes -----------------------------------------------*/
 void RCC_Configuration(void);
@@ -82,7 +83,6 @@ int main(void)
       /* Toggle blue led */
       if (BlueLED)
       {
-        // GPIO_WriteBit(GPIOC, GPIO_Pin_8, Bit_RESET);
         BlueLED = 0;
       }
       else
@@ -104,6 +104,11 @@ int main(void)
       TIM1->CNT = 0;
       /* Set repetirion counter */
       TIM1->RCR = STM32_Sonar.PingPulses;
+      /* TIM1 channel 1 pin (PA.08) and TIM1 channel 2 pin (PA.09) configuration */
+      GPIO_InitStructure.GPIO_Pin = GPIO_Pin_8 | GPIO_Pin_9;
+      GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
+      GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+      GPIO_Init(GPIOA, &GPIO_InitStructure);
       /* Enable TIM1 */
       TIM_Cmd(TIM1, ENABLE);
     }
@@ -125,6 +130,11 @@ int main(void)
 void TIM1_UP_IRQHandler(void)
 {
   u16 tmp;
+  /*  Configure pin (PA.08) and pin (PA.09) */
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_8 | GPIO_Pin_9;
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+  GPIO_Init(GPIOA, &GPIO_InitStructure);
   /* Clear TIM1 Update interrupt pending bit */
   TIM1->SR = (u16)~TIM_IT_Update;
   /* Disable TIM1 */
@@ -133,6 +143,7 @@ void TIM1_UP_IRQHandler(void)
   tmp = GPIO_ReadInputData(GPIOC);
   tmp = tmp & (u16)0xFF00;
   tmp = tmp | (u16)STM32_Sonar.Gain;
+  tmp = tmp | (u16)0x80;
   GPIO_Write(GPIOC, (u16)tmp);
   /* Enable TIM2 */
   TIM_Cmd(TIM2, ENABLE);
@@ -329,7 +340,6 @@ void RCC_Configuration(void)
 *******************************************************************************/
 void GPIO_Configuration(void)
 {
-  GPIO_InitTypeDef GPIO_InitStructure;
   /* Configure  ADC Channel4 (PA.04), ADC Channel3 (PA.03) and ADC Channel2 (PA.02) as analog input */
   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_4 | GPIO_Pin_3 | GPIO_Pin_2;
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AIN;
@@ -340,16 +350,12 @@ void GPIO_Configuration(void)
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
   GPIO_Init(GPIOC, &GPIO_InitStructure);
-  /* Configure PC04, PC03, PC02, PC01 amd PC00 as open drain output */
-  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_4 | GPIO_Pin_3 | GPIO_Pin_2 | GPIO_Pin_1 | GPIO_Pin_0;
+  /* Configure PC07, PC06, PC05, PC04, PC03, PC02, PC01 amd PC00 as open drain output */
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_7 | GPIO_Pin_6 | GPIO_Pin_5 | GPIO_Pin_4 | GPIO_Pin_3 | GPIO_Pin_2 | GPIO_Pin_1 | GPIO_Pin_0;
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_OD;
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
   GPIO_Init(GPIOC, &GPIO_InitStructure);
-  /* TIM1 channel 1 pin (PA.08) and TIM1 channel 2 pin (PA.09) configuration */
-  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_8 | GPIO_Pin_9;
-  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
-  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-  GPIO_Init(GPIOA, &GPIO_InitStructure);
+  GPIO_WriteBit(GPIOA, GPIO_Pin_8 | GPIO_Pin_9, Bit_SET);
 }
 
 /*******************************************************************************

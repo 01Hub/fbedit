@@ -120,39 +120,27 @@ UpdateBitmap proc uses ebx esi edi
 			mov		eax,MAXYECHO
 			mul		esi
 			movzx	eax,sonardata.sonar[eax+edi]
-			.if eax==255
-				;Large fish
-				mov		eax,edi
-				movzx	ecx,sonardata.sonarrange[esi]
-				lea		ecx,[ecx+ecx*2]
-				mov		ecx,sonarrange.range[ecx*4]
-				mul		ecx
-				div		ebx
-				mov		ecx,eax
-				invoke ImageList_Draw,hIml,18,sonardata.mDC,addr [esi-14],addr [ecx-8],ILD_TRANSPARENT
-			.else
-				.if eax>sonardata.Noise
-					.if eax<40
-						mov		eax,40h
-					.endif
-					xor		eax,0FFh
-					mov		ah,al
-					shl		eax,8
-					mov		al,ah
-				.else
-					mov		eax,SONARBACKCOLOR
+			.if eax>sonardata.Noise
+				.if eax<40
+					mov		eax,40h
 				.endif
-				push	eax
-				mov		eax,edi
-				movzx	ecx,sonardata.sonarrange[esi]
-				lea		ecx,[ecx+ecx*2]
-				mov		ecx,sonarrange.range[ecx*4]
-				mul		ecx
-				div		ebx
-				mov		ecx,eax
-				pop		eax
-				invoke SetPixel,sonardata.mDC,esi,ecx,eax
+				xor		eax,0FFh
+				mov		ah,al
+				shl		eax,8
+				mov		al,ah
+			.else
+				mov		eax,SONARBACKCOLOR
 			.endif
+			push	eax
+			mov		eax,edi
+			movzx	ecx,sonardata.sonarrange[esi]
+			lea		ecx,[ecx+ecx*2]
+			mov		ecx,sonarrange.range[ecx*4]
+			mul		ecx
+			div		ebx
+			mov		ecx,eax
+			pop		eax
+			invoke SetPixel,sonardata.mDC,esi,ecx,eax
 			inc		edi
 		.endw
 		inc		esi
@@ -273,8 +261,8 @@ ScrollEchoArray:
 	mov		[edi],al
 	mov		esi,offset sonardata.sonar+MAXYECHO
 	mov		edi,offset sonardata.sonar
-	mov		ecx,MAXXECHO*MAXYECHO-MAXYECHO
-	rep movsb
+	mov		ecx,(MAXXECHO*MAXYECHO-MAXYECHO)/4
+	rep movsd
 	retn
 
 CalculateDepth:
@@ -355,9 +343,8 @@ FindFish:
 				mov		eax,edi
 				sub		eax,16
 				.if sdword ptr eax>ebx
-					mov		sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO],255
 					;Large fish
-					invoke ImageList_Draw,hIml,18,sonardata.mDC,MAXXECHO-14,addr [ebx-8],ILD_TRANSPARENT
+					mov		sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO],255
 				.endif
 			.endif
 			inc		ebx
@@ -526,7 +513,42 @@ ShowRangeDepthTempScale proc uses ebx esi edi,hDC:HDC
 		inc		ebx
 	.endw
 	call	ShowScale
+	call	ShowFish
 	ret
+
+ShowFish:
+	invoke GetClientRect,hSonar,addr rcsonar
+	mov		ebx,sonardata.RangeVal
+	mov		esi,512
+	sub		esi,rect.right
+	.while esi<MAXXECHO
+		xor		edi,edi
+		.while edi<MAXYECHO
+			mov		eax,MAXYECHO
+			mul		esi
+			movzx	eax,sonardata.sonar[eax+edi]
+			.if eax==255
+				;Large fish
+				mov		eax,edi
+				movzx	ecx,sonardata.sonarrange[esi]
+				lea		ecx,[ecx+ecx*2]
+				mov		ecx,sonarrange.range[ecx*4]
+				mul		ecx
+				div		ebx
+				mov		ecx,rect.bottom
+				mul		ecx
+				mov		ecx,MAXYECHO
+				div		ecx
+				mov		ecx,eax
+				mov		edx,rect.right
+				sub		edx,512
+				invoke ImageList_Draw,hIml,18,hDC,addr [esi+edx-14],addr [ecx-8],ILD_TRANSPARENT
+			.endif
+			inc		edi
+		.endw
+		inc		esi
+	.endw
+	retn
 
 ShowScale:
 	invoke GetStockObject,WHITE_PEN
