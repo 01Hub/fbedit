@@ -724,10 +724,10 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke LoadCursor,hInstance,101
 		mov		hSplittV,eax
 		mov		sonardata.wt,250
-		mov		sonardata.RangeInx,2
+		mov		sonardata.RangeInx,10
 		mov		sonardata.Gain,63
 		mov		sonardata.PingPulses,7
-		mov		sonardata.Noise,128
+		mov		sonardata.Noise,31
 		mov		sonardata.AutoRange,TRUE
 		mov		sonardata.FishDetect,TRUE
 		invoke SendDlgItemMessage,hWin,IDC_TRBGAIN,TBM_SETRANGE,FALSE,(127 SHL 16)+0
@@ -740,6 +740,8 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		movzx	eax,sonardata.PingPulses
 		invoke SendDlgItemMessage,hWin,IDC_TRBPULSES,TBM_SETPOS,TRUE,eax
 		invoke SendDlgItemMessage,hWin,IDC_TRBRANGE,TBM_SETRANGE,FALSE,((MAXRANGE-1) SHL 16)+0
+		mov		eax,sonardata.RangeInx
+		invoke SendDlgItemMessage,hWin,IDC_TRBRANGE,TBM_SETPOS,TRUE,eax
 		.if sonardata.AutoRange
 			invoke CheckDlgButton,hWin,IDC_CHKRANGE,BST_CHECKED
 		.endif

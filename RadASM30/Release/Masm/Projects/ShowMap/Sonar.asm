@@ -95,7 +95,6 @@ SetRange proc uses ebx esi edi,RangeInx:DWORD
 	invoke wsprintf,addr sonardata.options.text,addr szFmtDec,eax
 	invoke RangeToTimer,RangeInx
 	mov		sonardata.Timer,ax
-	invoke SendDlgItemMessage,hWnd,IDC_TRBRANGE,TBM_SETPOS,TRUE,RangeInx
 	ret
 
 SetRange endp
@@ -128,19 +127,17 @@ UpdateBitmap proc uses ebx esi edi
 				mov		ah,al
 				shl		eax,8
 				mov		al,ah
-			.else
-				mov		eax,SONARBACKCOLOR
+				push	eax
+				mov		eax,edi
+				movzx	ecx,sonardata.sonarrange[esi]
+				lea		ecx,[ecx+ecx*2]
+				mov		ecx,sonarrange.range[ecx*4]
+				mul		ecx
+				div		ebx
+				mov		ecx,eax
+				pop		eax
+				invoke SetPixel,sonardata.mDC,esi,ecx,eax
 			.endif
-			push	eax
-			mov		eax,edi
-			movzx	ecx,sonardata.sonarrange[esi]
-			lea		ecx,[ecx+ecx*2]
-			mov		ecx,sonarrange.range[ecx*4]
-			mul		ecx
-			div		ebx
-			mov		ecx,eax
-			pop		eax
-			invoke SetPixel,sonardata.mDC,esi,ecx,eax
 			inc		edi
 		.endw
 		inc		esi
@@ -176,7 +173,7 @@ SonarThreadProc proc uses ebx esi edi,lParam:DWORD
 		.if eax!=sonardata.RangeInx
 			invoke SetRange,eax
 			invoke UpdateBitmap
-			mov		sonardata.nCount,0
+			mov		sonardata.nCount,4
 		.endif
 		mov		eax,sonardata.RangeInx
 	 	;Upload Start, PingPulses, Gain, Timer and Skip
@@ -196,7 +193,7 @@ SonarThreadProc proc uses ebx esi edi,lParam:DWORD
 					invoke STLinkWrite,hWnd,STM32_Sonar,addr sonardata.Start,8
 				.endif
 			.endif
-			movzx		eax,sonardata.ADCBattery
+			movzx	eax,sonardata.ADCBattery
 			mov		ecx,100
 			mul		ecx
 			mov		ecx,1625
@@ -213,10 +210,16 @@ SonarThreadProc proc uses ebx esi edi,lParam:DWORD
 			mov		fSTLink,0
 		.endif
 	.elseif fSTLink==IDIGNORE
+		invoke SendDlgItemMessage,hWnd,IDC_TRBRANGE,TBM_GETPOS,0,0
+		.if eax!=sonardata.RangeInx
+			invoke SetRange,eax
+			invoke UpdateBitmap
+			mov		sonardata.nCount,4
+		.endif
 		mov		eax,sonardata.RangeInx
 		call	ScrollEchoArray
 		invoke RtlZeroMemory,offset sonardata.sonar[(MAXXECHO*MAXYECHO)-MAXYECHO],MAXYECHO
-		.if !(pixcnt & 255)
+		.if !(pixcnt & 63)
 			;Random direction
 			invoke Random,30
 			mov		pixdir,eax
@@ -305,17 +308,15 @@ TestRangeChange:
 		;Test range decrement
 		mov		eax,sonardata.RangeInx
 		mov		ebx,dptinx
-		.if eax && ebx<MAXYECHO/5 && ebx
+		.if eax && ebx<MAXYECHO/3 && ebx
 			dec		eax
-			invoke SetRange,eax
-			invoke UpdateBitmap
+			invoke SendDlgItemMessage,hWnd,IDC_TRBRANGE,TBM_SETPOS,TRUE,eax
 		.endif
 		;Test range increment
 		mov		eax,sonardata.RangeInx
 		.if eax<(MAXRANGE-1) && (ebx>(MAXYECHO-MAXYECHO/5) || !ebx)
 			inc		eax
-			invoke SetRange,eax
-			invoke UpdateBitmap
+			invoke SendDlgItemMessage,hWnd,IDC_TRBRANGE,TBM_SETPOS,TRUE,eax
 		.endif
 	.endif
 	retn
@@ -347,16 +348,26 @@ TestDepth:
 
 FindDepth:
 	xor		ebx,ebx
+	xor		edx,edx
 	.while ebx<MAXYECHO-17
 		movzx	eax,sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO]
-		.if eax<sonardata.Noise
+		.if eax<=sonardata.Noise
 			movzx	eax,sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*2]
-			.if eax<sonardata.Noise
-				movzx	edx,sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*3]
-				.if eax<sonardata.Noise
-					.break
+			.if eax<=sonardata.Noise
+				movzx	eax,sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*3]
+				.if eax<=sonardata.Noise
+					inc		edx
+					.if edx>=3
+						.break
+					.endif
+				.else
+					xor		edx,edx
 				.endif
+			.else
+				xor		edx,edx
 			.endif
+		.else
+			xor		edx,edx
 		.endif
 		inc		ebx
 	.endw
@@ -364,8 +375,14 @@ FindDepth:
 		inc		ebx
 		movzx	eax,sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO]
 		.if eax>sonardata.Noise
-			call	TestDepth
-			.break .if eax
+			movzx	eax,sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO]
+			.if eax>sonardata.Noise
+				movzx	eax,sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO]
+				.if eax>sonardata.Noise
+					call	TestDepth
+					.break .if eax
+				.endif
+			.endif
 		.endif
 		xor		eax,eax
 	.endw
@@ -420,9 +437,10 @@ Update:
 		invoke WriteFile,sonardata.hLog,addr sonardata.RangeInx,1,addr dwwrite,NULL
 		invoke WriteFile,sonardata.hLog,addr sonardata.sonar[MAXXECHO*MAXYECHO-MAXYECHO],MAXYECHO,addr dwwrite,NULL
 	.endif
-	.if sonardata.nCount<4
+	.if sonardata.nCount
 		invoke InvalidateRect,hSonar,NULL,TRUE
 		invoke UpdateWindow,hSonar
+		dec		sonardata.nCount
 	.else
 		call	FindDepth
 		push	eax
@@ -431,12 +449,12 @@ Update:
 		invoke UpdateWindow,hSonar
 		pop		eax
 		.if !eax
-			.if sonardata.AutoRange && dptinx
+			;Depth not found, increment range
+			.if sonardata.AutoRange
 				mov		eax,sonardata.RangeInx
 				.if eax<MAXRANGE-1
 					inc		eax
-					invoke SetRange,eax
-					invoke UpdateBitmap
+					invoke SendDlgItemMessage,hWnd,IDC_TRBRANGE,TBM_SETPOS,TRUE,eax
 				.endif
 			.endif
 		.else
@@ -445,7 +463,6 @@ Update:
 			.endif
 		.endif
 	.endif
-	inc		sonardata.nCount
 	retn
 
 SonarThreadProc endp

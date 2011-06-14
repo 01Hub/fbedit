@@ -41,6 +41,7 @@ void ADC_Startup(void);
 void ADC_Configuration(void);
 void TIM1_Configuration(void);
 void TIM2_Configuration(void);
+u16 GetADCValue(u8 Channel);
 
 /* Private functions ---------------------------------------------------------*/
 
@@ -91,11 +92,11 @@ int main(void)
         BlueLED = 1;
       }
       /* Read battery */
-      STM32_Sonar.ADCBatt = ADC_GetInjectedConversionValue(ADC1, ADC_InjectedChannel_2);
+      STM32_Sonar.ADCBatt = GetADCValue(ADC_InjectedChannel_2);
       /* Read water temprature */
-      STM32_Sonar.ADCWaterTemp = ADC_GetInjectedConversionValue(ADC1, ADC_InjectedChannel_3);
+      STM32_Sonar.ADCWaterTemp = GetADCValue(ADC_InjectedChannel_3);
       /* Read air temprature */
-      STM32_Sonar.ADCAirTemp = ADC_GetInjectedConversionValue(ADC1, ADC_InjectedChannel_4);
+      STM32_Sonar.ADCAirTemp = GetADCValue(ADC_InjectedChannel_4);
       /* TIM2 configuration */
       TIM2_Configuration();
       /* Reset echo index */
@@ -118,6 +119,46 @@ int main(void)
       i++;
     }
   }
+}
+
+/*******************************************************************************
+* Function Name  : GetADCValue
+* Description    : This function sums 8 ADC conversions and returns the average.
+* Input          : ADC channel
+* Output         : None
+* Return         : The ADC cannel reading
+*******************************************************************************/
+u16 GetADCValue(u8 Channel)
+{
+  u8 i;
+  u16 ADCValue;
+  ADC_InitTypeDef ADC_InitStructure;
+
+  ADC_InitStructure.ADC_Mode = ADC_Mode_Independent;
+  ADC_InitStructure.ADC_ScanConvMode = ENABLE;
+  ADC_InitStructure.ADC_ContinuousConvMode = ENABLE;
+  ADC_InitStructure.ADC_ExternalTrigConv = ADC_ExternalTrigConv_None;
+  ADC_InitStructure.ADC_DataAlign = ADC_DataAlign_Right;
+  ADC_InitStructure.ADC_NbrOfChannel = 1;
+  ADC_Init(ADC1, &ADC_InitStructure);
+  /* ADC1 regular channel2 configuration */ 
+  ADC_RegularChannelConfig(ADC1, Channel, 1, ADC_SampleTime_1Cycles5);
+  /* Enable ADC1 */
+  ADC_Cmd(ADC1, ENABLE);
+  /* Add 8 conversions to reduce thermal noise */
+  while (i<8)
+  {
+    ADC_ClearFlag(ADC1, ADC_FLAG_EOC);
+    while (ADC_GetFlagStatus(ADC1, ADC_FLAG_EOC) == RESET)
+    {
+    }
+    ADCValue = ADCValue + ADC1->DR;
+    i++;
+  }
+  /* Disable ADC1 */
+  ADC_Cmd(ADC1, DISABLE);
+  /* Return average of the 8 added conversions */
+  return (ADCValue >> 3);
 }
 
 /*******************************************************************************
@@ -145,16 +186,7 @@ void TIM1_UP_IRQHandler(void)
   tmp = tmp | (u16)STM32_Sonar.Gain;
   tmp = tmp | (u16)0x80;
   GPIO_Write(GPIOC, (u16)tmp);
-  /* Setup injected channels */
-  ADC_InjectedSequencerLengthConfig(ADC1,1);
-  /* Sonar echo */
-  ADC_InjectedChannelConfig(ADC1,ADC_Channel_2,1,ADC_SampleTime_1Cycles5);
-  // /* Battery */
-  // ADC_InjectedChannelConfig(ADC1,ADC_Channel_3,2,ADC_SampleTime_1Cycles5);
-  // /* Water temprature */
-  // ADC_InjectedChannelConfig(ADC1,ADC_Channel_4,3,ADC_SampleTime_1Cycles5);
-  // /* Air temprature */
-  // ADC_InjectedChannelConfig(ADC1,ADC_Channel_16,4,ADC_SampleTime_1Cycles5);
+  /* Enable injected channels */
   ADC_AutoInjectedConvCmd(ADC1, ENABLE);
   /* Enable TIM2 */
   TIM_Cmd(TIM2, ENABLE);
@@ -169,46 +201,10 @@ void TIM1_UP_IRQHandler(void)
 *******************************************************************************/
 void TIM2_IRQHandler(void)
 {
-  // /* Clear TIM2 Update interrupt pending bit */
-  // asm("mov    r0,#0x40000000");       // TIM2
-  // asm("movw   r2,#0xFFFE");
-  // asm("strh   r2,[r0,#0x10]");
-  // asm("mov    r1,#0x20000000");       // STM32_Sonar
-  // asm("ldrh   r2,[r1,#0x6]");         // STM32_Sonar.Skip
-  // asm("cbz    r2,TIM2_IRQHandler1");
-  // asm("add    r2,#0xFFFFFFFF");
-  // asm("strh   r2,[r1,#0x6]");         // STM32_Sonar.Skip
-  // asm("movw   r2,#0x0");
-  // asm("b      TIM2_IRQHandler2");
-  // asm("TIM2_IRQHandler1:");
-  // asm("movw   r2,#0x243C");
-  // asm("movt   r2,#0x4100");           // ADC1->ADC_InjectedChannel_1
-  // asm("ldr    r2,[r2]");
-  // asm("uxth   r2,r2");
-  // asm("lsr    r2,#0x4");
-  // asm("TIM2_IRQHandler2:");
-  // asm("ldrh   r3,[r1,#0x8]");         // STM32_Sonar.EchoIndex
-  // asm("add    r3,r3,r1");
-  // asm("strb   r2,[r3,#0x10]");        // STM32_Sonar.Echo[STM32_Sonar.EchoIndex]
-  // asm("ldrh   r3,[r1,#0x8]");         // STM32_Sonar.EchoIndex
-  // asm("add    r3,#0x1");
-  // asm("strh   r3,[r1,#0x8]");
-  // asm("sub    r3,#0x200");            // MAXECHO
-  // asm("cbnz   r3,TIM2_IRQHandler3");
-  // asm("strh   r3,[r0]");              // TIM2->CR1
-  // asm("strb   r3,[r1]");              // STM32_Sonar.Start
-  // asm("TIM2_IRQHandler3:");
   /* Clear TIM2 Update interrupt pending bit */
   TIM2->SR = (u16)~TIM_IT_Update;
-  if (STM32_Sonar.Skip)
-  {
-    STM32_Sonar.Skip--;
-    STM32_Sonar.Echo[STM32_Sonar.EchoIndex] = 0;
-  }
-  else
-  {
-    STM32_Sonar.Echo[STM32_Sonar.EchoIndex] = (ADC_GetInjectedConversionValue(ADC1, ADC_InjectedChannel_1) >> 4);
-  }
+  /* Get echo */
+  STM32_Sonar.Echo[STM32_Sonar.EchoIndex] = (ADC_GetInjectedConversionValue(ADC1, ADC_InjectedChannel_1) >> 4);
   STM32_Sonar.EchoIndex++;
   if (STM32_Sonar.EchoIndex == MAXECHO)
   {
@@ -278,17 +274,10 @@ void ADC_Configuration(void)
   /* ADC1 single channel configuration -----------------------------*/
   ADC_InitStructure.ADC_NbrOfChannel = 1;
   ADC_Init(ADC1, &ADC_InitStructure);
-  // /* Setup injected channels */
-  // ADC_InjectedSequencerLengthConfig(ADC1,4);
-  // /* Sonar echo */
-  // ADC_InjectedChannelConfig(ADC1,ADC_Channel_2,1,ADC_SampleTime_1Cycles5);
-  // /* Battery */
-  // ADC_InjectedChannelConfig(ADC1,ADC_Channel_3,2,ADC_SampleTime_1Cycles5);
-  // /* Water temprature */
-  // ADC_InjectedChannelConfig(ADC1,ADC_Channel_4,3,ADC_SampleTime_1Cycles5);
-  // /* Air temprature */
-  // ADC_InjectedChannelConfig(ADC1,ADC_Channel_16,4,ADC_SampleTime_1Cycles5);
-  // ADC_AutoInjectedConvCmd(ADC1, ENABLE);
+  /* Setup injected channels */
+  ADC_InjectedSequencerLengthConfig(ADC1,1);
+  /* Sonar echo */
+  ADC_InjectedChannelConfig(ADC1,ADC_Channel_2,1,ADC_SampleTime_1Cycles5);
 }
 
 /*******************************************************************************
