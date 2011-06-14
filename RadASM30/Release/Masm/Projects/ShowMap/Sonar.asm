@@ -169,13 +169,6 @@ SonarThreadProc proc uses ebx esi edi,lParam:DWORD
 			mov		sonardata.hReply,0
 		.endif
 	.elseif fSTLink && fSTLink!=IDIGNORE
-		invoke SendDlgItemMessage,hWnd,IDC_TRBRANGE,TBM_GETPOS,0,0
-		.if eax!=sonardata.RangeInx
-			invoke SetRange,eax
-			invoke UpdateBitmap
-			mov		sonardata.nCount,4
-		.endif
-		mov		eax,sonardata.RangeInx
 	 	;Upload Start, PingPulses, Gain, Timer and Skip
 	 	mov		sonardata.Start,0
 		invoke STLinkWrite,hWnd,STM32_Sonar,addr sonardata.Start,8
@@ -196,7 +189,7 @@ SonarThreadProc proc uses ebx esi edi,lParam:DWORD
 			movzx	eax,sonardata.ADCBattery
 			mov		ecx,100
 			mul		ecx
-			mov		ecx,1625
+			mov		ecx,1640
 			div		ecx
 			invoke wsprintf,addr buffer,addr szFmtDec,eax
 			invoke strlen,addr buffer
@@ -463,6 +456,12 @@ Update:
 			.endif
 		.endif
 	.endif
+		invoke SendDlgItemMessage,hWnd,IDC_TRBRANGE,TBM_GETPOS,0,0
+		.if eax!=sonardata.RangeInx
+			invoke SetRange,eax
+			invoke UpdateBitmap
+			mov		sonardata.nCount,4
+		.endif
 	retn
 
 SonarThreadProc endp

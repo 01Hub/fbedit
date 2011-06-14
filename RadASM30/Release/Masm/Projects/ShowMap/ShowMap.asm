@@ -724,10 +724,10 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke LoadCursor,hInstance,101
 		mov		hSplittV,eax
 		mov		sonardata.wt,250
-		mov		sonardata.RangeInx,10
+		mov		sonardata.RangeInx,0
 		mov		sonardata.Gain,63
 		mov		sonardata.PingPulses,7
-		mov		sonardata.Noise,31
+		mov		sonardata.Noise,95
 		mov		sonardata.AutoRange,TRUE
 		mov		sonardata.FishDetect,TRUE
 		invoke SendDlgItemMessage,hWin,IDC_TRBGAIN,TBM_SETRANGE,FALSE,(127 SHL 16)+0

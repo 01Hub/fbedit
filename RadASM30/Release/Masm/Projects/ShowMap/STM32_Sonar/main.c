@@ -92,11 +92,11 @@ int main(void)
         BlueLED = 1;
       }
       /* Read battery */
-      STM32_Sonar.ADCBatt = GetADCValue(ADC_InjectedChannel_2);
+      STM32_Sonar.ADCBatt = GetADCValue(ADC_Channel_3);
       /* Read water temprature */
-      STM32_Sonar.ADCWaterTemp = GetADCValue(ADC_InjectedChannel_3);
+      STM32_Sonar.ADCWaterTemp = GetADCValue(ADC_Channel_4);
       /* Read air temprature */
-      STM32_Sonar.ADCAirTemp = GetADCValue(ADC_InjectedChannel_4);
+      STM32_Sonar.ADCAirTemp = GetADCValue(ADC_Channel_16);
       /* TIM2 configuration */
       TIM2_Configuration();
       /* Reset echo index */
@@ -130,10 +130,12 @@ int main(void)
 *******************************************************************************/
 u16 GetADCValue(u8 Channel)
 {
-  u8 i;
-  u16 ADCValue;
+  vu8 i;
+  vu16 ADCValue;
   ADC_InitTypeDef ADC_InitStructure;
 
+  i = 0;
+  ADCValue = 0;
   ADC_InitStructure.ADC_Mode = ADC_Mode_Independent;
   ADC_InitStructure.ADC_ScanConvMode = ENABLE;
   ADC_InitStructure.ADC_ContinuousConvMode = ENABLE;
@@ -142,12 +144,12 @@ u16 GetADCValue(u8 Channel)
   ADC_InitStructure.ADC_NbrOfChannel = 1;
   ADC_Init(ADC1, &ADC_InitStructure);
   /* ADC1 regular channel2 configuration */ 
-  ADC_RegularChannelConfig(ADC1, Channel, 1, ADC_SampleTime_1Cycles5);
-  /* Enable ADC1 */
-  ADC_Cmd(ADC1, ENABLE);
+  ADC_RegularChannelConfig(ADC1, Channel, 1, ADC_SampleTime_239Cycles5);
+  /* Start ADC1 Software Conversion */ 
+  ADC_SoftwareStartConvCmd(ADC1, ENABLE);
   /* Add 8 conversions to reduce thermal noise */
   while (i<8)
-  {
+    {
     ADC_ClearFlag(ADC1, ADC_FLAG_EOC);
     while (ADC_GetFlagStatus(ADC1, ADC_FLAG_EOC) == RESET)
     {
@@ -155,8 +157,8 @@ u16 GetADCValue(u8 Channel)
     ADCValue = ADCValue + ADC1->DR;
     i++;
   }
-  /* Disable ADC1 */
-  ADC_Cmd(ADC1, DISABLE);
+  /* Stop ADC1 Software Conversion */ 
+  ADC_SoftwareStartConvCmd(ADC1, DISABLE);
   /* Return average of the 8 added conversions */
   return (ADCValue >> 3);
 }
@@ -253,7 +255,7 @@ void ADC_Startup(void)
 /*******************************************************************************
 * Function Name  : ADC_Configuration
 * Description    : This function prepares ADC1 for Injected conversion
-*                  on channel 2, 3, 4 and channel 16.
+*                  on channel 2.
 * Input          : None
 * Output         : None
 * Return         : None
@@ -277,7 +279,7 @@ void ADC_Configuration(void)
   /* Setup injected channels */
   ADC_InjectedSequencerLengthConfig(ADC1,1);
   /* Sonar echo */
-  ADC_InjectedChannelConfig(ADC1,ADC_Channel_2,1,ADC_SampleTime_1Cycles5);
+  ADC_InjectedChannelConfig(ADC1,ADC_Channel_2,1,ADC_SampleTime_28Cycles5);
 }
 
 /*******************************************************************************
