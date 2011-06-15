@@ -290,8 +290,7 @@ SONAR struct
 	ADCBattery		WORD ?									;Battery level
 	ADCWaterTemp	WORD ?									;Water temprature
 	ADCAirTemp		WORD ?									;Air temprature
-	sonarrange		BYTE MAXXECHO dup(?)					;Range array
-	sonar			BYTE MAXXECHO*MAXYECHO dup(?)			;Echo array
+	sonar			BYTE MAXXECHO*MAXYECHO dup(?)			;Echo array. The first byte in each x element is the range index
 	hReply			HANDLE ?								;Handle of replay file
 	hLog			HANDLE ?								;Handle of log file
 SONAR ends

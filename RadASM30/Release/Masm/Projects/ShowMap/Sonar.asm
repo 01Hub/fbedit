@@ -99,6 +99,72 @@ SetRange proc uses ebx esi edi,RangeInx:DWORD
 
 SetRange endp
 
+UpdateBitmapTile proc uses ebx esi edi,x:DWORD,wt:DWORD
+	LOCAL	hDC:HDC
+	LOCAL	mDC:HDC
+	LOCAL	rect:RECT
+
+	invoke GetDC,hSonar
+	mov		hDC,eax
+	invoke CreateCompatibleDC,hDC
+	mov		mDC,eax
+	invoke CreateCompatibleBitmap,hDC,wt,MAXYECHO
+	invoke SelectObject,mDC,eax
+	push	eax
+	invoke ReleaseDC,hSonar,hDC
+	mov		rect.left,0
+	mov		rect.top,0
+	mov		eax,wt
+	mov		rect.right,eax
+	mov		rect.bottom,MAXYECHO
+	invoke CreateSolidBrush,SONARBACKCOLOR
+	push	eax
+	invoke FillRect,mDC,addr rect,eax
+	pop		eax
+	invoke DeleteObject,eax
+	xor		esi,esi
+	.while esi<wt
+		xor		edi,edi
+		.while edi<MAXYECHO
+			mov		eax,MAXYECHO
+			mov		edx,esi
+			add		edx,x
+			mul		edx
+			movzx	eax,sonardata.sonar[eax+edi]
+			.if eax>=sonardata.Noise
+				.if eax<20h
+					mov		eax,20h
+				.endif
+				xor		eax,0FFh
+				mov		ah,al
+				shl		eax,8
+				mov		al,ah
+				invoke SetPixel,mDC,esi,edi,eax
+			.endif
+			inc		edi
+		.endw
+		inc		esi
+	.endw
+	mov		eax,x
+	mov		edx,MAXYECHO
+	mul		edx
+	mov		edx,eax
+	movzx	ecx,sonardata.sonar[edx]
+	lea		ecx,[ecx+ecx*2]
+	mov		ecx,sonarrange.range[ecx*4]
+	mov		eax,MAXYECHO
+	mul		ecx
+	mov		ecx,sonardata.RangeVal
+	div		ecx
+	invoke StretchBlt,sonardata.mDC,x,0,wt,eax,mDC,0,0,wt,MAXYECHO,SRCCOPY
+	pop		eax
+	invoke SelectObject,mDC,eax
+	invoke DeleteObject,eax
+	invoke DeleteDC,mDC
+	ret
+
+UpdateBitmapTile endp
+
 UpdateBitmap proc uses ebx esi edi
 	LOCAL	rect:RECT
 
@@ -111,36 +177,23 @@ UpdateBitmap proc uses ebx esi edi
 	invoke FillRect,sonardata.mDC,addr rect,eax
 	pop		eax
 	invoke DeleteObject,eax
-	mov		ebx,sonardata.RangeVal
 	xor		esi,esi
 	.while esi<MAXXECHO
-		xor		edi,edi
-		.while edi<MAXYECHO
+		mov		eax,MAXYECHO
+		mul		esi
+		movzx	ebx,sonardata.sonar[eax]
+		mov		ecx,esi
+		.while ecx<MAXXECHO
+			inc		ecx
 			mov		eax,MAXYECHO
-			mul		esi
-			movzx	eax,sonardata.sonar[eax+edi]
-			.if eax>sonardata.Noise
-				.if eax<40
-					mov		eax,40h
-				.endif
-				xor		eax,0FFh
-				mov		ah,al
-				shl		eax,8
-				mov		al,ah
-				push	eax
-				mov		eax,edi
-				movzx	ecx,sonardata.sonarrange[esi]
-				lea		ecx,[ecx+ecx*2]
-				mov		ecx,sonarrange.range[ecx*4]
-				mul		ecx
-				div		ebx
-				mov		ecx,eax
-				pop		eax
-				invoke SetPixel,sonardata.mDC,esi,ecx,eax
-			.endif
-			inc		edi
+			mul		ecx
+			movzx	eax,sonardata.sonar[eax]
+			.break .if eax!=ebx
 		.endw
-		inc		esi
+		push	ecx
+		sub		ecx,esi
+		invoke UpdateBitmapTile,esi,ecx
+		pop		esi
 	.endw
 	ret
 
@@ -153,17 +206,10 @@ SonarThreadProc proc uses ebx esi edi,lParam:DWORD
 	LOCAL	dwwrite:DWORD
 
 	.if sonardata.hReply
-		invoke ReadFile,sonardata.hReply,addr sonardata.RangeInx,1,addr dwwrite,NULL
-		.if dwwrite==1
-			mov		eax,sonardata.RangeInx
-			call	ScrollEchoArray
-			invoke ReadFile,sonardata.hReply,addr sonardata.sonar[MAXXECHO*MAXYECHO-MAXYECHO],MAXYECHO,addr dwwrite,NULL
-			.if dwwrite==MAXYECHO
-				call	Update
-			.else
-				invoke CloseHandle,sonardata.hReply
-				mov		sonardata.hReply,0
-			.endif
+		call	ScrollEchoArray
+		invoke ReadFile,sonardata.hReply,addr sonardata.sonar[MAXXECHO*MAXYECHO-MAXYECHO],MAXYECHO,addr dwwrite,NULL
+		.if dwwrite==MAXYECHO
+			call	Update
 		.else
 			invoke CloseHandle,sonardata.hReply
 			mov		sonardata.hReply,0
@@ -268,12 +314,6 @@ SonarThreadProc proc uses ebx esi edi,lParam:DWORD
 	ret
 
 ScrollEchoArray:
-	mov		esi,offset sonardata.sonarrange+1
-	mov		edi,offset sonardata.sonarrange
-	mov		ecx,MAXXECHO-1
-	rep movsb
-	mov		eax,sonardata.RangeInx
-	mov		[edi],al
 	mov		esi,offset sonardata.sonar+MAXYECHO
 	mov		edi,offset sonardata.sonar
 	mov		ecx,(MAXXECHO*MAXYECHO-MAXYECHO)/4
@@ -340,7 +380,7 @@ TestDepth:
 	retn
 
 FindDepth:
-	xor		ebx,ebx
+	mov		ebx,1
 	xor		edx,edx
 	.while ebx<MAXYECHO-17
 		movzx	eax,sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO]
@@ -406,15 +446,17 @@ Update:
 	mov		rect.right,MAXXECHO
 	mov		rect.bottom,MAXYECHO
 	invoke ScrollDC,sonardata.mDC,-1,0,addr rect,addr rect,NULL,NULL
-	xor		ebx,ebx
+	mov		eax,sonardata.RangeInx
+	mov		sonardata.sonar[MAXXECHO*MAXYECHO-MAXYECHO],al
+	mov		ebx,1
 	.while ebx<MAXYECHO
 		movzx	eax,sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO]
 		.if eax>=254
 			mov		sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO],253
 		.endif
 		.if eax>sonardata.Noise
-			.if eax<40
-				mov		eax,40h
+			.if eax<20h
+				mov		eax,20h
 			.endif
 			xor		eax,0FFh
 			mov		ah,al
@@ -427,7 +469,6 @@ Update:
 		inc		ebx
 	.endw
 	.if sonardata.hLog
-		invoke WriteFile,sonardata.hLog,addr sonardata.RangeInx,1,addr dwwrite,NULL
 		invoke WriteFile,sonardata.hLog,addr sonardata.sonar[MAXXECHO*MAXYECHO-MAXYECHO],MAXYECHO,addr dwwrite,NULL
 	.endif
 	.if sonardata.nCount
@@ -466,121 +507,31 @@ Update:
 
 SonarThreadProc endp
 
-ShowRangeDepthTempScale proc uses ebx esi edi,hDC:HDC
+ShowRangeDepthTempScaleFish proc uses ebx esi edi,hDC:HDC
 	LOCAL	rcsonar:RECT
 	LOCAL	rect:RECT
 	LOCAL	x:DWORD
 	LOCAL	buffer[32]:BYTE
 
 	invoke GetClientRect,hSonar,addr rcsonar
+	call	ShowFish
 	invoke SetBkMode,hDC,TRANSPARENT
 	xor		ebx,ebx
 	mov		esi,offset sonardata.options
 	.while ebx<MAXSONAROPTION
 		.if [esi].OPTIONS.show
-			mov		ecx,[esi].OPTIONS.pt.x
-			mov		edx,[esi].OPTIONS.pt.y
-			mov		rect.left,ecx
-			mov		rect.top,edx
-			mov		eax,rcsonar.right
-			sub		eax,ecx
-			mov		rect.right,eax
-			mov		eax,rcsonar.bottom
-			sub		eax,edx
-			mov		rect.bottom,eax
-			mov		eax,[esi].OPTIONS.font
-			add		eax,7
-			invoke SelectObject,hDC,map.font[eax*4]
-			push	eax
-			invoke strlen,addr [esi].OPTIONS.text
-			mov		edi,eax
-			mov		edx,[esi].OPTIONS.position
-			.if !edx
-				;Left, Top
-				invoke SetTextColor,hDC,0FFFFFFh
-				invoke DrawText,hDC,addr [esi].OPTIONS.text,edi,addr rect,DT_LEFT or DT_SINGLELINE
-				add		rect.top,4
-				invoke DrawText,hDC,addr [esi].OPTIONS.text,edi,addr rect,DT_LEFT or DT_SINGLELINE
-				sub		rect.top,2
-				sub		rect.left,2
-				invoke DrawText,hDC,addr [esi].OPTIONS.text,edi,addr rect,DT_LEFT or DT_SINGLELINE
-				add		rect.left,4
-				invoke DrawText,hDC,addr [esi].OPTIONS.text,edi,addr rect,DT_LEFT or DT_SINGLELINE
-				sub		rect.left,2
-				invoke SetTextColor,hDC,0404040h
-				invoke DrawText,hDC,addr [esi].OPTIONS.text,edi,addr rect,DT_LEFT or DT_SINGLELINE
-			.elseif edx==1
-				;Center, Top
-				mov		rect.left,0
-				mov		eax,[esi].OPTIONS.pt.x
-				sub		rect.right,eax
-				invoke SetTextColor,hDC,0404040h
-				invoke DrawText,hDC,addr [esi].OPTIONS.text,edi,addr rect,DT_CENTER or DT_SINGLELINE
-			.elseif edx==2
-				;Rioght, Top
-				invoke SetTextColor,hDC,0FFFFFFh
-				invoke DrawText,hDC,addr [esi].OPTIONS.text,edi,addr rect,DT_RIGHT or DT_SINGLELINE
-				add		rect.top,4
-				invoke DrawText,hDC,addr [esi].OPTIONS.text,edi,addr rect,DT_RIGHT or DT_SINGLELINE
-				sub		rect.top,2
-				sub		rect.right,2
-				invoke DrawText,hDC,addr [esi].OPTIONS.text,edi,addr rect,DT_RIGHT or DT_SINGLELINE
-				add		rect.right,4
-				invoke DrawText,hDC,addr [esi].OPTIONS.text,edi,addr rect,DT_RIGHT or DT_SINGLELINE
-				sub		rect.right,2
-				invoke SetTextColor,hDC,0404040h
-				invoke DrawText,hDC,addr [esi].OPTIONS.text,edi,addr rect,DT_RIGHT or DT_SINGLELINE
-			.elseif edx==3
-				;Left, Bottom
-				invoke SetTextColor,hDC,0FFFFFFh
-				invoke DrawText,hDC,addr [esi].OPTIONS.text,edi,addr rect,DT_LEFT or DT_BOTTOM or DT_SINGLELINE
-				add		rect.bottom,4
-				invoke DrawText,hDC,addr [esi].OPTIONS.text,edi,addr rect,DT_LEFT or DT_BOTTOM or DT_SINGLELINE
-				sub		rect.bottom,2
-				sub		rect.left,2
-				invoke DrawText,hDC,addr [esi].OPTIONS.text,edi,addr rect,DT_LEFT or DT_BOTTOM or DT_SINGLELINE
-				add		rect.left,4
-				invoke DrawText,hDC,addr [esi].OPTIONS.text,edi,addr rect,DT_LEFT or DT_BOTTOM or DT_SINGLELINE
-				sub		rect.left,2
-				invoke SetTextColor,hDC,0404040h
-				invoke DrawText,hDC,addr [esi].OPTIONS.text,edi,addr rect,DT_LEFT or DT_BOTTOM or DT_SINGLELINE
-			.elseif edx==4
-				;Center, Bottom
-				mov		rect.left,0
-				mov		eax,[esi].OPTIONS.pt.x
-				sub		rect.right,eax
-				invoke SetTextColor,hDC,0404040h
-				invoke DrawText,hDC,addr [esi].OPTIONS.text,edi,addr rect,DT_CENTER or DT_BOTTOM or DT_SINGLELINE
-			.elseif edx==5
-				;Right, Bottom
-				invoke SetTextColor,hDC,0FFFFFFh
-				invoke DrawText,hDC,addr [esi].OPTIONS.text,edi,addr rect,DT_RIGHT or DT_BOTTOM or DT_SINGLELINE
-				add		rect.bottom,4
-				invoke DrawText,hDC,addr [esi].OPTIONS.text,edi,addr rect,DT_RIGHT or DT_BOTTOM or DT_SINGLELINE
-				sub		rect.bottom,2
-				sub		rect.right,2
-				invoke DrawText,hDC,addr [esi].OPTIONS.text,edi,addr rect,DT_RIGHT or DT_BOTTOM or DT_SINGLELINE
-				add		rect.right,4
-				invoke DrawText,hDC,addr [esi].OPTIONS.text,edi,addr rect,DT_RIGHT or DT_BOTTOM or DT_SINGLELINE
-				sub		rect.right,2
-				invoke SetTextColor,hDC,0404040h
-				invoke DrawText,hDC,addr [esi].OPTIONS.text,edi,addr rect,DT_RIGHT or DT_BOTTOM or DT_SINGLELINE
-			.endif
-			pop		eax
-			invoke SelectObject,hDC,eax
+			call ShowOption
 		.endif
 		lea		esi,[esi+sizeof OPTIONS]
 		inc		ebx
 	.endw
 	call	ShowScale
-	call	ShowFish
 	ret
 
 ShowFish:
-	invoke GetClientRect,hSonar,addr rcsonar
 	mov		ebx,sonardata.RangeVal
-	mov		esi,512
-	sub		esi,rect.right
+	mov		esi,MAXXECHO
+	sub		esi,rcsonar.right
 	.while esi<MAXXECHO
 		xor		edi,edi
 		.while edi<MAXYECHO
@@ -589,25 +540,120 @@ ShowFish:
 			movzx	eax,sonardata.sonar[eax+edi]
 			.if eax==255
 				;Large fish
-				mov		eax,edi
-				movzx	ecx,sonardata.sonarrange[esi]
+				mov		eax,MAXYECHO
+				mul		esi
+				movzx	ecx,sonardata.sonar[eax]
 				lea		ecx,[ecx+ecx*2]
 				mov		ecx,sonarrange.range[ecx*4]
+				mov		eax,edi
 				mul		ecx
 				div		ebx
-				mov		ecx,rect.bottom
+				mov		ecx,rcsonar.bottom
 				mul		ecx
 				mov		ecx,MAXYECHO
 				div		ecx
 				mov		ecx,eax
-				mov		edx,rect.right
-				sub		edx,512
-				invoke ImageList_Draw,hIml,18,hDC,addr [esi+edx-14],addr [ecx-8],ILD_TRANSPARENT
+				mov		edx,rcsonar.right
+				sub		edx,MAXXECHO
+				invoke ImageList_Draw,hIml,18,hDC,addr [esi+edx-8],addr [ecx-8],ILD_TRANSPARENT
 			.endif
 			inc		edi
 		.endw
 		inc		esi
 	.endw
+	retn
+
+ShowOption:
+	mov		ecx,[esi].OPTIONS.pt.x
+	mov		edx,[esi].OPTIONS.pt.y
+	mov		rect.left,ecx
+	mov		rect.top,edx
+	mov		eax,rcsonar.right
+	sub		eax,ecx
+	mov		rect.right,eax
+	mov		eax,rcsonar.bottom
+	sub		eax,edx
+	mov		rect.bottom,eax
+	mov		eax,[esi].OPTIONS.font
+	add		eax,7
+	invoke SelectObject,hDC,map.font[eax*4]
+	push	eax
+	invoke strlen,addr [esi].OPTIONS.text
+	mov		edi,eax
+	mov		edx,[esi].OPTIONS.position
+	.if !edx
+		;Left, Top
+		invoke SetTextColor,hDC,0FFFFFFh
+		invoke DrawText,hDC,addr [esi].OPTIONS.text,edi,addr rect,DT_LEFT or DT_SINGLELINE
+		add		rect.top,4
+		invoke DrawText,hDC,addr [esi].OPTIONS.text,edi,addr rect,DT_LEFT or DT_SINGLELINE
+		sub		rect.top,2
+		sub		rect.left,2
+		invoke DrawText,hDC,addr [esi].OPTIONS.text,edi,addr rect,DT_LEFT or DT_SINGLELINE
+		add		rect.left,4
+		invoke DrawText,hDC,addr [esi].OPTIONS.text,edi,addr rect,DT_LEFT or DT_SINGLELINE
+		sub		rect.left,2
+		invoke SetTextColor,hDC,0404040h
+		invoke DrawText,hDC,addr [esi].OPTIONS.text,edi,addr rect,DT_LEFT or DT_SINGLELINE
+	.elseif edx==1
+		;Center, Top
+		mov		rect.left,0
+		mov		eax,[esi].OPTIONS.pt.x
+		sub		rect.right,eax
+		invoke SetTextColor,hDC,0404040h
+		invoke DrawText,hDC,addr [esi].OPTIONS.text,edi,addr rect,DT_CENTER or DT_SINGLELINE
+	.elseif edx==2
+		;Rioght, Top
+		invoke SetTextColor,hDC,0FFFFFFh
+		invoke DrawText,hDC,addr [esi].OPTIONS.text,edi,addr rect,DT_RIGHT or DT_SINGLELINE
+		add		rect.top,4
+		invoke DrawText,hDC,addr [esi].OPTIONS.text,edi,addr rect,DT_RIGHT or DT_SINGLELINE
+		sub		rect.top,2
+		sub		rect.right,2
+		invoke DrawText,hDC,addr [esi].OPTIONS.text,edi,addr rect,DT_RIGHT or DT_SINGLELINE
+		add		rect.right,4
+		invoke DrawText,hDC,addr [esi].OPTIONS.text,edi,addr rect,DT_RIGHT or DT_SINGLELINE
+		sub		rect.right,2
+		invoke SetTextColor,hDC,0404040h
+		invoke DrawText,hDC,addr [esi].OPTIONS.text,edi,addr rect,DT_RIGHT or DT_SINGLELINE
+	.elseif edx==3
+		;Left, Bottom
+		invoke SetTextColor,hDC,0FFFFFFh
+		invoke DrawText,hDC,addr [esi].OPTIONS.text,edi,addr rect,DT_LEFT or DT_BOTTOM or DT_SINGLELINE
+		add		rect.bottom,4
+		invoke DrawText,hDC,addr [esi].OPTIONS.text,edi,addr rect,DT_LEFT or DT_BOTTOM or DT_SINGLELINE
+		sub		rect.bottom,2
+		sub		rect.left,2
+		invoke DrawText,hDC,addr [esi].OPTIONS.text,edi,addr rect,DT_LEFT or DT_BOTTOM or DT_SINGLELINE
+		add		rect.left,4
+		invoke DrawText,hDC,addr [esi].OPTIONS.text,edi,addr rect,DT_LEFT or DT_BOTTOM or DT_SINGLELINE
+		sub		rect.left,2
+		invoke SetTextColor,hDC,0404040h
+		invoke DrawText,hDC,addr [esi].OPTIONS.text,edi,addr rect,DT_LEFT or DT_BOTTOM or DT_SINGLELINE
+	.elseif edx==4
+		;Center, Bottom
+		mov		rect.left,0
+		mov		eax,[esi].OPTIONS.pt.x
+		sub		rect.right,eax
+		invoke SetTextColor,hDC,0404040h
+		invoke DrawText,hDC,addr [esi].OPTIONS.text,edi,addr rect,DT_CENTER or DT_BOTTOM or DT_SINGLELINE
+	.elseif edx==5
+		;Right, Bottom
+		invoke SetTextColor,hDC,0FFFFFFh
+		invoke DrawText,hDC,addr [esi].OPTIONS.text,edi,addr rect,DT_RIGHT or DT_BOTTOM or DT_SINGLELINE
+		add		rect.bottom,4
+		invoke DrawText,hDC,addr [esi].OPTIONS.text,edi,addr rect,DT_RIGHT or DT_BOTTOM or DT_SINGLELINE
+		sub		rect.bottom,2
+		sub		rect.right,2
+		invoke DrawText,hDC,addr [esi].OPTIONS.text,edi,addr rect,DT_RIGHT or DT_BOTTOM or DT_SINGLELINE
+		add		rect.right,4
+		invoke DrawText,hDC,addr [esi].OPTIONS.text,edi,addr rect,DT_RIGHT or DT_BOTTOM or DT_SINGLELINE
+		sub		rect.right,2
+		invoke SetTextColor,hDC,0404040h
+		invoke DrawText,hDC,addr [esi].OPTIONS.text,edi,addr rect,DT_RIGHT or DT_BOTTOM or DT_SINGLELINE
+	.endif
+	pop		eax
+	invoke SelectObject,hDC,eax
 	retn
 
 ShowScale:
@@ -695,7 +741,7 @@ ShowScale:
 	invoke SelectObject,hDC,eax
 	retn
 
-ShowRangeDepthTempScale endp
+ShowRangeDepthTempScaleFish endp
 
 SonarProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	ps:PAINTSTRUCT
@@ -781,7 +827,7 @@ SonarProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mul		edx
 		sub		rect.bottom,12
 		invoke StretchBlt,mDC,0,6,rect.right,rect.bottom,sonardata.mDC,ecx,0,rect.right,MAXYECHO,SRCCOPY
-		invoke ShowRangeDepthTempScale,mDC
+		invoke ShowRangeDepthTempScaleFish,mDC
 		add		rect.bottom,12
 		invoke BitBlt,ps.hdc,0,0,rect.right,rect.bottom,mDC,0,0,SRCCOPY
 		pop		eax
