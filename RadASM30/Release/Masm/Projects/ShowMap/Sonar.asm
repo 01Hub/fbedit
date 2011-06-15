@@ -82,18 +82,27 @@ Random endp
 ;	ret
 ;
 ;RangeToTimer endp
-;
+
+GetRangePtr proc uses edx,RangeInx:DWORD
+
+	mov		eax,RangeInx
+	mov		edx,sizeof RANGE
+	mul		edx
+	ret
+
+GetRangePtr endp
+
 SetRange proc uses ebx esi edi,RangeInx:DWORD
 
-	mov		ebx,RangeInx
-	mov		sonardata.RangeInx,ebx
-	lea		ebx,[ebx+ebx*2]
-	mov		eax,sonarrange.nsample[ebx*4]
+	mov		eax,RangeInx
+	mov		sonardata.RangeInx,eax
+	invoke GetRangePtr,eax
+	mov		ebx,eax
+	mov		eax,sonarrange.nsample[ebx]
 	mov		sonardata.nSample,ax
-	mov		eax,sonarrange.range[ebx*4]
+	mov		eax,sonarrange.range[ebx]
 	mov		sonardata.RangeVal,eax
 	invoke wsprintf,addr sonardata.options.text,addr szFmtDec,eax
-	;invoke RangeToTimer,RangeInx
 	mov		sonardata.Timer,STM32_Timer
 	ret
 
@@ -148,10 +157,9 @@ UpdateBitmapTile proc uses ebx esi edi,x:DWORD,wt:DWORD
 	mov		eax,x
 	mov		edx,MAXYECHO
 	mul		edx
-	mov		edx,eax
-	movzx	ecx,sonardata.sonar[edx]
-	lea		ecx,[ecx+ecx*2]
-	mov		ecx,sonarrange.range[ecx*4]
+	movzx	eax,sonardata.sonar[eax]
+	invoke GetRangePtr,eax
+	mov		ecx,sonarrange.range[eax]
 	mov		eax,MAXYECHO
 	mul		ecx
 	mov		ecx,sonardata.RangeVal
@@ -215,7 +223,7 @@ SonarThreadProc proc uses ebx esi edi,lParam:DWORD
 			mov		sonardata.hReply,0
 		.endif
 	.elseif fSTLink && fSTLink!=IDIGNORE
-	 	;Upload Start, PingPulses, Gain, Timer and Skip
+	 	;Upload Start, PingPulses, Gain, Timer and nSamples
 	 	mov		sonardata.Start,0
 		invoke STLinkWrite,hWnd,STM32_Sonar,addr sonardata.Start,8
 		.if eax
@@ -503,12 +511,12 @@ Update:
 			.endif
 		.endif
 	.endif
-		invoke SendDlgItemMessage,hWnd,IDC_TRBRANGE,TBM_GETPOS,0,0
-		.if eax!=sonardata.RangeInx
-			invoke SetRange,eax
-			invoke UpdateBitmap
-			mov		sonardata.nCount,4
-		.endif
+	invoke SendDlgItemMessage,hWnd,IDC_TRBRANGE,TBM_GETPOS,0,0
+	.if eax!=sonardata.RangeInx
+		invoke SetRange,eax
+		invoke UpdateBitmap
+		mov		sonardata.nCount,4
+	.endif
 	retn
 
 SonarThreadProc endp
@@ -548,9 +556,9 @@ ShowFish:
 				;Large fish
 				mov		eax,MAXYECHO
 				mul		esi
-				movzx	ecx,sonardata.sonar[eax]
-				lea		ecx,[ecx+ecx*2]
-				mov		ecx,sonarrange.range[ecx*4]
+				movzx	eax,sonardata.sonar[eax]
+				invoke GetRangePtr,eax
+				mov		ecx,sonarrange.range[eax]
 				mov		eax,edi
 				mul		ecx
 				div		ebx
@@ -779,10 +787,8 @@ SonarProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke DeleteObject,eax
 		invoke ReleaseDC,hWin,hDC
 		mov		pixdpt,250
-		mov		eax,sonardata.RangeInx
-		lea		eax,[eax+eax*2]
-		mov		eax,sonarrange.interval[eax*4]
-		invoke SetTimer,hWin,1000,eax,NULL
+		invoke GetRangePtr,sonardata.RangeInx
+		invoke SetTimer,hWin,1000,sonarrange.interval[eax],NULL
 	.elseif eax==WM_TIMER
 		.if !fSTLink
 			mov		fSTLink,IDIGNORE
@@ -801,10 +807,8 @@ SonarProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke CreateThread,NULL,NULL,addr SonarThreadProc,hWin,0,addr tid
 			invoke CloseHandle,eax
 			invoke KillTimer,hWin,1000
-			mov		eax,sonardata.RangeInx
-			lea		eax,[eax+eax*2]
-			mov		eax,sonarrange.interval[eax*4]
-			invoke SetTimer,hWin,1000,eax,NULL
+			invoke GetRangePtr,sonardata.RangeInx
+			invoke SetTimer,hWin,1000,sonarrange.interval[eax],NULL
 		.endif
 	.elseif eax==WM_DESTROY
 		.if fSTLink && fSTLink!=IDIGNORE
