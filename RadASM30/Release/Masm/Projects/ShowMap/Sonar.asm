@@ -59,42 +59,42 @@ Random endp
 
 ;Formula T=((Range/512)/(1450/2))*48000000
 
-RangeToTimer proc RangeInx:DWORD
-	LOCAL	tmp:DWORD
-
-	mov		eax,RangeInx
-	lea		eax,[eax+eax*2]
-	mov		eax,sonarrange.range[eax*4]
-	mov		tmp,eax
-	fild	tmp
-	mov		tmp,MAXYECHO
-	fild	tmp
-	fdivp	st(1),st
-	mov		tmp,1450/2			;Divide by 2 since it is the echo
-	fild	tmp
-	fdivp	st(1),st
-	mov		tmp,48000000
-	fild	tmp
-	fmulp	st(1),st
-	fistp	tmp
-	mov		eax,tmp
-	dec		eax
-	ret
-
-RangeToTimer endp
-
+;RangeToTimer proc RangeInx:DWORD
+;	LOCAL	tmp:DWORD
+;
+;	mov		eax,RangeInx
+;	lea		eax,[eax+eax*2]
+;	mov		eax,sonarrange.range[eax*4]
+;	mov		tmp,eax
+;	fild	tmp
+;	mov		tmp,MAXYECHO
+;	fild	tmp
+;	fdivp	st(1),st
+;	mov		tmp,1450/2			;Divide by 2 since it is the echo
+;	fild	tmp
+;	fdivp	st(1),st
+;	mov		tmp,48000000
+;	fild	tmp
+;	fmulp	st(1),st
+;	fistp	tmp
+;	mov		eax,tmp
+;	dec		eax
+;	ret
+;
+;RangeToTimer endp
+;
 SetRange proc uses ebx esi edi,RangeInx:DWORD
 
 	mov		ebx,RangeInx
 	mov		sonardata.RangeInx,ebx
 	lea		ebx,[ebx+ebx*2]
-	mov		eax,sonarrange.skip[ebx*4]
-	mov		sonardata.Skip,ax
+	mov		eax,sonarrange.nsample[ebx*4]
+	mov		sonardata.nSample,ax
 	mov		eax,sonarrange.range[ebx*4]
 	mov		sonardata.RangeVal,eax
 	invoke wsprintf,addr sonardata.options.text,addr szFmtDec,eax
-	invoke RangeToTimer,RangeInx
-	mov		sonardata.Timer,ax
+	;invoke RangeToTimer,RangeInx
+	mov		sonardata.Timer,STM32_Timer
 	ret
 
 SetRange endp
@@ -201,7 +201,7 @@ UpdateBitmap endp
 
 SonarThreadProc proc uses ebx esi edi,lParam:DWORD
 	LOCAL	rect:RECT
-	LOCAL	buffer[16]:BYTE
+	LOCAL	buffer[256]:BYTE
 	LOCAL	dptinx:DWORD
 	LOCAL	dwwrite:DWORD
 
@@ -425,6 +425,9 @@ FindFish:
 	.if sonardata.FishDetect
 		mov		ebx,MINYECHO
 		mov		edi,dptinx
+		.if edi>4
+			sub		edi,4
+		.endif
 		.while ebx<edi
 			movzx	eax,sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO]
 			.if eax>sonardata.Noise
@@ -433,6 +436,9 @@ FindFish:
 				.if sdword ptr eax>ebx
 					;Large fish
 					mov		sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO],255
+					invoke strcpy,addr buffer,addr szAppPath
+					invoke strcat,addr buffer,addr szFishWav
+					invoke PlaySound,addr buffer,hInstance,SND_ASYNC
 				.endif
 			.endif
 			inc		ebx
@@ -593,14 +599,14 @@ ShowOption:
 		add		rect.left,4
 		invoke DrawText,hDC,addr [esi].OPTIONS.text,edi,addr rect,DT_LEFT or DT_SINGLELINE
 		sub		rect.left,2
-		invoke SetTextColor,hDC,0404040h
+		invoke SetTextColor,hDC,0
 		invoke DrawText,hDC,addr [esi].OPTIONS.text,edi,addr rect,DT_LEFT or DT_SINGLELINE
 	.elseif edx==1
 		;Center, Top
 		mov		rect.left,0
 		mov		eax,[esi].OPTIONS.pt.x
 		sub		rect.right,eax
-		invoke SetTextColor,hDC,0404040h
+		invoke SetTextColor,hDC,0
 		invoke DrawText,hDC,addr [esi].OPTIONS.text,edi,addr rect,DT_CENTER or DT_SINGLELINE
 	.elseif edx==2
 		;Rioght, Top
@@ -614,7 +620,7 @@ ShowOption:
 		add		rect.right,4
 		invoke DrawText,hDC,addr [esi].OPTIONS.text,edi,addr rect,DT_RIGHT or DT_SINGLELINE
 		sub		rect.right,2
-		invoke SetTextColor,hDC,0404040h
+		invoke SetTextColor,hDC,0
 		invoke DrawText,hDC,addr [esi].OPTIONS.text,edi,addr rect,DT_RIGHT or DT_SINGLELINE
 	.elseif edx==3
 		;Left, Bottom
@@ -628,14 +634,14 @@ ShowOption:
 		add		rect.left,4
 		invoke DrawText,hDC,addr [esi].OPTIONS.text,edi,addr rect,DT_LEFT or DT_BOTTOM or DT_SINGLELINE
 		sub		rect.left,2
-		invoke SetTextColor,hDC,0404040h
+		invoke SetTextColor,hDC,0
 		invoke DrawText,hDC,addr [esi].OPTIONS.text,edi,addr rect,DT_LEFT or DT_BOTTOM or DT_SINGLELINE
 	.elseif edx==4
 		;Center, Bottom
 		mov		rect.left,0
 		mov		eax,[esi].OPTIONS.pt.x
 		sub		rect.right,eax
-		invoke SetTextColor,hDC,0404040h
+		invoke SetTextColor,hDC,0
 		invoke DrawText,hDC,addr [esi].OPTIONS.text,edi,addr rect,DT_CENTER or DT_BOTTOM or DT_SINGLELINE
 	.elseif edx==5
 		;Right, Bottom
@@ -649,7 +655,7 @@ ShowOption:
 		add		rect.right,4
 		invoke DrawText,hDC,addr [esi].OPTIONS.text,edi,addr rect,DT_RIGHT or DT_BOTTOM or DT_SINGLELINE
 		sub		rect.right,2
-		invoke SetTextColor,hDC,0404040h
+		invoke SetTextColor,hDC,0
 		invoke DrawText,hDC,addr [esi].OPTIONS.text,edi,addr rect,DT_RIGHT or DT_BOTTOM or DT_SINGLELINE
 	.endif
 	pop		eax
@@ -715,7 +721,7 @@ ShowScale:
 	invoke GetStockObject,BLACK_PEN
 	invoke SelectObject,hDC,eax
 	push	eax
-	invoke SetTextColor,hDC,0h
+	invoke SetTextColor,hDC,0
 	invoke MoveToEx,hDC,2,6,NULL
 	invoke LineTo,hDC,10,6
 	mov		word ptr buffer,'0'

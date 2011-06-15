@@ -8,6 +8,7 @@ include gdiplus.inc
 include gdiplus_structs.inc
 include ole32.inc
 include oleaut32.inc
+include winmm.inc
 
 includelib user32.lib
 includelib kernel32.lib
@@ -17,6 +18,7 @@ includelib gdi32.lib
 includelib gdiplus.lib
 includelib ole32.lib 
 includelib oleaut32.lib 
+includelib winmm.lib
 includelib STLinkLib.lib 
 
 ;#########################################################################
@@ -140,7 +142,9 @@ MAXYECHO				equ 512								;Max number of sonar Y-echos
 MINYECHO				equ 100
 MAXRANGE				equ 14								;Number of depth ranges
 STM32_Sonar				equ 20000000h						;STM32 ram address
-SONARBACKCOLOR			equ 0FFFF80h						;Back color of sonar
+;SONARBACKCOLOR			equ 0FFFF80h						;Back color of sonar
+SONARBACKCOLOR			equ 00F4BD6Ch						;Back color of sonar
+STM32_Timer				equ 258
 
 LONPOINT struct
 	iLon			DWORD ?									;Longitude
@@ -284,7 +288,7 @@ SONAR struct
 	PingPulses		BYTE ?									;Number of pulses in a ping ((0 to 255)+1)
 	Gain			WORD ?									;Gain level (0 to 31)
 	Timer			WORD ?									;Time between each echo reading
-	Skip			WORD ?									;Number of echo readings to skip
+	nSample			WORD ?									;Number of echo readings to sample. If more than one the largest is stored.
 	nCount			DWORD ?
 	dmy1			WORD ?
 	ADCBattery		WORD ?									;Battery level
@@ -298,7 +302,7 @@ SONAR ends
 RANGE struct
 	range		DWORD ?										;Range in meters
 	interval	DWORD ?										;Update rate
-	skip		DWORD ?										;Number of pixels to skip
+	nsample		DWORD ?										;Number of echo readings to sample. If more than one the largest is stored.
 RANGE ends
 
 .const
@@ -322,6 +326,7 @@ szBS				BYTE '\',0
 szCRLF				BYTE 0Dh,0Ah,0
 
 szIniFile			BYTE 'ShowMap.ini',0					;File name of ini file
+szFishWav			BYTE '\Wav\fish.wav',0
 
 szIniPlace			BYTE 'Place',0							;Ini file app / key
 szIniMap			BYTE 'Map',0
@@ -358,13 +363,13 @@ szIcons				BYTE 'None',0							;Icon selection descriptions
 					BYTE 'Red dot',0
 					BYTE 'Blue dot',0,0
 
-sonarrange			RANGE <2,200,0>,<4,200,0>,
-						  <6,200,0>,<10,250,0>,
-						  <20,250,0>,<30,300,0>,
-						  <50,300,0>,<70,350,0>,
-						  <100,350,0>,<150,400,0>,
-						  <200,400,0>,<250,450,0>,
-						  <300,450,0>,<350,500,0>
+sonarrange			RANGE <2,200,1>,<4,200,2>,
+						  <6,200,3>,<10,250,5>,
+						  <20,250,10>,<30,300,15>,
+						  <50,300,25>,<70,350,35>,
+						  <100,350,50>,<150,400,75>,
+						  <200,400,100>,<250,450,125>,
+						  <300,450,150>,<350,500,175>
 
 szFmtDec			BYTE '%u',0
 szFmtDepth			BYTE '%02u',0

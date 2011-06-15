@@ -1,13 +1,13 @@
 
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar\stm32f10x_adc.o:     file format elf32-littlearm
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar\stm32f10x_adc.o
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar\stm32f10x_adc.o:     file format elf32-littlearm
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar\stm32f10x_adc.o
 
 
 Disassembly of section .text.ADC_DeInit:
 
 00000000 <ADC_DeInit>:
 ADC_DeInit():
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:131
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:131
 * Input          : - ADCx: where x can be 1, 2 or 3 to select the ADC peripheral.
 * Output         : None
 * Return         : None
@@ -15,7 +15,7 @@ D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\ST
 void ADC_DeInit(ADC_TypeDef* ADCx)
 {
    0:	b508      	push	{r3, lr}
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:135
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:135
   /* Check the parameters */
   assert_param(IS_ADC_ALL_PERIPH(ADCx));
 
@@ -32,7 +32,7 @@ D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\ST
   1e:	f2c4 0301 	movt	r3, #16385	; 0x4001
   22:	4298      	cmp	r0, r3
   24:	d125      	bne.n	72 <ADC_DeInit+0x72>
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:139
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:139
   {
     case ADC1_BASE:
       /* Enable ADC1 reset state */
@@ -40,16 +40,16 @@ D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\ST
   26:	f44f 7000 	mov.w	r0, #512	; 0x200
   2a:	f04f 0101 	mov.w	r1, #1
   2e:	f7ff fffe 	bl	0 <RCC_APB2PeriphResetCmd>
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:141
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:141
       /* Release ADC1 from reset state */
       RCC_APB2PeriphResetCmd(RCC_APB2Periph_ADC1, DISABLE);
   32:	f44f 7000 	mov.w	r0, #512	; 0x200
   36:	f04f 0100 	mov.w	r1, #0
   3a:	f7ff fffe 	bl	0 <RCC_APB2PeriphResetCmd>
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:142
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:142
       break;
   3e:	bd08      	pop	{r3, pc}
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:146
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:146
     
     case ADC2_BASE:
       /* Enable ADC2 reset state */
@@ -57,16 +57,16 @@ D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\ST
   40:	f44f 6080 	mov.w	r0, #1024	; 0x400
   44:	f04f 0101 	mov.w	r1, #1
   48:	f7ff fffe 	bl	0 <RCC_APB2PeriphResetCmd>
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:148
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:148
       /* Release ADC2 from reset state */
       RCC_APB2PeriphResetCmd(RCC_APB2Periph_ADC2, DISABLE);
   4c:	f44f 6080 	mov.w	r0, #1024	; 0x400
   50:	f04f 0100 	mov.w	r1, #0
   54:	f7ff fffe 	bl	0 <RCC_APB2PeriphResetCmd>
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:149
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:149
       break;
   58:	bd08      	pop	{r3, pc}
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:153
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:153
       
     case ADC3_BASE:
       /* Enable ADC3 reset state */
@@ -74,7 +74,7 @@ D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\ST
   5a:	f44f 4000 	mov.w	r0, #32768	; 0x8000
   5e:	f04f 0101 	mov.w	r1, #1
   62:	f7ff fffe 	bl	0 <RCC_APB2PeriphResetCmd>
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:155
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:155
       /* Release ADC3 from reset state */
       RCC_APB2PeriphResetCmd(RCC_APB2Periph_ADC3, DISABLE);
   66:	f44f 4000 	mov.w	r0, #32768	; 0x8000
@@ -86,7 +86,7 @@ Disassembly of section .text.ADC_Init:
 
 00000000 <ADC_Init>:
 ADC_Init():
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:175
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:175
 *                    ADC peripheral.
 * Output         : None
 * Return         : None
@@ -94,7 +94,7 @@ D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\ST
 void ADC_Init(ADC_TypeDef* ADCx, ADC_InitTypeDef* ADC_InitStruct)
 {
    0:	b410      	push	{r4}
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:190
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:190
   assert_param(IS_ADC_DATA_ALIGN(ADC_InitStruct->ADC_DataAlign)); 
   assert_param(IS_ADC_REGULAR_LENGTH(ADC_InitStruct->ADC_NbrOfChannel));
 
@@ -102,12 +102,12 @@ D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\ST
   /* Get the ADCx CR1 value */
   tmpreg1 = ADCx->CR1;
    2:	6843      	ldr	r3, [r0, #4]
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:192
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:192
   /* Clear DUALMOD and SCAN bits */
   tmpreg1 &= CR1_CLEAR_Mask;
    4:	f423 2370 	bic.w	r3, r3, #983040	; 0xf0000
    8:	f423 7380 	bic.w	r3, r3, #256	; 0x100
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:196
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:196
   /* Configure ADCx: Dual mode and scan conversion mode */
   /* Set DUALMOD bits according to ADC_Mode value */
   /* Set SCAN bit according to ADC_ScanConvMode value */
@@ -116,17 +116,17 @@ D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\ST
    e:	4313      	orrs	r3, r2
   10:	790a      	ldrb	r2, [r1, #4]
   12:	ea43 2302 	orr.w	r3, r3, r2, lsl #8
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:198
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:198
   /* Write to ADCx CR1 */
   ADCx->CR1 = tmpreg1;
   16:	6043      	str	r3, [r0, #4]
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:202
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:202
 
   /*---------------------------- ADCx CR2 Configuration -----------------*/
   /* Get the ADCx CR2 value */
   tmpreg1 = ADCx->CR2;
   18:	6884      	ldr	r4, [r0, #8]
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:209
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:209
   tmpreg1 &= CR2_CLEAR_Mask;
   /* Configure ADCx: external trigger event and continuous conversion mode */
   /* Set ALIGN bit according to ADC_DataAlign value */
@@ -136,7 +136,7 @@ D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\ST
   1a:	688a      	ldr	r2, [r1, #8]
   1c:	68cb      	ldr	r3, [r1, #12]
   1e:	431a      	orrs	r2, r3
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:204
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:204
 
   /*---------------------------- ADCx CR2 Configuration -----------------*/
   /* Get the ADCx CR2 value */
@@ -146,17 +146,17 @@ D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\ST
   20:	f24f 73fd 	movw	r3, #63485	; 0xf7fd
   24:	f6cf 73f1 	movt	r3, #65521	; 0xfff1
   28:	ea04 0303 	and.w	r3, r4, r3
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:209
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:209
   /* Configure ADCx: external trigger event and continuous conversion mode */
   /* Set ALIGN bit according to ADC_DataAlign value */
   /* Set EXTSEL bits according to ADC_ExternalTrigConv value */
   /* Set CONT bit according to ADC_ContinuousConvMode value */
   tmpreg1 |= (u32)(ADC_InitStruct->ADC_DataAlign | ADC_InitStruct->ADC_ExternalTrigConv |
   2c:	ea42 0303 	orr.w	r3, r2, r3
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:210
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:210
             ((u32)ADC_InitStruct->ADC_ContinuousConvMode << 1));
   30:	794a      	ldrb	r2, [r1, #5]
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:209
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:209
   tmpreg1 &= CR2_CLEAR_Mask;
   /* Configure ADCx: external trigger event and continuous conversion mode */
   /* Set ALIGN bit according to ADC_DataAlign value */
@@ -164,36 +164,36 @@ D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\ST
   /* Set CONT bit according to ADC_ContinuousConvMode value */
   tmpreg1 |= (u32)(ADC_InitStruct->ADC_DataAlign | ADC_InitStruct->ADC_ExternalTrigConv |
   32:	ea43 0342 	orr.w	r3, r3, r2, lsl #1
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:212
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:212
             ((u32)ADC_InitStruct->ADC_ContinuousConvMode << 1));
   /* Write to ADCx CR2 */
   ADCx->CR2 = tmpreg1;
   36:	6083      	str	r3, [r0, #8]
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:216
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:216
 
   /*---------------------------- ADCx SQR1 Configuration -----------------*/
   /* Get the ADCx SQR1 value */
   tmpreg1 = ADCx->SQR1;
   38:	6ac2      	ldr	r2, [r0, #44]	; 0x2c
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:218
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:218
   /* Clear L bits */
   tmpreg1 &= SQR1_CLEAR_Mask;
   3a:	f422 0270 	bic.w	r2, r2, #15728640	; 0xf00000
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:221
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:221
   /* Configure ADCx: regular channel sequence length */
   /* Set L bits according to ADC_NbrOfChannel value */
   tmpreg2 |= (ADC_InitStruct->ADC_NbrOfChannel - 1);
   3e:	7c0b      	ldrb	r3, [r1, #16]
   40:	f103 33ff 	add.w	r3, r3, #4294967295
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:222
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:222
   tmpreg1 |= ((u32)tmpreg2 << 20);
   44:	b2db      	uxtb	r3, r3
   46:	ea42 5303 	orr.w	r3, r2, r3, lsl #20
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:224
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:224
   /* Write to ADCx SQR1 */
   ADCx->SQR1 = tmpreg1;
   4a:	62c3      	str	r3, [r0, #44]	; 0x2c
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:225
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:225
 }
   4c:	bc10      	pop	{r4}
   4e:	4770      	bx	lr
@@ -202,7 +202,7 @@ Disassembly of section .text.ADC_StructInit:
 
 00000000 <ADC_StructInit>:
 ADC_StructInit():
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:239
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:239
 *******************************************************************************/
 void ADC_StructInit(ADC_InitTypeDef* ADC_InitStruct)
 {
@@ -211,33 +211,33 @@ void ADC_StructInit(ADC_InitTypeDef* ADC_InitStruct)
   ADC_InitStruct->ADC_Mode = ADC_Mode_Independent;
    0:	f04f 0300 	mov.w	r3, #0
    4:	6003      	str	r3, [r0, #0]
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:242
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:242
 
   /* initialize the ADC_ScanConvMode member */
   ADC_InitStruct->ADC_ScanConvMode = DISABLE;
    6:	7103      	strb	r3, [r0, #4]
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:245
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:245
 
   /* Initialize the ADC_ContinuousConvMode member */
   ADC_InitStruct->ADC_ContinuousConvMode = DISABLE;
    8:	7143      	strb	r3, [r0, #5]
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:248
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:248
 
   /* Initialize the ADC_ExternalTrigConv member */
   ADC_InitStruct->ADC_ExternalTrigConv = ADC_ExternalTrigConv_T1_CC1;
    a:	6083      	str	r3, [r0, #8]
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:251
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:251
 
   /* Initialize the ADC_DataAlign member */
   ADC_InitStruct->ADC_DataAlign = ADC_DataAlign_Right;
    c:	60c3      	str	r3, [r0, #12]
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:254
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:254
 
   /* Initialize the ADC_NbrOfChannel member */
   ADC_InitStruct->ADC_NbrOfChannel = 1;
    e:	f04f 0301 	mov.w	r3, #1
   12:	7403      	strb	r3, [r0, #16]
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:255
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:255
 }
   14:	4770      	bx	lr
   16:	bf00      	nop
@@ -246,7 +246,7 @@ Disassembly of section .text.ADC_Cmd:
 
 00000000 <ADC_Cmd>:
 ADC_Cmd():
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:272
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:272
 {
   /* Check the parameters */
   assert_param(IS_ADC_ALL_PERIPH(ADCx));
@@ -254,7 +254,7 @@ D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\ST
 
   if (NewState != DISABLE)
    0:	b121      	cbz	r1, c <ADC_Cmd+0xc>
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:275
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:275
   {
     /* Set the ADON bit to wake up the ADC from power down mode */
     ADCx->CR2 |= CR2_ADON_Set;
@@ -262,7 +262,7 @@ D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\ST
    4:	f043 0301 	orr.w	r3, r3, #1
    8:	6083      	str	r3, [r0, #8]
    a:	4770      	bx	lr
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:280
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:280
   }
   else
   {
@@ -278,7 +278,7 @@ Disassembly of section .text.ADC_DMACmd:
 
 00000000 <ADC_DMACmd>:
 ADC_DMACmd():
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:300
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:300
 {
   /* Check the parameters */
   assert_param(IS_ADC_DMA_PERIPH(ADCx));
@@ -286,7 +286,7 @@ D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\ST
 
   if (NewState != DISABLE)
    0:	b121      	cbz	r1, c <ADC_DMACmd+0xc>
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:303
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:303
   {
     /* Enable the selected ADC DMA request */
     ADCx->CR2 |= CR2_DMA_Set;
@@ -294,7 +294,7 @@ D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\ST
    4:	f443 7380 	orr.w	r3, r3, #256	; 0x100
    8:	6083      	str	r3, [r0, #8]
    a:	4770      	bx	lr
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:308
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:308
   }
   else
   {
@@ -310,7 +310,7 @@ Disassembly of section .text.ADC_ITConfig:
 
 00000000 <ADC_ITConfig>:
 ADC_ITConfig():
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:337
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:337
   assert_param(IS_ADC_ALL_PERIPH(ADCx));
   assert_param(IS_FUNCTIONAL_STATE(NewState));
   assert_param(IS_ADC_IT(ADC_IT));
@@ -318,11 +318,11 @@ D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\ST
   /* Get the ADC IT index */
   itmask = (u8)ADC_IT;
    0:	b2c9      	uxtb	r1, r1
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:339
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:339
 
   if (NewState != DISABLE)
    2:	b11a      	cbz	r2, c <ADC_ITConfig+0xc>
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:342
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:342
   {
     /* Enable the selected ADC interrupts */
     ADCx->CR1 |= itmask;
@@ -330,7 +330,7 @@ D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\ST
    6:	4319      	orrs	r1, r3
    8:	6041      	str	r1, [r0, #4]
    a:	4770      	bx	lr
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:347
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:347
   }
   else
   {
@@ -346,7 +346,7 @@ Disassembly of section .text.ADC_ResetCalibration:
 
 00000000 <ADC_ResetCalibration>:
 ADC_ResetCalibration():
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:364
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:364
 {
   /* Check the parameters */
   assert_param(IS_ADC_ALL_PERIPH(ADCx));
@@ -356,7 +356,7 @@ D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\ST
    0:	6883      	ldr	r3, [r0, #8]
    2:	f043 0308 	orr.w	r3, r3, #8
    6:	6083      	str	r3, [r0, #8]
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:365
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:365
 }
    8:	4770      	bx	lr
    a:	bf00      	nop
@@ -365,7 +365,7 @@ Disassembly of section .text.ADC_GetResetCalibrationStatus:
 
 00000000 <ADC_GetResetCalibrationStatus>:
 ADC_GetResetCalibrationStatus():
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:382
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:382
 
   /* Check the parameters */
   assert_param(IS_ADC_ALL_PERIPH(ADCx));
@@ -373,7 +373,7 @@ D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\ST
   /* Check the status of RSTCAL bit */
   if ((ADCx->CR2 & CR2_RSTCAL_Set) != (u32)RESET)
    0:	6880      	ldr	r0, [r0, #8]
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:395
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:395
     bitstatus = RESET;
   }
 
@@ -387,7 +387,7 @@ Disassembly of section .text.ADC_StartCalibration:
 
 00000000 <ADC_StartCalibration>:
 ADC_StartCalibration():
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:410
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:410
 {
   /* Check the parameters */
   assert_param(IS_ADC_ALL_PERIPH(ADCx));
@@ -397,7 +397,7 @@ D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\ST
    0:	6883      	ldr	r3, [r0, #8]
    2:	f043 0304 	orr.w	r3, r3, #4
    6:	6083      	str	r3, [r0, #8]
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:411
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:411
 }
    8:	4770      	bx	lr
    a:	bf00      	nop
@@ -406,7 +406,7 @@ Disassembly of section .text.ADC_GetCalibrationStatus:
 
 00000000 <ADC_GetCalibrationStatus>:
 ADC_GetCalibrationStatus():
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:428
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:428
 
   /* Check the parameters */
   assert_param(IS_ADC_ALL_PERIPH(ADCx));
@@ -414,7 +414,7 @@ D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\ST
   /* Check the status of CAL bit */
   if ((ADCx->CR2 & CR2_CAL_Set) != (u32)RESET)
    0:	6880      	ldr	r0, [r0, #8]
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:441
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:441
     bitstatus = RESET;
   }
 
@@ -428,7 +428,7 @@ Disassembly of section .text.ADC_SoftwareStartConvCmd:
 
 00000000 <ADC_SoftwareStartConvCmd>:
 ADC_SoftwareStartConvCmd():
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:458
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:458
 {
   /* Check the parameters */
   assert_param(IS_ADC_ALL_PERIPH(ADCx));
@@ -436,7 +436,7 @@ D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\ST
 
   if (NewState != DISABLE)
    0:	b121      	cbz	r1, c <ADC_SoftwareStartConvCmd+0xc>
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:462
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:462
   {
     /* Enable the selected ADC conversion on external event and start the selected
        ADC conversion */
@@ -445,7 +445,7 @@ D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\ST
    4:	f443 03a0 	orr.w	r3, r3, #5242880	; 0x500000
    8:	6083      	str	r3, [r0, #8]
    a:	4770      	bx	lr
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:468
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:468
   }
   else
   {
@@ -462,7 +462,7 @@ Disassembly of section .text.ADC_GetSoftwareStartConvStatus:
 
 00000000 <ADC_GetSoftwareStartConvStatus>:
 ADC_GetSoftwareStartConvStatus():
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:487
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:487
 
   /* Check the parameters */
   assert_param(IS_ADC_ALL_PERIPH(ADCx));
@@ -470,7 +470,7 @@ D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\ST
   /* Check the status of SWSTART bit */
   if ((ADCx->CR2 & CR2_SWSTART_Set) != (u32)RESET)
    0:	6880      	ldr	r0, [r0, #8]
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:500
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:500
     bitstatus = RESET;
   }
 
@@ -484,7 +484,7 @@ Disassembly of section .text.ADC_DiscModeChannelCountConfig:
 
 00000000 <ADC_DiscModeChannelCountConfig>:
 ADC_DiscModeChannelCountConfig():
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:522
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:522
   /* Check the parameters */
   assert_param(IS_ADC_ALL_PERIPH(ADCx));
   assert_param(IS_ADC_REGULAR_DISC_NUMBER(Number));
@@ -492,22 +492,22 @@ D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\ST
   /* Get the old register value */
   tmpreg1 = ADCx->CR1;
    0:	6843      	ldr	r3, [r0, #4]
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:524
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:524
   /* Clear the old discontinuous mode channel count */
   tmpreg1 &= CR1_DISCNUM_Reset;
    2:	f423 4360 	bic.w	r3, r3, #57344	; 0xe000
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:526
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:526
   /* Set the discontinuous mode channel count */
   tmpreg2 = Number - 1;
    6:	f101 31ff 	add.w	r1, r1, #4294967295
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:527
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:527
   tmpreg1 |= tmpreg2 << 13;
    a:	ea43 3341 	orr.w	r3, r3, r1, lsl #13
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:529
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:529
   /* Store the new register value */
   ADCx->CR1 = tmpreg1;
    e:	6043      	str	r3, [r0, #4]
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:530
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:530
 }
   10:	4770      	bx	lr
   12:	bf00      	nop
@@ -516,7 +516,7 @@ Disassembly of section .text.ADC_DiscModeCmd:
 
 00000000 <ADC_DiscModeCmd>:
 ADC_DiscModeCmd():
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:549
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:549
 {
   /* Check the parameters */
   assert_param(IS_ADC_ALL_PERIPH(ADCx));
@@ -524,7 +524,7 @@ D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\ST
 
   if (NewState != DISABLE)
    0:	b121      	cbz	r1, c <ADC_DiscModeCmd+0xc>
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:552
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:552
   {
     /* Enable the selected ADC regular discontinuous mode */
     ADCx->CR1 |= CR1_DISCEN_Set;
@@ -532,7 +532,7 @@ D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\ST
    4:	f443 6300 	orr.w	r3, r3, #2048	; 0x800
    8:	6043      	str	r3, [r0, #4]
    a:	4770      	bx	lr
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:557
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:557
   }
   else
   {
@@ -548,7 +548,7 @@ Disassembly of section .text.ADC_RegularChannelConfig:
 
 00000000 <ADC_RegularChannelConfig>:
 ADC_RegularChannelConfig():
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:603
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:603
 *                       - ADC_SampleTime_239Cycles5: Sample time equal to 239.5 cycles	
 * Output         : None
 * Return         : None
@@ -556,7 +556,7 @@ D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\ST
 void ADC_RegularChannelConfig(ADC_TypeDef* ADCx, u8 ADC_Channel, u8 Rank, u8 ADC_SampleTime)
 {
    0:	b470      	push	{r4, r5, r6}
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:613
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:613
   assert_param(IS_ADC_CHANNEL(ADC_Channel));
   assert_param(IS_ADC_REGULAR_RANK(Rank));
   assert_param(IS_ADC_SAMPLE_TIME(ADC_SampleTime));
@@ -565,135 +565,135 @@ D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\ST
   if (ADC_Channel > ADC_Channel_9)
    2:	2909      	cmp	r1, #9
    4:	d910      	bls.n	28 <ADC_RegularChannelConfig+0x28>
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:616
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:616
   {
     /* Get the old register value */
     tmpreg1 = ADCx->SMPR1;
    6:	68c6      	ldr	r6, [r0, #12]
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:618
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:618
     /* Calculate the mask to clear */
     tmpreg2 = SMPR1_SMP_Set << (3 * (ADC_Channel - 10));
    8:	eb01 0441 	add.w	r4, r1, r1, lsl #1
    c:	f1a4 041e 	sub.w	r4, r4, #30
   10:	f04f 0507 	mov.w	r5, #7
   14:	fa05 f504 	lsl.w	r5, r5, r4
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:620
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:620
     /* Clear the old discontinuous mode channel count */
     tmpreg1 &= ~tmpreg2;
   18:	ea26 0505 	bic.w	r5, r6, r5
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:622
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:622
     /* Calculate the mask to set */
     tmpreg2 = (u32)ADC_SampleTime << (3 * (ADC_Channel - 10));
   1c:	fa03 f404 	lsl.w	r4, r3, r4
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:624
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:624
     /* Set the discontinuous mode channel count */
     tmpreg1 |= tmpreg2;
   20:	ea45 0304 	orr.w	r3, r5, r4
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:626
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:626
     /* Store the new register value */
     ADCx->SMPR1 = tmpreg1;
   24:	60c3      	str	r3, [r0, #12]
   26:	e00d      	b.n	44 <ADC_RegularChannelConfig+0x44>
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:631
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:631
   }
   else /* ADC_Channel include in ADC_Channel_[0..9] */
   {
     /* Get the old register value */
     tmpreg1 = ADCx->SMPR2;
   28:	6906      	ldr	r6, [r0, #16]
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:633
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:633
     /* Calculate the mask to clear */
     tmpreg2 = SMPR2_SMP_Set << (3 * ADC_Channel);
   2a:	eb01 0441 	add.w	r4, r1, r1, lsl #1
   2e:	f04f 0507 	mov.w	r5, #7
   32:	fa05 f504 	lsl.w	r5, r5, r4
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:635
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:635
     /* Clear the old discontinuous mode channel count */
     tmpreg1 &= ~tmpreg2;
   36:	ea26 0505 	bic.w	r5, r6, r5
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:637
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:637
     /* Calculate the mask to set */
     tmpreg2 = (u32)ADC_SampleTime << (3 * ADC_Channel);
   3a:	fa03 f404 	lsl.w	r4, r3, r4
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:639
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:639
     /* Set the discontinuous mode channel count */
     tmpreg1 |= tmpreg2;
   3e:	ea45 0304 	orr.w	r3, r5, r4
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:641
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:641
     /* Store the new register value */
     ADCx->SMPR2 = tmpreg1;
   42:	6103      	str	r3, [r0, #16]
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:644
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:644
   }
   /* For Rank 1 to 6 */
   if (Rank < 7)
   44:	2a06      	cmp	r2, #6
   46:	d810      	bhi.n	6a <ADC_RegularChannelConfig+0x6a>
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:647
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:647
   {
     /* Get the old register value */
     tmpreg1 = ADCx->SQR3;
   48:	6b44      	ldr	r4, [r0, #52]	; 0x34
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:649
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:649
     /* Calculate the mask to clear */
     tmpreg2 = SQR3_SQ_Set << (5 * (Rank - 1));
   4a:	f102 32ff 	add.w	r2, r2, #4294967295
   4e:	eb02 0282 	add.w	r2, r2, r2, lsl #2
   52:	f04f 031f 	mov.w	r3, #31
   56:	fa03 f302 	lsl.w	r3, r3, r2
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:651
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:651
     /* Clear the old SQx bits for the selected rank */
     tmpreg1 &= ~tmpreg2;
   5a:	ea24 0303 	bic.w	r3, r4, r3
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:653
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:653
     /* Calculate the mask to set */
     tmpreg2 = (u32)ADC_Channel << (5 * (Rank - 1));
   5e:	fa01 f102 	lsl.w	r1, r1, r2
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:655
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:655
     /* Set the SQx bits for the selected rank */
     tmpreg1 |= tmpreg2;
   62:	ea43 0201 	orr.w	r2, r3, r1
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:657
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:657
     /* Store the new register value */
     ADCx->SQR3 = tmpreg1;
   66:	6342      	str	r2, [r0, #52]	; 0x34
   68:	e022      	b.n	b0 <ADC_RegularChannelConfig+0xb0>
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:660
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:660
   }
   /* For Rank 7 to 12 */
   else if (Rank < 13)
   6a:	2a0c      	cmp	r2, #12
   6c:	d810      	bhi.n	90 <ADC_RegularChannelConfig+0x90>
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:663
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:663
   {
     /* Get the old register value */
     tmpreg1 = ADCx->SQR2;
   6e:	6b04      	ldr	r4, [r0, #48]	; 0x30
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:665
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:665
     /* Calculate the mask to clear */
     tmpreg2 = SQR2_SQ_Set << (5 * (Rank - 7));
   70:	eb02 0282 	add.w	r2, r2, r2, lsl #2
   74:	f1a2 0223 	sub.w	r2, r2, #35	; 0x23
   78:	f04f 031f 	mov.w	r3, #31
   7c:	fa03 f302 	lsl.w	r3, r3, r2
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:667
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:667
     /* Clear the old SQx bits for the selected rank */
     tmpreg1 &= ~tmpreg2;
   80:	ea24 0303 	bic.w	r3, r4, r3
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:669
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:669
     /* Calculate the mask to set */
     tmpreg2 = (u32)ADC_Channel << (5 * (Rank - 7));
   84:	fa01 f102 	lsl.w	r1, r1, r2
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:671
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:671
     /* Set the SQx bits for the selected rank */
     tmpreg1 |= tmpreg2;
   88:	ea43 0201 	orr.w	r2, r3, r1
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:673
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:673
     /* Store the new register value */
     ADCx->SQR2 = tmpreg1;
   8c:	6302      	str	r2, [r0, #48]	; 0x30
   8e:	e00f      	b.n	b0 <ADC_RegularChannelConfig+0xb0>
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:679
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:679
   }
   /* For Rank 13 to 16 */
   else
@@ -701,30 +701,30 @@ D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\ST
     /* Get the old register value */
     tmpreg1 = ADCx->SQR1;
   90:	6ac4      	ldr	r4, [r0, #44]	; 0x2c
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:681
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:681
     /* Calculate the mask to clear */
     tmpreg2 = SQR1_SQ_Set << (5 * (Rank - 13));
   92:	eb02 0282 	add.w	r2, r2, r2, lsl #2
   96:	f1a2 0241 	sub.w	r2, r2, #65	; 0x41
   9a:	f04f 031f 	mov.w	r3, #31
   9e:	fa03 f302 	lsl.w	r3, r3, r2
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:683
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:683
     /* Clear the old SQx bits for the selected rank */
     tmpreg1 &= ~tmpreg2;
   a2:	ea24 0303 	bic.w	r3, r4, r3
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:685
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:685
     /* Calculate the mask to set */
     tmpreg2 = (u32)ADC_Channel << (5 * (Rank - 13));
   a6:	fa01 f102 	lsl.w	r1, r1, r2
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:687
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:687
     /* Set the SQx bits for the selected rank */
     tmpreg1 |= tmpreg2;
   aa:	ea43 0201 	orr.w	r2, r3, r1
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:689
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:689
     /* Store the new register value */
     ADCx->SQR1 = tmpreg1;
   ae:	62c2      	str	r2, [r0, #44]	; 0x2c
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:691
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:691
   }
 }
   b0:	bc70      	pop	{r4, r5, r6}
@@ -734,7 +734,7 @@ Disassembly of section .text.ADC_ExternalTrigConvCmd:
 
 00000000 <ADC_ExternalTrigConvCmd>:
 ADC_ExternalTrigConvCmd():
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:709
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:709
 {
   /* Check the parameters */
   assert_param(IS_ADC_ALL_PERIPH(ADCx));
@@ -742,7 +742,7 @@ D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\ST
 
   if (NewState != DISABLE)
    0:	b121      	cbz	r1, c <ADC_ExternalTrigConvCmd+0xc>
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:712
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:712
   {
     /* Enable the selected ADC conversion on external event */
     ADCx->CR2 |= CR2_EXTTRIG_Set;
@@ -750,7 +750,7 @@ D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\ST
    4:	f443 1380 	orr.w	r3, r3, #1048576	; 0x100000
    8:	6083      	str	r3, [r0, #8]
    a:	4770      	bx	lr
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:717
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:717
   }
   else
   {
@@ -766,7 +766,7 @@ Disassembly of section .text.ADC_GetConversionValue:
 
 00000000 <ADC_GetConversionValue>:
 ADC_GetConversionValue():
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:734
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:734
 {
   /* Check the parameters */
   assert_param(IS_ADC_ALL_PERIPH(ADCx));
@@ -774,7 +774,7 @@ D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\ST
   /* Return the selected ADC conversion value */
   return (u16) ADCx->DR;
    0:	6cc0      	ldr	r0, [r0, #76]	; 0x4c
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:735
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:735
 }
    2:	b280      	uxth	r0, r0
    4:	4770      	bx	lr
@@ -784,7 +784,7 @@ Disassembly of section .text.ADC_GetDualModeConversionValue:
 
 00000000 <ADC_GetDualModeConversionValue>:
 ADC_GetDualModeConversionValue():
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:746
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:746
 * Return         : The Data conversion value.
 *******************************************************************************/
 u32 ADC_GetDualModeConversionValue(void)
@@ -794,7 +794,7 @@ u32 ADC_GetDualModeConversionValue(void)
    0:	f242 434c 	movw	r3, #9292	; 0x244c
    4:	f2c4 0301 	movt	r3, #16385	; 0x4001
    8:	6818      	ldr	r0, [r3, #0]
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:747
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:747
 }
    a:	4770      	bx	lr
 
@@ -802,7 +802,7 @@ Disassembly of section .text.ADC_AutoInjectedConvCmd:
 
 00000000 <ADC_AutoInjectedConvCmd>:
 ADC_AutoInjectedConvCmd():
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:766
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:766
 {
   /* Check the parameters */
   assert_param(IS_ADC_ALL_PERIPH(ADCx));
@@ -810,7 +810,7 @@ D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\ST
 
   if (NewState != DISABLE)
    0:	b121      	cbz	r1, c <ADC_AutoInjectedConvCmd+0xc>
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:769
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:769
   {
     /* Enable the selected ADC automatic injected group conversion */
     ADCx->CR1 |= CR1_JAUTO_Set;
@@ -818,7 +818,7 @@ D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\ST
    4:	f443 6380 	orr.w	r3, r3, #1024	; 0x400
    8:	6043      	str	r3, [r0, #4]
    a:	4770      	bx	lr
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:774
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:774
   }
   else
   {
@@ -834,7 +834,7 @@ Disassembly of section .text.ADC_InjectedDiscModeCmd:
 
 00000000 <ADC_InjectedDiscModeCmd>:
 ADC_InjectedDiscModeCmd():
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:795
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:795
 {
   /* Check the parameters */
   assert_param(IS_ADC_ALL_PERIPH(ADCx));
@@ -842,7 +842,7 @@ D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\ST
 
   if (NewState != DISABLE)
    0:	b121      	cbz	r1, c <ADC_InjectedDiscModeCmd+0xc>
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:798
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:798
   {
     /* Enable the selected ADC injected discontinuous mode */
     ADCx->CR1 |= CR1_JDISCEN_Set;
@@ -850,7 +850,7 @@ D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\ST
    4:	f443 5380 	orr.w	r3, r3, #4096	; 0x1000
    8:	6043      	str	r3, [r0, #4]
    a:	4770      	bx	lr
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:803
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:803
   }
   else
   {
@@ -866,7 +866,7 @@ Disassembly of section .text.ADC_ExternalTrigInjectedConvConfig:
 
 00000000 <ADC_ExternalTrigInjectedConvConfig>:
 ADC_ExternalTrigInjectedConvConfig():
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:854
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:854
   /* Check the parameters */
   assert_param(IS_ADC_ALL_PERIPH(ADCx));
   assert_param(IS_ADC_EXT_INJEC_TRIG(ADC_ExternalTrigInjecConv));
@@ -874,19 +874,19 @@ D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\ST
   /* Get the old register value */
   tmpreg = ADCx->CR2;
    0:	6883      	ldr	r3, [r0, #8]
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:856
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:856
   /* Clear the old external event selection for injected group */
   tmpreg &= CR2_JEXTSEL_Reset;
    2:	f423 43e0 	bic.w	r3, r3, #28672	; 0x7000
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:858
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:858
   /* Set the external event selection for injected group */
   tmpreg |= ADC_ExternalTrigInjecConv;
    6:	ea41 0303 	orr.w	r3, r1, r3
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:860
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:860
   /* Store the new register value */
   ADCx->CR2 = tmpreg;
    a:	6083      	str	r3, [r0, #8]
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:861
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:861
 }
    c:	4770      	bx	lr
    e:	bf00      	nop
@@ -895,7 +895,7 @@ Disassembly of section .text.ADC_ExternalTrigInjectedConvCmd:
 
 00000000 <ADC_ExternalTrigInjectedConvCmd>:
 ADC_ExternalTrigInjectedConvCmd():
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:880
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:880
 {
   /* Check the parameters */
   assert_param(IS_ADC_ALL_PERIPH(ADCx));
@@ -903,7 +903,7 @@ D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\ST
 
   if (NewState != DISABLE)
    0:	b121      	cbz	r1, c <ADC_ExternalTrigInjectedConvCmd+0xc>
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:883
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:883
   {
     /* Enable the selected ADC external event selection for injected group */
     ADCx->CR2 |= CR2_JEXTTRIG_Set;
@@ -911,7 +911,7 @@ D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\ST
    4:	f443 4300 	orr.w	r3, r3, #32768	; 0x8000
    8:	6083      	str	r3, [r0, #8]
    a:	4770      	bx	lr
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:888
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:888
   }
   else
   {
@@ -927,7 +927,7 @@ Disassembly of section .text.ADC_SoftwareStartInjectedConvCmd:
 
 00000000 <ADC_SoftwareStartInjectedConvCmd>:
 ADC_SoftwareStartInjectedConvCmd():
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:909
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:909
 {
   /* Check the parameters */
   assert_param(IS_ADC_ALL_PERIPH(ADCx));
@@ -935,7 +935,7 @@ D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\ST
 
   if (NewState != DISABLE)
    0:	b121      	cbz	r1, c <ADC_SoftwareStartInjectedConvCmd+0xc>
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:913
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:913
   {
     /* Enable the selected ADC conversion for injected group on external event and start the selected
        ADC injected conversion */
@@ -944,7 +944,7 @@ D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\ST
    4:	f443 1302 	orr.w	r3, r3, #2129920	; 0x208000
    8:	6083      	str	r3, [r0, #8]
    a:	4770      	bx	lr
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:919
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:919
   }
   else
   {
@@ -961,7 +961,7 @@ Disassembly of section .text.ADC_GetSoftwareStartInjectedConvCmdStatus:
 
 00000000 <ADC_GetSoftwareStartInjectedConvCmdStatus>:
 ADC_GetSoftwareStartInjectedConvCmdStatus():
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:938
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:938
 
   /* Check the parameters */
   assert_param(IS_ADC_ALL_PERIPH(ADCx));
@@ -969,7 +969,7 @@ D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\ST
   /* Check the status of JSWSTART bit */
   if ((ADCx->CR2 & CR2_JSWSTART_Set) != (u32)RESET)
    0:	6880      	ldr	r0, [r0, #8]
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:951
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:951
     bitstatus = RESET;
   }
 
@@ -983,7 +983,7 @@ Disassembly of section .text.ADC_InjectedChannelConfig:
 
 00000000 <ADC_InjectedChannelConfig>:
 ADC_InjectedChannelConfig():
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:995
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:995
 *                       - ADC_SampleTime_239Cycles5: Sample time equal to 239.5 cycles	
 * Output         : None
 * Return         : None
@@ -991,7 +991,7 @@ D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\ST
 void ADC_InjectedChannelConfig(ADC_TypeDef* ADCx, u8 ADC_Channel, u8 Rank, u8 ADC_SampleTime)
 {
    0:	b470      	push	{r4, r5, r6}
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1005
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1005
   assert_param(IS_ADC_CHANNEL(ADC_Channel));
   assert_param(IS_ADC_INJECTED_RANK(Rank));
   assert_param(IS_ADC_SAMPLE_TIME(ADC_SampleTime));
@@ -1000,76 +1000,76 @@ D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\ST
   if (ADC_Channel > ADC_Channel_9)
    2:	2909      	cmp	r1, #9
    4:	d910      	bls.n	28 <ADC_InjectedChannelConfig+0x28>
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1008
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1008
   {
     /* Get the old register value */
     tmpreg1 = ADCx->SMPR1;
    6:	68c6      	ldr	r6, [r0, #12]
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1010
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1010
     /* Calculate the mask to clear */
     tmpreg2 = SMPR1_SMP_Set << (3*(ADC_Channel - 10));
    8:	eb01 0441 	add.w	r4, r1, r1, lsl #1
    c:	f1a4 041e 	sub.w	r4, r4, #30
   10:	f04f 0507 	mov.w	r5, #7
   14:	fa05 f504 	lsl.w	r5, r5, r4
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1012
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1012
     /* Clear the old discontinuous mode channel count */
     tmpreg1 &= ~tmpreg2;
   18:	ea26 0505 	bic.w	r5, r6, r5
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1014
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1014
     /* Calculate the mask to set */
     tmpreg2 = (u32)ADC_SampleTime << (3*(ADC_Channel - 10));
   1c:	fa03 f404 	lsl.w	r4, r3, r4
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1016
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1016
     /* Set the discontinuous mode channel count */
     tmpreg1 |= tmpreg2;
   20:	ea45 0304 	orr.w	r3, r5, r4
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1018
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1018
     /* Store the new register value */
     ADCx->SMPR1 = tmpreg1;
   24:	60c3      	str	r3, [r0, #12]
   26:	e00d      	b.n	44 <ADC_InjectedChannelConfig+0x44>
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1023
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1023
   }
   else /* ADC_Channel include in ADC_Channel_[0..9] */
   {
     /* Get the old register value */
     tmpreg1 = ADCx->SMPR2;
   28:	6906      	ldr	r6, [r0, #16]
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1025
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1025
     /* Calculate the mask to clear */
     tmpreg2 = SMPR2_SMP_Set << (3 * ADC_Channel);
   2a:	eb01 0441 	add.w	r4, r1, r1, lsl #1
   2e:	f04f 0507 	mov.w	r5, #7
   32:	fa05 f504 	lsl.w	r5, r5, r4
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1027
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1027
     /* Clear the old discontinuous mode channel count */
     tmpreg1 &= ~tmpreg2;
   36:	ea26 0505 	bic.w	r5, r6, r5
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1029
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1029
     /* Calculate the mask to set */
     tmpreg2 = (u32)ADC_SampleTime << (3 * ADC_Channel);
   3a:	fa03 f404 	lsl.w	r4, r3, r4
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1031
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1031
     /* Set the discontinuous mode channel count */
     tmpreg1 |= tmpreg2;
   3e:	ea45 0304 	orr.w	r3, r5, r4
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1033
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1033
     /* Store the new register value */
     ADCx->SMPR2 = tmpreg1;
   42:	6103      	str	r3, [r0, #16]
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1038
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1038
   }
 
   /* Rank configuration */
   /* Get the old register value */
   tmpreg1 = ADCx->JSQR;
   44:	6b83      	ldr	r3, [r0, #56]	; 0x38
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1040
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1040
   /* Get JL value: Number = JL+1 */
   tmpreg3 =  (tmpreg1 & JSQR_JL_Set)>> 20;
   46:	f3c3 5401 	ubfx	r4, r3, #20, #2
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1042
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1042
   /* Calculate the mask to clear: ((Rank-1)+(4-JL-1)) */
   tmpreg2 = JSQR_JSQ_Set << (5 * (u8)((Rank + 3) - (tmpreg3 + 1)));
   4a:	1b12      	subs	r2, r2, r4
@@ -1078,23 +1078,23 @@ D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\ST
   52:	eb02 0282 	add.w	r2, r2, r2, lsl #2
   56:	f04f 041f 	mov.w	r4, #31
   5a:	fa04 f402 	lsl.w	r4, r4, r2
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1044
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1044
   /* Clear the old JSQx bits for the selected rank */
   tmpreg1 &= ~tmpreg2;
   5e:	ea23 0304 	bic.w	r3, r3, r4
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1046
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1046
   /* Calculate the mask to set: ((Rank-1)+(4-JL-1)) */
   tmpreg2 = (u32)ADC_Channel << (5 * (u8)((Rank + 3) - (tmpreg3 + 1)));
   62:	fa01 f102 	lsl.w	r1, r1, r2
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1048
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1048
   /* Set the JSQx bits for the selected rank */
   tmpreg1 |= tmpreg2;
   66:	430b      	orrs	r3, r1
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1050
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1050
   /* Store the new register value */
   ADCx->JSQR = tmpreg1;
   68:	6383      	str	r3, [r0, #56]	; 0x38
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1051
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1051
 }
   6a:	bc70      	pop	{r4, r5, r6}
   6c:	4770      	bx	lr
@@ -1104,7 +1104,7 @@ Disassembly of section .text.ADC_InjectedSequencerLengthConfig:
 
 00000000 <ADC_InjectedSequencerLengthConfig>:
 ADC_InjectedSequencerLengthConfig():
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1072
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1072
   /* Check the parameters */
   assert_param(IS_ADC_ALL_PERIPH(ADCx));
   assert_param(IS_ADC_INJECTED_LENGTH(Length));
@@ -1112,22 +1112,22 @@ D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\ST
   /* Get the old register value */
   tmpreg1 = ADCx->JSQR;
    0:	6b83      	ldr	r3, [r0, #56]	; 0x38
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1074
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1074
   /* Clear the old injected sequnence lenght JL bits */
   tmpreg1 &= JSQR_JL_Reset;
    2:	f423 1340 	bic.w	r3, r3, #3145728	; 0x300000
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1076
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1076
   /* Set the injected sequnence lenght JL bits */
   tmpreg2 = Length - 1; 
    6:	f101 31ff 	add.w	r1, r1, #4294967295
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1077
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1077
   tmpreg1 |= tmpreg2 << 20;
    a:	ea43 5301 	orr.w	r3, r3, r1, lsl #20
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1079
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1079
   /* Store the new register value */
   ADCx->JSQR = tmpreg1;
    e:	6383      	str	r3, [r0, #56]	; 0x38
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1080
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1080
 }
   10:	4770      	bx	lr
   12:	bf00      	nop
@@ -1136,7 +1136,7 @@ Disassembly of section .text.ADC_SetInjectedOffset:
 
 00000000 <ADC_SetInjectedOffset>:
 ADC_SetInjectedOffset():
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1106
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1106
   assert_param(IS_ADC_ALL_PERIPH(ADCx));
   assert_param(IS_ADC_INJECTED_CHANNEL(ADC_InjectedChannel));
   assert_param(IS_ADC_OFFSET(Offset));  
@@ -1144,7 +1144,7 @@ D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\ST
   /* Set the selected injected channel data offset */
   *((vu32 *)((*(u32*)&ADCx) + ADC_InjectedChannel)) = (u32)Offset;
    0:	5042      	str	r2, [r0, r1]
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1107
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1107
 }
    2:	4770      	bx	lr
 
@@ -1152,7 +1152,7 @@ Disassembly of section .text.ADC_GetInjectedConversionValue:
 
 00000000 <ADC_GetInjectedConversionValue>:
 ADC_GetInjectedConversionValue():
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1129
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1129
   /* Check the parameters */
   assert_param(IS_ADC_ALL_PERIPH(ADCx));
   assert_param(IS_ADC_INJECTED_CHANNEL(ADC_InjectedChannel));
@@ -1161,7 +1161,7 @@ D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\ST
   return (u16) (*(vu32*) (((*(u32*)&ADCx) + ADC_InjectedChannel + JDR_Offset)));
    0:	f100 0028 	add.w	r0, r0, #40	; 0x28
    4:	5840      	ldr	r0, [r0, r1]
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1130
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1130
 }
    6:	b280      	uxth	r0, r0
    8:	4770      	bx	lr
@@ -1171,7 +1171,7 @@ Disassembly of section .text.ADC_AnalogWatchdogCmd:
 
 00000000 <ADC_AnalogWatchdogCmd>:
 ADC_AnalogWatchdogCmd():
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1165
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1165
   /* Check the parameters */
   assert_param(IS_ADC_ALL_PERIPH(ADCx));
   assert_param(IS_ADC_ANALOG_WATCHDOG(ADC_AnalogWatchdog));
@@ -1179,20 +1179,20 @@ D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\ST
   /* Get the old register value */
   tmpreg = ADCx->CR1;
    0:	6843      	ldr	r3, [r0, #4]
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1167
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1167
   /* Clear AWDEN, AWDENJ and AWDSGL bits */
   tmpreg &= CR1_AWDMode_Reset;
    2:	f423 0340 	bic.w	r3, r3, #12582912	; 0xc00000
    6:	f423 7300 	bic.w	r3, r3, #512	; 0x200
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1169
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1169
   /* Set the analog watchdog enable mode */
   tmpreg |= ADC_AnalogWatchdog;
    a:	ea41 0303 	orr.w	r3, r1, r3
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1171
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1171
   /* Store the new register value */
   ADCx->CR1 = tmpreg;
    e:	6043      	str	r3, [r0, #4]
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1172
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1172
 }
   10:	4770      	bx	lr
   12:	bf00      	nop
@@ -1201,7 +1201,7 @@ Disassembly of section .text.ADC_AnalogWatchdogThresholdsConfig:
 
 00000000 <ADC_AnalogWatchdogThresholdsConfig>:
 ADC_AnalogWatchdogThresholdsConfig():
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1194
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1194
   assert_param(IS_ADC_ALL_PERIPH(ADCx));
   assert_param(IS_ADC_THRESHOLD(HighThreshold));
   assert_param(IS_ADC_THRESHOLD(LowThreshold));
@@ -1209,11 +1209,11 @@ D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\ST
   /* Set the ADCx high threshold */
   ADCx->HTR = HighThreshold;
    0:	6241      	str	r1, [r0, #36]	; 0x24
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1196
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1196
   /* Set the ADCx low threshold */
   ADCx->LTR = LowThreshold;
    2:	6282      	str	r2, [r0, #40]	; 0x28
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1197
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1197
 }
    4:	4770      	bx	lr
    6:	bf00      	nop
@@ -1222,7 +1222,7 @@ Disassembly of section .text.ADC_AnalogWatchdogSingleChannelConfig:
 
 00000000 <ADC_AnalogWatchdogSingleChannelConfig>:
 ADC_AnalogWatchdogSingleChannelConfig():
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1236
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1236
   /* Check the parameters */
   assert_param(IS_ADC_ALL_PERIPH(ADCx));
   assert_param(IS_ADC_CHANNEL(ADC_Channel));
@@ -1230,19 +1230,19 @@ D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\ST
   /* Get the old register value */
   tmpreg = ADCx->CR1;
    0:	6843      	ldr	r3, [r0, #4]
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1238
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1238
   /* Clear the Analog watchdog channel select bits */
   tmpreg &= CR1_AWDCH_Reset;
    2:	f023 031f 	bic.w	r3, r3, #31
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1240
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1240
   /* Set the Analog watchdog channel */
   tmpreg |= ADC_Channel;
    6:	ea41 0303 	orr.w	r3, r1, r3
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1242
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1242
   /* Store the new register value */
   ADCx->CR1 = tmpreg;
    a:	6043      	str	r3, [r0, #4]
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1243
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1243
 }
    c:	4770      	bx	lr
    e:	bf00      	nop
@@ -1251,7 +1251,7 @@ Disassembly of section .text.ADC_TempSensorVrefintCmd:
 
 00000000 <ADC_TempSensorVrefintCmd>:
 ADC_TempSensorVrefintCmd():
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1258
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1258
 void ADC_TempSensorVrefintCmd(FunctionalState NewState)
 {
   /* Check the parameters */
@@ -1259,7 +1259,7 @@ void ADC_TempSensorVrefintCmd(FunctionalState NewState)
 
   if (NewState != DISABLE)
    0:	b140      	cbz	r0, 14 <ADC_TempSensorVrefintCmd+0x14>
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1261
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1261
   {
     /* Enable the temperature sensor and Vrefint channel*/
     ADC1->CR2 |= CR2_TSVREFE_Set;
@@ -1269,7 +1269,7 @@ D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\ST
    c:	f442 0200 	orr.w	r2, r2, #8388608	; 0x800000
   10:	609a      	str	r2, [r3, #8]
   12:	4770      	bx	lr
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1266
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1266
   }
   else
   {
@@ -1287,7 +1287,7 @@ Disassembly of section .text.ADC_GetFlagStatus:
 
 00000000 <ADC_GetFlagStatus>:
 ADC_GetFlagStatus():
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1293
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1293
   /* Check the parameters */
   assert_param(IS_ADC_ALL_PERIPH(ADCx));
   assert_param(IS_ADC_GET_FLAG(ADC_FLAG));
@@ -1295,12 +1295,12 @@ D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\ST
   /* Check the status of the specified ADC flag */
   if ((ADCx->SR & ADC_FLAG) != (u8)RESET)
    0:	6803      	ldr	r3, [r0, #0]
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1296
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1296
   {
     /* ADC_FLAG is set */
     bitstatus = SET;
    2:	4219      	tst	r1, r3
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1306
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1306
     bitstatus = RESET;
   }
 
@@ -1316,7 +1316,7 @@ Disassembly of section .text.ADC_ClearFlag:
 
 00000000 <ADC_ClearFlag>:
 ADC_ClearFlag():
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1329
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1329
   /* Check the parameters */
   assert_param(IS_ADC_ALL_PERIPH(ADCx));
   assert_param(IS_ADC_CLEAR_FLAG(ADC_FLAG));
@@ -1325,7 +1325,7 @@ D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\ST
   ADCx->SR = ~(u32)ADC_FLAG;
    0:	ea6f 0101 	mvn.w	r1, r1
    4:	6001      	str	r1, [r0, #0]
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1330
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1330
 }
    6:	4770      	bx	lr
 
@@ -1333,7 +1333,7 @@ Disassembly of section .text.ADC_GetITStatus:
 
 00000000 <ADC_GetITStatus>:
 ADC_GetITStatus():
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1357
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1357
 
   /* Get the ADC IT index */
   itmask = ADC_IT >> 8;
@@ -1341,14 +1341,14 @@ D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\ST
   /* Get the ADC_IT enable bit status */
   enablestatus = (ADCx->CR1 & (u8)ADC_IT) ;
    0:	6842      	ldr	r2, [r0, #4]
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1360
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1360
 
   /* Check the status of the specified ADC interrupt */
   if (((ADCx->SR & itmask) != (u32)RESET) && enablestatus)
    2:	6803      	ldr	r3, [r0, #0]
    4:	ea13 2311 	ands.w	r3, r3, r1, lsr #8
    8:	d005      	beq.n	16 <ADC_GetITStatus+0x16>
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1357
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1357
 
   /* Get the ADC IT index */
   itmask = ADC_IT >> 8;
@@ -1356,7 +1356,7 @@ D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\ST
   /* Get the ADC_IT enable bit status */
   enablestatus = (ADCx->CR1 & (u8)ADC_IT) ;
    a:	b2c9      	uxtb	r1, r1
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1344
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1344
 *                       - ADC_IT_AWD: Analog watchdog interrupt mask
 *                       - ADC_IT_JEOC: End of injected conversion interrupt mask
 * Output         : None
@@ -1364,7 +1364,7 @@ D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\ST
 *******************************************************************************/
 ITStatus ADC_GetITStatus(ADC_TypeDef* ADCx, u16 ADC_IT)
    c:	4211      	tst	r1, r2
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1363
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1363
 
   /* Check the status of the specified ADC interrupt */
   if (((ADCx->SR & itmask) != (u32)RESET) && enablestatus)
@@ -1375,14 +1375,14 @@ D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\ST
   10:	2000      	moveq	r0, #0
   12:	2001      	movne	r0, #1
   14:	4770      	bx	lr
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1368
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1368
   }
   else
   {
     /* ADC_IT is reset */
     bitstatus = RESET;
   16:	f04f 0000 	mov.w	r0, #0
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1373
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1373
   }
 
   /* Return the ADC_IT status */
@@ -1394,7 +1394,7 @@ Disassembly of section .text.ADC_ClearITPendingBit:
 
 00000000 <ADC_ClearITPendingBit>:
 ADC_ClearITPendingBit():
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1399
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1399
 
   /* Get the ADC IT index */
   itmask = (u8)(ADC_IT >> 8);
@@ -1403,6 +1403,6 @@ D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\ST
   ADCx->SR = ~(u32)itmask;
    0:	ea6f 2111 	mvn.w	r1, r1, lsr #8
    4:	6001      	str	r1, [r0, #0]
-D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1400
+C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/stm32f10x_adc.c:1400
 }
    6:	4770      	bx	lr

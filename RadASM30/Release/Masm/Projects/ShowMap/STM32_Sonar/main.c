@@ -18,7 +18,7 @@ typedef struct
   u8 PingPulses;
   u16 Gain;
   u16 Timer;
-  u16 Skip;
+  u16 nSample;
   u16 EchoIndex;
   u16 ADCBatt;
   u16 ADCWaterTemp;
@@ -31,6 +31,7 @@ typedef struct
 static STM32_SonarTypeDef STM32_Sonar;         // 0x20000000
 vu8 BlueLED;
 vu8 GreenLED;
+vu16 nSample;
 GPIO_InitTypeDef GPIO_InitStructure;
 
 /* Private function prototypes -----------------------------------------------*/
@@ -62,17 +63,14 @@ int main(void)
   NVIC_Configuration();
   /* GPIO configuration ------------------------------------------------------*/
   GPIO_Configuration();
-  /* TIM1 configuration */
+  /* TIM1 configuration ------------------------------------------------------*/
   TIM1_Configuration();
   /* TIM2 configuration ------------------------------------------------------*/
   TIM2_Configuration();
   /* ADC1 configuration ------------------------------------------------------*/
   ADC_Startup();
-  /* ADC1 injected channels configuration ------------------------------------*/
+  /* ADC1 injected channel configuration -------------------------------------*/
   ADC_Configuration();
-  STM32_Sonar.PingPulses = 127;
-  STM32_Sonar.Gain = 7;
-  STM32_Sonar.Timer = 551;
 
   while (1)
   {
@@ -97,6 +95,13 @@ int main(void)
       STM32_Sonar.ADCWaterTemp = GetADCValue(ADC_Channel_4);
       /* Read air temprature */
       STM32_Sonar.ADCAirTemp = GetADCValue(ADC_Channel_16);
+      /* Clear the echo array */
+      i = 0;
+      while (i < MAXECHO)
+      {
+        STM32_Sonar.Echo[i] = 0;
+      }
+      nSample = STM32_Sonar.nSample;
       /* TIM2 configuration */
       TIM2_Configuration();
       /* Reset echo index */
@@ -203,18 +208,29 @@ void TIM1_UP_IRQHandler(void)
 *******************************************************************************/
 void TIM2_IRQHandler(void)
 {
+  u8 Echo;
   /* Clear TIM2 Update interrupt pending bit */
   TIM2->SR = (u16)~TIM_IT_Update;
   /* Get echo */
-  STM32_Sonar.Echo[STM32_Sonar.EchoIndex] = (ADC_GetInjectedConversionValue(ADC1, ADC_InjectedChannel_1) >> 4);
-  STM32_Sonar.EchoIndex++;
-  if (STM32_Sonar.EchoIndex == MAXECHO)
+  Echo = (ADC_GetInjectedConversionValue(ADC1, ADC_InjectedChannel_1) >> 4);
+  /* If echo larger than previous echo, update the echo array */
+  if (Echo > STM32_Sonar.Echo[STM32_Sonar.EchoIndex])
   {
-    /* Disable TIM2 */
-    TIM2->CR1 = 0;
-    ADC_AutoInjectedConvCmd(ADC1, DISABLE);
-    /* Done */
-    STM32_Sonar.Start = 0;
+    STM32_Sonar.Echo[STM32_Sonar.EchoIndex] = Echo;
+  }
+  nSample--;
+  if (!nSample)
+  {
+    nSample = STM32_Sonar.nSample;
+    STM32_Sonar.EchoIndex++;
+    if (STM32_Sonar.EchoIndex == MAXECHO)
+    {
+      /* Disable TIM2 */
+      TIM2->CR1 = 0;
+      ADC_AutoInjectedConvCmd(ADC1, DISABLE);
+      /* Done */
+      STM32_Sonar.Start = 0;
+    }
   }
 }
 

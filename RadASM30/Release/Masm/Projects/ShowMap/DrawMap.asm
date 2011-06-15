@@ -307,7 +307,7 @@ ShowSpeedBattTempTimeScale proc uses ebx esi edi
 	LOCAL	rect:RECT
 	LOCAL	x:DWORD
 
-	invoke SetTextColor,map.mDC2,0404040h
+	invoke SetTextColor,map.mDC2,0
 	xor		ebx,ebx
 	mov		esi,offset map.options
 	.while ebx<MAXMAPOPTION
