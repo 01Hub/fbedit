@@ -300,9 +300,9 @@ SONAR struct
 SONAR ends
 
 RANGE struct
-	range		DWORD ?										;Range in meters
-	interval	DWORD ?										;Update rate
-	nsample		DWORD ?										;Number of echo readings to sample. If more than one the largest is stored.
+	range			DWORD ?									;Range in meters
+	interval		DWORD ?									;Update rate
+	nsample			DWORD ?									;Number of echo readings to sample. If more than one the largest is stored.
 RANGE ends
 
 .const

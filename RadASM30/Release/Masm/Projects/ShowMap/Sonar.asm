@@ -212,7 +212,9 @@ SonarThreadProc proc uses ebx esi edi,lParam:DWORD
 	LOCAL	buffer[256]:BYTE
 	LOCAL	dptinx:DWORD
 	LOCAL	dwwrite:DWORD
+	local	fFishSound:DWORD
 
+	mov		fFishSound,FALSE
 	.if sonardata.hReply
 		call	ScrollEchoArray
 		invoke ReadFile,sonardata.hReply,addr sonardata.sonar[MAXXECHO*MAXYECHO-MAXYECHO],MAXYECHO,addr dwwrite,NULL
@@ -223,47 +225,49 @@ SonarThreadProc proc uses ebx esi edi,lParam:DWORD
 			mov		sonardata.hReply,0
 		.endif
 	.elseif fSTLink && fSTLink!=IDIGNORE
-	 	;Upload Start, PingPulses, Gain, Timer and nSamples
-	 	mov		sonardata.Start,0
-		invoke STLinkWrite,hWnd,STM32_Sonar,addr sonardata.Start,8
-		.if eax
-			;Download ADCBattery, ADCWaterTemp and ADCAirTemp
-			invoke STLinkRead,hWnd,STM32_Sonar+8,addr sonardata.dmy1,8
-			.if eax
-				call	ScrollEchoArray
-				;Download sonar echo array
-				invoke STLinkRead,hWnd,STM32_Sonar+16,addr sonardata.sonar[MAXXECHO*MAXYECHO-MAXYECHO],MAXYECHO
-				.if eax
-					call	Update
-				 	;Upload Start, PingPulses, Gain, Timer and Skip
-				 	mov		sonardata.Start,1
-					invoke STLinkWrite,hWnd,STM32_Sonar,addr sonardata.Start,8
-				.endif
-			.endif
-			movzx	eax,sonardata.ADCBattery
-			mov		ecx,100
-			mul		ecx
-			mov		ecx,1640
-			div		ecx
-			invoke wsprintf,addr buffer,addr szFmtDec,eax
-			invoke strlen,addr buffer
-			movzx	ecx,word ptr buffer[eax-1]
-			shl		ecx,8
-			mov		cl,'.'
-			mov		dword ptr buffer[eax-1],ecx
-			invoke strcat,addr buffer,addr szVolts
-			invoke strcpy,addr map.options.text[sizeof OPTIONS],addr buffer
-		.else
-			mov		fSTLink,0
+		;Download ADCBattery, ADCWaterTemp and ADCAirTemp
+		invoke STLinkRead,hWnd,STM32_Sonar+8,addr sonardata.dmy1,8
+		.if !eax
+			jmp		STLinkErr
 		.endif
-	.elseif fSTLink==IDIGNORE
+		call	ScrollEchoArray
+		;Download sonar echo array
+		invoke STLinkRead,hWnd,STM32_Sonar+16,addr sonardata.sonar[MAXXECHO*MAXYECHO-MAXYECHO],MAXYECHO
+		.if !eax
+			jmp		STLinkErr
+		.endif
+		call	Update
 		invoke SendDlgItemMessage,hWnd,IDC_TRBRANGE,TBM_GETPOS,0,0
 		.if eax!=sonardata.RangeInx
 			invoke SetRange,eax
 			invoke UpdateBitmap
 			mov		sonardata.nCount,4
 		.endif
-		mov		eax,sonardata.RangeInx
+	 	;Upload Start, PingPulses, Gain, Timer and nSample
+	 	mov		sonardata.Start,0
+		invoke STLinkWrite,hWnd,STM32_Sonar,addr sonardata.Start,8
+		.if !eax
+			jmp		STLinkErr
+		.endif
+	 	mov		sonardata.Start,1
+		invoke STLinkWrite,hWnd,STM32_Sonar,addr sonardata.Start,8
+		.if !eax
+			jmp		STLinkErr
+		.endif
+		movzx	eax,sonardata.ADCBattery
+		mov		ecx,100
+		mul		ecx
+		mov		ecx,1640
+		div		ecx
+		invoke wsprintf,addr buffer,addr szFmtDec,eax
+		invoke strlen,addr buffer
+		movzx	ecx,word ptr buffer[eax-1]
+		shl		ecx,8
+		mov		cl,'.'
+		mov		dword ptr buffer[eax-1],ecx
+		invoke strcat,addr buffer,addr szVolts
+		invoke strcpy,addr map.options.text[sizeof OPTIONS],addr buffer
+	.elseif fSTLink==IDIGNORE
 		call	ScrollEchoArray
 		invoke RtlZeroMemory,offset sonardata.sonar[(MAXXECHO*MAXYECHO)-MAXYECHO],MAXYECHO
 		.if !(pixcnt & 63)
@@ -317,7 +321,18 @@ SonarThreadProc proc uses ebx esi edi,lParam:DWORD
 			.endif
 		.endif
 		call	Update
+		invoke SendDlgItemMessage,hWnd,IDC_TRBRANGE,TBM_GETPOS,0,0
+		.if eax!=sonardata.RangeInx
+			invoke SetRange,eax
+			invoke UpdateBitmap
+			mov		sonardata.nCount,4
+		.endif
 	.endif
+	mov		fThread,FALSE
+	xor		eax,eax
+	ret
+
+STLinkErr:
 	mov		fThread,FALSE
 	ret
 
@@ -441,7 +456,8 @@ FindFish:
 			.if eax>sonardata.Noise
 				mov		eax,edi
 				sub		eax,16
-				.if sdword ptr eax>ebx
+				.if sdword ptr eax>ebx && !fFishSound
+					mov		fFishSound,TRUE
 					;Large fish
 					mov		sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO],255
 					invoke strcpy,addr buffer,addr szAppPath
@@ -511,12 +527,6 @@ Update:
 			.endif
 		.endif
 	.endif
-	invoke SendDlgItemMessage,hWnd,IDC_TRBRANGE,TBM_GETPOS,0,0
-	.if eax!=sonardata.RangeInx
-		invoke SetRange,eax
-		invoke UpdateBitmap
-		mov		sonardata.nCount,4
-	.endif
 	retn
 
 SonarThreadProc endp
@@ -561,10 +571,12 @@ ShowFish:
 				mov		ecx,sonarrange.range[eax]
 				mov		eax,edi
 				mul		ecx
+				xor		edx,edx
 				div		ebx
 				mov		ecx,rcsonar.bottom
 				mul		ecx
 				mov		ecx,MAXYECHO
+				xor		edx,edx
 				div		ecx
 				mov		ecx,eax
 				mov		edx,rcsonar.right
@@ -803,10 +815,11 @@ SonarProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.endif
 		.endif
 		.if fSTLink && !fThread
+			invoke KillTimer,hWin,1000
 			mov		fThread,TRUE
 			invoke CreateThread,NULL,NULL,addr SonarThreadProc,hWin,0,addr tid
 			invoke CloseHandle,eax
-			invoke KillTimer,hWin,1000
+;invoke SonarThreadProc,0
 			invoke GetRangePtr,sonardata.RangeInx
 			invoke SetTimer,hWin,1000,sonarrange.interval[eax],NULL
 		.endif

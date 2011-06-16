@@ -100,6 +100,7 @@ int main(void)
       while (i < MAXECHO)
       {
         STM32_Sonar.Echo[i] = 0;
+        i++;
       }
       nSample = STM32_Sonar.nSample;
       /* TIM2 configuration */
@@ -213,6 +214,10 @@ void TIM2_IRQHandler(void)
   TIM2->SR = (u16)~TIM_IT_Update;
   /* Get echo */
   Echo = (ADC_GetInjectedConversionValue(ADC1, ADC_InjectedChannel_1) >> 4);
+  if (Echo > 253)
+  {
+    Echo = 253;
+  }
   /* If echo larger than previous echo, update the echo array */
   if (Echo > STM32_Sonar.Echo[STM32_Sonar.EchoIndex])
   {
