@@ -11,14 +11,17 @@
 
 /* Private define ------------------------------------------------------------*/
 #define MAXECHO           ((u16)512)
+#define ADC1_ICDR_Address ((u32)0x4001243C)
 
 typedef struct
 {
   u8 Start;
   u8 PingPulses;
-  u16 Gain;
+  u8 Noise;
+  u8 Gain;
+  u8 Range;
+  u8 nSample;
   u16 Timer;
-  u16 nSample;
   u16 EchoIndex;
   u16 ADCBatt;
   u16 ADCWaterTemp;
@@ -31,7 +34,7 @@ typedef struct
 static STM32_SonarTypeDef STM32_Sonar;         // 0x20000000
 vu8 BlueLED;
 vu8 GreenLED;
-vu16 nSample;
+vu8 nSample;
 GPIO_InitTypeDef GPIO_InitStructure;
 
 /* Private function prototypes -----------------------------------------------*/
@@ -209,14 +212,23 @@ void TIM1_UP_IRQHandler(void)
 *******************************************************************************/
 void TIM2_IRQHandler(void)
 {
+  u32* ADC;
   u8 Echo;
   /* Clear TIM2 Update interrupt pending bit */
   TIM2->SR = (u16)~TIM_IT_Update;
   /* Get echo */
-  Echo = (ADC_GetInjectedConversionValue(ADC1, ADC_InjectedChannel_1) >> 4);
+  // Echo = (ADC_GetInjectedConversionValue(ADC1, ADC_InjectedChannel_1) >> 4);
+  ADC = ( (u32 *) ADC1_ICDR_Address);
+  Echo = (u8) ( (u16) (*(vu32*) (((*(u32*)&ADC)))) >> 4);
+  /* Reserve 254 and 255 for fish detect */
   if (Echo > 253)
   {
     Echo = 253;
+  }
+  /* Cancel noise */
+  if (Echo < STM32_Sonar.Noise)
+  {
+    Echo = 0;
   }
   /* If echo larger than previous echo, update the echo array */
   if (Echo > STM32_Sonar.Echo[STM32_Sonar.EchoIndex])
@@ -233,6 +245,8 @@ void TIM2_IRQHandler(void)
       /* Disable TIM2 */
       TIM2->CR1 = 0;
       ADC_AutoInjectedConvCmd(ADC1, DISABLE);
+      /* Store the range */
+      STM32_Sonar.Echo[0] = STM32_Sonar.Range;
       /* Done */
       STM32_Sonar.Start = 0;
     }

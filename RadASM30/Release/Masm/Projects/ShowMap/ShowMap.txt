@@ -40,8 +40,8 @@ KetilO
 Spherical law of cosines: d = acos(sin(lat1).sin(lat2)+cos(lat1).cos(lat2).cos(long2-long1)).R
 R = earth’s radius (mean radius = 6,371km)
 
-Description
-===========
+Sonar Description
+=================
 A short ping at 200 KHz is transmitted at intervals depending on depth range (200 to 500 ms).
 From the time it takes for the echo to return we can calculate the depth.
 The adc measures the strenght of the echo at intervalls depending on range
@@ -64,8 +64,8 @@ Since it is the echo we are measuring: 690 * 2 = 1380 us
 Two timers are needed:
 1. Timer in PWM mode to generate the 200 KHz two phase ping signal.
    The number of pulses is variable (1 to 256).
-2. Timer to generate an interrupt for every pixel. The interval depends
-   on range.
+2. Timer to generate an interrupt for every pixel. The interval is constant but the
+   number of samples / pixel depends on range.
 
 Time needed for the different ranges:
 ===================================================================================

@@ -68,16 +68,19 @@ IDC_CBOICON             equ 1105
 IDC_BTNGPS              equ 1106
 IDC_TRBZOOM             equ 1107
 
-IDC_STCGAIN				equ 1019
-IDC_TRBGAIN				equ 1018
 IDC_STCNOISE			equ 1023
 IDC_TRBNOISE			equ 1022
+IDC_STCGAIN				equ 1019
+IDC_TRBGAIN				equ 1018
+IDC_CHKGAIN				equ 1028
 IDC_STCPULSES			equ 1021
 IDC_TRBPULSES			equ 1020
+IDC_CHKPULSES			equ 1029
 IDC_STCRANGE			equ 1025
 IDC_TRBRANGE			equ 1024
 IDC_CHKRANGE			equ 1026
 IDC_CHKFISHDETECT		equ 1027
+IDC_CHKFISHALARM		equ 1030
 
 IDM_MENU                equ 10000
 IDM_FILE_OPENTRIP       equ 10010
@@ -139,7 +142,6 @@ MAXSONAROPTION			equ 3								;Max number of overlays on sonar scteen
 ;Sonar constants
 MAXXECHO				equ 512								;Max number of sonar X-echos
 MAXYECHO				equ 512								;Max number of sonar Y-echos
-MINYECHO				equ 100
 MAXRANGE				equ 14								;Number of depth ranges
 STM32_Sonar				equ 20000000h						;STM32 ram address
 ;SONARBACKCOLOR			equ 0FFFF80h						;Back color of sonar
@@ -273,36 +275,40 @@ MAP struct
 MAP ends
 
 SONAR struct
-	mDC				HDC ?
-	hBmp			HBITMAP ?
-	hBmpOld			HBITMAP ?
+	mDC				HDC ?									;The memory DC holds the echo bitmap, 512*512 pixels,
+	hBmp			HBITMAP ?								;Handle of the bitmap used in mDC
+	hBmpOld			HBITMAP ?								;Handle of the original bitmap in mDC
+	hReply			HANDLE ?								;Handle of replay file
+	hLog			HANDLE ?								;Handle of log file
 	wt				DWORD ?									;Width of sonar screen
 	options			OPTIONS MAXSONAROPTION dup(<>)			;Options for overlays on sonar screen
 	AutoRange		DWORD ?									;If TRUE autorange is on
-	RangeInx		DWORD ?									;Range (0 to 13)
-	RangeVal		DWORD ?									;Range in meters
+	AutoGain		DWORD ?									;If TRUE gain is set according to range
+	AutoPing		DWORD ?									;If TRUE number of pingpulses is set according to range
 	FishDetect		DWORD ?									;If TRUE fish detect is on
-	minyecho		DWORD ?
-	Noise			DWORD ?									;Noise reject level (0 to 255)
-	Start			BYTE ?
-	PingPulses		BYTE ?									;Number of pulses in a ping ((0 to 255)+1)
-	Gain			WORD ?									;Gain level (0 to 31)
+	FishAlarm		DWORD ?									;If TRUE fish alarm is on
+	RangeVal		DWORD ?									;Range in meters
+	Start			BYTE ?									;Set to 1 to init a new echo reading
+	PingPulses		BYTE ?									;Number of pulses in a ping ((0 to 63)+1)
+	Noise			BYTE ?									;Noise reject level (0 to 255)
+	Gain			BYTE ?									;Gain level (0 to 127)
+	RangeInx		BYTE ?									;Range (0 to 13)
+	nSample			BYTE ?									;Number of echo readings to sample. If more than one the largest is stored.
 	Timer			WORD ?									;Time between each echo reading
-	nSample			WORD ?									;Number of echo readings to sample. If more than one the largest is stored.
-	nCount			DWORD ?
-	dmy1			WORD ?
+	nCount			DWORD ?									;Used when the range is changed
+	dmy1			WORD ?									;Just to make the ADC readings dword sized
 	ADCBattery		WORD ?									;Battery level
 	ADCWaterTemp	WORD ?									;Water temprature
 	ADCAirTemp		WORD ?									;Air temprature
 	sonar			BYTE MAXXECHO*MAXYECHO dup(?)			;Echo array. The first byte in each x element is the range index
-	hReply			HANDLE ?								;Handle of replay file
-	hLog			HANDLE ?								;Handle of log file
 SONAR ends
 
 RANGE struct
 	range			DWORD ?									;Range in meters
 	interval		DWORD ?									;Update rate
 	nsample			DWORD ?									;Number of echo readings to sample. If more than one the largest is stored.
+	pingpulses		DWORD ?									;Number of pulses in a ping ((0 to 63)+1). Used when autoping is on
+	gain			DWORD ?									;Gain level (0 to 127). Used when auto gain is on
 RANGE ends
 
 .const
@@ -336,6 +342,7 @@ szIniFont			BYTE 'Font',0
 szIniOption			BYTE 'Option',0
 szIniLon			BYTE 'Lon',0
 szIniLat			BYTE 'Lat',0
+szIniSonar			BYTE 'Sonar',0
 
 szFonts				BYTE 'None',0							;Font selection descriptions
 					BYTE 'Small',0
@@ -363,17 +370,19 @@ szIcons				BYTE 'None',0							;Icon selection descriptions
 					BYTE 'Red dot',0
 					BYTE 'Blue dot',0,0
 
-sonarrange			RANGE <2,200,1>,<4,200,2>,
-						  <6,200,3>,<10,250,5>,
-						  <20,250,10>,<30,300,15>,
-						  <50,300,25>,<70,350,35>,
-						  <100,350,50>,<150,400,75>,
-						  <200,400,100>,<250,450,125>,
-						  <300,450,150>,<350,500,175>
+sonarrange			RANGE <2,200,1,7,30>,<4,200,2,7,35>,
+						  <6,200,3,8,40>,<10,250,5,8,45>,
+						  <20,250,10,9,50>,<30,300,15,9,55>,
+						  <50,300,25,10,60>,<70,350,35,10,65>,
+						  <100,350,50,11,70>,<150,400,75,11,75>,
+						  <200,400,100,12,80>,<250,450,125,12,85>,
+						  <300,450,150,13,90>,<350,500,175,13,95>
 
-szFmtDec			BYTE '%u',0
+szFmtDec			BYTE '%d',0
 szFmtDepth			BYTE '%02u',0
 szVolts				BYTE 'V',0
+szCelcius			BYTE 'C',0
+watertempconv		QWORD 3.46982758620
 
 .data?
 
