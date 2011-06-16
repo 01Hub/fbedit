@@ -462,7 +462,7 @@ TestDepth:
 	xor		ecx,ecx
 	xor		edx,edx
 	mov		dptinx,ecx
-	.while ecx<16
+	.while ecx<8
 		movzx	eax,sonardata.sonar[ebx+ecx+MAXXECHO*MAXYECHO-MAXYECHO]
 		.if eax
 			movzx	eax,sonardata.sonar[ebx+ecx+MAXXECHO*MAXYECHO-MAXYECHO*2]
@@ -488,11 +488,11 @@ FindDepth:
 	xor		edx,edx
 	.while ebx<MAXYECHO-17
 		movzx	eax,sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO]
-		.if eax
+		.if !eax
 			movzx	eax,sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*2]
-			.if eax
+			.if !eax
 				movzx	eax,sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*3]
-				.if eax
+				.if !eax
 					inc		edx
 					.if edx>=3
 						.break
