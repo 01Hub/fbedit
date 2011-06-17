@@ -3313,7 +3313,7 @@ CadProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			mov		eax,[ebx].CADMEM.zoom
 			inc		eax
 			mov		edx,eax
-			shr		edx,3
+			shr		edx,4
 			add		eax,edx
 			mov		[ebx].CADMEM.zoom,eax
 			mov		ecx,1
@@ -3345,7 +3345,7 @@ CadProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			mov		eax,[ebx].CADMEM.zoom
 			dec		eax
 			mov		edx,eax
-			shr		edx,3
+			shr		edx,4
 			sub		eax,edx
 			mov		[ebx].CADMEM.zoom,eax
 			mov		ecx,-1
@@ -3576,11 +3576,11 @@ CadProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
 TestGrid:
 	push	ecx
-	mov		eax,SNAP_SIZE
+	mov		eax,SNAP_SIZE*2
 	call	ZoomMul
 	call	ZoomDiv
 	pop		ecx
-	.if eax!=SNAP_SIZE
+	.if eax!=SNAP_SIZE*2
 		add		[ebx].CADMEM.zoom,ecx
 		jmp		TestGrid
 	.endif
