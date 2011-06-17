@@ -231,7 +231,17 @@ SonarThreadProc proc uses ebx esi edi,lParam:DWORD
 		call	ScrollEchoArray
 		invoke ReadFile,sonardata.hReply,addr sonardata.sonar[MAXXECHO*MAXYECHO-MAXYECHO],MAXYECHO,addr dwwrite,NULL
 		.if dwwrite==MAXYECHO
+			movzx	eax,sonardata.sonar[MAXXECHO*MAXYECHO-MAXYECHO]
+			.if al!=sonardata.RangeInx
+				invoke SendDlgItemMessage,hWnd,IDC_TRBRANGE,TBM_SETPOS,TRUE,eax
+			.endif
 			call	Update
+			invoke SendDlgItemMessage,hWnd,IDC_TRBRANGE,TBM_GETPOS,0,0
+			.if al!=sonardata.RangeInx
+				invoke SetRange,eax
+				invoke UpdateBitmap
+				mov		sonardata.nCount,4
+			.endif
 		.else
 			invoke CloseHandle,sonardata.hReply
 			mov		sonardata.hReply,0
@@ -337,6 +347,8 @@ SonarThreadProc proc uses ebx esi edi,lParam:DWORD
 		invoke strcpy,addr sonardata.options.text[sizeof OPTIONS*2],addr buffer
 		call	ScrollEchoArray
 		invoke RtlZeroMemory,offset sonardata.sonar[(MAXXECHO*MAXYECHO)-MAXYECHO],MAXYECHO
+		mov		al,sonardata.RangeInx
+		mov		sonardata.sonar[MAXXECHO*MAXYECHO-MAXYECHO],al
 		mov		sonardata.sonar[MAXXECHO*MAXYECHO-MAXYECHO+1],250
 		mov		sonardata.sonar[MAXXECHO*MAXYECHO-MAXYECHO+2],250
 		mov		sonardata.sonar[MAXXECHO*MAXYECHO-MAXYECHO+3],250

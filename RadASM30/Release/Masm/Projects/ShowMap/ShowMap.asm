@@ -909,6 +909,16 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						invoke CreateFile,addr buffer,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL
 						.if eax!=INVALID_HANDLE_VALUE
 							mov		sonardata.hReply,eax
+							invoke RtlZeroMemory,addr sonardata.sonar,MAXYECHO*MAXXECHO
+							mov		rect.left,0
+							mov		rect.top,0
+							mov		rect.right,MAXXECHO
+							mov		rect.bottom,MAXYECHO
+							invoke CreateSolidBrush,SONARBACKCOLOR
+							push	eax
+							invoke FillRect,sonardata.mDC,addr rect,eax
+							pop		eax
+							invoke DeleteObject,eax
 						.endif
 					.endif
 				.endif
@@ -1142,25 +1152,25 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		add		rect.right,8
 		invoke GetDlgItem,hWin,IDC_BTNZOOMIN
 		invoke MoveWindow,eax,rect.right,rect.top,80,25,TRUE
-		add		rect.top,30
+		add		rect.top,27
 		invoke GetDlgItem,hWin,IDC_BTNZOOMOUT
 		invoke MoveWindow,eax,rect.right,rect.top,80,25,TRUE
-		add		rect.top,30
+		add		rect.top,27
 		invoke GetDlgItem,hWin,IDC_CHKPAUSE
-		invoke MoveWindow,eax,rect.right,rect.top,80,20,TRUE
-		add		rect.top,20
+		invoke MoveWindow,eax,rect.right,rect.top,80,16,TRUE
+		add		rect.top,17
 		invoke GetDlgItem,hWin,IDC_CHKLOCK
-		invoke MoveWindow,eax,rect.right,rect.top,80,20,TRUE
-		add		rect.top,20
+		invoke MoveWindow,eax,rect.right,rect.top,80,16,TRUE
+		add		rect.top,17
 		invoke GetDlgItem,hWin,IDC_CHKTRAIL
-		invoke MoveWindow,eax,rect.right,rect.top,80,20,TRUE
-		add		rect.top,20
+		invoke MoveWindow,eax,rect.right,rect.top,80,16,TRUE
+		add		rect.top,17
 		invoke GetDlgItem,hWin,IDC_CHKGRID
-		invoke MoveWindow,eax,rect.right,rect.top,80,20,TRUE
-		add		rect.top,25
+		invoke MoveWindow,eax,rect.right,rect.top,80,16,TRUE
+		add		rect.top,17
 		invoke GetDlgItem,hWin,IDC_CBOGOTO
 		invoke MoveWindow,eax,rect.right,rect.top,80,200,TRUE
-		add		rect.top,30
+		add		rect.top,25
 		invoke GetDlgItem,hWin,IDC_STCLAT
 		invoke MoveWindow,eax,rect.right,rect.top,80,16,TRUE
 		add		rect.top,17
@@ -1184,7 +1194,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		add		rect.top,17
 		invoke GetDlgItem,hWin,IDC_EDTBEAR
 		invoke MoveWindow,eax,rect.right,rect.top,80,16,TRUE
-		add		rect.top,30
+		add		rect.top,17
 ;Sonar
 		invoke GetDlgItem,hWin,IDC_STCNOISE
 		invoke MoveWindow,eax,rect.right,rect.top,80,16,TRUE
@@ -1200,7 +1210,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		add		rect.top,25
 		invoke GetDlgItem,hWin,IDC_CHKGAIN
 		invoke MoveWindow,eax,rect.right,rect.top,80,16,TRUE
-		add		rect.top,20
+		add		rect.top,17
 		invoke GetDlgItem,hWin,IDC_STCPULSES
 		invoke MoveWindow,eax,rect.right,rect.top,80,16,TRUE
 		add		rect.top,17
@@ -1209,7 +1219,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		add		rect.top,25
 		invoke GetDlgItem,hWin,IDC_CHKPULSES
 		invoke MoveWindow,eax,rect.right,rect.top,80,16,TRUE
-		add		rect.top,20
+		add		rect.top,17
 		invoke GetDlgItem,hWin,IDC_STCRANGE
 		invoke MoveWindow,eax,rect.right,rect.top,80,16,TRUE
 		add		rect.top,17
@@ -1218,7 +1228,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		add		rect.top,25
 		invoke GetDlgItem,hWin,IDC_CHKRANGE
 		invoke MoveWindow,eax,rect.right,rect.top,80,16,TRUE
-		add		rect.top,20
+		add		rect.top,17
 		invoke GetDlgItem,hWin,IDC_CHKFISHDETECT
 		invoke MoveWindow,eax,rect.right,rect.top,80,16,TRUE
 		add		rect.top,17
