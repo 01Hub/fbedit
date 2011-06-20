@@ -142,7 +142,7 @@ MAXSONAROPTION			equ 3								;Max number of overlays on sonar scteen
 ;Sonar constants
 MAXXECHO				equ 512								;Max number of sonar X-echos
 MAXYECHO				equ 512								;Max number of sonar Y-echos
-MAXRANGE				equ 14								;Number of depth ranges
+MAXRANGE				equ 12								;Number of depth ranges
 STM32_Sonar				equ 20000000h						;STM32 ram address
 ;SONARBACKCOLOR			equ 0FFFF80h						;Back color of sonar
 SONARBACKCOLOR			equ 00F4BD6Ch						;Back color of sonar
@@ -288,6 +288,7 @@ SONAR struct
 	FishDetect		DWORD ?									;If TRUE fish detect is on
 	FishAlarm		DWORD ?									;If TRUE fish alarm is on
 	RangeVal		DWORD ?									;Range in meters
+	ShowDepth		DWORD ?
 	Start			BYTE ?									;Set to 1 to init a new echo reading
 	PingPulses		BYTE ?									;Number of pulses in a ping ((0 to 63)+1)
 	Noise			BYTE ?									;Noise reject level (0 to 255)
@@ -375,8 +376,7 @@ sonarrange			RANGE <2,200,1,7,30>,<4,200,2,7,35>,
 						  <20,250,10,9,50>,<30,300,15,9,55>,
 						  <50,300,25,10,60>,<70,350,35,10,65>,
 						  <100,350,50,11,70>,<150,400,75,11,75>,
-						  <200,400,100,12,80>,<250,450,125,12,85>,
-						  <300,450,150,13,90>,<350,500,175,13,95>
+						  <200,400,100,12,80>,<250,450,125,12,85>
 
 szFmtDec			BYTE '%d',0
 szFmtDepth			BYTE '%02u',0

@@ -108,3 +108,14 @@ PA.03		ADC Battery
 PA.04		ADC Water temprature
 
 PC.00 to PC.07 Open drain outputs for gain control.
+
+Transformer
+-----------
+L1 =			18 		Wdg j 0.09 CuL, Pin 3–4
+L2 =			46+100 	Wdg j 0.09 CuL, Pin 6–2–1 (6.1 280pF)
+
+LC Calculation
+--------------
+		 1
+f= -------------
+   2*pi*Sqr(L*C)

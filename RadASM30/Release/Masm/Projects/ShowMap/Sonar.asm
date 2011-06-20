@@ -263,7 +263,7 @@ SonarThreadProc proc uses ebx esi edi,lParam:DWORD
 		.if al!=sonardata.RangeInx
 			invoke SetRange,eax
 			invoke UpdateBitmap
-			mov		sonardata.nCount,4
+			mov		sonardata.nCount,3
 		.endif
 		invoke SendDlgItemMessage,hWnd,IDC_TRBGAIN,TBM_GETPOS,0,0
 		mov		sonardata.Gain,al
@@ -347,14 +347,14 @@ SonarThreadProc proc uses ebx esi edi,lParam:DWORD
 		invoke strcpy,addr sonardata.options.text[sizeof OPTIONS*2],addr buffer
 		call	ScrollEchoArray
 		invoke RtlZeroMemory,offset sonardata.sonar[(MAXXECHO*MAXYECHO)-MAXYECHO],MAXYECHO
-		mov		al,sonardata.RangeInx
+		movzx	eax,sonardata.RangeInx
 		mov		sonardata.sonar[MAXXECHO*MAXYECHO-MAXYECHO],al
-		mov		sonardata.sonar[MAXXECHO*MAXYECHO-MAXYECHO+1],250
-		mov		sonardata.sonar[MAXXECHO*MAXYECHO-MAXYECHO+2],250
-		mov		sonardata.sonar[MAXXECHO*MAXYECHO-MAXYECHO+3],250
-		mov		sonardata.sonar[MAXXECHO*MAXYECHO-MAXYECHO+4],250
-		mov		sonardata.sonar[MAXXECHO*MAXYECHO-MAXYECHO+5],250
-		mov		sonardata.sonar[MAXXECHO*MAXYECHO-MAXYECHO+6],250
+		xor		edx,edx
+		.while eax<20
+			mov		sonardata.sonar[edx+MAXXECHO*MAXYECHO-MAXYECHO],250
+			inc		edx
+			inc		eax
+		.endw
 		.if !(pixcnt & 63)
 			;Random direction
 			invoke Random,30
@@ -412,7 +412,7 @@ SonarThreadProc proc uses ebx esi edi,lParam:DWORD
 		.if al!=sonardata.RangeInx
 			invoke SetRange,eax
 			invoke UpdateBitmap
-			mov		sonardata.nCount,4
+			mov		sonardata.nCount,3
 		.endif
 		invoke SendDlgItemMessage,hWnd,IDC_TRBGAIN,TBM_GETPOS,0,0
 		mov		sonardata.Gain,al
@@ -487,10 +487,12 @@ TestDepth:
 		.endif
 		inc		ecx
 	.endw
+	and		sonardata.ShowDepth,1
 	mov		eax,FALSE
 	.if edx>4
 		mov		dptinx,ebx
 		call	CalculateDepth
+		or		sonardata.ShowDepth,2
 		mov		eax,TRUE
 	.endif
 	retn
@@ -636,7 +638,13 @@ ShowRangeDepthTempScaleFish proc uses ebx esi edi,hDC:HDC
 	mov		esi,offset sonardata.options
 	.while ebx<MAXSONAROPTION
 		.if [esi].OPTIONS.show
-			call ShowOption
+			.if !ebx
+				.if (sonardata.ShowDepth & 1) || (sonardata.ShowDepth>1)
+					call ShowOption
+				.endif
+			.else
+				call ShowOption
+			.endif
 		.endif
 		lea		esi,[esi+sizeof OPTIONS]
 		inc		ebx
@@ -943,27 +951,34 @@ SonarProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		pixdpt,250
 		invoke GetRangePtr,sonardata.RangeInx
 		invoke SetTimer,hWin,1000,sonarrange.interval[eax],NULL
+		invoke SetTimer,hWin,1001,1000,NULL
 	.elseif eax==WM_TIMER
-		.if !fSTLink
-			mov		fSTLink,IDIGNORE
-			invoke STLinkConnect,hWnd
-			.if eax==IDABORT
-				invoke SendMessage,hWnd,WM_CLOSE,0,0
-			.else
-				mov		fSTLink,eax
+		.if wParam==1000
+			.if !fSTLink
+				mov		fSTLink,IDIGNORE
+				invoke STLinkConnect,hWnd
+				.if eax==IDABORT
+					invoke SendMessage,hWnd,WM_CLOSE,0,0
+				.else
+					mov		fSTLink,eax
+				.endif
+				.if fSTLink && fSTLink!=IDIGNORE
+					invoke STLinkReset,hWnd
+				.endif
 			.endif
-			.if fSTLink && fSTLink!=IDIGNORE
-				invoke STLinkReset,hWnd
+			.if fSTLink && !fThread
+				invoke KillTimer,hWin,1000
+				mov		fThread,TRUE
+				invoke CreateThread,NULL,NULL,addr SonarThreadProc,hWin,0,addr tid
+				invoke CloseHandle,eax
+				invoke GetRangePtr,sonardata.RangeInx
+				invoke SetTimer,hWin,1000,sonarrange.interval[eax],NULL
 			.endif
-		.endif
-		.if fSTLink && !fThread
-			invoke KillTimer,hWin,1000
-			mov		fThread,TRUE
-			invoke CreateThread,NULL,NULL,addr SonarThreadProc,hWin,0,addr tid
-			invoke CloseHandle,eax
-;invoke SonarThreadProc,0
-			invoke GetRangePtr,sonardata.RangeInx
-			invoke SetTimer,hWin,1000,sonarrange.interval[eax],NULL
+		.elseif wParam==1001
+			xor		sonardata.ShowDepth,1
+			.if sonardata.ShowDepth<2
+				invoke InvalidateRect,hSonar,NULL,TRUE
+			.endif
 		.endif
 	.elseif eax==WM_DESTROY
 		.if fSTLink && fSTLink!=IDIGNORE
