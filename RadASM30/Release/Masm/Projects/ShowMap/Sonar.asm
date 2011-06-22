@@ -638,7 +638,7 @@ ShowRangeDepthTempScaleFish proc uses ebx esi edi,hDC:HDC
 	mov		esi,offset sonardata.options
 	.while ebx<MAXSONAROPTION
 		.if [esi].OPTIONS.show
-			.if !ebx
+			.if ebx==11
 				.if (sonardata.ShowDepth & 1) || (sonardata.ShowDepth>1)
 					call ShowOption
 				.endif
