@@ -284,67 +284,17 @@ SonarThreadProc proc uses ebx esi edi,lParam:DWORD
 		.endif
 		;Battery
 		movzx	eax,sonardata.ADCBattery
-		mov		ecx,100
-		mul		ecx
-		mov		ecx,1640
-		div		ecx
-		invoke wsprintf,addr buffer,addr szFmtDec,eax
-		invoke strlen,addr buffer
-		movzx	ecx,word ptr buffer[eax-1]
-		shl		ecx,8
-		mov		cl,'.'
-		mov		dword ptr buffer[eax-1],ecx
-		invoke strcat,addr buffer,addr szVolts
-		invoke strcpy,addr map.options.text[sizeof OPTIONS],addr buffer
+		call	SetBattery
 		;Water temprature
 		movzx	eax,sonardata.ADCWaterTemp
-		sub		eax,0BC8h
-		neg		eax
-		mov		tmp,eax
-		fild	tmp
-		fld		watertempconv
-		fdivp	st(1),st
-		fistp	tmp
-		invoke wsprintf,addr buffer,addr szFmtDec,tmp
-		invoke strlen,addr buffer
-		movzx	ecx,word ptr buffer[eax-1]
-		shl		ecx,8
-		mov		cl,'.'
-		mov		dword ptr buffer[eax-1],ecx
-		invoke strcat,addr buffer,addr szCelcius
-		invoke strcpy,addr sonardata.options.text[sizeof OPTIONS*2],addr buffer
+		call	SetWTemp
 	.elseif fSTLink==IDIGNORE
 		;Battery
 		mov		eax,0810h
-		mov		ecx,100
-		mul		ecx
-		mov		ecx,1640
-		div		ecx
-		invoke wsprintf,addr buffer,addr szFmtDec,eax
-		invoke strlen,addr buffer
-		movzx	ecx,word ptr buffer[eax-1]
-		shl		ecx,8
-		mov		cl,'.'
-		mov		dword ptr buffer[eax-1],ecx
-		invoke strcat,addr buffer,addr szVolts
-		invoke strcpy,addr map.options.text[sizeof OPTIONS],addr buffer
+		call	SetBattery
 		;Water temprature
 		mov		eax,0980h
-		sub		eax,0BC8h
-		neg		eax
-		mov		tmp,eax
-		fild	tmp
-		fld		watertempconv
-		fdivp	st(1),st
-		fistp	tmp
-		invoke wsprintf,addr buffer,addr szFmtDec,tmp
-		invoke strlen,addr buffer
-		movzx	ecx,word ptr buffer[eax-1]
-		shl		ecx,8
-		mov		cl,'.'
-		mov		dword ptr buffer[eax-1],ecx
-		invoke strcat,addr buffer,addr szCelcius
-		invoke strcpy,addr sonardata.options.text[sizeof OPTIONS*2],addr buffer
+		call	SetWTemp
 		call	ScrollEchoArray
 		invoke RtlZeroMemory,offset sonardata.sonar[(MAXXECHO*MAXYECHO)-MAXYECHO],MAXYECHO
 		movzx	eax,sonardata.RangeInx
@@ -428,6 +378,46 @@ SonarThreadProc proc uses ebx esi edi,lParam:DWORD
 STLinkErr:
 	mov		fThread,FALSE
 	ret
+
+SetBattery:
+	.if eax!=sonardata.Battery
+		mov		sonardata.Battery,eax
+		mov		ecx,100
+		mul		ecx
+		mov		ecx,1640
+		div		ecx
+		invoke wsprintf,addr buffer,addr szFmtVolts,eax
+		invoke strlen,addr buffer
+		movzx	ecx,word ptr buffer[eax-1]
+		shl		ecx,8
+		mov		cl,'.'
+		mov		dword ptr buffer[eax-1],ecx
+		invoke strcat,addr buffer,addr szVolts
+		invoke strcpy,addr map.options.text[sizeof OPTIONS],addr buffer
+		invoke InvalidateRect,hMap,NULL,TRUE
+	.endif
+	retn
+
+SetWTemp:
+	.if eax!=sonardata.WTemp
+		mov		sonardata.WTemp,eax
+		sub		eax,0BC8h
+		neg		eax
+		mov		tmp,eax
+		fild	tmp
+		fld		watertempconv
+		fdivp	st(1),st
+		fistp	tmp
+		invoke wsprintf,addr buffer,addr szFmtDec,tmp
+		invoke strlen,addr buffer
+		movzx	ecx,word ptr buffer[eax-1]
+		shl		ecx,8
+		mov		cl,'.'
+		mov		dword ptr buffer[eax-1],ecx
+		invoke strcat,addr buffer,addr szCelcius
+		invoke strcpy,addr sonardata.options.text[sizeof OPTIONS*2],addr buffer
+	.endif
+	retn
 
 ScrollEchoArray:
 	mov		esi,offset sonardata.sonar+MAXYECHO

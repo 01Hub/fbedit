@@ -289,6 +289,8 @@ SONAR struct
 	FishAlarm		DWORD ?									;If TRUE fish alarm is on
 	RangeVal		DWORD ?									;Range in meters
 	ShowDepth		DWORD ?
+	Battery			DWORD ?
+	WTemp			DWORD ?
 	Start			BYTE ?									;Set to 1 to init a new echo reading
 	PingPulses		BYTE ?									;Number of pulses in a ping ((0 to 63)+1)
 	Noise			BYTE ?									;Noise reject level (0 to 255)
@@ -380,6 +382,7 @@ sonarrange			RANGE <2,200,1,7,30>,<4,200,2,7,35>,
 
 szFmtDec			BYTE '%d',0
 szFmtDepth			BYTE '%02u',0
+szFmtVolts			BYTE '%02u',0
 szVolts				BYTE 'V',0
 szCelcius			BYTE 'C',0
 watertempconv		QWORD 3.46982758620
