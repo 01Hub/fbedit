@@ -153,8 +153,8 @@
    <function Name="GetADCValue" TI="76" FileName="D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar\main.c" Line="140">
     <parameter Name="Channel" TI="94" FileName="D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar\main.c" Line="140" Addr="0x0" Param="Yes"/>
     <variable Name="i" FileName="D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar\main.c" Line="142" Addr="0x34000017" TI="132"/>
-    <variable Name="ADCValue" FileName="D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar\main.c" Line="143" Addr="0x10000014" TI="127"/>
-    <variable Name="ADC_InitStructure" FileName="D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar\main.c" Line="144" Addr="0x10000000" TI="1368"/>
+    <variable Name="ADCValue" FileName="D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar\main.c" Line="143" Addr="0x34000014" TI="127"/>
+    <variable Name="ADC_InitStructure" FileName="D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar\main.c" Line="144" Addr="0x34000000" TI="1368"/>
    </function >
    <function Name="TIM1_UP_IRQHandler" TI="0" FileName="D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar\main.c" Line="182">
     <variable Name="tmp" FileName="D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar\main.c" Line="184" Addr="0x0" TI="76"/>

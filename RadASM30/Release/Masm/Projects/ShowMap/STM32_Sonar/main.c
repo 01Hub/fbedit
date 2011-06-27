@@ -195,7 +195,7 @@ void TIM1_UP_IRQHandler(void)
   tmp = GPIO_ReadInputData(GPIOC);
   tmp = tmp & (u16)0xFF00;
   tmp = tmp | (u16)STM32_Sonar.Gain;
-  tmp = tmp | (u16)0x80;
+  // tmp = tmp | (u16)0x80;
   GPIO_Write(GPIOC, (u16)tmp);
   /* Enable injected channels */
   ADC_AutoInjectedConvCmd(ADC1, ENABLE);

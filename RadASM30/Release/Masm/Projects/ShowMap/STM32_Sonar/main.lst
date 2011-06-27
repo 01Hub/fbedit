@@ -192,35 +192,34 @@ D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\ST
   48:	f7ff fffe 	bl	0 <GPIO_ReadInputData>
 D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/main.c:196
   tmp = tmp & (u16)0xFF00;
-  4c:	f400 437f 	and.w	r3, r0, #65280	; 0xff00
+  4c:	f400 417f 	and.w	r1, r0, #65280	; 0xff00
 D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/main.c:197
   tmp = tmp | (u16)STM32_Sonar.Gain;
-  50:	f240 0200 	movw	r2, #0
-  54:	f2c0 0200 	movt	r2, #0
-  58:	78d1      	ldrb	r1, [r2, #3]
-  5a:	f041 0180 	orr.w	r1, r1, #128	; 0x80
+  50:	f240 0300 	movw	r3, #0
+  54:	f2c0 0300 	movt	r3, #0
+  58:	78db      	ldrb	r3, [r3, #3]
 D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/main.c:199
-  tmp = tmp | (u16)0x80;
+  // tmp = tmp | (u16)0x80;
   GPIO_Write(GPIOC, (u16)tmp);
-  5e:	4620      	mov	r0, r4
-  60:	4319      	orrs	r1, r3
-  62:	f7ff fffe 	bl	0 <GPIO_Write>
+  5a:	4620      	mov	r0, r4
+  5c:	4319      	orrs	r1, r3
+  5e:	f7ff fffe 	bl	0 <GPIO_Write>
 D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/main.c:201
   /* Enable injected channels */
   ADC_AutoInjectedConvCmd(ADC1, ENABLE);
-  66:	f44f 5010 	mov.w	r0, #9216	; 0x2400
-  6a:	f2c4 0001 	movt	r0, #16385	; 0x4001
-  6e:	f04f 0101 	mov.w	r1, #1
-  72:	f7ff fffe 	bl	0 <ADC_AutoInjectedConvCmd>
+  62:	f44f 5010 	mov.w	r0, #9216	; 0x2400
+  66:	f2c4 0001 	movt	r0, #16385	; 0x4001
+  6a:	f04f 0101 	mov.w	r1, #1
+  6e:	f7ff fffe 	bl	0 <ADC_AutoInjectedConvCmd>
 D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/main.c:203
   /* Enable TIM2 */
   TIM_Cmd(TIM2, ENABLE);
-  76:	f04f 4080 	mov.w	r0, #1073741824	; 0x40000000
-  7a:	f04f 0101 	mov.w	r1, #1
-  7e:	f7ff fffe 	bl	0 <TIM_Cmd>
+  72:	f04f 4080 	mov.w	r0, #1073741824	; 0x40000000
+  76:	f04f 0101 	mov.w	r1, #1
+  7a:	f7ff fffe 	bl	0 <TIM_Cmd>
 D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/main.c:204
 }
-  82:	bd10      	pop	{r4, pc}
+  7e:	bd10      	pop	{r4, pc}
 
 Disassembly of section .text.TIM2_IRQHandler:
 
