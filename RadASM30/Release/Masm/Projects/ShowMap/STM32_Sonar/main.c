@@ -74,6 +74,8 @@ int main(void)
   ADC_Startup();
   /* ADC1 injected channel configuration -------------------------------------*/
   ADC_Configuration();
+  /* DAC channel2 Configuration */
+  DAC->CR = 0x10;
 
   while (1)
   {
@@ -197,6 +199,8 @@ void TIM1_UP_IRQHandler(void)
   tmp = tmp | (u16)STM32_Sonar.Gain;
   // tmp = tmp | (u16)0x80;
   GPIO_Write(GPIOC, (u16)tmp);
+  /* Set DAC Gain */
+  DAC->DHR8R2 = STM32_Sonar.Gain;
   /* Enable injected channels */
   ADC_AutoInjectedConvCmd(ADC1, ENABLE);
   /* Enable TIM2 */
@@ -366,7 +370,7 @@ void RCC_Configuration(void)
   /* Enable TIM1, ADC1, GPIOA, GPIOB and GPIOC clock */
   RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM1 | RCC_APB2Periph_ADC1 | RCC_APB2Periph_GPIOA | RCC_APB2Periph_GPIOB | RCC_APB2Periph_GPIOC, ENABLE);
   /* Enable TIM2 clock */
-  RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);
+  RCC_APB1PeriphClockCmd(RCC_APB1Periph_DAC | RCC_APB1Periph_TIM2, ENABLE);
 }
 
 /*******************************************************************************
@@ -378,8 +382,8 @@ void RCC_Configuration(void)
 *******************************************************************************/
 void GPIO_Configuration(void)
 {
-  /* Configure  ADC Channel4 (PA.04), ADC Channel3 (PA.03) and ADC Channel2 (PA.02) as analog input */
-  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_4 | GPIO_Pin_3 | GPIO_Pin_2;
+  /* Configure DAC Channel2 (PA.05), ADC Channel4 (PA.04), ADC Channel3 (PA.03) and ADC Channel2 (PA.02) as analog input */
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5 | GPIO_Pin_4 | GPIO_Pin_3 | GPIO_Pin_2;
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AIN;
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
   GPIO_Init(GPIOA, &GPIO_InitStructure);
