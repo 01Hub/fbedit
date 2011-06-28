@@ -477,7 +477,6 @@ TestDepth:
 		.endif
 		inc		ecx
 	.endw
-	and		sonardata.ShowDepth,1
 	mov		eax,FALSE
 	.if edx>4
 		mov		dptinx,ebx
@@ -488,6 +487,7 @@ TestDepth:
 	retn
 
 FindDepth:
+	and		sonardata.ShowDepth,1
 	mov		ebx,1
 	xor		edx,edx
 	.while ebx<MAXYECHO-17
@@ -628,7 +628,7 @@ ShowRangeDepthTempScaleFish proc uses ebx esi edi,hDC:HDC
 	mov		esi,offset sonardata.options
 	.while ebx<MAXSONAROPTION
 		.if [esi].OPTIONS.show
-			.if ebx==11
+			.if ebx==1
 				.if (sonardata.ShowDepth & 1) || (sonardata.ShowDepth>1)
 					call ShowOption
 				.endif

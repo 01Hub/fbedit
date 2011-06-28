@@ -83,8 +83,6 @@ Range		Time for echo to return		Pixel time					Samples / Pixel
 150 m		1380 * 150 = 207000 us		207000 / 512 = 404,3 us		150 / 2 =  75
 200 m		1380 * 200 = 276000 us		276000 / 512 = 539,1 us		200 / 2 = 100
 250 m		1380 * 250 = 345000 us		345000 / 512 = 673,8 us		250 / 2 = 125
-300 m		1380 * 300 = 414000 us		414000 / 512 = 808,6 us		300 / 2 = 150
-350 m		1380 * 350 = 483000 us		483000 / 512 = 943,4 us		350 / 2 = 175
 
 Hardware environment
 ====================
@@ -92,30 +90,30 @@ Runs on STM32 Discovery.
 
 Additional hardware
 ===================
-Output amplifier capable of delivering at least 800 watts peak to the swinger.
+Transmitter capable of delivering at least 800 watts peak to the swinger.
 For the swinger I am using, 800 Vpp is needed to generate 800 watts peak.
-Input buffer and gain control.
-Input amplifier and filter tuned at 200 KHz.
-Amplifier measuring amplitude.
+Receiver tuned at 200 KHz.
+Amplifier measuring peak amplitude.
 
 Port pins used
 ==============
+PA.02		ADC Echo
+PA.03		ADC Battery
+PA.04		DAC channel1 Gain
+PA.05		DAC channel2 Gain
+PA.06		ADC Water temprature
+PA.07		ADC Air temprature
+
 PA.08		Ping out phase 0
 PA.09		Ping out phase 1
 
-PA.02		ADC Echo
-PA.03		ADC Battery
-PA.04		ADC Water temprature
-
-PC.00 to PC.07 Open drain outputs for gain control.
-
 Transformer
 -----------
-L1 =			18 		Wdg j 0.09 CuL, Pin 3–4
-L2 =			46+100 	Wdg j 0.09 CuL, Pin 6–2–1 (6.1 280pF)
+L1 =		18 		Wdg j 0.09 CuL, Pin 3–4
+L2 =		46+100 	Wdg j 0.09 CuL, Pin 6–2–1 (6.1 280pF)
 
 LC Calculation
 --------------
-		 1
-f= -------------
-   2*pi*Sqr(L*C)
+		  1
+f = -------------
+    2*pi*Sqr(L*C)

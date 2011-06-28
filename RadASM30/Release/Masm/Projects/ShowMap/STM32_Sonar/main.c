@@ -60,22 +60,22 @@ int main(void)
 {
   u32 i;
 
-  /* System clocks configuration ---------------------------------------------*/
+  /* System clocks configuration */
   RCC_Configuration();
-  /* NVIC configuration ------------------------------------------------------*/
+  /* NVIC configuration */
   NVIC_Configuration();
-  /* GPIO configuration ------------------------------------------------------*/
+  /* GPIO configuration */
   GPIO_Configuration();
-  /* TIM1 configuration ------------------------------------------------------*/
+  /* TIM1 configuration */
   TIM1_Configuration();
-  /* TIM2 configuration ------------------------------------------------------*/
+  /* TIM2 configuration */
   TIM2_Configuration();
-  /* ADC1 configuration ------------------------------------------------------*/
+  /* ADC1 configuration */
   ADC_Startup();
-  /* ADC1 injected channel configuration -------------------------------------*/
+  /* ADC1 injected channel configuration */
   ADC_Configuration();
-  /* DAC channel2 Configuration */
-  DAC->CR = 0x10;
+  /* DAC channel1 and channel2 Configuration */
+  DAC->CR = 0x11;
 
   while (1)
   {
@@ -83,7 +83,8 @@ int main(void)
     {
       STM32_Sonar.Start = 2;
       /* Set the lowest gain */
-      GPIO_Write(GPIOC, (u16)0x0);
+      DAC->DHR8R1 = (u8) 0xFF;
+      DAC->DHR8R2 = (u8) 0xFF;
       /* Toggle blue led */
       if (BlueLED)
       {
@@ -97,9 +98,9 @@ int main(void)
       /* Read battery */
       STM32_Sonar.ADCBatt = GetADCValue(ADC_Channel_3);
       /* Read water temprature */
-      STM32_Sonar.ADCWaterTemp = GetADCValue(ADC_Channel_4);
+      STM32_Sonar.ADCWaterTemp = GetADCValue(ADC_Channel_6);
       /* Read air temprature */
-      STM32_Sonar.ADCAirTemp = GetADCValue(ADC_Channel_16);
+      STM32_Sonar.ADCAirTemp = GetADCValue(ADC_Channel_7);
       /* Clear the echo array */
       i = 0;
       while (i < MAXECHO)
@@ -183,7 +184,7 @@ u16 GetADCValue(u8 Channel)
 *******************************************************************************/
 void TIM1_UP_IRQHandler(void)
 {
-  u16 tmp;
+  // u16 tmp;
   /*  Configure pin (PA.08) and pin (PA.09) */
   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_8 | GPIO_Pin_9;
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
@@ -193,15 +194,10 @@ void TIM1_UP_IRQHandler(void)
   TIM1->SR = (u16)~TIM_IT_Update;
   /* Disable TIM1 */
   TIM_Cmd(TIM1, DISABLE);
-  /* Set the gain */
-  tmp = GPIO_ReadInputData(GPIOC);
-  tmp = tmp & (u16)0xFF00;
-  tmp = tmp | (u16)STM32_Sonar.Gain;
-  // tmp = tmp | (u16)0x80;
-  GPIO_Write(GPIOC, (u16)tmp);
   /* Set DAC Gain */
-  DAC->DHR8R2 = STM32_Sonar.Gain;
-  /* Enable injected channels */
+  DAC->DHR8R1 = ~STM32_Sonar.Gain;
+  DAC->DHR8R2 = ~STM32_Sonar.Gain;
+  /* Enable injected channel */
   ADC_AutoInjectedConvCmd(ADC1, ENABLE);
   /* Enable TIM2 */
   TIM_Cmd(TIM2, ENABLE);
@@ -221,7 +217,6 @@ void TIM2_IRQHandler(void)
   /* Clear TIM2 Update interrupt pending bit */
   TIM2->SR = (u16)~TIM_IT_Update;
   /* Get echo */
-  // Echo = (ADC_GetInjectedConversionValue(ADC1, ADC_InjectedChannel_1) >> 4);
   ADC = ( (u32 *) ADC1_ICDR_Address);
   Echo = (u8) ( (u16) (*(vu32*) (((*(u32*)&ADC)))) >> 4);
   /* Reserve 254 and 255 for fish detect */
@@ -248,6 +243,7 @@ void TIM2_IRQHandler(void)
     {
       /* Disable TIM2 */
       TIM2->CR1 = 0;
+      /* Disable ADC injected channel */
       ADC_AutoInjectedConvCmd(ADC1, DISABLE);
       /* Store the range */
       STM32_Sonar.Echo[0] = STM32_Sonar.Range;
@@ -303,8 +299,6 @@ void ADC_Configuration(void)
 {
   ADC_InitTypeDef ADC_InitStructure;
 
-  /* Enable temprature sensor */
-  ADC_TempSensorVrefintCmd(ENABLE);
   /* ADCCLK = PCLK2/8 */
   RCC_ADCCLKConfig(RCC_PCLK2_Div2);
   ADC_InitStructure.ADC_Mode = ADC_Mode_Independent;
@@ -312,10 +306,10 @@ void ADC_Configuration(void)
   ADC_InitStructure.ADC_ContinuousConvMode = ENABLE;
   ADC_InitStructure.ADC_ExternalTrigConv = ADC_ExternalTrigConv_None;
   ADC_InitStructure.ADC_DataAlign = ADC_DataAlign_Right;
-  /* ADC1 single channel configuration -----------------------------*/
+  /* ADC1 single channel configuration */
   ADC_InitStructure.ADC_NbrOfChannel = 1;
   ADC_Init(ADC1, &ADC_InitStructure);
-  /* Setup injected channels */
+  /* Setup injected channel */
   ADC_InjectedSequencerLengthConfig(ADC1,1);
   /* Sonar echo */
   ADC_InjectedChannelConfig(ADC1,ADC_Channel_2,1,ADC_SampleTime_28Cycles5);
@@ -365,12 +359,11 @@ void RCC_Configuration(void)
     while(RCC_GetSYSCLKSource() != 0x08)
     {
     }
+    /* Enable TIM1, ADC1, GPIOA and GPIOC peripheral clocks */
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM1 | RCC_APB2Periph_ADC1 | RCC_APB2Periph_GPIOA | RCC_APB2Periph_GPIOC, ENABLE);
+    /* Enable DAC and TIM2 peripheral clocks */
+    RCC_APB1PeriphClockCmd(RCC_APB1Periph_DAC | RCC_APB1Periph_TIM2, ENABLE);
   }
-  /* Enable peripheral clocks ------------------------------------------------*/
-  /* Enable TIM1, ADC1, GPIOA, GPIOB and GPIOC clock */
-  RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM1 | RCC_APB2Periph_ADC1 | RCC_APB2Periph_GPIOA | RCC_APB2Periph_GPIOB | RCC_APB2Periph_GPIOC, ENABLE);
-  /* Enable TIM2 clock */
-  RCC_APB1PeriphClockCmd(RCC_APB1Periph_DAC | RCC_APB1Periph_TIM2, ENABLE);
 }
 
 /*******************************************************************************
@@ -382,8 +375,8 @@ void RCC_Configuration(void)
 *******************************************************************************/
 void GPIO_Configuration(void)
 {
-  /* Configure DAC Channel2 (PA.05), ADC Channel4 (PA.04), ADC Channel3 (PA.03) and ADC Channel2 (PA.02) as analog input */
-  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5 | GPIO_Pin_4 | GPIO_Pin_3 | GPIO_Pin_2;
+  /* Configure ADC Channel7 (PA.07), ADC Channel6 (PA.06), DAC Channel2 (PA.05), DAC Channel1 (PA.04), ADC Channel3 (PA.03) and ADC Channel2 (PA.02) as analog input */
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_7 | GPIO_Pin_6 | GPIO_Pin_5 | GPIO_Pin_4 | GPIO_Pin_3 | GPIO_Pin_2;
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AIN;
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
   GPIO_Init(GPIOA, &GPIO_InitStructure);
@@ -392,11 +385,7 @@ void GPIO_Configuration(void)
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
   GPIO_Init(GPIOC, &GPIO_InitStructure);
-  /* Configure PC07, PC06, PC05, PC04, PC03, PC02, PC01 amd PC00 as open drain output */
-  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_7 | GPIO_Pin_6 | GPIO_Pin_5 | GPIO_Pin_4 | GPIO_Pin_3 | GPIO_Pin_2 | GPIO_Pin_1 | GPIO_Pin_0;
-  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_OD;
-  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-  GPIO_Init(GPIOC, &GPIO_InitStructure);
+  /* Set ping outputs high */
   GPIO_WriteBit(GPIOA, GPIO_Pin_8 | GPIO_Pin_9, Bit_SET);
 }
 
