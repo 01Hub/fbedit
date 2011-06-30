@@ -753,6 +753,9 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SendDlgItemMessage,hWin,IDC_TRBRANGE,TBM_SETPOS,TRUE,eax
 		movzx	eax,sonardata.RangeInx
 		invoke SetRange,eax
+		invoke SendDlgItemMessage,hWin,IDC_TRBCHART,TBM_SETRANGE,FALSE,(4 SHL 16)+0
+		mov		eax,sonardata.ChartSpeed
+		invoke SendDlgItemMessage,hWin,IDC_TRBCHART,TBM_SETPOS,TRUE,eax
 	.elseif eax==WM_HSCROLL
 		invoke SendMessage,lParam,TBM_GETPOS,0,0
 		mov		ebx,eax
@@ -763,6 +766,8 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			mov		sonardata.Noise,bl
 		.elseif eax==IDC_TRBPULSES
 			mov		sonardata.PingPulses,bl
+		.elseif eax==IDC_TRBCHART
+			mov		sonardata.ChartSpeed,ebx
 		.endif
 	.elseif eax==WM_COMMAND
 		mov		edx,wParam
@@ -1235,6 +1240,12 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke GetDlgItem,hWin,IDC_CHKFISHALARM
 		invoke MoveWindow,eax,rect.right,rect.top,80,16,TRUE
 		add		rect.top,17
+		invoke GetDlgItem,hWin,IDC_STCCHART
+		invoke MoveWindow,eax,rect.right,rect.top,80,16,TRUE
+		add		rect.top,17
+		invoke GetDlgItem,hWin,IDC_TRBCHART
+		invoke MoveWindow,eax,rect.right,rect.top,80,20,TRUE
+		add		rect.top,25
 	.elseif eax==WM_MOUSEMOVE
 		invoke GetClientRect,hWin,addr rect
 		invoke GetCapture

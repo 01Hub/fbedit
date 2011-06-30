@@ -81,6 +81,8 @@ IDC_TRBRANGE			equ 1024
 IDC_CHKRANGE			equ 1026
 IDC_CHKFISHDETECT		equ 1027
 IDC_CHKFISHALARM		equ 1030
+IDC_STCCHART			equ 1032
+IDC_TRBCHART			equ 1031
 
 IDM_MENU                equ 10000
 IDM_FILE_OPENTRIP       equ 10010
@@ -287,6 +289,7 @@ SONAR struct
 	AutoPing		DWORD ?									;If TRUE number of pingpulses is set according to range
 	FishDetect		DWORD ?									;If TRUE fish detect is on
 	FishAlarm		DWORD ?									;If TRUE fish alarm is on
+	ChartSpeed		DWORD ?
 	RangeVal		DWORD ?									;Range in meters
 	ShowDepth		DWORD ?
 	Battery			DWORD ?
@@ -303,7 +306,8 @@ SONAR struct
 	ADCBattery		WORD ?									;Battery level
 	ADCWaterTemp	WORD ?									;Water temprature
 	ADCAirTemp		WORD ?									;Air temprature
-	sonar			BYTE MAXXECHO*MAXYECHO dup(?)			;Echo array. The first byte in each x element is the range index
+	sonar			BYTE MAXXECHO*MAXYECHO dup(?)			;Sonar array. The first byte in each x element is the range index
+	STM32Echo		BYTE MAXYECHO dup(?)					;Echo array read from STM32
 SONAR ends
 
 RANGE struct
