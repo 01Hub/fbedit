@@ -155,7 +155,7 @@ u16 GetADCValue(u8 Channel)
   ADC_InitStructure.ADC_DataAlign = ADC_DataAlign_Right;
   ADC_InitStructure.ADC_NbrOfChannel = 1;
   ADC_Init(ADC1, &ADC_InitStructure);
-  /* ADC1 regular channel2 configuration */ 
+  /* ADC1 regular channel configuration */ 
   ADC_RegularChannelConfig(ADC1, Channel, 1, ADC_SampleTime_239Cycles5);
   /* Start ADC1 Software Conversion */ 
   ADC_SoftwareStartConvCmd(ADC1, ENABLE);

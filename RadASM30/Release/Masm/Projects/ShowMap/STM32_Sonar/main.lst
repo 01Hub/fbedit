@@ -56,7 +56,7 @@ C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\ST
   36:	4669      	mov	r1, sp
   38:	f7ff fffe 	bl	0 <ADC_Init>
 C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/main.c:159
-  /* ADC1 regular channel2 configuration */ 
+  /* ADC1 regular channel configuration */ 
   ADC_RegularChannelConfig(ADC1, Channel, 1, ADC_SampleTime_239Cycles5);
   3c:	4628      	mov	r0, r5
   3e:	4631      	mov	r1, r6
@@ -107,7 +107,7 @@ C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\ST
   90:	b2db      	uxtb	r3, r3
   92:	f88d 3017 	strb.w	r3, [sp, #23]
 C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\ShowMap\STM32_Sonar/main.c:163
-  /* ADC1 regular channel2 configuration */ 
+  /* ADC1 regular channel configuration */ 
   ADC_RegularChannelConfig(ADC1, Channel, 1, ADC_SampleTime_239Cycles5);
   /* Start ADC1 Software Conversion */ 
   ADC_SoftwareStartConvCmd(ADC1, ENABLE);
