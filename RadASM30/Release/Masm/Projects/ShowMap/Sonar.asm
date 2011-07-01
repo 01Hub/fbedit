@@ -679,7 +679,9 @@ ShowRangeDepthTempScaleFish proc uses ebx esi edi,hDC:HDC
 	ret
 
 ShowFish:
-	mov		ebx,sonardata.RangeVal
+	movzx	ebx,sonardata.sonar[(MAXXECHO*MAXYECHO)-MAXYECHO]
+	invoke GetRangePtr,ebx
+	mov		ebx,sonarrange.range[eax]
 	mov		esi,MAXXECHO
 	sub		esi,rcsonar.right
 	.while esi<MAXXECHO
@@ -899,6 +901,7 @@ SaveSonarToIni proc
 	LOCAL	buffer[256]:BYTE
 
 	mov		buffer,0
+	;Width,AutoRange,AutoGain,AutoPing,FishDetect,FishAlarm,RangeInx,Noise,PingPulses,Gain,ChartSpeed
 	invoke PutItemInt,addr buffer,sonardata.wt
 	invoke PutItemInt,addr buffer,sonardata.AutoRange
 	invoke PutItemInt,addr buffer,sonardata.AutoGain
@@ -918,32 +921,31 @@ SaveSonarToIni endp
 LoadSonarFromIni proc
 	LOCAL	buffer[256]:BYTE
 	
+	invoke RtlZeroMemory,addr buffer,sizeof buffer
 	invoke GetPrivateProfileString,addr szIniSonar,addr szIniSonar,addr szNULL,addr buffer,sizeof buffer,addr szIniFileName
-	.if eax
-		;Width,AutoRange,AutoGain,AutoPing,FishDetect,FishAlarm,RangeInx,Noise,PingPulses,Gain,ChartSpeed
-		invoke GetItemInt,addr buffer,250
-		mov		sonardata.wt,eax
-		invoke GetItemInt,addr buffer,1
-		mov		sonardata.AutoRange,eax
-		invoke GetItemInt,addr buffer,1
-		mov		sonardata.AutoGain,eax
-		invoke GetItemInt,addr buffer,1
-		mov		sonardata.AutoPing,eax
-		invoke GetItemInt,addr buffer,1
-		mov		sonardata.FishDetect,eax
-		invoke GetItemInt,addr buffer,1
-		mov		sonardata.FishAlarm,eax
-		invoke GetItemInt,addr buffer,0
-		mov		sonardata.RangeInx,al
-		invoke GetItemInt,addr buffer,31
-		mov		sonardata.Noise,al
-		invoke GetItemInt,addr buffer,7
-		mov		sonardata.PingPulses,al
-		invoke GetItemInt,addr buffer,63
-		mov		sonardata.Gain,al
-		invoke GetItemInt,addr buffer,3
-		mov		sonardata.ChartSpeed,eax
-	.endif
+	;Width,AutoRange,AutoGain,AutoPing,FishDetect,FishAlarm,RangeInx,Noise,PingPulses,Gain,ChartSpeed
+	invoke GetItemInt,addr buffer,250
+	mov		sonardata.wt,eax
+	invoke GetItemInt,addr buffer,1
+	mov		sonardata.AutoRange,eax
+	invoke GetItemInt,addr buffer,1
+	mov		sonardata.AutoGain,eax
+	invoke GetItemInt,addr buffer,1
+	mov		sonardata.AutoPing,eax
+	invoke GetItemInt,addr buffer,1
+	mov		sonardata.FishDetect,eax
+	invoke GetItemInt,addr buffer,1
+	mov		sonardata.FishAlarm,eax
+	invoke GetItemInt,addr buffer,0
+	mov		sonardata.RangeInx,al
+	invoke GetItemInt,addr buffer,31
+	mov		sonardata.Noise,al
+	invoke GetItemInt,addr buffer,7
+	mov		sonardata.PingPulses,al
+	invoke GetItemInt,addr buffer,63
+	mov		sonardata.Gain,al
+	invoke GetItemInt,addr buffer,3
+	mov		sonardata.ChartSpeed,eax
 	ret
 
 LoadSonarFromIni endp
