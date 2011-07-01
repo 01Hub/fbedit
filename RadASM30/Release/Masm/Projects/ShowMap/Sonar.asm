@@ -221,6 +221,7 @@ STM32Thread proc uses ebx esi edi,lParam:DWORD
 	LOCAL	status:DWORD
 	LOCAL	STM32Echo[MAXYECHO*3]:BYTE
 	LOCAL	dwread:DWORD
+	LOCAL	dwwrite:DWORD
 	LOCAL	buffer[16]:BYTE
 	LOCAL	fFishSound:DWORD
 
@@ -350,6 +351,10 @@ STM32Thread proc uses ebx esi edi,lParam:DWORD
 		.endif
 		mov		sonardata.ADCBattery,0810h
 		mov		sonardata.ADCWaterTemp,0980h
+	.endif
+	.if sonardata.hLog
+		;Write to log file
+		invoke WriteFile,sonardata.hLog,addr STM32Echo[MAXYECHO*2],MAXYECHO,addr dwwrite,NULL
 	.endif
 	;Get current range index
 	mov		al,STM32Echo[MAXYECHO*2]
@@ -521,7 +526,6 @@ SonarThreadProc proc uses ebx esi edi,lParam:DWORD
 	LOCAL	rect:RECT
 	LOCAL	buffer[256]:BYTE
 	LOCAL	tmp:DWORD
-	LOCAL	dwwrite:DWORD
 
 	.if sonardata.hReply
 		call	Update
@@ -590,10 +594,6 @@ Update:
 	;Water temprature
 	movzx	eax,sonardata.ADCWaterTemp
 	call	SetWTemp
-	.if sonardata.hLog
-		;Write to log file
-		invoke WriteFile,sonardata.hLog,offset sonardata.STM32Echo,MAXYECHO,addr dwwrite,NULL
-	.endif
 	;Check if range is still the same
 	movzx	eax,sonardata.STM32Echo
 	.if al!=sonardata.sonar[(MAXXECHO*MAXYECHO)-MAXYECHO]
