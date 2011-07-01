@@ -146,7 +146,6 @@ MAXXECHO				equ 512								;Max number of sonar X-echos
 MAXYECHO				equ 512								;Max number of sonar Y-echos
 MAXRANGE				equ 12								;Number of depth ranges
 STM32_Sonar				equ 20000000h						;STM32 ram address
-;SONARBACKCOLOR			equ 0FFFF80h						;Back color of sonar
 SONARBACKCOLOR			equ 00F4BD6Ch						;Back color of sonar
 STM32_Timer				equ 258
 
@@ -301,13 +300,14 @@ SONAR struct
 	RangeInx		BYTE ?									;Range (0 to 13)
 	nSample			BYTE ?									;Number of echo readings to sample. If more than one the largest is stored.
 	Timer			WORD ?									;Time between each echo reading
-	nCount			DWORD ?									;Used when the range is changed
 	dmy1			WORD ?									;Just to make the ADC readings dword sized
 	ADCBattery		WORD ?									;Battery level
 	ADCWaterTemp	WORD ?									;Water temprature
 	ADCAirTemp		WORD ?									;Air temprature
 	sonar			BYTE MAXXECHO*MAXYECHO dup(?)			;Sonar array. The first byte in each x element is the range index
 	STM32Echo		BYTE MAXYECHO dup(?)					;Echo array read from STM32
+	minyecho		DWORD ?
+	dptinx			DWORD ?
 SONAR ends
 
 RANGE struct
