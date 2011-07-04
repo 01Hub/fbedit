@@ -83,11 +83,12 @@ int main(void)
     {
       STM32_Sonar.Start = 2;
       /* Set the lowest gain */
-      DAC->DHR8R1 = (u8) 0xFF;
-      DAC->DHR8R2 = (u8) 0xFF;
+      DAC->DHR8R1 = (u8) 0x0;
+      DAC->DHR8R2 = (u8) 0x0;
       /* Toggle blue led */
       if (BlueLED)
       {
+        GPIO_WriteBit(GPIOC, GPIO_Pin_8, Bit_RESET);
         BlueLED = 0;
       }
       else
@@ -195,8 +196,8 @@ void TIM1_UP_IRQHandler(void)
   /* Disable TIM1 */
   TIM_Cmd(TIM1, DISABLE);
   /* Set DAC Gain */
-  DAC->DHR8R1 = ~STM32_Sonar.Gain;
-  DAC->DHR8R2 = ~STM32_Sonar.Gain;
+  DAC->DHR8R1 = STM32_Sonar.Gain;
+  DAC->DHR8R2 = STM32_Sonar.Gain;
   /* Enable injected channel */
   ADC_AutoInjectedConvCmd(ADC1, ENABLE);
   /* Enable TIM2 */

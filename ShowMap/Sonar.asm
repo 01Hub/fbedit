@@ -475,8 +475,7 @@ FindFish:
 				mov		STM32Echo[ebx+MAXYECHO*2],0
 				.if sonardata.FishAlarm && !fFishSound
 					mov		eax,sonardata.ChartSpeed
-					inc		eax
-					shl		eax,2
+					add		eax,4
 					mov		fFishSound,eax
 					invoke strcpy,addr buffer,addr szAppPath
 					invoke strcat,addr buffer,addr szFishWav
