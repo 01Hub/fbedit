@@ -117,3 +117,5 @@ LC Calculation
 		  1
 f = -------------
     2*pi*Sqr(L*C)
+
+http://www.qrp.pops.net/Cascode_BJT.asp
