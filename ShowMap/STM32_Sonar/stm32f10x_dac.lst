@@ -1,0 +1,407 @@
+
+C:\STM32\Projects\Sonar\stm32f10x_dac.o:     file format elf32-littlearm
+C:\STM32\Projects\Sonar\stm32f10x_dac.o
+
+
+Disassembly of section .text.DAC_DeInit:
+
+00000000 <DAC_DeInit>:
+DAC_DeInit():
+C:\STM32\Projects\Sonar/stm32f10x_dac.c:60
+* Input          : None.
+* Output         : None
+* Return         : None
+*******************************************************************************/
+void DAC_DeInit(void)
+{
+   0:	b508      	push	{r3, lr}
+C:\STM32\Projects\Sonar/stm32f10x_dac.c:62
+  /* Enable DAC reset state */
+  RCC_APB1PeriphResetCmd(RCC_APB1Periph_DAC, ENABLE);
+   2:	f04f 5000 	mov.w	r0, #536870912	; 0x20000000
+   6:	f04f 0101 	mov.w	r1, #1
+   a:	f7ff fffe 	bl	0 <RCC_APB1PeriphResetCmd>
+C:\STM32\Projects\Sonar/stm32f10x_dac.c:64
+  /* Release DAC from reset state */
+  RCC_APB1PeriphResetCmd(RCC_APB1Periph_DAC, DISABLE);
+   e:	f04f 5000 	mov.w	r0, #536870912	; 0x20000000
+  12:	f04f 0100 	mov.w	r1, #0
+  16:	f7ff fffe 	bl	0 <RCC_APB1PeriphResetCmd>
+C:\STM32\Projects\Sonar/stm32f10x_dac.c:65
+}
+  1a:	bd08      	pop	{r3, pc}
+
+Disassembly of section .text.DAC_Init:
+
+00000000 <DAC_Init>:
+DAC_Init():
+C:\STM32\Projects\Sonar/stm32f10x_dac.c:82
+*                    DAC channel.
+* Output         : None
+* Return         : None
+*******************************************************************************/
+void DAC_Init(u32 DAC_Channel, DAC_InitTypeDef* DAC_InitStruct)
+{
+   0:	b430      	push	{r4, r5}
+C:\STM32\Projects\Sonar/stm32f10x_dac.c:93
+  assert_param(IS_DAC_LFSR_UNMASK_TRIANGLE_AMPLITUDE(DAC_InitStruct->DAC_LFSRUnmask_TriangleAmplitude));
+  assert_param(IS_DAC_OUTPUT_BUFFER_STATE(DAC_InitStruct->DAC_OutputBuffer));
+
+/*---------------------------- DAC CR Configuration --------------------------*/
+  /* Get the DAC CR value */
+  tmpreg1 = DAC->CR;
+   2:	f44f 43e8 	mov.w	r3, #29696	; 0x7400
+   6:	f2c4 0300 	movt	r3, #16384	; 0x4000
+   a:	681c      	ldr	r4, [r3, #0]
+C:\STM32\Projects\Sonar/stm32f10x_dac.c:95
+  /* Clear BOFFx, TENx, TSELx, WAVEx and MAMPx bits */
+  tmpreg1 &= ~(CR_CLEAR_Mask << DAC_Channel);
+   c:	f640 72fe 	movw	r2, #4094	; 0xffe
+  10:	fa02 f200 	lsl.w	r2, r2, r0
+  14:	ea24 0202 	bic.w	r2, r4, r2
+C:\STM32\Projects\Sonar/stm32f10x_dac.c:102
+     mask/amplitude for wave genration */
+  /* Set TSELx and TENx bits according to DAC_Trigger value */
+  /* Set WAVEx bits according to DAC_WaveGeneration value */
+  /* Set MAMPx bits according to DAC_LFSRUnmask_TriangleAmplitude value */ 
+  /* Set BOFFx bit according to DAC_OutputBuffer value */   
+  tmpreg2 = (DAC_InitStruct->DAC_Trigger | DAC_InitStruct->DAC_WaveGeneration |
+  18:	684d      	ldr	r5, [r1, #4]
+  1a:	680c      	ldr	r4, [r1, #0]
+  1c:	4325      	orrs	r5, r4
+  1e:	688c      	ldr	r4, [r1, #8]
+  20:	4325      	orrs	r5, r4
+  22:	68cc      	ldr	r4, [r1, #12]
+  24:	ea45 0104 	orr.w	r1, r5, r4
+C:\STM32\Projects\Sonar/stm32f10x_dac.c:105
+             DAC_InitStruct->DAC_LFSRUnmask_TriangleAmplitude | DAC_InitStruct->DAC_OutputBuffer);
+  /* Calculate CR register value depending on DAC_Channel */
+  tmpreg1 |= tmpreg2 << DAC_Channel;
+  28:	fa01 f000 	lsl.w	r0, r1, r0
+  2c:	ea42 0000 	orr.w	r0, r2, r0
+C:\STM32\Projects\Sonar/stm32f10x_dac.c:107
+  /* Write to DAC CR */
+  DAC->CR = tmpreg1;
+  30:	6018      	str	r0, [r3, #0]
+C:\STM32\Projects\Sonar/stm32f10x_dac.c:108
+}
+  32:	bc30      	pop	{r4, r5}
+  34:	4770      	bx	lr
+  36:	bf00      	nop
+
+Disassembly of section .text.DAC_StructInit:
+
+00000000 <DAC_StructInit>:
+DAC_StructInit():
+C:\STM32\Projects\Sonar/stm32f10x_dac.c:122
+*******************************************************************************/
+void DAC_StructInit(DAC_InitTypeDef* DAC_InitStruct)
+{
+/*--------------- Reset DAC init structure parameters values -----------------*/
+  /* Initialize the DAC_Trigger member */
+  DAC_InitStruct->DAC_Trigger = DAC_Trigger_None;
+   0:	f04f 0300 	mov.w	r3, #0
+   4:	6003      	str	r3, [r0, #0]
+C:\STM32\Projects\Sonar/stm32f10x_dac.c:125
+
+  /* Initialize the DAC_WaveGeneration member */
+  DAC_InitStruct->DAC_WaveGeneration = DAC_WaveGeneration_None;
+   6:	6043      	str	r3, [r0, #4]
+C:\STM32\Projects\Sonar/stm32f10x_dac.c:128
+
+  /* Initialize the DAC_LFSRUnmask_TriangleAmplitude member */
+  DAC_InitStruct->DAC_LFSRUnmask_TriangleAmplitude = DAC_LFSRUnmask_Bit0;
+   8:	6083      	str	r3, [r0, #8]
+C:\STM32\Projects\Sonar/stm32f10x_dac.c:131
+
+  /* Initialize the DAC_OutputBuffer member */
+  DAC_InitStruct->DAC_OutputBuffer = DAC_OutputBuffer_Enable;
+   a:	60c3      	str	r3, [r0, #12]
+C:\STM32\Projects\Sonar/stm32f10x_dac.c:132
+}
+   c:	4770      	bx	lr
+   e:	bf00      	nop
+
+Disassembly of section .text.DAC_Cmd:
+
+00000000 <DAC_Cmd>:
+DAC_Cmd():
+C:\STM32\Projects\Sonar/stm32f10x_dac.c:152
+{
+  /* Check the parameters */
+  assert_param(IS_DAC_CHANNEL(DAC_Channel));
+  assert_param(IS_FUNCTIONAL_STATE(NewState));
+
+  if (NewState != DISABLE)
+   0:	b159      	cbz	r1, 1a <DAC_Cmd+0x1a>
+C:\STM32\Projects\Sonar/stm32f10x_dac.c:155
+  {
+    /* Enable the selected DAC channel */
+    DAC->CR |= CR_EN_Set << DAC_Channel;
+   2:	f44f 43e8 	mov.w	r3, #29696	; 0x7400
+   6:	f2c4 0300 	movt	r3, #16384	; 0x4000
+   a:	681a      	ldr	r2, [r3, #0]
+   c:	f04f 0101 	mov.w	r1, #1
+  10:	fa01 f000 	lsl.w	r0, r1, r0
+  14:	4310      	orrs	r0, r2
+  16:	6018      	str	r0, [r3, #0]
+  18:	4770      	bx	lr
+C:\STM32\Projects\Sonar/stm32f10x_dac.c:160
+  }
+  else
+  {
+    /* Disable the selected DAC channel */
+    DAC->CR &= ~(CR_EN_Set << DAC_Channel);
+  1a:	f44f 43e8 	mov.w	r3, #29696	; 0x7400
+  1e:	f2c4 0300 	movt	r3, #16384	; 0x4000
+  22:	681a      	ldr	r2, [r3, #0]
+  24:	f04f 0101 	mov.w	r1, #1
+  28:	fa01 f000 	lsl.w	r0, r1, r0
+  2c:	ea22 0000 	bic.w	r0, r2, r0
+  30:	6018      	str	r0, [r3, #0]
+  32:	4770      	bx	lr
+
+Disassembly of section .text.DAC_DMACmd:
+
+00000000 <DAC_DMACmd>:
+DAC_DMACmd():
+C:\STM32\Projects\Sonar/stm32f10x_dac.c:182
+{
+  /* Check the parameters */
+  assert_param(IS_DAC_CHANNEL(DAC_Channel));
+  assert_param(IS_FUNCTIONAL_STATE(NewState));
+
+  if (NewState != DISABLE)
+   0:	b159      	cbz	r1, 1a <DAC_DMACmd+0x1a>
+C:\STM32\Projects\Sonar/stm32f10x_dac.c:185
+  {
+    /* Enable the selected DAC channel DMA request */
+    DAC->CR |= CR_DMAEN_Set << DAC_Channel;
+   2:	f44f 43e8 	mov.w	r3, #29696	; 0x7400
+   6:	f2c4 0300 	movt	r3, #16384	; 0x4000
+   a:	681a      	ldr	r2, [r3, #0]
+   c:	f44f 5180 	mov.w	r1, #4096	; 0x1000
+  10:	fa01 f000 	lsl.w	r0, r1, r0
+  14:	4310      	orrs	r0, r2
+  16:	6018      	str	r0, [r3, #0]
+  18:	4770      	bx	lr
+C:\STM32\Projects\Sonar/stm32f10x_dac.c:190
+  }
+  else
+  {
+    /* Disable the selected DAC channel DMA request */
+    DAC->CR &= ~(CR_DMAEN_Set << DAC_Channel);
+  1a:	f44f 43e8 	mov.w	r3, #29696	; 0x7400
+  1e:	f2c4 0300 	movt	r3, #16384	; 0x4000
+  22:	681a      	ldr	r2, [r3, #0]
+  24:	f44f 5180 	mov.w	r1, #4096	; 0x1000
+  28:	fa01 f000 	lsl.w	r0, r1, r0
+  2c:	ea22 0000 	bic.w	r0, r2, r0
+  30:	6018      	str	r0, [r3, #0]
+  32:	4770      	bx	lr
+
+Disassembly of section .text.DAC_SoftwareTriggerCmd:
+
+00000000 <DAC_SoftwareTriggerCmd>:
+DAC_SoftwareTriggerCmd():
+C:\STM32\Projects\Sonar/stm32f10x_dac.c:212
+{
+  /* Check the parameters */
+  assert_param(IS_DAC_CHANNEL(DAC_Channel));
+  assert_param(IS_FUNCTIONAL_STATE(NewState));
+
+  if (NewState != DISABLE)
+   0:	b169      	cbz	r1, 1e <DAC_SoftwareTriggerCmd+0x1e>
+C:\STM32\Projects\Sonar/stm32f10x_dac.c:215
+  {
+    /* Enable software trigger for the selected DAC channel */
+    DAC->SWTRIGR |= SWTRIGR_SWTRIG_Set << (DAC_Channel >> 4);
+   2:	f44f 43e8 	mov.w	r3, #29696	; 0x7400
+   6:	f2c4 0300 	movt	r3, #16384	; 0x4000
+   a:	685a      	ldr	r2, [r3, #4]
+   c:	ea4f 1010 	mov.w	r0, r0, lsr #4
+  10:	f04f 0101 	mov.w	r1, #1
+  14:	fa01 f000 	lsl.w	r0, r1, r0
+  18:	4310      	orrs	r0, r2
+  1a:	6058      	str	r0, [r3, #4]
+  1c:	4770      	bx	lr
+C:\STM32\Projects\Sonar/stm32f10x_dac.c:220
+  }
+  else
+  {
+    /* Disable software trigger for the selected DAC channel */
+    DAC->SWTRIGR &= ~(SWTRIGR_SWTRIG_Set << (DAC_Channel >> 4));
+  1e:	f44f 43e8 	mov.w	r3, #29696	; 0x7400
+  22:	f2c4 0300 	movt	r3, #16384	; 0x4000
+  26:	685a      	ldr	r2, [r3, #4]
+  28:	ea4f 1010 	mov.w	r0, r0, lsr #4
+  2c:	f04f 0101 	mov.w	r1, #1
+  30:	fa01 f000 	lsl.w	r0, r1, r0
+  34:	ea22 0000 	bic.w	r0, r2, r0
+  38:	6058      	str	r0, [r3, #4]
+  3a:	4770      	bx	lr
+
+Disassembly of section .text.DAC_DualSoftwareTriggerCmd:
+
+00000000 <DAC_DualSoftwareTriggerCmd>:
+DAC_DualSoftwareTriggerCmd():
+C:\STM32\Projects\Sonar/stm32f10x_dac.c:238
+void DAC_DualSoftwareTriggerCmd(FunctionalState NewState)
+{
+  /* Check the parameters */
+  assert_param(IS_FUNCTIONAL_STATE(NewState));
+
+  if (NewState != DISABLE)
+   0:	b140      	cbz	r0, 14 <DAC_DualSoftwareTriggerCmd+0x14>
+C:\STM32\Projects\Sonar/stm32f10x_dac.c:241
+  {
+    /* Enable software trigger for both DAC channels */
+    DAC->SWTRIGR |= DUAL_SWTRIG_Set ;
+   2:	f44f 43e8 	mov.w	r3, #29696	; 0x7400
+   6:	f2c4 0300 	movt	r3, #16384	; 0x4000
+   a:	685a      	ldr	r2, [r3, #4]
+   c:	f042 0203 	orr.w	r2, r2, #3
+  10:	605a      	str	r2, [r3, #4]
+  12:	4770      	bx	lr
+C:\STM32\Projects\Sonar/stm32f10x_dac.c:246
+  }
+  else
+  {
+    /* Disable software trigger for both DAC channels */
+    DAC->SWTRIGR &= DUAL_SWTRIG_Reset;
+  14:	f44f 43e8 	mov.w	r3, #29696	; 0x7400
+  18:	f2c4 0300 	movt	r3, #16384	; 0x4000
+  1c:	685a      	ldr	r2, [r3, #4]
+  1e:	f022 0203 	bic.w	r2, r2, #3
+  22:	605a      	str	r2, [r3, #4]
+  24:	4770      	bx	lr
+  26:	bf00      	nop
+
+Disassembly of section .text.DAC_WaveGenerationCmd:
+
+00000000 <DAC_WaveGenerationCmd>:
+DAC_WaveGenerationCmd():
+C:\STM32\Projects\Sonar/stm32f10x_dac.c:273
+  /* Check the parameters */
+  assert_param(IS_DAC_CHANNEL(DAC_Channel));
+  assert_param(IS_DAC_WAVE(DAC_Wave)); 
+  assert_param(IS_FUNCTIONAL_STATE(NewState));
+
+  if (NewState != DISABLE)
+   0:	b14a      	cbz	r2, 16 <DAC_WaveGenerationCmd+0x16>
+C:\STM32\Projects\Sonar/stm32f10x_dac.c:276
+  {
+    /* Enable the selected wave generation for the selected DAC channel */
+    DAC->CR |= DAC_Wave << DAC_Channel;
+   2:	f44f 43e8 	mov.w	r3, #29696	; 0x7400
+   6:	f2c4 0300 	movt	r3, #16384	; 0x4000
+   a:	681a      	ldr	r2, [r3, #0]
+   c:	fa01 f100 	lsl.w	r1, r1, r0
+  10:	4311      	orrs	r1, r2
+  12:	6019      	str	r1, [r3, #0]
+  14:	4770      	bx	lr
+C:\STM32\Projects\Sonar/stm32f10x_dac.c:281
+  }
+  else
+  {
+    /* Disable the selected wave generation for the selected DAC channel */
+    DAC->CR &= ~(DAC_Wave << DAC_Channel);
+  16:	f44f 43e8 	mov.w	r3, #29696	; 0x7400
+  1a:	f2c4 0300 	movt	r3, #16384	; 0x4000
+  1e:	681a      	ldr	r2, [r3, #0]
+  20:	fa01 f100 	lsl.w	r1, r1, r0
+  24:	ea22 0101 	bic.w	r1, r2, r1
+  28:	6019      	str	r1, [r3, #0]
+  2a:	4770      	bx	lr
+
+Disassembly of section .text.DAC_SetChannel1Data:
+
+00000000 <DAC_SetChannel1Data>:
+DAC_SetChannel1Data():
+C:\STM32\Projects\Sonar/stm32f10x_dac.c:305
+  /* Check the parameters */
+  assert_param(IS_DAC_ALIGN(DAC_Align));
+  assert_param(IS_DAC_DATA(Data));
+
+  /* Set the DAC channel1 selected data holding register */
+  *((vu32 *)(DAC_BASE + DHR12R1_Offset + DAC_Align)) = (u32)Data;
+   0:	f247 4308 	movw	r3, #29704	; 0x7408
+   4:	f2c4 0300 	movt	r3, #16384	; 0x4000
+   8:	50c1      	str	r1, [r0, r3]
+C:\STM32\Projects\Sonar/stm32f10x_dac.c:306
+}
+   a:	4770      	bx	lr
+
+Disassembly of section .text.DAC_SetChannel2Data:
+
+00000000 <DAC_SetChannel2Data>:
+DAC_SetChannel2Data():
+C:\STM32\Projects\Sonar/stm32f10x_dac.c:328
+  /* Check the parameters */
+  assert_param(IS_DAC_ALIGN(DAC_Align));
+  assert_param(IS_DAC_DATA(Data));
+
+  /* Set the DAC channel2 selected data holding register */
+  *((vu32 *)(DAC_BASE + DHR12R2_Offset + DAC_Align)) = (u32)Data;
+   0:	f247 4314 	movw	r3, #29716	; 0x7414
+   4:	f2c4 0300 	movt	r3, #16384	; 0x4000
+   8:	50c1      	str	r1, [r0, r3]
+C:\STM32\Projects\Sonar/stm32f10x_dac.c:329
+}
+   a:	4770      	bx	lr
+
+Disassembly of section .text.DAC_SetDualChannelData:
+
+00000000 <DAC_SetDualChannelData>:
+DAC_SetDualChannelData():
+C:\STM32\Projects\Sonar/stm32f10x_dac.c:357
+  assert_param(IS_DAC_ALIGN(DAC_Align));
+  assert_param(IS_DAC_DATA(Data1));
+  assert_param(IS_DAC_DATA(Data2));
+  
+  /* Calculate and set dual DAC data holding register value */
+  if (DAC_Align == DAC_Align_8b_R)
+   0:	2808      	cmp	r0, #8
+C:\STM32\Projects\Sonar/stm32f10x_dac.c:359
+  {
+    data = ((u32)Data2 << 8) | Data1; 
+   2:	bf0c      	ite	eq
+   4:	ea42 2101 	orreq.w	r1, r2, r1, lsl #8
+C:\STM32\Projects\Sonar/stm32f10x_dac.c:363
+  }
+  else
+  {
+    data = ((u32)Data2 << 16) | Data1;
+   8:	ea42 4101 	orrne.w	r1, r2, r1, lsl #16
+C:\STM32\Projects\Sonar/stm32f10x_dac.c:367
+  }
+
+  /* Set the dual DAC selected data holding register */
+  *((vu32 *)(DAC_BASE + DHR12RD_Offset + DAC_Align)) = data;
+   c:	f247 4320 	movw	r3, #29728	; 0x7420
+  10:	f2c4 0300 	movt	r3, #16384	; 0x4000
+  14:	50c1      	str	r1, [r0, r3]
+C:\STM32\Projects\Sonar/stm32f10x_dac.c:368
+}
+  16:	4770      	bx	lr
+
+Disassembly of section .text.DAC_GetDataOutputValue:
+
+00000000 <DAC_GetDataOutputValue>:
+DAC_GetDataOutputValue():
+C:\STM32\Projects\Sonar/stm32f10x_dac.c:386
+{
+  /* Check the parameters */
+  assert_param(IS_DAC_CHANNEL(DAC_Channel));
+
+  /* Returns the DAC channel data output register value */
+  return (u16) (*(vu32*)(DAC_BASE + DOR_Offset + ((u32)DAC_Channel >> 2)));
+   0:	ea4f 0090 	mov.w	r0, r0, lsr #2
+   4:	f247 432c 	movw	r3, #29740	; 0x742c
+   8:	f2c4 0300 	movt	r3, #16384	; 0x4000
+   c:	58c0      	ldr	r0, [r0, r3]
+C:\STM32\Projects\Sonar/stm32f10x_dac.c:387
+}
+   e:	b280      	uxth	r0, r0
+  10:	4770      	bx	lr
+  12:	bf00      	nop
