@@ -1556,7 +1556,7 @@ BEGIN
   IDM_EDIT_UNDO "Undo"
   IDM_EDIT_REDO "Redo"
   IDM_EDIT_DELETE "Delete"
-  IDM_EDIT_FIND "Filnd"
+  IDM_EDIT_FIND "Find"
   IDM_EDIT_REPLACE "Replace"
   IDM_EDIT_TOGGLEBM "Toggle Bookmark"
   IDM_EDIT_NEXTBM "Next Bookmark"
