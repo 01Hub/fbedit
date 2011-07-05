@@ -82,9 +82,6 @@ int main(void)
     if (STM32_Sonar.Start == 1)
     {
       STM32_Sonar.Start = 2;
-      /* Set the lowest gain */
-      DAC->DHR8R1 = (u8) 0x0;
-      DAC->DHR8R2 = (u8) 0x0;
       /* Toggle blue led */
       if (BlueLED)
       {
@@ -185,8 +182,9 @@ u16 GetADCValue(u8 Channel)
 *******************************************************************************/
 void TIM1_UP_IRQHandler(void)
 {
-  // u16 tmp;
-  /*  Configure pin (PA.08) and pin (PA.09) */
+  /* Set DAC Gain */
+  DAC->DHR8R1 = STM32_Sonar.Gain;
+  /*  Configure pin PA.08 and pin PA.09 to turn off ping outputs */
   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_8 | GPIO_Pin_9;
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
@@ -195,10 +193,7 @@ void TIM1_UP_IRQHandler(void)
   TIM1->SR = (u16)~TIM_IT_Update;
   /* Disable TIM1 */
   TIM_Cmd(TIM1, DISABLE);
-  /* Set DAC Gain */
-  DAC->DHR8R1 = STM32_Sonar.Gain;
-  DAC->DHR8R2 = STM32_Sonar.Gain;
-  /* Enable injected channel */
+  /* Enable ADC injected channel */
   ADC_AutoInjectedConvCmd(ADC1, ENABLE);
   /* Enable TIM2 */
   TIM_Cmd(TIM2, ENABLE);
@@ -248,6 +243,8 @@ void TIM2_IRQHandler(void)
       ADC_AutoInjectedConvCmd(ADC1, DISABLE);
       /* Store the range */
       STM32_Sonar.Echo[0] = STM32_Sonar.Range;
+      /* Set the DAC to output lowest gain */
+      DAC->DHR8R1 = (u8) 0x0;
       /* Done */
       STM32_Sonar.Start = 0;
     }
@@ -376,8 +373,8 @@ void RCC_Configuration(void)
 *******************************************************************************/
 void GPIO_Configuration(void)
 {
-  /* Configure ADC Channel7 (PA.07), ADC Channel6 (PA.06), DAC Channel2 (PA.05), DAC Channel1 (PA.04), ADC Channel3 (PA.03) and ADC Channel2 (PA.02) as analog input */
-  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_7 | GPIO_Pin_6 | GPIO_Pin_5 | GPIO_Pin_4 | GPIO_Pin_3 | GPIO_Pin_2;
+  /* Configure ADC Channel7 (PA.07), ADC Channel6 (PA.06), DAC Channel1 (PA.04), ADC Channel3 (PA.03) and ADC Channel2 (PA.02) as analog input */
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_7 | GPIO_Pin_6 | GPIO_Pin_4 | GPIO_Pin_3 | GPIO_Pin_2;
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AIN;
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
   GPIO_Init(GPIOA, &GPIO_InitStructure);

@@ -466,7 +466,6 @@ FindFish:
 		movzx	eax,STM32Echo[ebx]
 		.if eax
 			mov		eax,edi
-;			sub		eax,16
 			.if sdword ptr eax>ebx
 				;Large fish
 				mov		sonardata.STM32Echo[ebx],255
