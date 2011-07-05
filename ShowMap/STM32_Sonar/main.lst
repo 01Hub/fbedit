@@ -660,11 +660,11 @@ void GPIO_Configuration(void)
 {
    0:	b5f8      	push	{r3, r4, r5, r6, r7, lr}
 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:381
-  /* Configure ADC Channel7 (PA.07), ADC Channel6 (PA.06), DAC Channel1 (PA.04), ADC Channel3 (PA.03) and ADC Channel2 (PA.02) as analog input */
-  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_7 | GPIO_Pin_6 | GPIO_Pin_4 | GPIO_Pin_3 | GPIO_Pin_2;
+  /* Configure ADC Channel6 (PA.06), ADC Channel5 (PA.05), DAC Channel1 (PA.04), ADC Channel3 (PA.03) and ADC Channel2 (PA.02) as analog input */
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_6 | GPIO_Pin_5 | GPIO_Pin_4 | GPIO_Pin_3 | GPIO_Pin_2;
    2:	f240 0400 	movw	r4, #0
    6:	f2c0 0400 	movt	r4, #0
-   a:	f04f 03dc 	mov.w	r3, #220	; 0xdc
+   a:	f04f 037c 	mov.w	r3, #124	; 0x7c
    e:	8023      	strh	r3, [r4, #0]
 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:382
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AIN;
@@ -700,7 +700,7 @@ C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:389
   42:	4621      	mov	r1, r4
   44:	f7ff fffe 	bl	0 <GPIO_Init>
 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:391
-  /* Set ping outputs high */
+  /* Set ping outputs high (FET's off) */
   GPIO_WriteBit(GPIOA, GPIO_Pin_8 | GPIO_Pin_9, Bit_SET);
   48:	4628      	mov	r0, r5
   4a:	4639      	mov	r1, r7
