@@ -19,10 +19,11 @@ typedef struct
   u8 PingPulses;
   u8 Noise;
   u8 Gain;
+  u8 GainInc;
   u8 Range;
   u8 nSample;
+  u8 Dummy;
   u16 Timer;
-  u16 EchoIndex;
   u16 ADCBatt;
   u16 ADCWaterTemp;
   u16 ADCAirTemp;
@@ -35,6 +36,7 @@ static STM32_SonarTypeDef STM32_Sonar;         // 0x20000000
 vu8 BlueLED;
 vu8 GreenLED;
 vu8 nSample;
+vu16 EchoIndex;
 GPIO_InitTypeDef GPIO_InitStructure;
 
 /* Private function prototypes -----------------------------------------------*/
@@ -96,9 +98,9 @@ int main(void)
       /* Read battery */
       STM32_Sonar.ADCBatt = GetADCValue(ADC_Channel_3);
       /* Read water temprature */
-      STM32_Sonar.ADCWaterTemp = GetADCValue(ADC_Channel_6);
+      STM32_Sonar.ADCWaterTemp = GetADCValue(ADC_Channel_5);
       /* Read air temprature */
-      STM32_Sonar.ADCAirTemp = GetADCValue(ADC_Channel_7);
+      STM32_Sonar.ADCAirTemp = GetADCValue(ADC_Channel_6);
       /* Clear the echo array */
       i = 0;
       while (i < MAXECHO)
@@ -110,7 +112,7 @@ int main(void)
       /* TIM2 configuration */
       TIM2_Configuration();
       /* Reset echo index */
-      STM32_Sonar.EchoIndex = 0;
+      EchoIndex = 0;
       /* Reset TIM1 count */
       TIM1->CNT = 0;
       /* Set repetirion counter */
@@ -183,7 +185,7 @@ u16 GetADCValue(u8 Channel)
 void TIM1_UP_IRQHandler(void)
 {
   /* Set DAC Gain */
-  DAC->DHR8R1 = STM32_Sonar.Gain;
+  DAC->DHR12R1 = (u16)STM32_Sonar.Gain << 4;
   /*  Configure pin PA.08 and pin PA.09 to turn off ping outputs */
   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_8 | GPIO_Pin_9;
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
@@ -226,16 +228,18 @@ void TIM2_IRQHandler(void)
     Echo = 0;
   }
   /* If echo larger than previous echo, update the echo array */
-  if (Echo > STM32_Sonar.Echo[STM32_Sonar.EchoIndex])
+  if (Echo > STM32_Sonar.Echo[EchoIndex])
   {
-    STM32_Sonar.Echo[STM32_Sonar.EchoIndex] = Echo;
+    STM32_Sonar.Echo[EchoIndex] = Echo;
   }
   nSample--;
   if (!nSample)
   {
+    /* Set the DAC to output next gain step */
+    DAC->DHR12R1 = DAC->DHR12R1 + (u16)STM32_Sonar.GainInc;
     nSample = STM32_Sonar.nSample;
-    STM32_Sonar.EchoIndex++;
-    if (STM32_Sonar.EchoIndex == MAXECHO)
+    EchoIndex++;
+    if (EchoIndex == MAXECHO)
     {
       /* Disable TIM2 */
       TIM2->CR1 = 0;
@@ -244,7 +248,7 @@ void TIM2_IRQHandler(void)
       /* Store the range */
       STM32_Sonar.Echo[0] = STM32_Sonar.Range;
       /* Set the DAC to output lowest gain */
-      DAC->DHR8R1 = (u8) 0x0;
+      DAC->DHR12R1 = (u16)0x0;
       /* Done */
       STM32_Sonar.Start = 0;
     }

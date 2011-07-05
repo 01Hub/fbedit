@@ -297,8 +297,10 @@ SONAR struct
 	PingPulses		BYTE ?									;Number of pulses in a ping ((0 to 63)+1)
 	Noise			BYTE ?									;Noise reject level (0 to 255)
 	Gain			BYTE ?									;Gain level (0 to 127)
+	GainInc			BYTE ?									;Gain level increment
 	RangeInx		BYTE ?									;Range (0 to 13)
 	nSample			BYTE ?									;Number of echo readings to sample. If more than one the largest is stored.
+	Dummy			BYTE ?
 	Timer			WORD ?									;Time between each echo reading
 	dmy1			WORD ?									;Just to make the ADC readings dword sized
 	ADCBattery		WORD ?									;Battery level
@@ -316,6 +318,7 @@ RANGE struct
 	nsample			DWORD ?									;Number of echo readings to sample. If more than one the largest is stored.
 	pingpulses		DWORD ?									;Number of pulses in a ping ((0 to 63)+1). Used when autoping is on
 	gain			DWORD ?									;Gain level (0 to 127). Used when auto gain is on
+	gaininc			DWORD ?									;Gain increment for each pixel. Used when auto gain is on
 RANGE ends
 
 .const
@@ -377,12 +380,12 @@ szIcons				BYTE 'None',0							;Icon selection descriptions
 					BYTE 'Red dot',0
 					BYTE 'Blue dot',0,0
 
-sonarrange			RANGE <2,200,1,7,30>,<4,200,2,7,35>,
-						  <6,200,3,8,40>,<10,250,5,8,45>,
-						  <20,250,10,9,50>,<30,300,15,9,55>,
-						  <50,300,25,10,60>,<70,350,35,10,65>,
-						  <100,350,50,11,70>,<150,400,75,11,75>,
-						  <200,400,100,12,80>,<250,450,125,12,85>
+sonarrange			RANGE <2,200,1,7,30,0>,<4,200,2,7,35,0>,
+						  <6,200,3,8,40,1>,<10,250,5,8,45,1>,
+						  <20,250,10,9,50,2>,<30,300,15,9,55,2>,
+						  <50,300,25,10,60,3>,<70,350,35,10,65,3>,
+						  <100,350,50,11,70,4>,<150,400,75,11,75,4>,
+						  <200,400,100,12,80,5>,<250,450,125,12,85,5>
 
 szFmtDec			BYTE '%d',0
 szFmtDepth			BYTE '%02u',0

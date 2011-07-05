@@ -107,6 +107,10 @@ SetRange proc uses ebx esi edi,RangeInx:DWORD
 		mov		eax,sonarrange.gain[ebx]
 		mov		sonardata.Gain,al
 		invoke SendDlgItemMessage,hWnd,IDC_TRBGAIN,TBM_SETPOS,TRUE,eax
+		mov		eax,sonarrange.gaininc[ebx]
+		mov		sonardata.GainInc,al
+	.else
+		mov		sonardata.GainInc,0
 	.endif
 	.if sonardata.AutoPing
 		mov		eax,sonarrange.pingpulses[ebx]
@@ -258,14 +262,14 @@ STM32Thread proc uses ebx esi edi,lParam:DWORD
 			.if !eax
 				jmp		STLinkErr
 			.endif
-		 	;Upload Start, PingPulses, Noise, Gain, RangeInx, nSample and Timer to init the next reading
+		 	;Upload Start, PingPulses, Noise, Gain, GainInc, RangeInx, nSample and Timer to init the next reading
 		 	mov		sonardata.Start,0
-			invoke STLinkWrite,hWnd,STM32_Sonar,addr sonardata.Start,8
+			invoke STLinkWrite,hWnd,STM32_Sonar,addr sonardata.Start,12
 			.if !eax
 				jmp		STLinkErr
 			.endif
 		 	mov		sonardata.Start,1
-			invoke STLinkWrite,hWnd,STM32_Sonar,addr sonardata.Start,8
+			invoke STLinkWrite,hWnd,STM32_Sonar,addr sonardata.Start,12
 			.if !eax
 				jmp		STLinkErr
 			.endif

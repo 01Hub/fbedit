@@ -90,25 +90,28 @@ Runs on STM32 Discovery.
 
 Additional hardware
 ===================
-Transmitter capable of delivering at least 800 watts peak to the swinger.
-For the swinger I am using, 800 Vpp is needed to generate 800 watts peak.
-Receiver tuned at 200 KHz.
-Amplifier measuring peak amplitude.
+o Transmitter capable of delivering at least 1000 watts peak to the swinger.
+  For the swinger I am using, 1000 Vpp is needed.
+o Echo receiver with gain control, tuned at 200 KHz.
+o Amplifier measuring echo peak amplitude to be fead to the ADC.
 
 Port pins used
 ==============
-PA.02		ADC Echo
-PA.03		ADC Battery
-PA.04		DAC channel1 Gain
-PA.05		DAC channel2 Gain
-PA.06		ADC Water temprature
-PA.07		ADC Air temprature
+PA.02		ADC Echo in
+PA.03		ADC Battery in
+PA.04		DAC channel1 Gain control out
+PA.05		ADC Water temprature in
+PA.06		ADC Air temprature in
 
-PA.08		Ping out phase 0
-PA.09		Ping out phase 1
+PA.08		Ping phase 0 out
+PA.09		Ping phase 1 out
 
-Transformer
------------
+Transmitter transformer
+-----------------------
+Primary 6+6 turns and secondary 250 turns on an 8mm air core.
+
+IF Transformers
+---------------
 L1 =		18 		Wdg j 0.09 CuL, Pin 3–4
 L2 =		46+100 	Wdg j 0.09 CuL, Pin 6–2–1 (6.1 280pF)
 
