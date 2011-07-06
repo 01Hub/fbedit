@@ -1246,6 +1246,9 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke GetDlgItem,hWin,IDC_TRBCHART
 		invoke MoveWindow,eax,rect.right,rect.top,80,20,TRUE
 		add		rect.top,25
+		invoke GetDlgItem,hWin,IDC_CHKCHART
+		invoke MoveWindow,eax,rect.right,rect.top,80,16,TRUE
+		add		rect.top,17
 	.elseif eax==WM_MOUSEMOVE
 		invoke GetClientRect,hWin,addr rect
 		invoke GetCapture

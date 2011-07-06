@@ -51,7 +51,7 @@ Random endp
 
 ;Timer value calculation
 ;=======================
-;Example 2m range
+;Example 2m range and 48MHz clock
 ;Timer period Tp=1/48MHz
 ;Each pixel is Px=2m/512.
 ;Time for each pixel is t=Px/1450/2
@@ -103,21 +103,6 @@ SetRange proc uses ebx esi edi,RangeInx:DWORD
 	mov		eax,sonarrange.range[ebx]
 	mov		sonardata.RangeVal,eax
 	invoke wsprintf,addr sonardata.options.text,addr szFmtDec,eax
-	.if sonardata.AutoGain
-		mov		eax,sonarrange.gain[ebx]
-		mov		sonardata.Gain,al
-		invoke SendDlgItemMessage,hWnd,IDC_TRBGAIN,TBM_SETPOS,TRUE,eax
-		mov		eax,sonarrange.gaininc[ebx]
-		mov		sonardata.GainInc,al
-	.else
-		mov		sonardata.GainInc,0
-	.endif
-	.if sonardata.AutoPing
-		mov		eax,sonarrange.pingpulses[ebx]
-		mov		sonardata.PingPulses,al
-		invoke SendDlgItemMessage,hWnd,IDC_TRBPULSES,TBM_SETPOS,TRUE,eax
-	.endif
-	mov		sonardata.Timer,STM32_Timer
 	ret
 
 SetRange endp
@@ -263,6 +248,7 @@ STM32Thread proc uses ebx esi edi,lParam:DWORD
 				jmp		STLinkErr
 			.endif
 		 	;Upload Start, PingPulses, Noise, Gain, GainInc, RangeInx, nSample and Timer to init the next reading
+			mov		sonardata.Timer,STM32_Timer
 		 	mov		sonardata.Start,0
 			invoke STLinkWrite,hWnd,STM32_Sonar,addr sonardata.Start,12
 			.if !eax
@@ -412,6 +398,7 @@ STLinkErr:
 FindDepth:
 	mov		sonardata.dptinx,0
 	and		sonardata.ShowDepth,1
+	;Skip ping
 	mov		ebx,1
 	xor		edx,edx
 	.while ebx<MAXYECHO-8
@@ -425,6 +412,7 @@ FindDepth:
 		inc		ebx
 	.endw
 	mov		sonardata.minyecho,ebx
+	;Find bottom echo
 	.while ebx<MAXYECHO-8
 		inc		ebx
 		movzx	eax,sonardata.STM32Echo[ebx]
@@ -611,46 +599,49 @@ Update:
 	;Water temprature
 	movzx	eax,sonardata.ADCWaterTemp
 	call	SetWTemp
-	;Check if range is still the same
-	movzx	eax,sonardata.STM32Echo
-	.if al!=sonardata.sonar[(MAXXECHO*MAXYECHO)-MAXYECHO]
-		invoke GetRangePtr,eax
-		mov		eax,sonarrange.range[eax]
-		invoke UpdateBitmap,eax
-		mov		eax,sonardata.ChartSpeed
-	.endif
-	call	ScrollEchoArray
-	invoke RtlMoveMemory,offset sonardata.sonar[(MAXXECHO*MAXYECHO)-MAXYECHO],offset sonardata.STM32Echo,MAXYECHO
-	mov		rect.left,0
-	mov		rect.top,0
-	mov		rect.right,MAXXECHO
-	mov		rect.bottom,MAXYECHO
-	invoke ScrollDC,sonardata.mDC,-1,0,addr rect,addr rect,NULL,NULL
-	mov		ebx,1
-	.while ebx<MAXYECHO
-		movzx	eax,sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO]
-		.if eax
-			.if eax<20h
-				mov		eax,20h
+	invoke IsDlgButtonChecked,hWnd,IDC_CHKCHART
+	.if !eax
+		;Check if range is still the same
+		movzx	eax,sonardata.STM32Echo
+		.if al!=sonardata.sonar[(MAXXECHO*MAXYECHO)-MAXYECHO]
+			invoke GetRangePtr,eax
+			mov		eax,sonarrange.range[eax]
+			invoke UpdateBitmap,eax
+			mov		eax,sonardata.ChartSpeed
+		.endif
+		call	ScrollEchoArray
+		invoke RtlMoveMemory,offset sonardata.sonar[(MAXXECHO*MAXYECHO)-MAXYECHO],offset sonardata.STM32Echo,MAXYECHO
+		mov		rect.left,0
+		mov		rect.top,0
+		mov		rect.right,MAXXECHO
+		mov		rect.bottom,MAXYECHO
+		invoke ScrollDC,sonardata.mDC,-1,0,addr rect,addr rect,NULL,NULL
+		mov		ebx,1
+		.while ebx<MAXYECHO
+			movzx	eax,sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO]
+			.if eax
+				.if eax<20h
+					mov		eax,20h
+				.endif
+				xor		eax,0FFh
+				mov		ah,al
+				shl		eax,8
+				mov		al,ah
+			.else
+				mov		eax,SONARBACKCOLOR
 			.endif
-			xor		eax,0FFh
-			mov		ah,al
-			shl		eax,8
-			mov		al,ah
-		.else
-			mov		eax,SONARBACKCOLOR
-		.endif
-		invoke SetPixel,sonardata.mDC,MAXXECHO-1,ebx,eax
-		inc		ebx
-	.endw
-	;Remove fish
-	xor		ebx,ebx
-	.while ebx<MAXYECHO
-		.if sonardata.STM32Echo[ebx]>253
-			mov		sonardata.STM32Echo[ebx],0
-		.endif
-		inc		ebx
-	.endw
+			invoke SetPixel,sonardata.mDC,MAXXECHO-1,ebx,eax
+			inc		ebx
+		.endw
+		;Remove fish
+		xor		ebx,ebx
+		.while ebx<MAXYECHO
+			.if sonardata.STM32Echo[ebx]>253
+				mov		sonardata.STM32Echo[ebx],0
+			.endif
+			inc		ebx
+		.endw
+	.endif
 	invoke InvalidateRect,hSonar,NULL,TRUE
 	invoke UpdateWindow,hSonar
 	retn
