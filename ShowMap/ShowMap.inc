@@ -144,10 +144,11 @@ MAXSONAROPTION			equ 3								;Max number of overlays on sonar scteen
 ;Sonar constants
 MAXXECHO				equ 512								;Max number of sonar X-echos
 MAXYECHO				equ 512								;Max number of sonar Y-echos
-MAXRANGE				equ 12								;Number of depth ranges
+MAXRANGE				equ 11								;Number of depth ranges
 STM32_Sonar				equ 20000000h						;STM32 ram address
 SONARBACKCOLOR			equ 00F4BD6Ch						;Back color of sonar
-STM32_Timer				equ 258
+;STM32_Timer			equ 258								;Timer for 48MHz clock
+STM32_Timer				equ 302								;Timer for 56MHz clock
 
 LONPOINT struct
 	iLon			DWORD ?									;Longitude
@@ -385,7 +386,9 @@ sonarrange			RANGE <2,200,1,7,30,0>,<4,200,2,7,35,0>,
 						  <20,250,10,9,50,2>,<30,300,15,9,55,2>,
 						  <50,300,25,10,60,3>,<70,350,35,10,65,3>,
 						  <100,350,50,11,70,4>,<150,400,75,11,75,4>,
-						  <200,400,100,12,80,5>,<250,450,125,12,85,5>
+						  <200,400,100,12,80,5>
+
+sonarchartspeed		DWORD 250,200,150,100,50
 
 szFmtDec			BYTE '%d',0
 szFmtDepth			BYTE '%02u',0

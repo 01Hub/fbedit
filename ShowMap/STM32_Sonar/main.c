@@ -212,6 +212,7 @@ void TIM2_IRQHandler(void)
 {
   u32* ADC;
   u8 Echo;
+  u16 Gain;
   /* Clear TIM2 Update interrupt pending bit */
   TIM2->SR = (u16)~TIM_IT_Update;
   /* Get echo */
@@ -236,7 +237,12 @@ void TIM2_IRQHandler(void)
   if (!nSample)
   {
     /* Set the DAC to output next gain step */
-    DAC->DHR12R1 = DAC->DHR12R1 + (u16)STM32_Sonar.GainInc;
+    Gain = (u16)DAC->DHR12R1 + (u16)STM32_Sonar.GainInc;
+    if (Gain > 4095)
+    {
+      Gain = 4095;
+    }
+    DAC->DHR12R1 = Gain;
     nSample = STM32_Sonar.nSample;
     EchoIndex++;
     if (EchoIndex == MAXECHO)
@@ -347,8 +353,10 @@ void RCC_Configuration(void)
     RCC_PCLK1Config(RCC_HCLK_Div1);
     /* ADCCLK = PCLK2/2 */
     RCC_ADCCLKConfig(RCC_PCLK2_Div2);
-    /* PLLCLK = 8MHz * 6 = 48 MHz */
-    RCC_PLLConfig(RCC_PLLSource_HSE_Div1, RCC_PLLMul_6);
+    // /* PLLCLK = 8MHz * 6 = 48 MHz */
+    // RCC_PLLConfig(RCC_PLLSource_HSE_Div1, RCC_PLLMul_6);
+    /* PLLCLK = 8MHz * 7 = 56 MHz */
+    RCC_PLLConfig(RCC_PLLSource_HSE_Div1, RCC_PLLMul_7);
     /* Enable PLL */ 
     RCC_PLLCmd(ENABLE);
     /* Wait till PLL is ready */
@@ -429,9 +437,12 @@ void TIM1_Configuration(void)
 {
   TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructure;
   TIM_OCInitTypeDef  TIM_OCInitStructure;
-  /* Time base configuration */
+  // /* Time base configuration 48MHz clock */
+  // TIM_TimeBaseStructure.TIM_Period = 9;
+  // TIM_TimeBaseStructure.TIM_Prescaler = 23;
+  /* Time base configuration 56MHz clock */
   TIM_TimeBaseStructure.TIM_Period = 9;
-  TIM_TimeBaseStructure.TIM_Prescaler = 23;
+  TIM_TimeBaseStructure.TIM_Prescaler = 27;
   TIM_TimeBaseStructure.TIM_ClockDivision = 0;
   TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
   TIM_TimeBaseStructure.TIM_RepetitionCounter = STM32_Sonar.PingPulses;

@@ -307,7 +307,7 @@ STM32Thread proc uses ebx esi edi,lParam:DWORD
 		.if eax<=3 && ebx>100
 			;Up
 			sub		ebx,pixmov
-		.elseif eax>=5 && ebx<15000
+		.elseif eax>=4 && ebx<15000
 			;Down
 			add		ebx,pixmov
 		.endif
@@ -384,9 +384,24 @@ STM32Thread proc uses ebx esi edi,lParam:DWORD
 	call	FindFish
 	call	TestRangeChange
 	;Get current range index
-	movzx	eax,STM32Echo[MAXYECHO*2]
-	invoke GetRangePtr,eax
-	mov		eax,sonarrange.interval[eax]
+	movzx	ebx,STM32Echo[MAXYECHO*2]
+	invoke GetRangePtr,ebx
+	mov		ebx,eax
+	.if sonardata.AutoGain
+		mov		eax,sonarrange.gain[ebx]
+		mov		sonardata.Gain,al
+		invoke SendDlgItemMessage,hWnd,IDC_TRBGAIN,TBM_SETPOS,TRUE,eax
+		mov		eax,sonarrange.gaininc[ebx]
+		mov		sonardata.GainInc,al
+	.else
+		mov		sonardata.GainInc,0
+	.endif
+	.if sonardata.AutoPing
+		mov		eax,sonarrange.pingpulses[ebx]
+		mov		sonardata.PingPulses,al
+		invoke SendDlgItemMessage,hWnd,IDC_TRBPULSES,TBM_SETPOS,TRUE,eax
+	.endif
+	mov		eax,sonarrange.interval[ebx]
 	invoke Sleep,eax
 	jmp		Again
 
@@ -1006,17 +1021,7 @@ SonarProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke CreateThread,NULL,NULL,addr SonarThreadProc,hWin,0,addr tid
 				invoke CloseHandle,eax
 				mov		eax,sonardata.ChartSpeed
-				.if eax==0
-					mov		eax,800
-				.elseif eax==1
-					mov		eax,400
-				.elseif eax==2
-					mov		eax,200
-				.elseif eax==3
-					mov		eax,100
-				.elseif eax==4
-					mov		eax,50
-				.endif
+				mov		eax,sonarchartspeed[eax*4]
 				invoke SetTimer,hWin,1000,eax,NULL
 			.endif
 		.elseif wParam==1001
