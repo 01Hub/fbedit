@@ -73,9 +73,9 @@ IDC_TRBNOISE			equ 1022
 IDC_STCGAIN				equ 1019
 IDC_TRBGAIN				equ 1018
 IDC_CHKGAIN				equ 1028
-IDC_STCPULSES			equ 1021
-IDC_TRBPULSES			equ 1020
-IDC_CHKPULSES			equ 1029
+IDC_STCPING				equ 1021
+IDC_TRBPING				equ 1020
+IDC_CHKPING				equ 1029
 IDC_STCRANGE			equ 1025
 IDC_TRBRANGE			equ 1024
 IDC_CHKRANGE			equ 1026
@@ -128,6 +128,8 @@ IDM_DIST_EDIT           equ 11012
 IDM_DIST_CLEAR          equ 11010
 IDM_DIST_INSERT         equ 11015
 IDM_DIST_DELETE         equ 11016
+IDM_SONARCLEAR			equ 11018
+IDM_SONARPAUSE			equ 11019
 
 IDR_ACCEL				equ 1
 
@@ -397,6 +399,9 @@ szFmtVolts			BYTE '%02u',0
 szVolts				BYTE 'V',0
 szCelcius			BYTE 'C',0
 watertempconv		QWORD 3.46982758620
+szFmtNoise			BYTE 'Noise: %d',0
+szFmtGain			BYTE 'Gain: %d',0
+szFmtPing			BYTE 'Ping: %d',0
 
 .data?
 
@@ -426,3 +431,4 @@ fSTLink				DWORD ?									;If TRUE STLink connected
 fThread				DWORD ?									;If TRUE sonar thread is running
 sonardata			SONAR <>								;Sonar data
 hSplittV			HCURSOR ?								;Horizontal splitt cursor
+rseed				DWORD ?									;Random seed

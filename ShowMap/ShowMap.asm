@@ -731,7 +731,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke CheckDlgButton,hWin,IDC_CHKGAIN,BST_CHECKED
 		.endif
 		.if sonardata.AutoPing
-			invoke CheckDlgButton,hWin,IDC_CHKPULSES,BST_CHECKED
+			invoke CheckDlgButton,hWin,IDC_CHKPING,BST_CHECKED
 		.endif
 		.if sonardata.FishDetect
 			invoke CheckDlgButton,hWin,IDC_CHKFISHDETECT,BST_CHECKED
@@ -739,15 +739,25 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.if sonardata.FishAlarm
 			invoke CheckDlgButton,hWin,IDC_CHKFISHALARM,BST_CHECKED
 		.endif
+
 		invoke SendDlgItemMessage,hWin,IDC_TRBGAIN,TBM_SETRANGE,FALSE,(255 SHL 16)+0
-		movzx	eax,sonardata.Gain
-		invoke SendDlgItemMessage,hWin,IDC_TRBGAIN,TBM_SETPOS,TRUE,eax
+		movzx	ebx,sonardata.Gain
+		invoke SendDlgItemMessage,hWin,IDC_TRBGAIN,TBM_SETPOS,TRUE,ebx
+		invoke wsprintf,addr buffer,addr szFmtGain,ebx
+		invoke SetDlgItemText,hWin,IDC_STCGAIN,addr buffer
+
 		invoke SendDlgItemMessage,hWin,IDC_TRBNOISE,TBM_SETRANGE,FALSE,(255 SHL 16)+1
-		movzx	eax,sonardata.Noise
-		invoke SendDlgItemMessage,hWin,IDC_TRBNOISE,TBM_SETPOS,TRUE,eax
-		invoke SendDlgItemMessage,hWin,IDC_TRBPULSES,TBM_SETRANGE,FALSE,(255 SHL 16)+0
-		movzx	eax,sonardata.PingPulses
-		invoke SendDlgItemMessage,hWin,IDC_TRBPULSES,TBM_SETPOS,TRUE,eax
+		movzx	ebx,sonardata.Noise
+		invoke SendDlgItemMessage,hWin,IDC_TRBNOISE,TBM_SETPOS,TRUE,ebx
+		invoke wsprintf,addr buffer,addr szFmtNoise,ebx
+		invoke SetDlgItemText,hWin,IDC_STCNOISE,addr buffer
+
+		invoke SendDlgItemMessage,hWin,IDC_TRBPING,TBM_SETRANGE,FALSE,(255 SHL 16)+0
+		movzx	ebx,sonardata.PingPulses
+		invoke SendDlgItemMessage,hWin,IDC_TRBPING,TBM_SETPOS,TRUE,ebx
+		invoke wsprintf,addr buffer,addr szFmtPing,ebx
+		invoke SetDlgItemText,hWin,IDC_STCPING,addr buffer
+
 		invoke SendDlgItemMessage,hWin,IDC_TRBRANGE,TBM_SETRANGE,FALSE,((MAXRANGE-1) SHL 16)+0
 		movzx	eax,sonardata.RangeInx
 		invoke SendDlgItemMessage,hWin,IDC_TRBRANGE,TBM_SETPOS,TRUE,eax
@@ -762,10 +772,17 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke GetDlgCtrlID,lParam
 		.if eax==IDC_TRBGAIN
 			mov		sonardata.Gain,bl
+			invoke wsprintf,addr buffer,addr szFmtGain,ebx
+			invoke SetDlgItemText,hWin,IDC_STCGAIN,addr buffer
 		.elseif eax==IDC_TRBNOISE
 			mov		sonardata.Noise,bl
-		.elseif eax==IDC_TRBPULSES
+			invoke wsprintf,addr buffer,addr szFmtNoise,ebx
+			invoke SetDlgItemText,hWin,IDC_STCNOISE,addr buffer
+		.elseif eax==IDC_TRBPING
 			mov		sonardata.PingPulses,bl
+			inc		ebx
+			invoke wsprintf,addr buffer,addr szFmtPing,ebx
+			invoke SetDlgItemText,hWin,IDC_STCPING,addr buffer
 		.elseif eax==IDC_TRBCHART
 			mov		sonardata.ChartSpeed,ebx
 		.endif
@@ -1039,6 +1056,25 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke InsertPoint,map.onpoint,addr map.dist,addr map.disthead
 			.elseif eax==IDM_DIST_DELETE
 				invoke DeletePoint,map.onpoint,addr map.dist,addr map.disthead
+			.elseif eax==IDM_SONARCLEAR
+				invoke RtlZeroMemory,addr sonardata.sonar,MAXXECHO*MAXYECHO
+				mov		rect.left,0
+				mov		rect.top,0
+				mov		rect.right,MAXXECHO
+				mov		rect.bottom,MAXYECHO
+				invoke CreateSolidBrush,SONARBACKCOLOR
+				push	eax
+				invoke FillRect,sonardata.mDC,addr rect,eax
+				pop		eax
+				invoke DeleteObject,eax
+			.elseif eax==IDM_SONARPAUSE
+				invoke IsDlgButtonChecked,hWin,IDC_CHKCHART
+				.if eax
+					mov		eax,BST_UNCHECKED
+				.else
+					mov		eax,BST_CHECKED
+				.endif
+				invoke CheckDlgButton,hWin,IDC_CHKCHART,eax
 ;Buttons
 			.elseif eax==IDC_BTNZOOMIN
 				mov		eax,map.zoominx
@@ -1078,7 +1114,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				xor		sonardata.AutoRange,TRUE
 			.elseif eax==IDC_CHKGAIN
 				xor		sonardata.AutoGain,TRUE
-			.elseif eax==IDC_CHKPULSES
+			.elseif eax==IDC_CHKPING
 				xor		sonardata.AutoPing,TRUE
 			.elseif eax==IDC_CHKFISHDETECT
 				xor		sonardata.FishDetect,TRUE
@@ -1216,13 +1252,13 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke GetDlgItem,hWin,IDC_CHKGAIN
 		invoke MoveWindow,eax,rect.right,rect.top,80,16,TRUE
 		add		rect.top,17
-		invoke GetDlgItem,hWin,IDC_STCPULSES
+		invoke GetDlgItem,hWin,IDC_STCPING
 		invoke MoveWindow,eax,rect.right,rect.top,80,16,TRUE
 		add		rect.top,17
-		invoke GetDlgItem,hWin,IDC_TRBPULSES
+		invoke GetDlgItem,hWin,IDC_TRBPING
 		invoke MoveWindow,eax,rect.right,rect.top,80,20,TRUE
 		add		rect.top,25
-		invoke GetDlgItem,hWin,IDC_CHKPULSES
+		invoke GetDlgItem,hWin,IDC_CHKPING
 		invoke MoveWindow,eax,rect.right,rect.top,80,16,TRUE
 		add		rect.top,17
 		invoke GetDlgItem,hWin,IDC_STCRANGE

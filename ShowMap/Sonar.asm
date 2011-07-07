@@ -1,12 +1,4 @@
 
-.data?
-
-pixcnt				DWORD ?
-pixdir				DWORD ?
-pixmov				DWORD ?
-pixdpt				DWORD ?
-rseed				DWORD ?
-
 .code
 
 Random proc uses ecx edx,range:DWORD
@@ -92,7 +84,7 @@ GetRangePtr proc uses edx,RangeInx:DWORD
 
 GetRangePtr endp
 
-SetRange proc uses ebx esi edi,RangeInx:DWORD
+SetRange proc uses ebx,RangeInx:DWORD
 
 	mov		eax,RangeInx
 	mov		sonardata.RangeInx,al
@@ -172,7 +164,7 @@ UpdateBitmapTile proc uses ebx esi edi,x:DWORD,wt:DWORD,NewRange:DWORD
 
 UpdateBitmapTile endp
 
-UpdateBitmap proc uses ebx esi edi,NewRange:DWORD
+UpdateBitmap proc uses ebx esi,NewRange:DWORD
 	LOCAL	rect:RECT
 
 	mov		rect.left,0
@@ -213,13 +205,18 @@ STM32Thread proc uses ebx esi edi,lParam:DWORD
 	LOCAL	dwwrite:DWORD
 	LOCAL	buffer[16]:BYTE
 	LOCAL	fFishSound:DWORD
+	LOCAL	pixcnt:DWORD
+	LOCAL	pixdir:DWORD
+	LOCAL	pixmov:DWORD
+	LOCAL	pixdpt:DWORD
 
+	mov		pixcnt,0
+	mov		pixdir,0
+	mov		pixmov,0
+	mov		pixdpt,250
   Again:
 	.if sonardata.hReply
-		lea		edi,STM32Echo
-		lea		esi,STM32Echo[MAXYECHO]
-		mov		ecx,MAXYECHO*2/4
-		rep movsd
+		call	ScrollArray
 		invoke ReadFile,sonardata.hReply,addr STM32Echo[MAXYECHO*2],MAXYECHO,addr dwread,NULL
 		.if dwread!=MAXYECHO
 			invoke CloseHandle,sonardata.hReply
@@ -238,10 +235,7 @@ STM32Thread proc uses ebx esi edi,lParam:DWORD
 			.if !eax
 				jmp		STLinkErr
 			.endif
-			lea		edi,STM32Echo
-			lea		esi,STM32Echo[MAXYECHO]
-			mov		ecx,MAXYECHO*2/4
-			rep movsd
+			call	ScrollArray
 			;Download sonar echo array
 			invoke STLinkRead,hWnd,STM32_Sonar+16,addr STM32Echo[MAXYECHO*2],MAXYECHO
 			.if !eax
@@ -265,10 +259,7 @@ STM32Thread proc uses ebx esi edi,lParam:DWORD
 			jmp		Again
 		.endif
 	.elseif fSTLink==IDIGNORE
-		lea		edi,STM32Echo
-		lea		esi,STM32Echo[MAXYECHO]
-		mov		ecx,MAXYECHO*2/4
-		rep movsd
+		call	ScrollArray
 		invoke RtlZeroMemory,addr STM32Echo[MAXYECHO*2],MAXYECHO
 		mov		al,sonardata.RangeInx
 		mov		STM32Echo[MAXYECHO*2],al
@@ -324,7 +315,7 @@ STM32Thread proc uses ebx esi edi,lParam:DWORD
 			;Random echo
 			invoke Random,200
 			.if ebx<MAXYECHO
-				add		eax,55
+				add		eax,50
 				mov		STM32Echo[ebx+MAXYECHO*2],al
 			.endif
 			inc		ebx
@@ -349,8 +340,13 @@ STM32Thread proc uses ebx esi edi,lParam:DWORD
 	;Get current range index
 	mov		al,STM32Echo[MAXYECHO*2]
 	.if al!=STM32Echo[MAXYECHO*1]
-		invoke RtlMoveMemory,addr STM32Echo,addr STM32Echo[MAXYECHO*2],MAXYECHO
-		invoke RtlMoveMemory,addr STM32Echo[MAXYECHO],addr STM32Echo[MAXYECHO*2],MAXYECHO
+		lea		edi,STM32Echo
+		lea		esi,STM32Echo[MAXYECHO*2]
+		mov		ecx,MAXYECHO/4
+		rep movsd
+		lea		esi,STM32Echo[MAXYECHO*2]
+		mov		ecx,MAXYECHO/4
+		rep movsd
   	.endif
 	;Store the average of the 3 last readings
 	xor		ebx,ebx
@@ -379,13 +375,16 @@ STM32Thread proc uses ebx esi edi,lParam:DWORD
 		invoke SendDlgItemMessage,hWnd,IDC_TRBGAIN,TBM_SETPOS,TRUE,eax
 		mov		eax,sonarrange.gaininc[ebx]
 		mov		sonardata.GainInc,al
+		movzx	eax,sonardata.Gain
+		invoke wsprintf,addr buffer,addr szFmtGain,eax
+		invoke SetDlgItemText,hWnd,IDC_STCGAIN,addr buffer
 	.else
 		mov		sonardata.GainInc,0
 	.endif
 	.if sonardata.AutoPing
 		mov		eax,sonarrange.pingpulses[ebx]
 		mov		sonardata.PingPulses,al
-		invoke SendDlgItemMessage,hWnd,IDC_TRBPULSES,TBM_SETPOS,TRUE,eax
+		invoke SendDlgItemMessage,hWnd,IDC_TRBPING,TBM_SETPOS,TRUE,eax
 	.endif
 	mov		eax,sonarrange.interval[ebx]
 	invoke Sleep,eax
@@ -394,6 +393,13 @@ STM32Thread proc uses ebx esi edi,lParam:DWORD
 STLinkErr:
 	xor		eax,eax
 	ret
+
+ScrollArray:
+	lea		edi,STM32Echo
+	lea		esi,STM32Echo[MAXYECHO]
+	mov		ecx,MAXYECHO*2/4
+	rep movsd
+	retn
 
 FindDepth:
 	mov		sonardata.dptinx,0
@@ -651,7 +657,7 @@ Setup:
 	mov		sonardata.Gain,al
 	invoke SendDlgItemMessage,hWnd,IDC_TRBNOISE,TBM_GETPOS,0,0
 	mov		sonardata.Noise,al
-	invoke SendDlgItemMessage,hWnd,IDC_TRBPULSES,TBM_GETPOS,0,0
+	invoke SendDlgItemMessage,hWnd,IDC_TRBPING,TBM_GETPOS,0,0
 	mov		sonardata.PingPulses,al
 	retn
 
@@ -964,6 +970,7 @@ SonarProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	hDC:HDC
 	LOCAL	mDC:HDC
 	LOCAL	hBmp:HBITMAP
+	LOCAL	pt:POINT
 
 	mov		eax,uMsg
 	.if eax==WM_CREATE
@@ -987,7 +994,6 @@ SonarProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		pop		eax
 		invoke DeleteObject,eax
 		invoke ReleaseDC,hWin,hDC
-		mov		pixdpt,250
 		invoke SetTimer,hWin,1000,800,NULL
 		invoke SetTimer,hWin,1001,1000,NULL
 	.elseif eax==WM_TIMER
@@ -1020,6 +1026,19 @@ SonarProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.if sonardata.ShowDepth<2
 				invoke InvalidateRect,hSonar,NULL,TRUE
 			.endif
+		.endif
+	.elseif eax==WM_CONTEXTMENU
+		mov		eax,lParam
+		.if eax!=-1
+			movsx	edx,ax
+			mov		mousept.x,edx
+			mov		pt.x,edx
+			shr		eax,16
+			movsx	edx,ax
+			mov		mousept.y,edx
+			mov		pt.y,edx
+			invoke GetSubMenu,hContext,5
+			invoke TrackPopupMenu,eax,TPM_LEFTALIGN or TPM_RIGHTBUTTON,mousept.x,mousept.y,0,hWnd,0
 		.endif
 	.elseif eax==WM_DESTROY
 		.if fSTLink && fSTLink!=IDIGNORE
