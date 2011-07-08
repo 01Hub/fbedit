@@ -763,7 +763,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SendDlgItemMessage,hWin,IDC_TRBRANGE,TBM_SETPOS,TRUE,eax
 		movzx	eax,sonardata.RangeInx
 		invoke SetRange,eax
-		invoke SendDlgItemMessage,hWin,IDC_TRBCHART,TBM_SETRANGE,FALSE,(4 SHL 16)+0
+		invoke SendDlgItemMessage,hWin,IDC_TRBCHART,TBM_SETRANGE,FALSE,(100 SHL 16)+1
 		mov		eax,sonardata.ChartSpeed
 		invoke SendDlgItemMessage,hWin,IDC_TRBCHART,TBM_SETPOS,TRUE,eax
 	.elseif eax==WM_HSCROLL

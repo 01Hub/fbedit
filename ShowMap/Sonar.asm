@@ -722,6 +722,7 @@ ShowFish:
 				div		ecx
 				mov		ecx,eax
 				mov		edx,rcsonar.right
+				sub		edx,20
 				sub		edx,MAXXECHO
 				invoke ImageList_Draw,hIml,18,hDC,addr [esi+edx-8],addr [ecx-8],ILD_TRANSPARENT
 			.endif
@@ -824,87 +825,83 @@ ShowOption:
 	invoke SelectObject,hDC,eax
 	retn
 
+DrawScaleBar:
+	mov		ebx,rect.right
+	sub		ebx,rect.left
+	shr		ebx,1
+	add		ebx,rect.left
+	invoke MoveToEx,hDC,ebx,rect.top,NULL
+	invoke LineTo,hDC,ebx,rect.bottom
+	invoke MoveToEx,hDC,rect.left,rect.top,NULL
+	invoke LineTo,hDC,rect.right,rect.top
+	mov		ebx,rect.bottom
+	sub		ebx,rect.top
+	shr		ebx,1
+	add		ebx,rect.top
+	invoke MoveToEx,hDC,rect.left,ebx,NULL
+	invoke LineTo,hDC,rect.right,ebx
+	invoke MoveToEx,hDC,rect.left,rect.bottom,NULL
+	invoke LineTo,hDC,rect.right,rect.bottom
+	retn
+
+DrawScaleText:
+	push	rect.top
+	add		rect.top,2
+	invoke DrawText,hDC,addr buffer,1,addr rect,DT_CENTER or DT_TOP or DT_SINGLELINE
+	mov		eax,rect.bottom
+	sub		eax,rect.top
+	shr		eax,1
+	sub		eax,20
+	add		rect.top,eax
+	invoke DrawText,hDC,addr buffer[8],-1,addr rect,DT_CENTER or DT_TOP or DT_SINGLELINE
+	mov		eax,rect.bottom
+	sub		eax,16
+	mov		rect.top,eax
+	invoke DrawText,hDC,addr buffer[16],-1,addr rect,DT_CENTER or DT_TOP or DT_SINGLELINE
+	pop		rect.top
+	retn
+
 ShowScale:
-	invoke GetStockObject,WHITE_PEN
+	invoke CopyRect,addr rect,addr rcsonar
+	mov		eax,rect.right
+	sub		eax,10
+	mov		rect.right,eax
+	sub		eax,14
+	mov		rect.left,eax
+	mov		rect.top,6
+	sub		rect.bottom,5
+	invoke CreatePen,PS_SOLID,5,0FFFFFFh
 	invoke SelectObject,hDC,eax
 	push	eax
-	invoke SetTextColor,hDC,0FFFFFFh
-
-	invoke MoveToEx,hDC,1,5,NULL
-	invoke LineTo,hDC,9,5
-	mov		word ptr buffer,'0'
-	invoke TextOut,hDC,11,-1,addr buffer,1
-	invoke MoveToEx,hDC,5,5,NULL
-	mov		ebx,rect.bottom
-	sub		ebx,13
-	invoke LineTo,hDC,5,ebx
-	invoke MoveToEx,hDC,1,ebx,NULL
-	invoke LineTo,hDC,9,ebx
-	mov		edi,sonardata.RangeVal
-	invoke wsprintf,addr buffer,addr szFmtDec,edi
-	invoke lstrlen,addr buffer
-	invoke TextOut,hDC,11,addr [ebx-9],addr buffer,eax
-	inc		ebx
-	shr		ebx,1
-	dec		ebx
-	invoke MoveToEx,hDC,1,ebx,NULL
-	invoke LineTo,hDC,9,ebx
-	shr		edi,1
-	invoke wsprintf,addr buffer,addr szFmtDec,edi
-	invoke lstrlen,addr buffer
-	invoke TextOut,hDC,11,addr [ebx-9],addr buffer,eax
-
-	invoke MoveToEx,hDC,3,7,NULL
-	invoke LineTo,hDC,11,7
-	mov		word ptr buffer,'0'
-	invoke TextOut,hDC,13,1,addr buffer,1
-	invoke MoveToEx,hDC,7,7,NULL
-	mov		ebx,rect.bottom
-	sub		ebx,11
-	invoke LineTo,hDC,7,ebx
-	invoke MoveToEx,hDC,3,ebx,NULL
-	invoke LineTo,hDC,11,ebx
-	mov		edi,sonardata.RangeVal
-	invoke wsprintf,addr buffer,addr szFmtDec,edi
-	invoke lstrlen,addr buffer
-	invoke TextOut,hDC,13,addr [ebx-11],addr buffer,eax
-	dec		ebx
-	shr		ebx,1
-	inc		ebx
-	invoke MoveToEx,hDC,3,ebx,NULL
-	invoke LineTo,hDC,11,ebx
-	shr		edi,1
-	invoke wsprintf,addr buffer,addr szFmtDec,edi
-	invoke lstrlen,addr buffer
-	invoke TextOut,hDC,13,addr [ebx-11],addr buffer,eax
-
+	call	DrawScaleBar
 	pop		eax
 	invoke SelectObject,hDC,eax
+	invoke DeleteObject,eax
 	invoke GetStockObject,BLACK_PEN
 	invoke SelectObject,hDC,eax
 	push	eax
-	invoke SetTextColor,hDC,0
-	invoke MoveToEx,hDC,2,6,NULL
-	invoke LineTo,hDC,10,6
+	call	DrawScaleBar
+	sub		rect.left,5
+	add		rect.right,5
 	mov		word ptr buffer,'0'
-	invoke TextOut,hDC,12,0,addr buffer,1
-	invoke MoveToEx,hDC,6,6,NULL
-	mov		ebx,rect.bottom
-	sub		ebx,12
-	invoke LineTo,hDC,6,ebx
-	invoke MoveToEx,hDC,2,ebx,NULL
-	invoke LineTo,hDC,10,ebx
 	mov		edi,sonardata.RangeVal
-	invoke wsprintf,addr buffer,addr szFmtDec,edi
-	invoke lstrlen,addr buffer
-	invoke TextOut,hDC,12,addr [ebx-10],addr buffer,eax
-	shr		ebx,1
-	invoke MoveToEx,hDC,2,ebx,NULL
-	invoke LineTo,hDC,10,ebx
+	invoke wsprintf,addr buffer[16],addr szFmtDec,edi
 	shr		edi,1
-	invoke wsprintf,addr buffer,addr szFmtDec,edi
-	invoke lstrlen,addr buffer
-	invoke TextOut,hDC,12,addr [ebx-10],addr buffer,eax
+	invoke wsprintf,addr buffer[8],addr szFmtDec,edi
+	invoke SetTextColor,hDC,0FFFFFFh
+	sub		rect.left,2
+	sub		rect.top,2
+	call	DrawScaleText
+	add		rect.left,4
+	call	DrawScaleText
+	add		rect.top,4
+	call	DrawScaleText
+	sub		rect.left,4
+	call	DrawScaleText
+	invoke SetTextColor,hDC,0
+	add		rect.left,2
+	sub		rect.top,2
+	call	DrawScaleText
 	pop		eax
 	invoke SelectObject,hDC,eax
 	retn
@@ -1017,8 +1014,10 @@ SonarProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		fThread,TRUE
 				invoke CreateThread,NULL,NULL,addr SonarThreadProc,hWin,0,addr tid
 				invoke CloseHandle,eax
-				mov		eax,sonardata.ChartSpeed
-				mov		eax,sonarchartspeed[eax*4]
+				mov		eax,350
+				sub		eax,sonardata.ChartSpeed
+				sub		eax,sonardata.ChartSpeed
+				sub		eax,sonardata.ChartSpeed
 				invoke SetTimer,hWin,1000,eax,NULL
 			.endif
 		.elseif wParam==1001
@@ -1061,15 +1060,17 @@ SonarProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke FillRect,mDC,addr rect,eax
 		pop		eax
 		invoke DeleteObject,eax
+		sub		rect.right,20
+		sub		rect.bottom,12
 		mov		ecx,MAXXECHO
 		sub		ecx,rect.right
 		mov		eax,sonardata.RangeVal
 		mov		edx,10
 		mul		edx
-		sub		rect.bottom,12
 		invoke StretchBlt,mDC,0,6,rect.right,rect.bottom,sonardata.mDC,ecx,0,rect.right,MAXYECHO,SRCCOPY
 		invoke ShowRangeDepthTempScaleFish,mDC
 		add		rect.bottom,12
+		add		rect.right,20
 		invoke BitBlt,ps.hdc,0,0,rect.right,rect.bottom,mDC,0,0,SRCCOPY
 		pop		eax
 		invoke SelectObject,mDC,eax
