@@ -124,3 +124,4 @@ f = -------------
 http://www.qrp.pops.net/Cascode_BJT.asp
 http://users.belgacom.net/hamradio/schemas/generalcoveragereceiver.htm
 http://electronickits.com/kit/complete/radi/amfm-108k.pdf
+1350 xbxy
