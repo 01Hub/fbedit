@@ -724,68 +724,8 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke LoadCursor,hInstance,101
 		mov		hSplittV,eax
 		invoke LoadSonarFromIni
-		.if sonardata.AutoRange
-			invoke CheckDlgButton,hWin,IDC_CHKRANGE,BST_CHECKED
-		.endif
-		.if sonardata.AutoGain
-			invoke CheckDlgButton,hWin,IDC_CHKGAIN,BST_CHECKED
-		.endif
-		.if sonardata.AutoPing
-			invoke CheckDlgButton,hWin,IDC_CHKPING,BST_CHECKED
-		.endif
-		.if sonardata.FishDetect
-			invoke CheckDlgButton,hWin,IDC_CHKFISHDETECT,BST_CHECKED
-		.endif
-		.if sonardata.FishAlarm
-			invoke CheckDlgButton,hWin,IDC_CHKFISHALARM,BST_CHECKED
-		.endif
-
-		invoke SendDlgItemMessage,hWin,IDC_TRBGAIN,TBM_SETRANGE,FALSE,(255 SHL 16)+0
-		movzx	ebx,sonardata.Gain
-		invoke SendDlgItemMessage,hWin,IDC_TRBGAIN,TBM_SETPOS,TRUE,ebx
-		invoke wsprintf,addr buffer,addr szFmtGain,ebx
-		invoke SetDlgItemText,hWin,IDC_STCGAIN,addr buffer
-
-		invoke SendDlgItemMessage,hWin,IDC_TRBNOISE,TBM_SETRANGE,FALSE,(255 SHL 16)+1
-		movzx	ebx,sonardata.Noise
-		invoke SendDlgItemMessage,hWin,IDC_TRBNOISE,TBM_SETPOS,TRUE,ebx
-		invoke wsprintf,addr buffer,addr szFmtNoise,ebx
-		invoke SetDlgItemText,hWin,IDC_STCNOISE,addr buffer
-
-		invoke SendDlgItemMessage,hWin,IDC_TRBPING,TBM_SETRANGE,FALSE,(255 SHL 16)+0
-		movzx	ebx,sonardata.PingPulses
-		invoke SendDlgItemMessage,hWin,IDC_TRBPING,TBM_SETPOS,TRUE,ebx
-		invoke wsprintf,addr buffer,addr szFmtPing,ebx
-		invoke SetDlgItemText,hWin,IDC_STCPING,addr buffer
-
-		invoke SendDlgItemMessage,hWin,IDC_TRBRANGE,TBM_SETRANGE,FALSE,((MAXRANGE-1) SHL 16)+0
-		movzx	eax,sonardata.RangeInx
-		invoke SendDlgItemMessage,hWin,IDC_TRBRANGE,TBM_SETPOS,TRUE,eax
 		movzx	eax,sonardata.RangeInx
 		invoke SetRange,eax
-		invoke SendDlgItemMessage,hWin,IDC_TRBCHART,TBM_SETRANGE,FALSE,(100 SHL 16)+1
-		mov		eax,sonardata.ChartSpeed
-		invoke SendDlgItemMessage,hWin,IDC_TRBCHART,TBM_SETPOS,TRUE,eax
-	.elseif eax==WM_HSCROLL
-		invoke SendMessage,lParam,TBM_GETPOS,0,0
-		mov		ebx,eax
-		invoke GetDlgCtrlID,lParam
-		.if eax==IDC_TRBGAIN
-			mov		sonardata.Gain,bl
-			invoke wsprintf,addr buffer,addr szFmtGain,ebx
-			invoke SetDlgItemText,hWin,IDC_STCGAIN,addr buffer
-		.elseif eax==IDC_TRBNOISE
-			mov		sonardata.Noise,bl
-			invoke wsprintf,addr buffer,addr szFmtNoise,ebx
-			invoke SetDlgItemText,hWin,IDC_STCNOISE,addr buffer
-		.elseif eax==IDC_TRBPING
-			mov		sonardata.PingPulses,bl
-			inc		ebx
-			invoke wsprintf,addr buffer,addr szFmtPing,ebx
-			invoke SetDlgItemText,hWin,IDC_STCPING,addr buffer
-		.elseif eax==IDC_TRBCHART
-			mov		sonardata.ChartSpeed,ebx
-		.endif
 	.elseif eax==WM_COMMAND
 		mov		edx,wParam
 		movzx	eax,dx
@@ -963,6 +903,8 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke DialogBoxParam,hInstance,IDD_DLGOPTION,hWin,addr OptionsProc,12
 			.elseif eax==IDM_OPTION_COMPORT
 				invoke DialogBoxParam,hInstance,IDD_DLGCOMPORT,hWin,addr ComOptionProc,0
+			.elseif eax==IDM_SONAR
+				invoke DialogBoxParam,hInstance,IDD_DLGSONAR,hWin,addr SonarOptionProc,0
 ;Context
 			.elseif eax==IDM_EDITPLACE
 				invoke DialogBoxParam,hInstance,IDD_DLGADDPLACE,hWin,addr AddPlaceProc,nPlace
@@ -1110,16 +1052,6 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke IsDlgButtonChecked,hWin,IDC_CHKGRID
 				mov		map.mapgrid,eax
 				inc		map.paintnow
-			.elseif eax==IDC_CHKRANGE
-				xor		sonardata.AutoRange,TRUE
-			.elseif eax==IDC_CHKGAIN
-				xor		sonardata.AutoGain,TRUE
-			.elseif eax==IDC_CHKPING
-				xor		sonardata.AutoPing,TRUE
-			.elseif eax==IDC_CHKFISHDETECT
-				xor		sonardata.FishDetect,TRUE
-			.elseif eax==IDC_CHKFISHALARM
-				xor		sonardata.FishAlarm,TRUE
 			.elseif eax==IDC_CBOGOTO
 				invoke SendDlgItemMessage,hWin,IDC_CBOGOTO,CB_GETCURSEL,0,0
 				invoke SendDlgItemMessage,hWin,IDC_CBOGOTO,CB_GETITEMDATA,eax,0
@@ -1236,52 +1168,6 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke GetDlgItem,hWin,IDC_EDTBEAR
 		invoke MoveWindow,eax,rect.right,rect.top,80,16,TRUE
 		add		rect.top,17
-;Sonar
-		invoke GetDlgItem,hWin,IDC_STCNOISE
-		invoke MoveWindow,eax,rect.right,rect.top,80,16,TRUE
-		add		rect.top,17
-		invoke GetDlgItem,hWin,IDC_TRBNOISE
-		invoke MoveWindow,eax,rect.right,rect.top,80,20,TRUE
-		add		rect.top,25
-		invoke GetDlgItem,hWin,IDC_STCGAIN
-		invoke MoveWindow,eax,rect.right,rect.top,80,16,TRUE
-		add		rect.top,17
-		invoke GetDlgItem,hWin,IDC_TRBGAIN
-		invoke MoveWindow,eax,rect.right,rect.top,80,20,TRUE
-		add		rect.top,25
-		invoke GetDlgItem,hWin,IDC_CHKGAIN
-		invoke MoveWindow,eax,rect.right,rect.top,80,16,TRUE
-		add		rect.top,17
-		invoke GetDlgItem,hWin,IDC_STCPING
-		invoke MoveWindow,eax,rect.right,rect.top,80,16,TRUE
-		add		rect.top,17
-		invoke GetDlgItem,hWin,IDC_TRBPING
-		invoke MoveWindow,eax,rect.right,rect.top,80,20,TRUE
-		add		rect.top,25
-		invoke GetDlgItem,hWin,IDC_CHKPING
-		invoke MoveWindow,eax,rect.right,rect.top,80,16,TRUE
-		add		rect.top,17
-		invoke GetDlgItem,hWin,IDC_STCRANGE
-		invoke MoveWindow,eax,rect.right,rect.top,80,16,TRUE
-		add		rect.top,17
-		invoke GetDlgItem,hWin,IDC_TRBRANGE
-		invoke MoveWindow,eax,rect.right,rect.top,80,20,TRUE
-		add		rect.top,25
-		invoke GetDlgItem,hWin,IDC_CHKRANGE
-		invoke MoveWindow,eax,rect.right,rect.top,80,16,TRUE
-		add		rect.top,17
-		invoke GetDlgItem,hWin,IDC_CHKFISHDETECT
-		invoke MoveWindow,eax,rect.right,rect.top,80,16,TRUE
-		add		rect.top,17
-		invoke GetDlgItem,hWin,IDC_CHKFISHALARM
-		invoke MoveWindow,eax,rect.right,rect.top,80,16,TRUE
-		add		rect.top,17
-		invoke GetDlgItem,hWin,IDC_STCCHART
-		invoke MoveWindow,eax,rect.right,rect.top,80,16,TRUE
-		add		rect.top,17
-		invoke GetDlgItem,hWin,IDC_TRBCHART
-		invoke MoveWindow,eax,rect.right,rect.top,80,20,TRUE
-		add		rect.top,25
 		invoke GetDlgItem,hWin,IDC_CHKCHART
 		invoke MoveWindow,eax,rect.right,rect.top,80,16,TRUE
 		add		rect.top,17

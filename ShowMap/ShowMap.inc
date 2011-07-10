@@ -67,22 +67,6 @@ IDC_CBOFONT             equ 1104
 IDC_CBOICON             equ 1105
 IDC_BTNGPS              equ 1106
 IDC_TRBZOOM             equ 1107
-
-IDC_STCNOISE			equ 1023
-IDC_TRBNOISE			equ 1022
-IDC_STCGAIN				equ 1019
-IDC_TRBGAIN				equ 1018
-IDC_CHKGAIN				equ 1028
-IDC_STCPING				equ 1021
-IDC_TRBPING				equ 1020
-IDC_CHKPING				equ 1029
-IDC_STCRANGE			equ 1025
-IDC_TRBRANGE			equ 1024
-IDC_CHKRANGE			equ 1026
-IDC_CHKFISHDETECT		equ 1027
-IDC_CHKFISHALARM		equ 1030
-IDC_STCCHART			equ 1032
-IDC_TRBCHART			equ 1031
 IDC_CHKCHART			equ 1033
 
 IDM_MENU                equ 10000
@@ -102,6 +86,7 @@ IDM_OPTION_RANGE		equ 10020
 IDM_OPTIO_DEPTH			equ 10019
 IDM_OPTION_WATERTEMP	equ 10021
 IDM_OPTION_COMPORT      equ 10008
+IDM_SONAR				equ 10025
 IDM_LOG_START           equ 10005
 IDM_LOG_END             equ 10006
 IDM_LOG_REPLAY          equ 10007
@@ -432,3 +417,4 @@ fThread				DWORD ?									;If TRUE sonar thread is running
 sonardata			SONAR <>								;Sonar data
 hSplittV			HCURSOR ?								;Horizontal splitt cursor
 rseed				DWORD ?									;Random seed
+fFishSound			DWORD ?
