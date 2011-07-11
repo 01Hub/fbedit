@@ -1184,8 +1184,8 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			sub		eax,ecx
 			.if sdword ptr eax<100
 				mov		eax,100
-			.elseif sdword ptr eax>MAXXECHO
-				mov		eax,MAXXECHO
+			.elseif sdword ptr eax>MAXXECHO+24
+				mov		eax,MAXXECHO+24
 			.endif
 			.if eax!=sonardata.wt
 				mov		sonardata.wt,eax
@@ -1283,6 +1283,8 @@ WinMain proc hInst:HINSTANCE,hPrevInst:HINSTANCE,CmdLine:LPSTR,CmdShow:DWORD
 	invoke ShowWindow,hWnd,SW_SHOWNORMAL
 	invoke UpdateWindow,hWnd
 	invoke InitCom
+	invoke GetCurrentProcess
+	invoke SetPriorityClass,eax,REALTIME_PRIORITY_CLASS
 	;Create thread thst comunicates with the GPS
 	invoke CreateThread,NULL,0,addr DoComm,0,0,addr tid
 	mov		hGpsThread,eax

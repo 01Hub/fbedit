@@ -282,10 +282,12 @@ SONAR struct
 	ShowDepth		DWORD ?
 	Battery			DWORD ?
 	WTemp			DWORD ?
+	PingInit		DWORD ?									;Ping initial value (0 to 255)
+	GainInit		DWORD ?									;Gain initial level (0 to 255)
 	Start			BYTE ?									;Set to 1 to init a new echo reading
-	PingPulses		BYTE ?									;Number of pulses in a ping ((0 to 63)+1)
+	Ping			BYTE ?									;Number of pulses in a ping ((0 to 255)+1)
 	Noise			BYTE ?									;Noise reject level (0 to 255)
-	Gain			BYTE ?									;Gain level (0 to 127)
+	Gain			BYTE ?									;Gain level (0 to 255)
 	GainInc			BYTE ?									;Gain level increment
 	RangeInx		BYTE ?									;Range (0 to 13)
 	nSample			BYTE ?									;Number of echo readings to sample. If more than one the largest is stored.
@@ -305,8 +307,8 @@ RANGE struct
 	range			DWORD ?									;Range in meters
 	interval		DWORD ?									;Update rate
 	nsample			DWORD ?									;Number of echo readings to sample. If more than one the largest is stored.
-	pingpulses		DWORD ?									;Number of pulses in a ping ((0 to 63)+1). Used when autoping is on
-	gain			DWORD ?									;Gain level (0 to 127). Used when auto gain is on
+	pingadd			DWORD ?									;Number of pulses in a ping ((0 to 63)+1). Used when autoping is on
+	gainadd			DWORD ?									;Gain level to add (0 to 255) to GainInit. Used when auto gain is on
 	gaininc			DWORD ?									;Gain increment for each pixel. Used when auto gain is on
 RANGE ends
 
