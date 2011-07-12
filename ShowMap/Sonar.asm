@@ -66,8 +66,7 @@ SonarOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:L
 			invoke CheckDlgButton,hWin,IDC_CHKSONARPING,BST_CHECKED
 		.endif
 		invoke SendDlgItemMessage,hWin,IDC_TRBSONARPING,TBM_SETRANGE,FALSE,(255 SHL 16)+0
-		mov		eax,sonardata.PingInit
-		invoke SendDlgItemMessage,hWin,IDC_TRBSONARPING,TBM_SETPOS,TRUE,eax
+		invoke SendDlgItemMessage,hWin,IDC_TRBSONARPING,TBM_SETPOS,TRUE,sonardata.PingInit
 		invoke SendDlgItemMessage,hWin,IDC_TRBSONARNOISE,TBM_SETRANGE,FALSE,(255 SHL 16)+1
 		movzx	eax,sonardata.Noise
 		invoke SendDlgItemMessage,hWin,IDC_TRBSONARNOISE,TBM_SETPOS,TRUE,eax
@@ -162,7 +161,7 @@ SonarOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:L
 		mov		ebx,eax
 		invoke GetDlgCtrlID,lParam
 		.if eax==IDC_TRBSONARGAIN
-			mov		sonardata.Gain,bl
+			mov		sonardata.GainInit,ebx
 		.elseif eax==IDC_TRBSONARRANGE
 			mov		sonardata.RangeInx,bl
 			invoke SetRange,ebx
@@ -1163,9 +1162,7 @@ SonarProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					invoke STLinkReset,hWnd
 				.endif
 				invoke CreateThread,NULL,NULL,addr STM32Thread,hWin,0,addr tid
-				mov		ebx,eax
-  				invoke SetThreadPriority,ebx,THREAD_PRIORITY_TIME_CRITICAL
-				invoke CloseHandle,ebx
+				invoke CloseHandle,eax
 			.endif
 			.if fSTLink && !fThread
 				invoke KillTimer,hWin,1000
