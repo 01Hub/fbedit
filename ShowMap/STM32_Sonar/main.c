@@ -223,11 +223,11 @@ void TIM2_IRQHandler(void)
   {
     Echo = 253;
   }
-  /* Cancel noise */
-  if (Echo < STM32_Sonar.Noise)
-  {
-    Echo = 0;
-  }
+  // /* Cancel noise */
+  // if (Echo < STM32_Sonar.Noise)
+  // {
+    // Echo = 0;
+  // }
   /* If echo larger than previous echo, update the echo array */
   if (Echo > STM32_Sonar.Echo[EchoIndex])
   {

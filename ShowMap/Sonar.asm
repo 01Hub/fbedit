@@ -551,11 +551,14 @@ STM32Thread proc uses ebx esi edi,lParam:DWORD
 		add		eax,edx
 		xor		edx,edx
 		div		ecx
+		.if al<sonardata.Noise
+			mov		al,0
+		.endif
 		mov		sonardata.STM32Echo[ebx],al
 		inc		ebx
 	.endw
 	call	FindDepth
-	call	FindFish
+	;call	FindFish
 	call	TestRangeChange
 	;Get current range index
 	movzx	ebx,STM32Echo[MAXYECHO*2]
@@ -651,15 +654,15 @@ FindFish:
 		sub		edi,4
 	.endif
 	.while ebx<edi
-		movzx	eax,STM32Echo[ebx]
-		.if eax
+		movzx	eax,sonardata.STM32Echo[ebx]
+		.if eax>0 && eax<=253
 			mov		eax,edi
 			.if sdword ptr eax>ebx
 				;Large fish
 				mov		sonardata.STM32Echo[ebx],255
-				mov		STM32Echo[ebx],0
-				mov		STM32Echo[ebx+MAXYECHO],0
-				mov		STM32Echo[ebx+MAXYECHO*2],0
+				mov		STM32Echo[ebx],255
+				mov		STM32Echo[ebx+MAXYECHO],255
+				mov		STM32Echo[ebx+MAXYECHO*2],255
 				.if sonardata.FishAlarm && !fFishSound
 					mov		fFishSound,3
 					invoke strcpy,addr buffer,addr szAppPath
