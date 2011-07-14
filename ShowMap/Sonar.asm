@@ -511,7 +511,7 @@ STM32Thread proc uses ebx esi edi,lParam:DWORD
 		.if eax>100 && eax<MAXYECHO
 			mov		edx,eax
 			invoke Random,255
-			.if eax>150 && eax<160
+			.if eax>110 && eax<140
 				;Random fish
 				mov		STM32Echo[edx],al
 			.endif
@@ -633,18 +633,21 @@ FindFish:
 		.while ebx<edi
 			movzx	eax,sonardata.STM32Echo[ebx]
 			.if eax>0
-				mov		eax,edi
-				.if sdword ptr eax>ebx
-					;Large fish
-					.if sonardata.FishDetect
-						mov		sonardata.STM32Echo[ebx],255
+				.if sonardata.FishDetect
+					.if eax>128
+						;Large fish
+						mov		eax,255
+					.else
+						;Small fish
+						mov		eax,254
 					.endif
-					.if sonardata.FishAlarm && !fFishSound
-						mov		fFishSound,3
-						invoke strcpy,addr buffer,addr szAppPath
-						invoke strcat,addr buffer,addr szFishWav
-						invoke PlaySound,addr buffer,hInstance,SND_ASYNC
-					.endif
+					mov		sonardata.STM32Echo[ebx],al
+				.endif
+				.if sonardata.FishAlarm && !fFishSound
+					mov		fFishSound,3
+					invoke strcpy,addr buffer,addr szAppPath
+					invoke strcat,addr buffer,addr szFishWav
+					invoke PlaySound,addr buffer,hInstance,SND_ASYNC
 				.endif
 			.endif
 			inc		ebx
@@ -839,8 +842,8 @@ ShowFish:
 			mov		eax,MAXYECHO
 			mul		esi
 			movzx	eax,sonardata.sonar[eax+edi]
-			.if eax==255
-				;Large fish
+			.if eax==254 || eax==255
+				push	eax
 				mov		eax,MAXYECHO
 				mul		esi
 				movzx	eax,sonardata.sonar[eax]
@@ -859,7 +862,16 @@ ShowFish:
 				mov		edx,rcsonar.right
 				sub		edx,20
 				sub		edx,MAXXECHO
-				invoke ImageList_Draw,hIml,18,hDC,addr [esi+edx-8],addr [ecx-8],ILD_TRANSPARENT
+				pop		eax
+				xchg	eax,ecx
+				.if ecx==255
+					;Large fish
+					mov		ecx,18
+				.else
+					;Small fish
+					mov		ecx,17
+				.endif
+				invoke ImageList_Draw,hIml,ecx,hDC,addr [esi+edx-8],addr [eax-8],ILD_TRANSPARENT
 			.endif
 			inc		edi
 		.endw
