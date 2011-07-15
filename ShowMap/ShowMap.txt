@@ -131,3 +131,5 @@ http://electronickits.com/kit/complete/radi/amfm-108k.pdf
 http://www.electronics-tutorials.com/filters/if-amplifier-transformers.htm
 MC1350 if amplifier
 http://schematicsforfree.com/archive/file/Audio/Circuits/Dynamics%20&%20Gain%20Control/Voltage%20Controlled%20Amplifiers.pdf
+http://www.toko.com.hk/Catalog/coils/7p.pdf
+http://www.mouser.com/catalog/specsheets/XC-600131.pdf

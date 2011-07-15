@@ -447,13 +447,25 @@ STM32Thread proc uses ebx esi edi,lParam:DWORD
 		lea		edi,STM32Echo
 		mov		ecx,MAXYECHO/4
 		rep		stosd
-		mov		al,sonardata.RangeInx
+		;Set range index
+		movzx	eax,sonardata.RangeInx
 		mov		STM32Echo,al
+		;Show ping
+		invoke GetRangePtr,eax
+		mov		ecx,sonarrange.nsample[eax]
+		mov		eax,100
 		xor		edx,edx
-		.while eax<20
-			inc		edx
-			mov		STM32Echo[edx],250
+		div		ecx
+		.if !eax
 			inc		eax
+		.endif
+		push	eax
+		mov		edx,eax
+		.while edx
+			invoke Random,64
+			add		eax,150
+			mov		STM32Echo[edx],al
+			dec		edx
 		.endw
 		.if !(pixcnt & 63)
 			;Random direction
@@ -462,15 +474,15 @@ STM32Thread proc uses ebx esi edi,lParam:DWORD
 		.endif
 		.if !(pixcnt & 31)
 			;Random move
-			invoke Random,7
+			invoke Random,4
 			mov		pixmov,eax
 		.endif
 		mov		ebx,pixdpt
 		mov		eax,pixdir
-		.if eax<=3 && ebx>100
+		.if eax<=1 && ebx>100
 			;Up
 			sub		ebx,pixmov
-		.elseif eax>=4 && ebx<15000
+		.elseif eax>=3 && ebx<15000
 			;Down
 			add		ebx,pixmov
 		.endif
@@ -485,23 +497,20 @@ STM32Thread proc uses ebx esi edi,lParam:DWORD
 		invoke GetRangePtr,eax
 		mov		ecx,sonarrange.range[eax]
 		pop		eax
-		push	ecx
 		xor		edx,edx
 		div		ecx
 		mov		ecx,100
 		xor		edx,edx
 		div		ecx
 		mov		ebx,eax
-		mov		edx,256
-		pop		ecx
-		sub		edx,ecx
-		shr		edx,2
+		pop		edx
+		shl		edx,1
 		xor		ecx,ecx
 		.while ecx<edx
 			;Random echo
-			invoke Random,200
+			invoke Random,100
 			.if ebx<MAXYECHO
-				add		eax,50
+				add		eax,100
 				mov		STM32Echo[ebx],al
 			.endif
 			inc		ebx
@@ -511,7 +520,7 @@ STM32Thread proc uses ebx esi edi,lParam:DWORD
 		.if eax>100 && eax<MAXYECHO
 			mov		edx,eax
 			invoke Random,255
-			.if eax>110 && eax<140
+			.if eax>114 && eax<136
 				;Random fish
 				mov		STM32Echo[edx],al
 			.endif
@@ -546,7 +555,7 @@ STLinkErr:
 RemoveNoise:
 	mov		ebx,1
 	.while ebx<MAXYECHO
-		movzx	eax,STM32Echo[ebx]
+		mov		al,STM32Echo[ebx]
 		.if al<sonardata.Noise
 			mov		al,0
 		.endif
@@ -790,7 +799,7 @@ Update:
 		xor		ebx,ebx
 		.while ebx<MAXYECHO
 			.if sonardata.STM32Echo[ebx]>253
-				mov		sonardata.STM32Echo[ebx],0
+				mov		sonardata.STM32Echo[ebx],1
 			.endif
 			inc		ebx
 		.endw
