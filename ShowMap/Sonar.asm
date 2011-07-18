@@ -520,7 +520,7 @@ STM32Thread proc uses ebx esi edi,lParam:DWORD
 		.if eax>100 && eax<MAXYECHO
 			mov		edx,eax
 			invoke Random,255
-			.if eax>114 && eax<136
+			.if eax>120 && eax<130
 				;Random fish
 				mov		STM32Echo[edx],al
 			.endif
