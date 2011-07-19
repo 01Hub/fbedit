@@ -132,6 +132,7 @@ MAXSONAROPTION			equ 3								;Max number of overlays on sonar scteen
 ;Sonar constants
 MAXXECHO				equ 512								;Max number of sonar X-echos
 MAXYECHO				equ 512								;Max number of sonar Y-echos
+SIGNALBAR				equ 32								;Width of signal strenght bar
 MAXRANGE				equ 11								;Number of depth ranges
 STM32_Sonar				equ 20000000h						;STM32 ram address
 SONARBACKCOLOR			equ 00F4BD6Ch						;Back color of sonar

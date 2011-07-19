@@ -1318,3 +1318,34 @@ SaveStatus proc
 	ret
 
 SaveStatus endp
+
+TextDraw proc uses edi,hDC:HDC,hFont:HFONT,lpRect:PTR RECT,lpText:DWORD,pos:DWORD
+	LOCAL	rect:RECT
+
+	invoke strlen,lpText
+	mov		edi,eax
+	invoke CopyRect,addr rect,lpRect
+	invoke SelectObject,hDC,hFont
+	push	eax
+	invoke SetTextColor,hDC,0FFFFFFh
+	invoke DrawText,hDC,lpText,edi,addr rect,pos
+	add		rect.top,4
+	add		rect.bottom,4
+	invoke DrawText,hDC,lpText,edi,addr rect,pos
+	sub		rect.top,2
+	sub		rect.bottom,2
+	sub		rect.left,2
+	sub		rect.right,2
+	invoke DrawText,hDC,lpText,edi,addr rect,pos
+	add		rect.left,4
+	add		rect.right,4
+	invoke DrawText,hDC,lpText,edi,addr rect,pos
+	sub		rect.left,2
+	sub		rect.right,2
+	invoke SetTextColor,hDC,0
+	invoke DrawText,hDC,lpText,edi,addr rect,pos
+	pop		eax
+	invoke SelectObject,hDC,eax
+	ret
+
+TextDraw endp

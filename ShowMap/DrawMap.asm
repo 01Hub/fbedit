@@ -328,38 +328,28 @@ ShowSpeedBattTempTimeScale proc uses ebx esi edi
 			.else
 				add		eax,7
 			.endif
-			invoke SelectObject,map.mDC2,map.font[eax*4]
-			push	eax
-			invoke strlen,addr [esi].OPTIONS.text
-			mov		ecx,eax
+			mov		ecx,map.font[eax*4]
 			mov		edx,[esi].OPTIONS.position
 			.if !edx
 				;Left, Top
-				invoke DrawText,map.mDC2,addr [esi].OPTIONS.text,ecx,addr rect,DT_LEFT or DT_SINGLELINE
+				mov		eax,DT_LEFT or DT_SINGLELINE
 			.elseif edx==1
 				;Center, Top
-				mov		rect.left,0
-				mov		eax,[esi].OPTIONS.pt.x
-				sub		rect.right,eax
-				invoke DrawText,map.mDC2,addr [esi].OPTIONS.text,ecx,addr rect,DT_CENTER or DT_SINGLELINE
+				mov		eax,DT_CENTER or DT_SINGLELINE
 			.elseif edx==2
 				;Rioght, Top
-				invoke DrawText,map.mDC2,addr [esi].OPTIONS.text,ecx,addr rect,DT_RIGHT or DT_SINGLELINE
+				mov		eax,DT_RIGHT or DT_SINGLELINE
 			.elseif edx==3
 				;Left, Bottom
-				invoke DrawText,map.mDC2,addr [esi].OPTIONS.text,ecx,addr rect,DT_LEFT or DT_BOTTOM or DT_SINGLELINE
+				mov		eax,DT_LEFT or DT_BOTTOM or DT_SINGLELINE
 			.elseif edx==4
 				;Center, Bottom
-				mov		rect.left,0
-				mov		eax,[esi].OPTIONS.pt.x
-				sub		rect.right,eax
-				invoke DrawText,map.mDC2,addr [esi].OPTIONS.text,ecx,addr rect,DT_CENTER or DT_BOTTOM or DT_SINGLELINE
+				mov		eax,DT_CENTER or DT_BOTTOM or DT_SINGLELINE
 			.elseif edx==5
 				;Right, Bottom
-				invoke DrawText,map.mDC2,addr [esi].OPTIONS.text,ecx,addr rect,DT_RIGHT or DT_BOTTOM or DT_SINGLELINE
+				mov		eax,DT_RIGHT or DT_BOTTOM or DT_SINGLELINE
 			.endif
-			pop		eax
-			invoke SelectObject,map.mDC2,eax
+			invoke TextDraw,map.mDC2,ecx,addr rect,addr [esi].OPTIONS.text,eax
 			.if ebx==3
 				call	ShowScale
 			.endif

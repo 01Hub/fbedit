@@ -520,7 +520,7 @@ STM32Thread proc uses ebx esi edi,lParam:DWORD
 		.if eax>100 && eax<MAXYECHO
 			mov		edx,eax
 			invoke Random,255
-			.if eax>120 && eax<130
+			.if eax>124 && eax<130
 				;Random fish
 				mov		STM32Echo[edx],al
 			.endif
@@ -603,7 +603,7 @@ TestDepth:
 		.endif
 		inc		ecx
 	.endw
-	.if edx>4
+	.if edx>=2
 		mov		sonardata.dptinx,ebx
 		call	CalculateDepth
 		or		sonardata.ShowDepth,2
@@ -843,7 +843,7 @@ ShowFish:
 	movzx	ebx,sonardata.sonar[(MAXXECHO*MAXYECHO)-MAXYECHO]
 	invoke GetRangePtr,ebx
 	mov		ebx,sonarrange.range[eax]
-	mov		esi,MAXXECHO+24
+	mov		esi,MAXXECHO+SIGNALBAR+7
 	sub		esi,rcsonar.right
 	.while esi<MAXXECHO
 		xor		edi,edi
@@ -869,7 +869,7 @@ ShowFish:
 				div		ecx
 				mov		ecx,eax
 				mov		edx,rcsonar.right
-				sub		edx,20
+				sub		edx,SIGNALBAR+7
 				sub		edx,MAXXECHO
 				pop		eax
 				xchg	eax,ecx
@@ -901,84 +901,28 @@ ShowOption:
 	mov		rect.bottom,eax
 	mov		eax,[esi].OPTIONS.font
 	add		eax,7
-	invoke SelectObject,hDC,map.font[eax*4]
-	push	eax
-	invoke strlen,addr [esi].OPTIONS.text
-	mov		edi,eax
+	mov		ecx,map.font[eax*4]
 	mov		edx,[esi].OPTIONS.position
 	.if !edx
 		;Left, Top
-		invoke SetTextColor,hDC,0FFFFFFh
-		invoke DrawText,hDC,addr [esi].OPTIONS.text,edi,addr rect,DT_LEFT or DT_SINGLELINE
-		add		rect.top,4
-		invoke DrawText,hDC,addr [esi].OPTIONS.text,edi,addr rect,DT_LEFT or DT_SINGLELINE
-		sub		rect.top,2
-		sub		rect.left,2
-		invoke DrawText,hDC,addr [esi].OPTIONS.text,edi,addr rect,DT_LEFT or DT_SINGLELINE
-		add		rect.left,4
-		invoke DrawText,hDC,addr [esi].OPTIONS.text,edi,addr rect,DT_LEFT or DT_SINGLELINE
-		sub		rect.left,2
-		invoke SetTextColor,hDC,0
-		invoke DrawText,hDC,addr [esi].OPTIONS.text,edi,addr rect,DT_LEFT or DT_SINGLELINE
+		mov		eax,DT_LEFT or DT_SINGLELINE
 	.elseif edx==1
 		;Center, Top
-		mov		rect.left,0
-		mov		eax,[esi].OPTIONS.pt.x
-		sub		rect.right,eax
-		invoke SetTextColor,hDC,0
-		invoke DrawText,hDC,addr [esi].OPTIONS.text,edi,addr rect,DT_CENTER or DT_SINGLELINE
+		mov		eax,DT_LEFT or DT_SINGLELINE
 	.elseif edx==2
 		;Rioght, Top
-		invoke SetTextColor,hDC,0FFFFFFh
-		invoke DrawText,hDC,addr [esi].OPTIONS.text,edi,addr rect,DT_RIGHT or DT_SINGLELINE
-		add		rect.top,4
-		invoke DrawText,hDC,addr [esi].OPTIONS.text,edi,addr rect,DT_RIGHT or DT_SINGLELINE
-		sub		rect.top,2
-		sub		rect.right,2
-		invoke DrawText,hDC,addr [esi].OPTIONS.text,edi,addr rect,DT_RIGHT or DT_SINGLELINE
-		add		rect.right,4
-		invoke DrawText,hDC,addr [esi].OPTIONS.text,edi,addr rect,DT_RIGHT or DT_SINGLELINE
-		sub		rect.right,2
-		invoke SetTextColor,hDC,0
-		invoke DrawText,hDC,addr [esi].OPTIONS.text,edi,addr rect,DT_RIGHT or DT_SINGLELINE
+		mov		eax,DT_RIGHT or DT_SINGLELINE
 	.elseif edx==3
 		;Left, Bottom
-		invoke SetTextColor,hDC,0FFFFFFh
-		invoke DrawText,hDC,addr [esi].OPTIONS.text,edi,addr rect,DT_LEFT or DT_BOTTOM or DT_SINGLELINE
-		add		rect.bottom,4
-		invoke DrawText,hDC,addr [esi].OPTIONS.text,edi,addr rect,DT_LEFT or DT_BOTTOM or DT_SINGLELINE
-		sub		rect.bottom,2
-		sub		rect.left,2
-		invoke DrawText,hDC,addr [esi].OPTIONS.text,edi,addr rect,DT_LEFT or DT_BOTTOM or DT_SINGLELINE
-		add		rect.left,4
-		invoke DrawText,hDC,addr [esi].OPTIONS.text,edi,addr rect,DT_LEFT or DT_BOTTOM or DT_SINGLELINE
-		sub		rect.left,2
-		invoke SetTextColor,hDC,0
-		invoke DrawText,hDC,addr [esi].OPTIONS.text,edi,addr rect,DT_LEFT or DT_BOTTOM or DT_SINGLELINE
+		mov		eax,DT_LEFT or DT_BOTTOM or DT_SINGLELINE
 	.elseif edx==4
 		;Center, Bottom
-		mov		rect.left,0
-		mov		eax,[esi].OPTIONS.pt.x
-		sub		rect.right,eax
-		invoke SetTextColor,hDC,0
-		invoke DrawText,hDC,addr [esi].OPTIONS.text,edi,addr rect,DT_CENTER or DT_BOTTOM or DT_SINGLELINE
+		mov		eax,DT_LEFT or DT_BOTTOM or DT_SINGLELINE
 	.elseif edx==5
 		;Right, Bottom
-		invoke SetTextColor,hDC,0FFFFFFh
-		invoke DrawText,hDC,addr [esi].OPTIONS.text,edi,addr rect,DT_RIGHT or DT_BOTTOM or DT_SINGLELINE
-		add		rect.bottom,4
-		invoke DrawText,hDC,addr [esi].OPTIONS.text,edi,addr rect,DT_RIGHT or DT_BOTTOM or DT_SINGLELINE
-		sub		rect.bottom,2
-		sub		rect.right,2
-		invoke DrawText,hDC,addr [esi].OPTIONS.text,edi,addr rect,DT_RIGHT or DT_BOTTOM or DT_SINGLELINE
-		add		rect.right,4
-		invoke DrawText,hDC,addr [esi].OPTIONS.text,edi,addr rect,DT_RIGHT or DT_BOTTOM or DT_SINGLELINE
-		sub		rect.right,2
-		invoke SetTextColor,hDC,0
-		invoke DrawText,hDC,addr [esi].OPTIONS.text,edi,addr rect,DT_RIGHT or DT_BOTTOM or DT_SINGLELINE
+		mov		eax,DT_RIGHT or DT_BOTTOM or DT_SINGLELINE
 	.endif
-	pop		eax
-	invoke SelectObject,hDC,eax
+	invoke TextDraw,hDC,ecx,addr rect,addr [esi].OPTIONS.text,eax
 	retn
 
 DrawScaleBar:
@@ -1020,7 +964,7 @@ DrawScaleText:
 ShowScale:
 	invoke CopyRect,addr rect,addr rcsonar
 	mov		eax,rect.right
-	sub		eax,10
+	sub		eax,SIGNALBAR
 	mov		rect.right,eax
 	sub		eax,14
 	mov		rect.left,eax
@@ -1219,7 +1163,7 @@ SonarProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke FillRect,mDC,addr rect,eax
 		pop		eax
 		invoke DeleteObject,eax
-		sub		rect.right,20
+		sub		rect.right,SIGNALBAR+7
 		sub		rect.bottom,12
 		mov		ecx,MAXXECHO
 		sub		ecx,rect.right
@@ -1229,7 +1173,7 @@ SonarProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke StretchBlt,mDC,0,6,rect.right,rect.bottom,sonardata.mDC,ecx,0,rect.right,MAXYECHO,SRCCOPY
 		invoke ShowRangeDepthTempScaleFish,mDC
 		add		rect.bottom,12
-		add		rect.right,20
+		add		rect.right,SIGNALBAR+7
 		invoke BitBlt,ps.hdc,0,0,rect.right,rect.bottom,mDC,0,0,SRCCOPY
 		pop		eax
 		invoke SelectObject,mDC,eax
