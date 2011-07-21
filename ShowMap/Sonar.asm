@@ -125,7 +125,7 @@ SonarOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:L
 					invoke SendDlgItemMessage,hWin,IDC_TRBSONARRANGE,TBM_SETPOS,TRUE,eax
 				.endif
 			.elseif eax==IDC_BTNRU
-				.if sonardata.RangeInx<MAXRANGE
+				.if sonardata.RangeInx<MAXRANGE-1
 					inc		sonardata.RangeInx
 					movzx	eax,sonardata.RangeInx
 					invoke SetRange,eax
@@ -275,11 +275,7 @@ UpdateBitmapTile proc uses ebx esi edi,x:DWORD,wt:DWORD,NewRange:DWORD
 	mov		eax,wt
 	mov		rect.right,eax
 	mov		rect.bottom,MAXYECHO
-	invoke CreateSolidBrush,SONARBACKCOLOR
-	push	eax
-	invoke FillRect,mDC,addr rect,eax
-	pop		eax
-	invoke DeleteObject,eax
+	invoke FillRect,mDC,addr rect,sonardata.hBrBack
 	xor		esi,esi
 	.while esi<wt
 		xor		edi,edi
@@ -329,11 +325,7 @@ UpdateBitmap proc uses ebx esi,NewRange:DWORD
 	mov		rect.top,0
 	mov		rect.right,MAXXECHO
 	mov		rect.bottom,MAXYECHO
-	invoke CreateSolidBrush,SONARBACKCOLOR
-	push	eax
-	invoke FillRect,sonardata.mDC,addr rect,eax
-	pop		eax
-	invoke DeleteObject,eax
+	invoke FillRect,sonardata.mDC,addr rect,sonardata.hBrBack
 	xor		esi,esi
 	.while esi<MAXXECHO
 		mov		eax,MAXYECHO
@@ -778,6 +770,12 @@ Update:
 		mov		rect.right,MAXXECHO
 		mov		rect.bottom,MAXYECHO
 		invoke ScrollDC,sonardata.mDC,-1,0,addr rect,addr rect,NULL,NULL
+		mov		rect.left,MAXXECHO-1
+		mov		rect.top,0
+		mov		rect.right,MAXXECHO
+		mov		rect.bottom,MAXYECHO
+		invoke FillRect,sonardata.mDC,addr rect,sonardata.hBrBack
+		;Draw echo
 		mov		ebx,1
 		.while ebx<MAXYECHO
 			movzx	eax,sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO]
@@ -789,17 +787,33 @@ Update:
 				mov		ah,al
 				shl		eax,8
 				mov		al,ah
-			.else
-				mov		eax,SONARBACKCOLOR
+				invoke SetPixel,sonardata.mDC,MAXXECHO-1,ebx,eax
 			.endif
-			invoke SetPixel,sonardata.mDC,MAXXECHO-1,ebx,eax
 			inc		ebx
 		.endw
 		;Remove fish
-		xor		ebx,ebx
+		mov		ebx,1
 		.while ebx<MAXYECHO
 			.if sonardata.STM32Echo[ebx]>253
 				mov		sonardata.STM32Echo[ebx],1
+			.endif
+			inc		ebx
+		.endw
+		;Draw echo strenght
+		mov		rect.left,0
+		mov		rect.top,0
+		mov		rect.right,SIGNALBAR
+		mov		rect.bottom,MAXYECHO
+		invoke FillRect,sonardata.mDCS,addr rect,sonardata.hBrBack
+		mov		ebx,1
+		.while ebx<MAXYECHO
+			movzx	eax,sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO]
+			shr		eax,4
+			.if eax
+				push	eax
+				invoke MoveToEx,sonardata.mDCS,0,ebx,NULL
+				pop		eax
+				invoke LineTo,sonardata.mDCS,eax,ebx
 			.endif
 			inc		ebx
 		.endw
@@ -843,7 +857,7 @@ ShowFish:
 	movzx	ebx,sonardata.sonar[(MAXXECHO*MAXYECHO)-MAXYECHO]
 	invoke GetRangePtr,ebx
 	mov		ebx,sonarrange.range[eax]
-	mov		esi,MAXXECHO+SIGNALBAR+7
+	mov		esi,MAXXECHO+RANGESCALE+SIGNALBAR
 	sub		esi,rcsonar.right
 	.while esi<MAXXECHO
 		xor		edi,edi
@@ -869,7 +883,7 @@ ShowFish:
 				div		ecx
 				mov		ecx,eax
 				mov		edx,rcsonar.right
-				sub		edx,SIGNALBAR+7
+				sub		edx,RANGESCALE+SIGNALBAR
 				sub		edx,MAXXECHO
 				pop		eax
 				xchg	eax,ecx
@@ -966,7 +980,7 @@ ShowScale:
 	mov		eax,rect.right
 	sub		eax,SIGNALBAR
 	mov		rect.right,eax
-	sub		eax,14
+	sub		eax,RANGESCALE
 	mov		rect.left,eax
 	mov		rect.top,6
 	sub		rect.bottom,5
@@ -981,8 +995,8 @@ ShowScale:
 	invoke SelectObject,hDC,eax
 	push	eax
 	call	DrawScaleBar
-	sub		rect.left,5
-	add		rect.right,5
+	sub		rect.left,20
+	add		rect.right,20
 	mov		word ptr buffer,'0'
 	mov		edi,sonardata.RangeVal
 	invoke wsprintf,addr buffer[16],addr szFmtDec,edi
@@ -1073,8 +1087,11 @@ SonarProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	.if eax==WM_CREATE
 		mov		eax,hWin
 		mov		hSonar,eax
+		invoke CreateSolidBrush,SONARBACKCOLOR
+		mov		sonardata.hBrBack,eax
 		invoke GetDC,hWin
 		mov		hDC,eax
+
 		invoke CreateCompatibleDC,hDC
 		mov		sonardata.mDC,eax
 		invoke CreateCompatibleBitmap,hDC,MAXXECHO,MAXYECHO
@@ -1085,11 +1102,20 @@ SonarProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		rect.top,0
 		mov		rect.right,MAXXECHO
 		mov		rect.bottom,MAXYECHO
-		invoke CreateSolidBrush,SONARBACKCOLOR
-		push	eax
-		invoke FillRect,sonardata.mDC,addr rect,eax
-		pop		eax
-		invoke DeleteObject,eax
+		invoke FillRect,sonardata.mDC,addr rect,sonardata.hBrBack
+
+		invoke CreateCompatibleDC,hDC
+		mov		sonardata.mDCS,eax
+		invoke CreateCompatibleBitmap,hDC,SIGNALBAR,MAXYECHO
+		mov		sonardata.hBmpS,eax
+		invoke SelectObject,sonardata.mDCS,eax
+		mov		sonardata.hBmpOldS,eax
+		mov		rect.left,0
+		mov		rect.top,0
+		mov		rect.right,SIGNALBAR
+		mov		rect.bottom,MAXYECHO
+		invoke FillRect,sonardata.mDCS,addr rect,sonardata.hBrBack
+
 		invoke ReleaseDC,hWin,hDC
 		invoke SetTimer,hWin,1000,800,NULL
 		invoke SetTimer,hWin,1001,1000,NULL
@@ -1146,9 +1172,13 @@ SonarProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.if fSTLink && fSTLink!=IDIGNORE
 			invoke STLinkDisconnect
 		.endif
+		invoke DeleteObject,sonardata.hBrBack
 		invoke SelectObject,sonardata.mDC,sonardata.hBmpOld
 		invoke DeleteObject,sonardata.hBmp
 		invoke DeleteDC,sonardata.mDC
+		invoke SelectObject,sonardata.mDCS,sonardata.hBmpOldS
+		invoke DeleteObject,sonardata.hBmpS
+		invoke DeleteDC,sonardata.mDCS
 		invoke SaveSonarToIni
 	.elseif eax==WM_PAINT
 		invoke GetClientRect,hWin,addr rect
@@ -1158,22 +1188,17 @@ SonarProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke CreateCompatibleBitmap,ps.hdc,rect.right,rect.bottom
 		invoke SelectObject,mDC,eax
 		push	eax
-		invoke CreateSolidBrush,SONARBACKCOLOR
-		push	eax
-		invoke FillRect,mDC,addr rect,eax
-		pop		eax
-		invoke DeleteObject,eax
-		sub		rect.right,SIGNALBAR+7
+		invoke FillRect,mDC,addr rect,sonardata.hBrBack
+		sub		rect.right,RANGESCALE+SIGNALBAR
 		sub		rect.bottom,12
 		mov		ecx,MAXXECHO
 		sub		ecx,rect.right
-		mov		eax,sonardata.RangeVal
-		mov		edx,10
-		mul		edx
 		invoke StretchBlt,mDC,0,6,rect.right,rect.bottom,sonardata.mDC,ecx,0,rect.right,MAXYECHO,SRCCOPY
+		add		rect.right,RANGESCALE
+		invoke StretchBlt,mDC,rect.right,6,SIGNALBAR,rect.bottom,sonardata.mDCS,0,0,SIGNALBAR,MAXYECHO,SRCCOPY
+		add		rect.right,SIGNALBAR
 		invoke ShowRangeDepthTempScaleFish,mDC
 		add		rect.bottom,12
-		add		rect.right,SIGNALBAR+7
 		invoke BitBlt,ps.hdc,0,0,rect.right,rect.bottom,mDC,0,0,SRCCOPY
 		pop		eax
 		invoke SelectObject,mDC,eax

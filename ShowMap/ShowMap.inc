@@ -132,8 +132,9 @@ MAXSONAROPTION			equ 3								;Max number of overlays on sonar scteen
 ;Sonar constants
 MAXXECHO				equ 512								;Max number of sonar X-echos
 MAXYECHO				equ 512								;Max number of sonar Y-echos
-SIGNALBAR				equ 32								;Width of signal strenght bar
-MAXRANGE				equ 11								;Number of depth ranges
+RANGESCALE				equ 5								;Width of range scale
+SIGNALBAR				equ 16								;Width of signal strenght bar
+MAXRANGE				equ 14								;Number of depth ranges
 STM32_Sonar				equ 20000000h						;STM32 ram address
 SONARBACKCOLOR			equ 00F4BD6Ch						;Back color of sonar
 ;STM32_Timer			equ 258								;Timer for 48MHz clock
@@ -267,8 +268,12 @@ MAP ends
 
 SONAR struct
 	mDC				HDC ?									;The memory DC holds the echo bitmap, 512*512 pixels,
-	hBmp			HBITMAP ?								;Handle of the bitmap used in mDC
+	hBmp			HBITMAP ?								;Handle of the bitmap used in mDC to draw echo
 	hBmpOld			HBITMAP ?								;Handle of the original bitmap in mDC
+	mDCS			HDC ?									;The memory DC holds the echo strenght bitmap, 32*512 pixels,
+	hBmpS			HBITMAP ?								;Handle of the bitmap used in mDCS to draw echo strenght
+	hBmpOldS		HBITMAP ?								;Handle of the original bitmap in mDCS
+	hBrBack			HBRUSH ?								;Handle of bacckground brush
 	hReply			HANDLE ?								;Handle of replay file
 	hLog			HANDLE ?								;Handle of log file
 	wt				DWORD ?									;Width of sonar screen
@@ -373,11 +378,12 @@ szIcons				BYTE 'None',0							;Icon selection descriptions
 					BYTE 'Blue dot',0,0
 
 sonarrange			RANGE <2,200,1,7,30,0>,<4,200,2,7,35,0>,
-						  <6,200,3,8,40,1>,<10,250,5,8,45,1>,
+						  <6,200,3,8,40,1>,<8,230,4,8,45,1>,
+						  <10,250,5,8,45,1>,<14,250,7,8,45,1>,
 						  <20,250,10,9,50,2>,<30,300,15,9,55,2>,
 						  <50,300,25,10,0,3>,<70,350,35,10,65,3>,
-						  <100,350,50,11,70,4>,<150,400,75,11,75,4>,
-						  <200,400,100,12,80,5>
+						  <100,350,50,11,70,4>,<120,370,60,11,75,4>,
+						  <150,400,75,11,75,4>,<200,400,100,12,80,5>
 
 sonarchartspeed		DWORD 250,200,150,100,50
 

@@ -1184,8 +1184,8 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			sub		eax,ecx
 			.if sdword ptr eax<100
 				mov		eax,100
-			.elseif sdword ptr eax>MAXXECHO+SIGNALBAR+11
-				mov		eax,MAXXECHO+SIGNALBAR+11
+			.elseif sdword ptr eax>MAXXECHO+RANGESCALE+SIGNALBAR+4
+				mov		eax,MAXXECHO+RANGESCALE+SIGNALBAR+4
 			.endif
 			.if eax!=sonardata.wt
 				mov		sonardata.wt,eax
