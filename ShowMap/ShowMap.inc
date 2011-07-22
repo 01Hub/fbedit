@@ -133,10 +133,11 @@ MAXSONAROPTION			equ 3								;Max number of overlays on sonar scteen
 MAXXECHO				equ 512								;Max number of sonar X-echos
 MAXYECHO				equ 512								;Max number of sonar Y-echos
 RANGESCALE				equ 5								;Width of range scale
-SIGNALBAR				equ 16								;Width of signal strenght bar
+SIGNALBAR				equ 24								;Width of signal strenght bar
 MAXRANGE				equ 14								;Number of depth ranges
 STM32_Sonar				equ 20000000h						;STM32 ram address
 SONARBACKCOLOR			equ 00F4BD6Ch						;Back color of sonar
+SONARPENCOLOR			equ 00808080h						;Signal bar pen color
 ;STM32_Timer			equ 258								;Timer for 48MHz clock
 STM32_Timer				equ 302								;Timer for 56MHz clock
 
@@ -274,6 +275,8 @@ SONAR struct
 	hBmpS			HBITMAP ?								;Handle of the bitmap used in mDCS to draw echo strenght
 	hBmpOldS		HBITMAP ?								;Handle of the original bitmap in mDCS
 	hBrBack			HBRUSH ?								;Handle of bacckground brush
+	hPen			HPEN ?									;Handle of signalbar pen
+	hPenOld			HPEN ?
 	hReply			HANDLE ?								;Handle of replay file
 	hLog			HANDLE ?								;Handle of log file
 	wt				DWORD ?									;Width of sonar screen
@@ -426,4 +429,5 @@ fThread				DWORD ?									;If TRUE sonar thread is running
 sonardata			SONAR <>								;Sonar data
 hSplittV			HCURSOR ?								;Horizontal splitt cursor
 rseed				DWORD ?									;Random seed
+szFishSound			BYTE MAX_PATH dup(?)
 fFishSound			DWORD ?

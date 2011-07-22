@@ -613,10 +613,14 @@ CalculateDepth:
 	div		ecx
 	invoke wsprintf,addr buffer,addr szFmtDepth,eax
 	invoke strlen,addr buffer
-	movzx	ecx,word ptr buffer[eax-1]
-	shl		ecx,8
-	mov		cl,'.'
-	mov		dword ptr buffer[eax-1],ecx
+	.if eax>2
+		mov		byte ptr buffer[eax-1],0
+	.else
+		movzx	ecx,word ptr buffer[eax-1]
+		shl		ecx,8
+		mov		cl,'.'
+		mov		dword ptr buffer[eax-1],ecx
+	.endif
 	invoke strcpy,addr sonardata.options.text[1*sizeof OPTIONS],addr buffer
 	retn
 
@@ -646,9 +650,7 @@ FindFish:
 				.endif
 				.if sonardata.FishAlarm && !fFishSound
 					mov		fFishSound,3
-					invoke strcpy,addr buffer,addr szAppPath
-					invoke strcat,addr buffer,addr szFishWav
-					invoke PlaySound,addr buffer,hInstance,SND_ASYNC
+					invoke PlaySound,addr szFishSound,hInstance,SND_ASYNC
 				.endif
 			.endif
 			inc		ebx
@@ -808,7 +810,9 @@ Update:
 		mov		ebx,1
 		.while ebx<MAXYECHO
 			movzx	eax,sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO]
-			shr		eax,4
+			mov		ecx,SIGNALBAR
+			mul		ecx
+			shr		eax,8
 			.if eax
 				push	eax
 				invoke MoveToEx,sonardata.mDCS,0,ebx,NULL
@@ -1089,6 +1093,8 @@ SonarProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		hSonar,eax
 		invoke CreateSolidBrush,SONARBACKCOLOR
 		mov		sonardata.hBrBack,eax
+		invoke CreatePen,PS_SOLID,1,SONARPENCOLOR
+		mov		sonardata.hPen,eax
 		invoke GetDC,hWin
 		mov		hDC,eax
 
@@ -1110,6 +1116,8 @@ SonarProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		sonardata.hBmpS,eax
 		invoke SelectObject,sonardata.mDCS,eax
 		mov		sonardata.hBmpOldS,eax
+		invoke SelectObject,sonardata.mDCS,sonardata.hPen
+		mov		sonardata.hPenOld,eax
 		mov		rect.left,0
 		mov		rect.top,0
 		mov		rect.right,SIGNALBAR
@@ -1117,6 +1125,8 @@ SonarProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke FillRect,sonardata.mDCS,addr rect,sonardata.hBrBack
 
 		invoke ReleaseDC,hWin,hDC
+		invoke strcpy,addr szFishSound,addr szAppPath
+		invoke strcat,addr szFishSound,addr szFishWav
 		invoke SetTimer,hWin,1000,800,NULL
 		invoke SetTimer,hWin,1001,1000,NULL
 	.elseif eax==WM_TIMER
@@ -1178,6 +1188,8 @@ SonarProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke DeleteDC,sonardata.mDC
 		invoke SelectObject,sonardata.mDCS,sonardata.hBmpOldS
 		invoke DeleteObject,sonardata.hBmpS
+		invoke SelectObject,sonardata.mDCS,sonardata.hPenOld
+		invoke DeleteObject,sonardata.hPen
 		invoke DeleteDC,sonardata.mDCS
 		invoke SaveSonarToIni
 	.elseif eax==WM_PAINT
