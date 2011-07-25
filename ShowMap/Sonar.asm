@@ -543,6 +543,9 @@ STM32Thread proc uses ebx esi edi,lParam:DWORD
 	;Get range index
 	mov		al,STM32Echo
 	mov		sonardata.STM32Echo,al
+	.if al!=STM32Echo[MAXYECHO]
+		invoke RtlMoveMemory,addr STM32Echo[MAXYECHO],addr STM32Echo,MAXYECHO
+	.endif
 	;Remove noise
 	call	RemoveNoise
 	call	FindDepth
@@ -622,6 +625,7 @@ FindDepth:
 		.break .if !eax
 		inc		ebx
 	.endw
+	mov		sonardata.minyecho,ebx
 	xor		esi,esi
 	xor		edi,edi
 	;mov		ebx,1
@@ -686,8 +690,7 @@ FindFish:
 		mov		edi,sonardata.dptinx
 		.if !edi
 			mov		edi,MAXYECHO
-		.endif
-		.if edi>4
+		.elseif edi>4
 			sub		edi,4
 		.endif
 		.while ebx<edi
