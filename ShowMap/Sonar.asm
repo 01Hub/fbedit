@@ -559,47 +559,36 @@ RemoveNoise:
 FindDepth:
 	mov		sonardata.dptinx,0
 	and		sonardata.ShowDepth,1
-	;Skip ping
+	xor		esi,esi
+	xor		edi,edi
 	mov		ebx,1
-	xor		edx,edx
-	.while ebx<MAXYECHO-8
-		movzx	eax,sonardata.STM32Echo[ebx]
-		.if !eax
-			inc		edx
-			.break .if edx==3
-		.else
-			xor		edx,edx
+	.while ebx<MAXYECHO
+		call	TestDepth
+		.if edx>esi
+			mov		esi,edx
+			mov		edi,ebx
 		.endif
 		inc		ebx
 	.endw
-	mov		sonardata.minyecho,ebx
-	;Find bottom echo
-	.while ebx<MAXYECHO-8
-		inc		ebx
-		movzx	eax,sonardata.STM32Echo[ebx]
-		.if eax
-			call	TestDepth
-			.break .if eax
-		.endif
-	.endw
+	.if edi>1
+		mov		ebx,edi
+		mov		sonardata.dptinx,ebx
+		call	CalculateDepth
+		or		sonardata.ShowDepth,2
+	.endif
 	retn
 
 TestDepth:
 	xor		ecx,ecx
 	xor		edx,edx
-	mov		sonardata.dptinx,ecx
-	.while ecx<8
+	.while TRUE
+		lea		eax,[ebx+ecx]
+		.break .if eax>MAXYECHO
 		movzx	eax,sonardata.STM32Echo[ebx+ecx]
-		.if eax
-			inc		edx
-		.endif
+		.break .if !eax
+		add		edx,eax
 		inc		ecx
 	.endw
-	.if edx>=2
-		mov		sonardata.dptinx,ebx
-		call	CalculateDepth
-		or		sonardata.ShowDepth,2
-	.endif
 	retn
 
 CalculateDepth:
