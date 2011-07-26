@@ -654,6 +654,7 @@ FindDepth:
 		inc		ebx
 	.endw
 	.if edi>1
+		mov		sonardata.nodptinx,0
 		mov		ebx,edi
 		mov		sonardata.dptinx,ebx
 		call	CalculateDepth
@@ -717,15 +718,19 @@ FindFish:
 	retn
 
 TestRangeChange:
-	.if sonardata.AutoRange
+	.if sonardata.AutoRange && !sonardata.hReply
 		movzx	eax,STM32Echo
 		mov		ebx,sonardata.dptinx
 		.if !ebx
 			;Bottom not found
-			.if eax<(MAXRANGE-1)
-				;Range increment
-				inc		eax
-				invoke SetRange,eax
+			inc		sonardata.nodptinx
+			.if sonardata.nodptinx>=4
+				mov		sonardata.nodptinx,0
+				.if eax<(MAXRANGE-1)
+					;Range increment
+					inc		eax
+					invoke SetRange,eax
+				.endif
 			.endif
 		.else
 			.if eax && ebx<MAXYECHO/3
@@ -1106,7 +1111,7 @@ SaveSonarToIni proc
 
 SaveSonarToIni endp
 
-LoadSonarFromIni proc
+LoadSonarFromIni proc uses ebx
 	LOCAL	buffer[256]:BYTE
 	
 	invoke RtlZeroMemory,addr buffer,sizeof buffer
@@ -1136,6 +1141,27 @@ LoadSonarFromIni proc
 	mov		sonardata.ChartSpeed,eax
 	invoke GetItemInt,addr buffer,1
 	mov		sonardata.NoiseReject,eax
+	xor		ebx,ebx
+	xor		edi,edi
+	.while ebx<MAXRANGE
+		invoke wsprintf,addr buffer,addr szFmtDec,ebx
+		invoke GetPrivateProfileString,addr szIniSonarRange,addr buffer,addr szNULL,addr buffer,sizeof buffer,addr szIniFileName
+		.break .if !eax
+		invoke GetItemInt,addr buffer,0
+		mov		sonarrange.range[edi],eax
+		invoke GetItemInt,addr buffer,0
+		mov		sonarrange.interval[edi],eax
+		invoke GetItemInt,addr buffer,0
+		mov		sonarrange.nsample[edi],eax
+		invoke GetItemInt,addr buffer,0
+		mov		sonarrange.pingadd[edi],eax
+		invoke GetItemInt,addr buffer,0
+		mov		sonarrange.gainadd[edi],eax
+		invoke GetItemInt,addr buffer,0
+		mov		sonarrange.gaininc[edi],eax
+		inc		ebx
+		lea		edi,[edi+sizeof RANGE]
+	.endw
 	ret
 
 LoadSonarFromIni endp

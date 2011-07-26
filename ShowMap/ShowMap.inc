@@ -310,6 +310,7 @@ SONAR struct
 	sonar			BYTE MAXXECHO*MAXYECHO dup(?)			;Sonar array. The first byte in each x element is the range index
 	STM32Echo		BYTE MAXYECHO dup(?)					;Echo array read from STM32
 	minyecho		DWORD ?
+	nodptinx		DWORD ?
 	dptinx			DWORD ?
 SONAR ends
 
@@ -354,6 +355,7 @@ szIniOption			BYTE 'Option',0
 szIniLon			BYTE 'Lon',0
 szIniLat			BYTE 'Lat',0
 szIniSonar			BYTE 'Sonar',0
+szIniSonarRange		BYTE 'SonarRange',0
 
 szFonts				BYTE 'None',0							;Font selection descriptions
 					BYTE 'Small',0
@@ -381,25 +383,12 @@ szIcons				BYTE 'None',0							;Icon selection descriptions
 					BYTE 'Red dot',0
 					BYTE 'Blue dot',0,0
 
-sonarrange			RANGE <2,200,1,7,30,0>,<4,200,2,7,35,0>,
-						  <6,200,3,8,40,1>,<8,230,4,8,45,1>,
-						  <10,250,5,8,45,1>,<14,250,7,8,45,1>,
-						  <20,250,10,9,50,2>,<30,300,15,9,55,2>,
-						  <50,300,25,10,0,3>,<70,350,35,10,65,3>,
-						  <100,350,50,11,70,4>,<120,370,60,11,75,4>,
-						  <150,400,75,11,75,4>,<200,400,100,12,80,5>
-
-sonarchartspeed		DWORD 250,200,150,100,50
-
 szFmtDec			BYTE '%d',0
 szFmtDepth			BYTE '%02u',0
 szFmtVolts			BYTE '%02u',0
 szVolts				BYTE 'V',0
 szCelcius			BYTE 'C',0
 watertempconv		QWORD 3.46982758620
-szFmtNoise			BYTE 'Noise: %d',0
-szFmtGain			BYTE 'Gain: %d',0
-szFmtPing			BYTE 'Ping: %d',0
 
 .data?
 
@@ -427,8 +416,9 @@ szbuff				BYTE 512 dup(?)							;Temporary buffer
 tid					DWORD ?									;Thread ID
 fSTLink				DWORD ?									;If TRUE STLink connected
 fThread				DWORD ?									;If TRUE sonar thread is running
+sonarrange			RANGE MAXRANGE dup(<?>)					;Sonar range definitions
 sonardata			SONAR <>								;Sonar data
 hSplittV			HCURSOR ?								;Horizontal splitt cursor
 rseed				DWORD ?									;Random seed
-szFishSound			BYTE MAX_PATH dup(?)
+szFishSound			BYTE MAX_PATH dup(?)					;Path & filename of fish.wav file
 fFishSound			DWORD ?
