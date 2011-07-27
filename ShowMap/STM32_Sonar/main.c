@@ -37,7 +37,7 @@ vu8 BlueLED;
 vu8 GreenLED;
 vu8 nSample;
 vu16 EchoIndex;
-GPIO_InitTypeDef GPIO_InitStructure;
+vu16 Ping;
 
 /* Private function prototypes -----------------------------------------------*/
 void RCC_Configuration(void);
@@ -70,8 +70,6 @@ int main(void)
   GPIO_Configuration();
   /* TIM1 configuration */
   TIM1_Configuration();
-  /* TIM2 configuration */
-  TIM2_Configuration();
   /* ADC1 configuration */
   ADC_Startup();
   /* ADC1 injected channel configuration */
@@ -115,13 +113,10 @@ int main(void)
       EchoIndex = 0;
       /* Reset TIM1 count */
       TIM1->CNT = 0;
-      /* Set repetirion counter */
-      TIM1->RCR = STM32_Sonar.PingPulses;
-      /* TIM1 channel 1 pin (PA.08) and TIM1 channel 2 pin (PA.09) configuration */
-      GPIO_InitStructure.GPIO_Pin = GPIO_Pin_8 | GPIO_Pin_9;
-      GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
-      GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-      GPIO_Init(GPIOA, &GPIO_InitStructure);
+      /* Set TIM1 repetirion counter */
+      TIM1->RCR = 0;
+      /* Init Ping */
+      Ping = 0x100;
       /* Enable TIM1 */
       TIM_Cmd(TIM1, ENABLE);
     }
@@ -184,21 +179,34 @@ u16 GetADCValue(u8 Channel)
 *******************************************************************************/
 void TIM1_UP_IRQHandler(void)
 {
-  /* Set DAC Gain */
-  DAC->DHR12R1 = (u16)STM32_Sonar.Gain << 4;
-  /*  Configure pin PA.08 and pin PA.09 to turn off ping outputs */
-  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_8 | GPIO_Pin_9;
-  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
-  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-  GPIO_Init(GPIOA, &GPIO_InitStructure);
+  /* Set ping outputs high (FET's off) */
+  GPIO_WriteBit(GPIOA, GPIO_Pin_9 | GPIO_Pin_8, Bit_SET);
   /* Clear TIM1 Update interrupt pending bit */
   TIM1->SR = (u16)~TIM_IT_Update;
-  /* Disable TIM1 */
-  TIM_Cmd(TIM1, DISABLE);
-  /* Enable ADC injected channel */
-  ADC_AutoInjectedConvCmd(ADC1, ENABLE);
-  /* Enable TIM2 */
-  TIM_Cmd(TIM2, ENABLE);
+  if (STM32_Sonar.PingPulses)
+  {
+    GPIO_Write(GPIOA,Ping);
+    if (Ping == 0x100)
+    {
+      Ping = 0x200;
+    }
+    else
+    {
+      Ping = 0x100;
+    }
+    STM32_Sonar.PingPulses--;
+  }
+  else
+  {
+    /* Set DAC Gain */
+    DAC->DHR12R1 = (u16)STM32_Sonar.Gain << 4;
+    /* Disable TIM1 */
+    TIM_Cmd(TIM1, DISABLE);
+    /* Enable ADC injected channel */
+    ADC_AutoInjectedConvCmd(ADC1, ENABLE);
+    /* Enable TIM2 */
+    TIM_Cmd(TIM2, ENABLE);
+  }
 }
 
 /*******************************************************************************
@@ -380,6 +388,7 @@ void RCC_Configuration(void)
 *******************************************************************************/
 void GPIO_Configuration(void)
 {
+  GPIO_InitTypeDef GPIO_InitStructure;
   /* Configure ADC Channel6 (PA.06), ADC Channel5 (PA.05), DAC Channel1 (PA.04), ADC Channel3 (PA.03) and ADC Channel2 (PA.02) as analog input */
   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_6 | GPIO_Pin_5 | GPIO_Pin_4 | GPIO_Pin_3 | GPIO_Pin_2;
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AIN;
@@ -391,7 +400,12 @@ void GPIO_Configuration(void)
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
   GPIO_Init(GPIOC, &GPIO_InitStructure);
   /* Set ping outputs high (FET's off) */
-  GPIO_WriteBit(GPIOA, GPIO_Pin_8 | GPIO_Pin_9, Bit_SET);
+  GPIO_WriteBit(GPIOA, GPIO_Pin_9 | GPIO_Pin_8, Bit_SET);
+  /* Configure PA.09 and PA.08 */
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9 | GPIO_Pin_8;
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+  GPIO_Init(GPIOA, &GPIO_InitStructure);
 }
 
 /*******************************************************************************
@@ -437,27 +451,25 @@ void TIM1_Configuration(void)
   // TIM_TimeBaseStructure.TIM_Prescaler = 23;
   /* Time base configuration 56MHz clock */
   TIM_TimeBaseStructure.TIM_Period = 9;
-  TIM_TimeBaseStructure.TIM_Prescaler = 27;
+  TIM_TimeBaseStructure.TIM_Prescaler = 13;
   TIM_TimeBaseStructure.TIM_ClockDivision = 0;
   TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
-  TIM_TimeBaseStructure.TIM_RepetitionCounter = STM32_Sonar.PingPulses;
+  TIM_TimeBaseStructure.TIM_RepetitionCounter = 0;
   TIM_TimeBaseInit(TIM1, &TIM_TimeBaseStructure);
-  /* PWM1 Mode configuration: Channel1 */
-  TIM_OCStructInit(&TIM_OCInitStructure);
-  TIM_OCInitStructure.TIM_OCMode = TIM_OCMode_PWM1;
-  TIM_OCInitStructure.TIM_OutputState = TIM_OutputState_Enable;
-  TIM_OCInitStructure.TIM_OutputNState = TIM_OutputNState_Disable;
-  TIM_OCInitStructure.TIM_Pulse = 5;
-  TIM_OCInitStructure.TIM_OCPolarity = TIM_OCPolarity_High;
-  TIM_OC1Init(TIM1, &TIM_OCInitStructure);
-  TIM_OC1PreloadConfig(TIM1, TIM_OCPreload_Enable);
-  /* PWM1 Mode configuration: Channel2 */
-  TIM_OCInitStructure.TIM_OCPolarity = TIM_OCPolarity_Low;
-  TIM_OC2Init(TIM1, &TIM_OCInitStructure);
-  TIM_OC2PreloadConfig(TIM1, TIM_OCPreload_Enable);
-  TIM_ARRPreloadConfig(TIM1, ENABLE);
-  /* TIM1 Main Output Enable */
-  TIM_CtrlPWMOutputs(TIM1, ENABLE);
+  // /* PWM1 Mode configuration: Channel1 */
+  // TIM_OCStructInit(&TIM_OCInitStructure);
+  // TIM_OCInitStructure.TIM_OCMode = TIM_OCMode_PWM1;
+  // TIM_OCInitStructure.TIM_OutputState = TIM_OutputState_Enable;
+  // TIM_OCInitStructure.TIM_OutputNState = TIM_OutputNState_Disable;
+  // TIM_OCInitStructure.TIM_Pulse = 6;
+  // TIM_OCInitStructure.TIM_OCPolarity = TIM_OCPolarity_High;
+  // TIM_OC1Init(TIM1, &TIM_OCInitStructure);
+
+  // TIM_OC1PreloadConfig(TIM1, TIM_OCPreload_Enable);
+  // TIM_ARRPreloadConfig(TIM1, ENABLE);
+
+  // /* TIM1 Main Output Enable */
+  // TIM_CtrlPWMOutputs(TIM1, ENABLE);
   /* Enable TIM1 Update interrupt */
   TIM_ClearITPendingBit(TIM1,TIM_IT_Update);
   TIM_ITConfig(TIM1, TIM_IT_Update, ENABLE);
