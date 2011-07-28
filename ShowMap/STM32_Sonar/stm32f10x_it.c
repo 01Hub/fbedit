@@ -747,9 +747,9 @@ void UART5_IRQHandler(void)
 * Output         : None
 * Return         : None
 *******************************************************************************/
-// void TIM6_IRQHandler(void)
-// {
-// }
+void TIM6_IRQHandler(void)
+{
+}
 
 /*******************************************************************************
 * Function Name  : TIM7_IRQHandler
@@ -758,9 +758,9 @@ void UART5_IRQHandler(void)
 * Output         : None
 * Return         : None
 *******************************************************************************/
-// void TIM7_IRQHandler(void)
-// {
-// }
+void TIM7_IRQHandler(void)
+{
+}
 
 /*******************************************************************************
 * Function Name  : DMA2_Channel1_IRQHandler

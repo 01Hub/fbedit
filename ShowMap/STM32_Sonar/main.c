@@ -22,8 +22,8 @@ typedef struct
   u8 GainInc;
   u8 Range;
   u8 nSample;
-  u8 Dummy;
-  u16 Timer;
+  u8 Dummy8;
+  u16 Dummy16;
   u16 ADCBatt;
   u16 ADCWaterTemp;
   u16 ADCAirTemp;
@@ -70,12 +70,14 @@ int main(void)
   GPIO_Configuration();
   /* TIM1 configuration */
   TIM1_Configuration();
+  /* TIM2 configuration */
+  TIM2_Configuration();
   /* ADC1 configuration */
   ADC_Startup();
   /* ADC1 injected channel configuration */
   ADC_Configuration();
-  /* DAC channel1 and channel2 Configuration */
-  DAC->CR = 0x11;
+  /* Enable DAC channel1 */
+  DAC->CR = 0x1;
 
   while (1)
   {
@@ -107,8 +109,6 @@ int main(void)
         i++;
       }
       nSample = STM32_Sonar.nSample;
-      /* TIM2 configuration */
-      TIM2_Configuration();
       /* Reset echo index */
       EchoIndex = 0;
       /* Reset TIM1 count */
@@ -446,30 +446,15 @@ void TIM1_Configuration(void)
 {
   TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructure;
   TIM_OCInitTypeDef  TIM_OCInitStructure;
-  // /* Time base configuration 48MHz clock */
-  // TIM_TimeBaseStructure.TIM_Period = 9;
-  // TIM_TimeBaseStructure.TIM_Prescaler = 23;
-  /* Time base configuration 56MHz clock */
-  TIM_TimeBaseStructure.TIM_Period = 9;
-  TIM_TimeBaseStructure.TIM_Prescaler = 13;
   TIM_TimeBaseStructure.TIM_ClockDivision = 0;
+  TIM_TimeBaseStructure.TIM_Period = 9;
+  // /* Time base configuration 48MHz clock */
+  // TIM_TimeBaseStructure.TIM_Prescaler = 11;
+  /* Time base configuration 56MHz clock */
+  TIM_TimeBaseStructure.TIM_Prescaler = 13;
   TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
   TIM_TimeBaseStructure.TIM_RepetitionCounter = 0;
   TIM_TimeBaseInit(TIM1, &TIM_TimeBaseStructure);
-  // /* PWM1 Mode configuration: Channel1 */
-  // TIM_OCStructInit(&TIM_OCInitStructure);
-  // TIM_OCInitStructure.TIM_OCMode = TIM_OCMode_PWM1;
-  // TIM_OCInitStructure.TIM_OutputState = TIM_OutputState_Enable;
-  // TIM_OCInitStructure.TIM_OutputNState = TIM_OutputNState_Disable;
-  // TIM_OCInitStructure.TIM_Pulse = 6;
-  // TIM_OCInitStructure.TIM_OCPolarity = TIM_OCPolarity_High;
-  // TIM_OC1Init(TIM1, &TIM_OCInitStructure);
-
-  // TIM_OC1PreloadConfig(TIM1, TIM_OCPreload_Enable);
-  // TIM_ARRPreloadConfig(TIM1, ENABLE);
-
-  // /* TIM1 Main Output Enable */
-  // TIM_CtrlPWMOutputs(TIM1, ENABLE);
   /* Enable TIM1 Update interrupt */
   TIM_ClearITPendingBit(TIM1,TIM_IT_Update);
   TIM_ITConfig(TIM1, TIM_IT_Update, ENABLE);
@@ -485,12 +470,14 @@ void TIM1_Configuration(void)
 void TIM2_Configuration(void)
 {
   TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;
-  /* Time base configuration */
-  TIM_TimeBaseStructure.TIM_Period = STM32_Sonar.Timer;
-  TIM_TimeBaseStructure.TIM_Prescaler = 0;
   TIM_TimeBaseStructure.TIM_ClockDivision = 0;
-  TIM_TimeBaseStructure.TIM_RepetitionCounter = 0;
+  TIM_TimeBaseStructure.TIM_Prescaler = 0;
+  // /* Time base configuration 48MHz clock */
+  // TIM_TimeBaseStructure.TIM_Period = 258;
+  /* Time base configuration 56MHz clock */
+  TIM_TimeBaseStructure.TIM_Period = 302;
   TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
+  TIM_TimeBaseStructure.TIM_RepetitionCounter = 0;
   TIM_TimeBaseInit(TIM2, &TIM_TimeBaseStructure);
   /* Enable TIM2 Update interrupt */
   TIM_ClearITPendingBit(TIM2,TIM_IT_Update);

@@ -429,7 +429,6 @@ STM32Thread proc uses ebx esi edi,lParam:DWORD
 			.endif
 			shl		eax,1
 			mov		sonardata.Ping,al
-			mov		sonardata.Timer,STM32_Timer
 		 	mov		sonardata.Start,0
 			invoke STLinkWrite,hWnd,STM32_Sonar,addr sonardata.Start,12
 			.if !eax

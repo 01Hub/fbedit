@@ -138,8 +138,6 @@ MAXRANGE				equ 14								;Number of depth ranges
 STM32_Sonar				equ 20000000h						;STM32 ram address
 SONARBACKCOLOR			equ 00F4BD6Ch						;Back color of sonar
 SONARPENCOLOR			equ 00808080h						;Signal bar pen color
-;STM32_Timer			equ 258								;Timer for 48MHz clock
-STM32_Timer				equ 302								;Timer for 56MHz clock
 
 LONPOINT struct
 	iLon			DWORD ?									;Longitude
@@ -301,8 +299,8 @@ SONAR struct
 	GainInc			BYTE ?									;Gain level increment
 	RangeInx		BYTE ?									;Range (0 to 13)
 	nSample			BYTE ?									;Number of echo readings to sample. If more than one the largest is stored.
-	Dummy			BYTE ?
-	Timer			WORD ?									;Time between each echo reading
+	Dummy8			BYTE ?
+	Dummy16			WORD ?
 	dmy1			WORD ?									;Just to make the ADC readings dword sized
 	ADCBattery		WORD ?									;Battery level
 	ADCWaterTemp	WORD ?									;Water temprature
