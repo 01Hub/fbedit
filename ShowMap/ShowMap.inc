@@ -283,6 +283,7 @@ SONAR struct
 	AutoGain		DWORD ?									;If TRUE gain is set according to range
 	AutoPing		DWORD ?									;If TRUE number of pingpulses is set according to range
 	NoiseReject		DWORD ?									;If TRUE 2 adjacent pixels needed to show echo
+	ChartSync		DWORD ?									;If TRUE shart speed is syncronized to ping
 	FishDetect		DWORD ?									;If TRUE fish detect is on
 	FishAlarm		DWORD ?									;If TRUE fish alarm is on
 	ChartSpeed		DWORD ?

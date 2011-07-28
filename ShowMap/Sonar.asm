@@ -7,6 +7,7 @@ IDC_CHKSONARPING        equ 1509
 IDC_TRBSONARRANGE       equ 1507
 IDC_CHKSONARRANGE       equ 1506
 IDC_TRBSONARCHART       equ 1512
+IDC_CHKSOPNARCHART		equ 1523
 IDC_CHKSONARDETECT      equ 1515
 IDC_TRBSONARNOISE       equ 1501
 IDC_CHKSONARNOISE		equ 1521
@@ -69,6 +70,9 @@ SonarOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:L
 		.if sonardata.NoiseReject
 			invoke CheckDlgButton,hWin,IDC_CHKSONARNOISE,BST_CHECKED
 		.endif
+		.if sonardata.ChartSync
+			invoke CheckDlgButton,hWin,IDC_CHKSOPNARCHART,BST_CHECKED
+		.endif
 		invoke SendDlgItemMessage,hWin,IDC_TRBSONARPING,TBM_SETRANGE,FALSE,(127 SHL 16)+1
 		invoke SendDlgItemMessage,hWin,IDC_TRBSONARPING,TBM_SETPOS,TRUE,sonardata.PingInit
 		invoke SendDlgItemMessage,hWin,IDC_TRBSONARNOISE,TBM_SETRANGE,FALSE,(255 SHL 16)+1
@@ -98,6 +102,8 @@ SonarOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:L
 				xor		sonardata.AutoRange,1
 			.elseif eax==IDC_CHKSONARNOISE
 				xor		sonardata.NoiseReject,1
+			.elseif eax==IDC_CHKSOPNARCHART
+				xor		sonardata.ChartSync,1
 			.elseif eax==IDC_CHKSONARDETECT
 				xor		sonardata.FishDetect,1
 			.elseif eax==IDC_CHKSONARALARM
@@ -1104,6 +1110,7 @@ SaveSonarToIni proc
 	invoke PutItemInt,addr buffer,sonardata.GainInit
 	invoke PutItemInt,addr buffer,sonardata.ChartSpeed
 	invoke PutItemInt,addr buffer,sonardata.NoiseReject
+	invoke PutItemInt,addr buffer,sonardata.ChartSync
 	invoke WritePrivateProfileString,addr szIniSonar,addr szIniSonar,addr buffer[1],addr szIniFileName
 	ret
 
@@ -1139,6 +1146,8 @@ LoadSonarFromIni proc uses ebx
 	mov		sonardata.ChartSpeed,eax
 	invoke GetItemInt,addr buffer,1
 	mov		sonardata.NoiseReject,eax
+	invoke GetItemInt,addr buffer,1
+	mov		sonardata.ChartSync,eax
 	xor		ebx,ebx
 	xor		edi,edi
 	.while ebx<MAXRANGE
@@ -1235,10 +1244,16 @@ SonarProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		fThread,TRUE
 				invoke CreateThread,NULL,NULL,addr SonarThreadProc,hWin,0,addr tid
 				invoke CloseHandle,eax
-				mov		eax,350
-				sub		eax,sonardata.ChartSpeed
-				sub		eax,sonardata.ChartSpeed
-				sub		eax,sonardata.ChartSpeed
+				.if sonardata.ChartSync
+					movzx	eax,sonardata.RangeInx
+					invoke GetRangePtr,eax
+					mov		eax,sonarrange.interval[eax]
+				.else
+					mov		eax,350
+					sub		eax,sonardata.ChartSpeed
+					sub		eax,sonardata.ChartSpeed
+					sub		eax,sonardata.ChartSpeed
+				.endif
 				invoke SetTimer,hWin,1000,eax,NULL
 			.endif
 		.elseif wParam==1001
