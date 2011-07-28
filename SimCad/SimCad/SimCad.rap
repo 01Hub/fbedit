@@ -67,10 +67,10 @@ Group=Assembly,Resources,Misc
 10=2
 11=
 [VerInf]
-FV=0.8.5.6
-FileVersion=0.8.5.6
-PV=0.8.5.6
-ProductVersion=0.8.5.6
+FV=0.8.6.3
+FileVersion=0.8.6.3
+PV=0.8.6.3
+ProductVersion=0.8.6.3
 Nme=VERINF1
 ID=1
 VerOS=0x00000004
@@ -94,7 +94,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=21
+MilestoneOnDateDate=28
 MilestoneOnDateTimeYear=2004
 MilestoneOnDateTimeMonth=5
 MilestoneOnDateTimeDate=6
@@ -141,9 +141,9 @@ ProductVer4Range=0
 0=
 
 [Size]
-1=0,0,0,0,19277
+1=0,0,0,0,6718
 6=0,0,0,0,0
-2=0,0,0,0,5286
+2=0,0,0,0,1795
 4=0,0,0,0
 8=
 11=
@@ -151,16 +151,16 @@ ProductVer4Range=0
 9=0,0,1014,459,1811
 3=0,0,0,0,0
 [Find]
-1="CM_ADDOBJECTS"
-2="AddSymbol"
-3="EnableDisable"
-4="PrintHex"
-5="IDM_FILE_SAVE_AS"
-6="CM_GETOBJECT"
-7="TPE_POLYLINE"
-8="WS_VSCROLL"
-9="CADMEM.style"
-10="Scroll"
+1="IDC_CBO1"
+2="CM_ADDOBJECTS"
+3="AddSymbol"
+4="EnableDisable"
+5="PrintHex"
+6="IDM_FILE_SAVE_AS"
+7="CM_GETOBJECT"
+8="TPE_POLYLINE"
+9="WS_VSCROLL"
+10="CADMEM.style"
 
 [Resource]
 1=IDB_CADBOX,100,0,Res\SimCadBox.bmp
@@ -181,8 +181,9 @@ ID=100
 12=IDM_EDIT_CUT,0,88,8
 13=IDM_EDIT_COPY,0,67,8
 14=IDM_EDIT_PASTE,0,86,8
+15=IDM_VIEW_HOME,10200,36,0
 [PTimer]
-PTimer=141057737
+PTimer=143555017
 [Collapse]
 2=
 1=,,

@@ -3560,6 +3560,28 @@ CadProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke InvalidateRect,hWin,NULL,TRUE
 		xor		eax,eax
 		jmp		Ex
+	.elseif eax==CM_GETTOP
+		invoke GetWindowLong,hWin,0
+		mov		ebx,eax
+		mov		edx,lParam
+		mov		eax,[ebx].CADMEM.scroll.x
+		mov		[edx].POINT.x,eax
+		mov		eax,[ebx].CADMEM.scroll.y
+		mov		[edx].POINT.y,eax
+		xor		eax,eax
+		jmp		Ex
+	.elseif eax==CM_SETTOP
+		invoke GetWindowLong,hWin,0
+		mov		ebx,eax
+		mov		edx,lParam
+		mov		eax,[edx].POINT.x
+		mov		[ebx].CADMEM.scroll.x,eax
+		mov		eax,[edx].POINT.y
+		mov		[ebx].CADMEM.scroll.y,eax
+		call	UpdateScrollPos
+		invoke InvalidateRect,hWin,NULL,TRUE
+		xor		eax,eax
+		jmp		Ex
 	.elseif eax==WM_USER+9999
 		invoke SendMessage,hWin,CM_SETWIDTH,2,0
 		mov		ncadbox,TPE_HTEXT

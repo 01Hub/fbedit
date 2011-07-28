@@ -579,7 +579,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		hSbr,eax
 		invoke SendMessage,hSbr,SB_SETPARTS,4,addr sbp
 		xor		ebx,ebx
-		.while ebx<19
+		.while ebx<39
 			inc		ebx
 			invoke DwToAscii,ebx,addr buffer
 			invoke SendMessage,hCbo,CB_ADDSTRING,0,addr buffer
@@ -781,6 +781,10 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke SendMessage,hCad,CM_ZOOMOUT,0,0
 		.elseif eax==IDM_VIEW_ZOOM_BEST_FIT
 			invoke SendMessage,hCad,CM_ZOOMFIT,0,0
+		.elseif eax==IDM_VIEW_HOME
+			mov		pt.x,0
+			mov		pt.y,0
+			invoke SendMessage,hCad,CM_SETTOP,0,addr rect
 		.elseif eax==IDM_HELP_ABOUT
 			invoke ShellAbout,hWin,addr AppName,addr AboutMsg,NULL
 		.elseif eax>=20000 && eax<20100
@@ -965,7 +969,7 @@ SizeIt:
 	invoke GetClientRect,hTbr1,addr rect
 	mov		edx,rect.right
 	add		edx,3
-	invoke MoveWindow,hCbo,edx,3,65,100,TRUE
+	invoke MoveWindow,hCbo,edx,3,65,250,TRUE
 	mov		edx,rect.right
 	add		edx,3+65+3
 	invoke MoveWindow,hStc,edx,3,21,21,TRUE
