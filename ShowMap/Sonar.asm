@@ -69,7 +69,7 @@ SonarOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:L
 		.if sonardata.NoiseReject
 			invoke CheckDlgButton,hWin,IDC_CHKSONARNOISE,BST_CHECKED
 		.endif
-		invoke SendDlgItemMessage,hWin,IDC_TRBSONARPING,TBM_SETRANGE,FALSE,(255 SHL 16)+0
+		invoke SendDlgItemMessage,hWin,IDC_TRBSONARPING,TBM_SETRANGE,FALSE,(127 SHL 16)+1
 		invoke SendDlgItemMessage,hWin,IDC_TRBSONARPING,TBM_SETPOS,TRUE,sonardata.PingInit
 		invoke SendDlgItemMessage,hWin,IDC_TRBSONARNOISE,TBM_SETRANGE,FALSE,(255 SHL 16)+1
 		movzx	eax,sonardata.Noise
@@ -420,23 +420,22 @@ STM32Thread proc uses ebx esi edi,lParam:DWORD
 				mov		sonardata.Gain,al
 				mov		sonardata.GainInc,0
 			.endif
+			mov		eax,sonardata.PingInit
 			.if sonardata.AutoPing
-				mov		eax,sonardata.PingInit
 				add		eax,sonarrange.pingadd[ebx]
-				.if eax>255
-					mov		eax,255
+				.if eax>127
+					mov		eax,127
 				.endif
-				mov		sonardata.Ping,al
-			.else
-				mov		eax,sonardata.PingInit
-				mov		sonardata.Ping,al
 			.endif
+			shl		eax,1
+			mov		sonardata.Ping,al
 			mov		sonardata.Timer,STM32_Timer
 		 	mov		sonardata.Start,0
 			invoke STLinkWrite,hWnd,STM32_Sonar,addr sonardata.Start,12
 			.if !eax
 				jmp		STLinkErr
 			.endif
+			;Start the next phase
 		 	mov		sonardata.Start,1
 			invoke STLinkWrite,hWnd,STM32_Sonar,addr sonardata.Start,12
 			.if !eax
