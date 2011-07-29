@@ -119,12 +119,12 @@ SonarOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:L
 					invoke SendDlgItemMessage,hWin,IDC_TRBSONARGAIN,TBM_SETPOS,TRUE,sonardata.GainInit
 				.endif
 			.elseif eax==IDC_BTNPD
-				.if sonardata.PingInit
+				.if sonardata.PingInit>1
 					dec		sonardata.PingInit
 					invoke SendDlgItemMessage,hWin,IDC_TRBSONARPING,TBM_SETPOS,TRUE,sonardata.PingInit
 				.endif
 			.elseif eax==IDC_BTNPU
-				.if sonardata.PingInit<255
+				.if sonardata.PingInit<127
 					inc		sonardata.PingInit
 					invoke SendDlgItemMessage,hWin,IDC_TRBSONARPING,TBM_SETPOS,TRUE,sonardata.PingInit
 				.endif
