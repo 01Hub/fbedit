@@ -560,6 +560,11 @@ STM32Thread proc uses ebx esi edi,lParam:DWORD
 	invoke GetRangePtr,ebx
 	mov		ebx,eax
 	mov		eax,sonarrange.interval[ebx]
+	.if sonardata.hReply
+		mov		ecx,REPLYSPEED
+		xor		edx,edx
+		div		ecx
+	.endif
 	invoke Sleep,eax
 	jmp		Again
 
@@ -1253,6 +1258,11 @@ SonarProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					sub		eax,sonardata.ChartSpeed
 					sub		eax,sonardata.ChartSpeed
 					sub		eax,sonardata.ChartSpeed
+				.endif
+				.if sonardata.hReply
+					mov		ecx,REPLYSPEED
+					xor		edx,edx
+					div		ecx
 				.endif
 				invoke SetTimer,hWin,1000,eax,NULL
 			.endif

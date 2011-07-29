@@ -133,8 +133,9 @@ MAXSONAROPTION			equ 3								;Max number of overlays on sonar scteen
 MAXXECHO				equ 512								;Max number of sonar X-echos
 MAXYECHO				equ 512								;Max number of sonar Y-echos
 RANGESCALE				equ 5								;Width of range scale
-SIGNALBAR				equ 24								;Width of signal strenght bar
+SIGNALBAR				equ 48								;Width of signal strenght bar
 MAXRANGE				equ 14								;Number of depth ranges
+REPLYSPEED				equ 20								;At reply, the ping interval is divided by REPLYSPEED
 STM32_Sonar				equ 20000000h						;STM32 ram address
 SONARBACKCOLOR			equ 00F4BD6Ch						;Back color of sonar
 SONARPENCOLOR			equ 00808080h						;Signal bar pen color
