@@ -363,6 +363,7 @@ UpdateBitmap endp
 STM32Thread proc uses ebx esi edi,lParam:DWORD
 	LOCAL	status:DWORD
 	LOCAL	STM32Echo[MAXYECHO*2]:BYTE
+	LOCAL	fish[32]:BYTE
 	LOCAL	dwread:DWORD
 	LOCAL	dwwrite:DWORD
 	LOCAL	buffer[16]:BYTE
@@ -370,12 +371,15 @@ STM32Thread proc uses ebx esi edi,lParam:DWORD
 	LOCAL	pixdir:DWORD
 	LOCAL	pixmov:DWORD
 	LOCAL	pixdpt:DWORD
+	LOCAL	rngchanged:DWORD
 
 	mov		pixcnt,0
 	mov		pixdir,0
 	mov		pixmov,0
 	mov		pixdpt,250
+	mov		rngchanged,3
 	invoke RtlZeroMemory,addr STM32Echo,sizeof STM32Echo
+	invoke RtlZeroMemory,addr fish,sizeof fish
   Again:
 	.if sonardata.hReply
 		;Copy old echo
@@ -544,6 +548,13 @@ STM32Thread proc uses ebx esi edi,lParam:DWORD
 		;Write to log file
 		invoke WriteFile,sonardata.hLog,addr STM32Echo,MAXYECHO,addr dwwrite,NULL
 	.endif
+	mov		ecx,MAXFISH-1
+	.while ecx
+		mov		al,fish[ecx-1]
+		mov		fish[ecx],al
+		dec		ecx
+	.endw
+	mov		fish,0
 	;Get range index
 	mov		al,STM32Echo
 	mov		sonardata.STM32Echo,al
@@ -552,9 +563,13 @@ STM32Thread proc uses ebx esi edi,lParam:DWORD
 	.endif
 	;Remove noise
 	call	RemoveNoise
-	call	FindDepth
-	call	FindFish
-	call	TestRangeChange
+	.if rngchanged
+		dec		rngchanged
+	.else
+		call	FindDepth
+		call	FindFish
+		call	TestRangeChange
+	.endif
 	;Get current range index
 	movzx	ebx,STM32Echo
 	invoke GetRangePtr,ebx
@@ -637,7 +652,6 @@ FindDepth:
 	mov		sonardata.minyecho,ebx
 	xor		esi,esi
 	xor		edi,edi
-	;mov		ebx,1
 	.while ebx<MAXYECHO
 		xor		ecx,ecx
 		xor		edx,edx
@@ -667,11 +681,14 @@ FindDepth:
 		mov		ebx,edi
 		mov		sonardata.dptinx,ebx
 		call	CalculateDepth
+		call	SetDepth
 		or		sonardata.ShowDepth,2
 	.endif
 	retn
 
 CalculateDepth:
+	push	ecx
+	push	edx
 	movzx	eax,sonardata.STM32Echo
 	invoke GetRangePtr,eax
 	mov		eax,sonarrange.range[eax]
@@ -680,6 +697,11 @@ CalculateDepth:
 	mul		ebx
 	mov		ecx,MAXYECHO
 	div		ecx
+	pop		edx
+	pop		ecx
+	retn
+
+SetDepth:
 	invoke wsprintf,addr buffer,addr szFmtDepth,eax
 	invoke strlen,addr buffer
 	.if eax>2
@@ -705,20 +727,45 @@ FindFish:
 		.endif
 		.while ebx<edi
 			movzx	eax,sonardata.STM32Echo[ebx]
-			.if eax>0
-				.if sonardata.FishDetect
-					.if eax>128
-						;Large fish
-						mov		eax,255
-					.else
-						;Small fish
-						mov		eax,254
-					.endif
-					mov		sonardata.STM32Echo[ebx],al
+			.if eax
+				call	CalculateDepth
+				mov		fish,al
+				push	ebx
+				sub		ebx,MAXFISH/2
+				.if CARRY?
+					xor		ebx,ebx
 				.endif
-				.if sonardata.FishAlarm && !fFishSound
-					mov		fFishSound,3
-					invoke PlaySound,addr szFishSound,hInstance,SND_ASYNC
+				call	CalculateDepth
+				mov		ecx,eax
+				pop		ebx
+				push	ebx
+				add		ebx,MAXFISH/2
+				call	CalculateDepth
+				mov		edx,eax
+				pop		ebx
+				mov		esi,MAXFISH-1
+				.while esi
+					movzx	eax,fish[esi]
+					.break .if eax>ecx && eax<edx
+					dec		esi
+				.endw
+				.if !esi
+					movzx	eax,sonardata.STM32Echo[ebx]
+					.if sonardata.FishDetect
+						.if eax>128
+							;Large fish
+							mov		eax,255
+						.else
+							;Small fish
+							mov		eax,254
+						.endif
+						mov		sonardata.STM32Echo[ebx],al
+					.endif
+					.if sonardata.FishAlarm && !fFishSound
+						mov		fFishSound,3
+						invoke PlaySound,addr szFishSound,hInstance,SND_ASYNC
+					.endif
+					.break
 				.endif
 			.endif
 			inc		ebx
@@ -739,6 +786,7 @@ TestRangeChange:
 					;Range increment
 					inc		eax
 					invoke SetRange,eax
+					mov		rngchanged,3
 				.endif
 			.endif
 		.else
@@ -746,10 +794,12 @@ TestRangeChange:
 				;Range decrement
 				dec		eax
 				invoke SetRange,eax
+				mov		rngchanged,3
 			.elseif eax<(MAXRANGE-1) && ebx>(MAXYECHO-MAXYECHO/5)
 				;Range increment
 				inc		eax
 				invoke SetRange,eax
+				mov		rngchanged,3
 			.endif
 		.endif
 	.endif
