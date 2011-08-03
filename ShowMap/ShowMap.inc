@@ -139,7 +139,7 @@ REPLYSPEED				equ 10								;At reply, the ping interval is divided by REPLYSPEE
 STM32_Sonar				equ 20000000h						;STM32 ram address
 SONARBACKCOLOR			equ 00F4BD6Ch						;Back color of sonar
 SONARPENCOLOR			equ 00808080h						;Signal bar pen color
-MAXFISH					equ 32
+MAXFISH					equ 32								;Prevents showing repeated fish symbols and repeated fish alarms
 
 LONPOINT struct
 	iLon			DWORD ?									;Longitude

@@ -363,7 +363,7 @@ UpdateBitmap endp
 STM32Thread proc uses ebx esi edi,lParam:DWORD
 	LOCAL	status:DWORD
 	LOCAL	STM32Echo[MAXYECHO*2]:BYTE
-	LOCAL	fish[32]:BYTE
+	LOCAL	fish[MAXFISH]:BYTE
 	LOCAL	dwread:DWORD
 	LOCAL	dwwrite:DWORD
 	LOCAL	buffer[16]:BYTE
@@ -549,11 +549,16 @@ STM32Thread proc uses ebx esi edi,lParam:DWORD
 		invoke WriteFile,sonardata.hLog,addr STM32Echo,MAXYECHO,addr dwwrite,NULL
 	.endif
 	mov		ecx,MAXFISH-1
+	xor		edx,edx
 	.while ecx
 		mov		al,fish[ecx-1]
 		mov		fish[ecx],al
+		.if al
+			inc		edx
+		.endif
 		dec		ecx
 	.endw
+PrintDec edx
 	mov		fish,0
 	;Get range index
 	mov		al,STM32Echo
@@ -766,6 +771,8 @@ FindFish:
 						invoke PlaySound,addr szFishSound,hInstance,SND_ASYNC
 					.endif
 					.break
+				.else
+					mov		fish,0
 				.endif
 			.endif
 			inc		ebx
@@ -1020,7 +1027,7 @@ ShowFish:
 					;Small fish
 					mov		ecx,17
 				.endif
-				invoke ImageList_Draw,hIml,ecx,hDC,addr [esi+edx-8],addr [eax-8],ILD_TRANSPARENT
+				invoke ImageList_Draw,hIml,ecx,hDC,addr [esi+edx-8],addr [eax],ILD_TRANSPARENT
 			.endif
 			inc		edi
 		.endw
