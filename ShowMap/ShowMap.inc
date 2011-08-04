@@ -295,9 +295,10 @@ SONAR struct
 	WTemp			DWORD ?
 	PingInit		DWORD ?									;Ping initial value (0 to 255)
 	GainInit		DWORD ?									;Gain initial level (0 to 255)
+	Noise			BYTE ?									;Noise reject level (0 to 255)
 	Start			BYTE ?									;Set to 1 to init a new echo reading
 	Ping			BYTE ?									;Number of pulses in a ping ((0 to 255)+1)
-	Noise			BYTE ?									;Noise reject level (0 to 255)
+	PingTimer		BYTE ?									;Timer value to generate 200 KHz ping
 	Gain			BYTE ?									;Gain level (0 to 255)
 	GainInc			BYTE ?									;Gain level increment
 	RangeInx		BYTE ?									;Range (0 to 13)

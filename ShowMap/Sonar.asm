@@ -12,6 +12,7 @@ IDC_CHKSONARDETECT      equ 1515
 IDC_TRBSONARNOISE       equ 1501
 IDC_CHKSONARNOISE		equ 1521
 IDC_CHKSONARALARM       equ 1514
+IDC_TRBPINGTIMER        equ 1526
 IDC_BTNGD               equ 1502
 IDC_BTNGU               equ 1505
 IDC_BTNPU               equ 1508
@@ -22,6 +23,8 @@ IDC_BTNCU               equ 1517
 IDC_BTNCD               equ 1518
 IDC_BTNNU               equ 1519
 IDC_BTNND               equ 1520
+IDC_BTNPTU              equ 1525
+IDC_BTNPTD              equ 1527
 
 .code
 
@@ -87,6 +90,9 @@ SonarOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:L
 		.if sonardata.FishAlarm
 			invoke CheckDlgButton,hWin,IDC_CHKSONARALARM,BST_CHECKED
 		.endif
+		invoke SendDlgItemMessage,hWin,IDC_TRBPINGTIMER,TBM_SETRANGE,FALSE,(144 SHL 16)+134
+		movzx	eax,sonardata.PingTimer
+		invoke SendDlgItemMessage,hWin,IDC_TRBPINGTIMER,TBM_SETPOS,TRUE,eax
 	.elseif eax==WM_COMMAND
 		mov		edx,wParam
 		movzx	eax,dx
@@ -183,6 +189,8 @@ SonarOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:L
 			mov		sonardata.PingInit,ebx
 		.elseif eax==IDC_TRBSONARCHART
 			mov		sonardata.ChartSpeed,ebx
+		.elseif eax==IDC_TRBPINGTIMER
+			mov		sonardata.PingTimer,bl
 		.endif
 	.elseif eax==WM_CLOSE
 		invoke EndDialog,hWin,lParam
@@ -1154,7 +1162,7 @@ SaveSonarToIni proc
 	LOCAL	buffer[256]:BYTE
 
 	mov		buffer,0
-	;Width,AutoRange,AutoGain,AutoPing,FishDetect,FishAlarm,RangeInx,Noise,PingInit,GainInit,ChartSpeed,NoiseReject
+	;Width,AutoRange,AutoGain,AutoPing,FishDetect,FishAlarm,RangeInx,Noise,PingInit,GainInit,ChartSpeed,NoiseReject,ChartSync,PingTimer
 	invoke PutItemInt,addr buffer,sonardata.wt
 	invoke PutItemInt,addr buffer,sonardata.AutoRange
 	invoke PutItemInt,addr buffer,sonardata.AutoGain
@@ -1168,6 +1176,8 @@ SaveSonarToIni proc
 	invoke PutItemInt,addr buffer,sonardata.ChartSpeed
 	invoke PutItemInt,addr buffer,sonardata.NoiseReject
 	invoke PutItemInt,addr buffer,sonardata.ChartSync
+	movzx	eax,sonardata.PingTimer
+	invoke PutItemInt,addr buffer,eax
 	invoke WritePrivateProfileString,addr szIniSonar,addr szIniSonar,addr buffer[1],addr szIniFileName
 	ret
 
@@ -1178,7 +1188,7 @@ LoadSonarFromIni proc uses ebx
 	
 	invoke RtlZeroMemory,addr buffer,sizeof buffer
 	invoke GetPrivateProfileString,addr szIniSonar,addr szIniSonar,addr szNULL,addr buffer,sizeof buffer,addr szIniFileName
-	;Width,AutoRange,AutoGain,AutoPing,FishDetect,FishAlarm,RangeInx,Noise,PingInit,GainInit,ChartSpeed
+	;Width,AutoRange,AutoGain,AutoPing,FishDetect,FishAlarm,RangeInx,Noise,PingInit,GainInit,ChartSpeed,NoiseReject,ChartSync,PingTimer
 	invoke GetItemInt,addr buffer,250
 	mov		sonardata.wt,eax
 	invoke GetItemInt,addr buffer,1
@@ -1205,6 +1215,8 @@ LoadSonarFromIni proc uses ebx
 	mov		sonardata.NoiseReject,eax
 	invoke GetItemInt,addr buffer,1
 	mov		sonardata.ChartSync,eax
+	invoke GetItemInt,addr buffer,139
+	mov		sonardata.PingTimer,al
 	xor		ebx,ebx
 	xor		edi,edi
 	.while ebx<MAXRANGE

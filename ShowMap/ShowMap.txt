@@ -150,3 +150,4 @@ MC1350 if amplifier
 http://schematicsforfree.com/archive/file/Audio/Circuits/Dynamics%20&%20Gain%20Control/Voltage%20Controlled%20Amplifiers.pdf
 http://www.toko.com.hk/Catalog/coils/7p.pdf
 http://www.mouser.com/catalog/specsheets/XC-600131.pdf
+Hybrid IF: http://www.ka7exm.net/hycas/hycas_200712_qst.pdf

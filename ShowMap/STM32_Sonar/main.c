@@ -17,7 +17,7 @@ typedef struct
 {
   u8 Start;
   u8 PingPulses;
-  u8 Noise;
+  u8 PingTimer;
   u8 Gain;
   u8 GainInc;
   u8 Range;
@@ -111,6 +111,8 @@ int main(void)
       nSample = STM32_Sonar.nSample;
       /* Reset echo index */
       EchoIndex = 0;
+      /* Set the TIM1 Autoreload value */
+      TIM1->ARR = STM32_Sonar.PingTimer;
       /* Reset TIM1 count */
       TIM1->CNT = 0;
       /* Set TIM1 repetirion counter */
@@ -445,13 +447,9 @@ void NVIC_Configuration(void)
 void TIM1_Configuration(void)
 {
   TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructure;
-  TIM_OCInitTypeDef  TIM_OCInitStructure;
   TIM_TimeBaseStructure.TIM_ClockDivision = 0;
-  TIM_TimeBaseStructure.TIM_Period = 9;
-  // /* Time base configuration 48MHz clock */
-  // TIM_TimeBaseStructure.TIM_Prescaler = 11;
-  /* Time base configuration 56MHz clock */
-  TIM_TimeBaseStructure.TIM_Prescaler = 13;
+  TIM_TimeBaseStructure.TIM_Prescaler = 0;
+  TIM_TimeBaseStructure.TIM_Period = 139;
   TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
   TIM_TimeBaseStructure.TIM_RepetitionCounter = 0;
   TIM_TimeBaseInit(TIM1, &TIM_TimeBaseStructure);
@@ -472,8 +470,6 @@ void TIM2_Configuration(void)
   TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;
   TIM_TimeBaseStructure.TIM_ClockDivision = 0;
   TIM_TimeBaseStructure.TIM_Prescaler = 0;
-  // /* Time base configuration 48MHz clock */
-  // TIM_TimeBaseStructure.TIM_Period = 258;
   /* Time base configuration 56MHz clock */
   TIM_TimeBaseStructure.TIM_Period = 302;
   TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
