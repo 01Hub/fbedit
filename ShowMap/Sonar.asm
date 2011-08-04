@@ -549,16 +549,11 @@ STM32Thread proc uses ebx esi edi,lParam:DWORD
 		invoke WriteFile,sonardata.hLog,addr STM32Echo,MAXYECHO,addr dwwrite,NULL
 	.endif
 	mov		ecx,MAXFISH-1
-	xor		edx,edx
 	.while ecx
 		mov		al,fish[ecx-1]
 		mov		fish[ecx],al
-		.if al
-			inc		edx
-		.endif
 		dec		ecx
 	.endw
-PrintDec edx
 	mov		fish,0
 	;Get range index
 	mov		al,STM32Echo
