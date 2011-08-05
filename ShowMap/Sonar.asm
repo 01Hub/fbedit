@@ -592,6 +592,7 @@ STM32Thread proc uses ebx esi edi,lParam:DWORD
 	jmp		Again
 
 STLinkErr:
+	invoke SendMessage,hWnd,WM_CLOSE,0,0
 	xor		eax,eax
 	ret
 

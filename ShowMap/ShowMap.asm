@@ -903,7 +903,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke DialogBoxParam,hInstance,IDD_DLGOPTION,hWin,addr OptionsProc,12
 			.elseif eax==IDM_OPTION_COMPORT
 				invoke DialogBoxParam,hInstance,IDD_DLGCOMPORT,hWin,addr ComOptionProc,0
-			.elseif eax==IDM_SONAR
+			.elseif eax==IDM_OPTION_SONAR
 				invoke DialogBoxParam,hInstance,IDD_DLGSONAR,hWin,addr SonarOptionProc,0
 ;Context
 			.elseif eax==IDM_EDITPLACE
