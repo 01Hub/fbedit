@@ -134,10 +134,10 @@ MAXXECHO				equ 512								;Max number of sonar X-echos
 MAXYECHO				equ 512								;Max number of sonar Y-echos
 RANGESCALE				equ 5								;Width of range scale
 SIGNALBAR				equ 48								;Width of signal strenght bar
-MAXRANGE				equ 14								;Number of depth ranges
+MAXRANGE				equ 32								;Max number of depth ranges that can be read from ini
 REPLYSPEED				equ 10								;At reply, the ping interval is divided by REPLYSPEED
 STM32_Sonar				equ 20000000h						;STM32 ram address
-SONARBACKCOLOR			equ 00F4BD6Ch						;Back color of sonar
+SONARBACKCOLOR			equ 00C47B0Fh						;Back color of sonar
 SONARPENCOLOR			equ 00808080h						;Signal bar pen color
 MAXFISH					equ 32								;Prevents showing repeated fish symbols and repeated fish alarms
 
@@ -276,7 +276,7 @@ SONAR struct
 	hBmpOldS		HBITMAP ?								;Handle of the original bitmap in mDCS
 	hBrBack			HBRUSH ?								;Handle of bacckground brush
 	hPen			HPEN ?									;Handle of signalbar pen
-	hPenOld			HPEN ?
+	hPenOld			HPEN ?									;Handle of the original pen in mDCS
 	hReply			HANDLE ?								;Handle of replay file
 	hLog			HANDLE ?								;Handle of log file
 	wt				DWORD ?									;Width of sonar screen
@@ -288,11 +288,12 @@ SONAR struct
 	ChartSync		DWORD ?									;If TRUE shart speed is syncronized to ping
 	FishDetect		DWORD ?									;If TRUE fish detect is on
 	FishAlarm		DWORD ?									;If TRUE fish alarm is on
-	ChartSpeed		DWORD ?
+	ChartSpeed		DWORD ?									;Sonar chart scroll speed.
+	MaxRange		DWORD ?									;Number of range definitions read from ini
 	RangeVal		DWORD ?									;Range in meters
-	ShowDepth		DWORD ?
-	Battery			DWORD ?
-	WTemp			DWORD ?
+	ShowDepth		DWORD ?									;Bit 0 depth on/off, Bit 1 blink depth if echo is lost
+	Battery			DWORD ?									;TRUE if battery should be shown
+	WTemp			DWORD ?									;TRUE if water surface temprature should be shown
 	PingInit		DWORD ?									;Ping initial value (0 to 255)
 	GainInit		DWORD ?									;Gain initial level (0 to 255)
 	Noise			BYTE ?									;Noise reject level (0 to 255)
@@ -320,7 +321,7 @@ RANGE struct
 	range			DWORD ?									;Range in meters
 	interval		DWORD ?									;Update rate
 	nsample			DWORD ?									;Number of echo readings to sample. If more than one the largest is stored.
-	pingadd			DWORD ?									;Number of pulses in a ping ((0 to 63)+1). Used when autoping is on
+	pingadd			DWORD ?									;Number of pulses in a ping (1 to 127). Used when autoping is on
 	gainadd			DWORD ?									;Gain level to add (0 to 255) to GainInit. Used when auto gain is on
 	gaininc			DWORD ?									;Gain increment for each pixel. Used when auto gain is on
 RANGE ends
@@ -418,7 +419,7 @@ szbuff				BYTE 512 dup(?)							;Temporary buffer
 tid					DWORD ?									;Thread ID
 fSTLink				DWORD ?									;If TRUE STLink connected
 fThread				DWORD ?									;If TRUE sonar thread is running
-sonarrange			RANGE MAXRANGE dup(<?>)					;Sonar range definitions
+sonarrange			RANGE MAXRANGE dup(<?>)					;Sonar range definitions (max 32)
 sonardata			SONAR <>								;Sonar data
 hSplittV			HCURSOR ?								;Horizontal splitt cursor
 rseed				DWORD ?									;Random seed

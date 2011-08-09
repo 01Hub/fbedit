@@ -59,7 +59,10 @@ SonarOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:L
 		.if sonardata.AutoRange
 			invoke CheckDlgButton,hWin,IDC_CHKSONARRANGE,BST_CHECKED
 		.endif
-		invoke SendDlgItemMessage,hWin,IDC_TRBSONARRANGE,TBM_SETRANGE,FALSE,((MAXRANGE-1) SHL 16)+0
+		mov		eax,sonardata.MaxRange
+		dec		eax
+		shl		eax,16
+		invoke SendDlgItemMessage,hWin,IDC_TRBSONARRANGE,TBM_SETRANGE,FALSE,eax
 		movzx	eax,sonardata.RangeInx
 		invoke SendDlgItemMessage,hWin,IDC_TRBSONARRANGE,TBM_SETPOS,TRUE,eax
 		.if sonardata.AutoGain
@@ -143,7 +146,9 @@ SonarOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:L
 					invoke SendDlgItemMessage,hWin,IDC_TRBSONARRANGE,TBM_SETPOS,TRUE,eax
 				.endif
 			.elseif eax==IDC_BTNRU
-				.if sonardata.RangeInx<MAXRANGE-1
+				mov		eax,sonardata.MaxRange
+				dec		eax
+				.if al>sonardata.RangeInx
 					inc		sonardata.RangeInx
 					movzx	eax,sonardata.RangeInx
 					invoke SetRange,eax
@@ -306,9 +311,6 @@ UpdateBitmapTile proc uses ebx esi edi,x:DWORD,wt:DWORD,NewRange:DWORD
 			mul		edx
 			movzx	eax,sonardata.sonar[eax+edi]
 			.if eax
-				.if eax<20h
-					mov		eax,20h
-				.endif
 				xor		eax,0FFh
 				mov		ah,al
 				shl		eax,8
@@ -623,8 +625,8 @@ RemoveNoise:
 FindDepth:
 	mov		sonardata.dptinx,0
 	and		sonardata.ShowDepth,1
-	mov		ebx,1
 	;Skip blank
+	mov		ebx,1
 	xor		eax,eax
 	.while ebx<MAXYECHO-2
 		mov		al,sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*1]
@@ -787,13 +789,15 @@ FindFish:
 TestRangeChange:
 	.if sonardata.AutoRange && !sonardata.hReply
 		movzx	eax,STM32Echo
+		mov		edx,sonardata.MaxRange
+		dec		edx
 		mov		ebx,sonardata.dptinx
 		.if !ebx
 			;Bottom not found
 			inc		sonardata.nodptinx
 			.if sonardata.nodptinx>=4
 				mov		sonardata.nodptinx,0
-				.if eax<(MAXRANGE-1)
+				.if eax<edx
 					;Range increment
 					inc		eax
 					invoke SetRange,eax
@@ -801,12 +805,13 @@ TestRangeChange:
 				.endif
 			.endif
 		.else
+			;Check if range should be changed
 			.if eax && ebx<MAXYECHO/3
 				;Range decrement
 				dec		eax
 				invoke SetRange,eax
 				mov		rngchanged,3
-			.elseif eax<(MAXRANGE-1) && ebx>(MAXYECHO-MAXYECHO/5)
+			.elseif eax<edx && ebx>(MAXYECHO-MAXYECHO/5)
 				;Range increment
 				inc		eax
 				invoke SetRange,eax
@@ -915,9 +920,6 @@ Update:
 		.while ebx<MAXYECHO
 			movzx	eax,sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO]
 			.if eax
-				.if eax<20h
-					mov		eax,20h
-				.endif
 				xor		eax,0FFh
 				mov		ah,al
 				shl		eax,8
@@ -1218,9 +1220,10 @@ LoadSonarFromIni proc uses ebx
 	mov		sonardata.ChartSync,eax
 	invoke GetItemInt,addr buffer,139
 	mov		sonardata.PingTimer,al
+	;Get the range definitions
 	xor		ebx,ebx
 	xor		edi,edi
-	.while ebx<MAXRANGE
+	.while ebx<32
 		invoke wsprintf,addr buffer,addr szFmtDec,ebx
 		invoke GetPrivateProfileString,addr szIniSonarRange,addr buffer,addr szNULL,addr buffer,sizeof buffer,addr szIniFileName
 		.break .if !eax
@@ -1239,6 +1242,8 @@ LoadSonarFromIni proc uses ebx
 		inc		ebx
 		lea		edi,[edi+sizeof RANGE]
 	.endw
+	;Store the number of range definitions read from ini
+	mov		sonardata.MaxRange,ebx
 	ret
 
 LoadSonarFromIni endp
