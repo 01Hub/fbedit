@@ -324,6 +324,8 @@ RANGE struct
 	pingadd			DWORD ?									;Number of pulses in a ping (1 to 127). Used when autoping is on
 	gainadd			DWORD ?									;Gain level to add (0 to 255) to GainInit. Used when auto gain is on
 	gaininc			DWORD ?									;Gain increment for each pixel. Used when auto gain is on
+	npixel			DWORD ?
+	scale			BYTE 64 dup(?)
 RANGE ends
 
 .const

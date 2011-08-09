@@ -1093,8 +1093,8 @@ DrawScaleBar:
 	add		ebx,rect.top
 	invoke MoveToEx,hDC,rect.left,ebx,NULL
 	invoke LineTo,hDC,rect.right,ebx
-	invoke MoveToEx,hDC,rect.left,rect.bottom,NULL
-	invoke LineTo,hDC,rect.right,rect.bottom
+;	invoke MoveToEx,hDC,rect.left,rect.bottom,NULL
+;	invoke LineTo,hDC,rect.right,rect.bottom
 	retn
 
 DrawScaleText:
@@ -1186,7 +1186,7 @@ SaveSonarToIni proc
 
 SaveSonarToIni endp
 
-LoadSonarFromIni proc uses ebx
+LoadSonarFromIni proc uses ebx edi
 	LOCAL	buffer[256]:BYTE
 	
 	invoke RtlZeroMemory,addr buffer,sizeof buffer
@@ -1239,6 +1239,16 @@ LoadSonarFromIni proc uses ebx
 		mov		sonarrange.gainadd[edi],eax
 		invoke GetItemInt,addr buffer,0
 		mov		sonarrange.gaininc[edi],eax
+		invoke GetItemInt,addr buffer,0
+		mov		sonarrange.npixel[edi],eax
+		lea		esi,sonarrange.scale[edi]
+		invoke strcpy,esi,addr buffer
+		.while byte ptr [esi]
+			.if byte ptr [esi]==','
+				mov		byte ptr [esi],0
+			.endif
+			inc		esi
+		.endw
 		inc		ebx
 		lea		edi,[edi+sizeof RANGE]
 	.endw
