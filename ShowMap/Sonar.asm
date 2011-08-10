@@ -79,7 +79,7 @@ SonarOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:L
 		.if sonardata.ChartSync
 			invoke CheckDlgButton,hWin,IDC_CHKSOPNARCHART,BST_CHECKED
 		.endif
-		invoke SendDlgItemMessage,hWin,IDC_TRBSONARPING,TBM_SETRANGE,FALSE,(127 SHL 16)+1
+		invoke SendDlgItemMessage,hWin,IDC_TRBSONARPING,TBM_SETRANGE,FALSE,(127 SHL 16)+0
 		invoke SendDlgItemMessage,hWin,IDC_TRBSONARPING,TBM_SETPOS,TRUE,sonardata.PingInit
 		invoke SendDlgItemMessage,hWin,IDC_TRBSONARNOISE,TBM_SETRANGE,FALSE,(255 SHL 16)+1
 		movzx	eax,sonardata.Noise
