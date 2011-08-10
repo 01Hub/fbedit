@@ -967,7 +967,9 @@ ShowRangeDepthTempScaleFish proc uses ebx esi edi,hDC:HDC
 	LOCAL	rcsonar:RECT
 	LOCAL	rect:RECT
 	LOCAL	x:DWORD
-	LOCAL	buffer[32]:BYTE
+	LOCAL	tmp:DWORD
+	LOCAL	nticks:DWORD
+	LOCAL	ntick:DWORD
 
 	invoke GetClientRect,hSonar,addr rcsonar
 	.if sonardata.FishDetect
@@ -1078,6 +1080,38 @@ ShowOption:
 	invoke TextDraw,hDC,ecx,addr rect,addr [esi].OPTIONS.text,eax
 	retn
 
+DrawTick:
+	mov		eax,rect.bottom
+	sub		eax,rect.top
+	mov		tmp,eax
+	fild	tmp
+	fild	nticks
+	fdivp	st(1),st
+	fild	ntick
+	fmulp	st(1),st
+	fistp	tmp
+	mov		eax,rect.top
+	add		tmp,eax
+	invoke MoveToEx,hDC,rect.left,tmp,NULL
+	invoke LineTo,hDC,rect.right,tmp
+	.if !ntick
+		add		tmp,2
+	.else
+		sub		tmp,18
+	.endif
+	push	rect.left
+	push	rect.top
+	push	rect.right
+	sub		rect.left,20
+	add		rect.right,20
+	mov		eax,tmp
+	mov		rect.top,eax
+	invoke TextDraw,hDC,NULL,addr rect,esi,DT_CENTER or DT_TOP or DT_SINGLELINE
+	pop		rect.right
+	pop		rect.top
+	pop		rect.left
+	retn
+
 DrawScaleBar:
 	mov		ebx,rect.right
 	sub		ebx,rect.left
@@ -1085,33 +1119,20 @@ DrawScaleBar:
 	add		ebx,rect.left
 	invoke MoveToEx,hDC,ebx,rect.top,NULL
 	invoke LineTo,hDC,ebx,rect.bottom
-	invoke MoveToEx,hDC,rect.left,rect.top,NULL
-	invoke LineTo,hDC,rect.right,rect.top
-	mov		ebx,rect.bottom
-	sub		ebx,rect.top
-	shr		ebx,1
-	add		ebx,rect.top
-	invoke MoveToEx,hDC,rect.left,ebx,NULL
-	invoke LineTo,hDC,rect.right,ebx
-;	invoke MoveToEx,hDC,rect.left,rect.bottom,NULL
-;	invoke LineTo,hDC,rect.right,rect.bottom
-	retn
-
-DrawScaleText:
-	push	rect.top
-	add		rect.top,2
-	invoke DrawText,hDC,addr buffer,1,addr rect,DT_CENTER or DT_TOP or DT_SINGLELINE
-	mov		eax,rect.bottom
-	sub		eax,rect.top
-	shr		eax,1
-	sub		eax,20
-	add		rect.top,eax
-	invoke DrawText,hDC,addr buffer[8],-1,addr rect,DT_CENTER or DT_TOP or DT_SINGLELINE
-	mov		eax,rect.bottom
-	sub		eax,16
-	mov		rect.top,eax
-	invoke DrawText,hDC,addr buffer[16],-1,addr rect,DT_CENTER or DT_TOP or DT_SINGLELINE
-	pop		rect.top
+	movzx	eax,sonardata.RangeInx
+	invoke GetRangePtr,eax
+	mov		edx,sonarrange.nticks[eax]
+	mov		nticks,edx
+	mov		ntick,0
+	lea		esi,sonarrange.scale[eax]
+	.while dword ptr ntick<=edx
+		push	edx
+		call	DrawTick
+		invoke strlen,esi
+		lea		esi,[esi+eax+1]
+		pop		edx
+		inc		ntick
+	.endw
 	retn
 
 ShowScale:
@@ -1134,27 +1155,6 @@ ShowScale:
 	invoke SelectObject,hDC,eax
 	push	eax
 	call	DrawScaleBar
-	sub		rect.left,20
-	add		rect.right,20
-	mov		word ptr buffer,'0'
-	mov		edi,sonardata.RangeVal
-	invoke wsprintf,addr buffer[16],addr szFmtDec,edi
-	shr		edi,1
-	invoke wsprintf,addr buffer[8],addr szFmtDec,edi
-	invoke SetTextColor,hDC,0FFFFFFh
-	sub		rect.left,2
-	sub		rect.top,2
-	call	DrawScaleText
-	add		rect.left,4
-	call	DrawScaleText
-	add		rect.top,4
-	call	DrawScaleText
-	sub		rect.left,4
-	call	DrawScaleText
-	invoke SetTextColor,hDC,0
-	add		rect.left,2
-	sub		rect.top,2
-	call	DrawScaleText
 	pop		eax
 	invoke SelectObject,hDC,eax
 	retn
@@ -1239,16 +1239,17 @@ LoadSonarFromIni proc uses ebx edi
 		mov		sonarrange.gainadd[edi],eax
 		invoke GetItemInt,addr buffer,0
 		mov		sonarrange.gaininc[edi],eax
-		invoke GetItemInt,addr buffer,0
-		mov		sonarrange.npixel[edi],eax
 		lea		esi,sonarrange.scale[edi]
 		invoke strcpy,esi,addr buffer
+		xor		eax,eax
 		.while byte ptr [esi]
 			.if byte ptr [esi]==','
+				inc		eax
 				mov		byte ptr [esi],0
 			.endif
 			inc		esi
 		.endw
+		mov		sonarrange.nticks[edi],eax
 		inc		ebx
 		lea		edi,[edi+sizeof RANGE]
 	.endw

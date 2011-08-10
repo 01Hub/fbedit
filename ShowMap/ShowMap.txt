@@ -62,7 +62,7 @@ Time for sound to travel 100 cm: 1000000 / 1450 = 689,66 ~ 690 us
 Since it is the echo we are measuring: 690 * 2 = 1380 us
 
 Two timers are needed:
-1. Timer to generate the 200 KHz two phase ping signal.
+1. Timer to generate the 200 KHz two phase none overlapping clock ping signal.
    The number of pulses is variable (1 to 127).
 2. Timer to generate an interrupt for every 5,4 us. The interval is constant but the
    number of samples / pixel depends on range.
@@ -91,12 +91,12 @@ Runs on STM32 Discovery.
 Additional hardware
 ===================
 o Transmitter capable of delivering at least 150 watts RMS to the swinger.
-  For the swinger I am using, 1000 Vpp is needed.
-o Echo receiver with gain control, tuned at 200 KHz.
+  For the swinger I am using (Lowrance HST-WSU Part #106-48), 1000 Vpp is needed.
+o Echo receiver with gain control (controled by DAC), tuned at 200 KHz.
 o Amplifier measuring echo peak amplitude to be fead to the ADC.
 
-Port pins used
-==============
+Port pins used on STM32 Discovery
+=================================
 PA2		ADC Echo in
 PA3		ADC Battery in
 PA4		DAC channel1 Gain control out
@@ -108,7 +108,17 @@ PA9		Ping phase 1 out
 
 Transmitter transformer
 =======================
-Primary 6+6 turns and secondary 250 turns on an 8mm air core.
+Primary 6+6 turns and secondary 300 turns on an 8mm air core.
+
+Receiver transformers
+=====================
+455KHz IF transformers, Toko type 7P core (http://www.toko.com.hk/Catalog/coils/7p.pdf).
+
+T1		Primary 70+7 turns, secondary 7 turns
+T2		455 KHz IF transformer, white type
+
+Some specifications on 455KHz IF transformers
+=============================================
 
 455 Khz IF transformers
 ========================================================================================================================
@@ -142,13 +152,12 @@ f = -------------
 
 Might be useful reading
 =======================
-http://www.qrp.pops.net/Cascode_BJT.asp
-http://users.belgacom.net/hamradio/schemas/generalcoveragereceiver.htm
-http://electronickits.com/kit/complete/radi/amfm-108k.pdf
-http://www.electronics-tutorials.com/filters/if-amplifier-transformers.htm
-MC1350 if amplifier
-http://schematicsforfree.com/archive/file/Audio/Circuits/Dynamics%20&%20Gain%20Control/Voltage%20Controlled%20Amplifiers.pdf
-http://www.toko.com.hk/Catalog/coils/7p.pdf
-http://www.mouser.com/catalog/specsheets/XC-600131.pdf
-Hybrid IF: http://www.ka7exm.net/hycas/hycas_200712_qst.pdf
-JFET: http://www.w7zoi.net/jfet101.pdf
+IF stage:			http://www.qrp.pops.net/Cascode_BJT.asp
+AM/FM radio:		http://electronickits.com/kit/complete/radi/amfm-108k.pdf
+IF transformers:	http://www.electronics-tutorials.com/filters/if-amplifier-transformers.htm
+IF amplifier IC:	MC1350 if amplifier
+VCA:				http://schematicsforfree.com/archive/file/Audio/Circuits/Dynamics%20&%20Gain%20Control/Voltage%20Controlled%20Amplifiers.pdf
+Toko IF colils:		http://www.toko.com.hk/Catalog/coils/7p.pdf
+Mouser IF coils:	http://www.mouser.com/catalog/specsheets/XC-600131.pdf
+Hybrid IF:			http://www.ka7exm.net/hycas/hycas_200712_qst.pdf
+JFET:				http://www.w7zoi.net/jfet101.pdf

@@ -138,7 +138,7 @@ MAXRANGE				equ 32								;Max number of depth ranges that can be read from ini
 REPLYSPEED				equ 10								;At reply, the ping interval is divided by REPLYSPEED
 STM32_Sonar				equ 20000000h						;STM32 ram address
 SONARBACKCOLOR			equ 00C47B0Fh						;Back color of sonar
-SONARPENCOLOR			equ 00808080h						;Signal bar pen color
+SONARPENCOLOR			equ 00A0A0A0h						;Signal bar pen color
 MAXFISH					equ 32								;Prevents showing repeated fish symbols and repeated fish alarms
 
 LONPOINT struct
@@ -324,7 +324,7 @@ RANGE struct
 	pingadd			DWORD ?									;Number of pulses in a ping (1 to 127). Used when autoping is on
 	gainadd			DWORD ?									;Gain level to add (0 to 255) to GainInit. Used when auto gain is on
 	gaininc			DWORD ?									;Gain increment for each pixel. Used when auto gain is on
-	npixel			DWORD ?
+	nticks			DWORD ?
 	scale			BYTE 64 dup(?)
 RANGE ends
 
