@@ -406,20 +406,20 @@ STM32Thread proc uses ebx esi edi,lParam:DWORD
 	.elseif fSTLink && fSTLink!=IDIGNORE
 		;Download Start status (first byte)
 		invoke STLinkRead,hWnd,STM32_Sonar,addr status,4
-		.if !eax
+		.if !eax || eax==IDABORT || eax==IDIGNORE
 			jmp		STLinkErr
 		.endif
 		.if !(status & 255)
 			;Download ADCBattery, ADCWaterTemp and ADCAirTemp
 			invoke STLinkRead,hWnd,STM32_Sonar+8,addr sonardata.dmy1,8
-			.if !eax
+			.if !eax || eax==IDABORT || eax==IDIGNORE
 				jmp		STLinkErr
 			.endif
 			;Copy old echo
 			invoke RtlMoveMemory,addr STM32Echo[MAXYECHO],addr STM32Echo,MAXYECHO
 			;Download sonar echo array
 			invoke STLinkRead,hWnd,STM32_Sonar+16,addr STM32Echo,MAXYECHO
-			.if !eax
+			.if !eax || eax==IDABORT || eax==IDIGNORE
 				jmp		STLinkErr
 			.endif
 		 	;Upload Start, PingPulses, Noise, Gain, GainInc, RangeInx, nSample and Timer to init the next reading
@@ -451,13 +451,13 @@ STM32Thread proc uses ebx esi edi,lParam:DWORD
 			mov		sonardata.Ping,al
 		 	mov		sonardata.Start,0
 			invoke STLinkWrite,hWnd,STM32_Sonar,addr sonardata.Start,12
-			.if !eax
+			.if !eax || eax==IDABORT || eax==IDIGNORE
 				jmp		STLinkErr
 			.endif
 			;Start the next phase
 		 	mov		sonardata.Start,1
 			invoke STLinkWrite,hWnd,STM32_Sonar,addr sonardata.Start,12
-			.if !eax
+			.if !eax || eax==IDABORT || eax==IDIGNORE
 				jmp		STLinkErr
 			.endif
 		.else
