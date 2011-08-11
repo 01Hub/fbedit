@@ -61,6 +61,8 @@ u16 GetADCValue(u8 Channel);
 int main(void)
 {
   u32 i;
+  u32* ADC;
+  u8 Echo;
 
   /* System clocks configuration */
   RCC_Configuration();
@@ -108,6 +110,7 @@ int main(void)
         STM32_Sonar.Echo[i] = 0;
         i++;
       }
+      /* Init nSample */
       nSample = STM32_Sonar.nSample;
       /* Reset echo index */
       EchoIndex = 0;
@@ -121,6 +124,28 @@ int main(void)
       Ping = 0x100;
       /* Enable TIM1 */
       TIM_Cmd(TIM1, ENABLE);
+      while (STM32_Sonar.Start == 2)
+      {
+        /* Get echo */
+        ADC = ( (u32 *) ADC1_ICDR_Address);
+        Echo = (u8) ( (u16) (*(vu32*) (((*(u32*)&ADC)))) >> 4);
+        /* Reserve 254 and 255 for fish detect */
+        if (Echo > 253)
+        {
+          Echo = 253;
+        }
+        /* If echo larger than previous echo, update the echo array */
+        if (Echo > STM32_Sonar.Echo[EchoIndex])
+        {
+          STM32_Sonar.Echo[EchoIndex] = Echo;
+        }
+      }
+      /* Disable ADC injected channel */
+      ADC_AutoInjectedConvCmd(ADC1, DISABLE);
+      /* Store the range */
+      STM32_Sonar.Echo[0] = STM32_Sonar.Range;
+      /* Set the DAC to output lowest gain */
+      DAC->DHR12R1 = (u16)0x0;
     }
     i = 0;
     while (i < 1000)
@@ -220,46 +245,25 @@ void TIM1_UP_IRQHandler(void)
 *******************************************************************************/
 void TIM2_IRQHandler(void)
 {
-  u32* ADC;
-  u8 Echo;
   u16 Gain;
   /* Clear TIM2 Update interrupt pending bit */
   TIM2->SR = (u16)~TIM_IT_Update;
-  /* Get echo */
-  ADC = ( (u32 *) ADC1_ICDR_Address);
-  Echo = (u8) ( (u16) (*(vu32*) (((*(u32*)&ADC)))) >> 4);
-  /* Reserve 254 and 255 for fish detect */
-  if (Echo > 253)
+  /* Set the DAC to output next gain step */
+  Gain = (u16)DAC->DHR12R1 + (u16)STM32_Sonar.GainInc;
+  if (Gain > 4095)
   {
-    Echo = 253;
+    Gain = 4095;
   }
-  /* If echo larger than previous echo, update the echo array */
-  if (Echo > STM32_Sonar.Echo[EchoIndex])
-  {
-    STM32_Sonar.Echo[EchoIndex] = Echo;
-  }
+  DAC->DHR12R1 = Gain;
   nSample--;
-  if (!nSample)
+  if (nSample == 0)
   {
-    /* Set the DAC to output next gain step */
-    Gain = (u16)DAC->DHR12R1 + (u16)STM32_Sonar.GainInc;
-    if (Gain > 4095)
-    {
-      Gain = 4095;
-    }
-    DAC->DHR12R1 = Gain;
-    nSample = STM32_Sonar.nSample;
     EchoIndex++;
     if (EchoIndex == MAXECHO)
     {
+      EchoIndex = 0;
       /* Disable TIM2 */
       TIM2->CR1 = 0;
-      /* Disable ADC injected channel */
-      ADC_AutoInjectedConvCmd(ADC1, DISABLE);
-      /* Store the range */
-      STM32_Sonar.Echo[0] = STM32_Sonar.Range;
-      /* Set the DAC to output lowest gain */
-      DAC->DHR12R1 = (u16)0x0;
       /* Done */
       STM32_Sonar.Start = 0;
     }
@@ -312,7 +316,7 @@ void ADC_Configuration(void)
 {
   ADC_InitTypeDef ADC_InitStructure;
 
-  /* ADCCLK = PCLK2/8 */
+  /* ADCCLK = PCLK2/2 */
   RCC_ADCCLKConfig(RCC_PCLK2_Div2);
   ADC_InitStructure.ADC_Mode = ADC_Mode_Independent;
   ADC_InitStructure.ADC_ScanConvMode = ENABLE;
@@ -325,7 +329,7 @@ void ADC_Configuration(void)
   /* Setup injected channel */
   ADC_InjectedSequencerLengthConfig(ADC1,1);
   /* Sonar echo */
-  ADC_InjectedChannelConfig(ADC1,ADC_Channel_2,1,ADC_SampleTime_28Cycles5);
+  ADC_InjectedChannelConfig(ADC1,ADC_Channel_2,1,ADC_SampleTime_1Cycles5);
 }
 
 /*******************************************************************************
@@ -403,7 +407,7 @@ void GPIO_Configuration(void)
   GPIO_Init(GPIOC, &GPIO_InitStructure);
   /* Set ping outputs high (FET's off) */
   GPIO_WriteBit(GPIOA, GPIO_Pin_9 | GPIO_Pin_8, Bit_SET);
-  /* Configure PA.09 and PA.08 */
+  /* Configure PA.09 and PA.08 as outputs */
   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9 | GPIO_Pin_8;
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
