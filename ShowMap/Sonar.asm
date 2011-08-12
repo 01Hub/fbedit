@@ -198,7 +198,7 @@ SonarOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:L
 			mov		sonardata.PingTimer,bl
 		.endif
 	.elseif eax==WM_CLOSE
-		invoke EndDialog,hWin,lParam
+		invoke DestroyWindow,hWin
 	.else
 		mov		eax,FALSE
 		ret
@@ -423,7 +423,7 @@ STM32Thread proc uses ebx esi edi,lParam:DWORD
 				jmp		STLinkErr
 			.endif
 		 	;Upload Start, PingPulses, Noise, Gain, GainInc, RangeInx, nSample and Timer to init the next reading
-			movzx	ebx,STM32Echo
+			movzx	ebx,sonardata.RangeInx
 			invoke GetRangePtr,ebx
 			mov		ebx,eax
 			.if sonardata.AutoGain

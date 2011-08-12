@@ -93,8 +93,7 @@ Additional hardware
 ===================
 o Transmitter capable of delivering at least 150 watts RMS to the swinger.
   For the swinger I am using (Lowrance HST-WSU Part #106-48), 1000 Vpp is needed.
-o Echo receiver with gain control (controled by DAC), tuned at 200 KHz.
-  Peak detection is done by the ADC so there is no need for a demodulator.
+o Echo receiver tuned at 200KHz and with time dependant gain control (controled by DAC).
 
 Port pins used on STM32 Discovery
 =================================
