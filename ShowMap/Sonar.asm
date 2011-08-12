@@ -311,6 +311,8 @@ UpdateBitmapTile proc uses ebx esi edi,x:DWORD,wt:DWORD,NewRange:DWORD
 			mul		edx
 			movzx	eax,sonardata.sonar[eax+edi]
 			.if eax
+				shr		eax,1
+				add		eax,64
 				xor		eax,0FFh
 				mov		ah,al
 				shl		eax,8
@@ -920,6 +922,8 @@ Update:
 		.while ebx<MAXYECHO
 			movzx	eax,sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO]
 			.if eax
+				shr		eax,1
+				add		eax,64
 				xor		eax,0FFh
 				mov		ah,al
 				shl		eax,8
@@ -1119,7 +1123,7 @@ DrawScaleBar:
 	add		ebx,rect.left
 	invoke MoveToEx,hDC,ebx,rect.top,NULL
 	invoke LineTo,hDC,ebx,rect.bottom
-	movzx	eax,sonardata.RangeInx
+	movzx	eax,sonardata.STM32Echo
 	invoke GetRangePtr,eax
 	mov		edx,sonarrange.nticks[eax]
 	mov		nticks,edx
