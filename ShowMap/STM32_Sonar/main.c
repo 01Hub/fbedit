@@ -15,7 +15,7 @@
 
 typedef struct
 {
-  u8 Start;
+  vu8 Start;
   u8 PingPulses;
   u8 PingTimer;
   u8 Gain;
@@ -259,6 +259,7 @@ void TIM2_IRQHandler(void)
   if (nSample == 0)
   {
     EchoIndex++;
+    nSample = STM32_Sonar.nSample;
     if (EchoIndex == MAXECHO)
     {
       EchoIndex = 0;
@@ -329,7 +330,7 @@ void ADC_Configuration(void)
   /* Setup injected channel */
   ADC_InjectedSequencerLengthConfig(ADC1,1);
   /* Sonar echo */
-  ADC_InjectedChannelConfig(ADC1,ADC_Channel_2,1,ADC_SampleTime_1Cycles5);
+  ADC_InjectedChannelConfig(ADC1,ADC_Channel_2,1,ADC_SampleTime_13Cycles5);
 }
 
 /*******************************************************************************
