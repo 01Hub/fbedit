@@ -427,3 +427,4 @@ hSplittV			HCURSOR ?								;Horizontal splitt cursor
 rseed				DWORD ?									;Random seed
 szFishSound			BYTE MAX_PATH dup(?)					;Path & filename of fish.wav file
 fFishSound			DWORD ?
+lpOldButtonProc		DWORD ?

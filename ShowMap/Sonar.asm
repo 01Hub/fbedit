@@ -52,6 +52,29 @@ SetRange proc uses ebx,RangeInx:DWORD
 
 SetRange endp
 
+ButtonProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+
+	mov		eax,uMsg
+	.if eax==WM_LBUTTONDOWN
+		invoke SetTimer,hWin,1000,500,NULL
+	.elseif eax==WM_LBUTTONUP
+		invoke KillTimer,hWin,1000
+	.elseif eax==WM_TIMER
+		invoke GetWindowLong,hWin,GWL_ID
+		push	eax
+		invoke GetParent,hWin
+		pop		edx
+		invoke SendMessage,eax,WM_COMMAND,edx,hWin
+		invoke KillTimer,hWin,1000
+		invoke SetTimer,hWin,1000,50,NULL
+		xor		eax,eax
+		ret
+	.endif
+	invoke CallWindowProc,lpOldButtonProc,hWin,uMsg,wParam,lParam
+	ret
+
+ButtonProc endp
+
 SonarOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
 	mov		eax,uMsg
@@ -96,6 +119,26 @@ SonarOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:L
 		invoke SendDlgItemMessage,hWin,IDC_TRBPINGTIMER,TBM_SETRANGE,FALSE,(144 SHL 16)+134
 		movzx	eax,sonardata.PingTimer
 		invoke SendDlgItemMessage,hWin,IDC_TRBPINGTIMER,TBM_SETPOS,TRUE,eax
+		;Subclass buttons to get autorepeat
+		push	0
+		push	IDC_BTNGD
+		push	IDC_BTNGU
+		push	IDC_BTNPU
+		push	IDC_BTNPD
+		push	IDC_BTNRU
+		push	IDC_BTNRD
+		push	IDC_BTNCU
+		push	IDC_BTNCD
+		push	IDC_BTNNU
+		push	IDC_BTNND
+		push	IDC_BTNPTU
+		mov		eax,IDC_BTNPTD
+		.while eax
+			invoke GetDlgItem,hWin,eax
+			invoke SetWindowLong,eax,GWL_WNDPROC,offset ButtonProc
+			mov		lpOldButtonProc,eax
+			pop		eax
+		.endw
 	.elseif eax==WM_COMMAND
 		mov		edx,wParam
 		movzx	eax,dx
@@ -311,8 +354,8 @@ UpdateBitmapTile proc uses ebx esi edi,x:DWORD,wt:DWORD,NewRange:DWORD
 			mul		edx
 			movzx	eax,sonardata.sonar[eax+edi]
 			.if eax
-				shr		eax,1
-				add		eax,64
+;				shr		eax,1
+;				add		eax,64
 				xor		eax,0FFh
 				mov		ah,al
 				shl		eax,8
@@ -922,8 +965,8 @@ Update:
 		.while ebx<MAXYECHO
 			movzx	eax,sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO]
 			.if eax
-				shr		eax,1
-				add		eax,64
+;				shr		eax,1
+;				add		eax,64
 				xor		eax,0FFh
 				mov		ah,al
 				shl		eax,8
