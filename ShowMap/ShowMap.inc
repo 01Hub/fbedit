@@ -140,6 +140,7 @@ STM32_Sonar				equ 20000000h						;STM32 ram address
 SONARBACKCOLOR			equ 00C47B0Fh						;Back color of sonar
 SONARPENCOLOR			equ 00A0A0A0h						;Signal bar pen color
 MAXFISH					equ 32								;Prevents showing repeated fish symbols and repeated fish alarms
+MAXSONARBMP				equ 64
 
 LONPOINT struct
 	iLon			DWORD ?									;Longitude
@@ -267,6 +268,13 @@ MAP struct
 	hMemLat			HGLOBAL ?								;Lattitude array
 MAP ends
 
+SONARBMP struct
+	nRange			DWORD ?
+	nStart			DWORD ?
+	wt				DWORD ?
+	hBmp			HBITMAP ?
+SONARBMP ends
+
 SONAR struct
 	mDC				HDC ?									;The memory DC holds the echo bitmap, 512*512 pixels,
 	hBmp			HBITMAP ?								;Handle of the bitmap used in mDC to draw echo
@@ -315,6 +323,7 @@ SONAR struct
 	minyecho		DWORD ?
 	nodptinx		DWORD ?
 	dptinx			DWORD ?
+	sonarbmp		SONARBMP 64 dup(<>)
 SONAR ends
 
 RANGE struct

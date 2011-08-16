@@ -871,16 +871,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						invoke CreateFile,addr buffer,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL
 						.if eax!=INVALID_HANDLE_VALUE
 							mov		sonardata.hReply,eax
-							invoke RtlZeroMemory,addr sonardata.sonar,MAXYECHO*MAXXECHO
-							mov		rect.left,0
-							mov		rect.top,0
-							mov		rect.right,MAXXECHO
-							mov		rect.bottom,MAXYECHO
-							invoke CreateSolidBrush,SONARBACKCOLOR
-							push	eax
-							invoke FillRect,sonardata.mDC,addr rect,eax
-							pop		eax
-							invoke DeleteObject,eax
+							invoke SonarClear
 						.endif
 					.endif
 				.endif
@@ -1000,16 +991,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.elseif eax==IDM_DIST_DELETE
 				invoke DeletePoint,map.onpoint,addr map.dist,addr map.disthead
 			.elseif eax==IDM_SONARCLEAR
-				invoke RtlZeroMemory,addr sonardata.sonar,MAXXECHO*MAXYECHO
-				mov		rect.left,0
-				mov		rect.top,0
-				mov		rect.right,MAXXECHO
-				mov		rect.bottom,MAXYECHO
-				invoke CreateSolidBrush,SONARBACKCOLOR
-				push	eax
-				invoke FillRect,sonardata.mDC,addr rect,eax
-				pop		eax
-				invoke DeleteObject,eax
+				invoke SonarClear
 			.elseif eax==IDM_SONARPAUSE
 				invoke IsDlgButtonChecked,hWin,IDC_CHKCHART
 				.if eax
