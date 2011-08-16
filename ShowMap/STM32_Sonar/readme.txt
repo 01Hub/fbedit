@@ -10,7 +10,7 @@ Description
 ===========
 A short ping at 200 KHz is transmitted at intervals depending on depth range (200 to 400 ms).
 From the time it takes for the echo to return we can calculate the depth.
-The adc measures the strenght of the echo at intervalls depending on range
+The ADC measures the strenght of the echo at intervalls depending on range
 and stores it in a 512 byte array.
 
 Speed of sound in water
@@ -61,7 +61,6 @@ Additional hardware
 o Transmitter capable of delivering at least 150 watts RMS to the swinger.
   For the swinger I am using, 1000 Vpp is needed.
 o Echo receiver with gain control, tuned at 200 KHz.
-o Amplifier measuring echo peak amplitude to be fead to the ADC.
 
 Port pins used
 ==============

@@ -34,7 +34,6 @@ typedef struct
 /* Private variables ---------------------------------------------------------*/
 static STM32_SonarTypeDef STM32_Sonar;         // 0x20000000
 vu8 BlueLED;
-vu8 GreenLED;
 vu8 nSample;
 vu16 EchoIndex;
 vu16 Ping;
@@ -61,7 +60,8 @@ u16 GetADCValue(u8 Channel);
 int main(void)
 {
   u32 i;
-
+  u32* ADC;
+  u8 Echo;
   /* System clocks configuration */
   RCC_Configuration();
   /* NVIC configuration */
@@ -122,6 +122,24 @@ int main(void)
       Ping = 0x100;
       /* Enable TIM1 */
       TIM_Cmd(TIM1, ENABLE);
+      while (STM32_Sonar.Start == 2)
+      {
+        /* Get echo */
+        ADC = ( (u32 *) ADC1_ICDR_Address);
+        Echo = (u8) ( (u16) (*(vu32*) (((*(u32*)&ADC)))) >> 4);
+        /* Reserve 254 and 255 for fish detect */
+        if (Echo > 253)
+        {
+          Echo = 253;
+        }
+        /* If echo larger than previous echo, update the echo array */
+        if (Echo > STM32_Sonar.Echo[EchoIndex])
+        {
+          STM32_Sonar.Echo[EchoIndex] = Echo;
+        }
+        /* Done, Store the current range */
+        STM32_Sonar.Echo[0] = STM32_Sonar.Range;
+      }
     }
     i = 0;
     while (i < 1000)
@@ -201,7 +219,7 @@ void TIM1_UP_IRQHandler(void)
   }
   else
   {
-    /* Set DAC Gain */
+    /* Ping done, Set DAC Gain */
     DAC->DHR12R1 = (u16)STM32_Sonar.Gain << 4;
     /* Disable TIM1 */
     TIM_Cmd(TIM1, DISABLE);
@@ -222,46 +240,30 @@ void TIM1_UP_IRQHandler(void)
 void TIM2_IRQHandler(void)
 {
   u16 Gain;
-  u32* ADC;
-  u8 Echo;
   /* Clear TIM2 Update interrupt pending bit */
   TIM2->SR = (u16)~TIM_IT_Update;
-  /* Get echo */
-  ADC = ( (u32 *) ADC1_ICDR_Address);
-  Echo = (u8) ( (u16) (*(vu32*) (((*(u32*)&ADC)))) >> 4);
-  /* Reserve 254 and 255 for fish detect */
-  if (Echo > 253)
-  {
-    Echo = 253;
-  }
-  /* If echo larger than previous echo, update the echo array */
-  if (Echo > STM32_Sonar.Echo[EchoIndex])
-  {
-    STM32_Sonar.Echo[EchoIndex] = Echo;
-  }
-  /* Set the DAC to output next gain step */
-  Gain = (u16)DAC->DHR12R1 + (u16)STM32_Sonar.GainInc;
-  if (Gain > 4095)
-  {
-    Gain = 4095;
-  }
-  DAC->DHR12R1 = Gain;
   nSample--;
   if (nSample == 0)
   {
+    /* Set the DAC to output next gain step */
+    Gain = (u16)DAC->DHR12R1 + (u16)STM32_Sonar.GainInc;
+    if (Gain > 4095)
+    {
+      Gain = 4095;
+    }
+    DAC->DHR12R1 = Gain;
     nSample = STM32_Sonar.nSample;
     EchoIndex++;
     if (EchoIndex == MAXECHO)
     {
+      EchoIndex = 0;
       /* Disable TIM2 */
       TIM2->CR1 = 0;
       /* Disable ADC injected channel */
       ADC_AutoInjectedConvCmd(ADC1, DISABLE);
-      /* Store the range */
-      STM32_Sonar.Echo[0] = STM32_Sonar.Range;
       /* Set the DAC to output lowest gain */
       DAC->DHR12R1 = (u16)0x0;
-      /* Done */
+      /* Done sampling echo*/
       STM32_Sonar.Start = 0;
     }
   }
