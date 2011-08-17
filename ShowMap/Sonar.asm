@@ -405,13 +405,13 @@ STM32Thread proc uses ebx esi edi,lParam:DWORD
 			shl		eax,1
 			mov		sonardata.Ping,al
 		 	mov		sonardata.Start,0
-			invoke STLinkWrite,hWnd,STM32_Sonar,addr sonardata.Start,12
+			invoke STLinkWrite,hWnd,STM32_Sonar,addr sonardata.Start,8
 			.if !eax || eax==IDABORT || eax==IDIGNORE
 				jmp		STLinkErr
 			.endif
 			;Start the next phase
 		 	mov		sonardata.Start,1
-			invoke STLinkWrite,hWnd,STM32_Sonar,addr sonardata.Start,12
+			invoke STLinkWrite,hWnd,STM32_Sonar,addr sonardata.Start,8
 			.if !eax || eax==IDABORT || eax==IDIGNORE
 				jmp		STLinkErr
 			.endif
@@ -859,7 +859,7 @@ SetBattery:
 		mov		sonardata.Battery,eax
 		mov		ecx,100
 		mul		ecx
-		mov		ecx,1640
+		mov		ecx,1780
 		div		ecx
 		invoke wsprintf,addr buffer,addr szFmtVolts,eax
 		invoke strlen,addr buffer

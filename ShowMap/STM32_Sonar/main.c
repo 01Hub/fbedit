@@ -24,9 +24,9 @@ typedef struct
   u8 nSample;
   u8 Dummy8;
   u16 Dummy16;
-  u16 ADCBatt;
-  u16 ADCWaterTemp;
-  u16 ADCAirTemp;
+  vu16 ADCBatt;
+  vu16 ADCWaterTemp;
+  vu16 ADCAirTemp;
   u8 Echo[MAXECHO];
 }STM32_SonarTypeDef;
 
