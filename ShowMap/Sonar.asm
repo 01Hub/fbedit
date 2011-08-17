@@ -990,9 +990,7 @@ Update:
 		mov		ebx,1
 		.while ebx<MAXYECHO
 			movzx	eax,sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO]
-			.if eax
-;				shr		eax,1
-;				add		eax,64
+			.if eax && eax<=253
 				xor		eax,0FFh
 				mov		ah,al
 				shl		eax,8
@@ -1079,7 +1077,7 @@ ShowFish:
 			mov		eax,MAXYECHO
 			mul		esi
 			movzx	eax,sonardata.sonar[eax+edi]
-			.if eax==254 || eax==255
+			.if eax>=254
 				push	eax
 				mov		eax,MAXYECHO
 				mul		esi

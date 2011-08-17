@@ -24,9 +24,9 @@ typedef struct
   u8 nSample;
   u8 Dummy8;
   u16 Dummy16;
-  vu16 ADCBatt;
-  vu16 ADCWaterTemp;
-  vu16 ADCAirTemp;
+  u16 ADCBatt;
+  u16 ADCWaterTemp;
+  u16 ADCAirTemp;
   u8 Echo[MAXECHO];
 }STM32_SonarTypeDef;
 
@@ -124,6 +124,8 @@ int main(void)
       TIM_Cmd(TIM1, ENABLE);
       while (STM32_Sonar.Start == 2)
       {
+        /* To eliminate the need for an AM demodulator the largest */ 
+        /* ADC reading is stored in its echo array element */
         /* Get echo */
         ADC = ( (u32 *) ADC1_ICDR_Address);
         Echo = (u8) ( (u16) (*(vu32*) (((*(u32*)&ADC)))) >> 4);
@@ -137,7 +139,7 @@ int main(void)
         {
           STM32_Sonar.Echo[EchoIndex] = Echo;
         }
-        /* Done, Store the current range */
+        /* Done, Store the current range as the first byte in the echo array */
         STM32_Sonar.Echo[0] = STM32_Sonar.Range;
       }
     }
@@ -252,10 +254,13 @@ void TIM2_IRQHandler(void)
       Gain = 4095;
     }
     DAC->DHR12R1 = Gain;
+    /* Reinit nSample */
     nSample = STM32_Sonar.nSample;
+    /* Increment the echo array index */
     EchoIndex++;
     if (EchoIndex == MAXECHO)
     {
+      /* Reset echo array index */
       EchoIndex = 0;
       /* Disable TIM2 */
       TIM2->CR1 = 0;
