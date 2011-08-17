@@ -506,8 +506,9 @@ STM32Thread proc uses ebx esi edi,lParam:DWORD
 				mov		STM32Echo[edx],al
 			.endif
 		.endif
-		mov		sonardata.ADCBattery,0810h
-		mov		sonardata.ADCWaterTemp,0980h
+		mov		sonardata.ADCBattery,08E0h
+		mov		sonardata.ADCWaterTemp,09A0h
+		mov		sonardata.ADCAirTemp,0900h
 	.endif
 	.if sonardata.hLog
 		;Write to log file
@@ -894,6 +895,27 @@ SetWTemp:
 	.endif
 	retn
 
+SetATemp:
+	.if eax!=sonardata.ATemp
+		mov		sonardata.ATemp,eax
+		sub		eax,0BC8h
+		neg		eax
+		mov		tmp,eax
+		fild	tmp
+		fld		airtempconv
+		fdivp	st(1),st
+		fistp	tmp
+		invoke wsprintf,addr buffer,addr szFmtDec,tmp
+		invoke strlen,addr buffer
+		movzx	ecx,word ptr buffer[eax-1]
+		shl		ecx,8
+		mov		cl,'.'
+		mov		dword ptr buffer[eax-1],ecx
+		invoke strcat,addr buffer,addr szCelcius
+		invoke strcpy,addr map.options.text[sizeof OPTIONS*2],addr buffer
+	.endif
+	retn
+
 ScrollEchoArray:
 	mov		esi,offset sonardata.sonar+MAXYECHO
 	mov		edi,offset sonardata.sonar
@@ -957,11 +979,15 @@ UpdateBitmapArray:
 	retn
 
 Update:
+	;Battery
 	movzx	eax,sonardata.ADCBattery
 	call	SetBattery
 	;Water temprature
 	movzx	eax,sonardata.ADCWaterTemp
 	call	SetWTemp
+	;Air temprature
+	movzx	eax,sonardata.ADCAirTemp
+	call	SetATemp
 	invoke IsDlgButtonChecked,hWnd,IDC_CHKCHART
 	.if !eax
 		;Check if range is still the same

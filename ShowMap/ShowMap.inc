@@ -300,8 +300,9 @@ SONAR struct
 	MaxRange		DWORD ?									;Number of range definitions read from ini
 	RangeVal		DWORD ?									;Range in meters
 	ShowDepth		DWORD ?									;Bit 0 depth on/off, Bit 1 blink depth if echo is lost
-	Battery			DWORD ?									;TRUE if battery should be shown
-	WTemp			DWORD ?									;TRUE if water surface temprature should be shown
+	Battery			DWORD ?									;Current battery
+	WTemp			DWORD ?									;Current water surface temprature
+	ATemp			DWORD ?									;Current air temprature
 	PingInit		DWORD ?									;Ping initial value (0 to 255)
 	GainInit		DWORD ?									;Gain initial level (0 to 255)
 	Noise			BYTE ?									;Noise reject level (0 to 255)
@@ -403,6 +404,7 @@ szFmtVolts			BYTE '%02u',0
 szVolts				BYTE 'V',0
 szCelcius			BYTE 'C',0
 watertempconv		QWORD 3.46982758620
+airtempconv			QWORD 3.46982758620
 
 .data?
 
