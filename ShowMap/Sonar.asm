@@ -900,7 +900,7 @@ SetATemp:
 		xor		ebx,ebx
 		mov		esi,offset atemp
 		.while ebx<NATEMP
-			.if eax<[esi+ebx*sizeof TEMP].TEMP.adcvalue && eax>=[esi+ebx*sizeof TEMP].TEMP.adcvalue[sizeof TEMP]
+			.if eax<[esi+ebx*sizeof TEMP].TEMP.adcvalue && eax>=[esi+ebx*sizeof TEMP+sizeof TEMP].TEMP.adcvalue
 				.break
 			.endif
 			inc		ebx
@@ -909,7 +909,7 @@ SetATemp:
 			mov		sonardata.ATemp,eax
 			;Tx=(T1-T2)/(V1-V2)*(V1-Vx)+T1
 			mov		eax,[esi+ebx*sizeof TEMP].TEMP.temp
-			sub		eax,[esi+ebx*sizeof TEMP].TEMP.temp[sizeof TEMP]
+			sub		eax,[esi+ebx*sizeof TEMP+sizeof TEMP].TEMP.temp
 			mov		tmp,eax
 			fild	tmp
 			mov		eax,[esi+ebx*sizeof TEMP].TEMP.adcvalue
