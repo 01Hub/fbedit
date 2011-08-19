@@ -338,6 +338,11 @@ RANGE struct
 	scale			BYTE 64 dup(?)							;Zero terminated strings of depths
 RANGE ends
 
+TEMP struct
+	adcvalue		DWORD ?
+	temp			DWORD ?
+TEMP ends
+
 .const
 
 dd256				DWORD 256
@@ -403,8 +408,12 @@ szFmtDepth			BYTE '%02u',0
 szFmtVolts			BYTE '%02u',0
 szVolts				BYTE 'V',0
 szCelcius			BYTE 'C',0
-watertempconv		QWORD 3.46982758620
+watertempconv		QWORD 5.16982758620
 airtempconv			QWORD 3.46982758620
+
+NATEMP				equ 14
+atemp				TEMP <3000,-200>,<2900,-150>,<2800,-100>,<2700,-50>,<2600,0>,<2522,50>,<2218,100>,
+						 <2015,150>,<1820,200>,<1610,250>,<1441,300>,<1268,350>,<1116,400>,<980,450>
 
 .data?
 

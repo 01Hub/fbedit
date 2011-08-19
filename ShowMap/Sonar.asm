@@ -860,7 +860,7 @@ SetBattery:
 		mov		sonardata.Battery,eax
 		mov		ecx,100
 		mul		ecx
-		mov		ecx,1780
+		mov		ecx,1792
 		div		ecx
 		invoke wsprintf,addr buffer,addr szFmtVolts,eax
 		invoke strlen,addr buffer
@@ -897,22 +897,44 @@ SetWTemp:
 
 SetATemp:
 	.if eax!=sonardata.ATemp
-		mov		sonardata.ATemp,eax
-		sub		eax,0BC8h
-		neg		eax
-		mov		tmp,eax
-		fild	tmp
-		fld		airtempconv
-		fdivp	st(1),st
-		fistp	tmp
-		invoke wsprintf,addr buffer,addr szFmtDec,tmp
-		invoke strlen,addr buffer
-		movzx	ecx,word ptr buffer[eax-1]
-		shl		ecx,8
-		mov		cl,'.'
-		mov		dword ptr buffer[eax-1],ecx
-		invoke strcat,addr buffer,addr szCelcius
-		invoke strcpy,addr map.options.text[sizeof OPTIONS*2],addr buffer
+		xor		ebx,ebx
+		mov		esi,offset atemp
+		.while ebx<NATEMP
+			.if eax<[esi+ebx*sizeof TEMP].TEMP.adcvalue && eax>=[esi+ebx*sizeof TEMP].TEMP.adcvalue[sizeof TEMP]
+				.break
+			.endif
+			inc		ebx
+		.endw
+		.if ebx<NATEMP
+			mov		sonardata.ATemp,eax
+			;Tx=(T1-T2)/(V1-V2)*(V1-Vx)+T1
+			mov		eax,[esi+ebx*sizeof TEMP].TEMP.temp
+			sub		eax,[esi+ebx*sizeof TEMP].TEMP.temp[sizeof TEMP]
+			mov		tmp,eax
+			fild	tmp
+			mov		eax,[esi+ebx*sizeof TEMP].TEMP.adcvalue
+			sub		eax,[esi+ebx*sizeof TEMP+sizeof TEMP].TEMP.adcvalue
+			mov		tmp,eax
+			fild	tmp
+			fdivp	st(1),st
+			mov		eax,[esi+ebx*sizeof TEMP].TEMP.adcvalue
+			sub		eax,sonardata.ATemp
+			mov		tmp,eax
+			fild	tmp
+			fmulp	st(1),st
+			fistp	tmp
+			mov		eax,[esi+ebx*sizeof TEMP].TEMP.temp
+			sub		eax,tmp
+			mov		tmp,eax
+			invoke wsprintf,addr buffer,addr szFmtDec,tmp
+			invoke strlen,addr buffer
+			movzx	ecx,word ptr buffer[eax-1]
+			shl		ecx,8
+			mov		cl,'.'
+			mov		dword ptr buffer[eax-1],ecx
+			invoke strcat,addr buffer,addr szCelcius
+			invoke strcpy,addr map.options.text[sizeof OPTIONS*2],addr buffer
+		.endif
 	.endif
 	retn
 

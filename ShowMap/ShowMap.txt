@@ -163,3 +163,30 @@ Toko IF colils:		http://www.toko.com.hk/Catalog/coils/7p.pdf
 Mouser IF coils:	http://www.mouser.com/catalog/specsheets/XC-600131.pdf
 Hybrid IF:			http://www.ka7exm.net/hycas/hycas_200712_qst.pdf
 JFET:				http://www.w7zoi.net/jfet101.pdf
+45  980
+40 1116
+35 1268
+30 1441
+25 1610
+20 1820
+17 1926
+15 2015
+10 2218
+ 5 2522
+ 2 2563
+ 
+(T1-Tx)/(V1-Vx)=(T1-T2)/(V1-V2)
+T1-Tx=(T1-T2)/(V1-V2)*(V1-Vx)
+-Tx=
+Tx=-((T1-T2)/(V1-V2)*(V1-Vx)+T1)
+
+(15-20)/(2015-1820)*(2015-1900)+15
+
+dT1/dV1=dT2/dV2
+dT1=dT2/dV2*dV1
+
+Rx=15*Vx/(3-Vx)
+
+17C --> Vx = 3/4095*1926 = 1.41 = 13.3K
+27C --> Vx = 3/4095*1547 = 1.13 = 8.98K
+37C --> Vx = 3/4095*1208 = 0.88 = 6.23K
