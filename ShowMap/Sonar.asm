@@ -347,17 +347,20 @@ STM32Thread proc uses ebx esi edi,lParam:DWORD
 	invoke RtlZeroMemory,addr fish,sizeof fish
   Again:
 	.if sonardata.hReply
-		;Copy old echo
-		invoke RtlMoveMemory,addr STM32Echo[MAXYECHO],addr STM32Echo,MAXYECHO
-		;Read echo from file
-		invoke ReadFile,sonardata.hReply,addr STM32Echo,MAXYECHO,addr dwread,NULL
-		.if dwread!=MAXYECHO
-			invoke CloseHandle,sonardata.hReply
-			mov		sonardata.hReply,0
-			jmp		Again
+		invoke IsDlgButtonChecked,hWnd,IDC_CHKCHART
+		.if !eax
+			;Copy old echo
+			invoke RtlMoveMemory,addr STM32Echo[MAXYECHO],addr STM32Echo,MAXYECHO
+			;Read echo from file
+			invoke ReadFile,sonardata.hReply,addr STM32Echo,MAXYECHO,addr dwread,NULL
+			.if dwread!=MAXYECHO
+				invoke CloseHandle,sonardata.hReply
+				mov		sonardata.hReply,0
+				jmp		Again
+			.endif
+			movzx	eax,sonardata.STM32Echo
+			invoke SetRange,eax
 		.endif
-		movzx	eax,sonardata.STM32Echo
-		invoke SetRange,eax
 	.elseif fSTLink && fSTLink!=IDIGNORE
 		;Download Start status (first byte)
 		invoke STLinkRead,hWnd,STM32_Sonar,addr status,4
@@ -1039,10 +1042,23 @@ Update:
 		.while ebx<MAXYECHO
 			movzx	eax,sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO]
 			.if eax && eax<=253
-				xor		eax,0FFh
-				mov		ah,al
-				shl		eax,8
-				mov		al,ah
+				.if eax>=0C0h
+					;Red
+				.elseif eax>=050h
+					;Green
+					shl		eax,8
+				.elseif eax>030h
+					;Yellow
+					add		al,0B0h
+					mov		ah,al
+				.else
+					;Gray
+					xor		eax,0FFh
+					;add		al,0B0h
+					mov		ah,al
+					shl		eax,8
+					mov		al,ah
+				.endif
 				invoke SetPixel,sonardata.mDC,MAXXECHO-1,ebx,eax
 			.endif
 			inc		ebx

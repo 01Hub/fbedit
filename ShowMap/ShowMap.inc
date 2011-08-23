@@ -324,7 +324,7 @@ SONAR struct
 	minyecho		DWORD ?
 	nodptinx		DWORD ?
 	dptinx			DWORD ?
-	sonarbmp		SONARBMP 64 dup(<>)
+	sonarbmp		SONARBMP MAXSONARBMP dup(<>)
 SONAR ends
 
 RANGE struct
