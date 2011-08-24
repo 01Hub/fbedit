@@ -440,16 +440,26 @@ STM32Thread proc uses ebx esi edi,lParam:DWORD
 		mov		eax,100
 		xor		edx,edx
 		div		ecx
-		.if !eax
-			inc		eax
+		.if eax<3
+			mov		eax,3
 		.endif
 		push	eax
-		mov		edx,eax
-		.while edx
-			invoke Random,64
-			add		eax,150
+		mov		edi,eax
+		mov		edx,1
+		.while edx<edi
+			invoke Random,50
+			add		eax,253-50
 			mov		STM32Echo[edx],al
-			dec		edx
+			inc		edx
+		.endw
+		;Show surface clutter
+		invoke Random,edi
+		mov		ecx,edi
+		add		ecx,eax
+		.while edx<ecx
+			invoke Random,250
+			mov		STM32Echo[edx],al
+			inc		edx
 		.endw
 		.if !(pixcnt & 63)
 			;Random direction
@@ -487,19 +497,54 @@ STM32Thread proc uses ebx esi edi,lParam:DWORD
 		xor		edx,edx
 		div		ecx
 		mov		ebx,eax
+		invoke Random,edi
+		mov		edx,eax
+		sub		ebx,eax
+		.while edx
+			;Random bottom vegetation
+			.if ebx<MAXYECHO
+				invoke Random,64
+				add		eax,32
+				mov		STM32Echo[ebx],al
+			.endif
+			inc		ebx
+			dec		edx
+		.endw
 		pop		edx
-		shl		edx,1
+		push	ebx
+		shl		edx,2
 		xor		ecx,ecx
 		.while ecx<edx
-			;Random echo
-			invoke Random,100
+			;Random bottom echo
+			invoke Random,64
 			.if ebx<MAXYECHO
-				add		eax,100
+				add		eax,253-64
+				sub		eax,ecx
+				.if eax>253
+					mov		eax,253
+				.endif
 				mov		STM32Echo[ebx],al
 			.endif
 			inc		ebx
 			inc		ecx
 		.endw
+		mov		eax,edx
+		shl		eax,1
+		invoke Random,eax
+		add		edx,eax
+		xor		ecx,ecx
+		.while ecx<edx
+			;Random bottom echo
+			mov		eax,ecx
+			xor		al,0FFh
+			invoke Random,eax
+			.if ebx<MAXYECHO
+				mov		STM32Echo[ebx],al
+			.endif
+			inc		ebx
+			inc		ecx
+		.endw
+		pop		ebx
 		invoke Random,ebx
 		.if eax>100 && eax<MAXYECHO
 			mov		edx,eax
@@ -688,12 +733,12 @@ SetDepth:
 FindFish:
 	.if sonardata.FishDetect || sonardata.FishAlarm
 		mov		ebx,sonardata.minyecho
-		add		ebx,5
+		add		ebx,50
 		mov		edi,sonardata.dptinx
 		.if !edi
 			mov		edi,MAXYECHO
-		.elseif edi>4
-			sub		edi,4
+		.elseif edi>30
+			sub		edi,50
 		.endif
 		.while ebx<edi
 			movzx	eax,sonardata.STM32Echo[ebx]
