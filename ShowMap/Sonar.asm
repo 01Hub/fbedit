@@ -358,7 +358,10 @@ STM32Thread proc uses ebx esi edi,lParam:DWORD
 				mov		sonardata.hReply,0
 				jmp		Again
 			.endif
-			movzx	eax,sonardata.STM32Echo
+			movzx	eax,STM32Echo
+			.if al!=STM32Echo[MAXYECHO]
+				mov		rngchanged,4
+			.endif
 			invoke SetRange,eax
 		.endif
 	.elseif fSTLink && fSTLink!=IDIGNORE
@@ -534,11 +537,17 @@ STM32Thread proc uses ebx esi edi,lParam:DWORD
 		add		edx,eax
 		xor		ecx,ecx
 		.while ecx<edx
-			;Random bottom echo
+			;Random bottom veak echo
 			mov		eax,ecx
 			xor		al,0FFh
+			.if !eax
+				inc		eax
+			.endif
 			invoke Random,eax
 			.if ebx<MAXYECHO
+				.if eax>253
+					mov		eax,253
+				.endif
 				mov		STM32Echo[ebx],al
 			.endif
 			inc		ebx
@@ -552,6 +561,7 @@ STM32Thread proc uses ebx esi edi,lParam:DWORD
 			.if eax>124 && eax<130
 				;Random fish
 				mov		STM32Echo[edx],al
+				mov		STM32Echo[edx+MAXYECHO],al
 			.endif
 		.endif
 		mov		sonardata.ADCBattery,08E0h
@@ -589,7 +599,7 @@ STM32Thread proc uses ebx esi edi,lParam:DWORD
 	invoke GetRangePtr,ebx
 	mov		ebx,eax
 	mov		eax,sonarrange.interval[ebx]
-	.if sonardata.hReply
+	.if sonardata.hReply!=0 || fSTLink==IDIGNORE
 		mov		ecx,REPLYSPEED
 		xor		edx,edx
 		div		ecx
@@ -632,7 +642,7 @@ FindDepth:
 	;Skip blank
 	mov		ebx,1
 	xor		eax,eax
-	.while ebx<MAXYECHO-2
+	.while ebx<MAXYECHO-3
 		mov		al,sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*1]
 		or		al,sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*2]
 		or		al,sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*3]
@@ -644,26 +654,36 @@ FindDepth:
 		mov		al,sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*1+2]
 		or		al,sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*2+2]
 		or		al,sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*3+2]
+		shl		eax,8
+		mov		al,sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*1+3]
+		or		al,sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*2+3]
+		or		al,sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*3+3]
 		.break .if eax
 		inc		ebx
 	.endw
 	;Skip ping and surface clutter
 	xor		eax,eax
-	.while ebx<MAXYECHO-2
-		mov		al,sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*1]
-		or		al,sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*2]
-		or		al,sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*3]
-		shl		eax,8
-		mov		al,sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*1+1]
-		or		al,sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*2+1]
-		or		al,sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*3+1]
-		shl		eax,8
-		mov		al,sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*1+2]
-		or		al,sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*2+2]
-		or		al,sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*3+2]
+	.while ebx<MAXYECHO-7
+		mov		eax,dword ptr sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*1+0]
+		or		eax,dword ptr sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*2+0]
+		or		eax,dword ptr sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*3+0]
+		or		eax,dword ptr sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*4+0]
+		or		eax,dword ptr sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*5+0]
+		or		eax,dword ptr sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*6+0]
+		or		eax,dword ptr sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*7+0]
+		or		eax,dword ptr sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*8+0]
+		or		eax,dword ptr sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*1+4]
+		or		eax,dword ptr sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*2+4]
+		or		eax,dword ptr sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*3+4]
+		or		eax,dword ptr sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*4+4]
+		or		eax,dword ptr sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*5+4]
+		or		eax,dword ptr sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*6+4]
+		or		eax,dword ptr sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*7+4]
+		or		eax,dword ptr sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*8+4]
 		.break .if !eax
 		inc		ebx
 	.endw
+	add		ebx,40
 	mov		sonardata.minyecho,ebx
 	xor		esi,esi
 	xor		edi,edi
@@ -733,16 +753,17 @@ SetDepth:
 FindFish:
 	.if sonardata.FishDetect || sonardata.FishAlarm
 		mov		ebx,sonardata.minyecho
-		add		ebx,50
+		;add		ebx,50
 		mov		edi,sonardata.dptinx
 		.if !edi
-			mov		edi,MAXYECHO
-		.elseif edi>30
+			retn
+			;mov		edi,MAXYECHO
+		.elseif edi>50
 			sub		edi,50
 		.endif
 		.while ebx<edi
 			movzx	eax,sonardata.STM32Echo[ebx]
-			.if eax
+			.if eax>=72
 				call	CalculateDepth
 				mov		fish,al
 				push	ebx
@@ -805,7 +826,7 @@ TestRangeChange:
 					;Range increment
 					inc		eax
 					invoke SetRange,eax
-					mov		rngchanged,3
+					mov		rngchanged,4
 				.endif
 			.endif
 		.else
@@ -814,12 +835,12 @@ TestRangeChange:
 				;Range decrement
 				dec		eax
 				invoke SetRange,eax
-				mov		rngchanged,3
+				mov		rngchanged,4
 			.elseif eax<edx && ebx>(MAXYECHO-MAXYECHO/5)
 				;Range increment
 				inc		eax
 				invoke SetRange,eax
-				mov		rngchanged,3
+				mov		rngchanged,4
 			.endif
 		.endif
 	.endif
@@ -1556,7 +1577,7 @@ SonarProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					sub		eax,sonardata.ChartSpeed
 					sub		eax,sonardata.ChartSpeed
 				.endif
-				.if sonardata.hReply
+				.if sonardata.hReply!=0 || fSTLink==IDIGNORE
 					mov		ecx,REPLYSPEED
 					xor		edx,edx
 					div		ecx

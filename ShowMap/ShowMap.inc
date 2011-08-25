@@ -135,7 +135,7 @@ MAXYECHO				equ 512								;Max number of sonar Y-echos
 RANGESCALE				equ 5								;Width of range scale
 SIGNALBAR				equ 32								;Width of signal strenght bar
 MAXRANGE				equ 32								;Max number of depth ranges that can be read from ini
-REPLYSPEED				equ 10								;At reply, the ping interval is divided by REPLYSPEED
+REPLYSPEED				equ 5								;At reply, the ping interval is divided by REPLYSPEED
 STM32_Sonar				equ 20000000h						;STM32 ram address
 SONARBACKCOLOR			equ 00C47B0Fh						;Back color of sonar
 SONARPENCOLOR			equ 00A0A0A0h						;Signal bar pen color
