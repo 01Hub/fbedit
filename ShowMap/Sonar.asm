@@ -555,13 +555,14 @@ STM32Thread proc uses ebx esi edi,lParam:DWORD
 		.endw
 		pop		ebx
 		invoke Random,ebx
-		.if eax>100 && eax<MAXYECHO
+		.if eax>100 && eax<MAXYECHO-1
 			mov		edx,eax
 			invoke Random,255
 			.if eax>124 && eax<130
 				;Random fish
-				mov		STM32Echo[edx],al
-				mov		STM32Echo[edx+MAXYECHO],al
+				mov		ah,al
+				mov		word ptr STM32Echo[edx],ax
+				mov		word ptr STM32Echo[edx+MAXYECHO],ax
 			.endif
 		.endif
 		mov		sonardata.ADCBattery,08E0h
@@ -614,20 +615,34 @@ STLinkErr:
 
 RemoveNoise:
 	mov		ebx,1
+	mov		dl,sonardata.Noise
 	.if sonardata.NoiseReject
 		.while ebx<MAXYECHO
-			mov		al,STM32Echo[ebx]
-			mov		ah,STM32Echo[ebx+MAXYECHO]
-			.if al<sonardata.Noise || ah<sonardata.Noise
+			mov		ax,word ptr STM32Echo[ebx]
+			.if al<dl || ah<dl
 				mov		al,0
 			.endif
 			mov		sonardata.STM32Echo[ebx],al
 			inc		ebx
 		.endw
+;	.elseif sonardata.NoiseReject==2
+;		.while ebx<MAXYECHO
+;			mov		ax,word ptr STM32Echo[ebx+MAXYECHO]
+;			.if al<dl || ah<dl
+;				mov		al,0
+;			.else
+;				mov		ax,word ptr STM32Echo[ebx]
+;				.if al<dl || ah<dl
+;					mov		al,0
+;				.endif
+;			.endif
+;			mov		sonardata.STM32Echo[ebx],al
+;			inc		ebx
+;		.endw
 	.else
 		.while ebx<MAXYECHO
 			mov		al,STM32Echo[ebx]
-			.if al<sonardata.Noise
+			.if al<dl
 				mov		al,0
 			.endif
 			mov		sonardata.STM32Echo[ebx],al
@@ -763,7 +778,7 @@ FindFish:
 		.endif
 		.while ebx<edi
 			movzx	eax,sonardata.STM32Echo[ebx]
-			.if eax>=72
+			.if al>=72
 				call	CalculateDepth
 				mov		fish,al
 				push	ebx
@@ -1137,7 +1152,7 @@ Update:
 			.endif
 			inc		ebx
 		.endw
-		;Draw echo strenght
+		;Draw signal bar
 		mov		rect.left,0
 		mov		rect.top,0
 		mov		rect.right,SIGNALBAR
@@ -1177,6 +1192,7 @@ ShowRangeDepthTempScaleFish proc uses ebx esi edi,hDC:HDC
 		call	ShowFish
 	.endif
 	invoke SetBkMode,hDC,TRANSPARENT
+	call	ShowScale
 	xor		ebx,ebx
 	mov		esi,offset sonardata.options
 	.while ebx<MAXSONAROPTION
@@ -1192,7 +1208,6 @@ ShowRangeDepthTempScaleFish proc uses ebx esi edi,hDC:HDC
 		lea		esi,[esi+sizeof OPTIONS]
 		inc		ebx
 	.endw
-	call	ShowScale
 	ret
 
 ShowFish:
