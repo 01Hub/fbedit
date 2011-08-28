@@ -333,7 +333,7 @@ void ADC_Configuration(void)
   /* Setup injected channel */
   ADC_InjectedSequencerLengthConfig(ADC1,1);
   /* Sonar echo */
-  ADC_InjectedChannelConfig(ADC1,ADC_Channel_2,1,ADC_SampleTime_13Cycles5);
+  ADC_InjectedChannelConfig(ADC1,ADC_Channel_2,1,ADC_SampleTime_1Cycles5);
 }
 
 /*******************************************************************************
