@@ -167,7 +167,7 @@ TripLogProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke wsprintf,addr buffer,addr szSonarFileName,addr datebuff
 			invoke SetDlgItemText,hWin,IDC_EDTFILE,addr buffer
 			mov		fSaveFile,TRUE
-		.elseif eax==IDM_LOG_REPLYSONAR
+		.elseif eax==IDM_LOG_REPLAYSONAR
 			invoke strcat,addr szPath,addr szSonarPath
 			invoke strcpy,addr buffer,addr szPath
 			invoke strcat,addr buffer,addr szAllFiles

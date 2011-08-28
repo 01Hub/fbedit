@@ -356,8 +356,12 @@ STM32Thread proc uses ebx esi edi,lParam:DWORD
 			.if dwread!=MAXYECHO
 				invoke CloseHandle,sonardata.hReply
 				mov		sonardata.hReply,0
+				invoke SetScrollPos,hSonar,SB_HORZ,0,TRUE
 				jmp		Again
 			.endif
+			invoke GetScrollPos,hSonar,SB_HORZ
+			inc		eax
+			invoke SetScrollPos,hSonar,SB_HORZ,eax,TRUE
 			movzx	eax,STM32Echo
 			.if al!=STM32Echo[MAXYECHO]
 				mov		rngchanged,4
@@ -1661,6 +1665,23 @@ SonarProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke DeleteObject,eax
 		invoke DeleteDC,mDC
 		invoke EndPaint,hWin,addr ps
+	.elseif eax==WM_HSCROLL
+		mov		eax,wParam
+		movzx	edx,ax
+		shr		eax,16
+		.if edx==SB_THUMBPOSITION
+			.if sonardata.hReply
+				push	eax
+				invoke SetScrollPos,hWin,SB_HORZ,eax,TRUE
+				pop		eax
+				shl		eax,9
+				invoke SetFilePointer,sonardata.hReply,eax,NULL,0
+			.endif
+		.elseif edx==SB_LINEDOWN
+		.elseif edx==SB_LINEUP
+		.elseif edx==SB_PAGEDOWN
+		.elseif edx==SB_PAGEUP
+		.endif
 	.else
 		invoke DefWindowProc,hWin,uMsg,wParam,lParam
 		ret
