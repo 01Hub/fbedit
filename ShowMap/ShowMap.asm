@@ -860,7 +860,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					invoke CloseHandle,sonardata.hLog
 					mov		sonardata.hLog,0
 				.endif
-			.elseif eax==IDM_LOG_REPLYSONAR
+			.elseif eax==IDM_LOG_REPLAYSONAR
 				.if sonardata.hReply
 					invoke CloseHandle,sonardata.hReply
 					mov		sonardata.hReply,0
@@ -871,6 +871,9 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						invoke CreateFile,addr buffer,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL
 						.if eax!=INVALID_HANDLE_VALUE
 							mov		sonardata.hReply,eax
+							invoke GetFileSize,sonardata.hReply,NULL
+							shr		eax,9
+							invoke SetScrollRange,hSonar,SB_HORZ,0,eax,TRUE
 							invoke SonarClear
 						.endif
 					.endif
