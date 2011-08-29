@@ -116,7 +116,7 @@ SonarOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:L
 		.if sonardata.FishAlarm
 			invoke CheckDlgButton,hWin,IDC_CHKSONARALARM,BST_CHECKED
 		.endif
-		invoke SendDlgItemMessage,hWin,IDC_TRBPINGTIMER,TBM_SETRANGE,FALSE,(144 SHL 16)+134
+		invoke SendDlgItemMessage,hWin,IDC_TRBPINGTIMER,TBM_SETRANGE,FALSE,(122 SHL 16)+116
 		movzx	eax,sonardata.PingTimer
 		invoke SendDlgItemMessage,hWin,IDC_TRBPINGTIMER,TBM_SETPOS,TRUE,eax
 		;Subclass buttons to get autorepeat
@@ -541,7 +541,7 @@ STM32Thread proc uses ebx esi edi,lParam:DWORD
 		add		edx,eax
 		xor		ecx,ecx
 		.while ecx<edx
-			;Random bottom veak echo
+			;Random bottom weak echo
 			mov		eax,ecx
 			xor		al,0FFh
 			.if !eax
@@ -656,71 +656,70 @@ RemoveNoise:
 	retn
 
 FindDepth:
-	mov		sonardata.dptinx,0
+	;mov		sonardata.dptinx,0
 	and		sonardata.ShowDepth,1
-	;Skip blank
-	mov		ebx,1
-	xor		eax,eax
-	.while ebx<MAXYECHO-3
-		mov		al,sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*1]
-		or		al,sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*2]
-		or		al,sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*3]
-		shl		eax,8
-		mov		al,sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*1+1]
-		or		al,sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*2+1]
-		or		al,sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*3+1]
-		shl		eax,8
-		mov		al,sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*1+2]
-		or		al,sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*2+2]
-		or		al,sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*3+2]
-		shl		eax,8
-		mov		al,sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*1+3]
-		or		al,sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*2+3]
-		or		al,sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*3+3]
-		.break .if eax
-		inc		ebx
-	.endw
-	;Skip ping and surface clutter
-	xor		eax,eax
-	.while ebx<MAXYECHO-7
-		mov		eax,dword ptr sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*1+0]
-		or		eax,dword ptr sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*2+0]
-		or		eax,dword ptr sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*3+0]
-		or		eax,dword ptr sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*4+0]
-		or		eax,dword ptr sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*5+0]
-		or		eax,dword ptr sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*6+0]
-		or		eax,dword ptr sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*7+0]
-		or		eax,dword ptr sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*8+0]
-		or		eax,dword ptr sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*1+4]
-		or		eax,dword ptr sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*2+4]
-		or		eax,dword ptr sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*3+4]
-		or		eax,dword ptr sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*4+4]
-		or		eax,dword ptr sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*5+4]
-		or		eax,dword ptr sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*6+4]
-		or		eax,dword ptr sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*7+4]
-		or		eax,dword ptr sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*8+4]
-		.break .if !eax
-		inc		ebx
-	.endw
-	add		ebx,40
-	mov		sonardata.minyecho,ebx
+;	;Skip blank
+;	mov		ebx,1
+;	xor		eax,eax
+;	.while ebx<MAXYECHO-3
+;		mov		al,sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*1]
+;		or		al,sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*2]
+;		or		al,sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*3]
+;		shl		eax,8
+;		mov		al,sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*1+1]
+;		or		al,sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*2+1]
+;		or		al,sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*3+1]
+;		shl		eax,8
+;		mov		al,sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*1+2]
+;		or		al,sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*2+2]
+;		or		al,sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*3+2]
+;		shl		eax,8
+;		mov		al,sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*1+3]
+;		or		al,sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*2+3]
+;		or		al,sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*3+3]
+;		.break .if eax
+;		inc		ebx
+;	.endw
+;	;Skip ping and surface clutter
+;	xor		eax,eax
+;	.while ebx<MAXYECHO-7
+;		mov		eax,dword ptr sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*1+0]
+;		or		eax,dword ptr sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*2+0]
+;		or		eax,dword ptr sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*3+0]
+;		or		eax,dword ptr sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*4+0]
+;		or		eax,dword ptr sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*5+0]
+;		or		eax,dword ptr sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*6+0]
+;		or		eax,dword ptr sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*7+0]
+;		or		eax,dword ptr sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*8+0]
+;		or		eax,dword ptr sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*1+4]
+;		or		eax,dword ptr sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*2+4]
+;		or		eax,dword ptr sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*3+4]
+;		or		eax,dword ptr sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*4+4]
+;		or		eax,dword ptr sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*5+4]
+;		or		eax,dword ptr sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*6+4]
+;		or		eax,dword ptr sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*7+4]
+;		or		eax,dword ptr sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*8+4]
+;		.break .if !eax
+;		inc		ebx
+;	.endw
+;	add		ebx,40
+;	mov		sonardata.minyecho,ebx
+	mov		ebx,20
 	xor		esi,esi
 	xor		edi,edi
 	.while ebx<MAXYECHO
 		xor		ecx,ecx
 		xor		edx,edx
-		.while TRUE
+		.while ecx<32
 			lea		eax,[ebx+ecx]
 			.break .if eax>=MAXYECHO
-			push	edx
-			movzx	edx,sonardata.sonar[ebx+ecx+MAXXECHO*MAXYECHO-MAXYECHO*1]
+			movzx	eax,sonardata.sonar[ebx+ecx+MAXXECHO*MAXYECHO-MAXYECHO*1]
+			add		edx,eax
 			movzx	eax,sonardata.sonar[ebx+ecx+MAXXECHO*MAXYECHO-MAXYECHO*2]
 			add		edx,eax
 			movzx	eax,sonardata.sonar[ebx+ecx+MAXXECHO*MAXYECHO-MAXYECHO*3]
 			add		edx,eax
-			mov		eax,edx
-			pop		edx
-			.break .if !eax
+			movzx	eax,sonardata.sonar[ebx+ecx+MAXXECHO*MAXYECHO-MAXYECHO*4]
 			add		edx,eax
 			inc		ecx
 		.endw
@@ -732,6 +731,8 @@ FindDepth:
 	.endw
 	.if edi>1
 		mov		sonardata.nodptinx,0
+		add		edi,sonardata.dptinx
+		shr		edi,1
 		mov		ebx,edi
 		mov		sonardata.dptinx,ebx
 		call	CalculateDepth

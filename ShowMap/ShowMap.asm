@@ -864,6 +864,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.if sonardata.hReply
 					invoke CloseHandle,sonardata.hReply
 					mov		sonardata.hReply,0
+					invoke SetScrollPos,hSonar,SB_HORZ,0,TRUE
 				.else
 					invoke DialogBoxParam,hInstance,IDD_DLGTRIPLOG,hWin,addr TripLogProc,eax
 					.if eax

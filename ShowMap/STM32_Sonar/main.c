@@ -130,10 +130,10 @@ int main(void)
         ADC = ( (u32 *) ADC1_ICDR_Address);
         Echo = (u8) ( (u16) (*(vu32*) (((*(u32*)&ADC)))) >> 4);
         /* Reserve 254 and 255 for fish detect */
-        if (Echo > 253)
-        {
-          Echo = 253;
-        }
+        // if (Echo > 253)
+        // {
+          // Echo = 253;
+        // }
         /* If echo larger than previous echo, update the echo array */
         if (Echo > STM32_Sonar.Echo[EchoIndex])
         {
@@ -367,9 +367,9 @@ void RCC_Configuration(void)
     /* ADCCLK = PCLK2/2 */
     RCC_ADCCLKConfig(RCC_PCLK2_Div2);
     // /* PLLCLK = 8MHz * 6 = 48 MHz */
-    // RCC_PLLConfig(RCC_PLLSource_HSE_Div1, RCC_PLLMul_6);
+    RCC_PLLConfig(RCC_PLLSource_HSE_Div1, RCC_PLLMul_6);
     /* PLLCLK = 8MHz * 7 = 56 MHz */
-    RCC_PLLConfig(RCC_PLLSource_HSE_Div1, RCC_PLLMul_7);
+    //RCC_PLLConfig(RCC_PLLSource_HSE_Div1, RCC_PLLMul_7);
     /* Enable PLL */ 
     RCC_PLLCmd(ENABLE);
     /* Wait till PLL is ready */
@@ -457,8 +457,11 @@ void TIM1_Configuration(void)
   TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructure;
   TIM_TimeBaseStructure.TIM_ClockDivision = 0;
   TIM_TimeBaseStructure.TIM_Prescaler = 0;
-  TIM_TimeBaseStructure.TIM_Period = 139;
+  /* Time base configuration 56MHz clock */
+  // TIM_TimeBaseStructure.TIM_Period = 139;
+  /* Time base configuration 48MHz clock */
   TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
+  TIM_TimeBaseStructure.TIM_Period = 119;
   TIM_TimeBaseStructure.TIM_RepetitionCounter = 0;
   TIM_TimeBaseInit(TIM1, &TIM_TimeBaseStructure);
   /* Enable TIM1 Update interrupt */
@@ -479,7 +482,9 @@ void TIM2_Configuration(void)
   TIM_TimeBaseStructure.TIM_ClockDivision = 0;
   TIM_TimeBaseStructure.TIM_Prescaler = 0;
   /* Time base configuration 56MHz clock */
-  TIM_TimeBaseStructure.TIM_Period = 302;
+  // TIM_TimeBaseStructure.TIM_Period = 302;
+  /* Time base configuration 48MHz clock */
+  TIM_TimeBaseStructure.TIM_Period = 259;
   TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
   TIM_TimeBaseStructure.TIM_RepetitionCounter = 0;
   TIM_TimeBaseInit(TIM2, &TIM_TimeBaseStructure);
