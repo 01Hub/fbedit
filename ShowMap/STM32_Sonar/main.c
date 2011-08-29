@@ -139,9 +139,9 @@ int main(void)
         {
           STM32_Sonar.Echo[EchoIndex] = Echo;
         }
-        /* Done, Store the current range as the first byte in the echo array */
-        STM32_Sonar.Echo[0] = STM32_Sonar.Range;
       }
+      /* Done, Store the current range as the first byte in the echo array */
+      STM32_Sonar.Echo[0] = STM32_Sonar.Range;
     }
     i = 0;
     while (i < 1000)

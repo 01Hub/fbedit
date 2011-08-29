@@ -623,6 +623,9 @@ RemoveNoise:
 	.if sonardata.NoiseReject
 		.while ebx<MAXYECHO
 			mov		ax,word ptr STM32Echo[ebx]
+			.if al>253
+				mov		al,253
+			.endif
 			.if al<dl || ah<dl
 				mov		al,0
 			.endif
