@@ -43,8 +43,8 @@ SetRange proc uses ebx,RangeInx:DWORD
 	mov		sonardata.RangeInx,al
 	invoke GetRangePtr,eax
 	mov		ebx,eax
-	mov		eax,sonarrange.nsample[ebx]
-	mov		sonardata.nSample,al
+	mov		eax,sonarrange.pixeltimer[ebx]
+	mov		sonardata.PixelTimer,ax
 	mov		eax,sonarrange.range[ebx]
 	mov		sonardata.RangeVal,eax
 	invoke wsprintf,addr sonardata.options.text,addr szFmtDec,eax
@@ -107,7 +107,7 @@ SonarOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:L
 		invoke SendDlgItemMessage,hWin,IDC_TRBSONARNOISE,TBM_SETRANGE,FALSE,(255 SHL 16)+1
 		movzx	eax,sonardata.Noise
 		invoke SendDlgItemMessage,hWin,IDC_TRBSONARNOISE,TBM_SETPOS,TRUE,eax
-		invoke SendDlgItemMessage,hWin,IDC_TRBSONARCHART,TBM_SETRANGE,FALSE,(100 SHL 16)+1
+		invoke SendDlgItemMessage,hWin,IDC_TRBSONARCHART,TBM_SETRANGE,FALSE,(4 SHL 16)+1
 		mov		eax,sonardata.ChartSpeed
 		invoke SendDlgItemMessage,hWin,IDC_TRBSONARCHART,TBM_SETPOS,TRUE,eax
 		.if sonardata.FishDetect
@@ -199,12 +199,12 @@ SonarOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:L
 					invoke SendDlgItemMessage,hWin,IDC_TRBSONARRANGE,TBM_SETPOS,TRUE,eax
 				.endif
 			.elseif eax==IDC_BTNCD
-				.if sonardata.ChartSpeed
+				.if sonardata.ChartSpeed>1
 					dec		sonardata.ChartSpeed
 					invoke SendDlgItemMessage,hWin,IDC_TRBSONARCHART,TBM_SETPOS,TRUE,sonardata.ChartSpeed
 				.endif
 			.elseif eax==IDC_BTNCU
-				.if sonardata.ChartSpeed<100
+				.if sonardata.ChartSpeed<4
 					inc		sonardata.ChartSpeed
 					invoke SendDlgItemMessage,hWin,IDC_TRBSONARCHART,TBM_SETPOS,TRUE,sonardata.ChartSpeed
 				.endif
@@ -324,552 +324,6 @@ Random endp
 ;	ret
 ;
 ;RangeToTimer endp
-
-STM32Thread proc uses ebx esi edi,lParam:DWORD
-	LOCAL	status:DWORD
-	LOCAL	STM32Echo[MAXYECHO*2]:BYTE
-	LOCAL	fish[MAXFISH]:BYTE
-	LOCAL	dwread:DWORD
-	LOCAL	dwwrite:DWORD
-	LOCAL	buffer[16]:BYTE
-	LOCAL	pixcnt:DWORD
-	LOCAL	pixdir:DWORD
-	LOCAL	pixmov:DWORD
-	LOCAL	pixdpt:DWORD
-	LOCAL	rngchanged:DWORD
-
-	mov		pixcnt,0
-	mov		pixdir,0
-	mov		pixmov,0
-	mov		pixdpt,250
-	mov		rngchanged,3
-	invoke RtlZeroMemory,addr STM32Echo,sizeof STM32Echo
-	invoke RtlZeroMemory,addr fish,sizeof fish
-  Again:
-	.if sonardata.hReply
-		invoke IsDlgButtonChecked,hWnd,IDC_CHKCHART
-		.if !eax
-			;Copy old echo
-			invoke RtlMoveMemory,addr STM32Echo[MAXYECHO],addr STM32Echo,MAXYECHO
-			;Read echo from file
-			invoke ReadFile,sonardata.hReply,addr STM32Echo,MAXYECHO,addr dwread,NULL
-			.if dwread!=MAXYECHO
-				invoke CloseHandle,sonardata.hReply
-				mov		sonardata.hReply,0
-				invoke SetScrollPos,hSonar,SB_HORZ,0,TRUE
-				jmp		Again
-			.endif
-			invoke GetScrollPos,hSonar,SB_HORZ
-			inc		eax
-			invoke SetScrollPos,hSonar,SB_HORZ,eax,TRUE
-			movzx	eax,STM32Echo
-			.if al!=STM32Echo[MAXYECHO]
-				mov		rngchanged,4
-			.endif
-			invoke SetRange,eax
-		.endif
-	.elseif fSTLink && fSTLink!=IDIGNORE
-		;Download Start status (first byte)
-		invoke STLinkRead,hWnd,STM32_Sonar,addr status,4
-		.if !eax || eax==IDABORT || eax==IDIGNORE
-			jmp		STLinkErr
-		.endif
-		.if !(status & 255)
-			;Download ADCBattery, ADCWaterTemp and ADCAirTemp
-			invoke STLinkRead,hWnd,STM32_Sonar+8,addr sonardata.dmy1,8
-			.if !eax || eax==IDABORT || eax==IDIGNORE
-				jmp		STLinkErr
-			.endif
-			;Copy old echo
-			invoke RtlMoveMemory,addr STM32Echo[MAXYECHO],addr STM32Echo,MAXYECHO
-			;Download sonar echo array
-			invoke STLinkRead,hWnd,STM32_Sonar+16,addr STM32Echo,MAXYECHO
-			.if !eax || eax==IDABORT || eax==IDIGNORE
-				jmp		STLinkErr
-			.endif
-		 	;Upload Start, PingPulses, Noise, Gain, GainInc, RangeInx, nSample and Timer to init the next reading
-			movzx	ebx,sonardata.RangeInx
-			invoke GetRangePtr,ebx
-			mov		ebx,eax
-			.if sonardata.AutoGain
-				mov		eax,sonardata.GainInit
-				add		eax,sonarrange.gainadd[ebx]
-				.if eax>255
-					mov		eax,255
-				.endif
-				mov		sonardata.Gain,al
-				mov		eax,sonarrange.gaininc[ebx]
-				mov		sonardata.GainInc,al
-			.else
-				mov		eax,sonardata.GainInit
-				mov		sonardata.Gain,al
-				mov		sonardata.GainInc,0
-			.endif
-			mov		eax,sonardata.PingInit
-			.if sonardata.AutoPing
-				add		eax,sonarrange.pingadd[ebx]
-				.if eax>127
-					mov		eax,127
-				.endif
-			.endif
-			shl		eax,1
-			mov		sonardata.Ping,al
-		 	mov		sonardata.Start,0
-			invoke STLinkWrite,hWnd,STM32_Sonar,addr sonardata.Start,8
-			.if !eax || eax==IDABORT || eax==IDIGNORE
-				jmp		STLinkErr
-			.endif
-			;Start the next phase
-		 	mov		sonardata.Start,1
-			invoke STLinkWrite,hWnd,STM32_Sonar,addr sonardata.Start,8
-			.if !eax || eax==IDABORT || eax==IDIGNORE
-				jmp		STLinkErr
-			.endif
-		.else
-			;Data not ready yet
-			invoke Sleep,10
-			jmp		Again
-		.endif
-	.elseif fSTLink==IDIGNORE
-		;Copy old echo
-		invoke RtlMoveMemory,addr STM32Echo[MAXYECHO],addr STM32Echo,MAXYECHO
-		;Clear echo
-		xor		eax,eax
-		lea		edi,STM32Echo
-		mov		ecx,MAXYECHO/4
-		rep		stosd
-		;Set range index
-		movzx	eax,sonardata.RangeInx
-		mov		STM32Echo,al
-		;Show ping
-		invoke GetRangePtr,eax
-		mov		ecx,sonarrange.nsample[eax]
-		mov		eax,100
-		xor		edx,edx
-		div		ecx
-		.if eax<3
-			mov		eax,3
-		.endif
-		push	eax
-		mov		edi,eax
-		mov		edx,1
-		.while edx<edi
-			invoke Random,50
-			add		eax,253-50
-			mov		STM32Echo[edx],al
-			inc		edx
-		.endw
-		;Show surface clutter
-		invoke Random,edi
-		mov		ecx,edi
-		add		ecx,eax
-		.while edx<ecx
-			invoke Random,250
-			mov		STM32Echo[edx],al
-			inc		edx
-		.endw
-		.if !(pixcnt & 63)
-			;Random direction
-			invoke Random,8
-			mov		pixdir,eax
-		.endif
-		.if !(pixcnt & 31)
-			;Random move
-			invoke Random,4
-			mov		pixmov,eax
-		.endif
-		mov		ebx,pixdpt
-		mov		eax,pixdir
-		.if eax<=1 && ebx>100
-			;Up
-			sub		ebx,pixmov
-		.elseif eax>=3 && ebx<15000
-			;Down
-			add		ebx,pixmov
-		.endif
-		mov		pixdpt,ebx
-		inc		pixcnt
-		mov		eax,ebx
-		mov		ecx,1024
-		mul		ecx
-		push	eax
-		;Get current range index
-		movzx	eax,STM32Echo
-		invoke GetRangePtr,eax
-		mov		ecx,sonarrange.range[eax]
-		pop		eax
-		xor		edx,edx
-		div		ecx
-		mov		ecx,100
-		xor		edx,edx
-		div		ecx
-		mov		ebx,eax
-		invoke Random,edi
-		mov		edx,eax
-		sub		ebx,eax
-		.while edx
-			;Random bottom vegetation
-			.if ebx<MAXYECHO
-				invoke Random,64
-				add		eax,32
-				mov		STM32Echo[ebx],al
-			.endif
-			inc		ebx
-			dec		edx
-		.endw
-		pop		edx
-		push	ebx
-		shl		edx,2
-		xor		ecx,ecx
-		.while ecx<edx
-			;Random bottom echo
-			invoke Random,64
-			.if ebx<MAXYECHO
-				add		eax,253-64
-				sub		eax,ecx
-				.if eax>253
-					mov		eax,253
-				.endif
-				mov		STM32Echo[ebx],al
-			.endif
-			inc		ebx
-			inc		ecx
-		.endw
-		mov		eax,edx
-		shl		eax,1
-		invoke Random,eax
-		add		edx,eax
-		xor		ecx,ecx
-		.while ecx<edx
-			;Random bottom weak echo
-			mov		eax,ecx
-			xor		al,0FFh
-			.if !eax
-				inc		eax
-			.endif
-			invoke Random,eax
-			.if ebx<MAXYECHO
-				.if eax>253
-					mov		eax,253
-				.endif
-				mov		STM32Echo[ebx],al
-			.endif
-			inc		ebx
-			inc		ecx
-		.endw
-		pop		ebx
-		invoke Random,ebx
-		.if eax>100 && eax<MAXYECHO-1
-			mov		edx,eax
-			invoke Random,255
-			.if eax>124 && eax<130
-				;Random fish
-				mov		ah,al
-				mov		word ptr STM32Echo[edx],ax
-				mov		word ptr STM32Echo[edx+MAXYECHO],ax
-			.endif
-		.endif
-		mov		sonardata.ADCBattery,08E0h
-		mov		sonardata.ADCWaterTemp,09A0h
-		mov		sonardata.ADCAirTemp,0900h
-	.endif
-	.if sonardata.hLog
-		;Write to log file
-		invoke WriteFile,sonardata.hLog,addr STM32Echo,MAXYECHO,addr dwwrite,NULL
-	.endif
-	mov		ecx,MAXFISH-1
-	.while ecx
-		mov		al,fish[ecx-1]
-		mov		fish[ecx],al
-		dec		ecx
-	.endw
-	mov		fish,0
-	;Get range index
-	mov		al,STM32Echo
-	mov		sonardata.STM32Echo,al
-	.if al!=STM32Echo[MAXYECHO]
-		invoke RtlMoveMemory,addr STM32Echo[MAXYECHO],addr STM32Echo,MAXYECHO
-	.endif
-	;Remove noise
-	call	RemoveNoise
-	.if rngchanged
-		dec		rngchanged
-	.else
-		call	FindDepth
-		call	FindFish
-		call	TestRangeChange
-	.endif
-	;Get current range index
-	movzx	ebx,STM32Echo
-	invoke GetRangePtr,ebx
-	mov		ebx,eax
-	mov		eax,sonarrange.interval[ebx]
-	.if sonardata.hReply!=0 || fSTLink==IDIGNORE
-		mov		ecx,REPLYSPEED
-		xor		edx,edx
-		div		ecx
-	.endif
-	invoke Sleep,eax
-	jmp		Again
-
-STLinkErr:
-	invoke SendMessage,hWnd,WM_CLOSE,0,0
-	xor		eax,eax
-	ret
-
-RemoveNoise:
-	mov		ebx,1
-	mov		dl,sonardata.Noise
-	.if sonardata.NoiseReject
-		.while ebx<MAXYECHO
-			mov		ax,word ptr STM32Echo[ebx]
-			.if al>253
-				mov		al,253
-			.endif
-			.if al<dl || ah<dl
-				mov		al,0
-			.endif
-			mov		sonardata.STM32Echo[ebx],al
-			inc		ebx
-		.endw
-;	.elseif sonardata.NoiseReject==2
-;		.while ebx<MAXYECHO
-;			mov		ax,word ptr STM32Echo[ebx+MAXYECHO]
-;			.if al<dl || ah<dl
-;				mov		al,0
-;			.else
-;				mov		ax,word ptr STM32Echo[ebx]
-;				.if al<dl || ah<dl
-;					mov		al,0
-;				.endif
-;			.endif
-;			mov		sonardata.STM32Echo[ebx],al
-;			inc		ebx
-;		.endw
-	.else
-		.while ebx<MAXYECHO
-			mov		al,STM32Echo[ebx]
-			.if al<dl
-				mov		al,0
-			.endif
-			mov		sonardata.STM32Echo[ebx],al
-			inc		ebx
-		.endw
-	.endif
-	retn
-
-FindDepth:
-	;mov		sonardata.dptinx,0
-	and		sonardata.ShowDepth,1
-;	;Skip blank
-;	mov		ebx,1
-;	xor		eax,eax
-;	.while ebx<MAXYECHO-3
-;		mov		al,sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*1]
-;		or		al,sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*2]
-;		or		al,sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*3]
-;		shl		eax,8
-;		mov		al,sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*1+1]
-;		or		al,sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*2+1]
-;		or		al,sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*3+1]
-;		shl		eax,8
-;		mov		al,sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*1+2]
-;		or		al,sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*2+2]
-;		or		al,sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*3+2]
-;		shl		eax,8
-;		mov		al,sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*1+3]
-;		or		al,sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*2+3]
-;		or		al,sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*3+3]
-;		.break .if eax
-;		inc		ebx
-;	.endw
-;	;Skip ping and surface clutter
-;	xor		eax,eax
-;	.while ebx<MAXYECHO-7
-;		mov		eax,dword ptr sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*1+0]
-;		or		eax,dword ptr sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*2+0]
-;		or		eax,dword ptr sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*3+0]
-;		or		eax,dword ptr sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*4+0]
-;		or		eax,dword ptr sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*5+0]
-;		or		eax,dword ptr sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*6+0]
-;		or		eax,dword ptr sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*7+0]
-;		or		eax,dword ptr sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*8+0]
-;		or		eax,dword ptr sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*1+4]
-;		or		eax,dword ptr sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*2+4]
-;		or		eax,dword ptr sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*3+4]
-;		or		eax,dword ptr sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*4+4]
-;		or		eax,dword ptr sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*5+4]
-;		or		eax,dword ptr sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*6+4]
-;		or		eax,dword ptr sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*7+4]
-;		or		eax,dword ptr sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*8+4]
-;		.break .if !eax
-;		inc		ebx
-;	.endw
-;	add		ebx,40
-;	mov		sonardata.minyecho,ebx
-	mov		ebx,20
-	xor		esi,esi
-	xor		edi,edi
-	.while ebx<MAXYECHO
-		xor		ecx,ecx
-		xor		edx,edx
-		.while ecx<32
-			lea		eax,[ebx+ecx]
-			.break .if eax>=MAXYECHO
-			movzx	eax,sonardata.sonar[ebx+ecx+MAXXECHO*MAXYECHO-MAXYECHO*1]
-			add		edx,eax
-			movzx	eax,sonardata.sonar[ebx+ecx+MAXXECHO*MAXYECHO-MAXYECHO*2]
-			add		edx,eax
-			movzx	eax,sonardata.sonar[ebx+ecx+MAXXECHO*MAXYECHO-MAXYECHO*3]
-			add		edx,eax
-			movzx	eax,sonardata.sonar[ebx+ecx+MAXXECHO*MAXYECHO-MAXYECHO*4]
-			add		edx,eax
-			inc		ecx
-		.endw
-		.if edx>esi
-			mov		esi,edx
-			mov		edi,ebx
-		.endif
-		inc		ebx
-	.endw
-	.if edi>1
-		mov		sonardata.nodptinx,0
-		add		edi,sonardata.dptinx
-		shr		edi,1
-		mov		ebx,edi
-		mov		sonardata.dptinx,ebx
-		call	CalculateDepth
-		call	SetDepth
-		or		sonardata.ShowDepth,2
-	.endif
-	retn
-
-CalculateDepth:
-	push	ecx
-	push	edx
-	movzx	eax,sonardata.STM32Echo
-	invoke GetRangePtr,eax
-	mov		eax,sonarrange.range[eax]
-	mov		ecx,10
-	mul		ecx
-	mul		ebx
-	mov		ecx,MAXYECHO
-	div		ecx
-	pop		edx
-	pop		ecx
-	retn
-
-SetDepth:
-	invoke wsprintf,addr buffer,addr szFmtDepth,eax
-	invoke strlen,addr buffer
-	.if eax>2
-		mov		byte ptr buffer[eax-1],0
-	.else
-		movzx	ecx,word ptr buffer[eax-1]
-		shl		ecx,8
-		mov		cl,'.'
-		mov		dword ptr buffer[eax-1],ecx
-	.endif
-	invoke strcpy,addr sonardata.options.text[1*sizeof OPTIONS],addr buffer
-	retn
-
-FindFish:
-	.if sonardata.FishDetect || sonardata.FishAlarm
-		mov		ebx,sonardata.minyecho
-		;add		ebx,50
-		mov		edi,sonardata.dptinx
-		.if !edi
-			retn
-			;mov		edi,MAXYECHO
-		.elseif edi>50
-			sub		edi,50
-		.endif
-		.while ebx<edi
-			movzx	eax,sonardata.STM32Echo[ebx]
-			.if al>=72
-				call	CalculateDepth
-				mov		fish,al
-				push	ebx
-				sub		ebx,MAXFISH/2
-				.if CARRY?
-					xor		ebx,ebx
-				.endif
-				call	CalculateDepth
-				mov		ecx,eax
-				pop		ebx
-				push	ebx
-				add		ebx,MAXFISH/2
-				call	CalculateDepth
-				mov		edx,eax
-				pop		ebx
-				mov		esi,MAXFISH-1
-				.while esi
-					movzx	eax,fish[esi]
-					.break .if eax>ecx && eax<edx
-					dec		esi
-				.endw
-				.if !esi
-					movzx	eax,sonardata.STM32Echo[ebx]
-					.if sonardata.FishDetect
-						.if eax>128
-							;Large fish
-							mov		eax,255
-						.else
-							;Small fish
-							mov		eax,254
-						.endif
-						mov		sonardata.STM32Echo[ebx],al
-					.endif
-					.if sonardata.FishAlarm && !fFishSound
-						mov		fFishSound,3
-						invoke PlaySound,addr szFishSound,hInstance,SND_ASYNC
-					.endif
-					.break
-				.else
-					mov		fish,0
-				.endif
-			.endif
-			inc		ebx
-		.endw
-	.endif
-	retn
-
-TestRangeChange:
-	.if sonardata.AutoRange && !sonardata.hReply
-		movzx	eax,STM32Echo
-		mov		edx,sonardata.MaxRange
-		dec		edx
-		mov		ebx,sonardata.dptinx
-		.if !ebx
-			;Bottom not found
-			inc		sonardata.nodptinx
-			.if sonardata.nodptinx>=4
-				mov		sonardata.nodptinx,0
-				.if eax<edx
-					;Range increment
-					inc		eax
-					invoke SetRange,eax
-					mov		rngchanged,4
-				.endif
-			.endif
-		.else
-			;Check if range should be changed
-			.if eax && ebx<MAXYECHO/3
-				;Range decrement
-				dec		eax
-				invoke SetRange,eax
-				mov		rngchanged,4
-			.elseif eax<edx && ebx>(MAXYECHO-MAXYECHO/5)
-				;Range increment
-				inc		eax
-				invoke SetRange,eax
-				mov		rngchanged,4
-			.endif
-		.endif
-	.endif
-	retn
-
-STM32Thread endp
 
 UpdateBitmap proc uses ebx esi edi,NewRange:DWORD
 	LOCAL	rect:RECT
@@ -1187,6 +641,700 @@ Update:
 
 SonarThreadProc endp
 
+STM32Thread proc uses ebx esi edi,lParam:DWORD
+	LOCAL	status:DWORD
+	LOCAL	fish[MAXFISH]:BYTE
+	LOCAL	dwread:DWORD
+	LOCAL	dwwrite:DWORD
+	LOCAL	buffer[16]:BYTE
+	LOCAL	pixcnt:DWORD
+	LOCAL	pixdir:DWORD
+	LOCAL	pixmov:DWORD
+	LOCAL	pixdpt:DWORD
+	LOCAL	rngchanged:DWORD
+
+	mov		pixcnt,0
+	mov		pixdir,0
+	mov		pixmov,0
+	mov		pixdpt,250
+	mov		rngchanged,3
+	invoke RtlZeroMemory,addr STM32Echo,sizeof STM32Echo
+	invoke RtlZeroMemory,addr fish,sizeof fish
+  Again:
+	.if sonardata.hReply
+		invoke IsDlgButtonChecked,hWnd,IDC_CHKCHART
+		.if !eax
+			;Copy old echo
+			call	CopyEcho
+			;Read echo from file
+			invoke ReadFile,sonardata.hReply,addr STM32Echo,MAXYECHO,addr dwread,NULL
+			.if dwread!=MAXYECHO
+				invoke CloseHandle,sonardata.hReply
+				mov		sonardata.hReply,0
+				invoke SetScrollPos,hSonar,SB_HORZ,0,TRUE
+				jmp		Again
+			.endif
+			invoke GetScrollPos,hSonar,SB_HORZ
+			inc		eax
+			invoke SetScrollPos,hSonar,SB_HORZ,eax,TRUE
+			movzx	eax,STM32Echo
+			.if al!=STM32Echo[MAXYECHO]
+				mov		rngchanged,4
+			.endif
+			invoke SetRange,eax
+		.endif
+	.elseif fSTLink && fSTLink!=IDIGNORE
+		;Download Start status (first byte)
+		invoke STLinkRead,hWnd,STM32_Sonar,addr status,4
+		.if !eax || eax==IDABORT || eax==IDIGNORE
+			jmp		STLinkErr
+		.endif
+		.if !(status & 255)
+			;Download ADCBattery, ADCWaterTemp and ADCAirTemp
+			invoke STLinkRead,hWnd,STM32_Sonar+8,addr sonardata.Dummy16,8
+			.if !eax || eax==IDABORT || eax==IDIGNORE
+				jmp		STLinkErr
+			.endif
+			;Copy old echo
+			call	CopyEcho
+			;Download sonar echo array
+			invoke STLinkRead,hWnd,STM32_Sonar+16,addr STM32Echo,MAXYECHO
+			.if !eax || eax==IDABORT || eax==IDIGNORE
+				jmp		STLinkErr
+			.endif
+		 	;Upload Start, PingPulses, PingTimer, Gain, GainInc, RangeInx, PixelTimer to init the next reading
+			movzx	ebx,sonardata.RangeInx
+			invoke GetRangePtr,ebx
+			mov		ebx,eax
+			.if sonardata.AutoGain
+				mov		eax,sonardata.GainInit
+				add		eax,sonarrange.gainadd[ebx]
+				.if eax>255
+					mov		eax,255
+				.endif
+				mov		sonardata.Gain,al
+				mov		eax,sonarrange.gaininc[ebx]
+				mov		sonardata.GainInc,al
+			.else
+				mov		eax,sonardata.GainInit
+				mov		sonardata.Gain,al
+				mov		sonardata.GainInc,0
+			.endif
+			mov		eax,sonardata.PingInit
+			.if sonardata.AutoPing
+				add		eax,sonarrange.pingadd[ebx]
+				.if eax>127
+					mov		eax,127
+				.endif
+			.endif
+			shl		eax,1
+			mov		sonardata.Ping,al
+		 	mov		sonardata.Start,0
+			invoke STLinkWrite,hWnd,STM32_Sonar,addr sonardata.Start,8
+			.if !eax || eax==IDABORT || eax==IDIGNORE
+				jmp		STLinkErr
+			.endif
+			;Start the next phase
+		 	mov		sonardata.Start,1
+			invoke STLinkWrite,hWnd,STM32_Sonar,addr sonardata.Start,8
+			.if !eax || eax==IDABORT || eax==IDIGNORE
+				jmp		STLinkErr
+			.endif
+		.else
+			;Data not ready yet
+			invoke Sleep,10
+			jmp		Again
+		.endif
+	.elseif fSTLink==IDIGNORE
+		;Copy old echo
+		call	CopyEcho
+		;Clear echo
+		xor		eax,eax
+		lea		edi,STM32Echo
+		mov		ecx,MAXYECHO/4
+		rep		stosd
+		;Set range index
+		movzx	eax,sonardata.RangeInx
+		mov		STM32Echo,al
+		;Show ping
+		invoke GetRangePtr,eax
+		mov		eax,sonarrange.pixeltimer[eax]
+		mov		ecx,sonarrange.pixeltimer
+		xor		edx,edx
+		div		ecx
+		mov		ecx,eax
+		mov		eax,100
+		xor		edx,edx
+		div		ecx
+		.if eax<3
+			mov		eax,3
+		.endif
+		push	eax
+		mov		edi,eax
+		mov		edx,1
+		.while edx<edi
+			invoke Random,50
+			add		eax,255-50
+			mov		STM32Echo[edx],al
+			inc		edx
+		.endw
+		;Show surface clutter
+		invoke Random,edi
+		mov		ecx,edi
+		add		ecx,eax
+		.while edx<ecx
+			invoke Random,255
+			mov		STM32Echo[edx],al
+			inc		edx
+		.endw
+		.if !(pixcnt & 63)
+			;Random direction
+			invoke Random,8
+			mov		pixdir,eax
+		.endif
+		.if !(pixcnt & 31)
+			;Random move
+			invoke Random,4
+			mov		pixmov,eax
+		.endif
+		mov		ebx,pixdpt
+		mov		eax,pixdir
+		.if eax<=1 && ebx>100
+			;Up
+			sub		ebx,pixmov
+		.elseif eax>=3 && ebx<15000
+			;Down
+			add		ebx,pixmov
+		.endif
+		mov		pixdpt,ebx
+		inc		pixcnt
+		mov		eax,ebx
+		mov		ecx,1024
+		mul		ecx
+		push	eax
+		;Get current range index
+		movzx	eax,STM32Echo
+		invoke GetRangePtr,eax
+		mov		ecx,sonarrange.range[eax]
+		pop		eax
+		xor		edx,edx
+		div		ecx
+		mov		ecx,100
+		xor		edx,edx
+		div		ecx
+		mov		ebx,eax
+		invoke Random,edi
+		mov		edx,eax
+		sub		ebx,eax
+		.while edx
+			;Random bottom vegetation
+			.if ebx<MAXYECHO
+				invoke Random,64
+				add		eax,32
+				mov		STM32Echo[ebx],al
+			.endif
+			inc		ebx
+			dec		edx
+		.endw
+		pop		edx
+		push	ebx
+		shl		edx,2
+		xor		ecx,ecx
+		.while ecx<edx
+			;Random bottom echo
+			invoke Random,64
+			.if ebx<MAXYECHO
+				add		eax,255-64
+				sub		eax,ecx
+				mov		STM32Echo[ebx],al
+			.endif
+			inc		ebx
+			inc		ecx
+		.endw
+		mov		eax,edx
+		shl		eax,1
+		invoke Random,eax
+		add		edx,eax
+		xor		ecx,ecx
+		.while ecx<edx
+			;Random bottom weak echo
+			mov		eax,ecx
+			xor		al,0FFh
+			.if !eax
+				inc		eax
+			.endif
+			invoke Random,eax
+			.if ebx<MAXYECHO
+				mov		STM32Echo[ebx],al
+			.endif
+			inc		ebx
+			inc		ecx
+		.endw
+		pop		ebx
+		invoke Random,ebx
+		.if eax>100 && eax<MAXYECHO-1
+			mov		edx,eax
+			invoke Random,255
+			.if eax>124 && eax<130
+				;Random fish
+				mov		ah,al
+				mov		word ptr STM32Echo[edx],ax
+				mov		word ptr STM32Echo[edx+MAXYECHO],ax
+			.endif
+		.endif
+		mov		sonardata.ADCBattery,08E0h
+		mov		sonardata.ADCWaterTemp,09A0h
+		mov		sonardata.ADCAirTemp,0900h
+	.endif
+	.if sonardata.hLog
+		;Write to log file
+		invoke WriteFile,sonardata.hLog,addr STM32Echo,MAXYECHO,addr dwwrite,NULL
+	.endif
+	mov		ecx,MAXFISH-1
+	.while ecx
+		mov		al,fish[ecx-1]
+		mov		fish[ecx],al
+		dec		ecx
+	.endw
+	mov		fish,0
+	;Get range index
+	mov		al,STM32Echo
+	mov		sonardata.STM32Echo,al
+	.if al!=STM32Echo[MAXYECHO]
+		invoke RtlMoveMemory,addr STM32Echo[MAXYECHO*3],addr STM32Echo,MAXYECHO
+		invoke RtlMoveMemory,addr STM32Echo[MAXYECHO*2],addr STM32Echo,MAXYECHO
+		invoke RtlMoveMemory,addr STM32Echo[MAXYECHO*1],addr STM32Echo,MAXYECHO
+	.endif
+	.if rngchanged
+		dec		rngchanged
+	.else
+		call	FindDepth
+		call	TestRangeChange
+	.endif
+	;Get current range index
+	movzx	eax,STM32Echo
+	invoke GetRangePtr,eax
+	mov		eax,sonarrange.interval[eax]
+	.if sonardata.hReply!=0 || fSTLink==IDIGNORE
+		mov		ecx,REPLYSPEED
+		xor		edx,edx
+		div		ecx
+	.endif
+	mov		esi,sonardata.ChartSpeed
+	xor		edx,edx
+	div		esi
+	mov		edi,eax
+	.if esi==1
+		call	Show0
+	.elseif esi==2
+		call	Show50
+		call	Show0
+	.elseif esi==3
+		call	Show66
+		call	Show33
+		call	Show0
+	.else
+		call	Show75
+		call	Show50
+		call	Show25
+		call	Show0
+	.endif
+	jmp		Again
+
+STLinkErr:
+	invoke SendMessage,hWnd,WM_CLOSE,0,0
+	xor		eax,eax
+	ret
+
+Show0:
+	mov		ebx,1
+	.while ebx<MAXYECHO
+		movzx	eax,STM32Echo[ebx]
+		.if al<sonardata.Noise
+			mov		al,0
+		.elseif al>253
+			mov		al,253
+		.endif
+		mov		sonardata.STM32Echo[ebx],al
+		inc		ebx
+	.endw
+	push	edi
+	.if !rngchanged
+		call	FindFish
+	.endif
+	invoke SonarThreadProc,0
+	pop		edi
+	invoke Sleep,edi
+	retn
+
+Show25:
+	mov		ebx,1
+	.while ebx<MAXYECHO
+		;Blend in 25% of previous echo
+		movzx	eax,STM32Echo[ebx]
+		shl		eax,2
+		movzx	edx,STM32Echo[ebx+MAXYECHO]
+		add		eax,edx
+		mov		ecx,5
+		xor		edx,edx
+		div		ecx
+		.if al<sonardata.Noise
+			mov		al,0
+		.elseif al>253
+			mov		al,253
+		.endif
+		mov		sonardata.STM32Echo[ebx],al
+		inc		ebx
+	.endw
+	invoke SonarThreadProc,0
+	invoke Sleep,edi
+	retn
+
+Show33:
+	mov		ebx,1
+	.while ebx<MAXYECHO
+		;Blend in 33% of previous echo
+		movzx	eax,STM32Echo[ebx+MAXYECHO]
+		mov		ecx,3
+		xor		edx,edx
+		div		ecx
+		mov		edx,eax
+		movzx	eax,STM32Echo[ebx]
+		add		eax,edx
+		mov		ecx,3
+		mul		ecx
+		shr		eax,2
+		.if al<sonardata.Noise
+			mov		al,0
+		.elseif al>253
+			mov		al,253
+		.endif
+		mov		sonardata.STM32Echo[ebx],al
+		inc		ebx
+	.endw
+	invoke SonarThreadProc,0
+	invoke Sleep,edi
+	retn
+
+Show50:
+	mov		ebx,1
+	.while ebx<MAXYECHO
+		;Blend in 50% of previous echo
+		movzx	eax,STM32Echo[ebx]
+		movzx	edx,STM32Echo[ebx+MAXYECHO]
+		add		eax,edx
+		shr		eax,1
+		.if al<sonardata.Noise
+			mov		al,0
+		.elseif al>253
+			mov		al,253
+		.endif
+		mov		sonardata.STM32Echo[ebx],al
+		inc		ebx
+	.endw
+	invoke SonarThreadProc,0
+	invoke Sleep,edi
+	retn
+
+Show66:
+	mov		ebx,1
+	.while ebx<MAXYECHO
+		;Blend in 66% of previous echo
+		movzx	eax,STM32Echo[ebx]
+		mov		ecx,3
+		xor		edx,edx
+		div		ecx
+		mov		edx,eax
+		movzx	eax,STM32Echo[ebx+MAXYECHO]
+		add		eax,edx
+		mov		ecx,3
+		mul		ecx
+		shr		eax,2
+		.if al<sonardata.Noise
+			mov		al,0
+		.elseif al>253
+			mov		al,253
+		.endif
+		mov		sonardata.STM32Echo[ebx],al
+		inc		ebx
+	.endw
+	invoke SonarThreadProc,0
+	invoke Sleep,edi
+	retn
+
+Show75:
+	mov		ebx,1
+	.while ebx<MAXYECHO
+		;Blend in 75% of previous echo
+		movzx	eax,STM32Echo[ebx+MAXYECHO]
+		shl		eax,2
+		movzx	edx,STM32Echo[ebx]
+		add		eax,edx
+		mov		ecx,5
+		xor		edx,edx
+		div		ecx
+		.if al<sonardata.Noise
+			mov		al,0
+		.elseif al>253
+			mov		al,253
+		.endif
+		mov		sonardata.STM32Echo[ebx],al
+		inc		ebx
+	.endw
+	invoke SonarThreadProc,0
+	invoke Sleep,edi
+	retn
+
+CopyEcho:
+	;Copy old echo
+	invoke RtlMoveMemory,addr STM32Echo[MAXYECHO*3],addr STM32Echo[MAXYECHO*2],MAXYECHO
+	invoke RtlMoveMemory,addr STM32Echo[MAXYECHO*2],addr STM32Echo[MAXYECHO*1],MAXYECHO
+	invoke RtlMoveMemory,addr STM32Echo[MAXYECHO*1],addr STM32Echo[MAXYECHO*0],MAXYECHO
+	retn
+
+RemoveNoise:
+	mov		ebx,1
+	mov		dl,sonardata.Noise
+	.if sonardata.NoiseReject
+		.while ebx<MAXYECHO
+			mov		ax,word ptr STM32Echo[ebx]
+			.if al>253
+				mov		al,253
+			.endif
+			.if al<dl || ah<dl
+				mov		al,0
+			.endif
+			mov		sonardata.STM32Echo[ebx],al
+			inc		ebx
+		.endw
+	.else
+		.while ebx<MAXYECHO
+			mov		al,STM32Echo[ebx]
+			.if al>253
+				mov		al,253
+			.endif
+			.if al<dl
+				mov		al,0
+			.endif
+			mov		sonardata.STM32Echo[ebx],al
+			inc		ebx
+		.endw
+	.endif
+	retn
+
+FindDepth:
+	;mov		sonardata.dptinx,0
+	and		sonardata.ShowDepth,1
+;	;Skip blank
+;	mov		ebx,1
+;	xor		eax,eax
+;	.while ebx<MAXYECHO-3
+;		mov		al,sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*1]
+;		or		al,sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*2]
+;		or		al,sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*3]
+;		shl		eax,8
+;		mov		al,sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*1+1]
+;		or		al,sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*2+1]
+;		or		al,sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*3+1]
+;		shl		eax,8
+;		mov		al,sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*1+2]
+;		or		al,sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*2+2]
+;		or		al,sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*3+2]
+;		shl		eax,8
+;		mov		al,sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*1+3]
+;		or		al,sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*2+3]
+;		or		al,sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*3+3]
+;		.break .if eax
+;		inc		ebx
+;	.endw
+;	;Skip ping and surface clutter
+;	xor		eax,eax
+;	.while ebx<MAXYECHO-7
+;		mov		eax,dword ptr sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*1+0]
+;		or		eax,dword ptr sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*2+0]
+;		or		eax,dword ptr sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*3+0]
+;		or		eax,dword ptr sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*4+0]
+;		or		eax,dword ptr sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*5+0]
+;		or		eax,dword ptr sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*6+0]
+;		or		eax,dword ptr sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*7+0]
+;		or		eax,dword ptr sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*8+0]
+;		or		eax,dword ptr sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*1+4]
+;		or		eax,dword ptr sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*2+4]
+;		or		eax,dword ptr sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*3+4]
+;		or		eax,dword ptr sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*4+4]
+;		or		eax,dword ptr sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*5+4]
+;		or		eax,dword ptr sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*6+4]
+;		or		eax,dword ptr sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*7+4]
+;		or		eax,dword ptr sonardata.sonar[ebx+MAXXECHO*MAXYECHO-MAXYECHO*8+4]
+;		.break .if !eax
+;		inc		ebx
+;	.endw
+;	add		ebx,40
+;	mov		sonardata.minyecho,ebx
+	mov		ebx,50
+	mov		sonardata.minyecho,ebx
+	xor		esi,esi
+	xor		edi,edi
+	.while ebx<MAXYECHO
+		xor		ecx,ecx
+		xor		edx,edx
+		.while ecx<32
+			lea		eax,[ebx+ecx]
+			.break .if eax>=MAXYECHO
+			movzx	eax,STM32Echo[ebx+ecx+MAXYECHO*0]
+			add		edx,eax
+			movzx	eax,STM32Echo[ebx+ecx+MAXYECHO*1]
+			add		edx,eax
+			movzx	eax,STM32Echo[ebx+ecx+MAXYECHO*2]
+			add		edx,eax
+			movzx	eax,STM32Echo[ebx+ecx+MAXYECHO*3]
+			add		edx,eax
+			inc		ecx
+		.endw
+		.if edx>esi
+			mov		esi,edx
+			mov		edi,ebx
+		.endif
+		inc		ebx
+	.endw
+	.if edi>1
+		mov		sonardata.nodptinx,0
+		add		edi,sonardata.dptinx
+		shr		edi,1
+		mov		ebx,edi
+		mov		sonardata.dptinx,ebx
+		call	CalculateDepth
+		call	SetDepth
+		or		sonardata.ShowDepth,2
+	.endif
+	retn
+
+CalculateDepth:
+	push	ecx
+	push	edx
+	movzx	eax,sonardata.STM32Echo
+	invoke GetRangePtr,eax
+	mov		eax,sonarrange.range[eax]
+	mov		ecx,10
+	mul		ecx
+	mul		ebx
+	mov		ecx,MAXYECHO
+	div		ecx
+	pop		edx
+	pop		ecx
+	retn
+
+SetDepth:
+	invoke wsprintf,addr buffer,addr szFmtDepth,eax
+	invoke strlen,addr buffer
+	.if eax>2
+		mov		byte ptr buffer[eax-1],0
+	.else
+		movzx	ecx,word ptr buffer[eax-1]
+		shl		ecx,8
+		mov		cl,'.'
+		mov		dword ptr buffer[eax-1],ecx
+	.endif
+	invoke strcpy,addr sonardata.options.text[1*sizeof OPTIONS],addr buffer
+	retn
+
+FindFish:
+	.if sonardata.FishDetect || sonardata.FishAlarm
+		mov		ebx,sonardata.minyecho
+		mov		edi,sonardata.dptinx
+		.if !edi
+			retn
+			;mov		edi,MAXYECHO
+		.elseif edi>50
+			sub		edi,50
+		.endif
+		.while ebx<edi
+			movzx	eax,STM32Echo[ebx]
+			.if al>=72
+				call	CalculateDepth
+				mov		fish,al
+				push	ebx
+				sub		ebx,MAXFISH/2
+				.if CARRY?
+					xor		ebx,ebx
+				.endif
+				call	CalculateDepth
+				mov		ecx,eax
+				pop		ebx
+				push	ebx
+				add		ebx,MAXFISH/2
+				call	CalculateDepth
+				mov		edx,eax
+				pop		ebx
+				mov		esi,MAXFISH-1
+				.while esi
+					movzx	eax,fish[esi]
+					.break .if eax>ecx && eax<edx
+					dec		esi
+				.endw
+				.if !esi
+					movzx	eax,STM32Echo[ebx]
+					.if sonardata.FishDetect
+						.if eax>128
+							;Large fish
+							mov		eax,255
+						.else
+							;Small fish
+							mov		eax,254
+						.endif
+						mov		sonardata.STM32Echo[ebx],al
+					.endif
+					.if sonardata.FishAlarm && !fFishSound
+						mov		fFishSound,3
+						invoke PlaySound,addr szFishSound,hInstance,SND_ASYNC
+					.endif
+					.break
+				.else
+					mov		fish,0
+				.endif
+			.endif
+			inc		ebx
+		.endw
+	.endif
+	retn
+
+TestRangeChange:
+	.if sonardata.AutoRange && !sonardata.hReply
+		movzx	eax,STM32Echo
+		mov		edx,sonardata.MaxRange
+		dec		edx
+		mov		ebx,sonardata.dptinx
+		.if !ebx
+			;Bottom not found
+			inc		sonardata.nodptinx
+			.if sonardata.nodptinx>=4
+				mov		sonardata.nodptinx,0
+				.if eax<edx
+					;Range increment
+					inc		eax
+					invoke SetRange,eax
+					mov		rngchanged,4
+				.endif
+			.endif
+		.else
+			;Check if range should be changed
+			.if eax && ebx<MAXYECHO/3
+				;Range decrement
+				dec		eax
+				invoke SetRange,eax
+				mov		rngchanged,4
+			.elseif eax<edx && ebx>(MAXYECHO-MAXYECHO/5)
+				;Range increment
+				inc		eax
+				invoke SetRange,eax
+				mov		rngchanged,4
+			.endif
+		.endif
+	.endif
+	retn
+
+STM32Thread endp
+
 ShowRangeDepthTempScaleFish proc uses ebx esi edi,hDC:HDC
 	LOCAL	rcsonar:RECT
 	LOCAL	rect:RECT
@@ -1456,7 +1604,7 @@ LoadSonarFromIni proc uses ebx edi
 		invoke GetItemInt,addr buffer,0
 		mov		sonarrange.interval[edi],eax
 		invoke GetItemInt,addr buffer,0
-		mov		sonarrange.nsample[edi],eax
+		mov		sonarrange.pixeltimer[edi],eax
 		invoke GetItemInt,addr buffer,0
 		mov		sonarrange.pingadd[edi],eax
 		invoke GetItemInt,addr buffer,0
@@ -1585,28 +1733,28 @@ SonarProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke CreateThread,NULL,NULL,addr STM32Thread,hWin,0,addr tid
 				invoke CloseHandle,eax
 			.endif
-			.if fSTLink && !fThread
-				invoke KillTimer,hWin,1000
-				mov		fThread,TRUE
-				invoke CreateThread,NULL,NULL,addr SonarThreadProc,hWin,0,addr tid
-				invoke CloseHandle,eax
-				.if sonardata.ChartSync
-					movzx	eax,sonardata.RangeInx
-					invoke GetRangePtr,eax
-					mov		eax,sonarrange.interval[eax]
-				.else
-					mov		eax,350
-					sub		eax,sonardata.ChartSpeed
-					sub		eax,sonardata.ChartSpeed
-					sub		eax,sonardata.ChartSpeed
-				.endif
-				.if sonardata.hReply!=0 || fSTLink==IDIGNORE
-					mov		ecx,REPLYSPEED
-					xor		edx,edx
-					div		ecx
-				.endif
-				invoke SetTimer,hWin,1000,eax,NULL
-			.endif
+;			.if fSTLink && !fThread
+;				invoke KillTimer,hWin,1000
+;				mov		fThread,TRUE
+;				invoke CreateThread,NULL,NULL,addr SonarThreadProc,hWin,0,addr tid
+;				invoke CloseHandle,eax
+;				.if sonardata.ChartSync
+;					movzx	eax,sonardata.RangeInx
+;					invoke GetRangePtr,eax
+;					mov		eax,sonarrange.interval[eax]
+;				.else
+;					mov		eax,350
+;					sub		eax,sonardata.ChartSpeed
+;					sub		eax,sonardata.ChartSpeed
+;					sub		eax,sonardata.ChartSpeed
+;				.endif
+;				.if sonardata.hReply!=0 || fSTLink==IDIGNORE
+;					mov		ecx,REPLYSPEED
+;					xor		edx,edx
+;					div		ecx
+;				.endif
+;				invoke SetTimer,hWin,1000,eax,NULL
+;			.endif
 		.elseif wParam==1001
 			xor		sonardata.ShowDepth,1
 			.if sonardata.ShowDepth<2

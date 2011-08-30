@@ -21,8 +21,7 @@ typedef struct
   u8 Gain;
   u8 GainInc;
   u8 Range;
-  u8 nSample;
-  u8 Dummy8;
+  u16 PixelTimer;
   u16 Dummy16;
   u16 ADCBatt;
   u16 ADCWaterTemp;
@@ -34,7 +33,6 @@ typedef struct
 /* Private variables ---------------------------------------------------------*/
 static STM32_SonarTypeDef STM32_Sonar;         // 0x20000000
 vu8 BlueLED;
-vu8 nSample;
 vu16 EchoIndex;
 vu16 Ping;
 
@@ -70,8 +68,6 @@ int main(void)
   GPIO_Configuration();
   /* TIM1 configuration */
   TIM1_Configuration();
-  /* TIM2 configuration */
-  TIM2_Configuration();
   /* ADC1 configuration */
   ADC_Startup();
   /* ADC1 injected channel configuration */
@@ -108,8 +104,6 @@ int main(void)
         STM32_Sonar.Echo[i] = 0;
         i++;
       }
-      /* Init nSample */
-      nSample = STM32_Sonar.nSample;
       /* Reset echo index */
       EchoIndex = 0;
       /* Set the TIM1 Autoreload value */
@@ -129,11 +123,6 @@ int main(void)
         /* Get echo */
         ADC = ( (u32 *) ADC1_ICDR_Address);
         Echo = (u8) ( (u16) (*(vu32*) (((*(u32*)&ADC)))) >> 4);
-        /* Reserve 254 and 255 for fish detect */
-        // if (Echo > 253)
-        // {
-          // Echo = 253;
-        // }
         /* If echo larger than previous echo, update the echo array */
         if (Echo > STM32_Sonar.Echo[EchoIndex])
         {
@@ -227,6 +216,8 @@ void TIM1_UP_IRQHandler(void)
     TIM_Cmd(TIM1, DISABLE);
     /* Enable ADC injected channel */
     ADC_AutoInjectedConvCmd(ADC1, ENABLE);
+    /* TIM2 configuration */
+    TIM2_Configuration();
     /* Enable TIM2 */
     TIM_Cmd(TIM2, ENABLE);
   }
@@ -244,33 +235,27 @@ void TIM2_IRQHandler(void)
   u16 Gain;
   /* Clear TIM2 Update interrupt pending bit */
   TIM2->SR = (u16)~TIM_IT_Update;
-  nSample--;
-  if (nSample == 0)
+  /* Set the DAC to output next gain step */
+  Gain = (u16)DAC->DHR12R1 + (u16)STM32_Sonar.GainInc;
+  if (Gain > 4095)
   {
-    /* Set the DAC to output next gain step */
-    Gain = (u16)DAC->DHR12R1 + (u16)STM32_Sonar.GainInc;
-    if (Gain > 4095)
-    {
-      Gain = 4095;
-    }
-    DAC->DHR12R1 = Gain;
-    /* Reinit nSample */
-    nSample = STM32_Sonar.nSample;
-    /* Increment the echo array index */
-    EchoIndex++;
-    if (EchoIndex == MAXECHO)
-    {
-      /* Reset echo array index */
-      EchoIndex = 0;
-      /* Disable TIM2 */
-      TIM2->CR1 = 0;
-      /* Disable ADC injected channel */
-      ADC_AutoInjectedConvCmd(ADC1, DISABLE);
-      /* Set the DAC to output lowest gain */
-      DAC->DHR12R1 = (u16)0x0;
-      /* Done sampling echo*/
-      STM32_Sonar.Start = 0;
-    }
+    Gain = 4095;
+  }
+  DAC->DHR12R1 = Gain;
+  /* Increment the echo array index */
+  EchoIndex++;
+  if (EchoIndex == MAXECHO)
+  {
+    /* Reset echo array index */
+    EchoIndex = 0;
+    /* Disable TIM2 */
+    TIM2->CR1 = 0;
+    /* Disable ADC injected channel */
+    ADC_AutoInjectedConvCmd(ADC1, DISABLE);
+    /* Set the DAC to output lowest gain */
+    DAC->DHR12R1 = (u16)0x0;
+    /* Done sampling echo*/
+    STM32_Sonar.Start = 0;
   }
 }
 
@@ -481,10 +466,7 @@ void TIM2_Configuration(void)
   TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;
   TIM_TimeBaseStructure.TIM_ClockDivision = 0;
   TIM_TimeBaseStructure.TIM_Prescaler = 0;
-  /* Time base configuration 56MHz clock */
-  // TIM_TimeBaseStructure.TIM_Period = 302;
-  /* Time base configuration 48MHz clock */
-  TIM_TimeBaseStructure.TIM_Period = 259;
+  TIM_TimeBaseStructure.TIM_Period = STM32_Sonar.PixelTimer;
   TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
   TIM_TimeBaseStructure.TIM_RepetitionCounter = 0;
   TIM_TimeBaseInit(TIM2, &TIM_TimeBaseStructure);

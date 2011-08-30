@@ -311,11 +311,9 @@ SONAR struct
 	PingTimer		BYTE ?									;Timer value to generate 200 KHz ping
 	Gain			BYTE ?									;Gain level (0 to 255)
 	GainInc			BYTE ?									;Gain level increment
-	RangeInx		BYTE ?									;Range (0 to 13)
-	nSample			BYTE ?									;Number of echo readings to sample. If more than one the largest is stored.
-	Dummy8			BYTE ?
-	Dummy16			WORD ?
-	dmy1			WORD ?									;Just to make the ADC readings dword sized
+	RangeInx		BYTE ?									;Range (0 to 16)
+	PixelTimer		WORD ?									;Pixel timer value
+	Dummy16			WORD ?									;Just to make the ADC readings dword sized
 	ADCBattery		WORD ?									;Battery level
 	ADCWaterTemp	WORD ?									;Water temprature
 	ADCAirTemp		WORD ?									;Air temprature
@@ -330,7 +328,7 @@ SONAR ends
 RANGE struct
 	range			DWORD ?									;Range in meters
 	interval		DWORD ?									;Update rate
-	nsample			DWORD ?									;Number of echo readings to sample. If more than one the largest is stored.
+	pixeltimer		DWORD ?									;Pixel timer value
 	pingadd			DWORD ?									;Number of pulses in a ping (1 to 127). Used when autoping is on
 	gainadd			DWORD ?									;Gain level to add (0 to 255) to GainInit. Used when auto gain is on
 	gaininc			DWORD ?									;Gain increment for each pixel. Used when auto gain is on
@@ -448,3 +446,4 @@ rseed				DWORD ?									;Random seed
 szFishSound			BYTE MAX_PATH dup(?)					;Path & filename of fish.wav file
 fFishSound			DWORD ?
 lpOldButtonProc		DWORD ?
+STM32Echo			BYTE MAXYECHO*4 dup(?)
