@@ -116,7 +116,7 @@ int main(void)
       Ping = 0x100;
       /* Enable TIM1 */
       TIM_Cmd(TIM1, ENABLE);
-      while (STM32_Sonar.Start == 2)
+      while (STM32_Sonar.Start)
       {
         /* To eliminate the need for an AM demodulator the largest */ 
         /* ADC reading is stored in its echo array element */
