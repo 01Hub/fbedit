@@ -137,10 +137,15 @@ SIGNALBAR				equ 32								;Width of signal strenght bar
 MAXRANGE				equ 32								;Max number of depth ranges that can be read from ini
 REPLYSPEED				equ 5								;At reply, the ping interval is divided by REPLYSPEED
 STM32_Sonar				equ 20000000h						;STM32 ram address
-SONARBACKCOLOR			equ 00C47B0Fh						;Back color of sonar
-SONARPENCOLOR			equ 00A0A0A0h						;Signal bar pen color
+;SONARBACKCOLOR			equ 00C47B0Fh						;Back color of sonar
+SONARBACKCOLOR			equ 00F4BD6Ch						;Back color of sonar
+SONARPENCOLOR			equ 0900000h;00606060h						;Signal bar pen color
 MAXFISH					equ 32								;Prevents showing repeated fish symbols and repeated fish alarms
 MAXSONARBMP				equ 64
+PINGTIMER				equ 139
+SOUNDSPEEDMIN			equ 1400
+SOUNDSPEEDMAX			equ 1550
+STM32CLOCK				equ 56000000
 
 LONPOINT struct
 	iLon			DWORD ?									;Longitude
@@ -293,10 +298,10 @@ SONAR struct
 	AutoGain		DWORD ?									;If TRUE gain is set according to range
 	AutoPing		DWORD ?									;If TRUE number of pingpulses is set according to range
 	NoiseReject		DWORD ?									;If TRUE 2 adjacent pixels needed to show echo
-	ChartSync		DWORD ?									;If TRUE shart speed is syncronized to ping
 	FishDetect		DWORD ?									;If TRUE fish detect is on
 	FishAlarm		DWORD ?									;If TRUE fish alarm is on
 	ChartSpeed		DWORD ?									;Sonar chart scroll speed.
+	SoundSpeed		DWORD ?									;Speed of sound in water
 	MaxRange		DWORD ?									;Number of range definitions read from ini
 	RangeVal		DWORD ?									;Range in meters
 	ShowDepth		DWORD ?									;Bit 0 depth on/off, Bit 1 blink depth if echo is lost
@@ -330,7 +335,6 @@ RANGE struct
 	interval		DWORD ?									;Update rate
 	pixeltimer		DWORD ?									;Pixel timer value
 	pingadd			DWORD ?									;Number of pulses in a ping (1 to 127). Used when autoping is on
-	gainadd			DWORD ?									;Gain level to add (0 to 255) to GainInit. Used when auto gain is on
 	gaininc			DWORD ?									;Gain increment for each pixel. Used when auto gain is on
 	nticks			DWORD ?									;Number of ticks on the range scale
 	scale			BYTE 64 dup(?)							;Zero terminated strings of depths

@@ -1,13 +1,13 @@
 
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.o:     file format elf32-littlearm
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.o
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.o:     file format elf32-littlearm
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.o
 
 
 Disassembly of section .text.GetADCValue:
 
 00000000 <GetADCValue>:
 GetADCValue():
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:151
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:156
 * Input          : ADC channel
 * Output         : None
 * Return         : The ADC cannel reading
@@ -17,7 +17,7 @@ u16 GetADCValue(u8 Channel)
    0:	b570      	push	{r4, r5, r6, lr}
    2:	b086      	sub	sp, #24
    4:	4606      	mov	r6, r0
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:156
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:161
   vu8 i;
   vu16 ADCValue;
   ADC_InitTypeDef ADC_InitStructure;
@@ -25,37 +25,37 @@ D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:156
   i = 0;
    6:	f04f 0300 	mov.w	r3, #0
    a:	f88d 3017 	strb.w	r3, [sp, #23]
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:157
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:162
   ADCValue = 0;
    e:	f8ad 3014 	strh.w	r3, [sp, #20]
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:158
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:163
   ADC_InitStructure.ADC_Mode = ADC_Mode_Independent;
   12:	9300      	str	r3, [sp, #0]
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:159
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:164
   ADC_InitStructure.ADC_ScanConvMode = ENABLE;
   14:	f04f 0401 	mov.w	r4, #1
   18:	f88d 4004 	strb.w	r4, [sp, #4]
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:160
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:165
   ADC_InitStructure.ADC_ContinuousConvMode = ENABLE;
   1c:	f88d 4005 	strb.w	r4, [sp, #5]
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:161
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:166
   ADC_InitStructure.ADC_ExternalTrigConv = ADC_ExternalTrigConv_None;
   20:	f44f 2260 	mov.w	r2, #917504	; 0xe0000
   24:	9202      	str	r2, [sp, #8]
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:162
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:167
   ADC_InitStructure.ADC_DataAlign = ADC_DataAlign_Right;
   26:	9303      	str	r3, [sp, #12]
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:163
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:168
   ADC_InitStructure.ADC_NbrOfChannel = 1;
   28:	f88d 4010 	strb.w	r4, [sp, #16]
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:164
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:169
   ADC_Init(ADC1, &ADC_InitStructure);
   2c:	f44f 5510 	mov.w	r5, #9216	; 0x2400
   30:	f2c4 0501 	movt	r5, #16385	; 0x4001
   34:	4628      	mov	r0, r5
   36:	4669      	mov	r1, sp
   38:	f7ff fffe 	bl	0 <ADC_Init>
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:166
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:171
   /* ADC1 regular channel configuration */ 
   ADC_RegularChannelConfig(ADC1, Channel, 1, ADC_SampleTime_239Cycles5);
   3c:	4628      	mov	r0, r5
@@ -63,19 +63,19 @@ D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:166
   40:	4622      	mov	r2, r4
   42:	f04f 0307 	mov.w	r3, #7
   46:	f7ff fffe 	bl	0 <ADC_RegularChannelConfig>
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:168
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:173
   /* Start ADC1 Software Conversion */ 
   ADC_SoftwareStartConvCmd(ADC1, ENABLE);
   4a:	4628      	mov	r0, r5
   4c:	4621      	mov	r1, r4
   4e:	f7ff fffe 	bl	0 <ADC_SoftwareStartConvCmd>
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:170
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:175
   /* Add 8 conversions to reduce thermal noise */
   while (i<8)
   52:	f89d 3017 	ldrb.w	r3, [sp, #23]
   56:	2b07      	cmp	r3, #7
   58:	d821      	bhi.n	9e <GetADCValue+0x9e>
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:172
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:177
     {
     ADC_ClearFlag(ADC1, ADC_FLAG_EOC);
   5a:	f44f 5410 	mov.w	r4, #9216	; 0x2400
@@ -84,14 +84,14 @@ D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:172
   66:	4620      	mov	r0, r4
   68:	4629      	mov	r1, r5
   6a:	f7ff fffe 	bl	0 <ADC_ClearFlag>
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:173
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:178
     while (ADC_GetFlagStatus(ADC1, ADC_FLAG_EOC) == RESET)
   6e:	4620      	mov	r0, r4
   70:	4629      	mov	r1, r5
   72:	f7ff fffe 	bl	0 <ADC_GetFlagStatus>
   76:	2800      	cmp	r0, #0
   78:	d0f9      	beq.n	6e <GetADCValue+0x6e>
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:176
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:181
     {
     }
     ADCValue = ADCValue + ADC1->DR;
@@ -100,13 +100,13 @@ D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:176
   80:	18d3      	adds	r3, r2, r3
   82:	b29b      	uxth	r3, r3
   84:	f8ad 3014 	strh.w	r3, [sp, #20]
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:177
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:182
     i++;
   88:	f89d 3017 	ldrb.w	r3, [sp, #23]
   8c:	f103 0301 	add.w	r3, r3, #1
   90:	b2db      	uxtb	r3, r3
   92:	f88d 3017 	strb.w	r3, [sp, #23]
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:170
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:175
   /* ADC1 regular channel configuration */ 
   ADC_RegularChannelConfig(ADC1, Channel, 1, ADC_SampleTime_239Cycles5);
   /* Start ADC1 Software Conversion */ 
@@ -116,7 +116,7 @@ D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:170
   96:	f89d 3017 	ldrb.w	r3, [sp, #23]
   9a:	2b07      	cmp	r3, #7
   9c:	d9e3      	bls.n	66 <GetADCValue+0x66>
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:180
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:185
     }
     ADCValue = ADCValue + ADC1->DR;
     i++;
@@ -127,11 +127,11 @@ D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:180
   a2:	f2c4 0001 	movt	r0, #16385	; 0x4001
   a6:	f04f 0100 	mov.w	r1, #0
   aa:	f7ff fffe 	bl	0 <ADC_SoftwareStartConvCmd>
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:182
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:187
   /* Return average of the 8 added conversions */
   return (ADCValue >> 3);
   ae:	f8bd 0014 	ldrh.w	r0, [sp, #20]
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:183
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:188
 }
   b2:	f3c0 00cc 	ubfx	r0, r0, #3, #13
   b6:	b006      	add	sp, #24
@@ -142,99 +142,90 @@ Disassembly of section .text.TIM2_IRQHandler:
 
 00000000 <TIM2_IRQHandler>:
 TIM2_IRQHandler():
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:234
-* Input          : None
-* Output         : None
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:241
 * Return         : None
 *******************************************************************************/
 void TIM2_IRQHandler(void)
 {
-   0:	b538      	push	{r3, r4, r5, lr}
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:237
-  u16 Gain;
   /* Clear TIM2 Update interrupt pending bit */
-  TIM2->SR = (u16)~TIM_IT_Update;
-   2:	f04f 4380 	mov.w	r3, #1073741824	; 0x40000000
-   6:	f64f 72fe 	movw	r2, #65534	; 0xfffe
-   a:	821a      	strh	r2, [r3, #16]
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:239
+  asm("mov    r0,#0x40000000"); /* TIM2 */
+   0:	f04f 4080 	mov.w	r0, #1073741824	; 0x40000000
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:242
+  asm("strh   r0,[r0,#0x8 *2]");/* TIM2->SR */
+   4:	8200      	strh	r0, [r0, #16]
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:244
   /* Set the DAC to output next gain step */
-  Gain = (u16)DAC->DHR12R1 + (u16)STM32_Sonar.GainInc;
-   c:	f44f 43e8 	mov.w	r3, #29696	; 0x7400
-  10:	f2c4 0300 	movt	r3, #16384	; 0x4000
-  14:	6899      	ldr	r1, [r3, #8]
-  16:	f240 0200 	movw	r2, #0
-  1a:	f2c0 0200 	movt	r2, #0
-  1e:	7912      	ldrb	r2, [r2, #4]
-  20:	1852      	adds	r2, r2, r1
-  22:	b292      	uxth	r2, r2
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:244
-  if (Gain > 4095)
-  {
-    Gain = 4095;
-  }
-  DAC->DHR12R1 = Gain;
-  24:	f640 71ff 	movw	r1, #4095	; 0xfff
-  28:	428a      	cmp	r2, r1
-  2a:	bf28      	it	cs
-  2c:	460a      	movcs	r2, r1
-  2e:	609a      	str	r2, [r3, #8]
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:246
+  asm("movw   r0,#0x7400");       /* DAC1 */
+   6:	f247 4000 	movw	r0, #29696	; 0x7400
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:245
+  asm("movt   r0,#0x4000");
+   a:	f2c4 0000 	movt	r0, #16384	; 0x4000
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:246
+  asm("ldr    r3,[r0,#0x8]");     /* DAC_DHR12R1 */
+   e:	6883      	ldr	r3, [r0, #8]
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:247
+  asm("movw   r1,#0x0");          /* STM32_Sonar */
+  10:	f240 0100 	movw	r1, #0
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:248
+  asm("movt   r1,#0x2000");
+  14:	f2c2 0100 	movt	r1, #8192	; 0x2000
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:249
+  asm("ldrb   r2,[r1,#0x4]");     /* STM32_Sonar.GainInc */
+  18:	790a      	ldrb	r2, [r1, #4]
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:250
+  asm("add    r3,r3,r2");
+  1a:	4413      	add	r3, r2
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:251
+  asm("uxth   r3,r3");
+  1c:	b29b      	uxth	r3, r3
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:252
+  asm("movw   r2,0xFFF");
+  1e:	f640 72ff 	movw	r2, #4095	; 0xfff
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:253
+  asm("cmp    r3,r2");
+  22:	4293      	cmp	r3, r2
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:254
+  asm("it     cs");
+  24:	bf28      	it	cs
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:255
+  asm("movcs  r3,r2");
+  26:	4613      	movcs	r3, r2
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:256
+  asm("str    r3,[r0,#0x8]");     /* DAC_DHR12R1 */
+  28:	6083      	str	r3, [r0, #8]
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:258
   /* Increment the echo array index */
-  EchoIndex++;
-  30:	f240 0300 	movw	r3, #0
-  34:	f2c0 0300 	movt	r3, #0
-  38:	881a      	ldrh	r2, [r3, #0]
-  3a:	f102 0201 	add.w	r2, r2, #1
-  3e:	b292      	uxth	r2, r2
-  40:	801a      	strh	r2, [r3, #0]
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:247
-  if (EchoIndex == MAXECHO)
-  42:	881b      	ldrh	r3, [r3, #0]
-  44:	b29b      	uxth	r3, r3
-  46:	f5b3 7f00 	cmp.w	r3, #512	; 0x200
-  4a:	d11b      	bne.n	3c <TIM2_IRQHandler+0x3c>
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:250
-  {
-    /* Reset echo array index */
-    EchoIndex = 0;
-  4c:	f240 0300 	movw	r3, #0
-  50:	f2c0 0300 	movt	r3, #0
-  54:	f04f 0400 	mov.w	r4, #0
-  58:	4625      	mov	r5, r4
-  5a:	801c      	strh	r4, [r3, #0]
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:252
-    /* Disable TIM2 */
-    TIM2->CR1 = 0;
-  5c:	f04f 4380 	mov.w	r3, #1073741824	; 0x40000000
-  60:	801c      	strh	r4, [r3, #0]
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:254
-    /* Disable ADC injected channel */
-    ADC_AutoInjectedConvCmd(ADC1, DISABLE);
-  62:	f44f 5010 	mov.w	r0, #9216	; 0x2400
-  66:	f2c4 0001 	movt	r0, #16385	; 0x4001
-  6a:	4621      	mov	r1, r4
-  6c:	f7ff fffe 	bl	0 <ADC_AutoInjectedConvCmd>
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:256
-    /* Set the DAC to output lowest gain */
-    DAC->DHR12R1 = (u16)0x0;
-  70:	f44f 43e8 	mov.w	r3, #29696	; 0x7400
-  74:	f2c4 0300 	movt	r3, #16384	; 0x4000
-  78:	609c      	str	r4, [r3, #8]
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:258
-    /* Done sampling echo*/
-    STM32_Sonar.Start = 0;
-  7a:	f240 0300 	movw	r3, #0
-  7e:	f2c0 0300 	movt	r3, #0
-  82:	701c      	strb	r4, [r3, #0]
-  84:	bd38      	pop	{r3, r4, r5, pc}
-  86:	bf00      	nop
+  asm("ldrh   r2,[r1,#0x8]");     /* STM32_Sonar.EchoIndex */
+  2a:	890a      	ldrh	r2, [r1, #8]
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:259
+  asm("add    r2,r2,#0x1");
+  2c:	f102 0201 	add.w	r2, r2, #1
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:260
+  asm("cmp    r2,#0x200");
+  30:	f5b2 7f00 	cmp.w	r2, #512	; 0x200
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:261
+  asm("ite    ne");
+  34:	bf14      	ite	ne
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:262
+  asm("strhne r2,[r1,#0x8]");     /* STM32_Sonar.EchoIndex */
+  36:	810a      	strhne	r2, [r1, #8]
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:263
+  asm("strbeq r2,[r1,#0x0]");     /* STM32_Sonar.Start */
+  38:	700a      	strbeq	r2, [r1, #0]
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:284
+    // /* Reset echo array index */
+    // STM32_Sonar.EchoIndex = 0;
+    // /* Done sampling echo*/
+    // STM32_Sonar.Start = 0;
+  // }
+}
+  3a:	4770      	bx	lr
 
 Disassembly of section .text.ADC_Startup:
 
 00000000 <ADC_Startup>:
 ADC_Startup():
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:270
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:294
 * Input          : None
 * Output         : None
 * Return         : None
@@ -243,42 +234,42 @@ void ADC_Startup(void)
 {
    0:	b530      	push	{r4, r5, lr}
    2:	b087      	sub	sp, #28
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:273
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:297
   ADC_InitTypeDef ADC_InitStructure;
   /* ADCCLK = PCLK2/2 */
   RCC_ADCCLKConfig(RCC_PCLK2_Div2);
    4:	f04f 0000 	mov.w	r0, #0
    8:	f7ff fffe 	bl	0 <RCC_ADCCLKConfig>
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:275
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:299
   /* ADC1 configuration ------------------------------------------------------*/
   ADC_InitStructure.ADC_Mode = ADC_Mode_Independent;
    c:	f04f 0300 	mov.w	r3, #0
   10:	9301      	str	r3, [sp, #4]
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:276
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:300
   ADC_InitStructure.ADC_ScanConvMode = ENABLE;
   12:	f04f 0501 	mov.w	r5, #1
   16:	f88d 5008 	strb.w	r5, [sp, #8]
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:277
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:301
   ADC_InitStructure.ADC_ContinuousConvMode = ENABLE;
   1a:	f88d 5009 	strb.w	r5, [sp, #9]
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:278
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:302
   ADC_InitStructure.ADC_ExternalTrigConv = ADC_ExternalTrigConv_None;
   1e:	f44f 2260 	mov.w	r2, #917504	; 0xe0000
   22:	9203      	str	r2, [sp, #12]
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:279
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:303
   ADC_InitStructure.ADC_DataAlign = ADC_DataAlign_Right;
   24:	9304      	str	r3, [sp, #16]
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:280
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:304
   ADC_InitStructure.ADC_NbrOfChannel = 1;
   26:	f88d 5014 	strb.w	r5, [sp, #20]
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:281
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:305
   ADC_Init(ADC1, &ADC_InitStructure);
   2a:	f44f 5410 	mov.w	r4, #9216	; 0x2400
   2e:	f2c4 0401 	movt	r4, #16385	; 0x4001
   32:	4620      	mov	r0, r4
   34:	a901      	add	r1, sp, #4
   36:	f7ff fffe 	bl	0 <ADC_Init>
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:283
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:307
   /* ADC1 regular channel2 configuration */ 
   ADC_RegularChannelConfig(ADC1, ADC_Channel_2, 1, ADC_SampleTime_55Cycles5);
   3a:	4620      	mov	r0, r4
@@ -286,18 +277,18 @@ D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:283
   40:	462a      	mov	r2, r5
   42:	f04f 0305 	mov.w	r3, #5
   46:	f7ff fffe 	bl	0 <ADC_RegularChannelConfig>
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:285
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:309
   /* Enable ADC1 */
   ADC_Cmd(ADC1, ENABLE);
   4a:	4620      	mov	r0, r4
   4c:	4629      	mov	r1, r5
   4e:	f7ff fffe 	bl	0 <ADC_Cmd>
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:287
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:311
   /* Enable ADC1 reset calibaration register */   
   ADC_ResetCalibration(ADC1);
   52:	4620      	mov	r0, r4
   54:	f7ff fffe 	bl	0 <ADC_ResetCalibration>
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:289
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:313
   /* Check the end of ADC1 reset calibration register */
   while(ADC_GetResetCalibrationStatus(ADC1));
   58:	f44f 5410 	mov.w	r4, #9216	; 0x2400
@@ -306,13 +297,13 @@ D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:289
   62:	f7ff fffe 	bl	0 <ADC_GetResetCalibrationStatus>
   66:	2800      	cmp	r0, #0
   68:	d1fa      	bne.n	60 <ADC_Startup+0x60>
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:291
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:315
   /* Start ADC1 calibaration */
   ADC_StartCalibration(ADC1);
   6a:	f44f 5010 	mov.w	r0, #9216	; 0x2400
   6e:	f2c4 0001 	movt	r0, #16385	; 0x4001
   72:	f7ff fffe 	bl	0 <ADC_StartCalibration>
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:293
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:317
   /* Check the end of ADC1 calibration */
   while(ADC_GetCalibrationStatus(ADC1));
   76:	f44f 5410 	mov.w	r4, #9216	; 0x2400
@@ -321,7 +312,7 @@ D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:293
   80:	f7ff fffe 	bl	0 <ADC_GetCalibrationStatus>
   84:	2800      	cmp	r0, #0
   86:	d1fa      	bne.n	7e <ADC_Startup+0x7e>
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:294
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:318
 }
   88:	b007      	add	sp, #28
   8a:	bd30      	pop	{r4, r5, pc}
@@ -330,7 +321,7 @@ Disassembly of section .text.ADC_Configuration:
 
 00000000 <ADC_Configuration>:
 ADC_Configuration():
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:305
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:329
 * Input          : None
 * Output         : None
 * Return         : None
@@ -339,49 +330,49 @@ void ADC_Configuration(void)
 {
    0:	b570      	push	{r4, r5, r6, lr}
    2:	b086      	sub	sp, #24
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:309
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:333
   ADC_InitTypeDef ADC_InitStructure;
 
   /* ADCCLK = PCLK2/2 */
   RCC_ADCCLKConfig(RCC_PCLK2_Div2);
    4:	f04f 0000 	mov.w	r0, #0
    8:	f7ff fffe 	bl	0 <RCC_ADCCLKConfig>
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:310
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:334
   ADC_InitStructure.ADC_Mode = ADC_Mode_Independent;
    c:	f04f 0600 	mov.w	r6, #0
   10:	9601      	str	r6, [sp, #4]
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:311
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:335
   ADC_InitStructure.ADC_ScanConvMode = ENABLE;
   12:	f04f 0401 	mov.w	r4, #1
   16:	f88d 4008 	strb.w	r4, [sp, #8]
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:312
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:336
   ADC_InitStructure.ADC_ContinuousConvMode = ENABLE;
   1a:	f88d 4009 	strb.w	r4, [sp, #9]
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:313
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:337
   ADC_InitStructure.ADC_ExternalTrigConv = ADC_ExternalTrigConv_None;
   1e:	f44f 2360 	mov.w	r3, #917504	; 0xe0000
   22:	9303      	str	r3, [sp, #12]
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:314
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:338
   ADC_InitStructure.ADC_DataAlign = ADC_DataAlign_Right;
   24:	9604      	str	r6, [sp, #16]
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:316
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:340
   /* ADC1 single channel configuration */
   ADC_InitStructure.ADC_NbrOfChannel = 1;
   26:	f88d 4014 	strb.w	r4, [sp, #20]
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:317
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:341
   ADC_Init(ADC1, &ADC_InitStructure);
   2a:	f44f 5510 	mov.w	r5, #9216	; 0x2400
   2e:	f2c4 0501 	movt	r5, #16385	; 0x4001
   32:	4628      	mov	r0, r5
   34:	a901      	add	r1, sp, #4
   36:	f7ff fffe 	bl	0 <ADC_Init>
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:319
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:343
   /* Setup injected channel */
   ADC_InjectedSequencerLengthConfig(ADC1,1);
   3a:	4628      	mov	r0, r5
   3c:	4621      	mov	r1, r4
   3e:	f7ff fffe 	bl	0 <ADC_InjectedSequencerLengthConfig>
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:321
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:345
   /* Sonar echo */
   ADC_InjectedChannelConfig(ADC1,ADC_Channel_2,1,ADC_SampleTime_1Cycles5);
   42:	4628      	mov	r0, r5
@@ -389,7 +380,7 @@ D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:321
   48:	4622      	mov	r2, r4
   4a:	4633      	mov	r3, r6
   4c:	f7ff fffe 	bl	0 <ADC_InjectedChannelConfig>
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:322
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:346
 }
   50:	b006      	add	sp, #24
   52:	bd70      	pop	{r4, r5, r6, pc}
@@ -398,7 +389,7 @@ Disassembly of section .text.RCC_Configuration:
 
 00000000 <RCC_Configuration>:
 RCC_Configuration():
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:332
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:356
 * Input          : None
 * Output         : None
 * Return         : None
@@ -406,69 +397,69 @@ D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:332
 void RCC_Configuration(void)
 {
    0:	b510      	push	{r4, lr}
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:335
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:359
   ErrorStatus HSEStartUpStatus;
   /* RCC system reset(for debug purpose) */
   RCC_DeInit();
    2:	f7ff fffe 	bl	0 <RCC_DeInit>
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:337
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:361
   /* Enable HSE */
   RCC_HSEConfig(RCC_HSE_ON);
    6:	f44f 3080 	mov.w	r0, #65536	; 0x10000
    a:	f7ff fffe 	bl	0 <RCC_HSEConfig>
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:339
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:363
   /* Wait till HSE is ready */
   HSEStartUpStatus = RCC_WaitForHSEStartUp();
    e:	f7ff fffe 	bl	0 <RCC_WaitForHSEStartUp>
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:340
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:364
   if(HSEStartUpStatus == SUCCESS)
   12:	2801      	cmp	r0, #1
   14:	d13e      	bne.n	94 <RCC_Configuration+0x94>
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:343
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:367
   {
     /* Enable Prefetch Buffer */
     FLASH_PrefetchBufferCmd(FLASH_PrefetchBuffer_Enable);
   16:	f04f 0010 	mov.w	r0, #16
   1a:	f7ff fffe 	bl	0 <FLASH_PrefetchBufferCmd>
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:345
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:369
     /* Flash 2 wait state */
     FLASH_SetLatency(FLASH_Latency_0);
   1e:	f04f 0000 	mov.w	r0, #0
   22:	f7ff fffe 	bl	0 <FLASH_SetLatency>
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:347
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:371
     /* HCLK = SYSCLK */
     RCC_HCLKConfig(RCC_SYSCLK_Div1); 
   26:	f04f 0000 	mov.w	r0, #0
   2a:	f7ff fffe 	bl	0 <RCC_HCLKConfig>
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:349
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:373
     /* PCLK2 = HCLK */
     RCC_PCLK2Config(RCC_HCLK_Div1); 
   2e:	f04f 0000 	mov.w	r0, #0
   32:	f7ff fffe 	bl	0 <RCC_PCLK2Config>
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:351
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:375
     /* PCLK1 = HCLK */
     RCC_PCLK1Config(RCC_HCLK_Div1);
   36:	f04f 0000 	mov.w	r0, #0
   3a:	f7ff fffe 	bl	0 <RCC_PCLK1Config>
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:353
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:377
     /* ADCCLK = PCLK2/2 */
     RCC_ADCCLKConfig(RCC_PCLK2_Div2);
   3e:	f04f 0000 	mov.w	r0, #0
   42:	f7ff fffe 	bl	0 <RCC_ADCCLKConfig>
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:355
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:381
     // /* PLLCLK = 8MHz * 6 = 48 MHz */
-    RCC_PLLConfig(RCC_PLLSource_HSE_Div1, RCC_PLLMul_6);
-  46:	f44f 3080 	mov.w	r0, #65536	; 0x10000
-  4a:	f44f 1180 	mov.w	r1, #1048576	; 0x100000
-  4e:	f7ff fffe 	bl	0 <RCC_PLLConfig>
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:359
+    //RCC_PLLConfig(RCC_PLLSource_HSE_Div1, RCC_PLLMul_6);
     /* PLLCLK = 8MHz * 7 = 56 MHz */
-    //RCC_PLLConfig(RCC_PLLSource_HSE_Div1, RCC_PLLMul_7);
+    RCC_PLLConfig(RCC_PLLSource_HSE_Div1, RCC_PLLMul_7);
+  46:	f44f 3080 	mov.w	r0, #65536	; 0x10000
+  4a:	f44f 11a0 	mov.w	r1, #1310720	; 0x140000
+  4e:	f7ff fffe 	bl	0 <RCC_PLLConfig>
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:383
     /* Enable PLL */ 
     RCC_PLLCmd(ENABLE);
   52:	f04f 0001 	mov.w	r0, #1
   56:	f7ff fffe 	bl	0 <RCC_PLLCmd>
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:361
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:385
     /* Wait till PLL is ready */
     while(RCC_GetFlagStatus(RCC_FLAG_PLLRDY) == RESET)
   5a:	f04f 0439 	mov.w	r4, #57	; 0x39
@@ -476,20 +467,20 @@ D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:361
   60:	f7ff fffe 	bl	0 <RCC_GetFlagStatus>
   64:	2800      	cmp	r0, #0
   66:	d0fa      	beq.n	5e <RCC_Configuration+0x5e>
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:365
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:389
     {
     }
     /* Select PLL as system clock source */
     RCC_SYSCLKConfig(RCC_SYSCLKSource_PLLCLK);
   68:	f04f 0002 	mov.w	r0, #2
   6c:	f7ff fffe 	bl	0 <RCC_SYSCLKConfig>
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:367
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:391
     /* Wait till PLL is used as system clock source */
     while(RCC_GetSYSCLKSource() != 0x08)
   70:	f7ff fffe 	bl	0 <RCC_GetSYSCLKSource>
   74:	2808      	cmp	r0, #8
   76:	d1fb      	bne.n	70 <RCC_Configuration+0x70>
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:371
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:395
     {
     }
     /* Enable TIM1, ADC1, GPIOA and GPIOC peripheral clocks */
@@ -497,7 +488,7 @@ D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:371
   78:	f640 2014 	movw	r0, #2580	; 0xa14
   7c:	f04f 0101 	mov.w	r1, #1
   80:	f7ff fffe 	bl	0 <RCC_APB2PeriphClockCmd>
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:373
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:397
     /* Enable DAC and TIM2 peripheral clocks */
     RCC_APB1PeriphClockCmd(RCC_APB1Periph_DAC | RCC_APB1Periph_TIM2, ENABLE);
   84:	f04f 0001 	mov.w	r0, #1
@@ -511,7 +502,7 @@ Disassembly of section .text.GPIO_Configuration:
 
 00000000 <GPIO_Configuration>:
 GPIO_Configuration():
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:385
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:409
 * Input          : None
 * Output         : None
 * Return         : None
@@ -520,68 +511,68 @@ void GPIO_Configuration(void)
 {
    0:	b5f0      	push	{r4, r5, r6, r7, lr}
    2:	b083      	sub	sp, #12
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:388
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:412
   GPIO_InitTypeDef GPIO_InitStructure;
   /* Configure ADC Channel6 (PA.06), ADC Channel5 (PA.05), DAC Channel1 (PA.04), ADC Channel3 (PA.03) and ADC Channel2 (PA.02) as analog input */
   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_6 | GPIO_Pin_5 | GPIO_Pin_4 | GPIO_Pin_3 | GPIO_Pin_2;
    4:	f04f 037c 	mov.w	r3, #124	; 0x7c
    8:	f8ad 3004 	strh.w	r3, [sp, #4]
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:389
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:413
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AIN;
    c:	f04f 0300 	mov.w	r3, #0
   10:	f88d 3007 	strb.w	r3, [sp, #7]
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:390
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:414
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
   14:	f04f 0603 	mov.w	r6, #3
   18:	f88d 6006 	strb.w	r6, [sp, #6]
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:391
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:415
   GPIO_Init(GPIOA, &GPIO_InitStructure);
   1c:	f44f 6400 	mov.w	r4, #2048	; 0x800
   20:	f2c4 0401 	movt	r4, #16385	; 0x4001
   24:	4620      	mov	r0, r4
   26:	a901      	add	r1, sp, #4
   28:	f7ff fffe 	bl	0 <GPIO_Init>
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:393
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:417
   /* Configure PC.09 (LED3) and PC.08 (LED4) as output */
   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9 | GPIO_Pin_8;
   2c:	f44f 7540 	mov.w	r5, #768	; 0x300
   30:	f8ad 5004 	strh.w	r5, [sp, #4]
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:394
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:418
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
   34:	f04f 0710 	mov.w	r7, #16
   38:	f88d 7007 	strb.w	r7, [sp, #7]
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:395
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:419
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
   3c:	f88d 6006 	strb.w	r6, [sp, #6]
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:396
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:420
   GPIO_Init(GPIOC, &GPIO_InitStructure);
   40:	f44f 5080 	mov.w	r0, #4096	; 0x1000
   44:	f2c4 0001 	movt	r0, #16385	; 0x4001
   48:	a901      	add	r1, sp, #4
   4a:	f7ff fffe 	bl	0 <GPIO_Init>
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:398
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:422
   /* Set ping outputs high (FET's off) */
   GPIO_WriteBit(GPIOA, GPIO_Pin_9 | GPIO_Pin_8, Bit_SET);
   4e:	4620      	mov	r0, r4
   50:	4629      	mov	r1, r5
   52:	f04f 0201 	mov.w	r2, #1
   56:	f7ff fffe 	bl	0 <GPIO_WriteBit>
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:400
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:424
   /* Configure PA.09 and PA.08 as outputs */
   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9 | GPIO_Pin_8;
   5a:	f8ad 5004 	strh.w	r5, [sp, #4]
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:401
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:425
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
   5e:	f88d 7007 	strb.w	r7, [sp, #7]
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:402
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:426
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
   62:	f88d 6006 	strb.w	r6, [sp, #6]
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:403
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:427
   GPIO_Init(GPIOA, &GPIO_InitStructure);
   66:	4620      	mov	r0, r4
   68:	a901      	add	r1, sp, #4
   6a:	f7ff fffe 	bl	0 <GPIO_Init>
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:404
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:428
 }
   6e:	b003      	add	sp, #12
   70:	bdf0      	pop	{r4, r5, r6, r7, pc}
@@ -591,7 +582,7 @@ Disassembly of section .text.NVIC_Configuration:
 
 00000000 <NVIC_Configuration>:
 NVIC_Configuration():
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:415
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:439
 * Input          : None
 * Output         : None
 * Return         : None
@@ -600,52 +591,52 @@ void NVIC_Configuration(void)
 {
    0:	b530      	push	{r4, r5, lr}
    2:	b083      	sub	sp, #12
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:418
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:442
   NVIC_InitTypeDef NVIC_InitStructure;
   /* Set the Vector Table base location at 0x08000000 */ 
   NVIC_SetVectorTable(NVIC_VectTab_FLASH, 0x0);   
    4:	f04f 6000 	mov.w	r0, #134217728	; 0x8000000
    8:	f04f 0100 	mov.w	r1, #0
    c:	f7ff fffe 	bl	0 <NVIC_SetVectorTable>
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:420
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:444
   /* Enable the TIM1 global Interrupt */
   NVIC_InitStructure.NVIC_IRQChannel = TIM1_UP_IRQChannel;
   10:	f04f 0319 	mov.w	r3, #25
   14:	f88d 3004 	strb.w	r3, [sp, #4]
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:421
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:445
   NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
   18:	f04f 0500 	mov.w	r5, #0
   1c:	f88d 5005 	strb.w	r5, [sp, #5]
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:422
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:446
   NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
   20:	f88d 5006 	strb.w	r5, [sp, #6]
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:423
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:447
   NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
   24:	f04f 0401 	mov.w	r4, #1
   28:	f88d 4007 	strb.w	r4, [sp, #7]
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:424
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:448
   NVIC_Init(&NVIC_InitStructure);
   2c:	a801      	add	r0, sp, #4
   2e:	f7ff fffe 	bl	0 <NVIC_Init>
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:426
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:450
   /* Enable the TIM2 global Interrupt */
   NVIC_InitStructure.NVIC_IRQChannel = TIM2_IRQChannel;
   32:	f04f 031c 	mov.w	r3, #28
   36:	f88d 3004 	strb.w	r3, [sp, #4]
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:427
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:451
   NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
   3a:	f88d 5005 	strb.w	r5, [sp, #5]
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:428
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:452
   NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
   3e:	f88d 4006 	strb.w	r4, [sp, #6]
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:429
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:453
   NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
   42:	f88d 4007 	strb.w	r4, [sp, #7]
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:430
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:454
   NVIC_Init(&NVIC_InitStructure);
   46:	a801      	add	r0, sp, #4
   48:	f7ff fffe 	bl	0 <NVIC_Init>
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:431
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:455
 }
   4c:	b003      	add	sp, #12
   4e:	bd30      	pop	{r4, r5, pc}
@@ -654,7 +645,7 @@ Disassembly of section .text.TIM1_Configuration:
 
 00000000 <TIM1_Configuration>:
 TIM1_Configuration():
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:441
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:465
 * Input          : None
 * Output         : None
 * Return         : None
@@ -663,48 +654,48 @@ void TIM1_Configuration(void)
 {
    0:	b510      	push	{r4, lr}
    2:	b084      	sub	sp, #16
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:443
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:467
   TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructure;
   TIM_TimeBaseStructure.TIM_ClockDivision = 0;
    4:	f04f 0300 	mov.w	r3, #0
    8:	461a      	mov	r2, r3
    a:	f8ad 300a 	strh.w	r3, [sp, #10]
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:444
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:468
   TIM_TimeBaseStructure.TIM_Prescaler = 0;
    e:	f8ad 3004 	strh.w	r3, [sp, #4]
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:448
-  /* Time base configuration 56MHz clock */
-  // TIM_TimeBaseStructure.TIM_Period = 139;
-  /* Time base configuration 48MHz clock */
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:469
   TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
   12:	f8ad 3006 	strh.w	r3, [sp, #6]
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:449
-  TIM_TimeBaseStructure.TIM_Period = 119;
-  16:	f04f 0377 	mov.w	r3, #119	; 0x77
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:471
+  /* Time base configuration 56MHz clock */
+  TIM_TimeBaseStructure.TIM_Period = 139;
+  16:	f04f 038b 	mov.w	r3, #139	; 0x8b
   1a:	f8ad 3008 	strh.w	r3, [sp, #8]
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:450
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:474
+  /* Time base configuration 48MHz clock */
+  //TIM_TimeBaseStructure.TIM_Period = 119;
   TIM_TimeBaseStructure.TIM_RepetitionCounter = 0;
   1e:	f88d 200c 	strb.w	r2, [sp, #12]
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:451
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:475
   TIM_TimeBaseInit(TIM1, &TIM_TimeBaseStructure);
   22:	f44f 5430 	mov.w	r4, #11264	; 0x2c00
   26:	f2c4 0401 	movt	r4, #16385	; 0x4001
   2a:	4620      	mov	r0, r4
   2c:	a901      	add	r1, sp, #4
   2e:	f7ff fffe 	bl	0 <TIM_TimeBaseInit>
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:453
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:477
   /* Enable TIM1 Update interrupt */
   TIM_ClearITPendingBit(TIM1,TIM_IT_Update);
   32:	4620      	mov	r0, r4
   34:	f04f 0101 	mov.w	r1, #1
   38:	f7ff fffe 	bl	0 <TIM_ClearITPendingBit>
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:454
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:478
   TIM_ITConfig(TIM1, TIM_IT_Update, ENABLE);
   3c:	4620      	mov	r0, r4
   3e:	f04f 0101 	mov.w	r1, #1
   42:	460a      	mov	r2, r1
   44:	f7ff fffe 	bl	0 <TIM_ITConfig>
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:455
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:479
 }
   48:	b004      	add	sp, #16
   4a:	bd10      	pop	{r4, pc}
@@ -713,289 +704,293 @@ Disassembly of section .text.main:
 
 00000000 <main>:
 main():
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:59
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:58
 * Input          : None
 * Output         : None
 * Return         : None
 *******************************************************************************/
 int main(void)
 {
-   0:	b5f8      	push	{r3, r4, r5, r6, r7, lr}
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:64
+   0:	e92d 41f0 	stmdb	sp!, {r4, r5, r6, r7, r8, lr}
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:63
   u32 i;
   u32* ADC;
   u8 Echo;
   /* System clocks configuration */
   RCC_Configuration();
-   2:	f7ff fffe 	bl	0 <main>
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:66
+   4:	f7ff fffe 	bl	0 <main>
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:65
   /* NVIC configuration */
   NVIC_Configuration();
-   6:	f7ff fffe 	bl	0 <main>
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:68
+   8:	f7ff fffe 	bl	0 <main>
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:67
   /* GPIO configuration */
   GPIO_Configuration();
-   a:	f7ff fffe 	bl	0 <main>
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:70
+   c:	f7ff fffe 	bl	0 <main>
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:69
   /* TIM1 configuration */
   TIM1_Configuration();
-   e:	f7ff fffe 	bl	0 <main>
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:72
+  10:	f7ff fffe 	bl	0 <main>
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:71
   /* ADC1 configuration */
   ADC_Startup();
-  12:	f7ff fffe 	bl	0 <main>
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:74
+  14:	f7ff fffe 	bl	0 <main>
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:73
   /* ADC1 injected channel configuration */
   ADC_Configuration();
-  16:	f7ff fffe 	bl	0 <main>
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:76
+  18:	f7ff fffe 	bl	0 <main>
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:75
   /* Enable DAC channel1 */
   DAC->CR = 0x1;
-  1a:	f44f 43e8 	mov.w	r3, #29696	; 0x7400
-  1e:	f2c4 0300 	movt	r3, #16384	; 0x4000
-  22:	f04f 0201 	mov.w	r2, #1
-  26:	601a      	str	r2, [r3, #0]
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:80
+  1c:	f44f 43e8 	mov.w	r3, #29696	; 0x7400
+  20:	f2c4 0300 	movt	r3, #16384	; 0x4000
+  24:	f04f 0201 	mov.w	r2, #1
+  28:	601a      	str	r2, [r3, #0]
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:79
 
   while (1)
   {
     if (STM32_Sonar.Start == 1)
-  28:	f240 0500 	movw	r5, #0
-  2c:	f2c0 0500 	movt	r5, #0
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:84
+  2a:	f240 0500 	movw	r5, #0
+  2e:	f2c0 0500 	movt	r5, #0
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:83
     {
       STM32_Sonar.Start = 2;
       /* Toggle blue led */
       if (BlueLED)
-  30:	f240 0700 	movw	r7, #0
-  34:	f2c0 0700 	movt	r7, #0
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:58
+  32:	f240 0800 	movw	r8, #0
+  36:	f2c0 0800 	movt	r8, #0
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:57
 * Description    : Main program
 * Input          : None
 * Output         : None
 * Return         : None
 *******************************************************************************/
 int main(void)
-  38:	f505 7402 	add.w	r4, r5, #520	; 0x208
-  3c:	f104 0407 	add.w	r4, r4, #7
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:125
+  3a:	f505 7402 	add.w	r4, r5, #520	; 0x208
+  3e:	f104 0407 	add.w	r4, r4, #7
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:124
       {
         /* To eliminate the need for an AM demodulator the largest */ 
         /* ADC reading is stored in its echo array element */
         /* Get echo */
         ADC = ( (u32 *) ADC1_ICDR_Address);
         Echo = (u8) ( (u16) (*(vu32*) (((*(u32*)&ADC)))) >> 4);
-  40:	f242 463c 	movw	r6, #9276	; 0x243c
-  44:	f2c4 0601 	movt	r6, #16385	; 0x4001
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:80
+  42:	f242 463c 	movw	r6, #9276	; 0x243c
+  46:	f2c4 0601 	movt	r6, #16385	; 0x4001
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:79
   /* Enable DAC channel1 */
   DAC->CR = 0x1;
 
   while (1)
   {
     if (STM32_Sonar.Start == 1)
-  48:	782b      	ldrb	r3, [r5, #0]
-  4a:	2b01      	cmp	r3, #1
-  4c:	d168      	bne.n	120 <main+0x120>
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:82
+  4a:	782b      	ldrb	r3, [r5, #0]
+  4c:	2b01      	cmp	r3, #1
+  4e:	d174      	bne.n	13a <main+0x13a>
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:81
     {
       STM32_Sonar.Start = 2;
-  4e:	f04f 0302 	mov.w	r3, #2
-  52:	702b      	strb	r3, [r5, #0]
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:84
+  50:	f04f 0302 	mov.w	r3, #2
+  54:	702b      	strb	r3, [r5, #0]
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:83
       /* Toggle blue led */
       if (BlueLED)
-  54:	783b      	ldrb	r3, [r7, #0]
-  56:	b16b      	cbz	r3, 74 <main+0x74>
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:86
+  56:	f898 3000 	ldrb.w	r3, [r8]
+  5a:	b173      	cbz	r3, 7a <main+0x7a>
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:85
       {
         GPIO_WriteBit(GPIOC, GPIO_Pin_8, Bit_RESET);
-  58:	f44f 5080 	mov.w	r0, #4096	; 0x1000
-  5c:	f2c4 0001 	movt	r0, #16385	; 0x4001
-  60:	f44f 7180 	mov.w	r1, #256	; 0x100
-  64:	f04f 0200 	mov.w	r2, #0
-  68:	f7ff fffe 	bl	0 <GPIO_WriteBit>
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:87
+  5c:	f44f 5080 	mov.w	r0, #4096	; 0x1000
+  60:	f2c4 0001 	movt	r0, #16385	; 0x4001
+  64:	f44f 7180 	mov.w	r1, #256	; 0x100
+  68:	f04f 0200 	mov.w	r2, #0
+  6c:	f7ff fffe 	bl	0 <GPIO_WriteBit>
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:86
         BlueLED = 0;
-  6c:	f04f 0300 	mov.w	r3, #0
-  70:	703b      	strb	r3, [r7, #0]
-  72:	e00c      	b.n	8e <main+0x8e>
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:91
+  70:	f04f 0300 	mov.w	r3, #0
+  74:	f888 3000 	strb.w	r3, [r8]
+  78:	e00d      	b.n	96 <main+0x96>
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:90
       }
       else
       {
         GPIO_WriteBit(GPIOC, GPIO_Pin_8, Bit_SET);
-  74:	f44f 5080 	mov.w	r0, #4096	; 0x1000
-  78:	f2c4 0001 	movt	r0, #16385	; 0x4001
-  7c:	f44f 7180 	mov.w	r1, #256	; 0x100
-  80:	f04f 0201 	mov.w	r2, #1
-  84:	f7ff fffe 	bl	0 <GPIO_WriteBit>
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:92
+  7a:	f44f 5080 	mov.w	r0, #4096	; 0x1000
+  7e:	f2c4 0001 	movt	r0, #16385	; 0x4001
+  82:	f44f 7180 	mov.w	r1, #256	; 0x100
+  86:	f04f 0201 	mov.w	r2, #1
+  8a:	f7ff fffe 	bl	0 <GPIO_WriteBit>
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:91
         BlueLED = 1;
-  88:	f04f 0301 	mov.w	r3, #1
-  8c:	703b      	strb	r3, [r7, #0]
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:95
+  8e:	f04f 0301 	mov.w	r3, #1
+  92:	f888 3000 	strb.w	r3, [r8]
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:94
       }
       /* Read battery */
       STM32_Sonar.ADCBatt = GetADCValue(ADC_Channel_3);
-  8e:	f04f 0003 	mov.w	r0, #3
-  92:	f7ff fffe 	bl	0 <main>
-  96:	8168      	strh	r0, [r5, #10]
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:97
+  96:	f04f 0003 	mov.w	r0, #3
+  9a:	f7ff fffe 	bl	0 <main>
+  9e:	8168      	strh	r0, [r5, #10]
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:96
       /* Read water temprature */
       STM32_Sonar.ADCWaterTemp = GetADCValue(ADC_Channel_5);
-  98:	f04f 0005 	mov.w	r0, #5
-  9c:	f7ff fffe 	bl	0 <main>
-  a0:	81a8      	strh	r0, [r5, #12]
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:99
+  a0:	f04f 0005 	mov.w	r0, #5
+  a4:	f7ff fffe 	bl	0 <main>
+  a8:	81a8      	strh	r0, [r5, #12]
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:98
       /* Read air temprature */
       STM32_Sonar.ADCAirTemp = GetADCValue(ADC_Channel_6);
-  a2:	f04f 0006 	mov.w	r0, #6
-  a6:	f7ff fffe 	bl	0 <main>
-  aa:	81e8      	strh	r0, [r5, #14]
-  ac:	f105 030f 	add.w	r3, r5, #15
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:104
+  aa:	f04f 0006 	mov.w	r0, #6
+  ae:	f7ff fffe 	bl	0 <main>
+  b2:	81e8      	strh	r0, [r5, #14]
+  b4:	f105 030f 	add.w	r3, r5, #15
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:103
       /* Clear the echo array */
       i = 0;
       while (i < MAXECHO)
       {
         STM32_Sonar.Echo[i] = 0;
-  b0:	f04f 0200 	mov.w	r2, #0
-  b4:	f803 2f01 	strb.w	r2, [r3, #1]!
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:102
+  b8:	f04f 0200 	mov.w	r2, #0
+  bc:	f803 2f01 	strb.w	r2, [r3, #1]!
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:101
       STM32_Sonar.ADCWaterTemp = GetADCValue(ADC_Channel_5);
       /* Read air temprature */
       STM32_Sonar.ADCAirTemp = GetADCValue(ADC_Channel_6);
       /* Clear the echo array */
       i = 0;
       while (i < MAXECHO)
-  b8:	42a3      	cmp	r3, r4
-  ba:	d1fb      	bne.n	b4 <main+0xb4>
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:108
+  c0:	42a3      	cmp	r3, r4
+  c2:	d1fb      	bne.n	bc <main+0xbc>
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:107
       {
         STM32_Sonar.Echo[i] = 0;
         i++;
       }
       /* Reset echo index */
-      EchoIndex = 0;
-  bc:	f240 0200 	movw	r2, #0
-  c0:	f2c0 0200 	movt	r2, #0
+      STM32_Sonar.EchoIndex = 0;
   c4:	f04f 0300 	mov.w	r3, #0
-  c8:	8013      	strh	r3, [r2, #0]
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:110
+  c8:	812b      	strh	r3, [r5, #8]
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:109
       /* Set the TIM1 Autoreload value */
       TIM1->ARR = STM32_Sonar.PingTimer;
   ca:	78aa      	ldrb	r2, [r5, #2]
   cc:	f44f 5030 	mov.w	r0, #11264	; 0x2c00
   d0:	f2c4 0001 	movt	r0, #16385	; 0x4001
   d4:	8582      	strh	r2, [r0, #44]	; 0x2c
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:112
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:111
       /* Reset TIM1 count */
       TIM1->CNT = 0;
   d6:	8483      	strh	r3, [r0, #36]	; 0x24
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:114
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:113
       /* Set TIM1 repetirion counter */
       TIM1->RCR = 0;
   d8:	8603      	strh	r3, [r0, #48]	; 0x30
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:116
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:115
       /* Init Ping */
       Ping = 0x100;
   da:	f240 0300 	movw	r3, #0
   de:	f2c0 0300 	movt	r3, #0
   e2:	f44f 7280 	mov.w	r2, #256	; 0x100
   e6:	801a      	strh	r2, [r3, #0]
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:118
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:117
       /* Enable TIM1 */
       TIM_Cmd(TIM1, ENABLE);
   e8:	f04f 0101 	mov.w	r1, #1
   ec:	f7ff fffe 	bl	0 <TIM_Cmd>
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:127
-        /* ADC reading is stored in its echo array element */
-        /* Get echo */
-        ADC = ( (u32 *) ADC1_ICDR_Address);
-        Echo = (u8) ( (u16) (*(vu32*) (((*(u32*)&ADC)))) >> 4);
-        /* If echo larger than previous echo, update the echo array */
-        if (Echo > STM32_Sonar.Echo[EchoIndex])
-  f0:	f240 0000 	movw	r0, #0
-  f4:	f2c0 0000 	movt	r0, #0
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:119
-      TIM1->RCR = 0;
-      /* Init Ping */
-      Ping = 0x100;
-      /* Enable TIM1 */
-      TIM_Cmd(TIM1, ENABLE);
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:118
       while (STM32_Sonar.Start)
-  f8:	e00d      	b.n	116 <main+0x116>
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:125
+  f0:	e00d      	b.n	10e <main+0x10e>
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:124
       {
         /* To eliminate the need for an AM demodulator the largest */ 
         /* ADC reading is stored in its echo array element */
         /* Get echo */
         ADC = ( (u32 *) ADC1_ICDR_Address);
         Echo = (u8) ( (u16) (*(vu32*) (((*(u32*)&ADC)))) >> 4);
-  fa:	6833      	ldr	r3, [r6, #0]
-  fc:	ea4f 1313 	mov.w	r3, r3, lsr #4
- 100:	b2da      	uxtb	r2, r3
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:127
+  f2:	6833      	ldr	r3, [r6, #0]
+  f4:	ea4f 1313 	mov.w	r3, r3, lsr #4
+  f8:	b2da      	uxtb	r2, r3
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:126
         /* If echo larger than previous echo, update the echo array */
-        if (Echo > STM32_Sonar.Echo[EchoIndex])
- 102:	8801      	ldrh	r1, [r0, #0]
- 104:	b289      	uxth	r1, r1
- 106:	1869      	adds	r1, r5, r1
- 108:	7c09      	ldrb	r1, [r1, #16]
- 10a:	4291      	cmp	r1, r2
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:129
+        if (Echo > STM32_Sonar.Echo[STM32_Sonar.EchoIndex])
+  fa:	8929      	ldrh	r1, [r5, #8]
+  fc:	b289      	uxth	r1, r1
+  fe:	1869      	adds	r1, r5, r1
+ 100:	7c09      	ldrb	r1, [r1, #16]
+ 102:	4291      	cmp	r1, r2
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:128
         {
-          STM32_Sonar.Echo[EchoIndex] = Echo;
- 10c:	bf3f      	itttt	cc
- 10e:	8802      	ldrhcc	r2, [r0, #0]
- 110:	b292      	uxthcc	r2, r2
- 112:	18aa      	addcc	r2, r5, r2
- 114:	7413      	strbcc	r3, [r2, #16]
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:119
+          STM32_Sonar.Echo[STM32_Sonar.EchoIndex] = Echo;
+ 104:	bf3f      	itttt	cc
+ 106:	892a      	ldrhcc	r2, [r5, #8]
+ 108:	b292      	uxthcc	r2, r2
+ 10a:	18aa      	addcc	r2, r5, r2
+ 10c:	7413      	strbcc	r3, [r2, #16]
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:118
       TIM1->RCR = 0;
       /* Init Ping */
       Ping = 0x100;
       /* Enable TIM1 */
       TIM_Cmd(TIM1, ENABLE);
       while (STM32_Sonar.Start)
- 116:	782b      	ldrb	r3, [r5, #0]
- 118:	2b00      	cmp	r3, #0
- 11a:	d1ee      	bne.n	fa <main+0xfa>
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:133
+ 10e:	782b      	ldrb	r3, [r5, #0]
+ 110:	2b00      	cmp	r3, #0
+ 112:	d1ee      	bne.n	f2 <main+0xf2>
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:132
         {
-          STM32_Sonar.Echo[EchoIndex] = Echo;
+          STM32_Sonar.Echo[STM32_Sonar.EchoIndex] = Echo;
         }
       }
       /* Done, Store the current range as the first byte in the echo array */
       STM32_Sonar.Echo[0] = STM32_Sonar.Range;
- 11c:	796b      	ldrb	r3, [r5, #5]
- 11e:	742b      	strb	r3, [r5, #16]
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:135
+ 114:	796b      	ldrb	r3, [r5, #5]
+ 116:	742b      	strb	r3, [r5, #16]
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:134
+      /* Disable TIM2 */
+      TIM2->CR1 = 0;
+ 118:	f04f 0700 	mov.w	r7, #0
+ 11c:	f04f 4380 	mov.w	r3, #1073741824	; 0x40000000
+ 120:	801f      	strh	r7, [r3, #0]
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:136
+      /* Disable ADC injected channel */
+      ADC_AutoInjectedConvCmd(ADC1, DISABLE);
+ 122:	f44f 5010 	mov.w	r0, #9216	; 0x2400
+ 126:	f2c4 0001 	movt	r0, #16385	; 0x4001
+ 12a:	4639      	mov	r1, r7
+ 12c:	f7ff fffe 	bl	0 <ADC_AutoInjectedConvCmd>
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:138
+      /* Set the DAC to output lowest gain */
+      DAC->DHR12R1 = (u16)0x0;
+ 130:	f44f 43e8 	mov.w	r3, #29696	; 0x7400
+ 134:	f2c4 0300 	movt	r3, #16384	; 0x4000
+ 138:	609f      	str	r7, [r3, #8]
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:140
     }
     i = 0;
- 120:	f04f 0300 	mov.w	r3, #0
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:138
+ 13a:	f04f 0300 	mov.w	r3, #0
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:143
     while (i < 1000)
     {
       i++;
- 124:	f103 0301 	add.w	r3, r3, #1
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:136
-      }
-      /* Done, Store the current range as the first byte in the echo array */
-      STM32_Sonar.Echo[0] = STM32_Sonar.Range;
+ 13e:	f103 0301 	add.w	r3, r3, #1
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:141
+      ADC_AutoInjectedConvCmd(ADC1, DISABLE);
+      /* Set the DAC to output lowest gain */
+      DAC->DHR12R1 = (u16)0x0;
     }
     i = 0;
     while (i < 1000)
- 128:	f5b3 7f7a 	cmp.w	r3, #1000	; 0x3e8
- 12c:	d1fa      	bne.n	124 <main+0x124>
- 12e:	e78b      	b.n	48 <main+0x48>
+ 142:	f5b3 7f7a 	cmp.w	r3, #1000	; 0x3e8
+ 146:	d1fa      	bne.n	13e <main+0x13e>
+ 148:	e77f      	b.n	4a <main+0x4a>
+ 14a:	bf00      	nop
 
 Disassembly of section .text.TIM2_Configuration:
 
 00000000 <TIM2_Configuration>:
 TIM2_Configuration():
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:465
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:489
 * Input          : None
 * Output         : None
 * Return         : None
@@ -1004,44 +999,44 @@ void TIM2_Configuration(void)
 {
    0:	b500      	push	{lr}
    2:	b085      	sub	sp, #20
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:467
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:491
   TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;
   TIM_TimeBaseStructure.TIM_ClockDivision = 0;
    4:	f04f 0300 	mov.w	r3, #0
    8:	f8ad 300a 	strh.w	r3, [sp, #10]
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:468
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:492
   TIM_TimeBaseStructure.TIM_Prescaler = 0;
    c:	f8ad 3004 	strh.w	r3, [sp, #4]
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:469
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:493
   TIM_TimeBaseStructure.TIM_Period = STM32_Sonar.PixelTimer;
   10:	f240 0200 	movw	r2, #0
   14:	f2c0 0200 	movt	r2, #0
   18:	88d2      	ldrh	r2, [r2, #6]
   1a:	f8ad 2008 	strh.w	r2, [sp, #8]
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:470
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:494
   TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
   1e:	f8ad 3006 	strh.w	r3, [sp, #6]
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:471
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:495
   TIM_TimeBaseStructure.TIM_RepetitionCounter = 0;
   22:	f88d 300c 	strb.w	r3, [sp, #12]
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:472
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:496
   TIM_TimeBaseInit(TIM2, &TIM_TimeBaseStructure);
   26:	f04f 4080 	mov.w	r0, #1073741824	; 0x40000000
   2a:	a901      	add	r1, sp, #4
   2c:	f7ff fffe 	bl	0 <TIM_TimeBaseInit>
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:474
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:498
   /* Enable TIM2 Update interrupt */
   TIM_ClearITPendingBit(TIM2,TIM_IT_Update);
   30:	f04f 4080 	mov.w	r0, #1073741824	; 0x40000000
   34:	f04f 0101 	mov.w	r1, #1
   38:	f7ff fffe 	bl	0 <TIM_ClearITPendingBit>
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:475
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:499
   TIM_ITConfig(TIM2, TIM_IT_Update, ENABLE);
   3c:	f04f 4080 	mov.w	r0, #1073741824	; 0x40000000
   40:	f04f 0101 	mov.w	r1, #1
   44:	460a      	mov	r2, r1
   46:	f7ff fffe 	bl	0 <TIM_ITConfig>
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:476
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:500
 }
   4a:	b005      	add	sp, #20
   4c:	bd00      	pop	{pc}
@@ -1051,7 +1046,7 @@ Disassembly of section .text.TIM1_UP_IRQHandler:
 
 00000000 <TIM1_UP_IRQHandler>:
 TIM1_UP_IRQHandler():
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:193
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:198
 * Input          : None
 * Output         : None
 * Return         : None
@@ -1059,7 +1054,7 @@ D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:193
 void TIM1_UP_IRQHandler(void)
 {
    0:	b510      	push	{r4, lr}
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:195
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:200
   /* Set ping outputs high (FET's off) */
   GPIO_WriteBit(GPIOA, GPIO_Pin_9 | GPIO_Pin_8, Bit_SET);
    2:	f44f 6000 	mov.w	r0, #2048	; 0x800
@@ -1067,20 +1062,20 @@ D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:195
    a:	f44f 7140 	mov.w	r1, #768	; 0x300
    e:	f04f 0201 	mov.w	r2, #1
   12:	f7ff fffe 	bl	0 <GPIO_WriteBit>
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:197
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:202
   /* Clear TIM1 Update interrupt pending bit */
   TIM1->SR = (u16)~TIM_IT_Update;
   16:	f44f 5330 	mov.w	r3, #11264	; 0x2c00
   1a:	f2c4 0301 	movt	r3, #16385	; 0x4001
   1e:	f64f 72fe 	movw	r2, #65534	; 0xfffe
   22:	821a      	strh	r2, [r3, #16]
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:198
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:203
   if (STM32_Sonar.PingPulses)
   24:	f240 0300 	movw	r3, #0
   28:	f2c0 0300 	movt	r3, #0
   2c:	785b      	ldrb	r3, [r3, #1]
   2e:	b323      	cbz	r3, 7a <TIM1_UP_IRQHandler+0x7a>
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:200
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:205
   {
     GPIO_Write(GPIOA,Ping);
   30:	f240 0400 	movw	r4, #0
@@ -1090,18 +1085,18 @@ D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:200
   3e:	f2c4 0001 	movt	r0, #16385	; 0x4001
   42:	b289      	uxth	r1, r1
   44:	f7ff fffe 	bl	0 <GPIO_Write>
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:201
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:206
     if (Ping == 0x100)
   48:	8823      	ldrh	r3, [r4, #0]
   4a:	b29b      	uxth	r3, r3
   4c:	f5b3 7f80 	cmp.w	r3, #256	; 0x100
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:203
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:208
     {
       Ping = 0x200;
   50:	bf07      	ittee	eq
   52:	4623      	moveq	r3, r4
   54:	f44f 7200 	moveq.w	r2, #512	; 0x200
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:207
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:212
     }
     else
     {
@@ -1111,7 +1106,7 @@ D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:207
   60:	bf18      	it	ne
   62:	f44f 7280 	movne.w	r2, #256	; 0x100
   66:	801a      	strh	r2, [r3, #0]
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:209
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:214
     }
     STM32_Sonar.PingPulses--;
   68:	f240 0300 	movw	r3, #0
@@ -1120,7 +1115,7 @@ D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:209
   72:	f102 32ff 	add.w	r2, r2, #4294967295
   76:	705a      	strb	r2, [r3, #1]
   78:	bd10      	pop	{r4, pc}
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:214
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:219
   }
   else
   {
@@ -1133,25 +1128,25 @@ D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:214
   88:	f44f 43e8 	mov.w	r3, #29696	; 0x7400
   8c:	f2c4 0300 	movt	r3, #16384	; 0x4000
   90:	609a      	str	r2, [r3, #8]
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:216
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:221
     /* Disable TIM1 */
     TIM_Cmd(TIM1, DISABLE);
   92:	f44f 5030 	mov.w	r0, #11264	; 0x2c00
   96:	f2c4 0001 	movt	r0, #16385	; 0x4001
   9a:	f04f 0100 	mov.w	r1, #0
   9e:	f7ff fffe 	bl	0 <TIM_Cmd>
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:218
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:223
     /* Enable ADC injected channel */
     ADC_AutoInjectedConvCmd(ADC1, ENABLE);
   a2:	f44f 5010 	mov.w	r0, #9216	; 0x2400
   a6:	f2c4 0001 	movt	r0, #16385	; 0x4001
   aa:	f04f 0101 	mov.w	r1, #1
   ae:	f7ff fffe 	bl	0 <ADC_AutoInjectedConvCmd>
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:220
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:225
     /* TIM2 configuration */
     TIM2_Configuration();
   b2:	f7ff fffe 	bl	0 <TIM1_UP_IRQHandler>
-D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:222
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:227
     /* Enable TIM2 */
     TIM_Cmd(TIM2, ENABLE);
   b6:	f04f 4080 	mov.w	r0, #1073741824	; 0x40000000

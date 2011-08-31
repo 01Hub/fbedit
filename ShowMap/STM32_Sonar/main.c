@@ -22,7 +22,7 @@ typedef struct
   u8 GainInc;
   u8 Range;
   u16 PixelTimer;
-  u16 Dummy16;
+  vu16 EchoIndex;
   u16 ADCBatt;
   u16 ADCWaterTemp;
   u16 ADCAirTemp;
@@ -33,7 +33,6 @@ typedef struct
 /* Private variables ---------------------------------------------------------*/
 static STM32_SonarTypeDef STM32_Sonar;         // 0x20000000
 vu8 BlueLED;
-vu16 EchoIndex;
 vu16 Ping;
 
 /* Private function prototypes -----------------------------------------------*/
@@ -105,7 +104,7 @@ int main(void)
         i++;
       }
       /* Reset echo index */
-      EchoIndex = 0;
+      STM32_Sonar.EchoIndex = 0;
       /* Set the TIM1 Autoreload value */
       TIM1->ARR = STM32_Sonar.PingTimer;
       /* Reset TIM1 count */
@@ -124,13 +123,19 @@ int main(void)
         ADC = ( (u32 *) ADC1_ICDR_Address);
         Echo = (u8) ( (u16) (*(vu32*) (((*(u32*)&ADC)))) >> 4);
         /* If echo larger than previous echo, update the echo array */
-        if (Echo > STM32_Sonar.Echo[EchoIndex])
+        if (Echo > STM32_Sonar.Echo[STM32_Sonar.EchoIndex])
         {
-          STM32_Sonar.Echo[EchoIndex] = Echo;
+          STM32_Sonar.Echo[STM32_Sonar.EchoIndex] = Echo;
         }
       }
       /* Done, Store the current range as the first byte in the echo array */
       STM32_Sonar.Echo[0] = STM32_Sonar.Range;
+      /* Disable TIM2 */
+      TIM2->CR1 = 0;
+      /* Disable ADC injected channel */
+      ADC_AutoInjectedConvCmd(ADC1, DISABLE);
+      /* Set the DAC to output lowest gain */
+      DAC->DHR12R1 = (u16)0x0;
     }
     i = 0;
     while (i < 1000)
@@ -232,31 +237,50 @@ void TIM1_UP_IRQHandler(void)
 *******************************************************************************/
 void TIM2_IRQHandler(void)
 {
-  u16 Gain;
   /* Clear TIM2 Update interrupt pending bit */
-  TIM2->SR = (u16)~TIM_IT_Update;
+  asm("mov    r0,#0x40000000"); /* TIM2 */
+  asm("strh   r0,[r0,#0x8 *2]");/* TIM2->SR */
   /* Set the DAC to output next gain step */
-  Gain = (u16)DAC->DHR12R1 + (u16)STM32_Sonar.GainInc;
-  if (Gain > 4095)
-  {
-    Gain = 4095;
-  }
-  DAC->DHR12R1 = Gain;
+  asm("movw   r0,#0x7400");       /* DAC1 */
+  asm("movt   r0,#0x4000");
+  asm("ldr    r3,[r0,#0x8]");     /* DAC_DHR12R1 */
+  asm("movw   r1,#0x0");          /* STM32_Sonar */
+  asm("movt   r1,#0x2000");
+  asm("ldrb   r2,[r1,#0x4]");     /* STM32_Sonar.GainInc */
+  asm("add    r3,r3,r2");
+  asm("uxth   r3,r3");
+  asm("movw   r2,0xFFF");
+  asm("cmp    r3,r2");
+  asm("it     cs");
+  asm("movcs  r3,r2");
+  asm("str    r3,[r0,#0x8]");     /* DAC_DHR12R1 */
   /* Increment the echo array index */
-  EchoIndex++;
-  if (EchoIndex == MAXECHO)
-  {
-    /* Reset echo array index */
-    EchoIndex = 0;
-    /* Disable TIM2 */
-    TIM2->CR1 = 0;
-    /* Disable ADC injected channel */
-    ADC_AutoInjectedConvCmd(ADC1, DISABLE);
-    /* Set the DAC to output lowest gain */
-    DAC->DHR12R1 = (u16)0x0;
-    /* Done sampling echo*/
-    STM32_Sonar.Start = 0;
-  }
+  asm("ldrh   r2,[r1,#0x8]");     /* STM32_Sonar.EchoIndex */
+  asm("add    r2,r2,#0x1");
+  asm("cmp    r2,#0x200");
+  asm("ite    ne");
+  asm("strhne r2,[r1,#0x8]");     /* STM32_Sonar.EchoIndex */
+  asm("strbeq r2,[r1,#0x0]");     /* STM32_Sonar.Start */
+
+  // u16 Gain;
+  /* Clear TIM2 Update interrupt pending bit */
+  //TIM2->SR = (u16)~TIM_IT_Update;
+  // /* Set the DAC to output next gain step */
+  // Gain = (u16)DAC->DHR12R1 + (u16)STM32_Sonar.GainInc;
+  // if (Gain > 4095)
+  // {
+    // Gain = 4095;
+  // }
+  // DAC->DHR12R1 = Gain;
+  // /* Increment the echo array index */
+  // STM32_Sonar.EchoIndex++;
+  // if (STM32_Sonar.EchoIndex == MAXECHO)
+  // {
+    // /* Reset echo array index */
+    // STM32_Sonar.EchoIndex = 0;
+    // /* Done sampling echo*/
+    // STM32_Sonar.Start = 0;
+  // }
 }
 
 /*******************************************************************************
@@ -352,9 +376,9 @@ void RCC_Configuration(void)
     /* ADCCLK = PCLK2/2 */
     RCC_ADCCLKConfig(RCC_PCLK2_Div2);
     // /* PLLCLK = 8MHz * 6 = 48 MHz */
-    RCC_PLLConfig(RCC_PLLSource_HSE_Div1, RCC_PLLMul_6);
+    //RCC_PLLConfig(RCC_PLLSource_HSE_Div1, RCC_PLLMul_6);
     /* PLLCLK = 8MHz * 7 = 56 MHz */
-    //RCC_PLLConfig(RCC_PLLSource_HSE_Div1, RCC_PLLMul_7);
+    RCC_PLLConfig(RCC_PLLSource_HSE_Div1, RCC_PLLMul_7);
     /* Enable PLL */ 
     RCC_PLLCmd(ENABLE);
     /* Wait till PLL is ready */
@@ -442,11 +466,11 @@ void TIM1_Configuration(void)
   TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructure;
   TIM_TimeBaseStructure.TIM_ClockDivision = 0;
   TIM_TimeBaseStructure.TIM_Prescaler = 0;
-  /* Time base configuration 56MHz clock */
-  // TIM_TimeBaseStructure.TIM_Period = 139;
-  /* Time base configuration 48MHz clock */
   TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
-  TIM_TimeBaseStructure.TIM_Period = 119;
+  /* Time base configuration 56MHz clock */
+  TIM_TimeBaseStructure.TIM_Period = 139;
+  /* Time base configuration 48MHz clock */
+  //TIM_TimeBaseStructure.TIM_Period = 119;
   TIM_TimeBaseStructure.TIM_RepetitionCounter = 0;
   TIM_TimeBaseInit(TIM1, &TIM_TimeBaseStructure);
   /* Enable TIM1 Update interrupt */

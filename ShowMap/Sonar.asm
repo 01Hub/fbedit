@@ -7,12 +7,12 @@ IDC_CHKSONARPING        equ 1509
 IDC_TRBSONARRANGE       equ 1507
 IDC_CHKSONARRANGE       equ 1506
 IDC_TRBSONARCHART       equ 1512
-IDC_CHKSOPNARCHART		equ 1523
 IDC_CHKSONARDETECT      equ 1515
 IDC_TRBSONARNOISE       equ 1501
 IDC_CHKSONARNOISE		equ 1521
 IDC_CHKSONARALARM       equ 1514
 IDC_TRBPINGTIMER        equ 1526
+IDC_TRBSOUNDSPEED       equ 1528
 IDC_BTNGD               equ 1502
 IDC_BTNGU               equ 1505
 IDC_BTNPU               equ 1508
@@ -25,6 +25,8 @@ IDC_BTNNU               equ 1519
 IDC_BTNND               equ 1520
 IDC_BTNPTU              equ 1525
 IDC_BTNPTD              equ 1527
+IDC_BTNSSU              equ 1523
+IDC_BTNSSD              equ 1529
 
 .code
 
@@ -75,6 +77,77 @@ ButtonProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
 ButtonProc endp
 
+;Description
+;===========
+;A short ping at 200KHz is transmitted at intervalls depending on range.
+;From the time it takes for the echo to return we can calculate the depth.
+;The ADC measures the strenght of the echo at intervalls depending on range
+;and stores it in a 512 byte array.
+;
+;Speed of sound in water
+;=======================
+;Temp (C)    Speed (m/s)
+;  0             1403
+;  5             1427
+; 10             1447
+; 20             1481
+; 30             1507
+; 40             1526
+;
+;1450m/s is probably a good estimate.
+;
+;The timer is clocked at 56 MHz so it increments every 0,0178571 us.
+;For each tick the sound travels 1450 * 0,0178571 = 25,8929 um or 25,8929e-6 meters.
+
+;Timer value calculation
+;=======================
+;Example 2m range and 56 MHz clock
+;Timer period Tp=1/56MHz
+;Each pixel is Px=2m/512.
+;Time for each pixel is t=Px/1450/2
+;Timer ticks Tt=t/Tp
+
+;Formula T=((Range/512)/(1450/2))56000000
+
+RangeToTimer proc RangeInx:DWORD
+	LOCAL	tmp:DWORD
+
+	invoke GetRangePtr,RangeInx
+	mov		eax,sonarrange.range[eax]
+	mov		tmp,eax
+	fild	tmp
+	mov		tmp,MAXYECHO
+	fild	tmp
+	fdivp	st(1),st
+	mov		eax,sonardata.SoundSpeed
+	shr		eax,1			;Divide by 2 since it is the echo
+	mov		tmp,eax
+	fild	tmp
+	fdivp	st(1),st
+	mov		tmp,STM32CLOCK
+	fild	tmp
+	fmulp	st(1),st
+	fistp	tmp
+	mov		eax,tmp
+	dec		eax
+	ret
+
+RangeToTimer endp
+
+SetupPixelTimer proc uses ebx edi
+	
+	xor		ebx,ebx
+	mov		edi,offset sonarrange
+	.while ebx<sonardata.MaxRange
+		invoke RangeToTimer,ebx
+		mov		[edi].RANGE.pixeltimer,eax
+		inc		ebx
+		lea		edi,[edi+sizeof RANGE]
+	.endw
+	ret
+
+SetupPixelTimer endp
+
 SonarOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
 	mov		eax,uMsg
@@ -99,9 +172,6 @@ SonarOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:L
 		.if sonardata.NoiseReject
 			invoke CheckDlgButton,hWin,IDC_CHKSONARNOISE,BST_CHECKED
 		.endif
-		.if sonardata.ChartSync
-			invoke CheckDlgButton,hWin,IDC_CHKSOPNARCHART,BST_CHECKED
-		.endif
 		invoke SendDlgItemMessage,hWin,IDC_TRBSONARPING,TBM_SETRANGE,FALSE,(127 SHL 16)+0
 		invoke SendDlgItemMessage,hWin,IDC_TRBSONARPING,TBM_SETPOS,TRUE,sonardata.PingInit
 		invoke SendDlgItemMessage,hWin,IDC_TRBSONARNOISE,TBM_SETRANGE,FALSE,(255 SHL 16)+1
@@ -116,9 +186,11 @@ SonarOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:L
 		.if sonardata.FishAlarm
 			invoke CheckDlgButton,hWin,IDC_CHKSONARALARM,BST_CHECKED
 		.endif
-		invoke SendDlgItemMessage,hWin,IDC_TRBPINGTIMER,TBM_SETRANGE,FALSE,(122 SHL 16)+116
+		invoke SendDlgItemMessage,hWin,IDC_TRBPINGTIMER,TBM_SETRANGE,FALSE,((PINGTIMER+2) SHL 16)+PINGTIMER-2
 		movzx	eax,sonardata.PingTimer
 		invoke SendDlgItemMessage,hWin,IDC_TRBPINGTIMER,TBM_SETPOS,TRUE,eax
+		invoke SendDlgItemMessage,hWin,IDC_TRBSOUNDSPEED,TBM_SETRANGE,FALSE,((SOUNDSPEEDMAX) SHL 16)+SOUNDSPEEDMIN
+		invoke SendDlgItemMessage,hWin,IDC_TRBSOUNDSPEED,TBM_SETPOS,TRUE,sonardata.SoundSpeed
 		;Subclass buttons to get autorepeat
 		push	0
 		push	IDC_BTNGD
@@ -131,6 +203,8 @@ SonarOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:L
 		push	IDC_BTNCD
 		push	IDC_BTNNU
 		push	IDC_BTNND
+		push	IDC_BTNSSU
+		push	IDC_BTNSSD
 		push	IDC_BTNPTU
 		mov		eax,IDC_BTNPTD
 		.while eax
@@ -154,8 +228,6 @@ SonarOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:L
 				xor		sonardata.AutoRange,1
 			.elseif eax==IDC_CHKSONARNOISE
 				xor		sonardata.NoiseReject,1
-			.elseif eax==IDC_CHKSOPNARCHART
-				xor		sonardata.ChartSync,1
 			.elseif eax==IDC_CHKSONARDETECT
 				xor		sonardata.FishDetect,1
 			.elseif eax==IDC_CHKSONARALARM
@@ -220,6 +292,30 @@ SonarOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:L
 					movzx	eax,sonardata.Noise
 					invoke SendDlgItemMessage,hWin,IDC_TRBSONARNOISE,TBM_SETPOS,TRUE,eax
 				.endif
+			.elseif eax==IDC_BTNPTD
+				.if sonardata.PingTimer>PINGTIMER-2
+					dec		sonardata.PingTimer
+					movzx	eax,sonardata.PingTimer
+					invoke SendDlgItemMessage,hWin,IDC_TRBPINGTIMER,TBM_SETPOS,TRUE,eax
+				.endif
+			.elseif eax==IDC_BTNPTU
+				.if sonardata.PingTimer<PINGTIMER+2
+					inc		sonardata.PingTimer
+					movzx	eax,sonardata.PingTimer
+					invoke SendDlgItemMessage,hWin,IDC_TRBPINGTIMER,TBM_SETPOS,TRUE,eax
+				.endif
+			.elseif eax==IDC_BTNSSU
+				.if sonardata.SoundSpeed<SOUNDSPEEDMAX
+					inc		sonardata.SoundSpeed
+					invoke SendDlgItemMessage,hWin,IDC_TRBSOUNDSPEED,TBM_SETPOS,TRUE,sonardata.SoundSpeed
+					invoke SetupPixelTimer
+				.endif
+			.elseif eax==IDC_BTNSSD
+				.if sonardata.SoundSpeed>SOUNDSPEEDMIN
+					dec		sonardata.SoundSpeed
+					invoke SendDlgItemMessage,hWin,IDC_TRBSOUNDSPEED,TBM_SETPOS,TRUE,sonardata.SoundSpeed
+					invoke SetupPixelTimer
+				.endif
 			.endif
 		.endif
 	.elseif eax==WM_HSCROLL
@@ -239,6 +335,9 @@ SonarOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:L
 			mov		sonardata.ChartSpeed,ebx
 		.elseif eax==IDC_TRBPINGTIMER
 			mov		sonardata.PingTimer,bl
+		.elseif eax==IDC_TRBSOUNDSPEED
+			mov		sonardata.SoundSpeed,ebx
+			invoke SetupPixelTimer
 		.endif
 	.elseif eax==WM_CLOSE
 		invoke DestroyWindow,hWin
@@ -268,62 +367,6 @@ Random proc uses ecx edx,range:DWORD
 	ret
 
 Random endp
-
-;Description
-;===========
-;A short ping at 200KHz is transmitted at intervalls depending on range.
-;From the time it takes for the echo to return we can calculate the depth.
-;The adc measures the strenght of the echo at intervalls depending on range
-;and stores it in a 512 byte array.
-;
-;Speed of sound in water
-;=======================
-;Temp (C)    Speed (m/s)
-;  0             1403
-;  5             1427
-; 10             1447
-; 20             1481
-; 30             1507
-; 40             1526
-;
-;1450m/s is probably a good estimate.
-;
-;The timer is clocked at 48MHz so it increments every 0,0208333 us.
-;For each tick the sound travels 1450 * 0,0208333 = 30,208285 um or 30,208285e-6 meters.
-
-;Timer value calculation
-;=======================
-;Example 2m range and 48MHz clock
-;Timer period Tp=1/48MHz
-;Each pixel is Px=2m/512.
-;Time for each pixel is t=Px/1450/2
-;Timer ticks Tt=t/Tp
-
-;Formula T=((Range/512)/(1450/2))*48000000
-
-;RangeToTimer proc RangeInx:DWORD
-;	LOCAL	tmp:DWORD
-;
-;	mov		eax,RangeInx
-;	lea		eax,[eax+eax*2]
-;	mov		eax,sonarrange.range[eax*4]
-;	mov		tmp,eax
-;	fild	tmp
-;	mov		tmp,MAXYECHO
-;	fild	tmp
-;	fdivp	st(1),st
-;	mov		tmp,1450/2			;Divide by 2 since it is the echo
-;	fild	tmp
-;	fdivp	st(1),st
-;	mov		tmp,48000000
-;	fild	tmp
-;	fmulp	st(1),st
-;	fistp	tmp
-;	mov		eax,tmp
-;	dec		eax
-;	ret
-;
-;RangeToTimer endp
 
 UpdateBitmap proc uses ebx esi edi,NewRange:DWORD
 	LOCAL	rect:RECT
@@ -657,7 +700,7 @@ STM32Thread proc uses ebx esi edi,lParam:DWORD
 	mov		pixdir,0
 	mov		pixmov,0
 	mov		pixdpt,250
-	mov		rngchanged,3
+	mov		rngchanged,4
 	invoke RtlZeroMemory,addr STM32Echo,sizeof STM32Echo
 	invoke RtlZeroMemory,addr fish,sizeof fish
   Again:
@@ -708,10 +751,6 @@ STM32Thread proc uses ebx esi edi,lParam:DWORD
 			mov		ebx,eax
 			.if sonardata.AutoGain
 				mov		eax,sonardata.GainInit
-				add		eax,sonarrange.gainadd[ebx]
-				.if eax>255
-					mov		eax,255
-				.endif
 				mov		sonardata.Gain,al
 				mov		eax,sonarrange.gaininc[ebx]
 				mov		sonardata.GainInc,al
@@ -852,7 +891,7 @@ STM32Thread proc uses ebx esi edi,lParam:DWORD
 			inc		ecx
 		.endw
 		mov		eax,edx
-		shl		eax,1
+		shl		edx,2
 		invoke Random,eax
 		add		edx,eax
 		xor		ecx,ecx
@@ -948,16 +987,30 @@ STLinkErr:
 
 Show0:
 	mov		ebx,1
-	.while ebx<MAXYECHO
-		movzx	eax,STM32Echo[ebx]
-		.if al<sonardata.Noise
-			mov		al,0
-		.elseif al>253
-			mov		al,253
-		.endif
-		mov		sonardata.STM32Echo[ebx],al
-		inc		ebx
-	.endw
+	.if sonardata.NoiseReject
+		.while ebx<MAXYECHO
+			mov		al,STM32Echo[ebx]
+			mov		ah,STM32Echo[ebx+MAXYECHO]
+			.if al<sonardata.Noise || ah<sonardata.Noise
+				mov		al,0
+			.elseif al>253
+				mov		al,253
+			.endif
+			mov		sonardata.STM32Echo[ebx],al
+			inc		ebx
+		.endw
+	.else
+		.while ebx<MAXYECHO
+			mov		al,STM32Echo[ebx]
+			.if al<sonardata.Noise
+				mov		al,0
+			.elseif al>253
+				mov		al,253
+			.endif
+			mov		sonardata.STM32Echo[ebx],al
+			inc		ebx
+		.endw
+	.endif
 	push	edi
 	.if !rngchanged
 		call	FindFish
@@ -969,118 +1022,251 @@ Show0:
 
 Show25:
 	mov		ebx,1
-	.while ebx<MAXYECHO
-		;Blend in 25% of previous echo
-		movzx	eax,STM32Echo[ebx]
-		shl		eax,2
-		movzx	edx,STM32Echo[ebx+MAXYECHO]
-		add		eax,edx
-		mov		ecx,5
-		xor		edx,edx
-		div		ecx
-		.if al<sonardata.Noise
-			mov		al,0
-		.elseif al>253
-			mov		al,253
-		.endif
-		mov		sonardata.STM32Echo[ebx],al
-		inc		ebx
-	.endw
+	.if sonardata.NoiseReject
+		.while ebx<MAXYECHO
+			mov		al,STM32Echo[ebx]
+			mov		ah,STM32Echo[ebx+MAXYECHO]
+			.if al<sonardata.Noise || ah<sonardata.Noise
+				mov		al,0
+			.else
+				;Blend in 25% of previous echo
+				movzx	edx,ah
+				movzx	eax,al
+				shl		eax,2
+				add		eax,edx
+				mov		ecx,5
+				xor		edx,edx
+				div		ecx
+				.if al<sonardata.Noise
+					mov		al,0
+				.elseif al>253
+					mov		al,253
+				.endif
+			.endif
+			mov		sonardata.STM32Echo[ebx],al
+			inc		ebx
+		.endw
+	.else
+		.while ebx<MAXYECHO
+			;Blend in 25% of previous echo
+			movzx	eax,STM32Echo[ebx]
+			shl		eax,2
+			movzx	edx,STM32Echo[ebx+MAXYECHO]
+			add		eax,edx
+			mov		ecx,5
+			xor		edx,edx
+			div		ecx
+			.if al<sonardata.Noise
+				mov		al,0
+			.elseif al>253
+				mov		al,253
+			.endif
+			mov		sonardata.STM32Echo[ebx],al
+			inc		ebx
+		.endw
+	.endif
 	invoke SonarThreadProc,0
 	invoke Sleep,edi
 	retn
 
 Show33:
 	mov		ebx,1
-	.while ebx<MAXYECHO
-		;Blend in 33% of previous echo
-		movzx	eax,STM32Echo[ebx+MAXYECHO]
-		mov		ecx,3
-		xor		edx,edx
-		div		ecx
-		mov		edx,eax
-		movzx	eax,STM32Echo[ebx]
-		add		eax,edx
-		mov		ecx,3
-		mul		ecx
-		shr		eax,2
-		.if al<sonardata.Noise
-			mov		al,0
-		.elseif al>253
-			mov		al,253
-		.endif
-		mov		sonardata.STM32Echo[ebx],al
-		inc		ebx
-	.endw
+	.if sonardata.NoiseReject
+		.while ebx<MAXYECHO
+			mov		al,STM32Echo[ebx]
+			mov		ah,STM32Echo[ebx+MAXYECHO]
+			.if al<sonardata.Noise || ah<sonardata.Noise
+				mov		al,0
+			.else
+				;Blend in 33% of previous echo
+				movzx	eax,ah
+				mov		ecx,3
+				xor		edx,edx
+				div		ecx
+				mov		edx,eax
+				movzx	eax,STM32Echo[ebx]
+				add		eax,edx
+				mov		ecx,3
+				mul		ecx
+				shr		eax,2
+				.if al<sonardata.Noise
+					mov		al,0
+				.elseif al>253
+					mov		al,253
+				.endif
+			.endif
+			mov		sonardata.STM32Echo[ebx],al
+			inc		ebx
+		.endw
+	.else
+		.while ebx<MAXYECHO
+			;Blend in 33% of previous echo
+			movzx	eax,STM32Echo[ebx+MAXYECHO]
+			mov		ecx,3
+			xor		edx,edx
+			div		ecx
+			mov		edx,eax
+			movzx	eax,STM32Echo[ebx]
+			add		eax,edx
+			mov		ecx,3
+			mul		ecx
+			shr		eax,2
+			.if al<sonardata.Noise
+				mov		al,0
+			.elseif al>253
+				mov		al,253
+			.endif
+			mov		sonardata.STM32Echo[ebx],al
+			inc		ebx
+		.endw
+	.endif
 	invoke SonarThreadProc,0
 	invoke Sleep,edi
 	retn
 
 Show50:
 	mov		ebx,1
-	.while ebx<MAXYECHO
-		;Blend in 50% of previous echo
-		movzx	eax,STM32Echo[ebx]
-		movzx	edx,STM32Echo[ebx+MAXYECHO]
-		add		eax,edx
-		shr		eax,1
-		.if al<sonardata.Noise
-			mov		al,0
-		.elseif al>253
-			mov		al,253
-		.endif
-		mov		sonardata.STM32Echo[ebx],al
-		inc		ebx
-	.endw
+	.if sonardata.NoiseReject
+		.while ebx<MAXYECHO
+			mov		al,STM32Echo[ebx]
+			mov		ah,STM32Echo[ebx+MAXYECHO]
+			.if al<sonardata.Noise || ah<sonardata.Noise
+				mov		al,0
+			.else
+				;Blend in 50% of previous echo
+				movzx	edx,ah
+				movzx	eax,al
+				add		eax,edx
+				shr		eax,1
+				.if al<sonardata.Noise
+					mov		al,0
+				.elseif al>253
+					mov		al,253
+				.endif
+			.endif
+			mov		sonardata.STM32Echo[ebx],al
+			inc		ebx
+		.endw
+	.else
+		.while ebx<MAXYECHO
+			;Blend in 50% of previous echo
+			movzx	eax,STM32Echo[ebx]
+			movzx	edx,STM32Echo[ebx+MAXYECHO]
+			add		eax,edx
+			shr		eax,1
+			.if al<sonardata.Noise
+				mov		al,0
+			.elseif al>253
+				mov		al,253
+			.endif
+			mov		sonardata.STM32Echo[ebx],al
+			inc		ebx
+		.endw
+	.endif
 	invoke SonarThreadProc,0
 	invoke Sleep,edi
 	retn
 
 Show66:
 	mov		ebx,1
-	.while ebx<MAXYECHO
-		;Blend in 66% of previous echo
-		movzx	eax,STM32Echo[ebx]
-		mov		ecx,3
-		xor		edx,edx
-		div		ecx
-		mov		edx,eax
-		movzx	eax,STM32Echo[ebx+MAXYECHO]
-		add		eax,edx
-		mov		ecx,3
-		mul		ecx
-		shr		eax,2
-		.if al<sonardata.Noise
-			mov		al,0
-		.elseif al>253
-			mov		al,253
-		.endif
-		mov		sonardata.STM32Echo[ebx],al
-		inc		ebx
-	.endw
+	.if sonardata.NoiseReject
+		.while ebx<MAXYECHO
+			mov		al,STM32Echo[ebx]
+			mov		ah,STM32Echo[ebx+MAXYECHO]
+			.if al<sonardata.Noise || ah<sonardata.Noise
+				mov		al,0
+			.else
+				;Blend in 66% of previous echo
+				movzx	eax,al
+				mov		ecx,3
+				xor		edx,edx
+				div		ecx
+				mov		edx,eax
+				movzx	eax,STM32Echo[ebx+MAXYECHO]
+				add		eax,edx
+				mov		ecx,3
+				mul		ecx
+				shr		eax,2
+				.if al<sonardata.Noise
+					mov		al,0
+				.elseif al>253
+					mov		al,253
+				.endif
+			.endif
+			mov		sonardata.STM32Echo[ebx],al
+			inc		ebx
+		.endw
+	.else
+		.while ebx<MAXYECHO
+			;Blend in 66% of previous echo
+			movzx	eax,STM32Echo[ebx]
+			mov		ecx,3
+			xor		edx,edx
+			div		ecx
+			mov		edx,eax
+			movzx	eax,STM32Echo[ebx+MAXYECHO]
+			add		eax,edx
+			mov		ecx,3
+			mul		ecx
+			shr		eax,2
+			.if al<sonardata.Noise
+				mov		al,0
+			.elseif al>253
+				mov		al,253
+			.endif
+			mov		sonardata.STM32Echo[ebx],al
+			inc		ebx
+		.endw
+	.endif
 	invoke SonarThreadProc,0
 	invoke Sleep,edi
 	retn
 
 Show75:
 	mov		ebx,1
-	.while ebx<MAXYECHO
-		;Blend in 75% of previous echo
-		movzx	eax,STM32Echo[ebx+MAXYECHO]
-		shl		eax,2
-		movzx	edx,STM32Echo[ebx]
-		add		eax,edx
-		mov		ecx,5
-		xor		edx,edx
-		div		ecx
-		.if al<sonardata.Noise
-			mov		al,0
-		.elseif al>253
-			mov		al,253
-		.endif
-		mov		sonardata.STM32Echo[ebx],al
-		inc		ebx
-	.endw
+	.if sonardata.NoiseReject
+		.while ebx<MAXYECHO
+			mov		al,STM32Echo[ebx]
+			mov		ah,STM32Echo[ebx+MAXYECHO]
+			.if al<sonardata.Noise || ah<sonardata.Noise
+				mov		al,0
+			.else
+				;Blend in 75% of previous echo
+				movzx	edx,al
+				movzx	eax,ah
+				shl		eax,2
+				add		eax,edx
+				mov		ecx,5
+				xor		edx,edx
+				div		ecx
+				.if al<sonardata.Noise
+					mov		al,0
+				.elseif al>253
+					mov		al,253
+				.endif
+			.endif
+			mov		sonardata.STM32Echo[ebx],al
+			inc		ebx
+		.endw
+	.else
+		.while ebx<MAXYECHO
+			;Blend in 75% of previous echo
+			movzx	eax,STM32Echo[ebx+MAXYECHO]
+			shl		eax,2
+			movzx	edx,STM32Echo[ebx]
+			add		eax,edx
+			mov		ecx,5
+			xor		edx,edx
+			div		ecx
+			.if al<sonardata.Noise
+				mov		al,0
+			.elseif al>253
+				mov		al,253
+			.endif
+			mov		sonardata.STM32Echo[ebx],al
+			inc		ebx
+		.endw
+	.endif
 	invoke SonarThreadProc,0
 	invoke Sleep,edi
 	retn
@@ -1090,36 +1276,6 @@ CopyEcho:
 	invoke RtlMoveMemory,addr STM32Echo[MAXYECHO*3],addr STM32Echo[MAXYECHO*2],MAXYECHO
 	invoke RtlMoveMemory,addr STM32Echo[MAXYECHO*2],addr STM32Echo[MAXYECHO*1],MAXYECHO
 	invoke RtlMoveMemory,addr STM32Echo[MAXYECHO*1],addr STM32Echo[MAXYECHO*0],MAXYECHO
-	retn
-
-RemoveNoise:
-	mov		ebx,1
-	mov		dl,sonardata.Noise
-	.if sonardata.NoiseReject
-		.while ebx<MAXYECHO
-			mov		ax,word ptr STM32Echo[ebx]
-			.if al>253
-				mov		al,253
-			.endif
-			.if al<dl || ah<dl
-				mov		al,0
-			.endif
-			mov		sonardata.STM32Echo[ebx],al
-			inc		ebx
-		.endw
-	.else
-		.while ebx<MAXYECHO
-			mov		al,STM32Echo[ebx]
-			.if al>253
-				mov		al,253
-			.endif
-			.if al<dl
-				mov		al,0
-			.endif
-			mov		sonardata.STM32Echo[ebx],al
-			inc		ebx
-		.endw
-	.endif
 	retn
 
 FindDepth:
@@ -1550,9 +1706,9 @@ SaveSonarToIni proc
 	invoke PutItemInt,addr buffer,sonardata.GainInit
 	invoke PutItemInt,addr buffer,sonardata.ChartSpeed
 	invoke PutItemInt,addr buffer,sonardata.NoiseReject
-	invoke PutItemInt,addr buffer,sonardata.ChartSync
 	movzx	eax,sonardata.PingTimer
 	invoke PutItemInt,addr buffer,eax
+	invoke PutItemInt,addr buffer,sonardata.SoundSpeed
 	invoke WritePrivateProfileString,addr szIniSonar,addr szIniSonar,addr buffer[1],addr szIniFileName
 	ret
 
@@ -1563,7 +1719,7 @@ LoadSonarFromIni proc uses ebx edi
 	
 	invoke RtlZeroMemory,addr buffer,sizeof buffer
 	invoke GetPrivateProfileString,addr szIniSonar,addr szIniSonar,addr szNULL,addr buffer,sizeof buffer,addr szIniFileName
-	;Width,AutoRange,AutoGain,AutoPing,FishDetect,FishAlarm,RangeInx,Noise,PingInit,GainInit,ChartSpeed,NoiseReject,ChartSync,PingTimer
+	;Width,AutoRange,AutoGain,AutoPing,FishDetect,FishAlarm,RangeInx,Noise,PingInit,GainInit,ChartSpeed,NoiseReject,ChartSync,PingTimer,SoundSpeed
 	invoke GetItemInt,addr buffer,250
 	mov		sonardata.wt,eax
 	invoke GetItemInt,addr buffer,1
@@ -1588,10 +1744,10 @@ LoadSonarFromIni proc uses ebx edi
 	mov		sonardata.ChartSpeed,eax
 	invoke GetItemInt,addr buffer,1
 	mov		sonardata.NoiseReject,eax
-	invoke GetItemInt,addr buffer,1
-	mov		sonardata.ChartSync,eax
-	invoke GetItemInt,addr buffer,139
+	invoke GetItemInt,addr buffer,PINGTIMER
 	mov		sonardata.PingTimer,al
+	invoke GetItemInt,addr buffer,(SOUNDSPEEDMAX+SOUNDSPEEDMIN)/2
+	mov		sonardata.SoundSpeed,eax
 	;Get the range definitions
 	xor		ebx,ebx
 	xor		edi,edi
@@ -1604,11 +1760,7 @@ LoadSonarFromIni proc uses ebx edi
 		invoke GetItemInt,addr buffer,0
 		mov		sonarrange.interval[edi],eax
 		invoke GetItemInt,addr buffer,0
-		mov		sonarrange.pixeltimer[edi],eax
-		invoke GetItemInt,addr buffer,0
 		mov		sonarrange.pingadd[edi],eax
-		invoke GetItemInt,addr buffer,0
-		mov		sonarrange.gainadd[edi],eax
 		invoke GetItemInt,addr buffer,0
 		mov		sonarrange.gaininc[edi],eax
 		lea		esi,sonarrange.scale[edi]
@@ -1627,6 +1779,7 @@ LoadSonarFromIni proc uses ebx edi
 	.endw
 	;Store the number of range definitions read from ini
 	mov		sonardata.MaxRange,ebx
+	invoke SetupPixelTimer
 	ret
 
 LoadSonarFromIni endp
