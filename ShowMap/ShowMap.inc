@@ -137,9 +137,8 @@ SIGNALBAR				equ 32								;Width of signal strenght bar
 MAXRANGE				equ 32								;Max number of depth ranges that can be read from ini
 REPLYSPEED				equ 5								;At reply, the ping interval is divided by REPLYSPEED
 STM32_Sonar				equ 20000000h						;STM32 ram address
-;SONARBACKCOLOR			equ 00C47B0Fh						;Back color of sonar
 SONARBACKCOLOR			equ 00F4BD6Ch						;Back color of sonar
-SONARPENCOLOR			equ 0900000h;00606060h						;Signal bar pen color
+SONARPENCOLOR			equ 0900000h						;Signal bar pen color
 MAXFISH					equ 32								;Prevents showing repeated fish symbols and repeated fish alarms
 MAXSONARBMP				equ 64
 PINGTIMER				equ 139
@@ -318,11 +317,10 @@ SONAR struct
 	GainInc			BYTE ?									;Gain level increment
 	RangeInx		BYTE ?									;Range (0 to 16)
 	PixelTimer		WORD ?									;Pixel timer value
-	Dummy16			WORD ?									;Just to make the ADC readings dword sized
+	EchoIndex		WORD ?									;Echo index
 	ADCBattery		WORD ?									;Battery level
 	ADCWaterTemp	WORD ?									;Water temprature
 	ADCAirTemp		WORD ?									;Air temprature
-	sonar			BYTE MAXXECHO*MAXYECHO dup(?)			;Sonar array. The first byte in each x element is the range index
 	STM32Echo		BYTE MAXYECHO dup(?)					;Echo array read from STM32
 	minyecho		DWORD ?
 	nodptinx		DWORD ?
@@ -339,6 +337,12 @@ RANGE struct
 	nticks			DWORD ?									;Number of ticks on the range scale
 	scale			BYTE 64 dup(?)							;Zero terminated strings of depths
 RANGE ends
+
+FISH struct
+	fishtype		DWORD ?									;17=small fish, 18=large fish
+	xpos			DWORD ?									;X position
+	depth			DWORD ?									;Depth in meters
+FISH ends
 
 TEMP struct
 	adcvalue		DWORD ?
@@ -442,12 +446,13 @@ szIniFileName		BYTE MAX_PATH dup(?)					;Path and filename of ini file
 szbuff				BYTE 512 dup(?)							;Temporary buffer
 tid					DWORD ?									;Thread ID
 fSTLink				DWORD ?									;If TRUE STLink connected
-fThread				DWORD ?									;If TRUE sonar thread is running
 sonarrange			RANGE MAXRANGE dup(<?>)					;Sonar range definitions (max 32)
 sonardata			SONAR <>								;Sonar data
+fishinx				DWORD ?									;Current index in fishdata
+fishdata			FISH MAXFISH dup(<>)					;Array of fish detected
 hSplittV			HCURSOR ?								;Horizontal splitt cursor
 rseed				DWORD ?									;Random seed
 szFishSound			BYTE MAX_PATH dup(?)					;Path & filename of fish.wav file
 fFishSound			DWORD ?
+STM32Echo			BYTE MAXYECHO*4 dup(?)					;Echo work area
 lpOldButtonProc		DWORD ?
-STM32Echo			BYTE MAXYECHO*4 dup(?)
