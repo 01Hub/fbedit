@@ -144,6 +144,8 @@ SetupPixelTimer proc uses ebx edi
 		inc		ebx
 		lea		edi,[edi+sizeof RANGE]
 	.endw
+	movzx	eax,sonardata.RangeInx
+	invoke SetRange,eax
 	ret
 
 SetupPixelTimer endp
@@ -471,6 +473,7 @@ SetWTemp:
 		fld		watertempconv
 		fdivp	st(1),st
 		fistp	tmp
+		sub		tmp,150
 		invoke wsprintf,addr buffer,addr szFmtDec,tmp
 		invoke strlen,addr buffer
 		movzx	ecx,word ptr buffer[eax-1]
@@ -512,6 +515,7 @@ SetATemp:
 			fistp	tmp
 			mov		eax,[esi+ebx*sizeof TEMP].TEMP.temp
 			sub		eax,tmp
+			sub		eax,20
 			mov		tmp,eax
 			invoke wsprintf,addr buffer,addr szFmtDec,tmp
 			invoke strlen,addr buffer
