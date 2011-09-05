@@ -133,18 +133,21 @@ MAXSONAROPTION			equ 3								;Max number of overlays on sonar scteen
 MAXXECHO				equ 512								;Max number of sonar X-echos
 MAXYECHO				equ 512								;Max number of sonar Y-echos
 RANGESCALE				equ 5								;Width of range scale
-SIGNALBAR				equ 256								;Width of signal strenght bar
+SIGNALBAR				equ 32								;Width of signal strenght bar
 MAXRANGE				equ 32								;Max number of depth ranges that can be read from ini
 REPLYSPEED				equ 5								;At reply, the ping interval is divided by REPLYSPEED
 STM32_Sonar				equ 20000000h						;STM32 ram address
 SONARBACKCOLOR			equ 00F4BD6Ch						;Back color of sonar
 SONARPENCOLOR			equ 0900000h						;Signal bar pen color
-MAXFISH					equ 32								;Prevents showing repeated fish symbols and repeated fish alarms
+MAXFISH					equ 64								;Prevents showing repeated fish symbols and repeated fish alarms
 MAXSONARBMP				equ 64
 PINGTIMER				equ 139
 SOUNDSPEEDMIN			equ 1400
 SOUNDSPEEDMAX			equ 1550
 STM32CLOCK				equ 56000000
+MINDEPTH				equ 150
+SMALLFISHECHO			equ 96
+LARGEFISHECHO			equ SMALLFISHECHO+64
 
 LONPOINT struct
 	iLon			DWORD ?									;Longitude
