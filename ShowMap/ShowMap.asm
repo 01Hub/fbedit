@@ -198,7 +198,7 @@ MapProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		hIml,eax
 		invoke LoadBitmap,hInstance,100
 		mov		ebx,eax
-		invoke ImageList_AddMasked,hIml,ebx,0
+		invoke ImageList_AddMasked,hIml,ebx,0FF00FFh
 		invoke DeleteObject,ebx
 		invoke GetDC,hWin
 		mov		map.hDC,eax
@@ -865,6 +865,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					invoke CloseHandle,sonardata.hReply
 					mov		sonardata.hReply,0
 					invoke SetScrollPos,hSonar,SB_HORZ,0,TRUE
+					mov		sonardata.dptinx,0
 				.else
 					invoke DialogBoxParam,hInstance,IDD_DLGTRIPLOG,hWin,addr TripLogProc,eax
 					.if eax
@@ -876,6 +877,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 							shr		eax,9
 							invoke SetScrollRange,hSonar,SB_HORZ,0,eax,TRUE
 							invoke SonarClear
+							mov		sonardata.dptinx,0
 						.endif
 					.endif
 				.endif

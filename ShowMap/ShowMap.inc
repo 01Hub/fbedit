@@ -129,6 +129,11 @@ MAXDIST					equ 256								;Max number of distance calculation poins
 MAXMAPOPTION			equ 5								;Max number of overlays on map scteen
 MAXSONAROPTION			equ 3								;Max number of overlays on sonar scteen
 
+;STM32 constants
+STM32_Sonar				equ 20000000h						;STM32 ram address
+STM32_Clock				equ 56000000						;STM32 clock frequency
+STM32_PingTimer			equ (STM32_Clock/200000/2)-1
+
 ;Sonar constants
 MAXXECHO				equ 512								;Max number of sonar X-echos
 MAXYECHO				equ 512								;Max number of sonar Y-echos
@@ -136,18 +141,15 @@ RANGESCALE				equ 5								;Width of range scale
 SIGNALBAR				equ 32								;Width of signal strenght bar
 MAXRANGE				equ 32								;Max number of depth ranges that can be read from ini
 REPLYSPEED				equ 5								;At reply, the ping interval is divided by REPLYSPEED
-STM32_Sonar				equ 20000000h						;STM32 ram address
 SONARBACKCOLOR			equ 00F4BD6Ch						;Back color of sonar
 SONARPENCOLOR			equ 0900000h						;Signal bar pen color
 MAXFISH					equ 64								;Prevents showing repeated fish symbols and repeated fish alarms
-MAXSONARBMP				equ 64
-PINGTIMER				equ 139
-SOUNDSPEEDMIN			equ 1400
-SOUNDSPEEDMAX			equ 1550
-STM32CLOCK				equ 56000000
-MINDEPTH				equ 150
-SMALLFISHECHO			equ 96
-LARGEFISHECHO			equ SMALLFISHECHO+64
+MAXSONARBMP				equ 64								;Max number of bitmap tiles
+SOUNDSPEEDMIN			equ 1400							;Minimum speed of sound in water
+SOUNDSPEEDMAX			equ 1550							;Maximum speed of sound in water
+SMALLFISHECHO			equ 96								;Minimum echo to detect small fish
+LARGEFISHECHO			equ SMALLFISHECHO+64				;Minimum echo to detect large fish
+MAXDEPTHJUMP			equ 10								;Max number of pixels to jump on depth detection
 
 LONPOINT struct
 	iLon			DWORD ?									;Longitude

@@ -124,7 +124,7 @@ RangeToTimer proc RangeInx:DWORD
 	mov		tmp,eax
 	fild	tmp
 	fdivp	st(1),st
-	mov		tmp,STM32CLOCK
+	mov		tmp,STM32_Clock
 	fild	tmp
 	fmulp	st(1),st
 	fistp	tmp
@@ -188,7 +188,7 @@ SonarOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:L
 		.if sonardata.FishAlarm
 			invoke CheckDlgButton,hWin,IDC_CHKSONARALARM,BST_CHECKED
 		.endif
-		invoke SendDlgItemMessage,hWin,IDC_TRBPINGTIMER,TBM_SETRANGE,FALSE,((PINGTIMER+2) SHL 16)+PINGTIMER-2
+		invoke SendDlgItemMessage,hWin,IDC_TRBPINGTIMER,TBM_SETRANGE,FALSE,((STM32_PingTimer+2) SHL 16)+STM32_PingTimer-2
 		movzx	eax,sonardata.PingTimer
 		invoke SendDlgItemMessage,hWin,IDC_TRBPINGTIMER,TBM_SETPOS,TRUE,eax
 		invoke SendDlgItemMessage,hWin,IDC_TRBSOUNDSPEED,TBM_SETRANGE,FALSE,((SOUNDSPEEDMAX) SHL 16)+SOUNDSPEEDMIN
@@ -295,13 +295,13 @@ SonarOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:L
 					invoke SendDlgItemMessage,hWin,IDC_TRBSONARNOISE,TBM_SETPOS,TRUE,eax
 				.endif
 			.elseif eax==IDC_BTNPTD
-				.if sonardata.PingTimer>PINGTIMER-2
+				.if sonardata.PingTimer>STM32_PingTimer-2
 					dec		sonardata.PingTimer
 					movzx	eax,sonardata.PingTimer
 					invoke SendDlgItemMessage,hWin,IDC_TRBPINGTIMER,TBM_SETPOS,TRUE,eax
 				.endif
 			.elseif eax==IDC_BTNPTU
-				.if sonardata.PingTimer<PINGTIMER+2
+				.if sonardata.PingTimer<STM32_PingTimer+2
 					inc		sonardata.PingTimer
 					movzx	eax,sonardata.PingTimer
 					invoke SendDlgItemMessage,hWin,IDC_TRBPINGTIMER,TBM_SETPOS,TRUE,eax
@@ -699,6 +699,7 @@ STM32Thread proc uses ebx esi edi,lParam:DWORD
 				invoke CloseHandle,sonardata.hReply
 				mov		sonardata.hReply,0
 				invoke SetScrollPos,hSonar,SB_HORZ,0,TRUE
+				mov		sonardata.dptinx,0
 				jmp		Again
 			.endif
 			invoke GetScrollPos,hSonar,SB_HORZ
@@ -921,15 +922,13 @@ STM32Thread proc uses ebx esi edi,lParam:DWORD
 		dec		ecx
 	.endw
 	mov		fish,0
-	;Get range index
-	mov		al,STM32Echo
-	mov		sonardata.STM32Echo,al
 	.if al!=STM32Echo[MAXYECHO]
 		invoke RtlMoveMemory,addr STM32Echo[MAXYECHO*3],addr STM32Echo,MAXYECHO
 		invoke RtlMoveMemory,addr STM32Echo[MAXYECHO*2],addr STM32Echo,MAXYECHO
 		invoke RtlMoveMemory,addr STM32Echo[MAXYECHO*1],addr STM32Echo,MAXYECHO
 	.endif
 	.if rngchanged
+		call	FindDepth
 		dec		rngchanged
 	.else
 		call	FindDepth
@@ -938,6 +937,7 @@ STM32Thread proc uses ebx esi edi,lParam:DWORD
 	.endif
 	;Get current range index
 	movzx	eax,STM32Echo
+	mov		sonardata.STM32Echo,al
 	invoke GetRangePtr,eax
 	mov		eax,sonarrange.interval[eax]
 	.if sonardata.hReply!=0 || fSTLink==IDIGNORE
@@ -1253,51 +1253,40 @@ FindDepth:
 		inc		ebx
 	.endw
 	;Skip ping and surface clutter
-	.while ebx<128
-		xor		ecx,ecx
+	movzx	ecx,sonardata.Noise
+	.while ebx<256
+		xor		ch,ch
 		mov		ax,word ptr STM32Echo[ebx+MAXYECHO*0]
 		mov		dx,word ptr STM32Echo[ebx+MAXYECHO*0+2]
-		.if al<SMALLFISHECHO && ah<SMALLFISHECHO && dl<SMALLFISHECHO && dh<SMALLFISHECHO
-			inc		ecx
+		.if al<cl && ah<cl && dl<cl && dh<cl
+			inc		ch
 		.endif
 		mov		ax,word ptr STM32Echo[ebx+MAXYECHO*1]
 		mov		dx,word ptr STM32Echo[ebx+MAXYECHO*1+2]
-		.if al<SMALLFISHECHO && ah<SMALLFISHECHO && dl<SMALLFISHECHO && dh<SMALLFISHECHO
-			inc		ecx
+		.if al<cl && ah<cl && dl<cl && dh<cl
+			inc		ch
 		.endif
 		mov		ax,word ptr STM32Echo[ebx+MAXYECHO*2]
 		mov		dx,word ptr STM32Echo[ebx+MAXYECHO*2+2]
-		.if al<SMALLFISHECHO && ah<SMALLFISHECHO && dl<SMALLFISHECHO && dh<SMALLFISHECHO
-			inc		ecx
+		.if al<cl && ah<cl && dl<cl && dh<cl
+			inc		ch
 		.endif
 		mov		ax,word ptr STM32Echo[ebx+MAXYECHO*3]
 		mov		dx,word ptr STM32Echo[ebx+MAXYECHO*3+2]
-		.if al<SMALLFISHECHO && ah<SMALLFISHECHO && dl<SMALLFISHECHO && dh<SMALLFISHECHO
-			inc		ecx
+		.if al<cl && ah<cl && dl<cl && dh<cl
+			inc		ch
 		.endif
-		.break .if ecx==4
+		.break .if ch==4
 		inc		ebx
 	.endw
 	mov		sonardata.minyecho,ebx
-;	movzx	ebx,STM32Echo
-;	invoke GetRangePtr,ebx
-;	mov		ebx,eax
-;	mov		ebx,sonarrange.range[ebx]
-;	mov		eax,MAXYECHO
-;	mov		edx,MINDEPTH
-;	mul		edx
-;	div		ebx
-;	mov		ebx,100
-;	xor		edx,edx
-;	div		ebx
-;	mov		ebx,eax
-;	mov		sonardata.minyecho,ebx
+	;Find the strongest echo in a 4x16 sqare
 	xor		esi,esi
 	xor		edi,edi
 	.while ebx<MAXYECHO
 		xor		ecx,ecx
 		xor		edx,edx
-		.while ecx<32
+		.while ecx<16
 			lea		eax,[ebx+ecx]
 			.break .if eax>=MAXYECHO
 			movzx	eax,STM32Echo[ebx+ecx+MAXYECHO*0]
@@ -1310,7 +1299,8 @@ FindDepth:
 			add		edx,eax
 			inc		ecx
 		.endw
-		.if edx>esi
+		lea		eax,[edx-8]
+		.if sdword ptr eax>esi
 			mov		esi,edx
 			mov		edi,ebx
 		.endif
@@ -1318,8 +1308,17 @@ FindDepth:
 	.endw
 	.if edi>1
 		mov		sonardata.nodptinx,0
-		add		edi,sonardata.dptinx
-		shr		edi,1
+		mov		eax,sonardata.dptinx
+		.if eax
+			sub		eax,edi
+			.if sdword ptr eax>MAXDEPTHJUMP
+				mov		edi,sonardata.dptinx
+				sub		edi,MAXDEPTHJUMP
+			.elseif sdword ptr eax<-MAXDEPTHJUMP
+				mov		edi,sonardata.dptinx
+				add		edi,MAXDEPTHJUMP
+			.endif
+		.endif
 		mov		ebx,edi
 		mov		sonardata.dptinx,ebx
 		call	CalculateDepth
@@ -1378,7 +1377,19 @@ FindFish:
 			;Depth unknowm
 			retn
 		.elseif edi>sonardata.minyecho
-			sub		edi,sonardata.minyecho
+			;Skip bottom vegetation
+			movzx	ecx,sonardata.Noise
+			.while edi>ebx
+				dec		edi
+				mov		ax,word ptr STM32Echo[edi]
+				mov		dx,word ptr STM32Echo[edi+MAXYECHO]
+				.if al<cl && ah<cl && dl<cl && dh<cl
+					inc		ch
+				.else
+					xor		ch,ch
+				.endif
+				.break .if ch==5
+			.endw
 		.else
 			;Too shallow
 			retn
@@ -1462,6 +1473,7 @@ TestRangeChange:
 					inc		eax
 					invoke SetRange,eax
 					mov		rngchanged,8
+					mov		sonardata.dptinx,0
 				.endif
 			.endif
 		.else
@@ -1471,11 +1483,13 @@ TestRangeChange:
 				dec		eax
 				invoke SetRange,eax
 				mov		rngchanged,8
+				mov		sonardata.dptinx,0
 			.elseif eax<edx && ebx>(MAXYECHO-MAXYECHO/5)
 				;Range increment
 				inc		eax
 				invoke SetRange,eax
 				mov		rngchanged,8
+				mov		sonardata.dptinx,0
 			.endif
 		.endif
 	.endif
@@ -1715,7 +1729,7 @@ LoadSonarFromIni proc uses ebx edi
 	mov		sonardata.ChartSpeed,eax
 	invoke GetItemInt,addr buffer,1
 	mov		sonardata.NoiseReject,eax
-	invoke GetItemInt,addr buffer,PINGTIMER
+	invoke GetItemInt,addr buffer,STM32_PingTimer
 	mov		sonardata.PingTimer,al
 	invoke GetItemInt,addr buffer,(SOUNDSPEEDMAX+SOUNDSPEEDMIN)/2
 	mov		sonardata.SoundSpeed,eax
@@ -1759,6 +1773,8 @@ SonarClear proc uses ebx esi
 	LOCAL	rect:RECT
 
 	invoke RtlZeroMemory,addr fishdata,MAXFISH*sizeof FISH
+	invoke RtlZeroMemory,addr STM32Echo,sizeof STM32Echo
+	invoke RtlZeroMemory,addr sonardata.STM32Echo,sizeof sonardata.STM32Echo
 	mov		rect.left,0
 	mov		rect.top,0
 	mov		rect.right,MAXXECHO

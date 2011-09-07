@@ -139,63 +139,63 @@
     <Component Name="TIM_RepetitionCounter" TI="1910" Line="33" Offs="8"/>
    </type>
    <type Family="typedef" Name="TIM_TimeBaseInitTypeDef" Line="34" ID="1925" toTI="1846"/>
-   <type Family="ComponentList" Line="16" ID="1936">
-    <Component Name="Start" TI="1945" Line="18" Offs="0"/>
-    <Component Name="PingPulses" TI="1959" Line="19" Offs="1"/>
-    <Component Name="PingTimer" TI="1973" Line="20" Offs="2"/>
-    <Component Name="Gain" TI="1987" Line="21" Offs="3"/>
-    <Component Name="GainInc" TI="2001" Line="22" Offs="4"/>
-    <Component Name="Range" TI="2015" Line="23" Offs="5"/>
-    <Component Name="PixelTimer" TI="2029" Line="24" Offs="6"/>
-    <Component Name="EchoIndex" TI="2043" Line="25" Offs="8"/>
-    <Component Name="ADCBatt" TI="2057" Line="26" Offs="10"/>
-    <Component Name="ADCWaterTemp" TI="2071" Line="27" Offs="12"/>
-    <Component Name="ADCAirTemp" TI="2085" Line="28" Offs="14"/>
+   <type Family="ComponentList" Line="24" ID="1936">
+    <Component Name="Start" TI="1945" Line="26" Offs="0"/>
+    <Component Name="PingPulses" TI="1959" Line="27" Offs="1"/>
+    <Component Name="PingTimer" TI="1973" Line="28" Offs="2"/>
+    <Component Name="Gain" TI="1987" Line="29" Offs="3"/>
+    <Component Name="GainInc" TI="2001" Line="30" Offs="4"/>
+    <Component Name="Range" TI="2015" Line="31" Offs="5"/>
+    <Component Name="PixelTimer" TI="2029" Line="32" Offs="6"/>
+    <Component Name="EchoIndex" TI="2043" Line="33" Offs="8"/>
+    <Component Name="ADCBatt" TI="2057" Line="34" Offs="10"/>
+    <Component Name="ADCWaterTemp" TI="2071" Line="35" Offs="12"/>
+    <Component Name="ADCAirTemp" TI="2085" Line="36" Offs="14"/>
    <type Family="array" ID="2114" toTI="94"/>
-    <Component Name="Echo" TI="2099" Line="29" Offs="16"/>
+    <Component Name="Echo" TI="2099" Line="37" Offs="16"/>
    </type>
-   <type Family="typedef" Name="STM32_SonarTypeDef" Line="30" ID="2131" toTI="1936"/>
-   <function Name="GetADCValue" TI="76" FileName="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" Line="155">
-    <parameter Name="Channel" TI="94" FileName="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" Line="155" Addr="0x0" Param="Yes"/>
-    <variable Name="i" FileName="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" Line="157" Addr="0x34000017" TI="132"/>
-    <variable Name="ADCValue" FileName="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" Line="158" Addr="0x34000014" TI="127"/>
-    <variable Name="ADC_InitStructure" FileName="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" Line="159" Addr="0x34000000" TI="1569"/>
+   <type Family="typedef" Name="STM32_SonarTypeDef" Line="38" ID="2131" toTI="1936"/>
+   <function Name="GetADCValue" TI="76" FileName="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" Line="163">
+    <parameter Name="Channel" TI="94" FileName="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" Line="163" Addr="0x0" Param="Yes"/>
+    <variable Name="i" FileName="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" Line="165" Addr="0x34000017" TI="132"/>
+    <variable Name="ADCValue" FileName="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" Line="166" Addr="0x34000014" TI="127"/>
+    <variable Name="ADC_InitStructure" FileName="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" Line="167" Addr="0x34000000" TI="1569"/>
    </function >
-   <function Name="TIM2_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" Line="238">
+   <function Name="TIM2_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" Line="246">
    </function >
-   <function Name="ADC_Startup" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" Line="293">
-    <variable Name="ADC_InitStructure" FileName="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" Line="295" Addr="0x34000004" TI="1569"/>
+   <function Name="ADC_Startup" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" Line="301">
+    <variable Name="ADC_InitStructure" FileName="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" Line="303" Addr="0x34000004" TI="1569"/>
    </function >
-   <function Name="ADC_Configuration" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" Line="328">
-    <variable Name="ADC_InitStructure" FileName="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" Line="330" Addr="0x34000004" TI="1569"/>
+   <function Name="ADC_Configuration" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" Line="336">
+    <variable Name="ADC_InitStructure" FileName="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" Line="338" Addr="0x34000004" TI="1569"/>
    </function >
-   <function Name="RCC_Configuration" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" Line="355">
-    <variable Name="HSEStartUpStatus" FileName="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" Line="357" Addr="0x0" TI="211"/>
+   <function Name="RCC_Configuration" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" Line="363">
+    <variable Name="HSEStartUpStatus" FileName="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" Line="365" Addr="0x0" TI="211"/>
    </function >
-   <function Name="GPIO_Configuration" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" Line="408">
-    <variable Name="GPIO_InitStructure" FileName="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" Line="410" Addr="0x34000004" TI="1738"/>
+   <function Name="GPIO_Configuration" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" Line="436">
+    <variable Name="GPIO_InitStructure" FileName="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" Line="438" Addr="0x34000004" TI="1738"/>
    </function >
-   <function Name="NVIC_Configuration" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" Line="438">
-    <variable Name="NVIC_InitStructure" FileName="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" Line="440" Addr="0x34000004" TI="1835"/>
+   <function Name="NVIC_Configuration" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" Line="466">
+    <variable Name="NVIC_InitStructure" FileName="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" Line="468" Addr="0x34000004" TI="1835"/>
    </function >
-   <function Name="TIM1_Configuration" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" Line="464">
-    <variable Name="TIM_TimeBaseStructure" FileName="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" Line="466" Addr="0x34000004" TI="1925"/>
+   <function Name="TIM1_Configuration" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" Line="492">
+    <variable Name="TIM_TimeBaseStructure" FileName="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" Line="494" Addr="0x34000004" TI="1925"/>
    </function >
    <type Family="Base" Name="int" ID="2575"/>
-   <function Name="main" TI="2575" FileName="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" Line="57">
-    <variable Name="i" FileName="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" Line="59" Addr="0x0" TI="58"/>
+   <function Name="main" TI="2575" FileName="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" Line="65">
+    <variable Name="i" FileName="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" Line="67" Addr="0x0" TI="58"/>
    <type Family="Pointer" TI="2582" toTI="58"/>
-    <variable Name="ADC" FileName="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" Line="60" Addr="0x0" TI="2582"/>
-    <variable Name="Echo" FileName="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" Line="61" Addr="0x3" TI="94"/>
+    <variable Name="ADC" FileName="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" Line="68" Addr="0x0" TI="2582"/>
+    <variable Name="Echo" FileName="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" Line="69" Addr="0x3" TI="94"/>
    </function >
-   <function Name="TIM2_Configuration" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" Line="488">
-    <variable Name="TIM_TimeBaseStructure" FileName="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" Line="490" Addr="0x34000004" TI="1925"/>
+   <function Name="TIM2_Configuration" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" Line="516">
+    <variable Name="TIM_TimeBaseStructure" FileName="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" Line="518" Addr="0x34000004" TI="1925"/>
    </function >
-   <function Name="TIM1_UP_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" Line="197">
+   <function Name="TIM1_UP_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" Line="205">
    </function >
-   <variable Name="STM32_Sonar" FileName="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" Line="34" Addr="0x20000000" TI="2131"/>
-   <variable Name="BlueLED" FileName="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" Line="35" Addr="0x20000210" TI="132"/>
-   <variable Name="Ping" FileName="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" Line="36" Addr="0x20000212" TI="127"/>
+   <variable Name="STM32_Sonar" FileName="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" Line="42" Addr="0x20000000" TI="2131"/>
+   <variable Name="BlueLED" FileName="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" Line="43" Addr="0x20000210" TI="132"/>
+   <variable Name="Ping" FileName="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" Line="44" Addr="0x20000212" TI="127"/>
   </module>
   <module Name="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_adc.c" >
    <type Family="Base" Name="long int" ID="2768"/>

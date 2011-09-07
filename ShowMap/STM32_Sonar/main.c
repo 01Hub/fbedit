@@ -10,6 +10,14 @@
 #include "stm32f10x_lib.h"
 
 /* Private define ------------------------------------------------------------*/
+// Uncomment the clock speed you will be using
+//#define STM32Clock24MHz
+//#define STM32Clock28MHz
+//#define STM32Clock32MHz
+//#define STM32Clock40MHz
+//#define STM32Clock48MHz
+#define STM32Clock56MHz
+
 #define MAXECHO           ((u16)512)
 #define ADC1_ICDR_Address ((u32)0x4001243C)
 
@@ -375,10 +383,30 @@ void RCC_Configuration(void)
     RCC_PCLK1Config(RCC_HCLK_Div1);
     /* ADCCLK = PCLK2/2 */
     RCC_ADCCLKConfig(RCC_PCLK2_Div2);
-    // /* PLLCLK = 8MHz * 6 = 48 MHz */
-    //RCC_PLLConfig(RCC_PLLSource_HSE_Div1, RCC_PLLMul_6);
+#ifdef STM32Clock24MHz
+    /* PLLCLK = 8MHz * 3 = 24 MHz */
+    RCC_PLLConfig(RCC_PLLSource_HSE_Div1, RCC_PLLMul_3);
+#endif
+#ifdef STM32Clock28MHz
+    /* PLLCLK = 8MHz / 2 * 7 = 28 MHz */
+    RCC_PLLConfig(RCC_PLLSource_HSE_Div2, RCC_PLLMul_7);
+#endif
+#ifdef STM32Clock32MHz
+    /* PLLCLK = 8MHz * 4 = 32 MHz */
+    RCC_PLLConfig(RCC_PLLSource_HSE_Div1, RCC_PLLMul_4);
+#endif
+#ifdef STM32Clock40MHz
+    /* PLLCLK = 8MHz * 5 = 40 MHz */
+    RCC_PLLConfig(RCC_PLLSource_HSE_Div1, RCC_PLLMul_5);
+#endif
+#ifdef STM32Clock48MHz
+    /* PLLCLK = 8MHz * 6 = 48 MHz */
+    RCC_PLLConfig(RCC_PLLSource_HSE_Div1, RCC_PLLMul_6);
+#endif
+#ifdef STM32Clock56MHz
     /* PLLCLK = 8MHz * 7 = 56 MHz */
     RCC_PLLConfig(RCC_PLLSource_HSE_Div1, RCC_PLLMul_7);
+#endif
     /* Enable PLL */ 
     RCC_PLLCmd(ENABLE);
     /* Wait till PLL is ready */
