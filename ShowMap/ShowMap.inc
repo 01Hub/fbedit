@@ -131,7 +131,7 @@ MAXSONAROPTION			equ 3								;Max number of overlays on sonar scteen
 
 ;STM32 constants
 STM32_Sonar				equ 20000000h						;STM32 ram address
-STM32_Clock				equ 56000000						;STM32 clock frequency
+STM32_Clock				equ 40000000						;STM32 clock frequency
 STM32_PingTimer			equ (STM32_Clock/200000/2)-1
 
 ;Sonar constants
@@ -144,7 +144,7 @@ REPLYSPEED				equ 5								;At reply, the ping interval is divided by REPLYSPEED
 SONARBACKCOLOR			equ 00F4BD6Ch						;Back color of sonar
 SONARPENCOLOR			equ 0900000h						;Signal bar pen color
 MAXFISH					equ 64								;Prevents showing repeated fish symbols and repeated fish alarms
-MAXSONARBMP				equ 64								;Max number of bitmap tiles
+MAXSONARBMP				equ 64								;Max number of bitmap tiles, for each range change a tile is created
 SOUNDSPEEDMIN			equ 1400							;Minimum speed of sound in water
 SOUNDSPEEDMAX			equ 1550							;Maximum speed of sound in water
 SMALLFISHECHO			equ 96								;Minimum echo to detect small fish
@@ -278,10 +278,10 @@ MAP struct
 MAP ends
 
 SONARBMP struct
-	nRange			DWORD ?
-	nStart			DWORD ?
-	wt				DWORD ?
-	hBmp			HBITMAP ?
+	RangeInx		DWORD ?									;Range index
+	xpos			DWORD ?									;X-Position
+	wt				DWORD ?									;Width
+	hBmp			HBITMAP ?								;Bitmap handle
 SONARBMP ends
 
 SONAR struct
@@ -326,18 +326,18 @@ SONAR struct
 	ADCBattery		WORD ?									;Battery level
 	ADCWaterTemp	WORD ?									;Water temprature
 	ADCAirTemp		WORD ?									;Air temprature
-	STM32Echo		BYTE MAXYECHO dup(?)					;Echo array read from STM32
-	minyecho		DWORD ?
-	nodptinx		DWORD ?
-	dptinx			DWORD ?
-	sonarbmp		SONARBMP MAXSONARBMP dup(<>)
+	STM32Echo		BYTE MAXYECHO dup(?)					;Echo array, read from STM32 and processed
+	minyecho		DWORD ?									;Ping and surface clutter skipped
+	nodptinx		DWORD ?									;Depth not found
+	dptinx			DWORD ?									;Index in echo array
+	sonarbmp		SONARBMP MAXSONARBMP dup(<>)			;Array of bitmap tiles
 SONAR ends
 
 RANGE struct
 	range			DWORD ?									;Range in meters
 	interval		DWORD ?									;Update rate
 	pixeltimer		DWORD ?									;Pixel timer value
-	pingadd			DWORD ?									;Number of pulses in a ping (1 to 127). Used when autoping is on
+	pingadd			DWORD ?									;Number of pulses to add to the initial ping (1 to 255). Used when autoping is on
 	gaininc			DWORD ?									;Gain increment for each pixel. Used when auto gain is on
 	nticks			DWORD ?									;Number of ticks on the range scale
 	scale			BYTE 64 dup(?)							;Zero terminated strings of depths
@@ -350,8 +350,8 @@ FISH struct
 FISH ends
 
 TEMP struct
-	adcvalue		DWORD ?
-	temp			DWORD ?
+	adcvalue		DWORD ?									;Value rad from ADC
+	temp			DWORD ?									;Temprature in Celsius
 TEMP ends
 
 .const

@@ -148,29 +148,29 @@ C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:249
 void TIM2_IRQHandler(void)
 {
   /* Clear TIM2 Update interrupt pending bit */
-  asm("mov    r0,#0x40000000"); /* TIM2 */
+  asm("mov    r0,#0x40000000");               /* TIM2 */
    0:	f04f 4080 	mov.w	r0, #1073741824	; 0x40000000
 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:250
-  asm("strh   r0,[r0,#0x8 *2]");/* TIM2->SR */
+  asm("strh   r0,[r0,#0x8 *2]");              /* TIM2->SR */
    4:	8200      	strh	r0, [r0, #16]
 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:252
   /* Set the DAC to output next gain step */
-  asm("movw   r0,#0x7400");       /* DAC1 */
+  asm("movw   r0,#0x7400");                   /* DAC1 */
    6:	f247 4000 	movw	r0, #29696	; 0x7400
 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:253
   asm("movt   r0,#0x4000");
    a:	f2c4 0000 	movt	r0, #16384	; 0x4000
 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:254
-  asm("ldr    r3,[r0,#0x8]");     /* DAC_DHR12R1 */
+  asm("ldr    r3,[r0,#0x8]");                 /* DAC_DHR12R1 */
    e:	6883      	ldr	r3, [r0, #8]
 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:255
-  asm("movw   r1,#0x0");          /* STM32_Sonar */
+  asm("movw   r1,#0x0");                      /* STM32_Sonar */
   10:	f240 0100 	movw	r1, #0
 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:256
   asm("movt   r1,#0x2000");
   14:	f2c2 0100 	movt	r1, #8192	; 0x2000
 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:257
-  asm("ldrb   r2,[r1,#0x4]");     /* STM32_Sonar.GainInc */
+  asm("ldrb   r2,[r1,#0x4]");                 /* STM32_Sonar.GainInc */
   18:	790a      	ldrb	r2, [r1, #4]
 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:258
   asm("add    r3,r3,r2");
@@ -191,11 +191,11 @@ C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:263
   asm("movcs  r3,r2");
   26:	4613      	movcs	r3, r2
 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:264
-  asm("str    r3,[r0,#0x8]");     /* DAC_DHR12R1 */
+  asm("str    r3,[r0,#0x8]");                 /* DAC_DHR12R1 */
   28:	6083      	str	r3, [r0, #8]
 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:266
   /* Increment the echo array index */
-  asm("ldrh   r2,[r1,#0x8]");     /* STM32_Sonar.EchoIndex */
+  asm("ldrh   r2,[r1,#0x8]");                 /* STM32_Sonar.EchoIndex */
   2a:	890a      	ldrh	r2, [r1, #8]
 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:267
   asm("add    r2,r2,#0x1");
@@ -207,10 +207,10 @@ C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:269
   asm("ite    ne");
   34:	bf14      	ite	ne
 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:270
-  asm("strhne r2,[r1,#0x8]");     /* STM32_Sonar.EchoIndex */
+  asm("strhne r2,[r1,#0x8]");                 /* STM32_Sonar.EchoIndex */
   36:	810a      	strhne	r2, [r1, #8]
 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:271
-  asm("strbeq r2,[r1,#0x0]");     /* STM32_Sonar.Start */
+  asm("strbeq r2,[r1,#0x0]");                 /* STM32_Sonar.Start */
   38:	700a      	strbeq	r2, [r1, #0]
 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:292
     // /* Reset echo array index */
@@ -446,17 +446,20 @@ C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:385
     RCC_ADCCLKConfig(RCC_PCLK2_Div2);
   3e:	f04f 0000 	mov.w	r0, #0
   42:	f7ff fffe 	bl	0 <RCC_ADCCLKConfig>
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:408
-    /* PLLCLK = 8MHz * 6 = 48 MHz */
-    RCC_PLLConfig(RCC_PLLSource_HSE_Div1, RCC_PLLMul_6);
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:400
+    /* PLLCLK = 8MHz * 4 = 32 MHz */
+    RCC_PLLConfig(RCC_PLLSource_HSE_Div1, RCC_PLLMul_4);
 #endif
+#ifdef STM32Clock40MHz
+    /* PLLCLK = 8MHz * 5 = 40 MHz */
+    RCC_PLLConfig(RCC_PLLSource_HSE_Div1, RCC_PLLMul_5);
+  46:	f44f 3080 	mov.w	r0, #65536	; 0x10000
+  4a:	f44f 2140 	mov.w	r1, #786432	; 0xc0000
+  4e:	f7ff fffe 	bl	0 <RCC_PLLConfig>
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:411
 #ifdef STM32Clock56MHz
     /* PLLCLK = 8MHz * 7 = 56 MHz */
     RCC_PLLConfig(RCC_PLLSource_HSE_Div1, RCC_PLLMul_7);
-  46:	f44f 3080 	mov.w	r0, #65536	; 0x10000
-  4a:	f44f 11a0 	mov.w	r1, #1310720	; 0x140000
-  4e:	f7ff fffe 	bl	0 <RCC_PLLConfig>
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:411
 #endif
     /* Enable PLL */ 
     RCC_PLLCmd(ENABLE);
@@ -946,7 +949,7 @@ C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:140
         }
       }
       /* Done, Store the current range as the first byte in the echo array */
-      STM32_Sonar.Echo[0] = STM32_Sonar.Range;
+      STM32_Sonar.Echo[0] = STM32_Sonar.RangeInx;
  114:	796b      	ldrb	r3, [r5, #5]
  116:	742b      	strb	r3, [r5, #16]
 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:142
@@ -1093,25 +1096,24 @@ C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:214
   48:	8823      	ldrh	r3, [r4, #0]
   4a:	b29b      	uxth	r3, r3
   4c:	f5b3 7f80 	cmp.w	r3, #256	; 0x100
+  50:	d103      	bne.n	5a <TIM1_UP_IRQHandler+0x5a>
 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:216
     {
       Ping = 0x200;
-  50:	bf07      	ittee	eq
-  52:	4623      	moveq	r3, r4
-  54:	f44f 7200 	moveq.w	r2, #512	; 0x200
+  52:	f44f 7200 	mov.w	r2, #512	; 0x200
+  56:	8022      	strh	r2, [r4, #0]
+  58:	bd10      	pop	{r4, pc}
 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:220
     }
     else
     {
       Ping = 0x100;
-  58:	f240 0300 	movwne	r3, #0
-  5c:	f2c0 0300 	movtne	r3, #0
-  60:	bf18      	it	ne
-  62:	f44f 7280 	movne.w	r2, #256	; 0x100
+  5a:	f240 0300 	movw	r3, #0
+  5e:	f2c0 0300 	movt	r3, #0
+  62:	f44f 7280 	mov.w	r2, #256	; 0x100
   66:	801a      	strh	r2, [r3, #0]
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:222
-    }
-    STM32_Sonar.PingPulses--;
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:221
+      STM32_Sonar.PingPulses--;
   68:	f240 0300 	movw	r3, #0
   6c:	f2c0 0300 	movt	r3, #0
   70:	785a      	ldrb	r2, [r3, #1]
@@ -1119,10 +1121,11 @@ C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:222
   76:	705a      	strb	r2, [r3, #1]
   78:	bd10      	pop	{r4, pc}
 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:227
+    }
   }
   else
   {
-    /* Ping done, Set DAC Gain */
+    /* Ping done, Set DAC Initial Gain */
     DAC->DHR12R1 = (u16)STM32_Sonar.Gain << 4;
   7a:	f240 0300 	movw	r3, #0
   7e:	f2c0 0300 	movt	r3, #0

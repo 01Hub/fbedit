@@ -145,7 +145,7 @@
     <Component Name="PingTimer" TI="1973" Line="28" Offs="2"/>
     <Component Name="Gain" TI="1987" Line="29" Offs="3"/>
     <Component Name="GainInc" TI="2001" Line="30" Offs="4"/>
-    <Component Name="Range" TI="2015" Line="31" Offs="5"/>
+    <Component Name="RangeInx" TI="2015" Line="31" Offs="5"/>
     <Component Name="PixelTimer" TI="2029" Line="32" Offs="6"/>
     <Component Name="EchoIndex" TI="2043" Line="33" Offs="8"/>
     <Component Name="ADCBatt" TI="2057" Line="34" Offs="10"/>

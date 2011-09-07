@@ -1176,17 +1176,17 @@ END GROUP
  .debug_abbrev  0x00000896      0x1f6 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_rcc.o
  .debug_abbrev  0x00000a8c      0x240 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_tim.o
 
-.debug_line     0x00000000     0x1d54
+.debug_line     0x00000000     0x1d56
  *(.debug_line)
- .debug_line    0x00000000      0x27d C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.o
- .debug_line    0x0000027d      0x3d5 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_adc.o
- .debug_line    0x00000652       0xd8 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_flash.o
- .debug_line    0x0000072a      0x255 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_gpio.o
- .debug_line    0x0000097f      0x4d6 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_it.o
- .debug_line    0x00000e55       0x1d C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_lib.o
- .debug_line    0x00000e72      0x336 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_nvic.o
- .debug_line    0x000011a8      0x35c C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_rcc.o
- .debug_line    0x00001504      0x850 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_tim.o
+ .debug_line    0x00000000      0x27f C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.o
+ .debug_line    0x0000027f      0x3d5 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_adc.o
+ .debug_line    0x00000654       0xd8 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_flash.o
+ .debug_line    0x0000072c      0x255 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_gpio.o
+ .debug_line    0x00000981      0x4d6 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_it.o
+ .debug_line    0x00000e57       0x1d C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_lib.o
+ .debug_line    0x00000e74      0x336 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_nvic.o
+ .debug_line    0x000011aa      0x35c C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_rcc.o
+ .debug_line    0x00001506      0x850 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_tim.o
 
 .debug_frame    0x00000000     0x1450
  *(.debug_frame)
@@ -1199,25 +1199,25 @@ END GROUP
  .debug_frame   0x00000bd4      0x224 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_rcc.o
  .debug_frame   0x00000df8      0x658 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_tim.o
 
-.debug_str      0x00000000     0x2730
+.debug_str      0x00000000     0x2733
  *(.debug_str)
- .debug_str     0x00000000      0x6c5 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.o
-                                0x6f5 (size before relaxing)
- .debug_str     0x000006c5      0x497 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_adc.o
+ .debug_str     0x00000000      0x6c8 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.o
+                                0x6f8 (size before relaxing)
+ .debug_str     0x000006c8      0x497 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_adc.o
                                 0x61b (size before relaxing)
- .debug_str     0x00000b5c       0xec C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_flash.o
+ .debug_str     0x00000b5f       0xec C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_flash.o
                                 0x15c (size before relaxing)
- .debug_str     0x00000c48      0x21b C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_gpio.o
+ .debug_str     0x00000c4b      0x21b C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_gpio.o
                                 0x3f3 (size before relaxing)
- .debug_str     0x00000e63      0x53d C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_it.o
+ .debug_str     0x00000e66      0x53d C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_it.o
                                 0x5a8 (size before relaxing)
- .debug_str     0x000013a0       0x4b C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_lib.o
+ .debug_str     0x000013a3       0x4b C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_lib.o
                                  0xb6 (size before relaxing)
- .debug_str     0x000013eb      0x49a C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_nvic.o
+ .debug_str     0x000013ee      0x49a C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_nvic.o
                                 0x605 (size before relaxing)
- .debug_str     0x00001885      0x442 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_rcc.o
+ .debug_str     0x00001888      0x442 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_rcc.o
                                 0x53a (size before relaxing)
- .debug_str     0x00001cc7      0xa69 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_tim.o
+ .debug_str     0x00001cca      0xa69 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_tim.o
                                 0xcf8 (size before relaxing)
 
 .debug_loc      0x00000000     0x3037
