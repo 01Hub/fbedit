@@ -150,6 +150,7 @@ SOUNDSPEEDMAX			equ 1550							;Maximum speed of sound in water
 SMALLFISHECHO			equ 96								;Minimum echo to detect small fish
 LARGEFISHECHO			equ SMALLFISHECHO+64				;Minimum echo to detect large fish
 MAXDEPTHJUMP			equ 10								;Max number of pixels to jump on depth detection
+MAXPING					equ 128								;Max number of ping pulses
 
 LONPOINT struct
 	iLon			DWORD ?									;Longitude
@@ -420,7 +421,6 @@ szFmtVolts			BYTE '%02u',0
 szVolts				BYTE 'V',0
 szCelcius			BYTE 'C',0
 watertempconv		QWORD 5.16982758620
-airtempconv			QWORD 3.46982758620
 
 NATEMP				equ 14
 atemp				TEMP <3000,-200>,<2900,-150>,<2800,-100>,<2700,-50>,<2600,0>,<2522,50>,<2218,100>,

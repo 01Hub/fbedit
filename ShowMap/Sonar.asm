@@ -6,11 +6,12 @@ IDC_TRBSONARPING        equ 1510
 IDC_CHKSONARPING        equ 1509
 IDC_TRBSONARRANGE       equ 1507
 IDC_CHKSONARRANGE       equ 1506
-IDC_TRBSONARCHART       equ 1512
-IDC_CHKSONARDETECT      equ 1515
 IDC_TRBSONARNOISE       equ 1501
 IDC_CHKSONARNOISE		equ 1521
+IDC_TRBSONARFISH        equ 1530
 IDC_CHKSONARALARM       equ 1514
+IDC_TRBSONARCHART       equ 1512
+IDC_CHKCHARTPAUSE       equ 1532
 IDC_TRBPINGTIMER        equ 1526
 IDC_TRBSOUNDSPEED       equ 1528
 IDC_BTNGD               equ 1502
@@ -27,6 +28,8 @@ IDC_BTNPTU              equ 1525
 IDC_BTNPTD              equ 1527
 IDC_BTNSSU              equ 1523
 IDC_BTNSSD              equ 1529
+IDC_BTNFU               equ 1515
+IDC_BTNFD               equ 1531
 
 .code
 
@@ -174,19 +177,21 @@ SonarOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:L
 		.if sonardata.NoiseReject
 			invoke CheckDlgButton,hWin,IDC_CHKSONARNOISE,BST_CHECKED
 		.endif
-		invoke SendDlgItemMessage,hWin,IDC_TRBSONARPING,TBM_SETRANGE,FALSE,(255 SHL 16)+0
+		invoke SendDlgItemMessage,hWin,IDC_TRBSONARPING,TBM_SETRANGE,FALSE,(MAXPING SHL 16)+0
 		invoke SendDlgItemMessage,hWin,IDC_TRBSONARPING,TBM_SETPOS,TRUE,sonardata.PingInit
 		invoke SendDlgItemMessage,hWin,IDC_TRBSONARNOISE,TBM_SETRANGE,FALSE,(255 SHL 16)+1
 		movzx	eax,sonardata.Noise
 		invoke SendDlgItemMessage,hWin,IDC_TRBSONARNOISE,TBM_SETPOS,TRUE,eax
-		invoke SendDlgItemMessage,hWin,IDC_TRBSONARCHART,TBM_SETRANGE,FALSE,(4 SHL 16)+1
-		mov		eax,sonardata.ChartSpeed
-		invoke SendDlgItemMessage,hWin,IDC_TRBSONARCHART,TBM_SETPOS,TRUE,eax
-		.if sonardata.FishDetect
-			invoke CheckDlgButton,hWin,IDC_CHKSONARDETECT,BST_CHECKED
-		.endif
+		invoke SendDlgItemMessage,hWin,IDC_TRBSONARFISH,TBM_SETRANGE,FALSE,(3 SHL 16)+0
+		invoke SendDlgItemMessage,hWin,IDC_TRBSONARFISH,TBM_SETPOS,TRUE,sonardata.FishDetect
 		.if sonardata.FishAlarm
 			invoke CheckDlgButton,hWin,IDC_CHKSONARALARM,BST_CHECKED
+		.endif
+		invoke SendDlgItemMessage,hWin,IDC_TRBSONARCHART,TBM_SETRANGE,FALSE,(4 SHL 16)+1
+		invoke SendDlgItemMessage,hWin,IDC_TRBSONARCHART,TBM_SETPOS,TRUE,sonardata.ChartSpeed
+		invoke IsDlgButtonChecked,hWnd,IDC_CHKCHART
+		.if eax
+			invoke CheckDlgButton,hWin,IDC_CHKCHARTPAUSE,BST_CHECKED
 		.endif
 		invoke SendDlgItemMessage,hWin,IDC_TRBPINGTIMER,TBM_SETRANGE,FALSE,((STM32_PingTimer+2) SHL 16)+STM32_PingTimer-2
 		movzx	eax,sonardata.PingTimer
@@ -197,18 +202,20 @@ SonarOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:L
 		push	0
 		push	IDC_BTNGD
 		push	IDC_BTNGU
-		push	IDC_BTNPU
 		push	IDC_BTNPD
-		push	IDC_BTNRU
+		push	IDC_BTNPU
 		push	IDC_BTNRD
-		push	IDC_BTNCU
+		push	IDC_BTNRU
 		push	IDC_BTNCD
-		push	IDC_BTNNU
+		push	IDC_BTNCU
 		push	IDC_BTNND
-		push	IDC_BTNSSU
+		push	IDC_BTNNU
 		push	IDC_BTNSSD
+		push	IDC_BTNSSU
+		push	IDC_BTNPTD
 		push	IDC_BTNPTU
-		mov		eax,IDC_BTNPTD
+		push	IDC_BTNFD
+		mov		eax,IDC_BTNFU
 		.while eax
 			invoke GetDlgItem,hWin,eax
 			invoke SetWindowLong,eax,GWL_WNDPROC,offset ButtonProc
@@ -230,8 +237,12 @@ SonarOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:L
 				xor		sonardata.AutoRange,1
 			.elseif eax==IDC_CHKSONARNOISE
 				xor		sonardata.NoiseReject,1
-			.elseif eax==IDC_CHKSONARDETECT
-				xor		sonardata.FishDetect,1
+			.elseif eax==IDC_CHKCHARTPAUSE
+				invoke IsDlgButtonChecked,hWin,IDC_CHKCHARTPAUSE
+				.if eax
+					mov		eax,BST_CHECKED
+				.endif
+				invoke CheckDlgButton,hWnd,IDC_CHKCHART,eax
 			.elseif eax==IDC_CHKSONARALARM
 				xor		sonardata.FishAlarm,1
 			.elseif eax==IDC_BTNGD
@@ -250,7 +261,7 @@ SonarOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:L
 					invoke SendDlgItemMessage,hWin,IDC_TRBSONARPING,TBM_SETPOS,TRUE,sonardata.PingInit
 				.endif
 			.elseif eax==IDC_BTNPU
-				.if sonardata.PingInit<255
+				.if sonardata.PingInit<MAXPING
 					inc		sonardata.PingInit
 					invoke SendDlgItemMessage,hWin,IDC_TRBSONARPING,TBM_SETPOS,TRUE,sonardata.PingInit
 				.endif
@@ -272,16 +283,6 @@ SonarOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:L
 					movzx	eax,sonardata.RangeInx
 					invoke SendDlgItemMessage,hWin,IDC_TRBSONARRANGE,TBM_SETPOS,TRUE,eax
 				.endif
-			.elseif eax==IDC_BTNCD
-				.if sonardata.ChartSpeed>1
-					dec		sonardata.ChartSpeed
-					invoke SendDlgItemMessage,hWin,IDC_TRBSONARCHART,TBM_SETPOS,TRUE,sonardata.ChartSpeed
-				.endif
-			.elseif eax==IDC_BTNCU
-				.if sonardata.ChartSpeed<4
-					inc		sonardata.ChartSpeed
-					invoke SendDlgItemMessage,hWin,IDC_TRBSONARCHART,TBM_SETPOS,TRUE,sonardata.ChartSpeed
-				.endif
 			.elseif eax==IDC_BTNND
 				.if sonardata.Noise
 					dec		sonardata.Noise
@@ -293,6 +294,26 @@ SonarOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:L
 					inc		sonardata.Noise
 					movzx	eax,sonardata.Noise
 					invoke SendDlgItemMessage,hWin,IDC_TRBSONARNOISE,TBM_SETPOS,TRUE,eax
+				.endif
+			.elseif eax==IDC_BTNFD
+				.if sonardata.FishDetect
+					dec		sonardata.FishDetect
+					invoke SendDlgItemMessage,hWin,IDC_TRBSONARFISH,TBM_SETPOS,TRUE,sonardata.FishDetect
+				.endif
+			.elseif eax==IDC_BTNFU
+				.if sonardata.FishDetect<3
+					inc		sonardata.FishDetect
+					invoke SendDlgItemMessage,hWin,IDC_TRBSONARFISH,TBM_SETPOS,TRUE,sonardata.FishDetect
+				.endif
+			.elseif eax==IDC_BTNCD
+				.if sonardata.ChartSpeed>1
+					dec		sonardata.ChartSpeed
+					invoke SendDlgItemMessage,hWin,IDC_TRBSONARCHART,TBM_SETPOS,TRUE,sonardata.ChartSpeed
+				.endif
+			.elseif eax==IDC_BTNCU
+				.if sonardata.ChartSpeed<4
+					inc		sonardata.ChartSpeed
+					invoke SendDlgItemMessage,hWin,IDC_TRBSONARCHART,TBM_SETPOS,TRUE,sonardata.ChartSpeed
 				.endif
 			.elseif eax==IDC_BTNPTD
 				.if sonardata.PingTimer>STM32_PingTimer-2
@@ -333,6 +354,8 @@ SonarOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:L
 			mov		sonardata.Noise,bl
 		.elseif eax==IDC_TRBSONARPING
 			mov		sonardata.PingInit,ebx
+		.elseif eax==IDC_TRBSONARFISH
+			mov		sonardata.FishDetect,ebx
 		.elseif eax==IDC_TRBSONARCHART
 			mov		sonardata.ChartSpeed,ebx
 		.elseif eax==IDC_TRBPINGTIMER
@@ -374,7 +397,6 @@ UpdateBitmap proc uses ebx esi edi,NewRange:DWORD
 	LOCAL	rect:RECT
 	LOCAL	hDC:HDC
 	LOCAL	mDC:HDC
-	LOCAL	nStart:DWORD
 	LOCAL	wt:DWORD
 
 	invoke GetDC,hSonar
@@ -679,7 +701,6 @@ SonarUpdateProc endp
 
 STM32Thread proc uses ebx esi edi,lParam:DWORD
 	LOCAL	status:DWORD
-	LOCAL	fish[MAXFISH]:DWORD
 	LOCAL	dwread:DWORD
 	LOCAL	dwwrite:DWORD
 	LOCAL	buffer[16]:BYTE
@@ -695,7 +716,6 @@ STM32Thread proc uses ebx esi edi,lParam:DWORD
 	mov		pixdpt,250
 	mov		rngchanged,4
 	invoke RtlZeroMemory,addr STM32Echo,sizeof STM32Echo
-	invoke RtlZeroMemory,addr fish,sizeof fish
   Again:
 	.if sonardata.hReply
 		invoke IsDlgButtonChecked,hWnd,IDC_CHKCHART
@@ -756,8 +776,8 @@ STM32Thread proc uses ebx esi edi,lParam:DWORD
 			mov		eax,sonardata.PingInit
 			.if sonardata.AutoPing
 				add		eax,sonarrange.pingadd[ebx]
-				.if eax>255
-					mov		eax,255
+				.if eax>MAXPING
+					mov		eax,MAXPING
 				.endif
 			.endif
 			mov		sonardata.Ping,al
@@ -912,6 +932,7 @@ STM32Thread proc uses ebx esi edi,lParam:DWORD
 				mov		ah,al
 				mov		word ptr STM32Echo[edx],ax
 				mov		word ptr STM32Echo[edx+MAXYECHO],ax
+				mov		word ptr STM32Echo[edx+MAXYECHO*2],ax
 			.endif
 		.endif
 		mov		sonardata.ADCBattery,08E0h
@@ -923,13 +944,7 @@ STM32Thread proc uses ebx esi edi,lParam:DWORD
 		;Write to log file
 		invoke WriteFile,sonardata.hLog,addr STM32Echo,MAXYECHO,addr dwwrite,NULL
 	.endif
-	mov		ecx,MAXFISH-1
-	.while ecx
-		mov		eax,fish[ecx*4-4]
-		mov		fish[ecx*4],eax
-		dec		ecx
-	.endw
-	mov		fish,0
+	movzx	eax,STM32Echo
 	.if al!=STM32Echo[MAXYECHO]
 		invoke RtlMoveMemory,addr STM32Echo[MAXYECHO*3],addr STM32Echo,MAXYECHO
 		invoke RtlMoveMemory,addr STM32Echo[MAXYECHO*2],addr STM32Echo,MAXYECHO
@@ -1288,13 +1303,13 @@ FindDepth:
 		inc		ebx
 	.endw
 	mov		sonardata.minyecho,ebx
-	;Find the strongest echo in a 4x16 sqare
+	;Find the strongest echo in a 4x32 sqare
 	xor		esi,esi
 	xor		edi,edi
 	.while ebx<MAXYECHO
 		xor		ecx,ecx
 		xor		edx,edx
-		.while ecx<16
+		.while ecx<32
 			lea		eax,[ebx+ecx]
 			.break .if eax>=MAXYECHO
 			movzx	eax,STM32Echo[ebx+ecx+MAXYECHO*0]
@@ -1307,7 +1322,7 @@ FindDepth:
 			add		edx,eax
 			inc		ecx
 		.endw
-		lea		eax,[edx-8]
+		lea		eax,[edx-32*4]
 		.if sdword ptr eax>esi
 			mov		esi,edx
 			mov		edi,ebx
@@ -1377,6 +1392,26 @@ ScrollFish:
 	.endif
 	retn
 
+CheckFish:
+	push	esi
+	push	edi
+	mov		edi,MAXFISH
+	mov		esi,offset fishdata
+	.while edi
+		.if sdword ptr [esi].FISH.xpos>512-32
+			.if sdword ptr [esi].FISH.depth>ecx && sdword ptr [esi].FISH.depth<edx
+				;The detected fish is close to a previously detected fish, ignore it
+				xor		eax,eax
+				.break
+			.endif
+		.endif
+		dec		edi
+		lea		esi,[esi+sizeof FISH]
+	.endw
+	pop		edx
+	pop		esi
+	retn
+
 FindFish:
 	.if sonardata.FishDetect || sonardata.FishAlarm
 		mov		ebx,sonardata.minyecho
@@ -1404,46 +1439,45 @@ FindFish:
 		.endif
 		.while ebx<edi
 			mov		ax,word ptr STM32Echo[ebx]
-			.if al>=SMALLFISHECHO && ah>=SMALLFISHECHO
-				call	CalculateDepth
-				mov		fish,eax
-				push	ebx
-				sub		ebx,MAXFISH/2
-				.if CARRY?
-					xor		ebx,ebx
-				.endif
-				call	CalculateDepth
-				mov		ecx,eax
-				pop		ebx
-				push	ebx
-				add		ebx,MAXFISH/2
-				call	CalculateDepth
-				mov		edx,eax
-				pop		ebx
-				mov		esi,MAXFISH-1
-				.while esi
-					mov		eax,fish[esi]
-					.break .if eax>ecx && eax<edx
-					dec		esi
-				.endw
-				.if !esi
-					.if sonardata.FishDetect
-						mov		eax,fishinx
-						mov		ecx,sizeof FISH
-						mul		ecx
-						mov		edx,eax
-						movzx	eax,STM32Echo[ebx]
-						.if eax>=LARGEFISHECHO
+			;2x3
+			mov		dx,word ptr STM32Echo[ebx+MAXYECHO]
+			mov		cx,word ptr STM32Echo[ebx+MAXYECHO*2]
+			.if sonardata.FishDetect==2
+				;2x2
+				mov		cx,ax
+			.elseif sonardata.FishDetect==3
+				;2x1
+				mov		dx,ax
+				mov		cx,ax
+			.endif
+			.if al>=SMALLFISHECHO && ah>=SMALLFISHECHO && dl>=SMALLFISHECHO && dh>=SMALLFISHECHO && cl>=SMALLFISHECHO && ch>=SMALLFISHECHO
+				.if sonardata.FishDetect
+					mov		eax,fishinx
+					mov		ecx,sizeof FISH
+					mul		ecx
+					mov		esi,eax
+					movzx	eax,STM32Echo
+					invoke GetRangePtr,eax
+					mov		edx,sonarrange.range[eax]
+					call	CalculateDepth
+					mov		ecx,eax
+					sub		ecx,edx
+					lea		edx,[eax+edx]
+					call	CheckFish
+					.if eax
+						movzx	edx,STM32Echo[ebx]
+						.if edx>=LARGEFISHECHO
 							;Large fish
-							mov		eax,18
+							mov		edx,18
 						.else
 							;Small fish
-							mov		eax,17
+							mov		edx,17
 						.endif
-						mov		fishdata.fishtype[edx],eax
-						mov		fishdata.xpos[edx],511
-						mov		eax,fish
-						mov		fishdata.depth[edx],eax
+						;Update the fishdata array
+						mov		fishdata.fishtype[esi],edx
+						mov		fishdata.xpos[esi],511
+						mov		fishdata.depth[esi],eax
+						;Increment the fishdata index
 						mov		eax,fishinx
 						inc		eax
 						.if eax==MAXFISH
@@ -1451,14 +1485,12 @@ FindFish:
 						.endif
 						mov		fishinx,eax
 					.endif
-					.if sonardata.FishAlarm && !fFishSound
-						mov		fFishSound,3
-						invoke PlaySound,addr szFishSound,hInstance,SND_ASYNC
-					.endif
-					.break
-				.else
-					mov		fish,0
 				.endif
+				.if sonardata.FishAlarm && !fFishSound
+					mov		fFishSound,3
+					invoke PlaySound,addr szFishSound,hInstance,SND_ASYNC
+				.endif
+				.break
 			.endif
 			inc		ebx
 		.endw
@@ -1514,9 +1546,7 @@ ShowRangeDepthTempScaleFish proc uses ebx esi edi,hDC:HDC
 	LOCAL	ntick:DWORD
 
 	invoke GetClientRect,hSonar,addr rcsonar
-	.if sonardata.FishDetect
-		call	ShowFish
-	.endif
+	call	ShowFish
 	invoke SetBkMode,hDC,TRANSPARENT
 	call	ShowScale
 	xor		ebx,ebx
@@ -1968,4 +1998,3 @@ SonarProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	ret
 
 SonarProc endp
-
