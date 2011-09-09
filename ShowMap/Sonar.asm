@@ -650,17 +650,18 @@ Update:
 	.while ebx<MAXYECHO
 		movzx	eax,sonardata.STM32Echo[ebx]
 		.if eax
-			.if eax>=0C0h
+			.if eax>0D0h
 				;Red
-			.elseif eax>=050h
+			.elseif eax>060h
 				;Green
 				shl		eax,8
-			.elseif eax>030h
+			.elseif eax>040h
 				;Yellow
-				add		al,0B0h
+				add		al,080h
 				mov		ah,al
 			.else
 				;Gray
+				add		al,08h
 				xor		eax,0FFh
 				mov		ah,al
 				shl		eax,8
@@ -728,6 +729,7 @@ STM32Thread proc uses ebx esi edi,lParam:DWORD
 				mov		sonardata.hReply,0
 				invoke SetScrollPos,hSonar,SB_HORZ,0,TRUE
 				mov		sonardata.dptinx,0
+				invoke EnableScrollBar,hSonar,SB_HORZ,ESB_DISABLE_BOTH
 				jmp		Again
 			.endif
 			invoke GetScrollPos,hSonar,SB_HORZ
@@ -1346,6 +1348,8 @@ FindDepth:
 		call	CalculateDepth
 		call	SetDepth
 		or		sonardata.ShowDepth,2
+	.else
+		inc		sonardata.nodptinx
 	.endif
 	retn
 
@@ -1499,10 +1503,9 @@ TestRangeChange:
 		mov		edx,sonardata.MaxRange
 		dec		edx
 		mov		ebx,sonardata.dptinx
-		.if !ebx
+		.if sonardata.nodptinx
 			;Bottom not found
-			inc		sonardata.nodptinx
-			.if sonardata.nodptinx>=4
+			.if sonardata.nodptinx>=10
 				mov		sonardata.nodptinx,0
 				.if eax<edx
 					;Range increment
@@ -1518,13 +1521,13 @@ TestRangeChange:
 				;Range decrement
 				dec		eax
 				invoke SetRange,eax
-				mov		rngchanged,8
+				mov		rngchanged,10
 				mov		sonardata.dptinx,0
 			.elseif eax<edx && ebx>(MAXYECHO-MAXYECHO/5)
 				;Range increment
 				inc		eax
 				invoke SetRange,eax
-				mov		rngchanged,8
+				mov		rngchanged,10
 				mov		sonardata.dptinx,0
 			.endif
 		.endif
@@ -1894,7 +1897,7 @@ SonarProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		sonardata.sonarbmp.hBmp,0
 
 		invoke SetTimer,hWin,1000,800,NULL
-		invoke SetTimer,hWin,1001,1000,NULL
+		invoke SetTimer,hWin,1001,500,NULL
 	.elseif eax==WM_TIMER
 		.if wParam==1000
 			.if !fSTLink
@@ -1983,12 +1986,54 @@ SonarProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke SetScrollPos,hWin,SB_HORZ,eax,TRUE
 				pop		eax
 				shl		eax,9
-				invoke SetFilePointer,sonardata.hReply,eax,NULL,0
+				invoke SetFilePointer,sonardata.hReply,eax,NULL,FILE_BEGIN
 			.endif
-		.elseif edx==SB_LINEDOWN
-		.elseif edx==SB_LINEUP
-		.elseif edx==SB_PAGEDOWN
-		.elseif edx==SB_PAGEUP
+		.elseif edx==SB_LINERIGHT
+			.if sonardata.hReply
+				invoke GetScrollPos,hWin,SB_HORZ
+				add		eax,16
+				push	eax
+				invoke SetScrollPos,hWin,SB_HORZ,eax,TRUE
+				pop		eax
+				shl		eax,9
+				invoke SetFilePointer,sonardata.hReply,eax,NULL,FILE_BEGIN
+			.endif
+		.elseif edx==SB_LINELEFT
+			.if sonardata.hReply
+				invoke GetScrollPos,hWin,SB_HORZ
+				sub		eax,16
+				.if CARRY?
+					xor		eax,eax
+				.endif
+				push	eax
+				invoke SetScrollPos,hWin,SB_HORZ,eax,TRUE
+				pop		eax
+				shl		eax,9
+				invoke SetFilePointer,sonardata.hReply,eax,NULL,FILE_BEGIN
+			.endif
+		.elseif edx==SB_PAGERIGHT
+			.if sonardata.hReply
+				invoke GetScrollPos,hWin,SB_HORZ
+				add		eax,256
+				push	eax
+				invoke SetScrollPos,hWin,SB_HORZ,eax,TRUE
+				pop		eax
+				shl		eax,9
+				invoke SetFilePointer,sonardata.hReply,eax,NULL,FILE_BEGIN
+			.endif
+		.elseif edx==SB_PAGELEFT
+			.if sonardata.hReply
+				invoke GetScrollPos,hWin,SB_HORZ
+				sub		eax,256
+				.if CARRY?
+					xor		eax,eax
+				.endif
+				push	eax
+				invoke SetScrollPos,hWin,SB_HORZ,eax,TRUE
+				pop		eax
+				shl		eax,9
+				invoke SetFilePointer,sonardata.hReply,eax,NULL,FILE_BEGIN
+			.endif
 		.endif
 	.else
 		invoke DefWindowProc,hWin,uMsg,wParam,lParam

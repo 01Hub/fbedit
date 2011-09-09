@@ -115,7 +115,7 @@ DoComm proc uses ebx esi edi,Param:DWORD
 	.while  !fExitGpsThread
 		.if hCom || hFileLogRead
 			.if hFileLogRead
-				invoke Sleep,100
+				invoke Sleep,200
 				.if !map.gpslogpause
 					invoke ReadFile,hFileLogRead,addr combuff,1024,addr nRead,NULL
 					.if !nRead

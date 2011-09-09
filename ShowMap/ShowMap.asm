@@ -721,6 +721,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		map.gpstrail,TRUE
 		invoke InitPlaces
 		;Sonar init
+		invoke EnableScrollBar,hSonar,SB_HORZ,ESB_DISABLE_BOTH
 		invoke LoadCursor,hInstance,101
 		mov		hSplittV,eax
 		invoke LoadSonarFromIni
@@ -866,6 +867,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					mov		sonardata.hReply,0
 					invoke SetScrollPos,hSonar,SB_HORZ,0,TRUE
 					mov		sonardata.dptinx,0
+					invoke EnableScrollBar,hSonar,SB_HORZ,ESB_DISABLE_BOTH
 				.else
 					invoke DialogBoxParam,hInstance,IDD_DLGTRIPLOG,hWin,addr TripLogProc,eax
 					.if eax
@@ -873,6 +875,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						invoke CreateFile,addr buffer,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL
 						.if eax!=INVALID_HANDLE_VALUE
 							mov		sonardata.hReply,eax
+							invoke EnableScrollBar,hSonar,SB_HORZ,ESB_ENABLE_BOTH
 							invoke GetFileSize,sonardata.hReply,NULL
 							shr		eax,9
 							invoke SetScrollRange,hSonar,SB_HORZ,0,eax,TRUE
@@ -1156,7 +1159,12 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		add		rect.top,17
 		invoke GetDlgItem,hWin,IDC_EDTBEAR
 		invoke MoveWindow,eax,rect.right,rect.top,80,16,TRUE
-		add		rect.top,17
+		add		rect.top,30
+		invoke GetDlgItem,hWin,IDC_SHP3
+		mov		edx,rect.right
+		sub		edx,7
+		invoke MoveWindow,eax,edx,rect.top,95,3,TRUE
+		add		rect.top,13
 		invoke GetDlgItem,hWin,IDC_CHKCHART
 		invoke MoveWindow,eax,rect.right,rect.top,80,16,TRUE
 		add		rect.top,17
