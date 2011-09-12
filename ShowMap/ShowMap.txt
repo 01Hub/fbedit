@@ -64,7 +64,7 @@ Since it is the echo we are measuring: 690 * 2 = 1380 us
 
 Two timers are needed:
 1. Timer to generate the 200 KHz two phase none overlapping clock ping signal.
-   The number of pulses is variable (0 to 127).
+   The number of pulses is variable (0 to 128).
 2. Timer to generate an interrupt for every pixel. The interval depends on selected range.
 
 Time needed for the different ranges:
@@ -88,6 +88,7 @@ Range		Time for echo to return		Pixel time					cm / Pixel						Pixel Timer
 200 m		1380 * 200 = 276000 us		276000 / 512 = 539,1 us		539,1 / 1380 * 100 = 39,07 cm		25874
 250 m		1380 * 250 = 345000 us		345000 / 512 = 673,8 us		673,8 / 1380 * 100 = 48,83 cm		32343
 300 m		1380 * 300 = 414000 us		414000 / 512 = 808,6 us		808,6 / 1380 * 100 = 58,59 cm		38812
+350 m		1380 * 350 = 483000 us		483000 / 512 = 943,4 us		943,4 ( 1380 * 100 = 68,36 cm		52802
 =======================================================================================================================
 
 Hardware environment

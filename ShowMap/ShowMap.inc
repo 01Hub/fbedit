@@ -286,6 +286,22 @@ SONARBMP struct
 	hBmp			HBITMAP ?								;Bitmap handle
 SONARBMP ends
 
+STM32SONAR struct
+	Start			BYTE ?									;Set to 1 to init a new echo reading
+	Ping			BYTE ?									;Number of pulses in a ping ((0 to 255)+1)
+	PingTimer		BYTE ?									;Timer value to generate 200 KHz ping
+	GainInit		BYTE ?									;Gain initial level (0 to 255)
+	GainInc			BYTE ?									;Gain level increment
+	RangeInx		BYTE ?									;Range (0 to 16)
+	PixelTimer		WORD ?									;Pixel timer value
+	EchoIndex		WORD ?									;Echo index
+	ADCBattery		WORD ?									;Battery level
+	ADCWaterTemp	WORD ?									;Water temprature
+	ADCAirTemp		WORD ?									;Air temprature
+	EchoArray		BYTE MAXYECHO dup(?)					;Echo array, read from STM32 and processed
+	GainArray		WORD MAXYECHO dup(?)					;Gain array
+STM32SONAR ends
+
 SONAR struct
 	mDC				HDC ?									;The memory DC holds the echo bitmap, 512*512 pixels,
 	hBmp			HBITMAP ?								;Handle of the bitmap used in mDC to draw echo
@@ -315,24 +331,15 @@ SONAR struct
 	WTemp			DWORD ?									;Current water surface temprature
 	ATemp			DWORD ?									;Current air temprature
 	PingInit		DWORD ?									;Ping initial value (0 to 255)
-	GainInit		DWORD ?									;Gain initial level (0 to 255)
+	GainSet			DWORD ?									;Gain set level (0 to 255)
 	Noise			BYTE ?									;Noise reject level (0 to 255)
-	Start			BYTE ?									;Set to 1 to init a new echo reading
-	Ping			BYTE ?									;Number of pulses in a ping ((0 to 255)+1)
-	PingTimer		BYTE ?									;Timer value to generate 200 KHz ping
-	Gain			BYTE ?									;Gain level (0 to 255)
-	GainInc			BYTE ?									;Gain level increment
-	RangeInx		BYTE ?									;Range (0 to 16)
-	PixelTimer		WORD ?									;Pixel timer value
-	EchoIndex		WORD ?									;Echo index
-	ADCBattery		WORD ?									;Battery level
-	ADCWaterTemp	WORD ?									;Water temprature
-	ADCAirTemp		WORD ?									;Air temprature
-	STM32Echo		BYTE MAXYECHO dup(?)					;Echo array, read from STM32 and processed
 	minyecho		DWORD ?									;Ping and surface clutter skipped
 	nodptinx		DWORD ?									;Depth not found
 	dptinx			DWORD ?									;Index in echo array
 	sonarbmp		SONARBMP MAXSONARBMP dup(<>)			;Array of bitmap tiles
+	struct
+		STM32SONAR <>
+	ends
 SONAR ends
 
 RANGE struct
@@ -340,9 +347,9 @@ RANGE struct
 	interval		DWORD ?									;Update rate
 	pixeltimer		DWORD ?									;Pixel timer value
 	pingadd			DWORD ?									;Number of pulses to add to the initial ping (1 to 255). Used when autoping is on
-	gaininc			DWORD ?									;Gain increment for each pixel. Used when auto gain is on
 	nticks			DWORD ?									;Number of ticks on the range scale
 	scale			BYTE 64 dup(?)							;Zero terminated strings of depths
+	gain			DWORD 32 dup(?)							;Gain levels read from ini file
 RANGE ends
 
 FISH struct
