@@ -24,16 +24,15 @@
 typedef struct
 {
   vu8 Start;                                    // 0=Wait/Done, 1=Start, 2=In progress
-  u8 PingPulses;                                // Number of ping pulses (0-255)
+  u8 PingPulses;                                // Number of ping pulses (0-128)
   u8 PingTimer;                                 // TIM1 auto reload value
-  u8 GainInit;                                  // Initial Gain
-  u8 GainInc;                                   // Gain increment for each echo reading
   u8 RangeInx;                                  // Current range index
   u16 PixelTimer;                               // TIM2 auto reload value
   vu16 EchoIndex;                               // Current index in Echo array (0-511)
   u16 ADCBatt;                                  // Battery
   u16 ADCWaterTemp;                             // Water temprature
   u16 ADCAirTemp;                               // Air temprature
+  u16 Dummy;                                    // Not used
   u8 EchoArray[MAXECHO];                        // Echo array
   u16 GainArray[MAXECHO];                       // Gain array
 }STM32_SonarTypeDef;
@@ -224,9 +223,7 @@ void TIM1_UP_IRQHandler(void)
   }
   else
   {
-    /* Ping done, Set DAC Initial Gain */
-    DAC->DHR12R1 = (u16)STM32_Sonar.GainInit << 4;
-    /* Disable TIM1 */
+    /* Ping done, Disable TIM1 */
     TIM_Cmd(TIM1, DISABLE);
     /* Enable ADC injected channel */
     ADC_AutoInjectedConvCmd(ADC1, ENABLE);
@@ -249,55 +246,22 @@ void TIM2_IRQHandler(void)
   /* Clear TIM2 Update interrupt pending bit */
   asm("mov    r0,#0x40000000");               /* TIM2 */
   asm("strh   r0,[r0,#0x8 *2]");              /* TIM2->SR */
-  // /* Set the DAC to output next gain step */
-  // asm("movw   r0,#0x7400");                   /* DAC1 */
-  // asm("movt   r0,#0x4000");
-  // asm("ldr    r3,[r0,#0x8]");                 /* DAC_DHR12R1 */
-  // asm("movw   r1,#0x0");                      /* STM32_Sonar */
-  // asm("movt   r1,#0x2000");
-  // asm("ldrb   r2,[r1,#0x4]");                 /* STM32_Sonar.GainInc */
-  // asm("add    r3,r3,r2");
-  // asm("uxth   r3,r3");
-  // asm("movw   r2,0xFFF");
-  // asm("cmp    r3,r2");
-  // asm("it     cs");
-  // asm("movcs  r3,r2");
-  // asm("str    r3,[r0,#0x8]");                 /* DAC_DHR12R1 */
+
   /* Increment the echo array index */
-  asm("ldrh   r2,[r1,#0x8]");                 /* STM32_Sonar.EchoIndex */
+  asm("mov    r1,#0x20000000");               /* STM32_Sonar */
+  asm("ldrh   r2,[r1,#0x6]");                 /* STM32_Sonar.EchoIndex */
   asm("add    r2,r2,#0x1");
   asm("cmp    r2,#0x200");
   asm("ite    ne");
-  asm("strhne r2,[r1,#0x8]");                 /* STM32_Sonar.EchoIndex */
+  asm("strhne r2,[r1,#0x6]");                 /* STM32_Sonar.EchoIndex */
   asm("strbeq r2,[r1,#0x0]");                 /* STM32_Sonar.Start */
 
-  /* Set the DAC to output next gain step */
+  /* Set the DAC to output next gain level */
   asm("movw   r0,#0x7400");                   /* DAC1 */
   asm("movt   r0,#0x4000");
   asm("add    r2,r2,0x108");
   asm("ldrh   r3,[r1,r2,lsl #0x1]");
   asm("strh   r3,[r0,#0x8]");                 /* DAC_DHR12R1 */
-
-
-  // u16 Gain;
-  /* Clear TIM2 Update interrupt pending bit */
-  //TIM2->SR = (u16)~TIM_IT_Update;
-  // /* Set the DAC to output next gain step */
-  // Gain = (u16)DAC->DHR12R1 + (u16)STM32_Sonar.GainInc;
-  // if (Gain > 4095)
-  // {
-    // Gain = 4095;
-  // }
-  // DAC->DHR12R1 = Gain;
-  // /* Increment the echo array index */
-  // STM32_Sonar.EchoIndex++;
-  // if (STM32_Sonar.EchoIndex == MAXECHO)
-  // {
-    // /* Reset echo array index */
-    // STM32_Sonar.EchoIndex = 0;
-    // /* Done sampling echo*/
-    // STM32_Sonar.Start = 0;
-  // }
 }
 
 /*******************************************************************************
