@@ -141,7 +141,7 @@ MAXYECHO				equ 512								;Max number of sonar Y-echos
 RANGESCALE				equ 5								;Width of range scale
 SIGNALBAR				equ 32								;Width of signal strenght bar
 MAXRANGE				equ 32								;Max number of depth ranges that can be read from ini
-REPLYSPEED				equ 5								;At reply, the ping interval is divided by REPLYSPEED
+REPLYSPEED				equ 10;5								;At reply, the ping interval is divided by REPLYSPEED
 SONARBACKCOLOR			equ 00F4BD6Ch						;Back color of sonar
 SONARPENCOLOR			equ 0900000h						;Signal bar pen color
 MAXFISH					equ 64								;Prevents showing repeated fish symbols and repeated fish alarms
@@ -286,26 +286,21 @@ SONARBMP struct
 	hBmp			HBITMAP ?								;Bitmap handle
 SONARBMP ends
 
-STM32SONAR struct
-	Start			BYTE ?									;Set to 1 to init a new echo reading
-	PingPulses		BYTE ?									;Number of pulses in a ping (0 to 128)
-	PingTimer		BYTE ?									;Timer value to generate 200 KHz ping
-	RangeInx		BYTE ?									;Range index (0 to 31)
-	PixelTimer		WORD ?									;Pixel timer value
-	EchoIndex		WORD ?									;Echo index
-	ADCBattery		WORD ?									;Battery level
-	ADCWaterTemp	WORD ?									;Water temprature
-	ADCAirTemp		WORD ?									;Air temprature
-	Dummy			WORD ?									;
-	EchoArray		BYTE MAXYECHO dup(?)					;Echo array, read from STM32 and processed
-	GainArray		WORD MAXYECHO dup(?)					;Gain array
-STM32SONAR ends
-
 FISH struct
 	fishtype		DWORD ?									;17=small fish, 18=large fish
 	xpos			DWORD ?									;X position
 	depth			DWORD ?									;Depth in meters*10
 FISH ends
+
+RANGE struct
+	range			DWORD ?									;Range in meters
+	interval		DWORD ?									;Update rate
+	pixeltimer		DWORD ?									;Pixel timer value
+	pingadd			DWORD ?									;Number of pulses to add to the initial ping (0 to 128). Used when autoping is on
+	nticks			DWORD ?									;Number of ticks on the range scale
+	scale			BYTE 64 dup(?)							;Zero terminated strings of depths on range scale
+	gain			DWORD MAXYECHO dup(?)					;Gain levels read from ini file and processed to add missing gain levels
+RANGE ends
 
 SONAR struct
 	fSTLink			DWORD ?									;If TRUE STLink connected
@@ -338,7 +333,7 @@ SONAR struct
 	ATemp			DWORD ?									;Current air temprature
 	PingInit		DWORD ?									;Ping initial value (0 to 255)
 	GainSet			DWORD ?									;Gain set level (0 to 255)
-	Noise			BYTE ?									;Noise reject level (0 to 255)
+	NoiseLevel		DWORD ?									;Noise level (0 to 255)
 	minyecho		DWORD ?									;Ping and surface clutter skipped
 	nodptinx		DWORD ?									;Depth not found
 	dptinx			DWORD ?									;Index in echo array
@@ -347,20 +342,23 @@ SONAR struct
 	fishdata		FISH MAXFISH dup(<>)					;Array of fish detected
 	fFishSound		DWORD ?									;Countdown to avoid repeated fish sounds
 	szFishSound		BYTE MAX_PATH dup(?)					;Path & filename of fish.wav file
+	fGainUpload		DWORD ?									;If TRUE gain levels must be uploaded
+	sonarrange		RANGE MAXRANGE dup(<?>)					;Sonar range definitions (max 32)
 	struct
-		STM32SONAR <>
+		Start			BYTE ?								;Set to 1 to init a new ping and echo reading
+		PingPulses		BYTE ?								;Number of pulses in a ping (0 to 128)
+		PingTimer		BYTE ?								;Timer value to generate 200 KHz ping
+		RangeInx		BYTE ?								;Range index (0 to 31)
+		PixelTimer		WORD ?								;Pixel timer value
+		EchoIndex		WORD ?								;Echo index
+		ADCBattery		WORD ?								;Battery level
+		ADCWaterTemp	WORD ?								;Water temprature
+		ADCAirTemp		WORD ?								;Air temprature
+		Dummy			WORD ?								;
+		EchoArray		BYTE MAXYECHO dup(?)				;Echo array, read from STM32 and processed
+		GainArray		WORD MAXYECHO dup(?)				;Gain array
 	ends
 SONAR ends
-
-RANGE struct
-	range			DWORD ?									;Range in meters
-	interval		DWORD ?									;Update rate
-	pixeltimer		DWORD ?									;Pixel timer value
-	pingadd			DWORD ?									;Number of pulses to add to the initial ping (0 to 128). Used when autoping is on
-	nticks			DWORD ?									;Number of ticks on the range scale
-	scale			BYTE 64 dup(?)							;Zero terminated strings of depths on range scale
-	gain			DWORD MAXYECHO dup(?)					;Gain levels read from ini file and processed to add missing gain levels
-RANGE ends
 
 TEMP struct
 	adcvalue		DWORD ?									;Value rad from ADC
@@ -462,7 +460,6 @@ fExitGpsThread		DWORD ?									;Flag to exit the GpsThread
 szIniFileName		BYTE MAX_PATH dup(?)					;Path and filename of ini file
 szbuff				BYTE 512 dup(?)							;Temporary buffer
 tid					DWORD ?									;Thread ID
-sonarrange			RANGE MAXRANGE dup(<?>)					;Sonar range definitions (max 32)
 sonardata			SONAR <>								;Sonar data
 hSplittV			HCURSOR ?								;Horizontal splitt cursor
 rseed				DWORD ?									;Random seed
