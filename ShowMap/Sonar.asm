@@ -237,8 +237,6 @@ SonarOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:L
 				xor		sonardata.AutoPing,1
 			.elseif eax==IDC_CHKSONARRANGE
 				xor		sonardata.AutoRange,1
-;			.elseif eax==IDC_CHKSONARNOISE
-;				xor		sonardata.NoiseReject,1
 			.elseif eax==IDC_CHKCHARTPAUSE
 				invoke IsDlgButtonChecked,hWin,IDC_CHKCHARTPAUSE
 				.if eax
@@ -252,6 +250,7 @@ SonarOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:L
 					dec		sonardata.GainSet
 					invoke SendDlgItemMessage,hWin,IDC_TRBSONARGAIN,TBM_SETPOS,TRUE,sonardata.GainSet
 					mov		sonardata.fGainUpload,TRUE
+;PrintDec sonardata.GainSet
 				.endif
 			.elseif eax==IDC_BTNGU
 				.if sonardata.GainSet<4095
@@ -259,6 +258,7 @@ SonarOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:L
 					invoke SendDlgItemMessage,hWin,IDC_TRBSONARGAIN,TBM_SETPOS,TRUE,sonardata.GainSet
 					mov		sonardata.fGainUpload,TRUE
 				.endif
+;PrintDec sonardata.GainSet
 			.elseif eax==IDC_BTNPD
 				.if sonardata.PingInit>1
 					dec		sonardata.PingInit
@@ -2074,7 +2074,8 @@ SaveSonarToIni proc
 	invoke PutItemInt,addr buffer,sonardata.AutoPing
 	invoke PutItemInt,addr buffer,sonardata.FishDetect
 	invoke PutItemInt,addr buffer,sonardata.FishAlarm
-	invoke PutItemInt,addr buffer,sonardata.RangeInx
+	movzx	eax,sonardata.RangeInx
+	invoke PutItemInt,addr buffer,eax
 	invoke PutItemInt,addr buffer,sonardata.NoiseLevel
 	invoke PutItemInt,addr buffer,sonardata.PingInit
 	invoke PutItemInt,addr buffer,sonardata.GainSet

@@ -1376,3 +1376,4 @@ userHGLOBAL,fContext,u.hInproc,u.hRemote,u.hGlobal
 userHMETAFILE,fContext,u.hInproc,u.hRemote,u.hGlobal
 userHMETAFILEPICT,fContext,u.hInproc,u.hRemote,u.hGlobal
 userHPALETTE,fContext,u.hInproc,u.hRemote,u.hGlobal
+GdiplusStartupInput,GdiplusVersion,DebugEventCallback,SuppressBackgroundThread,SuppressExternalCodecs

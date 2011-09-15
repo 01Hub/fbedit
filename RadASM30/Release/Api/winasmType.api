@@ -167,6 +167,7 @@ SHORT,0|Short integer.
 SPHANDLE,0|Pointer to a handle.
 DT,10|Ten bytes float.
 TBYTE,10|Ten bytes float.
+REAL10,10|Ten bytes float.
 TCHAR,1|Unicode character or Windows character.
 TIMERPROC,4|Pointer to an application-defined timer callback function.
 UCHAR,1|Unsigned Windows character.
