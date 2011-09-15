@@ -141,7 +141,7 @@ MAXYECHO				equ 512								;Max number of sonar Y-echos
 RANGESCALE				equ 5								;Width of range scale
 SIGNALBAR				equ 32								;Width of signal strenght bar
 MAXRANGE				equ 32								;Max number of depth ranges that can be read from ini
-REPLYSPEED				equ 10;5								;At reply, the ping interval is divided by REPLYSPEED
+REPLYSPEED				equ 5								;At reply, the ping interval is divided by REPLYSPEED
 SONARBACKCOLOR			equ 00F4BD6Ch						;Back color of sonar
 SONARPENCOLOR			equ 0900000h						;Signal bar pen color
 MAXFISH					equ 64								;Prevents showing repeated fish symbols and repeated fish alarms

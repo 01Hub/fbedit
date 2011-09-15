@@ -250,7 +250,6 @@ SonarOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:L
 					dec		sonardata.GainSet
 					invoke SendDlgItemMessage,hWin,IDC_TRBSONARGAIN,TBM_SETPOS,TRUE,sonardata.GainSet
 					mov		sonardata.fGainUpload,TRUE
-;PrintDec sonardata.GainSet
 				.endif
 			.elseif eax==IDC_BTNGU
 				.if sonardata.GainSet<4095
@@ -258,7 +257,6 @@ SonarOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:L
 					invoke SendDlgItemMessage,hWin,IDC_TRBSONARGAIN,TBM_SETPOS,TRUE,sonardata.GainSet
 					mov		sonardata.fGainUpload,TRUE
 				.endif
-;PrintDec sonardata.GainSet
 			.elseif eax==IDC_BTNPD
 				.if sonardata.PingInit>1
 					dec		sonardata.PingInit
@@ -425,7 +423,7 @@ Resize_Image proc hBmp:DWORD,wt:DWORD,ht:DWORD
 	invoke GdipGetImagePixelFormat,image1,addr lFormat
 	invoke GdipCreateBitmapFromScan0,wt,ht,0,lFormat,0,addr image2
 	invoke GdipGetImageGraphicsContext,image2,addr gfx
-	invoke GdipSetInterpolationMode,gfx,InterpolationModeBilinear
+	invoke GdipSetInterpolationMode,gfx,InterpolationModeNearestNeighbor
 	invoke GdipDrawImageRectI,gfx,image1,0,0,wt,ht
 	invoke GdipDisposeImage,image1
 	invoke GdipDeleteGraphics,gfx
@@ -750,7 +748,7 @@ Update:
 
 SonarUpdateProc endp
 
-GainUpload proc uses ebx
+GainUploadThread proc uses ebx,lParam:DWORD
 
 	;Setup gain array
 	movzx	ebx,sonardata.RangeInx
@@ -779,9 +777,10 @@ GainUpload proc uses ebx
 	.endif
 	;Upload Gain array
 	invoke STLinkWrite,hWnd,STM32_Sonar+16+MAXYECHO,addr sonardata.GainArray,MAXYECHO*WORD
+	xor		eax,eax
 	ret
 
-GainUpload endp
+GainUploadThread endp
 
 STM32Thread proc uses ebx esi edi,lParam:DWORD
 	LOCAL	status:DWORD
@@ -851,7 +850,8 @@ STM32Thread proc uses ebx esi edi,lParam:DWORD
 				.if sonardata.fGainUpload
 					;Upload Gain array
 					mov		sonardata.fGainUpload,FALSE
-					invoke GainUpload
+					invoke CreateThread,NULL,NULL,addr GainUploadThread,0,0,addr tid
+					invoke CloseHandle,eax
 				.endif
 			 	;Upload Start, PingPulses, PingTimer, RangeInx and PixelTimer to init the next reading
 				mov		eax,sonardata.PingInit
@@ -1102,6 +1102,7 @@ Show0:
 			mov		sonardata.EchoArray[esi],al
 			inc		esi
 		.endw
+		mov		sonardata.EchoArray[esi],al
 	.elseif eax==3
 		;3*2
 		.while esi<MAXYECHO-1
@@ -1114,6 +1115,7 @@ Show0:
 			mov		sonardata.EchoArray[esi],al
 			inc		esi
 		.endw
+		mov		sonardata.EchoArray[esi],al
 	.else
 		.while esi<MAXYECHO
 			mov		al,STM32Echo[esi]
@@ -1181,6 +1183,7 @@ Show25:
 			mov		sonardata.EchoArray[esi],al
 			inc		esi
 		.endw
+		mov		sonardata.EchoArray[esi],al
 	.elseif eax==3
 		;3*2
 		.while esi<MAXYECHO-1
@@ -1205,6 +1208,7 @@ Show25:
 			mov		sonardata.EchoArray[esi],al
 			inc		esi
 		.endw
+		mov		sonardata.EchoArray[esi],al
 	.else
 		.while esi<MAXYECHO
 			;Blend in 25% of previous echo
@@ -1283,6 +1287,7 @@ Show33:
 			mov		sonardata.EchoArray[esi],al
 			inc		esi
 		.endw
+		mov		sonardata.EchoArray[esi],al
 	.elseif eax==3
 		;3*2
 		.while esi<MAXYECHO-1
@@ -1310,6 +1315,7 @@ Show33:
 			mov		sonardata.EchoArray[esi],al
 			inc		esi
 		.endw
+		mov		sonardata.EchoArray[esi],al
 	.else
 		.while esi<MAXYECHO
 			;Blend in 33% of previous echo
@@ -1379,6 +1385,7 @@ Show50:
 			mov		sonardata.EchoArray[esi],al
 			inc		esi
 		.endw
+		mov		sonardata.EchoArray[esi],al
 	.elseif eax==3
 		;3*2
 		.while esi<MAXYECHO-1
@@ -1400,6 +1407,7 @@ Show50:
 			mov		sonardata.EchoArray[esi],al
 			inc		esi
 		.endw
+		mov		sonardata.EchoArray[esi],al
 	.else
 		.while esi<MAXYECHO
 			;Blend in 50% of previous echo
@@ -1475,6 +1483,7 @@ Show66:
 			mov		sonardata.EchoArray[esi],al
 			inc		esi
 		.endw
+		mov		sonardata.EchoArray[esi],al
 	.elseif eax==3
 		;3*2
 		.while esi<MAXYECHO-1
@@ -1562,6 +1571,7 @@ Show75:
 			mov		sonardata.EchoArray[esi],al
 			inc		esi
 		.endw
+		mov		sonardata.EchoArray[esi],al
 	.elseif eax==3
 		;3*2
 		.while esi<MAXYECHO-1
@@ -1586,6 +1596,7 @@ Show75:
 			mov		sonardata.EchoArray[esi],al
 			inc		esi
 		.endw
+		mov		sonardata.EchoArray[esi],al
 	.else
 		.while esi<MAXYECHO
 			;Blend in 75% of previous echo
