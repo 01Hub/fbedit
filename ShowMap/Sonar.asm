@@ -32,6 +32,8 @@ IDC_BTNSSU              equ 1523
 IDC_BTNSSD              equ 1529
 IDC_BTNFU               equ 1515
 IDC_BTNFD               equ 1531
+IDC_STCGAIN				equ 1521
+IDC_STCPING				equ 1536
 
 .code
 
@@ -224,6 +226,8 @@ SonarOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:L
 			mov		lpOldButtonProc,eax
 			pop		eax
 		.endw
+		call	SetGain
+		call	SetPing
 	.elseif eax==WM_COMMAND
 		mov		edx,wParam
 		movzx	eax,dx
@@ -250,22 +254,26 @@ SonarOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:L
 					dec		sonardata.GainSet
 					invoke SendDlgItemMessage,hWin,IDC_TRBSONARGAIN,TBM_SETPOS,TRUE,sonardata.GainSet
 					mov		sonardata.fGainUpload,TRUE
+					call	SetGain
 				.endif
 			.elseif eax==IDC_BTNGU
 				.if sonardata.GainSet<4095
 					inc		sonardata.GainSet
 					invoke SendDlgItemMessage,hWin,IDC_TRBSONARGAIN,TBM_SETPOS,TRUE,sonardata.GainSet
 					mov		sonardata.fGainUpload,TRUE
+					call	SetGain
 				.endif
 			.elseif eax==IDC_BTNPD
 				.if sonardata.PingInit>1
 					dec		sonardata.PingInit
 					invoke SendDlgItemMessage,hWin,IDC_TRBSONARPING,TBM_SETPOS,TRUE,sonardata.PingInit
+					call	SetPing
 				.endif
 			.elseif eax==IDC_BTNPU
 				.if sonardata.PingInit<MAXPING
 					inc		sonardata.PingInit
 					invoke SendDlgItemMessage,hWin,IDC_TRBSONARPING,TBM_SETPOS,TRUE,sonardata.PingInit
+					call	SetPing
 				.endif
 			.elseif eax==IDC_BTNRD
 				.if sonardata.RangeInx
@@ -360,6 +368,7 @@ SonarOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:L
 		.if eax==IDC_TRBSONARGAIN
 			mov		sonardata.GainSet,ebx
 			mov		sonardata.fGainUpload,TRUE
+			call	SetGain
 		.elseif eax==IDC_TRBSONARRANGE
 			mov		sonardata.RangeInx,bl
 			invoke SetRange,ebx
@@ -370,6 +379,7 @@ SonarOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:L
 			mov		sonardata.NoiseReject,ebx
 		.elseif eax==IDC_TRBSONARPING
 			mov		sonardata.PingInit,ebx
+			call	SetPing
 		.elseif eax==IDC_TRBSONARFISH
 			mov		sonardata.FishDetect,ebx
 		.elseif eax==IDC_TRBSONARCHART
@@ -388,6 +398,14 @@ SonarOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:L
 	.endif
 	mov		eax,TRUE
 	ret
+
+SetGain:
+	invoke SetDlgItemInt,hWin,IDC_STCGAIN,sonardata.GainSet,FALSE
+	retn
+
+SetPing:
+	invoke SetDlgItemInt,hWin,IDC_STCPING,sonardata.PingInit,FALSE
+	retn
 
 SonarOptionProc endp
 
@@ -1680,6 +1698,7 @@ FindDepth:
 			add		edx,eax
 			inc		ecx
 		.endw
+		;Put in a little hysteresis
 		lea		eax,[edx-4096]
 		.if sdword ptr eax>esi
 			mov		esi,edx
@@ -1687,7 +1706,8 @@ FindDepth:
 		.endif
 		inc		ebx
 	.endw
-	.if edi>1
+	.if edi>10
+		;A valid bottom signal has been found
 		mov		sonardata.nodptinx,0
 		mov		eax,sonardata.dptinx
 		.if eax
@@ -1729,8 +1749,10 @@ SetDepth:
 	invoke wsprintf,addr buffer,addr szFmtDepth,eax
 	invoke strlen,addr buffer
 	.if eax>3
+		;Remove the decimal
 		mov		byte ptr buffer[eax-1],0
 	.else
+		;Add a decimal point
 		movzx	ecx,word ptr buffer[eax-1]
 		shl		ecx,8
 		mov		cl,'.'
@@ -1845,6 +1867,7 @@ FindFish:
 					.endif
 				.endif
 				.if sonardata.FishAlarm && !sonardata.fFishSound
+					;Play a wav file
 					mov		sonardata.fFishSound,3
 					invoke PlaySound,addr sonardata.szFishSound,hInstance,SND_ASYNC
 				.endif
@@ -2076,7 +2099,7 @@ SaveSonarToIni proc
 	LOCAL	buffer[256]:BYTE
 
 	mov		buffer,0
-	;Width,AutoRange,AutoGain,AutoPing,FishDetect,FishAlarm,RangeInx,Noise,PingInit,GainInit,ChartSpeed,NoiseReject,ChartSync,PingTimer
+	;Width,AutoRange,AutoGain,AutoPing,FishDetect,FishAlarm,RangeInx,NoiseLevel,PingInit,GainSet,ChartSpeed,NoiseReject,PingTimer,SoundSpeed
 	invoke PutItemInt,addr buffer,sonardata.wt
 	invoke PutItemInt,addr buffer,sonardata.AutoRange
 	invoke PutItemInt,addr buffer,sonardata.AutoGain
@@ -2106,7 +2129,7 @@ LoadSonarFromIni proc uses ebx esi edi
 	
 	invoke RtlZeroMemory,addr buffer,sizeof buffer
 	invoke GetPrivateProfileString,addr szIniSonar,addr szIniSonar,addr szNULL,addr buffer,sizeof buffer,addr szIniFileName
-	;Width,AutoRange,AutoGain,AutoPing,FishDetect,FishAlarm,RangeInx,Noise,PingInit,GainInit,ChartSpeed,NoiseReject,ChartSync,PingTimer,SoundSpeed
+	;Width,AutoRange,AutoGain,AutoPing,FishDetect,FishAlarm,RangeInx,NoiseLevel,PingInit,GainSet,ChartSpeed,NoiseReject,PingTimer,SoundSpeed
 	invoke GetItemInt,addr buffer,250
 	mov		sonardata.wt,eax
 	invoke GetItemInt,addr buffer,1

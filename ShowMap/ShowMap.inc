@@ -337,12 +337,12 @@ SONAR struct
 	minyecho		DWORD ?									;Ping and surface clutter skipped
 	nodptinx		DWORD ?									;Depth not found
 	dptinx			DWORD ?									;Index in echo array
-	sonarbmp		SONARBMP MAXSONARBMP dup(<>)			;Array of bitmap tiles
 	fishinx			DWORD ?									;Current index in fishdata array
 	fishdata		FISH MAXFISH dup(<>)					;Array of fish detected
 	fFishSound		DWORD ?									;Countdown to avoid repeated fish sounds
 	szFishSound		BYTE MAX_PATH dup(?)					;Path & filename of fish.wav file
 	fGainUpload		DWORD ?									;If TRUE gain levels must be uploaded
+	sonarbmp		SONARBMP MAXSONARBMP dup(<>)			;Array of bitmap tiles
 	sonarrange		RANGE MAXRANGE dup(<?>)					;Sonar range definitions (max 32)
 	struct
 		Start			BYTE ?								;Set to 1 to init a new ping and echo reading
