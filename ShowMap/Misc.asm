@@ -425,7 +425,7 @@ sdFinish:
 
 AsciiToFp endp
 
-FpToAscii proc USES esi edi,lpFpin:PTR TBYTE,lpStr:PTR CHAR,fSci:DWORD
+FpToAscii proc USES esi edi,lpFpin:DWORD,lpStr:DWORD,fSci:DWORD
 	LOCAL	iExp:DWORD
 	LOCAL	sztemp[32]:BYTE
 	LOCAL	temp:TBYTE
@@ -1319,7 +1319,8 @@ SaveStatus proc
 
 SaveStatus endp
 
-TextDraw proc uses edi,hDC:HDC,hFont:HFONT,lpRect:PTR RECT,lpText:DWORD,pos:DWORD
+;TextDraw proc uses edi,hDC:HDC,hFont:HFONT,lpRect:PTR RECT,lpText:DWORD,pos:DWORD
+TextDraw proc uses edi,hDC:HDC,hFont:HFONT,lpRect:DWORD,lpText:DWORD,pos:DWORD
 	LOCAL	rect:RECT
 
 	invoke strlen,lpText

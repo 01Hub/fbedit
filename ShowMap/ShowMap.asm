@@ -189,11 +189,13 @@ MapProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	.if eax==WM_CREATE
 		mov		eax,hWin
 		mov		hMap,eax
+		mov		map.zoomval,1
 		invoke LoadMapPoints
 		invoke InitOptions
 		invoke InitZoom
 		invoke InitFonts
 		invoke InitMaps
+		invoke InitPlaces
 		invoke ImageList_Create,16,16,ILC_COLOR24 or ILC_MASK,8+16,0
 		mov		hIml,eax
 		invoke LoadBitmap,hInstance,100
@@ -719,14 +721,6 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		map.gpslock,TRUE
 		invoke CheckDlgButton,hWin,IDC_CHKTRAIL,BST_CHECKED
 		mov		map.gpstrail,TRUE
-		invoke InitPlaces
-		;Sonar init
-		invoke EnableScrollBar,hSonar,SB_HORZ,ESB_DISABLE_BOTH
-		invoke LoadCursor,hInstance,101
-		mov		hSplittV,eax
-		invoke LoadSonarFromIni
-		movzx	eax,sonardata.RangeInx
-		invoke SetRange,eax
 	.elseif eax==WM_COMMAND
 		mov		edx,wParam
 		movzx	eax,dx

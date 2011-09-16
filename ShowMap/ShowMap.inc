@@ -36,7 +36,7 @@ STLinkDisconnect		PROTO
 STLinkReset				PROTO hWin:HWND
 STLinkRead 				PROTO hWin:HWND,rdadr:DWORD,wradr:DWORD,nBytes:DWORD
 STLinkWrite				PROTO hWin:HWND,wradr:DWORD,rdadr:DWORD,nBytes:DWORD
-FpToAscii				PROTO :PTR TBYTE,:PTR CHAR,:DWORD
+FpToAscii				PROTO :DWORD,:DWORD,:DWORD
 InitScroll				PROTO
 
 ;#########################################################################
@@ -280,10 +280,10 @@ MAP struct
 MAP ends
 
 SONARBMP struct
+	hBmp			HBITMAP ?								;Bitmap handle
 	RangeInx		DWORD ?									;Range index
 	xpos			DWORD ?									;X-Position
 	wt				DWORD ?									;Width
-	hBmp			HBITMAP ?								;Bitmap handle
 SONARBMP ends
 
 FISH struct
