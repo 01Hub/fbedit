@@ -465,3 +465,4 @@ hSplittV			HCURSOR ?								;Horizontal splitt cursor
 rseed				DWORD ?									;Random seed
 STM32Echo			BYTE MAXYECHO*4 dup(?)					;Echo work area
 lpOldButtonProc		DWORD ?									;Button subclass
+ddtmp				DWORD ?

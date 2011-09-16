@@ -10,7 +10,6 @@ dq180			REAL8 180.0
 
 .code
 
-;Distance proc latA:REAL8,lonA:REAL8,latB:REAL8,lonB:REAL8,lpfDist:PTR REAL10
 Distance proc latA:REAL8,lonA:REAL8,latB:REAL8,lonB:REAL8,lpfDist:DWORD
 
 	fld     REAL8 ptr [latB]
@@ -91,7 +90,6 @@ Bearing endp
 
 ;In:  Integer Longitude,Lattitude
 ;Out: REAL10 distance and bearing
-;BearingDistanceInt proc iLonA:DWORD,iLatA:DWORD,iLonB:DWORD,iLatB:DWORD,lpfDist:PTR REAL10,lpfBear:PTR REAL10
 BearingDistanceInt proc iLonA:DWORD,iLatA:DWORD,iLonB:DWORD,iLatB:DWORD,lpfDist:DWORD,lpfBear:DWORD
 	LOCAL	fLatA:REAL8
 	LOCAL	fLonA:REAL8

@@ -41,6 +41,12 @@ KetilO
 Spherical law of cosines: d = acos(sin(lat1).sin(lat2)+cos(lat1).cos(lat2).cos(long2-long1)).R
 R = earth’s radius (mean radius = 6,371km)
 
+From minor28
+y = a*ln(tan(45deg + latitude/2deg))
+where a is semi-major axis = 6,378,137m
+
+y=a*ln[tan(lat/2+PI/4)]
+
 Sonar Description
 =================
 A short ping at 200 KHz is transmitted at intervals depending on depth range (200 to 400 ms).

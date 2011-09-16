@@ -55,6 +55,11 @@ ten_256		dt	1.0e256
 			dt	1.0e4608
 			dt	1.0e4864
 
+fp2			dq 2.0
+pidiv4		dq 0.78539816339744830961566084581988
+iL2e		dt 3FFEB17217F7D1CF79ACh
+smaxis		dq 6378137.0
+
 .code
 
 strcpy proc uses esi edi,lpDest:DWORD,lpSource:DWORD
@@ -803,6 +808,7 @@ CountMapTiles proc uses ebx,mapinx:DWORD,lpnx:DWORD,lpny:DWORD
 		mov		[edx],ebx
 		inc		ebx
 	.endw
+PrintDec ebx
 	;Get number of maps in y direction
 	xor		ebx,ebx
 	.while TRUE
@@ -813,6 +819,7 @@ CountMapTiles proc uses ebx,mapinx:DWORD,lpnx:DWORD,lpny:DWORD
 		mov		[edx],ebx
 		inc		ebx
 	.endw
+PrintDec ebx
 	ret
 
 CountMapTiles endp
@@ -1001,7 +1008,35 @@ MapPosToGpsPos proc uses ebx esi edi,x:DWORD,y:DWORD,lpiLon:DWORD,lpiLat:DWORD
 
 MapPosToGpsPos endp
 
+;y = a*ln(tan(45deg + latitude/2deg))
+;where a is semi-major axis = 6,378,137m
+;y = a*ln[tan(lat/2+PI/4)]
+
 GpsPosToMapPos proc uses ebx esi edi,iLon:DWORD,iLat:DWORD,lpix:DWORD,lpiy:DWORD
+	LOCAL	tmp:DWORD
+
+	fild	iLat
+	;Convert to decimal by dividing with 1 000 000
+	fdiv	dqdiv
+	;Convert to radians
+	fmul    deg2rad
+	;Divide by 2
+	fdiv	fp2
+	;Add PI / 4
+	fadd	pidiv4
+	fptan
+	fstp	st
+	fld		iL2e
+	fxch
+	fyl2x
+	fmul	smaxis
+	fistp	tmp
+
+;mov		eax,ddtmp
+;sub		eax,tmp
+;PrintDec eax
+;mov		eax,tmp
+;mov		ddtmp,eax
 
 	mov		esi,map.hMemLon
 	mov		edi,esi
