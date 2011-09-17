@@ -49,7 +49,7 @@ IDC_CHKPAUSE			equ 1013
 IDC_CHKLOCK				equ 1007
 IDC_CHKTRAIL			equ 1008
 IDC_CHKGRID				equ 1014
-IDC_CBOGOTO             equ 1004
+IDC_CBOGOTOPLACE             equ 1004
 IDC_EDTNORTH            equ 1005
 IDC_EDTEAST             equ 1006
 IDC_EDTDIST				equ 1009
@@ -277,6 +277,10 @@ MAP struct
 	hMemLon			HGLOBAL ?								;Longitude array
 	nLatPoint		DWORD ?									;Number of lattitude entries in array
 	hMemLat			HGLOBAL ?								;Lattitude array
+	LeftLon			DWORD ?
+	TopLat			DWORD ?
+	RightLon		DWORD ?
+	BottomLat		DWORD ?
 MAP ends
 
 SONARBMP struct
@@ -396,6 +400,8 @@ szIniFont			BYTE 'Font',0
 szIniOption			BYTE 'Option',0
 szIniLon			BYTE 'Lon',0
 szIniLat			BYTE 'Lat',0
+szIniUpLeft			BYTE 'UpLeft',0
+szIniDownRight		BYTE 'DownRight',0
 szIniSonar			BYTE 'Sonar',0
 szIniSonarRange		BYTE 'SonarRange',0
 

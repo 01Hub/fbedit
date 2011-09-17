@@ -189,7 +189,6 @@ MapProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	.if eax==WM_CREATE
 		mov		eax,hWin
 		mov		hMap,eax
-		mov		map.zoomval,1
 		invoke LoadMapPoints
 		invoke InitOptions
 		invoke InitZoom
@@ -1038,9 +1037,9 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke IsDlgButtonChecked,hWin,IDC_CHKGRID
 				mov		map.mapgrid,eax
 				inc		map.paintnow
-			.elseif eax==IDC_CBOGOTO
-				invoke SendDlgItemMessage,hWin,IDC_CBOGOTO,CB_GETCURSEL,0,0
-				invoke SendDlgItemMessage,hWin,IDC_CBOGOTO,CB_GETITEMDATA,eax,0
+			.elseif eax==IDC_CBOGOTOPLACE
+				invoke SendDlgItemMessage,hWin,IDC_CBOGOTOPLACE,CB_GETCURSEL,0,0
+				invoke SendDlgItemMessage,hWin,IDC_CBOGOTOPLACE,CB_GETITEMDATA,eax,0
 				invoke DoGoto,[eax].PLACE.iLon,[eax].PLACE.iLat,TRUE,FALSE
 				inc		map.paintnow
 			.endif
@@ -1127,7 +1126,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke GetDlgItem,hWin,IDC_CHKGRID
 		invoke MoveWindow,eax,rect.right,rect.top,80,16,TRUE
 		add		rect.top,17
-		invoke GetDlgItem,hWin,IDC_CBOGOTO
+		invoke GetDlgItem,hWin,IDC_CBOGOTOPLACE
 		invoke MoveWindow,eax,rect.right,rect.top,80,200,TRUE
 		add		rect.top,25
 		invoke GetDlgItem,hWin,IDC_STCLAT
