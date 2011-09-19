@@ -748,7 +748,6 @@ PutItemStr proc uses esi,lpBuff:DWORD,lpStr:DWORD
 
 PutItemStr endp
 
-
 ;deg2rad	0,017453292519943334
 ;LatTop=	66,533650 --> 1,1612312558695278041891 radians
 ;LatBottom=	65,965150 --> 1,1513090590719400188101 radians
@@ -776,14 +775,18 @@ LatToPos proc iLat:DWORD
 	fptan
 	;Pop the 1.0
 	fstp	st
-	;ln
-	fld		iL2e
-	fxch
-	fyl2x
+;	;ln
+;	fld		iL2e
+;	fxch
+;	fyl2x
+	fldln2
+	fxch	st(1)
+	fyl2x ;kLat1 = ln(tan(45 + refLat1 / 2) =+1.2939176754447657
 	;Multiply by a
 	fmul	smaxis
 	fistp	tmp
 	mov		eax,tmp
+PrintDec eax
 	ret
 
 LatToPos endp
@@ -837,6 +840,7 @@ LoadMapPoints proc uses ebx esi edi
 ;	invoke GetPrivateProfileString,addr szIniMap,addr szIniLatBottom,addr szNULL,hMem,32767,addr szIniFileName
 ;	invoke GetItemInt,hMem,0
 ;	invoke LatToPos,eax
+;	invoke LatToPos,66258218
 	invoke GlobalFree,hMem
 	ret
 
