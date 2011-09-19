@@ -28,8 +28,7 @@ InitPlaces proc uses ebx esi
 		mov		[esi].PLACE.iLat,eax
 		invoke strcpyn,addr [esi].PLACE.text,addr buffer,sizeof PLACE.text
 		.if [esi].PLACE.text
-;			invoke SendDlgItemMessage,hWnd,IDC_CBOGOTOPLACE,CB_ADDSTRING,0,addr [esi].PLACE.text
-			invoke SendDlgItemMessage,hWnd,IDC_CBOGOTOPLACE,CB_ADDSTRING,0,addr szIniFile
+			invoke SendDlgItemMessage,hWnd,IDC_CBOGOTOPLACE,CB_ADDSTRING,0,addr [esi].PLACE.text
 			invoke SendDlgItemMessage,hWnd,IDC_CBOGOTOPLACE,CB_SETITEMDATA,eax,esi
 		.endif
 		lea		esi,[esi+sizeof PLACE]

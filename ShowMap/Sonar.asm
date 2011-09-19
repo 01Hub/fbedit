@@ -975,6 +975,9 @@ STM32Thread proc uses ebx esi edi,lParam:DWORD
 			invoke Random,edi
 			mov		edx,eax
 			sub		ebx,eax
+			.if sdword ptr ebx<=0
+				mov		ebx,1
+			.endif
 			.while edx
 				;Random bottom vegetation
 				.if ebx<MAXYECHO

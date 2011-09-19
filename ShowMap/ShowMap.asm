@@ -194,7 +194,6 @@ MapProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke InitZoom
 		invoke InitFonts
 		invoke InitMaps
-		invoke InitPlaces
 		invoke ImageList_Create,16,16,ILC_COLOR24 or ILC_MASK,8+16,0
 		mov		hIml,eax
 		invoke LoadBitmap,hInstance,100
@@ -706,6 +705,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	.if eax==WM_INITDIALOG
 		mov		eax,hWin
 		mov		hWnd,eax
+		invoke InitPlaces
 		fldz
 		fstp	map.fSumDist
 		invoke GetMenu,hWin
