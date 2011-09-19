@@ -55,6 +55,11 @@ ten_256		dt	1.0e256
 			dt	1.0e4608
 			dt	1.0e4864
 
+fp2			dq 2.0
+pidiv4		dq 0.785398163397
+iL2e		dt 3FFEB17217F7D1CF79ACh
+smaxis		dq 6378137.0
+
 .code
 
 strcpy proc uses esi edi,lpDest:DWORD,lpSource:DWORD
@@ -743,6 +748,46 @@ PutItemStr proc uses esi,lpBuff:DWORD,lpStr:DWORD
 
 PutItemStr endp
 
+
+;deg2rad	0,017453292519943334
+;LatTop=	66,533650 --> 1,1612312558695278041891 radians
+;LatBottom=	65,965150 --> 1,1513090590719400188101 radians
+;pidiv4		0,78539816339744830961566084581988
+;top=		6378137*ln(tan(LatTop/2+pidiv4))=		10024451,725468130087769222532137
+;bottom		6378137*ln(tan(LatBottom/2+pidiv4))=	9867314,3303466512010688304635395
+
+;minor28
+;y = a*ln(tan(45deg + latitude/2deg))
+;where a is semi-major axis = 6378137m
+;http://mercator.myzen.co.uk/mercator.pdf
+;y = a*ln[tan(Rad(lat)/2+PI/4)]
+LatToPos proc iLat:DWORD
+	LOCAL	tmp:DWORD
+
+	fild	iLat
+	;Convert to decimal by dividing with 1 000 000
+	fdiv	dqdiv
+	;Convert to radians
+	fmul    deg2rad
+	;Divide by 2
+	fdiv	fp2
+	;Add PI / 4
+	fadd	pidiv4
+	fptan
+	;Pop the 1.0
+	fstp	st
+	;ln
+	fld		iL2e
+	fxch
+	fyl2x
+	;Multiply by a
+	fmul	smaxis
+	fistp	tmp
+	mov		eax,tmp
+	ret
+
+LatToPos endp
+
 ;Load mappoints
 LoadMapPoints proc uses ebx esi edi
 	LOCAL	hMem:HGLOBAL
@@ -785,6 +830,13 @@ LoadMapPoints proc uses ebx esi edi
 		.endw
 		mov		map.nLatPoint,ebx
 	.endif
+;	invoke LatToPos,66254350
+;	invoke GetPrivateProfileString,addr szIniMap,addr szIniLatTop,addr szNULL,hMem,32767,addr szIniFileName
+;	invoke GetItemInt,hMem,0
+;	invoke LatToPos,eax
+;	invoke GetPrivateProfileString,addr szIniMap,addr szIniLatBottom,addr szNULL,hMem,32767,addr szIniFileName
+;	invoke GetItemInt,hMem,0
+;	invoke LatToPos,eax
 	invoke GlobalFree,hMem
 	ret
 
@@ -1002,11 +1054,6 @@ MapPosToGpsPos proc uses ebx esi edi,x:DWORD,y:DWORD,lpiLon:DWORD,lpiLat:DWORD
 MapPosToGpsPos endp
 
 GpsPosToMapPos proc uses ebx esi edi,iLon:DWORD,iLat:DWORD,lpix:DWORD,lpiy:DWORD
-;mov		eax,ddtmp
-;sub		eax,tmp
-;PrintDec eax
-;mov		eax,tmp
-;mov		ddtmp,eax
 
 	mov		esi,map.hMemLon
 	mov		edi,esi

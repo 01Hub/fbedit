@@ -400,8 +400,8 @@ szIniFont			BYTE 'Font',0
 szIniOption			BYTE 'Option',0
 szIniLon			BYTE 'Lon',0
 szIniLat			BYTE 'Lat',0
-szIniUpLeft			BYTE 'UpLeft',0
-szIniDownRight		BYTE 'DownRight',0
+szIniLatTop			BYTE 'LatTop',0
+szIniLatBottom		BYTE 'LatBottom',0
 szIniSonar			BYTE 'Sonar',0
 szIniSonarRange		BYTE 'SonarRange',0
 
