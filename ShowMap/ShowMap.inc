@@ -394,14 +394,12 @@ szFishWav			BYTE '\Wav\fish.wav',0
 
 szIniPlace			BYTE 'Place',0							;Ini file app / key
 szIniMap			BYTE 'Map',0
-szIniZoom			BYTE 'Zoom',0
-szIniPos			BYTE 'Pos',0
-szIniFont			BYTE 'Font',0
-szIniOption			BYTE 'Option',0
 szIniLon			BYTE 'Lon',0
 szIniLat			BYTE 'Lat',0
-szIniLatTop			BYTE 'LatTop',0
-szIniLatBottom		BYTE 'LatBottom',0
+szIniPos			BYTE 'Pos',0
+szIniZoom			BYTE 'Zoom',0
+szIniFont			BYTE 'Font',0
+szIniOption			BYTE 'Option',0
 szIniSonar			BYTE 'Sonar',0
 szIniSonarRange		BYTE 'SonarRange',0
 

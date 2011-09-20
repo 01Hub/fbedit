@@ -57,8 +57,7 @@ ten_256		dt	1.0e256
 
 fp2			dq 2.0
 pidiv4		dq 0.785398163397
-iL2e		dt 3FFEB17217F7D1CF79ACh
-smaxis		dq 6378137.0
+smaxis		dq 1000000000.0
 
 .code
 
@@ -748,13 +747,6 @@ PutItemStr proc uses esi,lpBuff:DWORD,lpStr:DWORD
 
 PutItemStr endp
 
-;deg2rad	0,017453292519943334
-;LatTop=	66,533650 --> 1,1612312558695278041891 radians
-;LatBottom=	65,965150 --> 1,1513090590719400188101 radians
-;pidiv4		0,78539816339744830961566084581988
-;top=		6378137*ln(tan(LatTop/2+pidiv4))=		10024451,725468130087769222532137
-;bottom		6378137*ln(tan(LatBottom/2+pidiv4))=	9867314,3303466512010688304635395
-
 ;minor28
 ;y = a*ln(tan(45deg + latitude/2deg))
 ;where a is semi-major axis = 6378137m
@@ -775,76 +767,54 @@ LatToPos proc iLat:DWORD
 	fptan
 	;Pop the 1.0
 	fstp	st
-;	;ln
-;	fld		iL2e
-;	fxch
-;	fyl2x
+	;ln
 	fldln2
 	fxch	st(1)
-	fyl2x ;kLat1 = ln(tan(45 + refLat1 / 2) =+1.2939176754447657
-	;Multiply by a
+	fyl2x
+	;Multiply by a large factor to return a large integer
 	fmul	smaxis
 	fistp	tmp
 	mov		eax,tmp
-PrintDec eax
 	ret
 
 LatToPos endp
 
-;Load mappoints
-LoadMapPoints proc uses ebx esi edi
-	LOCAL	hMem:HGLOBAL
+MakeLatPoints proc iLatTop:DWORD,iLatBottom:DWORD,nTiles:DWORD,lpPoints:DWORD
+	LOCAL	iDiff:DWORD
+	LOCAL	iPos:DWORD
+	LOCAL	ypos:DWORD
 
-	invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,32768
-	mov		hMem,eax
-	invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,32768
-	mov		map.hMemLon,eax
-	invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,32768
-	mov		map.hMemLat,eax
-	;Get longitude array
-	invoke GetPrivateProfileString,addr szIniMap,addr szIniLon,addr szNULL,hMem,32767,addr szIniFileName
-	.if eax
-		mov		edi,map.hMemLon
-		mov		esi,hMem
-		xor		ebx,ebx
-		.while byte ptr [esi]
-			invoke GetItemInt,esi,0
-			mov		[edi].LONPOINT.iLon,eax
-			invoke GetItemInt,esi,0
-			mov		[edi].LONPOINT.ixpos,eax
-			lea		edi,[edi+sizeof LONPOINT]
-			inc		ebx
+	invoke LatToPos,iLatBottom
+	mov		iPos,eax
+	invoke LatToPos,iLatTop
+	sub		eax,iPos
+	mov		ecx,nTiles
+	xor		edx,edx
+	idiv	ecx
+	mov		iDiff,eax
+	mov		eax,nTiles
+	shl		eax,9
+	mov		ypos,eax
+	mov		edi,lpPoints
+	add		edi,64*8-8
+	.while sdword ptr ypos>=0
+		mov		eax,iLatBottom
+		mov		[edi],eax
+		mov		eax,ypos
+		mov		[edi+4],eax
+		lea		edi,[edi-8]
+		mov		eax,iDiff
+		add		iPos,eax
+		.while TRUE
+			inc		iLatBottom
+			invoke LatToPos,iLatBottom
+			.break .if eax>=iPos
 		.endw
-		mov		map.nLonPoint,ebx
-	.endif
-	;Get lattitude array
-	invoke GetPrivateProfileString,addr szIniMap,addr szIniLat,addr szNULL,hMem,32767,addr szIniFileName
-	.if eax
-		mov		edi,map.hMemLat
-		mov		esi,hMem
-		xor		ebx,ebx
-		.while byte ptr [esi]
-			invoke GetItemInt,esi,0
-			mov		[edi].LATPOINT.iLat,eax
-			invoke GetItemInt,esi,0
-			mov		[edi].LATPOINT.iypos,eax
-			lea		edi,[edi+sizeof LATPOINT]
-			inc		ebx
-		.endw
-		mov		map.nLatPoint,ebx
-	.endif
-;	invoke LatToPos,66254350
-;	invoke GetPrivateProfileString,addr szIniMap,addr szIniLatTop,addr szNULL,hMem,32767,addr szIniFileName
-;	invoke GetItemInt,hMem,0
-;	invoke LatToPos,eax
-;	invoke GetPrivateProfileString,addr szIniMap,addr szIniLatBottom,addr szNULL,hMem,32767,addr szIniFileName
-;	invoke GetItemInt,hMem,0
-;	invoke LatToPos,eax
-;	invoke LatToPos,66258218
-	invoke GlobalFree,hMem
+		sub		ypos,512
+	.endw
 	ret
 
-LoadMapPoints endp
+MakeLatPoints endp
 
 CountMapTiles proc uses ebx,mapinx:DWORD,lpnx:DWORD,lpny:DWORD
 	LOCAL	buffer[MAX_PATH]:BYTE
@@ -873,10 +843,84 @@ CountMapTiles proc uses ebx,mapinx:DWORD,lpnx:DWORD,lpny:DWORD
 
 CountMapTiles endp
 
+;Load mappoints
+LoadMapPoints proc uses ebx esi edi
+	LOCAL	hMem:HGLOBAL
+	LOCAL	nx:DWORD
+	LOCAL	ny:DWORD
+
+	invoke CountMapTiles,1,addr nx,addr ny
+	inc		nx
+	inc		ny
+	invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,32768
+	mov		hMem,eax
+	invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,32768
+	mov		map.hMemLon,eax
+	invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,32768
+	mov		map.hMemLat,eax
+	;Get longitude array
+	invoke GetPrivateProfileString,addr szIniMap,addr szIniLon,addr szNULL,hMem,32767,addr szIniFileName
+	.if eax
+		mov		edi,map.hMemLon
+		invoke GetItemInt,hMem,0
+		mov		[edi].LONPOINT.iLon,eax
+		mov		[edi].LONPOINT.ixpos,0
+		lea		edi,[edi+sizeof LONPOINT]
+		invoke GetItemInt,hMem,0
+		mov		[edi].LONPOINT.iLon,eax
+		mov		eax,nx
+		shl		eax,9
+		mov		[edi].LONPOINT.ixpos,eax
+		mov		map.nLonPoint,2
+;
+;		mov		esi,hMem
+;		xor		ebx,ebx
+;		.while byte ptr [esi]
+;			invoke GetItemInt,esi,0
+;			mov		[edi].LONPOINT.iLon,eax
+;			invoke GetItemInt,esi,0
+;			mov		[edi].LONPOINT.ixpos,eax
+;			lea		edi,[edi+sizeof LONPOINT]
+;			inc		ebx
+;		.endw
+;		mov		map.nLonPoint,ebx
+	.endif
+;	;Get lattitude array
+;	invoke GetPrivateProfileString,addr szIniMap,addr szIniLat,addr szNULL,hMem,32767,addr szIniFileName
+;	.if eax
+;		mov		edi,map.hMemLat
+;		mov		esi,hMem
+;		xor		ebx,ebx
+;		.while byte ptr [esi]
+;			invoke GetItemInt,esi,0
+;			mov		[edi].LATPOINT.iLat,eax
+;			invoke GetItemInt,esi,0
+;			mov		[edi].LATPOINT.iypos,eax
+;			lea		edi,[edi+sizeof LATPOINT]
+;			inc		ebx
+;		.endw
+;		mov		map.nLatPoint,ebx
+;	.endif
+	invoke GetPrivateProfileString,addr szIniMap,addr szIniLat,addr szNULL,hMem,32767,addr szIniFileName
+	.if eax
+		;Get top
+		invoke GetItemInt,hMem,0
+		push	eax
+		;Get bottom
+		invoke GetItemInt,hMem,0
+		pop		edx
+		invoke MakeLatPoints,edx,eax,ny,map.hMemLat
+		mov		eax,ny
+		mov		map.nLatPoint,eax
+	.endif
+	invoke GlobalFree,hMem
+	ret
+
+LoadMapPoints endp
+
 ;Distance between two points:
 ;Spherical law of cosines: d = acos(sin(lat1).sin(lat2)+cos(lat1).cos(lat2).cos(long2-long1)).R
 ;R = earth’s radius (mean radius = 6,371km)
-
 GetDistance proc uses ebx esi edi,lpLOG:DWORD,nCount:DWORD
 	LOCAL	fDist:REAL10
 	LOCAL	fBear:REAL10
