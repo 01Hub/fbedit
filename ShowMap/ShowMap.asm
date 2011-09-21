@@ -65,16 +65,16 @@ InitZoom proc uses ebx esi edi
 	mov		esi,offset map.zoom
 	xor		ebx,ebx
 	.while ebx<MAXZOOM
-		invoke BinToDec,ebx,addr buffer
-		invoke GetPrivateProfileString,addr szIniZoom,addr buffer,addr szNULL,addr buffer,sizeof buffer,addr szIniFileName
+		invoke BinToDec,ebx,addr szbuff
+		invoke GetPrivateProfileString,addr szIniZoom,addr szbuff,addr szNULL,addr szbuff,sizeof szbuff,addr szIniFileName
 		.break .if !eax
-		invoke GetItemInt,addr buffer,0
+		invoke GetItemInt,addr szbuff,0
 		mov		[esi].ZOOM.zoomval,eax
-		invoke GetItemInt,addr buffer,0
+		invoke GetItemInt,addr szbuff,0
 		mov		[esi].ZOOM.mapinx,eax
-		invoke GetItemInt,addr buffer,0
+		invoke GetItemInt,addr szbuff,0
 		mov		[esi].ZOOM.scalem,eax
-		invoke strcpyn,addr [esi].ZOOM.text,addr buffer,sizeof ZOOM.text
+		invoke strcpyn,addr [esi].ZOOM.text,addr szbuff,sizeof ZOOM.text
 		invoke CountMapTiles,[esi].ZOOM.mapinx,addr [esi].ZOOM.nx,addr [esi].ZOOM.ny
 		invoke GetMapSize,[esi].ZOOM.nx,[esi].ZOOM.ny,addr [esi].ZOOM.xPixels,addr [esi].ZOOM.yPixels,addr [esi].ZOOM.xMeters,addr [esi].ZOOM.yMeters
 		.if !ebx
@@ -893,7 +893,8 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke DialogBoxParam,hInstance,IDD_DLGCOMPORT,hWin,addr ComOptionProc,0
 			.elseif eax==IDM_OPTION_SONAR
 				invoke CreateDialogParam,hInstance,IDD_DLGSONAR,hWin,addr SonarOptionProc,0
-				;invoke DialogBoxParam,hInstance,IDD_DLGSONAR,hWin,addr SonarOptionProc,0
+			.elseif eax==IDM_OPTION_GAIN
+				invoke DialogBoxParam,hInstance,IDD_DLGSONARGAIN,hWin,addr SonarGainOptionProc,0
 ;Context
 			.elseif eax==IDM_EDITPLACE
 				invoke DialogBoxParam,hInstance,IDD_DLGADDPLACE,hWin,addr AddPlaceProc,nPlace

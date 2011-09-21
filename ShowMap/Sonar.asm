@@ -35,6 +35,8 @@ IDC_BTNFD               equ 1531
 IDC_STCGAIN				equ 1521
 IDC_STCPING				equ 1536
 
+IDD_DLGSONARGAIN		equ 1600
+
 .code
 
 GetRangePtr proc uses edx,RangeInx:DWORD
@@ -409,6 +411,39 @@ SetPing:
 
 SonarOptionProc endp
 
+SonarGainOptionProc proc uses ebx esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+	LOCAL	rect:RECT
+	local	ps:PAINTSTRUCT
+
+	mov		eax,uMsg
+	.if eax==WM_INITDIALOG
+	.elseif eax==WM_COMMAND
+		mov		edx,wParam
+		movzx	eax,dx
+		shr		edx,16
+		.if edx==BN_CLICKED
+			.if eax==IDOK
+				invoke EndDialog,hWin,NULL
+			.endif
+		.endif
+	.elseif eax==WM_PAINT
+		invoke GetClientRect,hWin,addr rect
+		invoke BeginPaint,hWin,addr ps
+		invoke MoveToEx,ps.hdc,50,10,NULL
+		invoke LineTo,ps.hdc,50,10+260
+		invoke LineTo,ps.hdc,256+50,270
+		invoke EndPaint,hWin,addr ps
+	.elseif eax==WM_CLOSE
+		invoke EndDialog,hWin,NULL
+	.else
+		mov		eax,FALSE
+		ret
+	.endif
+	mov		eax,TRUE
+	ret
+
+SonarGainOptionProc endp
+
 Random proc uses ecx edx,range:DWORD
 
 	mov		eax,rseed
@@ -564,7 +599,7 @@ SetWTemp:
 		fld		watertempconv
 		fdivp	st(1),st
 		fistp	tmp
-		sub		tmp,150
+		sub		tmp,164
 		invoke wsprintf,addr buffer,addr szFmtDec,tmp
 		invoke strlen,addr buffer
 		movzx	ecx,word ptr buffer[eax-1]
