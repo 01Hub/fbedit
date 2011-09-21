@@ -303,7 +303,7 @@ RANGE struct
 	pingadd			DWORD ?									;Number of pulses to add to the initial ping (0 to 128). Used when autoping is on
 	nticks			DWORD ?									;Number of ticks on the range scale
 	scale			BYTE 64 dup(?)							;Zero terminated strings of depths on range scale
-	gain			DWORD MAXYECHO dup(?)					;Gain levels read from ini file and processed to add missing gain levels
+	gain			DWORD MAXYECHO+1 dup(?)					;Gain levels read from ini file and processed to add missing gain levels
 RANGE ends
 
 SONAR struct

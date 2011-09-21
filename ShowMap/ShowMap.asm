@@ -59,7 +59,7 @@ InitMaps proc uses ebx
 
 InitMaps endp
 
-InitZoom proc uses ebx esi
+InitZoom proc uses ebx esi edi
 	LOCAL	buffer[256]:BYTE
 
 	mov		esi,offset map.zoom
@@ -189,11 +189,6 @@ MapProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	.if eax==WM_CREATE
 		mov		eax,hWin
 		mov		hMap,eax
-		invoke LoadMapPoints
-		invoke InitOptions
-		invoke InitZoom
-		invoke InitFonts
-		invoke InitMaps
 		invoke ImageList_Create,16,16,ILC_COLOR24 or ILC_MASK,8+16,0
 		mov		hIml,eax
 		invoke LoadBitmap,hInstance,100
@@ -705,7 +700,6 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	.if eax==WM_INITDIALOG
 		mov		eax,hWin
 		mov		hWnd,eax
-		invoke InitPlaces
 		fldz
 		fstp	map.fSumDist
 		invoke GetMenu,hWin
@@ -720,6 +714,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		map.gpslock,TRUE
 		invoke CheckDlgButton,hWin,IDC_CHKTRAIL,BST_CHECKED
 		mov		map.gpstrail,TRUE
+		invoke InitPlaces
 	.elseif eax==WM_COMMAND
 		mov		edx,wParam
 		movzx	eax,dx
@@ -1269,6 +1264,11 @@ WinMain proc hInst:HINSTANCE,hPrevInst:HINSTANCE,CmdLine:LPSTR,CmdShow:DWORD
 	mov		wc.lpszClassName,offset szSonarClassName
 	invoke RegisterClassEx,addr wc
 
+	invoke InitOptions
+	invoke InitFonts
+	invoke LoadMapPoints
+	invoke InitZoom
+	invoke InitMaps
 	invoke CreateDialogParam,hInstance,IDD_DIALOG,NULL,addr WndProc,NULL
 	invoke ShowWindow,hWnd,SW_SHOWNORMAL
 	invoke UpdateWindow,hWnd

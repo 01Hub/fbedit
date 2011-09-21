@@ -2175,10 +2175,10 @@ LoadSonarFromIni proc uses ebx esi edi
 		invoke GetItemInt,addr buffer,0
 		mov		sonardata.sonarrange.pingadd[edi],eax
 		xor		esi,esi
-		.while esi<MAXYECHO
+		.while esi<=MAXYECHO
 			invoke GetItemInt,addr buffer,0
-			mov		sonardata.sonarrange.gain[edi+esi*DWORD+15*DWORD],eax
-			lea		esi,[esi+16]
+			mov		sonardata.sonarrange.gain[edi+esi*DWORD],eax
+			lea		esi,[esi+32]
 		.endw
 		lea		esi,sonardata.sonarrange.scale[edi]
 		invoke strcpy,esi,addr buffer
@@ -2204,12 +2204,12 @@ LoadSonarFromIni proc uses ebx esi edi
 		xor		esi,esi
 		xor		ecx,ecx
 		.while esi<MAXYECHO
-			mov		eax,sonardata.sonarrange.gain[edi+esi*DWORD+15*DWORD]
+			mov		eax,sonardata.sonarrange.gain[edi+esi*DWORD+32*DWORD]
 			push	eax
 			sub		eax,ecx
 			mov		tmp,eax
 			fild	tmp
-			mov		tmp,16
+			mov		tmp,32
 			fild	tmp
 			fdivp	st(1),st
 			fstp	ftmp1
@@ -2218,7 +2218,7 @@ LoadSonarFromIni proc uses ebx esi edi
 			fstp	ftmp2
 			push	ebx
 			xor		ebx,ebx
-			.while ebx<15
+			.while ebx<32
 				fld		ftmp1
 				fld		ftmp2
 				faddp	st(1),st
@@ -2234,11 +2234,17 @@ LoadSonarFromIni proc uses ebx esi edi
 			.endw
 			pop		ebx
 			pop		ecx
-			lea		esi,[esi+16]
+			lea		esi,[esi+32]
 		.endw
 		lea		edi,[edi+sizeof RANGE]
 		inc		ebx
 	.endw
+;	xor		ebx,ebx
+;	.while ebx<=MAXYECHO
+;		mov		eax,sonardata.sonarrange.gain[ebx*DWORD]
+;		PrintDec eax
+;		lea		ebx,[ebx+1]
+;	.endw
 	ret
 
 LoadSonarFromIni endp
