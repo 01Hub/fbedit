@@ -60,12 +60,11 @@ InitMaps proc uses ebx
 InitMaps endp
 
 InitZoom proc uses ebx esi edi
-	LOCAL	buffer[256]:BYTE
 
 	mov		esi,offset map.zoom
 	xor		ebx,ebx
 	.while ebx<MAXZOOM
-		invoke BinToDec,ebx,addr szbuff
+		invoke wsprintf,addr szbuff,addr szFmtDec,ebx
 		invoke GetPrivateProfileString,addr szIniZoom,addr szbuff,addr szNULL,addr szbuff,sizeof szbuff,addr szIniFileName
 		.break .if !eax
 		invoke GetItemInt,addr szbuff,0
@@ -1265,10 +1264,11 @@ WinMain proc hInst:HINSTANCE,hPrevInst:HINSTANCE,CmdLine:LPSTR,CmdShow:DWORD
 	mov		wc.lpszClassName,offset szSonarClassName
 	invoke RegisterClassEx,addr wc
 
-	invoke InitOptions
-	invoke InitFonts
 	invoke LoadMapPoints
 	invoke InitZoom
+
+	invoke InitOptions
+	invoke InitFonts
 	invoke InitMaps
 	invoke CreateDialogParam,hInstance,IDD_DIALOG,NULL,addr WndProc,NULL
 	invoke ShowWindow,hWnd,SW_SHOWNORMAL

@@ -852,14 +852,14 @@ LoadMapPoints proc uses ebx esi edi
 	invoke CountMapTiles,1,addr nx,addr ny
 	inc		nx
 	inc		ny
-	invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,32768
+	invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,4096
 	mov		hMem,eax
-	invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,32768
+	invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,4096
 	mov		map.hMemLon,eax
-	invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,32768
+	invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,16384
 	mov		map.hMemLat,eax
 	;Get longitude array
-	invoke GetPrivateProfileString,addr szIniMap,addr szIniLon,addr szNULL,hMem,32767,addr szIniFileName
+	invoke GetPrivateProfileString,addr szIniMap,addr szIniLon,addr szNULL,hMem,4096,addr szIniFileName
 	.if eax
 		mov		edi,map.hMemLon
 		invoke GetItemInt,hMem,0
@@ -872,36 +872,8 @@ LoadMapPoints proc uses ebx esi edi
 		shl		eax,9
 		mov		[edi].LONPOINT.ixpos,eax
 		mov		map.nLonPoint,2
-;
-;		mov		esi,hMem
-;		xor		ebx,ebx
-;		.while byte ptr [esi]
-;			invoke GetItemInt,esi,0
-;			mov		[edi].LONPOINT.iLon,eax
-;			invoke GetItemInt,esi,0
-;			mov		[edi].LONPOINT.ixpos,eax
-;			lea		edi,[edi+sizeof LONPOINT]
-;			inc		ebx
-;		.endw
-;		mov		map.nLonPoint,ebx
 	.endif
-;	;Get lattitude array
-;	invoke GetPrivateProfileString,addr szIniMap,addr szIniLat,addr szNULL,hMem,32767,addr szIniFileName
-;	.if eax
-;		mov		edi,map.hMemLat
-;		mov		esi,hMem
-;		xor		ebx,ebx
-;		.while byte ptr [esi]
-;			invoke GetItemInt,esi,0
-;			mov		[edi].LATPOINT.iLat,eax
-;			invoke GetItemInt,esi,0
-;			mov		[edi].LATPOINT.iypos,eax
-;			lea		edi,[edi+sizeof LATPOINT]
-;			inc		ebx
-;		.endw
-;		mov		map.nLatPoint,ebx
-;	.endif
-	invoke GetPrivateProfileString,addr szIniMap,addr szIniLat,addr szNULL,hMem,32767,addr szIniFileName
+	invoke GetPrivateProfileString,addr szIniMap,addr szIniLat,addr szNULL,hMem,4096,addr szIniFileName
 	.if eax
 		;Get top
 		invoke GetItemInt,hMem,0
