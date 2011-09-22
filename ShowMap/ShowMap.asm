@@ -1227,6 +1227,7 @@ WinMain proc hInst:HINSTANCE,hPrevInst:HINSTANCE,CmdLine:LPSTR,CmdShow:DWORD
 	LOCAL	wc:WNDCLASSEX
 	LOCAL	msg:MSG
 
+	invoke RtlZeroMemory,addr wc,sizeof WNDCLASSEX
 	mov		wc.cbSize,sizeof WNDCLASSEX
 	mov		wc.style,CS_HREDRAW or CS_VREDRAW
 	mov		wc.lpfnWndProc,offset WndProc
@@ -1264,12 +1265,6 @@ WinMain proc hInst:HINSTANCE,hPrevInst:HINSTANCE,CmdLine:LPSTR,CmdShow:DWORD
 	mov		wc.lpszClassName,offset szSonarClassName
 	invoke RegisterClassEx,addr wc
 
-	invoke LoadMapPoints
-	invoke InitZoom
-
-	invoke InitOptions
-	invoke InitFonts
-	invoke InitMaps
 	invoke CreateDialogParam,hInstance,IDD_DIALOG,NULL,addr WndProc,NULL
 	invoke ShowWindow,hWnd,SW_SHOWNORMAL
 	invoke UpdateWindow,hWnd
@@ -1301,9 +1296,6 @@ start:
 	invoke GetCommandLine
 	mov		CommandLine,eax
 	invoke InitCommonControls
-	; Initialize GDI+ Librery
-    mov     gdiplSTI.GdiplusVersion,1
-	invoke GdiplusStartup,offset token,offset gdiplSTI,NULL
 	invoke GetModuleFileName,hInstance,addr szIniFileName,sizeof szIniFileName
 	.while szIniFileName[eax]!='\' && eax
 		dec		eax
@@ -1312,6 +1304,19 @@ start:
 	invoke strcpyn,addr szAppPath,addr szIniFileName,addr [eax+1]
 	pop		eax
 	invoke strcpy,addr szIniFileName[eax+1],addr szIniFile
+
+	invoke LoadMapPoints
+	invoke InitZoom
+	invoke InitOptions
+	invoke InitFonts
+	invoke InitMaps
+
+	; Initialize GDI+ Librery
+    mov     gdiplSTI.GdiplusVersion,1
+    mov		gdiplSTI.DebugEventCallback,NULL
+    mov		gdiplSTI.SuppressBackgroundThread,FALSE
+    mov		gdiplSTI.SuppressExternalCodecs,FALSE
+	invoke GdiplusStartup,offset token,offset gdiplSTI,NULL
 	invoke WinMain,hInstance,NULL,CommandLine,SW_SHOWDEFAULT
 	invoke GdiplusShutdown,token
 	invoke ExitProcess,eax

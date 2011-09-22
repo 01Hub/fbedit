@@ -779,7 +779,7 @@ LatToPos proc iLat:DWORD
 
 LatToPos endp
 
-MakeLatPoints proc iLatTop:DWORD,iLatBottom:DWORD,nTiles:DWORD,lpPoints:DWORD
+MakeLatPoints proc uses edi,iLatTop:DWORD,iLatBottom:DWORD,nTiles:DWORD,lpPoints:DWORD
 	LOCAL	iDiff:DWORD
 	LOCAL	iPos:DWORD
 	LOCAL	ypos:DWORD
@@ -793,6 +793,7 @@ MakeLatPoints proc iLatTop:DWORD,iLatBottom:DWORD,nTiles:DWORD,lpPoints:DWORD
 	idiv	ecx
 	mov		iDiff,eax
 	mov		eax,nTiles
+	mov		map.nLatPoint,eax
 	shl		eax,9
 	mov		ypos,eax
 	mov		edi,lpPoints
@@ -845,47 +846,44 @@ CountMapTiles endp
 
 ;Load mappoints
 LoadMapPoints proc uses ebx esi edi
-	LOCAL	hMem:HGLOBAL
+	LOCAL	buffer[256]:BYTE
 	LOCAL	nx:DWORD
 	LOCAL	ny:DWORD
 
-	invoke CountMapTiles,1,addr nx,addr ny
-	inc		nx
-	inc		ny
-	invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,4096
-	mov		hMem,eax
+;	invoke CountMapTiles,1,addr nx,addr ny
+;	inc		nx
+;	inc		ny
+mov		nx,80
+mov		ny,64
 	invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,4096
 	mov		map.hMemLon,eax
-	invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,16384
+	invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,4096
 	mov		map.hMemLat,eax
 	;Get longitude array
-	invoke GetPrivateProfileString,addr szIniMap,addr szIniLon,addr szNULL,hMem,4096,addr szIniFileName
+	invoke GetPrivateProfileString,addr szIniMap,addr szIniLon,addr szNULL,addr buffer,sizeof buffer,addr szIniFileName
 	.if eax
 		mov		edi,map.hMemLon
-		invoke GetItemInt,hMem,0
+		invoke GetItemInt,addr buffer,0
 		mov		[edi].LONPOINT.iLon,eax
 		mov		[edi].LONPOINT.ixpos,0
 		lea		edi,[edi+sizeof LONPOINT]
-		invoke GetItemInt,hMem,0
+		invoke GetItemInt,addr buffer,0
 		mov		[edi].LONPOINT.iLon,eax
 		mov		eax,nx
 		shl		eax,9
 		mov		[edi].LONPOINT.ixpos,eax
 		mov		map.nLonPoint,2
 	.endif
-	invoke GetPrivateProfileString,addr szIniMap,addr szIniLat,addr szNULL,hMem,4096,addr szIniFileName
+	invoke GetPrivateProfileString,addr szIniMap,addr szIniLat,addr szNULL,addr buffer,sizeof buffer,addr szIniFileName
 	.if eax
 		;Get top
-		invoke GetItemInt,hMem,0
+		invoke GetItemInt,addr buffer,0
 		push	eax
 		;Get bottom
-		invoke GetItemInt,hMem,0
+		invoke GetItemInt,addr buffer,0
 		pop		edx
 		invoke MakeLatPoints,edx,eax,ny,map.hMemLat
-		mov		eax,ny
-		mov		map.nLatPoint,eax
 	.endif
-	invoke GlobalFree,hMem
 	ret
 
 LoadMapPoints endp

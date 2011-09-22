@@ -527,6 +527,35 @@ SonarGainOptionProc proc uses ebx esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:L
 		shr		edx,16
 		.if edx==BN_CLICKED
 			.if eax==IDOK
+				xor		ebx,ebx
+				mov		esi,offset sonardata.sonarrange
+				.while ebx<sonardata.MaxRange
+					push	ebx
+					push	esi
+					mov		szbuff,0
+					invoke PutItemInt,addr szbuff,[esi].RANGE.range
+					invoke PutItemInt,addr szbuff,[esi].RANGE.interval
+					invoke PutItemInt,addr szbuff,[esi].RANGE.pingadd
+					xor		ebx,ebx
+					.while ebx<=MAXYECHO
+						invoke PutItemInt,addr szbuff,[esi].RANGE.gain[ebx*DWORD]
+						lea		ebx,[ebx+32]
+					.endw
+					mov		ebx,[esi].RANGE.nticks
+					lea		esi,[esi].RANGE.scale
+					.while sdword ptr ebx>=0
+						invoke PutItemStr,addr szbuff,esi
+						invoke strlen,esi
+						lea		esi,[esi+eax+1]
+						dec		ebx
+					.endw
+					pop		esi
+					pop		ebx
+					invoke wsprintf,addr buffer,addr szFmtDec,ebx
+					invoke WritePrivateProfileString,addr szIniSonarRange,addr buffer,addr szbuff+1,addr szIniFileName
+					lea		esi,[esi+sizeof RANGE]
+					inc		ebx
+				.endw
 				invoke EndDialog,hWin,NULL
 			.elseif eax==IDC_BTNXD
 				.if xp>1
@@ -541,9 +570,6 @@ SonarGainOptionProc proc uses ebx esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:L
 			.elseif eax==IDC_BTNYD
 				mov		eax,pgain
 				.if dword ptr [eax]
-mov		edx,[eax]
-add		edx,500
-PrintDec edx
 					dec		dword ptr [eax]
 					invoke SetupGainArray
 					invoke InvalidateRect,hWin,NULL,TRUE
@@ -551,9 +577,6 @@ PrintDec edx
 			.elseif eax==IDC_BTNYU
 				mov		eax,pgain
 				.if dword ptr [eax]<4095-500
-mov		edx,[eax]
-add		edx,500
-PrintDec edx
 					inc		dword ptr [eax]
 					invoke SetupGainArray
 					invoke InvalidateRect,hWin,NULL,TRUE
@@ -1324,7 +1347,11 @@ STM32Thread proc uses ebx esi edi,lParam:DWORD
 			call	Show0
 		.endif
 	.endif
-	jmp		Again
+	.if !sonardata.fTreadExit
+		jmp		Again
+	.endif
+	mov		sonardata.fTreadExit,2
+	ret
 
 STLinkErr:
 	invoke SendMessage,hWnd,WM_CLOSE,0,0
@@ -2450,7 +2477,7 @@ SonarClear proc uses ebx esi
 	mov		rect.right,SIGNALBAR
 	
 	invoke FillRect,sonardata.mDCS,addr rect,sonardata.hBrBack
-	lea		esi,sonardata.sonarbmp
+	mov		esi,offset sonardata.sonarbmp
 	mov		ebx,MAXSONARBMP
 	.while ebx
 		.if [esi].SONARBMP.hBmp
@@ -2477,6 +2504,7 @@ SonarProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	mDC:HDC
 	LOCAL	hBmp:HBITMAP
 	LOCAL	pt:POINT
+	LOCAL	msg:MSG
 
 	mov		eax,uMsg
 	.if eax==WM_CREATE
@@ -2575,6 +2603,11 @@ SonarProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke TrackPopupMenu,eax,TPM_LEFTALIGN or TPM_RIGHTBUTTON,mousept.x,mousept.y,0,hWnd,0
 		.endif
 	.elseif eax==WM_DESTROY
+		mov		sonardata.fTreadExit,1
+		.while sonardata.fTreadExit!=2
+			invoke GetMessage,addr msg,NULL,0,0
+			invoke Sleep,100
+		.endw
 		.if sonardata.fSTLink && sonardata.fSTLink!=IDIGNORE
 			invoke STLinkDisconnect
 		.endif

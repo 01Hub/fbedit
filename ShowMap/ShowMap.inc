@@ -363,6 +363,7 @@ SONAR struct
 		EchoArray		BYTE MAXYECHO dup(?)				;Echo array, read from STM32 and processed
 		GainArray		WORD MAXYECHO dup(?)				;Gain array
 	ends
+	fTreadExit		DWORD ?
 SONAR ends
 
 TEMP struct
