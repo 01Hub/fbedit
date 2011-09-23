@@ -783,6 +783,7 @@ MakeLatPoints proc uses edi,iLatTop:DWORD,iLatBottom:DWORD,nTiles:DWORD,lpPoints
 	LOCAL	iDiff:DWORD
 	LOCAL	iPos:DWORD
 	LOCAL	ypos:DWORD
+;	LOCAL	tmp:DWORD
 
 	invoke LatToPos,iLatBottom
 	mov		iPos,eax
@@ -797,20 +798,29 @@ MakeLatPoints proc uses edi,iLatTop:DWORD,iLatBottom:DWORD,nTiles:DWORD,lpPoints
 	shl		eax,9
 	mov		ypos,eax
 	mov		edi,lpPoints
-	add		edi,64*8-8
+	mov		eax,nTiles
+	dec		eax
+	mov		ecx,sizeof LATPOINT
+	imul	ecx
+	lea		edi,[edi+eax]
 	.while sdword ptr ypos>=0
 		mov		eax,iLatBottom
-		mov		[edi],eax
+;mov tmp,eax
+		mov		[edi].LATPOINT.iLat,eax
 		mov		eax,ypos
-		mov		[edi+4],eax
-		lea		edi,[edi-8]
+		mov		[edi].LATPOINT.iypos,eax
+		lea		edi,[edi-sizeof LATPOINT]
 		mov		eax,iDiff
 		add		iPos,eax
+		add		iLatBottom,8000
 		.while TRUE
 			inc		iLatBottom
 			invoke LatToPos,iLatBottom
 			.break .if eax>=iPos
 		.endw
+;mov eax,iLatBottom
+;sub eax,tmp
+;PrintDec eax
 		sub		ypos,512
 	.endw
 	ret
@@ -850,11 +860,9 @@ LoadMapPoints proc uses ebx esi edi
 	LOCAL	nx:DWORD
 	LOCAL	ny:DWORD
 
-;	invoke CountMapTiles,1,addr nx,addr ny
-;	inc		nx
-;	inc		ny
-mov		nx,80
-mov		ny,64
+	invoke CountMapTiles,1,addr nx,addr ny
+	inc		nx
+	inc		ny
 	invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,4096
 	mov		map.hMemLon,eax
 	invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,4096
