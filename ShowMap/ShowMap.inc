@@ -375,11 +375,11 @@ SONARREPLAY struct
 	ADCBattery		WORD ?									;Battery level
 	ADCWaterTemp	WORD ?									;Water temprature
 	ADCAirTemp		WORD ?									;Air temprature
-	Time			DWORD ?									;Dos file time
-	Lon				DWORD ?									;Longitude, integer
-	Lat				DWORD ?									;Lattitude, integer
-	Speed			WORD ?									;Speed in kts
-	Bearing			WORD ?									;Degrees
+	iTime			DWORD ?									;Dos file time
+	iLon			DWORD ?									;Longitude, integer
+	iLat			DWORD ?									;Lattitude, integer
+	iSpeed			WORD ?									;Speed in kts
+	iBear			WORD ?									;Degrees
 SONARREPLAY ends
 
 TEMP struct

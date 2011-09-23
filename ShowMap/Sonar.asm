@@ -584,6 +584,8 @@ SonarGainOptionProc proc uses ebx esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:L
 					inc		ebx
 				.endw
 				invoke EndDialog,hWin,NULL
+			.elseif eax==IDCANCEL
+				invoke EndDialog,hWin,NULL
 			.elseif eax==IDC_BTNXD
 				.if xp>1
 					sub		xp,32
@@ -1135,12 +1137,21 @@ STM32Thread proc uses ebx esi edi,lParam:DWORD
 	LOCAL	pixmov:DWORD
 	LOCAL	pixdpt:DWORD
 	LOCAL	rngchanged:DWORD
+	LOCAL	nTrail:DWORD
+	LOCAL	iLon:DWORD
+	LOCAL	iLat:DWORD
+	LOCAL	fDist:REAL10
+	LOCAL	fBear:REAL10
+	LOCAL	iSumDist:DWORD
 
 	mov		pixcnt,0
 	mov		pixdir,0
 	mov		pixmov,0
 	mov		pixdpt,250
 	mov		rngchanged,4
+	mov		nTrail,0
+	mov		iLat,-1
+	mov		iLon,-1
 	invoke RtlZeroMemory,addr STM32Echo,sizeof STM32Echo
   Again:
 	invoke IsDlgButtonChecked,hWnd,IDC_CHKCHART
@@ -1151,52 +1162,94 @@ STM32Thread proc uses ebx esi edi,lParam:DWORD
 			;Copy old echo
 			call	CopyEcho
 			;Read echo from file
-			movzx	eax,sonarreplay.Version
-			.if eax<200
+			.if sonarreplay.Version<200
 				invoke ReadFile,sonardata.hReply,addr STM32Echo,MAXYECHO,addr dwread,NULL
 			.else
 				invoke ReadFile,sonardata.hReply,addr sonarreplay,sizeof SONARREPLAY,addr dwread,NULL
-mov		eax,sonarreplay.Time
-mov		map.iTime,eax
-mov		eax,sonarreplay.Lon
-mov		map.iLon,eax
-mov		eax,sonarreplay.Lat
-mov		map.iLat,eax
-movzx	eax,sonarreplay.Speed
-mov		map.iSpeed,eax
-movzx	eax,sonarreplay.Bearing
-mov		map.iBear,eax
-.if eax>360-22 || eax<45-22
-	;N
-	mov		map.ncursor,0
-.elseif eax<90-22
-	;NE
-	mov		map.ncursor,1
-.elseif eax<135-22
-	;E
-	mov		map.ncursor,2
-.elseif eax<180-22
-	;SE
-	mov		map.ncursor,3
-.elseif eax<225-22
-	;S
-	mov		map.ncursor,4
-.elseif eax<270-22
-	;SW
-	mov		map.ncursor,5
-.elseif eax<315-22
-	;W
-	mov		map.ncursor,6
-.else
-	;NW
-	mov		map.ncursor,7
-.endif
-invoke DoGoto,map.iLon,map.iLat,map.gpslock,TRUE
-invoke SetDlgItemInt,hWnd,IDC_EDTEAST,map.iLon,TRUE
-invoke SetDlgItemInt,hWnd,IDC_EDTNORTH,map.iLat,TRUE
-invoke SetDlgItemInt,hWnd,IDC_EDTBEAR,map.iBear,FALSE
-inc		map.paintnow
-				invoke ReadFile,sonardata.hReply,addr STM32Echo,MAXYECHO,addr dwread,NULL
+				.if dwread==sizeof SONARREPLAY
+					movzx	eax,sonarreplay.SoundSpeed
+					mov		sonardata.SoundSpeed,eax
+					mov		ax,sonarreplay.ADCBattery
+					mov		sonardata.ADCBattery,ax
+					mov		ax,sonarreplay.ADCWaterTemp
+					mov		sonardata.ADCWaterTemp,ax
+					mov		ax,sonarreplay.ADCAirTemp
+					mov		sonardata.ADCAirTemp,ax
+					mov		eax,sonarreplay.iTime
+					mov		map.iTime,eax
+					mov		eax,sonarreplay.iLon
+					mov		map.iLon,eax
+					mov		eax,sonarreplay.iLat
+					mov		map.iLat,eax
+					movzx	eax,sonarreplay.iSpeed
+					mov		map.iSpeed,eax
+					movzx	eax,sonarreplay.iBear
+					mov		map.iBear,eax
+					.if eax>360-22 || eax<45-22
+						;N
+						mov		map.ncursor,0
+					.elseif eax<90-22
+						;NE
+						mov		map.ncursor,1
+					.elseif eax<135-22
+						;E
+						mov		map.ncursor,2
+					.elseif eax<180-22
+						;SE
+						mov		map.ncursor,3
+					.elseif eax<225-22
+						;S
+						mov		map.ncursor,4
+					.elseif eax<270-22
+						;SW
+						mov		map.ncursor,5
+					.elseif eax<315-22
+						;W
+						mov		map.ncursor,6
+					.else
+						;NW
+						mov		map.ncursor,7
+					.endif
+					mov		eax,map.iLon
+					mov		edx,map.iLat
+					.if eax!=iLon || edx!=iLat
+						mov		iLon,eax
+						mov		iLat,edx
+						invoke DoGoto,map.iLon,map.iLat,map.gpslock,TRUE
+						invoke SetDlgItemInt,hWnd,IDC_EDTEAST,map.iLon,TRUE
+						invoke SetDlgItemInt,hWnd,IDC_EDTNORTH,map.iLat,TRUE
+						invoke SetDlgItemInt,hWnd,IDC_EDTBEAR,map.iBear,FALSE
+						movzx	eax,sonarreplay.iSpeed
+						invoke wsprintf,addr buffer,addr szFmtDec,eax
+						invoke strlen,addr buffer
+						movzx	ecx,word ptr buffer[eax-1]
+						shl		ecx,8
+						mov		cl,'.'
+						mov		dword ptr buffer[eax-1],ecx
+						invoke strcpy,addr map.options.text,addr buffer
+						invoke AddTrailPoint,map.iLon,map.iLat,map.iBear,map.iTime
+						.if nTrail
+							mov		eax,map.iLon
+							mov		edx,map.iLat
+							.if eax!=iLon || edx!=iLat
+								invoke BearingDistanceInt,iLon,iLat,map.iLon,map.iLat,addr fDist,addr fBear
+								fld		fDist
+								fld		map.fSumDist
+								faddp	st(1),st(0)
+								fst		st(1)
+								lea		eax,map.fSumDist
+								fstp	REAL10 PTR [eax]
+								lea		eax,iSumDist
+								fistp	dword ptr [eax]
+								invoke SetDlgItemInt,hWnd,IDC_EDTDIST,iSumDist,FALSE
+								invoke SetDlgItemInt,hWnd,IDC_EDTBEAR,map.iBear,FALSE
+							.endif
+						.endif
+						inc		nTrail
+						inc		map.paintnow
+					.endif
+					invoke ReadFile,sonardata.hReply,addr STM32Echo,MAXYECHO,addr dwread,NULL
+				.endif
 			.endif
 			.if dwread!=MAXYECHO
 				invoke CloseHandle,sonardata.hReply
@@ -1204,6 +1257,9 @@ inc		map.paintnow
 				invoke SetScrollPos,hSonar,SB_HORZ,0,TRUE
 				mov		sonardata.dptinx,0
 				invoke EnableScrollBar,hSonar,SB_HORZ,ESB_DISABLE_BOTH
+				mov		nTrail,0
+				mov		iLat,-1
+				mov		iLon,-1
 				jmp		Again
 			.endif
 			invoke GetScrollPos,hSonar,SB_HORZ
@@ -1410,9 +1466,8 @@ inc		map.paintnow
 			.endif
 			mov		sonardata.ADCBattery,08E0h
 			mov		sonardata.ADCWaterTemp,06A0h
-			mov		sonardata.ADCAirTemp,0900h
+			mov		sonardata.ADCAirTemp,0780h
 		.endif
-	
 		.if sonardata.hLog
 			;Write to log file
 			mov		sonarreplay.Version,200
@@ -1430,15 +1485,15 @@ inc		map.paintnow
 			mov		ax,sonardata.ADCAirTemp
 			mov		sonarreplay.ADCAirTemp,ax
 			mov		eax,map.iTime
-			mov		sonarreplay.Time,eax
+			mov		sonarreplay.iTime,eax
 			mov		eax,map.iLon
-			mov		sonarreplay.Lon,eax
+			mov		sonarreplay.iLon,eax
 			mov		eax,map.iLat
-			mov		sonarreplay.Lat,eax
+			mov		sonarreplay.iLat,eax
 			mov		eax,map.iSpeed
-			mov		sonarreplay.Speed,ax
+			mov		sonarreplay.iSpeed,ax
 			mov		eax,map.iBear
-			mov		sonarreplay.Bearing,ax
+			mov		sonarreplay.iBear,ax
 			invoke WriteFile,sonardata.hLog,addr sonarreplay,sizeof SONARREPLAY,addr dwwrite,NULL
 			invoke WriteFile,sonardata.hLog,addr STM32Echo,MAXYECHO,addr dwwrite,NULL
 		.endif

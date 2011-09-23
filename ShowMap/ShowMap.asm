@@ -870,6 +870,9 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 							shr		eax,9
 							invoke SetScrollRange,hSonar,SB_HORZ,0,eax,TRUE
 							invoke SonarClear
+							.if sonarreplay.Version>=200
+								invoke SendMessage,hWin,WM_COMMAND,IDM_LOG_CLEARTRAIL,hWin
+							.endif
 							mov		sonardata.dptinx,0
 							mov		sonardata.hReply,ebx
 						.endif
