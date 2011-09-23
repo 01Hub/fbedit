@@ -783,7 +783,6 @@ MakeLatPoints proc uses edi,iLatTop:DWORD,iLatBottom:DWORD,nTiles:DWORD,lpPoints
 	LOCAL	iDiff:DWORD
 	LOCAL	iPos:DWORD
 	LOCAL	ypos:DWORD
-;	LOCAL	tmp:DWORD
 
 	invoke LatToPos,iLatBottom
 	mov		iPos,eax
@@ -805,7 +804,6 @@ MakeLatPoints proc uses edi,iLatTop:DWORD,iLatBottom:DWORD,nTiles:DWORD,lpPoints
 	lea		edi,[edi+eax]
 	.while sdword ptr ypos>=0
 		mov		eax,iLatBottom
-;mov tmp,eax
 		mov		[edi].LATPOINT.iLat,eax
 		mov		eax,ypos
 		mov		[edi].LATPOINT.iypos,eax
@@ -818,9 +816,6 @@ MakeLatPoints proc uses edi,iLatTop:DWORD,iLatBottom:DWORD,nTiles:DWORD,lpPoints
 			invoke LatToPos,iLatBottom
 			.break .if eax>=iPos
 		.endw
-;mov eax,iLatBottom
-;sub eax,tmp
-;PrintDec eax
 		sub		ypos,512
 	.endw
 	ret

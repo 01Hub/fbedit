@@ -694,6 +694,7 @@ MapProc endp
 WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	rect:RECT
 	LOCAL	buffer[MAX_PATH]:BYTE
+	LOCAL	dwread:DWORD
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
@@ -861,13 +862,16 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						invoke strcpy,addr buffer,eax
 						invoke CreateFile,addr buffer,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL
 						.if eax!=INVALID_HANDLE_VALUE
-							mov		sonardata.hReply,eax
+							mov		ebx,eax
+							invoke ReadFile,ebx,addr sonarreplay,1,addr dwread,NULL
+							invoke SetFilePointer,ebx,0,NULL,FILE_BEGIN
 							invoke EnableScrollBar,hSonar,SB_HORZ,ESB_ENABLE_BOTH
-							invoke GetFileSize,sonardata.hReply,NULL
+							invoke GetFileSize,ebx,NULL
 							shr		eax,9
 							invoke SetScrollRange,hSonar,SB_HORZ,0,eax,TRUE
 							invoke SonarClear
 							mov		sonardata.dptinx,0
+							mov		sonardata.hReply,ebx
 						.endif
 					.endif
 				.endif

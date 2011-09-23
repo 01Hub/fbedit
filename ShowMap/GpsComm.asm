@@ -169,22 +169,22 @@ DoComm proc uses ebx esi edi,Param:DWORD
 						.if hFileLogWrite
 							invoke strcat,addr logbuff,addr bufflog
 						.endif
-					.else
-						invoke strcmp,addr buffer,addr szSDDPT
-						.if !eax
-							call	Depth
-							.if hFileLogWrite
-								invoke strcat,addr logbuff,addr bufflog
-							.endif
-						.else
-							invoke strcmp,addr buffer,addr szSDMTW
-							.if !eax
-								call	Temprature
-								.if hFileLogWrite
-									invoke strcat,addr logbuff,addr bufflog
-								.endif
-							.endif
-						.endif
+;					.else
+;						invoke strcmp,addr buffer,addr szSDDPT
+;						.if !eax
+;							call	Depth
+;							.if hFileLogWrite
+;								invoke strcat,addr logbuff,addr bufflog
+;							.endif
+;						.else
+;							invoke strcmp,addr buffer,addr szSDMTW
+;							.if !eax
+;								call	Temprature
+;								.if hFileLogWrite
+;									invoke strcat,addr logbuff,addr bufflog
+;								.endif
+;							.endif
+;						.endif
 					.endif
 					pop		ebx
 				.endw
@@ -246,100 +246,112 @@ PositionSpeedDirection:
 	mov		iLon,eax
 	mov		eax,map.iLat
 	mov		iLat,eax
-	;Lattitude
-	invoke GetItemStr,addr linebuff,addr szNULL,addr buffer,32
-	lea		esi,buffer
-	mov		edi,esi
-	.while byte ptr [esi]
-		mov		al,[esi]
-		.if al!='.'
-			mov		[edi],al
-			inc		edi
-		.endif
-		inc		esi
-	.endw
-	mov		byte ptr [edi],0
-	invoke DecToBin,addr buffer[2]
-	;convert minutes to decimal
-	mov		ecx,100
-	mul		ecx
-	mov		ecx,60
-	xor		edx,edx
-	div		ecx
-	mov		edx,eax
-	invoke wsprintf,addr buffer[2],addr szBinToDec,edx
-	invoke DecToBin,addr buffer
-	push	eax
-	invoke GetItemStr,addr linebuff,addr szNULL,addr buffer,32
-	pop		eax
-	.if buffer=='S'
-		neg		eax
-	.endif
 	.if fValid
-		mov		map.iLat,eax
-	.endif
-	;Longitude
-	invoke GetItemStr,addr linebuff,addr szNULL,addr buffer,32
-	lea		esi,buffer
-	mov		edi,esi
-	.while byte ptr [esi]
-		mov		al,[esi]
-		.if al!='.'
-			mov		[edi],al
-			inc		edi
+		;Lattitude
+		invoke GetItemStr,addr linebuff,addr szNULL,addr buffer,32
+		lea		esi,buffer
+		mov		edi,esi
+		.while byte ptr [esi]
+			mov		al,[esi]
+			.if al!='.'
+				mov		[edi],al
+				inc		edi
+			.endif
+			inc		esi
+		.endw
+		mov		byte ptr [edi],0
+		invoke DecToBin,addr buffer[2]
+		;convert minutes to decimal
+		mov		ecx,100
+		mul		ecx
+		mov		ecx,60
+		xor		edx,edx
+		div		ecx
+		mov		edx,eax
+		invoke wsprintf,addr buffer[2],addr szBinToDec,edx
+		invoke DecToBin,addr buffer
+		push	eax
+		invoke GetItemStr,addr linebuff,addr szNULL,addr buffer,32
+		pop		eax
+		.if buffer=='S'
+			neg		eax
 		.endif
-		inc		esi
-	.endw
-	mov		byte ptr [edi],0
-	invoke DecToBin,addr buffer[3]
-	;convert minutes to decimal
-	mov		ecx,100
-	mul		ecx
-	mov		ecx,60
-	xor		edx,edx
-	div		ecx
-	mov		edx,eax
-	invoke wsprintf,addr buffer[3],addr szBinToDec,edx
-	invoke DecToBin,addr buffer
-	push	eax
-	invoke GetItemStr,addr linebuff,addr szNULL,addr buffer,32
-	pop		eax
-	.if combuff=='W'
-		neg		eax
-	.endif
-	.if fValid
-		mov		map.iLon,eax
-	.endif
-	;Speed
-	invoke GetItemStr,addr linebuff,addr szNULL,addr map.options.text,sizeof OPTIONS.text
-	;Get the bearing
-	invoke GetItemStr,addr linebuff,addr szNULL,addr buffer,32
-	invoke DecToBin,addr buffer
-	mov		map.iBear,eax
-	.if eax>360-22 || eax<45-22
-		;N
-		mov		map.ncursor,0
-	.elseif eax<90-22
-		;NE
-		mov		map.ncursor,1
-	.elseif eax<135-22
-		;E
-		mov		map.ncursor,2
-	.elseif eax<180-22
-		;SE
-		mov		map.ncursor,3
-	.elseif eax<225-22
-		;S
-		mov		map.ncursor,4
-	.elseif eax<270-22
-		;SW
-		mov		map.ncursor,5
-	.elseif eax<315-22
-		;W
-		mov		map.ncursor,6
-	.else
-		;NW
-		mov		map.ncursor,7
+		.if fValid
+			mov		map.iLat,eax
+		.endif
+		;Longitude
+		invoke GetItemStr,addr linebuff,addr szNULL,addr buffer,32
+		lea		esi,buffer
+		mov		edi,esi
+		.while byte ptr [esi]
+			mov		al,[esi]
+			.if al!='.'
+				mov		[edi],al
+				inc		edi
+			.endif
+			inc		esi
+		.endw
+		mov		byte ptr [edi],0
+		invoke DecToBin,addr buffer[3]
+		;convert minutes to decimal
+		mov		ecx,100
+		mul		ecx
+		mov		ecx,60
+		xor		edx,edx
+		div		ecx
+		mov		edx,eax
+		invoke wsprintf,addr buffer[3],addr szBinToDec,edx
+		invoke DecToBin,addr buffer
+		push	eax
+		invoke GetItemStr,addr linebuff,addr szNULL,addr buffer,32
+		pop		eax
+		.if combuff=='W'
+			neg		eax
+		.endif
+		.if fValid
+			mov		map.iLon,eax
+		.endif
+		;Speed
+		invoke GetItemStr,addr linebuff,addr szNULL,addr map.options.text,sizeof OPTIONS.text
+		invoke strcpy,addr buffer,addr map.options.text
+		invoke strlen,addr buffer
+		.while buffer[eax]!='.' && eax
+			dec		eax
+		.endw
+		mov		buffer[eax+2],0
+		mov		ecx,dword ptr buffer[eax+1]
+		mov		dword ptr buffer[eax],ecx
+		invoke DecToBin,addr buffer
+		mov		map.iSpeed,eax
+		;Get the bearing
+		invoke GetItemStr,addr linebuff,addr szNULL,addr buffer,32
+		invoke DecToBin,addr buffer
+		mov		map.iBear,eax
+		.if eax>360-22 || eax<45-22
+			;N
+			mov		map.ncursor,0
+		.elseif eax<90-22
+			;NE
+			mov		map.ncursor,1
+		.elseif eax<135-22
+			;E
+			mov		map.ncursor,2
+		.elseif eax<180-22
+			;SE
+			mov		map.ncursor,3
+		.elseif eax<225-22
+			;S
+			mov		map.ncursor,4
+		.elseif eax<270-22
+			;SW
+			mov		map.ncursor,5
+		.elseif eax<315-22
+			;W
+			mov		map.ncursor,6
+		.else
+			;NW
+			mov		map.ncursor,7
+		.endif
 	.endif
 	mov		iTime,0
 	;Date
@@ -425,22 +437,22 @@ PositionSpeedDirection:
 	.endif
 	retn
 
-Depth:
-	invoke GetItemStr,addr linebuff,addr szNULL,addr map.options.text[sizeof OPTIONS],10
-	.if !map.options.text[sizeof OPTIONS]
-		invoke strcpy,addr map.options.text[sizeof OPTIONS],addr sz0Dot0
-	.endif
-	retn
+;Depth:
+;	invoke GetItemStr,addr linebuff,addr szNULL,addr map.options.text[sizeof OPTIONS],10
+;	.if !map.options.text[sizeof OPTIONS]
+;		invoke strcpy,addr map.options.text[sizeof OPTIONS],addr sz0Dot0
+;	.endif
+;	retn
 
-Temprature:
-	invoke GetItemStr,addr linebuff,addr sz0Dot0,addr map.options.text[sizeof OPTIONS*2],10
-	invoke GetItemStr,addr linebuff,addr szNULL,addr buffer,4
-	xor		eax,eax
-	.while buffer[eax] && buffer[eax]!='*'
-		inc		eax
-	.endw
-	mov		buffer[eax],0
-	invoke strcat,addr map.options.text[sizeof OPTIONS*2],addr buffer
-	retn
+;Temprature:
+;	invoke GetItemStr,addr linebuff,addr sz0Dot0,addr map.options.text[sizeof OPTIONS*2],10
+;	invoke GetItemStr,addr linebuff,addr szNULL,addr buffer,4
+;	xor		eax,eax
+;	.while buffer[eax] && buffer[eax]!='*'
+;		inc		eax
+;	.endw
+;	mov		buffer[eax],0
+;	invoke strcat,addr map.options.text[sizeof OPTIONS*2],addr buffer
+;	retn
 
 DoComm endp

@@ -70,21 +70,35 @@ SetRange proc uses ebx,RangeInx:DWORD
 
 SetRange endp
 
-ButtonProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
-
+ButtonProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+	.data?
+		nCount		DWORD ?
+	.code
 	mov		eax,uMsg
 	.if eax==WM_LBUTTONDOWN || eax==WM_LBUTTONDBLCLK
+		mov		nCount,16
 		invoke SetTimer,hWin,1000,500,NULL
 	.elseif eax==WM_LBUTTONUP
+		mov		nCount,16
 		invoke KillTimer,hWin,1000
 	.elseif eax==WM_TIMER
 		invoke GetWindowLong,hWin,GWL_ID
-		push	eax
+		mov		ebx,eax
 		invoke GetParent,hWin
-		pop		edx
-		invoke SendMessage,eax,WM_COMMAND,edx,hWin
+		mov		esi,eax
+		invoke SendMessage,esi,WM_COMMAND,ebx,hWin
+		mov		edi,nCount
+		shr		edi,4
+		.if edi>40
+			mov		edi,40
+		.endif
+		.while edi
+			invoke SendMessage,esi,WM_COMMAND,ebx,hWin
+			dec		edi
+		.endw
 		invoke KillTimer,hWin,1000
 		invoke SetTimer,hWin,1000,50,NULL
+		inc		nCount
 		xor		eax,eax
 		ret
 	.endif
@@ -199,9 +213,6 @@ SetupGainArray proc uses ebx esi edi
 				fst		ftmp2
 				fistp	tmp
 				mov		eax,tmp
-				.if eax>4095
-					mov		eax,4095
-				.endif
 				lea		edx,[esi+ebx]
 				mov		sonardata.sonarrange.gain[edi+edx*DWORD],eax
 				inc		ebx
@@ -213,12 +224,6 @@ SetupGainArray proc uses ebx esi edi
 		lea		edi,[edi+sizeof RANGE]
 		inc		ebx
 	.endw
-;	xor		ebx,ebx
-;	.while ebx<=MAXYECHO
-;		mov		eax,sonardata.sonarrange.gain[ebx*DWORD]
-;		PrintDec eax
-;		lea		ebx,[ebx+1]
-;	.endw
 	ret
 
 SetupGainArray endp
@@ -266,6 +271,28 @@ SonarOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:L
 		invoke SendDlgItemMessage,hWin,IDC_TRBPINGTIMER,TBM_SETPOS,TRUE,eax
 		invoke SendDlgItemMessage,hWin,IDC_TRBSOUNDSPEED,TBM_SETRANGE,FALSE,((SOUNDSPEEDMAX) SHL 16)+SOUNDSPEEDMIN
 		invoke SendDlgItemMessage,hWin,IDC_TRBSOUNDSPEED,TBM_SETPOS,TRUE,sonardata.SoundSpeed
+		invoke ImageList_GetIcon,hIml,6,ILD_NORMAL
+		mov		ebx,eax
+		invoke SendDlgItemMessage,hWin,IDC_BTNNRD,BM_SETIMAGE,IMAGE_ICON,ebx
+		invoke SendDlgItemMessage,hWin,IDC_BTNGD,BM_SETIMAGE,IMAGE_ICON,ebx
+		invoke SendDlgItemMessage,hWin,IDC_BTNPD,BM_SETIMAGE,IMAGE_ICON,ebx
+		invoke SendDlgItemMessage,hWin,IDC_BTNRD,BM_SETIMAGE,IMAGE_ICON,ebx
+		invoke SendDlgItemMessage,hWin,IDC_BTNCD,BM_SETIMAGE,IMAGE_ICON,ebx
+		invoke SendDlgItemMessage,hWin,IDC_BTNND,BM_SETIMAGE,IMAGE_ICON,ebx
+		invoke SendDlgItemMessage,hWin,IDC_BTNSSD,BM_SETIMAGE,IMAGE_ICON,ebx
+		invoke SendDlgItemMessage,hWin,IDC_BTNPTD,BM_SETIMAGE,IMAGE_ICON,ebx
+		invoke SendDlgItemMessage,hWin,IDC_BTNFD,BM_SETIMAGE,IMAGE_ICON,ebx
+		invoke ImageList_GetIcon,hIml,2,ILD_NORMAL
+		mov		ebx,eax
+		invoke SendDlgItemMessage,hWin,IDC_BTNNRU,BM_SETIMAGE,IMAGE_ICON,ebx
+		invoke SendDlgItemMessage,hWin,IDC_BTNGU,BM_SETIMAGE,IMAGE_ICON,ebx
+		invoke SendDlgItemMessage,hWin,IDC_BTNPU,BM_SETIMAGE,IMAGE_ICON,ebx
+		invoke SendDlgItemMessage,hWin,IDC_BTNRU,BM_SETIMAGE,IMAGE_ICON,ebx
+		invoke SendDlgItemMessage,hWin,IDC_BTNCU,BM_SETIMAGE,IMAGE_ICON,ebx
+		invoke SendDlgItemMessage,hWin,IDC_BTNNU,BM_SETIMAGE,IMAGE_ICON,ebx
+		invoke SendDlgItemMessage,hWin,IDC_BTNSSU,BM_SETIMAGE,IMAGE_ICON,ebx
+		invoke SendDlgItemMessage,hWin,IDC_BTNPTU,BM_SETIMAGE,IMAGE_ICON,ebx
+		invoke SendDlgItemMessage,hWin,IDC_BTNFU,BM_SETIMAGE,IMAGE_ICON,ebx
 		;Subclass buttons to get autorepeat
 		push	0
 		push	IDC_BTNNRD
@@ -481,9 +508,10 @@ SonarGainOptionProc proc uses ebx esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:L
 	LOCAL	buffer[256]:BYTE
 	
 	.data?
-	xp		DWORD ?
-	yp		DWORD ?
-	pgain	DWORD ?
+		xrange	DWORD ?
+		xp		DWORD ?
+		yp		DWORD ?
+		pgain	DWORD ?
 	.code
 
 	mov		eax,uMsg
@@ -504,7 +532,6 @@ SonarGainOptionProc proc uses ebx esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:L
 		invoke SendDlgItemMessage,hWin,IDC_BTNYU,BM_SETIMAGE,IMAGE_ICON,eax
 		invoke ImageList_GetIcon,hIml,4,ILD_NORMAL
 		invoke SendDlgItemMessage,hWin,IDC_BTNYD,BM_SETIMAGE,IMAGE_ICON,eax
-
 		invoke ImageList_GetIcon,hIml,6,ILD_NORMAL
 		invoke SendDlgItemMessage,hWin,IDC_BTNXD,BM_SETIMAGE,IMAGE_ICON,eax
 		invoke ImageList_GetIcon,hIml,2,ILD_NORMAL
@@ -560,42 +587,38 @@ SonarGainOptionProc proc uses ebx esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:L
 			.elseif eax==IDC_BTNXD
 				.if xp>1
 					sub		xp,32
-					invoke InvalidateRect,hWin,NULL,TRUE
+					call	Invalidate
 				.endif
 			.elseif eax==IDC_BTNXU
 				.if xp<512
 					add		xp,32
-					invoke InvalidateRect,hWin,NULL,TRUE
+					call	Invalidate
 				.endif
 			.elseif eax==IDC_BTNYD
 				mov		eax,pgain
 				.if dword ptr [eax]
 					dec		dword ptr [eax]
 					invoke SetupGainArray
-					invoke InvalidateRect,hWin,NULL,TRUE
+					call	Invalidate
+					mov		sonardata.fGainUpload,TRUE
 				.endif
 			.elseif eax==IDC_BTNYU
 				mov		eax,pgain
-				.if dword ptr [eax]<4095-500
+				.if dword ptr [eax]<10000
 					inc		dword ptr [eax]
 					invoke SetupGainArray
-					invoke InvalidateRect,hWin,NULL,TRUE
+					call	Invalidate
+					mov		sonardata.fGainUpload,TRUE
 				.endif
 			.endif
 		.elseif edx==CBN_SELCHANGE
 			.if eax==IDC_CBORANGE
-				invoke InvalidateRect,hWin,NULL,TRUE
+				call	Invalidate
 			.endif
 		.endif
 	.elseif eax==WM_PAINT
 		invoke GetClientRect,hWin,addr rect
 		invoke BeginPaint,hWin,addr ps
-		;Y-axis
-		invoke MoveToEx,ps.hdc,50,10,NULL
-		invoke LineTo,ps.hdc,50,10+260
-		;X-axis
-		invoke MoveToEx,ps.hdc,50,270,NULL
-		invoke LineTo,ps.hdc,260+50,270
 		call	DrawGain
 		invoke EndPaint,hWin,addr ps
 	.elseif eax==WM_CLOSE
@@ -607,7 +630,14 @@ SonarGainOptionProc proc uses ebx esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:L
 	mov		eax,TRUE
 	ret
 
-SetPos:
+Invalidate:
+	invoke GetClientRect,hWin,addr rect
+	add		rect.left,49
+	sub		rect.bottom,65
+	invoke InvalidateRect,hWin,addr rect,TRUE
+	retn
+
+DrawGain:
 	invoke CreatePen,PS_SOLID,1,0FFh
 	invoke SelectObject,ps.hdc,eax
 	push		eax
@@ -620,6 +650,9 @@ SetPos:
 	mov		ecx,sizeof RANGE
 	mul		ecx
 	lea		esi,[eax+offset sonardata.sonarrange.gain]
+	lea		eax,[eax+offset sonardata.sonarrange]
+	mov		eax,[eax].RANGE.range
+	mov		xrange,eax
 	mov		eax,xp
 	lea		esi,[esi+eax*DWORD]
 	mov		pgain,esi
@@ -636,14 +669,37 @@ SetPos:
 	add		ebx,10
 	invoke MoveToEx,ps.hdc,50,ebx,NULL
 	invoke LineTo,ps.hdc,50+260,ebx
-	invoke SetDlgItemInt,hWin,IDC_STCX,xp,FALSE
+	mov		eax,xrange
+	mov		ecx,100
+	imul	ecx
+	mov		ecx,xp
+	imul	ecx
+	shr		eax,9
+	invoke wsprintf,addr szbuff,addr szFmtDec3,eax
+	invoke strlen,addr szbuff
+	mov		ecx,dword ptr szbuff[eax-2]
+	mov		szbuff[eax-2],'.'
+	mov		dword ptr szbuff[eax-1],ecx
+	invoke SetDlgItemText,hWin,IDC_STCX,addr szbuff
 	invoke SetDlgItemInt,hWin,IDC_STCY,yp,FALSE
 	pop		eax
 	invoke SelectObject,ps.hdc,eax
 	invoke DeleteObject,eax
-	retn
-
-DrawGain:
+	invoke CreatePen,PS_SOLID,2,0
+	invoke SelectObject,ps.hdc,eax
+	push		eax
+	;Y-axis
+	invoke MoveToEx,ps.hdc,50,10,NULL
+	invoke LineTo,ps.hdc,50,10+260
+	;X-axis
+	invoke MoveToEx,ps.hdc,50,270,NULL
+	invoke LineTo,ps.hdc,260+50,270
+	pop		eax
+	invoke SelectObject,ps.hdc,eax
+	invoke DeleteObject,eax
+	invoke CreatePen,PS_SOLID,2,0FF0000h
+	invoke SelectObject,ps.hdc,eax
+	push		eax
 	invoke SendDlgItemMessage,hWin,IDC_CBORANGE,CB_GETCURSEL,0,0
 	mov		ecx,sizeof RANGE
 	mul		ecx
@@ -652,6 +708,9 @@ DrawGain:
 	.while ebx<512
 		mov		eax,[esi]
 		add		eax,500
+		.if eax>4095
+			mov		eax,4095
+		.endif
 		sub		eax,4095
 		neg		eax
 		shr		eax,4
@@ -659,11 +718,20 @@ DrawGain:
 		mov		edx,ebx
 		shr		edx,1
 		add		edx,50+1
-		invoke SetPixel,ps.hdc,edx,eax,0FF0000h
+		.if !ebx
+			push	eax
+			push	edx
+			invoke MoveToEx,ps.hdc,edx,eax,NULL
+			pop		edx
+			pop		eax
+		.endif
+		invoke LineTo,ps.hdc,edx,eax
 		lea		esi,[esi+DWORD]
 		inc		ebx
 	.endw
-	call	SetPos
+	pop		eax
+	invoke SelectObject,ps.hdc,eax
+	invoke DeleteObject,eax
 	retn
 
 SonarGainOptionProc endp
@@ -1083,7 +1151,53 @@ STM32Thread proc uses ebx esi edi,lParam:DWORD
 			;Copy old echo
 			call	CopyEcho
 			;Read echo from file
-			invoke ReadFile,sonardata.hReply,addr STM32Echo,MAXYECHO,addr dwread,NULL
+			movzx	eax,sonarreplay.Version
+			.if eax<200
+				invoke ReadFile,sonardata.hReply,addr STM32Echo,MAXYECHO,addr dwread,NULL
+			.else
+				invoke ReadFile,sonardata.hReply,addr sonarreplay,sizeof SONARREPLAY,addr dwread,NULL
+mov		eax,sonarreplay.Time
+mov		map.iTime,eax
+mov		eax,sonarreplay.Lon
+mov		map.iLon,eax
+mov		eax,sonarreplay.Lat
+mov		map.iLat,eax
+movzx	eax,sonarreplay.Speed
+mov		map.iSpeed,eax
+movzx	eax,sonarreplay.Bearing
+mov		map.iBear,eax
+.if eax>360-22 || eax<45-22
+	;N
+	mov		map.ncursor,0
+.elseif eax<90-22
+	;NE
+	mov		map.ncursor,1
+.elseif eax<135-22
+	;E
+	mov		map.ncursor,2
+.elseif eax<180-22
+	;SE
+	mov		map.ncursor,3
+.elseif eax<225-22
+	;S
+	mov		map.ncursor,4
+.elseif eax<270-22
+	;SW
+	mov		map.ncursor,5
+.elseif eax<315-22
+	;W
+	mov		map.ncursor,6
+.else
+	;NW
+	mov		map.ncursor,7
+.endif
+invoke DoGoto,map.iLon,map.iLat,map.gpslock,TRUE
+invoke SetDlgItemInt,hWnd,IDC_EDTEAST,map.iLon,TRUE
+invoke SetDlgItemInt,hWnd,IDC_EDTNORTH,map.iLat,TRUE
+invoke SetDlgItemInt,hWnd,IDC_EDTBEAR,map.iBear,FALSE
+inc		map.paintnow
+				invoke ReadFile,sonardata.hReply,addr STM32Echo,MAXYECHO,addr dwread,NULL
+			.endif
 			.if dwread!=MAXYECHO
 				invoke CloseHandle,sonardata.hReply
 				mov		sonardata.hReply,0
@@ -1301,6 +1415,31 @@ STM32Thread proc uses ebx esi edi,lParam:DWORD
 	
 		.if sonardata.hLog
 			;Write to log file
+			mov		sonarreplay.Version,200
+			mov		al,sonardata.PingPulses
+			mov		sonarreplay.PingPulses,al
+			mov		eax,sonardata.GainSet
+			mov		sonarreplay.GainSet,ax
+			mov		eax,sonardata.SoundSpeed
+			mov		sonarreplay.SoundSpeed,ax
+			mov		sonarreplay.ADCBattery,ax
+			mov		ax,sonardata.ADCBattery
+			mov		sonarreplay.ADCBattery,ax
+			mov		ax,sonardata.ADCWaterTemp
+			mov		sonarreplay.ADCWaterTemp,ax
+			mov		ax,sonardata.ADCAirTemp
+			mov		sonarreplay.ADCAirTemp,ax
+			mov		eax,map.iTime
+			mov		sonarreplay.Time,eax
+			mov		eax,map.iLon
+			mov		sonarreplay.Lon,eax
+			mov		eax,map.iLat
+			mov		sonarreplay.Lat,eax
+			mov		eax,map.iSpeed
+			mov		sonarreplay.Speed,ax
+			mov		eax,map.iBear
+			mov		sonarreplay.Bearing,ax
+			invoke WriteFile,sonardata.hLog,addr sonarreplay,sizeof SONARREPLAY,addr dwwrite,NULL
 			invoke WriteFile,sonardata.hLog,addr STM32Echo,MAXYECHO,addr dwwrite,NULL
 		.endif
 		movzx	eax,STM32Echo
@@ -2657,6 +2796,9 @@ SonarProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke SetScrollPos,hWin,SB_HORZ,eax,TRUE
 				pop		eax
 				mov		ecx,MAXYECHO
+				.if sonarreplay.Version>=200
+					add		ecx,sizeof SONARREPLAY
+				.endif
 				mul		ecx
 				invoke SetFilePointer,sonardata.hReply,eax,NULL,FILE_BEGIN
 			.endif
@@ -2668,6 +2810,9 @@ SonarProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke SetScrollPos,hWin,SB_HORZ,eax,TRUE
 				pop		eax
 				mov		ecx,MAXYECHO
+				.if sonarreplay.Version>=200
+					add		ecx,sizeof SONARREPLAY
+				.endif
 				mul		ecx
 				invoke SetFilePointer,sonardata.hReply,eax,NULL,FILE_BEGIN
 			.endif
@@ -2682,6 +2827,9 @@ SonarProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke SetScrollPos,hWin,SB_HORZ,eax,TRUE
 				pop		eax
 				mov		ecx,MAXYECHO
+				.if sonarreplay.Version>=200
+					add		ecx,sizeof SONARREPLAY
+				.endif
 				mul		ecx
 				invoke SetFilePointer,sonardata.hReply,eax,NULL,FILE_BEGIN
 			.endif
@@ -2693,6 +2841,9 @@ SonarProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke SetScrollPos,hWin,SB_HORZ,eax,TRUE
 				pop		eax
 				mov		ecx,MAXYECHO
+				.if sonarreplay.Version>=200
+					add		ecx,sizeof SONARREPLAY
+				.endif
 				mul		ecx
 				invoke SetFilePointer,sonardata.hReply,eax,NULL,FILE_BEGIN
 			.endif
@@ -2707,6 +2858,9 @@ SonarProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke SetScrollPos,hWin,SB_HORZ,eax,TRUE
 				pop		eax
 				mov		ecx,MAXYECHO
+				.if sonarreplay.Version>=200
+					add		ecx,sizeof SONARREPLAY
+				.endif
 				mul		ecx
 				invoke SetFilePointer,sonardata.hReply,eax,NULL,FILE_BEGIN
 			.endif

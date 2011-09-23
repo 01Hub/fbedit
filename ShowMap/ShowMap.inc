@@ -271,6 +271,7 @@ MAP struct
 	disthead		DWORD ?									;Head index in distance array
 	dist			LOG MAXDIST dup(<>)						;Distance array
 	iBear			DWORD ?									;Bearing
+	iSpeed			DWORD ?									;Speed in kts
 	iTime			DWORD ?									;Dos time
 	onpoint			DWORD ?									;Point index, -1 if not on point
 	fSumDist		REAL10 ?								;The sum of a distance calculation
@@ -336,8 +337,8 @@ SONAR struct
 	Battery			DWORD ?									;Current battery
 	WTemp			DWORD ?									;Current water surface temprature
 	ATemp			DWORD ?									;Current air temprature
-	PingInit		DWORD ?									;Ping initial value (0 to 255)
-	GainSet			DWORD ?									;Gain set level (0 to 255)
+	PingInit		DWORD ?									;Ping initial value (0 to 128)
+	GainSet			DWORD ?									;Gain set level (0 to 4095)
 	NoiseLevel		DWORD ?									;Noise level (0 to 255)
 	minyecho		DWORD ?									;Ping and surface clutter skipped
 	nodptinx		DWORD ?									;Depth not found
@@ -365,6 +366,21 @@ SONAR struct
 	ends
 	fTreadExit		DWORD ?
 SONAR ends
+
+SONARREPLAY struct
+	Version			BYTE ?									;200
+	PingPulses		BYTE ?									;Number of pulses in a ping (0 to 128)
+	GainSet			WORD ?									;Gain set level (0 to 4095)
+	SoundSpeed		WORD ?									;Speed of sound in water
+	ADCBattery		WORD ?									;Battery level
+	ADCWaterTemp	WORD ?									;Water temprature
+	ADCAirTemp		WORD ?									;Air temprature
+	Time			DWORD ?									;Dos file time
+	Lon				DWORD ?									;Longitude, integer
+	Lat				DWORD ?									;Lattitude, integer
+	Speed			WORD ?									;Speed in kts
+	Bearing			WORD ?									;Degrees
+SONARREPLAY ends
 
 TEMP struct
 	adcvalue		DWORD ?									;Value rad from ADC
@@ -432,6 +448,7 @@ szIcons				BYTE 'None',0							;Icon selection descriptions
 					BYTE 'Blue dot',0,0
 
 szFmtDec			BYTE '%d',0
+szFmtDec3			BYTE '%03u',0
 szFmtDepth			BYTE '%02u',0
 szFmtVolts			BYTE '%02u',0
 szVolts				BYTE 'V',0
@@ -470,5 +487,6 @@ sonardata			SONAR <>								;Sonar data
 hSplittV			HCURSOR ?								;Horizontal splitt cursor
 rseed				DWORD ?									;Random seed
 STM32Echo			BYTE MAXYECHO*4 dup(?)					;Echo work area
+sonarreplay			SONARREPLAY <>
 lpOldButtonProc		DWORD ?									;Button subclass
 ddtmp				DWORD ?
