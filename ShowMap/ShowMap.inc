@@ -410,10 +410,10 @@ szCRLF				BYTE 0Dh,0Ah,0
 szIniFile			BYTE 'ShowMap.ini',0					;File name of ini file
 szFishWav			BYTE '\Wav\fish.wav',0
 
-szIniPlace			BYTE 'Place',0							;Ini file app / key
 szIniMap			BYTE 'Map',0
-szIniLon			BYTE 'Lon',0
-szIniLat			BYTE 'Lat',0
+szIniMapRect		BYTE 'MapRect',0
+szIniLatArray		BYTE 'LatArray',0
+szIniPlace			BYTE 'Place',0							;Ini file app / key
 szIniPos			BYTE 'Pos',0
 szIniZoom			BYTE 'Zoom',0
 szIniFont			BYTE 'Font',0
@@ -448,8 +448,8 @@ szIcons				BYTE 'None',0							;Icon selection descriptions
 					BYTE 'Blue dot',0,0
 
 szFmtDec			BYTE '%d',0
+szFmtDec2			BYTE '%02u',0
 szFmtDec3			BYTE '%03u',0
-szFmtDepth			BYTE '%02u',0
 szFmtVolts			BYTE '%02u',0
 szVolts				BYTE 'V',0
 szCelcius			BYTE 'C',0

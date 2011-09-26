@@ -852,8 +852,10 @@ CountMapTiles endp
 ;Load mappoints
 LoadMapPoints proc uses ebx esi edi
 	LOCAL	buffer[256]:BYTE
+	LOCAL	rect:RECT
 	LOCAL	nx:DWORD
 	LOCAL	ny:DWORD
+	LOCAL	hMem:HGLOBAL
 
 	invoke CountMapTiles,1,addr nx,addr ny
 	inc		nx
@@ -862,30 +864,63 @@ LoadMapPoints proc uses ebx esi edi
 	mov		map.hMemLon,eax
 	invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,4096
 	mov		map.hMemLat,eax
-	;Get longitude array
-	invoke GetPrivateProfileString,addr szIniMap,addr szIniLon,addr szNULL,addr buffer,sizeof buffer,addr szIniFileName
+	;Get map rectangle
+	invoke GetPrivateProfileString,addr szIniMap,addr szIniMapRect,addr szNULL,addr buffer,sizeof buffer,addr szIniFileName
 	.if eax
-		mov		edi,map.hMemLon
 		invoke GetItemInt,addr buffer,0
+		mov		rect.left,eax
+		invoke GetItemInt,addr buffer,0
+		mov		rect.top,eax
+		invoke GetItemInt,addr buffer,0
+		mov		rect.right,eax
+		invoke GetItemInt,addr buffer,0
+		mov		rect.bottom,eax
+		;Setup longitude
+		mov		edi,map.hMemLon
+		mov		eax,rect.left
 		mov		[edi].LONPOINT.iLon,eax
 		mov		[edi].LONPOINT.ixpos,0
 		lea		edi,[edi+sizeof LONPOINT]
-		invoke GetItemInt,addr buffer,0
+		mov		eax,rect.right
 		mov		[edi].LONPOINT.iLon,eax
 		mov		eax,nx
 		shl		eax,9
 		mov		[edi].LONPOINT.ixpos,eax
 		mov		map.nLonPoint,2
-	.endif
-	invoke GetPrivateProfileString,addr szIniMap,addr szIniLat,addr szNULL,addr buffer,sizeof buffer,addr szIniFileName
-	.if eax
-		;Get top
-		invoke GetItemInt,addr buffer,0
-		push	eax
-		;Get bottom
-		invoke GetItemInt,addr buffer,0
-		pop		edx
-		invoke MakeLatPoints,edx,eax,ny,map.hMemLat
+		;Setup lattitude
+		invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,4096
+		mov		hMem,eax
+		invoke GetPrivateProfileString,addr szIniMap,addr szIniLatArray,addr szNULL,hMem,4096,addr szIniFileName
+		.if eax
+			;A predefined array exists
+			mov		ebx,ny
+			mov		map.nLatPoint,ebx
+			xor		esi,esi
+			mov		edi,map.hMemLat
+			.while ebx
+				invoke GetItemInt,hMem,0
+				mov		[edi].LATPOINT.iLat,eax
+				mov		[edi].LATPOINT.iypos,esi
+				lea		esi,[esi+512]
+				lea		edi,[edi+sizeof LATPOINT]
+				dec		ebx
+			.endw
+		.else
+			;Calculate the array
+			invoke MakeLatPoints,rect.top,rect.bottom,ny,map.hMemLat
+			;Save the array to ini
+			mov		edi,hMem
+			mov		esi,map.hMemLat
+			mov		ebx,ny
+			invoke PutItemInt,edi,rect.top
+			.while ebx
+				invoke PutItemInt,edi,[esi].LATPOINT.iLat
+				lea		esi,[esi+sizeof LATPOINT]
+				dec		ebx
+			.endw
+			invoke WritePrivateProfileString,addr szIniMap,addr szIniLatArray,addr [edi+1],addr szIniFileName
+		.endif
+		invoke GlobalFree,hMem
 	.endif
 	ret
 

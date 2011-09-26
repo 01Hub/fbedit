@@ -1272,6 +1272,11 @@ WinMain proc hInst:HINSTANCE,hPrevInst:HINSTANCE,CmdLine:LPSTR,CmdShow:DWORD
 	mov		wc.lpszClassName,offset szSonarClassName
 	invoke RegisterClassEx,addr wc
 
+	invoke LoadMapPoints
+	invoke InitZoom
+	invoke InitOptions
+	invoke InitFonts
+	invoke InitMaps
 	invoke CreateDialogParam,hInstance,IDD_DIALOG,NULL,addr WndProc,NULL
 	invoke ShowWindow,hWnd,SW_SHOWNORMAL
 	invoke UpdateWindow,hWnd
@@ -1311,13 +1316,6 @@ start:
 	invoke strcpyn,addr szAppPath,addr szIniFileName,addr [eax+1]
 	pop		eax
 	invoke strcpy,addr szIniFileName[eax+1],addr szIniFile
-
-	invoke LoadMapPoints
-	invoke InitZoom
-	invoke InitOptions
-	invoke InitFonts
-	invoke InitMaps
-
 	; Initialize GDI+ Librery
     mov     gdiplSTI.GdiplusVersion,1
     mov		gdiplSTI.DebugEventCallback,NULL

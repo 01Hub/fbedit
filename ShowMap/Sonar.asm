@@ -1160,7 +1160,7 @@ STM32Thread proc uses ebx esi edi,lParam:DWORD
 	.else
 		.if sonardata.hReply
 			;Copy old echo
-			call	CopyEcho
+			call	MoveEcho
 			;Read echo from file
 			.if sonarreplay.Version<200
 				invoke ReadFile,sonardata.hReply,addr STM32Echo,MAXYECHO,addr dwread,NULL
@@ -1220,7 +1220,7 @@ STM32Thread proc uses ebx esi edi,lParam:DWORD
 						invoke SetDlgItemInt,hWnd,IDC_EDTNORTH,map.iLat,TRUE
 						invoke SetDlgItemInt,hWnd,IDC_EDTBEAR,map.iBear,FALSE
 						movzx	eax,sonarreplay.iSpeed
-						invoke wsprintf,addr buffer,addr szFmtDec,eax
+						invoke wsprintf,addr buffer,addr szFmtDec2,eax
 						invoke strlen,addr buffer
 						movzx	ecx,word ptr buffer[eax-1]
 						shl		ecx,8
@@ -1283,7 +1283,7 @@ STM32Thread proc uses ebx esi edi,lParam:DWORD
 					jmp		STLinkErr
 				.endif
 				;Copy old echo
-				call	CopyEcho
+				call	MoveEcho
 				;Download sonar echo array
 				invoke STLinkRead,hWnd,STM32_Sonar+16,addr STM32Echo,MAXYECHO
 				.if !eax || eax==IDABORT || eax==IDIGNORE
@@ -1325,7 +1325,7 @@ STM32Thread proc uses ebx esi edi,lParam:DWORD
 			.endif
 		.elseif sonardata.fSTLink==IDIGNORE
 			;Copy old echo
-			call	CopyEcho
+			call	MoveEcho
 			;Clear echo
 			xor		eax,eax
 			lea		edi,STM32Echo
@@ -1499,9 +1499,7 @@ STM32Thread proc uses ebx esi edi,lParam:DWORD
 		.endif
 		movzx	eax,STM32Echo
 		.if al!=STM32Echo[MAXYECHO]
-			invoke RtlMoveMemory,addr STM32Echo[MAXYECHO*3],addr STM32Echo,MAXYECHO
-			invoke RtlMoveMemory,addr STM32Echo[MAXYECHO*2],addr STM32Echo,MAXYECHO
-			invoke RtlMoveMemory,addr STM32Echo[MAXYECHO*1],addr STM32Echo,MAXYECHO
+			call	CopyEcho
 		.endif
 		.if rngchanged
 			call	FindDepth
@@ -2095,11 +2093,18 @@ Show75:
 	invoke Sleep,edi
 	retn
 
-CopyEcho:
-	;Copy old echo
+MoveEcho:
+	;Move echo arrays
 	invoke RtlMoveMemory,addr STM32Echo[MAXYECHO*3],addr STM32Echo[MAXYECHO*2],MAXYECHO
 	invoke RtlMoveMemory,addr STM32Echo[MAXYECHO*2],addr STM32Echo[MAXYECHO*1],MAXYECHO
 	invoke RtlMoveMemory,addr STM32Echo[MAXYECHO*1],addr STM32Echo[MAXYECHO*0],MAXYECHO
+	retn
+
+CopyEcho:
+	;Copy echo arrays
+	invoke RtlMoveMemory,addr STM32Echo[MAXYECHO*3],addr STM32Echo,MAXYECHO
+	invoke RtlMoveMemory,addr STM32Echo[MAXYECHO*2],addr STM32Echo,MAXYECHO
+	invoke RtlMoveMemory,addr STM32Echo[MAXYECHO*1],addr STM32Echo,MAXYECHO
 	retn
 
 FindDepth:
@@ -2206,7 +2211,7 @@ CalculateDepth:
 	retn
 
 SetDepth:
-	invoke wsprintf,addr buffer,addr szFmtDepth,eax
+	invoke wsprintf,addr buffer,addr szFmtDec2,eax
 	invoke strlen,addr buffer
 	.if eax>3
 		;Remove the decimal
