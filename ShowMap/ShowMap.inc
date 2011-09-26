@@ -45,6 +45,7 @@ IDD_DIALOG              equ 1000
 IDC_MAP                 equ 1001
 IDC_BTNZOOMIN           equ 1002
 IDC_BTNZOOMOUT          equ 1003
+IDC_BTNMAP				equ 1019
 IDC_CHKPAUSE			equ 1013
 IDC_CHKLOCK				equ 1007
 IDC_CHKTRAIL			equ 1008
@@ -401,7 +402,8 @@ szAppName			BYTE 'Navigation',0						;Application name
 szAskSaveTrail		BYTE 'Save current trail?',0			;Messagebox string
 szAskOverwrite		BYTE 'Overwrite existing file?',0Dh,0Ah,0
 
-szFileName			BYTE '%s\Map\X%d\Land%02X%02X.jpg',0	;Format string to get map tile path & filename
+szLandFileName		BYTE '%s\Map\LandX%d\Land%02X%02X.jpg',0;Format string to get map tile path & filename
+szSeaFileName		BYTE '%s\Map\SeaX%d\Sea%02X%02X.jpg',0	;Format string to get map tile path & filename
 
 szNULL				BYTE 0
 szBS				BYTE '\',0
@@ -490,3 +492,5 @@ STM32Echo			BYTE MAXYECHO*4 dup(?)					;Echo work area
 sonarreplay			SONARREPLAY <>
 lpOldButtonProc		DWORD ?									;Button subclass
 ddtmp				DWORD ?
+fSeaMap				DWORD ?
+szFileName			BYTE MAX_PATH dup(?)					;Format string to get map tile path & filename

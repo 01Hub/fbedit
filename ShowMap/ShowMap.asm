@@ -1024,6 +1024,26 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						invoke ZoomMap,eax
 					.endif
 				.endif
+			.elseif eax==IDC_BTNMAP
+				xor		ebx,ebx
+				mov		esi,offset bmpcache
+				.while ebx<MAXBMP
+					.if [esi].BMP.hBmp
+						invoke DeleteObject,[esi].BMP.hBmp
+						mov		[esi].BMP.hBmp,0
+						mov		[esi].BMP.inuse,0
+					.endif
+					lea		esi,[esi+sizeof BMP]
+					inc		ebx
+				.endw
+				.if fSeaMap
+					invoke strcpy,addr szFileName,addr szLandFileName
+					mov		fSeaMap,FALSE
+				.else
+					invoke strcpy,addr szFileName,addr szSeaFileName
+					mov		fSeaMap,TRUE
+				.endif
+				inc		map.paintnow
 			.elseif eax==IDC_CHKPAUSE
 				invoke IsDlgButtonChecked,hWin,IDC_CHKPAUSE
 				mov		map.gpslogpause,eax
@@ -1114,6 +1134,9 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke MoveWindow,eax,rect.right,rect.top,80,25,TRUE
 		add		rect.top,27
 		invoke GetDlgItem,hWin,IDC_BTNZOOMOUT
+		invoke MoveWindow,eax,rect.right,rect.top,80,25,TRUE
+		add		rect.top,27
+		invoke GetDlgItem,hWin,IDC_BTNMAP
 		invoke MoveWindow,eax,rect.right,rect.top,80,25,TRUE
 		add		rect.top,27
 		invoke GetDlgItem,hWin,IDC_CHKPAUSE
@@ -1316,6 +1339,7 @@ start:
 	invoke strcpyn,addr szAppPath,addr szIniFileName,addr [eax+1]
 	pop		eax
 	invoke strcpy,addr szIniFileName[eax+1],addr szIniFile
+	invoke strcpy,addr szFileName,addr szLandFileName
 	; Initialize GDI+ Librery
     mov     gdiplSTI.GdiplusVersion,1
     mov		gdiplSTI.DebugEventCallback,NULL
