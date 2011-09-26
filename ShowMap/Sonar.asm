@@ -43,6 +43,12 @@ IDC_BTNYU				equ 1605
 IDC_CBORANGE			equ 1603
 IDC_STCX				equ 1606
 IDC_STCY				equ 1607
+IDC_EDTGAINOFS			equ 1608
+IDC_EDTGAINMAX			equ 1609
+IDC_BTNCALCULATE		equ 1610
+
+GAINXOFS				equ 60
+GAINYOFS				equ 117
 
 .code
 
@@ -504,9 +510,12 @@ SonarOptionProc endp
 
 SonarGainOptionProc proc uses ebx esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	rect:RECT
-	local	ps:PAINTSTRUCT
+	LOCAL	ps:PAINTSTRUCT
 	LOCAL	buffer[256]:BYTE
-	
+	LOCAL	tmp:DWORD
+	LOCAL	ftmp:REAL8
+	LOCAL	frng:REAL8
+
 	.data?
 		xrange	DWORD ?
 		xp		DWORD ?
@@ -536,6 +545,8 @@ SonarGainOptionProc proc uses ebx esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:L
 		invoke SendDlgItemMessage,hWin,IDC_BTNXD,BM_SETIMAGE,IMAGE_ICON,eax
 		invoke ImageList_GetIcon,hIml,2,ILD_NORMAL
 		invoke SendDlgItemMessage,hWin,IDC_BTNXU,BM_SETIMAGE,IMAGE_ICON,eax
+		invoke SetDlgItemInt,hWin,IDC_EDTGAINOFS,sonardata.gaiofs,FALSE
+		invoke SetDlgItemInt,hWin,IDC_EDTGAINMAX,sonardata.gainmax,FALSE
 		;Subclass buttons to get autorepeat
 		push	0
 		push	IDC_BTNXD
@@ -584,6 +595,53 @@ SonarGainOptionProc proc uses ebx esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:L
 					inc		ebx
 				.endw
 				invoke EndDialog,hWin,NULL
+			.elseif eax==IDC_BTNCALCULATE
+				invoke GetDlgItemInt,hWin,IDC_EDTGAINOFS,NULL,FALSE
+				mov		sonardata.gaiofs,eax
+				invoke GetDlgItemInt,hWin,IDC_EDTGAINMAX,NULL,FALSE
+				mov		sonardata.gainmax,eax
+				mov		eax,4095
+				sub		eax,sonardata.gaiofs
+				mov		tmp,eax
+fwait
+				finit
+fwait
+				fild	tmp
+				mov		eax,sonardata.gainmax
+				mov		tmp,eax
+				fild	tmp
+				fdivp	st(1),st(0)
+fwait
+				fst		ftmp
+				mov		esi,offset sonardata.sonarrange
+				xor		ebx,ebx
+				.while ebx<sonardata.MaxRange
+fwait
+					fld		ftmp
+					mov		eax,[esi].RANGE.range
+					mov		tmp,eax
+					fidiv	tmp
+fwait
+					mov		tmp,512
+fwait
+					fdiv	qw512
+					fst		frng
+fwait
+					fldz
+fwait
+					xor		edi,edi
+					.while edi<=MAXYECHO
+						fld		frng
+						faddp	st(1),st(0)
+fwait
+						fist	tmp
+fwait
+PrintDec tmp
+						inc		edi
+					.endw
+					lea		esi,[esi+sizeof RANGE]
+					inc		ebx
+				.endw
 			.elseif eax==IDCANCEL
 				invoke EndDialog,hWin,NULL
 			.elseif eax==IDC_BTNXD
@@ -634,20 +692,26 @@ SonarGainOptionProc proc uses ebx esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:L
 
 Invalidate:
 	invoke GetClientRect,hWin,addr rect
-	add		rect.left,49
-	sub		rect.bottom,65
+	mov		rect.left,GAINXOFS
+	mov		eax,rect.left
+	add		eax,260
+	mov		rect.right,eax
+	mov		rect.top,GAINYOFS
+	mov		eax,rect.top
+	add		eax,260
+	mov		rect.bottom,eax
 	invoke InvalidateRect,hWin,addr rect,TRUE
 	retn
 
 DrawGain:
 	invoke CreatePen,PS_SOLID,1,0FFh
 	invoke SelectObject,ps.hdc,eax
-	push		eax
+	push	eax
 	mov		ebx,xp
 	shr		ebx,1
-	add		ebx,50+1
-	invoke MoveToEx,ps.hdc,ebx,10,NULL
-	invoke LineTo,ps.hdc,ebx,260+10
+	add		ebx,GAINXOFS+1
+	invoke MoveToEx,ps.hdc,ebx,GAINYOFS,NULL
+	invoke LineTo,ps.hdc,ebx,GAINYOFS+260
 	invoke SendDlgItemMessage,hWin,IDC_CBORANGE,CB_GETCURSEL,0,0
 	mov		ecx,sizeof RANGE
 	mul		ecx
@@ -668,9 +732,9 @@ DrawGain:
 	shr		ebx,4
 	sub		ebx,256
 	neg		ebx
-	add		ebx,10
-	invoke MoveToEx,ps.hdc,50,ebx,NULL
-	invoke LineTo,ps.hdc,50+260,ebx
+	add		ebx,GAINYOFS
+	invoke MoveToEx,ps.hdc,GAINXOFS,ebx,NULL
+	invoke LineTo,ps.hdc,GAINXOFS+260,ebx
 	mov		eax,xrange
 	mov		ecx,100
 	imul	ecx
@@ -691,11 +755,11 @@ DrawGain:
 	invoke SelectObject,ps.hdc,eax
 	push		eax
 	;Y-axis
-	invoke MoveToEx,ps.hdc,50,10,NULL
-	invoke LineTo,ps.hdc,50,10+260
+	invoke MoveToEx,ps.hdc,GAINXOFS,GAINYOFS,NULL
+	invoke LineTo,ps.hdc,GAINXOFS,GAINYOFS+260
 	;X-axis
-	invoke MoveToEx,ps.hdc,50,270,NULL
-	invoke LineTo,ps.hdc,260+50,270
+	invoke MoveToEx,ps.hdc,GAINXOFS,GAINYOFS+260,NULL
+	invoke LineTo,ps.hdc,260+GAINXOFS,GAINYOFS+260
 	pop		eax
 	invoke SelectObject,ps.hdc,eax
 	invoke DeleteObject,eax
@@ -716,10 +780,10 @@ DrawGain:
 		sub		eax,4095
 		neg		eax
 		shr		eax,4
-		add		eax,10
+		add		eax,GAINYOFS
 		mov		edx,ebx
 		shr		edx,1
-		add		edx,50+1
+		add		edx,GAINXOFS+1
 		.if !ebx
 			push	eax
 			push	edx
@@ -2620,6 +2684,11 @@ LoadSonarFromIni proc uses ebx esi edi
 	mov		sonardata.PingTimer,al
 	invoke GetItemInt,addr buffer,(SOUNDSPEEDMAX+SOUNDSPEEDMIN)/2
 	mov		sonardata.SoundSpeed,eax
+	invoke GetPrivateProfileString,addr szIniSonarRange,addr szIniGainDef,addr szNULL,addr buffer,sizeof buffer,addr szIniFileName
+	invoke GetItemInt,addr buffer,0
+	mov		sonardata.gaiofs,eax
+	invoke GetItemInt,addr buffer,0
+	mov		sonardata.gainmax,eax
 	;Get the range definitions
 	xor		ebx,ebx
 	xor		edi,edi

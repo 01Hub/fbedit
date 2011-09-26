@@ -350,6 +350,8 @@ SONAR struct
 	szFishSound		BYTE MAX_PATH dup(?)					;Path & filename of fish.wav file
 	fGainUpload		DWORD ?									;If TRUE gain levels must be uploaded
 	sonarbmp		SONARBMP MAXSONARBMP dup(<>)			;Array of bitmap tiles
+	gaiofs			DWORD ?
+	gainmax			DWORD ?
 	sonarrange		RANGE MAXRANGE dup(<?>)					;Sonar range definitions (max 32)
 	struct
 		Start			BYTE ?								;Set to 1 to init a new ping and echo reading
@@ -393,6 +395,7 @@ TEMP ends
 dd256				DWORD 256
 dd512				DWORD 512
 dd72				DWORD 72
+qw512				REAL8 512.0
 
 ClassName			BYTE 'DLGCLASS',0						;Window class for main window
 szMapClassName		BYTE 'MAPCLASS',0						;Window class for map window
@@ -422,6 +425,7 @@ szIniFont			BYTE 'Font',0
 szIniOption			BYTE 'Option',0
 szIniSonar			BYTE 'Sonar',0
 szIniSonarRange		BYTE 'SonarRange',0
+szIniGainDef		BYTE 'GainDef',0
 
 szFonts				BYTE 'None',0							;Font selection descriptions
 					BYTE 'Small',0
@@ -455,7 +459,7 @@ szFmtDec3			BYTE '%03u',0
 szFmtVolts			BYTE '%02u',0
 szVolts				BYTE 'V',0
 szCelcius			BYTE 'C',0
-watertempconv		QWORD 5.16982758620
+watertempconv		REAL8 5.16982758620
 
 NATEMP				equ 14
 atemp				TEMP <3000,-200>,<2900,-150>,<2800,-100>,<2700,-50>,<2600,0>,<2522,50>,<2218,100>,
