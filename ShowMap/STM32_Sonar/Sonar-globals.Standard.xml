@@ -31,7 +31,7 @@
  <func Header="NVIC_Configuration" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" DeclLine="439"/>
  <func Header="TIM1_Configuration" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" DeclLine="465"/>
  <func Header="main" Icon="3" Type="func" Desc=":   long" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" DeclLine="65"/>
- <func Header="TIM2_Configuration" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" DeclLine="489"/>
+ <func Header="TIM2_Configuration" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" DeclLine="491"/>
  <func Header="TIM1_UP_IRQHandler" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" DeclLine="205"/>
  <variable Header="STM32_Sonar" Icon="2" Type="variable" Desc=":   struct " DeclFile="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" DeclLine="42" Pointer="No"/>
  <variable Header="BlueLED" Icon="2" Type="variable" Desc=":   unsigned char" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" DeclLine="43" Pointer="No"/>

@@ -649,36 +649,38 @@ C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:469
 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:470
   TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
   12:	f8ad 3006 	strh.w	r3, [sp, #6]
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:472
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:476
   /* Time base configuration 56MHz clock */
-  TIM_TimeBaseStructure.TIM_Period = 139;
-  16:	f04f 038b 	mov.w	r3, #139	; 0x8b
-  1a:	f8ad 3008 	strh.w	r3, [sp, #8]
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:475
+  //TIM_TimeBaseStructure.TIM_Period = 139;
   /* Time base configuration 48MHz clock */
   //TIM_TimeBaseStructure.TIM_Period = 119;
+  /* Time base configuration 40MHz clock */
+  TIM_TimeBaseStructure.TIM_Period = 99;
+  16:	f04f 0363 	mov.w	r3, #99	; 0x63
+  1a:	f8ad 3008 	strh.w	r3, [sp, #8]
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:477
   TIM_TimeBaseStructure.TIM_RepetitionCounter = 0;
   1e:	f88d 200c 	strb.w	r2, [sp, #12]
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:476
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:478
   TIM_TimeBaseInit(TIM1, &TIM_TimeBaseStructure);
   22:	f44f 5430 	mov.w	r4, #11264	; 0x2c00
   26:	f2c4 0401 	movt	r4, #16385	; 0x4001
   2a:	4620      	mov	r0, r4
   2c:	a901      	add	r1, sp, #4
   2e:	f7ff fffe 	bl	0 <TIM_TimeBaseInit>
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:478
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:480
   /* Enable TIM1 Update interrupt */
   TIM_ClearITPendingBit(TIM1,TIM_IT_Update);
   32:	4620      	mov	r0, r4
   34:	f04f 0101 	mov.w	r1, #1
   38:	f7ff fffe 	bl	0 <TIM_ClearITPendingBit>
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:479
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:481
   TIM_ITConfig(TIM1, TIM_IT_Update, ENABLE);
   3c:	4620      	mov	r0, r4
   3e:	f04f 0101 	mov.w	r1, #1
   42:	460a      	mov	r2, r1
   44:	f7ff fffe 	bl	0 <TIM_ITConfig>
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:480
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:482
 }
   48:	b004      	add	sp, #16
   4a:	bd10      	pop	{r4, pc}
@@ -973,7 +975,7 @@ Disassembly of section .text.TIM2_Configuration:
 
 00000000 <TIM2_Configuration>:
 TIM2_Configuration():
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:490
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:492
 * Input          : None
 * Output         : None
 * Return         : None
@@ -982,44 +984,44 @@ void TIM2_Configuration(void)
 {
    0:	b500      	push	{lr}
    2:	b085      	sub	sp, #20
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:492
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:494
   TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;
   TIM_TimeBaseStructure.TIM_ClockDivision = 0;
    4:	f04f 0300 	mov.w	r3, #0
    8:	f8ad 300a 	strh.w	r3, [sp, #10]
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:493
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:495
   TIM_TimeBaseStructure.TIM_Prescaler = 0;
    c:	f8ad 3004 	strh.w	r3, [sp, #4]
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:494
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:496
   TIM_TimeBaseStructure.TIM_Period = STM32_Sonar.PixelTimer;
   10:	f240 0200 	movw	r2, #0
   14:	f2c0 0200 	movt	r2, #0
   18:	8892      	ldrh	r2, [r2, #4]
   1a:	f8ad 2008 	strh.w	r2, [sp, #8]
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:495
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:497
   TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
   1e:	f8ad 3006 	strh.w	r3, [sp, #6]
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:496
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:498
   TIM_TimeBaseStructure.TIM_RepetitionCounter = 0;
   22:	f88d 300c 	strb.w	r3, [sp, #12]
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:497
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:499
   TIM_TimeBaseInit(TIM2, &TIM_TimeBaseStructure);
   26:	f04f 4080 	mov.w	r0, #1073741824	; 0x40000000
   2a:	a901      	add	r1, sp, #4
   2c:	f7ff fffe 	bl	0 <TIM_TimeBaseInit>
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:499
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:501
   /* Enable TIM2 Update interrupt */
   TIM_ClearITPendingBit(TIM2,TIM_IT_Update);
   30:	f04f 4080 	mov.w	r0, #1073741824	; 0x40000000
   34:	f04f 0101 	mov.w	r1, #1
   38:	f7ff fffe 	bl	0 <TIM_ClearITPendingBit>
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:500
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:502
   TIM_ITConfig(TIM2, TIM_IT_Update, ENABLE);
   3c:	f04f 4080 	mov.w	r0, #1073741824	; 0x40000000
   40:	f04f 0101 	mov.w	r1, #1
   44:	460a      	mov	r2, r1
   46:	f7ff fffe 	bl	0 <TIM_ITConfig>
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:501
+C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/main.c:503
 }
   4a:	b005      	add	sp, #20
   4c:	bd00      	pop	{pc}

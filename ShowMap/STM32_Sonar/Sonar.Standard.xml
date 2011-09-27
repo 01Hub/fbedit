@@ -189,8 +189,8 @@
     <variable Name="ADC" FileName="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" Line="68" Addr="0x0" TI="2600"/>
     <variable Name="Echo" FileName="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" Line="69" Addr="0x3" TI="94"/>
    </function >
-   <function Name="TIM2_Configuration" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" Line="489">
-    <variable Name="TIM_TimeBaseStructure" FileName="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" Line="491" Addr="0x34000004" TI="1925"/>
+   <function Name="TIM2_Configuration" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" Line="491">
+    <variable Name="TIM_TimeBaseStructure" FileName="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" Line="493" Addr="0x34000004" TI="1925"/>
    </function >
    <function Name="TIM1_UP_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" Line="205">
    </function >

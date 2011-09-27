@@ -457,7 +457,7 @@ void NVIC_Configuration(void)
 
 /*******************************************************************************
 * Function Name  : TIM1_Configuration
-* Description    : Configures TIM1 to generate PWM output on PA.08.
+* Description    : Configures TIM1 to count up and generate interrupt on overflow
 * Input          : None
 * Output         : None
 * Return         : None
@@ -469,9 +469,11 @@ void TIM1_Configuration(void)
   TIM_TimeBaseStructure.TIM_Prescaler = 0;
   TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
   /* Time base configuration 56MHz clock */
-  TIM_TimeBaseStructure.TIM_Period = 139;
+  //TIM_TimeBaseStructure.TIM_Period = 139;
   /* Time base configuration 48MHz clock */
   //TIM_TimeBaseStructure.TIM_Period = 119;
+  /* Time base configuration 40MHz clock */
+  TIM_TimeBaseStructure.TIM_Period = 99;
   TIM_TimeBaseStructure.TIM_RepetitionCounter = 0;
   TIM_TimeBaseInit(TIM1, &TIM_TimeBaseStructure);
   /* Enable TIM1 Update interrupt */
