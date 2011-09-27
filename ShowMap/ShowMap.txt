@@ -47,6 +47,9 @@ where a is semi-major axis = 6,378,137m
 
 y=a*ln[tan(lat/2+PI/4)]
 
+Map top left
+66.53365,12.91296
+
 Sonar Description
 =================
 A short ping at 200 KHz is transmitted at intervals depending on depth range (200 to 400 ms).
