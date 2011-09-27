@@ -546,7 +546,9 @@ SonarGainOptionProc proc uses ebx esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:L
 		invoke ImageList_GetIcon,hIml,2,ILD_NORMAL
 		invoke SendDlgItemMessage,hWin,IDC_BTNXU,BM_SETIMAGE,IMAGE_ICON,eax
 		invoke SetDlgItemInt,hWin,IDC_EDTGAINOFS,sonardata.gaiofs,FALSE
+		invoke SendDlgItemMessage,hWin,IDC_EDTGAINOFS,EM_LIMITTEXT,3,0
 		invoke SetDlgItemInt,hWin,IDC_EDTGAINMAX,sonardata.gainmax,FALSE
+		invoke SendDlgItemMessage,hWin,IDC_EDTGAINMAX,EM_LIMITTEXT,3,0
 		;Subclass buttons to get autorepeat
 		push	0
 		push	IDC_BTNXD
@@ -603,45 +605,36 @@ SonarGainOptionProc proc uses ebx esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:L
 				mov		eax,4095
 				sub		eax,sonardata.gaiofs
 				mov		tmp,eax
-fwait
-				finit
-fwait
 				fild	tmp
 				mov		eax,sonardata.gainmax
 				mov		tmp,eax
-				fild	tmp
-				fdivp	st(1),st(0)
-fwait
-				fst		ftmp
+				fidiv	tmp
+				fstp	ftmp
 				mov		esi,offset sonardata.sonarrange
 				xor		ebx,ebx
 				.while ebx<sonardata.MaxRange
-fwait
 					fld		ftmp
 					mov		eax,[esi].RANGE.range
 					mov		tmp,eax
-					fidiv	tmp
-fwait
-					mov		tmp,512
-fwait
-					fdiv	qw512
-					fst		frng
-fwait
+					fimul	tmp
+					fidiv	dd512
+					fstp	frng
 					fldz
-fwait
 					xor		edi,edi
-					.while edi<=MAXYECHO
-						fld		frng
-						faddp	st(1),st(0)
-fwait
+					.while edi<MAXYECHO
 						fist	tmp
-fwait
-PrintDec tmp
+						mov		eax,tmp
+						mov		[esi].RANGE.gain[edi*DWORD],eax
+						fadd	frng
 						inc		edi
 					.endw
+					fistp	tmp
+					mov		eax,tmp
+					mov		[esi].RANGE.gain[edi*DWORD],eax
 					lea		esi,[esi+sizeof RANGE]
 					inc		ebx
 				.endw
+				call	Invalidate
 			.elseif eax==IDCANCEL
 				invoke EndDialog,hWin,NULL
 			.elseif eax==IDC_BTNXD
@@ -696,9 +689,9 @@ Invalidate:
 	mov		eax,rect.left
 	add		eax,260
 	mov		rect.right,eax
-	mov		rect.top,GAINYOFS
+	mov		rect.top,GAINYOFS-1
 	mov		eax,rect.top
-	add		eax,260
+	add		eax,261
 	mov		rect.bottom,eax
 	invoke InvalidateRect,hWin,addr rect,TRUE
 	retn
@@ -723,7 +716,7 @@ DrawGain:
 	lea		esi,[esi+eax*DWORD]
 	mov		pgain,esi
 	mov		eax,[esi]
-	add		eax,500
+	add		eax,sonardata.gaiofs
 	.if eax>4095
 		mov		eax,4095
 	.endif
@@ -773,7 +766,7 @@ DrawGain:
 	xor		ebx,ebx
 	.while ebx<512
 		mov		eax,[esi]
-		add		eax,500
+		add		eax,sonardata.gaiofs
 		.if eax>4095
 			mov		eax,4095
 		.endif

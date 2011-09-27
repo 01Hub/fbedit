@@ -395,7 +395,6 @@ TEMP ends
 dd256				DWORD 256
 dd512				DWORD 512
 dd72				DWORD 72
-qw512				REAL8 512.0
 
 ClassName			BYTE 'DLGCLASS',0						;Window class for main window
 szMapClassName		BYTE 'MAPCLASS',0						;Window class for map window
