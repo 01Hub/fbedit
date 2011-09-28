@@ -68,8 +68,10 @@ szJpgX16						db '\JpgX16',0
 szJpgX64						db '\JpgX64',0
 szJpgX256						db '\JpgX256',0
 
-szSourceFileName				db 'Sea%02X%02X.bmp',0
-szDestinationFileName			db 'Sea%02X%02X.jpg',0
+;szSourceFileName				db 'Sea%02X%02X.bmp',0
+;szDestinationFileName			db 'Sea%02X%02X.jpg',0
+szSourceFileName				db 'Land%02X%02X.bmp',0
+szDestinationFileName			db 'Land%02X%02X.jpg',0
 szMimeType						db 'image/jpeg',0
 
 .data?

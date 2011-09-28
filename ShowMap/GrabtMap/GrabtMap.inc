@@ -22,18 +22,18 @@ include FBEWeb.inc
 IDD_DIALOG				equ 1000
 IDC_MAP					equ 1001
 
-IDM_MENU            	equ 10000
-IDM_FILE_LAND       	equ 10003
-IDM_FILE_SEA        	equ 10004
-IDM_FILE_RIGHT      	equ 10006
-IDM_FILE_DOWN       	equ 10005
-IDM_FILE_LEFTTOP        equ 10009
-IDM_FILE_RIGHTBOTTOM    equ 10010
-IDM_FILE_START      	equ 10002
-IDM_FILE_EXIT       	equ 10001
+IDM_MENU				equ 10000
+IDM_FILE_LAND			equ 10003
+IDM_FILE_SEA			equ 10004
+IDM_FILE_RIGHT			equ 10006
+IDM_FILE_DOWN			equ 10005
+IDM_FILE_LEFTTOP	    equ 10009
+IDM_FILE_RIGHTBOTTOM	equ 10010
+IDM_FILE_START			equ 10002
+IDM_FILE_EXIT			equ 10001
 
-MAXX					equ 80			;Number of map tiles in X direction
-MAXY					equ 64			;Number of map tiles in Y direction
+MAXX					equ 16;80			;Number of map tiles in X direction
+MAXY					equ 16;64			;Number of map tiles in Y direction
 
 PICX					equ 512			;Left rect position
 PICY					equ 160			;Top rect posuition
@@ -56,8 +56,8 @@ ClassName				db 'DLGCLASS',0
 szDisplayDC				db  "DISPLAY",0
 szwb					db 'FBEWeb.dll',0
 
-szUrlLand				db 'http://kart.gulesider.no/query?profile=no&mop=yp&what=map&advert_code=Z000KKXO',0
-;szUrlLand				db 'http://maps.google.no/',0
+;szUrlLand				db 'http://kart.gulesider.no/query?profile=no&mop=yp&what=map&advert_code=Z000KKXO',0
+szUrlLand				db 'http://maps.google.no/',0
 szFileNameLand			db 'Land\Land%02X%02X.bmp',0
 szUrlSea				db 'http://kart.gulesider.no/m/p4VdK',0
 szFileNameSea			db 'Sea\Sea%02X%02X.bmp',0

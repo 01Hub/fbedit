@@ -129,9 +129,16 @@ GrabScreen proc py:DWORD,px:DWORD
 
 GrabScreen endp
 
-SendMouse proc lpmi:DWORD,nSleep:DWORD
+SendMouse proc uses ebx esi,lpmi:DWORD,nSleep:DWORD
 
-	invoke SendInput,5,lpmi,sizeof INPUT
+	mov		esi,lpmi
+	xor		ebx,ebx
+	.while ebx<5
+		invoke SendInput,1,esi,sizeof INPUT
+		invoke Sleep,250
+		inc		ebx
+		lea		esi,[esi+sizeof INPUT]
+	.endw
 	invoke Sleep,nSleep
 	ret
 
@@ -163,7 +170,7 @@ TestDown endp
 
 GrabMap proc uses ebx esi edi,Param:DWORD
 
-	invoke Sleep,3000
+	invoke Sleep,5000
 	.while edi<MAXY
 		xor		esi,esi
 		.while esi<MAXX-1

@@ -755,6 +755,7 @@ PutItemStr endp
 LatToPos proc iLat:DWORD
 	LOCAL	tmp:DWORD
 
+	sub		iLat,90000000
 	fild	iLat
 	;Convert to decimal by dividing with 1 000 000
 	fdiv	dqdiv
@@ -868,12 +869,20 @@ LoadMapPoints proc uses ebx esi edi
 	invoke GetPrivateProfileString,addr szIniMap,addr szIniMapRect,addr szNULL,addr buffer,sizeof buffer,addr szIniFileName
 	.if eax
 		invoke GetItemInt,addr buffer,0
+		.if eax<0
+			add		eax,360000000
+		.endif
 		mov		rect.left,eax
 		invoke GetItemInt,addr buffer,0
+		add		eax,90000000
 		mov		rect.top,eax
 		invoke GetItemInt,addr buffer,0
+		.if eax<=0
+			add		eax,360000000
+		.endif
 		mov		rect.right,eax
 		invoke GetItemInt,addr buffer,0
+		add		eax,90000000
 		mov		rect.bottom,eax
 		;Setup longitude
 		mov		edi,map.hMemLon
