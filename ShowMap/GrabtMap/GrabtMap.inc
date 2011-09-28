@@ -32,8 +32,8 @@ IDM_FILE_RIGHTBOTTOM	equ 10010
 IDM_FILE_START			equ 10002
 IDM_FILE_EXIT			equ 10001
 
-MAXX					equ 16;80			;Number of map tiles in X direction
-MAXY					equ 16;64			;Number of map tiles in Y direction
+MAXX					equ 64;80			;Number of map tiles in X direction
+MAXY					equ 64;64			;Number of map tiles in Y direction
 
 PICX					equ 512			;Left rect position
 PICY					equ 160			;Top rect posuition

@@ -57,7 +57,7 @@ ten_256		dt	1.0e256
 
 fp2			dq 2.0
 pidiv4		dq 0.785398163397
-smaxis		dq 1000000000.0
+smaxis		dq 250000000.0
 
 .code
 
@@ -755,7 +755,6 @@ PutItemStr endp
 LatToPos proc iLat:DWORD
 	LOCAL	tmp:DWORD
 
-	sub		iLat,90000000
 	fild	iLat
 	;Convert to decimal by dividing with 1 000 000
 	fdiv	dqdiv
@@ -811,7 +810,6 @@ MakeLatPoints proc uses edi,iLatTop:DWORD,iLatBottom:DWORD,nTiles:DWORD,lpPoints
 		lea		edi,[edi-sizeof LATPOINT]
 		mov		eax,iDiff
 		add		iPos,eax
-		add		iLatBottom,8000
 		.while TRUE
 			inc		iLatBottom
 			invoke LatToPos,iLatBottom
@@ -874,7 +872,6 @@ LoadMapPoints proc uses ebx esi edi
 		.endif
 		mov		rect.left,eax
 		invoke GetItemInt,addr buffer,0
-		add		eax,90000000
 		mov		rect.top,eax
 		invoke GetItemInt,addr buffer,0
 		.if eax<=0
@@ -882,7 +879,6 @@ LoadMapPoints proc uses ebx esi edi
 		.endif
 		mov		rect.right,eax
 		invoke GetItemInt,addr buffer,0
-		add		eax,90000000
 		mov		rect.bottom,eax
 		;Setup longitude
 		mov		edi,map.hMemLon

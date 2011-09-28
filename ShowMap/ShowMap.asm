@@ -307,8 +307,12 @@ MapProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		push	edx
 		invoke ScrnPosToMapPos,pt.x,pt.y,addr x,addr y
 		invoke MapPosToGpsPos,x,y,addr iLon,addr iLat
-		invoke SetDlgItemInt,hWnd,IDC_EDTNORTH,iLat,FALSE
-		invoke SetDlgItemInt,hWnd,IDC_EDTEAST,iLon,FALSE
+		invoke SetDlgItemInt,hWnd,IDC_EDTNORTH,iLat,TRUE
+		mov		eax,iLon
+		.if eax>=180000000
+			sub		eax,360000000
+		.endif
+		invoke SetDlgItemInt,hWnd,IDC_EDTEAST,eax,TRUE
 		pop		edx
 		pop		eax
 		.if map.bdist==1 && map.disthead
