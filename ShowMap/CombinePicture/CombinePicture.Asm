@@ -77,19 +77,22 @@ GetEncoderClsid endp
 ConvertPicture proc lpSourceFileName:DWORD,lpDestFileName:DWORD
 	LOCAL	image:DWORD
 
-	;Load the bitmap and save a jpeg
-	xor		eax,eax
-	mov		image,eax
-	invoke RtlZeroMemory,addr wbuffer,sizeof wbuffer
-	invoke MultiByteToWideChar,CP_OEMCP,MB_PRECOMPOSED,lpSourceFileName,-1,addr wbuffer,MAX_PATH
-	mov		wbuffer[eax*2],0
-	invoke GdipLoadImageFromFile,addr wbuffer,addr image
-	.if !eax
+	;Load the bitmap and save as jpeg
+	invoke GetFileAttributes,lpSourceFileName
+	.if eax!=INVALID_HANDLE_VALUE
+		xor		eax,eax
+		mov		image,eax
 		invoke RtlZeroMemory,addr wbuffer,sizeof wbuffer
-		invoke MultiByteToWideChar,CP_OEMCP,MB_PRECOMPOSED,lpDestFileName,-1,addr wbuffer,MAX_PATH
+		invoke MultiByteToWideChar,CP_OEMCP,MB_PRECOMPOSED,lpSourceFileName,-1,addr wbuffer,MAX_PATH
 		mov		wbuffer[eax*2],0
-		invoke GdipSaveImageToFile,image,addr wbuffer,addr EncoderClsid,0
-		invoke GdipDisposeImage,image
+		invoke GdipLoadImageFromFile,addr wbuffer,addr image
+		.if !eax
+			invoke RtlZeroMemory,addr wbuffer,sizeof wbuffer
+			invoke MultiByteToWideChar,CP_OEMCP,MB_PRECOMPOSED,lpDestFileName,-1,addr wbuffer,MAX_PATH
+			mov		wbuffer[eax*2],0
+			invoke GdipSaveImageToFile,image,addr wbuffer,addr EncoderClsid,0
+			invoke GdipDisposeImage,image
+		.endif
 	.endif
 	ret
 

@@ -406,6 +406,7 @@ szAskOverwrite		BYTE 'Overwrite existing file?',0Dh,0Ah,0
 
 szLandFileName		BYTE '%s\Map\LandX%d\Land%02X%02X.jpg',0;Format string to get map tile path & filename
 szSeaFileName		BYTE '%s\Map\SeaX%d\Sea%02X%02X.jpg',0	;Format string to get map tile path & filename
+szTile				BYTE 'Tile%02X%02X',0
 
 szNULL				BYTE 0
 szBS				BYTE '\',0

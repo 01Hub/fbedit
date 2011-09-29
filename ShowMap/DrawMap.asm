@@ -143,6 +143,7 @@ ShowMap proc uses ebx esi edi,topx:DWORD,topy:DWORD,zoomval:DWORD
 	LOCAL	diby:DWORD
 	LOCAL	mapx:DWORD
 	LOCAL	mapy:DWORD
+	LOCAL	buffer[MAX_PATH]:BYTE
 
 	invoke SetMapUsed,topx,topy,zoomval
 	;Find leftmost dibx and ofsx
@@ -196,7 +197,7 @@ DrawX:
 			invoke SelectObject,map.tDC,eax
 			push	eax
 ;			invoke wsprintf,addr buffer,addr szTile,diby,dibx
-;			invoke TextOut,map.tDC,10,10,addr buffer,4
+;			invoke TextOut,map.tDC,10,10,addr buffer,8
 ;			invoke MoveToEx,map.tDC,0,0,NULL
 ;			invoke LineTo,map.tDC,512,0
 ;			invoke MoveToEx,map.tDC,0,0,NULL

@@ -171,6 +171,7 @@ TestDown endp
 GrabMap proc uses ebx esi edi,Param:DWORD
 
 	invoke Sleep,5000
+	xor		edi,edi
 	.while edi<MAXY
 		xor		esi,esi
 		.while esi<MAXX-1
