@@ -71,7 +71,7 @@ MinorFiles=*.res;*.obj;*.lib;*.exp;
 7=22,22,664,445,36214
 8=0,0,0,0,542
 9=66,66,664,445,100
-10=0,0,0,0,21321
+10=0,0,0,0,8502
 11=0,0,0,0,7601
 12=0,0,0,0,4837
 13=0,0,0,0,9284
@@ -165,7 +165,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=12
+MilestoneOnDateDate=29
 MilestoneOnDateTimeYear=2003
 MilestoneOnDateTimeMonth=12
 MilestoneOnDateTimeDate=11
@@ -205,9 +205,9 @@ ProductVer4Range=0
 15=
 6=
 [PTimer]
-PTimer=1768342526
+PTimer=1768954721
 [AutoLoad]
-AutoLoad=1,4,13,7
+AutoLoad=1,4,13,7,10
 [Exports]
 1=GetDef
 2=GetDefEx

@@ -57,7 +57,6 @@ ten_256		dt	1.0e256
 
 fp2			dq 2.0
 pidiv4		dq 0.785398163397
-smaxis		dq 250000000.0
 
 .code
 
@@ -771,27 +770,21 @@ LatToPos proc iLat:DWORD
 	fldln2
 	fxch	st(1)
 	fyl2x
-	;Multiply by a large factor to return a large integer
-	fmul	smaxis
-	fistp	tmp
-	mov		eax,tmp
 	ret
 
 LatToPos endp
 
 MakeLatPoints proc uses edi,iLatTop:DWORD,iLatBottom:DWORD,nTiles:DWORD,lpPoints:DWORD
-	LOCAL	iDiff:DWORD
-	LOCAL	iPos:DWORD
+	LOCAL	fDiff:REAL8
+	LOCAL	fPos:REAL8
 	LOCAL	ypos:DWORD
 
 	invoke LatToPos,iLatBottom
-	mov		iPos,eax
+	fstp	fPos
 	invoke LatToPos,iLatTop
-	sub		eax,iPos
-	mov		ecx,nTiles
-	xor		edx,edx
-	idiv	ecx
-	mov		iDiff,eax
+	fsub	fPos
+	fidiv	nTiles
+	fstp	fDiff
 	mov		eax,nTiles
 	mov		map.nLatPoint,eax
 	shl		eax,9
@@ -808,13 +801,18 @@ MakeLatPoints proc uses edi,iLatTop:DWORD,iLatBottom:DWORD,nTiles:DWORD,lpPoints
 		mov		eax,ypos
 		mov		[edi].LATPOINT.iypos,eax
 		lea		edi,[edi-sizeof LATPOINT]
-		mov		eax,iDiff
-		add		iPos,eax
+		fld		fDiff
+		fadd	fPos
+		fstp	fPos
 		.while TRUE
 			inc		iLatBottom
 			invoke LatToPos,iLatBottom
-			.break .if eax>=iPos
+			fcomp	fPos
+			fstsw	ax
+			sahf
+			.break .if !CARRY?
 		.endw
+	  @@:
 		sub		ypos,512
 	.endw
 	ret
@@ -1119,6 +1117,9 @@ GpsPosToMapPos proc uses ebx esi edi,iLon:DWORD,iLat:DWORD,lpix:DWORD,lpiy:DWORD
 	mov		esi,map.hMemLon
 	mov		edi,esi
 	mov		ebx,map.nLonPoint
+	.if sdword ptr iLon<0
+		add		iLon,360000000
+	.endif
 	mov		eax,iLon
 	.while eax>=[esi].LONPOINT.iLon && ebx>1
 		mov		edi,esi
@@ -1145,7 +1146,7 @@ GpsPosToMapPos proc uses ebx esi edi,iLon:DWORD,iLat:DWORD,lpix:DWORD,lpiy:DWORD
 	mov		edi,esi
 	mov		ebx,map.nLatPoint
 	mov		eax,iLat
-	.while eax<=[esi].LATPOINT.iLat && ebx>1
+	.while sdword ptr eax<=[esi].LATPOINT.iLat && ebx>1
 		mov		edi,esi
 		lea		esi,[esi+sizeof LATPOINT]
 		dec		ebx
