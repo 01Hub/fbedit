@@ -1200,6 +1200,9 @@ STM32Thread proc uses ebx esi edi,lParam:DWORD
 	LOCAL	fDist:REAL10
 	LOCAL	fBear:REAL10
 	LOCAL	iSumDist:DWORD
+	LOCAL	ft:FILETIME
+	LOCAL	lft:FILETIME
+	LOCAL	lst:SYSTEMTIME
 
 	mov		pixcnt,0
 	mov		pixdir,0
@@ -1234,6 +1237,26 @@ STM32Thread proc uses ebx esi edi,lParam:DWORD
 					mov		sonardata.ADCAirTemp,ax
 					mov		eax,sonarreplay.iTime
 					mov		map.iTime,eax
+					mov		ecx,eax
+					movzx	edx,ax
+					shr		ecx,16
+					invoke DosDateTimeToFileTime,ecx,edx,addr ft
+					invoke FileTimeToLocalFileTime,addr ft,addr lft
+					invoke FileTimeToSystemTime,addr lft,addr lst
+					movzx	eax,lst.wSecond
+					push	eax
+					movzx	eax,lst.wMinute
+					push	eax
+					movzx	eax,lst.wHour
+					push	eax
+					movzx	eax,lst.wYear
+					sub		eax,1980
+					push	eax
+					movzx	eax,lst.wMonth
+					push	eax
+					movzx	eax,lst.wDay
+					push	eax
+					invoke wsprintf,addr map.options.text[sizeof OPTIONS*4],offset szFmtTime
 					mov		eax,sonarreplay.iLon
 					mov		map.iLon,eax
 					mov		eax,sonarreplay.iLat
