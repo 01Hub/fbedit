@@ -395,7 +395,7 @@ SonarOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:L
 					mov		sonardata.fGainUpload,TRUE
 				.endif
 			.elseif eax==IDC_BTNND
-				.if sonardata.NoiseLevel
+				.if sonardata.NoiseLevel>1
 					dec		sonardata.NoiseLevel
 					invoke SendDlgItemMessage,hWin,IDC_TRBSONARNOISE,TBM_SETPOS,TRUE,sonardata.NoiseLevel
 				.endif
@@ -545,7 +545,7 @@ SonarGainOptionProc proc uses ebx esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:L
 		invoke SendDlgItemMessage,hWin,IDC_BTNXD,BM_SETIMAGE,IMAGE_ICON,eax
 		invoke ImageList_GetIcon,hIml,2,ILD_NORMAL
 		invoke SendDlgItemMessage,hWin,IDC_BTNXU,BM_SETIMAGE,IMAGE_ICON,eax
-		invoke SetDlgItemInt,hWin,IDC_EDTGAINOFS,sonardata.gaiofs,FALSE
+		invoke SetDlgItemInt,hWin,IDC_EDTGAINOFS,sonardata.gainofs,FALSE
 		invoke SendDlgItemMessage,hWin,IDC_EDTGAINOFS,EM_LIMITTEXT,3,0
 		invoke SetDlgItemInt,hWin,IDC_EDTGAINMAX,sonardata.gainmax,FALSE
 		invoke SendDlgItemMessage,hWin,IDC_EDTGAINMAX,EM_LIMITTEXT,3,0
@@ -599,11 +599,11 @@ SonarGainOptionProc proc uses ebx esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:L
 				invoke EndDialog,hWin,NULL
 			.elseif eax==IDC_BTNCALCULATE
 				invoke GetDlgItemInt,hWin,IDC_EDTGAINOFS,NULL,FALSE
-				mov		sonardata.gaiofs,eax
+				mov		sonardata.gainofs,eax
 				invoke GetDlgItemInt,hWin,IDC_EDTGAINMAX,NULL,FALSE
 				mov		sonardata.gainmax,eax
 				mov		eax,4095
-				sub		eax,sonardata.gaiofs
+				sub		eax,sonardata.gainofs
 				mov		tmp,eax
 				fild	tmp
 				mov		eax,sonardata.gainmax
@@ -716,7 +716,7 @@ DrawGain:
 	lea		esi,[esi+eax*DWORD]
 	mov		pgain,esi
 	mov		eax,[esi]
-	add		eax,sonardata.gaiofs
+	add		eax,sonardata.gainofs
 	.if eax>4095
 		mov		eax,4095
 	.endif
@@ -766,7 +766,7 @@ DrawGain:
 	xor		ebx,ebx
 	.while ebx<512
 		mov		eax,[esi]
-		add		eax,sonardata.gaiofs
+		add		eax,sonardata.gainofs
 		.if eax>4095
 			mov		eax,4095
 		.endif
@@ -1216,7 +1216,7 @@ STM32Thread proc uses ebx esi edi,lParam:DWORD
   Again:
 	invoke IsDlgButtonChecked,hWnd,IDC_CHKCHART
 	.if eax
-		invoke Sleep,100
+		invoke Sleep,250
 	.else
 		.if sonardata.hReply
 			;Copy old echo
@@ -2702,7 +2702,7 @@ LoadSonarFromIni proc uses ebx esi edi
 	mov		sonardata.SoundSpeed,eax
 	invoke GetPrivateProfileString,addr szIniSonarRange,addr szIniGainDef,addr szNULL,addr buffer,sizeof buffer,addr szIniFileName
 	invoke GetItemInt,addr buffer,0
-	mov		sonardata.gaiofs,eax
+	mov		sonardata.gainofs,eax
 	invoke GetItemInt,addr buffer,0
 	mov		sonardata.gainmax,eax
 	;Get the range definitions

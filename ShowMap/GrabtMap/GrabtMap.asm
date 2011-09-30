@@ -251,6 +251,13 @@ SetupMouseMove proc
 
 	mov		eax,rect.left
 	add		eax,PICX
+	mov		mapupmov.dwdx,eax
+	mov		eax,rect.top
+	add		eax,PICY+512
+	mov		mapupmov.dwdy,eax
+
+	mov		eax,rect.left
+	add		eax,PICX
 	mov		maplefttopmov.dwdx,eax
 	mov		eax,rect.top
 	add		eax,PICY
@@ -288,11 +295,19 @@ WndProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		and		eax,0FFFFh
 		.if eax==IDM_FILE_EXIT
 			invoke SendMessage,hWin,WM_CLOSE,0,0
-		.elseif eax==IDM_FILE_LAND
+		.elseif eax==IDM_FILE_MOVRIGHT
+			invoke SendMouse,addr mapright,100
+		.elseif eax==IDM_FILE_MOVLEFT
+			invoke SendMouse,addr mapleft,100
+		.elseif eax==IDM_FILE_MOVDOWN
+			invoke SendMouse,addr mapdown,100
+		.elseif eax==IDM_FILE_MOVUP
+			invoke SendMouse,addr mapup,100
+		.elseif eax==IDM_SETUP_LAND
 			invoke lstrcpy,addr szurl,addr szUrlLand
 			invoke lstrcpy,addr szfilename,addr szFileNameLand
 			invoke SendMessage,hWeb,WBM_NAVIGATE,0,addr szurl
-		.elseif eax==IDM_FILE_SEA
+		.elseif eax==IDM_SETUP_SEA
 			invoke lstrcpy,addr szurl,addr szUrlSea
 			invoke lstrcpy,addr szfilename,addr szFileNameSea
 			invoke SendMessage,hWeb,WBM_NAVIGATE,0,addr szurl

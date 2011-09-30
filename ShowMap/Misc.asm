@@ -752,7 +752,6 @@ PutItemStr endp
 ;http://mercator.myzen.co.uk/mercator.pdf
 ;y = a*ln[tan(Rad(lat)/2+PI/4)]
 LatToPos proc iLat:DWORD
-	LOCAL	tmp:DWORD
 
 	fild	iLat
 	;Convert to decimal by dividing with 1 000 000
@@ -865,16 +864,10 @@ LoadMapPoints proc uses ebx esi edi
 	invoke GetPrivateProfileString,addr szIniMap,addr szIniMapRect,addr szNULL,addr buffer,sizeof buffer,addr szIniFileName
 	.if eax
 		invoke GetItemInt,addr buffer,0
-		.if eax<0
-			add		eax,360000000
-		.endif
 		mov		rect.left,eax
 		invoke GetItemInt,addr buffer,0
 		mov		rect.top,eax
 		invoke GetItemInt,addr buffer,0
-		.if eax<=0
-			add		eax,360000000
-		.endif
 		mov		rect.right,eax
 		invoke GetItemInt,addr buffer,0
 		mov		rect.bottom,eax
@@ -1114,34 +1107,23 @@ MapPosToGpsPos endp
 
 GpsPosToMapPos proc uses ebx esi edi,iLon:DWORD,iLat:DWORD,lpix:DWORD,lpiy:DWORD
 
+	;Get X pos
 	mov		esi,map.hMemLon
-	mov		edi,esi
+	lea		edi,[esi+sizeof LONPOINT]
 	mov		ebx,map.nLonPoint
-	.if sdword ptr iLon<0
-		add		iLon,360000000
-	.endif
 	mov		eax,iLon
-	.while eax>=[esi].LONPOINT.iLon && ebx>1
-		mov		edi,esi
-		lea		esi,[esi+sizeof LONPOINT]
-		dec		ebx
-	.endw
-	.if esi!=edi
-		mov		eax,iLon
-		sub		eax,[edi].LONPOINT.iLon
-		mov		ecx,[esi].LONPOINT.ixpos
-		sub		ecx,[edi].LONPOINT.ixpos
-		imul	ecx
-		mov		ecx,[esi].LONPOINT.iLon
-		sub		ecx,[edi].LONPOINT.iLon
-		idiv	ecx
-		add		eax,[edi].LONPOINT.ixpos
-	.else
-		xor		eax,eax
-	.endif
+	mov		eax,iLon
+	sub		eax,[esi].LONPOINT.iLon
+	mov		ecx,[edi].LONPOINT.ixpos
+	sub		ecx,[esi].LONPOINT.ixpos
+	imul	ecx
+	mov		ecx,[edi].LONPOINT.iLon
+	sub		ecx,[esi].LONPOINT.iLon
+	idiv	ecx
+	add		eax,[esi].LONPOINT.ixpos
 	mov		edx,lpix
 	mov		[edx],eax
-
+	;Get Y pos
 	mov		esi,map.hMemLat
 	mov		edi,esi
 	mov		ebx,map.nLatPoint

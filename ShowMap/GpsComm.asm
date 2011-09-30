@@ -4,10 +4,7 @@
 szIniCom			BYTE 'Com',0
 
 szGPRMC				BYTE '$GPRMC',0
-szSDMTW				BYTE '$SDMTW',0
-szSDDPT				BYTE '$SDDPT',0
 
-sz0Dot0				BYTE '25.2m',0
 szBinToDec			BYTE '%06d',0
 szFmtTime			BYTE '%02d%02d%02d %02d:%02d:%02d',0
 
@@ -205,6 +202,7 @@ DoComm proc uses ebx esi edi,Param:DWORD
 					inc		map.paintnow
 				.endif
 			.endif
+			invoke Sleep,10
 		.elseif map.comopt.active
 			;Open the com port
 			invoke OpenCom

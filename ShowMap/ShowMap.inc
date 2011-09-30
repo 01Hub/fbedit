@@ -132,29 +132,6 @@ MAXDIST					equ 256								;Max number of distance calculation poins
 MAXMAPOPTION			equ 5								;Max number of overlays on map scteen
 MAXSONAROPTION			equ 3								;Max number of overlays on sonar scteen
 
-;STM32 constants
-STM32_Sonar				equ 20000000h						;STM32 ram address
-STM32_Clock				equ 40000000						;STM32 clock frequency
-STM32_PingTimer			equ (STM32_Clock/200000/2)-1
-
-;Sonar constants
-MAXXECHO				equ 512								;Max number of sonar X-echos
-MAXYECHO				equ 512								;Max number of sonar Y-echos
-RANGESCALE				equ 5								;Width of range scale
-SIGNALBAR				equ 32								;Width of signal strenght bar
-MAXRANGE				equ 32								;Max number of depth ranges that can be read from ini
-REPLYSPEED				equ 5								;At reply, the ping interval is divided by REPLYSPEED
-SONARBACKCOLOR			equ 00F4BD6Ch						;Back color of sonar
-SONARPENCOLOR			equ 0900000h						;Signal bar pen color
-MAXFISH					equ 64								;Prevents showing repeated fish symbols and repeated fish alarms
-MAXSONARBMP				equ 64								;Max number of bitmap tiles, for each range change a tile is created
-SOUNDSPEEDMIN			equ 1400							;Minimum speed of sound in water
-SOUNDSPEEDMAX			equ 1550							;Maximum speed of sound in water
-SMALLFISHECHO			equ 96								;Minimum echo to detect small fish
-LARGEFISHECHO			equ SMALLFISHECHO+64				;Minimum echo to detect large fish
-MAXDEPTHJUMP			equ 10								;Max number of pixels to jump on depth detection
-MAXPING					equ 128								;Max number of ping pulses
-
 LONPOINT struct
 	iLon			DWORD ?									;Longitude
 	ixpos			DWORD ?									;Map x position
@@ -280,11 +257,30 @@ MAP struct
 	hMemLon			HGLOBAL ?								;Longitude array
 	nLatPoint		DWORD ?									;Number of lattitude entries in array
 	hMemLat			HGLOBAL ?								;Lattitude array
-	LeftLon			DWORD ?
-	TopLat			DWORD ?
-	RightLon		DWORD ?
-	BottomLat		DWORD ?
 MAP ends
+
+;STM32 constants
+STM32_Sonar				equ 20000000h						;STM32 ram address
+STM32_Clock				equ 40000000						;STM32 clock frequency
+STM32_PingTimer			equ (STM32_Clock/200000/2)-1
+
+;Sonar constants
+MAXXECHO				equ 512								;Max number of sonar X-echos
+MAXYECHO				equ 512								;Max number of sonar Y-echos
+RANGESCALE				equ 5								;Width of range scale
+SIGNALBAR				equ 32								;Width of signal strenght bar
+MAXRANGE				equ 32								;Max number of depth ranges that can be read from ini
+REPLYSPEED				equ 5								;At reply, the ping interval is divided by REPLYSPEED
+SONARBACKCOLOR			equ 00F4BD6Ch						;Back color of sonar
+SONARPENCOLOR			equ 0900000h						;Signal bar pen color
+MAXFISH					equ 64								;Prevents showing repeated fish symbols and repeated fish alarms
+MAXSONARBMP				equ 64								;Max number of bitmap tiles, for each range change a tile is created
+SOUNDSPEEDMIN			equ 1400							;Minimum speed of sound in water
+SOUNDSPEEDMAX			equ 1550							;Maximum speed of sound in water
+SMALLFISHECHO			equ 96								;Minimum echo to detect small fish
+LARGEFISHECHO			equ SMALLFISHECHO+64				;Minimum echo to detect large fish
+MAXDEPTHJUMP			equ 10								;Max number of pixels to jump on depth detection
+MAXPING					equ 128								;Max number of ping pulses
 
 SONARBMP struct
 	hBmp			HBITMAP ?								;Bitmap handle
@@ -350,7 +346,7 @@ SONAR struct
 	szFishSound		BYTE MAX_PATH dup(?)					;Path & filename of fish.wav file
 	fGainUpload		DWORD ?									;If TRUE gain levels must be uploaded
 	sonarbmp		SONARBMP MAXSONARBMP dup(<>)			;Array of bitmap tiles
-	gaiofs			DWORD ?
+	gainofs			DWORD ?
 	gainmax			DWORD ?
 	sonarrange		RANGE MAXRANGE dup(<?>)					;Sonar range definitions (max 32)
 	struct
@@ -495,6 +491,5 @@ rseed				DWORD ?									;Random seed
 STM32Echo			BYTE MAXYECHO*4 dup(?)					;Echo work area
 sonarreplay			SONARREPLAY <>
 lpOldButtonProc		DWORD ?									;Button subclass
-ddtmp				DWORD ?
 fSeaMap				DWORD ?
 szFileName			BYTE MAX_PATH dup(?)					;Format string to get map tile path & filename

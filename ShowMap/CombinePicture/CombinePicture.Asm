@@ -116,6 +116,69 @@ Convert proc x:DWORD,y:DWORD
 
 Convert endp
 
+RevolveFiles proc uses ebx esi
+	LOCAL	buffer[MAX_PATH]:BYTE
+	LOCAL	src[MAX_PATH]:BYTE
+	LOCAL	dst[MAX_PATH]:BYTE
+
+	;Get number of map tiles in x direction
+	xor		ebx,ebx
+	xor		esi,esi
+	.while TRUE
+		call	MakeSourceFileName
+		invoke GetFileAttributes,addr src
+		.break .if eax==INVALID_HANDLE_VALUE
+		inc		ebx
+	.endw
+	mov		nx,ebx
+	;Get number of map tiles in y direction
+	xor		ebx,ebx
+	xor		esi,esi
+	.while TRUE
+		call	MakeSourceFileName
+		invoke GetFileAttributes,addr src
+		.break .if eax==INVALID_HANDLE_VALUE
+		inc		esi
+	.endw
+	mov		ny,esi
+	;Rename all files
+	xor		esi,esi
+	.while esi<ny
+		xor		ebx,ebx
+		.while ebx<nx
+			call	MakeSourceFileName
+			push	ebx
+			mov		eax,nx
+			shr		eax,1
+			add		ebx,eax
+			mov		eax,nx
+			dec		eax
+			and		ebx,eax
+			call	MakeDestFileName
+			invoke MoveFile,addr src,addr dst
+			pop		ebx
+			inc		ebx
+		.endw
+		inc		esi
+	.endw
+	ret
+
+MakeSourceFileName:
+	invoke wsprintf,addr buffer,addr szDestinationFileName,esi,ebx
+	invoke lstrcpy,addr src,addr SourcePath
+	invoke lstrcat,addr src,addr szBS
+	invoke lstrcat,addr src,addr buffer
+	retn
+
+MakeDestFileName:
+	invoke wsprintf,addr buffer,addr szDestinationFileName,esi,ebx
+	invoke lstrcpy,addr dst,addr DestPath
+	invoke lstrcat,addr dst,addr szBS
+	invoke lstrcat,addr dst,addr buffer
+	retn
+
+RevolveFiles endp
+
 SaveDIB32 proc uses ebx esi edi,hBmp:HBITMAP,x:DWORD,y:DWORD
 	LOCAL	buffer[MAX_PATH]:BYTE
 	LOCAL	hFile:HANDLE
@@ -429,6 +492,7 @@ DlgProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke SetCursor,eax
 				invoke GetDlgItemText,hWin,IDC_EDTSOURCE,offset SourcePath,sizeof SourcePath
 				invoke GetDlgItemText,hWin,IDC_EDTDEST,offset DestPath,sizeof DestPath
+;				invoke RevolveFiles
 				invoke GetMapDimension
 				xor		ebx,ebx
 				.while ebx<ny

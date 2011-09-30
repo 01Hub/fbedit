@@ -40,7 +40,6 @@ IDC_CBOSIZE						equ 1008
 IDR_MENU						equ 10000
 IDM_FILE_EXIT					equ 10003
 
-; Size of frame 150x83 mm, 640*354px
 PIXWT							equ 512
 PIXHT							equ 512
 

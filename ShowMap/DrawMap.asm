@@ -143,7 +143,6 @@ ShowMap proc uses ebx esi edi,topx:DWORD,topy:DWORD,zoomval:DWORD
 	LOCAL	diby:DWORD
 	LOCAL	mapx:DWORD
 	LOCAL	mapy:DWORD
-	LOCAL	buffer[MAX_PATH]:BYTE
 
 	invoke SetMapUsed,topx,topy,zoomval
 	;Find leftmost dibx and ofsx
