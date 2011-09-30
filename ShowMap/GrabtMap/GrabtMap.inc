@@ -37,8 +37,8 @@ IDM_SETUP_LAND			equ 10003
 IDM_SETUP_SEA			equ 10004
 IDM_SETUP_TILES			equ 10007
 
-MAXX					equ 8;80			;Number of map tiles in X direction
-MAXY					equ 8;64			;Number of map tiles in Y direction
+MAXX					equ 128;80			;Number of map tiles in X direction
+MAXY					equ 128;64			;Number of map tiles in Y direction
 
 PICX					equ 512			;Left rect position
 PICY					equ 160			;Top rect posuition
