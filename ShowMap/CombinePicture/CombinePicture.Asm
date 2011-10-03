@@ -77,9 +77,9 @@ GetEncoderClsid endp
 ConvertPicture proc lpSourceFileName:DWORD,lpDestFileName:DWORD
 	LOCAL	image:DWORD
 
-	;Load the bitmap and save as jpeg
 	invoke GetFileAttributes,lpSourceFileName
 	.if eax!=INVALID_HANDLE_VALUE
+		;Load the bitmap and save as jpeg
 		xor		eax,eax
 		mov		image,eax
 		invoke RtlZeroMemory,addr wbuffer,sizeof wbuffer
@@ -494,6 +494,8 @@ DlgProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke GetDlgItemText,hWin,IDC_EDTDEST,offset DestPath,sizeof DestPath
 ;				invoke RevolveFiles
 				invoke GetMapDimension
+mov nx,128
+mov	ny,128
 				xor		ebx,ebx
 				.while ebx<ny
 					xor		edi,edi
