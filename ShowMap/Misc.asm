@@ -831,7 +831,6 @@ CountMapTiles proc uses ebx,mapinx:DWORD,lpnx:DWORD,lpny:DWORD
 		mov		[edx],ebx
 		inc		ebx
 	.endw
-PrintDec ebx
 	;Get number of maps in y direction
 	xor		ebx,ebx
 	.while TRUE
@@ -842,7 +841,6 @@ PrintDec ebx
 		mov		[edx],ebx
 		inc		ebx
 	.endw
-PrintDec ebx
 	ret
 
 CountMapTiles endp

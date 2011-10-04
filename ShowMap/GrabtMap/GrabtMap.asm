@@ -172,18 +172,17 @@ GrabMap proc uses ebx esi edi,Param:DWORD
 
 	invoke Sleep,5000
 	xor		edi,edi
-	.while edi<64
+	.while edi<72
 		invoke SendMouse,addr mapdown,500
 		inc		edi
 	.endw
-
-	.while edi<128
-		invoke GrabScreen,edi,0
-		invoke SendMouse,addr mapdown,500
-		inc		edi
-	.endw
-ret
-	.while edi<80
+;	.while edi<128
+;		invoke GrabScreen,edi,0
+;		invoke SendMouse,addr mapdown,500
+;		inc		edi
+;	.endw
+;	ret
+	.while edi<88
 		xor		esi,esi
 		.while esi<MAXX-1
 			invoke GrabScreen,edi,esi
