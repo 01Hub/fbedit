@@ -94,6 +94,8 @@ Function WndProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 				GlobalFree(lpFBEWEB)
 			EndIf
 			'
+		Case DLGC_WANTMESSAGE
+			Return DLGC_WANTALLKEYS Or DLGC_WANTCHARS Or DLGC_WANTMESSAGE
 		Case WBM_NAVIGATE
 			If hLib Then
 				lpFBEWEB=Cast(FBEWEB ptr,GetWindowLong(hWin,0))

@@ -14,13 +14,19 @@ include FBEWeb.inc
 ;#########################################################################
 ;VKim's Debug
 
-;include masm32.inc
-;include Debug.Inc
-;includelib masm32.lib
-;includelib Debug.lib
+include masm32.inc
+include Debug.Inc
+includelib masm32.lib
+includelib Debug.lib
 
-IDD_DIALOG				equ 1000
+IDD_DLGMAIN				equ 1000
 IDC_MAP					equ 1001
+
+IDD_DLGSETUP            equ 1100
+IDC_EDTURLLAND          equ 1101
+IDC_EDTURLSEA           equ 1104
+IDC_EDTMAPTILESX        equ 1102
+IDC_EDTMAPTILESY        equ 1103
 
 IDM_MENU				equ 10000
 IDM_FILE_MOVRIGHT		equ 10008
@@ -29,19 +35,14 @@ IDM_FILE_MOVDOWN		equ 10012
 IDM_FILE_MOVUP			equ 10013
 IDM_FILE_RIGHT			equ 10006
 IDM_FILE_DOWN			equ 10005
-IDM_FILE_LEFTTOP	    equ 10009
-IDM_FILE_RIGHTBOTTOM	equ 10010
 IDM_FILE_START			equ 10002
 IDM_FILE_EXIT			equ 10001
 IDM_SETUP_LAND			equ 10003
 IDM_SETUP_SEA			equ 10004
 IDM_SETUP_TILES			equ 10007
 
-MAXX					equ 128;80			;Number of map tiles in X direction
-MAXY					equ 128;64			;Number of map tiles in Y direction
-
 PICX					equ 512			;Left rect position
-PICY					equ 160			;Top rect posuition
+PICY					equ 160			;Top rect position
 PICWT					equ 512			;Tile width
 PICHT					equ 512			;Tile height
 
@@ -61,13 +62,14 @@ ClassName				db 'DLGCLASS',0
 szDisplayDC				db  "DISPLAY",0
 szwb					db 'FBEWeb.dll',0
 
-;szUrlLand				db 'http://kart.gulesider.no/query?profile=no&mop=yp&what=map&advert_code=Z000KKXO',0
-szUrlLand				db 'http://maps.google.no/',0
 szFileNameLand			db 'Land\Land%02X%02X.bmp',0
-szUrlSea				db 'http://kart.gulesider.no/m/p4VdK',0
 szFileNameSea			db 'Sea\Sea%02X%02X.bmp',0
 
 .data
+
+szDefUrlLand			db 'http://maps.google.no/',0
+;szDefUrlLand			db 'http://kart.gulesider.no/query?profile=no&mop=yp&what=map&advert_code=Z000KKXO',0
+szDefUrlSea				db 'http://kart.gulesider.no/m/p4VdK',0
 
 mapright				INPUT <INPUT_MOUSE,-2048,-2048,0,MOUSEEVENTF_MOVE,0,0>
 maprightmov				INPUT <INPUT_MOUSE,PICX+512,PICY,0,MOUSEEVENTF_MOVE,0,0>
@@ -93,18 +95,6 @@ mapupmov				INPUT <INPUT_MOUSE,PICX,PICY,0,MOUSEEVENTF_MOVE,0,0>
 						INPUT <INPUT_MOUSE,0,512,0,MOUSEEVENTF_MOVE,0,0>
 						INPUT <INPUT_MOUSE,0,0,0,MOUSEEVENTF_LEFTUP,0,0>
 
-maplefttop				INPUT <INPUT_MOUSE,-2048,-2048,0,MOUSEEVENTF_MOVE,0,0>
-maplefttopmov			INPUT <INPUT_MOUSE,PICX,PICY,0,MOUSEEVENTF_MOVE,0,0>
-						INPUT <INPUT_MOUSE,0,0,0,MOUSEEVENTF_RIGHTDOWN,0,0>
-						INPUT <INPUT_MOUSE,0,0,0,MOUSEEVENTF_MOVE,0,0>
-						INPUT <INPUT_MOUSE,0,0,0,MOUSEEVENTF_RIGHTUP,0,0>
-
-maprightbottom			INPUT <INPUT_MOUSE,-2048,-2048,0,MOUSEEVENTF_MOVE,0,0>
-maprightbottommov		INPUT <INPUT_MOUSE,PICX+512,PICY+512,0,MOUSEEVENTF_MOVE,0,0>
-						INPUT <INPUT_MOUSE,0,0,0,MOUSEEVENTF_RIGHTDOWN,0,0>
-						INPUT <INPUT_MOUSE,0,0,0,MOUSEEVENTF_MOVE,0,0>
-						INPUT <INPUT_MOUSE,0,0,0,MOUSEEVENTF_RIGHTUP,0,0>
-
 .data?
 
 hInstance				dd ?
@@ -112,5 +102,9 @@ CommandLine				dd ?
 hWnd					dd ?
 hWeb					dd ?
 hLib					dd ?
+szUrlLand				db MAX_PATH dup(?)
+szUrlSea				db MAX_PATH dup(?)
 szurl					db MAX_PATH dup(?)
+mapx					dd ?
+mapy					dd ?
 szfilename				db MAX_PATH dup(?)

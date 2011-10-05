@@ -125,7 +125,7 @@ int main(void)
       TIM_Cmd(TIM1, ENABLE);
       while (STM32_Sonar.Start)
       {
-        /* To eliminate the need for an AM demodulator the largest */ 
+        /* To eliminate the need for an advanced AM demodulator the largest */ 
         /* ADC reading is stored in its echo array element */
         /* Get echo */
         ADC = ( (u32 *) ADC1_ICDR_Address);
@@ -256,7 +256,7 @@ void TIM2_IRQHandler(void)
   asm("strhne r2,[r1,#0x6]");                 /* STM32_Sonar.EchoIndex */
   asm("strbeq r2,[r1,#0x0]");                 /* STM32_Sonar.Start */
 
-  /* Set the DAC to output next gain level */
+  /* Update the DAC to output next gain level */
   asm("movw   r0,#0x7400");                   /* DAC1 */
   asm("movt   r0,#0x4000");
   asm("add    r2,r2,0x108");

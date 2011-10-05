@@ -28,9 +28,17 @@ Time for sound to travel 100 cm: 1000000 / 1450 = 689,66 ~ 690 us
 Since it is the echo we are measuring: 690 * 2 = 1380 us
 
 Two timers are needed:
-1. Timer to generate the 200 KHz two phase ping signal.
-   The number of pulses is variable (1 to 127).
-2. Timer to generate an interrupt for every pixel. The interval depends on range.
+1. A timer to generate the 200 KHz two phase non overlapping clock to drive the ping
+   output signal. The number of pulses is variable (1 to 128). When the ping is done
+   the timer is disabled and a second timer and the ADC channel reading the echo is
+   enabled.
+2. A timer to generate an interrupt for every pixel. The interval depends on range.
+   In the interrupt handler the index of the echo array is incremented. At the same
+   time the gain level DAC is updated with the value from the gain array, thus creating
+   a time dependant gain control. A loop in main constantly reads the ADC echo and stores
+   the largest reading in the echo array. This way a simple diode AM demodulator can be used.
+   When the echo index reaches 512 the variable STM32_Sonar.Start is reset. This signals
+   the loop in main to terminate and disable the timer and the ADC.
 
 
 Time needed for the different ranges:

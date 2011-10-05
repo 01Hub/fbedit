@@ -144,24 +144,28 @@ SendMouse proc uses ebx esi,lpmi:DWORD,nSleep:DWORD
 
 SendMouse endp
 
-TestRight proc uses ebx,Param:DWORD
+TestRight proc uses ebx esi,Param:DWORD
 
 	invoke Sleep,3000
+	mov		esi,mapx
+	dec		esi
 	xor		ebx,ebx
-	.while ebx<MAXX-1
-		invoke SendMouse,addr mapright,2000
+	.while ebx<esi
+		invoke SendMouse,addr mapright,500
 		inc		ebx
 	.endw
 	ret
 
 TestRight endp
 
-TestDown proc uses ebx,Param:DWORD
+TestDown proc uses ebx esi,Param:DWORD
 
-	invoke Sleep,3000
+	invoke Sleep,5000
+	mov		esi,mapy
+	dec		esi
 	xor		ebx,ebx
-	.while ebx<MAXY-1
-		invoke SendMouse,addr mapdown,2000
+	.while ebx<esi
+		invoke SendMouse,addr mapdown,500
 		inc		ebx
 	.endw
 	ret
@@ -169,22 +173,20 @@ TestDown proc uses ebx,Param:DWORD
 TestDown endp
 
 GrabMap proc uses ebx esi edi,Param:DWORD
+	LOCAL	x:DWORD
+	LOCAL	y:DWORD
 
+	mov		eax,mapx
+	dec		eax
+	mov		x,eax
+	mov		eax,mapy
+	dec		eax
+	mov		y,eax
 	invoke Sleep,5000
 	xor		edi,edi
-	.while edi<72
-		invoke SendMouse,addr mapdown,500
-		inc		edi
-	.endw
-;	.while edi<128
-;		invoke GrabScreen,edi,0
-;		invoke SendMouse,addr mapdown,500
-;		inc		edi
-;	.endw
-;	ret
-	.while edi<88
+	.while edi<y
 		xor		esi,esi
-		.while esi<MAXX-1
+		.while esi<x
 			invoke GrabScreen,edi,esi
 			invoke SendMouse,addr mapright,500
 			inc		esi
@@ -266,23 +268,44 @@ SetupMouseMove proc
 	add		eax,PICY+512
 	mov		mapupmov.dwdy,eax
 
-	mov		eax,rect.left
-	add		eax,PICX
-	mov		maplefttopmov.dwdx,eax
-	mov		eax,rect.top
-	add		eax,PICY
-	mov		maplefttopmov.dwdy,eax
-
-	mov		eax,rect.left
-	add		eax,PICX+512
-	mov		maprightbottommov.dwdx,eax
-	mov		eax,rect.top
-	add		eax,PICY+512
-	mov		maprightbottommov.dwdy,eax
-
 	ret
 
 SetupMouseMove endp
+
+SetupProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+
+	mov		eax,uMsg
+	.if eax==WM_INITDIALOG
+		invoke SetDlgItemText,hWin,IDC_EDTURLLAND,addr szUrlLand
+		invoke SetDlgItemText,hWin,IDC_EDTURLSEA,addr szUrlSea
+		invoke SetDlgItemInt,hWin,IDC_EDTMAPTILESX,mapx,FALSE
+		invoke SetDlgItemInt,hWin,IDC_EDTMAPTILESY,mapy,FALSE
+	.elseif eax==WM_COMMAND
+		mov		edx,wParam
+		movzx	eax,dx
+		shr		edx,16
+		.if edx==BN_CLICKED
+			.if eax==IDOK
+				invoke GetDlgItemText,hWin,IDC_EDTURLLAND,addr szUrlLand,sizeof szUrlLand
+				invoke GetDlgItemText,hWin,IDC_EDTURLSEA,addr szUrlSea,sizeof szUrlSea
+				invoke GetDlgItemInt,hWin,IDC_EDTMAPTILESX,NULL,FALSE
+				mov		mapx,eax
+				invoke GetDlgItemInt,hWin,IDC_EDTMAPTILESY,NULL,FALSE
+				mov		mapy,eax
+				invoke SendMessage,hWin,WM_CLOSE,NULL,NULL
+			.endif
+		.endif
+	.elseif eax==WM_CLOSE
+		invoke EndDialog,hWin,lParam
+		invoke SetFocus,hWnd
+	.else
+		mov		eax,FALSE
+		ret
+	.endif
+	mov		eax,TRUE
+	ret
+
+SetupProc endp
 
 WndProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	rect:RECT
@@ -292,10 +315,14 @@ WndProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	.if eax==WM_INITDIALOG
 		push	hWin
 		pop		hWnd
-		invoke GetDlgItem,hWin,IDC_MAP
-		mov		hWeb,eax
+		invoke lstrcpy,addr szUrlLand,addr szDefUrlLand
+		invoke lstrcpy,addr szUrlSea,addr szDefUrlSea
+		mov		mapx,32
+		mov		mapy,32
 		invoke lstrcpy,addr szurl,addr szUrlLand
 		invoke lstrcpy,addr szfilename,addr szFileNameLand
+		invoke GetDlgItem,hWin,IDC_MAP
+		mov		hWeb,eax
 		invoke SendMessage,hWeb,WBM_NAVIGATE,0,addr szurl
 		invoke SetTimer,hWin,1000,500,NULL
 	.elseif eax==WM_TIMER
@@ -308,11 +335,11 @@ WndProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.elseif eax==IDM_FILE_MOVRIGHT
 			invoke SendMouse,addr mapright,100
 		.elseif eax==IDM_FILE_MOVLEFT
-			invoke SendMouse,addr mapleft,100
+			invoke SendMouse,addr mapleft,500
 		.elseif eax==IDM_FILE_MOVDOWN
-			invoke SendMouse,addr mapdown,100
+			invoke SendMouse,addr mapdown,500
 		.elseif eax==IDM_FILE_MOVUP
-			invoke SendMouse,addr mapup,100
+			invoke SendMouse,addr mapup,500
 		.elseif eax==IDM_SETUP_LAND
 			invoke lstrcpy,addr szurl,addr szUrlLand
 			invoke lstrcpy,addr szfilename,addr szFileNameLand
@@ -321,16 +348,12 @@ WndProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke lstrcpy,addr szurl,addr szUrlSea
 			invoke lstrcpy,addr szfilename,addr szFileNameSea
 			invoke SendMessage,hWeb,WBM_NAVIGATE,0,addr szurl
+		.elseif eax==IDM_SETUP_TILES
+			invoke DialogBoxParam,hInstance,IDD_DLGSETUP,hWin,addr SetupProc,0
 		.elseif eax==IDM_FILE_RIGHT
 			invoke CreateThread,NULL,NULL,addr TestRight,0,NORMAL_PRIORITY_CLASS,addr tid
 		.elseif eax==IDM_FILE_DOWN
 			invoke CreateThread,NULL,NULL,addr TestDown,0,NORMAL_PRIORITY_CLASS,addr tid
-		.elseif eax==IDM_FILE_LEFTTOP
-			invoke Sleep,3000
-			invoke SendMouse,addr maplefttop,2000
-		.elseif eax==IDM_FILE_RIGHTBOTTOM
-			invoke Sleep,3000
-			invoke SendMouse,addr maprightbottom,2000
 		.elseif eax==IDM_FILE_START
 			invoke CreateThread,NULL,NULL,addr GrabMap,0,NORMAL_PRIORITY_CLASS,addr tid
 		.endif
@@ -371,7 +394,7 @@ WinMain proc hInst:HINSTANCE,hPrevInst:HINSTANCE,CmdLine:LPSTR,CmdShow:DWORD
 	invoke LoadCursor,NULL,IDC_ARROW
 	mov		wc.hCursor,eax
 	invoke RegisterClassEx,addr wc
-	invoke CreateDialogParam,hInstance,IDD_DIALOG,NULL,addr WndProc,NULL
+	invoke CreateDialogParam,hInstance,IDD_DLGMAIN,NULL,addr WndProc,NULL
 	invoke ShowWindow,hWnd,SW_SHOWMAXIMIZED
 	invoke UpdateWindow,hWnd
 	.while TRUE
