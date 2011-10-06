@@ -6,6 +6,71 @@ include GrabtMap.inc
 
 .code
 
+GetEncoderClsid proc
+	LOCAL	numEncoders:DWORD
+	LOCAL	nSize:DWORD
+	LOCAL	hMem:DWORD
+
+	invoke MultiByteToWideChar,CP_ACP,0,offset szMimeType,-1,offset wbuffer,MAX_PATH
+	mov		wbuffer[eax*2],0
+	invoke GdipGetImageEncodersSize,addr numEncoders,addr nSize
+	invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,nSize
+	mov		hMem,eax
+	invoke GdipGetImageEncoders,numEncoders,nSize,hMem
+	mov		ebx,hMem
+	.while numEncoders
+		invoke lstrcmpiW,[ebx].ImageCodecInfo.MimeType,offset wbuffer
+		.if !eax
+			invoke RtlMoveMemory,offset EncoderClsid,addr [ebx].ImageCodecInfo.ClassID,sizeof GUID
+			.break
+		.endif
+		add		ebx,sizeof ImageCodecInfo
+		dec		numEncoders
+	.endw
+	invoke GlobalFree,hMem
+	ret
+
+GetEncoderClsid endp
+
+ConvertPicture proc lpSourceFileName:DWORD,lpDestFileName:DWORD
+	LOCAL	image:DWORD
+
+	invoke GetFileAttributes,lpSourceFileName
+	.if eax!=INVALID_HANDLE_VALUE
+		;Load the bitmap and save as jpeg
+		xor		eax,eax
+		mov		image,eax
+		invoke RtlZeroMemory,addr wbuffer,sizeof wbuffer
+		invoke MultiByteToWideChar,CP_OEMCP,MB_PRECOMPOSED,lpSourceFileName,-1,addr wbuffer,MAX_PATH
+		mov		wbuffer[eax*2],0
+		invoke GdipLoadImageFromFile,addr wbuffer,addr image
+		.if !eax
+			invoke RtlZeroMemory,addr wbuffer,sizeof wbuffer
+			invoke MultiByteToWideChar,CP_OEMCP,MB_PRECOMPOSED,lpDestFileName,-1,addr wbuffer,MAX_PATH
+			mov		wbuffer[eax*2],0
+			invoke GdipSaveImageToFile,image,addr wbuffer,addr EncoderClsid,0
+			invoke GdipDisposeImage,image
+			invoke DeleteFile,lpSourceFileName
+		.endif
+	.endif
+	ret
+
+ConvertPicture endp
+
+Convert proc x:DWORD,y:DWORD
+	LOCAL	buffer[MAX_PATH]:BYTE
+	LOCAL	src[MAX_PATH]:BYTE
+	LOCAL	dst[MAX_PATH]:BYTE
+
+	invoke wsprintf,addr src,addr szfilename,y,x
+	invoke lstrcpy,addr dst,addr src
+	invoke lstrlen,addr dst
+	mov		dword ptr dst[eax-3],'gpj'
+	invoke ConvertPicture,addr src,addr dst
+	ret
+
+Convert endp
+
 SaveDIB32 proc uses ebx esi edi,hBmp:HBITMAP,hFile:HANDLE
 	LOCAL	cbWrite:DWORD
 	LOCAL	dibs:BITMAP
@@ -135,7 +200,7 @@ SendMouse proc uses ebx esi,lpmi:DWORD,nSleep:DWORD
 	xor		ebx,ebx
 	.while ebx<5
 		invoke SendInput,1,esi,sizeof INPUT
-		invoke Sleep,250
+		invoke Sleep,500
 		inc		ebx
 		lea		esi,[esi+sizeof INPUT]
 	.endw
@@ -158,6 +223,20 @@ TestRight proc uses ebx esi,Param:DWORD
 
 TestRight endp
 
+TestLeft proc uses ebx esi,Param:DWORD
+
+	invoke Sleep,3000
+	mov		esi,mapx
+	dec		esi
+	xor		ebx,ebx
+	.while ebx<esi
+		invoke SendMouse,addr mapleft,500
+		inc		ebx
+	.endw
+	ret
+
+TestLeft endp
+
 TestDown proc uses ebx esi,Param:DWORD
 
 	invoke Sleep,5000
@@ -171,6 +250,20 @@ TestDown proc uses ebx esi,Param:DWORD
 	ret
 
 TestDown endp
+
+TestUp proc uses ebx esi,Param:DWORD
+
+	invoke Sleep,5000
+	mov		esi,mapy
+	dec		esi
+	xor		ebx,ebx
+	.while ebx<esi
+		invoke SendMouse,addr mapup,500
+		inc		ebx
+	.endw
+	ret
+
+TestUp endp
 
 GrabMap proc uses ebx esi edi,Param:DWORD
 	LOCAL	x:DWORD
@@ -265,7 +358,7 @@ SetupMouseMove proc
 	add		eax,PICX
 	mov		mapupmov.dwdx,eax
 	mov		eax,rect.top
-	add		eax,PICY+512
+	add		eax,PICY
 	mov		mapupmov.dwdy,eax
 
 	ret
@@ -276,9 +369,13 @@ SetupProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
+		invoke SendDlgItemMessage,hWin,IDC_EDTURLLAND,EM_LIMITTEXT,MAX_PATH,0
 		invoke SetDlgItemText,hWin,IDC_EDTURLLAND,addr szUrlLand
+		invoke SendDlgItemMessage,hWin,IDC_EDTURLSEA,EM_LIMITTEXT,MAX_PATH,0
 		invoke SetDlgItemText,hWin,IDC_EDTURLSEA,addr szUrlSea
+		invoke SendDlgItemMessage,hWin,IDC_EDTMAPTILESX,EM_LIMITTEXT,3,0
 		invoke SetDlgItemInt,hWin,IDC_EDTMAPTILESX,mapx,FALSE
+		invoke SendDlgItemMessage,hWin,IDC_EDTMAPTILESY,EM_LIMITTEXT,3,0
 		invoke SetDlgItemInt,hWin,IDC_EDTMAPTILESY,mapy,FALSE
 	.elseif eax==WM_COMMAND
 		mov		edx,wParam
@@ -289,8 +386,14 @@ SetupProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke GetDlgItemText,hWin,IDC_EDTURLLAND,addr szUrlLand,sizeof szUrlLand
 				invoke GetDlgItemText,hWin,IDC_EDTURLSEA,addr szUrlSea,sizeof szUrlSea
 				invoke GetDlgItemInt,hWin,IDC_EDTMAPTILESX,NULL,FALSE
+				.if eax>128
+					mov		eax,128
+				.endif
 				mov		mapx,eax
 				invoke GetDlgItemInt,hWin,IDC_EDTMAPTILESY,NULL,FALSE
+				.if eax>128
+					mov		eax,128
+				.endif
 				mov		mapy,eax
 				invoke SendMessage,hWin,WM_CLOSE,NULL,NULL
 			.endif
@@ -340,6 +443,30 @@ WndProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke SendMouse,addr mapdown,500
 		.elseif eax==IDM_FILE_MOVUP
 			invoke SendMouse,addr mapup,500
+		.elseif eax==IDM_FILE_RIGHT
+			invoke CreateThread,NULL,NULL,addr TestRight,0,NORMAL_PRIORITY_CLASS,addr tid
+		.elseif eax==IDM_FILE_LEFT
+			invoke CreateThread,NULL,NULL,addr TestLeft,0,NORMAL_PRIORITY_CLASS,addr tid
+		.elseif eax==IDM_FILE_DOWN
+			invoke CreateThread,NULL,NULL,addr TestDown,0,NORMAL_PRIORITY_CLASS,addr tid
+		.elseif eax==IDM_FILE_UP
+			invoke CreateThread,NULL,NULL,addr TestUp,0,NORMAL_PRIORITY_CLASS,addr tid
+		.elseif eax==IDM_FILE_START
+			invoke CreateThread,NULL,NULL,addr GrabMap,0,NORMAL_PRIORITY_CLASS,addr tid
+		.elseif eax==IDM_FILE_CONVERT
+			invoke LoadCursor,0,IDC_WAIT
+			invoke SetCursor,eax
+			xor		ebx,ebx
+			.while ebx<128
+				xor		edi,edi
+				.while edi<128
+					invoke Convert,edi,ebx
+					inc		edi
+				.endw
+				inc		ebx
+			.endw
+			invoke LoadCursor,0,IDC_ARROW
+			invoke SetCursor,eax
 		.elseif eax==IDM_SETUP_LAND
 			invoke lstrcpy,addr szurl,addr szUrlLand
 			invoke lstrcpy,addr szfilename,addr szFileNameLand
@@ -350,12 +477,6 @@ WndProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke SendMessage,hWeb,WBM_NAVIGATE,0,addr szurl
 		.elseif eax==IDM_SETUP_TILES
 			invoke DialogBoxParam,hInstance,IDD_DLGSETUP,hWin,addr SetupProc,0
-		.elseif eax==IDM_FILE_RIGHT
-			invoke CreateThread,NULL,NULL,addr TestRight,0,NORMAL_PRIORITY_CLASS,addr tid
-		.elseif eax==IDM_FILE_DOWN
-			invoke CreateThread,NULL,NULL,addr TestDown,0,NORMAL_PRIORITY_CLASS,addr tid
-		.elseif eax==IDM_FILE_START
-			invoke CreateThread,NULL,NULL,addr GrabMap,0,NORMAL_PRIORITY_CLASS,addr tid
 		.endif
 	.elseif eax==WM_SIZE
 		invoke GetClientRect,hWin,addr rect
@@ -418,7 +539,13 @@ start:
 	invoke LoadLibrary,addr szwb
 	.if eax
 		mov		hLib,eax
+		; Initialize GDI+ Librery
+	    mov     gdiplSTI.GdiplusVersion,1
+	    invoke GdiplusStartup,addr token,addr gdiplSTI,NULL
+		; Get Gdi+ jpeg encoder clsid for saving jpeg's
+		invoke GetEncoderClsid
 		invoke WinMain,hInstance,NULL,CommandLine,SW_SHOWDEFAULT
+		invoke GdiplusShutdown,token
 		invoke FreeLibrary,hLib
 	.endif
 	invoke ExitProcess,eax

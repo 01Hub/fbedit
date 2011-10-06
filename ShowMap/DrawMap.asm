@@ -53,6 +53,10 @@ LoadDib proc uses ebx esi edi,mapinx:DWORD,dibx:DWORD,diby:DWORD
 	.if !eax
 		;The tile is not loaded
 		invoke wsprintf,addr buffer,addr szFileName,addr szAppPath,mapinx,diby,dibx
+		invoke GetFileAttributes,addr buffer
+		.if eax==INVALID_HANDLE_VALUE
+			invoke wsprintf,addr buffer,addr szFileName,addr szAppPath,mapinx,0FFh,0FFh
+		.endif
 		invoke Load_Image,addr buffer
 		.if eax
 			push	eax
