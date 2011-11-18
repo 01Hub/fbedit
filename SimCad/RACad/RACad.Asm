@@ -2285,6 +2285,30 @@ CadZoomBestFit proc uses ebx esi,hWin:HWND,lpRectIn:DWORD,lpRectOut:DWORD,fGrid:
 				.if sdword ptr eax>[edi].RECT.bottom
 					mov		[edi].RECT.bottom,eax
 				.endif
+			.elseif [esi].OBJECT.tpe==TPE_SYMBOL
+				push	esi
+				mov		ecx,[esi].OBJECT.npt
+				lea		esi,[esi+sizeof OBJECT]
+				.while ecx
+					dec		ecx
+					mov		eax,[esi].OBJECT.rc.left
+					.if sdword ptr eax<[edi].RECT.left
+						mov		[edi].RECT.left,eax
+					.endif
+					.if sdword ptr eax>[edi].RECT.right
+						mov		[edi].RECT.right,eax
+					.endif
+					mov		eax,[esi].OBJECT.rc.top
+					.if sdword ptr eax<[edi].RECT.top
+						mov		[edi].RECT.top,eax
+					.endif
+					.if sdword ptr eax>[edi].RECT.bottom
+						mov		[edi].RECT.bottom,eax
+					.endif
+					mov		eax,[esi].OBJECT.cbsize
+					lea		esi,[esi+eax]
+				.endw
+				pop		esi
 			.else
 				mov		ecx,[esi].OBJECT.npt
 				.while ecx
@@ -3540,6 +3564,9 @@ CadProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	.elseif eax==CM_ADDOBJECTS
 		invoke CadSelectAll,hWin,FALSE
 		invoke CadAddObjects,hWin,lParam
+		invoke GetWindowLong,hWin,0
+		mov		ebx,eax
+		mov		[ebx].CADMEM.changed,TRUE
 	.elseif eax==CM_FLIPOBJECT
 		invoke CadGetSelCount,hWin
 		.if eax
