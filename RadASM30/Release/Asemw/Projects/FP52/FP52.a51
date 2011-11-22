@@ -145,6 +145,23 @@ FP_ACC8				EQU	FP_NIB1+17
 FP_ACCS				EQU	FP_NIB1+18 
 	; 
 	 
+			MOV	SP,#50H
+			MOV	24H,#07FH
+
+			MOV	DPTR,#FPONE
+			ACALL	PUSHC
+			MOV	DPTR,#FPTWO
+			ACALL	PUSHC
+			ACALL	FLOATING_ADD
+
+
+			MOV	24H,#0FEH
+			MOV	DPTR,#FPTHREE
+			ACALL	PUSHC
+			MOV	DPTR,#FPTWO
+			ACALL	PUSHC
+			ACALL	FLOATING_MUL
+			SJMP	$
 FP_BASE				EQU	$ 
  
 	;************************************************************** 
@@ -1715,7 +1732,6 @@ AINT:				ACALL	SETREG				;SET UP THE REGISTERS, CLEAR CARRY
 	; 
 P_Z:				MOV		DPTR,#ZRO			;PUT ZERO ON THE STACK 
 					AJMP	PUSHC 
-ZRO:				DB		0,0,0,0,0,0 
 	; 
 AI1:				SUBB	A,#7 
 					JNC		AI3 
@@ -1749,6 +1765,10 @@ PCL:				CLR		A					;SET UP A
 ; 
  
 EXA:				DB		'A-STACK',0 
+ZRO:			DB	0,0,0,0,0,0			;0.0000000
+FPONE:			DB 	81h,00h,00h,00h,00h,10h		;1.0000000
+FPTWO:			DB 	81h,00h,00h,00h,00h,20h		;2.0000000
+FPTHREE:		DB 	81h,00h,00h,00h,00h,30h		;3.0000000
 
 
 END
