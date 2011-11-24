@@ -54,19 +54,19 @@ SETMODE5:	LCALL	LCDCLEAR
 		LCALL	PRNTCDPTRLCD
 		RET
 
-MODE0:		DB 'Calibrate',0
-MODE1:		DB 'C Meter',0
-MODE2:		DB 'L Meter',0
-MODE3:		DB 'Frq Count',0
-MODE4:		DB 'Frq Count 1GHz',0
+MODE0:		DB	'Calibrate',0
+MODE1:		DB	'C Meter',0
+MODE2:		DB 	'L Meter',0
+MODE3:		DB	'Frq Count',0
+MODE4:		DB	'Frq Count 1GHz',0
 
 $INCLUDE	(FP52INT.a51)
 
 		ORG	0800h
 
 START0:		MOV	SP,#MCUSTACK			;Init stack pointer.
-		CLR	P1.5				;L/C
-		CLR	P1.6				;CAL
+		CLR	P1.4				;L/C
+		CLR	P1.5				;CAL
 		CLR	A
 		MOV	IE,A				;Disable all interrupts
 		SETB	EX0				;Enable INT0
@@ -82,7 +82,7 @@ START0:		MOV	SP,#MCUSTACK			;Init stack pointer.
 		MOV	MODE,#00h
 START:		ACALL	LCDCLEARLINE
 		MOV	R7,MODE
-		DJNZ	R7,START
+		DJNZ	R7,START1
 		;C Meter
 		ACALL	CMeter
 		SJMP	START
@@ -102,7 +102,7 @@ START3:		DJNZ	R7,START4
 		SJMP	START
 START4:		;Calibrate
 		ACALL	LCMETERINIT
-		MOV	MODE,#01h
+		MOV	MODE,#03h
 		SJMP	START
 
 FREQUENCY:	CLR	P1.4				;C
@@ -547,6 +547,11 @@ FRQFORMATDONE:	RET
 
 ;LCD Output.
 ;------------------------------------------------------------------
+;TXBYTE:		MOV	SBUF,A
+;		JNB	TI,$
+;		CLR	TI
+;		RET
+
 LCDDELAY:	PUSH	07h
 		MOV	R7,#00h
 		DJNZ	R7,$
@@ -571,7 +576,9 @@ LCDCMDOUT:	PUSH	ACC
 		RET
 
 ;A contains byte
-LCDCHROUT:	PUSH	ACC
+LCDCHROUT:
+;		AJMP	TXBYTE
+		PUSH	ACC
 		SWAP	A				;High nibble first
 		ANL	A,#0Fh
 		SETB	ACC.4				;RS
