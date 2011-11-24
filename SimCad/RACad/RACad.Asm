@@ -1057,15 +1057,12 @@ DrawDimension:
 
 CadDrawObject endp
 
-CadDraw proc uses ebx esi,hWin:HWND,hDC:HDC,xofs:DWORD,yofs:DWORD,wt:DWORD,ht:DWORD,fNosel:DWORD,fSwapxy:DWORD
+CadDraw proc uses ebx esi edi,hWin:HWND,hDC:HDC,xofs:DWORD,yofs:DWORD,wt:DWORD,ht:DWORD,fNosel:DWORD,fSwapxy:DWORD
 	LOCAL	hSel:HWND
 	LOCAL	wdt:DWORD
 
 	invoke GetWindowLong,hWin,0
 	mov		ebx,eax
-	.if [ebx].CADMEM.grid
-		call	DrawGrid
-	.endif
 	mov		eax,3
 	call	ZoomMul
 	.if eax<3
@@ -1073,8 +1070,26 @@ CadDraw proc uses ebx esi,hWin:HWND,hDC:HDC,xofs:DWORD,yofs:DWORD,wt:DWORD,ht:DW
 	.endif
 	mov		wdt,eax
 	lea		esi,[ebx+sizeof CADMEM]
+	.if [ebx].CADMEM.layer
+		mov		edi,3
+		.while sdword ptr edi>=[ebx].CADMEM.layer
+			call	DrawLayer
+			dec		edi
+		.endw
+	.else
+		xor		edi,edi
+		call	DrawLayer
+	.endif
+	.if [ebx].CADMEM.grid
+		call	DrawGrid
+	.endif
+	ret
+
+DrawLayer:
+	push	esi
 	.while byte ptr [esi].OBJECT.tpe
-		.if sbyte ptr [esi].OBJECT.tpe>0
+		mov		eax,edi
+		.if sbyte ptr [esi].OBJECT.tpe>0 && al==[esi].OBJECT.layer
 			invoke CadDrawObject,hDC,xofs,yofs,ebx,esi,fSwapxy,FALSE
 			.if !fNosel
 				call	MoveSel
@@ -1083,7 +1098,8 @@ CadDraw proc uses ebx esi,hWin:HWND,hDC:HDC,xofs:DWORD,yofs:DWORD,wt:DWORD,ht:DW
 		mov		eax,[esi].OBJECT.cbsize
 		lea		esi,[esi+eax]
 	.endw
-	ret
+	pop		esi
+	retn
 
 DrawGrid:
 	mov		eax,GRID_SIZE
@@ -1106,7 +1122,14 @@ DrawGrid:
 					sub		eax,xofs
 					.if sdword ptr eax>=0
 						.break .if sdword ptr eax>wt
-						invoke SetPixel,hDC,eax,edi,0404040h
+						invoke SetPixel,hDC,eax,edi,0808080h
+						inc		eax
+						invoke SetPixel,hDC,eax,edi,0808080h
+						inc		edi
+						invoke SetPixel,hDC,eax,edi,0808080h
+						dec		eax
+						invoke SetPixel,hDC,eax,edi,0808080h
+						dec		edi
 					.endif
 					add		esi,GRID_SIZE
 				.endw
