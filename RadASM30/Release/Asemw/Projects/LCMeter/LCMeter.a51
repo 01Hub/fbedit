@@ -1,32 +1,19 @@
 
-LCDLINE		EQU	40h				;16 Bytes
-FPCHR_OUT	EQU	50h				;Holds addrss to next byte during FP number convertion
-MODE		EQU	51h
-LCF1		EQU	60H				;LC Meter F1
-LCF2		EQU	68h				;LC Meter F2
-LCF3		EQU	70h				;LC Meter F3
-LCCA		EQU	78h				;((F1/F2)^2)-1
-LCCB		EQU	80h				;((1/2*Pi*F1)^2)*LCCA
-LCCT		EQU	88h				;Temp
-MCUSTACK	EQU	90h
-FPSTACK		EQU	0FFh
-
-MODEMAX		EQU	4
-
-		ORG	0000h
+$INCLUDE	(LCMeter.inc)
 
 ;RESET:***********************************************
 		ORG	0000h
-
-		LJMP	START0
+		AJMP	START0
 ;IE0IRQ:**********************************************
 		ORG	0003h
 		AJMP	IE0IRQ
+;------------------------------------------------------------------
 
+		ORG	0080h
 IE0IRQ:		INC	MODE
 		ACALL	SETMODE
 		ACALL	DEBOUNCEINT0
-		LJMP	START
+		AJMP	START
 
 DEBOUNCEINT0:	MOV	R6,#00h
 		MOV	R7,#00h
@@ -54,21 +41,29 @@ SETMODE5:	LCALL	LCDCLEAR
 		LCALL	PRNTCDPTRLCD
 		RET
 
-MODE0:		DB	'Calibrate',0
-MODE1:		DB	'C Meter',0
-MODE2:		DB 	'L Meter',0
-MODE3:		DB	'Frq Count',0
-MODE4:		DB	'Frq Count 1GHz',0
+MODE0:		DB	'Cali'
+		DB	'brat'
+		DB	'e',0
+MODE1:		DB	'C Me'
+		DB	'ter',0
+MODE2:		DB 	'L Me'
+		DB	'ter',0
+MODE3:		DB	'Frq '
+		DB	'Coun'
+		DB	't',0
+MODE4:		DB	'Frq '
+		DB	'Coun'
+		DB	't 1G'
+		DB	'Hz',0
 
-$INCLUDE	(FP52INT.a51)
-
-		ORG	0800h
-
-START0:		MOV	SP,#MCUSTACK			;Init stack pointer.
+START0:		CLR	A
 		CLR	P1.4				;L/C
 		CLR	P1.5				;CAL
-		CLR	A
 		MOV	IE,A				;Disable all interrupts
+		MOV	R0,A
+START01:	MOV	@R0,A				;Clear the ram
+		DJNZ	R0,START01
+		MOV	SP,#MCUSTACK			;Init stack pointer.
 		SETB	EX0				;Enable INT0
 		SETB	EA				;Enable interrupts
 		LCALL	FLOATING_INIT
@@ -80,6 +75,7 @@ START0:		MOV	SP,#MCUSTACK			;Init stack pointer.
 		DB	'Welcome Ketil',0
 		ACALL	WAITASEC
 		MOV	MODE,#00h
+START02:	ACALL	SETMODE
 START:		ACALL	LCDCLEARLINE
 		MOV	R7,MODE
 		DJNZ	R7,START1
@@ -92,27 +88,44 @@ START1:		DJNZ	R7,START2
 		SJMP	START
 START2:		DJNZ	R7,START3
 		;30MHz
-		MOV	A,#01h				;CH1, 30MHz
 		ACALL	FREQUENCY
 		SJMP	START
 START3:		DJNZ	R7,START4
 		;1GHz
-		MOV	A,#02h				;CH2, 1GHz
-		ACALL	FREQUENCY
+		ACALL	FREQUENCY1GHZ
 		SJMP	START
 START4:		;Calibrate
 		ACALL	LCMETERINIT
-		MOV	MODE,#03h
-		SJMP	START
+		MOV	MODE,#01h			;C Meter
+		SJMP	START02
 
 FREQUENCY:	CLR	P1.4				;C
 		CLR	P1.5				;F1
+		MOV	A,#01h				;CH1, 30MHz
 		ACALL	FRQCOUNT
 		MOV	R0,#LCDLINE+4			;Decimal buffer
 		ACALL	BIN2DEC
 		MOV	R7,A				;Number of digits
 		ACALL	FRQFORMAT
-		CLR	A				;Output result
+		MOV	A,#40h				;Output result
+		ACALL	LCDSETADR
+		MOV	R0,#LCDLINE
+		MOV	R7,#10h
+		ACALL	LCDPRINTSTR
+		RET
+
+FREQUENCY1GHZ:	CLR	P1.4				;C
+		CLR	P1.5				;F1
+		MOV	A,#02h				;CH2, 1GHz
+		ACALL	FRQCOUNT
+		ACALL	INTMUL10
+		ACALL	INTMUL10
+		ACALL	INTMUL10
+		MOV	R0,#LCDLINE+4			;Decimal buffer
+		ACALL	BIN2DEC
+		MOV	R7,A				;Number of digits
+		ACALL	FRQFORMAT
+		MOV	A,#40h				;Output result
 		ACALL	LCDSETADR
 		MOV	R0,#LCDLINE
 		MOV	R7,#10h
@@ -120,10 +133,10 @@ FREQUENCY:	CLR	P1.4				;C
 		RET
 
 ;------------------------------------------------------------------
-
 ;Get LC meter frquency
 ;IN:	R1 points to FP buffer
 ;OUT:	Nothing
+;------------------------------------------------------------------
 LCMETERGETFRQ:	PUSH	01h				;Save R1
 		MOV	A,#250
 		ACALL	WAIT				;Wait 25ms for relay to kick in / out
@@ -149,9 +162,11 @@ LCMETERGETFRQ1:	MOV	A,@R0
 		LCALL	POPAS				;POP ARGUMENT TO R1
 		RET
 
+;------------------------------------------------------------------
 ;Calculate X=((Fa/Fb)^2)-1
 ;IN:	Fa=R0, Fb=R1
 ;OUT:	Nothing
+;------------------------------------------------------------------
 LCCALC:		PUSH	01h
 		LCALL	PUSHAS				; PUSH R0 TO ARGUMENT
 		POP	00h
@@ -165,14 +180,13 @@ LCCALC:		PUSH	01h
 		LCALL	FLOATING_SUB
 		RET
 
+;------------------------------------------------------------------
 ;Get LC meter frquency F1 and F2. Calculatr LCCA=((F1/F2)^2)-1 and LCCB=LCCA*((1/(2*Pi*F1))^2)*(1/Ccal)
 ;IN:	Nothing
 ;OUT:	Nothing
+;------------------------------------------------------------------
 LCMETERINIT:	CLR	P1.4				;C
 		CLR	P1.5				;F1
-		ACALL	LCDCLEAR
-		ACALL	LCDPRNTCSTR
-		DB	'Calibrating',0
 		MOV	R7,#05h
 LCMETERINIT1:	PUSH	07h
 		ACALL	WAITASEC
@@ -223,12 +237,13 @@ LCMETERINIT1:	PUSH	07h
 		;Save result to LCCB
 		MOV	R1,#LCCB
 		LCALL	POPAS				;POP ARGUMENT TO R1
-		LCALL	LCDCLEAR
 		RET
 
+;------------------------------------------------------------------
 ;Capacitance meter: Cx=((F1/F3)^2)-1)/((F1/F2)^2)-1)*Ccal
 ;IN:	Nothing
 ;OUT:	Nothing
+;------------------------------------------------------------------
 CMETER:		CLR	P1.4				;C
 		CLR	P1.5				;F1
 		MOV	R1,#LCF3
@@ -274,16 +289,18 @@ CMETER2:	LCALL	PUSHC				;PUSH ARG IN DPTR TO STACK
 		SUBB	A,#05h
 		MOV	R0,A
 		LCALL	FLOATING_POINT_OUTPUT
-		CLR	A				;Output result
+		MOV	A,#40h				;Output result
 		ACALL	LCDSETADR
 		MOV	R0,#LCDLINE
 		MOV	R7,#10h
 		ACALL	LCDPRINTSTR
 		RET
 
+;------------------------------------------------------------------
 ;Inductance meter Lx=((F1/F3)^2)-1)*((F1/F2)^2)-1)*((1/(2*Pi*F1))^2)*(1/Ccal)
 ;IN:	Nothing
 ;OUT:	Nothing
+;------------------------------------------------------------------
 LMETER:		SETB	P1.4				;L
 		CLR	P1.5				;F1
 		MOV	R1,#LCF3
@@ -333,28 +350,14 @@ LMETER3:	LCALL	PUSHC				;PUSH ARG IN DPTR TO STACK
 		SUBB	A,#05h
 		MOV	R0,A
 		LCALL	FLOATING_POINT_OUTPUT
-		MOV	A,#00h
+		MOV	A,#40h				;Output result
 		ACALL	LCDSETADR
 		MOV	R0,#LCDLINE
 		MOV	R7,#10h
 		ACALL	LCDPRINTSTR
 		RET
 
-;Wait functions
 ;------------------------------------------------------------------
-
-WAIT100:	PUSH	07h				;Save R7
-		MOV	R7,#64h
-WAIT1001:	DJNZ	R7,WAIT1001			;Wait loop, 100uS
-		POP	07h				;Restore R7
-		RET
-
-WAIT:		XCH	A,R7
-WAIT1:		ACALL	WAIT100
-		DJNZ	R7,WAIT1
-		XCH	A,R7
-		RET
-
 ;Binary to decimal converter
 ;Converts R7:R6:R5:R4 to decimal pointed to by R0
 ;Returns with number of digits in A
@@ -440,7 +443,45 @@ BINDEC:		DB 000h,0CAh,09Ah,03Bh			;1000000000
 		DB 001h,000h,000h,000h			;         1
 
 ;------------------------------------------------------------------
-
+;Multiply R7:R6:R5:R4 by 10
+;------------------------------------------------------------------
+INTMUL10:	MOV	A,R4
+		MOV	R0,A
+		MOV	A,R5
+		MOV	R1,A
+		MOV	A,R6
+		MOV	R2,A
+		MOV	A,R7
+		MOV	R3,A
+		ACALL	INTMUL2
+		ACALL	INTMUL2
+		MOV	A,R4
+		ADD	A,R0
+		MOV	R4,A
+		MOV	A,R5
+		ADDC	A,R1
+		MOV	R5,A
+		MOV	A,R6
+		ADDC	A,R2
+		MOV	R6,A
+		MOV	A,R7
+		ADDC	A,R3
+		MOV	R7,A
+INTMUL2:	MOV	A,R4
+		ADD	A,R4
+		MOV	R4,A
+		MOV	A,R5
+		ADDC	A,R5
+		MOV	R5,A
+		MOV	A,R6
+		ADDC	A,R6
+		MOV	R6,A
+		MOV	A,R7
+		ADDC	A,R7
+		MOV	R7,A
+		RET
+		
+;------------------------------------------------------------------
 ;Wait loop. Waits 1 second
 ;------------------------------------------------------------------
 WAITASEC:	MOV	R7,#0F9h
@@ -451,12 +492,40 @@ WAITASEC1:	DJNZ	R7,WAITASEC1
 		DJNZ	R5,WAITASEC1
 		RET
 
-;Frequency counter. LSB from 74HC590 read at P0, TL0, TH0,
+;------------------------------------------------------------------
+;Wait loop. Waits 0.256 seconds
+;------------------------------------------------------------------
+WAIT256MS:	MOV	R7,#0F9h
+		MOV	R6,#51
+		MOV	R5,#02
+WAIT256MS1:	DJNZ	R7,WAIT256MS1
+		DJNZ	R6,WAIT256MS1
+		DJNZ	R5,WAIT256MS1
+		RET
+
+;------------------------------------------------------------------
+;Wait functions
+;------------------------------------------------------------------
+WAIT100:	PUSH	07h				;Save R7
+		MOV	R7,#64h
+WAIT1001:	DJNZ	R7,WAIT1001			;Wait loop, 100uS
+		POP	07h				;Restore R7
+		RET
+
+WAIT:		XCH	A,R7
+WAIT1:		ACALL	WAIT100
+		DJNZ	R7,WAIT1
+		XCH	A,R7
+		RET
+
+;------------------------------------------------------------------
+;Frequency counter. LSB from 74HC590 read at P0, TL0, TH0 and
 ;TF0 bit. 25 bits, max 33554431 Hz
 ;IN:	A Channel (0-3)
 ;OUT:	32 Bit result in R7:R6:R5:R4
 ;------------------------------------------------------------------
-FRQCOUNT:	SETB	P1.3				;DISABLE COUNT
+FRQCOUNT:	PUSH	ACC
+		SETB	P1.3				;DISABLE COUNT
 		CLR	P1.2				;RESET 74HC590
 		SETB	P1.2
 		;Select channel
@@ -476,10 +545,17 @@ FRQCOUNT:	SETB	P1.3				;DISABLE COUNT
 		SETB	ACC.4				;TR0
 		CLR	ACC.5				;TF0
 		MOV	TCON,A
+		POP	ACC
+		DEC	A
+		JZ	FRQCOUNT1
 		CLR	P1.3				;ENABLR COUNT
+		ACALL	WAIT256MS
+		SETB	P1.3				;DISABLE COUNT
+		SJMP	FRQCOUNT2
+FRQCOUNT1:	CLR	P1.3				;ENABLR COUNT
 		ACALL	WAITASEC
 		SETB	P1.3				;DISABLE COUNT
-		MOV	A,P0				;8 BITS FROM 74HC590
+FRQCOUNT2:	MOV	A,P0				;8 BITS FROM 74HC590
 		MOV	R4,A
 		MOV	A,TL0				;8 BITS FROM 
 		MOV	R5,A
@@ -491,10 +567,12 @@ FRQCOUNT:	SETB	P1.3				;DISABLE COUNT
 		MOV	R7,A
 		RET
 
+;------------------------------------------------------------------
 ;Format frequency conter text line
 ;	LCDLINE+4 Decimal result
 ;	R7 Number of digits
 ;OUT:	Formatted LCDLINE
+;------------------------------------------------------------------
 FRQFORMAT:	MOV	LCDLINE+0,#'F'
 		MOV	LCDLINE+1,#'='
 		MOV	LCDLINE+2,#' '
@@ -545,6 +623,7 @@ FRQFORMATHZ1:	MOV	A,@R1
 		MOV	LCDLINE+15,#' '
 FRQFORMATDONE:	RET
 
+;------------------------------------------------------------------
 ;LCD Output.
 ;------------------------------------------------------------------
 ;TXBYTE:		MOV	SBUF,A
@@ -576,8 +655,7 @@ LCDCMDOUT:	PUSH	ACC
 		RET
 
 ;A contains byte
-LCDCHROUT:
-;		AJMP	TXBYTE
+LCDCHROUT:	;AJMP	TXBYTE
 		PUSH	ACC
 		SWAP	A				;High nibble first
 		ANL	A,#0Fh
@@ -607,6 +685,11 @@ LCDPRINTSTR:	MOV	A,@R0
 		INC	R0
 		DJNZ	R7,LCDPRINTSTR
 		RET
+;MOV	A,#0DH
+;ACALL	LCDCHROUT
+;MOV	A,#0AH
+;ACALL	LCDCHROUT
+;RET
 
 LCDPRNTCSTR:	POP	DPH
 		POP	DPL
@@ -627,6 +710,11 @@ PRNTCDPTRLCD:	CLR	A
 		INC	DPTR
 		SJMP	PRNTCDPTRLCD
 PRNTCDPTRLCD1:	RET
+;MOV	A,#0DH
+;ACALL	LCDCHROUT
+;MOV	A,#0AH
+;ACALL	LCDCHROUT
+;RET
 
 LCDINIT:	MOV	A,#00000011b			;Function set
 		ACALL	LCDNIBOUT
@@ -649,6 +737,10 @@ LCDCLEARLINE1:	MOV	@R0,A
 		INC	R0
 		DJNZ	R7,LCDCLEARLINE1
 		RET
+
+		ORG	0800h
+
+$INCLUDE	(FP52INT.a51)
 
 		END
 
