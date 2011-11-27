@@ -2,7 +2,7 @@
 Version=3000
 [Project]
 Assembler=asemw
-Path=C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Asemw\Projects\LCMeter
+Path=D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Asemw\Projects\LCMeter
 Group=2,-1,0,1,LC Meter and 1GHz Frequency counter,-2,-1,1,Assembly,-4,-1,1,Misc
 F1=-2,2,1,22,22,600,400,12,LCMeter.a51
 Open=0,1,4,5
@@ -14,8 +14,8 @@ F2=-4,0,2,-6,-25,989,560,0,LCMeter.lst
 C2=
 B2=
 M2=
-F3=-4,0,0,0,0,0,0,0,LCMeter.cad
-C3=0
+F3=-4,0,2,-6,-25,1250,643,0,LCMeter.cad
+C3=
 B3=
 M3=
 F4=-2,0,1,22,22,1235,526,135,FP52INT.a51
