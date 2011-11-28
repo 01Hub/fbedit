@@ -1,4 +1,6 @@
 
+DEBUG		EQU 0
+
 $INCLUDE	(LCMeter.inc)
 
 ;RESET:***********************************************
@@ -37,24 +39,9 @@ SETMODE3:	DJNZ	R7,SETMODE4
 		MOV	DPTR,#MODE3
 SETMODE4:	DJNZ	R7,SETMODE5
 		MOV	DPTR,#MODE4
-SETMODE5:	LCALL	LCDCLEAR
-		LCALL	PRNTCDPTRLCD
+SETMODE5:	ACALL	LCDCLEAR
+		ACALL	PRNTCDPTRLCD
 		RET
-
-MODE0:		DB	'Cali'
-		DB	'brat'
-		DB	'e',0
-MODE1:		DB	'C Me'
-		DB	'ter',0
-MODE2:		DB 	'L Me'
-		DB	'ter',0
-MODE3:		DB	'Frq '
-		DB	'Coun'
-		DB	't',0
-MODE4:		DB	'Frq '
-		DB	'Coun'
-		DB	't 1G'
-		DB	'Hz',0
 
 START0:		CLR	A
 		CLR	P1.4				;L/C
@@ -71,8 +58,8 @@ START01:	MOV	@R0,A				;Clear the ram
 		ACALL	LCDINIT
 		CLR	A
 		ACALL	LCDSETADR
-		ACALL	LCDPRNTCSTR
-		DB	'Welcome Ketil',0
+		MOV	DPTR,#WELCOME
+		ACALL	PRNTCDPTRLCD
 		ACALL	WAITASEC
 		MOV	MODE,#00h
 START02:	ACALL	SETMODE
@@ -196,7 +183,7 @@ LCMETERINIT1:	PUSH	07h
 		DJNZ	R7,LCMETERINIT1
 		CLR	P1.5				;F1
 		MOV	R1,#LCF1
-		LCALL	LCMETERGETFRQ			;Get F1
+		ACALL	LCMETERGETFRQ			;Get F1
 		SETB	P1.5				;F2
 		MOV	R1,#LCF2
 		ACALL	LCMETERGETFRQ			;Get F2
@@ -487,6 +474,9 @@ INTMUL2:	MOV	A,R4
 WAITASEC:	MOV	R7,#0F9h
 		MOV	R6,#51
 		MOV	R5,#16
+IF DEBUG=1
+		MOV	R5,#01
+ENDIF
 WAITASEC1:	DJNZ	R7,WAITASEC1
 		DJNZ	R6,WAITASEC1
 		DJNZ	R5,WAITASEC1
@@ -520,7 +510,7 @@ WAIT1:		ACALL	WAIT100
 
 ;------------------------------------------------------------------
 ;Frequency counter. LSB from 74HC590 read at P0, TL0, TH0 and
-;TF0 bit. 25 bits, max 33554431 Hz
+;TF0 bit. 25 bits total, max 33554431 Hz
 ;IN:	A Channel (0-3)
 ;OUT:	32 Bit result in R7:R6:R5:R4
 ;------------------------------------------------------------------
@@ -626,10 +616,12 @@ FRQFORMATDONE:	RET
 ;------------------------------------------------------------------
 ;LCD Output.
 ;------------------------------------------------------------------
-;TXBYTE:		MOV	SBUF,A
-;		JNB	TI,$
-;		CLR	TI
-;		RET
+IF DEBUG=1
+TXBYTE:		MOV	SBUF,A
+		JNB	TI,$
+		CLR	TI
+		RET
+ENDIF
 
 LCDDELAY:	PUSH	07h
 		MOV	R7,#00h
@@ -655,7 +647,10 @@ LCDCMDOUT:	PUSH	ACC
 		RET
 
 ;A contains byte
-LCDCHROUT:	;AJMP	TXBYTE
+LCDCHROUT:
+IF DEBUG=1
+		AJMP	TXBYTE
+ENDIF
 		PUSH	ACC
 		SWAP	A				;High nibble first
 		ANL	A,#0Fh
@@ -684,37 +679,28 @@ LCDPRINTSTR:	MOV	A,@R0
 		ACALL	LCDCHROUT
 		INC	R0
 		DJNZ	R7,LCDPRINTSTR
-		RET
-;MOV	A,#0DH
-;ACALL	LCDCHROUT
-;MOV	A,#0AH
-;ACALL	LCDCHROUT
-;RET
-
-LCDPRNTCSTR:	POP	DPH
-		POP	DPL
-LCDPRNTCSTR1:	CLR	A
-		MOVC	A,@A+DPTR
-		INC	DPTR
-		JZ	LCDPRNTCSTR2
+IF DEBUG=1
+		MOV	A,#0DH
 		ACALL	LCDCHROUT
-		SJMP	LCDPRNTCSTR1
-LCDPRNTCSTR2:	PUSH	DPL
-		PUSH	DPH
+		MOV	A,#0AH
+		ACALL	LCDCHROUT
+ENDIF
 		RET
 
 PRNTCDPTRLCD:	CLR	A
 		MOVC	A,@A+DPTR
 		JZ	PRNTCDPTRLCD1
-		LCALL	LCDCHROUT
+		ACALL	LCDCHROUT
 		INC	DPTR
 		SJMP	PRNTCDPTRLCD
-PRNTCDPTRLCD1:	RET
-;MOV	A,#0DH
-;ACALL	LCDCHROUT
-;MOV	A,#0AH
-;ACALL	LCDCHROUT
-;RET
+PRNTCDPTRLCD1:
+IF DEBUG=1
+		MOV	A,#0DH
+		ACALL	LCDCHROUT
+		MOV	A,#0AH
+		ACALL	LCDCHROUT
+ENDIF
+		RET
 
 LCDINIT:	MOV	A,#00000011b			;Function set
 		ACALL	LCDNIBOUT
@@ -741,6 +727,25 @@ LCDCLEARLINE1:	MOV	@R0,A
 		ORG	0800h
 
 $INCLUDE	(FP52INT.a51)
+
+MODE0:		DB	'Cali'
+		DB	'brat'
+		DB	'e',0
+MODE1:		DB	'C Me'
+		DB	'ter',0
+MODE2:		DB 	'L Me'
+		DB	'ter',0
+MODE3:		DB	'Frq '
+		DB	'Coun'
+		DB	't',0
+MODE4:		DB	'Frq '
+		DB	'Coun'
+		DB	't 1G'
+		DB	'Hz',0
+WELCOME:	DB	'Welc'
+		DB	'ome '
+		DB	'Keti'
+		DB	'l',0
 
 		END
 
