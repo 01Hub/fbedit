@@ -447,7 +447,7 @@ MakePen:
 		.if eax==[ebx].CADMEM.layer
 			mov		edx,[esi].OBJECT.color
 		.else
-			mov		edx,0E0E0E0h
+			mov		edx,0C0C0C0h
 		.endif
 		.if [esi].OBJECT.hsel
 			mov		edx,0C0C000h
@@ -1122,11 +1122,17 @@ DrawGrid:
 					sub		eax,xofs
 					.if sdword ptr eax>=0
 						.break .if sdword ptr eax>wt
+						push	eax
 						invoke SetPixel,hDC,eax,edi,0808080h
+						pop		eax
 						inc		eax
+						push	eax
 						invoke SetPixel,hDC,eax,edi,0808080h
+						pop		eax
 						inc		edi
+						push	eax
 						invoke SetPixel,hDC,eax,edi,0808080h
+						pop		eax
 						dec		eax
 						invoke SetPixel,hDC,eax,edi,0808080h
 						dec		edi
