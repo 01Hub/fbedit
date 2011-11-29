@@ -61,9 +61,8 @@ START01:	MOV	@R0,A				;Clear the ram
 		MOV	DPTR,#WELCOME
 		ACALL	PRNTCDPTRLCD
 		ACALL	WAITASEC
-		MOV	MODE,#00h
 START02:	ACALL	SETMODE
-START:		ACALL	LCDCLEARLINE
+START:		ACALL	LCDCLEARBUFF
 		MOV	R7,MODE
 		DJNZ	R7,START1
 		;C Meter
@@ -75,11 +74,13 @@ START1:		DJNZ	R7,START2
 		SJMP	START
 START2:		DJNZ	R7,START3
 		;30MHz
+		MOV	A,#01h				;CH1, 30MHz
 		ACALL	FREQUENCY
 		SJMP	START
 START3:		DJNZ	R7,START4
 		;1GHz
-		ACALL	FREQUENCY1GHZ
+		MOV	A,#02h				;CH2, 1GHz
+		ACALL	FREQUENCY
 		SJMP	START
 START4:		;Calibrate
 		ACALL	LCMETERINIT
@@ -88,28 +89,9 @@ START4:		;Calibrate
 
 FREQUENCY:	CLR	P1.4				;C
 		CLR	P1.5				;F1
-		MOV	A,#01h				;CH1, 30MHz
 		ACALL	FRQCOUNT
 		MOV	R0,#LCDLINE+4			;Decimal buffer
-		ACALL	BIN2DEC
-		MOV	R7,A				;Number of digits
-		ACALL	FRQFORMAT
-		MOV	A,#40h				;Output result
-		ACALL	LCDSETADR
-		MOV	R0,#LCDLINE
-		MOV	R7,#10h
-		ACALL	LCDPRINTSTR
-		RET
-
-FREQUENCY1GHZ:	CLR	P1.4				;C
-		CLR	P1.5				;F1
-		MOV	A,#02h				;CH2, 1GHz
-		ACALL	FRQCOUNT
-		ACALL	INTMUL10
-		ACALL	INTMUL10
-		ACALL	INTMUL10
-		MOV	R0,#LCDLINE+4			;Decimal buffer
-		ACALL	BIN2DEC
+FREQUENCY1:	ACALL	BIN2DEC
 		MOV	R7,A				;Number of digits
 		ACALL	FRQFORMAT
 		MOV	A,#40h				;Output result
@@ -125,6 +107,7 @@ FREQUENCY1GHZ:	CLR	P1.4				;C
 ;OUT:	Nothing
 ;------------------------------------------------------------------
 LCMETERGETFRQ:	PUSH	01h				;Save R1
+		ACALL	LCDCLEARBUFF
 		MOV	A,#250
 		ACALL	WAIT				;Wait 25ms for relay to kick in / out
 		MOV	A,#250
@@ -184,10 +167,20 @@ LCMETERINIT1:	PUSH	07h
 		CLR	P1.5				;F1
 		MOV	R1,#LCF1
 		ACALL	LCMETERGETFRQ			;Get F1
+		MOV	A,#40h				;Output result
+		ACALL	LCDSETADR
+		MOV	R0,#LCDLINE
+		MOV	R7,#10h
+		ACALL	LCDPRINTSTR
 		SETB	P1.5				;F2
 		MOV	R1,#LCF2
 		ACALL	LCMETERGETFRQ			;Get F2
 		CLR	P1.5				;F1
+		MOV	A,#40h				;Output result
+		ACALL	LCDSETADR
+		MOV	R0,#LCDLINE
+		MOV	R7,#10h
+		ACALL	LCDPRINTSTR
 		;Calculate LCCA=((F1/F2)^2)-1
 		MOV	R0,#LCF1
 		MOV	R1,#LCF2
@@ -227,7 +220,7 @@ LCMETERINIT1:	PUSH	07h
 		RET
 
 ;------------------------------------------------------------------
-;Capacitance meter: Cx=((F1/F3)^2)-1)/((F1/F2)^2)-1)*Ccal
+;Capacitance meter: Cx=((((F1/F3)^2)-1)/(((F1/F2)^2)-1))*Ccal
 ;IN:	Nothing
 ;OUT:	Nothing
 ;------------------------------------------------------------------
@@ -256,12 +249,12 @@ CMETER:		CLR	P1.4				;C
 		MOV	@R0,A
 CMETER1:	MOV	A,@R0
 		MOV	LCDLINE+14,#'p'
-		MOV	DPTR,#FPP
+		MOV	DPTR,#FPpF
 		JZ	CMETER2
 		CJNE	A,#78h,$+3
 		JC	CMETER2
 		MOV	LCDLINE+14,#'n'
-		MOV	DPTR,#FPN
+		MOV	DPTR,#FPnF
 CMETER2:	LCALL	PUSHC				;PUSH ARG IN DPTR TO STACK
 		LCALL	FLOATING_MUL
 		MOV	LCDLINE,#'C'
@@ -313,16 +306,16 @@ LMETER1:	MOV	A,@R0
 		CLR	A
 		MOV	@R0,A
 LMETER2:	MOV	LCDLINE+14,#'n'
-		MOV	DPTR,#FPN
+		MOV	DPTR,#FPnF
 		JZ	LMETER3
 		CJNE	A,#7Bh,$+3
 		JC	LMETER3
 		MOV	LCDLINE+14,#'u'
-		MOV	DPTR,#FPU
+		MOV	DPTR,#FPuH
 		CJNE	A,#7Eh,$+3
 		JC	LMETER3
 		MOV	LCDLINE+14,#'m'
-		MOV	DPTR,#FPM
+		MOV	DPTR,#FPmH
 LMETER3:	LCALL	PUSHC				;PUSH ARG IN DPTR TO STACK
 		LCALL	FLOATING_MUL
 		MOV	LCDLINE,#'L'
@@ -418,17 +411,6 @@ ADDIT:		CLR	A
 		MOV	R7,A
 		RET
 
-BINDEC:		DB 000h,0CAh,09Ah,03Bh			;1000000000
-		DB 000h,0E1h,0F5h,005h			; 100000000
-		DB 080h,096h,098h,000h			;  10000000
-		DB 040h,042h,0Fh,0000h			;   1000000
-		DB 0A0h,086h,001h,000h			;    100000
-		DB 010h,027h,000h,000h			;     10000
-		DB 0E8h,003h,000h,000h			;      1000
-		DB 064h,000h,000h,000h			;       100
-		DB 00Ah,000h,000h,000h			;        10
-		DB 001h,000h,000h,000h			;         1
-
 ;------------------------------------------------------------------
 ;Multiply R7:R6:R5:R4 by 10
 ;------------------------------------------------------------------
@@ -515,7 +497,7 @@ WAIT1:		ACALL	WAIT100
 ;OUT:	32 Bit result in R7:R6:R5:R4
 ;------------------------------------------------------------------
 FRQCOUNT:	PUSH	ACC
-		SETB	P1.3				;DISABLE COUNT
+		SETB	P1.3				;DISABLE 74HC590 COUNT
 		CLR	P1.2				;RESET 74HC590
 		SETB	P1.2
 		;Select channel
@@ -538,18 +520,18 @@ FRQCOUNT:	PUSH	ACC
 		POP	ACC
 		DEC	A
 		JZ	FRQCOUNT1
-		CLR	P1.3				;ENABLR COUNT
+		CLR	P1.3				;ENABLR 74HC590 COUNT
 		ACALL	WAIT256MS
-		SETB	P1.3				;DISABLE COUNT
+		SETB	P1.3				;DISABLE 74HC590 COUNT
 		SJMP	FRQCOUNT2
-FRQCOUNT1:	CLR	P1.3				;ENABLR COUNT
+FRQCOUNT1:	CLR	P1.3				;ENABLR 74HC590 COUNT
 		ACALL	WAITASEC
-		SETB	P1.3				;DISABLE COUNT
+		SETB	P1.3				;DISABLE 74HC590 COUNT
 FRQCOUNT2:	MOV	A,P0				;8 BITS FROM 74HC590
 		MOV	R4,A
-		MOV	A,TL0				;8 BITS FROM 
+		MOV	A,TL0				;8 BITS FROM TL0
 		MOV	R5,A
-		MOV	A,TH0				;8 BITS FROM 
+		MOV	A,TH0				;8 BITS FROM TH0
 		MOV	R6,A
 		CLR	A				;TF0 Is the 25th bit
 		MOV	C,TF0
@@ -716,12 +698,12 @@ LCDINIT:	MOV	A,#00000011b			;Function set
 		ACALL	LCDCMDOUT
 		RET
 
-LCDCLEARLINE:	MOV	R0,#LCDLINE			;Get logic levels
+LCDCLEARBUFF:	MOV	R0,#LCDLINE
 		MOV	R7,#10h
 		MOV	A,#20H
-LCDCLEARLINE1:	MOV	@R0,A
+LCDCLEARBUFF1:	MOV	@R0,A
 		INC	R0
-		DJNZ	R7,LCDCLEARLINE1
+		DJNZ	R7,LCDCLEARBUFF1
 		RET
 
 		ORG	0800h
@@ -746,6 +728,34 @@ WELCOME:	DB	'Welc'
 		DB	'ome '
 		DB	'Keti'
 		DB	'l',0
+
+BINDEC:		DB	000h,0CAh,09Ah,03Bh		;1000000000
+		DB	000h,0E1h,0F5h,005h		; 100000000
+		DB	080h,096h,098h,000h		;  10000000
+		DB	040h,042h,0Fh,0000h		;   1000000
+		DB	0A0h,086h,001h,000h		;    100000
+		DB	010h,027h,000h,000h		;     10000
+		DB	0E8h,003h,000h,000h		;      1000
+		DB	064h,000h,000h,000h		;       100
+		DB	00Ah,000h,000h,000h		;        10
+		DB	001h,000h,000h,000h		;         1
+
+FPONE:		DB 	81h,00h,00h			;1.0000000
+		DB	00h,00h,10h
+FPTWO:		DB 	81h,00h,00h			;2.0000000
+		DB	00h,00h,20h
+FPPI:		DB	81h,00h,27h			;3.1415927
+		DB	59h,41h,31h
+FPCCAL:		DB	78h,00h,00h			;1nF=1e-9 Calibration Capasitor
+		DB	00h,00h,10h
+FPpF:		DB	8Dh,00h,00h			;1e12 Pico Farad
+		DB	00h,00h,10h
+FPnF:		DB	8Ah,00h,00h			;1e9 Nano Farad or Nano Henry
+		DB	00h,00h,10h
+FPuH:		DB	87h,00h,00h			;1e6 Micro Henry
+		DB	00h,00h,10h
+FPmH:		DB	84h,00h,00h			;1e3 Milli Henry
+		DB	00h,00h,10h
 
 		END
 

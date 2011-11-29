@@ -1566,19 +1566,3 @@ PCL:		CLR	A				;SET UP A
 EXA:		DB	'A-STACK',0
 ZRO:		DB	00h,00h,00h
 		DB	00h,00h,00h			;0.0000000
-FPONE:		DB 	81h,00h,00h
-		DB	00h,00h,10h			;1.0000000
-FPTWO:		DB 	81h,00h,00h
-		DB	00h,00h,20h			;2.0000000
-FPPI:		DB	81h,00h,27h
-		DB	59h,41h,31h			;3.1415927
-FPCCAL:		DB	78h,00h,00h
-		DB	00h,00h,10h			;1nF=1e-9
-FPP:		DB	8Dh,00h,00h
-		DB	00h,00h,10h			;1e12
-FPN:		DB	8Ah,00h,00h
-		DB	00h,00h,10h			;1e9
-FPU:		DB	87h,00h,00h
-		DB	00h,00h,10h			;1e6
-FPM:		DB	84h,00h,00h
-		DB	00h,00h,10h			;1e3
