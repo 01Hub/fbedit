@@ -1,7 +1,40 @@
 
+SFR_P0      		equ 080h
+SFR_SP      		equ 081h
+SFR_DPL     		equ 082h
+SFR_DPH     		equ 083h
+SFR_DP1L     		equ 084h
+SFR_DP1H     		equ 085h
+SFR_PCON    		equ 087h
+SFR_TCON    		equ 088h
+SFR_TMOD    		equ 089h
+SFR_TL0     		equ 08Ah
+SFR_TL1     		equ 08Bh
+SFR_TH0     		equ 08Ch
+SFR_TH1     		equ 08Dh
+SFR_AUXR    		equ 08Eh
+SFR_P1      		equ 090h
+SFR_SCON    		equ 098h
+SFR_SBUF    		equ 099h
+SFR_P2      		equ 0A0h
+SFR_AUXR1   		equ 0A2h
+SFR_WDTRST  		equ 0A6h
+SFR_IE      		equ 0A8h
+SFR_P3      		equ 0B0h
+SFR_IP      		equ 0B8h
+SFR_T2CON   		equ 0C8h
+SFR_T2MOD   		equ 0C9h
+SFR_RCAP2L  		equ 0CAh
+SFR_RCAP2H  		equ 0CBh
+SFR_TL2     		equ 0CCh
+SFR_TH2     		equ 0CDh
+SFR_PSW     		equ 0D0h
+SFR_ACC     		equ 0E0h
+SFR_B       		equ 0F0h
+
 .data
 
-JmpTab				dd NOP_,AJMP_$cad,LJMP_$cadP0,RR_A,INC_A,INC_$dad,INC_@R0,INC_@R1,INC_R0,INC_R1,INC_R2,INC_R3,INC_R4,INC_R5,INC_R6,INC_R7
+JmpTab				dd NOP_,AJMP_$cadP0,LJMP_$cad,RR_A,INC_A,INC_$dad,INC_@R0,INC_@R1,INC_R0,INC_R1,INC_R2,INC_R3,INC_R4,INC_R5,INC_R6,INC_R7
 					dd JBC$bad_$cad,ACALL_$cadP0,LCALL_$cad,RRC_A,DEC_A,DEC_$dad,DEC_@R0,DEC_@R1,DEC_R0,DEC_R1,DEC_R2,DEC_R3,DEC_R4,DEC_R5,DEC_R6,DEC_R7
 					dd JB_$bad_$cad,AJMP_$cadP1,RET_,RL_A,ADD_A_dd,ADD_A_$dad,ADD_A_@R0,ADD_A_@R1,ADD_A_R0,ADD_A_R1,ADD_A_R2,ADD_A_R3,ADD_A_R4,ADD_A_R5,ADD_A_R6,ADD_A_R7
 					dd JNB_$bad_$cad,ACALL_$cadP1,RETI_,RLC_A,ADDC_A_dd,ADDC_A_$dad,ADDC_A_@R0,ADDC_A_@R1,ADDC_A_R0,ADDC_A_R1,ADDC_A_R2,ADDC_A_R3,ADDC_A_R4,ADDC_A_R5,ADDC_A_R6,ADDC_A_R7
@@ -21,11 +54,215 @@ JmpTab				dd NOP_,AJMP_$cad,LJMP_$cadP0,RR_A,INC_A,INC_$dad,INC_@R0,INC_@R1,INC_
 					dd MOVX_A_@DPTR,AJMP_$cadP7,MOVX_A_@R0,MOVX_A_@R1,CLR_A,MOV_A_$dad,MOV_A_@R0,MOV_A_@R1,MOV_A_R0,MOV_A_R1,MOV_A_R2,MOV_A_R3,MOV_A_R4,MOV_A_R5,MOV_A_R6,MOV_A_R7
 					dd MOVX_@DPTR_A,ACALL_$cadP7,MOVX_@R0_A,MOVX_@R1_A,CPL_A,MOV_$dad_A,MOV_@R0_A,MOV_@R1_A,MOV_R0_A,MOV_R1_A,MOV_R2_A,MOV_R3_A,MOV_R4_A,MOV_R5_A,MOV_R6_A,MOV_R7_A
 
+.data?
+
+hMemFile			HGLOBAL ?
+hMemCode			HGLOBAL ?
+
+Sfr					db 256 dup(?)
+Ram					db 256 dup(?)
+Bank				dd ?
+PC					dd ?
+
 .code
 
+Reset proc
+
+	mov		PC,0
+	mov		Sfr[SFR_P0],0FFh
+	mov		Sfr[SFR_SP],07h
+	mov		Sfr[SFR_DPL],00h
+	mov		Sfr[SFR_DPH],00h
+	mov		Sfr[SFR_DP1L],00h
+	mov		Sfr[SFR_DP1H],00h
+	mov		Sfr[SFR_PCON],00h
+	mov		Sfr[SFR_TCON],00h
+	mov		Sfr[SFR_TMOD],00h
+	mov		Sfr[SFR_TL0],00h
+	mov		Sfr[SFR_TL1],00h
+	mov		Sfr[SFR_TH0],00h
+	mov		Sfr[SFR_TH1],00h
+	mov		Sfr[SFR_AUXR],00h
+	mov		Sfr[SFR_P1],0FFh
+	mov		Sfr[SFR_SCON],00h
+	mov		Sfr[SFR_SBUF],00h
+	mov		Sfr[SFR_P2],0FFh
+	mov		Sfr[SFR_AUXR1],00h
+	mov		Sfr[SFR_WDTRST],00h
+	mov		Sfr[SFR_IE],00h
+	mov		Sfr[SFR_P3],0FFh
+	mov		Sfr[SFR_IP],00h
+	mov		Sfr[SFR_T2CON],00h
+	mov		Sfr[SFR_T2MOD],00h
+	mov		Sfr[SFR_RCAP2L],00h
+	mov		Sfr[SFR_RCAP2H],00h
+	mov		Sfr[SFR_TL2],00h
+	mov		Sfr[SFR_TH2],00h
+	mov		Sfr[SFR_PSW],00h
+	mov		Sfr[SFR_ACC],00h
+	mov		Sfr[SFR_B],00h
+	ret
+
+Reset endp
+
+UpdateStatus proc uses ebx
+	LOCAL	buffer[16]:BYTE
+
+	mov		eax,PC
+	invoke wsprintf,addr buffer,addr szFmtHexWord,eax
+	invoke SetDlgItemText,hWnd,IDC_EDTPC,addr buffer
+	movzx	eax,word ptr Sfr(SFR_DPL)
+	invoke wsprintf,addr buffer,addr szFmtHexWord,eax
+	invoke SetDlgItemText,hWnd,IDC_EDTDPTR,addr buffer
+	movzx	eax,Sfr(SFR_ACC)
+	invoke wsprintf,addr buffer,addr szFmtHexByte,eax
+	invoke SetDlgItemText,hWnd,IDC_EDTACC,addr buffer
+	movzx	eax,Sfr(SFR_B)
+	invoke wsprintf,addr buffer,addr szFmtHexByte,eax
+	invoke SetDlgItemText,hWnd,IDC_EDTB,addr buffer
+	movzx	eax,Sfr(SFR_SP)
+	invoke wsprintf,addr buffer,addr szFmtHexByte,eax
+	invoke SetDlgItemText,hWnd,IDC_EDTSP,addr buffer
+	push	0
+	push	IDC_IMGCY
+	push	IDC_IMGAC
+	push	IDC_IMGF0
+	push	IDC_IMGRS1
+	push	IDC_IMGRS0
+	push	IDC_IMGOV
+	push	IDC_IMGFL
+	push	IDC_IMGP
+	movzx	ebx,Sfr(SFR_PSW)
+	pop		eax
+	.while eax
+		shr		ebx,1
+		.if CARRY?
+			invoke SendDlgItemMessage,hWnd,eax,STM_SETIMAGE,IMAGE_BITMAP,hBmpRedLed
+		.else
+			invoke SendDlgItemMessage,hWnd,eax,STM_SETIMAGE,IMAGE_BITMAP,hBmpGrayLed
+		.endif
+		pop		eax
+	.endw
+	ret
+
+UpdateStatus endp
+
+UpdatePorts proc uses ebx
+
+	push	0
+	push	IDC_IMGP0_0
+	push	IDC_IMGP0_1
+	push	IDC_IMGP0_2
+	push	IDC_IMGP0_3
+	push	IDC_IMGP0_4
+	push	IDC_IMGP0_5
+	push	IDC_IMGP0_6
+	push	IDC_IMGP0_7
+	movzx	ebx,Sfr(SFR_P0)
+	pop		eax
+	.while eax
+		shl		bl,1
+		.if CARRY?
+			invoke SendDlgItemMessage,hWnd,eax,STM_SETIMAGE,IMAGE_BITMAP,hBmpGreenLed
+		.else
+			invoke SendDlgItemMessage,hWnd,eax,STM_SETIMAGE,IMAGE_BITMAP,hBmpGrayLed
+		.endif
+		pop		eax
+	.endw
+	push	0
+	push	IDC_IMGP1_0
+	push	IDC_IMGP1_1
+	push	IDC_IMGP1_2
+	push	IDC_IMGP1_3
+	push	IDC_IMGP1_4
+	push	IDC_IMGP1_5
+	push	IDC_IMGP1_6
+	push	IDC_IMGP1_7
+	movzx	ebx,Sfr(SFR_P1)
+	pop		eax
+	.while eax
+		shl		bl,1
+		.if CARRY?
+			invoke SendDlgItemMessage,hWnd,eax,STM_SETIMAGE,IMAGE_BITMAP,hBmpGreenLed
+		.else
+			invoke SendDlgItemMessage,hWnd,eax,STM_SETIMAGE,IMAGE_BITMAP,hBmpGrayLed
+		.endif
+		pop		eax
+	.endw
+	push	0
+	push	IDC_IMGP2_0
+	push	IDC_IMGP2_1
+	push	IDC_IMGP2_2
+	push	IDC_IMGP2_3
+	push	IDC_IMGP2_4
+	push	IDC_IMGP2_5
+	push	IDC_IMGP2_6
+	push	IDC_IMGP2_7
+	movzx	ebx,Sfr(SFR_P2)
+	pop		eax
+	.while eax
+		shl		bl,1
+		.if CARRY?
+			invoke SendDlgItemMessage,hWnd,eax,STM_SETIMAGE,IMAGE_BITMAP,hBmpGreenLed
+		.else
+			invoke SendDlgItemMessage,hWnd,eax,STM_SETIMAGE,IMAGE_BITMAP,hBmpGrayLed
+		.endif
+		pop		eax
+	.endw
+	push	0
+	push	IDC_IMGP3_0
+	push	IDC_IMGP3_1
+	push	IDC_IMGP3_2
+	push	IDC_IMGP3_3
+	push	IDC_IMGP3_4
+	push	IDC_IMGP3_5
+	push	IDC_IMGP3_6
+	push	IDC_IMGP3_7
+	movzx	ebx,Sfr(SFR_P3)
+	pop		eax
+	.while eax
+		shl		bl,1
+		.if CARRY?
+			invoke SendDlgItemMessage,hWnd,eax,STM_SETIMAGE,IMAGE_BITMAP,hBmpGreenLed
+		.else
+			invoke SendDlgItemMessage,hWnd,eax,STM_SETIMAGE,IMAGE_BITMAP,hBmpGrayLed
+		.endif
+		pop		eax
+	.endw
+	ret
+
+UpdatePorts endp
+
+UpdateRegisters proc uses ebx esi
+	LOCAL	buffer[16]:BYTE
+
+	push	0
+	push	IDC_EDTR7
+	push	IDC_EDTR6
+	push	IDC_EDTR5
+	push	IDC_EDTR4
+	push	IDC_EDTR3
+	push	IDC_EDTR2
+	push	IDC_EDTR1
+	push	IDC_EDTR0
+	mov		esi,offset Ram
+	mov		eax,Bank
+	lea		esi,[esi+eax*8]
+	pop		ebx
+	.while ebx
+		movzx	eax,byte ptr [esi]
+		invoke wsprintf,addr buffer,addr szFmtHexByte,eax
+		invoke SetDlgItemText,hWnd,ebx,addr buffer
+		inc		esi
+		pop		ebx
+	.endw
+	ret
+
+UpdateRegisters endp
+
 NOP_:
-AJMP_$cad:
-LJMP_$cadP0:
+AJMP_$cadP0:
+LJMP_$cad:
 RR_A:
 INC_A:
 INC_$dad:

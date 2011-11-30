@@ -197,7 +197,7 @@ RCAP2H	CB   N
 TL2		CC   N	Timer 2 low
 TH2		CD   N	Timer 2 high
 
-PSW		D0   Y  Prog status word	CY		AC		F0		RS1		RS0		OV		F1		P
+PSW		D0   Y  Prog status word	CY		AC		F0		RS1		RS0		OV		FL		P
 
 ACC		E0   Y  Acmltr
 

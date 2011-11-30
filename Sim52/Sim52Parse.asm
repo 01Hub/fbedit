@@ -75,6 +75,7 @@ ParseList proc uses ebx esi edi,lpFileName:DWORD
 			.endif
 			call	SkipLine
 		.endw
+		invoke Reset
 		xor		eax,eax
 	.endif
 	ret
