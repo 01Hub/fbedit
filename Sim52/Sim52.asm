@@ -8,6 +8,23 @@ include Sim52Core.asm
 
 .code
 
+DoToolBar proc hInst:DWORD,hToolBar:HWND
+	LOCAL	tbab:TBADDBITMAP
+
+	;Set toolbar struct size
+	invoke SendMessage,hToolBar,TB_BUTTONSTRUCTSIZE,sizeof TBBUTTON,0
+	;Set toolbar bitmap
+	push	hInst
+	pop		tbab.hInst
+	mov		tbab.nID,IDB_TBRBMP
+	invoke SendMessage,hToolBar,TB_ADDBITMAP,9,addr tbab
+	;Set toolbar buttons
+	invoke SendMessage,hToolBar,TB_ADDBUTTONS,ntbrbtns,addr tbrbtns
+	mov		eax,hToolBar
+	ret
+
+DoToolBar endp
+
 WndProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	ofn:OPENFILENAME
 	LOCAL	buffer[MAX_PATH]:BYTE
@@ -16,6 +33,8 @@ WndProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	.if eax==WM_INITDIALOG
 		mov		eax,hWin
 		mov		hWnd,eax
+		invoke GetDlgItem,hWin,IDC_TBRSIM52
+		invoke DoToolBar,hInstance,eax
 		; Create font and set it to list box
 		invoke CreateFontIndirect,addr Courier_New_9
 		mov		hLstFont,eax
