@@ -55,6 +55,7 @@ WndProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	tci:TC_ITEM
 	LOCAL	ofn:OPENFILENAME
 	LOCAL	buffer[MAX_PATH]:BYTE
+	LOCAL	tid:DWORD
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
@@ -82,12 +83,17 @@ WndProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		hBmpGreenLed,eax
 		invoke LoadBitmap,hInstance,IDB_LEDRED
 		mov		hBmpRedLed,eax
-		invoke SetTimer,hWin,1000,200,NULL
-	.elseif eax==WM_TIMER
 		invoke Reset
 		invoke UpdateStatus
 		invoke UpdatePorts
 		invoke UpdateRegisters
+		invoke SetTimer,hWin,1000,200,NULL
+	.elseif eax==WM_TIMER
+		.if State & STATE_RUN
+			invoke UpdateStatus
+			invoke UpdatePorts
+			invoke UpdateRegisters
+		.endif
 	.elseif eax==WM_NOTIFY
 		.if wParam==IDC_UDNBANK
 			mov		eax,lParam
@@ -128,10 +134,84 @@ WndProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					invoke ParseList,addr buffer
 					invoke EnableDisable
 				.endif
+			.elseif eax==IDM_SEARCH_FIND
+			.elseif eax==IDM_VIEW_TERMINAL
+			.elseif eax==IDM_DEBUG_RUN
+				.if State & STATE_THREAD
+					mov		State,STATE_THREAD or STATE_RUN
+				.else
+					mov		State,STATE_THREAD or STATE_RUN
+					invoke CreateThread,NULL,0,addr CoreThread,0,0,addr tid
+					invoke CloseHandle,eax
+				.endif
+			.elseif eax==IDM_DEBUG_PAUSE
+				.if State & STATE_THREAD
+					or		State,STATE_PAUSE
+				.endif
+			.elseif eax==IDM_DEBUG_STOP
+				invoke Reset
+			.elseif eax==IDM_DEBUG_STEP_INTO
+				.if State & STATE_THREAD
+					or		State,STATE_STEP_INTO
+				.else
+					mov		State,STATE_THREAD or STATE_RUN or STATE_PAUSE or STATE_STEP_INTO
+					invoke CreateThread,NULL,0,addr CoreThread,0,0,addr tid
+					invoke CloseHandle,eax
+				.endif
+			.elseif eax==IDM_DEBUG_STEP_OVER
+				.if State & STATE_THREAD
+					or		State,STATE_STEP_OVER
+				.else
+					mov		State,STATE_THREAD or STATE_RUN or STATE_PAUSE or STATE_STEP_OVER
+					invoke CreateThread,NULL,0,addr CoreThread,0,0,addr tid
+					invoke CloseHandle,eax
+				.endif
+			.elseif eax==IDM_DEBUG_RUN_TO_CURSOR
+			.elseif eax==IDM_DEBUG_TOGGLE
+			.elseif eax==IDM_DEBUG_CLEAR
 			.elseif eax==IDM_HELP_ABOUT
 				invoke ShellAbout,hWin,addr AppName,addr AboutMsg,NULL
+			.elseif eax>=IDC_IMGP && eax<=IDC_IMGCY
+				;PSW
+				sub		eax,IDC_IMGP
+				mov		ecx,eax
+				mov		eax,1
+				shl		eax,cl
+				xor		Sfr(SFR_PSW),al
+				invoke UpdateStatus
+			.elseif eax>=IDC_IMGP0_0 && eax<=IDC_IMGP0_7
+				;P0
+				sub		eax,IDC_IMGP0_0
+				mov		ecx,eax
+				mov		eax,1
+				shl		eax,cl
+				xor		Sfr(SFR_P0),al
+				invoke UpdatePorts
+			.elseif eax>=IDC_IMGP1_0 && eax<=IDC_IMGP1_7
+				;P1
+				sub		eax,IDC_IMGP1_0
+				mov		ecx,eax
+				mov		eax,1
+				shl		eax,cl
+				xor		Sfr(SFR_P1),al
+				invoke UpdatePorts
+			.elseif eax>=IDC_IMGP2_0 && eax<=IDC_IMGP2_7
+				;P2
+				sub		eax,IDC_IMGP2_0
+				mov		ecx,eax
+				mov		eax,1
+				shl		eax,cl
+				xor		Sfr(SFR_P2),al
+				invoke UpdatePorts
+			.elseif eax>=IDC_IMGP3_0 && eax<=IDC_IMGP3_7
+				;P3
+				sub		eax,IDC_IMGP3_0
+				mov		ecx,eax
+				mov		eax,1
+				shl		eax,cl
+				xor		Sfr(SFR_P3),al
+				invoke UpdatePorts
 			.endif
-			PrintDec eax
 		.endif
 	.elseif eax==WM_INITMENUPOPUP
 		invoke SendDlgItemMessage,hWin,IDC_LSTCODE,LB_GETCOUNT,0,0
