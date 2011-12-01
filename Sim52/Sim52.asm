@@ -89,10 +89,11 @@ WndProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke UpdateRegisters
 		invoke SetTimer,hWin,1000,200,NULL
 	.elseif eax==WM_TIMER
-		.if State & STATE_RUN
+		.if Refresh
 			invoke UpdateStatus
 			invoke UpdatePorts
 			invoke UpdateRegisters
+			dec		Refresh
 		.endif
 	.elseif eax==WM_NOTIFY
 		.if wParam==IDC_UDNBANK
@@ -149,7 +150,7 @@ WndProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					or		State,STATE_PAUSE
 				.endif
 			.elseif eax==IDM_DEBUG_STOP
-				invoke Reset
+				mov		State,STATE_STOP
 			.elseif eax==IDM_DEBUG_STEP_INTO
 				.if State & STATE_THREAD
 					or		State,STATE_STEP_INTO
@@ -167,6 +168,18 @@ WndProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					invoke CloseHandle,eax
 				.endif
 			.elseif eax==IDM_DEBUG_RUN_TO_CURSOR
+				invoke SendDlgItemMessage,hWin,IDC_LSTCODE,LB_GETCURSEL,0,0
+				.if eax!=LB_ERR
+					invoke SendDlgItemMessage,hWin,IDC_LSTCODE,LB_GETITEMDATA,eax,0
+					mov		CursorAddr,eax
+					.if State & STATE_THREAD
+						or		State,STATE_RUN_TO_CURSOR
+					.else
+						mov		State,STATE_THREAD or STATE_RUN or STATE_PAUSE or STATE_RUN_TO_CURSOR
+						invoke CreateThread,NULL,0,addr CoreThread,0,0,addr tid
+						invoke CloseHandle,eax
+					.endif
+				.endif
 			.elseif eax==IDM_DEBUG_TOGGLE
 			.elseif eax==IDM_DEBUG_CLEAR
 			.elseif eax==IDM_HELP_ABOUT

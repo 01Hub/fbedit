@@ -163,8 +163,8 @@ P0		80   Y  I/O Port 0			P0.7	P0.6	P0.5	P0.4	P0.3	P0.2	P0.1	P0.0
 SP		81   N  Stack pointer
 DPL		82   N  Data pointer low
 DPH		83   N  Data pointer high
-DPL		84   N  Data pointer low
-DPH		83   N  Data pointer high
+DP1L	84   N  Data pointer low
+DP1H	85   N  Data pointer high
 PCON	87   N  Power control		SMOD	-		-		-		GF1		GF0		PD		IDL
 
 TCON	88   Y  Timer control		TF1		TR1		TF0		TR0		IE1		IT1		IE0		IT0
