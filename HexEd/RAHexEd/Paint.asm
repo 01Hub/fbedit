@@ -2,8 +2,6 @@
 .code
 
 HexAddr:
-	push	ecx
-	mov		ecx,8
   @@:
 	call	Nybble
 	mov		[edi],dl
@@ -11,7 +9,6 @@ HexAddr:
 	dec		ecx
 	jne		@b
 	mov		[edi],cl
-	pop		ecx
 	retn
 
 HexByte:
@@ -77,7 +74,7 @@ Ascii:
 	rep stosb
 	retn
 
-HexLine proc uses ebx esi edi,lpMem:DWORD,nBytes:DWORD,nLine:DWORD,nOfs:DWORD,lpString:DWORD
+HexLine proc uses ebx esi edi,lpMem:DWORD,fstyle:DWORD,nBytes:DWORD,nLine:DWORD,nOfs:DWORD,lpString:DWORD
 
 	mov		esi,lpMem
 	mov		edi,lpString
@@ -87,7 +84,23 @@ HexLine proc uses ebx esi edi,lpMem:DWORD,nBytes:DWORD,nLine:DWORD,nOfs:DWORD,lp
 	.if ebx<=nBytes
 		mov		eax,ebx
 		sub		eax,nOfs
+		test	fstyle,HEX_STYLE_ADDRESSBITS16 or HEX_STYLE_ADDRESSBITS8
+		.if ZERO?
+			mov		ecx,8
+		.else
+			test	fstyle,HEX_STYLE_ADDRESSBITS16
+			.if ZERO?
+				mov		ecx,4
+				shl		eax,16
+			.else
+				mov		ecx,2
+				shl		eax,24
+			.endif
+		.endif
+		push	edi
 		call	HexAddr
+		pop		edi
+		lea		edi,[edi+8]
 		xor		ecx,ecx
 		.while ebx<nBytes && ecx<16
 			call	HexByte
@@ -214,7 +227,7 @@ HexPaint proc uses ebx esi edi,hWin:HWND
 					invoke LineTo,ps.hdc,edi,rect.bottom
 				.endif
 				pop		edi
-				invoke HexLine,lpMem,[ebx].EDIT.nbytes,edi,[ebx].EDIT.ofs,addr buffer
+				invoke HexLine,lpMem,[ebx].EDIT.fstyle,[ebx].EDIT.nbytes,edi,[ebx].EDIT.ofs,addr buffer
 				mov		esi,eax
 				.if eax
 					call	DrawSelBack
@@ -226,7 +239,18 @@ HexPaint proc uses ebx esi edi,hWin:HWND
 						add		edx,[ebx].EDIT.linenrwt
 						add		edx,[ebx].EDIT.selbarwt
 						sub		edx,cpx
-						invoke TextOut,ps.hdc,edx,rect.top,addr buffer,8
+						test	[ebx].EDIT.fstyle,HEX_STYLE_ADDRESSBITS16 or HEX_STYLE_ADDRESSBITS8
+						.if ZERO?
+							mov		ecx,8
+						.else
+							test	[ebx].EDIT.fstyle,HEX_STYLE_ADDRESSBITS16
+							.if ZERO?
+								mov		ecx,4
+							.else
+								mov		ecx,2
+							.endif
+						.endif
+						invoke TextOut,ps.hdc,edx,rect.top,addr buffer,ecx
 					.endif
 					mov		edx,[ebx].EDIT.dataxp
 					add		edx,[ebx].EDIT.linenrwt

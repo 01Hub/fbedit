@@ -258,6 +258,9 @@ RAHexEdProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 		mov		fControl,eax
 		invoke GetKeyState,VK_SHIFT
 		and		eax,80h
+		.if [ebx].EDIT.fstyle & HEX_STYLE_NOINSDEL
+			xor		eax,eax
+		.endif
 		mov		fShift,eax
 		mov		edx,wParam
 		mov		eax,lParam
@@ -505,17 +508,22 @@ RAHexEdProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 		.elseif edx==2Dh && (eax==152h || eax==52h)
 			;Insert
 			xor		[ebx].EDIT.fOvr,TRUE
+			.if [ebx].EDIT.fstyle & HEX_STYLE_NOINSDEL
+				mov		[ebx].EDIT.fOvr,TRUE
+			.endif
 			invoke SetCaret,hWin
 		.elseif edx==2Eh && (eax==153h || eax==53h)
-			;Delete
-			.if fSel
-				invoke DeleteSelection,ebx,cpMin,cpMax
-			.else
-				mov		eax,cpMin
-				and		eax,0FFFFFFFEh
-				mov		edx,eax
-				add		edx,2
-				invoke DeleteSelection,ebx,eax,edx
+			.if !([ebx].EDIT.fstyle & HEX_STYLE_NOINSDEL)
+				;Delete
+				.if fSel
+					invoke DeleteSelection,ebx,cpMin,cpMax
+				.else
+					mov		eax,cpMin
+					and		eax,0FFFFFFFEh
+					mov		edx,eax
+					add		edx,2
+					invoke DeleteSelection,ebx,eax,edx
+				.endif
 			.endif
 		.elseif edx==43h && fControl && !fShift
 			;Ctrl+C, Copy
@@ -528,15 +536,17 @@ RAHexEdProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 			;Ctrl+V, Paste
 			invoke EditPaste,ebx
 		.elseif edx==41h && fControl && !fShift
-			;Ctrl+A, Select all
-			mov		eax,[ebx].EDIT.nbytes
-			shl		eax,1
-			mov		[ebx].EDIT.cpMin,0
-			mov		[ebx].EDIT.cpMax,eax
-			invoke InvalidateRect,[ebx].EDIT.edta.hwnd,NULL,FALSE
-			invoke InvalidateRect,[ebx].EDIT.edtb.hwnd,NULL,FALSE
-			invoke SetCaret,hWin
-			invoke SelChange,ebx,SEL_TEXT
+			.if ![ebx].EDIT.fstyle & HEX_STYLE_NOINSDEL
+				;Ctrl+A, Select all
+				mov		eax,[ebx].EDIT.nbytes
+				shl		eax,1
+				mov		[ebx].EDIT.cpMin,0
+				mov		[ebx].EDIT.cpMax,eax
+				invoke InvalidateRect,[ebx].EDIT.edta.hwnd,NULL,FALSE
+				invoke InvalidateRect,[ebx].EDIT.edtb.hwnd,NULL,FALSE
+				invoke SetCaret,hWin
+				invoke SelChange,ebx,SEL_TEXT
+			.endif
 		.elseif edx==5Ah && fControl && !fShift
 			;Ctrl+Z, Undo
 			invoke Undo,ebx,hWin
@@ -1457,6 +1467,28 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke InvalidateRect,[ebx].EDIT.edta.hwnd,NULL,FALSE
 		invoke InvalidateRect,[ebx].EDIT.edtb.hwnd,NULL,FALSE
 		invoke SetCaret,[esi].HEEDT.hwnd
+		xor		eax,eax
+		jmp		Ex
+	.elseif eax==HEM_SETMEM
+		invoke GlobalLock,[ebx].EDIT.hmem
+		mov		edi,eax
+		mov		ecx,wParam
+		mov		esi,lParam
+		rep movsb
+		mov		ecx,wParam
+		mov		[ebx].EDIT.nbytes,ecx
+		invoke GlobalUnlock,[ebx].EDIT.hmem
+		invoke InvalidateRect,[ebx].EDIT.edta.hwnd,NULL,FALSE
+		invoke InvalidateRect,[ebx].EDIT.edtb.hwnd,NULL,FALSE
+		xor		eax,eax
+		jmp		Ex
+	.elseif eax==HEM_GETMEM
+		invoke GlobalLock,[ebx].EDIT.hmem
+		mov		esi,eax
+		mov		ecx,wParam
+		mov		edi,lParam
+		rep movsb
+		invoke GlobalUnlock,[ebx].EDIT.hmem
 		xor		eax,eax
 		jmp		Ex
 	.elseif eax==EM_STREAMIN

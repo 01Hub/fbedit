@@ -42,7 +42,17 @@ SetFont proc uses ebx edi,hMem:DWORD,lpRafont:DWORD
 	.if ZERO?
 		mov		[ebx].EDIT.addrxp,SPCWT
 		mov		eax,pt.x
-		shl		eax,3
+		test	[ebx].EDIT.fstyle,HEX_STYLE_ADDRESSBITS16 or HEX_STYLE_ADDRESSBITS8
+		.if ZERO?
+			shl		eax,3
+		.else
+			test	[ebx].EDIT.fstyle,HEX_STYLE_ADDRESSBITS16
+			.if ZERO?
+				shl		eax,2
+			.else
+				shl		eax,1
+			.endif
+		.endif
 		mov		[ebx].EDIT.addrwt,eax
 		add		eax,SPCWT*2+1
 		add		eax,[ebx].EDIT.addrxp

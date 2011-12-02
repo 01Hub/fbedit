@@ -36,19 +36,25 @@ HEM_GETBYTE				equ HEM_BASE+16		;wParam=cp, lParam=0
 HEM_SETBYTE				equ HEM_BASE+16		;wParam=cp, lParam=ByteVal
 HEM_GETOFFSET			equ HEM_BASE+17		;wParam=0, lParam=0
 HEM_SETOFFSET			equ HEM_BASE+18		;wParam=ofs, lParam=0
+HEM_SETMEM				equ HEM_BASE+19		;wParam=nBytes, lParam=lpBytes
+HEM_GETMEM				equ HEM_BASE+20		;wParam=nBytes, lParam=lpBytes
 
 FR_HEX					equ 2
 
-HEX_STYLE_NOSPLITT		equ 001h			;No splitt button
-HEX_STYLE_NOLINENUMBER	equ 002h			;No linenumber button
-HEX_STYLE_NOHSCROLL		equ 004h			;No horizontal scrollbar
-HEX_STYLE_NOVSCROLL		equ 008h			;No vertical scrollbar
-HEX_STYLE_NOSIZEGRIP	equ 010h			;No size grip
-HEX_STYLE_NOSTATE		equ 020h			;No state indicator
-HEX_STYLE_NOADDRESS		equ 040h			;No adress field
-HEX_STYLE_NOASCII		equ 080h			;No ascii field
-HEX_STYLE_NOUPPERCASE	equ 100h			;Hex numbers is lowercase letters
-HEX_STYLE_READONLY		equ 200h			;Text is locked
+HEX_STYLE_NOSPLITT		equ 0001h			;No splitt button
+HEX_STYLE_NOLINENUMBER	equ 0002h			;No linenumber button
+HEX_STYLE_NOHSCROLL		equ 0004h			;No horizontal scrollbar
+HEX_STYLE_NOVSCROLL		equ 0008h			;No vertical scrollbar
+HEX_STYLE_NOSIZEGRIP	equ 0010h			;No size grip
+HEX_STYLE_NOSTATE		equ 0020h			;No state indicator
+HEX_STYLE_NOADDRESS		equ 0040h			;No adress field
+HEX_STYLE_NOASCII		equ 0080h			;No ascii field
+HEX_STYLE_NOUPPERCASE	equ 0100h			;Hex numbers is lowercase letters
+HEX_STYLE_READONLY		equ 0200h			;Text is locked
+HEX_STYLE_ADDRESSBITS8	equ 0400h			;8 bit address
+HEX_STYLE_ADDRESSBITS16	equ 0800h			;16 bit address
+HEX_STYLE_ADDRESSBITS32	equ 0000h			;32 bit address
+HEX_STYLE_NOINSDEL		equ 1000h			;Bytes can not be inserted or deleted
 
 HEFONT struct
 	hFont			dd ?		;Code edit normal
