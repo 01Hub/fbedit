@@ -36,8 +36,8 @@ STATE_STOP			equ 0
 STATE_RUN			equ 1
 STATE_PAUSE			equ 2
 STATE_STEP_INTO		equ 4
-STATE_STEP_OVER		equ 8
-STATE_RUN_TO_CURSOR	equ 16
+STATE_RUN_TO_CURSOR	equ 8
+STATE_BREAKPOINT	equ 16
 
 STATE_THREAD		equ 128
 
@@ -63,22 +63,60 @@ JmpTab				dd NOP_,AJMP_$cad,LJMP_$cad,RR_A,INC_A,INC_$dad,INC_@R0,INC_@R1,INC_R0
 					dd MOVX_A_@DPTR,AJMP_$cad,MOVX_A_@R0,MOVX_A_@R1,CLR_A,MOV_A_$dad,MOV_A_@R0,MOV_A_@R1,MOV_A_R0,MOV_A_R1,MOV_A_R2,MOV_A_R3,MOV_A_R4,MOV_A_R5,MOV_A_R6,MOV_A_R7
 					dd MOVX_@DPTR_A,ACALL_$cad,MOVX_@R0_A,MOVX_@R1_A,CPL_A,MOV_$dad_A,MOV_@R0_A,MOV_@R1_A,MOV_R0_A,MOV_R1_A,MOV_R2_A,MOV_R3_A,MOV_R4_A,MOV_R5_A,MOV_R6_A,MOV_R7_A
 
+Cycles				db 1,2,2,1,1,1,1,1,1,1,1,1,1,1,1,1
+					db 2,2,2,1,1,1,1,1,1,1,1,1,1,1,1,1
+					db 2,2,2,1,1,1,1,1,1,1,1,1,1,1,1,1
+					db 2,2,2,1,1,1,1,1,1,1,1,1,1,1,1,1
+					db 2,2,1,2,1,1,1,1,1,1,1,1,1,1,1,1
+					db 2,2,1,2,1,1,1,1,1,1,1,1,1,1,1,1
+					db 2,2,1,2,1,1,1,1,1,1,1,1,1,1,1,1
+					db 2,2,2,2,1,2,1,1,1,1,1,1,1,1,1,1
+					db 2,2,2,2,4,2,2,2,2,2,2,2,2,2,2,2
+					db 2,2,2,2,1,1,1,1,1,1,1,1,1,1,1,1
+					db 2,2,1,2,4,0,2,2,2,2,2,2,2,2,2,2
+					db 2,2,1,1,2,2,2,2,2,2,2,2,2,2,2,2
+					db 2,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+					db 2,2,1,1,1,2,1,1,2,2,2,2,2,2,2,2
+					db 2,2,2,2,1,1,1,1,1,1,1,1,1,1,1,1
+					db 2,2,2,2,1,1,1,1,1,1,1,1,1,1,1,1
+
+Bytes				db 1,2,3,1,1,2,1,1,1,1,1,1,1,1,1,1
+					db 3,2,3,1,1,2,1,1,1,1,1,1,1,1,1,1
+					db 3,2,1,1,2,2,1,1,1,1,1,1,1,1,1,1
+					db 3,2,1,1,1,2,1,1,1,1,1,1,1,1,1,1
+					db 2,2,2,3,2,2,1,1,1,1,1,1,1,1,1,1
+					db 2,2,2,3,2,2,1,1,1,1,1,1,1,1,1,1
+					db 2,2,2,3,2,2,1,1,1,1,1,1,1,1,1,1
+					db 2,2,2,1,2,3,2,2,2,2,2,2,2,2,2,2
+					db 2,2,2,1,1,3,2,2,2,2,2,2,2,2,2,2
+					db 3,2,2,1,2,2,1,1,1,1,1,1,1,1,1,1
+					db 2,2,2,1,1,0,2,2,2,2,2,2,2,2,2,2
+					db 2,2,2,1,3,3,3,3,3,3,3,3,3,3,3,3
+					db 2,2,2,1,1,2,1,1,1,1,1,1,1,1,1,1
+					db 2,2,2,1,1,3,1,1,2,2,2,2,2,2,2,2
+					db 1,2,1,1,1,2,1,1,1,1,1,1,1,1,1,1
+					db 1,2,1,1,1,2,1,1,1,1,1,1,1,1,1,1
+
 .data?
 
 hMemFile			HGLOBAL ?
-hMemCode			HGLOBAL ?
 hMemAddr			HGLOBAL ?
 
 Sfr					db 256 dup(?)
 Ram					db 256 dup(?)
 XRam				db 65536 dup(?)
+Code				db 65536 dup(?)
 Bank				dd ?
 PC					dd ?
+nAddr				dd ?
 
 ViewBank			DD ?
 Refresh				dd ?
 State				dd ?
 CursorAddr			dd ?
+TotalCycles			dd ?
+PerformanceCount		dq ?
+PerformanceFrequency	dq ?
 
 .code
 
@@ -123,6 +161,44 @@ Reset proc
 
 Reset endp
 
+FindMcuAddr proc uses esi,McuAddr:DWORD
+
+	mov		esi,hMemAddr
+	xor		eax,eax
+	.if esi
+		mov		edx,McuAddr
+		xor		ecx,ecx
+		.while dx!=[esi].MCUADDR.mcuaddr && ecx<nAddr
+			inc		ecx
+			lea		esi,[esi+sizeof MCUADDR]
+		.endw
+		.if dx==[esi].MCUADDR.mcuaddr
+			mov		eax,esi
+		.endif
+	.endif
+	ret
+
+FindMcuAddr endp
+
+FindLbInx proc uses esi,LbInx:DWORD
+
+	mov		esi,hMemAddr
+	xor		eax,eax
+	.if esi
+		mov		edx,LbInx
+		xor		ecx,ecx
+		.while dx!=[esi].MCUADDR.lbinx && ecx<nAddr
+			inc		ecx
+			lea		esi,[esi+sizeof MCUADDR]
+		.endw
+		.if dx==[esi].MCUADDR.lbinx
+			mov		eax,esi
+		.endif
+	.endif
+	ret
+
+FindLbInx endp
+
 UpdateStatus proc uses ebx
 	LOCAL	buffer[16]:BYTE
 
@@ -165,27 +241,11 @@ UpdateStatus proc uses ebx
 	invoke SendDlgItemMessage,hWnd,IDC_LSTCODE,LB_GETCOUNT,0,0
 	mov		ebx,eax
 	mov		edx,hMemAddr
-	mov		eax,PC
-	.while ebx
-		.if ax==[edx].MCUADDR.mcuaddr
-			mov		ax,[edx].MCUADDR.lbinx
-			invoke SendDlgItemMessage,hWnd,IDC_LSTCODE,LB_SETCURSEL,eax,0
-			.break
-		.endif
-		lea		edx,[edx+sizeof MCUADDR]
-		dec		ebx
-	.endw
-;	xor		ebx,ebx
-;	.while TRUE
-;		invoke SendDlgItemMessage,hWnd,IDC_LSTCODE,LB_GETITEMDATA,ebx,0
-;		.if eax==PC
-;			invoke SendDlgItemMessage,hWnd,IDC_LSTCODE,LB_SETCURSEL,ebx,0
-;			.break
-;		.elseif eax==LB_ERR
-;			.break
-;		.endif
-;		inc		ebx
-;	.endw
+	invoke FindMcuAddr,PC
+	.if eax
+		movzx	eax,[eax].MCUADDR.lbinx
+		invoke SendDlgItemMessage,hWnd,IDC_LSTCODE,LB_SETCURSEL,eax,0
+	.endif
 	ret
 
 UpdateStatus endp
@@ -302,6 +362,43 @@ UpdateRegisters proc uses ebx esi
 	ret
 
 UpdateRegisters endp
+
+ToggleBreakPoint proc lbinx:DWORD
+
+	invoke FindLbInx,lbinx
+	.if eax
+		xor		[eax].MCUADDR.fbp,TRUE
+	.endif
+	ret
+
+ToggleBreakPoint endp
+
+ClearBreakPoints proc
+
+	mov		edx,hMemAddr
+	.if edx
+		xor		ecx,ecx
+		.while ecx<nAddr
+			mov		[edx].MCUADDR.fbp,0
+			inc		ecx
+			lea		edx,[edx+sizeof MCUADDR]
+		.endw
+	.endif
+	ret
+
+ClearBreakPoints endp
+
+IsAddrBreakPoint proc uses esi,mcuaddr:DWORD
+
+	invoke FindMcuAddr,mcuaddr
+	.if eax
+		movzx	eax,[eax].MCUADDR.fbp
+	.else
+		dec		eax
+	.endif
+	ret
+
+IsAddrBreakPoint endp
 
 SetParity proc
 
@@ -2937,27 +3034,29 @@ MOV_R7_A:
 
 CoreThread proc lParam:DWORD
 
-	mov		esi,hMemCode
+	mov		esi,offset Code
 	mov		ebx,PC
 	.while State!=STATE_STOP
-		.if State & STATE_RUN
+		.if (State & STATE_RUN) && !(State & STATE_BREAKPOINT)
 			.if !(State & STATE_PAUSE)
 				call	Execute
-				mov		Refresh,2
+				mov		Refresh,1
 			.elseif State & STATE_STEP_INTO
 				call	Execute
 				xor		State,STATE_STEP_INTO
-				mov		Refresh,2
-			.elseif State & STATE_STEP_OVER
-				call	Execute
-				xor		State,STATE_STEP_OVER
-				mov		Refresh,2
+				mov		Refresh,1
 			.elseif State & STATE_RUN_TO_CURSOR
 				call	Execute
 				.if ebx==CursorAddr
 					xor		State,STATE_RUN_TO_CURSOR
 				.endif
-				mov		Refresh,2
+				mov		Refresh,1
+			.endif
+			invoke FindMcuAddr,ebx
+			.if eax
+				.if [eax].MCUADDR.fbp
+					or		State,STATE_BREAKPOINT
+				.endif
 			.endif
 		.endif
 	.endw
@@ -2967,8 +3066,12 @@ CoreThread proc lParam:DWORD
 
 Execute:
 	movzx	eax,byte ptr [esi+ebx]
+	movzx	edx,Cycles[eax]
+	add		TotalCycles,edx
 	call	JmpTab[eax*4]
 	mov		PC,ebx
+;	invoke QueryPerformanceFrequency,addr PerformanceFrequency
+;	invoke QueryPerformanceCounter,addr PerformanceCount
 	retn
 
 CoreThread endp

@@ -21,46 +21,46 @@ ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. 
     1:
     2:		N      0000			ORG	0000h
     3:
-    4:	  0000	00				NOP
+    4:	  0000	00		START:		NOP
     5:	  0001	01 04				AJMP	AA
     6:	  0003	00				NOP
-    7:	  0004	02 00 08	AA:		LJMP	BB
-    8:	  0007	00				NOP
-    9:	  0008	74 5A		BB:		MOV	A,#5Ah
-   10:	  000A	03				RR	A
-   11:	  000B	03				RR	A
-   12:	  000C	04				INC	A
-   13:	  000D	05 10				INC	10h
-   14:	  000F	78 10				MOV	R0,#10h
-   15:	  0011	06				INC	@R0
-   16:	  0012	79 10				MOV	R1,#10h
-   17:	  0014	07				INC	@R1
-   18:	  0015	08				INC	R0
-   19:	  0016	09				INC	R1
-   20:	  0017	0A				INC	R2
-   21:	  0018	0B				INC	R3
-   22:	  0019	0C				INC	R4
-   23:	  001A	0D				INC	R5
-   24:	  001B	0E				INC	R6
-   25:	  001C	0F				INC	R7
-   26:
-   27:	  001D	10 00 07			JBC	00h,CC
-   28:	  0020	00				NOP
-   29:	  0021	75 20 FF			MOV	20h,#0FFh
-   30:	  0024	10 00 00			JBC	00h,CC
-   31:	  0027	11 3C		CC:		ACALL	TESTCALL
-   32:	  0029	12 00 3C			LCALL	TESTCALL
-   33:	  002C	13				RRC	A
-   34:	  002D	14				DEC	A
-   35:	  002E	15 10				DEC	10h
-   36:	  0030	16				DEC	@R0
-   37:	  0031	17				DEC	@R1
-   38:	  0032	18				DEC	R0
-   39:	  0033	19				DEC	R1
-   40:	  0034	1A				DEC	R2
-   41:	  0035	1B				DEC	R3
-   42:	  0036	1C				DEC	R4
-   43:	  0037	1D				DEC	R5
+    7:	  0004			AA:
+    8:	  0004	02 00 08			LJMP	BB
+    9:	  0007	00				NOP
+   10:	  0008			BB:
+   11:	  0008	74 5A				MOV	A,#5Ah
+   12:	  000A	03				RR	A
+   13:	  000B	03				RR	A
+   14:	  000C	04				INC	A
+   15:	  000D	05 10				INC	10h
+   16:	  000F	78 10				MOV	R0,#10h
+   17:	  0011	06				INC	@R0
+   18:	  0012	79 10				MOV	R1,#10h
+   19:	  0014	07				INC	@R1
+   20:	  0015	08				INC	R0
+   21:	  0016	09				INC	R1
+   22:	  0017	0A				INC	R2
+   23:	  0018	0B				INC	R3
+   24:	  0019	0C				INC	R4
+   25:	  001A	0D				INC	R5
+   26:	  001B	0E				INC	R6
+   27:	  001C	0F				INC	R7
+   28:
+   29:	  001D	10 00 07			JBC	00h,CC
+   30:	  0020	00				NOP
+   31:	  0021	75 20 FF			MOV	20h,#0FFh
+   32:	  0024	10 00 00			JBC	00h,CC
+   33:	  0027	11 3F		CC:		ACALL	TESTCALL
+   34:	  0029	12 00 3F			LCALL	TESTCALL
+   35:	  002C	13				RRC	A
+   36:	  002D	14				DEC	A
+   37:	  002E	15 10				DEC	10h
+   38:	  0030	16				DEC	@R0
+   39:	  0031	17				DEC	@R1
+   40:	  0032	18				DEC	R0
+   41:	  0033	19				DEC	R1
+   42:	  0034	1A				DEC	R2
+   43:	  0035	1B				DEC	R3
 
 ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 2
 
@@ -68,16 +68,33 @@ ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. 
 
  Line  I  Addr  Code            Source
 
-   44:	  0038	1E				DEC	R6
-   45:	  0039	1F				DEC	R7
-   46:
-   47:	  003A	80 FE				SJMP	$
-   48:
-   49:	  003C	00		TESTCALL:	NOP
-   50:	  003D	00				NOP
-   51:	  003E	22				RET
-   52:
-   53:						END
+   44:	  0036	1C				DEC	R4
+   45:	  0037	1D				DEC	R5
+   46:	  0038	1E				DEC	R6
+   47:	  0039	1F				DEC	R7
+   48:	  003A	11 42		TIMING:		ACALL	WAITASEC
+   49:	  003C	04				INC	A
+   50:	  003D	80 FB				SJMP	TIMING
+   51:
+   52:	  003F	00		TESTCALL:	NOP
+   53:	  0040	00				NOP
+   54:	  0041	22				RET
+   55:
+   56:
+   57:				;------------------------------------------------------------------
+   58:				;Wait loop. Waits 1 second
+   59:				;------------------------------------------------------------------
+   60:	  0042	7F F9		WAITASEC:	MOV	R7,#0F9h
+   61:	  0044	7E 33				MOV	R6,#51
+   62:	  0046	7D 10				MOV	R5,#16
+   63:	  0048	DF FE		WAITASEC1:	DJNZ	R7,WAITASEC1
+   64:	  004A	DE FC				DJNZ	R6,WAITASEC1
+   65:	  004C	DD FA				DJNZ	R5,WAITASEC1
+   66:	  004E	22				RET
+   67:
+   68:	  004F	11 22 33 44	TSTDATA:	DB 11h,22h,33h,44h
+   69:
+   70:						END
 
 
 
@@ -108,8 +125,8 @@ AA				  CODE	    0004	   7
 AC				  BIT	      D6
 ACC				  DATA	      E0
 B				  DATA	      F0
-BB				  CODE	    0008	   9
-CC				  CODE	    0027	  31
+BB				  CODE	    0008	  10
+CC				  CODE	    0027	  33
 CY				  BIT	      D7
 DPH				  DATA	      83
 DPL				  DATA	      82
@@ -165,11 +182,12 @@ SM0				  BIT	      9F
 SM1				  BIT	      9E
 SM2				  BIT	      9D
 SP				  DATA	      81
+START				  CODE	    0000	   4
 T0				  BIT	      B4
 T1				  BIT	      B5
 TB8				  BIT	      9B
 TCON				  DATA	      88
-TESTCALL			  CODE	    003C	  49
+TESTCALL			  CODE	    003F	  52
 TF0				  BIT	      8D
 TF1				  BIT	      8F
 TH0				  DATA	      8C
@@ -177,10 +195,14 @@ TH1				  DATA	      8D
 TI				  BIT	      99
 TIMER0				  CODE	    000B
 TIMER1				  CODE	    001B
+TIMING				  CODE	    003A	  48
 TL0				  DATA	      8A
 TL1				  DATA	      8B
 TMOD				  DATA	      89
 TR0				  BIT	      8C
 TR1				  BIT	      8E
+TSTDATA				  CODE	    004F	  68
 TXD				  BIT	      B1
+WAITASEC			  CODE	    0042	  60
+WAITASEC1			  CODE	    0048	  63
 WR				  BIT	      B6

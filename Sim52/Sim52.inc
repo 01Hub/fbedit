@@ -13,6 +13,9 @@ includelib comctl32.lib
 includelib comdlg32.lib
 includelib gdi32.lib
 
+include RAHexEd.inc
+includelib RAHexEd.lib
+
 ;#########################################################################
 ; VKim's Debug
 
@@ -87,17 +90,29 @@ IDC_EDTR5               equ 1057
 IDC_EDTR6               equ 1058
 IDC_EDTR7               equ 1059
 
+IDC_STCCYCLES			equ 1014
+IDC_BTNRESET			equ 1013
+
 IDC_TABVIEW             equ 1009
+
 IDD_DLGTABRAM           equ 1100
 IDC_GRP1                equ 1101
+IDC_UDCHEXRAM           equ 1102
+
 IDD_DLGTABBIT           equ 1200
 IDC_GRP2                equ 1201
+
 IDD_DLGTABSFR           equ 1300
 IDC_GRP3                equ 1301
+IDC_UDCHEXSFR           equ 1302
+
 IDD_DLGTABXRAM          equ 1400
 IDC_GRP4                equ 1401
+IDC_UDCHEXXRAM          equ 1402
+
 IDD_DLGTABCODE          equ 1500
 IDC_GRP5                equ 1501
+IDC_UDCHEXCODE          equ 1502
 
 IDM_MENU                equ 10000
 IDM_FILE_OPEN           equ 10001
@@ -122,7 +137,9 @@ IDB_LEDRED              equ 103
 MCUADDR struct
 	mcuaddr		dw ?
 	lbinx		dw ?
-	fbp			dd ?
+	fbp			dw ?
+	bytes		db ?
+	cycles		db ?
 MCUADDR ends
 
 .const

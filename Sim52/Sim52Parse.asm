@@ -6,6 +6,8 @@ ParseList proc uses ebx esi edi,lpFileName:DWORD
 	LOCAL	BytesRead:DWORD
 	LOCAL	buffer[1024]:BYTE
 	LOCAL	paddr:DWORD
+	LOCAL	nBytes:DWORD
+	LOCAL	nBytesParsed:DWORD
 
 	invoke CreateFile,lpFileName,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL
 	.if eax!=INVALID_HANDLE_VALUE
@@ -14,25 +16,22 @@ ParseList proc uses ebx esi edi,lpFileName:DWORD
 			invoke GlobalFree,hMemFile
 			mov		hMemFile,0
 		.endif
-		.if hMemCode
-			invoke GlobalFree,hMemCode
-			mov		hMemCode,0
-		.endif
 		invoke GetFileSize,hFile,0
 		mov		ebx,eax
 		; Allocate memory for file
 		inc		eax
 		invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,eax
 		mov		hMemFile,eax
-		invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,65536
-		mov		hMemCode,eax
 		invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,65536*sizeof MCUADDR
 		mov		hMemAddr,eax
 		mov		paddr,eax
 		invoke ReadFile,hFile,hMemFile,ebx,addr BytesRead,NULL
 		invoke CloseHandle,hFile
 		mov		esi,hMemFile
+		mov		nAddr,0
 		.while byte ptr [esi]
+			mov		nBytes,0
+			mov		nBytesParsed,0
 			call	SkipWhiteSpace
 			call	IsLineNumber
 			.if eax
@@ -44,28 +43,38 @@ ParseList proc uses ebx esi edi,lpFileName:DWORD
 				call	IsAddress
 				.if eax
 					call	GetAddress
-					mov		edi,hMemCode
+					mov		edi,offset Code
 					lea		edi,[edi+ebx]
 					call	SkipWhiteSpace
 					call	IsCodeByte
 					.if eax
 						call	GetCodeByte
 						mov		byte ptr [edi],dl
+						inc		nBytesParsed
+						mov		ecx,paddr
+						mov		al,Cycles[edx]
+						mov		[ecx].MCUADDR.cycles,al
+						movzx	eax,Bytes[edx]
+						mov		[ecx].MCUADDR.bytes,al
+						mov		nBytes,eax
 						inc		edi
 						call	IsCodeByte
 						.if eax
 							call	GetCodeByte
 							mov		byte ptr [edi],dl
+							inc		nBytesParsed
 							inc		edi
 							call	IsCodeByte
 							.if eax
 								call	GetCodeByte
 								mov		byte ptr [edi],dl
+								inc		nBytesParsed
 								inc		edi
 								call	IsCodeByte
 								.if eax
 									call	GetCodeByte
 									mov		byte ptr [edi],dl
+									inc		nBytesParsed
 									inc		edi
 								.endif
 							.endif
@@ -76,13 +85,25 @@ ParseList proc uses ebx esi edi,lpFileName:DWORD
 					invoke SendDlgItemMessage,hWnd,IDC_LSTCODE,LB_ADDSTRING,0,addr buffer
 					push	eax
 					invoke SendDlgItemMessage,hWnd,IDC_LSTCODE,LB_SETITEMDATA,eax,ebx
-					mov		edx,paddr
-					mov		[edx].MCUADDR.mcuaddr,bx
-					pop		eax
-					mov		[edx].MCUADDR.lbinx,ax
-					mov		[edx].MCUADDR.fbp,0
-					lea		edx,[edx+sizeof MCUADDR]
-					mov		paddr,edx
+					.if nBytesParsed
+						mov		edx,paddr
+						mov		[edx].MCUADDR.mcuaddr,bx
+						pop		eax
+						mov		[edx].MCUADDR.lbinx,ax
+						mov		[edx].MCUADDR.fbp,0
+						lea		edx,[edx+sizeof MCUADDR]
+						mov		paddr,edx
+						inc		nAddr
+					.endif
+					mov		eax,nBytes
+					.if eax!=nBytesParsed
+						call	IsSourceLineDB
+						.if !eax
+							PrintHex bx
+							PrintDec nBytes
+							PrintDec nBytesParsed
+						.endif
+					.endif
 				.endif
 			.endif
 			call	SkipLine
@@ -188,6 +209,18 @@ GetSourceLine:
 		inc		ecx
 	.endw
 	mov		byte ptr [edx],0
+	retn
+
+IsSourceLineDB:
+	lea		edx,buffer
+	xor		eax,eax
+	.while byte ptr [edx]
+		.if word ptr [edx]=='BD'
+			inc		eax
+			.break
+		.endif
+		inc		edx
+	.endw
 	retn
 
 ParseList endp

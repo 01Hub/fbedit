@@ -77,11 +77,51 @@ TabBitProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
 TabBitProc endp
 
-WndProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+TabSfrProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+
+	mov		eax,uMsg
+	.if eax==WM_INITDIALOG
+	.else
+		mov		eax,FALSE
+		ret
+	.endif
+	mov		eax,TRUE
+	ret
+
+TabSfrProc endp
+
+TabXRamProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+
+	mov		eax,uMsg
+	.if eax==WM_INITDIALOG
+	.else
+		mov		eax,FALSE
+		ret
+	.endif
+	mov		eax,TRUE
+	ret
+
+TabXRamProc endp
+
+TabCodeProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+
+	mov		eax,uMsg
+	.if eax==WM_INITDIALOG
+	.else
+		mov		eax,FALSE
+		ret
+	.endif
+	mov		eax,TRUE
+	ret
+
+TabCodeProc endp
+
+WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	tci:TC_ITEM
 	LOCAL	ofn:OPENFILENAME
 	LOCAL	buffer[MAX_PATH]:BYTE
 	LOCAL	tid:DWORD
+	LOCAL	hef:HEFONT
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
@@ -117,17 +157,24 @@ WndProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
 		invoke GetDlgItem,hWin,IDC_TABVIEW
 		mov		ebx,eax
+		mov		eax,hLstFont
+		mov		hef.hFont,eax
+		mov		hef.hLnrFont,eax
 		;Create the tab dialogs
 		invoke CreateDialogParam,hInstance,IDD_DLGTABRAM,ebx,addr TabRamProc,0
 		mov		hTabDlg[0],eax
+		invoke SendDlgItemMessage,hTabDlg[0],IDC_UDCHEXRAM,HEM_SETFONT,0,addr hef
 		invoke CreateDialogParam,hInstance,IDD_DLGTABBIT,ebx,addr TabBitProc,0
 		mov		hTabDlg[4],eax
-		invoke CreateDialogParam,hInstance,IDD_DLGTABSFR,ebx,addr TabBitProc,0
+		invoke CreateDialogParam,hInstance,IDD_DLGTABSFR,ebx,addr TabSfrProc,0
 		mov		hTabDlg[8],eax
-		invoke CreateDialogParam,hInstance,IDD_DLGTABXRAM,ebx,addr TabBitProc,0
+		invoke SendDlgItemMessage,hTabDlg[8],IDC_UDCHEXSFR,HEM_SETFONT,0,addr hef
+		invoke CreateDialogParam,hInstance,IDD_DLGTABXRAM,ebx,addr TabXRamProc,0
 		mov		hTabDlg[12],eax
-		invoke CreateDialogParam,hInstance,IDD_DLGTABCODE,ebx,addr TabBitProc,0
+		invoke SendDlgItemMessage,hTabDlg[12],IDC_UDCHEXXRAM,HEM_SETFONT,0,addr hef
+		invoke CreateDialogParam,hInstance,IDD_DLGTABCODE,ebx,addr TabCodeProc,0
 		mov		hTabDlg[16],eax
+		invoke SendDlgItemMessage,hTabDlg[16],IDC_UDCHEXCODE,HEM_SETFONT,0,addr hef
 
 		invoke LoadBitmap,hInstance,IDB_LEDGRAY
 		mov		hBmpGrayLed,eax
@@ -135,16 +182,19 @@ WndProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		hBmpGreenLed,eax
 		invoke LoadBitmap,hInstance,IDB_LEDRED
 		mov		hBmpRedLed,eax
+		invoke SendDlgItemMessage,hTabDlg[8],IDC_UDCHEXSFR,HEM_SETOFFSET,128,0
 		invoke Reset
-		invoke UpdateStatus
-		invoke UpdatePorts
-		invoke UpdateRegisters
 		invoke SetTimer,hWin,1000,200,NULL
 	.elseif eax==WM_TIMER
 		.if Refresh
 			invoke UpdateStatus
 			invoke UpdatePorts
 			invoke UpdateRegisters
+			invoke SendDlgItemMessage,hTabDlg[0],IDC_UDCHEXRAM,HEM_SETMEM,256,addr Ram
+			invoke SendDlgItemMessage,hTabDlg[8],IDC_UDCHEXSFR,HEM_SETMEM,128,addr Sfr[128]
+			invoke SendDlgItemMessage,hTabDlg[12],IDC_UDCHEXXRAM,HEM_SETMEM,65535,addr XRam
+			invoke SendDlgItemMessage,hTabDlg[16],IDC_UDCHEXCODE,HEM_SETMEM,65535,addr Code
+			invoke SetDlgItemInt,hWin,IDC_STCCYCLES,TotalCycles,FALSE
 			dec		Refresh
 		.endif
 	.elseif eax==WM_NOTIFY
@@ -217,24 +267,32 @@ WndProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.elseif eax==IDM_DEBUG_PAUSE
 				.if State & STATE_THREAD
 					or		State,STATE_PAUSE
+					and		State,-1 xor STATE_BREAKPOINT
 				.endif
 			.elseif eax==IDM_DEBUG_STOP
 				mov		State,STATE_STOP
 			.elseif eax==IDM_DEBUG_STEP_INTO
 				.if State & STATE_THREAD
-					or		State,STATE_STEP_INTO
+					or		State,STATE_STEP_INTO or STATE_PAUSE
+					and		State,-1 xor STATE_BREAKPOINT
 				.else
 					mov		State,STATE_THREAD or STATE_RUN or STATE_PAUSE or STATE_STEP_INTO
 					invoke CreateThread,NULL,0,addr CoreThread,0,0,addr tid
 					invoke CloseHandle,eax
 				.endif
 			.elseif eax==IDM_DEBUG_STEP_OVER
-				.if State & STATE_THREAD
-					or		State,STATE_STEP_OVER
-				.else
-					mov		State,STATE_THREAD or STATE_RUN or STATE_PAUSE or STATE_STEP_OVER
-					invoke CreateThread,NULL,0,addr CoreThread,0,0,addr tid
-					invoke CloseHandle,eax
+				invoke FindMcuAddr,PC
+				.if eax
+					movzx	eax,[eax].MCUADDR.mcuaddr[sizeof MCUADDR]
+					mov		CursorAddr,eax
+					.if State & STATE_THREAD
+						or		State,STATE_RUN_TO_CURSOR or STATE_PAUSE
+						and		State,-1 xor STATE_BREAKPOINT
+					.else
+						mov		State,STATE_THREAD or STATE_RUN or STATE_PAUSE or STATE_RUN_TO_CURSOR
+						invoke CreateThread,NULL,0,addr CoreThread,0,0,addr tid
+						invoke CloseHandle,eax
+					.endif
 				.endif
 			.elseif eax==IDM_DEBUG_RUN_TO_CURSOR
 				invoke SendDlgItemMessage,hWin,IDC_LSTCODE,LB_GETCURSEL,0,0
@@ -242,7 +300,8 @@ WndProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					invoke SendDlgItemMessage,hWin,IDC_LSTCODE,LB_GETITEMDATA,eax,0
 					mov		CursorAddr,eax
 					.if State & STATE_THREAD
-						or		State,STATE_RUN_TO_CURSOR
+						or		State,STATE_RUN_TO_CURSOR or STATE_PAUSE
+						and		State,-1 xor STATE_BREAKPOINT
 					.else
 						mov		State,STATE_THREAD or STATE_RUN or STATE_PAUSE or STATE_RUN_TO_CURSOR
 						invoke CreateThread,NULL,0,addr CoreThread,0,0,addr tid
@@ -250,7 +309,12 @@ WndProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					.endif
 				.endif
 			.elseif eax==IDM_DEBUG_TOGGLE
+				invoke SendDlgItemMessage,hWin,IDC_LSTCODE,LB_GETCURSEL,0,0
+				.if eax!=LB_ERR
+					invoke ToggleBreakPoint,eax
+				.endif
 			.elseif eax==IDM_DEBUG_CLEAR
+				invoke ClearBreakPoints
 			.elseif eax==IDM_HELP_ABOUT
 				invoke ShellAbout,hWin,addr AppName,addr AboutMsg,NULL
 			.elseif eax>=IDC_IMGP && eax<=IDC_IMGCY
@@ -293,6 +357,9 @@ WndProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				shl		eax,cl
 				xor		Sfr(SFR_P3),al
 				invoke UpdatePorts
+			.elseif eax==IDC_BTNRESET
+				mov		TotalCycles,0
+				invoke SetDlgItemInt,hWin,IDC_STCCYCLES,TotalCycles,FALSE
 			.endif
 		.endif
 	.elseif eax==WM_INITMENUPOPUP
@@ -319,9 +386,6 @@ WndProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	.elseif eax==WM_CLOSE
 		.if hMemFile
 			invoke GlobalFree,hMemFile
-		.endif
-		.if hMemCode
-			invoke GlobalFree,hMemCode
 		.endif
 		.if hMemAddr
 			invoke GlobalFree,hMemAddr
@@ -383,7 +447,9 @@ start:
 	invoke GetCommandLine
 	invoke InitCommonControls
 	mov		CommandLine,eax
+	invoke RAHexEdInstall,hInstance,FALSE
 	invoke WinMain,hInstance,NULL,CommandLine,SW_SHOWDEFAULT
+	invoke RAHexEdUnInstall
 	invoke ExitProcess,eax
 
 end start

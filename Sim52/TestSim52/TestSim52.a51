@@ -1,12 +1,14 @@
 
 		ORG	0000h
 
-		NOP
+START:		NOP
 		AJMP	AA
 		NOP
-AA:		LJMP	BB
+AA:
+		LJMP	BB
 		NOP
-BB:		MOV	A,#5Ah
+BB:
+		MOV	A,#5Ah
 		RR	A
 		RR	A
 		INC	A
@@ -43,11 +45,26 @@ CC:		ACALL	TESTCALL
 		DEC	R5
 		DEC	R6
 		DEC	R7
-
-		SJMP	$
+TIMING:		ACALL	WAITASEC
+		INC	A
+		SJMP	TIMING
 
 TESTCALL:	NOP
 		NOP
 		RET
+
+
+;------------------------------------------------------------------
+;Wait loop. Waits 1 second
+;------------------------------------------------------------------
+WAITASEC:	MOV	R7,#0F9h
+		MOV	R6,#51
+		MOV	R5,#16
+WAITASEC1:	DJNZ	R7,WAITASEC1
+		DJNZ	R6,WAITASEC1
+		DJNZ	R5,WAITASEC1
+		RET
+
+TSTDATA:	DB 11h,22h,33h,44h
 
 		END
