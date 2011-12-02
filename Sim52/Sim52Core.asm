@@ -67,6 +67,7 @@ JmpTab				dd NOP_,AJMP_$cad,LJMP_$cad,RR_A,INC_A,INC_$dad,INC_@R0,INC_@R1,INC_R0
 
 hMemFile			HGLOBAL ?
 hMemCode			HGLOBAL ?
+hMemAddr			HGLOBAL ?
 
 Sfr					db 256 dup(?)
 Ram					db 256 dup(?)
@@ -74,6 +75,7 @@ XRam				db 65536 dup(?)
 Bank				dd ?
 PC					dd ?
 
+ViewBank			DD ?
 Refresh				dd ?
 State				dd ?
 CursorAddr			dd ?
@@ -159,17 +161,31 @@ UpdateStatus proc uses ebx
 		.endif
 		pop		eax
 	.endw
-	xor		ebx,ebx
-	.while TRUE
-		invoke SendDlgItemMessage,hWnd,IDC_LSTCODE,LB_GETITEMDATA,ebx,0
-		.if eax==PC
-			invoke SendDlgItemMessage,hWnd,IDC_LSTCODE,LB_SETCURSEL,ebx,0
-			.break
-		.elseif eax==LB_ERR
+
+	invoke SendDlgItemMessage,hWnd,IDC_LSTCODE,LB_GETCOUNT,0,0
+	mov		ebx,eax
+	mov		edx,hMemAddr
+	mov		eax,PC
+	.while ebx
+		.if ax==[edx].MCUADDR.mcuaddr
+			mov		ax,[edx].MCUADDR.lbinx
+			invoke SendDlgItemMessage,hWnd,IDC_LSTCODE,LB_SETCURSEL,eax,0
 			.break
 		.endif
-		inc		ebx
+		lea		edx,[edx+sizeof MCUADDR]
+		dec		ebx
 	.endw
+;	xor		ebx,ebx
+;	.while TRUE
+;		invoke SendDlgItemMessage,hWnd,IDC_LSTCODE,LB_GETITEMDATA,ebx,0
+;		.if eax==PC
+;			invoke SendDlgItemMessage,hWnd,IDC_LSTCODE,LB_SETCURSEL,ebx,0
+;			.break
+;		.elseif eax==LB_ERR
+;			.break
+;		.endif
+;		inc		ebx
+;	.endw
 	ret
 
 UpdateStatus endp
@@ -273,7 +289,7 @@ UpdateRegisters proc uses ebx esi
 	push	IDC_EDTR1
 	push	IDC_EDTR0
 	mov		esi,offset Ram
-	mov		eax,Bank
+	mov		eax,ViewBank
 	lea		esi,[esi+eax*8]
 	pop		ebx
 	.while ebx

@@ -5,6 +5,7 @@ ParseList proc uses ebx esi edi,lpFileName:DWORD
 	LOCAL	hFile:HANDLE
 	LOCAL	BytesRead:DWORD
 	LOCAL	buffer[1024]:BYTE
+	LOCAL	paddr:DWORD
 
 	invoke CreateFile,lpFileName,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL
 	.if eax!=INVALID_HANDLE_VALUE
@@ -25,6 +26,9 @@ ParseList proc uses ebx esi edi,lpFileName:DWORD
 		mov		hMemFile,eax
 		invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,65536
 		mov		hMemCode,eax
+		invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,65536*sizeof MCUADDR
+		mov		hMemAddr,eax
+		mov		paddr,eax
 		invoke ReadFile,hFile,hMemFile,ebx,addr BytesRead,NULL
 		invoke CloseHandle,hFile
 		mov		esi,hMemFile
@@ -70,7 +74,15 @@ ParseList proc uses ebx esi edi,lpFileName:DWORD
 					call	SkipWhiteSpace
 					call	GetSourceLine
 					invoke SendDlgItemMessage,hWnd,IDC_LSTCODE,LB_ADDSTRING,0,addr buffer
+					push	eax
 					invoke SendDlgItemMessage,hWnd,IDC_LSTCODE,LB_SETITEMDATA,eax,ebx
+					mov		edx,paddr
+					mov		[edx].MCUADDR.mcuaddr,bx
+					pop		eax
+					mov		[edx].MCUADDR.lbinx,ax
+					mov		[edx].MCUADDR.fbp,0
+					lea		edx,[edx+sizeof MCUADDR]
+					mov		paddr,edx
 				.endif
 			.endif
 			call	SkipLine

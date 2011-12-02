@@ -21,13 +21,63 @@ ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. 
     1:
     2:		N      0000			ORG	0000h
     3:
-    4:	  0000	75 81 80			MOV	SP,#80h
-    5:	  0003	7F 5A				MOV	R7,#5Ah
-    6:	  0005	C0 07				PUSH	07h
-    7:	  0007	7F 33				MOV	R7,#33h
-    8:	  0009	D0 07				POP	07h
-    9:	  000B	80 FE				SJMP	$
-   10:						END
+    4:	  0000	00				NOP
+    5:	  0001	01 04				AJMP	AA
+    6:	  0003	00				NOP
+    7:	  0004	02 00 08	AA:		LJMP	BB
+    8:	  0007	00				NOP
+    9:	  0008	74 5A		BB:		MOV	A,#5Ah
+   10:	  000A	03				RR	A
+   11:	  000B	03				RR	A
+   12:	  000C	04				INC	A
+   13:	  000D	05 10				INC	10h
+   14:	  000F	78 10				MOV	R0,#10h
+   15:	  0011	06				INC	@R0
+   16:	  0012	79 10				MOV	R1,#10h
+   17:	  0014	07				INC	@R1
+   18:	  0015	08				INC	R0
+   19:	  0016	09				INC	R1
+   20:	  0017	0A				INC	R2
+   21:	  0018	0B				INC	R3
+   22:	  0019	0C				INC	R4
+   23:	  001A	0D				INC	R5
+   24:	  001B	0E				INC	R6
+   25:	  001C	0F				INC	R7
+   26:
+   27:	  001D	10 00 07			JBC	00h,CC
+   28:	  0020	00				NOP
+   29:	  0021	75 20 FF			MOV	20h,#0FFh
+   30:	  0024	10 00 00			JBC	00h,CC
+   31:	  0027	11 3C		CC:		ACALL	TESTCALL
+   32:	  0029	12 00 3C			LCALL	TESTCALL
+   33:	  002C	13				RRC	A
+   34:	  002D	14				DEC	A
+   35:	  002E	15 10				DEC	10h
+   36:	  0030	16				DEC	@R0
+   37:	  0031	17				DEC	@R1
+   38:	  0032	18				DEC	R0
+   39:	  0033	19				DEC	R1
+   40:	  0034	1A				DEC	R2
+   41:	  0035	1B				DEC	R3
+   42:	  0036	1C				DEC	R4
+   43:	  0037	1D				DEC	R5
+
+ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 2
+
+
+
+ Line  I  Addr  Code            Source
+
+   44:	  0038	1E				DEC	R6
+   45:	  0039	1F				DEC	R7
+   46:
+   47:	  003A	80 FE				SJMP	$
+   48:
+   49:	  003C	00		TESTCALL:	NOP
+   50:	  003D	00				NOP
+   51:	  003E	22				RET
+   52:
+   53:						END
 
 
 
@@ -40,7 +90,7 @@ ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. 
 
 
 
-ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 2
+ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 3
 
 
 
@@ -54,9 +104,12 @@ SYMBOL				  TYPE     VALUE	LINE
 ------------------------------------------------------------
 ??ASEM_51			  NUMBER    8051
 ??VERSION			  NUMBER    0130
+AA				  CODE	    0004	   7
 AC				  BIT	      D6
 ACC				  DATA	      E0
 B				  DATA	      F0
+BB				  CODE	    0008	   9
+CC				  CODE	    0027	  31
 CY				  BIT	      D7
 DPH				  DATA	      83
 DPL				  DATA	      82
@@ -99,16 +152,16 @@ RS0				  BIT	      D3
 RS1				  BIT	      D4
 RXD				  BIT	      B0
 SBUF				  DATA	      99
-SCON				  DATA	      98
-SINT				  CODE	    0023
-SM0				  BIT	      9F
 
-ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 3
+ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 4
 
 
 
 SYMBOL				  TYPE     VALUE	LINE
 ------------------------------------------------------------
+SCON				  DATA	      98
+SINT				  CODE	    0023
+SM0				  BIT	      9F
 SM1				  BIT	      9E
 SM2				  BIT	      9D
 SP				  DATA	      81
@@ -116,6 +169,7 @@ T0				  BIT	      B4
 T1				  BIT	      B5
 TB8				  BIT	      9B
 TCON				  DATA	      88
+TESTCALL			  CODE	    003C	  49
 TF0				  BIT	      8D
 TF1				  BIT	      8F
 TH0				  DATA	      8C

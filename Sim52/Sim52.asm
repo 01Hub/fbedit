@@ -51,6 +51,32 @@ EnableDisable proc uses ebx
 	
 EnableDisable endp
 
+TabRamProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+
+	mov		eax,uMsg
+	.if eax==WM_INITDIALOG
+	.else
+		mov		eax,FALSE
+		ret
+	.endif
+	mov		eax,TRUE
+	ret
+
+TabRamProc endp
+
+TabBitProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+
+	mov		eax,uMsg
+	.if eax==WM_INITDIALOG
+	.else
+		mov		eax,FALSE
+		ret
+	.endif
+	mov		eax,TRUE
+	ret
+
+TabBitProc endp
+
 WndProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	tci:TC_ITEM
 	LOCAL	ofn:OPENFILENAME
@@ -75,8 +101,34 @@ WndProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		tci.lpReserved2,0
 		mov		tci.iImage,-1
 		mov		tci.lParam,0
-		mov		tci.pszText,offset szTabTitle
+		mov		tci.pszText,offset szTabStatus
 		invoke SendDlgItemMessage,hWin,IDC_TABSIM52,TCM_INSERTITEM,0,addr tci
+
+		mov		tci.pszText,offset szTabRam
+		invoke SendDlgItemMessage,hWin,IDC_TABVIEW,TCM_INSERTITEM,0,addr tci
+		mov		tci.pszText,offset szTabBit
+		invoke SendDlgItemMessage,hWin,IDC_TABVIEW,TCM_INSERTITEM,1,addr tci
+		mov		tci.pszText,offset szTabSfr
+		invoke SendDlgItemMessage,hWin,IDC_TABVIEW,TCM_INSERTITEM,2,addr tci
+		mov		tci.pszText,offset szTabXRam
+		invoke SendDlgItemMessage,hWin,IDC_TABVIEW,TCM_INSERTITEM,3,addr tci
+		mov		tci.pszText,offset szTabCode
+		invoke SendDlgItemMessage,hWin,IDC_TABVIEW,TCM_INSERTITEM,4,addr tci
+
+		invoke GetDlgItem,hWin,IDC_TABVIEW
+		mov		ebx,eax
+		;Create the tab dialogs
+		invoke CreateDialogParam,hInstance,IDD_DLGTABRAM,ebx,addr TabRamProc,0
+		mov		hTabDlg[0],eax
+		invoke CreateDialogParam,hInstance,IDD_DLGTABBIT,ebx,addr TabBitProc,0
+		mov		hTabDlg[4],eax
+		invoke CreateDialogParam,hInstance,IDD_DLGTABSFR,ebx,addr TabBitProc,0
+		mov		hTabDlg[8],eax
+		invoke CreateDialogParam,hInstance,IDD_DLGTABXRAM,ebx,addr TabBitProc,0
+		mov		hTabDlg[12],eax
+		invoke CreateDialogParam,hInstance,IDD_DLGTABCODE,ebx,addr TabBitProc,0
+		mov		hTabDlg[16],eax
+
 		invoke LoadBitmap,hInstance,IDB_LEDGRAY
 		mov		hBmpGrayLed,eax
 		invoke LoadBitmap,hInstance,IDB_LEDGREEN
@@ -96,15 +148,32 @@ WndProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			dec		Refresh
 		.endif
 	.elseif eax==WM_NOTIFY
-		.if wParam==IDC_UDNBANK
+		mov		eax,wParam
+		.if eax==IDC_UDNBANK
 			mov		eax,lParam
 			mov		eax,[eax].NM_UPDOWN.iDelta
 			neg		eax
-			add		eax,Bank
+			add		eax,ViewBank
 			and		eax,3
-			mov		Bank,eax
+			mov		ViewBank,eax
 			invoke wsprintf,addr buffer,addr szFmtBank,eax
 			invoke SetDlgItemText,hWin,IDC_STCBANK,addr buffer
+			invoke UpdateRegisters
+		.elseif eax==IDC_TABVIEW
+			mov		eax,lParam
+			mov		eax,[eax].NMHDR.code
+			.if eax==TCN_SELCHANGE
+				;Tab selection
+				invoke SendDlgItemMessage,hWin,IDC_TABVIEW,TCM_GETCURSEL,0,0
+				.if eax!=SelTab
+					push	eax
+					mov		eax,SelTab
+					invoke ShowWindow,[hTabDlg+eax*4],SW_HIDE
+					pop		eax
+					mov		SelTab,eax
+					invoke ShowWindow,[hTabDlg+eax*4],SW_SHOWDEFAULT
+				.endif
+			.endif
 		.endif
 	.elseif eax==WM_COMMAND
 		mov		edx,wParam
@@ -253,6 +322,9 @@ WndProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.endif
 		.if hMemCode
 			invoke GlobalFree,hMemCode
+		.endif
+		.if hMemAddr
+			invoke GlobalFree,hMemAddr
 		.endif
 		invoke DeleteObject,hLstFont
 		invoke DeleteObject,hBmpGrayLed

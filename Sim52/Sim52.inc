@@ -87,6 +87,18 @@ IDC_EDTR5               equ 1057
 IDC_EDTR6               equ 1058
 IDC_EDTR7               equ 1059
 
+IDC_TABVIEW             equ 1009
+IDD_DLGTABRAM           equ 1100
+IDC_GRP1                equ 1101
+IDD_DLGTABBIT           equ 1200
+IDC_GRP2                equ 1201
+IDD_DLGTABSFR           equ 1300
+IDC_GRP3                equ 1301
+IDD_DLGTABXRAM          equ 1400
+IDC_GRP4                equ 1401
+IDD_DLGTABCODE          equ 1500
+IDC_GRP5                equ 1501
+
 IDM_MENU                equ 10000
 IDM_FILE_OPEN           equ 10001
 IDM_FILE_EXIT           equ 10002
@@ -107,6 +119,12 @@ IDB_LEDGRAY             equ 101
 IDB_LEDGREEN            equ 102
 IDB_LEDRED              equ 103
 
+MCUADDR struct
+	mcuaddr		dw ?
+	lbinx		dw ?
+	fbp			dd ?
+MCUADDR ends
+
 .const
 
 tbrbtns				TBBUTTON <0,IDM_FILE_OPEN,TBSTATE_ENABLED,TBSTYLE_BUTTON,0,0>
@@ -126,7 +144,13 @@ AboutMsg			db 'MASM32 RadASM 8052 Simulator',13,10,'Copyright © MASM32 2001',0
 
 szLSTFilterString	db 'LST Files (*.lst)',0,'*.lst',0,0
 Courier_New_9 		LOGFONT <-12,0,0,0,400,0,0,0,0,3,2,1,49,"Courier New">
-szTabTitle			db 'Status',0
+szTabStatus			db 'Status',0
+
+szTabRam			db 'Ram',0
+szTabBit			db 'Bit',0
+szTabSfr			db 'Sfr',0
+szTabXRam			db 'XRam',0
+szTabCode			db 'Code',0
 
 szFmtHexByte		db '%02X',0
 szFmtHexWord		db '%04X',0
@@ -142,3 +166,5 @@ hLstFont			HFONT ?
 hBmpGrayLed			HBITMAP ?
 hBmpGreenLed		HBITMAP ?
 hBmpRedLed			HBITMAP ?
+SelTab				dd ?
+hTabDlg				HWND 5 dup(?)
