@@ -281,18 +281,13 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					invoke CloseHandle,eax
 				.endif
 			.elseif eax==IDM_DEBUG_STEP_OVER
-				invoke FindMcuAddr,PC
-				.if eax
-					movzx	eax,[eax].MCUADDR.mcuaddr[sizeof MCUADDR]
-					mov		CursorAddr,eax
-					.if State & STATE_THREAD
-						or		State,STATE_RUN_TO_CURSOR or STATE_PAUSE
-						and		State,-1 xor STATE_BREAKPOINT
-					.else
-						mov		State,STATE_THREAD or STATE_RUN or STATE_PAUSE or STATE_RUN_TO_CURSOR
-						invoke CreateThread,NULL,0,addr CoreThread,0,0,addr tid
-						invoke CloseHandle,eax
-					.endif
+				.if State & STATE_THREAD
+					or		State,STATE_STEP_OVER or STATE_PAUSE
+					and		State,-1 xor STATE_BREAKPOINT
+				.else
+					mov		State,STATE_THREAD or STATE_RUN or STATE_PAUSE or STATE_STEP_OVER
+					invoke CreateThread,NULL,0,addr CoreThread,0,0,addr tid
+					invoke CloseHandle,eax
 				.endif
 			.elseif eax==IDM_DEBUG_RUN_TO_CURSOR
 				invoke SendDlgItemMessage,hWin,IDC_LSTCODE,LB_GETCURSEL,0,0

@@ -36,8 +36,9 @@ STATE_STOP			equ 0
 STATE_RUN			equ 1
 STATE_PAUSE			equ 2
 STATE_STEP_INTO		equ 4
-STATE_RUN_TO_CURSOR	equ 8
-STATE_BREAKPOINT	equ 16
+STATE_STEP_OVER		equ 8
+STATE_RUN_TO_CURSOR	equ 16
+STATE_BREAKPOINT	equ 32
 
 STATE_THREAD		equ 128
 
@@ -45,18 +46,18 @@ STATE_THREAD		equ 128
 
 JmpTab				dd NOP_,AJMP_$cad,LJMP_$cad,RR_A,INC_A,INC_$dad,INC_@R0,INC_@R1,INC_R0,INC_R1,INC_R2,INC_R3,INC_R4,INC_R5,INC_R6,INC_R7
 					dd JBC$bad_$cad,ACALL_$cad,LCALL_$cad,RRC_A,DEC_A,DEC_$dad,DEC_@R0,DEC_@R1,DEC_R0,DEC_R1,DEC_R2,DEC_R3,DEC_R4,DEC_R5,DEC_R6,DEC_R7
-					dd JB_$bad_$cad,AJMP_$cad,RET_,RL_A,ADD_A_dd,ADD_A_$dad,ADD_A_@R0,ADD_A_@R1,ADD_A_R0,ADD_A_R1,ADD_A_R2,ADD_A_R3,ADD_A_R4,ADD_A_R5,ADD_A_R6,ADD_A_R7
-					dd JNB_$bad_$cad,ACALL_$cad,RETI_,RLC_A,ADDC_A_dd,ADDC_A_$dad,ADDC_A_@R0,ADDC_A_@R1,ADDC_A_R0,ADDC_A_R1,ADDC_A_R2,ADDC_A_R3,ADDC_A_R4,ADDC_A_R5,ADDC_A_R6,ADDC_A_R7
+					dd JB_$bad_$cad,AJMP_$cad,RET_,RL_A,ADD_A_imm,ADD_A_$dad,ADD_A_@R0,ADD_A_@R1,ADD_A_R0,ADD_A_R1,ADD_A_R2,ADD_A_R3,ADD_A_R4,ADD_A_R5,ADD_A_R6,ADD_A_R7
+					dd JNB_$bad_$cad,ACALL_$cad,RETI_,RLC_A,ADDC_A_imm,ADDC_A_$dad,ADDC_A_@R0,ADDC_A_@R1,ADDC_A_R0,ADDC_A_R1,ADDC_A_R2,ADDC_A_R3,ADDC_A_R4,ADDC_A_R5,ADDC_A_R6,ADDC_A_R7
 
-					dd JC_$cad,AJMP_$cad,ORL_$dad_A,ORL_$dad_dd,ORL_A_dd,ORL_A_$dad,ORL_A_@R0,ORL_A_@R1,ORL_A_R0,ORL_A_R1,ORL_A_R2,ORL_A_R3,ORL_A_R4,ORL_A_R5,ORL_A_R6,ORL_A_R7
-					dd JNC_$cad,ACALL_$cad,ANL_$dad_A,ANL_$dad_dd,ANL_A_dd,ANL_A_$dad,ANL_A_@R0,ANL_A_@R1,ANL_A_R0,ANL_A_R1,ANL_A_R2,ANL_A_R3,ANL_A_R4,ANL_A_R5,ANL_A_R6,ANL_A_R7
-					dd JZ_$cad,AJMP_$cad,XRL_$dad_A,XRL_$dad_dd,XRL_A_dd,XRL_A_$dad,XRL_A_@R0,XRL_A_@R1,XRL_A_R0,XRL_A_R1,XRL_A_R2,XRL_A_R3,XRL_A_R4,XRL_A_R5,XRL_A_R6,XRL_A_R7
-					dd JNZ_$cad,ACALL_$cad,ORL_C_$bad,JMP_@A_DPTR,MOV_A_dd,MOV_$dad_dd,MOV_@R0_dd,MOV_@R1_dd,MOV_R0_dd,MOV_R1_dd,MOV_R2_dd,MOV_R3_dd,MOV_R4_dd,MOV_R5_dd,MOV_R6_dd,MOV_R7_dd
+					dd JC_$cad,AJMP_$cad,ORL_$dad_A,ORL_$dad_imm,ORL_A_imm,ORL_A_$dad,ORL_A_@R0,ORL_A_@R1,ORL_A_R0,ORL_A_R1,ORL_A_R2,ORL_A_R3,ORL_A_R4,ORL_A_R5,ORL_A_R6,ORL_A_R7
+					dd JNC_$cad,ACALL_$cad,ANL_$dad_A,ANL_$dad_imm,ANL_A_imm,ANL_A_$dad,ANL_A_@R0,ANL_A_@R1,ANL_A_R0,ANL_A_R1,ANL_A_R2,ANL_A_R3,ANL_A_R4,ANL_A_R5,ANL_A_R6,ANL_A_R7
+					dd JZ_$cad,AJMP_$cad,XRL_$dad_A,XRL_$dad_imm,XRL_A_imm,XRL_A_$dad,XRL_A_@R0,XRL_A_@R1,XRL_A_R0,XRL_A_R1,XRL_A_R2,XRL_A_R3,XRL_A_R4,XRL_A_R5,XRL_A_R6,XRL_A_R7
+					dd JNZ_$cad,ACALL_$cad,ORL_C_$bad,JMP_@A_DPTR,MOV_A_imm,MOV_$dad_imm,MOV_@R0_imm,MOV_@R1_imm,MOV_R0_imm,MOV_R1_imm,MOV_R2_imm,MOV_R3_imm,MOV_R4_imm,MOV_R5_imm,MOV_R6_imm,MOV_R7_imm
 
 					dd SJMP_$cad,AJMP_$cad,ANL_C_$bad,MOVC_A_@A_PC,DIV_AB,MOV_$dad_$dad,MOV_$dad_@R0,MOV_$dad_@R1,MOV_$dad_R0,MOV_$dad_R1,MOV_$dad_R2,MOV_$dad_R3,MOV_$dad_R4,MOV_$dad_R5,MOV_$dad_R6,MOV_$dad_R7
-					dd MOV_DPTR_dw,ACALL_$cad,MOV_$bad_C,MOVC_A_@A_DPTR,SUBB_A_dd,SUBB_A_$dad,SUBB_A_@R0,SUBB_A_@R1,SUBB_A_R0,SUBB_A_R1,SUBB_A_R2,SUBB_A_R3,SUBB_A_R4,SUBB_A_R5,SUBB_A_R6,SUBB_A_R7
+					dd MOV_DPTR_dw,ACALL_$cad,MOV_$bad_C,MOVC_A_@A_DPTR,SUBB_A_imm,SUBB_A_$dad,SUBB_A_@R0,SUBB_A_@R1,SUBB_A_R0,SUBB_A_R1,SUBB_A_R2,SUBB_A_R3,SUBB_A_R4,SUBB_A_R5,SUBB_A_R6,SUBB_A_R7
 					dd ORL_C_n$bad,AJMP_$cad,MOV_C_$bad,INC_DPTR,MUL_AB,reserved,MOV_@R0_$dad,MOV_@R1_$dad,MOV_R0_$dad,MOV_R1_$dad,MOV_R2_$dad,MOV_R3_$dad,MOV_R4_$dad,MOV_R5_$dad,MOV_R6_$dad,MOV_R7_$dad
-					dd ANL_C_n$bad,ACALL_$cad,CPL_$bad,CPL_C,CJNE_A_dd_$cad,CJNE_A_$dad_$cad,CJNE_@R0_dd_$cad,CJNE_@R1_dd_$cad,CJNE_R0_dd_$cad,CJNE_R1_dd_$cad,CJNE_R2_dd_$cad,CJNE_R3_dd_$cad,CJNE_R4_dd_$cad,CJNE_R5_dd_$cad,CJNE_R6_dd_$cad,CJNE_R7_dd_$cad
+					dd ANL_C_n$bad,ACALL_$cad,CPL_$bad,CPL_C,CJNE_A_imm_$cad,CJNE_A_$dad_$cad,CJNE_@R0_imm_$cad,CJNE_@R1_imm_$cad,CJNE_R0_imm_$cad,CJNE_R1_imm_$cad,CJNE_R2_imm_$cad,CJNE_R3_imm_$cad,CJNE_R4_imm_$cad,CJNE_R5_imm_$cad,CJNE_R6_imm_$cad,CJNE_R7_imm_$cad
 
 					dd PUSH_$dad,AJMP_$cad,CLR_$bad,CLR_C,SWAP_A,XCH_A_$dad,XCH_A_@R0,XCH_A_@R1,XCH_A_R0,XCH_A_R1,XCH_A_R2,XCH_A_R3,XCH_A_R4,XCH_A_R5,XCH_A_R6,XCH_A_R7
 					dd POP_$dad,ACALL_$cad,SETB_$bad,SETB_C,DA_A,DJNZ_$dad_$cad,XCHD_A_@R0,XCHD_A_@R1,DJNZ_R0_$cad,DJNZ_R1_$cad,DJNZ_R2_$cad,DJNZ_R3_$cad,DJNZ_R4_$cad,DJNZ_R5_$cad,DJNZ_R6_$cad,DJNZ_R7_$cad
@@ -83,7 +84,7 @@ Cycles				db 1,2,2,1,1,1,1,1,1,1,1,1,1,1,1,1
 Bytes				db 1,2,3,1,1,2,1,1,1,1,1,1,1,1,1,1
 					db 3,2,3,1,1,2,1,1,1,1,1,1,1,1,1,1
 					db 3,2,1,1,2,2,1,1,1,1,1,1,1,1,1,1
-					db 3,2,1,1,1,2,1,1,1,1,1,1,1,1,1,1
+					db 3,2,1,1,2,2,1,1,1,1,1,1,1,1,1,1
 					db 2,2,2,3,2,2,1,1,1,1,1,1,1,1,1,1
 					db 2,2,2,3,2,2,1,1,1,1,1,1,1,1,1,1
 					db 2,2,2,3,2,2,1,1,1,1,1,1,1,1,1,1
@@ -161,20 +162,70 @@ Reset proc
 
 Reset endp
 
-FindMcuAddr proc uses esi,McuAddr:DWORD
+;FindMcuAddr proc uses esi,McuAddr:DWORD
+;
+;	mov		esi,hMemAddr
+;	xor		eax,eax
+;	.if esi
+;		mov		edx,McuAddr
+;		xor		ecx,ecx
+;		.while dx!=[esi].MCUADDR.mcuaddr && ecx<nAddr
+;			inc		ecx
+;			lea		esi,[esi+sizeof MCUADDR]
+;		.endw
+;		.if dx==[esi].MCUADDR.mcuaddr
+;			mov		eax,esi
+;		.endif
+;	.endif
+;	ret
+;
+;FindMcuAddr endp
+
+FindMcuAddr proc uses ebx esi edi,Address:DWORD
+	LOCAL	inx:DWORD
+	LOCAL	lower:DWORD
+	LOCAL	upper:DWORD
 
 	mov		esi,hMemAddr
 	xor		eax,eax
 	.if esi
-		mov		edx,McuAddr
-		xor		ecx,ecx
-		.while dx!=[esi].MCUADDR.mcuaddr && ecx<nAddr
-			inc		ecx
-			lea		esi,[esi+sizeof MCUADDR]
+		mov		lower,0
+		mov		eax,nAddr
+		mov		upper,eax
+		xor		ebx,ebx
+		.while TRUE
+			mov		eax,upper
+			sub		eax,lower
+			.break .if !eax
+			shr		eax,1
+			add		eax,lower
+			mov		inx,eax
+			mov		edx,sizeof MCUADDR
+			mul		edx
+			movzx	edx,[esi+eax].MCUADDR.mcuaddr
+			mov		eax,Address
+			sub		eax,edx
+			.if !eax || ebx>30
+				; Found
+				jmp		Ex
+			.elseif sdword ptr eax<0
+				; Smaller
+				mov		eax,inx
+				mov		upper,eax
+			.elseif sdword ptr eax>0
+				; Larger
+				mov		eax,inx
+				mov		lower,eax
+			.endif
+			inc		ebx
 		.endw
-		.if dx==[esi].MCUADDR.mcuaddr
-			mov		eax,esi
-		.endif
+		; Not found, should never happend
+PrintHex ebx
+	  Ex:
+		mov		eax,inx
+		mov		edx,sizeof MCUADDR
+		mul		edx
+		lea		eax,[esi+eax]
 	.endif
 	ret
 
@@ -742,7 +793,7 @@ RL_A:
 	lea		ebx,[ebx+1]
 	ret
 
-ADD_A_dd:
+ADD_A_imm:
 	movzx	eax,byte ptr [esi+ebx+1]
 	lea		ebx,[ebx+2]
 	add		Sfr[SFR_ACC],al
@@ -890,7 +941,7 @@ RLC_A:
 	lea		ebx,[ebx+1]
 	ret
 
-ADDC_A_dd:
+ADDC_A_imm:
 	movzx	eax,Sfr[SFR_PSW]
 	rcl		al,1
 	movzx	eax,byte ptr [esi+ebx+1]
@@ -1044,7 +1095,7 @@ ORL_$dad_A:
 	invoke SetFlags
 	ret
 
-ORL_$dad_dd:
+ORL_$dad_imm:
 	movzx	edx,byte ptr [esi+ebx+1]
 	movzx	eax,byte ptr [esi+ebx+2]
 	lea		ebx,[ebx+3]
@@ -1052,7 +1103,7 @@ ORL_$dad_dd:
 	invoke SetFlags
 	ret
 
-ORL_A_dd:
+ORL_A_imm:
 	movzx	eax,byte ptr [esi+ebx+1]
 	lea		ebx,[ebx+2]
 	or		Sfr[SFR_ACC],al
@@ -1182,7 +1233,7 @@ ANL_$dad_A:
 	invoke SetFlags
 	ret
 
-ANL_$dad_dd:
+ANL_$dad_imm:
 	movzx	edx,byte ptr [esi+ebx+1]
 	movzx	eax,byte ptr [esi+ebx+2]
 	lea		ebx,[ebx+3]
@@ -1190,7 +1241,7 @@ ANL_$dad_dd:
 	invoke SetFlags
 	ret
 
-ANL_A_dd:
+ANL_A_imm:
 	movzx	eax,byte ptr [esi+ebx+1]
 	lea		ebx,[ebx+2]
 	and		Sfr[SFR_ACC],al
@@ -1320,7 +1371,7 @@ XRL_$dad_A:
 	invoke SetFlags
 	ret
 
-XRL_$dad_dd:
+XRL_$dad_imm:
 	movzx	edx,byte ptr [esi+ebx+1]
 	movzx	eax,byte ptr [esi+ebx+2]
 	lea		ebx,[ebx+3]
@@ -1328,7 +1379,7 @@ XRL_$dad_dd:
 	invoke SetFlags
 	ret
 
-XRL_A_dd:
+XRL_A_imm:
 	movzx	eax,byte ptr [esi+ebx+1]
 	lea		ebx,[ebx+2]
 	xor		Sfr[SFR_ACC],al
@@ -1481,14 +1532,14 @@ JMP_@A_DPTR:
 	movzx	eax,Sfr[SFR_ACC]
 	lea		ebx,[edx+eax]
 	ret
-	
-MOV_A_dd:
+
+MOV_A_imm:
 	movzx	eax,byte ptr [esi+ebx+1]
 	mov		Sfr[SFR_ACC],al
 	lea		ebx,[ebx+2]
 	ret
 
-MOV_$dad_dd:
+MOV_$dad_imm:
 	movzx	edx,byte ptr [esi+ebx+1]
 	movzx	eax,byte ptr [esi+ebx+2]
 	.if edx<80h
@@ -1499,7 +1550,7 @@ MOV_$dad_dd:
 	lea		ebx,[ebx+3]
 	ret
 	
-MOV_@R0_dd:
+MOV_@R0_imm:
 	mov		eax,Bank
 	lea		eax,[eax*8+0]
 	movzx	edx,Ram[eax]
@@ -1508,7 +1559,7 @@ MOV_@R0_dd:
 	lea		ebx,[ebx+2]
 	ret
 
-MOV_@R1_dd:
+MOV_@R1_imm:
 	mov		eax,Bank
 	lea		eax,[eax*8+1]
 	movzx	edx,Ram[eax]
@@ -1517,7 +1568,7 @@ MOV_@R1_dd:
 	lea		ebx,[ebx+2]
 	ret
 
-MOV_R0_dd:
+MOV_R0_imm:
 	movzx	ecx,byte ptr [esi+ebx+1]
 	lea		ebx,[ebx+2]
 	mov		eax,Bank
@@ -1525,7 +1576,7 @@ MOV_R0_dd:
 	mov		Ram[eax],cl
 	ret
 
-MOV_R1_dd:
+MOV_R1_imm:
 	movzx	ecx,byte ptr [esi+ebx+1]
 	lea		ebx,[ebx+2]
 	mov		eax,Bank
@@ -1533,7 +1584,7 @@ MOV_R1_dd:
 	mov		Ram[eax],cl
 	ret
 
-MOV_R2_dd:
+MOV_R2_imm:
 	movzx	ecx,byte ptr [esi+ebx+1]
 	lea		ebx,[ebx+2]
 	mov		eax,Bank
@@ -1541,7 +1592,7 @@ MOV_R2_dd:
 	mov		Ram[eax],cl
 	ret
 
-MOV_R3_dd:
+MOV_R3_imm:
 	movzx	ecx,byte ptr [esi+ebx+1]
 	lea		ebx,[ebx+2]
 	mov		eax,Bank
@@ -1549,7 +1600,7 @@ MOV_R3_dd:
 	mov		Ram[eax],cl
 	ret
 
-MOV_R4_dd:
+MOV_R4_imm:
 	movzx	ecx,byte ptr [esi+ebx+1]
 	lea		ebx,[ebx+2]
 	mov		eax,Bank
@@ -1557,7 +1608,7 @@ MOV_R4_dd:
 	mov		Ram[eax],cl
 	ret
 
-MOV_R5_dd:
+MOV_R5_imm:
 	movzx	ecx,byte ptr [esi+ebx+1]
 	lea		ebx,[ebx+2]
 	mov		eax,Bank
@@ -1565,7 +1616,7 @@ MOV_R5_dd:
 	mov		Ram[eax],cl
 	ret
 
-MOV_R6_dd:
+MOV_R6_imm:
 	movzx	ecx,byte ptr [esi+ebx+1]
 	lea		ebx,[ebx+2]
 	mov		eax,Bank
@@ -1573,7 +1624,7 @@ MOV_R6_dd:
 	mov		Ram[eax],cl
 	ret
 
-MOV_R7_dd:
+MOV_R7_imm:
 	movzx	ecx,byte ptr [esi+ebx+1]
 	lea		ebx,[ebx+2]
 	mov		eax,Bank
@@ -1617,7 +1668,21 @@ MOVC_A_@A_PC:
 	ret
 
 DIV_AB:
-	;#########
+	movzx	eax,Sfr[SFR_ACC]
+	movzx	ecx,Sfr[SFR_B]
+	.if !ecx
+		;Set OV flag
+		or		Sfr[SFR_PSW],04h
+	.else
+		xor		edx,edx
+		div		cl
+		mov		Sfr[SFR_ACC],al
+		mov		Sfr[SFR_B],dl
+		;Clear OV flag
+		and		Sfr[SFR_PSW],0FBh
+	.endif
+	;Clear CY flag
+	and		Sfr[SFR_PSW],7Fh
 	lea		ebx,[ebx+1]
 	ret
 
@@ -1772,7 +1837,7 @@ MOV_$dad_R7:
 ;------------------------------------------------------------------------------
 MOV_DPTR_dw:
 	mov		ah,byte ptr [esi+ebx+1]
-	mov		al,byte ptr [esi+ebx+1]
+	mov		al,byte ptr [esi+ebx+2]
 	test	Sfr[SFR_AUXR1],1
 	.if ZERO?
 		mov		word ptr Sfr[SFR_DPL],ax
@@ -1825,7 +1890,7 @@ MOVC_A_@A_DPTR:
 	lea		ebx,[ebx+1]
 	ret
 
-SUBB_A_dd:
+SUBB_A_imm:
 	movzx	eax,Sfr[SFR_PSW]
 	rcl		al,1
 	movzx	eax,byte ptr [esi+ebx+1]
@@ -2011,11 +2076,24 @@ INC_DPTR:
 	.else
 		inc		word ptr Sfr[SFR_DP1L]
 	.endif
-	lea		ebx,[edx+1]
+	lea		ebx,[ebx+1]
 	ret
 
 MUL_AB:
-	;#########
+	mov		al,Sfr[SFR_ACC]
+	mov		ah,Sfr[SFR_B]
+	mul		ah
+	mov		Sfr[SFR_ACC],al
+	mov		Sfr[SFR_B],ah
+	.if ah
+		;Set OV flag
+		or		Sfr[SFR_PSW],04h
+	.else
+		;Clear OV flag
+		and		Sfr[SFR_PSW],0FBh
+	.endif
+	;Clear CY flag
+	and		Sfr[SFR_PSW],7Fh
 	lea		ebx,[ebx+1]
 	ret
 
@@ -2199,246 +2277,162 @@ CPL_C:
 	lea		ebx,[ebx+1]
 	ret
 
-CJNE_A_dd_$cad:
+CJNE_A_imm_$cad:
 	movzx	eax,byte ptr [esi+ebx+1]
 	movsx	ecx,byte ptr [esi+ebx+2]
 	lea		ebx,[ebx+3]
-	cmp		al,Sfr[SFR_ACC]
-	pushf
+	cmp		Sfr[SFR_ACC],al
 	.if !ZERO?
 		lea		ebx,[ebx+ecx]
 	.endif
-	.if CARRY?
-		or		Sfr[SFR_PSW],80h
-	.else
-		and		Sfr[SFR_PSW],7Fh
-	.endif
-	popf
 	invoke SetFlags
 	ret
 
 CJNE_A_$dad_$cad:
 	movzx	edx,byte ptr [esi+ebx+1]
+	movsx	ecx,byte ptr [esi+ebx+2]
+	lea		ebx,[ebx+3]
 	.if edx<80h
 		movzx	eax,Ram[edx]
 	.else
 		movzx	eax,Sfr[edx]
 	.endif
-	movsx	ecx,byte ptr [esi+ebx+2]
-	lea		ebx,[ebx+3]
-	cmp		al,Sfr[SFR_ACC]
-	pushf
+	cmp		Sfr[SFR_ACC],al
 	.if !ZERO?
 		lea		ebx,[ebx+ecx]
 	.endif
-	.if CARRY?
-		or		Sfr[SFR_PSW],80h
-	.else
-		and		Sfr[SFR_PSW],7Fh
-	.endif
-	popf
 	invoke SetFlags
 	ret
 
-CJNE_@R0_dd_$cad:
+CJNE_@R0_imm_$cad:
 	movzx	eax,byte ptr [esi+ebx+1]
 	movsx	ecx,byte ptr [esi+ebx+2]
+	lea		ebx,[ebx+3]
 	mov		edx,Bank
 	lea		edx,[edx*8+0]
 	movzx	edx,Ram[edx]
-	lea		ebx,[ebx+3]
-	cmp		al,Ram[edx]
-	pushf
+	cmp		Ram[edx],al
 	.if !ZERO?
 		lea		ebx,[ebx+ecx]
 	.endif
-	.if CARRY?
-		or		Sfr[SFR_PSW],80h
-	.else
-		and		Sfr[SFR_PSW],7Fh
-	.endif
-	popf
 	invoke SetFlags
 	ret
 
-CJNE_@R1_dd_$cad:
+CJNE_@R1_imm_$cad:
 	movzx	eax,byte ptr [esi+ebx+1]
 	movsx	ecx,byte ptr [esi+ebx+2]
+	lea		ebx,[ebx+3]
 	mov		edx,Bank
 	lea		edx,[edx*8+1]
 	movzx	edx,Ram[edx]
-	lea		ebx,[ebx+3]
-	cmp		al,Ram[edx]
-	pushf
+	cmp		Ram[edx],al
 	.if !ZERO?
 		lea		ebx,[ebx+ecx]
 	.endif
-	.if CARRY?
-		or		Sfr[SFR_PSW],80h
-	.else
-		and		Sfr[SFR_PSW],7Fh
-	.endif
-	popf
 	invoke SetFlags
 	ret
 
-CJNE_R0_dd_$cad:
+CJNE_R0_imm_$cad:
 	movzx	eax,byte ptr [esi+ebx+1]
 	movsx	ecx,byte ptr [esi+ebx+2]
+	lea		ebx,[ebx+3]
 	mov		edx,Bank
 	lea		edx,[edx*8+0]
-	lea		ebx,[ebx+3]
-	cmp		al,Ram[edx]
-	pushf
+	cmp		Ram[edx],al
 	.if !ZERO?
 		lea		ebx,[ebx+ecx]
 	.endif
-	.if CARRY?
-		or		Sfr[SFR_PSW],80h
-	.else
-		and		Sfr[SFR_PSW],7Fh
-	.endif
-	popf
 	invoke SetFlags
 	ret
 
-CJNE_R1_dd_$cad:
+CJNE_R1_imm_$cad:
 	movzx	eax,byte ptr [esi+ebx+1]
 	movsx	ecx,byte ptr [esi+ebx+2]
+	lea		ebx,[ebx+3]
 	mov		edx,Bank
 	lea		edx,[edx*8+1]
-	lea		ebx,[ebx+3]
-	cmp		al,Ram[edx]
-	pushf
+	cmp		Ram[edx],al
 	.if !ZERO?
 		lea		ebx,[ebx+ecx]
 	.endif
-	.if CARRY?
-		or		Sfr[SFR_PSW],80h
-	.else
-		and		Sfr[SFR_PSW],7Fh
-	.endif
-	popf
 	invoke SetFlags
 	ret
 
-CJNE_R2_dd_$cad:
+CJNE_R2_imm_$cad:
 	movzx	eax,byte ptr [esi+ebx+1]
 	movsx	ecx,byte ptr [esi+ebx+2]
+	lea		ebx,[ebx+3]
 	mov		edx,Bank
 	lea		edx,[edx*8+2]
-	lea		ebx,[ebx+3]
-	cmp		al,Ram[edx]
-	pushf
+	cmp		Ram[edx],al
 	.if !ZERO?
 		lea		ebx,[ebx+ecx]
 	.endif
-	.if CARRY?
-		or		Sfr[SFR_PSW],80h
-	.else
-		and		Sfr[SFR_PSW],7Fh
-	.endif
-	popf
 	invoke SetFlags
 	ret
 
-CJNE_R3_dd_$cad:
+CJNE_R3_imm_$cad:
 	movzx	eax,byte ptr [esi+ebx+1]
 	movsx	ecx,byte ptr [esi+ebx+2]
+	lea		ebx,[ebx+3]
 	mov		edx,Bank
 	lea		edx,[edx*8+3]
-	lea		ebx,[ebx+3]
-	cmp		al,Ram[edx]
-	pushf
+	cmp		Ram[edx],al
 	.if !ZERO?
 		lea		ebx,[ebx+ecx]
 	.endif
-	.if CARRY?
-		or		Sfr[SFR_PSW],80h
-	.else
-		and		Sfr[SFR_PSW],7Fh
-	.endif
-	popf
 	invoke SetFlags
 	ret
 
-CJNE_R4_dd_$cad:
+CJNE_R4_imm_$cad:
 	movzx	eax,byte ptr [esi+ebx+1]
 	movsx	ecx,byte ptr [esi+ebx+2]
+	lea		ebx,[ebx+3]
 	mov		edx,Bank
 	lea		edx,[edx*8+4]
-	lea		ebx,[ebx+3]
-	cmp		al,Ram[edx]
-	pushf
+	cmp		Ram[edx],al
 	.if !ZERO?
 		lea		ebx,[ebx+ecx]
 	.endif
-	.if CARRY?
-		or		Sfr[SFR_PSW],80h
-	.else
-		and		Sfr[SFR_PSW],7Fh
-	.endif
-	popf
 	invoke SetFlags
 	ret
 
-CJNE_R5_dd_$cad:
+CJNE_R5_imm_$cad:
 	movzx	eax,byte ptr [esi+ebx+1]
 	movsx	ecx,byte ptr [esi+ebx+2]
+	lea		ebx,[ebx+3]
 	mov		edx,Bank
 	lea		edx,[edx*8+5]
-	lea		ebx,[ebx+3]
-	cmp		al,Ram[edx]
-	pushf
+	cmp		Ram[edx],al
 	.if !ZERO?
 		lea		ebx,[ebx+ecx]
 	.endif
-	.if CARRY?
-		or		Sfr[SFR_PSW],80h
-	.else
-		and		Sfr[SFR_PSW],7Fh
-	.endif
-	popf
 	invoke SetFlags
 	ret
 
-CJNE_R6_dd_$cad:
+CJNE_R6_imm_$cad:
 	movzx	eax,byte ptr [esi+ebx+1]
 	movsx	ecx,byte ptr [esi+ebx+2]
+	lea		ebx,[ebx+3]
 	mov		edx,Bank
 	lea		edx,[edx*8+6]
-	lea		ebx,[ebx+3]
-	cmp		al,Ram[edx]
-	pushf
+	cmp		Ram[edx],al
 	.if !ZERO?
 		lea		ebx,[ebx+ecx]
 	.endif
-	.if CARRY?
-		or		Sfr[SFR_PSW],80h
-	.else
-		and		Sfr[SFR_PSW],7Fh
-	.endif
-	popf
 	invoke SetFlags
 	ret
 
-CJNE_R7_dd_$cad:
+CJNE_R7_imm_$cad:
 	movzx	eax,byte ptr [esi+ebx+1]
 	movsx	ecx,byte ptr [esi+ebx+2]
+	lea		ebx,[ebx+3]
 	mov		edx,Bank
 	lea		edx,[edx*8+7]
-	lea		ebx,[ebx+3]
-	cmp		al,Ram[edx]
-	pushf
+	cmp		Ram[edx],al
 	.if !ZERO?
 		lea		ebx,[ebx+ecx]
 	.endif
-	.if CARRY?
-		or		Sfr[SFR_PSW],80h
-	.else
-		and		Sfr[SFR_PSW],7Fh
-	.endif
-	popf
 	invoke SetFlags
 	ret
 
@@ -2458,7 +2452,6 @@ PUSH_$dad:
 
 CLR_$bad:
 	movzx	ecx,byte ptr [esi+ebx+1]
-	lea		ebx,[ebx+2]
 	movzx	eax,cl
 	and		cl,07h
 	mov		edx,1
@@ -2472,6 +2465,7 @@ CLR_$bad:
 		and		eax,0F8h
 		and		Sfr[eax],dl
 	.endif
+	lea		ebx,[ebx+2]
 	ret
 
 CLR_C:
@@ -2609,7 +2603,6 @@ POP_$dad:
 
 SETB_$bad:
 	movzx	ecx,byte ptr [esi+ebx+1]
-	lea		ebx,[ebx+2]
 	movzx	eax,cl
 	and		cl,07h
 	mov		edx,1
@@ -2622,6 +2615,7 @@ SETB_$bad:
 		and		eax,0F8h
 		or		Sfr[eax],dl
 	.endif
+	lea		ebx,[ebx+2]
 	ret
 
 SETB_C:
@@ -2630,7 +2624,10 @@ SETB_C:
 	ret
 
 DA_A:
-	;#########
+	movzx	eax,Sfr[SFR_ACC]
+	add		eax,0
+	daa
+	mov		Sfr[SFR_ACC],al
 	lea		ebx,[ebx+1]
 	ret
 
@@ -2643,7 +2640,7 @@ DJNZ_$dad_$cad:
 	.else
 		dec		Sfr[edx]
 	.endif
-	.if ZERO?
+	.if !ZERO?
 		lea		ebx,[ebx+ecx]
 	.endif
 	ret
@@ -2761,9 +2758,9 @@ MOVX_A_@DPTR:
 	movzx	eax,Sfr[SFR_AUXR1]
 	and		eax,1
 	.if ZERO?
-		movzx	dx,Sfr[SFR_DPL]
+		movzx	edx,word ptr Sfr[SFR_DPL]
 	.else
-		movzx	dx,Sfr[SFR_DP1L]
+		movzx	edx,word ptr Sfr[SFR_DP1L]
 	.endif
 	movzx	eax,XRam[edx]
 	mov		Sfr[SFR_ACC],al
@@ -2810,9 +2807,8 @@ MOV_A_@R0:
 	mov		edx,Bank
 	lea		edx,[edx*8+0]
 	movzx	edx,Ram[edx]
-	movzx	edx,Ram[edx]
-	movzx	eax,Sfr[SFR_ACC]
-	mov		Ram[edx],al
+	movzx	eax,Ram[edx]
+	mov		Sfr[SFR_ACC],al
 	lea		ebx,[ebx+1]
 	ret
 
@@ -2820,16 +2816,14 @@ MOV_A_@R1:
 	mov		edx,Bank
 	lea		edx,[edx*8+1]
 	movzx	edx,Ram[edx]
-	movzx	edx,Ram[edx]
-	movzx	eax,Sfr[SFR_ACC]
-	mov		Ram[edx],al
+	movzx	eax,Ram[edx]
+	mov		Sfr[SFR_ACC],al
 	lea		ebx,[ebx+1]
 	ret
 
 MOV_A_R0:
 	mov		edx,Bank
 	lea		edx,[edx*8+0]
-	movzx	edx,Ram[edx]
 	movzx	eax,Ram[edx]
 	mov		Sfr[SFR_ACC],al
 	lea		ebx,[ebx+1]
@@ -2838,7 +2832,6 @@ MOV_A_R0:
 MOV_A_R1:
 	mov		edx,Bank
 	lea		edx,[edx*8+1]
-	movzx	edx,Ram[edx]
 	movzx	eax,Ram[edx]
 	mov		Sfr[SFR_ACC],al
 	lea		ebx,[ebx+1]
@@ -2847,7 +2840,6 @@ MOV_A_R1:
 MOV_A_R2:
 	mov		edx,Bank
 	lea		edx,[edx*8+2]
-	movzx	edx,Ram[edx]
 	movzx	eax,Ram[edx]
 	mov		Sfr[SFR_ACC],al
 	lea		ebx,[ebx+1]
@@ -2856,7 +2848,6 @@ MOV_A_R2:
 MOV_A_R3:
 	mov		edx,Bank
 	lea		edx,[edx*8+3]
-	movzx	edx,Ram[edx]
 	movzx	eax,Ram[edx]
 	mov		Sfr[SFR_ACC],al
 	lea		ebx,[ebx+1]
@@ -2865,7 +2856,6 @@ MOV_A_R3:
 MOV_A_R4:
 	mov		edx,Bank
 	lea		edx,[edx*8+4]
-	movzx	edx,Ram[edx]
 	movzx	eax,Ram[edx]
 	mov		Sfr[SFR_ACC],al
 	lea		ebx,[ebx+1]
@@ -2874,7 +2864,6 @@ MOV_A_R4:
 MOV_A_R5:
 	mov		edx,Bank
 	lea		edx,[edx*8+5]
-	movzx	edx,Ram[edx]
 	movzx	eax,Ram[edx]
 	mov		Sfr[SFR_ACC],al
 	lea		ebx,[ebx+1]
@@ -2883,7 +2872,6 @@ MOV_A_R5:
 MOV_A_R6:
 	mov		edx,Bank
 	lea		edx,[edx*8+6]
-	movzx	edx,Ram[edx]
 	movzx	eax,Ram[edx]
 	mov		Sfr[SFR_ACC],al
 	lea		ebx,[ebx+1]
@@ -2892,7 +2880,6 @@ MOV_A_R6:
 MOV_A_R7:
 	mov		edx,Bank
 	lea		edx,[edx*8+7]
-	movzx	edx,Ram[edx]
 	movzx	eax,Ram[edx]
 	mov		Sfr[SFR_ACC],al
 	lea		ebx,[ebx+1]
@@ -2903,9 +2890,9 @@ MOVX_@DPTR_A:
 	movzx	eax,Sfr[SFR_AUXR1]
 	and		eax,1
 	.if ZERO?
-		movzx	dx,Sfr[SFR_DPL]
+		movzx	edx,word ptr Sfr[SFR_DPL]
 	.else
-		movzx	dx,Sfr[SFR_DP1L]
+		movzx	edx,word ptr Sfr[SFR_DP1L]
 	.endif
 	movzx	eax,Sfr[SFR_ACC]
 	mov		XRam[edx],al
@@ -3033,6 +3020,7 @@ MOV_R7_A:
 ;------------------------------------------------------------------------------
 
 CoreThread proc lParam:DWORD
+	LOCAL	StatusLed:DWORD
 
 	mov		esi,offset Code
 	mov		ebx,PC
@@ -3045,19 +3033,42 @@ CoreThread proc lParam:DWORD
 				call	Execute
 				xor		State,STATE_STEP_INTO
 				mov		Refresh,1
+			.elseif State & STATE_STEP_OVER
+				xor		State,STATE_STEP_OVER
+				movzx	eax,byte ptr [esi+ebx]
+				.if eax==12h || eax==11h || eax==31h || eax==51h || eax==71h || eax==91h || eax==0B1h || eax==0D1h || eax==0F1h
+					invoke FindMcuAddr,ebx
+					.if eax
+						movzx	eax,[eax].MCUADDR.mcuaddr[sizeof MCUADDR]
+						mov		CursorAddr,eax
+						or		State,STATE_RUN_TO_CURSOR or STATE_PAUSE
+					.endif
+				.else
+					xor		State,STATE_STEP_INTO
+				.endif
 			.elseif State & STATE_RUN_TO_CURSOR
 				call	Execute
 				.if ebx==CursorAddr
 					xor		State,STATE_RUN_TO_CURSOR
 				.endif
 				mov		Refresh,1
+			.else
+			mov		eax,hBmpGreenLed
+			call	SetStatusLed
 			.endif
-			invoke FindMcuAddr,ebx
-			.if eax
-				.if [eax].MCUADDR.fbp
-					or		State,STATE_BREAKPOINT
+			.if Refresh
+				mov		eax,hBmpRedLed
+				call	SetStatusLed
+				invoke FindMcuAddr,ebx
+				.if eax
+					.if [eax].MCUADDR.fbp
+						or		State,STATE_BREAKPOINT
+					.endif
 				.endif
 			.endif
+		.else
+			mov		eax,hBmpGreenLed
+			call	SetStatusLed
 		.endif
 	.endw
 	invoke Reset
@@ -3070,8 +3081,15 @@ Execute:
 	add		TotalCycles,edx
 	call	JmpTab[eax*4]
 	mov		PC,ebx
-;	invoke QueryPerformanceFrequency,addr PerformanceFrequency
-;	invoke QueryPerformanceCounter,addr PerformanceCount
+	invoke QueryPerformanceFrequency,addr PerformanceFrequency
+	invoke QueryPerformanceCounter,addr PerformanceCount
+	retn
+
+SetStatusLed:
+	.if eax!=StatusLed
+		mov		StatusLed,eax
+		invoke SendDlgItemMessage,hWnd,IDC_IMGSTATUS,STM_SETIMAGE,IMAGE_BITMAP,eax
+	.endif
 	retn
 
 CoreThread endp

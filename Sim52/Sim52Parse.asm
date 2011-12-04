@@ -29,6 +29,7 @@ ParseList proc uses ebx esi edi,lpFileName:DWORD
 		invoke CloseHandle,hFile
 		mov		esi,hMemFile
 		mov		nAddr,0
+		invoke SendDlgItemMessage,hWnd,IDC_LSTCODE,LB_RESETCONTENT,0,0
 		.while byte ptr [esi]
 			mov		nBytes,0
 			mov		nBytesParsed,0
