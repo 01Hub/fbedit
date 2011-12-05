@@ -42,6 +42,19 @@ STATE_BREAKPOINT	equ 32
 
 STATE_THREAD		equ 128
 
+SFRMAP struct
+	ad		dd ?
+	nme		db 8 dup(?)
+	d7		db 8 dup(?)
+	d6		db 8 dup(?)
+	d5		db 8 dup(?)
+	d4		db 8 dup(?)
+	d3		db 8 dup(?)
+	d2		db 8 dup(?)
+	d1		db 8 dup(?)
+	d0		db 8 dup(?)
+SFRMAP ends
+
 .data
 
 JmpTab				dd NOP_,AJMP_$cad,LJMP_$cad,RR_A,INC_A,INC_$dad,INC_@R0,INC_@R1,INC_R0,INC_R1,INC_R2,INC_R3,INC_R4,INC_R5,INC_R6,INC_R7
@@ -98,6 +111,52 @@ Bytes				db 1,2,3,1,1,2,1,1,1,1,1,1,1,1,1,1
 					db 1,2,1,1,1,2,1,1,1,1,1,1,1,1,1,1
 					db 1,2,1,1,1,2,1,1,1,1,1,1,1,1,1,1
 
+SfrData				SFRMAP <080h,'P0','P0.7','P0.6','P0.5','P0.4','P0.3','P0.2','P0.1','P0.0'>
+					SFRMAP <081h,'SP','D7','D6','D5','D4','D3','D2','D1','D0'>
+					SFRMAP <082h,'DPL','D7','D6','D5','D4','D3','D2','D1','D0'>
+					SFRMAP <083h,'DPH','D7','D6','D5','D4','D3','D2','D1','D0'>
+					SFRMAP <084h,'DP1L','D7','D6','D5','D4','D3','D2','D1','D0'>
+					SFRMAP <085h,'DP1H','D7','D6','D5','D4','D3','D2','D1','D0'>
+					SFRMAP <087h,'PCON','SMOD','-','-','-','GF1','GF0','PD','IDL'>
+
+					SFRMAP <088h,'TCON','TF1','TR1','TF0','TR0','IE1','IT1','IE0','IT0'>
+					SFRMAP <089h,'TMOD','GTE1','C/T1','M1.1','M0.1','GTE0','C/T0','M1.0','M0.1'>
+					SFRMAP <08Ah,'TL0','D7','D6','D5','D4','D3','D2','D1','D0'>
+					SFRMAP <08Bh,'TL1','D7','D6','D5','D4','D3','D2','D1','D0'>
+					SFRMAP <08Ch,'TH0','D7','D6','D5','D4','D3','D2','D1','D0'>
+					SFRMAP <08Dh,'TH1','D7','D6','D5','D4','D3','D2','D1','D0'>
+					SFRMAP <08Eh,'AUXR','-','-','-','WDIDLE','DISRTO','-','-','DISALE'>
+
+					SFRMAP <090h,'P1','P1.7','P1.6','P1.5','P1.4','P1.3','P1.2','P1.1','P1.0'>
+
+					SFRMAP <098h,'SCON','SM0','SM1','SM2','REN','TB8','RB8','TI','RI'>
+					SFRMAP <099h,'SBUF','D7','D6','D5','D4','D3','D2','D1','D0'>
+
+					SFRMAP <0A0h,'P2','P2.7','P2.6','P2.5','P2.4','P2.3','P2.2','P2.1','P2.0'>
+					SFRMAP <0A2h,'AUXR1','-','-','-','-','-','-','-','DPS'>
+					SFRMAP <0A6h,'WDTRST','-','-','-','-','-','-','-','-'>
+
+					SFRMAP <0A8h,'IE','EA','-','-','ES','ET1','EX1','ET0','EX0'>
+
+					SFRMAP <0B0h,'P3','P3.7','P3.6','P3.5','P3.4','P3.3','P3.2','P3.1','P3.0'>
+
+					SFRMAP <0B8h,'IP','-','-','-','PS','PT1','PX1','PT0','RX0'>
+
+					SFRMAP <0C8h,'T2CON','TF2','EXF2','RCLK','TCLK','EXEN2','TR2','C/T2','CP/RL2'>
+					SFRMAP <0C9h,'T2MOD','-','-','-','-','-','-','T2OE','DCEN'>
+					SFRMAP <0CAh,'RCAP2L','D7','D6','D5','D4','D3','D2','D1','D0'>
+					SFRMAP <0CBh,'RCAP2H','D7','D6','D5','D4','D3','D2','D1','D0'>
+					SFRMAP <0CCh,'TL2','D7','D6','D5','D4','D3','D2','D1','D0'>
+					SFRMAP <0CDh,'TH2','D7','D6','D5','D4','D3','D2','D1','D0'>
+
+					SFRMAP <0D0h,'PSW','CY','AC','F0','RS1','RS0','OV','FL','P'>
+
+					SFRMAP <0E0h,'ACC','ACC.7','ACC.6','ACC.5','ACC.4','ACC.3','ACC.2','ACC.1','ACC.0'>
+
+					SFRMAP <0F0h,'B','B.7','B.6','B.5','B.4','B.3','B.2','B.1','B.0'>
+
+					SFRMAP <0>
+
 .data?
 
 hMemFile			HGLOBAL ?
@@ -110,8 +169,9 @@ Code				db 65536 dup(?)
 Bank				dd ?
 PC					dd ?
 nAddr				dd ?
+StatusLed			dd ?
 
-ViewBank			DD ?
+ViewBank			dd ?
 Refresh				dd ?
 State				dd ?
 CursorAddr			dd ?
@@ -161,25 +221,6 @@ Reset proc
 	ret
 
 Reset endp
-
-;FindMcuAddr proc uses esi,McuAddr:DWORD
-;
-;	mov		esi,hMemAddr
-;	xor		eax,eax
-;	.if esi
-;		mov		edx,McuAddr
-;		xor		ecx,ecx
-;		.while dx!=[esi].MCUADDR.mcuaddr && ecx<nAddr
-;			inc		ecx
-;			lea		esi,[esi+sizeof MCUADDR]
-;		.endw
-;		.if dx==[esi].MCUADDR.mcuaddr
-;			mov		eax,esi
-;		.endif
-;	.endif
-;	ret
-;
-;FindMcuAddr endp
 
 FindMcuAddr proc uses ebx esi edi,Address:DWORD
 	LOCAL	inx:DWORD
@@ -250,24 +291,80 @@ FindLbInx proc uses esi,LbInx:DWORD
 
 FindLbInx endp
 
+GetSfrPtr proc uses esi,hWin:HWND
+
+	mov		esi,offset SfrData
+	invoke SendDlgItemMessage,hWin,IDC_CBOSFR,CB_GETCURSEL,0,0
+	invoke SendDlgItemMessage,hWin,IDC_CBOSFR,CB_GETITEMDATA,eax,0
+	mov		ebx,eax
+	xor		eax,eax
+	.while [esi].SFRMAP.ad
+		.if ebx==[esi].SFRMAP.ad
+			mov		eax,esi
+			.break
+		.endif
+		lea		esi,[esi+sizeof SFRMAP]
+	.endw
+	ret
+
+GetSfrPtr endp
+
+UpdateSelSfr proc uses ebx esi,hWin:HWND
+	LOCAL	buffer[16]:BYTE
+
+	invoke GetSfrPtr,hWin
+	.if eax
+		mov		esi,eax
+		mov		ebx,[esi].SFRMAP.ad
+		invoke wsprintf,addr buffer,addr szFmtHexByteh,ebx
+		invoke SetDlgItemText,hWin,IDC_STCSFRADDR,addr buffer
+		invoke SetDlgItemText,hWin,IDC_STCSFRBIT7,addr [esi].SFRMAP.d7
+		invoke SetDlgItemText,hWin,IDC_STCSFRBIT6,addr [esi].SFRMAP.d6
+		invoke SetDlgItemText,hWin,IDC_STCSFRBIT5,addr [esi].SFRMAP.d5
+		invoke SetDlgItemText,hWin,IDC_STCSFRBIT4,addr [esi].SFRMAP.d4
+		invoke SetDlgItemText,hWin,IDC_STCSFRBIT3,addr [esi].SFRMAP.d3
+		invoke SetDlgItemText,hWin,IDC_STCSFRBIT2,addr [esi].SFRMAP.d2
+		invoke SetDlgItemText,hWin,IDC_STCSFRBIT1,addr [esi].SFRMAP.d1
+		invoke SetDlgItemText,hWin,IDC_STCSFRBIT0,addr [esi].SFRMAP.d0
+		mov		al,Sfr[ebx]
+		xor		ecx,ecx
+		mov		ebx,1100
+		.while ecx<8
+			push	ecx
+			shr		eax,1
+			push	eax
+			.if CARRY?
+				invoke SendDlgItemMessage,hWin,addr [ebx+ecx],STM_SETIMAGE,IMAGE_BITMAP,hBmpRedLed
+			.else
+				invoke SendDlgItemMessage,hWin,addr [ebx+ecx],STM_SETIMAGE,IMAGE_BITMAP,hBmpGrayLed
+			.endif
+			pop		eax
+			pop		ecx
+			inc		ecx
+		.endw
+	.endif
+	ret
+
+UpdateSelSfr endp
+
 UpdateStatus proc uses ebx
 	LOCAL	buffer[16]:BYTE
 
 	mov		eax,PC
 	invoke wsprintf,addr buffer,addr szFmtHexWord,eax
-	invoke SetDlgItemText,hWnd,IDC_EDTPC,addr buffer
-	movzx	eax,word ptr Sfr(SFR_DPL)
+	invoke SetDlgItemText,hTabDlgStatus,IDC_EDTPC,addr buffer
+	movzx	eax,word ptr Sfr[SFR_DPL]
 	invoke wsprintf,addr buffer,addr szFmtHexWord,eax
-	invoke SetDlgItemText,hWnd,IDC_EDTDPTR,addr buffer
-	movzx	eax,Sfr(SFR_ACC)
+	invoke SetDlgItemText,hTabDlgStatus,IDC_EDTDPTR,addr buffer
+	movzx	eax,Sfr[SFR_ACC]
 	invoke wsprintf,addr buffer,addr szFmtHexByte,eax
-	invoke SetDlgItemText,hWnd,IDC_EDTACC,addr buffer
-	movzx	eax,Sfr(SFR_B)
+	invoke SetDlgItemText,hTabDlgStatus,IDC_EDTACC,addr buffer
+	movzx	eax,Sfr[SFR_B]
 	invoke wsprintf,addr buffer,addr szFmtHexByte,eax
-	invoke SetDlgItemText,hWnd,IDC_EDTB,addr buffer
-	movzx	eax,Sfr(SFR_SP)
+	invoke SetDlgItemText,hTabDlgStatus,IDC_EDTB,addr buffer
+	movzx	eax,Sfr[SFR_SP]
 	invoke wsprintf,addr buffer,addr szFmtHexByte,eax
-	invoke SetDlgItemText,hWnd,IDC_EDTSP,addr buffer
+	invoke SetDlgItemText,hTabDlgStatus,IDC_EDTSP,addr buffer
 	push	0
 	push	IDC_IMGCY
 	push	IDC_IMGAC
@@ -277,14 +374,14 @@ UpdateStatus proc uses ebx
 	push	IDC_IMGOV
 	push	IDC_IMGFL
 	push	IDC_IMGP
-	movzx	ebx,Sfr(SFR_PSW)
+	movzx	ebx,Sfr[SFR_PSW]
 	pop		eax
 	.while eax
 		shr		ebx,1
 		.if CARRY?
-			invoke SendDlgItemMessage,hWnd,eax,STM_SETIMAGE,IMAGE_BITMAP,hBmpRedLed
+			invoke SendDlgItemMessage,hTabDlgStatus,eax,STM_SETIMAGE,IMAGE_BITMAP,hBmpRedLed
 		.else
-			invoke SendDlgItemMessage,hWnd,eax,STM_SETIMAGE,IMAGE_BITMAP,hBmpGrayLed
+			invoke SendDlgItemMessage,hTabDlgStatus,eax,STM_SETIMAGE,IMAGE_BITMAP,hBmpGrayLed
 		.endif
 		pop		eax
 	.endw
@@ -312,14 +409,14 @@ UpdatePorts proc uses ebx
 	push	IDC_IMGP0_5
 	push	IDC_IMGP0_6
 	push	IDC_IMGP0_7
-	movzx	ebx,Sfr(SFR_P0)
+	movzx	ebx,Sfr[SFR_P0]
 	pop		eax
 	.while eax
 		shl		bl,1
 		.if CARRY?
-			invoke SendDlgItemMessage,hWnd,eax,STM_SETIMAGE,IMAGE_BITMAP,hBmpGreenLed
+			invoke SendDlgItemMessage,hTabDlgStatus,eax,STM_SETIMAGE,IMAGE_BITMAP,hBmpGreenLed
 		.else
-			invoke SendDlgItemMessage,hWnd,eax,STM_SETIMAGE,IMAGE_BITMAP,hBmpGrayLed
+			invoke SendDlgItemMessage,hTabDlgStatus,eax,STM_SETIMAGE,IMAGE_BITMAP,hBmpGrayLed
 		.endif
 		pop		eax
 	.endw
@@ -332,14 +429,14 @@ UpdatePorts proc uses ebx
 	push	IDC_IMGP1_5
 	push	IDC_IMGP1_6
 	push	IDC_IMGP1_7
-	movzx	ebx,Sfr(SFR_P1)
+	movzx	ebx,Sfr[SFR_P1]
 	pop		eax
 	.while eax
 		shl		bl,1
 		.if CARRY?
-			invoke SendDlgItemMessage,hWnd,eax,STM_SETIMAGE,IMAGE_BITMAP,hBmpGreenLed
+			invoke SendDlgItemMessage,hTabDlgStatus,eax,STM_SETIMAGE,IMAGE_BITMAP,hBmpGreenLed
 		.else
-			invoke SendDlgItemMessage,hWnd,eax,STM_SETIMAGE,IMAGE_BITMAP,hBmpGrayLed
+			invoke SendDlgItemMessage,hTabDlgStatus,eax,STM_SETIMAGE,IMAGE_BITMAP,hBmpGrayLed
 		.endif
 		pop		eax
 	.endw
@@ -352,14 +449,14 @@ UpdatePorts proc uses ebx
 	push	IDC_IMGP2_5
 	push	IDC_IMGP2_6
 	push	IDC_IMGP2_7
-	movzx	ebx,Sfr(SFR_P2)
+	movzx	ebx,Sfr[SFR_P2]
 	pop		eax
 	.while eax
 		shl		bl,1
 		.if CARRY?
-			invoke SendDlgItemMessage,hWnd,eax,STM_SETIMAGE,IMAGE_BITMAP,hBmpGreenLed
+			invoke SendDlgItemMessage,hTabDlgStatus,eax,STM_SETIMAGE,IMAGE_BITMAP,hBmpGreenLed
 		.else
-			invoke SendDlgItemMessage,hWnd,eax,STM_SETIMAGE,IMAGE_BITMAP,hBmpGrayLed
+			invoke SendDlgItemMessage,hTabDlgStatus,eax,STM_SETIMAGE,IMAGE_BITMAP,hBmpGrayLed
 		.endif
 		pop		eax
 	.endw
@@ -372,14 +469,14 @@ UpdatePorts proc uses ebx
 	push	IDC_IMGP3_5
 	push	IDC_IMGP3_6
 	push	IDC_IMGP3_7
-	movzx	ebx,Sfr(SFR_P3)
+	movzx	ebx,Sfr[SFR_P3]
 	pop		eax
 	.while eax
 		shl		bl,1
 		.if CARRY?
-			invoke SendDlgItemMessage,hWnd,eax,STM_SETIMAGE,IMAGE_BITMAP,hBmpGreenLed
+			invoke SendDlgItemMessage,hTabDlgStatus,eax,STM_SETIMAGE,IMAGE_BITMAP,hBmpGreenLed
 		.else
-			invoke SendDlgItemMessage,hWnd,eax,STM_SETIMAGE,IMAGE_BITMAP,hBmpGrayLed
+			invoke SendDlgItemMessage,hTabDlgStatus,eax,STM_SETIMAGE,IMAGE_BITMAP,hBmpGrayLed
 		.endif
 		pop		eax
 	.endw
@@ -406,13 +503,40 @@ UpdateRegisters proc uses ebx esi
 	.while ebx
 		movzx	eax,byte ptr [esi]
 		invoke wsprintf,addr buffer,addr szFmtHexByte,eax
-		invoke SetDlgItemText,hWnd,ebx,addr buffer
+		invoke SetDlgItemText,hTabDlgStatus,ebx,addr buffer
 		inc		esi
 		pop		ebx
 	.endw
 	ret
 
 UpdateRegisters endp
+
+UpdateBits proc uses ebx edi
+
+	mov		edi,1000
+	xor		ebx,ebx
+	.while ebx<16
+		xor		ecx,ecx
+		mov		al,Ram[ebx+20h]
+		.while ecx<8
+			push	ecx
+			ror		eax,1
+			push	eax
+			.if CARRY?
+				invoke SendDlgItemMessage,hTabDlg[4],edi,STM_SETIMAGE,IMAGE_BITMAP,hBmpRedLed
+			.else
+				invoke SendDlgItemMessage,hTabDlg[4],edi,STM_SETIMAGE,IMAGE_BITMAP,hBmpGrayLed
+			.endif
+			pop		eax
+			pop		ecx
+			inc		ecx
+			inc		edi
+		.endw
+		inc		ebx
+	.endw
+	ret
+
+UpdateBits endp
 
 ToggleBreakPoint proc lbinx:DWORD
 
@@ -3020,7 +3144,6 @@ MOV_R7_A:
 ;------------------------------------------------------------------------------
 
 CoreThread proc lParam:DWORD
-	LOCAL	StatusLed:DWORD
 
 	mov		esi,offset Code
 	mov		ebx,PC
