@@ -1,4 +1,16 @@
 
+;Structure used to update rows
+ROWDATA struct
+	nImage			dd ?			;Data for Break Point column. Double word value
+	lpszAddress		dd ?			;Data for Address column. Pointer to string
+	lpszLabel		dd ?			;Data for Label column. Pointer to string
+	lpszCode		dd ?			;Data for Code column. Pointer to string
+ROWDATA ends
+
+.data?
+
+rdta				ROWDATA <>
+
 .code
 
 ParseList proc uses ebx esi edi,lpFileName:DWORD
@@ -86,10 +98,16 @@ ParseList proc uses ebx esi edi,lpFileName:DWORD
 					invoke SendDlgItemMessage,hWnd,IDC_LSTCODE,LB_ADDSTRING,0,addr buffer
 					push	eax
 					invoke SendDlgItemMessage,hWnd,IDC_LSTCODE,LB_SETITEMDATA,eax,ebx
+					mov		rdta.nImage,0
+					mov		rdta.lpszAddress,0
+					mov		rdta.lpszLabel,0
+					lea		eax,buffer
+					mov		rdta.lpszCode,eax
+					invoke SendMessage,hGrd,GM_ADDROW,0,addr rdta
+					pop		eax
 					.if nBytesParsed
 						mov		edx,paddr
 						mov		[edx].MCUADDR.mcuaddr,bx
-						pop		eax
 						mov		[edx].MCUADDR.lbinx,ax
 						mov		[edx].MCUADDR.fbp,0
 						lea		edx,[edx+sizeof MCUADDR]

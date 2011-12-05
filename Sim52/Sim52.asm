@@ -357,6 +357,7 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	buffer[MAX_PATH]:BYTE
 	LOCAL	tid:DWORD
 	LOCAL	hef:HEFONT
+	LOCAL	col:COLUMN
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
@@ -420,6 +421,58 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SetTimer,hWin,1000,200,NULL
 		invoke LoadAccelerators,hInstance,IDR_ACCEL1
 		mov		hAccel,eax
+
+		invoke GetDlgItem,hWin,IDC_GRDCODE
+		mov		hGrd,eax
+
+		;Add Break Point column
+		mov		col.colwt,16
+		mov		col.lpszhdrtext,NULL;offset szAddress
+		mov		col.halign,GA_ALIGN_LEFT
+		mov		col.calign,GA_ALIGN_LEFT
+		mov		col.ctype,TYPE_IMAGE
+		mov		col.ctextmax,0
+		mov		col.lpszformat,0
+		mov		col.himl,0
+		mov		col.hdrflag,0
+		invoke SendMessage,hGrd,GM_ADDCOL,0,addr col
+
+		;Add Address column
+		mov		col.colwt,32
+		mov		col.lpszhdrtext,offset szAddress
+		mov		col.halign,GA_ALIGN_LEFT
+		mov		col.calign,GA_ALIGN_LEFT
+		mov		col.ctype,TYPE_EDITTEXT
+		mov		col.ctextmax,4
+		mov		col.lpszformat,0
+		mov		col.himl,0
+		mov		col.hdrflag,0
+		invoke SendMessage,hGrd,GM_ADDCOL,0,addr col
+
+		;Add Name column
+		mov		col.colwt,100
+		mov		col.lpszhdrtext,offset szLabel
+		mov		col.halign,GA_ALIGN_LEFT
+		mov		col.calign,GA_ALIGN_LEFT
+		mov		col.ctype,TYPE_EDITTEXT
+		mov		col.ctextmax,31
+		mov		col.lpszformat,0
+		mov		col.himl,0
+		mov		col.hdrflag,0
+		invoke SendMessage,hGrd,GM_ADDCOL,0,addr col
+
+		;Add Code column
+		mov		col.colwt,180
+		mov		col.lpszhdrtext,offset szCode
+		mov		col.halign,GA_ALIGN_LEFT
+		mov		col.calign,GA_ALIGN_LEFT
+		mov		col.ctype,TYPE_EDITTEXT
+		mov		col.ctextmax,63
+		mov		col.lpszformat,0
+		mov		col.himl,0
+		mov		col.hdrflag,0
+		invoke SendMessage,hGrd,GM_ADDCOL,0,addr col
+
 	.elseif eax==WM_TIMER
 		.if Refresh
 			invoke UpdateStatus
@@ -643,7 +696,9 @@ start:
 	invoke InitCommonControls
 	mov		CommandLine,eax
 	invoke RAHexEdInstall,hInstance,FALSE
+	invoke GridInstall,hInstance,FALSE
 	invoke WinMain,hInstance,NULL,CommandLine,SW_SHOWDEFAULT
+	invoke GridUnInstall
 	invoke RAHexEdUnInstall
 	invoke ExitProcess,eax
 

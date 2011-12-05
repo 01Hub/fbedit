@@ -16,6 +16,9 @@ includelib gdi32.lib
 include RAHexEd.inc
 includelib RAHexEd.lib
 
+include RAGrid.inc
+includelib RAGrid.lib
+
 ;#########################################################################
 ; VKim's Debug
 
@@ -31,6 +34,7 @@ IDD_SIM52               equ 1000
 IDC_GRPPORTS            equ 1060
 IDC_TBRSIM52            equ 1003
 IDC_LSTCODE             equ 1001
+IDC_GRDCODE				equ 1005
 IDC_SBRSIM52            equ 1002
 IDC_IMGSTATUS			equ 1011
 IDC_TABSTATUS            equ 1004
@@ -326,6 +330,10 @@ szFmtHexByteh		db '%02Xh',0
 szFmtHexWord		db '%04X',0
 szFmtBank			db 'Bank %u',0
 
+szAddress			db 'Addr',0
+szLabel				db 'Label',0
+szCode				db 'Code',0
+
 .data?
 
 hInstance			dd ?
@@ -338,6 +346,7 @@ hBmpGrayLed			HBITMAP ?
 hBmpGreenLed		HBITMAP ?
 hBmpRedLed			HBITMAP ?
 SelTab				dd ?
+hGrd				HWND ?
 hTabDlgStatus		HWND ?
 hTabDlg				HWND 5 dup(?)
 lpOldEditProc		dd ?
