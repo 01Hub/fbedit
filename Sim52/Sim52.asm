@@ -3,6 +3,7 @@
 option casemap:none
 
 include Sim52.inc
+include Terminal.asm
 include Sim52Core.asm
 include Sim52Parse.asm
 
@@ -65,7 +66,7 @@ EnableDisable proc uses ebx
 	push	IDM_DEBUG_RUN_TO_CURSOR
 	push	IDM_DEBUG_TOGGLE
 	push	IDM_DEBUG_CLEAR
-	invoke SendDlgItemMessage,hWnd,IDC_LSTCODE,LB_GETCOUNT,0,0
+	invoke SendMessage,hGrd,GM_GETROWCOUNT,0,0
 	mov		ebx,eax
 	.if eax
 		mov		ebx,TRUE
@@ -368,7 +369,6 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		; Create font and set it to list box
 		invoke CreateFontIndirect,addr Courier_New_9
 		mov		hLstFont,eax
-		invoke SendDlgItemMessage,hWin,IDC_LSTCODE,WM_SETFONT,hLstFont,FALSE
 		invoke EnableDisable
 		invoke GetMenu,hWin
 		mov		hMenu,eax
@@ -421,10 +421,12 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SetTimer,hWin,1000,200,NULL
 		invoke LoadAccelerators,hInstance,IDR_ACCEL1
 		mov		hAccel,eax
-
 		invoke GetDlgItem,hWin,IDC_GRDCODE
 		mov		hGrd,eax
-
+		invoke SendMessage,hGrd,WM_SETFONT,hLstFont,0
+		invoke ImageList_Create,16,16,ILC_COLOR24,1,0
+		mov		hIml,eax
+		invoke ImageList_Add,hIml,hBmpRedLed,NULL
 		;Add Break Point column
 		mov		col.colwt,16
 		mov		col.lpszhdrtext,NULL;offset szAddress
@@ -433,23 +435,12 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		col.ctype,TYPE_IMAGE
 		mov		col.ctextmax,0
 		mov		col.lpszformat,0
-		mov		col.himl,0
+		mov		eax,hIml
+		mov		col.himl,eax
 		mov		col.hdrflag,0
 		invoke SendMessage,hGrd,GM_ADDCOL,0,addr col
 
-		;Add Address column
-		mov		col.colwt,32
-		mov		col.lpszhdrtext,offset szAddress
-		mov		col.halign,GA_ALIGN_LEFT
-		mov		col.calign,GA_ALIGN_LEFT
-		mov		col.ctype,TYPE_EDITTEXT
-		mov		col.ctextmax,4
-		mov		col.lpszformat,0
-		mov		col.himl,0
-		mov		col.hdrflag,0
-		invoke SendMessage,hGrd,GM_ADDCOL,0,addr col
-
-		;Add Name column
+		;Add Label column
 		mov		col.colwt,100
 		mov		col.lpszhdrtext,offset szLabel
 		mov		col.halign,GA_ALIGN_LEFT
@@ -462,7 +453,7 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SendMessage,hGrd,GM_ADDCOL,0,addr col
 
 		;Add Code column
-		mov		col.colwt,180
+		mov		col.colwt,212
 		mov		col.lpszhdrtext,offset szCode
 		mov		col.halign,GA_ALIGN_LEFT
 		mov		col.calign,GA_ALIGN_LEFT
@@ -504,6 +495,12 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					invoke ShowWindow,[hTabDlg+eax*4],SW_SHOWDEFAULT
 				.endif
 			.endif
+		.elseif eax==IDC_GRDCODE
+			mov		ebx,lParam
+			mov		eax,[ebx].NMHDR.code
+			.if eax==GN_IMAGECLICK
+				invoke SendMessage,hWin,WM_COMMAND,IDM_DEBUG_TOGGLE,hGrd
+			.endif
 		.endif
 	.elseif eax==WM_COMMAND
 		mov		edx,wParam
@@ -536,9 +533,11 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					mov		eax,hBmpGreenLed
 					mov		StatusLed,eax
 					invoke SendDlgItemMessage,hWnd,IDC_IMGSTATUS,STM_SETIMAGE,IMAGE_BITMAP,eax
+					invoke SetFocus,hGrd
 				.endif
 			.elseif eax==IDM_SEARCH_FIND
 			.elseif eax==IDM_VIEW_TERMINAL
+				invoke CreateDialogParam,hInstance,IDD_DLGTERMINAL,hWin,addr TerminalProc,0
 			.elseif eax==IDM_DEBUG_RUN
 				.if State & STATE_THREAD
 					mov		State,STATE_THREAD or STATE_RUN
@@ -550,14 +549,14 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.elseif eax==IDM_DEBUG_PAUSE
 				.if State & STATE_THREAD
 					or		State,STATE_PAUSE
-					and		State,-1 xor STATE_BREAKPOINT
+					and		State,-1 xor SIM52_BREAKPOINT
 				.endif
 			.elseif eax==IDM_DEBUG_STOP
 				mov		State,STATE_STOP
 			.elseif eax==IDM_DEBUG_STEP_INTO
 				.if State & STATE_THREAD
 					or		State,STATE_STEP_INTO or STATE_PAUSE
-					and		State,-1 xor STATE_BREAKPOINT
+					and		State,-1 xor SIM52_BREAKPOINT
 				.else
 					mov		State,STATE_THREAD or STATE_RUN or STATE_PAUSE or STATE_STEP_INTO
 					invoke CreateThread,NULL,0,addr CoreThread,0,0,addr tid
@@ -566,20 +565,21 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.elseif eax==IDM_DEBUG_STEP_OVER
 				.if State & STATE_THREAD
 					or		State,STATE_STEP_OVER or STATE_PAUSE
-					and		State,-1 xor STATE_BREAKPOINT
+					and		State,-1 xor SIM52_BREAKPOINT
 				.else
 					mov		State,STATE_THREAD or STATE_RUN or STATE_PAUSE or STATE_STEP_OVER
 					invoke CreateThread,NULL,0,addr CoreThread,0,0,addr tid
 					invoke CloseHandle,eax
 				.endif
 			.elseif eax==IDM_DEBUG_RUN_TO_CURSOR
-				invoke SendDlgItemMessage,hWin,IDC_LSTCODE,LB_GETCURSEL,0,0
+				invoke SendMessage,hGrd,GM_GETCURROW,0,0
 				.if eax!=LB_ERR
-					invoke SendDlgItemMessage,hWin,IDC_LSTCODE,LB_GETITEMDATA,eax,0
+					invoke FindLbInx,eax
+					movzx	eax,[eax].MCUADDR.mcuaddr
 					mov		CursorAddr,eax
 					.if State & STATE_THREAD
 						or		State,STATE_RUN_TO_CURSOR or STATE_PAUSE
-						and		State,-1 xor STATE_BREAKPOINT
+						and		State,-1 xor SIM52_BREAKPOINT
 					.else
 						mov		State,STATE_THREAD or STATE_RUN or STATE_PAUSE or STATE_RUN_TO_CURSOR
 						invoke CreateThread,NULL,0,addr CoreThread,0,0,addr tid
@@ -587,7 +587,7 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					.endif
 				.endif
 			.elseif eax==IDM_DEBUG_TOGGLE
-				invoke SendDlgItemMessage,hWin,IDC_LSTCODE,LB_GETCURSEL,0,0
+				invoke SendMessage,hGrd,GM_GETCURROW,0,0
 				.if eax!=LB_ERR
 					invoke ToggleBreakPoint,eax
 				.endif
@@ -598,7 +598,7 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.endif
 		.endif
 	.elseif eax==WM_INITMENUPOPUP
-		invoke SendDlgItemMessage,hWin,IDC_LSTCODE,LB_GETCOUNT,0,0
+		invoke SendMessage,hGrd,GM_GETROWCOUNT,0,0
 		mov		ebx,MF_BYCOMMAND or MF_GRAYED
 		.if eax
 			mov		ebx,MF_BYCOMMAND or MF_ENABLED
@@ -626,6 +626,7 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke GlobalFree,hMemAddr
 		.endif
 		invoke DeleteObject,hLstFont
+		invoke ImageList_Destroy,hIml
 		invoke DestroyWindow,hWin
 	.elseif uMsg==WM_DESTROY
 		invoke PostQuitMessage,NULL
@@ -668,6 +669,14 @@ WinMain proc hInst:HINSTANCE,hPrevInst:HINSTANCE,CmdLine:LPSTR,CmdShow:DWORD
 	invoke CreateDialogParam,hInstance,IDD_SIM52,NULL,addr WndProc,NULL
 	invoke ShowWindow,hWnd,SW_SHOWNORMAL
 	invoke UpdateWindow,hWnd
+
+	push	0
+	push	0
+	push	AM_SHOW
+	push	hWnd
+	invoke GetProcAddress,hLCDDll,1
+	call	eax
+
 	.while TRUE
 		invoke GetMessage,addr msg,NULL,0,0
 	  .BREAK .if !eax
@@ -697,7 +706,10 @@ start:
 	mov		CommandLine,eax
 	invoke RAHexEdInstall,hInstance,FALSE
 	invoke GridInstall,hInstance,FALSE
+	invoke LoadLibrary,addr szLCDDll
+	mov		hLCDDll,eax
 	invoke WinMain,hInstance,NULL,CommandLine,SW_SHOWDEFAULT
+	invoke FreeLibrary,hLCDDll
 	invoke GridUnInstall
 	invoke RAHexEdUnInstall
 	invoke ExitProcess,eax

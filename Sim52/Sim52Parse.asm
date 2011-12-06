@@ -2,7 +2,6 @@
 ;Structure used to update rows
 ROWDATA struct
 	nImage			dd ?			;Data for Break Point column. Double word value
-	lpszAddress		dd ?			;Data for Address column. Pointer to string
 	lpszLabel		dd ?			;Data for Label column. Pointer to string
 	lpszCode		dd ?			;Data for Code column. Pointer to string
 ROWDATA ends
@@ -17,6 +16,7 @@ ParseList proc uses ebx esi edi,lpFileName:DWORD
 	LOCAL	hFile:HANDLE
 	LOCAL	BytesRead:DWORD
 	LOCAL	buffer[1024]:BYTE
+	LOCAL	lbl[1024]:BYTE
 	LOCAL	paddr:DWORD
 	LOCAL	nBytes:DWORD
 	LOCAL	nBytesParsed:DWORD
@@ -41,7 +41,7 @@ ParseList proc uses ebx esi edi,lpFileName:DWORD
 		invoke CloseHandle,hFile
 		mov		esi,hMemFile
 		mov		nAddr,0
-		invoke SendDlgItemMessage,hWnd,IDC_LSTCODE,LB_RESETCONTENT,0,0
+		invoke SendMessage,hGrd,GM_RESETCONTENT,0,0
 		.while byte ptr [esi]
 			mov		nBytes,0
 			mov		nBytesParsed,0
@@ -95,17 +95,35 @@ ParseList proc uses ebx esi edi,lpFileName:DWORD
 					.endif
 					call	SkipWhiteSpace
 					call	GetSourceLine
-					invoke SendDlgItemMessage,hWnd,IDC_LSTCODE,LB_ADDSTRING,0,addr buffer
-					push	eax
-					invoke SendDlgItemMessage,hWnd,IDC_LSTCODE,LB_SETITEMDATA,eax,ebx
-					mov		rdta.nImage,0
-					mov		rdta.lpszAddress,0
+					mov		rdta.nImage,1
 					mov		rdta.lpszLabel,0
+					call	IsSourceLineLabel
+					.if eax
+						mov		edi,eax
+						lea		ecx,buffer
+						sub		ecx,edi
+						neg		ecx
+						inc		ecx
+						invoke lstrcpyn,addr lbl,addr buffer,ecx
+						lea		eax,lbl
+						mov		rdta.lpszLabel,eax
+						invoke lstrcpy,addr buffer,edi
+					.endif
 					lea		eax,buffer
+					.while byte ptr [eax]==VK_SPACE || byte ptr [eax]==VK_TAB
+						inc		eax
+					.endw
 					mov		rdta.lpszCode,eax
+					.while byte ptr [eax] && byte ptr [eax]!=0Dh
+						.if byte ptr [eax]==VK_TAB
+							mov		byte ptr [eax],VK_SPACE
+						.endif
+						inc		eax
+					.endw
 					invoke SendMessage,hGrd,GM_ADDROW,0,addr rdta
-					pop		eax
 					.if nBytesParsed
+						invoke SendMessage,hGrd,GM_GETROWCOUNT,0,0
+						dec		eax
 						mov		edx,paddr
 						mov		[edx].MCUADDR.mcuaddr,bx
 						mov		[edx].MCUADDR.lbinx,ax
@@ -228,6 +246,23 @@ GetSourceLine:
 		inc		ecx
 	.endw
 	mov		byte ptr [edx],0
+	retn
+
+IsSourceLineLabel:
+	lea		edx,buffer
+	xor		eax,eax
+	.while byte ptr [edx]
+		mov		cl,[edx]
+		.if (cl>='0' && cl<='9') || (cl>='A' && cl<='Z') || (cl>='a' && cl<='z') || cl=='_'
+			inc		edx
+		.elseif cl==':'
+			inc		edx
+			mov		eax,edx
+			.break
+		.else
+			.break
+		.endif
+	.endw
 	retn
 
 IsSourceLineDB:

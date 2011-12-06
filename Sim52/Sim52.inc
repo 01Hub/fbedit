@@ -19,6 +19,8 @@ includelib RAHexEd.lib
 include RAGrid.inc
 includelib RAGrid.lib
 
+include Addin.inc
+
 ;#########################################################################
 ; VKim's Debug
 
@@ -28,12 +30,12 @@ includelib masm32.lib
 includelib Debug.lib
 
 ;#########################################################################
+
 IDR_ACCEL1				equ 1
 
 IDD_SIM52               equ 1000
 IDC_GRPPORTS            equ 1060
 IDC_TBRSIM52            equ 1003
-IDC_LSTCODE             equ 1001
 IDC_GRDCODE				equ 1005
 IDC_SBRSIM52            equ 1002
 IDC_IMGSTATUS			equ 1011
@@ -268,6 +270,9 @@ IDD_DLGTABCODE          equ 1500
 IDC_GRP5                equ 1501
 IDC_UDCHEXCODE          equ 1502
 
+IDD_DLGTERMINAL			equ 1700
+IDC_SCREEN				equ 1701
+
 IDM_MENU                equ 10000
 IDM_FILE_OPEN           equ 10001
 IDM_FILE_EXIT           equ 10002
@@ -334,11 +339,14 @@ szAddress			db 'Addr',0
 szLabel				db 'Label',0
 szCode				db 'Code',0
 
+szLCDDll			db 'LCD.dll',0
+
 .data?
 
 hInstance			dd ?
 CommandLine			dd ?
-hWnd				dd ?
+hWnd				HWND ?
+hScrn				HWND ?
 hMenu				HMENU ?
 hAccel				HACCEL ?
 hLstFont			HFONT ?
@@ -347,6 +355,8 @@ hBmpGreenLed		HBITMAP ?
 hBmpRedLed			HBITMAP ?
 SelTab				dd ?
 hGrd				HWND ?
+hIml				HIMAGELIST ?
 hTabDlgStatus		HWND ?
 hTabDlg				HWND 5 dup(?)
 lpOldEditProc		dd ?
+hLCDDll				HINSTANCE ?

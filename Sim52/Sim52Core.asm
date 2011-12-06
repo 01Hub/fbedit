@@ -38,7 +38,7 @@ STATE_PAUSE			equ 2
 STATE_STEP_INTO		equ 4
 STATE_STEP_OVER		equ 8
 STATE_RUN_TO_CURSOR	equ 16
-STATE_BREAKPOINT	equ 32
+SIM52_BREAKPOINT	equ 32
 
 STATE_THREAD		equ 128
 
@@ -178,6 +178,7 @@ CursorAddr			dd ?
 TotalCycles			dd ?
 PerformanceCount		dq ?
 PerformanceFrequency	dq ?
+SBUFWR				dd ?
 
 .code
 
@@ -385,14 +386,10 @@ UpdateStatus proc uses ebx
 		.endif
 		pop		eax
 	.endw
-
-	invoke SendDlgItemMessage,hWnd,IDC_LSTCODE,LB_GETCOUNT,0,0
-	mov		ebx,eax
-	mov		edx,hMemAddr
 	invoke FindMcuAddr,PC
 	.if eax
 		movzx	eax,[eax].MCUADDR.lbinx
-		invoke SendDlgItemMessage,hWnd,IDC_LSTCODE,LB_SETCURSEL,eax,0
+		invoke SendMessage,hGrd,GM_SETCURROW,eax,0
 	.endif
 	ret
 
@@ -539,10 +536,17 @@ UpdateBits proc uses ebx edi
 UpdateBits endp
 
 ToggleBreakPoint proc lbinx:DWORD
+	LOCAL	dwbp:DWORD
 
 	invoke FindLbInx,lbinx
 	.if eax
 		xor		[eax].MCUADDR.fbp,TRUE
+		movzx	eax,[eax].MCUADDR.fbp
+		xor		eax,1
+		mov		dwbp,eax
+		mov		ecx,lbinx
+		shl		ecx,16
+		invoke SendMessage,hGrd,GM_SETCELLDATA,ecx,addr dwbp
 	.endif
 	ret
 
@@ -574,6 +578,18 @@ IsAddrBreakPoint proc uses esi,mcuaddr:DWORD
 	ret
 
 IsAddrBreakPoint endp
+
+SetPort proc lpSfr:DWORD,nValue:DWORD
+
+	push	nValue
+	push	lpSfr
+	push	AM_PORTCHANGED
+	push	hWnd
+	invoke GetProcAddress,hLCDDll,1
+	call	eax
+	ret
+
+SetPort endp
 
 SetParity proc
 
@@ -652,7 +668,16 @@ INC_$dad:
 	.if edx<80h
 		inc		Ram[edx]
 	.else
-		inc		Sfr[edx]
+		.if edx==SFR_SBUF
+			inc		SBUFWR
+			invoke ScreenChar,SBUFWR
+		.else
+			inc		Sfr[edx]
+			.if edx==SFR_P0 || edx==SFR_P1 || edx==SFR_P2 || edx==SFR_P3
+				movzx	eax,Sfr[edx]
+				invoke SetPort,edx,eax
+			.endif
+		.endif
 	.endif
 	lea		ebx,[ebx+2]
 	ret
@@ -805,7 +830,16 @@ DEC_$dad:
 	.if edx<80h
 		dec		Ram[edx]
 	.else
-		dec		Sfr[edx]
+		.if edx==SFR_SBUF
+			dec		SBUFWR
+			invoke ScreenChar,SBUFWR
+		.else
+			dec		Sfr[edx]
+			.if edx==SFR_P0 || edx==SFR_P1 || edx==SFR_P2 || edx==SFR_P3
+				movzx	eax,Sfr[edx]
+				invoke SetPort,edx,eax
+			.endif
+		.endif
 	.endif
 	lea		ebx,[ebx+2]
 	ret
@@ -893,10 +927,11 @@ JB_$bad_$cad:
 	.if al<80h
 		shr		eax,3
 		lea		eax,[eax+20h]
+		test	Ram[eax],dl
 	.else
 		and		eax,0F8h
+		test	Sfr[eax],dl
 	.endif
-	test	Ram[eax],dl
 	.if !ZERO?
 		movsx	ecx,ch
 		lea		ebx,[ebx+ecx]
@@ -1039,10 +1074,11 @@ JNB_$bad_$cad:
 	.if al<80h
 		shr		eax,3
 		lea		eax,[eax+20h]
+		test	Ram[eax],dl
 	.else
 		and		eax,0F8h
+		test	Sfr[eax],dl
 	.endif
-	test	Ram[eax],dl
 	.if ZERO?
 		movsx	ecx,ch
 		lea		ebx,[ebx+ecx]
@@ -1669,7 +1705,16 @@ MOV_$dad_imm:
 	.if edx<80h
 		mov		Ram[edx],al
 	.else
-		mov		Sfr[edx],al
+		.if edx==SFR_SBUF
+			mov		SBUFWR,eax
+			invoke ScreenChar,SBUFWR
+		.else
+			mov		Sfr[edx],al
+			.if edx==SFR_P0 || edx==SFR_P1 || edx==SFR_P2 || edx==SFR_P3
+				movzx	eax,Sfr[edx]
+				invoke SetPort,edx,eax
+			.endif
+		.endif
 	.endif
 	lea		ebx,[ebx+3]
 	ret
@@ -1821,7 +1866,16 @@ MOV_$dad_$dad:
 	.if edx<80h
 		mov		Ram[edx],al
 	.else
-		mov		Sfr[edx],al
+		.if edx==SFR_SBUF
+			mov		SBUFWR,eax
+			invoke ScreenChar,SBUFWR
+		.else
+			mov		Sfr[edx],al
+			.if edx==SFR_P0 || edx==SFR_P1 || edx==SFR_P2 || edx==SFR_P3
+				movzx	eax,Sfr[edx]
+				invoke SetPort,edx,eax
+			.endif
+		.endif
 	.endif
 	lea		ebx,[ebx+3]
 	ret
@@ -1835,7 +1889,16 @@ MOV_$dad_@R0:
 	.if edx<80h
 		mov		Ram[edx],al
 	.else
-		mov		Sfr[edx],al
+		.if edx==SFR_SBUF
+			mov		SBUFWR,eax
+			invoke ScreenChar,SBUFWR
+		.else
+			mov		Sfr[edx],al
+			.if edx==SFR_P0 || edx==SFR_P1 || edx==SFR_P2 || edx==SFR_P3
+				movzx	eax,Sfr[edx]
+				invoke SetPort,edx,eax
+			.endif
+		.endif
 	.endif
 	lea		ebx,[ebx+2]
 	ret
@@ -1849,7 +1912,16 @@ MOV_$dad_@R1:
 	.if edx<80h
 		mov		Ram[edx],al
 	.else
-		mov		Sfr[edx],al
+		.if edx==SFR_SBUF
+			mov		SBUFWR,eax
+			invoke ScreenChar,SBUFWR
+		.else
+			mov		Sfr[edx],al
+			.if edx==SFR_P0 || edx==SFR_P1 || edx==SFR_P2 || edx==SFR_P3
+				movzx	eax,Sfr[edx]
+				invoke SetPort,edx,eax
+			.endif
+		.endif
 	.endif
 	lea		ebx,[ebx+2]
 	ret
@@ -1862,7 +1934,16 @@ MOV_$dad_R0:
 	.if edx<80h
 		mov		Ram[edx],al
 	.else
-		mov		Sfr[edx],al
+		.if edx==SFR_SBUF
+			mov		SBUFWR,eax
+			invoke ScreenChar,SBUFWR
+		.else
+			mov		Sfr[edx],al
+			.if edx==SFR_P0 || edx==SFR_P1 || edx==SFR_P2 || edx==SFR_P3
+				movzx	eax,Sfr[edx]
+				invoke SetPort,edx,eax
+			.endif
+		.endif
 	.endif
 	lea		ebx,[ebx+2]
 	ret
@@ -1875,7 +1956,16 @@ MOV_$dad_R1:
 	.if edx<80h
 		mov		Ram[edx],al
 	.else
-		mov		Sfr[edx],al
+		.if edx==SFR_SBUF
+			mov		SBUFWR,eax
+			invoke ScreenChar,SBUFWR
+		.else
+			mov		Sfr[edx],al
+			.if edx==SFR_P0 || edx==SFR_P1 || edx==SFR_P2 || edx==SFR_P3
+				movzx	eax,Sfr[edx]
+				invoke SetPort,edx,eax
+			.endif
+		.endif
 	.endif
 	lea		ebx,[ebx+2]
 	ret
@@ -1888,7 +1978,16 @@ MOV_$dad_R2:
 	.if edx<80h
 		mov		Ram[edx],al
 	.else
-		mov		Sfr[edx],al
+		.if edx==SFR_SBUF
+			mov		SBUFWR,eax
+			invoke ScreenChar,SBUFWR
+		.else
+			mov		Sfr[edx],al
+			.if edx==SFR_P0 || edx==SFR_P1 || edx==SFR_P2 || edx==SFR_P3
+				movzx	eax,Sfr[edx]
+				invoke SetPort,edx,eax
+			.endif
+		.endif
 	.endif
 	lea		ebx,[ebx+2]
 	ret
@@ -1901,7 +2000,16 @@ MOV_$dad_R3:
 	.if edx<80h
 		mov		Ram[edx],al
 	.else
-		mov		Sfr[edx],al
+		.if edx==SFR_SBUF
+			mov		SBUFWR,eax
+			invoke ScreenChar,SBUFWR
+		.else
+			mov		Sfr[edx],al
+			.if edx==SFR_P0 || edx==SFR_P1 || edx==SFR_P2 || edx==SFR_P3
+				movzx	eax,Sfr[edx]
+				invoke SetPort,edx,eax
+			.endif
+		.endif
 	.endif
 	lea		ebx,[ebx+2]
 	ret
@@ -1914,7 +2022,16 @@ MOV_$dad_R4:
 	.if edx<80h
 		mov		Ram[edx],al
 	.else
-		mov		Sfr[edx],al
+		.if edx==SFR_SBUF
+			mov		SBUFWR,eax
+			invoke ScreenChar,SBUFWR
+		.else
+			mov		Sfr[edx],al
+			.if edx==SFR_P0 || edx==SFR_P1 || edx==SFR_P2 || edx==SFR_P3
+				movzx	eax,Sfr[edx]
+				invoke SetPort,edx,eax
+			.endif
+		.endif
 	.endif
 	lea		ebx,[ebx+2]
 	ret
@@ -1927,7 +2044,16 @@ MOV_$dad_R5:
 	.if edx<80h
 		mov		Ram[edx],al
 	.else
-		mov		Sfr[edx],al
+		.if edx==SFR_SBUF
+			mov		SBUFWR,eax
+			invoke ScreenChar,SBUFWR
+		.else
+			mov		Sfr[edx],al
+			.if edx==SFR_P0 || edx==SFR_P1 || edx==SFR_P2 || edx==SFR_P3
+				movzx	eax,Sfr[edx]
+				invoke SetPort,edx,eax
+			.endif
+		.endif
 	.endif
 	lea		ebx,[ebx+2]
 	ret
@@ -1940,7 +2066,16 @@ MOV_$dad_R6:
 	.if edx<80h
 		mov		Ram[edx],al
 	.else
-		mov		Sfr[edx],al
+		.if edx==SFR_SBUF
+			mov		SBUFWR,eax
+			invoke ScreenChar,SBUFWR
+		.else
+			mov		Sfr[edx],al
+			.if edx==SFR_P0 || edx==SFR_P1 || edx==SFR_P2 || edx==SFR_P3
+				movzx	eax,Sfr[edx]
+				invoke SetPort,edx,eax
+			.endif
+		.endif
 	.endif
 	lea		ebx,[ebx+2]
 	ret
@@ -1953,7 +2088,16 @@ MOV_$dad_R7:
 	.if edx<80h
 		mov		Ram[edx],al
 	.else
-		mov		Sfr[edx],al
+		.if edx==SFR_SBUF
+			mov		SBUFWR,eax
+			invoke ScreenChar,SBUFWR
+		.else
+			mov		Sfr[edx],al
+			.if edx==SFR_P0 || edx==SFR_P1 || edx==SFR_P2 || edx==SFR_P3
+				movzx	eax,Sfr[edx]
+				invoke SetPort,edx,eax
+			.endif
+		.endif
 	.endif
 	lea		ebx,[ebx+2]
 	ret
@@ -2612,10 +2756,21 @@ XCH_A_$dad:
 	movzx	eax,Sfr[SFR_ACC]
 	.if edx<80h
 		xchg	al,Ram[edx]
+		mov		Sfr[SFR_ACC],al
 	.else
-		xchg	al,Sfr[edx]
+		.if edx==SFR_SBUF
+			xchg	eax,SBUFWR
+			mov		Sfr[SFR_ACC],al
+			invoke ScreenChar,SBUFWR
+		.else
+			xchg	al,Sfr[edx]
+			mov		Sfr[SFR_ACC],al
+			.if edx==SFR_P0 || edx==SFR_P1 || edx==SFR_P2 || edx==SFR_P3
+				movzx	eax,Sfr[edx]
+				invoke SetPort,edx,eax
+			.endif
+		.endif
 	.endif
-	mov		Sfr[SFR_ACC],al
 	lea		ebx,[ebx+2]
 	ret
 
@@ -2720,7 +2875,16 @@ POP_$dad:
 	.if edx<80h
 		mov		Ram[edx],al
 	.else
-		mov		Sfr[edx],al
+		.if edx==SFR_SBUF
+			mov		SBUFWR,eax
+			invoke ScreenChar,SBUFWR
+		.else
+			mov		Sfr[edx],al
+			.if edx==SFR_P0 || edx==SFR_P1 || edx==SFR_P2 || edx==SFR_P3
+				movzx	eax,Sfr[edx]
+				invoke SetPort,edx,eax
+			.endif
+		.endif
 	.endif
 	lea		ebx,[ebx+2]
 	ret
@@ -3054,7 +3218,16 @@ MOV_$dad_A:
 	.if edx<80h
 		mov		Ram[edx],al
 	.else
-		mov		Sfr[edx],al
+		.if edx==SFR_SBUF
+			mov		SBUFWR,eax
+			invoke ScreenChar,SBUFWR
+		.else
+			mov		Sfr[edx],al
+			.if edx==SFR_P0 || edx==SFR_P1 || edx==SFR_P2 || edx==SFR_P3
+				movzx	eax,Sfr[edx]
+				invoke SetPort,edx,eax
+			.endif
+		.endif
 	.endif
 	lea		ebx,[ebx+2]
 	ret
@@ -3148,7 +3321,7 @@ CoreThread proc lParam:DWORD
 	mov		esi,offset Code
 	mov		ebx,PC
 	.while State!=STATE_STOP
-		.if (State & STATE_RUN) && !(State & STATE_BREAKPOINT)
+		.if (State & STATE_RUN) && !(State & SIM52_BREAKPOINT)
 			.if !(State & STATE_PAUSE)
 				call	Execute
 				mov		Refresh,1
@@ -3185,7 +3358,7 @@ CoreThread proc lParam:DWORD
 				invoke FindMcuAddr,ebx
 				.if eax
 					.if [eax].MCUADDR.fbp
-						or		State,STATE_BREAKPOINT
+						or		State,SIM52_BREAKPOINT
 					.endif
 				.endif
 			.endif
