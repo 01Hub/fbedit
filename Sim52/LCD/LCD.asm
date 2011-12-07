@@ -16,8 +16,8 @@ InstallLCD proc
 	mov		wc.cbWndExtra,4
 	push	hInstance
 	pop		wc.hInstance
-	invoke GetStockObject,GRAY_BRUSH
-	mov		wc.hbrBackground,eax
+	;invoke GetStockObject,GRAY_BRUSH
+	mov		wc.hbrBackground,NULL
 	mov		wc.lpszMenuName,NULL
 	mov		wc.lpszClassName,offset LCDClass
 	mov		wc.hIcon,NULL
@@ -32,14 +32,60 @@ InstallLCD endp
 
 UnInstallLCD proc
 
+	.if hDlg
+		invoke SendMessage,hDlg,WM_CLOSE,0,0
+	.endif
 	ret
 
 UnInstallLCD endp
 
 DisplayProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+	LOCAL	ps:PAINTSTRUCT
+	LOCAL	rect:RECT
 
 	mov		eax,uMsg
 	.if eax==WM_CREATE
+	.elseif eax==WM_PAINT
+		invoke BeginPaint,hWin,addr ps
+		mov		eax,0E0E0E0h
+		.if BackLight
+			mov		eax,12D898h
+		.endif
+		invoke CreateSolidBrush,eax
+		mov		ebx,eax
+		invoke FillRect,ps.hdc,addr ps.rcPaint,ebx
+		invoke DeleteObject,ebx
+		mov		esi,11
+		mov		edi,12
+		xor		ecx,ecx
+		mov		ebx,offset LCDLine1
+		.while ecx<16
+			push	ebx
+			push	ecx
+			movzx	eax,byte ptr [ebx]
+			call	DrawChar
+			pop		ecx
+			pop		ebx
+			lea		ebx,[ebx+1]
+			lea		esi,[esi+6*3]
+			lea		ecx,[ecx+1]
+		.endw
+		mov		esi,12
+		mov		edi,11+3*9
+		xor		ecx,ecx
+		mov		ebx,offset LCDLine2
+		.while ecx<16
+			push	ebx
+			push	ecx
+			movzx	eax,byte ptr [ebx]
+			call	DrawChar
+			pop		ecx
+			pop		ebx
+			lea		ebx,[ebx+1]
+			lea		esi,[esi+6*3]
+			lea		ecx,[ecx+1]
+		.endw
+		invoke EndPaint,hWin,addr ps
 	.else
   ExDef:
 		invoke DefWindowProc,hWin,uMsg,wParam,lParam
@@ -48,6 +94,62 @@ DisplayProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 	xor    eax,eax
   Ex:
 	ret
+
+DrawDot:
+	push	ecx
+	mov		rect.left,esi
+	lea		eax,[esi+3]
+	mov		rect.right,eax
+	mov		rect.top,edi
+	lea		eax,[edi+3]
+	mov		rect.bottom,eax
+	invoke GetStockObject,BLACK_BRUSH
+	invoke FillRect,ps.hdc,addr rect,eax
+	pop		ecx
+	retn
+	invoke SetPixel,ps.hdc,esi,edi,0
+	invoke SetPixel,ps.hdc,addr [esi+1],edi,0
+	invoke SetPixel,ps.hdc,addr [esi+2],edi,0
+	invoke SetPixel,ps.hdc,esi,addr [edi+1],0
+	invoke SetPixel,ps.hdc,addr [esi+1],addr [edi+1],0
+	invoke SetPixel,ps.hdc,addr [esi+2],addr [edi+1],0
+	invoke SetPixel,ps.hdc,esi,addr [edi+2],0
+	invoke SetPixel,ps.hdc,addr [esi+1],addr [edi+2],0
+	invoke SetPixel,ps.hdc,addr [esi+2],addr [edi+2],0
+	pop		ecx
+	retn
+
+DrawChar:
+	push	esi
+	push	edi
+	mov		ebx,7
+	mul		ebx
+	lea		ebx,[eax+offset CharTab]
+	xor		edx,edx
+	.while edx<7
+		push	ebx
+		push	edx
+		xor		ecx,ecx
+		push	esi
+		movzx	ebx,byte ptr [ebx]
+		.while ecx<5
+			shl		bl,1
+			.if CARRY?
+				call	DrawDot
+			.endif
+			lea		esi,[esi+3]
+			lea		ecx,[ecx+1]
+		.endw
+		pop		esi
+		pop		edx
+		pop		ebx
+		lea		ebx,[ebx+1]
+		lea		edi,[edi+3]
+		lea		edx,[edx+1]
+	.endw
+	pop		edi
+	pop		esi
+	retn
 
 DisplayProc endp
 
@@ -127,6 +229,7 @@ GetCBOBits proc
 GetCBOBits endp
 
 LCDProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+	LOCAL	rect:RECT
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
@@ -187,6 +290,29 @@ LCDProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		shr		edx,16
 		.if edx==CBN_SELCHANGE
 			invoke GetCBOBits
+		.elseif edx==BN_CLICKED
+			.if eax==IDC_BTNEXPAND
+				invoke GetWindowRect,hWin,addr rect
+				mov		eax,rect.bottom
+				sub		eax,rect.top
+				.if eax>=237
+					mov		eax,offset szExpand
+					mov		edx,127
+				.else
+					mov		eax,offset szShrink
+					mov		edx,237
+				.endif
+				push	edx
+				invoke SetDlgItemText,hWin,IDC_BTNEXPAND,eax
+				pop		edx
+				mov		eax,rect.right
+				sub		eax,rect.left
+				invoke MoveWindow,hWin,rect.left,rect.top,eax,edx,TRUE
+			.elseif eax==IDC_CHKBACKLIGHT
+				xor		BackLight,TRUE
+				invoke GetDlgItem,hWin,IDC_LCD
+				invoke InvalidateRect,eax,NULL,TRUE
+			.endif
 		.endif
 	.elseif eax==WM_CLOSE
 		invoke DestroyWindow,hWin

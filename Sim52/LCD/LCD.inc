@@ -15,6 +15,7 @@ includelib masm32.lib
 includelib Debug.lib
 
 include ..\Addin.inc
+include CharTab.inc
 
 IDD_DLGLCD              equ 1000
 IDC_LCD                 equ 1001
@@ -30,6 +31,7 @@ IDC_CBORS               equ 1010
 IDC_CBORW               equ 1011
 IDC_CBOE                equ 1012
 IDC_CHKBACKLIGHT        equ 1023
+IDC_BTNEXPAND			equ 1013
 
 GND						equ 0
 VCC						equ 1
@@ -82,6 +84,8 @@ szPortBits				db 'GND',0,'VCC',0,'NC',0
 						db 'P3.0',0,'P3.1',0,'P3.2',0,'P3.3',0,'P3.4',0,'P3.5',0,'P3.6',0,'P3.7',0,0
 
 szMenuLCD				db 'LCD Display',0
+szExpand				db '>',0
+szShrink				db '<',0
 
 .data?
 
@@ -105,3 +109,6 @@ RS						DWORD ?
 RW						DWORD ?
 E						DWORD ?
 IDAddin					DWORD ?
+BackLight				DWORD ?
+LCDLine1				BYTE 40 dup(?)
+LCDLine2				BYTE 40 dup(?)
