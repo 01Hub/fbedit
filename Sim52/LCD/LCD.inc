@@ -31,6 +31,46 @@ IDC_CBORW               equ 1011
 IDC_CBOE                equ 1012
 IDC_CHKBACKLIGHT        equ 1023
 
+GND						equ 0
+VCC						equ 1
+NC						equ 2
+
+P0_0					equ 3
+P0_1					equ 4
+P0_2					equ 5
+P0_3					equ 6
+P0_4					equ 7
+P0_5					equ 8
+P0_6					equ 9
+P0_7					equ 10
+
+P1_0					equ 11
+P1_1					equ 12
+P1_2					equ 13
+P1_3					equ 14
+P1_4					equ 15
+P1_5					equ 16
+P1_6					equ 17
+P1_7					equ 18
+
+P2_0					equ 19
+P2_1					equ 20
+P2_2					equ 21
+P2_3					equ 22
+P2_4					equ 23
+P2_5					equ 24
+P2_6					equ 25
+P2_7					equ 26
+
+P3_0					equ 27
+P3_1					equ 28
+P3_2					equ 29
+P3_3					equ 30
+P3_4					equ 31
+P3_5					equ 32
+P3_6					equ 33
+P3_7					equ 34
+
 .const
 
 LCDClass				db 'LCDCLASS',0
@@ -41,7 +81,27 @@ szPortBits				db 'GND',0,'VCC',0,'NC',0
 						db 'P2.0',0,'P2.1',0,'P2.2',0,'P2.3',0,'P2.4',0,'P2.5',0,'P2.6',0,'P2.7',0
 						db 'P3.0',0,'P3.1',0,'P3.2',0,'P3.3',0,'P3.4',0,'P3.5',0,'P3.6',0,'P3.7',0,0
 
+szMenuLCD				db 'LCD Display',0
+
 .data?
 
 hDlg					HWND ?
 hInstance				HINSTANCE ?
+databits				DWORD ?
+lpAddin					DWORD ?
+P0Bits					DWORD ?
+P1Bits					DWORD ?
+P2Bits					DWORD ?
+P3Bits					DWORD ?
+DB0						DWORD ?
+DB1						DWORD ?
+DB2						DWORD ?
+DB3						DWORD ?
+DB4						DWORD ?
+DB5						DWORD ?
+DB6						DWORD ?
+DB7						DWORD ?
+RS						DWORD ?
+RW						DWORD ?
+E						DWORD ?
+IDAddin					DWORD ?

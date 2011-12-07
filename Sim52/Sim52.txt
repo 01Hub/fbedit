@@ -28,7 +28,7 @@
    |cad     |cad     |C,bad   |@A+DPTR |A,#dd   |dad,#dd |@R0,#dd |@R1,#dd |R0,#dd  |R1,#dd  |R2,#dd  |R3,#dd  |R4,#dd  |R5,#dd  |R6,#dd  |R7,#dd  |
    -------------------------------------------------------------------------------------------------------------------------------------------------
 8x |SJMP    |AJMP    |ANL     |MOVC    |DIV     |MOV     |MOV     |MOV     |MOV     |MOV     |MOV     |MOV     |MOV     |MOV     |MOV     |MOV     |
-   |cad     |cad     |C,bad   |A,@A+PC |AB      |dad,dad |dad,@R0 |dad,@R1 |dad,R0  |dad,R1  |dad,R2  |dad,R3  |dad,R4  |dad,R5  |dad,R6  |dad,R7  |
+   |cad     |cad     |C,bad   |A,@A+addin.PC |AB      |dad,dad |dad,@R0 |dad,@R1 |dad,R0  |dad,R1  |dad,R2  |dad,R3  |dad,R4  |dad,R5  |dad,R6  |dad,R7  |
    -------------------------------------------------------------------------------------------------------------------------------------------------
 9x |MOV     |ACALL   |MOV     |MOVC A, |SUBB    |SUBB    |SUBB    |SUBB    |SUBB    |SUBB    |SUBB    |SUBB    |SUBB    |SUBB    |SUBB    |SUBB    |
    |DPTR,#dd|cad     |bad,C   |@A+DPTR |A,#dd   |A,dad   |A,@R0   |A,@R1   |A,R0    |A,R1    |A,R2    |A,R3    |A,R4    |A,R5    |A,R6    |A,R7    |

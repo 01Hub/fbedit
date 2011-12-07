@@ -7,6 +7,7 @@ LINES				equ 26			;Number of lines
 
 .data?
 
+hTermScrn			HWND ?
 nLine				DWORD ?
 nPos				DWORD ?
 lpOldScreenProc		DWORD ?
@@ -28,7 +29,7 @@ ScreenCls proc
 	.endw
 	mov		nLine,0
 	mov		nPos,0
-	invoke InvalidateRect,hScrn,NULL,TRUE
+	invoke InvalidateRect,hTermScrn,NULL,TRUE
 	ret
 
 ScreenCls endp
@@ -42,7 +43,7 @@ ScreenScroll proc uses ebx esi edi
 	mov		ecx,80
 	mov		ax,20h
 	rep		stosw
-	invoke InvalidateRect,hScrn,NULL,TRUE
+	invoke InvalidateRect,hTermScrn,NULL,TRUE
 	ret
 
 ScreenScroll endp
@@ -50,13 +51,13 @@ ScreenScroll endp
 ScreenChar proc nChar:DWORD
 
 
-	.if !hScrn
-		invoke SendMessage,hWnd,WM_COMMAND,IDM_VIEW_TERMINAL,0
+	.if !hTermScrn
+		invoke SendMessage,addin.hWnd,WM_COMMAND,IDM_VIEW_TERMINAL,0
 	.endif
 	;Set TI bit in SCON
-	movzx	eax,Sfr[SFR_SCON]
+	movzx	eax,addin.Sfr[SFR_SCON]
 	or		eax,2
-	mov		Sfr[SFR_SCON],al
+	mov		addin.Sfr[SFR_SCON],al
 	mov		eax,nChar
 	.if al==0Eh
 		;Cls
@@ -122,7 +123,7 @@ ScreenChar proc nChar:DWORD
 		.endif
 	.endif
   Ex:
-	invoke InvalidateRect,hScrn,NULL,TRUE
+	invoke InvalidateRect,hTermScrn,NULL,TRUE
 	ret
 
 ScreenChar endp
@@ -193,7 +194,7 @@ ScreenProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	mov		eax,uMsg
 	.if eax==WM_PAINT
 		invoke BeginPaint,hWin,addr ps
-		invoke SelectObject,ps.hdc,hLstFont
+		invoke SelectObject,ps.hdc,addin.hLstFont
 		push	eax
 		invoke SetBkMode,ps.hdc,TRANSPARENT
 		invoke ScreenDraw,ps.hdc
@@ -214,14 +215,14 @@ TerminalProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
 		invoke GetDlgItem,hWin,IDC_SCREEN
-		mov		hScrn,eax
-		invoke SetWindowLong,hScrn,GWL_WNDPROC,addr ScreenProc
+		mov		hTermScrn,eax
+		invoke SetWindowLong,hTermScrn,GWL_WNDPROC,addr ScreenProc
 		mov		lpOldScreenProc,eax
 		invoke ScreenCls
-		invoke CreateCaret,hScrn,NULL,BOXWT,BOXHT
-		invoke ShowCaret,hScrn
+		invoke CreateCaret,hTermScrn,NULL,BOXWT,BOXHT
+		invoke ShowCaret,hTermScrn
 	.elseif eax==WM_CLOSE
-		mov		hScrn,0
+		mov		hTermScrn,0
 		invoke DestroyWindow,hWin
 	.else
 		mov		eax,FALSE
@@ -231,4 +232,3 @@ TerminalProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	ret
 
 TerminalProc endp
-

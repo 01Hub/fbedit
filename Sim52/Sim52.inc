@@ -294,69 +294,69 @@ IDB_LEDGREEN            equ 102
 IDB_LEDRED              equ 103
 
 MCUADDR struct
-	mcuaddr		dw ?
-	lbinx		dw ?
-	fbp			dw ?
-	bytes		db ?
-	cycles		db ?
+	mcuaddr				WORD ?
+	lbinx				WORD ?
+	fbp					WORD ?
+	bytes				BYTE ?
+	cycles				BYTE ?
 MCUADDR ends
+
+ADDINS struct
+	hDll				HINSTANCE ?
+	lpAddinProc			DWORD ?
+ADDINS ends
 
 .const
 
-tbrbtns				TBBUTTON <0,IDM_FILE_OPEN,TBSTATE_ENABLED,TBSTYLE_BUTTON,0,0>
-					TBBUTTON <1,IDM_SEARCH_FIND,TBSTATE_ENABLED,TBSTYLE_BUTTON,0,0>
-					TBBUTTON <0,0,TBSTATE_ENABLED,TBSTYLE_SEP,0,0>
-					TBBUTTON <2,IDM_DEBUG_RUN,TBSTATE_ENABLED,TBSTYLE_BUTTON,0,0>
-					TBBUTTON <3,IDM_DEBUG_PAUSE,TBSTATE_ENABLED,TBSTYLE_BUTTON,0,0>
-					TBBUTTON <4,IDM_DEBUG_STOP,TBSTATE_ENABLED,TBSTYLE_BUTTON,0,0>
-					TBBUTTON <5,IDM_DEBUG_STEP_INTO,TBSTATE_ENABLED,TBSTYLE_BUTTON,0,0>
-					TBBUTTON <6,IDM_DEBUG_STEP_OVER,TBSTATE_ENABLED,TBSTYLE_BUTTON,0,0>
-					TBBUTTON <0,0,TBSTATE_ENABLED,TBSTYLE_SEP,0,0>
-					TBBUTTON <7,IDM_DEBUG_TOGGLE,TBSTATE_ENABLED,TBSTYLE_BUTTON,0,0>
-					TBBUTTON <8,IDM_VIEW_TERMINAL,TBSTATE_ENABLED,TBSTYLE_BUTTON,0,0>
-ntbrbtns			equ 11
+tbrbtns					TBBUTTON <0,IDM_FILE_OPEN,TBSTATE_ENABLED,TBSTYLE_BUTTON,0,0>
+						TBBUTTON <1,IDM_SEARCH_FIND,TBSTATE_ENABLED,TBSTYLE_BUTTON,0,0>
+						TBBUTTON <0,0,TBSTATE_ENABLED,TBSTYLE_SEP,0,0>
+						TBBUTTON <2,IDM_DEBUG_RUN,TBSTATE_ENABLED,TBSTYLE_BUTTON,0,0>
+						TBBUTTON <3,IDM_DEBUG_PAUSE,TBSTATE_ENABLED,TBSTYLE_BUTTON,0,0>
+						TBBUTTON <4,IDM_DEBUG_STOP,TBSTATE_ENABLED,TBSTYLE_BUTTON,0,0>
+						TBBUTTON <5,IDM_DEBUG_STEP_INTO,TBSTATE_ENABLED,TBSTYLE_BUTTON,0,0>
+						TBBUTTON <6,IDM_DEBUG_STEP_OVER,TBSTATE_ENABLED,TBSTYLE_BUTTON,0,0>
+						TBBUTTON <0,0,TBSTATE_ENABLED,TBSTYLE_SEP,0,0>
+						TBBUTTON <7,IDM_DEBUG_TOGGLE,TBSTATE_ENABLED,TBSTYLE_BUTTON,0,0>
+						TBBUTTON <8,IDM_VIEW_TERMINAL,TBSTATE_ENABLED,TBSTYLE_BUTTON,0,0>
+ntbrbtns				equ 11
 
-ClassName			db 'DLGCLASS',0
-AppName				db '8052 Simulator',0
-AboutMsg			db 'MASM32 RadASM 8052 Simulator',13,10,'Copyright © MASM32 2001',0
+ClassName				BYTE 'DLGCLASS',0
+AppName					BYTE '8052 Simulator',0
+AboutMsg				BYTE 'MASM32 RadASM 8052 Simulator',13,10,'Copyright © MASM32 2001',0
 
-szLSTFilterString	db 'LST Files (*.lst)',0,'*.lst',0,0
-Courier_New_9 		LOGFONT <-12,0,0,0,400,0,0,0,0,3,2,1,49,"Courier New">
-szTabStatus			db 'Status',0
+szLSTFilterString		BYTE 'LST Files (*.lst)',0,'*.lst',0,0
+Courier_New_9 			LOGFONT <-12,0,0,0,400,0,0,0,0,3,2,1,49,"Courier New">
+szTabStatus				BYTE 'Status',0
 
-szTabRam			db 'Ram',0
-szTabBit			db 'Bit',0
-szTabSfr			db 'Sfr',0
-szTabXRam			db 'XRam',0
-szTabCode			db 'Code',0
+szTabRam				BYTE 'Ram',0
+szTabBit				BYTE 'Bit',0
+szTabSfr				BYTE 'Sfr',0
+szTabXRam				BYTE 'XRam',0
+szTabCode				BYTE 'Code',0
 
-szFmtHexByte		db '%02X',0
-szFmtHexByteh		db '%02Xh',0
-szFmtHexWord		db '%04X',0
-szFmtBank			db 'Bank %u',0
+szFmtHexByte			BYTE '%02X',0
+szFmtHexByteh			BYTE '%02Xh',0
+szFmtHexWord			BYTE '%04X',0
+szFmtBank				BYTE 'Bank %u',0
 
-szAddress			db 'Addr',0
-szLabel				db 'Label',0
-szCode				db 'Code',0
+szAddress				BYTE 'Addr',0
+szLabel					BYTE 'Label',0
+szCode					BYTE 'Code',0
 
-szLCDDll			db 'LCD.dll',0
+szAddins				BYTE 'LCD.dll',0,0
 
 .data?
 
-hInstance			dd ?
-CommandLine			dd ?
-hWnd				HWND ?
-hScrn				HWND ?
-hMenu				HMENU ?
-hAccel				HACCEL ?
-hLstFont			HFONT ?
-hBmpGrayLed			HBITMAP ?
-hBmpGreenLed		HBITMAP ?
-hBmpRedLed			HBITMAP ?
-SelTab				dd ?
-hGrd				HWND ?
-hIml				HIMAGELIST ?
-hTabDlgStatus		HWND ?
-hTabDlg				HWND 5 dup(?)
-lpOldEditProc		dd ?
-hLCDDll				HINSTANCE ?
+addin					ADDIN <>
+CommandLine				DWORD ?
+hBmpGrayLed				HBITMAP ?
+hBmpGreenLed			HBITMAP ?
+hBmpRedLed				HBITMAP ?
+SelTab					DWORD ?
+hGrd					HWND ?
+hIml					HIMAGELIST ?
+hTabDlgStatus			HWND ?
+hTabDlg					HWND 5 dup(?)
+lpOldEditProc			DWORD ?
+addins					ADDINS 16 dup(<>)

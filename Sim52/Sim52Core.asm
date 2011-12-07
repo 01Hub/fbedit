@@ -1,223 +1,185 @@
 
-SFR_P0      		equ 080h
-SFR_SP      		equ 081h
-SFR_DPL     		equ 082h
-SFR_DPH     		equ 083h
-SFR_DP1L     		equ 084h
-SFR_DP1H     		equ 085h
-SFR_PCON    		equ 087h
-SFR_TCON    		equ 088h
-SFR_TMOD    		equ 089h
-SFR_TL0     		equ 08Ah
-SFR_TL1     		equ 08Bh
-SFR_TH0     		equ 08Ch
-SFR_TH1     		equ 08Dh
-SFR_AUXR    		equ 08Eh
-SFR_P1      		equ 090h
-SFR_SCON    		equ 098h
-SFR_SBUF    		equ 099h
-SFR_P2      		equ 0A0h
-SFR_AUXR1   		equ 0A2h
-SFR_WDTRST  		equ 0A6h
-SFR_IE      		equ 0A8h
-SFR_P3      		equ 0B0h
-SFR_IP      		equ 0B8h
-SFR_T2CON   		equ 0C8h
-SFR_T2MOD   		equ 0C9h
-SFR_RCAP2L  		equ 0CAh
-SFR_RCAP2H  		equ 0CBh
-SFR_TL2     		equ 0CCh
-SFR_TH2     		equ 0CDh
-SFR_PSW     		equ 0D0h
-SFR_ACC     		equ 0E0h
-SFR_B       		equ 0F0h
+SendAddinMessage		PROTO :HWND,:DWORD,:DWORD,:DWORD
 
-STATE_STOP			equ 0
-STATE_RUN			equ 1
-STATE_PAUSE			equ 2
-STATE_STEP_INTO		equ 4
-STATE_STEP_OVER		equ 8
-STATE_RUN_TO_CURSOR	equ 16
-SIM52_BREAKPOINT	equ 32
+STATE_STOP				equ 0
+STATE_RUN				equ 1
+STATE_PAUSE				equ 2
+STATE_STEP_INTO			equ 4
+STATE_STEP_OVER			equ 8
+STATE_RUN_TO_CURSOR		equ 16
+SIM52_BREAKPOINT		equ 32
 
-STATE_THREAD		equ 128
+STATE_THREAD			equ 128
 
 SFRMAP struct
-	ad		dd ?
-	nme		db 8 dup(?)
-	d7		db 8 dup(?)
-	d6		db 8 dup(?)
-	d5		db 8 dup(?)
-	d4		db 8 dup(?)
-	d3		db 8 dup(?)
-	d2		db 8 dup(?)
-	d1		db 8 dup(?)
-	d0		db 8 dup(?)
+	ad					dd ?
+	nme					db 8 dup(?)
+	d7					db 8 dup(?)
+	d6					db 8 dup(?)
+	d5					db 8 dup(?)
+	d4					db 8 dup(?)
+	d3					db 8 dup(?)
+	d2					db 8 dup(?)
+	d1					db 8 dup(?)
+	d0					db 8 dup(?)
 SFRMAP ends
 
 .data
 
-JmpTab				dd NOP_,AJMP_$cad,LJMP_$cad,RR_A,INC_A,INC_$dad,INC_@R0,INC_@R1,INC_R0,INC_R1,INC_R2,INC_R3,INC_R4,INC_R5,INC_R6,INC_R7
-					dd JBC$bad_$cad,ACALL_$cad,LCALL_$cad,RRC_A,DEC_A,DEC_$dad,DEC_@R0,DEC_@R1,DEC_R0,DEC_R1,DEC_R2,DEC_R3,DEC_R4,DEC_R5,DEC_R6,DEC_R7
-					dd JB_$bad_$cad,AJMP_$cad,RET_,RL_A,ADD_A_imm,ADD_A_$dad,ADD_A_@R0,ADD_A_@R1,ADD_A_R0,ADD_A_R1,ADD_A_R2,ADD_A_R3,ADD_A_R4,ADD_A_R5,ADD_A_R6,ADD_A_R7
-					dd JNB_$bad_$cad,ACALL_$cad,RETI_,RLC_A,ADDC_A_imm,ADDC_A_$dad,ADDC_A_@R0,ADDC_A_@R1,ADDC_A_R0,ADDC_A_R1,ADDC_A_R2,ADDC_A_R3,ADDC_A_R4,ADDC_A_R5,ADDC_A_R6,ADDC_A_R7
+JmpTab					dd NOP_,AJMP_$cad,LJMP_$cad,RR_A,INC_A,INC_$dad,INC_@R0,INC_@R1,INC_R0,INC_R1,INC_R2,INC_R3,INC_R4,INC_R5,INC_R6,INC_R7
+						dd JBC$bad_$cad,ACALL_$cad,LCALL_$cad,RRC_A,DEC_A,DEC_$dad,DEC_@R0,DEC_@R1,DEC_R0,DEC_R1,DEC_R2,DEC_R3,DEC_R4,DEC_R5,DEC_R6,DEC_R7
+						dd JB_$bad_$cad,AJMP_$cad,RET_,RL_A,ADD_A_imm,ADD_A_$dad,ADD_A_@R0,ADD_A_@R1,ADD_A_R0,ADD_A_R1,ADD_A_R2,ADD_A_R3,ADD_A_R4,ADD_A_R5,ADD_A_R6,ADD_A_R7
+						dd JNB_$bad_$cad,ACALL_$cad,RETI_,RLC_A,ADDC_A_imm,ADDC_A_$dad,ADDC_A_@R0,ADDC_A_@R1,ADDC_A_R0,ADDC_A_R1,ADDC_A_R2,ADDC_A_R3,ADDC_A_R4,ADDC_A_R5,ADDC_A_R6,ADDC_A_R7
 
-					dd JC_$cad,AJMP_$cad,ORL_$dad_A,ORL_$dad_imm,ORL_A_imm,ORL_A_$dad,ORL_A_@R0,ORL_A_@R1,ORL_A_R0,ORL_A_R1,ORL_A_R2,ORL_A_R3,ORL_A_R4,ORL_A_R5,ORL_A_R6,ORL_A_R7
-					dd JNC_$cad,ACALL_$cad,ANL_$dad_A,ANL_$dad_imm,ANL_A_imm,ANL_A_$dad,ANL_A_@R0,ANL_A_@R1,ANL_A_R0,ANL_A_R1,ANL_A_R2,ANL_A_R3,ANL_A_R4,ANL_A_R5,ANL_A_R6,ANL_A_R7
-					dd JZ_$cad,AJMP_$cad,XRL_$dad_A,XRL_$dad_imm,XRL_A_imm,XRL_A_$dad,XRL_A_@R0,XRL_A_@R1,XRL_A_R0,XRL_A_R1,XRL_A_R2,XRL_A_R3,XRL_A_R4,XRL_A_R5,XRL_A_R6,XRL_A_R7
-					dd JNZ_$cad,ACALL_$cad,ORL_C_$bad,JMP_@A_DPTR,MOV_A_imm,MOV_$dad_imm,MOV_@R0_imm,MOV_@R1_imm,MOV_R0_imm,MOV_R1_imm,MOV_R2_imm,MOV_R3_imm,MOV_R4_imm,MOV_R5_imm,MOV_R6_imm,MOV_R7_imm
+						dd JC_$cad,AJMP_$cad,ORL_$dad_A,ORL_$dad_imm,ORL_A_imm,ORL_A_$dad,ORL_A_@R0,ORL_A_@R1,ORL_A_R0,ORL_A_R1,ORL_A_R2,ORL_A_R3,ORL_A_R4,ORL_A_R5,ORL_A_R6,ORL_A_R7
+						dd JNC_$cad,ACALL_$cad,ANL_$dad_A,ANL_$dad_imm,ANL_A_imm,ANL_A_$dad,ANL_A_@R0,ANL_A_@R1,ANL_A_R0,ANL_A_R1,ANL_A_R2,ANL_A_R3,ANL_A_R4,ANL_A_R5,ANL_A_R6,ANL_A_R7
+						dd JZ_$cad,AJMP_$cad,XRL_$dad_A,XRL_$dad_imm,XRL_A_imm,XRL_A_$dad,XRL_A_@R0,XRL_A_@R1,XRL_A_R0,XRL_A_R1,XRL_A_R2,XRL_A_R3,XRL_A_R4,XRL_A_R5,XRL_A_R6,XRL_A_R7
+						dd JNZ_$cad,ACALL_$cad,ORL_C_$bad,JMP_@A_DPTR,MOV_A_imm,MOV_$dad_imm,MOV_@R0_imm,MOV_@R1_imm,MOV_R0_imm,MOV_R1_imm,MOV_R2_imm,MOV_R3_imm,MOV_R4_imm,MOV_R5_imm,MOV_R6_imm,MOV_R7_imm
 
-					dd SJMP_$cad,AJMP_$cad,ANL_C_$bad,MOVC_A_@A_PC,DIV_AB,MOV_$dad_$dad,MOV_$dad_@R0,MOV_$dad_@R1,MOV_$dad_R0,MOV_$dad_R1,MOV_$dad_R2,MOV_$dad_R3,MOV_$dad_R4,MOV_$dad_R5,MOV_$dad_R6,MOV_$dad_R7
-					dd MOV_DPTR_dw,ACALL_$cad,MOV_$bad_C,MOVC_A_@A_DPTR,SUBB_A_imm,SUBB_A_$dad,SUBB_A_@R0,SUBB_A_@R1,SUBB_A_R0,SUBB_A_R1,SUBB_A_R2,SUBB_A_R3,SUBB_A_R4,SUBB_A_R5,SUBB_A_R6,SUBB_A_R7
-					dd ORL_C_n$bad,AJMP_$cad,MOV_C_$bad,INC_DPTR,MUL_AB,reserved,MOV_@R0_$dad,MOV_@R1_$dad,MOV_R0_$dad,MOV_R1_$dad,MOV_R2_$dad,MOV_R3_$dad,MOV_R4_$dad,MOV_R5_$dad,MOV_R6_$dad,MOV_R7_$dad
-					dd ANL_C_n$bad,ACALL_$cad,CPL_$bad,CPL_C,CJNE_A_imm_$cad,CJNE_A_$dad_$cad,CJNE_@R0_imm_$cad,CJNE_@R1_imm_$cad,CJNE_R0_imm_$cad,CJNE_R1_imm_$cad,CJNE_R2_imm_$cad,CJNE_R3_imm_$cad,CJNE_R4_imm_$cad,CJNE_R5_imm_$cad,CJNE_R6_imm_$cad,CJNE_R7_imm_$cad
+						dd SJMP_$cad,AJMP_$cad,ANL_C_$bad,MOVC_A_@A_PC,DIV_AB,MOV_$dad_$dad,MOV_$dad_@R0,MOV_$dad_@R1,MOV_$dad_R0,MOV_$dad_R1,MOV_$dad_R2,MOV_$dad_R3,MOV_$dad_R4,MOV_$dad_R5,MOV_$dad_R6,MOV_$dad_R7
+						dd MOV_DPTR_dw,ACALL_$cad,MOV_$bad_C,MOVC_A_@A_DPTR,SUBB_A_imm,SUBB_A_$dad,SUBB_A_@R0,SUBB_A_@R1,SUBB_A_R0,SUBB_A_R1,SUBB_A_R2,SUBB_A_R3,SUBB_A_R4,SUBB_A_R5,SUBB_A_R6,SUBB_A_R7
+						dd ORL_C_n$bad,AJMP_$cad,MOV_C_$bad,INC_DPTR,MUL_AB,reserved,MOV_@R0_$dad,MOV_@R1_$dad,MOV_R0_$dad,MOV_R1_$dad,MOV_R2_$dad,MOV_R3_$dad,MOV_R4_$dad,MOV_R5_$dad,MOV_R6_$dad,MOV_R7_$dad
+						dd ANL_C_n$bad,ACALL_$cad,CPL_$bad,CPL_C,CJNE_A_imm_$cad,CJNE_A_$dad_$cad,CJNE_@R0_imm_$cad,CJNE_@R1_imm_$cad,CJNE_R0_imm_$cad,CJNE_R1_imm_$cad,CJNE_R2_imm_$cad,CJNE_R3_imm_$cad,CJNE_R4_imm_$cad,CJNE_R5_imm_$cad,CJNE_R6_imm_$cad,CJNE_R7_imm_$cad
 
-					dd PUSH_$dad,AJMP_$cad,CLR_$bad,CLR_C,SWAP_A,XCH_A_$dad,XCH_A_@R0,XCH_A_@R1,XCH_A_R0,XCH_A_R1,XCH_A_R2,XCH_A_R3,XCH_A_R4,XCH_A_R5,XCH_A_R6,XCH_A_R7
-					dd POP_$dad,ACALL_$cad,SETB_$bad,SETB_C,DA_A,DJNZ_$dad_$cad,XCHD_A_@R0,XCHD_A_@R1,DJNZ_R0_$cad,DJNZ_R1_$cad,DJNZ_R2_$cad,DJNZ_R3_$cad,DJNZ_R4_$cad,DJNZ_R5_$cad,DJNZ_R6_$cad,DJNZ_R7_$cad
-					dd MOVX_A_@DPTR,AJMP_$cad,MOVX_A_@R0,MOVX_A_@R1,CLR_A,MOV_A_$dad,MOV_A_@R0,MOV_A_@R1,MOV_A_R0,MOV_A_R1,MOV_A_R2,MOV_A_R3,MOV_A_R4,MOV_A_R5,MOV_A_R6,MOV_A_R7
-					dd MOVX_@DPTR_A,ACALL_$cad,MOVX_@R0_A,MOVX_@R1_A,CPL_A,MOV_$dad_A,MOV_@R0_A,MOV_@R1_A,MOV_R0_A,MOV_R1_A,MOV_R2_A,MOV_R3_A,MOV_R4_A,MOV_R5_A,MOV_R6_A,MOV_R7_A
+						dd PUSH_$dad,AJMP_$cad,CLR_$bad,CLR_C,SWAP_A,XCH_A_$dad,XCH_A_@R0,XCH_A_@R1,XCH_A_R0,XCH_A_R1,XCH_A_R2,XCH_A_R3,XCH_A_R4,XCH_A_R5,XCH_A_R6,XCH_A_R7
+						dd POP_$dad,ACALL_$cad,SETB_$bad,SETB_C,DA_A,DJNZ_$dad_$cad,XCHD_A_@R0,XCHD_A_@R1,DJNZ_R0_$cad,DJNZ_R1_$cad,DJNZ_R2_$cad,DJNZ_R3_$cad,DJNZ_R4_$cad,DJNZ_R5_$cad,DJNZ_R6_$cad,DJNZ_R7_$cad
+						dd MOVX_A_@DPTR,AJMP_$cad,MOVX_A_@R0,MOVX_A_@R1,CLR_A,MOV_A_$dad,MOV_A_@R0,MOV_A_@R1,MOV_A_R0,MOV_A_R1,MOV_A_R2,MOV_A_R3,MOV_A_R4,MOV_A_R5,MOV_A_R6,MOV_A_R7
+						dd MOVX_@DPTR_A,ACALL_$cad,MOVX_@R0_A,MOVX_@R1_A,CPL_A,MOV_$dad_A,MOV_@R0_A,MOV_@R1_A,MOV_R0_A,MOV_R1_A,MOV_R2_A,MOV_R3_A,MOV_R4_A,MOV_R5_A,MOV_R6_A,MOV_R7_A
 
-Cycles				db 1,2,2,1,1,1,1,1,1,1,1,1,1,1,1,1
-					db 2,2,2,1,1,1,1,1,1,1,1,1,1,1,1,1
-					db 2,2,2,1,1,1,1,1,1,1,1,1,1,1,1,1
-					db 2,2,2,1,1,1,1,1,1,1,1,1,1,1,1,1
-					db 2,2,1,2,1,1,1,1,1,1,1,1,1,1,1,1
-					db 2,2,1,2,1,1,1,1,1,1,1,1,1,1,1,1
-					db 2,2,1,2,1,1,1,1,1,1,1,1,1,1,1,1
-					db 2,2,2,2,1,2,1,1,1,1,1,1,1,1,1,1
-					db 2,2,2,2,4,2,2,2,2,2,2,2,2,2,2,2
-					db 2,2,2,2,1,1,1,1,1,1,1,1,1,1,1,1
-					db 2,2,1,2,4,0,2,2,2,2,2,2,2,2,2,2
-					db 2,2,1,1,2,2,2,2,2,2,2,2,2,2,2,2
-					db 2,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1
-					db 2,2,1,1,1,2,1,1,2,2,2,2,2,2,2,2
-					db 2,2,2,2,1,1,1,1,1,1,1,1,1,1,1,1
-					db 2,2,2,2,1,1,1,1,1,1,1,1,1,1,1,1
+Cycles					db 1,2,2,1,1,1,1,1,1,1,1,1,1,1,1,1
+						db 2,2,2,1,1,1,1,1,1,1,1,1,1,1,1,1
+						db 2,2,2,1,1,1,1,1,1,1,1,1,1,1,1,1
+						db 2,2,2,1,1,1,1,1,1,1,1,1,1,1,1,1
+						db 2,2,1,2,1,1,1,1,1,1,1,1,1,1,1,1
+						db 2,2,1,2,1,1,1,1,1,1,1,1,1,1,1,1
+						db 2,2,1,2,1,1,1,1,1,1,1,1,1,1,1,1
+						db 2,2,2,2,1,2,1,1,1,1,1,1,1,1,1,1
+						db 2,2,2,2,4,2,2,2,2,2,2,2,2,2,2,2
+						db 2,2,2,2,1,1,1,1,1,1,1,1,1,1,1,1
+						db 2,2,1,2,4,0,2,2,2,2,2,2,2,2,2,2
+						db 2,2,1,1,2,2,2,2,2,2,2,2,2,2,2,2
+						db 2,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+						db 2,2,1,1,1,2,1,1,2,2,2,2,2,2,2,2
+						db 2,2,2,2,1,1,1,1,1,1,1,1,1,1,1,1
+						db 2,2,2,2,1,1,1,1,1,1,1,1,1,1,1,1
+                    	
+Bytes					db 1,2,3,1,1,2,1,1,1,1,1,1,1,1,1,1
+						db 3,2,3,1,1,2,1,1,1,1,1,1,1,1,1,1
+						db 3,2,1,1,2,2,1,1,1,1,1,1,1,1,1,1
+						db 3,2,1,1,2,2,1,1,1,1,1,1,1,1,1,1
+						db 2,2,2,3,2,2,1,1,1,1,1,1,1,1,1,1
+						db 2,2,2,3,2,2,1,1,1,1,1,1,1,1,1,1
+						db 2,2,2,3,2,2,1,1,1,1,1,1,1,1,1,1
+						db 2,2,2,1,2,3,2,2,2,2,2,2,2,2,2,2
+						db 2,2,2,1,1,3,2,2,2,2,2,2,2,2,2,2
+						db 3,2,2,1,2,2,1,1,1,1,1,1,1,1,1,1
+						db 2,2,2,1,1,0,2,2,2,2,2,2,2,2,2,2
+						db 2,2,2,1,3,3,3,3,3,3,3,3,3,3,3,3
+						db 2,2,2,1,1,2,1,1,1,1,1,1,1,1,1,1
+						db 2,2,2,1,1,3,1,1,2,2,2,2,2,2,2,2
+						db 1,2,1,1,1,2,1,1,1,1,1,1,1,1,1,1
+						db 1,2,1,1,1,2,1,1,1,1,1,1,1,1,1,1
 
-Bytes				db 1,2,3,1,1,2,1,1,1,1,1,1,1,1,1,1
-					db 3,2,3,1,1,2,1,1,1,1,1,1,1,1,1,1
-					db 3,2,1,1,2,2,1,1,1,1,1,1,1,1,1,1
-					db 3,2,1,1,2,2,1,1,1,1,1,1,1,1,1,1
-					db 2,2,2,3,2,2,1,1,1,1,1,1,1,1,1,1
-					db 2,2,2,3,2,2,1,1,1,1,1,1,1,1,1,1
-					db 2,2,2,3,2,2,1,1,1,1,1,1,1,1,1,1
-					db 2,2,2,1,2,3,2,2,2,2,2,2,2,2,2,2
-					db 2,2,2,1,1,3,2,2,2,2,2,2,2,2,2,2
-					db 3,2,2,1,2,2,1,1,1,1,1,1,1,1,1,1
-					db 2,2,2,1,1,0,2,2,2,2,2,2,2,2,2,2
-					db 2,2,2,1,3,3,3,3,3,3,3,3,3,3,3,3
-					db 2,2,2,1,1,2,1,1,1,1,1,1,1,1,1,1
-					db 2,2,2,1,1,3,1,1,2,2,2,2,2,2,2,2
-					db 1,2,1,1,1,2,1,1,1,1,1,1,1,1,1,1
-					db 1,2,1,1,1,2,1,1,1,1,1,1,1,1,1,1
+SfrData					SFRMAP <080h,'P0','P0.7','P0.6','P0.5','P0.4','P0.3','P0.2','P0.1','P0.0'>
+						SFRMAP <081h,'SP','D7','D6','D5','D4','D3','D2','D1','D0'>
+						SFRMAP <082h,'DPL','D7','D6','D5','D4','D3','D2','D1','D0'>
+						SFRMAP <083h,'DPH','D7','D6','D5','D4','D3','D2','D1','D0'>
+						SFRMAP <084h,'DP1L','D7','D6','D5','D4','D3','D2','D1','D0'>
+						SFRMAP <085h,'DP1H','D7','D6','D5','D4','D3','D2','D1','D0'>
+						SFRMAP <087h,'PCON','SMOD','-','-','-','GF1','GF0','PD','IDL'>
 
-SfrData				SFRMAP <080h,'P0','P0.7','P0.6','P0.5','P0.4','P0.3','P0.2','P0.1','P0.0'>
-					SFRMAP <081h,'SP','D7','D6','D5','D4','D3','D2','D1','D0'>
-					SFRMAP <082h,'DPL','D7','D6','D5','D4','D3','D2','D1','D0'>
-					SFRMAP <083h,'DPH','D7','D6','D5','D4','D3','D2','D1','D0'>
-					SFRMAP <084h,'DP1L','D7','D6','D5','D4','D3','D2','D1','D0'>
-					SFRMAP <085h,'DP1H','D7','D6','D5','D4','D3','D2','D1','D0'>
-					SFRMAP <087h,'PCON','SMOD','-','-','-','GF1','GF0','PD','IDL'>
+						SFRMAP <088h,'TCON','TF1','TR1','TF0','TR0','IE1','IT1','IE0','IT0'>
+						SFRMAP <089h,'TMOD','GTE1','C/T1','M1.1','M0.1','GTE0','C/T0','M1.0','M0.1'>
+						SFRMAP <08Ah,'TL0','D7','D6','D5','D4','D3','D2','D1','D0'>
+						SFRMAP <08Bh,'TL1','D7','D6','D5','D4','D3','D2','D1','D0'>
+						SFRMAP <08Ch,'TH0','D7','D6','D5','D4','D3','D2','D1','D0'>
+						SFRMAP <08Dh,'TH1','D7','D6','D5','D4','D3','D2','D1','D0'>
+						SFRMAP <08Eh,'AUXR','-','-','-','WDIDLE','DISRTO','-','-','DISALE'>
 
-					SFRMAP <088h,'TCON','TF1','TR1','TF0','TR0','IE1','IT1','IE0','IT0'>
-					SFRMAP <089h,'TMOD','GTE1','C/T1','M1.1','M0.1','GTE0','C/T0','M1.0','M0.1'>
-					SFRMAP <08Ah,'TL0','D7','D6','D5','D4','D3','D2','D1','D0'>
-					SFRMAP <08Bh,'TL1','D7','D6','D5','D4','D3','D2','D1','D0'>
-					SFRMAP <08Ch,'TH0','D7','D6','D5','D4','D3','D2','D1','D0'>
-					SFRMAP <08Dh,'TH1','D7','D6','D5','D4','D3','D2','D1','D0'>
-					SFRMAP <08Eh,'AUXR','-','-','-','WDIDLE','DISRTO','-','-','DISALE'>
+						SFRMAP <090h,'P1','P1.7','P1.6','P1.5','P1.4','P1.3','P1.2','P1.1','P1.0'>
 
-					SFRMAP <090h,'P1','P1.7','P1.6','P1.5','P1.4','P1.3','P1.2','P1.1','P1.0'>
+						SFRMAP <098h,'SCON','SM0','SM1','SM2','REN','TB8','RB8','TI','RI'>
+						SFRMAP <099h,'SBUF','D7','D6','D5','D4','D3','D2','D1','D0'>
 
-					SFRMAP <098h,'SCON','SM0','SM1','SM2','REN','TB8','RB8','TI','RI'>
-					SFRMAP <099h,'SBUF','D7','D6','D5','D4','D3','D2','D1','D0'>
+						SFRMAP <0A0h,'P2','P2.7','P2.6','P2.5','P2.4','P2.3','P2.2','P2.1','P2.0'>
+						SFRMAP <0A2h,'AUXR1','-','-','-','-','-','-','-','DPS'>
+						SFRMAP <0A6h,'WDTRST','-','-','-','-','-','-','-','-'>
 
-					SFRMAP <0A0h,'P2','P2.7','P2.6','P2.5','P2.4','P2.3','P2.2','P2.1','P2.0'>
-					SFRMAP <0A2h,'AUXR1','-','-','-','-','-','-','-','DPS'>
-					SFRMAP <0A6h,'WDTRST','-','-','-','-','-','-','-','-'>
+						SFRMAP <0A8h,'IE','EA','-','-','ES','ET1','EX1','ET0','EX0'>
 
-					SFRMAP <0A8h,'IE','EA','-','-','ES','ET1','EX1','ET0','EX0'>
+						SFRMAP <0B0h,'P3','P3.7','P3.6','P3.5','P3.4','P3.3','P3.2','P3.1','P3.0'>
 
-					SFRMAP <0B0h,'P3','P3.7','P3.6','P3.5','P3.4','P3.3','P3.2','P3.1','P3.0'>
+						SFRMAP <0B8h,'IP','-','-','-','PS','PT1','PX1','PT0','RX0'>
 
-					SFRMAP <0B8h,'IP','-','-','-','PS','PT1','PX1','PT0','RX0'>
+						SFRMAP <0C8h,'T2CON','TF2','EXF2','RCLK','TCLK','EXEN2','TR2','C/T2','CP/RL2'>
+						SFRMAP <0C9h,'T2MOD','-','-','-','-','-','-','T2OE','DCEN'>
+						SFRMAP <0CAh,'RCAP2L','D7','D6','D5','D4','D3','D2','D1','D0'>
+						SFRMAP <0CBh,'RCAP2H','D7','D6','D5','D4','D3','D2','D1','D0'>
+						SFRMAP <0CCh,'TL2','D7','D6','D5','D4','D3','D2','D1','D0'>
+						SFRMAP <0CDh,'TH2','D7','D6','D5','D4','D3','D2','D1','D0'>
 
-					SFRMAP <0C8h,'T2CON','TF2','EXF2','RCLK','TCLK','EXEN2','TR2','C/T2','CP/RL2'>
-					SFRMAP <0C9h,'T2MOD','-','-','-','-','-','-','T2OE','DCEN'>
-					SFRMAP <0CAh,'RCAP2L','D7','D6','D5','D4','D3','D2','D1','D0'>
-					SFRMAP <0CBh,'RCAP2H','D7','D6','D5','D4','D3','D2','D1','D0'>
-					SFRMAP <0CCh,'TL2','D7','D6','D5','D4','D3','D2','D1','D0'>
-					SFRMAP <0CDh,'TH2','D7','D6','D5','D4','D3','D2','D1','D0'>
+						SFRMAP <0D0h,'PSW','CY','AC','F0','RS1','RS0','OV','FL','P'>
 
-					SFRMAP <0D0h,'PSW','CY','AC','F0','RS1','RS0','OV','FL','P'>
+						SFRMAP <0E0h,'ACC','ACC.7','ACC.6','ACC.5','ACC.4','ACC.3','ACC.2','ACC.1','ACC.0'>
 
-					SFRMAP <0E0h,'ACC','ACC.7','ACC.6','ACC.5','ACC.4','ACC.3','ACC.2','ACC.1','ACC.0'>
+						SFRMAP <0F0h,'B','B.7','B.6','B.5','B.4','B.3','B.2','B.1','B.0'>
 
-					SFRMAP <0F0h,'B','B.7','B.6','B.5','B.4','B.3','B.2','B.1','B.0'>
-
-					SFRMAP <0>
+						SFRMAP <0>
 
 .data?
 
-hMemFile			HGLOBAL ?
-hMemAddr			HGLOBAL ?
+hMemFile				HGLOBAL ?
+hMemAddr				HGLOBAL ?
 
-Sfr					db 256 dup(?)
-Ram					db 256 dup(?)
-XRam				db 65536 dup(?)
-Code				db 65536 dup(?)
-Bank				dd ?
-PC					dd ?
-nAddr				dd ?
-StatusLed			dd ?
+StatusLed				DWORD ?
 
-ViewBank			dd ?
-Refresh				dd ?
-State				dd ?
-CursorAddr			dd ?
-TotalCycles			dd ?
-PerformanceCount		dq ?
-PerformanceFrequency	dq ?
-SBUFWR				dd ?
+ViewBank				DWORD ?
+Refresh					DWORD ?
+State					DWORD ?
+CursorAddr				DWORD ?
+TotalCycles				DWORD ?
+PerformanceCount		QWORD ?
+PerformanceFrequency	QWORD ?
+SBUFWR					DWORD ?
 
 .code
 
 Reset proc
 
 	mov		State,STATE_STOP
-	mov		PC,0
-	mov		Sfr[SFR_P0],0FFh
-	mov		Sfr[SFR_SP],07h
-	mov		Sfr[SFR_DPL],00h
-	mov		Sfr[SFR_DPH],00h
-	mov		Sfr[SFR_DP1L],00h
-	mov		Sfr[SFR_DP1H],00h
-	mov		Sfr[SFR_PCON],00h
-	mov		Sfr[SFR_TCON],00h
-	mov		Sfr[SFR_TMOD],00h
-	mov		Sfr[SFR_TL0],00h
-	mov		Sfr[SFR_TL1],00h
-	mov		Sfr[SFR_TH0],00h
-	mov		Sfr[SFR_TH1],00h
-	mov		Sfr[SFR_AUXR],00h
-	mov		Sfr[SFR_P1],0FFh
-	mov		Sfr[SFR_SCON],00h
-	mov		Sfr[SFR_SBUF],00h
-	mov		Sfr[SFR_P2],0FFh
-	mov		Sfr[SFR_AUXR1],00h
-	mov		Sfr[SFR_WDTRST],00h
-	mov		Sfr[SFR_IE],00h
-	mov		Sfr[SFR_P3],0FFh
-	mov		Sfr[SFR_IP],00h
-	mov		Sfr[SFR_T2CON],00h
-	mov		Sfr[SFR_T2MOD],00h
-	mov		Sfr[SFR_RCAP2L],00h
-	mov		Sfr[SFR_RCAP2H],00h
-	mov		Sfr[SFR_TL2],00h
-	mov		Sfr[SFR_TH2],00h
-	mov		Sfr[SFR_PSW],00h
-	mov		Sfr[SFR_ACC],00h
-	mov		Sfr[SFR_B],00h
+	mov		addin.PC,0
+	mov		addin.Sfr[SFR_P0],0FFh
+	mov		addin.Sfr[SFR_SP],07h
+	mov		addin.Sfr[SFR_DPL],00h
+	mov		addin.Sfr[SFR_DPH],00h
+	mov		addin.Sfr[SFR_DP1L],00h
+	mov		addin.Sfr[SFR_DP1H],00h
+	mov		addin.Sfr[SFR_PCON],00h
+	mov		addin.Sfr[SFR_TCON],00h
+	mov		addin.Sfr[SFR_TMOD],00h
+	mov		addin.Sfr[SFR_TL0],00h
+	mov		addin.Sfr[SFR_TL1],00h
+	mov		addin.Sfr[SFR_TH0],00h
+	mov		addin.Sfr[SFR_TH1],00h
+	mov		addin.Sfr[SFR_AUXR],00h
+	mov		addin.Sfr[SFR_P1],0FFh
+	mov		addin.Sfr[SFR_SCON],00h
+	mov		addin.Sfr[SFR_SBUF],00h
+	mov		addin.Sfr[SFR_P2],0FFh
+	mov		addin.Sfr[SFR_AUXR1],00h
+	mov		addin.Sfr[SFR_WDTRST],00h
+	mov		addin.Sfr[SFR_IE],00h
+	mov		addin.Sfr[SFR_P3],0FFh
+	mov		addin.Sfr[SFR_IP],00h
+	mov		addin.Sfr[SFR_T2CON],00h
+	mov		addin.Sfr[SFR_T2MOD],00h
+	mov		addin.Sfr[SFR_RCAP2L],00h
+	mov		addin.Sfr[SFR_RCAP2H],00h
+	mov		addin.Sfr[SFR_TL2],00h
+	mov		addin.Sfr[SFR_TH2],00h
+	mov		addin.Sfr[SFR_PSW],00h
+	mov		addin.Sfr[SFR_ACC],00h
+	mov		addin.Sfr[SFR_B],00h
 	mov		Refresh,1
 	ret
 
@@ -232,7 +194,7 @@ FindMcuAddr proc uses ebx esi edi,Address:DWORD
 	xor		eax,eax
 	.if esi
 		mov		lower,0
-		mov		eax,nAddr
+		mov		eax,addin.nAddr
 		mov		upper,eax
 		xor		ebx,ebx
 		.while TRUE
@@ -280,7 +242,7 @@ FindLbInx proc uses esi,LbInx:DWORD
 	.if esi
 		mov		edx,LbInx
 		xor		ecx,ecx
-		.while dx!=[esi].MCUADDR.lbinx && ecx<nAddr
+		.while dx!=[esi].MCUADDR.lbinx && ecx<addin.nAddr
 			inc		ecx
 			lea		esi,[esi+sizeof MCUADDR]
 		.endw
@@ -327,7 +289,7 @@ UpdateSelSfr proc uses ebx esi,hWin:HWND
 		invoke SetDlgItemText,hWin,IDC_STCSFRBIT2,addr [esi].SFRMAP.d2
 		invoke SetDlgItemText,hWin,IDC_STCSFRBIT1,addr [esi].SFRMAP.d1
 		invoke SetDlgItemText,hWin,IDC_STCSFRBIT0,addr [esi].SFRMAP.d0
-		mov		al,Sfr[ebx]
+		mov		al,addin.Sfr[ebx]
 		xor		ecx,ecx
 		mov		ebx,1100
 		.while ecx<8
@@ -351,19 +313,19 @@ UpdateSelSfr endp
 UpdateStatus proc uses ebx
 	LOCAL	buffer[16]:BYTE
 
-	mov		eax,PC
+	mov		eax,addin.PC
 	invoke wsprintf,addr buffer,addr szFmtHexWord,eax
 	invoke SetDlgItemText,hTabDlgStatus,IDC_EDTPC,addr buffer
-	movzx	eax,word ptr Sfr[SFR_DPL]
+	movzx	eax,word ptr addin.Sfr[SFR_DPL]
 	invoke wsprintf,addr buffer,addr szFmtHexWord,eax
 	invoke SetDlgItemText,hTabDlgStatus,IDC_EDTDPTR,addr buffer
-	movzx	eax,Sfr[SFR_ACC]
+	movzx	eax,addin.Sfr[SFR_ACC]
 	invoke wsprintf,addr buffer,addr szFmtHexByte,eax
 	invoke SetDlgItemText,hTabDlgStatus,IDC_EDTACC,addr buffer
-	movzx	eax,Sfr[SFR_B]
+	movzx	eax,addin.Sfr[SFR_B]
 	invoke wsprintf,addr buffer,addr szFmtHexByte,eax
 	invoke SetDlgItemText,hTabDlgStatus,IDC_EDTB,addr buffer
-	movzx	eax,Sfr[SFR_SP]
+	movzx	eax,addin.Sfr[SFR_SP]
 	invoke wsprintf,addr buffer,addr szFmtHexByte,eax
 	invoke SetDlgItemText,hTabDlgStatus,IDC_EDTSP,addr buffer
 	push	0
@@ -375,7 +337,7 @@ UpdateStatus proc uses ebx
 	push	IDC_IMGOV
 	push	IDC_IMGFL
 	push	IDC_IMGP
-	movzx	ebx,Sfr[SFR_PSW]
+	movzx	ebx,addin.Sfr[SFR_PSW]
 	pop		eax
 	.while eax
 		shr		ebx,1
@@ -386,7 +348,7 @@ UpdateStatus proc uses ebx
 		.endif
 		pop		eax
 	.endw
-	invoke FindMcuAddr,PC
+	invoke FindMcuAddr,addin.PC
 	.if eax
 		movzx	eax,[eax].MCUADDR.lbinx
 		invoke SendMessage,hGrd,GM_SETCURROW,eax,0
@@ -406,7 +368,7 @@ UpdatePorts proc uses ebx
 	push	IDC_IMGP0_5
 	push	IDC_IMGP0_6
 	push	IDC_IMGP0_7
-	movzx	ebx,Sfr[SFR_P0]
+	movzx	ebx,addin.Sfr[SFR_P0]
 	pop		eax
 	.while eax
 		shl		bl,1
@@ -426,7 +388,7 @@ UpdatePorts proc uses ebx
 	push	IDC_IMGP1_5
 	push	IDC_IMGP1_6
 	push	IDC_IMGP1_7
-	movzx	ebx,Sfr[SFR_P1]
+	movzx	ebx,addin.Sfr[SFR_P1]
 	pop		eax
 	.while eax
 		shl		bl,1
@@ -446,7 +408,7 @@ UpdatePorts proc uses ebx
 	push	IDC_IMGP2_5
 	push	IDC_IMGP2_6
 	push	IDC_IMGP2_7
-	movzx	ebx,Sfr[SFR_P2]
+	movzx	ebx,addin.Sfr[SFR_P2]
 	pop		eax
 	.while eax
 		shl		bl,1
@@ -466,7 +428,7 @@ UpdatePorts proc uses ebx
 	push	IDC_IMGP3_5
 	push	IDC_IMGP3_6
 	push	IDC_IMGP3_7
-	movzx	ebx,Sfr[SFR_P3]
+	movzx	ebx,addin.Sfr[SFR_P3]
 	pop		eax
 	.while eax
 		shl		bl,1
@@ -493,7 +455,7 @@ UpdateRegisters proc uses ebx esi
 	push	IDC_EDTR2
 	push	IDC_EDTR1
 	push	IDC_EDTR0
-	mov		esi,offset Ram
+	mov		esi,offset addin.Ram
 	mov		eax,ViewBank
 	lea		esi,[esi+eax*8]
 	pop		ebx
@@ -514,7 +476,7 @@ UpdateBits proc uses ebx edi
 	xor		ebx,ebx
 	.while ebx<16
 		xor		ecx,ecx
-		mov		al,Ram[ebx+20h]
+		mov		al,addin.Ram[ebx+20h]
 		.while ecx<8
 			push	ecx
 			ror		eax,1
@@ -553,11 +515,22 @@ ToggleBreakPoint proc lbinx:DWORD
 ToggleBreakPoint endp
 
 ClearBreakPoints proc
+	LOCAL	dwbp:DWORD
 
+	mov		dwbp,1
 	mov		edx,hMemAddr
 	.if edx
 		xor		ecx,ecx
-		.while ecx<nAddr
+		.while ecx<addin.nAddr
+			.if [edx].MCUADDR.fbp
+				push	ecx
+				push	edx
+				movzx	edx,[edx].MCUADDR.lbinx
+				shl		edx,16
+				invoke SendMessage,hGrd,GM_SETCELLDATA,edx,addr dwbp
+				pop		edx
+				pop		ecx
+			.endif
 			mov		[edx].MCUADDR.fbp,0
 			inc		ecx
 			lea		edx,[edx+sizeof MCUADDR]
@@ -581,12 +554,10 @@ IsAddrBreakPoint endp
 
 SetPort proc lpSfr:DWORD,nValue:DWORD
 
-	push	nValue
-	push	lpSfr
-	push	AM_PORTCHANGED
-	push	hWnd
-	invoke GetProcAddress,hLCDDll,1
-	call	eax
+	mov		eax,lpSfr
+	sub		eax,SFR_P0
+	shr		eax,4
+	invoke SendAddinMessage,addin.hWnd,AM_PORTCHANGED,eax,nValue
 	ret
 
 SetPort endp
@@ -604,30 +575,30 @@ SetFlags proc
 	;Carry
 	test	eax,1
 	.if ZERO?
-		and		Sfr[SFR_PSW],7Fh
+		and		addin.Sfr[SFR_PSW],7Fh
 	.else
-		or		Sfr[SFR_PSW],80h
+		or		addin.Sfr[SFR_PSW],80h
 	.endif
 	;Parity
 	test	eax,4
 	.if ZERO?
-		and		Sfr[SFR_PSW],0FEh
+		and		addin.Sfr[SFR_PSW],0FEh
 	.else
-		or		Sfr[SFR_PSW],01h
+		or		addin.Sfr[SFR_PSW],01h
 	.endif
 	;Auxiliary Flag
 	test	eax,16
 	.if ZERO?
-		and		Sfr[SFR_PSW],0BFh
+		and		addin.Sfr[SFR_PSW],0BFh
 	.else
-		or		Sfr[SFR_PSW],40h
+		or		addin.Sfr[SFR_PSW],40h
 	.endif
 	;Overflow flag
 	test	eax,2048
 	.if ZERO?
-		and		Sfr[SFR_PSW],0FBh
+		and		addin.Sfr[SFR_PSW],0FBh
 	.else
-		or		Sfr[SFR_PSW],04h
+		or		addin.Sfr[SFR_PSW],04h
 	.endif
 	ret
 
@@ -653,12 +624,12 @@ LJMP_$cad:
 	ret
 
 RR_A:
-	ror		Sfr[SFR_ACC],1
+	ror		addin.Sfr[SFR_ACC],1
 	lea		ebx,[ebx+1]
 	ret
 
 INC_A:
-	inc		Sfr[SFR_ACC]
+	inc		addin.Sfr[SFR_ACC]
 	invoke SetParity
 	lea		ebx,[ebx+1]
 	ret
@@ -666,15 +637,15 @@ INC_A:
 INC_$dad:
 	movzx	edx,byte ptr [esi+ebx+1]
 	.if edx<80h
-		inc		Ram[edx]
+		inc		addin.Ram[edx]
 	.else
 		.if edx==SFR_SBUF
 			inc		SBUFWR
 			invoke ScreenChar,SBUFWR
 		.else
-			inc		Sfr[edx]
+			inc		addin.Sfr[edx]
 			.if edx==SFR_P0 || edx==SFR_P1 || edx==SFR_P2 || edx==SFR_P3
-				movzx	eax,Sfr[edx]
+				movzx	eax,addin.Sfr[edx]
 				invoke SetPort,edx,eax
 			.endif
 		.endif
@@ -683,74 +654,74 @@ INC_$dad:
 	ret
 
 INC_@R0:
-	mov		eax,Bank
+	mov		eax,addin.Bank
 	lea		eax,[eax*8+0]
-	movzx	eax,Ram[eax]
-	inc		Ram[eax]
+	movzx	eax,addin.Ram[eax]
+	inc		addin.Ram[eax]
 	lea		ebx,[ebx+1]
 	ret
 
 INC_@R1:
-	mov		eax,Bank
+	mov		eax,addin.Bank
 	lea		eax,[eax*8+1]
-	movzx	eax,Ram[eax]
-	inc		Ram[eax]
+	movzx	eax,addin.Ram[eax]
+	inc		addin.Ram[eax]
 	lea		ebx,[ebx+1]
 	ret
 
 INC_R0:
-	mov		eax,Bank
+	mov		eax,addin.Bank
 	lea		eax,[eax*8+0]
-	inc		Ram[eax]
+	inc		addin.Ram[eax]
 	lea		ebx,[ebx+1]
 	ret
 
 INC_R1:
-	mov		eax,Bank
+	mov		eax,addin.Bank
 	lea		eax,[eax*8+1]
-	inc		Ram[eax]
+	inc		addin.Ram[eax]
 	lea		ebx,[ebx+1]
 	ret
 
 INC_R2:
-	mov		eax,Bank
+	mov		eax,addin.Bank
 	lea		eax,[eax*8+2]
-	inc		Ram[eax]
+	inc		addin.Ram[eax]
 	lea		ebx,[ebx+1]
 	ret
 
 INC_R3:
-	mov		eax,Bank
+	mov		eax,addin.Bank
 	lea		eax,[eax*8+3]
-	inc		Ram[eax]
+	inc		addin.Ram[eax]
 	lea		ebx,[ebx+1]
 	ret
 
 INC_R4:
-	mov		eax,Bank
+	mov		eax,addin.Bank
 	lea		eax,[eax*8+4]
-	inc		Ram[eax]
+	inc		addin.Ram[eax]
 	lea		ebx,[ebx+1]
 	ret
 
 INC_R5:
-	mov		eax,Bank
+	mov		eax,addin.Bank
 	lea		eax,[eax*8+5]
-	inc		Ram[eax]
+	inc		addin.Ram[eax]
 	lea		ebx,[ebx+1]
 	ret
 
 INC_R6:
-	mov		eax,Bank
+	mov		eax,addin.Bank
 	lea		eax,[eax*8+6]
-	inc		Ram[eax]
+	inc		addin.Ram[eax]
 	lea		ebx,[ebx+1]
 	ret
 
 INC_R7:
-	mov		eax,Bank
+	mov		eax,addin.Bank
 	lea		eax,[eax*8+7]
-	inc		Ram[eax]
+	inc		addin.Ram[eax]
 	lea		ebx,[ebx+1]
 	ret
 
@@ -768,9 +739,9 @@ JBC$bad_$cad:
 	.else
 		and		eax,0F8h
 	.endif
-	test	Ram[eax],dl
+	test	addin.Ram[eax],dl
 	.if !ZERO?
-		xor		Ram[eax],dl
+		xor		addin.Ram[eax],dl
 		movsx	ecx,ch
 		lea		ebx,[ebx+ecx]
 	.endif
@@ -780,12 +751,12 @@ ACALL_$cad:
 	movzx	eax,word ptr [esi+ebx]
 	xchg	al,ah
 	lea		ebx,[ebx+2]
-	movzx	edx,Sfr[SFR_SP]
+	movzx	edx,addin.Sfr[SFR_SP]
 	inc		dl
-	mov		Ram[edx],bl
+	mov		addin.Ram[edx],bl
 	inc		dl
-	mov		Ram[edx],bh
-	mov		Sfr[SFR_SP],dl
+	mov		addin.Ram[edx],bh
+	mov		addin.Sfr[SFR_SP],dl
 	shr		ah,5
 	and		ebx,0F800h
 	lea		ebx,[ebx+eax]
@@ -795,32 +766,32 @@ LCALL_$cad:
 	movzx	eax,word ptr [esi+ebx+1]
 	xchg	al,ah
 	lea		ebx,[ebx+3]
-	movzx	edx,Sfr[SFR_SP]
+	movzx	edx,addin.Sfr[SFR_SP]
 	inc		dl
-	mov		Ram[edx],bl
+	mov		addin.Ram[edx],bl
 	inc		dl
-	mov		Ram[edx],bh
-	mov		Sfr[SFR_SP],dl
+	mov		addin.Ram[edx],bh
+	mov		addin.Sfr[SFR_SP],dl
 	mov		ebx,eax
 	ret
 
 RRC_A:
-	test	Sfr[SFR_PSW],80h
+	test	addin.Sfr[SFR_PSW],80h
 	clc
 	.if !ZERO?
 		stc
 	.endif
-	rcr		Sfr[SFR_ACC],1
+	rcr		addin.Sfr[SFR_ACC],1
 	.if CARRY?
-		or		Sfr[SFR_PSW],80h
+		or		addin.Sfr[SFR_PSW],80h
 	.else
-		and		Sfr[SFR_PSW],7Fh
+		and		addin.Sfr[SFR_PSW],7Fh
 	.endif
 	lea		ebx,[ebx+1]
 	ret
 
 DEC_A:
-	dec		Sfr[SFR_ACC]
+	dec		addin.Sfr[SFR_ACC]
 	invoke SetParity
 	lea		ebx,[ebx+1]
 	ret
@@ -828,15 +799,15 @@ DEC_A:
 DEC_$dad:
 	movzx	edx,byte ptr [esi+ebx+1]
 	.if edx<80h
-		dec		Ram[edx]
+		dec		addin.Ram[edx]
 	.else
 		.if edx==SFR_SBUF
 			dec		SBUFWR
 			invoke ScreenChar,SBUFWR
 		.else
-			dec		Sfr[edx]
+			dec		addin.Sfr[edx]
 			.if edx==SFR_P0 || edx==SFR_P1 || edx==SFR_P2 || edx==SFR_P3
-				movzx	eax,Sfr[edx]
+				movzx	eax,addin.Sfr[edx]
 				invoke SetPort,edx,eax
 			.endif
 		.endif
@@ -845,74 +816,74 @@ DEC_$dad:
 	ret
 
 DEC_@R0:
-	mov		eax,Bank
+	mov		eax,addin.Bank
 	lea		eax,[eax*8+0]
-	movzx	eax,Ram[eax]
-	dec		Ram[eax]
+	movzx	eax,addin.Ram[eax]
+	dec		addin.Ram[eax]
 	lea		ebx,[ebx+1]
 	ret
 
 DEC_@R1:
-	mov		eax,Bank
+	mov		eax,addin.Bank
 	lea		eax,[eax*8+1]
-	movzx	eax,Ram[eax]
-	dec		Ram[eax]
+	movzx	eax,addin.Ram[eax]
+	dec		addin.Ram[eax]
 	lea		ebx,[ebx+1]
 	ret
 
 DEC_R0:
-	mov		eax,Bank
+	mov		eax,addin.Bank
 	lea		eax,[eax*8+0]
-	dec		Ram[eax]
+	dec		addin.Ram[eax]
 	lea		ebx,[ebx+1]
 	ret
 
 DEC_R1:
-	mov		eax,Bank
+	mov		eax,addin.Bank
 	lea		eax,[eax*8+1]
-	dec		Ram[eax]
+	dec		addin.Ram[eax]
 	lea		ebx,[ebx+1]
 	ret
 
 DEC_R2:
-	mov		eax,Bank
+	mov		eax,addin.Bank
 	lea		eax,[eax*8+2]
-	dec		Ram[eax]
+	dec		addin.Ram[eax]
 	lea		ebx,[ebx+1]
 	ret
 
 DEC_R3:
-	mov		eax,Bank
+	mov		eax,addin.Bank
 	lea		eax,[eax*8+3]
-	dec		Ram[eax]
+	dec		addin.Ram[eax]
 	lea		ebx,[ebx+1]
 	ret
 
 DEC_R4:
-	mov		eax,Bank
+	mov		eax,addin.Bank
 	lea		eax,[eax*8+4]
-	dec		Ram[eax]
+	dec		addin.Ram[eax]
 	lea		ebx,[ebx+1]
 	ret
 
 DEC_R5:
-	mov		eax,Bank
+	mov		eax,addin.Bank
 	lea		eax,[eax*8+5]
-	dec		Ram[eax]
+	dec		addin.Ram[eax]
 	lea		ebx,[ebx+1]
 	ret
 
 DEC_R6:
-	mov		eax,Bank
+	mov		eax,addin.Bank
 	lea		eax,[eax*8+6]
-	dec		Ram[eax]
+	dec		addin.Ram[eax]
 	lea		ebx,[ebx+1]
 	ret
 
 DEC_R7:
-	mov		eax,Bank
+	mov		eax,addin.Bank
 	lea		eax,[eax*8+7]
-	dec		Ram[eax]
+	dec		addin.Ram[eax]
 	lea		ebx,[ebx+1]
 	ret
 
@@ -927,10 +898,10 @@ JB_$bad_$cad:
 	.if al<80h
 		shr		eax,3
 		lea		eax,[eax+20h]
-		test	Ram[eax],dl
+		test	addin.Ram[eax],dl
 	.else
 		and		eax,0F8h
-		test	Sfr[eax],dl
+		test	addin.Sfr[eax],dl
 	.endif
 	.if !ZERO?
 		movsx	ecx,ch
@@ -939,23 +910,23 @@ JB_$bad_$cad:
 	ret
 
 RET_:
-	movzx	edx,Sfr[SFR_SP]
-	mov		bh,Ram[edx]
+	movzx	edx,addin.Sfr[SFR_SP]
+	mov		bh,addin.Ram[edx]
 	dec		dl
-	mov		bl,Ram[edx]
+	mov		bl,addin.Ram[edx]
 	dec		dl
-	mov		Sfr[SFR_SP],dl
+	mov		addin.Sfr[SFR_SP],dl
 	ret
 
 RL_A:
-	rol		Sfr[SFR_ACC],1
+	rol		addin.Sfr[SFR_ACC],1
 	lea		ebx,[ebx+1]
 	ret
 
 ADD_A_imm:
 	movzx	eax,byte ptr [esi+ebx+1]
 	lea		ebx,[ebx+2]
-	add		Sfr[SFR_ACC],al
+	add		addin.Sfr[SFR_ACC],al
 	invoke SetFlags
 	ret
 
@@ -963,102 +934,102 @@ ADD_A_$dad:
 	movzx	edx,byte ptr [esi+ebx+1]
 	lea		ebx,[ebx+2]
 	.if edx<80h
-		movzx	eax,Ram[edx]
+		movzx	eax,addin.Ram[edx]
 	.else
-		movzx	eax,Sfr[edx]
+		movzx	eax,addin.Sfr[edx]
 	.endif
-	add		Sfr[SFR_ACC],al
+	add		addin.Sfr[SFR_ACC],al
 	invoke SetFlags
 	ret
 
 ADD_A_@R0:
-	mov		eax,Bank
+	mov		eax,addin.Bank
 	lea		eax,[eax*8+0]
-	movzx	eax,Ram[eax]
-	movzx	eax,Ram[eax]
-	add		Sfr[SFR_ACC],al
+	movzx	eax,addin.Ram[eax]
+	movzx	eax,addin.Ram[eax]
+	add		addin.Sfr[SFR_ACC],al
 	invoke SetFlags
 	lea		ebx,[ebx+1]
 	ret
 
 ADD_A_@R1:
-	mov		eax,Bank
+	mov		eax,addin.Bank
 	lea		eax,[eax*8+1]
-	movzx	eax,Ram[eax]
-	movzx	eax,Ram[eax]
-	add		Sfr[SFR_ACC],al
+	movzx	eax,addin.Ram[eax]
+	movzx	eax,addin.Ram[eax]
+	add		addin.Sfr[SFR_ACC],al
 	invoke SetFlags
 	lea		ebx,[ebx+1]
 	ret
 
 ADD_A_R0:
-	mov		eax,Bank
+	mov		eax,addin.Bank
 	lea		eax,[eax*8+0]
-	movzx	eax,Ram[eax]
-	add		Sfr[SFR_ACC],al
+	movzx	eax,addin.Ram[eax]
+	add		addin.Sfr[SFR_ACC],al
 	invoke SetFlags
 	lea		ebx,[ebx+1]
 	ret
 
 ADD_A_R1:
-	mov		eax,Bank
+	mov		eax,addin.Bank
 	lea		eax,[eax*8+1]
-	movzx	eax,Ram[eax]
-	add		Sfr[SFR_ACC],al
+	movzx	eax,addin.Ram[eax]
+	add		addin.Sfr[SFR_ACC],al
 	invoke SetFlags
 	lea		ebx,[ebx+1]
 	ret
 
 ADD_A_R2:
-	mov		eax,Bank
+	mov		eax,addin.Bank
 	lea		eax,[eax*8+2]
-	movzx	eax,Ram[eax]
-	add		Sfr[SFR_ACC],al
+	movzx	eax,addin.Ram[eax]
+	add		addin.Sfr[SFR_ACC],al
 	invoke SetFlags
 	lea		ebx,[ebx+1]
 	ret
 
 ADD_A_R3:
-	mov		eax,Bank
+	mov		eax,addin.Bank
 	lea		eax,[eax*8+3]
-	movzx	eax,Ram[eax]
-	add		Sfr[SFR_ACC],al
+	movzx	eax,addin.Ram[eax]
+	add		addin.Sfr[SFR_ACC],al
 	invoke SetFlags
 	lea		ebx,[ebx+1]
 	ret
 
 ADD_A_R4:
-	mov		eax,Bank
+	mov		eax,addin.Bank
 	lea		eax,[eax*8+4]
-	movzx	eax,Ram[eax]
-	add		Sfr[SFR_ACC],al
+	movzx	eax,addin.Ram[eax]
+	add		addin.Sfr[SFR_ACC],al
 	invoke SetFlags
 	lea		ebx,[ebx+1]
 	ret
 
 ADD_A_R5:
-	mov		eax,Bank
+	mov		eax,addin.Bank
 	lea		eax,[eax*8+5]
-	movzx	eax,Ram[eax]
-	add		Sfr[SFR_ACC],al
+	movzx	eax,addin.Ram[eax]
+	add		addin.Sfr[SFR_ACC],al
 	invoke SetFlags
 	lea		ebx,[ebx+1]
 	ret
 
 ADD_A_R6:
-	mov		eax,Bank
+	mov		eax,addin.Bank
 	lea		eax,[eax*8+6]
-	movzx	eax,Ram[eax]
-	add		Sfr[SFR_ACC],al
+	movzx	eax,addin.Ram[eax]
+	add		addin.Sfr[SFR_ACC],al
 	invoke SetFlags
 	lea		ebx,[ebx+1]
 	ret
 
 ADD_A_R7:
-	mov		eax,Bank
+	mov		eax,addin.Bank
 	lea		eax,[eax*8+7]
-	movzx	eax,Ram[eax]
-	add		Sfr[SFR_ACC],al
+	movzx	eax,addin.Ram[eax]
+	add		addin.Sfr[SFR_ACC],al
 	invoke SetFlags
 	lea		ebx,[ebx+1]
 	ret
@@ -1074,10 +1045,10 @@ JNB_$bad_$cad:
 	.if al<80h
 		shr		eax,3
 		lea		eax,[eax+20h]
-		test	Ram[eax],dl
+		test	addin.Ram[eax],dl
 	.else
 		and		eax,0F8h
-		test	Sfr[eax],dl
+		test	addin.Sfr[eax],dl
 	.endif
 	.if ZERO?
 		movsx	ecx,ch
@@ -1086,152 +1057,152 @@ JNB_$bad_$cad:
 	ret
 
 RETI_:
-	movzx	edx,Sfr[SFR_SP]
-	mov		bh,Ram[edx]
+	movzx	edx,addin.Sfr[SFR_SP]
+	mov		bh,addin.Ram[edx]
 	dec		dl
-	mov		bl,Ram[edx]
+	mov		bl,addin.Ram[edx]
 	dec		dl
-	mov		Sfr[SFR_SP],dl
+	mov		addin.Sfr[SFR_SP],dl
 	ret
 
 RLC_A:
-	movzx	eax,Sfr[SFR_PSW]
+	movzx	eax,addin.Sfr[SFR_PSW]
 	rcl		al,1
-	rcl		Sfr[SFR_ACC],1
+	rcl		addin.Sfr[SFR_ACC],1
 	lea		ebx,[ebx+1]
 	ret
 
 ADDC_A_imm:
-	movzx	eax,Sfr[SFR_PSW]
+	movzx	eax,addin.Sfr[SFR_PSW]
 	rcl		al,1
 	movzx	eax,byte ptr [esi+ebx+1]
 	lea		ebx,[ebx+2]
-	adc		Sfr[SFR_ACC],al
+	adc		addin.Sfr[SFR_ACC],al
 	invoke SetFlags
 	ret
 
 ADDC_A_$dad:
-	movzx	eax,Sfr[SFR_PSW]
+	movzx	eax,addin.Sfr[SFR_PSW]
 	rcl		al,1
 	movzx	edx,byte ptr [esi+ebx+1]
 	lea		ebx,[ebx+2]
 	.if edx<80h
-		movzx	eax,Ram[edx]
+		movzx	eax,addin.Ram[edx]
 	.else
-		movzx	eax,Sfr[edx]
+		movzx	eax,addin.Sfr[edx]
 	.endif
-	adc		Sfr[SFR_ACC],al
+	adc		addin.Sfr[SFR_ACC],al
 	invoke SetFlags
 	ret
 
 ADDC_A_@R0:
-	movzx	eax,Sfr[SFR_PSW]
+	movzx	eax,addin.Sfr[SFR_PSW]
 	rcl		al,1
-	mov		eax,Bank
+	mov		eax,addin.Bank
 	lea		eax,[eax*8+0]
-	movzx	eax,Ram[eax]
-	movzx	eax,Ram[eax]
-	adc		Sfr[SFR_ACC],al
+	movzx	eax,addin.Ram[eax]
+	movzx	eax,addin.Ram[eax]
+	adc		addin.Sfr[SFR_ACC],al
 	invoke SetFlags
 	lea		ebx,[ebx+1]
 	ret
 
 ADDC_A_@R1:
-	movzx	eax,Sfr[SFR_PSW]
+	movzx	eax,addin.Sfr[SFR_PSW]
 	rcl		al,1
-	mov		eax,Bank
+	mov		eax,addin.Bank
 	lea		eax,[eax*8+1]
-	movzx	eax,Ram[eax]
-	movzx	eax,Ram[eax]
-	adc		Sfr[SFR_ACC],al
+	movzx	eax,addin.Ram[eax]
+	movzx	eax,addin.Ram[eax]
+	adc		addin.Sfr[SFR_ACC],al
 	invoke SetFlags
 	lea		ebx,[ebx+1]
 	ret
 
 ADDC_A_R0:
-	movzx	eax,Sfr[SFR_PSW]
+	movzx	eax,addin.Sfr[SFR_PSW]
 	rcl		al,1
-	mov		eax,Bank
+	mov		eax,addin.Bank
 	lea		eax,[eax*8+0]
-	movzx	eax,Ram[eax]
-	adc		Sfr[SFR_ACC],al
+	movzx	eax,addin.Ram[eax]
+	adc		addin.Sfr[SFR_ACC],al
 	invoke SetFlags
 	lea		ebx,[ebx+1]
 	ret
 
 ADDC_A_R1:
-	movzx	eax,Sfr[SFR_PSW]
+	movzx	eax,addin.Sfr[SFR_PSW]
 	rcl		al,1
-	mov		eax,Bank
+	mov		eax,addin.Bank
 	lea		eax,[eax*8+1]
-	movzx	eax,Ram[eax]
-	adc		Sfr[SFR_ACC],al
+	movzx	eax,addin.Ram[eax]
+	adc		addin.Sfr[SFR_ACC],al
 	invoke SetFlags
 	lea		ebx,[ebx+1]
 	ret
 
 ADDC_A_R2:
-	movzx	eax,Sfr[SFR_PSW]
+	movzx	eax,addin.Sfr[SFR_PSW]
 	rcl		al,1
-	mov		eax,Bank
+	mov		eax,addin.Bank
 	lea		eax,[eax*8+2]
-	movzx	eax,Ram[eax]
-	adc		Sfr[SFR_ACC],al
+	movzx	eax,addin.Ram[eax]
+	adc		addin.Sfr[SFR_ACC],al
 	invoke SetFlags
 	lea		ebx,[ebx+1]
 	ret
 
 ADDC_A_R3:
-	movzx	eax,Sfr[SFR_PSW]
+	movzx	eax,addin.Sfr[SFR_PSW]
 	rcl		al,1
-	mov		eax,Bank
+	mov		eax,addin.Bank
 	lea		eax,[eax*8+3]
-	movzx	eax,Ram[eax]
-	adc		Sfr[SFR_ACC],al
+	movzx	eax,addin.Ram[eax]
+	adc		addin.Sfr[SFR_ACC],al
 	invoke SetFlags
 	lea		ebx,[ebx+1]
 	ret
 
 ADDC_A_R4:
-	movzx	eax,Sfr[SFR_PSW]
+	movzx	eax,addin.Sfr[SFR_PSW]
 	rcl		al,1
-	mov		eax,Bank
+	mov		eax,addin.Bank
 	lea		eax,[eax*8+4]
-	movzx	eax,Ram[eax]
-	adc		Sfr[SFR_ACC],al
+	movzx	eax,addin.Ram[eax]
+	adc		addin.Sfr[SFR_ACC],al
 	invoke SetFlags
 	lea		ebx,[ebx+1]
 	ret
 
 ADDC_A_R5:
-	movzx	eax,Sfr[SFR_PSW]
+	movzx	eax,addin.Sfr[SFR_PSW]
 	rcl		al,1
-	mov		eax,Bank
+	mov		eax,addin.Bank
 	lea		eax,[eax*8+5]
-	movzx	eax,Ram[eax]
-	adc		Sfr[SFR_ACC],al
+	movzx	eax,addin.Ram[eax]
+	adc		addin.Sfr[SFR_ACC],al
 	invoke SetFlags
 	lea		ebx,[ebx+1]
 	ret
 
 ADDC_A_R6:
-	movzx	eax,Sfr[SFR_PSW]
+	movzx	eax,addin.Sfr[SFR_PSW]
 	rcl		al,1
-	mov		eax,Bank
+	mov		eax,addin.Bank
 	lea		eax,[eax*8+6]
-	movzx	eax,Ram[eax]
-	adc		Sfr[SFR_ACC],al
+	movzx	eax,addin.Ram[eax]
+	adc		addin.Sfr[SFR_ACC],al
 	invoke SetFlags
 	lea		ebx,[ebx+1]
 	ret
 
 ADDC_A_R7:
-	movzx	eax,Sfr[SFR_PSW]
+	movzx	eax,addin.Sfr[SFR_PSW]
 	rcl		al,1
-	mov		eax,Bank
+	mov		eax,addin.Bank
 	lea		eax,[eax*8+7]
-	movzx	eax,Ram[eax]
-	adc		Sfr[SFR_ACC],al
+	movzx	eax,addin.Ram[eax]
+	adc		addin.Sfr[SFR_ACC],al
 	invoke SetFlags
 	lea		ebx,[ebx+1]
 	ret
@@ -1240,7 +1211,7 @@ ADDC_A_R7:
 JC_$cad:
 	movsx	ecx,byte ptr [esi+ebx+1]
 	lea		ebx,[ebx+2]
-	movzx	eax,Sfr[SFR_PSW]
+	movzx	eax,addin.Sfr[SFR_PSW]
 	rcl		al,1
 	.if CARRY?
 		lea		ebx,[ebx+ecx]
@@ -1250,8 +1221,8 @@ JC_$cad:
 ORL_$dad_A:
 	movzx	edx,byte ptr [esi+ebx+1]
 	lea		ebx,[ebx+2]
-	movzx	eax,Sfr[SFR_ACC]
-	or		Ram[edx],al
+	movzx	eax,addin.Sfr[SFR_ACC]
+	or		addin.Ram[edx],al
 	invoke SetFlags
 	ret
 
@@ -1259,14 +1230,14 @@ ORL_$dad_imm:
 	movzx	edx,byte ptr [esi+ebx+1]
 	movzx	eax,byte ptr [esi+ebx+2]
 	lea		ebx,[ebx+3]
-	or		Ram[edx],al
+	or		addin.Ram[edx],al
 	invoke SetFlags
 	ret
 
 ORL_A_imm:
 	movzx	eax,byte ptr [esi+ebx+1]
 	lea		ebx,[ebx+2]
-	or		Sfr[SFR_ACC],al
+	or		addin.Sfr[SFR_ACC],al
 	invoke SetFlags
 	ret
 
@@ -1274,102 +1245,102 @@ ORL_A_$dad:
 	movzx	edx,byte ptr [esi+ebx+1]
 	lea		ebx,[ebx+2]
 	.if edx<80h
-		movzx	eax,Ram[edx]
+		movzx	eax,addin.Ram[edx]
 	.else
-		movzx	eax,Sfr[edx]
+		movzx	eax,addin.Sfr[edx]
 	.endif
-	or		Sfr[SFR_ACC],al
+	or		addin.Sfr[SFR_ACC],al
 	invoke SetFlags
 	ret
 
 ORL_A_@R0:
-	mov		eax,Bank
+	mov		eax,addin.Bank
 	lea		eax,[eax*8+0]
-	movzx	eax,Ram[eax]
-	movzx	eax,Ram[eax]
-	or		Sfr[SFR_ACC],al
+	movzx	eax,addin.Ram[eax]
+	movzx	eax,addin.Ram[eax]
+	or		addin.Sfr[SFR_ACC],al
 	invoke SetFlags
 	lea		ebx,[ebx+1]
 	ret
 
 ORL_A_@R1:
-	mov		eax,Bank
+	mov		eax,addin.Bank
 	lea		eax,[eax*8+1]
-	movzx	eax,Ram[eax]
-	movzx	eax,Ram[eax]
-	or		Sfr[SFR_ACC],al
+	movzx	eax,addin.Ram[eax]
+	movzx	eax,addin.Ram[eax]
+	or		addin.Sfr[SFR_ACC],al
 	invoke SetFlags
 	lea		ebx,[ebx+1]
 	ret
 
 ORL_A_R0:
-	mov		eax,Bank
+	mov		eax,addin.Bank
 	lea		eax,[eax*8+0]
-	movzx	eax,Ram[eax]
-	or		Sfr[SFR_ACC],al
+	movzx	eax,addin.Ram[eax]
+	or		addin.Sfr[SFR_ACC],al
 	invoke SetFlags
 	lea		ebx,[ebx+1]
 	ret
 
 ORL_A_R1:
-	mov		eax,Bank
+	mov		eax,addin.Bank
 	lea		eax,[eax*8+1]
-	movzx	eax,Ram[eax]
-	or		Sfr[SFR_ACC],al
+	movzx	eax,addin.Ram[eax]
+	or		addin.Sfr[SFR_ACC],al
 	invoke SetFlags
 	lea		ebx,[ebx+1]
 	ret
 
 ORL_A_R2:
-	mov		eax,Bank
+	mov		eax,addin.Bank
 	lea		eax,[eax*8+2]
-	movzx	eax,Ram[eax]
-	or		Sfr[SFR_ACC],al
+	movzx	eax,addin.Ram[eax]
+	or		addin.Sfr[SFR_ACC],al
 	invoke SetFlags
 	lea		ebx,[ebx+1]
 	ret
 
 ORL_A_R3:
-	mov		eax,Bank
+	mov		eax,addin.Bank
 	lea		eax,[eax*8+3]
-	movzx	eax,Ram[eax]
-	or		Sfr[SFR_ACC],al
+	movzx	eax,addin.Ram[eax]
+	or		addin.Sfr[SFR_ACC],al
 	invoke SetFlags
 	lea		ebx,[ebx+1]
 	ret
 
 ORL_A_R4:
-	mov		eax,Bank
+	mov		eax,addin.Bank
 	lea		eax,[eax*8+4]
-	movzx	eax,Ram[eax]
-	or		Sfr[SFR_ACC],al
+	movzx	eax,addin.Ram[eax]
+	or		addin.Sfr[SFR_ACC],al
 	invoke SetFlags
 	lea		ebx,[ebx+1]
 	ret
 
 ORL_A_R5:
-	mov		eax,Bank
+	mov		eax,addin.Bank
 	lea		eax,[eax*8+5]
-	movzx	eax,Ram[eax]
-	or		Sfr[SFR_ACC],al
+	movzx	eax,addin.Ram[eax]
+	or		addin.Sfr[SFR_ACC],al
 	invoke SetFlags
 	lea		ebx,[ebx+1]
 	ret
 
 ORL_A_R6:
-	mov		eax,Bank
+	mov		eax,addin.Bank
 	lea		eax,[eax*8+6]
-	movzx	eax,Ram[eax]
-	or		Sfr[SFR_ACC],al
+	movzx	eax,addin.Ram[eax]
+	or		addin.Sfr[SFR_ACC],al
 	invoke SetFlags
 	lea		ebx,[ebx+1]
 	ret
 
 ORL_A_R7:
-	mov		eax,Bank
+	mov		eax,addin.Bank
 	lea		eax,[eax*8+7]
-	movzx	eax,Ram[eax]
-	or		Sfr[SFR_ACC],al
+	movzx	eax,addin.Ram[eax]
+	or		addin.Sfr[SFR_ACC],al
 	invoke SetFlags
 	lea		ebx,[ebx+1]
 	ret
@@ -1378,7 +1349,7 @@ ORL_A_R7:
 JNC_$cad:
 	movsx	ecx,byte ptr [esi+ebx+1]
 	lea		ebx,[ebx+2]
-	movzx	eax,Sfr[SFR_PSW]
+	movzx	eax,addin.Sfr[SFR_PSW]
 	rcl		al,1
 	.if !CARRY?
 		lea		ebx,[ebx+ecx]
@@ -1388,8 +1359,8 @@ JNC_$cad:
 ANL_$dad_A:
 	movzx	edx,byte ptr [esi+ebx+1]
 	lea		ebx,[ebx+2]
-	movzx	eax,Sfr[SFR_ACC]
-	and		Ram[edx],al
+	movzx	eax,addin.Sfr[SFR_ACC]
+	and		addin.Ram[edx],al
 	invoke SetFlags
 	ret
 
@@ -1397,14 +1368,14 @@ ANL_$dad_imm:
 	movzx	edx,byte ptr [esi+ebx+1]
 	movzx	eax,byte ptr [esi+ebx+2]
 	lea		ebx,[ebx+3]
-	and		Ram[edx],al
+	and		addin.Ram[edx],al
 	invoke SetFlags
 	ret
 
 ANL_A_imm:
 	movzx	eax,byte ptr [esi+ebx+1]
 	lea		ebx,[ebx+2]
-	and		Sfr[SFR_ACC],al
+	and		addin.Sfr[SFR_ACC],al
 	invoke SetFlags
 	ret
 
@@ -1412,102 +1383,102 @@ ANL_A_$dad:
 	movzx	edx,byte ptr [esi+ebx+1]
 	lea		ebx,[ebx+2]
 	.if edx<80h
-		movzx	eax,Ram[edx]
+		movzx	eax,addin.Ram[edx]
 	.else
-		movzx	eax,Sfr[edx]
+		movzx	eax,addin.Sfr[edx]
 	.endif
-	and		Sfr[SFR_ACC],al
+	and		addin.Sfr[SFR_ACC],al
 	invoke SetFlags
 	ret
 
 ANL_A_@R0:
-	mov		eax,Bank
+	mov		eax,addin.Bank
 	lea		eax,[eax*8+0]
-	movzx	eax,Ram[eax]
-	movzx	eax,Ram[eax]
-	and		Sfr[SFR_ACC],al
+	movzx	eax,addin.Ram[eax]
+	movzx	eax,addin.Ram[eax]
+	and		addin.Sfr[SFR_ACC],al
 	invoke SetFlags
 	lea		ebx,[ebx+1]
 	ret
 
 ANL_A_@R1:
-	mov		eax,Bank
+	mov		eax,addin.Bank
 	lea		eax,[eax*8+1]
-	movzx	eax,Ram[eax]
-	movzx	eax,Ram[eax]
-	and		Sfr[SFR_ACC],al
+	movzx	eax,addin.Ram[eax]
+	movzx	eax,addin.Ram[eax]
+	and		addin.Sfr[SFR_ACC],al
 	invoke SetFlags
 	lea		ebx,[ebx+1]
 	ret
 
 ANL_A_R0:
-	mov		eax,Bank
+	mov		eax,addin.Bank
 	lea		eax,[eax*8+0]
-	movzx	eax,Ram[eax]
-	and		Sfr[SFR_ACC],al
+	movzx	eax,addin.Ram[eax]
+	and		addin.Sfr[SFR_ACC],al
 	invoke SetFlags
 	lea		ebx,[ebx+1]
 	ret
 
 ANL_A_R1:
-	mov		eax,Bank
+	mov		eax,addin.Bank
 	lea		eax,[eax*8+1]
-	movzx	eax,Ram[eax]
-	and		Sfr[SFR_ACC],al
+	movzx	eax,addin.Ram[eax]
+	and		addin.Sfr[SFR_ACC],al
 	invoke SetFlags
 	lea		ebx,[ebx+1]
 	ret
 
 ANL_A_R2:
-	mov		eax,Bank
+	mov		eax,addin.Bank
 	lea		eax,[eax*8+2]
-	movzx	eax,Ram[eax]
-	and		Sfr[SFR_ACC],al
+	movzx	eax,addin.Ram[eax]
+	and		addin.Sfr[SFR_ACC],al
 	invoke SetFlags
 	lea		ebx,[ebx+1]
 	ret
 
 ANL_A_R3:
-	mov		eax,Bank
+	mov		eax,addin.Bank
 	lea		eax,[eax*8+3]
-	movzx	eax,Ram[eax]
-	and		Sfr[SFR_ACC],al
+	movzx	eax,addin.Ram[eax]
+	and		addin.Sfr[SFR_ACC],al
 	invoke SetFlags
 	lea		ebx,[ebx+1]
 	ret
 
 ANL_A_R4:
-	mov		eax,Bank
+	mov		eax,addin.Bank
 	lea		eax,[eax*8+4]
-	movzx	eax,Ram[eax]
-	and		Sfr[SFR_ACC],al
+	movzx	eax,addin.Ram[eax]
+	and		addin.Sfr[SFR_ACC],al
 	invoke SetFlags
 	lea		ebx,[ebx+1]
 	ret
 
 ANL_A_R5:
-	mov		eax,Bank
+	mov		eax,addin.Bank
 	lea		eax,[eax*8+5]
-	movzx	eax,Ram[eax]
-	and		Sfr[SFR_ACC],al
+	movzx	eax,addin.Ram[eax]
+	and		addin.Sfr[SFR_ACC],al
 	invoke SetFlags
 	lea		ebx,[ebx+1]
 	ret
 
 ANL_A_R6:
-	mov		eax,Bank
+	mov		eax,addin.Bank
 	lea		eax,[eax*8+6]
-	movzx	eax,Ram[eax]
-	and		Sfr[SFR_ACC],al
+	movzx	eax,addin.Ram[eax]
+	and		addin.Sfr[SFR_ACC],al
 	invoke SetFlags
 	lea		ebx,[ebx+1]
 	ret
 
 ANL_A_R7:
-	mov		eax,Bank
+	mov		eax,addin.Bank
 	lea		eax,[eax*8+7]
-	movzx	eax,Ram[eax]
-	and		Sfr[SFR_ACC],al
+	movzx	eax,addin.Ram[eax]
+	and		addin.Sfr[SFR_ACC],al
 	invoke SetFlags
 	lea		ebx,[ebx+1]
 	ret
@@ -1516,7 +1487,7 @@ ANL_A_R7:
 JZ_$cad:
 	movsx	ecx,byte ptr [esi+ebx+1]
 	lea		ebx,[ebx+2]
-	movzx	eax,Sfr[SFR_ACC]
+	movzx	eax,addin.Sfr[SFR_ACC]
 	or		eax,eax
 	.if ZERO?
 		lea		ebx,[ebx+ecx]
@@ -1526,8 +1497,8 @@ JZ_$cad:
 XRL_$dad_A:
 	movzx	edx,byte ptr [esi+ebx+1]
 	lea		ebx,[ebx+2]
-	movzx	eax,Sfr[SFR_ACC]
-	xor		Ram[edx],al
+	movzx	eax,addin.Sfr[SFR_ACC]
+	xor		addin.Ram[edx],al
 	invoke SetFlags
 	ret
 
@@ -1535,14 +1506,14 @@ XRL_$dad_imm:
 	movzx	edx,byte ptr [esi+ebx+1]
 	movzx	eax,byte ptr [esi+ebx+2]
 	lea		ebx,[ebx+3]
-	xor		Ram[edx],al
+	xor		addin.Ram[edx],al
 	invoke SetFlags
 	ret
 
 XRL_A_imm:
 	movzx	eax,byte ptr [esi+ebx+1]
 	lea		ebx,[ebx+2]
-	xor		Sfr[SFR_ACC],al
+	xor		addin.Sfr[SFR_ACC],al
 	invoke SetFlags
 	ret
 
@@ -1550,102 +1521,102 @@ XRL_A_$dad:
 	movzx	edx,byte ptr [esi+ebx+1]
 	lea		ebx,[ebx+2]
 	.if edx<80h
-		movzx	eax,Ram[edx]
+		movzx	eax,addin.Ram[edx]
 	.else
-		movzx	eax,Sfr[edx]
+		movzx	eax,addin.Sfr[edx]
 	.endif
-	xor		Sfr[SFR_ACC],al
+	xor		addin.Sfr[SFR_ACC],al
 	invoke SetFlags
 	ret
 
 XRL_A_@R0:
-	mov		eax,Bank
+	mov		eax,addin.Bank
 	lea		eax,[eax*8+0]
-	movzx	eax,Ram[eax]
-	movzx	eax,Ram[eax]
-	xor		Sfr[SFR_ACC],al
+	movzx	eax,addin.Ram[eax]
+	movzx	eax,addin.Ram[eax]
+	xor		addin.Sfr[SFR_ACC],al
 	invoke SetFlags
 	lea		ebx,[ebx+1]
 	ret
 
 XRL_A_@R1:
-	mov		eax,Bank
+	mov		eax,addin.Bank
 	lea		eax,[eax*8+1]
-	movzx	eax,Ram[eax]
-	movzx	eax,Ram[eax]
-	xor		Sfr[SFR_ACC],al
+	movzx	eax,addin.Ram[eax]
+	movzx	eax,addin.Ram[eax]
+	xor		addin.Sfr[SFR_ACC],al
 	invoke SetFlags
 	lea		ebx,[ebx+1]
 	ret
 
 XRL_A_R0:
-	mov		eax,Bank
+	mov		eax,addin.Bank
 	lea		eax,[eax*8+0]
-	movzx	eax,Ram[eax]
-	xor		Sfr[SFR_ACC],al
+	movzx	eax,addin.Ram[eax]
+	xor		addin.Sfr[SFR_ACC],al
 	invoke SetFlags
 	lea		ebx,[ebx+1]
 	ret
 
 XRL_A_R1:
-	mov		eax,Bank
+	mov		eax,addin.Bank
 	lea		eax,[eax*8+1]
-	movzx	eax,Ram[eax]
-	xor		Sfr[SFR_ACC],al
+	movzx	eax,addin.Ram[eax]
+	xor		addin.Sfr[SFR_ACC],al
 	invoke SetFlags
 	lea		ebx,[ebx+1]
 	ret
 
 XRL_A_R2:
-	mov		eax,Bank
+	mov		eax,addin.Bank
 	lea		eax,[eax*8+2]
-	movzx	eax,Ram[eax]
-	xor		Sfr[SFR_ACC],al
+	movzx	eax,addin.Ram[eax]
+	xor		addin.Sfr[SFR_ACC],al
 	invoke SetFlags
 	lea		ebx,[ebx+1]
 	ret
 
 XRL_A_R3:
-	mov		eax,Bank
+	mov		eax,addin.Bank
 	lea		eax,[eax*8+3]
-	movzx	eax,Ram[eax]
-	xor		Sfr[SFR_ACC],al
+	movzx	eax,addin.Ram[eax]
+	xor		addin.Sfr[SFR_ACC],al
 	invoke SetFlags
 	lea		ebx,[ebx+1]
 	ret
 
 XRL_A_R4:
-	mov		eax,Bank
+	mov		eax,addin.Bank
 	lea		eax,[eax*8+4]
-	movzx	eax,Ram[eax]
-	xor		Sfr[SFR_ACC],al
+	movzx	eax,addin.Ram[eax]
+	xor		addin.Sfr[SFR_ACC],al
 	invoke SetFlags
 	lea		ebx,[ebx+1]
 	ret
 
 XRL_A_R5:
-	mov		eax,Bank
+	mov		eax,addin.Bank
 	lea		eax,[eax*8+5]
-	movzx	eax,Ram[eax]
-	xor		Sfr[SFR_ACC],al
+	movzx	eax,addin.Ram[eax]
+	xor		addin.Sfr[SFR_ACC],al
 	invoke SetFlags
 	lea		ebx,[ebx+1]
 	ret
 
 XRL_A_R6:
-	mov		eax,Bank
+	mov		eax,addin.Bank
 	lea		eax,[eax*8+6]
-	movzx	eax,Ram[eax]
-	xor		Sfr[SFR_ACC],al
+	movzx	eax,addin.Ram[eax]
+	xor		addin.Sfr[SFR_ACC],al
 	invoke SetFlags
 	lea		ebx,[ebx+1]
 	ret
 
 XRL_A_R7:
-	mov		eax,Bank
+	mov		eax,addin.Bank
 	lea		eax,[eax*8+7]
-	movzx	eax,Ram[eax]
-	xor		Sfr[SFR_ACC],al
+	movzx	eax,addin.Ram[eax]
+	xor		addin.Sfr[SFR_ACC],al
 	invoke SetFlags
 	lea		ebx,[ebx+1]
 	ret
@@ -1654,7 +1625,7 @@ XRL_A_R7:
 JNZ_$cad:
 	movsx	ecx,byte ptr [esi+ebx+1]
 	lea		ebx,[ebx+2]
-	movzx	eax,Sfr[SFR_ACC]
+	movzx	eax,addin.Sfr[SFR_ACC]
 	or		eax,eax
 	.if !ZERO?
 		lea		ebx,[ebx+ecx]
@@ -1671,31 +1642,31 @@ ORL_C_$bad:
 	.if al<80h
 		shr		eax,3
 		lea		eax,[eax+20h]
-		and		dl,Ram[eax]
+		and		dl,addin.Ram[eax]
 	.else
 		and		eax,0F8h
-		and		dl,Sfr[eax]
+		and		dl,addin.Sfr[eax]
 	.endif
 	.if dl
-		or		Sfr[SFR_PSW],80h
+		or		addin.Sfr[SFR_PSW],80h
 	.endif
 	ret
 
 JMP_@A_DPTR:
-	movzx	eax,Sfr[SFR_AUXR1]
+	movzx	eax,addin.Sfr[SFR_AUXR1]
 	and		eax,1
 	.if ZERO?
-		movzx	dx,Sfr[SFR_DPL]
+		movzx	dx,addin.Sfr[SFR_DPL]
 	.else
-		movzx	dx,Sfr[SFR_DP1L]
+		movzx	dx,addin.Sfr[SFR_DP1L]
 	.endif
-	movzx	eax,Sfr[SFR_ACC]
+	movzx	eax,addin.Sfr[SFR_ACC]
 	lea		ebx,[edx+eax]
 	ret
 
 MOV_A_imm:
 	movzx	eax,byte ptr [esi+ebx+1]
-	mov		Sfr[SFR_ACC],al
+	mov		addin.Sfr[SFR_ACC],al
 	lea		ebx,[ebx+2]
 	ret
 
@@ -1703,15 +1674,15 @@ MOV_$dad_imm:
 	movzx	edx,byte ptr [esi+ebx+1]
 	movzx	eax,byte ptr [esi+ebx+2]
 	.if edx<80h
-		mov		Ram[edx],al
+		mov		addin.Ram[edx],al
 	.else
 		.if edx==SFR_SBUF
 			mov		SBUFWR,eax
 			invoke ScreenChar,SBUFWR
 		.else
-			mov		Sfr[edx],al
+			mov		addin.Sfr[edx],al
 			.if edx==SFR_P0 || edx==SFR_P1 || edx==SFR_P2 || edx==SFR_P3
-				movzx	eax,Sfr[edx]
+				movzx	eax,addin.Sfr[edx]
 				invoke SetPort,edx,eax
 			.endif
 		.endif
@@ -1720,85 +1691,85 @@ MOV_$dad_imm:
 	ret
 	
 MOV_@R0_imm:
-	mov		eax,Bank
+	mov		eax,addin.Bank
 	lea		eax,[eax*8+0]
-	movzx	edx,Ram[eax]
+	movzx	edx,addin.Ram[eax]
 	movzx	eax,byte ptr [esi+ebx+1]
-	mov		Ram[edx],al
+	mov		addin.Ram[edx],al
 	lea		ebx,[ebx+2]
 	ret
 
 MOV_@R1_imm:
-	mov		eax,Bank
+	mov		eax,addin.Bank
 	lea		eax,[eax*8+1]
-	movzx	edx,Ram[eax]
+	movzx	edx,addin.Ram[eax]
 	movzx	eax,byte ptr [esi+ebx+1]
-	mov		Ram[edx],al
+	mov		addin.Ram[edx],al
 	lea		ebx,[ebx+2]
 	ret
 
 MOV_R0_imm:
 	movzx	ecx,byte ptr [esi+ebx+1]
 	lea		ebx,[ebx+2]
-	mov		eax,Bank
+	mov		eax,addin.Bank
 	lea		eax,[eax*8+0]
-	mov		Ram[eax],cl
+	mov		addin.Ram[eax],cl
 	ret
 
 MOV_R1_imm:
 	movzx	ecx,byte ptr [esi+ebx+1]
 	lea		ebx,[ebx+2]
-	mov		eax,Bank
+	mov		eax,addin.Bank
 	lea		eax,[eax*8+1]
-	mov		Ram[eax],cl
+	mov		addin.Ram[eax],cl
 	ret
 
 MOV_R2_imm:
 	movzx	ecx,byte ptr [esi+ebx+1]
 	lea		ebx,[ebx+2]
-	mov		eax,Bank
+	mov		eax,addin.Bank
 	lea		eax,[eax*8+2]
-	mov		Ram[eax],cl
+	mov		addin.Ram[eax],cl
 	ret
 
 MOV_R3_imm:
 	movzx	ecx,byte ptr [esi+ebx+1]
 	lea		ebx,[ebx+2]
-	mov		eax,Bank
+	mov		eax,addin.Bank
 	lea		eax,[eax*8+3]
-	mov		Ram[eax],cl
+	mov		addin.Ram[eax],cl
 	ret
 
 MOV_R4_imm:
 	movzx	ecx,byte ptr [esi+ebx+1]
 	lea		ebx,[ebx+2]
-	mov		eax,Bank
+	mov		eax,addin.Bank
 	lea		eax,[eax*8+4]
-	mov		Ram[eax],cl
+	mov		addin.Ram[eax],cl
 	ret
 
 MOV_R5_imm:
 	movzx	ecx,byte ptr [esi+ebx+1]
 	lea		ebx,[ebx+2]
-	mov		eax,Bank
+	mov		eax,addin.Bank
 	lea		eax,[eax*8+5]
-	mov		Ram[eax],cl
+	mov		addin.Ram[eax],cl
 	ret
 
 MOV_R6_imm:
 	movzx	ecx,byte ptr [esi+ebx+1]
 	lea		ebx,[ebx+2]
-	mov		eax,Bank
+	mov		eax,addin.Bank
 	lea		eax,[eax*8+6]
-	mov		Ram[eax],cl
+	mov		addin.Ram[eax],cl
 	ret
 
 MOV_R7_imm:
 	movzx	ecx,byte ptr [esi+ebx+1]
 	lea		ebx,[ebx+2]
-	mov		eax,Bank
+	mov		eax,addin.Bank
 	lea		eax,[eax*8+7]
-	mov		Ram[eax],cl
+	mov		addin.Ram[eax],cl
 	ret
 
 ;------------------------------------------------------------------------------
@@ -1818,61 +1789,61 @@ ANL_C_$bad:
 	.if al<80h
 		shr		eax,3
 		lea		eax,[eax+20h]
-		and		dl,Ram[eax]
+		and		dl,addin.Ram[eax]
 	.else
 		and		eax,0F8h
-		and		dl,Sfr[eax]
+		and		dl,addin.Sfr[eax]
 	.endif
 	.if !dl
-		and		Sfr[SFR_PSW],7Fh
+		and		addin.Sfr[SFR_PSW],7Fh
 	.endif
 	ret
 
 MOVC_A_@A_PC:
-	movzx	eax,Sfr[SFR_ACC]
+	movzx	eax,addin.Sfr[SFR_ACC]
 	lea		edx,[ebx+eax]
 	movzx	eax,byte ptr [esi+edx]
-	mov		Sfr[SFR_ACC],al
+	mov		addin.Sfr[SFR_ACC],al
 	lea		ebx,[ebx+1]
 	ret
 
 DIV_AB:
-	movzx	eax,Sfr[SFR_ACC]
-	movzx	ecx,Sfr[SFR_B]
+	movzx	eax,addin.Sfr[SFR_ACC]
+	movzx	ecx,addin.Sfr[SFR_B]
 	.if !ecx
 		;Set OV flag
-		or		Sfr[SFR_PSW],04h
+		or		addin.Sfr[SFR_PSW],04h
 	.else
 		xor		edx,edx
 		div		cl
-		mov		Sfr[SFR_ACC],al
-		mov		Sfr[SFR_B],dl
+		mov		addin.Sfr[SFR_ACC],al
+		mov		addin.Sfr[SFR_B],dl
 		;Clear OV flag
-		and		Sfr[SFR_PSW],0FBh
+		and		addin.Sfr[SFR_PSW],0FBh
 	.endif
 	;Clear CY flag
-	and		Sfr[SFR_PSW],7Fh
+	and		addin.Sfr[SFR_PSW],7Fh
 	lea		ebx,[ebx+1]
 	ret
 
 MOV_$dad_$dad:
 	movzx	edx,byte ptr [esi+ebx+2]
 	.if edx<80h
-		movzx	eax,Ram[edx]
+		movzx	eax,addin.Ram[edx]
 	.else
-		movzx	eax,Sfr[edx]
+		movzx	eax,addin.Sfr[edx]
 	.endif
 	movzx	edx,byte ptr [esi+ebx+1]
 	.if edx<80h
-		mov		Ram[edx],al
+		mov		addin.Ram[edx],al
 	.else
 		.if edx==SFR_SBUF
 			mov		SBUFWR,eax
 			invoke ScreenChar,SBUFWR
 		.else
-			mov		Sfr[edx],al
+			mov		addin.Sfr[edx],al
 			.if edx==SFR_P0 || edx==SFR_P1 || edx==SFR_P2 || edx==SFR_P3
-				movzx	eax,Sfr[edx]
+				movzx	eax,addin.Sfr[edx]
 				invoke SetPort,edx,eax
 			.endif
 		.endif
@@ -1881,21 +1852,21 @@ MOV_$dad_$dad:
 	ret
 
 MOV_$dad_@R0:
-	mov		edx,Bank
+	mov		edx,addin.Bank
 	lea		edx,[edx*8+0]
-	movzx	edx,Ram[edx]
-	movzx	eax,Ram[edx]
+	movzx	edx,addin.Ram[edx]
+	movzx	eax,addin.Ram[edx]
 	movzx	edx,byte ptr [esi+ebx+1]
 	.if edx<80h
-		mov		Ram[edx],al
+		mov		addin.Ram[edx],al
 	.else
 		.if edx==SFR_SBUF
 			mov		SBUFWR,eax
 			invoke ScreenChar,SBUFWR
 		.else
-			mov		Sfr[edx],al
+			mov		addin.Sfr[edx],al
 			.if edx==SFR_P0 || edx==SFR_P1 || edx==SFR_P2 || edx==SFR_P3
-				movzx	eax,Sfr[edx]
+				movzx	eax,addin.Sfr[edx]
 				invoke SetPort,edx,eax
 			.endif
 		.endif
@@ -1904,21 +1875,21 @@ MOV_$dad_@R0:
 	ret
 
 MOV_$dad_@R1:
-	mov		edx,Bank
+	mov		edx,addin.Bank
 	lea		edx,[edx*8+1]
-	movzx	edx,Ram[edx]
-	movzx	eax,Ram[edx]
+	movzx	edx,addin.Ram[edx]
+	movzx	eax,addin.Ram[edx]
 	movzx	edx,byte ptr [esi+ebx+1]
 	.if edx<80h
-		mov		Ram[edx],al
+		mov		addin.Ram[edx],al
 	.else
 		.if edx==SFR_SBUF
 			mov		SBUFWR,eax
 			invoke ScreenChar,SBUFWR
 		.else
-			mov		Sfr[edx],al
+			mov		addin.Sfr[edx],al
 			.if edx==SFR_P0 || edx==SFR_P1 || edx==SFR_P2 || edx==SFR_P3
-				movzx	eax,Sfr[edx]
+				movzx	eax,addin.Sfr[edx]
 				invoke SetPort,edx,eax
 			.endif
 		.endif
@@ -1927,20 +1898,20 @@ MOV_$dad_@R1:
 	ret
 
 MOV_$dad_R0:
-	mov		edx,Bank
+	mov		edx,addin.Bank
 	lea		edx,[edx*8+0]
-	movzx	eax,Ram[edx]
+	movzx	eax,addin.Ram[edx]
 	movzx	edx,byte ptr [esi+ebx+1]
 	.if edx<80h
-		mov		Ram[edx],al
+		mov		addin.Ram[edx],al
 	.else
 		.if edx==SFR_SBUF
 			mov		SBUFWR,eax
 			invoke ScreenChar,SBUFWR
 		.else
-			mov		Sfr[edx],al
+			mov		addin.Sfr[edx],al
 			.if edx==SFR_P0 || edx==SFR_P1 || edx==SFR_P2 || edx==SFR_P3
-				movzx	eax,Sfr[edx]
+				movzx	eax,addin.Sfr[edx]
 				invoke SetPort,edx,eax
 			.endif
 		.endif
@@ -1949,20 +1920,20 @@ MOV_$dad_R0:
 	ret
 
 MOV_$dad_R1:
-	mov		edx,Bank
+	mov		edx,addin.Bank
 	lea		edx,[edx*8+1]
-	movzx	eax,Ram[edx]
+	movzx	eax,addin.Ram[edx]
 	movzx	edx,byte ptr [esi+ebx+1]
 	.if edx<80h
-		mov		Ram[edx],al
+		mov		addin.Ram[edx],al
 	.else
 		.if edx==SFR_SBUF
 			mov		SBUFWR,eax
 			invoke ScreenChar,SBUFWR
 		.else
-			mov		Sfr[edx],al
+			mov		addin.Sfr[edx],al
 			.if edx==SFR_P0 || edx==SFR_P1 || edx==SFR_P2 || edx==SFR_P3
-				movzx	eax,Sfr[edx]
+				movzx	eax,addin.Sfr[edx]
 				invoke SetPort,edx,eax
 			.endif
 		.endif
@@ -1971,20 +1942,20 @@ MOV_$dad_R1:
 	ret
 
 MOV_$dad_R2:
-	mov		edx,Bank
+	mov		edx,addin.Bank
 	lea		edx,[edx*8+2]
-	movzx	eax,Ram[edx]
+	movzx	eax,addin.Ram[edx]
 	movzx	edx,byte ptr [esi+ebx+1]
 	.if edx<80h
-		mov		Ram[edx],al
+		mov		addin.Ram[edx],al
 	.else
 		.if edx==SFR_SBUF
 			mov		SBUFWR,eax
 			invoke ScreenChar,SBUFWR
 		.else
-			mov		Sfr[edx],al
+			mov		addin.Sfr[edx],al
 			.if edx==SFR_P0 || edx==SFR_P1 || edx==SFR_P2 || edx==SFR_P3
-				movzx	eax,Sfr[edx]
+				movzx	eax,addin.Sfr[edx]
 				invoke SetPort,edx,eax
 			.endif
 		.endif
@@ -1993,20 +1964,20 @@ MOV_$dad_R2:
 	ret
 
 MOV_$dad_R3:
-	mov		edx,Bank
+	mov		edx,addin.Bank
 	lea		edx,[edx*8+3]
-	movzx	eax,Ram[edx]
+	movzx	eax,addin.Ram[edx]
 	movzx	edx,byte ptr [esi+ebx+1]
 	.if edx<80h
-		mov		Ram[edx],al
+		mov		addin.Ram[edx],al
 	.else
 		.if edx==SFR_SBUF
 			mov		SBUFWR,eax
 			invoke ScreenChar,SBUFWR
 		.else
-			mov		Sfr[edx],al
+			mov		addin.Sfr[edx],al
 			.if edx==SFR_P0 || edx==SFR_P1 || edx==SFR_P2 || edx==SFR_P3
-				movzx	eax,Sfr[edx]
+				movzx	eax,addin.Sfr[edx]
 				invoke SetPort,edx,eax
 			.endif
 		.endif
@@ -2015,20 +1986,20 @@ MOV_$dad_R3:
 	ret
 
 MOV_$dad_R4:
-	mov		edx,Bank
+	mov		edx,addin.Bank
 	lea		edx,[edx*8+4]
-	movzx	eax,Ram[edx]
+	movzx	eax,addin.Ram[edx]
 	movzx	edx,byte ptr [esi+ebx+1]
 	.if edx<80h
-		mov		Ram[edx],al
+		mov		addin.Ram[edx],al
 	.else
 		.if edx==SFR_SBUF
 			mov		SBUFWR,eax
 			invoke ScreenChar,SBUFWR
 		.else
-			mov		Sfr[edx],al
+			mov		addin.Sfr[edx],al
 			.if edx==SFR_P0 || edx==SFR_P1 || edx==SFR_P2 || edx==SFR_P3
-				movzx	eax,Sfr[edx]
+				movzx	eax,addin.Sfr[edx]
 				invoke SetPort,edx,eax
 			.endif
 		.endif
@@ -2037,20 +2008,20 @@ MOV_$dad_R4:
 	ret
 
 MOV_$dad_R5:
-	mov		edx,Bank
+	mov		edx,addin.Bank
 	lea		edx,[edx*8+5]
-	movzx	eax,Ram[edx]
+	movzx	eax,addin.Ram[edx]
 	movzx	edx,byte ptr [esi+ebx+1]
 	.if edx<80h
-		mov		Ram[edx],al
+		mov		addin.Ram[edx],al
 	.else
 		.if edx==SFR_SBUF
 			mov		SBUFWR,eax
 			invoke ScreenChar,SBUFWR
 		.else
-			mov		Sfr[edx],al
+			mov		addin.Sfr[edx],al
 			.if edx==SFR_P0 || edx==SFR_P1 || edx==SFR_P2 || edx==SFR_P3
-				movzx	eax,Sfr[edx]
+				movzx	eax,addin.Sfr[edx]
 				invoke SetPort,edx,eax
 			.endif
 		.endif
@@ -2059,20 +2030,20 @@ MOV_$dad_R5:
 	ret
 
 MOV_$dad_R6:
-	mov		edx,Bank
+	mov		edx,addin.Bank
 	lea		edx,[edx*8+6]
-	movzx	eax,Ram[edx]
+	movzx	eax,addin.Ram[edx]
 	movzx	edx,byte ptr [esi+ebx+1]
 	.if edx<80h
-		mov		Ram[edx],al
+		mov		addin.Ram[edx],al
 	.else
 		.if edx==SFR_SBUF
 			mov		SBUFWR,eax
 			invoke ScreenChar,SBUFWR
 		.else
-			mov		Sfr[edx],al
+			mov		addin.Sfr[edx],al
 			.if edx==SFR_P0 || edx==SFR_P1 || edx==SFR_P2 || edx==SFR_P3
-				movzx	eax,Sfr[edx]
+				movzx	eax,addin.Sfr[edx]
 				invoke SetPort,edx,eax
 			.endif
 		.endif
@@ -2081,20 +2052,20 @@ MOV_$dad_R6:
 	ret
 
 MOV_$dad_R7:
-	mov		edx,Bank
+	mov		edx,addin.Bank
 	lea		edx,[edx*8+7]
-	movzx	eax,Ram[edx]
+	movzx	eax,addin.Ram[edx]
 	movzx	edx,byte ptr [esi+ebx+1]
 	.if edx<80h
-		mov		Ram[edx],al
+		mov		addin.Ram[edx],al
 	.else
 		.if edx==SFR_SBUF
 			mov		SBUFWR,eax
 			invoke ScreenChar,SBUFWR
 		.else
-			mov		Sfr[edx],al
+			mov		addin.Sfr[edx],al
 			.if edx==SFR_P0 || edx==SFR_P1 || edx==SFR_P2 || edx==SFR_P3
-				movzx	eax,Sfr[edx]
+				movzx	eax,addin.Sfr[edx]
 				invoke SetPort,edx,eax
 			.endif
 		.endif
@@ -2106,11 +2077,11 @@ MOV_$dad_R7:
 MOV_DPTR_dw:
 	mov		ah,byte ptr [esi+ebx+1]
 	mov		al,byte ptr [esi+ebx+2]
-	test	Sfr[SFR_AUXR1],1
+	test	addin.Sfr[SFR_AUXR1],1
 	.if ZERO?
-		mov		word ptr Sfr[SFR_DPL],ax
+		mov		word ptr addin.Sfr[SFR_DPL],ax
 	.else
-		mov		word ptr Sfr[SFR_DP1L],ax
+		mov		word ptr addin.Sfr[SFR_DP1L],ax
 	.endif
 	lea		ebx,[ebx+3]
 	ret
@@ -2125,170 +2096,170 @@ MOV_$bad_C:
 	.if al<80h
 		shr		eax,3
 		lea		eax,[eax+20h]
-		test	Sfr[SFR_PSW],80h
+		test	addin.Sfr[SFR_PSW],80h
 		.if ZERO?
 			xor		edx,0FFh
-			and		Ram[eax],dl
+			and		addin.Ram[eax],dl
 		.else
-			or		Ram[eax],dl
+			or		addin.Ram[eax],dl
 		.endif
 	.else
 		and		eax,0F8h
-		test	Sfr[SFR_PSW],80h
+		test	addin.Sfr[SFR_PSW],80h
 		.if ZERO?
 			xor		edx,0FFh
-			and		Sfr[eax],dl
+			and		addin.Sfr[eax],dl
 		.else
-			or		Sfr[eax],dl
+			or		addin.Sfr[eax],dl
 		.endif
 	.endif
 	ret
 
 MOVC_A_@A_DPTR:
-	test	Sfr[SFR_AUXR1],1
+	test	addin.Sfr[SFR_AUXR1],1
 	.if ZERO?
-		movzx	edx,word ptr Sfr[SFR_DPL]
+		movzx	edx,word ptr addin.Sfr[SFR_DPL]
 	.else
-		movzx	edx,word ptr Sfr[SFR_DP1L]
+		movzx	edx,word ptr addin.Sfr[SFR_DP1L]
 	.endif
-	movzx	eax,Sfr[SFR_ACC]
+	movzx	eax,addin.Sfr[SFR_ACC]
 	lea		edx,[edx+eax]
 	movzx	eax,byte ptr [esi+edx]
-	mov		Sfr[SFR_ACC],al
+	mov		addin.Sfr[SFR_ACC],al
 	lea		ebx,[ebx+1]
 	ret
 
 SUBB_A_imm:
-	movzx	eax,Sfr[SFR_PSW]
+	movzx	eax,addin.Sfr[SFR_PSW]
 	rcl		al,1
 	movzx	eax,byte ptr [esi+ebx+1]
 	lea		ebx,[ebx+2]
-	sbb		Sfr[SFR_ACC],al
+	sbb		addin.Sfr[SFR_ACC],al
 	invoke SetFlags
 	ret
 
 SUBB_A_$dad:
-	movzx	eax,Sfr[SFR_PSW]
+	movzx	eax,addin.Sfr[SFR_PSW]
 	rcl		al,1
 	movzx	edx,byte ptr [esi+ebx+1]
 	lea		ebx,[ebx+2]
 	.if edx<80h
-		movzx	eax,Ram[edx]
+		movzx	eax,addin.Ram[edx]
 	.else
-		movzx	eax,Sfr[edx]
+		movzx	eax,addin.Sfr[edx]
 	.endif
-	sbb		Sfr[SFR_ACC],al
+	sbb		addin.Sfr[SFR_ACC],al
 	invoke SetFlags
 	ret
 
 SUBB_A_@R0:
-	movzx	eax,Sfr[SFR_PSW]
+	movzx	eax,addin.Sfr[SFR_PSW]
 	rcl		al,1
-	mov		eax,Bank
+	mov		eax,addin.Bank
 	lea		eax,[eax*8+0]
-	movzx	eax,Ram[eax]
-	movzx	eax,Ram[eax]
-	sbb		Sfr[SFR_ACC],al
+	movzx	eax,addin.Ram[eax]
+	movzx	eax,addin.Ram[eax]
+	sbb		addin.Sfr[SFR_ACC],al
 	invoke SetFlags
 	lea		ebx,[ebx+1]
 	ret
 
 SUBB_A_@R1:
-	movzx	eax,Sfr[SFR_PSW]
+	movzx	eax,addin.Sfr[SFR_PSW]
 	rcl		al,1
-	mov		eax,Bank
+	mov		eax,addin.Bank
 	lea		eax,[eax*8+1]
-	movzx	eax,Ram[eax]
-	movzx	eax,Ram[eax]
-	sbb		Sfr[SFR_ACC],al
+	movzx	eax,addin.Ram[eax]
+	movzx	eax,addin.Ram[eax]
+	sbb		addin.Sfr[SFR_ACC],al
 	invoke SetFlags
 	lea		ebx,[ebx+1]
 	ret
 
 SUBB_A_R0:
-	movzx	eax,Sfr[SFR_PSW]
+	movzx	eax,addin.Sfr[SFR_PSW]
 	rcl		al,1
-	mov		eax,Bank
+	mov		eax,addin.Bank
 	lea		eax,[eax*8+0]
-	movzx	eax,Ram[eax]
-	sbb		Sfr[SFR_ACC],al
+	movzx	eax,addin.Ram[eax]
+	sbb		addin.Sfr[SFR_ACC],al
 	invoke SetFlags
 	lea		ebx,[ebx+1]
 	ret
 
 SUBB_A_R1:
-	movzx	eax,Sfr[SFR_PSW]
+	movzx	eax,addin.Sfr[SFR_PSW]
 	rcl		al,1
-	mov		eax,Bank
+	mov		eax,addin.Bank
 	lea		eax,[eax*8+1]
-	movzx	eax,Ram[eax]
-	sbb		Sfr[SFR_ACC],al
+	movzx	eax,addin.Ram[eax]
+	sbb		addin.Sfr[SFR_ACC],al
 	invoke SetFlags
 	lea		ebx,[ebx+1]
 	ret
 
 SUBB_A_R2:
-	movzx	eax,Sfr[SFR_PSW]
+	movzx	eax,addin.Sfr[SFR_PSW]
 	rcl		al,1
-	mov		eax,Bank
+	mov		eax,addin.Bank
 	lea		eax,[eax*8+2]
-	movzx	eax,Ram[eax]
-	sbb		Sfr[SFR_ACC],al
+	movzx	eax,addin.Ram[eax]
+	sbb		addin.Sfr[SFR_ACC],al
 	invoke SetFlags
 	lea		ebx,[ebx+1]
 	ret
 
 SUBB_A_R3:
-	movzx	eax,Sfr[SFR_PSW]
+	movzx	eax,addin.Sfr[SFR_PSW]
 	rcl		al,1
-	mov		eax,Bank
+	mov		eax,addin.Bank
 	lea		eax,[eax*8+3]
-	movzx	eax,Ram[eax]
-	sbb		Sfr[SFR_ACC],al
+	movzx	eax,addin.Ram[eax]
+	sbb		addin.Sfr[SFR_ACC],al
 	invoke SetFlags
 	lea		ebx,[ebx+1]
 	ret
 
 SUBB_A_R4:
-	movzx	eax,Sfr[SFR_PSW]
+	movzx	eax,addin.Sfr[SFR_PSW]
 	rcl		al,1
-	mov		eax,Bank
+	mov		eax,addin.Bank
 	lea		eax,[eax*8+4]
-	movzx	eax,Ram[eax]
-	sbb		Sfr[SFR_ACC],al
+	movzx	eax,addin.Ram[eax]
+	sbb		addin.Sfr[SFR_ACC],al
 	invoke SetFlags
 	lea		ebx,[ebx+1]
 	ret
 
 SUBB_A_R5:
-	movzx	eax,Sfr[SFR_PSW]
+	movzx	eax,addin.Sfr[SFR_PSW]
 	rcl		al,1
-	mov		eax,Bank
+	mov		eax,addin.Bank
 	lea		eax,[eax*8+5]
-	movzx	eax,Ram[eax]
-	sbb		Sfr[SFR_ACC],al
+	movzx	eax,addin.Ram[eax]
+	sbb		addin.Sfr[SFR_ACC],al
 	invoke SetFlags
 	lea		ebx,[ebx+1]
 	ret
 
 SUBB_A_R6:
-	movzx	eax,Sfr[SFR_PSW]
+	movzx	eax,addin.Sfr[SFR_PSW]
 	rcl		al,1
-	mov		eax,Bank
+	mov		eax,addin.Bank
 	lea		eax,[eax*8+6]
-	movzx	eax,Ram[eax]
-	sbb		Sfr[SFR_ACC],al
+	movzx	eax,addin.Ram[eax]
+	sbb		addin.Sfr[SFR_ACC],al
 	invoke SetFlags
 	lea		ebx,[ebx+1]
 	ret
 
 SUBB_A_R7:
-	movzx	eax,Sfr[SFR_PSW]
+	movzx	eax,addin.Sfr[SFR_PSW]
 	rcl		al,1
-	mov		eax,Bank
+	mov		eax,addin.Bank
 	lea		eax,[eax*8+7]
-	movzx	eax,Ram[eax]
-	sbb		Sfr[SFR_ACC],al
+	movzx	eax,addin.Ram[eax]
+	sbb		addin.Sfr[SFR_ACC],al
 	invoke SetFlags
 	lea		ebx,[ebx+1]
 	ret
@@ -2304,13 +2275,13 @@ ORL_C_n$bad:
 	.if al<80h
 		shr		eax,3
 		lea		eax,[eax+20h]
-		and		dl,Ram[eax]
+		and		dl,addin.Ram[eax]
 	.else
 		and		eax,0F8h
-		and		dl,Sfr[eax]
+		and		dl,addin.Sfr[eax]
 	.endif
 	.if !dl
-		or		Sfr[SFR_PSW],80h
+		or		addin.Sfr[SFR_PSW],80h
 	.endif
 	ret
 
@@ -2324,44 +2295,44 @@ MOV_C_$bad:
 	.if al<80h
 		shr		eax,3
 		lea		eax,[eax+20h]
-		and		dl,Ram[eax]
+		and		dl,addin.Ram[eax]
 	.else
 		and		eax,0F8h
-		and		dl,Sfr[eax]
+		and		dl,addin.Sfr[eax]
 	.endif
 	.if dl
-		or		Sfr[SFR_PSW],80h
+		or		addin.Sfr[SFR_PSW],80h
 	.else
-		and		Sfr[SFR_PSW],7Fh
+		and		addin.Sfr[SFR_PSW],7Fh
 	.endif
 	ret
 
 INC_DPTR:
-	movzx	eax,Sfr[SFR_AUXR1]
+	movzx	eax,addin.Sfr[SFR_AUXR1]
 	and		eax,1
 	.if ZERO?
-		inc		word ptr Sfr[SFR_DPL]
+		inc		word ptr addin.Sfr[SFR_DPL]
 	.else
-		inc		word ptr Sfr[SFR_DP1L]
+		inc		word ptr addin.Sfr[SFR_DP1L]
 	.endif
 	lea		ebx,[ebx+1]
 	ret
 
 MUL_AB:
-	mov		al,Sfr[SFR_ACC]
-	mov		ah,Sfr[SFR_B]
+	mov		al,addin.Sfr[SFR_ACC]
+	mov		ah,addin.Sfr[SFR_B]
 	mul		ah
-	mov		Sfr[SFR_ACC],al
-	mov		Sfr[SFR_B],ah
+	mov		addin.Sfr[SFR_ACC],al
+	mov		addin.Sfr[SFR_B],ah
 	.if ah
 		;Set OV flag
-		or		Sfr[SFR_PSW],04h
+		or		addin.Sfr[SFR_PSW],04h
 	.else
 		;Clear OV flag
-		and		Sfr[SFR_PSW],0FBh
+		and		addin.Sfr[SFR_PSW],0FBh
 	.endif
 	;Clear CY flag
-	and		Sfr[SFR_PSW],7Fh
+	and		addin.Sfr[SFR_PSW],7Fh
 	lea		ebx,[ebx+1]
 	ret
 
@@ -2371,134 +2342,134 @@ reserved:
 	ret
 
 MOV_@R0_$dad:
-	mov		edx,Bank
+	mov		edx,addin.Bank
 	lea		edx,[edx*8+0]
-	movzx	edx,Ram[edx]
+	movzx	edx,addin.Ram[edx]
 	movzx	eax,byte ptr [esi+ebx+1]
 	.if eax<80h
-		movzx	eax,Ram[eax]
+		movzx	eax,addin.Ram[eax]
 	.else
-		movzx	eax,Sfr[eax]
+		movzx	eax,addin.Sfr[eax]
 	.endif
-	mov		Ram[edx],al
+	mov		addin.Ram[edx],al
 	lea		ebx,[ebx+2]
 	ret
 
 MOV_@R1_$dad:
-	mov		edx,Bank
+	mov		edx,addin.Bank
 	lea		edx,[edx*8+1]
-	movzx	edx,Ram[edx]
+	movzx	edx,addin.Ram[edx]
 	movzx	eax,byte ptr [esi+ebx+1]
 	.if eax<80h
-		movzx	eax,Ram[eax]
+		movzx	eax,addin.Ram[eax]
 	.else
-		movzx	eax,Sfr[eax]
+		movzx	eax,addin.Sfr[eax]
 	.endif
-	mov		Ram[edx],al
+	mov		addin.Ram[edx],al
 	lea		ebx,[ebx+2]
 	ret
 
 MOV_R0_$dad:
-	mov		edx,Bank
+	mov		edx,addin.Bank
 	lea		edx,[edx*8+0]
 	movzx	eax,byte ptr [esi+ebx+1]
 	.if eax<80h
-		movzx	eax,Ram[eax]
+		movzx	eax,addin.Ram[eax]
 	.else
-		movzx	eax,Sfr[eax]
+		movzx	eax,addin.Sfr[eax]
 	.endif
-	mov		Ram[edx],al
+	mov		addin.Ram[edx],al
 	lea		ebx,[ebx+2]
 	ret
 
 MOV_R1_$dad:
-	mov		edx,Bank
+	mov		edx,addin.Bank
 	lea		edx,[edx*8+1]
 	movzx	eax,byte ptr [esi+ebx+1]
 	.if eax<80h
-		movzx	eax,Ram[eax]
+		movzx	eax,addin.Ram[eax]
 	.else
-		movzx	eax,Sfr[eax]
+		movzx	eax,addin.Sfr[eax]
 	.endif
-	mov		Ram[edx],al
+	mov		addin.Ram[edx],al
 	lea		ebx,[ebx+2]
 	ret
 
 MOV_R2_$dad:
-	mov		edx,Bank
+	mov		edx,addin.Bank
 	lea		edx,[edx*8+2]
 	movzx	eax,byte ptr [esi+ebx+1]
 	.if eax<80h
-		movzx	eax,Ram[eax]
+		movzx	eax,addin.Ram[eax]
 	.else
-		movzx	eax,Sfr[eax]
+		movzx	eax,addin.Sfr[eax]
 	.endif
-	mov		Ram[edx],al
+	mov		addin.Ram[edx],al
 	lea		ebx,[ebx+2]
 	ret
 
 MOV_R3_$dad:
-	mov		edx,Bank
+	mov		edx,addin.Bank
 	lea		edx,[edx*8+3]
 	movzx	eax,byte ptr [esi+ebx+1]
 	.if eax<80h
-		movzx	eax,Ram[eax]
+		movzx	eax,addin.Ram[eax]
 	.else
-		movzx	eax,Sfr[eax]
+		movzx	eax,addin.Sfr[eax]
 	.endif
-	mov		Ram[edx],al
+	mov		addin.Ram[edx],al
 	lea		ebx,[ebx+2]
 	ret
 
 MOV_R4_$dad:
-	mov		edx,Bank
+	mov		edx,addin.Bank
 	lea		edx,[edx*8+4]
 	movzx	eax,byte ptr [esi+ebx+1]
 	.if eax<80h
-		movzx	eax,Ram[eax]
+		movzx	eax,addin.Ram[eax]
 	.else
-		movzx	eax,Sfr[eax]
+		movzx	eax,addin.Sfr[eax]
 	.endif
-	mov		Ram[edx],al
+	mov		addin.Ram[edx],al
 	lea		ebx,[ebx+2]
 	ret
 
 MOV_R5_$dad:
-	mov		edx,Bank
+	mov		edx,addin.Bank
 	lea		edx,[edx*8+5]
 	movzx	eax,byte ptr [esi+ebx+1]
 	.if eax<80h
-		movzx	eax,Ram[eax]
+		movzx	eax,addin.Ram[eax]
 	.else
-		movzx	eax,Sfr[eax]
+		movzx	eax,addin.Sfr[eax]
 	.endif
-	mov		Ram[edx],al
+	mov		addin.Ram[edx],al
 	lea		ebx,[ebx+2]
 	ret
 
 MOV_R6_$dad:
-	mov		edx,Bank
+	mov		edx,addin.Bank
 	lea		edx,[edx*8+6]
 	movzx	eax,byte ptr [esi+ebx+1]
 	.if eax<80h
-		movzx	eax,Ram[eax]
+		movzx	eax,addin.Ram[eax]
 	.else
-		movzx	eax,Sfr[eax]
+		movzx	eax,addin.Sfr[eax]
 	.endif
-	mov		Ram[edx],al
+	mov		addin.Ram[edx],al
 	lea		ebx,[ebx+2]
 	ret
 
 MOV_R7_$dad:
-	mov		edx,Bank
+	mov		edx,addin.Bank
 	lea		edx,[edx*8+7]
 	movzx	eax,byte ptr [esi+ebx+1]
 	.if eax<80h
-		movzx	eax,Ram[eax]
+		movzx	eax,addin.Ram[eax]
 	.else
-		movzx	eax,Sfr[eax]
+		movzx	eax,addin.Sfr[eax]
 	.endif
-	mov		Ram[edx],al
+	mov		addin.Ram[edx],al
 	lea		ebx,[ebx+2]
 	ret
 
@@ -2513,13 +2484,13 @@ ANL_C_n$bad:
 	.if al<80h
 		shr		eax,3
 		lea		eax,[eax+20h]
-		and		dl,Ram[eax]
+		and		dl,addin.Ram[eax]
 	.else
 		and		eax,0F8h
-		and		dl,Sfr[eax]
+		and		dl,addin.Sfr[eax]
 	.endif
 	.if dl
-		and		Sfr[SFR_PSW],7Fh
+		and		addin.Sfr[SFR_PSW],7Fh
 	.endif
 	ret
 
@@ -2533,15 +2504,15 @@ CPL_$bad:
 	.if al<80h
 		shr		eax,3
 		lea		eax,[eax+20h]
-		xor		Ram[eax],dl
+		xor		addin.Ram[eax],dl
 	.else
 		and		eax,0F8h
-		xor		Sfr[eax],dl
+		xor		addin.Sfr[eax],dl
 	.endif
 	ret
 
 CPL_C:
-	xor		Sfr[SFR_PSW],80h
+	xor		addin.Sfr[SFR_PSW],80h
 	lea		ebx,[ebx+1]
 	ret
 
@@ -2549,7 +2520,7 @@ CJNE_A_imm_$cad:
 	movzx	eax,byte ptr [esi+ebx+1]
 	movsx	ecx,byte ptr [esi+ebx+2]
 	lea		ebx,[ebx+3]
-	cmp		Sfr[SFR_ACC],al
+	cmp		addin.Sfr[SFR_ACC],al
 	.if !ZERO?
 		lea		ebx,[ebx+ecx]
 	.endif
@@ -2561,11 +2532,11 @@ CJNE_A_$dad_$cad:
 	movsx	ecx,byte ptr [esi+ebx+2]
 	lea		ebx,[ebx+3]
 	.if edx<80h
-		movzx	eax,Ram[edx]
+		movzx	eax,addin.Ram[edx]
 	.else
-		movzx	eax,Sfr[edx]
+		movzx	eax,addin.Sfr[edx]
 	.endif
-	cmp		Sfr[SFR_ACC],al
+	cmp		addin.Sfr[SFR_ACC],al
 	.if !ZERO?
 		lea		ebx,[ebx+ecx]
 	.endif
@@ -2576,10 +2547,10 @@ CJNE_@R0_imm_$cad:
 	movzx	eax,byte ptr [esi+ebx+1]
 	movsx	ecx,byte ptr [esi+ebx+2]
 	lea		ebx,[ebx+3]
-	mov		edx,Bank
+	mov		edx,addin.Bank
 	lea		edx,[edx*8+0]
-	movzx	edx,Ram[edx]
-	cmp		Ram[edx],al
+	movzx	edx,addin.Ram[edx]
+	cmp		addin.Ram[edx],al
 	.if !ZERO?
 		lea		ebx,[ebx+ecx]
 	.endif
@@ -2590,10 +2561,10 @@ CJNE_@R1_imm_$cad:
 	movzx	eax,byte ptr [esi+ebx+1]
 	movsx	ecx,byte ptr [esi+ebx+2]
 	lea		ebx,[ebx+3]
-	mov		edx,Bank
+	mov		edx,addin.Bank
 	lea		edx,[edx*8+1]
-	movzx	edx,Ram[edx]
-	cmp		Ram[edx],al
+	movzx	edx,addin.Ram[edx]
+	cmp		addin.Ram[edx],al
 	.if !ZERO?
 		lea		ebx,[ebx+ecx]
 	.endif
@@ -2604,9 +2575,9 @@ CJNE_R0_imm_$cad:
 	movzx	eax,byte ptr [esi+ebx+1]
 	movsx	ecx,byte ptr [esi+ebx+2]
 	lea		ebx,[ebx+3]
-	mov		edx,Bank
+	mov		edx,addin.Bank
 	lea		edx,[edx*8+0]
-	cmp		Ram[edx],al
+	cmp		addin.Ram[edx],al
 	.if !ZERO?
 		lea		ebx,[ebx+ecx]
 	.endif
@@ -2617,9 +2588,9 @@ CJNE_R1_imm_$cad:
 	movzx	eax,byte ptr [esi+ebx+1]
 	movsx	ecx,byte ptr [esi+ebx+2]
 	lea		ebx,[ebx+3]
-	mov		edx,Bank
+	mov		edx,addin.Bank
 	lea		edx,[edx*8+1]
-	cmp		Ram[edx],al
+	cmp		addin.Ram[edx],al
 	.if !ZERO?
 		lea		ebx,[ebx+ecx]
 	.endif
@@ -2630,9 +2601,9 @@ CJNE_R2_imm_$cad:
 	movzx	eax,byte ptr [esi+ebx+1]
 	movsx	ecx,byte ptr [esi+ebx+2]
 	lea		ebx,[ebx+3]
-	mov		edx,Bank
+	mov		edx,addin.Bank
 	lea		edx,[edx*8+2]
-	cmp		Ram[edx],al
+	cmp		addin.Ram[edx],al
 	.if !ZERO?
 		lea		ebx,[ebx+ecx]
 	.endif
@@ -2643,9 +2614,9 @@ CJNE_R3_imm_$cad:
 	movzx	eax,byte ptr [esi+ebx+1]
 	movsx	ecx,byte ptr [esi+ebx+2]
 	lea		ebx,[ebx+3]
-	mov		edx,Bank
+	mov		edx,addin.Bank
 	lea		edx,[edx*8+3]
-	cmp		Ram[edx],al
+	cmp		addin.Ram[edx],al
 	.if !ZERO?
 		lea		ebx,[ebx+ecx]
 	.endif
@@ -2656,9 +2627,9 @@ CJNE_R4_imm_$cad:
 	movzx	eax,byte ptr [esi+ebx+1]
 	movsx	ecx,byte ptr [esi+ebx+2]
 	lea		ebx,[ebx+3]
-	mov		edx,Bank
+	mov		edx,addin.Bank
 	lea		edx,[edx*8+4]
-	cmp		Ram[edx],al
+	cmp		addin.Ram[edx],al
 	.if !ZERO?
 		lea		ebx,[ebx+ecx]
 	.endif
@@ -2669,9 +2640,9 @@ CJNE_R5_imm_$cad:
 	movzx	eax,byte ptr [esi+ebx+1]
 	movsx	ecx,byte ptr [esi+ebx+2]
 	lea		ebx,[ebx+3]
-	mov		edx,Bank
+	mov		edx,addin.Bank
 	lea		edx,[edx*8+5]
-	cmp		Ram[edx],al
+	cmp		addin.Ram[edx],al
 	.if !ZERO?
 		lea		ebx,[ebx+ecx]
 	.endif
@@ -2682,9 +2653,9 @@ CJNE_R6_imm_$cad:
 	movzx	eax,byte ptr [esi+ebx+1]
 	movsx	ecx,byte ptr [esi+ebx+2]
 	lea		ebx,[ebx+3]
-	mov		edx,Bank
+	mov		edx,addin.Bank
 	lea		edx,[edx*8+6]
-	cmp		Ram[edx],al
+	cmp		addin.Ram[edx],al
 	.if !ZERO?
 		lea		ebx,[ebx+ecx]
 	.endif
@@ -2695,9 +2666,9 @@ CJNE_R7_imm_$cad:
 	movzx	eax,byte ptr [esi+ebx+1]
 	movsx	ecx,byte ptr [esi+ebx+2]
 	lea		ebx,[ebx+3]
-	mov		edx,Bank
+	mov		edx,addin.Bank
 	lea		edx,[edx*8+7]
-	cmp		Ram[edx],al
+	cmp		addin.Ram[edx],al
 	.if !ZERO?
 		lea		ebx,[ebx+ecx]
 	.endif
@@ -2706,15 +2677,15 @@ CJNE_R7_imm_$cad:
 
 ;------------------------------------------------------------------------------
 PUSH_$dad:
-	inc		Sfr[SFR_SP]
-	movzx	edx,Sfr[SFR_SP]
+	inc		addin.Sfr[SFR_SP]
+	movzx	edx,addin.Sfr[SFR_SP]
 	movzx	eax,byte ptr [esi+ebx+1]
 	.if eax<80h
-		movzx	eax,Ram[eax]
+		movzx	eax,addin.Ram[eax]
 	.else
-		movzx	eax,Sfr[eax]
+		movzx	eax,addin.Sfr[eax]
 	.endif
-	mov		Ram[edx],al
+	mov		addin.Ram[edx],al
 	lea		ebx,[ebx+2]
 	ret
 
@@ -2728,45 +2699,45 @@ CLR_$bad:
 	.if al<80h
 		shr		eax,3
 		lea		eax,[eax+20h]
-		and		Ram[eax],dl
+		and		addin.Ram[eax],dl
 	.else
 		and		eax,0F8h
-		and		Sfr[eax],dl
+		and		addin.Sfr[eax],dl
 	.endif
 	lea		ebx,[ebx+2]
 	ret
 
 CLR_C:
-	and		Sfr[SFR_PSW],7Fh
+	and		addin.Sfr[SFR_PSW],7Fh
 	lea		ebx,[ebx+1]
 	ret
 
 SWAP_A:
-	movzx	eax,Sfr[SFR_ACC]
+	movzx	eax,addin.Sfr[SFR_ACC]
 	mov		ah,al
 	shr		al,4
 	shl		ah,4
 	or		al,ah
-	mov		Sfr[SFR_ACC],al
+	mov		addin.Sfr[SFR_ACC],al
 	lea		ebx,[ebx+1]
 	ret
 
 XCH_A_$dad:
 	movzx	edx,byte ptr [esi+ebx+1]
-	movzx	eax,Sfr[SFR_ACC]
+	movzx	eax,addin.Sfr[SFR_ACC]
 	.if edx<80h
-		xchg	al,Ram[edx]
-		mov		Sfr[SFR_ACC],al
+		xchg	al,addin.Ram[edx]
+		mov		addin.Sfr[SFR_ACC],al
 	.else
 		.if edx==SFR_SBUF
 			xchg	eax,SBUFWR
-			mov		Sfr[SFR_ACC],al
+			mov		addin.Sfr[SFR_ACC],al
 			invoke ScreenChar,SBUFWR
 		.else
-			xchg	al,Sfr[edx]
-			mov		Sfr[SFR_ACC],al
+			xchg	al,addin.Sfr[edx]
+			mov		addin.Sfr[SFR_ACC],al
 			.if edx==SFR_P0 || edx==SFR_P1 || edx==SFR_P2 || edx==SFR_P3
-				movzx	eax,Sfr[edx]
+				movzx	eax,addin.Sfr[edx]
 				invoke SetPort,edx,eax
 			.endif
 		.endif
@@ -2775,113 +2746,113 @@ XCH_A_$dad:
 	ret
 
 XCH_A_@R0:
-	mov		edx,Bank
+	mov		edx,addin.Bank
 	lea		edx,[edx*8+0]
-	movzx	edx,Ram[edx]
-	movzx	eax,Sfr[SFR_ACC]
-	xchg	al,Ram[edx]
-	mov		Sfr[SFR_ACC],al
+	movzx	edx,addin.Ram[edx]
+	movzx	eax,addin.Sfr[SFR_ACC]
+	xchg	al,addin.Ram[edx]
+	mov		addin.Sfr[SFR_ACC],al
 	lea		ebx,[ebx+1]
 	ret
 
 XCH_A_@R1:
-	mov		edx,Bank
+	mov		edx,addin.Bank
 	lea		edx,[edx*8+1]
-	movzx	edx,Ram[edx]
-	movzx	eax,Sfr[SFR_ACC]
-	xchg	al,Ram[edx]
-	mov		Sfr[SFR_ACC],al
+	movzx	edx,addin.Ram[edx]
+	movzx	eax,addin.Sfr[SFR_ACC]
+	xchg	al,addin.Ram[edx]
+	mov		addin.Sfr[SFR_ACC],al
 	lea		ebx,[ebx+1]
 	ret
 
 XCH_A_R0:
-	mov		edx,Bank
+	mov		edx,addin.Bank
 	lea		edx,[edx*8+0]
-	movzx	eax,Sfr[SFR_ACC]
-	xchg	al,Ram[edx]
-	mov		Sfr[SFR_ACC],al
+	movzx	eax,addin.Sfr[SFR_ACC]
+	xchg	al,addin.Ram[edx]
+	mov		addin.Sfr[SFR_ACC],al
 	lea		ebx,[ebx+1]
 	ret
 
 XCH_A_R1:
-	mov		edx,Bank
+	mov		edx,addin.Bank
 	lea		edx,[edx*8+1]
-	movzx	eax,Sfr[SFR_ACC]
-	xchg	al,Ram[edx]
-	mov		Sfr[SFR_ACC],al
+	movzx	eax,addin.Sfr[SFR_ACC]
+	xchg	al,addin.Ram[edx]
+	mov		addin.Sfr[SFR_ACC],al
 	lea		ebx,[ebx+1]
 	ret
 
 XCH_A_R2:
-	mov		edx,Bank
+	mov		edx,addin.Bank
 	lea		edx,[edx*8+2]
-	movzx	eax,Sfr[SFR_ACC]
-	xchg	al,Ram[edx]
-	mov		Sfr[SFR_ACC],al
+	movzx	eax,addin.Sfr[SFR_ACC]
+	xchg	al,addin.Ram[edx]
+	mov		addin.Sfr[SFR_ACC],al
 	lea		ebx,[ebx+1]
 	ret
 
 XCH_A_R3:
-	mov		edx,Bank
+	mov		edx,addin.Bank
 	lea		edx,[edx*8+3]
-	movzx	eax,Sfr[SFR_ACC]
-	xchg	al,Ram[edx]
-	mov		Sfr[SFR_ACC],al
+	movzx	eax,addin.Sfr[SFR_ACC]
+	xchg	al,addin.Ram[edx]
+	mov		addin.Sfr[SFR_ACC],al
 	lea		ebx,[ebx+1]
 	ret
 
 XCH_A_R4:
-	mov		edx,Bank
+	mov		edx,addin.Bank
 	lea		edx,[edx*8+4]
-	movzx	eax,Sfr[SFR_ACC]
-	xchg	al,Ram[edx]
-	mov		Sfr[SFR_ACC],al
+	movzx	eax,addin.Sfr[SFR_ACC]
+	xchg	al,addin.Ram[edx]
+	mov		addin.Sfr[SFR_ACC],al
 	lea		ebx,[ebx+1]
 	ret
 
 XCH_A_R5:
-	mov		edx,Bank
+	mov		edx,addin.Bank
 	lea		edx,[edx*8+5]
-	movzx	eax,Sfr[SFR_ACC]
-	xchg	al,Ram[edx]
-	mov		Sfr[SFR_ACC],al
+	movzx	eax,addin.Sfr[SFR_ACC]
+	xchg	al,addin.Ram[edx]
+	mov		addin.Sfr[SFR_ACC],al
 	lea		ebx,[ebx+1]
 	ret
 
 XCH_A_R6:
-	mov		edx,Bank
+	mov		edx,addin.Bank
 	lea		edx,[edx*8+6]
-	movzx	eax,Sfr[SFR_ACC]
-	xchg	al,Ram[edx]
-	mov		Sfr[SFR_ACC],al
+	movzx	eax,addin.Sfr[SFR_ACC]
+	xchg	al,addin.Ram[edx]
+	mov		addin.Sfr[SFR_ACC],al
 	lea		ebx,[ebx+1]
 	ret
 
 XCH_A_R7:
-	mov		edx,Bank
+	mov		edx,addin.Bank
 	lea		edx,[edx*8+7]
-	movzx	eax,Sfr[SFR_ACC]
-	xchg	al,Ram[edx]
-	mov		Sfr[SFR_ACC],al
+	movzx	eax,addin.Sfr[SFR_ACC]
+	xchg	al,addin.Ram[edx]
+	mov		addin.Sfr[SFR_ACC],al
 	lea		ebx,[ebx+1]
 	ret
 
 ;------------------------------------------------------------------------------
 POP_$dad:
-	movzx	edx,Sfr[SFR_SP]
-	movzx	eax,Ram[edx]
-	dec		Sfr[SFR_SP]
+	movzx	edx,addin.Sfr[SFR_SP]
+	movzx	eax,addin.Ram[edx]
+	dec		addin.Sfr[SFR_SP]
 	movzx	edx,byte ptr [esi+ebx+1]
 	.if edx<80h
-		mov		Ram[edx],al
+		mov		addin.Ram[edx],al
 	.else
 		.if edx==SFR_SBUF
 			mov		SBUFWR,eax
 			invoke ScreenChar,SBUFWR
 		.else
-			mov		Sfr[edx],al
+			mov		addin.Sfr[edx],al
 			.if edx==SFR_P0 || edx==SFR_P1 || edx==SFR_P2 || edx==SFR_P3
-				movzx	eax,Sfr[edx]
+				movzx	eax,addin.Sfr[edx]
 				invoke SetPort,edx,eax
 			.endif
 		.endif
@@ -2898,24 +2869,24 @@ SETB_$bad:
 	.if al<80h
 		shr		eax,3
 		lea		eax,[eax+20h]
-		or		Ram[eax],dl
+		or		addin.Ram[eax],dl
 	.else
 		and		eax,0F8h
-		or		Sfr[eax],dl
+		or		addin.Sfr[eax],dl
 	.endif
 	lea		ebx,[ebx+2]
 	ret
 
 SETB_C:
-	or		Sfr[SFR_PSW],80h
+	or		addin.Sfr[SFR_PSW],80h
 	lea		ebx,[ebx+1]
 	ret
 
 DA_A:
-	movzx	eax,Sfr[SFR_ACC]
+	movzx	eax,addin.Sfr[SFR_ACC]
 	add		eax,0
 	daa
-	mov		Sfr[SFR_ACC],al
+	mov		addin.Sfr[SFR_ACC],al
 	lea		ebx,[ebx+1]
 	ret
 
@@ -2924,9 +2895,9 @@ DJNZ_$dad_$cad:
 	movsx	ecx,byte ptr [esi+ebx+2]
 	lea		ebx,[ebx+3]
 	.if edx<80h
-		dec		Ram[edx]
+		dec		addin.Ram[edx]
 	.else
-		dec		Sfr[edx]
+		dec		addin.Sfr[edx]
 	.endif
 	.if !ZERO?
 		lea		ebx,[ebx+ecx]
@@ -2934,31 +2905,31 @@ DJNZ_$dad_$cad:
 	ret
 
 XCHD_A_@R0:
-	mov		eax,Bank
+	mov		eax,addin.Bank
 	lea		eax,[eax*8+0]
-	movzx	edx,Ram[eax]
-	movzx	eax,Ram[edx]
-	xchg	Sfr[SFR_ACC],al
-	mov		Ram[edx],al
+	movzx	edx,addin.Ram[eax]
+	movzx	eax,addin.Ram[edx]
+	xchg	addin.Sfr[SFR_ACC],al
+	mov		addin.Ram[edx],al
 	lea		ebx,[ebx+1]
 	ret
 
 XCHD_A_@R1:
-	mov		eax,Bank
+	mov		eax,addin.Bank
 	lea		eax,[eax*8+1]
-	movzx	edx,Ram[eax]
-	movzx	eax,Ram[edx]
-	xchg	Sfr[SFR_ACC],al
-	mov		Ram[edx],al
+	movzx	edx,addin.Ram[eax]
+	movzx	eax,addin.Ram[edx]
+	xchg	addin.Sfr[SFR_ACC],al
+	mov		addin.Ram[edx],al
 	lea		ebx,[ebx+1]
 	ret
 
 DJNZ_R0_$cad:
 	movsx	ecx,byte ptr [esi+ebx+1]
 	lea		ebx,[ebx+2]
-	mov		eax,Bank
+	mov		eax,addin.Bank
 	lea		eax,[eax*8+0]
-	dec		Ram[eax]
+	dec		addin.Ram[eax]
 	.if !ZERO?
 		lea		ebx,[ebx+ecx]
 	.endif
@@ -2967,9 +2938,9 @@ DJNZ_R0_$cad:
 DJNZ_R1_$cad:
 	movsx	ecx,byte ptr [esi+ebx+1]
 	lea		ebx,[ebx+2]
-	mov		eax,Bank
+	mov		eax,addin.Bank
 	lea		eax,[eax*8+1]
-	dec		Ram[eax]
+	dec		addin.Ram[eax]
 	.if !ZERO?
 		lea		ebx,[ebx+ecx]
 	.endif
@@ -2978,9 +2949,9 @@ DJNZ_R1_$cad:
 DJNZ_R2_$cad:
 	movsx	ecx,byte ptr [esi+ebx+1]
 	lea		ebx,[ebx+2]
-	mov		eax,Bank
+	mov		eax,addin.Bank
 	lea		eax,[eax*8+2]
-	dec		Ram[eax]
+	dec		addin.Ram[eax]
 	.if !ZERO?
 		lea		ebx,[ebx+ecx]
 	.endif
@@ -2989,9 +2960,9 @@ DJNZ_R2_$cad:
 DJNZ_R3_$cad:
 	movsx	ecx,byte ptr [esi+ebx+1]
 	lea		ebx,[ebx+2]
-	mov		eax,Bank
+	mov		eax,addin.Bank
 	lea		eax,[eax*8+3]
-	dec		Ram[eax]
+	dec		addin.Ram[eax]
 	.if !ZERO?
 		lea		ebx,[ebx+ecx]
 	.endif
@@ -3000,9 +2971,9 @@ DJNZ_R3_$cad:
 DJNZ_R4_$cad:
 	movsx	ecx,byte ptr [esi+ebx+1]
 	lea		ebx,[ebx+2]
-	mov		eax,Bank
+	mov		eax,addin.Bank
 	lea		eax,[eax*8+4]
-	dec		Ram[eax]
+	dec		addin.Ram[eax]
 	.if !ZERO?
 		lea		ebx,[ebx+ecx]
 	.endif
@@ -3011,9 +2982,9 @@ DJNZ_R4_$cad:
 DJNZ_R5_$cad:
 	movsx	ecx,byte ptr [esi+ebx+1]
 	lea		ebx,[ebx+2]
-	mov		eax,Bank
+	mov		eax,addin.Bank
 	lea		eax,[eax*8+5]
-	dec		Ram[eax]
+	dec		addin.Ram[eax]
 	.if !ZERO?
 		lea		ebx,[ebx+ecx]
 	.endif
@@ -3022,9 +2993,9 @@ DJNZ_R5_$cad:
 DJNZ_R6_$cad:
 	movsx	ecx,byte ptr [esi+ebx+1]
 	lea		ebx,[ebx+2]
-	mov		eax,Bank
+	mov		eax,addin.Bank
 	lea		eax,[eax*8+6]
-	dec		Ram[eax]
+	dec		addin.Ram[eax]
 	.if !ZERO?
 		lea		ebx,[ebx+ecx]
 	.endif
@@ -3033,9 +3004,9 @@ DJNZ_R6_$cad:
 DJNZ_R7_$cad:
 	movsx	ecx,byte ptr [esi+ebx+1]
 	lea		ebx,[ebx+2]
-	mov		eax,Bank
+	mov		eax,addin.Bank
 	lea		eax,[eax*8+7]
-	dec		Ram[eax]
+	dec		addin.Ram[eax]
 	.if !ZERO?
 		lea		ebx,[ebx+ecx]
 	.endif
@@ -3043,188 +3014,188 @@ DJNZ_R7_$cad:
 
 ;------------------------------------------------------------------------------
 MOVX_A_@DPTR:
-	movzx	eax,Sfr[SFR_AUXR1]
+	movzx	eax,addin.Sfr[SFR_AUXR1]
 	and		eax,1
 	.if ZERO?
-		movzx	edx,word ptr Sfr[SFR_DPL]
+		movzx	edx,word ptr addin.Sfr[SFR_DPL]
 	.else
-		movzx	edx,word ptr Sfr[SFR_DP1L]
+		movzx	edx,word ptr addin.Sfr[SFR_DP1L]
 	.endif
-	movzx	eax,XRam[edx]
-	mov		Sfr[SFR_ACC],al
+	movzx	eax,addin.Ram[edx]
+	mov		addin.Sfr[SFR_ACC],al
 	lea		ebx,[ebx+1]
 	ret
 
 MOVX_A_@R0:
-	mov		edx,Bank
+	mov		edx,addin.Bank
 	lea		edx,[edx*8+0]
-	movzx	edx,Ram[edx]
-	mov		dh,Sfr[SFR_P2]
-	movzx	eax,XRam[edx]
-	mov		Sfr[SFR_ACC],al
+	movzx	edx,addin.Ram[edx]
+	mov		dh,addin.Sfr[SFR_P2]
+	movzx	eax,addin.Ram[edx]
+	mov		addin.Sfr[SFR_ACC],al
 	lea		ebx,[ebx+1]
 	ret
 
 MOVX_A_@R1:
-	mov		edx,Bank
+	mov		edx,addin.Bank
 	lea		edx,[edx*8+1]
-	movzx	edx,Ram[edx]
-	mov		dh,Sfr[SFR_P2]
-	movzx	eax,XRam[edx]
-	mov		Sfr[SFR_ACC],al
+	movzx	edx,addin.Ram[edx]
+	mov		dh,addin.Sfr[SFR_P2]
+	movzx	eax,addin.Ram[edx]
+	mov		addin.Sfr[SFR_ACC],al
 	lea		ebx,[ebx+1]
 	ret
 
 CLR_A:
-	mov		Sfr[SFR_ACC],0
+	mov		addin.Sfr[SFR_ACC],0
 	lea		ebx,[ebx+1]
 	ret
 
 MOV_A_$dad:
 	movzx	edx,byte ptr [esi+ebx+1]
 	.if edx<80h
-		movzx	eax,Ram[edx]
+		movzx	eax,addin.Ram[edx]
 	.else
-		movzx	eax,Sfr[edx]
+		movzx	eax,addin.Sfr[edx]
 	.endif
-	mov		Sfr[SFR_ACC],al
+	mov		addin.Sfr[SFR_ACC],al
 	lea		ebx,[ebx+2]
 	ret
 
 MOV_A_@R0:
-	mov		edx,Bank
+	mov		edx,addin.Bank
 	lea		edx,[edx*8+0]
-	movzx	edx,Ram[edx]
-	movzx	eax,Ram[edx]
-	mov		Sfr[SFR_ACC],al
+	movzx	edx,addin.Ram[edx]
+	movzx	eax,addin.Ram[edx]
+	mov		addin.Sfr[SFR_ACC],al
 	lea		ebx,[ebx+1]
 	ret
 
 MOV_A_@R1:
-	mov		edx,Bank
+	mov		edx,addin.Bank
 	lea		edx,[edx*8+1]
-	movzx	edx,Ram[edx]
-	movzx	eax,Ram[edx]
-	mov		Sfr[SFR_ACC],al
+	movzx	edx,addin.Ram[edx]
+	movzx	eax,addin.Ram[edx]
+	mov		addin.Sfr[SFR_ACC],al
 	lea		ebx,[ebx+1]
 	ret
 
 MOV_A_R0:
-	mov		edx,Bank
+	mov		edx,addin.Bank
 	lea		edx,[edx*8+0]
-	movzx	eax,Ram[edx]
-	mov		Sfr[SFR_ACC],al
+	movzx	eax,addin.Ram[edx]
+	mov		addin.Sfr[SFR_ACC],al
 	lea		ebx,[ebx+1]
 	ret
 
 MOV_A_R1:
-	mov		edx,Bank
+	mov		edx,addin.Bank
 	lea		edx,[edx*8+1]
-	movzx	eax,Ram[edx]
-	mov		Sfr[SFR_ACC],al
+	movzx	eax,addin.Ram[edx]
+	mov		addin.Sfr[SFR_ACC],al
 	lea		ebx,[ebx+1]
 	ret
 
 MOV_A_R2:
-	mov		edx,Bank
+	mov		edx,addin.Bank
 	lea		edx,[edx*8+2]
-	movzx	eax,Ram[edx]
-	mov		Sfr[SFR_ACC],al
+	movzx	eax,addin.Ram[edx]
+	mov		addin.Sfr[SFR_ACC],al
 	lea		ebx,[ebx+1]
 	ret
 
 MOV_A_R3:
-	mov		edx,Bank
+	mov		edx,addin.Bank
 	lea		edx,[edx*8+3]
-	movzx	eax,Ram[edx]
-	mov		Sfr[SFR_ACC],al
+	movzx	eax,addin.Ram[edx]
+	mov		addin.Sfr[SFR_ACC],al
 	lea		ebx,[ebx+1]
 	ret
 
 MOV_A_R4:
-	mov		edx,Bank
+	mov		edx,addin.Bank
 	lea		edx,[edx*8+4]
-	movzx	eax,Ram[edx]
-	mov		Sfr[SFR_ACC],al
+	movzx	eax,addin.Ram[edx]
+	mov		addin.Sfr[SFR_ACC],al
 	lea		ebx,[ebx+1]
 	ret
 
 MOV_A_R5:
-	mov		edx,Bank
+	mov		edx,addin.Bank
 	lea		edx,[edx*8+5]
-	movzx	eax,Ram[edx]
-	mov		Sfr[SFR_ACC],al
+	movzx	eax,addin.Ram[edx]
+	mov		addin.Sfr[SFR_ACC],al
 	lea		ebx,[ebx+1]
 	ret
 
 MOV_A_R6:
-	mov		edx,Bank
+	mov		edx,addin.Bank
 	lea		edx,[edx*8+6]
-	movzx	eax,Ram[edx]
-	mov		Sfr[SFR_ACC],al
+	movzx	eax,addin.Ram[edx]
+	mov		addin.Sfr[SFR_ACC],al
 	lea		ebx,[ebx+1]
 	ret
 
 MOV_A_R7:
-	mov		edx,Bank
+	mov		edx,addin.Bank
 	lea		edx,[edx*8+7]
-	movzx	eax,Ram[edx]
-	mov		Sfr[SFR_ACC],al
+	movzx	eax,addin.Ram[edx]
+	mov		addin.Sfr[SFR_ACC],al
 	lea		ebx,[ebx+1]
 	ret
 
 ;------------------------------------------------------------------------------
 MOVX_@DPTR_A:
-	movzx	eax,Sfr[SFR_AUXR1]
+	movzx	eax,addin.Sfr[SFR_AUXR1]
 	and		eax,1
 	.if ZERO?
-		movzx	edx,word ptr Sfr[SFR_DPL]
+		movzx	edx,word ptr addin.Sfr[SFR_DPL]
 	.else
-		movzx	edx,word ptr Sfr[SFR_DP1L]
+		movzx	edx,word ptr addin.Sfr[SFR_DP1L]
 	.endif
-	movzx	eax,Sfr[SFR_ACC]
-	mov		XRam[edx],al
+	movzx	eax,addin.Sfr[SFR_ACC]
+	mov		addin.Ram[edx],al
 	lea		ebx,[ebx+1]
 	ret
 
 MOVX_@R0_A:
-	mov		edx,Bank
+	mov		edx,addin.Bank
 	lea		edx,[edx*8+0]
-	movzx	edx,Ram[edx]
-	mov		dh,Sfr[SFR_P2]
-	movzx	eax,Sfr[SFR_ACC]
-	mov		XRam[edx],al
+	movzx	edx,addin.Ram[edx]
+	mov		dh,addin.Sfr[SFR_P2]
+	movzx	eax,addin.Sfr[SFR_ACC]
+	mov		addin.Ram[edx],al
 	lea		ebx,[ebx+1]
 	ret
 
 MOVX_@R1_A:
-	mov		edx,Bank
+	mov		edx,addin.Bank
 	lea		edx,[edx*8+1]
-	movzx	edx,Ram[edx]
-	mov		dh,Sfr[SFR_P2]
-	movzx	eax,Sfr[SFR_ACC]
-	mov		XRam[edx],al
+	movzx	edx,addin.Ram[edx]
+	mov		dh,addin.Sfr[SFR_P2]
+	movzx	eax,addin.Sfr[SFR_ACC]
+	mov		addin.Ram[edx],al
 	lea		ebx,[ebx+1]
 	ret
 
 CPL_A:
-	xor		Sfr[SFR_ACC],0FFh
+	xor		addin.Sfr[SFR_ACC],0FFh
 	lea		ebx,[ebx+1]
 	ret
 
 MOV_$dad_A:
 	movzx	edx,byte ptr [esi+ebx+1]
-	movzx	eax,Sfr[SFR_ACC]
+	movzx	eax,addin.Sfr[SFR_ACC]
 	.if edx<80h
-		mov		Ram[edx],al
+		mov		addin.Ram[edx],al
 	.else
 		.if edx==SFR_SBUF
 			mov		SBUFWR,eax
 			invoke ScreenChar,SBUFWR
 		.else
-			mov		Sfr[edx],al
+			mov		addin.Sfr[edx],al
 			.if edx==SFR_P0 || edx==SFR_P1 || edx==SFR_P2 || edx==SFR_P3
-				movzx	eax,Sfr[edx]
+				movzx	eax,addin.Sfr[edx]
 				invoke SetPort,edx,eax
 			.endif
 		.endif
@@ -3233,84 +3204,84 @@ MOV_$dad_A:
 	ret
 
 MOV_@R0_A:
-	mov		edx,Bank
+	mov		edx,addin.Bank
 	lea		edx,[edx*8+0]
-	movzx	edx,Ram[edx]
-	movzx	eax,Sfr[SFR_ACC]
-	mov		Ram[edx],al
+	movzx	edx,addin.Ram[edx]
+	movzx	eax,addin.Sfr[SFR_ACC]
+	mov		addin.Ram[edx],al
 	lea		ebx,[ebx+1]
 	ret
 
 MOV_@R1_A:
-	mov		edx,Bank
+	mov		edx,addin.Bank
 	lea		edx,[edx*8+1]
-	movzx	edx,Ram[edx]
-	movzx	eax,Sfr[SFR_ACC]
-	mov		Ram[edx],al
+	movzx	edx,addin.Ram[edx]
+	movzx	eax,addin.Sfr[SFR_ACC]
+	mov		addin.Ram[edx],al
 	lea		ebx,[ebx+1]
 	ret
 
 MOV_R0_A:
-	movzx	eax,Sfr[SFR_ACC]
-	mov		edx,Bank
+	movzx	eax,addin.Sfr[SFR_ACC]
+	mov		edx,addin.Bank
 	lea		edx,[edx*8+0]
-	mov		Ram[edx],al
+	mov		addin.Ram[edx],al
 	lea		ebx,[ebx+1]
 	ret
 
 MOV_R1_A:
-	movzx	eax,Sfr[SFR_ACC]
-	mov		edx,Bank
+	movzx	eax,addin.Sfr[SFR_ACC]
+	mov		edx,addin.Bank
 	lea		edx,[edx*8+1]
-	mov		Ram[edx],al
+	mov		addin.Ram[edx],al
 	lea		ebx,[ebx+1]
 	ret
 
 MOV_R2_A:
-	movzx	eax,Sfr[SFR_ACC]
-	mov		edx,Bank
+	movzx	eax,addin.Sfr[SFR_ACC]
+	mov		edx,addin.Bank
 	lea		edx,[edx*8+2]
-	mov		Ram[edx],al
+	mov		addin.Ram[edx],al
 	lea		ebx,[ebx+1]
 	ret
 
 MOV_R3_A:
-	movzx	eax,Sfr[SFR_ACC]
-	mov		edx,Bank
+	movzx	eax,addin.Sfr[SFR_ACC]
+	mov		edx,addin.Bank
 	lea		edx,[edx*8+3]
-	mov		Ram[edx],al
+	mov		addin.Ram[edx],al
 	lea		ebx,[ebx+1]
 	ret
 
 MOV_R4_A:
-	movzx	eax,Sfr[SFR_ACC]
-	mov		edx,Bank
+	movzx	eax,addin.Sfr[SFR_ACC]
+	mov		edx,addin.Bank
 	lea		edx,[edx*8+4]
-	mov		Ram[edx],al
+	mov		addin.Ram[edx],al
 	lea		ebx,[ebx+1]
 	ret
 
 MOV_R5_A:
-	movzx	eax,Sfr[SFR_ACC]
-	mov		edx,Bank
+	movzx	eax,addin.Sfr[SFR_ACC]
+	mov		edx,addin.Bank
 	lea		edx,[edx*8+5]
-	mov		Ram[edx],al
+	mov		addin.Ram[edx],al
 	lea		ebx,[ebx+1]
 	ret
 
 MOV_R6_A:
-	movzx	eax,Sfr[SFR_ACC]
-	mov		edx,Bank
+	movzx	eax,addin.Sfr[SFR_ACC]
+	mov		edx,addin.Bank
 	lea		edx,[edx*8+6]
-	mov		Ram[edx],al
+	mov		addin.Ram[edx],al
 	lea		ebx,[ebx+1]
 	ret
 
 MOV_R7_A:
-	movzx	eax,Sfr[SFR_ACC]
-	mov		edx,Bank
+	movzx	eax,addin.Sfr[SFR_ACC]
+	mov		edx,addin.Bank
 	lea		edx,[edx*8+7]
-	mov		Ram[edx],al
+	mov		addin.Ram[edx],al
 	lea		ebx,[ebx+1]
 	ret
 
@@ -3318,8 +3289,8 @@ MOV_R7_A:
 
 CoreThread proc lParam:DWORD
 
-	mov		esi,offset Code
-	mov		ebx,PC
+	mov		esi,offset addin.Code
+	mov		ebx,addin.PC
 	.while State!=STATE_STOP
 		.if (State & STATE_RUN) && !(State & SIM52_BREAKPOINT)
 			.if !(State & STATE_PAUSE)
@@ -3376,15 +3347,15 @@ Execute:
 	movzx	edx,Cycles[eax]
 	add		TotalCycles,edx
 	call	JmpTab[eax*4]
-	mov		PC,ebx
-	invoke QueryPerformanceFrequency,addr PerformanceFrequency
+	mov		addin.PC,ebx
+;	invoke QueryPerformanceFrequency,addr PerformanceFrequency
 	invoke QueryPerformanceCounter,addr PerformanceCount
 	retn
 
 SetStatusLed:
 	.if eax!=StatusLed
 		mov		StatusLed,eax
-		invoke SendDlgItemMessage,hWnd,IDC_IMGSTATUS,STM_SETIMAGE,IMAGE_BITMAP,eax
+		invoke SendDlgItemMessage,addin.hWnd,IDC_IMGSTATUS,STM_SETIMAGE,IMAGE_BITMAP,eax
 	.endif
 	retn
 
