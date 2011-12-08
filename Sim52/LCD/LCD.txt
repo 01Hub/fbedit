@@ -1,15 +1,17 @@
 
 
-   RS	RW	DB7	DB6	DB5	DB4	DB3	DB2	DB1	DB0
------------------------------------------------------------------------------------------------
-	0	0	0	0	0	0	0	0	0	1		Wrie 20h to DDRAM and set DDRAM address to 00h
-	0	0	0	0	0	0	0	0	1	x		Set DDRAM address to 00h and home the cursor
-	0	0	0	0	0	0	0	1	I/D	S		Set cursor direction and display shift
-	0	0	0	0	0	0	1	D	C	B		D display on, C cursor on, B cursor position on
-	0	0	0	0	0	1	S(C	R/L	x	x		Cursor and display shift direction
-	0	0	0	0	1	DL	N	F	x	x		DL 8/4 databits, N lines 2/1, font 5x11/5x8
-	0	0	0	1	AC5	AC4	AC3	AC2	AC1	AC0		Set CGRAM address
-	0	0	1	AC6	AC5	AC4	AC3	AC2	AC1	AC0		Set DDRAM address
-	0	1	BF	AC6	AC5	AC4	AC3	AC2	AC1	AC0		Get BF and address
-	1	0	D7	D6	D5	D4	D3	D2	D1	D0		Write to DDRAM or CGRAM
-	1	1	D7	D6	D5	D4	D3	D2	D1	D0		Read from DDRAM or CGRAM
+   RS	RW		DB7	DB6	DB5	DB4		DB3	DB2	DB1	DB0
+-------------------------------------------------------------------------------------------------------
+	0	0		0	0	0	0		0	0	0	1		Write 20h to DDRAM and set DDRAM address to 00h
+	0	0		0	0	0	0		0	0	1	x		Set DDRAM address to 00h and home the cursor
+	0	0		0	0	0	0		0	1	I/D	S		Set cursor direction and display shift
+	0	0		0	0	0	0		1	D	C	B		D display on, C cursor on, B cursor position on
+	0	0		0	0	0	1		S/C	R/L	x	x		Cursor and display shift direction
+	0	0		0	0	1	DL		N	F	x	x		DL 8/4 databits, N lines 2/1, F font 5x11/5x8
+	0	0		0	1	AC5	AC4		AC3	AC2	AC1	AC0		Set CGRAM address
+	0	0		1	AC6	AC5	AC4		AC3	AC2	AC1	AC0		Set DDRAM address
+	0	1		BF	AC6	AC5	AC4		AC3	AC2	AC1	AC0		Get BF and address
+	1	0		D7	D6	D5	D4		D3	D2	D1	D0		Write to DDRAM or CGRAM
+	1	1		D7	D6	D5	D4		D3	D2	D1	D0		Read from DDRAM or CGRAM
+
+Falling edge on E latches the data on a write.

@@ -2,6 +2,7 @@
 AM_INIT				equ 0001h				;hWin=Handle to main window, wParam=0, lParam=pointer to ADDIN struct
 AM_PORTCHANGED		equ 0002h				;hWin=Handle to main window, wParam=Port (0-3), lParam=Port value
 AM_COMMAND			equ 0003h				;hWin=Handle to main window, wParam=0, lParam=MenuID
+AM_RESET			equ 0004h				;hWin=Handle to main window, wParam=0, lParam=0
 
 ADDIN struct
 	hInstance		HINSTANCE ?

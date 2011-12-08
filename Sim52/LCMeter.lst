@@ -19,7 +19,7 @@ ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. 
  Line  I  Addr  Code            Source
 
     1:
-    2:		N      0001	DEBUG		EQU 1
+    2:		N      0000	DEBUG		EQU 0
     3:
     4:				$INCLUDE	(LCMeter.inc)
     5: 1			;***********************************************************************
@@ -159,8 +159,8 @@ ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. 
   124:	  00AE	90 0E 2A			MOV	DPTR,#MODE3
   125:	  00B1	DF 03		SETMODE4:	DJNZ	R7,SETMODE5
   126:	  00B3	90 0E 34			MOV	DPTR,#MODE4
-  127:	  00B6	91 60		SETMODE5:	ACALL	LCDCLEAR
-  128:	  00B8	91 7F				ACALL	PRNTCDPTRLCD
+  127:	  00B6	91 56		SETMODE5:	ACALL	LCDCLEAR
+  128:	  00B8	91 6D				ACALL	PRNTCDPTRLCD
   129:	  00BA	22				RET
   130:
   131:	  00BB	E4		START0:		CLR	A
@@ -175,14 +175,14 @@ ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. 
   140:	  00CB	D2 AF				SETB	EA				;Enable interrupts
   141:	  00CD	12 08 00			LCALL	FLOATING_INIT
   142:	  00D0	71 4E				ACALL	WAITASEC
-  143:	  00D2	91 91				ACALL	LCDINIT
+  143:	  00D2	91 77				ACALL	LCDINIT
   144:	  00D4	E4				CLR	A
-  145:	  00D5	91 6B				ACALL	LCDSETADR
+  145:	  00D5	91 61				ACALL	LCDSETADR
   146:	  00D7	90 0E 43			MOV	DPTR,#WELCOME
-  147:	  00DA	91 7F				ACALL	PRNTCDPTRLCD
+  147:	  00DA	91 6D				ACALL	PRNTCDPTRLCD
   148:	  00DC	71 4E				ACALL	WAITASEC
   149:	  00DE	11 96		START02:	ACALL	SETMODE
-  150:	  00E0	91 AA		START:		ACALL	LCDCLEARBUFF
+  150:	  00E0	91 90		START:		ACALL	LCDCLEARBUFF
   151:	  00E2	AF 51				MOV	R7,MODE
   152:	  00E4	DF 04				DJNZ	R7,START1
   153:						;C Meter
@@ -222,10 +222,10 @@ ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. 
   180:	  0111	FF				MOV	R7,A				;Number of digits
   181:	  0112	71 C6				ACALL	FRQFORMAT
   182:	  0114	74 40				MOV	A,#40h				;Output result
-  183:	  0116	91 6B				ACALL	LCDSETADR
+  183:	  0116	91 61				ACALL	LCDSETADR
   184:	  0118	78 40				MOV	R0,#LCDLINE
   185:	  011A	7F 10				MOV	R7,#10h
-  186:	  011C	91 70				ACALL	LCDPRINTSTR
+  186:	  011C	91 66				ACALL	LCDPRINTSTR
   187:	  011E	22				RET
   188:
   189:				;------------------------------------------------------------------
@@ -234,7 +234,7 @@ ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. 
   192:				;OUT:	Nothing
   193:				;------------------------------------------------------------------
   194:	  011F	C0 01		LCMETERGETFRQ:	PUSH	01h				;Save R1
-  195:	  0121	91 AA				ACALL	LCDCLEARBUFF
+  195:	  0121	91 90				ACALL	LCDCLEARBUFF
   196:	  0123	74 FA				MOV	A,#250
   197:	  0125	71 71				ACALL	WAIT				;Wait 25ms for relay to kick in / out
   198:	  0127	74 FA				MOV	A,#250
@@ -296,23 +296,23 @@ ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. 
   246:	  0172	C0 07		LCMETERINIT1:	PUSH	07h
   247:	  0174	71 4E				ACALL	WAITASEC
   248:	  0176	74 2E				MOV	A,#'.'
-  249:	  0178	91 4A				ACALL	LCDCHROUT
+  249:	  0178	91 42				ACALL	LCDCHROUT
   250:	  017A	D0 07				POP	07h
   251:	  017C	DF F4				DJNZ	R7,LCMETERINIT1
   252:	  017E	C2 95				CLR	P1.5				;F1
   253:	  0180	79 65				MOV	R1,#LCF1
   254:	  0182	31 1F				ACALL	LCMETERGETFRQ			;Get F1
   255:	  0184	74 40				MOV	A,#40h				;Output result
-  256:	  0186	91 6B				ACALL	LCDSETADR
+  256:	  0186	91 61				ACALL	LCDSETADR
   257:	  0188	78 40				MOV	R0,#LCDLINE
   258:	  018A	7F 10				MOV	R7,#10h
-  259:	  018C	91 70				ACALL	LCDPRINTSTR
+  259:	  018C	91 66				ACALL	LCDPRINTSTR
   260:	  018E	D2 95				SETB	P1.5				;F2
   261:	  0190	79 6D				MOV	R1,#LCF2
   262:	  0192	31 1F				ACALL	LCMETERGETFRQ			;Get F2
   263:	  0194	C2 95				CLR	P1.5				;F1
   264:	  0196	74 40				MOV	A,#40h				;Output result
-  265:	  0198	91 6B				ACALL	LCDSETADR
+  265:	  0198	91 61				ACALL	LCDSETADR
 
 ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 6
 
@@ -322,7 +322,7 @@ ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. 
 
   266:	  019A	78 40				MOV	R0,#LCDLINE
   267:	  019C	7F 10				MOV	R7,#10h
-  268:	  019E	91 70				ACALL	LCDPRINTSTR
+  268:	  019E	91 66				ACALL	LCDPRINTSTR
   269:						;Calculate LCCA=((F1/F2)^2)-1
   270:	  01A0	78 65				MOV	R0,#LCF1
   271:	  01A2	79 6D				MOV	R1,#LCF2
@@ -419,10 +419,10 @@ ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. 
   355:	  0250	F8				MOV	R0,A
   356:	  0251	12 0B C6			LCALL	FLOATING_POINT_OUTPUT
   357:	  0254	74 40				MOV	A,#40h				;Output result
-  358:	  0256	91 6B				ACALL	LCDSETADR
+  358:	  0256	91 61				ACALL	LCDSETADR
   359:	  0258	78 40				MOV	R0,#LCDLINE
   360:	  025A	7F 10				MOV	R7,#10h
-  361:	  025C	91 70				ACALL	LCDPRINTSTR
+  361:	  025C	91 66				ACALL	LCDPRINTSTR
   362:	  025E	22				RET
   363:
   364:				;------------------------------------------------------------------
@@ -487,10 +487,10 @@ ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. 
   416:	  02C4	F8				MOV	R0,A
   417:	  02C5	12 0B C6			LCALL	FLOATING_POINT_OUTPUT
   418:	  02C8	74 40				MOV	A,#40h				;Output result
-  419:	  02CA	91 6B				ACALL	LCDSETADR
+  419:	  02CA	91 61				ACALL	LCDSETADR
   420:	  02CC	78 40				MOV	R0,#LCDLINE
   421:	  02CE	7F 10				MOV	R7,#10h
-  422:	  02D0	91 70				ACALL	LCDPRINTSTR
+  422:	  02D0	91 66				ACALL	LCDPRINTSTR
   423:	  02D2	22				RET
   424:
   425:				;------------------------------------------------------------------
@@ -787,35 +787,35 @@ ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. H
   681:				;------------------------------------------------------------------
   682:				;LCD Output.
   683:				;------------------------------------------------------------------
-  684:		N      FFFF	IF DEBUG=1
-  685:	  0422	F5 99		TXBYTE:		MOV	SBUF,A
-  686:	  0424	30 99 FD			JNB	TI,$
-  687:	  0427	C2 99				CLR	TI
-  688:	  0429	22				RET
+  684:		N      0000	IF DEBUG=1
+  685:				TXBYTE:		MOV	SBUF,A
+  686:						JNB	TI,$
+  687:						CLR	TI
+  688:						RET
   689:				ENDIF
   690:
-  691:	  042A	C0 07		LCDDELAY:	PUSH	07h
-  692:	  042C	7F 00				MOV	R7,#00h
-  693:	  042E	DF FE				DJNZ	R7,$
-  694:	  0430	D0 07				POP	07h
-  695:	  0432	22				RET
+  691:	  0422	C0 07		LCDDELAY:	PUSH	07h
+  692:	  0424	7F 00				MOV	R7,#00h
+  693:	  0426	DF FE				DJNZ	R7,$
+  694:	  0428	D0 07				POP	07h
+  695:	  042A	22				RET
   696:
   697:				;A contains nibble, ACC.4 contains RS
-  698:	  0433	D2 E5		LCDNIBOUT:	SETB	ACC.5				;E
-  699:	  0435	F5 A0				MOV	P2,A
-  700:	  0437	C2 A5				CLR	P2.5				;Negative edge on E
-  701:	  0439	22				RET
+  698:	  042B	D2 E5		LCDNIBOUT:	SETB	ACC.5				;E
+  699:	  042D	F5 A0				MOV	P2,A
+  700:	  042F	C2 A5				CLR	P2.5				;Negative edge on E
+  701:	  0431	22				RET
   702:
   703:				;A contains byte
-  704:	  043A	C0 E0		LCDCMDOUT:	PUSH	ACC
-  705:	  043C	C4				SWAP	A				;High nibble first
-  706:	  043D	54 0F				ANL	A,#0Fh
-  707:	  043F	91 33				ACALL	LCDNIBOUT
-  708:	  0441	D0 E0				POP	ACC
-  709:	  0443	54 0F				ANL	A,#0Fh
-  710:	  0445	91 33				ACALL	LCDNIBOUT
-  711:	  0447	91 2A				ACALL	LCDDELAY			;Wait for BF to clear
-  712:	  0449	22				RET
+  704:	  0432	C0 E0		LCDCMDOUT:	PUSH	ACC
+  705:	  0434	C4				SWAP	A				;High nibble first
+  706:	  0435	54 0F				ANL	A,#0Fh
+  707:	  0437	91 2B				ACALL	LCDNIBOUT
+  708:	  0439	D0 E0				POP	ACC
+  709:	  043B	54 0F				ANL	A,#0Fh
+  710:	  043D	91 2B				ACALL	LCDNIBOUT
+  711:	  043F	91 22				ACALL	LCDDELAY			;Wait for BF to clear
+  712:	  0441	22				RET
   713:
 
 ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. Heinz                                         PAGE 14
@@ -825,60 +825,60 @@ ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. H
  Line  I  Addr  Code            Source
 
   714:				;A contains byte
-  715:	  044A			LCDCHROUT:
-  716:		N      FFFF	IF DEBUG=1
-  717:	  044A	81 22				AJMP	TXBYTE
+  715:	  0442			LCDCHROUT:
+  716:		N      0000	IF DEBUG=1
+  717:						AJMP	TXBYTE
   718:				ENDIF
-  719:	  044C	C0 E0				PUSH	ACC
-  720:	  044E	C4				SWAP	A				;High nibble first
-  721:	  044F	54 0F				ANL	A,#0Fh
-  722:	  0451	D2 E4				SETB	ACC.4				;RS
-  723:	  0453	91 33				ACALL	LCDNIBOUT
-  724:	  0455	D0 E0				POP	ACC
-  725:	  0457	54 0F				ANL	A,#0Fh
-  726:	  0459	D2 E4				SETB	ACC.4				;RS
-  727:	  045B	91 33				ACALL	LCDNIBOUT
-  728:	  045D	91 2A				ACALL	LCDDELAY			;Wait for BF to clear
-  729:	  045F	22				RET
+  719:	  0442	C0 E0				PUSH	ACC
+  720:	  0444	C4				SWAP	A				;High nibble first
+  721:	  0445	54 0F				ANL	A,#0Fh
+  722:	  0447	D2 E4				SETB	ACC.4				;RS
+  723:	  0449	91 2B				ACALL	LCDNIBOUT
+  724:	  044B	D0 E0				POP	ACC
+  725:	  044D	54 0F				ANL	A,#0Fh
+  726:	  044F	D2 E4				SETB	ACC.4				;RS
+  727:	  0451	91 2B				ACALL	LCDNIBOUT
+  728:	  0453	91 22				ACALL	LCDDELAY			;Wait for BF to clear
+  729:	  0455	22				RET
   730:
-  731:	  0460	74 01		LCDCLEAR:	MOV	A,#00000001b
-  732:	  0462	91 3A				ACALL	LCDCMDOUT
-  733:	  0464	7F 00				MOV	R7,#00h
-  734:	  0466	91 2A		LCDCLEAR1:	ACALL	LCDDELAY
-  735:	  0468	DF FC				DJNZ	R7,LCDCLEAR1
-  736:	  046A	22				RET
+  731:	  0456	74 01		LCDCLEAR:	MOV	A,#00000001b
+  732:	  0458	91 32				ACALL	LCDCMDOUT
+  733:	  045A	7F 00				MOV	R7,#00h
+  734:	  045C	91 22		LCDCLEAR1:	ACALL	LCDDELAY
+  735:	  045E	DF FC				DJNZ	R7,LCDCLEAR1
+  736:	  0460	22				RET
   737:
   738:				;A contais address
-  739:	  046B	44 80		LCDSETADR:	ORL	A,#10000000b
-  740:	  046D	91 3A				ACALL	LCDCMDOUT
-  741:	  046F	22				RET
+  739:	  0461	44 80		LCDSETADR:	ORL	A,#10000000b
+  740:	  0463	91 32				ACALL	LCDCMDOUT
+  741:	  0465	22				RET
   742:
-  743:	  0470	E6		LCDPRINTSTR:	MOV	A,@R0
-  744:	  0471	91 4A				ACALL	LCDCHROUT
-  745:	  0473	08				INC	R0
-  746:	  0474	DF FA				DJNZ	R7,LCDPRINTSTR
-  747:		N      FFFF	IF DEBUG=1
-  748:	  0476	74 0D				MOV	A,#0DH
-  749:	  0478	91 4A				ACALL	LCDCHROUT
-  750:	  047A	74 0A				MOV	A,#0AH
-  751:	  047C	91 4A				ACALL	LCDCHROUT
+  743:	  0466	E6		LCDPRINTSTR:	MOV	A,@R0
+  744:	  0467	91 42				ACALL	LCDCHROUT
+  745:	  0469	08				INC	R0
+  746:	  046A	DF FA				DJNZ	R7,LCDPRINTSTR
+  747:		N      0000	IF DEBUG=1
+  748:						MOV	A,#0DH
+  749:						ACALL	LCDCHROUT
+  750:						MOV	A,#0AH
+  751:						ACALL	LCDCHROUT
   752:				ENDIF
-  753:	  047E	22				RET
+  753:	  046C	22				RET
   754:
-  755:	  047F	E4		PRNTCDPTRLCD:	CLR	A
-  756:	  0480	93				MOVC	A,@A+DPTR
-  757:	  0481	60 05				JZ	PRNTCDPTRLCD1
-  758:	  0483	91 4A				ACALL	LCDCHROUT
-  759:	  0485	A3				INC	DPTR
-  760:	  0486	80 F7				SJMP	PRNTCDPTRLCD
-  761:	  0488			PRNTCDPTRLCD1:
-  762:		N      FFFF	IF DEBUG=1
-  763:	  0488	74 0D				MOV	A,#0DH
-  764:	  048A	91 4A				ACALL	LCDCHROUT
-  765:	  048C	74 0A				MOV	A,#0AH
-  766:	  048E	91 4A				ACALL	LCDCHROUT
+  755:	  046D	E4		PRNTCDPTRLCD:	CLR	A
+  756:	  046E	93				MOVC	A,@A+DPTR
+  757:	  046F	60 05				JZ	PRNTCDPTRLCD1
+  758:	  0471	91 42				ACALL	LCDCHROUT
+  759:	  0473	A3				INC	DPTR
+  760:	  0474	80 F7				SJMP	PRNTCDPTRLCD
+  761:	  0476			PRNTCDPTRLCD1:
+  762:		N      0000	IF DEBUG=1
+  763:						MOV	A,#0DH
+  764:						ACALL	LCDCHROUT
+  765:						MOV	A,#0AH
+  766:						ACALL	LCDCHROUT
   767:				ENDIF
-  768:	  0490	22				RET
+  768:	  0476	22				RET
   769:
 
 ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. Heinz                                         PAGE 15
@@ -887,27 +887,27 @@ ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. H
 
  Line  I  Addr  Code            Source
 
-  770:	  0491	74 03		LCDINIT:	MOV	A,#00000011b			;Function set
-  771:	  0493	91 33				ACALL	LCDNIBOUT
-  772:	  0495	91 2A				ACALL	LCDDELAY			;Wait for BF to clear
-  773:	  0497	74 28				MOV	A,#00101000b
-  774:	  0499	91 3A				ACALL	LCDCMDOUT
-  775:	  049B	74 28				MOV	A,#00101000b
-  776:	  049D	91 3A				ACALL	LCDCMDOUT
-  777:	  049F	74 0C				MOV	A,#00001100b			;Display ON/OFF
-  778:	  04A1	91 3A				ACALL	LCDCMDOUT
-  779:	  04A3	91 60				ACALL	LCDCLEAR			;Clear
-  780:	  04A5	74 06				MOV	A,#00000110b			;Cursor direction
-  781:	  04A7	91 3A				ACALL	LCDCMDOUT
-  782:	  04A9	22				RET
+  770:	  0477	74 03		LCDINIT:	MOV	A,#00000011b			;Function set
+  771:	  0479	91 2B				ACALL	LCDNIBOUT
+  772:	  047B	91 22				ACALL	LCDDELAY			;Wait for BF to clear
+  773:	  047D	74 28				MOV	A,#00101000b
+  774:	  047F	91 32				ACALL	LCDCMDOUT
+  775:	  0481	74 28				MOV	A,#00101000b
+  776:	  0483	91 32				ACALL	LCDCMDOUT
+  777:	  0485	74 0C				MOV	A,#00001100b			;Display ON/OFF
+  778:	  0487	91 32				ACALL	LCDCMDOUT
+  779:	  0489	91 56				ACALL	LCDCLEAR			;Clear
+  780:	  048B	74 06				MOV	A,#00000110b			;Cursor direction
+  781:	  048D	91 32				ACALL	LCDCMDOUT
+  782:	  048F	22				RET
   783:
-  784:	  04AA	78 40		LCDCLEARBUFF:	MOV	R0,#LCDLINE
-  785:	  04AC	7F 10				MOV	R7,#10h
-  786:	  04AE	74 20				MOV	A,#20H
-  787:	  04B0	F6		LCDCLEARBUFF1:	MOV	@R0,A
-  788:	  04B1	08				INC	R0
-  789:	  04B2	DF FC				DJNZ	R7,LCDCLEARBUFF1
-  790:	  04B4	22				RET
+  784:	  0490	78 40		LCDCLEARBUFF:	MOV	R0,#LCDLINE
+  785:	  0492	7F 10				MOV	R7,#10h
+  786:	  0494	74 20				MOV	A,#20H
+  787:	  0496	F6		LCDCLEARBUFF1:	MOV	@R0,A
+  788:	  0497	08				INC	R0
+  789:	  0498	DF FC				DJNZ	R7,LCDCLEARBUFF1
+  790:	  049A	22				RET
   791:
   792:		N      0800			ORG	0800h
   793:
@@ -2808,7 +2808,7 @@ CY				  BIT	      D7
 DC1				  CODE	    0D84	2259
 DEBOUNCEINT0			  CODE	    0088	 105
 DEBOUNCEINT01			  CODE	    008C	 107
-DEBUG				  NUMBER    0001	   2
+DEBUG				  NUMBER    0000	   2
 DECX				  CODE	    0B98	1824
 DEC_ASTKA			  CODE	    0D9E	2283
 DIGIT				  NUMBER    0004	  25
@@ -2995,18 +2995,18 @@ LCCA				  NUMBER    007D	  82
 LCCALC				  CODE	    014D	 225
 LCCB				  NUMBER    0085	  83
 LCCT				  NUMBER    008D	  84
-LCDCHROUT			  CODE	    044A	 715
-LCDCLEAR			  CODE	    0460	 731
-LCDCLEAR1			  CODE	    0466	 734
-LCDCLEARBUFF			  CODE	    04AA	 784
-LCDCLEARBUFF1			  CODE	    04B0	 787
-LCDCMDOUT			  CODE	    043A	 704
-LCDDELAY			  CODE	    042A	 691
-LCDINIT				  CODE	    0491	 770
+LCDCHROUT			  CODE	    0442	 715
+LCDCLEAR			  CODE	    0456	 731
+LCDCLEAR1			  CODE	    045C	 734
+LCDCLEARBUFF			  CODE	    0490	 784
+LCDCLEARBUFF1			  CODE	    0496	 787
+LCDCMDOUT			  CODE	    0432	 704
+LCDDELAY			  CODE	    0422	 691
+LCDINIT				  CODE	    0477	 770
 LCDLINE				  NUMBER    0040	  76
-LCDNIBOUT			  CODE	    0433	 698
-LCDPRINTSTR			  CODE	    0470	 743
-LCDSETADR			  CODE	    046B	 739
+LCDNIBOUT			  CODE	    042B	 698
+LCDPRINTSTR			  CODE	    0466	 743
+LCDSETADR			  CODE	    0461	 739
 LCF1				  NUMBER    0065	  79
 LCF2				  NUMBER    006D	  80
 
@@ -3102,8 +3102,8 @@ POP_AND_EXIT			  CODE	    0828	 953
 POSNM1				  CODE	    0B7A	1803
 POSNUM				  CODE	    0B77	1800
 PRET				  CODE	    09DE	1386
-PRNTCDPTRLCD			  CODE	    047F	 755
-PRNTCDPTRLCD1			  CODE	    0488	 761
+PRNTCDPTRLCD			  CODE	    046D	 755
+PRNTCDPTRLCD1			  CODE	    0476	 761
 PRTERR				  CODE	    080D	 911
 PS				  BIT	      BC
 PSW				  DATA	      D0
@@ -3207,7 +3207,6 @@ SYMBOL				  TYPE     VALUE	LINE
 ------------------------------------------------------------
 TR0				  BIT	      8C
 TR1				  BIT	      8E
-TXBYTE				  CODE	    0422	 685
 TXD				  BIT	      B1
 ULOOP				  CODE	    09EF	1406
 UNDERFLOW			  NUMBER    0000	  28

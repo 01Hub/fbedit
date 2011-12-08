@@ -16,7 +16,6 @@ InstallLCD proc
 	mov		wc.cbWndExtra,4
 	push	hInstance
 	pop		wc.hInstance
-	;invoke GetStockObject,GRAY_BRUSH
 	mov		wc.hbrBackground,NULL
 	mov		wc.lpszMenuName,NULL
 	mov		wc.lpszClassName,offset LCDClass
@@ -25,16 +24,13 @@ InstallLCD proc
 	invoke LoadCursor,0,IDC_ARROW
 	mov		wc.hCursor,eax
 	invoke RegisterClassEx,addr wc
-	mov		databits,8
 	ret
 
 InstallLCD endp
 
 UnInstallLCD proc
 
-	.if hDlg
-		invoke SendMessage,hDlg,WM_CLOSE,0,0
-	.endif
+	invoke DestroyWindow,hDlg
 	ret
 
 UnInstallLCD endp
@@ -58,7 +54,7 @@ DisplayProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 		mov		esi,11
 		mov		edi,12
 		xor		ecx,ecx
-		mov		ebx,offset LCDLine1
+		mov		ebx,offset LCDDDRAM
 		.while ecx<16
 			push	ebx
 			push	ecx
@@ -73,7 +69,7 @@ DisplayProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 		mov		esi,12
 		mov		edi,11+3*9
 		xor		ecx,ecx
-		mov		ebx,offset LCDLine2
+		mov		ebx,offset LCDDDRAM+40h
 		.while ecx<16
 			push	ebx
 			push	ecx
@@ -87,37 +83,11 @@ DisplayProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 		.endw
 		invoke EndPaint,hWin,addr ps
 	.else
-  ExDef:
 		invoke DefWindowProc,hWin,uMsg,wParam,lParam
 		ret
 	.endif
 	xor    eax,eax
-  Ex:
 	ret
-
-DrawDot:
-	push	ecx
-	mov		rect.left,esi
-	lea		eax,[esi+3]
-	mov		rect.right,eax
-	mov		rect.top,edi
-	lea		eax,[edi+3]
-	mov		rect.bottom,eax
-	invoke GetStockObject,BLACK_BRUSH
-	invoke FillRect,ps.hdc,addr rect,eax
-	pop		ecx
-	retn
-	invoke SetPixel,ps.hdc,esi,edi,0
-	invoke SetPixel,ps.hdc,addr [esi+1],edi,0
-	invoke SetPixel,ps.hdc,addr [esi+2],edi,0
-	invoke SetPixel,ps.hdc,esi,addr [edi+1],0
-	invoke SetPixel,ps.hdc,addr [esi+1],addr [edi+1],0
-	invoke SetPixel,ps.hdc,addr [esi+2],addr [edi+1],0
-	invoke SetPixel,ps.hdc,esi,addr [edi+2],0
-	invoke SetPixel,ps.hdc,addr [esi+1],addr [edi+2],0
-	invoke SetPixel,ps.hdc,addr [esi+2],addr [edi+2],0
-	pop		ecx
-	retn
 
 DrawChar:
 	push	esi
@@ -135,7 +105,15 @@ DrawChar:
 		.while ecx<5
 			shl		bl,1
 			.if CARRY?
-				call	DrawDot
+				push	ecx
+				mov		rect.left,esi
+				lea		eax,[esi+3]
+				mov		rect.right,eax
+				mov		rect.top,edi
+				lea		eax,[edi+3]
+				mov		rect.bottom,eax
+				invoke FillRect,ps.hdc,addr rect,hBrush
+				pop		ecx
 			.endif
 			lea		esi,[esi+3]
 			lea		ecx,[ecx+1]
@@ -153,76 +131,67 @@ DrawChar:
 
 DisplayProc endp
 
-GetCBOBits proc
+GetCBOBits proc uses ebx edi
+	LOCAL	nlcdbit:DWORD
 
 	mov		P0Bits,0
 	mov		P1Bits,0
 	mov		P2Bits,0
 	mov		P3Bits,0
+	mov		nlcdbit,1
 	push	0
-	push	IDC_CBOD0
-	push	IDC_CBOD1
-	push	IDC_CBOD2
-	push	IDC_CBOD3
-	push	IDC_CBOD4
-	push	IDC_CBOD5
-	push	IDC_CBOD6
-	push	IDC_CBOD7
-	push	IDC_CBORS
+	push	IDC_CBOE
 	push	IDC_CBORW
-	mov		ebx,IDC_CBOE
+	push	IDC_CBORS
+	push	IDC_CBOD7
+	push	IDC_CBOD6
+	push	IDC_CBOD5
+	push	IDC_CBOD4
+	push	IDC_CBOD3
+	push	IDC_CBOD2
+	push	IDC_CBOD1
+	mov		ebx,IDC_CBOD0
+	mov		edi,offset lcdbit
 	.while ebx
 		invoke SendDlgItemMessage,hDlg,ebx,CB_GETCURSEL,0,0
-		.if ebx==IDC_CBOD0
-			mov		DB0,eax
-		.elseif ebx==IDC_CBOD1
-			mov		DB1,eax
-		.elseif ebx==IDC_CBOD2
-			mov		DB2,eax
-		.elseif ebx==IDC_CBOD3
-			mov		DB3,eax
-		.elseif ebx==IDC_CBOD4
-			mov		DB4,eax
-		.elseif ebx==IDC_CBOD5
-			mov		DB5,eax
-		.elseif ebx==IDC_CBOD6
-			mov		DB6,eax
-		.elseif ebx==IDC_CBOD7
-			mov		DB7,eax
-		.elseif ebx==IDC_CBORS
-			mov		RS,eax
-		.elseif ebx==IDC_CBORW
-			mov		RW,eax
-		.elseif ebx==IDC_CBOE
-			mov		E,eax
-		.endif
-		.if eax<=NC
+		.if eax>=GND && eax<=NC
+			mov		edx,-1
 		.elseif eax>=P0_0 && eax<=P0_7
 			sub		eax,P0_0
 			mov		ecx,eax
 			mov		eax,01h
 			shl		eax,cl
 			or		P0Bits,eax
+			mov		edx,0
 		.elseif eax>=P0_1 && eax<=P1_7
 			sub		eax,P1_0
 			mov		ecx,eax
 			mov		eax,01h
 			shl		eax,cl
 			or		P1Bits,eax
+			mov		edx,1
 		.elseif eax>=P0_2 && eax<=P2_7
 			sub		eax,P2_0
 			mov		ecx,eax
 			mov		eax,01h
 			shl		eax,cl
 			or		P2Bits,eax
+			mov		edx,2
 		.elseif eax>=P0_3 && eax<=P3_7
 			sub		eax,P3_0
 			mov		ecx,eax
 			mov		eax,01h
 			shl		eax,cl
 			or		P3Bits,eax
+			mov		edx,3
 		.endif
+		mov		[edi].LCDBIT.port,edx
+		mov		[edi].LCDBIT.portbit,eax
+		mov		eax,nlcdbit
+		mov		[edi].LCDBIT.lcdbit,eax
 		pop		ebx
+		shl		nlcdbit,1
+		lea		edi,[edi+sizeof LCDBIT]
 	.endw
 	ret
 
@@ -284,6 +253,11 @@ LCDProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			pop		eax
 		.endw
 		invoke GetCBOBits
+		invoke GetWindowRect,hWin,addr rect
+		mov		eax,rect.right
+		sub		eax,rect.left
+		mov		edx,127
+		invoke MoveWindow,hWin,rect.left,rect.top,eax,edx,TRUE
 	.elseif eax==WM_COMMAND
 		mov		edx,wParam
 		movzx	eax,dx
@@ -315,8 +289,7 @@ LCDProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.endif
 		.endif
 	.elseif eax==WM_CLOSE
-		invoke DestroyWindow,hWin
-		mov		hDlg,0
+		invoke ShowWindow,hWin,SW_HIDE
 	.else
 		mov		eax,FALSE
 		ret
@@ -351,28 +324,165 @@ AddinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		eax,[ebx].ADDIN.MenuID
 		mov		IDAddin,eax
 		inc		[ebx].ADDIN.MenuID
+		invoke GetStockObject,BLACK_BRUSH
+		mov		hBrush,eax
+		invoke CreateDialogParam,hInstance,IDD_DLGLCD,hWin,addr LCDProc,0
 	.elseif eax==AM_PORTCHANGED
+		push	LCDData
 		mov		eax,wParam
+		mov		edx,lParam
 		.if eax==0 && P0Bits
-PrintHex wParam
-PrintHex lParam
+			call	SetData
 		.elseif eax==1 && P1Bits
-PrintHex wParam
-PrintHex lParam
+			call	SetData
 		.elseif eax==2 && P2Bits
-PrintHex wParam
-PrintHex lParam
+			call	SetData
 		.elseif eax==3 && P3Bits
-PrintHex wParam
-PrintHex lParam
+			call	SetData
+		.endif
+		;Check for a high to low transition on E
+		mov		eax,LCDData
+		pop		edx
+		.if eax!=edx
+			test	eax,BITE
+			.if ZERO?
+				test	edx,BITE
+				.if !ZERO?
+					test	eax,BITRW
+					.if !ZERO?
+						;Read
+					.else
+						;Write
+						test	eax,BITRS
+						.if !ZERO?
+							;Data
+							and		eax,0FFh
+							.if LCDDB==8
+								;8 bit mode
+								call	LcdData
+							.else
+								;4 bit mode
+								.if !LCDNIBBLE
+									;First nibble
+									and		eax,0F0h
+									mov		LCDNibbleData,eax
+									mov		LCDNIBBLE,1
+								.else
+									;Second nibble
+									and		eax,0F0h
+									shr		eax,4
+									or		eax,LCDNibbleData
+									mov		LCDNIBBLE,0
+									call	LcdData
+								.endif
+							.endif
+						.else
+							;Command
+							and		eax,0FFh
+							.if LCDDB==8
+								;8 bit mode
+								call	LcdCommand
+							.else
+								;4 bit mode
+								.if !LCDNIBBLE
+									;First nibble
+									and		eax,0F0h
+									mov		LCDNibbleData,eax
+									mov		LCDNIBBLE,1
+								.else
+									;Second nibble
+									and		eax,0F0h
+									shr		eax,4
+									or		eax,LCDNibbleData
+									mov		LCDNIBBLE,0
+									call	LcdCommand
+								.endif
+							.endif
+						.endif
+					.endif
+				.endif
+			.endif
 		.endif
 	.elseif eax==AM_COMMAND
 		mov		eax,lParam
 		.if eax==IDAddin
-			invoke CreateDialogParam,hInstance,IDD_DLGLCD,hWin,addr LCDProc,0
+			invoke ShowWindow,hDlg,SW_SHOW
 		.endif
+	.elseif eax==AM_RESET
+		mov		LCDDB,8
+		mov		LCDNIBBLE,0
+		mov		LCDData,7FFh
+		mov		edi,offset LCDDDRAM
+		mov		ecx,128/4
+		mov		eax,20202020h
+		rep		stosd
+		mov		LCDDDRAMAddr,0
+		invoke GetDlgItem,hDlg,IDC_LCD
+		invoke InvalidateRect,eax,NULL,TRUE
 	.endif
 	ret
+
+LcdData:
+PrintHex eax
+	retn
+
+LcdCommand:
+	.if eax>=80h
+	.elseif eax>=40h
+	.elseif eax>=20h
+		test	eax,10h
+		.if !ZERO?
+			mov		LCDDB,8
+			mov		LCDNIBBLE,0
+		.else
+			mov		LCDDB,4
+			mov		LCDNibbleData,eax
+			mov		LCDNIBBLE,1
+		.endif
+	.elseif eax>=10h
+	.elseif eax>=08h
+	.elseif eax>=04h
+	.elseif eax>=02h
+	.elseif eax>=01h
+	.endif
+	retn
+
+SetData:
+	xor		ecx,ecx
+	mov		esi,offset lcdbit
+	.while ecx<8+3
+		.if eax==[esi].LCDBIT.port
+			push	eax
+			test	edx,[esi].LCDBIT.portbit
+			.if ZERO?
+				;Reset bit
+				mov		eax,[esi].LCDBIT.lcdbit
+				xor		eax,7FFh
+				and		LCDData,eax
+			.else
+				;Set bit
+				mov		eax,[esi].LCDBIT.lcdbit
+				or		LCDData,eax
+			.endif
+			pop		eax
+		.elseif [esi].LCDBIT.port==-1
+			push	eax
+			.if [esi].LCDBIT.portbit==1
+				;VCC. Set bit
+				mov		eax,[esi].LCDBIT.lcdbit
+				or		LCDData,eax
+			.else
+				;GND, NC. Reset bit
+				mov		eax,[esi].LCDBIT.lcdbit
+				xor		eax,7FFh
+				and		LCDData,eax
+			.endif
+			pop		eax
+		.endif
+		inc		ecx
+		lea		esi,[esi+sizeof LCDBIT]
+	.endw
+	retn
 
 AddinProc endp
 

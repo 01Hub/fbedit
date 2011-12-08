@@ -1,5 +1,5 @@
 
-DEBUG		EQU 1
+DEBUG		EQU 0
 
 $INCLUDE	(LCMeter.inc)
 

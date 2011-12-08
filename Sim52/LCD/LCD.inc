@@ -73,6 +73,16 @@ P3_5					equ 32
 P3_6					equ 33
 P3_7					equ 34
 
+BITRS					equ 00100000000b
+BITRW					equ 01000000000b
+BITE					equ 10000000000b
+
+LCDBIT struct
+	port				DWORD ?
+	portbit				DWORD ?
+	lcdbit				DWORD ?
+LCDBIT ends
+
 .const
 
 LCDClass				db 'LCDCLASS',0
@@ -91,24 +101,20 @@ szShrink				db '<',0
 
 hDlg					HWND ?
 hInstance				HINSTANCE ?
-databits				DWORD ?
+hBrush					HBRUSH ?
 lpAddin					DWORD ?
-P0Bits					DWORD ?
-P1Bits					DWORD ?
-P2Bits					DWORD ?
-P3Bits					DWORD ?
-DB0						DWORD ?
-DB1						DWORD ?
-DB2						DWORD ?
-DB3						DWORD ?
-DB4						DWORD ?
-DB5						DWORD ?
-DB6						DWORD ?
-DB7						DWORD ?
-RS						DWORD ?
-RW						DWORD ?
-E						DWORD ?
 IDAddin					DWORD ?
 BackLight				DWORD ?
-LCDLine1				BYTE 40 dup(?)
-LCDLine2				BYTE 40 dup(?)
+
+P0Bits					DWORD ?				;Each bit used by LCD is 1
+P1Bits					DWORD ?				;Each bit used by LCD is 1
+P2Bits					DWORD ?				;Each bit used by LCD is 1
+P3Bits					DWORD ?				;Each bit used by LCD is 1
+
+lcdbit					LCDBIT 8+3 dup(<>)	;What port bit the LCD bit is connected to
+LCDDB					DWORD ?				;8 or 4 databits
+LCDNIBBLE				DWORD ?
+LCDData					DWORD ?
+LCDNibbleData			DWORD ?
+LCDDDRAMAddr			DWORD ?
+LCDDDRAM				BYTE 128 dup(?)

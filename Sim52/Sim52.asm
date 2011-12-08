@@ -461,8 +461,6 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SendDlgItemMessage,hTabDlg[16],IDC_UDCHEXCODE,HEM_SETFONT,0,addr hef
 
 		invoke SendDlgItemMessage,hTabDlg[8],IDC_UDCHEXSFR,HEM_SETOFFSET,128,0
-		invoke Reset
-		invoke SetTimer,hWin,1000,200,NULL
 		invoke LoadAccelerators,addin.hInstance,IDR_ACCEL1
 		mov		addin.hAccel,eax
 		invoke GetDlgItem,hWin,IDC_GRDCODE
@@ -509,6 +507,8 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SendMessage,hGrd,GM_ADDCOL,0,addr col
 
 		invoke LoadAddins
+		invoke Reset
+		invoke SetTimer,hWin,1000,200,NULL
 
 	.elseif eax==WM_TIMER
 		.if Refresh

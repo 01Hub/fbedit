@@ -181,6 +181,7 @@ Reset proc
 	mov		addin.Sfr[SFR_ACC],00h
 	mov		addin.Sfr[SFR_B],00h
 	mov		Refresh,1
+	invoke SendAddinMessage,addin.hWnd,AM_RESET,0,0
 	ret
 
 Reset endp
@@ -2703,6 +2704,10 @@ CLR_$bad:
 	.else
 		and		eax,0F8h
 		and		addin.Sfr[eax],dl
+		.if eax==SFR_P0 || eax==SFR_P1 || eax==SFR_P2 || eax==SFR_P3
+			movzx	edx,addin.Sfr[eax]
+			invoke SetPort,eax,edx
+		.endif
 	.endif
 	lea		ebx,[ebx+2]
 	ret
@@ -2873,6 +2878,10 @@ SETB_$bad:
 	.else
 		and		eax,0F8h
 		or		addin.Sfr[eax],dl
+		.if eax==SFR_P0 || eax==SFR_P1 || eax==SFR_P2 || eax==SFR_P3
+			movzx	edx,addin.Sfr[eax]
+			invoke SetPort,eax,edx
+		.endif
 	.endif
 	lea		ebx,[ebx+2]
 	ret
