@@ -396,6 +396,284 @@ UnloadAddins proc uses edi
 
 UnloadAddins endp
 
+lstrcmpn proc uses esi edi,lpText1:DWORD,lpText2:DWORD,nLen2:DWORD
+
+	mov		esi,lpText1
+	mov		edi,lpText2
+	xor		ecx,ecx
+	.while ecx<nLen2
+		movzx	eax,byte ptr [edi+ecx]
+		.break .if !eax
+		movzx	edx,byte ptr [esi+ecx]
+		sub		eax,edx
+		.break .if eax
+		inc		ecx
+	.endw
+	ret
+
+lstrcmpn endp 
+
+lstrcmpin proc uses esi edi,lpText1:DWORD,lpText2:DWORD,nLen2:DWORD
+
+	mov		esi,lpText1
+	mov		edi,lpText2
+	xor		ecx,ecx
+	.while ecx<nLen2
+		movzx	eax,byte ptr [edi+ecx]
+		.break .if !eax
+		movzx	edx,byte ptr [esi+ecx]
+		sub		eax,edx
+		.if eax
+			movzx	eax,byte ptr [edi+ecx]
+			movzx	edx,CaseTab[edx]
+			sub		eax,edx
+		.endif
+		.break .if eax
+		inc		ecx
+	.endw
+	ret
+
+lstrcmpin endp 
+
+Find proc uses ebx esi edi,lpszText:DWORD,nLenText:DWORD,uFlag:DWORD
+	LOCAL	nRows:DWORD
+	LOCAL	rowdata:DWORD
+	LOCAL	rowbuffer[256]:BYTE
+	LOCAL	nLen:DWORD
+
+	invoke SendMessage,hGrd,GM_GETROWCOUNT,0,0
+	mov		nRows,eax
+	mov		ebx,nFindRow
+	mov		edi,nFindPos
+	.if uFlag & FIND_UP
+		.if uFlag & FIND_BREAKPOINT
+			dec		ebx
+			.while sdword ptr ebx>=0
+				mov		ecx,ebx
+				shl		ecx,16
+				invoke SendMessage,hGrd,GM_GETCELLDATA,ecx,addr rowdata
+				.if !rowdata
+					mov		ecx,ebx
+					shl		ecx,16
+					invoke SendMessage,hGrd,GM_SETCURSEL,0,ebx
+					mov		nFindRow,ebx
+					.break
+				.endif
+				dec		ebx
+			.endw
+		.elseif uFlag & FIND_LABEL
+			.while sdword ptr ebx>=0
+				mov		ecx,ebx
+				shl		ecx,16
+				or		ecx,1
+				invoke SendMessage,hGrd,GM_GETCELLDATA,ecx,addr rowbuffer
+				dec		edi
+				.if rowbuffer
+					invoke lstrlen,addr rowbuffer
+					mov		nLen,eax
+					.while sdword ptr edi>=0
+						.if uFlag & FIND_MATCH
+							invoke lstrcmpn,addr rowbuffer[edi],lpszText,nLenText
+						.else
+							invoke lstrcmpin,addr rowbuffer[edi],lpszText,nLenText
+						.endif
+						.if !eax
+							mov		ecx,ebx
+							shl		ecx,16
+							invoke SendMessage,hGrd,GM_SETCURSEL,1,ebx
+							mov		nFindRow,ebx
+							mov		nFindPos,edi
+							jmp		Ex
+						.endif
+						dec		edi
+					.endw
+				.endif
+				mov		edi,255
+				dec		ebx
+			.endw
+		.elseif uFlag & FIND_CODE
+			.while sdword ptr ebx>=0
+				mov		ecx,ebx
+				shl		ecx,16
+				or		ecx,2
+				invoke SendMessage,hGrd,GM_GETCELLDATA,ecx,addr rowbuffer
+				dec		edi
+				.if rowbuffer
+					invoke lstrlen,addr rowbuffer
+					mov		nLen,eax
+					.while sdword ptr edi>=0
+						.if uFlag & FIND_MATCH
+							invoke lstrcmpn,addr rowbuffer[edi],lpszText,nLenText
+						.else
+							invoke lstrcmpin,addr rowbuffer[edi],lpszText,nLenText
+						.endif
+						.if !eax
+							mov		ecx,ebx
+							shl		ecx,16
+							invoke SendMessage,hGrd,GM_SETCURSEL,2,ebx
+							mov		nFindRow,ebx
+							mov		nFindPos,edi
+							jmp		Ex
+						.endif
+						dec		edi
+					.endw
+				.endif
+				mov		edi,255
+				dec		ebx
+			.endw
+		.endif
+	.elseif uFlag & FIND_DOWN
+		.if uFlag & FIND_BREAKPOINT
+			inc		ebx
+			.while ebx<nRows
+				mov		ecx,ebx
+				shl		ecx,16
+				invoke SendMessage,hGrd,GM_GETCELLDATA,ecx,addr rowdata
+				.if !rowdata
+					mov		ecx,ebx
+					shl		ecx,16
+					invoke SendMessage,hGrd,GM_SETCURSEL,0,ebx
+					mov		nFindRow,ebx
+					.break
+				.endif
+				inc		ebx
+			.endw
+		.elseif uFlag & FIND_LABEL
+			.while ebx<nRows
+				mov		ecx,ebx
+				shl		ecx,16
+				or		ecx,1
+				invoke SendMessage,hGrd,GM_GETCELLDATA,ecx,addr rowbuffer
+				inc		edi
+				.if rowbuffer
+					invoke lstrlen,addr rowbuffer
+					mov		nLen,eax
+					.while edi<nLen
+						.if uFlag & FIND_MATCH
+							invoke lstrcmpn,addr rowbuffer[edi],lpszText,nLenText
+						.else
+							invoke lstrcmpin,addr rowbuffer[edi],lpszText,nLenText
+						.endif
+						.if !eax
+							mov		ecx,ebx
+							shl		ecx,16
+							invoke SendMessage,hGrd,GM_SETCURSEL,1,ebx
+							mov		nFindRow,ebx
+							mov		nFindPos,edi
+							jmp		Ex
+						.endif
+						inc		edi
+					.endw
+				.endif
+				mov		edi,-1
+				inc		ebx
+			.endw
+		.elseif uFlag & FIND_CODE
+			.while ebx<nRows
+				mov		ecx,ebx
+				shl		ecx,16
+				or		ecx,2
+				invoke SendMessage,hGrd,GM_GETCELLDATA,ecx,addr rowbuffer
+				inc		edi
+				.if rowbuffer
+					invoke lstrlen,addr rowbuffer
+					mov		nLen,eax
+					.while edi<nLen
+						.if uFlag & FIND_MATCH
+							invoke lstrcmpn,addr rowbuffer[edi],lpszText,nLenText
+						.else
+							invoke lstrcmpin,addr rowbuffer[edi],lpszText,nLenText
+						.endif
+						.if !eax
+							mov		ecx,ebx
+							shl		ecx,16
+							invoke SendMessage,hGrd,GM_SETCURSEL,2,ebx
+							mov		nFindRow,ebx
+							mov		nFindPos,edi
+							jmp		Ex
+						.endif
+						inc		edi
+					.endw
+				.endif
+				mov		edi,-1
+				inc		ebx
+			.endw
+		.endif
+	.endif
+  Ex:
+	ret
+
+Find endp
+
+FindProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+	LOCAL	buffer[256]:BYTE
+
+	mov		eax,uMsg
+	.if eax==WM_INITDIALOG
+		mov		eax,hWin
+		mov		hFind,eax
+		invoke CheckDlgButton,hWin,IDC_RBNDOWN,BST_CHECKED
+		invoke CheckDlgButton,hWin,IDC_RBNLABEL,BST_CHECKED
+	.elseif eax==WM_COMMAND
+		mov		edx,wParam
+		movzx	eax,dx
+		shr		edx,16
+		.if edx==BN_CLICKED
+			.if eax==IDCANCEL
+				invoke ShowWindow,hWin,SW_HIDE
+			.elseif eax==IDC_BTNFIND
+				xor		ebx,ebx
+				invoke IsDlgButtonChecked,hWin,IDC_RBNUP
+				.if eax
+					or		ebx,FIND_UP
+				.endif
+				invoke IsDlgButtonChecked,hWin,IDC_RBNDOWN
+				.if eax
+					or		ebx,FIND_DOWN
+				.endif
+				invoke IsDlgButtonChecked,hWin,IDC_RBNBREAKPOINT
+				.if eax
+					or		ebx,FIND_BREAKPOINT
+				.endif
+				invoke IsDlgButtonChecked,hWin,IDC_RBNLABEL
+				.if eax
+					or		ebx,FIND_LABEL
+				.endif
+				invoke IsDlgButtonChecked,hWin,IDC_RBNCODE
+				.if eax
+					or		ebx,FIND_CODE
+				.endif
+				invoke IsDlgButtonChecked,hWin,IDC_CHKMATCH
+				.if eax
+					or		ebx,FIND_MATCH
+				.endif
+				invoke IsDlgButtonChecked,hWin,IDC_CHKWORD
+				.if eax
+					or		ebx,FIND_WORD
+				.endif
+				invoke GetDlgItemText,hWin,IDC_EDTFIND,addr buffer,sizeof buffer
+				invoke Find,addr buffer,eax,ebx
+			.endif
+		.endif
+	.elseif eax==WM_ACTIVATE
+		mov		eax,wParam
+		movzx	eax,ax
+		.if eax==WA_CLICKACTIVE || eax==WA_ACTIVE
+			invoke SendMessage,hGrd,GM_GETCURROW,0,0
+			mov		nFindRow,eax
+			mov		nFindPos,-1
+		.endif
+	.elseif eax==WM_CLOSE
+		invoke ShowWindow,hWin,SW_HIDE
+	.else
+		mov		eax,FALSE
+		ret
+	.endif
+	mov		eax,TRUE
+	ret
+
+FindProc endp
+
 WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	tci:TC_ITEM
 	LOCAL	ofn:OPENFILENAME
@@ -506,10 +784,29 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		col.hdrflag,0
 		invoke SendMessage,hGrd,GM_ADDCOL,0,addr col
 
+		invoke CreateDialogParam,addin.hInstance,IDD_DLGFIND,hWin,addr FindProc,0
+		invoke CreateDialogParam,addin.hInstance,IDD_DLGTERMINAL,hWin,addr TerminalProc,0
 		invoke LoadAddins
 		invoke Reset
 		invoke SetTimer,hWin,1000,200,NULL
 
+		;Setup whole CharTab and CaseTab
+		xor		ebx,ebx
+		.while ebx<256
+			invoke IsCharAlpha,ebx
+			.if eax
+				mov		CharTab[ebx],1
+				invoke CharUpper,ebx
+				.if eax==ebx
+					invoke CharLower,ebx
+				.endif
+				mov		CaseTab[ebx],al
+			.else
+				mov		CharTab[ebx],0
+				mov		CaseTab[ebx],bl
+			.endif
+			inc		ebx
+		.endw
 	.elseif eax==WM_TIMER
 		.if Refresh
 			invoke UpdateStatus
@@ -582,8 +879,11 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					invoke SetFocus,hGrd
 				.endif
 			.elseif eax==IDM_SEARCH_FIND
+				invoke ShowWindow,hFind,SW_SHOW
 			.elseif eax==IDM_VIEW_TERMINAL
-				invoke CreateDialogParam,addin.hInstance,IDD_DLGTERMINAL,hWin,addr TerminalProc,0
+				invoke ShowWindow,hTerm,SW_SHOW
+				invoke CreateCaret,hTermScrn,NULL,BOXWT,BOXHT
+				invoke ShowCaret,hTermScrn
 			.elseif eax==IDM_DEBUG_RUN
 				.if State & STATE_THREAD
 					mov		State,STATE_THREAD or STATE_RUN
@@ -643,12 +943,6 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke ShellAbout,hWin,addr AppName,addr AboutMsg,NULL
 			.elseif eax>=12000
 				invoke SendAddinMessage,hWin,AM_COMMAND,0,eax
-;				push	0
-;				push	0
-;				push	AM_SHOW
-;				push	addin.hWnd
-;				invoke GetProcAddress,hLCDDll,1
-;				call	eax
 			.endif
 		.endif
 	.elseif eax==WM_INITMENUPOPUP
@@ -682,6 +976,8 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke DeleteObject,addin.hLstFont
 		invoke ImageList_Destroy,hIml
 		invoke UnloadAddins
+		invoke DestroyWindow,hFind
+		invoke DestroyWindow,hTerm
 		invoke DestroyWindow,hWin
 	.elseif uMsg==WM_DESTROY
 		invoke PostQuitMessage,NULL

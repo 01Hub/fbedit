@@ -145,6 +145,23 @@ ParseList proc uses ebx esi edi,lpFileName:DWORD
 			.endif
 			call	SkipLine
 		.endw
+		invoke lstrcpy,addr buffer,lpFileName
+		invoke lstrlen,addr buffer
+		mov		dword ptr buffer[eax-3],'dmc'
+		invoke CreateFile,addr buffer,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL
+		.if eax==INVALID_HANDLE_VALUE
+			invoke lstrlen,addr buffer
+			mov		dword ptr buffer[eax-3],'nib'
+			invoke CreateFile,addr buffer,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL
+		.endif
+		.if eax!=INVALID_HANDLE_VALUE
+			; A cmd or bin file exists, read it into code memory
+			mov		hFile,eax
+			invoke GetFileSize,hFile,0
+			mov		ebx,eax
+			invoke ReadFile,hFile,addr addin.Code,ebx,addr BytesRead,NULL
+			invoke CloseHandle,hFile
+		.endif
 		invoke Reset
 		xor		eax,eax
 	.endif

@@ -273,6 +273,17 @@ IDC_UDCHEXCODE          equ 1502
 IDD_DLGTERMINAL			equ 1700
 IDC_SCREEN				equ 1701
 
+IDD_DLGFIND             equ 1800
+IDC_EDTFIND             equ 1801
+IDC_BTNFIND             equ 1802
+IDC_RBNBREAKPOINT       equ 1803
+IDC_RBNLABEL            equ 1804
+IDC_RBNCODE             equ 1805
+IDC_CHKMATCH            equ 1806
+IDC_CHKWORD             equ 1807
+IDC_RBNUP               equ 1808
+IDC_RBNDOWN             equ 1809
+
 IDM_MENU                equ 10000
 IDM_FILE_OPEN           equ 10001
 IDM_FILE_EXIT           equ 10002
@@ -292,6 +303,14 @@ IDB_TBRBMP              equ 100
 IDB_LEDGRAY             equ 101
 IDB_LEDGREEN            equ 102
 IDB_LEDRED              equ 103
+
+FIND_UP					equ 1
+FIND_DOWN				equ 2
+FIND_LABEL				equ 4
+FIND_CODE				equ 8
+FIND_BREAKPOINT			equ 16
+FIND_MATCH				equ 32
+FIND_WORD				equ 64
 
 MCUADDR struct
 	mcuaddr				WORD ?
@@ -349,6 +368,7 @@ szAddins				BYTE 'LCD.dll',0,0
 .data?
 
 addin					ADDIN <>
+hFind					HWND ?
 CommandLine				DWORD ?
 hBmpGrayLed				HBITMAP ?
 hBmpGreenLed			HBITMAP ?
@@ -360,3 +380,7 @@ hTabDlgStatus			HWND ?
 hTabDlg					HWND 5 dup(?)
 lpOldEditProc			DWORD ?
 addins					ADDINS 16 dup(<>)
+nFindRow				DWORD ?
+nFindPos				DWORD ?
+CharTab					BYTE 256 dup(?)
+CaseTab					BYTE 256 dup(?)

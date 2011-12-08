@@ -553,7 +553,7 @@ IsAddrBreakPoint proc uses esi,mcuaddr:DWORD
 
 IsAddrBreakPoint endp
 
-SetPort proc lpSfr:DWORD,nValue:DWORD
+WritePort proc lpSfr:DWORD,nValue:DWORD
 
 	mov		eax,lpSfr
 	sub		eax,SFR_P0
@@ -561,7 +561,14 @@ SetPort proc lpSfr:DWORD,nValue:DWORD
 	invoke SendAddinMessage,addin.hWnd,AM_PORTCHANGED,eax,nValue
 	ret
 
-SetPort endp
+WritePort endp
+
+WriteXRam proc nAddr:DWORD,nValue:DWORD
+
+	invoke SendAddinMessage,addin.hWnd,AM_XRAMCHANGED,nAddr,nValue
+	ret
+
+WriteXRam endp
 
 SetParity proc
 
@@ -647,7 +654,7 @@ INC_$dad:
 			inc		addin.Sfr[edx]
 			.if edx==SFR_P0 || edx==SFR_P1 || edx==SFR_P2 || edx==SFR_P3
 				movzx	eax,addin.Sfr[edx]
-				invoke SetPort,edx,eax
+				invoke WritePort,edx,eax
 			.endif
 		.endif
 	.endif
@@ -809,7 +816,7 @@ DEC_$dad:
 			dec		addin.Sfr[edx]
 			.if edx==SFR_P0 || edx==SFR_P1 || edx==SFR_P2 || edx==SFR_P3
 				movzx	eax,addin.Sfr[edx]
-				invoke SetPort,edx,eax
+				invoke WritePort,edx,eax
 			.endif
 		.endif
 	.endif
@@ -1684,7 +1691,7 @@ MOV_$dad_imm:
 			mov		addin.Sfr[edx],al
 			.if edx==SFR_P0 || edx==SFR_P1 || edx==SFR_P2 || edx==SFR_P3
 				movzx	eax,addin.Sfr[edx]
-				invoke SetPort,edx,eax
+				invoke WritePort,edx,eax
 			.endif
 		.endif
 	.endif
@@ -1845,7 +1852,7 @@ MOV_$dad_$dad:
 			mov		addin.Sfr[edx],al
 			.if edx==SFR_P0 || edx==SFR_P1 || edx==SFR_P2 || edx==SFR_P3
 				movzx	eax,addin.Sfr[edx]
-				invoke SetPort,edx,eax
+				invoke WritePort,edx,eax
 			.endif
 		.endif
 	.endif
@@ -1868,7 +1875,7 @@ MOV_$dad_@R0:
 			mov		addin.Sfr[edx],al
 			.if edx==SFR_P0 || edx==SFR_P1 || edx==SFR_P2 || edx==SFR_P3
 				movzx	eax,addin.Sfr[edx]
-				invoke SetPort,edx,eax
+				invoke WritePort,edx,eax
 			.endif
 		.endif
 	.endif
@@ -1891,7 +1898,7 @@ MOV_$dad_@R1:
 			mov		addin.Sfr[edx],al
 			.if edx==SFR_P0 || edx==SFR_P1 || edx==SFR_P2 || edx==SFR_P3
 				movzx	eax,addin.Sfr[edx]
-				invoke SetPort,edx,eax
+				invoke WritePort,edx,eax
 			.endif
 		.endif
 	.endif
@@ -1913,7 +1920,7 @@ MOV_$dad_R0:
 			mov		addin.Sfr[edx],al
 			.if edx==SFR_P0 || edx==SFR_P1 || edx==SFR_P2 || edx==SFR_P3
 				movzx	eax,addin.Sfr[edx]
-				invoke SetPort,edx,eax
+				invoke WritePort,edx,eax
 			.endif
 		.endif
 	.endif
@@ -1935,7 +1942,7 @@ MOV_$dad_R1:
 			mov		addin.Sfr[edx],al
 			.if edx==SFR_P0 || edx==SFR_P1 || edx==SFR_P2 || edx==SFR_P3
 				movzx	eax,addin.Sfr[edx]
-				invoke SetPort,edx,eax
+				invoke WritePort,edx,eax
 			.endif
 		.endif
 	.endif
@@ -1957,7 +1964,7 @@ MOV_$dad_R2:
 			mov		addin.Sfr[edx],al
 			.if edx==SFR_P0 || edx==SFR_P1 || edx==SFR_P2 || edx==SFR_P3
 				movzx	eax,addin.Sfr[edx]
-				invoke SetPort,edx,eax
+				invoke WritePort,edx,eax
 			.endif
 		.endif
 	.endif
@@ -1979,7 +1986,7 @@ MOV_$dad_R3:
 			mov		addin.Sfr[edx],al
 			.if edx==SFR_P0 || edx==SFR_P1 || edx==SFR_P2 || edx==SFR_P3
 				movzx	eax,addin.Sfr[edx]
-				invoke SetPort,edx,eax
+				invoke WritePort,edx,eax
 			.endif
 		.endif
 	.endif
@@ -2001,7 +2008,7 @@ MOV_$dad_R4:
 			mov		addin.Sfr[edx],al
 			.if edx==SFR_P0 || edx==SFR_P1 || edx==SFR_P2 || edx==SFR_P3
 				movzx	eax,addin.Sfr[edx]
-				invoke SetPort,edx,eax
+				invoke WritePort,edx,eax
 			.endif
 		.endif
 	.endif
@@ -2023,7 +2030,7 @@ MOV_$dad_R5:
 			mov		addin.Sfr[edx],al
 			.if edx==SFR_P0 || edx==SFR_P1 || edx==SFR_P2 || edx==SFR_P3
 				movzx	eax,addin.Sfr[edx]
-				invoke SetPort,edx,eax
+				invoke WritePort,edx,eax
 			.endif
 		.endif
 	.endif
@@ -2045,7 +2052,7 @@ MOV_$dad_R6:
 			mov		addin.Sfr[edx],al
 			.if edx==SFR_P0 || edx==SFR_P1 || edx==SFR_P2 || edx==SFR_P3
 				movzx	eax,addin.Sfr[edx]
-				invoke SetPort,edx,eax
+				invoke WritePort,edx,eax
 			.endif
 		.endif
 	.endif
@@ -2067,7 +2074,7 @@ MOV_$dad_R7:
 			mov		addin.Sfr[edx],al
 			.if edx==SFR_P0 || edx==SFR_P1 || edx==SFR_P2 || edx==SFR_P3
 				movzx	eax,addin.Sfr[edx]
-				invoke SetPort,edx,eax
+				invoke WritePort,edx,eax
 			.endif
 		.endif
 	.endif
@@ -2706,7 +2713,7 @@ CLR_$bad:
 		and		addin.Sfr[eax],dl
 		.if eax==SFR_P0 || eax==SFR_P1 || eax==SFR_P2 || eax==SFR_P3
 			movzx	edx,addin.Sfr[eax]
-			invoke SetPort,eax,edx
+			invoke WritePort,eax,edx
 		.endif
 	.endif
 	lea		ebx,[ebx+2]
@@ -2743,7 +2750,7 @@ XCH_A_$dad:
 			mov		addin.Sfr[SFR_ACC],al
 			.if edx==SFR_P0 || edx==SFR_P1 || edx==SFR_P2 || edx==SFR_P3
 				movzx	eax,addin.Sfr[edx]
-				invoke SetPort,edx,eax
+				invoke WritePort,edx,eax
 			.endif
 		.endif
 	.endif
@@ -2858,7 +2865,7 @@ POP_$dad:
 			mov		addin.Sfr[edx],al
 			.if edx==SFR_P0 || edx==SFR_P1 || edx==SFR_P2 || edx==SFR_P3
 				movzx	eax,addin.Sfr[edx]
-				invoke SetPort,edx,eax
+				invoke WritePort,edx,eax
 			.endif
 		.endif
 	.endif
@@ -2880,7 +2887,7 @@ SETB_$bad:
 		or		addin.Sfr[eax],dl
 		.if eax==SFR_P0 || eax==SFR_P1 || eax==SFR_P2 || eax==SFR_P3
 			movzx	edx,addin.Sfr[eax]
-			invoke SetPort,eax,edx
+			invoke WritePort,eax,edx
 		.endif
 	.endif
 	lea		ebx,[ebx+2]
@@ -3164,6 +3171,7 @@ MOVX_@DPTR_A:
 	.endif
 	movzx	eax,addin.Sfr[SFR_ACC]
 	mov		addin.Ram[edx],al
+	invoke WriteXRam,edx,eax
 	lea		ebx,[ebx+1]
 	ret
 
@@ -3174,6 +3182,7 @@ MOVX_@R0_A:
 	mov		dh,addin.Sfr[SFR_P2]
 	movzx	eax,addin.Sfr[SFR_ACC]
 	mov		addin.Ram[edx],al
+	invoke WriteXRam,edx,eax
 	lea		ebx,[ebx+1]
 	ret
 
@@ -3184,6 +3193,7 @@ MOVX_@R1_A:
 	mov		dh,addin.Sfr[SFR_P2]
 	movzx	eax,addin.Sfr[SFR_ACC]
 	mov		addin.Ram[edx],al
+	invoke WriteXRam,edx,eax
 	lea		ebx,[ebx+1]
 	ret
 
@@ -3205,7 +3215,7 @@ MOV_$dad_A:
 			mov		addin.Sfr[edx],al
 			.if edx==SFR_P0 || edx==SFR_P1 || edx==SFR_P2 || edx==SFR_P3
 				movzx	eax,addin.Sfr[edx]
-				invoke SetPort,edx,eax
+				invoke WritePort,edx,eax
 			.endif
 		.endif
 	.endif

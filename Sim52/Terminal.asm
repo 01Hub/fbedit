@@ -7,9 +7,11 @@ LINES				equ 26			;Number of lines
 
 .data?
 
+hTerm				HWND ?
 hTermScrn			HWND ?
 nLine				DWORD ?
 nPos				DWORD ?
+nLocate				DWORD ?
 lpOldScreenProc		DWORD ?
 
 scrn				WORD LINES*80 dup(?)
@@ -51,7 +53,8 @@ ScreenScroll endp
 ScreenChar proc nChar:DWORD
 
 
-	.if !hTermScrn
+	invoke IsWindowVisible,hTerm
+	.if !eax
 		invoke SendMessage,addin.hWnd,WM_COMMAND,IDM_VIEW_TERMINAL,0
 	.endif
 	;Set TI bit in SCON
@@ -59,69 +62,104 @@ ScreenChar proc nChar:DWORD
 	or		eax,2
 	mov		addin.Sfr[SFR_SCON],al
 	mov		eax,nChar
-	.if al==0Eh
-		;Cls
-		invoke ScreenCls
-		jmp		Ex
-	.elseif al==0Ch
-		;Home
-		mov		nPos,0
-		mov		nLine,0
-		jmp		Ex
-	.elseif al==0Dh
-		;Cr
-		mov		nPos,0
-		jmp		Ex
-	.elseif al==0Ah
-		;Lf
-		inc		nLine
-		.if nLine>=LINES
-			invoke ScreenScroll
-			mov		nLine,LINES-1
+	.if nLocate==1
+		sub		eax,20h
+		.if eax<LINES
+			mov		nLine,eax
 		.endif
-		jmp		Ex
-	.elseif al==08h
-		;BS
-		.if nPos
-			dec		nPos
+		inc		nLocate
+	.elseif nLocate==2
+		sub		eax,20h
+		.if eax<80
+			mov		nPos,eax
 		.endif
-		jmp		Ex
-	.elseif eax=='Ä'
-		mov		eax,06h
-	.elseif eax=='Ú'
-		mov		eax,0Ch
-	.elseif eax=='Ã'
-		mov		eax,19h
-	.elseif eax=='´'
-		mov		eax,17h
-	.elseif eax=='À'
-		mov		eax,03h
-	.elseif eax==0BFh
-		mov		eax,02h
-	.elseif  eax=='Ù'
-		mov		eax,04h
-	.elseif eax==0B3h
-		mov		eax,05h
-	.elseif eax=='û'
-		mov		eax,07h
+		mov		nLocate,0
+	.else
+		.if al==0Eh
+			;Cls
+			invoke ScreenCls
+			jmp		Ex
+		.elseif al==0Bh
+			;Locate
+			mov		nLocate,1
+			jmp		Ex
+		.elseif al==0Ch
+			;Home
+			mov		nPos,0
+			mov		nLine,0
+			jmp		Ex
+		.elseif al==0Dh
+			;Cr
+			mov		nPos,0
+			jmp		Ex
+		.elseif al==0Ah
+			;Lf
+			inc		nLine
+			.if nLine>=LINES
+				invoke ScreenScroll
+				mov		nLine,LINES-1
+			.endif
+			jmp		Ex
+		.elseif al==08h
+			;BS
+			.if nPos
+				dec		nPos
+			.endif
+			jmp		Ex
+		.elseif al==01h
+			;Program rom
+		.elseif al==02h
+			;End Program rom
+		.elseif al==03h
+			;Read rom data and write it to file
+		.elseif al==04h
+			;End Read rom data
+		.elseif al==05h
+			;Send 16 bytes of cmd file to emulator
+		.elseif al==06h
+			;End Send 16 bytes of cmd file to emulator
+		.elseif al==07h
+			;Single step, next 2 characters is binary address of next instruction
+		.elseif al==10h
+			;Send cmd file to emulator
+		.elseif eax=='Ä'
+			mov		eax,06h
+		.elseif eax=='Ú'
+			mov		eax,0Ch
+		.elseif eax=='Ã'
+			mov		eax,19h
+		.elseif eax=='´'
+			mov		eax,17h
+		.elseif eax=='À'
+			mov		eax,03h
+		.elseif eax==0BFh
+			mov		eax,02h
+		.elseif  eax=='Ù'
+			mov		eax,04h
+		.elseif eax==0B3h
+			mov		eax,05h
+		.elseif eax=='û'
+			mov		eax,07h
+		.endif
+		mov		nChar,eax
+		mov		eax,nLine
+		mov		edx,80*2
+		imul	edx
+		add		eax,nPos
+		add		eax,nPos
+		mov		edx,nChar
+		mov		scrn[eax],dx
+		inc		nPos
+		.if nPos==80
+			mov		nPos,0
+			inc		nLine
+			.if nLine==LINES
+				invoke ScreenScroll
+				mov		nLine,LINES-1
+			.endif
+		.endif
 	.endif
-	mov		nChar,eax
-	mov		eax,nLine
-	mov		edx,80*2
-	imul	edx
-	add		eax,nPos
-	add		eax,nPos
-	mov		edx,nChar
-	mov		scrn[eax],dx
-	inc		nPos
-	.if nPos==80
-		mov		nPos,0
-		inc		nLine
-		.if nLine==LINES
-			invoke ScreenScroll
-			mov		nLine,LINES-1
-		.endif
-	.endif
+	ret
   Ex:
 	invoke InvalidateRect,hTermScrn,NULL,TRUE
 	ret
@@ -203,6 +241,35 @@ ScreenProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke EndPaint,hWin,addr ps
 		invoke ScreenCaret
 		xor		eax,eax
+	.elseif eax==WM_CHAR
+		mov		eax,wParam
+		.if eax==1Bh
+			;Esc
+			mov		eax,9Fh
+		.elseif eax>='a' && eax<='z'
+			;Convert to uppercase
+			and		eax,5Fh
+		.endif
+		mov		addin.Sfr[SFR_SBUF],al
+		or		addin.Sfr[SFR_SCON],01h
+	.elseif eax==WM_KEYDOWN
+		mov		eax,wParam
+		.if eax==VK_RIGHT
+			mov		addin.Sfr[SFR_SBUF],9Ch
+			or		addin.Sfr[SFR_SCON],01h
+		.elseif eax==VK_LEFT
+			mov		addin.Sfr[SFR_SBUF],9Dh
+			or		addin.Sfr[SFR_SCON],01h
+		.elseif eax==VK_DOWN
+			mov		addin.Sfr[SFR_SBUF],9Bh
+			or		addin.Sfr[SFR_SCON],01h
+		.elseif eax==VK_UP
+			mov		addin.Sfr[SFR_SBUF],9Ah
+			or		addin.Sfr[SFR_SCON],01h
+		.elseif eax==VK_INSERT
+			mov		addin.Sfr[SFR_SBUF],94h
+			or		addin.Sfr[SFR_SCON],01h
+		.endif
 	.else
 		invoke CallWindowProc,lpOldScreenProc,hWin,uMsg,wParam,lParam
 	.endif
@@ -214,16 +281,15 @@ TerminalProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
+		mov		eax,hWin
+		mov		hTerm,eax
 		invoke GetDlgItem,hWin,IDC_SCREEN
 		mov		hTermScrn,eax
 		invoke SetWindowLong,hTermScrn,GWL_WNDPROC,addr ScreenProc
 		mov		lpOldScreenProc,eax
 		invoke ScreenCls
-		invoke CreateCaret,hTermScrn,NULL,BOXWT,BOXHT
-		invoke ShowCaret,hTermScrn
 	.elseif eax==WM_CLOSE
-		mov		hTermScrn,0
-		invoke DestroyWindow,hWin
+		invoke ShowWindow,hWin,SW_HIDE
 	.else
 		mov		eax,FALSE
 		ret
