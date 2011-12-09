@@ -321,7 +321,7 @@ II12:
 		MOV	R7,A
 
 ;-------------------------------------------------------
-
+		CLR	A
 TIMING:		ACALL	WAITASEC
 		INC	A
 		SJMP	TIMING

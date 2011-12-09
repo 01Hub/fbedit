@@ -37,32 +37,31 @@ UnInstallLCD endp
 
 DisplayProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	ps:PAINTSTRUCT
-	LOCAL	mDC:HDC
+	LOCAL	hDC:HDC
 	LOCAL	rect:RECT
+	LOCAL	dotrect:RECT
 
 	mov		eax,uMsg
 	.if eax==WM_CREATE
 		mov		eax,hWin
 		mov		hLcd,eax
+		invoke GetClientRect,hWin,addr rect
+		invoke GetDC,hWin
+		mov		hDC,eax
+		invoke CreateCompatibleDC,hDC
+		mov		mDC,eax
+		invoke CreateCompatibleBitmap,hDC,rect.right,rect.bottom
+		invoke SelectObject,mDC,eax
+		mov		hBmp,eax
+		invoke ReleaseDC,hWin,hDC
+		invoke GetStockObject,BLACK_BRUSH
+		mov		hDotBrush,eax
+		invoke CreateSolidBrush,12D898h
+		mov		hBackBrush,eax
 	.elseif eax==WM_PAINT
 		invoke BeginPaint,hWin,addr ps
-		invoke CreateCompatibleDC,ps.hdc
-		mov		mDC,eax
-		mov		eax,ps.rcPaint.right
-		sub		eax,ps.rcPaint.left
-		mov		edx,ps.rcPaint.bottom
-		sub		edx,ps.rcPaint.top
-		invoke CreateCompatibleBitmap,ps.hdc,eax,edx
-		invoke SelectObject,mDC,eax
-		push	eax
-		mov		eax,0E0E0E0h
-		.if BackLight
-			mov		eax,12D898h
-		.endif
-		invoke CreateSolidBrush,eax
-		mov		ebx,eax
-		invoke FillRect,mDC,addr ps.rcPaint,ebx
-		invoke DeleteObject,ebx
+		invoke GetClientRect,hWin,addr rect
+		invoke FillRect,mDC,addr rect,hBackBrush
 		mov		esi,11
 		mov		edi,10
 		xor		ecx,ecx
@@ -93,16 +92,13 @@ DisplayProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 			lea		esi,[esi+6*3]
 			lea		ecx,[ecx+1]
 		.endw
-		mov		eax,ps.rcPaint.right
-		sub		eax,ps.rcPaint.left
-		mov		edx,ps.rcPaint.bottom
-		sub		edx,ps.rcPaint.top
-		invoke BitBlt,ps.hdc,ps.rcPaint.left,ps.rcPaint.top,eax,edx,mDC,0,0,SRCCOPY
-		pop		eax
-		invoke SelectObject,mDC,eax
+		invoke BitBlt,ps.hdc,0,0,rect.right,rect.bottom,mDC,0,0,SRCCOPY
+		invoke EndPaint,hWin,addr ps
+	.elseif eax==WM_DESTROY
+		invoke DeleteObject,hBackBrush
+		invoke SelectObject,mDC,hBmp
 		invoke DeleteObject,eax
 		invoke DeleteDC,mDC
-		invoke EndPaint,hWin,addr ps
 	.else
 		invoke DefWindowProc,hWin,uMsg,wParam,lParam
 		ret
@@ -127,13 +123,13 @@ DrawChar:
 			shl		bl,1
 			.if CARRY?
 				push	ecx
-				mov		rect.left,esi
+				mov		dotrect.left,esi
 				lea		eax,[esi+3]
-				mov		rect.right,eax
-				mov		rect.top,edi
+				mov		dotrect.right,eax
+				mov		dotrect.top,edi
 				lea		eax,[edi+3]
-				mov		rect.bottom,eax
-				invoke FillRect,mDC,addr rect,hBrush
+				mov		dotrect.bottom,eax
+				invoke FillRect,mDC,addr dotrect,hDotBrush
 				pop		ecx
 			.endif
 			lea		esi,[esi+3]
@@ -330,12 +326,14 @@ LCDProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke GetWindowRect,hWin,addr rect
 		mov		eax,rect.right
 		sub		eax,rect.left
-		mov		edx,127
+		mov		edx,120
 		invoke MoveWindow,hWin,rect.left,rect.top,eax,edx,TRUE
 		invoke SendDlgItemMessage,hWin,IDC_EDTMMADDR,EM_LIMITTEXT,4,0
 		invoke GetDlgItem,hWin,IDC_EDTMMADDR
 		invoke SetWindowLong,eax,GWL_WNDPROC,offset EditProc
 		mov		lpOldEditProc,eax
+		invoke CheckDlgButton,hWin,IDC_CHKBACKLIGHT,BST_CHECKED
+		mov		BackLight,1
 	.elseif eax==WM_COMMAND
 		mov		edx,wParam
 		movzx	eax,dx
@@ -358,12 +356,12 @@ LCDProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke GetWindowRect,hWin,addr rect
 				mov		eax,rect.bottom
 				sub		eax,rect.top
-				.if eax>=237
-					mov		eax,offset szExpand
-					mov		edx,127
-				.else
+				.if eax==120
 					mov		eax,offset szShrink
-					mov		edx,237
+					mov		edx,230
+				.else
+					mov		eax,offset szExpand
+					mov		edx,120
 				.endif
 				push	edx
 				invoke SetDlgItemText,hWin,IDC_BTNEXPAND,eax
@@ -372,7 +370,15 @@ LCDProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				sub		eax,rect.left
 				invoke MoveWindow,hWin,rect.left,rect.top,eax,edx,TRUE
 			.elseif eax==IDC_CHKBACKLIGHT
+				invoke DeleteObject,hBackBrush
 				xor		BackLight,TRUE
+				.if BackLight
+					mov		eax,12D898h
+				.else
+					mov		eax,0E0E0E0h
+				.endif
+				invoke CreateSolidBrush,eax
+				mov		hBackBrush,eax
 				invoke InvalidateRect,hLcd,NULL,TRUE
 			.endif
 		.endif
@@ -412,8 +418,6 @@ AddinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		eax,[ebx].ADDIN.MenuID
 		mov		IDAddin,eax
 		inc		[ebx].ADDIN.MenuID
-		invoke GetStockObject,BLACK_BRUSH
-		mov		hBrush,eax
 		invoke CreateDialogParam,hInstance,IDD_DLGLCD,hWin,addr LCDProc,0
 	.elseif eax==AM_PORTCHANGED
 		mov		eax,wParam

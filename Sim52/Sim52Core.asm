@@ -141,8 +141,26 @@ TotalCycles				DWORD ?
 PerformanceCount		QWORD ?
 PerformanceFrequency	QWORD ?
 SBUFWR					DWORD ?
+ComputerClock			QWORD ?
+MCUClock				DWORD ?
+CpuCycles				DWORD ?
 
 .code
+
+SetTiming proc
+
+	mov		eax,MCUClock
+	xor		edx,edx
+	mov		ecx,12
+	div		ecx
+	mov		ecx,eax
+	mov		eax,dword ptr ComputerClock
+	mov		edx,dword ptr ComputerClock+4
+	div		ecx
+	mov		CpuCycles,eax
+	ret
+
+SetTiming endp
 
 Reset proc
 
@@ -180,8 +198,11 @@ Reset proc
 	mov		addin.Sfr[SFR_PSW],00h
 	mov		addin.Sfr[SFR_ACC],00h
 	mov		addin.Sfr[SFR_B],00h
-	mov		Refresh,1
 	invoke SendAddinMessage,addin.hWnd,AM_RESET,0,0
+	mov		eax,hBmpGreenLed
+	mov		StatusLed,eax
+	invoke SendDlgItemMessage,addin.hWnd,IDC_IMGSTATUS,STM_SETIMAGE,IMAGE_BITMAP,StatusLed
+	mov		Refresh,1
 	ret
 
 Reset endp
@@ -320,6 +341,9 @@ UpdateStatus proc uses ebx
 	movzx	eax,word ptr addin.Sfr[SFR_DPL]
 	invoke wsprintf,addr buffer,addr szFmtHexWord,eax
 	invoke SetDlgItemText,hTabDlgStatus,IDC_EDTDPTR,addr buffer
+	movzx	eax,word ptr addin.Sfr[SFR_DP1L]
+	invoke wsprintf,addr buffer,addr szFmtHexWord,eax
+	invoke SetDlgItemText,hTabDlgStatus,IDC_EDTDPTR1,addr buffer
 	movzx	eax,addin.Sfr[SFR_ACC]
 	invoke wsprintf,addr buffer,addr szFmtHexByte,eax
 	invoke SetDlgItemText,hTabDlgStatus,IDC_EDTACC,addr buffer
@@ -354,6 +378,7 @@ UpdateStatus proc uses ebx
 		movzx	eax,[eax].MCUADDR.lbinx
 		invoke SendMessage,hGrd,GM_SETCURROW,eax,0
 	.endif
+	invoke SetDlgItemInt,hTabDlgStatus,IDC_STCCYCLES,TotalCycles,FALSE
 	ret
 
 UpdateStatus endp
@@ -3310,10 +3335,15 @@ MOV_R7_A:
 ;------------------------------------------------------------------------------
 
 CoreThread proc lParam:DWORD
+	LOCAL	InstCycles:DWORD
 
 	mov		esi,offset addin.Code
 	mov		ebx,addin.PC
+	mov		InstCycles,0
 	.while State!=STATE_STOP
+		rdtsc
+		mov		dword ptr PerformanceCount,eax
+		mov		dword ptr PerformanceCount+4,edx
 		.if (State & STATE_RUN) && !(State & SIM52_BREAKPOINT)
 			.if !(State & STATE_PAUSE)
 				call	Execute
@@ -3359,6 +3389,17 @@ CoreThread proc lParam:DWORD
 			mov		eax,hBmpGreenLed
 			call	SetStatusLed
 		.endif
+		mov		eax,InstCycles
+		mov		edx,CpuCycles
+		mul		edx
+		add		dword ptr PerformanceCount,eax
+		adc		dword ptr PerformanceCount+4,edx
+		.while TRUE
+			rdtsc
+			sub		eax,dword ptr PerformanceCount
+			sbb		edx,dword ptr PerformanceCount+4
+			.break .if !CARRY?
+		.endw
 	.endw
 	invoke Reset
 	xor		eax,eax
@@ -3366,12 +3407,13 @@ CoreThread proc lParam:DWORD
 
 Execute:
 	movzx	eax,byte ptr [esi+ebx]
-	movzx	edx,Cycles[eax]
-	add		TotalCycles,edx
+	push	eax
 	call	JmpTab[eax*4]
+	pop		eax
+	movzx	edx,Cycles[eax]
+	mov		InstCycles,edx
+	add		TotalCycles,edx
 	mov		addin.PC,ebx
-;	invoke QueryPerformanceFrequency,addr PerformanceFrequency
-	invoke QueryPerformanceCounter,addr PerformanceCount
 	retn
 
 SetStatusLed:

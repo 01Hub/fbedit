@@ -114,7 +114,10 @@ hInstance				HINSTANCE ?
 hDlg					HWND ?
 hLcd					HWND ?
 lpOldEditProc			DWORD ?
-hBrush					HBRUSH ?
+hDotBrush				HBRUSH ?
+hBackBrush				HBRUSH ?
+mDC						HDC ?
+hBmp					HBITMAP ?
 lpAddin					DWORD ?
 IDAddin					DWORD ?
 BackLight				DWORD ?

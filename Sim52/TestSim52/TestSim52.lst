@@ -75,8 +75,8 @@ ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. 
    48:	  0043	00				NOP
    49:	  0044	75 20 FF			MOV	20h,#0FFh
    50:	  0047	10 00 00			JBC	00h,CC
-   51:	  004A	31 BD		CC:		ACALL	TESTCALL
-   52:	  004C	12 01 BD			LCALL	TESTCALL
+   51:	  004A	31 BE		CC:		ACALL	TESTCALL
+   52:	  004C	12 01 BE			LCALL	TESTCALL
    53:	  004F	13				RRC	A
    54:	  0050	14				DEC	A
    55:	  0051	15 10				DEC	10h
@@ -383,28 +383,28 @@ ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. 
 
  Line  I  Addr  Code            Source
 
-  324:
-  325:	  01B8	31 C0		TIMING:		ACALL	WAITASEC
-  326:	  01BA	04				INC	A
-  327:	  01BB	80 FB				SJMP	TIMING
+  324:	  01B8	E4				CLR	A
+  325:	  01B9	31 C1		TIMING:		ACALL	WAITASEC
+  326:	  01BB	04				INC	A
+  327:	  01BC	80 FB				SJMP	TIMING
   328:
-  329:	  01BD	00		TESTCALL:	NOP
-  330:	  01BE	00				NOP
-  331:	  01BF	22				RET
+  329:	  01BE	00		TESTCALL:	NOP
+  330:	  01BF	00				NOP
+  331:	  01C0	22				RET
   332:
   333:
   334:				;------------------------------------------------------------------
   335:				;Wait loop. Waits 1 second
   336:				;------------------------------------------------------------------
-  337:	  01C0	7F F9		WAITASEC:	MOV	R7,#0F9h
-  338:	  01C2	7E 33				MOV	R6,#51
-  339:	  01C4	7D 10				MOV	R5,#16
-  340:	  01C6	DF FE		WAITASEC1:	DJNZ	R7,WAITASEC1
-  341:	  01C8	DE FC				DJNZ	R6,WAITASEC1
-  342:	  01CA	DD FA				DJNZ	R5,WAITASEC1
-  343:	  01CC	22				RET
+  337:	  01C1	7F F9		WAITASEC:	MOV	R7,#0F9h
+  338:	  01C3	7E 33				MOV	R6,#51
+  339:	  01C5	7D 10				MOV	R5,#16
+  340:	  01C7	DF FE		WAITASEC1:	DJNZ	R7,WAITASEC1
+  341:	  01C9	DE FC				DJNZ	R6,WAITASEC1
+  342:	  01CB	DD FA				DJNZ	R5,WAITASEC1
+  343:	  01CD	22				RET
   344:
-  345:	  01CD	11 22 33 44	TSTDATA:	DB 11h,22h,33h,44h
+  345:	  01CE	11 22 33 44	TSTDATA:	DB 11h,22h,33h,44h
   346:
   347:						END
 
@@ -517,7 +517,7 @@ T0				  BIT	      B4
 T1				  BIT	      B5
 TB8				  BIT	      9B
 TCON				  DATA	      88
-TESTCALL			  CODE	    01BD	 329
+TESTCALL			  CODE	    01BE	 329
 TF0				  BIT	      8D
 TF1				  BIT	      8F
 TH0				  DATA	      8C
@@ -525,14 +525,14 @@ TH1				  DATA	      8D
 TI				  BIT	      99
 TIMER0				  CODE	    000B
 TIMER1				  CODE	    001B
-TIMING				  CODE	    01B8	 325
+TIMING				  CODE	    01B9	 325
 TL0				  DATA	      8A
 TL1				  DATA	      8B
 TMOD				  DATA	      89
 TR0				  BIT	      8C
 TR1				  BIT	      8E
-TSTDATA				  CODE	    01CD	 345
+TSTDATA				  CODE	    01CE	 345
 TXD				  BIT	      B1
-WAITASEC			  CODE	    01C0	 337
-WAITASEC1			  CODE	    01C6	 340
+WAITASEC			  CODE	    01C1	 337
+WAITASEC1			  CODE	    01C7	 340
 WR				  BIT	      B6

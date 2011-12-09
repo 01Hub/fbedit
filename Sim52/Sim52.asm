@@ -1,4 +1,4 @@
-.386
+.586
 .model flat,stdcall
 option casemap:none
 
@@ -6,6 +6,7 @@ include Sim52.inc
 include Terminal.asm
 include Sim52Core.asm
 include Sim52Parse.asm
+include IniFile.asm
 
 .code
 
@@ -104,6 +105,7 @@ TabStatusProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	.if eax==WM_INITDIALOG
 		invoke SendDlgItemMessage,hWin,IDC_EDTPC,EM_LIMITTEXT,4,0
 		invoke SendDlgItemMessage,hWin,IDC_EDTDPTR,EM_LIMITTEXT,4,0
+		invoke SendDlgItemMessage,hWin,IDC_EDTDPTR1,EM_LIMITTEXT,4,0
 		invoke SendDlgItemMessage,hWin,IDC_EDTACC,EM_LIMITTEXT,2,0
 		invoke SendDlgItemMessage,hWin,IDC_EDTB,EM_LIMITTEXT,2,0
 		invoke SendDlgItemMessage,hWin,IDC_EDTSP,EM_LIMITTEXT,2,0
@@ -118,6 +120,7 @@ TabStatusProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		push	0
 		push	IDC_EDTPC
 		push	IDC_EDTDPTR
+		push	IDC_EDTDPTR1
 		push	IDC_EDTACC
 		push	IDC_EDTB
 		push	IDC_EDTSP
@@ -198,6 +201,9 @@ TabStatusProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					mov		addin.PC,eax
 				.elseif ebx==IDC_EDTDPTR
 					mov		word ptr addin.Sfr[SFR_DPL],ax
+					mov		Refresh,1
+				.elseif ebx==IDC_EDTDPTR1
+					mov		word ptr addin.Sfr[SFR_DP1L],ax
 					mov		Refresh,1
 				.endif
 			.else
@@ -745,10 +751,42 @@ FindProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
 FindProc endp
 
+ClockProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+
+	mov		eax,uMsg
+	.if eax==WM_INITDIALOG
+;		invoke SetDlgItemInt,hWin,IDC_EDTCOMPUTER,ComputerClock,FALSE
+		invoke SetDlgItemInt,hWin,IDC_EDTMCU,MCUClock,FALSE
+	.elseif eax==WM_COMMAND
+		mov		edx,wParam
+		movzx	eax,dx
+		shr		edx,16
+		.if edx==BN_CLICKED
+			.if eax==IDOK
+;				invoke GetDlgItemInt,hWin,IDC_EDTCOMPUTER,NULL,FALSE
+;				mov		ComputerClock,eax
+				invoke GetDlgItemInt,hWin,IDC_EDTMCU,NULL,FALSE
+				mov		MCUClock,eax
+				invoke SetTiming
+				invoke EndDialog,hWin,0
+			.endif
+		.endif
+	.elseif eax==WM_CLOSE
+		invoke EndDialog,hWin,0
+	.else
+		mov		eax,FALSE
+		ret
+	.endif
+	mov		eax,TRUE
+	ret
+
+ClockProc endp
+
 WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	tci:TC_ITEM
 	LOCAL	ofn:OPENFILENAME
 	LOCAL	buffer[MAX_PATH]:BYTE
+	LOCAL	buffer1[MAX_PATH]:BYTE
 	LOCAL	tid:DWORD
 	LOCAL	hef:HEFONT
 	LOCAL	col:COLUMN
@@ -939,11 +977,16 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				;Show the Open dialog
 				invoke GetOpenFileName,addr ofn
 				.if eax
+					invoke lstrcpy,addr buffer1,addr szAppName
+					invoke lstrcat,addr buffer1,addr szSlash
+					invoke lstrlen,addr buffer
+					.while buffer[eax]!='\' && eax
+						dec		eax
+					.endw
+					invoke lstrcat,addr buffer1,addr buffer[eax+1]
+					invoke SetWindowText,hWin,addr buffer1
 					invoke ParseList,addr buffer
 					invoke EnableDisable
-					mov		eax,hBmpGreenLed
-					mov		StatusLed,eax
-					invoke SendDlgItemMessage,addin.hWnd,IDC_IMGSTATUS,STM_SETIMAGE,IMAGE_BITMAP,eax
 					invoke SetFocus,hGrd
 				.endif
 			.elseif eax==IDM_SEARCH_FIND
@@ -1007,8 +1050,10 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.endif
 			.elseif eax==IDM_DEBUG_CLEAR
 				invoke ClearBreakPoints
+			.elseif eax==IDM_OPTION_CLOCK
+				invoke DialogBoxParam,addin.hInstance,IDD_DLGCLOCK,hWin,offset ClockProc,0
 			.elseif eax==IDM_HELP_ABOUT
-				invoke ShellAbout,hWin,addr AppName,addr AboutMsg,NULL
+				invoke ShellAbout,hWin,addr szAppName,addr szAboutMsg,NULL
 			.elseif eax>=12000
 				invoke SendAddinMessage,hWin,AM_COMMAND,0,eax
 			.endif
@@ -1063,6 +1108,15 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		[ebx].RECT.bottom,eax
 			.endif
 		.endif
+	.elseif eax==WM_MOVE
+		invoke IsZoomed,hWin
+		push	eax
+		invoke IsIconic,hWin
+		pop		edx
+		or		eax,edx
+		.if !eax
+			invoke GetWindowRect,addin.hWnd,addr WinRect
+		.endif
 	.elseif eax==WM_SIZE
 		invoke GetClientRect,hWin,addr rect
 		invoke GetDlgItem,hWin,IDC_TABSTATUS
@@ -1107,7 +1161,16 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		ecx,rect.bottom
 		sub		ecx,eax
 		invoke MoveWindow,ebx,esi,ecx,edx,eax,TRUE
+		invoke IsZoomed,hWin
+		push	eax
+		invoke IsIconic,hWin
+		pop		edx
+		or		eax,edx
+		.if !eax
+			invoke GetWindowRect,addin.hWnd,addr WinRect
+		.endif
 	.elseif eax==WM_CLOSE
+		invoke SaveSettings
 		.if hMemFile
 			invoke GlobalFree,hMemFile
 		.endif
@@ -1145,7 +1208,7 @@ WinMain proc hInst:HINSTANCE,hPrevInst:HINSTANCE,CmdLine:LPSTR,CmdShow:DWORD
 	pop		wc.hInstance
 	mov		wc.hbrBackground,COLOR_BTNFACE+1
 	mov		wc.lpszMenuName,IDM_MENU
-	mov		wc.lpszClassName,offset ClassName
+	mov		wc.lpszClassName,offset szClassName
 	invoke LoadIcon,NULL,IDI_APPLICATION
 	mov		wc.hIcon,eax
 	mov		wc.hIconSm,eax
@@ -1160,17 +1223,20 @@ WinMain proc hInst:HINSTANCE,hPrevInst:HINSTANCE,CmdLine:LPSTR,CmdShow:DWORD
 	mov		hBmpRedLed,eax
 	invoke Reset
 	invoke CreateDialogParam,addin.hInstance,IDD_SIM52,NULL,addr WndProc,NULL
-	invoke ShowWindow,addin.hWnd,SW_SHOWNORMAL
+	invoke LoadSettings
 	invoke UpdateWindow,addin.hWnd
 	.while TRUE
 		invoke GetMessage,addr msg,NULL,0,0
 	  .BREAK .if !eax
 		invoke IsDialogMessage,hTabDlgStatus,addr msg
 		.if !eax
-			invoke TranslateAccelerator,addin.hWnd,addin.hAccel,addr msg
+			invoke IsDialogMessage,hFind,addr msg
 			.if !eax
-				invoke TranslateMessage,addr msg
-				invoke DispatchMessage,addr msg
+				invoke TranslateAccelerator,addin.hWnd,addin.hAccel,addr msg
+				.if !eax
+					invoke TranslateMessage,addr msg
+					invoke DispatchMessage,addr msg
+				.endif
 			.endif
 		.endif
 	.endw
@@ -1184,6 +1250,10 @@ WinMain endp
 
 start:
 
+	invoke DecToBinLong,addr szLong
+mov		dword ptr ComputerClock,eax
+mov		dword ptr ComputerClock+4,edx
+	invoke BinToDecLong,dword ptr ComputerClock,dword ptr ComputerClock+4,addr szIniFile
 	invoke GetModuleHandle,NULL
 	mov    addin.hInstance,eax
 	invoke GetCommandLine
@@ -1192,6 +1262,11 @@ start:
 	invoke RAHexEdInstall,addin.hInstance,FALSE
 	invoke GridInstall,addin.hInstance,FALSE
 	mov		addin.MenuID,12000
+	invoke GetModuleFileName,addin.hInstance,addr szIniFile,sizeof szIniFile
+	.while szIniFile[eax]!='\'
+		dec		eax
+	.endw
+	invoke lstrcpy,addr szIniFile[eax],addr szIniFileName
 	invoke WinMain,addin.hInstance,NULL,CommandLine,SW_SHOWDEFAULT
 	invoke GridUnInstall
 	invoke RAHexEdUnInstall

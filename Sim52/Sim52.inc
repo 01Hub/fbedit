@@ -45,6 +45,7 @@ IDD_DLGTABSTATUS		equ 1600
 IDC_GRPSTATUS           equ 1005
 IDC_EDTPC               equ 1006
 IDC_EDTDPTR             equ 1007
+IDC_EDTDPTR1			equ 1601
 IDC_EDTACC              equ 1008
 IDC_EDTB                equ 1010
 IDC_EDTSP               equ 1012
@@ -284,6 +285,10 @@ IDC_CHKWORD             equ 1807
 IDC_RBNUP               equ 1808
 IDC_RBNDOWN             equ 1809
 
+IDD_DLGCLOCK			equ 1900
+IDC_EDTCOMPUTER			equ 1901
+IDC_EDTMCU				equ 1902
+
 IDM_MENU                equ 10000
 IDM_FILE_OPEN           equ 10001
 IDM_FILE_EXIT           equ 10002
@@ -297,6 +302,7 @@ IDM_DEBUG_STEP_OVER     equ 10008
 IDM_DEBUG_RUN_TO_CURSOR equ 10010
 IDM_DEBUG_TOGGLE        equ 10011
 IDM_DEBUG_CLEAR         equ 10012
+IDM_OPTION_CLOCK		equ 10013
 IDM_HELP_ABOUT          equ 10101
 
 IDB_TBRBMP              equ 100
@@ -340,9 +346,10 @@ tbrbtns					TBBUTTON <0,IDM_FILE_OPEN,TBSTATE_ENABLED,TBSTYLE_BUTTON,0,0>
 						TBBUTTON <8,IDM_VIEW_TERMINAL,TBSTATE_ENABLED,TBSTYLE_BUTTON,0,0>
 ntbrbtns				equ 11
 
-ClassName				BYTE 'DLGCLASS',0
-AppName					BYTE '8052 Simulator',0
-AboutMsg				BYTE 'MASM32 RadASM 8052 Simulator',13,10,'Copyright © MASM32 2001',0
+szClassName				BYTE 'DLGCLASS',0
+szAppName				BYTE '8052 Simulator',0
+szSlash					BYTE ' - ',0
+szAboutMsg				BYTE 'MASM32 RadASM 8052 Simulator',13,10,'Copyright © MASM32 2001',0
 
 szLSTFilterString		BYTE 'LST Files (*.lst)',0,'*.lst',0,0
 Courier_New_9 			LOGFONT <-12,0,0,0,400,0,0,0,0,3,2,1,49,"Courier New">
@@ -365,6 +372,13 @@ szCode					BYTE 'Code',0
 
 szAddins				BYTE 'LCD.dll',0,0
 
+szIniFileName			BYTE '\Sim52.ini',0
+szIniConfig				BYTE 'Config',0
+szIniPos				BYTE 'Pos',0
+szIniClock				BYTE 'Clock',0
+
+szLong					byte '100000000000',0
+
 .data?
 
 addin					ADDIN <>
@@ -384,3 +398,5 @@ nFindRow				DWORD ?
 nFindPos				DWORD ?
 CharTab					BYTE 256 dup(?)
 CaseTab					BYTE 256 dup(?)
+WinRect					RECT <>
+szIniFile				BYTE MAX_PATH dup(?)
