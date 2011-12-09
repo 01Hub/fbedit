@@ -162,6 +162,7 @@ ParseList proc uses ebx esi edi,lpFileName:DWORD
 			invoke ReadFile,hFile,addr addin.Code,ebx,addr BytesRead,NULL
 			invoke CloseHandle,hFile
 		.endif
+		invoke SendDlgItemMessage,hTabDlg[16],IDC_UDCHEXCODE,HEM_SETMEM,65536,addr addin.Code
 		invoke Reset
 		xor		eax,eax
 	.endif

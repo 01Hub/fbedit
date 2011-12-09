@@ -433,6 +433,8 @@ AddinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.if eax==MMAddr && MMBits
 			mov		eax,-2
 			call	SetData
+			mov		eax,TRUE
+			jmp		Ex
 		.endif
 	.elseif eax==AM_COMMAND
 		mov		eax,lParam
@@ -450,6 +452,8 @@ AddinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		LCDDDRAMADDR,0
 		invoke InvalidateRect,hLcd,NULL,TRUE
 	.endif
+	xor		eax,eax
+  Ex:
 	ret
 
 LcdDataWrite:

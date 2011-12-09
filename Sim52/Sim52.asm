@@ -353,6 +353,7 @@ TabCodeProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 TabCodeProc endp
 
 SendAddinMessage proc uses edi,hWin:HWND,uMsg:DWORD,wParam:DWORD,lParam:DWORD
+	LOCAL	nRet:DWORD
 
 	mov		edi,offset addins
 	.while [edi].ADDINS.hDll
@@ -361,8 +362,10 @@ SendAddinMessage proc uses edi,hWin:HWND,uMsg:DWORD,wParam:DWORD,lParam:DWORD
 		push	uMsg
 		push	hWin
 		call	[edi].ADDINS.lpAddinProc
+		add		nRet,eax
 		lea		edi,[edi+sizeof ADDINS]
 	.endw
+	mov		eax,nRet
 	ret
 
 SendAddinMessage endp
@@ -478,6 +481,22 @@ Find proc uses ebx esi edi,lpszText:DWORD,nLenText:DWORD,uFlag:DWORD
 							invoke lstrcmpin,addr rowbuffer[edi],lpszText,nLenText
 						.endif
 						.if !eax
+							.if uFlag & FIND_WORD
+								.if edi
+									movzx	edx,rowbuffer[edi-1]
+									movzx	edx,CharTab[edx]
+									.if edx
+										jmp		NotFound1
+									.endif
+								.endif
+								mov		edx,nLenText
+								lea		edx,[edx+edi]
+								movzx	edx,rowbuffer[edx]
+								movzx	edx,CharTab[edx]
+								.if edx
+									jmp		NotFound1
+								.endif
+							.endif
 							mov		ecx,ebx
 							shl		ecx,16
 							invoke SendMessage,hGrd,GM_SETCURSEL,1,ebx
@@ -485,10 +504,11 @@ Find proc uses ebx esi edi,lpszText:DWORD,nLenText:DWORD,uFlag:DWORD
 							mov		nFindPos,edi
 							jmp		Ex
 						.endif
+					  NotFound1:
 						dec		edi
 					.endw
 				.endif
-				mov		edi,255
+				mov		edi,63
 				dec		ebx
 			.endw
 		.elseif uFlag & FIND_CODE
@@ -508,6 +528,22 @@ Find proc uses ebx esi edi,lpszText:DWORD,nLenText:DWORD,uFlag:DWORD
 							invoke lstrcmpin,addr rowbuffer[edi],lpszText,nLenText
 						.endif
 						.if !eax
+							.if uFlag & FIND_WORD
+								.if edi
+									movzx	edx,rowbuffer[edi-1]
+									movzx	edx,CharTab[edx]
+									.if edx
+										jmp		NotFound2
+									.endif
+								.endif
+								mov		edx,nLenText
+								lea		edx,[edx+edi]
+								movzx	edx,rowbuffer[edx]
+								movzx	edx,CharTab[edx]
+								.if edx
+									jmp		NotFound2
+								.endif
+							.endif
 							mov		ecx,ebx
 							shl		ecx,16
 							invoke SendMessage,hGrd,GM_SETCURSEL,2,ebx
@@ -515,10 +551,11 @@ Find proc uses ebx esi edi,lpszText:DWORD,nLenText:DWORD,uFlag:DWORD
 							mov		nFindPos,edi
 							jmp		Ex
 						.endif
+					  NotFound2:
 						dec		edi
 					.endw
 				.endif
-				mov		edi,255
+				mov		edi,63
 				dec		ebx
 			.endw
 		.endif
@@ -555,6 +592,22 @@ Find proc uses ebx esi edi,lpszText:DWORD,nLenText:DWORD,uFlag:DWORD
 							invoke lstrcmpin,addr rowbuffer[edi],lpszText,nLenText
 						.endif
 						.if !eax
+							.if uFlag & FIND_WORD
+								.if edi
+									movzx	edx,rowbuffer[edi-1]
+									movzx	edx,CharTab[edx]
+									.if edx
+										jmp		NotFound3
+									.endif
+								.endif
+								mov		edx,nLenText
+								lea		edx,[edx+edi]
+								movzx	edx,rowbuffer[edx]
+								movzx	edx,CharTab[edx]
+								.if edx
+									jmp		NotFound3
+								.endif
+							.endif
 							mov		ecx,ebx
 							shl		ecx,16
 							invoke SendMessage,hGrd,GM_SETCURSEL,1,ebx
@@ -562,6 +615,7 @@ Find proc uses ebx esi edi,lpszText:DWORD,nLenText:DWORD,uFlag:DWORD
 							mov		nFindPos,edi
 							jmp		Ex
 						.endif
+					  NotFound3:
 						inc		edi
 					.endw
 				.endif
@@ -585,6 +639,22 @@ Find proc uses ebx esi edi,lpszText:DWORD,nLenText:DWORD,uFlag:DWORD
 							invoke lstrcmpin,addr rowbuffer[edi],lpszText,nLenText
 						.endif
 						.if !eax
+							.if uFlag & FIND_WORD
+								.if edi
+									movzx	edx,rowbuffer[edi-1]
+									movzx	edx,CharTab[edx]
+									.if edx
+										jmp		NotFound4
+									.endif
+								.endif
+								mov		edx,nLenText
+								lea		edx,[edx+edi]
+								movzx	edx,rowbuffer[edx]
+								movzx	edx,CharTab[edx]
+								.if edx
+									jmp		NotFound4
+								.endif
+							.endif
 							mov		ecx,ebx
 							shl		ecx,16
 							invoke SendMessage,hGrd,GM_SETCURSEL,2,ebx
@@ -592,6 +662,7 @@ Find proc uses ebx esi edi,lpszText:DWORD,nLenText:DWORD,uFlag:DWORD
 							mov		nFindPos,edi
 							jmp		Ex
 						.endif
+					  NotFound4:
 						inc		edi
 					.endw
 				.endif
@@ -681,6 +752,8 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	tid:DWORD
 	LOCAL	hef:HEFONT
 	LOCAL	col:COLUMN
+	LOCAL	rect:RECT
+	LOCAL	rectmov:RECT
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
@@ -705,7 +778,6 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		ebx,eax
 		invoke CreateDialogParam,addin.hInstance,IDD_DLGTABSTATUS,ebx,addr TabStatusProc,0
 		mov		hTabDlgStatus,eax
-
 		mov		tci.pszText,offset szTabRam
 		invoke SendDlgItemMessage,hWin,IDC_TABVIEW,TCM_INSERTITEM,0,addr tci
 		mov		tci.pszText,offset szTabBit
@@ -716,7 +788,6 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SendDlgItemMessage,hWin,IDC_TABVIEW,TCM_INSERTITEM,3,addr tci
 		mov		tci.pszText,offset szTabCode
 		invoke SendDlgItemMessage,hWin,IDC_TABVIEW,TCM_INSERTITEM,4,addr tci
-
 		invoke GetDlgItem,hWin,IDC_TABVIEW
 		mov		ebx,eax
 		mov		eax,addin.hLstFont
@@ -737,7 +808,6 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke CreateDialogParam,addin.hInstance,IDD_DLGTABCODE,ebx,addr TabCodeProc,0
 		mov		hTabDlg[16],eax
 		invoke SendDlgItemMessage,hTabDlg[16],IDC_UDCHEXCODE,HEM_SETFONT,0,addr hef
-
 		invoke SendDlgItemMessage,hTabDlg[8],IDC_UDCHEXSFR,HEM_SETOFFSET,128,0
 		invoke LoadAccelerators,addin.hInstance,IDR_ACCEL1
 		mov		addin.hAccel,eax
@@ -759,7 +829,6 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		col.himl,eax
 		mov		col.hdrflag,0
 		invoke SendMessage,hGrd,GM_ADDCOL,0,addr col
-
 		;Add Label column
 		mov		col.colwt,100
 		mov		col.lpszhdrtext,offset szLabel
@@ -771,7 +840,6 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		col.himl,0
 		mov		col.hdrflag,0
 		invoke SendMessage,hGrd,GM_ADDCOL,0,addr col
-
 		;Add Code column
 		mov		col.colwt,212
 		mov		col.lpszhdrtext,offset szCode
@@ -783,13 +851,10 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		col.himl,0
 		mov		col.hdrflag,0
 		invoke SendMessage,hGrd,GM_ADDCOL,0,addr col
-
 		invoke CreateDialogParam,addin.hInstance,IDD_DLGFIND,hWin,addr FindProc,0
 		invoke CreateDialogParam,addin.hInstance,IDD_DLGTERMINAL,hWin,addr TerminalProc,0
 		invoke LoadAddins
 		invoke Reset
-		invoke SetTimer,hWin,1000,200,NULL
-
 		;Setup whole CharTab and CaseTab
 		xor		ebx,ebx
 		.while ebx<256
@@ -807,6 +872,8 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.endif
 			inc		ebx
 		.endw
+		invoke SendDlgItemMessage,hTabDlg[16],IDC_UDCHEXCODE,HEM_SETMEM,65536,addr addin.Code
+		invoke SetTimer,hWin,1000,200,NULL
 	.elseif eax==WM_TIMER
 		.if Refresh
 			invoke UpdateStatus
@@ -815,8 +882,7 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke SendDlgItemMessage,hTabDlg[0],IDC_UDCHEXRAM,HEM_SETMEM,256,addr addin.Ram
 			invoke UpdateBits
 			invoke SendDlgItemMessage,hTabDlg[8],IDC_UDCHEXSFR,HEM_SETMEM,128,addr addin.Sfr[128]
-			invoke SendDlgItemMessage,hTabDlg[12],IDC_UDCHEXXRAM,HEM_SETMEM,65535,addr addin.XRam
-			invoke SendDlgItemMessage,hTabDlg[16],IDC_UDCHEXCODE,HEM_SETMEM,65535,addr addin.Code
+			invoke SendDlgItemMessage,hTabDlg[12],IDC_UDCHEXXRAM,HEM_SETMEM,65536,addr addin.XRam
 			invoke SetDlgItemInt,hWin,IDC_STCCYCLES,TotalCycles,FALSE
 			invoke UpdateSelSfr,hTabDlg[8]
 			dec		Refresh
@@ -843,6 +909,8 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			mov		eax,[ebx].NMHDR.code
 			.if eax==GN_IMAGECLICK
 				invoke SendMessage,hWin,WM_COMMAND,IDM_DEBUG_TOGGLE,hGrd
+			.elseif eax==GN_BEFOREEDIT && [ebx].GRIDNOTIFY.col
+				mov		[ebx].GRIDNOTIFY.fcancel,TRUE
 			.endif
 		.endif
 	.elseif eax==WM_COMMAND
@@ -960,12 +1028,85 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		push	IDM_DEBUG_STEP_OVER
 		push	IDM_DEBUG_RUN_TO_CURSOR
 		push	IDM_DEBUG_TOGGLE
-		push	IDM_DEBUG_CLEAR
-		pop		eax
+		mov		eax,IDM_DEBUG_CLEAR
 		.while eax
 			invoke EnableMenuItem,addin.hMenu,eax,ebx
 			pop		eax
 		.endw
+	.elseif eax==WM_SIZING
+		mov		ebx,lParam
+		mov		eax,[ebx].RECT.right
+		sub		eax,[ebx].RECT.left
+		.if eax<700
+			mov		eax,wParam
+			.if eax==WMSZ_LEFT || eax==WMSZ_BOTTOMLEFT || eax==WMSZ_TOPLEFT
+				mov		eax,[ebx].RECT.right
+				sub		eax,700
+				mov		[ebx].RECT.left,eax
+			.elseif eax==WMSZ_RIGHT || eax==WMSZ_BOTTOMRIGHT || eax==WMSZ_TOPRIGHT
+				mov		eax,[ebx].RECT.left
+				add		eax,700
+				mov		[ebx].RECT.right,eax
+			.endif
+		.endif
+		mov		eax,[ebx].RECT.bottom
+		sub		eax,[ebx].RECT.top
+		.if eax<535
+			mov		eax,wParam
+			.if eax==WMSZ_TOP || eax==WMSZ_TOPLEFT || eax==WMSZ_TOPRIGHT
+				mov		eax,[ebx].RECT.bottom
+				sub		eax,535
+				mov		[ebx].RECT.top,eax
+			.elseif eax==WMSZ_BOTTOM || eax==WMSZ_BOTTOMRIGHT || eax==WMSZ_BOTTOMLEFT
+				mov		eax,[ebx].RECT.top
+				add		eax,535
+				mov		[ebx].RECT.bottom,eax
+			.endif
+		.endif
+	.elseif eax==WM_SIZE
+		invoke GetClientRect,hWin,addr rect
+		invoke GetDlgItem,hWin,IDC_TABSTATUS
+		mov		ebx,eax
+		invoke GetWindowRect,ebx,addr rectmov
+		mov		eax,rectmov.right
+		sub		eax,rectmov.left
+		mov		edx,rectmov.bottom
+		sub		edx,rectmov.top
+		mov		esi,rect.right
+		sub		esi,eax
+		invoke MoveWindow,ebx,esi,0,eax,edx,TRUE
+		invoke GetDlgItem,hWin,IDC_TBRSIM52
+		mov		ebx,eax
+		invoke GetWindowRect,ebx,addr rectmov
+		mov		eax,rectmov.bottom
+		sub		eax,rectmov.top
+		invoke MoveWindow,ebx,0,0,esi,eax,TRUE
+		mov		eax,rectmov.bottom
+		sub		eax,rectmov.top
+		add		rect.top,eax
+		invoke GetDlgItem,hWin,IDC_IMGSTATUS
+		mov		ebx,eax
+		invoke MoveWindow,ebx,addr [esi+50],0,16,16,TRUE
+		invoke GetDlgItem,hWin,IDC_SBRSIM52
+		mov		ebx,eax
+		invoke MoveWindow,ebx,0,0,0,0,TRUE
+		invoke GetWindowRect,ebx,addr rectmov
+		mov		eax,rectmov.bottom
+		sub		eax,rectmov.top
+		sub		rect.bottom,eax
+		mov		eax,rect.bottom
+		sub		eax,rect.top
+		invoke MoveWindow,hGrd,0,rect.top,esi,eax,TRUE
+		invoke GetDlgItem,hWin,IDC_TABVIEW
+		mov		ebx,eax
+		invoke GetWindowRect,ebx,addr rectmov
+		mov		eax,rectmov.bottom
+		sub		eax,rectmov.top
+		mov		edx,rectmov.right
+		sub		edx,rectmov.left
+		mov		ecx,rect.bottom
+		sub		ecx,eax
+		invoke MoveWindow,ebx,esi,ecx,edx,eax,TRUE
 	.elseif eax==WM_CLOSE
 		.if hMemFile
 			invoke GlobalFree,hMemFile
@@ -979,13 +1120,14 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke DestroyWindow,hFind
 		invoke DestroyWindow,hTerm
 		invoke DestroyWindow,hWin
-	.elseif uMsg==WM_DESTROY
+	.elseif eax==WM_DESTROY
 		invoke PostQuitMessage,NULL
 	.else
 		invoke DefWindowProc,hWin,uMsg,wParam,lParam
 		ret
 	.endif
 	xor    eax,eax
+  Ex:
 	ret
 
 WndProc endp
@@ -1020,7 +1162,6 @@ WinMain proc hInst:HINSTANCE,hPrevInst:HINSTANCE,CmdLine:LPSTR,CmdShow:DWORD
 	invoke CreateDialogParam,addin.hInstance,IDD_SIM52,NULL,addr WndProc,NULL
 	invoke ShowWindow,addin.hWnd,SW_SHOWNORMAL
 	invoke UpdateWindow,addin.hWnd
-
 	.while TRUE
 		invoke GetMessage,addr msg,NULL,0,0
 	  .BREAK .if !eax

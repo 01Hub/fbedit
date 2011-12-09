@@ -566,6 +566,12 @@ WritePort endp
 WriteXRam proc nAddr:DWORD,nValue:DWORD
 
 	invoke SendAddinMessage,addin.hWnd,AM_XRAMCHANGED,nAddr,nValue
+	.if !eax
+		;No memory mapped outputs at this address, update XRam
+		mov		edx,nAddr
+		mov		eax,nValue
+		mov		addin.XRam[edx],al
+	.endif
 	ret
 
 WriteXRam endp
@@ -3170,7 +3176,6 @@ MOVX_@DPTR_A:
 		movzx	edx,word ptr addin.Sfr[SFR_DP1L]
 	.endif
 	movzx	eax,addin.Sfr[SFR_ACC]
-	mov		addin.Ram[edx],al
 	invoke WriteXRam,edx,eax
 	lea		ebx,[ebx+1]
 	ret
@@ -3181,7 +3186,6 @@ MOVX_@R0_A:
 	movzx	edx,addin.Ram[edx]
 	mov		dh,addin.Sfr[SFR_P2]
 	movzx	eax,addin.Sfr[SFR_ACC]
-	mov		addin.Ram[edx],al
 	invoke WriteXRam,edx,eax
 	lea		ebx,[ebx+1]
 	ret
@@ -3192,7 +3196,6 @@ MOVX_@R1_A:
 	movzx	edx,addin.Ram[edx]
 	mov		dh,addin.Sfr[SFR_P2]
 	movzx	eax,addin.Sfr[SFR_ACC]
-	mov		addin.Ram[edx],al
 	invoke WriteXRam,edx,eax
 	lea		ebx,[ebx+1]
 	ret
