@@ -2,6 +2,8 @@
 ;Structure used to update rows
 ROWDATA struct
 	nImage				DWORD ?			;Data for Break Point column. Double word value
+	nBytes				DWORD ?			;Data for Bytes column
+	nCycles				DWORD ?			;Data for Cycles column
 	lpszLabel			DWORD ?			;Data for Label column. Pointer to string
 	lpszCode			DWORD ?			;Data for Code column. Pointer to string
 ROWDATA ends
@@ -45,6 +47,8 @@ ParseList proc uses ebx esi edi,lpFileName:DWORD
 		.while byte ptr [esi]
 			mov		nBytes,0
 			mov		nBytesParsed,0
+			mov		rdta.nCycles,0
+			mov		rdta.nBytes,0
 			call	SkipWhiteSpace
 			call	IsLineNumber
 			.if eax
@@ -65,10 +69,12 @@ ParseList proc uses ebx esi edi,lpFileName:DWORD
 						mov		byte ptr [edi],dl
 						inc		nBytesParsed
 						mov		ecx,paddr
-						mov		al,Cycles[edx]
+						movzx	eax,Cycles[edx]
 						mov		[ecx].MCUADDR.cycles,al
+						mov		rdta.nCycles,eax
 						movzx	eax,Bytes[edx]
 						mov		[ecx].MCUADDR.bytes,al
+						mov		rdta.nBytes,eax
 						mov		nBytes,eax
 						inc		edi
 						call	IsCodeByte
@@ -120,6 +126,11 @@ ParseList proc uses ebx esi edi,lpFileName:DWORD
 						.endif
 						inc		eax
 					.endw
+					call	IsSourceLineDB
+					.if eax
+						mov		rdta.nBytes,0
+						mov		rdta.nCycles,0
+					.endif
 					invoke SendMessage,hGrd,GM_ADDROW,0,addr rdta
 					.if nBytesParsed
 						invoke SendMessage,hGrd,GM_GETROWCOUNT,0,0

@@ -74,11 +74,11 @@ DisplayProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 			pop		ecx
 			pop		ebx
 			lea		ebx,[ebx+1]
-			lea		esi,[esi+6*3]
+			lea		esi,[esi+6*4]
 			lea		ecx,[ecx+1]
 		.endw
-		mov		esi,12
-		mov		edi,11+3*9
+		mov		esi,11
+		mov		edi,10+4*8+5
 		xor		ecx,ecx
 		mov		ebx,offset LCDDDRAM+40h
 		.while ecx<16
@@ -89,7 +89,7 @@ DisplayProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 			pop		ecx
 			pop		ebx
 			lea		ebx,[ebx+1]
-			lea		esi,[esi+6*3]
+			lea		esi,[esi+6*4]
 			lea		ecx,[ecx+1]
 		.endw
 		invoke BitBlt,ps.hdc,0,0,rect.right,rect.bottom,mDC,0,0,SRCCOPY
@@ -109,11 +109,11 @@ DisplayProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 DrawChar:
 	push	esi
 	push	edi
-	mov		ebx,7
+	mov		ebx,8
 	mul		ebx
 	lea		ebx,[eax+offset CharTab]
 	xor		edx,edx
-	.while edx<7
+	.while edx<8
 		push	ebx
 		push	edx
 		xor		ecx,ecx
@@ -132,14 +132,14 @@ DrawChar:
 				invoke FillRect,mDC,addr dotrect,hDotBrush
 				pop		ecx
 			.endif
-			lea		esi,[esi+3]
+			lea		esi,[esi+4]
 			lea		ecx,[ecx+1]
 		.endw
 		pop		esi
 		pop		edx
 		pop		ebx
 		lea		ebx,[ebx+1]
-		lea		edi,[edi+3]
+		lea		edi,[edi+4]
 		lea		edx,[edx+1]
 	.endw
 	pop		edi
@@ -326,7 +326,7 @@ LCDProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke GetWindowRect,hWin,addr rect
 		mov		eax,rect.right
 		sub		eax,rect.left
-		mov		edx,120
+		mov		edx,142
 		invoke MoveWindow,hWin,rect.left,rect.top,eax,edx,TRUE
 		invoke SendDlgItemMessage,hWin,IDC_EDTMMADDR,EM_LIMITTEXT,4,0
 		invoke GetDlgItem,hWin,IDC_EDTMMADDR
@@ -356,12 +356,12 @@ LCDProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke GetWindowRect,hWin,addr rect
 				mov		eax,rect.bottom
 				sub		eax,rect.top
-				.if eax==120
+				.if eax==142
 					mov		eax,offset szShrink
-					mov		edx,230
+					mov		edx,252
 				.else
 					mov		eax,offset szExpand
-					mov		edx,120
+					mov		edx,142
 				.endif
 				push	edx
 				invoke SetDlgItemText,hWin,IDC_BTNEXPAND,eax
@@ -477,15 +477,15 @@ LcdDataWrite:
 	retn
 
 LcdCommandWrite:
-	.if eax>=80h
+	.if eax & 80h
 		;1	AC6	AC5	AC4	AC3	AC2	AC1	AC0		Set DDRAM address
 		and		eax,7Fh
 		mov		LCDDDRAMADDR,eax
-	.elseif eax>=40h
+	.elseif eax & 40h
 		;0	1	AC5	AC4	AC3	AC2	AC1	AC0		Set CGRAM address
 		and		eax,3Fh
 		mov		LCDDDRAMADDR,eax
-	.elseif eax>=20h
+	.elseif eax & 20h
 		;0	0	1	DL	N	F	x	x		DL 8/4 databits, N lines 2/1, F font 5x11/5x8
 		test	eax,10h
 		.if !ZERO?
@@ -508,7 +508,7 @@ LcdCommandWrite:
 		.else
 			mov		LCDF,0
 		.endif
-	.elseif eax>=10h
+	.elseif eax & 10h
 		;0	0	0	1	S/C	R/L	x	x		Cursor and display shift direction
 		test	eax,08h
 		.if !ZERO?
@@ -520,7 +520,7 @@ LcdCommandWrite:
 		.else
 			mov		LCDDSD,0
 		.endif
-	.elseif eax>=08h
+	.elseif eax & 08h
 		;0	0	0	0	1	D	C	B		D display on, C cursor on, B cursor position on
 		test	eax,04h
 		.if !ZERO?
@@ -540,7 +540,7 @@ LcdCommandWrite:
 		.else
 			mov		LCDCPON,0
 		.endif
-	.elseif eax>=04h
+	.elseif eax & 04h
 		;0	0	0	0	0	1	I/D	S		Set cursor direction and display shift on/off
 		test	eax,02h
 		.if !ZERO?
@@ -554,10 +554,10 @@ LcdCommandWrite:
 		.else
 			mov		LCDDSON,0
 		.endif
-	.elseif eax>=02h
+	.elseif eax & 02h
 		;0	0	0	0	0	0	1	x		Set DDRAM address to 00h and home the cursor
 		mov		LCDDDRAMADDR,0
-	.elseif eax>=01h
+	.elseif eax & 01h
 		;0	0	0	0	0	0	0	1		Write 20h to DDRAM and set DDRAM address to 00h
 		mov		edi,offset LCDDDRAM
 		mov		ecx,128/4

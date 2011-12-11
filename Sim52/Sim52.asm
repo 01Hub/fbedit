@@ -248,10 +248,20 @@ TabStatusProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
 TabStatusProc endp
 
-TabRamProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+TabRamProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
+	.elseif eax==WM_NOTIFY
+		mov		eax,wParam
+		.if eax==IDC_UDCHEXRAM
+			mov		esi,lParam
+			.if [esi].HESELCHANGE.fchanged
+				invoke SendDlgItemMessage,hWin,IDC_UDCHEXRAM,HEM_GETMEM,256,addr addin.Ram
+				invoke SendDlgItemMessage,hWin,IDC_UDCHEXRAM,EM_SETMODIFY,FALSE,0
+				mov		Refresh,1
+			.endif
+		.endif
 	.else
 		mov		eax,FALSE
 		ret
@@ -320,6 +330,16 @@ TabSfrProc proc uses ebx esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		eax,1
 				shl		eax,cl
 				xor		addin.Sfr[ebx],al
+				mov		Refresh,1
+			.endif
+		.endif
+	.elseif eax==WM_NOTIFY
+		mov		eax,wParam
+		.if eax==IDC_UDCHEXSFR
+			mov		esi,lParam
+			.if [esi].HESELCHANGE.fchanged
+				invoke SendDlgItemMessage,hWin,IDC_UDCHEXSFR,HEM_GETMEM,128,addr addin.Sfr[128]
+				invoke SendDlgItemMessage,hWin,IDC_UDCHEXSFR,EM_SETMODIFY,FALSE,0
 				mov		Refresh,1
 			.endif
 		.endif
@@ -474,7 +494,7 @@ Find proc uses ebx esi edi,lpszText:DWORD,nLenText:DWORD,uFlag:DWORD
 			.while sdword ptr ebx>=0
 				mov		ecx,ebx
 				shl		ecx,16
-				or		ecx,1
+				or		ecx,3
 				invoke SendMessage,hGrd,GM_GETCELLDATA,ecx,addr rowbuffer
 				dec		edi
 				.if rowbuffer
@@ -505,7 +525,7 @@ Find proc uses ebx esi edi,lpszText:DWORD,nLenText:DWORD,uFlag:DWORD
 							.endif
 							mov		ecx,ebx
 							shl		ecx,16
-							invoke SendMessage,hGrd,GM_SETCURSEL,1,ebx
+							invoke SendMessage,hGrd,GM_SETCURSEL,3,ebx
 							mov		nFindRow,ebx
 							mov		nFindPos,edi
 							jmp		Ex
@@ -521,7 +541,7 @@ Find proc uses ebx esi edi,lpszText:DWORD,nLenText:DWORD,uFlag:DWORD
 			.while sdword ptr ebx>=0
 				mov		ecx,ebx
 				shl		ecx,16
-				or		ecx,2
+				or		ecx,4
 				invoke SendMessage,hGrd,GM_GETCELLDATA,ecx,addr rowbuffer
 				dec		edi
 				.if rowbuffer
@@ -552,7 +572,7 @@ Find proc uses ebx esi edi,lpszText:DWORD,nLenText:DWORD,uFlag:DWORD
 							.endif
 							mov		ecx,ebx
 							shl		ecx,16
-							invoke SendMessage,hGrd,GM_SETCURSEL,2,ebx
+							invoke SendMessage,hGrd,GM_SETCURSEL,4,ebx
 							mov		nFindRow,ebx
 							mov		nFindPos,edi
 							jmp		Ex
@@ -585,7 +605,7 @@ Find proc uses ebx esi edi,lpszText:DWORD,nLenText:DWORD,uFlag:DWORD
 			.while ebx<nRows
 				mov		ecx,ebx
 				shl		ecx,16
-				or		ecx,1
+				or		ecx,3
 				invoke SendMessage,hGrd,GM_GETCELLDATA,ecx,addr rowbuffer
 				inc		edi
 				.if rowbuffer
@@ -616,7 +636,7 @@ Find proc uses ebx esi edi,lpszText:DWORD,nLenText:DWORD,uFlag:DWORD
 							.endif
 							mov		ecx,ebx
 							shl		ecx,16
-							invoke SendMessage,hGrd,GM_SETCURSEL,1,ebx
+							invoke SendMessage,hGrd,GM_SETCURSEL,3,ebx
 							mov		nFindRow,ebx
 							mov		nFindPos,edi
 							jmp		Ex
@@ -632,7 +652,7 @@ Find proc uses ebx esi edi,lpszText:DWORD,nLenText:DWORD,uFlag:DWORD
 			.while ebx<nRows
 				mov		ecx,ebx
 				shl		ecx,16
-				or		ecx,2
+				or		ecx,4
 				invoke SendMessage,hGrd,GM_GETCELLDATA,ecx,addr rowbuffer
 				inc		edi
 				.if rowbuffer
@@ -663,7 +683,7 @@ Find proc uses ebx esi edi,lpszText:DWORD,nLenText:DWORD,uFlag:DWORD
 							.endif
 							mov		ecx,ebx
 							shl		ecx,16
-							invoke SendMessage,hGrd,GM_SETCURSEL,2,ebx
+							invoke SendMessage,hGrd,GM_SETCURSEL,4,ebx
 							mov		nFindRow,ebx
 							mov		nFindPos,edi
 							jmp		Ex
@@ -755,18 +775,25 @@ ClockProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
-;		invoke SetDlgItemInt,hWin,IDC_EDTCOMPUTER,ComputerClock,FALSE
+		invoke SendDlgItemMessage,hWin,IDC_UDNREFRESH,UDM_SETRANGE,0,(50 SHL 16) OR 5000
+		invoke SetDlgItemInt,hWin,IDC_EDTCOMPUTER,ComputerClock,FALSE
 		invoke SetDlgItemInt,hWin,IDC_EDTMCU,MCUClock,FALSE
+		invoke SetDlgItemInt,hWin,IDC_EDTREFRESH,RefreshRate,FALSE
 	.elseif eax==WM_COMMAND
 		mov		edx,wParam
 		movzx	eax,dx
 		shr		edx,16
 		.if edx==BN_CLICKED
 			.if eax==IDOK
-;				invoke GetDlgItemInt,hWin,IDC_EDTCOMPUTER,NULL,FALSE
-;				mov		ComputerClock,eax
+				invoke GetDlgItemInt,hWin,IDC_EDTCOMPUTER,NULL,FALSE
+				mov		ComputerClock,eax
 				invoke GetDlgItemInt,hWin,IDC_EDTMCU,NULL,FALSE
+				.if eax<12
+					mov		eax,12
+				.endif
 				mov		MCUClock,eax
+				invoke GetDlgItemInt,hWin,IDC_EDTREFRESH,NULL,FALSE
+				mov		RefreshRate,eax
 				invoke SetTiming
 				invoke EndDialog,hWin,0
 			.endif
@@ -867,6 +894,28 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		col.himl,eax
 		mov		col.hdrflag,0
 		invoke SendMessage,hGrd,GM_ADDCOL,0,addr col
+		;Add Bytes column
+		mov		col.colwt,16
+		mov		col.lpszhdrtext,offset szBytes
+		mov		col.halign,GA_ALIGN_LEFT
+		mov		col.calign,GA_ALIGN_LEFT
+		mov		col.ctype,TYPE_EDITLONG
+		mov		col.ctextmax,1
+		mov		col.lpszformat,0
+		mov		col.himl,0
+		mov		col.hdrflag,0
+		invoke SendMessage,hGrd,GM_ADDCOL,0,addr col
+		;Add Cycles column
+		mov		col.colwt,16
+		mov		col.lpszhdrtext,offset szCycles
+		mov		col.halign,GA_ALIGN_LEFT
+		mov		col.calign,GA_ALIGN_LEFT
+		mov		col.ctype,TYPE_EDITLONG
+		mov		col.ctextmax,1
+		mov		col.lpszformat,0
+		mov		col.himl,0
+		mov		col.hdrflag,0
+		invoke SendMessage,hGrd,GM_ADDCOL,0,addr col
 		;Add Label column
 		mov		col.colwt,100
 		mov		col.lpszhdrtext,offset szLabel
@@ -889,6 +938,7 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		col.himl,0
 		mov		col.hdrflag,0
 		invoke SendMessage,hGrd,GM_ADDCOL,0,addr col
+
 		invoke CreateDialogParam,addin.hInstance,IDD_DLGFIND,hWin,addr FindProc,0
 		invoke CreateDialogParam,addin.hInstance,IDD_DLGTERMINAL,hWin,addr TerminalProc,0
 		invoke LoadAddins
@@ -911,7 +961,6 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			inc		ebx
 		.endw
 		invoke SendDlgItemMessage,hTabDlg[16],IDC_UDCHEXCODE,HEM_SETMEM,65536,addr addin.Code
-		invoke SetTimer,hWin,1000,200,NULL
 	.elseif eax==WM_TIMER
 		.if Refresh
 			invoke UpdateStatus
@@ -996,13 +1045,14 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke CreateCaret,hTermScrn,NULL,BOXWT,BOXHT
 				invoke ShowCaret,hTermScrn
 			.elseif eax==IDM_DEBUG_RUN
-				.if State & STATE_THREAD
-					mov		State,STATE_THREAD or STATE_RUN
-				.else
-					mov		State,STATE_THREAD or STATE_RUN
+				.if !(State & STATE_THREAD)
 					invoke CreateThread,NULL,0,addr CoreThread,0,0,addr tid
 					invoke CloseHandle,eax
 				.endif
+				rdtsc
+				mov		dword ptr PerformanceCount,eax
+				mov		dword ptr PerformanceCount+4,edx
+				mov		State,STATE_THREAD or STATE_RUN
 			.elseif eax==IDM_DEBUG_PAUSE
 				.if State & STATE_THREAD
 					or		State,STATE_PAUSE
@@ -1011,43 +1061,39 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.elseif eax==IDM_DEBUG_STOP
 				mov		State,STATE_STOP
 			.elseif eax==IDM_DEBUG_STEP_INTO
-				.if State & STATE_THREAD
-					or		State,STATE_STEP_INTO or STATE_PAUSE
-					and		State,-1 xor SIM52_BREAKPOINT
-				.else
-					mov		State,STATE_THREAD or STATE_RUN or STATE_PAUSE or STATE_STEP_INTO
+				.if !(State & STATE_THREAD)
 					invoke CreateThread,NULL,0,addr CoreThread,0,0,addr tid
 					invoke CloseHandle,eax
 				.endif
+				rdtsc
+				mov		dword ptr PerformanceCount,eax
+				mov		dword ptr PerformanceCount+4,edx
+				mov		State,STATE_THREAD or STATE_RUN or STATE_PAUSE or STATE_STEP_INTO
 			.elseif eax==IDM_DEBUG_STEP_OVER
-				.if State & STATE_THREAD
-					or		State,STATE_STEP_OVER or STATE_PAUSE
-					and		State,-1 xor SIM52_BREAKPOINT
-				.else
-					mov		State,STATE_THREAD or STATE_RUN or STATE_PAUSE or STATE_STEP_OVER
+				.if !(State & STATE_THREAD)
 					invoke CreateThread,NULL,0,addr CoreThread,0,0,addr tid
 					invoke CloseHandle,eax
 				.endif
+				rdtsc
+				mov		dword ptr PerformanceCount,eax
+				mov		dword ptr PerformanceCount+4,edx
+				mov		State,STATE_THREAD or STATE_RUN or STATE_PAUSE or STATE_STEP_OVER
 			.elseif eax==IDM_DEBUG_RUN_TO_CURSOR
 				invoke SendMessage,hGrd,GM_GETCURROW,0,0
-				.if eax!=LB_ERR
-					invoke FindLbInx,eax
-					movzx	eax,[eax].MCUADDR.mcuaddr
-					mov		CursorAddr,eax
-					.if State & STATE_THREAD
-						or		State,STATE_RUN_TO_CURSOR or STATE_PAUSE
-						and		State,-1 xor SIM52_BREAKPOINT
-					.else
-						mov		State,STATE_THREAD or STATE_RUN or STATE_PAUSE or STATE_RUN_TO_CURSOR
-						invoke CreateThread,NULL,0,addr CoreThread,0,0,addr tid
-						invoke CloseHandle,eax
-					.endif
+				invoke FindGrdInx,eax
+				movzx	eax,[eax].MCUADDR.mcuaddr
+				mov		CursorAddr,eax
+				.if !(State & STATE_THREAD)
+					invoke CreateThread,NULL,0,addr CoreThread,0,0,addr tid
+					invoke CloseHandle,eax
 				.endif
+				rdtsc
+				mov		dword ptr PerformanceCount,eax
+				mov		dword ptr PerformanceCount+4,edx
+				mov		State,STATE_THREAD or STATE_RUN or STATE_PAUSE or STATE_RUN_TO_CURSOR
 			.elseif eax==IDM_DEBUG_TOGGLE
 				invoke SendMessage,hGrd,GM_GETCURROW,0,0
-				.if eax!=LB_ERR
-					invoke ToggleBreakPoint,eax
-				.endif
+				invoke ToggleBreakPoint,eax
 			.elseif eax==IDM_DEBUG_CLEAR
 				invoke ClearBreakPoints
 			.elseif eax==IDM_OPTION_CLOCK
@@ -1250,10 +1296,6 @@ WinMain endp
 
 start:
 
-	invoke DecToBinLong,addr szLong
-mov		dword ptr ComputerClock,eax
-mov		dword ptr ComputerClock+4,edx
-	invoke BinToDecLong,dword ptr ComputerClock,dword ptr ComputerClock+4,addr szIniFile
 	invoke GetModuleHandle,NULL
 	mov    addin.hInstance,eax
 	invoke GetCommandLine

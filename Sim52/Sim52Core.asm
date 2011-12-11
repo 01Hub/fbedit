@@ -138,26 +138,33 @@ Refresh					DWORD ?
 State					DWORD ?
 CursorAddr				DWORD ?
 TotalCycles				DWORD ?
-PerformanceCount		QWORD ?
-PerformanceFrequency	QWORD ?
 SBUFWR					DWORD ?
-ComputerClock			QWORD ?
+ComputerClock			DWORD ?
 MCUClock				DWORD ?
 CpuCycles				DWORD ?
+PerformanceCount		QWORD ?
+RefreshRate				DWORD ?
 
 .code
 
+;Get number of computer clock cycles for each 8052 instruction cycle. ComputerClock/(MCUClock/12)
 SetTiming proc
 
-	mov		eax,MCUClock
+	mov		eax,MCUClock			;8052 Clock in Hz
+	.if eax<12
+		mov		eax,12
+	.endif
 	xor		edx,edx
 	mov		ecx,12
-	div		ecx
+	div		ecx						;Divide by 12 to get instruction cycle
 	mov		ecx,eax
-	mov		eax,dword ptr ComputerClock
-	mov		edx,dword ptr ComputerClock+4
+	mov		eax,ComputerClock		;Computer clock in MHz
+	mov		edx,1000000
+	mul		edx						;Multiply by 1000000 to convert to Hz
 	div		ecx
 	mov		CpuCycles,eax
+	invoke KillTimer,addin.hWnd,1000
+	invoke SetTimer,addin.hWnd,1000,RefreshRate,NULL
 	ret
 
 SetTiming endp
@@ -208,61 +215,54 @@ Reset proc
 Reset endp
 
 FindMcuAddr proc uses ebx esi edi,Address:DWORD
-	LOCAL	inx:DWORD
 	LOCAL	lower:DWORD
 	LOCAL	upper:DWORD
 
 	mov		esi,hMemAddr
 	xor		eax,eax
 	.if esi
-		mov		lower,0
+		mov		lower,eax
+		mov		ecx,eax
 		mov		eax,addin.nAddr
 		mov		upper,eax
-		xor		ebx,ebx
+		mov		ebx,Address
 		.while TRUE
 			mov		eax,upper
 			sub		eax,lower
 			.break .if !eax
 			shr		eax,1
 			add		eax,lower
-			mov		inx,eax
+			mov		ecx,eax
 			mov		edx,sizeof MCUADDR
 			mul		edx
 			movzx	edx,[esi+eax].MCUADDR.mcuaddr
-			mov		eax,Address
+			mov		eax,ebx
 			sub		eax,edx
-			.if !eax || ebx>30
+			.if !eax
 				; Found
-				jmp		Ex
+				.break
 			.elseif sdword ptr eax<0
 				; Smaller
-				mov		eax,inx
-				mov		upper,eax
+				mov		upper,ecx
 			.elseif sdword ptr eax>0
 				; Larger
-				mov		eax,inx
-				mov		lower,eax
+				mov		lower,ecx
 			.endif
-			inc		ebx
 		.endw
-		; Not found, should never happend
-PrintHex ebx
-	  Ex:
-		mov		eax,inx
-		mov		edx,sizeof MCUADDR
-		mul		edx
+		mov		eax,sizeof MCUADDR
+		mul		ecx
 		lea		eax,[esi+eax]
 	.endif
 	ret
 
 FindMcuAddr endp
 
-FindLbInx proc uses esi,LbInx:DWORD
+FindGrdInx proc uses esi,GrdInx:DWORD
 
 	mov		esi,hMemAddr
 	xor		eax,eax
 	.if esi
-		mov		edx,LbInx
+		mov		edx,GrdInx
 		xor		ecx,ecx
 		.while dx!=[esi].MCUADDR.lbinx && ecx<addin.nAddr
 			inc		ecx
@@ -274,7 +274,7 @@ FindLbInx proc uses esi,LbInx:DWORD
 	.endif
 	ret
 
-FindLbInx endp
+FindGrdInx endp
 
 GetSfrPtr proc uses esi,hWin:HWND
 
@@ -523,16 +523,16 @@ UpdateBits proc uses ebx edi
 
 UpdateBits endp
 
-ToggleBreakPoint proc lbinx:DWORD
+ToggleBreakPoint proc grdinx:DWORD
 	LOCAL	dwbp:DWORD
 
-	invoke FindLbInx,lbinx
+	invoke FindGrdInx,grdinx
 	.if eax
 		xor		[eax].MCUADDR.fbp,TRUE
 		movzx	eax,[eax].MCUADDR.fbp
 		xor		eax,1
 		mov		dwbp,eax
-		mov		ecx,lbinx
+		mov		ecx,grdinx
 		shl		ecx,16
 		invoke SendMessage,hGrd,GM_SETCELLDATA,ecx,addr dwbp
 	.endif
@@ -3341,9 +3341,6 @@ CoreThread proc lParam:DWORD
 	mov		ebx,addin.PC
 	mov		InstCycles,0
 	.while State!=STATE_STOP
-		rdtsc
-		mov		dword ptr PerformanceCount,eax
-		mov		dword ptr PerformanceCount+4,edx
 		.if (State & STATE_RUN) && !(State & SIM52_BREAKPOINT)
 			.if !(State & STATE_PAUSE)
 				call	Execute
@@ -3372,18 +3369,8 @@ CoreThread proc lParam:DWORD
 				.endif
 				mov		Refresh,1
 			.else
-			mov		eax,hBmpGreenLed
-			call	SetStatusLed
-			.endif
-			.if Refresh
-				mov		eax,hBmpRedLed
+				mov		eax,hBmpGreenLed
 				call	SetStatusLed
-				invoke FindMcuAddr,ebx
-				.if eax
-					.if [eax].MCUADDR.fbp
-						or		State,SIM52_BREAKPOINT
-					.endif
-				.endif
 			.endif
 		.else
 			mov		eax,hBmpGreenLed
@@ -3406,6 +3393,8 @@ CoreThread proc lParam:DWORD
 	ret
 
 Execute:
+	mov		eax,hBmpRedLed
+	call	SetStatusLed
 	movzx	eax,byte ptr [esi+ebx]
 	push	eax
 	call	JmpTab[eax*4]
@@ -3414,6 +3403,12 @@ Execute:
 	mov		InstCycles,edx
 	add		TotalCycles,edx
 	mov		addin.PC,ebx
+	invoke FindMcuAddr,ebx
+	.if eax
+		.if [eax].MCUADDR.fbp
+			or		State,SIM52_BREAKPOINT
+		.endif
+	.endif
 	retn
 
 SetStatusLed:

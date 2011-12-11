@@ -288,6 +288,8 @@ IDC_RBNDOWN             equ 1809
 IDD_DLGCLOCK			equ 1900
 IDC_EDTCOMPUTER			equ 1901
 IDC_EDTMCU				equ 1902
+IDC_EDTREFRESH			equ 1903
+IDC_UDNREFRESH			equ 1904
 
 IDM_MENU                equ 10000
 IDM_FILE_OPEN           equ 10001
@@ -366,9 +368,10 @@ szFmtHexByteh			BYTE '%02Xh',0
 szFmtHexWord			BYTE '%04X',0
 szFmtBank				BYTE 'Bank %u',0
 
-szAddress				BYTE 'Addr',0
 szLabel					BYTE 'Label',0
 szCode					BYTE 'Code',0
+szBytes					BYTE 'B',0
+szCycles				BYTE 'C',0
 
 szAddins				BYTE 'LCD.dll',0,0
 
@@ -376,8 +379,6 @@ szIniFileName			BYTE '\Sim52.ini',0
 szIniConfig				BYTE 'Config',0
 szIniPos				BYTE 'Pos',0
 szIniClock				BYTE 'Clock',0
-
-szLong					byte '100000000000',0
 
 .data?
 
