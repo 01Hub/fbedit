@@ -419,7 +419,7 @@ AddinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		IDAddin,eax
 		inc		[ebx].ADDIN.MenuID
 		invoke CreateDialogParam,hInstance,IDD_DLGLCD,hWin,addr LCDProc,0
-	.elseif eax==AM_PORTCHANGED
+	.elseif eax==AM_PORTWRITE
 		mov		eax,wParam
 		mov		edx,lParam
 		.if eax==0 && P0Bits
@@ -431,7 +431,7 @@ AddinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.elseif eax==3 && P3Bits
 			call	SetData
 		.endif
-	.elseif eax==AM_XRAMCHANGED
+	.elseif eax==AM_XRAMWRITE
 		mov		eax,wParam
 		mov		edx,lParam
 		.if eax==MMAddr && MMBits

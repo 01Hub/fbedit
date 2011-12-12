@@ -1,10 +1,12 @@
 
 											;Always return FALSE, except for a memory mapped output write.
 AM_INIT				equ 0001h				;hWin=Handle to main window, wParam=0, lParam=pointer to ADDIN struct
-AM_PORTCHANGED		equ 0002h				;hWin=Handle to main window, wParam=Port (0-3), lParam=Port value
-AM_XRAMCHANGED		equ 0003h				;hWin=Handle to main window, wParam=XRam address, lParam=XRam value
-AM_COMMAND			equ 0004h				;hWin=Handle to main window, wParam=0, lParam=MenuID
-AM_RESET			equ 0005h				;hWin=Handle to main window, wParam=0, lParam=0
+AM_PORTWRITE		equ 0002h				;hWin=Handle to main window, wParam=Port (0-3), lParam=Port value
+AM_ALECHANGED		equ 0003h
+AM_XRAMWRITE		equ 0004h				;hWin=Handle to main window, wParam=XRam address, lParam=XRam value
+AM_XRAMREAD			equ 0005h				;hWin=Handle to main window, wParam=XRam address, lParam=XRam value
+AM_COMMAND			equ 0006h				;hWin=Handle to main window, wParam=0, lParam=MenuID
+AM_RESET			equ 0007h				;hWin=Handle to main window, wParam=0, lParam=0
 
 ADDIN struct
 	hInstance		HINSTANCE ?
