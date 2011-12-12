@@ -378,6 +378,19 @@ TabCodeProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
 TabCodeProc endp
 
+TabMMIOProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+
+	mov		eax,uMsg
+	.if eax==WM_INITDIALOG
+	.else
+		mov		eax,FALSE
+		ret
+	.endif
+	mov		eax,TRUE
+	ret
+
+TabMMIOProc endp
+
 SendAddinMessage proc uses edi,hWin:HWND,uMsg:DWORD,wParam:DWORD,lParam:DWORD
 	LOCAL	nRet:DWORD
 
@@ -853,6 +866,8 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SendDlgItemMessage,hWin,IDC_TABVIEW,TCM_INSERTITEM,3,addr tci
 		mov		tci.pszText,offset szTabCode
 		invoke SendDlgItemMessage,hWin,IDC_TABVIEW,TCM_INSERTITEM,4,addr tci
+		mov		tci.pszText,offset szTabMMIO
+		invoke SendDlgItemMessage,hWin,IDC_TABVIEW,TCM_INSERTITEM,5,addr tci
 		invoke GetDlgItem,hWin,IDC_TABVIEW
 		mov		ebx,eax
 		mov		eax,addin.hLstFont
@@ -867,13 +882,16 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke CreateDialogParam,addin.hInstance,IDD_DLGTABSFR,ebx,addr TabSfrProc,0
 		mov		hTabDlg[8],eax
 		invoke SendDlgItemMessage,hTabDlg[8],IDC_UDCHEXSFR,HEM_SETFONT,0,addr hef
+		invoke SendDlgItemMessage,hTabDlg[8],IDC_UDCHEXSFR,HEM_SETOFFSET,128,0
 		invoke CreateDialogParam,addin.hInstance,IDD_DLGTABXRAM,ebx,addr TabXRamProc,0
 		mov		hTabDlg[12],eax
 		invoke SendDlgItemMessage,hTabDlg[12],IDC_UDCHEXXRAM,HEM_SETFONT,0,addr hef
 		invoke CreateDialogParam,addin.hInstance,IDD_DLGTABCODE,ebx,addr TabCodeProc,0
 		mov		hTabDlg[16],eax
 		invoke SendDlgItemMessage,hTabDlg[16],IDC_UDCHEXCODE,HEM_SETFONT,0,addr hef
-		invoke SendDlgItemMessage,hTabDlg[8],IDC_UDCHEXSFR,HEM_SETOFFSET,128,0
+		invoke CreateDialogParam,addin.hInstance,IDD_DLGTABMMIO,ebx,addr TabMMIOProc,0
+		mov		hTabDlg[20],eax
+
 		invoke LoadAccelerators,addin.hInstance,IDR_ACCEL1
 		mov		addin.hAccel,eax
 		invoke GetDlgItem,hWin,IDC_GRDCODE
