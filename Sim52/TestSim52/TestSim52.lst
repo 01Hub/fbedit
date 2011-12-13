@@ -75,8 +75,8 @@ ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. 
    48:	  0043	00				NOP
    49:	  0044	75 20 FF			MOV	20h,#0FFh
    50:	  0047	10 00 00			JBC	00h,CC
-   51:	  004A	31 BE		CC:		ACALL	TESTCALL
-   52:	  004C	12 01 BE			LCALL	TESTCALL
+   51:	  004A	31 C1		CC:		ACALL	TESTCALL
+   52:	  004C	12 01 C1			LCALL	TESTCALL
    53:	  004F	13				RRC	A
    54:	  0050	14				DEC	A
    55:	  0051	15 10				DEC	10h
@@ -384,29 +384,32 @@ ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. 
  Line  I  Addr  Code            Source
 
   324:	  01B8	E4				CLR	A
-  325:	  01B9	31 C1		TIMING:		ACALL	WAITASEC
-  326:	  01BB	04				INC	A
-  327:	  01BC	80 FB				SJMP	TIMING
-  328:
-  329:	  01BE	00		TESTCALL:	NOP
-  330:	  01BF	00				NOP
-  331:	  01C0	22				RET
-  332:
+  325:	  01B9	90 80 00			MOV	DPTR,#8000h
+  326:	  01BC	31 C4		TIMING:		ACALL	WAITASEC
+  327:	  01BE	04				INC	A
+  328:	  01BF	80 FB				SJMP	TIMING
+  329:
+  330:	  01C1	00		TESTCALL:	NOP
+  331:	  01C2	00				NOP
+  332:	  01C3	22				RET
   333:
-  334:				;------------------------------------------------------------------
-  335:				;Wait loop. Waits 1 second
-  336:				;------------------------------------------------------------------
-  337:	  01C1	7F F9		WAITASEC:	MOV	R7,#0F9h
-  338:	  01C3	7E 33				MOV	R6,#51
-  339:	  01C5	7D 10				MOV	R5,#16
-  340:	  01C7	DF FE		WAITASEC1:	DJNZ	R7,WAITASEC1
-  341:	  01C9	DE FC				DJNZ	R6,WAITASEC1
-  342:	  01CB	DD FA				DJNZ	R5,WAITASEC1
-  343:	  01CD	22				RET
-  344:
-  345:	  01CE	11 22 33 44	TSTDATA:	DB 11h,22h,33h,44h
-  346:
-  347:						END
+  334:
+  335:				;------------------------------------------------------------------
+  336:				;Wait loop. Waits 1 second
+  337:				;------------------------------------------------------------------
+  338:	  01C4	7F F9		WAITASEC:	MOV	R7,#0F9h
+  339:	  01C6	7E 33				MOV	R6,#51
+  340:	  01C8	7D 10				MOV	R5,#16
+  341:	  01CA	F0		WAITASEC1:	MOVX	@DPTR,A
+  342:	  01CB	E0				MOVX	A,@DPTR
+  343:	  01CC	DF FC				DJNZ	R7,WAITASEC1
+  344:	  01CE	DE FA				DJNZ	R6,WAITASEC1
+  345:	  01D0	DD F8				DJNZ	R5,WAITASEC1
+  346:	  01D2	22				RET
+  347:
+  348:	  01D3	11 22 33 44	TSTDATA:	DB 11h,22h,33h,44h
+  349:
+  350:						END
 
 
 
@@ -517,7 +520,7 @@ T0				  BIT	      B4
 T1				  BIT	      B5
 TB8				  BIT	      9B
 TCON				  DATA	      88
-TESTCALL			  CODE	    01BE	 329
+TESTCALL			  CODE	    01C1	 330
 TF0				  BIT	      8D
 TF1				  BIT	      8F
 TH0				  DATA	      8C
@@ -525,14 +528,14 @@ TH1				  DATA	      8D
 TI				  BIT	      99
 TIMER0				  CODE	    000B
 TIMER1				  CODE	    001B
-TIMING				  CODE	    01B9	 325
+TIMING				  CODE	    01BC	 326
 TL0				  DATA	      8A
 TL1				  DATA	      8B
 TMOD				  DATA	      89
 TR0				  BIT	      8C
 TR1				  BIT	      8E
-TSTDATA				  CODE	    01CE	 345
+TSTDATA				  CODE	    01D3	 348
 TXD				  BIT	      B1
-WAITASEC			  CODE	    01C1	 337
-WAITASEC1			  CODE	    01C7	 340
+WAITASEC			  CODE	    01C4	 338
+WAITASEC1			  CODE	    01CA	 341
 WR				  BIT	      B6

@@ -370,18 +370,22 @@ szFmtHexByte			BYTE '%02X',0
 szFmtHexByteh			BYTE '%02Xh',0
 szFmtHexWord			BYTE '%04X',0
 szFmtBank				BYTE 'Bank %u',0
+szFmtDec				BYTE '%u',0
 
 szLabel					BYTE 'Label',0
 szCode					BYTE 'Code',0
 szBytes					BYTE 'B',0
 szCycles				BYTE 'C',0
 
-szAddins				BYTE 'LCD.dll',0,0
-
-szIniFileName			BYTE '\Sim52.ini',0
+szNULL					BYTE 0
+szIniFileName			BYTE 'Sim52.ini',0
+szSfrFileExt			BYTE '.sfr',0
 szIniConfig				BYTE 'Config',0
 szIniPos				BYTE 'Pos',0
 szIniClock				BYTE 'Clock',0
+szIniAddin				BYTE 'Addin',0
+szIniMCU				BYTE 'MCU',0
+szIniSFRMAP				BYTE 'SFRMAP',0
 
 .data?
 
@@ -403,4 +407,24 @@ nFindPos				DWORD ?
 CharTab					BYTE 256 dup(?)
 CaseTab					BYTE 256 dup(?)
 WinRect					RECT <>
+szPath					BYTE MAX_PATH dup(?)
 szIniFile				BYTE MAX_PATH dup(?)
+szSfrFile				BYTE MAX_PATH dup(?)
+szMCUTypes				BYTE 32*16 dup(?)
+
+hMemFile				HGLOBAL ?
+hMemAddr				HGLOBAL ?
+StatusLed				DWORD ?
+ViewBank				DWORD ?
+Refresh					DWORD ?
+State					DWORD ?
+CursorAddr				DWORD ?
+TotalCycles				DWORD ?
+SBUFWR					DWORD ?
+ComputerClock			DWORD ?
+MCUClock				DWORD ?
+CpuCycles				DWORD ?
+PerformanceCount		QWORD ?
+RefreshRate				DWORD ?
+PCDONE					DWORD ?
+

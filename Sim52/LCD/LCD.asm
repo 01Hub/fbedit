@@ -434,7 +434,7 @@ AddinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	.elseif eax==AM_XRAMWRITE
 		mov		eax,wParam
 		mov		edx,lParam
-		.if eax==MMAddr && MMBits
+		.if eax==MMAddr && MMBits!=0
 			mov		eax,-2
 			call	SetData
 			mov		eax,TRUE

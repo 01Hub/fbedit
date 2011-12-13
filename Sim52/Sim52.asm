@@ -4,39 +4,11 @@ option casemap:none
 
 include Sim52.inc
 include Terminal.asm
+include IniFile.asm
 include Sim52Core.asm
 include Sim52Parse.asm
-include IniFile.asm
 
 .code
-
-HexToBin proc lpStr:DWORD
-
-	push	esi
-	xor		eax,eax
-	xor		edx,edx
-	mov		esi,lpStr
-  @@:
-	shl		eax,4
-	add		eax,edx
-	movzx	edx,byte ptr [esi]
-	.if edx>='0' && edx<='9'
-		sub		edx,'0'
-		inc		esi
-		jmp		@b
-	.elseif  edx>='A' && edx<='F'
-		sub		edx,'A'-10
-		inc		esi
-		jmp		@b
-	.elseif  edx>='a' && edx<='f'
-		sub		edx,'a'-10
-		inc		esi
-		jmp		@b
-	.endif
-	pop		esi
-	ret
-
-HexToBin endp
 
 DoToolBar proc hInst:DWORD,hToolBar:HWND
 	LOCAL	tbab:TBADDBITMAP
@@ -305,7 +277,7 @@ TabSfrProc proc uses ebx esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
-		mov		esi,offset SfrData
+		mov		esi,offset addin.SfrData
 		.while [esi].SFRMAP.ad
 			invoke SendDlgItemMessage,hWin,IDC_CBOSFR,CB_ADDSTRING,0,addr [esi].SFRMAP.nme
 			invoke SendDlgItemMessage,hWin,IDC_CBOSFR,CB_SETITEMDATA,eax,[esi].SFRMAP.ad
@@ -391,16 +363,19 @@ TabMMIOProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
 TabMMIOProc endp
 
-SendAddinMessage proc uses edi,hWin:HWND,uMsg:DWORD,wParam:DWORD,lParam:DWORD
+SendAddinMessage proc uses ebx esi edi,hWin:HWND,uMsg:DWORD,wParam:DWORD,lParam:DWORD
 	LOCAL	nRet:DWORD
 
 	mov		edi,offset addins
+	mov		nRet,0
 	.while [edi].ADDINS.hDll
+		push	edi
 		push	lParam
 		push	wParam
 		push	uMsg
 		push	hWin
 		call	[edi].ADDINS.lpAddinProc
+		pop		edi
 		add		nRet,eax
 		lea		edi,[edi+sizeof ADDINS]
 	.endw
@@ -409,18 +384,26 @@ SendAddinMessage proc uses edi,hWin:HWND,uMsg:DWORD,wParam:DWORD,lParam:DWORD
 
 SendAddinMessage endp
 
-LoadAddins proc uses esi edi
+LoadAddins proc uses ebx esi edi
+	LOCAL	buffer[MAX_PATH]:BYTE
 
-	mov		esi,offset szAddins
+	xor		esi,esi
 	mov		edi,offset addins
-	.while byte ptr [esi]
-		invoke LoadLibrary,esi
-		mov		[edi].ADDINS.hDll,eax
-		invoke GetProcAddress,[edi].ADDINS.hDll,1
-		mov		[edi].ADDINS.lpAddinProc,eax
-		lea		edi,[edi+sizeof ADDINS]
-		invoke lstrlen,esi
-		lea		esi,[esi+eax+1]
+	.while TRUE
+		invoke wsprintf,addr buffer,addr szFmtDec,esi
+		invoke GetPrivateProfileString,addr szIniAddin,addr buffer,addr szNULL,addr buffer,sizeof buffer,addr szIniFile
+		.break .if !eax
+		invoke LoadLibrary,addr buffer
+		.if eax
+			mov		ebx,eax
+			invoke GetProcAddress,ebx,1
+			.if eax
+				mov		[edi].ADDINS.hDll,ebx
+				mov		[edi].ADDINS.lpAddinProc,eax
+				lea		edi,[edi+sizeof ADDINS]
+			.endif
+		.endif
+		inc		esi
 	.endw
 	invoke SendAddinMessage,addin.hWnd,AM_INIT,0,offset addin
 	ret
@@ -994,9 +977,9 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.endif
 	.elseif eax==WM_NOTIFY
 		mov		eax,wParam
+		mov		ebx,lParam
 		.if eax==IDC_TABVIEW
-			mov		eax,lParam
-			mov		eax,[eax].NMHDR.code
+			mov		eax,[ebx].NMHDR.code
 			.if eax==TCN_SELCHANGE
 				;Tab selection
 				invoke SendDlgItemMessage,hWin,IDC_TABVIEW,TCM_GETCURSEL,0,0
@@ -1010,12 +993,17 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.endif
 			.endif
 		.elseif eax==IDC_GRDCODE
-			mov		ebx,lParam
 			mov		eax,[ebx].NMHDR.code
 			.if eax==GN_IMAGECLICK
 				invoke SendMessage,hWin,WM_COMMAND,IDM_DEBUG_TOGGLE,hGrd
 			.elseif eax==GN_BEFOREEDIT && [ebx].GRIDNOTIFY.col
 				mov		[ebx].GRIDNOTIFY.fcancel,TRUE
+			.endif
+		.else;if eax==IDC_TBRSIM52
+			mov		eax,[ebx].NMHDR.code
+			.if eax==TTN_NEEDTEXT
+				mov		eax,wParam
+				mov		[ebx].TOOLTIPTEXT.lpszText,eax
 			.endif
 		.endif
 	.elseif eax==WM_COMMAND
@@ -1059,9 +1047,17 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.elseif eax==IDM_SEARCH_FIND
 				invoke ShowWindow,hFind,SW_SHOW
 			.elseif eax==IDM_VIEW_TERMINAL
-				invoke ShowWindow,hTerm,SW_SHOW
-				invoke CreateCaret,hTermScrn,NULL,BOXWT,BOXHT
-				invoke ShowCaret,hTermScrn
+				invoke IsWindowVisible,hTerm
+				.if eax
+					mov		ebx,SW_HIDE
+				.else
+					mov		ebx,SW_SHOW
+				.endif
+				invoke ShowWindow,hTerm,ebx
+				.if ebx==SW_SHOW
+					invoke CreateCaret,hTermScrn,NULL,BOXWT,BOXHT
+					invoke ShowCaret,hTermScrn
+				.endif
 			.elseif eax==IDM_DEBUG_RUN
 				.if !(State & STATE_THREAD)
 					invoke CreateThread,NULL,0,addr CoreThread,0,0,addr tid
@@ -1285,9 +1281,11 @@ WinMain proc hInst:HINSTANCE,hPrevInst:HINSTANCE,CmdLine:LPSTR,CmdShow:DWORD
 	mov		hBmpGreenLed,eax
 	invoke LoadBitmap,addin.hInstance,IDB_LEDRED
 	mov		hBmpRedLed,eax
-	invoke Reset
+	invoke LoadMCUTypes
+	invoke LoadSFRFile,offset szMCUTypes
 	invoke CreateDialogParam,addin.hInstance,IDD_SIM52,NULL,addr WndProc,NULL
 	invoke LoadSettings
+	invoke Reset
 	invoke UpdateWindow,addin.hWnd
 	.while TRUE
 		invoke GetMessage,addr msg,NULL,0,0
@@ -1322,11 +1320,13 @@ start:
 	invoke RAHexEdInstall,addin.hInstance,FALSE
 	invoke GridInstall,addin.hInstance,FALSE
 	mov		addin.MenuID,12000
-	invoke GetModuleFileName,addin.hInstance,addr szIniFile,sizeof szIniFile
-	.while szIniFile[eax]!='\'
+	invoke GetModuleFileName,addin.hInstance,addr szPath,sizeof szPath
+	.while szPath[eax]!='\' && eax
 		dec		eax
 	.endw
-	invoke lstrcpy,addr szIniFile[eax],addr szIniFileName
+	mov		szPath[eax+1],0
+	invoke lstrcpy,addr szIniFile,addr szPath
+	invoke lstrcat,addr szIniFile,addr szIniFileName
 	invoke WinMain,addin.hInstance,NULL,CommandLine,SW_SHOWDEFAULT
 	invoke GridUnInstall
 	invoke RAHexEdUnInstall

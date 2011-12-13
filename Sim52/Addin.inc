@@ -8,6 +8,20 @@ AM_XRAMREAD			equ 0005h				;hWin=Handle to main window, wParam=XRam address, lPa
 AM_COMMAND			equ 0006h				;hWin=Handle to main window, wParam=0, lParam=MenuID
 AM_RESET			equ 0007h				;hWin=Handle to main window, wParam=0, lParam=0
 
+SFRMAP struct
+	ad				dd ?					;SFR Adress
+	rst				dd ?					;SFR Reset Value
+	nme				db 8 dup(?)				;SFR Name
+	d7				db 8 dup(?)				;SFR Bit 7 Name
+	d6				db 8 dup(?)				;SFR Bit 6 Name
+	d5				db 8 dup(?)				;SFR Bit 5 Name
+	d4				db 8 dup(?)				;SFR Bit 4 Name
+	d3				db 8 dup(?)				;SFR Bit 3 Name
+	d2				db 8 dup(?)				;SFR Bit 2 Name
+	d1				db 8 dup(?)				;SFR Bit 1 Name
+	d0				db 8 dup(?)				;SFR Bit 0 Name
+SFRMAP ends
+
 ADDIN struct
 	hInstance		HINSTANCE ?
 	hWnd			HWND ?
@@ -15,6 +29,7 @@ ADDIN struct
 	MenuID			DWORD ?
 	hAccel			HACCEL ?
 	hLstFont		HFONT ?
+	SfrData			SFRMAP 128 dup(<>)
 	Sfr				BYTE 256 dup(?)
 	Ram				BYTE 256 dup(?)
 	XRam			BYTE 65536 dup(?)

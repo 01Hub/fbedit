@@ -1,0 +1,3 @@
+LIBRARY MMIO.dll
+EXPORTS
+	AddinProc

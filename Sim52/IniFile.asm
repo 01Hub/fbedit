@@ -44,6 +44,34 @@ BinToDec proc dwVal:DWORD,lpAscii:DWORD
 
 BinToDec endp
 
+HexToBin proc lpStr:DWORD
+
+	push	esi
+	xor		eax,eax
+	xor		edx,edx
+	mov		esi,lpStr
+  @@:
+	shl		eax,4
+	add		eax,edx
+	movzx	edx,byte ptr [esi]
+	.if edx>='0' && edx<='9'
+		sub		edx,'0'
+		inc		esi
+		jmp		@b
+	.elseif  edx>='A' && edx<='F'
+		sub		edx,'A'-10
+		inc		esi
+		jmp		@b
+	.elseif  edx>='a' && edx<='f'
+		sub		edx,'a'-10
+		inc		esi
+		jmp		@b
+	.endif
+	pop		esi
+	ret
+
+HexToBin endp
+
 GetItemInt proc uses esi edi,lpBuff:DWORD,nDefVal:DWORD
 
 	mov		esi,lpBuff
@@ -65,6 +93,28 @@ GetItemInt proc uses esi edi,lpBuff:DWORD,nDefVal:DWORD
 	ret
 
 GetItemInt endp
+
+GetItemHex proc uses esi edi,lpBuff:DWORD,nDefVal:DWORD
+
+	mov		esi,lpBuff
+	.if byte ptr [esi]
+		mov		edi,esi
+		invoke HexToBin,edi
+		push	eax
+		.while byte ptr [esi] && byte ptr [esi]!=','
+			inc		esi
+		.endw
+		.if byte ptr [esi]==','
+			inc		esi
+		.endif
+		invoke lstrcpy,edi,esi
+		pop		eax
+	.else
+		mov		eax,nDefVal
+	.endif
+	ret
+
+GetItemHex endp
 
 PutItemInt proc uses esi edi,lpBuff:DWORD,nVal:DWORD
 
@@ -156,6 +206,28 @@ PutItemQuotedStr proc uses esi,lpBuff:DWORD,lpStr:DWORD
 	ret
 
 PutItemQuotedStr endp
+
+;Get number of computer clock cycles for each 8052 instruction cycle. ComputerClock/(MCUClock/12)
+SetTiming proc
+
+	mov		eax,MCUClock			;8052 Clock in Hz
+	.if eax<6
+		mov		eax,6
+	.endif
+	xor		edx,edx
+	mov		ecx,6
+	div		ecx						;Divide by 12 to get instruction cycle
+	mov		ecx,eax
+	mov		eax,ComputerClock		;Computer clock in MHz
+	mov		edx,1000000
+	mul		edx						;Multiply by 1000000 to convert to Hz
+	div		ecx
+	mov		CpuCycles,eax
+	invoke KillTimer,addin.hWnd,1000
+	invoke SetTimer,addin.hWnd,1000,RefreshRate,NULL
+	ret
+
+SetTiming endp
 
 LoadSettings proc
 	LOCAL	buffer[MAX_PATH]:BYTE

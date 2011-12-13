@@ -11,40 +11,27 @@ SIM52_BREAKPOINT		equ 32
 
 STATE_THREAD			equ 128
 
-SFRMAP struct
-	ad					dd ?
-	nme					db 8 dup(?)
-	d7					db 8 dup(?)
-	d6					db 8 dup(?)
-	d5					db 8 dup(?)
-	d4					db 8 dup(?)
-	d3					db 8 dup(?)
-	d2					db 8 dup(?)
-	d1					db 8 dup(?)
-	d0					db 8 dup(?)
-SFRMAP ends
-
 .data
 
-JmpTab					dd NOP_,AJMP_$cad,LJMP_$cad,RR_A,INC_A,INC_$dad,INC_@R0,INC_@R1,INC_R0,INC_R1,INC_R2,INC_R3,INC_R4,INC_R5,INC_R6,INC_R7
-						dd JBC_bit_$cad,ACALL_$cad,LCALL_$cad,RRC_A,DEC_A,DEC_$dad,DEC_@R0,DEC_@R1,DEC_R0,DEC_R1,DEC_R2,DEC_R3,DEC_R4,DEC_R5,DEC_R6,DEC_R7
-						dd JB_bit_$cad,AJMP_$cad,RET_,RL_A,ADD_A_imm,ADD_A_$dad,ADD_A_@R0,ADD_A_@R1,ADD_A_R0,ADD_A_R1,ADD_A_R2,ADD_A_R3,ADD_A_R4,ADD_A_R5,ADD_A_R6,ADD_A_R7
-						dd JNB_bit_$cad,ACALL_$cad,RETI_,RLC_A,ADDC_A_imm,ADDC_A_$dad,ADDC_A_@R0,ADDC_A_@R1,ADDC_A_R0,ADDC_A_R1,ADDC_A_R2,ADDC_A_R3,ADDC_A_R4,ADDC_A_R5,ADDC_A_R6,ADDC_A_R7
+JmpTab					dd NOP_,AJMP_$cad,LJMP_$cad,RR_A,INC_A,INC_dir,INC_@R0,INC_@R1,INC_R0,INC_R1,INC_R2,INC_R3,INC_R4,INC_R5,INC_R6,INC_R7
+						dd JBC_bit_$cad,ACALL_$cad,LCALL_$cad,RRC_A,DEC_A,DEC_dir,DEC_@R0,DEC_@R1,DEC_R0,DEC_R1,DEC_R2,DEC_R3,DEC_R4,DEC_R5,DEC_R6,DEC_R7
+						dd JB_bit_$cad,AJMP_$cad,RET_,RL_A,ADD_A_imm,ADD_A_dir,ADD_A_@R0,ADD_A_@R1,ADD_A_R0,ADD_A_R1,ADD_A_R2,ADD_A_R3,ADD_A_R4,ADD_A_R5,ADD_A_R6,ADD_A_R7
+						dd JNB_bit_$cad,ACALL_$cad,RETI_,RLC_A,ADDC_A_imm,ADDC_A_dir,ADDC_A_@R0,ADDC_A_@R1,ADDC_A_R0,ADDC_A_R1,ADDC_A_R2,ADDC_A_R3,ADDC_A_R4,ADDC_A_R5,ADDC_A_R6,ADDC_A_R7
 
-						dd JC_$cad,AJMP_$cad,ORL_$dad_A,ORL_$dad_imm,ORL_A_imm,ORL_A_$dad,ORL_A_@R0,ORL_A_@R1,ORL_A_R0,ORL_A_R1,ORL_A_R2,ORL_A_R3,ORL_A_R4,ORL_A_R5,ORL_A_R6,ORL_A_R7
-						dd JNC_$cad,ACALL_$cad,ANL_$dad_A,ANL_$dad_imm,ANL_A_imm,ANL_A_$dad,ANL_A_@R0,ANL_A_@R1,ANL_A_R0,ANL_A_R1,ANL_A_R2,ANL_A_R3,ANL_A_R4,ANL_A_R5,ANL_A_R6,ANL_A_R7
-						dd JZ_$cad,AJMP_$cad,XRL_$dad_A,XRL_$dad_imm,XRL_A_imm,XRL_A_$dad,XRL_A_@R0,XRL_A_@R1,XRL_A_R0,XRL_A_R1,XRL_A_R2,XRL_A_R3,XRL_A_R4,XRL_A_R5,XRL_A_R6,XRL_A_R7
-						dd JNZ_$cad,ACALL_$cad,ORL_C_bit,JMP_@A_DPTR,MOV_A_imm,MOV_$dad_imm,MOV_@R0_imm,MOV_@R1_imm,MOV_R0_imm,MOV_R1_imm,MOV_R2_imm,MOV_R3_imm,MOV_R4_imm,MOV_R5_imm,MOV_R6_imm,MOV_R7_imm
+						dd JC_$cad,AJMP_$cad,ORL_dir_A,ORL_dir_imm,ORL_A_imm,ORL_A_dir,ORL_A_@R0,ORL_A_@R1,ORL_A_R0,ORL_A_R1,ORL_A_R2,ORL_A_R3,ORL_A_R4,ORL_A_R5,ORL_A_R6,ORL_A_R7
+						dd JNC_$cad,ACALL_$cad,ANL_dir_A,ANL_dir_imm,ANL_A_imm,ANL_A_dir,ANL_A_@R0,ANL_A_@R1,ANL_A_R0,ANL_A_R1,ANL_A_R2,ANL_A_R3,ANL_A_R4,ANL_A_R5,ANL_A_R6,ANL_A_R7
+						dd JZ_$cad,AJMP_$cad,XRL_dir_A,XRL_dir_imm,XRL_A_imm,XRL_A_dir,XRL_A_@R0,XRL_A_@R1,XRL_A_R0,XRL_A_R1,XRL_A_R2,XRL_A_R3,XRL_A_R4,XRL_A_R5,XRL_A_R6,XRL_A_R7
+						dd JNZ_$cad,ACALL_$cad,ORL_C_bit,JMP_@A_DPTR,MOV_A_imm,MOV_dir_imm,MOV_@R0_imm,MOV_@R1_imm,MOV_R0_imm,MOV_R1_imm,MOV_R2_imm,MOV_R3_imm,MOV_R4_imm,MOV_R5_imm,MOV_R6_imm,MOV_R7_imm
 
-						dd SJMP_$cad,AJMP_$cad,ANL_C_bit,MOVC_A_@A_PC,DIV_AB,MOV_$dad_$dad,MOV_$dad_@R0,MOV_$dad_@R1,MOV_$dad_R0,MOV_$dad_R1,MOV_$dad_R2,MOV_$dad_R3,MOV_$dad_R4,MOV_$dad_R5,MOV_$dad_R6,MOV_$dad_R7
-						dd MOV_DPTR_dw,ACALL_$cad,MOV_bit_C,MOVC_A_@A_DPTR,SUBB_A_imm,SUBB_A_$dad,SUBB_A_@R0,SUBB_A_@R1,SUBB_A_R0,SUBB_A_R1,SUBB_A_R2,SUBB_A_R3,SUBB_A_R4,SUBB_A_R5,SUBB_A_R6,SUBB_A_R7
-						dd ORL_C_nbit,AJMP_$cad,MOV_C_bit,INC_DPTR,MUL_AB,reserved,MOV_@R0_$dad,MOV_@R1_$dad,MOV_R0_$dad,MOV_R1_$dad,MOV_R2_$dad,MOV_R3_$dad,MOV_R4_$dad,MOV_R5_$dad,MOV_R6_$dad,MOV_R7_$dad
-						dd ANL_C_nbit,ACALL_$cad,CPL_bit,CPL_C,CJNE_A_imm_$cad,CJNE_A_$dad_$cad,CJNE_@R0_imm_$cad,CJNE_@R1_imm_$cad,CJNE_R0_imm_$cad,CJNE_R1_imm_$cad,CJNE_R2_imm_$cad,CJNE_R3_imm_$cad,CJNE_R4_imm_$cad,CJNE_R5_imm_$cad,CJNE_R6_imm_$cad,CJNE_R7_imm_$cad
+						dd SJMP_$cad,AJMP_$cad,ANL_C_bit,MOVC_A_@A_PC,DIV_AB,MOV_dir_dir,MOV_dir_@R0,MOV_dir_@R1,MOV_dir_R0,MOV_dir_R1,MOV_dir_R2,MOV_dir_R3,MOV_dir_R4,MOV_dir_R5,MOV_dir_R6,MOV_dir_R7
+						dd MOV_DPTR_dw,ACALL_$cad,MOV_bit_C,MOVC_A_@A_DPTR,SUBB_A_imm,SUBB_A_dir,SUBB_A_@R0,SUBB_A_@R1,SUBB_A_R0,SUBB_A_R1,SUBB_A_R2,SUBB_A_R3,SUBB_A_R4,SUBB_A_R5,SUBB_A_R6,SUBB_A_R7
+						dd ORL_C_nbit,AJMP_$cad,MOV_C_bit,INC_DPTR,MUL_AB,reserved,MOV_@R0_dir,MOV_@R1_dir,MOV_R0_dir,MOV_R1_dir,MOV_R2_dir,MOV_R3_dir,MOV_R4_dir,MOV_R5_dir,MOV_R6_dir,MOV_R7_dir
+						dd ANL_C_nbit,ACALL_$cad,CPL_bit,CPL_C,CJNE_A_imm_$cad,CJNE_A_dir_$cad,CJNE_@R0_imm_$cad,CJNE_@R1_imm_$cad,CJNE_R0_imm_$cad,CJNE_R1_imm_$cad,CJNE_R2_imm_$cad,CJNE_R3_imm_$cad,CJNE_R4_imm_$cad,CJNE_R5_imm_$cad,CJNE_R6_imm_$cad,CJNE_R7_imm_$cad
 
-						dd PUSH_$dad,AJMP_$cad,CLR_bit,CLR_C,SWAP_A,XCH_A_$dad,XCH_A_@R0,XCH_A_@R1,XCH_A_R0,XCH_A_R1,XCH_A_R2,XCH_A_R3,XCH_A_R4,XCH_A_R5,XCH_A_R6,XCH_A_R7
-						dd POP_$dad,ACALL_$cad,SETB_bit,SETB_C,DA_A,DJNZ_$dad_$cad,XCHD_A_@R0,XCHD_A_@R1,DJNZ_R0_$cad,DJNZ_R1_$cad,DJNZ_R2_$cad,DJNZ_R3_$cad,DJNZ_R4_$cad,DJNZ_R5_$cad,DJNZ_R6_$cad,DJNZ_R7_$cad
-						dd MOVX_A_@DPTR,AJMP_$cad,MOVX_A_@R0,MOVX_A_@R1,CLR_A,MOV_A_$dad,MOV_A_@R0,MOV_A_@R1,MOV_A_R0,MOV_A_R1,MOV_A_R2,MOV_A_R3,MOV_A_R4,MOV_A_R5,MOV_A_R6,MOV_A_R7
-						dd MOVX_@DPTR_A,ACALL_$cad,MOVX_@R0_A,MOVX_@R1_A,CPL_A,MOV_$dad_A,MOV_@R0_A,MOV_@R1_A,MOV_R0_A,MOV_R1_A,MOV_R2_A,MOV_R3_A,MOV_R4_A,MOV_R5_A,MOV_R6_A,MOV_R7_A
+						dd PUSH_dir,AJMP_$cad,CLR_bit,CLR_C,SWAP_A,XCH_A_dir,XCH_A_@R0,XCH_A_@R1,XCH_A_R0,XCH_A_R1,XCH_A_R2,XCH_A_R3,XCH_A_R4,XCH_A_R5,XCH_A_R6,XCH_A_R7
+						dd POP_dir,ACALL_$cad,SETB_bit,SETB_C,DA_A,DJNZ_dir_$cad,XCHD_A_@R0,XCHD_A_@R1,DJNZ_R0_$cad,DJNZ_R1_$cad,DJNZ_R2_$cad,DJNZ_R3_$cad,DJNZ_R4_$cad,DJNZ_R5_$cad,DJNZ_R6_$cad,DJNZ_R7_$cad
+						dd MOVX_A_@DPTR,AJMP_$cad,MOVX_A_@R0,MOVX_A_@R1,CLR_A,MOV_A_dir,MOV_A_@R0,MOV_A_@R1,MOV_A_R0,MOV_A_R1,MOV_A_R2,MOV_A_R3,MOV_A_R4,MOV_A_R5,MOV_A_R6,MOV_A_R7
+						dd MOVX_@DPTR_A,ACALL_$cad,MOVX_@R0_A,MOVX_@R1_A,CPL_A,MOV_dir_A,MOV_@R0_A,MOV_@R1_A,MOV_R0_A,MOV_R1_A,MOV_R2_A,MOV_R3_A,MOV_R4_A,MOV_R5_A,MOV_R6_A,MOV_R7_A
 
 Cycles					db 1,2,2,1,1,1,1,1,1,1,1,1,1,1,1,1
 						db 2,2,2,1,1,1,1,1,1,1,1,1,1,1,1,1
@@ -80,133 +67,76 @@ Bytes					db 1,2,3,1,1,2,1,1,1,1,1,1,1,1,1,1
 						db 1,2,1,1,1,2,1,1,1,1,1,1,1,1,1,1
 						db 1,2,1,1,1,2,1,1,1,1,1,1,1,1,1,1
 
-SfrData					SFRMAP <080h,'P0','P0.7','P0.6','P0.5','P0.4','P0.3','P0.2','P0.1','P0.0'>
-						SFRMAP <081h,'SP','D7','D6','D5','D4','D3','D2','D1','D0'>
-						SFRMAP <082h,'DPL','D7','D6','D5','D4','D3','D2','D1','D0'>
-						SFRMAP <083h,'DPH','D7','D6','D5','D4','D3','D2','D1','D0'>
-						SFRMAP <084h,'DP1L','D7','D6','D5','D4','D3','D2','D1','D0'>
-						SFRMAP <085h,'DP1H','D7','D6','D5','D4','D3','D2','D1','D0'>
-						SFRMAP <087h,'PCON','SMOD','-','-','-','GF1','GF0','PD','IDL'>
-
-						SFRMAP <088h,'TCON','TF1','TR1','TF0','TR0','IE1','IT1','IE0','IT0'>
-						SFRMAP <089h,'TMOD','GTE1','C/T1','M1.1','M0.1','GTE0','C/T0','M1.0','M0.1'>
-						SFRMAP <08Ah,'TL0','D7','D6','D5','D4','D3','D2','D1','D0'>
-						SFRMAP <08Bh,'TL1','D7','D6','D5','D4','D3','D2','D1','D0'>
-						SFRMAP <08Ch,'TH0','D7','D6','D5','D4','D3','D2','D1','D0'>
-						SFRMAP <08Dh,'TH1','D7','D6','D5','D4','D3','D2','D1','D0'>
-						SFRMAP <08Eh,'AUXR','-','-','-','WDIDLE','DISRTO','-','-','DISALE'>
-
-						SFRMAP <090h,'P1','P1.7','P1.6','P1.5','P1.4','P1.3','P1.2','P1.1','P1.0'>
-
-						SFRMAP <098h,'SCON','SM0','SM1','SM2','REN','TB8','RB8','TI','RI'>
-						SFRMAP <099h,'SBUF','D7','D6','D5','D4','D3','D2','D1','D0'>
-
-						SFRMAP <0A0h,'P2','P2.7','P2.6','P2.5','P2.4','P2.3','P2.2','P2.1','P2.0'>
-						SFRMAP <0A2h,'AUXR1','-','-','-','-','-','-','-','DPS'>
-						SFRMAP <0A6h,'WDTRST','-','-','-','-','-','-','-','-'>
-
-						SFRMAP <0A8h,'IE','EA','-','-','ES','ET1','EX1','ET0','EX0'>
-
-						SFRMAP <0B0h,'P3','P3.7','P3.6','P3.5','P3.4','P3.3','P3.2','P3.1','P3.0'>
-
-						SFRMAP <0B8h,'IP','-','-','-','PS','PT1','PX1','PT0','RX0'>
-
-						SFRMAP <0C8h,'T2CON','TF2','EXF2','RCLK','TCLK','EXEN2','TR2','C/T2','CP/RL2'>
-						SFRMAP <0C9h,'T2MOD','-','-','-','-','-','-','T2OE','DCEN'>
-						SFRMAP <0CAh,'RCAP2L','D7','D6','D5','D4','D3','D2','D1','D0'>
-						SFRMAP <0CBh,'RCAP2H','D7','D6','D5','D4','D3','D2','D1','D0'>
-						SFRMAP <0CCh,'TL2','D7','D6','D5','D4','D3','D2','D1','D0'>
-						SFRMAP <0CDh,'TH2','D7','D6','D5','D4','D3','D2','D1','D0'>
-
-						SFRMAP <0D0h,'PSW','CY','AC','F0','RS1','RS0','OV','FL','P'>
-
-						SFRMAP <0E0h,'ACC','ACC.7','ACC.6','ACC.5','ACC.4','ACC.3','ACC.2','ACC.1','ACC.0'>
-
-						SFRMAP <0F0h,'B','B.7','B.6','B.5','B.4','B.3','B.2','B.1','B.0'>
-
-						SFRMAP <0>
-
-.data?
-
-hMemFile				HGLOBAL ?
-hMemAddr				HGLOBAL ?
-
-StatusLed				DWORD ?
-
-ViewBank				DWORD ?
-Refresh					DWORD ?
-State					DWORD ?
-CursorAddr				DWORD ?
-TotalCycles				DWORD ?
-SBUFWR					DWORD ?
-ComputerClock			DWORD ?
-MCUClock				DWORD ?
-CpuCycles				DWORD ?
-PerformanceCount		QWORD ?
-RefreshRate				DWORD ?
-PCDONE					DWORD ?
-
 .code
 
-;Get number of computer clock cycles for each 8052 instruction cycle. ComputerClock/(MCUClock/12)
-SetTiming proc
+LoadMCUTypes proc uses ebx esi edi
+	LOCAL	buffer[8]:BYTE
 
-	mov		eax,MCUClock			;8052 Clock in Hz
-	.if eax<6
-		mov		eax,6
-	.endif
-	xor		edx,edx
-	mov		ecx,6
-	div		ecx						;Divide by 12 to get instruction cycle
-	mov		ecx,eax
-	mov		eax,ComputerClock		;Computer clock in MHz
-	mov		edx,1000000
-	mul		edx						;Multiply by 1000000 to convert to Hz
-	div		ecx
-	mov		CpuCycles,eax
-	invoke KillTimer,addin.hWnd,1000
-	invoke SetTimer,addin.hWnd,1000,RefreshRate,NULL
+	mov		edi,offset szMCUTypes
+	xor		ebx,ebx
+	.while ebx<16
+		invoke wsprintf,addr buffer,addr szFmtDec,ebx
+		invoke GetPrivateProfileString,addr szIniMCU,addr buffer,addr szNULL,edi,16,addr szIniFile
+		.break .if !eax
+		inc		ebx
+		lea		edi,[edi+16]
+	.endw
 	ret
 
-SetTiming endp
+LoadMCUTypes endp
 
-Reset proc
+LoadSFRFile proc uses ebx esi edi,lpMCU:DWORD
+	LOCAL	buffer[MAX_PATH]:BYTE
+
+	invoke lstrcpy,addr szSfrFile,addr szPath
+	invoke lstrcat,addr szSfrFile,lpMCU
+	invoke lstrcat,addr szSfrFile,addr szSfrFileExt
+	mov		edi,offset addin.SfrData
+	mov		ecx,sizeof addin.SfrData
+	xor		eax,eax
+	rep		stosb
+	xor		ebx,ebx
+	mov		edi,offset addin.SfrData
+	.while TRUE
+		invoke wsprintf,addr buffer,addr szFmtDec,ebx
+		invoke GetPrivateProfileString,addr szIniSFRMAP,addr buffer,addr szNULL,addr buffer,sizeof buffer,addr szSfrFile
+		.break .if !eax
+		invoke GetItemHex,addr buffer,0
+		mov		[edi].SFRMAP.ad,eax
+		invoke GetItemHex,addr buffer,0
+		mov		[edi].SFRMAP.rst,eax
+		invoke GetItemStr,addr buffer,addr szNULL,addr [edi].SFRMAP.nme,8
+		invoke GetItemStr,addr buffer,addr szNULL,addr [edi].SFRMAP.d7,8
+		invoke GetItemStr,addr buffer,addr szNULL,addr [edi].SFRMAP.d6,8
+		invoke GetItemStr,addr buffer,addr szNULL,addr [edi].SFRMAP.d5,8
+		invoke GetItemStr,addr buffer,addr szNULL,addr [edi].SFRMAP.d4,8
+		invoke GetItemStr,addr buffer,addr szNULL,addr [edi].SFRMAP.d3,8
+		invoke GetItemStr,addr buffer,addr szNULL,addr [edi].SFRMAP.d2,8
+		invoke GetItemStr,addr buffer,addr szNULL,addr [edi].SFRMAP.d1,8
+		invoke GetItemStr,addr buffer,addr szNULL,addr [edi].SFRMAP.d0,8
+		inc		ebx
+		lea		edi,[edi+sizeof SFRMAP]
+	.endw
+	ret
+
+LoadSFRFile endp
+
+Reset proc uses edi
 
 	mov		State,STATE_STOP
 	mov		addin.PC,0
 	mov		PCDONE,0
-	mov		addin.Sfr[SFR_P0],0FFh
-	mov		addin.Sfr[SFR_SP],07h
-	mov		addin.Sfr[SFR_DPL],00h
-	mov		addin.Sfr[SFR_DPH],00h
-	mov		addin.Sfr[SFR_DP1L],00h
-	mov		addin.Sfr[SFR_DP1H],00h
-	mov		addin.Sfr[SFR_PCON],00h
-	mov		addin.Sfr[SFR_TCON],00h
-	mov		addin.Sfr[SFR_TMOD],00h
-	mov		addin.Sfr[SFR_TL0],00h
-	mov		addin.Sfr[SFR_TL1],00h
-	mov		addin.Sfr[SFR_TH0],00h
-	mov		addin.Sfr[SFR_TH1],00h
-	mov		addin.Sfr[SFR_AUXR],00h
-	mov		addin.Sfr[SFR_P1],0FFh
-	mov		addin.Sfr[SFR_SCON],00h
-	mov		addin.Sfr[SFR_SBUF],00h
-	mov		addin.Sfr[SFR_P2],0FFh
-	mov		addin.Sfr[SFR_AUXR1],00h
-	mov		addin.Sfr[SFR_WDTRST],00h
-	mov		addin.Sfr[SFR_IE],00h
-	mov		addin.Sfr[SFR_P3],0FFh
-	mov		addin.Sfr[SFR_IP],00h
-	mov		addin.Sfr[SFR_T2CON],00h
-	mov		addin.Sfr[SFR_T2MOD],00h
-	mov		addin.Sfr[SFR_RCAP2L],00h
-	mov		addin.Sfr[SFR_RCAP2H],00h
-	mov		addin.Sfr[SFR_TL2],00h
-	mov		addin.Sfr[SFR_TH2],00h
-	mov		addin.Sfr[SFR_PSW],00h
-	mov		addin.Sfr[SFR_ACC],00h
-	mov		addin.Sfr[SFR_B],00h
+	mov		edi,offset addin.Sfr
+	mov		ecx,sizeof addin.Sfr
+	xor		eax,eax
+	rep		stosb
+	mov		edi,offset addin.SfrData
+	.while [edi].SFRMAP.ad
+		mov		edx,[edi].SFRMAP.ad
+		mov		eax,[edi].SFRMAP.rst
+		mov		addin.Sfr[edx],al
+		lea		edi,[edi+sizeof SFRMAP]
+	.endw
 	invoke SendAddinMessage,addin.hWnd,AM_RESET,0,0
 	mov		eax,hBmpGreenLed
 	mov		StatusLed,eax
@@ -280,7 +210,7 @@ FindGrdInx endp
 
 GetSfrPtr proc uses esi,hWin:HWND
 
-	mov		esi,offset SfrData
+	mov		esi,offset addin.SfrData
 	invoke SendDlgItemMessage,hWin,IDC_CBOSFR,CB_GETCURSEL,0,0
 	invoke SendDlgItemMessage,hWin,IDC_CBOSFR,CB_GETITEMDATA,eax,0
 	mov		ebx,eax
@@ -590,9 +520,36 @@ WritePort proc lpSfr:DWORD,nValue:DWORD
 
 WritePort endp
 
-ReadXRam proc nAddr:DWORD
+WaitHalfCycle proc
+
+	push	eax
+	push	edx
+	mov		eax,CpuCycles
+	add		dword ptr PerformanceCount,eax
+	adc		dword ptr PerformanceCount+4,0
+	.while TRUE
+		rdtsc
+		sub		eax,dword ptr PerformanceCount
+		sbb		edx,dword ptr PerformanceCount+4
+		.break .if !CARRY?
+	.endw
+	pop		edx
+	pop		eax
+	ret
+
+WaitHalfCycle endp
+
+
+
+ReadXRam proc uses ebx,nAddr:DWORD
 	LOCAL	nValue:DWORD
 
+	movzx	ebx,addin.Sfr[SFR_P3]
+	mov		eax,ebx
+	and		eax,7Fh
+	mov		addin.Sfr[SFR_P3],al
+	;Set RD low
+	invoke WritePort,addr addin.Sfr[SFR_P3],eax
 	invoke SendAddinMessage,addin.hWnd,AM_XRAMREAD,nAddr,addr nValue
 	.if !eax
 		;No memory mapped input at this address, read XRam
@@ -601,19 +558,35 @@ ReadXRam proc nAddr:DWORD
 	.else
 		mov		eax,nValue
 	.endif
+	push	eax
+	invoke WaitHalfCycle
+	mov		addin.Sfr[SFR_P3],bl
+	;Set RD high
+	invoke WritePort,addr addin.Sfr[SFR_P3],ebx
+	pop		eax
 	ret
 
 ReadXRam endp
 
-WriteXRam proc nAddr:DWORD,nValue:DWORD
+WriteXRam proc uses ebx,nAddr:DWORD,nValue:DWORD
 
+	movzx	ebx,addin.Sfr[SFR_P3]
+	mov		eax,ebx
+	and		eax,0BFh
+	mov		addin.Sfr[SFR_P3],al
+	;Set WR low
+	invoke WritePort,addr addin.Sfr[SFR_P3],eax
 	invoke SendAddinMessage,addin.hWnd,AM_XRAMWRITE,nAddr,nValue
 	.if !eax
-		;No memory mapped outputs at this address, update XRam
+		;No memory mapped output at this address, update XRam
 		mov		edx,nAddr
 		mov		eax,nValue
 		mov		addin.XRam[edx],al
 	.endif
+	invoke WaitHalfCycle
+	mov		addin.Sfr[SFR_P3],bl
+	;Set WR high
+	invoke WritePort,addr addin.Sfr[SFR_P3],ebx
 	ret
 
 WriteXRam endp
@@ -688,7 +661,7 @@ INC_A:
 	invoke SetParity
 	ret
 
-INC_$dad:
+INC_dir:
 	.if edx<80h
 		inc		addin.Ram[edx]
 	.else
@@ -842,7 +815,7 @@ DEC_A:
 	invoke SetParity
 	ret
 
-DEC_$dad:
+DEC_dir:
 	.if edx<80h
 		dec		addin.Ram[edx]
 	.else
@@ -962,7 +935,7 @@ ADD_A_imm:
 	invoke SetFlags
 	ret
 
-ADD_A_$dad:
+ADD_A_dir:
 	.if edx<80h
 		movzx	eax,addin.Ram[edx]
 	.else
@@ -1100,7 +1073,7 @@ ADDC_A_imm:
 	invoke SetFlags
 	ret
 
-ADDC_A_$dad:
+ADDC_A_dir:
 	movzx	eax,addin.Sfr[SFR_PSW]
 	rcl		al,1
 	.if edx<80h
@@ -1225,13 +1198,13 @@ JC_$cad:
 	.endif
 	ret
 
-ORL_$dad_A:
+ORL_dir_A:
 	movzx	eax,addin.Sfr[SFR_ACC]
 	or		addin.Ram[edx],al
 	invoke SetFlags
 	ret
 
-ORL_$dad_imm:
+ORL_dir_imm:
 	movzx	eax,dh
 	movzx	edx,dl
 	or		addin.Ram[edx],al
@@ -1243,7 +1216,7 @@ ORL_A_imm:
 	invoke SetFlags
 	ret
 
-ORL_A_$dad:
+ORL_A_dir:
 	.if edx<80h
 		movzx	eax,addin.Ram[edx]
 	.else
@@ -1346,13 +1319,13 @@ JNC_$cad:
 	.endif
 	ret
 
-ANL_$dad_A:
+ANL_dir_A:
 	movzx	eax,addin.Sfr[SFR_ACC]
 	and		addin.Ram[edx],al
 	invoke SetFlags
 	ret
 
-ANL_$dad_imm:
+ANL_dir_imm:
 	movzx	eax,dh
 	movzx	edx,dl
 	and		addin.Ram[edx],al
@@ -1364,7 +1337,7 @@ ANL_A_imm:
 	invoke SetFlags
 	ret
 
-ANL_A_$dad:
+ANL_A_dir:
 	.if edx<80h
 		movzx	eax,addin.Ram[edx]
 	.else
@@ -1467,13 +1440,13 @@ JZ_$cad:
 	.endif
 	ret
 
-XRL_$dad_A:
+XRL_dir_A:
 	movzx	eax,addin.Sfr[SFR_ACC]
 	xor		addin.Ram[edx],al
 	invoke SetFlags
 	ret
 
-XRL_$dad_imm:
+XRL_dir_imm:
 	movzx	eax,dh
 	movzx	edx,dl
 	xor		addin.Ram[edx],al
@@ -1485,7 +1458,7 @@ XRL_A_imm:
 	invoke SetFlags
 	ret
 
-XRL_A_$dad:
+XRL_A_dir:
 	.if edx<80h
 		movzx	eax,addin.Ram[edx]
 	.else
@@ -1624,7 +1597,7 @@ MOV_A_imm:
 	mov		addin.Sfr[SFR_ACC],dl
 	ret
 
-MOV_$dad_imm:
+MOV_dir_imm:
 	movzx	eax,dh
 	movzx	edx,dl
 	.if edx<80h
@@ -1756,7 +1729,7 @@ DIV_AB:
 	and		addin.Sfr[SFR_PSW],7Fh
 	ret
 
-MOV_$dad_$dad:
+MOV_dir_dir:
 	movzx	ecx,dh
 	.if ecx<80h
 		movzx	eax,addin.Ram[ecx]
@@ -1780,7 +1753,7 @@ MOV_$dad_$dad:
 	.endif
 	ret
 
-MOV_$dad_@R0:
+MOV_dir_@R0:
 	mov		ecx,addin.Bank
 	lea		ecx,[ecx*8+0]
 	movzx	ecx,addin.Ram[ecx]
@@ -1801,7 +1774,7 @@ MOV_$dad_@R0:
 	.endif
 	ret
 
-MOV_$dad_@R1:
+MOV_dir_@R1:
 	mov		ecx,addin.Bank
 	lea		ecx,[ecx*8+1]
 	movzx	ecx,addin.Ram[ecx]
@@ -1822,7 +1795,7 @@ MOV_$dad_@R1:
 	.endif
 	ret
 
-MOV_$dad_R0:
+MOV_dir_R0:
 	mov		ecx,addin.Bank
 	lea		ecx,[ecx*8+0]
 	movzx	eax,addin.Ram[ecx]
@@ -1842,7 +1815,7 @@ MOV_$dad_R0:
 	.endif
 	ret
 
-MOV_$dad_R1:
+MOV_dir_R1:
 	mov		ecx,addin.Bank
 	lea		ecx,[ecx*8+1]
 	movzx	eax,addin.Ram[ecx]
@@ -1862,7 +1835,7 @@ MOV_$dad_R1:
 	.endif
 	ret
 
-MOV_$dad_R2:
+MOV_dir_R2:
 	mov		ecx,addin.Bank
 	lea		ecx,[ecx*8+2]
 	movzx	eax,addin.Ram[ecx]
@@ -1882,7 +1855,7 @@ MOV_$dad_R2:
 	.endif
 	ret
 
-MOV_$dad_R3:
+MOV_dir_R3:
 	mov		ecx,addin.Bank
 	lea		ecx,[ecx*8+3]
 	movzx	eax,addin.Ram[ecx]
@@ -1902,7 +1875,7 @@ MOV_$dad_R3:
 	.endif
 	ret
 
-MOV_$dad_R4:
+MOV_dir_R4:
 	mov		ecx,addin.Bank
 	lea		ecx,[ecx*8+4]
 	movzx	eax,addin.Ram[ecx]
@@ -1922,7 +1895,7 @@ MOV_$dad_R4:
 	.endif
 	ret
 
-MOV_$dad_R5:
+MOV_dir_R5:
 	mov		ecx,addin.Bank
 	lea		ecx,[ecx*8+5]
 	movzx	eax,addin.Ram[ecx]
@@ -1942,7 +1915,7 @@ MOV_$dad_R5:
 	.endif
 	ret
 
-MOV_$dad_R6:
+MOV_dir_R6:
 	mov		ecx,addin.Bank
 	lea		ecx,[ecx*8+6]
 	movzx	eax,addin.Ram[ecx]
@@ -1962,7 +1935,7 @@ MOV_$dad_R6:
 	.endif
 	ret
 
-MOV_$dad_R7:
+MOV_dir_R7:
 	mov		ecx,addin.Bank
 	lea		ecx,[ecx*8+7]
 	movzx	eax,addin.Ram[ecx]
@@ -2056,7 +2029,7 @@ SUBB_A_imm:
 	invoke SetFlags
 	ret
 
-SUBB_A_$dad:
+SUBB_A_dir:
 	movzx	eax,addin.Sfr[SFR_PSW]
 	rcl		al,1
 	.if edx<80h
@@ -2242,7 +2215,7 @@ reserved:
 	;#########
 	ret
 
-MOV_@R0_$dad:
+MOV_@R0_dir:
 	mov		ecx,addin.Bank
 	lea		ecx,[ecx*8+0]
 	movzx	ecx,addin.Ram[ecx]
@@ -2254,7 +2227,7 @@ MOV_@R0_$dad:
 	mov		addin.Ram[ecx],al
 	ret
 
-MOV_@R1_$dad:
+MOV_@R1_dir:
 	mov		ecx,addin.Bank
 	lea		ecx,[ecx*8+1]
 	movzx	ecx,addin.Ram[ecx]
@@ -2266,7 +2239,7 @@ MOV_@R1_$dad:
 	mov		addin.Ram[ecx],al
 	ret
 
-MOV_R0_$dad:
+MOV_R0_dir:
 	mov		ecx,addin.Bank
 	lea		ecx,[ecx*8+0]
 	.if edx<80h
@@ -2277,7 +2250,7 @@ MOV_R0_$dad:
 	mov		addin.Ram[ecx],al
 	ret
 
-MOV_R1_$dad:
+MOV_R1_dir:
 	mov		ecx,addin.Bank
 	lea		ecx,[ecx*8+1]
 	.if edx<80h
@@ -2288,7 +2261,7 @@ MOV_R1_$dad:
 	mov		addin.Ram[ecx],al
 	ret
 
-MOV_R2_$dad:
+MOV_R2_dir:
 	mov		ecx,addin.Bank
 	lea		ecx,[ecx*8+2]
 	.if edx<80h
@@ -2299,7 +2272,7 @@ MOV_R2_$dad:
 	mov		addin.Ram[ecx],al
 	ret
 
-MOV_R3_$dad:
+MOV_R3_dir:
 	mov		ecx,addin.Bank
 	lea		ecx,[ecx*8+3]
 	.if edx<80h
@@ -2310,7 +2283,7 @@ MOV_R3_$dad:
 	mov		addin.Ram[ecx],al
 	ret
 
-MOV_R4_$dad:
+MOV_R4_dir:
 	mov		ecx,addin.Bank
 	lea		ecx,[ecx*8+4]
 	.if edx<80h
@@ -2321,7 +2294,7 @@ MOV_R4_$dad:
 	mov		addin.Ram[ecx],al
 	ret
 
-MOV_R5_$dad:
+MOV_R5_dir:
 	mov		ecx,addin.Bank
 	lea		ecx,[ecx*8+5]
 	.if edx<80h
@@ -2332,7 +2305,7 @@ MOV_R5_$dad:
 	mov		addin.Ram[ecx],al
 	ret
 
-MOV_R6_$dad:
+MOV_R6_dir:
 	mov		ecx,addin.Bank
 	lea		ecx,[ecx*8+6]
 	.if edx<80h
@@ -2343,7 +2316,7 @@ MOV_R6_$dad:
 	mov		addin.Ram[ecx],al
 	ret
 
-MOV_R7_$dad:
+MOV_R7_dir:
 	mov		ecx,addin.Bank
 	lea		ecx,[ecx*8+7]
 	.if edx<80h
@@ -2404,7 +2377,7 @@ CJNE_A_imm_$cad:
 	invoke SetFlags
 	ret
 
-CJNE_A_$dad_$cad:
+CJNE_A_dir_$cad:
 	movsx	ecx,dh
 	movzx	edx,dl
 	.if edx<80h
@@ -2553,7 +2526,7 @@ CJNE_R7_imm_$cad:
 	ret
 
 ;------------------------------------------------------------------------------
-PUSH_$dad:
+PUSH_dir:
 	inc		addin.Sfr[SFR_SP]
 	movzx	ecx,addin.Sfr[SFR_SP]
 	.if edx<80h
@@ -2603,7 +2576,7 @@ SWAP_A:
 	mov		addin.Sfr[SFR_ACC],al
 	ret
 
-XCH_A_$dad:
+XCH_A_dir:
 	movzx	eax,addin.Sfr[SFR_ACC]
 	.if edx<80h
 		xchg	al,addin.Ram[edx]
@@ -2707,7 +2680,7 @@ XCH_A_R7:
 	ret
 
 ;------------------------------------------------------------------------------
-POP_$dad:
+POP_dir:
 	movzx	ecx,addin.Sfr[SFR_SP]
 	movzx	eax,addin.Ram[ecx]
 	dec		addin.Sfr[SFR_SP]
@@ -2763,7 +2736,7 @@ DA_A:
 	mov		addin.Sfr[SFR_ACC],al
 	ret
 
-DJNZ_$dad_$cad:
+DJNZ_dir_$cad:
 	movsx	ecx,dh
 	movzx	edx,dl
 	.if edx<80h
@@ -2918,7 +2891,7 @@ CLR_A:
 	mov		addin.Sfr[SFR_ACC],0
 	ret
 
-MOV_A_$dad:
+MOV_A_dir:
 	.if edx<80h
 		movzx	eax,addin.Ram[edx]
 	.else
@@ -3034,7 +3007,7 @@ CPL_A:
 	xor		addin.Sfr[SFR_ACC],0FFh
 	ret
 
-MOV_$dad_A:
+MOV_dir_A:
 	movzx	eax,addin.Sfr[SFR_ACC]
 	.if edx<80h
 		mov		addin.Ram[edx],al
@@ -3168,45 +3141,21 @@ CoreThread proc lParam:DWORD
 			mov		eax,hBmpGreenLed
 			call	SetStatusLed
 		.endif
-;		mov		eax,InstCycles
-;		mov		edx,CpuCycles
-;		mul		edx
-;		add		dword ptr PerformanceCount,eax
-;		adc		dword ptr PerformanceCount+4,edx
-;		.while TRUE
-;			rdtsc
-;			sub		eax,dword ptr PerformanceCount
-;			sbb		edx,dword ptr PerformanceCount+4
-;			.break .if !CARRY?
-;		.endw
 	.endw
 	invoke Reset
 	xor		eax,eax
 	ret
 
-WaitHalfCycle:
+Fetch:
 	push	eax
 	push	edx
 	invoke SendAddinMessage,addin.hWnd,AM_ALECHANGED,0,0
-	mov		eax,CpuCycles
-	add		dword ptr PerformanceCount,eax
-	adc		dword ptr PerformanceCount+4,0
-	.while TRUE
-		rdtsc
-		sub		eax,dword ptr PerformanceCount
-		sbb		edx,dword ptr PerformanceCount+4
-		.break .if !CARRY?
-	.endw
 	pop		edx
 	pop		eax
-	retn
-
-Fetch:
-	call	WaitHalfCycle
+	invoke WaitHalfCycle
 	movzx	ecx,byte ptr [esi+ebx]
 	inc		ebx
 	mov		addin.PC,ebx
-	inc		TotalCycles
 	retn
 
 Execute:
@@ -3215,20 +3164,49 @@ Execute:
 	call	Fetch
 	mov		eax,ecx
 	movzx	ecx,Bytes[ecx]
+	movzx	edi,Cycles[ecx]
+	add		TotalCycles,edi
+	lea		edi,[edi*2-1]
 	.if ecx==1
+		.while edi>1
+			push	eax
+			push	edx
+			invoke SendAddinMessage,addin.hWnd,AM_ALECHANGED,0,0
+			pop		edx
+			pop		eax
+			invoke WaitHalfCycle
+			dec		edi
+		.endw
 		call	JmpTab[eax*4]
 	.elseif ecx==2
 		call	Fetch
 		mov		edx,ecx
+		.while edi>1
+			push	eax
+			push	edx
+			invoke SendAddinMessage,addin.hWnd,AM_ALECHANGED,0,0
+			pop		edx
+			pop		eax
+			invoke WaitHalfCycle
+			dec		edi
+		.endw
 		call	JmpTab[eax*4]
 	.elseif ecx==3
 		call	Fetch
 		mov		edx,ecx
 		call	Fetch
 		mov		dh,cl
+		.while edi>1
+			push	eax
+			push	edx
+			invoke SendAddinMessage,addin.hWnd,AM_ALECHANGED,0,0
+			pop		edx
+			pop		eax
+			invoke WaitHalfCycle
+			dec		edi
+		.endw
 		call	JmpTab[eax*4]
 	.endif
-	call	WaitHalfCycle
 	mov		PCDONE,ebx
 	invoke FindMcuAddr,ebx
 	.if eax
@@ -3236,6 +3214,11 @@ Execute:
 			or		State,SIM52_BREAKPOINT
 		.endif
 	.endif
+	.while edi
+		invoke SendAddinMessage,addin.hWnd,AM_ALECHANGED,0,0
+		invoke WaitHalfCycle
+		dec		edi
+	.endw
 	retn
 
 SetStatusLed:
