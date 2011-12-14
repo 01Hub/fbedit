@@ -158,6 +158,7 @@ ScreenChar proc nChar:DWORD
 				mov		nLine,LINES-1
 			.endif
 		.endif
+		jmp		Ex
 	.endif
 	ret
   Ex:

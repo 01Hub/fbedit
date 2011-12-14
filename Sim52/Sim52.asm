@@ -39,7 +39,7 @@ EnableDisable proc uses ebx
 	push	IDM_DEBUG_RUN_TO_CURSOR
 	push	IDM_DEBUG_TOGGLE
 	push	IDM_DEBUG_CLEAR
-	invoke SendMessage,hGrd,GM_GETROWCOUNT,0,0
+	invoke SendMessage,addin.hGrd,GM_GETROWCOUNT,0,0
 	mov		ebx,eax
 	.if eax
 		mov		ebx,TRUE
@@ -122,7 +122,7 @@ TabStatusProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		eax,1
 				shl		eax,cl
 				xor		addin.Sfr[SFR_PSW],al
-				mov		Refresh,1
+				mov		addin.Refresh,1
 			.elseif eax>=IDC_IMGP0_0 && eax<=IDC_IMGP0_7
 				;P0
 				sub		eax,IDC_IMGP0_0
@@ -130,7 +130,7 @@ TabStatusProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		eax,1
 				shl		eax,cl
 				xor		addin.Sfr[SFR_P0],al
-				mov		Refresh,1
+				mov		addin.Refresh,1
 			.elseif eax>=IDC_IMGP1_0 && eax<=IDC_IMGP1_7
 				;P1
 				sub		eax,IDC_IMGP1_0
@@ -138,7 +138,7 @@ TabStatusProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		eax,1
 				shl		eax,cl
 				xor		addin.Sfr[SFR_P1],al
-				mov		Refresh,1
+				mov		addin.Refresh,1
 			.elseif eax>=IDC_IMGP2_0 && eax<=IDC_IMGP2_7
 				;P2
 				sub		eax,IDC_IMGP2_0
@@ -146,7 +146,7 @@ TabStatusProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		eax,1
 				shl		eax,cl
 				xor		addin.Sfr[SFR_P2],al
-				mov		Refresh,1
+				mov		addin.Refresh,1
 			.elseif eax>=IDC_IMGP3_0 && eax<=IDC_IMGP3_7
 				;P3
 				sub		eax,IDC_IMGP3_0
@@ -154,7 +154,7 @@ TabStatusProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		eax,1
 				shl		eax,cl
 				xor		addin.Sfr[SFR_P3],al
-				mov		Refresh,1
+				mov		addin.Refresh,1
 			.elseif eax==IDC_BTNRESET
 				mov		TotalCycles,0
 				invoke SetDlgItemInt,hWin,IDC_STCCYCLES,TotalCycles,FALSE
@@ -166,36 +166,41 @@ TabStatusProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke lstrlen,addr buffer
 			mov		edx,4
 			sub		edx,eax
-			.if ebx==IDC_EDTPC || ebx==IDC_EDTDPTR
+			.if ebx==IDC_EDTPC || ebx==IDC_EDTDPTR || ebx==IDC_EDTDPTR1
 				invoke lstrcpy,addr buffer[edx+16],addr buffer
 				invoke HexToBin,addr buffer[16]
 				.if ebx==IDC_EDTPC
 					mov		addin.PC,eax
 				.elseif ebx==IDC_EDTDPTR
 					mov		word ptr addin.Sfr[SFR_DPL],ax
-					mov		Refresh,1
 				.elseif ebx==IDC_EDTDPTR1
 					mov		word ptr addin.Sfr[SFR_DP1L],ax
-					mov		Refresh,1
 				.endif
+				invoke SetDlgItemText,hWin,ebx,addr buffer[16]
+				invoke SendDlgItemMessage,addin.hTabDlg[8],IDC_UDCHEXSFR,HEM_SETMEM,128,addr addin.Sfr[128]
+				invoke UpdateSelSfr,addin.hTabDlg[8]
 			.else
 				invoke lstrcpy,addr buffer[edx+16],addr buffer
 				invoke HexToBin,addr buffer[16]
 				.if ebx==IDC_EDTACC
 					mov		addin.Sfr[SFR_ACC],al
-					mov		Refresh,1
+					invoke SendDlgItemMessage,addin.hTabDlg[8],IDC_UDCHEXSFR,HEM_SETMEM,128,addr addin.Sfr[128]
+					invoke UpdateSelSfr,addin.hTabDlg[8]
 				.elseif ebx==IDC_EDTB
 					mov		addin.Sfr[SFR_B],al
-					mov		Refresh,1
+					invoke SendDlgItemMessage,addin.hTabDlg[8],IDC_UDCHEXSFR,HEM_SETMEM,128,addr addin.Sfr[128]
+					invoke UpdateSelSfr,addin.hTabDlg[8]
 				.elseif ebx==IDC_EDTSP
 					mov		addin.Sfr[SFR_SP],al
-					mov		Refresh,1
+					invoke SendDlgItemMessage,addin.hTabDlg[8],IDC_UDCHEXSFR,HEM_SETMEM,128,addr addin.Sfr[128]
+					invoke UpdateSelSfr,addin.hTabDlg[8]
 				.elseif ebx>=IDC_EDTR0 && ebx<=IDC_EDTR7
 					sub		ebx,IDC_EDTR0
 					mov		edx,ViewBank
 					mov		addin.Ram[ebx+edx*8],al
-					mov		Refresh,1
+					invoke SendDlgItemMessage,addin.hTabDlg[0],IDC_UDCHEXRAM,HEM_SETMEM,256,addr addin.Ram
 				.endif
+				invoke SetDlgItemText,hWin,ebx,addr buffer[18]
 			.endif
 		.endif
 	.elseif eax==WM_NOTIFY
@@ -209,7 +214,7 @@ TabStatusProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			mov		ViewBank,eax
 			invoke wsprintf,addr buffer,addr szFmtBank,eax
 			invoke SetDlgItemText,hWin,IDC_STCBANK,addr buffer
-			mov		Refresh,1
+			mov		addin.Refresh,1
 		.endif
 	.else
 		mov		eax,FALSE
@@ -231,7 +236,7 @@ TabRamProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.if [esi].HESELCHANGE.fchanged
 				invoke SendDlgItemMessage,hWin,IDC_UDCHEXRAM,HEM_GETMEM,256,addr addin.Ram
 				invoke SendDlgItemMessage,hWin,IDC_UDCHEXRAM,EM_SETMODIFY,FALSE,0
-				mov		Refresh,1
+				mov		addin.Refresh,1
 			.endif
 		.endif
 	.else
@@ -261,7 +266,7 @@ TabBitProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		eax,1
 				shl		eax,cl
 				xor		addin.Ram[ebx+20h],al
-				mov		Refresh,1
+				mov		addin.Refresh,1
 			.endif
 		.endif
 	.else
@@ -290,7 +295,7 @@ TabSfrProc proc uses ebx esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		movzx	eax,dx
 		shr		edx,16
 		.if edx==CBN_SELCHANGE
-			mov		Refresh,1
+			mov		addin.Refresh,1
 		.elseif edx==BN_CLICKED
 			.if eax>=IDC_IMGSFRBIT0 && eax<=IDC_IMGSFRBIT7
 				push	eax
@@ -302,7 +307,7 @@ TabSfrProc proc uses ebx esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		eax,1
 				shl		eax,cl
 				xor		addin.Sfr[ebx],al
-				mov		Refresh,1
+				mov		addin.Refresh,1
 			.endif
 		.endif
 	.elseif eax==WM_NOTIFY
@@ -312,7 +317,7 @@ TabSfrProc proc uses ebx esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.if [esi].HESELCHANGE.fchanged
 				invoke SendDlgItemMessage,hWin,IDC_UDCHEXSFR,HEM_GETMEM,128,addr addin.Sfr[128]
 				invoke SendDlgItemMessage,hWin,IDC_UDCHEXSFR,EM_SETMODIFY,FALSE,0
-				mov		Refresh,1
+				mov		addin.Refresh,1
 			.endif
 		.endif
 	.else
@@ -453,7 +458,7 @@ Find proc uses ebx esi edi,lpszText:DWORD,nLenText:DWORD,uFlag:DWORD
 	LOCAL	rowbuffer[256]:BYTE
 	LOCAL	nLen:DWORD
 
-	invoke SendMessage,hGrd,GM_GETROWCOUNT,0,0
+	invoke SendMessage,addin.hGrd,GM_GETROWCOUNT,0,0
 	mov		nRows,eax
 	mov		ebx,nFindRow
 	mov		edi,nFindPos
@@ -463,11 +468,11 @@ Find proc uses ebx esi edi,lpszText:DWORD,nLenText:DWORD,uFlag:DWORD
 			.while sdword ptr ebx>=0
 				mov		ecx,ebx
 				shl		ecx,16
-				invoke SendMessage,hGrd,GM_GETCELLDATA,ecx,addr rowdata
+				invoke SendMessage,addin.hGrd,GM_GETCELLDATA,ecx,addr rowdata
 				.if !rowdata
 					mov		ecx,ebx
 					shl		ecx,16
-					invoke SendMessage,hGrd,GM_SETCURSEL,0,ebx
+					invoke SendMessage,addin.hGrd,GM_SETCURSEL,0,ebx
 					mov		nFindRow,ebx
 					.break
 				.endif
@@ -478,7 +483,7 @@ Find proc uses ebx esi edi,lpszText:DWORD,nLenText:DWORD,uFlag:DWORD
 				mov		ecx,ebx
 				shl		ecx,16
 				or		ecx,3
-				invoke SendMessage,hGrd,GM_GETCELLDATA,ecx,addr rowbuffer
+				invoke SendMessage,addin.hGrd,GM_GETCELLDATA,ecx,addr rowbuffer
 				dec		edi
 				.if rowbuffer
 					invoke lstrlen,addr rowbuffer
@@ -508,7 +513,7 @@ Find proc uses ebx esi edi,lpszText:DWORD,nLenText:DWORD,uFlag:DWORD
 							.endif
 							mov		ecx,ebx
 							shl		ecx,16
-							invoke SendMessage,hGrd,GM_SETCURSEL,3,ebx
+							invoke SendMessage,addin.hGrd,GM_SETCURSEL,3,ebx
 							mov		nFindRow,ebx
 							mov		nFindPos,edi
 							jmp		Ex
@@ -525,7 +530,7 @@ Find proc uses ebx esi edi,lpszText:DWORD,nLenText:DWORD,uFlag:DWORD
 				mov		ecx,ebx
 				shl		ecx,16
 				or		ecx,4
-				invoke SendMessage,hGrd,GM_GETCELLDATA,ecx,addr rowbuffer
+				invoke SendMessage,addin.hGrd,GM_GETCELLDATA,ecx,addr rowbuffer
 				dec		edi
 				.if rowbuffer
 					invoke lstrlen,addr rowbuffer
@@ -555,7 +560,7 @@ Find proc uses ebx esi edi,lpszText:DWORD,nLenText:DWORD,uFlag:DWORD
 							.endif
 							mov		ecx,ebx
 							shl		ecx,16
-							invoke SendMessage,hGrd,GM_SETCURSEL,4,ebx
+							invoke SendMessage,addin.hGrd,GM_SETCURSEL,4,ebx
 							mov		nFindRow,ebx
 							mov		nFindPos,edi
 							jmp		Ex
@@ -574,11 +579,11 @@ Find proc uses ebx esi edi,lpszText:DWORD,nLenText:DWORD,uFlag:DWORD
 			.while ebx<nRows
 				mov		ecx,ebx
 				shl		ecx,16
-				invoke SendMessage,hGrd,GM_GETCELLDATA,ecx,addr rowdata
+				invoke SendMessage,addin.hGrd,GM_GETCELLDATA,ecx,addr rowdata
 				.if !rowdata
 					mov		ecx,ebx
 					shl		ecx,16
-					invoke SendMessage,hGrd,GM_SETCURSEL,0,ebx
+					invoke SendMessage,addin.hGrd,GM_SETCURSEL,0,ebx
 					mov		nFindRow,ebx
 					.break
 				.endif
@@ -589,7 +594,7 @@ Find proc uses ebx esi edi,lpszText:DWORD,nLenText:DWORD,uFlag:DWORD
 				mov		ecx,ebx
 				shl		ecx,16
 				or		ecx,3
-				invoke SendMessage,hGrd,GM_GETCELLDATA,ecx,addr rowbuffer
+				invoke SendMessage,addin.hGrd,GM_GETCELLDATA,ecx,addr rowbuffer
 				inc		edi
 				.if rowbuffer
 					invoke lstrlen,addr rowbuffer
@@ -619,7 +624,7 @@ Find proc uses ebx esi edi,lpszText:DWORD,nLenText:DWORD,uFlag:DWORD
 							.endif
 							mov		ecx,ebx
 							shl		ecx,16
-							invoke SendMessage,hGrd,GM_SETCURSEL,3,ebx
+							invoke SendMessage,addin.hGrd,GM_SETCURSEL,3,ebx
 							mov		nFindRow,ebx
 							mov		nFindPos,edi
 							jmp		Ex
@@ -636,7 +641,7 @@ Find proc uses ebx esi edi,lpszText:DWORD,nLenText:DWORD,uFlag:DWORD
 				mov		ecx,ebx
 				shl		ecx,16
 				or		ecx,4
-				invoke SendMessage,hGrd,GM_GETCELLDATA,ecx,addr rowbuffer
+				invoke SendMessage,addin.hGrd,GM_GETCELLDATA,ecx,addr rowbuffer
 				inc		edi
 				.if rowbuffer
 					invoke lstrlen,addr rowbuffer
@@ -666,7 +671,7 @@ Find proc uses ebx esi edi,lpszText:DWORD,nLenText:DWORD,uFlag:DWORD
 							.endif
 							mov		ecx,ebx
 							shl		ecx,16
-							invoke SendMessage,hGrd,GM_SETCURSEL,4,ebx
+							invoke SendMessage,addin.hGrd,GM_SETCURSEL,4,ebx
 							mov		nFindRow,ebx
 							mov		nFindPos,edi
 							jmp		Ex
@@ -739,9 +744,11 @@ FindProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		eax,wParam
 		movzx	eax,ax
 		.if eax==WA_CLICKACTIVE || eax==WA_ACTIVE
-			invoke SendMessage,hGrd,GM_GETCURROW,0,0
+			invoke SendMessage,addin.hGrd,GM_GETCURROW,0,0
 			mov		nFindRow,eax
 			mov		nFindPos,-1
+			mov		eax,hWin
+			mov		addin.hActive,eax
 		.endif
 	.elseif eax==WM_CLOSE
 		invoke ShowWindow,hWin,SW_HIDE
@@ -780,6 +787,11 @@ ClockProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke SetTiming
 				invoke EndDialog,hWin,0
 			.endif
+		.endif
+	.elseif eax==WM_ACTIVATE
+		.if wParam!=WA_INACTIVE
+			mov		eax,hWin
+			mov		addin.hActive,eax
 		.endif
 	.elseif eax==WM_CLOSE
 		invoke EndDialog,hWin,0
@@ -865,11 +877,11 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke LoadAccelerators,addin.hInstance,IDR_ACCEL1
 		mov		addin.hAccel,eax
 		invoke GetDlgItem,hWin,IDC_GRDCODE
-		mov		hGrd,eax
-		invoke SendMessage,hGrd,WM_SETFONT,addin.hLstFont,0
+		mov		addin.hGrd,eax
+		invoke SendMessage,addin.hGrd,WM_SETFONT,addin.hLstFont,0
 		invoke ImageList_Create,16,16,ILC_COLOR24,1,0
-		mov		hIml,eax
-		invoke ImageList_Add,hIml,addin.hBmpRedLed,NULL
+		mov		addin.hIml,eax
+		invoke ImageList_Add,addin.hIml,addin.hBmpRedLed,NULL
 		;Add Break Point column
 		mov		col.colwt,16
 		mov		col.lpszhdrtext,NULL;offset szAddress
@@ -878,10 +890,10 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		col.ctype,TYPE_IMAGE
 		mov		col.ctextmax,0
 		mov		col.lpszformat,0
-		mov		eax,hIml
+		mov		eax,addin.hIml
 		mov		col.himl,eax
 		mov		col.hdrflag,0
-		invoke SendMessage,hGrd,GM_ADDCOL,0,addr col
+		invoke SendMessage,addin.hGrd,GM_ADDCOL,0,addr col
 		;Add Bytes column
 		mov		col.colwt,16
 		mov		col.lpszhdrtext,offset szBytes
@@ -892,7 +904,7 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		col.lpszformat,0
 		mov		col.himl,0
 		mov		col.hdrflag,0
-		invoke SendMessage,hGrd,GM_ADDCOL,0,addr col
+		invoke SendMessage,addin.hGrd,GM_ADDCOL,0,addr col
 		;Add Cycles column
 		mov		col.colwt,16
 		mov		col.lpszhdrtext,offset szCycles
@@ -903,7 +915,7 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		col.lpszformat,0
 		mov		col.himl,0
 		mov		col.hdrflag,0
-		invoke SendMessage,hGrd,GM_ADDCOL,0,addr col
+		invoke SendMessage,addin.hGrd,GM_ADDCOL,0,addr col
 		;Add Label column
 		mov		col.colwt,100
 		mov		col.lpszhdrtext,offset szLabel
@@ -914,7 +926,7 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		col.lpszformat,0
 		mov		col.himl,0
 		mov		col.hdrflag,0
-		invoke SendMessage,hGrd,GM_ADDCOL,0,addr col
+		invoke SendMessage,addin.hGrd,GM_ADDCOL,0,addr col
 		;Add Code column
 		mov		col.colwt,212
 		mov		col.lpszhdrtext,offset szCode
@@ -925,10 +937,12 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		col.lpszformat,0
 		mov		col.himl,0
 		mov		col.hdrflag,0
-		invoke SendMessage,hGrd,GM_ADDCOL,0,addr col
+		invoke SendMessage,addin.hGrd,GM_ADDCOL,0,addr col
 
 		invoke CreateDialogParam,addin.hInstance,IDD_DLGFIND,hWin,addr FindProc,0
 		invoke CreateDialogParam,addin.hInstance,IDD_DLGTERMINAL,hWin,addr TerminalProc,0
+		mov		eax,offset SendAddinMessage
+		mov		addin.lpSendAddinMessage,eax
 		invoke LoadAddins
 		invoke Reset
 		;Setup whole CharTab and CaseTab
@@ -950,7 +964,7 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.endw
 		invoke SendDlgItemMessage,addin.hTabDlg[16],IDC_UDCHEXCODE,HEM_SETMEM,65536,addr addin.Code
 	.elseif eax==WM_TIMER
-		.if Refresh
+		.if addin.Refresh
 			invoke UpdateStatus
 			invoke UpdatePorts
 			invoke UpdateRegisters
@@ -960,7 +974,7 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke SendDlgItemMessage,addin.hTabDlg[12],IDC_UDCHEXXRAM,HEM_SETMEM,65536,addr addin.XRam
 			invoke SetDlgItemInt,hWin,IDC_STCCYCLES,TotalCycles,FALSE
 			invoke UpdateSelSfr,addin.hTabDlg[8]
-			dec		Refresh
+			dec		addin.Refresh
 		.endif
 	.elseif eax==WM_NOTIFY
 		mov		eax,wParam
@@ -982,7 +996,7 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.elseif eax==IDC_GRDCODE
 			mov		eax,[ebx].NMHDR.code
 			.if eax==GN_IMAGECLICK
-				invoke SendMessage,hWin,WM_COMMAND,IDM_DEBUG_TOGGLE,hGrd
+				invoke SendMessage,hWin,WM_COMMAND,IDM_DEBUG_TOGGLE,addin.hGrd
 			.elseif eax==GN_BEFOREEDIT && [ebx].GRIDNOTIFY.col
 				mov		[ebx].GRIDNOTIFY.fcancel,TRUE
 			.endif
@@ -1029,7 +1043,7 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					invoke SetWindowText,hWin,addr buffer1
 					invoke ParseList,addr buffer
 					invoke EnableDisable
-					invoke SetFocus,hGrd
+					invoke SetFocus,addin.hGrd
 				.endif
 			.elseif eax==IDM_SEARCH_FIND
 				invoke ShowWindow,hFind,SW_SHOW
@@ -1080,7 +1094,7 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		dword ptr PerformanceCount+4,edx
 				mov		State,STATE_THREAD or STATE_RUN or STATE_PAUSE or STATE_STEP_OVER
 			.elseif eax==IDM_DEBUG_RUN_TO_CURSOR
-				invoke SendMessage,hGrd,GM_GETCURROW,0,0
+				invoke SendMessage,addin.hGrd,GM_GETCURROW,0,0
 				invoke FindGrdInx,eax
 				movzx	eax,[eax].MCUADDR.mcuaddr
 				mov		CursorAddr,eax
@@ -1093,7 +1107,7 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		dword ptr PerformanceCount+4,edx
 				mov		State,STATE_THREAD or STATE_RUN or STATE_PAUSE or STATE_RUN_TO_CURSOR
 			.elseif eax==IDM_DEBUG_TOGGLE
-				invoke SendMessage,hGrd,GM_GETCURROW,0,0
+				invoke SendMessage,addin.hGrd,GM_GETCURROW,0,0
 				invoke ToggleBreakPoint,eax
 			.elseif eax==IDM_DEBUG_CLEAR
 				invoke ClearBreakPoints
@@ -1105,8 +1119,13 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke SendAddinMessage,hWin,AM_COMMAND,0,eax
 			.endif
 		.endif
+	.elseif eax==WM_ACTIVATE
+		.if wParam!=WA_INACTIVE
+			mov		eax,hWin
+			mov		addin.hActive,eax
+		.endif
 	.elseif eax==WM_INITMENUPOPUP
-		invoke SendMessage,hGrd,GM_GETROWCOUNT,0,0
+		invoke SendMessage,addin.hGrd,GM_GETROWCOUNT,0,0
 		mov		ebx,MF_BYCOMMAND or MF_GRAYED
 		.if eax
 			mov		ebx,MF_BYCOMMAND or MF_ENABLED
@@ -1197,7 +1216,7 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		sub		rect.bottom,eax
 		mov		eax,rect.bottom
 		sub		eax,rect.top
-		invoke MoveWindow,hGrd,0,rect.top,esi,eax,TRUE
+		invoke MoveWindow,addin.hGrd,0,rect.top,esi,eax,TRUE
 		invoke GetDlgItem,hWin,IDC_TABVIEW
 		mov		ebx,eax
 		invoke GetWindowRect,ebx,addr rectmov
@@ -1225,7 +1244,7 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke GlobalFree,hMemAddr
 		.endif
 		invoke DeleteObject,addin.hLstFont
-		invoke ImageList_Destroy,hIml
+		invoke ImageList_Destroy,addin.hIml
 		invoke UnloadAddins
 		invoke DestroyWindow,hFind
 		invoke DestroyWindow,hTerm
@@ -1279,7 +1298,7 @@ WinMain proc hInst:HINSTANCE,hPrevInst:HINSTANCE,CmdLine:LPSTR,CmdShow:DWORD
 	  .BREAK .if !eax
 		invoke IsDialogMessage,addin.hTabDlgStatus,addr msg
 		.if !eax
-			invoke IsDialogMessage,hFind,addr msg
+			invoke IsDialogMessage,addin.hActive,addr msg
 			.if !eax
 				invoke TranslateAccelerator,addin.hWnd,addin.hAccel,addr msg
 				.if !eax

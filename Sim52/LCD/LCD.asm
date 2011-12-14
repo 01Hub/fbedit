@@ -382,6 +382,12 @@ LCDProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke InvalidateRect,hLcd,NULL,TRUE
 			.endif
 		.endif
+	.elseif eax==WM_ACTIVATE
+		.if wParam!=WA_INACTIVE
+			mov		eax,hWin
+			mov		ebx,lpAddin
+			mov		[ebx].ADDIN.hActive,eax
+		.endif
 	.elseif eax==WM_CLOSE
 		invoke ShowWindow,hWin,SW_HIDE
 	.else
@@ -443,7 +449,12 @@ AddinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	.elseif eax==AM_COMMAND
 		mov		eax,lParam
 		.if eax==IDAddin
-			invoke ShowWindow,hDlg,SW_SHOW
+			invoke IsWindowVisible,hDlg
+			.if eax
+				invoke ShowWindow,hDlg,SW_HIDE
+			.else
+				invoke ShowWindow,hDlg,SW_SHOW
+			.endif
 		.endif
 	.elseif eax==AM_RESET
 		mov		LCDDB,8

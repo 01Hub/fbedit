@@ -390,8 +390,6 @@ addin					ADDIN <>
 hFind					HWND ?
 CommandLine				DWORD ?
 SelTab					DWORD ?
-hGrd					HWND ?
-hIml					HIMAGELIST ?
 lpOldEditProc			DWORD ?
 addins					ADDINS 16 dup(<>)
 nFindRow				DWORD ?
@@ -408,7 +406,6 @@ hMemFile				HGLOBAL ?
 hMemAddr				HGLOBAL ?
 StatusLed				DWORD ?
 ViewBank				DWORD ?
-Refresh					DWORD ?
 State					DWORD ?
 CursorAddr				DWORD ?
 TotalCycles				DWORD ?

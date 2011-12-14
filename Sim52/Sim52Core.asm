@@ -141,7 +141,8 @@ Reset proc uses edi
 	mov		eax,addin.hBmpGreenLed
 	mov		StatusLed,eax
 	invoke SendDlgItemMessage,addin.hWnd,IDC_IMGSTATUS,STM_SETIMAGE,IMAGE_BITMAP,StatusLed
-	mov		Refresh,1
+	invoke ScreenCls
+	mov		addin.Refresh,1
 	ret
 
 Reset endp
@@ -308,7 +309,7 @@ UpdateStatus proc uses ebx
 	invoke FindMcuAddr,PCDONE
 	.if eax
 		movzx	eax,[eax].MCUADDR.lbinx
-		invoke SendMessage,hGrd,GM_SETCURROW,eax,0
+		invoke SendMessage,addin.hGrd,GM_SETCURROW,eax,0
 	.endif
 	invoke SetDlgItemInt,addin.hTabDlgStatus,IDC_STCCYCLES,TotalCycles,FALSE
 	ret
@@ -466,7 +467,7 @@ ToggleBreakPoint proc grdinx:DWORD
 		mov		dwbp,eax
 		mov		ecx,grdinx
 		shl		ecx,16
-		invoke SendMessage,hGrd,GM_SETCELLDATA,ecx,addr dwbp
+		invoke SendMessage,addin.hGrd,GM_SETCELLDATA,ecx,addr dwbp
 	.endif
 	ret
 
@@ -485,7 +486,7 @@ ClearBreakPoints proc
 				push	edx
 				movzx	edx,[edx].MCUADDR.lbinx
 				shl		edx,16
-				invoke SendMessage,hGrd,GM_SETCELLDATA,edx,addr dwbp
+				invoke SendMessage,addin.hGrd,GM_SETCELLDATA,edx,addr dwbp
 				pop		edx
 				pop		ecx
 			.endif
@@ -539,10 +540,7 @@ WaitHalfCycle proc
 
 WaitHalfCycle endp
 
-
-
 ReadXRam proc uses ebx,nAddr:DWORD
-	LOCAL	nValue:DWORD
 
 	movzx	ebx,addin.Sfr[SFR_P3]
 	mov		eax,ebx
@@ -550,14 +548,9 @@ ReadXRam proc uses ebx,nAddr:DWORD
 	mov		addin.Sfr[SFR_P3],al
 	;Set RD low
 	invoke WritePort,addr addin.Sfr[SFR_P3],eax
-	invoke SendAddinMessage,addin.hWnd,AM_XRAMREAD,nAddr,addr nValue
-	.if !eax
-		;No memory mapped input at this address, read XRam
-		mov		edx,nAddr
-		movzx	eax,addin.XRam[edx]
-	.else
-		mov		eax,nValue
-	.endif
+	invoke SendAddinMessage,addin.hWnd,AM_XRAMREAD,nAddr,0
+	mov		edx,nAddr
+	movzx	eax,addin.XRam[edx]
 	push	eax
 	invoke WaitHalfCycle
 	mov		addin.Sfr[SFR_P3],bl
@@ -3109,11 +3102,11 @@ CoreThread proc lParam:DWORD
 		.if (State & STATE_RUN) && !(State & SIM52_BREAKPOINT)
 			.if !(State & STATE_PAUSE)
 				call	Execute
-				mov		Refresh,1
+				mov		addin.Refresh,1
 			.elseif State & STATE_STEP_INTO
 				call	Execute
 				xor		State,STATE_STEP_INTO
-				mov		Refresh,1
+				mov		addin.Refresh,1
 			.elseif State & STATE_STEP_OVER
 				xor		State,STATE_STEP_OVER
 				movzx	eax,byte ptr [esi+ebx]
@@ -3132,7 +3125,7 @@ CoreThread proc lParam:DWORD
 				.if ebx==CursorAddr
 					xor		State,STATE_RUN_TO_CURSOR
 				.endif
-				mov		Refresh,1
+				mov		addin.Refresh,1
 			.else
 				mov		eax,addin.hBmpGreenLed
 				call	SetStatusLed

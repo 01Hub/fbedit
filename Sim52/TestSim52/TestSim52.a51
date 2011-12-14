@@ -1,7 +1,17 @@
 
 		ORG	0000h
 
-START:		MOV	P0,#00h
+START:		MOV	DPTR,#8000h
+		MOV	A,#0FFh
+		MOVX	@DPTR,A
+		MOV	A,#0F0h
+		MOVX	@DPTR,A
+		MOV	A,#0Fh
+		MOVX	@DPTR,A
+		MOV	A,#00h
+		MOVX	@DPTR,A
+
+		MOV	P0,#00h
 		SETB	80h
 		SETB	81h
 		SETB	82h

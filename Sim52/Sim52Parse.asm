@@ -43,7 +43,7 @@ ParseList proc uses ebx esi edi,lpFileName:DWORD
 		invoke CloseHandle,hFile
 		mov		esi,hMemFile
 		mov		addin.nAddr,0
-		invoke SendMessage,hGrd,GM_RESETCONTENT,0,0
+		invoke SendMessage,addin.hGrd,GM_RESETCONTENT,0,0
 		.while byte ptr [esi]
 			mov		nBytes,0
 			mov		nBytesParsed,0
@@ -131,9 +131,9 @@ ParseList proc uses ebx esi edi,lpFileName:DWORD
 						mov		rdta.nBytes,0
 						mov		rdta.nCycles,0
 					.endif
-					invoke SendMessage,hGrd,GM_ADDROW,0,addr rdta
+					invoke SendMessage,addin.hGrd,GM_ADDROW,0,addr rdta
 					.if nBytesParsed
-						invoke SendMessage,hGrd,GM_GETROWCOUNT,0,0
+						invoke SendMessage,addin.hGrd,GM_GETROWCOUNT,0,0
 						dec		eax
 						mov		edx,paddr
 						mov		[edx].MCUADDR.mcuaddr,bx
