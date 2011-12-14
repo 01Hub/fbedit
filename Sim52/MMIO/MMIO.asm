@@ -13,6 +13,23 @@ UnInstallMMIO proc
 
 UnInstallMMIO endp
 
+EditProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+
+	mov		eax,uMsg
+	.if eax==WM_CHAR
+		mov		eax,wParam
+		.if (eax>='0' && eax<='9') || (eax>='A' && eax<='F') || (eax>='a' && eax<='f') || eax==VK_BACK
+			invoke CallWindowProc,lpOldEditProc,hWin,uMsg,wParam,lParam
+		.else
+			xor		eax,eax
+		.endif
+	.else
+		invoke CallWindowProc,lpOldEditProc,hWin,uMsg,wParam,lParam
+	.endif
+	ret
+
+EditProc endp
+
 MMIOProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
 	mov		eax,uMsg
@@ -45,6 +62,23 @@ AddinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		IDAddin,eax
 		inc		[ebx].ADDIN.MenuID
 		invoke CreateDialogParam,hInstance,IDD_DLGMMIO,hWin,addr MMIOProc,0
+		push	0
+		push	IDC_EDTADDRMMI0
+		push	IDC_EDTADDRMMI1
+		push	IDC_EDTADDRMMI2
+		push	IDC_EDTADDRMMI3
+		push	IDC_EDTADDRMMO0
+		push	IDC_EDTADDRMMO1
+		push	IDC_EDTADDRMMO2
+		mov		eax,IDC_EDTADDRMMO3
+		.while eax
+			invoke GetDlgItem,hDlg,eax
+			mov		ebx,eax
+			invoke SetWindowLong,ebx,GWL_WNDPROC,offset EditProc
+			mov		lpOldEditProc,eax
+			invoke SendMessage,ebx,EM_LIMITTEXT,4,0
+			pop		eax
+		.endw
 	.elseif eax==AM_PORTWRITE
 	.elseif eax==AM_XRAMWRITE
 	.elseif eax==AM_COMMAND

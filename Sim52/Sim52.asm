@@ -350,19 +350,6 @@ TabCodeProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
 TabCodeProc endp
 
-TabMMIOProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
-
-	mov		eax,uMsg
-	.if eax==WM_INITDIALOG
-	.else
-		mov		eax,FALSE
-		ret
-	.endif
-	mov		eax,TRUE
-	ret
-
-TabMMIOProc endp
-
 SendAddinMessage proc uses ebx esi edi,hWin:HWND,uMsg:DWORD,wParam:DWORD,lParam:DWORD
 	LOCAL	nRet:DWORD
 
@@ -838,7 +825,7 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke GetDlgItem,hWin,IDC_TABSTATUS
 		mov		ebx,eax
 		invoke CreateDialogParam,addin.hInstance,IDD_DLGTABSTATUS,ebx,addr TabStatusProc,0
-		mov		hTabDlgStatus,eax
+		mov		addin.hTabDlgStatus,eax
 		mov		tci.pszText,offset szTabRam
 		invoke SendDlgItemMessage,hWin,IDC_TABVIEW,TCM_INSERTITEM,0,addr tci
 		mov		tci.pszText,offset szTabBit
@@ -849,8 +836,6 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SendDlgItemMessage,hWin,IDC_TABVIEW,TCM_INSERTITEM,3,addr tci
 		mov		tci.pszText,offset szTabCode
 		invoke SendDlgItemMessage,hWin,IDC_TABVIEW,TCM_INSERTITEM,4,addr tci
-		mov		tci.pszText,offset szTabMMIO
-		invoke SendDlgItemMessage,hWin,IDC_TABVIEW,TCM_INSERTITEM,5,addr tci
 		invoke GetDlgItem,hWin,IDC_TABVIEW
 		mov		ebx,eax
 		mov		eax,addin.hLstFont
@@ -858,22 +843,24 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		hef.hLnrFont,eax
 		;Create the tab dialogs
 		invoke CreateDialogParam,addin.hInstance,IDD_DLGTABRAM,ebx,addr TabRamProc,0
-		mov		hTabDlg[0],eax
-		invoke SendDlgItemMessage,hTabDlg[0],IDC_UDCHEXRAM,HEM_SETFONT,0,addr hef
+		mov		addin.hTabDlg[0],eax
+		invoke SendDlgItemMessage,addin.hTabDlg[0],IDC_UDCHEXRAM,HEM_SETFONT,0,addr hef
+
 		invoke CreateDialogParam,addin.hInstance,IDD_DLGTABBIT,ebx,addr TabBitProc,0
-		mov		hTabDlg[4],eax
+		mov		addin.hTabDlg[4],eax
+
 		invoke CreateDialogParam,addin.hInstance,IDD_DLGTABSFR,ebx,addr TabSfrProc,0
-		mov		hTabDlg[8],eax
-		invoke SendDlgItemMessage,hTabDlg[8],IDC_UDCHEXSFR,HEM_SETFONT,0,addr hef
-		invoke SendDlgItemMessage,hTabDlg[8],IDC_UDCHEXSFR,HEM_SETOFFSET,128,0
+		mov		addin.hTabDlg[8],eax
+		invoke SendDlgItemMessage,addin.hTabDlg[8],IDC_UDCHEXSFR,HEM_SETFONT,0,addr hef
+		invoke SendDlgItemMessage,addin.hTabDlg[8],IDC_UDCHEXSFR,HEM_SETOFFSET,128,0
+
 		invoke CreateDialogParam,addin.hInstance,IDD_DLGTABXRAM,ebx,addr TabXRamProc,0
-		mov		hTabDlg[12],eax
-		invoke SendDlgItemMessage,hTabDlg[12],IDC_UDCHEXXRAM,HEM_SETFONT,0,addr hef
+		mov		addin.hTabDlg[12],eax
+		invoke SendDlgItemMessage,addin.hTabDlg[12],IDC_UDCHEXXRAM,HEM_SETFONT,0,addr hef
+
 		invoke CreateDialogParam,addin.hInstance,IDD_DLGTABCODE,ebx,addr TabCodeProc,0
-		mov		hTabDlg[16],eax
-		invoke SendDlgItemMessage,hTabDlg[16],IDC_UDCHEXCODE,HEM_SETFONT,0,addr hef
-		invoke CreateDialogParam,addin.hInstance,IDD_DLGTABMMIO,ebx,addr TabMMIOProc,0
-		mov		hTabDlg[20],eax
+		mov		addin.hTabDlg[16],eax
+		invoke SendDlgItemMessage,addin.hTabDlg[16],IDC_UDCHEXCODE,HEM_SETFONT,0,addr hef
 
 		invoke LoadAccelerators,addin.hInstance,IDR_ACCEL1
 		mov		addin.hAccel,eax
@@ -882,7 +869,7 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SendMessage,hGrd,WM_SETFONT,addin.hLstFont,0
 		invoke ImageList_Create,16,16,ILC_COLOR24,1,0
 		mov		hIml,eax
-		invoke ImageList_Add,hIml,hBmpRedLed,NULL
+		invoke ImageList_Add,hIml,addin.hBmpRedLed,NULL
 		;Add Break Point column
 		mov		col.colwt,16
 		mov		col.lpszhdrtext,NULL;offset szAddress
@@ -961,18 +948,18 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.endif
 			inc		ebx
 		.endw
-		invoke SendDlgItemMessage,hTabDlg[16],IDC_UDCHEXCODE,HEM_SETMEM,65536,addr addin.Code
+		invoke SendDlgItemMessage,addin.hTabDlg[16],IDC_UDCHEXCODE,HEM_SETMEM,65536,addr addin.Code
 	.elseif eax==WM_TIMER
 		.if Refresh
 			invoke UpdateStatus
 			invoke UpdatePorts
 			invoke UpdateRegisters
-			invoke SendDlgItemMessage,hTabDlg[0],IDC_UDCHEXRAM,HEM_SETMEM,256,addr addin.Ram
+			invoke SendDlgItemMessage,addin.hTabDlg[0],IDC_UDCHEXRAM,HEM_SETMEM,256,addr addin.Ram
 			invoke UpdateBits
-			invoke SendDlgItemMessage,hTabDlg[8],IDC_UDCHEXSFR,HEM_SETMEM,128,addr addin.Sfr[128]
-			invoke SendDlgItemMessage,hTabDlg[12],IDC_UDCHEXXRAM,HEM_SETMEM,65536,addr addin.XRam
+			invoke SendDlgItemMessage,addin.hTabDlg[8],IDC_UDCHEXSFR,HEM_SETMEM,128,addr addin.Sfr[128]
+			invoke SendDlgItemMessage,addin.hTabDlg[12],IDC_UDCHEXXRAM,HEM_SETMEM,65536,addr addin.XRam
 			invoke SetDlgItemInt,hWin,IDC_STCCYCLES,TotalCycles,FALSE
-			invoke UpdateSelSfr,hTabDlg[8]
+			invoke UpdateSelSfr,addin.hTabDlg[8]
 			dec		Refresh
 		.endif
 	.elseif eax==WM_NOTIFY
@@ -986,10 +973,10 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.if eax!=SelTab
 					push	eax
 					mov		eax,SelTab
-					invoke ShowWindow,[hTabDlg+eax*4],SW_HIDE
+					invoke ShowWindow,addin.hTabDlg[eax*4],SW_HIDE
 					pop		eax
 					mov		SelTab,eax
-					invoke ShowWindow,[hTabDlg+eax*4],SW_SHOWDEFAULT
+					invoke ShowWindow,addin.hTabDlg[eax*4],SW_SHOWDEFAULT
 				.endif
 			.endif
 		.elseif eax==IDC_GRDCODE
@@ -1276,11 +1263,11 @@ WinMain proc hInst:HINSTANCE,hPrevInst:HINSTANCE,CmdLine:LPSTR,CmdShow:DWORD
 	mov		wc.hCursor,eax
 	invoke RegisterClassEx,addr wc
 	invoke LoadBitmap,addin.hInstance,IDB_LEDGRAY
-	mov		hBmpGrayLed,eax
+	mov		addin.hBmpGrayLed,eax
 	invoke LoadBitmap,addin.hInstance,IDB_LEDGREEN
-	mov		hBmpGreenLed,eax
+	mov		addin.hBmpGreenLed,eax
 	invoke LoadBitmap,addin.hInstance,IDB_LEDRED
-	mov		hBmpRedLed,eax
+	mov		addin.hBmpRedLed,eax
 	invoke LoadMCUTypes
 	invoke LoadSFRFile,offset szMCUTypes
 	invoke CreateDialogParam,addin.hInstance,IDD_SIM52,NULL,addr WndProc,NULL
@@ -1290,7 +1277,7 @@ WinMain proc hInst:HINSTANCE,hPrevInst:HINSTANCE,CmdLine:LPSTR,CmdShow:DWORD
 	.while TRUE
 		invoke GetMessage,addr msg,NULL,0,0
 	  .BREAK .if !eax
-		invoke IsDialogMessage,hTabDlgStatus,addr msg
+		invoke IsDialogMessage,addin.hTabDlgStatus,addr msg
 		.if !eax
 			invoke IsDialogMessage,hFind,addr msg
 			.if !eax
@@ -1302,9 +1289,9 @@ WinMain proc hInst:HINSTANCE,hPrevInst:HINSTANCE,CmdLine:LPSTR,CmdShow:DWORD
 			.endif
 		.endif
 	.endw
-	invoke DeleteObject,hBmpGrayLed
-	invoke DeleteObject,hBmpGreenLed
-	invoke DeleteObject,hBmpRedLed
+	invoke DeleteObject,addin.hBmpGrayLed
+	invoke DeleteObject,addin.hBmpGreenLed
+	invoke DeleteObject,addin.hBmpRedLed
 	mov		eax,msg.wParam
 	ret
 

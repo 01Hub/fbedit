@@ -138,7 +138,7 @@ Reset proc uses edi
 		lea		edi,[edi+sizeof SFRMAP]
 	.endw
 	invoke SendAddinMessage,addin.hWnd,AM_RESET,0,0
-	mov		eax,hBmpGreenLed
+	mov		eax,addin.hBmpGreenLed
 	mov		StatusLed,eax
 	invoke SendDlgItemMessage,addin.hWnd,IDC_IMGSTATUS,STM_SETIMAGE,IMAGE_BITMAP,StatusLed
 	mov		Refresh,1
@@ -251,9 +251,9 @@ UpdateSelSfr proc uses ebx esi,hWin:HWND
 			shr		eax,1
 			push	eax
 			.if CARRY?
-				invoke SendDlgItemMessage,hWin,addr [ebx+ecx],STM_SETIMAGE,IMAGE_BITMAP,hBmpRedLed
+				invoke SendDlgItemMessage,hWin,addr [ebx+ecx],STM_SETIMAGE,IMAGE_BITMAP,addin.hBmpRedLed
 			.else
-				invoke SendDlgItemMessage,hWin,addr [ebx+ecx],STM_SETIMAGE,IMAGE_BITMAP,hBmpGrayLed
+				invoke SendDlgItemMessage,hWin,addr [ebx+ecx],STM_SETIMAGE,IMAGE_BITMAP,addin.hBmpGrayLed
 			.endif
 			pop		eax
 			pop		ecx
@@ -269,22 +269,22 @@ UpdateStatus proc uses ebx
 
 	mov		eax,addin.PC
 	invoke wsprintf,addr buffer,addr szFmtHexWord,eax
-	invoke SetDlgItemText,hTabDlgStatus,IDC_EDTPC,addr buffer
+	invoke SetDlgItemText,addin.hTabDlgStatus,IDC_EDTPC,addr buffer
 	movzx	eax,word ptr addin.Sfr[SFR_DPL]
 	invoke wsprintf,addr buffer,addr szFmtHexWord,eax
-	invoke SetDlgItemText,hTabDlgStatus,IDC_EDTDPTR,addr buffer
+	invoke SetDlgItemText,addin.hTabDlgStatus,IDC_EDTDPTR,addr buffer
 	movzx	eax,word ptr addin.Sfr[SFR_DP1L]
 	invoke wsprintf,addr buffer,addr szFmtHexWord,eax
-	invoke SetDlgItemText,hTabDlgStatus,IDC_EDTDPTR1,addr buffer
+	invoke SetDlgItemText,addin.hTabDlgStatus,IDC_EDTDPTR1,addr buffer
 	movzx	eax,addin.Sfr[SFR_ACC]
 	invoke wsprintf,addr buffer,addr szFmtHexByte,eax
-	invoke SetDlgItemText,hTabDlgStatus,IDC_EDTACC,addr buffer
+	invoke SetDlgItemText,addin.hTabDlgStatus,IDC_EDTACC,addr buffer
 	movzx	eax,addin.Sfr[SFR_B]
 	invoke wsprintf,addr buffer,addr szFmtHexByte,eax
-	invoke SetDlgItemText,hTabDlgStatus,IDC_EDTB,addr buffer
+	invoke SetDlgItemText,addin.hTabDlgStatus,IDC_EDTB,addr buffer
 	movzx	eax,addin.Sfr[SFR_SP]
 	invoke wsprintf,addr buffer,addr szFmtHexByte,eax
-	invoke SetDlgItemText,hTabDlgStatus,IDC_EDTSP,addr buffer
+	invoke SetDlgItemText,addin.hTabDlgStatus,IDC_EDTSP,addr buffer
 	push	0
 	push	IDC_IMGCY
 	push	IDC_IMGAC
@@ -299,9 +299,9 @@ UpdateStatus proc uses ebx
 	.while eax
 		shr		ebx,1
 		.if CARRY?
-			invoke SendDlgItemMessage,hTabDlgStatus,eax,STM_SETIMAGE,IMAGE_BITMAP,hBmpRedLed
+			invoke SendDlgItemMessage,addin.hTabDlgStatus,eax,STM_SETIMAGE,IMAGE_BITMAP,addin.hBmpRedLed
 		.else
-			invoke SendDlgItemMessage,hTabDlgStatus,eax,STM_SETIMAGE,IMAGE_BITMAP,hBmpGrayLed
+			invoke SendDlgItemMessage,addin.hTabDlgStatus,eax,STM_SETIMAGE,IMAGE_BITMAP,addin.hBmpGrayLed
 		.endif
 		pop		eax
 	.endw
@@ -310,7 +310,7 @@ UpdateStatus proc uses ebx
 		movzx	eax,[eax].MCUADDR.lbinx
 		invoke SendMessage,hGrd,GM_SETCURROW,eax,0
 	.endif
-	invoke SetDlgItemInt,hTabDlgStatus,IDC_STCCYCLES,TotalCycles,FALSE
+	invoke SetDlgItemInt,addin.hTabDlgStatus,IDC_STCCYCLES,TotalCycles,FALSE
 	ret
 
 UpdateStatus endp
@@ -331,9 +331,9 @@ UpdatePorts proc uses ebx
 	.while eax
 		shl		bl,1
 		.if CARRY?
-			invoke SendDlgItemMessage,hTabDlgStatus,eax,STM_SETIMAGE,IMAGE_BITMAP,hBmpGreenLed
+			invoke SendDlgItemMessage,addin.hTabDlgStatus,eax,STM_SETIMAGE,IMAGE_BITMAP,addin.hBmpGreenLed
 		.else
-			invoke SendDlgItemMessage,hTabDlgStatus,eax,STM_SETIMAGE,IMAGE_BITMAP,hBmpGrayLed
+			invoke SendDlgItemMessage,addin.hTabDlgStatus,eax,STM_SETIMAGE,IMAGE_BITMAP,addin.hBmpGrayLed
 		.endif
 		pop		eax
 	.endw
@@ -351,9 +351,9 @@ UpdatePorts proc uses ebx
 	.while eax
 		shl		bl,1
 		.if CARRY?
-			invoke SendDlgItemMessage,hTabDlgStatus,eax,STM_SETIMAGE,IMAGE_BITMAP,hBmpGreenLed
+			invoke SendDlgItemMessage,addin.hTabDlgStatus,eax,STM_SETIMAGE,IMAGE_BITMAP,addin.hBmpGreenLed
 		.else
-			invoke SendDlgItemMessage,hTabDlgStatus,eax,STM_SETIMAGE,IMAGE_BITMAP,hBmpGrayLed
+			invoke SendDlgItemMessage,addin.hTabDlgStatus,eax,STM_SETIMAGE,IMAGE_BITMAP,addin.hBmpGrayLed
 		.endif
 		pop		eax
 	.endw
@@ -371,9 +371,9 @@ UpdatePorts proc uses ebx
 	.while eax
 		shl		bl,1
 		.if CARRY?
-			invoke SendDlgItemMessage,hTabDlgStatus,eax,STM_SETIMAGE,IMAGE_BITMAP,hBmpGreenLed
+			invoke SendDlgItemMessage,addin.hTabDlgStatus,eax,STM_SETIMAGE,IMAGE_BITMAP,addin.hBmpGreenLed
 		.else
-			invoke SendDlgItemMessage,hTabDlgStatus,eax,STM_SETIMAGE,IMAGE_BITMAP,hBmpGrayLed
+			invoke SendDlgItemMessage,addin.hTabDlgStatus,eax,STM_SETIMAGE,IMAGE_BITMAP,addin.hBmpGrayLed
 		.endif
 		pop		eax
 	.endw
@@ -391,9 +391,9 @@ UpdatePorts proc uses ebx
 	.while eax
 		shl		bl,1
 		.if CARRY?
-			invoke SendDlgItemMessage,hTabDlgStatus,eax,STM_SETIMAGE,IMAGE_BITMAP,hBmpGreenLed
+			invoke SendDlgItemMessage,addin.hTabDlgStatus,eax,STM_SETIMAGE,IMAGE_BITMAP,addin.hBmpGreenLed
 		.else
-			invoke SendDlgItemMessage,hTabDlgStatus,eax,STM_SETIMAGE,IMAGE_BITMAP,hBmpGrayLed
+			invoke SendDlgItemMessage,addin.hTabDlgStatus,eax,STM_SETIMAGE,IMAGE_BITMAP,addin.hBmpGrayLed
 		.endif
 		pop		eax
 	.endw
@@ -420,7 +420,7 @@ UpdateRegisters proc uses ebx esi
 	.while ebx
 		movzx	eax,byte ptr [esi]
 		invoke wsprintf,addr buffer,addr szFmtHexByte,eax
-		invoke SetDlgItemText,hTabDlgStatus,ebx,addr buffer
+		invoke SetDlgItemText,addin.hTabDlgStatus,ebx,addr buffer
 		inc		esi
 		pop		ebx
 	.endw
@@ -440,9 +440,9 @@ UpdateBits proc uses ebx edi
 			ror		eax,1
 			push	eax
 			.if CARRY?
-				invoke SendDlgItemMessage,hTabDlg[4],edi,STM_SETIMAGE,IMAGE_BITMAP,hBmpRedLed
+				invoke SendDlgItemMessage,addin.hTabDlg[4],edi,STM_SETIMAGE,IMAGE_BITMAP,addin.hBmpRedLed
 			.else
-				invoke SendDlgItemMessage,hTabDlg[4],edi,STM_SETIMAGE,IMAGE_BITMAP,hBmpGrayLed
+				invoke SendDlgItemMessage,addin.hTabDlg[4],edi,STM_SETIMAGE,IMAGE_BITMAP,addin.hBmpGrayLed
 			.endif
 			pop		eax
 			pop		ecx
@@ -3134,11 +3134,11 @@ CoreThread proc lParam:DWORD
 				.endif
 				mov		Refresh,1
 			.else
-				mov		eax,hBmpGreenLed
+				mov		eax,addin.hBmpGreenLed
 				call	SetStatusLed
 			.endif
 		.else
-			mov		eax,hBmpGreenLed
+			mov		eax,addin.hBmpGreenLed
 			call	SetStatusLed
 		.endif
 	.endw
@@ -3159,7 +3159,7 @@ Fetch:
 	retn
 
 Execute:
-	mov		eax,hBmpRedLed
+	mov		eax,addin.hBmpRedLed
 	call	SetStatusLed
 	call	Fetch
 	mov		eax,ecx

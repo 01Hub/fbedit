@@ -25,13 +25,18 @@ SFRMAP ends
 ADDIN struct
 	hInstance		HINSTANCE ?
 	hWnd			HWND ?
+	hTabDlgStatus	HWND ?
+	hTabDlg			HWND 16 dup(?)
 	hMenu			HMENU ?
-	MenuID			DWORD ?
 	hAccel			HACCEL ?
 	hLstFont		HFONT ?
+	hBmpGrayLed		HBITMAP ?
+	hBmpGreenLed	HBITMAP ?
+	hBmpRedLed		HBITMAP ?
+	MenuID			DWORD ?
+	Ram				BYTE 256 dup(?)
 	SfrData			SFRMAP 128 dup(<>)
 	Sfr				BYTE 256 dup(?)
-	Ram				BYTE 256 dup(?)
 	XRam			BYTE 65536 dup(?)
 	Code			BYTE 65536 dup(?)
 	Bank			DWORD ?

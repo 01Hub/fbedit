@@ -2,7 +2,7 @@
 Version=3000
 [Project]
 Assembler=Masm
-Path=C:\FbEdit\Projects\Applications\FbEdit\Sim52\LCD
+Path=D:\FbEdit\Projects\Applications\FbEdit\Sim52\LCD
 Group=2,-1,0,1,LCD Display,-2,-1,1,Assembly,-3,-1,1,Include,-4,-1,1,Misc,-5,-1,1,Resource
 F1=-2,2,1,22,22,600,400,8,LCD.asm
 F2=-3,0,1,44,44,600,400,0,LCD.inc

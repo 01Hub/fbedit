@@ -291,8 +291,6 @@ IDC_EDTMCU				equ 1902
 IDC_EDTREFRESH			equ 1903
 IDC_UDNREFRESH			equ 1904
 
-IDD_DLGTABMMIO			equ 2000
-
 IDM_MENU                equ 10000
 IDM_FILE_OPEN           equ 10001
 IDM_FILE_EXIT           equ 10002
@@ -364,7 +362,6 @@ szTabBit				BYTE 'Bit',0
 szTabSfr				BYTE 'Sfr',0
 szTabXRam				BYTE 'XRam',0
 szTabCode				BYTE 'Code',0
-szTabMMIO				BYTE 'Memory Mapped I/O',0
 
 szFmtHexByte			BYTE '%02X',0
 szFmtHexByteh			BYTE '%02Xh',0
@@ -392,14 +389,9 @@ szIniSFRMAP				BYTE 'SFRMAP',0
 addin					ADDIN <>
 hFind					HWND ?
 CommandLine				DWORD ?
-hBmpGrayLed				HBITMAP ?
-hBmpGreenLed			HBITMAP ?
-hBmpRedLed				HBITMAP ?
 SelTab					DWORD ?
 hGrd					HWND ?
 hIml					HIMAGELIST ?
-hTabDlgStatus			HWND ?
-hTabDlg					HWND 6 dup(?)
 lpOldEditProc			DWORD ?
 addins					ADDINS 16 dup(<>)
 nFindRow				DWORD ?
