@@ -2,7 +2,7 @@
 Version=3000
 [Project]
 Assembler=Masm
-Path=C:\FbEdit\Projects\Applications\FbEdit\Sim52\MMIO
+Path=D:\FbEdit\Projects\Applications\FbEdit\Sim52\MMIO
 Group=2,-1,0,1,Memory Mapped I/O,-2,-1,1,Assembly,-3,-1,1,Include,-4,-1,1,Misc,-5,-1,1,Resource
 F1=-2,2,1,22,22,600,400,635,MMIO.asm
 F2=-3,0,1,44,44,600,400,124,MMIO.inc
@@ -12,7 +12,7 @@ C3=
 B3=
 M3=
 F5=-4,0,2,132,132,1240,526,3,MMIO.def
-Open=0,1,2,5,3,6
+Open=1,1,2,5,3,6
 Api=
 C5=
 B5=
@@ -23,7 +23,7 @@ M2=
 C1=0,0,0
 B1=
 M1=
-F6=-3,0,1,-6,-25,1494,799,7,..\Addin.inc
+F6=-3,0,1,-6,-25,1452,799,7,..\Addin.inc
 C6=0
 B6=
 M6=
