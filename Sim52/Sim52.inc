@@ -416,4 +416,13 @@ CpuCycles				DWORD ?
 PerformanceCount		QWORD ?
 RefreshRate				DWORD ?
 PCDONE					DWORD ?
+nHalfCycles				DWORD ?
+OldP3					DWORD ?
+NewP3					DWORD ?
+T0Mod					DWORD ?
+T1Mod					DWORD ?
+T2Mod					DWORD ?
+T0Con					DWORD ?
+T1Con					DWORD ?
+T2Con					DWORD ?
 

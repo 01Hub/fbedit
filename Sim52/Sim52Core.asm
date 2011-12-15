@@ -142,6 +142,14 @@ Reset proc uses edi
 	mov		StatusLed,eax
 	invoke SendDlgItemMessage,addin.hWnd,IDC_IMGSTATUS,STM_SETIMAGE,IMAGE_BITMAP,StatusLed
 	invoke ScreenCls
+	mov		T0Mod,0
+	mov		T1Mod,0
+	mov		T2Mod,0
+	mov		T0Con,0
+	mov		T1Con,0
+	mov		T2Con,0
+	mov		NewP3,3Ch
+	mov		OldP3,3Ch
 	mov		addin.Refresh,1
 	ret
 
@@ -525,6 +533,42 @@ WaitHalfCycle proc
 
 	push	eax
 	push	edx
+	inc		nHalfCycles
+	test	nHalfCycles,3
+	.if ZERO?
+		mov		edx,NewP3
+		mov		OldP3,edx
+		movzx	eax,addin.Sfr[SFR_P3]
+		and		eax,3Ch
+		mov		NewP3,eax
+		test	T0Con,10h
+		.if !ZERO?
+			;Enabled
+			mov		eax,T0Mod
+			.if eax==0
+				;13 bit timer
+			.elseif eax==1
+				;16 bit timer
+			.elseif eax==2
+				;8 bit timer, auto reload
+			.elseif eax==3
+				;Two 8 bit timers
+			.elseif eax==4
+				;13 bit counter
+			.elseif eax==5
+				;16 bit counter
+				inc		word ptr addin.Sfr(SFR_TL0)
+				.if ZERO?
+					or		addin.Sfr[SFR_TCON],20h
+				.endif
+			.elseif eax==6
+				;8 bit counter, auto reload
+			.elseif eax==7
+				;One 8 bit counter
+			.endif
+		.endif
+		
+	.endif
 	mov		eax,CpuCycles
 	add		dword ptr PerformanceCount,eax
 	adc		dword ptr PerformanceCount+4,0
@@ -592,6 +636,26 @@ WriteXRam proc uses ebx esi edi,nAddr:DWORD,nValue:DWORD
 	ret
 
 WriteXRam endp
+
+SetTimerMode proc
+
+	movzx	eax,addin.Sfr[SFR_TMOD]
+	mov		edx,eax
+	and		edx,0Fh
+	mov		T0Mod,edx
+	shr		eax,4
+	and		eax,0Fh
+	mov		T1Mod,eax
+	movzx	eax,addin.Sfr[SFR_TCON]
+	mov		edx,eax
+	and		edx,33h
+	mov		T0Con,edx
+	shr		eax,2
+	and		eax,33h
+	mov		T1Con,eax
+	ret
+
+SetTimerMode endp
 
 SetParity proc
 
@@ -675,6 +739,8 @@ INC_dir:
 			.if edx==SFR_P0 || edx==SFR_P1 || edx==SFR_P2 || edx==SFR_P3
 				movzx	eax,addin.Sfr[edx]
 				invoke WritePort,edx,eax
+			.elseif edx==SFR_TMOD || edx==SFR_TCON
+				invoke SetTimerMode
 			.endif
 		.endif
 	.endif
@@ -829,6 +895,8 @@ DEC_dir:
 			.if edx==SFR_P0 || edx==SFR_P1 || edx==SFR_P2 || edx==SFR_P3
 				movzx	eax,addin.Sfr[edx]
 				invoke WritePort,edx,eax
+			.elseif edx==SFR_TMOD || edx==SFR_TCON
+				invoke SetTimerMode
 			.endif
 		.endif
 	.endif
@@ -1613,6 +1681,8 @@ MOV_dir_imm:
 			.if edx==SFR_P0 || edx==SFR_P1 || edx==SFR_P2 || edx==SFR_P3
 				movzx	eax,addin.Sfr[edx]
 				invoke WritePort,edx,eax
+			.elseif edx==SFR_TMOD || edx==SFR_TCON
+				invoke SetTimerMode
 			.endif
 		.endif
 	.endif
@@ -1750,6 +1820,8 @@ MOV_dir_dir:
 			.if edx==SFR_P0 || edx==SFR_P1 || edx==SFR_P2 || edx==SFR_P3
 				movzx	eax,addin.Sfr[edx]
 				invoke WritePort,edx,eax
+			.elseif edx==SFR_TMOD || edx==SFR_TCON
+				invoke SetTimerMode
 			.endif
 		.endif
 	.endif
@@ -1771,6 +1843,8 @@ MOV_dir_@R0:
 			.if edx==SFR_P0 || edx==SFR_P1 || edx==SFR_P2 || edx==SFR_P3
 				movzx	eax,addin.Sfr[edx]
 				invoke WritePort,edx,eax
+			.elseif edx==SFR_TMOD || edx==SFR_TCON
+				invoke SetTimerMode
 			.endif
 		.endif
 	.endif
@@ -1792,6 +1866,8 @@ MOV_dir_@R1:
 			.if edx==SFR_P0 || edx==SFR_P1 || edx==SFR_P2 || edx==SFR_P3
 				movzx	eax,addin.Sfr[edx]
 				invoke WritePort,edx,eax
+			.elseif edx==SFR_TMOD || edx==SFR_TCON
+				invoke SetTimerMode
 			.endif
 		.endif
 	.endif
@@ -1812,6 +1888,8 @@ MOV_dir_R0:
 			.if edx==SFR_P0 || edx==SFR_P1 || edx==SFR_P2 || edx==SFR_P3
 				movzx	eax,addin.Sfr[edx]
 				invoke WritePort,edx,eax
+			.elseif edx==SFR_TMOD || edx==SFR_TCON
+				invoke SetTimerMode
 			.endif
 		.endif
 	.endif
@@ -1832,6 +1910,8 @@ MOV_dir_R1:
 			.if edx==SFR_P0 || edx==SFR_P1 || edx==SFR_P2 || edx==SFR_P3
 				movzx	eax,addin.Sfr[edx]
 				invoke WritePort,edx,eax
+			.elseif edx==SFR_TMOD || edx==SFR_TCON
+				invoke SetTimerMode
 			.endif
 		.endif
 	.endif
@@ -1852,6 +1932,8 @@ MOV_dir_R2:
 			.if edx==SFR_P0 || edx==SFR_P1 || edx==SFR_P2 || edx==SFR_P3
 				movzx	eax,addin.Sfr[edx]
 				invoke WritePort,edx,eax
+			.elseif edx==SFR_TMOD || edx==SFR_TCON
+				invoke SetTimerMode
 			.endif
 		.endif
 	.endif
@@ -1872,6 +1954,8 @@ MOV_dir_R3:
 			.if edx==SFR_P0 || edx==SFR_P1 || edx==SFR_P2 || edx==SFR_P3
 				movzx	eax,addin.Sfr[edx]
 				invoke WritePort,edx,eax
+			.elseif edx==SFR_TMOD || edx==SFR_TCON
+				invoke SetTimerMode
 			.endif
 		.endif
 	.endif
@@ -1892,6 +1976,8 @@ MOV_dir_R4:
 			.if edx==SFR_P0 || edx==SFR_P1 || edx==SFR_P2 || edx==SFR_P3
 				movzx	eax,addin.Sfr[edx]
 				invoke WritePort,edx,eax
+			.elseif edx==SFR_TMOD || edx==SFR_TCON
+				invoke SetTimerMode
 			.endif
 		.endif
 	.endif
@@ -1912,6 +1998,8 @@ MOV_dir_R5:
 			.if edx==SFR_P0 || edx==SFR_P1 || edx==SFR_P2 || edx==SFR_P3
 				movzx	eax,addin.Sfr[edx]
 				invoke WritePort,edx,eax
+			.elseif edx==SFR_TMOD || edx==SFR_TCON
+				invoke SetTimerMode
 			.endif
 		.endif
 	.endif
@@ -1932,6 +2020,8 @@ MOV_dir_R6:
 			.if edx==SFR_P0 || edx==SFR_P1 || edx==SFR_P2 || edx==SFR_P3
 				movzx	eax,addin.Sfr[edx]
 				invoke WritePort,edx,eax
+			.elseif edx==SFR_TMOD || edx==SFR_TCON
+				invoke SetTimerMode
 			.endif
 		.endif
 	.endif
@@ -1952,6 +2042,8 @@ MOV_dir_R7:
 			.if edx==SFR_P0 || edx==SFR_P1 || edx==SFR_P2 || edx==SFR_P3
 				movzx	eax,addin.Sfr[edx]
 				invoke WritePort,edx,eax
+			.elseif edx==SFR_TMOD || edx==SFR_TCON
+				invoke SetTimerMode
 			.endif
 		.endif
 	.endif
@@ -2006,6 +2098,8 @@ MOV_bit_C:
 			.if eax==SFR_P0 || eax==SFR_P1 || eax==SFR_P2 || eax==SFR_P3
 				movzx	edx,addin.Sfr[eax]
 				invoke WritePort,eax,edx
+			.elseif eax==SFR_TCON
+				invoke SetTimerMode
 			.endif
 		.endif
 	.endif
@@ -2560,6 +2654,8 @@ CLR_bit:
 			.if eax==SFR_P0 || eax==SFR_P1 || eax==SFR_P2 || eax==SFR_P3
 				movzx	edx,addin.Sfr[eax]
 				invoke WritePort,eax,edx
+			.elseif eax==SFR_TCON
+				invoke SetTimerMode
 			.endif
 		.endif
 	.endif
@@ -2594,6 +2690,8 @@ XCH_A_dir:
 			.if edx==SFR_P0 || edx==SFR_P1 || edx==SFR_P2 || edx==SFR_P3
 				movzx	eax,addin.Sfr[edx]
 				invoke WritePort,edx,eax
+			.elseif edx==SFR_TMOD || edx==SFR_TCON
+				invoke SetTimerMode
 			.endif
 		.endif
 	.endif
@@ -2697,6 +2795,8 @@ POP_dir:
 			.if edx==SFR_P0 || edx==SFR_P1 || edx==SFR_P2 || edx==SFR_P3
 				movzx	eax,addin.Sfr[edx]
 				invoke WritePort,edx,eax
+			.elseif edx==SFR_TMOD || edx==SFR_TCON
+				invoke SetTimerMode
 			.endif
 		.endif
 	.endif
@@ -2722,6 +2822,8 @@ SETB_bit:
 			.if eax==SFR_P0 || eax==SFR_P1 || eax==SFR_P2 || eax==SFR_P3
 				movzx	edx,addin.Sfr[eax]
 				invoke WritePort,eax,edx
+			.elseif eax==SFR_TCON
+				invoke SetTimerMode
 			.endif
 		.endif
 	.endif
@@ -3022,6 +3124,8 @@ MOV_dir_A:
 			.if edx==SFR_P0 || edx==SFR_P1 || edx==SFR_P2 || edx==SFR_P3
 				movzx	eax,addin.Sfr[edx]
 				invoke WritePort,edx,eax
+			.elseif edx==SFR_TMOD || edx==SFR_TCON
+				invoke SetTimerMode
 			.endif
 		.endif
 	.endif
