@@ -561,7 +561,7 @@ ReadXRam proc uses ebx,nAddr:DWORD
 
 ReadXRam endp
 
-WriteXRam proc uses ebx,nAddr:DWORD,nValue:DWORD
+WriteXRam proc uses ebx esi edi,nAddr:DWORD,nValue:DWORD
 
 	movzx	ebx,addin.Sfr[SFR_P3]
 	mov		eax,ebx
@@ -569,8 +569,20 @@ WriteXRam proc uses ebx,nAddr:DWORD,nValue:DWORD
 	mov		addin.Sfr[SFR_P3],al
 	;Set WR low
 	invoke WritePort,addr addin.Sfr[SFR_P3],eax
-	invoke SendAddinMessage,addin.hWnd,AM_XRAMWRITE,nAddr,nValue
-	.if !eax
+	xor		edi,edi
+	xor		esi,esi
+	.while edi<4
+		mov		eax,nAddr
+		.if eax==addin.mmoutport[edi*4]
+			;There is a memory mapped output at this address, update port
+			mov		edx,nValue
+			mov		addin.mmoutportdata[edi*4],edx
+			;invoke SendAddinMessage,addin.hWnd,AM_MMOWRITE,nAddr,nValue
+			lea		esi,[esi+1]
+		.endif
+		lea		edi,[edi+1]
+	.endw
+	.if !esi
 		;No memory mapped output at this address, update XRam
 		mov		edx,nAddr
 		mov		eax,nValue

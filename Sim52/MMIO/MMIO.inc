@@ -119,7 +119,3 @@ hDlg					HWND ?
 lpAddin					DWORD ?
 IDAddin					DWORD ?
 lpOldEditProc			DWORD ?
-outport					DWORD 4 dup(?)
-outportdata				DWORD 4 dup(?)
-inport					DWORD 4 dup(?)
-inportdata				DWORD 4 dup(?)

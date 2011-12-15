@@ -974,6 +974,7 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke SendDlgItemMessage,addin.hTabDlg[12],IDC_UDCHEXXRAM,HEM_SETMEM,65536,addr addin.XRam
 			invoke SetDlgItemInt,hWin,IDC_STCCYCLES,TotalCycles,FALSE
 			invoke UpdateSelSfr,addin.hTabDlg[8]
+			invoke SendAddinMessage,hWin,AM_REFRESH,0,0
 			dec		addin.Refresh
 		.endif
 	.elseif eax==WM_NOTIFY

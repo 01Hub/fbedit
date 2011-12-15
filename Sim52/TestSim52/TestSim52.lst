@@ -411,15 +411,14 @@ ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. 
   349:	  01D5	7E 33				MOV	R6,#51
   350:	  01D7	7D 10				MOV	R5,#16
   351:	  01D9	F0		WAITASEC1:	MOVX	@DPTR,A
-  352:	  01DA	E0				MOVX	A,@DPTR
-  353:	  01DB	DF FC				DJNZ	R7,WAITASEC1
-  354:	  01DD	DE FA				DJNZ	R6,WAITASEC1
-  355:	  01DF	DD F8				DJNZ	R5,WAITASEC1
-  356:	  01E1	22				RET
-  357:
-  358:	  01E2	11 22 33 44	TSTDATA:	DB 11h,22h,33h,44h
-  359:
-  360:						END
+  352:	  01DA	DF FD				DJNZ	R7,WAITASEC1
+  353:	  01DC	DE FB				DJNZ	R6,WAITASEC1
+  354:	  01DE	DD F9				DJNZ	R5,WAITASEC1
+  355:	  01E0	22				RET
+  356:
+  357:	  01E1	11 22 33 44	TSTDATA:	DB 11h,22h,33h,44h
+  358:
+  359:						END
 
 
 
@@ -544,7 +543,7 @@ TL1				  DATA	      8B
 TMOD				  DATA	      89
 TR0				  BIT	      8C
 TR1				  BIT	      8E
-TSTDATA				  CODE	    01E2	 358
+TSTDATA				  CODE	    01E1	 357
 TXD				  BIT	      B1
 WAITASEC			  CODE	    01D3	 348
 WAITASEC1			  CODE	    01D9	 351

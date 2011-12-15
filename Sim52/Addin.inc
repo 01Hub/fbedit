@@ -1,13 +1,14 @@
 
-												;Always return FALSE, except for a memory mapped output write.
+												;Always return FALSE
 AM_INIT					equ 0001h				;hWin=Handle to main window, wParam=0, lParam=pointer to ADDIN struct
 AM_PORTWRITE			equ 0002h				;hWin=Handle to main window, wParam=Port (0-3), lParam=Port value
 AM_ALECHANGED			equ 0003h
-AM_XRAMWRITE			equ 0004h				;hWin=Handle to main window, wParam=XRam address, lParam=XRam value
+AM_MMOWRITE				equ 0004h				;hWin=Handle to main window, wParam=XRam address, lParam=XRam value
 AM_XRAMREAD				equ 0005h				;hWin=Handle to main window, wParam=XRam address, lParam=XRam value
 AM_MMIBITCHANGED		equ 0006h				;hWin=Handle to main window, wParam=MMIPort bit (0 to 31), lParam=TRUE or FALSE
 AM_COMMAND				equ 0007h				;hWin=Handle to main window, wParam=0, lParam=MenuID
 AM_RESET				equ 0008h				;hWin=Handle to main window, wParam=0, lParam=0
+AM_REFRESH				equ 0009h				;hWin=Handle to main window, wParam=0, lParam=0
 
 SFRMAP struct
 	ad					DWORD ?					;SFR Adress
@@ -48,6 +49,10 @@ ADDIN struct
 	nAddr				DWORD ?
 	Refresh				DWORD ?
 	lpSendAddinMessage	DWORD ?
+	mmoutport			DWORD 4 dup(?)
+	mmoutportdata		DWORD 4 dup(?)
+	mminport			DWORD 4 dup(?)
+	mminportdata		DWORD 4 dup(?)
 ADDIN ends
 
 SFR_P0      			equ 080h
