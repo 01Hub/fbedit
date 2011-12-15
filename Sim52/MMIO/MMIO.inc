@@ -93,7 +93,7 @@ IDC_IMG2                equ 1411
 IDC_IMG3                equ 1412
 IDC_IMG4                equ 1413
 IDC_IMG5                equ 1414
-IDC_IMG99               equ 1415
+IDC_IMG6                equ 1415
 IDC_IMG7                equ 1416
 IDC_IMG8                equ 1417
 IDC_EDTADDRMMI3         equ 1016

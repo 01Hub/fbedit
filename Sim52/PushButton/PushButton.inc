@@ -172,11 +172,3 @@ lpAddin					DWORD ?
 hBmpPushButton			HBITMAP ?
 hBmpSwitchOpen			HBITMAP ?
 hBmpSwitchClosed		HBITMAP ?
-;P0Bits					DWORD ?
-;P1Bits					DWORD ?
-;P2Bits					DWORD ?
-;P3Bits					DWORD ?
-;MMI0Bits				DWORD ?
-;MMI1Bits				DWORD ?
-;MMI2Bits				DWORD ?
-;MMI3Bits				DWORD ?

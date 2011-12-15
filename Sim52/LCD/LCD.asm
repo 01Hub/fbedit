@@ -201,13 +201,78 @@ GetCBOBits proc uses ebx edi
 			shl		eax,cl
 			or		P3Bits,eax
 			mov		edx,3
-		.elseif eax>=MM_0 && eax<=MM_7
-			sub		eax,MM_0
+		.elseif eax>=MMO0_0 && eax<=MMO0_7
+			sub		eax,MMO0_0
 			mov		ecx,eax
 			mov		eax,01h
 			shl		eax,cl
-			or		MMBits,eax
-			mov		edx,-2
+			or		MMBits[0],eax
+			mov		ecx,lpAddin
+			mov		edx,[ecx].ADDIN.mmoutport[0]
+			mov		MMAddr[0],edx
+			push	eax
+			push	edx
+			.if edx==-1
+				invoke SetDlgItemText,hDlg,IDC_STCERROR,addr szError
+			.else
+				invoke SetDlgItemText,hDlg,IDC_STCERROR,NULL
+			.endif
+			pop		edx
+			pop		eax
+		.elseif eax>=MMO1_0 && eax<=MMO1_7
+			sub		eax,MMO1_0
+			mov		ecx,eax
+			mov		eax,01h
+			shl		eax,cl
+			or		MMBits[4],eax
+			mov		ecx,lpAddin
+			mov		edx,[ecx].ADDIN.mmoutport[4]
+			mov		MMAddr[4],edx
+			push	eax
+			push	edx
+			.if edx==-1
+				invoke SetDlgItemText,hDlg,IDC_STCERROR,addr szError
+			.else
+				invoke SetDlgItemText,hDlg,IDC_STCERROR,NULL
+			.endif
+			pop		edx
+			pop		eax
+		.elseif eax>=MMO2_0 && eax<=MMO2_7
+			sub		eax,MMO2_0
+			mov		ecx,eax
+			mov		eax,01h
+			shl		eax,cl
+			or		MMBits[8],eax
+			mov		ecx,lpAddin
+			mov		edx,[ecx].ADDIN.mmoutport[8]
+			mov		MMAddr[8],edx
+			push	eax
+			push	edx
+			.if edx==-1
+				invoke SetDlgItemText,hDlg,IDC_STCERROR,addr szError
+			.else
+				invoke SetDlgItemText,hDlg,IDC_STCERROR,NULL
+			.endif
+			pop		edx
+			pop		eax
+		.elseif eax>=MMO3_0 && eax<=MMO3_7
+			sub		eax,MMO3_0
+			mov		ecx,eax
+			mov		eax,01h
+			shl		eax,cl
+			or		MMBits[12],eax
+			mov		ecx,lpAddin
+			mov		edx,[ecx].ADDIN.mmoutport[12]
+			mov		MMAddr[12],edx
+			push	eax
+			push	edx
+			.if edx==-1
+				invoke SetDlgItemText,hDlg,IDC_STCERROR,addr szError
+			.else
+				invoke SetDlgItemText,hDlg,IDC_STCERROR,NULL
+			.endif
+			pop		edx
+			pop		eax
 		.endif
 		mov		[edi].LCDBIT.port,edx
 		mov		[edi].LCDBIT.portbit,eax
@@ -220,51 +285,6 @@ GetCBOBits proc uses ebx edi
 	ret
 
 GetCBOBits endp
-
-EditProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
-
-	mov		eax,uMsg
-	.if eax==WM_CHAR
-		mov		eax,wParam
-		.if (eax>='0' && eax<='9') || (eax>='A' && eax<='F') || (eax>='a' && eax<='f') || eax==VK_BACK
-			invoke CallWindowProc,lpOldEditProc,hWin,uMsg,wParam,lParam
-		.else
-			xor		eax,eax
-		.endif
-	.else
-		invoke CallWindowProc,lpOldEditProc,hWin,uMsg,wParam,lParam
-	.endif
-	ret
-
-EditProc endp
-
-HexToBin proc lpStr:DWORD
-
-	push	esi
-	xor		eax,eax
-	xor		edx,edx
-	mov		esi,lpStr
-  @@:
-	shl		eax,4
-	add		eax,edx
-	movzx	edx,byte ptr [esi]
-	.if edx>='0' && edx<='9'
-		sub		edx,'0'
-		inc		esi
-		jmp		@b
-	.elseif  edx>='A' && edx<='F'
-		sub		edx,'A'-10
-		inc		esi
-		jmp		@b
-	.elseif  edx>='a' && edx<='f'
-		sub		edx,'a'-10
-		inc		esi
-		jmp		@b
-	.endif
-	pop		esi
-	ret
-
-HexToBin endp
 
 LCDProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	rect:RECT
@@ -328,10 +348,6 @@ LCDProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		sub		eax,rect.left
 		mov		edx,142
 		invoke MoveWindow,hWin,rect.left,rect.top,eax,edx,TRUE
-		invoke SendDlgItemMessage,hWin,IDC_EDTMMADDR,EM_LIMITTEXT,4,0
-		invoke GetDlgItem,hWin,IDC_EDTMMADDR
-		invoke SetWindowLong,eax,GWL_WNDPROC,offset EditProc
-		mov		lpOldEditProc,eax
 		invoke CheckDlgButton,hWin,IDC_CHKBACKLIGHT,BST_CHECKED
 		mov		BackLight,1
 	.elseif eax==WM_COMMAND
@@ -340,17 +356,6 @@ LCDProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		shr		edx,16
 		.if edx==CBN_SELCHANGE
 			invoke GetCBOBits
-		.elseif edx==EN_CHANGE
-			.if eax==IDC_EDTMMADDR
-				invoke GetDlgItemText,hWin,IDC_EDTMMADDR,addr buffer,sizeof buffer
-				mov		dword ptr buffer[16],'0000'
-				invoke lstrlen,addr buffer
-				mov		edx,4
-				sub		edx,eax
-				invoke lstrcpy,addr buffer[edx+16],addr buffer
-				invoke HexToBin,addr buffer[16]
-				mov		MMAddr,eax
-			.endif
 		.elseif edx==BN_CLICKED
 			.if eax==IDC_BTNEXPAND
 				invoke GetWindowRect,hWin,addr rect
@@ -390,6 +395,17 @@ LCDProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.endif
 	.elseif eax==WM_CLOSE
 		invoke ShowWindow,hWin,SW_HIDE
+	mov		edi,offset lcdbit
+	.while ebx<8+3
+		mov		eax,[edi].LCDBIT.port
+		PrintHex eax
+		mov		eax,[edi].LCDBIT.portbit
+		PrintHex eax
+		mov		eax,[edi].LCDBIT.lcdbit
+		PrintHex eax
+		lea		edi,[edi+sizeof LCDBIT]
+		inc		ebx
+	.endw
 	.else
 		mov		eax,FALSE
 		ret
@@ -437,15 +453,17 @@ AddinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.elseif eax==3 && P3Bits
 			call	SetData
 		.endif
-	.elseif eax==AM_XRAMWRITE
+	.elseif eax==AM_MMPORTWRITE
 		mov		eax,wParam
 		mov		edx,lParam
-		.if eax==MMAddr && MMBits!=0
-			mov		eax,-2
-			call	SetData
-			mov		eax,TRUE
-			jmp		Ex
-		.endif
+		xor		ebx,ebx
+		.while ebx<4
+			.if eax==MMAddr[ebx*4] && MMBits[ebx*4]!=0
+				call	SetData
+				.break
+			.endif
+			inc		ebx
+		.endw
 	.elseif eax==AM_COMMAND
 		mov		eax,lParam
 		.if eax==IDAddin
@@ -468,7 +486,6 @@ AddinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke InvalidateRect,hLcd,NULL,TRUE
 	.endif
 	xor		eax,eax
-  Ex:
 	ret
 
 LcdDataWrite:
@@ -579,6 +596,7 @@ LcdCommandWrite:
 	.endif
 	retn
 
+;eax=portaddress, edx=portdata
 SetData:
 	push	LCDData
 	xor		ecx,ecx

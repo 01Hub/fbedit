@@ -540,7 +540,7 @@ WaitHalfCycle proc
 
 WaitHalfCycle endp
 
-ReadXRam proc uses ebx,nAddr:DWORD
+ReadXRam proc uses ebx edi,nAddr:DWORD
 
 	movzx	ebx,addin.Sfr[SFR_P3]
 	mov		eax,ebx
@@ -548,15 +548,12 @@ ReadXRam proc uses ebx,nAddr:DWORD
 	mov		addin.Sfr[SFR_P3],al
 	;Set RD low
 	invoke WritePort,addr addin.Sfr[SFR_P3],eax
-	invoke SendAddinMessage,addin.hWnd,AM_XRAMREAD,nAddr,0
-	mov		edx,nAddr
-	movzx	eax,addin.XRam[edx]
-	push	eax
 	invoke WaitHalfCycle
 	mov		addin.Sfr[SFR_P3],bl
 	;Set RD high
 	invoke WritePort,addr addin.Sfr[SFR_P3],ebx
-	pop		eax
+	mov		edx,nAddr
+	movzx	eax,addin.XRam[edx]
 	ret
 
 ReadXRam endp
@@ -577,8 +574,8 @@ WriteXRam proc uses ebx esi edi,nAddr:DWORD,nValue:DWORD
 			;There is a memory mapped output at this address, update port
 			mov		edx,nValue
 			mov		addin.mmoutportdata[edi*4],edx
-			;invoke SendAddinMessage,addin.hWnd,AM_MMOWRITE,nAddr,nValue
 			lea		esi,[esi+1]
+			invoke SendAddinMessage,addin.hWnd,AM_MMPORTWRITE,eax,edx
 		.endif
 		lea		edi,[edi+1]
 	.endw

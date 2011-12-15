@@ -26,100 +26,6 @@ UnInstallPB proc uses ebx
 
 UnInstallPB endp
 
-;GetCBOBits proc uses ebx edi
-;
-;	mov		P0Bits,0
-;	mov		P1Bits,0
-;	mov		P2Bits,0
-;	mov		P3Bits,0
-;	mov		MMI0Bits,0
-;	mov		MMI1Bits,0
-;	mov		MMI2Bits,0
-;	mov		MMI3Bits,0
-;	push	0
-;	push	IDC_CBOTPB0
-;	push	IDC_CBOTPB1
-;	push	IDC_CBOTPB2
-;	push	IDC_CBOTPB3
-;	push	IDC_CBOTPB4
-;	push	IDC_CBOTPB5
-;	push	IDC_CBOTPB6
-;	mov		ebx,IDC_CBOTPB7
-;	.while ebx
-;		lea		eax,[ebx-IDC_CBOTPB0+IDC_CBOBPB0]
-;		invoke SendDlgItemMessage,hDlg,eax,CB_GETCURSEL,0,0
-;		.if eax
-;			lea		eax,[ebx-IDC_CBOTPB0+IDC_CHKPB0]
-;			invoke IsDlgButtonChecked,hDlg,eax
-;			.if eax
-;				invoke SendDlgItemMessage,hDlg,ebx,CB_GETCURSEL,0,0
-;				.if eax==NC
-;					mov		edx,-1
-;				.elseif eax>=P0_0 && eax<=P0_7
-;					sub		eax,P0_0
-;					mov		ecx,eax
-;					mov		eax,01h
-;					shl		eax,cl
-;					or		P0Bits,eax
-;					mov		edx,0
-;				.elseif eax>=P1_0 && eax<=P1_7
-;					sub		eax,P1_0
-;					mov		ecx,eax
-;					mov		eax,01h
-;					shl		eax,cl
-;					or		P1Bits,eax
-;					mov		edx,1
-;				.elseif eax>=P2_0 && eax<=P2_7
-;					sub		eax,P2_0
-;					mov		ecx,eax
-;					mov		eax,01h
-;					shl		eax,cl
-;					or		P2Bits,eax
-;					mov		edx,2
-;				.elseif eax>=P3_0 && eax<=P3_7
-;					sub		eax,P3_0
-;					mov		ecx,eax
-;					mov		eax,01h
-;					shl		eax,cl
-;					or		P3Bits,eax
-;					mov		edx,3
-;				.elseif eax>=MMI0_0 && eax<=MMI0_7
-;					sub		eax,MMI0_0
-;					mov		ecx,eax
-;					mov		eax,01h
-;					shl		eax,cl
-;					or		MMI0Bits,eax
-;					mov		edx,4
-;				.elseif eax>=MMI1_0 && eax<=MMI1_7
-;					sub		eax,MMI1_0
-;					mov		ecx,eax
-;					mov		eax,01h
-;					shl		eax,cl
-;					or		MMI1Bits,eax
-;					mov		edx,5
-;				.elseif eax>=MMI2_0 && eax<=MMI2_7
-;					sub		eax,MMI2_0
-;					mov		ecx,eax
-;					mov		eax,01h
-;					shl		eax,cl
-;					or		MMI2Bits,eax
-;					mov		edx,6
-;				.elseif eax>=MMI3_0 && eax<=MMI3_7
-;					sub		eax,MMI3_0
-;					mov		ecx,eax
-;					mov		eax,01h
-;					shl		eax,cl
-;					or		MMI3Bits,eax
-;					mov		edx,7
-;				.endif
-;			.endif
-;		.endif
-;		pop		ebx
-;	.endw
-;	ret
-;
-;GetCBOBits endp
-;
 PBProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	rect:RECT
 	LOCAL	buffer[32]:BYTE
@@ -199,86 +105,143 @@ PBProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						lea		eax,[ebx-IDC_BTNPB0+IDC_CBOTPB0]
 						invoke SendDlgItemMessage,hWin,eax,CB_GETCURSEL,0,0
 						.if eax
+							mov		esi,lpAddin
 							.if eax>=P0_0 && eax<=P0_7
 								lea		ecx,[eax-P0_0]
 								mov		ebx,1
 								shl		ebx,cl
 								.if edi
 									xor		ebx,0FFh
-									mov		edi,lpAddin
-									and		[edi].ADDIN.Sfr[SFR_P0],bl
+									and		[esi].ADDIN.Sfr[SFR_P0],bl
 								.else
-									mov		edi,lpAddin
-									or		[edi].ADDIN.Sfr[SFR_P0],bl
+									or		[esi].ADDIN.Sfr[SFR_P0],bl
 								.endif
-								movzx	ebx,[edi].ADDIN.Sfr[SFR_P0]
+								movzx	ebx,[esi].ADDIN.Sfr[SFR_P0]
 								push	ebx
 								push	0
 								push	AM_PORTWRITE
-								push	[edi].ADDIN.hWnd
-								mov		eax,[edi].ADDIN.lpSendAddinMessage
+								push	[esi].ADDIN.hWnd
+								mov		eax,[esi].ADDIN.lpSendAddinMessage
 								call	eax
-								mov		[edi].ADDIN.Refresh,1
+								mov		[esi].ADDIN.Refresh,1
 							.elseif eax>=P1_0 && eax<=P1_7
 								lea		ecx,[eax-P1_0]
 								mov		ebx,1
 								shl		ebx,cl
 								.if edi
 									xor		ebx,0FFh
-									mov		edi,lpAddin
-									and		[edi].ADDIN.Sfr[SFR_P1],bl
+									and		[esi].ADDIN.Sfr[SFR_P1],bl
 								.else
-									mov		edi,lpAddin
-									or		[edi].ADDIN.Sfr[SFR_P1],bl
+									or		[esi].ADDIN.Sfr[SFR_P1],bl
 								.endif
-								movzx	ebx,[edi].ADDIN.Sfr[SFR_P1]
+								movzx	ebx,[esi].ADDIN.Sfr[SFR_P1]
 								push	ebx
 								push	1
 								push	AM_PORTWRITE
-								push	[edi].ADDIN.hWnd
-								mov		eax,[edi].ADDIN.lpSendAddinMessage
+								push	[esi].ADDIN.hWnd
+								mov		eax,[esi].ADDIN.lpSendAddinMessage
 								call	eax
-								mov		[edi].ADDIN.Refresh,1
+								mov		[esi].ADDIN.Refresh,1
 							.elseif eax>=P2_0 && eax<=P2_7
 								lea		ecx,[eax-P2_0]
 								mov		ebx,1
 								shl		ebx,cl
 								.if edi
 									xor		ebx,0FFh
-									mov		edi,lpAddin
-									and		[edi].ADDIN.Sfr[SFR_P2],bl
+									and		[esi].ADDIN.Sfr[SFR_P2],bl
 								.else
-									mov		edi,lpAddin
-									or		[edi].ADDIN.Sfr[SFR_P2],bl
+									or		[esi].ADDIN.Sfr[SFR_P2],bl
 								.endif
-								movzx	ebx,[edi].ADDIN.Sfr[SFR_P2]
+								movzx	ebx,[esi].ADDIN.Sfr[SFR_P2]
 								push	ebx
 								push	2
 								push	AM_PORTWRITE
-								push	[edi].ADDIN.hWnd
-								mov		eax,[edi].ADDIN.lpSendAddinMessage
+								push	[esi].ADDIN.hWnd
+								mov		eax,[esi].ADDIN.lpSendAddinMessage
 								call	eax
-								mov		[edi].ADDIN.Refresh,1
+								mov		[esi].ADDIN.Refresh,1
 							.elseif eax>=P3_0 && eax<=P3_7
 								lea		ecx,[eax-P3_0]
 								mov		ebx,1
 								shl		ebx,cl
 								.if edi
 									xor		ebx,0FFh
-									mov		edi,lpAddin
-									and		[edi].ADDIN.Sfr[SFR_P3],bl
+									and		[esi].ADDIN.Sfr[SFR_P3],bl
 								.else
-									mov		edi,lpAddin
-									or		[edi].ADDIN.Sfr[SFR_P3],bl
+									or		[esi].ADDIN.Sfr[SFR_P3],bl
 								.endif
-								movzx	ebx,[edi].ADDIN.Sfr[SFR_P3]
+								movzx	ebx,[esi].ADDIN.Sfr[SFR_P3]
 								push	ebx
 								push	3
 								push	AM_PORTWRITE
-								push	[edi].ADDIN.hWnd
-								mov		eax,[edi].ADDIN.lpSendAddinMessage
+								push	[esi].ADDIN.hWnd
+								mov		eax,[esi].ADDIN.lpSendAddinMessage
 								call	eax
-								mov		[edi].ADDIN.Refresh,1
+								mov		[esi].ADDIN.Refresh,1
+							.elseif eax>=MMI0_0 && eax<=MMI0_7
+								mov		edx,[esi].ADDIN.mminport[0]
+								.if edx!=-1
+									lea		ecx,[eax-MMI0_0]
+									mov		ebx,1
+									shl		ebx,cl
+									.if edi
+										xor		ebx,0FFh
+										and		[esi].ADDIN.mminportdata[0],ebx
+									.else
+										or		[esi].ADDIN.mminportdata[0],ebx
+									.endif
+									mov		ebx,[esi].ADDIN.mminportdata[0]
+									mov		[esi].ADDIN.XRam[edx],bl
+									mov		[esi].ADDIN.Refresh,1
+								.endif
+							.elseif eax>=MMI1_0 && eax<=MMI1_7
+								mov		edx,[esi].ADDIN.mminport[4]
+								.if edx!=-1
+									lea		ecx,[eax-MMI1_0]
+									mov		ebx,1
+									shl		ebx,cl
+									.if edi
+										xor		ebx,0FFh
+										and		[esi].ADDIN.mminportdata[4],ebx
+									.else
+										or		[esi].ADDIN.mminportdata[4],ebx
+									.endif
+									mov		ebx,[esi].ADDIN.mminportdata[4]
+									mov		[esi].ADDIN.XRam[edx],bl
+									mov		[esi].ADDIN.Refresh,1
+								.endif
+							.elseif eax>=MMI2_0 && eax<=MMI2_7
+								mov		edx,[esi].ADDIN.mminport[8]
+								.if edx!=-1
+									lea		ecx,[eax-MMI2_0]
+									mov		ebx,1
+									shl		ebx,cl
+									.if edi
+										xor		ebx,0FFh
+										and		[esi].ADDIN.mminportdata[8],ebx
+									.else
+										or		[esi].ADDIN.mminportdata[8],ebx
+									.endif
+									mov		ebx,[esi].ADDIN.mminportdata[8]
+									mov		[esi].ADDIN.XRam[edx],bl
+									mov		[esi].ADDIN.Refresh,1
+								.endif
+							.elseif eax>=MMI3_0 && eax<=MMI3_7
+								mov		edx,[esi].ADDIN.mminport[12]
+								.if edx!=-1
+									lea		ecx,[eax-MMI3_0]
+									mov		ebx,1
+									shl		ebx,cl
+									.if edi
+										xor		ebx,0FFh
+										and		[esi].ADDIN.mminportdata[12],ebx
+									.else
+										or		[esi].ADDIN.mminportdata[12],ebx
+									.endif
+									mov		ebx,[esi].ADDIN.mminportdata[12]
+									mov		[esi].ADDIN.XRam[edx],bl
+									mov		[esi].ADDIN.Refresh,1
+								.endif
 							.endif
 						.endif
 					.endif
@@ -298,10 +261,6 @@ PBProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.endif
 				invoke MoveWindow,hWin,rect.left,rect.top,rect.right,eax,TRUE
 			.endif
-;		.elseif edx==CBN_SELCHANGE
-;			.if (eax>=IDC_CBOTPB0 && eax<=IDC_CBOTPB7) || (eax>=IDC_CBOBPB0 && eax<=IDC_CBOBPB7)
-;				invoke GetCBOBits
-;			.endif
 		.elseif edx==EN_CHANGE
 			mov		ebx,eax
 			invoke GetDlgItemText,hWin,ebx,addr buffer,sizeof buffer
@@ -341,8 +300,6 @@ AddinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		IDAddin,eax
 		inc		[ebx].ADDIN.MenuID
 		invoke CreateDialogParam,hInstance,IDD_DLGPB,hWin,addr PBProc,0
-	.elseif eax==AM_PORTWRITE
-	.elseif eax==AM_XRAMWRITE
 	.elseif eax==AM_COMMAND
 		mov		eax,lParam
 		.if eax==IDAddin

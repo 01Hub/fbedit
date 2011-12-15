@@ -143,7 +143,7 @@ ResetInputs proc uses ebx,fDelete:DWORD
 	push	IDC_IMG3
 	push	IDC_IMG4
 	push	IDC_IMG5
-	push	IDC_IMG99
+	push	IDC_IMG6
 	push	IDC_IMG7
 	mov		eax,IDC_IMG8
 	.while eax
@@ -289,6 +289,8 @@ MMIOProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		edx,01h
 				shl		edx,cl
 				xor		[edi].ADDIN.mminportdata[0],edx
+				mov		eax,[edi].ADDIN.mminportdata[0]
+				mov		edx,[edi].ADDIN.mminport[0]
 				call	ToggleLed
 			.elseif ebx>=1210 && ebx<=1217
 				;MMI1
@@ -296,6 +298,8 @@ MMIOProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		edx,01h
 				shl		edx,cl
 				xor		[edi].ADDIN.mminportdata[4],edx
+				mov		eax,[edi].ADDIN.mminportdata[4]
+				mov		edx,[edi].ADDIN.mminport[4]
 				call	ToggleLed
 			.elseif ebx>=1310 && ebx<=1317
 				;MMI2
@@ -303,6 +307,8 @@ MMIOProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		edx,01h
 				shl		edx,cl
 				xor		[edi].ADDIN.mminportdata[8],edx
+				mov		eax,[edi].ADDIN.mminportdata[8]
+				mov		edx,[edi].ADDIN.mminport[8]
 				call	ToggleLed
 			.elseif ebx>=1410 && ebx<=1417
 				;MMI3
@@ -310,6 +316,8 @@ MMIOProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		edx,01h
 				shl		edx,cl
 				xor		[edi].ADDIN.mminportdata[12],edx
+				mov		eax,[edi].ADDIN.mminportdata[12]
+				mov		edx,[edi].ADDIN.mminport[12]
 				call	ToggleLed
 			.endif
 		.elseif edx==EN_KILLFOCUS
@@ -385,12 +393,14 @@ GetHex:
 	retn
 
 ToggleLed:
-	mov		esi,lpAddin
+	.if edx!=-1
+		mov		[edi].ADDIN.XRam[edx],al
+	.endif
 	invoke SendDlgItemMessage,hWin,ebx,STM_GETIMAGE,IMAGE_BITMAP,0
-	.if eax==[esi].ADDIN.hBmpGrayLed
-		mov		eax,[esi].ADDIN.hBmpRedLed
+	.if eax==[edi].ADDIN.hBmpGrayLed
+		mov		eax,[edi].ADDIN.hBmpRedLed
 	.else
-		mov		eax,[esi].ADDIN.hBmpGrayLed
+		mov		eax,[edi].ADDIN.hBmpGrayLed
 	.endif
 	invoke SendDlgItemMessage,hWin,ebx,STM_SETIMAGE,IMAGE_BITMAP,eax
 	retn
@@ -412,133 +422,6 @@ AddinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		IDAddin,eax
 		inc		[ebx].ADDIN.MenuID
 		invoke CreateDialogParam,hInstance,IDD_DLGMMIO,hWin,addr MMIOProc,0
-;	.elseif eax==AM_MMOWRITE
-;		mov		eax,wParam
-;		xor		ebx,ebx
-;		mov		esi,lpAddin
-;		.while ebx<4
-;			.if eax==[esi].ADDIN.mmoutport[ebx*4]
-;				mov		eax,lParam
-;				mov		[esi].ADDIN.mmoutportdata[ebx*4],eax
-;			.endif
-;			inc		ebx
-;		.endw
-;		.if edi
-;		.endif
-	.elseif eax==AM_XRAMREAD
-		mov		eax,wParam
-		xor		ebx,ebx
-		mov		esi,lpAddin
-		.while ebx<4
-			.if eax==[esi].ADDIN.mminport[ebx*4]
-				mov		edx,[esi].ADDIN.mminportdata[ebx*4]
-				mov		[esi].ADDIN.XRam[eax],dl
-				.break
-			.endif
-			inc		ebx
-		.endw
-	.elseif eax==AM_MMIBITCHANGED
-		mov		eax,wParam
-		mov		ecx,eax
-		and		ecx,07h
-		shr		eax,3
-		mov		edx,1
-		shl		edx,cl
-		mov		esi,lpAddin
-		.if lParam
-			or		[esi].ADDIN.mminportdata[eax*4],edx
-		.else
-			xor		edx,0FFh
-			and		[esi].ADDIN.mminportdata[eax*4],edx
-		.endif
-		.if !eax
-			push	0
-			push	IDC_IMG49
-			push	IDC_IMG50
-			push	IDC_IMG51
-			push	IDC_IMG52
-			push	IDC_IMG53
-			push	IDC_IMG54
-			push	IDC_IMG55
-			mov		eax,IDC_IMG56
-			mov		edx,[esi].ADDIN.mmoutportdata[0]
-			.while eax
-				mov		ecx,[esi].ADDIN.hBmpGrayLed
-				shl		dl,1
-				.if CARRY?
-					mov		ecx,[esi].ADDIN.hBmpRedLed
-				.endif
-				push	edx
-				invoke SendDlgItemMessage,hDlg,eax,STM_SETIMAGE,IMAGE_BITMAP,ecx
-				pop		edx
-				pop		eax
-			.endw
-		.elseif eax==1
-			push	0
-			push	IDC_IMG33
-			push	IDC_IMG34
-			push	IDC_IMG35
-			push	IDC_IMG36
-			push	IDC_IMG37
-			push	IDC_IMG38
-			push	IDC_IMG39
-			mov		eax,IDC_IMG40
-			mov		edx,[esi].ADDIN.mmoutportdata[4]
-			.while eax
-				mov		ecx,[esi].ADDIN.hBmpGrayLed
-				shl		dl,1
-				.if CARRY?
-					mov		ecx,[esi].ADDIN.hBmpRedLed
-				.endif
-				push	edx
-				invoke SendDlgItemMessage,hDlg,eax,STM_SETIMAGE,IMAGE_BITMAP,ecx
-				pop		edx
-				pop		eax
-			.endw
-		.elseif eax==2
-			push	0
-			push	IDC_IMG17
-			push	IDC_IMG18
-			push	IDC_IMG19
-			push	IDC_IMG20
-			push	IDC_IMG21
-			push	IDC_IMG22
-			mov		eax,IDC_IMG23
-			mov		edx,[esi].ADDIN.mmoutportdata[8]
-			.while eax
-				mov		ecx,[esi].ADDIN.hBmpGrayLed
-				shl		dl,1
-				.if CARRY?
-					mov		ecx,[esi].ADDIN.hBmpRedLed
-				.endif
-				push	edx
-				invoke SendDlgItemMessage,hDlg,eax,STM_SETIMAGE,IMAGE_BITMAP,ecx
-				pop		edx
-				pop		eax
-			.endw
-		.elseif eax==3
-			push	0
-			push	IDC_IMG24
-			push	IDC_IMG1
-			push	IDC_IMG2
-			push	IDC_IMG3
-			push	IDC_IMG4
-			push	IDC_IMG5
-			push	IDC_IMG99
-			mov		eax,IDC_IMG7
-			mov		edx,[esi].ADDIN.mmoutportdata[12]
-			.while eax
-				mov		ecx,[esi].ADDIN.hBmpGrayLed
-				shl		dl,1
-				.if CARRY?
-					mov		ecx,[esi].ADDIN.hBmpRedLed
-				.endif
-				push	edx
-				invoke SendDlgItemMessage,hDlg,eax,STM_SETIMAGE,IMAGE_BITMAP,ecx
-				pop		edx
-				pop		eax
-			.endw
-		.endif
 	.elseif eax==AM_COMMAND
 		mov		eax,lParam
 		.if eax==IDAddin
@@ -638,9 +521,92 @@ AddinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			pop		edx
 			pop		eax
 		.endw
+		push	0
+		push	IDC_IMG49
+		push	IDC_IMG50
+		push	IDC_IMG51
+		push	IDC_IMG52
+		push	IDC_IMG53
+		push	IDC_IMG54
+		push	IDC_IMG55
+		mov		eax,IDC_IMG56
+		mov		edx,[esi].ADDIN.mminportdata[0]
+		.while eax
+			mov		ecx,[esi].ADDIN.hBmpGrayLed
+			shl		dl,1
+			.if CARRY?
+				mov		ecx,[esi].ADDIN.hBmpRedLed
+			.endif
+			push	edx
+			invoke SendDlgItemMessage,hDlg,eax,STM_SETIMAGE,IMAGE_BITMAP,ecx
+			pop		edx
+			pop		eax
+		.endw
+		push	0
+		push	IDC_IMG33
+		push	IDC_IMG34
+		push	IDC_IMG35
+		push	IDC_IMG36
+		push	IDC_IMG37
+		push	IDC_IMG38
+		push	IDC_IMG39
+		mov		eax,IDC_IMG40
+		mov		edx,[esi].ADDIN.mminportdata[4]
+		.while eax
+			mov		ecx,[esi].ADDIN.hBmpGrayLed
+			shl		dl,1
+			.if CARRY?
+				mov		ecx,[esi].ADDIN.hBmpRedLed
+			.endif
+			push	edx
+			invoke SendDlgItemMessage,hDlg,eax,STM_SETIMAGE,IMAGE_BITMAP,ecx
+			pop		edx
+			pop		eax
+		.endw
+		push	0
+		push	IDC_IMG17
+		push	IDC_IMG18
+		push	IDC_IMG19
+		push	IDC_IMG20
+		push	IDC_IMG21
+		push	IDC_IMG22
+		push	IDC_IMG23
+		mov		eax,IDC_IMG24
+		mov		edx,[esi].ADDIN.mminportdata[8]
+		.while eax
+			mov		ecx,[esi].ADDIN.hBmpGrayLed
+			shl		dl,1
+			.if CARRY?
+				mov		ecx,[esi].ADDIN.hBmpRedLed
+			.endif
+			push	edx
+			invoke SendDlgItemMessage,hDlg,eax,STM_SETIMAGE,IMAGE_BITMAP,ecx
+			pop		edx
+			pop		eax
+		.endw
+		push	0
+		push	IDC_IMG1
+		push	IDC_IMG2
+		push	IDC_IMG3
+		push	IDC_IMG4
+		push	IDC_IMG5
+		push	IDC_IMG6
+		push	IDC_IMG7
+		mov		eax,IDC_IMG8
+		mov		edx,[esi].ADDIN.mminportdata[12]
+		.while eax
+			mov		ecx,[esi].ADDIN.hBmpGrayLed
+			shl		dl,1
+			.if CARRY?
+				mov		ecx,[esi].ADDIN.hBmpRedLed
+			.endif
+			push	edx
+			invoke SendDlgItemMessage,hDlg,eax,STM_SETIMAGE,IMAGE_BITMAP,ecx
+			pop		edx
+			pop		eax
+		.endw
 	.endif
 	xor		eax,eax
-  Ex:
 	ret
 
 AddinProc endp
