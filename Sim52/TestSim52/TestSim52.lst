@@ -19,48 +19,48 @@ ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. 
  Line  I  Addr  Code            Source
 
     1:
-    2:		N      0000			ORG	0000h
-    3:
-    4:	  0000	75 89 05	START:		MOV	TMOD,#05h
-    5:	  0003	75 88 10			MOV	TCON,#10h
-    6:	  0006	E4				CLR	A
-    7:	  0007	30 8D FD	START1:		JNB	TF0,START1
-    8:	  000A	C2 8D				CLR	TF0
-    9:	  000C	04				INC	A
-   10:	  000D	80 F8				SJMP	START1
-   11:	  000F	00				NOP
-   12:	  0010	00				NOP
-   13:	  0011	00				NOP
-   14:	  0012	00				NOP
-   15:	  0013	90 80 00			MOV	DPTR,#8000h
-   16:	  0016	74 FF				MOV	A,#0FFh
-   17:	  0018	F0				MOVX	@DPTR,A
-   18:	  0019	74 F0				MOV	A,#0F0h
-   19:	  001B	F0				MOVX	@DPTR,A
-   20:	  001C	74 0F				MOV	A,#0Fh
-   21:	  001E	F0				MOVX	@DPTR,A
-   22:	  001F	74 00				MOV	A,#00h
-   23:	  0021	F0				MOVX	@DPTR,A
-   24:
-   25:	  0022	75 80 00			MOV	P0,#00h
-   26:	  0025	D2 80				SETB	80h
-   27:	  0027	D2 81				SETB	81h
-   28:	  0029	D2 82				SETB	82h
-   29:	  002B	D2 83				SETB	83h
-   30:	  002D	D2 84				SETB	84h
-   31:	  002F	D2 85				SETB	85h
-   32:	  0031	D2 86				SETB	86h
-   33:	  0033	D2 87				SETB	87h
-   34:	  0035	D3				SETB	C
-   35:	  0036	C3				CLR	C
-   36:	  0037	75 20 FF			MOV	20h,#0FFh
-   37:	  003A	A2 00				MOV	C,00h
-   38:	  003C	C3				CLR	C
-   39:	  003D	72 00				ORL	C,00h
-   40:	  003F	82 00				ANL	C,00h
-   41:	  0041	C2 00				CLR	00h
-   42:	  0043	82 00				ANL	C,00h
-   43:	  0045	00				NOP
+    2:				;RESET:***********************************************
+    3:		N      0000			ORG	0000h
+    4:	  0000	02 00 2E			LJMP	START
+    5:				;IE0IRQ:**********************************************
+    6:		N      0003			ORG	0003h
+    7:	  0003	00				NOP
+    8:	  0004	00				NOP
+    9:	  0005	32				RETI
+   10:				;TF0IRQ:**********************************************
+   11:		N      000B			ORG	000Bh
+   12:	  000B	00				NOP
+   13:	  000C	00				NOP
+   14:	  000D	32				RETI
+   15:				;IE1IRQ:**********************************************
+   16:		N      0013			ORG	0013h
+   17:	  0013	00				NOP
+   18:	  0014	00				NOP
+   19:	  0015	32				RETI
+   20:				;TF1IRQ:**********************************************
+   21:		N      001B			ORG	001Bh
+   22:	  001B	00				NOP
+   23:	  001C	00				NOP
+   24:	  001D	32				RETI
+   25:				;RITIIRQ:*********************************************
+   26:		N      0023			ORG	0023h
+   27:	  0023	00				NOP
+   28:	  0024	00				NOP
+   29:	  0025	32				RETI
+   30:				;TF2EXF2IRQ:******************************************
+   31:		N      002B			ORG	002Bh
+   32:	  002B	00				NOP
+   33:	  002C	00				NOP
+   34:	  002D	32				RETI
+   35:				;*****************************************************
+   36:
+   37:	  002E	75 89 02	START:		MOV	TMOD,#02h
+   38:	  0031	75 8A F0			MOV	TL0,#0F0h
+   39:	  0034	75 8C F0			MOV	TH0,#0F0h
+   40:	  0037	75 A8 82			MOV	IE,#82h
+   41:	  003A	75 88 10			MOV	TCON,#10h
+   42:	  003D	E4				CLR	A
+   43:	  003E	30 8D FD	START1:		JNB	TF0,START1
 
 ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 2
 
@@ -68,62 +68,62 @@ ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. 
 
  Line  I  Addr  Code            Source
 
-   44:	  0046	01 49				AJMP	AA
-   45:	  0048	00				NOP
-   46:	  0049			AA:
-   47:	  0049	02 00 4D			LJMP	BB
-   48:	  004C	00				NOP
-   49:	  004D			BB:
-   50:	  004D	74 5A				MOV	A,#5Ah
-   51:	  004F	03				RR	A
-   52:	  0050	03				RR	A
-   53:	  0051	04				INC	A
-   54:	  0052	05 10				INC	10h
-   55:	  0054	78 10				MOV	R0,#10h
-   56:	  0056	06				INC	@R0
-   57:	  0057	79 10				MOV	R1,#10h
-   58:	  0059	07				INC	@R1
-   59:	  005A	08				INC	R0
-   60:	  005B	09				INC	R1
-   61:	  005C	0A				INC	R2
-   62:	  005D	0B				INC	R3
-   63:	  005E	0C				INC	R4
-   64:	  005F	0D				INC	R5
-   65:	  0060	0E				INC	R6
-   66:	  0061	0F				INC	R7
-   67:
-   68:	  0062	10 00 07			JBC	00h,CC
-   69:	  0065	00				NOP
-   70:	  0066	75 20 FF			MOV	20h,#0FFh
-   71:	  0069	10 00 00			JBC	00h,CC
-   72:	  006C	31 E3		CC:		ACALL	TESTCALL
-   73:	  006E	12 01 E3			LCALL	TESTCALL
-   74:	  0071	13				RRC	A
-   75:	  0072	14				DEC	A
-   76:	  0073	15 10				DEC	10h
-   77:	  0075	16				DEC	@R0
-   78:	  0076	17				DEC	@R1
-   79:	  0077	18				DEC	R0
-   80:	  0078	19				DEC	R1
-   81:	  0079	1A				DEC	R2
-   82:	  007A	1B				DEC	R3
-   83:	  007B	1C				DEC	R4
-   84:	  007C	1D				DEC	R5
-   85:	  007D	1E				DEC	R6
-   86:	  007E	1F				DEC	R7
-   87:
-   88:	  007F	20 00 01			JB	00h,DD
-   89:				;		AJMP	$cad
-   90:				;		RET
-   91:	  0082	00				NOP
-   92:	  0083	23		DD:		RL	A
-   93:	  0084	24 10				ADD	A,#10h
-   94:	  0086	25 10				ADD	A,10h
-   95:	  0088	26				ADD	A,@R0
-   96:	  0089	27				ADD	A,@R1
-   97:	  008A	28				ADD	A,R0
-   98:	  008B	29				ADD	A,R1
-   99:	  008C	2A				ADD	A,R2
+   44:	  0041	C2 8D				CLR	TF0
+   45:	  0043	04				INC	A
+   46:	  0044	80 F8				SJMP	START1
+   47:	  0046	00				NOP
+   48:	  0047	00				NOP
+   49:	  0048	00				NOP
+   50:	  0049	00				NOP
+   51:	  004A	90 80 00			MOV	DPTR,#8000h
+   52:	  004D	74 FF				MOV	A,#0FFh
+   53:	  004F	F0				MOVX	@DPTR,A
+   54:	  0050	74 F0				MOV	A,#0F0h
+   55:	  0052	F0				MOVX	@DPTR,A
+   56:	  0053	74 0F				MOV	A,#0Fh
+   57:	  0055	F0				MOVX	@DPTR,A
+   58:	  0056	74 00				MOV	A,#00h
+   59:	  0058	F0				MOVX	@DPTR,A
+   60:
+   61:	  0059	75 80 00			MOV	P0,#00h
+   62:	  005C	D2 80				SETB	80h
+   63:	  005E	D2 81				SETB	81h
+   64:	  0060	D2 82				SETB	82h
+   65:	  0062	D2 83				SETB	83h
+   66:	  0064	D2 84				SETB	84h
+   67:	  0066	D2 85				SETB	85h
+   68:	  0068	D2 86				SETB	86h
+   69:	  006A	D2 87				SETB	87h
+   70:	  006C	D3				SETB	C
+   71:	  006D	C3				CLR	C
+   72:	  006E	75 20 FF			MOV	20h,#0FFh
+   73:	  0071	A2 00				MOV	C,00h
+   74:	  0073	C3				CLR	C
+   75:	  0074	72 00				ORL	C,00h
+   76:	  0076	82 00				ANL	C,00h
+   77:	  0078	C2 00				CLR	00h
+   78:	  007A	82 00				ANL	C,00h
+   79:	  007C	00				NOP
+   80:	  007D	01 80				AJMP	AA
+   81:	  007F	00				NOP
+   82:	  0080			AA:
+   83:	  0080	02 00 84			LJMP	BB
+   84:	  0083	00				NOP
+   85:	  0084			BB:
+   86:	  0084	74 5A				MOV	A,#5Ah
+   87:	  0086	03				RR	A
+   88:	  0087	03				RR	A
+   89:	  0088	04				INC	A
+   90:	  0089	05 10				INC	10h
+   91:	  008B	78 10				MOV	R0,#10h
+   92:	  008D	06				INC	@R0
+   93:	  008E	79 10				MOV	R1,#10h
+   94:	  0090	07				INC	@R1
+   95:	  0091	08				INC	R0
+   96:	  0092	09				INC	R1
+   97:	  0093	0A				INC	R2
+   98:	  0094	0B				INC	R3
+   99:	  0095	0C				INC	R4
 
 ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 3
 
@@ -131,62 +131,62 @@ ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. 
 
  Line  I  Addr  Code            Source
 
-  100:	  008D	2B				ADD	A,R3
-  101:	  008E	2C				ADD	A,R4
-  102:	  008F	2D				ADD	A,R5
-  103:	  0090	2E				ADD	A,R6
-  104:	  0091	2F				ADD	A,R7
-  105:
-  106:	  0092	30 00 01			JNB	00h,EE
-  107:				;		ACALL	$cad
-  108:				;		RETI
-  109:	  0095	00				NOP
-  110:	  0096	33		EE:		RLC	A
-  111:	  0097	34 10				ADDC	A,#10h
-  112:	  0099	35 10				ADDC	A,10h
-  113:	  009B	36				ADDC	A,@R0
-  114:	  009C	37				ADDC	A,@R1
-  115:	  009D	38				ADDC	A,R0
-  116:	  009E	39				ADDC	A,R1
-  117:	  009F	3A				ADDC	A,R2
-  118:	  00A0	3B				ADDC	A,R3
-  119:	  00A1	3C				ADDC	A,R4
-  120:	  00A2	3D				ADDC	A,R5
-  121:	  00A3	3E				ADDC	A,R6
-  122:	  00A4	3F				ADDC	A,R7
+  100:	  0096	0D				INC	R5
+  101:	  0097	0E				INC	R6
+  102:	  0098	0F				INC	R7
+  103:
+  104:	  0099	10 00 07			JBC	00h,CC
+  105:	  009C	00				NOP
+  106:	  009D	75 20 FF			MOV	20h,#0FFh
+  107:	  00A0	10 00 00			JBC	00h,CC
+  108:	  00A3	51 1A		CC:		ACALL	TESTCALL
+  109:	  00A5	12 02 1A			LCALL	TESTCALL
+  110:	  00A8	13				RRC	A
+  111:	  00A9	14				DEC	A
+  112:	  00AA	15 10				DEC	10h
+  113:	  00AC	16				DEC	@R0
+  114:	  00AD	17				DEC	@R1
+  115:	  00AE	18				DEC	R0
+  116:	  00AF	19				DEC	R1
+  117:	  00B0	1A				DEC	R2
+  118:	  00B1	1B				DEC	R3
+  119:	  00B2	1C				DEC	R4
+  120:	  00B3	1D				DEC	R5
+  121:	  00B4	1E				DEC	R6
+  122:	  00B5	1F				DEC	R7
   123:
-  124:	  00A5	D3				SETB	C
-  125:	  00A6	40 01				JC	FF
-  126:	  00A8	00				NOP
-  127:				;		AJMP	$cad
-  128:	  00A9	42 10		FF:		ORL	10h,A
-  129:	  00AB	43 10 0F			ORL	10h,#0Fh
-  130:	  00AE	44 0F				ORL	A,#0Fh
-  131:	  00B0	45 10				ORL	A,10h
-  132:	  00B2	46				ORL	A,@R0
-  133:	  00B3	47				ORL	A,@R1
-  134:	  00B4	48				ORL	A,R0
-  135:	  00B5	49				ORL	A,R1
-  136:	  00B6	4A				ORL	A,R2
-  137:	  00B7	4B				ORL	A,R3
-  138:	  00B8	4C				ORL	A,R4
-  139:	  00B9	4D				ORL	A,R5
-  140:	  00BA	4E				ORL	A,R6
-  141:	  00BB	4F				ORL	A,R7
-  142:
-  143:	  00BC	C3				CLR	C
-  144:	  00BD	50 00				JNC	GG
-  145:				;		ACALL	$cad
-  146:	  00BF	52 10		GG:		ANL	10h,A
-  147:	  00C1	53 10 0F			ANL	10h,#0Fh
-  148:	  00C4	54 0F				ANL	A,#0Fh
-  149:	  00C6	55 10				ANL	A,10h
-  150:	  00C8	56				ANL	A,@R0
-  151:	  00C9	57				ANL	A,@R1
-  152:	  00CA	58				ANL	A,R0
-  153:	  00CB	59				ANL	A,R1
-  154:	  00CC	5A				ANL	A,R2
-  155:	  00CD	5B				ANL	A,R3
+  124:	  00B6	20 00 01			JB	00h,DD
+  125:				;		AJMP	$cad
+  126:				;		RET
+  127:	  00B9	00				NOP
+  128:	  00BA	23		DD:		RL	A
+  129:	  00BB	24 10				ADD	A,#10h
+  130:	  00BD	25 10				ADD	A,10h
+  131:	  00BF	26				ADD	A,@R0
+  132:	  00C0	27				ADD	A,@R1
+  133:	  00C1	28				ADD	A,R0
+  134:	  00C2	29				ADD	A,R1
+  135:	  00C3	2A				ADD	A,R2
+  136:	  00C4	2B				ADD	A,R3
+  137:	  00C5	2C				ADD	A,R4
+  138:	  00C6	2D				ADD	A,R5
+  139:	  00C7	2E				ADD	A,R6
+  140:	  00C8	2F				ADD	A,R7
+  141:
+  142:	  00C9	30 00 01			JNB	00h,EE
+  143:				;		ACALL	$cad
+  144:				;		RETI
+  145:	  00CC	00				NOP
+  146:	  00CD	33		EE:		RLC	A
+  147:	  00CE	34 10				ADDC	A,#10h
+  148:	  00D0	35 10				ADDC	A,10h
+  149:	  00D2	36				ADDC	A,@R0
+  150:	  00D3	37				ADDC	A,@R1
+  151:	  00D4	38				ADDC	A,R0
+  152:	  00D5	39				ADDC	A,R1
+  153:	  00D6	3A				ADDC	A,R2
+  154:	  00D7	3B				ADDC	A,R3
+  155:	  00D8	3C				ADDC	A,R4
 
 ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 4
 
@@ -194,62 +194,62 @@ ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. 
 
  Line  I  Addr  Code            Source
 
-  156:	  00CE	5C				ANL	A,R4
-  157:	  00CF	5D				ANL	A,R5
-  158:	  00D0	5E				ANL	A,R6
-  159:	  00D1	5F				ANL	A,R7
-  160:
-  161:	  00D2	60 00				JZ	HH
-  162:				;		AJMP	$cad
-  163:	  00D4	62 10		HH:		XRL	10h,A
-  164:	  00D6	63 10 0F			XRL	10h,#0Fh
-  165:	  00D9	65 FF				XRL	A,0FFh
-  166:	  00DB	65 10				XRL	A,10h
-  167:	  00DD	66				XRL	A,@R0
-  168:	  00DE	67				XRL	A,@R1
-  169:	  00DF	68				XRL	A,R0
-  170:	  00E0	69				XRL	A,R1
-  171:	  00E1	6A				XRL	A,R2
-  172:	  00E2	6B				XRL	A,R3
-  173:	  00E3	6C				XRL	A,R4
-  174:	  00E4	6D				XRL	A,R5
-  175:	  00E5	6E				XRL	A,R6
-  176:	  00E6	6F				XRL	A,R7
-  177:
-  178:	  00E7	70 00				JNZ	II
-  179:				;		ACALL	$cad
-  180:	  00E9	72 00		II:		ORL	C,00h
-  181:	  00EB	74 01				MOV	A,#01h
-  182:	  00ED	90 00 02			MOV	DPTR,#0002h
-  183:				;		JMP	@A+DPTR
-  184:	  00F0	74 11				MOV	A,#11h
-  185:	  00F2	75 10 12			MOV	10h,#12h
-  186:	  00F5	76 11				MOV	@R0,#11h
-  187:	  00F7	77 11				MOV	@R1,#11h
-  188:	  00F9	78 11				MOV	R0,#11h
-  189:	  00FB	79 11				MOV	R1,#11h
-  190:	  00FD	7A 11				MOV	R2,#11h
-  191:	  00FF	7B 11				MOV	R3,#11h
-  192:	  0101	7C 11				MOV	R4,#11h
-  193:	  0103	7D 11				MOV	R5,#11h
-  194:	  0105	7E 11				MOV	R6,#11h
-  195:	  0107	7F 11				MOV	R7,#11h
+  156:	  00D9	3D				ADDC	A,R5
+  157:	  00DA	3E				ADDC	A,R6
+  158:	  00DB	3F				ADDC	A,R7
+  159:
+  160:	  00DC	D3				SETB	C
+  161:	  00DD	40 01				JC	FF
+  162:	  00DF	00				NOP
+  163:				;		AJMP	$cad
+  164:	  00E0	42 10		FF:		ORL	10h,A
+  165:	  00E2	43 10 0F			ORL	10h,#0Fh
+  166:	  00E5	44 0F				ORL	A,#0Fh
+  167:	  00E7	45 10				ORL	A,10h
+  168:	  00E9	46				ORL	A,@R0
+  169:	  00EA	47				ORL	A,@R1
+  170:	  00EB	48				ORL	A,R0
+  171:	  00EC	49				ORL	A,R1
+  172:	  00ED	4A				ORL	A,R2
+  173:	  00EE	4B				ORL	A,R3
+  174:	  00EF	4C				ORL	A,R4
+  175:	  00F0	4D				ORL	A,R5
+  176:	  00F1	4E				ORL	A,R6
+  177:	  00F2	4F				ORL	A,R7
+  178:
+  179:	  00F3	C3				CLR	C
+  180:	  00F4	50 00				JNC	GG
+  181:				;		ACALL	$cad
+  182:	  00F6	52 10		GG:		ANL	10h,A
+  183:	  00F8	53 10 0F			ANL	10h,#0Fh
+  184:	  00FB	54 0F				ANL	A,#0Fh
+  185:	  00FD	55 10				ANL	A,10h
+  186:	  00FF	56				ANL	A,@R0
+  187:	  0100	57				ANL	A,@R1
+  188:	  0101	58				ANL	A,R0
+  189:	  0102	59				ANL	A,R1
+  190:	  0103	5A				ANL	A,R2
+  191:	  0104	5B				ANL	A,R3
+  192:	  0105	5C				ANL	A,R4
+  193:	  0106	5D				ANL	A,R5
+  194:	  0107	5E				ANL	A,R6
+  195:	  0108	5F				ANL	A,R7
   196:
-  197:				;-------------------------------------------------------
-  198:
-  199:	  0109	80 01				SJMP	$+3
-  200:	  010B	00				NOP
-  201:	  010C	21 0F				AJMP	$+3
-  202:	  010E	00				NOP
-  203:	  010F	82 00				ANL	C,00h
-  204:	  0111	83				MOVC	A,@A+PC
-  205:	  0112	74 64				MOV	A,#100
-  206:	  0114	75 F0 04			MOV	B,#4
-  207:	  0117	84				DIV	AB
-  208:	  0118	85 11 10			MOV	10h,11h
-  209:	  011B	86 10				MOV	10h,@R0
-  210:	  011D	87 10				MOV	10h,@R1
-  211:	  011F	88 10				MOV	10h,R0
+  197:	  0109	60 00				JZ	HH
+  198:				;		AJMP	$cad
+  199:	  010B	62 10		HH:		XRL	10h,A
+  200:	  010D	63 10 0F			XRL	10h,#0Fh
+  201:	  0110	65 FF				XRL	A,0FFh
+  202:	  0112	65 10				XRL	A,10h
+  203:	  0114	66				XRL	A,@R0
+  204:	  0115	67				XRL	A,@R1
+  205:	  0116	68				XRL	A,R0
+  206:	  0117	69				XRL	A,R1
+  207:	  0118	6A				XRL	A,R2
+  208:	  0119	6B				XRL	A,R3
+  209:	  011A	6C				XRL	A,R4
+  210:	  011B	6D				XRL	A,R5
+  211:	  011C	6E				XRL	A,R6
 
 ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 5
 
@@ -257,62 +257,62 @@ ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. 
 
  Line  I  Addr  Code            Source
 
-  212:	  0121	89 10				MOV	10h,R1
-  213:	  0123	8A 10				MOV	10h,R2
-  214:	  0125	8B 10				MOV	10h,R3
-  215:	  0127	8C 10				MOV	10h,R4
-  216:	  0129	8D 10				MOV	10h,R5
-  217:	  012B	8E 10				MOV	10h,R6
-  218:	  012D	8F 10				MOV	10h,R7
-  219:
-  220:	  012F	90 12 34			MOV	DPTR,#1234h
-  221:				;		ACALL	$cad
-  222:	  0132	92 00				MOV	00h,C
-  223:	  0134	93				MOVC	A,@A+DPTR
-  224:	  0135	94 10				SUBB	A,#10h
-  225:	  0137	95 10				SUBB	A,10h
-  226:	  0139	96				SUBB	A,@R0
-  227:	  013A	97				SUBB	A,@R1
-  228:	  013B	98				SUBB	A,R0
-  229:	  013C	99				SUBB	A,R1
-  230:	  013D	9A				SUBB	A,R2
-  231:	  013E	9B				SUBB	A,R3
-  232:	  013F	9C				SUBB	A,R4
-  233:	  0140	9D				SUBB	A,R5
-  234:	  0141	9E				SUBB	A,R6
-  235:	  0142	9F				SUBB	A,R7
-  236:
-  237:	  0143	72 00				ORL	C,00h
-  238:				;		AJMP	$cad
-  239:	  0145	A2 00				MOV	C,00h
-  240:	  0147	A3				INC	DPTR
-  241:	  0148	74 05				MOV	A,#5
-  242:	  014A	75 F0 06			MOV	B,#6
-  243:	  014D	A4				MUL	AB
-  244:	  014E	A6 10				MOV	@R0,10h
-  245:	  0150	A7 10				MOV	@R1,10h
-  246:	  0152	A8 10				MOV	R0,10h
-  247:	  0154	A9 10				MOV	R1,10h
-  248:	  0156	AA 10				MOV	R2,10h
-  249:	  0158	AB 10				MOV	R3,10h
-  250:	  015A	AC 10				MOV	R4,10h
-  251:	  015C	AD 10				MOV	R5,10h
-  252:	  015E	AE 10				MOV	R6,10h
-  253:	  0160	AF 10				MOV	R7,10h
-  254:
-  255:	  0162	82 10				ANL	C,10h
-  256:				;		ACALL	$cad
-  257:	  0164	B2 10				CPL	10h
-  258:	  0166	B3				CPL	C
-  259:	  0167	B4 10 00			CJNE	A,#10h,II1
-  260:	  016A	B5 10 00	II1:		CJNE	A,10h,II2
-  261:	  016D	B6 10 00	II2:		CJNE	@R0,#10h,II3
-  262:	  0170	B7 10 00	II3:		CJNE	@R1,#10h,II4
-  263:	  0173	B8 10 00	II4:		CJNE	R0,#10h,II5
-  264:	  0176	B9 10 00	II5:		CJNE	R1,#10h,II6
-  265:	  0179	BA 10 00	II6:		CJNE	R2,#10h,II7
-  266:	  017C	BB 10 00	II7:		CJNE	R3,#10h,II8
-  267:	  017F	BC 10 00	II8:		CJNE	R4,#10h,II9
+  212:	  011D	6F				XRL	A,R7
+  213:
+  214:	  011E	70 00				JNZ	II
+  215:				;		ACALL	$cad
+  216:	  0120	72 00		II:		ORL	C,00h
+  217:	  0122	74 01				MOV	A,#01h
+  218:	  0124	90 00 02			MOV	DPTR,#0002h
+  219:				;		JMP	@A+DPTR
+  220:	  0127	74 11				MOV	A,#11h
+  221:	  0129	75 10 12			MOV	10h,#12h
+  222:	  012C	76 11				MOV	@R0,#11h
+  223:	  012E	77 11				MOV	@R1,#11h
+  224:	  0130	78 11				MOV	R0,#11h
+  225:	  0132	79 11				MOV	R1,#11h
+  226:	  0134	7A 11				MOV	R2,#11h
+  227:	  0136	7B 11				MOV	R3,#11h
+  228:	  0138	7C 11				MOV	R4,#11h
+  229:	  013A	7D 11				MOV	R5,#11h
+  230:	  013C	7E 11				MOV	R6,#11h
+  231:	  013E	7F 11				MOV	R7,#11h
+  232:
+  233:				;-------------------------------------------------------
+  234:
+  235:	  0140	80 01				SJMP	$+3
+  236:	  0142	00				NOP
+  237:	  0143	21 46				AJMP	$+3
+  238:	  0145	00				NOP
+  239:	  0146	82 00				ANL	C,00h
+  240:	  0148	83				MOVC	A,@A+PC
+  241:	  0149	74 64				MOV	A,#100
+  242:	  014B	75 F0 04			MOV	B,#4
+  243:	  014E	84				DIV	AB
+  244:	  014F	85 11 10			MOV	10h,11h
+  245:	  0152	86 10				MOV	10h,@R0
+  246:	  0154	87 10				MOV	10h,@R1
+  247:	  0156	88 10				MOV	10h,R0
+  248:	  0158	89 10				MOV	10h,R1
+  249:	  015A	8A 10				MOV	10h,R2
+  250:	  015C	8B 10				MOV	10h,R3
+  251:	  015E	8C 10				MOV	10h,R4
+  252:	  0160	8D 10				MOV	10h,R5
+  253:	  0162	8E 10				MOV	10h,R6
+  254:	  0164	8F 10				MOV	10h,R7
+  255:
+  256:	  0166	90 12 34			MOV	DPTR,#1234h
+  257:				;		ACALL	$cad
+  258:	  0169	92 00				MOV	00h,C
+  259:	  016B	93				MOVC	A,@A+DPTR
+  260:	  016C	94 10				SUBB	A,#10h
+  261:	  016E	95 10				SUBB	A,10h
+  262:	  0170	96				SUBB	A,@R0
+  263:	  0171	97				SUBB	A,@R1
+  264:	  0172	98				SUBB	A,R0
+  265:	  0173	99				SUBB	A,R1
+  266:	  0174	9A				SUBB	A,R2
+  267:	  0175	9B				SUBB	A,R3
 
 ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 6
 
@@ -320,62 +320,62 @@ ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. 
 
  Line  I  Addr  Code            Source
 
-  268:	  0182	BD 10 00	II9:		CJNE	R5,#10h,II10
-  269:	  0185	BE 10 00	II10:		CJNE	R6,#10h,II11
-  270:	  0188	BF 10 00	II11:		CJNE	R7,#10h,II12
-  271:	  018B			II12:
+  268:	  0176	9C				SUBB	A,R4
+  269:	  0177	9D				SUBB	A,R5
+  270:	  0178	9E				SUBB	A,R6
+  271:	  0179	9F				SUBB	A,R7
   272:
-  273:				;-------------------------------------------------------
-  274:
-  275:	  018B	C0 10				PUSH	10h
-  276:				;		AJMP	$cad
-  277:	  018D	C2 00				CLR	00h
-  278:	  018F	C3				CLR	C
-  279:	  0190	C4				SWAP	A
-  280:	  0191	C5 10				XCH	A,10h
-  281:	  0193	C6				XCH	A,@R0
-  282:	  0194	C7				XCH	A,@R1
-  283:	  0195	C8				XCH	A,R0
-  284:	  0196	C9				XCH	A,R1
-  285:	  0197	CA				XCH	A,R2
-  286:	  0198	CB				XCH	A,R3
-  287:	  0199	CC				XCH	A,R4
-  288:	  019A	CD				XCH	A,R5
-  289:	  019B	CE				XCH	A,R6
-  290:	  019C	CF				XCH	A,R7
-  291:
-  292:	  019D	D0 10				POP	10h
-  293:				;		ACALL_$cad
-  294:	  019F	D2 00				SETB	00h
-  295:	  01A1	D3				SETB	C
-  296:	  01A2	D4				DA	A
-  297:	  01A3	D5 10 FD			DJNZ	10h,$
-  298:	  01A6	D6				XCHD	A,@R0
-  299:	  01A7	D7				XCHD	A,@R1
-  300:	  01A8	D8 FE				DJNZ	R0,$
-  301:	  01AA	D9 FE				DJNZ	R1,$
-  302:	  01AC	DA FE				DJNZ	R2,$
-  303:	  01AE	DB FE				DJNZ	R3,$
-  304:	  01B0	DC FE				DJNZ	R4,$
-  305:	  01B2	DD FE				DJNZ	R5,$
-  306:	  01B4	DE FE				DJNZ	R6,$
-  307:	  01B6	DF FE				DJNZ	R7,$
+  273:	  017A	72 00				ORL	C,00h
+  274:				;		AJMP	$cad
+  275:	  017C	A2 00				MOV	C,00h
+  276:	  017E	A3				INC	DPTR
+  277:	  017F	74 05				MOV	A,#5
+  278:	  0181	75 F0 06			MOV	B,#6
+  279:	  0184	A4				MUL	AB
+  280:	  0185	A6 10				MOV	@R0,10h
+  281:	  0187	A7 10				MOV	@R1,10h
+  282:	  0189	A8 10				MOV	R0,10h
+  283:	  018B	A9 10				MOV	R1,10h
+  284:	  018D	AA 10				MOV	R2,10h
+  285:	  018F	AB 10				MOV	R3,10h
+  286:	  0191	AC 10				MOV	R4,10h
+  287:	  0193	AD 10				MOV	R5,10h
+  288:	  0195	AE 10				MOV	R6,10h
+  289:	  0197	AF 10				MOV	R7,10h
+  290:
+  291:	  0199	82 10				ANL	C,10h
+  292:				;		ACALL	$cad
+  293:	  019B	B2 10				CPL	10h
+  294:	  019D	B3				CPL	C
+  295:	  019E	B4 10 00			CJNE	A,#10h,II1
+  296:	  01A1	B5 10 00	II1:		CJNE	A,10h,II2
+  297:	  01A4	B6 10 00	II2:		CJNE	@R0,#10h,II3
+  298:	  01A7	B7 10 00	II3:		CJNE	@R1,#10h,II4
+  299:	  01AA	B8 10 00	II4:		CJNE	R0,#10h,II5
+  300:	  01AD	B9 10 00	II5:		CJNE	R1,#10h,II6
+  301:	  01B0	BA 10 00	II6:		CJNE	R2,#10h,II7
+  302:	  01B3	BB 10 00	II7:		CJNE	R3,#10h,II8
+  303:	  01B6	BC 10 00	II8:		CJNE	R4,#10h,II9
+  304:	  01B9	BD 10 00	II9:		CJNE	R5,#10h,II10
+  305:	  01BC	BE 10 00	II10:		CJNE	R6,#10h,II11
+  306:	  01BF	BF 10 00	II11:		CJNE	R7,#10h,II12
+  307:	  01C2			II12:
   308:
-  309:	  01B8	E0				MOVX	A,@DPTR
-  310:				;		AJMP	$cad
-  311:	  01B9	E2				MOVX	A,@R0
-  312:	  01BA	E3				MOVX	A,@R1
-  313:	  01BB	E4				CLR	A
-  314:	  01BC	E5 10				MOV	A,10h
-  315:	  01BE	E6				MOV	A,@R0
-  316:	  01BF	E7				MOV	A,@R1
-  317:	  01C0	E8				MOV	A,R0
-  318:	  01C1	E9				MOV	A,R1
-  319:	  01C2	EA				MOV	A,R2
-  320:	  01C3	EB				MOV	A,R3
-  321:	  01C4	EC				MOV	A,R4
-  322:	  01C5	ED				MOV	A,R5
-  323:	  01C6	EE				MOV	A,R6
+  309:				;-------------------------------------------------------
+  310:
+  311:	  01C2	C0 10				PUSH	10h
+  312:				;		AJMP	$cad
+  313:	  01C4	C2 00				CLR	00h
+  314:	  01C6	C3				CLR	C
+  315:	  01C7	C4				SWAP	A
+  316:	  01C8	C5 10				XCH	A,10h
+  317:	  01CA	C6				XCH	A,@R0
+  318:	  01CB	C7				XCH	A,@R1
+  319:	  01CC	C8				XCH	A,R0
+  320:	  01CD	C9				XCH	A,R1
+  321:	  01CE	CA				XCH	A,R2
+  322:	  01CF	CB				XCH	A,R3
+  323:	  01D0	CC				XCH	A,R4
 
 ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 7
 
@@ -383,54 +383,97 @@ ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. 
 
  Line  I  Addr  Code            Source
 
-  324:	  01C7	EF				MOV	A,R7
-  325:
-  326:	  01C8	74 12				MOV	A,#12h
-  327:	  01CA	F0				MOVX	@DPTR,A
-  328:				;		ACALL	$cad
-  329:	  01CB	F2				MOVX	@R0,A
-  330:	  01CC	F3				MOVX	@R1,A
-  331:	  01CD	F4				CPL	A
-  332:	  01CE	F5 10				MOV	10h,A
-  333:	  01D0	F6				MOV	@R0,A
-  334:	  01D1	F7				MOV	@R1,A
-  335:	  01D2	F8				MOV	R0,A
-  336:	  01D3	F9				MOV	R1,A
-  337:	  01D4	FA				MOV	R2,A
-  338:	  01D5	FB				MOV	R3,A
-  339:	  01D6	FC				MOV	R4,A
-  340:	  01D7	FD				MOV	R5,A
-  341:	  01D8	FE				MOV	R6,A
-  342:	  01D9	FF				MOV	R7,A
-  343:
-  344:				;-------------------------------------------------------
-  345:	  01DA	E4				CLR	A
-  346:	  01DB	90 80 00			MOV	DPTR,#8000h
-  347:	  01DE	31 E6		TIMING:		ACALL	WAITASEC
-  348:	  01E0	04				INC	A
-  349:	  01E1	80 FB				SJMP	TIMING
-  350:
-  351:	  01E3	00		TESTCALL:	NOP
-  352:	  01E4	00				NOP
-  353:	  01E5	22				RET
-  354:
-  355:
-  356:				;------------------------------------------------------------------
-  357:				;Wait loop. Waits 1 second
-  358:				;------------------------------------------------------------------
-  359:	  01E6	7F F9		WAITASEC:	MOV	R7,#0F9h
-  360:	  01E8	7E 33				MOV	R6,#51
-  361:	  01EA	7D 10				MOV	R5,#16
-  362:	  01EC	F0		WAITASEC1:	MOVX	@DPTR,A
-  363:	  01ED	E0				MOVX	A,@DPTR
-  364:	  01EE	DF FC				DJNZ	R7,WAITASEC1
-  365:	  01F0	DE FA				DJNZ	R6,WAITASEC1
-  366:	  01F2	DD F8				DJNZ	R5,WAITASEC1
-  367:	  01F4	22				RET
-  368:
-  369:	  01F5	11 22 33 44	TSTDATA:	DB 11h,22h,33h,44h
-  370:
-  371:						END
+  324:	  01D1	CD				XCH	A,R5
+  325:	  01D2	CE				XCH	A,R6
+  326:	  01D3	CF				XCH	A,R7
+  327:
+  328:	  01D4	D0 10				POP	10h
+  329:				;		ACALL_$cad
+  330:	  01D6	D2 00				SETB	00h
+  331:	  01D8	D3				SETB	C
+  332:	  01D9	D4				DA	A
+  333:	  01DA	D5 10 FD			DJNZ	10h,$
+  334:	  01DD	D6				XCHD	A,@R0
+  335:	  01DE	D7				XCHD	A,@R1
+  336:	  01DF	D8 FE				DJNZ	R0,$
+  337:	  01E1	D9 FE				DJNZ	R1,$
+  338:	  01E3	DA FE				DJNZ	R2,$
+  339:	  01E5	DB FE				DJNZ	R3,$
+  340:	  01E7	DC FE				DJNZ	R4,$
+  341:	  01E9	DD FE				DJNZ	R5,$
+  342:	  01EB	DE FE				DJNZ	R6,$
+  343:	  01ED	DF FE				DJNZ	R7,$
+  344:
+  345:	  01EF	E0				MOVX	A,@DPTR
+  346:				;		AJMP	$cad
+  347:	  01F0	E2				MOVX	A,@R0
+  348:	  01F1	E3				MOVX	A,@R1
+  349:	  01F2	E4				CLR	A
+  350:	  01F3	E5 10				MOV	A,10h
+  351:	  01F5	E6				MOV	A,@R0
+  352:	  01F6	E7				MOV	A,@R1
+  353:	  01F7	E8				MOV	A,R0
+  354:	  01F8	E9				MOV	A,R1
+  355:	  01F9	EA				MOV	A,R2
+  356:	  01FA	EB				MOV	A,R3
+  357:	  01FB	EC				MOV	A,R4
+  358:	  01FC	ED				MOV	A,R5
+  359:	  01FD	EE				MOV	A,R6
+  360:	  01FE	EF				MOV	A,R7
+  361:
+  362:	  01FF	74 12				MOV	A,#12h
+  363:	  0201	F0				MOVX	@DPTR,A
+  364:				;		ACALL	$cad
+  365:	  0202	F2				MOVX	@R0,A
+  366:	  0203	F3				MOVX	@R1,A
+  367:	  0204	F4				CPL	A
+  368:	  0205	F5 10				MOV	10h,A
+  369:	  0207	F6				MOV	@R0,A
+  370:	  0208	F7				MOV	@R1,A
+  371:	  0209	F8				MOV	R0,A
+  372:	  020A	F9				MOV	R1,A
+  373:	  020B	FA				MOV	R2,A
+  374:	  020C	FB				MOV	R3,A
+  375:	  020D	FC				MOV	R4,A
+  376:	  020E	FD				MOV	R5,A
+  377:	  020F	FE				MOV	R6,A
+  378:	  0210	FF				MOV	R7,A
+  379:
+
+ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 8
+
+
+
+ Line  I  Addr  Code            Source
+
+  380:				;-------------------------------------------------------
+  381:	  0211	E4				CLR	A
+  382:	  0212	90 80 00			MOV	DPTR,#8000h
+  383:	  0215	51 1D		TIMING:		ACALL	WAITASEC
+  384:	  0217	04				INC	A
+  385:	  0218	80 FB				SJMP	TIMING
+  386:
+  387:	  021A	00		TESTCALL:	NOP
+  388:	  021B	00				NOP
+  389:	  021C	22				RET
+  390:
+  391:
+  392:				;------------------------------------------------------------------
+  393:				;Wait loop. Waits 1 second
+  394:				;------------------------------------------------------------------
+  395:	  021D	7F F9		WAITASEC:	MOV	R7,#0F9h
+  396:	  021F	7E 33				MOV	R6,#51
+  397:	  0221	7D 10				MOV	R5,#16
+  398:	  0223	F0		WAITASEC1:	MOVX	@DPTR,A
+  399:	  0224	E0				MOVX	A,@DPTR
+  400:	  0225	DF FC				DJNZ	R7,WAITASEC1
+  401:	  0227	DE FA				DJNZ	R6,WAITASEC1
+  402:	  0229	DD F8				DJNZ	R5,WAITASEC1
+  403:	  022B	22				RET
+  404:
+  405:	  022C	11 22 33 44	TSTDATA:	DB 11h,22h,33h,44h
+  406:
+  407:						END
 
 
 
@@ -439,11 +482,6 @@ ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. 
                      register banks used:  ---
 
                      no errors
-
-ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 8
-
-
-
 
 
 
@@ -462,18 +500,18 @@ SYMBOL				  TYPE     VALUE	LINE
 ------------------------------------------------------------
 ??ASEM_51			  NUMBER    8051
 ??VERSION			  NUMBER    0130
-AA				  CODE	    0049	  46
+AA				  CODE	    0080	  82
 AC				  BIT	      D6
 ACC				  DATA	      E0
 B				  DATA	      F0
-BB				  CODE	    004D	  49
-CC				  CODE	    006C	  72
+BB				  CODE	    0084	  85
+CC				  CODE	    00A3	 108
 CY				  BIT	      D7
-DD				  CODE	    0083	  92
+DD				  CODE	    00BA	 128
 DPH				  DATA	      83
 DPL				  DATA	      82
 EA				  BIT	      AF
-EE				  CODE	    0096	 110
+EE				  CODE	    00CD	 146
 ES				  BIT	      AC
 ET0				  BIT	      A9
 ET1				  BIT	      AB
@@ -482,25 +520,25 @@ EX1				  BIT	      AA
 EXTI0				  CODE	    0003
 EXTI1				  CODE	    0013
 F0				  BIT	      D5
-FF				  CODE	    00A9	 128
-GG				  CODE	    00BF	 146
-HH				  CODE	    00D4	 163
+FF				  CODE	    00E0	 164
+GG				  CODE	    00F6	 182
+HH				  CODE	    010B	 199
 IE				  DATA	      A8
 IE0				  BIT	      89
 IE1				  BIT	      8B
-II				  CODE	    00E9	 180
-II1				  CODE	    016A	 260
-II10				  CODE	    0185	 269
-II11				  CODE	    0188	 270
-II12				  CODE	    018B	 271
-II2				  CODE	    016D	 261
-II3				  CODE	    0170	 262
-II4				  CODE	    0173	 263
-II5				  CODE	    0176	 264
-II6				  CODE	    0179	 265
-II7				  CODE	    017C	 266
-II8				  CODE	    017F	 267
-II9				  CODE	    0182	 268
+II				  CODE	    0120	 216
+II1				  CODE	    01A1	 296
+II10				  CODE	    01BC	 305
+II11				  CODE	    01BF	 306
+II12				  CODE	    01C2	 307
+II2				  CODE	    01A4	 297
+II3				  CODE	    01A7	 298
+II4				  CODE	    01AA	 299
+II5				  CODE	    01AD	 300
+II6				  CODE	    01B0	 301
+II7				  CODE	    01B3	 302
+II8				  CODE	    01B6	 303
+II9				  CODE	    01B9	 304
 INT0				  BIT	      B2
 INT1				  BIT	      B3
 IP				  DATA	      B8
@@ -541,13 +579,13 @@ SM0				  BIT	      9F
 SM1				  BIT	      9E
 SM2				  BIT	      9D
 SP				  DATA	      81
-START				  CODE	    0000	   4
-START1				  CODE	    0007	   7
+START				  CODE	    002E	  37
+START1				  CODE	    003E	  43
 T0				  BIT	      B4
 T1				  BIT	      B5
 TB8				  BIT	      9B
 TCON				  DATA	      88
-TESTCALL			  CODE	    01E3	 351
+TESTCALL			  CODE	    021A	 387
 TF0				  BIT	      8D
 TF1				  BIT	      8F
 TH0				  DATA	      8C
@@ -555,14 +593,14 @@ TH1				  DATA	      8D
 TI				  BIT	      99
 TIMER0				  CODE	    000B
 TIMER1				  CODE	    001B
-TIMING				  CODE	    01DE	 347
+TIMING				  CODE	    0215	 383
 TL0				  DATA	      8A
 TL1				  DATA	      8B
 TMOD				  DATA	      89
 TR0				  BIT	      8C
 TR1				  BIT	      8E
-TSTDATA				  CODE	    01F5	 369
+TSTDATA				  CODE	    022C	 405
 TXD				  BIT	      B1
-WAITASEC			  CODE	    01E6	 359
-WAITASEC1			  CODE	    01EC	 362
+WAITASEC			  CODE	    021D	 395
+WAITASEC1			  CODE	    0223	 398
 WR				  BIT	      B6

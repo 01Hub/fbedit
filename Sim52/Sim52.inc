@@ -333,6 +333,12 @@ ADDINS struct
 	lpAddinProc			DWORD ?
 ADDINS ends
 
+INTERRUPT struct
+	pri					DWORD ?
+	sfr					DWORD ?
+	bit					DWORD ?
+INTERRUPT ends
+
 .const
 
 tbrbtns					TBBUTTON <0,IDM_FILE_OPEN,TBSTATE_ENABLED,TBSTYLE_BUTTON,0,0>
@@ -417,12 +423,7 @@ PerformanceCount		QWORD ?
 RefreshRate				DWORD ?
 PCDONE					DWORD ?
 nHalfCycles				DWORD ?
-OldP3					DWORD ?
 NewP3					DWORD ?
-T0Mod					DWORD ?
-T1Mod					DWORD ?
-T2Mod					DWORD ?
-T0Con					DWORD ?
-T1Con					DWORD ?
-T2Con					DWORD ?
+OldP3					DWORD ?
+pendingint				INTERRUPT 2 dup(<>)
 

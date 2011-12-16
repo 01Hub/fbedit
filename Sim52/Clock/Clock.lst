@@ -1,0 +1,359 @@
+
+ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 1
+
+
+
+
+
+       MCS-51 Family Macro Assembler   A S E M - 5 1   V 1.3
+       =====================================================
+
+
+
+	Source File:	Clock.a51
+	Object File:	Clock.hex
+	List File:	Clock.lst
+
+
+
+ Line  I  Addr  Code            Source
+
+    1:
+    2:
+    3:		N      0040	LCDBUFF		equ	40h
+    4:		N	 00	CLOCKFLAG	bit	00h
+    5:
+    6:				;RESET:***********************************************
+    7:		N      0000			ORG	0000h
+    8:	  0000	02 00 2C			LJMP	START
+    9:				;IE0IRQ:**********************************************
+   10:		N      0003			ORG	0003h
+   11:	  0003	32				RETI
+   12:				;TF0IRQ:**********************************************
+   13:		N      000B			ORG	000Bh
+   14:	  000B	02 00 B0			LJMP	CLOCK
+   15:				;IE1IRQ:**********************************************
+   16:		N      0013			ORG	0013h
+   17:	  0013	32				RETI
+   18:				;TF1IRQ:**********************************************
+   19:		N      001B			ORG	001Bh
+   20:	  001B	32				RETI
+   21:				;RITIIRQ:*********************************************
+   22:		N      0023			ORG	0023h
+   23:	  0023	32				RETI
+   24:				;TF2EXF2IRQ:******************************************
+   25:		N      002B			ORG	002Bh
+   26:	  002B	32				RETI
+   27:				;*****************************************************
+   28:
+   29:	  002C	31 1F		START:		ACALL	LCDCLEARBUFF
+   30:	  002E	31 06				ACALL	LCDINIT
+   31:	  0030	11 EF				ACALL	LCDCLEAR
+   32:	  0032	11 71				ACALL	CLOCKSHOW
+   33:	  0034	75 89 02			MOV	TMOD,#02h	;8 bit auto reload
+   34:	  0037	75 8A 37			MOV	TL0,#255-200
+   35:	  003A	75 8C 38			MOV	TH0,#256-200	;100us intervall
+   36:	  003D	75 A8 82			MOV	IE,#82h		;Enable timer 0 interrupt
+   37:	  0040	7F 64				MOV	R7,#100
+   38:	  0042	7E 64				MOV	R6,#100
+   39:	  0044	75 88 10			MOV	TCON,#10h	;Start timer 0
+   40:	  0047	30 00 06	START1:		JNB	CLOCKFLAG,START2
+   41:	  004A	C2 00				CLR	CLOCKFLAG
+   42:	  004C	11 52				ACALL	CLOCKINC
+   43:	  004E	11 71				ACALL	CLOCKSHOW
+
+ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 2
+
+
+
+ Line  I  Addr  Code            Source
+
+   44:	  0050	80 F5		START2:		SJMP	START1		;Enter endless loop
+   45:
+   46:	  0052	EA		CLOCKINC:	MOV	A,R2
+   47:	  0053	24 01				ADD	A,#01h
+   48:	  0055	D4				DA	A
+   49:	  0056	FA				MOV	R2,A
+   50:	  0057	B4 60 16			CJNE	A,#60h,CLOCKINCEX
+   51:	  005A	7A 00				MOV	R2,#00h
+   52:	  005C	EB				MOV	A,R3
+   53:	  005D	24 01				ADD	A,#01h
+   54:	  005F	D4				DA	A
+   55:	  0060	FB				MOV	R3,A
+   56:	  0061	B4 60 0C			CJNE	A,#60h,CLOCKINCEX
+   57:	  0064	7B 00				MOV	R3,#00h
+   58:	  0066	EC				MOV	A,R4
+   59:	  0067	24 01				ADD	A,#01h
+   60:	  0069	D4				DA	A
+   61:	  006A	FC				MOV	R4,A
+   62:	  006B	B4 24 02			CJNE	A,#24h,CLOCKINCEX
+   63:	  006E	7C 00				MOV	R4,#00h
+   64:	  0070	22		CLOCKINCEX:	RET
+   65:
+   66:	  0071	74 04		CLOCKSHOW:	MOV	A,#04h
+   67:	  0073	11 FA				ACALL	LCDSETADR
+   68:	  0075	78 40				MOV	R0,#LCDBUFF
+   69:	  0077	EC				MOV	A,R4		;Hours
+   70:	  0078	C4				SWAP	A
+   71:	  0079	54 0F				ANL	A,#0Fh
+   72:	  007B	44 30				ORL	A,#30h
+   73:	  007D	F6				MOV	@R0,A
+   74:	  007E	08				INC	R0
+   75:	  007F	EC				MOV	A,R4		;Hours
+   76:	  0080	54 0F				ANL	A,#0Fh
+   77:	  0082	44 30				ORL	A,#30h
+   78:	  0084	F6				MOV	@R0,A
+   79:	  0085	08				INC	R0
+   80:	  0086	76 3A				MOV	@R0,#':'
+   81:	  0088	08				INC	R0
+   82:	  0089	EB				MOV	A,R3		;Minutes
+   83:	  008A	C4				SWAP	A
+   84:	  008B	54 0F				ANL	A,#0Fh
+   85:	  008D	44 30				ORL	A,#30h
+   86:	  008F	F6				MOV	@R0,A
+   87:	  0090	08				INC	R0
+   88:	  0091	EB				MOV	A,R3		;Minutes
+   89:	  0092	54 0F				ANL	A,#0Fh
+   90:	  0094	44 30				ORL	A,#30h
+   91:	  0096	F6				MOV	@R0,A
+   92:	  0097	08				INC	R0
+   93:	  0098	76 3A				MOV	@R0,#':'
+   94:	  009A	08				INC	R0
+   95:	  009B	EA				MOV	A,R2		;Seconds
+   96:	  009C	C4				SWAP	A
+   97:	  009D	54 0F				ANL	A,#0Fh
+   98:	  009F	44 30				ORL	A,#30h
+   99:	  00A1	F6				MOV	@R0,A
+
+ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 3
+
+
+
+ Line  I  Addr  Code            Source
+
+  100:	  00A2	08				INC	R0
+  101:	  00A3	EA				MOV	A,R2		;Seconds
+  102:	  00A4	54 0F				ANL	A,#0Fh
+  103:	  00A6	44 30				ORL	A,#30h
+  104:	  00A8	F6				MOV	@R0,A
+  105:	  00A9	78 40				MOV	R0,#LCDBUFF
+  106:	  00AB	7D 08				MOV	R5,#8
+  107:	  00AD	11 FF				ACALL	LCDPRINTSTR
+  108:	  00AF	22				RET
+  109:
+  110:	  00B0	DF 08		CLOCK:		DJNZ	R7,CLOCKEX
+  111:	  00B2	7F 64				MOV	R7,#100
+  112:	  00B4	DE 04				DJNZ	R6,CLOCKEX
+  113:	  00B6	7E 64				MOV	R6,#100
+  114:	  00B8	D2 00				SETB	CLOCKFLAG
+  115:	  00BA	32		CLOCKEX:	RETI
+  116:
+  117:				;------------------------------------------------------------------
+  118:				;LCD Output.
+  119:				;------------------------------------------------------------------
+  120:	  00BB	C0 07		LCDDELAY:	PUSH	07h
+  121:	  00BD	7F 00				MOV	R7,#00h
+  122:	  00BF	DF FE				DJNZ	R7,$
+  123:	  00C1	D0 07				POP	07h
+  124:	  00C3	22				RET
+  125:
+  126:				;A contains nibble, ACC.4 contains RS
+  127:	  00C4	D2 E5		LCDNIBOUT:	SETB	ACC.5				;E
+  128:	  00C6	F5 A0				MOV	P2,A
+  129:	  00C8	C2 A5				CLR	P2.5				;Negative edge on E
+  130:	  00CA	22				RET
+  131:
+  132:				;A contains byte
+  133:	  00CB	C0 E0		LCDCMDOUT:	PUSH	ACC
+  134:	  00CD	C4				SWAP	A				;High nibble first
+  135:	  00CE	54 0F				ANL	A,#0Fh
+  136:	  00D0	11 C4				ACALL	LCDNIBOUT
+  137:	  00D2	D0 E0				POP	ACC
+  138:	  00D4	54 0F				ANL	A,#0Fh
+  139:	  00D6	11 C4				ACALL	LCDNIBOUT
+  140:	  00D8	11 BB				ACALL	LCDDELAY			;Wait for BF to clear
+  141:	  00DA	22				RET
+  142:
+  143:				;A contains byte
+  144:	  00DB	C0 E0		LCDCHROUT:	PUSH	ACC
+  145:	  00DD	C4				SWAP	A				;High nibble first
+  146:	  00DE	54 0F				ANL	A,#0Fh
+  147:	  00E0	D2 E4				SETB	ACC.4				;RS
+  148:	  00E2	11 C4				ACALL	LCDNIBOUT
+  149:	  00E4	D0 E0				POP	ACC
+  150:	  00E6	54 0F				ANL	A,#0Fh
+  151:	  00E8	D2 E4				SETB	ACC.4				;RS
+  152:	  00EA	11 C4				ACALL	LCDNIBOUT
+  153:	  00EC	11 BB				ACALL	LCDDELAY			;Wait for BF to clear
+  154:	  00EE	22				RET
+  155:
+
+ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 4
+
+
+
+ Line  I  Addr  Code            Source
+
+  156:	  00EF	74 01		LCDCLEAR:	MOV	A,#00000001b
+  157:	  00F1	11 CB				ACALL	LCDCMDOUT
+  158:	  00F3	7F 00				MOV	R7,#00h
+  159:	  00F5	11 BB		LCDCLEAR1:	ACALL	LCDDELAY
+  160:	  00F7	DF FC				DJNZ	R7,LCDCLEAR1
+  161:	  00F9	22				RET
+  162:
+  163:				;A contais address
+  164:	  00FA	44 80		LCDSETADR:	ORL	A,#10000000b
+  165:	  00FC	11 CB				ACALL	LCDCMDOUT
+  166:	  00FE	22				RET
+  167:
+  168:	  00FF	E6		LCDPRINTSTR:	MOV	A,@R0
+  169:	  0100	11 DB				ACALL	LCDCHROUT
+  170:	  0102	08				INC	R0
+  171:	  0103	DD FA				DJNZ	R5,LCDPRINTSTR
+  172:	  0105	22				RET
+  173:
+  174:	  0106	74 03		LCDINIT:	MOV	A,#00000011b			;Function set
+  175:	  0108	11 C4				ACALL	LCDNIBOUT
+  176:	  010A	11 BB				ACALL	LCDDELAY			;Wait for BF to clear
+  177:	  010C	74 28				MOV	A,#00101000b
+  178:	  010E	11 CB				ACALL	LCDCMDOUT
+  179:	  0110	74 28				MOV	A,#00101000b
+  180:	  0112	11 CB				ACALL	LCDCMDOUT
+  181:	  0114	74 0C				MOV	A,#00001100b			;Display ON/OFF
+  182:	  0116	11 CB				ACALL	LCDCMDOUT
+  183:	  0118	11 EF				ACALL	LCDCLEAR			;Clear
+  184:	  011A	74 06				MOV	A,#00000110b			;Cursor direction
+  185:	  011C	11 CB				ACALL	LCDCMDOUT
+  186:	  011E	22				RET
+  187:
+  188:	  011F	78 40		LCDCLEARBUFF:	MOV	R0,#LCDBUFF
+  189:	  0121	7F 10				MOV	R7,#10h
+  190:	  0123	74 20				MOV	A,#20H
+  191:	  0125	F6		LCDCLEARBUFF1:	MOV	@R0,A
+  192:	  0126	08				INC	R0
+  193:	  0127	DF FC				DJNZ	R7,LCDCLEARBUFF1
+  194:	  0129	22				RET
+  195:						END
+
+
+
+
+
+                     register banks used:  ---
+
+                     no errors
+
+
+
+
+ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 5
+
+
+
+
+
+	       L I S T   O F   S Y M B O L S
+	       =============================
+
+
+SYMBOL				  TYPE     VALUE	LINE
+------------------------------------------------------------
+??ASEM_51			  NUMBER    8051
+??VERSION			  NUMBER    0130
+AC				  BIT	      D6
+ACC				  DATA	      E0
+B				  DATA	      F0
+CLOCK				  CODE	    00B0	 110
+CLOCKEX				  CODE	    00BA	 115
+CLOCKFLAG			  BIT	      00	   4
+CLOCKINC			  CODE	    0052	  46
+CLOCKINCEX			  CODE	    0070	  64
+CLOCKSHOW			  CODE	    0071	  66
+CY				  BIT	      D7
+DPH				  DATA	      83
+DPL				  DATA	      82
+EA				  BIT	      AF
+ES				  BIT	      AC
+ET0				  BIT	      A9
+ET1				  BIT	      AB
+EX0				  BIT	      A8
+EX1				  BIT	      AA
+EXTI0				  CODE	    0003
+EXTI1				  CODE	    0013
+F0				  BIT	      D5
+IE				  DATA	      A8
+IE0				  BIT	      89
+IE1				  BIT	      8B
+INT0				  BIT	      B2
+INT1				  BIT	      B3
+IP				  DATA	      B8
+IT0				  BIT	      88
+IT1				  BIT	      8A
+LCDBUFF				  NUMBER    0040	   3
+LCDCHROUT			  CODE	    00DB	 144
+LCDCLEAR			  CODE	    00EF	 156
+LCDCLEAR1			  CODE	    00F5	 159
+LCDCLEARBUFF			  CODE	    011F	 188
+LCDCLEARBUFF1			  CODE	    0125	 191
+LCDCMDOUT			  CODE	    00CB	 133
+LCDDELAY			  CODE	    00BB	 120
+LCDINIT				  CODE	    0106	 174
+LCDNIBOUT			  CODE	    00C4	 127
+LCDPRINTSTR			  CODE	    00FF	 168
+LCDSETADR			  CODE	    00FA	 164
+OV				  BIT	      D2
+P				  BIT	      D0
+P0				  DATA	      80
+P1				  DATA	      90
+P2				  DATA	      A0
+P3				  DATA	      B0
+PCON				  DATA	      87
+
+ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 6
+
+
+
+SYMBOL				  TYPE     VALUE	LINE
+------------------------------------------------------------
+PS				  BIT	      BC
+PSW				  DATA	      D0
+PT0				  BIT	      B9
+PT1				  BIT	      BB
+PX0				  BIT	      B8
+PX1				  BIT	      BA
+RB8				  BIT	      9A
+RD				  BIT	      B7
+REN				  BIT	      9C
+RESET				  CODE	    0000
+RI				  BIT	      98
+RS0				  BIT	      D3
+RS1				  BIT	      D4
+RXD				  BIT	      B0
+SBUF				  DATA	      99
+SCON				  DATA	      98
+SINT				  CODE	    0023
+SM0				  BIT	      9F
+SM1				  BIT	      9E
+SM2				  BIT	      9D
+SP				  DATA	      81
+START				  CODE	    002C	  29
+START1				  CODE	    0047	  40
+START2				  CODE	    0050	  44
+T0				  BIT	      B4
+T1				  BIT	      B5
+TB8				  BIT	      9B
+TCON				  DATA	      88
+TF0				  BIT	      8D
+TF1				  BIT	      8F
+TH0				  DATA	      8C
+TH1				  DATA	      8D
+TI				  BIT	      99
+TIMER0				  CODE	    000B
+TIMER1				  CODE	    001B
+TL0				  DATA	      8A
+TL1				  DATA	      8B
+TMOD				  DATA	      89
+TR0				  BIT	      8C
+TR1				  BIT	      8E
+TXD				  BIT	      B1
+WR				  BIT	      B6

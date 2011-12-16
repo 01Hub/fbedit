@@ -143,15 +143,10 @@ Reset proc uses edi
 	xor		eax,eax
 	mov		addin.PC,eax
 	mov		PCDONE,eax
-	mov		T0Mod,eax
-	mov		T1Mod,eax
-	mov		T2Mod,eax
-	mov		T0Con,eax
-	mov		T1Con,eax
-	mov		T2Con,eax
 	mov		nHalfCycles,eax
-	mov		NewP3,3Ch
-	mov		OldP3,3Ch
+	dec		eax
+	mov		NewP3,eax
+	mov		OldP3,eax
 	mov		addin.Refresh,1
 	ret
 
@@ -538,22 +533,25 @@ WaitHalfCycle proc
 	inc		nHalfCycles
 	test	nHalfCycles,1
 	.if ZERO?
-		mov		edx,NewP3
-		mov		OldP3,edx
+		mov		eax,NewP3
+		mov		OldP3,eax
 		movzx	eax,addin.Sfr[SFR_P3]
-		and		eax,3Ch
 		mov		NewP3,eax
-		test	T0Con,10h
+		;Timer 0, Check TR0
+		movzx	eax,addin.Sfr(SFR_TCON)
+		test	eax,10h
 		.if !ZERO?
-			;Enabled
-			mov		eax,T0Mod
+			;Timer0 Enabled
+			movzx	eax,addin.Sfr(SFR_TMOD)
+			;Check GTE0
 			test	eax,08h
 			.if !ZERO?
-				;Gated mode,test P3.2
-				test	addin.Sfr[SFR_P3],04h
+				;Gated mode,test P3.2/INT0
+				test	NewP3,04h
 				jz		@f
-				and		eax,07h
 			.endif
+			and		eax,07h
+			;Check C/T0
 			test	eax,04h
 			.if ZERO?
 				;Timer
@@ -600,8 +598,8 @@ WaitHalfCycle proc
 					.endif
 				.endif
 			.else
+				;Counter, Check HIGH to LOW transition on P3.4/T0
 				.if (OldP3 & 10h) && !(NewP3 & 10h)
-					;Counter
 					.if eax==4
 						;13 bit counter
 						inc		byte ptr addin.Sfr(SFR_TL0)
@@ -649,6 +647,177 @@ WaitHalfCycle proc
 			.endif
 		  @@:
 		.endif
+		;Check if Timer 0 is in mode 3
+		movzx	eax,addin.Sfr(SFR_TMOD)
+		and		eax,03h
+		.if eax==03h
+			;Timer 0 is in mode 3, Timer 1 Enabled
+			movzx	eax,addin.Sfr(SFR_TMOD)
+			shr		eax,4
+			;Check GTE1
+			test	eax,08h
+			.if !ZERO?
+				;Gated mode, test P3.3/INT1
+				test	NewP3,08h
+				jz		@f
+			.endif
+			and		eax,07h
+			;Check C/T1
+			test	eax,04h
+			.if ZERO?
+				;Timer
+				.if eax==0
+					;13 bit timer
+					inc		byte ptr addin.Sfr(SFR_TL1)
+					and		addin.Sfr(SFR_TL1),1Fh
+					.if ZERO?
+						inc		byte ptr addin.Sfr(SFR_TH1)
+					.endif
+				.elseif eax==1
+					;16 bit timer
+					inc		byte ptr addin.Sfr(SFR_TL1)
+					.if ZERO?
+						inc		byte ptr addin.Sfr(SFR_TH1)
+					.endif
+				.elseif eax==2
+					;8 bit timer, auto reload
+					inc		byte ptr addin.Sfr(SFR_TL1)
+					.if ZERO?
+						movzx	eax,addin.Sfr(SFR_TH1)
+						mov		addin.Sfr(SFR_TL1),al
+					.endif
+				.endif
+			.else
+				;Counter
+				;Check HIGH to LOW transition on P3.5/T1
+				.if (OldP3 & 20h) && !(NewP3 & 20h)
+					.if eax==4
+						;13 bit counter
+						inc		byte ptr addin.Sfr(SFR_TL1)
+						and		addin.Sfr(SFR_TL1),1Fh
+						.if ZERO?
+							inc		byte ptr addin.Sfr(SFR_TH1)
+						.endif
+					.elseif eax==5
+						;16 bit counter
+						inc		byte ptr addin.Sfr(SFR_TL1)
+						.if ZERO?
+							inc		byte ptr addin.Sfr(SFR_TH1)
+						.endif
+					.elseif eax==6
+						;8 bit counter, auto reload
+						inc		byte ptr addin.Sfr(SFR_TL1)
+						.if ZERO?
+							movzx	eax,addin.Sfr(SFR_TH1)
+							mov		addin.Sfr(SFR_TL1),al
+						.endif
+					.endif
+				.endif
+			.endif
+		  @@:
+		.else
+			;Timer 1, Check TR1
+			movzx	eax,addin.Sfr(SFR_TCON)
+			test	eax,40h
+			.if !ZERO?
+				;Timer 1 Enabled
+				movzx	eax,addin.Sfr(SFR_TMOD)
+				shr		eax,4
+				;Check GTE1
+				test	eax,08h
+				.if !ZERO?
+					;Gated mode, test P3.3/INT1
+					test	NewP3,08h
+					jz		@f
+				.endif
+				and		eax,07h
+				;Check C/T1
+				test	eax,04h
+				.if ZERO?
+					;Timer
+					.if eax==0
+						;13 bit timer
+						inc		byte ptr addin.Sfr(SFR_TL1)
+						and		addin.Sfr(SFR_TL1),1Fh
+						.if ZERO?
+							inc		byte ptr addin.Sfr(SFR_TH1)
+							.if ZERO?
+								;Set TF1
+								or		addin.Sfr[SFR_TCON],80h
+							.endif
+						.endif
+					.elseif eax==1
+						;16 bit timer
+						inc		byte ptr addin.Sfr(SFR_TL1)
+						.if ZERO?
+							inc		byte ptr addin.Sfr(SFR_TH1)
+							.if ZERO?
+								;Set TF1
+								or		addin.Sfr[SFR_TCON],80h
+							.endif
+						.endif
+					.elseif eax==2
+						;8 bit timer, auto reload
+						inc		byte ptr addin.Sfr(SFR_TL1)
+						.if ZERO?
+							movzx	eax,addin.Sfr(SFR_TH1)
+							mov		addin.Sfr(SFR_TL1),al
+							;Set TF0
+							or		addin.Sfr[SFR_TCON],80h
+						.endif
+					.elseif eax==3
+						;Stopped
+					.endif
+				.else
+					;Counter
+					;Check HIGH to LOW transition on P3.5/T1
+					.if (OldP3 & 20h) && !(NewP3 & 20h)
+						.if eax==4
+							;13 bit counter
+							inc		byte ptr addin.Sfr(SFR_TL1)
+							and		addin.Sfr(SFR_TL1),1Fh
+							.if ZERO?
+								inc		byte ptr addin.Sfr(SFR_TH1)
+								.if ZERO?
+									;Set TF1
+									or		addin.Sfr[SFR_TCON],80h
+								.endif
+							.endif
+						.elseif eax==5
+							;16 bit counter
+							inc		byte ptr addin.Sfr(SFR_TL1)
+							.if ZERO?
+								inc		byte ptr addin.Sfr(SFR_TH1)
+								.if ZERO?
+									;Set TF1
+									or		addin.Sfr[SFR_TCON],80h
+								.endif
+							.endif
+						.elseif eax==6
+							;8 bit counter, auto reload
+							inc		byte ptr addin.Sfr(SFR_TL1)
+							.if ZERO?
+								movzx	eax,addin.Sfr(SFR_TH1)
+								mov		addin.Sfr(SFR_TL1),al
+								;Set TF1
+								or		addin.Sfr[SFR_TCON],80h
+							.endif
+						.endif
+					.endif
+				.endif
+			  @@:
+			.endif
+		.endif
+	.endif
+	;Check HIGH to LOW transition on P3.2/INT0 and if it is transition activated or P3.2/INT0 is low and not transition activated
+	.if ((OldP3 & 04h) && !(NewP3 & 04h) && (addin.Sfr[SFR_TCON] & 01h)) || (!(NewP3 & 04h) && !(addin.Sfr[SFR_TCON] & 01h))
+		;Set TCON.IE0
+		or		addin.Sfr[SFR_TCON],02h
+	.endif
+	;Check HIGH to LOW transition on P3.3/INT1 and if it is transition activated or P3.3/INT1 is low and not transition activated
+	.if ((OldP3 & 08h) && !(NewP3 & 08h) && (addin.Sfr[SFR_TCON] & 04h)) || (!(NewP3 & 08h) && !(addin.Sfr[SFR_TCON] & 04h))
+		;Set TCON.IE1
+		or		addin.Sfr[SFR_TCON],08h
 	.endif
 	mov		eax,CpuCycles
 	add		dword ptr PerformanceCount,eax
@@ -717,26 +886,6 @@ WriteXRam proc uses ebx esi edi,nAddr:DWORD,nValue:DWORD
 	ret
 
 WriteXRam endp
-
-SetTimerMode proc
-
-	movzx	eax,addin.Sfr[SFR_TMOD]
-	mov		edx,eax
-	and		edx,0Fh
-	mov		T0Mod,edx
-	shr		eax,4
-	and		eax,0Fh
-	mov		T1Mod,eax
-	movzx	eax,addin.Sfr[SFR_TCON]
-	mov		edx,eax
-	and		edx,33h
-	mov		T0Con,edx
-	shr		eax,2
-	and		eax,33h
-	mov		T1Con,eax
-	ret
-
-SetTimerMode endp
 
 SetParity proc
 
@@ -820,8 +969,6 @@ INC_dir:
 			.if edx==SFR_P0 || edx==SFR_P1 || edx==SFR_P2 || edx==SFR_P3
 				movzx	eax,addin.Sfr[edx]
 				invoke WritePort,edx,eax
-			.elseif edx==SFR_TMOD || edx==SFR_TCON
-				invoke SetTimerMode
 			.endif
 		.endif
 	.endif
@@ -976,8 +1123,6 @@ DEC_dir:
 			.if edx==SFR_P0 || edx==SFR_P1 || edx==SFR_P2 || edx==SFR_P3
 				movzx	eax,addin.Sfr[edx]
 				invoke WritePort,edx,eax
-			.elseif edx==SFR_TMOD || edx==SFR_TCON
-				invoke SetTimerMode
 			.endif
 		.endif
 	.endif
@@ -1208,6 +1353,21 @@ RETI_:
 	dec		dl
 	mov		addin.Sfr[SFR_SP],dl
 	mov		addin.PC,ebx
+	;Clear the bit that caused the interrupt
+	mov		edx,pendingint.sfr
+	mov		eax,pendingint.bit
+	xor		eax,0FFh
+	and		addin.Sfr[edx],al
+	;POP the pendingint
+	mov		eax,pendingint.pri[sizeof INTERRUPT]
+	mov		pendingint.pri,eax
+	mov		eax,pendingint.sfr[sizeof INTERRUPT]
+	mov		pendingint.sfr,eax
+	mov		eax,pendingint.bit[sizeof INTERRUPT]
+	mov		pendingint.bit,eax
+	mov		pendingint.pri[sizeof INTERRUPT],0
+	mov		pendingint.sfr[sizeof INTERRUPT],0
+	mov		pendingint.bit[sizeof INTERRUPT],0
 	ret
 
 RLC_A:
@@ -1762,8 +1922,6 @@ MOV_dir_imm:
 			.if edx==SFR_P0 || edx==SFR_P1 || edx==SFR_P2 || edx==SFR_P3
 				movzx	eax,addin.Sfr[edx]
 				invoke WritePort,edx,eax
-			.elseif edx==SFR_TMOD || edx==SFR_TCON
-				invoke SetTimerMode
 			.endif
 		.endif
 	.endif
@@ -1901,8 +2059,6 @@ MOV_dir_dir:
 			.if edx==SFR_P0 || edx==SFR_P1 || edx==SFR_P2 || edx==SFR_P3
 				movzx	eax,addin.Sfr[edx]
 				invoke WritePort,edx,eax
-			.elseif edx==SFR_TMOD || edx==SFR_TCON
-				invoke SetTimerMode
 			.endif
 		.endif
 	.endif
@@ -1924,8 +2080,6 @@ MOV_dir_@R0:
 			.if edx==SFR_P0 || edx==SFR_P1 || edx==SFR_P2 || edx==SFR_P3
 				movzx	eax,addin.Sfr[edx]
 				invoke WritePort,edx,eax
-			.elseif edx==SFR_TMOD || edx==SFR_TCON
-				invoke SetTimerMode
 			.endif
 		.endif
 	.endif
@@ -1947,8 +2101,6 @@ MOV_dir_@R1:
 			.if edx==SFR_P0 || edx==SFR_P1 || edx==SFR_P2 || edx==SFR_P3
 				movzx	eax,addin.Sfr[edx]
 				invoke WritePort,edx,eax
-			.elseif edx==SFR_TMOD || edx==SFR_TCON
-				invoke SetTimerMode
 			.endif
 		.endif
 	.endif
@@ -1969,8 +2121,6 @@ MOV_dir_R0:
 			.if edx==SFR_P0 || edx==SFR_P1 || edx==SFR_P2 || edx==SFR_P3
 				movzx	eax,addin.Sfr[edx]
 				invoke WritePort,edx,eax
-			.elseif edx==SFR_TMOD || edx==SFR_TCON
-				invoke SetTimerMode
 			.endif
 		.endif
 	.endif
@@ -1991,8 +2141,6 @@ MOV_dir_R1:
 			.if edx==SFR_P0 || edx==SFR_P1 || edx==SFR_P2 || edx==SFR_P3
 				movzx	eax,addin.Sfr[edx]
 				invoke WritePort,edx,eax
-			.elseif edx==SFR_TMOD || edx==SFR_TCON
-				invoke SetTimerMode
 			.endif
 		.endif
 	.endif
@@ -2013,8 +2161,6 @@ MOV_dir_R2:
 			.if edx==SFR_P0 || edx==SFR_P1 || edx==SFR_P2 || edx==SFR_P3
 				movzx	eax,addin.Sfr[edx]
 				invoke WritePort,edx,eax
-			.elseif edx==SFR_TMOD || edx==SFR_TCON
-				invoke SetTimerMode
 			.endif
 		.endif
 	.endif
@@ -2035,8 +2181,6 @@ MOV_dir_R3:
 			.if edx==SFR_P0 || edx==SFR_P1 || edx==SFR_P2 || edx==SFR_P3
 				movzx	eax,addin.Sfr[edx]
 				invoke WritePort,edx,eax
-			.elseif edx==SFR_TMOD || edx==SFR_TCON
-				invoke SetTimerMode
 			.endif
 		.endif
 	.endif
@@ -2057,8 +2201,6 @@ MOV_dir_R4:
 			.if edx==SFR_P0 || edx==SFR_P1 || edx==SFR_P2 || edx==SFR_P3
 				movzx	eax,addin.Sfr[edx]
 				invoke WritePort,edx,eax
-			.elseif edx==SFR_TMOD || edx==SFR_TCON
-				invoke SetTimerMode
 			.endif
 		.endif
 	.endif
@@ -2079,8 +2221,6 @@ MOV_dir_R5:
 			.if edx==SFR_P0 || edx==SFR_P1 || edx==SFR_P2 || edx==SFR_P3
 				movzx	eax,addin.Sfr[edx]
 				invoke WritePort,edx,eax
-			.elseif edx==SFR_TMOD || edx==SFR_TCON
-				invoke SetTimerMode
 			.endif
 		.endif
 	.endif
@@ -2101,8 +2241,6 @@ MOV_dir_R6:
 			.if edx==SFR_P0 || edx==SFR_P1 || edx==SFR_P2 || edx==SFR_P3
 				movzx	eax,addin.Sfr[edx]
 				invoke WritePort,edx,eax
-			.elseif edx==SFR_TMOD || edx==SFR_TCON
-				invoke SetTimerMode
 			.endif
 		.endif
 	.endif
@@ -2123,8 +2261,6 @@ MOV_dir_R7:
 			.if edx==SFR_P0 || edx==SFR_P1 || edx==SFR_P2 || edx==SFR_P3
 				movzx	eax,addin.Sfr[edx]
 				invoke WritePort,edx,eax
-			.elseif edx==SFR_TMOD || edx==SFR_TCON
-				invoke SetTimerMode
 			.endif
 		.endif
 	.endif
@@ -2179,8 +2315,6 @@ MOV_bit_C:
 			.if eax==SFR_P0 || eax==SFR_P1 || eax==SFR_P2 || eax==SFR_P3
 				movzx	edx,addin.Sfr[eax]
 				invoke WritePort,eax,edx
-			.elseif eax==SFR_TCON
-				invoke SetTimerMode
 			.endif
 		.endif
 	.endif
@@ -2735,8 +2869,6 @@ CLR_bit:
 			.if eax==SFR_P0 || eax==SFR_P1 || eax==SFR_P2 || eax==SFR_P3
 				movzx	edx,addin.Sfr[eax]
 				invoke WritePort,eax,edx
-			.elseif eax==SFR_TCON
-				invoke SetTimerMode
 			.endif
 		.endif
 	.endif
@@ -2771,8 +2903,6 @@ XCH_A_dir:
 			.if edx==SFR_P0 || edx==SFR_P1 || edx==SFR_P2 || edx==SFR_P3
 				movzx	eax,addin.Sfr[edx]
 				invoke WritePort,edx,eax
-			.elseif edx==SFR_TMOD || edx==SFR_TCON
-				invoke SetTimerMode
 			.endif
 		.endif
 	.endif
@@ -2876,8 +3006,6 @@ POP_dir:
 			.if edx==SFR_P0 || edx==SFR_P1 || edx==SFR_P2 || edx==SFR_P3
 				movzx	eax,addin.Sfr[edx]
 				invoke WritePort,edx,eax
-			.elseif edx==SFR_TMOD || edx==SFR_TCON
-				invoke SetTimerMode
 			.endif
 		.endif
 	.endif
@@ -2903,8 +3031,6 @@ SETB_bit:
 			.if eax==SFR_P0 || eax==SFR_P1 || eax==SFR_P2 || eax==SFR_P3
 				movzx	edx,addin.Sfr[eax]
 				invoke WritePort,eax,edx
-			.elseif eax==SFR_TCON
-				invoke SetTimerMode
 			.endif
 		.endif
 	.endif
@@ -3211,8 +3337,6 @@ MOV_dir_A:
 			.if edx==SFR_P0 || edx==SFR_P1 || edx==SFR_P2 || edx==SFR_P3
 				movzx	eax,addin.Sfr[edx]
 				invoke WritePort,edx,eax
-			.elseif edx==SFR_TMOD || edx==SFR_TCON
-				invoke SetTimerMode
 			.endif
 		.endif
 	.endif
@@ -3415,6 +3539,339 @@ Execute:
 		invoke WaitHalfCycle
 		dec		edi
 	.endw
+	;Interrupt handling, test IE.EA
+	movzx	edi,addin.Sfr[SFR_IE]
+	test	edi,80h
+	.if !ZERO?
+		;Interrupts enabled
+		.if !pendingint.sfr
+			;No pending interrupt
+			;Test IE.EX0
+			test	edi,01h
+			.if !ZERO?
+				;Test TCON.IE0
+				test	addin.Sfr[SFR_TCON],02h
+				.if !ZERO?
+					;Test IP.PX0
+					test	addin.Sfr[SFR_IP],01h
+					.if !ZERO?
+						;High priority interrupt
+						mov		pendingint.pri,TRUE
+					.endif
+					mov		pendingint.sfr,SFR_TCON
+					mov		pendingint.bit,02h
+					;Generate external interrupt 0
+					mov		edx,0300h
+					call	LCALL_$cad
+					mov		PCDONE,0003h
+					jmp		Ex
+				.endif
+			.endif
+			;Test IE.ET0
+			test	edi,02h
+			.if !ZERO?
+				;Test TCON.TF0
+				test	addin.Sfr[SFR_TCON],20h
+				.if !ZERO?
+					;Test IP.PT0
+					test	addin.Sfr[SFR_IP],02h
+					.if !ZERO?
+						;High priority interrupt
+						mov		pendingint.pri,TRUE
+					.endif
+					mov		pendingint.sfr,SFR_TCON
+					mov		pendingint.bit,20h
+					;Generate Timer 0 interrupt
+					mov		edx,0B00h
+					call	LCALL_$cad
+					mov		PCDONE,000Bh
+					jmp		Ex
+				.endif
+			.endif
+			;Test IE.EX1
+			test	edi,04h
+			.if !ZERO?
+				;Test TCON.IE1
+				test	addin.Sfr[SFR_TCON],04h
+				.if !ZERO?
+					;Test IP.PX1
+					test	addin.Sfr[SFR_IP],04h
+					.if !ZERO?
+						;High priority interrupt
+						mov		pendingint.pri,TRUE
+					.endif
+					mov		pendingint.sfr,SFR_TCON
+					mov		pendingint.bit,04h
+					;Generate Timer 0 interrupt
+					mov		edx,1300h
+					call	LCALL_$cad
+					mov		PCDONE,0013h
+					jmp		Ex
+				.endif
+			.endif
+			;Test IE.ET1
+			test	edi,08h
+			.if !ZERO?
+				;Test TCON.TF1
+				test	addin.Sfr[SFR_TCON],80h
+				.if !ZERO?
+					;Test IP.PT1
+					test	addin.Sfr[SFR_IP],08h
+					.if !ZERO?
+						;High priority interrupt
+						mov		pendingint.pri,TRUE
+					.endif
+					mov		pendingint.sfr,SFR_TCON
+					mov		pendingint.bit,80h
+					;Generate Timer 1 interrupt
+					mov		edx,1B00h
+					call	LCALL_$cad
+					mov		PCDONE,001Bh
+					jmp		Ex
+				.endif
+			.endif
+			;Test IE.ES
+			test	edi,10h
+			.if !ZERO?
+				;Test SCON.RI
+				test	addin.Sfr[SFR_SCON],01h
+				.if !ZERO?
+					;Test IP.PS
+					test	addin.Sfr[SFR_IP],10h
+					.if !ZERO?
+						;High priority interrupt
+						mov		pendingint.pri,TRUE
+					.endif
+					mov		pendingint.sfr,SFR_SCON
+					mov		pendingint.bit,01h
+					;Generate RI interrupt
+					mov		edx,2300h
+					call	LCALL_$cad
+					mov		PCDONE,0023h
+					jmp		Ex
+				.endif
+				;Test SCON.TI
+				test	addin.Sfr[SFR_SCON],02h
+				.if !ZERO?
+					;Test IP.PS
+					test	addin.Sfr[SFR_IP],10h
+					.if !ZERO?
+						;High priority interrupt
+						mov		pendingint.pri,TRUE
+					.endif
+					mov		pendingint.sfr,SFR_SCON
+					mov		pendingint.bit,02h
+					;Generate RI interrupt
+					mov		edx,2300h
+					call	LCALL_$cad
+					mov		PCDONE,0023h
+					jmp		Ex
+				.endif
+			.endif
+			;Test IE.ET2
+			test	edi,20h
+			.if !ZERO?
+				;Test T2CON.TF2
+				test	addin.Sfr[SFR_T2CON],80h
+				.if !ZERO?
+					;Test IP.PT2
+					test	addin.Sfr[SFR_IP],20h
+					.if !ZERO?
+						;High priority interrupt
+						mov		pendingint.pri,TRUE
+					.endif
+					mov		pendingint.sfr,SFR_T2CON
+					mov		pendingint.bit,80h
+					;Generate RI interrupt
+					mov		edx,2B00h
+					call	LCALL_$cad
+					mov		PCDONE,002Bh
+					jmp		Ex
+				.endif
+				;Test T2CON.EXF2
+				test	addin.Sfr[SFR_T2CON],40h
+				.if !ZERO?
+					;Test IP.PT2
+					test	addin.Sfr[SFR_IP],20h
+					.if !ZERO?
+						;High priority interrupt
+						mov		pendingint.pri,TRUE
+					.endif
+					mov		pendingint.sfr,SFR_T2CON
+					mov		pendingint.bit,40h
+					;Generate RI interrupt
+					mov		edx,2B00h
+					call	LCALL_$cad
+					mov		PCDONE,002Bh
+					jmp		Ex
+				.endif
+			.endif
+		.elseif !pendingint.pri && addin.Sfr[SFR_IP]
+			;No pending high priority interrupt and high proiority interrupts are defined, Check for high priority interrups
+			;Test IP.PX0
+			test	addin.Sfr[SFR_IP],01h
+			.if !ZERO?
+				;Test IE.EX0
+				test	edi,01h
+				.if !ZERO?
+					;Test TCON.IE0
+					test	addin.Sfr[SFR_TCON],02h
+					.if !ZERO?
+						call	PUSHpendingint
+						mov		pendingint.pri,TRUE
+						mov		pendingint.sfr,SFR_TCON
+						mov		pendingint.bit,02h
+						;Generate external interrupt 0
+						mov		edx,0300h
+						call	LCALL_$cad
+						mov		PCDONE,0003h
+						jmp		Ex
+					.endif
+				.endif
+			.endif
+			;Test IP.PT0
+			test	addin.Sfr[SFR_IP],02h
+			.if !ZERO?
+				;Test IE.ET0
+				test	edi,02h
+				.if !ZERO?
+					;Test TCON.TF0
+					test	addin.Sfr[SFR_TCON],20h
+					.if !ZERO?
+						call	PUSHpendingint
+						mov		pendingint.pri,TRUE
+						mov		pendingint.sfr,SFR_TCON
+						mov		pendingint.bit,20h
+						;Generate Timer 0 interrupt
+						mov		edx,0B00h
+						call	LCALL_$cad
+						mov		PCDONE,000Bh
+						jmp		Ex
+					.endif
+				.endif
+			.endif
+			;Test IP.PX1
+			test	addin.Sfr[SFR_IP],04h
+			.if !ZERO?
+				;Test IE.EX1
+				test	edi,04h
+				.if !ZERO?
+					;Test TCON.IE1
+					test	addin.Sfr[SFR_TCON],04h
+					.if !ZERO?
+						call	PUSHpendingint
+						mov		pendingint.pri,TRUE
+						mov		pendingint.sfr,SFR_TCON
+						mov		pendingint.bit,04h
+						;Generate Timer 0 interrupt
+						mov		edx,1300h
+						call	LCALL_$cad
+						mov		PCDONE,0013h
+						jmp		Ex
+					.endif
+				.endif
+			.endif
+			;Test IP.PT1
+			test	addin.Sfr[SFR_IP],08h
+			.if !ZERO?
+				;Test IE.ET1
+				test	edi,08h
+				.if !ZERO?
+					;Test TCON.TF1
+					test	addin.Sfr[SFR_TCON],80h
+					.if !ZERO?
+						call	PUSHpendingint
+						mov		pendingint.pri,TRUE
+						mov		pendingint.sfr,SFR_TCON
+						mov		pendingint.bit,80h
+						;Generate Timer 1 interrupt
+						mov		edx,1B00h
+						call	LCALL_$cad
+						mov		PCDONE,001Bh
+						jmp		Ex
+					.endif
+				.endif
+			.endif
+			;Test IP.PS
+			test	addin.Sfr[SFR_IP],10h
+			.if !ZERO?
+				;Test IE.ES
+				test	edi,10h
+				.if !ZERO?
+					;Test SCON.RI
+					test	addin.Sfr[SFR_SCON],01h
+					.if !ZERO?
+						call	PUSHpendingint
+						mov		pendingint.pri,TRUE
+						mov		pendingint.sfr,SFR_SCON
+						mov		pendingint.bit,01h
+						;Generate RI interrupt
+						mov		edx,2300h
+						call	LCALL_$cad
+						mov		PCDONE,0023h
+						jmp		Ex
+					.endif
+					;Test SCON.TI
+					test	addin.Sfr[SFR_SCON],02h
+					.if !ZERO?
+						call	PUSHpendingint
+						mov		pendingint.pri,TRUE
+						mov		pendingint.sfr,SFR_SCON
+						mov		pendingint.bit,02h
+						;Generate RI interrupt
+						mov		edx,2300h
+						call	LCALL_$cad
+						mov		PCDONE,0023h
+						jmp		Ex
+					.endif
+				.endif
+			.endif
+			;Test IP.PT2
+			test	addin.Sfr[SFR_IP],20h
+			.if !ZERO?
+				;Test IE.ET2
+				test	edi,20h
+				.if !ZERO?
+					;Test T2CON.TF2
+					test	addin.Sfr[SFR_T2CON],80h
+					.if !ZERO?
+						call	PUSHpendingint
+						mov		pendingint.pri,TRUE
+						mov		pendingint.sfr,SFR_T2CON
+						mov		pendingint.bit,80h
+						;Generate RI interrupt
+						mov		edx,2B00h
+						call	LCALL_$cad
+						mov		PCDONE,002Bh
+						jmp		Ex
+					.endif
+					;Test T2CON.EXF2
+					test	addin.Sfr[SFR_T2CON],40h
+					.if !ZERO?
+						call	PUSHpendingint
+						mov		pendingint.pri,TRUE
+						mov		pendingint.sfr,SFR_T2CON
+						mov		pendingint.bit,40h
+						;Generate RI interrupt
+						mov		edx,2B00h
+						call	LCALL_$cad
+						mov		PCDONE,002Bh
+						jmp		Ex
+					.endif
+				.endif
+			.endif
+		.endif
+	.endif
+  Ex:
+	retn
+
+PUSHpendingint:
+	mov		eax,pendingint.pri
+	mov		pendingint.pri[sizeof INTERRUPT],eax
+	mov		eax,pendingint.sfr
+	mov		pendingint.sfr[sizeof INTERRUPT],eax
+	mov		eax,pendingint.bit
+	mov		pendingint.bit[sizeof INTERRUPT],eax
 	retn
 
 SetStatusLed:
