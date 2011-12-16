@@ -1297,11 +1297,11 @@ WinMain proc hInst:HINSTANCE,hPrevInst:HINSTANCE,CmdLine:LPSTR,CmdShow:DWORD
 	.while TRUE
 		invoke GetMessage,addr msg,NULL,0,0
 	  .BREAK .if !eax
-		invoke IsDialogMessage,addin.hTabDlgStatus,addr msg
+		invoke TranslateAccelerator,addin.hWnd,addin.hAccel,addr msg
 		.if !eax
-			invoke IsDialogMessage,addin.hActive,addr msg
+			invoke IsDialogMessage,addin.hTabDlgStatus,addr msg
 			.if !eax
-				invoke TranslateAccelerator,addin.hWnd,addin.hAccel,addr msg
+				invoke IsDialogMessage,addin.hActive,addr msg
 				.if !eax
 					invoke TranslateMessage,addr msg
 					invoke DispatchMessage,addr msg

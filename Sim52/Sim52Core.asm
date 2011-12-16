@@ -124,8 +124,6 @@ LoadSFRFile endp
 Reset proc uses edi
 
 	mov		State,STATE_STOP
-	mov		addin.PC,0
-	mov		PCDONE,0
 	mov		edi,offset addin.Sfr
 	mov		ecx,sizeof addin.Sfr
 	xor		eax,eax
@@ -142,12 +140,16 @@ Reset proc uses edi
 	mov		StatusLed,eax
 	invoke SendDlgItemMessage,addin.hWnd,IDC_IMGSTATUS,STM_SETIMAGE,IMAGE_BITMAP,StatusLed
 	invoke ScreenCls
-	mov		T0Mod,0
-	mov		T1Mod,0
-	mov		T2Mod,0
-	mov		T0Con,0
-	mov		T1Con,0
-	mov		T2Con,0
+	xor		eax,eax
+	mov		addin.PC,eax
+	mov		PCDONE,eax
+	mov		T0Mod,eax
+	mov		T1Mod,eax
+	mov		T2Mod,eax
+	mov		T0Con,eax
+	mov		T1Con,eax
+	mov		T2Con,eax
+	mov		nHalfCycles,eax
 	mov		NewP3,3Ch
 	mov		OldP3,3Ch
 	mov		addin.Refresh,1
@@ -534,7 +536,7 @@ WaitHalfCycle proc
 	push	eax
 	push	edx
 	inc		nHalfCycles
-	test	nHalfCycles,3
+	test	nHalfCycles,1
 	.if ZERO?
 		mov		edx,NewP3
 		mov		OldP3,edx
@@ -545,29 +547,108 @@ WaitHalfCycle proc
 		.if !ZERO?
 			;Enabled
 			mov		eax,T0Mod
-			.if eax==0
-				;13 bit timer
-			.elseif eax==1
-				;16 bit timer
-			.elseif eax==2
-				;8 bit timer, auto reload
-			.elseif eax==3
-				;Two 8 bit timers
-			.elseif eax==4
-				;13 bit counter
-			.elseif eax==5
-				;16 bit counter
-				inc		word ptr addin.Sfr(SFR_TL0)
-				.if ZERO?
-					or		addin.Sfr[SFR_TCON],20h
-				.endif
-			.elseif eax==6
-				;8 bit counter, auto reload
-			.elseif eax==7
-				;One 8 bit counter
+			test	eax,08h
+			.if !ZERO?
+				;Gated mode,test P3.2
+				test	addin.Sfr[SFR_P3],04h
+				jz		@f
+				and		eax,07h
 			.endif
+			test	eax,04h
+			.if ZERO?
+				;Timer
+				.if eax==0
+					;13 bit timer
+					inc		byte ptr addin.Sfr(SFR_TL0)
+					and		addin.Sfr(SFR_TL0),1Fh
+					.if ZERO?
+						inc		byte ptr addin.Sfr(SFR_TH0)
+						.if ZERO?
+							;Set TF0
+							or		addin.Sfr[SFR_TCON],20h
+						.endif
+					.endif
+				.elseif eax==1
+					;16 bit timer
+					inc		byte ptr addin.Sfr(SFR_TL0)
+					.if ZERO?
+						inc		byte ptr addin.Sfr(SFR_TH0)
+						.if ZERO?
+							;Set TF0
+							or		addin.Sfr[SFR_TCON],20h
+						.endif
+					.endif
+				.elseif eax==2
+					;8 bit timer, auto reload
+					inc		byte ptr addin.Sfr(SFR_TL0)
+					.if ZERO?
+						movzx	eax,addin.Sfr(SFR_TH0)
+						mov		addin.Sfr(SFR_TL0),al
+						;Set TF0
+						or		addin.Sfr[SFR_TCON],20h
+					.endif
+				.elseif eax==3
+					;Two 8 bit timers
+					inc		byte ptr addin.Sfr(SFR_TL0)
+					.if ZERO?
+						;Set TF0
+						or		addin.Sfr[SFR_TCON],20h
+					.endif
+					inc		byte ptr addin.Sfr(SFR_TH0)
+					.if ZERO?
+						or		addin.Sfr[SFR_TCON],80h
+					.endif
+				.endif
+			.else
+				.if (OldP3 & 10h) && !(NewP3 & 10h)
+					;Counter
+					.if eax==4
+						;13 bit counter
+						inc		byte ptr addin.Sfr(SFR_TL0)
+						and		addin.Sfr(SFR_TL0),1Fh
+						.if ZERO?
+							inc		byte ptr addin.Sfr(SFR_TH0)
+							.if ZERO?
+								;Set TF0
+								or		addin.Sfr[SFR_TCON],20h
+							.endif
+						.endif
+					.elseif eax==5
+						;16 bit counter
+						inc		byte ptr addin.Sfr(SFR_TL0)
+						.if ZERO?
+							inc		byte ptr addin.Sfr(SFR_TH0)
+							.if ZERO?
+								;Set TF0
+								or		addin.Sfr[SFR_TCON],20h
+							.endif
+						.endif
+					.elseif eax==6
+						;8 bit counter, auto reload
+						inc		byte ptr addin.Sfr(SFR_TL0)
+						.if ZERO?
+							movzx	eax,addin.Sfr(SFR_TH0)
+							mov		addin.Sfr(SFR_TL0),al
+							;Set TF0
+							or		addin.Sfr[SFR_TCON],20h
+						.endif
+					.elseif eax==7
+						;One 8 bit counter
+						inc		byte ptr addin.Sfr(SFR_TL0)
+						.if ZERO?
+							;Set TF0
+							or		addin.Sfr[SFR_TCON],20h
+						.endif
+					.endif
+				.elseif eax==7
+					inc		byte ptr addin.Sfr(SFR_TH0)
+					.if ZERO?
+						or		addin.Sfr[SFR_TCON],80h
+					.endif
+				.endif
+			.endif
+		  @@:
 		.endif
-		
 	.endif
 	mov		eax,CpuCycles
 	add		dword ptr PerformanceCount,eax
@@ -2971,6 +3052,7 @@ MOVX_A_@DPTR:
 	.endif
 	invoke ReadXRam,edx
 	mov		addin.Sfr[SFR_ACC],al
+	xor		edi,edi
 	ret
 
 MOVX_A_@R0:
@@ -2980,6 +3062,7 @@ MOVX_A_@R0:
 	mov		dh,addin.Sfr[SFR_P2]
 	invoke ReadXRam,edx
 	mov		addin.Sfr[SFR_ACC],al
+	xor		edi,edi
 	ret
 
 MOVX_A_@R1:
@@ -2989,6 +3072,7 @@ MOVX_A_@R1:
 	mov		dh,addin.Sfr[SFR_P2]
 	invoke ReadXRam,edx
 	mov		addin.Sfr[SFR_ACC],al
+	xor		edi,edi
 	ret
 
 CLR_A:
@@ -3087,6 +3171,7 @@ MOVX_@DPTR_A:
 	.endif
 	movzx	eax,addin.Sfr[SFR_ACC]
 	invoke WriteXRam,edx,eax
+	xor		edi,edi
 	ret
 
 MOVX_@R0_A:
@@ -3096,6 +3181,7 @@ MOVX_@R0_A:
 	mov		dh,addin.Sfr[SFR_P2]
 	movzx	eax,addin.Sfr[SFR_ACC]
 	invoke WriteXRam,edx,eax
+	xor		edi,edi
 	ret
 
 MOVX_@R1_A:
@@ -3105,6 +3191,7 @@ MOVX_@R1_A:
 	mov		dh,addin.Sfr[SFR_P2]
 	movzx	eax,addin.Sfr[SFR_ACC]
 	invoke WriteXRam,edx,eax
+	xor		edi,edi
 	ret
 
 CPL_A:
@@ -3270,7 +3357,7 @@ Execute:
 	call	Fetch
 	mov		eax,ecx
 	movzx	ecx,Bytes[ecx]
-	movzx	edi,Cycles[ecx]
+	movzx	edi,Cycles[eax]
 	add		TotalCycles,edi
 	lea		edi,[edi*2-1]
 	.if ecx==1
@@ -3286,6 +3373,7 @@ Execute:
 		call	JmpTab[eax*4]
 	.elseif ecx==2
 		call	Fetch
+		dec		edi
 		mov		edx,ecx
 		.while edi>1
 			push	eax
@@ -3299,8 +3387,10 @@ Execute:
 		call	JmpTab[eax*4]
 	.elseif ecx==3
 		call	Fetch
+		dec		edi
 		mov		edx,ecx
 		call	Fetch
+		dec		edi
 		mov		dh,cl
 		.while edi>1
 			push	eax
