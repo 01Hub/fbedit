@@ -79,6 +79,9 @@ IDB_SWITCHOPEN          equ 100
 IDB_PUSHBUTTON          equ 102
 IDB_SWITCHCLOSED        equ 101
 
+WM_PBDOWN				equ WM_USER+1
+WM_PBUP					equ WM_USER+2
+
 NC						equ 0
 GND						equ 1
 P0_0					equ 1
@@ -162,6 +165,8 @@ szPBHigh				db 'NC',0
 szMenuPB				db 'Push Buttons',0
 szExpand				db '>',0
 szShrink				db '<',0
+szNULL					db 0
+szProPB					db 'PB',0
 
 .data?
 
@@ -172,3 +177,4 @@ lpAddin					DWORD ?
 hBmpPushButton			HBITMAP ?
 hBmpSwitchOpen			HBITMAP ?
 hBmpSwitchClosed		HBITMAP ?
+lpOldBtnProc			DWORD ?

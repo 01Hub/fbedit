@@ -13,6 +13,49 @@ UnInstallMMIO proc
 
 UnInstallMMIO endp
 
+DecToBin proc uses ebx esi,lpStr:DWORD
+	LOCAL	fNeg:DWORD
+
+    mov     esi,lpStr
+    mov		fNeg,FALSE
+    mov		al,[esi]
+    .if al=='-'
+		inc		esi
+		mov		fNeg,TRUE
+    .endif
+    xor     eax,eax
+  @@:
+    cmp     byte ptr [esi],30h
+    jb      @f
+    cmp     byte ptr [esi],3Ah
+    jnb     @f
+    mov     ebx,eax
+    shl     eax,2
+    add     eax,ebx
+    shl     eax,1
+    xor     ebx,ebx
+    mov     bl,[esi]
+    sub     bl,30h
+    add     eax,ebx
+    inc     esi
+    jmp     @b
+  @@:
+	.if fNeg
+		neg		eax
+	.endif
+    ret
+
+DecToBin endp
+
+BinToDec proc dwVal:DWORD,lpAscii:DWORD
+	LOCAL	buffer[8]:BYTE
+
+	mov		dword ptr buffer,'d%'
+	invoke wsprintf,lpAscii,addr buffer,dwVal
+	ret
+
+BinToDec endp
+
 HexToBin proc lpStr:DWORD
 
 	push	esi
@@ -40,6 +83,73 @@ HexToBin proc lpStr:DWORD
 	ret
 
 HexToBin endp
+
+GetItemInt proc uses esi edi,lpBuff:DWORD,nDefVal:DWORD
+
+	mov		esi,lpBuff
+	.if byte ptr [esi]
+		mov		edi,esi
+		invoke DecToBin,edi
+		.while byte ptr [esi] && byte ptr [esi]!=','
+			inc		esi
+		.endw
+		.if byte ptr [esi]==','
+			inc		esi
+		.endif
+		push	eax
+		invoke lstrcpy,edi,esi
+		pop		eax
+	.else
+		mov		eax,nDefVal
+	.endif
+	ret
+
+GetItemInt endp
+
+PutItemInt proc uses esi edi,lpBuff:DWORD,nVal:DWORD
+
+	mov		esi,lpBuff
+	invoke lstrlen,esi
+	mov		byte ptr [esi+eax],','
+	invoke BinToDec,nVal,addr [esi+eax+1]
+	ret
+
+PutItemInt endp
+
+GetItemStr proc uses esi edi,lpBuff:DWORD,lpDefVal:DWORD,lpResult:DWORD,ccMax:DWORD
+
+	mov		esi,lpBuff
+	.if byte ptr [esi]
+		mov		edi,esi
+		.while byte ptr [esi] && byte ptr [esi]!=','
+			inc		esi
+		.endw
+		lea		eax,[esi+1]
+		sub		eax,edi
+		.if eax>ccMax
+			mov		eax,ccMax
+		.endif
+		invoke lstrcpyn,lpResult,edi,eax
+		.if byte ptr [esi]
+			inc		esi
+		.endif
+		invoke lstrcpy,edi,esi
+	.else
+		invoke lstrcpyn,lpResult,lpDefVal,ccMax
+	.endif
+	ret
+
+GetItemStr endp
+
+PutItemStr proc uses esi,lpBuff:DWORD,lpStr:DWORD
+
+	mov		esi,lpBuff
+	invoke lstrlen,esi
+	mov		byte ptr [esi+eax],','
+	invoke lstrcpy,addr [esi+eax+1],lpStr
+	ret
+
+PutItemStr endp
 
 EditProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
@@ -409,6 +519,8 @@ MMIOProc endp
 
 AddinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	mii:MENUITEMINFO
+	LOCAL	buffer[256]:BYTE
+	LOCAL	buffer1[16]:BYTE
 
 	mov		eax,uMsg
 	.if eax==AM_INIT
@@ -605,6 +717,69 @@ AddinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			pop		edx
 			pop		eax
 		.endw
+	.elseif eax==AM_PROJECTOPEN
+		invoke GetPrivateProfileString,addr szProMMIO,addr szProMMIO,addr szNULL,addr buffer,sizeof buffer,lParam
+		invoke GetItemInt,addr buffer,0
+		.if eax
+			invoke ShowWindow,hDlg,SW_SHOW
+		.else
+			invoke ShowWindow,hDlg,SW_HIDE
+		.endif
+		push	0
+		push	IDC_EDTADDRMMI3
+		push	IDC_CHKMMI3
+		push	IDC_EDTADDRMMI2
+		push	IDC_CHKMMI2
+		push	IDC_EDTADDRMMI1
+		push	IDC_CHKMMI1
+		push	IDC_EDTADDRMMI0
+		push	IDC_CHKMMI0
+		push	IDC_EDTADDRMMO3
+		push	IDC_CHKMMO3
+		push	IDC_EDTADDRMMO2
+		push	IDC_CHKMMO2
+		push	IDC_EDTADDRMMO1
+		push	IDC_CHKMMO1
+		push	IDC_EDTADDRMMO0
+		mov		ebx,IDC_CHKMMO0
+		.while ebx
+			invoke GetItemInt,addr buffer,0
+			invoke CheckDlgButton,hDlg,ebx,eax
+			invoke GetItemStr,addr buffer,addr szNULL,addr buffer1,sizeof buffer1
+			pop		ebx
+			invoke SetDlgItemText,hDlg,ebx,addr buffer1
+			pop		ebx
+		.endw
+	.elseif eax==AM_PROJECTCLOSE
+		mov		buffer,0
+		invoke IsWindowVisible,hDlg
+		invoke PutItemInt,addr buffer,eax
+		push	0
+		push	IDC_EDTADDRMMI3
+		push	IDC_CHKMMI3
+		push	IDC_EDTADDRMMI2
+		push	IDC_CHKMMI2
+		push	IDC_EDTADDRMMI1
+		push	IDC_CHKMMI1
+		push	IDC_EDTADDRMMI0
+		push	IDC_CHKMMI0
+		push	IDC_EDTADDRMMO3
+		push	IDC_CHKMMO3
+		push	IDC_EDTADDRMMO2
+		push	IDC_CHKMMO2
+		push	IDC_EDTADDRMMO1
+		push	IDC_CHKMMO1
+		push	IDC_EDTADDRMMO0
+		mov		eax,IDC_CHKMMO0
+		.while eax
+			invoke IsDlgButtonChecked,hDlg,eax
+			invoke PutItemInt,addr buffer,eax
+			pop		edx
+			invoke GetDlgItemText,hDlg,edx,addr buffer1,sizeof buffer1
+			invoke PutItemStr,addr buffer,addr buffer1
+			pop		eax
+		.endw
+		invoke WritePrivateProfileString,addr szProMMIO,addr szProMMIO,addr buffer[1],lParam
 	.endif
 	xor		eax,eax
 	ret

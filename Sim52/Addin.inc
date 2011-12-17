@@ -3,9 +3,11 @@ AM_INIT					equ 0001h				;hWin=Handle to main window, wParam=0, lParam=pointer t
 AM_PORTWRITE			equ 0002h				;hWin=Handle to main window, wParam=Port (0-3), lParam=Port value
 AM_ALECHANGED			equ 0003h				;hWin=Handle to main window, wParam=0, lParam=0
 AM_MMPORTWRITE			equ 0004h				;hWin=Handle to main window, wParam=Port address, lParam=Port value				
-AM_COMMAND				equ 0007h				;hWin=Handle to main window, wParam=0, lParam=MenuID
-AM_RESET				equ 0008h				;hWin=Handle to main window, wParam=0, lParam=0
-AM_REFRESH				equ 0009h				;hWin=Handle to main window, wParam=0, lParam=0
+AM_COMMAND				equ 0006h				;hWin=Handle to main window, wParam=0, lParam=MenuID
+AM_RESET				equ 0007h				;hWin=Handle to main window, wParam=0, lParam=0
+AM_REFRESH				equ 0008h				;hWin=Handle to main window, wParam=0, lParam=0
+AM_PROJECTOPEN			equ 0009h				;hWin=Handle to main window, wParam=0, lParam=lpProjectFile
+AM_PROJECTCLOSE			equ 000Ah				;hWin=Handle to main window, wParam=0, lParam=lpProjectFile
 
 SFRMAP struct
 	ad					DWORD ?					;SFR Adress
@@ -36,6 +38,7 @@ ADDIN struct
 	hBmpGreenLed		HBITMAP ?
 	hBmpRedLed			HBITMAP ?
 	MenuID				DWORD ?
+	nRam				DWORD ?
 	Ram					BYTE 256 dup(?)
 	SfrData				SFRMAP 128 dup(<>)
 	Sfr					BYTE 256 dup(?)
@@ -50,6 +53,7 @@ ADDIN struct
 	mmoutportdata		DWORD 4 dup(?)
 	mminport			DWORD 4 dup(?)
 	mminportdata		DWORD 4 dup(?)
+	szMCU				BYTE 16 dup(?)
 ADDIN ends
 
 SFR_P0      			equ 080h

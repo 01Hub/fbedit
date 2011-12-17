@@ -278,18 +278,26 @@ TabBitProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
 TabBitProc endp
 
+SetupSfr proc uses esi
+
+	mov		esi,offset addin.SfrData
+	invoke SendDlgItemMessage,addin.hTabDlg[8],IDC_CBOSFR,CB_RESETCONTENT,0,0
+	.while [esi].SFRMAP.ad
+		invoke SendDlgItemMessage,addin.hTabDlg[8],IDC_CBOSFR,CB_ADDSTRING,0,addr [esi].SFRMAP.nme
+		invoke SendDlgItemMessage,addin.hTabDlg[8],IDC_CBOSFR,CB_SETITEMDATA,eax,[esi].SFRMAP.ad
+		lea		esi,[esi+sizeof SFRMAP]
+	.endw
+	invoke SendDlgItemMessage,addin.hTabDlg[8],IDC_CBOSFR,CB_SETCURSEL,0,0
+	invoke UpdateSelSfr,addin.hTabDlg[8]
+	invoke SendDlgItemMessage,addin.hTabDlg[0],IDC_UDCHEXRAM,HEM_SETMEM,addin.nRam,addr addin.Ram
+	ret
+
+SetupSfr endp
+
 TabSfrProc proc uses ebx esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
-		mov		esi,offset addin.SfrData
-		.while [esi].SFRMAP.ad
-			invoke SendDlgItemMessage,hWin,IDC_CBOSFR,CB_ADDSTRING,0,addr [esi].SFRMAP.nme
-			invoke SendDlgItemMessage,hWin,IDC_CBOSFR,CB_SETITEMDATA,eax,[esi].SFRMAP.ad
-			lea		esi,[esi+sizeof SFRMAP]
-		.endw
-		invoke SendDlgItemMessage,hWin,IDC_CBOSFR,CB_SETCURSEL,0,0
-		invoke UpdateSelSfr,hWin
 	.elseif eax==WM_COMMAND
 		mov		edx,wParam
 		movzx	eax,dx
@@ -963,12 +971,17 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			inc		ebx
 		.endw
 		invoke SendDlgItemMessage,addin.hTabDlg[16],IDC_UDCHEXCODE,HEM_SETMEM,65536,addr addin.Code
+		invoke LoadMCUTypes
+		invoke LoadSFRFile,offset szMCUTypes
+		invoke SetupSfr
+		invoke LoadSettings
+		invoke Reset
 	.elseif eax==WM_TIMER
 		.if addin.Refresh
 			invoke UpdateStatus
 			invoke UpdatePorts
 			invoke UpdateRegisters
-			invoke SendDlgItemMessage,addin.hTabDlg[0],IDC_UDCHEXRAM,HEM_SETMEM,256,addr addin.Ram
+			invoke SendDlgItemMessage,addin.hTabDlg[0],IDC_UDCHEXRAM,HEM_SETMEM,addin.nRam,addr addin.Ram
 			invoke UpdateBits
 			invoke SendDlgItemMessage,addin.hTabDlg[8],IDC_UDCHEXSFR,HEM_SETMEM,128,addr addin.Sfr[128]
 			invoke SendDlgItemMessage,addin.hTabDlg[12],IDC_UDCHEXXRAM,HEM_SETMEM,65536,addr addin.XRam
@@ -1001,7 +1014,7 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.elseif eax==GN_BEFOREEDIT && [ebx].GRIDNOTIFY.col
 				mov		[ebx].GRIDNOTIFY.fcancel,TRUE
 			.endif
-		.else;if eax==IDC_TBRSIM52
+		.else
 			mov		eax,[ebx].NMHDR.code
 			.if eax==TTN_NEEDTEXT
 				mov		eax,wParam
@@ -1015,7 +1028,7 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.if edx==BN_CLICKED || edx==1
 			.if eax==IDM_FILE_EXIT
 				invoke SendMessage,hWin,WM_CLOSE,0,0
-			.elseif eax==IDM_FILE_OPEN
+			.elseif eax==IDM_FILE_OPENFILE
 				;Zero out the ofn struct
 				invoke RtlZeroMemory,addr ofn,sizeof ofn
 				;Setup the ofn struct
@@ -1034,18 +1047,89 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				;Show the Open dialog
 				invoke GetOpenFileName,addr ofn
 				.if eax
+					.if szLstFile || szSimFile
+						invoke SendMessage,hWin,WM_COMMAND,IDM_FILE_CLOSE,NULL
+					.endif
 					invoke lstrcpy,addr buffer1,addr szAppName
-					invoke lstrcat,addr buffer1,addr szSlash
+					invoke lstrcat,addr buffer1,addr szDash
 					invoke lstrlen,addr buffer
 					.while buffer[eax]!='\' && eax
 						dec		eax
 					.endw
 					invoke lstrcat,addr buffer1,addr buffer[eax+1]
 					invoke SetWindowText,hWin,addr buffer1
+					invoke lstrcpy,addr szLstFile,addr buffer
 					invoke ParseList,addr buffer
 					invoke EnableDisable
 					invoke SetFocus,addin.hGrd
 				.endif
+			.elseif eax==IDM_FILE_OPENPROJECT
+				;Zero out the ofn struct
+				invoke RtlZeroMemory,addr ofn,sizeof ofn
+				;Setup the ofn struct
+				mov		ofn.lStructSize,sizeof ofn
+				push	hWin
+				pop		ofn.hwndOwner
+				push	addin.hInstance
+				pop		ofn.hInstance
+				mov		ofn.lpstrFilter,offset szSIMFilterString
+				mov		buffer[0],0
+				lea		eax,buffer
+				mov		ofn.lpstrFile,eax
+				mov		ofn.nMaxFile,sizeof buffer
+				mov		ofn.lpstrDefExt,NULL
+				mov		ofn.Flags,OFN_FILEMUSTEXIST or OFN_HIDEREADONLY or OFN_PATHMUSTEXIST
+				;Show the Open dialog
+				invoke GetOpenFileName,addr ofn
+				.if eax
+					.if szLstFile || szSimFile
+						invoke SendMessage,hWin,WM_COMMAND,IDM_FILE_CLOSE,NULL
+					.endif
+					invoke lstrcpy,addr buffer1,addr szAppName
+					invoke lstrcat,addr buffer1,addr szDash
+					invoke lstrlen,addr buffer
+					.while buffer[eax]!='\' && eax
+						dec		eax
+					.endw
+					invoke lstrcat,addr buffer1,addr buffer[eax+1]
+					invoke SetWindowText,hWin,addr buffer1
+					invoke lstrcpy,addr szSimFile,addr buffer
+					invoke GetPrivateProfileString,addr szProSIM52,addr szProFile,addr szNULL,addr buffer,sizeof buffer,addr szSimFile
+					invoke lstrcpy,addr buffer1,addr szSimFile
+					invoke lstrlen,addr buffer1
+					.while buffer1[eax]!='\' && eax
+						dec		eax
+					.endw
+					mov		edx,eax
+					invoke lstrcpy,addr buffer1[edx+1],addr buffer
+					invoke ParseList,addr buffer1
+					invoke GetPrivateProfileString,addr szProSIM52,addr szProMCU,addr szNULL,addr buffer,sizeof buffer,addr szSimFile
+					invoke LoadSFRFile,addr buffer
+					invoke SetupSfr
+					invoke GetPrivateProfileInt,addr szProSIM52,addr szProClock,24000000,addr szSimFile
+					invoke SendAddinMessage,hWin,AM_PROJECTOPEN,0,addr szSimFile
+					invoke EnableDisable
+					invoke SetFocus,addin.hGrd
+				.endif
+			.elseif eax==IDM_FILE_CLOSE
+				.if szSimFile
+					;Save project settings
+					invoke WritePrivateProfileString,addr szProSIM52,addr szProMCU,addr addin.szMCU,addr szSimFile
+					invoke wsprintf,addr buffer,addr szFmtDec,MCUClock
+					invoke WritePrivateProfileString,addr szProSIM52,addr szProClock,addr buffer,addr szSimFile
+					invoke SendAddinMessage,hWin,AM_PROJECTCLOSE,0,addr szSimFile
+				.endif
+				mov		State,STATE_STOP
+				invoke Reset
+				mov		szSimFile,0
+				mov		szLstFile,0
+				invoke SendMessage,addin.hGrd,GM_RESETCONTENT,0,0
+				invoke LoadSFRFile,addr szMCUTypes
+				invoke SetupSfr
+				mov		eax,DefMCUClock
+				mov		MCUClock,eax
+				invoke EnableDisable
+				invoke SetWindowText,hWin,addr szAppName
 			.elseif eax==IDM_SEARCH_FIND
 				invoke ShowWindow,hFind,SW_SHOW
 			.elseif eax==IDM_VIEW_TERMINAL
@@ -1116,6 +1200,11 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke DialogBoxParam,addin.hInstance,IDD_DLGCLOCK,hWin,offset ClockProc,0
 			.elseif eax==IDM_HELP_ABOUT
 				invoke ShellAbout,hWin,addr szAppName,addr szAboutMsg,NULL
+			.elseif eax>=11000 && eax<=11031
+				lea		eax,[eax-11000]
+				shl		eax,4
+				invoke LoadSFRFile,addr szMCUTypes[eax]
+				invoke SetupSfr
 			.elseif eax>=12000
 				invoke SendAddinMessage,hWin,AM_COMMAND,0,eax
 			.endif
@@ -1237,6 +1326,9 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke GetWindowRect,addin.hWnd,addr WinRect
 		.endif
 	.elseif eax==WM_CLOSE
+		.if szLstFile || szSimFile
+			invoke SendMessage,hWin,WM_COMMAND,IDM_FILE_CLOSE,NULL
+		.endif
 		invoke SaveSettings
 		.if hMemFile
 			invoke GlobalFree,hMemFile
@@ -1288,11 +1380,7 @@ WinMain proc hInst:HINSTANCE,hPrevInst:HINSTANCE,CmdLine:LPSTR,CmdShow:DWORD
 	mov		addin.hBmpGreenLed,eax
 	invoke LoadBitmap,addin.hInstance,IDB_LEDRED
 	mov		addin.hBmpRedLed,eax
-	invoke LoadMCUTypes
-	invoke LoadSFRFile,offset szMCUTypes
 	invoke CreateDialogParam,addin.hInstance,IDD_SIM52,NULL,addr WndProc,NULL
-	invoke LoadSettings
-	invoke Reset
 	invoke UpdateWindow,addin.hWnd
 	.while TRUE
 		invoke GetMessage,addr msg,NULL,0,0

@@ -71,13 +71,19 @@ Bytes					db 1,2,3,1,1,2,1,1,1,1,1,1,1,1,1,1
 
 LoadMCUTypes proc uses ebx esi edi
 	LOCAL	buffer[8]:BYTE
+	LOCAL	mii:MENUITEMINFO
 
+	invoke DeleteMenu,addin.hMenu,11000,MF_BYCOMMAND
 	mov		edi,offset szMCUTypes
 	xor		ebx,ebx
+	mov		mii.cbSize,sizeof MENUITEMINFO
+	mov		mii.fMask,MIIM_SUBMENU
+	invoke GetMenuItemInfo,addin.hMenu,IDM_OPTION_MCU,FALSE,addr mii
 	.while ebx<16
 		invoke wsprintf,addr buffer,addr szFmtDec,ebx
 		invoke GetPrivateProfileString,addr szIniMCU,addr buffer,addr szNULL,edi,16,addr szIniFile
 		.break .if !eax
+		invoke AppendMenu,mii.hSubMenu,MF_STRING,addr [ebx+11000],edi
 		inc		ebx
 		lea		edi,[edi+16]
 	.endw
@@ -88,6 +94,7 @@ LoadMCUTypes endp
 LoadSFRFile proc uses ebx esi edi,lpMCU:DWORD
 	LOCAL	buffer[MAX_PATH]:BYTE
 
+	invoke lstrcpy,addr addin.szMCU,lpMCU
 	invoke lstrcpy,addr szSfrFile,addr szPath
 	invoke lstrcat,addr szSfrFile,lpMCU
 	invoke lstrcat,addr szSfrFile,addr szSfrFileExt
@@ -97,6 +104,8 @@ LoadSFRFile proc uses ebx esi edi,lpMCU:DWORD
 	rep		stosb
 	xor		ebx,ebx
 	mov		edi,offset addin.SfrData
+	invoke GetPrivateProfileInt,addr szIniSFRMAP,addr szIniRam,128,addr szSfrFile
+	mov		addin.nRam,eax
 	.while TRUE
 		invoke wsprintf,addr buffer,addr szFmtDec,ebx
 		invoke GetPrivateProfileString,addr szIniSFRMAP,addr buffer,addr szNULL,addr buffer,sizeof buffer,addr szSfrFile
@@ -116,6 +125,18 @@ LoadSFRFile proc uses ebx esi edi,lpMCU:DWORD
 		invoke GetItemStr,addr buffer,addr szNULL,addr [edi].SFRMAP.d0,8
 		inc		ebx
 		lea		edi,[edi+sizeof SFRMAP]
+	.endw
+	xor		ebx,ebx
+	mov		edi,offset szMCUTypes
+	.while ebx<32
+		invoke lstrcmp,edi,lpMCU
+		.if ZERO?
+			invoke CheckMenuItem,addin.hMenu,addr [ebx+11000],MF_BYCOMMAND or MF_CHECKED
+		.else
+			invoke CheckMenuItem,addin.hMenu,addr [ebx+11000],MF_BYCOMMAND or MF_UNCHECKED
+		.endif
+		inc		ebx
+		lea		edi,[edi+16]
 	.endw
 	ret
 
@@ -311,10 +332,12 @@ UpdateStatus proc uses ebx
 		.endif
 		pop		eax
 	.endw
-	invoke FindMcuAddr,PCDONE
-	.if eax
-		movzx	eax,[eax].MCUADDR.lbinx
-		invoke SendMessage,addin.hGrd,GM_SETCURROW,eax,0
+	.if (State & STATE_PAUSE) || (State & SIM52_BREAKPOINT)
+		invoke FindMcuAddr,PCDONE
+		.if eax
+			movzx	eax,[eax].MCUADDR.lbinx
+			invoke SendMessage,addin.hGrd,GM_SETCURROW,eax,0
+		.endif
 	.endif
 	invoke SetDlgItemInt,addin.hTabDlgStatus,IDC_STCCYCLES,TotalCycles,FALSE
 	ret

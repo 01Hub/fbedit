@@ -112,6 +112,9 @@ IDB_LEDRED              equ 101
 
 szMenuMMIO				BYTE 'Memory Mapped I/O',0
 
+szNULL					BYTE 0
+szProMMIO				BYTE 'MMIO',0
+
 .data?
 
 hInstance				HINSTANCE ?

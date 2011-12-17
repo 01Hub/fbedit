@@ -256,6 +256,7 @@ LoadSettings proc
 	mov		ComputerClock,eax
 	invoke GetItemInt,addr buffer,24000000
 	mov		MCUClock,eax
+	mov		DefMCUClock,eax
 	invoke GetItemInt,addr buffer,200
 	mov		RefreshRate,eax
 	invoke SetTiming
@@ -282,7 +283,7 @@ SaveSettings proc
 	invoke WritePrivateProfileString,addr szIniConfig,addr szIniPos,addr buffer[1],addr szIniFile
 	mov		buffer,0
 	invoke PutItemInt,addr buffer,ComputerClock
-	invoke PutItemInt,addr buffer,MCUClock
+	invoke PutItemInt,addr buffer,DefMCUClock
 	invoke PutItemInt,addr buffer,RefreshRate
 	invoke WritePrivateProfileString,addr szIniConfig,addr szIniClock,addr buffer[1],addr szIniFile
 	ret

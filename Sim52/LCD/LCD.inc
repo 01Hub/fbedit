@@ -122,22 +122,25 @@ LCDBIT ends
 
 .const
 
-LCDClass				db 'LCDCLASS',0
+LCDClass				BYTE 'LCDCLASS',0
 
-szPortBits				db 'GND',0,'VCC',0,'NC',0
-						db 'P0.0',0,'P0.1',0,'P0.2',0,'P0.3',0,'P0.4',0,'P0.5',0,'P0.6',0,'P0.7',0
-						db 'P1.0',0,'P1.1',0,'P1.2',0,'P1.3',0,'P1.4',0,'P1.5',0,'P1.6',0,'P1.7',0
-						db 'P2.0',0,'P2.1',0,'P2.2',0,'P2.3',0,'P2.4',0,'P2.5',0,'P2.6',0,'P2.7',0
-						db 'P3.0',0,'P3.1',0,'P3.2',0,'P3.3',0,'P3.4',0,'P3.5',0,'P3.6',0,'P3.7',0
-						db 'MMO0.0',0,'MMO0.1',0,'MMO0.2',0,'MMO0.3',0,'MMO0.4',0,'MMO0.5',0,'MMO0.6',0,'MMO0.7',0
-						db 'MMO1.0',0,'MMO1.1',0,'MMO1.2',0,'MMO1.3',0,'MMO1.4',0,'MMO1.5',0,'MMO1.6',0,'MMO1.7',0
-						db 'MMO2.0',0,'MMO2.1',0,'MMO2.2',0,'MMO2.3',0,'MMO2.4',0,'MMO2.5',0,'MMO2.6',0,'MMO2.7',0
-						db 'MMO3.0',0,'MMO3.1',0,'MMO3.2',0,'MMO3.3',0,'MMO3.4',0,'MMO3.5',0,'MMO3.6',0,'MMO3.7',0,0
+szPortBits				BYTE 'GND',0,'VCC',0,'NC',0
+						BYTE 'P0.0',0,'P0.1',0,'P0.2',0,'P0.3',0,'P0.4',0,'P0.5',0,'P0.6',0,'P0.7',0
+						BYTE 'P1.0',0,'P1.1',0,'P1.2',0,'P1.3',0,'P1.4',0,'P1.5',0,'P1.6',0,'P1.7',0
+						BYTE 'P2.0',0,'P2.1',0,'P2.2',0,'P2.3',0,'P2.4',0,'P2.5',0,'P2.6',0,'P2.7',0
+						BYTE 'P3.0',0,'P3.1',0,'P3.2',0,'P3.3',0,'P3.4',0,'P3.5',0,'P3.6',0,'P3.7',0
+						BYTE 'MMO0.0',0,'MMO0.1',0,'MMO0.2',0,'MMO0.3',0,'MMO0.4',0,'MMO0.5',0,'MMO0.6',0,'MMO0.7',0
+						BYTE 'MMO1.0',0,'MMO1.1',0,'MMO1.2',0,'MMO1.3',0,'MMO1.4',0,'MMO1.5',0,'MMO1.6',0,'MMO1.7',0
+						BYTE 'MMO2.0',0,'MMO2.1',0,'MMO2.2',0,'MMO2.3',0,'MMO2.4',0,'MMO2.5',0,'MMO2.6',0,'MMO2.7',0
+						BYTE 'MMO3.0',0,'MMO3.1',0,'MMO3.2',0,'MMO3.3',0,'MMO3.4',0,'MMO3.5',0,'MMO3.6',0,'MMO3.7',0,0
 
-szMenuLCD				db 'LCD Display',0
-szExpand				db '>',0
-szShrink				db '<',0
-szError					db 'Port not activated',0
+szMenuLCD				BYTE 'LCD Display',0
+szExpand				BYTE '>',0
+szShrink				BYTE '<',0
+szError					BYTE 'Port not activated',0
+
+szNULL					BYTE 0
+szProLCD				BYTE 'LCD',0
 
 .data?
 

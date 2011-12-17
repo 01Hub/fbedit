@@ -31,87 +31,18 @@ includelib Debug.lib
 
 ;#########################################################################
 
-IDR_ACCEL1				equ 1
-
+IDD_DLGTABCODE          equ 1500
 IDD_SIM52               equ 1000
-IDC_GRPPORTS            equ 1060
 IDC_TBRSIM52            equ 1003
-IDC_GRDCODE				equ 1005
 IDC_SBRSIM52            equ 1002
-IDC_IMGSTATUS			equ 1011
-IDC_TABSTATUS            equ 1004
-
-IDD_DLGTABSTATUS		equ 1600
-IDC_GRPSTATUS           equ 1005
-IDC_EDTPC               equ 1006
-IDC_EDTDPTR             equ 1007
-IDC_EDTDPTR1			equ 1601
-IDC_EDTACC              equ 1008
-IDC_EDTB                equ 1010
-IDC_EDTSP               equ 1012
-IDC_IMGCY               equ 1207
-IDC_IMGAC               equ 1206
-IDC_IMGF0               equ 1205
-IDC_IMGRS1              equ 1204
-IDC_IMGRS0              equ 1203
-IDC_IMGOV               equ 1202
-IDC_IMGFL               equ 1201
-IDC_IMGP                equ 1200
-IDC_IMGP0_7             equ 1307
-IDC_IMGP0_6             equ 1306
-IDC_IMGP0_5             equ 1305
-IDC_IMGP0_4             equ 1304
-IDC_IMGP0_3             equ 1303
-IDC_IMGP0_2             equ 1302
-IDC_IMGP0_1             equ 1301
-IDC_IMGP0_0             equ 1300
-IDC_IMGP1_7             equ 1317
-IDC_IMGP1_6             equ 1316
-IDC_IMGP1_5             equ 1315
-IDC_IMGP1_4             equ 1314
-IDC_IMGP1_3             equ 1313
-IDC_IMGP1_2             equ 1312
-IDC_IMGP1_1             equ 1311
-IDC_IMGP1_0             equ 1310
-IDC_IMGP2_7             equ 1327
-IDC_IMGP2_6             equ 1326
-IDC_IMGP2_5             equ 1325
-IDC_IMGP2_4             equ 1324
-IDC_IMGP2_3             equ 1323
-IDC_IMGP2_2             equ 1322
-IDC_IMGP2_1             equ 1321
-IDC_IMGP2_0             equ 1320
-IDC_IMGP3_7             equ 1337
-IDC_IMGP3_6             equ 1336
-IDC_IMGP3_5             equ 1335
-IDC_IMGP3_4             equ 1334
-IDC_IMGP3_3             equ 1333
-IDC_IMGP3_2             equ 1332
-IDC_IMGP3_1             equ 1331
-IDC_IMGP3_0             equ 1330
-IDC_GRPREG              equ 1051
-IDC_STCBANK             equ 1069
-IDC_UDNBANK             equ 1068
-IDC_EDTR0               equ 1052
-IDC_EDTR1               equ 1053
-IDC_EDTR2               equ 1054
-IDC_EDTR3               equ 1055
-IDC_EDTR4               equ 1056
-IDC_EDTR5               equ 1057
-IDC_EDTR6               equ 1058
-IDC_EDTR7               equ 1059
-
-IDC_STCCYCLES			equ 1014
-IDC_BTNRESET			equ 1013
-
+IDC_TABSTATUS           equ 1004
+IDC_IMGSTATUS           equ 1011
 IDC_TABVIEW             equ 1009
-
+IDC_GRDCODE             equ 1005
 IDD_DLGTABRAM           equ 1100
 IDC_GRP1                equ 1101
 IDC_UDCHEXRAM           equ 1102
-
 IDD_DLGTABBIT           equ 1200
-IDC_GRP2                equ 1201
 IDC_IMGBIT00            equ 1000
 IDC_IMGBIT01            equ 1001
 IDC_IMGBIT02            equ 1002
@@ -240,40 +171,98 @@ IDC_IMGBIT7C            equ 1124
 IDC_IMGBIT7D            equ 1125
 IDC_IMGBIT7E            equ 1126
 IDC_IMGBIT7F            equ 1127
-
 IDD_DLGTABSFR           equ 1300
 IDC_GRP3                equ 1301
 IDC_UDCHEXSFR           equ 1302
 IDC_CBOSFR              equ 1303
 IDC_STCSFRADDR          equ 1304
-IDC_IMGSFRBIT0          equ 1100
-IDC_IMGSFRBIT1          equ 1101
-IDC_IMGSFRBIT2          equ 1102
-IDC_IMGSFRBIT3          equ 1103
-IDC_IMGSFRBI4           equ 1104
-IDC_IMGSFRBIT5          equ 1105
-IDC_IMGSFRBIT6          equ 1106
-IDC_IMGSFRBIT7          equ 1107
-IDC_STCSFRBIT0          equ 1000
-IDC_STCSFRBIT1          equ 1001
-IDC_STCSFRBIT2          equ 1002
-IDC_STCSFRBIT3          equ 1003
-IDC_STCSFRBIT4          equ 1004
-IDC_STCSFRBIT5          equ 1005
-IDC_STCSFRBIT6          equ 1006
 IDC_STCSFRBIT7          equ 1007
-
+IDC_STCSFRBIT6          equ 1006
+IDC_STCSFRBIT5          equ 1005
+IDC_STCSFRBIT4          equ 1004
+IDC_STCSFRBIT3          equ 1003
+IDC_STCSFRBIT2          equ 1002
+IDC_STCSFRBIT1          equ 1001
+IDC_STCSFRBIT0          equ 1000
+IDC_IMGSFRBIT7          equ 1107
+IDC_IMGSFRBIT6          equ 1106
+IDC_IMGSFRBIT5          equ 1105
+IDC_IMGSFRBI4           equ 1104
+IDC_IMGSFRBIT3          equ 1103
+IDC_IMGSFRBIT2          equ 1102
+IDC_IMGSFRBIT1          equ 1101
+IDC_IMGSFRBIT0          equ 1100
+IDC_SHP1                equ 1305
 IDD_DLGTABXRAM          equ 1400
 IDC_GRP4                equ 1401
 IDC_UDCHEXXRAM          equ 1402
-
-IDD_DLGTABCODE          equ 1500
+IDD_DLGTABBCODE         equ 1500
 IDC_GRP5                equ 1501
 IDC_UDCHEXCODE          equ 1502
-
-IDD_DLGTERMINAL			equ 1700
-IDC_SCREEN				equ 1701
-
+IDD_DLGTABSTATUS        equ 1600
+IDC_GRPSTATUS           equ 1005
+IDC_EDTPC               equ 1006
+IDC_EDTDPTR             equ 1007
+IDC_EDTDPTR1            equ 1601
+IDC_EDTACC              equ 1008
+IDC_EDTB                equ 1010
+IDC_EDTSP               equ 1012
+IDC_IMGCY               equ 1207
+IDC_IMGAC               equ 1206
+IDC_IMGF0               equ 1205
+IDC_IMGRS1              equ 1204
+IDC_IMGRS0              equ 1203
+IDC_IMGOV               equ 1202
+IDC_IMGFL               equ 1201
+IDC_IMGP                equ 1200
+IDC_STCCYCLES           equ 1014
+IDC_BTNRESET            equ 1013
+IDC_GRPPORTS            equ 1060
+IDC_IMGP0_7             equ 1307
+IDC_IMGP0_6             equ 1306
+IDC_IMGP0_5             equ 1305
+IDC_IMGP0_4             equ 1304
+IDC_IMGP0_3             equ 1303
+IDC_IMGP0_2             equ 1302
+IDC_IMGP0_1             equ 1301
+IDC_IMGP0_0             equ 1300
+IDC_IMGP1_7             equ 1317
+IDC_IMGP1_6             equ 1316
+IDC_IMGP1_5             equ 1315
+IDC_IMGP1_4             equ 1314
+IDC_IMGP1_3             equ 1313
+IDC_IMGP1_2             equ 1312
+IDC_IMGP1_1             equ 1311
+IDC_IMGP1_0             equ 1310
+IDC_IMGP2_7             equ 1327
+IDC_IMGP2_6             equ 1326
+IDC_IMGP2_5             equ 1325
+IDC_IMGP2_4             equ 1324
+IDC_IMGP2_3             equ 1323
+IDC_IMGP2_2             equ 1322
+IDC_IMGP2_1             equ 1321
+IDC_IMGP2_0             equ 1320
+IDC_IMGP3_7             equ 1337
+IDC_IMGP3_6             equ 1336
+IDC_IMGP3_5             equ 1335
+IDC_IMGP3_4             equ 1334
+IDC_IMGP3_3             equ 1333
+IDC_IMGP3_2             equ 1332
+IDC_IMGP3_1             equ 1331
+IDC_IMGP3_0             equ 1330
+IDC_GRPREG              equ 1051
+IDC_STCBANK             equ 1069
+IDC_UDNBANK             equ 1068
+IDC_EDTR0               equ 1052
+IDC_EDTR1               equ 1053
+IDC_EDTR2               equ 1054
+IDC_EDTR3               equ 1055
+IDC_EDTR4               equ 1056
+IDC_EDTR5               equ 1057
+IDC_EDTR6               equ 1058
+IDC_EDTR7               equ 1059
+IDD_DLGTERMINAL         equ 1700
+IDC_SCREEN              equ 1701
 IDD_DLGFIND             equ 1800
 IDC_EDTFIND             equ 1801
 IDC_BTNFIND             equ 1802
@@ -281,21 +270,25 @@ IDC_RBNBREAKPOINT       equ 1803
 IDC_RBNLABEL            equ 1804
 IDC_RBNCODE             equ 1805
 IDC_CHKMATCH            equ 1806
-IDC_CHKWORD             equ 1807
 IDC_RBNUP               equ 1808
 IDC_RBNDOWN             equ 1809
-
-IDD_DLGCLOCK			equ 1900
-IDC_EDTCOMPUTER			equ 1901
-IDC_EDTMCU				equ 1902
-IDC_EDTREFRESH			equ 1903
-IDC_UDNREFRESH			equ 1904
-
+IDC_CHKWORD             equ 1807
+IDD_DLGCLOCK            equ 1900
+IDC_EDTCOMPUTER         equ 1901
+IDC_EDTMCU              equ 1902
+IDC_EDTREFRESH          equ 1903
+IDC_UDNREFRESH          equ 1904
 IDM_MENU                equ 10000
-IDM_FILE_OPEN           equ 10001
+IDM_FILE                equ 10200
+IDM_FILE_OPENFILE       equ 10001
+IDM_FILE_OPENPROJECT    equ 10014
+IDM_FILE_CLOSE          equ 10015
 IDM_FILE_EXIT           equ 10002
+IDM_SEARCH              equ 10201
 IDM_SEARCH_FIND         equ 10003
+IDM_VIEW                equ 10202
 IDM_VIEW_TERMINAL       equ 10004
+IDM_DEBUG               equ 10203
 IDM_DEBUG_RUN           equ 10005
 IDM_DEBUG_PAUSE         equ 10006
 IDM_DEBUG_STOP          equ 10007
@@ -304,13 +297,17 @@ IDM_DEBUG_STEP_OVER     equ 10008
 IDM_DEBUG_RUN_TO_CURSOR equ 10010
 IDM_DEBUG_TOGGLE        equ 10011
 IDM_DEBUG_CLEAR         equ 10012
-IDM_OPTION_CLOCK		equ 10013
+IDM_OPTIONS             equ 10204
+IDM_OPTION_MCU			equ 10016
+IDM_OPTION_CLOCK        equ 10013
+IDM_HELP                equ 10205
 IDM_HELP_ABOUT          equ 10101
-
 IDB_TBRBMP              equ 100
 IDB_LEDGRAY             equ 101
 IDB_LEDGREEN            equ 102
 IDB_LEDRED              equ 103
+IDM_FILE_OPEN           equ 10001
+IDR_ACCEL1              equ 1
 
 FIND_UP					equ 1
 FIND_DOWN				equ 2
@@ -356,10 +353,11 @@ ntbrbtns				equ 11
 
 szClassName				BYTE 'DLGCLASS',0
 szAppName				BYTE '8052 Simulator',0
-szSlash					BYTE ' - ',0
+szDash					BYTE ' - ',0
 szAboutMsg				BYTE 'MASM32 RadASM 8052 Simulator',13,10,'Copyright © MASM32 2001',0
 
 szLSTFilterString		BYTE 'LST Files (*.lst)',0,'*.lst',0,0
+szSIMFilterString		BYTE 'SIM Files (*.sim)',0,'*.sim',0,0
 Courier_New_9 			LOGFONT <-12,0,0,0,400,0,0,0,0,3,2,1,49,"Courier New">
 szTabStatus				BYTE 'Status',0
 
@@ -388,7 +386,13 @@ szIniPos				BYTE 'Pos',0
 szIniClock				BYTE 'Clock',0
 szIniAddin				BYTE 'Addin',0
 szIniMCU				BYTE 'MCU',0
+szIniRam				BYTE 'Ram',0
 szIniSFRMAP				BYTE 'SFRMAP',0
+
+szProSIM52				BYTE 'SIM52',0
+szProFile				BYTE 'File',0
+szProMCU				BYTE 'MCU',0
+szProClock				BYTE 'Clock',0
 
 .data?
 
@@ -406,6 +410,8 @@ WinRect					RECT <>
 szPath					BYTE MAX_PATH dup(?)
 szIniFile				BYTE MAX_PATH dup(?)
 szSfrFile				BYTE MAX_PATH dup(?)
+szLstFile				BYTE MAX_PATH dup(?)
+szSimFile				BYTE MAX_PATH dup(?)
 szMCUTypes				BYTE 32*16 dup(?)
 
 hMemFile				HGLOBAL ?
@@ -418,6 +424,7 @@ TotalCycles				DWORD ?
 SBUFWR					DWORD ?
 ComputerClock			DWORD ?
 MCUClock				DWORD ?
+DefMCUClock				DWORD ?
 CpuCycles				DWORD ?
 PerformanceCount		QWORD ?
 RefreshRate				DWORD ?

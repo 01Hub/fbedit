@@ -6,6 +6,152 @@ include PushButton.inc
 
 .code
 
+DecToBin proc uses ebx esi,lpStr:DWORD
+	LOCAL	fNeg:DWORD
+
+    mov     esi,lpStr
+    mov		fNeg,FALSE
+    mov		al,[esi]
+    .if al=='-'
+		inc		esi
+		mov		fNeg,TRUE
+    .endif
+    xor     eax,eax
+  @@:
+    cmp     byte ptr [esi],30h
+    jb      @f
+    cmp     byte ptr [esi],3Ah
+    jnb     @f
+    mov     ebx,eax
+    shl     eax,2
+    add     eax,ebx
+    shl     eax,1
+    xor     ebx,ebx
+    mov     bl,[esi]
+    sub     bl,30h
+    add     eax,ebx
+    inc     esi
+    jmp     @b
+  @@:
+	.if fNeg
+		neg		eax
+	.endif
+    ret
+
+DecToBin endp
+
+BinToDec proc dwVal:DWORD,lpAscii:DWORD
+	LOCAL	buffer[8]:BYTE
+
+	mov		dword ptr buffer,'d%'
+	invoke wsprintf,lpAscii,addr buffer,dwVal
+	ret
+
+BinToDec endp
+
+GetItemInt proc uses esi edi,lpBuff:DWORD,nDefVal:DWORD
+
+	mov		esi,lpBuff
+	.if byte ptr [esi]
+		mov		edi,esi
+		invoke DecToBin,edi
+		.while byte ptr [esi] && byte ptr [esi]!=','
+			inc		esi
+		.endw
+		.if byte ptr [esi]==','
+			inc		esi
+		.endif
+		push	eax
+		invoke lstrcpy,edi,esi
+		pop		eax
+	.else
+		mov		eax,nDefVal
+	.endif
+	ret
+
+GetItemInt endp
+
+PutItemInt proc uses esi edi,lpBuff:DWORD,nVal:DWORD
+
+	mov		esi,lpBuff
+	invoke lstrlen,esi
+	mov		byte ptr [esi+eax],','
+	invoke BinToDec,nVal,addr [esi+eax+1]
+	ret
+
+PutItemInt endp
+
+GetItemStr proc uses esi edi,lpBuff:DWORD,lpDefVal:DWORD,lpResult:DWORD,ccMax:DWORD
+
+	mov		esi,lpBuff
+	.if byte ptr [esi]
+		mov		edi,esi
+		.while byte ptr [esi] && byte ptr [esi]!=','
+			inc		esi
+		.endw
+		lea		eax,[esi+1]
+		sub		eax,edi
+		.if eax>ccMax
+			mov		eax,ccMax
+		.endif
+		invoke lstrcpyn,lpResult,edi,eax
+		.if byte ptr [esi]
+			inc		esi
+		.endif
+		invoke lstrcpy,edi,esi
+	.else
+		invoke lstrcpyn,lpResult,lpDefVal,ccMax
+	.endif
+	ret
+
+GetItemStr endp
+
+;'"Str,Str","Str",1,2','Str',1
+GetItemQuotedStr proc uses esi edi,lpBuff:DWORD,lpDefVal:DWORD,lpResult:DWORD,ccMax:DWORD
+
+	mov		esi,lpBuff
+	.if byte ptr [esi]=="'"
+		mov		edi,esi
+		inc		esi
+		.while byte ptr [esi] && byte ptr [esi]!="'"
+			inc		esi
+		.endw
+		.if byte ptr [esi]=="'"
+			inc		esi
+		.endif
+		lea		eax,[esi+1]
+		sub		eax,edi
+		.if eax>ccMax
+			mov		eax,ccMax
+			lea		eax,[eax+2]
+		.endif
+		invoke lstrcpyn,lpResult,addr [edi+1],addr [eax-2]
+		.if byte ptr [esi]
+			inc		esi
+		.endif
+		invoke lstrcpy,edi,esi
+	.elseif byte ptr [esi]
+		invoke GetItemStr,lpBuff,lpDefVal,lpResult,ccMax
+	.else
+		invoke lstrcpyn,lpResult,lpDefVal,ccMax
+	.endif
+	ret
+
+GetItemQuotedStr endp
+
+PutItemQuotedStr proc uses esi,lpBuff:DWORD,lpStr:DWORD
+
+	mov		esi,lpBuff
+	invoke lstrlen,esi
+	lea		esi,[esi+eax]
+	mov		word ptr [esi],"',"
+	invoke lstrcpy,addr [esi+2],lpStr
+	invoke lstrlen,esi
+	mov		word ptr [esi+eax],"'"
+	ret
+
+PutItemQuotedStr endp
+
 UnInstallPB proc uses ebx
 
 	mov		ebx,IDC_BTNPB0
@@ -25,6 +171,31 @@ UnInstallPB proc uses ebx
 	ret
 
 UnInstallPB endp
+
+BtnProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+
+	mov		eax,uMsg
+	.if eax==WM_LBUTTONDOWN
+		invoke CallWindowProc,lpOldBtnProc,hWin,WM_LBUTTONUP,wParam,lParam
+		invoke GetWindowLong,hWin,GWL_ID
+		push	eax
+		invoke GetParent,hWin
+		pop		edx
+		invoke SendMessage,eax,WM_PBDOWN,hWin,edx
+	.elseif eax==WM_LBUTTONUP || eax==WM_LBUTTONDBLCLK
+		invoke GetWindowLong,hWin,GWL_ID
+		push	eax
+		invoke GetParent,hWin
+		pop		edx
+		invoke SendMessage,eax,WM_PBUP,hWin,edx
+	.else
+		invoke CallWindowProc,lpOldBtnProc,hWin,uMsg,wParam,lParam
+		ret
+	.endif
+	xor		eax,eax
+	ret
+
+BtnProc endp
 
 PBProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	rect:RECT
@@ -71,6 +242,27 @@ PBProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke SendDlgItemMessage,hWin,ebx,CB_SETCURSEL,0,0
 			inc		ebx
 		.endw
+		push	0
+		push	IDC_BTNPB0
+		push	IDC_BTNPB1
+		push	IDC_BTNPB2
+		push	IDC_BTNPB3
+		push	IDC_BTNPB4
+		push	IDC_BTNPB5
+		push	IDC_BTNPB6
+		mov		eax,IDC_BTNPB7
+		.while eax
+			invoke GetDlgItem,hWin,eax
+			invoke SetWindowLong,eax,GWL_WNDPROC,offset BtnProc
+			mov		lpOldBtnProc,eax
+			pop		eax
+		.endw
+	.elseif eax==WM_PBDOWN
+		invoke CheckDlgButton,hWin,lParam,BST_CHECKED
+		invoke SendMessage,hWin,WM_COMMAND,lParam,wParam
+	.elseif eax==WM_PBUP
+		invoke CheckDlgButton,hWin,lParam,BST_UNCHECKED
+		invoke SendMessage,hWin,WM_COMMAND,lParam,wParam
 	.elseif eax==WM_COMMAND
 		mov		edx,wParam
 		movzx	eax,dx
@@ -287,6 +479,8 @@ PBProc endp
 
 AddinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	mii:MENUITEMINFO
+	LOCAL	buffer[512]:BYTE
+	LOCAL	buffer1[32]:BYTE
 
 	mov		eax,uMsg
 	.if eax==AM_INIT
@@ -310,10 +504,51 @@ AddinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke ShowWindow,hDlg,SW_SHOW
 			.endif
 		.endif
-	.elseif eax==AM_RESET
+	.elseif eax==AM_PROJECTOPEN
+		invoke GetPrivateProfileString,addr szProPB,addr szProPB,addr szNULL,addr buffer,sizeof buffer,lParam
+		invoke GetItemInt,addr buffer,0
+		.if eax
+			invoke ShowWindow,hDlg,SW_SHOW
+		.else
+			invoke ShowWindow,hDlg,SW_HIDE
+		.endif
+		xor		ebx,ebx
+		.while ebx<8
+			invoke GetDlgItem,hDlg,addr [ebx+1000]
+			push	eax
+			invoke GetItemInt,addr buffer,0
+			push	eax
+			invoke CheckDlgButton,hDlg,addr [ebx+1020],eax
+			invoke GetItemQuotedStr,addr buffer,addr szNULL,addr buffer1,sizeof buffer1
+			pop		eax
+			pop		edx
+			invoke EnableWindow,edx,eax
+			invoke SetDlgItemText,hDlg,addr [ebx+1030],addr buffer1
+			invoke GetItemInt,addr buffer,0
+			invoke SendDlgItemMessage,hDlg,addr [ebx+1050],CB_SETCURSEL,eax,0
+			invoke GetItemInt,addr buffer,0
+			invoke SendDlgItemMessage,hDlg,addr [ebx+1060],CB_SETCURSEL,eax,0
+			inc		ebx
+		.endw
+	.elseif eax==AM_PROJECTCLOSE
+		mov		buffer,0
+		xor		ebx,ebx
+		invoke IsWindowVisible,hDlg
+		invoke PutItemInt,addr buffer,eax
+		.while ebx<8
+			invoke IsDlgButtonChecked,hDlg,addr [ebx+1020]
+			invoke PutItemInt,addr buffer,eax
+			invoke GetDlgItemText,hDlg,addr [ebx+1030],addr buffer1,sizeof buffer1
+			invoke PutItemQuotedStr,addr buffer,addr buffer1
+			invoke SendDlgItemMessage,hDlg,addr [ebx+1050],CB_GETCURSEL,0,0
+			invoke PutItemInt,addr buffer,eax
+			invoke SendDlgItemMessage,hDlg,addr [ebx+1060],CB_GETCURSEL,0,0
+			invoke PutItemInt,addr buffer,eax
+			inc		ebx
+		.endw
+		invoke WritePrivateProfileString,addr szProPB,addr szProPB,addr buffer[1],lParam
 	.endif
 	xor		eax,eax
-  Ex:
 	ret
 
 AddinProc endp

@@ -6,6 +6,81 @@ include LCD.inc
 
 .code
 
+DecToBin proc uses ebx esi,lpStr:DWORD
+	LOCAL	fNeg:DWORD
+
+    mov     esi,lpStr
+    mov		fNeg,FALSE
+    mov		al,[esi]
+    .if al=='-'
+		inc		esi
+		mov		fNeg,TRUE
+    .endif
+    xor     eax,eax
+  @@:
+    cmp     byte ptr [esi],30h
+    jb      @f
+    cmp     byte ptr [esi],3Ah
+    jnb     @f
+    mov     ebx,eax
+    shl     eax,2
+    add     eax,ebx
+    shl     eax,1
+    xor     ebx,ebx
+    mov     bl,[esi]
+    sub     bl,30h
+    add     eax,ebx
+    inc     esi
+    jmp     @b
+  @@:
+	.if fNeg
+		neg		eax
+	.endif
+    ret
+
+DecToBin endp
+
+BinToDec proc dwVal:DWORD,lpAscii:DWORD
+	LOCAL	buffer[8]:BYTE
+
+	mov		dword ptr buffer,'d%'
+	invoke wsprintf,lpAscii,addr buffer,dwVal
+	ret
+
+BinToDec endp
+
+GetItemInt proc uses esi edi,lpBuff:DWORD,nDefVal:DWORD
+
+	mov		esi,lpBuff
+	.if byte ptr [esi]
+		mov		edi,esi
+		invoke DecToBin,edi
+		.while byte ptr [esi] && byte ptr [esi]!=','
+			inc		esi
+		.endw
+		.if byte ptr [esi]==','
+			inc		esi
+		.endif
+		push	eax
+		invoke lstrcpy,edi,esi
+		pop		eax
+	.else
+		mov		eax,nDefVal
+	.endif
+	ret
+
+GetItemInt endp
+
+PutItemInt proc uses esi edi,lpBuff:DWORD,nVal:DWORD
+
+	mov		esi,lpBuff
+	invoke lstrlen,esi
+	mov		byte ptr [esi+eax],','
+	invoke BinToDec,nVal,addr [esi+eax+1]
+	ret
+
+PutItemInt endp
+
 InstallLCD proc
 	LOCAL	wc:WNDCLASSEX
 
@@ -395,17 +470,6 @@ LCDProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.endif
 	.elseif eax==WM_CLOSE
 		invoke ShowWindow,hWin,SW_HIDE
-	mov		edi,offset lcdbit
-	.while ebx<8+3
-		mov		eax,[edi].LCDBIT.port
-		PrintHex eax
-		mov		eax,[edi].LCDBIT.portbit
-		PrintHex eax
-		mov		eax,[edi].LCDBIT.lcdbit
-		PrintHex eax
-		lea		edi,[edi+sizeof LCDBIT]
-		inc		ebx
-	.endw
 	.else
 		mov		eax,FALSE
 		ret
@@ -428,6 +492,7 @@ LCDProc endp
 
 AddinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	mii:MENUITEMINFO
+	LOCAL	buffer[256]:BYTE
 
 	mov		eax,uMsg
 	.if eax==AM_INIT
@@ -484,6 +549,54 @@ AddinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		rep		stosd
 		mov		LCDDDRAMADDR,0
 		invoke InvalidateRect,hLcd,NULL,TRUE
+	.elseif eax==AM_PROJECTOPEN
+		invoke GetPrivateProfileString,addr szProLCD,addr szProLCD,addr szNULL,addr buffer,sizeof buffer,lParam
+		invoke GetItemInt,addr buffer,0
+		.if eax
+			invoke ShowWindow,hDlg,SW_SHOW
+		.else
+			invoke ShowWindow,hDlg,SW_HIDE
+		.endif
+		push	0
+		push	IDC_CBOE
+		push	IDC_CBORW
+		push	IDC_CBORS
+		push	IDC_CBOD7
+		push	IDC_CBOD6
+		push	IDC_CBOD5
+		push	IDC_CBOD4
+		push	IDC_CBOD3
+		push	IDC_CBOD2
+		push	IDC_CBOD1
+		mov		ebx,IDC_CBOD0
+		.while ebx
+			invoke GetItemInt,addr buffer,0
+			invoke SendDlgItemMessage,hDlg,ebx,CB_SETCURSEL,eax,0
+			pop		ebx
+		.endw
+	.elseif eax==AM_PROJECTCLOSE
+		;Save settings to project file
+		mov		buffer,0
+		invoke IsWindowVisible,hDlg
+		invoke PutItemInt,addr buffer,eax
+		push	0
+		push	IDC_CBOE
+		push	IDC_CBORW
+		push	IDC_CBORS
+		push	IDC_CBOD7
+		push	IDC_CBOD6
+		push	IDC_CBOD5
+		push	IDC_CBOD4
+		push	IDC_CBOD3
+		push	IDC_CBOD2
+		push	IDC_CBOD1
+		mov		eax,IDC_CBOD0
+		.while eax
+			invoke SendDlgItemMessage,hDlg,eax,CB_GETCURSEL,0,0
+			invoke PutItemInt,addr buffer,eax
+			pop		eax
+		.endw
+		invoke WritePrivateProfileString,addr szProLCD,addr szProLCD,addr buffer[1],lParam
 	.endif
 	xor		eax,eax
 	ret
