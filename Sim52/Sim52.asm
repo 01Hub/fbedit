@@ -1182,6 +1182,9 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.elseif eax==IDM_DEBUG_RUN
 				.if !(State & STATE_THREAD)
 					invoke CreateThread,NULL,0,addr CoreThread,0,0,addr tid
+					push	eax
+					invoke SetThreadPriority,eax,THREAD_PRIORITY_TIME_CRITICAL
+					pop		eax
 					invoke CloseHandle,eax
 				.endif
 				rdtsc
@@ -1331,6 +1334,9 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke GetDlgItem,hWin,IDC_IMGSTATUS
 		mov		ebx,eax
 		invoke MoveWindow,ebx,addr [esi+50],0,16,16,TRUE
+		invoke GetDlgItem,hWin,IDC_IMGLAGGING
+		mov		ebx,eax
+		invoke MoveWindow,ebx,addr [esi+70],0,16,16,TRUE
 		invoke GetDlgItem,hWin,IDC_SBRSIM52
 		mov		ebx,eax
 		invoke MoveWindow,ebx,0,0,0,0,TRUE

@@ -338,6 +338,11 @@ UpdateStatus proc uses ebx
 		.endif
 	.endif
 	invoke SetDlgItemInt,addin.hTabDlgStatus,IDC_STCCYCLES,TotalCycles,FALSE
+	.if flagging
+		invoke SendDlgItemMessage,addin.hWnd,IDC_IMGLAGGING,STM_SETIMAGE,IMAGE_BITMAP,addin.hBmpRedLed
+	.else
+		invoke SendDlgItemMessage,addin.hWnd,IDC_IMGLAGGING,STM_SETIMAGE,IMAGE_BITMAP,addin.hBmpGrayLed
+	.endif
 	ret
 
 UpdateStatus endp
@@ -830,27 +835,17 @@ WaitHalfCycle proc
 			.endif
 		.endif
 	.endif
-	;Check HIGH to LOW transition on P3.2/INT0 and if it is transition activated or P3.2/INT0 is low and not transition activated
+	;Check HIGH to LOW transition on P3.2/INT0, if it is transition activated
 	.if addin.Sfr[SFR_TCON] & 01h
 		.if (OldP3 & 04h) && !(NewP3 & 04h)
 			;Set TCON.IE0
 			or		addin.Sfr[SFR_TCON],02h
 		.endif
-	.else
-		.if !(NewP3 & 04h)
-			;Set TCON.IE0
-			or		addin.Sfr[SFR_TCON],02h
-		.endif
 	.endif
-	;Check HIGH to LOW transition on P3.3/INT1 and if it is transition activated or P3.3/INT1 is low and not transition activated
+	;Check HIGH to LOW transition on P3.3/INT1, if it is transition activated
 	.if addin.Sfr[SFR_TCON] & 04h
 		.if (OldP3 & 08h) && !(NewP3 & 08h)
 			;Set TCON.IE1
-			or		addin.Sfr[SFR_TCON],08h
-		.endif
-	.else
-		.if !(NewP3 & 04h)
-			;Set TCON.IE0
 			or		addin.Sfr[SFR_TCON],08h
 		.endif
 	.endif
@@ -867,6 +862,12 @@ WaitHalfCycle proc
 		.endw
 		inc		ecx
 	.endw
+	.if eax>100000 || edx
+		;Lagging
+		inc		flagging
+	.elseif flagging
+		dec		flagging
+	.endif
 	pop		edx
 	pop		eax
 	ret

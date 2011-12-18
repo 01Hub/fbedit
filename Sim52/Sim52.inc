@@ -33,6 +33,7 @@ includelib Debug.lib
 
 IDD_DLGTABCODE          equ 1500
 IDD_SIM52               equ 1000
+IDC_IMGLAGGING			equ 1001
 IDC_TBRSIM52            equ 1003
 IDC_SBRSIM52            equ 1002
 IDC_TABSTATUS           equ 1004
@@ -436,4 +437,5 @@ nHalfCycles				DWORD ?
 NewP3					DWORD ?
 OldP3					DWORD ?
 pendingint				INTERRUPT 2 dup(<>)
+flagging				DWORD ?
 
