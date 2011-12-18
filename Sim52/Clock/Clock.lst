@@ -54,8 +54,8 @@ ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. 
    34:	  0030	31 8C				ACALL	LCDCLEAR
    35:	  0032	11 9E				ACALL	CLOCKSHOW
    36:	  0034	75 89 02			MOV	TMOD,#02h	;8 bit auto reload
-   37:	  0037	75 8A 37			MOV	TL0,#255-200
-   38:	  003A	75 8C 38			MOV	TH0,#256-200	;100us intervall
+   37:	  0037	75 8A 9B			MOV	TL0,#255-100
+   38:	  003A	75 8C 9C			MOV	TH0,#256-100	;100us intervall
    39:	  003D	75 A8 82			MOV	IE,#82h		;Enable timer 0 interrupt
    40:	  0040	7F 64				MOV	R7,#100
    41:	  0042	7E 64				MOV	R6,#100

@@ -34,8 +34,8 @@ START:		ACALL	LCDCLEARBUFF
 		ACALL	LCDCLEAR
 		ACALL	CLOCKSHOW
 		MOV	TMOD,#02h	;8 bit auto reload
-		MOV	TL0,#255-200	
-		MOV	TH0,#256-200	;100us intervall
+		MOV	TL0,#255-100	
+		MOV	TH0,#256-100	;100us intervall
 		MOV	IE,#82h		;Enable timer 0 interrupt
 		MOV	R7,#100
 		MOV	R6,#100

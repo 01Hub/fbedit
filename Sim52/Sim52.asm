@@ -1028,6 +1028,48 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.if edx==BN_CLICKED || edx==1
 			.if eax==IDM_FILE_EXIT
 				invoke SendMessage,hWin,WM_CLOSE,0,0
+			.elseif eax==IDM_FILE_NEWPROJECT 
+				;Zero out the ofn struct
+				invoke RtlZeroMemory,addr ofn,sizeof ofn
+				;Setup the ofn struct
+				mov		ofn.lStructSize,sizeof ofn
+				push	hWin
+				pop		ofn.hwndOwner
+				push	addin.hInstance
+				pop		ofn.hInstance
+				mov		ofn.lpstrFilter,offset szLSTFilterString
+				mov		buffer[0],0
+				lea		eax,buffer
+				mov		ofn.lpstrFile,eax
+				mov		ofn.nMaxFile,sizeof buffer
+				mov		ofn.lpstrDefExt,NULL
+				mov		ofn.Flags,OFN_FILEMUSTEXIST or OFN_HIDEREADONLY or OFN_PATHMUSTEXIST
+				;Show the Open dialog
+				invoke GetOpenFileName,addr ofn
+				.if eax
+					;Save project settings
+					.if szLstFile || szSimFile
+						invoke SendMessage,hWin,WM_COMMAND,IDM_FILE_CLOSE,NULL
+					.endif
+					invoke lstrcpy,addr buffer1,addr buffer
+					invoke lstrlen,addr buffer1
+					.while buffer1[eax]!='.'
+						dec		eax
+					.endw
+					mov		dword ptr buffer1[eax+1],'mis'
+					invoke lstrlen,addr buffer
+					.while buffer[eax]!='\'
+						dec		eax
+					.endw
+					mov		edx,eax
+					invoke WritePrivateProfileString,addr szProSIM52,addr szProFile,addr buffer[edx+1],addr buffer1
+					invoke WritePrivateProfileString,addr szProSIM52,addr szProMCU,addr addin.szMCU,addr buffer1
+					invoke wsprintf,addr buffer,addr szFmtDec,MCUClock
+					invoke WritePrivateProfileString,addr szProSIM52,addr szProClock,addr buffer,addr buffer1
+					invoke lstrcpy,addr buffer,addr buffer1
+					invoke SendAddinMessage,hWin,AM_PROJECTCLOSE,0,addr buffer
+					call	OpenProject
+				.endif
 			.elseif eax==IDM_FILE_OPENFILE
 				;Zero out the ofn struct
 				invoke RtlZeroMemory,addr ofn,sizeof ofn
@@ -1082,34 +1124,7 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				;Show the Open dialog
 				invoke GetOpenFileName,addr ofn
 				.if eax
-					.if szLstFile || szSimFile
-						invoke SendMessage,hWin,WM_COMMAND,IDM_FILE_CLOSE,NULL
-					.endif
-					invoke lstrcpy,addr buffer1,addr szAppName
-					invoke lstrcat,addr buffer1,addr szDash
-					invoke lstrlen,addr buffer
-					.while buffer[eax]!='\' && eax
-						dec		eax
-					.endw
-					invoke lstrcat,addr buffer1,addr buffer[eax+1]
-					invoke SetWindowText,hWin,addr buffer1
-					invoke lstrcpy,addr szSimFile,addr buffer
-					invoke GetPrivateProfileString,addr szProSIM52,addr szProFile,addr szNULL,addr buffer,sizeof buffer,addr szSimFile
-					invoke lstrcpy,addr buffer1,addr szSimFile
-					invoke lstrlen,addr buffer1
-					.while buffer1[eax]!='\' && eax
-						dec		eax
-					.endw
-					mov		edx,eax
-					invoke lstrcpy,addr buffer1[edx+1],addr buffer
-					invoke ParseList,addr buffer1
-					invoke GetPrivateProfileString,addr szProSIM52,addr szProMCU,addr szNULL,addr buffer,sizeof buffer,addr szSimFile
-					invoke LoadSFRFile,addr buffer
-					invoke SetupSfr
-					invoke GetPrivateProfileInt,addr szProSIM52,addr szProClock,24000000,addr szSimFile
-					invoke SendAddinMessage,hWin,AM_PROJECTOPEN,0,addr szSimFile
-					invoke EnableDisable
-					invoke SetFocus,addin.hGrd
+					call	OpenProject
 				.endif
 			.elseif eax==IDM_FILE_CLOSE
 				.if szSimFile
@@ -1350,6 +1365,39 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	xor    eax,eax
   Ex:
 	ret
+
+OpenProject:
+	.if szLstFile || szSimFile
+		invoke SendMessage,hWin,WM_COMMAND,IDM_FILE_CLOSE,NULL
+	.endif
+	invoke lstrcpy,addr buffer1,addr szAppName
+	invoke lstrcat,addr buffer1,addr szDash
+	invoke lstrlen,addr buffer
+	.while buffer[eax]!='\' && eax
+		dec		eax
+	.endw
+	invoke lstrcat,addr buffer1,addr buffer[eax+1]
+	invoke SetWindowText,hWin,addr buffer1
+	invoke lstrcpy,addr szSimFile,addr buffer
+	invoke GetPrivateProfileString,addr szProSIM52,addr szProFile,addr szNULL,addr buffer,sizeof buffer,addr szSimFile
+	invoke lstrcpy,addr buffer1,addr szSimFile
+	invoke lstrlen,addr buffer1
+	.while buffer1[eax]!='\' && eax
+		dec		eax
+	.endw
+	mov		edx,eax
+	invoke lstrcpy,addr buffer1[edx+1],addr buffer
+	invoke ParseList,addr buffer1
+	invoke GetPrivateProfileString,addr szProSIM52,addr szProMCU,addr szNULL,addr buffer,sizeof buffer,addr szSimFile
+	invoke LoadSFRFile,addr buffer
+	invoke SetupSfr
+	invoke GetPrivateProfileInt,addr szProSIM52,addr szProClock,24000000,addr szSimFile
+	mov		MCUClock,eax
+	invoke SetTiming
+	invoke SendAddinMessage,hWin,AM_PROJECTOPEN,0,addr szSimFile
+	invoke EnableDisable
+	invoke SetFocus,addin.hGrd
+	retn
 
 WndProc endp
 
