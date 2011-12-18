@@ -329,6 +329,7 @@ MCUADDR ends
 ADDINS struct
 	hDll				HINSTANCE ?
 	lpAddinProc			DWORD ?
+	hook				DWORD ?
 ADDINS ends
 
 INTERRUPT struct
@@ -374,10 +375,11 @@ szFmtHexWord			BYTE '%04X',0
 szFmtBank				BYTE 'Bank %u',0
 szFmtDec				BYTE '%u',0
 
-szLabel					BYTE 'Label',0
-szCode					BYTE 'Code',0
 szBytes					BYTE 'B',0
 szCycles				BYTE 'C',0
+szAddr					BYTE 'Addr',0
+szLabel					BYTE 'Label',0
+szCode					BYTE 'Code',0
 
 szNULL					BYTE 0
 szIniFileName			BYTE 'Sim52.ini',0

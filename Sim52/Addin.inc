@@ -1,13 +1,24 @@
 
-AM_INIT					equ 0001h				;hWin=Handle to main window, wParam=0, lParam=pointer to ADDIN struct
-AM_PORTWRITE			equ 0002h				;hWin=Handle to main window, wParam=Port (0-3), lParam=Port value
-AM_ALECHANGED			equ 0003h				;hWin=Handle to main window, wParam=0, lParam=0
-AM_MMPORTWRITE			equ 0004h				;hWin=Handle to main window, wParam=Port address, lParam=Port value				
-AM_COMMAND				equ 0006h				;hWin=Handle to main window, wParam=0, lParam=MenuID
-AM_RESET				equ 0007h				;hWin=Handle to main window, wParam=0, lParam=0
-AM_REFRESH				equ 0008h				;hWin=Handle to main window, wParam=0, lParam=0
-AM_PROJECTOPEN			equ 0009h				;hWin=Handle to main window, wParam=0, lParam=lpProjectFile
-AM_PROJECTCLOSE			equ 000Ah				;hWin=Handle to main window, wParam=0, lParam=lpProjectFile
+;Addin messages
+AM_INIT					equ 0001h				;hWin=Handle to main window, wParam=0, lParam=pointer to ADDIN struct, Return hook flags
+AM_PORTWRITE			equ 0002h				;hWin=Handle to main window, wParam=Port (0-3), lParam=Port value, Return FALSE
+AM_ALECHANGED			equ 0003h				;hWin=Handle to main window, wParam=0, lParam=0, Return FALSE
+AM_MMPORTWRITE			equ 0004h				;hWin=Handle to main window, wParam=Port address, lParam=Port value, Return FALSE				
+AM_COMMAND				equ 0005h				;hWin=Handle to main window, wParam=0, lParam=MenuID, Return FALSE
+AM_RESET				equ 0006h				;hWin=Handle to main window, wParam=0, lParam=0, Return FALSE
+AM_REFRESH				equ 0007h				;hWin=Handle to main window, wParam=0, lParam=0, Return FALSE
+AM_PROJECTOPEN			equ 0008h				;hWin=Handle to main window, wParam=0, lParam=lpProjectFile, Return FALSE
+AM_PROJECTCLOSE			equ 0009h				;hWin=Handle to main window, wParam=0, lParam=lpProjectFile, Return FALSE
+
+;Hook flags
+AH_PORTWRITE            equ 0001h
+AH_ALECHANGED           equ 0002h
+AH_MMPORTWRITE          equ 0004h
+AH_COMMAND              equ 0008h
+AH_RESET                equ 0010h
+AH_REFRESH              equ 0020h
+AH_PROJECTOPEN          equ 0040h
+AH_PROJECTCLOSE         equ 0080h
 
 SFRMAP struct
 	ad					DWORD ?					;SFR Adress

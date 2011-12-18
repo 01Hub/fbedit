@@ -1,5 +1,5 @@
 
-SendAddinMessage		PROTO :HWND,:DWORD,:DWORD,:DWORD
+SendAddinMessage		PROTO :HWND,:DWORD,:DWORD,:DWORD,:DWORD
 
 STATE_STOP				equ 1
 STATE_RUN				equ 2
@@ -155,7 +155,7 @@ Reset proc uses edi
 		mov		addin.Sfr[edx],al
 		lea		edi,[edi+sizeof SFRMAP]
 	.endw
-	invoke SendAddinMessage,addin.hWnd,AM_RESET,0,0
+	invoke SendAddinMessage,addin.hWnd,AM_RESET,0,0,AH_RESET
 	mov		eax,addin.hBmpGreenLed
 	mov		StatusLed,eax
 	invoke SendDlgItemMessage,addin.hWnd,IDC_IMGSTATUS,STM_SETIMAGE,IMAGE_BITMAP,StatusLed
@@ -542,7 +542,7 @@ WritePort proc lpSfr:DWORD,nValue:DWORD
 	mov		eax,lpSfr
 	sub		eax,SFR_P0
 	shr		eax,4
-	invoke SendAddinMessage,addin.hWnd,AM_PORTWRITE,eax,nValue
+	invoke SendAddinMessage,addin.hWnd,AM_PORTWRITE,eax,nValue,AH_PORTWRITE
 	ret
 
 WritePort endp
@@ -840,14 +840,18 @@ WaitHalfCycle proc
 		;Set TCON.IE1
 		or		addin.Sfr[SFR_TCON],08h
 	.endif
-	mov		eax,CpuCycles
-	add		dword ptr PerformanceCount,eax
-	adc		dword ptr PerformanceCount+4,0
-	.while TRUE
-		rdtsc
-		sub		eax,dword ptr PerformanceCount
-		sbb		edx,dword ptr PerformanceCount+4
-		.break .if !CARRY?
+	xor		ecx,ecx
+	.while ecx<6
+		mov		eax,CpuCycles
+		add		dword ptr PerformanceCount,eax
+		adc		dword ptr PerformanceCount+4,0
+		.while TRUE
+			rdtsc
+			sub		eax,dword ptr PerformanceCount
+			sbb		edx,dword ptr PerformanceCount+4
+			.break .if !CARRY?
+		.endw
+		inc		ecx
 	.endw
 	pop		edx
 	pop		eax
@@ -890,7 +894,7 @@ WriteXRam proc uses ebx esi edi,nAddr:DWORD,nValue:DWORD
 			mov		edx,nValue
 			mov		addin.mmoutportdata[edi*4],edx
 			lea		esi,[esi+1]
-			invoke SendAddinMessage,addin.hWnd,AM_MMPORTWRITE,eax,edx
+			invoke SendAddinMessage,addin.hWnd,AM_MMPORTWRITE,eax,edx,AH_MMPORTWRITE
 		.endif
 		lea		edi,[edi+1]
 	.endw
@@ -3496,7 +3500,7 @@ CoreThread proc lParam:DWORD
 Fetch:
 	push	eax
 	push	edx
-	invoke SendAddinMessage,addin.hWnd,AM_ALECHANGED,0,0
+	invoke SendAddinMessage,addin.hWnd,AM_ALECHANGED,0,0,AH_ALECHANGED
 	pop		edx
 	pop		eax
 	invoke WaitHalfCycle
@@ -3516,7 +3520,7 @@ Execute:
 		.while edi>1
 			push	eax
 			push	edx
-			invoke SendAddinMessage,addin.hWnd,AM_ALECHANGED,0,0
+			invoke SendAddinMessage,addin.hWnd,AM_ALECHANGED,0,0,AH_ALECHANGED
 			pop		edx
 			pop		eax
 			invoke WaitHalfCycle
@@ -3530,7 +3534,7 @@ Execute:
 		.while edi>1
 			push	eax
 			push	edx
-			invoke SendAddinMessage,addin.hWnd,AM_ALECHANGED,0,0
+			invoke SendAddinMessage,addin.hWnd,AM_ALECHANGED,0,0,AH_ALECHANGED
 			pop		edx
 			pop		eax
 			invoke WaitHalfCycle
@@ -3547,7 +3551,7 @@ Execute:
 		.while edi>1
 			push	eax
 			push	edx
-			invoke SendAddinMessage,addin.hWnd,AM_ALECHANGED,0,0
+			invoke SendAddinMessage,addin.hWnd,AM_ALECHANGED,0,0,AH_ALECHANGED
 			pop		edx
 			pop		eax
 			invoke WaitHalfCycle
@@ -3563,7 +3567,7 @@ Execute:
 		.endif
 	.endif
 	.while edi
-		invoke SendAddinMessage,addin.hWnd,AM_ALECHANGED,0,0
+		invoke SendAddinMessage,addin.hWnd,AM_ALECHANGED,0,0,AH_ALECHANGED
 		invoke WaitHalfCycle
 		dec		edi
 	.endw
@@ -3620,7 +3624,7 @@ Execute:
 			test	edi,04h
 			.if !ZERO?
 				;Test TCON.IE1
-				test	addin.Sfr[SFR_TCON],04h
+				test	addin.Sfr[SFR_TCON],08h
 				.if !ZERO?
 					;Test IP.PX1
 					test	addin.Sfr[SFR_IP],04h
@@ -3629,7 +3633,7 @@ Execute:
 						mov		pendingint.pri,TRUE
 					.endif
 					mov		pendingint.sfr,SFR_TCON
-					mov		pendingint.bit,04h
+					mov		pendingint.bit,08h
 					;Generate Timer 0 interrupt
 					mov		edx,1300h
 					call	LCALL_$cad

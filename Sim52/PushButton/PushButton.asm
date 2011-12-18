@@ -494,6 +494,9 @@ AddinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		IDAddin,eax
 		inc		[ebx].ADDIN.MenuID
 		invoke CreateDialogParam,hInstance,IDD_DLGPB,hWin,addr PBProc,0
+		;Return hook flags
+		mov		eax,AH_COMMAND or AH_PROJECTOPEN or AH_PROJECTCLOSE
+		jmp		Ex
 	.elseif eax==AM_COMMAND
 		mov		eax,lParam
 		.if eax==IDAddin
@@ -549,6 +552,7 @@ AddinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke WritePrivateProfileString,addr szProPB,addr szProPB,addr buffer[1],lParam
 	.endif
 	xor		eax,eax
+  Ex:
 	ret
 
 AddinProc endp

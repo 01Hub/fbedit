@@ -210,19 +210,20 @@ PutItemQuotedStr endp
 ;Get number of computer clock cycles for each 8052 instruction cycle. ComputerClock/(MCUClock/12)
 SetTiming proc
 
-	mov		eax,MCUClock			;8052 Clock in Hz
-	.if eax<6
-		mov		eax,6
-	.endif
-	xor		edx,edx
-	mov		ecx,6
-	div		ecx						;Divide by 12 to get instruction cycle
-	mov		ecx,eax
+;	mov		eax,MCUClock			;8052 Clock in Hz
+;	.if eax<6
+;		mov		eax,6
+;	.endif
+;	xor		edx,edx
+;	mov		ecx,6
+;	div		ecx						;Divide by 12 to get instruction cycle
+;	mov		ecx,eax
 	mov		eax,ComputerClock		;Computer clock in MHz
 	mov		edx,1000000
 	mul		edx						;Multiply by 1000000 to convert to Hz
+	mov		ecx,MCUClock			;8051/8052 Clock in Hz
 	div		ecx
-	mov		CpuCycles,eax
+	mov		CpuCycles,eax			;Number of computer cycles for each osc period
 	invoke KillTimer,addin.hWnd,1000
 	invoke SetTimer,addin.hWnd,1000,RefreshRate,NULL
 	ret

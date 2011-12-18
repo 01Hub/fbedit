@@ -534,6 +534,9 @@ AddinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		IDAddin,eax
 		inc		[ebx].ADDIN.MenuID
 		invoke CreateDialogParam,hInstance,IDD_DLGMMIO,hWin,addr MMIOProc,0
+		;Return hook flags
+		mov		eax,AH_COMMAND or AH_RESET or AH_REFRESH or AH_PROJECTOPEN or AH_PROJECTCLOSE
+		jmp		Ex
 	.elseif eax==AM_COMMAND
 		mov		eax,lParam
 		.if eax==IDAddin
@@ -750,6 +753,14 @@ AddinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke SetDlgItemText,hDlg,ebx,addr buffer1
 			pop		ebx
 		.endw
+		invoke SendMessage,hDlg,WM_COMMAND,IDC_CHKMMO0,NULL
+		invoke SendMessage,hDlg,WM_COMMAND,IDC_CHKMMO1,NULL
+		invoke SendMessage,hDlg,WM_COMMAND,IDC_CHKMMO2,NULL
+		invoke SendMessage,hDlg,WM_COMMAND,IDC_CHKMMO3,NULL
+		invoke SendMessage,hDlg,WM_COMMAND,IDC_CHKMMI0,NULL
+		invoke SendMessage,hDlg,WM_COMMAND,IDC_CHKMMI1,NULL
+		invoke SendMessage,hDlg,WM_COMMAND,IDC_CHKMMI2,NULL
+		invoke SendMessage,hDlg,WM_COMMAND,IDC_CHKMMI3,NULL
 	.elseif eax==AM_PROJECTCLOSE
 		mov		buffer,0
 		invoke IsWindowVisible,hDlg
@@ -782,6 +793,7 @@ AddinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke WritePrivateProfileString,addr szProMMIO,addr szProMMIO,addr buffer[1],lParam
 	.endif
 	xor		eax,eax
+  Ex:
 	ret
 
 AddinProc endp

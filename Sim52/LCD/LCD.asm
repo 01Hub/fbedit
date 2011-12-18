@@ -506,6 +506,9 @@ AddinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		IDAddin,eax
 		inc		[ebx].ADDIN.MenuID
 		invoke CreateDialogParam,hInstance,IDD_DLGLCD,hWin,addr LCDProc,0
+		;Return hook flags
+		mov		eax,AH_PORTWRITE or AH_MMPORTWRITE or AH_COMMAND or AH_RESET or AH_REFRESH or AH_PROJECTOPEN or AH_PROJECTCLOSE
+		jmp		Ex
 	.elseif eax==AM_PORTWRITE
 		mov		eax,wParam
 		mov		edx,lParam
@@ -602,6 +605,7 @@ AddinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke WritePrivateProfileString,addr szProLCD,addr szProLCD,addr buffer[1],lParam
 	.endif
 	xor		eax,eax
+  Ex:
 	ret
 
 LcdDataWrite:

@@ -363,23 +363,23 @@ TabCodeProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
 TabCodeProc endp
 
-SendAddinMessage proc uses ebx esi edi,hWin:HWND,uMsg:DWORD,wParam:DWORD,lParam:DWORD
-	LOCAL	nRet:DWORD
+SendAddinMessage proc uses ebx esi edi,hWin:HWND,uMsg:DWORD,wParam:DWORD,lParam:DWORD,hook:DWORD
 
 	mov		edi,offset addins
-	mov		nRet,0
 	.while [edi].ADDINS.hDll
-		push	edi
-		push	lParam
-		push	wParam
-		push	uMsg
-		push	hWin
-		call	[edi].ADDINS.lpAddinProc
-		pop		edi
-		add		nRet,eax
+		mov		eax,hook
+		test	[edi].ADDINS.hook,eax
+		.if !ZERO?
+			push	edi
+			push	lParam
+			push	wParam
+			push	uMsg
+			push	hWin
+			call	[edi].ADDINS.lpAddinProc
+			pop		edi
+		.endif
 		lea		edi,[edi+sizeof ADDINS]
 	.endw
-	mov		eax,nRet
 	ret
 
 SendAddinMessage endp
@@ -400,12 +400,21 @@ LoadAddins proc uses ebx esi edi
 			.if eax
 				mov		[edi].ADDINS.hDll,ebx
 				mov		[edi].ADDINS.lpAddinProc,eax
+				push	esi
+				push	edi
+				push	offset addin
+				push	0
+				push	AM_INIT
+				push	addin.hWnd
+				call	[edi].ADDINS.lpAddinProc
+				pop		edi
+				pop		esi
+				mov		[edi].ADDINS.hook,eax
 				lea		edi,[edi+sizeof ADDINS]
 			.endif
 		.endif
 		inc		esi
 	.endw
-	invoke SendAddinMessage,addin.hWnd,AM_INIT,0,offset addin
 	ret
 
 LoadAddins endp
@@ -924,6 +933,17 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		col.himl,0
 		mov		col.hdrflag,0
 		invoke SendMessage,addin.hGrd,GM_ADDCOL,0,addr col
+		;Add Address column
+		mov		col.colwt,40
+		mov		col.lpszhdrtext,offset szAddr
+		mov		col.halign,GA_ALIGN_LEFT
+		mov		col.calign,GA_ALIGN_LEFT
+		mov		col.ctype,TYPE_EDITTEXT
+		mov		col.ctextmax,4
+		mov		col.lpszformat,0
+		mov		col.himl,0
+		mov		col.hdrflag,0
+		invoke SendMessage,addin.hGrd,GM_ADDCOL,0,addr col
 		;Add Label column
 		mov		col.colwt,100
 		mov		col.lpszhdrtext,offset szLabel
@@ -987,7 +1007,7 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke SendDlgItemMessage,addin.hTabDlg[12],IDC_UDCHEXXRAM,HEM_SETMEM,65536,addr addin.XRam
 			invoke SetDlgItemInt,hWin,IDC_STCCYCLES,TotalCycles,FALSE
 			invoke UpdateSelSfr,addin.hTabDlg[8]
-			invoke SendAddinMessage,hWin,AM_REFRESH,0,0
+			invoke SendAddinMessage,hWin,AM_REFRESH,0,0,AH_REFRESH
 			dec		addin.Refresh
 		.endif
 	.elseif eax==WM_NOTIFY
@@ -1067,7 +1087,7 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					invoke wsprintf,addr buffer,addr szFmtDec,MCUClock
 					invoke WritePrivateProfileString,addr szProSIM52,addr szProClock,addr buffer,addr buffer1
 					invoke lstrcpy,addr buffer,addr buffer1
-					invoke SendAddinMessage,hWin,AM_PROJECTCLOSE,0,addr buffer
+					invoke SendAddinMessage,hWin,AM_PROJECTCLOSE,0,addr buffer,AH_PROJECTCLOSE
 					call	OpenProject
 				.endif
 			.elseif eax==IDM_FILE_OPENFILE
@@ -1132,7 +1152,7 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					invoke WritePrivateProfileString,addr szProSIM52,addr szProMCU,addr addin.szMCU,addr szSimFile
 					invoke wsprintf,addr buffer,addr szFmtDec,MCUClock
 					invoke WritePrivateProfileString,addr szProSIM52,addr szProClock,addr buffer,addr szSimFile
-					invoke SendAddinMessage,hWin,AM_PROJECTCLOSE,0,addr szSimFile
+					invoke SendAddinMessage,hWin,AM_PROJECTCLOSE,0,addr szSimFile,AH_PROJECTCLOSE
 				.endif
 				mov		State,STATE_STOP
 				invoke Reset
@@ -1220,7 +1240,7 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke LoadSFRFile,addr szMCUTypes[eax]
 				invoke SetupSfr
 			.elseif eax>=12000
-				invoke SendAddinMessage,hWin,AM_COMMAND,0,eax
+				invoke SendAddinMessage,hWin,AM_COMMAND,0,eax,AH_COMMAND
 			.endif
 		.endif
 	.elseif eax==WM_ACTIVATE
@@ -1394,7 +1414,7 @@ OpenProject:
 	invoke GetPrivateProfileInt,addr szProSIM52,addr szProClock,24000000,addr szSimFile
 	mov		MCUClock,eax
 	invoke SetTiming
-	invoke SendAddinMessage,hWin,AM_PROJECTOPEN,0,addr szSimFile
+	invoke SendAddinMessage,hWin,AM_PROJECTOPEN,0,addr szSimFile,AH_PROJECTOPEN
 	invoke EnableDisable
 	invoke SetFocus,addin.hGrd
 	retn

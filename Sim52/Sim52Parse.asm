@@ -4,6 +4,7 @@ ROWDATA struct
 	nImage				DWORD ?			;Data for Break Point column. Double word value
 	nBytes				DWORD ?			;Data for Bytes column
 	nCycles				DWORD ?			;Data for Cycles column
+	lpszAddr			DWORD ?			;Data for Address column. Pointer to string
 	lpszLabel			DWORD ?			;Data for Label column. Pointer to string
 	lpszCode			DWORD ?			;Data for Code column. Pointer to string
 ROWDATA ends
@@ -19,6 +20,7 @@ ParseList proc uses ebx esi edi,lpFileName:DWORD
 	LOCAL	BytesRead:DWORD
 	LOCAL	buffer[1024]:BYTE
 	LOCAL	lbl[1024]:BYTE
+	LOCAL	buffaddr[8]:BYTE
 	LOCAL	paddr:DWORD
 	LOCAL	nBytes:DWORD
 	LOCAL	nBytesParsed:DWORD
@@ -76,6 +78,7 @@ ParseList proc uses ebx esi edi,lpFileName:DWORD
 						mov		[ecx].MCUADDR.bytes,al
 						mov		rdta.nBytes,eax
 						mov		nBytes,eax
+						invoke wsprintf,addr buffaddr,addr szFmtHexWord,ebx
 						inc		edi
 						call	IsCodeByte
 						.if eax
@@ -102,6 +105,8 @@ ParseList proc uses ebx esi edi,lpFileName:DWORD
 					call	SkipWhiteSpace
 					call	GetSourceLine
 					mov		rdta.nImage,1
+					lea		eax,buffaddr
+					mov		rdta.lpszAddr,eax
 					mov		rdta.lpszLabel,0
 					call	IsSourceLineLabel
 					.if eax
