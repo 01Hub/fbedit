@@ -549,6 +549,8 @@ AddinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		rep		stosd
 		mov		LCDDDRAMADDR,0
 		invoke InvalidateRect,hLcd,NULL,TRUE
+	.elseif eax==AM_REFRESH
+		invoke InvalidateRect,hLcd,NULL,TRUE
 	.elseif eax==AM_PROJECTOPEN
 		invoke GetPrivateProfileString,addr szProLCD,addr szProLCD,addr szNULL,addr buffer,sizeof buffer,lParam
 		invoke GetItemInt,addr buffer,0
@@ -574,6 +576,7 @@ AddinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke SendDlgItemMessage,hDlg,ebx,CB_SETCURSEL,eax,0
 			pop		ebx
 		.endw
+		invoke GetCBOBits
 	.elseif eax==AM_PROJECTCLOSE
 		;Save settings to project file
 		mov		buffer,0
@@ -607,13 +610,11 @@ LcdDataWrite:
 		mov		LCDCGRAM[edx],al
 		inc		LCDCGRAMADDR
 		and		LCDCGRAMADDR,3Fh
-		invoke InvalidateRect,hLcd,NULL,TRUE
 	.else
 		mov		edx,LCDDDRAMADDR
 		mov		LCDDDRAM[edx],al
 		inc		LCDDDRAMADDR
 		and		LCDDDRAMADDR,7Fh
-		invoke InvalidateRect,hLcd,NULL,TRUE
 	.endif
 	retn
 
@@ -705,7 +706,6 @@ LcdCommandWrite:
 		mov		eax,20202020h
 		rep		stosd
 		mov		LCDDDRAMADDR,0
-		invoke InvalidateRect,hLcd,NULL,TRUE
 	.endif
 	retn
 

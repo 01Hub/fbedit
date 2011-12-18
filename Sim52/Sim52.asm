@@ -1156,10 +1156,9 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.elseif eax==IDM_DEBUG_PAUSE
 				.if State & STATE_THREAD
 					or		State,STATE_PAUSE
-					and		State,-1 xor SIM52_BREAKPOINT
 				.endif
 			.elseif eax==IDM_DEBUG_STOP
-				mov		State,STATE_STOP
+				mov		State,STATE_STOP or STATE_PAUSE
 			.elseif eax==IDM_DEBUG_STEP_INTO
 				.if !(State & STATE_THREAD)
 					invoke CreateThread,NULL,0,addr CoreThread,0,0,addr tid

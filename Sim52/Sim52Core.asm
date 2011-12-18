@@ -1,13 +1,12 @@
 
 SendAddinMessage		PROTO :HWND,:DWORD,:DWORD,:DWORD
 
-STATE_STOP				equ 0
-STATE_RUN				equ 1
-STATE_PAUSE				equ 2
-STATE_STEP_INTO			equ 4
-STATE_STEP_OVER			equ 8
-STATE_RUN_TO_CURSOR		equ 16
-SIM52_BREAKPOINT		equ 32
+STATE_STOP				equ 1
+STATE_RUN				equ 2
+STATE_PAUSE				equ 4
+STATE_STEP_INTO			equ 8
+STATE_STEP_OVER			equ 16
+STATE_RUN_TO_CURSOR		equ 32
 
 STATE_THREAD			equ 128
 
@@ -173,7 +172,7 @@ Reset proc uses edi
 
 Reset endp
 
-FindMcuAddr proc uses ebx esi edi,Address:DWORD
+FindMcuAddr proc uses ebx esi,Address:DWORD
 	LOCAL	lower:DWORD
 	LOCAL	upper:DWORD
 
@@ -195,16 +194,15 @@ FindMcuAddr proc uses ebx esi edi,Address:DWORD
 			mov		edx,sizeof MCUADDR
 			mul		edx
 			movzx	edx,[esi+eax].MCUADDR.mcuaddr
-			mov		eax,ebx
-			sub		eax,edx
-			.if !eax
+			sub		edx,ebx
+			.if !edx
 				; Found
 				.break
-			.elseif sdword ptr eax<0
-				; Smaller
+			.elseif sdword ptr edx>0
+				; Too large
 				mov		upper,ecx
-			.elseif sdword ptr eax>0
-				; Larger
+			.elseif sdword ptr edx<0
+				; Too small
 				mov		lower,ecx
 			.endif
 		.endw
@@ -332,7 +330,7 @@ UpdateStatus proc uses ebx
 		.endif
 		pop		eax
 	.endw
-	.if (State & STATE_PAUSE) || (State & SIM52_BREAKPOINT)
+	.if (State & STATE_PAUSE) && !(State & STATE_RUN_TO_CURSOR)
 		invoke FindMcuAddr,PCDONE
 		.if eax
 			movzx	eax,[eax].MCUADDR.lbinx
@@ -3445,12 +3443,19 @@ CoreThread proc lParam:DWORD
 	mov		esi,offset addin.Code
 	mov		ebx,addin.PC
 	mov		InstCycles,0
-	.while State!=STATE_STOP
-		.if (State & STATE_RUN) && !(State & SIM52_BREAKPOINT)
+	.while !(State & STATE_STOP)
+		.if (State & STATE_RUN)
 			.if !(State & STATE_PAUSE)
+				mov		eax,addin.hBmpRedLed
+				call	SetStatusLed
+			  @@:
 				call	Execute
 				mov		addin.Refresh,1
+				test	State,STATE_PAUSE
+				jz		@b
 			.elseif State & STATE_STEP_INTO
+				mov		eax,addin.hBmpRedLed
+				call	SetStatusLed
 				call	Execute
 				xor		State,STATE_STEP_INTO
 				mov		addin.Refresh,1
@@ -3468,6 +3473,8 @@ CoreThread proc lParam:DWORD
 					xor		State,STATE_STEP_INTO
 				.endif
 			.elseif State & STATE_RUN_TO_CURSOR
+				mov		eax,addin.hBmpRedLed
+				call	SetStatusLed
 				call	Execute
 				.if ebx==CursorAddr
 					xor		State,STATE_RUN_TO_CURSOR
@@ -3499,8 +3506,6 @@ Fetch:
 	retn
 
 Execute:
-	mov		eax,addin.hBmpRedLed
-	call	SetStatusLed
 	call	Fetch
 	mov		eax,ecx
 	movzx	ecx,Bytes[ecx]
@@ -3554,7 +3559,7 @@ Execute:
 	invoke FindMcuAddr,ebx
 	.if eax
 		.if [eax].MCUADDR.fbp
-			or		State,SIM52_BREAKPOINT
+			or		State,STATE_PAUSE
 		.endif
 	.endif
 	.while edi
