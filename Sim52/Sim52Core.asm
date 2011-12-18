@@ -831,14 +831,28 @@ WaitHalfCycle proc
 		.endif
 	.endif
 	;Check HIGH to LOW transition on P3.2/INT0 and if it is transition activated or P3.2/INT0 is low and not transition activated
-	.if ((OldP3 & 04h) && !(NewP3 & 04h) && (addin.Sfr[SFR_TCON] & 01h)) || (!(NewP3 & 04h) && !(addin.Sfr[SFR_TCON] & 01h))
-		;Set TCON.IE0
-		or		addin.Sfr[SFR_TCON],02h
+	.if addin.Sfr[SFR_TCON] & 01h
+		.if (OldP3 & 04h) && !(NewP3 & 04h)
+			;Set TCON.IE0
+			or		addin.Sfr[SFR_TCON],02h
+		.endif
+	.else
+		.if !(NewP3 & 04h)
+			;Set TCON.IE0
+			or		addin.Sfr[SFR_TCON],02h
+		.endif
 	.endif
 	;Check HIGH to LOW transition on P3.3/INT1 and if it is transition activated or P3.3/INT1 is low and not transition activated
-	.if ((OldP3 & 08h) && !(NewP3 & 08h) && (addin.Sfr[SFR_TCON] & 04h)) || (!(NewP3 & 08h) && !(addin.Sfr[SFR_TCON] & 04h))
-		;Set TCON.IE1
-		or		addin.Sfr[SFR_TCON],08h
+	.if addin.Sfr[SFR_TCON] & 04h
+		.if (OldP3 & 08h) && !(NewP3 & 08h)
+			;Set TCON.IE1
+			or		addin.Sfr[SFR_TCON],08h
+		.endif
+	.else
+		.if !(NewP3 & 04h)
+			;Set TCON.IE0
+			or		addin.Sfr[SFR_TCON],08h
+		.endif
 	.endif
 	xor		ecx,ecx
 	.while ecx<6
