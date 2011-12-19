@@ -1,0 +1,202 @@
+
+ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 1
+
+
+
+
+
+       MCS-51 Family Macro Assembler   A S E M - 5 1   V 1.3
+       =====================================================
+
+
+
+	Source File:	TestSim52.a51
+	Object File:	TestSim52.hex
+	List File:	TestSim52.lst
+
+
+
+ Line  I  Addr  Code            Source
+
+    1:
+    2:				;RESET:***********************************************
+    3:		N      0000			ORG	0000h
+    4:				;		LJMP	TESTINT0INT1	;RESET:
+    5:	  0000	02 00 2E			LJMP	TESTTMR0TMR1	;RESET:
+    6:				;IE0IRQ:**********************************************
+    7:		N      0003			ORG	0003h
+    8:	  0003	74 00				MOV	A,#00h
+    9:	  0005	11 48				ACALL	WAITASEC
+   10:	  0007	32				RETI			;IE0IRQ:
+   11:				;TF0IRQ:**********************************************
+   12:		N      000B			ORG	000Bh
+   13:	  000B	74 00				MOV	A,#00h
+   14:	  000D	11 3F				ACALL	WAIT
+   15:	  000F	32				RETI			;TF0IRQ:
+   16:				;IE1IRQ:**********************************************
+   17:		N      0013			ORG	0013h
+   18:	  0013	74 01				MOV	A,#01h
+   19:	  0015	11 48				ACALL	WAITASEC
+   20:	  0017	32				RETI			;IE1IRQ:
+   21:				;TF1IRQ:**********************************************
+   22:		N      001B			ORG	001Bh
+   23:	  001B	74 01				MOV	A,#01h
+   24:	  001D	11 3F				ACALL	WAIT
+   25:	  001F	32				RETI			;TF1IRQ:
+   26:				;RITIIRQ:*********************************************
+   27:		N      0023			ORG	0023h
+   28:	  0023	00				NOP
+   29:	  0024	00				NOP
+   30:	  0025	32				RETI			;RITIIRQ:
+   31:				;TF2EXF2IRQ:******************************************
+   32:		N      002B			ORG	002Bh
+   33:	  002B	00				NOP
+   34:	  002C	00				NOP
+   35:	  002D	32				RETI			;TF2EXF2IRQ:
+   36:				;*****************************************************
+   37:
+   38:	  002E	75 89 11	TESTTMR0TMR1:	MOV	TMOD,#11h	;16 bit
+   39:	  0031	75 A8 8A			MOV	IE,#8Ah
+   40:	  0034	D2 8C				SETB	TR0
+   41:	  0036	D2 8E				SETB	TR1
+   42:	  0038	80 FE				SJMP	$
+   43:
+
+ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 2
+
+
+
+ Line  I  Addr  Code            Source
+
+   44:	  003A	75 A8 85	TESTINT0INT1:	MOV	IE,#85h
+   45:	  003D	80 FE				SJMP	$
+   46:
+   47:	  003F	7F 00		WAIT:		MOV	R7,#00h
+   48:	  0041	7E 10				MOV	R6,#10h
+   49:	  0043	DF FE		WAIT1:		DJNZ	R7,WAIT1
+   50:	  0045	DE FC				DJNZ	R6,WAIT1
+   51:	  0047	22				RET
+   52:				;------------------------------------------------------------------
+   53:				;Wait loop. Waits 1 second
+   54:				;------------------------------------------------------------------
+   55:	  0048	7F F9		WAITASEC:	MOV	R7,#0F9h
+   56:	  004A	7E 33				MOV	R6,#51
+   57:	  004C	7D 10				MOV	R5,#16
+   58:	  004E	DF FE		WAITASEC1:	DJNZ	R7,WAITASEC1
+   59:	  0050	DE FC				DJNZ	R6,WAITASEC1
+   60:	  0052	DD FA				DJNZ	R5,WAITASEC1
+   61:	  0054	74 FF				MOV	A,#0FFh
+   62:	  0056	22				RET
+   63:
+   64:	  0057	11 22 33 44	TSTDATA:	DB 11h,22h,33h,44h
+   65:
+   66:						END
+
+
+
+
+
+                     register banks used:  ---
+
+                     no errors
+
+
+
+
+ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 3
+
+
+
+
+
+	       L I S T   O F   S Y M B O L S
+	       =============================
+
+
+SYMBOL				  TYPE     VALUE	LINE
+------------------------------------------------------------
+??ASEM_51			  NUMBER    8051
+??VERSION			  NUMBER    0130
+AC				  BIT	      D6
+ACC				  DATA	      E0
+B				  DATA	      F0
+CY				  BIT	      D7
+DPH				  DATA	      83
+DPL				  DATA	      82
+EA				  BIT	      AF
+ES				  BIT	      AC
+ET0				  BIT	      A9
+ET1				  BIT	      AB
+EX0				  BIT	      A8
+EX1				  BIT	      AA
+EXTI0				  CODE	    0003
+EXTI1				  CODE	    0013
+F0				  BIT	      D5
+IE				  DATA	      A8
+IE0				  BIT	      89
+IE1				  BIT	      8B
+INT0				  BIT	      B2
+INT1				  BIT	      B3
+IP				  DATA	      B8
+IT0				  BIT	      88
+IT1				  BIT	      8A
+OV				  BIT	      D2
+P				  BIT	      D0
+P0				  DATA	      80
+P1				  DATA	      90
+P2				  DATA	      A0
+P3				  DATA	      B0
+PCON				  DATA	      87
+PS				  BIT	      BC
+PSW				  DATA	      D0
+PT0				  BIT	      B9
+PT1				  BIT	      BB
+PX0				  BIT	      B8
+PX1				  BIT	      BA
+RB8				  BIT	      9A
+RD				  BIT	      B7
+REN				  BIT	      9C
+RESET				  CODE	    0000
+RI				  BIT	      98
+RS0				  BIT	      D3
+RS1				  BIT	      D4
+RXD				  BIT	      B0
+SBUF				  DATA	      99
+SCON				  DATA	      98
+SINT				  CODE	    0023
+SM0				  BIT	      9F
+
+ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 4
+
+
+
+SYMBOL				  TYPE     VALUE	LINE
+------------------------------------------------------------
+SM1				  BIT	      9E
+SM2				  BIT	      9D
+SP				  DATA	      81
+T0				  BIT	      B4
+T1				  BIT	      B5
+TB8				  BIT	      9B
+TCON				  DATA	      88
+TESTINT0INT1			  CODE	    003A	  44
+TESTTMR0TMR1			  CODE	    002E	  38
+TF0				  BIT	      8D
+TF1				  BIT	      8F
+TH0				  DATA	      8C
+TH1				  DATA	      8D
+TI				  BIT	      99
+TIMER0				  CODE	    000B
+TIMER1				  CODE	    001B
+TL0				  DATA	      8A
+TL1				  DATA	      8B
+TMOD				  DATA	      89
+TR0				  BIT	      8C
+TR1				  BIT	      8E
+TSTDATA				  CODE	    0057	  64
+TXD				  BIT	      B1
+WAIT				  CODE	    003F	  47
+WAIT1				  CODE	    0043	  49
+WAITASEC			  CODE	    0048	  55
+WAITASEC1			  CODE	    004E	  58
+WR				  BIT	      B6
