@@ -167,44 +167,93 @@ EditProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
 EditProc endp
 
-TabStatusProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+TabStatusProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	buffer[32]:BYTE
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
-		invoke SendDlgItemMessage,hWin,IDC_EDTPC,EM_LIMITTEXT,4,0
-		invoke SendDlgItemMessage,hWin,IDC_EDTDPTR,EM_LIMITTEXT,4,0
-		invoke SendDlgItemMessage,hWin,IDC_EDTDPTR1,EM_LIMITTEXT,4,0
-		invoke SendDlgItemMessage,hWin,IDC_EDTACC,EM_LIMITTEXT,2,0
-		invoke SendDlgItemMessage,hWin,IDC_EDTB,EM_LIMITTEXT,2,0
-		invoke SendDlgItemMessage,hWin,IDC_EDTSP,EM_LIMITTEXT,2,0
-		invoke SendDlgItemMessage,hWin,IDC_EDTR0,EM_LIMITTEXT,2,0
-		invoke SendDlgItemMessage,hWin,IDC_EDTR1,EM_LIMITTEXT,2,0
-		invoke SendDlgItemMessage,hWin,IDC_EDTR2,EM_LIMITTEXT,2,0
-		invoke SendDlgItemMessage,hWin,IDC_EDTR3,EM_LIMITTEXT,2,0
-		invoke SendDlgItemMessage,hWin,IDC_EDTR4,EM_LIMITTEXT,2,0
-		invoke SendDlgItemMessage,hWin,IDC_EDTR5,EM_LIMITTEXT,2,0
-		invoke SendDlgItemMessage,hWin,IDC_EDTR6,EM_LIMITTEXT,2,0
-		invoke SendDlgItemMessage,hWin,IDC_EDTR7,EM_LIMITTEXT,2,0
 		push	0
+		push	4
 		push	IDC_EDTPC
+		push	4
 		push	IDC_EDTDPTR
+		push	4
 		push	IDC_EDTDPTR1
+		push	2
 		push	IDC_EDTACC
+		push	2
 		push	IDC_EDTB
+		push	2
 		push	IDC_EDTSP
+		push	2
 		push	IDC_EDTR0
+		push	2
 		push	IDC_EDTR1
+		push	2
 		push	IDC_EDTR2
+		push	2
 		push	IDC_EDTR3
+		push	2
 		push	IDC_EDTR4
+		push	2
 		push	IDC_EDTR5
+		push	2
 		push	IDC_EDTR6
+		push	2
 		mov		eax,IDC_EDTR7
 		.while eax
 			invoke GetDlgItem,hWin,eax
-			invoke SetWindowLong,eax,GWL_WNDPROC,offset EditProc
+			mov		ebx,eax
+			pop		eax
+			invoke SendMessage,ebx,EM_LIMITTEXT,eax,0
+			invoke SetWindowLong,ebx,GWL_WNDPROC,offset EditProc
 			mov		lpOldEditProc,eax
+			pop		eax
+		.endw
+		push	0
+		push	IDC_IMGCY
+		push	IDC_IMGAC
+		push	IDC_IMGF0
+		push	IDC_IMGRS1
+		push	IDC_IMGRS0
+		push	IDC_IMGOV
+		push	IDC_IMGFL
+		push	IDC_IMGP
+		push	IDC_IMGP0_7
+		push	IDC_IMGP0_6
+		push	IDC_IMGP0_5
+		push	IDC_IMGP0_4
+		push	IDC_IMGP0_3
+		push	IDC_IMGP0_2
+		push	IDC_IMGP0_1
+		push	IDC_IMGP0_0
+		push	IDC_IMGP1_7
+		push	IDC_IMGP1_6
+		push	IDC_IMGP1_5
+		push	IDC_IMGP1_4
+		push	IDC_IMGP1_3
+		push	IDC_IMGP1_2
+		push	IDC_IMGP1_1
+		push	IDC_IMGP1_0
+		push	IDC_IMGP2_7
+		push	IDC_IMGP2_6
+		push	IDC_IMGP2_5
+		push	IDC_IMGP2_4
+		push	IDC_IMGP2_3
+		push	IDC_IMGP2_2
+		push	IDC_IMGP2_1
+		push	IDC_IMGP2_0
+		push	IDC_IMGP3_7
+		push	IDC_IMGP3_6
+		push	IDC_IMGP3_5
+		push	IDC_IMGP3_4
+		push	IDC_IMGP3_3
+		push	IDC_IMGP3_2
+		push	IDC_IMGP3_1
+		mov		eax,IDC_IMGP3_0
+		.while eax
+			invoke SendDlgItemMessage,hWin,eax,STM_SETIMAGE,IMAGE_BITMAP,addin.hBmpGrayLed
+			invoke DeleteObject,eax
 			pop		eax
 		.endw
 	.elseif eax==WM_COMMAND
@@ -349,6 +398,140 @@ TabBitProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
+		push	0
+		push	IDC_IMGBIT00
+		push	IDC_IMGBIT01
+		push	IDC_IMGBIT02
+		push	IDC_IMGBIT03
+		push	IDC_IMGBIT04
+		push	IDC_IMGBIT05
+		push	IDC_IMGBIT06
+		push	IDC_IMGBIT07
+		push	IDC_IMGBIT08
+		push	IDC_IMGBIT09
+		push	IDC_IMGBIT0A
+		push	IDC_IMGBIT0B
+		push	IDC_IMGBIT0C
+		push	IDC_IMGBIT0D
+		push	IDC_IMGBIT0E
+		push	IDC_IMGBIT0F
+		push	IDC_IMGBIT10
+		push	IDC_IMGBIT11
+		push	IDC_IMGBIT12
+		push	IDC_IMGBIT13
+		push	IDC_IMGBIT14
+		push	IDC_IMGBIT15
+		push	IDC_IMGBIT16
+		push	IDC_IMGBIT17
+		push	IDC_IMGBIT18
+		push	IDC_IMGBIT19
+		push	IDC_IMGBIT1A
+		push	IDC_IMGBIT1B
+		push	IDC_IMGBIT1C
+		push	IDC_IMGBIT1D
+		push	IDC_IMGBIT1E
+		push	IDC_IMGBIT1F
+		push	IDC_IMGBIT20
+		push	IDC_IMGBIT21
+		push	IDC_IMGBIT22
+		push	IDC_IMGBIT23
+		push	IDC_IMGBIT24
+		push	IDC_IMGBIT25
+		push	IDC_IMGBIT26
+		push	IDC_IMGBIT27
+		push	IDC_IMGBIT28
+		push	IDC_IMGBIT29
+		push	IDC_IMGBIT2A
+		push	IDC_IMGBIT2B
+		push	IDC_IMGBIT2C
+		push	IDC_IMGBIT2D
+		push	IDC_IMGBIT2E
+		push	IDC_IMGBIT2F
+		push	IDC_IMGBIT30
+		push	IDC_IMGBIT31
+		push	IDC_IMGBIT32
+		push	IDC_IMGBIT33
+		push	IDC_IMGBIT34
+		push	IDC_IMGBIT35
+		push	IDC_IMGBIT36
+		push	IDC_IMGBIT37
+		push	IDC_IMGBIT38
+		push	IDC_IMGBIT39
+		push	IDC_IMGBIT3A
+		push	IDC_IMGBIT3B
+		push	IDC_IMGBIT3C
+		push	IDC_IMGBIT3D
+		push	IDC_IMGBIT3E
+		push	IDC_IMGBIT3F
+		push	IDC_IMGBIT40
+		push	IDC_IMGBIT41
+		push	IDC_IMGBIT42
+		push	IDC_IMGBIT43
+		push	IDC_IMGBIT44
+		push	IDC_IMGBIT45
+		push	IDC_IMGBIT46
+		push	IDC_IMGBIT47
+		push	IDC_IMGBIT48
+		push	IDC_IMGBIT49
+		push	IDC_IMGBIT4A
+		push	IDC_IMGBIT4B
+		push	IDC_IMGBIT4C
+		push	IDC_IMGBIT4D
+		push	IDC_IMGBIT4E
+		push	IDC_IMGBIT4F
+		push	IDC_IMGBIT50
+		push	IDC_IMGBIT51
+		push	IDC_IMGBIT52
+		push	IDC_IMGBIT53
+		push	IDC_IMGBIT54
+		push	IDC_IMGBIT55
+		push	IDC_IMGBIT56
+		push	IDC_IMGBIT57
+		push	IDC_IMGBIT58
+		push	IDC_IMGBIT59
+		push	IDC_IMGBIT5A
+		push	IDC_IMGBIT5B
+		push	IDC_IMGBIT5C
+		push	IDC_IMGBIT5D
+		push	IDC_IMGBIT5E
+		push	IDC_IMGBIT5F
+		push	IDC_IMGBIT60
+		push	IDC_IMGBIT61
+		push	IDC_IMGBIT62
+		push	IDC_IMGBIT63
+		push	IDC_IMGBIT64
+		push	IDC_IMGBIT65
+		push	IDC_IMGBIT66
+		push	IDC_IMGBIT67
+		push	IDC_IMGBIT68
+		push	IDC_IMGBIT69
+		push	IDC_IMGBIT6A
+		push	IDC_IMGBIT6B
+		push	IDC_IMGBIT6C
+		push	IDC_IMGBIT6D
+		push	IDC_IMGBIT6E
+		push	IDC_IMGBIT6F
+		push	IDC_IMGBIT70
+		push	IDC_IMGBIT71
+		push	IDC_IMGBIT72
+		push	IDC_IMGBIT73
+		push	IDC_IMGBIT74
+		push	IDC_IMGBIT75
+		push	IDC_IMGBIT76
+		push	IDC_IMGBIT77
+		push	IDC_IMGBIT78
+		push	IDC_IMGBIT79
+		push	IDC_IMGBIT7A
+		push	IDC_IMGBIT7B
+		push	IDC_IMGBIT7C
+		push	IDC_IMGBIT7D
+		push	IDC_IMGBIT7E
+		mov		eax,IDC_IMGBIT7F
+		.while eax
+			invoke SendDlgItemMessage,hWin,eax,STM_SETIMAGE,IMAGE_BITMAP,addin.hBmpGrayLed
+			invoke DeleteObject,eax
+			pop		eax
+		.endw
 	.elseif eax==WM_COMMAND
 		mov		edx,wParam
 		movzx	eax,dx
@@ -395,6 +578,20 @@ TabSfrProc proc uses ebx esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
+		push	0
+		push	IDC_IMGSFRBIT7
+		push	IDC_IMGSFRBIT6
+		push	IDC_IMGSFRBIT5
+		push	IDC_IMGSFRBI4 
+		push	IDC_IMGSFRBIT3
+		push	IDC_IMGSFRBIT2
+		push	IDC_IMGSFRBIT1
+		mov		eax,IDC_IMGSFRBIT0
+		.while eax
+			invoke SendDlgItemMessage,hWin,eax,STM_SETIMAGE,IMAGE_BITMAP,addin.hBmpGrayLed
+			invoke DeleteObject,eax
+			pop		eax
+		.endw
 	.elseif eax==WM_COMMAND
 		mov		edx,wParam
 		movzx	eax,dx
@@ -1063,13 +1260,11 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		col.himl,0
 		mov		col.hdrflag,0
 		invoke SendMessage,addin.hGrd,GM_ADDCOL,0,addr col
-
 		invoke CreateDialogParam,addin.hInstance,IDD_DLGFIND,hWin,addr FindProc,0
 		invoke CreateDialogParam,addin.hInstance,IDD_DLGTERMINAL,hWin,addr TerminalProc,0
 		mov		eax,offset SendAddinMessage
 		mov		addin.lpSendAddinMessage,eax
 		invoke LoadAddins
-		invoke Reset
 		;Setup whole CharTab and CaseTab
 		xor		ebx,ebx
 		.while ebx<256
@@ -1092,6 +1287,10 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke LoadSFRFile,offset szMCUTypes
 		invoke SetupSfr
 		invoke LoadSettings
+		invoke SendDlgItemMessage,hWin,IDC_IMGSTATUS,STM_SETIMAGE,IMAGE_BITMAP,addin.hBmpGreenLed
+		invoke DeleteObject,eax
+		invoke SendDlgItemMessage,hWin,IDC_IMGLAGGING,STM_SETIMAGE,IMAGE_BITMAP,addin.hBmpGrayLed
+		invoke DeleteObject,eax
 		invoke Reset
 	.elseif eax==WM_TIMER
 		.if addin.Refresh
@@ -1332,13 +1531,19 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke ClearBreakPoints
 			.elseif eax==IDM_OPTION_CLOCK
 				invoke DialogBoxParam,addin.hInstance,IDD_DLGCLOCK,hWin,offset ClockProc,0
-			.elseif eax==IDM_OPTION_CLEARRAM
+			.elseif eax>=11000 && eax<=11031
+				;Sfr file
+				lea		eax,[eax-11000]
+				shl		eax,4
+				invoke LoadSFRFile,addr szMCUTypes[eax]
+				invoke SetupSfr
+			.elseif eax==IDM_TOOLS_CLEARRAM
 				mov		edi,offset addin.Ram
 				mov		ecx,256/4
 				xor		eax,eax
 				rep		stosd
 				mov		addin.Refresh,1
-			.elseif eax==IDM_OPTION_CLEARXRAM
+			.elseif eax==IDM_TOOLS_CLEARXRAM
 				mov		edi,offset addin.XRam
 				mov		ecx,65536/4
 				xor		eax,eax
@@ -1347,16 +1552,13 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.elseif eax==IDM_HELP_ABOUT
 				invoke DialogBoxParam,addin.hInstance,IDD_DLGABOUT,hWin,offset AboutProc,0
 			.elseif eax>=11100 && eax<=11131
+				;Help
 				lea		eax,[eax-11100]
 				mov		edx,sizeof HELP
 				mul		edx
 				invoke ShellExecute,addin.hWnd,addr szOpen,addr help.szHelpFile[eax],NULL,NULL,SW_SHOWNORMAL
-			.elseif eax>=11000 && eax<=11031
-				lea		eax,[eax-11000]
-				shl		eax,4
-				invoke LoadSFRFile,addr szMCUTypes[eax]
-				invoke SetupSfr
 			.elseif eax>=12000
+				;Addin
 				invoke SendAddinMessage,hWin,AM_COMMAND,0,eax,AH_COMMAND
 			.endif
 		.endif

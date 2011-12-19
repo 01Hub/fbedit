@@ -105,4 +105,5 @@ IDM_SEARCH          	equ 10201
 IDM_VIEW            	equ 10202
 IDM_DEBUG           	equ 10203
 IDM_OPTIONS         	equ 10204
+IDM_TOOLS				equ 10020
 IDM_HELP            	equ 10205
