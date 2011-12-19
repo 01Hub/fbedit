@@ -257,12 +257,41 @@ PBProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			mov		lpOldBtnProc,eax
 			pop		eax
 		.endw
+		mov		nButtons,8
+		mov		eax,(2 shl 16)+8
+		invoke SendDlgItemMessage,hWin,IDC_UDNBUTTONS,UDM_SETRANGE,0,(2 shl 16)+8
+		invoke SendDlgItemMessage,hWin,IDC_UDNBUTTONS,UDM_SETPOS,0,8
+	.elseif eax==WM_SIZE
+		invoke GetWindowRect,hWin,addr rect
+		mov		eax,rect.top
+		sub		rect.bottom,eax
+		mov		eax,nButtons
+		mov		edx,58
+		mul		edx
+		add		eax,20
+		mov		rect.right,eax
+		push	eax
+		invoke MoveWindow,hWin,rect.left,rect.top,rect.right,rect.bottom,TRUE
+		invoke GetDlgItem,hWin,IDC_GRPPB
+		mov		ebx,eax
+		invoke GetWindowRect,ebx,addr rect
+		invoke ScreenToClient,ebx,addr rect.left
+		invoke ScreenToClient,ebx,addr rect.right
+		pop		eax
+		sub		eax,6
+		mov		rect.right,eax
+		invoke MoveWindow,ebx,rect.left,rect.top,rect.right,rect.bottom,TRUE
 	.elseif eax==WM_PBDOWN
 		invoke CheckDlgButton,hWin,lParam,BST_CHECKED
 		invoke SendMessage,hWin,WM_COMMAND,lParam,wParam
 	.elseif eax==WM_PBUP
 		invoke CheckDlgButton,hWin,lParam,BST_UNCHECKED
 		invoke SendMessage,hWin,WM_COMMAND,lParam,wParam
+	.elseif eax==WM_HSCROLL
+		invoke SendDlgItemMessage,hWin,IDC_UDNBUTTONS,UDM_GETPOS,0,0
+		and		eax,0FFFFh
+		mov		nButtons,eax
+		invoke SendMessage,hWin,WM_SIZE,0,0
 	.elseif eax==WM_COMMAND
 		mov		edx,wParam
 		movzx	eax,dx
@@ -515,6 +544,10 @@ AddinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.else
 			invoke ShowWindow,hDlg,SW_HIDE
 		.endif
+		invoke GetItemInt,addr buffer,0
+		mov		nButtons,eax
+		invoke SendDlgItemMessage,hDlg,IDC_UDNBUTTONS,UDM_SETPOS,0,nButtons
+		invoke SendMessage,hDlg,WM_SIZE,0,0
 		xor		ebx,ebx
 		.while ebx<8
 			invoke GetDlgItem,hDlg,addr [ebx+1000]
@@ -538,6 +571,7 @@ AddinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		xor		ebx,ebx
 		invoke IsWindowVisible,hDlg
 		invoke PutItemInt,addr buffer,eax
+		invoke PutItemInt,addr buffer,nButtons
 		.while ebx<8
 			invoke IsDlgButtonChecked,hDlg,addr [ebx+1020]
 			invoke PutItemInt,addr buffer,eax

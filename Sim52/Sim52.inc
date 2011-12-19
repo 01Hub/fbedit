@@ -218,6 +218,7 @@ IDC_IMGFL               equ 1201
 IDC_IMGP                equ 1200
 IDC_STCCYCLES           equ 1014
 IDC_BTNRESET            equ 1013
+IDC_STCDPTR1			equ 1699
 IDC_GRPPORTS            equ 1060
 IDC_IMGP0_7             equ 1307
 IDC_IMGP0_6             equ 1306
@@ -279,6 +280,11 @@ IDC_EDTCOMPUTER         equ 1901
 IDC_EDTMCU              equ 1902
 IDC_EDTREFRESH          equ 1903
 IDC_UDNREFRESH          equ 1904
+IDD_DLGABOUT			equ 2000
+IDC_EDTABOUT			equ 1001
+IDC_URL1				equ 1002
+IDC_URL2				equ 1003
+
 IDM_MENU                equ 10000
 IDM_FILE                equ 10200
 IDM_FILE_NEWPROJECT 	equ 10017
@@ -355,9 +361,8 @@ tbrbtns					TBBUTTON <0,IDM_FILE_OPEN,TBSTATE_ENABLED,TBSTYLE_BUTTON,0,0>
 ntbrbtns				equ 11
 
 szClassName				BYTE 'DLGCLASS',0
-szAppName				BYTE '8052 Simulator',0
+szAppName				BYTE '8051 / 8052 Simulator',0
 szDash					BYTE ' - ',0
-szAboutMsg				BYTE 'MASM32 RadASM 8052 Simulator',13,10,'Copyright © MASM32 2001',0
 
 szLSTFilterString		BYTE 'LST Files (*.lst)',0,'*.lst',0,0
 szSIMFilterString		BYTE 'SIM Files (*.sim)',0,'*.sim',0,0
@@ -397,6 +402,15 @@ szProSIM52				BYTE 'SIM52',0
 szProFile				BYTE 'File',0
 szProMCU				BYTE 'MCU',0
 szProClock				BYTE 'Clock',0
+
+szT2CON					BYTE 'T2CON',0
+szDP1L					BYTE 'DP1L',0
+
+szVersion				BYTE 'Sim52 version 1.0.0.0',0
+szAboutMsg				BYTE '8051 / 8052 Simulator 1.0.0.0',13,10,'KetilO © 2011',13,10,13,10,'radasmide@hotmail.com',0
+szAboutUrl1				BYTE 'https://fbedit.svn.sourceforge.net/svnroot/fbedit/Sim52/Sim52.zip',0
+szAboutUrl2				BYTE 'http://radasm.cherrytree.at/',0
+szOpen					BYTE 'Open',0
 
 .data?
 
@@ -438,4 +452,11 @@ NewP3					DWORD ?
 OldP3					DWORD ?
 pendingint				INTERRUPT 2 dup(<>)
 flagging				DWORD ?
+fTimer2					DWORD ?
+fDPTR1					DWORD ?
+OldUrlProc				DWORD ?
+fMouseOver				DWORD ?
+hUrlFont				DWORD ?
+hUrlFontU				DWORD ?
+hUrlBrush				DWORD ?
 

@@ -35,6 +35,7 @@ IDC_BTNPB6              equ 1006
 IDC_STCPB7              equ 1017
 IDC_BTNPB7              equ 1007
 IDC_BTNCONFIG           equ 1008
+IDC_UDNBUTTONS			equ 1009
 IDC_CHKPB0              equ 1020
 IDC_CHKPB1              equ 1021
 IDC_CHKPB2              equ 1022
@@ -75,6 +76,7 @@ IDC_IMGPB4              equ 1074
 IDC_IMGPB5              equ 1075
 IDC_IMGPB6              equ 1076
 IDC_IMGPB7              equ 1077
+IDC_GRPPB				equ 1100
 IDB_SWITCHOPEN          equ 100
 IDB_PUSHBUTTON          equ 102
 IDB_SWITCHCLOSED        equ 101
@@ -178,3 +180,4 @@ hBmpPushButton			HBITMAP ?
 hBmpSwitchOpen			HBITMAP ?
 hBmpSwitchClosed		HBITMAP ?
 lpOldBtnProc			DWORD ?
+nButtons				DWORD ?

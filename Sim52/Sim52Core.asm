@@ -93,6 +93,13 @@ LoadMCUTypes endp
 LoadSFRFile proc uses ebx esi edi,lpMCU:DWORD
 	LOCAL	buffer[MAX_PATH]:BYTE
 
+
+	mov		fTimer2,FALSE
+	mov		fDPTR1,FALSE
+	invoke GetDlgItem,addin.hTabDlgStatus,IDC_STCDPTR1
+	invoke ShowWindow,eax,SW_HIDE
+	invoke GetDlgItem,addin.hTabDlgStatus,IDC_EDTDPTR1
+	invoke ShowWindow,eax,SW_HIDE
 	invoke lstrcpy,addr addin.szMCU,lpMCU
 	invoke lstrcpy,addr szSfrFile,addr szPath
 	invoke lstrcat,addr szSfrFile,lpMCU
@@ -122,6 +129,18 @@ LoadSFRFile proc uses ebx esi edi,lpMCU:DWORD
 		invoke GetItemStr,addr buffer,addr szNULL,addr [edi].SFRMAP.d2,8
 		invoke GetItemStr,addr buffer,addr szNULL,addr [edi].SFRMAP.d1,8
 		invoke GetItemStr,addr buffer,addr szNULL,addr [edi].SFRMAP.d0,8
+		invoke lstrcmp,addr [edi].SFRMAP.nme,addr szT2CON
+		.if !eax
+			mov		fTimer2,TRUE
+		.endif
+		invoke lstrcmp,addr [edi].SFRMAP.nme,addr szDP1L
+		.if !eax
+			mov		fDPTR1,TRUE
+			invoke GetDlgItem,addin.hTabDlgStatus,IDC_STCDPTR1
+			invoke ShowWindow,eax,SW_SHOW
+			invoke GetDlgItem,addin.hTabDlgStatus,IDC_EDTDPTR1
+			invoke ShowWindow,eax,SW_SHOW
+		.endif
 		inc		ebx
 		lea		edi,[edi+sizeof SFRMAP]
 	.endw
@@ -841,6 +860,10 @@ WaitHalfCycle proc
 			;Set TCON.IE0
 			or		addin.Sfr[SFR_TCON],02h
 		.endif
+	.elseif !(NewP3 & 04h)
+		;Level triggered
+		;Set TCON.IE0
+		or		addin.Sfr[SFR_TCON],02h
 	.endif
 	;Check HIGH to LOW transition on P3.3/INT1, if it is transition activated
 	.if addin.Sfr[SFR_TCON] & 04h
@@ -848,6 +871,10 @@ WaitHalfCycle proc
 			;Set TCON.IE1
 			or		addin.Sfr[SFR_TCON],08h
 		.endif
+	.elseif !(NewP3 & 08h)
+		;Level triggered
+		;Set TCON.IE1
+		or		addin.Sfr[SFR_TCON],08h
 	.endif
 	xor		ecx,ecx
 	.while ecx<6
@@ -3606,7 +3633,13 @@ Execute:
 						mov		pendingint.pri,TRUE
 					.endif
 					mov		pendingint.sfr,SFR_TCON
-					mov		pendingint.bit,02h
+					.if addin.Sfr[SFR_TCON] & 01h
+						;Transition triggered, TCON.IE0 shoud be cleared
+						mov		pendingint.bit,02h
+					.else
+						;Level triggered, TCON.IE0 should not be cleared by hardware
+						mov		pendingint.bit,00h
+					.endif
 					;Generate external interrupt 0
 					mov		edx,0300h
 					call	LCALL_$cad
@@ -3648,8 +3681,15 @@ Execute:
 						mov		pendingint.pri,TRUE
 					.endif
 					mov		pendingint.sfr,SFR_TCON
+					.if addin.Sfr[SFR_TCON] & 04h
+						;Transition triggered, TCON.IE1 shoud be cleared
+						mov		pendingint.bit,08h
+					.else
+						;Level triggered, TCON.IE1 should not be cleared by hardware
+						mov		pendingint.bit,00h
+					.endif
 					mov		pendingint.bit,08h
-					;Generate Timer 0 interrupt
+					;Generate external interrupt 1
 					mov		edx,1300h
 					call	LCALL_$cad
 					mov		PCDONE,0013h
@@ -3708,51 +3748,53 @@ Execute:
 					.endif
 					mov		pendingint.sfr,SFR_SCON
 					mov		pendingint.bit,02h
-					;Generate RI interrupt
+					;Generate TI interrupt
 					mov		edx,2300h
 					call	LCALL_$cad
 					mov		PCDONE,0023h
 					jmp		Ex
 				.endif
 			.endif
-			;Test IE.ET2
-			test	edi,20h
-			.if !ZERO?
-				;Test T2CON.TF2
-				test	addin.Sfr[SFR_T2CON],80h
-				.if !ZERO?
-					;Test IP.PT2
-					test	addin.Sfr[SFR_IP],20h
-					.if !ZERO?
-						;High priority interrupt
-						mov		pendingint.pri,TRUE
-					.endif
-					mov		pendingint.sfr,SFR_T2CON
-					mov		pendingint.bit,80h
-					;Generate RI interrupt
-					mov		edx,2B00h
-					call	LCALL_$cad
-					mov		PCDONE,002Bh
-					jmp		Ex
-				.endif
-				;Test T2CON.EXF2
-				test	addin.Sfr[SFR_T2CON],40h
-				.if !ZERO?
-					;Test IP.PT2
-					test	addin.Sfr[SFR_IP],20h
-					.if !ZERO?
-						;High priority interrupt
-						mov		pendingint.pri,TRUE
-					.endif
-					mov		pendingint.sfr,SFR_T2CON
-					mov		pendingint.bit,40h
-					;Generate RI interrupt
-					mov		edx,2B00h
-					call	LCALL_$cad
-					mov		PCDONE,002Bh
-					jmp		Ex
-				.endif
-			.endif
+;			;Test IE.ET2
+;			test	edi,20h
+;			.if !ZERO?
+;				;Test T2CON.TF2
+;				test	addin.Sfr[SFR_T2CON],80h
+;				.if !ZERO?
+;					;Test IP.PT2
+;					test	addin.Sfr[SFR_IP],20h
+;					.if !ZERO?
+;						;High priority interrupt
+;						mov		pendingint.pri,TRUE
+;					.endif
+;					mov		pendingint.sfr,SFR_T2CON
+;					;Bit not cleared by hardware
+;					mov		pendingint.bit,00h
+;					;Generate RI interrupt
+;					mov		edx,2B00h
+;					call	LCALL_$cad
+;					mov		PCDONE,002Bh
+;					jmp		Ex
+;				.endif
+;				;Test T2CON.EXF2
+;				test	addin.Sfr[SFR_T2CON],40h
+;				.if !ZERO?
+;					;Test IP.PT2
+;					test	addin.Sfr[SFR_IP],20h
+;					.if !ZERO?
+;						;High priority interrupt
+;						mov		pendingint.pri,TRUE
+;					.endif
+;					mov		pendingint.sfr,SFR_T2CON
+;					;Bit not cleared by hardware
+;					mov		pendingint.bit,40h
+;					;Generate RI interrupt
+;					mov		edx,2B00h
+;					call	LCALL_$cad
+;					mov		PCDONE,002Bh
+;					jmp		Ex
+;				.endif
+;			.endif
 		.elseif !pendingint.pri && addin.Sfr[SFR_IP]
 			;No pending high priority interrupt and high proiority interrupts are defined, Check for high priority interrups
 			;Test IP.PX0
@@ -3767,7 +3809,13 @@ Execute:
 						call	PUSHpendingint
 						mov		pendingint.pri,TRUE
 						mov		pendingint.sfr,SFR_TCON
-						mov		pendingint.bit,02h
+						.if addin.Sfr[SFR_TCON] & 01h
+							;Transition triggered, TCON.IE0 shoud be cleared
+							mov		pendingint.bit,02h
+						.else
+							;Level triggered, TCON.IE0 should not be cleared by hardware
+							mov		pendingint.bit,00h
+						.endif
 						;Generate external interrupt 0
 						mov		edx,0300h
 						call	LCALL_$cad
@@ -3809,8 +3857,14 @@ Execute:
 						call	PUSHpendingint
 						mov		pendingint.pri,TRUE
 						mov		pendingint.sfr,SFR_TCON
-						mov		pendingint.bit,04h
-						;Generate Timer 0 interrupt
+						.if addin.Sfr[SFR_TCON] & 04h
+							;Transition triggered, TCON.IE1 shoud be cleared
+							mov		pendingint.bit,08h
+						.else
+							;Level triggered, TCON.IE1 should not be cleared by hardware
+							mov		pendingint.bit,00h
+						.endif
+						;Generate external interrupt 1
 						mov		edx,1300h
 						call	LCALL_$cad
 						mov		PCDONE,0013h
@@ -3865,7 +3919,7 @@ Execute:
 						mov		pendingint.pri,TRUE
 						mov		pendingint.sfr,SFR_SCON
 						mov		pendingint.bit,02h
-						;Generate RI interrupt
+						;Generate TI interrupt
 						mov		edx,2300h
 						call	LCALL_$cad
 						mov		PCDONE,0023h
@@ -3873,40 +3927,40 @@ Execute:
 					.endif
 				.endif
 			.endif
-			;Test IP.PT2
-			test	addin.Sfr[SFR_IP],20h
-			.if !ZERO?
-				;Test IE.ET2
-				test	edi,20h
-				.if !ZERO?
-					;Test T2CON.TF2
-					test	addin.Sfr[SFR_T2CON],80h
-					.if !ZERO?
-						call	PUSHpendingint
-						mov		pendingint.pri,TRUE
-						mov		pendingint.sfr,SFR_T2CON
-						mov		pendingint.bit,80h
-						;Generate RI interrupt
-						mov		edx,2B00h
-						call	LCALL_$cad
-						mov		PCDONE,002Bh
-						jmp		Ex
-					.endif
-					;Test T2CON.EXF2
-					test	addin.Sfr[SFR_T2CON],40h
-					.if !ZERO?
-						call	PUSHpendingint
-						mov		pendingint.pri,TRUE
-						mov		pendingint.sfr,SFR_T2CON
-						mov		pendingint.bit,40h
-						;Generate RI interrupt
-						mov		edx,2B00h
-						call	LCALL_$cad
-						mov		PCDONE,002Bh
-						jmp		Ex
-					.endif
-				.endif
-			.endif
+;			;Test IP.PT2
+;			test	addin.Sfr[SFR_IP],20h
+;			.if !ZERO?
+;				;Test IE.ET2
+;				test	edi,20h
+;				.if !ZERO?
+;					;Test T2CON.TF2
+;					test	addin.Sfr[SFR_T2CON],80h
+;					.if !ZERO?
+;						call	PUSHpendingint
+;						mov		pendingint.pri,TRUE
+;						mov		pendingint.sfr,SFR_T2CON
+;						mov		pendingint.bit,80h
+;						;Generate RI interrupt
+;						mov		edx,2B00h
+;						call	LCALL_$cad
+;						mov		PCDONE,002Bh
+;						jmp		Ex
+;					.endif
+;					;Test T2CON.EXF2
+;					test	addin.Sfr[SFR_T2CON],40h
+;					.if !ZERO?
+;						call	PUSHpendingint
+;						mov		pendingint.pri,TRUE
+;						mov		pendingint.sfr,SFR_T2CON
+;						mov		pendingint.bit,40h
+;						;Generate RI interrupt
+;						mov		edx,2B00h
+;						call	LCALL_$cad
+;						mov		PCDONE,002Bh
+;						jmp		Ex
+;					.endif
+;				.endif
+;			.endif
 		.endif
 	.endif
   Ex:
