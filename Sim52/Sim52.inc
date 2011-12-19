@@ -31,7 +31,6 @@ includelib Debug.lib
 
 ;#########################################################################
 
-IDD_DLGTABCODE          equ 1500
 IDD_SIM52               equ 1000
 IDC_IMGLAGGING			equ 1001
 IDC_TBRSIM52            equ 1003
@@ -197,7 +196,7 @@ IDC_SHP1                equ 1305
 IDD_DLGTABXRAM          equ 1400
 IDC_GRP4                equ 1401
 IDC_UDCHEXXRAM          equ 1402
-IDD_DLGTABBCODE         equ 1500
+IDD_DLGTABCODE          equ 1500
 IDC_GRP5                equ 1501
 IDC_UDCHEXCODE          equ 1502
 IDD_DLGTABSTATUS        equ 1600
@@ -308,6 +307,8 @@ IDM_DEBUG_CLEAR         equ 10012
 IDM_OPTIONS             equ 10204
 IDM_OPTION_MCU			equ 10016
 IDM_OPTION_CLOCK        equ 10013
+IDM_OPTION_CLEARRAM		equ 10018
+IDM_OPTION_CLEARXRAM	equ 10019
 IDM_HELP                equ 10205
 IDM_HELP_ABOUT          equ 10101
 IDB_TBRBMP              equ 100

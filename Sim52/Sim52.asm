@@ -1244,6 +1244,7 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					call	OpenProject
 				.endif
 			.elseif eax==IDM_FILE_CLOSE
+				mov		State,STATE_STOP or STATE_PAUSE
 				.if szSimFile
 					;Save project settings
 					invoke WritePrivateProfileString,addr szProSIM52,addr szProMCU,addr addin.szMCU,addr szSimFile
@@ -1251,7 +1252,6 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					invoke WritePrivateProfileString,addr szProSIM52,addr szProClock,addr buffer,addr szSimFile
 					invoke SendAddinMessage,hWin,AM_PROJECTCLOSE,0,addr szSimFile,AH_PROJECTCLOSE
 				.endif
-				mov		State,STATE_STOP
 				invoke Reset
 				mov		szSimFile,0
 				mov		szLstFile,0
@@ -1332,6 +1332,18 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke ClearBreakPoints
 			.elseif eax==IDM_OPTION_CLOCK
 				invoke DialogBoxParam,addin.hInstance,IDD_DLGCLOCK,hWin,offset ClockProc,0
+			.elseif eax==IDM_OPTION_CLEARRAM
+				mov		edi,offset addin.Ram
+				mov		ecx,256/4
+				xor		eax,eax
+				rep		stosd
+				mov		addin.Refresh,1
+			.elseif eax==IDM_OPTION_CLEARXRAM
+				mov		edi,offset addin.XRam
+				mov		ecx,65536/4
+				xor		eax,eax
+				rep		stosd
+				mov		addin.Refresh,1
 			.elseif eax==IDM_HELP_ABOUT
 				invoke DialogBoxParam,addin.hInstance,IDD_DLGABOUT,hWin,offset AboutProc,0
 			.elseif eax>=11000 && eax<=11031

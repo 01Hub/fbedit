@@ -92,8 +92,11 @@ LoadMCUTypes endp
 
 LoadSFRFile proc uses ebx esi edi,lpMCU:DWORD
 	LOCAL	buffer[MAX_PATH]:BYTE
+	LOCAL	chrg:CHARRANGE
 
-
+	mov		chrg.cpMin,0
+	mov		chrg.cpMax,0
+	invoke SendDlgItemMessage,addin.hTabDlg[0],IDC_UDCHEXRAM,EM_EXSETSEL,0,addr chrg
 	mov		fTimer2,FALSE
 	mov		fDPTR1,FALSE
 	invoke GetDlgItem,addin.hTabDlgStatus,IDC_STCDPTR1
@@ -858,10 +861,15 @@ WaitHalfCycle proc
 			;Set TCON.IE0
 			or		addin.Sfr[SFR_TCON],02h
 		.endif
-	.elseif !(NewP3 & 04h)
+	.else
 		;Level triggered
-		;Set TCON.IE0
-		or		addin.Sfr[SFR_TCON],02h
+		.if  !(NewP3 & 04h)
+			;Set TCON.IE0
+			or		addin.Sfr[SFR_TCON],02h
+		.else
+			;Reset TCON.IE0
+			and		addin.Sfr[SFR_TCON],0FFh-02h
+		.endif
 	.endif
 	;Check HIGH to LOW transition on P3.3/INT1, if it is transition activated
 	.if addin.Sfr[SFR_TCON] & 04h
@@ -871,8 +879,13 @@ WaitHalfCycle proc
 		.endif
 	.elseif !(NewP3 & 08h)
 		;Level triggered
-		;Set TCON.IE1
-		or		addin.Sfr[SFR_TCON],08h
+		.if  !(NewP3 & 08h)
+			;Set TCON.IE1
+			or		addin.Sfr[SFR_TCON],08h
+		.else
+			;Reset TCON.IE1
+			and		addin.Sfr[SFR_TCON],0FFh-08h
+		.endif
 	.endif
 	xor		ecx,ecx
 	.while ecx<6
@@ -3642,6 +3655,7 @@ Execute:
 					mov		edx,0300h
 					call	LCALL_$cad
 					mov		PCDONE,0003h
+					call	Wait2Cycles
 					jmp		Ex
 				.endif
 			.endif
@@ -3663,6 +3677,7 @@ Execute:
 					mov		edx,0B00h
 					call	LCALL_$cad
 					mov		PCDONE,000Bh
+					call	Wait2Cycles
 					jmp		Ex
 				.endif
 			.endif
@@ -3691,6 +3706,7 @@ Execute:
 					mov		edx,1300h
 					call	LCALL_$cad
 					mov		PCDONE,0013h
+					call	Wait2Cycles
 					jmp		Ex
 				.endif
 			.endif
@@ -3712,6 +3728,7 @@ Execute:
 					mov		edx,1B00h
 					call	LCALL_$cad
 					mov		PCDONE,001Bh
+					call	Wait2Cycles
 					jmp		Ex
 				.endif
 			.endif
@@ -3733,6 +3750,7 @@ Execute:
 					mov		edx,2300h
 					call	LCALL_$cad
 					mov		PCDONE,0023h
+					call	Wait2Cycles
 					jmp		Ex
 				.endif
 				;Test SCON.TI
@@ -3750,6 +3768,7 @@ Execute:
 					mov		edx,2300h
 					call	LCALL_$cad
 					mov		PCDONE,0023h
+					call	Wait2Cycles
 					jmp		Ex
 				.endif
 			.endif
@@ -3772,6 +3791,7 @@ Execute:
 ;					mov		edx,2B00h
 ;					call	LCALL_$cad
 ;					mov		PCDONE,002Bh
+;					call	Wait2Cycles
 ;					jmp		Ex
 ;				.endif
 ;				;Test T2CON.EXF2
@@ -3790,6 +3810,7 @@ Execute:
 ;					mov		edx,2B00h
 ;					call	LCALL_$cad
 ;					mov		PCDONE,002Bh
+;					call	Wait2Cycles
 ;					jmp		Ex
 ;				.endif
 ;			.endif
@@ -3818,6 +3839,7 @@ Execute:
 						mov		edx,0300h
 						call	LCALL_$cad
 						mov		PCDONE,0003h
+						call	Wait2Cycles
 						jmp		Ex
 					.endif
 				.endif
@@ -3839,6 +3861,7 @@ Execute:
 						mov		edx,0B00h
 						call	LCALL_$cad
 						mov		PCDONE,000Bh
+						call	Wait2Cycles
 						jmp		Ex
 					.endif
 				.endif
@@ -3866,6 +3889,7 @@ Execute:
 						mov		edx,1300h
 						call	LCALL_$cad
 						mov		PCDONE,0013h
+						call	Wait2Cycles
 						jmp		Ex
 					.endif
 				.endif
@@ -3887,6 +3911,7 @@ Execute:
 						mov		edx,1B00h
 						call	LCALL_$cad
 						mov		PCDONE,001Bh
+						call	Wait2Cycles
 						jmp		Ex
 					.endif
 				.endif
@@ -3908,6 +3933,7 @@ Execute:
 						mov		edx,2300h
 						call	LCALL_$cad
 						mov		PCDONE,0023h
+						call	Wait2Cycles
 						jmp		Ex
 					.endif
 					;Test SCON.TI
@@ -3921,6 +3947,7 @@ Execute:
 						mov		edx,2300h
 						call	LCALL_$cad
 						mov		PCDONE,0023h
+						call	Wait2Cycles
 						jmp		Ex
 					.endif
 				.endif
@@ -3942,6 +3969,7 @@ Execute:
 ;						mov		edx,2B00h
 ;						call	LCALL_$cad
 ;						mov		PCDONE,002Bh
+;						call	Wait2Cycles
 ;						jmp		Ex
 ;					.endif
 ;					;Test T2CON.EXF2
@@ -3955,6 +3983,7 @@ Execute:
 ;						mov		edx,2B00h
 ;						call	LCALL_$cad
 ;						mov		PCDONE,002Bh
+;						call	Wait2Cycles
 ;						jmp		Ex
 ;					.endif
 ;				.endif
@@ -3962,6 +3991,28 @@ Execute:
 		.endif
 	.endif
   Ex:
+	retn
+
+Wait2Cycles:
+	xor		ecx,ecx
+	.while ecx<6*2*2
+		mov		eax,CpuCycles
+		add		dword ptr PerformanceCount,eax
+		adc		dword ptr PerformanceCount+4,0
+		.while TRUE
+			rdtsc
+			sub		eax,dword ptr PerformanceCount
+			sbb		edx,dword ptr PerformanceCount+4
+			.break .if !CARRY?
+		.endw
+		inc		ecx
+	.endw
+	.if eax>100000 || edx
+		;Lagging
+		inc		flagging
+	.elseif flagging
+		dec		flagging
+	.endif
 	retn
 
 PUSHpendingint:

@@ -175,14 +175,14 @@ UnInstallPB endp
 BtnProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
 	mov		eax,uMsg
-	.if eax==WM_LBUTTONDOWN
+	.if eax==WM_LBUTTONDOWN || eax==WM_LBUTTONDBLCLK
 		invoke CallWindowProc,lpOldBtnProc,hWin,WM_LBUTTONUP,wParam,lParam
 		invoke GetWindowLong,hWin,GWL_ID
 		push	eax
 		invoke GetParent,hWin
 		pop		edx
 		invoke SendMessage,eax,WM_PBDOWN,hWin,edx
-	.elseif eax==WM_LBUTTONUP || eax==WM_LBUTTONDBLCLK
+	.elseif eax==WM_LBUTTONUP
 		invoke GetWindowLong,hWin,GWL_ID
 		push	eax
 		invoke GetParent,hWin
