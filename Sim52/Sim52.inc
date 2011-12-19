@@ -5,6 +5,7 @@ include shell32.inc
 include comctl32.inc
 include comdlg32.inc
 include gdi32.inc
+include shlwapi.inc
 
 includelib user32.lib
 includelib kernel32.lib
@@ -12,6 +13,7 @@ includelib shell32.lib
 includelib comctl32.lib
 includelib comdlg32.lib
 includelib gdi32.lib
+includelib shlwapi.lib
 
 include RAHexEd.inc
 includelib RAHexEd.lib
@@ -288,7 +290,6 @@ IDM_MENU                equ 10000
 IDM_FILE                equ 10200
 IDM_FILE_NEWPROJECT 	equ 10017
 IDM_FILE_OPENFILE       equ 10001
-IDM_FILE_OPENPROJECT    equ 10014
 IDM_FILE_CLOSE          equ 10015
 IDM_FILE_EXIT           equ 10002
 IDM_SEARCH              equ 10201
@@ -370,8 +371,8 @@ szClassName				BYTE 'DLGCLASS',0
 szAppName				BYTE '8051 / 8052 Simulator',0
 szDash					BYTE ' - ',0
 
-szLSTFilterString		BYTE 'LST Files (*.lst)',0,'*.lst',0,0
-szSIMFilterString		BYTE 'SIM Files (*.sim)',0,'*.sim',0,0
+szLSTSIMFilterString	BYTE 'Lst / Sim Files (*.lst,*.sim)',0,'*.lst;*.sim',0,0
+szLSTFilterString		BYTE 'Lst Files (*.lst)',0,'*.lst',0,0
 Courier_New_9 			LOGFONT <-12,0,0,0,400,0,0,0,0,3,2,1,49,"Courier New">
 szTabStatus				BYTE 'Status',0
 
@@ -397,6 +398,8 @@ szCode					BYTE 'Code',0
 szNULL					BYTE 0
 szIniFileName			BYTE 'Sim52.ini',0
 szSfrFileExt			BYTE '.sfr',0
+szLstFileExt			BYTE '.lst',0
+szSimFileExt			BYTE '.sim',0
 szIniConfig				BYTE 'Config',0
 szIniPos				BYTE 'Pos',0
 szIniClock				BYTE 'Clock',0

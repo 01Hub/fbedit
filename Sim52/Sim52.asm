@@ -1395,7 +1395,7 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				pop		ofn.hwndOwner
 				push	addin.hInstance
 				pop		ofn.hInstance
-				mov		ofn.lpstrFilter,offset szLSTFilterString
+				mov		ofn.lpstrFilter,offset szLSTSIMFilterString
 				mov		buffer[0],0
 				lea		eax,buffer
 				mov		ofn.lpstrFile,eax
@@ -1405,42 +1405,7 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				;Show the Open dialog
 				invoke GetOpenFileName,addr ofn
 				.if eax
-					.if szLstFile || szSimFile
-						invoke SendMessage,hWin,WM_COMMAND,IDM_FILE_CLOSE,NULL
-					.endif
-					invoke lstrcpy,addr buffer1,addr szAppName
-					invoke lstrcat,addr buffer1,addr szDash
-					invoke lstrlen,addr buffer
-					.while buffer[eax]!='\' && eax
-						dec		eax
-					.endw
-					invoke lstrcat,addr buffer1,addr buffer[eax+1]
-					invoke SetWindowText,hWin,addr buffer1
-					invoke lstrcpy,addr szLstFile,addr buffer
-					invoke ParseList,addr buffer
-					invoke EnableDisable
-					invoke SetFocus,addin.hGrd
-				.endif
-			.elseif eax==IDM_FILE_OPENPROJECT
-				;Zero out the ofn struct
-				invoke RtlZeroMemory,addr ofn,sizeof ofn
-				;Setup the ofn struct
-				mov		ofn.lStructSize,sizeof ofn
-				push	hWin
-				pop		ofn.hwndOwner
-				push	addin.hInstance
-				pop		ofn.hInstance
-				mov		ofn.lpstrFilter,offset szSIMFilterString
-				mov		buffer[0],0
-				lea		eax,buffer
-				mov		ofn.lpstrFile,eax
-				mov		ofn.nMaxFile,sizeof buffer
-				mov		ofn.lpstrDefExt,NULL
-				mov		ofn.Flags,OFN_FILEMUSTEXIST or OFN_HIDEREADONLY or OFN_PATHMUSTEXIST
-				;Show the Open dialog
-				invoke GetOpenFileName,addr ofn
-				.if eax
-					call	OpenProject
+					invoke SendMessage,hWin,WM_USER,0,addr buffer
 				.endif
 			.elseif eax==IDM_FILE_CLOSE
 				mov		State,STATE_STOP or STATE_PAUSE
@@ -1698,6 +1663,19 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke DestroyWindow,hFind
 		invoke DestroyWindow,hTerm
 		invoke DestroyWindow,hWin
+	.elseif eax==WM_USER
+		invoke lstrcpy,addr buffer,lParam
+		invoke lstrlen,addr buffer
+		lea		ebx,buffer[eax-4]
+		invoke lstrcmpi,ebx,addr szLstFileExt
+		.if !eax
+			call	OpenLstFile
+		.else
+			invoke lstrcmpi,ebx,addr szSimFileExt
+			.if !eax
+				call	OpenProject
+			.endif
+		.endif
 	.elseif eax==WM_DESTROY
 		invoke PostQuitMessage,NULL
 	.else
@@ -1707,6 +1685,24 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	xor    eax,eax
   Ex:
 	ret
+
+OpenLstFile:
+	.if szLstFile || szSimFile
+		invoke SendMessage,hWin,WM_COMMAND,IDM_FILE_CLOSE,NULL
+	.endif
+	invoke lstrcpy,addr buffer1,addr szAppName
+	invoke lstrcat,addr buffer1,addr szDash
+	invoke lstrlen,addr buffer
+	.while buffer[eax]!='\' && eax
+		dec		eax
+	.endw
+	invoke lstrcat,addr buffer1,addr buffer[eax+1]
+	invoke SetWindowText,hWin,addr buffer1
+	invoke lstrcpy,addr szLstFile,addr buffer
+	invoke ParseList,addr buffer
+	invoke EnableDisable
+	invoke SetFocus,addin.hGrd
+	retn
 
 OpenProject:
 	.if szLstFile || szSimFile
@@ -1771,6 +1767,10 @@ WinMain proc hInst:HINSTANCE,hPrevInst:HINSTANCE,CmdLine:LPSTR,CmdShow:DWORD
 	mov		addin.hBmpRedLed,eax
 	invoke CreateDialogParam,addin.hInstance,IDD_SIM52,NULL,addr WndProc,NULL
 	invoke UpdateWindow,addin.hWnd
+	mov		eax,CmdLine
+	.if byte ptr [eax]
+		invoke SendMessage,addin.hWnd,WM_USER,0,CmdLine
+	.endif
 	.while TRUE
 		invoke GetMessage,addr msg,NULL,0,0
 	  .BREAK .if !eax
@@ -1799,8 +1799,11 @@ start:
 	invoke GetModuleHandle,NULL
 	mov    addin.hInstance,eax
 	invoke GetCommandLine
-	invoke InitCommonControls
 	mov		CommandLine,eax
+	invoke PathGetArgs,CommandLine
+	mov		CommandLine,eax
+	invoke PathUnquoteSpaces,eax
+	invoke InitCommonControls
 	invoke RAHexEdInstall,addin.hInstance,FALSE
 	invoke GridInstall,addin.hInstance,FALSE
 	mov		addin.MenuID,12000
