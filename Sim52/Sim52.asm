@@ -1031,7 +1031,7 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		col.hdrflag,0
 		invoke SendMessage,addin.hGrd,GM_ADDCOL,0,addr col
 		;Add Address column
-		mov		col.colwt,40
+		mov		col.colwt,35
 		mov		col.lpszhdrtext,offset szAddr
 		mov		col.halign,GA_ALIGN_LEFT
 		mov		col.calign,GA_ALIGN_LEFT
@@ -1042,7 +1042,7 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		col.hdrflag,0
 		invoke SendMessage,addin.hGrd,GM_ADDCOL,0,addr col
 		;Add Label column
-		mov		col.colwt,100
+		mov		col.colwt,102
 		mov		col.lpszhdrtext,offset szLabel
 		mov		col.halign,GA_ALIGN_LEFT
 		mov		col.calign,GA_ALIGN_LEFT
@@ -1346,6 +1346,11 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		addin.Refresh,1
 			.elseif eax==IDM_HELP_ABOUT
 				invoke DialogBoxParam,addin.hInstance,IDD_DLGABOUT,hWin,offset AboutProc,0
+			.elseif eax>=11100 && eax<=11131
+				lea		eax,[eax-11100]
+				mov		edx,sizeof HELP
+				mul		edx
+				invoke ShellExecute,addin.hWnd,addr szOpen,addr help.szHelpFile[eax],NULL,NULL,SW_SHOWNORMAL
 			.elseif eax>=11000 && eax<=11031
 				lea		eax,[eax-11000]
 				shl		eax,4

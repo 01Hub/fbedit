@@ -230,10 +230,11 @@ SetTiming proc
 
 SetTiming endp
 
-LoadSettings proc
+LoadSettings proc uses ebx edi
 	LOCAL	buffer[MAX_PATH]:BYTE
 	LOCAL	rect:RECT
 	LOCAL	fMax:DWORD
+	LOCAL	mii:MENUITEMINFO
 
 	invoke GetPrivateProfileString,addr szIniConfig,addr szIniPos,NULL,addr buffer,sizeof buffer,addr szIniFile
 	invoke GetItemInt,addr buffer,10
@@ -261,6 +262,28 @@ LoadSettings proc
 	invoke GetItemInt,addr buffer,200
 	mov		RefreshRate,eax
 	invoke SetTiming
+	xor		ebx,ebx
+	mov		edi,offset help
+	.while ebx<32
+		invoke wsprintf,addr buffer,addr szFmtDec,ebx
+		invoke GetPrivateProfileString,addr szIniHelp,addr buffer,NULL,addr buffer,sizeof buffer,addr szIniFile
+		.break .if !eax
+		invoke GetItemStr,addr buffer,addr szNULL,addr [edi].HELP.szMenuItem,sizeof HELP.szMenuItem
+		invoke GetItemStr,addr buffer,addr szNULL,addr [edi].HELP.szHelpFile,sizeof HELP.szHelpFile
+		inc		ebx
+	.endw
+	invoke DeleteMenu,addin.hMenu,11100,MF_BYCOMMAND
+	mov		edi,offset help
+	xor		ebx,ebx
+	mov		mii.cbSize,sizeof MENUITEMINFO
+	mov		mii.fMask,MIIM_SUBMENU
+	invoke GetMenuItemInfo,addin.hMenu,IDM_HELP,FALSE,addr mii
+	.while ebx<32
+		.break .if ![edi].HELP.szMenuItem
+		invoke AppendMenu,mii.hSubMenu,MF_STRING,addr [ebx+11100],addr [edi].HELP.szMenuItem
+		inc		ebx
+		lea		edi,[edi+sizeof HELP]
+	.endw
 	ret
 
 LoadSettings endp

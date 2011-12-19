@@ -19,6 +19,7 @@ ParseList proc uses ebx esi edi,lpFileName:DWORD
 	LOCAL	hFile:HANDLE
 	LOCAL	BytesRead:DWORD
 	LOCAL	buffer[1024]:BYTE
+	LOCAL	sourceline[1024]:BYTE
 	LOCAL	lbl[1024]:BYTE
 	LOCAL	buffaddr[8]:BYTE
 	LOCAL	paddr:DWORD
@@ -120,17 +121,9 @@ ParseList proc uses ebx esi edi,lpFileName:DWORD
 						mov		rdta.lpszLabel,eax
 						invoke lstrcpy,addr buffer,edi
 					.endif
-					lea		eax,buffer
-					.while byte ptr [eax]==VK_SPACE || byte ptr [eax]==VK_TAB
-						inc		eax
-					.endw
+					call	FixSourceLine
+					lea		eax,sourceline
 					mov		rdta.lpszCode,eax
-					.while byte ptr [eax] && byte ptr [eax]!=0Dh
-						.if byte ptr [eax]==VK_TAB
-							mov		byte ptr [eax],VK_SPACE
-						.endif
-						inc		eax
-					.endw
 					call	IsSourceLineDB
 					.if eax
 						mov		rdta.nBytes,0
@@ -282,6 +275,35 @@ GetSourceLine:
 	mov		byte ptr [edx],0
 	retn
 
+FixSourceLine:
+	push	esi
+	push	edi
+	lea		esi,buffer
+	lea		edi,sourceline
+	.while byte ptr [esi]==VK_SPACE || byte ptr [esi]==VK_TAB
+		inc		esi
+	.endw
+	xor		ecx,ecx
+	.while byte ptr [esi]
+		mov		al,[esi]
+		.if al==VK_TAB
+			mov		byte ptr [edi+ecx],VK_SPACE
+			inc		ecx
+			.while ecx & 07h
+				mov		byte ptr [edi+ecx],VK_SPACE
+				inc		ecx
+			.endw
+		.else
+			mov		[edi+ecx],al
+			inc		ecx
+		.endif
+		inc		esi
+	.endw
+	mov		byte ptr [edi+ecx],00h
+	pop		edi
+	pop		esi
+	retn
+
 IsSourceLineLabel:
 	lea		edx,buffer
 	xor		eax,eax
@@ -300,7 +322,7 @@ IsSourceLineLabel:
 	retn
 
 IsSourceLineDB:
-	lea		edx,buffer
+	lea		edx,sourceline
 	xor		eax,eax
 	.while byte ptr [edx]
 		.if word ptr [edx]=='BD'

@@ -346,6 +346,11 @@ INTERRUPT struct
 	bit					DWORD ?
 INTERRUPT ends
 
+HELP struct
+	szMenuItem			BYTE 64 dup(?)
+	szHelpFile			BYTE MAX_PATH dup(?)
+HELP ends
+
 .const
 
 tbrbtns					TBBUTTON <0,IDM_FILE_OPEN,TBSTATE_ENABLED,TBSTYLE_BUTTON,0,0>
@@ -399,6 +404,7 @@ szIniAddin				BYTE 'Addin',0
 szIniMCU				BYTE 'MCU',0
 szIniRam				BYTE 'Ram',0
 szIniSFRMAP				BYTE 'SFRMAP',0
+szIniHelp				BYTE 'Help',0
 
 szProSIM52				BYTE 'SIM52',0
 szProFile				BYTE 'File',0
@@ -461,4 +467,4 @@ fMouseOver				DWORD ?
 hUrlFont				DWORD ?
 hUrlFontU				DWORD ?
 hUrlBrush				DWORD ?
-
+help					HELP 32 dup(<>)
