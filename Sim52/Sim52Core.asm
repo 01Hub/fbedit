@@ -101,9 +101,7 @@ LoadSFRFile proc uses ebx esi edi,lpMCU:DWORD
 	invoke GetDlgItem,addin.hTabDlgStatus,IDC_EDTDPTR1
 	invoke ShowWindow,eax,SW_HIDE
 	invoke lstrcpy,addr addin.szMCU,lpMCU
-	invoke lstrcpy,addr szSfrFile,addr szPath
-	invoke lstrcat,addr szSfrFile,lpMCU
-	invoke lstrcat,addr szSfrFile,addr szSfrFileExt
+	invoke wsprintf,addr szSfrFile,addr szFmtSfrFile,addr szPath,lpMCU
 	mov		edi,offset addin.SfrData
 	mov		ecx,sizeof addin.SfrData
 	xor		eax,eax

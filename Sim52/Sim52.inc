@@ -380,6 +380,7 @@ szFmtHexByteh			BYTE '%02Xh',0
 szFmtHexWord			BYTE '%04X',0
 szFmtBank				BYTE 'Bank %u',0
 szFmtDec				BYTE '%u',0
+szFmtSfrFile			BYTE '%sSfr\%s.sfr',0
 
 szBytes					BYTE 'B',0
 szCycles				BYTE 'C',0
