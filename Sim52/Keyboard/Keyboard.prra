@@ -34,6 +34,6 @@ M1=
 [Make]
 Make=0
 0=Dll Release,'/v "$R"',"$R.res",'/c /coff /Cp "$C"',"$C.obj",'/SUBSYSTEM:WINDOWS /RELEASE /VERSION:4.0 /DLL /DEF:$D /OUT:$O $C $M $R',"..\Addins\$C.dll",'',
-Delete=0
+Delete=1
 IncBuild=0
 Run=0,'',''
