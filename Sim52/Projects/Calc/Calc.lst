@@ -19,11 +19,11 @@ ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. 
  Line  I  Addr  Code            Source
 
     1:
-    2:		N      0040	LCDBUFF		equ	40h
+    2:		N      0040	LCDBUFF		equ	40h		;40h-4Fh 16 byte buffer
     3:
     4:				;RESET:***********************************************
     5:		N      0000			ORG	0000h
-    6:	  0000	02 00 2C			LJMP	START	;RESET:
+    6:	  0000	02 00 2C			LJMP	START		;RESET:
     7:				;IE0IRQ:**********************************************
     8:		N      0003			ORG	0003h
     9:	  0003	32				RETI			;IE0IRQ:
@@ -44,23 +44,23 @@ ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. 
    24:	  002B	32				RETI			;TF2EXF2IRQ:
    25:				;*****************************************************
    26:
-   27:	  002C	11 B2		START:		ACALL	LCDCLEARBUFF
-   28:	  002E	11 99				ACALL	LCDINIT
-   29:	  0030	11 82				ACALL	LCDCLEAR
-   30:	  0032	11 38		START1:		ACALL	SCANKEYBOARD
-   31:	  0034	60 FC				JZ	START1
-   32:	  0036	80 FA				SJMP	START1
-   33:
-   34:	  0038	7F 04		SCANKEYBOARD:	MOV	R7,#04h
-   35:	  003A	7E FE				MOV	R6,#0FEh
-   36:	  003C	8E 90		SCANKEYBOARD1:	MOV	P1,R6
-   37:	  003E	E5 90				MOV	A,P1
-   38:	  0040	54 F0				ANL	A,#0F0h
-   39:	  0042	B4 F0 08			CJNE	A,#0F0h,SCANKEYBOARD2
-   40:	  0045	EE				MOV	A,R6
-   41:	  0046	D3				SETB	C
-   42:	  0047	33				RLC	A
-   43:	  0048	FE				MOV	R6,A
+   27:	  002C	31 09		START:		ACALL	LCDCLEARBUFF
+   28:	  002E	11 F0				ACALL	LCDINIT
+   29:	  0030	11 D9				ACALL	LCDCLEAR
+   30:	  0032	75 4F 30			MOV	4Fh,#'0'
+   31:	  0035	11 60				ACALL	LCDSHOW
+   32:	  0037	11 6A		START1:		ACALL	SCANKEYBOARD
+   33:	  0039	60 FC				JZ	START1
+   34:	  003B	B4 43 09			CJNE	A,#'C',START2
+   35:	  003E	31 09				ACALL	LCDCLEARBUFF
+   36:	  0040	75 4F 30			MOV	4Fh,#'0'
+   37:	  0043	11 60				ACALL	LCDSHOW
+   38:	  0045	80 F0				SJMP	START1
+   39:	  0047	C0 E0		START2:		PUSH	ACC
+   40:	  0049	78 40				MOV	R0,#LCDBUFF
+   41:	  004B	79 41				MOV	R1,#LCDBUFF+1
+   42:	  004D	7F 0F				MOV	R7,#15
+   43:	  004F	E7		START3:		MOV	A,@R1
 
 ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 2
 
@@ -68,62 +68,62 @@ ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. 
 
  Line  I  Addr  Code            Source
 
-   44:	  0049	DF F1				DJNZ	R7,SCANKEYBOARD1
-   45:						;No keys down
-   46:	  004B	E4				CLR	A
-   47:	  004C	22				RET
-   48:	  004D	22		SCANKEYBOARD2:	RET
-   49:
-   50:				;------------------------------------------------------------------
-   51:				;LCD Output.
-   52:				;------------------------------------------------------------------
-   53:	  004E	C0 07		LCDDELAY:	PUSH	07h
-   54:	  0050	7F 00				MOV	R7,#00h
-   55:	  0052	DF FE				DJNZ	R7,$
-   56:	  0054	D0 07				POP	07h
-   57:	  0056	22				RET
-   58:
-   59:				;A contains nibble, ACC.4 contains RS
-   60:	  0057	D2 E5		LCDNIBOUT:	SETB	ACC.5				;E
-   61:	  0059	F5 A0				MOV	P2,A
-   62:	  005B	C2 A5				CLR	P2.5				;Negative edge on E
-   63:	  005D	22				RET
-   64:
-   65:				;A contains byte
-   66:	  005E	C0 E0		LCDCMDOUT:	PUSH	ACC
-   67:	  0060	C4				SWAP	A				;High nibble first
-   68:	  0061	54 0F				ANL	A,#0Fh
-   69:	  0063	11 57				ACALL	LCDNIBOUT
-   70:	  0065	D0 E0				POP	ACC
-   71:	  0067	54 0F				ANL	A,#0Fh
-   72:	  0069	11 57				ACALL	LCDNIBOUT
-   73:	  006B	11 4E				ACALL	LCDDELAY			;Wait for BF to clear
-   74:	  006D	22				RET
-   75:
-   76:				;A contains byte
-   77:	  006E	C0 E0		LCDCHROUT:	PUSH	ACC
-   78:	  0070	C4				SWAP	A				;High nibble first
-   79:	  0071	54 0F				ANL	A,#0Fh
-   80:	  0073	D2 E4				SETB	ACC.4				;RS
-   81:	  0075	11 57				ACALL	LCDNIBOUT
-   82:	  0077	D0 E0				POP	ACC
-   83:	  0079	54 0F				ANL	A,#0Fh
-   84:	  007B	D2 E4				SETB	ACC.4				;RS
-   85:	  007D	11 57				ACALL	LCDNIBOUT
-   86:	  007F	11 4E				ACALL	LCDDELAY			;Wait for BF to clear
-   87:	  0081	22				RET
-   88:
-   89:	  0082	74 01		LCDCLEAR:	MOV	A,#00000001b
-   90:	  0084	11 5E				ACALL	LCDCMDOUT
-   91:	  0086	7F 00				MOV	R7,#00h
-   92:	  0088	11 4E		LCDCLEAR1:	ACALL	LCDDELAY
-   93:	  008A	DF FC				DJNZ	R7,LCDCLEAR1
-   94:	  008C	22				RET
-   95:
-   96:				;A contais address
-   97:	  008D	44 80		LCDSETADR:	ORL	A,#10000000b
-   98:	  008F	11 5E				ACALL	LCDCMDOUT
-   99:	  0091	22				RET
+   44:	  0050	F6				MOV	@R0,A
+   45:	  0051	08				INC	R0
+   46:	  0052	09				INC	R1
+   47:	  0053	DF FA				DJNZ	R7,START3
+   48:	  0055	D0 E0				POP	ACC
+   49:	  0057	F6				MOV	@R0,A
+   50:	  0058	11 60				ACALL	LCDSHOW
+   51:	  005A	11 6A		START4:		ACALL	SCANKEYBOARD
+   52:	  005C	70 FC				JNZ	START4
+   53:	  005E	80 D7				SJMP	START1
+   54:
+   55:	  0060	E4		LCDSHOW:	CLR	A
+   56:	  0061	11 E4				ACALL	LCDSETADR
+   57:	  0063	7F 10				MOV	R7,#16
+   58:	  0065	78 40				MOV	R0,#LCDBUFF
+   59:	  0067	11 E9				ACALL	LCDPRINTSTR
+   60:	  0069	22				RET
+   61:
+   62:	  006A	7F 04		SCANKEYBOARD:	MOV	R7,#04h
+   63:	  006C	7E FE				MOV	R6,#0FEh
+   64:	  006E	8E 90		SCANKEYBOARD1:	MOV	P1,R6
+   65:	  0070	E5 90				MOV	A,P1
+   66:	  0072	54 F0				ANL	A,#0F0h
+   67:	  0074	B4 F0 08			CJNE	A,#0F0h,SCANKEYBOARD2
+   68:	  0077	EE				MOV	A,R6
+   69:	  0078	D3				SETB	C
+   70:	  0079	33				RLC	A
+   71:	  007A	FE				MOV	R6,A
+   72:	  007B	DF F1				DJNZ	R7,SCANKEYBOARD1
+   73:						;No keys down
+   74:	  007D	E4				CLR	A
+   75:	  007E	22				RET
+   76:	  007F	7D 04		SCANKEYBOARD2:	MOV	R5,#04h
+   77:	  0081	1D		SCANKEYBOARD3:	DEC	R5		;Row
+   78:	  0082	33				RLC	A
+   79:	  0083	40 FC				JC	SCANKEYBOARD3
+   80:	  0085	EE				MOV	A,R6
+   81:	  0086	7E FF				MOV	R6,#0FFh	;Column
+   82:	  0088	0E		SCANKEYBOARD4:	INC	R6
+   83:	  0089	13				RRC	A
+   84:	  008A	40 FC				JC	SCANKEYBOARD4
+   85:	  008C	ED				MOV	A,R5
+   86:	  008D	23				RL	A
+   87:	  008E	23				RL	A
+   88:	  008F	4E				ORL	A,R6
+   89:	  0090	90 00 95			MOV	DPTR,#KEYS
+   90:	  0093	93				MOVC	A,@A+DPTR
+   91:	  0094	22				RET
+   92:
+   93:	  0095	37 38 39 2B	KEYS:		DB	'789+'
+   94:	  0099	34 35 36 2D			DB	'456-'
+   95:	  009D	31 32 33 2A			DB	'123*'
+   96:	  00A1	43 30 2E 2F			DB	'C0./'
+   97:
+   98:				;------------------------------------------------------------------
+   99:				;LCD Output.
 
 ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 3
 
@@ -131,36 +131,91 @@ ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. 
 
  Line  I  Addr  Code            Source
 
-  100:
-  101:	  0092	E6		LCDPRINTSTR:	MOV	A,@R0
-  102:	  0093	11 6E				ACALL	LCDCHROUT
-  103:	  0095	08				INC	R0
-  104:	  0096	DD FA				DJNZ	R5,LCDPRINTSTR
-  105:	  0098	22				RET
+  100:				;------------------------------------------------------------------
+  101:	  00A5	C0 07		LCDDELAY:	PUSH	07h
+  102:	  00A7	7F 00				MOV	R7,#00h
+  103:	  00A9	DF FE				DJNZ	R7,$
+  104:	  00AB	D0 07				POP	07h
+  105:	  00AD	22				RET
   106:
-  107:	  0099	74 03		LCDINIT:	MOV	A,#00000011b			;Function set
-  108:	  009B	11 57				ACALL	LCDNIBOUT
-  109:	  009D	11 4E				ACALL	LCDDELAY			;Wait for BF to clear
-  110:	  009F	74 28				MOV	A,#00101000b
-  111:	  00A1	11 5E				ACALL	LCDCMDOUT
-  112:	  00A3	74 28				MOV	A,#00101000b
-  113:	  00A5	11 5E				ACALL	LCDCMDOUT
-  114:	  00A7	74 0C				MOV	A,#00001100b			;Display ON/OFF
-  115:	  00A9	11 5E				ACALL	LCDCMDOUT
-  116:	  00AB	11 82				ACALL	LCDCLEAR			;Clear
-  117:	  00AD	74 06				MOV	A,#00000110b			;Cursor direction
-  118:	  00AF	11 5E				ACALL	LCDCMDOUT
-  119:	  00B1	22				RET
-  120:
-  121:	  00B2	78 40		LCDCLEARBUFF:	MOV	R0,#LCDBUFF
-  122:	  00B4	7F 10				MOV	R7,#10h
-  123:	  00B6	74 20				MOV	A,#20H
-  124:	  00B8	F6		LCDCLEARBUFF1:	MOV	@R0,A
-  125:	  00B9	08				INC	R0
-  126:	  00BA	DF FC				DJNZ	R7,LCDCLEARBUFF1
-  127:	  00BC	22				RET
-  128:
-  129:						END
+  107:				;A contains nibble, ACC.4 contains RS
+  108:	  00AE	D2 E5		LCDNIBOUT:	SETB	ACC.5				;E
+  109:	  00B0	F5 A0				MOV	P2,A
+  110:	  00B2	C2 A5				CLR	P2.5				;Negative edge on E
+  111:	  00B4	22				RET
+  112:
+  113:				;A contains byte
+  114:	  00B5	C0 E0		LCDCMDOUT:	PUSH	ACC
+  115:	  00B7	C4				SWAP	A				;High nibble first
+  116:	  00B8	54 0F				ANL	A,#0Fh
+  117:	  00BA	11 AE				ACALL	LCDNIBOUT
+  118:	  00BC	D0 E0				POP	ACC
+  119:	  00BE	54 0F				ANL	A,#0Fh
+  120:	  00C0	11 AE				ACALL	LCDNIBOUT
+  121:	  00C2	11 A5				ACALL	LCDDELAY			;Wait for BF to clear
+  122:	  00C4	22				RET
+  123:
+  124:				;A contains byte
+  125:	  00C5	C0 E0		LCDCHROUT:	PUSH	ACC
+  126:	  00C7	C4				SWAP	A				;High nibble first
+  127:	  00C8	54 0F				ANL	A,#0Fh
+  128:	  00CA	D2 E4				SETB	ACC.4				;RS
+  129:	  00CC	11 AE				ACALL	LCDNIBOUT
+  130:	  00CE	D0 E0				POP	ACC
+  131:	  00D0	54 0F				ANL	A,#0Fh
+  132:	  00D2	D2 E4				SETB	ACC.4				;RS
+  133:	  00D4	11 AE				ACALL	LCDNIBOUT
+  134:	  00D6	11 A5				ACALL	LCDDELAY			;Wait for BF to clear
+  135:	  00D8	22				RET
+  136:
+  137:	  00D9	74 01		LCDCLEAR:	MOV	A,#00000001b
+  138:	  00DB	11 B5				ACALL	LCDCMDOUT
+  139:	  00DD	7F 00				MOV	R7,#00h
+  140:	  00DF	11 A5		LCDCLEAR1:	ACALL	LCDDELAY
+  141:	  00E1	DF FC				DJNZ	R7,LCDCLEAR1
+  142:	  00E3	22				RET
+  143:
+  144:				;A contais address
+  145:	  00E4	44 80		LCDSETADR:	ORL	A,#10000000b
+  146:	  00E6	11 B5				ACALL	LCDCMDOUT
+  147:	  00E8	22				RET
+  148:
+  149:	  00E9	E6		LCDPRINTSTR:	MOV	A,@R0
+  150:	  00EA	11 C5				ACALL	LCDCHROUT
+  151:	  00EC	08				INC	R0
+  152:	  00ED	DF FA				DJNZ	R7,LCDPRINTSTR
+  153:	  00EF	22				RET
+  154:
+  155:	  00F0	74 03		LCDINIT:	MOV	A,#00000011b			;Function set
+
+ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 4
+
+
+
+ Line  I  Addr  Code            Source
+
+  156:	  00F2	11 AE				ACALL	LCDNIBOUT
+  157:	  00F4	11 A5				ACALL	LCDDELAY			;Wait for BF to clear
+  158:	  00F6	74 28				MOV	A,#00101000b
+  159:	  00F8	11 B5				ACALL	LCDCMDOUT
+  160:	  00FA	74 28				MOV	A,#00101000b
+  161:	  00FC	11 B5				ACALL	LCDCMDOUT
+  162:	  00FE	74 0C				MOV	A,#00001100b			;Display ON/OFF
+  163:	  0100	11 B5				ACALL	LCDCMDOUT
+  164:	  0102	11 D9				ACALL	LCDCLEAR			;Clear
+  165:	  0104	74 06				MOV	A,#00000110b			;Cursor direction
+  166:	  0106	11 B5				ACALL	LCDCMDOUT
+  167:	  0108	22				RET
+  168:
+  169:	  0109	78 40		LCDCLEARBUFF:	MOV	R0,#LCDBUFF
+  170:	  010B	7F 10				MOV	R7,#10h
+  171:	  010D	74 20				MOV	A,#20H
+  172:	  010F	F6		LCDCLEARBUFF1:	MOV	@R0,A
+  173:	  0110	08				INC	R0
+  174:	  0111	DF FC				DJNZ	R7,LCDCLEARBUFF1
+  175:	  0113	22				RET
+  176:
+  177:						END
 
 
 
@@ -173,7 +228,7 @@ ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. 
 
 
 
-ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 4
+ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 5
 
 
 
@@ -210,18 +265,20 @@ INT1				  BIT	      B3
 IP				  DATA	      B8
 IT0				  BIT	      88
 IT1				  BIT	      8A
+KEYS				  CODE	    0095	  93
 LCDBUFF				  NUMBER    0040	   2
-LCDCHROUT			  CODE	    006E	  77
-LCDCLEAR			  CODE	    0082	  89
-LCDCLEAR1			  CODE	    0088	  92
-LCDCLEARBUFF			  CODE	    00B2	 121
-LCDCLEARBUFF1			  CODE	    00B8	 124
-LCDCMDOUT			  CODE	    005E	  66
-LCDDELAY			  CODE	    004E	  53
-LCDINIT				  CODE	    0099	 107
-LCDNIBOUT			  CODE	    0057	  60
-LCDPRINTSTR			  CODE	    0092	 101
-LCDSETADR			  CODE	    008D	  97
+LCDCHROUT			  CODE	    00C5	 125
+LCDCLEAR			  CODE	    00D9	 137
+LCDCLEAR1			  CODE	    00DF	 140
+LCDCLEARBUFF			  CODE	    0109	 169
+LCDCLEARBUFF1			  CODE	    010F	 172
+LCDCMDOUT			  CODE	    00B5	 114
+LCDDELAY			  CODE	    00A5	 101
+LCDINIT				  CODE	    00F0	 155
+LCDNIBOUT			  CODE	    00AE	 108
+LCDPRINTSTR			  CODE	    00E9	 149
+LCDSETADR			  CODE	    00E4	 145
+LCDSHOW				  CODE	    0060	  55
 OV				  BIT	      D2
 P				  BIT	      D0
 P0				  DATA	      80
@@ -233,15 +290,15 @@ PS				  BIT	      BC
 PSW				  DATA	      D0
 PT0				  BIT	      B9
 PT1				  BIT	      BB
-PX0				  BIT	      B8
-PX1				  BIT	      BA
 
-ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 5
+ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 6
 
 
 
 SYMBOL				  TYPE     VALUE	LINE
 ------------------------------------------------------------
+PX0				  BIT	      B8
+PX1				  BIT	      BA
 RB8				  BIT	      9A
 RD				  BIT	      B7
 REN				  BIT	      9C
@@ -251,9 +308,11 @@ RS0				  BIT	      D3
 RS1				  BIT	      D4
 RXD				  BIT	      B0
 SBUF				  DATA	      99
-SCANKEYBOARD			  CODE	    0038	  34
-SCANKEYBOARD1			  CODE	    003C	  36
-SCANKEYBOARD2			  CODE	    004D	  48
+SCANKEYBOARD			  CODE	    006A	  62
+SCANKEYBOARD1			  CODE	    006E	  64
+SCANKEYBOARD2			  CODE	    007F	  76
+SCANKEYBOARD3			  CODE	    0081	  77
+SCANKEYBOARD4			  CODE	    0088	  82
 SCON				  DATA	      98
 SINT				  CODE	    0023
 SM0				  BIT	      9F
@@ -261,7 +320,10 @@ SM1				  BIT	      9E
 SM2				  BIT	      9D
 SP				  DATA	      81
 START				  CODE	    002C	  27
-START1				  CODE	    0032	  30
+START1				  CODE	    0037	  32
+START2				  CODE	    0047	  39
+START3				  CODE	    004F	  43
+START4				  CODE	    005A	  51
 T0				  BIT	      B4
 T1				  BIT	      B5
 TB8				  BIT	      9B

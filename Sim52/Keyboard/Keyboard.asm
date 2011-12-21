@@ -115,6 +115,8 @@ BtnProc endp
 
 KeyboardProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	rect:RECT
+	LOCAL	port:DWORD
+	LOCAL	bit:DWORD
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
@@ -216,144 +218,18 @@ KeyboardProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 		shr		edx,16
 		.if edx==BN_CLICKED
 			.if eax>=IDC_BTN7 && eax<=IDC_BTNDIV
+				push	eax
+				lea		eax,[eax-IDC_BTN7]
+				mov		edx,sizeof KEY
+				mul		edx
 				mov		ebx,eax
-				mov		keydown,0
-				invoke IsDlgButtonChecked,hWin,ebx
-				.if ebx==IDC_BTN7
-					;col0,row0
-					.if eax
-						;Down
-						mov		keydown,11h
-					.endif
-				.elseif ebx==IDC_BTN4
-					;col0,row1
-					.if eax
-						;Down
-						mov		keydown,21h
-					.endif
-				.elseif ebx==IDC_BTN1
-					;col0,row2
-					.if eax
-						;Down
-						mov		keydown,41h
-					.endif
-				.elseif ebx==IDC_BTNCE
-					;col0,row3
-					.if eax
-						;Down
-						mov		keydown,81h
-					.endif
-				.elseif ebx==IDC_BTN8
-					;col1, row0
-					.if eax
-						;Down
-						mov		keydown,12h
-					.endif
-				.elseif ebx==IDC_BTN5
-					;col1, row1
-					.if eax
-						;Down
-						mov		keydown,22h
-					.endif
-				.elseif ebx==IDC_BTN2
-					;col1, row2
-					.if eax
-						;Down
-						mov		keydown,42h
-					.endif
-				.elseif ebx==IDC_BTN0
-					;col1, row3
-					.if eax
-						;Down
-						mov		keydown,82h
-					.endif
-				.elseif ebx==IDC_BTN9
-					;col2, row0
-					.if eax
-						;Down
-						mov		keydown,14h
-					.endif
-				.elseif ebx==IDC_BTN6
-					;col2, row1
-					.if eax
-						;Down
-						mov		keydown,24h
-					.endif
-				.elseif ebx==IDC_BTN3
-					;col2, row2
-					.if eax
-						;Down
-						mov		keydown,44h
-					.endif
-				.elseif ebx==IDC_BTNDOT
-					;col2, row3
-					.if eax
-						;Down
-						mov		keydown,84h
-					.endif
-				.elseif ebx==IDC_BTNADD
-					;col3, row0
-					.if eax
-						;Down
-						mov		keydown,18h
-					.endif
-				.elseif ebx==IDC_BTNSUB
-					;col3, row1
-					.if eax
-						;Down
-						mov		keydown,28h
-					.endif
-				.elseif ebx==IDC_BTNMUL
-					;col3, row2
-					.if eax
-						;Down
-						mov		keydown,48h
-					.endif
-				.elseif ebx==IDC_BTNDIV
-					;col3, row3
-					.if eax
-						;Down
-						mov		keydown,88h
-					.endif
+				pop		eax
+				invoke IsDlgButtonChecked,hWin,eax
+				.if !eax
+					dec		eax
 				.endif
-				mov		eax,keydown
-				.if eax
-					and		eax,0Fh
-PrintHex eax
-					test	portcol.keybit[0*sizeof PORT],eax
-					.if !ZERO?
-						mov		eax,portcol.bit[0*sizeof PORT]
-						mov		keydowncolbit,eax
-						mov		eax,portcol.adr[0*sizeof PORT]
-						mov		keydowncolport,eax
-					.else
-						test	portcol.keybit[1*sizeof PORT],eax
-						.if !ZERO?
-							mov		eax,portcol.bit[1*sizeof PORT]
-							mov		keydowncolbit,eax
-							mov		eax,portcol.adr[1*sizeof PORT]
-							mov		keydowncolport,eax
-						.else
-							test	portcol.keybit[2*sizeof PORT],eax
-							.if !ZERO?
-								mov		eax,portcol.bit[2*sizeof PORT]
-								mov		keydowncolbit,eax
-								mov		eax,portcol.adr[2*sizeof PORT]
-								mov		keydowncolport,eax
-							.else
-								test	portcol.keybit[3*sizeof PORT],eax
-								.if !ZERO?
-									mov		eax,portcol.bit[3*sizeof PORT]
-									mov		keydowncolbit,eax
-									mov		eax,portcol.adr[3*sizeof PORT]
-									mov		keydowncolport,eax
-								.endif
-							.endif
-						.endif
-					.endif
-PrintHex keydowncolport
-PrintHex keydowncolbit
-				.endif
+				mov		keystate,eax
+				invoke RtlMoveMemory,offset curkey,addr key[ebx],sizeof KEY
 			.elseif eax==IDC_BTNCONFIG
 				invoke GetWindowRect,hWin,addr rect
 				mov		eax,rect.left
@@ -375,73 +251,32 @@ PrintHex keydowncolbit
 				mov		fActive,eax
 			.endif
 		.elseif edx==CBN_SELCHANGE
-			xor		eax,eax
-			xor		ecx,ecx
-			mov		ebx,offset portcol
-			.while ecx<4
-				mov		[ebx].PORT.adr,eax
-				mov		[ebx].PORT.bit,eax
-				mov		[ebx].PORT.value,eax
-				inc		ecx
-				lea		ebx,[ebx+sizeof PORT]
+			;cols
+			mov		ebx,IDC_CBO4
+			mov		edi,offset key
+			.while ebx<=IDC_CBO7
+				invoke SendDlgItemMessage,hWin,ebx,CB_GETCURSEL,0,0
+				call	GetPort
+				mov		port,eax
+				mov		bit,edx
+				;Rows
+				push	ebx
+				mov		ebx,IDC_CBO0
+				.while ebx<=IDC_CBO3
+					invoke SendDlgItemMessage,hWin,ebx,CB_GETCURSEL,0,0
+					call	GetPort
+					mov		[edi].KEY.colport,eax
+					mov		[edi].KEY.colbit,edx
+					mov		eax,port
+					mov		edx,bit
+					mov		[edi].KEY.rowport,eax
+					mov		[edi].KEY.rowbit,edx
+					inc		ebx
+					lea		edi,[edi+sizeof KEY]
+				.endw
+				pop		ebx
+				inc		ebx
 			.endw
-			xor		eax,eax
-			xor		ecx,ecx
-			mov		ebx,offset mmoportcol
-			.while ecx<4
-				mov		[ebx].PORT.adr,eax
-				mov		[ebx].PORT.bit,eax
-				mov		[ebx].PORT.value,eax
-				inc		ecx
-				lea		ebx,[ebx+sizeof PORT]
-			.endw
-			call	GetColPorts
-			xor		eax,eax
-			xor		ecx,ecx
-			mov		ebx,offset portrow
-			.while ecx<4
-				mov		[ebx].PORT.adr,eax
-				mov		[ebx].PORT.bit,eax
-				mov		[ebx].PORT.value,eax
-				inc		ecx
-				lea		ebx,[ebx+sizeof PORT]
-			.endw
-			xor		eax,eax
-			xor		ecx,ecx
-			mov		ebx,offset mmiportrow
-			.while ecx<4
-				mov		[ebx].PORT.adr,eax
-				mov		[ebx].PORT.bit,eax
-				mov		[ebx].PORT.value,eax
-				inc		ecx
-				lea		ebx,[ebx+sizeof PORT]
-			.endw
-			call	GetRowPorts
-;mov		eax,portcol.adr[0*sizeof PORT]
-;PrintHex eax
-;mov		eax,portcol.bit[0*sizeof PORT]
-;PrintHex eax
-;mov		eax,portcol.value[0*sizeof PORT]
-;PrintHex eax
-;mov		eax,portcol.keybit[0*sizeof PORT]
-;PrintHex eax
-;mov		eax,portcol.adr[1*sizeof PORT]
-;PrintHex eax
-;mov		eax,portcol.bit[1*sizeof PORT]
-;PrintHex eax
-;mov		eax,portcol.value[1*sizeof PORT]
-;PrintHex eax
-;mov		eax,portcol.keybit[1*sizeof PORT]
-;PrintHex eax
-;
-;mov		eax,portrow.adr[1*sizeof PORT]
-;PrintHex eax
-;mov		eax,portrow.bit[1*sizeof PORT]
-;PrintHex eax
-;mov		eax,portrow.value[1*sizeof PORT]
-;PrintHex eax
-;mov		eax,portrow.keybit[1*sizeof PORT]
-;PrintHex eax
 		.endif
 	.elseif eax==WM_ACTIVATE
 		.if wParam!=WA_INACTIVE
@@ -458,160 +293,45 @@ PrintHex keydowncolbit
 	mov		eax,TRUE
 	ret
 
-GetOutPort:
+GetPort:
 	mov		edx,1
 	.if eax>=P0_0 && eax<=P0_7
 		lea		ecx,[eax-P0_0]
 		shl		edx,cl
-		mov		ecx,edx
 		mov		eax,SFR_P0
 	.elseif eax>=P1_0 && eax<=P1_7
 		lea		ecx,[eax-P1_0]
 		shl		edx,cl
-		mov		ecx,edx
 		mov		eax,SFR_P1
 	.elseif eax>=P2_0 && eax<=P2_7
 		lea		ecx,[eax-P2_0]
 		shl		edx,cl
-		mov		ecx,edx
 		mov		eax,SFR_P2
 	.elseif eax>=P3_0 && eax<=P3_7
 		lea		ecx,[eax-P3_0]
 		shl		edx,cl
-		mov		ecx,edx
 		mov		eax,SFR_P3
 	.elseif eax>=MMO0_0 && eax<=MMO0_7
 		lea		ecx,[eax-MMO0_0]
 		shl		edx,cl
-		mov		ecx,edx
 		mov		eax,[esi].ADDIN.mmoutport[0]
 		or		eax,80000000h
 	.elseif eax>=MMO1_0 && eax<=MMO1_7
 		lea		ecx,[eax-MMO1_0]
 		shl		edx,cl
-		mov		ecx,edx
 		mov		eax,[esi].ADDIN.mmoutport[4]
 		or		eax,80000000h
 	.elseif eax>=MMO2_0 && eax<=MMO2_7
 		lea		ecx,[eax-MMO2_0]
 		shl		edx,cl
-		mov		ecx,edx
 		mov		eax,[esi].ADDIN.mmoutport[8]
 		or		eax,80000000h
 	.elseif eax>=MMO3_0 && eax<=MMO3_7
 		lea		ecx,[eax-MMO3_0]
 		shl		edx,cl
-		mov		ecx,edx
 		mov		eax,[esi].ADDIN.mmoutport[12]
 		or		eax,80000000h
 	.endif
-	retn
-
-GetInPort:
-	mov		edx,1
-	.if eax>=P0_0 && eax<=P0_7
-		lea		ecx,[eax-P0_0]
-		shl		edx,cl
-		mov		ecx,edx
-		mov		edx,0*sizeof PORT
-		mov		eax,SFR_P0
-	.elseif eax>=P1_0 && eax<=P1_7
-		lea		ecx,[eax-P1_0]
-		shl		edx,cl
-		mov		ecx,edx
-		mov		edx,1*sizeof PORT
-		mov		eax,SFR_P1
-	.elseif eax>=P2_0 && eax<=P2_7
-		lea		ecx,[eax-P2_0]
-		shl		edx,cl
-		mov		ecx,edx
-		mov		edx,2*sizeof PORT
-		mov		eax,SFR_P2
-	.elseif eax>=P3_0 && eax<=P3_7
-		lea		ecx,[eax-P3_0]
-		shl		edx,cl
-		mov		ecx,edx
-		mov		edx,3*sizeof PORT
-		mov		eax,SFR_P3
-	.elseif eax>=MMI0_0 && eax<=MMI0_7
-		lea		ecx,[eax-MMI0_0]
-		shl		edx,cl
-		mov		ecx,edx
-		mov		edx,0*sizeof PORT
-		mov		eax,[esi].ADDIN.mminport[0]
-		or		eax,80000000h
-	.elseif eax>=MMI1_0 && eax<=MMI1_7
-		lea		ecx,[eax-MMI1_0]
-		shl		edx,cl
-		mov		ecx,edx
-		mov		edx,1*sizeof PORT
-		mov		eax,[esi].ADDIN.mminport[4]
-		or		eax,80000000h
-	.elseif eax>=MMI2_0 && eax<=MMI2_7
-		lea		ecx,[eax-MMI2_0]
-		shl		edx,cl
-		mov		ecx,edx
-		mov		edx,2*sizeof PORT
-		mov		eax,[esi].ADDIN.mminport[8]
-		or		eax,80000000h
-	.elseif eax>=MMI3_0 && eax<=MMI3_7
-		lea		ecx,[eax-MMI3_0]
-		shl		edx,cl
-		mov		ecx,edx
-		mov		edx,3*sizeof PORT
-		mov		eax,[esi].ADDIN.mminport[12]
-		or		eax,80000000h
-	.endif
-	retn
-
-GetColPorts:
-	push	0
-	push	IDC_CBO3
-	push	IDC_CBO2
-	push	IDC_CBO1
-	mov		eax,IDC_CBO0
-	mov		esi,01h
-	xor		ebx,ebx
-	.while eax
-		invoke SendDlgItemMessage,hWin,eax,CB_GETCURSEL,0,0
-		call	GetOutPort
-		.if sdword ptr eax>=0
-			mov		portcol.adr[ebx],eax
-			or		portcol.bit[ebx],ecx
-			or		portcol.keybit[ebx],esi
-		.else
-			mov		mmoportcol.adr[ebx],eax
-			or		mmoportcol.bit[ebx],ecx
-			or		mmoportcol.keybit[ebx],esi
-		.endif
-		lea		ebx,[ebx+sizeof PORT]
-		pop		eax
-		shl		esi,1
-	.endw
-	retn
-
-GetRowPorts:
-	push	0
-	push	IDC_CBO7
-	push	IDC_CBO6
-	push	IDC_CBO5
-	mov		eax,IDC_CBO4
-	mov		esi,10h
-	.while eax
-		invoke SendDlgItemMessage,hWin,eax,CB_GETCURSEL,0,0
-		call	GetInPort
-		.if sdword ptr eax>0
-			mov		portrow.adr[edx],eax
-			or		portrow.bit[edx],ecx
-			or		portrow.keybit[edx],esi
-		.else
-			mov		mmiportrow.adr[edx],eax
-			or		mmiportrow.bit[edx],ecx
-			or		mmiportrow.keybit[edx],esi
-		.endif
-		pop		eax
-		shl		esi,1
-	.endw
 	retn
 
 KeyboardProc endp
@@ -637,23 +357,35 @@ AddinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		eax,AH_COMMAND or AH_PORTWRITE or AH_MMPORTWRITE or AH_PROJECTOPEN or AH_PROJECTCLOSE
 		jmp		Ex
 	.elseif eax==AM_PORTWRITE
-		.if fActive
+		.if fActive && keystate
 			mov		eax,wParam
-			mov		edx,sizeof PORT
-			mul		edx
-			.if portcol.bit[eax]
-				mov		edx,lParam
-				xor		edx,0FFh
-				and		edx,portcol.bit[eax]
-				.if edx
-					PrintHex edx
+			shl		eax,4
+			or		eax,80h
+			.if eax==curkey.colport
+				mov		eax,lParam
+				and		eax,0Fh
+				xor		eax,0Fh
+				test	eax,curkey.colbit
+				.if !ZERO?
+					mov		eax,keystate
+					mov		edx,curkey.rowport
+					mov		ebx,lpAddin
+					.if sdword ptr eax>0
+						mov		eax,curkey.rowbit
+						.if sdword ptr edx>=0
+							xor		eax,0FFh
+							and		[ebx].ADDIN.Sfr[edx],al
+						.endif
+					.elseif sdword ptr eax<0
+						mov		keystate,0
+						mov		eax,curkey.rowbit
+						.if sdword ptr edx>=0
+							or		[ebx].ADDIN.Sfr[edx],al
+						.endif
+					.endif
 				.endif
-;PrintHex eax
-;PrintHex wParam
-;PrintHex lParam
 			.endif
 		.endif
-		mov		ebx,offset portcol
 	.elseif eax==AM_MMPORTWRITE
 	.elseif eax==AM_COMMAND
 		mov		eax,lParam

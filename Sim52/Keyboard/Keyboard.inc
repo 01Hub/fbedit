@@ -82,39 +82,6 @@ P3_5					equ 29
 P3_6					equ 30
 P3_7					equ 31
 
-MMI0_0					equ 32
-MMI0_1					equ 33
-MMI0_2					equ 34
-MMI0_3					equ 35
-MMI0_4					equ 36
-MMI0_5					equ 37
-MMI0_6					equ 38
-MMI0_7					equ 39
-MMI1_0					equ 40
-MMI1_1					equ 41
-MMI1_2					equ 42
-MMI1_3					equ 43
-MMI1_4					equ 44
-MMI1_5					equ 45
-MMI1_6					equ 46
-MMI1_7					equ 47
-MMI2_0					equ 48
-MMI2_1					equ 49
-MMI2_2					equ 50
-MMI2_3					equ 51
-MMI2_4					equ 52
-MMI2_5					equ 53
-MMI2_6					equ 54
-MMI2_7					equ 55
-MMI3_0					equ 56
-MMI3_1					equ 57
-MMI3_2					equ 58
-MMI3_3					equ 59
-MMI3_4					equ 60
-MMI3_5					equ 61
-MMI3_6					equ 62
-MMI3_7					equ 63
-
 MMO0_0					equ 32
 MMO0_1					equ 33
 MMO0_2					equ 34
@@ -148,12 +115,45 @@ MMO3_5					equ 61
 MMO3_6					equ 62
 MMO3_7					equ 63
 
-PORT struct
-	adr					DWORD ?
-	bit					DWORD ?
-	value				DWORD ?
-	keybit				DWORD ?
-PORT ends
+MMI0_0					equ 32
+MMI0_1					equ 33
+MMI0_2					equ 34
+MMI0_3					equ 35
+MMI0_4					equ 36
+MMI0_5					equ 37
+MMI0_6					equ 38
+MMI0_7					equ 39
+MMI1_0					equ 40
+MMI1_1					equ 41
+MMI1_2					equ 42
+MMI1_3					equ 43
+MMI1_4					equ 44
+MMI1_5					equ 45
+MMI1_6					equ 46
+MMI1_7					equ 47
+MMI2_0					equ 48
+MMI2_1					equ 49
+MMI2_2					equ 50
+MMI2_3					equ 51
+MMI2_4					equ 52
+MMI2_5					equ 53
+MMI2_6					equ 54
+MMI2_7					equ 55
+MMI3_0					equ 56
+MMI3_1					equ 57
+MMI3_2					equ 58
+MMI3_3					equ 59
+MMI3_4					equ 60
+MMI3_5					equ 61
+MMI3_6					equ 62
+MMI3_7					equ 63
+
+KEY struct
+	colport				DWORD ?
+	colbit				DWORD ?
+	rowport				DWORD ?
+	rowbit				DWORD ?
+KEY ends
 
 .const
 
@@ -189,11 +189,6 @@ IDAddin					DWORD ?
 lpAddin					DWORD ?
 lpOldBtnProc			DWORD ?
 fActive					DWORD ?
-keydown					DWORD ?
-keydowncolport			DWORD ?
-keydowncolbit			DWORD ?
-
-portcol					PORT 4 dup(<>)
-mmoportcol				PORT 4 dup(<>)
-portrow					PORT 4 dup(<>)
-mmiportrow				PORT 4 dup(<>)
+key						KEY 16 dup(<>)
+keystate				DWORD ?
+curkey					KEY <>

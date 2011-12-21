@@ -1452,6 +1452,11 @@ RLC_A:
 	movzx	eax,addin.Sfr[SFR_PSW]
 	rcl		al,1
 	rcl		addin.Sfr[SFR_ACC],1
+	.if CARRY?
+		or		addin.Sfr[SFR_PSW],80h
+	.else
+		and		addin.Sfr[SFR_PSW],7Fh
+	.endif
 	ret
 
 ADDC_A_imm:
