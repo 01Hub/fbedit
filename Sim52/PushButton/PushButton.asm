@@ -549,13 +549,14 @@ AddinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SendDlgItemMessage,hDlg,IDC_UDNBUTTONS,UDM_SETPOS,0,nButtons
 		invoke SendMessage,hDlg,WM_SIZE,0,0
 		xor		ebx,ebx
+		mov		esi,offset szDefLabel
 		.while ebx<8
 			invoke GetDlgItem,hDlg,addr [ebx+1000]
 			push	eax
 			invoke GetItemInt,addr buffer,0
 			push	eax
 			invoke CheckDlgButton,hDlg,addr [ebx+1020],eax
-			invoke GetItemQuotedStr,addr buffer,addr szNULL,addr buffer1,sizeof buffer1
+			invoke GetItemQuotedStr,addr buffer,esi,addr buffer1,sizeof buffer1
 			pop		eax
 			pop		edx
 			invoke EnableWindow,edx,eax
@@ -564,6 +565,8 @@ AddinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke SendDlgItemMessage,hDlg,addr [ebx+1050],CB_SETCURSEL,eax,0
 			invoke GetItemInt,addr buffer,0
 			invoke SendDlgItemMessage,hDlg,addr [ebx+1060],CB_SETCURSEL,eax,0
+			invoke lstrlen,esi
+			lea		esi,[esi+eax+1]
 			inc		ebx
 		.endw
 	.elseif eax==AM_PROJECTCLOSE

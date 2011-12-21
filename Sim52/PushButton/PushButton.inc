@@ -169,6 +169,7 @@ szExpand				db '>',0
 szShrink				db '<',0
 szNULL					db 0
 szProPB					db 'PB',0
+szDefLabel				db 'PB0',0,'PB1',0,'PB2',0,'PB3',0,'PB4',0,'PB5',0,'PB6',0,'PB7',0
 
 .data?
 

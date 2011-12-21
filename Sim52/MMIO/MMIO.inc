@@ -114,6 +114,7 @@ szMenuMMIO				BYTE 'Memory Mapped I/O',0
 
 szNULL					BYTE 0
 szProMMIO				BYTE 'MMIO',0
+szDefAddr				BYTE '8000',0,'8001',0,'8002',0,'8003',0,'8000',0,'8001',0,'8002',0,'8003',0
 
 .data?
 

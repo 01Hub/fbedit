@@ -745,10 +745,13 @@ AddinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		push	IDC_CHKMMO1
 		push	IDC_EDTADDRMMO0
 		mov		ebx,IDC_CHKMMO0
+		mov		esi,offset szDefAddr
 		.while ebx
 			invoke GetItemInt,addr buffer,0
 			invoke CheckDlgButton,hDlg,ebx,eax
-			invoke GetItemStr,addr buffer,addr szNULL,addr buffer1,sizeof buffer1
+			invoke GetItemStr,addr buffer,esi,addr buffer1,sizeof buffer1
+			invoke lstrlen,esi
+			lea		esi,[esi+eax+1]
 			pop		ebx
 			invoke SetDlgItemText,hDlg,ebx,addr buffer1
 			pop		ebx

@@ -43,6 +43,8 @@ IDC_CBO6                equ 1024
 IDC_CBO7                equ 1025
 IDC_STCERROR			equ 1027
 IDC_CHKACTIVE			equ 1028
+IDC_EDTBUTTON			equ 1026
+IDC_BTNSET				equ 1029
 
 IDB_KEYBOARD			equ 100
 
@@ -174,12 +176,14 @@ szMMOPorts				BYTE 'MMO0.0',0,'MMO0.1',0,'MMO0.2',0,'MMO0.3',0,'MMO0.4',0,'MMO0.
 
 szMenuKeyboard			BYTE 'Keyboard',0
 
+szDefButtonText			BYTE '7,8,9,+,4,5,6,-,1,2,3,*,CE/C,0,.,/',0
 szExpand				BYTE '>',0
 szShrink				BYTE '<',0
 szNULL					BYTE 0
 szError					BYTE 'Port not active',0
 
 szProKeyboard			BYTE 'Keyboard',0
+szProKeyboardText		BYTE 'Text',0
 
 .data?
 
@@ -192,3 +196,4 @@ fActive					DWORD ?
 key						KEY 16 dup(<>)
 keystate				DWORD ?
 curkey					KEY <>
+szButtonText			BYTE 256 dup(?)

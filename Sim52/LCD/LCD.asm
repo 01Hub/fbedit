@@ -563,19 +563,31 @@ AddinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke ShowWindow,hDlg,SW_HIDE
 		.endif
 		push	0
+		push	P2_5
 		push	IDC_CBOE
+		push	GND
 		push	IDC_CBORW
+		push	P2_4
 		push	IDC_CBORS
+		push	GND
 		push	IDC_CBOD7
+		push	GND
 		push	IDC_CBOD6
+		push	GND
 		push	IDC_CBOD5
+		push	GND
 		push	IDC_CBOD4
+		push	P2_3
 		push	IDC_CBOD3
+		push	P2_2
 		push	IDC_CBOD2
+		push	P2_1
 		push	IDC_CBOD1
+		push	P2_0
 		mov		ebx,IDC_CBOD0
 		.while ebx
-			invoke GetItemInt,addr buffer,0
+			pop		eax
+			invoke GetItemInt,addr buffer,eax
 			invoke SendDlgItemMessage,hDlg,ebx,CB_SETCURSEL,eax,0
 			pop		ebx
 		.endw

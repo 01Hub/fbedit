@@ -281,6 +281,8 @@ IDC_EDTCOMPUTER         equ 1901
 IDC_EDTMCU              equ 1902
 IDC_EDTREFRESH          equ 1903
 IDC_UDNREFRESH          equ 1904
+IDC_EDTTHREAD			equ 1905
+IDC_UDNTHREAD			equ 1906
 IDD_DLGABOUT			equ 2000
 IDC_EDTABOUT			equ 1001
 IDC_URL1				equ 1002
@@ -453,10 +455,11 @@ TotalCycles				DWORD ?
 SBUFWR					DWORD ?
 ComputerClock			DWORD ?
 MCUClock				DWORD ?
+RefreshRate				DWORD ?
+ThreadPriority			DWORD ?
 DefMCUClock				DWORD ?
 CpuCycles				DWORD ?
 PerformanceCount		QWORD ?
-RefreshRate				DWORD ?
 PCDONE					DWORD ?
 nHalfCycles				DWORD ?
 NewP3					DWORD ?

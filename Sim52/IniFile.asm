@@ -241,9 +241,9 @@ LoadSettings proc uses ebx edi
 	mov		rect.left,eax
 	invoke GetItemInt,addr buffer,10
 	mov		rect.top,eax
-	invoke GetItemInt,addr buffer,800
+	invoke GetItemInt,addr buffer,780
 	mov		rect.right,eax
-	invoke GetItemInt,addr buffer,600
+	invoke GetItemInt,addr buffer,580
 	mov		rect.bottom,eax
 	invoke GetItemInt,addr buffer,0
 	mov		fMax,eax
@@ -261,6 +261,8 @@ LoadSettings proc uses ebx edi
 	mov		DefMCUClock,eax
 	invoke GetItemInt,addr buffer,200
 	mov		RefreshRate,eax
+	invoke GetItemInt,addr buffer,0
+	mov		ThreadPriority,eax
 	invoke SetTiming
 	xor		ebx,ebx
 	mov		edi,offset help
@@ -309,6 +311,7 @@ SaveSettings proc
 	invoke PutItemInt,addr buffer,ComputerClock
 	invoke PutItemInt,addr buffer,DefMCUClock
 	invoke PutItemInt,addr buffer,RefreshRate
+	invoke PutItemInt,addr buffer,ThreadPriority
 	invoke WritePrivateProfileString,addr szIniConfig,addr szIniClock,addr buffer[1],addr szIniFile
 	ret
 

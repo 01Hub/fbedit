@@ -1077,9 +1077,11 @@ ClockProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
 		invoke SendDlgItemMessage,hWin,IDC_UDNREFRESH,UDM_SETRANGE,0,(50 SHL 16) OR 5000
+		invoke SendDlgItemMessage,hWin,IDC_UDNTHREAD,UDM_SETRANGE,0,(-2 SHL 16) OR 15
 		invoke SetDlgItemInt,hWin,IDC_EDTCOMPUTER,ComputerClock,FALSE
 		invoke SetDlgItemInt,hWin,IDC_EDTMCU,MCUClock,FALSE
 		invoke SetDlgItemInt,hWin,IDC_EDTREFRESH,RefreshRate,FALSE
+		invoke SetDlgItemInt,hWin,IDC_EDTTHREAD,ThreadPriority,TRUE
 	.elseif eax==WM_COMMAND
 		mov		edx,wParam
 		movzx	eax,dx
@@ -1095,6 +1097,8 @@ ClockProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		MCUClock,eax
 				invoke GetDlgItemInt,hWin,IDC_EDTREFRESH,NULL,FALSE
 				mov		RefreshRate,eax
+				invoke GetDlgItemInt,hWin,IDC_EDTTHREAD,NULL,TRUE
+				mov		ThreadPriority,eax
 				invoke SetTiming
 				invoke EndDialog,hWin,0
 			.endif
@@ -1442,11 +1446,7 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.endif
 			.elseif eax==IDM_DEBUG_RUN
 				.if !(State & STATE_THREAD)
-					invoke CreateThread,NULL,0,addr CoreThread,0,0,addr tid
-					push	eax
-					invoke SetThreadPriority,eax,THREAD_PRIORITY_TIME_CRITICAL
-					pop		eax
-					invoke CloseHandle,eax
+					call	MakeThread
 				.endif
 				rdtsc
 				mov		dword ptr PerformanceCount,eax
@@ -1460,8 +1460,7 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		State,STATE_STOP or STATE_PAUSE
 			.elseif eax==IDM_DEBUG_STEP_INTO
 				.if !(State & STATE_THREAD)
-					invoke CreateThread,NULL,0,addr CoreThread,0,0,addr tid
-					invoke CloseHandle,eax
+					call	MakeThread
 				.endif
 				rdtsc
 				mov		dword ptr PerformanceCount,eax
@@ -1469,8 +1468,7 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		State,STATE_THREAD or STATE_RUN or STATE_PAUSE or STATE_STEP_INTO
 			.elseif eax==IDM_DEBUG_STEP_OVER
 				.if !(State & STATE_THREAD)
-					invoke CreateThread,NULL,0,addr CoreThread,0,0,addr tid
-					invoke CloseHandle,eax
+					call	MakeThread
 				.endif
 				rdtsc
 				mov		dword ptr PerformanceCount,eax
@@ -1482,8 +1480,7 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				movzx	eax,[eax].MCUADDR.mcuaddr
 				mov		CursorAddr,eax
 				.if !(State & STATE_THREAD)
-					invoke CreateThread,NULL,0,addr CoreThread,0,0,addr tid
-					invoke CloseHandle,eax
+					call	MakeThread
 				.endif
 				rdtsc
 				mov		dword ptr PerformanceCount,eax
@@ -1685,6 +1682,14 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	xor    eax,eax
   Ex:
 	ret
+
+MakeThread:
+	invoke CreateThread,NULL,0,addr CoreThread,0,0,addr tid
+	push	eax
+	invoke SetThreadPriority,eax,ThreadPriority
+	pop		eax
+	invoke CloseHandle,eax
+	retn
 
 OpenLstFile:
 	.if szLstFile || szSimFile

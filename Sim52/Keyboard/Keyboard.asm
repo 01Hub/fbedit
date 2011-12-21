@@ -81,6 +81,41 @@ PutItemInt proc uses esi edi,lpBuff:DWORD,nVal:DWORD
 
 PutItemInt endp
 
+GetItemStr proc uses esi edi,lpBuff:DWORD,lpDefVal:DWORD,lpResult:DWORD,ccMax:DWORD
+
+	mov		esi,lpBuff
+	.if byte ptr [esi]
+		mov		edi,esi
+		.while byte ptr [esi] && byte ptr [esi]!=','
+			inc		esi
+		.endw
+		lea		eax,[esi+1]
+		sub		eax,edi
+		.if eax>ccMax
+			mov		eax,ccMax
+		.endif
+		invoke lstrcpyn,lpResult,edi,eax
+		.if byte ptr [esi]
+			inc		esi
+		.endif
+		invoke lstrcpy,edi,esi
+	.else
+		invoke lstrcpyn,lpResult,lpDefVal,ccMax
+	.endif
+	ret
+
+GetItemStr endp
+
+PutItemStr proc uses esi,lpBuff:DWORD,lpStr:DWORD
+
+	mov		esi,lpBuff
+	invoke lstrlen,esi
+	mov		byte ptr [esi+eax],','
+	invoke lstrcpy,addr [esi+eax+1],lpStr
+	ret
+
+PutItemStr endp
+
 UnInstallKeyboard proc uses ebx
 
 	invoke DestroyWindow,hDlg
@@ -117,31 +152,39 @@ KeyboardProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 	LOCAL	rect:RECT
 	LOCAL	port:DWORD
 	LOCAL	bit:DWORD
+	LOCAL	buffer[256]:BYTE
+	LOCAL	buffer1[8]:BYTE
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
 		mov		eax,hWin
 		mov		hDlg,eax
+		invoke lstrcpy,addr szButtonText,addr szDefButtonText
+		invoke lstrcpy,addr buffer,addr szDefButtonText
+		invoke SetDlgItemText,hWin,IDC_EDTBUTTON,addr szButtonText
 		push	0
-		push	IDC_BTN7
-		push	IDC_BTN8
-		push	IDC_BTN9
-		push	IDC_BTNADD
-		push	IDC_BTN4
-		push	IDC_BTN5
-		push	IDC_BTN6
-		push	IDC_BTNSUB
-		push	IDC_BTN1
-		push	IDC_BTN2
-		push	IDC_BTN3
-		push	IDC_BTNMUL
-		push	IDC_BTNCE
-		push	IDC_BTN0
+		push	IDC_BTNDIV
 		push	IDC_BTNDOT
-		mov		eax,IDC_BTNDIV
+		push	IDC_BTN0
+		push	IDC_BTNCE
+		push	IDC_BTNMUL
+		push	IDC_BTN3
+		push	IDC_BTN2
+		push	IDC_BTN1
+		push	IDC_BTNSUB
+		push	IDC_BTN6
+		push	IDC_BTN5
+		push	IDC_BTN4
+		push	IDC_BTNADD
+		push	IDC_BTN9
+		push	IDC_BTN8
+		mov		eax,IDC_BTN7
 		.while eax
 			invoke GetDlgItem,hWin,eax
-			invoke SetWindowLong,eax,GWL_WNDPROC,offset BtnProc
+			mov		ebx,eax
+			invoke GetItemStr,addr buffer,addr szNULL,addr buffer1,sizeof buffer1
+			invoke SetWindowText,ebx,addr buffer1
+			invoke SetWindowLong,ebx,GWL_WNDPROC,offset BtnProc
 			mov		lpOldBtnProc,eax
 			pop		eax
 		.endw
@@ -203,7 +246,7 @@ KeyboardProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 		.endw
 		invoke GetWindowRect,hWin,addr rect
 		mov		eax,263
-		mov		edx,237
+		mov		edx,237+6*4+3
 		invoke MoveWindow,hWin,rect.left,rect.top,edx,eax,TRUE
 		invoke SendMessage,hWin,WM_COMMAND,CBN_SELCHANGE shl 16,0
 	.elseif eax==WM_KDOWN
@@ -225,11 +268,24 @@ KeyboardProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 				mov		ebx,eax
 				pop		eax
 				invoke IsDlgButtonChecked,hWin,eax
-				.if !eax
-					dec		eax
-				.endif
 				mov		keystate,eax
 				invoke RtlMoveMemory,offset curkey,addr key[ebx],sizeof KEY
+				.if !keystate
+					;Button up, Set row bit high
+					mov		esi,lpAddin
+					mov		edx,curkey.rowport
+					mov		eax,curkey.rowbit
+					.if sdword ptr edx>0
+						or		[esi].ADDIN.Sfr[edx],al
+					.else
+						;Memory mapped input
+						and		edx,0FFFFh
+						or		[esi].ADDIN.XRam[edx],al
+					.endif
+					xor		eax,eax
+					mov		curkey.colbit,eax
+					mov		curkey.rowbit,eax
+				.endif
 			.elseif eax==IDC_BTNCONFIG
 				invoke GetWindowRect,hWin,addr rect
 				mov		eax,rect.left
@@ -238,22 +294,50 @@ KeyboardProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 				sub		eax,rect.top
 				.if eax==263
 					invoke SetDlgItemText,hWin,IDC_BTNCONFIG,addr szShrink
-					mov		eax,442
-					mov		edx,302
+					mov		eax,442+25
+					mov		edx,302+6*4+3
 				.else
 					invoke SetDlgItemText,hWin,IDC_BTNCONFIG,addr szExpand
 					mov		eax,263
-					mov		edx,237
+					mov		edx,237+6*4+3
 				.endif
 				invoke MoveWindow,hWin,rect.left,rect.top,edx,eax,TRUE
 			.elseif eax==IDC_CHKACTIVE
 				invoke IsDlgButtonChecked,hWin,IDC_CHKACTIVE
 				mov		fActive,eax
+			.elseif eax==IDC_BTNSET
+				invoke GetDlgItemText,hWin,IDC_EDTBUTTON,addr buffer,sizeof buffer
+				invoke lstrcpy,addr szButtonText,addr buffer
+				push	0
+				push	IDC_BTNDIV
+				push	IDC_BTNDOT
+				push	IDC_BTN0
+				push	IDC_BTNCE
+				push	IDC_BTNMUL
+				push	IDC_BTN3
+				push	IDC_BTN2
+				push	IDC_BTN1
+				push	IDC_BTNSUB
+				push	IDC_BTN6
+				push	IDC_BTN5
+				push	IDC_BTN4
+				push	IDC_BTNADD
+				push	IDC_BTN9
+				push	IDC_BTN8
+				mov		eax,IDC_BTN7
+				.while eax
+					invoke GetDlgItem,hWin,eax
+					mov		ebx,eax
+					invoke GetItemStr,addr buffer,addr szNULL,addr buffer1,sizeof buffer1
+					invoke SetWindowText,ebx,addr buffer1
+					pop		eax
+				.endw
 			.endif
 		.elseif edx==CBN_SELCHANGE
 			;cols
 			mov		ebx,IDC_CBO4
 			mov		edi,offset key
+			mov		esi,lpAddin
 			.while ebx<=IDC_CBO7
 				invoke SendDlgItemMessage,hWin,ebx,CB_GETCURSEL,0,0
 				call	GetPort
@@ -357,36 +441,99 @@ AddinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		eax,AH_COMMAND or AH_PORTWRITE or AH_MMPORTWRITE or AH_PROJECTOPEN or AH_PROJECTCLOSE
 		jmp		Ex
 	.elseif eax==AM_PORTWRITE
-		.if fActive && keystate
-			mov		eax,wParam
-			shl		eax,4
-			or		eax,80h
-			.if eax==curkey.colport
-				mov		eax,lParam
-				and		eax,0Fh
-				xor		eax,0Fh
-				test	eax,curkey.colbit
-				.if !ZERO?
-					mov		eax,keystate
-					mov		edx,curkey.rowport
-					mov		ebx,lpAddin
-					.if sdword ptr eax>0
-						mov		eax,curkey.rowbit
-						.if sdword ptr edx>=0
+		.if fActive
+			;Keyboard active
+			mov		esi,lpAddin
+			;Set all row bits high
+			mov		ebx,offset key
+			xor		ecx,ecx
+			.while ecx<4
+				mov		edx,[ebx].KEY.rowport
+				mov		eax,[ebx].KEY.rowbit
+				.if sdword ptr edx>0
+					or		[esi].ADDIN.Sfr[edx],al
+				.else
+					;Memory mapped input
+					and		edx,0FFFFh
+					or		[esi].ADDIN.XRam[edx],al
+				.endif
+				inc		ecx
+				lea		ebx,[ebx+sizeof KEY*4]
+			.endw
+			.if keystate
+				;A key has been pressed
+				mov		eax,wParam
+				shl		eax,4
+				or		eax,80h
+				.if eax==curkey.colport
+					mov		eax,lParam
+					and		eax,0Fh
+					xor		eax,0Fh
+					test	eax,curkey.colbit
+					.if !ZERO?
+						mov		eax,keystate
+						mov		edx,curkey.rowport
+						.if sdword ptr eax>0
+							mov		eax,curkey.rowbit
 							xor		eax,0FFh
-							and		[ebx].ADDIN.Sfr[edx],al
-						.endif
-					.elseif sdword ptr eax<0
-						mov		keystate,0
-						mov		eax,curkey.rowbit
-						.if sdword ptr edx>=0
-							or		[ebx].ADDIN.Sfr[edx],al
+							.if sdword ptr edx>0
+								and		[esi].ADDIN.Sfr[edx],al
+							.else
+								;Memory mapped input
+								and		edx,0FFFFh
+								and		[esi].ADDIN.XRam[edx],al
+							.endif
 						.endif
 					.endif
 				.endif
 			.endif
 		.endif
 	.elseif eax==AM_MMPORTWRITE
+		.if fActive
+			;Keyboard active
+			mov		esi,lpAddin
+			;Set all row bits high
+			mov		ebx,offset key
+			xor		ecx,ecx
+			.while ecx<4
+				mov		edx,[ebx].KEY.rowport
+				mov		eax,[ebx].KEY.rowbit
+				.if edx!=curkey.rowport || eax!=curkey.rowbit; || !keystate
+					.if sdword ptr edx>0
+						or		[esi].ADDIN.Sfr[edx],al
+					.else
+						;Memory mapped input
+						and		edx,0FFFFh
+						or		[esi].ADDIN.XRam[edx],al
+					.endif
+				.endif
+				inc		ecx
+				lea		ebx,[ebx+sizeof KEY*4]
+			.endw
+			.if keystate
+				;A key has been pressed
+				mov		eax,wParam
+				or		eax,80000000h
+				.if eax==curkey.colport
+					mov		eax,lParam
+					and		eax,0Fh
+					xor		eax,0Fh
+					test	eax,curkey.colbit
+					.if !ZERO?
+						mov		edx,curkey.rowport
+						mov		eax,curkey.rowbit
+						xor		eax,0FFh
+						.if sdword ptr edx>0
+							and		[esi].ADDIN.Sfr[edx],al
+						.else
+							;Memory mapped input
+							and		edx,0FFFFh
+							and		[esi].ADDIN.XRam[edx],al
+						.endif
+					.endif
+				.endif
+			.endif
+		.endif
 	.elseif eax==AM_COMMAND
 		mov		eax,lParam
 		.if eax==IDAddin
@@ -431,6 +578,34 @@ AddinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke SendDlgItemMessage,hDlg,ebx,CB_SETCURSEL,eax,0
 			pop		ebx
 		.endw
+		invoke SendMessage,hDlg,WM_COMMAND,CBN_SELCHANGE shl 16,0
+		invoke GetPrivateProfileString,addr szProKeyboard,addr szProKeyboardText,addr szDefButtonText,addr buffer,sizeof buffer,lParam
+		invoke SetDlgItemText,hDlg,IDC_EDTBUTTON,addr buffer
+		invoke lstrcpy,addr szButtonText,addr buffer
+		push	0
+		push	IDC_BTNDIV
+		push	IDC_BTNDOT
+		push	IDC_BTN0
+		push	IDC_BTNCE
+		push	IDC_BTNMUL
+		push	IDC_BTN3
+		push	IDC_BTN2
+		push	IDC_BTN1
+		push	IDC_BTNSUB
+		push	IDC_BTN6
+		push	IDC_BTN5
+		push	IDC_BTN4
+		push	IDC_BTNADD
+		push	IDC_BTN9
+		push	IDC_BTN8
+		mov		eax,IDC_BTN7
+		.while eax
+			invoke GetDlgItem,hDlg,eax
+			mov		ebx,eax
+			invoke GetItemStr,addr buffer,addr szNULL,addr buffer1,sizeof buffer1
+			invoke SetWindowText,ebx,addr buffer1
+			pop		eax
+		.endw
 	.elseif eax==AM_PROJECTCLOSE
 		mov		buffer,0
 		xor		ebx,ebx
@@ -452,6 +627,8 @@ AddinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			pop		eax
 		.endw
 		invoke WritePrivateProfileString,addr szProKeyboard,addr szProKeyboard,addr buffer[1],lParam
+		invoke GetDlgItemText,hDlg,IDC_EDTBUTTON,addr buffer,sizeof buffer
+		invoke WritePrivateProfileString,addr szProKeyboard,addr szProKeyboardText,addr buffer,lParam
 	.endif
 	xor		eax,eax
   Ex:
