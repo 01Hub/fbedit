@@ -20,47 +20,47 @@ ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. 
 
     1:
     2:		N      0040	LCDBUFF		equ	40h		;40h-4Fh 16 byte buffer
-    3:		N      0050	LASTCHR		equ	50h		;Holds the last key pressed
-    4:		N      0051	FUNCTION	equ	51h		;Holds function +,-,* or /
-    5:		N	 00	NOENTRY		bit	00h
-    6:		N	 01	CCE		bit	01h		;If set then C
-    7:
-    8:				;RESET:***********************************************
-    9:		N      0000			ORG	0000h
-   10:	  0000	02 00 2C			LJMP	START		;RESET:
-   11:				;IE0IRQ:**********************************************
-   12:		N      0003			ORG	0003h
-   13:	  0003	32				RETI			;IE0IRQ:
-   14:				;TF0IRQ:**********************************************
-   15:		N      000B			ORG	000Bh
-   16:	  000B	32				RETI			;TF0IRQ:
-   17:				;IE1IRQ:**********************************************
-   18:		N      0013			ORG	0013h
-   19:	  0013	32				RETI			;IE1IRQ:
-   20:				;TF1IRQ:**********************************************
-   21:		N      001B			ORG	001Bh
-   22:	  001B	32				RETI			;TF1IRQ:
-   23:				;RITIIRQ:*********************************************
-   24:		N      0023			ORG	0023h
-   25:	  0023	32				RETI			;RITIIRQ:
-   26:				;TF2EXF2IRQ:******************************************
-   27:		N      002B			ORG	002Bh
-   28:	  002B	32				RETI			;TF2EXF2IRQ:
-   29:				;*****************************************************
-   30:
-   31:	  002C	C2 01		START:		CLR	CCE
-   32:	  002E	75 51 2B			MOV	FUNCTION,#'+'
-   33:	  0031	31 A9				ACALL	LCDINIT
-   34:	  0033	31 92				ACALL	LCDCLEAR
-   35:	  0035	31 C2		START0:		ACALL	LCDCLEARBUFF
-   36:	  0037	75 4F 30			MOV	4Fh,#'0'
-   37:	  003A	11 AE				ACALL	LCDSHOW
-   38:	  003C	D2 00				SETB	NOENTRY
-   39:	  003E	11 B8		START1:		ACALL	PSCANKEYB
-   40:	  0040	60 FC				JZ	START1
-   41:	  0042	B4 43 07			CJNE	A,#'C',START2
-   42:	  0045	20 01 E4			JB	CCE,START		;CE/C pressed twice
-   43:	  0048	D2 01				SETB	CCE
+    3:		N      0050	CR		equ	50h		;Byte at address 50h holds 0Dh
+    4:		N      0051	LASTCHR		equ	51h		;Holds the last key pressed
+    5:		N      0052	FUNCTION	equ	52h		;Holds function +,-,* or /
+    6:		N      0053	FPOUTPTR	equ	53h		;Holds address of output character
+    7:		N	 00	NOENTRY		bit	00h
+    8:		N	 01	CCE		bit	01h		;If set then C
+    9:
+   10:				;RESET:***********************************************
+   11:		N      0000			ORG	0000h
+   12:	  0000	02 00 2C			LJMP	START		;RESET:
+   13:				;IE0IRQ:**********************************************
+   14:		N      0003			ORG	0003h
+   15:	  0003	32				RETI			;IE0IRQ:
+   16:				;TF0IRQ:**********************************************
+   17:		N      000B			ORG	000Bh
+   18:	  000B	32				RETI			;TF0IRQ:
+   19:				;IE1IRQ:**********************************************
+   20:		N      0013			ORG	0013h
+   21:	  0013	32				RETI			;IE1IRQ:
+   22:				;TF1IRQ:**********************************************
+   23:		N      001B			ORG	001Bh
+   24:	  001B	32				RETI			;TF1IRQ:
+   25:				;RITIIRQ:*********************************************
+   26:		N      0023			ORG	0023h
+   27:	  0023	32				RETI			;RITIIRQ:
+   28:				;TF2EXF2IRQ:******************************************
+   29:		N      002B			ORG	002Bh
+   30:	  002B	32				RETI			;TF2EXF2IRQ:
+   31:				;*****************************************************
+   32:
+   33:	  002C	75 50 0D	START:		MOV	CR,#0Dh
+   34:	  002F	75 24 7F			MOV	24H,#7Fh		;ARG STACK
+   35:	  0032	75 25 00			MOV	25H,#00h		;FORMAT
+   36:	  0035	90 16 05			MOV	DPTR,#ZRO
+   37:	  0038	12 15 E9			LCALL	PUSHC
+   38:	  003B	C2 01				CLR	CCE
+   39:	  003D	75 52 2B			MOV	FUNCTION,#'+'
+   40:	  0040	51 11				ACALL	LCDINIT
+   41:	  0042	31 FA				ACALL	LCDCLEAR
+   42:	  0044	51 2A		START0:		ACALL	LCDCLEARBUFF
+   43:	  0046	75 4F 30			MOV	4Fh,#'0'
 
 ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 2
 
@@ -68,62 +68,62 @@ ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. 
 
  Line  I  Addr  Code            Source
 
-   44:	  004A	80 E9				SJMP	START0
-   45:	  004C	C2 01		START2:		CLR	CCE
-   46:	  004E	B4 2B 06			CJNE	A,#'+',START3
-   47:	  0051	F5 51				MOV	FUNCTION,A
-   48:	  0053	D2 00				SETB	NOENTRY
-   49:	  0055	80 E7				SJMP	START1
-   50:	  0057	B4 2D 06	START3:		CJNE	A,#'-',START4
-   51:	  005A	F5 51				MOV	FUNCTION,A
-   52:	  005C	D2 00				SETB	NOENTRY
-   53:	  005E	80 DE				SJMP	START1
-   54:	  0060	B4 2A 06	START4:		CJNE	A,#'*',START5
-   55:	  0063	F5 51				MOV	FUNCTION,A
-   56:	  0065	D2 00				SETB	NOENTRY
-   57:	  0067	80 D5				SJMP	START1
-   58:	  0069	B4 2F 06	START5:		CJNE	A,#'/',START6
-   59:	  006C	F5 51				MOV	FUNCTION,A
-   60:	  006E	D2 00				SETB	NOENTRY
-   61:	  0070	80 CC				SJMP	START1
-   62:	  0072	20 00 06	START6:		JB	NOENTRY,START10
-   63:	  0075	11 9C				ACALL	LCDSCROLL
-   64:	  0077	11 AE				ACALL	LCDSHOW
-   65:	  0079	80 C3				SJMP	START1
-   66:	  007B	C0 E0		START10:	PUSH	ACC
-   67:	  007D	31 C2				ACALL	LCDCLEARBUFF
-   68:	  007F	75 4F 30			MOV	4Fh,#'0'
-   69:	  0082	D0 E0				POP	ACC
-   70:	  0084	B4 2E 03			CJNE	A,#'.',START11
-   71:	  0087	75 4E 30			MOV	4Eh,#'0'
-   72:	  008A	B4 30 07	START11:	CJNE	A,#'0',START12
-   73:	  008D	75 4F 30			MOV	4Fh,#'0'
-   74:	  0090	11 AE				ACALL	LCDSHOW
-   75:	  0092	80 AA				SJMP	START1
-   76:	  0094	F5 4F		START12:	MOV	4Fh,A
-   77:	  0096	11 AE				ACALL	LCDSHOW
-   78:	  0098	C2 00				CLR	NOENTRY
-   79:	  009A	80 A2				SJMP	START1
-   80:
-   81:	  009C	C0 E0		LCDSCROLL:	PUSH	ACC
-   82:	  009E	78 40				MOV	R0,#LCDBUFF
-   83:	  00A0	79 41				MOV	R1,#LCDBUFF+1
-   84:	  00A2	7F 0F				MOV	R7,#15
-   85:	  00A4	E7		LCDSCROLL1:	MOV	A,@R1
-   86:	  00A5	F6				MOV	@R0,A
-   87:	  00A6	08				INC	R0
-   88:	  00A7	09				INC	R1
-   89:	  00A8	DF FA				DJNZ	R7,LCDSCROLL1
-   90:	  00AA	D0 E0				POP	ACC
-   91:	  00AC	F6				MOV	@R0,A
-   92:	  00AD	22				RET
-   93:
-   94:	  00AE	E4		LCDSHOW:	CLR	A
-   95:	  00AF	31 9D				ACALL	LCDSETADR
-   96:	  00B1	7F 10				MOV	R7,#16
-   97:	  00B3	78 40				MOV	R0,#LCDBUFF
-   98:	  00B5	31 A2				ACALL	LCDPRINTSTR
-   99:	  00B7	22				RET
+   44:	  0049	31 16				ACALL	LCDSHOW
+   45:	  004B	D2 00				SETB	NOENTRY
+   46:	  004D	31 20		START1:		ACALL	PSCANKEYB
+   47:	  004F	60 FC				JZ	START1
+   48:	  0051	B4 43 07			CJNE	A,#'C',START2
+   49:	  0054	20 01 D5			JB	CCE,START		;CE/C pressed twice
+   50:	  0057	D2 01				SETB	CCE
+   51:	  0059	80 E9				SJMP	START0
+   52:	  005B	C2 01		START2:		CLR	CCE
+   53:	  005D	B4 2B 0A			CJNE	A,#'+',START3
+   54:	  0060	C0 E0				PUSH	ACC
+   55:	  0062	11 BB				ACALL	GETRESULT
+   56:	  0064	D0 52				POP	FUNCTION
+   57:	  0066	D2 00				SETB	NOENTRY
+   58:	  0068	80 E3				SJMP	START1
+   59:	  006A	B4 2D 0A	START3:		CJNE	A,#'-',START4
+   60:	  006D	C0 E0				PUSH	ACC
+   61:	  006F	11 BB				ACALL	GETRESULT
+   62:	  0071	D0 52				POP	FUNCTION
+   63:	  0073	D2 00				SETB	NOENTRY
+   64:	  0075	80 D6				SJMP	START1
+   65:	  0077	B4 2A 0A	START4:		CJNE	A,#'*',START5
+   66:	  007A	C0 E0				PUSH	ACC
+   67:	  007C	11 BB				ACALL	GETRESULT
+   68:	  007E	D0 52				POP	FUNCTION
+   69:	  0080	D2 00				SETB	NOENTRY
+   70:	  0082	80 C9				SJMP	START1
+   71:	  0084	B4 2F 0A	START5:		CJNE	A,#'/',START6
+   72:	  0087	C0 E0				PUSH	ACC
+   73:	  0089	11 BB				ACALL	GETRESULT
+   74:	  008B	D0 52				POP	FUNCTION
+   75:	  008D	D2 00				SETB	NOENTRY
+   76:	  008F	80 BC				SJMP	START1
+   77:	  0091	20 00 06	START6:		JB	NOENTRY,START10
+   78:	  0094	31 04				ACALL	LCDSCROLL
+   79:	  0096	31 16				ACALL	LCDSHOW
+   80:	  0098	80 B3				SJMP	START1
+   81:	  009A	C0 E0		START10:	PUSH	ACC
+   82:	  009C	51 2A				ACALL	LCDCLEARBUFF
+   83:	  009E	75 4F 30			MOV	4Fh,#'0'
+   84:	  00A1	D0 E0				POP	ACC
+   85:	  00A3	B4 2E 03			CJNE	A,#'.',START11
+   86:	  00A6	75 4E 30			MOV	4Eh,#'0'
+   87:	  00A9	B4 30 07	START11:	CJNE	A,#'0',START12
+   88:	  00AC	75 4F 30			MOV	4Fh,#'0'
+   89:	  00AF	31 16				ACALL	LCDSHOW
+   90:	  00B1	80 9A				SJMP	START1
+   91:	  00B3	F5 4F		START12:	MOV	4Fh,A
+   92:	  00B5	31 16				ACALL	LCDSHOW
+   93:	  00B7	C2 00				CLR	NOENTRY
+   94:	  00B9	01 4D				AJMP	START1
+   95:
+   96:	  00BB	79 40		GETRESULT:	MOV	R1,#40h
+   97:	  00BD	12 13 0B			LCALL	FLOATING_POINT_INPUT
+   98:	  00C0	E5 52				MOV	A,FUNCTION
+   99:	  00C2	11 EB				ACALL	EXEC
 
 ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 3
 
@@ -131,62 +131,62 @@ ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. 
 
  Line  I  Addr  Code            Source
 
-  100:
-  101:	  00B8	7F 04		PSCANKEYB:	MOV	R7,#04h
-  102:	  00BA	7E 0E				MOV	R6,#0Eh
-  103:	  00BC	7D 00				MOV	R5,#00h
-  104:	  00BE	E5 90		PSCANKEYB1:	MOV	A,P1
-  105:	  00C0	54 F0				ANL	A,#0F0h
-  106:	  00C2	4E				ORL	A,R6
-  107:	  00C3	F5 90				MOV	P1,A
-  108:	  00C5	E5 90				MOV	A,P1
-  109:	  00C7	54 F0				ANL	A,#0F0h
-  110:	  00C9	B4 F0 0D			CJNE	A,#0F0h,PSCANKEYB2
-  111:						;Next column
-  112:	  00CC	EE				MOV	A,R6
-  113:	  00CD	D3				SETB	C
-  114:	  00CE	33				RLC	A
-  115:	  00CF	54 0F				ANL	A,#0Fh
-  116:	  00D1	FE				MOV	R6,A
-  117:						;Wait loop
-  118:	  00D2	DD FE				DJNZ	R5,$
-  119:	  00D4	DF E8				DJNZ	R7,PSCANKEYB1
-  120:						;No keys down
-  121:	  00D6	E4				CLR	A
-  122:	  00D7	80 1B				SJMP	PSCANKEYB5
-  123:						;A key is down, find column and row
-  124:	  00D9	7D 04		PSCANKEYB2:	MOV	R5,#04h
-  125:	  00DB	1D		PSCANKEYB3:	DEC	R5		;Row
-  126:	  00DC	33				RLC	A
-  127:	  00DD	40 FC				JC	PSCANKEYB3
-  128:	  00DF	EE				MOV	A,R6
-  129:	  00E0	7E FF				MOV	R6,#0FFh	;Column
-  130:	  00E2	0E		PSCANKEYB4:	INC	R6
-  131:	  00E3	13				RRC	A
-  132:	  00E4	40 FC				JC	PSCANKEYB4
-  133:						;Convert column and row to a character
-  134:	  00E6	ED				MOV	A,R5
-  135:	  00E7	23				RL	A
-  136:	  00E8	23				RL	A
-  137:	  00E9	4E				ORL	A,R6
-  138:	  00EA	90 01 4E			MOV	DPTR,#KEYS
-  139:	  00ED	93				MOVC	A,@A+DPTR
-  140:	  00EE	B5 50 03			CJNE	A,LASTCHR,PSCANKEYB5
-  141:						;Previous key not released yet
-  142:	  00F1	E4				CLR	A
-  143:	  00F2	80 02				SJMP	PSCANKEYB6
-  144:	  00F4	F5 50		PSCANKEYB5:	MOV	LASTCHR,A
-  145:	  00F6	C0 E0		PSCANKEYB6:	PUSH	ACC
-  146:	  00F8	E5 90				MOV	A,P1
-  147:	  00FA	44 0F				ORL	A,#0Fh
-  148:	  00FC	F5 90				MOV	P1,A
-  149:	  00FE	D0 E0				POP	ACC
-  150:	  0100	22				RET
-  151:
-  152:	  0101	7F 04		MMSCANKEYB:	MOV	R7,#04h
-  153:	  0103	7E 0E				MOV	R6,#0Eh
-  154:	  0105	7D 00				MOV	R5,#00h
-  155:	  0107	90 80 00			MOV	DPTR,#8000h
+  100:	  00C4	78 54				MOV	R0,#54h
+  101:	  00C6	88 53				MOV	FPOUTPTR,R0
+  102:	  00C8	7F 0A				MOV	R7,#10
+  103:	  00CA	E4				CLR	A
+  104:	  00CB	F6		GETRESULT1:	MOV	@R0,A
+  105:	  00CC	08				INC	R0
+  106:	  00CD	DF FC				DJNZ	R7,GETRESULT1
+  107:	  00CF	A8 24				MOV	R0,ARG_STACK
+  108:	  00D1	12 15 A2			LCALL	PUSHAS
+  109:	  00D4	12 13 B9			LCALL	FLOATING_POINT_OUTPUT
+  110:	  00D7	51 2A				ACALL	LCDCLEARBUFF
+  111:	  00D9	78 5E				MOV	R0,#54h+10
+  112:	  00DB	18		GETRESULT2:	DEC	R0
+  113:	  00DC	E6				MOV	A,@R0
+  114:	  00DD	60 FC				JZ	GETRESULT2
+  115:	  00DF	79 4F				MOV	R1,#4Fh
+  116:	  00E1	E6		GETRESULT3:	MOV	A,@R0
+  117:	  00E2	F7				MOV	@R1,A
+  118:	  00E3	18				DEC	R0
+  119:	  00E4	19				DEC	R1
+  120:	  00E5	B8 53 F9			CJNE	R0,#53h,GETRESULT3
+  121:	  00E8	31 16				ACALL	LCDSHOW
+  122:	  00EA	22				RET
+  123:
+  124:	  00EB	B4 2B 03	EXEC:		CJNE	A,#'+',EXEC1
+  125:	  00EE	02 10 09			LJMP	FLOATING_ADD
+  126:	  00F1	B4 2D 03	EXEC1:		CJNE	A,#'-',EXEC2
+  127:	  00F4	02 10 02			LJMP	FLOATING_SUB
+  128:	  00F7	B4 2A 03	EXEC2:		CJNE	A,#'*',EXEC3
+  129:	  00FA	02 10 ED			LJMP	FLOATING_MUL
+  130:	  00FD	B4 2F 03	EXEC3:		CJNE	A,#'/',EXEC4
+  131:	  0100	02 11 22			LJMP	FLOATING_DIV
+  132:	  0103	22		EXEC4:		RET
+  133:
+  134:	  0104	C0 E0		LCDSCROLL:	PUSH	ACC
+  135:	  0106	78 40				MOV	R0,#LCDBUFF
+  136:	  0108	79 41				MOV	R1,#LCDBUFF+1
+  137:	  010A	7F 0F				MOV	R7,#15
+  138:	  010C	E7		LCDSCROLL1:	MOV	A,@R1
+  139:	  010D	F6				MOV	@R0,A
+  140:	  010E	08				INC	R0
+  141:	  010F	09				INC	R1
+  142:	  0110	DF FA				DJNZ	R7,LCDSCROLL1
+  143:	  0112	D0 E0				POP	ACC
+  144:	  0114	F6				MOV	@R0,A
+  145:	  0115	22				RET
+  146:
+  147:	  0116	E4		LCDSHOW:	CLR	A
+  148:	  0117	51 05				ACALL	LCDSETADR
+  149:	  0119	7F 10				MOV	R7,#16
+  150:	  011B	78 40				MOV	R0,#LCDBUFF
+  151:	  011D	51 0A				ACALL	LCDPRINTSTR
+  152:	  011F	22				RET
+  153:
+  154:	  0120	7F 04		PSCANKEYB:	MOV	R7,#04h
+  155:	  0122	7E 0E				MOV	R6,#0Eh
 
 ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 4
 
@@ -194,62 +194,62 @@ ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. 
 
  Line  I  Addr  Code            Source
 
-  156:	  010A	E0		MMSCANKEYB1:	MOVX	A,@DPTR
-  157:	  010B	54 F0				ANL	A,#0F0h
-  158:	  010D	4E				ORL	A,R6
-  159:	  010E	F0				MOVX	@DPTR,A
-  160:	  010F	E5 90				MOV	A,P1
-  161:	  0111	F5 51		MOV 51h,A
-  162:	  0113	54 F0				ANL	A,#0F0h
-  163:	  0115	B4 F0 0D			CJNE	A,#0F0h,MMSCANKEYB2
+  156:	  0124	7D 00				MOV	R5,#00h
+  157:	  0126	E5 90		PSCANKEYB1:	MOV	A,P1
+  158:	  0128	54 F0				ANL	A,#0F0h
+  159:	  012A	4E				ORL	A,R6
+  160:	  012B	F5 90				MOV	P1,A
+  161:	  012D	E5 90				MOV	A,P1
+  162:	  012F	54 F0				ANL	A,#0F0h
+  163:	  0131	B4 F0 0D			CJNE	A,#0F0h,PSCANKEYB2
   164:						;Next column
-  165:	  0118	EE				MOV	A,R6
-  166:	  0119	D3				SETB	C
-  167:	  011A	33				RLC	A
-  168:	  011B	54 0F				ANL	A,#0Fh
-  169:	  011D	FE				MOV	R6,A
+  165:	  0134	EE				MOV	A,R6
+  166:	  0135	D3				SETB	C
+  167:	  0136	33				RLC	A
+  168:	  0137	54 0F				ANL	A,#0Fh
+  169:	  0139	FE				MOV	R6,A
   170:						;Wait loop
-  171:	  011E	DD FE				DJNZ	R5,$
-  172:	  0120	DF E8				DJNZ	R7,MMSCANKEYB1
+  171:	  013A	DD FE				DJNZ	R5,$
+  172:	  013C	DF E8				DJNZ	R7,PSCANKEYB1
   173:						;No keys down
-  174:	  0122	E4				CLR	A
-  175:	  0123	80 1B				SJMP	MMSCANKEYB5
+  174:	  013E	E4				CLR	A
+  175:	  013F	80 1B				SJMP	PSCANKEYB5
   176:						;A key is down, find column and row
-  177:	  0125	7D 04		MMSCANKEYB2:	MOV	R5,#04h
-  178:	  0127	1D		MMSCANKEYB3:	DEC	R5		;Row
-  179:	  0128	33				RLC	A
-  180:	  0129	40 FC				JC	MMSCANKEYB3
-  181:	  012B	EE				MOV	A,R6
-  182:	  012C	7E FF				MOV	R6,#0FFh	;Column
-  183:	  012E	0E		MMSCANKEYB4:	INC	R6
-  184:	  012F	13				RRC	A
-  185:	  0130	40 FC				JC	MMSCANKEYB4
+  177:	  0141	7D 04		PSCANKEYB2:	MOV	R5,#04h
+  178:	  0143	1D		PSCANKEYB3:	DEC	R5		;Row
+  179:	  0144	33				RLC	A
+  180:	  0145	40 FC				JC	PSCANKEYB3
+  181:	  0147	EE				MOV	A,R6
+  182:	  0148	7E FF				MOV	R6,#0FFh	;Column
+  183:	  014A	0E		PSCANKEYB4:	INC	R6
+  184:	  014B	13				RRC	A
+  185:	  014C	40 FC				JC	PSCANKEYB4
   186:						;Convert column and row to a character
-  187:	  0132	ED				MOV	A,R5
-  188:	  0133	23				RL	A
-  189:	  0134	23				RL	A
-  190:	  0135	4E				ORL	A,R6
-  191:	  0136	90 01 4E			MOV	DPTR,#KEYS
-  192:	  0139	93				MOVC	A,@A+DPTR
-  193:	  013A	B5 50 03			CJNE	A,LASTCHR,MMSCANKEYB5
+  187:	  014E	ED				MOV	A,R5
+  188:	  014F	23				RL	A
+  189:	  0150	23				RL	A
+  190:	  0151	4E				ORL	A,R6
+  191:	  0152	90 01 B6			MOV	DPTR,#KEYS
+  192:	  0155	93				MOVC	A,@A+DPTR
+  193:	  0156	B5 51 03			CJNE	A,LASTCHR,PSCANKEYB5
   194:						;Previous key not released yet
-  195:	  013D	E4				CLR	A
-  196:	  013E	80 02				SJMP	MMSCANKEYB6
-  197:	  0140	F5 50		MMSCANKEYB5:	MOV	LASTCHR,A
-  198:	  0142	90 80 00	MMSCANKEYB6:	MOV	DPTR,#8000h
-  199:	  0145	C0 E0				PUSH	ACC
-  200:	  0147	E0				MOVX	A,@DPTR
-  201:	  0148	44 0F				ORL	A,#0Fh
-  202:	  014A	F0				MOVX	@DPTR,A
-  203:	  014B	D0 E0				POP	ACC
-  204:	  014D	22				RET
-  205:
-  206:	  014E	37 38 39 2B	KEYS:		DB	'789+'
-  207:	  0152	34 35 36 2D			DB	'456-'
-  208:	  0156	31 32 33 2A			DB	'123*'
-  209:	  015A	43 30 2E 2F			DB	'C0./'
-  210:
-  211:				;------------------------------------------------------------------
+  195:	  0159	E4				CLR	A
+  196:	  015A	80 02				SJMP	PSCANKEYB6
+  197:	  015C	F5 51		PSCANKEYB5:	MOV	LASTCHR,A
+  198:	  015E	C0 E0		PSCANKEYB6:	PUSH	ACC
+  199:	  0160	E5 90				MOV	A,P1
+  200:	  0162	44 0F				ORL	A,#0Fh
+  201:	  0164	F5 90				MOV	P1,A
+  202:	  0166	D0 E0				POP	ACC
+  203:	  0168	22				RET
+  204:
+  205:	  0169	7F 04		MMSCANKEYB:	MOV	R7,#04h
+  206:	  016B	7E 0E				MOV	R6,#0Eh
+  207:	  016D	7D 00				MOV	R5,#00h
+  208:	  016F	90 80 00			MOV	DPTR,#8000h
+  209:	  0172	E0		MMSCANKEYB1:	MOVX	A,@DPTR
+  210:	  0173	54 F0				ANL	A,#0F0h
+  211:	  0175	4E				ORL	A,R6
 
 ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 5
 
@@ -257,62 +257,62 @@ ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. 
 
  Line  I  Addr  Code            Source
 
-  212:				;LCD Output.
-  213:				;------------------------------------------------------------------
-  214:	  015E	C0 07		LCDDELAY:	PUSH	07h
-  215:	  0160	7F 00				MOV	R7,#00h
-  216:	  0162	DF FE				DJNZ	R7,$
-  217:	  0164	D0 07				POP	07h
-  218:	  0166	22				RET
-  219:
-  220:				;A contains nibble, ACC.4 contains RS
-  221:	  0167	D2 E5		LCDNIBOUT:	SETB	ACC.5				;E
-  222:	  0169	F5 A0				MOV	P2,A
-  223:	  016B	C2 A5				CLR	P2.5				;Negative edge on E
-  224:	  016D	22				RET
-  225:
-  226:				;A contains byte
-  227:	  016E	C0 E0		LCDCMDOUT:	PUSH	ACC
-  228:	  0170	C4				SWAP	A				;High nibble first
-  229:	  0171	54 0F				ANL	A,#0Fh
-  230:	  0173	31 67				ACALL	LCDNIBOUT
-  231:	  0175	D0 E0				POP	ACC
-  232:	  0177	54 0F				ANL	A,#0Fh
-  233:	  0179	31 67				ACALL	LCDNIBOUT
-  234:	  017B	31 5E				ACALL	LCDDELAY			;Wait for BF to clear
-  235:	  017D	22				RET
-  236:
-  237:				;A contains byte
-  238:	  017E	C0 E0		LCDCHROUT:	PUSH	ACC
-  239:	  0180	C4				SWAP	A				;High nibble first
-  240:	  0181	54 0F				ANL	A,#0Fh
-  241:	  0183	D2 E4				SETB	ACC.4				;RS
-  242:	  0185	31 67				ACALL	LCDNIBOUT
-  243:	  0187	D0 E0				POP	ACC
-  244:	  0189	54 0F				ANL	A,#0Fh
-  245:	  018B	D2 E4				SETB	ACC.4				;RS
-  246:	  018D	31 67				ACALL	LCDNIBOUT
-  247:	  018F	31 5E				ACALL	LCDDELAY			;Wait for BF to clear
-  248:	  0191	22				RET
-  249:
-  250:	  0192	74 01		LCDCLEAR:	MOV	A,#00000001b
-  251:	  0194	31 6E				ACALL	LCDCMDOUT
-  252:	  0196	7F 00				MOV	R7,#00h
-  253:	  0198	31 5E		LCDCLEAR1:	ACALL	LCDDELAY
-  254:	  019A	DF FC				DJNZ	R7,LCDCLEAR1
-  255:	  019C	22				RET
-  256:
-  257:				;A contais address
-  258:	  019D	44 80		LCDSETADR:	ORL	A,#10000000b
-  259:	  019F	31 6E				ACALL	LCDCMDOUT
-  260:	  01A1	22				RET
-  261:
-  262:	  01A2	E6		LCDPRINTSTR:	MOV	A,@R0
-  263:	  01A3	31 7E				ACALL	LCDCHROUT
-  264:	  01A5	08				INC	R0
-  265:	  01A6	DF FA				DJNZ	R7,LCDPRINTSTR
-  266:	  01A8	22				RET
-  267:
+  212:	  0176	F0				MOVX	@DPTR,A
+  213:	  0177	E5 90				MOV	A,P1
+  214:	  0179	F5 51		MOV 51h,A
+  215:	  017B	54 F0				ANL	A,#0F0h
+  216:	  017D	B4 F0 0D			CJNE	A,#0F0h,MMSCANKEYB2
+  217:						;Next column
+  218:	  0180	EE				MOV	A,R6
+  219:	  0181	D3				SETB	C
+  220:	  0182	33				RLC	A
+  221:	  0183	54 0F				ANL	A,#0Fh
+  222:	  0185	FE				MOV	R6,A
+  223:						;Wait loop
+  224:	  0186	DD FE				DJNZ	R5,$
+  225:	  0188	DF E8				DJNZ	R7,MMSCANKEYB1
+  226:						;No keys down
+  227:	  018A	E4				CLR	A
+  228:	  018B	80 1B				SJMP	MMSCANKEYB5
+  229:						;A key is down, find column and row
+  230:	  018D	7D 04		MMSCANKEYB2:	MOV	R5,#04h
+  231:	  018F	1D		MMSCANKEYB3:	DEC	R5		;Row
+  232:	  0190	33				RLC	A
+  233:	  0191	40 FC				JC	MMSCANKEYB3
+  234:	  0193	EE				MOV	A,R6
+  235:	  0194	7E FF				MOV	R6,#0FFh	;Column
+  236:	  0196	0E		MMSCANKEYB4:	INC	R6
+  237:	  0197	13				RRC	A
+  238:	  0198	40 FC				JC	MMSCANKEYB4
+  239:						;Convert column and row to a character
+  240:	  019A	ED				MOV	A,R5
+  241:	  019B	23				RL	A
+  242:	  019C	23				RL	A
+  243:	  019D	4E				ORL	A,R6
+  244:	  019E	90 01 B6			MOV	DPTR,#KEYS
+  245:	  01A1	93				MOVC	A,@A+DPTR
+  246:	  01A2	B5 51 03			CJNE	A,LASTCHR,MMSCANKEYB5
+  247:						;Previous key not released yet
+  248:	  01A5	E4				CLR	A
+  249:	  01A6	80 02				SJMP	MMSCANKEYB6
+  250:	  01A8	F5 51		MMSCANKEYB5:	MOV	LASTCHR,A
+  251:	  01AA	90 80 00	MMSCANKEYB6:	MOV	DPTR,#8000h
+  252:	  01AD	C0 E0				PUSH	ACC
+  253:	  01AF	E0				MOVX	A,@DPTR
+  254:	  01B0	44 0F				ORL	A,#0Fh
+  255:	  01B2	F0				MOVX	@DPTR,A
+  256:	  01B3	D0 E0				POP	ACC
+  257:	  01B5	22				RET
+  258:
+  259:	  01B6	37 38 39 2B	KEYS:		DB	'789+'
+  260:	  01BA	34 35 36 2D			DB	'456-'
+  261:	  01BE	31 32 33 2A			DB	'123*'
+  262:	  01C2	43 30 2E 2F			DB	'C0./'
+  263:
+  264:				;------------------------------------------------------------------
+  265:				;LCD Output.
+  266:				;------------------------------------------------------------------
+  267:	  01C6	C0 07		LCDDELAY:	PUSH	07h
 
 ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 6
 
@@ -320,62 +320,62 @@ ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. 
 
  Line  I  Addr  Code            Source
 
-  268:	  01A9	74 03		LCDINIT:	MOV	A,#00000011b			;Function set
-  269:	  01AB	31 67				ACALL	LCDNIBOUT
-  270:	  01AD	31 5E				ACALL	LCDDELAY			;Wait for BF to clear
-  271:	  01AF	74 28				MOV	A,#00101000b
-  272:	  01B1	31 6E				ACALL	LCDCMDOUT
-  273:	  01B3	74 28				MOV	A,#00101000b
-  274:	  01B5	31 6E				ACALL	LCDCMDOUT
-  275:	  01B7	74 0C				MOV	A,#00001100b			;Display ON/OFF
-  276:	  01B9	31 6E				ACALL	LCDCMDOUT
-  277:	  01BB	31 92				ACALL	LCDCLEAR			;Clear
-  278:	  01BD	74 06				MOV	A,#00000110b			;Cursor direction
-  279:	  01BF	31 6E				ACALL	LCDCMDOUT
-  280:	  01C1	22				RET
-  281:
-  282:	  01C2	78 40		LCDCLEARBUFF:	MOV	R0,#LCDBUFF
-  283:	  01C4	7F 10				MOV	R7,#10h
-  284:	  01C6	74 20				MOV	A,#20H
-  285:	  01C8	F6		LCDCLEARBUFF1:	MOV	@R0,A
-  286:	  01C9	08				INC	R0
-  287:	  01CA	DF FC				DJNZ	R7,LCDCLEARBUFF1
-  288:	  01CC	22				RET
+  268:	  01C8	7F 00				MOV	R7,#00h
+  269:	  01CA	DF FE				DJNZ	R7,$
+  270:	  01CC	D0 07				POP	07h
+  271:	  01CE	22				RET
+  272:
+  273:				;A contains nibble, ACC.4 contains RS
+  274:	  01CF	D2 E5		LCDNIBOUT:	SETB	ACC.5				;E
+  275:	  01D1	F5 A0				MOV	P2,A
+  276:	  01D3	C2 A5				CLR	P2.5				;Negative edge on E
+  277:	  01D5	22				RET
+  278:
+  279:				;A contains byte
+  280:	  01D6	C0 E0		LCDCMDOUT:	PUSH	ACC
+  281:	  01D8	C4				SWAP	A				;High nibble first
+  282:	  01D9	54 0F				ANL	A,#0Fh
+  283:	  01DB	31 CF				ACALL	LCDNIBOUT
+  284:	  01DD	D0 E0				POP	ACC
+  285:	  01DF	54 0F				ANL	A,#0Fh
+  286:	  01E1	31 CF				ACALL	LCDNIBOUT
+  287:	  01E3	31 C6				ACALL	LCDDELAY			;Wait for BF to clear
+  288:	  01E5	22				RET
   289:
-  290:				$include	(FP52INT.a51)
-  291: 1			; This is a complete BCD floating point package for the 8051 micro-
-  292: 1			; controller. It provides 8 digits of accuracy with exponents that
-  293: 1			; range from +127 to -127. The mantissa is in packed BCD, while the
-  294: 1			; exponent is expressed in pseudo-twos complement. A ZERO exponent
-  295: 1			; is used to express the number ZERO. An exponent value of 80H or
-  296: 1			; greater than means the exponent is positive, i.e. 80H = E 0,
-  297: 1			; 81H = E+1, 82H = E+2 and so on. If the exponent is 7FH or less,
-  298: 1			; the exponent is negative, 7FH = E-1, 7EH = E-2, and so on.
-  299: 1			; ALL NUMBERS ARE ASSUMED TO BE NORMALIZED and all results are
-  300: 1			; normalized after calculation. A normalized mantissa is >=.10 and
-  301: 1			; <=.99999999.
-  302: 1			;
-  303: 1			; The numbers in memory assumed to be stored as follows:
-  304: 1			;
-  305: 1			; EXPONENT OF ARGUMENT 2   =   VALUE OF ARG_STACK+FP_NUMBER_SIZE
-  306: 1			; SIGN OF ARGUMENT 2       =   VALUE OF ARG_STACK+FP_NUMBER_SIZE-1
-  307: 1			; DIGIT 78 OF ARGUMENT 2   =   VALUE OF ARG_STACK+FP_NUMBER_SIZE-2
-  308: 1			; DIGIT 56 OF ARGUMENT 2   =   VALUE OF ARG_STACK+FP_NUMBER_SIZE-3
-  309: 1			; DIGIT 34 OF ARGUMENT 2   =   VALUE OF ARG_STACK+FP_NUMBER_SIZE-4
-  310: 1			; DIGIT 12 OF ARGUMENT 2   =   VALUE OF ARG_STACK+FP_NUMBER_SIZE-5
-  311: 1			;
-  312: 1			; EXPONENT OF ARGUMENT 1   =   VALUE OF ARG_STACK
-  313: 1			; SIGN OF ARGUMENT 1       =   VALUE OF ARG_STACK-1
-  314: 1			; DIGIT 78 OF ARGUMENT 1   =   VALUE OF ARG_STACK-2
-  315: 1			; DIGIT 56 OF ARGUMENT 1   =   VALUE OF ARG_STACK-3
-  316: 1			; DIGIT 34 OF ARGUMENT 1   =   VALUE OF ARG_STACK-4
-  317: 1			; DIGIT 12 OF ARGUMENT 1   =   VALUE OF ARG_STACK-5
-  318: 1			;
-  319: 1			; The operations are performed thusly:
-  320: 1			;
-  321: 1			; ARG_STACK+FP_NUMBER_SIZE = ARG_STACK+FP_NUMBER_SIZE # ARG_STACK
-  322: 1			;
-  323: 1			; Which is ARGUMENT 2 = ARGUMENT 2 # ARGUMENT 1
+  290:				;A contains byte
+  291:	  01E6	C0 E0		LCDCHROUT:	PUSH	ACC
+  292:	  01E8	C4				SWAP	A				;High nibble first
+  293:	  01E9	54 0F				ANL	A,#0Fh
+  294:	  01EB	D2 E4				SETB	ACC.4				;RS
+  295:	  01ED	31 CF				ACALL	LCDNIBOUT
+  296:	  01EF	D0 E0				POP	ACC
+  297:	  01F1	54 0F				ANL	A,#0Fh
+  298:	  01F3	D2 E4				SETB	ACC.4				;RS
+  299:	  01F5	31 CF				ACALL	LCDNIBOUT
+  300:	  01F7	31 C6				ACALL	LCDDELAY			;Wait for BF to clear
+  301:	  01F9	22				RET
+  302:
+  303:	  01FA	74 01		LCDCLEAR:	MOV	A,#00000001b
+  304:	  01FC	31 D6				ACALL	LCDCMDOUT
+  305:	  01FE	7F 00				MOV	R7,#00h
+  306:	  0200	31 C6		LCDCLEAR1:	ACALL	LCDDELAY
+  307:	  0202	DF FC				DJNZ	R7,LCDCLEAR1
+  308:	  0204	22				RET
+  309:
+  310:				;A contais address
+  311:	  0205	44 80		LCDSETADR:	ORL	A,#10000000b
+  312:	  0207	31 D6				ACALL	LCDCMDOUT
+  313:	  0209	22				RET
+  314:
+  315:	  020A	E6		LCDPRINTSTR:	MOV	A,@R0
+  316:	  020B	31 E6				ACALL	LCDCHROUT
+  317:	  020D	08				INC	R0
+  318:	  020E	DF FA				DJNZ	R7,LCDPRINTSTR
+  319:	  0210	22				RET
+  320:
+  321:	  0211	74 03		LCDINIT:	MOV	A,#00000011b			;Function set
+  322:	  0213	31 CF				ACALL	LCDNIBOUT
+  323:	  0215	31 C6				ACALL	LCDDELAY			;Wait for BF to clear
 
 ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 7
 
@@ -383,62 +383,62 @@ ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. 
 
  Line  I  Addr  Code            Source
 
-  324: 1			;
-  325: 1			; Where # can be ADD, SUBTRACT, MULTIPLY OR DIVIDE.
-  326: 1			;
-  327: 1			; Note that the stack gets popped after an operation.
-  328: 1			;
-  329: 1			; The FP_COMP instruction POPS the ARG_STACK TWICE and returns status.
-  330: 1			;
-  331: 1			;**********************************************************************
-  332: 1			;
-  333: 1			;**********************************************************************
-  334: 1			;
-  335: 1			; STATUS ON RETURN - After performing an operation (+, -, *, /)
-  336: 1			;                    the accumulator contains the following status
-  337: 1			;
-  338: 1			; ACCUMULATOR - BIT 0 - FLOATING POINT UNDERFLOW OCCURED
-  339: 1			;
-  340: 1			;             - BIT 1 - FLOATING POINT OVERFLOW OCCURED
-  341: 1			;
-  342: 1			;             - BIT 2 - RESULT WAS ZER0
-  343: 1			;
-  344: 1			;             - BIT 3 - DIVIDE BY ZERO ATTEMPTED
-  345: 1			;
-  346: 1			;             - BIT 4 - NOT USED, 0 RETURNED
-  347: 1			;
-  348: 1			;             - BIT 5 - NOT USED, 0 RETURNED
-  349: 1			;
-  350: 1			;             - BIT 6 - NOT USED, 0 RETURNED
-  351: 1			;
-  352: 1			;             - BIT 7 - NOT USED, 0 RETURNED
-  353: 1			;
-  354: 1			; NOTE: When underflow occures, a ZERO result is returned.
-  355: 1			;       When overflow or divide by zero occures, a result of
-  356: 1			;       .99999999 E+127 is returned and it is up to the user
-  357: 1			;       to handle these conditions as needed in the program.
-  358: 1			;
-  359: 1			; NOTE: The Compare instruction returns F0 = 0 if ARG 1 = ARG 2
-  360: 1			;       and returns a CARRY FLAG = 1 if ARG 1 is > ARG 2
-  361: 1			;
-  362: 1			;***********************************************************************
-  363: 1			;
-  364: 1
-  365: 1			;$NOTABS                  ;expand tabs
-  366: 1
-  367: 1
-  368: 1			CMP MACRO REGISTER,CONSTANT
-  369: 1			CJNE	REGISTER,CONSTANT,$+3
-  370: 1			ENDM
-  371: 1			;***********************************************************************
-  372: 1			;
-  373: 1			; The following values MUST be provided by the user
-  374: 1			;
-  375: 1			;***********************************************************************
-  376: 1			;
-  377: 1	N      0024	ARG_STACK		EQU	24H				;ARGUMENT STACK POINTER
-  378: 1	N      0025	FORMAT			EQU	25H				;LOCATION OF OUTPUT FORMAT BYTE
-  379: 1	N      0048	CONVT			EQU	48H				;String addr TO CONVERT NUMBERS
+  324:	  0217	74 28				MOV	A,#00101000b
+  325:	  0219	31 D6				ACALL	LCDCMDOUT
+  326:	  021B	74 28				MOV	A,#00101000b
+  327:	  021D	31 D6				ACALL	LCDCMDOUT
+  328:	  021F	74 0C				MOV	A,#00001100b			;Display ON/OFF
+  329:	  0221	31 D6				ACALL	LCDCMDOUT
+  330:	  0223	31 FA				ACALL	LCDCLEAR			;Clear
+  331:	  0225	74 06				MOV	A,#00000110b			;Cursor direction
+  332:	  0227	31 D6				ACALL	LCDCMDOUT
+  333:	  0229	22				RET
+  334:
+  335:	  022A	78 40		LCDCLEARBUFF:	MOV	R0,#LCDBUFF
+  336:	  022C	7F 10				MOV	R7,#10h
+  337:	  022E	74 20				MOV	A,#20H
+  338:	  0230	F6		LCDCLEARBUFF1:	MOV	@R0,A
+  339:	  0231	08				INC	R0
+  340:	  0232	DF FC				DJNZ	R7,LCDCLEARBUFF1
+  341:	  0234	22				RET
+  342:
+  343:		N      1000			ORG	1000h
+  344:
+  345:				$include	(FP52INT.a51)
+  346: 1			; This is a complete BCD floating point package for the 8051 micro-
+  347: 1			; controller. It provides 8 digits of accuracy with exponents that
+  348: 1			; range from +127 to -127. The mantissa is in packed BCD, while the
+  349: 1			; exponent is expressed in pseudo-twos complement. A ZERO exponent
+  350: 1			; is used to express the number ZERO. An exponent value of 80H or
+  351: 1			; greater than means the exponent is positive, i.e. 80H = E 0,
+  352: 1			; 81H = E+1, 82H = E+2 and so on. If the exponent is 7FH or less,
+  353: 1			; the exponent is negative, 7FH = E-1, 7EH = E-2, and so on.
+  354: 1			; ALL NUMBERS ARE ASSUMED TO BE NORMALIZED and all results are
+  355: 1			; normalized after calculation. A normalized mantissa is >=.10 and
+  356: 1			; <=.99999999.
+  357: 1			;
+  358: 1			; The numbers in memory assumed to be stored as follows:
+  359: 1			;
+  360: 1			; EXPONENT OF ARGUMENT 2   =   VALUE OF ARG_STACK+FP_NUMBER_SIZE
+  361: 1			; SIGN OF ARGUMENT 2       =   VALUE OF ARG_STACK+FP_NUMBER_SIZE-1
+  362: 1			; DIGIT 78 OF ARGUMENT 2   =   VALUE OF ARG_STACK+FP_NUMBER_SIZE-2
+  363: 1			; DIGIT 56 OF ARGUMENT 2   =   VALUE OF ARG_STACK+FP_NUMBER_SIZE-3
+  364: 1			; DIGIT 34 OF ARGUMENT 2   =   VALUE OF ARG_STACK+FP_NUMBER_SIZE-4
+  365: 1			; DIGIT 12 OF ARGUMENT 2   =   VALUE OF ARG_STACK+FP_NUMBER_SIZE-5
+  366: 1			;
+  367: 1			; EXPONENT OF ARGUMENT 1   =   VALUE OF ARG_STACK
+  368: 1			; SIGN OF ARGUMENT 1       =   VALUE OF ARG_STACK-1
+  369: 1			; DIGIT 78 OF ARGUMENT 1   =   VALUE OF ARG_STACK-2
+  370: 1			; DIGIT 56 OF ARGUMENT 1   =   VALUE OF ARG_STACK-3
+  371: 1			; DIGIT 34 OF ARGUMENT 1   =   VALUE OF ARG_STACK-4
+  372: 1			; DIGIT 12 OF ARGUMENT 1   =   VALUE OF ARG_STACK-5
+  373: 1			;
+  374: 1			; The operations are performed thusly:
+  375: 1			;
+  376: 1			; ARG_STACK+FP_NUMBER_SIZE = ARG_STACK+FP_NUMBER_SIZE # ARG_STACK
+  377: 1			;
+  378: 1			; Which is ARGUMENT 2 = ARGUMENT 2 # ARGUMENT 1
+  379: 1			;
 
 ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 8
 
@@ -446,62 +446,62 @@ ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. 
 
  Line  I  Addr  Code            Source
 
-  380: 1	B	 31	INTGRC			BIT	26H.1				;BIT SET IF INTEGER ERROR
-  381: 1	B	 33	ADD_IN			BIT	26H.3				;DCMPXZ IN BASIC BACKAGE
-  382: 1	B	 36	ZSURP			BIT	26H.6				;ZERO SUPRESSION FOR HEX PRINT
+  380: 1			; Where # can be ADD, SUBTRACT, MULTIPLY OR DIVIDE.
+  381: 1			;
+  382: 1			; Note that the stack gets popped after an operation.
   383: 1			;
-  384: 1			;***********************************************************************
+  384: 1			; The FP_COMP instruction POPS the ARG_STACK TWICE and returns status.
   385: 1			;
-  386: 1			; The following equates are used internally
+  386: 1			;**********************************************************************
   387: 1			;
-  388: 1			;***********************************************************************
+  388: 1			;**********************************************************************
   389: 1			;
-  390: 1	N      0006	FP_NUMBER_SIZE		EQU	6
-  391: 1	N      0004	DIGIT			EQU	4
-  392: 1	N      0000	R0B0			EQU	0
-  393: 1	N      0001	R1B0			EQU	1
-  394: 1	N      0000	UNDERFLOW		EQU	0
-  395: 1	N      0001	OVERFLOW		EQU	1
-  396: 1	N      0002	ZERO			EQU	2
-  397: 1	N      0003	ZERO_DIVIDE		EQU	3
+  390: 1			; STATUS ON RETURN - After performing an operation (+, -, *, /)
+  391: 1			;                    the accumulator contains the following status
+  392: 1			;
+  393: 1			; ACCUMULATOR - BIT 0 - FLOATING POINT UNDERFLOW OCCURED
+  394: 1			;
+  395: 1			;             - BIT 1 - FLOATING POINT OVERFLOW OCCURED
+  396: 1			;
+  397: 1			;             - BIT 2 - RESULT WAS ZER0
   398: 1			;
-  399: 1			;***********************************************************************
-  400: 1				;**************************************************************
-  401: 1				;
-  402: 1				; The following internal locations are used by the math pack
-  403: 1				; ordering is important and the FP_DIGITS must be bit
-  404: 1				; addressable
-  405: 1				;
-  406: 1				;***************************************************************
-  407: 1				;
-  408: 1	N      0028	FP_STATUS		EQU	28H				;28 NOT used data pointer me
-  409: 1	N      0029	FP_TEMP			EQU	FP_STATUS+1			;29 NOT USED
-  410: 1	N      002A	FP_CARRY		EQU	FP_STATUS+2			;2A USED FOR BITS
-  411: 1	N      002B	FP_DIG12		EQU	FP_CARRY+1			;2B
-  412: 1	N      002C	FP_DIG34		EQU	FP_CARRY+2			;2C
-  413: 1	N      002D	FP_DIG56		EQU	FP_CARRY+3			;2D
-  414: 1	N      002E	FP_DIG78		EQU	FP_CARRY+4			;2E
-  415: 1	N      002F	FP_SIGN			EQU	FP_CARRY+5			;2F
-  416: 1	N      0030	FP_EXP			EQU	FP_CARRY+6			;30
-  417: 1	B	 78	MSIGN			BIT	FP_SIGN.0			;2F.0
-  418: 1	B	 50	XSIGN			BIT	FP_CARRY.0			;2A.0
-  419: 1	B	 51	FOUND_RADIX		BIT	FP_CARRY.1			;2A.1
-  420: 1	B	 52	FIRST_RADIX		BIT	FP_CARRY.2			;2A.2
-  421: 1	B	 53	DONE_LOAD		BIT	FP_CARRY.3			;2A.3
-  422: 1	N      002B	FP_NIB1			EQU	FP_DIG12			;2B
-  423: 1	N      002C	FP_NIB2			EQU	FP_NIB1+1			;2C
-  424: 1	N      002D	FP_NIB3			EQU	FP_NIB1+2			;2D
-  425: 1	N      002E	FP_NIB4			EQU	FP_NIB1+3			;2E
-  426: 1	N      002F	FP_NIB5			EQU	FP_NIB1+4			;2F
-  427: 1	N      0030	FP_NIB6			EQU	FP_NIB1+5			;30
-  428: 1	N      0031	FP_NIB7			EQU	FP_NIB1+6			;31
-  429: 1	N      0032	FP_NIB8			EQU	FP_NIB1+7			;32
-  430: 1	N      0033	FP_ACCX			EQU	FP_NIB1+8			;33
-  431: 1	N      0034	FP_ACCC			EQU	FP_NIB1+9			;34
-  432: 1	N      0035	FP_ACC1			EQU	FP_NIB1+10			;35
-  433: 1	N      0036	FP_ACC2			EQU	FP_NIB1+11			;36
-  434: 1	N      0037	FP_ACC3			EQU	FP_NIB1+12			;37
-  435: 1	N      0038	FP_ACC4			EQU	FP_NIB1+13			;38
+  399: 1			;             - BIT 3 - DIVIDE BY ZERO ATTEMPTED
+  400: 1			;
+  401: 1			;             - BIT 4 - NOT USED, 0 RETURNED
+  402: 1			;
+  403: 1			;             - BIT 5 - NOT USED, 0 RETURNED
+  404: 1			;
+  405: 1			;             - BIT 6 - NOT USED, 0 RETURNED
+  406: 1			;
+  407: 1			;             - BIT 7 - NOT USED, 0 RETURNED
+  408: 1			;
+  409: 1			; NOTE: When underflow occures, a ZERO result is returned.
+  410: 1			;       When overflow or divide by zero occures, a result of
+  411: 1			;       .99999999 E+127 is returned and it is up to the user
+  412: 1			;       to handle these conditions as needed in the program.
+  413: 1			;
+  414: 1			; NOTE: The Compare instruction returns F0 = 0 if ARG 1 = ARG 2
+  415: 1			;       and returns a CARRY FLAG = 1 if ARG 1 is > ARG 2
+  416: 1			;
+  417: 1			;***********************************************************************
+  418: 1			;
+  419: 1
+  420: 1			;$NOTABS                  ;expand tabs
+  421: 1
+  422: 1
+  423: 1			CMP MACRO REGISTER,CONSTANT
+  424: 1			CJNE	REGISTER,CONSTANT,$+3
+  425: 1			ENDM
+  426: 1			;***********************************************************************
+  427: 1			;
+  428: 1			; The following values MUST be provided by the user
+  429: 1			;
+  430: 1			;***********************************************************************
+  431: 1			;
+  432: 1	N      0024	ARG_STACK		EQU	24H				;ARGUMENT STACK POINTER
+  433: 1	N      0025	FORMAT			EQU	25H				;LOCATION OF OUTPUT FORMAT BYTE
+  434: 1	N      0060	CONVT			EQU	60H				;String addr TO CONVERT NUMBERS
+  435: 1	B	 31	INTGRC			BIT	26H.1				;BIT SET IF INTEGER ERROR
 
 ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 9
 
@@ -509,62 +509,62 @@ ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. 
 
  Line  I  Addr  Code            Source
 
-  436: 1	N      0039	FP_ACC5			EQU	FP_NIB1+14			;39
-  437: 1	N      003A	FP_ACC6			EQU	FP_NIB1+15			;3A
-  438: 1	N      003B	FP_ACC7			EQU	FP_NIB1+16			;3B
-  439: 1	N      003C	FP_ACC8			EQU	FP_NIB1+17			;3C
-  440: 1	N      003D	FP_ACCS			EQU	FP_NIB1+18			;3D
-  441: 1
-  442: 1
-  443: 1			;			MOV	SP,#50H
-  444: 1			;			MOV	24H,#07FH
-  445: 1			;			MOV	25H,#044H
-  446: 1			;
-  447: 1			;			MOV	DPTR,#FPONE
-  448: 1			;			ACALL	PUSHC
-  449: 1			;			MOV	DPTR,#FPTWO
-  450: 1			;			ACALL	PUSHC
-  451: 1			;			ACALL	FLOATING_ADD
-  452: 1			;
+  436: 1	B	 33	ADD_IN			BIT	26H.3				;DCMPXZ IN BASIC BACKAGE
+  437: 1	B	 36	ZSURP			BIT	26H.6				;ZERO SUPRESSION FOR HEX PRINT
+  438: 1			;
+  439: 1			;***********************************************************************
+  440: 1			;
+  441: 1			; The following equates are used internally
+  442: 1			;
+  443: 1			;***********************************************************************
+  444: 1			;
+  445: 1	N      0006	FP_NUMBER_SIZE		EQU	6
+  446: 1	N      0004	DIGIT			EQU	4
+  447: 1	N      0000	R0B0			EQU	0
+  448: 1	N      0001	R1B0			EQU	1
+  449: 1	N      0000	UNDERFLOW		EQU	0
+  450: 1	N      0001	OVERFLOW		EQU	1
+  451: 1	N      0002	ZERO			EQU	2
+  452: 1	N      0003	ZERO_DIVIDE		EQU	3
   453: 1			;
-  454: 1			;			MOV	24H,#07FH
-  455: 1			;			MOV	DPTR,#FPTHREE
-  456: 1			;			ACALL	PUSHC
-  457: 1			;			MOV	DPTR,#FPTWO
-  458: 1			;			ACALL	PUSHC
-  459: 1			;			ACALL	FLOATING_MUL
-  460: 1			;			ACALL	FLOATING_POINT_OUTPUT
-  461: 1			;			SJMP	$
-  462: 1
-  463: 1			;FP_BASE			EQU	$
-  464: 1			;
-  465: 1			;	;**************************************************************
-  466: 1			;	;
-  467: 1			;	; The floating point entry points and jump table
-  468: 1			;	;
-  469: 1			;	;**************************************************************
-  470: 1			;	;
-  471: 1			;			AJMP	FLOATING_ADD
-  472: 1			;			AJMP	FLOATING_SUB
-  473: 1			;			AJMP	FLOATING_COMP
-  474: 1			;			AJMP	FLOATING_MUL
-  475: 1			;			AJMP	FLOATING_DIV
-  476: 1			;			AJMP	HEXSCAN
-  477: 1			;			AJMP	FLOATING_POINT_INPUT
-  478: 1			;			AJMP	FLOATING_POINT_OUTPUT
-  479: 1			;			AJMP	MULNUM10
-  480: 1			;			AJMP	HEXOUT
-  481: 1			;;
-  482: 1			;; the remaining jump to routines were extracted from basic52
-  483: 1			;; by me to make the floating point software stand alone
-  484: 1			;;
-  485: 1			;			AJMP	PUSHAS				;PUSH R0 TO ARGUMENT
-  486: 1			;			AJMP	POPAS				;POP ARGUMENT TO R1
-  487: 1			;			AJMP	MOVAS				;COPY ARGUMENT
-  488: 1			;			AJMP	AINT				;INT FUNCTION
-  489: 1			;			AJMP	PUSHC				;PUSH ARG IN DPTR TO STACK
-  490: 1
-  491: 1  01CD	22		PRTERR:			RET
+  454: 1			;***********************************************************************
+  455: 1				;**************************************************************
+  456: 1				;
+  457: 1				; The following internal locations are used by the math pack
+  458: 1				; ordering is important and the FP_DIGITS must be bit
+  459: 1				; addressable
+  460: 1				;
+  461: 1				;***************************************************************
+  462: 1				;
+  463: 1	N      0028	FP_STATUS		EQU	28H				;28 NOT used data pointer me
+  464: 1	N      0029	FP_TEMP			EQU	FP_STATUS+1			;29 NOT USED
+  465: 1	N      002A	FP_CARRY		EQU	FP_STATUS+2			;2A USED FOR BITS
+  466: 1	N      002B	FP_DIG12		EQU	FP_CARRY+1			;2B
+  467: 1	N      002C	FP_DIG34		EQU	FP_CARRY+2			;2C
+  468: 1	N      002D	FP_DIG56		EQU	FP_CARRY+3			;2D
+  469: 1	N      002E	FP_DIG78		EQU	FP_CARRY+4			;2E
+  470: 1	N      002F	FP_SIGN			EQU	FP_CARRY+5			;2F
+  471: 1	N      0030	FP_EXP			EQU	FP_CARRY+6			;30
+  472: 1	B	 78	MSIGN			BIT	FP_SIGN.0			;2F.0
+  473: 1	B	 50	XSIGN			BIT	FP_CARRY.0			;2A.0
+  474: 1	B	 51	FOUND_RADIX		BIT	FP_CARRY.1			;2A.1
+  475: 1	B	 52	FIRST_RADIX		BIT	FP_CARRY.2			;2A.2
+  476: 1	B	 53	DONE_LOAD		BIT	FP_CARRY.3			;2A.3
+  477: 1	N      002B	FP_NIB1			EQU	FP_DIG12			;2B
+  478: 1	N      002C	FP_NIB2			EQU	FP_NIB1+1			;2C
+  479: 1	N      002D	FP_NIB3			EQU	FP_NIB1+2			;2D
+  480: 1	N      002E	FP_NIB4			EQU	FP_NIB1+3			;2E
+  481: 1	N      002F	FP_NIB5			EQU	FP_NIB1+4			;2F
+  482: 1	N      0030	FP_NIB6			EQU	FP_NIB1+5			;30
+  483: 1	N      0031	FP_NIB7			EQU	FP_NIB1+6			;31
+  484: 1	N      0032	FP_NIB8			EQU	FP_NIB1+7			;32
+  485: 1	N      0033	FP_ACCX			EQU	FP_NIB1+8			;33
+  486: 1	N      0034	FP_ACCC			EQU	FP_NIB1+9			;34
+  487: 1	N      0035	FP_ACC1			EQU	FP_NIB1+10			;35
+  488: 1	N      0036	FP_ACC2			EQU	FP_NIB1+11			;36
+  489: 1	N      0037	FP_ACC3			EQU	FP_NIB1+12			;37
+  490: 1	N      0038	FP_ACC4			EQU	FP_NIB1+13			;38
+  491: 1	N      0039	FP_ACC5			EQU	FP_NIB1+14			;39
 
 ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. Heinz                                         PAGE 10
 
@@ -572,62 +572,62 @@ ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. H
 
  Line  I  Addr  Code            Source
 
-  492: 1  01CE	22		BADPRM:			RET
-  493: 1
-  494: 1				;
-  495: 1				;
-  496: 1  01CF			FLOATING_SUB:
-  497: 1				;
-  498: 1  01CF	A8 24					MOV	R0,ARG_STACK
-  499: 1  01D1	18					DEC	R0				;POINT TO SIGN
-  500: 1  01D2	E6					MOV	A,@R0				;READ SIGN
-  501: 1  01D3	B2 E0					CPL	ACC.0
-  502: 1  01D5	F6					MOV	@R0,A
-  503: 1				;
-  504: 1				;AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-  505: 1				;
-  506: 1  01D6			FLOATING_ADD:
-  507: 1				;
-  508: 1				;AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-  509: 1				;
-  510: 1				;
-  511: 1  01D6	91 94					ACALL 	MDES1				;R7=TOS EXP, R6=TOS-1 EXP, R4=TOS SI
-       1			GN
-  512: 1											;R3=TOS-1 SIGN, OPERATION IS R1 # R0
-  513: 1				;
-  514: 1  01D8	EF					MOV	A,R7				;GET TOS EXPONENT
-  515: 1  01D9	60 0D					JZ	POP_AND_EXIT			;IF TOS=0 THEN POP AND EXIT
-  516: 1  01DB	BE 00 12				CJNE	R6,#0,LOAD1			;CLEAR CARRY EXIT IF ZERO
-  517: 1				;
-  518: 1				;**************************************************************
-  519: 1				;
-  520: 1  01DE			SWAP_AND_EXIT:							; Swap external args and return
-  521: 1				;
-  522: 1				;**************************************************************
-  523: 1				;
-  524: 1  01DE	91 8B					ACALL	LOAD_POINTERS
-  525: 1  01E0	7F 06					MOV	R7,#FP_NUMBER_SIZE
-  526: 1				;
-  527: 1  01E2	E6		SE1:			MOV	A,@R0				;SWAP THE ARGUMENTS
-  528: 1  01E3	F7					MOV	@R1,A
-  529: 1  01E4	18					DEC	R0
-  530: 1  01E5	19					DEC	R1
-  531: 1  01E6	DF FA					DJNZ	R7,SE1
-  532: 1				;
-  533: 1  01E8			POP_AND_EXIT:
-  534: 1				;
-  535: 1  01E8	E5 24					MOV	A,ARG_STACK			;POP THE STACK
-  536: 1  01EA	24 06					ADD	A,#FP_NUMBER_SIZE
-  537: 1  01EC	F5 24					MOV	ARG_STACK,A
-  538: 1  01EE	E4					CLR	A
-  539: 1  01EF	22					RET
-  540: 1				;
-  541: 1				;
-  542: 1  01F0	9E		LOAD1:			SUBB	A,R6				;A = ARG 1 EXP - ARG 2 EXP
-  543: 1  01F1	8F 30					MOV	FP_EXP,R7			;SAVE EXPONENT AND SIGN
-  544: 1  01F3	8C 2F					MOV	FP_SIGN,R4
-  545: 1  01F5	50 09					JNC	LOAD2				;ARG1 EXPONENT IS LARGER OR SAME
-  546: 1  01F7	8E 30					MOV	FP_EXP,R6
+  492: 1	N      003A	FP_ACC6			EQU	FP_NIB1+15			;3A
+  493: 1	N      003B	FP_ACC7			EQU	FP_NIB1+16			;3B
+  494: 1	N      003C	FP_ACC8			EQU	FP_NIB1+17			;3C
+  495: 1	N      003D	FP_ACCS			EQU	FP_NIB1+18			;3D
+  496: 1
+  497: 1
+  498: 1			;			MOV	SP,#50H
+  499: 1			;
+  500: 1			;			MOV	DPTR,#FPONE
+  501: 1			;			ACALL	PUSHC
+  502: 1			;			MOV	DPTR,#FPTWO
+  503: 1			;			ACALL	PUSHC
+  504: 1			;			ACALL	FLOATING_ADD
+  505: 1			;
+  506: 1			;
+  507: 1			;			MOV	24H,#07FH
+  508: 1			;			MOV	DPTR,#FPTHREE
+  509: 1			;			ACALL	PUSHC
+  510: 1			;			MOV	DPTR,#FPTWO
+  511: 1			;			ACALL	PUSHC
+  512: 1			;			ACALL	FLOATING_MUL
+  513: 1			;			ACALL	FLOATING_POINT_OUTPUT
+  514: 1			;			SJMP	$
+  515: 1
+  516: 1			;FP_BASE			EQU	$
+  517: 1			;
+  518: 1			;	;**************************************************************
+  519: 1			;	;
+  520: 1			;	; The floating point entry points and jump table
+  521: 1			;	;
+  522: 1			;	;**************************************************************
+  523: 1			;	;
+  524: 1			;			AJMP	FLOATING_ADD
+  525: 1			;			AJMP	FLOATING_SUB
+  526: 1			;			AJMP	FLOATING_COMP
+  527: 1			;			AJMP	FLOATING_MUL
+  528: 1			;			AJMP	FLOATING_DIV
+  529: 1			;			AJMP	HEXSCAN
+  530: 1			;			AJMP	FLOATING_POINT_INPUT
+  531: 1			;			AJMP	FLOATING_POINT_OUTPUT
+  532: 1			;			AJMP	MULNUM10
+  533: 1			;			AJMP	HEXOUT
+  534: 1			;;
+  535: 1			;; the remaining jump to routines were extracted from basic52
+  536: 1			;; by me to make the floating point software stand alone
+  537: 1			;;
+  538: 1			;			AJMP	PUSHAS				;PUSH R0 TO ARGUMENT
+  539: 1			;			AJMP	POPAS				;POP ARGUMENT TO R1
+  540: 1			;			AJMP	MOVAS				;COPY ARGUMENT
+  541: 1			;			AJMP	AINT				;INT FUNCTION
+  542: 1			;			AJMP	PUSHC				;PUSH ARG IN DPTR TO STACK
+  543: 1
+  544: 1  1000	22		PRTERR:			RET
+  545: 1  1001	22		BADPRM:			RET
+  546: 1
+  547: 1				;
 
 ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. Heinz                                         PAGE 11
 
@@ -635,62 +635,62 @@ ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. H
 
  Line  I  Addr  Code            Source
 
-  547: 1  01F9	8B 2F					MOV	FP_SIGN,R3
-  548: 1  01FB	F4					CPL	A
-  549: 1  01FC	04					INC	A				;COMPENSATE FOR EXP DELTA
-  550: 1  01FD	C8					XCH	A,R0				;FORCE R0 TO POINT AT THE LARGEST
-  551: 1  01FE	C9					XCH	A,R1				;EXPONENT
-  552: 1  01FF	C8					XCH	A,R0
-  553: 1				;
-  554: 1  0200	FF		LOAD2:			MOV	R7,A				;SAVE THE EXPONENT DELTA IN R7
-  555: 1  0201	C2 33					CLR	ADD_IN
-  556: 1  0203	BD 00 02				CJNE	R5,#0,LOAD3
-  557: 1  0206	D2 33					SETB	ADD_IN
+  548: 1				;
+  549: 1  1002			FLOATING_SUB:
+  550: 1				;
+  551: 1  1002	A8 24					MOV	R0,ARG_STACK
+  552: 1  1004	18					DEC	R0				;POINT TO SIGN
+  553: 1  1005	E6					MOV	A,@R0				;READ SIGN
+  554: 1  1006	B2 E0					CPL	ACC.0
+  555: 1  1008	F6					MOV	@R0,A
+  556: 1				;
+  557: 1				;AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
   558: 1				;
-  559: 1				; Load the R1 mantissa
+  559: 1  1009			FLOATING_ADD:
   560: 1				;
-  561: 1  0208	91 A5		LOAD3:			ACALL	LOADR1_MANTISSA			;LOAD THE SMALLEST NUMBER
+  561: 1				;AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
   562: 1				;
-  563: 1				; Now align the number to the delta exponent
-  564: 1				; R4 points to the string of the last digits lost
-  565: 1				;
-  566: 1						CMP	R7,#DIGIT+DIGIT+3
-  567+ 2  020A	BF 0B 00	CJNE	R7,#DIGIT+DIGIT+3,$+3
-  568: 1  020D	40 02					JC	LOAD4
-  569: 1  020F	7F 0A					MOV	R7,#DIGIT+DIGIT+2
+  563: 1				;
+  564: 1  1009	51 C7					ACALL 	MDES1				;R7=TOS EXP, R6=TOS-1 EXP, R4=TOS SI
+       1			GN
+  565: 1											;R3=TOS-1 SIGN, OPERATION IS R1 # R0
+  566: 1				;
+  567: 1  100B	EF					MOV	A,R7				;GET TOS EXPONENT
+  568: 1  100C	60 0D					JZ	POP_AND_EXIT			;IF TOS=0 THEN POP AND EXIT
+  569: 1  100E	BE 00 12				CJNE	R6,#0,LOAD1			;CLEAR CARRY EXIT IF ZERO
   570: 1				;
-  571: 1  0211	75 2A 00	LOAD4:			MOV	FP_CARRY,#00			;CLEAR THE CARRY
-  572: 1  0214	71 E8					ACALL	RIGHT				;SHIFT THE NUMBER
-  573: 1				;
-  574: 1				; Set up for addition and subtraction
-  575: 1				;
-  576: 1  0216	7F 04					MOV	R7,#DIGIT			;LOOP COUNT
-  577: 1  0218	79 2E					MOV	R1,#FP_DIG78
-  578: 1  021A	74 9E					MOV	A,#9EH
-  579: 1  021C	C3					CLR	C
-  580: 1  021D	9C					SUBB	A,R4
-  581: 1  021E	D4					DA	A
-  582: 1  021F	CC					XCH	A,R4
-  583: 1  0220	70 01					JNZ	LOAD5
-  584: 1  0222	FC					MOV	R4,A
-  585: 1  0223			LOAD5:			CMP	A,#50H				;TEST FOR SUBTRACTION
-  586+ 2  0223	B4 50 00	CJNE	A,#50H,$+3
-  587: 1  0226	30 33 18				JNB	ADD_IN,SUBLP			;DO SUBTRACTION IF NO ADD_IN
-  588: 1  0229	B3					CPL	C				;FLIP CARRY FOR ADDITION
-  589: 1  022A	51 38					ACALL	ADDLP				;DO ADDITION
-  590: 1				;
-  591: 1  022C	50 08					JNC	ADD_R
-  592: 1  022E	05 2A					INC	FP_CARRY
-  593: 1  0230	7F 01					MOV	R7,#1
-  594: 1  0232	71 E8					ACALL	RIGHT
-  595: 1  0234	71 9F					ACALL	INC_FP_EXP			;SHIFT AND BUMP EXPONENT
-  596: 1				;
-  597: 1  0236	61 90		ADD_R:			AJMP	STORE_ALIGN_TEST_AND_EXIT
-  598: 1				;
-  599: 1  0238	E6		ADDLP:			MOV	A,@R0
-  600: 1  0239	37					ADDC	A,@R1
-  601: 1  023A	D4					DA	A
-  602: 1  023B	F7					MOV	@R1,A
+  571: 1				;**************************************************************
+  572: 1				;
+  573: 1  1011			SWAP_AND_EXIT:							; Swap external args and return
+  574: 1				;
+  575: 1				;**************************************************************
+  576: 1				;
+  577: 1  1011	51 BE					ACALL	LOAD_POINTERS
+  578: 1  1013	7F 06					MOV	R7,#FP_NUMBER_SIZE
+  579: 1				;
+  580: 1  1015	E6		SE1:			MOV	A,@R0				;SWAP THE ARGUMENTS
+  581: 1  1016	F7					MOV	@R1,A
+  582: 1  1017	18					DEC	R0
+  583: 1  1018	19					DEC	R1
+  584: 1  1019	DF FA					DJNZ	R7,SE1
+  585: 1				;
+  586: 1  101B			POP_AND_EXIT:
+  587: 1				;
+  588: 1  101B	E5 24					MOV	A,ARG_STACK			;POP THE STACK
+  589: 1  101D	24 06					ADD	A,#FP_NUMBER_SIZE
+  590: 1  101F	F5 24					MOV	ARG_STACK,A
+  591: 1  1021	E4					CLR	A
+  592: 1  1022	22					RET
+  593: 1				;
+  594: 1				;
+  595: 1  1023	9E		LOAD1:			SUBB	A,R6				;A = ARG 1 EXP - ARG 2 EXP
+  596: 1  1024	8F 30					MOV	FP_EXP,R7			;SAVE EXPONENT AND SIGN
+  597: 1  1026	8C 2F					MOV	FP_SIGN,R4
+  598: 1  1028	50 09					JNC	LOAD2				;ARG1 EXPONENT IS LARGER OR SAME
+  599: 1  102A	8E 30					MOV	FP_EXP,R6
+  600: 1  102C	8B 2F					MOV	FP_SIGN,R3
+  601: 1  102E	F4					CPL	A
+  602: 1  102F	04					INC	A				;COMPENSATE FOR EXP DELTA
 
 ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. Heinz                                         PAGE 12
 
@@ -698,62 +698,62 @@ ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. H
 
  Line  I  Addr  Code            Source
 
-  603: 1  023C	18					DEC	R0
-  604: 1  023D	19					DEC	R1
-  605: 1  023E	DF F8					DJNZ	R7,ADDLP			;LOOP UNTIL DONE
-  606: 1  0240	22					RET
-  607: 1				;
-  608: 1				;
-  609: 1  0241	E6		SUBLP:			MOV	A,@R0				;NOW DO SUBTRACTION
-  610: 1  0242	FE					MOV	R6,A
-  611: 1  0243	E4					CLR	A
-  612: 1  0244	34 99					ADDC	A,#99H
-  613: 1  0246	97					SUBB	A,@R1
-  614: 1  0247	2E					ADD	A,R6
-  615: 1  0248	D4					DA	A
-  616: 1  0249	F7					MOV	@R1,A
-  617: 1  024A	18					DEC	R0
-  618: 1  024B	19					DEC	R1
-  619: 1  024C	DF F3					DJNZ	R7,SUBLP
-  620: 1  024E	40 11					JC	FSUB6
-  621: 1				;
-  622: 1				;
-  623: 1				; Need to complement the result and sign because the floating
-  624: 1				; point accumulator mantissa was larger than the external
-  625: 1				; memory and their signs were equal.
+  603: 1  1030	C8					XCH	A,R0				;FORCE R0 TO POINT AT THE LARGEST
+  604: 1  1031	C9					XCH	A,R1				;EXPONENT
+  605: 1  1032	C8					XCH	A,R0
+  606: 1				;
+  607: 1  1033	FF		LOAD2:			MOV	R7,A				;SAVE THE EXPONENT DELTA IN R7
+  608: 1  1034	C2 33					CLR	ADD_IN
+  609: 1  1036	BD 00 02				CJNE	R5,#0,LOAD3
+  610: 1  1039	D2 33					SETB	ADD_IN
+  611: 1				;
+  612: 1				; Load the R1 mantissa
+  613: 1				;
+  614: 1  103B	51 D8		LOAD3:			ACALL	LOADR1_MANTISSA			;LOAD THE SMALLEST NUMBER
+  615: 1				;
+  616: 1				; Now align the number to the delta exponent
+  617: 1				; R4 points to the string of the last digits lost
+  618: 1				;
+  619: 1						CMP	R7,#DIGIT+DIGIT+3
+  620+ 2  103D	BF 0B 00	CJNE	R7,#DIGIT+DIGIT+3,$+3
+  621: 1  1040	40 02					JC	LOAD4
+  622: 1  1042	7F 0A					MOV	R7,#DIGIT+DIGIT+2
+  623: 1				;
+  624: 1  1044	75 2A 00	LOAD4:			MOV	FP_CARRY,#00			;CLEAR THE CARRY
+  625: 1  1047	51 1B					ACALL	RIGHT				;SHIFT THE NUMBER
   626: 1				;
-  627: 1  0250	B2 78					CPL	FP_SIGN.0
-  628: 1  0252	79 2E					MOV	R1,#FP_DIG78
-  629: 1  0254	7F 04					MOV	R7,#DIGIT			;LOOP COUNT
-  630: 1				;
-  631: 1  0256	74 9A		FSUB5:			MOV	A,#9AH
-  632: 1  0258	97					SUBB	A,@R1
-  633: 1  0259	24 00					ADD	A,#0
-  634: 1  025B	D4					DA	A
-  635: 1  025C	F7					MOV	@R1,A
-  636: 1  025D	19					DEC	R1
-  637: 1  025E	B3					CPL	C
-  638: 1  025F	DF F5					DJNZ	R7,FSUB5			;LOOP
-  639: 1				;
-  640: 1				; Now see how many zeros their are
-  641: 1				;
-  642: 1  0261	78 2B		FSUB6:			MOV	R0,#FP_DIG12
-  643: 1  0263	7F 00					MOV	R7,#0
-  644: 1				;
-  645: 1  0265	E6		FSUB7:			MOV	A,@R0
-  646: 1  0266	70 08					JNZ	FSUB8
-  647: 1  0268	0F					INC	R7
-  648: 1  0269	0F					INC	R7
-  649: 1  026A	08					INC	R0
-  650: 1  026B	B8 2F F7				CJNE	R0,#FP_SIGN,FSUB7
-  651: 1  026E	61 D8					AJMP	ZERO_AND_EXIT
-  652: 1				;
-  653: 1  0270			FSUB8:			CMP	A,#10H
-  654+ 2  0270	B4 10 00	CJNE	A,#10H,$+3
-  655: 1  0273	50 01					JNC	FSUB9
-  656: 1  0275	0F					INC	R7
-  657: 1				;
-  658: 1				; Now R7 has the number of leading zeros in the FP ACC
+  627: 1				; Set up for addition and subtraction
+  628: 1				;
+  629: 1  1049	7F 04					MOV	R7,#DIGIT			;LOOP COUNT
+  630: 1  104B	79 2E					MOV	R1,#FP_DIG78
+  631: 1  104D	74 9E					MOV	A,#9EH
+  632: 1  104F	C3					CLR	C
+  633: 1  1050	9C					SUBB	A,R4
+  634: 1  1051	D4					DA	A
+  635: 1  1052	CC					XCH	A,R4
+  636: 1  1053	70 01					JNZ	LOAD5
+  637: 1  1055	FC					MOV	R4,A
+  638: 1  1056			LOAD5:			CMP	A,#50H				;TEST FOR SUBTRACTION
+  639+ 2  1056	B4 50 00	CJNE	A,#50H,$+3
+  640: 1  1059	30 33 18				JNB	ADD_IN,SUBLP			;DO SUBTRACTION IF NO ADD_IN
+  641: 1  105C	B3					CPL	C				;FLIP CARRY FOR ADDITION
+  642: 1  105D	11 6B					ACALL	ADDLP				;DO ADDITION
+  643: 1				;
+  644: 1  105F	50 08					JNC	ADD_R
+  645: 1  1061	05 2A					INC	FP_CARRY
+  646: 1  1063	7F 01					MOV	R7,#1
+  647: 1  1065	51 1B					ACALL	RIGHT
+  648: 1  1067	31 D2					ACALL	INC_FP_EXP			;SHIFT AND BUMP EXPONENT
+  649: 1				;
+  650: 1  1069	21 C3		ADD_R:			AJMP	STORE_ALIGN_TEST_AND_EXIT
+  651: 1				;
+  652: 1  106B	E6		ADDLP:			MOV	A,@R0
+  653: 1  106C	37					ADDC	A,@R1
+  654: 1  106D	D4					DA	A
+  655: 1  106E	F7					MOV	@R1,A
+  656: 1  106F	18					DEC	R0
+  657: 1  1070	19					DEC	R1
+  658: 1  1071	DF F8					DJNZ	R7,ADDLP			;LOOP UNTIL DONE
 
 ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. Heinz                                         PAGE 13
 
@@ -761,62 +761,62 @@ ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. H
 
  Line  I  Addr  Code            Source
 
-  659: 1				;
-  660: 1  0276	E5 30		FSUB9:			MOV	A,FP_EXP			;GET THE OLD EXPONENT
-  661: 1  0278	C3					CLR	C
-  662: 1  0279	9F					SUBB	A,R7				;SUBTRACT FROM THE NUMBER OF ZEROS
-  663: 1  027A	60 0B					JZ	FSUB10
-  664: 1  027C	40 09					JC	FSUB10
-  665: 1				;
-  666: 1  027E	F5 30					MOV	FP_EXP,A			;SAVE THE NEW EXPONENT
-  667: 1				;
-  668: 1  0280	91 22					ACALL	LEFT1				;SHIFT THE FP ACC
-  669: 1  0282	75 2A 00				MOV	FP_CARRY,#0
-  670: 1  0285	61 90					AJMP	STORE_ALIGN_TEST_AND_EXIT
-  671: 1				;
-  672: 1  0287	61 D2		FSUB10:			AJMP	UNDERFLOW_AND_EXIT
-  673: 1				;
-  674: 1				;***************************************************************
+  659: 1  1073	22					RET
+  660: 1				;
+  661: 1				;
+  662: 1  1074	E6		SUBLP:			MOV	A,@R0				;NOW DO SUBTRACTION
+  663: 1  1075	FE					MOV	R6,A
+  664: 1  1076	E4					CLR	A
+  665: 1  1077	34 99					ADDC	A,#99H
+  666: 1  1079	97					SUBB	A,@R1
+  667: 1  107A	2E					ADD	A,R6
+  668: 1  107B	D4					DA	A
+  669: 1  107C	F7					MOV	@R1,A
+  670: 1  107D	18					DEC	R0
+  671: 1  107E	19					DEC	R1
+  672: 1  107F	DF F3					DJNZ	R7,SUBLP
+  673: 1  1081	40 11					JC	FSUB6
+  674: 1				;
   675: 1				;
-  676: 1  0289			FLOATING_COMP:	; Compare two floating point numbers
-  677: 1					; used for relational operations and is faster
-  678: 1					; than subtraction. ON RETURN, The carry is set
-  679: 1					; if ARG1 is > ARG2, else carry is not set
-  680: 1					; if ARG1 = ARG2, F0 gets set
-  681: 1				;
-  682: 1				;***************************************************************
+  676: 1				; Need to complement the result and sign because the floating
+  677: 1				; point accumulator mantissa was larger than the external
+  678: 1				; memory and their signs were equal.
+  679: 1				;
+  680: 1  1083	B2 78					CPL	FP_SIGN.0
+  681: 1  1085	79 2E					MOV	R1,#FP_DIG78
+  682: 1  1087	7F 04					MOV	R7,#DIGIT			;LOOP COUNT
   683: 1				;
-  684: 1  0289	91 94					ACALL	MDES1				;SET UP THE REGISTERS
-  685: 1  028B	E5 24					MOV	A,ARG_STACK
-  686: 1  028D	24 0C					ADD	A,#FP_NUMBER_SIZE+FP_NUMBER_SIZE
-  687: 1  028F	F5 24					MOV	ARG_STACK,A			;POP THE STACK TWICE, CLEAR THE CARR
-       1			Y
-  688: 1  0291	EE					MOV	A,R6				;CHECK OUT EXPONENTS
-  689: 1  0292	C2 D5					CLR	F0
-  690: 1  0294	C3		        		CLR     C
-  691: 1  0295	9F					SUBB	A,R7
-  692: 1  0296	60 0A					JZ	EXPONENTS_EQUAL
-  693: 1  0298	40 03					JC	ARG1_EXP_IS_LARGER
+  684: 1  1089	74 9A		FSUB5:			MOV	A,#9AH
+  685: 1  108B	97					SUBB	A,@R1
+  686: 1  108C	24 00					ADD	A,#0
+  687: 1  108E	D4					DA	A
+  688: 1  108F	F7					MOV	@R1,A
+  689: 1  1090	19					DEC	R1
+  690: 1  1091	B3					CPL	C
+  691: 1  1092	DF F5					DJNZ	R7,FSUB5			;LOOP
+  692: 1				;
+  693: 1				; Now see how many zeros their are
   694: 1				;
-  695: 1				; Now the ARG2 EXPONENT is > ARG1 EXPONENT
-  696: 1				;
-  697: 1  029A			SIGNS_DIFFERENT:
-  698: 1				;
-  699: 1  029A	EB					MOV	A,R3				;SEE IF SIGN OF ARG2 IS POSITIVE
-  700: 1  029B	80 01					SJMP	ARG1_EXP_IS_LARGER1
-  701: 1				;
-  702: 1  029D			ARG1_EXP_IS_LARGER:
-  703: 1				;
-  704: 1  029D	EC					MOV	A,R4				;GET THE SIGN OF ARG1 EXPONENT
-  705: 1  029E	60 01		ARG1_EXP_IS_LARGER1:	JZ	ARG1_EXP_IS_LARGER2
-  706: 1  02A0	B3					CPL	C
-  707: 1  02A1	22		ARG1_EXP_IS_LARGER2:	RET
-  708: 1				;
-  709: 1  02A2			EXPONENTS_EQUAL:
+  695: 1  1094	78 2B		FSUB6:			MOV	R0,#FP_DIG12
+  696: 1  1096	7F 00					MOV	R7,#0
+  697: 1				;
+  698: 1  1098	E6		FSUB7:			MOV	A,@R0
+  699: 1  1099	70 08					JNZ	FSUB8
+  700: 1  109B	0F					INC	R7
+  701: 1  109C	0F					INC	R7
+  702: 1  109D	08					INC	R0
+  703: 1  109E	B8 2F F7				CJNE	R0,#FP_SIGN,FSUB7
+  704: 1  10A1	41 0B					AJMP	ZERO_AND_EXIT
+  705: 1				;
+  706: 1  10A3			FSUB8:			CMP	A,#10H
+  707+ 2  10A3	B4 10 00	CJNE	A,#10H,$+3
+  708: 1  10A6	50 01					JNC	FSUB9
+  709: 1  10A8	0F					INC	R7
   710: 1				;
-  711: 1				; First, test the sign, then the mantissa
+  711: 1				; Now R7 has the number of leading zeros in the FP ACC
   712: 1				;
-  713: 1  02A2	BD 00 F5				CJNE	R5,#0,SIGNS_DIFFERENT
+  713: 1  10A9	E5 30		FSUB9:			MOV	A,FP_EXP			;GET THE OLD EXPONENT
+  714: 1  10AB	C3					CLR	C
 
 ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. Heinz                                         PAGE 14
 
@@ -824,61 +824,61 @@ ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. H
 
  Line  I  Addr  Code            Source
 
-  714: 1				;
-  715: 1  02A5			BOTH_PLUS:
-  716: 1				;
-  717: 1  02A5	7F 04					MOV	R7,#DIGIT			;POINT AT MS DIGIT
-  718: 1  02A7	18					DEC	R0
-  719: 1  02A8	18					DEC	R0
-  720: 1  02A9	18					DEC	R0
-  721: 1  02AA	19					DEC	R1
-  722: 1  02AB	19					DEC	R1
-  723: 1  02AC	19					DEC	R1
+  715: 1  10AC	9F					SUBB	A,R7				;SUBTRACT FROM THE NUMBER OF ZEROS
+  716: 1  10AD	60 0B					JZ	FSUB10
+  717: 1  10AF	40 09					JC	FSUB10
+  718: 1				;
+  719: 1  10B1	F5 30					MOV	FP_EXP,A			;SAVE THE NEW EXPONENT
+  720: 1				;
+  721: 1  10B3	51 55					ACALL	LEFT1				;SHIFT THE FP ACC
+  722: 1  10B5	75 2A 00				MOV	FP_CARRY,#0
+  723: 1  10B8	21 C3					AJMP	STORE_ALIGN_TEST_AND_EXIT
   724: 1				;
-  725: 1				; Now do the compare
+  725: 1  10BA	41 05		FSUB10:			AJMP	UNDERFLOW_AND_EXIT
   726: 1				;
-  727: 1  02AD	E6		CLOOP:			MOV	A,@R0
-  728: 1  02AE	FE					MOV	R6,A
-  729: 1  02AF	E7					MOV	A,@R1
-  730: 1  02B0	9E					SUBB	A,R6
-  731: 1  02B1	70 EA					JNZ	ARG1_EXP_IS_LARGER
-  732: 1  02B3	08					INC	R0
-  733: 1  02B4	09					INC	R1
-  734: 1  02B5	DF F6					DJNZ	R7,CLOOP
-  735: 1				;
-  736: 1				; If here, the numbers are the same, the carry is cleared
-  737: 1				;
-  738: 1  02B7	D2 D5					SETB	F0
-  739: 1  02B9	22					RET					;EXIT WITH EQUAL
-  740: 1				;
-  741: 1			;MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
-  742: 1			;
-  743: 1  02BA			FLOATING_MUL:							; Floating point multiply
-  744: 1			;
-  745: 1			;MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
-  746: 1			;
-  747: 1  02BA	91 92					ACALL	MUL_DIV_EXP_AND_SIGN
-  748: 1				;
-  749: 1				; check for zero exponents
-  750: 1				;
-  751: 1  02BC	BE 00 02				CJNE	R6,#00,FMUL1			;ARG 2 EXP ZERO?
-  752: 1  02BF	61 D8		FMUL0:			AJMP	ZERO_AND_EXIT
-  753: 1				;
-  754: 1				; calculate the exponent
-  755: 1				;
-  756: 1  02C1	8D 2F		FMUL1:			MOV	FP_SIGN,R5			;SAVE THE SIGN, IN CASE OF FAILURE
-  757: 1				;
-  758: 1  02C3	EF					MOV	A,R7
-  759: 1  02C4	60 F9					JZ	FMUL0
-  760: 1  02C6	2E					ADD	A,R6				;ADD THE EXPONENTS
-  761: 1  02C7	20 E7 05				JB	ACC.7,FMUL_OVER
-  762: 1  02CA	10 D7 06				JBC	CY,FMUL2			;SEE IF CARRY IS SET
+  727: 1				;***************************************************************
+  728: 1				;
+  729: 1  10BC			FLOATING_COMP:	; Compare two floating point numbers
+  730: 1					; used for relational operations and is faster
+  731: 1					; than subtraction. ON RETURN, The carry is set
+  732: 1					; if ARG1 is > ARG2, else carry is not set
+  733: 1					; if ARG1 = ARG2, F0 gets set
+  734: 1				;
+  735: 1				;***************************************************************
+  736: 1				;
+  737: 1  10BC	51 C7					ACALL	MDES1				;SET UP THE REGISTERS
+  738: 1  10BE	E5 24					MOV	A,ARG_STACK
+  739: 1  10C0	24 0C					ADD	A,#FP_NUMBER_SIZE+FP_NUMBER_SIZE
+  740: 1  10C2	F5 24					MOV	ARG_STACK,A			;POP THE STACK TWICE, CLEAR THE CARR
+       1			Y
+  741: 1  10C4	EE					MOV	A,R6				;CHECK OUT EXPONENTS
+  742: 1  10C5	C2 D5					CLR	F0
+  743: 1  10C7	C3		        		CLR     C
+  744: 1  10C8	9F					SUBB	A,R7
+  745: 1  10C9	60 0A					JZ	EXPONENTS_EQUAL
+  746: 1  10CB	40 03					JC	ARG1_EXP_IS_LARGER
+  747: 1				;
+  748: 1				; Now the ARG2 EXPONENT is > ARG1 EXPONENT
+  749: 1				;
+  750: 1  10CD			SIGNS_DIFFERENT:
+  751: 1				;
+  752: 1  10CD	EB					MOV	A,R3				;SEE IF SIGN OF ARG2 IS POSITIVE
+  753: 1  10CE	80 01					SJMP	ARG1_EXP_IS_LARGER1
+  754: 1				;
+  755: 1  10D0			ARG1_EXP_IS_LARGER:
+  756: 1				;
+  757: 1  10D0	EC					MOV	A,R4				;GET THE SIGN OF ARG1 EXPONENT
+  758: 1  10D1	60 01		ARG1_EXP_IS_LARGER1:	JZ	ARG1_EXP_IS_LARGER2
+  759: 1  10D3	B3					CPL	C
+  760: 1  10D4	22		ARG1_EXP_IS_LARGER2:	RET
+  761: 1				;
+  762: 1  10D5			EXPONENTS_EQUAL:
   763: 1				;
-  764: 1  02CD	61 D2					AJMP	UNDERFLOW_AND_EXIT
+  764: 1				; First, test the sign, then the mantissa
   765: 1				;
-  766: 1  02CF			FMUL_OVER:
+  766: 1  10D5	BD 00 F5				CJNE	R5,#0,SIGNS_DIFFERENT
   767: 1				;
-  768: 1  02CF	50 02					JNC	FMUL2				;OK IF SET
+  768: 1  10D8			BOTH_PLUS:
   769: 1				;
 
 ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. Heinz                                         PAGE 15
@@ -887,62 +887,62 @@ ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. H
 
  Line  I  Addr  Code            Source
 
-  770: 1  02D1	61 C1		FOV:			AJMP	OVERFLOW_AND_EXIT
-  771: 1				;
-  772: 1  02D3	94 81		FMUL2:			SUBB	A,#129				;SUBTRACT THE EXPONENT BIAS
-  773: 1  02D5	FE					MOV	R6,A				;SAVE IT FOR LATER
-  774: 1				;
-  775: 1				; Unpack and load R0
-  776: 1				;
-  777: 1  02D6	71 AB					ACALL	UNPACK_R0
-  778: 1				;
-  779: 1				; Now set up for loop multiply
-  780: 1				;
-  781: 1  02D8	7B 04					MOV	R3,#DIGIT
-  782: 1  02DA	AC 01					MOV	R4,R1B0
-  783: 1				;
-  784: 1				;
-  785: 1				; Now, do the multiply and accumulate the product
-  786: 1				;
-  787: 1  02DC	8C 01		FMUL3:			MOV	R1B0,R4
-  788: 1  02DE	E7					MOV	A,@R1
-  789: 1  02DF	FA					MOV	R2,A
-  790: 1  02E0	91 58					ACALL	MUL_NIBBLE
-  791: 1				;
-  792: 1  02E2	EA					MOV	A,R2
-  793: 1  02E3	C4					SWAP	A
-  794: 1  02E4	91 58					ACALL	MUL_NIBBLE
-  795: 1  02E6	1C					DEC	R4
-  796: 1  02E7	DB F3					DJNZ	R3,FMUL3
-  797: 1				;
-  798: 1				; Now, pack and restore the sign
-  799: 1				;
-  800: 1  02E9	8E 30					MOV	FP_EXP,R6
-  801: 1  02EB	8D 2F					MOV	FP_SIGN,R5
-  802: 1  02ED	61 50					AJMP	PACK				;FINISH IT OFF
+  770: 1  10D8	7F 04					MOV	R7,#DIGIT			;POINT AT MS DIGIT
+  771: 1  10DA	18					DEC	R0
+  772: 1  10DB	18					DEC	R0
+  773: 1  10DC	18					DEC	R0
+  774: 1  10DD	19					DEC	R1
+  775: 1  10DE	19					DEC	R1
+  776: 1  10DF	19					DEC	R1
+  777: 1				;
+  778: 1				; Now do the compare
+  779: 1				;
+  780: 1  10E0	E6		CLOOP:			MOV	A,@R0
+  781: 1  10E1	FE					MOV	R6,A
+  782: 1  10E2	E7					MOV	A,@R1
+  783: 1  10E3	9E					SUBB	A,R6
+  784: 1  10E4	70 EA					JNZ	ARG1_EXP_IS_LARGER
+  785: 1  10E6	08					INC	R0
+  786: 1  10E7	09					INC	R1
+  787: 1  10E8	DF F6					DJNZ	R7,CLOOP
+  788: 1				;
+  789: 1				; If here, the numbers are the same, the carry is cleared
+  790: 1				;
+  791: 1  10EA	D2 D5					SETB	F0
+  792: 1  10EC	22					RET					;EXIT WITH EQUAL
+  793: 1				;
+  794: 1			;MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  795: 1			;
+  796: 1  10ED			FLOATING_MUL:							; Floating point multiply
+  797: 1			;
+  798: 1			;MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  799: 1			;
+  800: 1  10ED	51 C5					ACALL	MUL_DIV_EXP_AND_SIGN
+  801: 1				;
+  802: 1				; check for zero exponents
   803: 1				;
-  804: 1				;DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD
-  805: 1				;
-  806: 1  02EF			FLOATING_DIV:
-  807: 1				;
-  808: 1				;DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD
-  809: 1				;
-  810: 1  02EF	91 94					ACALL	MDES1
-  811: 1				;
-  812: 1				; Check the exponents
-  813: 1				;
-  814: 1  02F1	8D 2F					MOV	FP_SIGN,R5			;SAVE THE SIGN
-  815: 1  02F3	BF 00 06				CJNE	R7,#0,DIV0			;CLEARS THE CARRY
-  816: 1  02F6	71 C1					ACALL	OVERFLOW_AND_EXIT
-  817: 1  02F8	E4					CLR	A
-  818: 1  02F9	D2 E3					SETB	ACC.ZERO_DIVIDE
-  819: 1  02FB	22					RET
+  804: 1  10EF	BE 00 02				CJNE	R6,#00,FMUL1			;ARG 2 EXP ZERO?
+  805: 1  10F2	41 0B		FMUL0:			AJMP	ZERO_AND_EXIT
+  806: 1				;
+  807: 1				; calculate the exponent
+  808: 1				;
+  809: 1  10F4	8D 2F		FMUL1:			MOV	FP_SIGN,R5			;SAVE THE SIGN, IN CASE OF FAILURE
+  810: 1				;
+  811: 1  10F6	EF					MOV	A,R7
+  812: 1  10F7	60 F9					JZ	FMUL0
+  813: 1  10F9	2E					ADD	A,R6				;ADD THE EXPONENTS
+  814: 1  10FA	20 E7 05				JB	ACC.7,FMUL_OVER
+  815: 1  10FD	10 D7 06				JBC	CY,FMUL2			;SEE IF CARRY IS SET
+  816: 1				;
+  817: 1  1100	41 05					AJMP	UNDERFLOW_AND_EXIT
+  818: 1				;
+  819: 1  1102			FMUL_OVER:
   820: 1				;
-  821: 1  02FC	EE		DIV0:			MOV	A,R6				;GET EXPONENT
-  822: 1  02FD	60 C0					JZ	FMUL1-2				;EXIT IF ZERO
-  823: 1  02FF	9F					SUBB	A,R7				;DELTA EXPONENT
-  824: 1  0300	20 E7 04				JB	ACC.7,D_UNDER
-  825: 1  0303	50 04					JNC	DIV3
+  821: 1  1102	50 02					JNC	FMUL2				;OK IF SET
+  822: 1				;
+  823: 1  1104	21 F4		FOV:			AJMP	OVERFLOW_AND_EXIT
+  824: 1				;
+  825: 1  1106	94 81		FMUL2:			SUBB	A,#129				;SUBTRACT THE EXPONENT BIAS
 
 ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. Heinz                                         PAGE 16
 
@@ -950,62 +950,62 @@ ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. H
 
  Line  I  Addr  Code            Source
 
-  826: 1  0305	61 D2					AJMP	UNDERFLOW_AND_EXIT
+  826: 1  1108	FE					MOV	R6,A				;SAVE IT FOR LATER
   827: 1				;
-  828: 1  0307	50 C8		D_UNDER:		JNC	FOV
+  828: 1				; Unpack and load R0
   829: 1				;
-  830: 1  0309	24 81		DIV3:			ADD	A,#129				;CORRECTLY BIAS THE EXPONENT
-  831: 1  030B	F5 30					MOV	FP_EXP,A			;SAVE THE EXPONENT
-  832: 1  030D	91 A5					ACALL	LOADR1_MANTISSA			;LOAD THE DIVIDED
+  830: 1  1109	31 DE					ACALL	UNPACK_R0
+  831: 1				;
+  832: 1				; Now set up for loop multiply
   833: 1				;
-  834: 1  030F	7A 34					MOV	R2,#FP_ACCC			;SAVE LOCATION
-  835: 1  0311	AB 00					MOV	R3,R0B0				;SAVE POINTER IN R3
-  836: 1  0313	75 2A 00				MOV	FP_CARRY,#0			;ZERO CARRY BYTE
+  834: 1  110B	7B 04					MOV	R3,#DIGIT
+  835: 1  110D	AC 01					MOV	R4,R1B0
+  836: 1				;
   837: 1				;
-  838: 1  0316	7D FF		DIV4:			MOV	R5,#0FFH			;LOOP COUNT
-  839: 1  0318	D3					SETB	C
-  840: 1				;
-  841: 1  0319	8B 00		DIV5:			MOV	R0B0,R3				;RESTORE THE EXTERNAL POINTER
-  842: 1  031B	79 2E					MOV	R1,#FP_DIG78			;SET UP INTERNAL POINTER
-  843: 1  031D	7F 04					MOV	R7,#DIGIT			;LOOP COUNT
-  844: 1  031F	50 17					JNC	DIV7				;EXIT IF NO CARRY
-  845: 1				;
-  846: 1  0321	E6		DIV6:			MOV	A,@R0				;DO ACCUMLATION
-  847: 1  0322	FE					MOV	R6,A
-  848: 1  0323	E4					CLR	A
-  849: 1  0324	34 99					ADDC	A,#99H
-  850: 1  0326	9E					SUBB	A,R6
-  851: 1  0327	27					ADD	A,@R1
-  852: 1  0328	D4					DA	A
-  853: 1  0329	F7					MOV	@R1,A
-  854: 1  032A	18					DEC	R0
-  855: 1  032B	19					DEC	R1
-  856: 1  032C	DF F3					DJNZ	R7,DIV6				;LOOP
-  857: 1				;
-  858: 1  032E	0D					INC	R5				;SUBTRACT COUNTER
-  859: 1  032F	40 E8					JC	DIV5				;KEEP LOOPING IF CARRY
-  860: 1  0331	E7					MOV	A,@R1				;GET CARRY
-  861: 1  0332	94 01					SUBB	A,#1				;CARRY IS CLEARED
-  862: 1  0334	F7					MOV	@R1,A				;SAVE CARRY DIGIT
-  863: 1  0335	B3					CPL	C
-  864: 1  0336	80 E1					SJMP	DIV5				;LOOP
-  865: 1				;
-  866: 1				; Restore the result if carry was found
-  867: 1				;
-  868: 1  0338	51 38		DIV7:			ACALL	ADDLP				;ADD NUMBER BACK
-  869: 1  033A	77 00					MOV	@R1,#0				;CLEAR CARRY
-  870: 1  033C	8A 00					MOV	R0B0,R2				;GET SAVE COUNTER
-  871: 1  033E	A6 05					MOV	@R0,5				;SAVE COUNT BYTE
-  872: 1				;
-  873: 1  0340	0A					INC	R2				;ADJUST SAVE COUNTER
-  874: 1  0341	7F 01					MOV	R7,#1				;BUMP DIVIDEND
-  875: 1  0343	91 20					ACALL	LEFT
-  876: 1  0345	BA 3E CE				CJNE	R2,#FP_ACC8+2,DIV4
-  877: 1				;
-  878: 1  0348	D5 30 02				DJNZ	FP_EXP,DIV8
-  879: 1  034B	61 D2					AJMP	UNDERFLOW_AND_EXIT
+  838: 1				; Now, do the multiply and accumulate the product
+  839: 1				;
+  840: 1  110F	8C 01		FMUL3:			MOV	R1B0,R4
+  841: 1  1111	E7					MOV	A,@R1
+  842: 1  1112	FA					MOV	R2,A
+  843: 1  1113	51 8B					ACALL	MUL_NIBBLE
+  844: 1				;
+  845: 1  1115	EA					MOV	A,R2
+  846: 1  1116	C4					SWAP	A
+  847: 1  1117	51 8B					ACALL	MUL_NIBBLE
+  848: 1  1119	1C					DEC	R4
+  849: 1  111A	DB F3					DJNZ	R3,FMUL3
+  850: 1				;
+  851: 1				; Now, pack and restore the sign
+  852: 1				;
+  853: 1  111C	8E 30					MOV	FP_EXP,R6
+  854: 1  111E	8D 2F					MOV	FP_SIGN,R5
+  855: 1  1120	21 83					AJMP	PACK				;FINISH IT OFF
+  856: 1				;
+  857: 1				;DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD
+  858: 1				;
+  859: 1  1122			FLOATING_DIV:
+  860: 1				;
+  861: 1				;DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD
+  862: 1				;
+  863: 1  1122	51 C7					ACALL	MDES1
+  864: 1				;
+  865: 1				; Check the exponents
+  866: 1				;
+  867: 1  1124	8D 2F					MOV	FP_SIGN,R5			;SAVE THE SIGN
+  868: 1  1126	BF 00 06				CJNE	R7,#0,DIV0			;CLEARS THE CARRY
+  869: 1  1129	31 F4					ACALL	OVERFLOW_AND_EXIT
+  870: 1  112B	E4					CLR	A
+  871: 1  112C	D2 E3					SETB	ACC.ZERO_DIVIDE
+  872: 1  112E	22					RET
+  873: 1				;
+  874: 1  112F	EE		DIV0:			MOV	A,R6				;GET EXPONENT
+  875: 1  1130	60 C0					JZ	FMUL1-2				;EXIT IF ZERO
+  876: 1  1132	9F					SUBB	A,R7				;DELTA EXPONENT
+  877: 1  1133	20 E7 04				JB	ACC.7,D_UNDER
+  878: 1  1136	50 04					JNC	DIV3
+  879: 1  1138	41 05					AJMP	UNDERFLOW_AND_EXIT
   880: 1				;
-  881: 1  034D	75 2A 00	DIV8:			MOV	FP_CARRY,#0
+  881: 1  113A	50 C8		D_UNDER:		JNC	FOV
 
 ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. Heinz                                         PAGE 17
 
@@ -1014,61 +1014,61 @@ ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. H
  Line  I  Addr  Code            Source
 
   882: 1				;
-  883: 1				;***************************************************************
-  884: 1				;
-  885: 1  0350			PACK:	; Pack the mantissa
+  883: 1  113C	24 81		DIV3:			ADD	A,#129				;CORRECTLY BIAS THE EXPONENT
+  884: 1  113E	F5 30					MOV	FP_EXP,A			;SAVE THE EXPONENT
+  885: 1  1140	51 D8					ACALL	LOADR1_MANTISSA			;LOAD THE DIVIDED
   886: 1				;
-  887: 1				;***************************************************************
-  888: 1				;
-  889: 1				; First, set up the pointers
+  887: 1  1142	7A 34					MOV	R2,#FP_ACCC			;SAVE LOCATION
+  888: 1  1144	AB 00					MOV	R3,R0B0				;SAVE POINTER IN R3
+  889: 1  1146	75 2A 00				MOV	FP_CARRY,#0			;ZERO CARRY BYTE
   890: 1				;
-  891: 1  0350	78 34					MOV	R0,#FP_ACCC
-  892: 1  0352	E6					MOV	A,@R0				;GET FP_ACCC
-  893: 1  0353	FE					MOV	R6,A				;SAVE FOR ZERO COUNT
-  894: 1  0354	60 03					JZ	PACK0				;JUMP OVER IF ZERO
-  895: 1  0356	71 9F					ACALL	INC_FP_EXP			;BUMP THE EXPONENT
-  896: 1  0358	18					DEC	R0
-  897: 1				;
-  898: 1  0359	08		PACK0:			INC	R0				;POINT AT FP_ACC1
-  899: 1				;
-  900: 1  035A	74 08		PACK1:			MOV	A,#8				;ADJUST NIBBLE POINTER
-  901: 1  035C	F9					MOV	R1,A
-  902: 1  035D	28					ADD	A,R0
-  903: 1  035E	F8					MOV	R0,A
-  904: 1						CMP	@R0,#5				;SEE IF ADJUSTING NEEDED
-  905+ 2  035F	B6 05 00	CJNE	@R0,#5,$+3
-  906: 1  0362	40 13					JC	PACK3+1
-  907: 1				;
-  908: 1  0364	D3		PACK2:			SETB	C
-  909: 1  0365	E4					CLR	A
-  910: 1  0366	18					DEC	R0
-  911: 1  0367	36					ADDC	A,@R0
-  912: 1  0368	D4					DA	A
-  913: 1  0369	D6					XCHD	A,@R0				;SAVE THE VALUE
-  914: 1  036A	30 E4 09				JNB	ACC.4,PACK3
-  915: 1  036D	D9 F5					DJNZ	R1,PACK2
-  916: 1				;
-  917: 1  036F	18					DEC	R0
-  918: 1  0370	76 01					MOV	@R0,#1
-  919: 1  0372	71 9F					ACALL	INC_FP_EXP
-  920: 1  0374	80 06					SJMP	PACK4
-  921: 1				;
-  922: 1  0376	19		PACK3:			DEC	R1
-  923: 1  0377	E9					MOV	A,R1
-  924: 1  0378	C3					CLR	C
-  925: 1  0379	C8					XCH	A,R0
-  926: 1  037A	98					SUBB	A,R0
-  927: 1  037B	F8					MOV	R0,A
-  928: 1				;
-  929: 1  037C	79 2B		PACK4:			MOV	R1,#FP_DIG12
+  891: 1  1149	7D FF		DIV4:			MOV	R5,#0FFH			;LOOP COUNT
+  892: 1  114B	D3					SETB	C
+  893: 1				;
+  894: 1  114C	8B 00		DIV5:			MOV	R0B0,R3				;RESTORE THE EXTERNAL POINTER
+  895: 1  114E	79 2E					MOV	R1,#FP_DIG78			;SET UP INTERNAL POINTER
+  896: 1  1150	7F 04					MOV	R7,#DIGIT			;LOOP COUNT
+  897: 1  1152	50 17					JNC	DIV7				;EXIT IF NO CARRY
+  898: 1				;
+  899: 1  1154	E6		DIV6:			MOV	A,@R0				;DO ACCUMLATION
+  900: 1  1155	FE					MOV	R6,A
+  901: 1  1156	E4					CLR	A
+  902: 1  1157	34 99					ADDC	A,#99H
+  903: 1  1159	9E					SUBB	A,R6
+  904: 1  115A	27					ADD	A,@R1
+  905: 1  115B	D4					DA	A
+  906: 1  115C	F7					MOV	@R1,A
+  907: 1  115D	18					DEC	R0
+  908: 1  115E	19					DEC	R1
+  909: 1  115F	DF F3					DJNZ	R7,DIV6				;LOOP
+  910: 1				;
+  911: 1  1161	0D					INC	R5				;SUBTRACT COUNTER
+  912: 1  1162	40 E8					JC	DIV5				;KEEP LOOPING IF CARRY
+  913: 1  1164	E7					MOV	A,@R1				;GET CARRY
+  914: 1  1165	94 01					SUBB	A,#1				;CARRY IS CLEARED
+  915: 1  1167	F7					MOV	@R1,A				;SAVE CARRY DIGIT
+  916: 1  1168	B3					CPL	C
+  917: 1  1169	80 E1					SJMP	DIV5				;LOOP
+  918: 1				;
+  919: 1				; Restore the result if carry was found
+  920: 1				;
+  921: 1  116B	11 6B		DIV7:			ACALL	ADDLP				;ADD NUMBER BACK
+  922: 1  116D	77 00					MOV	@R1,#0				;CLEAR CARRY
+  923: 1  116F	8A 00					MOV	R0B0,R2				;GET SAVE COUNTER
+  924: 1  1171	A6 05					MOV	@R0,5				;SAVE COUNT BYTE
+  925: 1				;
+  926: 1  1173	0A					INC	R2				;ADJUST SAVE COUNTER
+  927: 1  1174	7F 01					MOV	R7,#1				;BUMP DIVIDEND
+  928: 1  1176	51 53					ACALL	LEFT
+  929: 1  1178	BA 3E CE				CJNE	R2,#FP_ACC8+2,DIV4
   930: 1				;
-  931: 1				; Now, pack
-  932: 1				;
-  933: 1  037E	E6		PLOOP:			MOV	A,@R0
-  934: 1  037F	C4					SWAP	A				;FLIP THE DIGITS
-  935: 1  0380	08					INC	R0
-  936: 1  0381	D6					XCHD	A,@R0
-  937: 1  0382	42 06					ORL	6,A				;ACCUMULATE THE OR'ED DIGITS
+  931: 1  117B	D5 30 02				DJNZ	FP_EXP,DIV8
+  932: 1  117E	41 05					AJMP	UNDERFLOW_AND_EXIT
+  933: 1				;
+  934: 1  1180	75 2A 00	DIV8:			MOV	FP_CARRY,#0
+  935: 1				;
+  936: 1				;***************************************************************
+  937: 1				;
 
 ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. Heinz                                         PAGE 18
 
@@ -1076,62 +1076,62 @@ ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. H
 
  Line  I  Addr  Code            Source
 
-  938: 1  0384	F7					MOV	@R1,A
-  939: 1  0385	08					INC	R0
-  940: 1  0386	09					INC	R1
-  941: 1  0387	B9 2F F4				CJNE	R1,#FP_SIGN,PLOOP
-  942: 1  038A	EE					MOV	A,R6
-  943: 1  038B	70 03					JNZ	STORE_ALIGN_TEST_AND_EXIT
-  944: 1  038D	75 30 00				MOV	FP_EXP,#0			;ZERO EXPONENT
-  945: 1				;
-  946: 1				;**************************************************************
-  947: 1				;
-  948: 1  0390			STORE_ALIGN_TEST_AND_EXIT:					;Save the number align carry and exi
-       1			t
-  949: 1				;
-  950: 1				;**************************************************************
-  951: 1				;
-  952: 1  0390	91 8B					ACALL	LOAD_POINTERS
-  953: 1  0392	89 24					MOV	ARG_STACK,R1			;SET UP THE NEW STACK
-  954: 1  0394	78 30					MOV	R0,#FP_EXP
-  955: 1				;
-  956: 1				; Now load the numbers
-  957: 1				;
-  958: 1  0396	E6		STORE2:			MOV	A,@R0
-  959: 1  0397	F7					MOV	@R1,A				;SAVE THE NUMBER
-  960: 1  0398	18					DEC	R0
-  961: 1  0399	19					DEC	R1
-  962: 1  039A	B8 2A F9				CJNE	R0,#FP_CARRY,STORE2
-  963: 1				;
-  964: 1  039D	E4					CLR	A				;NO ERRORS
-  965: 1				;
-  966: 1  039E	22		PRET:			RET					;EXIT
-  967: 1				;
-  968: 1  039F			INC_FP_EXP:
+  938: 1  1183			PACK:	; Pack the mantissa
+  939: 1				;
+  940: 1				;***************************************************************
+  941: 1				;
+  942: 1				; First, set up the pointers
+  943: 1				;
+  944: 1  1183	78 34					MOV	R0,#FP_ACCC
+  945: 1  1185	E6					MOV	A,@R0				;GET FP_ACCC
+  946: 1  1186	FE					MOV	R6,A				;SAVE FOR ZERO COUNT
+  947: 1  1187	60 03					JZ	PACK0				;JUMP OVER IF ZERO
+  948: 1  1189	31 D2					ACALL	INC_FP_EXP			;BUMP THE EXPONENT
+  949: 1  118B	18					DEC	R0
+  950: 1				;
+  951: 1  118C	08		PACK0:			INC	R0				;POINT AT FP_ACC1
+  952: 1				;
+  953: 1  118D	74 08		PACK1:			MOV	A,#8				;ADJUST NIBBLE POINTER
+  954: 1  118F	F9					MOV	R1,A
+  955: 1  1190	28					ADD	A,R0
+  956: 1  1191	F8					MOV	R0,A
+  957: 1						CMP	@R0,#5				;SEE IF ADJUSTING NEEDED
+  958+ 2  1192	B6 05 00	CJNE	@R0,#5,$+3
+  959: 1  1195	40 13					JC	PACK3+1
+  960: 1				;
+  961: 1  1197	D3		PACK2:			SETB	C
+  962: 1  1198	E4					CLR	A
+  963: 1  1199	18					DEC	R0
+  964: 1  119A	36					ADDC	A,@R0
+  965: 1  119B	D4					DA	A
+  966: 1  119C	D6					XCHD	A,@R0				;SAVE THE VALUE
+  967: 1  119D	30 E4 09				JNB	ACC.4,PACK3
+  968: 1  11A0	D9 F5					DJNZ	R1,PACK2
   969: 1				;
-  970: 1  039F	05 30					INC	FP_EXP
-  971: 1  03A1	E5 30					MOV	A,FP_EXP
-  972: 1  03A3	70 F9					JNZ	PRET				;EXIT IF NOT ZERO
-  973: 1  03A5	D0 E0					POP	ACC				;WASTE THE CALLING STACK
-  974: 1  03A7	D0 E0					POP	ACC
-  975: 1  03A9	61 C1					AJMP	OVERFLOW_AND_EXIT
-  976: 1				;
-  977: 1			;***********************************************************************
-  978: 1			;
-  979: 1  03AB			UNPACK_R0:	; Unpack BCD digits and load into nibble locations
-  980: 1			;
-  981: 1			;***********************************************************************
-  982: 1				;
-  983: 1  03AB	C0 01					PUSH	R1B0
-  984: 1  03AD	79 32					MOV	R1,#FP_NIB8
+  970: 1  11A2	18					DEC	R0
+  971: 1  11A3	76 01					MOV	@R0,#1
+  972: 1  11A5	31 D2					ACALL	INC_FP_EXP
+  973: 1  11A7	80 06					SJMP	PACK4
+  974: 1				;
+  975: 1  11A9	19		PACK3:			DEC	R1
+  976: 1  11AA	E9					MOV	A,R1
+  977: 1  11AB	C3					CLR	C
+  978: 1  11AC	C8					XCH	A,R0
+  979: 1  11AD	98					SUBB	A,R0
+  980: 1  11AE	F8					MOV	R0,A
+  981: 1				;
+  982: 1  11AF	79 2B		PACK4:			MOV	R1,#FP_DIG12
+  983: 1				;
+  984: 1				; Now, pack
   985: 1				;
-  986: 1  03AF	E6		ULOOP:			MOV	A,@R0
-  987: 1  03B0	54 0F					ANL	A,#0FH
-  988: 1  03B2	F7					MOV	@R1,A				;SAVE THE NIBBLE
-  989: 1  03B3	E6					MOV	A,@R0
-  990: 1  03B4	C4					SWAP	A
-  991: 1  03B5	54 0F					ANL	A,#0FH
-  992: 1  03B7	19					DEC	R1
+  986: 1  11B1	E6		PLOOP:			MOV	A,@R0
+  987: 1  11B2	C4					SWAP	A				;FLIP THE DIGITS
+  988: 1  11B3	08					INC	R0
+  989: 1  11B4	D6					XCHD	A,@R0
+  990: 1  11B5	42 06					ORL	6,A				;ACCUMULATE THE OR'ED DIGITS
+  991: 1  11B7	F7					MOV	@R1,A
+  992: 1  11B8	08					INC	R0
+  993: 1  11B9	09					INC	R1
 
 ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. Heinz                                         PAGE 19
 
@@ -1139,62 +1139,62 @@ ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. H
 
  Line  I  Addr  Code            Source
 
-  993: 1  03B8	F7					MOV	@R1,A				;SAVE THE NIBBLE AGAIN
-  994: 1  03B9	18					DEC	R0
-  995: 1  03BA	19					DEC	R1
-  996: 1  03BB	B9 2A F1				CJNE	R1,#FP_NIB1-1,ULOOP
-  997: 1				;
-  998: 1  03BE	D0 01					POP	R1B0
-  999: 1				;
- 1000: 1  03C0	22		LOAD7:			RET
- 1001: 1				;
- 1002: 1				;**************************************************************
- 1003: 1				;
- 1004: 1  03C1			OVERFLOW_AND_EXIT:	;LOAD 99999999 E+127,  SET OV BIT, AND EXIT
- 1005: 1				;
- 1006: 1				;**************************************************************
- 1007: 1				;
- 1008: 1  03C1	78 2E					MOV	R0,#FP_DIG78
- 1009: 1  03C3	74 99					MOV	A,#99H
+  994: 1  11BA	B9 2F F4				CJNE	R1,#FP_SIGN,PLOOP
+  995: 1  11BD	EE					MOV	A,R6
+  996: 1  11BE	70 03					JNZ	STORE_ALIGN_TEST_AND_EXIT
+  997: 1  11C0	75 30 00				MOV	FP_EXP,#0			;ZERO EXPONENT
+  998: 1				;
+  999: 1				;**************************************************************
+ 1000: 1				;
+ 1001: 1  11C3			STORE_ALIGN_TEST_AND_EXIT:					;Save the number align carry and exi
+       1			t
+ 1002: 1				;
+ 1003: 1				;**************************************************************
+ 1004: 1				;
+ 1005: 1  11C3	51 BE					ACALL	LOAD_POINTERS
+ 1006: 1  11C5	89 24					MOV	ARG_STACK,R1			;SET UP THE NEW STACK
+ 1007: 1  11C7	78 30					MOV	R0,#FP_EXP
+ 1008: 1				;
+ 1009: 1				; Now load the numbers
  1010: 1				;
- 1011: 1  03C5	F6		OVE1:			MOV	@R0,A
- 1012: 1  03C6	18					DEC	R0
- 1013: 1  03C7	B8 2A FB				CJNE	R0,#FP_CARRY,OVE1
- 1014: 1				;
- 1015: 1  03CA	75 30 FF				MOV	FP_EXP,#0FFH
- 1016: 1  03CD	71 90					ACALL	STORE_ALIGN_TEST_AND_EXIT
- 1017: 1				;
- 1018: 1  03CF	D2 E1					SETB	ACC.OVERFLOW
- 1019: 1  03D1	22					RET
+ 1011: 1  11C9	E6		STORE2:			MOV	A,@R0
+ 1012: 1  11CA	F7					MOV	@R1,A				;SAVE THE NUMBER
+ 1013: 1  11CB	18					DEC	R0
+ 1014: 1  11CC	19					DEC	R1
+ 1015: 1  11CD	B8 2A F9				CJNE	R0,#FP_CARRY,STORE2
+ 1016: 1				;
+ 1017: 1  11D0	E4					CLR	A				;NO ERRORS
+ 1018: 1				;
+ 1019: 1  11D1	22		PRET:			RET					;EXIT
  1020: 1				;
- 1021: 1				;**************************************************************
+ 1021: 1  11D2			INC_FP_EXP:
  1022: 1				;
- 1023: 1  03D2			UNDERFLOW_AND_EXIT:	;LOAD 0, SET UF BIT, AND EXIT
- 1024: 1				;
- 1025: 1				;**************************************************************
- 1026: 1				;
- 1027: 1  03D2	71 D8					ACALL	ZERO_AND_EXIT
- 1028: 1  03D4	E4					CLR		A
- 1029: 1  03D5	D2 E0					SETB	ACC.UNDERFLOW
- 1030: 1  03D7	22					RET
- 1031: 1				;
- 1032: 1				;**************************************************************
- 1033: 1				;
- 1034: 1  03D8			ZERO_AND_EXIT:		;LOAD 0, SET ZERO BIT, AND EXIT
+ 1023: 1  11D2	05 30					INC	FP_EXP
+ 1024: 1  11D4	E5 30					MOV	A,FP_EXP
+ 1025: 1  11D6	70 F9					JNZ	PRET				;EXIT IF NOT ZERO
+ 1026: 1  11D8	D0 E0					POP	ACC				;WASTE THE CALLING STACK
+ 1027: 1  11DA	D0 E0					POP	ACC
+ 1028: 1  11DC	21 F4					AJMP	OVERFLOW_AND_EXIT
+ 1029: 1				;
+ 1030: 1			;***********************************************************************
+ 1031: 1			;
+ 1032: 1  11DE			UNPACK_R0:	; Unpack BCD digits and load into nibble locations
+ 1033: 1			;
+ 1034: 1			;***********************************************************************
  1035: 1				;
- 1036: 1				;**************************************************************
- 1037: 1				;
- 1038: 1  03D8	71 DF					ACALL	FP_CLEAR
- 1039: 1  03DA	71 90					ACALL	STORE_ALIGN_TEST_AND_EXIT
- 1040: 1  03DC	D2 E2					SETB	ACC.ZERO
- 1041: 1  03DE	22					RET					;EXIT
- 1042: 1				;
- 1043: 1				;**************************************************************
- 1044: 1				;
- 1045: 1  03DF			FP_CLEAR:
- 1046: 1				;
- 1047: 1				; Clear internal storage
- 1048: 1				;
+ 1036: 1  11DE	C0 01					PUSH	R1B0
+ 1037: 1  11E0	79 32					MOV	R1,#FP_NIB8
+ 1038: 1				;
+ 1039: 1  11E2	E6		ULOOP:			MOV	A,@R0
+ 1040: 1  11E3	54 0F					ANL	A,#0FH
+ 1041: 1  11E5	F7					MOV	@R1,A				;SAVE THE NIBBLE
+ 1042: 1  11E6	E6					MOV	A,@R0
+ 1043: 1  11E7	C4					SWAP	A
+ 1044: 1  11E8	54 0F					ANL	A,#0FH
+ 1045: 1  11EA	19					DEC	R1
+ 1046: 1  11EB	F7					MOV	@R1,A				;SAVE THE NIBBLE AGAIN
+ 1047: 1  11EC	18					DEC	R0
+ 1048: 1  11ED	19					DEC	R1
 
 ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. Heinz                                         PAGE 20
 
@@ -1202,62 +1202,62 @@ ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. H
 
  Line  I  Addr  Code            Source
 
- 1049: 1				;**************************************************************
+ 1049: 1  11EE	B9 2A F1				CJNE	R1,#FP_NIB1-1,ULOOP
  1050: 1				;
- 1051: 1  03DF	E4					CLR	A
- 1052: 1  03E0	78 3D					MOV	R0,#FP_ACC8+1
- 1053: 1				;
- 1054: 1  03E2	F6		FPC1:			MOV	@R0,A
- 1055: 1  03E3	18					DEC	R0
- 1056: 1  03E4	B8 29 FB				CJNE	R0,#FP_TEMP,FPC1
- 1057: 1  03E7	22					RET
+ 1051: 1  11F1	D0 01					POP	R1B0
+ 1052: 1				;
+ 1053: 1  11F3	22		LOAD7:			RET
+ 1054: 1				;
+ 1055: 1				;**************************************************************
+ 1056: 1				;
+ 1057: 1  11F4			OVERFLOW_AND_EXIT:	;LOAD 99999999 E+127,  SET OV BIT, AND EXIT
  1058: 1				;
  1059: 1				;**************************************************************
  1060: 1				;
- 1061: 1  03E8			RIGHT:	; Shift ACCUMULATOR RIGHT the number of nibbles in R7
- 1062: 1				; Save the shifted values in R4 if SAVE_ROUND is set
+ 1061: 1  11F4	78 2E					MOV	R0,#FP_DIG78
+ 1062: 1  11F6	74 99					MOV	A,#99H
  1063: 1				;
- 1064: 1				;**************************************************************
- 1065: 1				;
- 1066: 1  03E8	7C 00					MOV	R4,#0				;IN CASE OF NO SHIFT
+ 1064: 1  11F8	F6		OVE1:			MOV	@R0,A
+ 1065: 1  11F9	18					DEC	R0
+ 1066: 1  11FA	B8 2A FB				CJNE	R0,#FP_CARRY,OVE1
  1067: 1				;
- 1068: 1  03EA	C3		RIGHT1:			CLR	C
- 1069: 1  03EB	EF					MOV	A,R7				;GET THE DIGITS TO SHIFT
- 1070: 1  03EC	60 22					JZ	RIGHT5-1			;EXIT IF ZERO
- 1071: 1  03EE	94 02					SUBB	A,#2				;TWO TO DO?
- 1072: 1  03F0	50 1F					JNC	RIGHT5				;SHIFT TWO NIBBLES
+ 1068: 1  11FD	75 30 FF				MOV	FP_EXP,#0FFH
+ 1069: 1  1200	31 C3					ACALL	STORE_ALIGN_TEST_AND_EXIT
+ 1070: 1				;
+ 1071: 1  1202	D2 E1					SETB	ACC.OVERFLOW
+ 1072: 1  1204	22					RET
  1073: 1				;
- 1074: 1				; Swap one nibble then exit
+ 1074: 1				;**************************************************************
  1075: 1				;
- 1076: 1  03F2	C0 00		RIGHT3:			PUSH	R0B0				;SAVE POINTER REGISTER
- 1077: 1  03F4	C0 01					PUSH	R1B0
- 1078: 1				;
- 1079: 1  03F6	79 2E					MOV	R1,#FP_DIG78			;LOAD THE POINTERS
- 1080: 1  03F8	78 2D					MOV	R0,#FP_DIG56
- 1081: 1  03FA	EC					MOV	A,R4				;GET THE OVERFLOW REGISTER
- 1082: 1  03FB	D7					XCHD	A,@R1				;GET DIGIT 8
- 1083: 1  03FC	C4					SWAP	A				;FLIP FOR LOAD
- 1084: 1  03FD	FC					MOV	R4,A
- 1085: 1				;
- 1086: 1  03FE	E7		RIGHTL:			MOV	A,@R1				;GET THE LOW ORDER BYTE
- 1087: 1  03FF	D6					XCHD	A,@R0				;SWAP NIBBLES
- 1088: 1  0400	C4					SWAP	A				;FLIP FOR STORE
- 1089: 1  0401	F7					MOV	@R1,A				;SAVE THE DIGITS
- 1090: 1  0402	18					DEC	R0				;BUMP THE POINTERS
- 1091: 1  0403	19					DEC	R1
- 1092: 1  0404	B9 2A F7				CJNE	R1,#FP_DIG12-1,RIGHTL	;LOOP
- 1093: 1				;
- 1094: 1  0407	E7					MOV	A,@R1				;ACC = CH8
- 1095: 1  0408	C4					SWAP	A				;ACC = 8CH
- 1096: 1  0409	54 0F					ANL	A,#0FH				;ACC = 0CH
- 1097: 1  040B	F7					MOV	@R1,A				;CARRY DONE
- 1098: 1  040C	D0 01					POP	R1B0				;EXIT
- 1099: 1  040E	D0 00					POP	R0B0				;RESTORE REGISTER
- 1100: 1  0410	22					RET
+ 1076: 1  1205			UNDERFLOW_AND_EXIT:	;LOAD 0, SET UF BIT, AND EXIT
+ 1077: 1				;
+ 1078: 1				;**************************************************************
+ 1079: 1				;
+ 1080: 1  1205	51 0B					ACALL	ZERO_AND_EXIT
+ 1081: 1  1207	E4					CLR		A
+ 1082: 1  1208	D2 E0					SETB	ACC.UNDERFLOW
+ 1083: 1  120A	22					RET
+ 1084: 1				;
+ 1085: 1				;**************************************************************
+ 1086: 1				;
+ 1087: 1  120B			ZERO_AND_EXIT:		;LOAD 0, SET ZERO BIT, AND EXIT
+ 1088: 1				;
+ 1089: 1				;**************************************************************
+ 1090: 1				;
+ 1091: 1  120B	51 12					ACALL	FP_CLEAR
+ 1092: 1  120D	31 C3					ACALL	STORE_ALIGN_TEST_AND_EXIT
+ 1093: 1  120F	D2 E2					SETB	ACC.ZERO
+ 1094: 1  1211	22					RET					;EXIT
+ 1095: 1				;
+ 1096: 1				;**************************************************************
+ 1097: 1				;
+ 1098: 1  1212			FP_CLEAR:
+ 1099: 1				;
+ 1100: 1				; Clear internal storage
  1101: 1				;
- 1102: 1  0411	FF		RIGHT5:			MOV	R7,A				;SAVE THE NEW SHIFT NUMBER
- 1103: 1  0412	E4					CLR	A
- 1104: 1  0413	C5 2A					XCH	A,FP_CARRY			;SWAP THE NIBBLES
+ 1102: 1				;**************************************************************
+ 1103: 1				;
+ 1104: 1  1212	E4					CLR	A
 
 ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. Heinz                                         PAGE 21
 
@@ -1265,62 +1265,62 @@ ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. H
 
  Line  I  Addr  Code            Source
 
- 1105: 1  0415	C5 2B					XCH	A,FP_DIG12
- 1106: 1  0417	C5 2C					XCH	A,FP_DIG34
- 1107: 1  0419	C5 2D					XCH	A,FP_DIG56
- 1108: 1  041B	C5 2E					XCH	A,FP_DIG78
- 1109: 1  041D	FC					MOV	R4,A				;SAVE THE LAST DIGIT SHIFTED
- 1110: 1  041E	80 CB					SJMP	RIGHT1+1
+ 1105: 1  1213	78 3D					MOV	R0,#FP_ACC8+1
+ 1106: 1				;
+ 1107: 1  1215	F6		FPC1:			MOV	@R0,A
+ 1108: 1  1216	18					DEC	R0
+ 1109: 1  1217	B8 29 FB				CJNE	R0,#FP_TEMP,FPC1
+ 1110: 1  121A	22					RET
  1111: 1				;
- 1112: 1				;***************************************************************
+ 1112: 1				;**************************************************************
  1113: 1				;
- 1114: 1  0420			LEFT:	; Shift ACCUMULATOR LEFT the number of nibbles in R7
- 1115: 1				;
- 1116: 1				;***************************************************************
- 1117: 1				;
- 1118: 1  0420	7C 00					MOV	R4,#00H				;CLEAR FOR SOME ENTRYS
- 1119: 1				;
- 1120: 1  0422	C3		LEFT1:			CLR	C
- 1121: 1  0423	EF					MOV	A,R7				;GET SHIFT VALUE
- 1122: 1  0424	60 22					JZ	LEFT5-1				;EXIT IF ZERO
- 1123: 1  0426	94 02					SUBB	A,#2				;SEE HOW MANY BYTES TO SHIFT
- 1124: 1  0428	50 1F					JNC	LEFT5
- 1125: 1				;
- 1126: 1  042A	C0 00		LEFT3:			PUSH	R0B0				;SAVE POINTER
- 1127: 1  042C	C0 01					PUSH	R1B0
- 1128: 1  042E	78 2A					MOV	R0,#FP_CARRY
- 1129: 1  0430	79 2B					MOV	R1,#FP_DIG12
- 1130: 1				;
- 1131: 1  0432	E6					MOV	A,@R0				;ACC=CHCL
- 1132: 1  0433	C4					SWAP	A				;ACC = CLCH
- 1133: 1  0434	F6					MOV	@R0,A				;ACC = CLCH, @R0 = CLCH
- 1134: 1				;
- 1135: 1  0435	E7		LEFTL:			MOV	A,@R1				;DIG 12
- 1136: 1  0436	C4					SWAP	A				;DIG 21
- 1137: 1  0437	D6					XCHD	A,@R0
- 1138: 1  0438	F7					MOV	@R1,A				;SAVE IT
- 1139: 1  0439	08					INC	R0				;BUMP POINTERS
- 1140: 1  043A	09					INC	R1
- 1141: 1  043B	B8 2E F7				CJNE	R0,#FP_DIG78,LEFTL
- 1142: 1				;
- 1143: 1  043E	EC					MOV	A,R4
- 1144: 1  043F	C4					SWAP	A
- 1145: 1  0440	D6					XCHD	A,@R0
- 1146: 1  0441	54 F0					ANL	A,#0F0H
- 1147: 1  0443	FC					MOV	R4,A
- 1148: 1				;
- 1149: 1  0444	D0 01					POP	R1B0
- 1150: 1  0446	D0 00					POP	R0B0				;RESTORE
- 1151: 1  0448	22					RET					;DONE
- 1152: 1				;
- 1153: 1  0449	FF		LEFT5:			MOV	R7,A				;RESTORE COUNT
- 1154: 1  044A	E4					CLR	A
- 1155: 1  044B	CC					XCH	A,R4				;GET THE RESTORATION BYTE
- 1156: 1  044C	C5 2E					XCH	A,FP_DIG78			;DO THE SWAP
- 1157: 1  044E	C5 2D					XCH	A,FP_DIG56
- 1158: 1  0450	C5 2C					XCH	A,FP_DIG34
- 1159: 1  0452	C5 2B					XCH	A,FP_DIG12
- 1160: 1  0454	C5 2A					XCH	A,FP_CARRY
+ 1114: 1  121B			RIGHT:	; Shift ACCUMULATOR RIGHT the number of nibbles in R7
+ 1115: 1				; Save the shifted values in R4 if SAVE_ROUND is set
+ 1116: 1				;
+ 1117: 1				;**************************************************************
+ 1118: 1				;
+ 1119: 1  121B	7C 00					MOV	R4,#0				;IN CASE OF NO SHIFT
+ 1120: 1				;
+ 1121: 1  121D	C3		RIGHT1:			CLR	C
+ 1122: 1  121E	EF					MOV	A,R7				;GET THE DIGITS TO SHIFT
+ 1123: 1  121F	60 22					JZ	RIGHT5-1			;EXIT IF ZERO
+ 1124: 1  1221	94 02					SUBB	A,#2				;TWO TO DO?
+ 1125: 1  1223	50 1F					JNC	RIGHT5				;SHIFT TWO NIBBLES
+ 1126: 1				;
+ 1127: 1				; Swap one nibble then exit
+ 1128: 1				;
+ 1129: 1  1225	C0 00		RIGHT3:			PUSH	R0B0				;SAVE POINTER REGISTER
+ 1130: 1  1227	C0 01					PUSH	R1B0
+ 1131: 1				;
+ 1132: 1  1229	79 2E					MOV	R1,#FP_DIG78			;LOAD THE POINTERS
+ 1133: 1  122B	78 2D					MOV	R0,#FP_DIG56
+ 1134: 1  122D	EC					MOV	A,R4				;GET THE OVERFLOW REGISTER
+ 1135: 1  122E	D7					XCHD	A,@R1				;GET DIGIT 8
+ 1136: 1  122F	C4					SWAP	A				;FLIP FOR LOAD
+ 1137: 1  1230	FC					MOV	R4,A
+ 1138: 1				;
+ 1139: 1  1231	E7		RIGHTL:			MOV	A,@R1				;GET THE LOW ORDER BYTE
+ 1140: 1  1232	D6					XCHD	A,@R0				;SWAP NIBBLES
+ 1141: 1  1233	C4					SWAP	A				;FLIP FOR STORE
+ 1142: 1  1234	F7					MOV	@R1,A				;SAVE THE DIGITS
+ 1143: 1  1235	18					DEC	R0				;BUMP THE POINTERS
+ 1144: 1  1236	19					DEC	R1
+ 1145: 1  1237	B9 2A F7				CJNE	R1,#FP_DIG12-1,RIGHTL	;LOOP
+ 1146: 1				;
+ 1147: 1  123A	E7					MOV	A,@R1				;ACC = CH8
+ 1148: 1  123B	C4					SWAP	A				;ACC = 8CH
+ 1149: 1  123C	54 0F					ANL	A,#0FH				;ACC = 0CH
+ 1150: 1  123E	F7					MOV	@R1,A				;CARRY DONE
+ 1151: 1  123F	D0 01					POP	R1B0				;EXIT
+ 1152: 1  1241	D0 00					POP	R0B0				;RESTORE REGISTER
+ 1153: 1  1243	22					RET
+ 1154: 1				;
+ 1155: 1  1244	FF		RIGHT5:			MOV	R7,A				;SAVE THE NEW SHIFT NUMBER
+ 1156: 1  1245	E4					CLR	A
+ 1157: 1  1246	C5 2A					XCH	A,FP_CARRY			;SWAP THE NIBBLES
+ 1158: 1  1248	C5 2B					XCH	A,FP_DIG12
+ 1159: 1  124A	C5 2C					XCH	A,FP_DIG34
+ 1160: 1  124C	C5 2D					XCH	A,FP_DIG56
 
 ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. Heinz                                         PAGE 22
 
@@ -1328,62 +1328,62 @@ ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. H
 
  Line  I  Addr  Code            Source
 
- 1161: 1  0456	80 CB					SJMP	LEFT1+1
- 1162: 1				;
- 1163: 1  0458			MUL_NIBBLE:
+ 1161: 1  124E	C5 2E					XCH	A,FP_DIG78
+ 1162: 1  1250	FC					MOV	R4,A				;SAVE THE LAST DIGIT SHIFTED
+ 1163: 1  1251	80 CB					SJMP	RIGHT1+1
  1164: 1				;
- 1165: 1				; Multiply the nibble in R7 by the FP_NIB locations
- 1166: 1				; accumulate the product in FP_ACC
- 1167: 1				;
- 1168: 1				; Set up the pointers for multiplication
- 1169: 1				;
- 1170: 1  0458	54 0F					ANL	A,#0FH				;STRIP OFF MS NIBBLE
- 1171: 1  045A	FF					MOV	R7,A
- 1172: 1  045B	78 3C					MOV	R0,#FP_ACC8
- 1173: 1  045D	79 32					MOV	R1,#FP_NIB8
- 1174: 1  045F	E4					CLR	A
- 1175: 1  0460	F5 33					MOV	FP_ACCX,A
- 1176: 1				;
- 1177: 1  0462	18		MNLOOP:			DEC	R0				;BUMP POINTER TO PROPAGATE CARRY
- 1178: 1  0463	26					ADD	A,@R0				;ATTEMPT TO FORCE CARRY
- 1179: 1  0464	D4					DA	A				;BCD ADJUST
- 1180: 1  0465	30 E4 03				JNB	ACC.4,MNL0			;DON'T ADJUST IF NO NEED
- 1181: 1  0468	18					DEC	R0				;PROPAGATE CARRY TO THE NEXT DIGIT
- 1182: 1  0469	06					INC	@R0				;DO THE ADJUSTING
- 1183: 1  046A	08					INC	R0				;RESTORE R0
- 1184: 1				;
- 1185: 1  046B	D6		MNL0:			XCHD	A,@R0				;RESTORE INITIAL NUMBER
- 1186: 1  046C	8F F0					MOV	B,R7				;GET THE NUBBLE TO MULTIPLY
- 1187: 1  046E	E7					MOV	A,@R1				;GET THE OTHER NIBBLE
- 1188: 1  046F	A4					MUL	AB					;DO THE MULTIPLY
- 1189: 1  0470	75 F0 0A				MOV	B,#10				;NOW BCD ADJUST
- 1190: 1  0473	84					DIV	AB
- 1191: 1  0474	C5 F0					XCH	A,B				;GET THE REMAINDER
- 1192: 1  0476	26					ADD	A,@R0				;PROPAGATE THE PARTIAL PRODUCTS
- 1193: 1  0477	D4					DA	A				;BCD ADJUST
- 1194: 1  0478	30 E4 02				JNB	ACC.4,MNL1			;PROPAGATE PARTIAL PRODUCT CARRY
- 1195: 1  047B	05 F0					INC	B
- 1196: 1				;
- 1197: 1  047D	08		MNL1:			INC	R0
- 1198: 1  047E	D6					XCHD	A,@R0				;SAVE THE NEW PRODUCT
- 1199: 1  047F	18					DEC	R0
- 1200: 1  0480	E5 F0					MOV	A,B				;GET BACK THE QUOTIENT
- 1201: 1  0482	19					DEC	R1
- 1202: 1  0483	B9 2A DC				CJNE	R1,#FP_NIB1-1,MNLOOP
- 1203: 1				;
- 1204: 1  0486	25 33					ADD	A,FP_ACCX			;GET THE OVERFLOW
- 1205: 1  0488	D4					DA	A				;ADJUST
- 1206: 1  0489	F6					MOV	@R0,A				;SAVE IT
- 1207: 1  048A	22					RET					;EXIT
- 1208: 1				;
- 1209: 1				;***************************************************************
- 1210: 1				;
- 1211: 1  048B			LOAD_POINTERS:	; Load the ARG_STACK into R0 and bump R1
- 1212: 1				;
- 1213: 1				;***************************************************************
- 1214: 1				;
- 1215: 1  048B	A8 24					MOV	R0,ARG_STACK
- 1216: 1  048D	74 06					MOV	A,#FP_NUMBER_SIZE
+ 1165: 1				;***************************************************************
+ 1166: 1				;
+ 1167: 1  1253			LEFT:	; Shift ACCUMULATOR LEFT the number of nibbles in R7
+ 1168: 1				;
+ 1169: 1				;***************************************************************
+ 1170: 1				;
+ 1171: 1  1253	7C 00					MOV	R4,#00H				;CLEAR FOR SOME ENTRYS
+ 1172: 1				;
+ 1173: 1  1255	C3		LEFT1:			CLR	C
+ 1174: 1  1256	EF					MOV	A,R7				;GET SHIFT VALUE
+ 1175: 1  1257	60 22					JZ	LEFT5-1				;EXIT IF ZERO
+ 1176: 1  1259	94 02					SUBB	A,#2				;SEE HOW MANY BYTES TO SHIFT
+ 1177: 1  125B	50 1F					JNC	LEFT5
+ 1178: 1				;
+ 1179: 1  125D	C0 00		LEFT3:			PUSH	R0B0				;SAVE POINTER
+ 1180: 1  125F	C0 01					PUSH	R1B0
+ 1181: 1  1261	78 2A					MOV	R0,#FP_CARRY
+ 1182: 1  1263	79 2B					MOV	R1,#FP_DIG12
+ 1183: 1				;
+ 1184: 1  1265	E6					MOV	A,@R0				;ACC=CHCL
+ 1185: 1  1266	C4					SWAP	A				;ACC = CLCH
+ 1186: 1  1267	F6					MOV	@R0,A				;ACC = CLCH, @R0 = CLCH
+ 1187: 1				;
+ 1188: 1  1268	E7		LEFTL:			MOV	A,@R1				;DIG 12
+ 1189: 1  1269	C4					SWAP	A				;DIG 21
+ 1190: 1  126A	D6					XCHD	A,@R0
+ 1191: 1  126B	F7					MOV	@R1,A				;SAVE IT
+ 1192: 1  126C	08					INC	R0				;BUMP POINTERS
+ 1193: 1  126D	09					INC	R1
+ 1194: 1  126E	B8 2E F7				CJNE	R0,#FP_DIG78,LEFTL
+ 1195: 1				;
+ 1196: 1  1271	EC					MOV	A,R4
+ 1197: 1  1272	C4					SWAP	A
+ 1198: 1  1273	D6					XCHD	A,@R0
+ 1199: 1  1274	54 F0					ANL	A,#0F0H
+ 1200: 1  1276	FC					MOV	R4,A
+ 1201: 1				;
+ 1202: 1  1277	D0 01					POP	R1B0
+ 1203: 1  1279	D0 00					POP	R0B0				;RESTORE
+ 1204: 1  127B	22					RET					;DONE
+ 1205: 1				;
+ 1206: 1  127C	FF		LEFT5:			MOV	R7,A				;RESTORE COUNT
+ 1207: 1  127D	E4					CLR	A
+ 1208: 1  127E	CC					XCH	A,R4				;GET THE RESTORATION BYTE
+ 1209: 1  127F	C5 2E					XCH	A,FP_DIG78			;DO THE SWAP
+ 1210: 1  1281	C5 2D					XCH	A,FP_DIG56
+ 1211: 1  1283	C5 2C					XCH	A,FP_DIG34
+ 1212: 1  1285	C5 2B					XCH	A,FP_DIG12
+ 1213: 1  1287	C5 2A					XCH	A,FP_CARRY
+ 1214: 1  1289	80 CB					SJMP	LEFT1+1
+ 1215: 1				;
+ 1216: 1  128B			MUL_NIBBLE:
 
 ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. Heinz                                         PAGE 23
 
@@ -1391,62 +1391,62 @@ ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. H
 
  Line  I  Addr  Code            Source
 
- 1217: 1  048F	28					ADD	A,R0
- 1218: 1  0490	F9					MOV	R1,A
- 1219: 1  0491	22					RET
+ 1217: 1				;
+ 1218: 1				; Multiply the nibble in R7 by the FP_NIB locations
+ 1219: 1				; accumulate the product in FP_ACC
  1220: 1				;
- 1221: 1				;***************************************************************
+ 1221: 1				; Set up the pointers for multiplication
  1222: 1				;
- 1223: 1  0492			MUL_DIV_EXP_AND_SIGN:
- 1224: 1				;
- 1225: 1				; Load the sign into R7, R6. R5 gets the sign for
- 1226: 1				; multiply and divide.
- 1227: 1				;
- 1228: 1				;***************************************************************
+ 1223: 1  128B	54 0F					ANL	A,#0FH				;STRIP OFF MS NIBBLE
+ 1224: 1  128D	FF					MOV	R7,A
+ 1225: 1  128E	78 3C					MOV	R0,#FP_ACC8
+ 1226: 1  1290	79 32					MOV	R1,#FP_NIB8
+ 1227: 1  1292	E4					CLR	A
+ 1228: 1  1293	F5 33					MOV	FP_ACCX,A
  1229: 1				;
- 1230: 1  0492	71 DF					ACALL	FP_CLEAR			;CLEAR INTERNAL MEMORY
- 1231: 1				;
- 1232: 1  0494	91 8B		MDES1:			ACALL	LOAD_POINTERS			;LOAD REGISTERS
- 1233: 1  0496	E6					MOV	A,@R0				;ARG 1 EXP
- 1234: 1  0497	FF					MOV	R7,A				;SAVED IN R7
- 1235: 1  0498	E7					MOV	A,@R1				;ARG 2 EXP
- 1236: 1  0499	FE					MOV	R6,A				;SAVED IN R6
- 1237: 1  049A	18					DEC	R0				;BUMP POINTERS TO SIGN
- 1238: 1  049B	19					DEC	R1
- 1239: 1  049C	E6					MOV	A,@R0				;GET THE SIGN
- 1240: 1  049D	FC					MOV	R4,A				;SIGN OF ARG1
- 1241: 1  049E	E7					MOV	A,@R1				;GET SIGN OF NEXT ARG
- 1242: 1  049F	FB					MOV	R3,A				;SIGN OF ARG2
- 1243: 1  04A0	6C					XRL	A,R4				;ACC GETS THE NEW SIGN
- 1244: 1  04A1	FD					MOV	R5,A				;R5 GETS THE NEW SIGN
- 1245: 1				;
- 1246: 1				; Bump the pointers to point at the LS digit
- 1247: 1				;
- 1248: 1  04A2	18					DEC	R0
- 1249: 1  04A3	19					DEC	R1
- 1250: 1				;
- 1251: 1  04A4	22					RET
- 1252: 1				;
- 1253: 1				;***************************************************************
- 1254: 1				;
- 1255: 1  04A5			LOADR1_MANTISSA:
+ 1230: 1  1295	18		MNLOOP:			DEC	R0				;BUMP POINTER TO PROPAGATE CARRY
+ 1231: 1  1296	26					ADD	A,@R0				;ATTEMPT TO FORCE CARRY
+ 1232: 1  1297	D4					DA	A				;BCD ADJUST
+ 1233: 1  1298	30 E4 03				JNB	ACC.4,MNL0			;DON'T ADJUST IF NO NEED
+ 1234: 1  129B	18					DEC	R0				;PROPAGATE CARRY TO THE NEXT DIGIT
+ 1235: 1  129C	06					INC	@R0				;DO THE ADJUSTING
+ 1236: 1  129D	08					INC	R0				;RESTORE R0
+ 1237: 1				;
+ 1238: 1  129E	D6		MNL0:			XCHD	A,@R0				;RESTORE INITIAL NUMBER
+ 1239: 1  129F	8F F0					MOV	B,R7				;GET THE NUBBLE TO MULTIPLY
+ 1240: 1  12A1	E7					MOV	A,@R1				;GET THE OTHER NIBBLE
+ 1241: 1  12A2	A4					MUL	AB					;DO THE MULTIPLY
+ 1242: 1  12A3	75 F0 0A				MOV	B,#10				;NOW BCD ADJUST
+ 1243: 1  12A6	84					DIV	AB
+ 1244: 1  12A7	C5 F0					XCH	A,B				;GET THE REMAINDER
+ 1245: 1  12A9	26					ADD	A,@R0				;PROPAGATE THE PARTIAL PRODUCTS
+ 1246: 1  12AA	D4					DA	A				;BCD ADJUST
+ 1247: 1  12AB	30 E4 02				JNB	ACC.4,MNL1			;PROPAGATE PARTIAL PRODUCT CARRY
+ 1248: 1  12AE	05 F0					INC	B
+ 1249: 1				;
+ 1250: 1  12B0	08		MNL1:			INC	R0
+ 1251: 1  12B1	D6					XCHD	A,@R0				;SAVE THE NEW PRODUCT
+ 1252: 1  12B2	18					DEC	R0
+ 1253: 1  12B3	E5 F0					MOV	A,B				;GET BACK THE QUOTIENT
+ 1254: 1  12B5	19					DEC	R1
+ 1255: 1  12B6	B9 2A DC				CJNE	R1,#FP_NIB1-1,MNLOOP
  1256: 1				;
- 1257: 1				; Load the mantissa of R0 into FP_Digits
- 1258: 1				;
- 1259: 1				;***************************************************************
- 1260: 1				;
- 1261: 1  04A5	C0 00					PUSH	R0B0				;SAVE REGISTER 1
- 1262: 1  04A7	78 2E					MOV	R0,#FP_DIG78			;SET UP THE POINTER
+ 1257: 1  12B9	25 33					ADD	A,FP_ACCX			;GET THE OVERFLOW
+ 1258: 1  12BB	D4					DA	A				;ADJUST
+ 1259: 1  12BC	F6					MOV	@R0,A				;SAVE IT
+ 1260: 1  12BD	22					RET					;EXIT
+ 1261: 1				;
+ 1262: 1				;***************************************************************
  1263: 1				;
- 1264: 1  04A9	E7		LOADR1:			MOV	A,@R1
- 1265: 1  04AA	F6					MOV	@R0,A
- 1266: 1  04AB	19					DEC	R1
- 1267: 1  04AC	18					DEC	R0
- 1268: 1  04AD	B8 2A F9				CJNE	R0,#FP_CARRY,LOADR1
- 1269: 1				;
- 1270: 1  04B0	D0 00					POP	R0B0
- 1271: 1  04B2	22					RET
- 1272: 1				;
+ 1264: 1  12BE			LOAD_POINTERS:	; Load the ARG_STACK into R0 and bump R1
+ 1265: 1				;
+ 1266: 1				;***************************************************************
+ 1267: 1				;
+ 1268: 1  12BE	A8 24					MOV	R0,ARG_STACK
+ 1269: 1  12C0	74 06					MOV	A,#FP_NUMBER_SIZE
+ 1270: 1  12C2	28					ADD	A,R0
+ 1271: 1  12C3	F9					MOV	R1,A
+ 1272: 1  12C4	22					RET
 
 ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. Heinz                                         PAGE 24
 
@@ -1454,62 +1454,62 @@ ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. H
 
  Line  I  Addr  Code            Source
 
- 1273: 1				;***************************************************************
- 1274: 1				;
- 1275: 1  04B3			HEXSCAN:	; Scan a string to determine if it is a hex number
- 1276: 1					; set carry if hex, else carry = 0
+ 1273: 1				;
+ 1274: 1				;***************************************************************
+ 1275: 1				;
+ 1276: 1  12C5			MUL_DIV_EXP_AND_SIGN:
  1277: 1				;
- 1278: 1				;***************************************************************
- 1279: 1				;
- 1280: 1  04B3	B1 75					ACALL	GET_R1_CHARACTER
- 1281: 1				;
- 1282: 1  04B5	E7		HEXSC1:			MOV	A,@R1				;GET THE CHARACTER
- 1283: 1  04B6	F1 3E					ACALL	DIGIT_CHECK			;SEE IF A DIGIT
- 1284: 1  04B8	40 0E					JC	HS1				;CONTINUE IF A DIGIT
- 1285: 1  04BA	91 CB					ACALL	HEX_CHECK			;SEE IF HEX
- 1286: 1  04BC	40 0A					JC	HS1
- 1287: 1				;
- 1288: 1  04BE	C2 E5					CLR	ACC.5				;NO LOWER CASE
- 1289: 1  04C0	B4 48 03				CJNE	A,#'H',HEXDON
- 1290: 1  04C3	D3					SETB	C
- 1291: 1  04C4	80 01					SJMP	HEXDO1				;NUMBER IS VALID HEX, MAYBE
- 1292: 1				;
- 1293: 1  04C6	C3		HEXDON:			CLR	C
- 1294: 1				;
- 1295: 1  04C7	22		HEXDO1:			RET
- 1296: 1				;
- 1297: 1  04C8	09		HS1:			INC	R1				;BUMP TO NEXT CHARACTER
- 1298: 1  04C9	80 EA					SJMP	HEXSC1				;LOOP
- 1299: 1				;
- 1300: 1  04CB			HEX_CHECK:	;CHECK FOR A VALID ASCII HEX, SET CARRY IF FOUND
- 1301: 1				;
- 1302: 1  04CB	C2 E5					CLR	ACC.5				;WASTE LOWER CASE
- 1303: 1						CMP	A,#'F'+1			;SEE IF F OR LESS
- 1304+ 2  04CD	B4 47 00	CJNE	A,#'F'+1,$+3
- 1305: 1  04D0	40 01					JC	HC1
- 1306: 1  04D2	22					RET
+ 1278: 1				; Load the sign into R7, R6. R5 gets the sign for
+ 1279: 1				; multiply and divide.
+ 1280: 1				;
+ 1281: 1				;***************************************************************
+ 1282: 1				;
+ 1283: 1  12C5	51 12					ACALL	FP_CLEAR			;CLEAR INTERNAL MEMORY
+ 1284: 1				;
+ 1285: 1  12C7	51 BE		MDES1:			ACALL	LOAD_POINTERS			;LOAD REGISTERS
+ 1286: 1  12C9	E6					MOV	A,@R0				;ARG 1 EXP
+ 1287: 1  12CA	FF					MOV	R7,A				;SAVED IN R7
+ 1288: 1  12CB	E7					MOV	A,@R1				;ARG 2 EXP
+ 1289: 1  12CC	FE					MOV	R6,A				;SAVED IN R6
+ 1290: 1  12CD	18					DEC	R0				;BUMP POINTERS TO SIGN
+ 1291: 1  12CE	19					DEC	R1
+ 1292: 1  12CF	E6					MOV	A,@R0				;GET THE SIGN
+ 1293: 1  12D0	FC					MOV	R4,A				;SIGN OF ARG1
+ 1294: 1  12D1	E7					MOV	A,@R1				;GET SIGN OF NEXT ARG
+ 1295: 1  12D2	FB					MOV	R3,A				;SIGN OF ARG2
+ 1296: 1  12D3	6C					XRL	A,R4				;ACC GETS THE NEW SIGN
+ 1297: 1  12D4	FD					MOV	R5,A				;R5 GETS THE NEW SIGN
+ 1298: 1				;
+ 1299: 1				; Bump the pointers to point at the LS digit
+ 1300: 1				;
+ 1301: 1  12D5	18					DEC	R0
+ 1302: 1  12D6	19					DEC	R1
+ 1303: 1				;
+ 1304: 1  12D7	22					RET
+ 1305: 1				;
+ 1306: 1				;***************************************************************
  1307: 1				;
- 1308: 1  04D3			HC1:			CMP	A,#'A'				;SEE IF A OR GREATER
- 1309+ 2  04D3	B4 41 00	CJNE	A,#'A',$+3
- 1310: 1  04D6	B3					CPL	C
- 1311: 1  04D7	22					RET
- 1312: 1				;
- 1313: 1				;***************************************************************
- 1314: 1				;
- 1315: 1  04D8			FLOATING_POINT_INPUT:	; Input a floating point number pointed to by R0
+ 1308: 1  12D8			LOADR1_MANTISSA:
+ 1309: 1				;
+ 1310: 1				; Load the mantissa of R0 into FP_Digits
+ 1311: 1				;
+ 1312: 1				;***************************************************************
+ 1313: 1				;
+ 1314: 1  12D8	C0 00					PUSH	R0B0				;SAVE REGISTER 1
+ 1315: 1  12DA	78 2E					MOV	R0,#FP_DIG78			;SET UP THE POINTER
  1316: 1				;
- 1317: 1				;***************************************************************
- 1318: 1				;
- 1319: 1  04D8	71 DF					ACALL	FP_CLEAR			;CLEAR EVERYTHING
- 1320: 1  04DA	B1 75					ACALL	GET_R1_CHARACTER
- 1321: 1  04DC	B1 7B					ACALL	PLUS_MINUS_TEST
- 1322: 1  04DE	92 78					MOV	MSIGN,C				;SAVE THE MANTISSA SIGN
- 1323: 1				;
- 1324: 1				; Now, set up for input loop
+ 1317: 1  12DC	E7		LOADR1:			MOV	A,@R1
+ 1318: 1  12DD	F6					MOV	@R0,A
+ 1319: 1  12DE	19					DEC	R1
+ 1320: 1  12DF	18					DEC	R0
+ 1321: 1  12E0	B8 2A F9				CJNE	R0,#FP_CARRY,LOADR1
+ 1322: 1				;
+ 1323: 1  12E3	D0 00					POP	R0B0
+ 1324: 1  12E5	22					RET
  1325: 1				;
- 1326: 1  04E0	78 34					MOV	R0,#FP_ACCC
- 1327: 1  04E2	7E 7F					MOV	R6,#7FH				;BASE EXPONENT
- 1328: 1  04E4	D2 D5					SETB	F0				;SET INITIAL FLAG
+ 1326: 1				;***************************************************************
+ 1327: 1				;
+ 1328: 1  12E6			HEXSCAN:	; Scan a string to determine if it is a hex number
 
 ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. Heinz                                         PAGE 25
 
@@ -1517,62 +1517,62 @@ ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. H
 
  Line  I  Addr  Code            Source
 
- 1329: 1				;
- 1330: 1  04E6	F1 3C		INLOOP:			ACALL	GET_DIGIT_CHECK
- 1331: 1  04E8	50 07					JNC	GTEST				;IF NOT A CHARACTER, WHAT IS IT?
- 1332: 1  04EA	54 0F					ANL	A,#0FH				;STRIP ASCII
- 1333: 1  04EC	B1 4E					ACALL	STDIG				;STORE THE DIGITS
+ 1329: 1					; set carry if hex, else carry = 0
+ 1330: 1				;
+ 1331: 1				;***************************************************************
+ 1332: 1				;
+ 1333: 1  12E6	71 A8					ACALL	GET_R1_CHARACTER
  1334: 1				;
- 1335: 1  04EE	09		INLPIK:			INC	R1				;BUMP POINTER FOR LOOP
- 1336: 1  04EF	80 F5					SJMP	INLOOP				;LOOP FOR INPUT
- 1337: 1				;
- 1338: 1  04F1	B4 2E 0C	GTEST:			CJNE	A,#'.',GT1			;SEE IF A RADIX
- 1339: 1  04F4	20 51 63				JB	FOUND_RADIX,INERR
- 1340: 1  04F7	D2 51					SETB	FOUND_RADIX
- 1341: 1  04F9	B8 34 F2				CJNE	R0,#FP_ACCC,INLPIK
- 1342: 1  04FC	D2 52					SETB	FIRST_RADIX			;SET IF FIRST RADIX
- 1343: 1  04FE	80 EE					SJMP	INLPIK				;GET ADDITIONAL DIGITS
- 1344: 1				;
- 1345: 1  0500	20 D5 57	GT1:			JB	F0,INERR			;ERROR IF NOT CLEARED
- 1346: 1  0503	B4 65 02				CJNE	A,#'e',GT11			;CHECK FOR LOWER CASE
- 1347: 1  0506	80 03					SJMP	GT12
- 1348: 1  0508	B4 45 33	GT11:			CJNE	A,#'E',FINISH_UP
- 1349: 1  050B	B1 74		GT12:			ACALL	INC_AND_GET_R1_CHARACTER
- 1350: 1  050D	B1 7B					ACALL	PLUS_MINUS_TEST
- 1351: 1  050F	92 50					MOV	XSIGN,C				;SAVE SIGN STATUS
- 1352: 1  0511	F1 3C					ACALL	GET_DIGIT_CHECK
- 1353: 1  0513	50 45					JNC	INERR
+ 1335: 1  12E8	E7		HEXSC1:			MOV	A,@R1				;GET THE CHARACTER
+ 1336: 1  12E9	B1 71					ACALL	DIGIT_CHECK			;SEE IF A DIGIT
+ 1337: 1  12EB	40 0E					JC	HS1				;CONTINUE IF A DIGIT
+ 1338: 1  12ED	51 FE					ACALL	HEX_CHECK			;SEE IF HEX
+ 1339: 1  12EF	40 0A					JC	HS1
+ 1340: 1				;
+ 1341: 1  12F1	C2 E5					CLR	ACC.5				;NO LOWER CASE
+ 1342: 1  12F3	B4 48 03				CJNE	A,#'H',HEXDON
+ 1343: 1  12F6	D3					SETB	C
+ 1344: 1  12F7	80 01					SJMP	HEXDO1				;NUMBER IS VALID HEX, MAYBE
+ 1345: 1				;
+ 1346: 1  12F9	C3		HEXDON:			CLR	C
+ 1347: 1				;
+ 1348: 1  12FA	22		HEXDO1:			RET
+ 1349: 1				;
+ 1350: 1  12FB	09		HS1:			INC	R1				;BUMP TO NEXT CHARACTER
+ 1351: 1  12FC	80 EA					SJMP	HEXSC1				;LOOP
+ 1352: 1				;
+ 1353: 1  12FE			HEX_CHECK:	;CHECK FOR A VALID ASCII HEX, SET CARRY IF FOUND
  1354: 1				;
- 1355: 1  0515	54 0F					ANL	A,#0FH				;STRIP ASCII BIAS OFF THE CHARACTER
- 1356: 1  0517	FD					MOV	R5,A				;SAVE THE CHARACTER IN R5
- 1357: 1				;
- 1358: 1  0518	09		GT2:			INC	R1
- 1359: 1  0519	F1 3C					ACALL	GET_DIGIT_CHECK
- 1360: 1  051B	50 0D					JNC	FINISH1
- 1361: 1  051D	54 0F					ANL	A,#0FH				;STRIP OFF BIAS
- 1362: 1  051F	CD					XCH	A,R5				;GET THE LAST DIGIT
- 1363: 1  0520	75 F0 0A				MOV	B,#10				;MULTIPLY BY TEN
- 1364: 1  0523	A4					MUL	AB
- 1365: 1  0524	2D					ADD	A,R5				;ADD TO ORIGINAL VALUE
- 1366: 1  0525	FD					MOV	R5,A				;SAVE IN R5
- 1367: 1  0526	50 F0					JNC	GT2					;LOOP IF NO CARRY
- 1368: 1  0528	7D FF					MOV	R5,#0FFH			;FORCE AN ERROR
+ 1355: 1  12FE	C2 E5					CLR	ACC.5				;WASTE LOWER CASE
+ 1356: 1						CMP	A,#'F'+1			;SEE IF F OR LESS
+ 1357+ 2  1300	B4 47 00	CJNE	A,#'F'+1,$+3
+ 1358: 1  1303	40 01					JC	HC1
+ 1359: 1  1305	22					RET
+ 1360: 1				;
+ 1361: 1  1306			HC1:			CMP	A,#'A'				;SEE IF A OR GREATER
+ 1362+ 2  1306	B4 41 00	CJNE	A,#'A',$+3
+ 1363: 1  1309	B3					CPL	C
+ 1364: 1  130A	22					RET
+ 1365: 1				;
+ 1366: 1				;***************************************************************
+ 1367: 1				;
+ 1368: 1  130B			FLOATING_POINT_INPUT:	; Input a floating point number pointed to by R0
  1369: 1				;
- 1370: 1  052A	ED		FINISH1:		MOV	A,R5				;GET THE SIGN
- 1371: 1  052B	30 50 09				JNB	XSIGN,POSNUM			;SEE IF EXPONENT IS POS OR NEG
- 1372: 1  052E	C3					CLR	C
- 1373: 1  052F	9E					SUBB	A,R6
- 1374: 1  0530	F4					CPL	A
- 1375: 1  0531	04					INC	A
- 1376: 1  0532	40 09					JC	FINISH2
- 1377: 1  0534	74 01					MOV	A,#01H
- 1378: 1  0536	22					RET
- 1379: 1				;
- 1380: 1  0537	2E		POSNUM:			ADD	A,R6				;ADD TO EXPONENT
- 1381: 1  0538	50 03					JNC	FINISH2
+ 1370: 1				;***************************************************************
+ 1371: 1				;
+ 1372: 1  130B	51 12					ACALL	FP_CLEAR			;CLEAR EVERYTHING
+ 1373: 1  130D	71 A8					ACALL	GET_R1_CHARACTER
+ 1374: 1  130F	71 AE					ACALL	PLUS_MINUS_TEST
+ 1375: 1  1311	92 78					MOV	MSIGN,C				;SAVE THE MANTISSA SIGN
+ 1376: 1				;
+ 1377: 1				; Now, set up for input loop
+ 1378: 1				;
+ 1379: 1  1313	78 34					MOV	R0,#FP_ACCC
+ 1380: 1  1315	7E 7F					MOV	R6,#7FH				;BASE EXPONENT
+ 1381: 1  1317	D2 D5					SETB	F0				;SET INITIAL FLAG
  1382: 1				;
- 1383: 1  053A	74 02		POSNM1:			MOV	A,#02H
- 1384: 1  053C	22					RET
+ 1383: 1  1319	B1 6F		INLOOP:			ACALL	GET_DIGIT_CHECK
+ 1384: 1  131B	50 07					JNC	GTEST				;IF NOT A CHARACTER, WHAT IS IT?
 
 ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. Heinz                                         PAGE 26
 
@@ -1580,61 +1580,61 @@ ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. H
 
  Line  I  Addr  Code            Source
 
- 1385: 1				;
- 1386: 1  053D	CE		FINISH2:		XCH	A,R6				;SAVE THE EXPONENT
+ 1385: 1  131D	54 0F					ANL	A,#0FH				;STRIP ASCII
+ 1386: 1  131F	71 81					ACALL	STDIG				;STORE THE DIGITS
  1387: 1				;
- 1388: 1  053E			FINISH_UP:
- 1389: 1				;
- 1390: 1  053E	8E 30					MOV	FP_EXP,R6			;SAVE EXPONENT
- 1391: 1  0540	B8 34 02				CJNE	R0,#FP_ACCC,FINISH_UP1
- 1392: 1  0543	71 DF					ACALL	FP_CLEAR			;CLEAR THE MEMORY IF 0
- 1393: 1  0545	E5 24		FINISH_UP1:		MOV	A,ARG_STACK			;GET THE ARG STACK
- 1394: 1  0547	C3					CLR	C
- 1395: 1  0548	94 0C					SUBB	A,#FP_NUMBER_SIZE+FP_NUMBER_SIZE
- 1396: 1  054A	F5 24					MOV	ARG_STACK,A			;ADJUST FOR STORE
- 1397: 1  054C	61 50					AJMP	PACK
- 1398: 1				;
- 1399: 1  054E	C2 D5		STDIG:			CLR	F0				;CLEAR INITIAL DESIGNATOR
- 1400: 1  0550	70 0B					JNZ	STDIG1				;CONTINUE IF NOT ZERO
- 1401: 1  0552	B8 34 08				CJNE	R0,#FP_ACCC,STDIG1
- 1402: 1  0555	30 52 04				JNB	FIRST_RADIX,RET_X
- 1403: 1				;
- 1404: 1  0558	DE 02		DECX:			DJNZ	R6,RET_X
- 1405: 1				;
- 1406: 1  055A	74 FF		INERR:			MOV	A,#0FFH
+ 1388: 1  1321	09		INLPIK:			INC	R1				;BUMP POINTER FOR LOOP
+ 1389: 1  1322	80 F5					SJMP	INLOOP				;LOOP FOR INPUT
+ 1390: 1				;
+ 1391: 1  1324	B4 2E 0C	GTEST:			CJNE	A,#'.',GT1			;SEE IF A RADIX
+ 1392: 1  1327	20 51 63				JB	FOUND_RADIX,INERR
+ 1393: 1  132A	D2 51					SETB	FOUND_RADIX
+ 1394: 1  132C	B8 34 F2				CJNE	R0,#FP_ACCC,INLPIK
+ 1395: 1  132F	D2 52					SETB	FIRST_RADIX			;SET IF FIRST RADIX
+ 1396: 1  1331	80 EE					SJMP	INLPIK				;GET ADDITIONAL DIGITS
+ 1397: 1				;
+ 1398: 1  1333	20 D5 57	GT1:			JB	F0,INERR			;ERROR IF NOT CLEARED
+ 1399: 1  1336	B4 65 02				CJNE	A,#'e',GT11			;CHECK FOR LOWER CASE
+ 1400: 1  1339	80 03					SJMP	GT12
+ 1401: 1  133B	B4 45 33	GT11:			CJNE	A,#'E',FINISH_UP
+ 1402: 1  133E	71 A7		GT12:			ACALL	INC_AND_GET_R1_CHARACTER
+ 1403: 1  1340	71 AE					ACALL	PLUS_MINUS_TEST
+ 1404: 1  1342	92 50					MOV	XSIGN,C				;SAVE SIGN STATUS
+ 1405: 1  1344	B1 6F					ACALL	GET_DIGIT_CHECK
+ 1406: 1  1346	50 45					JNC	INERR
  1407: 1				;
- 1408: 1  055C	22		RET_X:			RET
- 1409: 1				;
- 1410: 1  055D	20 53 02	STDIG1:			JB	DONE_LOAD,FRTEST
- 1411: 1  0560	C2 52					CLR	FIRST_RADIX
- 1412: 1				;
- 1413: 1  0562	20 52 F3	FRTEST:			JB	FIRST_RADIX,DECX
- 1414: 1				;
- 1415: 1  0565	20 51 01	FDTEST:			JB	FOUND_RADIX,FDT1
- 1416: 1  0568	0E					INC	R6
- 1417: 1				;
- 1418: 1  0569	20 53 F0	FDT1:			JB	DONE_LOAD,RET_X
- 1419: 1  056C	B8 3D 02				CJNE	R0,#FP_ACC8+1,FDT2
- 1420: 1  056F	D2 53					SETB	DONE_LOAD
- 1421: 1				;
- 1422: 1  0571	F6		FDT2:			MOV	@R0,A				;SAVE THE STRIPPED ACCUMULATOR
- 1423: 1  0572	08					INC	R0				;BUMP THE POINTER
- 1424: 1  0573	22					RET					;EXIT
- 1425: 1				;
- 1426: 1				;***************************************************************
- 1427: 1				;
- 1428: 1				; I/O utilities
- 1429: 1				;
- 1430: 1				;***************************************************************
- 1431: 1				;
- 1432: 1  0574			INC_AND_GET_R1_CHARACTER:
- 1433: 1				;
- 1434: 1  0574	09					INC	R1
+ 1408: 1  1348	54 0F					ANL	A,#0FH				;STRIP ASCII BIAS OFF THE CHARACTER
+ 1409: 1  134A	FD					MOV	R5,A				;SAVE THE CHARACTER IN R5
+ 1410: 1				;
+ 1411: 1  134B	09		GT2:			INC	R1
+ 1412: 1  134C	B1 6F					ACALL	GET_DIGIT_CHECK
+ 1413: 1  134E	50 0D					JNC	FINISH1
+ 1414: 1  1350	54 0F					ANL	A,#0FH				;STRIP OFF BIAS
+ 1415: 1  1352	CD					XCH	A,R5				;GET THE LAST DIGIT
+ 1416: 1  1353	75 F0 0A				MOV	B,#10				;MULTIPLY BY TEN
+ 1417: 1  1356	A4					MUL	AB
+ 1418: 1  1357	2D					ADD	A,R5				;ADD TO ORIGINAL VALUE
+ 1419: 1  1358	FD					MOV	R5,A				;SAVE IN R5
+ 1420: 1  1359	50 F0					JNC	GT2					;LOOP IF NO CARRY
+ 1421: 1  135B	7D FF					MOV	R5,#0FFH			;FORCE AN ERROR
+ 1422: 1				;
+ 1423: 1  135D	ED		FINISH1:		MOV	A,R5				;GET THE SIGN
+ 1424: 1  135E	30 50 09				JNB	XSIGN,POSNUM			;SEE IF EXPONENT IS POS OR NEG
+ 1425: 1  1361	C3					CLR	C
+ 1426: 1  1362	9E					SUBB	A,R6
+ 1427: 1  1363	F4					CPL	A
+ 1428: 1  1364	04					INC	A
+ 1429: 1  1365	40 09					JC	FINISH2
+ 1430: 1  1367	74 01					MOV	A,#01H
+ 1431: 1  1369	22					RET
+ 1432: 1				;
+ 1433: 1  136A	2E		POSNUM:			ADD	A,R6				;ADD TO EXPONENT
+ 1434: 1  136B	50 03					JNC	FINISH2
  1435: 1				;
- 1436: 1  0575			GET_R1_CHARACTER:
- 1437: 1				;
- 1438: 1  0575	E7					MOV	A,@R1				;GET THE CHARACTER
- 1439: 1  0576	B4 20 0C				CJNE	A,#' ',PMT1			;SEE IF A SPACE
+ 1436: 1  136D	74 02		POSNM1:			MOV	A,#02H
+ 1437: 1  136F	22					RET
+ 1438: 1				;
+ 1439: 1  1370	CE		FINISH2:		XCH	A,R6				;SAVE THE EXPONENT
  1440: 1				;
 
 ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. Heinz                                         PAGE 27
@@ -1643,62 +1643,62 @@ ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. H
 
  Line  I  Addr  Code            Source
 
- 1441: 1				; Kill spaces
+ 1441: 1  1371			FINISH_UP:
  1442: 1				;
- 1443: 1  0579	80 F9					SJMP	INC_AND_GET_R1_CHARACTER
- 1444: 1				;
- 1445: 1  057B			PLUS_MINUS_TEST:
- 1446: 1				;
- 1447: 1  057B	B4 2B 02				CJNE	A,#'+',PMT0
- 1448: 1  057E	80 04					SJMP	PMT3
- 1449: 1  0580	B4 2D 02	PMT0:			CJNE	A,#'-',PMT1
- 1450: 1				;
- 1451: 1  0583	D3		PMT2:			SETB	C
- 1452: 1				;
- 1453: 1  0584	09		PMT3:			INC	R1
- 1454: 1				;
- 1455: 1  0585	22		PMT1:			RET
+ 1443: 1  1371	8E 30					MOV	FP_EXP,R6			;SAVE EXPONENT
+ 1444: 1  1373	B8 34 02				CJNE	R0,#FP_ACCC,FINISH_UP1
+ 1445: 1  1376	51 12					ACALL	FP_CLEAR			;CLEAR THE MEMORY IF 0
+ 1446: 1  1378	E5 24		FINISH_UP1:		MOV	A,ARG_STACK			;GET THE ARG STACK
+ 1447: 1  137A	C3					CLR	C
+ 1448: 1  137B	94 0C					SUBB	A,#FP_NUMBER_SIZE+FP_NUMBER_SIZE
+ 1449: 1  137D	F5 24					MOV	ARG_STACK,A			;ADJUST FOR STORE
+ 1450: 1  137F	21 83					AJMP	PACK
+ 1451: 1				;
+ 1452: 1  1381	C2 D5		STDIG:			CLR	F0				;CLEAR INITIAL DESIGNATOR
+ 1453: 1  1383	70 0B					JNZ	STDIG1				;CONTINUE IF NOT ZERO
+ 1454: 1  1385	B8 34 08				CJNE	R0,#FP_ACCC,STDIG1
+ 1455: 1  1388	30 52 04				JNB	FIRST_RADIX,RET_X
  1456: 1				;
- 1457: 1				;***************************************************************
+ 1457: 1  138B	DE 02		DECX:			DJNZ	R6,RET_X
  1458: 1				;
- 1459: 1  0586			FLOATING_POINT_OUTPUT:	; Output the number, format is in location 25
+ 1459: 1  138D	74 FF		INERR:			MOV	A,#0FFH
  1460: 1				;
- 1461: 1				; IF FORMAT = 00 - FREE FLOATING
- 1462: 1				;           = FX - EXPONENTIAL (X IS THE NUMBER OF SIG DIGITS)
- 1463: 1				;           = NX - N = NUM BEFORE RADIX, X = NUM AFTER RADIX
- 1464: 1				;                  N + X = 8 MAX
+ 1461: 1  138F	22		RET_X:			RET
+ 1462: 1				;
+ 1463: 1  1390	20 53 02	STDIG1:			JB	DONE_LOAD,FRTEST
+ 1464: 1  1393	C2 52					CLR	FIRST_RADIX
  1465: 1				;
- 1466: 1				;***************************************************************
+ 1466: 1  1395	20 52 F3	FRTEST:			JB	FIRST_RADIX,DECX
  1467: 1				;
- 1468: 1  0586	91 94					ACALL	MDES1				;GET THE NUMBER TO OUTPUT, R0 IS POI
-       1			NTER
- 1469: 1  0588	31 E8					ACALL	POP_AND_EXIT			;OUTPUT POPS THE STACK
- 1470: 1  058A	EF					MOV	A,R7
- 1471: 1  058B	FE					MOV	R6,A				;PUT THE EXPONENT IN R6
- 1472: 1  058C	71 AB					ACALL	UNPACK_R0			;UNPACK THE NUMBER
- 1473: 1  058E	78 2B					MOV	R0,#FP_NIB1			;POINT AT THE NUMBER
- 1474: 1  0590	E5 25					MOV	A,FORMAT			;GET THE FORMAT
- 1475: 1  0592	FB					MOV	R3,A				;SAVE IN CASE OF EXP FORMAT
- 1476: 1  0593	60 49					JZ	FREE				;FREE FLOATING?
- 1477: 1						CMP	A,#0F0H				;SEE IF EXPONENTIAL
- 1478+ 2  0595	B4 F0 00	CJNE	A,#0F0H,$+3
- 1479: 1  0598	50 73					JNC	EXPOUT
+ 1468: 1  1398	20 51 01	FDTEST:			JB	FOUND_RADIX,FDT1
+ 1469: 1  139B	0E					INC	R6
+ 1470: 1				;
+ 1471: 1  139C	20 53 F0	FDT1:			JB	DONE_LOAD,RET_X
+ 1472: 1  139F	B8 3D 02				CJNE	R0,#FP_ACC8+1,FDT2
+ 1473: 1  13A2	D2 53					SETB	DONE_LOAD
+ 1474: 1				;
+ 1475: 1  13A4	F6		FDT2:			MOV	@R0,A				;SAVE THE STRIPPED ACCUMULATOR
+ 1476: 1  13A5	08					INC	R0				;BUMP THE POINTER
+ 1477: 1  13A6	22					RET					;EXIT
+ 1478: 1				;
+ 1479: 1				;***************************************************************
  1480: 1				;
- 1481: 1				; If here, must be integer USING format
+ 1481: 1				; I/O utilities
  1482: 1				;
- 1483: 1  059A	EE					MOV	A,R6				;GET THE EXPONENT
- 1484: 1  059B	70 02					JNZ	FPO1
- 1485: 1  059D	7E 80					MOV	R6,#80H
- 1486: 1  059F	EB		FPO1:			MOV	A,R3				;GET THE FORMAT
- 1487: 1  05A0	C4					SWAP	A				;SPLIT INTEGER AND FRACTION
- 1488: 1  05A1	54 0F					ANL	A,#0FH
- 1489: 1  05A3	FA					MOV	R2,A				;SAVE INTEGER
- 1490: 1  05A4	D1 73					ACALL	NUM_LT				;GET THE NUMBER OF INTEGERS
- 1491: 1  05A6	CA					XCH	A,R2				;FLIP FOR SUBB
- 1492: 1  05A7	C3					CLR	C
- 1493: 1  05A8	9A					SUBB	A,R2
- 1494: 1  05A9	FF					MOV	R7,A
- 1495: 1  05AA	50 06					JNC	FPO2
+ 1483: 1				;***************************************************************
+ 1484: 1				;
+ 1485: 1  13A7			INC_AND_GET_R1_CHARACTER:
+ 1486: 1				;
+ 1487: 1  13A7	09					INC	R1
+ 1488: 1				;
+ 1489: 1  13A8			GET_R1_CHARACTER:
+ 1490: 1				;
+ 1491: 1  13A8	E7					MOV	A,@R1				;GET THE CHARACTER
+ 1492: 1  13A9	B4 20 0C				CJNE	A,#' ',PMT1			;SEE IF A SPACE
+ 1493: 1				;
+ 1494: 1				; Kill spaces
+ 1495: 1				;
+ 1496: 1  13AC	80 F9					SJMP	INC_AND_GET_R1_CHARACTER
 
 ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. Heinz                                         PAGE 28
 
@@ -1706,62 +1706,62 @@ ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. H
 
  Line  I  Addr  Code            Source
 
- 1496: 1  05AC	7D 3F					MOV	R5,#'?'				;OUTPUT A QUESTION MARK
- 1497: 1  05AE	D1 A8					ACALL	SOUT1				;NUMBER IS TOO LARGE FOR FORMAT
- 1498: 1  05B0	A1 DE					AJMP	FREE
- 1499: 1  05B2	BA 00 07	FPO2:			CJNE	R2,#00,USING0			;SEE IF ZERO
- 1500: 1  05B5	1F					DEC	R7
- 1501: 1  05B6	D1 95					ACALL	SS7
- 1502: 1  05B8	D1 A2					ACALL	ZOUT				;OUTPUT A ZERO
- 1503: 1  05BA	80 06					SJMP	USING1
- 1504: 1				;
- 1505: 1  05BC	D1 95		USING0:			ACALL	SS7				;OUTPUT SPACES, IF NEED TO
- 1506: 1  05BE	EA					MOV	A,R2				;OUTPUT DIGITS
- 1507: 1  05BF	FF					MOV	R7,A
- 1508: 1  05C0	D1 57					ACALL	OUTR0
+ 1497: 1				;
+ 1498: 1  13AE			PLUS_MINUS_TEST:
+ 1499: 1				;
+ 1500: 1  13AE	B4 2B 02				CJNE	A,#'+',PMT0
+ 1501: 1  13B1	80 04					SJMP	PMT3
+ 1502: 1  13B3	B4 2D 02	PMT0:			CJNE	A,#'-',PMT1
+ 1503: 1				;
+ 1504: 1  13B6	D3		PMT2:			SETB	C
+ 1505: 1				;
+ 1506: 1  13B7	09		PMT3:			INC	R1
+ 1507: 1				;
+ 1508: 1  13B8	22		PMT1:			RET
  1509: 1				;
- 1510: 1  05C2	EB		USING1:			MOV	A,R3
- 1511: 1  05C3	54 0F					ANL	A,#0FH				;GET THE NUMBER RIGHT OF DP
- 1512: 1  05C5	FA					MOV	R2,A				;SAVE IT
- 1513: 1  05C6	60 BD					JZ	PMT1				;EXIT IF ZERO
- 1514: 1  05C8	D1 9E					ACALL	ROUT				;OUTPUT DP
- 1515: 1  05CA	D1 7C					ACALL	NUM_RT
- 1516: 1  05CC	B5 02 03				CJNE	A,2,USINGX			;COMPARE A TO R2
- 1517: 1				;
- 1518: 1  05CF	EA		USINGY:			MOV	A,R2
- 1519: 1  05D0	C1 8C					AJMP	Z7R7
+ 1510: 1				;***************************************************************
+ 1511: 1				;
+ 1512: 1  13B9			FLOATING_POINT_OUTPUT:	; Output the number, format is in location 25
+ 1513: 1				;
+ 1514: 1				; IF FORMAT = 00 - FREE FLOATING
+ 1515: 1				;           = FX - EXPONENTIAL (X IS THE NUMBER OF SIG DIGITS)
+ 1516: 1				;           = NX - N = NUM BEFORE RADIX, X = NUM AFTER RADIX
+ 1517: 1				;                  N + X = 8 MAX
+ 1518: 1				;
+ 1519: 1				;***************************************************************
  1520: 1				;
- 1521: 1  05D2	50 FB		USINGX:			JNC	USINGY
- 1522: 1				;
- 1523: 1  05D4	CA		USING2:			XCH	A,R2
- 1524: 1  05D5	C3					CLR	C
- 1525: 1  05D6	9A					SUBB	A,R2
- 1526: 1  05D7	CA					XCH	A,R2
- 1527: 1  05D8	D1 8C					ACALL	Z7R7				;OUTPUT ZEROS IF NEED TO
- 1528: 1  05DA	EA					MOV	A,R2
- 1529: 1  05DB	FF					MOV	R7,A
- 1530: 1  05DC	C1 57					AJMP	OUTR0
- 1531: 1				;
- 1532: 1				; First, force exponential output, if need to
+ 1521: 1  13B9	51 C7					ACALL	MDES1				;GET THE NUMBER TO OUTPUT, R0 IS POI
+       1			NTER
+ 1522: 1  13BB	11 1B					ACALL	POP_AND_EXIT			;OUTPUT POPS THE STACK
+ 1523: 1  13BD	EF					MOV	A,R7
+ 1524: 1  13BE	FE					MOV	R6,A				;PUT THE EXPONENT IN R6
+ 1525: 1  13BF	31 DE					ACALL	UNPACK_R0			;UNPACK THE NUMBER
+ 1526: 1  13C1	78 2B					MOV	R0,#FP_NIB1			;POINT AT THE NUMBER
+ 1527: 1  13C3	E5 25					MOV	A,FORMAT			;GET THE FORMAT
+ 1528: 1  13C5	FB					MOV	R3,A				;SAVE IN CASE OF EXP FORMAT
+ 1529: 1  13C6	60 49					JZ	FREE				;FREE FLOATING?
+ 1530: 1						CMP	A,#0F0H				;SEE IF EXPONENTIAL
+ 1531+ 2  13C8	B4 F0 00	CJNE	A,#0F0H,$+3
+ 1532: 1  13CB	50 73					JNC	EXPOUT
  1533: 1				;
- 1534: 1  05DE	EE		FREE:			MOV	A,R6				;GET THE EXPONENT
- 1535: 1  05DF	70 04					JNZ	FREE1				;IF ZERO, PRINT IT
- 1536: 1  05E1	D1 A6					ACALL	SOUT
- 1537: 1  05E3	C1 A2					AJMP	ZOUT
- 1538: 1				;
- 1539: 1  05E5	7B F0		FREE1:			MOV	R3,#0F0H			;IN CASE EXP NEEDED
- 1540: 1  05E7	74 77					MOV	A,#80H-DIGIT-DIGIT-1
- 1541: 1  05E9	2E					ADD	A,R6
- 1542: 1  05EA	40 21					JC	EXPOUT
- 1543: 1  05EC	94 F7					SUBB	A,#0F7H
- 1544: 1  05EE	40 1D					JC	EXPOUT
- 1545: 1				;
- 1546: 1				; Now, just print the number
- 1547: 1				;
- 1548: 1  05F0	D1 97					ACALL	SINOUT				;PRINT THE SIGN OF THE NUMBER
- 1549: 1  05F2	D1 73					ACALL	NUM_LT				;GET THE NUMBER LEFT OF DP
- 1550: 1  05F4	B4 08 02				CJNE	A,#8,FREE4
- 1551: 1  05F7	C1 57					AJMP	OUTR0
+ 1534: 1				; If here, must be integer USING format
+ 1535: 1				;
+ 1536: 1  13CD	EE					MOV	A,R6				;GET THE EXPONENT
+ 1537: 1  13CE	70 02					JNZ	FPO1
+ 1538: 1  13D0	7E 80					MOV	R6,#80H
+ 1539: 1  13D2	EB		FPO1:			MOV	A,R3				;GET THE FORMAT
+ 1540: 1  13D3	C4					SWAP	A				;SPLIT INTEGER AND FRACTION
+ 1541: 1  13D4	54 0F					ANL	A,#0FH
+ 1542: 1  13D6	FA					MOV	R2,A				;SAVE INTEGER
+ 1543: 1  13D7	91 A6					ACALL	NUM_LT				;GET THE NUMBER OF INTEGERS
+ 1544: 1  13D9	CA					XCH	A,R2				;FLIP FOR SUBB
+ 1545: 1  13DA	C3					CLR	C
+ 1546: 1  13DB	9A					SUBB	A,R2
+ 1547: 1  13DC	FF					MOV	R7,A
+ 1548: 1  13DD	50 06					JNC	FPO2
+ 1549: 1  13DF	7D 3F					MOV	R5,#'?'				;OUTPUT A QUESTION MARK
+ 1550: 1  13E1	91 DB					ACALL	SOUT1				;NUMBER IS TOO LARGE FOR FORMAT
+ 1551: 1  13E3	81 11					AJMP	FREE
 
 ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. Heinz                                         PAGE 29
 
@@ -1769,62 +1769,62 @@ ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. H
 
  Line  I  Addr  Code            Source
 
- 1552: 1				;
- 1553: 1  05F9	D1 57		FREE4:			ACALL	OUTR0
- 1554: 1  05FB	D1 69					ACALL	ZTEST				;TEST FOR TRAILING ZEROS
- 1555: 1  05FD	60 57					JZ	U_RET				;DONE IF ALL TRAILING ZEROS
- 1556: 1  05FF	D1 9E					ACALL	ROUT				;OUTPUT RADIX
+ 1552: 1  13E5	BA 00 07	FPO2:			CJNE	R2,#00,USING0			;SEE IF ZERO
+ 1553: 1  13E8	1F					DEC	R7
+ 1554: 1  13E9	91 C8					ACALL	SS7
+ 1555: 1  13EB	91 D5					ACALL	ZOUT				;OUTPUT A ZERO
+ 1556: 1  13ED	80 06					SJMP	USING1
  1557: 1				;
- 1558: 1  0601	7F 01		FREE2:			MOV	R7,#1				;OUTPUT ONE DIGIT
- 1559: 1  0603	D1 57					ACALL	OUTR0
- 1560: 1  0605	70 4F					JNZ	U_RET
- 1561: 1  0607	D1 69					ACALL	ZTEST
- 1562: 1  0609	60 4B					JZ	U_RET
- 1563: 1  060B	80 F4					SJMP	FREE2				;LOOP
- 1564: 1				;
- 1565: 1  060D	D1 97		EXPOUT:			ACALL	SINOUT				;PRINT THE SIGN
- 1566: 1  060F	7F 01					MOV	R7,#1				;OUTPUT ONE CHARACTER
- 1567: 1  0611	D1 57					ACALL	OUTR0
- 1568: 1  0613	D1 9E					ACALL	ROUT				;OUTPUT RADIX
- 1569: 1  0615	EB					MOV	A,R3				;GET FORMAT
- 1570: 1  0616	54 0F					ANL	A,#0FH				;STRIP INDICATOR
- 1571: 1  0618	60 06					JZ	EXPOTX
- 1572: 1				;
- 1573: 1  061A	FF					MOV	R7,A				;OUTPUT THE NUMBER OF DIGITS
- 1574: 1  061B	1F					DEC	R7				;ADJUST BECAUSE ONE CHAR ALREADY OUT
- 1575: 1  061C	D1 57					ACALL	OUTR0
- 1576: 1  061E	80 02					SJMP	EXPOT4
- 1577: 1				;
- 1578: 1  0620	D1 01		EXPOTX:			ACALL	FREE2				;OUTPUT UNTIL TRAILING ZEROS
- 1579: 1				;
- 1580: 1  0622	D1 A6		EXPOT4:			ACALL	SOUT				;OUTPUT A SPACE
- 1581: 1  0624	7D 45					MOV	R5,#'E'
- 1582: 1  0626	D1 A8					ACALL	SOUT1				;OUTPUT AN E
- 1583: 1  0628	EE					MOV	A,R6				;GET THE EXPONENT
- 1584: 1  0629	60 04					JZ	XOUT0				;EXIT IF ZERO
- 1585: 1  062B	14					DEC	A				;ADJUST FOR THE DIGIT ALREADY OUTPUT
- 1586: 1  062C	B4 80 05				CJNE	A,#80H,XOUT2			;SEE WHAT IT IS
- 1587: 1				;
- 1588: 1  062F	D1 A6		XOUT0:			ACALL	SOUT
- 1589: 1  0631	E4					CLR	A
- 1590: 1  0632	80 0C					SJMP	XOUT4
+ 1558: 1  13EF	91 C8		USING0:			ACALL	SS7				;OUTPUT SPACES, IF NEED TO
+ 1559: 1  13F1	EA					MOV	A,R2				;OUTPUT DIGITS
+ 1560: 1  13F2	FF					MOV	R7,A
+ 1561: 1  13F3	91 8A					ACALL	OUTR0
+ 1562: 1				;
+ 1563: 1  13F5	EB		USING1:			MOV	A,R3
+ 1564: 1  13F6	54 0F					ANL	A,#0FH				;GET THE NUMBER RIGHT OF DP
+ 1565: 1  13F8	FA					MOV	R2,A				;SAVE IT
+ 1566: 1  13F9	60 BD					JZ	PMT1				;EXIT IF ZERO
+ 1567: 1  13FB	91 D1					ACALL	ROUT				;OUTPUT DP
+ 1568: 1  13FD	91 AF					ACALL	NUM_RT
+ 1569: 1  13FF	B5 02 03				CJNE	A,2,USINGX			;COMPARE A TO R2
+ 1570: 1				;
+ 1571: 1  1402	EA		USINGY:			MOV	A,R2
+ 1572: 1  1403	81 BF					AJMP	Z7R7
+ 1573: 1				;
+ 1574: 1  1405	50 FB		USINGX:			JNC	USINGY
+ 1575: 1				;
+ 1576: 1  1407	CA		USING2:			XCH	A,R2
+ 1577: 1  1408	C3					CLR	C
+ 1578: 1  1409	9A					SUBB	A,R2
+ 1579: 1  140A	CA					XCH	A,R2
+ 1580: 1  140B	91 BF					ACALL	Z7R7				;OUTPUT ZEROS IF NEED TO
+ 1581: 1  140D	EA					MOV	A,R2
+ 1582: 1  140E	FF					MOV	R7,A
+ 1583: 1  140F	81 8A					AJMP	OUTR0
+ 1584: 1				;
+ 1585: 1				; First, force exponential output, if need to
+ 1586: 1				;
+ 1587: 1  1411	EE		FREE:			MOV	A,R6				;GET THE EXPONENT
+ 1588: 1  1412	70 04					JNZ	FREE1				;IF ZERO, PRINT IT
+ 1589: 1  1414	91 D9					ACALL	SOUT
+ 1590: 1  1416	81 D5					AJMP	ZOUT
  1591: 1				;
- 1592: 1  0634	40 06		XOUT2:			JC	XOUT3				;NEGATIVE EXPONENT
- 1593: 1  0636	7D 2B					MOV	R5,#'+'				;OUTPUT A PLUS SIGN
- 1594: 1  0638	D1 A8					ACALL	SOUT1
- 1595: 1  063A	80 04					SJMP	XOUT4
- 1596: 1				;
- 1597: 1  063C	D1 9A		XOUT3:			ACALL	MOUT
- 1598: 1  063E	F4					CPL	A				;FLIP BITS
- 1599: 1  063F	04					INC	A				;BUMP
+ 1592: 1  1418	7B F0		FREE1:			MOV	R3,#0F0H			;IN CASE EXP NEEDED
+ 1593: 1  141A	74 77					MOV	A,#80H-DIGIT-DIGIT-1
+ 1594: 1  141C	2E					ADD	A,R6
+ 1595: 1  141D	40 21					JC	EXPOUT
+ 1596: 1  141F	94 F7					SUBB	A,#0F7H
+ 1597: 1  1421	40 1D					JC	EXPOUT
+ 1598: 1				;
+ 1599: 1				; Now, just print the number
  1600: 1				;
- 1601: 1  0640	C2 E7		XOUT4:			CLR	ACC.7
- 1602: 1  0642	F8					MOV	R0,A
- 1603: 1  0643	7A 00					MOV	R2,#0
- 1604: 1  0645	79 48					MOV	R1,#LOW CONVT			;CONVERSION LOCATION
- 1605: 1  0647	7B 00					MOV	R3,#HIGH CONVT
- 1606: 1  0649	D1 CE					ACALL	CONVERT_BINARY_TO_ASCII_STRING
- 1607: 1  064B	78 48					MOV	R0,#LOW CONVT			;NOW, OUTPUT EXPONENT
+ 1601: 1  1423	91 CA					ACALL	SINOUT				;PRINT THE SIGN OF THE NUMBER
+ 1602: 1  1425	91 A6					ACALL	NUM_LT				;GET THE NUMBER LEFT OF DP
+ 1603: 1  1427	B4 08 02				CJNE	A,#8,FREE4
+ 1604: 1  142A	81 8A					AJMP	OUTR0
+ 1605: 1				;
+ 1606: 1  142C	91 8A		FREE4:			ACALL	OUTR0
+ 1607: 1  142E	91 9C					ACALL	ZTEST				;TEST FOR TRAILING ZEROS
 
 ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. Heinz                                         PAGE 30
 
@@ -1832,62 +1832,62 @@ ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. H
 
  Line  I  Addr  Code            Source
 
- 1608: 1				;
- 1609: 1  064D	E6		EXPOT5:			MOV	A,@R0				;GET THE CHARACTER
- 1610: 1  064E	FD					MOV	R5,A				;OUTPUT IT
- 1611: 1  064F	D1 A8					ACALL	SOUT1
- 1612: 1  0651	08					INC	R0				;BUMP THE POINTER
- 1613: 1  0652	E8					MOV	A,R0				;GET THE POINTER
- 1614: 1  0653	B5 01 F7				CJNE	A,R1B0,EXPOT5			;LOOP
- 1615: 1				;
- 1616: 1  0656	22		U_RET:			RET					;EXIT
+ 1608: 1  1430	60 57					JZ	U_RET				;DONE IF ALL TRAILING ZEROS
+ 1609: 1  1432	91 D1					ACALL	ROUT				;OUTPUT RADIX
+ 1610: 1				;
+ 1611: 1  1434	7F 01		FREE2:			MOV	R7,#1				;OUTPUT ONE DIGIT
+ 1612: 1  1436	91 8A					ACALL	OUTR0
+ 1613: 1  1438	70 4F					JNZ	U_RET
+ 1614: 1  143A	91 9C					ACALL	ZTEST
+ 1615: 1  143C	60 4B					JZ	U_RET
+ 1616: 1  143E	80 F4					SJMP	FREE2				;LOOP
  1617: 1				;
- 1618: 1  0657			OUTR0:	; Output the characters pointed to by R0, also bias ascii
- 1619: 1				;
- 1620: 1  0657	EF					MOV	A,R7				;GET THE COUNTER
- 1621: 1  0658	60 0E					JZ	OUTR				;EXIT IF DONE
- 1622: 1  065A	E6					MOV	A,@R0				;GET THE NUMBER
- 1623: 1  065B	44 30					ORL	A,#30H				;ASCII BIAS
- 1624: 1  065D	08					INC	R0				;BUMP POINTER AND COUNTER
- 1625: 1  065E	1F					DEC	R7
- 1626: 1  065F	FD					MOV	R5,A				;PUT CHARACTER IN OUTPUT REGISTER
- 1627: 1  0660	D1 A8					ACALL	SOUT1				;OUTPUT THE CHARACTER
- 1628: 1  0662	E4					CLR	A				;JUST FOR TEST
- 1629: 1  0663	B8 33 F1				CJNE	R0,#FP_NIB8+1,OUTR0
- 1630: 1  0666	74 55					MOV	A,#55H				;KNOW WHERE EXIT OCCURED
- 1631: 1				;
- 1632: 1  0668	22		OUTR:			RET
- 1633: 1				;
- 1634: 1  0669	A9 00		ZTEST:			MOV	R1,R0B0				;GET POINTER REGISTER
- 1635: 1				;
- 1636: 1  066B	E7		ZT0:			MOV	A,@R1				;GET THE VALUE
- 1637: 1  066C	70 04					JNZ	ZT1
- 1638: 1  066E	09					INC	R1				;BUMP POINTER
- 1639: 1  066F	B9 33 F9				CJNE	R1,#FP_NIB8+1,ZT0
+ 1618: 1  1440	91 CA		EXPOUT:			ACALL	SINOUT				;PRINT THE SIGN
+ 1619: 1  1442	7F 01					MOV	R7,#1				;OUTPUT ONE CHARACTER
+ 1620: 1  1444	91 8A					ACALL	OUTR0
+ 1621: 1  1446	91 D1					ACALL	ROUT				;OUTPUT RADIX
+ 1622: 1  1448	EB					MOV	A,R3				;GET FORMAT
+ 1623: 1  1449	54 0F					ANL	A,#0FH				;STRIP INDICATOR
+ 1624: 1  144B	60 06					JZ	EXPOTX
+ 1625: 1				;
+ 1626: 1  144D	FF					MOV	R7,A				;OUTPUT THE NUMBER OF DIGITS
+ 1627: 1  144E	1F					DEC	R7				;ADJUST BECAUSE ONE CHAR ALREADY OUT
+ 1628: 1  144F	91 8A					ACALL	OUTR0
+ 1629: 1  1451	80 02					SJMP	EXPOT4
+ 1630: 1				;
+ 1631: 1  1453	91 34		EXPOTX:			ACALL	FREE2				;OUTPUT UNTIL TRAILING ZEROS
+ 1632: 1				;
+ 1633: 1  1455	91 D9		EXPOT4:			ACALL	SOUT				;OUTPUT A SPACE
+ 1634: 1  1457	7D 45					MOV	R5,#'E'
+ 1635: 1  1459	91 DB					ACALL	SOUT1				;OUTPUT AN E
+ 1636: 1  145B	EE					MOV	A,R6				;GET THE EXPONENT
+ 1637: 1  145C	60 04					JZ	XOUT0				;EXIT IF ZERO
+ 1638: 1  145E	14					DEC	A				;ADJUST FOR THE DIGIT ALREADY OUTPUT
+ 1639: 1  145F	B4 80 05				CJNE	A,#80H,XOUT2			;SEE WHAT IT IS
  1640: 1				;
- 1641: 1  0672	22		ZT1:			RET
- 1642: 1				;
- 1643: 1  0673	EE		NUM_LT:			MOV	A,R6				;GET EXPONENT
- 1644: 1  0674	C3					CLR	C				;GET READY FOR SUBB
- 1645: 1  0675	94 80					SUBB	A,#80H				;SUB EXPONENT BIAS
- 1646: 1  0677	50 01					JNC	NL1				;OK IF NO CARRY
- 1647: 1  0679	E4					CLR	A				;NO DIGITS LEFT
- 1648: 1				;
- 1649: 1  067A	FF		NL1:			MOV	R7,A				;SAVE THE COUNT
- 1650: 1  067B	22					RET
- 1651: 1				;
- 1652: 1  067C	C3		NUM_RT:			CLR	C				;SUBB AGAIN
- 1653: 1  067D	74 80					MOV	A,#80H				;EXPONENT BIAS
- 1654: 1  067F	9E					SUBB	A,R6				;GET THE BIASED EXPONENT
- 1655: 1  0680	50 01					JNC	NR1
- 1656: 1  0682	E4					CLR	A
- 1657: 1				;
- 1658: 1  0683	22		NR1:			RET					;EXIT
- 1659: 1				;
- 1660: 1  0684	EF		SPACE7:			MOV	A,R7				;GET THE NUMBER OF SPACES
- 1661: 1  0685	60 FC					JZ	NR1				;EXIT IF ZERO
- 1662: 1  0687	D1 A6					ACALL	SOUT				;OUTPUT A SPACE
- 1663: 1  0689	1F					DEC	R7				;BUMP COUNTER
+ 1641: 1  1462	91 D9		XOUT0:			ACALL	SOUT
+ 1642: 1  1464	E4					CLR	A
+ 1643: 1  1465	80 0C					SJMP	XOUT4
+ 1644: 1				;
+ 1645: 1  1467	40 06		XOUT2:			JC	XOUT3				;NEGATIVE EXPONENT
+ 1646: 1  1469	7D 2B					MOV	R5,#'+'				;OUTPUT A PLUS SIGN
+ 1647: 1  146B	91 DB					ACALL	SOUT1
+ 1648: 1  146D	80 04					SJMP	XOUT4
+ 1649: 1				;
+ 1650: 1  146F	91 CD		XOUT3:			ACALL	MOUT
+ 1651: 1  1471	F4					CPL	A				;FLIP BITS
+ 1652: 1  1472	04					INC	A				;BUMP
+ 1653: 1				;
+ 1654: 1  1473	C2 E7		XOUT4:			CLR	ACC.7
+ 1655: 1  1475	F8					MOV	R0,A
+ 1656: 1  1476	7A 00					MOV	R2,#0
+ 1657: 1  1478	79 60					MOV	R1,#LOW CONVT			;CONVERSION LOCATION
+ 1658: 1  147A	7B 00					MOV	R3,#HIGH CONVT
+ 1659: 1  147C	B1 01					ACALL	CONVERT_BINARY_TO_ASCII_STRING
+ 1660: 1  147E	78 60					MOV	R0,#LOW CONVT			;NOW, OUTPUT EXPONENT
+ 1661: 1				;
+ 1662: 1  1480	E6		EXPOT5:			MOV	A,@R0				;GET THE CHARACTER
+ 1663: 1  1481	FD					MOV	R5,A				;OUTPUT IT
 
 ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. Heinz                                         PAGE 31
 
@@ -1895,62 +1895,62 @@ ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. H
 
  Line  I  Addr  Code            Source
 
- 1664: 1  068A	80 F8					SJMP	SPACE7				;LOOP
- 1665: 1				;
- 1666: 1  068C	FF		Z7R7:			MOV	R7,A
- 1667: 1				;
- 1668: 1  068D	EF		ZERO7:			MOV	A,R7				;GET COUNTER
- 1669: 1  068E	60 F3					JZ	NR1				;EXIT IF ZERO
- 1670: 1  0690	D1 A2					ACALL	ZOUT				;OUTPUT A ZERO
- 1671: 1  0692	1F					DEC	R7				;BUMP COUNTER
- 1672: 1  0693	80 F8					SJMP	ZERO7				;LOOP
- 1673: 1				;
- 1674: 1  0695	D1 84		SS7:			ACALL	SPACE7
- 1675: 1				;
- 1676: 1  0697	EC		SINOUT:			MOV	A,R4				;GET THE SIGN
- 1677: 1  0698	60 0C					JZ	SOUT				;OUTPUT A SPACE IF ZERO
- 1678: 1				;
- 1679: 1  069A	7D 2D		MOUT:			MOV	R5,#'-'
- 1680: 1  069C	80 0A					SJMP	SOUT1				;OUTPUT A MINUS IF NOT
- 1681: 1				;
- 1682: 1  069E	7D 2E		ROUT:			MOV	R5,#'.'				;OUTPUT A RADIX
- 1683: 1  06A0	80 06					SJMP	SOUT1
+ 1664: 1  1482	91 DB					ACALL	SOUT1
+ 1665: 1  1484	08					INC	R0				;BUMP THE POINTER
+ 1666: 1  1485	E8					MOV	A,R0				;GET THE POINTER
+ 1667: 1  1486	B5 01 F7				CJNE	A,R1B0,EXPOT5			;LOOP
+ 1668: 1				;
+ 1669: 1  1489	22		U_RET:			RET					;EXIT
+ 1670: 1				;
+ 1671: 1  148A			OUTR0:	; Output the characters pointed to by R0, also bias ascii
+ 1672: 1				;
+ 1673: 1  148A	EF					MOV	A,R7				;GET THE COUNTER
+ 1674: 1  148B	60 0E					JZ	OUTR				;EXIT IF DONE
+ 1675: 1  148D	E6					MOV	A,@R0				;GET THE NUMBER
+ 1676: 1  148E	44 30					ORL	A,#30H				;ASCII BIAS
+ 1677: 1  1490	08					INC	R0				;BUMP POINTER AND COUNTER
+ 1678: 1  1491	1F					DEC	R7
+ 1679: 1  1492	FD					MOV	R5,A				;PUT CHARACTER IN OUTPUT REGISTER
+ 1680: 1  1493	91 DB					ACALL	SOUT1				;OUTPUT THE CHARACTER
+ 1681: 1  1495	E4					CLR	A				;JUST FOR TEST
+ 1682: 1  1496	B8 33 F1				CJNE	R0,#FP_NIB8+1,OUTR0
+ 1683: 1  1499	74 55					MOV	A,#55H				;KNOW WHERE EXIT OCCURED
  1684: 1				;
- 1685: 1  06A2	7D 30		ZOUT:			MOV	R5,#'0'				;OUTPUT A ZERO
- 1686: 1  06A4	80 02					SJMP	SOUT1
- 1687: 1				;
- 1688: 1  06A6	7D 20		SOUT:			MOV	R5,#' '				;OUTPUT A SPACE
- 1689: 1				;
- 1690: 1  06A8	E1 49		SOUT1:			AJMP	R5OUT
- 1691: 1				;
- 1692: 1				;
- 1693: 1  06AA	75 F0 0A	MULNUM10:		MOV	B,#10
- 1694: 1				;
- 1695: 1				;***************************************************************
- 1696: 1				;
- 1697: 1  06AD			MULNUM:	; Take the next digit in the acc (masked to 0FH)
- 1698: 1				; accumulate in R3:R1
- 1699: 1				;
- 1700: 1				;***************************************************************
+ 1685: 1  149B	22		OUTR:			RET
+ 1686: 1				;
+ 1687: 1  149C	A9 00		ZTEST:			MOV	R1,R0B0				;GET POINTER REGISTER
+ 1688: 1				;
+ 1689: 1  149E	E7		ZT0:			MOV	A,@R1				;GET THE VALUE
+ 1690: 1  149F	70 04					JNZ	ZT1
+ 1691: 1  14A1	09					INC	R1				;BUMP POINTER
+ 1692: 1  14A2	B9 33 F9				CJNE	R1,#FP_NIB8+1,ZT0
+ 1693: 1				;
+ 1694: 1  14A5	22		ZT1:			RET
+ 1695: 1				;
+ 1696: 1  14A6	EE		NUM_LT:			MOV	A,R6				;GET EXPONENT
+ 1697: 1  14A7	C3					CLR	C				;GET READY FOR SUBB
+ 1698: 1  14A8	94 80					SUBB	A,#80H				;SUB EXPONENT BIAS
+ 1699: 1  14AA	50 01					JNC	NL1				;OK IF NO CARRY
+ 1700: 1  14AC	E4					CLR	A				;NO DIGITS LEFT
  1701: 1				;
- 1702: 1  06AD	C0 E0					PUSH	ACC				;SAVE ACC
- 1703: 1  06AF	C0 F0					PUSH	B				;SAVE MULTIPLIER
- 1704: 1  06B1	E9					MOV	A,R1				;PUT LOW ORDER BITS IN ACC
- 1705: 1  06B2	A4					MUL	AB				;DO THE MULTIPLY
- 1706: 1  06B3	F9					MOV	R1,A				;PUT THE RESULT BACK
- 1707: 1  06B4	EB					MOV	A,R3				;GET THE HIGH ORDER BYTE
- 1708: 1  06B5	AB F0					MOV	R3,B				;SAVE THE OVERFLOW
- 1709: 1  06B7	D0 F0					POP	B				;GET THE MULTIPLIER
- 1710: 1  06B9	A4					MUL	AB				;DO IT
- 1711: 1  06BA	A2 D2					MOV	C,OV				;SAVE OVERFLOW IN F0
- 1712: 1  06BC	92 D5					MOV	F0,C
- 1713: 1  06BE	2B					ADD	A,R3				;ADD OVERFLOW TO HIGH RESULT
- 1714: 1  06BF	FB					MOV	R3,A				;PUT IT BACK
- 1715: 1  06C0	D0 E0					POP	ACC				;GET THE ORIGINAL ACC BACK
- 1716: 1  06C2	72 D5					ORL	C,F0				;OR CARRY AND OVERFLOW
- 1717: 1  06C4	40 07					JC	MULX				;NO GOOD IF THE CARRY IS SET
+ 1702: 1  14AD	FF		NL1:			MOV	R7,A				;SAVE THE COUNT
+ 1703: 1  14AE	22					RET
+ 1704: 1				;
+ 1705: 1  14AF	C3		NUM_RT:			CLR	C				;SUBB AGAIN
+ 1706: 1  14B0	74 80					MOV	A,#80H				;EXPONENT BIAS
+ 1707: 1  14B2	9E					SUBB	A,R6				;GET THE BIASED EXPONENT
+ 1708: 1  14B3	50 01					JNC	NR1
+ 1709: 1  14B5	E4					CLR	A
+ 1710: 1				;
+ 1711: 1  14B6	22		NR1:			RET					;EXIT
+ 1712: 1				;
+ 1713: 1  14B7	EF		SPACE7:			MOV	A,R7				;GET THE NUMBER OF SPACES
+ 1714: 1  14B8	60 FC					JZ	NR1				;EXIT IF ZERO
+ 1715: 1  14BA	91 D9					ACALL	SOUT				;OUTPUT A SPACE
+ 1716: 1  14BC	1F					DEC	R7				;BUMP COUNTER
+ 1717: 1  14BD	80 F8					SJMP	SPACE7				;LOOP
  1718: 1				;
- 1719: 1  06C6	54 0F		MUL11:			ANL	A,#0FH				;MASK OFF HIGH ORDER BITS
+ 1719: 1  14BF	FF		Z7R7:			MOV	R7,A
 
 ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. Heinz                                         PAGE 32
 
@@ -1958,62 +1958,62 @@ ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. H
 
  Line  I  Addr  Code            Source
 
- 1720: 1  06C8	29					ADD	A,R1				;NOW ADD THE ACC
- 1721: 1  06C9	F9					MOV	R1,A				;PUT IT BACK
- 1722: 1  06CA	E4					CLR	A				;PROPAGATE THE CARRY
- 1723: 1  06CB	3B					ADDC	A,R3
- 1724: 1  06CC	FB					MOV	R3,A				;PUT IT BACK
- 1725: 1				;
- 1726: 1  06CD	22		MULX:			RET					;EXIT WITH OR WITHOUT CARRY
- 1727: 1				;
- 1728: 1				;***************************************************************
- 1729: 1				;
- 1730: 1  06CE			CONVERT_BINARY_TO_ASCII_STRING:
+ 1720: 1				;
+ 1721: 1  14C0	EF		ZERO7:			MOV	A,R7				;GET COUNTER
+ 1722: 1  14C1	60 F3					JZ	NR1				;EXIT IF ZERO
+ 1723: 1  14C3	91 D5					ACALL	ZOUT				;OUTPUT A ZERO
+ 1724: 1  14C5	1F					DEC	R7				;BUMP COUNTER
+ 1725: 1  14C6	80 F8					SJMP	ZERO7				;LOOP
+ 1726: 1				;
+ 1727: 1  14C8	91 B7		SS7:			ACALL	SPACE7
+ 1728: 1				;
+ 1729: 1  14CA	EC		SINOUT:			MOV	A,R4				;GET THE SIGN
+ 1730: 1  14CB	60 0C					JZ	SOUT				;OUTPUT A SPACE IF ZERO
  1731: 1				;
- 1732: 1				;R1 contains the address of the string
- 1733: 1				;R0 contains the value to convert
- 1734: 1				;DPTR, R7, R6, and ACC gets clobbered
- 1735: 1				;
- 1736: 1				;***************************************************************
+ 1732: 1  14CD	7D 2D		MOUT:			MOV	R5,#'-'
+ 1733: 1  14CF	80 0A					SJMP	SOUT1				;OUTPUT A MINUS IF NOT
+ 1734: 1				;
+ 1735: 1  14D1	7D 2E		ROUT:			MOV	R5,#'.'				;OUTPUT A RADIX
+ 1736: 1  14D3	80 06					SJMP	SOUT1
  1737: 1				;
- 1738: 1  06CE	E4					CLR	A				;NO LEADING ZEROS
- 1739: 1  06CF	90 27 10				MOV	DPTR,#10000			;SUBTRACT 10000
- 1740: 1  06D2	D1 EB					ACALL	RSUB				;DO THE SUBTRACTION
- 1741: 1  06D4	90 03 E8				MOV	DPTR,#1000			;NOW 1000
- 1742: 1  06D7	D1 EB					ACALL	RSUB
- 1743: 1  06D9	90 00 64				MOV	DPTR,#100			;NOW 100
- 1744: 1  06DC	D1 EB					ACALL	RSUB
- 1745: 1  06DE	90 00 0A				MOV	DPTR,#10			;NOW 10
- 1746: 1  06E1	D1 EB					ACALL	RSUB
- 1747: 1  06E3	90 00 01				MOV	DPTR,#1				;NOW 1
- 1748: 1  06E6	D1 EB					ACALL	RSUB
- 1749: 1  06E8	60 20					JZ	RSUB2				;JUMP OVER RET
- 1750: 1				;
- 1751: 1  06EA	22		RSUB_R:			RET
+ 1738: 1  14D5	7D 30		ZOUT:			MOV	R5,#'0'				;OUTPUT A ZERO
+ 1739: 1  14D7	80 02					SJMP	SOUT1
+ 1740: 1				;
+ 1741: 1  14D9	7D 20		SOUT:			MOV	R5,#' '				;OUTPUT A SPACE
+ 1742: 1				;
+ 1743: 1  14DB	A1 7C		SOUT1:			AJMP	R5OUT
+ 1744: 1				;
+ 1745: 1				;
+ 1746: 1  14DD	75 F0 0A	MULNUM10:		MOV	B,#10
+ 1747: 1				;
+ 1748: 1				;***************************************************************
+ 1749: 1				;
+ 1750: 1  14E0			MULNUM:	; Take the next digit in the acc (masked to 0FH)
+ 1751: 1				; accumulate in R3:R1
  1752: 1				;
- 1753: 1  06EB	7E FF		RSUB:			MOV	R6,#-1				;SET UP THE COUNTER
+ 1753: 1				;***************************************************************
  1754: 1				;
- 1755: 1  06ED	0E		RSUB1:			INC	R6				;BUMP THE COUNTER
- 1756: 1  06EE	CA					XCH	A,R2				;DO A FAST COMPARE
- 1757: 1						CMP	A,DPH
- 1758+ 2  06EF	B5 83 00	CJNE	A,DPH,$+3
- 1759: 1  06F2	CA					XCH	A,R2
- 1760: 1  06F3	40 12					JC	FAST_DONE
- 1761: 1  06F5	C8					XCH	A,R0				;GET LOW BYTE
- 1762: 1  06F6	95 82					SUBB	A,DPL				;SUBTRACT, CARRY IS CLEARED
- 1763: 1  06F8	C8					XCH	A,R0				;PUT IT BACK
- 1764: 1  06F9	CA					XCH	A,R2				;GET THE HIGH BYTE
- 1765: 1  06FA	95 83					SUBB	A,DPH				;ADD THE HIGH BYTE
- 1766: 1  06FC	CA					XCH	A,R2				;PUT IT BACK
- 1767: 1  06FD	50 EE					JNC	RSUB1				;LOOP UNTIL CARRY
- 1768: 1				;
- 1769: 1  06FF	C8					XCH	A,R0
- 1770: 1  0700	25 82					ADD	A,DPL				;RESTORE R2:R0
- 1771: 1  0702	C8					XCH	A,R0
- 1772: 1  0703	CA					XCH	A,R2
- 1773: 1  0704	35 83					ADDC	A,DPH
- 1774: 1  0706	CA					XCH	A,R2
- 1775: 1				;
+ 1755: 1  14E0	C0 E0					PUSH	ACC				;SAVE ACC
+ 1756: 1  14E2	C0 F0					PUSH	B				;SAVE MULTIPLIER
+ 1757: 1  14E4	E9					MOV	A,R1				;PUT LOW ORDER BITS IN ACC
+ 1758: 1  14E5	A4					MUL	AB				;DO THE MULTIPLY
+ 1759: 1  14E6	F9					MOV	R1,A				;PUT THE RESULT BACK
+ 1760: 1  14E7	EB					MOV	A,R3				;GET THE HIGH ORDER BYTE
+ 1761: 1  14E8	AB F0					MOV	R3,B				;SAVE THE OVERFLOW
+ 1762: 1  14EA	D0 F0					POP	B				;GET THE MULTIPLIER
+ 1763: 1  14EC	A4					MUL	AB				;DO IT
+ 1764: 1  14ED	A2 D2					MOV	C,OV				;SAVE OVERFLOW IN F0
+ 1765: 1  14EF	92 D5					MOV	F0,C
+ 1766: 1  14F1	2B					ADD	A,R3				;ADD OVERFLOW TO HIGH RESULT
+ 1767: 1  14F2	FB					MOV	R3,A				;PUT IT BACK
+ 1768: 1  14F3	D0 E0					POP	ACC				;GET THE ORIGINAL ACC BACK
+ 1769: 1  14F5	72 D5					ORL	C,F0				;OR CARRY AND OVERFLOW
+ 1770: 1  14F7	40 07					JC	MULX				;NO GOOD IF THE CARRY IS SET
+ 1771: 1				;
+ 1772: 1  14F9	54 0F		MUL11:			ANL	A,#0FH				;MASK OFF HIGH ORDER BITS
+ 1773: 1  14FB	29					ADD	A,R1				;NOW ADD THE ACC
+ 1774: 1  14FC	F9					MOV	R1,A				;PUT IT BACK
+ 1775: 1  14FD	E4					CLR	A				;PROPAGATE THE CARRY
 
 ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. Heinz                                         PAGE 33
 
@@ -2021,62 +2021,62 @@ ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. H
 
  Line  I  Addr  Code            Source
 
- 1776: 1  0707			FAST_DONE:
- 1777: 1				;
- 1778: 1  0707	4E					ORL	A,R6				;OR THE COUNT VALUE
- 1779: 1  0708	60 E0					JZ	RSUB_R				;RETURN IF ZERO
+ 1776: 1  14FE	3B					ADDC	A,R3
+ 1777: 1  14FF	FB					MOV	R3,A				;PUT IT BACK
+ 1778: 1				;
+ 1779: 1  1500	22		MULX:			RET					;EXIT WITH OR WITHOUT CARRY
  1780: 1				;
- 1781: 1  070A	74 30		RSUB2:			MOV	A,#'0'				;GET THE ASCII BIAS
- 1782: 1  070C	2E					ADD	A,R6				;ADD THE COUNT
- 1783: 1				;
- 1784: 1  070D	F7		RSUB4:			MOV	@R1,A				;PLACE THE VALUE IN MEMORY
- 1785: 1  070E	09					INC	R1
- 1786: 1				;
- 1787: 1  070F	22					RET					;EXIT
+ 1781: 1				;***************************************************************
+ 1782: 1				;
+ 1783: 1  1501			CONVERT_BINARY_TO_ASCII_STRING:
+ 1784: 1				;
+ 1785: 1				;R1 contains the address of the string
+ 1786: 1				;R0 contains the value to convert
+ 1787: 1				;DPTR, R7, R6, and ACC gets clobbered
  1788: 1				;
  1789: 1				;***************************************************************
  1790: 1				;
- 1791: 1  0710			HEXOUT:	; Output the hex number in R3:R1, supress leading zeros, if set
- 1792: 1				;
- 1793: 1				;***************************************************************
- 1794: 1				;
- 1795: 1  0710	D1 A6					ACALL	SOUT				;OUTPUT A SPACE
- 1796: 1  0712	A2 36					MOV	C,ZSURP				;GET ZERO SUPPRESSION BIT
- 1797: 1  0714	92 33					MOV	ADD_IN,C
- 1798: 1  0716	EB					MOV	A,R3				;GET HIGH NIBBLE AND PRINT IT
- 1799: 1  0717	F1 33					ACALL	HOUTHI
- 1800: 1  0719	EB					MOV	A,R3
- 1801: 1  071A	F1 34					ACALL	HOUTLO
- 1802: 1				;
- 1803: 1  071C	C2 33		HEX2X:			CLR	ADD_IN				;DON'T SUPPRESS ZEROS
- 1804: 1  071E	E9					MOV	A,R1				;GET LOW NIBBLE AND PRINT IT
- 1805: 1  071F	F1 33					ACALL	HOUTHI
- 1806: 1  0721	E9					MOV	A,R1
- 1807: 1  0722	F1 34					ACALL	HOUTLO
- 1808: 1  0724	7D 48					MOV	R5,#'H'				;OUTPUT H TO INDICATE HEX MODE
- 1809: 1				;
- 1810: 1  0726	C1 A8		SOUT_1:			AJMP	SOUT1
- 1811: 1				;
- 1812: 1  0728	C2 33		HOUT1:			CLR	ADD_IN				;PRINTED SOMETHING, SO CLEAR ADD_IN
- 1813: 1  072A	24 90					ADD	A,#90H				;CONVERT TO ASCII
- 1814: 1  072C	D4					DA	A
- 1815: 1  072D	34 40					ADDC	A,#40H
- 1816: 1  072F	D4					DA	A				;GOT IT HERE
- 1817: 1  0730	FD					MOV	R5,A				;OUTPUT THE BYTE
- 1818: 1  0731	80 F3					SJMP	SOUT_1
- 1819: 1				;
- 1820: 1  0733	C4		HOUTHI:			SWAP	A				;SWAP TO OUTPUT HIGH NIBBLE
+ 1791: 1  1501	E4					CLR	A				;NO LEADING ZEROS
+ 1792: 1  1502	90 27 10				MOV	DPTR,#10000			;SUBTRACT 10000
+ 1793: 1  1505	B1 1E					ACALL	RSUB				;DO THE SUBTRACTION
+ 1794: 1  1507	90 03 E8				MOV	DPTR,#1000			;NOW 1000
+ 1795: 1  150A	B1 1E					ACALL	RSUB
+ 1796: 1  150C	90 00 64				MOV	DPTR,#100			;NOW 100
+ 1797: 1  150F	B1 1E					ACALL	RSUB
+ 1798: 1  1511	90 00 0A				MOV	DPTR,#10			;NOW 10
+ 1799: 1  1514	B1 1E					ACALL	RSUB
+ 1800: 1  1516	90 00 01				MOV	DPTR,#1				;NOW 1
+ 1801: 1  1519	B1 1E					ACALL	RSUB
+ 1802: 1  151B	60 20					JZ	RSUB2				;JUMP OVER RET
+ 1803: 1				;
+ 1804: 1  151D	22		RSUB_R:			RET
+ 1805: 1				;
+ 1806: 1  151E	7E FF		RSUB:			MOV	R6,#-1				;SET UP THE COUNTER
+ 1807: 1				;
+ 1808: 1  1520	0E		RSUB1:			INC	R6				;BUMP THE COUNTER
+ 1809: 1  1521	CA					XCH	A,R2				;DO A FAST COMPARE
+ 1810: 1						CMP	A,DPH
+ 1811+ 2  1522	B5 83 00	CJNE	A,DPH,$+3
+ 1812: 1  1525	CA					XCH	A,R2
+ 1813: 1  1526	40 12					JC	FAST_DONE
+ 1814: 1  1528	C8					XCH	A,R0				;GET LOW BYTE
+ 1815: 1  1529	95 82					SUBB	A,DPL				;SUBTRACT, CARRY IS CLEARED
+ 1816: 1  152B	C8					XCH	A,R0				;PUT IT BACK
+ 1817: 1  152C	CA					XCH	A,R2				;GET THE HIGH BYTE
+ 1818: 1  152D	95 83					SUBB	A,DPH				;ADD THE HIGH BYTE
+ 1819: 1  152F	CA					XCH	A,R2				;PUT IT BACK
+ 1820: 1  1530	50 EE					JNC	RSUB1				;LOOP UNTIL CARRY
  1821: 1				;
- 1822: 1  0734	54 0F		HOUTLO:			ANL	A,#0FH				;STRIP
- 1823: 1  0736	70 F0					JNZ	HOUT1				;PRINT IF NOT ZERO
- 1824: 1  0738	30 33 ED				JNB	ADD_IN,HOUT1			;OUTPUT A ZERO IF NOT SUPRESSED
- 1825: 1  073B	22					RET
- 1826: 1				;
- 1827: 1				;
- 1828: 1  073C			GET_DIGIT_CHECK:	; Get a character, then check for digit
- 1829: 1				;
- 1830: 1  073C	B1 75					ACALL	GET_R1_CHARACTER
- 1831: 1				;
+ 1822: 1  1532	C8					XCH	A,R0
+ 1823: 1  1533	25 82					ADD	A,DPL				;RESTORE R2:R0
+ 1824: 1  1535	C8					XCH	A,R0
+ 1825: 1  1536	CA					XCH	A,R2
+ 1826: 1  1537	35 83					ADDC	A,DPH
+ 1827: 1  1539	CA					XCH	A,R2
+ 1828: 1				;
+ 1829: 1  153A			FAST_DONE:
+ 1830: 1				;
+ 1831: 1  153A	4E					ORL	A,R6				;OR THE COUNT VALUE
 
 ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. Heinz                                         PAGE 34
 
@@ -2084,62 +2084,62 @@ ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. H
 
  Line  I  Addr  Code            Source
 
- 1832: 1  073E			DIGIT_CHECK:	;CHECK FOR A VALID ASCII DIGIT, SET CARRY IF FOUND
+ 1832: 1  153B	60 E0					JZ	RSUB_R				;RETURN IF ZERO
  1833: 1				;
- 1834: 1						CMP	A,#'9'+1			;SEE IF ASCII 9 OR LESS
- 1835+ 2  073E	B4 3A 00	CJNE	A,#'9'+1,$+3
- 1836: 1  0741	40 01					JC	DC1
- 1837: 1  0743	22					RET
- 1838: 1				;
- 1839: 1  0744			DC1:			CMP	A,#'0'				;SEE IF ASCII 0 OR GREATER
- 1840+ 2  0744	B4 30 00	CJNE	A,#'0',$+3
- 1841: 1  0747	B3					CPL	C
- 1842: 1  0748	22					RET
+ 1834: 1  153D	74 30		RSUB2:			MOV	A,#'0'				;GET THE ASCII BIAS
+ 1835: 1  153F	2E					ADD	A,R6				;ADD THE COUNT
+ 1836: 1				;
+ 1837: 1  1540	F7		RSUB4:			MOV	@R1,A				;PLACE THE VALUE IN MEMORY
+ 1838: 1  1541	09					INC	R1
+ 1839: 1				;
+ 1840: 1  1542	22					RET					;EXIT
+ 1841: 1				;
+ 1842: 1				;***************************************************************
  1843: 1				;
- 1844: 1
- 1845: 1  0749	C0 E0		R5OUT:			PUSH	ACC				; me
- 1846: 1  074B	ED					MOV	A,R5				; me
- 1847: 1			;			ACALL	TXBYTE				; me
- 1848: 1  074C	D0 E0					POP	ACC				; me
- 1849: 1  074E	22					RET					; me
- 1850: 1
- 1851: 1  074F	21 CE		SQ_ERR:			JMP	BADPRM				; me
- 1852: 1
- 1853: 1			; Pop the ARG STACK and check for overflow
- 1854: 1  0751			INC_ASTKA:
- 1855: 1  0751	74 06					MOV	A,#FP_NUMBER_SIZE		;number to pop
- 1856: 1  0753	80 16					SJMP	SETREG1
- 1857: 1
- 1858: 1			;Push ARG STACK and check for underflow
- 1859: 1  0755			DEC_ASTKA:
- 1860: 1  0755	74 FA					MOV	A,#-FP_NUMBER_SIZE
- 1861: 1  0757	25 24					ADD	A,ARG_STACK
- 1862: 1						CMP	A,#0
- 1863+ 2  0759	B4 00 00	CJNE	A,#0,$+3
- 1864: 1  075C	40 28					JC	E4YY
- 1865: 1  075E	F5 24					MOV	ARG_STACK,A
- 1866: 1  0760	F9					MOV	R1,A
- 1867: 1  0761	22		SRT:			RET
- 1868: 1
- 1869: 1  0762	F1 51		POPAS:			ACALL	INC_ASTKA
- 1870: 1  0764	E1 7D					AJMP	VARCOP				;COPY THE VARIABLE
- 1871: 1
- 1872: 1  0766	F1 55		PUSHAS:			ACALL	DEC_ASTKA
- 1873: 1  0768	E1 7D					AJMP	VARCOP
- 1874: 1
- 1875: 1  076A	E4		SETREG:			CLR	A				;DON'T POP ANYTHING
- 1876: 1  076B	A8 24		SETREG1:		MOV	R0,ARG_STACK
- 1877: 1  076D	28					ADD	A,R0
- 1878: 1  076E	40 16					JC	E4YY
- 1879: 1  0770	F5 24					MOV	ARG_STACK,A
- 1880: 1  0772	E6					MOV	A,@R0
- 1881: 1  0773	22		A_D:			RET
- 1882: 1
- 1883: 1			;Routine to copy bottom arg on stack to address in R1.
- 1884: 1  0774	F1 6A		MOVAS:  		ACALL   SETREG				;SET UP R0
- 1885: 1  0776	E6		M_C:			MOV	A,@R0				;READ THE VALUE
- 1886: 1  0777	F7					MOV	@R1,A				;SAVE IT
- 1887: 1  0778	08		        		INC     R0
+ 1844: 1  1543			HEXOUT:	; Output the hex number in R3:R1, supress leading zeros, if set
+ 1845: 1				;
+ 1846: 1				;***************************************************************
+ 1847: 1				;
+ 1848: 1  1543	91 D9					ACALL	SOUT				;OUTPUT A SPACE
+ 1849: 1  1545	A2 36					MOV	C,ZSURP				;GET ZERO SUPPRESSION BIT
+ 1850: 1  1547	92 33					MOV	ADD_IN,C
+ 1851: 1  1549	EB					MOV	A,R3				;GET HIGH NIBBLE AND PRINT IT
+ 1852: 1  154A	B1 66					ACALL	HOUTHI
+ 1853: 1  154C	EB					MOV	A,R3
+ 1854: 1  154D	B1 67					ACALL	HOUTLO
+ 1855: 1				;
+ 1856: 1  154F	C2 33		HEX2X:			CLR	ADD_IN				;DON'T SUPPRESS ZEROS
+ 1857: 1  1551	E9					MOV	A,R1				;GET LOW NIBBLE AND PRINT IT
+ 1858: 1  1552	B1 66					ACALL	HOUTHI
+ 1859: 1  1554	E9					MOV	A,R1
+ 1860: 1  1555	B1 67					ACALL	HOUTLO
+ 1861: 1  1557	7D 48					MOV	R5,#'H'				;OUTPUT H TO INDICATE HEX MODE
+ 1862: 1				;
+ 1863: 1  1559	81 DB		SOUT_1:			AJMP	SOUT1
+ 1864: 1				;
+ 1865: 1  155B	C2 33		HOUT1:			CLR	ADD_IN				;PRINTED SOMETHING, SO CLEAR ADD_IN
+ 1866: 1  155D	24 90					ADD	A,#90H				;CONVERT TO ASCII
+ 1867: 1  155F	D4					DA	A
+ 1868: 1  1560	34 40					ADDC	A,#40H
+ 1869: 1  1562	D4					DA	A				;GOT IT HERE
+ 1870: 1  1563	FD					MOV	R5,A				;OUTPUT THE BYTE
+ 1871: 1  1564	80 F3					SJMP	SOUT_1
+ 1872: 1				;
+ 1873: 1  1566	C4		HOUTHI:			SWAP	A				;SWAP TO OUTPUT HIGH NIBBLE
+ 1874: 1				;
+ 1875: 1  1567	54 0F		HOUTLO:			ANL	A,#0FH				;STRIP
+ 1876: 1  1569	70 F0					JNZ	HOUT1				;PRINT IF NOT ZERO
+ 1877: 1  156B	30 33 ED				JNB	ADD_IN,HOUT1			;OUTPUT A ZERO IF NOT SUPRESSED
+ 1878: 1  156E	22					RET
+ 1879: 1				;
+ 1880: 1				;
+ 1881: 1  156F			GET_DIGIT_CHECK:	; Get a character, then check for digit
+ 1882: 1				;
+ 1883: 1  156F	71 A8					ACALL	GET_R1_CHARACTER
+ 1884: 1				;
+ 1885: 1  1571			DIGIT_CHECK:	;CHECK FOR A VALID ASCII DIGIT, SET CARRY IF FOUND
+ 1886: 1				;
+ 1887: 1						CMP	A,#'9'+1			;SEE IF ASCII 9 OR LESS
 
 ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. Heinz                                         PAGE 35
 
@@ -2147,62 +2147,62 @@ ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. H
 
  Line  I  Addr  Code            Source
 
- 1888: 1  0779	09		        		INC     R1
- 1889: 1  077A	DC FA		        		DJNZ    R4,M_C  	        	;LOOP
- 1890: 1  077C	22					RET					;EXIT
- 1891: 1
- 1892: 1
- 1893: 1			; VARCOP - Copy a variable from R0 to R1
- 1894: 1  077D	7C 06		VARCOP:			MOV	R4,#FP_NUMBER_SIZE		;LOAD THE LOOP COUNTER
- 1895: 1  077F	E6		V_C:			MOV	A,@R0				;READ THE VALUE
- 1896: 1  0780	F7					MOV	@R1,A				;SAVE IT
- 1897: 1  0781	18					DEC	R0
- 1898: 1  0782	19					DEC	R1
- 1899: 1  0783	DC FA					DJNZ	R4,V_C				;LOOP
- 1900: 1  0785	22					RET					;EXIT
- 1901: 1			;
- 1902: 1  0786	90 07 C1	E4YY:			MOV	DPTR,#EXA
- 1903: 1  0789	21 CD					JMP	PRTERR				; me
- 1904: 1
- 1905: 1				; integer operator - INT
- 1906: 1  078B	F1 6A		AINT:			ACALL	SETREG				;SET UP THE REGISTERS, CLEAR CARRY
- 1907: 1  078D	94 81					SUBB	A,#129				;SUBTRACT EXPONENT BIAS
- 1908: 1  078F	50 07					JNC	AI1				;JUMP IF ACC > 81H
- 1909: 1				;
- 1910: 1				; Force the number to be a zero
- 1911: 1				;
- 1912: 1  0791	F1 51					ACALL	INC_ASTKA			;BUMP THE STACK
- 1913: 1				;
- 1914: 1  0793	90 07 C9	P_Z:			MOV	DPTR,#ZRO			;PUT ZERO ON THE STACK
- 1915: 1  0796	E1 AD					AJMP	PUSHC
- 1916: 1				;
- 1917: 1  0798	94 07		AI1:			SUBB	A,#7
- 1918: 1  079A	50 10					JNC	AI3
- 1919: 1  079C	F4					CPL	A
- 1920: 1  079D	04					INC	A
- 1921: 1  079E	FB					MOV	R3,A
- 1922: 1  079F	18					DEC	R0				;POINT AT SIGN
- 1923: 1				;
- 1924: 1  07A0	18		AI2:			DEC	R0				;NOW AT LSB'S
- 1925: 1  07A1	E6					MOV	A,@R0				;READ BYTE
- 1926: 1  07A2	54 F0					ANL	A,#0F0H				;STRIP NIBBLE
- 1927: 1  07A4	F6					MOV	@R0,A				;WRITE BYTE
- 1928: 1  07A5	DB 01					DJNZ	R3,AI21
- 1929: 1  07A7	22					RET
- 1930: 1  07A8	E4		AI21:			CLR	A
- 1931: 1  07A9	F6					MOV	@R0,A				;CLEAR THE LOCATION
- 1932: 1  07AA	DB F4					DJNZ	R3,AI2
- 1933: 1  07AC	22		AI3:			RET					;EXIT
- 1934: 1				;
- 1935: 1				; PUSHC - Push constant pointed by DPTR on to the arg stack
- 1936: 1  07AD	F1 55		PUSHC:			ACALL	DEC_ASTKA
- 1937: 1  07AF	7B 06					MOV	R3,#FP_number_SIZe		;LOOP COUNTER
- 1938: 1  07B1	E4		PCL:			CLR	A				;SET UP A
- 1939: 1  07B2	93					MOVC	A,@A+DPTR			;LOAD IT
- 1940: 1  07B3	F7					MOV	@R1,A				;SAVE IT
- 1941: 1  07B4	A3					INC	DPTR				;BUMP POINTERS
- 1942: 1  07B5	19					DEC	R1
- 1943: 1  07B6	DB F9					DJNZ	R3,PCL				;LOOP
+ 1888+ 2  1571	B4 3A 00	CJNE	A,#'9'+1,$+3
+ 1889: 1  1574	40 01					JC	DC1
+ 1890: 1  1576	22					RET
+ 1891: 1				;
+ 1892: 1  1577			DC1:			CMP	A,#'0'				;SEE IF ASCII 0 OR GREATER
+ 1893+ 2  1577	B4 30 00	CJNE	A,#'0',$+3
+ 1894: 1  157A	B3					CPL	C
+ 1895: 1  157B	22					RET
+ 1896: 1				;
+ 1897: 1
+ 1898: 1  157C	C0 00		R5OUT:			PUSH	00h
+ 1899: 1  157E	C0 E0					PUSH	ACC				; me
+ 1900: 1  1580	ED					MOV	A,R5				; me
+ 1901: 1  1581	A8 53					MOV	R0,FPOUTPTR
+ 1902: 1  1583	F6					MOV	@R0,A
+ 1903: 1  1584	05 53					INC	FPOUTPTR
+ 1904: 1			;			ACALL	TXBYTE				; me
+ 1905: 1  1586	D0 E0					POP	ACC				; me
+ 1906: 1  1588	D0 00					POP	00h
+ 1907: 1  158A	22					RET					; me
+ 1908: 1
+ 1909: 1  158B	01 01		SQ_ERR:			JMP	BADPRM				; me
+ 1910: 1
+ 1911: 1			; Pop the ARG STACK and check for overflow
+ 1912: 1  158D			INC_ASTKA:
+ 1913: 1  158D	74 06					MOV	A,#FP_NUMBER_SIZE		;number to pop
+ 1914: 1  158F	80 16					SJMP	SETREG1
+ 1915: 1
+ 1916: 1			;Push ARG STACK and check for underflow
+ 1917: 1  1591			DEC_ASTKA:
+ 1918: 1  1591	74 FA					MOV	A,#-FP_NUMBER_SIZE
+ 1919: 1  1593	25 24					ADD	A,ARG_STACK
+ 1920: 1						CMP	A,#0
+ 1921+ 2  1595	B4 00 00	CJNE	A,#0,$+3
+ 1922: 1  1598	40 28					JC	E4YY
+ 1923: 1  159A	F5 24					MOV	ARG_STACK,A
+ 1924: 1  159C	F9					MOV	R1,A
+ 1925: 1  159D	22		SRT:			RET
+ 1926: 1
+ 1927: 1  159E	B1 8D		POPAS:			ACALL	INC_ASTKA
+ 1928: 1  15A0	A1 B9					AJMP	VARCOP				;COPY THE VARIABLE
+ 1929: 1
+ 1930: 1  15A2	B1 91		PUSHAS:			ACALL	DEC_ASTKA
+ 1931: 1  15A4	A1 B9					AJMP	VARCOP
+ 1932: 1
+ 1933: 1  15A6	E4		SETREG:			CLR	A				;DON'T POP ANYTHING
+ 1934: 1  15A7	A8 24		SETREG1:		MOV	R0,ARG_STACK
+ 1935: 1  15A9	28					ADD	A,R0
+ 1936: 1  15AA	40 16					JC	E4YY
+ 1937: 1  15AC	F5 24					MOV	ARG_STACK,A
+ 1938: 1  15AE	E6					MOV	A,@R0
+ 1939: 1  15AF	22		A_D:			RET
+ 1940: 1
+ 1941: 1			;Routine to copy bottom arg on stack to address in R1.
+ 1942: 1  15B0	B1 A6		MOVAS:  		ACALL   SETREG				;SET UP R0
+ 1943: 1  15B2	E6		M_C:			MOV	A,@R0				;READ THE VALUE
 
 ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. Heinz                                         PAGE 36
 
@@ -2210,20 +2210,85 @@ ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. H
 
  Line  I  Addr  Code            Source
 
- 1944: 1  07B8	22					RET					;EXIT
- 1945: 1			;
- 1946: 1
- 1947: 1  07B9	F5 99		TXBYTE:			MOV	SBUF,A
- 1948: 1  07BB	30 99 FD				JNB	SCON.1,$
- 1949: 1  07BE	C2 99					CLR	SCON.1
- 1950: 1  07C0	22					RET
- 1951: 1
- 1952: 1  07C1	41 2D 53 54	EXA:			DB	'A-STACK',0
-       1  07C5	41 43 4B 00
- 1953: 1  07C9	00 00 00	ZRO:			DB	0,0,0
- 1954: 1  07CC	00 00 00				DB	0,0,0				;0.0000000
- 1955:
- 1956:						END
+ 1944: 1  15B3	F7					MOV	@R1,A				;SAVE IT
+ 1945: 1  15B4	08		        		INC     R0
+ 1946: 1  15B5	09		        		INC     R1
+ 1947: 1  15B6	DC FA		        		DJNZ    R4,M_C  	        	;LOOP
+ 1948: 1  15B8	22					RET					;EXIT
+ 1949: 1
+ 1950: 1
+ 1951: 1			; VARCOP - Copy a variable from R0 to R1
+ 1952: 1  15B9	7C 06		VARCOP:			MOV	R4,#FP_NUMBER_SIZE		;LOAD THE LOOP COUNTER
+ 1953: 1  15BB	E6		V_C:			MOV	A,@R0				;READ THE VALUE
+ 1954: 1  15BC	F7					MOV	@R1,A				;SAVE IT
+ 1955: 1  15BD	18					DEC	R0
+ 1956: 1  15BE	19					DEC	R1
+ 1957: 1  15BF	DC FA					DJNZ	R4,V_C				;LOOP
+ 1958: 1  15C1	22					RET					;EXIT
+ 1959: 1			;
+ 1960: 1  15C2	90 15 FD	E4YY:			MOV	DPTR,#EXA
+ 1961: 1  15C5	01 00					JMP	PRTERR				; me
+ 1962: 1
+ 1963: 1				; integer operator - INT
+ 1964: 1  15C7	B1 A6		AINT:			ACALL	SETREG				;SET UP THE REGISTERS, CLEAR CARRY
+ 1965: 1  15C9	94 81					SUBB	A,#129				;SUBTRACT EXPONENT BIAS
+ 1966: 1  15CB	50 07					JNC	AI1				;JUMP IF ACC > 81H
+ 1967: 1				;
+ 1968: 1				; Force the number to be a zero
+ 1969: 1				;
+ 1970: 1  15CD	B1 8D					ACALL	INC_ASTKA			;BUMP THE STACK
+ 1971: 1				;
+ 1972: 1  15CF	90 16 05	P_Z:			MOV	DPTR,#ZRO			;PUT ZERO ON THE STACK
+ 1973: 1  15D2	A1 E9					AJMP	PUSHC
+ 1974: 1				;
+ 1975: 1  15D4	94 07		AI1:			SUBB	A,#7
+ 1976: 1  15D6	50 10					JNC	AI3
+ 1977: 1  15D8	F4					CPL	A
+ 1978: 1  15D9	04					INC	A
+ 1979: 1  15DA	FB					MOV	R3,A
+ 1980: 1  15DB	18					DEC	R0				;POINT AT SIGN
+ 1981: 1				;
+ 1982: 1  15DC	18		AI2:			DEC	R0				;NOW AT LSB'S
+ 1983: 1  15DD	E6					MOV	A,@R0				;READ BYTE
+ 1984: 1  15DE	54 F0					ANL	A,#0F0H				;STRIP NIBBLE
+ 1985: 1  15E0	F6					MOV	@R0,A				;WRITE BYTE
+ 1986: 1  15E1	DB 01					DJNZ	R3,AI21
+ 1987: 1  15E3	22					RET
+ 1988: 1  15E4	E4		AI21:			CLR	A
+ 1989: 1  15E5	F6					MOV	@R0,A				;CLEAR THE LOCATION
+ 1990: 1  15E6	DB F4					DJNZ	R3,AI2
+ 1991: 1  15E8	22		AI3:			RET					;EXIT
+ 1992: 1				;
+ 1993: 1				; PUSHC - Push constant pointed by DPTR on to the arg stack
+ 1994: 1  15E9	B1 91		PUSHC:			ACALL	DEC_ASTKA
+ 1995: 1  15EB	7B 06					MOV	R3,#FP_number_SIZe		;LOOP COUNTER
+ 1996: 1  15ED	E4		PCL:			CLR	A				;SET UP A
+ 1997: 1  15EE	93					MOVC	A,@A+DPTR			;LOAD IT
+ 1998: 1  15EF	F7					MOV	@R1,A				;SAVE IT
+ 1999: 1  15F0	A3					INC	DPTR				;BUMP POINTERS
+
+ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. Heinz                                         PAGE 37
+
+
+
+ Line  I  Addr  Code            Source
+
+ 2000: 1  15F1	19					DEC	R1
+ 2001: 1  15F2	DB F9					DJNZ	R3,PCL				;LOOP
+ 2002: 1  15F4	22					RET					;EXIT
+ 2003: 1			;
+ 2004: 1
+ 2005: 1  15F5	F5 99		TXBYTE:			MOV	SBUF,A
+ 2006: 1  15F7	30 99 FD				JNB	SCON.1,$
+ 2007: 1  15FA	C2 99					CLR	SCON.1
+ 2008: 1  15FC	22					RET
+ 2009: 1
+ 2010: 1  15FD	41 2D 53 54	EXA:			DB	'A-STACK',0
+       1  1601	41 43 4B 00
+ 2011: 1  1605	00 00 00	ZRO:			DB	0,0,0
+ 2012: 1  1608	00 00 00				DB	0,0,0				;0.0000000
+ 2013:
+ 2014:						END
 
 
 
@@ -2236,7 +2301,7 @@ ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. H
 
 
 
-ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. Heinz                                         PAGE 37
+ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. Heinz                                         PAGE 38
 
 
 
@@ -2252,115 +2317,52 @@ SYMBOL				  TYPE     VALUE	LINE
 ??VERSION			  NUMBER    0130
 AC				  BIT	      D6
 ACC				  DATA	      E0
-ADDLP				  CODE	    0238	 599
-ADD_IN				  BIT	      33	 381
-ADD_R				  CODE	    0236	 597
-AI1				  CODE	    0798	1917
-AI2				  CODE	    07A0	1924
-AI21				  CODE	    07A8	1930
-AI3				  CODE	    07AC	1933
-AINT				  CODE	    078B	1906
-ARG1_EXP_IS_LARGER		  CODE	    029D	 702
-ARG1_EXP_IS_LARGER1		  CODE	    029E	 705
-ARG1_EXP_IS_LARGER2		  CODE	    02A1	 707
-ARG_STACK			  NUMBER    0024	 377
-A_D				  CODE	    0773	1881
+ADDLP				  CODE	    106B	 652
+ADD_IN				  BIT	      33	 436
+ADD_R				  CODE	    1069	 650
+AI1				  CODE	    15D4	1975
+AI2				  CODE	    15DC	1982
+AI21				  CODE	    15E4	1988
+AI3				  CODE	    15E8	1991
+AINT				  CODE	    15C7	1964
+ARG1_EXP_IS_LARGER		  CODE	    10D0	 755
+ARG1_EXP_IS_LARGER1		  CODE	    10D1	 758
+ARG1_EXP_IS_LARGER2		  CODE	    10D4	 760
+ARG_STACK			  NUMBER    0024	 432
+A_D				  CODE	    15AF	1939
 B				  DATA	      F0
-BADPRM				  CODE	    01CE	 492
-BOTH_PLUS			  CODE	    02A5	 715
-CCE				  BIT	      01	   6
-CLOOP				  CODE	    02AD	 727
-CMP				  MACRO	        	 368
-CONVERT_BINARY_TO_ASCII_STRING	  CODE	    06CE	1730
-CONVT				  NUMBER    0048	 379
+BADPRM				  CODE	    1001	 545
+BOTH_PLUS			  CODE	    10D8	 768
+CCE				  BIT	      01	   8
+CLOOP				  CODE	    10E0	 780
+CMP				  MACRO	        	 423
+CONVERT_BINARY_TO_ASCII_STRING	  CODE	    1501	1783
+CONVT				  NUMBER    0060	 434
+CR				  NUMBER    0050	   3
 CY				  BIT	      D7
-DC1				  CODE	    0744	1839
-DECX				  CODE	    0558	1404
-DEC_ASTKA			  CODE	    0755	1859
-DIGIT				  NUMBER    0004	 391
-DIGIT_CHECK			  CODE	    073E	1832
-DIV0				  CODE	    02FC	 821
-DIV3				  CODE	    0309	 830
-DIV4				  CODE	    0316	 838
-DIV5				  CODE	    0319	 841
-DIV6				  CODE	    0321	 846
-DIV7				  CODE	    0338	 868
-DIV8				  CODE	    034D	 881
-DONE_LOAD			  BIT	      53	 421
+DC1				  CODE	    1577	1892
+DECX				  CODE	    138B	1457
+DEC_ASTKA			  CODE	    1591	1917
+DIGIT				  NUMBER    0004	 446
+DIGIT_CHECK			  CODE	    1571	1885
+DIV0				  CODE	    112F	 874
+DIV3				  CODE	    113C	 883
+DIV4				  CODE	    1149	 891
+DIV5				  CODE	    114C	 894
+DIV6				  CODE	    1154	 899
+DIV7				  CODE	    116B	 921
+DIV8				  CODE	    1180	 934
+DONE_LOAD			  BIT	      53	 476
 DPH				  DATA	      83
 DPL				  DATA	      82
-D_UNDER				  CODE	    0307	 828
-E4YY				  CODE	    0786	1902
+D_UNDER				  CODE	    113A	 881
+E4YY				  CODE	    15C2	1960
 EA				  BIT	      AF
 ES				  BIT	      AC
 ET0				  BIT	      A9
 ET1				  BIT	      AB
 EX0				  BIT	      A8
 EX1				  BIT	      AA
-EXA				  CODE	    07C1	1952
-
-ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. Heinz                                         PAGE 38
-
-
-
-SYMBOL				  TYPE     VALUE	LINE
-------------------------------------------------------------
-EXPONENTS_EQUAL			  CODE	    02A2	 709
-EXPOT4				  CODE	    0622	1580
-EXPOT5				  CODE	    064D	1609
-EXPOTX				  CODE	    0620	1578
-EXPOUT				  CODE	    060D	1565
-EXTI0				  CODE	    0003
-EXTI1				  CODE	    0013
-F0				  BIT	      D5
-FAST_DONE			  CODE	    0707	1776
-FDT1				  CODE	    0569	1418
-FDT2				  CODE	    0571	1422
-FDTEST				  CODE	    0565	1415
-FINISH1				  CODE	    052A	1370
-FINISH2				  CODE	    053D	1386
-FINISH_UP			  CODE	    053E	1388
-FINISH_UP1			  CODE	    0545	1393
-FIRST_RADIX			  BIT	      52	 420
-FLOATING_ADD			  CODE	    01D6	 506
-FLOATING_COMP			  CODE	    0289	 676
-FLOATING_DIV			  CODE	    02EF	 806
-FLOATING_MUL			  CODE	    02BA	 743
-FLOATING_POINT_INPUT		  CODE	    04D8	1315
-FLOATING_POINT_OUTPUT		  CODE	    0586	1459
-FLOATING_SUB			  CODE	    01CF	 496
-FMUL0				  CODE	    02BF	 752
-FMUL1				  CODE	    02C1	 756
-FMUL2				  CODE	    02D3	 772
-FMUL3				  CODE	    02DC	 787
-FMUL_OVER			  CODE	    02CF	 766
-FORMAT				  NUMBER    0025	 378
-FOUND_RADIX			  BIT	      51	 419
-FOV				  CODE	    02D1	 770
-FPC1				  CODE	    03E2	1054
-FPO1				  CODE	    059F	1486
-FPO2				  CODE	    05B2	1499
-FP_ACC1				  NUMBER    0035	 432
-FP_ACC2				  NUMBER    0036	 433
-FP_ACC3				  NUMBER    0037	 434
-FP_ACC4				  NUMBER    0038	 435
-FP_ACC5				  NUMBER    0039	 436
-FP_ACC6				  NUMBER    003A	 437
-FP_ACC7				  NUMBER    003B	 438
-FP_ACC8				  NUMBER    003C	 439
-FP_ACCC				  NUMBER    0034	 431
-FP_ACCS				  NUMBER    003D	 440
-FP_ACCX				  NUMBER    0033	 430
-FP_CARRY			  NUMBER    002A	 410
-FP_CLEAR			  CODE	    03DF	1045
-FP_DIG12			  NUMBER    002B	 411
-FP_DIG34			  NUMBER    002C	 412
-FP_DIG56			  NUMBER    002D	 413
-FP_DIG78			  NUMBER    002E	 414
-FP_EXP				  NUMBER    0030	 416
-FP_NIB1				  NUMBER    002B	 422
-FP_NIB2				  NUMBER    002C	 423
-FP_NIB3				  NUMBER    002D	 424
 
 ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. Heinz                                         PAGE 39
 
@@ -2368,62 +2370,62 @@ ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. H
 
 SYMBOL				  TYPE     VALUE	LINE
 ------------------------------------------------------------
-FP_NIB4				  NUMBER    002E	 425
-FP_NIB5				  NUMBER    002F	 426
-FP_NIB6				  NUMBER    0030	 427
-FP_NIB7				  NUMBER    0031	 428
-FP_NIB8				  NUMBER    0032	 429
-FP_NUMBER_SIZE			  NUMBER    0006	 390
-FP_SIGN				  NUMBER    002F	 415
-FP_STATUS			  NUMBER    0028	 408
-FP_TEMP				  NUMBER    0029	 409
-FREE				  CODE	    05DE	1534
-FREE1				  CODE	    05E5	1539
-FREE2				  CODE	    0601	1558
-FREE4				  CODE	    05F9	1553
-FRTEST				  CODE	    0562	1413
-FSUB10				  CODE	    0287	 672
-FSUB5				  CODE	    0256	 631
-FSUB6				  CODE	    0261	 642
-FSUB7				  CODE	    0265	 645
-FSUB8				  CODE	    0270	 653
-FSUB9				  CODE	    0276	 660
-FUNCTION			  NUMBER    0051	   4
-GET_DIGIT_CHECK			  CODE	    073C	1828
-GET_R1_CHARACTER		  CODE	    0575	1436
-GT1				  CODE	    0500	1345
-GT11				  CODE	    0508	1348
-GT12				  CODE	    050B	1349
-GT2				  CODE	    0518	1358
-GTEST				  CODE	    04F1	1338
-HC1				  CODE	    04D3	1308
-HEX2X				  CODE	    071C	1803
-HEXDO1				  CODE	    04C7	1295
-HEXDON				  CODE	    04C6	1293
-HEXOUT				  CODE	    0710	1791
-HEXSC1				  CODE	    04B5	1282
-HEXSCAN				  CODE	    04B3	1275
-HEX_CHECK			  CODE	    04CB	1300
-HOUT1				  CODE	    0728	1812
-HOUTHI				  CODE	    0733	1820
-HOUTLO				  CODE	    0734	1822
-HS1				  CODE	    04C8	1297
-IE				  DATA	      A8
-IE0				  BIT	      89
-IE1				  BIT	      8B
-INC_AND_GET_R1_CHARACTER	  CODE	    0574	1432
-INC_ASTKA			  CODE	    0751	1854
-INC_FP_EXP			  CODE	    039F	 968
-INERR				  CODE	    055A	1406
-INLOOP				  CODE	    04E6	1330
-INLPIK				  CODE	    04EE	1335
-INT0				  BIT	      B2
-INT1				  BIT	      B3
-INTGRC				  BIT	      31	 380
-IP				  DATA	      B8
-IT0				  BIT	      88
-IT1				  BIT	      8A
-KEYS				  CODE	    014E	 206
+EXA				  CODE	    15FD	2010
+EXEC				  CODE	    00EB	 124
+EXEC1				  CODE	    00F1	 126
+EXEC2				  CODE	    00F7	 128
+EXEC3				  CODE	    00FD	 130
+EXEC4				  CODE	    0103	 132
+EXPONENTS_EQUAL			  CODE	    10D5	 762
+EXPOT4				  CODE	    1455	1633
+EXPOT5				  CODE	    1480	1662
+EXPOTX				  CODE	    1453	1631
+EXPOUT				  CODE	    1440	1618
+EXTI0				  CODE	    0003
+EXTI1				  CODE	    0013
+F0				  BIT	      D5
+FAST_DONE			  CODE	    153A	1829
+FDT1				  CODE	    139C	1471
+FDT2				  CODE	    13A4	1475
+FDTEST				  CODE	    1398	1468
+FINISH1				  CODE	    135D	1423
+FINISH2				  CODE	    1370	1439
+FINISH_UP			  CODE	    1371	1441
+FINISH_UP1			  CODE	    1378	1446
+FIRST_RADIX			  BIT	      52	 475
+FLOATING_ADD			  CODE	    1009	 559
+FLOATING_COMP			  CODE	    10BC	 729
+FLOATING_DIV			  CODE	    1122	 859
+FLOATING_MUL			  CODE	    10ED	 796
+FLOATING_POINT_INPUT		  CODE	    130B	1368
+FLOATING_POINT_OUTPUT		  CODE	    13B9	1512
+FLOATING_SUB			  CODE	    1002	 549
+FMUL0				  CODE	    10F2	 805
+FMUL1				  CODE	    10F4	 809
+FMUL2				  CODE	    1106	 825
+FMUL3				  CODE	    110F	 840
+FMUL_OVER			  CODE	    1102	 819
+FORMAT				  NUMBER    0025	 433
+FOUND_RADIX			  BIT	      51	 474
+FOV				  CODE	    1104	 823
+FPC1				  CODE	    1215	1107
+FPO1				  CODE	    13D2	1539
+FPO2				  CODE	    13E5	1552
+FPOUTPTR			  NUMBER    0053	   6
+FP_ACC1				  NUMBER    0035	 487
+FP_ACC2				  NUMBER    0036	 488
+FP_ACC3				  NUMBER    0037	 489
+FP_ACC4				  NUMBER    0038	 490
+FP_ACC5				  NUMBER    0039	 491
+FP_ACC6				  NUMBER    003A	 492
+FP_ACC7				  NUMBER    003B	 493
+FP_ACC8				  NUMBER    003C	 494
+FP_ACCC				  NUMBER    0034	 486
+FP_ACCS				  NUMBER    003D	 495
+FP_ACCX				  NUMBER    0033	 485
+FP_CARRY			  NUMBER    002A	 465
+FP_CLEAR			  CODE	    1212	1098
+FP_DIG12			  NUMBER    002B	 466
 
 ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. Heinz                                         PAGE 40
 
@@ -2431,62 +2433,62 @@ ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. H
 
 SYMBOL				  TYPE     VALUE	LINE
 ------------------------------------------------------------
-LASTCHR				  NUMBER    0050	   3
-LCDBUFF				  NUMBER    0040	   2
-LCDCHROUT			  CODE	    017E	 238
-LCDCLEAR			  CODE	    0192	 250
-LCDCLEAR1			  CODE	    0198	 253
-LCDCLEARBUFF			  CODE	    01C2	 282
-LCDCLEARBUFF1			  CODE	    01C8	 285
-LCDCMDOUT			  CODE	    016E	 227
-LCDDELAY			  CODE	    015E	 214
-LCDINIT				  CODE	    01A9	 268
-LCDNIBOUT			  CODE	    0167	 221
-LCDPRINTSTR			  CODE	    01A2	 262
-LCDSCROLL			  CODE	    009C	  81
-LCDSCROLL1			  CODE	    00A4	  85
-LCDSETADR			  CODE	    019D	 258
-LCDSHOW				  CODE	    00AE	  94
-LEFT				  CODE	    0420	1114
-LEFT1				  CODE	    0422	1120
-LEFT3				  CODE	    042A	1126
-LEFT5				  CODE	    0449	1153
-LEFTL				  CODE	    0435	1135
-LOAD1				  CODE	    01F0	 542
-LOAD2				  CODE	    0200	 554
-LOAD3				  CODE	    0208	 561
-LOAD4				  CODE	    0211	 571
-LOAD5				  CODE	    0223	 585
-LOAD7				  CODE	    03C0	1000
-LOADR1				  CODE	    04A9	1264
-LOADR1_MANTISSA			  CODE	    04A5	1255
-LOAD_POINTERS			  CODE	    048B	1211
-MDES1				  CODE	    0494	1232
-MMSCANKEYB			  CODE	    0101	 152
-MMSCANKEYB1			  CODE	    010A	 156
-MMSCANKEYB2			  CODE	    0125	 177
-MMSCANKEYB3			  CODE	    0127	 178
-MMSCANKEYB4			  CODE	    012E	 183
-MMSCANKEYB5			  CODE	    0140	 197
-MMSCANKEYB6			  CODE	    0142	 198
-MNL0				  CODE	    046B	1185
-MNL1				  CODE	    047D	1197
-MNLOOP				  CODE	    0462	1177
-MOUT				  CODE	    069A	1679
-MOVAS				  CODE	    0774	1884
-MSIGN				  BIT	      78	 417
-MUL11				  CODE	    06C6	1719
-MULNUM				  CODE	    06AD	1697
-MULNUM10			  CODE	    06AA	1693
-MULX				  CODE	    06CD	1726
-MUL_DIV_EXP_AND_SIGN		  CODE	    0492	1223
-MUL_NIBBLE			  CODE	    0458	1163
-M_C				  CODE	    0776	1885
-NL1				  CODE	    067A	1649
-NOENTRY				  BIT	      00	   5
-NR1				  CODE	    0683	1658
-NUM_LT				  CODE	    0673	1643
-NUM_RT				  CODE	    067C	1652
+FP_DIG34			  NUMBER    002C	 467
+FP_DIG56			  NUMBER    002D	 468
+FP_DIG78			  NUMBER    002E	 469
+FP_EXP				  NUMBER    0030	 471
+FP_NIB1				  NUMBER    002B	 477
+FP_NIB2				  NUMBER    002C	 478
+FP_NIB3				  NUMBER    002D	 479
+FP_NIB4				  NUMBER    002E	 480
+FP_NIB5				  NUMBER    002F	 481
+FP_NIB6				  NUMBER    0030	 482
+FP_NIB7				  NUMBER    0031	 483
+FP_NIB8				  NUMBER    0032	 484
+FP_NUMBER_SIZE			  NUMBER    0006	 445
+FP_SIGN				  NUMBER    002F	 470
+FP_STATUS			  NUMBER    0028	 463
+FP_TEMP				  NUMBER    0029	 464
+FREE				  CODE	    1411	1587
+FREE1				  CODE	    1418	1592
+FREE2				  CODE	    1434	1611
+FREE4				  CODE	    142C	1606
+FRTEST				  CODE	    1395	1466
+FSUB10				  CODE	    10BA	 725
+FSUB5				  CODE	    1089	 684
+FSUB6				  CODE	    1094	 695
+FSUB7				  CODE	    1098	 698
+FSUB8				  CODE	    10A3	 706
+FSUB9				  CODE	    10A9	 713
+FUNCTION			  NUMBER    0052	   5
+GETRESULT			  CODE	    00BB	  96
+GETRESULT1			  CODE	    00CB	 104
+GETRESULT2			  CODE	    00DB	 112
+GETRESULT3			  CODE	    00E1	 116
+GET_DIGIT_CHECK			  CODE	    156F	1881
+GET_R1_CHARACTER		  CODE	    13A8	1489
+GT1				  CODE	    1333	1398
+GT11				  CODE	    133B	1401
+GT12				  CODE	    133E	1402
+GT2				  CODE	    134B	1411
+GTEST				  CODE	    1324	1391
+HC1				  CODE	    1306	1361
+HEX2X				  CODE	    154F	1856
+HEXDO1				  CODE	    12FA	1348
+HEXDON				  CODE	    12F9	1346
+HEXOUT				  CODE	    1543	1844
+HEXSC1				  CODE	    12E8	1335
+HEXSCAN				  CODE	    12E6	1328
+HEX_CHECK			  CODE	    12FE	1353
+HOUT1				  CODE	    155B	1865
+HOUTHI				  CODE	    1566	1873
+HOUTLO				  CODE	    1567	1875
+HS1				  CODE	    12FB	1350
+IE				  DATA	      A8
+IE0				  BIT	      89
+IE1				  BIT	      8B
+INC_AND_GET_R1_CHARACTER	  CODE	    13A7	1485
+INC_ASTKA			  CODE	    158D	1912
 
 ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. Heinz                                         PAGE 41
 
@@ -2494,62 +2496,62 @@ ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. H
 
 SYMBOL				  TYPE     VALUE	LINE
 ------------------------------------------------------------
-OUTR				  CODE	    0668	1632
-OUTR0				  CODE	    0657	1618
-OV				  BIT	      D2
-OVE1				  CODE	    03C5	1011
-OVERFLOW			  NUMBER    0001	 395
-OVERFLOW_AND_EXIT		  CODE	    03C1	1004
-P				  BIT	      D0
-P0				  DATA	      80
-P1				  DATA	      90
-P2				  DATA	      A0
-P3				  DATA	      B0
-PACK				  CODE	    0350	 885
-PACK0				  CODE	    0359	 898
-PACK1				  CODE	    035A	 900
-PACK2				  CODE	    0364	 908
-PACK3				  CODE	    0376	 922
-PACK4				  CODE	    037C	 929
-PCL				  CODE	    07B1	1938
-PCON				  DATA	      87
-PLOOP				  CODE	    037E	 933
-PLUS_MINUS_TEST			  CODE	    057B	1445
-PMT0				  CODE	    0580	1449
-PMT1				  CODE	    0585	1455
-PMT2				  CODE	    0583	1451
-PMT3				  CODE	    0584	1453
-POPAS				  CODE	    0762	1869
-POP_AND_EXIT			  CODE	    01E8	 533
-POSNM1				  CODE	    053A	1383
-POSNUM				  CODE	    0537	1380
-PRET				  CODE	    039E	 966
-PRTERR				  CODE	    01CD	 491
-PS				  BIT	      BC
-PSCANKEYB			  CODE	    00B8	 101
-PSCANKEYB1			  CODE	    00BE	 104
-PSCANKEYB2			  CODE	    00D9	 124
-PSCANKEYB3			  CODE	    00DB	 125
-PSCANKEYB4			  CODE	    00E2	 130
-PSCANKEYB5			  CODE	    00F4	 144
-PSCANKEYB6			  CODE	    00F6	 145
-PSW				  DATA	      D0
-PT0				  BIT	      B9
-PT1				  BIT	      BB
-PUSHAS				  CODE	    0766	1872
-PUSHC				  CODE	    07AD	1936
-PX0				  BIT	      B8
-PX1				  BIT	      BA
-P_Z				  CODE	    0793	1914
-R0B0				  NUMBER    0000	 392
-R1B0				  NUMBER    0001	 393
-R5OUT				  CODE	    0749	1845
-RB8				  BIT	      9A
-RD				  BIT	      B7
-REN				  BIT	      9C
-RESET				  CODE	    0000
-RET_X				  CODE	    055C	1408
-RI				  BIT	      98
+INC_FP_EXP			  CODE	    11D2	1021
+INERR				  CODE	    138D	1459
+INLOOP				  CODE	    1319	1383
+INLPIK				  CODE	    1321	1388
+INT0				  BIT	      B2
+INT1				  BIT	      B3
+INTGRC				  BIT	      31	 435
+IP				  DATA	      B8
+IT0				  BIT	      88
+IT1				  BIT	      8A
+KEYS				  CODE	    01B6	 259
+LASTCHR				  NUMBER    0051	   4
+LCDBUFF				  NUMBER    0040	   2
+LCDCHROUT			  CODE	    01E6	 291
+LCDCLEAR			  CODE	    01FA	 303
+LCDCLEAR1			  CODE	    0200	 306
+LCDCLEARBUFF			  CODE	    022A	 335
+LCDCLEARBUFF1			  CODE	    0230	 338
+LCDCMDOUT			  CODE	    01D6	 280
+LCDDELAY			  CODE	    01C6	 267
+LCDINIT				  CODE	    0211	 321
+LCDNIBOUT			  CODE	    01CF	 274
+LCDPRINTSTR			  CODE	    020A	 315
+LCDSCROLL			  CODE	    0104	 134
+LCDSCROLL1			  CODE	    010C	 138
+LCDSETADR			  CODE	    0205	 311
+LCDSHOW				  CODE	    0116	 147
+LEFT				  CODE	    1253	1167
+LEFT1				  CODE	    1255	1173
+LEFT3				  CODE	    125D	1179
+LEFT5				  CODE	    127C	1206
+LEFTL				  CODE	    1268	1188
+LOAD1				  CODE	    1023	 595
+LOAD2				  CODE	    1033	 607
+LOAD3				  CODE	    103B	 614
+LOAD4				  CODE	    1044	 624
+LOAD5				  CODE	    1056	 638
+LOAD7				  CODE	    11F3	1053
+LOADR1				  CODE	    12DC	1317
+LOADR1_MANTISSA			  CODE	    12D8	1308
+LOAD_POINTERS			  CODE	    12BE	1264
+MDES1				  CODE	    12C7	1285
+MMSCANKEYB			  CODE	    0169	 205
+MMSCANKEYB1			  CODE	    0172	 209
+MMSCANKEYB2			  CODE	    018D	 230
+MMSCANKEYB3			  CODE	    018F	 231
+MMSCANKEYB4			  CODE	    0196	 236
+MMSCANKEYB5			  CODE	    01A8	 250
+MMSCANKEYB6			  CODE	    01AA	 251
+MNL0				  CODE	    129E	1238
+MNL1				  CODE	    12B0	1250
+MNLOOP				  CODE	    1295	1230
+MOUT				  CODE	    14CD	1732
+MOVAS				  CODE	    15B0	1942
+MSIGN				  BIT	      78	 472
+MUL11				  CODE	    14F9	1772
 
 ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. Heinz                                         PAGE 42
 
@@ -2557,62 +2559,62 @@ ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. H
 
 SYMBOL				  TYPE     VALUE	LINE
 ------------------------------------------------------------
-RIGHT				  CODE	    03E8	1061
-RIGHT1				  CODE	    03EA	1068
-RIGHT3				  CODE	    03F2	1076
-RIGHT5				  CODE	    0411	1102
-RIGHTL				  CODE	    03FE	1086
-ROUT				  CODE	    069E	1682
-RS0				  BIT	      D3
-RS1				  BIT	      D4
-RSUB				  CODE	    06EB	1753
-RSUB1				  CODE	    06ED	1755
-RSUB2				  CODE	    070A	1781
-RSUB4				  CODE	    070D	1784
-RSUB_R				  CODE	    06EA	1751
-RXD				  BIT	      B0
-SBUF				  DATA	      99
-SCON				  DATA	      98
-SE1				  CODE	    01E2	 527
-SETREG				  CODE	    076A	1875
-SETREG1				  CODE	    076B	1876
-SIGNS_DIFFERENT			  CODE	    029A	 697
-SINOUT				  CODE	    0697	1676
-SINT				  CODE	    0023
-SM0				  BIT	      9F
-SM1				  BIT	      9E
-SM2				  BIT	      9D
-SOUT				  CODE	    06A6	1688
-SOUT1				  CODE	    06A8	1690
-SOUT_1				  CODE	    0726	1810
-SP				  DATA	      81
-SPACE7				  CODE	    0684	1660
-SQ_ERR				  CODE	    074F	1851
-SRT				  CODE	    0761	1867
-SS7				  CODE	    0695	1674
-START				  CODE	    002C	  31
-START0				  CODE	    0035	  35
-START1				  CODE	    003E	  39
-START10				  CODE	    007B	  66
-START11				  CODE	    008A	  72
-START12				  CODE	    0094	  76
-START2				  CODE	    004C	  45
-START3				  CODE	    0057	  50
-START4				  CODE	    0060	  54
-START5				  CODE	    0069	  58
-START6				  CODE	    0072	  62
-STDIG				  CODE	    054E	1399
-STDIG1				  CODE	    055D	1410
-STORE2				  CODE	    0396	 958
-STORE_ALIGN_TEST_AND_EXIT	  CODE	    0390	 948
-SUBLP				  CODE	    0241	 609
-SWAP_AND_EXIT			  CODE	    01DE	 520
-T0				  BIT	      B4
-T1				  BIT	      B5
-TB8				  BIT	      9B
-TCON				  DATA	      88
-TF0				  BIT	      8D
-TF1				  BIT	      8F
+MULNUM				  CODE	    14E0	1750
+MULNUM10			  CODE	    14DD	1746
+MULX				  CODE	    1500	1779
+MUL_DIV_EXP_AND_SIGN		  CODE	    12C5	1276
+MUL_NIBBLE			  CODE	    128B	1216
+M_C				  CODE	    15B2	1943
+NL1				  CODE	    14AD	1702
+NOENTRY				  BIT	      00	   7
+NR1				  CODE	    14B6	1711
+NUM_LT				  CODE	    14A6	1696
+NUM_RT				  CODE	    14AF	1705
+OUTR				  CODE	    149B	1685
+OUTR0				  CODE	    148A	1671
+OV				  BIT	      D2
+OVE1				  CODE	    11F8	1064
+OVERFLOW			  NUMBER    0001	 450
+OVERFLOW_AND_EXIT		  CODE	    11F4	1057
+P				  BIT	      D0
+P0				  DATA	      80
+P1				  DATA	      90
+P2				  DATA	      A0
+P3				  DATA	      B0
+PACK				  CODE	    1183	 938
+PACK0				  CODE	    118C	 951
+PACK1				  CODE	    118D	 953
+PACK2				  CODE	    1197	 961
+PACK3				  CODE	    11A9	 975
+PACK4				  CODE	    11AF	 982
+PCL				  CODE	    15ED	1996
+PCON				  DATA	      87
+PLOOP				  CODE	    11B1	 986
+PLUS_MINUS_TEST			  CODE	    13AE	1498
+PMT0				  CODE	    13B3	1502
+PMT1				  CODE	    13B8	1508
+PMT2				  CODE	    13B6	1504
+PMT3				  CODE	    13B7	1506
+POPAS				  CODE	    159E	1927
+POP_AND_EXIT			  CODE	    101B	 586
+POSNM1				  CODE	    136D	1436
+POSNUM				  CODE	    136A	1433
+PRET				  CODE	    11D1	1019
+PRTERR				  CODE	    1000	 544
+PS				  BIT	      BC
+PSCANKEYB			  CODE	    0120	 154
+PSCANKEYB1			  CODE	    0126	 157
+PSCANKEYB2			  CODE	    0141	 177
+PSCANKEYB3			  CODE	    0143	 178
+PSCANKEYB4			  CODE	    014A	 183
+PSCANKEYB5			  CODE	    015C	 197
+PSCANKEYB6			  CODE	    015E	 198
+PSW				  DATA	      D0
+PT0				  BIT	      B9
+PT1				  BIT	      BB
+PUSHAS				  CODE	    15A2	1930
+PUSHC				  CODE	    15E9	1994
+PX0				  BIT	      B8
 
 ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. Heinz                                         PAGE 43
 
@@ -2620,6 +2622,80 @@ ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. H
 
 SYMBOL				  TYPE     VALUE	LINE
 ------------------------------------------------------------
+PX1				  BIT	      BA
+P_Z				  CODE	    15CF	1972
+R0B0				  NUMBER    0000	 447
+R1B0				  NUMBER    0001	 448
+R5OUT				  CODE	    157C	1898
+RB8				  BIT	      9A
+RD				  BIT	      B7
+REN				  BIT	      9C
+RESET				  CODE	    0000
+RET_X				  CODE	    138F	1461
+RI				  BIT	      98
+RIGHT				  CODE	    121B	1114
+RIGHT1				  CODE	    121D	1121
+RIGHT3				  CODE	    1225	1129
+RIGHT5				  CODE	    1244	1155
+RIGHTL				  CODE	    1231	1139
+ROUT				  CODE	    14D1	1735
+RS0				  BIT	      D3
+RS1				  BIT	      D4
+RSUB				  CODE	    151E	1806
+RSUB1				  CODE	    1520	1808
+RSUB2				  CODE	    153D	1834
+RSUB4				  CODE	    1540	1837
+RSUB_R				  CODE	    151D	1804
+RXD				  BIT	      B0
+SBUF				  DATA	      99
+SCON				  DATA	      98
+SE1				  CODE	    1015	 580
+SETREG				  CODE	    15A6	1933
+SETREG1				  CODE	    15A7	1934
+SIGNS_DIFFERENT			  CODE	    10CD	 750
+SINOUT				  CODE	    14CA	1729
+SINT				  CODE	    0023
+SM0				  BIT	      9F
+SM1				  BIT	      9E
+SM2				  BIT	      9D
+SOUT				  CODE	    14D9	1741
+SOUT1				  CODE	    14DB	1743
+SOUT_1				  CODE	    1559	1863
+SP				  DATA	      81
+SPACE7				  CODE	    14B7	1713
+SQ_ERR				  CODE	    158B	1909
+SRT				  CODE	    159D	1925
+SS7				  CODE	    14C8	1727
+START				  CODE	    002C	  33
+START0				  CODE	    0044	  42
+START1				  CODE	    004D	  46
+START10				  CODE	    009A	  81
+START11				  CODE	    00A9	  87
+START12				  CODE	    00B3	  91
+START2				  CODE	    005B	  52
+START3				  CODE	    006A	  59
+START4				  CODE	    0077	  65
+START5				  CODE	    0084	  71
+START6				  CODE	    0091	  77
+STDIG				  CODE	    1381	1452
+
+ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. Heinz                                         PAGE 44
+
+
+
+SYMBOL				  TYPE     VALUE	LINE
+------------------------------------------------------------
+STDIG1				  CODE	    1390	1463
+STORE2				  CODE	    11C9	1011
+STORE_ALIGN_TEST_AND_EXIT	  CODE	    11C3	1001
+SUBLP				  CODE	    1074	 662
+SWAP_AND_EXIT			  CODE	    1011	 573
+T0				  BIT	      B4
+T1				  BIT	      B5
+TB8				  BIT	      9B
+TCON				  DATA	      88
+TF0				  BIT	      8D
+TF1				  BIT	      8F
 TH0				  DATA	      8C
 TH1				  DATA	      8D
 TI				  BIT	      99
@@ -2630,34 +2706,34 @@ TL1				  DATA	      8B
 TMOD				  DATA	      89
 TR0				  BIT	      8C
 TR1				  BIT	      8E
-TXBYTE				  CODE	    07B9	1947
+TXBYTE				  CODE	    15F5	2005
 TXD				  BIT	      B1
-ULOOP				  CODE	    03AF	 986
-UNDERFLOW			  NUMBER    0000	 394
-UNDERFLOW_AND_EXIT		  CODE	    03D2	1023
-UNPACK_R0			  CODE	    03AB	 979
-USING0				  CODE	    05BC	1505
-USING1				  CODE	    05C2	1510
-USING2				  CODE	    05D4	1523
-USINGX				  CODE	    05D2	1521
-USINGY				  CODE	    05CF	1518
-U_RET				  CODE	    0656	1616
-VARCOP				  CODE	    077D	1894
-V_C				  CODE	    077F	1895
+ULOOP				  CODE	    11E2	1039
+UNDERFLOW			  NUMBER    0000	 449
+UNDERFLOW_AND_EXIT		  CODE	    1205	1076
+UNPACK_R0			  CODE	    11DE	1032
+USING0				  CODE	    13EF	1558
+USING1				  CODE	    13F5	1563
+USING2				  CODE	    1407	1576
+USINGX				  CODE	    1405	1574
+USINGY				  CODE	    1402	1571
+U_RET				  CODE	    1489	1669
+VARCOP				  CODE	    15B9	1952
+V_C				  CODE	    15BB	1953
 WR				  BIT	      B6
-XOUT0				  CODE	    062F	1588
-XOUT2				  CODE	    0634	1592
-XOUT3				  CODE	    063C	1597
-XOUT4				  CODE	    0640	1601
-XSIGN				  BIT	      50	 418
-Z7R7				  CODE	    068C	1666
-ZERO				  NUMBER    0002	 396
-ZERO7				  CODE	    068D	1668
-ZERO_AND_EXIT			  CODE	    03D8	1034
-ZERO_DIVIDE			  NUMBER    0003	 397
-ZOUT				  CODE	    06A2	1685
-ZRO				  CODE	    07C9	1953
-ZSURP				  BIT	      36	 382
-ZT0				  CODE	    066B	1636
-ZT1				  CODE	    0672	1641
-ZTEST				  CODE	    0669	1634
+XOUT0				  CODE	    1462	1641
+XOUT2				  CODE	    1467	1645
+XOUT3				  CODE	    146F	1650
+XOUT4				  CODE	    1473	1654
+XSIGN				  BIT	      50	 473
+Z7R7				  CODE	    14BF	1719
+ZERO				  NUMBER    0002	 451
+ZERO7				  CODE	    14C0	1721
+ZERO_AND_EXIT			  CODE	    120B	1087
+ZERO_DIVIDE			  NUMBER    0003	 452
+ZOUT				  CODE	    14D5	1738
+ZRO				  CODE	    1605	2011
+ZSURP				  BIT	      36	 437
+ZT0				  CODE	    149E	1689
+ZT1				  CODE	    14A5	1694
+ZTEST				  CODE	    149C	1687
