@@ -965,12 +965,6 @@ WriteXRam proc uses ebx esi edi,nAddr:DWORD,nValue:DWORD
 
 WriteXRam endp
 
-SetParity proc
-
-	ret
-
-SetParity endp
-
 SetFlags proc
 
 	pushfd
@@ -981,13 +975,6 @@ SetFlags proc
 		and		addin.Sfr[SFR_PSW],7Fh
 	.else
 		or		addin.Sfr[SFR_PSW],80h
-	.endif
-	;Parity
-	test	eax,4
-	.if ZERO?
-		and		addin.Sfr[SFR_PSW],0FEh
-	.else
-		or		addin.Sfr[SFR_PSW],01h
 	.endif
 	;Auxiliary Flag
 	test	eax,16
@@ -1028,12 +1015,10 @@ LJMP_addr16:
 
 RR_A:
 	ror		addin.Sfr[SFR_ACC],1
-	call	SetParity
 	ret
 
 INC_A:
 	inc		addin.Sfr[SFR_ACC]
-	call	SetParity
 	ret
 
 INC_dir:
@@ -1048,8 +1033,6 @@ INC_dir:
 			.if edx==SFR_P0 || edx==SFR_P1 || edx==SFR_P2 || edx==SFR_P3
 				movzx	eax,addin.Sfr[edx]
 				invoke WritePort,edx,eax
-			.elseif edx==SFR_ACC
-				call	SetParity
 			.endif
 		.endif
 	.endif
@@ -1058,63 +1041,63 @@ INC_dir:
 INC_@R0:
 	mov		eax,addin.Bank
 	lea		eax,[eax*8+0]
-	movzx	eax,addin.Ram[eax]
-	inc		addin.Ram[eax]
+	movzx	edx,addin.Ram[eax]
+	inc		addin.Ram[edx]
 	ret
 
 INC_@R1:
 	mov		eax,addin.Bank
 	lea		eax,[eax*8+1]
-	movzx	eax,addin.Ram[eax]
-	inc		addin.Ram[eax]
+	movzx	edx,addin.Ram[eax]
+	inc		addin.Ram[edx]
 	ret
 
 INC_R0:
 	mov		eax,addin.Bank
-	lea		eax,[eax*8+0]
-	inc		addin.Ram[eax]
+	lea		edx,[eax*8+0]
+	inc		addin.Ram[edx]
 	ret
 
 INC_R1:
 	mov		eax,addin.Bank
-	lea		eax,[eax*8+1]
-	inc		addin.Ram[eax]
+	lea		edx,[eax*8+1]
+	inc		addin.Ram[edx]
 	ret
 
 INC_R2:
 	mov		eax,addin.Bank
-	lea		eax,[eax*8+2]
-	inc		addin.Ram[eax]
+	lea		edx,[eax*8+2]
+	inc		addin.Ram[edx]
 	ret
 
 INC_R3:
 	mov		eax,addin.Bank
-	lea		eax,[eax*8+3]
-	inc		addin.Ram[eax]
+	lea		edx,[eax*8+3]
+	inc		addin.Ram[edx]
 	ret
 
 INC_R4:
 	mov		eax,addin.Bank
-	lea		eax,[eax*8+4]
-	inc		addin.Ram[eax]
+	lea		edx,[eax*8+4]
+	inc		addin.Ram[edx]
 	ret
 
 INC_R5:
 	mov		eax,addin.Bank
-	lea		eax,[eax*8+5]
-	inc		addin.Ram[eax]
+	lea		edx,[eax*8+5]
+	inc		addin.Ram[edx]
 	ret
 
 INC_R6:
 	mov		eax,addin.Bank
-	lea		eax,[eax*8+6]
-	inc		addin.Ram[eax]
+	lea		edx,[eax*8+6]
+	inc		addin.Ram[edx]
 	ret
 
 INC_R7:
 	mov		eax,addin.Bank
-	lea		eax,[eax*8+7]
-	inc		addin.Ram[eax]
+	lea		edx,[eax*8+7]
+	inc		addin.Ram[edx]
 	ret
 
 ;------------------------------------------------------------------------------
@@ -1140,7 +1123,6 @@ JBC_bit_rel:
 		.if !ZERO?
 			movsx	ecx,ch
 			lea		ebx,[ebx+ecx]
-			xor		addin.Sfr[eax],dl
 			.if eax==SFR_SBUF
 				xor		byte ptr SBUFWR,dl
 				invoke ScreenChar,SBUFWR
@@ -1149,8 +1131,6 @@ JBC_bit_rel:
 				.if eax==SFR_P0 || eax==SFR_P1 || eax==SFR_P2 || eax==SFR_P3
 					movzx	edx,addin.Sfr[eax]
 					invoke WritePort,eax,edx
-				.elseif edx==SFR_ACC
-					call	SetParity
 				.endif
 			.endif
 			mov		addin.PC,ebx
@@ -1194,12 +1174,10 @@ RRC_A:
 	.else
 		and		addin.Sfr[SFR_PSW],7Fh
 	.endif
-	call	SetParity
 	ret
 
 DEC_A:
 	dec		addin.Sfr[SFR_ACC]
-	invoke SetParity
 	ret
 
 DEC_dir:
@@ -1214,8 +1192,6 @@ DEC_dir:
 			.if edx==SFR_P0 || edx==SFR_P1 || edx==SFR_P2 || edx==SFR_P3
 				movzx	eax,addin.Sfr[edx]
 				invoke WritePort,edx,eax
-			.elseif edx==SFR_ACC
-				call	SetParity
 			.endif
 		.endif
 	.endif
@@ -1224,63 +1200,63 @@ DEC_dir:
 DEC_@R0:
 	mov		eax,addin.Bank
 	lea		eax,[eax*8+0]
-	movzx	eax,addin.Ram[eax]
-	dec		addin.Ram[eax]
+	movzx	edx,addin.Ram[eax]
+	dec		addin.Ram[edx]
 	ret
 
 DEC_@R1:
 	mov		eax,addin.Bank
 	lea		eax,[eax*8+1]
-	movzx	eax,addin.Ram[eax]
-	dec		addin.Ram[eax]
+	movzx	edx,addin.Ram[eax]
+	dec		addin.Ram[edx]
 	ret
 
 DEC_R0:
 	mov		eax,addin.Bank
-	lea		eax,[eax*8+0]
-	dec		addin.Ram[eax]
+	lea		edx,[eax*8+0]
+	dec		addin.Ram[edx]
 	ret
 
 DEC_R1:
 	mov		eax,addin.Bank
-	lea		eax,[eax*8+1]
-	dec		addin.Ram[eax]
+	lea		edx,[eax*8+1]
+	dec		addin.Ram[edx]
 	ret
 
 DEC_R2:
 	mov		eax,addin.Bank
-	lea		eax,[eax*8+2]
-	dec		addin.Ram[eax]
+	lea		edx,[eax*8+2]
+	dec		addin.Ram[edx]
 	ret
 
 DEC_R3:
 	mov		eax,addin.Bank
-	lea		eax,[eax*8+3]
-	dec		addin.Ram[eax]
+	lea		edx,[eax*8+3]
+	dec		addin.Ram[edx]
 	ret
 
 DEC_R4:
 	mov		eax,addin.Bank
-	lea		eax,[eax*8+4]
-	dec		addin.Ram[eax]
+	lea		edx,[eax*8+4]
+	dec		addin.Ram[edx]
 	ret
 
 DEC_R5:
 	mov		eax,addin.Bank
-	lea		eax,[eax*8+5]
-	dec		addin.Ram[eax]
+	lea		edx,[eax*8+5]
+	dec		addin.Ram[edx]
 	ret
 
 DEC_R6:
 	mov		eax,addin.Bank
-	lea		eax,[eax*8+6]
-	dec		addin.Ram[eax]
+	lea		edx,[eax*8+6]
+	dec		addin.Ram[edx]
 	ret
 
 DEC_R7:
 	mov		eax,addin.Bank
-	lea		eax,[eax*8+7]
-	dec		addin.Ram[eax]
+	lea		edx,[eax*8+7]
+	dec		addin.Ram[edx]
 	ret
 
 ;------------------------------------------------------------------------------
@@ -1317,7 +1293,6 @@ RET_:
 
 RL_A:
 	rol		addin.Sfr[SFR_ACC],1
-	call	SetParity
 	ret
 
 ADD_A_imm:
@@ -1473,127 +1448,125 @@ RLC_A:
 	.else
 		and		addin.Sfr[SFR_PSW],7Fh
 	.endif
-	call	SetParity
 	ret
 
 ADDC_A_imm:
 	movzx	eax,addin.Sfr[SFR_PSW]
 	rcl		al,1
-	mov		eax,edx
-	adc		addin.Sfr[SFR_ACC],al
+	adc		addin.Sfr[SFR_ACC],dl
 	invoke SetFlags
 	ret
 
 ADDC_A_dir:
-	movzx	eax,addin.Sfr[SFR_PSW]
-	rcl		al,1
 	.if edx<80h
 		movzx	eax,addin.Ram[edx]
 	.else
 		movzx	eax,addin.Sfr[edx]
 	.endif
+	movzx	edx,addin.Sfr[SFR_PSW]
+	rcl		dl,1
 	adc		addin.Sfr[SFR_ACC],al
 	invoke SetFlags
 	ret
 
 ADDC_A_@R0:
-	movzx	eax,addin.Sfr[SFR_PSW]
-	rcl		al,1
 	mov		eax,addin.Bank
 	lea		eax,[eax*8+0]
 	movzx	eax,addin.Ram[eax]
 	movzx	eax,addin.Ram[eax]
+	movzx	edx,addin.Sfr[SFR_PSW]
+	rcl		dl,1
 	adc		addin.Sfr[SFR_ACC],al
 	invoke SetFlags
 	ret
 
 ADDC_A_@R1:
-	movzx	eax,addin.Sfr[SFR_PSW]
-	rcl		al,1
 	mov		eax,addin.Bank
 	lea		eax,[eax*8+1]
 	movzx	eax,addin.Ram[eax]
 	movzx	eax,addin.Ram[eax]
+	movzx	edx,addin.Sfr[SFR_PSW]
+	rcl		dl,1
 	adc		addin.Sfr[SFR_ACC],al
 	invoke SetFlags
 	ret
 
 ADDC_A_R0:
-	movzx	eax,addin.Sfr[SFR_PSW]
-	rcl		al,1
 	mov		eax,addin.Bank
 	lea		eax,[eax*8+0]
 	movzx	eax,addin.Ram[eax]
+	movzx	edx,addin.Sfr[SFR_PSW]
+	rcl		dl,1
 	adc		addin.Sfr[SFR_ACC],al
 	invoke SetFlags
 	ret
 
 ADDC_A_R1:
-	movzx	eax,addin.Sfr[SFR_PSW]
-	rcl		al,1
 	mov		eax,addin.Bank
 	lea		eax,[eax*8+1]
 	movzx	eax,addin.Ram[eax]
+	movzx	edx,addin.Sfr[SFR_PSW]
+	rcl		dl,1
 	adc		addin.Sfr[SFR_ACC],al
 	invoke SetFlags
 	ret
 
 ADDC_A_R2:
-	movzx	eax,addin.Sfr[SFR_PSW]
-	rcl		al,1
 	mov		eax,addin.Bank
 	lea		eax,[eax*8+2]
 	movzx	eax,addin.Ram[eax]
+	movzx	edx,addin.Sfr[SFR_PSW]
+	rcl		dl,1
 	adc		addin.Sfr[SFR_ACC],al
 	invoke SetFlags
 	ret
 
 ADDC_A_R3:
-	movzx	eax,addin.Sfr[SFR_PSW]
-	rcl		al,1
 	mov		eax,addin.Bank
 	lea		eax,[eax*8+3]
 	movzx	eax,addin.Ram[eax]
+	movzx	edx,addin.Sfr[SFR_PSW]
+	rcl		dl,1
 	adc		addin.Sfr[SFR_ACC],al
 	invoke SetFlags
 	ret
 
 ADDC_A_R4:
-	movzx	eax,addin.Sfr[SFR_PSW]
-	rcl		al,1
 	mov		eax,addin.Bank
 	lea		eax,[eax*8+4]
 	movzx	eax,addin.Ram[eax]
+	movzx	edx,addin.Sfr[SFR_PSW]
+	rcl		dl,1
 	adc		addin.Sfr[SFR_ACC],al
 	invoke SetFlags
 	ret
 
 ADDC_A_R5:
-	movzx	eax,addin.Sfr[SFR_PSW]
-	rcl		al,1
 	mov		eax,addin.Bank
 	lea		eax,[eax*8+5]
 	movzx	eax,addin.Ram[eax]
+	movzx	edx,addin.Sfr[SFR_PSW]
+	rcl		dl,1
 	adc		addin.Sfr[SFR_ACC],al
 	invoke SetFlags
 	ret
 
 ADDC_A_R6:
-	movzx	eax,addin.Sfr[SFR_PSW]
-	rcl		al,1
 	mov		eax,addin.Bank
 	lea		eax,[eax*8+6]
 	movzx	eax,addin.Ram[eax]
+	movzx	edx,addin.Sfr[SFR_PSW]
+	rcl		dl,1
 	adc		addin.Sfr[SFR_ACC],al
 	invoke SetFlags
 	ret
 
 ADDC_A_R7:
-	movzx	eax,addin.Sfr[SFR_PSW]
-	rcl		al,1
 	mov		eax,addin.Bank
 	lea		eax,[eax*8+7]
 	movzx	eax,addin.Ram[eax]
+	movzx	edx,addin.Sfr[SFR_PSW]
+	rcl		dl,1
 	adc		addin.Sfr[SFR_ACC],al
 	invoke SetFlags
 	ret
@@ -1611,18 +1584,25 @@ JC_rel:
 
 ORL_dir_A:
 	movzx	eax,addin.Sfr[SFR_ACC]
-	or		addin.Ram[edx],al
+	.if edx<80h
+		or		addin.Ram[edx],al
+	.else
+		or		addin.Sfr[edx],al
+	.endif
 	ret
 
 ORL_dir_imm:
 	movzx	eax,dh
 	movzx	edx,dl
-	or		addin.Ram[edx],al
+	.if edx<80h
+		or		addin.Ram[edx],al
+	.else
+		or		addin.Sfr[edx],al
+	.endif
 	ret
 
 ORL_A_imm:
 	or		addin.Sfr[SFR_ACC],dl
-	call	SetParity
 	ret
 
 ORL_A_dir:
@@ -1632,7 +1612,6 @@ ORL_A_dir:
 		movzx	eax,addin.Sfr[edx]
 	.endif
 	or		addin.Sfr[SFR_ACC],al
-	call	SetParity
 	ret
 
 ORL_A_@R0:
@@ -1641,7 +1620,6 @@ ORL_A_@R0:
 	movzx	eax,addin.Ram[eax]
 	movzx	eax,addin.Ram[eax]
 	or		addin.Sfr[SFR_ACC],al
-	call	SetParity
 	ret
 
 ORL_A_@R1:
@@ -1650,7 +1628,6 @@ ORL_A_@R1:
 	movzx	eax,addin.Ram[eax]
 	movzx	eax,addin.Ram[eax]
 	or		addin.Sfr[SFR_ACC],al
-	call	SetParity
 	ret
 
 ORL_A_R0:
@@ -1658,7 +1635,6 @@ ORL_A_R0:
 	lea		eax,[eax*8+0]
 	movzx	eax,addin.Ram[eax]
 	or		addin.Sfr[SFR_ACC],al
-	call	SetParity
 	ret
 
 ORL_A_R1:
@@ -1666,7 +1642,6 @@ ORL_A_R1:
 	lea		eax,[eax*8+1]
 	movzx	eax,addin.Ram[eax]
 	or		addin.Sfr[SFR_ACC],al
-	call	SetParity
 	ret
 
 ORL_A_R2:
@@ -1674,7 +1649,6 @@ ORL_A_R2:
 	lea		eax,[eax*8+2]
 	movzx	eax,addin.Ram[eax]
 	or		addin.Sfr[SFR_ACC],al
-	call	SetParity
 	ret
 
 ORL_A_R3:
@@ -1682,7 +1656,6 @@ ORL_A_R3:
 	lea		eax,[eax*8+3]
 	movzx	eax,addin.Ram[eax]
 	or		addin.Sfr[SFR_ACC],al
-	call	SetParity
 	ret
 
 ORL_A_R4:
@@ -1690,7 +1663,6 @@ ORL_A_R4:
 	lea		eax,[eax*8+4]
 	movzx	eax,addin.Ram[eax]
 	or		addin.Sfr[SFR_ACC],al
-	call	SetParity
 	ret
 
 ORL_A_R5:
@@ -1698,7 +1670,6 @@ ORL_A_R5:
 	lea		eax,[eax*8+5]
 	movzx	eax,addin.Ram[eax]
 	or		addin.Sfr[SFR_ACC],al
-	call	SetParity
 	ret
 
 ORL_A_R6:
@@ -1706,7 +1677,6 @@ ORL_A_R6:
 	lea		eax,[eax*8+6]
 	movzx	eax,addin.Ram[eax]
 	or		addin.Sfr[SFR_ACC],al
-	call	SetParity
 	ret
 
 ORL_A_R7:
@@ -1714,7 +1684,6 @@ ORL_A_R7:
 	lea		eax,[eax*8+7]
 	movzx	eax,addin.Ram[eax]
 	or		addin.Sfr[SFR_ACC],al
-	call	SetParity
 	ret
 
 ;------------------------------------------------------------------------------
@@ -1730,18 +1699,25 @@ JNC_rel:
 
 ANL_dir_A:
 	movzx	eax,addin.Sfr[SFR_ACC]
-	and		addin.Ram[edx],al
+	.if edx<80h
+		and		addin.Ram[edx],al
+	.else
+		and		addin.Sfr[edx],al
+	.endif
 	ret
 
 ANL_dir_imm:
 	movzx	eax,dh
 	movzx	edx,dl
-	and		addin.Ram[edx],al
+	.if edx<80h
+		and		addin.Ram[edx],al
+	.else
+		and		addin.Sfr[edx],al
+	.endif
 	ret
 
 ANL_A_imm:
 	and		addin.Sfr[SFR_ACC],dl
-	call	SetParity
 	ret
 
 ANL_A_dir:
@@ -1751,7 +1727,6 @@ ANL_A_dir:
 		movzx	eax,addin.Sfr[edx]
 	.endif
 	and		addin.Sfr[SFR_ACC],al
-	call	SetParity
 	ret
 
 ANL_A_@R0:
@@ -1760,7 +1735,6 @@ ANL_A_@R0:
 	movzx	eax,addin.Ram[eax]
 	movzx	eax,addin.Ram[eax]
 	and		addin.Sfr[SFR_ACC],al
-	call	SetParity
 	ret
 
 ANL_A_@R1:
@@ -1769,7 +1743,6 @@ ANL_A_@R1:
 	movzx	eax,addin.Ram[eax]
 	movzx	eax,addin.Ram[eax]
 	and		addin.Sfr[SFR_ACC],al
-	call	SetParity
 	ret
 
 ANL_A_R0:
@@ -1777,7 +1750,6 @@ ANL_A_R0:
 	lea		eax,[eax*8+0]
 	movzx	eax,addin.Ram[eax]
 	and		addin.Sfr[SFR_ACC],al
-	call	SetParity
 	ret
 
 ANL_A_R1:
@@ -1785,7 +1757,6 @@ ANL_A_R1:
 	lea		eax,[eax*8+1]
 	movzx	eax,addin.Ram[eax]
 	and		addin.Sfr[SFR_ACC],al
-	call	SetParity
 	ret
 
 ANL_A_R2:
@@ -1793,7 +1764,6 @@ ANL_A_R2:
 	lea		eax,[eax*8+2]
 	movzx	eax,addin.Ram[eax]
 	and		addin.Sfr[SFR_ACC],al
-	call	SetParity
 	ret
 
 ANL_A_R3:
@@ -1801,7 +1771,6 @@ ANL_A_R3:
 	lea		eax,[eax*8+3]
 	movzx	eax,addin.Ram[eax]
 	and		addin.Sfr[SFR_ACC],al
-	call	SetParity
 	ret
 
 ANL_A_R4:
@@ -1809,7 +1778,6 @@ ANL_A_R4:
 	lea		eax,[eax*8+4]
 	movzx	eax,addin.Ram[eax]
 	and		addin.Sfr[SFR_ACC],al
-	call	SetParity
 	ret
 
 ANL_A_R5:
@@ -1817,7 +1785,6 @@ ANL_A_R5:
 	lea		eax,[eax*8+5]
 	movzx	eax,addin.Ram[eax]
 	and		addin.Sfr[SFR_ACC],al
-	call	SetParity
 	ret
 
 ANL_A_R6:
@@ -1825,7 +1792,6 @@ ANL_A_R6:
 	lea		eax,[eax*8+6]
 	movzx	eax,addin.Ram[eax]
 	and		addin.Sfr[SFR_ACC],al
-	call	SetParity
 	ret
 
 ANL_A_R7:
@@ -1833,7 +1799,6 @@ ANL_A_R7:
 	lea		eax,[eax*8+7]
 	movzx	eax,addin.Ram[eax]
 	and		addin.Sfr[SFR_ACC],al
-	call	SetParity
 	ret
 
 ;------------------------------------------------------------------------------
@@ -1849,18 +1814,25 @@ JZ_rel:
 
 XRL_dir_A:
 	movzx	eax,addin.Sfr[SFR_ACC]
-	xor		addin.Ram[edx],al
+	.if edx<80h
+		xor		addin.Ram[edx],al
+	.else
+		xor		addin.Sfr[edx],al
+	.endif
 	ret
 
 XRL_dir_imm:
 	movzx	eax,dh
 	movzx	edx,dl
-	xor		addin.Ram[edx],al
+	.if edx<80h
+		xor		addin.Ram[edx],al
+	.else
+		xor		addin.Sfr[edx],al
+	.endif
 	ret
 
 XRL_A_imm:
 	xor		addin.Sfr[SFR_ACC],dl
-	call	SetParity
 	ret
 
 XRL_A_dir:
@@ -1870,7 +1842,6 @@ XRL_A_dir:
 		movzx	eax,addin.Sfr[edx]
 	.endif
 	xor		addin.Sfr[SFR_ACC],al
-	call	SetParity
 	ret
 
 XRL_A_@R0:
@@ -1879,7 +1850,6 @@ XRL_A_@R0:
 	movzx	eax,addin.Ram[eax]
 	movzx	eax,addin.Ram[eax]
 	xor		addin.Sfr[SFR_ACC],al
-	call	SetParity
 	ret
 
 XRL_A_@R1:
@@ -1888,7 +1858,6 @@ XRL_A_@R1:
 	movzx	eax,addin.Ram[eax]
 	movzx	eax,addin.Ram[eax]
 	xor		addin.Sfr[SFR_ACC],al
-	call	SetParity
 	ret
 
 XRL_A_R0:
@@ -1896,7 +1865,6 @@ XRL_A_R0:
 	lea		eax,[eax*8+0]
 	movzx	eax,addin.Ram[eax]
 	xor		addin.Sfr[SFR_ACC],al
-	call	SetParity
 	ret
 
 XRL_A_R1:
@@ -1904,7 +1872,6 @@ XRL_A_R1:
 	lea		eax,[eax*8+1]
 	movzx	eax,addin.Ram[eax]
 	xor		addin.Sfr[SFR_ACC],al
-	call	SetParity
 	ret
 
 XRL_A_R2:
@@ -1912,7 +1879,6 @@ XRL_A_R2:
 	lea		eax,[eax*8+2]
 	movzx	eax,addin.Ram[eax]
 	xor		addin.Sfr[SFR_ACC],al
-	call	SetParity
 	ret
 
 XRL_A_R3:
@@ -1920,7 +1886,6 @@ XRL_A_R3:
 	lea		eax,[eax*8+3]
 	movzx	eax,addin.Ram[eax]
 	xor		addin.Sfr[SFR_ACC],al
-	call	SetParity
 	ret
 
 XRL_A_R4:
@@ -1928,7 +1893,6 @@ XRL_A_R4:
 	lea		eax,[eax*8+4]
 	movzx	eax,addin.Ram[eax]
 	xor		addin.Sfr[SFR_ACC],al
-	call	SetParity
 	ret
 
 XRL_A_R5:
@@ -1936,7 +1900,6 @@ XRL_A_R5:
 	lea		eax,[eax*8+5]
 	movzx	eax,addin.Ram[eax]
 	xor		addin.Sfr[SFR_ACC],al
-	call	SetParity
 	ret
 
 XRL_A_R6:
@@ -1944,7 +1907,6 @@ XRL_A_R6:
 	lea		eax,[eax*8+6]
 	movzx	eax,addin.Ram[eax]
 	xor		addin.Sfr[SFR_ACC],al
-	call	SetParity
 	ret
 
 XRL_A_R7:
@@ -1952,7 +1914,6 @@ XRL_A_R7:
 	lea		eax,[eax*8+7]
 	movzx	eax,addin.Ram[eax]
 	xor		addin.Sfr[SFR_ACC],al
-	call	SetParity
 	ret
 
 ;------------------------------------------------------------------------------
@@ -2000,7 +1961,6 @@ JMP_@A_DPTR:
 
 MOV_A_imm:
 	mov		addin.Sfr[SFR_ACC],dl
-	call	SetParity
 	ret
 
 MOV_dir_imm:
@@ -2017,8 +1977,6 @@ MOV_dir_imm:
 			.if edx==SFR_P0 || edx==SFR_P1 || edx==SFR_P2 || edx==SFR_P3
 				movzx	eax,addin.Sfr[edx]
 				invoke WritePort,edx,eax
-			.elseif edx==SFR_ACC
-				call	SetParity
 			.endif
 		.endif
 	.endif
@@ -2035,7 +1993,7 @@ MOV_@R1_imm:
 	mov		eax,addin.Bank
 	lea		eax,[eax*8+1]
 	movzx	ecx,addin.Ram[eax]
-	mov		addin.Ram[edx],dl
+	mov		addin.Ram[ecx],dl
 	ret
 
 MOV_R0_imm:
@@ -2117,7 +2075,6 @@ MOVC_A_@A_PC:
 	lea		edx,[ebx+eax]
 	movzx	eax,byte ptr [esi+edx]
 	mov		addin.Sfr[SFR_ACC],al
-	call	SetParity
 	ret
 
 DIV_AB:
@@ -2156,8 +2113,6 @@ MOV_dir_dir:
 			.if edx==SFR_P0 || edx==SFR_P1 || edx==SFR_P2 || edx==SFR_P3
 				movzx	eax,addin.Sfr[edx]
 				invoke WritePort,edx,eax
-			.elseif edx==SFR_ACC
-				call	SetParity
 			.endif
 		.endif
 	.endif
@@ -2179,8 +2134,6 @@ MOV_dir_@R0:
 			.if edx==SFR_P0 || edx==SFR_P1 || edx==SFR_P2 || edx==SFR_P3
 				movzx	eax,addin.Sfr[edx]
 				invoke WritePort,edx,eax
-			.elseif edx==SFR_ACC
-				call	SetParity
 			.endif
 		.endif
 	.endif
@@ -2202,8 +2155,6 @@ MOV_dir_@R1:
 			.if edx==SFR_P0 || edx==SFR_P1 || edx==SFR_P2 || edx==SFR_P3
 				movzx	eax,addin.Sfr[edx]
 				invoke WritePort,edx,eax
-			.elseif edx==SFR_ACC
-				call	SetParity
 			.endif
 		.endif
 	.endif
@@ -2224,8 +2175,6 @@ MOV_dir_R0:
 			.if edx==SFR_P0 || edx==SFR_P1 || edx==SFR_P2 || edx==SFR_P3
 				movzx	eax,addin.Sfr[edx]
 				invoke WritePort,edx,eax
-			.elseif edx==SFR_ACC
-				call	SetParity
 			.endif
 		.endif
 	.endif
@@ -2246,8 +2195,6 @@ MOV_dir_R1:
 			.if edx==SFR_P0 || edx==SFR_P1 || edx==SFR_P2 || edx==SFR_P3
 				movzx	eax,addin.Sfr[edx]
 				invoke WritePort,edx,eax
-			.elseif edx==SFR_ACC
-				call	SetParity
 			.endif
 		.endif
 	.endif
@@ -2268,8 +2215,6 @@ MOV_dir_R2:
 			.if edx==SFR_P0 || edx==SFR_P1 || edx==SFR_P2 || edx==SFR_P3
 				movzx	eax,addin.Sfr[edx]
 				invoke WritePort,edx,eax
-			.elseif edx==SFR_ACC
-				call	SetParity
 			.endif
 		.endif
 	.endif
@@ -2290,8 +2235,6 @@ MOV_dir_R3:
 			.if edx==SFR_P0 || edx==SFR_P1 || edx==SFR_P2 || edx==SFR_P3
 				movzx	eax,addin.Sfr[edx]
 				invoke WritePort,edx,eax
-			.elseif edx==SFR_ACC
-				call	SetParity
 			.endif
 		.endif
 	.endif
@@ -2312,8 +2255,6 @@ MOV_dir_R4:
 			.if edx==SFR_P0 || edx==SFR_P1 || edx==SFR_P2 || edx==SFR_P3
 				movzx	eax,addin.Sfr[edx]
 				invoke WritePort,edx,eax
-			.elseif edx==SFR_ACC
-				call	SetParity
 			.endif
 		.endif
 	.endif
@@ -2334,8 +2275,6 @@ MOV_dir_R5:
 			.if edx==SFR_P0 || edx==SFR_P1 || edx==SFR_P2 || edx==SFR_P3
 				movzx	eax,addin.Sfr[edx]
 				invoke WritePort,edx,eax
-			.elseif edx==SFR_ACC
-				call	SetParity
 			.endif
 		.endif
 	.endif
@@ -2356,8 +2295,6 @@ MOV_dir_R6:
 			.if edx==SFR_P0 || edx==SFR_P1 || edx==SFR_P2 || edx==SFR_P3
 				movzx	eax,addin.Sfr[edx]
 				invoke WritePort,edx,eax
-			.elseif edx==SFR_ACC
-				call	SetParity
 			.endif
 		.endif
 	.endif
@@ -2378,8 +2315,6 @@ MOV_dir_R7:
 			.if edx==SFR_P0 || edx==SFR_P1 || edx==SFR_P2 || edx==SFR_P3
 				movzx	eax,addin.Sfr[edx]
 				invoke WritePort,edx,eax
-			.elseif edx==SFR_ACC
-				call	SetParity
 			.endif
 		.endif
 	.endif
@@ -2434,8 +2369,6 @@ MOV_bit_C:
 			.if eax==SFR_P0 || eax==SFR_P1 || eax==SFR_P2 || eax==SFR_P3
 				movzx	edx,addin.Sfr[eax]
 				invoke WritePort,eax,edx
-			.elseif eax==SFR_ACC
-				call	SetParity
 			.endif
 		.endif
 	.endif
@@ -2462,115 +2395,115 @@ SUBB_A_imm:
 	ret
 
 SUBB_A_dir:
-	movzx	eax,addin.Sfr[SFR_PSW]
-	rcl		al,1
 	.if edx<80h
 		movzx	eax,addin.Ram[edx]
 	.else
 		movzx	eax,addin.Sfr[edx]
 	.endif
+	movzx	edx,addin.Sfr[SFR_PSW]
+	rcl		dl,1
 	sbb		addin.Sfr[SFR_ACC],al
 	invoke SetFlags
 	ret
 
 SUBB_A_@R0:
-	movzx	eax,addin.Sfr[SFR_PSW]
-	rcl		al,1
 	mov		eax,addin.Bank
 	lea		eax,[eax*8+0]
 	movzx	eax,addin.Ram[eax]
 	movzx	eax,addin.Ram[eax]
+	movzx	edx,addin.Sfr[SFR_PSW]
+	rcl		dl,1
 	sbb		addin.Sfr[SFR_ACC],al
 	invoke SetFlags
 	ret
 
 SUBB_A_@R1:
-	movzx	eax,addin.Sfr[SFR_PSW]
-	rcl		al,1
 	mov		eax,addin.Bank
 	lea		eax,[eax*8+1]
 	movzx	eax,addin.Ram[eax]
 	movzx	eax,addin.Ram[eax]
+	movzx	edx,addin.Sfr[SFR_PSW]
+	rcl		dl,1
 	sbb		addin.Sfr[SFR_ACC],al
 	invoke SetFlags
 	ret
 
 SUBB_A_R0:
-	movzx	eax,addin.Sfr[SFR_PSW]
-	rcl		al,1
 	mov		eax,addin.Bank
 	lea		eax,[eax*8+0]
 	movzx	eax,addin.Ram[eax]
+	movzx	edx,addin.Sfr[SFR_PSW]
+	rcl		dl,1
 	sbb		addin.Sfr[SFR_ACC],al
 	invoke SetFlags
 	ret
 
 SUBB_A_R1:
-	movzx	eax,addin.Sfr[SFR_PSW]
-	rcl		al,1
 	mov		eax,addin.Bank
 	lea		eax,[eax*8+1]
 	movzx	eax,addin.Ram[eax]
+	movzx	edx,addin.Sfr[SFR_PSW]
+	rcl		dl,1
 	sbb		addin.Sfr[SFR_ACC],al
 	invoke SetFlags
 	ret
 
 SUBB_A_R2:
-	movzx	eax,addin.Sfr[SFR_PSW]
-	rcl		al,1
 	mov		eax,addin.Bank
 	lea		eax,[eax*8+2]
 	movzx	eax,addin.Ram[eax]
+	movzx	edx,addin.Sfr[SFR_PSW]
+	rcl		dl,1
 	sbb		addin.Sfr[SFR_ACC],al
 	invoke SetFlags
 	ret
 
 SUBB_A_R3:
-	movzx	eax,addin.Sfr[SFR_PSW]
-	rcl		al,1
 	mov		eax,addin.Bank
 	lea		eax,[eax*8+3]
 	movzx	eax,addin.Ram[eax]
+	movzx	edx,addin.Sfr[SFR_PSW]
+	rcl		dl,1
 	sbb		addin.Sfr[SFR_ACC],al
 	invoke SetFlags
 	ret
 
 SUBB_A_R4:
-	movzx	eax,addin.Sfr[SFR_PSW]
-	rcl		al,1
 	mov		eax,addin.Bank
 	lea		eax,[eax*8+4]
 	movzx	eax,addin.Ram[eax]
 	sbb		addin.Sfr[SFR_ACC],al
+	movzx	edx,addin.Sfr[SFR_PSW]
+	rcl		dl,1
 	invoke SetFlags
 	ret
 
 SUBB_A_R5:
-	movzx	eax,addin.Sfr[SFR_PSW]
-	rcl		al,1
 	mov		eax,addin.Bank
 	lea		eax,[eax*8+5]
 	movzx	eax,addin.Ram[eax]
+	movzx	edx,addin.Sfr[SFR_PSW]
+	rcl		dl,1
 	sbb		addin.Sfr[SFR_ACC],al
 	invoke SetFlags
 	ret
 
 SUBB_A_R6:
-	movzx	eax,addin.Sfr[SFR_PSW]
-	rcl		al,1
 	mov		eax,addin.Bank
 	lea		eax,[eax*8+6]
 	movzx	eax,addin.Ram[eax]
+	movzx	edx,addin.Sfr[SFR_PSW]
+	rcl		dl,1
 	sbb		addin.Sfr[SFR_ACC],al
 	invoke SetFlags
 	ret
 
 SUBB_A_R7:
-	movzx	eax,addin.Sfr[SFR_PSW]
-	rcl		al,1
 	mov		eax,addin.Bank
 	lea		eax,[eax*8+7]
 	movzx	eax,addin.Ram[eax]
+	movzx	edx,addin.Sfr[SFR_PSW]
+	rcl		dl,1
 	sbb		addin.Sfr[SFR_ACC],al
 	invoke SetFlags
 	ret
@@ -2792,9 +2725,6 @@ CPL_bit:
 	.else
 		and		eax,0F8h
 		xor		addin.Sfr[eax],dl
-		.if eax==SFR_ACC
-			call	SetParity
-		.endif
 	.endif
 	ret
 
@@ -2993,8 +2923,6 @@ CLR_bit:
 			.if eax==SFR_P0 || eax==SFR_P1 || eax==SFR_P2 || eax==SFR_P3
 				movzx	edx,addin.Sfr[eax]
 				invoke WritePort,eax,edx
-			.elseif eax==SFR_ACC
-				call	SetParity
 			.endif
 		.endif
 	.endif
@@ -3011,7 +2939,6 @@ SWAP_A:
 	shl		ah,4
 	or		al,ah
 	mov		addin.Sfr[SFR_ACC],al
-	call	SetParity
 	ret
 
 XCH_A_dir:
@@ -3033,7 +2960,6 @@ XCH_A_dir:
 			.endif
 		.endif
 	.endif
-	call	SetParity
 	ret
 
 XCH_A_@R0:
@@ -3043,7 +2969,6 @@ XCH_A_@R0:
 	movzx	eax,addin.Sfr[SFR_ACC]
 	xchg	al,addin.Ram[edx]
 	mov		addin.Sfr[SFR_ACC],al
-	call	SetParity
 	ret
 
 XCH_A_@R1:
@@ -3053,7 +2978,6 @@ XCH_A_@R1:
 	movzx	eax,addin.Sfr[SFR_ACC]
 	xchg	al,addin.Ram[edx]
 	mov		addin.Sfr[SFR_ACC],al
-	call	SetParity
 	ret
 
 XCH_A_R0:
@@ -3062,7 +2986,6 @@ XCH_A_R0:
 	movzx	eax,addin.Sfr[SFR_ACC]
 	xchg	al,addin.Ram[edx]
 	mov		addin.Sfr[SFR_ACC],al
-	call	SetParity
 	ret
 
 XCH_A_R1:
@@ -3071,7 +2994,6 @@ XCH_A_R1:
 	movzx	eax,addin.Sfr[SFR_ACC]
 	xchg	al,addin.Ram[edx]
 	mov		addin.Sfr[SFR_ACC],al
-	call	SetParity
 	ret
 
 XCH_A_R2:
@@ -3080,7 +3002,6 @@ XCH_A_R2:
 	movzx	eax,addin.Sfr[SFR_ACC]
 	xchg	al,addin.Ram[edx]
 	mov		addin.Sfr[SFR_ACC],al
-	call	SetParity
 	ret
 
 XCH_A_R3:
@@ -3089,7 +3010,6 @@ XCH_A_R3:
 	movzx	eax,addin.Sfr[SFR_ACC]
 	xchg	al,addin.Ram[edx]
 	mov		addin.Sfr[SFR_ACC],al
-	call	SetParity
 	ret
 
 XCH_A_R4:
@@ -3098,7 +3018,6 @@ XCH_A_R4:
 	movzx	eax,addin.Sfr[SFR_ACC]
 	xchg	al,addin.Ram[edx]
 	mov		addin.Sfr[SFR_ACC],al
-	call	SetParity
 	ret
 
 XCH_A_R5:
@@ -3107,7 +3026,6 @@ XCH_A_R5:
 	movzx	eax,addin.Sfr[SFR_ACC]
 	xchg	al,addin.Ram[edx]
 	mov		addin.Sfr[SFR_ACC],al
-	call	SetParity
 	ret
 
 XCH_A_R6:
@@ -3116,7 +3034,6 @@ XCH_A_R6:
 	movzx	eax,addin.Sfr[SFR_ACC]
 	xchg	al,addin.Ram[edx]
 	mov		addin.Sfr[SFR_ACC],al
-	call	SetParity
 	ret
 
 XCH_A_R7:
@@ -3125,7 +3042,6 @@ XCH_A_R7:
 	movzx	eax,addin.Sfr[SFR_ACC]
 	xchg	al,addin.Ram[edx]
 	mov		addin.Sfr[SFR_ACC],al
-	call	SetParity
 	ret
 
 ;------------------------------------------------------------------------------
@@ -3144,8 +3060,6 @@ POP_dir:
 			.if edx==SFR_P0 || edx==SFR_P1 || edx==SFR_P2 || edx==SFR_P3
 				movzx	eax,addin.Sfr[edx]
 				invoke WritePort,edx,eax
-			.elseif edx==SFR_ACC
-				call	SetParity
 			.endif
 		.endif
 	.endif
@@ -3171,8 +3085,6 @@ SETB_bit:
 			.if eax==SFR_P0 || eax==SFR_P1 || eax==SFR_P2 || eax==SFR_P3
 				movzx	edx,addin.Sfr[eax]
 				invoke WritePort,eax,edx
-			.elseif eax==SFR_ACC
-				call	SetParity
 			.endif
 		.endif
 	.endif
@@ -3184,10 +3096,37 @@ SETB_C:
 
 DA_A:
 	movzx	eax,addin.Sfr[SFR_ACC]
-	add		eax,0
+	or		al,al
+	pushf
+	pop		edx
+	;CY
+	test	addin.Sfr[SFR_PSW],80h
+	.if !ZERO?
+		or		edx,00000001h
+	.else
+		and		edx,0FFFFFFFEh
+	.endif
+	;AC
+	test	addin.Sfr[SFR_PSW],40h
+	.if !ZERO?
+		or		edx,00000010h
+	.else
+		and		edx,0FFFFFFEFh
+	.endif
+	;OV
+	test	addin.Sfr[SFR_PSW],04h
+	.if !ZERO?
+		or		edx,00000800h
+	.else
+		and		edx,0FFFFF7FFh
+	.endif
+	push	edx
+	popf
 	daa
 	mov		addin.Sfr[SFR_ACC],al
-	invoke SetFlags
+	.if CARRY?
+		or		addin.Sfr[SFR_PSW],80h
+	.endif
 	ret
 
 DJNZ_dir_rel:
@@ -3218,7 +3157,6 @@ XCHD_A_@R0:
 	and		ax,0FF0h
 	or		al,ah
 	mov		addin.Ram[edx],al
-	call	SetParity
 	ret
 
 XCHD_A_@R1:
@@ -3235,7 +3173,6 @@ XCHD_A_@R1:
 	and		ax,0FF0h
 	or		al,ah
 	mov		addin.Ram[edx],al
-	call	SetParity
 	ret
 
 DJNZ_R0_rel:
@@ -3338,7 +3275,6 @@ MOVX_A_@DPTR:
 	invoke ReadXRam,edx
 	mov		addin.Sfr[SFR_ACC],al
 	xor		edi,edi
-	call	SetParity
 	ret
 
 MOVX_A_@R0:
@@ -3349,7 +3285,6 @@ MOVX_A_@R0:
 	invoke ReadXRam,edx
 	mov		addin.Sfr[SFR_ACC],al
 	xor		edi,edi
-	call	SetParity
 	ret
 
 MOVX_A_@R1:
@@ -3360,12 +3295,10 @@ MOVX_A_@R1:
 	invoke ReadXRam,edx
 	mov		addin.Sfr[SFR_ACC],al
 	xor		edi,edi
-	call	SetParity
 	ret
 
 CLR_A:
 	mov		addin.Sfr[SFR_ACC],0
-	call	SetParity
 	ret
 
 MOV_A_dir:
@@ -3375,7 +3308,6 @@ MOV_A_dir:
 		movzx	eax,addin.Sfr[edx]
 	.endif
 	mov		addin.Sfr[SFR_ACC],al
-	call	SetParity
 	ret
 
 MOV_A_@R0:
@@ -3384,7 +3316,6 @@ MOV_A_@R0:
 	movzx	edx,addin.Ram[edx]
 	movzx	eax,addin.Ram[edx]
 	mov		addin.Sfr[SFR_ACC],al
-	call	SetParity
 	ret
 
 MOV_A_@R1:
@@ -3393,7 +3324,6 @@ MOV_A_@R1:
 	movzx	edx,addin.Ram[edx]
 	movzx	eax,addin.Ram[edx]
 	mov		addin.Sfr[SFR_ACC],al
-	call	SetParity
 	ret
 
 MOV_A_R0:
@@ -3401,7 +3331,6 @@ MOV_A_R0:
 	lea		edx,[edx*8+0]
 	movzx	eax,addin.Ram[edx]
 	mov		addin.Sfr[SFR_ACC],al
-	call	SetParity
 	ret
 
 MOV_A_R1:
@@ -3409,7 +3338,6 @@ MOV_A_R1:
 	lea		edx,[edx*8+1]
 	movzx	eax,addin.Ram[edx]
 	mov		addin.Sfr[SFR_ACC],al
-	call	SetParity
 	ret
 
 MOV_A_R2:
@@ -3417,7 +3345,6 @@ MOV_A_R2:
 	lea		edx,[edx*8+2]
 	movzx	eax,addin.Ram[edx]
 	mov		addin.Sfr[SFR_ACC],al
-	call	SetParity
 	ret
 
 MOV_A_R3:
@@ -3425,7 +3352,6 @@ MOV_A_R3:
 	lea		edx,[edx*8+3]
 	movzx	eax,addin.Ram[edx]
 	mov		addin.Sfr[SFR_ACC],al
-	call	SetParity
 	ret
 
 MOV_A_R4:
@@ -3433,7 +3359,6 @@ MOV_A_R4:
 	lea		edx,[edx*8+4]
 	movzx	eax,addin.Ram[edx]
 	mov		addin.Sfr[SFR_ACC],al
-	call	SetParity
 	ret
 
 MOV_A_R5:
@@ -3441,7 +3366,6 @@ MOV_A_R5:
 	lea		edx,[edx*8+5]
 	movzx	eax,addin.Ram[edx]
 	mov		addin.Sfr[SFR_ACC],al
-	call	SetParity
 	ret
 
 MOV_A_R6:
@@ -3449,7 +3373,6 @@ MOV_A_R6:
 	lea		edx,[edx*8+6]
 	movzx	eax,addin.Ram[edx]
 	mov		addin.Sfr[SFR_ACC],al
-	call	SetParity
 	ret
 
 MOV_A_R7:
@@ -3457,7 +3380,6 @@ MOV_A_R7:
 	lea		edx,[edx*8+7]
 	movzx	eax,addin.Ram[edx]
 	mov		addin.Sfr[SFR_ACC],al
-	call	SetParity
 	ret
 
 ;------------------------------------------------------------------------------
@@ -3496,7 +3418,6 @@ MOVX_@R1_A:
 
 CPL_A:
 	xor		addin.Sfr[SFR_ACC],0FFh
-	call	SetParity
 	ret
 
 MOV_dir_A:
@@ -3710,6 +3631,12 @@ Execute:
 		call	JmpTab[eax*4]
 	.endif
 	mov		PCDONE,ebx
+	and		addin.Sfr[SFR_PSW],0FEh
+	movzx	eax,addin.Sfr[SFR_ACC]
+	or		eax,eax
+	.if !PARITY?
+		or		addin.Sfr[SFR_PSW],01h
+	.endif
 	invoke FindMcuAddr,ebx
 	.if eax
 		.if [eax].MCUADDR.fbp

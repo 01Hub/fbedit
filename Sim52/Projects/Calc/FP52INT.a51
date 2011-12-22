@@ -84,12 +84,6 @@ ENDM
 ;
 ;***********************************************************************
 ;
-ARG_STACK		EQU	24H				;ARGUMENT STACK POINTER
-FORMAT			EQU	25H				;LOCATION OF OUTPUT FORMAT BYTE
-CONVT			EQU	60H				;String addr TO CONVERT NUMBERS
-INTGRC			BIT	26H.1				;BIT SET IF INTEGER ERROR
-ADD_IN			BIT	26H.3				;DCMPXZ IN BASIC BACKAGE
-ZSURP			BIT	26H.6				;ZERO SUPRESSION FOR HEX PRINT
 ;
 ;***********************************************************************
 ;
@@ -115,7 +109,6 @@ ZERO_DIVIDE		EQU	3
 	;
 	;***************************************************************
 	;
-FP_STATUS		EQU	28H				;28 NOT used data pointer me
 FP_TEMP			EQU	FP_STATUS+1			;29 NOT USED
 FP_CARRY		EQU	FP_STATUS+2			;2A USED FOR BITS
 FP_DIG12		EQU	FP_CARRY+1			;2B
@@ -149,52 +142,6 @@ FP_ACC7			EQU	FP_NIB1+16			;3B
 FP_ACC8			EQU	FP_NIB1+17			;3C
 FP_ACCS			EQU	FP_NIB1+18			;3D
 
-
-;			MOV	SP,#50H
-;
-;			MOV	DPTR,#FPONE
-;			ACALL	PUSHC
-;			MOV	DPTR,#FPTWO
-;			ACALL	PUSHC
-;			ACALL	FLOATING_ADD
-;
-;
-;			MOV	24H,#07FH
-;			MOV	DPTR,#FPTHREE
-;			ACALL	PUSHC
-;			MOV	DPTR,#FPTWO
-;			ACALL	PUSHC
-;			ACALL	FLOATING_MUL
-;			ACALL	FLOATING_POINT_OUTPUT
-;			SJMP	$
-
-;FP_BASE			EQU	$
-;
-;	;**************************************************************
-;	;
-;	; The floating point entry points and jump table
-;	;
-;	;**************************************************************
-;	;
-;			AJMP	FLOATING_ADD
-;			AJMP	FLOATING_SUB
-;			AJMP	FLOATING_COMP
-;			AJMP	FLOATING_MUL
-;			AJMP	FLOATING_DIV
-;			AJMP	HEXSCAN
-;			AJMP	FLOATING_POINT_INPUT
-;			AJMP	FLOATING_POINT_OUTPUT
-;			AJMP	MULNUM10
-;			AJMP	HEXOUT
-;;
-;; the remaining jump to routines were extracted from basic52
-;; by me to make the floating point software stand alone
-;;
-;			AJMP	PUSHAS				;PUSH R0 TO ARGUMENT
-;			AJMP	POPAS				;POP ARGUMENT TO R1
-;			AJMP	MOVAS				;COPY ARGUMENT
-;			AJMP	AINT				;INT FUNCTION
-;			AJMP	PUSHC				;PUSH ARG IN DPTR TO STACK
 
 PRTERR:			RET
 BADPRM:			RET
