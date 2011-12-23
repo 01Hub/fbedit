@@ -49,7 +49,11 @@ MakeThreadProc proc uses ebx,Param:DWORD
 	invoke SendMessage,ha.hOutput,EM_REPLACESEL,FALSE,offset szCR
 	invoke SendMessage,ha.hOutput,EM_SCROLLCARET,0,0
 	.if Param==IDM_MAKE_RUN
-		invoke ShellExecute,ha.hWnd,NULL,addr makeexe.cmd,addr makeexe.cmdline,NULL,SW_SHOWNORMAL
+		.if makeexe.cmd
+			invoke ShellExecute,ha.hWnd,NULL,addr makeexe.cmd,addr makeexe.cmdline,NULL,SW_SHOWNORMAL
+		.else
+			invoke ShellExecute,ha.hWnd,NULL,addr makeexe.cmdline,NULL,NULL,SW_SHOWNORMAL
+		.endif
 		.if eax>=32
 			xor		eax,eax
 		.endif
@@ -777,9 +781,16 @@ OutputMake proc uses ebx esi edi,nCommand:DWORD,fClear:DWORD
 				invoke strcat,addr makeexe.cmdline,addr da.szCommandLine
 			.endif
 		.else
-			invoke SetOutputFile,addr da.make.szOutLink[esi],offset da.szMainAsm
-			invoke strcpy,addr makeexe.cmd,addr makeexe.output
-			.if da.szCommandLine
+			invoke iniInStr,addr da.make.szOutLink[edi],addr szDotExe
+			inc		eax
+			.if eax
+				invoke SetOutputFile,addr da.make.szOutLink[esi],offset da.szMainAsm
+				invoke strcpy,addr makeexe.cmd,addr makeexe.output
+				.if da.szCommandLine
+					invoke strcpy,addr makeexe.cmdline,addr da.szCommandLine
+				.endif
+			.elseif da.szCommandLine
+				mov		makeexe.cmdline,0
 				invoke strcpy,addr makeexe.cmdline,addr da.szCommandLine
 			.endif
 		.endif

@@ -4,6 +4,13 @@ Ini files, project files, template files, api files and addins are all incompati
 
 Do NOT install RadASM 3.0 in the same directory as an older version of RadASM.
 
+Version 3.0.0.8 2011-12-23
+--------------------------
+o Improved build options so that linkers not producing windows executeable code still can
+  have the Run button enabled.
+  This is useful when assembling / linking microcontroller projects and running it in a
+  simulator.
+
 Version 3.0.0.7m 2011-05-06
 ---------------------------
 o The number of environment entries has been changed from max 8 to max 16.

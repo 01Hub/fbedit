@@ -1662,15 +1662,65 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke DestroyWindow,hWin
 	.elseif eax==WM_USER
 		invoke lstrcpy,addr buffer,lParam
-		invoke lstrlen,addr buffer
-		lea		ebx,buffer[eax-4]
-		invoke lstrcmpi,ebx,addr szLstFileExt
-		.if !eax
-			call	OpenLstFile
+		invoke GetFileAttributes,addr buffer
+		.if eax!=INVALID_HANDLE_VALUE
+			invoke lstrlen,addr buffer
+			lea		ebx,buffer[eax-4]
+			invoke lstrcmpi,ebx,addr szLstFileExt
+			.if !eax
+				call	OpenLstFile
+			.else
+				invoke lstrcmpi,ebx,addr szSimFileExt
+				.if !eax
+					call	OpenProject
+				.endif
+			.endif
 		.else
+			invoke lstrlen,addr buffer
+			lea		ebx,buffer[eax-4]
 			invoke lstrcmpi,ebx,addr szSimFileExt
 			.if !eax
-				call	OpenProject
+				mov		dword ptr [ebx],'tsl.'
+				;Zero out the ofn struct
+				invoke RtlZeroMemory,addr ofn,sizeof ofn
+				;Setup the ofn struct
+				mov		ofn.lStructSize,sizeof ofn
+				push	hWin
+				pop		ofn.hwndOwner
+				push	addin.hInstance
+				pop		ofn.hInstance
+				mov		ofn.lpstrFilter,offset szLSTFilterString
+				lea		eax,buffer
+				mov		ofn.lpstrFile,eax
+				mov		ofn.nMaxFile,sizeof buffer
+				mov		ofn.lpstrDefExt,NULL
+				mov		ofn.Flags,OFN_FILEMUSTEXIST or OFN_HIDEREADONLY or OFN_PATHMUSTEXIST
+				;Show the Open dialog
+				invoke GetOpenFileName,addr ofn
+				.if eax
+					;Save project settings
+					.if szLstFile || szSimFile
+						invoke SendMessage,hWin,WM_COMMAND,IDM_FILE_CLOSE,NULL
+					.endif
+					invoke lstrcpy,addr buffer1,addr buffer
+					invoke lstrlen,addr buffer1
+					.while buffer1[eax]!='.'
+						dec		eax
+					.endw
+					mov		dword ptr buffer1[eax+1],'mis'
+					invoke lstrlen,addr buffer
+					.while buffer[eax]!='\'
+						dec		eax
+					.endw
+					mov		edx,eax
+					invoke WritePrivateProfileString,addr szProSIM52,addr szProFile,addr buffer[edx+1],addr buffer1
+					invoke WritePrivateProfileString,addr szProSIM52,addr szProMCU,addr addin.szMCU,addr buffer1
+					invoke wsprintf,addr buffer,addr szFmtDec,MCUClock
+					invoke WritePrivateProfileString,addr szProSIM52,addr szProClock,addr buffer,addr buffer1
+					invoke lstrcpy,addr buffer,addr buffer1
+					invoke SendAddinMessage,hWin,AM_PROJECTCLOSE,0,addr buffer,AH_PROJECTCLOSE
+					call	OpenProject
+				.endif
 			.endif
 		.endif
 	.elseif eax==WM_DESTROY

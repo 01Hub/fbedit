@@ -1236,8 +1236,8 @@ IDB_TBRBMP BITMAP DISCARDABLE "Res/Toolbar.bmp"
 32106 BITMAP DISCARDABLE "Res/Button.bmp"
 
 VERINF1 VERSIONINFO
-FILEVERSION 3,0,0,7
-PRODUCTVERSION 3,0,0,7
+FILEVERSION 3,0,0,8
+PRODUCTVERSION 3,0,0,8
 FILEOS 0x00000004
 FILETYPE 0x00000001
 BEGIN
@@ -1245,13 +1245,13 @@ BEGIN
   BEGIN
     BLOCK "040904E4"
     BEGIN
-      VALUE "FileVersion", "3.0.0.7\0"
+      VALUE "FileVersion", "3.0.0.8\0"
       VALUE "FileDescription", "Assembly programming IDE\0"
       VALUE "InternalName", "RadASM 3.0\0"
-      VALUE "LegalCopyright", "KetilO (C) 2010\0"
+      VALUE "LegalCopyright", "KetilO (C) 2010 - 2011\0"
       VALUE "OriginalFilename", "RadASM.exe\0"
       VALUE "ProductName", "RadASM\0"
-      VALUE "ProductVersion", "3.0.0.7\0"
+      VALUE "ProductVersion", "3.0.0.8\0"
     END
   END
   BLOCK "VarFileInfo"

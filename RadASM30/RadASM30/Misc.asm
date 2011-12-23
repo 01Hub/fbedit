@@ -2492,6 +2492,11 @@ EnableToolBar proc uses ebx esi edi
 	.elseif da.szMainAsm && da.make.szAssemble[edi] && da.make.szLink[edi]
 		invoke iniInStr,addr da.make.szOutLink[edi],addr szDotExe
 		inc		eax
+		.if !eax
+			.if da.szCommandLine
+				inc eax
+			.endif
+		.endif
 	.endif
 	push	eax
 	push	IDM_MAKE_RUN
