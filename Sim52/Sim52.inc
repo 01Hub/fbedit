@@ -337,12 +337,6 @@ MCUADDR struct
 	cycles				BYTE ?
 MCUADDR ends
 
-ADDINS struct
-	hDll				HINSTANCE ?
-	lpAddinProc			DWORD ?
-	hook				DWORD ?
-ADDINS ends
-
 INTERRUPT struct
 	pri					DWORD ?
 	sfr					DWORD ?
@@ -432,7 +426,6 @@ hFind					HWND ?
 CommandLine				DWORD ?
 SelTab					DWORD ?
 lpOldEditProc			DWORD ?
-addins					ADDINS 16 dup(<>)
 nFindRow				DWORD ?
 nFindPos				DWORD ?
 CharTab					BYTE 256 dup(?)
@@ -451,17 +444,11 @@ StatusLed				DWORD ?
 ViewBank				DWORD ?
 State					DWORD ?
 CursorAddr				DWORD ?
-TotalCycles				DWORD ?
 SBUFWR					DWORD ?
-ComputerClock			DWORD ?
-MCUClock				DWORD ?
-RefreshRate				DWORD ?
-ThreadPriority			DWORD ?
 DefMCUClock				DWORD ?
 CpuCycles				DWORD ?
 PerformanceCount		QWORD ?
 PCDONE					DWORD ?
-nHalfCycles				DWORD ?
 NewP3					DWORD ?
 OldP3					DWORD ?
 pendingint				INTERRUPT 2 dup(<>)
@@ -474,3 +461,4 @@ hUrlFont				DWORD ?
 hUrlFontU				DWORD ?
 hUrlBrush				DWORD ?
 help					HELP 32 dup(<>)
+GlobalHook				DWORD ?

@@ -218,14 +218,14 @@ SetTiming proc
 ;	mov		ecx,6
 ;	div		ecx						;Divide by 12 to get instruction cycle
 ;	mov		ecx,eax
-	mov		eax,ComputerClock		;Computer clock in MHz
+	mov		eax,addin.ComputerClock		;Computer clock in MHz
 	mov		edx,1000000
 	mul		edx						;Multiply by 1000000 to convert to Hz
-	mov		ecx,MCUClock			;8051/8052 Clock in Hz
+	mov		ecx,addin.MCUClock			;8051/8052 Clock in Hz
 	div		ecx
 	mov		CpuCycles,eax			;Number of computer cycles for each osc period
 	invoke KillTimer,addin.hWnd,1000
-	invoke SetTimer,addin.hWnd,1000,RefreshRate,NULL
+	invoke SetTimer,addin.hWnd,1000,addin.RefreshRate,NULL
 	ret
 
 SetTiming endp
@@ -255,14 +255,14 @@ LoadSettings proc uses ebx edi
 	.endif
 	invoke GetPrivateProfileString,addr szIniConfig,addr szIniClock,NULL,addr buffer,sizeof buffer,addr szIniFile
 	invoke GetItemInt,addr buffer,2500
-	mov		ComputerClock,eax
+	mov		addin.ComputerClock,eax
 	invoke GetItemInt,addr buffer,24000000
-	mov		MCUClock,eax
+	mov		addin.MCUClock,eax
 	mov		DefMCUClock,eax
 	invoke GetItemInt,addr buffer,200
-	mov		RefreshRate,eax
+	mov		addin.RefreshRate,eax
 	invoke GetItemInt,addr buffer,0
-	mov		ThreadPriority,eax
+	mov		addin.ThreadPriority,eax
 	invoke SetTiming
 	xor		ebx,ebx
 	mov		edi,offset help
@@ -308,10 +308,10 @@ SaveSettings proc
 	invoke PutItemInt,addr buffer,fMax
 	invoke WritePrivateProfileString,addr szIniConfig,addr szIniPos,addr buffer[1],addr szIniFile
 	mov		buffer,0
-	invoke PutItemInt,addr buffer,ComputerClock
+	invoke PutItemInt,addr buffer,addin.ComputerClock
 	invoke PutItemInt,addr buffer,DefMCUClock
-	invoke PutItemInt,addr buffer,RefreshRate
-	invoke PutItemInt,addr buffer,ThreadPriority
+	invoke PutItemInt,addr buffer,addin.RefreshRate
+	invoke PutItemInt,addr buffer,addin.ThreadPriority
 	invoke WritePrivateProfileString,addr szIniConfig,addr szIniClock,addr buffer[1],addr szIniFile
 	ret
 

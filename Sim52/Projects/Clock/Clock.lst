@@ -60,7 +60,7 @@ ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. 
    40:	  0038	C2 02				CLR	CLOCKBLINKFLAG
    41:	  003A	11 A6				ACALL	CLOCKSHOW
    42:	  003C	75 89 02			MOV	TMOD,#02h	;8 bit auto reload
-   43:	  003F	75 8A 9B			MOV	TL0,#255-100
+   43:	  003F	75 8A 9C			MOV	TL0,#256-100
 
 ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 2
 

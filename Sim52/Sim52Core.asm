@@ -183,7 +183,7 @@ Reset proc uses edi
 	xor		eax,eax
 	mov		addin.PC,eax
 	mov		PCDONE,eax
-	mov		nHalfCycles,eax
+	mov		addin.HalfCycles,eax
 	dec		eax
 	mov		NewP3,eax
 	mov		OldP3,eax
@@ -357,7 +357,7 @@ UpdateStatus proc uses ebx
 			invoke SendMessage,addin.hGrd,GM_SETCURROW,eax,0
 		.endif
 	.endif
-	invoke SetDlgItemInt,addin.hTabDlgStatus,IDC_STCCYCLES,TotalCycles,FALSE
+	invoke SetDlgItemInt,addin.hTabDlgStatus,IDC_STCCYCLES,addin.TotalCycles,FALSE
 	.if flagging
 		invoke SendDlgItemMessage,addin.hWnd,IDC_IMGLAGGING,STM_SETIMAGE,IMAGE_BITMAP,addin.hBmpRedLed
 	.else
@@ -574,10 +574,9 @@ WritePort endp
 
 WaitHalfCycle proc
 
-	push	eax
-	push	edx
-	inc		nHalfCycles
-	test	nHalfCycles,1
+	invoke SendAddinMessage,addin.hWnd,AM_ALECHANGED,0,0,AH_ALECHANGED
+	inc		addin.HalfCycles
+	test	addin.HalfCycles,1
 	.if ZERO?
 		mov		eax,NewP3
 		mov		OldP3,eax
@@ -906,15 +905,14 @@ WaitHalfCycle proc
 	.elseif flagging
 		dec		flagging
 	.endif
-	pop		edx
-	pop		eax
 	ret
 
 WaitHalfCycle endp
 
-ReadXRam proc uses ebx edi,nAddr:DWORD
+ReadXRam proc uses ebx,nAddr:DWORD
 
 	movzx	ebx,addin.Sfr[SFR_P3]
+	lea		edi,[edi-1]
 	mov		eax,ebx
 	and		eax,7Fh
 	mov		addin.Sfr[SFR_P3],al
@@ -930,8 +928,9 @@ ReadXRam proc uses ebx edi,nAddr:DWORD
 
 ReadXRam endp
 
-WriteXRam proc uses ebx esi edi,nAddr:DWORD,nValue:DWORD
+WriteXRam proc uses ebx esi,nAddr:DWORD,nValue:DWORD
 
+	push	edi
 	movzx	ebx,addin.Sfr[SFR_P3]
 	mov		eax,ebx
 	and		eax,0BFh
@@ -961,6 +960,8 @@ WriteXRam proc uses ebx esi edi,nAddr:DWORD,nValue:DWORD
 	mov		addin.Sfr[SFR_P3],bl
 	;Set WR high
 	invoke WritePort,addr addin.Sfr[SFR_P3],ebx
+	pop		edi
+	lea		edi,[edi-1]
 	ret
 
 WriteXRam endp
@@ -3569,11 +3570,6 @@ CoreThread proc lParam:DWORD
 	ret
 
 Fetch:
-	push	eax
-	push	edx
-	invoke SendAddinMessage,addin.hWnd,AM_ALECHANGED,0,0,AH_ALECHANGED
-	pop		edx
-	pop		eax
 	invoke WaitHalfCycle
 	movzx	ecx,byte ptr [esi+ebx]
 	inc		ebx
@@ -3583,51 +3579,48 @@ Fetch:
 Execute:
 	call	Fetch
 	mov		eax,ecx
-	movzx	ecx,Bytes[ecx]
-	movzx	edi,Cycles[eax]
-	add		TotalCycles,edi
+	movzx	edi,Cycles[ecx]
+	movzx	ecx,Bytes[eax]
+	add		addin.TotalCycles,edi
 	lea		edi,[edi*2-1]
 	.if ecx==1
+		push	eax
+		push	edx
 		.while edi>1
-			push	eax
-			push	edx
-			invoke SendAddinMessage,addin.hWnd,AM_ALECHANGED,0,0,AH_ALECHANGED
-			pop		edx
-			pop		eax
 			invoke WaitHalfCycle
-			dec		edi
+			lea		edi,[edi-1]
 		.endw
+		pop		edx
+		pop		eax
 		call	JmpTab[eax*4]
 	.elseif ecx==2
+		push	eax
 		call	Fetch
-		dec		edi
-		mov		edx,ecx
+		lea		edi,[edi-1]
+		push	ecx
 		.while edi>1
-			push	eax
-			push	edx
-			invoke SendAddinMessage,addin.hWnd,AM_ALECHANGED,0,0,AH_ALECHANGED
-			pop		edx
-			pop		eax
 			invoke WaitHalfCycle
-			dec		edi
+			lea		edi,[edi-1]
 		.endw
+		pop		edx
+		pop		eax
 		call	JmpTab[eax*4]
 	.elseif ecx==3
+		push	eax
 		call	Fetch
-		dec		edi
-		mov		edx,ecx
+		lea		edi,[edi-1]
+		push	ecx
 		call	Fetch
-		dec		edi
+		pop		edx
+		lea		edi,[edi-1]
 		mov		dh,cl
+		push	edx
 		.while edi>1
-			push	eax
-			push	edx
-			invoke SendAddinMessage,addin.hWnd,AM_ALECHANGED,0,0,AH_ALECHANGED
-			pop		edx
-			pop		eax
 			invoke WaitHalfCycle
-			dec		edi
+			lea		edi,[edi-1]
 		.endw
+		pop		edx
+		pop		eax
 		call	JmpTab[eax*4]
 	.endif
 	mov		PCDONE,ebx
@@ -3644,9 +3637,8 @@ Execute:
 		.endif
 	.endif
 	.while edi
-		invoke SendAddinMessage,addin.hWnd,AM_ALECHANGED,0,0,AH_ALECHANGED
 		invoke WaitHalfCycle
-		dec		edi
+		lea		edi,[edi-1]
 	.endw
 	;Interrupt handling, test IE.EA
 	movzx	edi,addin.Sfr[SFR_IE]
@@ -4031,7 +4023,7 @@ Wait2Cycles:
 		.endw
 		inc		ecx
 	.endw
-	.if eax>100000 || edx
+	.if eax>1000 || edx
 		;Lagging
 		inc		flagging
 	.elseif flagging

@@ -12,6 +12,7 @@ AM_PROJECTCLOSE			equ 0009h				;hWin=Handle to main window, wParam=0, lParam=lpP
 
 ;Handling of AM_PORTWRITE, AM_ALECHANGED and AM_MMPORTWRITE must be optimized for speed.
 ;Do NOT call any windows api's when your addin processes these messages.
+;IMPORTANT: You MUST preserve ebx, esi and edi.
 
 ;Hook flags, return or'ed flags in responce to AM_INIT
 AH_PORTWRITE            equ 0001h
@@ -36,6 +37,13 @@ SFRMAP struct
 	d1					BYTE 8 dup(?)			;SFR Bit 1 Name
 	d0					BYTE 8 dup(?)			;SFR Bit 0 Name
 SFRMAP ends
+
+ADDINS struct
+	szDll				BYTE 64 dup(?)
+	hDll				HINSTANCE ?
+	lpAddinProc			DWORD ?
+	hook				DWORD ?
+ADDINS ends
 
 ADDIN struct
 	hInstance			HINSTANCE ?				;Instace handle
@@ -68,6 +76,13 @@ ADDIN struct
 	mminport			DWORD 4 dup(?)			;Memory mapped input addresses
 	mminportdata		DWORD 4 dup(?)			;Memory mapped input data
 	szMCU				BYTE 16 dup(?)			;Current selected MCU
+	addins				ADDINS 16 dup(<>)
+	HalfCycles			DWORD ?
+	TotalCycles			DWORD ?
+	ComputerClock		DWORD ?
+	MCUClock			DWORD ?
+	RefreshRate			DWORD ?
+	ThreadPriority		DWORD ?
 ADDIN ends
 
 ;Addresses of all implemented sfr's

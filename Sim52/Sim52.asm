@@ -302,8 +302,8 @@ TabStatusProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				xor		addin.Sfr[SFR_P3],al
 				mov		addin.Refresh,1
 			.elseif eax==IDC_BTNRESET
-				mov		TotalCycles,0
-				invoke SetDlgItemInt,hWin,IDC_STCCYCLES,TotalCycles,FALSE
+				mov		addin.TotalCycles,0
+				invoke SetDlgItemInt,hWin,IDC_STCCYCLES,addin.TotalCycles,FALSE
 			.endif
 		.elseif edx==EN_KILLFOCUS
 			mov		ebx,eax
@@ -659,21 +659,22 @@ TabCodeProc endp
 
 SendAddinMessage proc uses ebx esi edi,hWin:HWND,uMsg:DWORD,wParam:DWORD,lParam:DWORD,hook:DWORD
 
-	mov		edi,offset addins
-	.while [edi].ADDINS.hDll
-		mov		eax,hook
-		test	[edi].ADDINS.hook,eax
-		.if !ZERO?
-			push	edi
-			push	lParam
-			push	wParam
-			push	uMsg
-			push	hWin
-			call	[edi].ADDINS.lpAddinProc
-			pop		edi
-		.endif
-		lea		edi,[edi+sizeof ADDINS]
-	.endw
+	mov		ebx,hook
+	test	ebx,GlobalHook
+	.if !ZERO?
+		mov		edi,offset addin.addins
+		.while [edi].ADDINS.hDll
+			test	ebx,[edi].ADDINS.hook
+			.if !ZERO?
+				push	lParam
+				push	wParam
+				push	uMsg
+				push	hWin
+				call	[edi].ADDINS.lpAddinProc
+			.endif
+			lea		edi,[edi+sizeof ADDINS]
+		.endw
+	.endif
 	ret
 
 SendAddinMessage endp
@@ -682,7 +683,8 @@ LoadAddins proc uses ebx esi edi
 	LOCAL	buffer[MAX_PATH]:BYTE
 
 	xor		esi,esi
-	mov		edi,offset addins
+	mov		GlobalHook,esi
+	mov		edi,offset addin.addins
 	.while TRUE
 		invoke wsprintf,addr buffer,addr szFmtDec,esi
 		invoke GetPrivateProfileString,addr szIniAddin,addr buffer,addr szNULL,addr buffer,sizeof buffer,addr szIniFile
@@ -694,6 +696,7 @@ LoadAddins proc uses ebx esi edi
 			.if eax
 				mov		[edi].ADDINS.hDll,ebx
 				mov		[edi].ADDINS.lpAddinProc,eax
+				invoke lstrcpyn,addr [edi].ADDINS.szDll,addr buffer,sizeof ADDINS.szDll
 				push	esi
 				push	edi
 				push	offset addin
@@ -704,6 +707,7 @@ LoadAddins proc uses ebx esi edi
 				pop		edi
 				pop		esi
 				mov		[edi].ADDINS.hook,eax
+				or		GlobalHook,eax
 				lea		edi,[edi+sizeof ADDINS]
 			.endif
 		.endif
@@ -715,7 +719,7 @@ LoadAddins endp
 
 UnloadAddins proc uses edi
 	
-	mov		edi,offset addins
+	mov		edi,offset addin.addins
 	.while [edi].ADDINS.hDll
 		invoke FreeLibrary,[edi].ADDINS.hDll
 		lea		edi,[edi+sizeof ADDINS]
@@ -1078,10 +1082,10 @@ ClockProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	.if eax==WM_INITDIALOG
 		invoke SendDlgItemMessage,hWin,IDC_UDNREFRESH,UDM_SETRANGE,0,(50 SHL 16) OR 5000
 		invoke SendDlgItemMessage,hWin,IDC_UDNTHREAD,UDM_SETRANGE,0,(-2 SHL 16) OR 15
-		invoke SetDlgItemInt,hWin,IDC_EDTCOMPUTER,ComputerClock,FALSE
-		invoke SetDlgItemInt,hWin,IDC_EDTMCU,MCUClock,FALSE
-		invoke SetDlgItemInt,hWin,IDC_EDTREFRESH,RefreshRate,FALSE
-		invoke SetDlgItemInt,hWin,IDC_EDTTHREAD,ThreadPriority,TRUE
+		invoke SetDlgItemInt,hWin,IDC_EDTCOMPUTER,addin.ComputerClock,FALSE
+		invoke SetDlgItemInt,hWin,IDC_EDTMCU,addin.MCUClock,FALSE
+		invoke SetDlgItemInt,hWin,IDC_EDTREFRESH,addin.RefreshRate,FALSE
+		invoke SetDlgItemInt,hWin,IDC_EDTTHREAD,addin.ThreadPriority,TRUE
 	.elseif eax==WM_COMMAND
 		mov		edx,wParam
 		movzx	eax,dx
@@ -1089,16 +1093,16 @@ ClockProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.if edx==BN_CLICKED
 			.if eax==IDOK
 				invoke GetDlgItemInt,hWin,IDC_EDTCOMPUTER,NULL,FALSE
-				mov		ComputerClock,eax
+				mov		addin.ComputerClock,eax
 				invoke GetDlgItemInt,hWin,IDC_EDTMCU,NULL,FALSE
 				.if eax<12
 					mov		eax,12
 				.endif
-				mov		MCUClock,eax
+				mov		addin.MCUClock,eax
 				invoke GetDlgItemInt,hWin,IDC_EDTREFRESH,NULL,FALSE
-				mov		RefreshRate,eax
+				mov		addin.RefreshRate,eax
 				invoke GetDlgItemInt,hWin,IDC_EDTTHREAD,NULL,TRUE
-				mov		ThreadPriority,eax
+				mov		addin.ThreadPriority,eax
 				invoke SetTiming
 				invoke EndDialog,hWin,0
 			.endif
@@ -1305,7 +1309,7 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke UpdateBits
 			invoke SendDlgItemMessage,addin.hTabDlg[8],IDC_UDCHEXSFR,HEM_SETMEM,128,addr addin.Sfr[128]
 			invoke SendDlgItemMessage,addin.hTabDlg[12],IDC_UDCHEXXRAM,HEM_SETMEM,65536,addr addin.XRam
-			invoke SetDlgItemInt,hWin,IDC_STCCYCLES,TotalCycles,FALSE
+			invoke SetDlgItemInt,hWin,IDC_STCCYCLES,addin.TotalCycles,FALSE
 			invoke UpdateSelSfr,addin.hTabDlg[8]
 			invoke SendAddinMessage,hWin,AM_REFRESH,0,0,AH_REFRESH
 			dec		addin.Refresh
@@ -1384,7 +1388,7 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					mov		edx,eax
 					invoke WritePrivateProfileString,addr szProSIM52,addr szProFile,addr buffer[edx+1],addr buffer1
 					invoke WritePrivateProfileString,addr szProSIM52,addr szProMCU,addr addin.szMCU,addr buffer1
-					invoke wsprintf,addr buffer,addr szFmtDec,MCUClock
+					invoke wsprintf,addr buffer,addr szFmtDec,addin.MCUClock
 					invoke WritePrivateProfileString,addr szProSIM52,addr szProClock,addr buffer,addr buffer1
 					invoke lstrcpy,addr buffer,addr buffer1
 					invoke SendAddinMessage,hWin,AM_PROJECTCLOSE,0,addr buffer,AH_PROJECTCLOSE
@@ -1416,7 +1420,7 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.if szSimFile
 					;Save project settings
 					invoke WritePrivateProfileString,addr szProSIM52,addr szProMCU,addr addin.szMCU,addr szSimFile
-					invoke wsprintf,addr buffer,addr szFmtDec,MCUClock
+					invoke wsprintf,addr buffer,addr szFmtDec,addin.MCUClock
 					invoke WritePrivateProfileString,addr szProSIM52,addr szProClock,addr buffer,addr szSimFile
 					invoke SendAddinMessage,hWin,AM_PROJECTCLOSE,0,addr szSimFile,AH_PROJECTCLOSE
 				.endif
@@ -1427,7 +1431,7 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke LoadSFRFile,addr szMCUTypes
 				invoke SetupSfr
 				mov		eax,DefMCUClock
-				mov		MCUClock,eax
+				mov		addin.MCUClock,eax
 				invoke EnableDisable
 				invoke SetWindowText,hWin,addr szAppName
 			.elseif eax==IDM_SEARCH_FIND
@@ -1715,7 +1719,7 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					mov		edx,eax
 					invoke WritePrivateProfileString,addr szProSIM52,addr szProFile,addr buffer[edx+1],addr buffer1
 					invoke WritePrivateProfileString,addr szProSIM52,addr szProMCU,addr addin.szMCU,addr buffer1
-					invoke wsprintf,addr buffer,addr szFmtDec,MCUClock
+					invoke wsprintf,addr buffer,addr szFmtDec,addin.MCUClock
 					invoke WritePrivateProfileString,addr szProSIM52,addr szProClock,addr buffer,addr buffer1
 					invoke lstrcpy,addr buffer,addr buffer1
 					invoke SendAddinMessage,hWin,AM_PROJECTCLOSE,0,addr buffer,AH_PROJECTCLOSE
@@ -1736,7 +1740,7 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 MakeThread:
 	invoke CreateThread,NULL,0,addr CoreThread,0,0,addr tid
 	push	eax
-	invoke SetThreadPriority,eax,ThreadPriority
+	invoke SetThreadPriority,eax,addin.ThreadPriority
 	pop		eax
 	invoke CloseHandle,eax
 	retn
@@ -1785,7 +1789,7 @@ OpenProject:
 	invoke LoadSFRFile,addr buffer
 	invoke SetupSfr
 	invoke GetPrivateProfileInt,addr szProSIM52,addr szProClock,24000000,addr szSimFile
-	mov		MCUClock,eax
+	mov		addin.MCUClock,eax
 	invoke SetTiming
 	invoke SendAddinMessage,hWin,AM_PROJECTOPEN,0,addr szSimFile,AH_PROJECTOPEN
 	invoke EnableDisable
