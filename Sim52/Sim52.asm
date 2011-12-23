@@ -797,7 +797,7 @@ Find proc uses ebx esi edi,lpszText:DWORD,nLenText:DWORD,uFlag:DWORD
 			.while sdword ptr ebx>=0
 				mov		ecx,ebx
 				shl		ecx,16
-				or		ecx,3
+				or		ecx,4
 				invoke SendMessage,addin.hGrd,GM_GETCELLDATA,ecx,addr rowbuffer
 				dec		edi
 				.if rowbuffer
@@ -828,7 +828,7 @@ Find proc uses ebx esi edi,lpszText:DWORD,nLenText:DWORD,uFlag:DWORD
 							.endif
 							mov		ecx,ebx
 							shl		ecx,16
-							invoke SendMessage,addin.hGrd,GM_SETCURSEL,3,ebx
+							invoke SendMessage,addin.hGrd,GM_SETCURSEL,4,ebx
 							mov		nFindRow,ebx
 							mov		nFindPos,edi
 							jmp		Ex
@@ -844,7 +844,7 @@ Find proc uses ebx esi edi,lpszText:DWORD,nLenText:DWORD,uFlag:DWORD
 			.while sdword ptr ebx>=0
 				mov		ecx,ebx
 				shl		ecx,16
-				or		ecx,4
+				or		ecx,5
 				invoke SendMessage,addin.hGrd,GM_GETCELLDATA,ecx,addr rowbuffer
 				dec		edi
 				.if rowbuffer
@@ -875,7 +875,7 @@ Find proc uses ebx esi edi,lpszText:DWORD,nLenText:DWORD,uFlag:DWORD
 							.endif
 							mov		ecx,ebx
 							shl		ecx,16
-							invoke SendMessage,addin.hGrd,GM_SETCURSEL,4,ebx
+							invoke SendMessage,addin.hGrd,GM_SETCURSEL,5,ebx
 							mov		nFindRow,ebx
 							mov		nFindPos,edi
 							jmp		Ex
@@ -908,7 +908,7 @@ Find proc uses ebx esi edi,lpszText:DWORD,nLenText:DWORD,uFlag:DWORD
 			.while ebx<nRows
 				mov		ecx,ebx
 				shl		ecx,16
-				or		ecx,3
+				or		ecx,4
 				invoke SendMessage,addin.hGrd,GM_GETCELLDATA,ecx,addr rowbuffer
 				inc		edi
 				.if rowbuffer
@@ -939,7 +939,7 @@ Find proc uses ebx esi edi,lpszText:DWORD,nLenText:DWORD,uFlag:DWORD
 							.endif
 							mov		ecx,ebx
 							shl		ecx,16
-							invoke SendMessage,addin.hGrd,GM_SETCURSEL,3,ebx
+							invoke SendMessage,addin.hGrd,GM_SETCURSEL,4,ebx
 							mov		nFindRow,ebx
 							mov		nFindPos,edi
 							jmp		Ex
@@ -955,7 +955,7 @@ Find proc uses ebx esi edi,lpszText:DWORD,nLenText:DWORD,uFlag:DWORD
 			.while ebx<nRows
 				mov		ecx,ebx
 				shl		ecx,16
-				or		ecx,4
+				or		ecx,5
 				invoke SendMessage,addin.hGrd,GM_GETCELLDATA,ecx,addr rowbuffer
 				inc		edi
 				.if rowbuffer
@@ -986,7 +986,7 @@ Find proc uses ebx esi edi,lpszText:DWORD,nLenText:DWORD,uFlag:DWORD
 							.endif
 							mov		ecx,ebx
 							shl		ecx,16
-							invoke SendMessage,addin.hGrd,GM_SETCURSEL,4,ebx
+							invoke SendMessage,addin.hGrd,GM_SETCURSEL,5,ebx
 							mov		nFindRow,ebx
 							mov		nFindPos,edi
 							jmp		Ex
