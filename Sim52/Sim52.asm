@@ -1138,7 +1138,7 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke DoToolBar,addin.hInstance,eax
 		; Create font and set it to list box
 		invoke CreateFontIndirect,addr Courier_New_9
-		mov		addin.hLstFont,eax
+		mov		addin.hGrdFont,eax
 		invoke EnableDisable
 		invoke GetMenu,hWin
 		mov		addin.hMenu,eax
@@ -1165,7 +1165,7 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SendDlgItemMessage,hWin,IDC_TABVIEW,TCM_INSERTITEM,4,addr tci
 		invoke GetDlgItem,hWin,IDC_TABVIEW
 		mov		ebx,eax
-		mov		eax,addin.hLstFont
+		mov		eax,addin.hGrdFont
 		mov		hef.hFont,eax
 		mov		hef.hLnrFont,eax
 		;Create the tab dialogs
@@ -1193,7 +1193,7 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		addin.hAccel,eax
 		invoke GetDlgItem,hWin,IDC_GRDCODE
 		mov		addin.hGrd,eax
-		invoke SendMessage,addin.hGrd,WM_SETFONT,addin.hLstFont,0
+		invoke SendMessage,addin.hGrd,WM_SETFONT,addin.hGrdFont,0
 		invoke ImageList_Create,16,16,ILC_COLOR24,1,0
 		mov		addin.hIml,eax
 		invoke ImageList_Add,addin.hIml,addin.hBmpRedLed,NULL
@@ -1654,7 +1654,7 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.if hMemAddr
 			invoke GlobalFree,hMemAddr
 		.endif
-		invoke DeleteObject,addin.hLstFont
+		invoke DeleteObject,addin.hGrdFont
 		invoke ImageList_Destroy,addin.hIml
 		invoke UnloadAddins
 		invoke DestroyWindow,hFind

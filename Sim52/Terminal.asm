@@ -233,7 +233,7 @@ ScreenProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	mov		eax,uMsg
 	.if eax==WM_PAINT
 		invoke BeginPaint,hWin,addr ps
-		invoke SelectObject,ps.hdc,addin.hLstFont
+		invoke SelectObject,ps.hdc,addin.hGrdFont
 		push	eax
 		invoke SetBkMode,ps.hdc,TRANSPARENT
 		invoke ScreenDraw,ps.hdc

@@ -19,6 +19,10 @@ include CharTab.inc
 
 IDD_DLGLCD              equ 1000
 IDC_LCD                 equ 1001
+IDC_BTNEXPAND			equ 1013
+IDC_STCERROR			equ 1014
+IDC_CHKACTIVE			equ 1015
+IDC_CHKBACKLIGHT        equ 1023
 IDC_CBOD0               equ 1002
 IDC_CBOD1               equ 1003
 IDC_CBOD2               equ 1004
@@ -30,9 +34,6 @@ IDC_CBOD7               equ 1009
 IDC_CBORS               equ 1010
 IDC_CBORW               equ 1011
 IDC_CBOE                equ 1012
-IDC_CHKBACKLIGHT        equ 1023
-IDC_BTNEXPAND			equ 1013
-IDC_STCERROR			equ 1014
 
 GND						equ 0
 VCC						equ 1
@@ -155,6 +156,7 @@ hBmp					HBITMAP ?
 lpAddin					DWORD ?
 IDAddin					DWORD ?
 BackLight				DWORD ?
+fActive					DWORD ?
 
 P0Bits					DWORD ?				;Each bit used by LCD is 1
 P1Bits					DWORD ?				;Each bit used by LCD is 1

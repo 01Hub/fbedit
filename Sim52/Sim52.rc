@@ -287,11 +287,11 @@
 #define IDC_EDTMCU 1902
 #define IDC_EDTREFRESH 1903
 #define IDC_UDNREFRESH 1904
+#define IDC_EDTTHREAD 1905
+#define IDC_UDNTHREAD 1906
 #ifndef IDOK
   #define IDOK 1
 #endif
-#define IDC_EDTTHREAD 1905
-#define IDC_UDNTHREAD 1906
 #define IDD_DLGABOUT 2000
 #define IDC_EDTABOUT 1001
 #define IDC_URL1 1002
@@ -340,6 +340,7 @@ BEGIN
     MENUITEM "Step &Into\tF7",IDM_DEBUG_STEP_INTO
     MENUITEM "Step &Over\tCtrl+F7",IDM_DEBUG_STEP_OVER
     MENUITEM "Run to &Cursor\tShift+Ctrl+F7",IDM_DEBUG_RUN_TO_CURSOR
+    MENUITEM "",,0x00000800
     MENUITEM "&Toggle Breakpoint\tCtrl+T",IDM_DEBUG_TOGGLE
     MENUITEM "Clear &All Breakpoints\tShift+Ctrl+T",IDM_DEBUG_CLEAR
   END

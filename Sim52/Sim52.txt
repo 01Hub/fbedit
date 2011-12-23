@@ -4,52 +4,52 @@
        x0       x1       x2       x3       x4       x5       x6       x7	       x8       x9       xA       xB       xC       xD       xE       xF
    -------------------------------------------------------------------------------------------------------------------------------------------------
 0x |NOP     |AJMP    |LJMP    |RR      |INC     |INC     |INC     |INC     |INC     |INC     |INC     |INC     |INC     |INC     |INC     |INC     |
-   |        |cad     |cad     |A       |A       |dad     |@R0     |@R1     |R0      |R1      |R2      |R3      |R4      |R5      |R6      |R7      |
+   |        |adr11   |adr16   |A       |A       |dir     |@R0     |@R1     |R0      |R1      |R2      |R3      |R4      |R5      |R6      |R7      |
    -------------------------------------------------------------------------------------------------------------------------------------------------
 1x |JBC     |ACALL   |LCALL   |RRC     |DEC     |DEC     |DEC     |DEC     |DEC     |DEC     |DEC     |DEC     |DEC     |DEC     |DEC     |DEC     |
-   |bad,cad |cad     |cad     |A       |A       |dad     |@R0     |@R1     |R0      |R1      |R2      |R3      |R4      |R5      |R6      |R7      |
+   |bit,rel |adr11   |adr16   |A       |A       |dir     |@R0     |@R1     |R0      |R1      |R2      |R3      |R4      |R5      |R6      |R7      |
    -------------------------------------------------------------------------------------------------------------------------------------------------
 2x |JB      |AJMP    |RET     |RL      |ADD     |ADD     |ADD     |ADD     |ADD     |ADD     |ADD     |ADD     |ADD     |ADD     |ADD     |ADD     |
-   |bad,cad |cad     |        |A       |A,#dd   |A,dad   |A,@R0   |A,@R1   |A,R0    |A,R1    |A,R2    |A,R3    |A,R4    |A,R5    |A,R6    |A,R7    |
+   |bit,rel |adr11   |        |A       |A,imm   |A,dir   |A,@R0   |A,@R1   |A,R0    |A,R1    |A,R2    |A,R3    |A,R4    |A,R5    |A,R6    |A,R7    |
    -------------------------------------------------------------------------------------------------------------------------------------------------
 3x |JNB     |ACALL   |RETI    |RLC     |ADDC    |ADDC    |ADDC    |ADDC    |ADDC    |ADDC    |ADDC    |ADDC    |ADDC    |ADDC    |ADDC    |ADDC    |
-   |bad,cad |cad     |        |A       |A,#dd   |A,dad   |A,@R0   |A,@R1   |A,R0    |A,R1    |A,R2    |A,R3    |A,R4    |A,R5    |A,R6    |A,R7    |
+   |bit,rel |adr11   |        |A       |A,imm   |A,dir   |A,@R0   |A,@R1   |A,R0    |A,R1    |A,R2    |A,R3    |A,R4    |A,R5    |A,R6    |A,R7    |
    -------------------------------------------------------------------------------------------------------------------------------------------------
 4x |JC      |AJMP    |ORL     |ORL     |ORL     |ORL     |ORL     |ORL     |ORL     |ORL     |ORL     |ORL     |ORL     |ORL     |ORL     |ORL     |
-   |cad     |cad     |dad,A   |dad,#dd |A,#dd   |A,dad   |A,@R0   |A,@R1   |A,R0    |A,R1    |A,R2    |A,R3    |A,R4    |A,R5    |A,R6    |A,R7    |
+   |rel     |adr11   |dir,A   |dir,imm |A,imm   |A,dir   |A,@R0   |A,@R1   |A,R0    |A,R1    |A,R2    |A,R3    |A,R4    |A,R5    |A,R6    |A,R7    |
    -------------------------------------------------------------------------------------------------------------------------------------------------
 5x |JNC     |ACALL   |ANL     |ANL     |ANL     |ANL     |ANL     |ANL     |ANL     |ANL     |ANL     |ANL     |ANL     |ANL     |ANL     |ANL     |
-   |cad     |cad     |dad,A   |dad,#dd |A,#dd   |A,dad   |A,@R0   |A,@R1   |A,R0    |A,R1    |A,R2    |A,R3    |A,R4    |A,R5    |A,R6    |A,R7    |
+   |rel     |adr11   |dir,A   |dir,imm |A,imm   |A,dir   |A,@R0   |A,@R1   |A,R0    |A,R1    |A,R2    |A,R3    |A,R4    |A,R5    |A,R6    |A,R7    |
    -------------------------------------------------------------------------------------------------------------------------------------------------
 6x |JZ      |AJMP    |XRL     |XRL     |XRL     |XRL     |XRL     |XRL     |XRL     |XRL     |XRL     |XRL     |XRL     |XRL     |XRL     |XRL     |
-   |cad     |cad     |dad,A   |dad,#dd |A,#dd   |A,dad   |A,@R0   |A,@R1   |A,R0    |A,R1    |A,R2    |A,R3    |A,R4    |A,R5    |A,R6    |A,R7    |
+   |rel     |adr11   |dir,A   |dir,imm |A,imm   |A,dir   |A,@R0   |A,@R1   |A,R0    |A,R1    |A,R2    |A,R3    |A,R4    |A,R5    |A,R6    |A,R7    |
    -------------------------------------------------------------------------------------------------------------------------------------------------
 7x |JNZ     |ACALL   |ORL     |JMP     |MOV     |MOV     |MOV     |MOV     |MOV     |MOV     |MOV     |MOV     |MOV     |MOV     |MOV     |MOV     |
-   |cad     |cad     |C,bad   |@A+DPTR |A,#dd   |dad,#dd |@R0,#dd |@R1,#dd |R0,#dd  |R1,#dd  |R2,#dd  |R3,#dd  |R4,#dd  |R5,#dd  |R6,#dd  |R7,#dd  |
+   |rel     |adr11   |C,bit   |@A+DPTR |A,imm   |dir,imm |@R0,imm |@R1,imm |R0,imm  |R1,imm  |R2,imm  |R3,imm  |R4,imm  |R5,imm  |R6,imm  |R7,imm  |
    -------------------------------------------------------------------------------------------------------------------------------------------------
 8x |SJMP    |AJMP    |ANL     |MOVC    |DIV     |MOV     |MOV     |MOV     |MOV     |MOV     |MOV     |MOV     |MOV     |MOV     |MOV     |MOV     |
-   |cad     |cad     |C,bad   |A,@A+PC |AB      |dad,dad |dad,@R0 |dad,@R1 |dad,R0  |dad,R1  |dad,R2  |dad,R3  |dad,R4  |dad,R5  |dad,R6  |dad,R7  |
+   |rel     |adr11   |C,bit   |A,@A+PC |AB      |dir,dir |dir,@R0 |dir,@R1 |dir,R0  |dir,R1  |dir,R2  |dir,R3  |dir,R4  |dir,R5  |dir,R6  |dir,R7  |
    -------------------------------------------------------------------------------------------------------------------------------------------------
 9x |MOV     |ACALL   |MOV     |MOVC A, |SUBB    |SUBB    |SUBB    |SUBB    |SUBB    |SUBB    |SUBB    |SUBB    |SUBB    |SUBB    |SUBB    |SUBB    |
-   |DPTR,#dd|cad     |bad,C   |@A+DPTR |A,#dd   |A,dad   |A,@R0   |A,@R1   |A,R0    |A,R1    |A,R2    |A,R3    |A,R4    |A,R5    |A,R6    |A,R7    |
+   |DPTR,imm|adr11   |bit,C   |@A+DPTR |A,imm   |A,dir   |A,@R0   |A,@R1   |A,R0    |A,R1    |A,R2    |A,R3    |A,R4    |A,R5    |A,R6    |A,R7    |
    -------------------------------------------------------------------------------------------------------------------------------------------------
 Ax |ORL     |AJMP    |MOV     |INC     |MUL     |reserved|MOV     |MOV     |MOV     |MOV     |MOV     |MOV     |MOV     |MOV     |MOV     |MOV     |
-   |C,/bad  |cad     |C,bad   |DPTR    |AB      |        |@R0,dad |@R1,dad |R0,dad  |R1,dad  |R2,dad  |R3,dad  |R4,dad  |R5,dad  |R6,dad  |R7,dad  |
+   |C,/bit  |adr11   |C,bit   |DPTR    |AB      |        |@R0,dir |@R1,dir |R0,dir  |R1,dir  |R2,dir  |R3,dir  |R4,dir  |R5,dir  |R6,dir  |R7,dir  |
    -------------------------------------------------------------------------------------------------------------------------------------------------
 Bx |ANL     |ACALL   |CPL     |CPL     |CJNE A  |CJNE A  |CJNE @R0|CJNE @R1|CJNE R0,|CJNE R1,|CJNE R2,|CJNE R3,|CJNE R4,|CJNE R5,|CJNE R6,|CJNE R7,|
-   |C,/bad  |cad     |bad     |C       |#dd,cad |dad,cad |#dd,cad |#dd,cad |#dd,cad |#dd,cad |#dd,cad |#dd,cad |#dd,cad |#dd,cad |#dd,cad |#dd,cad |
+   |C,/bit  |adr11   |bit     |C       |imm,rel |dir,rel |imm,rel |imm,rel |imm,rel |imm,rel |imm,rel |imm,rel |imm,rel |imm,rel |imm,rel |imm,rel |
    -------------------------------------------------------------------------------------------------------------------------------------------------
 Cx |PUSH    |AJMP    |CLR     |CLR     |SWAP    |XCH     |XCH     |XCH     |XCH     |XCH     |XCH     |XCH     |XCH     |XCH     |XCH     |XCH     |
-   |dad     |cad     |bad     |C       |A       |A,dad   |A,@R0   |A,@R1   |A,R0    |A,R1    |A,R2    |A,R3    |A,R4    |A,R5    |A,R6    |A,R7    |
+   |dir     |adr11   |bit     |C       |A       |A,dir   |A,@R0   |A,@R1   |A,R0    |A,R1    |A,R2    |A,R3    |A,R4    |A,R5    |A,R6    |A,R7    |
    -------------------------------------------------------------------------------------------------------------------------------------------------
 Dx |POP     |ACALL   |SETB    |SETB    |DA      |DJNZ    |XCHD    |XCHD    |DJNZ    |DJNZ    |DJNZ    |DJNZ    |DJNZ    |DJNZ    |DJNZ    |DJNZ    |
-   |dad     |cad     |bad     |C       |A       |dad,cad |A,@R0   |A,@R1   |R0,cad  |R1,cad  |R2,cad  |R3,cad  |R4,cad  |R5,cad  |R6,cad  |R7,cad  |
+   |dir     |adr11   |bit     |C       |A       |dir,rel |A,@R0   |A,@R1   |R0,rel  |R1,rel  |R2,rel  |R3,rel  |R4,rel  |R5,rel  |R6,rel  |R7,rel  |
    -------------------------------------------------------------------------------------------------------------------------------------------------
 Ex |MOVX    |AJMP    |MOVX    |MOVX    |CLR     |MOV     |MOV     |MOV     |MOV     |MOV     |MOV     |MOV     |MOV     |MOV     |MOV     |MOV     |
-   |A,@DPTR |cad     |A,@R0   |A,@R1   |A       |A,dad   |A,@R0   |A,@R1   |A,R0    |A,R1    |A,R2    |A,R3    |A,R4    |A,R5    |A,R6    |A,R7    |
+   |A,@DPTR |adr11   |A,@R0   |A,@R1   |A       |A,dir   |A,@R0   |A,@R1   |A,R0    |A,R1    |A,R2    |A,R3    |A,R4    |A,R5    |A,R6    |A,R7    |
    -------------------------------------------------------------------------------------------------------------------------------------------------
 Fx |MOVX    |ACALL   |MOVX    |MOVX    |CPL     |MOV     |MOV     |MOV     |MOV     |MOV     |MOV     |MOV     |MOV     |MOV     |MOV     |MOV     |
-   |@DPTR,A |cad     |@R0,A   |@R1,A   |A       |dad,A   |@R0,A   |@R1,A   |R0,A    |R1,A    |R2,A    |R3,A    |R4,A    |R5,A    |R6,A    |R7,A    |
+   |@DPTR,A |adr11   |@R0,A   |@R1,A   |A       |dir,A   |@R0,A   |@R1,A   |R0,A    |R1,A    |R2,A    |R3,A    |R4,A    |R5,A    |R6,A    |R7,A    |
    -------------------------------------------------------------------------------------------------------------------------------------------------
 
 	AT89S52 SFR map

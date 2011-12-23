@@ -460,6 +460,8 @@ LCDProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke CreateSolidBrush,eax
 				mov		hBackBrush,eax
 				invoke InvalidateRect,hLcd,NULL,TRUE
+			.elseif eax==IDC_CHKACTIVE
+				xor		fActive,TRUE
 			.endif
 		.endif
 	.elseif eax==WM_ACTIVATE
@@ -510,28 +512,32 @@ AddinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		eax,AH_PORTWRITE or AH_MMPORTWRITE or AH_COMMAND or AH_RESET or AH_REFRESH or AH_PROJECTOPEN or AH_PROJECTCLOSE
 		jmp		Ex
 	.elseif eax==AM_PORTWRITE
-		mov		eax,wParam
-		mov		edx,lParam
-		.if eax==0 && P0Bits
-			call	SetData
-		.elseif eax==1 && P1Bits
-			call	SetData
-		.elseif eax==2 && P2Bits
-			call	SetData
-		.elseif eax==3 && P3Bits
-			call	SetData
+		.if fActive
+			mov		eax,wParam
+			mov		edx,lParam
+			.if eax==0 && P0Bits
+				call	SetData
+			.elseif eax==1 && P1Bits
+				call	SetData
+			.elseif eax==2 && P2Bits
+				call	SetData
+			.elseif eax==3 && P3Bits
+				call	SetData
+			.endif
 		.endif
 	.elseif eax==AM_MMPORTWRITE
-		mov		eax,wParam
-		mov		edx,lParam
-		xor		ebx,ebx
-		.while ebx<4
-			.if eax==MMAddr[ebx*4] && MMBits[ebx*4]!=0
-				call	SetData
-				.break
-			.endif
-			inc		ebx
-		.endw
+		.if fActive
+			mov		eax,wParam
+			mov		edx,lParam
+			xor		ebx,ebx
+			.while ebx<4
+				.if eax==MMAddr[ebx*4] && MMBits[ebx*4]!=0
+					call	SetData
+					.break
+				.endif
+				inc		ebx
+			.endw
+		.endif
 	.elseif eax==AM_COMMAND
 		mov		eax,lParam
 		.if eax==IDAddin
@@ -543,17 +549,21 @@ AddinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.endif
 		.endif
 	.elseif eax==AM_RESET
-		mov		LCDDB,8
-		mov		LCDNIBBLE,0
-		mov		LCDData,7FFh
-		mov		edi,offset LCDDDRAM
-		mov		ecx,128/4
-		mov		eax,20202020h
-		rep		stosd
-		mov		LCDDDRAMADDR,0
-		invoke InvalidateRect,hLcd,NULL,TRUE
+		.if fActive
+			mov		LCDDB,8
+			mov		LCDNIBBLE,0
+			mov		LCDData,7FFh
+			mov		edi,offset LCDDDRAM
+			mov		ecx,128/4
+			mov		eax,20202020h
+			rep		stosd
+			mov		LCDDDRAMADDR,0
+			invoke InvalidateRect,hLcd,NULL,TRUE
+		.endif
 	.elseif eax==AM_REFRESH
-		invoke InvalidateRect,hLcd,NULL,TRUE
+		.if fActive
+			invoke InvalidateRect,hLcd,NULL,TRUE
+		.endif
 	.elseif eax==AM_PROJECTOPEN
 		invoke GetPrivateProfileString,addr szProLCD,addr szProLCD,addr szNULL,addr buffer,sizeof buffer,lParam
 		invoke GetItemInt,addr buffer,0
@@ -591,6 +601,9 @@ AddinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke SendDlgItemMessage,hDlg,ebx,CB_SETCURSEL,eax,0
 			pop		ebx
 		.endw
+		invoke GetItemInt,addr buffer,0
+		mov		fActive,eax
+		invoke CheckDlgButton,hDlg,IDC_CHKACTIVE,eax
 		invoke GetCBOBits
 	.elseif eax==AM_PROJECTCLOSE
 		;Save settings to project file
@@ -614,6 +627,7 @@ AddinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke PutItemInt,addr buffer,eax
 			pop		eax
 		.endw
+		invoke PutItemInt,addr buffer,fActive
 		invoke WritePrivateProfileString,addr szProLCD,addr szProLCD,addr buffer[1],lParam
 	.endif
 	xor		eax,eax

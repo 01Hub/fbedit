@@ -1,16 +1,19 @@
 
 ;Addin messages
-AM_INIT					equ 0001h				;hWin=Handle to main window, wParam=0, lParam=pointer to ADDIN struct, Return hook flags
-AM_PORTWRITE			equ 0002h				;hWin=Handle to main window, wParam=Port (0-3), lParam=Port value, Return FALSE
-AM_ALECHANGED			equ 0003h				;hWin=Handle to main window, wParam=0, lParam=0, Return FALSE
-AM_MMPORTWRITE			equ 0004h				;hWin=Handle to main window, wParam=Port address, lParam=Port value, Return FALSE				
-AM_COMMAND				equ 0005h				;hWin=Handle to main window, wParam=0, lParam=MenuID, Return FALSE
-AM_RESET				equ 0006h				;hWin=Handle to main window, wParam=0, lParam=0, Return FALSE
-AM_REFRESH				equ 0007h				;hWin=Handle to main window, wParam=0, lParam=0, Return FALSE
-AM_PROJECTOPEN			equ 0008h				;hWin=Handle to main window, wParam=0, lParam=lpProjectFile, Return FALSE
-AM_PROJECTCLOSE			equ 0009h				;hWin=Handle to main window, wParam=0, lParam=lpProjectFile, Return FALSE
+AM_INIT					equ 0001h				;hWin=Handle to main window, wParam=0, lParam=pointer to ADDIN struct, Return or'ed hook flags
+AM_PORTWRITE			equ 0002h				;hWin=Handle to main window, wParam=Port (0-3), lParam=Port value, No Return
+AM_ALECHANGED			equ 0003h				;hWin=Handle to main window, wParam=0, lParam=0, No Return
+AM_MMPORTWRITE			equ 0004h				;hWin=Handle to main window, wParam=Port address, lParam=Port value, No Return				
+AM_COMMAND				equ 0005h				;hWin=Handle to main window, wParam=0, lParam=MenuID, No Return
+AM_RESET				equ 0006h				;hWin=Handle to main window, wParam=0, lParam=0, No Return
+AM_REFRESH				equ 0007h				;hWin=Handle to main window, wParam=0, lParam=0, No Return
+AM_PROJECTOPEN			equ 0008h				;hWin=Handle to main window, wParam=0, lParam=lpProjectFile, No Return
+AM_PROJECTCLOSE			equ 0009h				;hWin=Handle to main window, wParam=0, lParam=lpProjectFile, No Return
 
-;Hook flags
+;Handling of AM_PORTWRITE, AM_ALECHANGED and AM_MMPORTWRITE must be optimized for speed.
+;Do NOT call any windows api's when your addin processes these messages.
+
+;Hook flags, return or'ed flags in responce to AM_INIT
 AH_PORTWRITE            equ 0001h
 AH_ALECHANGED           equ 0002h
 AH_MMPORTWRITE          equ 0004h
@@ -35,38 +38,39 @@ SFRMAP struct
 SFRMAP ends
 
 ADDIN struct
-	hInstance			HINSTANCE ?
-	hWnd				HWND ?
-	hGrd				HWND ?
-	hActive				HWND ?
-	hTabDlgStatus		HWND ?
-	hTabDlg				HWND 16 dup(?)
-	hIml				HIMAGELIST ?
-	hMenu				HMENU ?
-	hAccel				HACCEL ?
-	hLstFont			HFONT ?
-	hBmpGrayLed			HBITMAP ?
-	hBmpGreenLed		HBITMAP ?
-	hBmpRedLed			HBITMAP ?
-	MenuID				DWORD ?
-	nRam				DWORD ?
-	Ram					BYTE 256 dup(?)
-	SfrData				SFRMAP 128 dup(<>)
-	Sfr					BYTE 256 dup(?)
-	XRam				BYTE 65536 dup(?)
-	Code				BYTE 65536 dup(?)
-	Bank				DWORD ?
-	PC					DWORD ?
-	nAddr				DWORD ?
-	Refresh				DWORD ?
-	lpSendAddinMessage	DWORD ?
-	mmoutport			DWORD 4 dup(?)
-	mmoutportdata		DWORD 4 dup(?)
-	mminport			DWORD 4 dup(?)
-	mminportdata		DWORD 4 dup(?)
-	szMCU				BYTE 16 dup(?)
+	hInstance			HINSTANCE ?				;Instace handle
+	hWnd				HWND ?					;Main window handle
+	hGrd				HWND ?					;Code grid handle
+	hActive				HWND ?					;Handle of current active window
+	hTabDlgStatus		HWND ?					;Handle of status dialog
+	hTabDlg				HWND 16 dup(?)			;Handle of Ram, Bit, Sfr, XRam or Code
+	hIml				HIMAGELIST ?			;Handle of image list
+	hMenu				HMENU ?					;Handle of menu
+	hAccel				HACCEL ?				;Handle of accelerators
+	hGrdFont			HFONT ?					;Handle of code grid / hexedit font
+	hBmpGrayLed			HBITMAP ?				;Handle of gray led bitmap
+	hBmpGreenLed		HBITMAP ?				;Handle of green led bitmap
+	hBmpRedLed			HBITMAP ?				;Handle of red led bitmap
+	MenuID				DWORD ?					;Menu ID's for addins
+	nRam				DWORD ?					;Size of Ram (128 or 256)
+	Ram					BYTE 256 dup(?)			;Ram bytes
+	SfrData				SFRMAP 128 dup(<>)		;Sfr definitions
+	Sfr					BYTE 256 dup(?)			;Sfr bytes, only top 128 bytes used
+	XRam				BYTE 65536 dup(?)		;XRam bytes
+	Code				BYTE 65536 dup(?)		;Code bytes
+	Bank				DWORD ?					;Current register bank
+	PC					DWORD ?					;Program counter
+	nAddr				DWORD ?					;Number of addresses
+	Refresh				DWORD ?					;Set to TRUE to force a refresh
+	lpSendAddinMessage	DWORD ?					;Pointer to SendAddinMessage api
+	mmoutport			DWORD 4 dup(?)			;Memory mapped output port addresses
+	mmoutportdata		DWORD 4 dup(?)			;Memory mapped output data
+	mminport			DWORD 4 dup(?)			;Memory mapped input addresses
+	mminportdata		DWORD 4 dup(?)			;Memory mapped input data
+	szMCU				BYTE 16 dup(?)			;Current selected MCU
 ADDIN ends
 
+;Addresses of all implemented sfr's
 SFR_P0      			equ 080h
 SFR_SP      			equ 081h
 SFR_DPL     			equ 082h
@@ -100,10 +104,10 @@ SFR_PSW     			equ 0D0h
 SFR_ACC     			equ 0E0h
 SFR_B       			equ 0F0h
 
-IDM_FILE            	equ 10200
-IDM_SEARCH          	equ 10201
-IDM_VIEW            	equ 10202
-IDM_DEBUG           	equ 10203
-IDM_OPTIONS         	equ 10204
-IDM_TOOLS				equ 10020
-IDM_HELP            	equ 10205
+IDM_FILE            	equ 10200				;ID of file menu
+IDM_SEARCH          	equ 10201				;ID of search menu
+IDM_VIEW            	equ 10202				;ID of view menu
+IDM_DEBUG           	equ 10203				;ID of debug menu
+IDM_OPTIONS         	equ 10204				;ID of options menu
+IDM_TOOLS				equ 10020				;ID of tools meny
+IDM_HELP            	equ 10205				;ID of help menu
