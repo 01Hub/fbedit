@@ -1123,6 +1123,14 @@ ClockProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
 ClockProc endp
 
+StreamInProc proc hFile:DWORD,pBuffer:DWORD,NumBytes:DWORD,pBytesRead:DWORD
+
+	invoke ReadFile,hFile,pBuffer,NumBytes,pBytesRead,0
+	xor		eax,1
+	ret
+
+StreamInProc endp
+
 WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	tci:TC_ITEM
 	LOCAL	ofn:OPENFILENAME
@@ -1133,6 +1141,7 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	col:COLUMN
 	LOCAL	rect:RECT
 	LOCAL	rectmov:RECT
+	LOCAL	editstream:EDITSTREAM
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
@@ -1151,6 +1160,10 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		tci.lpReserved2,0
 		mov		tci.iImage,-1
 		mov		tci.lParam,0
+		mov		tci.pszText,offset szTabCode
+		invoke SendDlgItemMessage,hWin,IDC_TABCODE,TCM_INSERTITEM,0,addr tci
+		mov		tci.pszText,offset szTabSchematics
+		invoke SendDlgItemMessage,hWin,IDC_TABCODE,TCM_INSERTITEM,1,addr tci
 		mov		tci.pszText,offset szTabStatus
 		invoke SendDlgItemMessage,hWin,IDC_TABSTATUS,TCM_INSERTITEM,0,addr tci
 		invoke GetDlgItem,hWin,IDC_TABSTATUS
@@ -1299,6 +1312,8 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke DeleteObject,eax
 		invoke SendDlgItemMessage,hWin,IDC_IMGLAGGING,STM_SETIMAGE,IMAGE_BITMAP,addin.hBmpGrayLed
 		invoke DeleteObject,eax
+		invoke GetDlgItem,hWin,IDC_UDCCAD
+		invoke ShowWindow,eax,SW_HIDE
 		invoke Reset
 	.elseif eax==WM_TIMER
 		.if addin.Refresh
@@ -1329,6 +1344,21 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					pop		eax
 					mov		SelTab,eax
 					invoke ShowWindow,addin.hTabDlg[eax*4],SW_SHOWDEFAULT
+				.endif
+			.endif
+		.elseif eax==IDC_TABCODE
+			mov		eax,[ebx].NMHDR.code
+			.if eax==TCN_SELCHANGE
+				;Tab selection
+				invoke GetDlgItem,hWin,IDC_UDCCAD
+				mov		ebx,eax
+				invoke IsWindowVisible,addin.hGrd
+				.if eax
+					invoke ShowWindow,addin.hGrd,SW_HIDE
+					invoke ShowWindow,ebx,SW_SHOW
+				.else
+					invoke ShowWindow,ebx,SW_HIDE
+					invoke ShowWindow,addin.hGrd,SW_SHOW
 				.endif
 			.endif
 		.elseif eax==IDC_GRDCODE
@@ -1622,13 +1652,25 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke GetDlgItem,hWin,IDC_SBRSIM52
 		mov		ebx,eax
 		invoke MoveWindow,ebx,0,0,0,0,TRUE
+		invoke GetDlgItem,hWin,IDC_TABCODE
+		push	eax
 		invoke GetWindowRect,ebx,addr rectmov
 		mov		eax,rectmov.bottom
 		sub		eax,rectmov.top
 		sub		rect.bottom,eax
 		mov		eax,rect.bottom
 		sub		eax,rect.top
+		pop		edx
+		push	eax
+		invoke MoveWindow,edx,0,rect.top,esi,eax,TRUE
+		pop		eax
+		add		rect.top,25
+		sub		eax,25
+		push	eax
 		invoke MoveWindow,addin.hGrd,0,rect.top,esi,eax,TRUE
+		invoke GetDlgItem,hWin,IDC_UDCCAD
+		pop		edx
+		invoke MoveWindow,eax,0,rect.top,esi,edx,TRUE
 		invoke GetDlgItem,hWin,IDC_TABVIEW
 		mov		ebx,eax
 		invoke GetWindowRect,ebx,addr rectmov
@@ -1794,6 +1836,18 @@ OpenProject:
 	invoke SendAddinMessage,hWin,AM_PROJECTOPEN,0,addr szSimFile,AH_PROJECTOPEN
 	invoke EnableDisable
 	invoke SetFocus,addin.hGrd
+	invoke lstrlen,addr buffer1
+	mov		dword ptr buffer1[eax-4],'dac.'
+	invoke CreateFile,addr buffer1,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,0
+	.if eax!=INVALID_HANDLE_VALUE
+		mov		ebx,eax
+		;stream the text into the cad control
+		mov		editstream.dwCookie,ebx
+		mov		editstream.pfnCallback,offset StreamInProc
+		invoke SendDlgItemMessage,hWin,IDC_UDCCAD,CM_STREAMIN,0,addr editstream
+		invoke CloseHandle,ebx
+	.endif
+	invoke SendDlgItemMessage,hWin,IDC_UDCCAD,CM_SETGRID,FALSE,0
 	retn
 
 WndProc endp
@@ -1865,6 +1919,7 @@ start:
 	invoke InitCommonControls
 	invoke RAHexEdInstall,addin.hInstance,FALSE
 	invoke GridInstall,addin.hInstance,FALSE
+	invoke RACadInstall,addin.hInstance,FALSE
 	mov		addin.MenuID,12000
 	invoke GetModuleFileName,addin.hInstance,addr szPath,sizeof szPath
 	.while szPath[eax]!='\' && eax
@@ -1875,6 +1930,7 @@ start:
 	invoke lstrcat,addr szIniFile,addr szIniFileName
 	invoke WinMain,addin.hInstance,NULL,CommandLine,SW_SHOWDEFAULT
 	invoke GridUnInstall
+	invoke RACadUnInstall
 	invoke RAHexEdUnInstall
 	invoke ExitProcess,eax
 

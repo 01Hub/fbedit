@@ -21,6 +21,9 @@ includelib RAHexEd.lib
 include RAGrid.inc
 includelib RAGrid.lib
 
+include RACad.inc
+includelib RACad.lib
+
 include Addin.inc
 
 ;#########################################################################
@@ -37,6 +40,8 @@ IDD_SIM52               equ 1000
 IDC_IMGLAGGING			equ 1001
 IDC_TBRSIM52            equ 1003
 IDC_SBRSIM52            equ 1002
+IDC_TABCODE				equ 1006
+IDC_UDCCAD				equ 1007
 IDC_TABSTATUS           equ 1004
 IDC_IMGSTATUS           equ 1011
 IDC_TABVIEW             equ 1009
@@ -377,6 +382,7 @@ szTabBit				BYTE 'Bit',0
 szTabSfr				BYTE 'Sfr',0
 szTabXRam				BYTE 'XRam',0
 szTabCode				BYTE 'Code',0
+szTabSchematics			BYTE 'Schematics',0
 
 szFmtHexByte			BYTE '%02X',0
 szFmtHexByteh			BYTE '%02Xh',0

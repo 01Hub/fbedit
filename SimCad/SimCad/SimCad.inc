@@ -179,7 +179,6 @@ ppos				PRNPOS <<1000,1000,1000,1000>,<21000,29700>>
 
 hInstance			dd ?
 CommandLine			dd ?
-hRACad				dd ?
 hAccel				dd ?
 hWnd				dd ?
 hSymDlg				dd ?

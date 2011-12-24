@@ -643,7 +643,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				movsx	eax,ax
 				mov		pt.y,eax
 			.else
-				invoke GetWindowRect,hRACad,addr rect
+				invoke GetWindowRect,hCad,addr rect
 				mov		eax,rect.left
 				add		eax,10
 				mov		pt.x,eax
@@ -1099,31 +1099,26 @@ start:
 		invoke PathUnquoteSpaces,eax
 	.ENDIF
 	invoke InitCommonControls
-;	invoke LoadLibrary,addr RACad
-;	.if eax
-;		mov		hRACad,eax
-		invoke RACadInstall,hInstance,FALSE
-		invoke RegCreateKeyEx,HKEY_CURRENT_USER,addr szSimCad,0,addr szREG_SZ,0,KEY_WRITE or KEY_READ,0,addr hReg,addr lpdwDisp
-		.if lpdwDisp==REG_OPENED_EXISTING_KEY
-			mov		lpcbData,sizeof wpos
-			invoke RegQueryValueEx,hReg,addr szWinPos,0,addr lpType,addr wpos,addr lpcbData
-			mov		lpcbData,sizeof ppos
-			invoke RegQueryValueEx,hReg,addr szPrnPos,0,addr lpType,addr ppos,addr lpcbData
-			mov		eax,ppos.margins.left
-			mov		psd.rtMargin.left,eax
-			mov		eax,ppos.margins.top
-			mov		psd.rtMargin.top,eax
-			mov		eax,ppos.margins.right
-			mov		psd.rtMargin.right,eax
-			mov		eax,ppos.margins.bottom
-			mov		psd.rtMargin.bottom,eax
-			mov		eax,ppos.pagesize.x
-			mov		psd.ptPaperSize.x,eax
-			mov		eax,ppos.pagesize.y
-			mov		psd.ptPaperSize.y,eax
-;		.endif
+	invoke RACadInstall,hInstance,FALSE
+	invoke RegCreateKeyEx,HKEY_CURRENT_USER,addr szSimCad,0,addr szREG_SZ,0,KEY_WRITE or KEY_READ,0,addr hReg,addr lpdwDisp
+	.if lpdwDisp==REG_OPENED_EXISTING_KEY
+		mov		lpcbData,sizeof wpos
+		invoke RegQueryValueEx,hReg,addr szWinPos,0,addr lpType,addr wpos,addr lpcbData
+		mov		lpcbData,sizeof ppos
+		invoke RegQueryValueEx,hReg,addr szPrnPos,0,addr lpType,addr ppos,addr lpcbData
+		mov		eax,ppos.margins.left
+		mov		psd.rtMargin.left,eax
+		mov		eax,ppos.margins.top
+		mov		psd.rtMargin.top,eax
+		mov		eax,ppos.margins.right
+		mov		psd.rtMargin.right,eax
+		mov		eax,ppos.margins.bottom
+		mov		psd.rtMargin.bottom,eax
+		mov		eax,ppos.pagesize.x
+		mov		psd.ptPaperSize.x,eax
+		mov		eax,ppos.pagesize.y
+		mov		psd.ptPaperSize.y,eax
 		invoke WinMain,hInstance,NULL,CommandLine,SW_SHOWDEFAULT
-;		invoke FreeLibrary,hRACad
 		invoke RegSetValueEx,hReg,addr szWinPos,0,REG_BINARY,addr wpos,sizeof wpos
 		invoke RegCloseKey,hReg
 		invoke RACadUnInstall
