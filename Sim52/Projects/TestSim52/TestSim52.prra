@@ -2,9 +2,9 @@
 Version=3000
 [Project]
 Assembler=asemw
-Path=C:\FbEdit\Projects\Applications\FbEdit\Sim52\Projects\TestSim52
+Path=D:\FbEdit\Projects\Applications\FbEdit\Sim52\Projects\TestSim52
 Group=2,-1,0,1,Test Sim52,-2,-1,1,Assembly
-F1=-2,2,1,22,22,600,400,0,TestSim52.a51
+F1=-2,2,1,22,22,600,400,41,TestSim52.a51
 Open=0,1
 Api=
 C1=0
@@ -15,4 +15,4 @@ Make=0
 0=Release,'',,'"$C"',"$C.hex",'"$C" "$O"',"$C.cmd",'',
 Delete=0
 IncBuild=0
-Run=0,'',''
+Run=0,'','TestSim52.sim'

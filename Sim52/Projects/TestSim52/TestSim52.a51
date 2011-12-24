@@ -2,7 +2,8 @@
 ;RESET:***********************************************
 		ORG	0000h
 ;		LJMP	TESTINT0INT1	;RESET:
-		LJMP	TESTTMR0TMR1	;RESET:
+;		LJMP	TESTTMR0TMR1	;RESET:
+		LJMP	TESTSUBB
 ;IE0IRQ:**********************************************
 		ORG	0003h
 		MOV	A,#00h
@@ -34,6 +35,11 @@
 		NOP
 		RETI			;TF2EXF2IRQ:
 ;*****************************************************
+
+TESTSUBB:	MOV	A,#10h
+		MOV	R4,#04h
+TESTSUBB1:	SUBB	A,R4
+		SJMP	TESTSUBB1
 
 TESTTMR0TMR1:	MOV	TMOD,#11h	;16 bit
 		MOV	IE,#8Ah

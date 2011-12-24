@@ -2,7 +2,7 @@
 Version=3000
 [Project]
 Assembler=asemw
-Path=C:\FbEdit\Projects\Applications\FbEdit\Sim52\Projects\Calc
+Path=D:\FbEdit\Projects\Applications\FbEdit\Sim52\Projects\Calc
 Group=2,-1,0,1,Calculator,-2,-1,1,Assembly,-4,-1,1,Misc
 F1=-2,2,1,22,22,600,400,115,Calc.a51
 F2=-4,0,2,44,44,600,400,5,Calc.txt

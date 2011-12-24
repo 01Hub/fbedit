@@ -2473,9 +2473,9 @@ SUBB_A_R4:
 	mov		eax,addin.Bank
 	lea		eax,[eax*8+4]
 	movzx	eax,addin.Ram[eax]
-	sbb		addin.Sfr[SFR_ACC],al
 	movzx	edx,addin.Sfr[SFR_PSW]
 	rcl		dl,1
+	sbb		addin.Sfr[SFR_ACC],al
 	invoke SetFlags
 	ret
 
