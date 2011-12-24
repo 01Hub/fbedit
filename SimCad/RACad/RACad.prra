@@ -1,0 +1,44 @@
+[Version]
+Version=3000
+[Project]
+Assembler=masm
+Path=D:\SimCadRA3\SimCad\RACad
+Group=2,-1,0,1,Cad custom control,-2,-1,1,Assembly,-3,-1,1,Include,-4,-1,1,Misc,-5,-1,1,Resource
+F1=-2,2,1,22,22,600,400,0,RACad.Asm
+F2=-3,0,1,22,22,600,400,112,..\RACad.Inc
+F3=-4,0,2,22,22,600,400,0,RACad.Def
+F4=-5,2,4,22,22,600,400,0,RACad.rc
+F5=-4,0,3,22,22,600,400,0,Res\Button.bmp
+F6=-2,0,1,22,22,600,400,0,RACadCharSet.asm
+F7=-2,0,1,44,44,1040,414,47,RACadDll.asm
+F8=-2,0,1,66,66,1040,414,4,RACadLib.asm
+Open=0,1,6,2,4,3,7,8
+Api=
+C8=0
+B8=
+M8=
+C7=0
+B7=
+M7=
+C3=
+B3=
+M3=
+C4=
+B4=
+M4=
+C2=0
+B2=
+M2=
+C6=0
+B6=
+M6=
+C1=0,0,0,0,0,0,0,0,0,0,0
+B1=
+M1=
+[Make]
+Make=1
+0=Dll Release,'/v "$R"',"$R.res",'/DDLL /c /coff /Cp "$C"',"$C.obj",'/SUBSYSTEM:WINDOWS /RELEASE /VERSION:4.0 /DLL /DEF:$D /OUT:$O $C $M $R',"..\$C.dll",'',
+1=Library,'',,'/c /coff /Cp "$C"',"$C.obj",'',,'/VERBOSE /SUBSYSTEM:WINDOWS /OUT:$O $C $M',"..\Lib\$C.lib"
+Delete=1
+IncBuild=0
+Run=0,'',''
