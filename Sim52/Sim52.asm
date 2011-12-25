@@ -1285,7 +1285,6 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke CreateDialogParam,addin.hInstance,IDD_DLGTERMINAL,hWin,addr TerminalProc,0
 		mov		eax,offset SendAddinMessage
 		mov		addin.lpSendAddinMessage,eax
-		invoke LoadAddins
 		;Setup whole CharTab and CaseTab
 		xor		ebx,ebx
 		.while ebx<256
@@ -1314,6 +1313,7 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke DeleteObject,eax
 		invoke GetDlgItem,hWin,IDC_UDCCAD
 		invoke ShowWindow,eax,SW_HIDE
+		invoke LoadAddins
 		invoke Reset
 	.elseif eax==WM_TIMER
 		.if addin.Refresh

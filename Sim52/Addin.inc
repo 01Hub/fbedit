@@ -9,6 +9,7 @@ AM_RESET				equ 0006h				;hWin=Handle to main window, wParam=0, lParam=0, No Ret
 AM_REFRESH				equ 0007h				;hWin=Handle to main window, wParam=0, lParam=0, No Return
 AM_PROJECTOPEN			equ 0008h				;hWin=Handle to main window, wParam=0, lParam=lpProjectFile, No Return
 AM_PROJECTCLOSE			equ 0009h				;hWin=Handle to main window, wParam=0, lParam=lpProjectFile, No Return
+AM_CLOCKOUT				equ 000Ah				;hWin=Handle to main window, wParam=TRUE/FALSE, lParam=0, No Return
 
 ;Handling of AM_PORTWRITE, AM_ALECHANGED and AM_MMPORTWRITE must be optimized for speed.
 ;Do NOT call any windows api's when your addin processes these messages.
@@ -23,6 +24,7 @@ AH_RESET                equ 0010h
 AH_REFRESH              equ 0020h
 AH_PROJECTOPEN          equ 0040h
 AH_PROJECTCLOSE         equ 0080h
+AH_CLOCKOUT				equ 0100h
 
 SFRMAP struct
 	ad					DWORD ?					;SFR Adress
