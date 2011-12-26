@@ -81,67 +81,6 @@ PutItemInt proc uses esi edi,lpBuff:DWORD,nVal:DWORD
 
 PutItemInt endp
 
-GetFrequency proc uses ebx Frq:DWORD
-
-	mov		ebx,lpAddin
-	mov		eax,[ebx].ADDIN.ComputerClock
-	mov		edx,1000000
-	mul		edx
-	mov		ecx,Frq
-	div		ecx
-	mov		Divisor,eax
-	mov		ecx,eax
-	mov		eax,[ebx].ADDIN.ComputerClock
-	mov		edx,1000000
-	mul		edx
-	div		ecx
-	mov		Frequency,eax
-	shr		Divisor,1
-	ret
-
-GetFrequency endp
-
-ClkThread proc lParam:DWORD
-
-	rdtsc
-	mov		esi,eax
-	mov		edi,edx
-	xor		ebx,ebx
-	.while !fExitThread
-		add		esi,Divisor
-		adc		edi,0
-		stc
-		.while CARRY?
-			rdtsc
-			sub		eax,esi
-			sbb		edx,edi
-		.endw
-		.if fActive
-			.if sdword ptr portaddr>0
-				mov		eax,portbit
-				mov		edx,portaddr
-				xor		ebx,TRUE
-				.if ZERO?
-					xor		eax,0FFh
-					and		byte ptr [edx],al
-				.else
-					or		byte ptr [edx],al
-				.endif
-			.endif
-			mov		eax,lpAddin
-			push	0
-			push	ebx
-			push	AM_CLOCKOUT
-			push	[eax].ADDIN.hWnd
-			push	AH_CLOCKOUT
-			call	[eax].ADDIN.lpSendAddinMessage
-		.endif
-	.endw
-	invoke CloseHandle,hThread
-	ret
-
-ClkThread endp
-
 ClkGenProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	rect:RECT
 	LOCAL	buffer[32]:BYTE
@@ -161,9 +100,8 @@ ClkGenProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		eax,rect.right
 		sub		eax,rect.left
 		invoke MoveWindow,hWin,rect.left,rect.top,eax,80,TRUE
-		invoke SendDlgItemMessage,hWin,IDC_EDTFREQUENCY,EM_LIMITTEXT,7,0
-		invoke CreateThread,NULL,0,addr ClkThread,0,CREATE_SUSPENDED,addr tid
-		mov		hThread,eax
+		invoke SendDlgItemMessage,hWin,IDC_EDTDIVISOR,EM_LIMITTEXT,5,0
+		invoke SendDlgItemMessage,hWin,IDC_UDNDIVISOR,UDM_SETRANGE,0,(1 shl 16) or 32767
 		mov		portbit,0
 		mov		portaddr,-1
 	.elseif eax==WM_COMMAND
@@ -173,11 +111,6 @@ ClkGenProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.if edx==BN_CLICKED
 			.if eax==IDC_CHKACTIVE
 				xor		fActive,TRUE
-				.if fActive
-					invoke ResumeThread,hThread
-				.else
-					invoke SuspendThread,hThread
-				.endif
 			.elseif eax==IDC_BTNEXPAND
 				invoke GetWindowRect,hWin,addr rect
 				mov		eax,rect.right
@@ -196,12 +129,19 @@ ClkGenProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke SetDlgItemText,hWin,IDC_BTNEXPAND,eax
 			.endif
 		.elseif edx==EN_CHANGE
-			invoke GetDlgItemInt,hWin,IDC_EDTFREQUENCY,NULL,FALSE
+			invoke GetDlgItemInt,hWin,IDC_EDTDIVISOR,NULL,FALSE
 			.if !eax
 				inc		eax
+				push	eax
+				invoke SetDlgItemInt,hWin,IDC_EDTDIVISOR,eax,FALSE
+				pop		eax
+			.elseif eax>32767
+				mov		eax,32767
+				push	eax
+				invoke SetDlgItemInt,hWin,IDC_EDTDIVISOR,eax,FALSE
+				pop		eax
 			.endif
-			mov		Frequency,eax
-			invoke GetFrequency,eax
+			mov		Divisor,eax
 			invoke wsprintf,addr buffer,addr szFmtDiv,Divisor
 			invoke SetDlgItemText,hWin,IDC_STCDIVISOR,addr buffer
 		.elseif edx==CBN_SELCHANGE
@@ -288,8 +228,36 @@ AddinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		inc		[ebx].ADDIN.MenuID
 		invoke CreateDialogParam,hInstance,IDD_DLGCLKGEN,hWin,addr ClkGenProc,0
 		;Return hook flags
-		mov		eax,AH_COMMAND or AH_PROJECTOPEN or AH_PROJECTCLOSE
+		mov		eax,AH_ALECHANGED or AH_COMMAND or AH_PROJECTOPEN or AH_PROJECTCLOSE
 		jmp		Ex
+	.elseif eax==AM_ALECHANGED
+		.if fActive
+			mov		eax,nCount
+			lea		eax,[eax+1]
+			.if eax>=Divisor
+				xor		ClkOut,TRUE
+				.if sdword ptr portaddr>0
+					mov		eax,portbit
+					mov		edx,portaddr
+					xor		ebx,TRUE
+					.if ClkOut
+						or		byte ptr [edx],al
+					.else
+						xor		eax,0FFh
+						and		byte ptr [edx],al
+					.endif
+				.endif
+				mov		eax,lpAddin
+				push	0
+				push	ebx
+				push	AM_CLOCKOUT
+				push	[eax].ADDIN.hWnd
+				push	AH_CLOCKOUT
+				call	[eax].ADDIN.lpSendAddinMessage
+				xor		eax,eax
+			.endif
+			mov		nCount,eax
+		.endif
 	.elseif eax==AM_COMMAND
 		mov		eax,lParam
 		.if eax==IDAddin
@@ -310,25 +278,20 @@ AddinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke ShowWindow,hDlg,SW_HIDE
 		.endif
 		invoke GetItemInt,addr buffer,1
-		mov		Frequency,eax
-		invoke SetDlgItemInt,hDlg,IDC_EDTFREQUENCY,eax,FALSE
+		mov		Divisor,eax
+		invoke SetDlgItemInt,hDlg,IDC_EDTDIVISOR,eax,FALSE
 		invoke GetItemInt,addr buffer,0
 		mov		fActive,eax
 		invoke CheckDlgButton,hDlg,IDC_CHKACTIVE,eax
 		invoke GetItemInt,addr buffer,1
 		invoke SendDlgItemMessage,hDlg,IDC_CBOOUT,CB_SETCURSEL,eax,0
 		invoke SendMessage,hDlg,WM_COMMAND,(CBN_SELCHANGE shl 16) or IDC_CBOOUT,0
-		.if fActive
-			invoke ResumeThread,hThread
-		.else
-			invoke SuspendThread,hThread
-		.endif
 	.elseif eax==AM_PROJECTCLOSE
 		;Save settings to project file
 		mov		buffer,0
 		invoke IsWindowVisible,hDlg
 		invoke PutItemInt,addr buffer,eax
-		invoke PutItemInt,addr buffer,Frequency
+		invoke PutItemInt,addr buffer,Divisor
 		invoke PutItemInt,addr buffer,fActive
 		invoke SendDlgItemMessage,hDlg,IDC_CBOOUT,CB_GETCURSEL,0,0
 		invoke PutItemInt,addr buffer,eax
@@ -348,10 +311,6 @@ InstallClkGen endp
 
 UnInstallClkGen proc
 
-	mov		fExitThread,TRUE
-	.if !fActive
-		invoke ResumeThread,hThread
-	.endif
 	invoke DestroyWindow,hDlg
 	ret
 

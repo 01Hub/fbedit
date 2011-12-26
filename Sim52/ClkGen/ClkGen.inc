@@ -17,11 +17,12 @@ includelib Debug.lib
 include ..\Addin.inc
 
 IDD_DLGCLKGEN           equ 1000
-IDC_EDTFREQUENCY        equ 1001
-IDC_CHKACTIVE           equ 1002
+IDC_EDTDIVISOR          equ 1001
 IDC_BTNEXPAND           equ 1004
+IDC_CHKACTIVE           equ 1002
 IDC_STCDIVISOR          equ 1005
 IDC_CBOOUT              equ 1006
+IDC_UDNDIVISOR          equ 1008
 
 NC						equ 0
 P0_0					equ 1
@@ -116,9 +117,8 @@ hDlg					HWND ?
 fActive					DWORD ?
 lpAddin					DWORD ?
 IDAddin					DWORD ?
-Frequency				DWORD ?
 Divisor					DWORD ?
+nCount					DWORD ?
+ClkOut					DWORD ?
 portbit					DWORD ?
 portaddr				DWORD ?
-hThread					HANDLE ?
-fExitThread				DWORD ?

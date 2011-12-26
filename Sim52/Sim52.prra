@@ -81,4 +81,4 @@ Make=0
 1=Window Debug,'/v "$R"',"$R.res",'/c /coff /Cp /Zi /Zd "$C"',"$C.obj",'/SUBSYSTEM:WINDOWS /DEBUG /VERSION:4.0 /OUT:$O $C $M $R',"$C.exe",'',
 Delete=1
 IncBuild=0
-Run=0,'','"\FbEdit\Projects\Applications\FbEdit\Sim52\Projects\Calc\Calc.sim"'
+Run=0,'','"D:\FbEdit\Projects\Applications\FbEdit\Sim52\Projects\FrqCount\FrqCount.sim"'
