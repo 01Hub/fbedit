@@ -1464,6 +1464,7 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		addin.MCUClock,eax
 				invoke EnableDisable
 				invoke SetWindowText,hWin,addr szAppName
+				invoke SendDlgItemMessage,hWin,IDC_UDCCAD,CM_CLEAR,0,0
 			.elseif eax==IDM_SEARCH_FIND
 				invoke ShowWindow,hFind,SW_SHOW
 			.elseif eax==IDM_VIEW_TERMINAL

@@ -495,6 +495,7 @@ LCDProc endp
 AddinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	mii:MENUITEMINFO
 	LOCAL	buffer[256]:BYTE
+	LOCAL	rect:RECT
 
 	mov		eax,uMsg
 	.if eax==AM_INIT
@@ -604,6 +605,16 @@ AddinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke GetItemInt,addr buffer,0
 		mov		fActive,eax
 		invoke CheckDlgButton,hDlg,IDC_CHKACTIVE,eax
+		invoke GetWindowRect,hDlg,addr rect
+		mov		eax,rect.left
+		sub		rect.right,eax
+		mov		eax,rect.top
+		sub		rect.bottom,eax
+		invoke GetItemInt,addr buffer,10
+		mov		rect.left,eax
+		invoke GetItemInt,addr buffer,10
+		mov		rect.top,eax
+		invoke MoveWindow,hDlg,rect.left,rect.top,rect.right,rect.bottom,TRUE
 		invoke GetCBOBits
 	.elseif eax==AM_PROJECTCLOSE
 		;Save settings to project file
@@ -628,6 +639,9 @@ AddinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			pop		eax
 		.endw
 		invoke PutItemInt,addr buffer,fActive
+		invoke GetWindowRect,hDlg,addr rect
+		invoke PutItemInt,addr buffer,rect.left
+		invoke PutItemInt,addr buffer,rect.top
 		invoke WritePrivateProfileString,addr szProLCD,addr szProLCD,addr buffer[1],lParam
 	.endif
 	xor		eax,eax

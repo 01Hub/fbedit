@@ -2,9 +2,9 @@
 Version=3000
 [Project]
 Assembler=Masm
-Path=C:\FbEdit\Projects\Applications\FbEdit\Sim52\Keyboard
+Path=D:\FbEdit\Projects\Applications\FbEdit\Sim52\Keyboard
 Group=2,-1,0,1,4x4 Keyboard,-2,-1,1,Assembly,-3,-1,1,Include,-4,-1,1,Misc,-5,-1,1,Resource
-F1=-2,2,1,22,22,600,400,602,Keyboard.asm
+F1=-2,2,1,22,22,600,400,592,Keyboard.asm
 F2=-3,0,1,44,44,600,400,186,Keyboard.inc
 F3=-5,2,4,66,66,600,400,0,Keyboard.rc
 F4=-4,0,2,88,88,600,400,0,Keyboard.txt

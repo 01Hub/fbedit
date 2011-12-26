@@ -193,15 +193,27 @@ SetPort:
 	.elseif ecx>=MMI0_0 && ecx<=MMI0_7
 		lea		ecx,[ecx-MMI0_0]
 		mov		edx,[ebx].ADDIN.mminport[0]
+		.if sdword ptr ecx>0
+			lea		edx,[ebx].ADDIN.XRam[edx]
+		.endif
 	.elseif ecx>=MMI1_0 && ecx<=MMI1_7
 		lea		ecx,[ecx-MMI1_0]
 		mov		edx,[ebx].ADDIN.mminport[4]
+		.if sdword ptr ecx>0
+			lea		edx,[ebx].ADDIN.XRam[edx]
+		.endif
 	.elseif ecx>=MMI2_0 && ecx<=MMI2_7
 		lea		ecx,[ecx-MMI2_0]
 		mov		edx,[ebx].ADDIN.mminport[8]
+		.if sdword ptr ecx>0
+			lea		edx,[ebx].ADDIN.XRam[edx]
+		.endif
 	.elseif ecx>=MMI3_0 && ecx<=MMI3_7
 		lea		ecx,[ecx-MMI3_0]
 		mov		edx,[ebx].ADDIN.mminport[12]
+		.if sdword ptr ecx>0
+			lea		edx,[ebx].ADDIN.XRam[edx]
+		.endif
 	.endif
 	mov		portbit,eax
 	mov		portaddr,edx
@@ -212,6 +224,7 @@ ClkGenProc endp
 AddinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	mii:MENUITEMINFO
 	LOCAL	buffer[256]:BYTE
+	LOCAL	rect:RECT
 
 	mov		eax,uMsg
 	.if eax==AM_INIT
@@ -286,6 +299,16 @@ AddinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke GetItemInt,addr buffer,1
 		invoke SendDlgItemMessage,hDlg,IDC_CBOOUT,CB_SETCURSEL,eax,0
 		invoke SendMessage,hDlg,WM_COMMAND,(CBN_SELCHANGE shl 16) or IDC_CBOOUT,0
+		invoke GetWindowRect,hDlg,addr rect
+		mov		eax,rect.left
+		sub		rect.right,eax
+		mov		eax,rect.top
+		sub		rect.bottom,eax
+		invoke GetItemInt,addr buffer,10
+		mov		rect.left,eax
+		invoke GetItemInt,addr buffer,10
+		mov		rect.top,eax
+		invoke MoveWindow,hDlg,rect.left,rect.top,rect.right,rect.bottom,TRUE
 	.elseif eax==AM_PROJECTCLOSE
 		;Save settings to project file
 		mov		buffer,0
@@ -295,6 +318,9 @@ AddinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke PutItemInt,addr buffer,fActive
 		invoke SendDlgItemMessage,hDlg,IDC_CBOOUT,CB_GETCURSEL,0,0
 		invoke PutItemInt,addr buffer,eax
+		invoke GetWindowRect,hDlg,addr rect
+		invoke PutItemInt,addr buffer,rect.left
+		invoke PutItemInt,addr buffer,rect.top
 		invoke WritePrivateProfileString,addr szProClkGen,addr szProClkGen,addr buffer[1],lParam
 	.endif
 	xor		eax,eax

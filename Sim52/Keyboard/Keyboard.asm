@@ -424,6 +424,7 @@ AddinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	mii:MENUITEMINFO
 	LOCAL	buffer[512]:BYTE
 	LOCAL	buffer1[32]:BYTE
+	LOCAL	rect:RECT
 
 	mov		eax,uMsg
 	.if eax==AM_INIT
@@ -579,6 +580,16 @@ AddinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			pop		ebx
 		.endw
 		invoke SendMessage,hDlg,WM_COMMAND,CBN_SELCHANGE shl 16,0
+		invoke GetWindowRect,hDlg,addr rect
+		mov		eax,rect.left
+		sub		rect.right,eax
+		mov		eax,rect.top
+		sub		rect.bottom,eax
+		invoke GetItemInt,addr buffer,10
+		mov		rect.left,eax
+		invoke GetItemInt,addr buffer,10
+		mov		rect.top,eax
+		invoke MoveWindow,hDlg,rect.left,rect.top,rect.right,rect.bottom,TRUE
 		invoke GetPrivateProfileString,addr szProKeyboard,addr szProKeyboardText,addr szDefButtonText,addr buffer,sizeof buffer,lParam
 		invoke SetDlgItemText,hDlg,IDC_EDTBUTTON,addr buffer
 		invoke lstrcpy,addr szButtonText,addr buffer
@@ -626,6 +637,9 @@ AddinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke PutItemInt,addr buffer,eax
 			pop		eax
 		.endw
+		invoke GetWindowRect,hDlg,addr rect
+		invoke PutItemInt,addr buffer,rect.left
+		invoke PutItemInt,addr buffer,rect.top
 		invoke WritePrivateProfileString,addr szProKeyboard,addr szProKeyboard,addr buffer[1],lParam
 		invoke GetDlgItemText,hDlg,IDC_EDTBUTTON,addr buffer,sizeof buffer
 		invoke WritePrivateProfileString,addr szProKeyboard,addr szProKeyboardText,addr buffer,lParam

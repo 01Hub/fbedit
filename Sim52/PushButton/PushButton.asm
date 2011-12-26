@@ -510,6 +510,7 @@ AddinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	mii:MENUITEMINFO
 	LOCAL	buffer[512]:BYTE
 	LOCAL	buffer1[32]:BYTE
+	LOCAL	rect:RECT
 
 	mov		eax,uMsg
 	.if eax==AM_INIT
@@ -569,6 +570,16 @@ AddinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			lea		esi,[esi+eax+1]
 			inc		ebx
 		.endw
+		invoke GetWindowRect,hDlg,addr rect
+		mov		eax,rect.left
+		sub		rect.right,eax
+		mov		eax,rect.top
+		sub		rect.bottom,eax
+		invoke GetItemInt,addr buffer,10
+		mov		rect.left,eax
+		invoke GetItemInt,addr buffer,10
+		mov		rect.top,eax
+		invoke MoveWindow,hDlg,rect.left,rect.top,rect.right,rect.bottom,TRUE
 	.elseif eax==AM_PROJECTCLOSE
 		mov		buffer,0
 		xor		ebx,ebx
@@ -586,6 +597,9 @@ AddinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke PutItemInt,addr buffer,eax
 			inc		ebx
 		.endw
+		invoke GetWindowRect,hDlg,addr rect
+		invoke PutItemInt,addr buffer,rect.left
+		invoke PutItemInt,addr buffer,rect.top
 		invoke WritePrivateProfileString,addr szProPB,addr szProPB,addr buffer[1],lParam
 	.endif
 	xor		eax,eax

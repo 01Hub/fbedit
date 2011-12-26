@@ -2,9 +2,9 @@
 Version=3000
 [Project]
 Assembler=Masm
-Path=C:\FbEdit\Projects\Applications\FbEdit\Sim52\PushButton
+Path=D:\FbEdit\Projects\Applications\FbEdit\Sim52\PushButton
 Group=2,-1,0,1,8 Push Buttons,-2,-1,1,Assembly,-3,-1,1,Include,-4,-1,1,Misc,-5,-1,1,Resource
-F1=-2,2,1,22,22,600,400,569,PushButton.asm
+F1=-2,2,1,22,22,600,400,513,PushButton.asm
 F2=-3,0,1,44,44,600,400,172,PushButton.inc
 F3=-5,2,4,66,66,600,400,0,PushButton.rc
 F4=-4,0,2,88,88,600,400,0,PushButton.txt
