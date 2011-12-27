@@ -1548,6 +1548,20 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		addin.Refresh,1
 			.elseif eax==IDM_HELP_ABOUT
 				invoke DialogBoxParam,addin.hInstance,IDD_DLGABOUT,hWin,offset AboutProc,0
+			.elseif eax==IDM_ZOOMIN
+				invoke GetDlgItem,hWin,IDC_UDCCAD
+				mov		ebx,eax
+				invoke IsWindowVisible,ebx
+				.if eax
+					invoke SendMessage,ebx,CM_ZOOMIN,0,0
+				.endif
+			.elseif eax==IDM_ZOOMOUT
+				invoke GetDlgItem,hWin,IDC_UDCCAD
+				mov		ebx,eax
+				invoke IsWindowVisible,ebx
+				.if eax
+					invoke SendMessage,ebx,CM_ZOOMOUT,0,0
+				.endif
 			.elseif eax>=11100 && eax<=11131
 				;Help
 				lea		eax,[eax-11100]

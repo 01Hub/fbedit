@@ -319,6 +319,9 @@ IDM_TOOLS_CLEARRAM		equ 10018
 IDM_TOOLS_CLEARXRAM		equ 10019
 IDM_HELP                equ 10205
 IDM_HELP_ABOUT          equ 10101
+IDM_ZOOMIN				equ 10300
+IDM_ZOOMOUT				equ 10301
+
 IDB_TBRBMP              equ 100
 IDB_LEDGRAY             equ 101
 IDB_LEDGREEN            equ 102
