@@ -1,0 +1,3 @@
+LIBRARY 74HC590.dll
+EXPORTS
+	AddinProc

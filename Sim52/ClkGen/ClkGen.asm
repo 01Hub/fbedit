@@ -84,7 +84,6 @@ PutItemInt endp
 ClkGenProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	rect:RECT
 	LOCAL	buffer[32]:BYTE
-	LOCAL	tid:DWORD
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
