@@ -197,12 +197,16 @@ GetPortBit:
 	mov		edx,1
 	.if eax>=P0_0 && eax<=P0_7
 		lea		ecx,[eax-P0_0]
+		mov		eax,SFR_P0
 	.elseif eax>=P1_0 && eax<=P1_7
 		lea		ecx,[eax-P1_0]
+		mov		eax,SFR_P1
 	.elseif eax>=P2_0 && eax<=P2_7
 		lea		ecx,[eax-P2_0]
+		mov		eax,SFR_P2
 	.elseif eax>=P3_0 && eax<=P3_7
 		lea		ecx,[eax-P3_0]
+		mov		eax,SFR_P3
 	.endif
 	shl		edx,cl
 	retn
