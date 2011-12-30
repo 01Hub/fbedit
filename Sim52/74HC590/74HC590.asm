@@ -309,8 +309,8 @@ AddinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		shl		eax,4
 		or		eax,80h
 		mov		edx,lParam
-		mov		ecx,TRUE
 		.if eax==portbit.portadr[PORTBIT_OE]
+			mov		ecx,TRUE
 			test		edx,portbit.portbit[PORTBIT_OE]
 			.if ZERO?
 				xor		ecx,ecx
@@ -318,6 +318,7 @@ AddinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			mov		portbit.bitval[PORTBIT_OE],ecx
 		.endif
 		.if eax==portbit.portadr[PORTBIT_MRC]
+			mov		ecx,TRUE
 			test		edx,portbit.portbit[PORTBIT_MRC]
 			.if ZERO?
 				xor		ecx,ecx
@@ -326,6 +327,7 @@ AddinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			mov		portbit.bitval[PORTBIT_MRC],ecx
 		.endif
 		.if eax==portbit.portadr[PORTBIT_CPR]
+			mov		ecx,TRUE
 			test		edx,portbit.portbit[PORTBIT_CPR]
 			.if ZERO?
 				xor		ecx,ecx
@@ -341,6 +343,7 @@ AddinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.endif
 		.endif
 		.if eax==portbit.portadr[PORTBIT_CE]
+			mov		ecx,TRUE
 			test		edx,portbit.portbit[PORTBIT_CE]
 			.if ZERO?
 				xor		ecx,ecx

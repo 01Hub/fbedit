@@ -3,14 +3,14 @@ Version=3000
 [Project]
 Assembler=masm
 Group=2,-1,0,1,Sim52,-2,-1,1,Assembly,-3,-1,1,Include,-4,-1,1,Misc,-5,-1,1,Resource
-F1=-2,2,1,22,54,600,400,1720,Sim52.asm
-F2=-3,0,1,-6,7,1135,764,321,Sim52.inc
+F1=-2,2,1,22,54,600,400,1905,Sim52.asm
+F2=-3,0,1,-6,7,1135,764,438,Sim52.inc
 F3=-5,2,4,-6,-25,1250,643,315,Sim52.rc
 F6=-5,0,2,-6,-25,1250,643,0,Sim52Tbr.bmp
 C6=
 B6=
 M6=
-Path=D:\FbEdit\Projects\Applications\FbEdit\Sim52
+Path=C:\FbEdit\Projects\Applications\FbEdit\Sim52
 F4=-4,0,2,-1,-2,1040,323,52,Sim52.txt
 F5=-2,0,1,176,208,1040,414,123,Sim52Parse.asm
 F7=-2,0,1,-6,319,1250,331,2478,Sim52Core.asm

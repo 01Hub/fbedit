@@ -2,9 +2,9 @@
 Version=3000
 [Project]
 Assembler=Masm
-Path=D:\FbEdit\Projects\Applications\FbEdit\Sim52\74HC590
+Path=C:\FbEdit\Projects\Applications\FbEdit\Sim52\74HC590
 Group=2,-1,0,1,74HC590 Simulator,-2,-1,1,Assembly,-3,-1,1,Include,-4,-1,1,Misc,-5,-1,1,Resource
-F1=-2,2,1,22,22,600,400,485,74HC590.asm
+F1=-2,2,1,22,22,600,400,386,74HC590.asm
 F2=-3,0,1,44,44,600,400,0,74HC590.inc
 F3=-5,2,4,-4,-23,1246,639,0,74HC590.rc
 F4=-4,0,2,88,88,600,400,0,74HC590.txt

@@ -1,0 +1,14 @@
+ADC Demo
+--------
+This demo shows how to connect the MCP3208 12 bit, 8 channel ADC
+to the 8051/8052.
+
+In this demo CH0 is connected to a 0 to +5V power supply and
+CH1 is connected to a 0 to +24V powersupply using 19K and 5K
+resistors to divide the voltage down to +5V output at +24V input.
+A 100nF capacitor could be connected in parallel with the 5K resistor
+to lower the output impedance.
+
+The FP5MUL and FP24MUL constants was found using the Calc demo.
+
+KetilO

@@ -1142,6 +1142,7 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	rect:RECT
 	LOCAL	rectmov:RECT
 	LOCAL	editstream:EDITSTREAM
+	LOCAL	dwread:DWORD
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
@@ -1164,6 +1165,8 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SendDlgItemMessage,hWin,IDC_TABCODE,TCM_INSERTITEM,0,addr tci
 		mov		tci.pszText,offset szTabSchematics
 		invoke SendDlgItemMessage,hWin,IDC_TABCODE,TCM_INSERTITEM,1,addr tci
+		mov		tci.pszText,offset szTabDescription
+		invoke SendDlgItemMessage,hWin,IDC_TABCODE,TCM_INSERTITEM,2,addr tci
 		mov		tci.pszText,offset szTabStatus
 		invoke SendDlgItemMessage,hWin,IDC_TABSTATUS,TCM_INSERTITEM,0,addr tci
 		invoke GetDlgItem,hWin,IDC_TABSTATUS
@@ -1211,6 +1214,7 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke GetDlgItem,hWin,IDC_GRDCODE
 		mov		addin.hGrd,eax
 		invoke SendMessage,addin.hGrd,WM_SETFONT,addin.hGrdFont,0
+		invoke SendDlgItemMessage,hWin,IDC_EDTDESC,WM_SETFONT,addin.hGrdFont,TRUE
 		invoke ImageList_Create,16,16,ILC_COLOR24,1,0
 		mov		addin.hIml,eax
 		invoke ImageList_Add,addin.hIml,addin.hBmpRedLed,NULL
@@ -1350,15 +1354,30 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			mov		eax,[ebx].NMHDR.code
 			.if eax==TCN_SELCHANGE
 				;Tab selection
-				invoke GetDlgItem,hWin,IDC_UDCCAD
-				mov		ebx,eax
-				invoke IsWindowVisible,addin.hGrd
-				.if eax
-					invoke ShowWindow,addin.hGrd,SW_HIDE
-					invoke ShowWindow,ebx,SW_SHOW
-				.else
-					invoke ShowWindow,ebx,SW_HIDE
-					invoke ShowWindow,addin.hGrd,SW_SHOW
+				invoke SendDlgItemMessage,hWin,IDC_TABCODE,TCM_GETCURSEL,0,0
+				.if eax!=SelTabCode
+					push	eax
+					mov		eax,SelTabCode
+					.if !eax
+						invoke ShowWindow,addin.hGrd,SW_HIDE
+					.elseif eax==1
+						invoke GetDlgItem,hWin,IDC_UDCCAD
+						invoke ShowWindow,eax,SW_HIDE
+					.else
+						invoke GetDlgItem,hWin,IDC_EDTDESC
+						invoke ShowWindow,eax,SW_HIDE
+					.endif
+					pop		eax
+					mov		SelTabCode,eax
+					.if !eax
+						invoke ShowWindow,addin.hGrd,SW_SHOW
+					.elseif eax==1
+						invoke GetDlgItem,hWin,IDC_UDCCAD
+						invoke ShowWindow,eax,SW_SHOW
+					.else
+						invoke GetDlgItem,hWin,IDC_EDTDESC
+						invoke ShowWindow,eax,SW_SHOW
+					.endif
 				.endif
 			.endif
 		.elseif eax==IDC_GRDCODE
@@ -1682,8 +1701,12 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		add		rect.top,25
 		sub		eax,25
 		push	eax
+		push	eax
 		invoke MoveWindow,addin.hGrd,0,rect.top,esi,eax,TRUE
 		invoke GetDlgItem,hWin,IDC_UDCCAD
+		pop		edx
+		invoke MoveWindow,eax,0,rect.top,esi,edx,TRUE
+		invoke GetDlgItem,hWin,IDC_EDTDESC
 		pop		edx
 		invoke MoveWindow,eax,0,rect.top,esi,edx,TRUE
 		invoke GetDlgItem,hWin,IDC_TABVIEW
@@ -1863,6 +1886,24 @@ OpenProject:
 		invoke CloseHandle,ebx
 	.endif
 	invoke SendDlgItemMessage,hWin,IDC_UDCCAD,CM_SETGRID,FALSE,0
+	invoke lstrlen,addr buffer1
+	mov		dword ptr buffer1[eax-4],'txt.'
+	invoke CreateFile,addr buffer1,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,0
+	.if eax!=INVALID_HANDLE_VALUE
+		mov		ebx,eax
+		invoke GetFileSize,ebx,NULL
+		push	eax
+		inc		eax
+		invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,eax
+		mov		edi,eax
+		pop		edx
+		invoke ReadFile,ebx,edi,edx,addr dwread,NULL
+		invoke SetDlgItemText,hWin,IDC_EDTDESC,edi
+		invoke GlobalFree,edi
+		invoke CloseHandle,ebx
+	.else
+		invoke SetDlgItemText,hWin,IDC_EDTDESC,addr szNULL
+	.endif
 	retn
 
 WndProc endp

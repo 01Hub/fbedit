@@ -292,6 +292,7 @@ IDD_DLGABOUT			equ 2000
 IDC_EDTABOUT			equ 1001
 IDC_URL1				equ 1002
 IDC_URL2				equ 1003
+IDC_EDTDESC				equ 1008
 
 IDM_MENU                equ 10000
 IDM_FILE                equ 10200
@@ -386,6 +387,7 @@ szTabSfr				BYTE 'Sfr',0
 szTabXRam				BYTE 'XRam',0
 szTabCode				BYTE 'Code',0
 szTabSchematics			BYTE 'Schematics',0
+szTabDescription		BYTE 'Description',0
 
 szFmtHexByte			BYTE '%02X',0
 szFmtHexByteh			BYTE '%02Xh',0
@@ -434,6 +436,7 @@ addin					ADDIN <>
 hFind					HWND ?
 CommandLine				DWORD ?
 SelTab					DWORD ?
+SelTabCode				DWORD ?
 lpOldEditProc			DWORD ?
 nFindRow				DWORD ?
 nFindPos				DWORD ?
