@@ -1,0 +1,31 @@
+[Version]
+Version=3000
+[Project]
+Assembler=Masm
+Path=D:\FbEdit\Projects\Applications\FbEdit\Sim52\MCP3208
+Group=2,-1,0,1,MCP3208 8 channel 12 bit ADC,-2,-1,1,Assembly,-3,-1,1,Include,-4,-1,1,Misc,-5,-1,1,Resource
+F1=-2,2,1,22,22,600,400,339,MCP3208.asm
+F2=-3,0,1,44,44,600,400,108,MCP3208.inc
+F3=-5,2,4,66,66,600,400,0,MCP3208.rc
+F4=-4,0,2,88,88,600,400,0,MCP3208.txt
+F5=-2,0,2,88,88,1040,414,2,MCP3208.def
+Open=0,1,2,3,5
+Api=
+C5=
+B5=
+M5=
+C3=
+B3=
+M3=
+C2=0
+B2=
+M2=
+C1=0,0
+B1=
+M1=
+[Make]
+Make=0
+0=Dll Release,'/v "$R"',"$R.res",'/c /coff /Cp "$C"',"$C.obj",'/SUBSYSTEM:WINDOWS /RELEASE /VERSION:4.0 /DLL /DEF:$D /OUT:$O $C $M $R',"..\Addins\$C.dll",'',
+Delete=1
+IncBuild=0
+Run=0,'',''

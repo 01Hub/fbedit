@@ -1,0 +1,433 @@
+
+ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 1
+
+
+
+
+
+       MCS-51 Family Macro Assembler   A S E M - 5 1   V 1.3
+       =====================================================
+
+
+
+	Source File:	ADC.a51
+	Object File:	ADC.hex
+	List File:	ADC.lst
+
+
+
+ Line  I  Addr  Code            Source
+
+    1:
+    2:		N      0040	LCDLINE		EQU	40h				;16 Bytes
+    3:
+    4:				;RESET:***********************************************
+    5:		N      0000			ORG	0000h
+    6:	  0000	02 00 03			LJMP	START
+    7:
+    8:	  0003	11 E7		START:		ACALL	LCDCLEARBUFF
+    9:	  0005	11 CE				ACALL	LCDINIT
+   10:	  0007	75 40 43			MOV	LCDLINE,#'C'
+   11:	  000A	75 41 48			MOV	LCDLINE+1,#'H'
+   12:	  000D	E4		START1:		CLR	A
+   13:	  000E	11 B8				ACALL	LCDSETADR
+   14:	  0010	74 00				MOV	A,#00h			;CH0
+   15:	  0012	11 48				ACALL	ADCONVERT
+   16:	  0014	7E 00				MOV	R6,#00h
+   17:	  0016	7F 00				MOV	R7,#00h
+   18:	  0018	78 44				MOV	R0,#LCDLINE+4
+   19:	  001A	11 F2				ACALL	BIN2DEC
+   20:	  001C	75 42 30			MOV	LCDLINE+2,#'0'
+   21:	  001F	7F 10				MOV	R7,#10h
+   22:	  0021	78 40				MOV	R0,#LCDLINE
+   23:	  0023	11 BD				ACALL	LCDPRINTSTR
+   24:	  0025	74 40				MOV	A,#40h
+   25:	  0027	11 B8				ACALL	LCDSETADR
+   26:	  0029	74 01				MOV	A,#01h			;CH1
+   27:	  002B	11 48				ACALL	ADCONVERT
+   28:	  002D	7E 00				MOV	R6,#00h
+   29:	  002F	7F 00				MOV	R7,#00h
+   30:	  0031	78 44				MOV	R0,#LCDLINE+4
+   31:	  0033	11 F2				ACALL	BIN2DEC
+   32:	  0035	75 42 31			MOV	LCDLINE+2,#'1'
+   33:	  0038	7F 10				MOV	R7,#10h
+   34:	  003A	78 40				MOV	R0,#LCDLINE
+   35:	  003C	11 BD				ACALL	LCDPRINTSTR
+   36:	  003E	7E 00				MOV	R6,#00h
+   37:	  0040	7F 00				MOV	R7,#00h
+   38:	  0042	DE FE		START2:		DJNZ	R6,START2
+   39:	  0044	DF FC				DJNZ	R7,START2
+   40:	  0046	01 0D				AJMP	START1
+   41:
+   42:				;------------------------------------------------------------------
+   43:				;AD Converter.
+
+ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 2
+
+
+
+ Line  I  Addr  Code            Source
+
+   44:				;IN:	A holds channel (0 to 7).
+   45:				;OUT:	R5:R4 Holds 16 Bit result
+   46:				;-----------------------------------------------------
+   47:	  0048	44 18		ADCONVERT:	ORL	A,#18h				;START, SINGLE ENDED
+   48:	  004A	23				RL	A
+   49:	  004B	23				RL	A
+   50:	  004C	23				RL	A
+   51:	  004D	C2 90				CLR	P1.0				;CS	LOW
+   52:						;Clock in channel select and Single/Diff+2 clocks for sample
+   53:	  004F	7F 07				MOV	R7,#07h
+   54:	  0051	33		ADCONVERT1:	RLC	A
+   55:	  0052	92 92				MOV	P1.2,C				;DIN
+   56:	  0054	C2 91				CLR	P1.1				;CLK	LOW
+   57:	  0056	D2 91				SETB	P1.1				;CLK	HIGH
+   58:	  0058	DF F7				DJNZ	R7,ADCONVERT1
+   59:	  005A	D2 92				SETB	P1.2				;DIN	HIGH
+   60:						;Clock out 5 bits, including null bit
+   61:	  005C	E4				CLR	A
+   62:	  005D	7F 05				MOV	R7,#05h
+   63:	  005F	A2 93		ADCONVERT2:	MOV	C,P1.3				;DOUT
+   64:	  0061	33				RLC	A
+   65:	  0062	C2 91				CLR	P1.1				;CLK	LOW
+   66:	  0064	D2 91				SETB	P1.1				;CLK	HIGH
+   67:	  0066	DF F7				DJNZ	R7,ADCONVERT2
+   68:	  0068	FD				MOV	R5,A
+   69:						;Clock out 8 bits
+   70:	  0069	7F 08				MOV	R7,#08h
+   71:	  006B	E4				CLR	A
+   72:	  006C	A2 93		ADCONVERT3:	MOV	C,P1.3				;DOUT
+   73:	  006E	33				RLC	A
+   74:	  006F	C2 91				CLR	P1.1				;CLK	LOW
+   75:	  0071	D2 91				SETB	P1.1				;CLK	HIGH
+   76:	  0073	DF F7				DJNZ	R7,ADCONVERT3
+   77:	  0075	FC				MOV	R4,A
+   78:						;CS high
+   79:	  0076	D2 90				SETB	P1.0				;CS	HIGH
+   80:	  0078	22				RET
+   81:
+   82:				;------------------------------------------------------------------
+   83:				;LCD Output.
+   84:				;------------------------------------------------------------------
+   85:	  0079	C0 07		LCDDELAY:	PUSH	07h
+   86:	  007B	7F 00				MOV	R7,#00h
+   87:	  007D	DF FE				DJNZ	R7,$
+   88:	  007F	D0 07				POP	07h
+   89:	  0081	22				RET
+   90:
+   91:				;A contains nibble, ACC.4 contains RS
+   92:	  0082	D2 E5		LCDNIBOUT:	SETB	ACC.5				;E
+   93:	  0084	F5 A0				MOV	P2,A
+   94:	  0086	C2 A5				CLR	P2.5				;Negative edge on E
+   95:	  0088	22				RET
+   96:
+   97:				;A contains byte
+   98:	  0089	C0 E0		LCDCMDOUT:	PUSH	ACC
+   99:	  008B	C4				SWAP	A				;High nibble first
+
+ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 3
+
+
+
+ Line  I  Addr  Code            Source
+
+  100:	  008C	54 0F				ANL	A,#0Fh
+  101:	  008E	11 82				ACALL	LCDNIBOUT
+  102:	  0090	D0 E0				POP	ACC
+  103:	  0092	54 0F				ANL	A,#0Fh
+  104:	  0094	11 82				ACALL	LCDNIBOUT
+  105:	  0096	11 79				ACALL	LCDDELAY			;Wait for BF to clear
+  106:	  0098	22				RET
+  107:
+  108:				;A contains byte
+  109:	  0099	C0 E0		LCDCHROUT:	PUSH	ACC
+  110:	  009B	C4				SWAP	A				;High nibble first
+  111:	  009C	54 0F				ANL	A,#0Fh
+  112:	  009E	D2 E4				SETB	ACC.4				;RS
+  113:	  00A0	11 82				ACALL	LCDNIBOUT
+  114:	  00A2	D0 E0				POP	ACC
+  115:	  00A4	54 0F				ANL	A,#0Fh
+  116:	  00A6	D2 E4				SETB	ACC.4				;RS
+  117:	  00A8	11 82				ACALL	LCDNIBOUT
+  118:	  00AA	11 79				ACALL	LCDDELAY			;Wait for BF to clear
+  119:	  00AC	22				RET
+  120:
+  121:	  00AD	74 01		LCDCLEAR:	MOV	A,#00000001b
+  122:	  00AF	11 89				ACALL	LCDCMDOUT
+  123:	  00B1	7F 00				MOV	R7,#00h
+  124:	  00B3	11 79		LCDCLEAR1:	ACALL	LCDDELAY
+  125:	  00B5	DF FC				DJNZ	R7,LCDCLEAR1
+  126:	  00B7	22				RET
+  127:
+  128:				;A contais address
+  129:	  00B8	44 80		LCDSETADR:	ORL	A,#10000000b
+  130:	  00BA	11 89				ACALL	LCDCMDOUT
+  131:	  00BC	22				RET
+  132:
+  133:	  00BD	E6		LCDPRINTSTR:	MOV	A,@R0
+  134:	  00BE	11 99				ACALL	LCDCHROUT
+  135:	  00C0	08				INC	R0
+  136:	  00C1	DF FA				DJNZ	R7,LCDPRINTSTR
+  137:	  00C3	22				RET
+  138:
+  139:	  00C4	E4		PRNTCDPTRLCD:	CLR	A
+  140:	  00C5	93				MOVC	A,@A+DPTR
+  141:	  00C6	60 05				JZ	PRNTCDPTRLCD1
+  142:	  00C8	11 99				ACALL	LCDCHROUT
+  143:	  00CA	A3				INC	DPTR
+  144:	  00CB	80 F7				SJMP	PRNTCDPTRLCD
+  145:	  00CD	22		PRNTCDPTRLCD1:	RET
+  146:
+  147:	  00CE	74 03		LCDINIT:	MOV	A,#00000011b			;Function set
+  148:	  00D0	11 82				ACALL	LCDNIBOUT
+  149:	  00D2	11 79				ACALL	LCDDELAY			;Wait for BF to clear
+  150:	  00D4	74 28				MOV	A,#00101000b
+  151:	  00D6	11 89				ACALL	LCDCMDOUT
+  152:	  00D8	74 28				MOV	A,#00101000b
+  153:	  00DA	11 89				ACALL	LCDCMDOUT
+  154:	  00DC	74 0C				MOV	A,#00001100b			;Display ON/OFF
+  155:	  00DE	11 89				ACALL	LCDCMDOUT
+
+ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 4
+
+
+
+ Line  I  Addr  Code            Source
+
+  156:	  00E0	11 AD				ACALL	LCDCLEAR			;Clear
+  157:	  00E2	74 06				MOV	A,#00000110b			;Cursor direction
+  158:	  00E4	11 89				ACALL	LCDCMDOUT
+  159:	  00E6	22				RET
+  160:
+  161:	  00E7	78 40		LCDCLEARBUFF:	MOV	R0,#LCDLINE
+  162:	  00E9	7F 10				MOV	R7,#10h
+  163:	  00EB	74 20				MOV	A,#20H
+  164:	  00ED	F6		LCDCLEARBUFF1:	MOV	@R0,A
+  165:	  00EE	08				INC	R0
+  166:	  00EF	DF FC				DJNZ	R7,LCDCLEARBUFF1
+  167:	  00F1	22				RET
+  168:
+  169:				;------------------------------------------------------------------
+  170:				;Binary to decimal converter
+  171:				;Converts R7:R6:R5:R4 to decimal pointed to by R0
+  172:				;Returns with number of digits in A
+  173:				;------------------------------------------------------------------
+  174:	  00F2	C0 00		BIN2DEC:	PUSH	00h
+  175:	  00F4	90 01 48			MOV	DPTR,#BINDEC
+  176:	  00F7	7A 0A				MOV	R2,#0Ah
+  177:	  00F9	7B 2F		BIN2DEC1:	MOV	R3,#2Fh
+  178:	  00FB	0B		BIN2DEC2:	INC	R3
+  179:	  00FC	31 1B				ACALL	SUBIT
+  180:	  00FE	50 FB				JNC	BIN2DEC2
+  181:	  0100	31 34				ACALL	ADDIT
+  182:	  0102	EB				MOV	A,R3
+  183:	  0103	F6				MOV	@R0,A
+  184:	  0104	08				INC	R0
+  185:	  0105	A3				INC	DPTR
+  186:	  0106	A3				INC	DPTR
+  187:	  0107	A3				INC	DPTR
+  188:	  0108	A3				INC	DPTR
+  189:	  0109	DA EE				DJNZ	R2,BIN2DEC1
+  190:	  010B	D0 00				POP	00h
+  191:						;Remove leading zeroes
+  192:	  010D	7A 09				MOV	R2,#09h
+  193:	  010F	E6		BIN2DEC3:	MOV	A,@R0
+  194:	  0110	B4 30 05			CJNE	A,#30h,BIN2DEC4
+  195:	  0113	76 20				MOV	@R0,#20h
+  196:	  0115	08				INC	R0
+  197:	  0116	DA F7				DJNZ	R2,BIN2DEC3
+  198:	  0118	0A		BIN2DEC4:	INC	R2
+  199:	  0119	EA				MOV	A,R2
+  200:	  011A	22				RET
+  201:
+  202:	  011B	E4		SUBIT:		CLR	A
+  203:	  011C	93				MOVC	A,@A+DPTR
+  204:	  011D	CC				XCH	A,R4
+  205:	  011E	C3				CLR	C
+  206:	  011F	9C				SUBB	A,R4
+  207:	  0120	FC				MOV	R4,A
+  208:	  0121	74 01				MOV	A,#01h
+  209:	  0123	93				MOVC	A,@A+DPTR
+  210:	  0124	CD				XCH	A,R5
+  211:	  0125	9D				SUBB	A,R5
+
+ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 5
+
+
+
+ Line  I  Addr  Code            Source
+
+  212:	  0126	FD				MOV	R5,A
+  213:	  0127	74 02				MOV	A,#02h
+  214:	  0129	93				MOVC	A,@A+DPTR
+  215:	  012A	CE				XCH	A,R6
+  216:	  012B	9E				SUBB	A,R6
+  217:	  012C	FE				MOV	R6,A
+  218:	  012D	74 03				MOV	A,#03h
+  219:	  012F	93				MOVC	A,@A+DPTR
+  220:	  0130	CF				XCH	A,R7
+  221:	  0131	9F				SUBB	A,R7
+  222:	  0132	FF				MOV	R7,A
+  223:	  0133	22				RET
+  224:
+  225:	  0134	E4		ADDIT:		CLR	A
+  226:	  0135	93				MOVC	A,@A+DPTR
+  227:	  0136	2C				ADD	A,R4
+  228:	  0137	FC				MOV	R4,A
+  229:	  0138	74 01				MOV	A,#01h
+  230:	  013A	93				MOVC	A,@A+DPTR
+  231:	  013B	3D				ADDC	A,R5
+  232:	  013C	FD				MOV	R5,A
+  233:	  013D	74 02				MOV	A,#02h
+  234:	  013F	93				MOVC	A,@A+DPTR
+  235:	  0140	3E				ADDC	A,R6
+  236:	  0141	FE				MOV	R6,A
+  237:	  0142	74 03				MOV	A,#03h
+  238:	  0144	93				MOVC	A,@A+DPTR
+  239:	  0145	3F				ADDC	A,R7
+  240:	  0146	FF				MOV	R7,A
+  241:	  0147	22				RET
+  242:
+  243:	  0148	00 CA 9A 3B	BINDEC:		DB	000h,0CAh,09Ah,03Bh		;1000000000
+  244:	  014C	00 E1 F5 05			DB	000h,0E1h,0F5h,005h		; 100000000
+  245:	  0150	80 96 98 00			DB	080h,096h,098h,000h		;  10000000
+  246:	  0154	40 42 0F 00			DB	040h,042h,0Fh,0000h		;   1000000
+  247:	  0158	A0 86 01 00			DB	0A0h,086h,001h,000h		;    100000
+  248:	  015C	10 27 00 00			DB	010h,027h,000h,000h		;     10000
+  249:	  0160	E8 03 00 00			DB	0E8h,003h,000h,000h		;      1000
+  250:	  0164	64 00 00 00			DB	064h,000h,000h,000h		;       100
+  251:	  0168	0A 00 00 00			DB	00Ah,000h,000h,000h		;        10
+  252:	  016C	01 00 00 00			DB	001h,000h,000h,000h		;         1
+  253:
+  254:						END
+
+
+
+
+
+                     register banks used:  ---
+
+                     no errors
+
+
+
+
+ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 6
+
+
+
+
+
+	       L I S T   O F   S Y M B O L S
+	       =============================
+
+
+SYMBOL				  TYPE     VALUE	LINE
+------------------------------------------------------------
+??ASEM_51			  NUMBER    8051
+??VERSION			  NUMBER    0130
+AC				  BIT	      D6
+ACC				  DATA	      E0
+ADCONVERT			  CODE	    0048	  47
+ADCONVERT1			  CODE	    0051	  54
+ADCONVERT2			  CODE	    005F	  63
+ADCONVERT3			  CODE	    006C	  72
+ADDIT				  CODE	    0134	 225
+B				  DATA	      F0
+BIN2DEC				  CODE	    00F2	 174
+BIN2DEC1			  CODE	    00F9	 177
+BIN2DEC2			  CODE	    00FB	 178
+BIN2DEC3			  CODE	    010F	 193
+BIN2DEC4			  CODE	    0118	 198
+BINDEC				  CODE	    0148	 243
+CY				  BIT	      D7
+DPH				  DATA	      83
+DPL				  DATA	      82
+EA				  BIT	      AF
+ES				  BIT	      AC
+ET0				  BIT	      A9
+ET1				  BIT	      AB
+EX0				  BIT	      A8
+EX1				  BIT	      AA
+EXTI0				  CODE	    0003
+EXTI1				  CODE	    0013
+F0				  BIT	      D5
+IE				  DATA	      A8
+IE0				  BIT	      89
+IE1				  BIT	      8B
+INT0				  BIT	      B2
+INT1				  BIT	      B3
+IP				  DATA	      B8
+IT0				  BIT	      88
+IT1				  BIT	      8A
+LCDCHROUT			  CODE	    0099	 109
+LCDCLEAR			  CODE	    00AD	 121
+LCDCLEAR1			  CODE	    00B3	 124
+LCDCLEARBUFF			  CODE	    00E7	 161
+LCDCLEARBUFF1			  CODE	    00ED	 164
+LCDCMDOUT			  CODE	    0089	  98
+LCDDELAY			  CODE	    0079	  85
+LCDINIT				  CODE	    00CE	 147
+LCDLINE				  NUMBER    0040	   2
+LCDNIBOUT			  CODE	    0082	  92
+LCDPRINTSTR			  CODE	    00BD	 133
+LCDSETADR			  CODE	    00B8	 129
+OV				  BIT	      D2
+P				  BIT	      D0
+
+ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 7
+
+
+
+SYMBOL				  TYPE     VALUE	LINE
+------------------------------------------------------------
+P0				  DATA	      80
+P1				  DATA	      90
+P2				  DATA	      A0
+P3				  DATA	      B0
+PCON				  DATA	      87
+PRNTCDPTRLCD			  CODE	    00C4	 139
+PRNTCDPTRLCD1			  CODE	    00CD	 145
+PS				  BIT	      BC
+PSW				  DATA	      D0
+PT0				  BIT	      B9
+PT1				  BIT	      BB
+PX0				  BIT	      B8
+PX1				  BIT	      BA
+RB8				  BIT	      9A
+RD				  BIT	      B7
+REN				  BIT	      9C
+RESET				  CODE	    0000
+RI				  BIT	      98
+RS0				  BIT	      D3
+RS1				  BIT	      D4
+RXD				  BIT	      B0
+SBUF				  DATA	      99
+SCON				  DATA	      98
+SINT				  CODE	    0023
+SM0				  BIT	      9F
+SM1				  BIT	      9E
+SM2				  BIT	      9D
+SP				  DATA	      81
+START				  CODE	    0003	   8
+START1				  CODE	    000D	  12
+START2				  CODE	    0042	  38
+SUBIT				  CODE	    011B	 202
+T0				  BIT	      B4
+T1				  BIT	      B5
+TB8				  BIT	      9B
+TCON				  DATA	      88
+TF0				  BIT	      8D
+TF1				  BIT	      8F
+TH0				  DATA	      8C
+TH1				  DATA	      8D
+TI				  BIT	      99
+TIMER0				  CODE	    000B
+TIMER1				  CODE	    001B
+TL0				  DATA	      8A
+TL1				  DATA	      8B
+TMOD				  DATA	      89
+TR0				  BIT	      8C
+TR1				  BIT	      8E
+TXD				  BIT	      B1
+WR				  BIT	      B6

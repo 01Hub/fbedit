@@ -1,0 +1,3 @@
+LIBRARY MCP3208.dll
+EXPORTS
+	AddinProc
