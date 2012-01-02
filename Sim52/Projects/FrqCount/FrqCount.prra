@@ -2,9 +2,21 @@
 Version=3000
 [Project]
 Assembler=asemw
-Path=D:\FbEdit\Projects\Applications\FbEdit\Sim52\Projects\FrqCount
-Group=2,-1,0,1,1 MHz Frequency Counter,-2,-1,1,Assembly,-3,-1,1,Include,-4,-1,1,Misc,-5,-1,1,Resource
-F1=-2,2,1,22,22,600,400,0,FrqCount.a51
+Path=C:\FbEdit\Projects\Applications\FbEdit\Sim52\Projects\FrqCount
+Group=2,-1,0,1,1 MHz Frequency Counter,-2,-1,1,Assembly,-4,-1,1,Misc
+F1=-2,2,1,22,22,600,400,1,FrqCount.a51
+Open=1,1,2
+Api=
+C1=0
+B1=
+M1=
+F2=-4,0,2,44,44,934,491,8,FrqCount.txt
+C2=
+B2=
+M2=
 [Make]
 Make=0
 0=Release,'',,'"$C"',"$C.hex",'"$C" "$O"',"$C.cmd",'',
+Delete=0
+IncBuild=0
+Run=0,'',''
