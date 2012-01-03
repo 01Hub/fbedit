@@ -19,4 +19,4 @@ Make=0
 0=Release,'',,'"$C"',"$C.hex",'"$C" "$O"',"$C.cmd",'',
 Delete=0
 IncBuild=0
-Run=0,'',''
+Run=0,'','FrqCount60MHz.sim'

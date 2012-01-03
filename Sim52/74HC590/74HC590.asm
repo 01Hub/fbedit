@@ -305,50 +305,52 @@ AddinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		eax,AH_PORTWRITE or AH_ALECHANGED or AH_COMMAND or AH_RESET or AH_PROJECTOPEN or AH_PROJECTCLOSE
 		jmp		Ex
 	.elseif eax==AM_PORTWRITE
-		mov		eax,wParam
-		shl		eax,4
-		or		eax,80h
-		mov		edx,lParam
-		.if eax==portbit.portadr[PORTBIT_OE]
-			mov		ecx,TRUE
-			test		edx,portbit.portbit[PORTBIT_OE]
-			.if ZERO?
-				xor		ecx,ecx
+		.if fActive
+			mov		eax,wParam
+			shl		eax,4
+			or		eax,80h
+			mov		edx,lParam
+			.if eax==portbit.portadr[PORTBIT_OE]
+				mov		ecx,TRUE
+				test		edx,portbit.portbit[PORTBIT_OE]
+				.if ZERO?
+					xor		ecx,ecx
+				.endif
+				mov		portbit.bitval[PORTBIT_OE],ecx
 			.endif
-			mov		portbit.bitval[PORTBIT_OE],ecx
-		.endif
-		.if eax==portbit.portadr[PORTBIT_MRC]
-			mov		ecx,TRUE
-			test		edx,portbit.portbit[PORTBIT_MRC]
-			.if ZERO?
-				xor		ecx,ecx
-				mov		nCountC,ecx
+			.if eax==portbit.portadr[PORTBIT_MRC]
+				mov		ecx,TRUE
+				test		edx,portbit.portbit[PORTBIT_MRC]
+				.if ZERO?
+					xor		ecx,ecx
+					mov		nCountC,ecx
+				.endif
+				mov		portbit.bitval[PORTBIT_MRC],ecx
 			.endif
-			mov		portbit.bitval[PORTBIT_MRC],ecx
-		.endif
-		.if eax==portbit.portadr[PORTBIT_CPR]
-			mov		ecx,TRUE
-			test		edx,portbit.portbit[PORTBIT_CPR]
-			.if ZERO?
-				xor		ecx,ecx
-			.endif
-			.if ecx!=portbit.bitval[PORTBIT_CPR]
-				mov		portbit.bitval[PORTBIT_CPR],ecx
-				.if ecx
-					;Low to High transition
-					mov		eax,nCountC
-					mov		nCountR,eax
-					mov		ecx,TRUE
+			.if eax==portbit.portadr[PORTBIT_CPR]
+				mov		ecx,TRUE
+				test		edx,portbit.portbit[PORTBIT_CPR]
+				.if ZERO?
+					xor		ecx,ecx
+				.endif
+				.if ecx!=portbit.bitval[PORTBIT_CPR]
+					mov		portbit.bitval[PORTBIT_CPR],ecx
+					.if ecx
+						;Low to High transition
+						mov		eax,nCountC
+						mov		nCountR,eax
+						mov		ecx,TRUE
+					.endif
 				.endif
 			.endif
-		.endif
-		.if eax==portbit.portadr[PORTBIT_CE]
-			mov		ecx,TRUE
-			test		edx,portbit.portbit[PORTBIT_CE]
-			.if ZERO?
-				xor		ecx,ecx
+			.if eax==portbit.portadr[PORTBIT_CE]
+				mov		ecx,TRUE
+				test		edx,portbit.portbit[PORTBIT_CE]
+				.if ZERO?
+					xor		ecx,ecx
+				.endif
+				mov		portbit.bitval[PORTBIT_CE],ecx
 			.endif
-			mov		portbit.bitval[PORTBIT_CE],ecx
 		.endif
 	.elseif eax==AM_ALECHANGED
 		.if fActive
@@ -375,15 +377,19 @@ AddinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					.endif
 				.endif
 			.endif
-			mov		eax,nCount
-			lea		eax,[eax+1]
-			.if eax>=Divisor
-				.if !portbit.bitval[PORTBIT_CE] && portbit.bitval[PORTBIT_MRC]
-					;CE is low, MRC is high, counting is enabled
-					inc		nCountC
-					and		nCountC,0FFh
+			.if !portbit.bitval[PORTBIT_OE]
+				mov		eax,nCount
+				lea		eax,[eax+1]
+				.if eax>=Divisor
+					.if !portbit.bitval[PORTBIT_CE] && portbit.bitval[PORTBIT_MRC]
+						;CE is low, MRC is high, counting is enabled
+						inc		nCountC
+						and		nCountC,0FFh
+					.endif
+					xor		eax,eax
 				.endif
-				xor		eax,eax
+			.else
+				mov		eax,0FFh
 			.endif
 			mov		nCount,eax
 		.endif
@@ -400,11 +406,13 @@ AddinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	.elseif eax==AM_RESET
 		mov		eax,portbit.portadr[PORTBIT_OE]
 		.if sdword ptr eax>0
+			;Port bit
 			mov		portbit.bitval[PORTBIT_OE],TRUE
 		.elseif !eax
 			;GND
 			mov		portbit.bitval[PORTBIT_OE],FALSE
 		.else
+			;NC
 			mov		portbit.bitval[PORTBIT_OE],TRUE
 		.endif
 		;Port bit or NC
