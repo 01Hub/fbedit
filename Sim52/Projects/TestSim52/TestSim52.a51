@@ -3,7 +3,8 @@
 		ORG	0000h
 ;		LJMP	TESTINT0INT1	;RESET:
 ;		LJMP	TESTTMR0TMR1	;RESET:
-		LJMP	TESTSUBB
+;		LJMP	TESTSUBB
+		LJMP	WAITTEST
 ;IE0IRQ:**********************************************
 		ORG	0003h
 		MOV	A,#00h
@@ -35,6 +36,23 @@
 		NOP
 		RETI			;TF2EXF2IRQ:
 ;*****************************************************
+
+WAITTEST:	SETB	ACC.0
+		ACALL	WAIT512MS
+		CLR	ACC.0
+		SJMP	WAITTEST
+
+;------------------------------------------------------------------
+;Wait loop. Waits 0.512 seconds
+;------------------------------------------------------------------
+WAIT512MS:	MOV	R7,#2Bh
+		MOV	R6,#0C9h
+		MOV	R5,#08
+WAIT512MS1:	DJNZ	R7,WAIT512MS1
+		DJNZ	R6,WAIT512MS1
+		DJNZ	R5,WAIT512MS1
+		RET
+
 
 TESTSUBB:	MOV	A,#10h
 		MOV	R4,#04h

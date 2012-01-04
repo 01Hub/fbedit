@@ -23,44 +23,44 @@ ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. 
     3:		N      0000			ORG	0000h
     4:				;		LJMP	TESTINT0INT1	;RESET:
     5:				;		LJMP	TESTTMR0TMR1	;RESET:
-    6:	  0000	02 00 2E			LJMP	TESTSUBB
-    7:				;IE0IRQ:**********************************************
-    8:		N      0003			ORG	0003h
-    9:	  0003	74 00				MOV	A,#00h
-   10:	  0005	11 4F				ACALL	WAITASEC
-   11:	  0007	32				RETI			;IE0IRQ:
-   12:				;TF0IRQ:**********************************************
-   13:		N      000B			ORG	000Bh
-   14:	  000B	74 00				MOV	A,#00h
-   15:	  000D	11 46				ACALL	WAIT
-   16:	  000F	32				RETI			;TF0IRQ:
-   17:				;IE1IRQ:**********************************************
-   18:		N      0013			ORG	0013h
-   19:	  0013	74 01				MOV	A,#01h
-   20:	  0015	11 4F				ACALL	WAITASEC
-   21:	  0017	32				RETI			;IE1IRQ:
-   22:				;TF1IRQ:**********************************************
-   23:		N      001B			ORG	001Bh
-   24:	  001B	74 01				MOV	A,#01h
-   25:	  001D	11 46				ACALL	WAIT
-   26:	  001F	32				RETI			;TF1IRQ:
-   27:				;RITIIRQ:*********************************************
-   28:		N      0023			ORG	0023h
-   29:	  0023	00				NOP
-   30:	  0024	00				NOP
-   31:	  0025	32				RETI			;RITIIRQ:
-   32:				;TF2EXF2IRQ:******************************************
-   33:		N      002B			ORG	002Bh
-   34:	  002B	00				NOP
-   35:	  002C	00				NOP
-   36:	  002D	32				RETI			;TF2EXF2IRQ:
-   37:				;*****************************************************
-   38:
-   39:	  002E	74 10		TESTSUBB:	MOV	A,#10h
-   40:	  0030	7C 04				MOV	R4,#04h
-   41:	  0032	9C		TESTSUBB1:	SUBB	A,R4
-   42:	  0033	80 FD				SJMP	TESTSUBB1
-   43:
+    6:				;		LJMP	TESTSUBB
+    7:	  0000	02 00 2E			LJMP	WAITTEST
+    8:				;IE0IRQ:**********************************************
+    9:		N      0003			ORG	0003h
+   10:	  0003	74 00				MOV	A,#00h
+   11:	  0005	11 64				ACALL	WAITASEC
+   12:	  0007	32				RETI			;IE0IRQ:
+   13:				;TF0IRQ:**********************************************
+   14:		N      000B			ORG	000Bh
+   15:	  000B	74 00				MOV	A,#00h
+   16:	  000D	11 5B				ACALL	WAIT
+   17:	  000F	32				RETI			;TF0IRQ:
+   18:				;IE1IRQ:**********************************************
+   19:		N      0013			ORG	0013h
+   20:	  0013	74 01				MOV	A,#01h
+   21:	  0015	11 64				ACALL	WAITASEC
+   22:	  0017	32				RETI			;IE1IRQ:
+   23:				;TF1IRQ:**********************************************
+   24:		N      001B			ORG	001Bh
+   25:	  001B	74 01				MOV	A,#01h
+   26:	  001D	11 5B				ACALL	WAIT
+   27:	  001F	32				RETI			;TF1IRQ:
+   28:				;RITIIRQ:*********************************************
+   29:		N      0023			ORG	0023h
+   30:	  0023	00				NOP
+   31:	  0024	00				NOP
+   32:	  0025	32				RETI			;RITIIRQ:
+   33:				;TF2EXF2IRQ:******************************************
+   34:		N      002B			ORG	002Bh
+   35:	  002B	00				NOP
+   36:	  002C	00				NOP
+   37:	  002D	32				RETI			;TF2EXF2IRQ:
+   38:				;*****************************************************
+   39:
+   40:	  002E	D2 E0		WAITTEST:	SETB	ACC.0
+   41:	  0030	11 36				ACALL	WAIT512MS
+   42:	  0032	C2 E0				CLR	ACC.0
+   43:	  0034	80 F8				SJMP	WAITTEST
 
 ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 2
 
@@ -68,35 +68,53 @@ ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. 
 
  Line  I  Addr  Code            Source
 
-   44:	  0035	75 89 11	TESTTMR0TMR1:	MOV	TMOD,#11h	;16 bit
-   45:	  0038	75 A8 8A			MOV	IE,#8Ah
-   46:	  003B	D2 8C				SETB	TR0
-   47:	  003D	D2 8E				SETB	TR1
-   48:	  003F	80 FE				SJMP	$
-   49:
-   50:	  0041	75 A8 85	TESTINT0INT1:	MOV	IE,#85h
-   51:	  0044	80 FE				SJMP	$
-   52:
-   53:	  0046	7F 00		WAIT:		MOV	R7,#00h
-   54:	  0048	7E 10				MOV	R6,#10h
-   55:	  004A	DF FE		WAIT1:		DJNZ	R7,WAIT1
-   56:	  004C	DE FC				DJNZ	R6,WAIT1
-   57:	  004E	22				RET
-   58:				;------------------------------------------------------------------
-   59:				;Wait loop. Waits 1 second
-   60:				;------------------------------------------------------------------
-   61:	  004F	7F F9		WAITASEC:	MOV	R7,#0F9h
-   62:	  0051	7E 33				MOV	R6,#51
-   63:	  0053	7D 10				MOV	R5,#16
-   64:	  0055	DF FE		WAITASEC1:	DJNZ	R7,WAITASEC1
-   65:	  0057	DE FC				DJNZ	R6,WAITASEC1
-   66:	  0059	DD FA				DJNZ	R5,WAITASEC1
-   67:	  005B	74 FF				MOV	A,#0FFh
-   68:	  005D	22				RET
-   69:
-   70:	  005E	11 22 33 44	TSTDATA:	DB 11h,22h,33h,44h
-   71:
-   72:						END
+   44:
+   45:				;------------------------------------------------------------------
+   46:				;Wait loop. Waits 0.512 seconds
+   47:				;------------------------------------------------------------------
+   48:	  0036	7F 2B		WAIT512MS:	MOV	R7,#2Bh
+   49:	  0038	7E C9				MOV	R6,#0C9h
+   50:	  003A	7D 08				MOV	R5,#08
+   51:	  003C	DF FE		WAIT512MS1:	DJNZ	R7,WAIT512MS1
+   52:	  003E	DE FC				DJNZ	R6,WAIT512MS1
+   53:	  0040	DD FA				DJNZ	R5,WAIT512MS1
+   54:	  0042	22				RET
+   55:
+   56:
+   57:	  0043	74 10		TESTSUBB:	MOV	A,#10h
+   58:	  0045	7C 04				MOV	R4,#04h
+   59:	  0047	9C		TESTSUBB1:	SUBB	A,R4
+   60:	  0048	80 FD				SJMP	TESTSUBB1
+   61:
+   62:	  004A	75 89 11	TESTTMR0TMR1:	MOV	TMOD,#11h	;16 bit
+   63:	  004D	75 A8 8A			MOV	IE,#8Ah
+   64:	  0050	D2 8C				SETB	TR0
+   65:	  0052	D2 8E				SETB	TR1
+   66:	  0054	80 FE				SJMP	$
+   67:
+   68:	  0056	75 A8 85	TESTINT0INT1:	MOV	IE,#85h
+   69:	  0059	80 FE				SJMP	$
+   70:
+   71:	  005B	7F 00		WAIT:		MOV	R7,#00h
+   72:	  005D	7E 10				MOV	R6,#10h
+   73:	  005F	DF FE		WAIT1:		DJNZ	R7,WAIT1
+   74:	  0061	DE FC				DJNZ	R6,WAIT1
+   75:	  0063	22				RET
+   76:				;------------------------------------------------------------------
+   77:				;Wait loop. Waits 1 second
+   78:				;------------------------------------------------------------------
+   79:	  0064	7F F9		WAITASEC:	MOV	R7,#0F9h
+   80:	  0066	7E 33				MOV	R6,#51
+   81:	  0068	7D 10				MOV	R5,#16
+   82:	  006A	DF FE		WAITASEC1:	DJNZ	R7,WAITASEC1
+   83:	  006C	DE FC				DJNZ	R6,WAITASEC1
+   84:	  006E	DD FA				DJNZ	R5,WAITASEC1
+   85:	  0070	74 FF				MOV	A,#0FFh
+   86:	  0072	22				RET
+   87:
+   88:	  0073	11 22 33 44	TSTDATA:	DB 11h,22h,33h,44h
+   89:
+   90:						END
 
 
 
@@ -106,10 +124,15 @@ ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. 
 
                      no errors
 
+
+ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 3
+
+
+
 
 
 
-ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 3
+ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 4
 
 
 
@@ -172,7 +195,7 @@ SCON				  DATA	      98
 SINT				  CODE	    0023
 SM0				  BIT	      9F
 
-ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 4
+ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 5
 
 
 
@@ -185,10 +208,10 @@ T0				  BIT	      B4
 T1				  BIT	      B5
 TB8				  BIT	      9B
 TCON				  DATA	      88
-TESTINT0INT1			  CODE	    0041	  50
-TESTSUBB			  CODE	    002E	  39
-TESTSUBB1			  CODE	    0032	  41
-TESTTMR0TMR1			  CODE	    0035	  44
+TESTINT0INT1			  CODE	    0056	  68
+TESTSUBB			  CODE	    0043	  57
+TESTSUBB1			  CODE	    0047	  59
+TESTTMR0TMR1			  CODE	    004A	  62
 TF0				  BIT	      8D
 TF1				  BIT	      8F
 TH0				  DATA	      8C
@@ -201,10 +224,13 @@ TL1				  DATA	      8B
 TMOD				  DATA	      89
 TR0				  BIT	      8C
 TR1				  BIT	      8E
-TSTDATA				  CODE	    005E	  70
+TSTDATA				  CODE	    0073	  88
 TXD				  BIT	      B1
-WAIT				  CODE	    0046	  53
-WAIT1				  CODE	    004A	  55
-WAITASEC			  CODE	    004F	  61
-WAITASEC1			  CODE	    0055	  64
+WAIT				  CODE	    005B	  71
+WAIT1				  CODE	    005F	  73
+WAIT512MS			  CODE	    0036	  48
+WAIT512MS1			  CODE	    003C	  51
+WAITASEC			  CODE	    0064	  79
+WAITASEC1			  CODE	    006A	  82
+WAITTEST			  CODE	    002E	  40
 WR				  BIT	      B6

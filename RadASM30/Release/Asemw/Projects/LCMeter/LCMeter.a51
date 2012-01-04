@@ -62,7 +62,8 @@ START01:	MOV	@R0,A				;Clear the ram
 		ACALL	PRNTCDPTRLCD
 		ACALL	WAITASEC
 START02:	ACALL	SETMODE
-START:		ACALL	LCDCLEARBUFF
+START:		MOV	SP,#MCUSTACK			;Init stack pointer.
+		ACALL	LCDCLEARBUFF
 		MOV	R7,MODE
 		DJNZ	R7,START1
 		;C Meter
@@ -414,7 +415,11 @@ ADDIT:		CLR	A
 ;------------------------------------------------------------------
 ;Multiply R7:R6:R5:R4 by 10
 ;------------------------------------------------------------------
-INTMUL10:	MOV	A,R4
+INTMUL10:	ACALL	INTMUL5
+		ACALL	INTMUL2
+		RET
+
+INTMUL5:	MOV	A,R4
 		MOV	R0,A
 		MOV	A,R5
 		MOV	R1,A
@@ -436,6 +441,8 @@ INTMUL10:	MOV	A,R4
 		MOV	A,R7
 		ADDC	A,R3
 		MOV	R7,A
+		RET
+
 INTMUL2:	MOV	A,R4
 		ADD	A,R4
 		MOV	R4,A
@@ -451,25 +458,31 @@ INTMUL2:	MOV	A,R4
 		RET
 		
 ;------------------------------------------------------------------
-;Wait loop. Waits 1 second
+;Wait loop. Waits 1 second, 2 000 000 cycles on a 24 MHz MCU
 ;------------------------------------------------------------------
-WAITASEC:	MOV	R7,#0F9h
-		MOV	R6,#51
-		MOV	R5,#16
-WAITASEC1:	DJNZ	R7,WAITASEC1
+WAITASEC:	NOP
+		NOP
+		MOV	R7,#96
+		MOV	R6,#21
+		MOV	R5,#6
+WAITASEC1:	JBC	TCON.5,WAITASEC2
+		SJMP	WAITASEC3
+WAITASEC2:	INC	TF0OVF
+		NOP
+WAITASEC3:	DJNZ	R7,WAITASEC1
 		DJNZ	R6,WAITASEC1
 		DJNZ	R5,WAITASEC1
 		RET
 
 ;------------------------------------------------------------------
-;Wait loop. Waits 0.256 seconds
+;Wait loop. Waits 0.512 seconds
 ;------------------------------------------------------------------
-WAIT256MS:	MOV	R7,#0F9h
-		MOV	R6,#51
-		MOV	R5,#02
-WAIT256MS1:	DJNZ	R7,WAIT256MS1
-		DJNZ	R6,WAIT256MS1
-		DJNZ	R5,WAIT256MS1
+WAIT512MS:	MOV	R7,#2Bh
+		MOV	R6,#0C9h
+		MOV	R5,#08
+WAIT512MS1:	DJNZ	R7,WAIT512MS1
+		DJNZ	R6,WAIT512MS1
+		DJNZ	R5,WAIT512MS1
 		RET
 
 ;------------------------------------------------------------------
@@ -519,22 +532,27 @@ FRQCOUNT:	PUSH	ACC
 		DEC	A
 		JZ	FRQCOUNT1
 		CLR	P1.3				;ENABLR 74HC590 COUNT
-		ACALL	WAIT256MS
+		ACALL	WAIT512MS
 		SETB	P1.3				;DISABLE 74HC590 COUNT
-		SJMP	FRQCOUNT2
-FRQCOUNT1:	CLR	P1.3				;ENABLR 74HC590 COUNT
-		ACALL	WAITASEC
-		SETB	P1.3				;DISABLE 74HC590 COUNT
-FRQCOUNT2:	MOV	A,P0				;8 BITS FROM 74HC590
-		MOV	R4,A
-		MOV	A,TL0				;8 BITS FROM TL0
-		MOV	R5,A
-		MOV	A,TH0				;8 BITS FROM TH0
-		MOV	R6,A
+		MOV	R4,P0				;8 BITS FROM 74HC590
+		MOV	R5,TL0				;8 BITS FROM TL0
+		MOV	R6,TH0				;8 BITS FROM TH0
 		CLR	A				;TF0 Is the 25th bit
 		MOV	C,TF0
 		RLC	A
 		MOV	R7,A
+		ACALL	INTMUL5
+		ACALL	INTMUL10
+		ACALL	INTMUL10
+		RET
+FRQCOUNT1:	MOV	TF0OVF,#00h
+		CLR	P1.3				;ENABLR 74HC590 COUNT
+		ACALL	WAITASEC
+		SETB	P1.3				;DISABLE 74HC590 COUNT
+		MOV	R4,P0				;8 BITS FROM 74HC590
+		MOV	R5,TL0
+		MOV	R6,TH0
+		MOV	R7,TF0OVF
 		RET
 
 ;------------------------------------------------------------------
@@ -546,12 +564,12 @@ FRQCOUNT2:	MOV	A,P0				;8 BITS FROM 74HC590
 FRQFORMAT:	MOV	LCDLINE+0,#'F'
 		MOV	LCDLINE+1,#'='
 		MOV	LCDLINE+2,#' '
-		MOV	R0,#LCDLINE+3
-		MOV	R1,#LCDLINE+5
+		MOV	R0,#LCDLINE+2
+		MOV	R1,#LCDLINE+4
 		CJNE	R7,#07h,$+3
 		JC	FRQFORMATKHZ
 		;MHz
-		MOV	R7,#09h
+		MOV	R7,#0Ah
 FRQFORMATMHZ1:	MOV	A,@R1
 		CJNE	R7,#06h,FRQFORMATMHZ2
 		MOV	@R0,#'.'
@@ -567,7 +585,7 @@ FRQFORMATMHZ2:	MOV	@R0,A
 FRQFORMATKHZ:	CJNE	R7,#04h,$+3
 		JC	FRQFORMATHZ
 		;KHz
-		MOV	R7,#09h
+		MOV	R7,#0Ah
 FRQFORMATKHZ1:	MOV	A,@R1
 		CJNE	R7,#03h,FRQFORMATKHZ2
 		MOV	@R0,#'.'
@@ -582,7 +600,7 @@ FRQFORMATKHZ2:	MOV	@R0,A
 		SJMP	FRQFORMATDONE
 FRQFORMATHZ:	;Hz
 		INC	R0
-		MOV	R7,#09h
+		MOV	R7,#0Ah
 FRQFORMATHZ1:	MOV	A,@R1
 		MOV	@R0,A
 		INC	R0

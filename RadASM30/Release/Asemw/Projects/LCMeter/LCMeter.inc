@@ -72,6 +72,7 @@ FP_ACCS		EQU	FP_NIB1+18			;3D
 LCDLINE		EQU	40h				;16 Bytes
 FPCHR_OUT	EQU	50h				;Holds addrss to next byte during FP number convertion
 MODE		EQU	51h				;Current mode (0-4)
+TF0OVF		EQU	52h				;Timer 0 overflow counter
 LCF1		EQU	60H+FP_NUMBER_SIZE-1		;LC Meter F1
 LCF2		EQU	68h+FP_NUMBER_SIZE-1		;LC Meter F2
 LCF3		EQU	70h+FP_NUMBER_SIZE-1		;LC Meter F3
