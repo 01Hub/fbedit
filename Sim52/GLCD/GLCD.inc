@@ -19,61 +19,54 @@ include CharTab.inc
 
 IDD_DLGGLCD             equ 1000
 IDC_UDCGLCD             equ 1009
-IDC_BTNEXPAND			equ 1013
-IDC_STCERROR			equ 1014
-IDC_CHKACTIVE			equ 1015
-IDC_CHKBACKLIGHT        equ 1023
-IDC_CBOD0               equ 1002
-IDC_CBOD1               equ 1003
-IDC_CBOD2               equ 1004
-IDC_CBOD3               equ 1005
-IDC_CBOD4               equ 1006
-IDC_CBOD5               equ 1007
-IDC_CBOD6               equ 1008
-IDC_CBOD7               equ 1009
-IDC_CBORS               equ 1010
-IDC_CBORW               equ 1011
-IDC_CBOE                equ 1012
+IDC_BTNEXPAND			equ 1010
+IDC_CBODATA				equ 1001
+IDC_CBOCS               equ 1002
+IDC_CBOCD               equ 1003
+IDC_CBOR                equ 1004
+IDC_CBOW                equ 1005
+IDC_CBORST              equ 1006
+IDC_CBOMD               equ 1007
+IDC_CBOFS               equ 1008
 
-GND						equ 0
-VCC						equ 1
-NC						equ 2
+IDC_CHKACTIVE			equ 1013
+IDC_CHKBACKLIGHT        equ 1014
 
-P0_0					equ 3
-P0_1					equ 4
-P0_2					equ 5
-P0_3					equ 6
-P0_4					equ 7
-P0_5					equ 8
-P0_6					equ 9
-P0_7					equ 10
+P0_0					equ 0
+P0_1					equ 1
+P0_2					equ 2
+P0_3					equ 3
+P0_4					equ 4
+P0_5					equ 5
+P0_6					equ 6
+P0_7					equ 7
 
-P1_0					equ 11
-P1_1					equ 12
-P1_2					equ 13
-P1_3					equ 14
-P1_4					equ 15
-P1_5					equ 16
-P1_6					equ 17
-P1_7					equ 18
+P1_0					equ 8
+P1_1					equ 9
+P1_2					equ 10
+P1_3					equ 11
+P1_4					equ 12
+P1_5					equ 13
+P1_6					equ 14
+P1_7					equ 15
 
-P2_0					equ 19
-P2_1					equ 20
-P2_2					equ 21
-P2_3					equ 22
-P2_4					equ 23
-P2_5					equ 24
-P2_6					equ 25
-P2_7					equ 26
+P2_0					equ 16
+P2_1					equ 17
+P2_2					equ 18
+P2_3					equ 19
+P2_4					equ 20
+P2_5					equ 21
+P2_6					equ 22
+P2_7					equ 23
 
-P3_0					equ 27
-P3_1					equ 28
-P3_2					equ 29
-P3_3					equ 30
-P3_4					equ 31
-P3_5					equ 32
-P3_6					equ 33
-P3_7					equ 34
+P3_0					equ 24
+P3_1					equ 25
+P3_2					equ 26
+P3_3					equ 27
+P3_4					equ 28
+P3_5					equ 29
+P3_6					equ 30
+P3_7					equ 31
 
 BITRS					equ 00100000000b
 BITRW					equ 01000000000b
@@ -89,8 +82,9 @@ LCDBIT ends
 
 GLCDClass				BYTE 'GLCDCLASS',0
 
-szPortBits				BYTE 'GND',0,'VCC',0,'NC',0
-						BYTE 'P0.0',0,'P0.1',0,'P0.2',0,'P0.3',0,'P0.4',0,'P0.5',0,'P0.6',0,'P0.7',0
+szPorts					BYTE 'P0',0,'P1',0,'P2',0,'P3',0,0
+
+szPortBits				BYTE 'P0.0',0,'P0.1',0,'P0.2',0,'P0.3',0,'P0.4',0,'P0.5',0,'P0.6',0,'P0.7',0
 						BYTE 'P1.0',0,'P1.1',0,'P1.2',0,'P1.3',0,'P1.4',0,'P1.5',0,'P1.6',0,'P1.7',0
 						BYTE 'P2.0',0,'P2.1',0,'P2.2',0,'P2.3',0,'P2.4',0,'P2.5',0,'P2.6',0,'P2.7',0
 						BYTE 'P3.0',0,'P3.1',0,'P3.2',0,'P3.3',0,'P3.4',0,'P3.5',0,'P3.6',0,'P3.7',0,0

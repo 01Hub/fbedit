@@ -133,6 +133,7 @@ DisplayProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 		mov		hDotBrush,eax
 		invoke CreateSolidBrush,12D898h
 		mov		hBackBrush,eax
+		invoke MoveWindow,hWin,0,0,240*2+4,128*2+4,FALSE
 	.elseif eax==WM_PAINT
 		invoke BeginPaint,hWin,addr ps
 		invoke GetClientRect,hWin,addr rect
@@ -232,23 +233,17 @@ GetCBOBits proc uses ebx edi
 	mov		P3Bits,0
 	mov		nlcdbit,1
 	push	0
-	push	IDC_CBOE
-	push	IDC_CBORW
-	push	IDC_CBORS
-	push	IDC_CBOD7
-	push	IDC_CBOD6
-	push	IDC_CBOD5
-	push	IDC_CBOD4
-	push	IDC_CBOD3
-	push	IDC_CBOD2
-	push	IDC_CBOD1
-	mov		ebx,IDC_CBOD0
+	push	IDC_CBOCS
+	push	IDC_CBOCD
+	push	IDC_CBOR
+	push	IDC_CBOW
+	push	IDC_CBORST
+	push	IDC_CBOMD
+	mov		ebx,IDC_CBOFS
 	mov		edi,offset lcdbit
 	.while ebx
 		invoke SendDlgItemMessage,hDlg,ebx,CB_GETCURSEL,0,0
-		.if eax>=GND && eax<=NC
-			mov		edx,-1
-		.elseif eax>=P0_0 && eax<=P0_7
+		.if eax>=P0_0 && eax<=P0_7
 			sub		eax,P0_0
 			mov		ecx,eax
 			mov		eax,01h
@@ -297,59 +292,51 @@ GLCDProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	.if eax==WM_INITDIALOG
 		mov		eax,hWin
 		mov		hDlg,eax
+		mov		esi,offset szPorts
+		.while byte ptr [esi]
+			invoke SendDlgItemMessage,hWin,IDC_CBODATA,CB_ADDSTRING,0,esi
+			invoke lstrlen,esi
+			lea		esi,[esi+eax+1]
+		.endw
+		invoke SendDlgItemMessage,hWin,IDC_CBODATA,CB_SETCURSEL,2,0
 		push	0
-		push	IDC_CBOD0
-		push	IDC_CBOD1
-		push	IDC_CBOD2
-		push	IDC_CBOD3
-		push	IDC_CBOD4
-		push	IDC_CBOD5
-		push	IDC_CBOD6
-		push	IDC_CBOD7
-		push	IDC_CBORS
-		push	IDC_CBORW
-		mov		eax,IDC_CBOE
+		push	IDC_CBOCS
+		push	IDC_CBOCD
+		push	IDC_CBOR
+		push	IDC_CBOW
+		push	IDC_CBORST
+		push	IDC_CBOMD
+		mov		eax,IDC_CBOFS
 		.while eax
 			call	InitCbo
 			pop		eax
 		.endw
 		push	0
-		push	0
-		push	IDC_CBOD0
-		push	GND
-		push	IDC_CBOD1
-		push	GND
-		push	IDC_CBOD2
-		push	GND
-		push	IDC_CBOD3
-		push	GND
-		push	IDC_CBOD4
-		push	P2_0
-		push	IDC_CBOD5
-		push	P2_1
-		push	IDC_CBOD6
-		push	P2_2
-		push	IDC_CBOD7
-		push	P2_3
-		push	IDC_CBORS
-		push	P2_4
-		push	IDC_CBORW
-		push	GND
-		mov		eax,IDC_CBOE
-		mov		edx,P2_5
+		push	P1_0
+		push	IDC_CBOCS
+		push	P1_1
+		push	IDC_CBOCD
+		push	P1_2
+		push	IDC_CBOR
+		push	P1_3
+		push	IDC_CBOW
+		push	P1_4
+		push	IDC_CBORST
+		push	P1_5
+		push	IDC_CBOMD
+		push	P1_6
+		mov		eax,IDC_CBOFS
 		.while eax
-			push	edx
 			invoke GetDlgItem,hWin,eax
 			pop		edx
 			invoke SendMessage,eax,CB_SETCURSEL,edx,0
-			pop		edx
 			pop		eax
 		.endw
 		invoke GetCBOBits
 		invoke GetWindowRect,hWin,addr rect
 		mov		eax,rect.right
 		sub		eax,rect.left
-		mov		edx,142
+		mov		edx,317
 		invoke MoveWindow,hWin,rect.left,rect.top,eax,edx,TRUE
 		invoke CheckDlgButton,hWin,IDC_CHKBACKLIGHT,BST_CHECKED
 		mov		BackLight,1
@@ -364,12 +351,12 @@ GLCDProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke GetWindowRect,hWin,addr rect
 				mov		eax,rect.bottom
 				sub		eax,rect.top
-				.if eax==142
+				.if eax==317
 					mov		eax,offset szShrink
-					mov		edx,252
+					mov		edx,525
 				.else
 					mov		eax,offset szExpand
-					mov		edx,142
+					mov		edx,317
 				.endif
 				push	edx
 				invoke SetDlgItemText,hWin,IDC_BTNEXPAND,eax
@@ -501,29 +488,23 @@ AddinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.else
 			invoke ShowWindow,hDlg,SW_HIDE
 		.endif
+		invoke GetItemInt,addr buffer,2
+		invoke SendDlgItemMessage,hDlg,IDC_CBODATA,CB_SETCURSEL,eax,0
 		push	0
-		push	P2_5
-		push	IDC_CBOE
-		push	GND
-		push	IDC_CBORW
-		push	P2_4
-		push	IDC_CBORS
-		push	GND
-		push	IDC_CBOD7
-		push	GND
-		push	IDC_CBOD6
-		push	GND
-		push	IDC_CBOD5
-		push	GND
-		push	IDC_CBOD4
-		push	P2_3
-		push	IDC_CBOD3
-		push	P2_2
-		push	IDC_CBOD2
-		push	P2_1
-		push	IDC_CBOD1
-		push	P2_0
-		mov		ebx,IDC_CBOD0
+		push	P1_0
+		push	IDC_CBOCS
+		push	P1_1
+		push	IDC_CBOCD
+		push	P1_2
+		push	IDC_CBOR
+		push	P1_3
+		push	IDC_CBOW
+		push	P1_4
+		push	IDC_CBORST
+		push	P1_5
+		push	IDC_CBOMD
+		push	P1_6
+		mov		ebx,IDC_CBOFS
 		.while ebx
 			pop		eax
 			invoke GetItemInt,addr buffer,eax
@@ -549,18 +530,16 @@ AddinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		buffer,0
 		invoke IsWindowVisible,hDlg
 		invoke PutItemInt,addr buffer,eax
+		invoke SendDlgItemMessage,hDlg,IDC_CBODATA,CB_GETCURSEL,0,0
+		invoke PutItemInt,addr buffer,eax
 		push	0
-		push	IDC_CBOE
-		push	IDC_CBORW
-		push	IDC_CBORS
-		push	IDC_CBOD7
-		push	IDC_CBOD6
-		push	IDC_CBOD5
-		push	IDC_CBOD4
-		push	IDC_CBOD3
-		push	IDC_CBOD2
-		push	IDC_CBOD1
-		mov		eax,IDC_CBOD0
+		push	IDC_CBOCS
+		push	IDC_CBOCD
+		push	IDC_CBOR
+		push	IDC_CBOW
+		push	IDC_CBORST
+		push	IDC_CBOMD
+		mov		eax,IDC_CBOFS
 		.while eax
 			invoke SendDlgItemMessage,hDlg,eax,CB_GETCURSEL,0,0
 			invoke PutItemInt,addr buffer,eax
