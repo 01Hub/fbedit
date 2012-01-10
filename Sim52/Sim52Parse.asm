@@ -325,7 +325,7 @@ IsSourceLineDB:
 	lea		edx,sourceline
 	xor		eax,eax
 	.while byte ptr [edx]
-		.if word ptr [edx]=='BD'
+		.if word ptr [edx]=='BD' || word ptr [edx]=='bD' || word ptr [edx]=='Bd' || word ptr [edx]=='bd'
 			inc		eax
 			.break
 		.endif

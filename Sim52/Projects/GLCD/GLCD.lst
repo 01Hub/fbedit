@@ -1,0 +1,289 @@
+
+ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 1
+
+
+
+
+
+       MCS-51 Family Macro Assembler   A S E M - 5 1   V 1.3
+       =====================================================
+
+
+
+	Source File:	GLCD.a51
+	Object File:	GLCD.hex
+	List File:	GLCD.lst
+
+
+
+ Line  I  Addr  Code            Source
+
+    1:
+    2:				; The processor clock speed is 24MHz.
+    3:				; Cycle time is .500uS.
+    4:				; Demo software to display a bit-mapped
+    5:				; graphic on a 240x128 graphics display
+    6:				; with a T6963C LCD controller.
+    7:
+    8:		B	 90	PB_CD	BIT	P1.0
+    9:		B	 91	PB_R	BIT	P1.1
+   10:		B	 92	PB_W	BIT	P1.2
+   11:		B	 93	PB_RST	BIT	P1.3
+   12:
+   13:		N      0000		ORG	0000h
+   14:	  0000	02 01 00		LJMP	START		;program start
+   15:
+   16:		N      0100		ORG	0100h
+   17:	  0100			START:
+   18:					; Initialize the T6963C
+   19:	  0100	C2 93			CLR	PB_RST		;hardware reset
+   20:	  0102	00			NOP
+   21:	  0103	00			NOP
+   22:	  0104	00			NOP
+   23:	  0105	00			NOP
+   24:	  0106	D2 93			SETB	PB_RST
+   25:	  0108	90 01 66		MOV	DPTR,#MSGI1	;initialization bytes
+   26:	  010B	12 01 1C		LCALL	MSGC
+   27:					; Start of regular program
+   28:					; Display graphic
+   29:	  010E	90 01 7C		MOV	DPTR,#MSGI2	;set auto mode
+   30:	  0111	12 01 1C		LCALL	MSGC
+   31:	  0114	90 01 80		MOV	DPTR,#MSG1	;display graphic
+   32:	  0117	12 01 33		LCALL	MSGD
+   33:	  011A	80 FE			SJMP	$		;infinite loop
+   34:
+   35:				;*************************************************
+   36:				;SUBROUTINES
+   37:				; MSGC sends the data pointed to by
+   38:				; the DPTR to the graphics module
+   39:				; as a series of commands with
+   40:				; two parameters each.
+   41:	  011C			MSGC:
+   42:	  011C	78 02			MOV	R0,#2		;# of data bytes
+   43:	  011E			MSGC2:
+
+ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 2
+
+
+
+ Line  I  Addr  Code            Source
+
+   44:	  011E	E4			CLR	A
+   45:	  011F	93			MOVC	A,@A+DPTR	;get byte
+   46:	  0120	B4 A1 01		CJNE	A,#0A1h,MSGC3	;done?
+   47:	  0123	22			RET
+   48:
+   49:	  0124			MSGC3:
+   50:	  0124	F9			MOV	R1,A
+   51:	  0125	12 01 4C		LCALL	WRITED		;send it
+   52:	  0128	A3			INC	DPTR
+   53:	  0129	D8 F3			DJNZ	R0,MSGC2
+   54:	  012B	E4			CLR	A
+   55:	  012C	93			MOVC	A,@A+DPTR	;get command
+   56:	  012D	F9			MOV	R1,A
+   57:	  012E	12 01 40		LCALL	WRITEC		;send command
+   58:	  0131	80 E9			SJMP	MSGC		;next command
+   59:
+   60:				; MSGD sends the data pointed to by
+   61:				; the DPTR to the graphics module.
+   62:	  0133			MSGD:
+   63:	  0133	E4			CLR	A
+   64:	  0134	93			MOVC	A,@A+DPTR	;get byte
+   65:	  0135	B4 A1 01		CJNE	A,#0A1h,MSGD1	;done?
+   66:	  0138	22			RET
+   67:
+   68:	  0139			MSGD1:
+   69:	  0139	F9			MOV	R1,A
+   70:	  013A	12 01 4C		LCALL	WRITED		;send data
+   71:	  013D	A3			INC	DPTR
+   72:	  013E	80 F3			SJMP	MSGD
+   73:
+   74:				; WRITEC sends the byte in R1 to a
+   75:				; graphics module as a command.
+   76:	  0140			WRITEC:
+   77:	  0140	12 01 53		LCALL	STATUS		;display ready?
+   78:	  0143	D2 90			SETB	PB_CD		;c/d = 1
+   79:	  0145			WRITEC1:
+   80:	  0145	89 A0			MOV	P2,R1		;get data
+   81:	  0147	C2 92			CLR	PB_W		;strobe it
+   82:	  0149	D2 92			SETB	PB_W
+   83:	  014B	22			RET
+   84:
+   85:				; WRITED sends the byte in R1 to the
+   86:				; graphics module as data.
+   87:	  014C			WRITED:
+   88:	  014C	12 01 53		LCALL	STATUS		;display ready?
+   89:	  014F	C2 90			CLR	PB_CD		;c/d = 0
+   90:	  0151	80 F2			SJMP	WRITEC1
+   91:
+   92:				; STATUS check to see that the graphic
+   93:				; display is ready. It won't return
+   94:				; until it is.
+   95:	  0153			STATUS:
+   96:	  0153	D2 90			SETB	PB_CD		;c/d=1
+   97:	  0155	75 A0 FF		MOV	P2,#0FFh	;P2 to input
+   98:	  0158	7B 0B			MOV	R3,#0Bh		;status bits mask
+   99:	  015A			STAT1:
+
+ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 3
+
+
+
+ Line  I  Addr  Code            Source
+
+  100:	  015A	C2 91			CLR	PB_R		;read it
+  101:	  015C	E5 A0			MOV	A,P2
+  102:	  015E	D2 91			SETB	PB_R
+  103:	  0160	5B			ANL	A,R3		;status OK?
+  104:	  0161	C3			CLR	C
+  105:	  0162	9B			SUBB	A,R3
+  106:	  0163	70 F5			JNZ	STAT1
+  107:	  0165	22			RET
+  108:
+  109:				;************************************************
+  110:				; TABLES AND DATA
+  111:				; Initialization bytes for 240x128
+  112:	  0166			MSGI1:
+  113:	  0166	80 07 40		DB	80h,07h,40h	;text home address
+  114:	  0169	1E 00 41		DB	1Eh,00h,41h	;text area
+  115:	  016C	00 00 42		DB	00h,00h,42h	;graphic home address
+  116:	  016F	1E 00 43		DB	1Eh,00h,43h	;graphic area
+  117:	  0172	00 00 81		DB	00h,00h,81h	;mode set
+  118:	  0175	00 00 24		DB	00h,00h,24h	;address pointer set
+  119:	  0178	00 00 98		DB	00h,00h,98h	;display mode set
+  120:	  017B	A1			DB	0A1h
+  121:
+  122:	  017C			MSGI2:
+  123:	  017C	00 00 B0		DB	00,00,0b0h	;auto mode
+  124:	  017F	A1			DB	0A1h
+  125:
+  126:				;240x128 Bitmap graphic data
+  127:				;Only the first 8 bytes are shown here
+  128:				;The real graphic consists of 240/8*128=3840 bytes
+  129:				;of binary data.
+  130:	  0180			MSG1:
+  131:	  0180	00 00 00 00		DB	00h,00h,00h,00h,00h,00h,00h,00h
+	  0184	00 00 00 00
+  132:	  0188	A1			DB	0A1h
+  133:
+  134:					END
+
+
+
+
+
+                     register banks used:  ---
+
+                     no errors
+
+
+
+
+ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 4
+
+
+
+
+
+	       L I S T   O F   S Y M B O L S
+	       =============================
+
+
+SYMBOL				  TYPE     VALUE	LINE
+------------------------------------------------------------
+??ASEM_51			  NUMBER    8051
+??VERSION			  NUMBER    0130
+AC				  BIT	      D6
+ACC				  DATA	      E0
+B				  DATA	      F0
+CY				  BIT	      D7
+DPH				  DATA	      83
+DPL				  DATA	      82
+EA				  BIT	      AF
+ES				  BIT	      AC
+ET0				  BIT	      A9
+ET1				  BIT	      AB
+EX0				  BIT	      A8
+EX1				  BIT	      AA
+EXTI0				  CODE	    0003
+EXTI1				  CODE	    0013
+F0				  BIT	      D5
+IE				  DATA	      A8
+IE0				  BIT	      89
+IE1				  BIT	      8B
+INT0				  BIT	      B2
+INT1				  BIT	      B3
+IP				  DATA	      B8
+IT0				  BIT	      88
+IT1				  BIT	      8A
+MSG1				  CODE	    0180	 130
+MSGC				  CODE	    011C	  41
+MSGC2				  CODE	    011E	  43
+MSGC3				  CODE	    0124	  49
+MSGD				  CODE	    0133	  62
+MSGD1				  CODE	    0139	  68
+MSGI1				  CODE	    0166	 112
+MSGI2				  CODE	    017C	 122
+OV				  BIT	      D2
+P				  BIT	      D0
+P0				  DATA	      80
+P1				  DATA	      90
+P2				  DATA	      A0
+P3				  DATA	      B0
+PB_CD				  BIT	      90	   8
+PB_R				  BIT	      91	   9
+PB_RST				  BIT	      93	  11
+PB_W				  BIT	      92	  10
+PCON				  DATA	      87
+PS				  BIT	      BC
+PSW				  DATA	      D0
+PT0				  BIT	      B9
+PT1				  BIT	      BB
+PX0				  BIT	      B8
+PX1				  BIT	      BA
+
+ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 5
+
+
+
+SYMBOL				  TYPE     VALUE	LINE
+------------------------------------------------------------
+RB8				  BIT	      9A
+RD				  BIT	      B7
+REN				  BIT	      9C
+RESET				  CODE	    0000
+RI				  BIT	      98
+RS0				  BIT	      D3
+RS1				  BIT	      D4
+RXD				  BIT	      B0
+SBUF				  DATA	      99
+SCON				  DATA	      98
+SINT				  CODE	    0023
+SM0				  BIT	      9F
+SM1				  BIT	      9E
+SM2				  BIT	      9D
+SP				  DATA	      81
+START				  CODE	    0100	  17
+STAT1				  CODE	    015A	  99
+STATUS				  CODE	    0153	  95
+T0				  BIT	      B4
+T1				  BIT	      B5
+TB8				  BIT	      9B
+TCON				  DATA	      88
+TF0				  BIT	      8D
+TF1				  BIT	      8F
+TH0				  DATA	      8C
+TH1				  DATA	      8D
+TI				  BIT	      99
+TIMER0				  CODE	    000B
+TIMER1				  CODE	    001B
+TL0				  DATA	      8A
+TL1				  DATA	      8B
+TMOD				  DATA	      89
+TR0				  BIT	      8C
+TR1				  BIT	      8E
+TXD				  BIT	      B1
+WR				  BIT	      B6
+WRITEC				  CODE	    0140	  76
+WRITEC1				  CODE	    0145	  79
+WRITED				  CODE	    014C	  87
