@@ -120,7 +120,7 @@ DisplayProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 	.if eax==WM_CREATE
 		mov		eax,hWin
 		mov		hLcd,eax
-		invoke MoveWindow,hWin,0,0,240*2+4,128*2+4,FALSE
+		invoke MoveWindow,hWin,0,0,240*2+6,128*2+6,FALSE
 		invoke GetClientRect,hWin,addr rect
 		invoke GetDC,hWin
 		mov		hDC,eax
@@ -138,13 +138,14 @@ DisplayProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 		invoke BeginPaint,hWin,addr ps
 		invoke GetClientRect,hWin,addr rect
 		invoke FillRect,mDC,addr rect,hBackBrush
+		invoke RtlZeroMemory,addr glcd.scrn,sizeof GLCD.scrn
 		.if glcd.gon
 			;Graphics on
 			mov		esi,glcd.ghome
 			xor		edi,edi
-			.while edi<128
+			.while edi<240*128
 				call	DrawGLine
-				inc		edi
+				lea		edi,[edi+240]
 			.endw
 		.endif
 		.if glcd.ton
@@ -180,6 +181,28 @@ DisplayProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 ;			lea		esi,[esi+6*4]
 ;			lea		ecx,[ecx+1]
 ;		.endw
+		xor		ebx,ebx
+		xor		edi,edi
+		xor		esi,esi
+		.while esi<sizeof GLCD.scrn
+			.if glcd.scrn[esi]
+				lea		edx,[ebx*2+1]
+				mov		dotrect.left,edx
+				lea		edx,[edx+2]
+				mov		dotrect.right,edx
+				lea		edx,[edi*2+1]
+				mov		dotrect.top,edx
+				lea		edx,[edx+2]
+				mov		dotrect.bottom,edx
+				invoke FillRect,mDC,addr dotrect,hDotBrush
+			.endif
+			inc		esi
+			inc		ebx
+			.if ebx==240
+				xor		ebx,ebx
+				inc		edi
+			.endif
+		.endw
 		invoke BitBlt,ps.hdc,0,0,rect.right,rect.bottom,mDC,0,0,SRCCOPY
 		invoke EndPaint,hWin,addr ps
 	.elseif eax==WM_DESTROY
@@ -200,19 +223,7 @@ DrawGByte:
 		test	eax,80h
 		.if !ZERO?
 			lea		edx,[ebx*8+ecx]
-			lea		edx,[edx*2]
-			mov		dotrect.left,edx
-			lea		edx,[edx+2]
-			mov		dotrect.right,edx
-			lea		edx,[edi*2]
-			mov		dotrect.top,edx
-			lea		edx,[edx+2]
-			mov		dotrect.bottom,edx
-			push	eax
-			push	ecx
-			invoke FillRect,mDC,addr dotrect,hDotBrush
-			pop		ecx
-			pop		eax
+			mov		glcd.scrn[edi+edx],TRUE
 		.endif
 		shl		eax,1
 		inc		ecx
@@ -519,11 +530,13 @@ AddinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			inc		ecx
 			lea		esi,[esi+sizeof GLCDBIT]
 		.endw
+		invoke GetCBOBits
 		.if fActive
 			invoke InvalidateRect,hLcd,NULL,TRUE
 		.endif
 	.elseif eax==AM_REFRESH
-		.if fActive
+		.if fActive && fChanged
+			mov		fChanged,FALSE
 			invoke InvalidateRect,hLcd,NULL,TRUE
 		.endif
 	.elseif eax==AM_PROJECTOPEN
@@ -640,6 +653,7 @@ DataWrite:
 		movzx	eax,[ebx].ADDIN.Sfr[eax]
 		mov		glcd.ram[edi],al
 		inc		glcd.adp
+		mov		fChanged,TRUE
 	.else
 		shr		glcd.data,8
 		mov		eax,glcd.port
@@ -760,6 +774,7 @@ CommandWrite:
 	.else
 		;Error
 	.endif
+	mov		fChanged,TRUE
 	retn
 
 Write:

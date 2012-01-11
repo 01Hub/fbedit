@@ -108,6 +108,7 @@ GLCD struct
 	awr					DWORD ?		;Auto write=1
 	ard					DWORD ?		;Auto read=1
 	ram					BYTE 64*1024 dup(?)
+	scrn				BYTE 240*128 dup(?)
 GLCD ends
 
 .const
@@ -150,6 +151,7 @@ lpAddin					DWORD ?
 IDAddin					DWORD ?
 BackLight				DWORD ?
 fActive					DWORD ?
+fChanged				DWORD ?
 
 P0Bits					DWORD ?				;Each bit used by LCD is 1
 P1Bits					DWORD ?				;Each bit used by LCD is 1
