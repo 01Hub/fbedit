@@ -120,6 +120,7 @@ DisplayProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 	.if eax==WM_CREATE
 		mov		eax,hWin
 		mov		hLcd,eax
+		invoke MoveWindow,hWin,0,0,240*2+4,128*2+4,FALSE
 		invoke GetClientRect,hWin,addr rect
 		invoke GetDC,hWin
 		mov		hDC,eax
@@ -133,11 +134,22 @@ DisplayProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 		mov		hDotBrush,eax
 		invoke CreateSolidBrush,12D898h
 		mov		hBackBrush,eax
-		invoke MoveWindow,hWin,0,0,240*2+4,128*2+4,FALSE
 	.elseif eax==WM_PAINT
 		invoke BeginPaint,hWin,addr ps
 		invoke GetClientRect,hWin,addr rect
 		invoke FillRect,mDC,addr rect,hBackBrush
+		.if glcd.gon
+			;Graphics on
+			mov		esi,glcd.ghome
+			xor		edi,edi
+			.while edi<128
+				call	DrawGLine
+				inc		edi
+			.endw
+		.endif
+		.if glcd.ton
+			;Text on
+		.endif
 ;		mov		esi,11
 ;		mov		edi,10
 ;		xor		ecx,ecx
@@ -181,6 +193,42 @@ DisplayProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 	.endif
 	xor    eax,eax
 	ret
+
+DrawGByte:
+	xor		ecx,ecx
+	.while ecx<8
+		test	eax,80h
+		.if !ZERO?
+			lea		edx,[ebx*8+ecx]
+			lea		edx,[edx*2]
+			mov		dotrect.left,edx
+			lea		edx,[edx+2]
+			mov		dotrect.right,edx
+			lea		edx,[edi*2]
+			mov		dotrect.top,edx
+			lea		edx,[edx+2]
+			mov		dotrect.bottom,edx
+			push	eax
+			push	ecx
+			invoke FillRect,mDC,addr dotrect,hDotBrush
+			pop		ecx
+			pop		eax
+		.endif
+		shl		eax,1
+		inc		ecx
+	.endw
+	retn
+
+DrawGLine:
+	xor		ebx,ebx
+	.while ebx<glcd.gcol
+		and		esi,0FFFFh
+		movzx	eax,glcd.ram[esi]
+		call	DrawGByte
+		inc		esi
+		inc		ebx
+	.endw
+	retn
 
 DrawChar:
 	push	esi
@@ -230,6 +278,10 @@ GetCBOBits proc uses ebx edi
 	mov		P1Bits,0
 	mov		P2Bits,0
 	mov		P3Bits,0
+	invoke SendDlgItemMessage,hDlg,IDC_CBODATA,CB_GETCURSEL,0,0
+	shl		eax,4
+	or		al,80h
+	mov		glcd.port,eax
 	push	0
 	push	IDC_CBOFS
 	push	IDC_CBOMD
@@ -238,7 +290,7 @@ GetCBOBits proc uses ebx edi
 	push	IDC_CBOR
 	push	IDC_CBOCD
 	mov		ebx,IDC_CBOCS
-	mov		edi,offset lcdbit
+	mov		edi,offset glcdbit
 	.while ebx
 		invoke SendDlgItemMessage,hDlg,ebx,CB_GETCURSEL,0,0
 		.if eax==GND
@@ -457,15 +509,17 @@ AddinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.endif
 		.endif
 	.elseif eax==AM_RESET
+		invoke RtlZeroMemory,addr glcd,sizeof GLCD
+		xor		ecx,ecx
+		mov		esi,offset glcdbit
+		.while ecx<7
+			;Set bit
+			mov		[esi].GLCDBIT.bitval,TRUE
+			mov		[esi].GLCDBIT.oldbitval,TRUE
+			inc		ecx
+			lea		esi,[esi+sizeof GLCDBIT]
+		.endw
 		.if fActive
-;			mov		LCDDB,8
-;			mov		LCDNIBBLE,0
-;			mov		LCDData,7FFh
-;			mov		edi,offset LCDDDRAM
-;			mov		ecx,128/4
-;			mov		eax,20202020h
-;			rep		stosd
-;			mov		LCDDDRAMADDR,0
 			invoke InvalidateRect,hLcd,NULL,TRUE
 		.endif
 	.elseif eax==AM_REFRESH
@@ -549,17 +603,176 @@ AddinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
 DataRead:
 PrintText "DataRead"
+PrintHex eax
 	retn
 
-DataWrite:
-PrintText "DataWrite"
+CommandRead:
+	;Get status
+	xor		eax,eax
+	;Command execution capability
+	or		eax,STA0
+	;Data read / write capability
+	or		eax,STA1
+	;Auto read
+	or		eax,STA2
+	;Auto write
+	or		eax,STA3
+	;Controller operation capability
+	or		eax,STA5
+	;Blink condition
+	or		eax,STA7
+	mov		glcd.status,eax
+	mov		edx,glcd.port
+	mov		[ebx].ADDIN.Sfr[edx],al
 	retn
+
+Read:
+	.if glcdbit.bitval[GLCDBIT_CD]
+		jmp		CommandRead
+	.endif
+	jmp		DataRead
+
+DataWrite:
+	.if glcd.awr
+		mov		edi,glcd.adp
+		and		edi,0FFFFh
+		mov		eax,glcd.port
+		movzx	eax,[ebx].ADDIN.Sfr[eax]
+		mov		glcd.ram[edi],al
+		inc		glcd.adp
+	.else
+		shr		glcd.data,8
+		mov		eax,glcd.port
+		movzx	eax,[ebx].ADDIN.Sfr[eax]
+		shl		eax,8
+		or		glcd.data,eax
+	.endif
+	retn
+
+CommandWrite:
+	mov		eax,glcd.port
+	movzx	eax,[ebx].ADDIN.Sfr[eax]
+	mov		glcd.cmnd,eax
+	.if eax>=21h && eax<=24h
+		;Setting registers
+		.if eax==21h
+			;CURSOR POINTER
+			mov		eax,glcd.data
+			mov		glcd.cp,eax
+		.elseif eax==22h
+			;OFFSET REGISTER
+			mov		eax,glcd.data
+			mov		glcd.ofs,eax
+		.elseif eax==24h
+			;ADDRESS POINTER
+			mov		eax,glcd.data
+			mov		glcd.adp,eax
+		.else
+			;Error
+		.endif
+	.elseif eax>=40h && eax<=43h
+		;Set Control Word
+		.if eax==40h
+			;Set Text Home Address
+			mov		eax,glcd.data
+			mov		glcd.thome,eax
+		.elseif eax==41h
+			;Set Text Area
+			mov		eax,glcd.data
+			mov		glcd.tcol,eax
+		.elseif eax==42h
+			;Set Graphic Home Address
+			mov		eax,glcd.data
+			mov		glcd.ghome,eax
+		.elseif eax==43h
+			;Graphic Area
+			mov		eax,glcd.data
+			mov		glcd.gcol,eax
+		.endif
+	.elseif eax>=80h && eax<=8Fh
+		;Mode set
+		test	eax,08h
+		.if ZERO?
+			mov		glcd.ecg,FALSE
+		.else
+			mov		glcd.ecg,TRUE
+		.endif
+		and		eax,07h
+		mov		glcd.mode,eax
+	.elseif eax>=90h && eax<=9Fh
+		;Display mode
+		mov		glcd.bon,FALSE
+		mov		glcd.con,FALSE
+		mov		glcd.ton,FALSE
+		mov		glcd.gon,FALSE
+		.if eax & 01h
+			;Blink on
+			mov		glcd.bon,TRUE
+		.endif
+		.if eax & 02h
+			;Cursor on
+			mov		glcd.con,TRUE
+		.endif
+		.if eax & 04h
+			;Text on
+			mov		glcd.ton,TRUE
+		.endif
+		.if eax & 08h
+			;Graphic on
+			mov		glcd.gon,TRUE
+		.endif
+	.elseif eax>=0A0h && eax<=0A7h
+		;Cursor pattern select
+		and		eax,07h
+		mov		glcd.cur,eax
+	.elseif eax>=0B0h && eax<=0B2h
+		;Data Auto Read / Write
+		.if eax==0B0h
+			;Set Data Auto Write
+			mov		glcd.awr,TRUE
+		.elseif eax==0B1h
+			;Set Data Auto Read
+			mov		glcd.ard,TRUE
+		.elseif eax==0B2h
+			;Set Data Auto Read / Write off
+			mov		glcd.awr,FALSE
+			mov		glcd.ard,FALSE
+		.endif
+	.elseif eax>=0C0h && eax<=0C5h
+		;Data Read / Write
+		.if eax==0C0h
+			;Data Write and Increment ADP
+		.elseif eax==0C1h
+			;Data Read and Increment ADP
+		.elseif eax==0C2h
+			;Data Write and Decrement ADP
+		.elseif eax==0C3h
+			;Data Read and Decrement ADP
+		.elseif eax==0C4h
+			;Data Write and Nonvariable ADP
+		.elseif eax==0C5h
+			;Data Read and Nonvariable ADP
+		.endif
+	.elseif eax==0E0h
+		;Screen Peep
+	.elseif eax==0E8h
+		;Screen Copy
+	.else
+		;Error
+	.endif
+	retn
+
+Write:
+	.if glcdbit.bitval[GLCDBIT_CD]
+		jmp		CommandWrite
+	.endif
+	jmp		DataWrite
 
 ;eax=portaddress, edx=portdata
 SetData:
 	xor		ecx,ecx
 	xor		ebx,ebx
-	mov		esi,offset lcdbit
+	mov		esi,offset glcdbit
 	.while ecx<7
 		.if eax==[esi].GLCDBIT.port
 			push	[esi].GLCDBIT.bitval
@@ -579,21 +792,22 @@ SetData:
 	.endw
 	.if ebx
 		;Asigned port bit(s) changed
-		.if !lcdbit.oldbitval[GLCDBIT_CS] && lcdbit.bitval[GLCDBIT_CS]
+		mov		ebx,lpAddin
+		.if !glcdbit.oldbitval[GLCDBIT_CS] && glcdbit.bitval[GLCDBIT_CS]
 			;Low to High transition on CS
-			.if !lcdbit.oldbitval[GLCDBIT_R]
+			.if !glcdbit.oldbitval[GLCDBIT_R]
 				;R was low
-				call	DataRead
-			.elseif !lcdbit.oldbitval[GLCDBIT_W]
+				call	Read
+			.elseif !glcdbit.oldbitval[GLCDBIT_W]
 				;W was low
-				call	DataWrite
+				call	Write
 			.endif
-		.elseif !lcdbit.bitval[GLCDBIT_CS] && !lcdbit.oldbitval[GLCDBIT_R] && lcdbit.bitval[GLCDBIT_R]
-			;CS is low, low to high transition on R
-			call	DataRead
-		.elseif !lcdbit.bitval[GLCDBIT_CS] && !lcdbit.oldbitval[GLCDBIT_W] && lcdbit.bitval[GLCDBIT_W]
+		.elseif !glcdbit.bitval[GLCDBIT_CS] && glcdbit.oldbitval[GLCDBIT_R] && !glcdbit.bitval[GLCDBIT_R]
+			;CS is low, high to low transition on R
+			call	Read
+		.elseif !glcdbit.bitval[GLCDBIT_CS] && !glcdbit.oldbitval[GLCDBIT_W] && glcdbit.bitval[GLCDBIT_W]
 			;CS is low, low to high transition on W
-			call	DataWrite
+			call	Write
 		.endif
 	.endif
 	retn

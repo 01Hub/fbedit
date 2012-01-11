@@ -70,12 +70,45 @@ P3_5					equ 31
 P3_6					equ 32
 P3_7					equ 33
 
+STA0					equ 1
+STA1					equ 2
+STA2					equ 4
+STA3					equ 8
+STA4					equ 16
+STA5					equ 32
+STA6					equ 64
+STA7					equ 128
+
 GLCDBIT struct
-	port				DWORD ?
-	portbit				DWORD ?
-	bitval				DWORD ?
-	oldbitval			DWORD ?
+	port				DWORD ?		;Port address
+	portbit				DWORD ?		;Bit
+	bitval				DWORD ?		;Current state
+	oldbitval			DWORD ?		;Previous state
 GLCDBIT ends
+
+GLCD struct
+	port				DWORD ?		;Data port address
+	cmnd				DWORD ?		;Current command
+	data				DWORD ?		;Current data
+	status				DWORD ?		;LCD status
+	adp					DWORD ?		;Address pointer
+	cp					DWORD ?		;Cursor pointer
+	ofs					DWORD ?		;Offset register
+	thome				DWORD ?		;Text home address
+	tcol				DWORD ?		;Text columns
+	ghome				DWORD ?		;Graphics home address
+	gcol				DWORD ?		;Graphics columns
+	mode				DWORD ?		;OR=0, EXOR=1, AND=3, Text Attribute mode=4
+	ecg					DWORD ?		;Internal CG ROM=0, External CG RAM=1
+	con					DWORD ?		;Cursor on=1
+	bon					DWORD ?		;Blink on=1
+	ton					DWORD ?		;Text on=1
+	gon					DWORD ?		;Grapics on=1
+	cur					DWORD ?		;1 Line=0, .., .., 8 Lines=7
+	awr					DWORD ?		;Auto write=1
+	ard					DWORD ?		;Auto read=1
+	ram					BYTE 64*1024 dup(?)
+GLCD ends
 
 .const
 
@@ -122,12 +155,7 @@ P0Bits					DWORD ?				;Each bit used by LCD is 1
 P1Bits					DWORD ?				;Each bit used by LCD is 1
 P2Bits					DWORD ?				;Each bit used by LCD is 1
 P3Bits					DWORD ?				;Each bit used by LCD is 1
-dataport				DWORD ?
-lcddata1				DWORD ?
-lcddata2				DWORD ?
-lcdcmnd					DWORD ?
 
-lcdbit					GLCDBIT 7 dup(<>)	;What port bit the GLCD bit is connected to
+glcdbit					GLCDBIT 7 dup(<>)	;What port bit the GLCD bit is connected to
+glcd					GLCD <>
 
-LCDDDRAMADDR			DWORD ?
-LCDCGRAMADDR			DWORD ?

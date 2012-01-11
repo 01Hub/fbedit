@@ -53,6 +53,19 @@ X: invalid
 
 **************************************************************************************************
 
+Status byte
+-------------------------------------------------------------------------------------
+STA0	Check command execution capability			0:Disable, 1:Enable
+STA1	Check data read / write capability			0:Disable, 1:Enable
+STA2	Check Auto mode data read capability		0:Disable, 1:Enable
+STA3	Check Auto mode data write capability		0:Disable, 1:Enable
+STA4	Not used
+STA5	Check controller operation capability		0:Disable, 1:Enable
+STA6	Error flag. Screen Peek and Screen copy		0:No error, 1=Error
+STA7	Check the blink condition					0:Display off, 1=Normal display
+-------------------------------------------------------------------------------------
+
+
 Setting registers
 -------------------------------------------------------------------------
 Code		Hex	Function						D1			D2

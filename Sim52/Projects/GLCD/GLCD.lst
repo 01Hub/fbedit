@@ -42,14 +42,14 @@ ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. 
    22:	  0104	00			NOP
    23:	  0105	00			NOP
    24:	  0106	D2 93			SETB	PB_RST
-   25:	  0108	90 01 66		MOV	DPTR,#MSGI1	;initialization bytes
+   25:	  0108	90 01 67		MOV	DPTR,#MSGI1	;initialization bytes
    26:	  010B	12 01 1C		LCALL	MSGC
    27:					; Start of regular program
    28:					; Display graphic
-   29:	  010E	90 01 7C		MOV	DPTR,#MSGI2	;set auto mode
+   29:	  010E	90 01 7D		MOV	DPTR,#MSGI2	;set auto mode
    30:	  0111	12 01 1C		LCALL	MSGC
-   31:	  0114	90 01 80		MOV	DPTR,#MSG1	;display graphic
-   32:	  0117	12 01 33		LCALL	MSGD
+   31:	  0114	90 01 81		MOV	DPTR,#MSG1	;display graphic
+   32:	  0117	12 01 34		LCALL	MSGD
    33:	  011A	80 FE			SJMP	$		;infinite loop
    34:
    35:				;*************************************************
@@ -75,55 +75,55 @@ ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. 
    48:
    49:	  0124			MSGC3:
    50:	  0124	F9			MOV	R1,A
-   51:	  0125	12 01 4C		LCALL	WRITED		;send it
+   51:	  0125	12 01 4D		LCALL	WRITED		;send it
    52:	  0128	A3			INC	DPTR
    53:	  0129	D8 F3			DJNZ	R0,MSGC2
    54:	  012B	E4			CLR	A
    55:	  012C	93			MOVC	A,@A+DPTR	;get command
    56:	  012D	F9			MOV	R1,A
-   57:	  012E	12 01 40		LCALL	WRITEC		;send command
-   58:	  0131	80 E9			SJMP	MSGC		;next command
-   59:
-   60:				; MSGD sends the data pointed to by
-   61:				; the DPTR to the graphics module.
-   62:	  0133			MSGD:
-   63:	  0133	E4			CLR	A
-   64:	  0134	93			MOVC	A,@A+DPTR	;get byte
-   65:	  0135	B4 A1 01		CJNE	A,#0A1h,MSGD1	;done?
-   66:	  0138	22			RET
-   67:
-   68:	  0139			MSGD1:
-   69:	  0139	F9			MOV	R1,A
-   70:	  013A	12 01 4C		LCALL	WRITED		;send data
-   71:	  013D	A3			INC	DPTR
-   72:	  013E	80 F3			SJMP	MSGD
-   73:
-   74:				; WRITEC sends the byte in R1 to a
-   75:				; graphics module as a command.
-   76:	  0140			WRITEC:
-   77:	  0140	12 01 53		LCALL	STATUS		;display ready?
-   78:	  0143	D2 90			SETB	PB_CD		;c/d = 1
-   79:	  0145			WRITEC1:
-   80:	  0145	89 A0			MOV	P2,R1		;get data
-   81:	  0147	C2 92			CLR	PB_W		;strobe it
-   82:	  0149	D2 92			SETB	PB_W
-   83:	  014B	22			RET
-   84:
-   85:				; WRITED sends the byte in R1 to the
-   86:				; graphics module as data.
-   87:	  014C			WRITED:
-   88:	  014C	12 01 53		LCALL	STATUS		;display ready?
-   89:	  014F	C2 90			CLR	PB_CD		;c/d = 0
-   90:	  0151	80 F2			SJMP	WRITEC1
-   91:
-   92:				; STATUS check to see that the graphic
-   93:				; display is ready. It won't return
-   94:				; until it is.
-   95:	  0153			STATUS:
-   96:	  0153	D2 90			SETB	PB_CD		;c/d=1
-   97:	  0155	75 A0 FF		MOV	P2,#0FFh	;P2 to input
-   98:	  0158	7B 0B			MOV	R3,#0Bh		;status bits mask
-   99:	  015A			STAT1:
+   57:	  012E	12 01 41		LCALL	WRITEC		;send command
+   58:	  0131	A3			INC	DPTR
+   59:	  0132	80 E8			SJMP	MSGC		;next command
+   60:
+   61:				; MSGD sends the data pointed to by
+   62:				; the DPTR to the graphics module.
+   63:	  0134			MSGD:
+   64:	  0134	E4			CLR	A
+   65:	  0135	93			MOVC	A,@A+DPTR	;get byte
+   66:	  0136	B4 A1 01		CJNE	A,#0A1h,MSGD1	;done?
+   67:	  0139	22			RET
+   68:
+   69:	  013A			MSGD1:
+   70:	  013A	F9			MOV	R1,A
+   71:	  013B	12 01 4D		LCALL	WRITED		;send data
+   72:	  013E	A3			INC	DPTR
+   73:	  013F	80 F3			SJMP	MSGD
+   74:
+   75:				; WRITEC sends the byte in R1 to a
+   76:				; graphics module as a command.
+   77:	  0141			WRITEC:
+   78:	  0141	12 01 54		LCALL	STATUS		;display ready?
+   79:	  0144	D2 90			SETB	PB_CD		;c/d = 1
+   80:	  0146			WRITEC1:
+   81:	  0146	89 A0			MOV	P2,R1		;set data
+   82:	  0148	C2 92			CLR	PB_W		;strobe it
+   83:	  014A	D2 92			SETB	PB_W
+   84:	  014C	22			RET
+   85:
+   86:				; WRITED sends the byte in R1 to the
+   87:				; graphics module as data.
+   88:	  014D			WRITED:
+   89:	  014D	12 01 54		LCALL	STATUS		;display ready?
+   90:	  0150	C2 90			CLR	PB_CD		;c/d = 0
+   91:	  0152	80 F2			SJMP	WRITEC1
+   92:
+   93:				; STATUS check to see that the graphic
+   94:				; display is ready. It won't return
+   95:				; until it is.
+   96:	  0154			STATUS:
+   97:	  0154	D2 90			SETB	PB_CD		;c/d=1
+   98:	  0156	75 A0 FF		MOV	P2,#0FFh	;P2 to input
+   99:	  0159	7B 0B			MOV	R3,#0Bh		;status bits mask
 
 ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 3
 
@@ -131,42 +131,159 @@ ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. 
 
  Line  I  Addr  Code            Source
 
-  100:	  015A	C2 91			CLR	PB_R		;read it
-  101:	  015C	E5 A0			MOV	A,P2
-  102:	  015E	D2 91			SETB	PB_R
-  103:	  0160	5B			ANL	A,R3		;status OK?
-  104:	  0161	C3			CLR	C
-  105:	  0162	9B			SUBB	A,R3
-  106:	  0163	70 F5			JNZ	STAT1
-  107:	  0165	22			RET
-  108:
-  109:				;************************************************
-  110:				; TABLES AND DATA
-  111:				; Initialization bytes for 240x128
-  112:	  0166			MSGI1:
-  113:	  0166	80 07 40		DB	80h,07h,40h	;text home address
-  114:	  0169	1E 00 41		DB	1Eh,00h,41h	;text area
-  115:	  016C	00 00 42		DB	00h,00h,42h	;graphic home address
-  116:	  016F	1E 00 43		DB	1Eh,00h,43h	;graphic area
-  117:	  0172	00 00 81		DB	00h,00h,81h	;mode set
-  118:	  0175	00 00 24		DB	00h,00h,24h	;address pointer set
-  119:	  0178	00 00 98		DB	00h,00h,98h	;display mode set
-  120:	  017B	A1			DB	0A1h
-  121:
-  122:	  017C			MSGI2:
-  123:	  017C	00 00 B0		DB	00,00,0b0h	;auto mode
-  124:	  017F	A1			DB	0A1h
-  125:
-  126:				;240x128 Bitmap graphic data
-  127:				;Only the first 8 bytes are shown here
-  128:				;The real graphic consists of 240/8*128=3840 bytes
-  129:				;of binary data.
-  130:	  0180			MSG1:
-  131:	  0180	00 00 00 00		DB	00h,00h,00h,00h,00h,00h,00h,00h
-	  0184	00 00 00 00
-  132:	  0188	A1			DB	0A1h
-  133:
-  134:					END
+  100:	  015B			STAT1:
+  101:	  015B	C2 91			CLR	PB_R		;read it
+  102:	  015D	E5 A0			MOV	A,P2
+  103:	  015F	D2 91			SETB	PB_R
+  104:	  0161	5B			ANL	A,R3		;status OK?
+  105:	  0162	C3			CLR	C
+  106:	  0163	9B			SUBB	A,R3
+  107:	  0164	70 F5			JNZ	STAT1
+  108:	  0166	22			RET
+  109:
+  110:				;************************************************
+  111:				; TABLES AND DATA
+  112:				; Initialization bytes for 240x128
+  113:	  0167			MSGI1:
+  114:	  0167	80 07 40		DB	80h,07h,40h	;text home address
+  115:	  016A	1E 00 41		DB	1Eh,00h,41h	;text area
+  116:	  016D	00 00 42		DB	00h,00h,42h	;graphic home address
+  117:	  0170	1E 00 43		DB	1Eh,00h,43h	;graphic area
+  118:	  0173	00 00 81		DB	00h,00h,81h	;mode set
+  119:	  0176	00 00 24		DB	00h,00h,24h	;address pointer set
+  120:	  0179	00 00 98		DB	00h,00h,98h	;display mode set
+  121:	  017C	A1			DB	0A1h
+  122:
+  123:	  017D			MSGI2:
+  124:	  017D	00 00 B0		DB	00,00,0B0h	;auto mode
+  125:	  0180	A1			DB	0A1h
+  126:
+  127:				;240x128 Bitmap graphic data
+  128:				;Only the first 8 bytes are shown here
+  129:				;The real graphic consists of 240/8*128=3840 bytes
+  130:				;of binary data.
+  131:	  0181			MSG1:
+  132:	  0181	00 00 00 00		DB	000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
+	  0185	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
+	  0189	00 00 00 00
+	  018D	00 00 00 00
+	  0191	00 00 00 00
+	  0195	00 00 00 00
+	  0199	00 00 00 00
+	  019D	00 00
+  133:	  019F	00 00 00 00		DB	000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
+	  01A3	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
+	  01A7	00 00 00 00
+	  01AB	00 00 00 00
+	  01AF	00 00 00 00
+	  01B3	00 00 00 00
+	  01B7	00 00 00 00
+	  01BB	00 00
+  134:	  01BD	00 00 00 00		DB	000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
+	  01C1	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
+	  01C5	00 00 00 00
+	  01C9	00 00 00 00
+	  01CD	00 00 00 00
+	  01D1	00 00 00 00
+	  01D5	00 00 00 00
+	  01D9	00 00
+
+ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 4
+
+
+
+ Line  I  Addr  Code            Source
+
+  135:	  01DB	FF FF FF FF		DB	0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh
+	  01DF	FF FF FF FF	,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh
+	  01E3	FF FF FF FF
+	  01E7	FF FF FF FF
+	  01EB	FF FF FF FF
+	  01EF	FF FF FF FF
+	  01F3	FF FF FF FF
+	  01F7	FF FF
+  136:	  01F9	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
+	  01FD	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
+	  0201	00 00 00 00
+	  0205	00 00 00 00
+	  0209	00 00 00 00
+	  020D	00 00 00 00
+	  0211	00 00 00 00
+	  0215	00 01
+  137:	  0217	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
+	  021B	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
+	  021F	00 00 00 00
+	  0223	00 00 00 00
+	  0227	00 00 00 00
+	  022B	00 00 00 00
+	  022F	00 00 00 00
+	  0233	00 01
+  138:	  0235	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
+	  0239	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
+	  023D	00 00 00 00
+	  0241	00 00 00 00
+	  0245	00 00 00 00
+	  0249	00 00 00 00
+	  024D	00 00 00 00
+	  0251	00 01
+  139:	  0253	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
+	  0257	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
+	  025B	00 00 00 00
+	  025F	00 00 00 00
+	  0263	00 00 00 00
+	  0267	00 00 00 00
+	  026B	00 00 00 00
+	  026F	00 01
+  140:	  0271	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
+	  0275	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
+	  0279	00 00 00 00
+	  027D	00 00 00 00
+	  0281	00 00 00 00
+	  0285	00 00 00 00
+	  0289	00 00 00 00
+	  028D	00 01
+  141:	  028F	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
+	  0293	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
+	  0297	00 00 00 00
+	  029B	00 00 00 00
+	  029F	00 00 00 00
+	  02A3	00 00 00 00
+	  02A7	00 00 00 00
+	  02AB	00 01
+
+ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 5
+
+
+
+ Line  I  Addr  Code            Source
+
+  142:	  02AD	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
+	  02B1	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
+	  02B5	00 00 00 00
+	  02B9	00 00 00 00
+	  02BD	00 00 00 00
+	  02C1	00 00 00 00
+	  02C5	00 00 00 00
+	  02C9	00 01
+  143:	  02CB	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
+	  02CF	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
+	  02D3	00 00 00 00
+	  02D7	00 00 00 00
+	  02DB	00 00 00 00
+	  02DF	00 00 00 00
+	  02E3	00 00 00 00
+	  02E7	00 01
+  144:	  02E9	FF FF FF FF		DB	0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh
+	  02ED	FF FF FF FF	,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh
+	  02F1	FF FF FF FF
+	  02F5	FF FF FF FF
+	  02F9	FF FF FF FF
+	  02FD	FF FF FF FF
+	  0301	FF FF FF FF
+	  0305	FF FF
+  145:	  0307	A1			DB	0A1h
+  146:
+  147:					END
 
 
 
@@ -179,7 +296,7 @@ ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. 
 
 
 
-ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 4
+ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 6
 
 
 
@@ -216,14 +333,14 @@ INT1				  BIT	      B3
 IP				  DATA	      B8
 IT0				  BIT	      88
 IT1				  BIT	      8A
-MSG1				  CODE	    0180	 130
+MSG1				  CODE	    0181	 131
 MSGC				  CODE	    011C	  41
 MSGC2				  CODE	    011E	  43
 MSGC3				  CODE	    0124	  49
-MSGD				  CODE	    0133	  62
-MSGD1				  CODE	    0139	  68
-MSGI1				  CODE	    0166	 112
-MSGI2				  CODE	    017C	 122
+MSGD				  CODE	    0134	  63
+MSGD1				  CODE	    013A	  69
+MSGI1				  CODE	    0167	 113
+MSGI2				  CODE	    017D	 123
 OV				  BIT	      D2
 P				  BIT	      D0
 P0				  DATA	      80
@@ -242,7 +359,7 @@ PT1				  BIT	      BB
 PX0				  BIT	      B8
 PX1				  BIT	      BA
 
-ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 5
+ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 7
 
 
 
@@ -264,8 +381,8 @@ SM1				  BIT	      9E
 SM2				  BIT	      9D
 SP				  DATA	      81
 START				  CODE	    0100	  17
-STAT1				  CODE	    015A	  99
-STATUS				  CODE	    0153	  95
+STAT1				  CODE	    015B	 100
+STATUS				  CODE	    0154	  96
 T0				  BIT	      B4
 T1				  BIT	      B5
 TB8				  BIT	      9B
@@ -284,6 +401,6 @@ TR0				  BIT	      8C
 TR1				  BIT	      8E
 TXD				  BIT	      B1
 WR				  BIT	      B6
-WRITEC				  CODE	    0140	  76
-WRITEC1				  CODE	    0145	  79
-WRITED				  CODE	    014C	  87
+WRITEC				  CODE	    0141	  77
+WRITEC1				  CODE	    0146	  80
+WRITED				  CODE	    014D	  88
