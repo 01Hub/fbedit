@@ -1,3 +1,11 @@
+TODO
+----
+Screen peek
+Screen copy
+Text Attribute mode
+Compare behaviour to real hardware
+
+
 Command Definitions
 --------------------------------------------------------------------------------------------------
 Command					Code		D1				D2				Function

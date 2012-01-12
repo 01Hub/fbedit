@@ -107,6 +107,7 @@ GLCD struct
 	cur					DWORD ?		;1 Line=0, .., .., 8 Lines=7
 	awr					DWORD ?		;Auto write=1
 	ard					DWORD ?		;Auto read=1
+	fblink				DWORD ?		;Blink state
 	ram					BYTE 64*1024 dup(?)
 	scrn				BYTE 240*128 dup(?)
 GLCD ends

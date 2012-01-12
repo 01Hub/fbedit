@@ -150,37 +150,16 @@ DisplayProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 		.endif
 		.if glcd.ton
 			;Text on
+			mov		esi,glcd.thome
+			xor		edi,edi
+			.while edi<240*128
+				call	DrawTLine
+				lea		edi,[edi+240*8]
+			.endw
 		.endif
-;		mov		esi,11
-;		mov		edi,10
-;		xor		ecx,ecx
-;		mov		ebx,offset LCDDDRAM
-;		.while ecx<16
-;			push	ebx
-;			push	ecx
-;			movzx	eax,byte ptr [ebx]
-;			call	DrawChar
-;			pop		ecx
-;			pop		ebx
-;			lea		ebx,[ebx+1]
-;			lea		esi,[esi+6*4]
-;			lea		ecx,[ecx+1]
-;		.endw
-;		mov		esi,11
-;		mov		edi,10+4*8+5
-;		xor		ecx,ecx
-;		mov		ebx,offset LCDDDRAM+40h
-;		.while ecx<16
-;			push	ebx
-;			push	ecx
-;			movzx	eax,byte ptr [ebx]
-;			call	DrawChar
-;			pop		ecx
-;			pop		ebx
-;			lea		ebx,[ebx+1]
-;			lea		esi,[esi+6*4]
-;			lea		ecx,[ecx+1]
-;		.endw
+		.if glcd.con
+			call	DrawCursor
+		.endif
 		xor		ebx,ebx
 		xor		edi,edi
 		xor		esi,esi
@@ -241,44 +220,151 @@ DrawGLine:
 	.endw
 	retn
 
-DrawChar:
+DrawTCharOR:
 	push	esi
-	push	edi
-	mov		ebx,8
-	mul		ebx
-	lea		ebx,[eax+offset CharTab]
 	xor		edx,edx
-	.while edx<8
-		push	ebx
-		push	edx
+	lea		esi,[eax*8]
+	.while edx<240*8
 		xor		ecx,ecx
-		push	esi
-		movzx	ebx,byte ptr [ebx]
-		.while ecx<5
-			shl		bl,1
-			.if CARRY?
-				push	ecx
-				mov		dotrect.left,esi
-				lea		eax,[esi+3]
-				mov		dotrect.right,eax
-				mov		dotrect.top,edi
-				lea		eax,[edi+3]
-				mov		dotrect.bottom,eax
-				invoke FillRect,mDC,addr dotrect,hDotBrush
-				pop		ecx
+		movzx	eax,CharTab[esi]
+		push	edx
+		lea		edx,[edi+edx]
+		.if glcdbit.bitval[GLCDBIT_FS]
+			;Font 6x8
+			lea		edx,[edx+ebx*2]
+			lea		edx,[edx+ebx*4]
+		.else
+			;Font 8x8
+			lea		edx,[edx+ebx*8]
+		.endif
+		.while ecx<8
+			test	eax,80h
+			.if !ZERO?
+				mov		glcd.scrn[edx+ecx],TRUE
 			.endif
-			lea		esi,[esi+4]
-			lea		ecx,[ecx+1]
+			shl		eax,1
+			inc		ecx
 		.endw
-		pop		esi
 		pop		edx
-		pop		ebx
-		lea		ebx,[ebx+1]
-		lea		edi,[edi+4]
-		lea		edx,[edx+1]
+		inc		esi
+		lea		edx,[edx+240]
 	.endw
-	pop		edi
 	pop		esi
+	retn
+
+DrawTCharEXOR:
+	push	esi
+	xor		edx,edx
+	lea		esi,[eax*8]
+	.while edx<240*8
+		xor		ecx,ecx
+		movzx	eax,CharTab[esi]
+		push	edx
+		lea		edx,[edi+edx]
+		.if glcdbit.bitval[GLCDBIT_FS]
+			;Font 6x8
+			lea		edx,[edx+ebx*2]
+			lea		edx,[edx+ebx*4]
+		.else
+			;Font 8x8
+			lea		edx,[edx+ebx*8]
+		.endif
+		.while ecx<8
+			test	eax,80h
+			.if !ZERO?
+				xor		glcd.scrn[edx+ecx],TRUE
+			.endif
+			shl		eax,1
+			inc		ecx
+		.endw
+		pop		edx
+		inc		esi
+		lea		edx,[edx+240]
+	.endw
+	pop		esi
+	retn
+
+DrawTCharAND:
+	push	esi
+	xor		edx,edx
+	lea		esi,[eax*8]
+	.while edx<240*8
+		xor		ecx,ecx
+		movzx	eax,CharTab[esi]
+		push	edx
+		lea		edx,[edi+edx]
+		.if glcdbit.bitval[GLCDBIT_FS]
+			;Font 6x8
+			lea		edx,[edx+ebx*2]
+			lea		edx,[edx+ebx*4]
+		.else
+			;Font 8x8
+			lea		edx,[edx+ebx*8]
+		.endif
+		.while ecx<8
+			test	eax,80h
+			.if !ZERO?
+				and		glcd.scrn[edx+ecx],TRUE
+			.else
+				mov		glcd.scrn[edx+ecx],FALSE
+			.endif
+			shl		eax,1
+			inc		ecx
+		.endw
+		pop		edx
+		inc		esi
+		lea		edx,[edx+240]
+	.endw
+	pop		esi
+	retn
+
+DrawTCharATTRIBUTE:
+	;Not implemented
+	retn
+
+DrawTLine:
+	xor		ebx,ebx
+	.while ebx<glcd.tcol
+		and		esi,0FFFFh
+		movzx	eax,glcd.ram[esi]
+		.if glcd.mode==0
+			call	DrawTCharOR
+		.elseif glcd.mode==1
+			call	DrawTCharEXOR
+		.elseif glcd.mode==3
+			call	DrawTCharAND
+		.elseif glcd.mode==4
+			call	DrawTCharATTRIBUTE
+		.endif
+		inc		esi
+		inc		ebx
+	.endw
+	retn
+
+DrawCursor:
+	.if glcd.fblink && glcd.bon
+		retn
+	.endif
+	mov		eax,glcd.cp
+	movzx	ecx,al				;x
+	lea		ecx,[ecx*8]
+	movzx	edx,ah				;y
+	mov		eax,240*8
+	mul		edx
+	mov		edx,eax
+	mov		edi,7
+	.while sdword ptr edi>=0
+		.if edi<=glcd.cur
+			xor		ebx,ebx
+			.while ebx<8
+				lea		eax,[edx+ecx]
+				xor		glcd.scrn[eax+ebx],TRUE
+				inc		ebx
+			.endw
+		.endif
+		dec		edi
+		lea		edx,[edx+240]
+	.endw
 	retn
 
 DisplayProc endp
@@ -406,11 +492,18 @@ GLCDProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke MoveWindow,hWin,rect.left,rect.top,eax,edx,TRUE
 		invoke CheckDlgButton,hWin,IDC_CHKBACKLIGHT,BST_CHECKED
 		mov		BackLight,1
+		invoke SetTimer,hWin,1000,500,NULL
+	.elseif eax==WM_TIMER
+		xor		glcd.fblink,TRUE
+		.if fActive && glcd.con && glcd.bon
+			mov		fChanged,TRUE
+		.endif
 	.elseif eax==WM_COMMAND
 		mov		edx,wParam
 		movzx	eax,dx
 		shr		edx,16
 		.if edx==CBN_SELCHANGE
+			mov		fChanged,TRUE
 			invoke GetCBOBits
 		.elseif edx==BN_CLICKED
 			.if eax==IDC_BTNEXPAND
@@ -615,8 +708,13 @@ AddinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	ret
 
 DataRead:
-PrintText "DataRead"
-PrintHex eax
+	.if glcd.ard
+		mov		edi,glcd.adp
+		movzx	eax,glcd.ram[edi]
+		mov		edx,glcd.port
+		mov		[ebx].ADDIN.Sfr[edx],al
+		inc		word ptr glcd.adp
+	.endif
 	retn
 
 CommandRead:
@@ -633,7 +731,9 @@ CommandRead:
 	;Controller operation capability
 	or		eax,STA5
 	;Blink condition
-	or		eax,STA7
+	.if !glcd.fblink
+		or		eax,STA7
+	.endif
 	mov		glcd.status,eax
 	mov		edx,glcd.port
 	mov		[ebx].ADDIN.Sfr[edx],al
@@ -648,11 +748,10 @@ Read:
 DataWrite:
 	.if glcd.awr
 		mov		edi,glcd.adp
-		and		edi,0FFFFh
 		mov		eax,glcd.port
 		movzx	eax,[ebx].ADDIN.Sfr[eax]
 		mov		glcd.ram[edi],al
-		inc		glcd.adp
+		inc		word ptr glcd.adp
 		mov		fChanged,TRUE
 	.else
 		shr		glcd.data,8
@@ -754,23 +853,61 @@ CommandWrite:
 		.endif
 	.elseif eax>=0C0h && eax<=0C5h
 		;Data Read / Write
+		mov		edi,glcd.adp
 		.if eax==0C0h
 			;Data Write and Increment ADP
+			mov		eax,glcd.data
+			mov		glcd.ram[edi],ah
+			inc		edi
 		.elseif eax==0C1h
 			;Data Read and Increment ADP
+			movzx	eax,glcd.ram[edi]
+			mov		edx,glcd.port
+			mov		[ebx].ADDIN.Sfr[edx],al
+			inc		edi
 		.elseif eax==0C2h
 			;Data Write and Decrement ADP
+			mov		eax,glcd.data
+			mov		glcd.ram[edi],ah
+			dec		edi
 		.elseif eax==0C3h
 			;Data Read and Decrement ADP
+			movzx	eax,glcd.ram[edi]
+			mov		edx,glcd.port
+			mov		[ebx].ADDIN.Sfr[edx],al
+			dec		edi
 		.elseif eax==0C4h
 			;Data Write and Nonvariable ADP
+			mov		eax,glcd.data
+			mov		glcd.ram[edi],ah
 		.elseif eax==0C5h
 			;Data Read and Nonvariable ADP
+			movzx	eax,glcd.ram[edi]
+			mov		edx,glcd.port
+			mov		[ebx].ADDIN.Sfr[edx],al
 		.endif
+		and		edi,0FFFFh
+		mov		glcd.adp,edi
 	.elseif eax==0E0h
-		;Screen Peep
+		;Screen Peek
 	.elseif eax==0E8h
 		;Screen Copy
+	.elseif eax>=0F0h && eax<=0FFh
+		;BIT SET / RESET
+		mov		ecx,eax
+		and		ecx,07h
+		mov		edx,01h
+		shl		edx,cl
+		mov		edi,glcd.adp
+		test	eax,08h
+		.if ZERO?
+			;BIT RESET
+			xor		edx,0FFh
+			and		glcd.ram[edi],dl
+		.else
+			;BIT SET
+			or		glcd.ram[edi],dl
+		.endif
 	.else
 		;Error
 	.endif
