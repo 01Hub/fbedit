@@ -28,7 +28,6 @@ IDC_CBOW                equ 1005
 IDC_CBORST              equ 1006
 IDC_CBOMD               equ 1007
 IDC_CBOFS               equ 1008
-
 IDC_CHKACTIVE			equ 1013
 IDC_CHKBACKLIGHT        equ 1014
 
@@ -79,6 +78,9 @@ STA5					equ 32
 STA6					equ 64
 STA7					equ 128
 
+XPIX					equ 240
+YPIX					equ 128
+
 GLCDBIT struct
 	port				DWORD ?		;Port address
 	portbit				DWORD ?		;Bit
@@ -109,7 +111,7 @@ GLCD struct
 	ard					DWORD ?		;Auto read=1
 	fblink				DWORD ?		;Blink state
 	ram					BYTE 64*1024 dup(?)
-	scrn				BYTE 240*128 dup(?)
+	scrn				BYTE XPIX*YPIX dup(?)
 GLCD ends
 
 .const

@@ -120,7 +120,7 @@ DisplayProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 	.if eax==WM_CREATE
 		mov		eax,hWin
 		mov		hLcd,eax
-		invoke MoveWindow,hWin,0,0,240*2+6,128*2+6,FALSE
+		invoke MoveWindow,hWin,0,0,XPIX*2+6,YPIX*2+6,FALSE
 		invoke GetClientRect,hWin,addr rect
 		invoke GetDC,hWin
 		mov		hDC,eax
@@ -143,18 +143,18 @@ DisplayProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 			;Graphics on
 			mov		esi,glcd.ghome
 			xor		edi,edi
-			.while edi<240*128
+			.while edi<XPIX*YPIX
 				call	DrawGLine
-				lea		edi,[edi+240]
+				lea		edi,[edi+XPIX]
 			.endw
 		.endif
 		.if glcd.ton
 			;Text on
 			mov		esi,glcd.thome
 			xor		edi,edi
-			.while edi<240*128
+			.while edi<XPIX*YPIX
 				call	DrawTLine
-				lea		edi,[edi+240*8]
+				lea		edi,[edi+XPIX*8]
 			.endw
 		.endif
 		.if glcd.con
@@ -177,7 +177,7 @@ DisplayProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 			.endif
 			inc		esi
 			inc		ebx
-			.if ebx==240
+			.if ebx==XPIX
 				xor		ebx,ebx
 				inc		edi
 			.endif
@@ -224,7 +224,7 @@ DrawTCharOR:
 	push	esi
 	xor		edx,edx
 	lea		esi,[eax*8]
-	.while edx<240*8
+	.while edx<XPIX*8
 		xor		ecx,ecx
 		movzx	eax,CharTab[esi]
 		push	edx
@@ -247,7 +247,7 @@ DrawTCharOR:
 		.endw
 		pop		edx
 		inc		esi
-		lea		edx,[edx+240]
+		lea		edx,[edx+XPIX]
 	.endw
 	pop		esi
 	retn
@@ -256,7 +256,7 @@ DrawTCharEXOR:
 	push	esi
 	xor		edx,edx
 	lea		esi,[eax*8]
-	.while edx<240*8
+	.while edx<XPIX*8
 		xor		ecx,ecx
 		movzx	eax,CharTab[esi]
 		push	edx
@@ -279,7 +279,7 @@ DrawTCharEXOR:
 		.endw
 		pop		edx
 		inc		esi
-		lea		edx,[edx+240]
+		lea		edx,[edx+XPIX]
 	.endw
 	pop		esi
 	retn
@@ -288,7 +288,7 @@ DrawTCharAND:
 	push	esi
 	xor		edx,edx
 	lea		esi,[eax*8]
-	.while edx<240*8
+	.while edx<XPIX*8
 		xor		ecx,ecx
 		movzx	eax,CharTab[esi]
 		push	edx
@@ -313,7 +313,7 @@ DrawTCharAND:
 		.endw
 		pop		edx
 		inc		esi
-		lea		edx,[edx+240]
+		lea		edx,[edx+XPIX]
 	.endw
 	pop		esi
 	retn
@@ -349,7 +349,7 @@ DrawCursor:
 	movzx	ecx,al				;x
 	lea		ecx,[ecx*8]
 	movzx	edx,ah				;y
-	mov		eax,240*8
+	mov		eax,XPIX*8
 	mul		edx
 	mov		edx,eax
 	mov		edi,7
@@ -363,7 +363,7 @@ DrawCursor:
 			.endw
 		.endif
 		dec		edi
-		lea		edx,[edx+240]
+		lea		edx,[edx+XPIX]
 	.endw
 	retn
 
@@ -947,11 +947,11 @@ SetData:
 		mov		ebx,lpAddin
 		.if !glcdbit.oldbitval[GLCDBIT_CS] && glcdbit.bitval[GLCDBIT_CS]
 			;Low to High transition on CS
-			.if !glcdbit.oldbitval[GLCDBIT_R]
-				;R was low
+			.if !glcdbit.oldbitval[GLCDBIT_R] || !glcdbit.bitval[GLCDBIT_R]
+				;R was / is low
 				call	Read
-			.elseif !glcdbit.oldbitval[GLCDBIT_W]
-				;W was low
+			.elseif !glcdbit.oldbitval[GLCDBIT_W] || !glcdbit.bitval[GLCDBIT_W]
+				;W was / is low
 				call	Write
 			.endif
 		.elseif !glcdbit.bitval[GLCDBIT_CS] && glcdbit.oldbitval[GLCDBIT_R] && !glcdbit.bitval[GLCDBIT_R]
