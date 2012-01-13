@@ -95,7 +95,7 @@ GLCD struct
 	status				DWORD ?		;LCD status
 	adp					DWORD ?		;Address pointer
 	cp					DWORD ?		;Cursor pointer
-	ofs					DWORD ?		;Offset register
+	chome				DWORD ?		;CG RAM start = Offset register SHL 11
 	thome				DWORD ?		;Text home address
 	tcol				DWORD ?		;Text columns
 	ghome				DWORD ?		;Graphics home address

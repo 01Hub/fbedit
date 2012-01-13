@@ -865,291 +865,291 @@ CharTab					db 00000b
 						db 00000b
 						db 00000b
 						; 60h
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
+						db 01110b
+						db 10001b
+						db 10000b
+						db 10000b
+						db 10001b
+						db 01110b
+						db 00100b
+						db 01100b
 						; 61h
 						db 00000b
+						db 01010b
 						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
+						db 10010b
+						db 10010b
+						db 10010b
+						db 01101b
 						db 00000b
 						; 62h
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
+						db 00100b
+						db 01000b
+						db 01110b
+						db 10001b
+						db 11111b
+						db 10000b
+						db 01110b
 						db 00000b
 						; 63h
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
+						db 00100b
+						db 01010b
+						db 01110b
+						db 00001b
+						db 01111b
+						db 10001b
+						db 01111b
 						db 00000b
 						; 64h
+						db 01010b
 						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
+						db 01110b
+						db 00001b
+						db 01111b
+						db 10001b
+						db 01111b
 						db 00000b
 						; 65h
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
+						db 00100b
+						db 00010b
+						db 01110b
+						db 00001b
+						db 01111b
+						db 10001b
+						db 01111b
 						db 00000b
 						; 66h
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
+						db 00100b
+						db 01010b
+						db 00100b
+						db 01110b
+						db 00001b
+						db 01111b
+						db 10001b
+						db 01111b
 						; 67h
 						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
+						db 01110b
+						db 10001b
+						db 10001b
+						db 10001b
+						db 01110b
+						db 00100b
+						db 01100b
 						; 68h
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
+						db 00100b
+						db 01010b
+						db 01110b
+						db 10001b
+						db 10001b
+						db 10000b
+						db 01110b
 						db 00000b
 						; 69h
+						db 01010b
 						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
+						db 01110b
+						db 10001b
+						db 10001b
+						db 10000b
+						db 01110b
 						db 00000b
 						; 6Ah
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
+						db 00100b
+						db 00010b
+						db 01110b
+						db 10001b
+						db 10001b
+						db 10000b
+						db 01110b
 						db 00000b
 						; 6Bh
 						db 00000b
+						db 01010b
 						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
+						db 01100b
+						db 00100b
+						db 00100b
+						db 01110b
 						db 00000b
 						; 6Ch
+						db 00100b
+						db 01010b
 						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
+						db 01100b
+						db 00100b
+						db 00100b
+						db 01110b
 						db 00000b
 						; 6Dh
+						db 01000b
+						db 00100b
 						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
+						db 01100b
+						db 00100b
+						db 00100b
+						db 01110b
 						db 00000b
 						; 6Eh
+						db 01010b
 						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
+						db 00100b
+						db 01010b
+						db 10001b
+						db 11111b
+						db 10001b
 						db 00000b
 						; 6Fh
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
+						db 00100b
+						db 01010b
+						db 00100b
+						db 00100b
+						db 01010b
+						db 10001b
+						db 11111b
+						db 10001b
 						; 70h
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
+						db 00100b
+						db 01000b
+						db 11111b
+						db 10000b
+						db 11110b
+						db 10000b
+						db 11111b
 						db 00000b
 						; 71h
 						db 00000b
 						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
+						db 11110b
+						db 00101b
+						db 01111b
+						db 10100b
+						db 01111b
 						db 00000b
 						; 72h
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
+						db 01111b
+						db 10100b
+						db 10100b
+						db 10110b
+						db 11100b
+						db 10100b
+						db 10111b
 						db 00000b
 						; 73h
+						db 00100b
+						db 01010b
 						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
+						db 01110b
+						db 10001b
+						db 10001b
+						db 01110b
 						db 00000b
 						; 74h
 						db 00000b
+						db 01010b
 						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
+						db 01110b
+						db 10001b
+						db 10001b
+						db 01110b
 						db 00000b
 						; 75h
+						db 00100b
+						db 00010b
 						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
+						db 01110b
+						db 10001b
+						db 10001b
+						db 01110b
 						db 00000b
 						; 76h
+						db 00100b
+						db 01010b
 						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
+						db 10010b
+						db 10010b
+						db 10010b
+						db 01101b
 						db 00000b
 						; 77h
+						db 01000b
+						db 00100b
 						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
+						db 10010b
+						db 10010b
+						db 10010b
+						db 01101b
 						db 00000b
 						; 78h
+						db 01010b
 						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
+						db 10001b
+						db 10001b
+						db 10001b
+						db 01101b
+						db 00001b
+						db 01110b
 						; 79h
+						db 01010b
 						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
+						db 01110b
+						db 10001b
+						db 10001b
+						db 10001b
+						db 01110b
 						db 00000b
 						; 7Ah
 						db 00000b
+						db 01010b
 						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
+						db 10001b
+						db 10001b
+						db 10001b
+						db 01110b
 						db 00000b
 						; 7Bh
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
+						db 00100b
+						db 01110b
+						db 10101b
+						db 10100b
+						db 10101b
+						db 01110b
+						db 00100b
 						db 00000b
 						; 7Ch
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
+						db 00110b
+						db 01001b
+						db 01000b
+						db 11100b
+						db 01000b
+						db 11101b
+						db 11010b
 						db 00000b
 						; 7Dh
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
+						db 10001b
+						db 01010b
+						db 00100b
+						db 11111b
+						db 00100b
+						db 11111b
+						db 00100b
 						db 00000b
 						; 7Eh
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
+						db 11000b
+						db 10100b
+						db 11010b
+						db 10010b
+						db 10111b
+						db 10010b
+						db 10011b
 						db 00000b
 						; 7Fh
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
-						db 00000b
+						db 00110b
+						db 01001b
+						db 01000b
+						db 11100b
+						db 01000b
+						db 01000b
+						db 01000b
 						db 00000b
 

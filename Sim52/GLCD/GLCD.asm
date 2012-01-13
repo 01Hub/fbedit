@@ -223,28 +223,44 @@ DrawGLine:
 DrawTCharOR:
 	push	esi
 	xor		edx,edx
-	lea		esi,[eax*8]
+	.if eax>=80h || glcd.ecg
+		;CG RAM
+		mov		esi,glcd.chome
+		lea		esi,[esi+eax*8+offset glcd.ram]
+	.else
+		;CG ROM
+		lea		esi,[eax*8+offset CharTab]
+	.endif
 	.while edx<XPIX*8
 		xor		ecx,ecx
-		movzx	eax,CharTab[esi]
+		movzx	eax,byte ptr [esi]
 		push	edx
 		lea		edx,[edi+edx]
 		.if glcdbit.bitval[GLCDBIT_FS]
 			;Font 6x8
 			lea		edx,[edx+ebx*2]
 			lea		edx,[edx+ebx*4]
+			shl		eax,2
+			.while ecx<6
+				test	eax,80h
+				.if !ZERO?
+					mov		glcd.scrn[edx+ecx],TRUE
+				.endif
+				shl		eax,1
+				inc		ecx
+			.endw
 		.else
 			;Font 8x8
 			lea		edx,[edx+ebx*8]
+			.while ecx<8
+				test	eax,80h
+				.if !ZERO?
+					mov		glcd.scrn[edx+ecx],TRUE
+				.endif
+				shl		eax,1
+				inc		ecx
+			.endw
 		.endif
-		.while ecx<8
-			test	eax,80h
-			.if !ZERO?
-				mov		glcd.scrn[edx+ecx],TRUE
-			.endif
-			shl		eax,1
-			inc		ecx
-		.endw
 		pop		edx
 		inc		esi
 		lea		edx,[edx+XPIX]
@@ -255,28 +271,44 @@ DrawTCharOR:
 DrawTCharEXOR:
 	push	esi
 	xor		edx,edx
-	lea		esi,[eax*8]
+	.if eax>=80h || glcd.ecg
+		;CG RAM
+		mov		esi,glcd.chome
+		lea		esi,[esi+eax*8+offset glcd.ram]
+	.else
+		;CG ROM
+		lea		esi,[eax*8+offset CharTab]
+	.endif
 	.while edx<XPIX*8
 		xor		ecx,ecx
-		movzx	eax,CharTab[esi]
+		movzx	eax,byte ptr [esi]
 		push	edx
 		lea		edx,[edi+edx]
 		.if glcdbit.bitval[GLCDBIT_FS]
 			;Font 6x8
 			lea		edx,[edx+ebx*2]
 			lea		edx,[edx+ebx*4]
+			shl		eax,2
+			.while ecx<6
+				test	eax,80h
+				.if !ZERO?
+					xor		glcd.scrn[edx+ecx],TRUE
+				.endif
+				shl		eax,1
+				inc		ecx
+			.endw
 		.else
 			;Font 8x8
 			lea		edx,[edx+ebx*8]
+			.while ecx<8
+				test	eax,80h
+				.if !ZERO?
+					xor		glcd.scrn[edx+ecx],TRUE
+				.endif
+				shl		eax,1
+				inc		ecx
+			.endw
 		.endif
-		.while ecx<8
-			test	eax,80h
-			.if !ZERO?
-				xor		glcd.scrn[edx+ecx],TRUE
-			.endif
-			shl		eax,1
-			inc		ecx
-		.endw
 		pop		edx
 		inc		esi
 		lea		edx,[edx+XPIX]
@@ -287,30 +319,48 @@ DrawTCharEXOR:
 DrawTCharAND:
 	push	esi
 	xor		edx,edx
-	lea		esi,[eax*8]
+	.if eax>=80h || glcd.ecg
+		;CG RAM
+		mov		esi,glcd.chome
+		lea		esi,[esi+eax*8+offset glcd.ram]
+	.else
+		;CG ROM
+		lea		esi,[eax*8+offset CharTab]
+	.endif
 	.while edx<XPIX*8
 		xor		ecx,ecx
-		movzx	eax,CharTab[esi]
+		movzx	eax,byte ptr [esi]
 		push	edx
 		lea		edx,[edi+edx]
 		.if glcdbit.bitval[GLCDBIT_FS]
 			;Font 6x8
 			lea		edx,[edx+ebx*2]
 			lea		edx,[edx+ebx*4]
+			shl		eax,2
+			.while ecx<6
+				test	eax,80h
+				.if !ZERO?
+					and		glcd.scrn[edx+ecx],TRUE
+				.else
+					mov		glcd.scrn[edx+ecx],FALSE
+				.endif
+				shl		eax,1
+				inc		ecx
+			.endw
 		.else
 			;Font 8x8
 			lea		edx,[edx+ebx*8]
+			.while ecx<8
+				test	eax,80h
+				.if !ZERO?
+					and		glcd.scrn[edx+ecx],TRUE
+				.else
+					mov		glcd.scrn[edx+ecx],FALSE
+				.endif
+				shl		eax,1
+				inc		ecx
+			.endw
 		.endif
-		.while ecx<8
-			test	eax,80h
-			.if !ZERO?
-				and		glcd.scrn[edx+ecx],TRUE
-			.else
-				mov		glcd.scrn[edx+ecx],FALSE
-			.endif
-			shl		eax,1
-			inc		ecx
-		.endw
 		pop		edx
 		inc		esi
 		lea		edx,[edx+XPIX]
@@ -356,11 +406,21 @@ DrawCursor:
 	.while sdword ptr edi>=0
 		.if edi<=glcd.cur
 			xor		ebx,ebx
-			.while ebx<8
-				lea		eax,[edx+ecx]
-				xor		glcd.scrn[eax+ebx],TRUE
-				inc		ebx
-			.endw
+			.if glcdbit.bitval[GLCDBIT_FS]
+				;Font 6x8
+				.while ebx<6
+					lea		eax,[edx+ecx]
+					xor		glcd.scrn[eax+ebx],TRUE
+					inc		ebx
+				.endw
+			.else
+				;Font 8x8
+				.while ebx<8
+					lea		eax,[edx+ecx]
+					xor		glcd.scrn[eax+ebx],TRUE
+					inc		ebx
+				.endw
+			.endif
 		.endif
 		dec		edi
 		lea		edx,[edx+XPIX]
@@ -775,7 +835,9 @@ CommandWrite:
 		.elseif eax==22h
 			;OFFSET REGISTER
 			mov		eax,glcd.data
-			mov		glcd.ofs,eax
+			shl		eax,11
+			and		eax,0FFFFh
+			mov		glcd.chome,eax
 		.elseif eax==24h
 			;ADDRESS POINTER
 			mov		eax,glcd.data

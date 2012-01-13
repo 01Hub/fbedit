@@ -1,10 +1,13 @@
 TODO
 ----
-Screen peek
-Screen copy
-Text Attribute mode
+Implement screen peek
+Implement screen copy
+Implement text attribute mode
 Compare behaviour to real hardware
 
+
+T6963C DOT MATRIX LCD CONTROL
+--------------------------------------------------------------------------------------------------
 
 Command Definitions
 --------------------------------------------------------------------------------------------------

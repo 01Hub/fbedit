@@ -25,19 +25,41 @@ START:
 	MOV	DPTR,#MSGI1	;initialization bytes
 	LCALL	MSGC
 	; Start of regular program
+	MOV	DPTR,#MSGI2	;CG RAM address pointer set
+	LCALL	MSGC
+	MOV	DPTR,#MSGI4	;set auto mode
+	LCALL	MSGC
+	MOV	DPTR,#CGRAM	;set CG RAM
+	LCALL	MSGD
+	MOV	R1,#0B2h	;Auto Reset
+	LCALL	WRITEC
 	; Display graphic
-	MOV	DPTR,#MSGI2	;set auto mode
+	MOV	DPTR,#MSGI3	;graphic address pointer set
+	LCALL	MSGC
+	MOV	DPTR,#MSGI4	;set auto mode
 	LCALL	MSGC
 	MOV	DPTR,#GRAPHIC	;display graphic
 	LCALL	MSGD
-	MOV	R1,#0B2h		;Auto Reset
+	MOV	R1,#0B2h	;Auto Reset
 	LCALL	WRITEC
-	MOV	DPTR,#MSGI3	;text initialization bytes
+	; Display text1
+	MOV	DPTR,#MSGI5	;text initialization bytes
 	LCALL	MSGC
-	MOV	DPTR,#MSGI2	;set auto mode
+	MOV	DPTR,#MSGI4	;set auto mode
 	LCALL	MSGC
-	MOV	DPTR,#TEXT	;display text
+	MOV	DPTR,#TEXT1	;display text
 	LCALL	MSGDT
+	MOV	R1,#0B2h	;Auto Reset
+	LCALL	WRITEC
+	; Display text2
+	MOV	DPTR,#MSGI6	;text initialization bytes
+	LCALL	MSGC
+	MOV	DPTR,#MSGI4	;set auto mode
+	LCALL	MSGC
+	MOV	DPTR,#TEXT2	;display text
+	LCALL	MSGDT
+	MOV	R1,#0B2h	;Auto Reset
+	LCALL	WRITEC
 	SJMP	$		;infinite loop
 
 ;*************************************************
@@ -141,18 +163,42 @@ MSGI1:
 	DB	00h,00h,42h	;graphic home address
 	DB	1Eh,00h,43h	;graphic area
 	DB	00h,00h,81h	;mode set. EXOR Mode
-	DB	00h,00h,24h	;graphic address pointer set
+	DB	04h,00h,22h	;offset register set, CG RAM area at 2000h to 27FFh
 	DB	00h,00h,9Fh	;display mode set. Text on, Graphic on, Cursor on, Blink on
 	DB	0A1h
 
 MSGI2:
-	DB	00h,00h,0B0h	;auto mode
+	DB	00h,24h,24h	;CG RAM address pointer set, character code 80h
 	DB	0A1h
 
 MSGI3:
+	DB	00h,00h,24h	;graphic address pointer set
+	DB	0A1h
+
+MSGI4:
+	DB	00h,00h,0B0h	;auto mode
+	DB	0A1h
+
+MSGI5:
 	DB	53h,11h,24h	;text address pointer set. X=9, Y=11
-	DB	15h,0Bh,21h	;Cursor pointer
+	DB	0A1h
+
+MSGI6:
+	DB	6Ch,11h,24h	;text address pointer set. X=9, Y=11
+	DB	55h,0Ch,21h	;Cursor pointer
 	DB	00h,00h,0A0h	;1 line cursor
+	DB	0A1h
+
+CGRAM:
+	;80h
+	DB	00000000b
+	DB	00000100b
+	DB	00001110b
+	DB	00010101b
+	DB	00000100b
+	DB	00000100b
+	DB	00000100b
+	DB	00000000b
 	DB	0A1h
 
 ;240x128 Bitmap graphic data
@@ -289,7 +335,10 @@ GRAPHIC:
 	DB	0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh
 	DB	0A1h
 
-TEXT:
-	DB	'Hello World!',0A1h
+TEXT1:
+	DB	'Hello World! ',80h,0A0h,0A1h		;NOTE! 20h is subtracted to get psaudo ascii
+
+TEXT2:
+	DB	'Simulatig graphic LCD',0A1h
 
 	END
