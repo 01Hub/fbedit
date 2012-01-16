@@ -115,6 +115,7 @@ DisplayProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 	LOCAL	hDC:HDC
 	LOCAL	rect:RECT
 	LOCAL	dotrect:RECT
+	LOCAL	tattrib:DWORD
 
 	mov		eax,uMsg
 	.if eax==WM_CREATE
@@ -197,16 +198,36 @@ DisplayProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 	ret
 
 DrawGByte:
-	xor		ecx,ecx
-	.while ecx<8
-		test	eax,80h
-		.if !ZERO?
-			lea		edx,[ebx*8+ecx]
-			mov		glcd.scrn[edi+edx],TRUE
-		.endif
-		shl		eax,1
-		inc		ecx
-	.endw
+	.if glcdbit.bitval[GLCDBIT_FS]
+		;Font 6x8
+		push	ebx
+		shl		eax,2
+		lea		ecx,[ebx*2]
+		lea		ebx,[ebx*4+ecx]
+		xor		ecx,ecx
+		.while ecx<6
+			test	eax,80h
+			.if !ZERO?
+				lea		edx,[ebx+ecx]
+				mov		glcd.scrn[edi+edx],TRUE
+			.endif
+			shl		eax,1
+			inc		ecx
+		.endw
+		pop		ebx
+	.else
+		;Font 8x8
+		xor		ecx,ecx
+		.while ecx<8
+			test	eax,80h
+			.if !ZERO?
+				lea		edx,[ebx*8+ecx]
+				mov		glcd.scrn[edi+edx],TRUE
+			.endif
+			shl		eax,1
+			inc		ecx
+		.endw
+	.endif
 	retn
 
 DrawGLine:
@@ -369,7 +390,82 @@ DrawTCharAND:
 	retn
 
 DrawTCharATTRIBUTE:
-	;Not implemented
+	push	esi
+	xor		edx,edx
+	.if eax>=80h || glcd.ecg
+		;CG RAM
+		mov		esi,glcd.chome
+		lea		esi,[esi+eax*8+offset glcd.ram]
+	.else
+		;CG ROM
+		lea		esi,[eax*8+offset CharTab]
+	.endif
+	.while edx<XPIX*8
+		mov		ecx,tattrib
+		movzx	eax,byte ptr [esi]
+		test	ecx,08h					;Blink
+		.if ZERO?
+			;No blink
+			.if ecx==1
+				;Reverse display
+				xor		eax,0FFh
+			.elseif ecx==3
+				;Inhibit display
+				xor		eax,eax				
+			.endif
+		.else
+			;Blink
+			and		ecx,07h
+			.if ecx==0
+				;Blink of normal display
+				.if glcd.fblink
+					xor		eax,eax
+				.endif
+			.elseif ecx==1
+				;Blink of reverse display
+				.if glcd.fblink
+					xor		eax,0FFh
+				.endif
+			.elseif ecx==3
+				;Blink of inhibit display
+				.if !glcd.fblink
+					xor		eax,eax
+				.endif
+			.endif
+		.endif
+		push	edx
+		lea		edx,[edi+edx]
+		xor		ecx,ecx
+		.if glcdbit.bitval[GLCDBIT_FS]
+			;Font 6x8
+			lea		edx,[edx+ebx*2]
+			lea		edx,[edx+ebx*4]
+			shl		eax,2
+			.while ecx<6
+				test	eax,80h
+				.if !ZERO?
+					mov		glcd.scrn[edx+ecx],TRUE
+				.endif
+				shl		eax,1
+				inc		ecx
+			.endw
+		.else
+			;Font 8x8
+			lea		edx,[edx+ebx*8]
+			.while ecx<8
+				test	eax,80h
+				.if !ZERO?
+					mov		glcd.scrn[edx+ecx],TRUE
+				.endif
+				shl		eax,1
+				inc		ecx
+			.endw
+		.endif
+		pop		edx
+		inc		esi
+		lea		edx,[edx+XPIX]
+	.endw
+	pop		esi
 	retn
 
 DrawTLine:
@@ -384,6 +480,11 @@ DrawTLine:
 		.elseif glcd.mode==3
 			call	DrawTCharAND
 		.elseif glcd.mode==4
+			mov		edx,esi
+			sub		edx,glcd.thome
+			add		edx,glcd.ghome
+			movzx	edx,glcd.ram[edx]
+			mov		tattrib,edx
 			call	DrawTCharATTRIBUTE
 		.endif
 		inc		esi
@@ -397,11 +498,19 @@ DrawCursor:
 	.endif
 	mov		eax,glcd.cp
 	movzx	ecx,al				;x
-	lea		ecx,[ecx*8]
 	movzx	edx,ah				;y
 	mov		eax,XPIX*8
 	mul		edx
 	mov		edx,eax
+	push	edx
+	xor		edx,edx
+	mov		eax,8
+	.if glcdbit.bitval[GLCDBIT_FS]
+		mov		eax,6
+	.endif
+	mul		ecx
+	mov		ecx,eax
+	pop		edx
 	mov		edi,7
 	.while sdword ptr edi>=0
 		.if edi<=glcd.cur
@@ -556,6 +665,10 @@ GLCDProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	.elseif eax==WM_TIMER
 		xor		glcd.fblink,TRUE
 		.if fActive && glcd.con && glcd.bon
+			;Blinking cursor
+			mov		fChanged,TRUE
+		.elseif fActive && glcd.mode==4
+			;Text attribute mode
 			mov		fChanged,TRUE
 		.endif
 	.elseif eax==WM_COMMAND

@@ -2,8 +2,25 @@ TODO
 ----
 Implement screen peek
 Implement screen copy
-Implement text attribute mode
+What does MD do?
 Compare behaviour to real hardware
+
+
+Attribute function
+--------------------------------------------------------------------------------------------------
+"Reverse display", "Character blink" and "Inhibit" are called "Attribute". The attribute data is written in the graphic
+area defined by control word set command. The mode set command selects text display only and graphic display cannot be
+displayed.
+The attribute data of the lst character in text area is written at the lst byte in graphic area, and attribute data of n-th
+character is written at the n-th byte in graphic area. Attribute function is defined as follow.
+Attribute RAM byte x x x x d3 d2 d1 d0
+d3 d2 d1 d0 Function
+0 0 0 0 Normal display
+0 1 0 1 Reverse display
+0 0 1 1 Inhibit display
+1 0 0 0 Blink of normal display
+1 1 0 1 Blink of reverse display
+1 0 1 1 Blink of inhibit display
 
 
 T6963C DOT MATRIX LCD CONTROL
@@ -60,7 +77,6 @@ SCREEN PEEK				11100000									Screen Peek
 --------------------------------------------------------------------------------------------------
 SCREEN COPY				11101000									Screen Copy
 --------------------------------------------------------------------------------------------------
-X: invalid
 
 **************************************************************************************************
 

@@ -83,7 +83,7 @@ ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. 
    56:	  0156	12 01 6C		LCALL	MSGC
    57:	  0159	90 01 E5		MOV	DPTR,#MSGI4	;set auto mode
    58:	  015C	12 01 6C		LCALL	MSGC
-   59:	  015F	90 11 11		MOV	DPTR,#TEXT2	;display text
+   59:	  015F	90 11 10		MOV	DPTR,#TEXT2	;display text
    60:	  0162	12 01 91		LCALL	MSGDT
    61:	  0165	79 B2			MOV	R1,#0B2h	;Auto Reset
    62:	  0167	12 01 A1		LCALL	WRITEC
@@ -221,12 +221,12 @@ ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. 
   180:	  01E8	A1			DB	0A1h
   181:
   182:	  01E9			MSGI5:
-  183:	  01E9	53 11 24		DB	53h,11h,24h	;text address pointer set. X=9, Y=11
+  183:	  01E9	53 11 24		DB	53h,11h,24h	;text address pointer set.
   184:	  01EC	A1			DB	0A1h
   185:
   186:	  01ED			MSGI6:
-  187:	  01ED	6C 11 24		DB	6Ch,11h,24h	;text address pointer set. X=9, Y=11
-  188:	  01F0	55 0C 21		DB	55h,0Ch,21h	;Cursor pointer
+  187:	  01ED	6C 11 24		DB	6Ch,11h,24h	;text address pointer set.
+  188:	  01F0	19 0C 21		DB	19h,0Ch,21h	;Cursor pointer
   189:	  01F3	00 00 A0		DB	00h,00h,0A0h	;1 line cursor
   190:	  01F6	A1			DB	0A1h
   191:
@@ -1406,18 +1406,18 @@ ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. H
   336:	  1100	A1			DB	0A1h
   337:
   338:	  1101			TEXT1:
-  339:	  1101	48 65 6C 6C		DB	'Hello World! ',80h,0A0h,0A1h		;NOTE! 20h is subtracted to get psaudo ascii
+  339:	  1101	48 65 6C 6C		DB	'Hello World! ',0A0h,0A1h		;NOTE! 20h is subtracted to get psaudo ascii
 	  1105	6F 20 57 6F
 	  1109	72 6C 64 21
-	  110D	20 80 A0 A1
+	  110D	20 A0 A1
   340:
-  341:	  1111			TEXT2:
-  342:	  1111	53 69 6D 75		DB	'Simulatig graphic LCD',0A1h
-	  1115	6C 61 74 69
-	  1119	67 20 67 72
-	  111D	61 70 68 69
-	  1121	63 20 4C 43
-	  1125	44 A1
+  341:	  1110			TEXT2:
+  342:	  1110	53 69 6D 75		DB	'Simulatig graphic LCD',0A1h
+	  1114	6C 61 74 69
+	  1118	67 20 67 72
+	  111C	61 70 68 69
+	  1120	63 20 4C 43
+	  1124	44 A1
   343:
   344:					END
 
@@ -1531,7 +1531,7 @@ T1				  BIT	      B5
 TB8				  BIT	      9B
 TCON				  DATA	      88
 TEXT1				  CODE	    1101	 338
-TEXT2				  CODE	    1111	 341
+TEXT2				  CODE	    1110	 341
 TF0				  BIT	      8D
 TF1				  BIT	      8F
 TH0				  DATA	      8C

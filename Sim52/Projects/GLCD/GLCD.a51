@@ -180,12 +180,12 @@ MSGI4:
 	DB	0A1h
 
 MSGI5:
-	DB	53h,11h,24h	;text address pointer set. X=9, Y=11
+	DB	53h,11h,24h	;text address pointer set.
 	DB	0A1h
 
 MSGI6:
-	DB	6Ch,11h,24h	;text address pointer set. X=9, Y=11
-	DB	55h,0Ch,21h	;Cursor pointer
+	DB	6Ch,11h,24h	;text address pointer set.
+	DB	19h,0Ch,21h	;Cursor pointer
 	DB	00h,00h,0A0h	;1 line cursor
 	DB	0A1h
 
@@ -336,7 +336,7 @@ GRAPHIC:
 	DB	0A1h
 
 TEXT1:
-	DB	'Hello World! ',80h,0A0h,0A1h		;NOTE! 20h is subtracted to get psaudo ascii
+	DB	'Hello World! ',0A0h,0A1h		;NOTE! 20h is subtracted to get psaudo ascii
 
 TEXT2:
 	DB	'Simulatig graphic LCD',0A1h
