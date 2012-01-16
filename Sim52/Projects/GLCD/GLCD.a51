@@ -22,8 +22,10 @@ START:
 	NOP
 	NOP
 	SETB	PB_RST
+START1:
 	MOV	DPTR,#MSGI1	;initialization bytes
 	LCALL	MSGC
+	LCALL	CLS
 	; Start of regular program
 	MOV	DPTR,#MSGI2	;CG RAM address pointer set
 	LCALL	MSGC
@@ -60,10 +62,67 @@ START:
 	LCALL	MSGDT
 	MOV	R1,#0B2h	;Auto Reset
 	LCALL	WRITEC
-	SJMP	$		;infinite loop
+	LCALL	WAIT
+	LCALL	CLS
+
+	MOV	DPTR,#MSGI7	;text initialization bytes
+	LCALL	MSGC
+	; Display attributes
+	MOV	DPTR,#MSGI3	;graphic address pointer set
+	LCALL	MSGC
+	MOV	DPTR,#MSGI4	;set auto mode
+	LCALL	MSGC
+	MOV	DPTR,#ATTRIB	;display attributes
+	LCALL	MSGD
+
+	MOV	R1,#0B2h	;Auto Reset
+	LCALL	WRITEC
+
+	; Display text
+	MOV	DPTR,#MSGI8	;text address pointer set
+	LCALL	MSGC
+	MOV	DPTR,#MSGI4	;set auto mode
+	LCALL	MSGC
+	MOV	DPTR,#TEXT3	;display text
+	LCALL	MSGDT
+	MOV	R1,#0B2h	;Auto Reset
+	LCALL	WRITEC
+	LCALL	WAIT
+	LCALL	WAIT
+	LCALL	WAIT
+	LCALL	WAIT
+	LJMP	START1		;infinite loop
+
+WAIT:
+	MOV	R5,#00h
+	MOV	R6,#00h
+	MOV	R7,#40h
+WAIT1:
+	DJNZ	R5,WAIT1
+	DJNZ	R6,WAIT1
+	DJNZ	R7,WAIT1
+	RET
 
 ;*************************************************
 ;SUBROUTINES
+
+;Clear 32K ram
+CLS:
+	MOV	DPTR,#MSGI3	;Set ADP to 0000h
+	LCALL	MSGC
+	MOV	DPTR,#MSGI4	;set auto mode
+	LCALL	MSGC
+	MOV	R7,#80h
+	MOV	R6,#00h
+CLS1:
+	MOV	R1,#00h
+	LCALL	WRITED
+	DJNZ	R6,CLS1
+	DJNZ	R7,CLS1
+	MOV	R1,#0B2h	;Auto Reset
+	LCALL	WRITEC
+	RET
+
 ; MSGC sends the data pointed to by
 ; the DPTR to the graphics module
 ; as a series of commands with
@@ -187,6 +246,20 @@ MSGI6:
 	DB	6Ch,11h,24h	;text address pointer set.
 	DB	19h,0Ch,21h	;Cursor pointer
 	DB	00h,00h,0A0h	;1 line cursor
+	DB	0A1h
+
+MSGI7:
+	DB	00h,10h,40h	;text home address
+	DB	1Eh,00h,41h	;text area
+	DB	00h,00h,42h	;graphic home address
+	DB	1Eh,00h,43h	;graphic area
+	DB	00h,00h,84h	;mode set. ATTRIBUTE Mode
+	DB	04h,00h,22h	;offset register set, CG RAM area at 2000h to 27FFh
+	DB	00h,00h,94h	;display mode set. Text on, Graphic off, Cursor off, Blink off
+	DB	0A1h
+
+MSGI8:
+	DB	00h,10h,24h	;text address pointer set.
 	DB	0A1h
 
 CGRAM:
@@ -340,5 +413,11 @@ TEXT1:
 
 TEXT2:
 	DB	'Simulatig graphic LCD',0A1h
+
+ATTRIB:
+	db	05h,05h,05h,05h,05h,05h,00h,0Dh,0Dh,0Dh,0Dh,0Dh,0Dh,0Dh,00h,0Bh,0Bh,0Bh,0Bh,0Bh,0Bh,0Bh,00h,08h,08h,08h,08h,08h,08h,08h,08h,08h,0A1h
+
+TEXT3:
+	db	'INVATT INVBLNK NRMBLNK INHBLNK',0A1h
 
 	END

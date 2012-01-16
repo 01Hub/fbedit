@@ -42,25 +42,25 @@ ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. 
    22:	  0104	00			NOP
    23:	  0105	00			NOP
    24:	  0106	D2 93			SETB	PB_RST
-   25:	  0108	90 01 C7		MOV	DPTR,#MSGI1	;initialization bytes
-   26:	  010B	12 01 6C		LCALL	MSGC
-   27:					; Start of regular program
-   28:	  010E	90 01 DD		MOV	DPTR,#MSGI2	;CG RAM address pointer set
-   29:	  0111	12 01 6C		LCALL	MSGC
-   30:	  0114	90 01 E5		MOV	DPTR,#MSGI4	;set auto mode
-   31:	  0117	12 01 6C		LCALL	MSGC
-   32:	  011A	90 01 F7		MOV	DPTR,#CGRAM	;set CG RAM
-   33:	  011D	12 01 84		LCALL	MSGD
-   34:	  0120	79 B2			MOV	R1,#0B2h	;Auto Reset
-   35:	  0122	12 01 A1		LCALL	WRITEC
-   36:					; Display graphic
-   37:	  0125	90 01 E1		MOV	DPTR,#MSGI3	;graphic address pointer set
-   38:	  0128	12 01 6C		LCALL	MSGC
-   39:	  012B	90 01 E5		MOV	DPTR,#MSGI4	;set auto mode
-   40:	  012E	12 01 6C		LCALL	MSGC
-   41:	  0131	90 02 00		MOV	DPTR,#GRAPHIC	;display graphic
-   42:	  0134	12 01 84		LCALL	MSGD
-   43:	  0137	79 B2			MOV	R1,#0B2h	;Auto Reset
+   25:	  0108			START1:
+   26:	  0108	90 02 3D		MOV	DPTR,#MSGI1	;initialization bytes
+   27:	  010B	12 01 E2		LCALL	MSGC
+   28:	  010E	12 01 C3		LCALL	CLS
+   29:					; Start of regular program
+   30:	  0111	90 02 53		MOV	DPTR,#MSGI2	;CG RAM address pointer set
+   31:	  0114	12 01 E2		LCALL	MSGC
+   32:	  0117	90 02 5B		MOV	DPTR,#MSGI4	;set auto mode
+   33:	  011A	12 01 E2		LCALL	MSGC
+   34:	  011D	90 02 87		MOV	DPTR,#CGRAM	;set CG RAM
+   35:	  0120	12 01 FA		LCALL	MSGD
+   36:	  0123	79 B2			MOV	R1,#0B2h	;Auto Reset
+   37:	  0125	12 02 17		LCALL	WRITEC
+   38:					; Display graphic
+   39:	  0128	90 02 57		MOV	DPTR,#MSGI3	;graphic address pointer set
+   40:	  012B	12 01 E2		LCALL	MSGC
+   41:	  012E	90 02 5B		MOV	DPTR,#MSGI4	;set auto mode
+   42:	  0131	12 01 E2		LCALL	MSGC
+   43:	  0134	90 02 90		MOV	DPTR,#GRAPHIC	;display graphic
 
 ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 2
 
@@ -68,62 +68,62 @@ ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. 
 
  Line  I  Addr  Code            Source
 
-   44:	  0139	12 01 A1		LCALL	WRITEC
-   45:					; Display text1
-   46:	  013C	90 01 E9		MOV	DPTR,#MSGI5	;text initialization bytes
-   47:	  013F	12 01 6C		LCALL	MSGC
-   48:	  0142	90 01 E5		MOV	DPTR,#MSGI4	;set auto mode
-   49:	  0145	12 01 6C		LCALL	MSGC
-   50:	  0148	90 11 01		MOV	DPTR,#TEXT1	;display text
-   51:	  014B	12 01 91		LCALL	MSGDT
-   52:	  014E	79 B2			MOV	R1,#0B2h	;Auto Reset
-   53:	  0150	12 01 A1		LCALL	WRITEC
-   54:					; Display text2
-   55:	  0153	90 01 ED		MOV	DPTR,#MSGI6	;text initialization bytes
-   56:	  0156	12 01 6C		LCALL	MSGC
-   57:	  0159	90 01 E5		MOV	DPTR,#MSGI4	;set auto mode
-   58:	  015C	12 01 6C		LCALL	MSGC
-   59:	  015F	90 11 10		MOV	DPTR,#TEXT2	;display text
-   60:	  0162	12 01 91		LCALL	MSGDT
-   61:	  0165	79 B2			MOV	R1,#0B2h	;Auto Reset
-   62:	  0167	12 01 A1		LCALL	WRITEC
-   63:	  016A	80 FE			SJMP	$		;infinite loop
-   64:
-   65:				;*************************************************
-   66:				;SUBROUTINES
-   67:				; MSGC sends the data pointed to by
-   68:				; the DPTR to the graphics module
-   69:				; as a series of commands with
-   70:				; two parameters each.
-   71:	  016C			MSGC:
-   72:	  016C	78 02			MOV	R0,#2		;# of data bytes
-   73:	  016E			MSGC2:
-   74:	  016E	E4			CLR	A
-   75:	  016F	93			MOVC	A,@A+DPTR	;get byte
-   76:	  0170	B4 A1 01		CJNE	A,#0A1h,MSGC3	;done?
-   77:	  0173	22			RET
-   78:
-   79:	  0174			MSGC3:
-   80:	  0174	F9			MOV	R1,A
-   81:	  0175	12 01 AD		LCALL	WRITED		;send it
-   82:	  0178	A3			INC	DPTR
-   83:	  0179	D8 F3			DJNZ	R0,MSGC2
-   84:	  017B	E4			CLR	A
-   85:	  017C	93			MOVC	A,@A+DPTR	;get command
-   86:	  017D	F9			MOV	R1,A
-   87:	  017E	12 01 A1		LCALL	WRITEC		;send command
-   88:	  0181	A3			INC	DPTR
-   89:	  0182	80 E8			SJMP	MSGC		;next command
-   90:
-   91:				; MSGD sends the data pointed to by
-   92:				; the DPTR to the graphics module.
-   93:	  0184			MSGD:
-   94:	  0184	E4			CLR	A
-   95:	  0185	93			MOVC	A,@A+DPTR	;get byte
-   96:	  0186	B4 A1 01		CJNE	A,#0A1h,MSGD1	;done?
-   97:	  0189	22			RET
-   98:
-   99:	  018A			MSGD1:
+   44:	  0137	12 01 FA		LCALL	MSGD
+   45:	  013A	79 B2			MOV	R1,#0B2h	;Auto Reset
+   46:	  013C	12 02 17		LCALL	WRITEC
+   47:					; Display text1
+   48:	  013F	90 02 5F		MOV	DPTR,#MSGI5	;text initialization bytes
+   49:	  0142	12 01 E2		LCALL	MSGC
+   50:	  0145	90 02 5B		MOV	DPTR,#MSGI4	;set auto mode
+   51:	  0148	12 01 E2		LCALL	MSGC
+   52:	  014B	90 11 91		MOV	DPTR,#TEXT1	;display text
+   53:	  014E	12 02 07		LCALL	MSGDT
+   54:	  0151	79 B2			MOV	R1,#0B2h	;Auto Reset
+   55:	  0153	12 02 17		LCALL	WRITEC
+   56:					; Display text2
+   57:	  0156	90 02 63		MOV	DPTR,#MSGI6	;text initialization bytes
+   58:	  0159	12 01 E2		LCALL	MSGC
+   59:	  015C	90 02 5B		MOV	DPTR,#MSGI4	;set auto mode
+   60:	  015F	12 01 E2		LCALL	MSGC
+   61:	  0162	90 11 A0		MOV	DPTR,#TEXT2	;display text
+   62:	  0165	12 02 07		LCALL	MSGDT
+   63:	  0168	79 B2			MOV	R1,#0B2h	;Auto Reset
+   64:	  016A	12 02 17		LCALL	WRITEC
+   65:	  016D	12 01 B6		LCALL	WAIT
+   66:	  0170	12 01 C3		LCALL	CLS
+   67:
+   68:	  0173	90 02 6D		MOV	DPTR,#MSGI7	;text initialization bytes
+   69:	  0176	12 01 E2		LCALL	MSGC
+   70:					; Display attributes
+   71:	  0179	90 02 57		MOV	DPTR,#MSGI3	;graphic address pointer set
+   72:	  017C	12 01 E2		LCALL	MSGC
+   73:	  017F	90 02 5B		MOV	DPTR,#MSGI4	;set auto mode
+   74:	  0182	12 01 E2		LCALL	MSGC
+   75:	  0185	90 11 B6		MOV	DPTR,#ATTRIB	;display attributes
+   76:	  0188	12 01 FA		LCALL	MSGD
+   77:
+   78:	  018B	79 B2			MOV	R1,#0B2h	;Auto Reset
+   79:	  018D	12 02 17		LCALL	WRITEC
+   80:
+   81:					; Display text
+   82:	  0190	90 02 83		MOV	DPTR,#MSGI8	;text address pointer set
+   83:	  0193	12 01 E2		LCALL	MSGC
+   84:	  0196	90 02 5B		MOV	DPTR,#MSGI4	;set auto mode
+   85:	  0199	12 01 E2		LCALL	MSGC
+   86:	  019C	90 11 D7		MOV	DPTR,#TEXT3	;display text
+   87:	  019F	12 02 07		LCALL	MSGDT
+   88:	  01A2	79 B2			MOV	R1,#0B2h	;Auto Reset
+   89:	  01A4	12 02 17		LCALL	WRITEC
+   90:	  01A7	12 01 B6		LCALL	WAIT
+   91:	  01AA	12 01 B6		LCALL	WAIT
+   92:	  01AD	12 01 B6		LCALL	WAIT
+   93:	  01B0	12 01 B6		LCALL	WAIT
+   94:	  01B3	02 01 08		LJMP	START1		;infinite loop
+   95:
+   96:	  01B6			WAIT:
+   97:	  01B6	7D 00			MOV	R5,#00h
+   98:	  01B8	7E 00			MOV	R6,#00h
+   99:	  01BA	7F 40			MOV	R7,#40h
 
 ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 3
 
@@ -131,62 +131,62 @@ ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. 
 
  Line  I  Addr  Code            Source
 
-  100:	  018A	F9			MOV	R1,A
-  101:	  018B	12 01 AD		LCALL	WRITED		;send data
-  102:	  018E	A3			INC	DPTR
-  103:	  018F	80 F3			SJMP	MSGD
-  104:
-  105:				; MSGDT sends the data pointed to by
-  106:				; the DPTR to the graphics module.
-  107:				;20h is subtracted to get the psaudo ascii
-  108:	  0191			MSGDT:
-  109:	  0191	E4			CLR	A
-  110:	  0192	93			MOVC	A,@A+DPTR	;get byte
-  111:	  0193	B4 A1 01		CJNE	A,#0A1h,MSGDT1	;done?
-  112:	  0196	22			RET
-  113:
-  114:	  0197			MSGDT1:
-  115:	  0197	C3			CLR	C
-  116:	  0198	94 20			SUBB	A,#20h		;Subtract 20h to get psaudo ascii
-  117:	  019A	F9			MOV	R1,A
-  118:	  019B	12 01 AD		LCALL	WRITED		;send data
-  119:	  019E	A3			INC	DPTR
-  120:	  019F	80 F0			SJMP	MSGDT
-  121:
-  122:				; WRITEC sends the byte in R1 to a
-  123:				; graphics module as a command.
-  124:	  01A1			WRITEC:
-  125:	  01A1	12 01 B4		LCALL	STATUS		;display ready?
-  126:	  01A4	D2 90			SETB	PB_CD		;c/d = 1
-  127:	  01A6			WRITEC1:
-  128:	  01A6	89 A0			MOV	P2,R1		;set data
-  129:	  01A8	C2 92			CLR	PB_W		;strobe it
-  130:	  01AA	D2 92			SETB	PB_W
-  131:	  01AC	22			RET
-  132:
-  133:				; WRITED sends the byte in R1 to the
-  134:				; graphics module as data.
-  135:	  01AD			WRITED:
-  136:	  01AD	12 01 B4		LCALL	STATUS		;display ready?
-  137:	  01B0	C2 90			CLR	PB_CD		;c/d = 0
-  138:	  01B2	80 F2			SJMP	WRITEC1
-  139:
-  140:				; STATUS check to see that the graphic
-  141:				; display is ready. It won't return
-  142:				; until it is.
-  143:	  01B4			STATUS:
-  144:	  01B4	D2 90			SETB	PB_CD		;c/d=1
-  145:	  01B6	75 A0 FF		MOV	P2,#0FFh	;P2 to input
-  146:	  01B9	7B 0B			MOV	R3,#0Bh		;status bits mask
-  147:	  01BB			STAT1:
-  148:	  01BB	C2 91			CLR	PB_R		;read it
-  149:	  01BD	E5 A0			MOV	A,P2
-  150:	  01BF	D2 91			SETB	PB_R
-  151:	  01C1	5B			ANL	A,R3		;status OK?
-  152:	  01C2	C3			CLR	C
-  153:	  01C3	9B			SUBB	A,R3
-  154:	  01C4	70 F5			JNZ	STAT1
-  155:	  01C6	22			RET
+  100:	  01BC			WAIT1:
+  101:	  01BC	DD FE			DJNZ	R5,WAIT1
+  102:	  01BE	DE FC			DJNZ	R6,WAIT1
+  103:	  01C0	DF FA			DJNZ	R7,WAIT1
+  104:	  01C2	22			RET
+  105:
+  106:				;*************************************************
+  107:				;SUBROUTINES
+  108:
+  109:				;Clear 32K ram
+  110:	  01C3			CLS:
+  111:	  01C3	90 02 57		MOV	DPTR,#MSGI3	;Set ADP to 0000h
+  112:	  01C6	12 01 E2		LCALL	MSGC
+  113:	  01C9	90 02 5B		MOV	DPTR,#MSGI4	;set auto mode
+  114:	  01CC	12 01 E2		LCALL	MSGC
+  115:	  01CF	7F 80			MOV	R7,#80h
+  116:	  01D1	7E 00			MOV	R6,#00h
+  117:	  01D3			CLS1:
+  118:	  01D3	79 00			MOV	R1,#00h
+  119:	  01D5	12 02 23		LCALL	WRITED
+  120:	  01D8	DE F9			DJNZ	R6,CLS1
+  121:	  01DA	DF F7			DJNZ	R7,CLS1
+  122:	  01DC	79 B2			MOV	R1,#0B2h	;Auto Reset
+  123:	  01DE	12 02 17		LCALL	WRITEC
+  124:	  01E1	22			RET
+  125:
+  126:				; MSGC sends the data pointed to by
+  127:				; the DPTR to the graphics module
+  128:				; as a series of commands with
+  129:				; two parameters each.
+  130:	  01E2			MSGC:
+  131:	  01E2	78 02			MOV	R0,#2		;# of data bytes
+  132:	  01E4			MSGC2:
+  133:	  01E4	E4			CLR	A
+  134:	  01E5	93			MOVC	A,@A+DPTR	;get byte
+  135:	  01E6	B4 A1 01		CJNE	A,#0A1h,MSGC3	;done?
+  136:	  01E9	22			RET
+  137:
+  138:	  01EA			MSGC3:
+  139:	  01EA	F9			MOV	R1,A
+  140:	  01EB	12 02 23		LCALL	WRITED		;send it
+  141:	  01EE	A3			INC	DPTR
+  142:	  01EF	D8 F3			DJNZ	R0,MSGC2
+  143:	  01F1	E4			CLR	A
+  144:	  01F2	93			MOVC	A,@A+DPTR	;get command
+  145:	  01F3	F9			MOV	R1,A
+  146:	  01F4	12 02 17		LCALL	WRITEC		;send command
+  147:	  01F7	A3			INC	DPTR
+  148:	  01F8	80 E8			SJMP	MSGC		;next command
+  149:
+  150:				; MSGD sends the data pointed to by
+  151:				; the DPTR to the graphics module.
+  152:	  01FA			MSGD:
+  153:	  01FA	E4			CLR	A
+  154:	  01FB	93			MOVC	A,@A+DPTR	;get byte
+  155:	  01FC	B4 A1 01		CJNE	A,#0A1h,MSGD1	;done?
 
 ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 4
 
@@ -194,62 +194,62 @@ ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. 
 
  Line  I  Addr  Code            Source
 
-  156:
-  157:				;************************************************
-  158:				; TABLES AND DATA
-  159:				; Initialization bytes for 240x128
-  160:	  01C7			MSGI1:
-  161:	  01C7	00 10 40		DB	00h,10h,40h	;text home address
-  162:	  01CA	1E 00 41		DB	1Eh,00h,41h	;text area
-  163:	  01CD	00 00 42		DB	00h,00h,42h	;graphic home address
-  164:	  01D0	1E 00 43		DB	1Eh,00h,43h	;graphic area
-  165:	  01D3	00 00 81		DB	00h,00h,81h	;mode set. EXOR Mode
-  166:	  01D6	04 00 22		DB	04h,00h,22h	;offset register set, CG RAM area at 2000h to 27FFh
-  167:	  01D9	00 00 9F		DB	00h,00h,9Fh	;display mode set. Text on, Graphic on, Cursor on, Blink on
-  168:	  01DC	A1			DB	0A1h
-  169:
-  170:	  01DD			MSGI2:
-  171:	  01DD	00 24 24		DB	00h,24h,24h	;CG RAM address pointer set, character code 80h
-  172:	  01E0	A1			DB	0A1h
-  173:
-  174:	  01E1			MSGI3:
-  175:	  01E1	00 00 24		DB	00h,00h,24h	;graphic address pointer set
-  176:	  01E4	A1			DB	0A1h
-  177:
-  178:	  01E5			MSGI4:
-  179:	  01E5	00 00 B0		DB	00h,00h,0B0h	;auto mode
-  180:	  01E8	A1			DB	0A1h
-  181:
-  182:	  01E9			MSGI5:
-  183:	  01E9	53 11 24		DB	53h,11h,24h	;text address pointer set.
-  184:	  01EC	A1			DB	0A1h
-  185:
-  186:	  01ED			MSGI6:
-  187:	  01ED	6C 11 24		DB	6Ch,11h,24h	;text address pointer set.
-  188:	  01F0	19 0C 21		DB	19h,0Ch,21h	;Cursor pointer
-  189:	  01F3	00 00 A0		DB	00h,00h,0A0h	;1 line cursor
-  190:	  01F6	A1			DB	0A1h
+  156:	  01FF	22			RET
+  157:
+  158:	  0200			MSGD1:
+  159:	  0200	F9			MOV	R1,A
+  160:	  0201	12 02 23		LCALL	WRITED		;send data
+  161:	  0204	A3			INC	DPTR
+  162:	  0205	80 F3			SJMP	MSGD
+  163:
+  164:				; MSGDT sends the data pointed to by
+  165:				; the DPTR to the graphics module.
+  166:				;20h is subtracted to get the psaudo ascii
+  167:	  0207			MSGDT:
+  168:	  0207	E4			CLR	A
+  169:	  0208	93			MOVC	A,@A+DPTR	;get byte
+  170:	  0209	B4 A1 01		CJNE	A,#0A1h,MSGDT1	;done?
+  171:	  020C	22			RET
+  172:
+  173:	  020D			MSGDT1:
+  174:	  020D	C3			CLR	C
+  175:	  020E	94 20			SUBB	A,#20h		;Subtract 20h to get psaudo ascii
+  176:	  0210	F9			MOV	R1,A
+  177:	  0211	12 02 23		LCALL	WRITED		;send data
+  178:	  0214	A3			INC	DPTR
+  179:	  0215	80 F0			SJMP	MSGDT
+  180:
+  181:				; WRITEC sends the byte in R1 to a
+  182:				; graphics module as a command.
+  183:	  0217			WRITEC:
+  184:	  0217	12 02 2A		LCALL	STATUS		;display ready?
+  185:	  021A	D2 90			SETB	PB_CD		;c/d = 1
+  186:	  021C			WRITEC1:
+  187:	  021C	89 A0			MOV	P2,R1		;set data
+  188:	  021E	C2 92			CLR	PB_W		;strobe it
+  189:	  0220	D2 92			SETB	PB_W
+  190:	  0222	22			RET
   191:
-  192:	  01F7			CGRAM:
-  193:					;80h
-  194:	  01F7	00			DB	00000000b
-  195:	  01F8	04			DB	00000100b
-  196:	  01F9	0E			DB	00001110b
-  197:	  01FA	15			DB	00010101b
-  198:	  01FB	04			DB	00000100b
-  199:	  01FC	04			DB	00000100b
-  200:	  01FD	04			DB	00000100b
-  201:	  01FE	00			DB	00000000b
-  202:	  01FF	A1			DB	0A1h
-  203:
-  204:				;240x128 Bitmap graphic data
-  205:				;The graphic consists of 240/8*128=3840 bytes
-  206:				;of binary data.
-  207:	  0200			GRAPHIC:
-  208:	  0200	FF FF FF FF		DB	0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh
-	  0204	FF FF FF FF	,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh
-	  0208	FF FF FF FF
-	  020C	FF FF FF FF
+  192:				; WRITED sends the byte in R1 to the
+  193:				; graphics module as data.
+  194:	  0223			WRITED:
+  195:	  0223	12 02 2A		LCALL	STATUS		;display ready?
+  196:	  0226	C2 90			CLR	PB_CD		;c/d = 0
+  197:	  0228	80 F2			SJMP	WRITEC1
+  198:
+  199:				; STATUS check to see that the graphic
+  200:				; display is ready. It won't return
+  201:				; until it is.
+  202:	  022A			STATUS:
+  203:	  022A	D2 90			SETB	PB_CD		;c/d=1
+  204:	  022C	75 A0 FF		MOV	P2,#0FFh	;P2 to input
+  205:	  022F	7B 0B			MOV	R3,#0Bh		;status bits mask
+  206:	  0231			STAT1:
+  207:	  0231	C2 91			CLR	PB_R		;read it
+  208:	  0233	E5 A0			MOV	A,P2
+  209:	  0235	D2 91			SETB	PB_R
+  210:	  0237	5B			ANL	A,R3		;status OK?
+  211:	  0238	C3			CLR	C
 
 ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 5
 
@@ -257,62 +257,62 @@ ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. 
 
  Line  I  Addr  Code            Source
 
-	  0210	FF FF FF FF
-	  0214	FF FF FF FF
-	  0218	FF FF FF FF
-	  021C	FF FF
-  209:	  021E	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
-	  0222	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
-	  0226	00 00 00 00
-	  022A	00 00 00 00
-	  022E	00 00 00 00
-	  0232	00 00 00 00
-	  0236	00 00 00 00
-	  023A	00 01
-  210:	  023C	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
-	  0240	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
-	  0244	00 00 00 00
-	  0248	00 00 00 00
-	  024C	00 00 00 00
-	  0250	00 00 00 00
-	  0254	00 00 00 00
-	  0258	00 01
-  211:	  025A	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
-	  025E	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
-	  0262	00 00 00 00
-	  0266	00 00 00 00
-	  026A	00 00 00 00
-	  026E	00 00 00 00
-	  0272	00 00 00 00
-	  0276	00 01
-  212:	  0278	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
-	  027C	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
-	  0280	00 00 00 00
-	  0284	00 00 00 00
-	  0288	00 00 00 00
-	  028C	00 00 00 00
-	  0290	00 00 00 00
-	  0294	00 01
-  213:	  0296	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
-	  029A	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
-	  029E	00 00 00 00
-	  02A2	00 00 00 00
-	  02A6	00 00 00 00
-	  02AA	00 00 00 00
-	  02AE	00 00 00 00
-	  02B2	00 01
-  214:	  02B4	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
-	  02B8	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
-	  02BC	00 00 00 00
-	  02C0	00 00 00 00
-	  02C4	00 00 00 00
-	  02C8	00 00 00 00
-	  02CC	00 00 00 00
-	  02D0	00 01
-  215:	  02D2	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
-	  02D6	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
-	  02DA	00 00 00 00
-	  02DE	00 00 00 00
+  212:	  0239	9B			SUBB	A,R3
+  213:	  023A	70 F5			JNZ	STAT1
+  214:	  023C	22			RET
+  215:
+  216:				;************************************************
+  217:				; TABLES AND DATA
+  218:				; Initialization bytes for 240x128
+  219:	  023D			MSGI1:
+  220:	  023D	00 10 40		DB	00h,10h,40h	;text home address
+  221:	  0240	1E 00 41		DB	1Eh,00h,41h	;text area
+  222:	  0243	00 00 42		DB	00h,00h,42h	;graphic home address
+  223:	  0246	1E 00 43		DB	1Eh,00h,43h	;graphic area
+  224:	  0249	00 00 81		DB	00h,00h,81h	;mode set. EXOR Mode
+  225:	  024C	04 00 22		DB	04h,00h,22h	;offset register set, CG RAM area at 2000h to 27FFh
+  226:	  024F	00 00 9F		DB	00h,00h,9Fh	;display mode set. Text on, Graphic on, Cursor on, Blink on
+  227:	  0252	A1			DB	0A1h
+  228:
+  229:	  0253			MSGI2:
+  230:	  0253	00 24 24		DB	00h,24h,24h	;CG RAM address pointer set, character code 80h
+  231:	  0256	A1			DB	0A1h
+  232:
+  233:	  0257			MSGI3:
+  234:	  0257	00 00 24		DB	00h,00h,24h	;graphic address pointer set
+  235:	  025A	A1			DB	0A1h
+  236:
+  237:	  025B			MSGI4:
+  238:	  025B	00 00 B0		DB	00h,00h,0B0h	;auto mode
+  239:	  025E	A1			DB	0A1h
+  240:
+  241:	  025F			MSGI5:
+  242:	  025F	53 11 24		DB	53h,11h,24h	;text address pointer set.
+  243:	  0262	A1			DB	0A1h
+  244:
+  245:	  0263			MSGI6:
+  246:	  0263	6C 11 24		DB	6Ch,11h,24h	;text address pointer set.
+  247:	  0266	19 0C 21		DB	19h,0Ch,21h	;Cursor pointer
+  248:	  0269	00 00 A0		DB	00h,00h,0A0h	;1 line cursor
+  249:	  026C	A1			DB	0A1h
+  250:
+  251:	  026D			MSGI7:
+  252:	  026D	00 10 40		DB	00h,10h,40h	;text home address
+  253:	  0270	1E 00 41		DB	1Eh,00h,41h	;text area
+  254:	  0273	00 00 42		DB	00h,00h,42h	;graphic home address
+  255:	  0276	1E 00 43		DB	1Eh,00h,43h	;graphic area
+  256:	  0279	00 00 84		DB	00h,00h,84h	;mode set. ATTRIBUTE Mode
+  257:	  027C	04 00 22		DB	04h,00h,22h	;offset register set, CG RAM area at 2000h to 27FFh
+  258:	  027F	00 00 94		DB	00h,00h,94h	;display mode set. Text on, Graphic off, Cursor off, Blink off
+  259:	  0282	A1			DB	0A1h
+  260:
+  261:	  0283			MSGI8:
+  262:	  0283	00 10 24		DB	00h,10h,24h	;text address pointer set.
+  263:	  0286	A1			DB	0A1h
+  264:
+  265:	  0287			CGRAM:
+  266:					;80h
+  267:	  0287	00			DB	00000000b
 
 ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 6
 
@@ -320,62 +320,62 @@ ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. 
 
  Line  I  Addr  Code            Source
 
-	  02E2	00 00 00 00
-	  02E6	00 00 00 00
-	  02EA	00 00 00 00
-	  02EE	00 01
-  216:	  02F0	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,0FFh,0FFh,0FFh,000h,000h,000h,000h,000h,0FFh,000h,000h
-	  02F4	00 00 FF FF	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
-	  02F8	FF 00 00 00
-	  02FC	00 00 FF 00
-	  0300	00 00 00 00
-	  0304	00 00 00 00
-	  0308	00 00 00 00
-	  030C	00 01
-  217:	  030E	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,0FFh,0FFh,0FFh,000h,000h,000h,000h,000h,0FFh,000h,000h
-	  0312	00 00 FF FF	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
-	  0316	FF 00 00 00
-	  031A	00 00 FF 00
-	  031E	00 00 00 00
-	  0322	00 00 00 00
-	  0326	00 00 00 00
-	  032A	00 01
-  218:	  032C	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,0FFh,0FFh,0FFh,000h,000h,000h,000h,000h,0FFh,000h,000h
-	  0330	00 00 FF FF	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
-	  0334	FF 00 00 00
-	  0338	00 00 FF 00
-	  033C	00 00 00 00
-	  0340	00 00 00 00
-	  0344	00 00 00 00
-	  0348	00 01
-  219:	  034A	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,0FFh,0FFh,0FFh,000h,000h,000h,000h,000h,0FFh,000h,000h
-	  034E	00 00 FF FF	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
-	  0352	FF 00 00 00
-	  0356	00 00 FF 00
-	  035A	00 00 00 00
-	  035E	00 00 00 00
-	  0362	00 00 00 00
-	  0366	00 01
-  220:	  0368	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,0FFh,0FFh,0FFh,000h,000h,000h,000h,000h,0FFh,000h,000h
-	  036C	00 00 FF FF	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
-	  0370	FF 00 00 00
-	  0374	00 00 FF 00
-	  0378	00 00 00 00
-	  037C	00 00 00 00
-	  0380	00 00 00 00
-	  0384	00 01
-  221:	  0386	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,0FFh,0FFh,0FFh,000h,000h,000h,000h,000h,0FFh,000h,000h
-	  038A	00 00 FF FF	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
-	  038E	FF 00 00 00
-	  0392	00 00 FF 00
-	  0396	00 00 00 00
-	  039A	00 00 00 00
-	  039E	00 00 00 00
-	  03A2	00 01
-  222:	  03A4	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,0FFh,0FFh,0FFh,000h,000h,000h,000h,000h,0FFh,000h,000h
-	  03A8	00 00 FF FF	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
-	  03AC	FF 00 00 00
-	  03B0	00 00 FF 00
+  268:	  0288	04			DB	00000100b
+  269:	  0289	0E			DB	00001110b
+  270:	  028A	15			DB	00010101b
+  271:	  028B	04			DB	00000100b
+  272:	  028C	04			DB	00000100b
+  273:	  028D	04			DB	00000100b
+  274:	  028E	00			DB	00000000b
+  275:	  028F	A1			DB	0A1h
+  276:
+  277:				;240x128 Bitmap graphic data
+  278:				;The graphic consists of 240/8*128=3840 bytes
+  279:				;of binary data.
+  280:	  0290			GRAPHIC:
+  281:	  0290	FF FF FF FF		DB	0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh
+	  0294	FF FF FF FF	,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh
+	  0298	FF FF FF FF
+	  029C	FF FF FF FF
+	  02A0	FF FF FF FF
+	  02A4	FF FF FF FF
+	  02A8	FF FF FF FF
+	  02AC	FF FF
+  282:	  02AE	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
+	  02B2	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
+	  02B6	00 00 00 00
+	  02BA	00 00 00 00
+	  02BE	00 00 00 00
+	  02C2	00 00 00 00
+	  02C6	00 00 00 00
+	  02CA	00 01
+  283:	  02CC	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
+	  02D0	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
+	  02D4	00 00 00 00
+	  02D8	00 00 00 00
+	  02DC	00 00 00 00
+	  02E0	00 00 00 00
+	  02E4	00 00 00 00
+	  02E8	00 01
+  284:	  02EA	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
+	  02EE	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
+	  02F2	00 00 00 00
+	  02F6	00 00 00 00
+	  02FA	00 00 00 00
+	  02FE	00 00 00 00
+	  0302	00 00 00 00
+	  0306	00 01
+  285:	  0308	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
+	  030C	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
+	  0310	00 00 00 00
+	  0314	00 00 00 00
+	  0318	00 00 00 00
+	  031C	00 00 00 00
+	  0320	00 00 00 00
+	  0324	00 01
+  286:	  0326	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
+	  032A	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
+	  032E	00 00 00 00
 
 ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 7
 
@@ -383,62 +383,62 @@ ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. 
 
  Line  I  Addr  Code            Source
 
-	  03B4	00 00 00 00
-	  03B8	00 00 00 00
-	  03BC	00 00 00 00
-	  03C0	00 01
-  223:	  03C2	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,0FFh,0FFh,0FFh,000h,000h,000h,000h,000h,0FFh,000h,000h
-	  03C6	00 00 FF FF	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
-	  03CA	FF 00 00 00
-	  03CE	00 00 FF 00
-	  03D2	00 00 00 00
-	  03D6	00 00 00 00
-	  03DA	00 00 00 00
-	  03DE	00 01
-  224:	  03E0	80 00 00 00		DB	080h,000h,000h,000h,000h,0FFh,000h,000h,000h,0FFh,000h,000h,000h,000h,000h,000h,000h
-	  03E4	00 FF 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
-	  03E8	00 FF 00 00
-	  03EC	00 00 00 00
-	  03F0	00 00 00 00
-	  03F4	00 00 00 00
-	  03F8	00 00 00 00
-	  03FC	00 01
-  225:	  03FE	80 00 00 00		DB	080h,000h,000h,000h,000h,0FFh,000h,000h,000h,0FFh,000h,000h,000h,000h,000h,000h,000h
-	  0402	00 FF 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
-	  0406	00 FF 00 00
-	  040A	00 00 00 00
-	  040E	00 00 00 00
-	  0412	00 00 00 00
-	  0416	00 00 00 00
-	  041A	00 01
-  226:	  041C	80 00 00 00		DB	080h,000h,000h,000h,000h,0FFh,000h,000h,000h,0FFh,000h,000h,000h,000h,000h,000h,000h
-	  0420	00 FF 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
-	  0424	00 FF 00 00
-	  0428	00 00 00 00
-	  042C	00 00 00 00
-	  0430	00 00 00 00
-	  0434	00 00 00 00
-	  0438	00 01
-  227:	  043A	80 00 00 00		DB	080h,000h,000h,000h,000h,0FFh,000h,000h,000h,0FFh,000h,000h,000h,000h,000h,000h,000h
-	  043E	00 FF 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
-	  0442	00 FF 00 00
-	  0446	00 00 00 00
-	  044A	00 00 00 00
-	  044E	00 00 00 00
-	  0452	00 00 00 00
-	  0456	00 01
-  228:	  0458	80 00 00 00		DB	080h,000h,000h,000h,000h,0FFh,000h,000h,000h,0FFh,000h,000h,000h,000h,000h,000h,000h
-	  045C	00 FF 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
-	  0460	00 FF 00 00
-	  0464	00 00 00 00
-	  0468	00 00 00 00
-	  046C	00 00 00 00
-	  0470	00 00 00 00
-	  0474	00 01
-  229:	  0476	80 00 00 00		DB	080h,000h,000h,000h,000h,0FFh,000h,000h,000h,0FFh,000h,000h,000h,000h,000h,000h,000h
-	  047A	00 FF 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
-	  047E	00 FF 00 00
-	  0482	00 00 00 00
+	  0332	00 00 00 00
+	  0336	00 00 00 00
+	  033A	00 00 00 00
+	  033E	00 00 00 00
+	  0342	00 01
+  287:	  0344	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
+	  0348	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
+	  034C	00 00 00 00
+	  0350	00 00 00 00
+	  0354	00 00 00 00
+	  0358	00 00 00 00
+	  035C	00 00 00 00
+	  0360	00 01
+  288:	  0362	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
+	  0366	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
+	  036A	00 00 00 00
+	  036E	00 00 00 00
+	  0372	00 00 00 00
+	  0376	00 00 00 00
+	  037A	00 00 00 00
+	  037E	00 01
+  289:	  0380	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,0FFh,0FFh,0FFh,000h,000h,000h,000h,000h,0FFh,000h,000h
+	  0384	00 00 FF FF	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
+	  0388	FF 00 00 00
+	  038C	00 00 FF 00
+	  0390	00 00 00 00
+	  0394	00 00 00 00
+	  0398	00 00 00 00
+	  039C	00 01
+  290:	  039E	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,0FFh,0FFh,0FFh,000h,000h,000h,000h,000h,0FFh,000h,000h
+	  03A2	00 00 FF FF	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
+	  03A6	FF 00 00 00
+	  03AA	00 00 FF 00
+	  03AE	00 00 00 00
+	  03B2	00 00 00 00
+	  03B6	00 00 00 00
+	  03BA	00 01
+  291:	  03BC	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,0FFh,0FFh,0FFh,000h,000h,000h,000h,000h,0FFh,000h,000h
+	  03C0	00 00 FF FF	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
+	  03C4	FF 00 00 00
+	  03C8	00 00 FF 00
+	  03CC	00 00 00 00
+	  03D0	00 00 00 00
+	  03D4	00 00 00 00
+	  03D8	00 01
+  292:	  03DA	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,0FFh,0FFh,0FFh,000h,000h,000h,000h,000h,0FFh,000h,000h
+	  03DE	00 00 FF FF	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
+	  03E2	FF 00 00 00
+	  03E6	00 00 FF 00
+	  03EA	00 00 00 00
+	  03EE	00 00 00 00
+	  03F2	00 00 00 00
+	  03F6	00 01
+  293:	  03F8	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,0FFh,0FFh,0FFh,000h,000h,000h,000h,000h,0FFh,000h,000h
+	  03FC	00 00 FF FF	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
+	  0400	FF 00 00 00
 
 ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 8
 
@@ -446,62 +446,62 @@ ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. 
 
  Line  I  Addr  Code            Source
 
-	  0486	00 00 00 00
-	  048A	00 00 00 00
-	  048E	00 00 00 00
-	  0492	00 01
-  230:	  0494	80 00 00 00		DB	080h,000h,000h,000h,000h,0FFh,000h,000h,000h,0FFh,000h,000h,000h,000h,000h,000h,000h
-	  0498	00 FF 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
-	  049C	00 FF 00 00
-	  04A0	00 00 00 00
-	  04A4	00 00 00 00
-	  04A8	00 00 00 00
-	  04AC	00 00 00 00
-	  04B0	00 01
-  231:	  04B2	80 00 00 00		DB	080h,000h,000h,000h,000h,0FFh,000h,000h,000h,0FFh,000h,000h,000h,000h,000h,000h,000h
-	  04B6	00 FF 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
-	  04BA	00 FF 00 00
-	  04BE	00 00 00 00
-	  04C2	00 00 00 00
-	  04C6	00 00 00 00
-	  04CA	00 00 00 00
-	  04CE	00 01
-  232:	  04D0	80 00 00 00		DB	080h,000h,000h,000h,000h,0FFh,000h,000h,000h,000h,000h,000h,000h,0FFh,0FFh,000h,000h
-	  04D4	00 FF 00 00	,000h,000h,0FFh,000h,0FFh,000h,0FFh,000h,000h,000h,000h,000h,001h
-	  04D8	00 00 00 00
-	  04DC	00 FF FF 00
-	  04E0	00 00 00 FF
-	  04E4	00 FF 00 FF
-	  04E8	00 00 00 00
-	  04EC	00 01
-  233:	  04EE	80 00 00 00		DB	080h,000h,000h,000h,000h,0FFh,000h,000h,000h,000h,000h,000h,000h,0FFh,0FFh,000h,000h
-	  04F2	00 FF 00 00	,000h,000h,0FFh,000h,0FFh,000h,0FFh,000h,000h,000h,000h,000h,001h
-	  04F6	00 00 00 00
-	  04FA	00 FF FF 00
-	  04FE	00 00 00 FF
-	  0502	00 FF 00 FF
-	  0506	00 00 00 00
-	  050A	00 01
-  234:	  050C	80 00 00 00		DB	080h,000h,000h,000h,000h,0FFh,000h,000h,000h,000h,000h,000h,000h,0FFh,0FFh,000h,000h
-	  0510	00 FF 00 00	,000h,000h,0FFh,000h,0FFh,000h,0FFh,000h,000h,000h,000h,000h,001h
-	  0514	00 00 00 00
-	  0518	00 FF FF 00
-	  051C	00 00 00 FF
-	  0520	00 FF 00 FF
-	  0524	00 00 00 00
-	  0528	00 01
-  235:	  052A	80 00 00 00		DB	080h,000h,000h,000h,000h,0FFh,000h,000h,000h,000h,000h,000h,000h,0FFh,0FFh,000h,000h
-	  052E	00 FF 00 00	,000h,000h,0FFh,000h,0FFh,000h,0FFh,000h,000h,000h,000h,000h,001h
-	  0532	00 00 00 00
-	  0536	00 FF FF 00
-	  053A	00 00 00 FF
-	  053E	00 FF 00 FF
-	  0542	00 00 00 00
-	  0546	00 01
-  236:	  0548	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,0FFh,0FFh,0FFh,000h,000h,000h,000h,0FFh,0FFh,000h,000h
-	  054C	00 00 FF FF	,000h,000h,0FFh,000h,0FFh,000h,0FFh,000h,000h,000h,000h,000h,001h
-	  0550	FF 00 00 00
-	  0554	00 FF FF 00
+	  0404	00 00 FF 00
+	  0408	00 00 00 00
+	  040C	00 00 00 00
+	  0410	00 00 00 00
+	  0414	00 01
+  294:	  0416	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,0FFh,0FFh,0FFh,000h,000h,000h,000h,000h,0FFh,000h,000h
+	  041A	00 00 FF FF	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
+	  041E	FF 00 00 00
+	  0422	00 00 FF 00
+	  0426	00 00 00 00
+	  042A	00 00 00 00
+	  042E	00 00 00 00
+	  0432	00 01
+  295:	  0434	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,0FFh,0FFh,0FFh,000h,000h,000h,000h,000h,0FFh,000h,000h
+	  0438	00 00 FF FF	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
+	  043C	FF 00 00 00
+	  0440	00 00 FF 00
+	  0444	00 00 00 00
+	  0448	00 00 00 00
+	  044C	00 00 00 00
+	  0450	00 01
+  296:	  0452	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,0FFh,0FFh,0FFh,000h,000h,000h,000h,000h,0FFh,000h,000h
+	  0456	00 00 FF FF	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
+	  045A	FF 00 00 00
+	  045E	00 00 FF 00
+	  0462	00 00 00 00
+	  0466	00 00 00 00
+	  046A	00 00 00 00
+	  046E	00 01
+  297:	  0470	80 00 00 00		DB	080h,000h,000h,000h,000h,0FFh,000h,000h,000h,0FFh,000h,000h,000h,000h,000h,000h,000h
+	  0474	00 FF 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
+	  0478	00 FF 00 00
+	  047C	00 00 00 00
+	  0480	00 00 00 00
+	  0484	00 00 00 00
+	  0488	00 00 00 00
+	  048C	00 01
+  298:	  048E	80 00 00 00		DB	080h,000h,000h,000h,000h,0FFh,000h,000h,000h,0FFh,000h,000h,000h,000h,000h,000h,000h
+	  0492	00 FF 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
+	  0496	00 FF 00 00
+	  049A	00 00 00 00
+	  049E	00 00 00 00
+	  04A2	00 00 00 00
+	  04A6	00 00 00 00
+	  04AA	00 01
+  299:	  04AC	80 00 00 00		DB	080h,000h,000h,000h,000h,0FFh,000h,000h,000h,0FFh,000h,000h,000h,000h,000h,000h,000h
+	  04B0	00 FF 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
+	  04B4	00 FF 00 00
+	  04B8	00 00 00 00
+	  04BC	00 00 00 00
+	  04C0	00 00 00 00
+	  04C4	00 00 00 00
+	  04C8	00 01
+  300:	  04CA	80 00 00 00		DB	080h,000h,000h,000h,000h,0FFh,000h,000h,000h,0FFh,000h,000h,000h,000h,000h,000h,000h
+	  04CE	00 FF 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
+	  04D2	00 FF 00 00
 
 ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 9
 
@@ -509,62 +509,62 @@ ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. 
 
  Line  I  Addr  Code            Source
 
-	  0558	00 00 00 FF
-	  055C	00 FF 00 FF
-	  0560	00 00 00 00
-	  0564	00 01
-  237:	  0566	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,0FFh,0FFh,0FFh,000h,000h,000h,000h,0FFh,0FFh,000h,000h
-	  056A	00 00 FF FF	,000h,000h,0FFh,000h,0FFh,000h,0FFh,000h,000h,000h,000h,000h,001h
-	  056E	FF 00 00 00
-	  0572	00 FF FF 00
-	  0576	00 00 00 FF
-	  057A	00 FF 00 FF
-	  057E	00 00 00 00
-	  0582	00 01
-  238:	  0584	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,0FFh,0FFh,0FFh,000h,000h,000h,000h,0FFh,0FFh,000h,000h
-	  0588	00 00 FF FF	,000h,000h,0FFh,000h,0FFh,000h,0FFh,000h,000h,000h,000h,000h,001h
-	  058C	FF 00 00 00
-	  0590	00 FF FF 00
-	  0594	00 00 00 FF
-	  0598	00 FF 00 FF
-	  059C	00 00 00 00
-	  05A0	00 01
-  239:	  05A2	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,0FFh,0FFh,0FFh,000h,000h,000h,000h,0FFh,0FFh,000h,000h
-	  05A6	00 00 FF FF	,000h,000h,0FFh,000h,0FFh,000h,0FFh,000h,000h,000h,000h,000h,001h
-	  05AA	FF 00 00 00
-	  05AE	00 FF FF 00
-	  05B2	00 00 00 FF
-	  05B6	00 FF 00 FF
-	  05BA	00 00 00 00
-	  05BE	00 01
-  240:	  05C0	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,0FFh,0FFh,0FFh,000h,000h,000h,000h,000h,0FFh,000h,000h
-	  05C4	00 00 FF FF	,000h,000h,0FFh,0FFh,000h,0FFh,000h,0FFh,000h,000h,000h,000h,001h
-	  05C8	FF 00 00 00
-	  05CC	00 00 FF 00
-	  05D0	00 00 00 FF
-	  05D4	FF 00 FF 00
-	  05D8	FF 00 00 00
-	  05DC	00 01
-  241:	  05DE	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,0FFh,0FFh,0FFh,000h,000h,000h,000h,000h,0FFh,000h,000h
-	  05E2	00 00 FF FF	,000h,000h,0FFh,0FFh,000h,0FFh,000h,0FFh,000h,000h,000h,000h,001h
-	  05E6	FF 00 00 00
-	  05EA	00 00 FF 00
-	  05EE	00 00 00 FF
-	  05F2	FF 00 FF 00
-	  05F6	FF 00 00 00
-	  05FA	00 01
-  242:	  05FC	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,0FFh,0FFh,0FFh,000h,000h,000h,000h,000h,0FFh,000h,000h
-	  0600	00 00 FF FF	,000h,000h,0FFh,0FFh,000h,0FFh,000h,0FFh,000h,000h,000h,000h,001h
-	  0604	FF 00 00 00
-	  0608	00 00 FF 00
-	  060C	00 00 00 FF
-	  0610	FF 00 FF 00
-	  0614	FF 00 00 00
-	  0618	00 01
-  243:	  061A	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,0FFh,0FFh,0FFh,000h,000h,000h,000h,000h,0FFh,000h,000h
-	  061E	00 00 FF FF	,000h,000h,0FFh,0FFh,000h,0FFh,000h,0FFh,000h,000h,000h,000h,001h
-	  0622	FF 00 00 00
-	  0626	00 00 FF 00
+	  04D6	00 00 00 00
+	  04DA	00 00 00 00
+	  04DE	00 00 00 00
+	  04E2	00 00 00 00
+	  04E6	00 01
+  301:	  04E8	80 00 00 00		DB	080h,000h,000h,000h,000h,0FFh,000h,000h,000h,0FFh,000h,000h,000h,000h,000h,000h,000h
+	  04EC	00 FF 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
+	  04F0	00 FF 00 00
+	  04F4	00 00 00 00
+	  04F8	00 00 00 00
+	  04FC	00 00 00 00
+	  0500	00 00 00 00
+	  0504	00 01
+  302:	  0506	80 00 00 00		DB	080h,000h,000h,000h,000h,0FFh,000h,000h,000h,0FFh,000h,000h,000h,000h,000h,000h,000h
+	  050A	00 FF 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
+	  050E	00 FF 00 00
+	  0512	00 00 00 00
+	  0516	00 00 00 00
+	  051A	00 00 00 00
+	  051E	00 00 00 00
+	  0522	00 01
+  303:	  0524	80 00 00 00		DB	080h,000h,000h,000h,000h,0FFh,000h,000h,000h,0FFh,000h,000h,000h,000h,000h,000h,000h
+	  0528	00 FF 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
+	  052C	00 FF 00 00
+	  0530	00 00 00 00
+	  0534	00 00 00 00
+	  0538	00 00 00 00
+	  053C	00 00 00 00
+	  0540	00 01
+  304:	  0542	80 00 00 00		DB	080h,000h,000h,000h,000h,0FFh,000h,000h,000h,0FFh,000h,000h,000h,000h,000h,000h,000h
+	  0546	00 FF 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
+	  054A	00 FF 00 00
+	  054E	00 00 00 00
+	  0552	00 00 00 00
+	  0556	00 00 00 00
+	  055A	00 00 00 00
+	  055E	00 01
+  305:	  0560	80 00 00 00		DB	080h,000h,000h,000h,000h,0FFh,000h,000h,000h,000h,000h,000h,000h,0FFh,0FFh,000h,000h
+	  0564	00 FF 00 00	,000h,000h,0FFh,000h,0FFh,000h,0FFh,000h,000h,000h,000h,000h,001h
+	  0568	00 00 00 00
+	  056C	00 FF FF 00
+	  0570	00 00 00 FF
+	  0574	00 FF 00 FF
+	  0578	00 00 00 00
+	  057C	00 01
+  306:	  057E	80 00 00 00		DB	080h,000h,000h,000h,000h,0FFh,000h,000h,000h,000h,000h,000h,000h,0FFh,0FFh,000h,000h
+	  0582	00 FF 00 00	,000h,000h,0FFh,000h,0FFh,000h,0FFh,000h,000h,000h,000h,000h,001h
+	  0586	00 00 00 00
+	  058A	00 FF FF 00
+	  058E	00 00 00 FF
+	  0592	00 FF 00 FF
+	  0596	00 00 00 00
+	  059A	00 01
+  307:	  059C	80 00 00 00		DB	080h,000h,000h,000h,000h,0FFh,000h,000h,000h,000h,000h,000h,000h,0FFh,0FFh,000h,000h
+	  05A0	00 FF 00 00	,000h,000h,0FFh,000h,0FFh,000h,0FFh,000h,000h,000h,000h,000h,001h
+	  05A4	00 00 00 00
 
 ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. Heinz                                         PAGE 10
 
@@ -572,62 +572,62 @@ ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. H
 
  Line  I  Addr  Code            Source
 
-	  062A	00 00 00 FF
-	  062E	FF 00 FF 00
-	  0632	FF 00 00 00
-	  0636	00 01
-  244:	  0638	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,0FFh,000h,000h,000h,000h,0FFh,000h,000h
-	  063C	00 00 00 00	,000h,000h,0FFh,0FFh,000h,0FFh,000h,0FFh,000h,000h,000h,000h,001h
-	  0640	00 FF 00 00
-	  0644	00 00 FF 00
-	  0648	00 00 00 FF
-	  064C	FF 00 FF 00
-	  0650	FF 00 00 00
-	  0654	00 01
-  245:	  0656	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,0FFh,000h,000h,000h,000h,0FFh,000h,000h
-	  065A	00 00 00 00	,000h,000h,0FFh,0FFh,000h,0FFh,000h,0FFh,000h,000h,000h,000h,001h
-	  065E	00 FF 00 00
-	  0662	00 00 FF 00
-	  0666	00 00 00 FF
-	  066A	FF 00 FF 00
-	  066E	FF 00 00 00
-	  0672	00 01
-  246:	  0674	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,0FFh,000h,000h,000h,000h,0FFh,000h,000h
-	  0678	00 00 00 00	,000h,000h,0FFh,0FFh,000h,0FFh,000h,0FFh,000h,000h,000h,000h,001h
-	  067C	00 FF 00 00
-	  0680	00 00 FF 00
-	  0684	00 00 00 FF
-	  0688	FF 00 FF 00
-	  068C	FF 00 00 00
-	  0690	00 01
-  247:	  0692	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,0FFh,000h,000h,000h,000h,0FFh,000h,000h
-	  0696	00 00 00 00	,000h,000h,0FFh,0FFh,000h,0FFh,000h,0FFh,000h,000h,000h,000h,001h
-	  069A	00 FF 00 00
-	  069E	00 00 FF 00
-	  06A2	00 00 00 FF
-	  06A6	FF 00 FF 00
-	  06AA	FF 00 00 00
-	  06AE	00 01
-  248:	  06B0	80 00 00 00		DB	080h,000h,000h,000h,000h,0FFh,000h,000h,000h,0FFh,000h,000h,000h,000h,0FFh,000h,000h
-	  06B4	00 FF 00 00	,000h,000h,0FFh,000h,000h,0FFh,000h,0FFh,000h,000h,000h,000h,001h
-	  06B8	00 FF 00 00
-	  06BC	00 00 FF 00
-	  06C0	00 00 00 FF
-	  06C4	00 00 FF 00
-	  06C8	FF 00 00 00
-	  06CC	00 01
-  249:	  06CE	80 00 00 00		DB	080h,000h,000h,000h,000h,0FFh,000h,000h,000h,0FFh,000h,000h,000h,000h,0FFh,000h,000h
-	  06D2	00 FF 00 00	,000h,000h,0FFh,000h,000h,0FFh,000h,0FFh,000h,000h,000h,000h,001h
-	  06D6	00 FF 00 00
-	  06DA	00 00 FF 00
-	  06DE	00 00 00 FF
-	  06E2	00 00 FF 00
-	  06E6	FF 00 00 00
-	  06EA	00 01
-  250:	  06EC	80 00 00 00		DB	080h,000h,000h,000h,000h,0FFh,000h,000h,000h,0FFh,000h,000h,000h,000h,0FFh,000h,000h
-	  06F0	00 FF 00 00	,000h,000h,0FFh,000h,000h,0FFh,000h,0FFh,000h,000h,000h,000h,001h
-	  06F4	00 FF 00 00
-	  06F8	00 00 FF 00
+	  05A8	00 FF FF 00
+	  05AC	00 00 00 FF
+	  05B0	00 FF 00 FF
+	  05B4	00 00 00 00
+	  05B8	00 01
+  308:	  05BA	80 00 00 00		DB	080h,000h,000h,000h,000h,0FFh,000h,000h,000h,000h,000h,000h,000h,0FFh,0FFh,000h,000h
+	  05BE	00 FF 00 00	,000h,000h,0FFh,000h,0FFh,000h,0FFh,000h,000h,000h,000h,000h,001h
+	  05C2	00 00 00 00
+	  05C6	00 FF FF 00
+	  05CA	00 00 00 FF
+	  05CE	00 FF 00 FF
+	  05D2	00 00 00 00
+	  05D6	00 01
+  309:	  05D8	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,0FFh,0FFh,0FFh,000h,000h,000h,000h,0FFh,0FFh,000h,000h
+	  05DC	00 00 FF FF	,000h,000h,0FFh,000h,0FFh,000h,0FFh,000h,000h,000h,000h,000h,001h
+	  05E0	FF 00 00 00
+	  05E4	00 FF FF 00
+	  05E8	00 00 00 FF
+	  05EC	00 FF 00 FF
+	  05F0	00 00 00 00
+	  05F4	00 01
+  310:	  05F6	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,0FFh,0FFh,0FFh,000h,000h,000h,000h,0FFh,0FFh,000h,000h
+	  05FA	00 00 FF FF	,000h,000h,0FFh,000h,0FFh,000h,0FFh,000h,000h,000h,000h,000h,001h
+	  05FE	FF 00 00 00
+	  0602	00 FF FF 00
+	  0606	00 00 00 FF
+	  060A	00 FF 00 FF
+	  060E	00 00 00 00
+	  0612	00 01
+  311:	  0614	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,0FFh,0FFh,0FFh,000h,000h,000h,000h,0FFh,0FFh,000h,000h
+	  0618	00 00 FF FF	,000h,000h,0FFh,000h,0FFh,000h,0FFh,000h,000h,000h,000h,000h,001h
+	  061C	FF 00 00 00
+	  0620	00 FF FF 00
+	  0624	00 00 00 FF
+	  0628	00 FF 00 FF
+	  062C	00 00 00 00
+	  0630	00 01
+  312:	  0632	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,0FFh,0FFh,0FFh,000h,000h,000h,000h,0FFh,0FFh,000h,000h
+	  0636	00 00 FF FF	,000h,000h,0FFh,000h,0FFh,000h,0FFh,000h,000h,000h,000h,000h,001h
+	  063A	FF 00 00 00
+	  063E	00 FF FF 00
+	  0642	00 00 00 FF
+	  0646	00 FF 00 FF
+	  064A	00 00 00 00
+	  064E	00 01
+  313:	  0650	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,0FFh,0FFh,0FFh,000h,000h,000h,000h,000h,0FFh,000h,000h
+	  0654	00 00 FF FF	,000h,000h,0FFh,0FFh,000h,0FFh,000h,0FFh,000h,000h,000h,000h,001h
+	  0658	FF 00 00 00
+	  065C	00 00 FF 00
+	  0660	00 00 00 FF
+	  0664	FF 00 FF 00
+	  0668	FF 00 00 00
+	  066C	00 01
+  314:	  066E	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,0FFh,0FFh,0FFh,000h,000h,000h,000h,000h,0FFh,000h,000h
+	  0672	00 00 FF FF	,000h,000h,0FFh,0FFh,000h,0FFh,000h,0FFh,000h,000h,000h,000h,001h
+	  0676	FF 00 00 00
 
 ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. Heinz                                         PAGE 11
 
@@ -635,62 +635,62 @@ ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. H
 
  Line  I  Addr  Code            Source
 
-	  06FC	00 00 00 FF
-	  0700	00 00 FF 00
-	  0704	FF 00 00 00
-	  0708	00 01
-  251:	  070A	80 00 00 00		DB	080h,000h,000h,000h,000h,0FFh,000h,000h,000h,0FFh,000h,000h,000h,000h,0FFh,000h,000h
-	  070E	00 FF 00 00	,000h,000h,0FFh,000h,000h,0FFh,000h,0FFh,000h,000h,000h,000h,001h
-	  0712	00 FF 00 00
-	  0716	00 00 FF 00
-	  071A	00 00 00 FF
-	  071E	00 00 FF 00
-	  0722	FF 00 00 00
-	  0726	00 01
-  252:	  0728	80 00 00 00		DB	080h,000h,000h,000h,000h,0FFh,000h,000h,000h,0FFh,000h,000h,000h,000h,0FFh,000h,000h
-	  072C	00 FF 00 00	,000h,000h,0FFh,000h,000h,0FFh,000h,0FFh,000h,000h,000h,000h,001h
-	  0730	00 FF 00 00
-	  0734	00 00 FF 00
-	  0738	00 00 00 FF
-	  073C	00 00 FF 00
-	  0740	FF 00 00 00
-	  0744	00 01
-  253:	  0746	80 00 00 00		DB	080h,000h,000h,000h,000h,0FFh,000h,000h,000h,0FFh,000h,000h,000h,000h,0FFh,000h,000h
-	  074A	00 FF 00 00	,000h,000h,0FFh,000h,000h,0FFh,000h,0FFh,000h,000h,000h,000h,001h
-	  074E	00 FF 00 00
-	  0752	00 00 FF 00
-	  0756	00 00 00 FF
-	  075A	00 00 FF 00
-	  075E	FF 00 00 00
-	  0762	00 01
-  254:	  0764	80 00 00 00		DB	080h,000h,000h,000h,000h,0FFh,000h,000h,000h,0FFh,000h,000h,000h,000h,0FFh,000h,000h
-	  0768	00 FF 00 00	,000h,000h,0FFh,000h,000h,0FFh,000h,0FFh,000h,000h,000h,000h,001h
-	  076C	00 FF 00 00
-	  0770	00 00 FF 00
-	  0774	00 00 00 FF
-	  0778	00 00 FF 00
-	  077C	FF 00 00 00
-	  0780	00 01
-  255:	  0782	80 00 00 00		DB	080h,000h,000h,000h,000h,0FFh,000h,000h,000h,0FFh,000h,000h,000h,000h,0FFh,000h,000h
-	  0786	00 FF 00 00	,000h,000h,0FFh,000h,000h,0FFh,000h,0FFh,000h,000h,000h,000h,001h
-	  078A	00 FF 00 00
-	  078E	00 00 FF 00
-	  0792	00 00 00 FF
-	  0796	00 00 FF 00
-	  079A	FF 00 00 00
-	  079E	00 01
-  256:	  07A0	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,0FFh,0FFh,0FFh,000h,000h,000h,000h,0FFh,0FFh,0FFh,000h
-	  07A4	00 00 FF FF	,000h,000h,0FFh,000h,000h,0FFh,000h,0FFh,000h,000h,000h,000h,001h
-	  07A8	FF 00 00 00
-	  07AC	00 FF FF FF
-	  07B0	00 00 00 FF
-	  07B4	00 00 FF 00
-	  07B8	FF 00 00 00
-	  07BC	00 01
-  257:	  07BE	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,0FFh,0FFh,0FFh,000h,000h,000h,000h,0FFh,0FFh,0FFh,000h
-	  07C2	00 00 FF FF	,000h,000h,0FFh,000h,000h,0FFh,000h,0FFh,000h,000h,000h,000h,001h
-	  07C6	FF 00 00 00
-	  07CA	00 FF FF FF
+	  067A	00 00 FF 00
+	  067E	00 00 00 FF
+	  0682	FF 00 FF 00
+	  0686	FF 00 00 00
+	  068A	00 01
+  315:	  068C	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,0FFh,0FFh,0FFh,000h,000h,000h,000h,000h,0FFh,000h,000h
+	  0690	00 00 FF FF	,000h,000h,0FFh,0FFh,000h,0FFh,000h,0FFh,000h,000h,000h,000h,001h
+	  0694	FF 00 00 00
+	  0698	00 00 FF 00
+	  069C	00 00 00 FF
+	  06A0	FF 00 FF 00
+	  06A4	FF 00 00 00
+	  06A8	00 01
+  316:	  06AA	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,0FFh,0FFh,0FFh,000h,000h,000h,000h,000h,0FFh,000h,000h
+	  06AE	00 00 FF FF	,000h,000h,0FFh,0FFh,000h,0FFh,000h,0FFh,000h,000h,000h,000h,001h
+	  06B2	FF 00 00 00
+	  06B6	00 00 FF 00
+	  06BA	00 00 00 FF
+	  06BE	FF 00 FF 00
+	  06C2	FF 00 00 00
+	  06C6	00 01
+  317:	  06C8	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,0FFh,000h,000h,000h,000h,0FFh,000h,000h
+	  06CC	00 00 00 00	,000h,000h,0FFh,0FFh,000h,0FFh,000h,0FFh,000h,000h,000h,000h,001h
+	  06D0	00 FF 00 00
+	  06D4	00 00 FF 00
+	  06D8	00 00 00 FF
+	  06DC	FF 00 FF 00
+	  06E0	FF 00 00 00
+	  06E4	00 01
+  318:	  06E6	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,0FFh,000h,000h,000h,000h,0FFh,000h,000h
+	  06EA	00 00 00 00	,000h,000h,0FFh,0FFh,000h,0FFh,000h,0FFh,000h,000h,000h,000h,001h
+	  06EE	00 FF 00 00
+	  06F2	00 00 FF 00
+	  06F6	00 00 00 FF
+	  06FA	FF 00 FF 00
+	  06FE	FF 00 00 00
+	  0702	00 01
+  319:	  0704	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,0FFh,000h,000h,000h,000h,0FFh,000h,000h
+	  0708	00 00 00 00	,000h,000h,0FFh,0FFh,000h,0FFh,000h,0FFh,000h,000h,000h,000h,001h
+	  070C	00 FF 00 00
+	  0710	00 00 FF 00
+	  0714	00 00 00 FF
+	  0718	FF 00 FF 00
+	  071C	FF 00 00 00
+	  0720	00 01
+  320:	  0722	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,0FFh,000h,000h,000h,000h,0FFh,000h,000h
+	  0726	00 00 00 00	,000h,000h,0FFh,0FFh,000h,0FFh,000h,0FFh,000h,000h,000h,000h,001h
+	  072A	00 FF 00 00
+	  072E	00 00 FF 00
+	  0732	00 00 00 FF
+	  0736	FF 00 FF 00
+	  073A	FF 00 00 00
+	  073E	00 01
+  321:	  0740	80 00 00 00		DB	080h,000h,000h,000h,000h,0FFh,000h,000h,000h,0FFh,000h,000h,000h,000h,0FFh,000h,000h
+	  0744	00 FF 00 00	,000h,000h,0FFh,000h,000h,0FFh,000h,0FFh,000h,000h,000h,000h,001h
+	  0748	00 FF 00 00
 
 ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. Heinz                                         PAGE 12
 
@@ -698,62 +698,62 @@ ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. H
 
  Line  I  Addr  Code            Source
 
-	  07CE	00 00 00 FF
-	  07D2	00 00 FF 00
-	  07D6	FF 00 00 00
-	  07DA	00 01
-  258:	  07DC	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,0FFh,0FFh,0FFh,000h,000h,000h,000h,0FFh,0FFh,0FFh,000h
-	  07E0	00 00 FF FF	,000h,000h,0FFh,000h,000h,0FFh,000h,0FFh,000h,000h,000h,000h,001h
-	  07E4	FF 00 00 00
-	  07E8	00 FF FF FF
-	  07EC	00 00 00 FF
-	  07F0	00 00 FF 00
-	  07F4	FF 00 00 00
-	  07F8	00 01
-  259:	  07FA	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,0FFh,0FFh,0FFh,000h,000h,000h,000h,0FFh,0FFh,0FFh,000h
-	  07FE	00 00 FF FF	,000h,000h,0FFh,000h,000h,0FFh,000h,0FFh,000h,000h,000h,000h,001h
-	  0802	FF 00 00 00
-	  0806	00 FF FF FF
-	  080A	00 00 00 FF
-	  080E	00 00 FF 00
-	  0812	FF 00 00 00
-	  0816	00 01
-  260:	  0818	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,0FFh,0FFh,0FFh,000h,000h,000h,000h,0FFh,0FFh,0FFh,000h
-	  081C	00 00 FF FF	,000h,000h,0FFh,000h,000h,0FFh,000h,0FFh,000h,000h,000h,000h,001h
-	  0820	FF 00 00 00
-	  0824	00 FF FF FF
-	  0828	00 00 00 FF
-	  082C	00 00 FF 00
-	  0830	FF 00 00 00
-	  0834	00 01
-  261:	  0836	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,0FFh,0FFh,0FFh,000h,000h,000h,000h,0FFh,0FFh,0FFh,000h
-	  083A	00 00 FF FF	,000h,000h,0FFh,000h,000h,0FFh,000h,0FFh,000h,000h,000h,000h,001h
-	  083E	FF 00 00 00
-	  0842	00 FF FF FF
-	  0846	00 00 00 FF
-	  084A	00 00 FF 00
-	  084E	FF 00 00 00
-	  0852	00 01
-  262:	  0854	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,0FFh,0FFh,0FFh,000h,000h,000h,000h,0FFh,0FFh,0FFh,000h
-	  0858	00 00 FF FF	,000h,000h,0FFh,000h,000h,0FFh,000h,0FFh,000h,000h,000h,000h,001h
-	  085C	FF 00 00 00
-	  0860	00 FF FF FF
-	  0864	00 00 00 FF
-	  0868	00 00 FF 00
-	  086C	FF 00 00 00
-	  0870	00 01
-  263:	  0872	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,0FFh,0FFh,0FFh,000h,000h,000h,000h,0FFh,0FFh,0FFh,000h
-	  0876	00 00 FF FF	,000h,000h,0FFh,000h,000h,0FFh,000h,0FFh,000h,000h,000h,000h,001h
-	  087A	FF 00 00 00
-	  087E	00 FF FF FF
-	  0882	00 00 00 FF
-	  0886	00 00 FF 00
-	  088A	FF 00 00 00
-	  088E	00 01
-  264:	  0890	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
-	  0894	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
-	  0898	00 00 00 00
-	  089C	00 00 00 00
+	  074C	00 00 FF 00
+	  0750	00 00 00 FF
+	  0754	00 00 FF 00
+	  0758	FF 00 00 00
+	  075C	00 01
+  322:	  075E	80 00 00 00		DB	080h,000h,000h,000h,000h,0FFh,000h,000h,000h,0FFh,000h,000h,000h,000h,0FFh,000h,000h
+	  0762	00 FF 00 00	,000h,000h,0FFh,000h,000h,0FFh,000h,0FFh,000h,000h,000h,000h,001h
+	  0766	00 FF 00 00
+	  076A	00 00 FF 00
+	  076E	00 00 00 FF
+	  0772	00 00 FF 00
+	  0776	FF 00 00 00
+	  077A	00 01
+  323:	  077C	80 00 00 00		DB	080h,000h,000h,000h,000h,0FFh,000h,000h,000h,0FFh,000h,000h,000h,000h,0FFh,000h,000h
+	  0780	00 FF 00 00	,000h,000h,0FFh,000h,000h,0FFh,000h,0FFh,000h,000h,000h,000h,001h
+	  0784	00 FF 00 00
+	  0788	00 00 FF 00
+	  078C	00 00 00 FF
+	  0790	00 00 FF 00
+	  0794	FF 00 00 00
+	  0798	00 01
+  324:	  079A	80 00 00 00		DB	080h,000h,000h,000h,000h,0FFh,000h,000h,000h,0FFh,000h,000h,000h,000h,0FFh,000h,000h
+	  079E	00 FF 00 00	,000h,000h,0FFh,000h,000h,0FFh,000h,0FFh,000h,000h,000h,000h,001h
+	  07A2	00 FF 00 00
+	  07A6	00 00 FF 00
+	  07AA	00 00 00 FF
+	  07AE	00 00 FF 00
+	  07B2	FF 00 00 00
+	  07B6	00 01
+  325:	  07B8	80 00 00 00		DB	080h,000h,000h,000h,000h,0FFh,000h,000h,000h,0FFh,000h,000h,000h,000h,0FFh,000h,000h
+	  07BC	00 FF 00 00	,000h,000h,0FFh,000h,000h,0FFh,000h,0FFh,000h,000h,000h,000h,001h
+	  07C0	00 FF 00 00
+	  07C4	00 00 FF 00
+	  07C8	00 00 00 FF
+	  07CC	00 00 FF 00
+	  07D0	FF 00 00 00
+	  07D4	00 01
+  326:	  07D6	80 00 00 00		DB	080h,000h,000h,000h,000h,0FFh,000h,000h,000h,0FFh,000h,000h,000h,000h,0FFh,000h,000h
+	  07DA	00 FF 00 00	,000h,000h,0FFh,000h,000h,0FFh,000h,0FFh,000h,000h,000h,000h,001h
+	  07DE	00 FF 00 00
+	  07E2	00 00 FF 00
+	  07E6	00 00 00 FF
+	  07EA	00 00 FF 00
+	  07EE	FF 00 00 00
+	  07F2	00 01
+  327:	  07F4	80 00 00 00		DB	080h,000h,000h,000h,000h,0FFh,000h,000h,000h,0FFh,000h,000h,000h,000h,0FFh,000h,000h
+	  07F8	00 FF 00 00	,000h,000h,0FFh,000h,000h,0FFh,000h,0FFh,000h,000h,000h,000h,001h
+	  07FC	00 FF 00 00
+	  0800	00 00 FF 00
+	  0804	00 00 00 FF
+	  0808	00 00 FF 00
+	  080C	FF 00 00 00
+	  0810	00 01
+  328:	  0812	80 00 00 00		DB	080h,000h,000h,000h,000h,0FFh,000h,000h,000h,0FFh,000h,000h,000h,000h,0FFh,000h,000h
+	  0816	00 FF 00 00	,000h,000h,0FFh,000h,000h,0FFh,000h,0FFh,000h,000h,000h,000h,001h
+	  081A	00 FF 00 00
 
 ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. Heinz                                         PAGE 13
 
@@ -761,62 +761,62 @@ ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. H
 
  Line  I  Addr  Code            Source
 
-	  08A0	00 00 00 00
-	  08A4	00 00 00 00
-	  08A8	00 00 00 00
-	  08AC	00 01
-  265:	  08AE	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
-	  08B2	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
-	  08B6	00 00 00 00
-	  08BA	00 00 00 00
-	  08BE	00 00 00 00
-	  08C2	00 00 00 00
-	  08C6	00 00 00 00
-	  08CA	00 01
-  266:	  08CC	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
-	  08D0	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
-	  08D4	00 00 00 00
-	  08D8	00 00 00 00
-	  08DC	00 00 00 00
-	  08E0	00 00 00 00
-	  08E4	00 00 00 00
-	  08E8	00 01
-  267:	  08EA	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
-	  08EE	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
-	  08F2	00 00 00 00
-	  08F6	00 00 00 00
-	  08FA	00 00 00 00
-	  08FE	00 00 00 00
-	  0902	00 00 00 00
-	  0906	00 01
-  268:	  0908	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
-	  090C	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
-	  0910	00 00 00 00
-	  0914	00 00 00 00
-	  0918	00 00 00 00
-	  091C	00 00 00 00
-	  0920	00 00 00 00
-	  0924	00 01
-  269:	  0926	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
-	  092A	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
-	  092E	00 00 00 00
-	  0932	00 00 00 00
-	  0936	00 00 00 00
-	  093A	00 00 00 00
-	  093E	00 00 00 00
-	  0942	00 01
-  270:	  0944	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
-	  0948	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
-	  094C	00 00 00 00
-	  0950	00 00 00 00
-	  0954	00 00 00 00
-	  0958	00 00 00 00
-	  095C	00 00 00 00
-	  0960	00 01
-  271:	  0962	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
-	  0966	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
-	  096A	00 00 00 00
-	  096E	00 00 00 00
+	  081E	00 00 FF 00
+	  0822	00 00 00 FF
+	  0826	00 00 FF 00
+	  082A	FF 00 00 00
+	  082E	00 01
+  329:	  0830	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,0FFh,0FFh,0FFh,000h,000h,000h,000h,0FFh,0FFh,0FFh,000h
+	  0834	00 00 FF FF	,000h,000h,0FFh,000h,000h,0FFh,000h,0FFh,000h,000h,000h,000h,001h
+	  0838	FF 00 00 00
+	  083C	00 FF FF FF
+	  0840	00 00 00 FF
+	  0844	00 00 FF 00
+	  0848	FF 00 00 00
+	  084C	00 01
+  330:	  084E	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,0FFh,0FFh,0FFh,000h,000h,000h,000h,0FFh,0FFh,0FFh,000h
+	  0852	00 00 FF FF	,000h,000h,0FFh,000h,000h,0FFh,000h,0FFh,000h,000h,000h,000h,001h
+	  0856	FF 00 00 00
+	  085A	00 FF FF FF
+	  085E	00 00 00 FF
+	  0862	00 00 FF 00
+	  0866	FF 00 00 00
+	  086A	00 01
+  331:	  086C	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,0FFh,0FFh,0FFh,000h,000h,000h,000h,0FFh,0FFh,0FFh,000h
+	  0870	00 00 FF FF	,000h,000h,0FFh,000h,000h,0FFh,000h,0FFh,000h,000h,000h,000h,001h
+	  0874	FF 00 00 00
+	  0878	00 FF FF FF
+	  087C	00 00 00 FF
+	  0880	00 00 FF 00
+	  0884	FF 00 00 00
+	  0888	00 01
+  332:	  088A	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,0FFh,0FFh,0FFh,000h,000h,000h,000h,0FFh,0FFh,0FFh,000h
+	  088E	00 00 FF FF	,000h,000h,0FFh,000h,000h,0FFh,000h,0FFh,000h,000h,000h,000h,001h
+	  0892	FF 00 00 00
+	  0896	00 FF FF FF
+	  089A	00 00 00 FF
+	  089E	00 00 FF 00
+	  08A2	FF 00 00 00
+	  08A6	00 01
+  333:	  08A8	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,0FFh,0FFh,0FFh,000h,000h,000h,000h,0FFh,0FFh,0FFh,000h
+	  08AC	00 00 FF FF	,000h,000h,0FFh,000h,000h,0FFh,000h,0FFh,000h,000h,000h,000h,001h
+	  08B0	FF 00 00 00
+	  08B4	00 FF FF FF
+	  08B8	00 00 00 FF
+	  08BC	00 00 FF 00
+	  08C0	FF 00 00 00
+	  08C4	00 01
+  334:	  08C6	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,0FFh,0FFh,0FFh,000h,000h,000h,000h,0FFh,0FFh,0FFh,000h
+	  08CA	00 00 FF FF	,000h,000h,0FFh,000h,000h,0FFh,000h,0FFh,000h,000h,000h,000h,001h
+	  08CE	FF 00 00 00
+	  08D2	00 FF FF FF
+	  08D6	00 00 00 FF
+	  08DA	00 00 FF 00
+	  08DE	FF 00 00 00
+	  08E2	00 01
+  335:	  08E4	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,0FFh,0FFh,0FFh,000h,000h,000h,000h,0FFh,0FFh,0FFh,000h
+	  08E8	00 00 FF FF	,000h,000h,0FFh,000h,000h,0FFh,000h,0FFh,000h,000h,000h,000h,001h
+	  08EC	FF 00 00 00
 
 ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. Heinz                                         PAGE 14
 
@@ -824,62 +824,62 @@ ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. H
 
  Line  I  Addr  Code            Source
 
-	  0972	00 00 00 00
-	  0976	00 00 00 00
-	  097A	00 00 00 00
-	  097E	00 01
-  272:	  0980	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
-	  0984	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
-	  0988	00 00 00 00
-	  098C	00 00 00 00
-	  0990	00 00 00 00
-	  0994	00 00 00 00
-	  0998	00 00 00 00
-	  099C	00 01
-  273:	  099E	FF FF FF FF		DB	0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh
-	  09A2	FF FF FF FF	,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh
-	  09A6	FF FF FF FF
-	  09AA	FF FF FF FF
-	  09AE	FF FF FF FF
-	  09B2	FF FF FF FF
-	  09B6	FF FF FF FF
-	  09BA	FF FF
-  274:	  09BC	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
-	  09C0	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
-	  09C4	00 00 00 00
-	  09C8	00 00 00 00
-	  09CC	00 00 00 00
-	  09D0	00 00 00 00
-	  09D4	00 00 00 00
-	  09D8	00 01
-  275:	  09DA	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
-	  09DE	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
-	  09E2	00 00 00 00
-	  09E6	00 00 00 00
-	  09EA	00 00 00 00
-	  09EE	00 00 00 00
-	  09F2	00 00 00 00
-	  09F6	00 01
-  276:	  09F8	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
-	  09FC	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
-	  0A00	00 00 00 00
-	  0A04	00 00 00 00
-	  0A08	00 00 00 00
-	  0A0C	00 00 00 00
-	  0A10	00 00 00 00
-	  0A14	00 01
-  277:	  0A16	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
-	  0A1A	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
-	  0A1E	00 00 00 00
-	  0A22	00 00 00 00
-	  0A26	00 00 00 00
-	  0A2A	00 00 00 00
-	  0A2E	00 00 00 00
-	  0A32	00 01
-  278:	  0A34	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
-	  0A38	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
-	  0A3C	00 00 00 00
-	  0A40	00 00 00 00
+	  08F0	00 FF FF FF
+	  08F4	00 00 00 FF
+	  08F8	00 00 FF 00
+	  08FC	FF 00 00 00
+	  0900	00 01
+  336:	  0902	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,0FFh,0FFh,0FFh,000h,000h,000h,000h,0FFh,0FFh,0FFh,000h
+	  0906	00 00 FF FF	,000h,000h,0FFh,000h,000h,0FFh,000h,0FFh,000h,000h,000h,000h,001h
+	  090A	FF 00 00 00
+	  090E	00 FF FF FF
+	  0912	00 00 00 FF
+	  0916	00 00 FF 00
+	  091A	FF 00 00 00
+	  091E	00 01
+  337:	  0920	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
+	  0924	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
+	  0928	00 00 00 00
+	  092C	00 00 00 00
+	  0930	00 00 00 00
+	  0934	00 00 00 00
+	  0938	00 00 00 00
+	  093C	00 01
+  338:	  093E	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
+	  0942	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
+	  0946	00 00 00 00
+	  094A	00 00 00 00
+	  094E	00 00 00 00
+	  0952	00 00 00 00
+	  0956	00 00 00 00
+	  095A	00 01
+  339:	  095C	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
+	  0960	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
+	  0964	00 00 00 00
+	  0968	00 00 00 00
+	  096C	00 00 00 00
+	  0970	00 00 00 00
+	  0974	00 00 00 00
+	  0978	00 01
+  340:	  097A	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
+	  097E	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
+	  0982	00 00 00 00
+	  0986	00 00 00 00
+	  098A	00 00 00 00
+	  098E	00 00 00 00
+	  0992	00 00 00 00
+	  0996	00 01
+  341:	  0998	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
+	  099C	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
+	  09A0	00 00 00 00
+	  09A4	00 00 00 00
+	  09A8	00 00 00 00
+	  09AC	00 00 00 00
+	  09B0	00 00 00 00
+	  09B4	00 01
+  342:	  09B6	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
+	  09BA	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
+	  09BE	00 00 00 00
 
 ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. Heinz                                         PAGE 15
 
@@ -887,62 +887,62 @@ ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. H
 
  Line  I  Addr  Code            Source
 
-	  0A44	00 00 00 00
-	  0A48	00 00 00 00
-	  0A4C	00 00 00 00
-	  0A50	00 01
-  279:	  0A52	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
-	  0A56	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
-	  0A5A	00 00 00 00
-	  0A5E	00 00 00 00
-	  0A62	00 00 00 00
-	  0A66	00 00 00 00
-	  0A6A	00 00 00 00
-	  0A6E	00 01
-  280:	  0A70	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
-	  0A74	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
-	  0A78	00 00 00 00
-	  0A7C	00 00 00 00
-	  0A80	00 00 00 00
-	  0A84	00 00 00 00
-	  0A88	00 00 00 00
-	  0A8C	00 01
-  281:	  0A8E	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
-	  0A92	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
-	  0A96	00 00 00 00
-	  0A9A	00 00 00 00
-	  0A9E	00 00 00 00
-	  0AA2	00 00 00 00
-	  0AA6	00 00 00 00
-	  0AAA	00 01
-  282:	  0AAC	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
-	  0AB0	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
-	  0AB4	00 00 00 00
-	  0AB8	00 00 00 00
-	  0ABC	00 00 00 00
-	  0AC0	00 00 00 00
-	  0AC4	00 00 00 00
-	  0AC8	00 01
-  283:	  0ACA	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
-	  0ACE	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
-	  0AD2	00 00 00 00
-	  0AD6	00 00 00 00
-	  0ADA	00 00 00 00
-	  0ADE	00 00 00 00
-	  0AE2	00 00 00 00
-	  0AE6	00 01
-  284:	  0AE8	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
-	  0AEC	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
-	  0AF0	00 00 00 00
-	  0AF4	00 00 00 00
-	  0AF8	00 00 00 00
-	  0AFC	00 00 00 00
-	  0B00	00 00 00 00
-	  0B04	00 01
-  285:	  0B06	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
-	  0B0A	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
-	  0B0E	00 00 00 00
-	  0B12	00 00 00 00
+	  09C2	00 00 00 00
+	  09C6	00 00 00 00
+	  09CA	00 00 00 00
+	  09CE	00 00 00 00
+	  09D2	00 01
+  343:	  09D4	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
+	  09D8	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
+	  09DC	00 00 00 00
+	  09E0	00 00 00 00
+	  09E4	00 00 00 00
+	  09E8	00 00 00 00
+	  09EC	00 00 00 00
+	  09F0	00 01
+  344:	  09F2	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
+	  09F6	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
+	  09FA	00 00 00 00
+	  09FE	00 00 00 00
+	  0A02	00 00 00 00
+	  0A06	00 00 00 00
+	  0A0A	00 00 00 00
+	  0A0E	00 01
+  345:	  0A10	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
+	  0A14	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
+	  0A18	00 00 00 00
+	  0A1C	00 00 00 00
+	  0A20	00 00 00 00
+	  0A24	00 00 00 00
+	  0A28	00 00 00 00
+	  0A2C	00 01
+  346:	  0A2E	FF FF FF FF		DB	0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh
+	  0A32	FF FF FF FF	,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh
+	  0A36	FF FF FF FF
+	  0A3A	FF FF FF FF
+	  0A3E	FF FF FF FF
+	  0A42	FF FF FF FF
+	  0A46	FF FF FF FF
+	  0A4A	FF FF
+  347:	  0A4C	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
+	  0A50	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
+	  0A54	00 00 00 00
+	  0A58	00 00 00 00
+	  0A5C	00 00 00 00
+	  0A60	00 00 00 00
+	  0A64	00 00 00 00
+	  0A68	00 01
+  348:	  0A6A	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
+	  0A6E	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
+	  0A72	00 00 00 00
+	  0A76	00 00 00 00
+	  0A7A	00 00 00 00
+	  0A7E	00 00 00 00
+	  0A82	00 00 00 00
+	  0A86	00 01
+  349:	  0A88	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
+	  0A8C	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
+	  0A90	00 00 00 00
 
 ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. Heinz                                         PAGE 16
 
@@ -950,62 +950,62 @@ ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. H
 
  Line  I  Addr  Code            Source
 
-	  0B16	00 00 00 00
-	  0B1A	00 00 00 00
-	  0B1E	00 00 00 00
-	  0B22	00 01
-  286:	  0B24	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
-	  0B28	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
-	  0B2C	00 00 00 00
-	  0B30	00 00 00 00
-	  0B34	00 00 00 00
-	  0B38	00 00 00 00
-	  0B3C	00 00 00 00
-	  0B40	00 01
-  287:	  0B42	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
-	  0B46	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
-	  0B4A	00 00 00 00
-	  0B4E	00 00 00 00
-	  0B52	00 00 00 00
-	  0B56	00 00 00 00
-	  0B5A	00 00 00 00
-	  0B5E	00 01
-  288:	  0B60	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
-	  0B64	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
-	  0B68	00 00 00 00
-	  0B6C	00 00 00 00
-	  0B70	00 00 00 00
-	  0B74	00 00 00 00
-	  0B78	00 00 00 00
-	  0B7C	00 01
-  289:	  0B7E	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
-	  0B82	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
-	  0B86	00 00 00 00
-	  0B8A	00 00 00 00
-	  0B8E	00 00 00 00
-	  0B92	00 00 00 00
-	  0B96	00 00 00 00
-	  0B9A	00 01
-  290:	  0B9C	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
-	  0BA0	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
-	  0BA4	00 00 00 00
-	  0BA8	00 00 00 00
-	  0BAC	00 00 00 00
-	  0BB0	00 00 00 00
-	  0BB4	00 00 00 00
-	  0BB8	00 01
-  291:	  0BBA	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
-	  0BBE	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
-	  0BC2	00 00 00 00
-	  0BC6	00 00 00 00
-	  0BCA	00 00 00 00
-	  0BCE	00 00 00 00
-	  0BD2	00 00 00 00
-	  0BD6	00 01
-  292:	  0BD8	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
-	  0BDC	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
-	  0BE0	00 00 00 00
-	  0BE4	00 00 00 00
+	  0A94	00 00 00 00
+	  0A98	00 00 00 00
+	  0A9C	00 00 00 00
+	  0AA0	00 00 00 00
+	  0AA4	00 01
+  350:	  0AA6	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
+	  0AAA	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
+	  0AAE	00 00 00 00
+	  0AB2	00 00 00 00
+	  0AB6	00 00 00 00
+	  0ABA	00 00 00 00
+	  0ABE	00 00 00 00
+	  0AC2	00 01
+  351:	  0AC4	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
+	  0AC8	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
+	  0ACC	00 00 00 00
+	  0AD0	00 00 00 00
+	  0AD4	00 00 00 00
+	  0AD8	00 00 00 00
+	  0ADC	00 00 00 00
+	  0AE0	00 01
+  352:	  0AE2	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
+	  0AE6	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
+	  0AEA	00 00 00 00
+	  0AEE	00 00 00 00
+	  0AF2	00 00 00 00
+	  0AF6	00 00 00 00
+	  0AFA	00 00 00 00
+	  0AFE	00 01
+  353:	  0B00	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
+	  0B04	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
+	  0B08	00 00 00 00
+	  0B0C	00 00 00 00
+	  0B10	00 00 00 00
+	  0B14	00 00 00 00
+	  0B18	00 00 00 00
+	  0B1C	00 01
+  354:	  0B1E	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
+	  0B22	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
+	  0B26	00 00 00 00
+	  0B2A	00 00 00 00
+	  0B2E	00 00 00 00
+	  0B32	00 00 00 00
+	  0B36	00 00 00 00
+	  0B3A	00 01
+  355:	  0B3C	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
+	  0B40	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
+	  0B44	00 00 00 00
+	  0B48	00 00 00 00
+	  0B4C	00 00 00 00
+	  0B50	00 00 00 00
+	  0B54	00 00 00 00
+	  0B58	00 01
+  356:	  0B5A	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
+	  0B5E	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
+	  0B62	00 00 00 00
 
 ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. Heinz                                         PAGE 17
 
@@ -1013,62 +1013,62 @@ ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. H
 
  Line  I  Addr  Code            Source
 
-	  0BE8	00 00 00 00
-	  0BEC	00 00 00 00
-	  0BF0	00 00 00 00
-	  0BF4	00 01
-  293:	  0BF6	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
-	  0BFA	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
-	  0BFE	00 00 00 00
-	  0C02	00 00 00 00
-	  0C06	00 00 00 00
-	  0C0A	00 00 00 00
-	  0C0E	00 00 00 00
-	  0C12	00 01
-  294:	  0C14	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
-	  0C18	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
-	  0C1C	00 00 00 00
-	  0C20	00 00 00 00
-	  0C24	00 00 00 00
-	  0C28	00 00 00 00
-	  0C2C	00 00 00 00
-	  0C30	00 01
-  295:	  0C32	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
-	  0C36	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
-	  0C3A	00 00 00 00
-	  0C3E	00 00 00 00
-	  0C42	00 00 00 00
-	  0C46	00 00 00 00
-	  0C4A	00 00 00 00
-	  0C4E	00 01
-  296:	  0C50	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
-	  0C54	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
-	  0C58	00 00 00 00
-	  0C5C	00 00 00 00
-	  0C60	00 00 00 00
-	  0C64	00 00 00 00
-	  0C68	00 00 00 00
-	  0C6C	00 01
-  297:	  0C6E	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
-	  0C72	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
-	  0C76	00 00 00 00
-	  0C7A	00 00 00 00
-	  0C7E	00 00 00 00
-	  0C82	00 00 00 00
-	  0C86	00 00 00 00
-	  0C8A	00 01
-  298:	  0C8C	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
-	  0C90	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
-	  0C94	00 00 00 00
-	  0C98	00 00 00 00
-	  0C9C	00 00 00 00
-	  0CA0	00 00 00 00
-	  0CA4	00 00 00 00
-	  0CA8	00 01
-  299:	  0CAA	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
-	  0CAE	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
-	  0CB2	00 00 00 00
-	  0CB6	00 00 00 00
+	  0B66	00 00 00 00
+	  0B6A	00 00 00 00
+	  0B6E	00 00 00 00
+	  0B72	00 00 00 00
+	  0B76	00 01
+  357:	  0B78	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
+	  0B7C	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
+	  0B80	00 00 00 00
+	  0B84	00 00 00 00
+	  0B88	00 00 00 00
+	  0B8C	00 00 00 00
+	  0B90	00 00 00 00
+	  0B94	00 01
+  358:	  0B96	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
+	  0B9A	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
+	  0B9E	00 00 00 00
+	  0BA2	00 00 00 00
+	  0BA6	00 00 00 00
+	  0BAA	00 00 00 00
+	  0BAE	00 00 00 00
+	  0BB2	00 01
+  359:	  0BB4	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
+	  0BB8	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
+	  0BBC	00 00 00 00
+	  0BC0	00 00 00 00
+	  0BC4	00 00 00 00
+	  0BC8	00 00 00 00
+	  0BCC	00 00 00 00
+	  0BD0	00 01
+  360:	  0BD2	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
+	  0BD6	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
+	  0BDA	00 00 00 00
+	  0BDE	00 00 00 00
+	  0BE2	00 00 00 00
+	  0BE6	00 00 00 00
+	  0BEA	00 00 00 00
+	  0BEE	00 01
+  361:	  0BF0	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
+	  0BF4	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
+	  0BF8	00 00 00 00
+	  0BFC	00 00 00 00
+	  0C00	00 00 00 00
+	  0C04	00 00 00 00
+	  0C08	00 00 00 00
+	  0C0C	00 01
+  362:	  0C0E	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
+	  0C12	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
+	  0C16	00 00 00 00
+	  0C1A	00 00 00 00
+	  0C1E	00 00 00 00
+	  0C22	00 00 00 00
+	  0C26	00 00 00 00
+	  0C2A	00 01
+  363:	  0C2C	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
+	  0C30	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
+	  0C34	00 00 00 00
 
 ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. Heinz                                         PAGE 18
 
@@ -1076,62 +1076,62 @@ ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. H
 
  Line  I  Addr  Code            Source
 
-	  0CBA	00 00 00 00
-	  0CBE	00 00 00 00
-	  0CC2	00 00 00 00
-	  0CC6	00 01
-  300:	  0CC8	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
-	  0CCC	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
-	  0CD0	00 00 00 00
-	  0CD4	00 00 00 00
-	  0CD8	00 00 00 00
-	  0CDC	00 00 00 00
-	  0CE0	00 00 00 00
-	  0CE4	00 01
-  301:	  0CE6	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
-	  0CEA	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
-	  0CEE	00 00 00 00
-	  0CF2	00 00 00 00
-	  0CF6	00 00 00 00
-	  0CFA	00 00 00 00
-	  0CFE	00 00 00 00
-	  0D02	00 01
-  302:	  0D04	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
-	  0D08	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
-	  0D0C	00 00 00 00
-	  0D10	00 00 00 00
-	  0D14	00 00 00 00
-	  0D18	00 00 00 00
-	  0D1C	00 00 00 00
-	  0D20	00 01
-  303:	  0D22	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
-	  0D26	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
-	  0D2A	00 00 00 00
-	  0D2E	00 00 00 00
-	  0D32	00 00 00 00
-	  0D36	00 00 00 00
-	  0D3A	00 00 00 00
-	  0D3E	00 01
-  304:	  0D40	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
-	  0D44	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
-	  0D48	00 00 00 00
-	  0D4C	00 00 00 00
-	  0D50	00 00 00 00
-	  0D54	00 00 00 00
-	  0D58	00 00 00 00
-	  0D5C	00 01
-  305:	  0D5E	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
-	  0D62	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
-	  0D66	00 00 00 00
-	  0D6A	00 00 00 00
-	  0D6E	00 00 00 00
-	  0D72	00 00 00 00
-	  0D76	00 00 00 00
-	  0D7A	00 01
-  306:	  0D7C	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
-	  0D80	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
-	  0D84	00 00 00 00
-	  0D88	00 00 00 00
+	  0C38	00 00 00 00
+	  0C3C	00 00 00 00
+	  0C40	00 00 00 00
+	  0C44	00 00 00 00
+	  0C48	00 01
+  364:	  0C4A	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
+	  0C4E	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
+	  0C52	00 00 00 00
+	  0C56	00 00 00 00
+	  0C5A	00 00 00 00
+	  0C5E	00 00 00 00
+	  0C62	00 00 00 00
+	  0C66	00 01
+  365:	  0C68	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
+	  0C6C	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
+	  0C70	00 00 00 00
+	  0C74	00 00 00 00
+	  0C78	00 00 00 00
+	  0C7C	00 00 00 00
+	  0C80	00 00 00 00
+	  0C84	00 01
+  366:	  0C86	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
+	  0C8A	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
+	  0C8E	00 00 00 00
+	  0C92	00 00 00 00
+	  0C96	00 00 00 00
+	  0C9A	00 00 00 00
+	  0C9E	00 00 00 00
+	  0CA2	00 01
+  367:	  0CA4	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
+	  0CA8	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
+	  0CAC	00 00 00 00
+	  0CB0	00 00 00 00
+	  0CB4	00 00 00 00
+	  0CB8	00 00 00 00
+	  0CBC	00 00 00 00
+	  0CC0	00 01
+  368:	  0CC2	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
+	  0CC6	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
+	  0CCA	00 00 00 00
+	  0CCE	00 00 00 00
+	  0CD2	00 00 00 00
+	  0CD6	00 00 00 00
+	  0CDA	00 00 00 00
+	  0CDE	00 01
+  369:	  0CE0	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
+	  0CE4	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
+	  0CE8	00 00 00 00
+	  0CEC	00 00 00 00
+	  0CF0	00 00 00 00
+	  0CF4	00 00 00 00
+	  0CF8	00 00 00 00
+	  0CFC	00 01
+  370:	  0CFE	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
+	  0D02	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
+	  0D06	00 00 00 00
 
 ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. Heinz                                         PAGE 19
 
@@ -1139,62 +1139,62 @@ ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. H
 
  Line  I  Addr  Code            Source
 
-	  0D8C	00 00 00 00
-	  0D90	00 00 00 00
-	  0D94	00 00 00 00
-	  0D98	00 01
-  307:	  0D9A	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
-	  0D9E	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
-	  0DA2	00 00 00 00
-	  0DA6	00 00 00 00
-	  0DAA	00 00 00 00
-	  0DAE	00 00 00 00
-	  0DB2	00 00 00 00
-	  0DB6	00 01
-  308:	  0DB8	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
-	  0DBC	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
-	  0DC0	00 00 00 00
-	  0DC4	00 00 00 00
-	  0DC8	00 00 00 00
-	  0DCC	00 00 00 00
-	  0DD0	00 00 00 00
-	  0DD4	00 01
-  309:	  0DD6	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
-	  0DDA	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
-	  0DDE	00 00 00 00
-	  0DE2	00 00 00 00
-	  0DE6	00 00 00 00
-	  0DEA	00 00 00 00
-	  0DEE	00 00 00 00
-	  0DF2	00 01
-  310:	  0DF4	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
-	  0DF8	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
-	  0DFC	00 00 00 00
-	  0E00	00 00 00 00
-	  0E04	00 00 00 00
-	  0E08	00 00 00 00
-	  0E0C	00 00 00 00
-	  0E10	00 01
-  311:	  0E12	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
-	  0E16	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
-	  0E1A	00 00 00 00
-	  0E1E	00 00 00 00
-	  0E22	00 00 00 00
-	  0E26	00 00 00 00
-	  0E2A	00 00 00 00
-	  0E2E	00 01
-  312:	  0E30	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
-	  0E34	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
-	  0E38	00 00 00 00
-	  0E3C	00 00 00 00
-	  0E40	00 00 00 00
-	  0E44	00 00 00 00
-	  0E48	00 00 00 00
-	  0E4C	00 01
-  313:	  0E4E	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
-	  0E52	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
-	  0E56	00 00 00 00
-	  0E5A	00 00 00 00
+	  0D0A	00 00 00 00
+	  0D0E	00 00 00 00
+	  0D12	00 00 00 00
+	  0D16	00 00 00 00
+	  0D1A	00 01
+  371:	  0D1C	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
+	  0D20	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
+	  0D24	00 00 00 00
+	  0D28	00 00 00 00
+	  0D2C	00 00 00 00
+	  0D30	00 00 00 00
+	  0D34	00 00 00 00
+	  0D38	00 01
+  372:	  0D3A	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
+	  0D3E	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
+	  0D42	00 00 00 00
+	  0D46	00 00 00 00
+	  0D4A	00 00 00 00
+	  0D4E	00 00 00 00
+	  0D52	00 00 00 00
+	  0D56	00 01
+  373:	  0D58	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
+	  0D5C	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
+	  0D60	00 00 00 00
+	  0D64	00 00 00 00
+	  0D68	00 00 00 00
+	  0D6C	00 00 00 00
+	  0D70	00 00 00 00
+	  0D74	00 01
+  374:	  0D76	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
+	  0D7A	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
+	  0D7E	00 00 00 00
+	  0D82	00 00 00 00
+	  0D86	00 00 00 00
+	  0D8A	00 00 00 00
+	  0D8E	00 00 00 00
+	  0D92	00 01
+  375:	  0D94	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
+	  0D98	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
+	  0D9C	00 00 00 00
+	  0DA0	00 00 00 00
+	  0DA4	00 00 00 00
+	  0DA8	00 00 00 00
+	  0DAC	00 00 00 00
+	  0DB0	00 01
+  376:	  0DB2	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
+	  0DB6	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
+	  0DBA	00 00 00 00
+	  0DBE	00 00 00 00
+	  0DC2	00 00 00 00
+	  0DC6	00 00 00 00
+	  0DCA	00 00 00 00
+	  0DCE	00 01
+  377:	  0DD0	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
+	  0DD4	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
+	  0DD8	00 00 00 00
 
 ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. Heinz                                         PAGE 20
 
@@ -1202,62 +1202,62 @@ ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. H
 
  Line  I  Addr  Code            Source
 
-	  0E5E	00 00 00 00
-	  0E62	00 00 00 00
-	  0E66	00 00 00 00
-	  0E6A	00 01
-  314:	  0E6C	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
-	  0E70	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
-	  0E74	00 00 00 00
-	  0E78	00 00 00 00
-	  0E7C	00 00 00 00
-	  0E80	00 00 00 00
-	  0E84	00 00 00 00
-	  0E88	00 01
-  315:	  0E8A	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
-	  0E8E	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
-	  0E92	00 00 00 00
-	  0E96	00 00 00 00
-	  0E9A	00 00 00 00
-	  0E9E	00 00 00 00
-	  0EA2	00 00 00 00
-	  0EA6	00 01
-  316:	  0EA8	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
-	  0EAC	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
-	  0EB0	00 00 00 00
-	  0EB4	00 00 00 00
-	  0EB8	00 00 00 00
-	  0EBC	00 00 00 00
-	  0EC0	00 00 00 00
-	  0EC4	00 01
-  317:	  0EC6	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
-	  0ECA	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
-	  0ECE	00 00 00 00
-	  0ED2	00 00 00 00
-	  0ED6	00 00 00 00
-	  0EDA	00 00 00 00
-	  0EDE	00 00 00 00
-	  0EE2	00 01
-  318:	  0EE4	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
-	  0EE8	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
-	  0EEC	00 00 00 00
-	  0EF0	00 00 00 00
-	  0EF4	00 00 00 00
-	  0EF8	00 00 00 00
-	  0EFC	00 00 00 00
-	  0F00	00 01
-  319:	  0F02	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
-	  0F06	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
-	  0F0A	00 00 00 00
-	  0F0E	00 00 00 00
-	  0F12	00 00 00 00
-	  0F16	00 00 00 00
-	  0F1A	00 00 00 00
-	  0F1E	00 01
-  320:	  0F20	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
-	  0F24	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
-	  0F28	00 00 00 00
-	  0F2C	00 00 00 00
+	  0DDC	00 00 00 00
+	  0DE0	00 00 00 00
+	  0DE4	00 00 00 00
+	  0DE8	00 00 00 00
+	  0DEC	00 01
+  378:	  0DEE	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
+	  0DF2	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
+	  0DF6	00 00 00 00
+	  0DFA	00 00 00 00
+	  0DFE	00 00 00 00
+	  0E02	00 00 00 00
+	  0E06	00 00 00 00
+	  0E0A	00 01
+  379:	  0E0C	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
+	  0E10	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
+	  0E14	00 00 00 00
+	  0E18	00 00 00 00
+	  0E1C	00 00 00 00
+	  0E20	00 00 00 00
+	  0E24	00 00 00 00
+	  0E28	00 01
+  380:	  0E2A	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
+	  0E2E	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
+	  0E32	00 00 00 00
+	  0E36	00 00 00 00
+	  0E3A	00 00 00 00
+	  0E3E	00 00 00 00
+	  0E42	00 00 00 00
+	  0E46	00 01
+  381:	  0E48	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
+	  0E4C	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
+	  0E50	00 00 00 00
+	  0E54	00 00 00 00
+	  0E58	00 00 00 00
+	  0E5C	00 00 00 00
+	  0E60	00 00 00 00
+	  0E64	00 01
+  382:	  0E66	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
+	  0E6A	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
+	  0E6E	00 00 00 00
+	  0E72	00 00 00 00
+	  0E76	00 00 00 00
+	  0E7A	00 00 00 00
+	  0E7E	00 00 00 00
+	  0E82	00 01
+  383:	  0E84	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
+	  0E88	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
+	  0E8C	00 00 00 00
+	  0E90	00 00 00 00
+	  0E94	00 00 00 00
+	  0E98	00 00 00 00
+	  0E9C	00 00 00 00
+	  0EA0	00 01
+  384:	  0EA2	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
+	  0EA6	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
+	  0EAA	00 00 00 00
 
 ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. Heinz                                         PAGE 21
 
@@ -1265,62 +1265,62 @@ ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. H
 
  Line  I  Addr  Code            Source
 
-	  0F30	00 00 00 00
-	  0F34	00 00 00 00
-	  0F38	00 00 00 00
-	  0F3C	00 01
-  321:	  0F3E	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
-	  0F42	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
-	  0F46	00 00 00 00
-	  0F4A	00 00 00 00
-	  0F4E	00 00 00 00
-	  0F52	00 00 00 00
-	  0F56	00 00 00 00
-	  0F5A	00 01
-  322:	  0F5C	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
-	  0F60	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
-	  0F64	00 00 00 00
-	  0F68	00 00 00 00
-	  0F6C	00 00 00 00
-	  0F70	00 00 00 00
-	  0F74	00 00 00 00
-	  0F78	00 01
-  323:	  0F7A	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
-	  0F7E	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
-	  0F82	00 00 00 00
-	  0F86	00 00 00 00
-	  0F8A	00 00 00 00
-	  0F8E	00 00 00 00
-	  0F92	00 00 00 00
-	  0F96	00 01
-  324:	  0F98	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
-	  0F9C	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
-	  0FA0	00 00 00 00
-	  0FA4	00 00 00 00
-	  0FA8	00 00 00 00
-	  0FAC	00 00 00 00
-	  0FB0	00 00 00 00
-	  0FB4	00 01
-  325:	  0FB6	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
-	  0FBA	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
-	  0FBE	00 00 00 00
-	  0FC2	00 00 00 00
-	  0FC6	00 00 00 00
-	  0FCA	00 00 00 00
-	  0FCE	00 00 00 00
-	  0FD2	00 01
-  326:	  0FD4	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
-	  0FD8	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
-	  0FDC	00 00 00 00
-	  0FE0	00 00 00 00
-	  0FE4	00 00 00 00
-	  0FE8	00 00 00 00
-	  0FEC	00 00 00 00
-	  0FF0	00 01
-  327:	  0FF2	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
-	  0FF6	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
-	  0FFA	00 00 00 00
-	  0FFE	00 00 00 00
+	  0EAE	00 00 00 00
+	  0EB2	00 00 00 00
+	  0EB6	00 00 00 00
+	  0EBA	00 00 00 00
+	  0EBE	00 01
+  385:	  0EC0	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
+	  0EC4	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
+	  0EC8	00 00 00 00
+	  0ECC	00 00 00 00
+	  0ED0	00 00 00 00
+	  0ED4	00 00 00 00
+	  0ED8	00 00 00 00
+	  0EDC	00 01
+  386:	  0EDE	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
+	  0EE2	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
+	  0EE6	00 00 00 00
+	  0EEA	00 00 00 00
+	  0EEE	00 00 00 00
+	  0EF2	00 00 00 00
+	  0EF6	00 00 00 00
+	  0EFA	00 01
+  387:	  0EFC	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
+	  0F00	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
+	  0F04	00 00 00 00
+	  0F08	00 00 00 00
+	  0F0C	00 00 00 00
+	  0F10	00 00 00 00
+	  0F14	00 00 00 00
+	  0F18	00 01
+  388:	  0F1A	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
+	  0F1E	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
+	  0F22	00 00 00 00
+	  0F26	00 00 00 00
+	  0F2A	00 00 00 00
+	  0F2E	00 00 00 00
+	  0F32	00 00 00 00
+	  0F36	00 01
+  389:	  0F38	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
+	  0F3C	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
+	  0F40	00 00 00 00
+	  0F44	00 00 00 00
+	  0F48	00 00 00 00
+	  0F4C	00 00 00 00
+	  0F50	00 00 00 00
+	  0F54	00 01
+  390:	  0F56	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
+	  0F5A	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
+	  0F5E	00 00 00 00
+	  0F62	00 00 00 00
+	  0F66	00 00 00 00
+	  0F6A	00 00 00 00
+	  0F6E	00 00 00 00
+	  0F72	00 01
+  391:	  0F74	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
+	  0F78	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
+	  0F7C	00 00 00 00
 
 ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. Heinz                                         PAGE 22
 
@@ -1328,62 +1328,62 @@ ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. H
 
  Line  I  Addr  Code            Source
 
-	  1002	00 00 00 00
-	  1006	00 00 00 00
-	  100A	00 00 00 00
-	  100E	00 01
-  328:	  1010	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
-	  1014	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
-	  1018	00 00 00 00
-	  101C	00 00 00 00
-	  1020	00 00 00 00
-	  1024	00 00 00 00
-	  1028	00 00 00 00
-	  102C	00 01
-  329:	  102E	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
-	  1032	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
-	  1036	00 00 00 00
-	  103A	00 00 00 00
-	  103E	00 00 00 00
-	  1042	00 00 00 00
-	  1046	00 00 00 00
-	  104A	00 01
-  330:	  104C	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
-	  1050	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
-	  1054	00 00 00 00
-	  1058	00 00 00 00
-	  105C	00 00 00 00
-	  1060	00 00 00 00
-	  1064	00 00 00 00
-	  1068	00 01
-  331:	  106A	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
-	  106E	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
-	  1072	00 00 00 00
-	  1076	00 00 00 00
-	  107A	00 00 00 00
-	  107E	00 00 00 00
-	  1082	00 00 00 00
-	  1086	00 01
-  332:	  1088	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
-	  108C	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
-	  1090	00 00 00 00
-	  1094	00 00 00 00
-	  1098	00 00 00 00
-	  109C	00 00 00 00
-	  10A0	00 00 00 00
-	  10A4	00 01
-  333:	  10A6	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
-	  10AA	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
-	  10AE	00 00 00 00
-	  10B2	00 00 00 00
-	  10B6	00 00 00 00
-	  10BA	00 00 00 00
-	  10BE	00 00 00 00
-	  10C2	00 01
-  334:	  10C4	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
-	  10C8	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
-	  10CC	00 00 00 00
-	  10D0	00 00 00 00
+	  0F80	00 00 00 00
+	  0F84	00 00 00 00
+	  0F88	00 00 00 00
+	  0F8C	00 00 00 00
+	  0F90	00 01
+  392:	  0F92	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
+	  0F96	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
+	  0F9A	00 00 00 00
+	  0F9E	00 00 00 00
+	  0FA2	00 00 00 00
+	  0FA6	00 00 00 00
+	  0FAA	00 00 00 00
+	  0FAE	00 01
+  393:	  0FB0	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
+	  0FB4	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
+	  0FB8	00 00 00 00
+	  0FBC	00 00 00 00
+	  0FC0	00 00 00 00
+	  0FC4	00 00 00 00
+	  0FC8	00 00 00 00
+	  0FCC	00 01
+  394:	  0FCE	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
+	  0FD2	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
+	  0FD6	00 00 00 00
+	  0FDA	00 00 00 00
+	  0FDE	00 00 00 00
+	  0FE2	00 00 00 00
+	  0FE6	00 00 00 00
+	  0FEA	00 01
+  395:	  0FEC	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
+	  0FF0	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
+	  0FF4	00 00 00 00
+	  0FF8	00 00 00 00
+	  0FFC	00 00 00 00
+	  1000	00 00 00 00
+	  1004	00 00 00 00
+	  1008	00 01
+  396:	  100A	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
+	  100E	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
+	  1012	00 00 00 00
+	  1016	00 00 00 00
+	  101A	00 00 00 00
+	  101E	00 00 00 00
+	  1022	00 00 00 00
+	  1026	00 01
+  397:	  1028	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
+	  102C	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
+	  1030	00 00 00 00
+	  1034	00 00 00 00
+	  1038	00 00 00 00
+	  103C	00 00 00 00
+	  1040	00 00 00 00
+	  1044	00 01
+  398:	  1046	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
+	  104A	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
+	  104E	00 00 00 00
 
 ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. Heinz                                         PAGE 23
 
@@ -1391,35 +1391,143 @@ ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. H
 
  Line  I  Addr  Code            Source
 
-	  10D4	00 00 00 00
-	  10D8	00 00 00 00
-	  10DC	00 00 00 00
-	  10E0	00 01
-  335:	  10E2	FF FF FF FF		DB	0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh
-	  10E6	FF FF FF FF	,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh
-	  10EA	FF FF FF FF
-	  10EE	FF FF FF FF
-	  10F2	FF FF FF FF
-	  10F6	FF FF FF FF
-	  10FA	FF FF FF FF
-	  10FE	FF FF
-  336:	  1100	A1			DB	0A1h
-  337:
-  338:	  1101			TEXT1:
-  339:	  1101	48 65 6C 6C		DB	'Hello World! ',0A0h,0A1h		;NOTE! 20h is subtracted to get psaudo ascii
-	  1105	6F 20 57 6F
-	  1109	72 6C 64 21
-	  110D	20 A0 A1
-  340:
-  341:	  1110			TEXT2:
-  342:	  1110	53 69 6D 75		DB	'Simulatig graphic LCD',0A1h
-	  1114	6C 61 74 69
-	  1118	67 20 67 72
-	  111C	61 70 68 69
-	  1120	63 20 4C 43
-	  1124	44 A1
-  343:
-  344:					END
+	  1052	00 00 00 00
+	  1056	00 00 00 00
+	  105A	00 00 00 00
+	  105E	00 00 00 00
+	  1062	00 01
+  399:	  1064	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
+	  1068	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
+	  106C	00 00 00 00
+	  1070	00 00 00 00
+	  1074	00 00 00 00
+	  1078	00 00 00 00
+	  107C	00 00 00 00
+	  1080	00 01
+  400:	  1082	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
+	  1086	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
+	  108A	00 00 00 00
+	  108E	00 00 00 00
+	  1092	00 00 00 00
+	  1096	00 00 00 00
+	  109A	00 00 00 00
+	  109E	00 01
+  401:	  10A0	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
+	  10A4	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
+	  10A8	00 00 00 00
+	  10AC	00 00 00 00
+	  10B0	00 00 00 00
+	  10B4	00 00 00 00
+	  10B8	00 00 00 00
+	  10BC	00 01
+  402:	  10BE	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
+	  10C2	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
+	  10C6	00 00 00 00
+	  10CA	00 00 00 00
+	  10CE	00 00 00 00
+	  10D2	00 00 00 00
+	  10D6	00 00 00 00
+	  10DA	00 01
+  403:	  10DC	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
+	  10E0	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
+	  10E4	00 00 00 00
+	  10E8	00 00 00 00
+	  10EC	00 00 00 00
+	  10F0	00 00 00 00
+	  10F4	00 00 00 00
+	  10F8	00 01
+  404:	  10FA	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
+	  10FE	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
+	  1102	00 00 00 00
+	  1106	00 00 00 00
+	  110A	00 00 00 00
+	  110E	00 00 00 00
+	  1112	00 00 00 00
+	  1116	00 01
+  405:	  1118	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
+	  111C	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
+	  1120	00 00 00 00
+
+ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. Heinz                                         PAGE 24
+
+
+
+ Line  I  Addr  Code            Source
+
+	  1124	00 00 00 00
+	  1128	00 00 00 00
+	  112C	00 00 00 00
+	  1130	00 00 00 00
+	  1134	00 01
+  406:	  1136	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
+	  113A	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
+	  113E	00 00 00 00
+	  1142	00 00 00 00
+	  1146	00 00 00 00
+	  114A	00 00 00 00
+	  114E	00 00 00 00
+	  1152	00 01
+  407:	  1154	80 00 00 00		DB	080h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h
+	  1158	00 00 00 00	,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,001h
+	  115C	00 00 00 00
+	  1160	00 00 00 00
+	  1164	00 00 00 00
+	  1168	00 00 00 00
+	  116C	00 00 00 00
+	  1170	00 01
+  408:	  1172	FF FF FF FF		DB	0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh
+	  1176	FF FF FF FF	,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh
+	  117A	FF FF FF FF
+	  117E	FF FF FF FF
+	  1182	FF FF FF FF
+	  1186	FF FF FF FF
+	  118A	FF FF FF FF
+	  118E	FF FF
+  409:	  1190	A1			DB	0A1h
+  410:
+  411:	  1191			TEXT1:
+  412:	  1191	48 65 6C 6C		DB	'Hello World! ',0A0h,0A1h		;NOTE! 20h is subtracted to get psaudo ascii
+	  1195	6F 20 57 6F
+	  1199	72 6C 64 21
+	  119D	20 A0 A1
+  413:
+  414:	  11A0			TEXT2:
+  415:	  11A0	53 69 6D 75		DB	'Simulatig graphic LCD',0A1h
+	  11A4	6C 61 74 69
+	  11A8	67 20 67 72
+	  11AC	61 70 68 69
+	  11B0	63 20 4C 43
+	  11B4	44 A1
+  416:
+  417:	  11B6			ATTRIB:
+  418:	  11B6	05 05 05 05		db	05h,05h,05h,05h,05h,05h,00h,0Dh,0Dh,0Dh,0Dh,0Dh,0Dh,0Dh,00h,0Bh,0Bh,0Bh,0Bh,0Bh,0Bh,
+	  11BA	05 05 00 0D	0Bh,00h,08h,08h,08h,08h,08h,08h,08h,08h,08h,0A1h
+	  11BE	0D 0D 0D 0D
+	  11C2	0D 0D 00 0B
+	  11C6	0B 0B 0B 0B
+	  11CA	0B 0B 00 08
+	  11CE	08 08 08 08
+	  11D2	08 08 08 08
+	  11D6	A1
+  419:
+
+ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. Heinz                                         PAGE 25
+
+
+
+ Line  I  Addr  Code            Source
+
+  420:	  11D7			TEXT3:
+  421:	  11D7	49 4E 56 41		db	'INVATT INVBLNK NRMBLNK INHBLNK',0A1h
+	  11DB	54 54 20 49
+	  11DF	4E 56 42 4C
+	  11E3	4E 4B 20 4E
+	  11E7	52 4D 42 4C
+	  11EB	4E 4B 20 49
+	  11EF	4E 48 42 4C
+	  11F3	4E 4B A1
+  422:
+  423:					END
 
 
 
@@ -1432,7 +1540,7 @@ ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. H
 
 
 
-ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. Heinz                                         PAGE 24
+ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. Heinz                                         PAGE 26
 
 
 
@@ -1448,8 +1556,11 @@ SYMBOL				  TYPE     VALUE	LINE
 ??VERSION			  NUMBER    0130
 AC				  BIT	      D6
 ACC				  DATA	      E0
+ATTRIB				  CODE	    11B6	 417
 B				  DATA	      F0
-CGRAM				  CODE	    01F7	 192
+CGRAM				  CODE	    0287	 265
+CLS				  CODE	    01C3	 110
+CLS1				  CODE	    01D3	 117
 CY				  BIT	      D7
 DPH				  DATA	      83
 DPL				  DATA	      82
@@ -1462,7 +1573,7 @@ EX1				  BIT	      AA
 EXTI0				  CODE	    0003
 EXTI1				  CODE	    0013
 F0				  BIT	      D5
-GRAPHIC				  CODE	    0200	 207
+GRAPHIC				  CODE	    0290	 280
 IE				  DATA	      A8
 IE0				  BIT	      89
 IE1				  BIT	      8B
@@ -1471,36 +1582,38 @@ INT1				  BIT	      B3
 IP				  DATA	      B8
 IT0				  BIT	      88
 IT1				  BIT	      8A
-MSGC				  CODE	    016C	  71
-MSGC2				  CODE	    016E	  73
-MSGC3				  CODE	    0174	  79
-MSGD				  CODE	    0184	  93
-MSGD1				  CODE	    018A	  99
-MSGDT				  CODE	    0191	 108
-MSGDT1				  CODE	    0197	 114
-MSGI1				  CODE	    01C7	 160
-MSGI2				  CODE	    01DD	 170
-MSGI3				  CODE	    01E1	 174
-MSGI4				  CODE	    01E5	 178
-MSGI5				  CODE	    01E9	 182
-MSGI6				  CODE	    01ED	 186
+MSGC				  CODE	    01E2	 130
+MSGC2				  CODE	    01E4	 132
+MSGC3				  CODE	    01EA	 138
+MSGD				  CODE	    01FA	 152
+MSGD1				  CODE	    0200	 158
+MSGDT				  CODE	    0207	 167
+MSGDT1				  CODE	    020D	 173
+MSGI1				  CODE	    023D	 219
+MSGI2				  CODE	    0253	 229
+MSGI3				  CODE	    0257	 233
+MSGI4				  CODE	    025B	 237
+MSGI5				  CODE	    025F	 241
+MSGI6				  CODE	    0263	 245
+MSGI7				  CODE	    026D	 251
+MSGI8				  CODE	    0283	 261
 OV				  BIT	      D2
 P				  BIT	      D0
 P0				  DATA	      80
 P1				  DATA	      90
 P2				  DATA	      A0
-P3				  DATA	      B0
-PB_CD				  BIT	      90	   8
-PB_R				  BIT	      91	   9
-PB_RST				  BIT	      93	  11
-PB_W				  BIT	      92	  10
 
-ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. Heinz                                         PAGE 25
+ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. Heinz                                         PAGE 27
 
 
 
 SYMBOL				  TYPE     VALUE	LINE
 ------------------------------------------------------------
+P3				  DATA	      B0
+PB_CD				  BIT	      90	   8
+PB_R				  BIT	      91	   9
+PB_RST				  BIT	      93	  11
+PB_W				  BIT	      92	  10
 PCON				  DATA	      87
 PS				  BIT	      BC
 PSW				  DATA	      D0
@@ -1524,14 +1637,16 @@ SM1				  BIT	      9E
 SM2				  BIT	      9D
 SP				  DATA	      81
 START				  CODE	    0100	  17
-STAT1				  CODE	    01BB	 147
-STATUS				  CODE	    01B4	 143
+START1				  CODE	    0108	  25
+STAT1				  CODE	    0231	 206
+STATUS				  CODE	    022A	 202
 T0				  BIT	      B4
 T1				  BIT	      B5
 TB8				  BIT	      9B
 TCON				  DATA	      88
-TEXT1				  CODE	    1101	 338
-TEXT2				  CODE	    1110	 341
+TEXT1				  CODE	    1191	 411
+TEXT2				  CODE	    11A0	 414
+TEXT3				  CODE	    11D7	 420
 TF0				  BIT	      8D
 TF1				  BIT	      8F
 TH0				  DATA	      8C
@@ -1545,7 +1660,16 @@ TMOD				  DATA	      89
 TR0				  BIT	      8C
 TR1				  BIT	      8E
 TXD				  BIT	      B1
+WAIT				  CODE	    01B6	  96
+WAIT1				  CODE	    01BC	 100
 WR				  BIT	      B6
-WRITEC				  CODE	    01A1	 124
-WRITEC1				  CODE	    01A6	 127
-WRITED				  CODE	    01AD	 135
+WRITEC				  CODE	    0217	 183
+WRITEC1				  CODE	    021C	 186
+
+ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. Heinz                                         PAGE 28
+
+
+
+SYMBOL				  TYPE     VALUE	LINE
+------------------------------------------------------------
+WRITED				  CODE	    0223	 194

@@ -2,9 +2,14 @@ TODO
 ----
 Implement screen peek
 Implement screen copy
-What does MD do?
+What does MD and FS do?
 Compare behaviour to real hardware
 
+
+MD/FS
+-----
+MD		L:40/H:32		Selection of columns
+FS		L:8x8/H:6x8		Selection of font
 
 Attribute function
 --------------------------------------------------------------------------------------------------

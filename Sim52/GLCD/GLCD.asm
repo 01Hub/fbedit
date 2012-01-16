@@ -406,7 +406,7 @@ DrawTCharATTRIBUTE:
 		test	ecx,08h					;Blink
 		.if ZERO?
 			;No blink
-			.if ecx==1
+			.if ecx==5
 				;Reverse display
 				xor		eax,0FFh
 			.elseif ecx==3
@@ -421,7 +421,7 @@ DrawTCharATTRIBUTE:
 				.if glcd.fblink
 					xor		eax,eax
 				.endif
-			.elseif ecx==1
+			.elseif ecx==5
 				;Blink of reverse display
 				.if glcd.fblink
 					xor		eax,0FFh
