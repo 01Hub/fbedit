@@ -299,7 +299,7 @@ ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. 
   249:	  017C	74 40				MOV	A,#40h				;Output result
   250:	  017E	91 7C				ACALL	LCDSETADR
   251:	  0180	78 40				MOV	R0,#LCDLINE
-  252:	  0182	7F 10				MOV	R7,#10h
+  252:	  0182	7F 0A				MOV	R7,#10
   253:	  0184	91 81				ACALL	LCDPRINTSTR
   254:	  0186	71 52				ACALL	WAITASEC
   255:	  0188	D2 95				SETB	P1.5				;F2
@@ -309,7 +309,7 @@ ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. 
   259:	  0190	74 40				MOV	A,#40h				;Output result
   260:	  0192	91 7C				ACALL	LCDSETADR
   261:	  0194	78 40				MOV	R0,#LCDLINE
-  262:	  0196	7F 10				MOV	R7,#10h
+  262:	  0196	7F 0A				MOV	R7,#10
   263:	  0198	91 81				ACALL	LCDPRINTSTR
   264:	  019A	71 52				ACALL	WAITASEC
   265:	  019C	71 52				ACALL	WAITASEC
