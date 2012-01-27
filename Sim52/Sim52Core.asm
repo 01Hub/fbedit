@@ -2097,23 +2097,23 @@ DIV_AB:
 
 MOV_dir_dir:
 	movzx	ecx,dh
-	.if ecx<80h
-		movzx	eax,addin.Ram[ecx]
-	.else
-		movzx	eax,addin.Sfr[ecx]
-	.endif
 	movzx	edx,dl
 	.if edx<80h
-		mov		addin.Ram[edx],al
+		movzx	eax,addin.Ram[edx]
 	.else
-		.if edx==SFR_SBUF
+		movzx	eax,addin.Sfr[edx]
+	.endif
+	.if ecx<80h
+		mov		addin.Ram[ecx],al
+	.else
+		.if ecx==SFR_SBUF
 			mov		SBUFWR,eax
 			invoke ScreenChar,SBUFWR
 		.else
-			mov		addin.Sfr[edx],al
-			.if edx==SFR_P0 || edx==SFR_P1 || edx==SFR_P2 || edx==SFR_P3
-				movzx	eax,addin.Sfr[edx]
-				invoke WritePort,edx,eax
+			mov		addin.Sfr[ecx],al
+			.if ecx==SFR_P0 || ecx==SFR_P1 || ecx==SFR_P2 || ecx==SFR_P3
+				movzx	eax,addin.Sfr[ecx]
+				invoke WritePort,ecx,eax
 			.endif
 		.endif
 	.endif

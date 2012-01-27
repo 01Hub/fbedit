@@ -21,8 +21,8 @@ ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. 
     1:
     2:				; The processor clock speed is 24MHz.
     3:				; Cycle time is .500uS.
-    4:				; Demo software to display a bit-mapped
-    5:				; graphic on a 240x128 graphics display
+    4:				; Demo software to display a menu
+    5:				; on a 240x128 graphics LCD display
     6:				; with a T6963C LCD controller.
     7:
     8:		B	 90	PB_CD		BIT	P1.0
@@ -30,37 +30,37 @@ ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. 
    10:		B	 92	PB_W		BIT	P1.2
    11:		B	 93	PB_RST		BIT	P1.3
    12:		D      00A0	P_DATA		EQU	P2
-   13:		N      001E	CHARSLINE	EQU	30
+   13:		N      0028	CHARSLINE	EQU	40
    14:		N      0000	GRPHOME		EQU	0000h
    15:		N      1000	TXTHOME		EQU	1000h
    16:		N      2000	CGRHOME		EQU	2000h
-   17:		N      0040	LASTMNUSELX	EQU	40h
-   18:		N      0040	LASTMNUSELY	EQU	40h
-   19:
-   20:		N      0000			ORG	0000h
-   21:	  0000	02 01 00			LJMP	START		;program start
-   22:
-   23:		N      0100			ORG	0100h
-   24:
-   25:	  0100			START:		; Initialize the T6963C
-   26:	  0100	C2 93				CLR	PB_RST		;hardware reset
-   27:	  0102	00				NOP
-   28:	  0103	00				NOP
-   29:	  0104	00				NOP
-   30:	  0105	00				NOP
-   31:	  0106	D2 93				SETB	PB_RST
-   32:	  0108	90 02 1D			MOV	DPTR,#MSGINIT	;initialization bytes
-   33:	  010B	31 54				ACALL	SENDCOMMANDS
-   34:	  010D	31 6A				ACALL	CLS
-   35:	  010F	31 7F				ACALL	SETCGRAM
-   36:	  0111	90 02 71			MOV	DPTR,#MENU1
-   37:	  0114	7E 00				MOV	R6,#00h
-   38:	  0116	7F 00				MOV	R7,#00h
-   39:	  0118	31 24				ACALL	PRINTMENU
-   40:	  011A	7D 0F				MOV	R5,#15
-   41:	  011C	7E 01				MOV	R6,#1
-   42:	  011E	7F 02				MOV	R7,#2
-   43:	  0120	31 38				ACALL	SELECTMENU
+   17:
+   18:		N      0040	MNUDEF		EQU	40h
+   19:		N      000A	NMNUDEF		EQU	10
+   20:		N      0040	MNUSEL		EQU	MNUDEF+0
+   21:		N      0041	MNUOFS		EQU	MNUDEF+1
+   22:		N      0042	MNUX		EQU	MNUDEF+2
+   23:		N      0043	MNUY		EQU	MNUDEF+3
+   24:		N      0044	MNUWT		EQU	MNUDEF+4
+   25:		N      0045	MNUHT		EQU	MNUDEF+5
+   26:		N      0046	MNUITEMWT	EQU	MNUDEF+6
+   27:		N      0047	MNUITEMS	EQU	MNUDEF+7
+   28:		N      0048	MNUTXTL		EQU	MNUDEF+8
+   29:		N      0049	MNUTXTH		EQU	MNUDEF+9
+   30:		N      004A	LASTKEY		EQU	MNUDEF+10
+   31:
+   32:		N      0000	MNUX1		EQU	0
+   33:		N      0001	MNUY1		EQU	1
+   34:		N      000A	MNUWT1		EQU	10
+   35:		N      0005	MNUHT1		EQU	5
+   36:
+   37:		N      0000			ORG	0000h
+   38:	  0000	21 00				AJMP	START		;program start
+   39:
+   40:		N      0100			ORG	0100h
+   41:
+   42:	  0100			START:		; Initialize the T6963C
+   43:	  0100	C2 93				CLR	PB_RST		;hardware reset
 
 ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 2
 
@@ -68,62 +68,62 @@ ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. 
 
  Line  I  Addr  Code            Source
 
-   44:	  0122	80 FE				SJMP	$
-   45:
-   46:	  0124	E4		PRINTMENU:	CLR	A
-   47:	  0125	93				MOVC	A,@A+DPTR	;get byte
-   48:	  0126	04				INC	A
-   49:	  0127	60 0E				JZ	PRINTMENUEX
-   50:	  0129	14				DEC	A
-   51:	  012A	C0 06				PUSH	6
-   52:	  012C	C0 07				PUSH	7
-   53:	  012E	31 A2				ACALL	PRINTLINE
-   54:	  0130	D0 07				POP	7
-   55:	  0132	D0 06				POP	6
-   56:	  0134	0F				INC	R7
-   57:	  0135	80 ED				SJMP	PRINTMENU
-   58:	  0137	22		PRINTMENUEX:	RET
-   59:
-   60:	  0138	C0 05		SELECTMENU:	PUSH	5
-   61:	  013A	C0 06				PUSH	6
-   62:	  013C	C0 07				PUSH	7
-   63:	  013E	AE 40				MOV	R6,LASTMNUSELX
-   64:	  0140	AF 40				MOV	R7,LASTMNUSELY
-   65:	  0142	E4				CLR	A
-   66:	  0143	31 CA				ACALL	SETTEXTMODE
-   67:	  0145	D0 07				POP	7
-   68:	  0147	D0 06				POP	6
-   69:	  0149	D0 05				POP	5
-   70:	  014B	8E 40				MOV	LASTMNUSELX,R6
-   71:	  014D	8F 40				MOV	LASTMNUSELY,R7
-   72:	  014F	74 0D				MOV	A,#0Dh
-   73:	  0151	31 CA				ACALL	SETTEXTMODE
-   74:	  0153	22				RET
-   75:
-   76:				;*************************************************
-   77:
-   78:				;Send bytes @DPTR as a series of commands, two data bytes and one command byte.
-   79:				;Terminate if first data byte is 0FFh
-   80:	  0154	E4		SENDCOMMANDS:	CLR	A
-   81:	  0155	93				MOVC	A,@A+DPTR	;get byte
-   82:	  0156	04				INC	A
-   83:	  0157	60 10				JZ	SENDCOMMANDSEX
-   84:	  0159	14				DEC	A
-   85:	  015A	31 FB				ACALL	WRITEDATA
-   86:	  015C	A3				INC	DPTR
-   87:	  015D	E4				CLR	A
-   88:	  015E	93				MOVC	A,@A+DPTR	;get byte
-   89:	  015F	A3				INC	DPTR
-   90:	  0160	31 FB				ACALL	WRITEDATA
-   91:	  0162	E4				CLR	A
-   92:	  0163	93				MOVC	A,@A+DPTR	;get byte
-   93:	  0164	A3				INC	DPTR
-   94:	  0165	31 F0				ACALL	WRITECOMMAND
-   95:	  0167	80 EB				SJMP	SENDCOMMANDS
-   96:	  0169	22		SENDCOMMANDSEX:	RET
-   97:
-   98:				;Clear 32K ram
-   99:	  016A	90 02 33	CLS:		MOV	DPTR,#MSGCLS	;Set ADP to 0000h and init auto write mode
+   44:	  0102	00				NOP
+   45:	  0103	00				NOP
+   46:	  0104	00				NOP
+   47:	  0105	00				NOP
+   48:	  0106	D2 93				SETB	PB_RST
+   49:	  0108	90 03 62			MOV	DPTR,#MSGINIT	;initialization bytes
+   50:	  010B	51 6F				ACALL	SENDCOMMANDS
+   51:	  010D	51 84				ACALL	CLS
+   52:	  010F	51 99				ACALL	SETCGRAM
+   53:	  0111	7E 00				MOV	R6,#0
+   54:	  0113	7F 00				MOV	R7,#0
+   55:	  0115	90 03 D6			MOV	DPTR,#HEADER
+   56:	  0118	71 0A				ACALL	PRINTLINE
+   57:	  011A	90 03 E8			MOV	DPTR,#MNUDEF1
+   58:	  011D	31 7D				ACALL	MNUINIT
+   59:	  011F	31 89				ACALL	MNUPRINT
+   60:	  0121	31 62		START1:		ACALL	GETKEY
+   61:	  0123	60 FC				JZ	START1
+   62:	  0125	B4 01 17			CJNE	A,#01h,START3
+   63:						;Up
+   64:	  0128	E5 40				MOV	A,MNUSEL
+   65:	  012A	60 F5				JZ	START1
+   66:	  012C	51 48				ACALL	MNUCLRSEL
+   67:	  012E	15 40				DEC	MNUSEL
+   68:	  0130	E5 40				MOV	A,MNUSEL
+   69:	  0132	B5 41 00			CJNE	A,MNUOFS,$+3
+   70:	  0135	50 06				JNC	START2
+   71:	  0137	15 41				DEC	MNUOFS
+   72:	  0139	31 D1				ACALL	MNUTXT
+   73:	  013B	51 05				ACALL	MNUSCROLL
+   74:	  013D	51 5B		START2:		ACALL	MNUSETSEL
+   75:	  013F	B4 02 1E	START3:		CJNE	A,#02h,START5
+   76:						;Down
+   77:	  0142	E5 40				MOV	A,MNUSEL
+   78:	  0144	04				INC	A
+   79:	  0145	C3				CLR	C
+   80:	  0146	95 47				SUBB	A,MNUITEMS
+   81:	  0148	60 D7				JZ	START1
+   82:	  014A	51 48				ACALL	MNUCLRSEL
+   83:	  014C	05 40				INC	MNUSEL
+   84:	  014E	E5 40				MOV	A,MNUSEL
+   85:	  0150	C3				CLR	C
+   86:	  0151	95 41				SUBB	A,MNUOFS
+   87:	  0153	B5 45 00			CJNE	A,MNUHT,$+3
+   88:	  0156	40 06				JC	START4
+   89:	  0158	05 41				INC	MNUOFS
+   90:	  015A	31 D1				ACALL	MNUTXT
+   91:	  015C	51 05				ACALL	MNUSCROLL
+   92:	  015E	51 5B		START4:		ACALL	MNUSETSEL
+   93:	  0160	80 BF		START5:		SJMP	START1
+   94:
+   95:	  0162	7F 00		GETKEY:		MOV	R7,#00h
+   96:	  0164	E5 90				MOV	A,P1
+   97:	  0166	54 F0				ANL	A,#0F0h
+   98:	  0168	64 F0				XRL	A,#0F0h
+   99:	  016A	60 08				JZ	GETKEY2
 
 ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 3
 
@@ -131,62 +131,62 @@ ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. 
 
  Line  I  Addr  Code            Source
 
-  100:	  016D	31 54				ACALL	SENDCOMMANDS
-  101:	  016F	7F 80				MOV	R7,#80h
-  102:	  0171	7E 00				MOV	R6,#00h
-  103:	  0173	E4		CLS1:		CLR	A
-  104:	  0174	31 FB				ACALL	WRITEDATA
-  105:	  0176	DE FB				DJNZ	R6,CLS1
-  106:	  0178	DF F9				DJNZ	R7,CLS1
-  107:	  017A	74 B2				MOV	A,#0B2h		;Auto Reset
-  108:	  017C	31 F0				ACALL	WRITECOMMAND
-  109:	  017E	22				RET
-  110:
-  111:	  017F	90 02 3A	SETCGRAM:	MOV	DPTR,#MSGCGRAM	;Set ADP to 2400h and init auto write mode
-  112:	  0182	31 54				ACALL	SENDCOMMANDS
-  113:	  0184	90 02 41			MOV	DPTR,#CGRAM
-  114:	  0187	7F 30				MOV	R7,#8*6		;6 characters to be defined
-  115:	  0189	E4		SETCGRAM1:	CLR	A
-  116:	  018A	93				MOVC	A,@A+DPTR	;get byte
-  117:	  018B	A3				INC	DPTR
-  118:	  018C	31 FB				ACALL	WRITEDATA
-  119:	  018E	DF F9				DJNZ	R7,SETCGRAM1
-  120:	  0190	74 B2				MOV	A,#0B2h		;Auto Reset
-  121:	  0192	31 F0				ACALL	WRITECOMMAND
-  122:	  0194	22				RET
-  123:
-  124:				;Convert text pos in R7:R6 to ram offset
-  125:	  0195	75 F0 1E	POSTOADP:	MOV	B,#CHARSLINE	;Number of characters on each line
-  126:	  0198	EF				MOV	A,R7
-  127:	  0199	A4				MUL	AB
-  128:	  019A	2E				ADD	A,R6
-  129:	  019B	FE				MOV	R6,A
-  130:	  019C	E5 F0				MOV	A,B
-  131:	  019E	34 00				ADDC	A,#00h
-  132:	  01A0	FF				MOV	R7,A
-  133:	  01A1	22				RET
-  134:
-  135:				;Line data @DPTR,R6 pos, R7 line
-  136:	  01A2	31 95		PRINTLINE:	ACALL	POSTOADP
-  137:	  01A4	74 00				MOV	A,#LOW TXTHOME	;Add text home address
-  138:	  01A6	2E				ADD	A,R6
-  139:	  01A7	FE				MOV	R6,A
-  140:	  01A8	74 10				MOV	A,#HIGH TXTHOME
-  141:	  01AA	3F				ADDC	A,R7
-  142:	  01AB	FF				MOV	R7,A
-  143:	  01AC	EE				MOV	A,R6		;ADP LSB
-  144:	  01AD	31 FB				ACALL	WRITEDATA
-  145:	  01AF	EF				MOV	A,R7		;ADP MSB
-  146:	  01B0	31 FB				ACALL	WRITEDATA
-  147:	  01B2	74 24				MOV	A,#24h		;Set address pointer command
-  148:	  01B4	31 F0				ACALL	WRITECOMMAND
-  149:	  01B6	74 B0				MOV	A,#0B0h		;Set auto write mode
-  150:	  01B8	31 F0				ACALL	WRITECOMMAND
-  151:	  01BA	E4		PRINTLINE1:	CLR	A
-  152:	  01BB	93				MOVC	A,@A+DPTR	;get byte
-  153:	  01BC	A3				INC	DPTR
-  154:	  01BD	04				INC	A
-  155:	  01BE	60 05				JZ	PRINTLINEEX
+  100:	  016C	7F 04				MOV	R7,#04h
+  101:	  016E	33		GETKEY1:	RLC	A
+  102:	  016F	40 03				JC	GETKEY2
+  103:	  0171	1F				DEC	R7
+  104:	  0172	80 FA				SJMP	GETKEY1
+  105:	  0174	EF		GETKEY2:	MOV	A,R7
+  106:	  0175	B5 4A 02			CJNE	A,LASTKEY,GETKEY3
+  107:	  0178	E4				CLR	A
+  108:	  0179	22				RET
+  109:	  017A	F5 4A		GETKEY3:	MOV	LASTKEY,A
+  110:	  017C	22				RET
+  111:
+  112:	  017D	7F 0A		MNUINIT:	MOV	R7,#NMNUDEF
+  113:	  017F	78 40				MOV	R0,#MNUDEF
+  114:	  0181	E4		MNUINIT1:	CLR	A
+  115:	  0182	93				MOVC	A,@A+DPTR	;get byte
+  116:	  0183	F6				MOV	@R0,A
+  117:	  0184	A3				INC	DPTR
+  118:	  0185	08				INC	R0
+  119:	  0186	DF F9				DJNZ	R7,MNUINIT1
+  120:	  0188	22				RET
+  121:
+  122:	  0189	31 92		MNUPRINT:	ACALL	MNUFRAME
+  123:	  018B	31 D1				ACALL	MNUTXT
+  124:	  018D	51 05				ACALL	MNUSCROLL
+  125:	  018F	51 5B				ACALL	MNUSETSEL
+  126:	  0191	22				RET
+  127:
+  128:	  0192	AC 44		MNUFRAME:	MOV	R4,MNUWT
+  129:	  0194	AD 45				MOV	R5,MNUHT
+  130:	  0196	AE 42				MOV	R6,MNUX
+  131:	  0198	AF 43				MOV	R7,MNUY
+  132:	  019A	74 80				MOV	A,#80h
+  133:	  019C	51 FD				ACALL	PRINTCHR
+  134:	  019E	0E				INC	R6
+  135:	  019F	74 81		MNUFRAME1:	MOV	A,#81h
+  136:	  01A1	51 FD				ACALL	PRINTCHR
+  137:	  01A3	0E				INC	R6
+  138:	  01A4	DC F9				DJNZ	R4,MNUFRAME1
+  139:	  01A6	74 82				MOV	A,#82h
+  140:	  01A8	51 FD				ACALL	PRINTCHR
+  141:	  01AA	AC 44				MOV	R4,MNUWT
+  142:	  01AC	AE 42				MOV	R6,MNUX
+  143:	  01AE	0F				INC	R7
+  144:	  01AF	74 83		MNUFRAME2:	MOV	A,#83h
+  145:	  01B1	51 FD				ACALL	PRINTCHR
+  146:	  01B3	EE				MOV	A,R6
+  147:	  01B4	2C				ADD	A,R4
+  148:	  01B5	FE				MOV	R6,A
+  149:	  01B6	0E				INC	R6
+  150:	  01B7	74 83				MOV	A,#83h
+  151:	  01B9	51 FD				ACALL	PRINTCHR
+  152:	  01BB	AE 42				MOV	R6,MNUX
+  153:	  01BD	0F				INC	R7
+  154:	  01BE	DD EF				DJNZ	R5,MNUFRAME2
+  155:	  01C0	74 85				MOV	A,#85h
 
 ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 4
 
@@ -194,62 +194,62 @@ ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. 
 
  Line  I  Addr  Code            Source
 
-  156:	  01C0	14				DEC	A
-  157:	  01C1	31 FB				ACALL	WRITEDATA
-  158:	  01C3	80 F5				SJMP	PRINTLINE1
-  159:	  01C5	74 B2		PRINTLINEEX:	MOV	A,#0B2h		;Auto Reset
-  160:	  01C7	31 F0				ACALL	WRITECOMMAND
-  161:	  01C9	22				RET
-  162:
-  163:				;R6 pos, R7 line, R5 number of characters, A mode
-  164:	  01CA	C0 E0		SETTEXTMODE:	PUSH	ACC
-  165:	  01CC	31 95				ACALL	POSTOADP
-  166:	  01CE	74 00				MOV	A,#LOW GRPHOME	;Add text home address
-  167:	  01D0	2E				ADD	A,R6
-  168:	  01D1	FE				MOV	R6,A
-  169:	  01D2	74 00				MOV	A,#HIGH GRPHOME
-  170:	  01D4	3F				ADDC	A,R7
-  171:	  01D5	FF				MOV	R7,A
-  172:	  01D6	EE				MOV	A,R6		;ADP LSB
-  173:	  01D7	31 FB				ACALL	WRITEDATA
-  174:	  01D9	EF				MOV	A,R7		;ADP MSB
-  175:	  01DA	31 FB				ACALL	WRITEDATA
-  176:	  01DC	74 24				MOV	A,#24h		;Set address pointer command
-  177:	  01DE	31 F0				ACALL	WRITECOMMAND
-  178:	  01E0	74 B0				MOV	A,#0B0h		;Set auto write mode
-  179:	  01E2	31 F0				ACALL	WRITECOMMAND
-  180:	  01E4	D0 E0				POP	ACC
-  181:	  01E6	31 FB		SETTEXTMODE1:	ACALL	WRITEDATA
-  182:	  01E8	DD FC				DJNZ	R5,SETTEXTMODE1
-  183:	  01EA	74 B2				MOV	A,#0B2h		;Auto Reset
-  184:	  01EC	31 F0				ACALL	WRITECOMMAND
-  185:	  01EE	22				RET
-  186:	  01EF	22				RET
-  187:
-  188:				; WRITECOMMAND sends the byte in A to a
-  189:				; graphics module as a command.
-  190:	  01F0	51 06		WRITECOMMAND:	ACALL	STATUS		;display ready?
-  191:	  01F2	D2 90				SETB	PB_CD		;c/d = 1
-  192:	  01F4	F5 A0				MOV	P_DATA,A	;set data
-  193:	  01F6	C2 92				CLR	PB_W		;strobe it
-  194:	  01F8	D2 92				SETB	PB_W
-  195:	  01FA	22				RET
+  156:	  01C2	51 FD				ACALL	PRINTCHR
+  157:	  01C4	0E				INC	R6
+  158:	  01C5	74 81		MNUFRAME3:	MOV	A,#81h
+  159:	  01C7	51 FD				ACALL	PRINTCHR
+  160:	  01C9	0E				INC	R6
+  161:	  01CA	DC F9				DJNZ	R4,MNUFRAME3
+  162:	  01CC	74 84				MOV	A,#84h
+  163:	  01CE	51 FD				ACALL	PRINTCHR
+  164:	  01D0	22				RET
+  165:
+  166:	  01D1	85 48 82	MNUTXT:		MOV	DPL,MNUTXTL
+  167:	  01D4	85 49 83			MOV	DPH,MNUTXTH
+  168:	  01D7	E5 41				MOV	A,MNUOFS
+  169:	  01D9	85 46 F0			MOV	B,MNUITEMWT
+  170:	  01DC	A4				MUL	AB
+  171:	  01DD	25 82				ADD	A,DPL
+  172:	  01DF	F5 82				MOV	DPL,A
+  173:	  01E1	E5 F0				MOV	A,B
+  174:	  01E3	35 83				ADDC	A,DPH
+  175:	  01E5	F5 83				MOV	DPH,A
+  176:	  01E7	AD 45				MOV	R5,MNUHT
+  177:	  01E9	AE 42				MOV	R6,MNUX
+  178:	  01EB	0E				INC	R6
+  179:	  01EC	0E				INC	R6
+  180:	  01ED	AF 43				MOV	R7,MNUY
+  181:	  01EF	0F				INC	R7
+  182:	  01F0	C0 06		MNUTXT1:	PUSH	AR6
+  183:	  01F2	AC 46				MOV	R4,MNUITEMWT
+  184:	  01F4	E4		MNUTXT2:	CLR	A
+  185:	  01F5	93				MOVC	A,@A+DPTR	;get byte
+  186:	  01F6	C3				CLR	C
+  187:	  01F7	94 20				SUBB	A,#20h
+  188:	  01F9	51 FD				ACALL	PRINTCHR
+  189:	  01FB	A3				INC	DPTR
+  190:	  01FC	0E				INC	R6
+  191:	  01FD	DC F5				DJNZ	R4,MNUTXT2
+  192:	  01FF	D0 06				POP	AR6
+  193:	  0201	0F				INC	R7
+  194:	  0202	DD EC				DJNZ	R5,MNUTXT1
+  195:	  0204	22				RET
   196:
-  197:				; WRITEDATA sends the byte in A to the
-  198:				; graphics module as data.
-  199:	  01FB	51 06		WRITEDATA:	ACALL	STATUS		;display ready?
-  200:	  01FD	C2 90				CLR	PB_CD		;c/d = 0
-  201:	  01FF	F5 A0				MOV	P_DATA,A	;set data
-  202:	  0201	C2 92				CLR	PB_W		;strobe it
-  203:	  0203	D2 92				SETB	PB_W
-  204:	  0205	22				RET
-  205:
-  206:				; STATUS check to see that the graphic
-  207:				; display is ready. It won't return
-  208:				; until it is.
-  209:	  0206	C0 E0		STATUS:		PUSH	ACC
-  210:	  0208	D2 90				SETB	PB_CD		;c/d=1
-  211:	  020A	75 A0 FF			MOV	P_DATA,#0FFh	;Port to input
+  197:	  0205	AB 40		MNUSCROLL:	MOV	R3,MNUSEL
+  198:	  0207	AD 45				MOV	R5,MNUHT
+  199:	  0209	E5 42				MOV	A,MNUX
+  200:	  020B	25 46				ADD	A,MNUITEMWT
+  201:	  020D	24 03				ADD	A,#3
+  202:	  020F	FE				MOV	R6,A
+  203:	  0210	AF 43				MOV	R7,MNUY
+  204:	  0212	0F				INC	R7
+  205:	  0213	E5 41				MOV	A,MNUOFS
+  206:	  0215	60 09				JZ	MNUSCROLL2
+  207:	  0217	FB				MOV	R3,A
+  208:	  0218	74 86		MNUSCROLL1:	MOV	A,#86h
+  209:	  021A	51 FD				ACALL	PRINTCHR
+  210:	  021C	0F				INC	R7
+  211:	  021D	1D				DEC	R5
 
 ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 5
 
@@ -257,62 +257,62 @@ ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. 
 
  Line  I  Addr  Code            Source
 
-  212:	  020D	7B 0B				MOV	R3,#0Bh		;status bits mask
-  213:	  020F	C2 91		STATUS1:	CLR	PB_R		;read it
-  214:	  0211	E5 A0				MOV	A,P_DATA
-  215:	  0213	D2 91				SETB	PB_R
-  216:	  0215	5B				ANL	A,R3		;status OK?
-  217:	  0216	C3				CLR	C
-  218:	  0217	9B				SUBB	A,R3
-  219:	  0218	70 F5				JNZ	STATUS1
-  220:	  021A	D0 E0				POP	ACC
-  221:	  021C	22				RET
-  222:
-  223:				; Initialization bytes for 240x128
-  224:	  021D	00 10 40	MSGINIT:	DB	00h,10h,40h	;text home address
-  225:	  0220	1E 00 41			DB	1Eh,00h,41h	;text area
-  226:	  0223	00 00 42			DB	00h,00h,42h	;graphic home address
-  227:	  0226	1E 00 43			DB	1Eh,00h,43h	;graphic area
-  228:	  0229	00 00 84			DB	00h,00h,84h	;mode set. Text Attribute mode
-  229:	  022C	04 00 22			DB	04h,00h,22h	;offset register set, CG RAM area at 2000h to 27FFh
-  230:	  022F	00 00 94			DB	00h,00h,94h	;display mode set. Text on, Graphic off, Cursor off, Blink o
-				ff
-  231:	  0232	FF				DB	0FFh
-  232:
-  233:	  0233	00 00 24	MSGCLS:		DB	00h,00h,24h	;address pointer set
-  234:	  0236	00 00 B0			DB	00h,00h,0B0h	;auto write mode
-  235:	  0239	FF				DB	0FFh
-  236:
-  237:	  023A	00 24 24	MSGCGRAM:	DB	00h,24h,24h	;CG RAM address pointer set, character code 80h to 85h
-  238:	  023D	00 00 B0			DB	00h,00h,0B0h	;auto write mode
-  239:	  0240	FF				DB	0FFh
-  240:
-  241:	  0241			CGRAM:		;80h
-  242:	  0241	00				DB	000000b
-  243:	  0242	00				DB	000000b
-  244:	  0243	00				DB	000000b
-  245:	  0244	0F				DB	001111b
-  246:	  0245	0F				DB	001111b
-  247:	  0246	0C				DB	001100b
-  248:	  0247	0C				DB	001100b
-  249:	  0248	0C				DB	001100b
-  250:						;81h
-  251:	  0249	00				DB	000000b
-  252:	  024A	00				DB	000000b
-  253:	  024B	00				DB	000000b
-  254:	  024C	3F				DB	111111b
-  255:	  024D	3F				DB	111111b
-  256:	  024E	00				DB	000000b
-  257:	  024F	00				DB	000000b
-  258:	  0250	00				DB	000000b
-  259:						;82h
-  260:	  0251	00				DB	000000b
-  261:	  0252	00				DB	000000b
-  262:	  0253	00				DB	000000b
-  263:	  0254	3C				DB	111100b
-  264:	  0255	3C				DB	111100b
-  265:	  0256	0C				DB	001100b
-  266:	  0257	0C				DB	001100b
+  212:	  021E	DB F8				DJNZ	R3,MNUSCROLL1
+  213:	  0220	74 87		MNUSCROLL2:	MOV	A,#87h
+  214:	  0222	51 FD				ACALL	PRINTCHR
+  215:	  0224	0F				INC	R7
+  216:	  0225	1D				DEC	R5
+  217:	  0226	E5 45				MOV	A,MNUHT
+  218:	  0228	24 03				ADD	A,#03h
+  219:	  022A	95 47				SUBB	A,MNUITEMS
+  220:	  022C	FC				MOV	R4,A
+  221:	  022D	60 08				JZ	MNUSCROLL4
+  222:	  022F	74 88		MNUSCROLL3:	MOV	A,#88h
+  223:	  0231	51 FD				ACALL	PRINTCHR
+  224:	  0233	0F				INC	R7
+  225:	  0234	1D				DEC	R5
+  226:	  0235	DC F8				DJNZ	R4,MNUSCROLL3
+  227:	  0237	74 89		MNUSCROLL4:	MOV	A,#89h
+  228:	  0239	51 FD				ACALL	PRINTCHR
+  229:	  023B	0F				INC	R7
+  230:	  023C	1D				DEC	R5
+  231:	  023D	ED				MOV	A,R5
+  232:	  023E	60 07				JZ	MNUSCROLL6
+  233:	  0240	74 86		MNUSCROLL5:	MOV	A,#86h
+  234:	  0242	51 FD				ACALL	PRINTCHR
+  235:	  0244	0F				INC	R7
+  236:	  0245	DD F9				DJNZ	R5,MNUSCROLL5
+  237:	  0247	22		MNUSCROLL6:	RET
+  238:
+  239:	  0248	AD 46		MNUCLRSEL:	MOV	R5,MNUITEMWT
+  240:	  024A	0D				INC	R5
+  241:	  024B	0D				INC	R5
+  242:	  024C	AE 42				MOV	R6,MNUX
+  243:	  024E	0E				INC	R6
+  244:	  024F	E5 40				MOV	A,MNUSEL
+  245:	  0251	25 43				ADD	A,MNUY
+  246:	  0253	95 41				SUBB	A,MNUOFS
+  247:	  0255	04				INC	A
+  248:	  0256	FF				MOV	R7,A
+  249:	  0257	E4				CLR	A
+  250:	  0258	71 21				ACALL	SETTEXTMODE
+  251:	  025A	22				RET
+  252:
+  253:	  025B	AD 46		MNUSETSEL:	MOV	R5,MNUITEMWT
+  254:	  025D	0D				INC	R5
+  255:	  025E	0D				INC	R5
+  256:	  025F	AE 42				MOV	R6,MNUX
+  257:	  0261	0E				INC	R6
+  258:	  0262	E5 40				MOV	A,MNUSEL
+  259:	  0264	25 43				ADD	A,MNUY
+  260:	  0266	95 41				SUBB	A,MNUOFS
+  261:	  0268	04				INC	A
+  262:	  0269	FF				MOV	R7,A
+  263:	  026A	74 0D				MOV	A,#0Dh
+  264:	  026C	71 21				ACALL	SETTEXTMODE
+  265:	  026E	22				RET
+  266:
+  267:				;*************************************************
 
 ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 6
 
@@ -320,62 +320,62 @@ ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. 
 
  Line  I  Addr  Code            Source
 
-  267:	  0258	0C				DB	001100b
-  268:						;83h
-  269:	  0259	0C				DB	001100b
-  270:	  025A	0C				DB	001100b
-  271:	  025B	0C				DB	001100b
-  272:	  025C	0C				DB	001100b
-  273:	  025D	0C				DB	001100b
-  274:	  025E	0C				DB	001100b
-  275:	  025F	0C				DB	001100b
-  276:	  0260	0C				DB	001100b
-  277:						;84h
-  278:	  0261	0C				DB	001100b
-  279:	  0262	0C				DB	001100b
-  280:	  0263	0C				DB	001100b
-  281:	  0264	3C				DB	111100b
-  282:	  0265	3C				DB	111100b
-  283:	  0266	00				DB	000000b
-  284:	  0267	00				DB	000000b
-  285:	  0268	00				DB	000000b
-  286:						;85h
-  287:	  0269	0C				DB	001100b
-  288:	  026A	0C				DB	001100b
-  289:	  026B	0C				DB	001100b
-  290:	  026C	0F				DB	001111b
-  291:	  026D	0F				DB	001111b
-  292:	  026E	00				DB	000000b
-  293:	  026F	00				DB	000000b
-  294:	  0270	00				DB	000000b
-  295:
-  296:	  0271	24 45 56 49	MENU1:		DB	024h,045h,056h,049h,043h,045h,000h,050h,052h,04Fh,047h,052h,041h,04Dh,04Dh,0
-	  0275	43 45 00 50	45h,052h,0FFh
-	  0279	52 4F 47 52
-	  027D	41 4D 4D 45
-	  0281	52 FF
-  297:	  0283	80 81 81 81			DB	080h,081h,081h,081h,081h,081h,081h,081h,081h,081h,081h,081h,081h,081h,081h,0
-	  0287	81 81 81 81	81h,082h,0FFh
-	  028B	81 81 81 81
-	  028F	81 81 81 81
-	  0293	82 FF
-  298:	  0295	83 21 00 00			DB	083h,021h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,0
-	  0299	00 00 00 00	00h,083h,0FFh
-	  029D	00 00 00 00
-	  02A1	00 00 00 00
-	  02A5	83 FF
-  299:	  02A7	83 22 00 00			DB	083h,022h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,0
-	  02AB	00 00 00 00	00h,083h,0FFh
-	  02AF	00 00 00 00
-	  02B3	00 00 00 00
-	  02B7	83 FF
-  300:	  02B9	83 23 00 00			DB	083h,023h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,0
-	  02BD	00 00 00 00	00h,083h,0FFh
-	  02C1	00 00 00 00
-	  02C5	00 00 00 00
-	  02C9	83 FF
-  301:	  02CB	83 00 00 00			DB	083h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,0
-	  02CF	00 00 00 00	00h,083h,0FFh
+  268:
+  269:				;Send bytes @DPTR as a series of commands, two data bytes and one command byte.
+  270:				;Terminate if first data byte is 0FFh
+  271:	  026F	E4		SENDCOMMANDS:	CLR	A
+  272:	  0270	93				MOVC	A,@A+DPTR	;get byte
+  273:	  0271	B4 FF 01			CJNE	A,#0FFh,SENDCOMMANDS1
+  274:	  0274	22				RET
+  275:	  0275	71 40		SENDCOMMANDS1:	ACALL	WRITEDATA
+  276:	  0277	A3				INC	DPTR
+  277:	  0278	E4				CLR	A
+  278:	  0279	93				MOVC	A,@A+DPTR	;get byte
+  279:	  027A	A3				INC	DPTR
+  280:	  027B	71 40				ACALL	WRITEDATA
+  281:	  027D	E4				CLR	A
+  282:	  027E	93				MOVC	A,@A+DPTR	;get byte
+  283:	  027F	A3				INC	DPTR
+  284:	  0280	71 35				ACALL	WRITECOMMAND
+  285:	  0282	80 EB				SJMP	SENDCOMMANDS
+  286:
+  287:				;Clear 32K ram
+  288:	  0284	90 03 78	CLS:		MOV	DPTR,#MSGCLS	;Set ADP to 0000h and init auto write mode
+  289:	  0287	51 6F				ACALL	SENDCOMMANDS
+  290:	  0289	7F 80				MOV	R7,#80h
+  291:	  028B	7E 00				MOV	R6,#00h
+  292:	  028D	E4		CLS1:		CLR	A
+  293:	  028E	71 40				ACALL	WRITEDATA
+  294:	  0290	DE FB				DJNZ	R6,CLS1
+  295:	  0292	DF F9				DJNZ	R7,CLS1
+  296:	  0294	74 B2				MOV	A,#0B2h		;Auto Reset
+  297:	  0296	71 35				ACALL	WRITECOMMAND
+  298:	  0298	22				RET
+  299:
+  300:	  0299	90 03 7F	SETCGRAM:	MOV	DPTR,#MSGCGRAM	;Set ADP to 2400h and init auto write mode
+  301:	  029C	51 6F				ACALL	SENDCOMMANDS
+  302:	  029E	90 03 86			MOV	DPTR,#CGRAM
+  303:	  02A1	7F 50				MOV	R7,#8*10	;10 characters to be defined
+  304:	  02A3	E4		SETCGRAM1:	CLR	A
+  305:	  02A4	93				MOVC	A,@A+DPTR	;get byte
+  306:	  02A5	A3				INC	DPTR
+  307:	  02A6	71 40				ACALL	WRITEDATA
+  308:	  02A8	DF F9				DJNZ	R7,SETCGRAM1
+  309:	  02AA	74 B2				MOV	A,#0B2h		;Auto Reset
+  310:	  02AC	71 35				ACALL	WRITECOMMAND
+  311:	  02AE	22				RET
+  312:
+  313:				;Convert text pos in R7:R6 to ram offset
+  314:	  02AF	C0 06		POSTOTXTADP:	PUSH	AR6
+  315:	  02B1	C0 07				PUSH	AR7
+  316:	  02B3	75 F0 28			MOV	B,#CHARSLINE	;Number of characters on each line
+  317:	  02B6	EF				MOV	A,R7
+  318:	  02B7	A4				MUL	AB
+  319:	  02B8	2E				ADD	A,R6
+  320:	  02B9	FE				MOV	R6,A
+  321:	  02BA	E5 F0				MOV	A,B
+  322:	  02BC	34 00				ADDC	A,#00h
+  323:	  02BE	FF				MOV	R7,A
 
 ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 7
 
@@ -383,35 +383,303 @@ ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. 
 
  Line  I  Addr  Code            Source
 
-	  02D3	00 00 00 00
-	  02D7	00 00 00 00
-	  02DB	83 FF
-  302:	  02DD	83 00 00 00			DB	083h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,0
-	  02E1	00 00 00 00	00h,083h,0FFh
-	  02E5	00 00 00 00
-	  02E9	00 00 00 00
-	  02ED	83 FF
-  303:	  02EF	85 81 81 81			DB	085h,081h,081h,081h,081h,081h,081h,081h,081h,081h,081h,081h,081h,081h,081h,0
-	  02F3	81 81 81 81	81h,084h,0FFh
-	  02F7	81 81 81 81
-	  02FB	81 81 81 81
-	  02FF	84 FF
-  304:	  0301	FF				DB	0FFh
-  305:
-  306:						END
+  324:	  02BF	74 00				MOV	A,#LOW TXTHOME	;Add text home address
+  325:	  02C1	2E				ADD	A,R6
+  326:	  02C2	FE				MOV	R6,A
+  327:	  02C3	74 10				MOV	A,#HIGH TXTHOME
+  328:	  02C5	3F				ADDC	A,R7
+  329:	  02C6	FF				MOV	R7,A
+  330:	  02C7	EE				MOV	A,R6		;ADP LSB
+  331:	  02C8	71 40				ACALL	WRITEDATA
+  332:	  02CA	EF				MOV	A,R7		;ADP MSB
+  333:	  02CB	71 40				ACALL	WRITEDATA
+  334:	  02CD	74 24				MOV	A,#24h		;Set address pointer command
+  335:	  02CF	71 35				ACALL	WRITECOMMAND
+  336:	  02D1	D0 07				POP	AR7
+  337:	  02D3	D0 06				POP	AR6
+  338:	  02D5	22				RET
+  339:
+  340:				;Convert graphic pos in R7:R6 to ram offset
+  341:	  02D6	C0 06		POSTOGRPADP:	PUSH	AR6
+  342:	  02D8	C0 07				PUSH	AR7
+  343:	  02DA	75 F0 28			MOV	B,#CHARSLINE	;Number of characters on each line
+  344:	  02DD	EF				MOV	A,R7
+  345:	  02DE	A4				MUL	AB
+  346:	  02DF	2E				ADD	A,R6
+  347:	  02E0	FE				MOV	R6,A
+  348:	  02E1	E5 F0				MOV	A,B
+  349:	  02E3	34 00				ADDC	A,#00h
+  350:	  02E5	FF				MOV	R7,A
+  351:	  02E6	74 00				MOV	A,#LOW GRPHOME	;Add text home address
+  352:	  02E8	2E				ADD	A,R6
+  353:	  02E9	FE				MOV	R6,A
+  354:	  02EA	74 00				MOV	A,#HIGH GRPHOME
+  355:	  02EC	3F				ADDC	A,R7
+  356:	  02ED	FF				MOV	R7,A
+  357:	  02EE	EE				MOV	A,R6		;ADP LSB
+  358:	  02EF	71 40				ACALL	WRITEDATA
+  359:	  02F1	EF				MOV	A,R7		;ADP MSB
+  360:	  02F2	71 40				ACALL	WRITEDATA
+  361:	  02F4	74 24				MOV	A,#24h		;Set address pointer command
+  362:	  02F6	71 35				ACALL	WRITECOMMAND
+  363:	  02F8	D0 07				POP	AR7
+  364:	  02FA	D0 06				POP	AR6
+  365:	  02FC	22				RET
+  366:
+  367:				;A character,R6 X pos, R7 Y pos
+  368:	  02FD	C0 E0		PRINTCHR:	PUSH	ACC
+  369:	  02FF	51 AF				ACALL	POSTOTXTADP
+  370:	  0301	D0 E0				POP	ACC
+  371:	  0303	71 40				ACALL	WRITEDATA
+  372:	  0305	74 C4				MOV	A,#0C4h		;Data Write and Nonvariable ADP
+  373:	  0307	71 35				ACALL	WRITECOMMAND
+  374:	  0309	22				RET
+  375:
+  376:				;Line data @DPTR,R6 X pos, R7 Y pos
+  377:	  030A	51 AF		PRINTLINE:	ACALL	POSTOTXTADP
+  378:	  030C	74 B0				MOV	A,#0B0h		;Set auto write mode
+  379:	  030E	71 35				ACALL	WRITECOMMAND
+
+ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 8
+
+
+
+ Line  I  Addr  Code            Source
+
+  380:	  0310	E4		PRINTLINE1:	CLR	A
+  381:	  0311	93				MOVC	A,@A+DPTR	;get byte
+  382:	  0312	A3				INC	DPTR
+  383:	  0313	60 07				JZ	PRINTLINE2
+  384:	  0315	C3				CLR	C
+  385:	  0316	94 20				SUBB	A,#20h
+  386:	  0318	71 40				ACALL	WRITEDATA
+  387:	  031A	80 F4				SJMP	PRINTLINE1
+  388:	  031C	74 B2		PRINTLINE2:	MOV	A,#0B2h		;Auto Reset
+  389:	  031E	71 35				ACALL	WRITECOMMAND
+  390:	  0320	22				RET
+  391:
+  392:
+  393:				;R6 pos, R7 line, R5 number of characters, A mode
+  394:	  0321	C0 E0		SETTEXTMODE:	PUSH	ACC
+  395:	  0323	51 D6				ACALL	POSTOGRPADP
+  396:	  0325	74 B0				MOV	A,#0B0h		;Set auto write mode
+  397:	  0327	71 35				ACALL	WRITECOMMAND
+  398:	  0329	D0 E0				POP	ACC
+  399:	  032B	71 40		SETTEXTMODE1:	ACALL	WRITEDATA
+  400:	  032D	DD FC				DJNZ	R5,SETTEXTMODE1
+  401:	  032F	74 B2				MOV	A,#0B2h		;Auto Reset
+  402:	  0331	71 35				ACALL	WRITECOMMAND
+  403:	  0333	22				RET
+  404:	  0334	22				RET
+  405:
+  406:				;*************************************************
+  407:
+  408:				; WRITECOMMAND sends the byte in A to a
+  409:				; graphics module as a command.
+  410:	  0335	71 4B		WRITECOMMAND:	ACALL	STATUS		;display ready?
+  411:	  0337	D2 90				SETB	PB_CD		;c/d = 1
+  412:	  0339	F5 A0				MOV	P_DATA,A	;set data
+  413:	  033B	C2 92				CLR	PB_W		;strobe it
+  414:	  033D	D2 92				SETB	PB_W
+  415:	  033F	22				RET
+  416:
+  417:				; WRITEDATA sends the byte in A to the
+  418:				; graphics module as data.
+  419:	  0340	71 4B		WRITEDATA:	ACALL	STATUS		;display ready?
+  420:	  0342	C2 90				CLR	PB_CD		;c/d = 0
+  421:	  0344	F5 A0				MOV	P_DATA,A	;set data
+  422:	  0346	C2 92				CLR	PB_W		;strobe it
+  423:	  0348	D2 92				SETB	PB_W
+  424:	  034A	22				RET
+  425:
+  426:				; STATUS check to see that the graphic
+  427:				; display is ready. It won't return
+  428:				; until it is.
+  429:	  034B	C0 E0		STATUS:		PUSH	ACC
+  430:	  034D	D2 90				SETB	PB_CD		;c/d=1
+  431:	  034F	75 A0 FF			MOV	P_DATA,#0FFh	;Port to input
+  432:	  0352	C2 91		STATUS1:	CLR	PB_R		;read it
+  433:	  0354	E5 A0				MOV	A,P_DATA
+  434:	  0356	D2 91				SETB	PB_R
+  435:	  0358	54 0B				ANL	A,#0Bh		;status OK?
+
+ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 9
+
+
+
+ Line  I  Addr  Code            Source
+
+  436:	  035A	C3				CLR	C
+  437:	  035B	94 0B				SUBB	A,#0Bh
+  438:	  035D	70 F3				JNZ	STATUS1
+  439:	  035F	D0 E0				POP	ACC
+  440:	  0361	22				RET
+  441:
+  442:				;*************************************************
+  443:
+  444:				; Initialization bytes for 240x128
+  445:	  0362	00 10 40	MSGINIT:	DB	00h,10h,40h		;text home address
+  446:	  0365	28 00 41			DB	CHARSLINE,00h,41h	;text area
+  447:	  0368	00 00 42			DB	00h,00h,42h		;graphic home address
+  448:	  036B	28 00 43			DB	CHARSLINE,00h,43h	;graphic area
+  449:	  036E	00 00 84			DB	00h,00h,84h		;mode set. Text Attribute mode
+  450:	  0371	04 00 22			DB	04h,00h,22h		;offset register set, CG RAM area at 2000h to 27FFh
+  451:	  0374	00 00 94			DB	00h,00h,94h		;display mode set. Text on, Graphic off, Cursor off,
+				 Blink off
+  452:	  0377	FF				DB	0FFh
+  453:
+  454:	  0378	00 00 24	MSGCLS:		DB	00h,00h,24h		;address pointer set
+  455:	  037B	00 00 B0			DB	00h,00h,0B0h		;auto write mode
+  456:	  037E	FF				DB	0FFh
+  457:
+  458:	  037F	00 24 24	MSGCGRAM:	DB	00h,24h,24h		;CG RAM address pointer set, character code 80h to 8
+				5h
+  459:	  0382	00 00 B0			DB	00h,00h,0B0h		;auto write mode
+  460:	  0385	FF				DB	0FFh
+  461:
+  462:	  0386			CGRAM:		;80h left upper corner
+  463:	  0386	00				DB	000000b
+  464:	  0387	00				DB	000000b
+  465:	  0388	00				DB	000000b
+  466:	  0389	0F				DB	001111b
+  467:	  038A	0F				DB	001111b
+  468:	  038B	0C				DB	001100b
+  469:	  038C	0C				DB	001100b
+  470:	  038D	0C				DB	001100b
+  471:						;81h horizontal line
+  472:	  038E	00				DB	000000b
+  473:	  038F	00				DB	000000b
+  474:	  0390	00				DB	000000b
+  475:	  0391	3F				DB	111111b
+  476:	  0392	3F				DB	111111b
+  477:	  0393	00				DB	000000b
+  478:	  0394	00				DB	000000b
+  479:	  0395	00				DB	000000b
+  480:						;82h right upper corner
+  481:	  0396	00				DB	000000b
+  482:	  0397	00				DB	000000b
+  483:	  0398	00				DB	000000b
+  484:	  0399	3C				DB	111100b
+  485:	  039A	3C				DB	111100b
+  486:	  039B	0C				DB	001100b
+  487:	  039C	0C				DB	001100b
+  488:	  039D	0C				DB	001100b
+  489:						;83h vertical line
+
+ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. Heinz                                         PAGE 10
+
+
+
+ Line  I  Addr  Code            Source
+
+  490:	  039E	0C				DB	001100b
+  491:	  039F	0C				DB	001100b
+  492:	  03A0	0C				DB	001100b
+  493:	  03A1	0C				DB	001100b
+  494:	  03A2	0C				DB	001100b
+  495:	  03A3	0C				DB	001100b
+  496:	  03A4	0C				DB	001100b
+  497:	  03A5	0C				DB	001100b
+  498:						;84h right lower corner
+  499:	  03A6	0C				DB	001100b
+  500:	  03A7	0C				DB	001100b
+  501:	  03A8	0C				DB	001100b
+  502:	  03A9	3C				DB	111100b
+  503:	  03AA	3C				DB	111100b
+  504:	  03AB	00				DB	000000b
+  505:	  03AC	00				DB	000000b
+  506:	  03AD	00				DB	000000b
+  507:						;85h right lower corner
+  508:	  03AE	0C				DB	001100b
+  509:	  03AF	0C				DB	001100b
+  510:	  03B0	0C				DB	001100b
+  511:	  03B1	0F				DB	001111b
+  512:	  03B2	0F				DB	001111b
+  513:	  03B3	00				DB	000000b
+  514:	  03B4	00				DB	000000b
+  515:	  03B5	00				DB	000000b
+  516:						;86h scroll bar
+  517:	  03B6	2A				DB	101010b
+  518:	  03B7	15				DB	010101b
+  519:	  03B8	2A				DB	101010b
+  520:	  03B9	15				DB	010101b
+  521:	  03BA	2A				DB	101010b
+  522:	  03BB	15				DB	010101b
+  523:	  03BC	2A				DB	101010b
+  524:	  03BD	15				DB	010101b
+  525:						;87h scroll pos top
+  526:	  03BE	3F				DB	111111b
+  527:	  03BF	21				DB	100001b
+  528:	  03C0	21				DB	100001b
+  529:	  03C1	21				DB	100001b
+  530:	  03C2	21				DB	100001b
+  531:	  03C3	21				DB	100001b
+  532:	  03C4	21				DB	100001b
+  533:	  03C5	21				DB	100001b
+  534:						;88h scroll pos middle
+  535:	  03C6	21				DB	100001b
+  536:	  03C7	21				DB	100001b
+  537:	  03C8	21				DB	100001b
+  538:	  03C9	21				DB	100001b
+  539:	  03CA	21				DB	100001b
+  540:	  03CB	21				DB	100001b
+  541:	  03CC	21				DB	100001b
+  542:	  03CD	21				DB	100001b
+  543:						;89h scroll pos bottom
+  544:	  03CE	21				DB	100001b
+  545:	  03CF	21				DB	100001b
+
+ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. Heinz                                         PAGE 11
+
+
+
+ Line  I  Addr  Code            Source
+
+  546:	  03D0	21				DB	100001b
+  547:	  03D1	21				DB	100001b
+  548:	  03D2	21				DB	100001b
+  549:	  03D3	21				DB	100001b
+  550:	  03D4	21				DB	100001b
+  551:	  03D5	3F				DB	111111b
+  552:
+  553:	  03D6	44 65 76 69	HEADER:		DB	'Device Programmer',0
+	  03DA	63 65 20 50
+	  03DE	72 6F 67 72
+	  03E2	61 6D 6D 65
+	  03E6	72 00
+  554:
+  555:							;MNUSEL,MNUOFS,MNUX,MNUY,MNUWT,MNUHT,MNUITEMWT,MNUITEMS,MNUTXTL,MNUTXTH
+  556:	  03E8	00 00 00 01	MNUDEF1:	DB	00h,00h,MNUX1,MNUY1,MNUWT1,MNUHT1,07h,06h,LOW MENU1,HIGH MENU1
+	  03EC	0A 05 07 06
+	  03F0	F2 03
+  557:
+  558:	  03F2	41 54 38 39	MENU1:		DB	'AT89S52'
+	  03F6	53 35 32
+  559:	  03F9	38 37 35 31			DB	'8751   '
+	  03FD	20 20 20
+  560:	  0400	32 37 36 34			DB	'2764   '
+	  0404	20 20 20
+  561:	  0407	32 37 31 32			DB	'27128  '
+	  040B	38 20 20
+  562:	  040E	32 37 32 35			DB	'27256  '
+	  0412	36 20 20
+  563:	  0415	32 37 35 31			DB	'27512  '
+	  0419	32 20 20
+  564:
+  565:						END
 
 
 
 
 
-                     register banks used:  ---
+                     register banks used:  0
 
                      no errors
 
 
 
 
-ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 8
+ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. Heinz                                         PAGE 12
 
 
 
@@ -428,11 +696,11 @@ SYMBOL				  TYPE     VALUE	LINE
 AC				  BIT	      D6
 ACC				  DATA	      E0
 B				  DATA	      F0
-CGRAM				  CODE	    0241	 241
+CGRAM				  CODE	    0386	 462
 CGRHOME				  NUMBER    2000	  16
-CHARSLINE			  NUMBER    001E	  13
-CLS				  CODE	    016A	  99
-CLS1				  CODE	    0173	 103
+CHARSLINE			  NUMBER    0028	  13
+CLS				  CODE	    0284	 288
+CLS1				  CODE	    028D	 292
 CY				  BIT	      D7
 DPH				  DATA	      83
 DPL				  DATA	      82
@@ -445,7 +713,12 @@ EX1				  BIT	      AA
 EXTI0				  CODE	    0003
 EXTI1				  CODE	    0013
 F0				  BIT	      D5
+GETKEY				  CODE	    0162	  95
+GETKEY1				  CODE	    016E	 101
+GETKEY2				  CODE	    0174	 105
+GETKEY3				  CODE	    017A	 109
 GRPHOME				  NUMBER    0000	  14
+HEADER				  CODE	    03D6	 553
 IE				  DATA	      A8
 IE0				  BIT	      89
 IE1				  BIT	      8B
@@ -454,12 +727,54 @@ INT1				  BIT	      B3
 IP				  DATA	      B8
 IT0				  BIT	      88
 IT1				  BIT	      8A
-LASTMNUSELX			  NUMBER    0040	  17
-LASTMNUSELY			  NUMBER    0040	  18
-MENU1				  CODE	    0271	 296
-MSGCGRAM			  CODE	    023A	 237
-MSGCLS				  CODE	    0233	 233
-MSGINIT				  CODE	    021D	 224
+LASTKEY				  NUMBER    004A	  30
+MENU1				  CODE	    03F2	 558
+MNUCLRSEL			  CODE	    0248	 239
+MNUDEF				  NUMBER    0040	  18
+MNUDEF1				  CODE	    03E8	 556
+MNUFRAME			  CODE	    0192	 128
+MNUFRAME1			  CODE	    019F	 135
+MNUFRAME2			  CODE	    01AF	 144
+MNUFRAME3			  CODE	    01C5	 158
+MNUHT				  NUMBER    0045	  25
+MNUHT1				  NUMBER    0005	  35
+MNUINIT				  CODE	    017D	 112
+MNUINIT1			  CODE	    0181	 114
+MNUITEMS			  NUMBER    0047	  27
+
+ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. Heinz                                         PAGE 13
+
+
+
+SYMBOL				  TYPE     VALUE	LINE
+------------------------------------------------------------
+MNUITEMWT			  NUMBER    0046	  26
+MNUOFS				  NUMBER    0041	  21
+MNUPRINT			  CODE	    0189	 122
+MNUSCROLL			  CODE	    0205	 197
+MNUSCROLL1			  CODE	    0218	 208
+MNUSCROLL2			  CODE	    0220	 213
+MNUSCROLL3			  CODE	    022F	 222
+MNUSCROLL4			  CODE	    0237	 227
+MNUSCROLL5			  CODE	    0240	 233
+MNUSCROLL6			  CODE	    0247	 237
+MNUSEL				  NUMBER    0040	  20
+MNUSETSEL			  CODE	    025B	 253
+MNUTXT				  CODE	    01D1	 166
+MNUTXT1				  CODE	    01F0	 182
+MNUTXT2				  CODE	    01F4	 184
+MNUTXTH				  NUMBER    0049	  29
+MNUTXTL				  NUMBER    0048	  28
+MNUWT				  NUMBER    0044	  24
+MNUWT1				  NUMBER    000A	  34
+MNUX				  NUMBER    0042	  22
+MNUX1				  NUMBER    0000	  32
+MNUY				  NUMBER    0043	  23
+MNUY1				  NUMBER    0001	  33
+MSGCGRAM			  CODE	    037F	 458
+MSGCLS				  CODE	    0378	 454
+MSGINIT				  CODE	    0362	 445
+NMNUDEF				  NUMBER    000A	  19
 OV				  BIT	      D2
 P				  BIT	      D0
 P0				  DATA	      80
@@ -471,19 +786,12 @@ PB_R				  BIT	      91	   9
 PB_RST				  BIT	      93	  11
 PB_W				  BIT	      92	  10
 PCON				  DATA	      87
-POSTOADP			  CODE	    0195	 125
-PRINTLINE			  CODE	    01A2	 136
-
-ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 9
-
-
-
-SYMBOL				  TYPE     VALUE	LINE
-------------------------------------------------------------
-PRINTLINE1			  CODE	    01BA	 151
-PRINTLINEEX			  CODE	    01C5	 159
-PRINTMENU			  CODE	    0124	  46
-PRINTMENUEX			  CODE	    0137	  58
+POSTOGRPADP			  CODE	    02D6	 341
+POSTOTXTADP			  CODE	    02AF	 314
+PRINTCHR			  CODE	    02FD	 368
+PRINTLINE			  CODE	    030A	 377
+PRINTLINE1			  CODE	    0310	 380
+PRINTLINE2			  CODE	    031C	 388
 PS				  BIT	      BC
 PSW				  DATA	      D0
 PT0				  BIT	      B9
@@ -496,26 +804,37 @@ RD				  BIT	      B7
 REN				  BIT	      9C
 RESET				  CODE	    0000
 RI				  BIT	      98
+
+ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. Heinz                                         PAGE 14
+
+
+
+SYMBOL				  TYPE     VALUE	LINE
+------------------------------------------------------------
 RS0				  BIT	      D3
 RS1				  BIT	      D4
 RXD				  BIT	      B0
 SBUF				  DATA	      99
 SCON				  DATA	      98
-SELECTMENU			  CODE	    0138	  60
-SENDCOMMANDS			  CODE	    0154	  80
-SENDCOMMANDSEX			  CODE	    0169	  96
-SETCGRAM			  CODE	    017F	 111
-SETCGRAM1			  CODE	    0189	 115
-SETTEXTMODE			  CODE	    01CA	 164
-SETTEXTMODE1			  CODE	    01E6	 181
+SENDCOMMANDS			  CODE	    026F	 271
+SENDCOMMANDS1			  CODE	    0275	 275
+SETCGRAM			  CODE	    0299	 300
+SETCGRAM1			  CODE	    02A3	 304
+SETTEXTMODE			  CODE	    0321	 394
+SETTEXTMODE1			  CODE	    032B	 399
 SINT				  CODE	    0023
 SM0				  BIT	      9F
 SM1				  BIT	      9E
 SM2				  BIT	      9D
 SP				  DATA	      81
-START				  CODE	    0100	  25
-STATUS				  CODE	    0206	 209
-STATUS1				  CODE	    020F	 213
+START				  CODE	    0100	  42
+START1				  CODE	    0121	  60
+START2				  CODE	    013D	  74
+START3				  CODE	    013F	  75
+START4				  CODE	    015E	  92
+START5				  CODE	    0160	  93
+STATUS				  CODE	    034B	 429
+STATUS1				  CODE	    0352	 432
 T0				  BIT	      B4
 T1				  BIT	      B5
 TB8				  BIT	      9B
@@ -535,12 +854,5 @@ TR1				  BIT	      8E
 TXD				  BIT	      B1
 TXTHOME				  NUMBER    1000	  15
 WR				  BIT	      B6
-WRITECOMMAND			  CODE	    01F0	 190
-
-ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. Heinz                                         PAGE 10
-
-
-
-SYMBOL				  TYPE     VALUE	LINE
-------------------------------------------------------------
-WRITEDATA			  CODE	    01FB	 199
+WRITECOMMAND			  CODE	    0335	 410
+WRITEDATA			  CODE	    0340	 419
