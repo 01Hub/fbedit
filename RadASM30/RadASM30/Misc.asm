@@ -3056,11 +3056,14 @@ ShowOutput proc fShow:DWORD
 	.if fShow
 		mov		fShow,FALSE
 		.if !eax
+			;Show output
 			invoke SendMessage,ha.hTool,TLM_HIDE,0,ha.hToolOutput
 			mov		fShow,TRUE
+			invoke UpdateWindow,ha.hWnd
 		.endif
 	.else
 		.if eax
+			;Hide output
 			invoke SendMessage,ha.hTool,TLM_HIDE,0,ha.hToolOutput
 			mov		fShow,TRUE
 		.endif

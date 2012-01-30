@@ -4,6 +4,11 @@ Ini files, project files, template files, api files and addins are all incompati
 
 Do NOT install RadASM 3.0 in the same directory as an older version of RadASM.
 
+Version 3.0.0.8 2012-01-30
+--------------------------
+o Fixed bug where code complete list and tooltip did not get its colors set. Thanks ragdog.
+o Fixed a paint bug when output was shown during build.
+
 Version 3.0.0.8 2011-12-23
 --------------------------
 o Improved build options so that linkers not producing windows executeable code still can

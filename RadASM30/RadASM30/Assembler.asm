@@ -318,6 +318,8 @@ SetEnvironment endp
 
 GetColors proc uses ebx
 	LOCAL	racolor:RACOLOR
+	LOCAL	cccol:CC_COLOR
+	 LOCAL	ttcol:TT_COLOR
 
 	invoke GetPrivateProfileString,addr szIniColors,addr szIniColors,addr szNULL,addr tmpbuff,sizeof tmpbuff,addr da.szAssemblerIni
 	.if eax
@@ -347,6 +349,21 @@ GetColors proc uses ebx
 	invoke SendMessage,ha.hProjectBrowser,RPBM_SETTEXTCOLOR,0,da.radcolor.tooltext
 	invoke SendMessage,ha.hProperty,PRM_SETBACKCOLOR,0,da.radcolor.toolback
 	invoke SendMessage,ha.hProperty,PRM_SETTEXTCOLOR,0,da.radcolor.tooltext
+	;Code complete
+	mov		eax,da.radcolor.ccback
+	mov		cccol.back,eax
+	mov		eax,da.radcolor.cctext
+	mov		cccol.text,eax
+	invoke SendMessage,ha.hCC,CCM_SETCOLOR,0,addr cccol
+	mov		eax,da.radcolor.ttback
+	mov		ttcol.back,eax
+	mov		eax,da.radcolor.tttext
+	mov		ttcol.text,eax
+	mov		eax,da.radcolor.ttapi
+	mov		ttcol.api,eax
+	mov		eax,da.radcolor.ttsel
+	mov		ttcol.hilite,eax
+	invoke SendMessage,ha.hTT,TTM_SETCOLOR,0,addr ttcol
 	ret
 
 GetColors endp
