@@ -1,5 +1,5 @@
 [Application]
-ApplicationPath=C:\STM32\Projects\LCDDriver\LCDDriver.elf
+ApplicationPath=C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\LCDDriver.elf
 CSX=0
 HighBankAddr=400000
 BootMode=0

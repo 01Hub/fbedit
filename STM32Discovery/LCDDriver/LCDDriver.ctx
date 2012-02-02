@@ -1,7 +1,7 @@
 
 <Debug>
 	<LCDDriver>
-		<CodeView TopRow="134220278" Focus="4294967295" >
+		<CodeView TopRow="134219104" Focus="4294967295" >
 			<CodeReport>
 				<0>112</0>
 				<1>123</1>
@@ -32,17 +32,19 @@
 				<Col Type="PT_STRING" Header="Condcount" sizeCache="DD" AutoSize="1" Edit="0" Sortable="0" Visible="0" />
 							
 			</Def>
-			<Rows/>
+			<Rows>
+				<Row Check="True" Kind="Breakpoint" KindID="0" Space="code" SpaceID="0" Condition="" Line="L:56" File="main.c" Path="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\main.c" />
+							
+			</Rows>
 					
 		</Report>
 			
 	</Flags>
 	<Views>
-		<View File="C:\STM32\Projects\LCDDriver\main.c" Line="105" Index="0" focus="1" />
-		<View File="C:\STM32\Projects\LCDDriver\Font6x8.h" Line="14" Index="1" />
-		<View File="C:\STM32\Projects\LCDDriver\stm32f10x_it.c" Line="480" Index="2" />
-		<View File="C:\STM32\Projects\LCDDriver\stm32f10x_tim.c" Line="16" Index="3" />
-		<View File="C:\STM32\Inc\stm32f10x_tim.h" Line="603" Index="4" />
+		<View File="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\main.c" Line="111" Index="0" focus="1" />
+		<View File="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="458" Index="1" />
+		<View File="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\Font6x8.h" Line="14" Index="2" />
+		<View File="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\startup_stm32f10x_hd.s" Line="0" Index="3" />
 	</Views>
 	<Grep>
 		<GrepIncludeSub>yes</GrepIncludeSub>

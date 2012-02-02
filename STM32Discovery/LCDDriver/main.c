@@ -7,14 +7,17 @@
 *******************************************************************************/
 
 /*******************************************************************************
+* Horizontal
 * H-sync         4,70uS
 * Blank start    1,65uS
 * Active video  51,95uS
 * Blank end      5,70uS
 * Line total    64,0uS
 * 
-* V-sync        0,576mS
+* Vertical
+* V-sync        0,576mS (9 lines)
 * Frame         20mS (312,5 lines)
+* Video signal  288 lines
 *******************************************************************************/
 
 /* Includes ------------------------------------------------------------------*/
@@ -26,11 +29,14 @@ ErrorStatus HSEStartUpStatus;
 NVIC_InitTypeDef NVIC_InitStructure;
 TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;
 vu16 LineCount;
+vu16 ScreenCharLineInx;
+vu16 ScreenChars[25*80];
 
 /* Private function prototypes -----------------------------------------------*/
 void RCC_Configuration(void);
 void GPIO_Configuration(void);
 void NVIC_Configuration(void);
+void TIM2_Configuration(void);
 void TIM3_Configuration(void);
 void TIM4_Configuration(void);
 
@@ -51,12 +57,17 @@ int main(void)
   NVIC_Configuration();
   /* GPIO configuration ------------------------------------------------------*/
   GPIO_Configuration();
+  /* TIM2 configuration ------------------------------------------------------*/
+  TIM2_Configuration();
   /* TIM3 configuration ------------------------------------------------------*/
   TIM3_Configuration();
   /* TIM4 configuration ------------------------------------------------------*/
   TIM4_Configuration();
   /* Enable TIM3 */
   TIM_Cmd(TIM3, ENABLE);
+  /* Enable TIM2 Update interrupt */
+  TIM_ClearITPendingBit(TIM2,TIM_IT_Update);
+  TIM_ITConfig(TIM2, TIM_IT_Update, ENABLE);
   /* Enable TIM3 Update interrupt */
   TIM_ClearITPendingBit(TIM3,TIM_IT_Update);
   TIM_ITConfig(TIM3, TIM_IT_Update, ENABLE);
@@ -69,8 +80,49 @@ int main(void)
 }
 
 /*******************************************************************************
+* Function Name  : TIM2_IRQHandler
+* Description    : This function handles TIM2 global interrupt request.
+*                  An interrupt is generated 1,65uS after the end of horizontal sync.
+*                  The video signal is generated here.
+* Input          : None
+* Output         : None
+* Return         : None
+*******************************************************************************/
+void TIM2_IRQHandler(void)
+{
+  // u16 CharNbr;
+  // u16 Char;
+  // u16 PixelNbr;
+  /* Clear TIM2 Update interrupt pending bit */
+  asm("mov    r0,#0x0");
+  asm("mov    r1,#0x40000000");
+  asm("strh   r0,[r1,#0x10]");
+  /* Disable TIM2 */
+  asm("strh   r0,[r1,#0x0]");
+  /* r0 line start index into ScreenChar */
+  asm volatile("ldr r0,[%0]" : : "r" (ScreenCharLineInx));
+  asm volatile("mov    r3,#0x0");
+  asm volatile
+  (
+    "1:add r3,r3,#0x1\r\n"
+    "cmp r3,#80\r\n"
+    "it ne\r\n"
+    "bne 1"
+  );
+
+
+  // CharNbr=0;
+  // while (CharNbr<80)
+  // {
+    // Char=ScreenChars[ScreenCharLineInx+CharNbr];
+    // CharNbr++;
+  // }
+}
+
+/*******************************************************************************
 * Function Name  : TIM3_IRQHandler
 * Description    : This function handles TIM3 global interrupt request.
+*                  An interrupt is generated for each horizontal line.
 * Input          : None
 * Output         : None
 * Return         : None
@@ -84,10 +136,8 @@ void TIM3_IRQHandler(void)
   asm("strh   r0,[r1,#0x10]");
   /* Reset TIM4 count */
   TIM4->CNT=0;
-  /* Set the Autoreload value (4,7uS) */
-  TIM4->ARR = 263;
   /* Enable TIM4 */
-  TIM_Cmd(TIM4, ENABLE);
+  TIM4->CR1=1;
   /* H-Sync low */
   GPIO_ResetBits(GPIOA,GPIO_Pin_1);
 }
@@ -95,6 +145,7 @@ void TIM3_IRQHandler(void)
 /*******************************************************************************
 * Function Name  : TIM4_IRQHandler
 * Description    : This function handles TIM4 global interrupt request.
+*                  An interrupt is generated after 4,70uS for each horizontal line.
 * Input          : None
 * Output         : None
 * Return         : None
@@ -107,7 +158,6 @@ void TIM4_IRQHandler(void)
   asm("movt   r1,#0x4000");
   asm("strh   r0,[r1,#0x10]");
   /* Disable TIM4 */
-  // TIM_Cmd(TIM4, DISABLE);
   asm("strh   r0,[r1,#0x0]");
 
   LineCount++;
@@ -115,12 +165,22 @@ void TIM4_IRQHandler(void)
   {
     /* H-Sync high */
     GPIO_SetBits(GPIOA,GPIO_Pin_1);
+    /* Skip 10 lines befor any video signal */
+    if (LineCount>=10 && LineCount<260)
+    {
+      /* Reset TIM2 count */
+      TIM2->CNT=0;
+      /* Enable TIM2 */
+      TIM2->CR1=1;
+      ScreenCharLineInx=(LineCount/10-1)*80;
+    }
   }
   else if (LineCount==312)
   {
     /* V-Sync high (9 lines) */
     GPIO_SetBits(GPIOA,GPIO_Pin_1);
     LineCount=0;
+    ScreenCharLineInx=0;
   }
 }
 
@@ -219,6 +279,12 @@ void NVIC_Configuration(void)
   NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
   NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
   NVIC_Init(&NVIC_InitStructure);
+  /* Enable the TIM2 global Interrupt */
+  NVIC_InitStructure.NVIC_IRQChannel = TIM2_IRQChannel;
+  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
+  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+  NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+  NVIC_Init(&NVIC_InitStructure);
   /* Enable the TIM3 global Interrupt */
   NVIC_InitStructure.NVIC_IRQChannel = TIM3_IRQChannel;
   NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
@@ -234,9 +300,25 @@ void NVIC_Configuration(void)
 }
 
 /*******************************************************************************
+* Function Name  : TIM2_Configuration
+* Description    : Configures TIM2 to count up
+* Input          : None
+* Output         : None
+* Return         : None
+*******************************************************************************/
+void TIM2_Configuration(void)
+{
+  /* Time base configuration */
+  TIM_TimeBaseStructure.TIM_Period = 92;                      // 1.65uS
+  TIM_TimeBaseStructure.TIM_Prescaler = 0;
+  TIM_TimeBaseStructure.TIM_ClockDivision = 0;
+  TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
+  TIM_TimeBaseInit(TIM2, &TIM_TimeBaseStructure);
+}
+
+/*******************************************************************************
 * Function Name  : TIM3_Configuration
-* Description    : Configures TIM3 to count up on rising edges on CH2 PA.07
-*                  TIM3 is master for TIM4.
+* Description    : Configures TIM3 to count up
 * Input          : None
 * Output         : None
 * Return         : None
@@ -253,7 +335,7 @@ void TIM3_Configuration(void)
 
 /*******************************************************************************
 * Function Name  : TIM4_Configuration
-* Description    : Configures TIM4 as a slave to TIM3 to form a 32bit up counter.
+* Description    : Configures TIM4 to count up
 * Input          : None
 * Output         : None
 * Return         : None
@@ -261,7 +343,7 @@ void TIM3_Configuration(void)
 void TIM4_Configuration(void)
 {
   /* Time base configuration */
-  TIM_TimeBaseStructure.TIM_Period = 0xffff;
+  TIM_TimeBaseStructure.TIM_Period = 263;                   // 4,70uS
   TIM_TimeBaseStructure.TIM_Prescaler = 0;
   TIM_TimeBaseStructure.TIM_ClockDivision = 0;
   TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
