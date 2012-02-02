@@ -1,0 +1,621 @@
+<!-- DWF2XML 2.00.01 - Raisonance Dwarf information extractor -->
+<aoffile Filename="LCDDriver" dwarf="1">
+ <modulelist>
+  <module Name="C:\STM32\Projects\LCDDriver\main.c" >
+   <type Family="Base" Name="long int" ID="37"/>
+   <type Family="Base" Name="short int" ID="44"/>
+   <type Family="Base" Name="signed char" ID="51"/>
+   <type Family="Base" Name="long unsigned int" ID="69"/>
+   <type Family="typedef" Name="u32" Line="39" ID="58" toTI="69"/>
+   <type Family="Base" Name="short unsigned int" ID="87"/>
+   <type Family="typedef" Name="u16" Line="40" ID="76" toTI="87"/>
+   <type Family="Base" Name="unsigned char" ID="104"/>
+   <type Family="typedef" Name="u8" Line="41" ID="94" toTI="104"/>
+   <type Family="typedef" Name="FunctionalState" Line="59" ID="163" toTI="142"/>
+   <type Family="typedef" Name="ErrorStatus" Line="62" ID="195" toTI="174"/>
+   <type Family="Base" Name="unsigned int" ID="206"/>
+   <type Family="ComponentList" Line="334" ID="213">
+    <Component Name="CRL" TI="222" Line="336" Offs="0"/>
+    <Component Name="CRH" TI="237" Line="337" Offs="4"/>
+    <Component Name="IDR" TI="252" Line="338" Offs="8"/>
+    <Component Name="ODR" TI="267" Line="339" Offs="12"/>
+    <Component Name="BSRR" TI="282" Line="340" Offs="16"/>
+    <Component Name="BRR" TI="297" Line="341" Offs="20"/>
+    <Component Name="LCKR" TI="312" Line="342" Offs="24"/>
+   </type>
+   <type Family="typedef" Name="GPIO_TypeDef" Line="343" ID="328" toTI="213"/>
+   <type Family="ComponentList" Line="523" ID="340">
+    <Component Name="CR1" TI="349" Line="525" Offs="0"/>
+    <Component Name="RESERVED0" TI="364" Line="526" Offs="2"/>
+    <Component Name="CR2" TI="379" Line="527" Offs="4"/>
+    <Component Name="RESERVED1" TI="394" Line="528" Offs="6"/>
+    <Component Name="SMCR" TI="409" Line="529" Offs="8"/>
+    <Component Name="RESERVED2" TI="424" Line="530" Offs="10"/>
+    <Component Name="DIER" TI="439" Line="531" Offs="12"/>
+    <Component Name="RESERVED3" TI="454" Line="532" Offs="14"/>
+    <Component Name="SR" TI="469" Line="533" Offs="16"/>
+    <Component Name="RESERVED4" TI="483" Line="534" Offs="18"/>
+    <Component Name="EGR" TI="498" Line="535" Offs="20"/>
+    <Component Name="RESERVED5" TI="513" Line="536" Offs="22"/>
+    <Component Name="CCMR1" TI="528" Line="537" Offs="24"/>
+    <Component Name="RESERVED6" TI="543" Line="538" Offs="26"/>
+    <Component Name="CCMR2" TI="558" Line="539" Offs="28"/>
+    <Component Name="RESERVED7" TI="573" Line="540" Offs="30"/>
+    <Component Name="CCER" TI="588" Line="541" Offs="32"/>
+    <Component Name="RESERVED8" TI="603" Line="542" Offs="34"/>
+    <Component Name="CNT" TI="618" Line="543" Offs="36"/>
+    <Component Name="RESERVED9" TI="633" Line="544" Offs="38"/>
+    <Component Name="PSC" TI="648" Line="545" Offs="40"/>
+    <Component Name="RESERVED10" TI="663" Line="546" Offs="42"/>
+    <Component Name="ARR" TI="678" Line="547" Offs="44"/>
+    <Component Name="RESERVED11" TI="693" Line="548" Offs="46"/>
+    <Component Name="RCR" TI="708" Line="549" Offs="48"/>
+    <Component Name="RESERVED12" TI="723" Line="550" Offs="50"/>
+    <Component Name="CCR1" TI="738" Line="551" Offs="52"/>
+    <Component Name="RESERVED13" TI="753" Line="552" Offs="54"/>
+    <Component Name="CCR2" TI="768" Line="553" Offs="56"/>
+    <Component Name="RESERVED14" TI="783" Line="554" Offs="58"/>
+    <Component Name="CCR3" TI="798" Line="555" Offs="60"/>
+    <Component Name="RESERVED15" TI="813" Line="556" Offs="62"/>
+    <Component Name="CCR4" TI="828" Line="557" Offs="64"/>
+    <Component Name="RESERVED16" TI="843" Line="558" Offs="66"/>
+    <Component Name="BDTR" TI="858" Line="559" Offs="68"/>
+    <Component Name="RESERVED17" TI="873" Line="560" Offs="70"/>
+    <Component Name="DCR" TI="888" Line="561" Offs="72"/>
+    <Component Name="RESERVED18" TI="903" Line="562" Offs="74"/>
+    <Component Name="DMAR" TI="918" Line="563" Offs="76"/>
+    <Component Name="RESERVED19" TI="933" Line="564" Offs="78"/>
+   </type>
+   <type Family="typedef" Name="TIM_TypeDef" Line="565" ID="949" toTI="340"/>
+   <type Family="typedef" Name="GPIOSpeed_TypeDef" Line="39" ID="988" toTI="961"/>
+   <type Family="typedef" Name="GPIOMode_TypeDef" Line="54" ID="1057" toTI="999"/>
+   <type Family="ComponentList" Line="62" ID="1068">
+    <Component Name="GPIO_Pin" TI="1076" Line="64" Offs="0"/>
+    <Component Name="GPIO_Speed" TI="1090" Line="65" Offs="2"/>
+    <Component Name="GPIO_Mode" TI="1104" Line="66" Offs="3"/>
+   </type>
+   <type Family="typedef" Name="GPIO_InitTypeDef" Line="67" ID="1119" toTI="1068"/>
+   <type Family="ComponentList" Line="26" ID="1130">
+    <Component Name="NVIC_IRQChannel" TI="1138" Line="28" Offs="0"/>
+    <Component Name="NVIC_IRQChannelPreemptionPriority" TI="1152" Line="29" Offs="1"/>
+    <Component Name="NVIC_IRQChannelSubPriority" TI="1166" Line="30" Offs="2"/>
+    <Component Name="NVIC_IRQChannelCmd" TI="1180" Line="31" Offs="3"/>
+   </type>
+   <type Family="typedef" Name="NVIC_InitTypeDef" Line="32" ID="1195" toTI="1130"/>
+   <type Family="ComponentList" Line="27" ID="1206">
+    <Component Name="TIM_Prescaler" TI="1214" Line="29" Offs="0"/>
+    <Component Name="TIM_CounterMode" TI="1228" Line="30" Offs="2"/>
+    <Component Name="TIM_Period" TI="1242" Line="31" Offs="4"/>
+    <Component Name="TIM_ClockDivision" TI="1256" Line="32" Offs="6"/>
+    <Component Name="TIM_RepetitionCounter" TI="1270" Line="33" Offs="8"/>
+   </type>
+   <type Family="typedef" Name="TIM_TimeBaseInitTypeDef" Line="34" ID="1285" toTI="1206"/>
+   <function Name="TIM3_IRQHandler" TI="0" FileName="C:\STM32\Projects\LCDDriver\main.c" Line="78">
+   </function >
+   <function Name="TIM4_IRQHandler" TI="0" FileName="C:\STM32\Projects\LCDDriver\main.c" Line="102">
+   </function >
+   <function Name="RCC_Configuration" TI="0" FileName="C:\STM32\Projects\LCDDriver\main.c" Line="134">
+   </function >
+   <function Name="GPIO_Configuration" TI="0" FileName="C:\STM32\Projects\LCDDriver\main.c" Line="185">
+    <variable Name="GPIO_InitStructure" FileName="C:\STM32\Projects\LCDDriver\main.c" Line="187" Addr="0x34000004" TI="1119"/>
+   </function >
+   <function Name="NVIC_Configuration" TI="0" FileName="C:\STM32\Projects\LCDDriver\main.c" Line="212">
+   </function >
+   <function Name="TIM3_Configuration" TI="0" FileName="C:\STM32\Projects\LCDDriver\main.c" Line="244">
+   </function >
+   <function Name="TIM4_Configuration" TI="0" FileName="C:\STM32\Projects\LCDDriver\main.c" Line="261">
+   </function >
+   <type Family="Base" Name="int" ID="1488"/>
+   <function Name="main" TI="1488" FileName="C:\STM32\Projects\LCDDriver\main.c" Line="46">
+   </function >
+   <type Family="array" ID="1547" toTI="94"/>
+   <variable Name="Font6x8" FileName="C:\STM32\Projects\LCDDriver\Font6x8.h" Line="15" Addr="0x0" TI="1547"/>
+   <variable Name="HSEStartUpStatus" FileName="C:\STM32\Projects\LCDDriver\main.c" Line="25" Addr="0x20000000" TI="195"/>
+   <variable Name="NVIC_InitStructure" FileName="C:\STM32\Projects\LCDDriver\main.c" Line="26" Addr="0x20000010" TI="1195"/>
+   <variable Name="TIM_TimeBaseStructure" FileName="C:\STM32\Projects\LCDDriver\main.c" Line="27" Addr="0x20000004" TI="1285"/>
+   <variable Name="LineCount" FileName="C:\STM32\Projects\LCDDriver\main.c" Line="28" Addr="0x2000000E" TI="116"/>
+  </module>
+  <module Name="C:\STM32\Projects\LCDDriver\stm32f10x_lib.c" >
+   <type Family="Base" Name="long int" ID="1693"/>
+   <type Family="Base" Name="short int" ID="1700"/>
+   <type Family="Base" Name="signed char" ID="1707"/>
+   <type Family="Base" Name="long unsigned int" ID="1714"/>
+   <type Family="Base" Name="short unsigned int" ID="1721"/>
+   <type Family="Base" Name="unsigned char" ID="1728"/>
+   <type Family="Base" Name="unsigned int" ID="1735"/>
+  </module>
+  <module Name="C:\STM32\Projects\LCDDriver\stm32f10x_nvic.c" >
+   <type Family="Base" Name="long int" ID="1780"/>
+   <type Family="Base" Name="short int" ID="1787"/>
+   <type Family="Base" Name="signed char" ID="1794"/>
+   <type Family="Base" Name="long unsigned int" ID="1812"/>
+   <type Family="typedef" Name="u32" Line="39" ID="1801" toTI="1812"/>
+   <type Family="Base" Name="short unsigned int" ID="1830"/>
+   <type Family="typedef" Name="u16" Line="40" ID="1819" toTI="1830"/>
+   <type Family="Base" Name="unsigned char" ID="1847"/>
+   <type Family="typedef" Name="u8" Line="41" ID="1837" toTI="1847"/>
+   <type Family="typedef" Name="vu32" Line="47" ID="1854" toTI="1865"/>
+   <type Family="typedef" Name="ITStatus" Line="57" ID="1896" toTI="1875"/>
+   <type Family="typedef" Name="FunctionalState" Line="59" ID="1928" toTI="1907"/>
+   <type Family="Base" Name="unsigned int" ID="1939"/>
+   <type Family="ComponentList" Line="385" ID="1946">
+   <type Family="array" ID="2131" toTI="1812"/>
+    <Component Name="ISER" TI="1956" Line="387" Offs="0"/>
+   <type Family="array" ID="2152" toTI="1801"/>
+    <Component Name="RESERVED0" TI="1971" Line="388" Offs="8"/>
+    <Component Name="ICER" TI="1986" Line="389" Offs="128"/>
+    <Component Name="RSERVED1" TI="2002" Line="390" Offs="136"/>
+    <Component Name="ISPR" TI="2018" Line="391" Offs="256"/>
+    <Component Name="RESERVED2" TI="2034" Line="392" Offs="264"/>
+    <Component Name="ICPR" TI="2050" Line="393" Offs="384"/>
+    <Component Name="RESERVED3" TI="2066" Line="394" Offs="392"/>
+    <Component Name="IABR" TI="2082" Line="395" Offs="512"/>
+   <type Family="array" ID="2188" toTI="1801"/>
+    <Component Name="RESERVED4" TI="2098" Line="396" Offs="520"/>
+   <type Family="array" ID="2204" toTI="1812"/>
+    <Component Name="IPR" TI="2114" Line="397" Offs="768"/>
+   </type>
+   <type Family="typedef" Name="NVIC_TypeDef" Line="398" ID="2225" toTI="1946"/>
+   <type Family="ComponentList" Line="400" ID="2237">
+    <Component Name="CPUID" TI="2246" Line="402" Offs="0"/>
+    <Component Name="ICSR" TI="2261" Line="403" Offs="4"/>
+    <Component Name="VTOR" TI="2276" Line="404" Offs="8"/>
+    <Component Name="AIRCR" TI="2291" Line="405" Offs="12"/>
+    <Component Name="SCR" TI="2306" Line="406" Offs="16"/>
+    <Component Name="CCR" TI="2321" Line="407" Offs="20"/>
+   <type Family="array" ID="2457" toTI="1812"/>
+    <Component Name="SHPR" TI="2336" Line="408" Offs="24"/>
+    <Component Name="SHCSR" TI="2351" Line="409" Offs="36"/>
+    <Component Name="CFSR" TI="2366" Line="410" Offs="40"/>
+    <Component Name="HFSR" TI="2381" Line="411" Offs="44"/>
+    <Component Name="DFSR" TI="2396" Line="412" Offs="48"/>
+    <Component Name="MMFAR" TI="2411" Line="413" Offs="52"/>
+    <Component Name="BFAR" TI="2426" Line="414" Offs="56"/>
+    <Component Name="AFSR" TI="2441" Line="415" Offs="60"/>
+   </type>
+   <type Family="typedef" Name="SCB_TypeDef" Line="416" ID="2478" toTI="2237"/>
+   <type Family="ComponentList" Line="26" ID="2490">
+    <Component Name="NVIC_IRQChannel" TI="2498" Line="28" Offs="0"/>
+    <Component Name="NVIC_IRQChannelPreemptionPriority" TI="2512" Line="29" Offs="1"/>
+    <Component Name="NVIC_IRQChannelSubPriority" TI="2526" Line="30" Offs="2"/>
+    <Component Name="NVIC_IRQChannelCmd" TI="2540" Line="31" Offs="3"/>
+   </type>
+   <type Family="typedef" Name="NVIC_InitTypeDef" Line="32" ID="2555" toTI="2490"/>
+   <function Name="NVIC_Init" TI="0" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_nvic.c" Line="116">
+   <type Family="Pointer" TI="2802" toTI="2555"/>
+    <parameter Name="NVIC_InitStruct" TI="2802" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_nvic.c" Line="116" Addr="0x0" Param="Yes"/>
+    <variable Name="tmppriority" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_nvic.c" Line="118" Addr="0x0" TI="1801"/>
+    <variable Name="tmpreg" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_nvic.c" Line="118" Addr="0x0" TI="1801"/>
+    <variable Name="tmpmask" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_nvic.c" Line="118" Addr="0x0" TI="1801"/>
+    <variable Name="tmppre" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_nvic.c" Line="119" Addr="0x0" TI="1801"/>
+    <variable Name="tmpsub" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_nvic.c" Line="119" Addr="0x0" TI="1801"/>
+   </function >
+   <function Name="NVIC_SetVectorTable" TI="0" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_nvic.c" Line="393">
+    <parameter Name="NVIC_VectTab" TI="1801" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_nvic.c" Line="393" Addr="0x0" Param="Yes"/>
+    <parameter Name="Offset" TI="1801" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_nvic.c" Line="393" Addr="0x1" Param="Yes"/>
+   </function >
+  </module>
+  <module Name="C:\STM32\Projects\LCDDriver\stm32f10x_rcc.c" >
+   <type Family="Base" Name="long int" ID="4184"/>
+   <type Family="Base" Name="short int" ID="4191"/>
+   <type Family="Base" Name="signed char" ID="4198"/>
+   <type Family="Base" Name="long unsigned int" ID="4216"/>
+   <type Family="typedef" Name="u32" Line="39" ID="4205" toTI="4216"/>
+   <type Family="Base" Name="short unsigned int" ID="4234"/>
+   <type Family="typedef" Name="u16" Line="40" ID="4223" toTI="4234"/>
+   <type Family="Base" Name="unsigned char" ID="4251"/>
+   <type Family="typedef" Name="u8" Line="41" ID="4241" toTI="4251"/>
+   <type Family="typedef" Name="vu32" Line="47" ID="4258" toTI="4269"/>
+   <type Family="typedef" Name="vu8" Line="49" ID="4274" toTI="4285"/>
+   <type Family="typedef" Name="FlagStatus" Line="57" ID="4311" toTI="4290"/>
+   <type Family="typedef" Name="ITStatus" Line="57" ID="4322" toTI="4290"/>
+   <type Family="typedef" Name="FunctionalState" Line="59" ID="4354" toTI="4333"/>
+   <type Family="typedef" Name="ErrorStatus" Line="62" ID="4386" toTI="4365"/>
+   <type Family="Base" Name="unsigned int" ID="4397"/>
+   <type Family="ComponentList" Line="426" ID="4404">
+    <Component Name="CR" TI="4413" Line="428" Offs="0"/>
+    <Component Name="CFGR" TI="4427" Line="429" Offs="4"/>
+    <Component Name="CIR" TI="4442" Line="430" Offs="8"/>
+    <Component Name="APB2RSTR" TI="4457" Line="431" Offs="12"/>
+    <Component Name="APB1RSTR" TI="4472" Line="432" Offs="16"/>
+    <Component Name="AHBENR" TI="4487" Line="433" Offs="20"/>
+    <Component Name="APB2ENR" TI="4502" Line="434" Offs="24"/>
+    <Component Name="APB1ENR" TI="4517" Line="435" Offs="28"/>
+    <Component Name="BDCR" TI="4532" Line="436" Offs="32"/>
+    <Component Name="CSR" TI="4547" Line="437" Offs="36"/>
+   </type>
+   <type Family="typedef" Name="RCC_TypeDef" Line="438" ID="4563" toTI="4404"/>
+   <type Family="ComponentList" Line="25" ID="4575">
+    <Component Name="SYSCLK_Frequency" TI="4583" Line="27" Offs="0"/>
+    <Component Name="HCLK_Frequency" TI="4597" Line="28" Offs="4"/>
+    <Component Name="PCLK1_Frequency" TI="4611" Line="29" Offs="8"/>
+    <Component Name="PCLK2_Frequency" TI="4625" Line="30" Offs="12"/>
+    <Component Name="ADCCLK_Frequency" TI="4639" Line="31" Offs="16"/>
+   </type>
+   <type Family="typedef" Name="RCC_ClocksTypeDef" Line="32" ID="4654" toTI="4575"/>
+   <function Name="RCC_DeInit" TI="0" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_rcc.c" Line="124">
+   </function >
+   <function Name="RCC_HSEConfig" TI="0" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_rcc.c" Line="159">
+    <parameter Name="RCC_HSE" TI="4205" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_rcc.c" Line="159" Addr="0x0" Param="Yes"/>
+   </function >
+   <function Name="RCC_PLLConfig" TI="0" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_rcc.c" Line="287">
+    <parameter Name="RCC_PLLSource" TI="4205" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_rcc.c" Line="287" Addr="0x0" Param="Yes"/>
+    <parameter Name="RCC_PLLMul" TI="4205" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_rcc.c" Line="287" Addr="0x1" Param="Yes"/>
+    <variable Name="tmpreg" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_rcc.c" Line="289" Addr="0x0" TI="4205"/>
+   </function >
+   <function Name="RCC_PLLCmd" TI="0" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_rcc.c" Line="316">
+    <parameter Name="NewState" TI="4354" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_rcc.c" Line="316" Addr="0x0" Param="Yes"/>
+   </function >
+   <function Name="RCC_SYSCLKConfig" TI="0" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_rcc.c" Line="335">
+    <parameter Name="RCC_SYSCLKSource" TI="4205" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_rcc.c" Line="335" Addr="0x0" Param="Yes"/>
+    <variable Name="tmpreg" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_rcc.c" Line="337" Addr="0x0" TI="4205"/>
+   </function >
+   <function Name="RCC_GetSYSCLKSource" TI="4241" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_rcc.c" Line="365">
+   </function >
+   <function Name="RCC_HCLKConfig" TI="0" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_rcc.c" Line="388">
+    <parameter Name="RCC_SYSCLK" TI="4205" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_rcc.c" Line="388" Addr="0x0" Param="Yes"/>
+    <variable Name="tmpreg" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_rcc.c" Line="390" Addr="0x0" TI="4205"/>
+   </function >
+   <function Name="RCC_PCLK1Config" TI="0" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_rcc.c" Line="421">
+    <parameter Name="RCC_HCLK" TI="4205" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_rcc.c" Line="421" Addr="0x0" Param="Yes"/>
+    <variable Name="tmpreg" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_rcc.c" Line="423" Addr="0x0" TI="4205"/>
+   </function >
+   <function Name="RCC_PCLK2Config" TI="0" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_rcc.c" Line="454">
+    <parameter Name="RCC_HCLK" TI="4205" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_rcc.c" Line="454" Addr="0x0" Param="Yes"/>
+    <variable Name="tmpreg" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_rcc.c" Line="456" Addr="0x0" TI="4205"/>
+   </function >
+   <function Name="RCC_ADCCLKConfig" TI="0" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_rcc.c" Line="541">
+    <parameter Name="RCC_PCLK2" TI="4205" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_rcc.c" Line="541" Addr="0x0" Param="Yes"/>
+    <variable Name="tmpreg" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_rcc.c" Line="543" Addr="0x0" TI="4205"/>
+   </function >
+   <type Family="Pointer" TI="5592" toTI="4654"/>
+   <function Name="RCC_APB2PeriphClockCmd" TI="0" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_rcc.c" Line="801">
+    <parameter Name="RCC_APB2Periph" TI="4205" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_rcc.c" Line="801" Addr="0x0" Param="Yes"/>
+    <parameter Name="NewState" TI="4354" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_rcc.c" Line="801" Addr="0x1" Param="Yes"/>
+   </function >
+   <function Name="RCC_APB1PeriphClockCmd" TI="0" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_rcc.c" Line="835">
+    <parameter Name="RCC_APB1Periph" TI="4205" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_rcc.c" Line="835" Addr="0x0" Param="Yes"/>
+    <parameter Name="NewState" TI="4354" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_rcc.c" Line="835" Addr="0x1" Param="Yes"/>
+   </function >
+   <function Name="RCC_GetFlagStatus" TI="4311" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_rcc.c" Line="989">
+    <parameter Name="RCC_FLAG" TI="4241" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_rcc.c" Line="989" Addr="0x0" Param="Yes"/>
+    <variable Name="tmp" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_rcc.c" Line="991" Addr="0x0" TI="4205"/>
+    <variable Name="statusreg" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_rcc.c" Line="992" Addr="0x0" TI="4205"/>
+    <variable Name="bitstatus" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_rcc.c" Line="993" Addr="0x0" TI="4311"/>
+   </function >
+   <function Name="RCC_WaitForHSEStartUp" TI="4386" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_rcc.c" Line="198">
+    <variable Name="StartUpCounter" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_rcc.c" Line="200" Addr="0x34000004" TI="4269"/>
+    <variable Name="status" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_rcc.c" Line="201" Addr="0x34000010" TI="4386"/>
+    <variable Name="HSEStatus" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_rcc.c" Line="202" Addr="0x10" TI="4311"/>
+   </function >
+   <type Family="array" ID="6290" toTI="4251"/>
+   <variable Name="APBAHBPrescTable" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_rcc.c" Line="111" Addr="0x0" TI="6323"/>
+   <type Family="array" ID="6328" toTI="4251"/>
+   <variable Name="ADCPrescTable" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_rcc.c" Line="112" Addr="0x0" TI="6361"/>
+  </module>
+  <module Name="C:\STM32\Projects\LCDDriver\stm32f10x_gpio.c" >
+   <type Family="Base" Name="long int" ID="6404"/>
+   <type Family="Base" Name="short int" ID="6411"/>
+   <type Family="Base" Name="signed char" ID="6418"/>
+   <type Family="Base" Name="long unsigned int" ID="6436"/>
+   <type Family="typedef" Name="u32" Line="39" ID="6425" toTI="6436"/>
+   <type Family="Base" Name="short unsigned int" ID="6454"/>
+   <type Family="typedef" Name="u16" Line="40" ID="6443" toTI="6454"/>
+   <type Family="Base" Name="unsigned char" ID="6471"/>
+   <type Family="typedef" Name="u8" Line="41" ID="6461" toTI="6471"/>
+   <type Family="typedef" Name="vu32" Line="47" ID="6478" toTI="6489"/>
+   <type Family="typedef" Name="FunctionalState" Line="59" ID="6515" toTI="6494"/>
+   <type Family="Base" Name="unsigned int" ID="6526"/>
+   <type Family="ComponentList" Line="334" ID="6533">
+    <Component Name="CRL" TI="6542" Line="336" Offs="0"/>
+    <Component Name="CRH" TI="6557" Line="337" Offs="4"/>
+    <Component Name="IDR" TI="6572" Line="338" Offs="8"/>
+    <Component Name="ODR" TI="6587" Line="339" Offs="12"/>
+    <Component Name="BSRR" TI="6602" Line="340" Offs="16"/>
+    <Component Name="BRR" TI="6617" Line="341" Offs="20"/>
+    <Component Name="LCKR" TI="6632" Line="342" Offs="24"/>
+   </type>
+   <type Family="typedef" Name="GPIO_TypeDef" Line="343" ID="6648" toTI="6533"/>
+   <type Family="ComponentList" Line="345" ID="6660">
+    <Component Name="EVCR" TI="6669" Line="347" Offs="0"/>
+    <Component Name="MAPR" TI="6684" Line="348" Offs="4"/>
+   <type Family="array" ID="6715" toTI="6436"/>
+    <Component Name="EXTICR" TI="6699" Line="349" Offs="8"/>
+   </type>
+   <type Family="typedef" Name="AFIO_TypeDef" Line="350" ID="6736" toTI="6660"/>
+   <type Family="typedef" Name="GPIOSpeed_TypeDef" Line="39" ID="6775" toTI="6748"/>
+   <type Family="typedef" Name="GPIOMode_TypeDef" Line="54" ID="6844" toTI="6786"/>
+   <type Family="ComponentList" Line="62" ID="6855">
+    <Component Name="GPIO_Pin" TI="6863" Line="64" Offs="0"/>
+    <Component Name="GPIO_Speed" TI="6877" Line="65" Offs="2"/>
+    <Component Name="GPIO_Mode" TI="6891" Line="66" Offs="3"/>
+   </type>
+   <type Family="typedef" Name="GPIO_InitTypeDef" Line="67" ID="6906" toTI="6855"/>
+   <type Family="typedef" Name="BitAction" Line="73" ID="6938" toTI="6917"/>
+   <type Family="Pointer" TI="6990" toTI="6648"/>
+   <function Name="GPIO_Init" TI="0" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_gpio.c" Line="124">
+    <parameter Name="GPIOx" TI="6990" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_gpio.c" Line="124" Addr="0x0" Param="Yes"/>
+   <type Family="Pointer" TI="7159" toTI="6906"/>
+    <parameter Name="GPIO_InitStruct" TI="7159" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_gpio.c" Line="124" Addr="0x1" Param="Yes"/>
+    <variable Name="currentmode" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_gpio.c" Line="126" Addr="0x0" TI="6425"/>
+    <variable Name="currentpin" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_gpio.c" Line="126" Addr="0x0" TI="6425"/>
+    <variable Name="pinpos" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_gpio.c" Line="126" Addr="0x0" TI="6425"/>
+    <variable Name="pos" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_gpio.c" Line="126" Addr="0x0" TI="6425"/>
+    <variable Name="tmpreg" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_gpio.c" Line="127" Addr="0x0" TI="6425"/>
+    <variable Name="pinmask" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_gpio.c" Line="127" Addr="0x0" TI="6425"/>
+   </function >
+   <function Name="GPIO_SetBits" TI="0" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_gpio.c" Line="333">
+    <parameter Name="GPIOx" TI="6990" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_gpio.c" Line="333" Addr="0x0" Param="Yes"/>
+    <parameter Name="GPIO_Pin" TI="6443" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_gpio.c" Line="333" Addr="0x1" Param="Yes"/>
+   </function >
+   <function Name="GPIO_ResetBits" TI="0" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_gpio.c" Line="352">
+    <parameter Name="GPIOx" TI="6990" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_gpio.c" Line="352" Addr="0x0" Param="Yes"/>
+    <parameter Name="GPIO_Pin" TI="6443" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_gpio.c" Line="352" Addr="0x1" Param="Yes"/>
+   </function >
+  </module>
+  <module Name="C:\STM32\Projects\LCDDriver\stm32f10x_flash.c" >
+   <type Family="Base" Name="long int" ID="8084"/>
+   <type Family="Base" Name="short int" ID="8091"/>
+   <type Family="Base" Name="signed char" ID="8098"/>
+   <type Family="Base" Name="long unsigned int" ID="8116"/>
+   <type Family="typedef" Name="u32" Line="39" ID="8105" toTI="8116"/>
+   <type Family="Base" Name="short unsigned int" ID="8123"/>
+   <type Family="Base" Name="unsigned char" ID="8130"/>
+   <type Family="Base" Name="unsigned int" ID="8142"/>
+   <type Family="ComponentList" Line="268" ID="8149">
+    <Component Name="ACR" TI="8158" Line="270" Offs="0"/>
+    <Component Name="KEYR" TI="8173" Line="271" Offs="4"/>
+    <Component Name="OPTKEYR" TI="8188" Line="272" Offs="8"/>
+    <Component Name="SR" TI="8203" Line="273" Offs="12"/>
+    <Component Name="CR" TI="8217" Line="274" Offs="16"/>
+    <Component Name="AR" TI="8231" Line="275" Offs="20"/>
+    <Component Name="RESERVED" TI="8245" Line="276" Offs="24"/>
+    <Component Name="OBR" TI="8260" Line="277" Offs="28"/>
+    <Component Name="WRPR" TI="8275" Line="278" Offs="32"/>
+   </type>
+   <type Family="typedef" Name="FLASH_TypeDef" Line="279" ID="8291" toTI="8149"/>
+   <function Name="FLASH_SetLatency" TI="0" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_flash.c" Line="86">
+    <parameter Name="FLASH_Latency" TI="8105" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_flash.c" Line="86" Addr="0x0" Param="Yes"/>
+   </function >
+   <function Name="FLASH_PrefetchBufferCmd" TI="0" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_flash.c" Line="126">
+    <parameter Name="FLASH_PrefetchBuffer" TI="8105" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_flash.c" Line="126" Addr="0x0" Param="Yes"/>
+   </function >
+  </module>
+  <module Name="C:\STM32\Projects\LCDDriver\stm32f10x_it.c" >
+   <type Family="Base" Name="long int" ID="8451"/>
+   <type Family="Base" Name="short int" ID="8458"/>
+   <type Family="Base" Name="signed char" ID="8465"/>
+   <type Family="Base" Name="long unsigned int" ID="8472"/>
+   <type Family="Base" Name="short unsigned int" ID="8479"/>
+   <type Family="Base" Name="unsigned char" ID="8486"/>
+   <type Family="Base" Name="unsigned int" ID="8493"/>
+   <function Name="WWDG_IRQHandler" TI="0" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_it.c" Line="150">
+   </function >
+   <function Name="PVD_IRQHandler" TI="0" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_it.c" Line="161">
+   </function >
+   <function Name="TAMPER_IRQHandler" TI="0" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_it.c" Line="172">
+   </function >
+   <function Name="RTC_IRQHandler" TI="0" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_it.c" Line="183">
+   </function >
+   <function Name="FLASH_IRQHandler" TI="0" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_it.c" Line="194">
+   </function >
+   <function Name="RCC_IRQHandler" TI="0" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_it.c" Line="205">
+   </function >
+   <function Name="EXTI0_IRQHandler" TI="0" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_it.c" Line="216">
+   </function >
+   <function Name="EXTI1_IRQHandler" TI="0" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_it.c" Line="227">
+   </function >
+   <function Name="EXTI2_IRQHandler" TI="0" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_it.c" Line="238">
+   </function >
+   <function Name="EXTI3_IRQHandler" TI="0" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_it.c" Line="249">
+   </function >
+   <function Name="EXTI4_IRQHandler" TI="0" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_it.c" Line="260">
+   </function >
+   <function Name="DMA1_Channel1_IRQHandler" TI="0" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_it.c" Line="271">
+   </function >
+   <function Name="DMA1_Channel2_IRQHandler" TI="0" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_it.c" Line="282">
+   </function >
+   <function Name="DMA1_Channel3_IRQHandler" TI="0" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_it.c" Line="293">
+   </function >
+   <function Name="DMA1_Channel4_IRQHandler" TI="0" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_it.c" Line="304">
+   </function >
+   <function Name="DMA1_Channel5_IRQHandler" TI="0" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_it.c" Line="315">
+   </function >
+   <function Name="DMA1_Channel6_IRQHandler" TI="0" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_it.c" Line="326">
+   </function >
+   <function Name="DMA1_Channel7_IRQHandler" TI="0" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_it.c" Line="337">
+   </function >
+   <function Name="ADC1_2_IRQHandler" TI="0" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_it.c" Line="348">
+   </function >
+   <function Name="EXTI9_5_IRQHandler" TI="0" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_it.c" Line="405">
+   </function >
+   <function Name="TIM1_BRK_IRQHandler" TI="0" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_it.c" Line="416">
+   </function >
+   <function Name="TIM1_UP_IRQHandler" TI="0" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_it.c" Line="428">
+   </function >
+   <function Name="TIM1_TRG_COM_IRQHandler" TI="0" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_it.c" Line="440">
+   </function >
+   <function Name="TIM1_CC_IRQHandler" TI="0" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_it.c" Line="451">
+   </function >
+   <function Name="TIM2_IRQHandler" TI="0" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_it.c" Line="462">
+   </function >
+   <function Name="I2C1_EV_IRQHandler" TI="0" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_it.c" Line="495">
+   </function >
+   <function Name="I2C1_ER_IRQHandler" TI="0" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_it.c" Line="506">
+   </function >
+   <function Name="I2C2_EV_IRQHandler" TI="0" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_it.c" Line="517">
+   </function >
+   <function Name="I2C2_ER_IRQHandler" TI="0" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_it.c" Line="528">
+   </function >
+   <function Name="SPI1_IRQHandler" TI="0" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_it.c" Line="539">
+   </function >
+   <function Name="SPI2_IRQHandler" TI="0" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_it.c" Line="550">
+   </function >
+   <function Name="USART1_IRQHandler" TI="0" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_it.c" Line="561">
+   </function >
+   <function Name="USART2_IRQHandler" TI="0" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_it.c" Line="572">
+   </function >
+   <function Name="USART3_IRQHandler" TI="0" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_it.c" Line="583">
+   </function >
+   <function Name="EXTI15_10_IRQHandler" TI="0" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_it.c" Line="594">
+   </function >
+   <function Name="RTCAlarm_IRQHandler" TI="0" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_it.c" Line="605">
+   </function >
+   <function Name="USBWakeUp_IRQHandler" TI="0" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_it.c" Line="616">
+   </function >
+   <function Name="TIM8_BRK_IRQHandler" TI="0" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_it.c" Line="627">
+   </function >
+   <function Name="TIM8_UP_IRQHandler" TI="0" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_it.c" Line="639">
+   </function >
+   <function Name="TIM8_TRG_COM_IRQHandler" TI="0" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_it.c" Line="651">
+   </function >
+   <function Name="TIM8_CC_IRQHandler" TI="0" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_it.c" Line="662">
+   </function >
+   <function Name="ADC3_IRQHandler" TI="0" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_it.c" Line="673">
+   </function >
+   <function Name="FSMC_IRQHandler" TI="0" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_it.c" Line="684">
+   </function >
+   <function Name="SDIO_IRQHandler" TI="0" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_it.c" Line="695">
+   </function >
+   <function Name="TIM5_IRQHandler" TI="0" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_it.c" Line="706">
+   </function >
+   <function Name="SPI3_IRQHandler" TI="0" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_it.c" Line="717">
+   </function >
+   <function Name="UART4_IRQHandler" TI="0" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_it.c" Line="728">
+   </function >
+   <function Name="UART5_IRQHandler" TI="0" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_it.c" Line="739">
+   </function >
+   <function Name="TIM6_IRQHandler" TI="0" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_it.c" Line="750">
+   </function >
+   <function Name="TIM7_IRQHandler" TI="0" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_it.c" Line="761">
+   </function >
+   <function Name="DMA2_Channel1_IRQHandler" TI="0" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_it.c" Line="772">
+   </function >
+   <function Name="DMA2_Channel2_IRQHandler" TI="0" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_it.c" Line="783">
+   </function >
+   <function Name="DMA2_Channel3_IRQHandler" TI="0" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_it.c" Line="794">
+   </function >
+   <function Name="DMA2_Channel4_5_IRQHandler" TI="0" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_it.c" Line="806">
+   </function >
+  </module>
+  <module Name="C:\STM32\Projects\LCDDriver\stm32f10x_tim.c" >
+   <type Family="Base" Name="long int" ID="9926"/>
+   <type Family="Base" Name="short int" ID="9933"/>
+   <type Family="Base" Name="signed char" ID="9940"/>
+   <type Family="Base" Name="long unsigned int" ID="9958"/>
+   <type Family="typedef" Name="u32" Line="39" ID="9947" toTI="9958"/>
+   <type Family="Base" Name="short unsigned int" ID="9976"/>
+   <type Family="typedef" Name="u16" Line="40" ID="9965" toTI="9976"/>
+   <type Family="Base" Name="unsigned char" ID="9993"/>
+   <type Family="typedef" Name="u8" Line="41" ID="9983" toTI="9993"/>
+   <type Family="typedef" Name="vu32" Line="47" ID="10000" toTI="10011"/>
+   <type Family="typedef" Name="FlagStatus" Line="57" ID="10042" toTI="10021"/>
+   <type Family="typedef" Name="ITStatus" Line="57" ID="10053" toTI="10021"/>
+   <type Family="typedef" Name="FunctionalState" Line="59" ID="10085" toTI="10064"/>
+   <type Family="Base" Name="unsigned int" ID="10096"/>
+   <type Family="ComponentList" Line="523" ID="10103">
+    <Component Name="CR1" TI="10112" Line="525" Offs="0"/>
+    <Component Name="RESERVED0" TI="10127" Line="526" Offs="2"/>
+    <Component Name="CR2" TI="10142" Line="527" Offs="4"/>
+    <Component Name="RESERVED1" TI="10157" Line="528" Offs="6"/>
+    <Component Name="SMCR" TI="10172" Line="529" Offs="8"/>
+    <Component Name="RESERVED2" TI="10187" Line="530" Offs="10"/>
+    <Component Name="DIER" TI="10202" Line="531" Offs="12"/>
+    <Component Name="RESERVED3" TI="10217" Line="532" Offs="14"/>
+    <Component Name="SR" TI="10232" Line="533" Offs="16"/>
+    <Component Name="RESERVED4" TI="10246" Line="534" Offs="18"/>
+    <Component Name="EGR" TI="10261" Line="535" Offs="20"/>
+    <Component Name="RESERVED5" TI="10276" Line="536" Offs="22"/>
+    <Component Name="CCMR1" TI="10291" Line="537" Offs="24"/>
+    <Component Name="RESERVED6" TI="10306" Line="538" Offs="26"/>
+    <Component Name="CCMR2" TI="10321" Line="539" Offs="28"/>
+    <Component Name="RESERVED7" TI="10336" Line="540" Offs="30"/>
+    <Component Name="CCER" TI="10351" Line="541" Offs="32"/>
+    <Component Name="RESERVED8" TI="10366" Line="542" Offs="34"/>
+    <Component Name="CNT" TI="10381" Line="543" Offs="36"/>
+    <Component Name="RESERVED9" TI="10396" Line="544" Offs="38"/>
+    <Component Name="PSC" TI="10411" Line="545" Offs="40"/>
+    <Component Name="RESERVED10" TI="10426" Line="546" Offs="42"/>
+    <Component Name="ARR" TI="10441" Line="547" Offs="44"/>
+    <Component Name="RESERVED11" TI="10456" Line="548" Offs="46"/>
+    <Component Name="RCR" TI="10471" Line="549" Offs="48"/>
+    <Component Name="RESERVED12" TI="10486" Line="550" Offs="50"/>
+    <Component Name="CCR1" TI="10501" Line="551" Offs="52"/>
+    <Component Name="RESERVED13" TI="10516" Line="552" Offs="54"/>
+    <Component Name="CCR2" TI="10531" Line="553" Offs="56"/>
+    <Component Name="RESERVED14" TI="10546" Line="554" Offs="58"/>
+    <Component Name="CCR3" TI="10561" Line="555" Offs="60"/>
+    <Component Name="RESERVED15" TI="10576" Line="556" Offs="62"/>
+    <Component Name="CCR4" TI="10591" Line="557" Offs="64"/>
+    <Component Name="RESERVED16" TI="10606" Line="558" Offs="66"/>
+    <Component Name="BDTR" TI="10621" Line="559" Offs="68"/>
+    <Component Name="RESERVED17" TI="10636" Line="560" Offs="70"/>
+    <Component Name="DCR" TI="10651" Line="561" Offs="72"/>
+    <Component Name="RESERVED18" TI="10666" Line="562" Offs="74"/>
+    <Component Name="DMAR" TI="10681" Line="563" Offs="76"/>
+    <Component Name="RESERVED19" TI="10696" Line="564" Offs="78"/>
+   </type>
+   <type Family="typedef" Name="TIM_TypeDef" Line="565" ID="10712" toTI="10103"/>
+   <type Family="ComponentList" Line="27" ID="10724">
+    <Component Name="TIM_Prescaler" TI="10732" Line="29" Offs="0"/>
+    <Component Name="TIM_CounterMode" TI="10746" Line="30" Offs="2"/>
+    <Component Name="TIM_Period" TI="10760" Line="31" Offs="4"/>
+    <Component Name="TIM_ClockDivision" TI="10774" Line="32" Offs="6"/>
+    <Component Name="TIM_RepetitionCounter" TI="10788" Line="33" Offs="8"/>
+   </type>
+   <type Family="typedef" Name="TIM_TimeBaseInitTypeDef" Line="34" ID="10803" toTI="10724"/>
+   <type Family="ComponentList" Line="37" ID="10814">
+    <Component Name="TIM_OCMode" TI="10822" Line="39" Offs="0"/>
+    <Component Name="TIM_OutputState" TI="10836" Line="40" Offs="2"/>
+    <Component Name="TIM_OutputNState" TI="10850" Line="41" Offs="4"/>
+    <Component Name="TIM_Pulse" TI="10864" Line="42" Offs="6"/>
+    <Component Name="TIM_OCPolarity" TI="10878" Line="43" Offs="8"/>
+    <Component Name="TIM_OCNPolarity" TI="10892" Line="44" Offs="10"/>
+    <Component Name="TIM_OCIdleState" TI="10906" Line="45" Offs="12"/>
+    <Component Name="TIM_OCNIdleState" TI="10920" Line="46" Offs="14"/>
+   </type>
+   <type Family="typedef" Name="TIM_OCInitTypeDef" Line="47" ID="10935" toTI="10814"/>
+   <type Family="ComponentList" Line="50" ID="10946">
+    <Component Name="TIM_Channel" TI="10954" Line="52" Offs="0"/>
+    <Component Name="TIM_ICPolarity" TI="10968" Line="53" Offs="2"/>
+    <Component Name="TIM_ICSelection" TI="10982" Line="54" Offs="4"/>
+    <Component Name="TIM_ICPrescaler" TI="10996" Line="55" Offs="6"/>
+    <Component Name="TIM_ICFilter" TI="11010" Line="56" Offs="8"/>
+   </type>
+   <type Family="typedef" Name="TIM_ICInitTypeDef" Line="57" ID="11025" toTI="10946"/>
+   <type Family="ComponentList" Line="60" ID="11036">
+    <Component Name="TIM_OSSRState" TI="11044" Line="62" Offs="0"/>
+    <Component Name="TIM_OSSIState" TI="11058" Line="63" Offs="2"/>
+    <Component Name="TIM_LOCKLevel" TI="11072" Line="64" Offs="4"/>
+    <Component Name="TIM_DeadTime" TI="11086" Line="65" Offs="6"/>
+    <Component Name="TIM_Break" TI="11100" Line="66" Offs="8"/>
+    <Component Name="TIM_BreakPolarity" TI="11114" Line="67" Offs="10"/>
+    <Component Name="TIM_AutomaticOutput" TI="11128" Line="68" Offs="12"/>
+   </type>
+   <type Family="typedef" Name="TIM_BDTRInitTypeDef" Line="69" ID="11143" toTI="11036"/>
+   <type Family="Pointer" TI="11268" toTI="10712"/>
+   <function Name="TIM_TimeBaseInit" TI="0" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_tim.c" Line="199">
+    <parameter Name="TIMx" TI="11268" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_tim.c" Line="199" Addr="0x0" Param="Yes"/>
+   <type Family="Pointer" TI="11496" toTI="10803"/>
+    <parameter Name="TIM_TimeBaseInitStruct" TI="11496" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_tim.c" Line="199" Addr="0x1" Param="Yes"/>
+   </function >
+   <type Family="Pointer" TI="11601" toTI="10935"/>
+   <type Family="Pointer" TI="11972" toTI="11143"/>
+   <type Family="Pointer" TI="12098" toTI="11025"/>
+   <function Name="TIM_Cmd" TI="0" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_tim.c" Line="829">
+    <parameter Name="TIMx" TI="11268" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_tim.c" Line="829" Addr="0x0" Param="Yes"/>
+    <parameter Name="NewState" TI="10085" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_tim.c" Line="829" Addr="0x1" Param="Yes"/>
+   </function >
+   <function Name="TIM_ITConfig" TI="0" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_tim.c" Line="894">
+    <parameter Name="TIMx" TI="11268" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_tim.c" Line="894" Addr="0x0" Param="Yes"/>
+    <parameter Name="TIM_IT" TI="9965" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_tim.c" Line="894" Addr="0x1" Param="Yes"/>
+    <parameter Name="NewState" TI="10085" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_tim.c" Line="894" Addr="0x2" Param="Yes"/>
+   </function >
+   <function Name="TIM_ClearITPendingBit" TI="0" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_tim.c" Line="3022">
+    <parameter Name="TIMx" TI="11268" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_tim.c" Line="3022" Addr="0x0" Param="Yes"/>
+    <parameter Name="TIM_IT" TI="9965" FileName="C:\STM32\Projects\LCDDriver\stm32f10x_tim.c" Line="3022" Addr="0x1" Param="Yes"/>
+   </function >
+  </module>
+ </modulelist>
+</aoffile>
+
