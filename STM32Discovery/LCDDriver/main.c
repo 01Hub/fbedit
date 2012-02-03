@@ -70,7 +70,7 @@ int main(void)
     ScreenChars[5]='F';
     ScreenChars[6]='G';
     ScreenChars[7]='H';
-    // MakeVideoLine();
+    MakeVideoLine();
     // LineCount++;
     // CharTileLineInx++;
     // MakeVideoLine();
@@ -117,6 +117,9 @@ int main(void)
 *******************************************************************************/
 void MakeVideoLine(void)
 {
+  asm volatile("push {r4}");
+  ScreenCharLineInx=LineCount<<3;
+  CharTileLineInx=LineCount & 7;
   /* r0 current line start index into ScreenChars buffer */
   asm volatile("mov r0,%0" : : "r" (ScreenChars));
   asm volatile("add r0,%0" : : "r" (ScreenCharLineInx));
@@ -126,16 +129,17 @@ void MakeVideoLine(void)
   asm volatile("mov r2,%0" : : "r" (LineTileBuff));
   asm volatile
   (
-    "mov r7,#0x0\r\n"             // Character index in current line
+    "mov r4,#0x0\r\n"             // Character index in current line
     "L1:\r\n"
-    "ldrb r3,[r0,r7]\r\n"         // Character
+    "ldrb r3,[r0,r4]\r\n"         // Character
     "ldrb r3,[r1,r3,lsl #3]\r\n"  // Character tile pixels
-    "strb r3,[r2,r7]\r\n"         // Line tile pixels
-    "add r7,r7,#0x1\r\n"
-    "cmp r7,#64\r\n"
+    "strb r3,[r2,r4]\r\n"         // Line tile pixels
+    "add r4,#0x1\r\n"
+    "cmp r4,#64\r\n"
     "it ne\r\n"
     "bne L1"
   );
+  asm volatile("pop {r4}");
 }
 
 /*******************************************************************************
@@ -237,8 +241,6 @@ void TIM3_IRQHandler(void)
   asm("strh r0,[r1,#0x14]");      // GPIO_ResetBits
   if (LineCount<256)
   {
-    ScreenCharLineInx=(LineCount>>3)*64;
-    CharTileLineInx=LineCount & 7;
     MakeVideoLine();
   }
 }
@@ -478,8 +480,8 @@ void DMA_Config(void)
 	DMA_InitStructure.DMA_PeripheralBaseAddr = (u32)0x4001300C;
 	DMA_InitStructure.DMA_MemoryBaseAddr = (u32)LineTileBuff[0];
 	DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralDST;
-	DMA_InitStructure.DMA_Priority = DMA_Priority_Low;
-	DMA_InitStructure.DMA_BufferSize = BUFFER_LINE_LENGTH;
+	DMA_InitStructure.DMA_Priority = DMA_Priority_VeryHigh;
+	DMA_InitStructure.DMA_BufferSize = BUFFER_LINE_LENGTH/2;
 	DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
 	DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;
 	DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_HalfWord;

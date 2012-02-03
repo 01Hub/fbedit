@@ -30,7 +30,7 @@ Discarded input sections
  .text.SPI_Config
                 0x00000000       0x58 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\main.o
  .text.DMA_Config
-                0x00000000       0x60 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\main.o
+                0x00000000       0x64 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\main.o
  .text          0x00000000        0x0 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_flash.o
  .data          0x00000000        0x0 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_flash.o
  .bss           0x00000000        0x0 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_flash.o
@@ -659,7 +659,7 @@ END GROUP
  *(.flashtext)
                 0x080001e4                . = ALIGN (0x4)
 
-.text           0x080001e4      0xb60
+.text           0x080001e4      0xb68
                 0x080001e4                . = ALIGN (0x4)
  *(.text)
  *(.text.*)
@@ -687,294 +687,294 @@ END GROUP
                 0x08000236                CAN1_SCE_IRQHandler
                 0x08000236                BusFault_Handler
  .text.MakeVideoLine
-                0x08000238       0x50 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\main.o
+                0x08000238       0x84 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\main.o
                 0x08000238                MakeVideoLine
  .text.TIM2_IRQHandler
-                0x08000288       0x1c C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\main.o
-                0x08000288                TIM2_IRQHandler
+                0x080002bc       0x1c C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\main.o
+                0x080002bc                TIM2_IRQHandler
  .text.TIM3_IRQHandler
-                0x080002a4       0x74 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\main.o
-                0x080002a4                TIM3_IRQHandler
+                0x080002d8       0x44 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\main.o
+                0x080002d8                TIM3_IRQHandler
  .text.TIM4_IRQHandler
-                0x08000318       0x9c C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\main.o
-                0x08000318                TIM4_IRQHandler
+                0x0800031c       0x9c C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\main.o
+                0x0800031c                TIM4_IRQHandler
  .text.RCC_Configuration
-                0x080003b4       0xa8 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\main.o
-                0x080003b4                RCC_Configuration
+                0x080003b8       0xa8 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\main.o
+                0x080003b8                RCC_Configuration
  .text.GPIO_Configuration
-                0x0800045c       0x7c C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\main.o
-                0x0800045c                GPIO_Configuration
+                0x08000460       0x7c C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\main.o
+                0x08000460                GPIO_Configuration
  .text.NVIC_Configuration
-                0x080004d8       0x68 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\main.o
-                0x080004d8                NVIC_Configuration
+                0x080004dc       0x68 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\main.o
+                0x080004dc                NVIC_Configuration
  .text.TIM2_Configuration
-                0x08000540       0x24 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\main.o
-                0x08000540                TIM2_Configuration
+                0x08000544       0x24 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\main.o
+                0x08000544                TIM2_Configuration
  .text.TIM3_Configuration
-                0x08000564       0x28 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\main.o
-                0x08000564                TIM3_Configuration
+                0x08000568       0x28 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\main.o
+                0x08000568                TIM3_Configuration
  .text.TIM4_Configuration
-                0x0800058c       0x28 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\main.o
-                0x0800058c                TIM4_Configuration
- .text.main     0x080005b4       0xc4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\main.o
-                0x080005b4                main
+                0x08000590       0x28 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\main.o
+                0x08000590                TIM4_Configuration
+ .text.main     0x080005b8       0xc8 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\main.o
+                0x080005b8                main
  .text.FLASH_SetLatency
-                0x08000678       0x1c C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_flash.o
-                0x08000678                FLASH_SetLatency
+                0x08000680       0x1c C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_flash.o
+                0x08000680                FLASH_SetLatency
  .text.FLASH_PrefetchBufferCmd
-                0x08000694       0x1c C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_flash.o
-                0x08000694                FLASH_PrefetchBufferCmd
+                0x0800069c       0x1c C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_flash.o
+                0x0800069c                FLASH_PrefetchBufferCmd
  .text.GPIO_Init
-                0x080006b0       0xc4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_gpio.o
-                0x080006b0                GPIO_Init
+                0x080006b8       0xc4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_gpio.o
+                0x080006b8                GPIO_Init
  .text.GPIO_SetBits
-                0x08000774        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_gpio.o
-                0x08000774                GPIO_SetBits
+                0x0800077c        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_gpio.o
+                0x0800077c                GPIO_SetBits
  .text.GPIO_ResetBits
-                0x08000778        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_gpio.o
-                0x08000778                GPIO_ResetBits
+                0x08000780        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_gpio.o
+                0x08000780                GPIO_ResetBits
  .text.WWDG_IRQHandler
-                0x0800077c        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.o
-                0x0800077c                WWDG_IRQHandler
- .text.PVD_IRQHandler
-                0x08000780        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.o
-                0x08000780                PVD_IRQHandler
- .text.TAMPER_IRQHandler
                 0x08000784        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.o
-                0x08000784                TAMPER_IRQHandler
- .text.RTC_IRQHandler
+                0x08000784                WWDG_IRQHandler
+ .text.PVD_IRQHandler
                 0x08000788        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.o
-                0x08000788                RTC_IRQHandler
- .text.FLASH_IRQHandler
+                0x08000788                PVD_IRQHandler
+ .text.TAMPER_IRQHandler
                 0x0800078c        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.o
-                0x0800078c                FLASH_IRQHandler
- .text.RCC_IRQHandler
+                0x0800078c                TAMPER_IRQHandler
+ .text.RTC_IRQHandler
                 0x08000790        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.o
-                0x08000790                RCC_IRQHandler
- .text.EXTI0_IRQHandler
+                0x08000790                RTC_IRQHandler
+ .text.FLASH_IRQHandler
                 0x08000794        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.o
-                0x08000794                EXTI0_IRQHandler
- .text.EXTI1_IRQHandler
+                0x08000794                FLASH_IRQHandler
+ .text.RCC_IRQHandler
                 0x08000798        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.o
-                0x08000798                EXTI1_IRQHandler
- .text.EXTI2_IRQHandler
+                0x08000798                RCC_IRQHandler
+ .text.EXTI0_IRQHandler
                 0x0800079c        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.o
-                0x0800079c                EXTI2_IRQHandler
- .text.EXTI3_IRQHandler
+                0x0800079c                EXTI0_IRQHandler
+ .text.EXTI1_IRQHandler
                 0x080007a0        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.o
-                0x080007a0                EXTI3_IRQHandler
- .text.EXTI4_IRQHandler
+                0x080007a0                EXTI1_IRQHandler
+ .text.EXTI2_IRQHandler
                 0x080007a4        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.o
-                0x080007a4                EXTI4_IRQHandler
- .text.DMA1_Channel1_IRQHandler
+                0x080007a4                EXTI2_IRQHandler
+ .text.EXTI3_IRQHandler
                 0x080007a8        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.o
-                0x080007a8                DMA1_Channel1_IRQHandler
- .text.DMA1_Channel2_IRQHandler
+                0x080007a8                EXTI3_IRQHandler
+ .text.EXTI4_IRQHandler
                 0x080007ac        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.o
-                0x080007ac                DMA1_Channel2_IRQHandler
- .text.DMA1_Channel3_IRQHandler
+                0x080007ac                EXTI4_IRQHandler
+ .text.DMA1_Channel1_IRQHandler
                 0x080007b0        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.o
-                0x080007b0                DMA1_Channel3_IRQHandler
- .text.DMA1_Channel4_IRQHandler
+                0x080007b0                DMA1_Channel1_IRQHandler
+ .text.DMA1_Channel2_IRQHandler
                 0x080007b4        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.o
-                0x080007b4                DMA1_Channel4_IRQHandler
- .text.DMA1_Channel5_IRQHandler
+                0x080007b4                DMA1_Channel2_IRQHandler
+ .text.DMA1_Channel3_IRQHandler
                 0x080007b8        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.o
-                0x080007b8                DMA1_Channel5_IRQHandler
- .text.DMA1_Channel6_IRQHandler
+                0x080007b8                DMA1_Channel3_IRQHandler
+ .text.DMA1_Channel4_IRQHandler
                 0x080007bc        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.o
-                0x080007bc                DMA1_Channel6_IRQHandler
- .text.DMA1_Channel7_IRQHandler
+                0x080007bc                DMA1_Channel4_IRQHandler
+ .text.DMA1_Channel5_IRQHandler
                 0x080007c0        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.o
-                0x080007c0                DMA1_Channel7_IRQHandler
- .text.ADC1_2_IRQHandler
+                0x080007c0                DMA1_Channel5_IRQHandler
+ .text.DMA1_Channel6_IRQHandler
                 0x080007c4        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.o
-                0x080007c4                ADC1_2_IRQHandler
- .text.EXTI9_5_IRQHandler
+                0x080007c4                DMA1_Channel6_IRQHandler
+ .text.DMA1_Channel7_IRQHandler
                 0x080007c8        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.o
-                0x080007c8                EXTI9_5_IRQHandler
- .text.TIM1_BRK_IRQHandler
+                0x080007c8                DMA1_Channel7_IRQHandler
+ .text.ADC1_2_IRQHandler
                 0x080007cc        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.o
-                0x080007cc                TIM1_BRK_IRQHandler
- .text.TIM1_UP_IRQHandler
+                0x080007cc                ADC1_2_IRQHandler
+ .text.EXTI9_5_IRQHandler
                 0x080007d0        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.o
-                0x080007d0                TIM1_UP_IRQHandler
- .text.TIM1_TRG_COM_IRQHandler
+                0x080007d0                EXTI9_5_IRQHandler
+ .text.TIM1_BRK_IRQHandler
                 0x080007d4        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.o
-                0x080007d4                TIM1_TRG_COM_IRQHandler
- .text.TIM1_CC_IRQHandler
+                0x080007d4                TIM1_BRK_IRQHandler
+ .text.TIM1_UP_IRQHandler
                 0x080007d8        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.o
-                0x080007d8                TIM1_CC_IRQHandler
- .text.I2C1_EV_IRQHandler
+                0x080007d8                TIM1_UP_IRQHandler
+ .text.TIM1_TRG_COM_IRQHandler
                 0x080007dc        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.o
-                0x080007dc                I2C1_EV_IRQHandler
- .text.I2C1_ER_IRQHandler
+                0x080007dc                TIM1_TRG_COM_IRQHandler
+ .text.TIM1_CC_IRQHandler
                 0x080007e0        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.o
-                0x080007e0                I2C1_ER_IRQHandler
- .text.I2C2_EV_IRQHandler
+                0x080007e0                TIM1_CC_IRQHandler
+ .text.I2C1_EV_IRQHandler
                 0x080007e4        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.o
-                0x080007e4                I2C2_EV_IRQHandler
- .text.I2C2_ER_IRQHandler
+                0x080007e4                I2C1_EV_IRQHandler
+ .text.I2C1_ER_IRQHandler
                 0x080007e8        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.o
-                0x080007e8                I2C2_ER_IRQHandler
- .text.SPI1_IRQHandler
+                0x080007e8                I2C1_ER_IRQHandler
+ .text.I2C2_EV_IRQHandler
                 0x080007ec        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.o
-                0x080007ec                SPI1_IRQHandler
- .text.SPI2_IRQHandler
+                0x080007ec                I2C2_EV_IRQHandler
+ .text.I2C2_ER_IRQHandler
                 0x080007f0        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.o
-                0x080007f0                SPI2_IRQHandler
- .text.USART1_IRQHandler
+                0x080007f0                I2C2_ER_IRQHandler
+ .text.SPI1_IRQHandler
                 0x080007f4        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.o
-                0x080007f4                USART1_IRQHandler
- .text.USART2_IRQHandler
+                0x080007f4                SPI1_IRQHandler
+ .text.SPI2_IRQHandler
                 0x080007f8        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.o
-                0x080007f8                USART2_IRQHandler
- .text.USART3_IRQHandler
+                0x080007f8                SPI2_IRQHandler
+ .text.USART1_IRQHandler
                 0x080007fc        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.o
-                0x080007fc                USART3_IRQHandler
- .text.EXTI15_10_IRQHandler
+                0x080007fc                USART1_IRQHandler
+ .text.USART2_IRQHandler
                 0x08000800        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.o
-                0x08000800                EXTI15_10_IRQHandler
- .text.RTCAlarm_IRQHandler
+                0x08000800                USART2_IRQHandler
+ .text.USART3_IRQHandler
                 0x08000804        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.o
-                0x08000804                RTCAlarm_IRQHandler
- .text.USBWakeUp_IRQHandler
+                0x08000804                USART3_IRQHandler
+ .text.EXTI15_10_IRQHandler
                 0x08000808        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.o
-                0x08000808                USBWakeUp_IRQHandler
- .text.TIM8_BRK_IRQHandler
+                0x08000808                EXTI15_10_IRQHandler
+ .text.RTCAlarm_IRQHandler
                 0x0800080c        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.o
-                0x0800080c                TIM8_BRK_IRQHandler
- .text.TIM8_UP_IRQHandler
+                0x0800080c                RTCAlarm_IRQHandler
+ .text.USBWakeUp_IRQHandler
                 0x08000810        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.o
-                0x08000810                TIM8_UP_IRQHandler
- .text.TIM8_TRG_COM_IRQHandler
+                0x08000810                USBWakeUp_IRQHandler
+ .text.TIM8_BRK_IRQHandler
                 0x08000814        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.o
-                0x08000814                TIM8_TRG_COM_IRQHandler
- .text.TIM8_CC_IRQHandler
+                0x08000814                TIM8_BRK_IRQHandler
+ .text.TIM8_UP_IRQHandler
                 0x08000818        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.o
-                0x08000818                TIM8_CC_IRQHandler
- .text.ADC3_IRQHandler
+                0x08000818                TIM8_UP_IRQHandler
+ .text.TIM8_TRG_COM_IRQHandler
                 0x0800081c        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.o
-                0x0800081c                ADC3_IRQHandler
- .text.FSMC_IRQHandler
+                0x0800081c                TIM8_TRG_COM_IRQHandler
+ .text.TIM8_CC_IRQHandler
                 0x08000820        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.o
-                0x08000820                FSMC_IRQHandler
- .text.SDIO_IRQHandler
+                0x08000820                TIM8_CC_IRQHandler
+ .text.ADC3_IRQHandler
                 0x08000824        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.o
-                0x08000824                SDIO_IRQHandler
- .text.TIM5_IRQHandler
+                0x08000824                ADC3_IRQHandler
+ .text.FSMC_IRQHandler
                 0x08000828        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.o
-                0x08000828                TIM5_IRQHandler
- .text.SPI3_IRQHandler
+                0x08000828                FSMC_IRQHandler
+ .text.SDIO_IRQHandler
                 0x0800082c        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.o
-                0x0800082c                SPI3_IRQHandler
- .text.UART4_IRQHandler
+                0x0800082c                SDIO_IRQHandler
+ .text.TIM5_IRQHandler
                 0x08000830        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.o
-                0x08000830                UART4_IRQHandler
- .text.UART5_IRQHandler
+                0x08000830                TIM5_IRQHandler
+ .text.SPI3_IRQHandler
                 0x08000834        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.o
-                0x08000834                UART5_IRQHandler
- .text.TIM6_IRQHandler
+                0x08000834                SPI3_IRQHandler
+ .text.UART4_IRQHandler
                 0x08000838        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.o
-                0x08000838                TIM6_IRQHandler
- .text.TIM7_IRQHandler
+                0x08000838                UART4_IRQHandler
+ .text.UART5_IRQHandler
                 0x0800083c        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.o
-                0x0800083c                TIM7_IRQHandler
- .text.DMA2_Channel1_IRQHandler
+                0x0800083c                UART5_IRQHandler
+ .text.TIM6_IRQHandler
                 0x08000840        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.o
-                0x08000840                DMA2_Channel1_IRQHandler
- .text.DMA2_Channel2_IRQHandler
+                0x08000840                TIM6_IRQHandler
+ .text.TIM7_IRQHandler
                 0x08000844        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.o
-                0x08000844                DMA2_Channel2_IRQHandler
- .text.DMA2_Channel3_IRQHandler
+                0x08000844                TIM7_IRQHandler
+ .text.DMA2_Channel1_IRQHandler
                 0x08000848        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.o
-                0x08000848                DMA2_Channel3_IRQHandler
- .text.DMA2_Channel4_5_IRQHandler
+                0x08000848                DMA2_Channel1_IRQHandler
+ .text.DMA2_Channel2_IRQHandler
                 0x0800084c        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.o
-                0x0800084c                DMA2_Channel4_5_IRQHandler
+                0x0800084c                DMA2_Channel2_IRQHandler
+ .text.DMA2_Channel3_IRQHandler
+                0x08000850        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.o
+                0x08000850                DMA2_Channel3_IRQHandler
+ .text.DMA2_Channel4_5_IRQHandler
+                0x08000854        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.o
+                0x08000854                DMA2_Channel4_5_IRQHandler
  .text.NVIC_Init
-                0x08000850       0xac C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_nvic.o
-                0x08000850                NVIC_Init
+                0x08000858       0xac C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_nvic.o
+                0x08000858                NVIC_Init
  .text.NVIC_SetVectorTable
-                0x080008fc       0x18 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_nvic.o
-                0x080008fc                NVIC_SetVectorTable
+                0x08000904       0x18 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_nvic.o
+                0x08000904                NVIC_SetVectorTable
  .text.RCC_DeInit
-                0x08000914       0x44 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.o
-                0x08000914                RCC_DeInit
+                0x0800091c       0x44 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.o
+                0x0800091c                RCC_DeInit
  .text.RCC_HSEConfig
-                0x08000958       0x4c C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.o
-                0x08000958                RCC_HSEConfig
+                0x08000960       0x4c C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.o
+                0x08000960                RCC_HSEConfig
  .text.RCC_PLLConfig
-                0x080009a4       0x18 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.o
-                0x080009a4                RCC_PLLConfig
+                0x080009ac       0x18 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.o
+                0x080009ac                RCC_PLLConfig
  .text.RCC_PLLCmd
-                0x080009bc        0xc C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.o
-                0x080009bc                RCC_PLLCmd
+                0x080009c4        0xc C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.o
+                0x080009c4                RCC_PLLCmd
  .text.RCC_SYSCLKConfig
-                0x080009c8       0x18 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.o
-                0x080009c8                RCC_SYSCLKConfig
+                0x080009d0       0x18 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.o
+                0x080009d0                RCC_SYSCLKConfig
  .text.RCC_GetSYSCLKSource
-                0x080009e0       0x10 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.o
-                0x080009e0                RCC_GetSYSCLKSource
+                0x080009e8       0x10 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.o
+                0x080009e8                RCC_GetSYSCLKSource
  .text.RCC_HCLKConfig
-                0x080009f0       0x18 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.o
-                0x080009f0                RCC_HCLKConfig
+                0x080009f8       0x18 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.o
+                0x080009f8                RCC_HCLKConfig
  .text.RCC_PCLK1Config
-                0x08000a08       0x18 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.o
-                0x08000a08                RCC_PCLK1Config
+                0x08000a10       0x18 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.o
+                0x08000a10                RCC_PCLK1Config
  .text.RCC_PCLK2Config
-                0x08000a20       0x18 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.o
-                0x08000a20                RCC_PCLK2Config
+                0x08000a28       0x18 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.o
+                0x08000a28                RCC_PCLK2Config
  .text.RCC_ADCCLKConfig
-                0x08000a38       0x18 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.o
-                0x08000a38                RCC_ADCCLKConfig
+                0x08000a40       0x18 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.o
+                0x08000a40                RCC_ADCCLKConfig
  .text.RCC_AHBPeriphClockCmd
-                0x08000a50       0x24 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.o
-                0x08000a50                RCC_AHBPeriphClockCmd
+                0x08000a58       0x24 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.o
+                0x08000a58                RCC_AHBPeriphClockCmd
  .text.RCC_APB2PeriphClockCmd
-                0x08000a74       0x24 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.o
-                0x08000a74                RCC_APB2PeriphClockCmd
+                0x08000a7c       0x24 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.o
+                0x08000a7c                RCC_APB2PeriphClockCmd
  .text.RCC_APB1PeriphClockCmd
-                0x08000a98       0x24 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.o
-                0x08000a98                RCC_APB1PeriphClockCmd
+                0x08000aa0       0x24 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.o
+                0x08000aa0                RCC_APB1PeriphClockCmd
  .text.RCC_GetFlagStatus
-                0x08000abc       0x34 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.o
-                0x08000abc                RCC_GetFlagStatus
+                0x08000ac4       0x34 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.o
+                0x08000ac4                RCC_GetFlagStatus
  .text.RCC_WaitForHSEStartUp
-                0x08000af0       0x38 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.o
-                0x08000af0                RCC_WaitForHSEStartUp
+                0x08000af8       0x38 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.o
+                0x08000af8                RCC_WaitForHSEStartUp
  .text.TIM_TimeBaseInit
-                0x08000b28       0x50 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_tim.o
-                0x08000b28                TIM_TimeBaseInit
- .text.TIM_Cmd  0x08000b78       0x20 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_tim.o
-                0x08000b78                TIM_Cmd
+                0x08000b30       0x50 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_tim.o
+                0x08000b30                TIM_TimeBaseInit
+ .text.TIM_Cmd  0x08000b80       0x20 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_tim.o
+                0x08000b80                TIM_Cmd
  .text.TIM_ITConfig
-                0x08000b98       0x18 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_tim.o
-                0x08000b98                TIM_ITConfig
+                0x08000ba0       0x18 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_tim.o
+                0x08000ba0                TIM_ITConfig
  .text.TIM_ClearITPendingBit
-                0x08000bb0        0xc C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_tim.o
-                0x08000bb0                TIM_ClearITPendingBit
- .text.DMA_Cmd  0x08000bbc       0x18 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_dma.o
-                0x08000bbc                DMA_Cmd
+                0x08000bb8        0xc C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_tim.o
+                0x08000bb8                TIM_ClearITPendingBit
+ .text.DMA_Cmd  0x08000bc4       0x18 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_dma.o
+                0x08000bc4                DMA_Cmd
  .text.__io_putchar
-                0x08000bd4      0x16c C:\Program Files\Raisonance\Ride\Lib\ARM\STM32x_io_putchar_thumb.a(STM32F10X_io_putchar.o)
-                0x08000bd4                __io_putchar
- .text._write   0x08000d40        0x4 C:\Program Files\Raisonance\Ride\Lib\ARM\std_sbrk_thumb.lib(write.o)
-                0x08000d40                _write
+                0x08000bdc      0x16c C:\Program Files\Raisonance\Ride\Lib\ARM\STM32x_io_putchar_thumb.a(STM32F10X_io_putchar.o)
+                0x08000bdc                __io_putchar
+ .text._write   0x08000d48        0x4 C:\Program Files\Raisonance\Ride\Lib\ARM\std_sbrk_thumb.lib(write.o)
+                0x08000d48                _write
  *(.rodata)
  *(.rodata*)
  *(.glue_7)
  .glue_7        0x00000000        0x0 linker stubs
  *(.glue_7t)
  .glue_7t       0x00000000        0x0 linker stubs
-                0x08000d44                . = ALIGN (0x4)
-                0x08000d44                _etext = .
-                0x08000d44                _sidata = _etext
+                0x08000d4c                . = ALIGN (0x4)
+                0x08000d4c                _etext = .
+                0x08000d4c                _sidata = _etext
 
-.vfp11_veneer   0x08000d44        0x0
+.vfp11_veneer   0x08000d4c        0x0
  .vfp11_veneer  0x00000000        0x0 linker stubs
 
-.v4_bx          0x08000d44        0x0
+.v4_bx          0x08000d4c        0x0
  .v4_bx         0x00000000        0x0 linker stubs
 
 .flashpatch     0x00000000        0x0
@@ -988,7 +988,7 @@ END GROUP
                 0x00000000                . = ALIGN (0x4)
                 0x00000000                _e_endflash = .
 
-.data           0x20000000      0x800 load address 0x08000d44
+.data           0x20000000      0x800 load address 0x08000d4c
                 0x20000000                . = ALIGN (0x4)
                 0x20000000                _sdata = .
                 0x20000000                _data = .
@@ -999,11 +999,11 @@ END GROUP
  *(.RAMtext)
                 0x20000800                . = ALIGN (0x4)
                 0x20000800                _edata = .
-                0x08001544                _eidata = ((_sidata + _edata) - _sdata)
+                0x0800154c                _eidata = ((_sidata + _edata) - _sdata)
                 0x08010000                _lastdataromaddress = 0x8010000
                 0x00000000                toobig = (_eidata > _lastdataromaddress)?!!!!!!!!! FLASH IS FULL !!!!!!!!!:0x0
 
-.bss            0x20000800      0x89c load address 0x08001544
+.bss            0x20000800      0x89c load address 0x0800154c
                 0x20000800                . = ALIGN (0x4)
                 0x20000800                _sbss = .
                 0x20000800                _bss = .
@@ -1026,7 +1026,7 @@ END GROUP
                 0x2000109c                PROVIDE (end, _ebss)
                 0x2000109c                PROVIDE (_end, _ebss)
 
-._usrstack      0x2000109c      0x100 load address 0x08001de0
+._usrstack      0x2000109c      0x100 load address 0x08001de8
                 0x2000109c                . = ALIGN (0x4)
                 0x2000109c                _susrstack = .
                 0x2000119c                . = (. + _Minimum_Stack_Size)
@@ -1184,18 +1184,18 @@ END GROUP
  .debug_pubnames
                 0x00001865      0x1f6 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_spi.o
 
-.debug_info     0x00000000     0x555a
+.debug_info     0x00000000     0x555b
  *(.debug_info .gnu.linkonce.wi.*)
- .debug_info    0x00000000      0xaa0 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\main.o
- .debug_info    0x00000aa0      0x16f C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_flash.o
- .debug_info    0x00000c0f      0x690 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_gpio.o
- .debug_info    0x0000129f      0x5ae C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.o
- .debug_info    0x0000184d       0x53 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_lib.o
- .debug_info    0x000018a0      0x964 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_nvic.o
- .debug_info    0x00002204      0x8ac C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.o
- .debug_info    0x00002ab0     0x1d8d C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_tim.o
- .debug_info    0x0000483d      0x414 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_dma.o
- .debug_info    0x00004c51      0x909 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_spi.o
+ .debug_info    0x00000000      0xaa1 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\main.o
+ .debug_info    0x00000aa1      0x16f C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_flash.o
+ .debug_info    0x00000c10      0x690 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_gpio.o
+ .debug_info    0x000012a0      0x5ae C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.o
+ .debug_info    0x0000184e       0x53 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_lib.o
+ .debug_info    0x000018a1      0x964 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_nvic.o
+ .debug_info    0x00002205      0x8ac C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.o
+ .debug_info    0x00002ab1     0x1d8d C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_tim.o
+ .debug_info    0x0000483e      0x414 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_dma.o
+ .debug_info    0x00004c52      0x909 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_spi.o
 
 .debug_abbrev   0x00000000      0xdf3
  *(.debug_abbrev)
@@ -1210,18 +1210,18 @@ END GROUP
  .debug_abbrev  0x00000aec      0x151 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_dma.o
  .debug_abbrev  0x00000c3d      0x1b6 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_spi.o
 
-.debug_line     0x00000000     0x1e58
+.debug_line     0x00000000     0x1e5b
  *(.debug_line)
- .debug_line    0x00000000      0x2cd C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\main.o
- .debug_line    0x000002cd       0xdd C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_flash.o
- .debug_line    0x000003aa      0x25a C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_gpio.o
- .debug_line    0x00000604      0x4ca C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.o
- .debug_line    0x00000ace       0x1d C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_lib.o
- .debug_line    0x00000aeb      0x33b C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_nvic.o
- .debug_line    0x00000e26      0x361 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.o
- .debug_line    0x00001187      0x855 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_tim.o
- .debug_line    0x000019dc      0x1ab C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_dma.o
- .debug_line    0x00001b87      0x2d1 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_spi.o
+ .debug_line    0x00000000      0x2d0 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\main.o
+ .debug_line    0x000002d0       0xdd C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_flash.o
+ .debug_line    0x000003ad      0x25a C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_gpio.o
+ .debug_line    0x00000607      0x4ca C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.o
+ .debug_line    0x00000ad1       0x1d C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_lib.o
+ .debug_line    0x00000aee      0x33b C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_nvic.o
+ .debug_line    0x00000e29      0x361 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.o
+ .debug_line    0x0000118a      0x855 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_tim.o
+ .debug_line    0x000019df      0x1ab C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_dma.o
+ .debug_line    0x00001b8a      0x2d1 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_spi.o
 
 .debug_frame    0x00000000     0x1434
  *(.debug_frame)
