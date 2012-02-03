@@ -29,6 +29,7 @@ ErrorStatus HSEStartUpStatus;
 NVIC_InitTypeDef NVIC_InitStructure;
 TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;
 vu16 LineCount;
+vu16 CharTileLineInx;
 vu16 ScreenCharLineInx;
 vu16 ScreenChars[25*80];
 
@@ -90,33 +91,59 @@ int main(void)
 *******************************************************************************/
 void TIM2_IRQHandler(void)
 {
-  // u16 CharNbr;
-  // u16 Char;
-  // u16 PixelNbr;
   /* Clear TIM2 Update interrupt pending bit */
-  asm("mov    r0,#0x0");
   asm("mov    r1,#0x40000000");
-  asm("strh   r0,[r1,#0x10]");
+  asm("strh   r1,[r1,#0x10]");
   /* Disable TIM2 */
   asm("strh   r0,[r1,#0x0]");
   /* r0 line start index into ScreenChar */
   asm volatile("ldr r0,[%0]" : : "r" (ScreenCharLineInx));
-  asm volatile("mov    r3,#0x0");
+  asm volatile("ldr r1,[%0]" : : "r" (CharTileLineInx));
+  asm volatile("add r1,r1,%0" : : "r" (Font6x8));
   asm volatile
   (
-    "1:add r3,r3,#0x1\r\n"
-    "cmp r3,#80\r\n"
+    "movw r2,#0x0800\r\n"         // GPIOA
+    "movt r2,#0x1000\r\n"
+    "mov r7,#0x0\r\n"             // Character index in current line
+    "L1:\r\n"
+    "ldrb r3,[r0,r7]\r\n"         // Character
+    "ldrb r3,[r1,r3,lsl #3]\r\n"  // Character tile pixels
+
+    "lsl r3,r3,#1\r\n"
+    "ite cs\r\n"
+    "strcs r4,[r2,#0x10]\r\n"
+    "strcc r4,[r2,#0x14]\r\n"
+
+    "lsl r3,r3,#1\r\n"
+    "ite cs\r\n"
+    "strcs r4,[r2,#0x10]\r\n"
+    "strcc r4,[r2,#0x14]\r\n"
+
+    "lsl r3,r3,#1\r\n"
+    "ite cs\r\n"
+    "strcs r4,[r2,#0x10]\r\n"
+    "strcc r4,[r2,#0x14]\r\n"
+
+    "lsl r3,r3,#1\r\n"
+    "ite cs\r\n"
+    "strcs r4,[r2,#0x10]\r\n"
+    "strcc r4,[r2,#0x14]\r\n"
+
+    "lsl r3,r3,#1\r\n"
+    "ite cs\r\n"
+    "strcs r4,[r2,#0x10]\r\n"
+    "strcc r4,[r2,#0x14]\r\n"
+
+    "lsl r3,r3,#1\r\n"
+    "ite cs\r\n"
+    "strcs r4,[r2,#0x10]\r\n"
+    "strcc r4,[r2,#0x14]\r\n"
+
+    "add r7,r7,#0x1\r\n"
+    "cmp r7,#80\r\n"
     "it ne\r\n"
-    "bne 1"
+    "bne L1"
   );
-
-
-  // CharNbr=0;
-  // while (CharNbr<80)
-  // {
-    // Char=ScreenChars[ScreenCharLineInx+CharNbr];
-    // CharNbr++;
-  // }
 }
 
 /*******************************************************************************
@@ -160,7 +187,6 @@ void TIM4_IRQHandler(void)
   /* Disable TIM4 */
   asm("strh   r0,[r1,#0x0]");
 
-  LineCount++;
   if (LineCount<303)
   {
     /* H-Sync high */
@@ -173,15 +199,19 @@ void TIM4_IRQHandler(void)
       /* Enable TIM2 */
       TIM2->CR1=1;
       ScreenCharLineInx=(LineCount/10-1)*80;
+      CharTileLineInx=LineCount/10;
+      CharTileLineInx=ScreenCharLineInx*10;
+      CharTileLineInx=LineCount-CharTileLineInx-10;
     }
   }
   else if (LineCount==312)
   {
     /* V-Sync high (9 lines) */
     GPIO_SetBits(GPIOA,GPIO_Pin_1);
-    LineCount=0;
+    LineCount=0xffff;
     ScreenCharLineInx=0;
   }
+  LineCount++;
 }
 
 /*******************************************************************************

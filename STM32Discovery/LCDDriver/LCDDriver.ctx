@@ -1,14 +1,14 @@
 
 <Debug>
 	<LCDDriver>
-		<CodeView TopRow="134219104" Focus="4294967295" >
+		<CodeView TopRow="134218308" Focus="4294967295" >
 			<CodeReport>
-				<0>112</0>
-				<1>123</1>
-				<2>67</2>
-				<3>372</3>
-				<4>67</4>
-				<5>142</5>
+				<0>93</0>
+				<1>102</1>
+				<2>55</2>
+				<3>309</3>
+				<4>56</4>
+				<5>119</5>
 														
 			</CodeReport>
 										
@@ -19,7 +19,7 @@
 	<Flags>
 		<Report>
 			<Def Header="FlagReport" NbCol="9" >
-				<Col Type="PT_BOOL" Header="Check" sizeCache="18" AutoSize="0" Edit="1" Sortable="1" Icon="C:\Program Files\Raisonance\Ride\Config\Resources\check.bmp" />
+				<Col Type="PT_BOOL" Header="Check" sizeCache="18" AutoSize="0" Edit="1" Sortable="1" Icon="D:\Ride\Ride\Config\Resources\check.bmp" />
 				<Col Type="PT_STRING" Header="Kind" sizeCache="DDDDDDDDDDD" AutoSize="1" Edit="0" Sortable="1" />
 				<Col Type="PT_STRING" Header="KindID" sizeCache="DD" AutoSize="1" Edit="0" Sortable="1" Visible="0" />
 				<Col Type="PT_STRING" Header="Space" sizeCache="DDDDDD" AutoSize="1" Edit="0" Sortable="1" />
@@ -33,7 +33,7 @@
 							
 			</Def>
 			<Rows>
-				<Row Check="True" Kind="Breakpoint" KindID="0" Space="code" SpaceID="0" Condition="" Line="L:56" File="main.c" Path="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\main.c" />
+				<Row Check="True" Kind="Breakpoint" KindID="0" Space="code" SpaceID="0" Condition="" Line="L:55" File="main.c" Path="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\main.c" />
 							
 			</Rows>
 					
@@ -41,10 +41,11 @@
 			
 	</Flags>
 	<Views>
-		<View File="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\main.c" Line="111" Index="0" focus="1" />
-		<View File="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="458" Index="1" />
-		<View File="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\Font6x8.h" Line="14" Index="2" />
-		<View File="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\startup_stm32f10x_hd.s" Line="0" Index="3" />
+		<View File="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\main.c" Line="95" Index="0" focus="1" />
+		<View File="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\Font6x8.h" Line="16" Index="1" />
+		<View File="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_gpio.c" Line="17" Index="2" />
+		<View File="D:\STM32\Inc\stm32f10x_gpio.h" Line="18" Index="3" />
+		<View File="D:\STM32\Inc\stm32f10x_map.h" Line="636" Index="4" />
 	</Views>
 	<Grep>
 		<GrepIncludeSub>yes</GrepIncludeSub>
@@ -57,7 +58,7 @@
 			<GrepFileType>*.c;*.h</GrepFileType>
 		</GrepFileTypes>
 		<GrepFindWhat>
-			<GrepFindWhatValue>#else</GrepFindWhatValue>
+			<GrepFindWhatValue>stm32f10x_gpio</GrepFindWhatValue>
 			<GrepFindStr>#elif</GrepFindStr>
 			<GrepFindStr>#else</GrepFindStr>
 			<GrepFindStr>#elseif</GrepFindStr>
@@ -77,6 +78,8 @@
 		</GrepReplaceWhat>
 	</Grep>
 	<FindStrings>
+		<Find>BSRR</Find>
+		<Find>GPIO_ResetBits</Find>
 		<Find>TIM_TimeBaseStructure</Find>
 		<Find>//</Find>
 		<Find>GPIO_SetBits</Find>
