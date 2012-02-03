@@ -1,7 +1,7 @@
 <!-- DWF2XML 2.00.01 - Raisonance Dwarf information extractor -->
 <aoffile Filename="LCDDriver" dwarf="1">
  <modulelist>
-  <module Name="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\main.c" >
+  <module Name="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\main.c" >
    <type Family="Base" Name="long int" ID="37"/>
    <type Family="Base" Name="short int" ID="44"/>
    <type Family="Base" Name="signed char" ID="51"/>
@@ -14,613 +14,791 @@
    <type Family="typedef" Name="FunctionalState" Line="59" ID="163" toTI="142"/>
    <type Family="typedef" Name="ErrorStatus" Line="62" ID="195" toTI="174"/>
    <type Family="Base" Name="unsigned int" ID="206"/>
-   <type Family="ComponentList" Line="334" ID="213">
-    <Component Name="CRL" TI="222" Line="336" Offs="0"/>
-    <Component Name="CRH" TI="237" Line="337" Offs="4"/>
-    <Component Name="IDR" TI="252" Line="338" Offs="8"/>
-    <Component Name="ODR" TI="267" Line="339" Offs="12"/>
-    <Component Name="BSRR" TI="282" Line="340" Offs="16"/>
-    <Component Name="BRR" TI="297" Line="341" Offs="20"/>
-    <Component Name="LCKR" TI="312" Line="342" Offs="24"/>
+   <type Family="ComponentList" Line="242" ID="213">
+    <Component Name="CCR" TI="221" Line="244" Offs="0"/>
+    <Component Name="CNDTR" TI="235" Line="245" Offs="4"/>
+    <Component Name="CPAR" TI="249" Line="246" Offs="8"/>
+    <Component Name="CMAR" TI="263" Line="247" Offs="12"/>
    </type>
-   <type Family="typedef" Name="GPIO_TypeDef" Line="343" ID="328" toTI="213"/>
-   <type Family="ComponentList" Line="523" ID="340">
-    <Component Name="CR1" TI="349" Line="525" Offs="0"/>
-    <Component Name="RESERVED0" TI="364" Line="526" Offs="2"/>
-    <Component Name="CR2" TI="379" Line="527" Offs="4"/>
-    <Component Name="RESERVED1" TI="394" Line="528" Offs="6"/>
-    <Component Name="SMCR" TI="409" Line="529" Offs="8"/>
-    <Component Name="RESERVED2" TI="424" Line="530" Offs="10"/>
-    <Component Name="DIER" TI="439" Line="531" Offs="12"/>
-    <Component Name="RESERVED3" TI="454" Line="532" Offs="14"/>
-    <Component Name="SR" TI="469" Line="533" Offs="16"/>
-    <Component Name="RESERVED4" TI="483" Line="534" Offs="18"/>
-    <Component Name="EGR" TI="498" Line="535" Offs="20"/>
-    <Component Name="RESERVED5" TI="513" Line="536" Offs="22"/>
-    <Component Name="CCMR1" TI="528" Line="537" Offs="24"/>
-    <Component Name="RESERVED6" TI="543" Line="538" Offs="26"/>
-    <Component Name="CCMR2" TI="558" Line="539" Offs="28"/>
-    <Component Name="RESERVED7" TI="573" Line="540" Offs="30"/>
-    <Component Name="CCER" TI="588" Line="541" Offs="32"/>
-    <Component Name="RESERVED8" TI="603" Line="542" Offs="34"/>
-    <Component Name="CNT" TI="618" Line="543" Offs="36"/>
-    <Component Name="RESERVED9" TI="633" Line="544" Offs="38"/>
-    <Component Name="PSC" TI="648" Line="545" Offs="40"/>
-    <Component Name="RESERVED10" TI="663" Line="546" Offs="42"/>
-    <Component Name="ARR" TI="678" Line="547" Offs="44"/>
-    <Component Name="RESERVED11" TI="693" Line="548" Offs="46"/>
-    <Component Name="RCR" TI="708" Line="549" Offs="48"/>
-    <Component Name="RESERVED12" TI="723" Line="550" Offs="50"/>
-    <Component Name="CCR1" TI="738" Line="551" Offs="52"/>
-    <Component Name="RESERVED13" TI="753" Line="552" Offs="54"/>
-    <Component Name="CCR2" TI="768" Line="553" Offs="56"/>
-    <Component Name="RESERVED14" TI="783" Line="554" Offs="58"/>
-    <Component Name="CCR3" TI="798" Line="555" Offs="60"/>
-    <Component Name="RESERVED15" TI="813" Line="556" Offs="62"/>
-    <Component Name="CCR4" TI="828" Line="557" Offs="64"/>
-    <Component Name="RESERVED16" TI="843" Line="558" Offs="66"/>
-    <Component Name="BDTR" TI="858" Line="559" Offs="68"/>
-    <Component Name="RESERVED17" TI="873" Line="560" Offs="70"/>
-    <Component Name="DCR" TI="888" Line="561" Offs="72"/>
-    <Component Name="RESERVED18" TI="903" Line="562" Offs="74"/>
-    <Component Name="DMAR" TI="918" Line="563" Offs="76"/>
-    <Component Name="RESERVED19" TI="933" Line="564" Offs="78"/>
+   <type Family="typedef" Name="DMA_Channel_TypeDef" Line="248" ID="278" toTI="213"/>
+   <type Family="ComponentList" Line="334" ID="289">
+    <Component Name="CRL" TI="298" Line="336" Offs="0"/>
+    <Component Name="CRH" TI="313" Line="337" Offs="4"/>
+    <Component Name="IDR" TI="328" Line="338" Offs="8"/>
+    <Component Name="ODR" TI="343" Line="339" Offs="12"/>
+    <Component Name="BSRR" TI="358" Line="340" Offs="16"/>
+    <Component Name="BRR" TI="373" Line="341" Offs="20"/>
+    <Component Name="LCKR" TI="388" Line="342" Offs="24"/>
    </type>
-   <type Family="typedef" Name="TIM_TypeDef" Line="565" ID="949" toTI="340"/>
-   <type Family="typedef" Name="GPIOSpeed_TypeDef" Line="39" ID="988" toTI="961"/>
-   <type Family="typedef" Name="GPIOMode_TypeDef" Line="54" ID="1057" toTI="999"/>
-   <type Family="ComponentList" Line="62" ID="1068">
-    <Component Name="GPIO_Pin" TI="1076" Line="64" Offs="0"/>
-    <Component Name="GPIO_Speed" TI="1090" Line="65" Offs="2"/>
-    <Component Name="GPIO_Mode" TI="1104" Line="66" Offs="3"/>
+   <type Family="typedef" Name="GPIO_TypeDef" Line="343" ID="404" toTI="289"/>
+   <type Family="ComponentList" Line="491" ID="416">
+    <Component Name="CR1" TI="425" Line="493" Offs="0"/>
+    <Component Name="RESERVED0" TI="440" Line="494" Offs="2"/>
+    <Component Name="CR2" TI="455" Line="495" Offs="4"/>
+    <Component Name="RESERVED1" TI="470" Line="496" Offs="6"/>
+    <Component Name="SR" TI="485" Line="497" Offs="8"/>
+    <Component Name="RESERVED2" TI="499" Line="498" Offs="10"/>
+    <Component Name="DR" TI="514" Line="499" Offs="12"/>
+    <Component Name="RESERVED3" TI="528" Line="500" Offs="14"/>
+    <Component Name="CRCPR" TI="543" Line="501" Offs="16"/>
+    <Component Name="RESERVED4" TI="558" Line="502" Offs="18"/>
+    <Component Name="RXCRCR" TI="573" Line="503" Offs="20"/>
+    <Component Name="RESERVED5" TI="588" Line="504" Offs="22"/>
+    <Component Name="TXCRCR" TI="603" Line="505" Offs="24"/>
+    <Component Name="RESERVED6" TI="618" Line="506" Offs="26"/>
+    <Component Name="I2SCFGR" TI="633" Line="507" Offs="28"/>
+    <Component Name="RESERVED7" TI="648" Line="508" Offs="30"/>
+    <Component Name="I2SPR" TI="663" Line="509" Offs="32"/>
+    <Component Name="RESERVED8" TI="678" Line="510" Offs="34"/>
    </type>
-   <type Family="typedef" Name="GPIO_InitTypeDef" Line="67" ID="1119" toTI="1068"/>
-   <type Family="ComponentList" Line="26" ID="1130">
-    <Component Name="NVIC_IRQChannel" TI="1138" Line="28" Offs="0"/>
-    <Component Name="NVIC_IRQChannelPreemptionPriority" TI="1152" Line="29" Offs="1"/>
-    <Component Name="NVIC_IRQChannelSubPriority" TI="1166" Line="30" Offs="2"/>
-    <Component Name="NVIC_IRQChannelCmd" TI="1180" Line="31" Offs="3"/>
+   <type Family="typedef" Name="SPI_TypeDef" Line="511" ID="694" toTI="416"/>
+   <type Family="ComponentList" Line="523" ID="706">
+    <Component Name="CR1" TI="715" Line="525" Offs="0"/>
+    <Component Name="RESERVED0" TI="730" Line="526" Offs="2"/>
+    <Component Name="CR2" TI="745" Line="527" Offs="4"/>
+    <Component Name="RESERVED1" TI="760" Line="528" Offs="6"/>
+    <Component Name="SMCR" TI="775" Line="529" Offs="8"/>
+    <Component Name="RESERVED2" TI="790" Line="530" Offs="10"/>
+    <Component Name="DIER" TI="805" Line="531" Offs="12"/>
+    <Component Name="RESERVED3" TI="820" Line="532" Offs="14"/>
+    <Component Name="SR" TI="835" Line="533" Offs="16"/>
+    <Component Name="RESERVED4" TI="849" Line="534" Offs="18"/>
+    <Component Name="EGR" TI="864" Line="535" Offs="20"/>
+    <Component Name="RESERVED5" TI="879" Line="536" Offs="22"/>
+    <Component Name="CCMR1" TI="894" Line="537" Offs="24"/>
+    <Component Name="RESERVED6" TI="909" Line="538" Offs="26"/>
+    <Component Name="CCMR2" TI="924" Line="539" Offs="28"/>
+    <Component Name="RESERVED7" TI="939" Line="540" Offs="30"/>
+    <Component Name="CCER" TI="954" Line="541" Offs="32"/>
+    <Component Name="RESERVED8" TI="969" Line="542" Offs="34"/>
+    <Component Name="CNT" TI="984" Line="543" Offs="36"/>
+    <Component Name="RESERVED9" TI="999" Line="544" Offs="38"/>
+    <Component Name="PSC" TI="1014" Line="545" Offs="40"/>
+    <Component Name="RESERVED10" TI="1029" Line="546" Offs="42"/>
+    <Component Name="ARR" TI="1044" Line="547" Offs="44"/>
+    <Component Name="RESERVED11" TI="1059" Line="548" Offs="46"/>
+    <Component Name="RCR" TI="1074" Line="549" Offs="48"/>
+    <Component Name="RESERVED12" TI="1089" Line="550" Offs="50"/>
+    <Component Name="CCR1" TI="1104" Line="551" Offs="52"/>
+    <Component Name="RESERVED13" TI="1119" Line="552" Offs="54"/>
+    <Component Name="CCR2" TI="1134" Line="553" Offs="56"/>
+    <Component Name="RESERVED14" TI="1149" Line="554" Offs="58"/>
+    <Component Name="CCR3" TI="1164" Line="555" Offs="60"/>
+    <Component Name="RESERVED15" TI="1179" Line="556" Offs="62"/>
+    <Component Name="CCR4" TI="1194" Line="557" Offs="64"/>
+    <Component Name="RESERVED16" TI="1209" Line="558" Offs="66"/>
+    <Component Name="BDTR" TI="1224" Line="559" Offs="68"/>
+    <Component Name="RESERVED17" TI="1239" Line="560" Offs="70"/>
+    <Component Name="DCR" TI="1254" Line="561" Offs="72"/>
+    <Component Name="RESERVED18" TI="1269" Line="562" Offs="74"/>
+    <Component Name="DMAR" TI="1284" Line="563" Offs="76"/>
+    <Component Name="RESERVED19" TI="1299" Line="564" Offs="78"/>
    </type>
-   <type Family="typedef" Name="NVIC_InitTypeDef" Line="32" ID="1195" toTI="1130"/>
-   <type Family="ComponentList" Line="27" ID="1206">
-    <Component Name="TIM_Prescaler" TI="1214" Line="29" Offs="0"/>
-    <Component Name="TIM_CounterMode" TI="1228" Line="30" Offs="2"/>
-    <Component Name="TIM_Period" TI="1242" Line="31" Offs="4"/>
-    <Component Name="TIM_ClockDivision" TI="1256" Line="32" Offs="6"/>
-    <Component Name="TIM_RepetitionCounter" TI="1270" Line="33" Offs="8"/>
+   <type Family="typedef" Name="TIM_TypeDef" Line="565" ID="1315" toTI="706"/>
+   <type Family="ComponentList" Line="26" ID="1327">
+    <Component Name="DMA_PeripheralBaseAddr" TI="1335" Line="28" Offs="0"/>
+    <Component Name="DMA_MemoryBaseAddr" TI="1349" Line="29" Offs="4"/>
+    <Component Name="DMA_DIR" TI="1363" Line="30" Offs="8"/>
+    <Component Name="DMA_BufferSize" TI="1377" Line="31" Offs="12"/>
+    <Component Name="DMA_PeripheralInc" TI="1391" Line="32" Offs="16"/>
+    <Component Name="DMA_MemoryInc" TI="1405" Line="33" Offs="20"/>
+    <Component Name="DMA_PeripheralDataSize" TI="1419" Line="34" Offs="24"/>
+    <Component Name="DMA_MemoryDataSize" TI="1433" Line="35" Offs="28"/>
+    <Component Name="DMA_Mode" TI="1447" Line="36" Offs="32"/>
+    <Component Name="DMA_Priority" TI="1461" Line="37" Offs="36"/>
+    <Component Name="DMA_M2M" TI="1475" Line="38" Offs="40"/>
    </type>
-   <type Family="typedef" Name="TIM_TimeBaseInitTypeDef" Line="34" ID="1285" toTI="1206"/>
-   <function Name="TIM2_IRQHandler" TI="0" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\main.c" Line="92">
+   <type Family="typedef" Name="DMA_InitTypeDef" Line="39" ID="1490" toTI="1327"/>
+   <type Family="typedef" Name="GPIOSpeed_TypeDef" Line="39" ID="1528" toTI="1501"/>
+   <type Family="typedef" Name="GPIOMode_TypeDef" Line="54" ID="1597" toTI="1539"/>
+   <type Family="ComponentList" Line="62" ID="1608">
+    <Component Name="GPIO_Pin" TI="1616" Line="64" Offs="0"/>
+    <Component Name="GPIO_Speed" TI="1630" Line="65" Offs="2"/>
+    <Component Name="GPIO_Mode" TI="1644" Line="66" Offs="3"/>
+   </type>
+   <type Family="typedef" Name="GPIO_InitTypeDef" Line="67" ID="1659" toTI="1608"/>
+   <type Family="ComponentList" Line="26" ID="1670">
+    <Component Name="NVIC_IRQChannel" TI="1678" Line="28" Offs="0"/>
+    <Component Name="NVIC_IRQChannelPreemptionPriority" TI="1692" Line="29" Offs="1"/>
+    <Component Name="NVIC_IRQChannelSubPriority" TI="1706" Line="30" Offs="2"/>
+    <Component Name="NVIC_IRQChannelCmd" TI="1720" Line="31" Offs="3"/>
+   </type>
+   <type Family="typedef" Name="NVIC_InitTypeDef" Line="32" ID="1735" toTI="1670"/>
+   <type Family="ComponentList" Line="26" ID="1746">
+    <Component Name="SPI_Direction" TI="1754" Line="28" Offs="0"/>
+    <Component Name="SPI_Mode" TI="1768" Line="29" Offs="2"/>
+    <Component Name="SPI_DataSize" TI="1782" Line="30" Offs="4"/>
+    <Component Name="SPI_CPOL" TI="1796" Line="31" Offs="6"/>
+    <Component Name="SPI_CPHA" TI="1810" Line="32" Offs="8"/>
+    <Component Name="SPI_NSS" TI="1824" Line="33" Offs="10"/>
+    <Component Name="SPI_BaudRatePrescaler" TI="1838" Line="34" Offs="12"/>
+    <Component Name="SPI_FirstBit" TI="1852" Line="35" Offs="14"/>
+    <Component Name="SPI_CRCPolynomial" TI="1866" Line="36" Offs="16"/>
+   </type>
+   <type Family="typedef" Name="SPI_InitTypeDef" Line="37" ID="1881" toTI="1746"/>
+   <type Family="ComponentList" Line="27" ID="1892">
+    <Component Name="TIM_Prescaler" TI="1900" Line="29" Offs="0"/>
+    <Component Name="TIM_CounterMode" TI="1914" Line="30" Offs="2"/>
+    <Component Name="TIM_Period" TI="1928" Line="31" Offs="4"/>
+    <Component Name="TIM_ClockDivision" TI="1942" Line="32" Offs="6"/>
+    <Component Name="TIM_RepetitionCounter" TI="1956" Line="33" Offs="8"/>
+   </type>
+   <type Family="typedef" Name="TIM_TimeBaseInitTypeDef" Line="34" ID="1971" toTI="1892"/>
+   <function Name="MakeVideoLine" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\main.c" Line="118">
    </function >
-   <function Name="TIM3_IRQHandler" TI="0" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\main.c" Line="157">
+   <function Name="TIM2_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\main.c" Line="150">
    </function >
-   <function Name="TIM4_IRQHandler" TI="0" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\main.c" Line="180">
+   <function Name="TIM3_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\main.c" Line="219">
    </function >
-   <function Name="RCC_Configuration" TI="0" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\main.c" Line="224">
+   <function Name="TIM4_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\main.c" Line="254">
    </function >
-   <function Name="GPIO_Configuration" TI="0" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\main.c" Line="275">
-    <variable Name="GPIO_InitStructure" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\main.c" Line="277" Addr="0x34000004" TI="1119"/>
+   <function Name="RCC_Configuration" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\main.c" Line="293">
    </function >
-   <function Name="NVIC_Configuration" TI="0" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\main.c" Line="302">
+   <function Name="GPIO_Configuration" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\main.c" Line="345">
+    <variable Name="GPIO_InitStructure" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\main.c" Line="347" Addr="0x34000004" TI="1659"/>
    </function >
-   <function Name="TIM2_Configuration" TI="0" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\main.c" Line="339">
+   <function Name="NVIC_Configuration" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\main.c" Line="377">
    </function >
-   <function Name="TIM3_Configuration" TI="0" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\main.c" Line="356">
+   <function Name="TIM2_Configuration" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\main.c" Line="414">
    </function >
-   <function Name="TIM4_Configuration" TI="0" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\main.c" Line="373">
+   <function Name="TIM3_Configuration" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\main.c" Line="431">
    </function >
-   <type Family="Base" Name="int" ID="1534"/>
-   <function Name="main" TI="1534" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\main.c" Line="53">
+   <function Name="TIM4_Configuration" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\main.c" Line="448">
    </function >
-   <type Family="array" ID="1541" toTI="104"/>
-   <variable Name="Font6x8" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\Font6x8.h" Line="15" Addr="0x20000000" TI="1677"/>
-   <variable Name="HSEStartUpStatus" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\main.c" Line="28" Addr="0x20000800" TI="195"/>
-   <variable Name="NVIC_InitStructure" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\main.c" Line="29" Addr="0x200017B4" TI="1195"/>
-   <variable Name="TIM_TimeBaseStructure" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\main.c" Line="30" Addr="0x20000804" TI="1285"/>
-   <variable Name="LineCount" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\main.c" Line="31" Addr="0x200017B2" TI="116"/>
-   <variable Name="CharTileLineInx" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\main.c" Line="32" Addr="0x200017B0" TI="116"/>
-   <variable Name="ScreenCharLineInx" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\main.c" Line="33" Addr="0x200017B8" TI="116"/>
-   <type Family="array" ID="1790" toTI="87"/>
-   <variable Name="ScreenChars" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\main.c" Line="34" Addr="0x20000810" TI="1825"/>
+   <type Family="Base" Name="int" ID="2242"/>
+   <function Name="main" TI="2242" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\main.c" Line="63">
+   </function >
+   <type Family="array" ID="2293" toTI="104"/>
+   <type Family="array" ID="2437" toTI="104"/>
+   <type Family="array" ID="2472" toTI="104"/>
+   <variable Name="Font6x8" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\Font6x8.h" Line="15" Addr="0x20000000" TI="2524"/>
+   <variable Name="HSEStartUpStatus" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\main.c" Line="33" Addr="0x20000800" TI="195"/>
+   <variable Name="NVIC_InitStructure" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\main.c" Line="34" Addr="0x20001068" TI="1735"/>
+   <variable Name="TIM_TimeBaseStructure" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\main.c" Line="35" Addr="0x20000804" TI="1971"/>
+   <variable Name="SPI_InitStructure" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\main.c" Line="36" Addr="0x20001054" TI="1881"/>
+   <variable Name="DMA_InitStructure" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\main.c" Line="37" Addr="0x2000106C" TI="1490"/>
+   <variable Name="LineCount" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\main.c" Line="38" Addr="0x20001052" TI="116"/>
+   <variable Name="CharTileLineInx" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\main.c" Line="39" Addr="0x20001050" TI="116"/>
+   <variable Name="ScreenCharLineInx" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\main.c" Line="40" Addr="0x20001098" TI="116"/>
+   <variable Name="ScreenChars" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\main.c" Line="41" Addr="0x20000810" TI="2691"/>
+   <variable Name="LineTileBuff" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\main.c" Line="42" Addr="0x20001010" TI="2714"/>
   </module>
-  <module Name="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_flash.c" >
-   <type Family="Base" Name="long int" ID="1868"/>
-   <type Family="Base" Name="short int" ID="1875"/>
-   <type Family="Base" Name="signed char" ID="1882"/>
-   <type Family="Base" Name="long unsigned int" ID="1900"/>
-   <type Family="typedef" Name="u32" Line="39" ID="1889" toTI="1900"/>
-   <type Family="Base" Name="short unsigned int" ID="1907"/>
-   <type Family="Base" Name="unsigned char" ID="1914"/>
-   <type Family="Base" Name="unsigned int" ID="1926"/>
-   <type Family="ComponentList" Line="268" ID="1933">
-    <Component Name="ACR" TI="1942" Line="270" Offs="0"/>
-    <Component Name="KEYR" TI="1957" Line="271" Offs="4"/>
-    <Component Name="OPTKEYR" TI="1972" Line="272" Offs="8"/>
-    <Component Name="SR" TI="1987" Line="273" Offs="12"/>
-    <Component Name="CR" TI="2001" Line="274" Offs="16"/>
-    <Component Name="AR" TI="2015" Line="275" Offs="20"/>
-    <Component Name="RESERVED" TI="2029" Line="276" Offs="24"/>
-    <Component Name="OBR" TI="2044" Line="277" Offs="28"/>
-    <Component Name="WRPR" TI="2059" Line="278" Offs="32"/>
+  <module Name="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_flash.c" >
+   <type Family="Base" Name="long int" ID="2757"/>
+   <type Family="Base" Name="short int" ID="2764"/>
+   <type Family="Base" Name="signed char" ID="2771"/>
+   <type Family="Base" Name="long unsigned int" ID="2789"/>
+   <type Family="typedef" Name="u32" Line="39" ID="2778" toTI="2789"/>
+   <type Family="Base" Name="short unsigned int" ID="2796"/>
+   <type Family="Base" Name="unsigned char" ID="2803"/>
+   <type Family="Base" Name="unsigned int" ID="2815"/>
+   <type Family="ComponentList" Line="268" ID="2822">
+    <Component Name="ACR" TI="2831" Line="270" Offs="0"/>
+    <Component Name="KEYR" TI="2846" Line="271" Offs="4"/>
+    <Component Name="OPTKEYR" TI="2861" Line="272" Offs="8"/>
+    <Component Name="SR" TI="2876" Line="273" Offs="12"/>
+    <Component Name="CR" TI="2890" Line="274" Offs="16"/>
+    <Component Name="AR" TI="2904" Line="275" Offs="20"/>
+    <Component Name="RESERVED" TI="2918" Line="276" Offs="24"/>
+    <Component Name="OBR" TI="2933" Line="277" Offs="28"/>
+    <Component Name="WRPR" TI="2948" Line="278" Offs="32"/>
    </type>
-   <type Family="typedef" Name="FLASH_TypeDef" Line="279" ID="2075" toTI="1933"/>
-   <function Name="FLASH_SetLatency" TI="0" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_flash.c" Line="86">
-    <parameter Name="FLASH_Latency" TI="1889" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_flash.c" Line="86" Addr="0x0" Param="Yes"/>
+   <type Family="typedef" Name="FLASH_TypeDef" Line="279" ID="2964" toTI="2822"/>
+   <function Name="FLASH_SetLatency" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_flash.c" Line="86">
+    <parameter Name="FLASH_Latency" TI="2778" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_flash.c" Line="86" Addr="0x0" Param="Yes"/>
    </function >
-   <function Name="FLASH_PrefetchBufferCmd" TI="0" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_flash.c" Line="126">
-    <parameter Name="FLASH_PrefetchBuffer" TI="1889" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_flash.c" Line="126" Addr="0x0" Param="Yes"/>
-   </function >
-  </module>
-  <module Name="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_gpio.c" >
-   <type Family="Base" Name="long int" ID="2235"/>
-   <type Family="Base" Name="short int" ID="2242"/>
-   <type Family="Base" Name="signed char" ID="2249"/>
-   <type Family="Base" Name="long unsigned int" ID="2267"/>
-   <type Family="typedef" Name="u32" Line="39" ID="2256" toTI="2267"/>
-   <type Family="Base" Name="short unsigned int" ID="2285"/>
-   <type Family="typedef" Name="u16" Line="40" ID="2274" toTI="2285"/>
-   <type Family="Base" Name="unsigned char" ID="2302"/>
-   <type Family="typedef" Name="u8" Line="41" ID="2292" toTI="2302"/>
-   <type Family="typedef" Name="vu32" Line="47" ID="2309" toTI="2320"/>
-   <type Family="typedef" Name="FunctionalState" Line="59" ID="2346" toTI="2325"/>
-   <type Family="Base" Name="unsigned int" ID="2357"/>
-   <type Family="ComponentList" Line="334" ID="2364">
-    <Component Name="CRL" TI="2373" Line="336" Offs="0"/>
-    <Component Name="CRH" TI="2388" Line="337" Offs="4"/>
-    <Component Name="IDR" TI="2403" Line="338" Offs="8"/>
-    <Component Name="ODR" TI="2418" Line="339" Offs="12"/>
-    <Component Name="BSRR" TI="2433" Line="340" Offs="16"/>
-    <Component Name="BRR" TI="2448" Line="341" Offs="20"/>
-    <Component Name="LCKR" TI="2463" Line="342" Offs="24"/>
-   </type>
-   <type Family="typedef" Name="GPIO_TypeDef" Line="343" ID="2479" toTI="2364"/>
-   <type Family="ComponentList" Line="345" ID="2491">
-    <Component Name="EVCR" TI="2500" Line="347" Offs="0"/>
-    <Component Name="MAPR" TI="2515" Line="348" Offs="4"/>
-   <type Family="array" ID="2546" toTI="2267"/>
-    <Component Name="EXTICR" TI="2530" Line="349" Offs="8"/>
-   </type>
-   <type Family="typedef" Name="AFIO_TypeDef" Line="350" ID="2567" toTI="2491"/>
-   <type Family="typedef" Name="GPIOSpeed_TypeDef" Line="39" ID="2606" toTI="2579"/>
-   <type Family="typedef" Name="GPIOMode_TypeDef" Line="54" ID="2675" toTI="2617"/>
-   <type Family="ComponentList" Line="62" ID="2686">
-    <Component Name="GPIO_Pin" TI="2694" Line="64" Offs="0"/>
-    <Component Name="GPIO_Speed" TI="2708" Line="65" Offs="2"/>
-    <Component Name="GPIO_Mode" TI="2722" Line="66" Offs="3"/>
-   </type>
-   <type Family="typedef" Name="GPIO_InitTypeDef" Line="67" ID="2737" toTI="2686"/>
-   <type Family="typedef" Name="BitAction" Line="73" ID="2769" toTI="2748"/>
-   <type Family="Pointer" TI="2821" toTI="2479"/>
-   <function Name="GPIO_Init" TI="0" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_gpio.c" Line="124">
-    <parameter Name="GPIOx" TI="2821" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_gpio.c" Line="124" Addr="0x0" Param="Yes"/>
-   <type Family="Pointer" TI="2990" toTI="2737"/>
-    <parameter Name="GPIO_InitStruct" TI="2990" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_gpio.c" Line="124" Addr="0x1" Param="Yes"/>
-    <variable Name="currentmode" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_gpio.c" Line="126" Addr="0x0" TI="2256"/>
-    <variable Name="currentpin" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_gpio.c" Line="126" Addr="0x0" TI="2256"/>
-    <variable Name="pinpos" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_gpio.c" Line="126" Addr="0x0" TI="2256"/>
-    <variable Name="pos" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_gpio.c" Line="126" Addr="0x0" TI="2256"/>
-    <variable Name="tmpreg" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_gpio.c" Line="127" Addr="0x0" TI="2256"/>
-    <variable Name="pinmask" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_gpio.c" Line="127" Addr="0x0" TI="2256"/>
-   </function >
-   <function Name="GPIO_SetBits" TI="0" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_gpio.c" Line="333">
-    <parameter Name="GPIOx" TI="2821" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_gpio.c" Line="333" Addr="0x0" Param="Yes"/>
-    <parameter Name="GPIO_Pin" TI="2274" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_gpio.c" Line="333" Addr="0x1" Param="Yes"/>
-   </function >
-   <function Name="GPIO_ResetBits" TI="0" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_gpio.c" Line="352">
-    <parameter Name="GPIOx" TI="2821" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_gpio.c" Line="352" Addr="0x0" Param="Yes"/>
-    <parameter Name="GPIO_Pin" TI="2274" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_gpio.c" Line="352" Addr="0x1" Param="Yes"/>
-   </function >
-  </module>
-  <module Name="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" >
-   <type Family="Base" Name="long int" ID="3915"/>
-   <type Family="Base" Name="short int" ID="3922"/>
-   <type Family="Base" Name="signed char" ID="3929"/>
-   <type Family="Base" Name="long unsigned int" ID="3936"/>
-   <type Family="Base" Name="short unsigned int" ID="3943"/>
-   <type Family="Base" Name="unsigned char" ID="3950"/>
-   <type Family="Base" Name="unsigned int" ID="3957"/>
-   <function Name="WWDG_IRQHandler" TI="0" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="150">
-   </function >
-   <function Name="PVD_IRQHandler" TI="0" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="161">
-   </function >
-   <function Name="TAMPER_IRQHandler" TI="0" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="172">
-   </function >
-   <function Name="RTC_IRQHandler" TI="0" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="183">
-   </function >
-   <function Name="FLASH_IRQHandler" TI="0" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="194">
-   </function >
-   <function Name="RCC_IRQHandler" TI="0" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="205">
-   </function >
-   <function Name="EXTI0_IRQHandler" TI="0" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="216">
-   </function >
-   <function Name="EXTI1_IRQHandler" TI="0" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="227">
-   </function >
-   <function Name="EXTI2_IRQHandler" TI="0" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="238">
-   </function >
-   <function Name="EXTI3_IRQHandler" TI="0" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="249">
-   </function >
-   <function Name="EXTI4_IRQHandler" TI="0" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="260">
-   </function >
-   <function Name="DMA1_Channel1_IRQHandler" TI="0" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="271">
-   </function >
-   <function Name="DMA1_Channel2_IRQHandler" TI="0" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="282">
-   </function >
-   <function Name="DMA1_Channel3_IRQHandler" TI="0" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="293">
-   </function >
-   <function Name="DMA1_Channel4_IRQHandler" TI="0" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="304">
-   </function >
-   <function Name="DMA1_Channel5_IRQHandler" TI="0" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="315">
-   </function >
-   <function Name="DMA1_Channel6_IRQHandler" TI="0" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="326">
-   </function >
-   <function Name="DMA1_Channel7_IRQHandler" TI="0" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="337">
-   </function >
-   <function Name="ADC1_2_IRQHandler" TI="0" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="348">
-   </function >
-   <function Name="EXTI9_5_IRQHandler" TI="0" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="405">
-   </function >
-   <function Name="TIM1_BRK_IRQHandler" TI="0" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="416">
-   </function >
-   <function Name="TIM1_UP_IRQHandler" TI="0" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="428">
-   </function >
-   <function Name="TIM1_TRG_COM_IRQHandler" TI="0" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="440">
-   </function >
-   <function Name="TIM1_CC_IRQHandler" TI="0" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="451">
-   </function >
-   <function Name="I2C1_EV_IRQHandler" TI="0" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="495">
-   </function >
-   <function Name="I2C1_ER_IRQHandler" TI="0" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="506">
-   </function >
-   <function Name="I2C2_EV_IRQHandler" TI="0" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="517">
-   </function >
-   <function Name="I2C2_ER_IRQHandler" TI="0" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="528">
-   </function >
-   <function Name="SPI1_IRQHandler" TI="0" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="539">
-   </function >
-   <function Name="SPI2_IRQHandler" TI="0" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="550">
-   </function >
-   <function Name="USART1_IRQHandler" TI="0" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="561">
-   </function >
-   <function Name="USART2_IRQHandler" TI="0" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="572">
-   </function >
-   <function Name="USART3_IRQHandler" TI="0" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="583">
-   </function >
-   <function Name="EXTI15_10_IRQHandler" TI="0" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="594">
-   </function >
-   <function Name="RTCAlarm_IRQHandler" TI="0" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="605">
-   </function >
-   <function Name="USBWakeUp_IRQHandler" TI="0" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="616">
-   </function >
-   <function Name="TIM8_BRK_IRQHandler" TI="0" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="627">
-   </function >
-   <function Name="TIM8_UP_IRQHandler" TI="0" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="639">
-   </function >
-   <function Name="TIM8_TRG_COM_IRQHandler" TI="0" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="651">
-   </function >
-   <function Name="TIM8_CC_IRQHandler" TI="0" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="662">
-   </function >
-   <function Name="ADC3_IRQHandler" TI="0" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="673">
-   </function >
-   <function Name="FSMC_IRQHandler" TI="0" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="684">
-   </function >
-   <function Name="SDIO_IRQHandler" TI="0" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="695">
-   </function >
-   <function Name="TIM5_IRQHandler" TI="0" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="706">
-   </function >
-   <function Name="SPI3_IRQHandler" TI="0" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="717">
-   </function >
-   <function Name="UART4_IRQHandler" TI="0" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="728">
-   </function >
-   <function Name="UART5_IRQHandler" TI="0" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="739">
-   </function >
-   <function Name="TIM6_IRQHandler" TI="0" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="750">
-   </function >
-   <function Name="TIM7_IRQHandler" TI="0" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="761">
-   </function >
-   <function Name="DMA2_Channel1_IRQHandler" TI="0" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="772">
-   </function >
-   <function Name="DMA2_Channel2_IRQHandler" TI="0" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="783">
-   </function >
-   <function Name="DMA2_Channel3_IRQHandler" TI="0" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="794">
-   </function >
-   <function Name="DMA2_Channel4_5_IRQHandler" TI="0" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="806">
+   <function Name="FLASH_PrefetchBufferCmd" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_flash.c" Line="126">
+    <parameter Name="FLASH_PrefetchBuffer" TI="2778" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_flash.c" Line="126" Addr="0x0" Param="Yes"/>
    </function >
   </module>
-  <module Name="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_lib.c" >
-   <type Family="Base" Name="long int" ID="5365"/>
-   <type Family="Base" Name="short int" ID="5372"/>
-   <type Family="Base" Name="signed char" ID="5379"/>
-   <type Family="Base" Name="long unsigned int" ID="5386"/>
-   <type Family="Base" Name="short unsigned int" ID="5393"/>
-   <type Family="Base" Name="unsigned char" ID="5400"/>
-   <type Family="Base" Name="unsigned int" ID="5407"/>
-  </module>
-  <module Name="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_nvic.c" >
-   <type Family="Base" Name="long int" ID="5452"/>
-   <type Family="Base" Name="short int" ID="5459"/>
-   <type Family="Base" Name="signed char" ID="5466"/>
-   <type Family="Base" Name="long unsigned int" ID="5484"/>
-   <type Family="typedef" Name="u32" Line="39" ID="5473" toTI="5484"/>
-   <type Family="Base" Name="short unsigned int" ID="5502"/>
-   <type Family="typedef" Name="u16" Line="40" ID="5491" toTI="5502"/>
-   <type Family="Base" Name="unsigned char" ID="5519"/>
-   <type Family="typedef" Name="u8" Line="41" ID="5509" toTI="5519"/>
-   <type Family="typedef" Name="vu32" Line="47" ID="5526" toTI="5537"/>
-   <type Family="typedef" Name="ITStatus" Line="57" ID="5568" toTI="5547"/>
-   <type Family="typedef" Name="FunctionalState" Line="59" ID="5600" toTI="5579"/>
-   <type Family="Base" Name="unsigned int" ID="5611"/>
-   <type Family="ComponentList" Line="385" ID="5618">
-   <type Family="array" ID="5803" toTI="5484"/>
-    <Component Name="ISER" TI="5628" Line="387" Offs="0"/>
-   <type Family="array" ID="5824" toTI="5473"/>
-    <Component Name="RESERVED0" TI="5643" Line="388" Offs="8"/>
-    <Component Name="ICER" TI="5658" Line="389" Offs="128"/>
-    <Component Name="RSERVED1" TI="5674" Line="390" Offs="136"/>
-    <Component Name="ISPR" TI="5690" Line="391" Offs="256"/>
-    <Component Name="RESERVED2" TI="5706" Line="392" Offs="264"/>
-    <Component Name="ICPR" TI="5722" Line="393" Offs="384"/>
-    <Component Name="RESERVED3" TI="5738" Line="394" Offs="392"/>
-    <Component Name="IABR" TI="5754" Line="395" Offs="512"/>
-   <type Family="array" ID="5860" toTI="5473"/>
-    <Component Name="RESERVED4" TI="5770" Line="396" Offs="520"/>
-   <type Family="array" ID="5876" toTI="5484"/>
-    <Component Name="IPR" TI="5786" Line="397" Offs="768"/>
+  <module Name="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_gpio.c" >
+   <type Family="Base" Name="long int" ID="3124"/>
+   <type Family="Base" Name="short int" ID="3131"/>
+   <type Family="Base" Name="signed char" ID="3138"/>
+   <type Family="Base" Name="long unsigned int" ID="3156"/>
+   <type Family="typedef" Name="u32" Line="39" ID="3145" toTI="3156"/>
+   <type Family="Base" Name="short unsigned int" ID="3174"/>
+   <type Family="typedef" Name="u16" Line="40" ID="3163" toTI="3174"/>
+   <type Family="Base" Name="unsigned char" ID="3191"/>
+   <type Family="typedef" Name="u8" Line="41" ID="3181" toTI="3191"/>
+   <type Family="typedef" Name="vu32" Line="47" ID="3198" toTI="3209"/>
+   <type Family="typedef" Name="FunctionalState" Line="59" ID="3235" toTI="3214"/>
+   <type Family="Base" Name="unsigned int" ID="3246"/>
+   <type Family="ComponentList" Line="334" ID="3253">
+    <Component Name="CRL" TI="3262" Line="336" Offs="0"/>
+    <Component Name="CRH" TI="3277" Line="337" Offs="4"/>
+    <Component Name="IDR" TI="3292" Line="338" Offs="8"/>
+    <Component Name="ODR" TI="3307" Line="339" Offs="12"/>
+    <Component Name="BSRR" TI="3322" Line="340" Offs="16"/>
+    <Component Name="BRR" TI="3337" Line="341" Offs="20"/>
+    <Component Name="LCKR" TI="3352" Line="342" Offs="24"/>
    </type>
-   <type Family="typedef" Name="NVIC_TypeDef" Line="398" ID="5897" toTI="5618"/>
-   <type Family="ComponentList" Line="400" ID="5909">
-    <Component Name="CPUID" TI="5918" Line="402" Offs="0"/>
-    <Component Name="ICSR" TI="5933" Line="403" Offs="4"/>
-    <Component Name="VTOR" TI="5948" Line="404" Offs="8"/>
-    <Component Name="AIRCR" TI="5963" Line="405" Offs="12"/>
-    <Component Name="SCR" TI="5978" Line="406" Offs="16"/>
-    <Component Name="CCR" TI="5993" Line="407" Offs="20"/>
-   <type Family="array" ID="6129" toTI="5484"/>
-    <Component Name="SHPR" TI="6008" Line="408" Offs="24"/>
-    <Component Name="SHCSR" TI="6023" Line="409" Offs="36"/>
-    <Component Name="CFSR" TI="6038" Line="410" Offs="40"/>
-    <Component Name="HFSR" TI="6053" Line="411" Offs="44"/>
-    <Component Name="DFSR" TI="6068" Line="412" Offs="48"/>
-    <Component Name="MMFAR" TI="6083" Line="413" Offs="52"/>
-    <Component Name="BFAR" TI="6098" Line="414" Offs="56"/>
-    <Component Name="AFSR" TI="6113" Line="415" Offs="60"/>
+   <type Family="typedef" Name="GPIO_TypeDef" Line="343" ID="3368" toTI="3253"/>
+   <type Family="ComponentList" Line="345" ID="3380">
+    <Component Name="EVCR" TI="3389" Line="347" Offs="0"/>
+    <Component Name="MAPR" TI="3404" Line="348" Offs="4"/>
+   <type Family="array" ID="3435" toTI="3156"/>
+    <Component Name="EXTICR" TI="3419" Line="349" Offs="8"/>
    </type>
-   <type Family="typedef" Name="SCB_TypeDef" Line="416" ID="6150" toTI="5909"/>
-   <type Family="ComponentList" Line="26" ID="6162">
-    <Component Name="NVIC_IRQChannel" TI="6170" Line="28" Offs="0"/>
-    <Component Name="NVIC_IRQChannelPreemptionPriority" TI="6184" Line="29" Offs="1"/>
-    <Component Name="NVIC_IRQChannelSubPriority" TI="6198" Line="30" Offs="2"/>
-    <Component Name="NVIC_IRQChannelCmd" TI="6212" Line="31" Offs="3"/>
+   <type Family="typedef" Name="AFIO_TypeDef" Line="350" ID="3456" toTI="3380"/>
+   <type Family="typedef" Name="GPIOSpeed_TypeDef" Line="39" ID="3495" toTI="3468"/>
+   <type Family="typedef" Name="GPIOMode_TypeDef" Line="54" ID="3564" toTI="3506"/>
+   <type Family="ComponentList" Line="62" ID="3575">
+    <Component Name="GPIO_Pin" TI="3583" Line="64" Offs="0"/>
+    <Component Name="GPIO_Speed" TI="3597" Line="65" Offs="2"/>
+    <Component Name="GPIO_Mode" TI="3611" Line="66" Offs="3"/>
    </type>
-   <type Family="typedef" Name="NVIC_InitTypeDef" Line="32" ID="6227" toTI="6162"/>
-   <function Name="NVIC_Init" TI="0" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_nvic.c" Line="116">
-   <type Family="Pointer" TI="6474" toTI="6227"/>
-    <parameter Name="NVIC_InitStruct" TI="6474" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_nvic.c" Line="116" Addr="0x0" Param="Yes"/>
-    <variable Name="tmppriority" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_nvic.c" Line="118" Addr="0x0" TI="5473"/>
-    <variable Name="tmpreg" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_nvic.c" Line="118" Addr="0x0" TI="5473"/>
-    <variable Name="tmpmask" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_nvic.c" Line="118" Addr="0x0" TI="5473"/>
-    <variable Name="tmppre" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_nvic.c" Line="119" Addr="0x0" TI="5473"/>
-    <variable Name="tmpsub" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_nvic.c" Line="119" Addr="0x0" TI="5473"/>
+   <type Family="typedef" Name="GPIO_InitTypeDef" Line="67" ID="3626" toTI="3575"/>
+   <type Family="typedef" Name="BitAction" Line="73" ID="3658" toTI="3637"/>
+   <type Family="Pointer" TI="3710" toTI="3368"/>
+   <function Name="GPIO_Init" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_gpio.c" Line="124">
+    <parameter Name="GPIOx" TI="3710" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_gpio.c" Line="124" Addr="0x0" Param="Yes"/>
+   <type Family="Pointer" TI="3879" toTI="3626"/>
+    <parameter Name="GPIO_InitStruct" TI="3879" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_gpio.c" Line="124" Addr="0x1" Param="Yes"/>
+    <variable Name="currentmode" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_gpio.c" Line="126" Addr="0x0" TI="3145"/>
+    <variable Name="currentpin" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_gpio.c" Line="126" Addr="0x0" TI="3145"/>
+    <variable Name="pinpos" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_gpio.c" Line="126" Addr="0x0" TI="3145"/>
+    <variable Name="pos" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_gpio.c" Line="126" Addr="0x0" TI="3145"/>
+    <variable Name="tmpreg" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_gpio.c" Line="127" Addr="0x0" TI="3145"/>
+    <variable Name="pinmask" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_gpio.c" Line="127" Addr="0x0" TI="3145"/>
    </function >
-   <function Name="NVIC_SetVectorTable" TI="0" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_nvic.c" Line="393">
-    <parameter Name="NVIC_VectTab" TI="5473" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_nvic.c" Line="393" Addr="0x0" Param="Yes"/>
-    <parameter Name="Offset" TI="5473" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_nvic.c" Line="393" Addr="0x1" Param="Yes"/>
+   <function Name="GPIO_SetBits" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_gpio.c" Line="333">
+    <parameter Name="GPIOx" TI="3710" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_gpio.c" Line="333" Addr="0x0" Param="Yes"/>
+    <parameter Name="GPIO_Pin" TI="3163" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_gpio.c" Line="333" Addr="0x1" Param="Yes"/>
+   </function >
+   <function Name="GPIO_ResetBits" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_gpio.c" Line="352">
+    <parameter Name="GPIOx" TI="3710" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_gpio.c" Line="352" Addr="0x0" Param="Yes"/>
+    <parameter Name="GPIO_Pin" TI="3163" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_gpio.c" Line="352" Addr="0x1" Param="Yes"/>
    </function >
   </module>
-  <module Name="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.c" >
-   <type Family="Base" Name="long int" ID="7856"/>
-   <type Family="Base" Name="short int" ID="7863"/>
-   <type Family="Base" Name="signed char" ID="7870"/>
-   <type Family="Base" Name="long unsigned int" ID="7888"/>
-   <type Family="typedef" Name="u32" Line="39" ID="7877" toTI="7888"/>
-   <type Family="Base" Name="short unsigned int" ID="7906"/>
-   <type Family="typedef" Name="u16" Line="40" ID="7895" toTI="7906"/>
-   <type Family="Base" Name="unsigned char" ID="7923"/>
-   <type Family="typedef" Name="u8" Line="41" ID="7913" toTI="7923"/>
-   <type Family="typedef" Name="vu32" Line="47" ID="7930" toTI="7941"/>
-   <type Family="typedef" Name="vu8" Line="49" ID="7946" toTI="7957"/>
-   <type Family="typedef" Name="FlagStatus" Line="57" ID="7983" toTI="7962"/>
-   <type Family="typedef" Name="ITStatus" Line="57" ID="7994" toTI="7962"/>
-   <type Family="typedef" Name="FunctionalState" Line="59" ID="8026" toTI="8005"/>
-   <type Family="typedef" Name="ErrorStatus" Line="62" ID="8058" toTI="8037"/>
-   <type Family="Base" Name="unsigned int" ID="8069"/>
-   <type Family="ComponentList" Line="426" ID="8076">
-    <Component Name="CR" TI="8085" Line="428" Offs="0"/>
-    <Component Name="CFGR" TI="8099" Line="429" Offs="4"/>
-    <Component Name="CIR" TI="8114" Line="430" Offs="8"/>
-    <Component Name="APB2RSTR" TI="8129" Line="431" Offs="12"/>
-    <Component Name="APB1RSTR" TI="8144" Line="432" Offs="16"/>
-    <Component Name="AHBENR" TI="8159" Line="433" Offs="20"/>
-    <Component Name="APB2ENR" TI="8174" Line="434" Offs="24"/>
-    <Component Name="APB1ENR" TI="8189" Line="435" Offs="28"/>
-    <Component Name="BDCR" TI="8204" Line="436" Offs="32"/>
-    <Component Name="CSR" TI="8219" Line="437" Offs="36"/>
-   </type>
-   <type Family="typedef" Name="RCC_TypeDef" Line="438" ID="8235" toTI="8076"/>
-   <type Family="ComponentList" Line="25" ID="8247">
-    <Component Name="SYSCLK_Frequency" TI="8255" Line="27" Offs="0"/>
-    <Component Name="HCLK_Frequency" TI="8269" Line="28" Offs="4"/>
-    <Component Name="PCLK1_Frequency" TI="8283" Line="29" Offs="8"/>
-    <Component Name="PCLK2_Frequency" TI="8297" Line="30" Offs="12"/>
-    <Component Name="ADCCLK_Frequency" TI="8311" Line="31" Offs="16"/>
-   </type>
-   <type Family="typedef" Name="RCC_ClocksTypeDef" Line="32" ID="8326" toTI="8247"/>
-   <function Name="RCC_DeInit" TI="0" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.c" Line="124">
+  <module Name="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" >
+   <type Family="Base" Name="long int" ID="4804"/>
+   <type Family="Base" Name="short int" ID="4811"/>
+   <type Family="Base" Name="signed char" ID="4818"/>
+   <type Family="Base" Name="long unsigned int" ID="4825"/>
+   <type Family="Base" Name="short unsigned int" ID="4832"/>
+   <type Family="Base" Name="unsigned char" ID="4839"/>
+   <type Family="Base" Name="unsigned int" ID="4846"/>
+   <function Name="WWDG_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="150">
    </function >
-   <function Name="RCC_HSEConfig" TI="0" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.c" Line="159">
-    <parameter Name="RCC_HSE" TI="7877" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.c" Line="159" Addr="0x0" Param="Yes"/>
+   <function Name="PVD_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="161">
    </function >
-   <function Name="RCC_PLLConfig" TI="0" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.c" Line="287">
-    <parameter Name="RCC_PLLSource" TI="7877" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.c" Line="287" Addr="0x0" Param="Yes"/>
-    <parameter Name="RCC_PLLMul" TI="7877" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.c" Line="287" Addr="0x1" Param="Yes"/>
-    <variable Name="tmpreg" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.c" Line="289" Addr="0x0" TI="7877"/>
+   <function Name="TAMPER_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="172">
    </function >
-   <function Name="RCC_PLLCmd" TI="0" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.c" Line="316">
-    <parameter Name="NewState" TI="8026" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.c" Line="316" Addr="0x0" Param="Yes"/>
+   <function Name="RTC_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="183">
    </function >
-   <function Name="RCC_SYSCLKConfig" TI="0" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.c" Line="335">
-    <parameter Name="RCC_SYSCLKSource" TI="7877" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.c" Line="335" Addr="0x0" Param="Yes"/>
-    <variable Name="tmpreg" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.c" Line="337" Addr="0x0" TI="7877"/>
+   <function Name="FLASH_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="194">
    </function >
-   <function Name="RCC_GetSYSCLKSource" TI="7913" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.c" Line="365">
+   <function Name="RCC_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="205">
    </function >
-   <function Name="RCC_HCLKConfig" TI="0" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.c" Line="388">
-    <parameter Name="RCC_SYSCLK" TI="7877" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.c" Line="388" Addr="0x0" Param="Yes"/>
-    <variable Name="tmpreg" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.c" Line="390" Addr="0x0" TI="7877"/>
+   <function Name="EXTI0_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="216">
    </function >
-   <function Name="RCC_PCLK1Config" TI="0" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.c" Line="421">
-    <parameter Name="RCC_HCLK" TI="7877" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.c" Line="421" Addr="0x0" Param="Yes"/>
-    <variable Name="tmpreg" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.c" Line="423" Addr="0x0" TI="7877"/>
+   <function Name="EXTI1_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="227">
    </function >
-   <function Name="RCC_PCLK2Config" TI="0" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.c" Line="454">
-    <parameter Name="RCC_HCLK" TI="7877" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.c" Line="454" Addr="0x0" Param="Yes"/>
-    <variable Name="tmpreg" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.c" Line="456" Addr="0x0" TI="7877"/>
+   <function Name="EXTI2_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="238">
    </function >
-   <function Name="RCC_ADCCLKConfig" TI="0" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.c" Line="541">
-    <parameter Name="RCC_PCLK2" TI="7877" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.c" Line="541" Addr="0x0" Param="Yes"/>
-    <variable Name="tmpreg" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.c" Line="543" Addr="0x0" TI="7877"/>
+   <function Name="EXTI3_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="249">
    </function >
-   <type Family="Pointer" TI="9264" toTI="8326"/>
-   <function Name="RCC_APB2PeriphClockCmd" TI="0" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.c" Line="801">
-    <parameter Name="RCC_APB2Periph" TI="7877" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.c" Line="801" Addr="0x0" Param="Yes"/>
-    <parameter Name="NewState" TI="8026" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.c" Line="801" Addr="0x1" Param="Yes"/>
+   <function Name="EXTI4_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="260">
    </function >
-   <function Name="RCC_APB1PeriphClockCmd" TI="0" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.c" Line="835">
-    <parameter Name="RCC_APB1Periph" TI="7877" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.c" Line="835" Addr="0x0" Param="Yes"/>
-    <parameter Name="NewState" TI="8026" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.c" Line="835" Addr="0x1" Param="Yes"/>
+   <function Name="DMA1_Channel1_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="271">
    </function >
-   <function Name="RCC_GetFlagStatus" TI="7983" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.c" Line="989">
-    <parameter Name="RCC_FLAG" TI="7913" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.c" Line="989" Addr="0x0" Param="Yes"/>
-    <variable Name="tmp" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.c" Line="991" Addr="0x0" TI="7877"/>
-    <variable Name="statusreg" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.c" Line="992" Addr="0x0" TI="7877"/>
-    <variable Name="bitstatus" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.c" Line="993" Addr="0x0" TI="7983"/>
+   <function Name="DMA1_Channel2_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="282">
    </function >
-   <function Name="RCC_WaitForHSEStartUp" TI="8058" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.c" Line="198">
-    <variable Name="StartUpCounter" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.c" Line="200" Addr="0x34000004" TI="7941"/>
-    <variable Name="status" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.c" Line="201" Addr="0x34000010" TI="8058"/>
-    <variable Name="HSEStatus" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.c" Line="202" Addr="0x10" TI="7983"/>
+   <function Name="DMA1_Channel3_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="293">
    </function >
-   <type Family="array" ID="9962" toTI="7923"/>
-   <variable Name="APBAHBPrescTable" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.c" Line="111" Addr="0x0" TI="9995"/>
-   <type Family="array" ID="10000" toTI="7923"/>
-   <variable Name="ADCPrescTable" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.c" Line="112" Addr="0x0" TI="10033"/>
+   <function Name="DMA1_Channel4_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="304">
+   </function >
+   <function Name="DMA1_Channel5_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="315">
+   </function >
+   <function Name="DMA1_Channel6_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="326">
+   </function >
+   <function Name="DMA1_Channel7_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="337">
+   </function >
+   <function Name="ADC1_2_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="348">
+   </function >
+   <function Name="EXTI9_5_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="405">
+   </function >
+   <function Name="TIM1_BRK_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="416">
+   </function >
+   <function Name="TIM1_UP_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="428">
+   </function >
+   <function Name="TIM1_TRG_COM_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="440">
+   </function >
+   <function Name="TIM1_CC_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="451">
+   </function >
+   <function Name="I2C1_EV_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="495">
+   </function >
+   <function Name="I2C1_ER_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="506">
+   </function >
+   <function Name="I2C2_EV_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="517">
+   </function >
+   <function Name="I2C2_ER_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="528">
+   </function >
+   <function Name="SPI1_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="539">
+   </function >
+   <function Name="SPI2_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="550">
+   </function >
+   <function Name="USART1_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="561">
+   </function >
+   <function Name="USART2_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="572">
+   </function >
+   <function Name="USART3_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="583">
+   </function >
+   <function Name="EXTI15_10_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="594">
+   </function >
+   <function Name="RTCAlarm_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="605">
+   </function >
+   <function Name="USBWakeUp_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="616">
+   </function >
+   <function Name="TIM8_BRK_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="627">
+   </function >
+   <function Name="TIM8_UP_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="639">
+   </function >
+   <function Name="TIM8_TRG_COM_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="651">
+   </function >
+   <function Name="TIM8_CC_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="662">
+   </function >
+   <function Name="ADC3_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="673">
+   </function >
+   <function Name="FSMC_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="684">
+   </function >
+   <function Name="SDIO_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="695">
+   </function >
+   <function Name="TIM5_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="706">
+   </function >
+   <function Name="SPI3_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="717">
+   </function >
+   <function Name="UART4_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="728">
+   </function >
+   <function Name="UART5_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="739">
+   </function >
+   <function Name="TIM6_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="750">
+   </function >
+   <function Name="TIM7_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="761">
+   </function >
+   <function Name="DMA2_Channel1_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="772">
+   </function >
+   <function Name="DMA2_Channel2_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="783">
+   </function >
+   <function Name="DMA2_Channel3_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="794">
+   </function >
+   <function Name="DMA2_Channel4_5_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="806">
+   </function >
   </module>
-  <module Name="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_tim.c" >
-   <type Family="Base" Name="long int" ID="10076"/>
-   <type Family="Base" Name="short int" ID="10083"/>
-   <type Family="Base" Name="signed char" ID="10090"/>
-   <type Family="Base" Name="long unsigned int" ID="10108"/>
-   <type Family="typedef" Name="u32" Line="39" ID="10097" toTI="10108"/>
-   <type Family="Base" Name="short unsigned int" ID="10126"/>
-   <type Family="typedef" Name="u16" Line="40" ID="10115" toTI="10126"/>
-   <type Family="Base" Name="unsigned char" ID="10143"/>
-   <type Family="typedef" Name="u8" Line="41" ID="10133" toTI="10143"/>
-   <type Family="typedef" Name="vu32" Line="47" ID="10150" toTI="10161"/>
-   <type Family="typedef" Name="FlagStatus" Line="57" ID="10192" toTI="10171"/>
-   <type Family="typedef" Name="ITStatus" Line="57" ID="10203" toTI="10171"/>
-   <type Family="typedef" Name="FunctionalState" Line="59" ID="10235" toTI="10214"/>
-   <type Family="Base" Name="unsigned int" ID="10246"/>
-   <type Family="ComponentList" Line="523" ID="10253">
-    <Component Name="CR1" TI="10262" Line="525" Offs="0"/>
-    <Component Name="RESERVED0" TI="10277" Line="526" Offs="2"/>
-    <Component Name="CR2" TI="10292" Line="527" Offs="4"/>
-    <Component Name="RESERVED1" TI="10307" Line="528" Offs="6"/>
-    <Component Name="SMCR" TI="10322" Line="529" Offs="8"/>
-    <Component Name="RESERVED2" TI="10337" Line="530" Offs="10"/>
-    <Component Name="DIER" TI="10352" Line="531" Offs="12"/>
-    <Component Name="RESERVED3" TI="10367" Line="532" Offs="14"/>
-    <Component Name="SR" TI="10382" Line="533" Offs="16"/>
-    <Component Name="RESERVED4" TI="10396" Line="534" Offs="18"/>
-    <Component Name="EGR" TI="10411" Line="535" Offs="20"/>
-    <Component Name="RESERVED5" TI="10426" Line="536" Offs="22"/>
-    <Component Name="CCMR1" TI="10441" Line="537" Offs="24"/>
-    <Component Name="RESERVED6" TI="10456" Line="538" Offs="26"/>
-    <Component Name="CCMR2" TI="10471" Line="539" Offs="28"/>
-    <Component Name="RESERVED7" TI="10486" Line="540" Offs="30"/>
-    <Component Name="CCER" TI="10501" Line="541" Offs="32"/>
-    <Component Name="RESERVED8" TI="10516" Line="542" Offs="34"/>
-    <Component Name="CNT" TI="10531" Line="543" Offs="36"/>
-    <Component Name="RESERVED9" TI="10546" Line="544" Offs="38"/>
-    <Component Name="PSC" TI="10561" Line="545" Offs="40"/>
-    <Component Name="RESERVED10" TI="10576" Line="546" Offs="42"/>
-    <Component Name="ARR" TI="10591" Line="547" Offs="44"/>
-    <Component Name="RESERVED11" TI="10606" Line="548" Offs="46"/>
-    <Component Name="RCR" TI="10621" Line="549" Offs="48"/>
-    <Component Name="RESERVED12" TI="10636" Line="550" Offs="50"/>
-    <Component Name="CCR1" TI="10651" Line="551" Offs="52"/>
-    <Component Name="RESERVED13" TI="10666" Line="552" Offs="54"/>
-    <Component Name="CCR2" TI="10681" Line="553" Offs="56"/>
-    <Component Name="RESERVED14" TI="10696" Line="554" Offs="58"/>
-    <Component Name="CCR3" TI="10711" Line="555" Offs="60"/>
-    <Component Name="RESERVED15" TI="10726" Line="556" Offs="62"/>
-    <Component Name="CCR4" TI="10741" Line="557" Offs="64"/>
-    <Component Name="RESERVED16" TI="10756" Line="558" Offs="66"/>
-    <Component Name="BDTR" TI="10771" Line="559" Offs="68"/>
-    <Component Name="RESERVED17" TI="10786" Line="560" Offs="70"/>
-    <Component Name="DCR" TI="10801" Line="561" Offs="72"/>
-    <Component Name="RESERVED18" TI="10816" Line="562" Offs="74"/>
-    <Component Name="DMAR" TI="10831" Line="563" Offs="76"/>
-    <Component Name="RESERVED19" TI="10846" Line="564" Offs="78"/>
+  <module Name="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_lib.c" >
+   <type Family="Base" Name="long int" ID="6254"/>
+   <type Family="Base" Name="short int" ID="6261"/>
+   <type Family="Base" Name="signed char" ID="6268"/>
+   <type Family="Base" Name="long unsigned int" ID="6275"/>
+   <type Family="Base" Name="short unsigned int" ID="6282"/>
+   <type Family="Base" Name="unsigned char" ID="6289"/>
+   <type Family="Base" Name="unsigned int" ID="6296"/>
+  </module>
+  <module Name="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_nvic.c" >
+   <type Family="Base" Name="long int" ID="6341"/>
+   <type Family="Base" Name="short int" ID="6348"/>
+   <type Family="Base" Name="signed char" ID="6355"/>
+   <type Family="Base" Name="long unsigned int" ID="6373"/>
+   <type Family="typedef" Name="u32" Line="39" ID="6362" toTI="6373"/>
+   <type Family="Base" Name="short unsigned int" ID="6391"/>
+   <type Family="typedef" Name="u16" Line="40" ID="6380" toTI="6391"/>
+   <type Family="Base" Name="unsigned char" ID="6408"/>
+   <type Family="typedef" Name="u8" Line="41" ID="6398" toTI="6408"/>
+   <type Family="typedef" Name="vu32" Line="47" ID="6415" toTI="6426"/>
+   <type Family="typedef" Name="ITStatus" Line="57" ID="6457" toTI="6436"/>
+   <type Family="typedef" Name="FunctionalState" Line="59" ID="6489" toTI="6468"/>
+   <type Family="Base" Name="unsigned int" ID="6500"/>
+   <type Family="ComponentList" Line="385" ID="6507">
+   <type Family="array" ID="6692" toTI="6373"/>
+    <Component Name="ISER" TI="6517" Line="387" Offs="0"/>
+   <type Family="array" ID="6713" toTI="6362"/>
+    <Component Name="RESERVED0" TI="6532" Line="388" Offs="8"/>
+    <Component Name="ICER" TI="6547" Line="389" Offs="128"/>
+    <Component Name="RSERVED1" TI="6563" Line="390" Offs="136"/>
+    <Component Name="ISPR" TI="6579" Line="391" Offs="256"/>
+    <Component Name="RESERVED2" TI="6595" Line="392" Offs="264"/>
+    <Component Name="ICPR" TI="6611" Line="393" Offs="384"/>
+    <Component Name="RESERVED3" TI="6627" Line="394" Offs="392"/>
+    <Component Name="IABR" TI="6643" Line="395" Offs="512"/>
+   <type Family="array" ID="6749" toTI="6362"/>
+    <Component Name="RESERVED4" TI="6659" Line="396" Offs="520"/>
+   <type Family="array" ID="6765" toTI="6373"/>
+    <Component Name="IPR" TI="6675" Line="397" Offs="768"/>
    </type>
-   <type Family="typedef" Name="TIM_TypeDef" Line="565" ID="10862" toTI="10253"/>
-   <type Family="ComponentList" Line="27" ID="10874">
-    <Component Name="TIM_Prescaler" TI="10882" Line="29" Offs="0"/>
-    <Component Name="TIM_CounterMode" TI="10896" Line="30" Offs="2"/>
-    <Component Name="TIM_Period" TI="10910" Line="31" Offs="4"/>
-    <Component Name="TIM_ClockDivision" TI="10924" Line="32" Offs="6"/>
-    <Component Name="TIM_RepetitionCounter" TI="10938" Line="33" Offs="8"/>
+   <type Family="typedef" Name="NVIC_TypeDef" Line="398" ID="6786" toTI="6507"/>
+   <type Family="ComponentList" Line="400" ID="6798">
+    <Component Name="CPUID" TI="6807" Line="402" Offs="0"/>
+    <Component Name="ICSR" TI="6822" Line="403" Offs="4"/>
+    <Component Name="VTOR" TI="6837" Line="404" Offs="8"/>
+    <Component Name="AIRCR" TI="6852" Line="405" Offs="12"/>
+    <Component Name="SCR" TI="6867" Line="406" Offs="16"/>
+    <Component Name="CCR" TI="6882" Line="407" Offs="20"/>
+   <type Family="array" ID="7018" toTI="6373"/>
+    <Component Name="SHPR" TI="6897" Line="408" Offs="24"/>
+    <Component Name="SHCSR" TI="6912" Line="409" Offs="36"/>
+    <Component Name="CFSR" TI="6927" Line="410" Offs="40"/>
+    <Component Name="HFSR" TI="6942" Line="411" Offs="44"/>
+    <Component Name="DFSR" TI="6957" Line="412" Offs="48"/>
+    <Component Name="MMFAR" TI="6972" Line="413" Offs="52"/>
+    <Component Name="BFAR" TI="6987" Line="414" Offs="56"/>
+    <Component Name="AFSR" TI="7002" Line="415" Offs="60"/>
    </type>
-   <type Family="typedef" Name="TIM_TimeBaseInitTypeDef" Line="34" ID="10953" toTI="10874"/>
-   <type Family="ComponentList" Line="37" ID="10964">
-    <Component Name="TIM_OCMode" TI="10972" Line="39" Offs="0"/>
-    <Component Name="TIM_OutputState" TI="10986" Line="40" Offs="2"/>
-    <Component Name="TIM_OutputNState" TI="11000" Line="41" Offs="4"/>
-    <Component Name="TIM_Pulse" TI="11014" Line="42" Offs="6"/>
-    <Component Name="TIM_OCPolarity" TI="11028" Line="43" Offs="8"/>
-    <Component Name="TIM_OCNPolarity" TI="11042" Line="44" Offs="10"/>
-    <Component Name="TIM_OCIdleState" TI="11056" Line="45" Offs="12"/>
-    <Component Name="TIM_OCNIdleState" TI="11070" Line="46" Offs="14"/>
+   <type Family="typedef" Name="SCB_TypeDef" Line="416" ID="7039" toTI="6798"/>
+   <type Family="ComponentList" Line="26" ID="7051">
+    <Component Name="NVIC_IRQChannel" TI="7059" Line="28" Offs="0"/>
+    <Component Name="NVIC_IRQChannelPreemptionPriority" TI="7073" Line="29" Offs="1"/>
+    <Component Name="NVIC_IRQChannelSubPriority" TI="7087" Line="30" Offs="2"/>
+    <Component Name="NVIC_IRQChannelCmd" TI="7101" Line="31" Offs="3"/>
    </type>
-   <type Family="typedef" Name="TIM_OCInitTypeDef" Line="47" ID="11085" toTI="10964"/>
-   <type Family="ComponentList" Line="50" ID="11096">
-    <Component Name="TIM_Channel" TI="11104" Line="52" Offs="0"/>
-    <Component Name="TIM_ICPolarity" TI="11118" Line="53" Offs="2"/>
-    <Component Name="TIM_ICSelection" TI="11132" Line="54" Offs="4"/>
-    <Component Name="TIM_ICPrescaler" TI="11146" Line="55" Offs="6"/>
-    <Component Name="TIM_ICFilter" TI="11160" Line="56" Offs="8"/>
-   </type>
-   <type Family="typedef" Name="TIM_ICInitTypeDef" Line="57" ID="11175" toTI="11096"/>
-   <type Family="ComponentList" Line="60" ID="11186">
-    <Component Name="TIM_OSSRState" TI="11194" Line="62" Offs="0"/>
-    <Component Name="TIM_OSSIState" TI="11208" Line="63" Offs="2"/>
-    <Component Name="TIM_LOCKLevel" TI="11222" Line="64" Offs="4"/>
-    <Component Name="TIM_DeadTime" TI="11236" Line="65" Offs="6"/>
-    <Component Name="TIM_Break" TI="11250" Line="66" Offs="8"/>
-    <Component Name="TIM_BreakPolarity" TI="11264" Line="67" Offs="10"/>
-    <Component Name="TIM_AutomaticOutput" TI="11278" Line="68" Offs="12"/>
-   </type>
-   <type Family="typedef" Name="TIM_BDTRInitTypeDef" Line="69" ID="11293" toTI="11186"/>
-   <type Family="Pointer" TI="11418" toTI="10862"/>
-   <function Name="TIM_TimeBaseInit" TI="0" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_tim.c" Line="199">
-    <parameter Name="TIMx" TI="11418" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_tim.c" Line="199" Addr="0x0" Param="Yes"/>
-   <type Family="Pointer" TI="11646" toTI="10953"/>
-    <parameter Name="TIM_TimeBaseInitStruct" TI="11646" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_tim.c" Line="199" Addr="0x1" Param="Yes"/>
+   <type Family="typedef" Name="NVIC_InitTypeDef" Line="32" ID="7116" toTI="7051"/>
+   <function Name="NVIC_Init" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_nvic.c" Line="116">
+   <type Family="Pointer" TI="7363" toTI="7116"/>
+    <parameter Name="NVIC_InitStruct" TI="7363" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_nvic.c" Line="116" Addr="0x0" Param="Yes"/>
+    <variable Name="tmppriority" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_nvic.c" Line="118" Addr="0x0" TI="6362"/>
+    <variable Name="tmpreg" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_nvic.c" Line="118" Addr="0x0" TI="6362"/>
+    <variable Name="tmpmask" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_nvic.c" Line="118" Addr="0x0" TI="6362"/>
+    <variable Name="tmppre" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_nvic.c" Line="119" Addr="0x0" TI="6362"/>
+    <variable Name="tmpsub" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_nvic.c" Line="119" Addr="0x0" TI="6362"/>
    </function >
-   <type Family="Pointer" TI="11751" toTI="11085"/>
-   <type Family="Pointer" TI="12122" toTI="11293"/>
-   <type Family="Pointer" TI="12248" toTI="11175"/>
-   <function Name="TIM_Cmd" TI="0" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_tim.c" Line="829">
-    <parameter Name="TIMx" TI="11418" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_tim.c" Line="829" Addr="0x0" Param="Yes"/>
-    <parameter Name="NewState" TI="10235" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_tim.c" Line="829" Addr="0x1" Param="Yes"/>
+   <function Name="NVIC_SetVectorTable" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_nvic.c" Line="393">
+    <parameter Name="NVIC_VectTab" TI="6362" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_nvic.c" Line="393" Addr="0x0" Param="Yes"/>
+    <parameter Name="Offset" TI="6362" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_nvic.c" Line="393" Addr="0x1" Param="Yes"/>
    </function >
-   <function Name="TIM_ITConfig" TI="0" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_tim.c" Line="894">
-    <parameter Name="TIMx" TI="11418" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_tim.c" Line="894" Addr="0x0" Param="Yes"/>
-    <parameter Name="TIM_IT" TI="10115" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_tim.c" Line="894" Addr="0x1" Param="Yes"/>
-    <parameter Name="NewState" TI="10235" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_tim.c" Line="894" Addr="0x2" Param="Yes"/>
+  </module>
+  <module Name="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.c" >
+   <type Family="Base" Name="long int" ID="8745"/>
+   <type Family="Base" Name="short int" ID="8752"/>
+   <type Family="Base" Name="signed char" ID="8759"/>
+   <type Family="Base" Name="long unsigned int" ID="8777"/>
+   <type Family="typedef" Name="u32" Line="39" ID="8766" toTI="8777"/>
+   <type Family="Base" Name="short unsigned int" ID="8795"/>
+   <type Family="typedef" Name="u16" Line="40" ID="8784" toTI="8795"/>
+   <type Family="Base" Name="unsigned char" ID="8812"/>
+   <type Family="typedef" Name="u8" Line="41" ID="8802" toTI="8812"/>
+   <type Family="typedef" Name="vu32" Line="47" ID="8819" toTI="8830"/>
+   <type Family="typedef" Name="vu8" Line="49" ID="8835" toTI="8846"/>
+   <type Family="typedef" Name="FlagStatus" Line="57" ID="8872" toTI="8851"/>
+   <type Family="typedef" Name="ITStatus" Line="57" ID="8883" toTI="8851"/>
+   <type Family="typedef" Name="FunctionalState" Line="59" ID="8915" toTI="8894"/>
+   <type Family="typedef" Name="ErrorStatus" Line="62" ID="8947" toTI="8926"/>
+   <type Family="Base" Name="unsigned int" ID="8958"/>
+   <type Family="ComponentList" Line="426" ID="8965">
+    <Component Name="CR" TI="8974" Line="428" Offs="0"/>
+    <Component Name="CFGR" TI="8988" Line="429" Offs="4"/>
+    <Component Name="CIR" TI="9003" Line="430" Offs="8"/>
+    <Component Name="APB2RSTR" TI="9018" Line="431" Offs="12"/>
+    <Component Name="APB1RSTR" TI="9033" Line="432" Offs="16"/>
+    <Component Name="AHBENR" TI="9048" Line="433" Offs="20"/>
+    <Component Name="APB2ENR" TI="9063" Line="434" Offs="24"/>
+    <Component Name="APB1ENR" TI="9078" Line="435" Offs="28"/>
+    <Component Name="BDCR" TI="9093" Line="436" Offs="32"/>
+    <Component Name="CSR" TI="9108" Line="437" Offs="36"/>
+   </type>
+   <type Family="typedef" Name="RCC_TypeDef" Line="438" ID="9124" toTI="8965"/>
+   <type Family="ComponentList" Line="25" ID="9136">
+    <Component Name="SYSCLK_Frequency" TI="9144" Line="27" Offs="0"/>
+    <Component Name="HCLK_Frequency" TI="9158" Line="28" Offs="4"/>
+    <Component Name="PCLK1_Frequency" TI="9172" Line="29" Offs="8"/>
+    <Component Name="PCLK2_Frequency" TI="9186" Line="30" Offs="12"/>
+    <Component Name="ADCCLK_Frequency" TI="9200" Line="31" Offs="16"/>
+   </type>
+   <type Family="typedef" Name="RCC_ClocksTypeDef" Line="32" ID="9215" toTI="9136"/>
+   <function Name="RCC_DeInit" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.c" Line="124">
    </function >
-   <function Name="TIM_ClearITPendingBit" TI="0" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_tim.c" Line="3022">
-    <parameter Name="TIMx" TI="11418" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_tim.c" Line="3022" Addr="0x0" Param="Yes"/>
-    <parameter Name="TIM_IT" TI="10115" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_tim.c" Line="3022" Addr="0x1" Param="Yes"/>
+   <function Name="RCC_HSEConfig" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.c" Line="159">
+    <parameter Name="RCC_HSE" TI="8766" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.c" Line="159" Addr="0x0" Param="Yes"/>
    </function >
+   <function Name="RCC_PLLConfig" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.c" Line="287">
+    <parameter Name="RCC_PLLSource" TI="8766" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.c" Line="287" Addr="0x0" Param="Yes"/>
+    <parameter Name="RCC_PLLMul" TI="8766" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.c" Line="287" Addr="0x1" Param="Yes"/>
+    <variable Name="tmpreg" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.c" Line="289" Addr="0x0" TI="8766"/>
+   </function >
+   <function Name="RCC_PLLCmd" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.c" Line="316">
+    <parameter Name="NewState" TI="8915" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.c" Line="316" Addr="0x0" Param="Yes"/>
+   </function >
+   <function Name="RCC_SYSCLKConfig" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.c" Line="335">
+    <parameter Name="RCC_SYSCLKSource" TI="8766" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.c" Line="335" Addr="0x0" Param="Yes"/>
+    <variable Name="tmpreg" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.c" Line="337" Addr="0x0" TI="8766"/>
+   </function >
+   <function Name="RCC_GetSYSCLKSource" TI="8802" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.c" Line="365">
+   </function >
+   <function Name="RCC_HCLKConfig" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.c" Line="388">
+    <parameter Name="RCC_SYSCLK" TI="8766" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.c" Line="388" Addr="0x0" Param="Yes"/>
+    <variable Name="tmpreg" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.c" Line="390" Addr="0x0" TI="8766"/>
+   </function >
+   <function Name="RCC_PCLK1Config" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.c" Line="421">
+    <parameter Name="RCC_HCLK" TI="8766" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.c" Line="421" Addr="0x0" Param="Yes"/>
+    <variable Name="tmpreg" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.c" Line="423" Addr="0x0" TI="8766"/>
+   </function >
+   <function Name="RCC_PCLK2Config" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.c" Line="454">
+    <parameter Name="RCC_HCLK" TI="8766" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.c" Line="454" Addr="0x0" Param="Yes"/>
+    <variable Name="tmpreg" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.c" Line="456" Addr="0x0" TI="8766"/>
+   </function >
+   <function Name="RCC_ADCCLKConfig" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.c" Line="541">
+    <parameter Name="RCC_PCLK2" TI="8766" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.c" Line="541" Addr="0x0" Param="Yes"/>
+    <variable Name="tmpreg" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.c" Line="543" Addr="0x0" TI="8766"/>
+   </function >
+   <type Family="Pointer" TI="10153" toTI="9215"/>
+   <function Name="RCC_AHBPeriphClockCmd" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.c" Line="768">
+    <parameter Name="RCC_AHBPeriph" TI="8766" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.c" Line="768" Addr="0x0" Param="Yes"/>
+    <parameter Name="NewState" TI="8915" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.c" Line="768" Addr="0x1" Param="Yes"/>
+   </function >
+   <function Name="RCC_APB2PeriphClockCmd" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.c" Line="801">
+    <parameter Name="RCC_APB2Periph" TI="8766" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.c" Line="801" Addr="0x0" Param="Yes"/>
+    <parameter Name="NewState" TI="8915" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.c" Line="801" Addr="0x1" Param="Yes"/>
+   </function >
+   <function Name="RCC_APB1PeriphClockCmd" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.c" Line="835">
+    <parameter Name="RCC_APB1Periph" TI="8766" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.c" Line="835" Addr="0x0" Param="Yes"/>
+    <parameter Name="NewState" TI="8915" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.c" Line="835" Addr="0x1" Param="Yes"/>
+   </function >
+   <function Name="RCC_GetFlagStatus" TI="8872" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.c" Line="989">
+    <parameter Name="RCC_FLAG" TI="8802" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.c" Line="989" Addr="0x0" Param="Yes"/>
+    <variable Name="tmp" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.c" Line="991" Addr="0x0" TI="8766"/>
+    <variable Name="statusreg" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.c" Line="992" Addr="0x0" TI="8766"/>
+    <variable Name="bitstatus" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.c" Line="993" Addr="0x0" TI="8872"/>
+   </function >
+   <function Name="RCC_WaitForHSEStartUp" TI="8947" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.c" Line="198">
+    <variable Name="StartUpCounter" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.c" Line="200" Addr="0x34000004" TI="8830"/>
+    <variable Name="status" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.c" Line="201" Addr="0x34000010" TI="8947"/>
+    <variable Name="HSEStatus" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.c" Line="202" Addr="0x10" TI="8872"/>
+   </function >
+   <type Family="array" ID="10851" toTI="8812"/>
+   <variable Name="APBAHBPrescTable" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.c" Line="111" Addr="0x0" TI="10884"/>
+   <type Family="array" ID="10889" toTI="8812"/>
+   <variable Name="ADCPrescTable" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_rcc.c" Line="112" Addr="0x0" TI="10922"/>
+  </module>
+  <module Name="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_tim.c" >
+   <type Family="Base" Name="long int" ID="10965"/>
+   <type Family="Base" Name="short int" ID="10972"/>
+   <type Family="Base" Name="signed char" ID="10979"/>
+   <type Family="Base" Name="long unsigned int" ID="10997"/>
+   <type Family="typedef" Name="u32" Line="39" ID="10986" toTI="10997"/>
+   <type Family="Base" Name="short unsigned int" ID="11015"/>
+   <type Family="typedef" Name="u16" Line="40" ID="11004" toTI="11015"/>
+   <type Family="Base" Name="unsigned char" ID="11032"/>
+   <type Family="typedef" Name="u8" Line="41" ID="11022" toTI="11032"/>
+   <type Family="typedef" Name="vu32" Line="47" ID="11039" toTI="11050"/>
+   <type Family="typedef" Name="FlagStatus" Line="57" ID="11081" toTI="11060"/>
+   <type Family="typedef" Name="ITStatus" Line="57" ID="11092" toTI="11060"/>
+   <type Family="typedef" Name="FunctionalState" Line="59" ID="11124" toTI="11103"/>
+   <type Family="Base" Name="unsigned int" ID="11135"/>
+   <type Family="ComponentList" Line="523" ID="11142">
+    <Component Name="CR1" TI="11151" Line="525" Offs="0"/>
+    <Component Name="RESERVED0" TI="11166" Line="526" Offs="2"/>
+    <Component Name="CR2" TI="11181" Line="527" Offs="4"/>
+    <Component Name="RESERVED1" TI="11196" Line="528" Offs="6"/>
+    <Component Name="SMCR" TI="11211" Line="529" Offs="8"/>
+    <Component Name="RESERVED2" TI="11226" Line="530" Offs="10"/>
+    <Component Name="DIER" TI="11241" Line="531" Offs="12"/>
+    <Component Name="RESERVED3" TI="11256" Line="532" Offs="14"/>
+    <Component Name="SR" TI="11271" Line="533" Offs="16"/>
+    <Component Name="RESERVED4" TI="11285" Line="534" Offs="18"/>
+    <Component Name="EGR" TI="11300" Line="535" Offs="20"/>
+    <Component Name="RESERVED5" TI="11315" Line="536" Offs="22"/>
+    <Component Name="CCMR1" TI="11330" Line="537" Offs="24"/>
+    <Component Name="RESERVED6" TI="11345" Line="538" Offs="26"/>
+    <Component Name="CCMR2" TI="11360" Line="539" Offs="28"/>
+    <Component Name="RESERVED7" TI="11375" Line="540" Offs="30"/>
+    <Component Name="CCER" TI="11390" Line="541" Offs="32"/>
+    <Component Name="RESERVED8" TI="11405" Line="542" Offs="34"/>
+    <Component Name="CNT" TI="11420" Line="543" Offs="36"/>
+    <Component Name="RESERVED9" TI="11435" Line="544" Offs="38"/>
+    <Component Name="PSC" TI="11450" Line="545" Offs="40"/>
+    <Component Name="RESERVED10" TI="11465" Line="546" Offs="42"/>
+    <Component Name="ARR" TI="11480" Line="547" Offs="44"/>
+    <Component Name="RESERVED11" TI="11495" Line="548" Offs="46"/>
+    <Component Name="RCR" TI="11510" Line="549" Offs="48"/>
+    <Component Name="RESERVED12" TI="11525" Line="550" Offs="50"/>
+    <Component Name="CCR1" TI="11540" Line="551" Offs="52"/>
+    <Component Name="RESERVED13" TI="11555" Line="552" Offs="54"/>
+    <Component Name="CCR2" TI="11570" Line="553" Offs="56"/>
+    <Component Name="RESERVED14" TI="11585" Line="554" Offs="58"/>
+    <Component Name="CCR3" TI="11600" Line="555" Offs="60"/>
+    <Component Name="RESERVED15" TI="11615" Line="556" Offs="62"/>
+    <Component Name="CCR4" TI="11630" Line="557" Offs="64"/>
+    <Component Name="RESERVED16" TI="11645" Line="558" Offs="66"/>
+    <Component Name="BDTR" TI="11660" Line="559" Offs="68"/>
+    <Component Name="RESERVED17" TI="11675" Line="560" Offs="70"/>
+    <Component Name="DCR" TI="11690" Line="561" Offs="72"/>
+    <Component Name="RESERVED18" TI="11705" Line="562" Offs="74"/>
+    <Component Name="DMAR" TI="11720" Line="563" Offs="76"/>
+    <Component Name="RESERVED19" TI="11735" Line="564" Offs="78"/>
+   </type>
+   <type Family="typedef" Name="TIM_TypeDef" Line="565" ID="11751" toTI="11142"/>
+   <type Family="ComponentList" Line="27" ID="11763">
+    <Component Name="TIM_Prescaler" TI="11771" Line="29" Offs="0"/>
+    <Component Name="TIM_CounterMode" TI="11785" Line="30" Offs="2"/>
+    <Component Name="TIM_Period" TI="11799" Line="31" Offs="4"/>
+    <Component Name="TIM_ClockDivision" TI="11813" Line="32" Offs="6"/>
+    <Component Name="TIM_RepetitionCounter" TI="11827" Line="33" Offs="8"/>
+   </type>
+   <type Family="typedef" Name="TIM_TimeBaseInitTypeDef" Line="34" ID="11842" toTI="11763"/>
+   <type Family="ComponentList" Line="37" ID="11853">
+    <Component Name="TIM_OCMode" TI="11861" Line="39" Offs="0"/>
+    <Component Name="TIM_OutputState" TI="11875" Line="40" Offs="2"/>
+    <Component Name="TIM_OutputNState" TI="11889" Line="41" Offs="4"/>
+    <Component Name="TIM_Pulse" TI="11903" Line="42" Offs="6"/>
+    <Component Name="TIM_OCPolarity" TI="11917" Line="43" Offs="8"/>
+    <Component Name="TIM_OCNPolarity" TI="11931" Line="44" Offs="10"/>
+    <Component Name="TIM_OCIdleState" TI="11945" Line="45" Offs="12"/>
+    <Component Name="TIM_OCNIdleState" TI="11959" Line="46" Offs="14"/>
+   </type>
+   <type Family="typedef" Name="TIM_OCInitTypeDef" Line="47" ID="11974" toTI="11853"/>
+   <type Family="ComponentList" Line="50" ID="11985">
+    <Component Name="TIM_Channel" TI="11993" Line="52" Offs="0"/>
+    <Component Name="TIM_ICPolarity" TI="12007" Line="53" Offs="2"/>
+    <Component Name="TIM_ICSelection" TI="12021" Line="54" Offs="4"/>
+    <Component Name="TIM_ICPrescaler" TI="12035" Line="55" Offs="6"/>
+    <Component Name="TIM_ICFilter" TI="12049" Line="56" Offs="8"/>
+   </type>
+   <type Family="typedef" Name="TIM_ICInitTypeDef" Line="57" ID="12064" toTI="11985"/>
+   <type Family="ComponentList" Line="60" ID="12075">
+    <Component Name="TIM_OSSRState" TI="12083" Line="62" Offs="0"/>
+    <Component Name="TIM_OSSIState" TI="12097" Line="63" Offs="2"/>
+    <Component Name="TIM_LOCKLevel" TI="12111" Line="64" Offs="4"/>
+    <Component Name="TIM_DeadTime" TI="12125" Line="65" Offs="6"/>
+    <Component Name="TIM_Break" TI="12139" Line="66" Offs="8"/>
+    <Component Name="TIM_BreakPolarity" TI="12153" Line="67" Offs="10"/>
+    <Component Name="TIM_AutomaticOutput" TI="12167" Line="68" Offs="12"/>
+   </type>
+   <type Family="typedef" Name="TIM_BDTRInitTypeDef" Line="69" ID="12182" toTI="12075"/>
+   <type Family="Pointer" TI="12307" toTI="11751"/>
+   <function Name="TIM_TimeBaseInit" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_tim.c" Line="199">
+    <parameter Name="TIMx" TI="12307" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_tim.c" Line="199" Addr="0x0" Param="Yes"/>
+   <type Family="Pointer" TI="12535" toTI="11842"/>
+    <parameter Name="TIM_TimeBaseInitStruct" TI="12535" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_tim.c" Line="199" Addr="0x1" Param="Yes"/>
+   </function >
+   <type Family="Pointer" TI="12640" toTI="11974"/>
+   <type Family="Pointer" TI="13011" toTI="12182"/>
+   <type Family="Pointer" TI="13137" toTI="12064"/>
+   <function Name="TIM_Cmd" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_tim.c" Line="829">
+    <parameter Name="TIMx" TI="12307" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_tim.c" Line="829" Addr="0x0" Param="Yes"/>
+    <parameter Name="NewState" TI="11124" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_tim.c" Line="829" Addr="0x1" Param="Yes"/>
+   </function >
+   <function Name="TIM_ITConfig" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_tim.c" Line="894">
+    <parameter Name="TIMx" TI="12307" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_tim.c" Line="894" Addr="0x0" Param="Yes"/>
+    <parameter Name="TIM_IT" TI="11004" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_tim.c" Line="894" Addr="0x1" Param="Yes"/>
+    <parameter Name="NewState" TI="11124" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_tim.c" Line="894" Addr="0x2" Param="Yes"/>
+   </function >
+   <function Name="TIM_ClearITPendingBit" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_tim.c" Line="3022">
+    <parameter Name="TIMx" TI="12307" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_tim.c" Line="3022" Addr="0x0" Param="Yes"/>
+    <parameter Name="TIM_IT" TI="11004" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_tim.c" Line="3022" Addr="0x1" Param="Yes"/>
+   </function >
+  </module>
+  <module Name="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_dma.c" >
+   <type Family="Base" Name="long int" ID="18530"/>
+   <type Family="Base" Name="short int" ID="18537"/>
+   <type Family="Base" Name="signed char" ID="18544"/>
+   <type Family="Base" Name="long unsigned int" ID="18562"/>
+   <type Family="typedef" Name="u32" Line="39" ID="18551" toTI="18562"/>
+   <type Family="Base" Name="short unsigned int" ID="18580"/>
+   <type Family="typedef" Name="u16" Line="40" ID="18569" toTI="18580"/>
+   <type Family="Base" Name="unsigned char" ID="18587"/>
+   <type Family="typedef" Name="FlagStatus" Line="57" ID="18620" toTI="18599"/>
+   <type Family="typedef" Name="ITStatus" Line="57" ID="18631" toTI="18599"/>
+   <type Family="typedef" Name="FunctionalState" Line="59" ID="18663" toTI="18642"/>
+   <type Family="Base" Name="unsigned int" ID="18674"/>
+   <type Family="ComponentList" Line="242" ID="18681">
+    <Component Name="CCR" TI="18689" Line="244" Offs="0"/>
+    <Component Name="CNDTR" TI="18703" Line="245" Offs="4"/>
+    <Component Name="CPAR" TI="18717" Line="246" Offs="8"/>
+    <Component Name="CMAR" TI="18731" Line="247" Offs="12"/>
+   </type>
+   <type Family="typedef" Name="DMA_Channel_TypeDef" Line="248" ID="18746" toTI="18681"/>
+   <type Family="ComponentList" Line="250" ID="18757">
+    <Component Name="ISR" TI="18765" Line="252" Offs="0"/>
+    <Component Name="IFCR" TI="18779" Line="253" Offs="4"/>
+   </type>
+   <type Family="typedef" Name="DMA_TypeDef" Line="254" ID="18794" toTI="18757"/>
+   <type Family="ComponentList" Line="26" ID="18805">
+    <Component Name="DMA_PeripheralBaseAddr" TI="18813" Line="28" Offs="0"/>
+    <Component Name="DMA_MemoryBaseAddr" TI="18827" Line="29" Offs="4"/>
+    <Component Name="DMA_DIR" TI="18841" Line="30" Offs="8"/>
+    <Component Name="DMA_BufferSize" TI="18855" Line="31" Offs="12"/>
+    <Component Name="DMA_PeripheralInc" TI="18869" Line="32" Offs="16"/>
+    <Component Name="DMA_MemoryInc" TI="18883" Line="33" Offs="20"/>
+    <Component Name="DMA_PeripheralDataSize" TI="18897" Line="34" Offs="24"/>
+    <Component Name="DMA_MemoryDataSize" TI="18911" Line="35" Offs="28"/>
+    <Component Name="DMA_Mode" TI="18925" Line="36" Offs="32"/>
+    <Component Name="DMA_Priority" TI="18939" Line="37" Offs="36"/>
+    <Component Name="DMA_M2M" TI="18953" Line="38" Offs="40"/>
+   </type>
+   <type Family="typedef" Name="DMA_InitTypeDef" Line="39" ID="18968" toTI="18805"/>
+   <type Family="Pointer" TI="19017" toTI="18746"/>
+   <type Family="Pointer" TI="19090" toTI="18968"/>
+   <function Name="DMA_Cmd" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_dma.c" Line="269">
+    <parameter Name="DMAy_Channelx" TI="19017" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_dma.c" Line="269" Addr="0x0" Param="Yes"/>
+    <parameter Name="NewState" TI="18663" FileName="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_dma.c" Line="269" Addr="0x1" Param="Yes"/>
+   </function >
+  </module>
+  <module Name="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_spi.c" >
+   <type Family="Base" Name="long int" ID="19574"/>
+   <type Family="Base" Name="short int" ID="19581"/>
+   <type Family="Base" Name="signed char" ID="19588"/>
+   <type Family="Base" Name="long unsigned int" ID="19606"/>
+   <type Family="typedef" Name="u32" Line="39" ID="19595" toTI="19606"/>
+   <type Family="Base" Name="short unsigned int" ID="19624"/>
+   <type Family="typedef" Name="u16" Line="40" ID="19613" toTI="19624"/>
+   <type Family="Base" Name="unsigned char" ID="19641"/>
+   <type Family="typedef" Name="u8" Line="41" ID="19631" toTI="19641"/>
+   <type Family="typedef" Name="FlagStatus" Line="57" ID="19674" toTI="19653"/>
+   <type Family="typedef" Name="ITStatus" Line="57" ID="19685" toTI="19653"/>
+   <type Family="typedef" Name="FunctionalState" Line="59" ID="19717" toTI="19696"/>
+   <type Family="Base" Name="unsigned int" ID="19728"/>
+   <type Family="ComponentList" Line="491" ID="19735">
+    <Component Name="CR1" TI="19744" Line="493" Offs="0"/>
+    <Component Name="RESERVED0" TI="19759" Line="494" Offs="2"/>
+    <Component Name="CR2" TI="19774" Line="495" Offs="4"/>
+    <Component Name="RESERVED1" TI="19789" Line="496" Offs="6"/>
+    <Component Name="SR" TI="19804" Line="497" Offs="8"/>
+    <Component Name="RESERVED2" TI="19818" Line="498" Offs="10"/>
+    <Component Name="DR" TI="19833" Line="499" Offs="12"/>
+    <Component Name="RESERVED3" TI="19847" Line="500" Offs="14"/>
+    <Component Name="CRCPR" TI="19862" Line="501" Offs="16"/>
+    <Component Name="RESERVED4" TI="19877" Line="502" Offs="18"/>
+    <Component Name="RXCRCR" TI="19892" Line="503" Offs="20"/>
+    <Component Name="RESERVED5" TI="19907" Line="504" Offs="22"/>
+    <Component Name="TXCRCR" TI="19922" Line="505" Offs="24"/>
+    <Component Name="RESERVED6" TI="19937" Line="506" Offs="26"/>
+    <Component Name="I2SCFGR" TI="19952" Line="507" Offs="28"/>
+    <Component Name="RESERVED7" TI="19967" Line="508" Offs="30"/>
+    <Component Name="I2SPR" TI="19982" Line="509" Offs="32"/>
+    <Component Name="RESERVED8" TI="19997" Line="510" Offs="34"/>
+   </type>
+   <type Family="typedef" Name="SPI_TypeDef" Line="511" ID="20013" toTI="19735"/>
+   <type Family="ComponentList" Line="26" ID="20025">
+    <Component Name="SPI_Direction" TI="20033" Line="28" Offs="0"/>
+    <Component Name="SPI_Mode" TI="20047" Line="29" Offs="2"/>
+    <Component Name="SPI_DataSize" TI="20061" Line="30" Offs="4"/>
+    <Component Name="SPI_CPOL" TI="20075" Line="31" Offs="6"/>
+    <Component Name="SPI_CPHA" TI="20089" Line="32" Offs="8"/>
+    <Component Name="SPI_NSS" TI="20103" Line="33" Offs="10"/>
+    <Component Name="SPI_BaudRatePrescaler" TI="20117" Line="34" Offs="12"/>
+    <Component Name="SPI_FirstBit" TI="20131" Line="35" Offs="14"/>
+    <Component Name="SPI_CRCPolynomial" TI="20145" Line="36" Offs="16"/>
+   </type>
+   <type Family="typedef" Name="SPI_InitTypeDef" Line="37" ID="20160" toTI="20025"/>
+   <type Family="ComponentList" Line="40" ID="20171">
+    <Component Name="I2S_Mode" TI="20179" Line="42" Offs="0"/>
+    <Component Name="I2S_Standard" TI="20193" Line="43" Offs="2"/>
+    <Component Name="I2S_DataFormat" TI="20207" Line="44" Offs="4"/>
+    <Component Name="I2S_MCLKOutput" TI="20221" Line="45" Offs="6"/>
+    <Component Name="I2S_AudioFreq" TI="20235" Line="46" Offs="8"/>
+    <Component Name="I2S_CPOL" TI="20249" Line="47" Offs="10"/>
+   </type>
+   <type Family="typedef" Name="I2S_InitTypeDef" Line="48" ID="20264" toTI="20171"/>
+   <type Family="ComponentList" Line="25" ID="20275">
+    <Component Name="SYSCLK_Frequency" TI="20283" Line="27" Offs="0"/>
+    <Component Name="HCLK_Frequency" TI="20297" Line="28" Offs="4"/>
+    <Component Name="PCLK1_Frequency" TI="20311" Line="29" Offs="8"/>
+    <Component Name="PCLK2_Frequency" TI="20325" Line="30" Offs="12"/>
+    <Component Name="ADCCLK_Frequency" TI="20339" Line="31" Offs="16"/>
+   </type>
+   <type Family="typedef" Name="RCC_ClocksTypeDef" Line="32" ID="20354" toTI="20275"/>
+   <type Family="Pointer" TI="20406" toTI="20013"/>
+   <type Family="Pointer" TI="20479" toTI="20160"/>
+   <type Family="Pointer" TI="20630" toTI="20264"/>
   </module>
  </modulelist>
 </aoffile>

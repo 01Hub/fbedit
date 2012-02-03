@@ -20,6 +20,11 @@
 * Video signal  288 lines
 *******************************************************************************/
 
+#define BUFFER_LINE_LENGTH          64  // 32 halfwords (64characters*8bits/16bits.
+#define SCREEN_LINE_LENGHT          64  // 64 characters on each screen line.
+#define SCREEN_TILE_WIDTH           8   // Width of each character tile.
+#define SCREEN_TILE_HEIGHT          8   // Height of each character tile.
+
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f10x_lib.h"
 #include "Font6x8.h"
@@ -28,11 +33,13 @@
 ErrorStatus HSEStartUpStatus;
 NVIC_InitTypeDef NVIC_InitStructure;
 TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;
+SPI_InitTypeDef SPI_InitStructure;
+DMA_InitTypeDef DMA_InitStructure;
 vu16 LineCount;
 vu16 CharTileLineInx;
 vu16 ScreenCharLineInx;
-vu16 ScreenChars[25*80];
-
+vu8 ScreenChars[32*64];
+vu8 LineTileBuff[BUFFER_LINE_LENGTH];
 /* Private function prototypes -----------------------------------------------*/
 void RCC_Configuration(void);
 void GPIO_Configuration(void);
@@ -40,6 +47,9 @@ void NVIC_Configuration(void);
 void TIM2_Configuration(void);
 void TIM3_Configuration(void);
 void TIM4_Configuration(void);
+void SPI_Config(void);
+void DMA_Config(void);
+void MakeVideoLine(void);
 
 /* Private functions ---------------------------------------------------------*/
 
@@ -52,6 +62,24 @@ void TIM4_Configuration(void);
 *******************************************************************************/
 int main(void)
 {
+    ScreenChars[0]='A';
+    ScreenChars[1]='B';
+    ScreenChars[2]='C';
+    ScreenChars[3]='D';
+    ScreenChars[4]='E';
+    ScreenChars[5]='F';
+    ScreenChars[6]='G';
+    ScreenChars[7]='H';
+    // MakeVideoLine();
+    // LineCount++;
+    // CharTileLineInx++;
+    // MakeVideoLine();
+    // LineCount++;
+    // CharTileLineInx++;
+    // MakeVideoLine();
+    // LineCount++;
+    // CharTileLineInx++;
+    // MakeVideoLine();
   /* System clocks configuration ---------------------------------------------*/
   RCC_Configuration();
   /* NVIC configuration ------------------------------------------------------*/
@@ -81,6 +109,36 @@ int main(void)
 }
 
 /*******************************************************************************
+* Function Name  : MakeVideoLine
+* Description    : This function makes a video line.
+* Input          : None
+* Output         : None
+* Return         : None
+*******************************************************************************/
+void MakeVideoLine(void)
+{
+  /* r0 current line start index into ScreenChars buffer */
+  asm volatile("mov r0,%0" : : "r" (ScreenChars));
+  asm volatile("add r0,%0" : : "r" (ScreenCharLineInx));
+  /* r1 current line start pointer into Font6x8 */
+  asm volatile("mov r1,%0" : : "r" (Font6x8));
+  asm volatile("add r1,%0" : : "r" (CharTileLineInx));
+  asm volatile("mov r2,%0" : : "r" (LineTileBuff));
+  asm volatile
+  (
+    "mov r7,#0x0\r\n"             // Character index in current line
+    "L1:\r\n"
+    "ldrb r3,[r0,r7]\r\n"         // Character
+    "ldrb r3,[r1,r3,lsl #3]\r\n"  // Character tile pixels
+    "strb r3,[r2,r7]\r\n"         // Line tile pixels
+    "add r7,r7,#0x1\r\n"
+    "cmp r7,#64\r\n"
+    "it ne\r\n"
+    "bne L1"
+  );
+}
+
+/*******************************************************************************
 * Function Name  : TIM2_IRQHandler
 * Description    : This function handles TIM2 global interrupt request.
 *                  An interrupt is generated 1,65uS after the end of horizontal sync.
@@ -91,59 +149,63 @@ int main(void)
 *******************************************************************************/
 void TIM2_IRQHandler(void)
 {
+	DMA_Cmd(DMA1_Channel3, ENABLE);
   /* Clear TIM2 Update interrupt pending bit */
-  asm("mov    r1,#0x40000000");
-  asm("strh   r1,[r1,#0x10]");
+  asm("mov r1,#0x40000000");
+  asm("strh r1,[r1,#0x10]");
   /* Disable TIM2 */
-  asm("strh   r0,[r1,#0x0]");
-  /* r0 line start index into ScreenChar */
-  asm volatile("ldr r0,[%0]" : : "r" (ScreenCharLineInx));
-  asm volatile("ldr r1,[%0]" : : "r" (CharTileLineInx));
-  asm volatile("add r1,r1,%0" : : "r" (Font6x8));
-  asm volatile
-  (
-    "movw r2,#0x0800\r\n"         // GPIOA
-    "movt r2,#0x1000\r\n"
-    "mov r7,#0x0\r\n"             // Character index in current line
-    "L1:\r\n"
-    "ldrb r3,[r0,r7]\r\n"         // Character
-    "ldrb r3,[r1,r3,lsl #3]\r\n"  // Character tile pixels
+  asm("strh r0,[r1,#0x0]");
+  // asm("push {r4}");
+  // /* r0 line start index into ScreenChar */
+  // asm volatile("ldr r0,[%0]" : : "r" (ScreenCharLineInx));
+  // asm volatile("ldr r1,[%0]" : : "r" (CharTileLineInx));
+  // asm volatile("add r1,r1,%0" : : "r" (Font6x8));
+  // asm volatile
+  // (
+    // "movw r4,#0x0001\r\n"         // Port bit set / reset
+    // "movw r2,#0x0800\r\n"         // GPIOA
+    // "movt r2,#0x1000\r\n"
+    // "mov r7,#0x0\r\n"             // Character index in current line
+    // "L2:\r\n"
+    // "ldrb r3,[r0,r7]\r\n"         // Character
+    // "ldrb r3,[r1,r3,lsl #3]\r\n"  // Character tile pixels
 
-    "lsl r3,r3,#1\r\n"
-    "ite cs\r\n"
-    "strcs r4,[r2,#0x10]\r\n"
-    "strcc r4,[r2,#0x14]\r\n"
+    // "lsls r3,r3,#25\r\n"           // Shift left 25 bits
+    // "ite cs\r\n"                   // if else condition
+    // "strhcs r4,[r2,#0x10]\r\n"     // if carry Set port bit
+    // "strhcc r4,[r2,#0x14]\r\n"     // else Reset port bit
 
-    "lsl r3,r3,#1\r\n"
-    "ite cs\r\n"
-    "strcs r4,[r2,#0x10]\r\n"
-    "strcc r4,[r2,#0x14]\r\n"
+    // "lsls r3,r3,#1\r\n"           // Shift left 1 bit
+    // "ite cs\r\n"                  // if else condition
+    // "strhcs r4,[r2,#0x10]\r\n"    // if carry Set port bit
+    // "strhcc r4,[r2,#0x14]\r\n"    // else Reset port bit
 
-    "lsl r3,r3,#1\r\n"
-    "ite cs\r\n"
-    "strcs r4,[r2,#0x10]\r\n"
-    "strcc r4,[r2,#0x14]\r\n"
+    // "lsls r3,r3,#1\r\n"
+    // "ite cs\r\n"
+    // "strhcs r4,[r2,#0x10]\r\n"
+    // "strhcc r4,[r2,#0x14]\r\n"
 
-    "lsl r3,r3,#1\r\n"
-    "ite cs\r\n"
-    "strcs r4,[r2,#0x10]\r\n"
-    "strcc r4,[r2,#0x14]\r\n"
+    // "lsls r3,r3,#1\r\n"
+    // "ite cs\r\n"
+    // "strhcs r4,[r2,#0x10]\r\n"
+    // "strhcc r4,[r2,#0x14]\r\n"
 
-    "lsl r3,r3,#1\r\n"
-    "ite cs\r\n"
-    "strcs r4,[r2,#0x10]\r\n"
-    "strcc r4,[r2,#0x14]\r\n"
+    // "lsls r3,r3,#1\r\n"
+    // "ite cs\r\n"
+    // "strhcs r4,[r2,#0x10]\r\n"
+    // "strhcc r4,[r2,#0x14]\r\n"
 
-    "lsl r3,r3,#1\r\n"
-    "ite cs\r\n"
-    "strcs r4,[r2,#0x10]\r\n"
-    "strcc r4,[r2,#0x14]\r\n"
+    // "lsls r3,r3,#1\r\n"
+    // "ite cs\r\n"
+    // "strhcs r4,[r2,#0x10]\r\n"
+    // "strhcc r4,[r2,#0x14]\r\n"
 
-    "add r7,r7,#0x1\r\n"
-    "cmp r7,#80\r\n"
-    "it ne\r\n"
-    "bne L1"
-  );
+    // "add r7,r7,#0x1\r\n"
+    // "cmp r7,#80\r\n"
+    // "it ne\r\n"
+    // "bne L2"
+  // );
+  // asm("pop {r4}");
 }
 
 /*******************************************************************************
@@ -157,16 +219,28 @@ void TIM2_IRQHandler(void)
 void TIM3_IRQHandler(void)
 {
   /* Clear TIM3 Update interrupt pending bit */
-  asm("mov    r0,#0x0");
-  asm("movw   r1,#0x0400");
-  asm("movt   r1,#0x4000");
-  asm("strh   r0,[r1,#0x10]");
+  asm("mov r0,#0x0");
+  asm("movw r1,#0x0400");
+  asm("movt r1,#0x4000");
+  asm("strh r0,[r1,#0x10]");
   /* Reset TIM4 count */
-  TIM4->CNT=0;
+  asm("movw r1,#0x0800");
+  asm("movt r1,#0x4000");
+  asm("strh r0,[r1,#0x24]");
   /* Enable TIM4 */
-  TIM4->CR1=1;
+  asm("mov r0,#0x1");
+  asm("strh r0,[r1,#0x0]");
   /* H-Sync low */
-  GPIO_ResetBits(GPIOA,GPIO_Pin_1);
+  asm("movw r1,#0x0800");         // GPIOA
+  asm("movt r1,#0x1000");
+  asm("mov r0,#0x2");             // GPIO_Pin_1
+  asm("strh r0,[r1,#0x14]");      // GPIO_ResetBits
+  if (LineCount<256)
+  {
+    ScreenCharLineInx=(LineCount>>3)*64;
+    CharTileLineInx=LineCount & 7;
+    MakeVideoLine();
+  }
 }
 
 /*******************************************************************************
@@ -192,24 +266,19 @@ void TIM4_IRQHandler(void)
     /* H-Sync high */
     GPIO_SetBits(GPIOA,GPIO_Pin_1);
     /* Skip 10 lines befor any video signal */
-    if (LineCount>=10 && LineCount<260)
+    if (LineCount<256)
     {
       /* Reset TIM2 count */
       TIM2->CNT=0;
       /* Enable TIM2 */
       TIM2->CR1=1;
-      ScreenCharLineInx=(LineCount/10-1)*80;
-      CharTileLineInx=LineCount/10;
-      CharTileLineInx=ScreenCharLineInx*10;
-      CharTileLineInx=LineCount-CharTileLineInx-10;
     }
   }
   else if (LineCount==312)
   {
-    /* V-Sync high (9 lines) */
+    /* V-Sync high after 312-303=9 lines) */
     GPIO_SetBits(GPIOA,GPIO_Pin_1);
     LineCount=0xffff;
-    ScreenCharLineInx=0;
   }
   LineCount++;
 }
@@ -259,10 +328,11 @@ void RCC_Configuration(void)
     }
   }
   /* Enable peripheral clocks ------------------------------------------------*/
+	RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1 , ENABLE);	
   /* Enable GPIOA, GPIOB and GPIOC clock */
-  RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA | RCC_APB2Periph_GPIOB | RCC_APB2Periph_GPIOC, ENABLE);
-  /* Enable TIM3 and TIM4 clock */
-  RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3 | RCC_APB1Periph_TIM4, ENABLE);
+  RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA | RCC_APB2Periph_GPIOB | RCC_APB2Periph_GPIOC | RCC_APB2Periph_SPI1, ENABLE);
+  /* Enable TIM2, TIM3 and TIM4 clock */
+  RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2 | RCC_APB1Periph_TIM3 | RCC_APB1Periph_TIM4, ENABLE);
 }
 
 /*******************************************************************************
@@ -275,11 +345,16 @@ void RCC_Configuration(void)
 void GPIO_Configuration(void)
 {
   GPIO_InitTypeDef GPIO_InitStructure;
-  /* Configure PA7 to PA0 as outputs */
-  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_7 | GPIO_Pin_6 | GPIO_Pin_5 | GPIO_Pin_4 | GPIO_Pin_3 | GPIO_Pin_2 | GPIO_Pin_1 | GPIO_Pin_0;
+  /* Configure PA1 and PA0 as outputs */
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_1 | GPIO_Pin_0;
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
   GPIO_Init(GPIOA, &GPIO_InitStructure);
+	/* GPIOA Configuration:SPI1_MOSI and SPI1_SCK as alternate function push-pull */
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_7 | GPIO_Pin_5 ;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_Init(GPIOA, &GPIO_InitStructure);
   /* Configure PC.09 (LED3) and PC.08 (LED4) as output */
   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9 | GPIO_Pin_8;
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
@@ -318,13 +393,13 @@ void NVIC_Configuration(void)
   /* Enable the TIM3 global Interrupt */
   NVIC_InitStructure.NVIC_IRQChannel = TIM3_IRQChannel;
   NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
-  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
   NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
   NVIC_Init(&NVIC_InitStructure);
   /* Enable the TIM4 global Interrupt */
   NVIC_InitStructure.NVIC_IRQChannel = TIM4_IRQChannel;
   NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
-  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 2;
   NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
   NVIC_Init(&NVIC_InitStructure);
 }
@@ -378,6 +453,40 @@ void TIM4_Configuration(void)
   TIM_TimeBaseStructure.TIM_ClockDivision = 0;
   TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
   TIM_TimeBaseInit(TIM4, &TIM_TimeBaseStructure);
+}
+
+void SPI_Config(void)
+{
+	//Set up SPI port.  This acts as a pixel buffer.
+	SPI_InitStructure.SPI_Direction = SPI_Direction_2Lines_FullDuplex;
+	SPI_InitStructure.SPI_Mode = SPI_Mode_Master;
+	SPI_InitStructure.SPI_DataSize = SPI_DataSize_16b;
+	SPI_InitStructure.SPI_CPOL = SPI_CPOL_Low;
+	SPI_InitStructure.SPI_CPHA = SPI_CPHA_2Edge;
+	SPI_InitStructure.SPI_NSS = SPI_NSS_Soft;
+	SPI_InitStructure.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_8;
+	SPI_InitStructure.SPI_FirstBit = SPI_FirstBit_MSB;
+	SPI_Init(SPI1, &SPI_InitStructure);
+	SPI_Cmd(SPI1, ENABLE);
+	SPI_I2S_DMACmd(SPI1, SPI_I2S_DMAReq_Tx, ENABLE);
+}
+
+void DMA_Config(void)
+{
+	//Set up the DMA to keep the SPI port fed from the framebuffer.
+	DMA_DeInit(DMA1_Channel3);
+	DMA_InitStructure.DMA_PeripheralBaseAddr = (u32)0x4001300C;
+	DMA_InitStructure.DMA_MemoryBaseAddr = (u32)LineTileBuff[0];
+	DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralDST;
+	DMA_InitStructure.DMA_Priority = DMA_Priority_Low;
+	DMA_InitStructure.DMA_BufferSize = BUFFER_LINE_LENGTH;
+	DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
+	DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;
+	DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_HalfWord;
+	DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_HalfWord;
+	DMA_InitStructure.DMA_Mode = DMA_Mode_Normal;
+	DMA_InitStructure.DMA_M2M = DMA_M2M_Disable;
+	DMA_Init(DMA1_Channel3, &DMA_InitStructure);
 }
 
 /*****END OF FILE****/

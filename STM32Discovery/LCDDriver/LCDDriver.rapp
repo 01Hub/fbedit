@@ -2,7 +2,7 @@
 <ApplicationBuild Header="LCDDriver" Extern=".\LCDDriver.rapp" Path=".\LCDDriver.rapp" AsyncBuild="" OutputFile=".\LCDDriver.elf" sate="96" >
 	<NodeC Path=".\main.c" Header="main.c" Marker="-1" AsyncBuild="" OutputFile=".\main.o" sate="0" />
 	<NodeC Path=".\stm32f10x_flash.c" Header="stm32f10x_flash.c" Marker="-1" AsyncBuild="" OutputFile=".\stm32f10x_flash.o" sate="0" />
-	<NodeC Path=".\stm32f10x_gpio.c" Header="stm32f10x_gpio.c" Marker="-1" AsyncBuild="" OutputFile=".\stm32f10x_gpio.o" sate="2" />
+	<NodeC Path=".\stm32f10x_gpio.c" Header="stm32f10x_gpio.c" Marker="-1" AsyncBuild="" OutputFile=".\stm32f10x_gpio.o" sate="0" />
 	<NodeC Path=".\stm32f10x_it.c" Header="stm32f10x_it.c" Marker="-1" AsyncBuild="" OutputFile=".\stm32f10x_it.o" sate="0" />
 	<NodeC Path=".\stm32f10x_lib.c" Header="stm32f10x_lib.c" Marker="-1" AsyncBuild="" OutputFile=".\stm32f10x_lib.o" sate="0" />
 	<NodeC Path=".\stm32f10x_nvic.c" Header="stm32f10x_nvic.c" Marker="-1" AsyncBuild="" OutputFile=".\stm32f10x_nvic.o" sate="0" />
@@ -13,38 +13,40 @@
 			<Set Header="ApplicationBuild" >
 				<Section Header="General" >
 					<Property Header="TargetFamily" Value="ARM" />
-																																																				
+																																																													
 				</Section>
 				<Section Header="Directories" >
 					<Property Header="IncDir" Value="\STM32\Inc" Removable="1" />
-																																											
+																																																				
 				</Section>
-																																	
+																																								
 			</Set>
 			<Set Header="Target" >
 				<Section Header="ProcessorARM" >
 					<Property Header="Processor" Value="STM32F100RB" />
-																																																				
+																																																													
 				</Section>
 				<Section Header="ToolSetARM" >
 					<Property Header="BuildToolSetARM" Value="ARM\GNU.config" Removable="1" />
-																																																				
+																																																													
 				</Section>
 				<Section Header="DebugARM" >
 					<Property Header="DebugTool_CORTEX" Value="SIM-ARM" Removable="1" />
-																									
+																																		
 				</Section>
-																			
+																										
 			</Set>
 			<Set Header="LD" >
 				<Section Header="Startup" >
 					<Property Header="DEFAULTSTARTUP" Value="No" Removable="1" />
 					<Property Header="File" Value="\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\startup_stm32f10x_hd.o" Removable="1" />
-							
+																
 				</Section>
-					
+												
 			</Set>
+					
 		</Config>
+			
 	</Options>
 	<NodeASM Path=".\startup_stm32f10x_hd.s" Header="startup_stm32f10x_hd.s" Marker="0" AsyncBuild="" OutputFile=".\startup_stm32f10x_hd.o" sate="0" >
 		<Options>
@@ -52,11 +54,16 @@
 				<Set Header="NodeASM" >
 					<Section Header="Build" >
 						<Property Header="Exclude" Value="Yes" Removable="1" />
-								
+																			
 					</Section>
-						
+															
 				</Set>
+							
 			</Config>
+					
 		</Options>
+			
 	</NodeASM>
+	<NodeC Path=".\stm32f10x_dma.c" Header="stm32f10x_dma.c" Marker="-1" AsyncBuild="" OutputFile=".\stm32f10x_dma.o" sate="0" />
+	<NodeC Path=".\stm32f10x_spi.c" Header="stm32f10x_spi.c" Marker="-1" AsyncBuild="" OutputFile=".\stm32f10x_spi.o" sate="2" />
 </ApplicationBuild>
