@@ -1,7 +1,7 @@
 
 <ApplicationBuild Header="TV_Terminal" Extern=".\TV_Terminal.rapp" Path=".\TV_Terminal.rapp" AsyncBuild="" OutputFile=".\TV_Terminal.elf" sate="96" >
 	<NodeC Path=".\main.c" Header="main.c" Marker="-1" AsyncBuild="" OutputFile=".\main.o" sate="0" />
-	<NodeASM Path=".\startup_stm32f10x_hd.s" Header="startup_stm32f10x_hd.s" Marker="0" AsyncBuild="" OutputFile=".\startup_stm32f10x_hd.o" sate="2" >
+	<NodeASM Path=".\startup_stm32f10x_hd.s" Header="startup_stm32f10x_hd.s" Marker="0" AsyncBuild="" OutputFile=".\startup_stm32f10x_hd.o" sate="0" >
 		<Options>
 			<Config Header="Standard" >
 				<Set Header="NodeASM" >
@@ -14,7 +14,7 @@
 			</Config>
 		</Options>
 	</NodeASM>
-	<NodeC Path=".\stm32f10x_dma.c" Header="stm32f10x_dma.c" Marker="-1" AsyncBuild="" OutputFile=".\stm32f10x_dma.o" sate="0" />
+	<NodeC Path=".\stm32f10x_dma.c" Header="stm32f10x_dma.c" Marker="-1" AsyncBuild="" OutputFile=".\stm32f10x_dma.o" sate="2" />
 	<NodeC Path=".\stm32f10x_flash.c" Header="stm32f10x_flash.c" Marker="-1" AsyncBuild="" OutputFile=".\stm32f10x_flash.o" sate="0" />
 	<NodeC Path=".\stm32f10x_gpio.c" Header="stm32f10x_gpio.c" Marker="-1" AsyncBuild="" OutputFile=".\stm32f10x_gpio.o" sate="0" />
 	<NodeC Path=".\stm32f10x_it.c" Header="stm32f10x_it.c" Marker="-1" AsyncBuild="" OutputFile=".\stm32f10x_it.o" sate="0" />
