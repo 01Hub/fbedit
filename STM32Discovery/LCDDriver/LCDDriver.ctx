@@ -9,12 +9,12 @@
 				<3>301</3>
 				<4>53</4>
 				<5>119</5>
-														
+																																										
 			</CodeReport>
-										
+																														
 		</CodeView>
 		<MemoryView Focus="134222164" TopRow="134222160" NbPerLine="8" />
-						
+																		
 	</LCDDriver>
 	<Flags>
 		<Report>
@@ -38,12 +38,8 @@
 			
 	</Flags>
 	<Views>
-		<View File="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\main.c" Line="21" Index="0" focus="1" />
-		<View File="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_it.c" Line="467" Index="1" />
-		<View File="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\Font6x8.h" Line="14" Index="2" />
-		<View File="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_gpio.c" Line="339" Index="3" />
-		<View File="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_tim.c" Line="3029" Index="4" />
-		<View File="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\stm32f10x_dma.c" Line="22" Index="5" />
+		<View File="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\LCDDriver\main.c" Line="31" Index="0" focus="1" />
+		<View File="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\TV_Terminal\Font8x10.h" Line="1" Index="1" />
 	</Views>
 	<Grep>
 		<GrepIncludeSub>yes</GrepIncludeSub>
