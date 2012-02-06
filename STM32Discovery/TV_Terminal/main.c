@@ -40,6 +40,21 @@
 *******************************************************************************/
 
 /*******************************************************************************
+* Video output
+*                  330
+* PA0     O-------[  ]---o---------O  Video output
+*                  1k0   |
+* PA7     O-------[  ]---o
+*                        |
+*                       ---
+*                       | |  82
+*                       ---
+*                        |
+* GND     O--------------o---------O  GND
+* 
+*******************************************************************************/
+
+/*******************************************************************************
 * Keyboard connector 5 pin female DIN
 *        2
 *        o
@@ -111,9 +126,11 @@ void EXTI_Configuration(void);
 void MakeVideoLine(void);
 void decode(u8 scancode);
 void puthex(u8 n);
+void video_cls();
 void video_show_cursor();
 void video_putc(char c);
-//void memmove(u32* src, u32* dst, u16 cnt);
+void * memmove(void *dest, void *source, u32 count);
+void * memset(void *dest, u32 c, u32 count); 
 
 /* Private functions ---------------------------------------------------------*/
 
@@ -173,7 +190,11 @@ int main(void)
       decode(scancode);
       scancode = 0;
     }
-    if (!(FrameCount && 63))
+    if (!(FrameCount && 4095))
+    {
+      video_cls();
+    }
+    if (!(FrameCount && 15))
     {
       video_putc((char) 65);
     }
@@ -206,7 +227,7 @@ void video_hide_cursor()
 
 static void _video_scrollup()
 {
-  memmove(&ScreenChars[0],&ScreenChars[1], (u32) (SCREEN_HEIGHT-1)*SCREEN_WIDTH);
+  memmove(&ScreenChars[0],&ScreenChars[1], (SCREEN_HEIGHT-1)*SCREEN_WIDTH);
   memset(&ScreenChars[SCREEN_HEIGHT-1], 0, SCREEN_WIDTH);
 }
 
@@ -214,6 +235,15 @@ void video_scrollup()
 {
   CURSOR_INVERT();
   _video_scrollup();
+  CURSOR_INVERT();
+}
+
+void video_cls()
+{
+  CURSOR_INVERT();
+  memset(&ScreenChars, 0, SCREEN_HEIGHT*SCREEN_WIDTH);
+  cx=0;
+  cy=0;
   CURSOR_INVERT();
 }
 
@@ -417,13 +447,16 @@ void TIM4_IRQHandler(void)
       /* Enable DMA1 Channel3 */
       DMA1_Channel3->CCR|=(u32)0x00000001;
     }
+    else if (LineCount=SCREEN_HEIGHT*TILE_HEIGHT+TOP_MARGIN)
+    {
+      FrameCount++;
+    }
   }
   else if (LineCount==312)
   {
     /* V-Sync high after 312-303=9 lines) */
     GPIOA->BSRR=(u16)GPIO_Pin_0;
     LineCount=0xffff;
-    FrameCount++;
   }
   LineCount++;
   /* Clear the IT pending Bit */
