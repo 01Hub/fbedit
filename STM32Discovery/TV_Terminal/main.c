@@ -36,9 +36,10 @@ NVIC_InitTypeDef NVIC_InitStructure;
 TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;
 SPI_InitTypeDef SPI_InitStructure;
 DMA_InitTypeDef DMA_InitStructure;
+USART_InitTypeDef USART_InitStructure;
 vu16 LineCount;
 vu8 ScreenChars[SCREEN_HEIGHT][SCREEN_WIDTH];
-vu8 PixelBuff[SCREEN_WIDTH];
+vu8 PixelBuff[SCREEN_WIDTH+2];
 
 /* Private function prototypes -----------------------------------------------*/
 void RCC_Configuration(void);
@@ -47,6 +48,7 @@ void NVIC_Configuration(void);
 void TIM3_Configuration(void);
 void TIM4_Configuration(void);
 void SPI_Configuration(void);
+void USART_Configuration(void);
 void MakeVideoLine(void);
 
 /* Private functions ---------------------------------------------------------*/
@@ -80,7 +82,7 @@ int main(void)
   /* NVIC configuration ------------------------------------------------------*/
   NVIC_Configuration();
   SPI_Configuration();
-  // DMA_Configuration();
+  USART_Configuration();
   /* GPIO configuration ------------------------------------------------------*/
   GPIO_Configuration();
   /* TIM3 configuration ------------------------------------------------------*/
@@ -194,7 +196,8 @@ void TIM4_IRQHandler(void)
       DMA_InitStructure.DMA_MemoryBaseAddr = (u32)PixelBuff;
       DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralDST;
       DMA_InitStructure.DMA_Priority = DMA_Priority_VeryHigh;
-      DMA_InitStructure.DMA_BufferSize = SCREEN_WIDTH/2;
+      // Add 1 halfword to ensure MOSI is low when transfer is done.
+      DMA_InitStructure.DMA_BufferSize = SCREEN_WIDTH/2+1;
       DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
       DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;
       DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_HalfWord;
@@ -290,6 +293,15 @@ void GPIO_Configuration(void)
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
 	GPIO_Init(GPIOA, &GPIO_InitStructure);
+  /* Configure PA9 USART1 Tx as alternate function push-pull */
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9;
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
+  GPIO_Init(GPIOA, &GPIO_InitStructure);
+  /* Configure PA10 USART1 Rx as input floating */
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10;
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+  GPIO_Init(GPIOA, &GPIO_InitStructure);
   /* Configure PC.09 (LED3) and PC.08 (LED4) as output */
   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9 | GPIO_Pin_8;
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
@@ -373,6 +385,27 @@ void SPI_Configuration(void)
 	SPI_Init(SPI1, &SPI_InitStructure);
 	SPI_Cmd(SPI1, ENABLE);
 	SPI_I2S_DMACmd(SPI1, SPI_I2S_DMAReq_Tx, ENABLE);
+}
+
+void USART_Configuration(void)
+{
+  /* USART1 configured as follow:
+        - BaudRate = 115200 baud  
+        - Word Length = 8 Bits
+        - One Stop Bit
+        - No parity
+        - Hardware flow control disabled
+        - Receive and transmit enabled
+  */
+  USART_InitStructure.USART_BaudRate = 115200;
+  USART_InitStructure.USART_WordLength = USART_WordLength_8b;
+  USART_InitStructure.USART_StopBits = USART_StopBits_1;
+  USART_InitStructure.USART_Parity = USART_Parity_No ;
+  USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
+  USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;
+  USART_Init(USART1, &USART_InitStructure);
+  /* Enable the USART2 */
+  USART_Cmd(USART1, ENABLE);
 }
 
 /*****END OF FILE****/
