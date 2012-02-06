@@ -1,4 +1,4 @@
 
 <Project Header="Project 'TV_Terminal'" Path=".\TV_Terminal.rprj" Project="Yes" AsyncBuild="" OutputFile="" sate="96" ActiveApp="TV_Terminal" >
-	<ApplicationBuild Header="TV_Terminal" Extern=".\TV_Terminal.rapp" Path=".\TV_Terminal.rapp" AsyncBuild="" OutputFile=".\TV_Terminal.elf" sate="96" />
+	<ApplicationBuild Header="TV_Terminal" Extern=".\TV_Terminal.rapp" Path=".\TV_Terminal.rapp" AsyncBuild="" OutputFile=".\TV_Terminal.elf" sate="98" />
 </Project>

@@ -7,6 +7,7 @@
 *******************************************************************************/
 
 /*******************************************************************************
+* PAL timing
 * Horizontal
 * H-sync         4,70uS
 * Blank start    1,65uS
@@ -18,6 +19,53 @@
 * V-sync        0,576mS (9 lines)
 * Frame         20mS (312,5 lines)
 * Video signal  288 lines
+*******************************************************************************/
+
+/*******************************************************************************
+* Port pins
+*
+* Video out
+* PA0   H-Sync and V-Sync
+* PA5   Dot clock SPI1_SCK
+* PA7   Video out SPI1_MOSI
+* RS232
+* PA9   USART1 Tx
+* PA10  USART1 Rx
+* Keyboard
+* PA8   Keyboard clock
+* PA11  Keyboard data
+* Leds
+* PC08  Led
+* PC09  Led
+*******************************************************************************/
+
+/*******************************************************************************
+* Keyboard connector 5 pin female DIN
+*        2
+*        o
+*   4 o    o 5
+*   1 o    o 3
+* 
+* Pin 1   CLK     Clock signal
+* Pin 2   DATA    Data
+* Pin 3   N/C     Not connected. Reset on older keyboards
+* Pin 4   GND     Ground
+* Pin 5   VCC     +5V DC
+*******************************************************************************/
+
+/*******************************************************************************
+* Keyboard connector 6 pin female mini DIN
+*
+*   5 o    o 6
+*   3 o    o 4
+*    1 o o 2 
+*
+* Pin 1   DATA    Data
+* Pin 2   N/C     Not connected.
+* Pin 3   GND     Ground
+* Pin 4   VCC     +5V DC
+* Pin 5   CLK     Clock signal
+* Pin 6   N/C     Not connected.
 *******************************************************************************/
 
 #define TOP_MARGIN                  30  // Number of lines before video signal starts
@@ -37,9 +85,19 @@ TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;
 SPI_InitTypeDef SPI_InitStructure;
 DMA_InitTypeDef DMA_InitStructure;
 USART_InitTypeDef USART_InitStructure;
+EXTI_InitTypeDef EXTI_InitStructure;
 vu16 LineCount;
+vu16 FrameCount;
 vu8 ScreenChars[SCREEN_HEIGHT][SCREEN_WIDTH];
 vu8 PixelBuff[SCREEN_WIDTH+2];
+
+static u8 tmpscancode = 0;
+static u8 scancode = 0;
+static u8 bitcount = 11;
+
+static u8 cx;
+static u8 cy;
+static u8 showcursor;
 
 /* Private function prototypes -----------------------------------------------*/
 void RCC_Configuration(void);
@@ -49,7 +107,13 @@ void TIM3_Configuration(void);
 void TIM4_Configuration(void);
 void SPI_Configuration(void);
 void USART_Configuration(void);
+void EXTI_Configuration(void);
 void MakeVideoLine(void);
+void decode(u8 scancode);
+void puthex(u8 n);
+void video_show_cursor();
+void video_putc(char c);
+//void memmove(u32* src, u32* dst, u16 cnt);
 
 /* Private functions ---------------------------------------------------------*/
 
@@ -100,9 +164,154 @@ int main(void)
   TIM_ITConfig(TIM4, TIM_IT_Update, ENABLE);
   /* Enable TIM3 */
   TIM_Cmd(TIM3, ENABLE);
+  video_show_cursor();
   while (1)
   {
+    if(scancode)
+    {
+      puthex(scancode);
+      decode(scancode);
+      scancode = 0;
+    }
+    if (!(FrameCount && 63))
+    {
+      video_putc((char) 65);
+    }
   }
+}
+
+static void CURSOR_INVERT() __attribute__((noinline));
+static void CURSOR_INVERT()
+{
+  ScreenChars[cy][cx] ^= showcursor;
+}
+
+void video_show_cursor()
+{
+  if (!showcursor)
+  {
+    showcursor = 0x80;
+    CURSOR_INVERT();
+  }
+}
+
+void video_hide_cursor()
+{
+  if (showcursor)
+  {
+    CURSOR_INVERT();
+    showcursor = 0;
+  }
+}
+
+static void _video_scrollup()
+{
+  memmove(&ScreenChars[0],&ScreenChars[1], (u32) (SCREEN_HEIGHT-1)*SCREEN_WIDTH);
+  memset(&ScreenChars[SCREEN_HEIGHT-1], 0, SCREEN_WIDTH);
+}
+
+void video_scrollup()
+{
+  CURSOR_INVERT();
+  _video_scrollup();
+  CURSOR_INVERT();
+}
+
+static void _video_lfwd()
+{
+  cx = 0;
+  if (++cy > SCREEN_HEIGHT-1)
+  {
+    cy = SCREEN_HEIGHT-1;
+    _video_scrollup();
+  }
+}
+
+static inline void _video_cfwd()
+{
+  if (++cx > SCREEN_WIDTH-1)
+    _video_lfwd();
+}
+
+void video_cfwd()
+{
+  CURSOR_INVERT();
+  _video_cfwd();
+  CURSOR_INVERT();
+}
+
+void video_lfwd()
+{
+  CURSOR_INVERT();
+  cx = 0;
+  if (++cy > SCREEN_HEIGHT-1)
+  {
+    cy = SCREEN_HEIGHT-1;
+    _video_scrollup();
+  }
+  CURSOR_INVERT();
+}
+
+void video_lf()
+{
+  CURSOR_INVERT();
+  if (++cy > SCREEN_HEIGHT-1)
+  {
+    cy = SCREEN_HEIGHT-1;
+    _video_scrollup();
+  }
+  CURSOR_INVERT();
+}
+
+static inline void _video_putc(char c)
+{
+  /* If the last character printed exceeded the right boundary,
+   * we have to go to a new line. */
+  if (cx >= SCREEN_WIDTH-1) _video_lfwd();
+
+  if (c == '\r') cx = 0;
+  else if (c == '\n') _video_lfwd();
+  else
+  {
+    ScreenChars[cy][cx] = c;
+    _video_cfwd();
+  }
+}
+
+void video_putc(char c)
+{
+  CURSOR_INVERT();
+  _video_putc(c);
+  CURSOR_INVERT();
+}
+
+void video_puts(char *str)
+{
+  /* Characters are interpreted and printed one at a time. */
+  char c;
+  // CURSOR_INVERT();
+  while ((c = *str++))
+    _video_putc(c);
+  // CURSOR_INVERT();
+}
+
+/*******************************************************************************
+* Function Name  : puthex
+* Description    : This function prints a byte as hex
+* Input          : None
+* Output         : None
+* Return         : None
+*******************************************************************************/
+void puthex(u8 n)
+{
+	static char hexchars[] = "0123456789ABCDEF";
+	char hexstr[5];
+	hexstr[0] = hexchars[(n >> 4) & 0xF];
+	hexstr[1] = hexchars[n & 0xF];
+	hexstr[2] = '\r';
+	hexstr[3] = '\n';
+	hexstr[4] = '\0';
+  video_puts(hexstr);
 }
 
 /*******************************************************************************
@@ -214,10 +423,30 @@ void TIM4_IRQHandler(void)
     /* V-Sync high after 312-303=9 lines) */
     GPIOA->BSRR=(u16)GPIO_Pin_0;
     LineCount=0xffff;
+    FrameCount++;
   }
   LineCount++;
   /* Clear the IT pending Bit */
   TIM4->SR=(u16)~TIM_IT_Update;
+}
+
+void EXTI9_5_IRQHandler(void)
+{
+	//figure out what the keyboard is sending us
+  EXTI->PR = EXTI_Line8;
+	// EXTI_ClearFlag(EXTI_Line8);
+	--bitcount;
+	if (bitcount >= 2 && bitcount <= 9)
+	{
+		tmpscancode >>= 1;
+		if (GPIOA->IDR & GPIO_Pin_11)
+			tmpscancode |= 0x80;
+	}
+	else if (bitcount == 0)
+	{
+    scancode=tmpscancode;
+		bitcount = 11;
+	}
 }
 
 /*******************************************************************************
@@ -283,11 +512,13 @@ void RCC_Configuration(void)
 void GPIO_Configuration(void)
 {
   GPIO_InitTypeDef GPIO_InitStructure;
-  /* Configure PA0 as outputs */
+  /* Configure PA0 as outputs H-Sync and V-Sync*/
   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0;
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
   GPIO_Init(GPIOA, &GPIO_InitStructure);
+  /* H-Sync and V-Sync signal High */
+  GPIO_SetBits(GPIOA,GPIO_Pin_0);
 	/* GPIOA Configuration:SPI1_MOSI and SPI1_SCK as alternate function push-pull */
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_7 | GPIO_Pin_5 ;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
@@ -307,8 +538,13 @@ void GPIO_Configuration(void)
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
   GPIO_Init(GPIOC, &GPIO_InitStructure);
-  /* H-Sync and V-Sync signal */
-  GPIO_SetBits(GPIOA,GPIO_Pin_0);
+  /* Setting up for keyboard pin change interrupts. */
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_8 | GPIO_Pin_11;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_Init(GPIOA, &GPIO_InitStructure);
+  /* Connect exti */
+	GPIO_EXTILineConfig(GPIO_PortSourceGPIOA, GPIO_PinSource8 );
 }
 
 /*******************************************************************************
@@ -335,6 +571,11 @@ void NVIC_Configuration(void)
   NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
   NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
   NVIC_Init(&NVIC_InitStructure);
+	// Enable the EXTI9_5 Interrupt for keyboard transmissions
+	NVIC_InitStructure.NVIC_IRQChannel	= EXTI9_5_IRQChannel;
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority	= 2;
+  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+	NVIC_InitStructure.NVIC_IRQChannelCmd	= ENABLE;
 }
 
 /*******************************************************************************
@@ -371,6 +612,13 @@ void TIM4_Configuration(void)
   TIM_TimeBaseInit(TIM4, &TIM_TimeBaseStructure);
 }
 
+/*******************************************************************************
+* Function Name  : SPI_Configuration
+* Description    : Configures SPI1 to output video signal
+* Input          : None
+* Output         : None
+* Return         : None
+*******************************************************************************/
 void SPI_Configuration(void)
 {
 	//Set up SPI port.  This acts as a pixel buffer.
@@ -387,17 +635,24 @@ void SPI_Configuration(void)
 	SPI_I2S_DMACmd(SPI1, SPI_I2S_DMAReq_Tx, ENABLE);
 }
 
+/*******************************************************************************
+* Function Name  : USART_Configuration
+* Description    : Configures USART1 Rx and Tx
+* Input          : None
+* Output         : None
+* Return         : None
+*******************************************************************************/
 void USART_Configuration(void)
 {
   /* USART1 configured as follow:
-        - BaudRate = 115200 baud  
+        - BaudRate = 19200 baud  
         - Word Length = 8 Bits
         - One Stop Bit
         - No parity
         - Hardware flow control disabled
         - Receive and transmit enabled
   */
-  USART_InitStructure.USART_BaudRate = 115200;
+  USART_InitStructure.USART_BaudRate = 19200;
   USART_InitStructure.USART_WordLength = USART_WordLength_8b;
   USART_InitStructure.USART_StopBits = USART_StopBits_1;
   USART_InitStructure.USART_Parity = USART_Parity_No ;
@@ -406,6 +661,23 @@ void USART_Configuration(void)
   USART_Init(USART1, &USART_InitStructure);
   /* Enable the USART2 */
   USART_Cmd(USART1, ENABLE);
+}
+
+/*******************************************************************************
+* Function Name  : EXTI_Configuration
+* Description    : Configures EXTI to generate interrupt on rising edge on PA8
+* Input          : None
+* Output         : None
+* Return         : None
+*******************************************************************************/
+void EXTI_Configuration(void)
+{
+	// Enable an interrupt on EXTI line 8 rising
+	EXTI_InitStructure.EXTI_Line = EXTI_Line8;
+	EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
+	EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Rising;
+	EXTI_InitStructure.EXTI_LineCmd = ENABLE;
+	EXTI_Init(&EXTI_InitStructure);
 }
 
 /*****END OF FILE****/

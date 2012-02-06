@@ -402,9 +402,9 @@ void CAN_SCE_IRQHandler(void)
 * Output         : None
 * Return         : None
 *******************************************************************************/
-void EXTI9_5_IRQHandler(void)
-{
-}
+// void EXTI9_5_IRQHandler(void)
+// {
+// }
 
 /*******************************************************************************
 * Function Name  : TIM1_BRK_IRQHandler
