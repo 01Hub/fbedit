@@ -7,14 +7,23 @@
 *******************************************************************************/
 
 /*******************************************************************************
-* PAL timing
-* Horizontal
+* PAL timing Horizontal
 * H-sync         4,70uS
-* Blank start    1,65uS
+* Front porch    1,65uS
 * Active video  51,95uS
-* Blank end      5,70uS
-* Line total    64,0uS
-* 
+* Back porch     5,70uS
+* Line total     64,0uS
+*
+* |                64.00uS                   |
+* |4,70|1,65|          51,95uS          |5,70|
+*
+*            ---------------------------
+*           |                           |
+*           |                           |
+*       ----                             ----
+* |    |                                     |
+* -----                                      ----
+*
 * Vertical
 * V-sync        0,576mS (9 lines)
 * Frame         20mS (312,5 lines)
@@ -22,7 +31,7 @@
 *******************************************************************************/
 
 /*******************************************************************************
-* Port pins
+* Port pins used
 *
 * Video out
 * PA0   H-Sync and V-Sync
@@ -32,8 +41,8 @@
 * PA9   USART1 Tx
 * PA10  USART1 Rx
 * Keyboard
-* PA8   Keyboard clock
-* PA11  Keyboard data
+* PA8   Keyboard clock in
+* PA11  Keyboard data in
 * Leds
 * PC08  Led
 * PC09  Led
@@ -170,15 +179,6 @@ int main(void)
   TIM3_Configuration();
   /* TIM4 configuration ------------------------------------------------------*/
   TIM4_Configuration();
-  /* Enable TIM2 Update interrupt */
-  TIM_ClearITPendingBit(TIM2,TIM_IT_Update);
-  TIM_ITConfig(TIM2, TIM_IT_Update, ENABLE);
-  /* Enable TIM3 Update interrupt */
-  TIM_ClearITPendingBit(TIM3,TIM_IT_Update);
-  TIM_ITConfig(TIM3, TIM_IT_Update, ENABLE);
-  /* Enable TIM4 Update interrupt */
-  TIM_ClearITPendingBit(TIM4,TIM_IT_Update);
-  TIM_ITConfig(TIM4, TIM_IT_Update, ENABLE);
   /* Enable TIM3 */
   TIM_Cmd(TIM3, ENABLE);
   video_show_cursor();
@@ -319,10 +319,10 @@ void video_puts(char *str)
 {
   /* Characters are interpreted and printed one at a time. */
   char c;
-  // CURSOR_INVERT();
+  CURSOR_INVERT();
   while ((c = *str++))
     _video_putc(c);
-  // CURSOR_INVERT();
+  CURSOR_INVERT();
 }
 
 /*******************************************************************************
@@ -345,45 +345,17 @@ void puthex(u8 n)
 }
 
 /*******************************************************************************
-* Function Name  : MakeVideoLine
-* Description    : This function makes a single video line.
-*                  Since the SPI operates in halfword mode
-*                  odd first then even character stored in pixel buffer.
-* Input          : None
-* Output         : None
-* Return         : None
-*******************************************************************************/
-void MakeVideoLine(void)
-{
-  u16 i,j,k;
-  u8 c;
-  j=LineCount-TOP_MARGIN;
-  k=j;
-  j=j/TILE_HEIGHT;
-  k=k-j*TILE_HEIGHT;
-  i=0;
-  while (i<SCREEN_WIDTH)
-  {
-    c=ScreenChars[j][i+1];
-    c=Font8x10[c][k];
-    PixelBuff[i]=c;
-    c=ScreenChars[j][i];
-    c=Font8x10[c][k];
-    PixelBuff[i+1]=c;
-    i=i+2;
-  }
-}
-
-/*******************************************************************************
 * Function Name  : TIM3_IRQHandler
 * Description    : This function handles TIM3 global interrupt request.
-*                  An interrupt is generated for each horizontal line.
+*                  An interrupt is generated for each horizontal line (64uS).
 * Input          : None
 * Output         : None
 * Return         : None
 *******************************************************************************/
 void TIM3_IRQHandler(void)
 {
+  u16 i,j,k;
+  /* TIM4 is used to time the H-Sync (4,70uS) */
   /* Clear the IT pending Bit */
   TIM3->SR=(u16)~TIM_IT_Update;
   /* Reset TIM4 count */
@@ -394,7 +366,19 @@ void TIM3_IRQHandler(void)
   GPIOA->BRR=(u16)GPIO_Pin_0;
   if (LineCount>=TOP_MARGIN && LineCount<SCREEN_HEIGHT*TILE_HEIGHT+TOP_MARGIN)
   {
-   MakeVideoLine();
+    /* Make a video line
+       Since the SPI operates in halfword mode
+       odd character first then even character stored in pixel buffer. */
+    j=k=LineCount-TOP_MARGIN;
+    j=j/TILE_HEIGHT;
+    k=k-j*TILE_HEIGHT;
+    i=0;
+    while (i<SCREEN_WIDTH)
+    {
+      PixelBuff[i]=Font8x10[ScreenChars[j][i+1]][k];
+      PixelBuff[i+1]=Font8x10[ScreenChars[j][i]][k];
+      i+=2;
+    }
   }
 }
 
@@ -416,9 +400,8 @@ void TIM4_IRQHandler(void)
     GPIOA->BSRR=(u16)GPIO_Pin_0;
     if (LineCount>=TOP_MARGIN && LineCount<SCREEN_HEIGHT*TILE_HEIGHT+TOP_MARGIN)
     {
-      // DMA_Configuration();
-      //Set up the DMA to keep the SPI port fed from the linebuffer.
-      // DMA_DeInit(DMA1_Channel3);
+      /* Set up the DMA to keep the SPI port fed from the pixelbuffer. */
+      /* The time it takes to init the DMA is the Front porch */
       /* Disable the selected DMAy Channelx */
       DMA1_Channel3->CCR &= (u32)0xFFFFFFFE;
       /* Reset DMAy Channelx control register */
@@ -626,6 +609,9 @@ void TIM3_Configuration(void)
   TIM_TimeBaseStructure.TIM_ClockDivision = 0;
   TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
   TIM_TimeBaseInit(TIM3, &TIM_TimeBaseStructure);
+  /* Enable TIM3 Update interrupt */
+  TIM_ClearITPendingBit(TIM3,TIM_IT_Update);
+  TIM_ITConfig(TIM3, TIM_IT_Update, ENABLE);
 }
 
 /*******************************************************************************
@@ -643,6 +629,9 @@ void TIM4_Configuration(void)
   TIM_TimeBaseStructure.TIM_ClockDivision = 0;
   TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
   TIM_TimeBaseInit(TIM4, &TIM_TimeBaseStructure);
+  /* Enable TIM4 Update interrupt */
+  TIM_ClearITPendingBit(TIM4,TIM_IT_Update);
+  TIM_ITConfig(TIM4, TIM_IT_Update, ENABLE);
 }
 
 /*******************************************************************************
