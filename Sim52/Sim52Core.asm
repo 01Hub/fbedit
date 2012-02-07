@@ -575,6 +575,34 @@ WritePort endp
 WaitHalfCycle proc
 
 	invoke SendAddinMessage,addin.hWnd,AM_ALECHANGED,0,0,AH_ALECHANGED
+	movzx	eax,addin.Sfr(SFR_T2CON)
+	test	eax,30h										;RCLK, TCLK
+	.if ZERO?
+		test	eax,04h									;TR2
+		.if !ZERO?
+			;Timer 2 is running
+			test	eax,03h								;C/T2, CP/RL2
+			.if ZERO?
+				;Timer 2 is a counter
+				inc		byte ptr addin.Sfr(SFR_TL2)
+				.if ZERO?
+					inc		byte ptr addin.Sfr(SFR_TH2)
+					.if ZERO?
+						;Set TF2
+						or		addin.Sfr[SFR_T2CON],80h
+						test	eax,01h					;CP/RL2
+						.if ZERO?
+							;Reload
+							mov		al,addin.Sfr[SFR_RCAP2L]
+							mov		addin.Sfr(SFR_TL2),al
+							mov		al,addin.Sfr[SFR_RCAP2H]
+							mov		addin.Sfr(SFR_TH2),al
+						.endif
+					.endif
+				.endif
+			.endif
+		.endif
+	.endif
 	inc		addin.HalfCycles
 	test	addin.HalfCycles,1
 	.if ZERO?
@@ -3788,28 +3816,29 @@ Execute:
 					jmp		Ex
 				.endif
 			.endif
-;			;Test IE.ET2
-;			test	edi,20h
-;			.if !ZERO?
-;				;Test T2CON.TF2
-;				test	addin.Sfr[SFR_T2CON],80h
-;				.if !ZERO?
-;					;Test IP.PT2
-;					test	addin.Sfr[SFR_IP],20h
-;					.if !ZERO?
-;						;High priority interrupt
-;						mov		pendingint.pri,TRUE
-;					.endif
-;					mov		pendingint.sfr,SFR_T2CON
-;					;Bit not cleared by hardware
-;					mov		pendingint.bit,00h
-;					;Generate RI interrupt
-;					mov		edx,2B00h
-;					call	LCALL_addr16
-;					mov		PCDONE,002Bh
-;					call	Wait2Cycles
-;					jmp		Ex
-;				.endif
+			;Test IE.ET2
+			test	edi,20h
+			.if !ZERO?
+				;Test T2CON.TF2
+				test	addin.Sfr[SFR_T2CON],80h
+				.if !ZERO?
+					and		addin.Sfr[SFR_T2CON],7Fh
+					;Test IP.PT2
+					test	addin.Sfr[SFR_IP],20h
+					.if !ZERO?
+						;High priority interrupt
+						mov		pendingint.pri,TRUE
+					.endif
+					mov		pendingint.sfr,SFR_T2CON
+					;Bit not cleared by hardware
+					mov		pendingint.bit,00h
+					;Generate T2 interrupt
+					mov		edx,2B00h
+					call	LCALL_addr16
+					mov		PCDONE,002Bh
+					call	Wait2Cycles
+					jmp		Ex
+				.endif
 ;				;Test T2CON.EXF2
 ;				test	addin.Sfr[SFR_T2CON],40h
 ;				.if !ZERO?
@@ -3829,7 +3858,7 @@ Execute:
 ;					call	Wait2Cycles
 ;					jmp		Ex
 ;				.endif
-;			.endif
+			.endif
 		.elseif !pendingint.pri && addin.Sfr[SFR_IP]
 			;No pending high priority interrupt and high proiority interrupts are defined, Check for high priority interrups
 			;Test IP.PX0
@@ -3968,26 +3997,27 @@ Execute:
 					.endif
 				.endif
 			.endif
-;			;Test IP.PT2
-;			test	addin.Sfr[SFR_IP],20h
-;			.if !ZERO?
-;				;Test IE.ET2
-;				test	edi,20h
-;				.if !ZERO?
-;					;Test T2CON.TF2
-;					test	addin.Sfr[SFR_T2CON],80h
-;					.if !ZERO?
-;						call	PUSHpendingint
-;						mov		pendingint.pri,TRUE
-;						mov		pendingint.sfr,SFR_T2CON
-;						mov		pendingint.bit,80h
-;						;Generate RI interrupt
-;						mov		edx,2B00h
-;						call	LCALL_addr16
-;						mov		PCDONE,002Bh
-;						call	Wait2Cycles
-;						jmp		Ex
-;					.endif
+			;Test IP.PT2
+			test	addin.Sfr[SFR_IP],20h
+			.if !ZERO?
+				;Test IE.ET2
+				test	edi,20h
+				.if !ZERO?
+					;Test T2CON.TF2
+					test	addin.Sfr[SFR_T2CON],80h
+					.if !ZERO?
+						and		addin.Sfr[SFR_T2CON],7Fh
+						call	PUSHpendingint
+						mov		pendingint.pri,TRUE
+						mov		pendingint.sfr,SFR_T2CON
+						mov		pendingint.bit,80h
+						;Generate T2 interrupt
+						mov		edx,2B00h
+						call	LCALL_addr16
+						mov		PCDONE,002Bh
+						call	Wait2Cycles
+						jmp		Ex
+					.endif
 ;					;Test T2CON.EXF2
 ;					test	addin.Sfr[SFR_T2CON],40h
 ;					.if !ZERO?
@@ -4002,8 +4032,8 @@ Execute:
 ;						call	Wait2Cycles
 ;						jmp		Ex
 ;					.endif
-;				.endif
-;			.endif
+				.endif
+			.endif
 		.endif
 	.endif
   Ex:

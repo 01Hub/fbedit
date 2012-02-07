@@ -184,11 +184,11 @@ P2		A0   Y  I/O Port 2			P2.7	P2.6	P2.5	P2.4	P2.3	P2.2	P2.1	P2.0
 AUXR1	A2   N	Auxiliary Register1	-		-		-		-		-		-		-		DPS
 WDTRST	A6   N
 
-IE		A8   Y  Interrupt enable	EA		-		-		ES		ET1		EX1		ET0		EX0
+IE		A8   Y  Interrupt enable	EA		-		ET2		ES		ET1		EX1		ET0		EX0
 
 P3		B0   Y  I/O Port 3			P3.7	P3.6	P3.5	P3.4	P3.3	P3.2	P3.1	P3.0
 
-IP		B8   Y  Interrupt priority	-		-		-		PS		PT1		PX1		PT0		PX0
+IP		B8   Y  Interrupt priority	-		-		PT2		PS		PT1		PX1		PT0		PX0
 
 T2CON	C8   Y	Timer 2 control		TF2		EXF2	RCLK	TCLK	EXEN2	TR2		C/T2	CP/RL2
 T2MOD	C9   N	Timer 2 mode		-		-		-		-		-		-		T2OE	DCEN

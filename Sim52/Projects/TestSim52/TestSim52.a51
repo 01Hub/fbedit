@@ -1,10 +1,16 @@
+T2CON		EQU	0C8h
+RCAP2L		EQU	0CAh
+RCAP2H		EQU	0CBh
+TL2		EQU	0CCh
+TH2		EQU	0CDh
 
 ;RESET:***********************************************
 		ORG	0000h
 ;		LJMP	TESTINT0INT1	;RESET:
 ;		LJMP	TESTTMR0TMR1	;RESET:
 ;		LJMP	TESTSUBB
-		LJMP	WAITTEST
+;		LJMP	WAITTEST
+		LJMP	TIMER2TEST
 ;IE0IRQ:**********************************************
 		ORG	0003h
 		MOV	A,#00h
@@ -33,7 +39,7 @@
 ;TF2EXF2IRQ:******************************************
 		ORG	002Bh
 		NOP
-		NOP
+		INC	R7
 		RETI			;TF2EXF2IRQ:
 ;*****************************************************
 
@@ -41,6 +47,15 @@ WAITTEST:	SETB	ACC.0
 		ACALL	WAIT512MS
 		CLR	ACC.0
 		SJMP	WAITTEST
+
+TIMER2TEST:	MOV	RCAP2L,#00h
+		MOV	RCAP2H,#00h
+		MOV	TL2,#00h
+		MOV	TH2,#00h
+		SETB	T2CON.2
+		SETB	IE.5
+		SETB	IE.7
+		SJMP	$
 
 ;------------------------------------------------------------------
 ;Wait loop. Waits 0.512 seconds

@@ -124,7 +124,7 @@ ParseList proc uses ebx esi edi,lpFileName:DWORD
 					call	FixSourceLine
 					lea		eax,sourceline
 					mov		rdta.lpszCode,eax
-					call	IsSourceLineDB
+					call	IsSourceLineDBDW
 					.if eax
 						mov		rdta.nBytes,0
 						mov		rdta.nCycles,0
@@ -143,7 +143,7 @@ ParseList proc uses ebx esi edi,lpFileName:DWORD
 					.endif
 					mov		eax,nBytes
 					.if eax!=nBytesParsed
-						call	IsSourceLineDB
+						call	IsSourceLineDBDW
 						.if !eax
 							PrintHex bx
 							PrintDec nBytes
@@ -321,16 +321,18 @@ IsSourceLineLabel:
 	.endw
 	retn
 
-IsSourceLineDB:
+IsSourceLineDBDW:
 	lea		edx,sourceline
-	xor		eax,eax
 	.while byte ptr [edx]
-		.if word ptr [edx]=='BD' || word ptr [edx]=='bD' || word ptr [edx]=='Bd' || word ptr [edx]=='bd'
+		movzx	eax,word ptr [edx]
+		and		eax,5F5Fh
+		.if eax=='BD' || eax=='WD'
 			inc		eax
-			.break
+			retn
 		.endif
 		inc		edx
 	.endw
+	xor		eax,eax
 	retn
 
 ParseList endp
