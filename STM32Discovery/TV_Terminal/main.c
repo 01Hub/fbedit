@@ -184,19 +184,25 @@ int main(void)
   video_show_cursor();
   while (1)
   {
+    x=FrameCount;
+    while (x==FrameCount)
+    {
+    }
     if(scancode)
     {
       puthex(scancode);
       decode(scancode);
       scancode = 0;
     }
-    if (!(FrameCount && 4095))
+    if ((FrameCount & 4095)==0)
     {
       video_cls();
     }
-    if (!(FrameCount && 15))
+    if ((FrameCount & 7)==0)
     {
       video_putc((char) 65);
+      video_putc((char) 66);
+      video_putc((char) 67);
     }
   }
 }
@@ -297,7 +303,7 @@ static inline void _video_putc(char c)
 {
   /* If the last character printed exceeded the right boundary,
    * we have to go to a new line. */
-  if (cx >= SCREEN_WIDTH-1) _video_lfwd();
+  if (cx >= SCREEN_WIDTH) _video_lfwd();
 
   if (c == '\r') cx = 0;
   else if (c == '\n') _video_lfwd();
@@ -392,58 +398,54 @@ void TIM3_IRQHandler(void)
 *******************************************************************************/
 void TIM4_IRQHandler(void)
 {
+  u32 tmp;
   /* Disable TIM4 */
   TIM4->CR1=0;
+  /* Clear the IT pending Bit */
+  TIM4->SR=(u16)~TIM_IT_Update;
   if (LineCount<303)
   {
     /* H-Sync high */
     GPIOA->BSRR=(u16)GPIO_Pin_0;
     if (LineCount>=TOP_MARGIN && LineCount<SCREEN_HEIGHT*TILE_HEIGHT+TOP_MARGIN)
     {
+      /* The time it takes to init the DMA and run the loop is the Front porch */
+      tmp=0;
+      while (tmp<20)
+      {
+        tmp++;
+      }
       /* Set up the DMA to keep the SPI port fed from the pixelbuffer. */
-      /* The time it takes to init the DMA is the Front porch */
-      /* Disable the selected DMAy Channelx */
+      /* Disable the selected DMA1 Channel3 */
       DMA1_Channel3->CCR &= (u32)0xFFFFFFFE;
-      /* Reset DMAy Channelx control register */
+      /* Reset DMA1 Channel3 control register */
       DMA1_Channel3->CCR  = 0;
-      /* Reset DMAy Channelx remaining bytes register */
-      DMA1_Channel3->CNDTR = 0;
-      /* Reset DMAy Channelx peripheral address register */
-      DMA1_Channel3->CPAR  = 0;
-      /* Reset DMAy Channelx memory address register */
-      DMA1_Channel3->CMAR = 0;
       /* Reset interrupt pending bits for DMA1 Channel3 */
       DMA1->IFCR |= (u32)0x00000F00;
-      DMA_InitStructure.DMA_PeripheralBaseAddr = (u32)0x4001300C;
-      DMA_InitStructure.DMA_MemoryBaseAddr = (u32)PixelBuff;
-      DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralDST;
-      DMA_InitStructure.DMA_Priority = DMA_Priority_VeryHigh;
-      // Add 1 halfword to ensure MOSI is low when transfer is done.
-      DMA_InitStructure.DMA_BufferSize = SCREEN_WIDTH/2+1;
-      DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
-      DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;
-      DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_HalfWord;
-      DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_HalfWord;
-      DMA_InitStructure.DMA_Mode = DMA_Mode_Normal;
-      DMA_InitStructure.DMA_M2M = DMA_M2M_Disable;
-      DMA_Init(DMA1_Channel3, &DMA_InitStructure);
+
+      DMA1_Channel3->CCR = (u32)DMA_DIR_PeripheralDST | DMA_Mode_Normal |
+                                DMA_PeripheralInc_Disable | DMA_MemoryInc_Enable |
+                                DMA_PeripheralDataSize_HalfWord | DMA_MemoryDataSize_HalfWord |
+                                DMA_Priority_VeryHigh | DMA_M2M_Disable;
+      /* Write to DMA1 Channel3 CNDTR */
+      /* Add 1 halfword to ensure MOSI is low when transfer is done. */
+      DMA1_Channel3->CNDTR = (u32)SCREEN_WIDTH/2+1;
+      /* Write to DMA1 Channel3 CPAR */
+      DMA1_Channel3->CPAR = (u32)0x4001300C;
+      /* Write to DMA1 Channel3 CMAR */
+      DMA1_Channel3->CMAR = (u32)PixelBuff;
       /* Enable DMA1 Channel3 */
-      DMA1_Channel3->CCR|=(u32)0x00000001;
-    }
-    else if (LineCount=SCREEN_HEIGHT*TILE_HEIGHT+TOP_MARGIN)
-    {
-      FrameCount++;
+      DMA1_Channel3->CCR |= (u32)0x00000001;
     }
   }
-  else if (LineCount==312)
+  else if (LineCount==313)
   {
-    /* V-Sync high after 312-303=9 lines) */
+    /* V-Sync high after 313-303=10 lines) */
     GPIOA->BSRR=(u16)GPIO_Pin_0;
+    FrameCount++;
     LineCount=0xffff;
   }
   LineCount++;
-  /* Clear the IT pending Bit */
-  TIM4->SR=(u16)~TIM_IT_Update;
 }
 
 void EXTI9_5_IRQHandler(void)
@@ -587,7 +589,7 @@ void NVIC_Configuration(void)
   NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
   NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
   NVIC_Init(&NVIC_InitStructure);
-	// Enable the EXTI9_5 Interrupt for keyboard transmissions
+	/* Enable the EXTI9_5 Interrupt for keyboard transmissions */
 	NVIC_InitStructure.NVIC_IRQChannel	= EXTI9_5_IRQChannel;
 	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority	= 2;
   NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
@@ -624,7 +626,7 @@ void TIM3_Configuration(void)
 void TIM4_Configuration(void)
 {
   /* Time base configuration */
-  TIM_TimeBaseStructure.TIM_Period = 263;                   // 4,70uS
+  TIM_TimeBaseStructure.TIM_Period = 264;                   // 4,70uS
   TIM_TimeBaseStructure.TIM_Prescaler = 0;
   TIM_TimeBaseStructure.TIM_ClockDivision = 0;
   TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
@@ -644,7 +646,7 @@ void TIM4_Configuration(void)
 void SPI_Configuration(void)
 {
 	//Set up SPI port.  This acts as a pixel buffer.
-	SPI_InitStructure.SPI_Direction = SPI_Direction_2Lines_FullDuplex;
+	SPI_InitStructure.SPI_Direction = SPI_Direction_1Line_Tx;
 	SPI_InitStructure.SPI_Mode = SPI_Mode_Master;
 	SPI_InitStructure.SPI_DataSize = SPI_DataSize_16b;
 	SPI_InitStructure.SPI_CPOL = SPI_CPOL_Low;
@@ -694,7 +696,7 @@ void USART_Configuration(void)
 *******************************************************************************/
 void EXTI_Configuration(void)
 {
-	// Enable an interrupt on EXTI line 8 rising
+	/* Enable an interrupt on EXTI line 8 rising */
 	EXTI_InitStructure.EXTI_Line = EXTI_Line8;
 	EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
 	EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Rising;
