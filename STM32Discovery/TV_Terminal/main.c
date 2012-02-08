@@ -115,6 +115,10 @@ vu16 FrameCount;
 vu8 ScreenChars[SCREEN_HEIGHT][SCREEN_WIDTH];
 vu8 PixelBuff[SCREEN_WIDTH+2];
 
+vu8 rs232buff[256];
+vu8 rs232tail;
+vu8 rs232head;
+
 static u8 tmpscancode = 0;
 static u8 scancode = 0;
 static u8 bitcount = 11;
@@ -448,6 +452,18 @@ void TIM4_IRQHandler(void)
   LineCount++;
 }
 
+void USART1_IRQHandler(void)
+{
+  u8 c;
+	/* receive data from the serial port */
+	if(USART_GetITStatus(USART1, USART_IT_RXNE) != RESET)
+	{
+    rs232buff[rs232head]=USART1->DR;
+    rs232head++;
+		USART_ClearFlag(USART1, USART_FLAG_RXNE);
+	}
+}
+
 void EXTI9_5_IRQHandler(void)
 {
 	//figure out what the keyboard is sending us
@@ -589,11 +605,18 @@ void NVIC_Configuration(void)
   NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
   NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
   NVIC_Init(&NVIC_InitStructure);
+	/* Enable USART interrupt */
+	NVIC_InitStructure.NVIC_IRQChannel = USART1_IRQChannel;
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
+  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+	NVIC_Init(&NVIC_InitStructure);
 	/* Enable the EXTI9_5 Interrupt for keyboard transmissions */
 	NVIC_InitStructure.NVIC_IRQChannel	= EXTI9_5_IRQChannel;
 	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority	= 2;
   NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
 	NVIC_InitStructure.NVIC_IRQChannelCmd	= ENABLE;
+	NVIC_Init(&NVIC_InitStructure);
 }
 
 /*******************************************************************************
