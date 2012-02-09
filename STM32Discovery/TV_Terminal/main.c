@@ -35,7 +35,7 @@
 *
 * Video out
 * PA0   H-Sync and V-Sync
-* PA5   Dot clock SPI1_SCK
+* PA5   Dot clock SPI1_SCK (NC)
 * PA7   Video out SPI1_MOSI
 * RS232
 * PA9   USART1 Tx
@@ -92,11 +92,11 @@
 * Pin 6   N/C     Not connected.
 *******************************************************************************/
 
-#define TOP_MARGIN                  30  // Number of lines before video signal starts
-#define SCREEN_WIDTH                40  // 40 characters on each line.
-#define SCREEN_HEIGHT               25  // 25 lines.
-#define TILE_WIDTH                  8   // Width of a character tile.
-#define TILE_HEIGHT                 10  // Height of a character tile.
+#define TOP_MARGIN          30  // Number of lines before video signal starts
+#define SCREEN_WIDTH        40  // 40 characters on each line.
+#define SCREEN_HEIGHT       25  // 25 lines.
+#define TILE_WIDTH          8   // Width of a character tile.
+#define TILE_HEIGHT         10  // Height of a character tile.
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f10x_lib.h"
@@ -127,6 +127,8 @@ static u8 cx;
 static u8 cy;
 static u8 showcursor;
 
+//const char msg[]={"ABC\0"};
+
 /* Private function prototypes -----------------------------------------------*/
 void RCC_Configuration(void);
 void GPIO_Configuration(void);
@@ -138,12 +140,21 @@ void USART_Configuration(void);
 void EXTI_Configuration(void);
 void MakeVideoLine(void);
 void decode(u8 scancode);
-void puthex(u8 n);
-void video_cls();
 void video_show_cursor();
+void video_hide_cursor();
+void video_scrollup();
+void video_cls();
+void video_cfwd();
+void video_lfwd();
+void video_lf();
 void video_putc(char c);
+void video_puts(char *str);
+void video_puthex(u8 n);
+void rs232_putc(char c);
+void rs232_puts(char *str);
 void * memmove(void *dest, void *source, u32 count);
 void * memset(void *dest, u32 c, u32 count); 
+static void CURSOR_INVERT() __attribute__((noinline));
 
 /* Private functions ---------------------------------------------------------*/
 
@@ -192,69 +203,44 @@ int main(void)
     while (x==FrameCount)
     {
     }
-    if(scancode)
+    while (rs232tail!=rs232head)
     {
-      puthex(scancode);
-      decode(scancode);
-      scancode = 0;
-    }
-    if ((FrameCount & 4095)==0)
-    {
-      video_cls();
+      c=rs232buff[rs232tail];
+      rs232tail++;
+      video_putc(c);
     }
     if ((FrameCount & 7)==0)
     {
-      video_putc((char) 65);
-      video_putc((char) 66);
-      video_putc((char) 67);
+      rs232_puts("ABCDEFGHIJ\0");
     }
+    // if(scancode)
+    // {
+      // puthex(scancode);
+      // decode(scancode);
+      // scancode = 0;
+    // }
+    // if ((FrameCount & 4095)==0)
+    // {
+      // video_cls();
+    // }
+    // if ((FrameCount & 7)==0)
+    // {
+      // video_putc((char) 65);
+      // video_putc((char) 66);
+      // video_putc((char) 67);
+    // }
   }
 }
 
-static void CURSOR_INVERT() __attribute__((noinline));
 static void CURSOR_INVERT()
 {
   ScreenChars[cy][cx] ^= showcursor;
-}
-
-void video_show_cursor()
-{
-  if (!showcursor)
-  {
-    showcursor = 0x80;
-    CURSOR_INVERT();
-  }
-}
-
-void video_hide_cursor()
-{
-  if (showcursor)
-  {
-    CURSOR_INVERT();
-    showcursor = 0;
-  }
 }
 
 static void _video_scrollup()
 {
   memmove(&ScreenChars[0],&ScreenChars[1], (SCREEN_HEIGHT-1)*SCREEN_WIDTH);
   memset(&ScreenChars[SCREEN_HEIGHT-1], 0, SCREEN_WIDTH);
-}
-
-void video_scrollup()
-{
-  CURSOR_INVERT();
-  _video_scrollup();
-  CURSOR_INVERT();
-}
-
-void video_cls()
-{
-  CURSOR_INVERT();
-  memset(&ScreenChars, 0, SCREEN_HEIGHT*SCREEN_WIDTH);
-  cx=0;
-  cy=0;
-  CURSOR_INVERT();
 }
 
 static void _video_lfwd()
@@ -273,36 +259,6 @@ static inline void _video_cfwd()
     _video_lfwd();
 }
 
-void video_cfwd()
-{
-  CURSOR_INVERT();
-  _video_cfwd();
-  CURSOR_INVERT();
-}
-
-void video_lfwd()
-{
-  CURSOR_INVERT();
-  cx = 0;
-  if (++cy > SCREEN_HEIGHT-1)
-  {
-    cy = SCREEN_HEIGHT-1;
-    _video_scrollup();
-  }
-  CURSOR_INVERT();
-}
-
-void video_lf()
-{
-  CURSOR_INVERT();
-  if (++cy > SCREEN_HEIGHT-1)
-  {
-    cy = SCREEN_HEIGHT-1;
-    _video_scrollup();
-  }
-  CURSOR_INVERT();
-}
-
 static inline void _video_putc(char c)
 {
   /* If the last character printed exceeded the right boundary,
@@ -318,6 +274,126 @@ static inline void _video_putc(char c)
   }
 }
 
+/*******************************************************************************
+* Function Name  : video_show_cursor
+* Description    : This function shows the cursor
+* Input          : None
+* Output         : None
+* Return         : None
+*******************************************************************************/
+void video_show_cursor()
+{
+  if (!showcursor)
+  {
+    showcursor = 0x80;
+    CURSOR_INVERT();
+  }
+}
+
+/*******************************************************************************
+* Function Name  : video_hide_cursor
+* Description    : This function hides the cursor
+* Input          : None
+* Output         : None
+* Return         : None
+*******************************************************************************/
+void video_hide_cursor()
+{
+  if (showcursor)
+  {
+    CURSOR_INVERT();
+    showcursor = 0;
+  }
+}
+
+/*******************************************************************************
+* Function Name  : video_scrollup
+* Description    : This function scrolls the screen up
+* Input          : None
+* Output         : None
+* Return         : None
+*******************************************************************************/
+void video_scrollup()
+{
+  CURSOR_INVERT();
+  _video_scrollup();
+  CURSOR_INVERT();
+}
+
+/*******************************************************************************
+* Function Name  : video_cls
+* Description    : This function clears the screen and homes the cursor
+* Input          : None
+* Output         : None
+* Return         : None
+*******************************************************************************/
+void video_cls()
+{
+  CURSOR_INVERT();
+  memset(&ScreenChars, 0, SCREEN_HEIGHT*SCREEN_WIDTH);
+  cx=0;
+  cy=0;
+  CURSOR_INVERT();
+}
+
+/*******************************************************************************
+* Function Name  : video_cfwd
+* Description    : This function 
+* Input          : None
+* Output         : None
+* Return         : None
+*******************************************************************************/
+void video_cfwd()
+{
+  CURSOR_INVERT();
+  _video_cfwd();
+  CURSOR_INVERT();
+}
+
+/*******************************************************************************
+* Function Name  : video_lfwd
+* Description    : This function handles a crlf
+* Input          : None
+* Output         : None
+* Return         : None
+*******************************************************************************/
+void video_lfwd()
+{
+  CURSOR_INVERT();
+  cx = 0;
+  if (++cy > SCREEN_HEIGHT-1)
+  {
+    cy = SCREEN_HEIGHT-1;
+    _video_scrollup();
+  }
+  CURSOR_INVERT();
+}
+
+/*******************************************************************************
+* Function Name  : video_lf
+* Description    : This function handles a lf
+* Input          : None
+* Output         : None
+* Return         : None
+*******************************************************************************/
+void video_lf()
+{
+  CURSOR_INVERT();
+  if (++cy > SCREEN_HEIGHT-1)
+  {
+    cy = SCREEN_HEIGHT-1;
+    _video_scrollup();
+  }
+  CURSOR_INVERT();
+}
+
+/*******************************************************************************
+* Function Name  : video_putc
+* Description    : This function prints a character
+* Input          : Character
+* Output         : None
+* Return         : None
+*******************************************************************************/
 void video_putc(char c)
 {
   CURSOR_INVERT();
@@ -325,6 +401,13 @@ void video_putc(char c)
   CURSOR_INVERT();
 }
 
+/*******************************************************************************
+* Function Name  : video_puts
+* Description    : This function prints a zero terminated string
+* Input          : Zero terminated string
+* Output         : None
+* Return         : None
+*******************************************************************************/
 void video_puts(char *str)
 {
   /* Characters are interpreted and printed one at a time. */
@@ -336,13 +419,13 @@ void video_puts(char *str)
 }
 
 /*******************************************************************************
-* Function Name  : puthex
+* Function Name  : video_puthex
 * Description    : This function prints a byte as hex
-* Input          : None
+* Input          : Byte
 * Output         : None
 * Return         : None
 *******************************************************************************/
-void puthex(u8 n)
+void video_puthex(u8 n)
 {
 	static char hexchars[] = "0123456789ABCDEF";
 	char hexstr[5];
@@ -352,6 +435,36 @@ void puthex(u8 n)
 	hexstr[3] = '\n';
 	hexstr[4] = '\0';
   video_puts(hexstr);
+}
+
+/*******************************************************************************
+* Function Name  : rs232_putc
+* Description    : This function transmits a character
+* Input          : Character
+* Output         : None
+* Return         : None
+*******************************************************************************/
+void rs232_putc(char c)
+{
+  /* Wait until transmit register empty*/
+  while((USART1->SR & USART_FLAG_TXE) == 0);          
+  /* Transmit Data */
+  USART1->DR = (u16)c;
+}
+
+/*******************************************************************************
+* Function Name  : rs232_puts
+* Description    : This function transmits a zero terminated string
+* Input          : Zero terminated string
+* Output         : None
+* Return         : None
+*******************************************************************************/
+void rs232_puts(char *str)
+{
+  char c;
+  /* Characters are transmitted one at a time. */
+  while ((c = *str++))
+    rs232_putc(c);
 }
 
 /*******************************************************************************
@@ -376,8 +489,7 @@ void TIM3_IRQHandler(void)
   GPIOA->BRR=(u16)GPIO_Pin_0;
   if (LineCount>=TOP_MARGIN && LineCount<SCREEN_HEIGHT*TILE_HEIGHT+TOP_MARGIN)
   {
-    /* Make a video line
-       Since the SPI operates in halfword mode
+    /* Make a video line. Since the SPI operates in halfword mode
        odd character first then even character stored in pixel buffer. */
     j=k=LineCount-TOP_MARGIN;
     j=j/TILE_HEIGHT;
@@ -706,6 +818,9 @@ void USART_Configuration(void)
   USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
   USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;
   USART_Init(USART1, &USART_InitStructure);
+  /* Enable the USART Receive interrupt: this interrupt is generated when the 
+     USART1 receive data register is not empty */
+  USART_ITConfig(USART1, USART_IT_RXNE, ENABLE);
   /* Enable the USART2 */
   USART_Cmd(USART1, ENABLE);
 }
