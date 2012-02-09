@@ -48,13 +48,15 @@ WAITTEST:	SETB	ACC.0
 		CLR	ACC.0
 		SJMP	WAITTEST
 
-TIMER2TEST:	MOV	RCAP2L,#00h
-		MOV	RCAP2H,#00h
-		MOV	TL2,#00h
-		MOV	TH2,#00h
-		SETB	T2CON.2
+TIMER2TEST:	MOV	RCAP2L,#0F0h
+		MOV	RCAP2H,#0FFh
+		MOV	TL2,#0F0h
+		MOV	TH2,#0FFh
+		SETB	T2CON.1			;Enable timer 2 event on P1.1
+		SETB	T2CON.2			;Enable timer 2
 		SETB	IE.5
 		SETB	IE.7
+		JB	RXD,$
 		SJMP	$
 
 ;------------------------------------------------------------------

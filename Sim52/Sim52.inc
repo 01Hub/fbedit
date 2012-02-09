@@ -461,6 +461,8 @@ DefMCUClock				DWORD ?
 CpuCycles				DWORD ?
 PerformanceCount		QWORD ?
 PCDONE					DWORD ?
+NewP1					DWORD ?
+OldP1					DWORD ?
 NewP3					DWORD ?
 OldP3					DWORD ?
 pendingint				INTERRUPT 2 dup(<>)
