@@ -208,13 +208,13 @@ int main(void)
     }
     while (rs232tail!=rs232head)
     {
-      c=rs232buff[rs232tail];
-      rs232tail++;
+      c=rs232buff[rs232tail++];
       video_putc(c);
     }
-    if ((FrameCount & 7)==0)
+    if ((FrameCount & 15)==0)
     {
-      rs232_puts("ABCDEFGHIJ\0");
+      rs232_puts("ABCDEFGHIJKLMNOPQRSTUVWXYZ\0");
+      rs232_puts("ABCDEFGHIJKLMNOPQRSTUVWXYZ\0");
     }
     // if(scancode)
     // {
@@ -222,7 +222,7 @@ int main(void)
       // decode(scancode);
       // scancode = 0;
     // }
-    if ((FrameCount & 4095)==0)
+    if ((FrameCount & 511)==0)
     {
       video_cls();
     }
