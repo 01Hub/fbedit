@@ -20,6 +20,7 @@
 *            ---------------------------
 *           |                           |
 *           |                           |
+*           |                           |
 *       ----                             ----
 * |    |                                     |
 * -----                                      ----
@@ -34,7 +35,7 @@
 * Port pins used
 *
 * Video out
-* PA0   H-Sync and V-Sync
+* PA1   H-Sync and V-Sync
 * PA5   Dot clock SPI1_SCK (NC)
 * PA7   Video out SPI1_MOSI
 * RS232
@@ -46,6 +47,8 @@
 * Leds
 * PC08  Led
 * PC09  Led
+* User button
+* PA1   User button
 *******************************************************************************/
 
 /*******************************************************************************
@@ -219,10 +222,10 @@ int main(void)
       // decode(scancode);
       // scancode = 0;
     // }
-    // if ((FrameCount & 4095)==0)
-    // {
-      // video_cls();
-    // }
+    if ((FrameCount & 4095)==0)
+    {
+      video_cls();
+    }
     // if ((FrameCount & 7)==0)
     // {
       // video_putc((char) 65);
@@ -478,15 +481,15 @@ void rs232_puts(char *str)
 void TIM3_IRQHandler(void)
 {
   u16 i,j,k;
-  /* TIM4 is used to time the H-Sync (4,70uS) */
   /* Clear the IT pending Bit */
   TIM3->SR=(u16)~TIM_IT_Update;
+  /* TIM4 is used to time the H-Sync (4,70uS) */
   /* Reset TIM4 count */
   TIM4->CNT=0;
   /* Enable TIM4 */
   TIM4->CR1=1;
   /* H-Sync or V-Sync low */
-  GPIOA->BRR=(u16)GPIO_Pin_0;
+  GPIOA->BRR=(u16)GPIO_Pin_1;
   if (LineCount>=TOP_MARGIN && LineCount<SCREEN_HEIGHT*TILE_HEIGHT+TOP_MARGIN)
   {
     /* Make a video line. Since the SPI operates in halfword mode
@@ -522,7 +525,7 @@ void TIM4_IRQHandler(void)
   if (LineCount<303)
   {
     /* H-Sync high */
-    GPIOA->BSRR=(u16)GPIO_Pin_0;
+    GPIOA->BSRR=(u16)GPIO_Pin_1;
     if (LineCount>=TOP_MARGIN && LineCount<SCREEN_HEIGHT*TILE_HEIGHT+TOP_MARGIN)
     {
       /* The time it takes to init the DMA and run the loop is the Front porch */
@@ -557,7 +560,7 @@ void TIM4_IRQHandler(void)
   else if (LineCount==313)
   {
     /* V-Sync high after 313-303=10 lines) */
-    GPIOA->BSRR=(u16)GPIO_Pin_0;
+    GPIOA->BSRR=(u16)GPIO_Pin_1;
     FrameCount++;
     LineCount=0xffff;
   }
@@ -659,13 +662,13 @@ void RCC_Configuration(void)
 void GPIO_Configuration(void)
 {
   GPIO_InitTypeDef GPIO_InitStructure;
-  /* Configure PA0 as outputs H-Sync and V-Sync*/
-  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0;
+  /* Configure PA1 as outputs H-Sync and V-Sync*/
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_1;
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
   GPIO_Init(GPIOA, &GPIO_InitStructure);
   /* H-Sync and V-Sync signal High */
-  GPIO_SetBits(GPIOA,GPIO_Pin_0);
+  GPIO_SetBits(GPIOA,GPIO_Pin_1);
 	/* GPIOA Configuration:SPI1_MOSI and SPI1_SCK as alternate function push-pull */
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_7 | GPIO_Pin_5 ;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
@@ -708,7 +711,7 @@ void NVIC_Configuration(void)
   NVIC_SetVectorTable(NVIC_VectTab_FLASH, 0x0);   
   /* Enable the TIM3 global Interrupt */
   NVIC_InitStructure.NVIC_IRQChannel = TIM3_IRQChannel;
-  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
+  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
   NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
   NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
   NVIC_Init(&NVIC_InitStructure);
