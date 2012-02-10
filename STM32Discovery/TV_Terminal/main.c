@@ -568,12 +568,12 @@ void USART1_IRQHandler(void)
 {
   u8 c;
 	/* receive data from the serial port */
-	if(USART_GetITStatus(USART1, USART_IT_RXNE) != RESET)
-	{
-    rs232buff[rs232head]=USART1->DR;
-    rs232head++;
-		USART_ClearFlag(USART1, USART_FLAG_RXNE);
-	}
+	// if(USART_GetITStatus(USART1, USART_IT_RXNE) != RESET)
+	// {
+    rs232buff[rs232head++]=USART1->DR;
+		// USART_ClearFlag(USART1, USART_FLAG_RXNE);
+    USART1->SR = (u16)~USART_FLAG_RXNE;
+	// }
 }
 
 void EXTI9_5_IRQHandler(void)
@@ -642,8 +642,9 @@ void RCC_Configuration(void)
   /* Enable peripheral clocks ------------------------------------------------*/
   /* Enable DMA1 clock */
 	RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1 , ENABLE);	
-  /* Enable GPIOA, GPIOB, GPIOC and SPI1 clock */
-  RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA | RCC_APB2Periph_GPIOB | RCC_APB2Periph_GPIOC | RCC_APB2Periph_SPI1, ENABLE);
+  /* Enable GPIOA, GPIOC, SPI1 and USART1 clock */
+  RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA | RCC_APB2Periph_GPIOC |
+                         RCC_APB2Periph_SPI1 | RCC_APB2Periph_USART1, ENABLE);
   /* Enable TIM3 and TIM4 clock */
   RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3 | RCC_APB1Periph_TIM4, ENABLE);
 }
