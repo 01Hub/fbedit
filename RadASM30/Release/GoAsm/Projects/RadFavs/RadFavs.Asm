@@ -152,13 +152,27 @@ AddinProc	FRAME hWin, uMsg, wParam, lParam
 		jg >>.ExitMsgLoop
 		sub eax,[FirstID]
 		mov ecx,offset IndexTable
-		mov eax,[ecx+eax*4]
-		or eax,eax
+		mov ebx,[ecx+eax*4]
+		or ebx,ebx
 		jz >>.ExitMsgLoop
+		invoke PathFindExtension,ebx
+		inc eax
+		mov eax,[eax]
 		mov ecx,[lpProcs]
 		mov ecx,[ecx+ADDINPROCS.lpOpenTheFile]
+		or eax,0x20202020
+		cmp eax,"prra"
+		je >.PROJECT
+
+		// other file type just open it
+		push 0
+		push ebx
+		call ecx
+		jmp >>.ExitMsgLoop
+
+		.PROJECT
 		push ID_PROJECT
-		push eax
+		push ebx
 		call ecx
 		jmp >>.ExitMsgLoop
 
@@ -288,7 +302,7 @@ GetGlobalFavs FRAME hmenu
 ENDF
 
 AddToFavourites FRAME
-	uses ebx
+	uses ebx,esi
 	LOCAL MenuLabel[64]		:%CHAR
 	LOCAL FileName[MAX_PATH]:%CHAR
 	LOCAL Index[16]			:B
@@ -321,7 +335,9 @@ AddToFavourites FRAME
 	invoke DialogBoxParam,[hInstance],1000,[hRadASM],offset EnterLabelDlgProc,offset DlgStruct
 	or eax,eax
 	js >>.EXIT
+	mov esi,eax
 
+	.RAPFILE
 	; Get next index
 	xor ebx,ebx
 	:
@@ -334,11 +350,21 @@ AddToFavourites FRAME
 		jnz <
 	:
 
+	test esi,esi
+	jnz >
 	mov B[FileName],","
 	mov eax,[lpData]
 	add eax,ADDINDATA.szProjectFile
 	invoke lstrcpy,offset FileName+1,eax
+	jmp >.WRITETOFILE
 
+	:
+	mov B[FileName],","
+	mov eax,[lpData]
+	add eax,ADDINDATA.szFileName
+	invoke lstrcpy,offset FileName+1,eax
+
+	.WRITETOFILE
 	invoke lstrcpy,offset OutString,offset MenuLabel
 	invoke lstrcat,offset OutString,offset FileName
 
@@ -391,13 +417,13 @@ EnterLabelDlgProc FRAME hwnd,uMsg,wParam,lParam
 		invoke SendMessage,ebx,EM_LIMITTEXT,63,0
 		invoke SetWindowLong,ebx,GWL_USERDATA,[edi]
 		mov B[edi],0
-		jmp >.EXIT
+		jmp >>.EXIT
 
 	M1:
 	cmp D[uMsg],WM_CLOSE
 	jne >M2
 		invoke EndDialog,[hwnd],-1
-		jmp >.EXIT
+		jmp >>.EXIT
 
 	M2:
 	cmp D[uMsg],WM_COMMAND
@@ -409,7 +435,8 @@ EnterLabelDlgProc FRAME hwnd,uMsg,wParam,lParam
 			mov ebx,eax
 			invoke GetWindowLong,ebx,GWL_USERDATA
 			invoke SendMessage,ebx,WM_GETTEXT,64,eax
-			invoke EndDialog,[hwnd],0
+			invoke SendDlgItemMessage,[hwnd],1007,BM_GETCHECK,0,0
+			invoke EndDialog,[hwnd],eax
 			jmp >.EXIT
 		C1:
 		cmp eax,1006
@@ -693,6 +720,14 @@ GetRAPInfo FRAME pRAPFile,hOutput
 	invoke GetTimeFormat,LOCALE_SYSTEM_DEFAULT,NULL,\
 		OFFSET stLocal,"hh:mm tt",OFFSET szTempTime,64
 
+	// Is the file a project file ?
+	invoke PathFindExtension,[pRAPFile]
+	inc eax
+	mov eax,[eax]
+	or eax,0x20202020
+	cmp eax,"prra"
+	jne >>
+
 	invoke GetPrivateProfileString,"Project","Assembler","",\
 			offset szAssembler,1024,[pRAPFile]
 
@@ -713,7 +748,14 @@ GetRAPInfo FRAME pRAPFile,hOutput
 	add esp,24
 
 	invoke SendMessage,[hOutput],WM_SETTEXT,0,offset outstring
+	RET
 
+	:
+
+	invoke wsprintf,offset outstring,OFFSET outfmt2,OFFSET szTempDate,OFFSET szTempTime
+	add esp,16
+
+	invoke SendMessage,[hOutput],WM_SETTEXT,0,offset outstring
 	RET
 
 	.EXIT
@@ -723,6 +765,7 @@ GetRAPInfo FRAME pRAPFile,hOutput
 	RET
 
 	outfmt: CHAR "Assembler : %s",13,10,"Description : %s",13,10,13,10,"Last write :",13,10,"Date : %s",13,10,"Time : %s",0
+	outfmt2: CHAR "Assembler : N/A",13,10,"Description : N/A",13,10,13,10,"Last write :",13,10,"Date : %s",13,10,"Time : %s",0
 
 ENDF
 

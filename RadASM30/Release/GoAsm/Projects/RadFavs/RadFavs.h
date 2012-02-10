@@ -6,4 +6,5 @@
 // include files
 #include "Windows.h"
 #include "shlobj.h"
+#include "shlwapi.h"
 #include "Radasm\AddIns.h" ; RadAsm plugin definitions
