@@ -465,6 +465,7 @@ NewP1					DWORD ?
 OldP1					DWORD ?
 NewP3					DWORD ?
 OldP3					DWORD ?
+T2Baud					DWORD ?
 pendingint				INTERRUPT 2 dup(<>)
 flagging				DWORD ?
 fTimer2					DWORD ?

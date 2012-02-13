@@ -575,56 +575,34 @@ WritePort endp
 WaitHalfCycle proc
 
 	invoke SendAddinMessage,addin.hWnd,AM_ALECHANGED,0,0,AH_ALECHANGED
+	;Timer 2
 	movzx	eax,addin.Sfr(SFR_T2CON)
-	test	eax,30h										;RCLK, TCLK
-	.if ZERO?
-		test	eax,04h									;TR2
+	test	eax,04h											;TR2
+	.if !ZERO?
+		;Timer 2 is running
+		test	eax,30h										;RCLK, TCLK
 		.if !ZERO?
-			;Timer 2 is running
-			test	eax,03h								;C/T2, CP/RL2
-			.if ZERO?
-				;Timer 2 is a counter
+			;Timer 2 is used as baudrate generator and is clocked at half the osc frequency
+			mov		ecx,3
+			.while ecx
 				inc		byte ptr addin.Sfr(SFR_TL2)
 				.if ZERO?
 					inc		byte ptr addin.Sfr(SFR_TH2)
 					.if ZERO?
-						;Set TF2
-						or		addin.Sfr[SFR_T2CON],80h
-						test	eax,01h					;CP/RL2
+						;Reload
+						mov		al,addin.Sfr[SFR_RCAP2L]
+						mov		addin.Sfr(SFR_TL2),al
+						mov		al,addin.Sfr[SFR_RCAP2H]
+						mov		addin.Sfr(SFR_TH2),al
+						inc		T2Baud
+						and		T2Baud,0Fh
 						.if ZERO?
-							;Reload
-							mov		al,addin.Sfr[SFR_RCAP2L]
-							mov		addin.Sfr(SFR_TL2),al
-							mov		al,addin.Sfr[SFR_RCAP2H]
-							mov		addin.Sfr(SFR_TH2),al
+							;Baud clock
 						.endif
 					.endif
 				.endif
-			.endif
-			test	eax,02h								;C/T2
-			.if !ZERO?
-				;Timer 2 is an event counter
-				;Check HIGH to LOW transition on P1.0/T2
-				.if (OldP1 & 01h) && !(NewP1 & 01h)
-					and		OldP1,0FEh
-					inc		byte ptr addin.Sfr(SFR_TL2)
-					.if ZERO?
-						inc		byte ptr addin.Sfr(SFR_TH2)
-						.if ZERO?
-							;Set TF2
-							or		addin.Sfr[SFR_T2CON],80h
-							test	eax,01h					;CP/RL2
-							.if ZERO?
-								;Reload
-								mov		al,addin.Sfr[SFR_RCAP2L]
-								mov		addin.Sfr(SFR_TL2),al
-								mov		al,addin.Sfr[SFR_RCAP2H]
-								mov		addin.Sfr(SFR_TH2),al
-							.endif
-						.endif
-					.endif
-				.endif
-			.endif
+				dec		ecx
+			.endw
 		.endif
 	.endif
 	inc		addin.HalfCycles
@@ -907,6 +885,59 @@ WaitHalfCycle proc
 					.endif
 				.endif
 			  @@:
+			.endif
+		.endif
+		;Timer 2
+		movzx	eax,addin.Sfr(SFR_T2CON)
+		test	eax,04h										;TR2
+		.if !ZERO?
+			;Timer 2 is running
+			test	eax,30h									;RCLK, TCLK
+			.if ZERO?
+				test	eax,03h								;C/T2, CP/RL2
+				.if ZERO?
+					;Timer 2 is a counter
+					inc		byte ptr addin.Sfr(SFR_TL2)
+					.if ZERO?
+						inc		byte ptr addin.Sfr(SFR_TH2)
+						.if ZERO?
+							;Set TF2
+							or		addin.Sfr[SFR_T2CON],80h
+							test	eax,01h					;CP/RL2
+							.if ZERO?
+								;Reload
+								mov		al,addin.Sfr[SFR_RCAP2L]
+								mov		addin.Sfr(SFR_TL2),al
+								mov		al,addin.Sfr[SFR_RCAP2H]
+								mov		addin.Sfr(SFR_TH2),al
+							.endif
+						.endif
+					.endif
+				.endif
+				test	eax,02h								;C/T2
+				.if !ZERO?
+					;Timer 2 is an event counter
+					;Check HIGH to LOW transition on P1.0/T2
+					.if (OldP1 & 01h) && !(NewP1 & 01h)
+						and		OldP1,0FEh
+						inc		byte ptr addin.Sfr(SFR_TL2)
+						.if ZERO?
+							inc		byte ptr addin.Sfr(SFR_TH2)
+							.if ZERO?
+								;Set TF2
+								or		addin.Sfr[SFR_T2CON],80h
+								test	eax,01h					;CP/RL2
+								.if ZERO?
+									;Reload
+									mov		al,addin.Sfr[SFR_RCAP2L]
+									mov		addin.Sfr(SFR_TL2),al
+									mov		al,addin.Sfr[SFR_RCAP2H]
+									mov		addin.Sfr(SFR_TH2),al
+								.endif
+							.endif
+						.endif
+					.endif
+				.endif
 			.endif
 		.endif
 	.endif
