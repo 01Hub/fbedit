@@ -2038,9 +2038,9 @@ JMP_@A_DPTR:
 	movzx	eax,addin.Sfr[SFR_AUXR1]
 	and		eax,1
 	.if ZERO?
-		movzx	dx,addin.Sfr[SFR_DPL]
+		movzx	edx,word ptr addin.Sfr[SFR_DPL]
 	.else
-		movzx	dx,addin.Sfr[SFR_DP1L]
+		movzx	edx,word ptr addin.Sfr[SFR_DP1L]
 	.endif
 	movzx	eax,addin.Sfr[SFR_ACC]
 	lea		ebx,[edx+eax]
@@ -3664,6 +3664,10 @@ Fetch:
 	retn
 
 Execute:
+	movzx	eax,addin.Sfr[SFR_PSW]
+	and		eax,18h
+	shr		eax,3
+	mov		addin.Bank,eax
 	call	Fetch
 	mov		eax,ecx
 	movzx	edi,Cycles[ecx]

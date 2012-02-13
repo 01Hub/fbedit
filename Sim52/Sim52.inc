@@ -424,8 +424,8 @@ szProClock				BYTE 'Clock',0
 szT2CON					BYTE 'T2CON',0
 szDP1L					BYTE 'DP1L',0
 
-szVersion				BYTE 'Sim52 version 1.0.0.1',0
-szAboutMsg				BYTE '8051 / 8052 Simulator 1.0.0.1',13,10,'KetilO © 2011',13,10,13,10,'radasmide@hotmail.com',0
+szVersion				BYTE 'Sim52 version 1.0.0.2',0
+szAboutMsg				BYTE '8051 / 8052 Simulator Version 1.0.0.2',13,10,'KetilO © 2011-2012',13,10,13,10,'radasmide@hotmail.com',0
 szAboutUrl1				BYTE 'https://fbedit.svn.sourceforge.net/svnroot/fbedit/Sim52/Sim52.zip',0
 szAboutUrl2				BYTE 'http://radasm.cherrytree.at/',0
 szOpen					BYTE 'Open',0
