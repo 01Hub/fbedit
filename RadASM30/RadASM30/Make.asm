@@ -781,7 +781,7 @@ OutputMake proc uses ebx esi edi,nCommand:DWORD,fClear:DWORD
 				invoke strcat,addr makeexe.cmdline,addr da.szCommandLine
 			.endif
 		.else
-			invoke iniInStr,addr da.make.szOutLink[edi],addr szDotExe
+			invoke iniInStr,addr da.make.szOutLink[esi],addr szDotExe
 			inc		eax
 			.if eax
 				invoke SetOutputFile,addr da.make.szOutLink[esi],offset da.szMainAsm
