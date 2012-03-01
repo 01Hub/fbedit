@@ -851,9 +851,9 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					mov		sonardata.hLog,0
 				.endif
 			.elseif eax==IDM_LOG_REPLAYSONAR
-				.if sonardata.hReply
-					invoke CloseHandle,sonardata.hReply
-					mov		sonardata.hReply,0
+				.if sonardata.hReplay
+					invoke CloseHandle,sonardata.hReplay
+					mov		sonardata.hReplay,0
 					invoke SetScrollPos,hSonar,SB_HORZ,0,TRUE
 					mov		sonardata.dptinx,0
 					invoke EnableScrollBar,hSonar,SB_HORZ,ESB_DISABLE_BOTH
@@ -877,7 +877,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 								mov		map.trailtail,0
 							.endif
 							mov		sonardata.dptinx,0
-							mov		sonardata.hReply,ebx
+							mov		sonardata.hReplay,ebx
 						.endif
 					.endif
 				.endif
@@ -898,8 +898,6 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke DialogBoxParam,hInstance,IDD_DLGOPTION,hWin,addr OptionsProc,11
 			.elseif eax==IDM_OPTION_WATERTEMP
 				invoke DialogBoxParam,hInstance,IDD_DLGOPTION,hWin,addr OptionsProc,12
-			.elseif eax==IDM_OPTION_COMPORT
-				invoke DialogBoxParam,hInstance,IDD_DLGCOMPORT,hWin,addr ComOptionProc,0
 			.elseif eax==IDM_OPTION_SONAR
 				invoke CreateDialogParam,hInstance,IDD_DLGSONAR,hWin,addr SonarOptionProc,0
 			.elseif eax==IDM_OPTION_GAIN
@@ -1087,7 +1085,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.endif
 		invoke EnableMenuItem,hMenu,IDM_FILE_SAVETRAIL,edx
 		mov		edx,MF_BYCOMMAND or MF_ENABLED
-		.if hFileLogWrite || !hCom
+		.if hFileLogWrite || !sonardata.fSTLink || sonardata.fSTLink==IDIGNORE
 			mov		edx,MF_BYCOMMAND or MF_GRAYED
 		.endif
 		invoke EnableMenuItem,hMenu,IDM_LOG_START,edx
@@ -1306,9 +1304,8 @@ WinMain proc hInst:HINSTANCE,hPrevInst:HINSTANCE,CmdLine:LPSTR,CmdShow:DWORD
 	invoke CreateDialogParam,hInstance,IDD_DIALOG,NULL,addr WndProc,NULL
 	invoke ShowWindow,hWnd,SW_SHOWNORMAL
 	invoke UpdateWindow,hWnd
-	invoke InitCom
-	;Create thread thst comunicates with the GPS
-	invoke CreateThread,NULL,0,addr DoComm,0,0,addr tid
+	;Create thread that comunicates with the GPS
+	invoke CreateThread,NULL,0,addr DoGPSComm,0,0,addr tid
 	mov		hGpsThread,eax
 	;Create thread that paints the map
 	invoke CreateThread,NULL,0,addr PaintMap,0,0,addr tid
@@ -1327,8 +1324,28 @@ WinMain proc hInst:HINSTANCE,hPrevInst:HINSTANCE,CmdLine:LPSTR,CmdShow:DWORD
 
 WinMain endp
 
+;NMEACheckSum proc
+;
+;.data
+;;NMEAstr		db 'PSRF100,1,4800,8,1,0',0
+;NMEAstr		db 'PSRF103,05,00,00,01',0
+;.code
+;
+;	mov		edx,offset NMEAstr
+;	xor		eax,eax
+;	.while byte ptr [edx]
+;		xor		al,[edx]
+;		inc		edx
+;	.endw
+;	PrintHex al
+;	ret
+;
+;NMEACheckSum endp
+
 start:
 
+;invoke NMEACheckSum
+;invoke ExitProcess,eax
 	invoke GetModuleHandle,NULL
 	mov    hInstance,eax
 	invoke GetCommandLine

@@ -15,27 +15,33 @@
  <type Header="DAC_TypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="C:\STM32\Inc\stm32f10x_map.h" DeclLine="232" Pointer="No"/>
  <type Header="GPIO_TypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="C:\STM32\Inc\stm32f10x_map.h" DeclLine="343" Pointer="No"/>
  <type Header="TIM_TypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="C:\STM32\Inc\stm32f10x_map.h" DeclLine="565" Pointer="No"/>
+ <type Header="USART_TypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="C:\STM32\Inc\stm32f10x_map.h" DeclLine="584" Pointer="No"/>
  <type Header="ADC_InitTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="C:\STM32\Inc\stm32f10x_adc.h" DeclLine="34" Pointer="No"/>
  <type Header="GPIOSpeed_TypeDef" Icon="1" Type="type" Desc=": unsigned char" DeclFile="C:\STM32\Inc\stm32f10x_gpio.h" DeclLine="39" Pointer="No"/>
  <type Header="GPIOMode_TypeDef" Icon="1" Type="type" Desc=": unsigned char" DeclFile="C:\STM32\Inc\stm32f10x_gpio.h" DeclLine="54" Pointer="No"/>
  <type Header="GPIO_InitTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="C:\STM32\Inc\stm32f10x_gpio.h" DeclLine="67" Pointer="No"/>
  <type Header="NVIC_InitTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="C:\STM32\Inc\stm32f10x_nvic.h" DeclLine="32" Pointer="No"/>
  <type Header="TIM_TimeBaseInitTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="C:\STM32\Inc\stm32f10x_tim.h" DeclLine="34" Pointer="No"/>
- <type Header="STM32_SonarTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" DeclLine="38" Pointer="No"/>
- <func Header="GetADCValue" Icon="3" Type="func" Desc=":   unsigned int" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" DeclLine="163"/>
- <func Header="TIM2_IRQHandler" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" DeclLine="244"/>
- <func Header="ADC_Startup" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" DeclLine="274"/>
- <func Header="ADC_Configuration" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" DeclLine="309"/>
- <func Header="RCC_Configuration" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" DeclLine="336"/>
- <func Header="GPIO_Configuration" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" DeclLine="409"/>
- <func Header="NVIC_Configuration" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" DeclLine="439"/>
- <func Header="TIM1_Configuration" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" DeclLine="465"/>
- <func Header="main" Icon="3" Type="func" Desc=":   long" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" DeclLine="65"/>
- <func Header="TIM2_Configuration" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" DeclLine="491"/>
- <func Header="TIM1_UP_IRQHandler" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" DeclLine="205"/>
- <variable Header="STM32_Sonar" Icon="2" Type="variable" Desc=":   struct " DeclFile="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" DeclLine="42" Pointer="No"/>
- <variable Header="BlueLED" Icon="2" Type="variable" Desc=":   unsigned char" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" DeclLine="43" Pointer="No"/>
- <variable Header="Ping" Icon="2" Type="variable" Desc=":   unsigned int" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" DeclLine="44" Pointer="No"/>
+ <type Header="USART_InitTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="C:\STM32\Inc\stm32f10x_usart.h" DeclLine="34" Pointer="No"/>
+ <type Header="STM32_SonarTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" DeclLine="42" Pointer="No"/>
+ <func Header="GetADCValue" Icon="3" Type="func" Desc=":   unsigned int" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" DeclLine="184"/>
+ <func Header="TIM2_IRQHandler" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" DeclLine="265"/>
+ <func Header="rs232_putc" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" DeclLine="295"/>
+ <func Header="rs232_puts" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" DeclLine="310"/>
+ <func Header="USART1_IRQHandler" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" DeclLine="318"/>
+ <func Header="ADC_Startup" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" DeclLine="364"/>
+ <func Header="ADC_Configuration" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" DeclLine="399"/>
+ <func Header="RCC_Configuration" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" DeclLine="426"/>
+ <func Header="GPIO_Configuration" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" DeclLine="499"/>
+ <func Header="NVIC_Configuration" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" DeclLine="538"/>
+ <func Header="TIM1_Configuration" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" DeclLine="570"/>
+ <func Header="TIM2_Configuration" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" DeclLine="596"/>
+ <func Header="TIM1_UP_IRQHandler" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" DeclLine="226"/>
+ <func Header="USART_Configuration" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" DeclLine="617"/>
+ <func Header="main" Icon="3" Type="func" Desc=":   long" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" DeclLine="72"/>
+ <variable Header="STM32_Sonar" Icon="2" Type="variable" Desc=":   struct " DeclFile="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" DeclLine="46" Pointer="No"/>
+ <variable Header="BlueLED" Icon="2" Type="variable" Desc=":   unsigned char" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" DeclLine="47" Pointer="No"/>
+ <variable Header="Ping" Icon="2" Type="variable" Desc=":   unsigned int" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" DeclLine="48" Pointer="No"/>
  <type Header="u32" Icon="1" Type="type" Desc=": unsigned long" DeclFile="C:\STM32\Inc\stm32f10x_type.h" DeclLine="39" Pointer="No"/>
  <type Header="u16" Icon="1" Type="type" Desc=": unsigned int" DeclFile="C:\STM32\Inc\stm32f10x_type.h" DeclLine="40" Pointer="No"/>
  <type Header="u8" Icon="1" Type="type" Desc=": unsigned char" DeclFile="C:\STM32\Inc\stm32f10x_type.h" DeclLine="41" Pointer="No"/>
@@ -107,7 +113,6 @@
  <func Header="I2C2_ER_IRQHandler" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_it.c" DeclLine="528"/>
  <func Header="SPI1_IRQHandler" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_it.c" DeclLine="539"/>
  <func Header="SPI2_IRQHandler" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_it.c" DeclLine="550"/>
- <func Header="USART1_IRQHandler" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_it.c" DeclLine="561"/>
  <func Header="USART2_IRQHandler" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_it.c" DeclLine="572"/>
  <func Header="USART3_IRQHandler" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_it.c" DeclLine="583"/>
  <func Header="EXTI15_10_IRQHandler" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_it.c" DeclLine="594"/>
@@ -145,6 +150,7 @@
  <func Header="RCC_PCLK1Config" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_rcc.c" DeclLine="421"/>
  <func Header="RCC_PCLK2Config" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_rcc.c" DeclLine="454"/>
  <func Header="RCC_ADCCLKConfig" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_rcc.c" DeclLine="541"/>
+ <func Header="RCC_GetClocksFreq" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_rcc.c" DeclLine="668"/>
  <func Header="RCC_APB2PeriphClockCmd" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_rcc.c" DeclLine="801"/>
  <func Header="RCC_APB1PeriphClockCmd" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_rcc.c" DeclLine="835"/>
  <func Header="RCC_GetFlagStatus" Icon="3" Type="func" Desc=":   unsigned char" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_rcc.c" DeclLine="989"/>
@@ -167,5 +173,19 @@
  <func Header="TIM_Cmd" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_tim.c" DeclLine="829"/>
  <func Header="TIM_ITConfig" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_tim.c" DeclLine="894"/>
  <func Header="TIM_ClearITPendingBit" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_tim.c" DeclLine="3022"/>
+ <type Header="u32" Icon="1" Type="type" Desc=": unsigned long" DeclFile="C:\STM32\Inc\stm32f10x_type.h" DeclLine="39" Pointer="No"/>
+ <type Header="u16" Icon="1" Type="type" Desc=": unsigned int" DeclFile="C:\STM32\Inc\stm32f10x_type.h" DeclLine="40" Pointer="No"/>
+ <type Header="u8" Icon="1" Type="type" Desc=": unsigned char" DeclFile="C:\STM32\Inc\stm32f10x_type.h" DeclLine="41" Pointer="No"/>
+ <type Header="vu32" Icon="1" Type="type" Desc=": unsigned long" DeclFile="C:\STM32\Inc\stm32f10x_type.h" DeclLine="47" Pointer="No"/>
+ <type Header="FlagStatus" Icon="1" Type="type" Desc=": unsigned char" DeclFile="C:\STM32\Inc\stm32f10x_type.h" DeclLine="57" Pointer="No"/>
+ <type Header="ITStatus" Icon="1" Type="type" Desc=": unsigned char" DeclFile="C:\STM32\Inc\stm32f10x_type.h" DeclLine="57" Pointer="No"/>
+ <type Header="FunctionalState" Icon="1" Type="type" Desc=": unsigned char" DeclFile="C:\STM32\Inc\stm32f10x_type.h" DeclLine="59" Pointer="No"/>
+ <type Header="USART_TypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="C:\STM32\Inc\stm32f10x_map.h" DeclLine="584" Pointer="No"/>
+ <type Header="USART_InitTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="C:\STM32\Inc\stm32f10x_usart.h" DeclLine="34" Pointer="No"/>
+ <type Header="USART_ClockInitTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="C:\STM32\Inc\stm32f10x_usart.h" DeclLine="43" Pointer="No"/>
+ <type Header="RCC_ClocksTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="C:\STM32\Inc\stm32f10x_rcc.h" DeclLine="32" Pointer="No"/>
+ <func Header="USART_Init" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_usart.c" DeclLine="140"/>
+ <func Header="USART_Cmd" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_usart.c" DeclLine="311"/>
+ <func Header="USART_ITConfig" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_usart.c" DeclLine="354"/>
 </aoffile>
 

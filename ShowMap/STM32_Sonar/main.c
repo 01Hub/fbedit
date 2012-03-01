@@ -24,7 +24,7 @@
 typedef struct
 {
   vu8 Start;                                    // 0=Wait/Done, 1=Start, 2=In progress
-  u8 PingPulses;                                // Number of ping pulses (0-128)
+  u8 PingPulses;                                // Number of ping pulses (0-255)
   u8 PingTimer;                                 // TIM1 auto reload value
   u8 RangeInx;                                  // Current range index
   u16 PixelTimer;                               // TIM2 auto reload value
@@ -32,9 +32,13 @@ typedef struct
   u16 ADCBatt;                                  // Battery
   u16 ADCWaterTemp;                             // Water temprature
   u16 ADCAirTemp;                               // Air temprature
-  u16 Dummy;                                    // Not used
+  u16 GPSValid;                                 // GPS array valid
   u8 EchoArray[MAXECHO];                        // Echo array
   u16 GainArray[MAXECHO];                       // Gain array
+  u8 GPSArray[256];                             // GPS array
+  vu8 rs232buff[256];                           // RS232 buffer
+  vu8 rs232tail;                                // Buffer tail
+  vu8 rs232head;                                // Buffer head
 }STM32_SonarTypeDef;
 
 /* Private macro -------------------------------------------------------------*/
@@ -51,7 +55,10 @@ void ADC_Startup(void);
 void ADC_Configuration(void);
 void TIM1_Configuration(void);
 void TIM2_Configuration(void);
+void USART_Configuration(u16 Baud);
 u16 GetADCValue(u8 Channel);
+void rs232_putc(char c);
+void rs232_puts(char *str);
 
 /* Private functions ---------------------------------------------------------*/
 
@@ -81,6 +88,21 @@ int main(void)
   ADC_Configuration();
   /* Enable DAC channel1 */
   DAC->CR = 0x1;
+  /* Setup USART1 */
+  USART_Configuration(4800);
+
+  /* Switch to NMEA protocol at 4800,8,N,1 */
+  rs232_puts("$PSRF100,1,4800,8,1,0*\0x0E\0xD\0xA\0x0");
+  /* Disable GGA message */
+  rs232_puts("$PSRF103,00,00,00,01*24\0xD\0xA\0x0");
+  /* Disable GLL message */
+  rs232_puts("$PSRF103,01,00,00,01*25\0xD\0xA\0x0");
+  /* Disable GSA message */
+  rs232_puts("$PSRF103,02,00,00,01*26\0xD\0xA\0x0");
+  /* Disable GSV message */
+  rs232_puts("$PSRF103,03,00,00,01*27\0xD\0xA\0x0");
+  /* Disable VTG message */
+  rs232_puts("$PSRF103,05,00,00,01*21\0xD\0xA\0x0");
 
   while (1)
   {
@@ -99,11 +121,11 @@ int main(void)
         BlueLED = 1;
       }
       /* Read battery */
-      STM32_Sonar.ADCBatt = GetADCValue(ADC_Channel_3);
+      STM32_Sonar.ADCBatt = GetADCValue(ADC_Channel_5);
       /* Read water temprature */
-      STM32_Sonar.ADCWaterTemp = GetADCValue(ADC_Channel_5);
+      STM32_Sonar.ADCWaterTemp = GetADCValue(ADC_Channel_6);
       /* Read air temprature */
-      STM32_Sonar.ADCAirTemp = GetADCValue(ADC_Channel_6);
+      STM32_Sonar.ADCAirTemp = GetADCValue(ADC_Channel_7);
       /* Clear the echo array */
       i = 0;
       while (i < MAXECHO)
@@ -120,7 +142,7 @@ int main(void)
       /* Set TIM1 repetirion counter */
       TIM1->RCR = 0;
       /* Init Ping */
-      Ping = 0x100;
+      Ping = 0x2;
       /* Enable TIM1 */
       TIM_Cmd(TIM1, ENABLE);
       while (STM32_Sonar.Start)
@@ -146,9 +168,8 @@ int main(void)
       DAC->DHR12R1 = (u16)0x0;
     }
     i = 0;
-    while (i < 1000)
+    while (i++ < 1000)
     {
-      i++;
     }
   }
 }
@@ -205,19 +226,19 @@ u16 GetADCValue(u8 Channel)
 void TIM1_UP_IRQHandler(void)
 {
   /* Set ping outputs high (FET's off) */
-  GPIO_WriteBit(GPIOA, GPIO_Pin_9 | GPIO_Pin_8, Bit_SET);
+  GPIO_WriteBit(GPIOA, GPIO_Pin_2 | GPIO_Pin_1, Bit_SET);
   /* Clear TIM1 Update interrupt pending bit */
   TIM1->SR = (u16)~TIM_IT_Update;
   if (STM32_Sonar.PingPulses)
   {
     GPIO_Write(GPIOA,Ping);
-    if (Ping == 0x100)
+    if (Ping == 0x2)
     {
-      Ping = 0x200;
+      Ping = 0x4;     // PA02
     }
     else
     {
-      Ping = 0x100;
+      Ping = 0x2;     // PA01
       STM32_Sonar.PingPulses--;
     }
   }
@@ -265,6 +286,75 @@ void TIM2_IRQHandler(void)
 }
 
 /*******************************************************************************
+* Function Name  : rs232_putc
+* Description    : This function transmits a character
+* Input          : Character
+* Output         : None
+* Return         : None
+*******************************************************************************/
+void rs232_putc(char c)
+{
+  /* Wait until transmit register empty*/
+  while((USART1->SR & USART_FLAG_TXE) == 0);          
+  /* Transmit Data */
+  USART1->DR = (u16)c;
+}
+
+/*******************************************************************************
+* Function Name  : rs232_puts
+* Description    : This function transmits a zero terminated string
+* Input          : Zero terminated string
+* Output         : None
+* Return         : None
+*******************************************************************************/
+void rs232_puts(char *str)
+{
+  char c;
+  /* Characters are transmitted one at a time. */
+  while ((c = *str++))
+    rs232_putc(c);
+}
+
+void USART1_IRQHandler(void)
+{
+  u8 i;
+  /* receive data from the serial port */
+  STM32_Sonar.rs232buff[STM32_Sonar.rs232head++]=(u8) USART1->DR;
+  USART1->SR = (u16)~USART_FLAG_RXNE;
+  if ((u8) USART1->DR==0xA)
+  {
+    /* Check if data is $GPRMC */
+    if (STM32_Sonar.rs232buff[STM32_Sonar.rs232tail++]=='$')
+    {
+      if (STM32_Sonar.rs232buff[STM32_Sonar.rs232tail++]=='G')
+      {
+        if (STM32_Sonar.rs232buff[STM32_Sonar.rs232tail++]=='P')
+        {
+          if (STM32_Sonar.rs232buff[STM32_Sonar.rs232tail++]=='R')
+          {
+            if (STM32_Sonar.rs232buff[STM32_Sonar.rs232tail++]=='M')
+            {
+              if (STM32_Sonar.rs232buff[STM32_Sonar.rs232tail]=='C')
+              {
+                STM32_Sonar.rs232tail-=5;
+                i=0;
+                STM32_Sonar.GPSValid=0;
+                while (STM32_Sonar.rs232tail!=STM32_Sonar.rs232head)
+                {
+                  STM32_Sonar.GPSArray[i++]=STM32_Sonar.rs232buff[STM32_Sonar.rs232tail++];
+                }
+                STM32_Sonar.GPSValid=1;
+              }
+            }
+          }
+        }
+      }
+    }
+    STM32_Sonar.rs232tail=STM32_Sonar.rs232head;
+  }
+}
+
+/*******************************************************************************
 * Function Name  : ADC_Startup
 * Description    : This function calibrates ADC1.
 * Input          : None
@@ -285,7 +375,7 @@ void ADC_Startup(void)
   ADC_InitStructure.ADC_NbrOfChannel = 1;
   ADC_Init(ADC1, &ADC_InitStructure);
   /* ADC1 regular channel2 configuration */ 
-  ADC_RegularChannelConfig(ADC1, ADC_Channel_2, 1, ADC_SampleTime_55Cycles5);
+  ADC_RegularChannelConfig(ADC1, ADC_Channel_3, 1, ADC_SampleTime_55Cycles5);
   /* Enable ADC1 */
   ADC_Cmd(ADC1, ENABLE);
   /* Enable ADC1 reset calibaration register */   
@@ -323,7 +413,7 @@ void ADC_Configuration(void)
   /* Setup injected channel */
   ADC_InjectedSequencerLengthConfig(ADC1,1);
   /* Sonar echo */
-  ADC_InjectedChannelConfig(ADC1,ADC_Channel_2,1,ADC_SampleTime_1Cycles5);
+  ADC_InjectedChannelConfig(ADC1,ADC_Channel_3,1,ADC_SampleTime_1Cycles5);
 }
 
 /*******************************************************************************
@@ -392,8 +482,8 @@ void RCC_Configuration(void)
     while(RCC_GetSYSCLKSource() != 0x08)
     {
     }
-    /* Enable TIM1, ADC1, GPIOA and GPIOC peripheral clocks */
-    RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM1 | RCC_APB2Periph_ADC1 | RCC_APB2Periph_GPIOA | RCC_APB2Periph_GPIOC, ENABLE);
+    /* Enable TIM1, ADC1, USART1, GPIOA and GPIOC peripheral clocks */
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM1 | RCC_APB2Periph_ADC1 | RCC_APB2Periph_USART1 | RCC_APB2Periph_GPIOA | RCC_APB2Periph_GPIOC, ENABLE);
     /* Enable DAC and TIM2 peripheral clocks */
     RCC_APB1PeriphClockCmd(RCC_APB1Periph_DAC | RCC_APB1Periph_TIM2, ENABLE);
   }
@@ -409,23 +499,32 @@ void RCC_Configuration(void)
 void GPIO_Configuration(void)
 {
   GPIO_InitTypeDef GPIO_InitStructure;
-  /* Configure ADC Channel6 (PA.06), ADC Channel5 (PA.05), DAC Channel1 (PA.04), ADC Channel3 (PA.03) and ADC Channel2 (PA.02) as analog input */
-  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_6 | GPIO_Pin_5 | GPIO_Pin_4 | GPIO_Pin_3 | GPIO_Pin_2;
+  /* Set ping outputs high (FET's off) */
+  GPIO_WriteBit(GPIOA, GPIO_Pin_2 | GPIO_Pin_1, Bit_SET);
+  /* Configure PA.02 and PA.01 as outputs */
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_2 | GPIO_Pin_1;
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+  GPIO_Init(GPIOA, &GPIO_InitStructure);
+  /* Configure ADC Channel7 (PA.07), ADC Channel6 (PA.06), ADC Channel5 (PA.05), DAC Channel1 (PA.04) and ADC Channel3 (PA.03) as analog input */
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_7 | GPIO_Pin_6 | GPIO_Pin_5 | GPIO_Pin_4 | GPIO_Pin_3;
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AIN;
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+  GPIO_Init(GPIOA, &GPIO_InitStructure);
+  /* Configure PA9 USART1 Tx as alternate function push-pull */
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9;
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
+  GPIO_Init(GPIOA, &GPIO_InitStructure);
+  /* Configure PA10 USART1 Rx as input floating */
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10;
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
   GPIO_Init(GPIOA, &GPIO_InitStructure);
   /* Configure PC.09 (LED3) and PC.08 (LED4) as output */
   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9 | GPIO_Pin_8;
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
   GPIO_Init(GPIOC, &GPIO_InitStructure);
-  /* Set ping outputs high (FET's off) */
-  GPIO_WriteBit(GPIOA, GPIO_Pin_9 | GPIO_Pin_8, Bit_SET);
-  /* Configure PA.09 and PA.08 as outputs */
-  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9 | GPIO_Pin_8;
-  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
-  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-  GPIO_Init(GPIOA, &GPIO_InitStructure);
 }
 
 /*******************************************************************************
@@ -450,9 +549,15 @@ void NVIC_Configuration(void)
   /* Enable the TIM2 global Interrupt */
   NVIC_InitStructure.NVIC_IRQChannel = TIM2_IRQChannel;
   NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
-  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
+  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
   NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
   NVIC_Init(&NVIC_InitStructure);
+	/* Enable USART1 interrupt */
+	NVIC_InitStructure.NVIC_IRQChannel = USART1_IRQChannel;
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
+  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+	NVIC_Init(&NVIC_InitStructure);
 }
 
 /*******************************************************************************
@@ -500,6 +605,39 @@ void TIM2_Configuration(void)
   /* Enable TIM2 Update interrupt */
   TIM_ClearITPendingBit(TIM2,TIM_IT_Update);
   TIM_ITConfig(TIM2, TIM_IT_Update, ENABLE);
+}
+
+/*******************************************************************************
+* Function Name  : USART_Configuration
+* Description    : Configures USART1 Rx and Tx for communication with GPS module.
+* Input          : None
+* Output         : None
+* Return         : None
+*******************************************************************************/
+void USART_Configuration(u16 BaudRate)
+{
+  /* USART1 configured as follow:
+        - BaudRate = 1200,2400,4800,9600,19200 or 38400 baud  
+        - Word Length = 8 Bits
+        - One Stop Bit
+        - No parity
+        - Hardware flow control disabled
+        - Receive and transmit enabled
+  */
+  USART_InitTypeDef USART_InitStructure;
+
+  USART_InitStructure.USART_BaudRate = BaudRate;
+  USART_InitStructure.USART_WordLength = USART_WordLength_8b;
+  USART_InitStructure.USART_StopBits = USART_StopBits_1;
+  USART_InitStructure.USART_Parity = USART_Parity_No ;
+  USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
+  USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;
+  USART_Init(USART1, &USART_InitStructure);
+  /* Enable the USART Receive interrupt: this interrupt is generated when the 
+     USART1 receive data register is not empty */
+  USART_ITConfig(USART1, USART_IT_RXNE, ENABLE);
+  /* Enable the USART2 */
+  USART_Cmd(USART1, ENABLE);
 }
 
 /*****END OF FILE****/

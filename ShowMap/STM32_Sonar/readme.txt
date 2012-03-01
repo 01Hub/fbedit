@@ -80,15 +80,17 @@ o Echo receiver with gain control, tuned at 200 KHz.
 
 Port pins used
 ==============
-PA2		ADC Echo in
-PA3		ADC Battery in
+PA1		Ping phase 0 out
+PA2		Ping phase 1 out
+
+PA3		ADC Echo in, ADC_Channel_3
 PA4		DAC channel1 Gain control out
-PA5		ADC Water temprature in
-PA6		ADC Air temprature in
+PA5		ADC Battery in, ADC_Channel_5
+PA6		ADC Water temprature in, ADC_Channel_6
+PA7		ADC Air temprature in, ADC_Channel_7
 
-PA8		Ping phase 0 out
-PA9		Ping phase 1 out
-
+PA9   USART1 TX, GPS Configuration
+PA10  USART1 RX, GPS Data
 
 Directory contents
 ==================

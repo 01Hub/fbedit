@@ -911,7 +911,7 @@ SonarUpdateProc proc uses ebx esi edi
 	LOCAL	hDC:HDC
 	LOCAL	mDC:HDC
 
-	.if sonardata.hReply
+	.if sonardata.hReplay
 		call	Update
 		;Update range
 		movzx	eax,sonardata.EchoArray
@@ -1218,14 +1218,14 @@ STM32Thread proc uses ebx esi edi,lParam:DWORD
 	.if eax
 		invoke Sleep,250
 	.else
-		.if sonardata.hReply
+		.if sonardata.hReplay
 			;Copy old echo
 			call	MoveEcho
 			;Read echo from file
 			.if sonarreplay.Version<200
-				invoke ReadFile,sonardata.hReply,addr STM32Echo,MAXYECHO,addr dwread,NULL
+				invoke ReadFile,sonardata.hReplay,addr STM32Echo,MAXYECHO,addr dwread,NULL
 			.else
-				invoke ReadFile,sonardata.hReply,addr sonarreplay,sizeof SONARREPLAY,addr dwread,NULL
+				invoke ReadFile,sonardata.hReplay,addr sonarreplay,sizeof SONARREPLAY,addr dwread,NULL
 				.if dwread==sizeof SONARREPLAY
 					movzx	eax,sonarreplay.SoundSpeed
 					mov		sonardata.SoundSpeed,eax
@@ -1328,12 +1328,12 @@ STM32Thread proc uses ebx esi edi,lParam:DWORD
 						inc		nTrail
 						inc		map.paintnow
 					.endif
-					invoke ReadFile,sonardata.hReply,addr STM32Echo,MAXYECHO,addr dwread,NULL
+					invoke ReadFile,sonardata.hReplay,addr STM32Echo,MAXYECHO,addr dwread,NULL
 				.endif
 			.endif
 			.if dwread!=MAXYECHO
-				invoke CloseHandle,sonardata.hReply
-				mov		sonardata.hReply,0
+				invoke CloseHandle,sonardata.hReplay
+				mov		sonardata.hReplay,0
 				invoke SetScrollPos,hSonar,SB_HORZ,0,TRUE
 				mov		sonardata.dptinx,0
 				invoke EnableScrollBar,hSonar,SB_HORZ,ESB_DISABLE_BOTH
@@ -1357,13 +1357,23 @@ STM32Thread proc uses ebx esi edi,lParam:DWORD
 				jmp		STLinkErr
 			.endif
 			.if !(status & 255)
-				;Download ADCBattery, ADCWaterTemp and ADCAirTemp
+				;Download ADCBattery, ADCWaterTemp, ADCAirTemp and GPSValid
 				invoke STLinkRead,hWnd,STM32_Sonar+8,addr sonardata.ADCBattery,8
 				.if !eax || eax==IDABORT || eax==IDIGNORE
 					jmp		STLinkErr
 				.endif
 				;Copy old echo
 				call	MoveEcho
+				.if sonardata.GPSValid
+					;Download GPS array
+					invoke STLinkRead,hWnd,STM32_Sonar+16+MAXYECHO+MAXYECHO*2,addr sonardata.GPSArray,256
+					mov		sonardata.GPSValid,0
+					invoke STLinkWrite,hWnd,STM32_Sonar+12,addr sonardata.ADCAirTemp,4
+					mov		sonardata.GPSValid,1
+				.endif
+				.if !eax || eax==IDABORT || eax==IDIGNORE
+					jmp		STLinkErr
+				.endif
 				;Download sonar echo array
 				invoke STLinkRead,hWnd,STM32_Sonar+16,addr STM32Echo,MAXYECHO
 				.if !eax || eax==IDABORT || eax==IDIGNORE
@@ -1594,8 +1604,8 @@ STM32Thread proc uses ebx esi edi,lParam:DWORD
 		mov		sonardata.EchoArray,al
 		invoke GetRangePtr,eax
 		mov		eax,sonardata.sonarrange.interval[eax]
-		.if sonardata.hReply!=0 || sonardata.fSTLink==IDIGNORE
-			mov		ecx,REPLYSPEED
+		.if sonardata.hReplay!=0 || sonardata.fSTLink==IDIGNORE
+			mov		ecx,REPLAYSPEED
 			xor		edx,edx
 			div		ecx
 		.endif
@@ -2424,7 +2434,7 @@ FindFish:
 	retn
 
 TestRangeChange:
-	.if sonardata.AutoRange && !sonardata.hReply
+	.if sonardata.AutoRange && !sonardata.hReplay
 		movzx	eax,STM32Echo
 		mov		edx,sonardata.MaxRange
 		dec		edx
@@ -2936,7 +2946,7 @@ SonarProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		movzx	edx,ax
 		shr		eax,16
 		.if edx==SB_THUMBPOSITION
-			.if sonardata.hReply
+			.if sonardata.hReplay
 				push	eax
 				invoke SetScrollPos,hWin,SB_HORZ,eax,TRUE
 				pop		eax
@@ -2945,10 +2955,10 @@ SonarProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					add		ecx,sizeof SONARREPLAY
 				.endif
 				mul		ecx
-				invoke SetFilePointer,sonardata.hReply,eax,NULL,FILE_BEGIN
+				invoke SetFilePointer,sonardata.hReplay,eax,NULL,FILE_BEGIN
 			.endif
 		.elseif edx==SB_LINERIGHT
-			.if sonardata.hReply
+			.if sonardata.hReplay
 				invoke GetScrollPos,hWin,SB_HORZ
 				add		eax,16
 				push	eax
@@ -2959,10 +2969,10 @@ SonarProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					add		ecx,sizeof SONARREPLAY
 				.endif
 				mul		ecx
-				invoke SetFilePointer,sonardata.hReply,eax,NULL,FILE_BEGIN
+				invoke SetFilePointer,sonardata.hReplay,eax,NULL,FILE_BEGIN
 			.endif
 		.elseif edx==SB_LINELEFT
-			.if sonardata.hReply
+			.if sonardata.hReplay
 				invoke GetScrollPos,hWin,SB_HORZ
 				sub		eax,16
 				.if CARRY?
@@ -2976,10 +2986,10 @@ SonarProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					add		ecx,sizeof SONARREPLAY
 				.endif
 				mul		ecx
-				invoke SetFilePointer,sonardata.hReply,eax,NULL,FILE_BEGIN
+				invoke SetFilePointer,sonardata.hReplay,eax,NULL,FILE_BEGIN
 			.endif
 		.elseif edx==SB_PAGERIGHT
-			.if sonardata.hReply
+			.if sonardata.hReplay
 				invoke GetScrollPos,hWin,SB_HORZ
 				add		eax,256
 				push	eax
@@ -2990,10 +3000,10 @@ SonarProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					add		ecx,sizeof SONARREPLAY
 				.endif
 				mul		ecx
-				invoke SetFilePointer,sonardata.hReply,eax,NULL,FILE_BEGIN
+				invoke SetFilePointer,sonardata.hReplay,eax,NULL,FILE_BEGIN
 			.endif
 		.elseif edx==SB_PAGELEFT
-			.if sonardata.hReply
+			.if sonardata.hReplay
 				invoke GetScrollPos,hWin,SB_HORZ
 				sub		eax,256
 				.if CARRY?
@@ -3007,7 +3017,7 @@ SonarProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					add		ecx,sizeof SONARREPLAY
 				.endif
 				mul		ecx
-				invoke SetFilePointer,sonardata.hReply,eax,NULL,FILE_BEGIN
+				invoke SetFilePointer,sonardata.hReplay,eax,NULL,FILE_BEGIN
 			.endif
 		.endif
 	.else

@@ -200,6 +200,20 @@ int main(void)
   /* Enable TIM3 */
   TIM_Cmd(TIM3, ENABLE);
   video_show_cursor();
+
+  /* Switch to NMEA protocol at 4800,8,N,1 */
+  rs232_puts("$PSRF100,1,4800,8,1,0*\0x0E\0xD\0xA\0x0");
+  /* Disable GGA message */
+  rs232_puts("$PSRF103,00,00,00,01*24\0xD\0xA\0x0");
+  /* Disable GLL message */
+  rs232_puts("$PSRF103,01,00,00,01*25\0xD\0xA\0x0");
+  /* Disable GSA message */
+  rs232_puts("$PSRF103,02,00,00,01*26\0xD\0xA\0x0");
+  /* Disable GSV message */
+  rs232_puts("$PSRF103,03,00,00,01*27\0xD\0xA\0x0");
+  /* Disable VTG message */
+  rs232_puts("$PSRF103,05,00,00,01*21\0xD\0xA\0x0");
+
   while (1)
   {
     x=FrameCount;
@@ -211,21 +225,21 @@ int main(void)
       c=rs232buff[rs232tail++];
       video_putc(c);
     }
-    if ((FrameCount & 15)==0)
-    {
-      rs232_puts("ABCDEFGHIJKLMNOPQRSTUVWXYZ\0");
-      rs232_puts("ABCDEFGHIJKLMNOPQRSTUVWXYZ\0");
-    }
+    // if ((FrameCount & 15)==0)
+    // {
+      // rs232_puts("ABCDEFGHIJKLMNOPQRSTUVWXYZ\0");
+      // rs232_puts("ABCDEFGHIJKLMNOPQRSTUVWXYZ\0");
+    // }
     // if(scancode)
     // {
       // puthex(scancode);
       // decode(scancode);
       // scancode = 0;
     // }
-    if ((FrameCount & 511)==0)
-    {
-      video_cls();
-    }
+    // if ((FrameCount & 511)==0)
+    // {
+      // video_cls();
+    // }
     // if ((FrameCount & 7)==0)
     // {
       // video_putc((char) 65);
@@ -567,23 +581,31 @@ void TIM4_IRQHandler(void)
   LineCount++;
 }
 
+/*******************************************************************************
+* Function Name  : USART1_IRQHandler
+* Description    : This function handles USART1 global interrupt request.
+*                  An interrupt is generated when a character is recieved.
+* Input          : None
+* Output         : None
+* Return         : None
+*******************************************************************************/
 void USART1_IRQHandler(void)
 {
-  u8 c;
-	/* receive data from the serial port */
-	// if(USART_GetITStatus(USART1, USART_IT_RXNE) != RESET)
-	// {
-    rs232buff[rs232head++]=USART1->DR;
-		// USART_ClearFlag(USART1, USART_FLAG_RXNE);
-    USART1->SR = (u16)~USART_FLAG_RXNE;
-	// }
+  rs232buff[rs232head++]=USART1->DR;
+  USART1->SR = (u16)~USART_FLAG_RXNE;
 }
 
+/*******************************************************************************
+* Function Name  : EXTI9_5_IRQHandler
+* Description    : This function handles External lines 9 to 5 interrupt request.
+* Input          : None
+* Output         : None
+* Return         : None
+*******************************************************************************/
 void EXTI9_5_IRQHandler(void)
 {
 	//figure out what the keyboard is sending us
   EXTI->PR = EXTI_Line8;
-	// EXTI_ClearFlag(EXTI_Line8);
 	--bitcount;
 	if (bitcount >= 2 && bitcount <= 9)
 	{
@@ -808,14 +830,14 @@ void SPI_Configuration(void)
 void USART_Configuration(void)
 {
   /* USART1 configured as follow:
-        - BaudRate = 19200 baud  
+        - BaudRate = 4800 baud  
         - Word Length = 8 Bits
         - One Stop Bit
         - No parity
         - Hardware flow control disabled
         - Receive and transmit enabled
   */
-  USART_InitStructure.USART_BaudRate = 19200;
+  USART_InitStructure.USART_BaudRate = 4800;
   USART_InitStructure.USART_WordLength = USART_WordLength_8b;
   USART_InitStructure.USART_StopBits = USART_StopBits_1;
   USART_InitStructure.USART_Parity = USART_Parity_No ;

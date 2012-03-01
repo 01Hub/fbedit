@@ -1,8 +1,6 @@
 
 .const
 
-szIniCom			BYTE 'Com',0
-
 szGPRMC				BYTE '$GPRMC',0
 
 szBinToDec			BYTE '%06d',0
@@ -10,41 +8,14 @@ szFmtTime			BYTE '%02d%02d%02d %02d:%02d:%02d',0
 
 .data?
 
-dcb					DCB <>
-hCom				HANDLE ?
 hFileLogRead		HANDLE ?
 hFileLogWrite		HANDLE ?
-to					COMMTIMEOUTS <>
 npos				DWORD ?
 combuff				BYTE 4096 dup(?)
 linebuff			BYTE 512 dup(?)
 logbuff				BYTE 1024 dup(?)
 
 .code
-
-OpenCom proc
-
-	.if map.comopt.active
-		invoke CreateFile,addr map.comopt.szcom,GENERIC_READ,NULL,NULL,OPEN_EXISTING,NULL,NULL
-		.if eax
-			mov		hCom,eax
-			invoke RtlZeroMemory,addr dcb,sizeof DCB
-			mov		eax,map.comopt.nbaud
-			mov		dcb.BaudRate,eax
-			mov		eax,map.comopt.nbits
-			mov		dcb.ByteSize,al
-			mov		eax,map.comopt.nparity
-			mov		dcb.Parity,al
-			mov		eax,map.comopt.nstop
-			mov		dcb.StopBits,al
-			invoke SetCommState,hCom,addr dcb
-			mov		to.ReadTotalTimeoutConstant,100 ;0.1 sek
-			invoke SetCommTimeouts,hCom,addr to
-		.endif
-	.endif
-	ret
-
-OpenCom endp
 
 GetLine proc uses esi,pos:DWORD
 
@@ -75,21 +46,7 @@ GetLine proc uses esi,pos:DWORD
 
 GetLine endp
 
-;
-;$GPAPB,A,A,0.00,L,N,V,V,237.3,T,Cursor,237.3,T,192.3,T,A*6C
-;$GPGLL,6619.0298,N,01411.8025,E,212044,A*2A
-;$GPRMB,A,0.00,L,,,6558.4316,N,01254.1262,E,37.56,237.3,0.0,V*3F
-;$GPRMC,212044,A,6619.0298,N,01411.8025,E,0.0,0.0,220710,3.9,E*7A
-;$GPGGA,212044,6619.0298,N,01411.8025,E,1,0,50.00,102,M,,,,*39
-;$GPGSA,A,2,,,,,,,,,,,,,50.00,50.00,50.00*36
-;$GPGSV,3,1,12,24,71,186,,3,63,207,,6,58,176,,19,53,270,*74
-;$GPGSV,3,2,12,18,49,89,,22,48,147,,21,27,86,,15,24,36,*4F
-;$GPGSV,3,3,12,8,22,322,,26,20,15,,7,11,288,,16,9,192,*72
-;$SDMTW,22.3,C*07
-;$SDDPT,,*57
-;$SDDBT,,,,,,*45
-
-DoComm proc uses ebx esi edi,Param:DWORD
+DoGPSComm proc uses ebx esi edi,Param:DWORD
 	LOCAL	nRead:DWORD
 	LOCAL	nWrite:DWORD
 	LOCAL	buffer[256]:BYTE
@@ -110,9 +67,8 @@ DoComm proc uses ebx esi edi,Param:DWORD
 
 	mov		nTrail,0
 	.while  !fExitGpsThread
-		.if hCom || hFileLogRead
+		.if sonardata.GPSValid || hFileLogRead
 			.if hFileLogRead
-				invoke Sleep,200
 				.if !map.gpslogpause
 					invoke ReadFile,hFileLogRead,addr combuff,1024,addr nRead,NULL
 					.if !nRead
@@ -136,19 +92,11 @@ DoComm proc uses ebx esi edi,Param:DWORD
 					.endif
 				.endif
 				mov		nRead,0
-			.else
-				mov		edx,npos
-				mov		ecx,4000
-				sub		ecx,edx
-				invoke ReadFile,hCom,addr combuff[edx],ecx,addr nRead,NULL
+			.elseif sonardata.GPSValid
+				invoke strcpy,addr combuff,addr sonardata.GPSArray
+				mov		sonardata.GPSValid,0
 			.endif
-			.if nRead
-				mov		eax,nRead
-				add		eax,npos
-				mov		npos,eax
-				mov		combuff[eax],0
-				invoke Sleep,10
-			.elseif combuff
+			.if combuff
 				xor		ebx,ebx
 				.while combuff[ebx] && ebx<sizeof combuff-32
 					invoke GetLine,ebx
@@ -166,22 +114,6 @@ DoComm proc uses ebx esi edi,Param:DWORD
 						.if hFileLogWrite
 							invoke strcat,addr logbuff,addr bufflog
 						.endif
-;					.else
-;						invoke strcmp,addr buffer,addr szSDDPT
-;						.if !eax
-;							call	Depth
-;							.if hFileLogWrite
-;								invoke strcat,addr logbuff,addr bufflog
-;							.endif
-;						.else
-;							invoke strcmp,addr buffer,addr szSDMTW
-;							.if !eax
-;								call	Temprature
-;								.if hFileLogWrite
-;									invoke strcat,addr logbuff,addr bufflog
-;								.endif
-;							.endif
-;						.endif
 					.endif
 					pop		ebx
 				.endw
@@ -202,21 +134,9 @@ DoComm proc uses ebx esi edi,Param:DWORD
 					inc		map.paintnow
 				.endif
 			.endif
-			invoke Sleep,10
-		.elseif map.comopt.active
-			;Open the com port
-			invoke OpenCom
-			invoke Sleep,250
-			mov		npos,0
-			mov		combuff,0
-		.else
-			invoke Sleep,100
 		.endif
+		invoke Sleep,200
 	.endw
-	.if hCom
-		invoke CloseHandle,hCom
-		mov		hCom,0
-	.endif
 	.if hFileLogRead
 		invoke CloseHandle,hFileLogRead
 		mov		hFileLogRead,0
@@ -435,22 +355,4 @@ PositionSpeedDirection:
 	.endif
 	retn
 
-;Depth:
-;	invoke GetItemStr,addr linebuff,addr szNULL,addr map.options.text[sizeof OPTIONS],10
-;	.if !map.options.text[sizeof OPTIONS]
-;		invoke strcpy,addr map.options.text[sizeof OPTIONS],addr sz0Dot0
-;	.endif
-;	retn
-
-;Temprature:
-;	invoke GetItemStr,addr linebuff,addr sz0Dot0,addr map.options.text[sizeof OPTIONS*2],10
-;	invoke GetItemStr,addr linebuff,addr szNULL,addr buffer,4
-;	xor		eax,eax
-;	.while buffer[eax] && buffer[eax]!='*'
-;		inc		eax
-;	.endw
-;	mov		buffer[eax],0
-;	invoke strcat,addr map.options.text[sizeof OPTIONS*2],addr buffer
-;	retn
-
-DoComm endp
+DoGPSComm endp

@@ -87,7 +87,6 @@ IDM_OPTION_TIME			equ 10016
 IDM_OPTION_RANGE		equ 10020
 IDM_OPTIO_DEPTH			equ 10019
 IDM_OPTION_WATERTEMP	equ 10021
-IDM_OPTION_COMPORT      equ 10008
 IDM_OPTION_SONAR		equ 10025
 IDM_OPTION_GAIN			equ 10018
 IDM_LOG_START           equ 10005
@@ -270,7 +269,7 @@ MAXYECHO				equ 512								;Max number of sonar Y-echos
 RANGESCALE				equ 5								;Width of range scale
 SIGNALBAR				equ 32								;Width of signal strenght bar
 MAXRANGE				equ 32								;Max number of depth ranges that can be read from ini
-REPLYSPEED				equ 5								;At reply, the ping interval is divided by REPLYSPEED
+REPLAYSPEED				equ 5								;At replay, the ping interval is divided by REPLAYSPEED
 SONARBACKCOLOR			equ 00F4BD6Ch						;Back color of sonar
 SONARPENCOLOR			equ 0900000h						;Signal bar pen color
 MAXFISH					equ 64								;Prevents showing repeated fish symbols and repeated fish alarms
@@ -316,7 +315,7 @@ SONAR struct
 	hBrBack			HBRUSH ?								;Handle of bacckground brush
 	hPen			HPEN ?									;Handle of signalbar pen
 	hPenOld			HPEN ?									;Handle of the original pen in mDCS
-	hReply			HANDLE ?								;Handle of replay file
+	hReplay			HANDLE ?								;Handle of replay file
 	hLog			HANDLE ?								;Handle of log file
 	wt				DWORD ?									;Width of sonar screen
 	options			OPTIONS MAXSONAROPTION dup(<>)			;Options for overlays on sonar screen
@@ -359,9 +358,10 @@ SONAR struct
 		ADCBattery		WORD ?								;Battery level
 		ADCWaterTemp	WORD ?								;Water temprature
 		ADCAirTemp		WORD ?								;Air temprature
-		Dummy			WORD ?								;
+		GPSValid		WORD ?								;GPS array valid
 		EchoArray		BYTE MAXYECHO dup(?)				;Echo array, read from STM32 and processed
 		GainArray		WORD MAXYECHO dup(?)				;Gain array
+		GPSArray		BYTE 256 dup(?)						;GPS array, read from STM32 if GPSValid=TRUE
 	ends
 	fTreadExit		DWORD ?
 SONAR ends
@@ -402,7 +402,6 @@ szAskOverwrite		BYTE 'Overwrite existing file?',0Dh,0Ah,0
 
 szLandFileName		BYTE '%s\Map\LandX%d\Land%02X%02X.jpg',0;Format string to get map tile path & filename
 szSeaFileName		BYTE '%s\Map\SeaX%d\Sea%02X%02X.jpg',0	;Format string to get map tile path & filename
-szTile				BYTE 'Tile%02X%02X',0
 
 szNULL				BYTE 0
 szBS				BYTE '\',0

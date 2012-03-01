@@ -1,12 +1,4 @@
 
-IDD_DLGCOMPORT          equ 1400
-IDC_CHKCOMACTIVE        equ 1401
-IDC_EDTCOMPORT          equ 1402
-IDC_CBOCOMBAUD          equ 1404
-IDC_CBOCOMBITS          equ 1405
-IDC_CBOCOMSTOP          equ 1407
-IDC_CHKCOMPARITY		equ 1403
-
 IDD_DLGOPTION           equ 1200
 IDC_CHKSHOW             equ 1201
 IDC_RBNLEFTTOP          equ 1220
@@ -22,11 +14,6 @@ IDC_BTNDOWN             equ 1212
 IDC_BTNLEFT             equ 1213
 
 .const
-
-szCom1					BYTE 'COM1',0
-nBaud					DWORD 4800,9600,19200,38400,-1
-nBits					DWORD 7,8,-1
-nStop					DWORD 0,1,-1
 
 szSpeed					BYTE 'Speed Options',0
 szBattery				BYTE 'Battery Options',0
@@ -47,126 +34,6 @@ nOptType				DWORD ?
 coptions				OPTIONS 10 dup(<>)
 
 .code
-
-InitCom proc
-	LOCAL	buffer[256]:BYTE
-
-	invoke GetPrivateProfileString,addr szIniCom,addr szIniCom,addr szNULL,addr buffer,sizeof buffer,addr szIniFileName
-	invoke GetItemInt,addr buffer,0
-	mov		map.comopt.active,eax
-	invoke GetItemStr,addr buffer,addr szCom1,addr map.comopt.szcom,sizeof map.comopt.szcom
-	invoke GetItemInt,addr buffer,4800
-	mov		map.comopt.nbaud,eax
-	invoke GetItemInt,addr buffer,8
-	mov		map.comopt.nbits,eax
-	invoke GetItemInt,addr buffer,0
-	mov		map.comopt.nparity,eax
-	invoke GetItemInt,addr buffer,0
-	mov		map.comopt.nstop,eax
-	ret
-
-InitCom endp
-
-SaveComOption proc
-	LOCAL	buffer[256]:BYTE
-
-	mov		buffer,0
-	invoke PutItemInt,addr buffer,map.comopt.active
-	invoke PutItemStr,addr buffer,addr map.comopt.szcom
-	invoke PutItemInt,addr buffer,map.comopt.nbaud
-	invoke PutItemInt,addr buffer,map.comopt.nbits
-	invoke PutItemInt,addr buffer,map.comopt.nparity
-	invoke PutItemInt,addr buffer,map.comopt.nstop
-	invoke WritePrivateProfileString,addr szIniCom,addr szIniCom,addr buffer[1],addr szIniFileName
-	ret
-
-SaveComOption endp
-
-ComOptionProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
-	LOCAL	buffcom[16]:BYTE
-
-	mov		eax,uMsg
-	.if eax==WM_INITDIALOG
-		mov		esi,offset nBaud
-		.while dword ptr [esi]!=-1
-			invoke BinToDec,dword ptr [esi],addr buffcom
-			invoke SendDlgItemMessage,hWin,IDC_CBOCOMBAUD,CB_ADDSTRING,0,addr buffcom
-			lea		esi,[esi+4]
-		.endw
-		mov		esi,offset nBits
-		.while dword ptr [esi]!=-1
-			invoke BinToDec,dword ptr [esi],addr buffcom
-			invoke SendDlgItemMessage,hWin,IDC_CBOCOMBITS,CB_ADDSTRING,0,addr buffcom
-			lea		esi,[esi+4]
-		.endw
-		mov		esi,offset nStop
-		.while dword ptr [esi]!=-1
-			invoke BinToDec,dword ptr [esi],addr buffcom
-			invoke SendDlgItemMessage,hWin,IDC_CBOCOMSTOP,CB_ADDSTRING,0,addr buffcom
-			lea		esi,[esi+4]
-		.endw
-		.if map.comopt.active
-			invoke CheckDlgButton,hWin,IDC_CHKCOMACTIVE,BST_CHECKED
-		.endif
-		invoke SetDlgItemText,hWin,IDC_EDTCOMPORT,addr map.comopt.szcom
-		invoke BinToDec,map.comopt.nbaud,addr buffcom
-		invoke SendDlgItemMessage,hWin,IDC_CBOCOMBAUD,CB_FINDSTRINGEXACT,-1,addr buffcom
-		invoke SendDlgItemMessage,hWin,IDC_CBOCOMBAUD,CB_SETCURSEL,eax,0
-		invoke BinToDec,map.comopt.nbits,addr buffcom
-		invoke SendDlgItemMessage,hWin,IDC_CBOCOMBITS,CB_FINDSTRINGEXACT,-1,addr buffcom
-		invoke SendDlgItemMessage,hWin,IDC_CBOCOMBITS,CB_SETCURSEL,eax,0
-		.if map.comopt.nparity
-			invoke CheckDlgButton,hWin,IDC_CHKCOMPARITY,BST_CHECKED
-		.endif
-		invoke BinToDec,map.comopt.nstop,addr buffcom
-		invoke SendDlgItemMessage,hWin,IDC_CBOCOMSTOP,CB_FINDSTRINGEXACT,-1,addr buffcom
-		invoke SendDlgItemMessage,hWin,IDC_CBOCOMSTOP,CB_SETCURSEL,eax,0
-	.elseif eax==WM_COMMAND
-		mov		edx,wParam
-		movzx	eax,dx
-		shr		edx,16
-		.if edx==BN_CLICKED
-			.if eax==IDOK
-				invoke IsDlgButtonChecked,hWin,IDC_CHKCOMACTIVE
-				mov		map.comopt.active,eax
-				invoke GetDlgItemText,hWin,IDC_EDTCOMPORT,addr map.comopt.szcom,sizeof COM.szcom
-				invoke SendDlgItemMessage,hWin,IDC_CBOCOMBAUD,CB_GETCURSEL,0,0
-				mov		edx,eax
-				invoke SendDlgItemMessage,hWin,IDC_CBOCOMBAUD,CB_GETLBTEXT,edx,addr buffcom
-				invoke DecToBin,addr buffcom
-				mov		map.comopt.nbaud,eax
-				invoke SendDlgItemMessage,hWin,IDC_CBOCOMBITS,CB_GETCURSEL,0,0
-				mov		edx,eax
-				invoke SendDlgItemMessage,hWin,IDC_CBOCOMBITS,CB_GETLBTEXT,edx,addr buffcom
-				invoke DecToBin,addr buffcom
-				mov		map.comopt.nbits,eax
-				invoke SendDlgItemMessage,hWin,IDC_CBOCOMSTOP,CB_GETCURSEL,0,0
-				mov		edx,eax
-				invoke SendDlgItemMessage,hWin,IDC_CBOCOMSTOP,CB_GETLBTEXT,edx,addr buffcom
-				invoke DecToBin,addr buffcom
-				mov		map.comopt.nstop,eax
-				invoke IsDlgButtonChecked,hWin,IDC_CHKCOMPARITY
-				mov		map.comopt.nparity,eax
-				invoke SaveComOption
-				.if hCom
-					invoke CloseHandle,hCom
-					mov		hCom,0
-				.endif
-				invoke SendMessage,hWin,WM_CLOSE,NULL,TRUE
-			.elseif eax==IDCANCEL
-				invoke SendMessage,hWin,WM_CLOSE,NULL,FALSE
-			.endif
-		.endif
-	.elseif eax==WM_CLOSE
-		invoke EndDialog,hWin,lParam
-	.else
-		mov		eax,FALSE
-		ret
-	.endif
-	mov		eax,TRUE
-	ret
-
-ComOptionProc endp
 
 InitOptions proc uses ebx esi
 	LOCAL	buffer[256]:BYTE

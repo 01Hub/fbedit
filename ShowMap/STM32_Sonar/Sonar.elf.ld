@@ -18,6 +18,7 @@ INPUT("C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_lib.
 INPUT("C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_nvic.o")
 INPUT("C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_rcc.o")
 INPUT("C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_tim.o")
+INPUT("C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_usart.o")
 EXTERN( __io_putchar )
 EXTERN( _write )
 GROUP(
