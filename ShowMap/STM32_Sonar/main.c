@@ -92,7 +92,10 @@ int main(void)
   USART_Configuration(4800);
 
   /* Switch to NMEA protocol at 4800,8,N,1 */
-  rs232_puts("$PSRF100,1,4800,8,1,0*\0x0E\0xD\0xA\0x0");
+  // rs232_puts("$PSRF100,1,4800,8,1,0*\0x0E\0xD\0xA\0x0");
+  rs232_puts("$PSRF100,1,38400,8,1,0*\0x0E\0xD\0xA\0x0");
+  /* Setup USART1 */
+  USART_Configuration(38400);
   /* Disable GGA message */
   rs232_puts("$PSRF103,00,00,00,01*24\0xD\0xA\0x0");
   /* Disable GLL message */
@@ -294,10 +297,10 @@ void TIM2_IRQHandler(void)
 *******************************************************************************/
 void rs232_putc(char c)
 {
-  /* Wait until transmit register empty*/
-  while((USART1->SR & USART_FLAG_TXE) == 0);          
   /* Transmit Data */
   USART1->DR = (u16)c;
+  /* Wait until transmit register empty*/
+  while((USART1->SR & USART_FLAG_TXE) == 0);          
 }
 
 /*******************************************************************************
