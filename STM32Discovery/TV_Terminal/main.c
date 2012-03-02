@@ -139,7 +139,7 @@ void NVIC_Configuration(void);
 void TIM3_Configuration(void);
 void TIM4_Configuration(void);
 void SPI_Configuration(void);
-void USART_Configuration(void);
+void USART_Configuration(u16 Baud);
 void EXTI_Configuration(void);
 void MakeVideoLine(void);
 void decode(u8 scancode);
@@ -189,8 +189,10 @@ int main(void)
   RCC_Configuration();
   /* NVIC configuration ------------------------------------------------------*/
   NVIC_Configuration();
+  /* SPI configuration -------------------------------------------------------*/
   SPI_Configuration();
-  USART_Configuration();
+  /* USART configuration -----------------------------------------------------*/
+  USART_Configuration(4800);
   /* GPIO configuration ------------------------------------------------------*/
   GPIO_Configuration();
   /* TIM3 configuration ------------------------------------------------------*/
@@ -213,19 +215,9 @@ int main(void)
   }
   video_cls();
 
-  /* Switch to NMEA protocol at 4800,8,N,1 */
-  rs232_puts("$PSRF100,1,4800,8,1,0*0E\r\n\0");
-
-  /* Wait 200 frames */
-  y=0;
-  while (y<200)
-  {
-    x=FrameCount;
-    while (x==FrameCount)
-    {
-    }
-    y++;
-  }
+  /* Switch to NMEA protocol at 38400,8,N,1 */
+  rs232_puts("$PSRF100,1,38400,8,1,0*0E\r\n\0");
+  USART_Configuration(38400);
   /* Disable GLL message */
   rs232_puts("$PSRF103,01,00,00,01*25\r\n\0");
   /* Disable GSA message */
@@ -251,10 +243,6 @@ int main(void)
 
   while (1)
   {
-    x=FrameCount;
-    while (x==FrameCount)
-    {
-    }
     while (rs232tail!=rs232head)
     {
       c=rs232buff[rs232tail++];
@@ -264,28 +252,12 @@ int main(void)
     {
       /* Query RMC message */
       rs232_puts("$PSRF103,04,01,00,01*21\r\n\0");
+      /* Wait until frame changed */
+      x=FrameCount;
+      while (x==FrameCount)
+      {
+      }
     }
-    // if ((FrameCount & 15)==0)
-    // {
-      // rs232_puts("ABCDEFGHIJKLMNOPQRSTUVWXYZ\0");
-      // rs232_puts("ABCDEFGHIJKLMNOPQRSTUVWXYZ\0");
-    // }
-    // if(scancode)
-    // {
-      // puthex(scancode);
-      // decode(scancode);
-      // scancode = 0;
-    // }
-    // if ((FrameCount & 511)==0)
-    // {
-      // video_cls();
-    // }
-    // if ((FrameCount & 7)==0)
-    // {
-      // video_putc((char) 65);
-      // video_putc((char) 66);
-      // video_putc((char) 67);
-    // }
   }
 }
 
@@ -867,7 +839,7 @@ void SPI_Configuration(void)
 * Output         : None
 * Return         : None
 *******************************************************************************/
-void USART_Configuration(void)
+void USART_Configuration(u16 Baud)
 {
   /* USART1 configured as follow:
         - BaudRate = 4800 baud  
@@ -877,7 +849,7 @@ void USART_Configuration(void)
         - Hardware flow control disabled
         - Receive and transmit enabled
   */
-  USART_InitStructure.USART_BaudRate = 4800;
+  USART_InitStructure.USART_BaudRate = Baud;
   USART_InitStructure.USART_WordLength = USART_WordLength_8b;
   USART_InitStructure.USART_StopBits = USART_StopBits_1;
   USART_InitStructure.USART_Parity = USART_Parity_No ;

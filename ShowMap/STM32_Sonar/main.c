@@ -88,11 +88,13 @@ int main(void)
   ADC_Configuration();
   /* Enable DAC channel1 */
   DAC->CR = 0x1;
-  /* Setup USART1 */
-  USART_Configuration(4800);
 
-  /* Switch to NMEA protocol at 4800,8,N,1 */
+  /* Setup USART1 4800 baud */
+  USART_Configuration(4800);
+  /* Switch to NMEA protocol at 38400,8,N,1 */
   rs232_puts("$PSRF100,1,4800,8,1,0*0E\r\n\0");
+  /* Setup USART1 38400 baud */
+  USART_Configuration(38400);
   /* Disable GGA message */
   rs232_puts("$PSRF103,00,00,00,01*24\r\n\0");
   /* Disable GLL message */
@@ -111,6 +113,7 @@ int main(void)
     if (STM32_Sonar.Start == 1)
     {
       STM32_Sonar.Start = 2;
+      STM32_Sonar.GPSValid=0;
       /* Query RMC message */
       rs232_puts("$PSRF103,04,01,00,01*21\r\n\0");
       /* Toggle blue led */
@@ -147,8 +150,14 @@ int main(void)
       TIM1->RCR = 0;
       /* Init Ping */
       Ping = 0x2;
+      /* Wait until GPS done*/
+      i = 0;
+      while (i++ < 1000000 && STM32_Sonar.GPSValid==0)
+      {
+      }
       /* Enable TIM1 */
       TIM_Cmd(TIM1, ENABLE);
+      /* Get the Echo array */
       while (STM32_Sonar.Start)
       {
         /* To eliminate the need for an advanced AM demodulator the largest */ 
@@ -315,7 +324,9 @@ void rs232_puts(char *str)
   char c;
   /* Characters are transmitted one at a time. */
   while ((c = *str++))
+  {
     rs232_putc(c);
+  }
 }
 
 void USART1_IRQHandler(void)
