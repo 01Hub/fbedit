@@ -92,26 +92,27 @@ int main(void)
   USART_Configuration(4800);
 
   /* Switch to NMEA protocol at 4800,8,N,1 */
-  // rs232_puts("$PSRF100,1,4800,8,1,0*\0x0E\0xD\0xA\0x0");
-  rs232_puts("$PSRF100,1,38400,8,1,0*\0x0E\0xD\0xA\0x0");
-  /* Setup USART1 */
-  USART_Configuration(38400);
+  rs232_puts("$PSRF100,1,4800,8,1,0*0E\r\n\0");
   /* Disable GGA message */
-  rs232_puts("$PSRF103,00,00,00,01*24\0xD\0xA\0x0");
+  rs232_puts("$PSRF103,00,00,00,01*24\r\n\0");
   /* Disable GLL message */
-  rs232_puts("$PSRF103,01,00,00,01*25\0xD\0xA\0x0");
+  rs232_puts("$PSRF103,01,00,00,01*25\r\n\0");
   /* Disable GSA message */
-  rs232_puts("$PSRF103,02,00,00,01*26\0xD\0xA\0x0");
+  rs232_puts("$PSRF103,02,00,00,01*26\r\n\0");
   /* Disable GSV message */
-  rs232_puts("$PSRF103,03,00,00,01*27\0xD\0xA\0x0");
+  rs232_puts("$PSRF103,03,00,00,01*27\r\n\0");
+  /* Disable RMC message */
+  rs232_puts("$PSRF103,04,00,00,01*20\r\n\0");
   /* Disable VTG message */
-  rs232_puts("$PSRF103,05,00,00,01*21\0xD\0xA\0x0");
+  rs232_puts("$PSRF103,05,00,00,01*21\r\n\0");
 
   while (1)
   {
     if (STM32_Sonar.Start == 1)
     {
       STM32_Sonar.Start = 2;
+      /* Query RMC message */
+      rs232_puts("$PSRF103,04,01,00,01*21\r\n\0");
       /* Toggle blue led */
       if (BlueLED)
       {
@@ -179,7 +180,7 @@ int main(void)
 
 /*******************************************************************************
 * Function Name  : GetADCValue
-* Description    : This function sums 8 ADC conversions and returns the average.
+* Description    : This function sums 16 ADC conversions and returns the average.
 * Input          : ADC channel
 * Output         : None
 * Return         : The ADC cannel reading
@@ -190,7 +191,6 @@ u16 GetADCValue(u8 Channel)
   vu16 ADCValue;
   ADC_InitTypeDef ADC_InitStructure;
 
-  i = 0;
   ADCValue = 0;
   ADC_InitStructure.ADC_Mode = ADC_Mode_Independent;
   ADC_InitStructure.ADC_ScanConvMode = ENABLE;
@@ -203,20 +203,20 @@ u16 GetADCValue(u8 Channel)
   ADC_RegularChannelConfig(ADC1, Channel, 1, ADC_SampleTime_239Cycles5);
   /* Start ADC1 Software Conversion */ 
   ADC_SoftwareStartConvCmd(ADC1, ENABLE);
-  /* Add 8 conversions to reduce thermal noise */
-  while (i<8)
-    {
+  /* Add 16 conversions to reduce thermal noise */
+  i = 16;
+  while (i--)
+  {
     ADC_ClearFlag(ADC1, ADC_FLAG_EOC);
     while (ADC_GetFlagStatus(ADC1, ADC_FLAG_EOC) == RESET)
     {
     }
     ADCValue = ADCValue + ADC1->DR;
-    i++;
   }
   /* Stop ADC1 Software Conversion */ 
   ADC_SoftwareStartConvCmd(ADC1, DISABLE);
-  /* Return average of the 8 added conversions */
-  return (ADCValue >> 3);
+  /* Return average of the 16 added conversions */
+  return (ADCValue >> 4);
 }
 
 /*******************************************************************************

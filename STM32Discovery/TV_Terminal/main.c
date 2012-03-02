@@ -201,18 +201,53 @@ int main(void)
   TIM_Cmd(TIM3, ENABLE);
   video_show_cursor();
 
+  /* Wait 200 frames */
+  y=0;
+  while (y<200)
+  {
+    x=FrameCount;
+    while (x==FrameCount)
+    {
+    }
+    y++;
+  }
+  video_cls();
+
   /* Switch to NMEA protocol at 4800,8,N,1 */
-  rs232_puts("$PSRF100,1,4800,8,1,0*\0x0E\0xD\0xA\0x0");
-  /* Disable GGA message */
-  rs232_puts("$PSRF103,00,00,00,01*24\0xD\0xA\0x0");
+  rs232_puts("$PSRF100,1,4800,8,1,0*0E\r\n\0");
+
+  /* Wait 200 frames */
+  y=0;
+  while (y<200)
+  {
+    x=FrameCount;
+    while (x==FrameCount)
+    {
+    }
+    y++;
+  }
   /* Disable GLL message */
-  rs232_puts("$PSRF103,01,00,00,01*25\0xD\0xA\0x0");
+  rs232_puts("$PSRF103,01,00,00,01*25\r\n\0");
   /* Disable GSA message */
-  rs232_puts("$PSRF103,02,00,00,01*26\0xD\0xA\0x0");
+  rs232_puts("$PSRF103,02,00,00,01*26\r\n\0");
   /* Disable GSV message */
-  rs232_puts("$PSRF103,03,00,00,01*27\0xD\0xA\0x0");
+  rs232_puts("$PSRF103,03,00,00,01*27\r\n\0");
+  /* Disable RMC message */
+  rs232_puts("$PSRF103,04,00,00,01*20\r\n\0");
   /* Disable VTG message */
-  rs232_puts("$PSRF103,05,00,00,01*21\0xD\0xA\0x0");
+  rs232_puts("$PSRF103,05,00,00,01*21\r\n\0");
+  /* Wait 200 frames */
+  y=0;
+  while (y<200)
+  {
+    x=FrameCount;
+    while (x==FrameCount)
+    {
+    }
+    y++;
+  }
+  rs232tail=rs232head;
+  video_cls();
 
   while (1)
   {
@@ -224,6 +259,11 @@ int main(void)
     {
       c=rs232buff[rs232tail++];
       video_putc(c);
+    }
+    if ((FrameCount & 31)==0)
+    {
+      /* Query RMC message */
+      rs232_puts("$PSRF103,04,01,00,01*21\r\n\0");
     }
     // if ((FrameCount & 15)==0)
     // {
