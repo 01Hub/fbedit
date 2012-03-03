@@ -1364,16 +1364,16 @@ STM32Thread proc uses ebx esi edi,lParam:DWORD
 				.endif
 				;Copy old echo
 				call	MoveEcho
-				.if sonardata.GPSValid
-					;Download GPS array
-					invoke STLinkRead,hWnd,STM32_Sonar+16+MAXYECHO+MAXYECHO*2,addr sonardata.GPSArray,256
-					mov		sonardata.GPSValid,0
-					invoke STLinkWrite,hWnd,STM32_Sonar+12,addr sonardata.ADCAirTemp,4
-					mov		sonardata.GPSValid,1
-				.endif
-				.if !eax || eax==IDABORT || eax==IDIGNORE
-					jmp		STLinkErr
-				.endif
+;				.if sonardata.GPSValid
+;					;Download GPS array
+;					invoke STLinkRead,hWnd,STM32_Sonar+16+MAXYECHO+MAXYECHO*2,addr sonardata.GPSArray,256
+;;					mov		sonardata.GPSValid,0
+;;					invoke STLinkWrite,hWnd,STM32_Sonar+12,addr sonardata.ADCAirTemp,4
+;;					mov		sonardata.GPSValid,1
+;				.endif
+;				.if !eax || eax==IDABORT || eax==IDIGNORE
+;					jmp		STLinkErr
+;				.endif
 				;Download sonar echo array
 				invoke STLinkRead,hWnd,STM32_Sonar+16,addr STM32Echo,MAXYECHO
 				.if !eax || eax==IDABORT || eax==IDIGNORE

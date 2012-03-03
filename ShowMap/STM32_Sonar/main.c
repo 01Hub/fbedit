@@ -36,9 +36,7 @@ typedef struct
   u8 EchoArray[MAXECHO];                        // Echo array
   u16 GainArray[MAXECHO];                       // Gain array
   u8 GPSArray[256];                             // GPS array
-  vu8 rs232buff[256];                           // RS232 buffer
-  vu8 rs232tail;                                // Buffer tail
-  vu8 rs232head;                                // Buffer head
+  vu8 GPSPtr;                                   // GPS array pointer
 }STM32_SonarTypeDef;
 
 /* Private macro -------------------------------------------------------------*/
@@ -91,10 +89,8 @@ int main(void)
 
   /* Setup USART1 4800 baud */
   USART_Configuration(4800);
-  /* Switch to NMEA protocol at 38400,8,N,1 */
+  /* Switch to NMEA protocol at 4800,8,N,1 */
   rs232_puts("$PSRF100,1,4800,8,1,0*0E\r\n\0");
-  /* Setup USART1 38400 baud */
-  USART_Configuration(38400);
   /* Disable GGA message */
   rs232_puts("$PSRF103,00,00,00,01*24\r\n\0");
   /* Disable GLL message */
@@ -103,8 +99,8 @@ int main(void)
   rs232_puts("$PSRF103,02,00,00,01*26\r\n\0");
   /* Disable GSV message */
   rs232_puts("$PSRF103,03,00,00,01*27\r\n\0");
-  /* Disable RMC message */
-  rs232_puts("$PSRF103,04,00,00,01*20\r\n\0");
+  /* Enable RMC message, rate 1 second */
+  rs232_puts("$PSRF103,04,00,01,01*21\r\n\0");
   /* Disable VTG message */
   rs232_puts("$PSRF103,05,00,00,01*21\r\n\0");
 
@@ -113,9 +109,6 @@ int main(void)
     if (STM32_Sonar.Start == 1)
     {
       STM32_Sonar.Start = 2;
-      STM32_Sonar.GPSValid=0;
-      /* Query RMC message */
-      rs232_puts("$PSRF103,04,01,00,01*21\r\n\0");
       /* Toggle blue led */
       if (BlueLED)
       {
@@ -150,11 +143,6 @@ int main(void)
       TIM1->RCR = 0;
       /* Init Ping */
       Ping = 0x2;
-      /* Wait until GPS done*/
-      i = 0;
-      while (i++ < 1000000 && STM32_Sonar.GPSValid==0)
-      {
-      }
       /* Enable TIM1 */
       TIM_Cmd(TIM1, ENABLE);
       /* Get the Echo array */
@@ -331,40 +319,22 @@ void rs232_puts(char *str)
 
 void USART1_IRQHandler(void)
 {
-  u8 i;
+  u8 c;
   /* receive data from the serial port */
-  STM32_Sonar.rs232buff[STM32_Sonar.rs232head++]=(u8) USART1->DR;
+  c=USART1->DR;
   USART1->SR = (u16)~USART_FLAG_RXNE;
-  if ((u8) USART1->DR==0xA)
+  STM32_Sonar.GPSArray[STM32_Sonar.GPSPtr++]=c;
+  /* Check if char is LF */
+  if (c==0xA)
   {
-    /* Check if data is $GPRMC */
-    if (STM32_Sonar.rs232buff[STM32_Sonar.rs232tail++]=='$')
-    {
-      if (STM32_Sonar.rs232buff[STM32_Sonar.rs232tail++]=='G')
-      {
-        if (STM32_Sonar.rs232buff[STM32_Sonar.rs232tail++]=='P')
-        {
-          if (STM32_Sonar.rs232buff[STM32_Sonar.rs232tail++]=='R')
-          {
-            if (STM32_Sonar.rs232buff[STM32_Sonar.rs232tail++]=='M')
-            {
-              if (STM32_Sonar.rs232buff[STM32_Sonar.rs232tail]=='C')
-              {
-                STM32_Sonar.rs232tail-=5;
-                i=0;
-                STM32_Sonar.GPSValid=0;
-                while (STM32_Sonar.rs232tail!=STM32_Sonar.rs232head)
-                {
-                  STM32_Sonar.GPSArray[i++]=STM32_Sonar.rs232buff[STM32_Sonar.rs232tail++];
-                }
-                STM32_Sonar.GPSValid=1;
-              }
-            }
-          }
-        }
-      }
-    }
-    STM32_Sonar.rs232tail=STM32_Sonar.rs232head;
+    STM32_Sonar.GPSPtr=0;
+    STM32_Sonar.GPSValid=1;
+  }
+  /* Check if data is $ */
+  if (c=='$')
+  {
+    STM32_Sonar.GPSPtr=1;
+    STM32_Sonar.GPSValid=0;
   }
 }
 

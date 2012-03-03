@@ -215,9 +215,11 @@ int main(void)
   }
   video_cls();
 
-  /* Switch to NMEA protocol at 38400,8,N,1 */
-  rs232_puts("$PSRF100,1,38400,8,1,0*0E\r\n\0");
-  USART_Configuration(38400);
+  /* Switch to NMEA protocol at 4800,8,N,1 */
+  rs232_puts("$PSRF100,1,4800,8,1,0*0E\r\n\0");
+  // /* Switch to NMEA protocol at 38400,8,N,1 */
+  // rs232_puts("$PSRF100,1,38400,8,1,0*3D\r\n\0");
+  // USART_Configuration(38400);
   /* Disable GLL message */
   rs232_puts("$PSRF103,01,00,00,01*25\r\n\0");
   /* Disable GSA message */

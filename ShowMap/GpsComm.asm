@@ -67,6 +67,10 @@ DoGPSComm proc uses ebx esi edi,Param:DWORD
 
 	mov		nTrail,0
 	.while  !fExitGpsThread
+		.if sonardata.fSTLink && sonardata.fSTLink!=IDIGNORE
+			;Download ADCBattery, ADCWaterTemp, ADCAirTemp and GPSValid
+			invoke STLinkRead,hWnd,STM32_Sonar+8,addr sonardata.ADCBattery,8
+		.endif
 		.if sonardata.GPSValid || hFileLogRead
 			.if hFileLogRead
 				.if !map.gpslogpause
@@ -93,12 +97,14 @@ DoGPSComm proc uses ebx esi edi,Param:DWORD
 				.endif
 				mov		nRead,0
 			.elseif sonardata.GPSValid
+				;Download GPS array
+				invoke STLinkRead,hWnd,STM32_Sonar+16+MAXYECHO+MAXYECHO*2,addr sonardata.GPSArray,256
 				invoke strcpy,addr combuff,addr sonardata.GPSArray
-				mov		sonardata.GPSValid,0
 			.endif
 			.if combuff
+PrintStringByAddr offset combuff
 				xor		ebx,ebx
-				.while combuff[ebx] && ebx<sizeof combuff-32
+				;.while combuff[ebx] && ebx<sizeof combuff-32
 					invoke GetLine,ebx
 					.break .if !eax
 					add		ebx,eax
@@ -116,7 +122,7 @@ DoGPSComm proc uses ebx esi edi,Param:DWORD
 						.endif
 					.endif
 					pop		ebx
-				.endw
+				;.endw
 				.if hFileLogWrite && !map.gpslogpause
 					invoke strlen,addr logbuff
 					lea		edx,[eax+1]
@@ -134,6 +140,7 @@ DoGPSComm proc uses ebx esi edi,Param:DWORD
 					inc		map.paintnow
 				.endif
 			.endif
+			invoke Sleep,700
 		.endif
 		invoke Sleep,200
 	.endw
@@ -270,6 +277,13 @@ PositionSpeedDirection:
 			;NW
 			mov		map.ncursor,7
 		.endif
+	.else
+		invoke GetItemStr,addr linebuff,addr szNULL,addr buffer,32
+		invoke GetItemStr,addr linebuff,addr szNULL,addr buffer,32
+		invoke GetItemStr,addr linebuff,addr szNULL,addr buffer,32
+		invoke GetItemStr,addr linebuff,addr szNULL,addr buffer,32
+		invoke GetItemStr,addr linebuff,addr szNULL,addr buffer,32
+		invoke GetItemStr,addr linebuff,addr szNULL,addr buffer,32
 	.endif
 	mov		iTime,0
 	;Date
