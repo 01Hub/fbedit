@@ -710,6 +710,7 @@ PaintMap proc uses esi edi,Param:DWORD
 			invoke Sleep,100
 		.endif
 	.endw
+;PrintText "MAP Exit"
 	ret
 
 PaintMap endp

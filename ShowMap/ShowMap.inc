@@ -358,11 +358,12 @@ SONAR struct
 		ADCBattery		WORD ?								;Battery level
 		ADCWaterTemp	WORD ?								;Water temprature
 		ADCAirTemp		WORD ?								;Air temprature
-		GPSValid		WORD ?								;GPS array valid
+		GPSCount		WORD ?								;Incremented when GPS array valid
 		EchoArray		BYTE MAXYECHO dup(?)				;Echo array, read from STM32 and processed
 		GainArray		WORD MAXYECHO dup(?)				;Gain array
 		GPSArray		BYTE 256 dup(?)						;GPS array, read from STM32 if GPSValid=TRUE
 	ends
+	nGPSCount		DWORD ?
 	fTreadExit		DWORD ?
 SONAR ends
 

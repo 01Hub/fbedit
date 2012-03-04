@@ -1,20 +1,20 @@
 
 <Debug>
 	<Sonar>
-		<CodeView TopRow="134218800" Focus="4294967295" >
-			<CodeReport>
-				<0>108</0>
-				<1>119</1>
-				<2>64</2>
-				<3>374</3>
-				<4>66</4>
-				<5>152</5>
-																																																																																				
-			</CodeReport>
-																																																												
-		</CodeView>
 		<MemoryView Focus="134217996" TopRow="0" NbPerLine="8" />
-																																				
+		<CodeView TopRow="134218426" Focus="4294967295" >
+			<CodeReport>
+				<0>89</0>
+				<1>133</1>
+				<2>71</2>
+				<3>278</3>
+				<4>48</4>
+				<5>115</5>
+														
+			</CodeReport>
+										
+		</CodeView>
+						
 	</Sonar>
 	<Flags>
 		<Report>
@@ -38,7 +38,8 @@
 			
 	</Flags>
 	<Views>
-		<View File="D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" Line="104" Index="0" focus="1" />
+		<View File="D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" Line="70" Index="0" focus="1" />
+		<View File="D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\readme.txt" Line="0" Index="1" />
 	</Views>
 	<Grep>
 		<GrepIncludeSub>yes</GrepIncludeSub>

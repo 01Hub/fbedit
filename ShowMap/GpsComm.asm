@@ -64,85 +64,43 @@ DoGPSComm proc uses ebx esi edi,Param:DWORD
 	LOCAL	lft:FILETIME
 	LOCAL	lst:SYSTEMTIME
 	LOCAL	fValid:DWORD
+	LOCAL	nGPSCount:DWORD
 
 	mov		nTrail,0
 	.while  !fExitGpsThread
-		.if sonardata.fSTLink && sonardata.fSTLink!=IDIGNORE
-			;Download ADCBattery, ADCWaterTemp, ADCAirTemp and GPSValid
-			invoke STLinkRead,hWnd,STM32_Sonar+8,addr sonardata.ADCBattery,8
-		.endif
-		.if sonardata.GPSValid || hFileLogRead
-			.if hFileLogRead
-				.if !map.gpslogpause
-					invoke ReadFile,hFileLogRead,addr combuff,1024,addr nRead,NULL
-					.if !nRead
-						invoke CloseHandle,hFileLogRead
-						invoke GetDlgItem,hWnd,IDC_CHKPAUSE
-						invoke EnableWindow,eax,FALSE
-						mov		hFileLogRead,0
-						mov		npos,0
-						fldz
-						fstp	fDist
-						mov		nTrail,0
-					.else
-						.if !nTrail
-							fldz
-							fstp	map.fSumDist
-						.endif
-						invoke strlen,addr combuff
-						lea		eax,[eax+1]
-						add		npos,eax
-						invoke SetFilePointer,hFileLogRead,npos,NULL,FILE_BEGIN
-					.endif
-				.endif
-				mov		nRead,0
-			.elseif sonardata.GPSValid
-				;Download GPS array
-				invoke STLinkRead,hWnd,STM32_Sonar+16+MAXYECHO+MAXYECHO*2,addr sonardata.GPSArray,256
-				invoke strcpy,addr combuff,addr sonardata.GPSArray
-			.endif
-			.if combuff
-PrintStringByAddr offset combuff
-				xor		ebx,ebx
-				;.while combuff[ebx] && ebx<sizeof combuff-32
-					invoke GetLine,ebx
-					.break .if !eax
-					add		ebx,eax
-					push	ebx
-					.if hFileLogWrite
-						invoke strcpy,addr bufflog,addr linebuff
-						invoke strcat,addr bufflog,addr szCRLF
-					.endif
-					invoke GetItemStr,addr linebuff,addr szNULL,addr buffer,32
-					invoke strcmp,addr buffer,addr szGPRMC
-					.if !eax
-						call	PositionSpeedDirection
-						.if hFileLogWrite
-							invoke strcat,addr logbuff,addr bufflog
-						.endif
-					.endif
-					pop		ebx
-				;.endw
-				.if hFileLogWrite && !map.gpslogpause
-					invoke strlen,addr logbuff
-					lea		edx,[eax+1]
-					invoke WriteFile,hFileLogWrite,addr logbuff,edx,addr nWrite,NULL
-				.endif
-				.if !hFileLogRead
+		mov		eax,sonardata.nGPSCount
+		.if hFileLogRead
+			.if !map.gpslogpause
+				invoke ReadFile,hFileLogRead,addr combuff,1024,addr nRead,NULL
+				.if !nRead
+					invoke CloseHandle,hFileLogRead
+					invoke GetDlgItem,hWnd,IDC_CHKPAUSE
+					invoke EnableWindow,eax,FALSE
+					mov		hFileLogRead,0
 					mov		npos,0
-				.endif
-				mov		logbuff,0
-				mov		combuff,0
-				.if (!map.bdist || map.bdist==2) && (!map.btrip || map.btrip==2)
-					invoke DoGoto,map.iLon,map.iLat,map.gpslock,TRUE
-					invoke SetDlgItemInt,hWnd,IDC_EDTEAST,map.iLon,TRUE
-					invoke SetDlgItemInt,hWnd,IDC_EDTNORTH,map.iLat,TRUE
-					inc		map.paintnow
+					fldz
+					fstp	fDist
+					mov		nTrail,0
+				.else
+					.if !nTrail
+						fldz
+						fstp	map.fSumDist
+					.endif
+					invoke strlen,addr combuff
+					lea		eax,[eax+1]
+					add		npos,eax
+					invoke SetFilePointer,hFileLogRead,npos,NULL,FILE_BEGIN
+					call	GPSExec
+					invoke Sleep,100
 				.endif
 			.endif
-			invoke Sleep,700
+			mov		nRead,0
+		.elseif eax!=nGPSCount && !sonardata.hReplay
+			mov		nGPSCount,eax
+			invoke strcpy,addr combuff,addr sonardata.GPSArray
+			call	GPSExec
 		.endif
-		invoke Sleep,200
+		invoke Sleep,100
 	.endw
 	.if hFileLogRead
 		invoke CloseHandle,hFileLogRead
@@ -152,7 +110,46 @@ PrintStringByAddr offset combuff
 		invoke CloseHandle,hFileLogWrite
 		mov		hFileLogWrite,0
 	.endif
+;PrintText "GPS Exit"
 	ret
+
+GPSExec:
+	.if combuff
+;PrintStringByAddr offset combuff
+		xor		ebx,ebx
+		invoke GetLine,ebx
+		.if eax
+			.if hFileLogWrite
+				invoke strcpy,addr bufflog,addr linebuff
+				invoke strcat,addr bufflog,addr szCRLF
+			.endif
+			invoke GetItemStr,addr linebuff,addr szNULL,addr buffer,32
+			invoke strcmp,addr buffer,addr szGPRMC
+			.if !eax
+				call	PositionSpeedDirection
+				.if hFileLogWrite
+					invoke strcat,addr logbuff,addr bufflog
+				.endif
+			.endif
+			.if hFileLogWrite && !map.gpslogpause
+				invoke strlen,addr logbuff
+				lea		edx,[eax+1]
+				invoke WriteFile,hFileLogWrite,addr logbuff,edx,addr nWrite,NULL
+			.endif
+			.if !hFileLogRead
+				mov		npos,0
+			.endif
+			mov		logbuff,0
+			mov		combuff,0
+			.if (!map.bdist || map.bdist==2) && (!map.btrip || map.btrip==2)
+				invoke DoGoto,map.iLon,map.iLat,map.gpslock,TRUE
+				invoke SetDlgItemInt,hWnd,IDC_EDTEAST,map.iLon,TRUE
+				invoke SetDlgItemInt,hWnd,IDC_EDTNORTH,map.iLat,TRUE
+				inc		map.paintnow
+			.endif
+		.endif
+	.endif
+	retn
 
 PositionSpeedDirection:
 	;Time

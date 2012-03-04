@@ -1227,6 +1227,7 @@ STM32Thread proc uses ebx esi edi,lParam:DWORD
 			.else
 				invoke ReadFile,sonardata.hReplay,addr sonarreplay,sizeof SONARREPLAY,addr dwread,NULL
 				.if dwread==sizeof SONARREPLAY
+					mov		map.fcursor,TRUE
 					movzx	eax,sonarreplay.SoundSpeed
 					mov		sonardata.SoundSpeed,eax
 					mov		ax,sonarreplay.ADCBattery
@@ -1357,27 +1358,26 @@ STM32Thread proc uses ebx esi edi,lParam:DWORD
 				jmp		STLinkErr
 			.endif
 			.if !(status & 255)
-				;Download ADCBattery, ADCWaterTemp, ADCAirTemp and GPSValid
+				;Download ADCBattery, ADCWaterTemp, ADCAirTemp and GPSCount
 				invoke STLinkRead,hWnd,STM32_Sonar+8,addr sonardata.ADCBattery,8
 				.if !eax || eax==IDABORT || eax==IDIGNORE
 					jmp		STLinkErr
 				.endif
 				;Copy old echo
 				call	MoveEcho
-;				.if sonardata.GPSValid
-;					;Download GPS array
-;					invoke STLinkRead,hWnd,STM32_Sonar+16+MAXYECHO+MAXYECHO*2,addr sonardata.GPSArray,256
-;;					mov		sonardata.GPSValid,0
-;;					invoke STLinkWrite,hWnd,STM32_Sonar+12,addr sonardata.ADCAirTemp,4
-;;					mov		sonardata.GPSValid,1
-;				.endif
-;				.if !eax || eax==IDABORT || eax==IDIGNORE
-;					jmp		STLinkErr
-;				.endif
 				;Download sonar echo array
 				invoke STLinkRead,hWnd,STM32_Sonar+16,addr STM32Echo,MAXYECHO
 				.if !eax || eax==IDABORT || eax==IDIGNORE
 					jmp		STLinkErr
+				.endif
+				movzx	ebx,sonardata.GPSCount
+				.if ebx!=sonardata.nGPSCount
+					;Download GPS array
+					invoke STLinkRead,hWnd,STM32_Sonar+16+MAXYECHO+MAXYECHO*2,addr sonardata.GPSArray,80
+					.if !eax || eax==IDABORT || eax==IDIGNORE
+						jmp		STLinkErr
+					.endif
+					mov		sonardata.nGPSCount,ebx
 				.endif
 				movzx	ebx,sonardata.RangeInx
 				invoke GetRangePtr,ebx
@@ -1633,6 +1633,7 @@ STM32Thread proc uses ebx esi edi,lParam:DWORD
 		jmp		Again
 	.endif
 	mov		sonardata.fTreadExit,2
+;PrintText "SONAR Exit"
 	ret
 
 STLinkErr:

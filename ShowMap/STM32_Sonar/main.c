@@ -32,7 +32,7 @@ typedef struct
   u16 ADCBatt;                                  // Battery
   u16 ADCWaterTemp;                             // Water temprature
   u16 ADCAirTemp;                               // Air temprature
-  u16 GPSValid;                                 // GPS array valid
+  u16 GPSCounter;                               // Incremented when GPS array valid
   u8 EchoArray[MAXECHO];                        // Echo array
   u16 GainArray[MAXECHO];                       // Gain array
   u8 GPSArray[256];                             // GPS array
@@ -43,7 +43,7 @@ typedef struct
 /* Private variables ---------------------------------------------------------*/
 static STM32_SonarTypeDef STM32_Sonar;          // 0x20000000
 vu8 BlueLED;                                    // Current state of the blue led
-vu16 Ping;                                      // Value to output to PA8 and PA9 pins
+vu16 Ping;                                      // Value to output to PA1 and PA2 pins
 
 /* Private function prototypes -----------------------------------------------*/
 void RCC_Configuration(void);
@@ -99,8 +99,8 @@ int main(void)
   rs232_puts("$PSRF103,02,00,00,01*26\r\n\0");
   /* Disable GSV message */
   rs232_puts("$PSRF103,03,00,00,01*27\r\n\0");
-  /* Enable RMC message, rate 1 second */
-  rs232_puts("$PSRF103,04,00,01,01*21\r\n\0");
+  /* Enable RMC message without checksum, rate 1 second */
+  rs232_puts("$PSRF103,04,00,01,00*20\r\n\0");
   /* Disable VTG message */
   rs232_puts("$PSRF103,05,00,00,01*21\r\n\0");
 
@@ -327,14 +327,9 @@ void USART1_IRQHandler(void)
   /* Check if char is LF */
   if (c==0xA)
   {
+    STM32_Sonar.GPSArray[STM32_Sonar.GPSPtr]=0;
     STM32_Sonar.GPSPtr=0;
-    STM32_Sonar.GPSValid=1;
-  }
-  /* Check if data is $ */
-  if (c=='$')
-  {
-    STM32_Sonar.GPSPtr=1;
-    STM32_Sonar.GPSValid=0;
+    STM32_Sonar.GPSCounter++;
   }
 }
 
