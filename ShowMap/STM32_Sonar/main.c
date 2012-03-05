@@ -317,6 +317,13 @@ void rs232_puts(char *str)
   }
 }
 
+/*******************************************************************************
+* Function Name  : USART1_IRQHandler
+* Description    : This function handles USART1 Receive interrupt request
+* Input          : None
+* Output         : None
+* Return         : None
+*******************************************************************************/
 void USART1_IRQHandler(void)
 {
   u8 c;
