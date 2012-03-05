@@ -89,6 +89,8 @@ PA5		ADC Battery in, ADC_Channel_5
 PA6		ADC Water temprature in, ADC_Channel_6
 PA7		ADC Air temprature in, ADC_Channel_7
 
+PC4   200KHz output in setup mode
+
 PA9   USART1 TX, GPS Configuration
 PA10  USART1 RX, GPS Data
 

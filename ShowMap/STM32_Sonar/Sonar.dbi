@@ -25,4 +25,4 @@ Crystal=8.000
 [General]
 FreqXTal=8.000
 [SimFile]
-path=D:\Ride\Ride\sim\ARM\STM32F100RB.sim
+path=C:\Program Files\Raisonance\Ride\sim\ARM\STM32F100RB.sim

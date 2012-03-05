@@ -267,7 +267,7 @@ STM32_PingTimer			equ (STM32_Clock/200000/2)-1
 MAXXECHO				equ 512								;Max number of sonar X-echos
 MAXYECHO				equ 512								;Max number of sonar Y-echos
 RANGESCALE				equ 5								;Width of range scale
-SIGNALBAR				equ 32								;Width of signal strenght bar
+;SIGNALBAR				equ 32								;Width of signal strenght bar
 MAXRANGE				equ 32								;Max number of depth ranges that can be read from ini
 REPLAYSPEED				equ 5								;At replay, the ping interval is divided by REPLAYSPEED
 SONARBACKCOLOR			equ 00F4BD6Ch						;Back color of sonar
@@ -365,6 +365,7 @@ SONAR struct
 	ends
 	nGPSCount		DWORD ?
 	fTreadExit		DWORD ?
+	SignalBarWt		DWORD ?
 SONAR ends
 
 SONARREPLAY struct

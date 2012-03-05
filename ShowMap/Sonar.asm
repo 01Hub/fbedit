@@ -34,6 +34,9 @@ IDC_BTNFU               equ 1515
 IDC_BTNFD               equ 1531
 IDC_STCGAIN				equ 1521
 IDC_STCPING				equ 1536
+IDC_BTNSIGNALD          equ 1539
+IDC_BTNSIGNALU          equ 1537
+IDC_TRBSIGNAL           equ 1538
 
 IDD_DLGSONARGAIN		equ 1600
 IDC_BTNXD				equ 1604
@@ -235,6 +238,7 @@ SetupGainArray proc uses ebx esi edi
 SetupGainArray endp
 
 SonarOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+	LOCAL	hDC:HDC
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
@@ -263,6 +267,10 @@ SonarOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:L
 		invoke SendDlgItemMessage,hWin,IDC_TRBSONARREJECT,TBM_SETPOS,TRUE,sonardata.NoiseReject
 		invoke SendDlgItemMessage,hWin,IDC_TRBSONARFISH,TBM_SETRANGE,FALSE,(3 SHL 16)+0
 		invoke SendDlgItemMessage,hWin,IDC_TRBSONARFISH,TBM_SETPOS,TRUE,sonardata.FishDetect
+		invoke SendDlgItemMessage,hWin,IDC_TRBSIGNAL,TBM_SETRANGE,FALSE,(16 shl 16)+0
+		mov		eax,sonardata.SignalBarWt
+		shr		eax,4
+		invoke SendDlgItemMessage,hWin,IDC_TRBSIGNAL,TBM_SETPOS,TRUE,eax
 		.if sonardata.FishAlarm
 			invoke CheckDlgButton,hWin,IDC_CHKSONARALARM,BST_CHECKED
 		.endif
@@ -288,6 +296,7 @@ SonarOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:L
 		invoke SendDlgItemMessage,hWin,IDC_BTNSSD,BM_SETIMAGE,IMAGE_ICON,ebx
 		invoke SendDlgItemMessage,hWin,IDC_BTNPTD,BM_SETIMAGE,IMAGE_ICON,ebx
 		invoke SendDlgItemMessage,hWin,IDC_BTNFD,BM_SETIMAGE,IMAGE_ICON,ebx
+		invoke SendDlgItemMessage,hWin,IDC_BTNSIGNALD,BM_SETIMAGE,IMAGE_ICON,ebx
 		invoke ImageList_GetIcon,hIml,2,ILD_NORMAL
 		mov		ebx,eax
 		invoke SendDlgItemMessage,hWin,IDC_BTNNRU,BM_SETIMAGE,IMAGE_ICON,ebx
@@ -299,8 +308,11 @@ SonarOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:L
 		invoke SendDlgItemMessage,hWin,IDC_BTNSSU,BM_SETIMAGE,IMAGE_ICON,ebx
 		invoke SendDlgItemMessage,hWin,IDC_BTNPTU,BM_SETIMAGE,IMAGE_ICON,ebx
 		invoke SendDlgItemMessage,hWin,IDC_BTNFU,BM_SETIMAGE,IMAGE_ICON,ebx
+		invoke SendDlgItemMessage,hWin,IDC_BTNSIGNALU,BM_SETIMAGE,IMAGE_ICON,ebx
 		;Subclass buttons to get autorepeat
 		push	0
+		push	IDC_BTNSIGNALD
+		push	IDC_BTNSIGNALU
 		push	IDC_BTNNRD
 		push	IDC_BTNNRU
 		push	IDC_BTNGD
@@ -458,6 +470,22 @@ SonarOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:L
 					invoke SendDlgItemMessage,hWin,IDC_TRBSOUNDSPEED,TBM_SETPOS,TRUE,sonardata.SoundSpeed
 					invoke SetupPixelTimer
 				.endif
+			.elseif eax==IDC_BTNSIGNALU
+				.if sonardata.SignalBarWt<256+8
+					add		sonardata.SignalBarWt,16
+					mov		eax,sonardata.SignalBarWt
+					shr		eax,4
+					invoke SendDlgItemMessage,hWin,IDC_TRBSIGNAL,TBM_SETPOS,TRUE,eax
+					call	SetSignal
+				.endif
+			.elseif eax==IDC_BTNSIGNALD
+				.if sonardata.SignalBarWt>8
+					sub		sonardata.SignalBarWt,16
+					mov		eax,sonardata.SignalBarWt
+					shr		eax,4
+					invoke SendDlgItemMessage,hWin,IDC_TRBSIGNAL,TBM_SETPOS,TRUE,eax
+					call	SetSignal
+				.endif
 			.endif
 		.endif
 	.elseif eax==WM_HSCROLL
@@ -488,6 +516,13 @@ SonarOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:L
 		.elseif eax==IDC_TRBSOUNDSPEED
 			mov		sonardata.SoundSpeed,ebx
 			invoke SetupPixelTimer
+		.elseif eax==IDC_TRBSIGNAL
+			shl		ebx,4
+			add		ebx,8
+			.if ebx!=sonardata.SignalBarWt
+				mov		sonardata.SignalBarWt,ebx
+				call	SetSignal
+			.endif
 		.endif
 	.elseif eax==WM_CLOSE
 		invoke DestroyWindow,hWin
@@ -504,6 +539,19 @@ SetGain:
 
 SetPing:
 	invoke SetDlgItemInt,hWin,IDC_STCPING,sonardata.PingInit,FALSE
+	retn
+
+SetSignal:
+	invoke GetDC,hWin
+	mov		hDC,eax
+	push	sonardata.hBmpOldS
+	invoke CreateCompatibleBitmap,hDC,sonardata.SignalBarWt,MAXYECHO
+	mov		sonardata.hBmpS,eax
+	invoke SelectObject,sonardata.mDCS,eax
+	mov		sonardata.hBmpOldS,eax
+	invoke ReleaseDC,hWin,hDC
+	pop		eax
+	invoke DeleteObject,eax
 	retn
 
 SonarOptionProc endp
@@ -1127,13 +1175,14 @@ Update:
 	;Draw signal bar
 	mov		rect.left,0
 	mov		rect.top,0
-	mov		rect.right,SIGNALBAR
+	mov		eax,sonardata.SignalBarWt
+	mov		rect.right,eax
 	mov		rect.bottom,MAXYECHO
 	invoke FillRect,sonardata.mDCS,addr rect,sonardata.hBrBack
 	mov		ebx,1
 	.while ebx<MAXYECHO
 		movzx	eax,sonardata.EchoArray[ebx]
-		mov		ecx,SIGNALBAR
+		mov		ecx,sonardata.SignalBarWt
 		mul		ecx
 		shr		eax,8
 		.if eax
@@ -2523,7 +2572,9 @@ ShowFish:
 			xor		edx,edx
 			div		ebx
 			mov		edx,[esi].FISH.xpos
-			sub		edx,MAXXECHO+SIGNALBAR
+			mov		ecx,MAXXECHO
+			add		ecx,sonardata.SignalBarWt
+			sub		edx,ecx
 			add		edx,rcsonar.right
 			invoke ImageList_Draw,hIml,[esi].FISH.fishtype,hDC,addr [edx-8],eax,ILD_TRANSPARENT
 		.endif
@@ -2628,7 +2679,7 @@ DrawScaleBar:
 ShowScale:
 	invoke CopyRect,addr rect,addr rcsonar
 	mov		eax,rect.right
-	sub		eax,SIGNALBAR
+	sub		eax,sonardata.SignalBarWt
 	mov		rect.right,eax
 	sub		eax,RANGESCALE
 	mov		rect.left,eax
@@ -2769,7 +2820,8 @@ SonarClear proc uses ebx esi
 	mov		rect.bottom,MAXYECHO
 	invoke FillRect,sonardata.mDC,addr rect,sonardata.hBrBack
 	invoke GetClientRect,hSonar,addr rect
-	mov		rect.right,SIGNALBAR
+	mov		eax,sonardata.SignalBarWt
+	mov		rect.right,eax
 	
 	invoke FillRect,sonardata.mDCS,addr rect,sonardata.hBrBack
 	mov		esi,offset sonardata.sonarbmp
@@ -2803,6 +2855,7 @@ SonarProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
 	mov		eax,uMsg
 	.if eax==WM_CREATE
+		mov		sonardata.SignalBarWt,32+8
 		mov		eax,hWin
 		mov		hSonar,eax
 		invoke CreateSolidBrush,SONARBACKCOLOR
@@ -2826,7 +2879,7 @@ SonarProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
 		invoke CreateCompatibleDC,hDC
 		mov		sonardata.mDCS,eax
-		invoke CreateCompatibleBitmap,hDC,SIGNALBAR,MAXYECHO
+		invoke CreateCompatibleBitmap,hDC,sonardata.SignalBarWt,MAXYECHO
 		mov		sonardata.hBmpS,eax
 		invoke SelectObject,sonardata.mDCS,eax
 		mov		sonardata.hBmpOldS,eax
@@ -2834,7 +2887,8 @@ SonarProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		sonardata.hPenOld,eax
 		mov		rect.left,0
 		mov		rect.top,0
-		mov		rect.right,SIGNALBAR
+		mov		eax,sonardata.SignalBarWt
+		mov		rect.right,eax
 		mov		rect.bottom,MAXYECHO
 		invoke FillRect,sonardata.mDCS,addr rect,sonardata.hBrBack
 
@@ -2926,14 +2980,19 @@ SonarProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SelectObject,mDC,eax
 		push	eax
 		invoke FillRect,mDC,addr rect,sonardata.hBrBack
-		sub		rect.right,RANGESCALE+SIGNALBAR
+		;Draw echo
+		mov		eax,RANGESCALE
+		add		eax,sonardata.SignalBarWt
+		sub		rect.right,eax
 		sub		rect.bottom,12
 		mov		ecx,MAXXECHO
 		sub		ecx,rect.right
 		invoke StretchBlt,mDC,0,6,rect.right,rect.bottom,sonardata.mDC,ecx,0,rect.right,MAXYECHO,SRCCOPY
+		;Draw signal
 		add		rect.right,RANGESCALE
-		invoke StretchBlt,mDC,rect.right,6,SIGNALBAR,rect.bottom,sonardata.mDCS,0,0,SIGNALBAR,MAXYECHO,SRCCOPY
-		add		rect.right,SIGNALBAR
+		invoke StretchBlt,mDC,rect.right,6,sonardata.SignalBarWt,rect.bottom,sonardata.mDCS,0,0,sonardata.SignalBarWt,MAXYECHO,SRCCOPY
+		mov		eax,sonardata.SignalBarWt
+		add		rect.right,eax
 		invoke ShowRangeDepthTempScaleFish,mDC
 		add		rect.bottom,12
 		invoke BitBlt,ps.hdc,0,0,rect.right,rect.bottom,mDC,0,0,SRCCOPY

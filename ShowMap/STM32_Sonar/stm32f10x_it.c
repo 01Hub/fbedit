@@ -470,9 +470,9 @@ void TIM1_CC_IRQHandler(void)
 * Output         : None
 * Return         : None
 *******************************************************************************/
-void TIM3_IRQHandler(void)
-{
-}
+// void TIM3_IRQHandler(void)
+// {
+// }
 
 /*******************************************************************************
 * Function Name  : TIM4_IRQHandler

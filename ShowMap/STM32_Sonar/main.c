@@ -37,6 +37,7 @@ typedef struct
   u16 GainArray[MAXECHO];                       // Gain array
   u8 GPSArray[256];                             // GPS array
   vu8 GPSPtr;                                   // GPS array pointer
+  vu8 Setup;                                    // Setup Mode
 }STM32_SonarTypeDef;
 
 /* Private macro -------------------------------------------------------------*/
@@ -53,6 +54,7 @@ void ADC_Startup(void);
 void ADC_Configuration(void);
 void TIM1_Configuration(void);
 void TIM2_Configuration(void);
+void TIM3_Configuration(void);
 void USART_Configuration(u16 Baud);
 u16 GetADCValue(u8 Channel);
 void rs232_putc(char c);
@@ -80,6 +82,8 @@ int main(void)
   GPIO_Configuration();
   /* TIM1 configuration */
   TIM1_Configuration();
+  /* TIM3 configuration */
+  TIM3_Configuration();
   /* ADC1 configuration */
   ADC_Startup();
   /* ADC1 injected channel configuration */
@@ -103,6 +107,10 @@ int main(void)
   rs232_puts("$PSRF103,04,00,01,00*20\r\n\0");
   /* Disable VTG message */
   rs232_puts("$PSRF103,05,00,00,01*21\r\n\0");
+  if (GPIO_ReadInputDataBit(GPIOA,GPIO_Pin_0))
+  {
+    STM32_Sonar.Setup=1;
+  }
 
   while (1)
   {
@@ -127,24 +135,35 @@ int main(void)
       /* Read air temprature */
       STM32_Sonar.ADCAirTemp = GetADCValue(ADC_Channel_7);
       /* Clear the echo array */
-      i = 0;
+      i = 1;
       while (i < MAXECHO)
       {
         STM32_Sonar.EchoArray[i] = 0;
         i++;
       }
+      /* Store the current range as the first byte in the echo array */
+      STM32_Sonar.EchoArray[0] = STM32_Sonar.RangeInx;
       /* Reset echo index */
-      STM32_Sonar.EchoIndex = 0;
+      STM32_Sonar.EchoIndex = 1;
       /* Set the TIM1 Autoreload value */
       TIM1->ARR = STM32_Sonar.PingTimer;
+      /* Set the TIM3 Autoreload value */
+      TIM3->ARR = STM32_Sonar.PingTimer;
       /* Reset TIM1 count */
       TIM1->CNT = 0;
+      /* Reset TIM3 count */
+      TIM3->CNT = 0;
       /* Set TIM1 repetirion counter */
       TIM1->RCR = 0;
       /* Init Ping */
       Ping = 0x2;
       /* Enable TIM1 */
       TIM_Cmd(TIM1, ENABLE);
+      if (STM32_Sonar.Setup)
+      {
+        /* Enable TIM3 */
+        TIM_Cmd(TIM3, ENABLE);
+      }
       /* Get the Echo array */
       while (STM32_Sonar.Start)
       {
@@ -159,10 +178,10 @@ int main(void)
           STM32_Sonar.EchoArray[STM32_Sonar.EchoIndex] = Echo;
         }
       }
-      /* Done, Store the current range as the first byte in the echo array */
-      STM32_Sonar.EchoArray[0] = STM32_Sonar.RangeInx;
-      /* Disable TIM2 */
+      /* Done, Disable TIM2 */
       TIM2->CR1 = 0;
+      /* Disable TIM3 */
+      TIM3->CR1 = 0;
       /* Disable ADC injected channel */
       ADC_AutoInjectedConvCmd(ADC1, DISABLE);
       /* Set the DAC to output lowest gain */
@@ -286,6 +305,27 @@ void TIM2_IRQHandler(void)
 }
 
 /*******************************************************************************
+* Function Name  : TIM3_IRQHandler
+* Description    : This function handles TIM3 global interrupt request.
+* Input          : None
+* Output         : None
+* Return         : None
+*******************************************************************************/
+void TIM3_IRQHandler(void)
+{
+  /* Clear TIM3 Update interrupt pending bit */
+  TIM3->SR = (u16)~TIM_IT_Update;
+  if (GPIO_ReadOutputDataBit(GPIOC,GPIO_Pin_4))
+  {
+    GPIO_ResetBits(GPIOC,GPIO_Pin_4);
+  }
+  else
+  {
+    GPIO_SetBits(GPIOC,GPIO_Pin_4);
+  }
+}
+
+/*******************************************************************************
 * Function Name  : rs232_putc
 * Description    : This function transmits a character
 * Input          : Character
@@ -328,16 +368,39 @@ void USART1_IRQHandler(void)
 {
   u8 c;
   /* receive data from the serial port */
-  c=USART1->DR;
-  USART1->SR = (u16)~USART_FLAG_RXNE;
-  STM32_Sonar.GPSArray[STM32_Sonar.GPSPtr++]=c;
-  /* Check if char is LF */
-  if (c==0xA)
-  {
-    STM32_Sonar.GPSArray[STM32_Sonar.GPSPtr]=0;
-    STM32_Sonar.GPSPtr=0;
-    STM32_Sonar.GPSCounter++;
-  }
+  asm("movw   r0,#0x3800");                   /* USART1 */
+  asm("movt   r0,#0x4001");
+  asm("ldrh   r12,[r0,#0x4]");                /* USART1->DR */
+  asm("uxtb   r12,r12");                      /* USART1->DR */
+  asm("movw   r3,#0xFFDF");                   /* Reset RX status */
+  asm("strh   r3,[r0,#0x0]");                 /* USART1->SR */
+  asm("movw   r1,#0x0610");                   /* GPSArray */
+  asm("movt   r1,#0x2000");
+  asm("movw   r2,#0x0100");                   /* GPSPtr */
+  asm("ldrb   r3,[r1,r2]");                   /* GPSPtr */
+  asm("strb   r12,[r1,r3]");                  /* GPSArray[GPSPtr] */
+  asm("add    r3,r3,#0x1");                   /* GPSPtr++ */
+  asm("strb   r3,[r1,r2]");                   /* GPSPtr */
+  asm("cmp    r12,#0xA");                     /* LF */
+  asm("bne    ex");                           /* Exit */
+  asm("mov    r3,#0x0");                      /* 0 */
+  asm("strb   r3,[r1,r2]");                   /* GPSPtr */
+  asm("mov    r1,#0x20000000");               /* STM32_Sonar */
+  asm("ldrh   r3,[r1,#0xE]");                 /* GPSCount */
+  asm("add    r3,r3,#0x1");                   /* GPSPtr++ */
+  asm("strh   r3,[r1,#0xE]");                 /* GPSCount */
+  asm("ex:");                                 /* Done */
+
+  // c=USART1->DR;
+  // USART1->SR = (u16)~USART_FLAG_RXNE;
+  // STM32_Sonar.GPSArray[STM32_Sonar.GPSPtr++]=c;
+  // /* Check if char is LF */
+  // if (c==0xA)
+  // {
+    // STM32_Sonar.GPSArray[STM32_Sonar.GPSPtr]=0;
+    // STM32_Sonar.GPSPtr=0;
+    // STM32_Sonar.GPSCounter++;
+  // }
 }
 
 /*******************************************************************************
@@ -471,7 +534,7 @@ void RCC_Configuration(void)
     /* Enable TIM1, ADC1, USART1, GPIOA and GPIOC peripheral clocks */
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM1 | RCC_APB2Periph_ADC1 | RCC_APB2Periph_USART1 | RCC_APB2Periph_GPIOA | RCC_APB2Periph_GPIOC, ENABLE);
     /* Enable DAC and TIM2 peripheral clocks */
-    RCC_APB1PeriphClockCmd(RCC_APB1Periph_DAC | RCC_APB1Periph_TIM2, ENABLE);
+    RCC_APB1PeriphClockCmd(RCC_APB1Periph_DAC | RCC_APB1Periph_TIM2 | RCC_APB1Periph_TIM3, ENABLE);
   }
 }
 
@@ -506,8 +569,8 @@ void GPIO_Configuration(void)
   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10;
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
   GPIO_Init(GPIOA, &GPIO_InitStructure);
-  /* Configure PC.09 (LED3) and PC.08 (LED4) as output */
-  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9 | GPIO_Pin_8;
+  /* Configure PC.09 (LED3), PC.08 (LED4) and PC.04 (Setup mode) as output */
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9 | GPIO_Pin_8 | GPIO_Pin_4;
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
   GPIO_Init(GPIOC, &GPIO_InitStructure);
@@ -534,6 +597,12 @@ void NVIC_Configuration(void)
   NVIC_Init(&NVIC_InitStructure);
   /* Enable the TIM2 global Interrupt */
   NVIC_InitStructure.NVIC_IRQChannel = TIM2_IRQChannel;
+  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
+  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+  NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+  NVIC_Init(&NVIC_InitStructure);
+  /* Enable the TIM3 global Interrupt */
+  NVIC_InitStructure.NVIC_IRQChannel = TIM3_IRQChannel;
   NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
   NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
   NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
@@ -591,6 +660,32 @@ void TIM2_Configuration(void)
   /* Enable TIM2 Update interrupt */
   TIM_ClearITPendingBit(TIM2,TIM_IT_Update);
   TIM_ITConfig(TIM2, TIM_IT_Update, ENABLE);
+}
+
+/*******************************************************************************
+* Function Name  : TIM3_Configuration
+* Description    : Configures TIM3 to count up and generate interrupt on overflow
+* Input          : None
+* Output         : None
+* Return         : None
+*******************************************************************************/
+void TIM3_Configuration(void)
+{
+  TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructure;
+  TIM_TimeBaseStructure.TIM_ClockDivision = 0;
+  TIM_TimeBaseStructure.TIM_Prescaler = 0;
+  TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
+  /* Time base configuration 56MHz clock */
+  //TIM_TimeBaseStructure.TIM_Period = 139;
+  /* Time base configuration 48MHz clock */
+  //TIM_TimeBaseStructure.TIM_Period = 119;
+  /* Time base configuration 40MHz clock */
+  TIM_TimeBaseStructure.TIM_Period = 99;
+  TIM_TimeBaseStructure.TIM_RepetitionCounter = 0;
+  TIM_TimeBaseInit(TIM3, &TIM_TimeBaseStructure);
+  /* Enable TIM3 Update interrupt */
+  TIM_ClearITPendingBit(TIM3,TIM_IT_Update);
+  TIM_ITConfig(TIM3, TIM_IT_Update, ENABLE);
 }
 
 /*******************************************************************************

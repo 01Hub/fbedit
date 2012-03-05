@@ -1,19 +1,19 @@
 
 <Debug>
 	<Sonar>
-		<MemoryView Focus="134217996" TopRow="0" NbPerLine="8" />
-		<CodeView TopRow="134218426" Focus="4294967295" >
+		<CodeView TopRow="134218438" Focus="134218444" >
 			<CodeReport>
-				<0>89</0>
-				<1>133</1>
-				<2>71</2>
-				<3>278</3>
-				<4>48</4>
-				<5>115</5>
+				<0>107</0>
+				<1>160</1>
+				<2>85</2>
+				<3>334</3>
+				<4>58</4>
+				<5>139</5>
 																												
 			</CodeReport>
 																				
 		</CodeView>
+		<MemoryView Focus="134217996" TopRow="0" NbPerLine="8" />
 												
 	</Sonar>
 	<Flags>
@@ -38,7 +38,8 @@
 			
 	</Flags>
 	<Views>
-		<View File="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" Line="323" Index="0" focus="1" />
+		<View File="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" Line="161" Index="0" focus="1" />
+		<View File="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_gpio.c" Line="245" Index="1" />
 	</Views>
 	<Grep>
 		<GrepIncludeSub>yes</GrepIncludeSub>

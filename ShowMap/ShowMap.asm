@@ -1194,14 +1194,16 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		movsx	ecx,dx
 		shr		edx,16
 		movsx	edx,dx
+		mov		ebx,MAXXECHO+RANGESCALE+4
+		add		ebx,sonardata.SignalBarWt
 		.if eax==hWin
 			mov		eax,rect.right
 			sub		eax,95
 			sub		eax,ecx
 			.if sdword ptr eax<100
 				mov		eax,100
-			.elseif sdword ptr eax>MAXXECHO+RANGESCALE+SIGNALBAR+4
-				mov		eax,MAXXECHO+RANGESCALE+SIGNALBAR+4
+			.elseif sdword ptr eax>ebx
+				mov		eax,ebx
 			.endif
 			.if eax!=sonardata.wt
 				mov		sonardata.wt,eax
