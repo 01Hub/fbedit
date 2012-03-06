@@ -716,6 +716,17 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke CheckDlgButton,hWin,IDC_CHKTRAIL,BST_CHECKED
 		mov		map.gpstrail,TRUE
 		invoke InitPlaces
+		mov		eax,BST_UNCHECKED
+		.if sonardata.AutoRange
+			mov		eax,BST_CHECKED
+		.endif
+		invoke CheckDlgButton,hWin,IDC_CHKAUTORANGE,eax
+		invoke ImageList_GetIcon,hIml,12,ILD_NORMAL
+		mov		ebx,eax
+		invoke SendDlgItemMessage,hWin,IDC_BTNRANGEDN,BM_SETIMAGE,IMAGE_ICON,ebx
+		invoke ImageList_GetIcon,hIml,4,ILD_NORMAL
+		mov		ebx,eax
+		invoke SendDlgItemMessage,hWin,IDC_BTNRANGEUP,BM_SETIMAGE,IMAGE_ICON,ebx
 	.elseif eax==WM_COMMAND
 		mov		edx,wParam
 		movzx	eax,dx
@@ -1065,6 +1076,33 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke SendDlgItemMessage,hWin,IDC_CBOGOTOPLACE,CB_GETITEMDATA,eax,0
 				invoke DoGoto,[eax].PLACE.iLon,[eax].PLACE.iLat,TRUE,FALSE
 				inc		map.paintnow
+			.elseif eax==IDC_CHKAUTORANGE
+				xor		sonardata.AutoRange,1
+				mov		eax,BST_UNCHECKED
+				.if sonardata.AutoRange
+					mov		eax,BST_CHECKED
+				.endif
+				invoke CheckDlgButton,hWin,IDC_CHKAUTORANGE,eax
+			.elseif eax==IDC_BTNRANGEDN
+				.if sonardata.RangeInx
+					dec		sonardata.RangeInx
+					movzx	eax,sonardata.RangeInx
+					invoke SetRange,eax
+					movzx	eax,sonardata.RangeInx
+					invoke SendDlgItemMessage,hWin,IDC_TRBSONARRANGE,TBM_SETPOS,TRUE,eax
+					mov		sonardata.fGainUpload,TRUE
+				.endif
+			.elseif eax==IDC_BTNRANGEUP
+				mov		eax,sonardata.MaxRange
+				dec		eax
+				.if al>sonardata.RangeInx
+					inc		sonardata.RangeInx
+					movzx	eax,sonardata.RangeInx
+					invoke SetRange,eax
+					movzx	eax,sonardata.RangeInx
+					invoke SendDlgItemMessage,hWin,IDC_TRBSONARRANGE,TBM_SETPOS,TRUE,eax
+					mov		sonardata.fGainUpload,TRUE
+				.endif
 			.endif
 		.endif
 	.elseif eax==WM_INITMENUPOPUP
@@ -1187,6 +1225,15 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke GetDlgItem,hWin,IDC_CHKCHART
 		invoke MoveWindow,eax,rect.right,rect.top,80,16,TRUE
 		add		rect.top,17
+		invoke GetDlgItem,hWin,IDC_CHKAUTORANGE
+		invoke MoveWindow,eax,rect.right,rect.top,80,16,TRUE
+		add		rect.top,17
+		invoke GetDlgItem,hWin,IDC_BTNRANGEDN
+		invoke MoveWindow,eax,rect.right,rect.top,22,22,TRUE
+		invoke GetDlgItem,hWin,IDC_BTNRANGEUP
+		mov		edx,rect.right
+		add		edx,80-22
+		invoke MoveWindow,eax,edx,rect.top,22,22,TRUE
 	.elseif eax==WM_MOUSEMOVE
 		invoke GetClientRect,hWin,addr rect
 		invoke GetCapture

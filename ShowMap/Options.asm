@@ -173,11 +173,11 @@ OptionsProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 		invoke SendDlgItemMessage,hWin,IDC_CBOOVLFONT,CB_SETCURSEL,[esi].OPTIONS.font[ebx],0
 		invoke ImageList_GetIcon,hIml,0,ILD_NORMAL
 		invoke SendDlgItemMessage,hWin,IDC_BTNUP,BM_SETIMAGE,IMAGE_ICON,eax
-		invoke ImageList_GetIcon,hIml,2,ILD_NORMAL
-		invoke SendDlgItemMessage,hWin,IDC_BTNRIGHT,BM_SETIMAGE,IMAGE_ICON,eax
 		invoke ImageList_GetIcon,hIml,4,ILD_NORMAL
+		invoke SendDlgItemMessage,hWin,IDC_BTNRIGHT,BM_SETIMAGE,IMAGE_ICON,eax
+		invoke ImageList_GetIcon,hIml,8,ILD_NORMAL
 		invoke SendDlgItemMessage,hWin,IDC_BTNDOWN,BM_SETIMAGE,IMAGE_ICON,eax
-		invoke ImageList_GetIcon,hIml,6,ILD_NORMAL
+		invoke ImageList_GetIcon,hIml,12,ILD_NORMAL
 		invoke SendDlgItemMessage,hWin,IDC_BTNLEFT,BM_SETIMAGE,IMAGE_ICON,eax
 	.elseif eax==WM_COMMAND
 		mov		eax,nOptType

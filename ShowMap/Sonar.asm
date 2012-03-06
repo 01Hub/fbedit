@@ -285,7 +285,7 @@ SonarOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:L
 		invoke SendDlgItemMessage,hWin,IDC_TRBPINGTIMER,TBM_SETPOS,TRUE,eax
 		invoke SendDlgItemMessage,hWin,IDC_TRBSOUNDSPEED,TBM_SETRANGE,FALSE,((SOUNDSPEEDMAX) SHL 16)+SOUNDSPEEDMIN
 		invoke SendDlgItemMessage,hWin,IDC_TRBSOUNDSPEED,TBM_SETPOS,TRUE,sonardata.SoundSpeed
-		invoke ImageList_GetIcon,hIml,6,ILD_NORMAL
+		invoke ImageList_GetIcon,hIml,12,ILD_NORMAL
 		mov		ebx,eax
 		invoke SendDlgItemMessage,hWin,IDC_BTNNRD,BM_SETIMAGE,IMAGE_ICON,ebx
 		invoke SendDlgItemMessage,hWin,IDC_BTNGD,BM_SETIMAGE,IMAGE_ICON,ebx
@@ -297,7 +297,7 @@ SonarOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:L
 		invoke SendDlgItemMessage,hWin,IDC_BTNPTD,BM_SETIMAGE,IMAGE_ICON,ebx
 		invoke SendDlgItemMessage,hWin,IDC_BTNFD,BM_SETIMAGE,IMAGE_ICON,ebx
 		invoke SendDlgItemMessage,hWin,IDC_BTNSIGNALD,BM_SETIMAGE,IMAGE_ICON,ebx
-		invoke ImageList_GetIcon,hIml,2,ILD_NORMAL
+		invoke ImageList_GetIcon,hIml,4,ILD_NORMAL
 		mov		ebx,eax
 		invoke SendDlgItemMessage,hWin,IDC_BTNNRU,BM_SETIMAGE,IMAGE_ICON,ebx
 		invoke SendDlgItemMessage,hWin,IDC_BTNGU,BM_SETIMAGE,IMAGE_ICON,ebx
@@ -352,6 +352,11 @@ SonarOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:L
 				xor		sonardata.AutoPing,1
 			.elseif eax==IDC_CHKSONARRANGE
 				xor		sonardata.AutoRange,1
+				mov		eax,BST_UNCHECKED
+				.if sonardata.AutoRange
+					mov		eax,BST_CHECKED
+				.endif
+				invoke CheckDlgButton,hWnd,IDC_CHKAUTORANGE,eax
 			.elseif eax==IDC_CHKCHARTPAUSE
 				invoke IsDlgButtonChecked,hWin,IDC_CHKCHARTPAUSE
 				.if eax
@@ -587,11 +592,11 @@ SonarGainOptionProc proc uses ebx esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:L
 		mov		yp,0
 		invoke ImageList_GetIcon,hIml,0,ILD_NORMAL
 		invoke SendDlgItemMessage,hWin,IDC_BTNYU,BM_SETIMAGE,IMAGE_ICON,eax
-		invoke ImageList_GetIcon,hIml,4,ILD_NORMAL
+		invoke ImageList_GetIcon,hIml,8,ILD_NORMAL
 		invoke SendDlgItemMessage,hWin,IDC_BTNYD,BM_SETIMAGE,IMAGE_ICON,eax
-		invoke ImageList_GetIcon,hIml,6,ILD_NORMAL
+		invoke ImageList_GetIcon,hIml,12,ILD_NORMAL
 		invoke SendDlgItemMessage,hWin,IDC_BTNXD,BM_SETIMAGE,IMAGE_ICON,eax
-		invoke ImageList_GetIcon,hIml,2,ILD_NORMAL
+		invoke ImageList_GetIcon,hIml,4,ILD_NORMAL
 		invoke SendDlgItemMessage,hWin,IDC_BTNXU,BM_SETIMAGE,IMAGE_ICON,eax
 		invoke SetDlgItemInt,hWin,IDC_EDTGAINOFS,sonardata.gainofs,FALSE
 		invoke SendDlgItemMessage,hWin,IDC_EDTGAINOFS,EM_LIMITTEXT,3,0
@@ -1315,30 +1320,33 @@ STM32Thread proc uses ebx esi edi,lParam:DWORD
 					mov		map.iSpeed,eax
 					movzx	eax,sonarreplay.iBear
 					mov		map.iBear,eax
-					.if eax>360-22 || eax<45-22
+					.if eax>360-12 || eax<12
 						;N
 						mov		map.ncursor,0
+					.elseif eax<22
+						;NNE
+						mov		map.ncursor,1
 					.elseif eax<90-22
 						;NE
-						mov		map.ncursor,1
+						mov		map.ncursor,2
 					.elseif eax<135-22
 						;E
-						mov		map.ncursor,2
+						mov		map.ncursor,4
 					.elseif eax<180-22
 						;SE
-						mov		map.ncursor,3
+						mov		map.ncursor,6
 					.elseif eax<225-22
 						;S
-						mov		map.ncursor,4
+						mov		map.ncursor,8
 					.elseif eax<270-22
 						;SW
-						mov		map.ncursor,5
+						mov		map.ncursor,10
 					.elseif eax<315-22
 						;W
-						mov		map.ncursor,6
+						mov		map.ncursor,12
 					.else
 						;NW
-						mov		map.ncursor,7
+						mov		map.ncursor,14
 					.endif
 					mov		eax,map.iLon
 					mov		edx,map.iLat
@@ -2453,10 +2461,10 @@ FindFish:
 						movzx	edx,STM32Echo[ebx]
 						.if edx>=LARGEFISHECHO
 							;Large fish
-							mov		edx,18
+							mov		edx,18+8
 						.else
 							;Small fish
-							mov		edx,17
+							mov		edx,17+8
 						.endif
 						;Update the fishdata array
 						mov		sonardata.fishdata.fishtype[esi],edx

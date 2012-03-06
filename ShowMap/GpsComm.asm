@@ -254,25 +254,25 @@ PositionSpeedDirection:
 			mov		map.ncursor,0
 		.elseif eax<90-22
 			;NE
-			mov		map.ncursor,1
+			mov		map.ncursor,2
 		.elseif eax<135-22
 			;E
-			mov		map.ncursor,2
+			mov		map.ncursor,4
 		.elseif eax<180-22
 			;SE
-			mov		map.ncursor,3
+			mov		map.ncursor,6
 		.elseif eax<225-22
 			;S
-			mov		map.ncursor,4
+			mov		map.ncursor,8
 		.elseif eax<270-22
 			;SW
-			mov		map.ncursor,5
+			mov		map.ncursor,10
 		.elseif eax<315-22
 			;W
-			mov		map.ncursor,6
+			mov		map.ncursor,12
 		.else
 			;NW
-			mov		map.ncursor,7
+			mov		map.ncursor,14
 		.endif
 	.else
 		invoke GetItemStr,addr linebuff,addr szNULL,addr buffer,32

@@ -274,7 +274,7 @@ ShowPlace proc uses ebx esi edi,topx:DWORD,topy:DWORD,zoomval:DWORD
 					sub		ecx,8
 					mov		edx,y
 					sub		edx,8
-					invoke ImageList_Draw,hIml,addr [eax+7],map.mDC2,ecx,edx,ILD_TRANSPARENT
+					invoke ImageList_Draw,hIml,addr [eax+15],map.mDC2,ecx,edx,ILD_TRANSPARENT
 				.endif
 			.endif
 			lea		esi,[esi+sizeof PLACE]
@@ -353,7 +353,9 @@ ShowSpeedBattTempTimeScale proc uses ebx esi edi
 				;Right, Bottom
 				mov		eax,DT_RIGHT or DT_BOTTOM or DT_SINGLELINE
 			.endif
-			invoke TextDraw,map.mDC2,ecx,addr rect,addr [esi].OPTIONS.text,eax
+			.if ebx || map.fcursor
+				invoke TextDraw,map.mDC2,ecx,addr rect,addr [esi].OPTIONS.text,eax
+			.endif
 			.if ebx==3
 				call	ShowScale
 			.endif
