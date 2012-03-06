@@ -366,7 +366,6 @@ void rs232_puts(char *str)
 *******************************************************************************/
 void USART1_IRQHandler(void)
 {
-  u8 c;
   /* receive data from the serial port */
   asm("movw   r0,#0x3800");                   /* USART1 */
   asm("movt   r0,#0x4001");
@@ -391,6 +390,7 @@ void USART1_IRQHandler(void)
   asm("strh   r3,[r1,#0xE]");                 /* GPSCount */
   asm("ex:");                                 /* Done */
 
+  // u8 c;
   // c=USART1->DR;
   // USART1->SR = (u16)~USART_FLAG_RXNE;
   // STM32_Sonar.GPSArray[STM32_Sonar.GPSPtr++]=c;

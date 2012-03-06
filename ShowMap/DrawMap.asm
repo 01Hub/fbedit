@@ -502,14 +502,14 @@ ShowDist proc uses ebx esi edi,topx:DWORD,topy:DWORD,zoomval:DWORD
 	invoke MoveToEx,map.mDC2,pt.x,pt.y,NULL
 	sub		pt.x,8
 	sub		pt.y,8
-	invoke ImageList_Draw,hIml,8,map.mDC2,pt.x,pt.y,ILD_TRANSPARENT
+	invoke ImageList_Draw,hIml,16,map.mDC2,pt.x,pt.y,ILD_TRANSPARENT
 	inc		ebx
 	.while ebx<map.disthead && ebx<MAXDIST
 		call	ToScreen
 		lea		edx,[ebx+1]
-		mov		eax,9
+		mov		eax,17
 		.if edx==map.disthead
-			mov		eax,10
+			mov		eax,18
 		.endif
 		mov		ecx,pt.x
 		sub		ecx,8
@@ -548,14 +548,14 @@ ShowTrip proc uses ebx esi edi,topx:DWORD,topy:DWORD,zoomval:DWORD
 	invoke MoveToEx,map.mDC2,pt.x,pt.y,NULL
 	sub		pt.x,8
 	sub		pt.y,8
-	invoke ImageList_Draw,hIml,8,map.mDC2,pt.x,pt.y,ILD_TRANSPARENT
+	invoke ImageList_Draw,hIml,16,map.mDC2,pt.x,pt.y,ILD_TRANSPARENT
 	inc		ebx
 	.while ebx<map.triphead && ebx<MAXTRIP
 		call	ToScreen
 		lea		edx,[ebx+1]
-		mov		eax,9
+		mov		eax,17
 		.if edx==map.triphead
-			mov		eax,10
+			mov		eax,18
 		.endif
 		mov		ecx,pt.x
 		sub		ecx,8
