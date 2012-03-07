@@ -367,27 +367,34 @@ void rs232_puts(char *str)
 void USART1_IRQHandler(void)
 {
   /* receive data from the serial port */
-  asm("movw   r0,#0x3800");                   /* USART1 */
+  /* Get the 8 bit character */
+  asm("movw   r0,#0x3800");                   /* Get pointer to USART1 */
   asm("movt   r0,#0x4001");
   asm("ldrh   r12,[r0,#0x4]");                /* USART1->DR */
-  asm("uxtb   r12,r12");                      /* USART1->DR */
+  asm("uxtb   r12,r12");                      /* Convert to 8 bit */
+  /* Reset the RX Status */
   asm("movw   r3,#0xFFDF");                   /* Reset RX status */
-  asm("strh   r3,[r0,#0x0]");                 /* USART1->SR */
-  asm("movw   r1,#0x0610");                   /* GPSArray */
+  asm("strh   r3,[r0,#0x0]");                 /* Store USART1->SR */
+  /* Store the byte in the GPSArray */
+  asm("movw   r1,#0x0610");                   /* Get pointer to GPSArray */
   asm("movt   r1,#0x2000");
-  asm("movw   r2,#0x0100");                   /* GPSPtr */
-  asm("ldrb   r3,[r1,r2]");                   /* GPSPtr */
-  asm("strb   r12,[r1,r3]");                  /* GPSArray[GPSPtr] */
-  asm("add    r3,r3,#0x1");                   /* GPSPtr++ */
-  asm("strb   r3,[r1,r2]");                   /* GPSPtr */
+  asm("movw   r2,#0x0100");                   /* Get offset to GPSPtr */
+  asm("ldrb   r3,[r1,r2]");                   /* Get GPSPtr */
+  asm("strb   r12,[r1,r3]");                  /* Store GPSArray[GPSPtr] */
+  /* Increment the GPSPtr */
+  asm("add    r3,r3,#0x1");                   /* Increment GPSPtr */
+  asm("strb   r3,[r1,r2]");                   /* Store GPSPtr */
+  /* Check for end of message (LF character) */
   asm("cmp    r12,#0xA");                     /* LF */
-  asm("bne    ex");                           /* Exit */
+  asm("bne    ex");                           /* Not LF, Exit */
+  /* Reset GPSPtr */
   asm("mov    r3,#0x0");                      /* 0 */
-  asm("strb   r3,[r1,r2]");                   /* GPSPtr */
+  asm("strb   r3,[r1,r2]");                   /* Store GPSPtr */
   asm("mov    r1,#0x20000000");               /* STM32_Sonar */
-  asm("ldrh   r3,[r1,#0xE]");                 /* GPSCount */
-  asm("add    r3,r3,#0x1");                   /* GPSPtr++ */
-  asm("strh   r3,[r1,#0xE]");                 /* GPSCount */
+  /* Increment the GPSCount to signal that a new message is ready */
+  asm("ldrh   r3,[r1,#0xE]");                 /* Get GPSCount */
+  asm("add    r3,r3,#0x1");                   /* Increment GPSCount */
+  asm("strh   r3,[r1,#0xE]");                 /* Store GPSCount */
   asm("ex:");                                 /* Done */
 
   // u8 c;
