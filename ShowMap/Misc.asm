@@ -1407,6 +1407,8 @@ SaveStatus proc
 	invoke PutItemInt,addr buffer,map.topy
 	invoke PutItemInt,addr buffer,map.cursorx
 	invoke PutItemInt,addr buffer,map.cursory
+	invoke PutItemInt,addr buffer,map.iLon
+	invoke PutItemInt,addr buffer,map.iLat
 	invoke WritePrivateProfileString,addr szIniMap,addr szIniPos,addr buffer[1],addr szIniFileName
 	mov		buffer,0
 	invoke PutItemInt,addr buffer,map.zoominx

@@ -55,6 +55,10 @@ InitMaps proc uses ebx
 	invoke GetItemInt,addr buffer,256
 	mov		map.cursory,eax
 	mov		map.fcursor,TRUE
+	invoke GetItemInt,addr buffer,0
+	mov		map.iLon,eax
+	invoke GetItemInt,addr buffer,0
+	mov		map.iLat,eax
 	ret
 
 InitMaps endp

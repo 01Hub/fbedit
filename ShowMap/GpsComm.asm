@@ -198,9 +198,7 @@ PositionSpeedDirection:
 		.if buffer=='S'
 			neg		eax
 		.endif
-		.if fValid
-			mov		map.iLat,eax
-		.endif
+		mov		map.iLat,eax
 		;Longitude
 		invoke GetItemStr,addr linebuff,addr szNULL,addr buffer,32
 		lea		esi,buffer
@@ -230,9 +228,7 @@ PositionSpeedDirection:
 		.if combuff=='W'
 			neg		eax
 		.endif
-		.if fValid
-			mov		map.iLon,eax
-		.endif
+		mov		map.iLon,eax
 		;Speed
 		invoke GetItemStr,addr linebuff,addr szNULL,addr map.options.text,sizeof OPTIONS.text
 		invoke strcpy,addr buffer,addr map.options.text
