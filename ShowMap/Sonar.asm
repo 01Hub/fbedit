@@ -1320,58 +1320,7 @@ STM32Thread proc uses ebx esi edi,lParam:DWORD
 					mov		map.iSpeed,eax
 					movzx	eax,sonarreplay.iBear
 					mov		map.iBear,eax
-					.if eax<=0+12
-						;N
-						mov		map.ncursor,0
-					.elseif eax<=22+12
-						;NNE
-						mov		map.ncursor,1
-					.elseif eax<=45+12
-						;NE
-						mov		map.ncursor,2
-					.elseif eax<67+12
-						;NEE
-						mov		map.ncursor,3
-					.elseif eax<=90+12
-						;E
-						mov		map.ncursor,4
-					.elseif eax<=112+12
-						;SEE
-						mov		map.ncursor,5
-					.elseif eax<=135+12
-						;SE
-						mov		map.ncursor,6
-					.elseif eax<=157+12
-						;SSE
-						mov		map.ncursor,7
-					.elseif eax<=180+12
-						;S
-						mov		map.ncursor,8
-					.elseif eax<=202+12
-						;SSW
-						mov		map.ncursor,9
-					.elseif eax<=225+12
-						;SW
-						mov		map.ncursor,10
-					.elseif eax<=247+12
-						;SWW
-						mov		map.ncursor,11
-					.elseif eax<=270+12
-						;W
-						mov		map.ncursor,12
-					.elseif eax<=292+12
-						;NWW
-						mov		map.ncursor,13
-					.elseif eax<=315+12
-						;NW
-						mov		map.ncursor,14
-					.elseif eax<=337+12
-						;NNW
-						mov		map.ncursor,15
-					.elseif eax<=360
-						;N
-						mov		map.ncursor,0
-					.endif
+					invoke SetGPSCursor
 					mov		eax,map.iLon
 					mov		edx,map.iLat
 					.if eax!=iLon || edx!=iLat
