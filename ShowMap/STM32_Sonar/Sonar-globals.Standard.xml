@@ -30,16 +30,16 @@
  <func Header="rs232_putc" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" DeclLine="335"/>
  <func Header="rs232_puts" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" DeclLine="350"/>
  <func Header="USART1_IRQHandler" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" DeclLine="367"/>
- <func Header="ADC_Startup" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" DeclLine="420"/>
- <func Header="ADC_Configuration" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" DeclLine="455"/>
- <func Header="RCC_Configuration" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" DeclLine="482"/>
- <func Header="GPIO_Configuration" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" DeclLine="555"/>
- <func Header="NVIC_Configuration" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" DeclLine="594"/>
- <func Header="TIM1_Configuration" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" DeclLine="632"/>
- <func Header="TIM2_Configuration" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" DeclLine="658"/>
+ <func Header="ADC_Startup" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" DeclLine="429"/>
+ <func Header="ADC_Configuration" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" DeclLine="464"/>
+ <func Header="RCC_Configuration" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" DeclLine="491"/>
+ <func Header="GPIO_Configuration" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" DeclLine="564"/>
+ <func Header="NVIC_Configuration" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" DeclLine="603"/>
+ <func Header="TIM1_Configuration" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" DeclLine="641"/>
+ <func Header="TIM2_Configuration" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" DeclLine="667"/>
  <func Header="TIM1_UP_IRQHandler" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" DeclLine="245"/>
- <func Header="TIM3_Configuration" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" DeclLine="679"/>
- <func Header="USART_Configuration" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" DeclLine="705"/>
+ <func Header="TIM3_Configuration" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" DeclLine="688"/>
+ <func Header="USART_Configuration" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" DeclLine="714"/>
  <func Header="main" Icon="3" Type="func" Desc=":   long" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" DeclLine="72"/>
  <variable Header="STM32_Sonar" Icon="2" Type="variable" Desc=":   struct " DeclFile="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" DeclLine="45" Pointer="No"/>
  <variable Header="BlueLED" Icon="2" Type="variable" Desc=":   unsigned char" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" DeclLine="46" Pointer="No"/>
