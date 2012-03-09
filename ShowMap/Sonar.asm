@@ -88,25 +88,29 @@ ButtonProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		nCount,16
 		invoke SetTimer,hWin,1000,500,NULL
 	.elseif eax==WM_LBUTTONUP
-		mov		nCount,16
 		invoke KillTimer,hWin,1000
+		mov		nCount,16
 	.elseif eax==WM_TIMER
 		invoke GetWindowLong,hWin,GWL_ID
 		mov		ebx,eax
 		invoke GetParent,hWin
 		mov		esi,eax
-		invoke SendMessage,esi,WM_COMMAND,ebx,hWin
-		mov		edi,nCount
-		shr		edi,4
-		.if edi>40
-			mov		edi,40
-		.endif
-		.while edi
+		.if esi==hWnd
 			invoke SendMessage,esi,WM_COMMAND,ebx,hWin
-			dec		edi
-		.endw
-		invoke KillTimer,hWin,1000
-		invoke SetTimer,hWin,1000,50,NULL
+		.else
+			invoke SendMessage,esi,WM_COMMAND,ebx,hWin
+			mov		edi,nCount
+			shr		edi,4
+			.if edi>40
+				mov		edi,40
+			.endif
+			.while edi
+				invoke SendMessage,esi,WM_COMMAND,ebx,hWin
+				dec		edi
+			.endw
+			invoke KillTimer,hWin,1000
+			invoke SetTimer,hWin,1000,50,NULL
+		.endif
 		inc		nCount
 		xor		eax,eax
 		ret
@@ -194,45 +198,45 @@ SetupGainArray proc uses ebx esi edi
 	LOCAL	ftmp1:REAL8
 	LOCAL	ftmp2:REAL8
 
-	;Calculate the missing gain levels
-	xor		ebx,ebx
-	xor		edi,edi
-	.while ebx<sonardata.MaxRange
-		xor		esi,esi
-		mov		ecx,sonardata.sonarrange.gain[edi+esi*DWORD]
-		.while esi<MAXYECHO
-			mov		eax,sonardata.sonarrange.gain[edi+esi*DWORD+32*DWORD]
-			push	eax
-			sub		eax,ecx
-			mov		tmp,eax
-			fild	tmp
-			mov		tmp,32
-			fild	tmp
-			fdivp	st(1),st
-			fstp	ftmp1
-			mov		tmp,ecx
-			fild	tmp
-			fstp	ftmp2
-			push	ebx
-			mov		ebx,1
-			.while ebx<32
-				fld		ftmp1
-				fld		ftmp2
-				faddp	st(1),st
-				fst		ftmp2
-				fistp	tmp
-				mov		eax,tmp
-				lea		edx,[esi+ebx]
-				mov		sonardata.sonarrange.gain[edi+edx*DWORD],eax
-				inc		ebx
-			.endw
-			pop		ebx
-			pop		ecx
-			lea		esi,[esi+32]
-		.endw
-		lea		edi,[edi+sizeof RANGE]
-		inc		ebx
-	.endw
+;	;Calculate the missing gain levels
+;	xor		ebx,ebx
+;	xor		edi,edi
+;	.while ebx<sonardata.MaxRange
+;		xor		esi,esi
+;		mov		ecx,sonardata.sonarrange.gain[edi+esi*DWORD]
+;		.while esi<MAXYECHO
+;			mov		eax,sonardata.sonarrange.gain[edi+esi*DWORD+32*DWORD]
+;			push	eax
+;			sub		eax,ecx
+;			mov		tmp,eax
+;			fild	tmp
+;			mov		tmp,32
+;			fild	tmp
+;			fdivp	st(1),st
+;			fstp	ftmp1
+;			mov		tmp,ecx
+;			fild	tmp
+;			fstp	ftmp2
+;			push	ebx
+;			mov		ebx,1
+;			.while ebx<32
+;				fld		ftmp1
+;				fld		ftmp2
+;				faddp	st(1),st
+;				fst		ftmp2
+;				fistp	tmp
+;				mov		eax,tmp
+;				lea		edx,[esi+ebx]
+;				mov		sonardata.sonarrange.gain[edi+edx*DWORD],eax
+;				inc		ebx
+;			.endw
+;			pop		ebx
+;			pop		ecx
+;			lea		esi,[esi+32]
+;		.endw
+;		lea		edi,[edi+sizeof RANGE]
+;		inc		ebx
+;	.endw
 	ret
 
 SetupGainArray endp
@@ -369,14 +373,14 @@ SonarOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:L
 				.if sonardata.GainSet
 					dec		sonardata.GainSet
 					invoke SendDlgItemMessage,hWin,IDC_TRBSONARGAIN,TBM_SETPOS,TRUE,sonardata.GainSet
-					mov		sonardata.fGainUpload,TRUE
+					inc		sonardata.fGainUpload
 					call	SetGain
 				.endif
 			.elseif eax==IDC_BTNGU
 				.if sonardata.GainSet<4095
 					inc		sonardata.GainSet
 					invoke SendDlgItemMessage,hWin,IDC_TRBSONARGAIN,TBM_SETPOS,TRUE,sonardata.GainSet
-					mov		sonardata.fGainUpload,TRUE
+					inc		sonardata.fGainUpload
 					call	SetGain
 				.endif
 			.elseif eax==IDC_BTNPD
@@ -398,7 +402,7 @@ SonarOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:L
 					invoke SetRange,eax
 					movzx	eax,sonardata.RangeInx
 					invoke SendDlgItemMessage,hWin,IDC_TRBSONARRANGE,TBM_SETPOS,TRUE,eax
-					mov		sonardata.fGainUpload,TRUE
+					inc		sonardata.fGainUpload
 				.endif
 			.elseif eax==IDC_BTNRU
 				mov		eax,sonardata.MaxRange
@@ -409,7 +413,7 @@ SonarOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:L
 					invoke SetRange,eax
 					movzx	eax,sonardata.RangeInx
 					invoke SendDlgItemMessage,hWin,IDC_TRBSONARRANGE,TBM_SETPOS,TRUE,eax
-					mov		sonardata.fGainUpload,TRUE
+					inc		sonardata.fGainUpload
 				.endif
 			.elseif eax==IDC_BTNND
 				.if sonardata.NoiseLevel>1
@@ -499,12 +503,12 @@ SonarOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:L
 		invoke GetDlgCtrlID,lParam
 		.if eax==IDC_TRBSONARGAIN
 			mov		sonardata.GainSet,ebx
-			mov		sonardata.fGainUpload,TRUE
+			inc		sonardata.fGainUpload
 			call	SetGain
 		.elseif eax==IDC_TRBSONARRANGE
 			mov		sonardata.RangeInx,bl
 			invoke SetRange,ebx
-			mov		sonardata.fGainUpload,TRUE
+			inc		sonardata.fGainUpload
 		.elseif eax==IDC_TRBSONARNOISE
 			mov		sonardata.NoiseLevel,ebx
 		.elseif eax==IDC_TRBSONARREJECT
@@ -706,7 +710,7 @@ SonarGainOptionProc proc uses ebx esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:L
 					dec		dword ptr [eax]
 					invoke SetupGainArray
 					call	Invalidate
-					mov		sonardata.fGainUpload,TRUE
+					inc		sonardata.fGainUpload
 				.endif
 			.elseif eax==IDC_BTNYU
 				mov		eax,pgain
@@ -714,7 +718,7 @@ SonarGainOptionProc proc uses ebx esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:L
 					inc		dword ptr [eax]
 					invoke SetupGainArray
 					call	Invalidate
-					mov		sonardata.fGainUpload,TRUE
+					inc		sonardata.fGainUpload
 				.endif
 			.endif
 		.elseif edx==CBN_SELCHANGE
@@ -1204,39 +1208,39 @@ Update:
 
 SonarUpdateProc endp
 
-GainUploadThread proc uses ebx,lParam:DWORD
+GainUpload proc uses ebx edi
 
 	;Setup gain array
 	movzx	ebx,sonardata.RangeInx
 	invoke GetRangePtr,ebx
 	mov		ebx,eax
+	;Fixed gain
+	mov		eax,sonardata.GainSet
+	mov		sonardata.GainInit[0],ax
 	xor		ecx,ecx
+	xor		edi,edi
 	.if sonardata.AutoGain
 		;Time dependent gain
-		.while ecx<MAXYECHO
+		.while ecx<=MAXYECHO
 			mov		eax,sonardata.sonarrange.gain[ebx+ecx*DWORD]
-			;Add fixed gain
-			add		eax,sonardata.GainSet
-			.if eax>4095
-				mov		eax,4095
-			.endif
-			mov		sonardata.GainArray[ecx*WORD],ax
-			inc		ecx
+			inc		edi
+			mov		sonardata.GainInit[edi*WORD],ax
+			lea		ecx,[ecx+32]
 		.endw
 	.else
 		;Fixed gain
-		mov		eax,sonardata.GainSet
-		.while ecx<MAXYECHO
-			mov		sonardata.GainArray[ecx*WORD],ax
-			inc		ecx
+		xor		eax,eax
+		.while ecx<=MAXYECHO
+			inc		edi
+			mov		sonardata.GainInit[edi*WORD],ax
+			lea		ecx,[ecx+32]
 		.endw
 	.endif
 	;Upload Gain array
-	invoke STLinkWrite,hWnd,STM32_Sonar+16+MAXYECHO,addr sonardata.GainArray,MAXYECHO*WORD
-	xor		eax,eax
+	invoke STLinkWrite,hWnd,STM32_Sonar+16+sizeof SONAR.EchoArray+sizeof SONAR.GainArray+sizeof SONAR.GPSArray+2,addr sonardata.GainInit,sizeof SONAR.GainInit
 	ret
 
-GainUploadThread endp
+GainUpload endp
 
 STM32Thread proc uses ebx esi edi,lParam:DWORD
 	LOCAL	status:DWORD
@@ -1400,23 +1404,22 @@ STM32Thread proc uses ebx esi edi,lParam:DWORD
 				.if !eax || eax==IDABORT || eax==IDIGNORE
 					jmp		STLinkErr
 				.endif
-				movzx	ebx,sonardata.GPSCount
-				.if ebx!=sonardata.nGPSCount
+				movzx	ebx,sonardata.GPSCounter
+				.if ebx!=sonardata.nGPSCounter
 					;Download GPS array
-					invoke STLinkRead,hWnd,STM32_Sonar+16+MAXYECHO+MAXYECHO*2,addr sonardata.GPSArray,80
+					invoke STLinkRead,hWnd,STM32_Sonar+16+sizeof SONAR.EchoArray+sizeof SONAR.GainArray,addr sonardata.GPSArray,80
 					.if !eax || eax==IDABORT || eax==IDIGNORE
 						jmp		STLinkErr
 					.endif
-					mov		sonardata.nGPSCount,ebx
+					mov		sonardata.nGPSCounter,ebx
 				.endif
 				movzx	ebx,sonardata.RangeInx
 				invoke GetRangePtr,ebx
 				mov		ebx,eax
 				.if sonardata.fGainUpload
 					;Upload Gain array
-					mov		sonardata.fGainUpload,FALSE
-					invoke CreateThread,NULL,NULL,addr GainUploadThread,0,0,addr tid
-					invoke CloseHandle,eax
+					dec		sonardata.fGainUpload
+					invoke GainUpload
 				.endif
 			 	;Upload Start, PingPulses, PingTimer, RangeInx and PixelTimer to init the next reading
 				mov		eax,sonardata.PingInit
@@ -1663,6 +1666,9 @@ STM32Thread proc uses ebx esi edi,lParam:DWORD
 		jmp		Again
 	.endif
 	mov		sonardata.fTreadExit,2
+	invoke CloseHandle,sonardata.hThreadSTM32
+	xor		eax,eax
+	mov		sonardata.hThreadSTM32,eax
 ;PrintText "SONAR Exit"
 	ret
 
@@ -2480,7 +2486,7 @@ TestRangeChange:
 					invoke SetRange,eax
 					mov		rngchanged,8
 					mov		sonardata.dptinx,0
-					mov		sonardata.fGainUpload,TRUE
+					inc		sonardata.fGainUpload
 				.endif
 			.endif
 		.else
@@ -2491,14 +2497,14 @@ TestRangeChange:
 				invoke SetRange,eax
 				mov		rngchanged,10
 				mov		sonardata.dptinx,0
-				mov		sonardata.fGainUpload,TRUE
+				inc		sonardata.fGainUpload
 			.elseif eax<edx && ebx>(MAXYECHO-MAXYECHO/5)
 				;Range increment
 				inc		eax
 				invoke SetRange,eax
 				mov		rngchanged,10
 				mov		sonardata.dptinx,0
-				mov		sonardata.fGainUpload,TRUE
+				inc		sonardata.fGainUpload
 			.endif
 		.endif
 	.endif
@@ -2704,6 +2710,7 @@ SaveSonarToIni proc
 	movzx	eax,sonardata.PingTimer
 	invoke PutItemInt,addr buffer,eax
 	invoke PutItemInt,addr buffer,sonardata.SoundSpeed
+	invoke PutItemInt,addr buffer,sonardata.SignalBarWt
 	invoke WritePrivateProfileString,addr szIniSonar,addr szIniSonar,addr buffer[1],addr szIniFileName
 	ret
 
@@ -2743,6 +2750,8 @@ LoadSonarFromIni proc uses ebx esi edi
 	mov		sonardata.PingTimer,al
 	invoke GetItemInt,addr buffer,(SOUNDSPEEDMAX+SOUNDSPEEDMIN)/2
 	mov		sonardata.SoundSpeed,eax
+	invoke GetItemInt,addr buffer,32+8
+	mov		sonardata.SignalBarWt,eax
 	invoke GetPrivateProfileString,addr szIniSonarRange,addr szIniGainDef,addr szNULL,addr buffer,sizeof buffer,addr szIniFileName
 	invoke GetItemInt,addr buffer,0
 	mov		sonardata.gainofs,eax
@@ -2832,11 +2841,9 @@ SonarProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	mDC:HDC
 	LOCAL	hBmp:HBITMAP
 	LOCAL	pt:POINT
-	LOCAL	msg:MSG
 
 	mov		eax,uMsg
 	.if eax==WM_CREATE
-		mov		sonardata.SignalBarWt,32+8
 		mov		eax,hWin
 		mov		hSonar,eax
 		invoke CreateSolidBrush,SONARBACKCOLOR
@@ -2881,7 +2888,6 @@ SonarProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke EnableScrollBar,hSonar,SB_HORZ,ESB_DISABLE_BOTH
 		invoke LoadCursor,hInstance,101
 		mov		hSplittV,eax
-		invoke LoadSonarFromIni
 		movzx	eax,sonardata.RangeInx
 		invoke SetRange,eax
 
@@ -2905,7 +2911,7 @@ SonarProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.endif
 				.if sonardata.fSTLink && sonardata.fSTLink!=IDIGNORE
 					invoke STLinkReset,hWnd
-					mov		sonardata.fGainUpload,TRUE
+					inc		sonardata.fGainUpload
 				.endif
 				invoke CreateThread,NULL,NULL,addr STM32Thread,hWin,0,addr tid
 				invoke CloseHandle,eax
@@ -2933,14 +2939,6 @@ SonarProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke TrackPopupMenu,eax,TPM_LEFTALIGN or TPM_RIGHTBUTTON,mousept.x,mousept.y,0,hWnd,0
 		.endif
 	.elseif eax==WM_DESTROY
-		mov		sonardata.fTreadExit,1
-		.while sonardata.fTreadExit!=2
-			invoke GetMessage,addr msg,NULL,0,0
-			invoke Sleep,100
-		.endw
-		.if sonardata.fSTLink && sonardata.fSTLink!=IDIGNORE
-			invoke STLinkDisconnect
-		.endif
 		invoke SonarClear
 		invoke DeleteObject,sonardata.hBrBack
 		invoke SelectObject,sonardata.mDC,sonardata.hBmpOld

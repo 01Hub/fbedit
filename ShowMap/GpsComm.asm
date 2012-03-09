@@ -2,6 +2,7 @@
 .const
 
 szGPRMC				BYTE '$GPRMC',0
+szGPGSV				BYTE '$GPGSV',0
 
 szBinToDec			BYTE '%06d',0
 szFmtTime			BYTE '%02d%02d%02d %02d:%02d:%02d',0
@@ -65,10 +66,11 @@ DoGPSComm proc uses ebx esi edi,Param:DWORD
 	LOCAL	lst:SYSTEMTIME
 	LOCAL	fValid:DWORD
 	LOCAL	nGPSCount:DWORD
+	LOCAL	nSatelites:DWORD
 
 	mov		nTrail,0
 	.while  !fExitGpsThread
-		mov		eax,sonardata.nGPSCount
+		mov		eax,sonardata.nGPSCounter
 		.if hFileLogRead
 			.if !map.gpslogpause
 				invoke ReadFile,hFileLogRead,addr combuff,1024,addr nRead,NULL
@@ -129,6 +131,32 @@ GPSExec:
 				call	PositionSpeedDirection
 				.if hFileLogWrite
 					invoke strcat,addr logbuff,addr bufflog
+				.endif
+			.else
+				invoke strcmp,addr buffer,addr szGPGSV
+				.if !eax
+					.if !sonardata.fGSV
+						mov		sonardata.fGSV,TRUE
+						invoke SendMessage,hWnd,WM_SIZE,0,0
+					.endif
+					invoke GetItemInt,addr linebuff,0			;Number of Messages
+					invoke GetItemInt,addr linebuff,0			;Messages number
+					invoke GetItemInt,addr linebuff,0			;Satellites in View
+					mov		nSatelites,eax
+					xor		ebx,ebx
+					.while nSatelites && ebx<4*sizeof SATELITE
+						invoke GetItemInt,addr linebuff,0			;Satellite ID
+						mov		satelites.SatelliteID[ebx],eax
+						invoke GetItemInt,addr linebuff,0			;Elevation
+						mov		satelites.Elevation[ebx],eax
+						invoke GetItemInt,addr linebuff,0			;Azimuth
+						mov		satelites.Azimuth[ebx],eax
+						invoke GetItemInt,addr linebuff,0			;SNR
+						mov		satelites.SNR[ebx],eax
+						lea		ebx,[ebx+sizeof SATELITE]
+						dec		nSatelites
+					.endw
+					retn
 				.endif
 			.endif
 			.if hFileLogWrite && !map.gpslogpause
@@ -339,3 +367,46 @@ PositionSpeedDirection:
 	retn
 
 DoGPSComm endp
+
+GPSProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+	LOCAL	rect:RECT
+	LOCAL	ps:PAINTSTRUCT
+
+	mov		eax,uMsg
+	.if eax==WM_CREATE
+		mov		eax,hWin
+		mov		hGPS,eax
+mov		sonardata.fGSV,TRUE
+	.elseif eax==WM_PAINT
+		invoke GetClientRect,hWin,addr rect
+		mov		eax,rect.right
+		shr		eax,1
+		sub		eax,170
+		mov		rect.left,eax
+		add		eax,340
+		mov		rect.right,eax
+		invoke BeginPaint,hWin,addr ps
+		invoke CreatePen,PS_SOLID,1,0FFh
+		invoke SelectObject,ps.hdc,eax
+		push	eax
+		invoke GetStockObject,BLACK_BRUSH
+		invoke SelectObject,ps.hdc,eax
+		push	eax
+		invoke Ellipse,ps.hdc,rect.left,10,rect.right,350
+		invoke ImageList_Draw,hIml,31,ps.hdc,150,150,ILD_TRANSPARENT
+		invoke ImageList_Draw,hIml,29,ps.hdc,120,200,ILD_TRANSPARENT
+		invoke ImageList_Draw,hIml,30,ps.hdc,200,190,ILD_TRANSPARENT
+		pop		eax
+		invoke SelectObject,ps.hdc,eax
+		pop		eax
+		invoke SelectObject,ps.hdc,eax
+		invoke DeleteObject,eax
+		invoke EndPaint,hWin,addr ps
+	.else
+		invoke DefWindowProc,hWin,uMsg,wParam,lParam
+		ret
+	.endif
+	xor    eax,eax
+	ret
+
+GPSProc endp

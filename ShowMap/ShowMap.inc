@@ -304,7 +304,7 @@ RANGE struct
 	pingadd			DWORD ?									;Number of pulses to add to the initial ping (0 to 128). Used when autoping is on
 	nticks			DWORD ?									;Number of ticks on the range scale
 	scale			BYTE 64 dup(?)							;Zero terminated strings of depths on range scale
-	gain			DWORD MAXYECHO+1 dup(?)					;Gain levels read from ini file and processed to add missing gain levels
+	gain			DWORD MAXYECHO+1 dup(?)					;Gain levels read from ini file
 RANGE ends
 
 SONAR struct
@@ -361,14 +361,19 @@ SONAR struct
 		ADCBattery		WORD ?								;Battery level
 		ADCWaterTemp	WORD ?								;Water temprature
 		ADCAirTemp		WORD ?								;Air temprature
-		GPSCount		WORD ?								;Incremented when GPS array valid
+		GPSCounter		WORD ?								;Incremented when GPS array valid
 		EchoArray		BYTE MAXYECHO dup(?)				;Echo array, read from STM32 and processed
-		GainArray		WORD MAXYECHO dup(?)				;Gain array
-		GPSArray		BYTE 256 dup(?)						;GPS array, read from STM32 if GPSValid=TRUE
+		GainArray		WORD MAXYECHO dup(?)				;Gain array. Not downloaded
+		GPSArray		BYTE 256 dup(?)						;GPS array, read from STM32 if GPSCouner incremented
+		GPSPtr			BYTE ?								;Pointer into GPSArray. Not downloaded
+		Setup			BYTE ?								;If TRUE, setupmode. Not downloaded
+		GainInit		WORD 18 dup(?)						;First word is initial gain, next always 0
 	ends
-	nGPSCount		DWORD ?
+	nGPSCounter		DWORD ?
 	fTreadExit		DWORD ?
 	SignalBarWt		DWORD ?
+	hThreadSTM32	HANDLE ?
+	fGSV			DWORD ?
 SONAR ends
 
 SONARREPLAY struct
@@ -386,6 +391,13 @@ SONARREPLAY struct
 	iBear			WORD ?									;Degrees
 SONARREPLAY ends
 
+SATELITE struct
+	SatelliteID		DWORD ?
+	Elevation		DWORD ?
+	Azimuth			DWORD ?
+	SNR				DWORD ?
+SATELITE ends
+
 TEMP struct
 	adcvalue		DWORD ?									;Value rad from ADC
 	temp			DWORD ?									;Temprature in Celsius
@@ -400,6 +412,7 @@ dd72				DWORD 72
 ClassName			BYTE 'DLGCLASS',0						;Window class for main window
 szMapClassName		BYTE 'MAPCLASS',0						;Window class for map window
 szSonarClassName	BYTE 'SONARCLASS',0						;Window class for sonar window
+szGPSClassName		BYTE 'GPSCLASS',0						;Window class for GPS window
 szAppName			BYTE 'Navigation',0						;Application name
 
 szAskSaveTrail		BYTE 'Save current trail?',0			;Messagebox string
@@ -474,6 +487,7 @@ token				DWORD ?									;Gdi+ token
 hWnd				HWND ?									;Handle of main window
 hMap				HWND ?									;Handle of map screen
 hSonar				HWND ?									;Handle of sonar screen
+hGPS				HWND ?									;Handle of GPS screen
 hMenu				HMENU ?									;Hamdle of menu
 hContext			HMENU ?									;Hamdle of context menu
 hAccel				HACCEL ?								;Handle of accelerator table
@@ -490,6 +504,7 @@ szIniFileName		BYTE MAX_PATH dup(?)					;Path and filename of ini file
 szbuff				BYTE 512 dup(?)							;Temporary buffer
 tid					DWORD ?									;Thread ID
 sonardata			SONAR <>								;Sonar data
+satelites			SATELITE 12 dup(<>)
 hSplittV			HCURSOR ?								;Horizontal splitt cursor
 rseed				DWORD ?									;Random seed
 STM32Echo			BYTE MAXYECHO*4 dup(?)					;Echo work area

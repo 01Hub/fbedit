@@ -38,6 +38,8 @@ typedef struct
   u8 GPSArray[256];                             // GPS array
   vu8 GPSPtr;                                   // GPS array pointer
   vu8 Setup;                                    // Setup Mode
+  vu16 GainInit[17];                            // Gain setup array
+  vu16 nGSV;                                    // Number of GSV messages
 }STM32_SonarTypeDef;
 
 /* Private macro -------------------------------------------------------------*/
@@ -59,6 +61,7 @@ void USART_Configuration(u16 Baud);
 u16 GetADCValue(u8 Channel);
 void rs232_putc(char c);
 void rs232_puts(char *str);
+void GainSetup(void);
 
 /* Private functions ---------------------------------------------------------*/
 
@@ -85,12 +88,16 @@ int main(void)
   /* TIM3 configuration */
   TIM3_Configuration();
   /* ADC1 configuration */
-  ADC_Startup();
+//  ADC_Startup();
   /* ADC1 injected channel configuration */
   ADC_Configuration();
   /* Enable DAC channel1 */
   DAC->CR = 0x1;
 
+  if (GPIO_ReadInputDataBit(GPIOA,GPIO_Pin_0))
+  {
+    STM32_Sonar.Setup=1;
+  }
   /* Setup USART1 4800 baud */
   USART_Configuration(4800);
   /* Switch to NMEA protocol at 4800,8,N,1 */
@@ -101,16 +108,22 @@ int main(void)
   rs232_puts("$PSRF103,01,00,00,01*25\r\n\0");
   /* Disable GSA message */
   rs232_puts("$PSRF103,02,00,00,01*26\r\n\0");
-  /* Disable GSV message */
-  rs232_puts("$PSRF103,03,00,00,01*27\r\n\0");
-  /* Enable RMC message without checksum, rate 1 second */
-  rs232_puts("$PSRF103,04,00,01,00*20\r\n\0");
+  if (STM32_Sonar.Setup)
+  {
+    /* Enable GSV message */
+    rs232_puts("$PSRF103,03,00,05,00*23\r\n\0");
+    /* Disable RMC message */
+    rs232_puts("$PSRF103,04,00,00,01*20\r\n\0");
+  }
+  else
+  {
+    /* Disable GSV message */
+    rs232_puts("$PSRF103,03,00,00,01*27\r\n\0");
+    /* Enable RMC message without checksum, rate 1 second */
+    rs232_puts("$PSRF103,04,00,01,00*20\r\n\0");
+  }
   /* Disable VTG message */
   rs232_puts("$PSRF103,05,00,00,01*21\r\n\0");
-  if (GPIO_ReadInputDataBit(GPIOA,GPIO_Pin_0))
-  {
-    STM32_Sonar.Setup=1;
-  }
 
   while (1)
   {
@@ -134,6 +147,8 @@ int main(void)
       STM32_Sonar.ADCWaterTemp = GetADCValue(ADC_Channel_6);
       /* Read air temprature */
       STM32_Sonar.ADCAirTemp = GetADCValue(ADC_Channel_7);
+      /* Setup gain array */
+      GainSetup();
       /* Clear the echo array */
       i = 1;
       while (i < MAXECHO)
@@ -233,6 +248,47 @@ u16 GetADCValue(u8 Channel)
   ADC_SoftwareStartConvCmd(ADC1, DISABLE);
   /* Return average of the 16 added conversions */
   return (ADCValue >> 4);
+}
+
+/*******************************************************************************
+* Function Name  : GainSetup
+* Description    : This function sets up the gain levels for each pixel
+* Input          : Zero terminated string
+* Output         : None
+* Return         : None
+*******************************************************************************/
+void GainSetup(void)
+{
+  vu32 GainInitPtr;
+  vu32 i;
+  vu32 GainPtr;
+  vu32 GainInc;
+  vu32 GainVal;
+  GainInitPtr=1;
+  GainPtr=0;
+  GainVal=0;
+  while (GainInitPtr<17)
+  {
+    GainVal=STM32_Sonar.GainInit[GainInitPtr]<<13;
+    GainInc=(STM32_Sonar.GainInit[GainInitPtr+1]-STM32_Sonar.GainInit[GainInitPtr])<<8;
+    i=0;
+    while (i<32)
+    {
+      STM32_Sonar.GainArray[GainPtr]=(GainVal>>13)+STM32_Sonar.GainInit[0];
+      if ((GainVal>>12) && 1)
+      {
+        STM32_Sonar.GainArray[GainPtr]++;
+      }
+      if (STM32_Sonar.GainArray[GainPtr]>4095)
+      {
+        STM32_Sonar.GainArray[GainPtr]=4095;
+      }
+      GainVal+=GainInc;
+      GainPtr++;
+      i++;
+    }
+    GainInitPtr++;
+  }
 }
 
 /*******************************************************************************
@@ -366,57 +422,82 @@ void rs232_puts(char *str)
 *******************************************************************************/
 void USART1_IRQHandler(void)
 {
-  /* receive data from the serial port */
-  /* Get the 8 bit character */
-  asm("movw   r0,#0x3800");                   /* Get pointer to USART1 */
-  asm("movt   r0,#0x4001");
-  asm("ldrh   r12,[r0,#0x4]");                /* USART1->DR */
-  asm("uxtb   r12,r12");                      /* Convert to 8 bit */
+  /* receive GPS data from the serial port */
+  vu8 c;
+  c=USART1->DR;
+  USART1->SR = (u16)~USART_FLAG_RXNE;
+  STM32_Sonar.GPSArray[STM32_Sonar.GPSPtr++]=c;
+  if (STM32_Sonar.Setup)
+  {
+    if (c==0xA)
+    {
+      if (STM32_Sonar.nGSV)
+      {
+        STM32_Sonar.nGSV--;
+      }
+      else
+      {
+        /* Get number of GSV messages - 1 */
+        STM32_Sonar.nGSV=(STM32_Sonar.GPSArray[7] & 0x3)-1;
+      }
+      if (!STM32_Sonar.nGSV)
+      {
+        STM32_Sonar.GPSArray[STM32_Sonar.GPSPtr]=0;
+        STM32_Sonar.GPSPtr=0;
+        STM32_Sonar.GPSCounter++;
+      }
+    }
+  }
+  else
+  {
+    /* Check if char is LF */
+    if (c==0xA)
+    {
+      STM32_Sonar.GPSArray[STM32_Sonar.GPSPtr]=0;
+      STM32_Sonar.GPSPtr=0;
+      STM32_Sonar.GPSCounter++;
+    }
+  }
 
-  /* Reset the RX Status */
-  asm("movw   r3,#0xFFDF");                   /* Reset RX status */
-  asm("strh   r3,[r0,#0x0]");                 /* Store USART1->SR */
+  // /* Get the 8 bit character */
+  // asm("movw   r0,#0x3800");                   /* Get pointer to USART1 */
+  // asm("movt   r0,#0x4001");
+  // asm("ldrh   r12,[r0,#0x4]");                /* USART1->DR */
+  // asm("uxtb   r12,r12");                      /* Convert to 8 bit */
 
-  /* Store the byte in the GPSArray */
-  asm("movw   r1,#0x0610");                   /* Get pointer to GPSArray */
-  asm("movt   r1,#0x2000");
-  asm("movw   r2,#0x0100");                   /* Get offset to GPSPtr */
-  asm("ldrb   r3,[r1,r2]");                   /* Get GPSPtr */
-  asm("strb   r12,[r1,r3]");                  /* Store GPSArray[GPSPtr] */
+  // /* Reset the RX Status */
+  // asm("movw   r3,#0xFFDF");                   /* Reset RX status */
+  // asm("strh   r3,[r0,#0x0]");                 /* Store USART1->SR */
 
-  /* Increment the GPSPtr */
-  asm("add    r3,r3,#0x1");                   /* Increment GPSPtr */
-  asm("strb   r3,[r1,r2]");                   /* Store GPSPtr */
+  // /* Store the byte in the GPSArray */
+  // asm("movw   r1,#0x0610");                   /* Get pointer to GPSArray */
+  // asm("movt   r1,#0x2000");
+  // asm("movw   r2,#0x0100");                   /* Get offset to GPSPtr */
+  // asm("ldrb   r3,[r1,r2]");                   /* Get GPSPtr */
+  // asm("strb   r12,[r1,r3]");                  /* Store GPSArray[GPSPtr] */
 
-  /* Check for end of message (LF character) */
-  asm("cmp    r12,#0xA");                     /* LF */
-  asm("bne    ex");                           /* Not LF, Exit */
+  // /* Increment the GPSPtr */
+  // asm("add    r3,r3,#0x1");                   /* Increment GPSPtr */
+  // asm("strb   r3,[r1,r2]");                   /* Store GPSPtr */
 
-  /* Zero terminate */
-  asm("mov    r2,#0x0");                      /* 0 */
-  asm("strb   r2,[r1,r3]");                  /* Store GPSArray[GPSPtr] */
+  // /* Check for end of message (LF character) */
+  // asm("cmp    r12,#0xA");                     /* LF */
+  // asm("bne    ex");                           /* Not LF, Exit */
 
-  /* Reset GPSPtr */
-  asm("strb   r2,[r1,r2]");                   /* Store GPSPtr */
+  // /* Zero terminate */
+  // asm("mov    r2,#0x0");                      /* 0 */
+  // asm("strb   r2,[r1,r3]");                  /* Store GPSArray[GPSPtr] */
 
-  /* Increment the GPSCount to signal that a new message is ready */
-  asm("mov    r1,#0x20000000");               /* STM32_Sonar */
-  asm("ldrh   r3,[r1,#0xE]");                 /* Get GPSCount */
-  asm("add    r3,r3,#0x1");                   /* Increment GPSCount */
-  asm("strh   r3,[r1,#0xE]");                 /* Store GPSCount */
-  asm("ex:");                                 /* Done */
+  // /* Reset GPSPtr */
+  // asm("strb   r2,[r1,r2]");                   /* Store GPSPtr */
 
-  // u8 c;
-  // c=USART1->DR;
-  // USART1->SR = (u16)~USART_FLAG_RXNE;
-  // STM32_Sonar.GPSArray[STM32_Sonar.GPSPtr++]=c;
-  // /* Check if char is LF */
-  // if (c==0xA)
-  // {
-    // STM32_Sonar.GPSArray[STM32_Sonar.GPSPtr]=0;
-    // STM32_Sonar.GPSPtr=0;
-    // STM32_Sonar.GPSCounter++;
-  // }
+  // /* Increment the GPSCounter to signal that a new message is ready */
+  // asm("mov    r1,#0x20000000");               /* STM32_Sonar */
+  // asm("ldrh   r3,[r1,#0xE]");                 /* Get GPSCounter */
+  // asm("add    r3,r3,#0x1");                   /* Increment GPSCounter */
+  // asm("strh   r3,[r1,#0xE]");                 /* Store GPSCounter */
+  // asm("ex:");                                 /* Done */
+
 }
 
 /*******************************************************************************

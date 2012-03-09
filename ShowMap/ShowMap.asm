@@ -700,6 +700,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	rect:RECT
 	LOCAL	buffer[MAX_PATH]:BYTE
 	LOCAL	dwread:DWORD
+	LOCAL	msg:MSG
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
@@ -731,6 +732,11 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke ImageList_GetIcon,hIml,4,ILD_NORMAL
 		mov		ebx,eax
 		invoke SendDlgItemMessage,hWin,IDC_BTNRANGEUP,BM_SETIMAGE,IMAGE_ICON,ebx
+		invoke GetDlgItem,hWin,IDC_BTNRANGEDN
+		invoke SetWindowLong,eax,GWL_WNDPROC,offset ButtonProc
+		mov		lpOldButtonProc,eax
+		invoke GetDlgItem,hWin,IDC_BTNRANGEUP
+		invoke SetWindowLong,eax,GWL_WNDPROC,offset ButtonProc
 	.elseif eax==WM_COMMAND
 		mov		edx,wParam
 		movzx	eax,dx
@@ -1094,7 +1100,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					invoke SetRange,eax
 					movzx	eax,sonardata.RangeInx
 					invoke SendDlgItemMessage,hWin,IDC_TRBSONARRANGE,TBM_SETPOS,TRUE,eax
-					mov		sonardata.fGainUpload,TRUE
+					inc		sonardata.fGainUpload
 				.endif
 			.elseif eax==IDC_BTNRANGEUP
 				mov		eax,sonardata.MaxRange
@@ -1105,7 +1111,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					invoke SetRange,eax
 					movzx	eax,sonardata.RangeInx
 					invoke SendDlgItemMessage,hWin,IDC_TRBSONARRANGE,TBM_SETPOS,TRUE,eax
-					mov		sonardata.fGainUpload,TRUE
+					inc		sonardata.fGainUpload
 				.endif
 			.endif
 		.endif
@@ -1166,7 +1172,15 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.if eax==hWin
 			mov		ebx,sonardata.wt
 			sub		rect.right,ebx
-			invoke MoveWindow,hSonar,rect.right,0,ebx,rect.bottom,TRUE
+			push	rect.bottom
+			.if sonardata.fGSV
+				sub		rect.bottom,360
+				invoke MoveWindow,hSonar,rect.right,0,ebx,rect.bottom,TRUE
+				invoke MoveWindow,hGPS,rect.right,rect.bottom,ebx,360,TRUE
+			.else
+				invoke MoveWindow,hSonar,rect.right,0,ebx,rect.bottom,TRUE
+			.endif
+			pop		rect.bottom
 			sub		rect.right,4
 			invoke MoveWindow,hMap,0,0,rect.right,rect.bottom,TRUE
 			add		rect.right,ebx
@@ -1287,11 +1301,28 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	.elseif eax==WM_CLOSE
 		invoke SaveStatus
 		invoke ShowWindow,hWin,SW_HIDE
+		; Terminate GPS Thread
 		mov		fExitGpsThread,TRUE
 		invoke WaitForSingleObject,hGpsThread,3000
+		.if eax==WAIT_TIMEOUT
+			invoke TerminateThread,hGpsThread,0
+		.endif
 		invoke CloseHandle,hGpsThread
+		; Terminate STM32 Thread
+		mov		sonardata.fTreadExit,1
+		.while sonardata.fTreadExit!=2
+			invoke GetMessage,addr msg,NULL,0,0
+			invoke Sleep,100
+		.endw
+		.if sonardata.fSTLink && sonardata.fSTLink!=IDIGNORE
+			invoke STLinkDisconnect
+		.endif
+
 		mov		fExitMapThread,TRUE
 		invoke WaitForSingleObject,hMapThread,3000
+		.if eax==WAIT_TIMEOUT
+			invoke TerminateThread,hMapThread,0
+		.endif
 		invoke CloseHandle,hMapThread
 		invoke GlobalFree,map.hMemLon
 		invoke GlobalFree,map.hMemLat
@@ -1349,11 +1380,18 @@ WinMain proc hInst:HINSTANCE,hPrevInst:HINSTANCE,CmdLine:LPSTR,CmdShow:DWORD
 	mov		wc.lpszClassName,offset szSonarClassName
 	invoke RegisterClassEx,addr wc
 
+	mov		wc.lpfnWndProc,offset GPSProc
+	mov		wc.lpszClassName,offset szGPSClassName
+	invoke GetStockObject,BLACK_BRUSH
+	mov		wc.hbrBackground,eax
+	invoke RegisterClassEx,addr wc
+
 	invoke LoadMapPoints
 	invoke InitZoom
 	invoke InitOptions
 	invoke InitFonts
 	invoke InitMaps
+	invoke LoadSonarFromIni
 	invoke CreateDialogParam,hInstance,IDD_DIALOG,NULL,addr WndProc,NULL
 	invoke ShowWindow,hWnd,SW_SHOWNORMAL
 	invoke UpdateWindow,hWnd
@@ -1381,7 +1419,7 @@ WinMain endp
 ;
 ;.data
 ;;NMEAstr		db 'PSRF100,1,4800,8,1,0',0
-;NMEAstr		db 'PSRF103,04,00,01,01',0
+;NMEAstr		db 'PSRF103,03,00,05,00',0
 ;.code
 ;
 ;	mov		edx,offset NMEAstr
