@@ -92,6 +92,7 @@ IDM_OPTIO_DEPTH			equ 10019
 IDM_OPTION_WATERTEMP	equ 10021
 IDM_OPTION_SONAR		equ 10025
 IDM_OPTION_GAIN			equ 10018
+IDM_OPTION_GPS			equ 10008
 IDM_LOG_START           equ 10005
 IDM_LOG_END             equ 10006
 IDM_LOG_REPLAY          equ 10007
@@ -439,6 +440,7 @@ szIniOption			BYTE 'Option',0
 szIniSonar			BYTE 'Sonar',0
 szIniSonarRange		BYTE 'SonarRange',0
 szIniGainDef		BYTE 'GainDef',0
+szIniGPS			BYTE 'GPS',0
 
 szFonts				BYTE 'None',0							;Font selection descriptions
 					BYTE 'Small',0

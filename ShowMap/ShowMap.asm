@@ -923,6 +923,8 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke CreateDialogParam,hInstance,IDD_DLGSONAR,hWin,addr SonarOptionProc,0
 			.elseif eax==IDM_OPTION_GAIN
 				invoke DialogBoxParam,hInstance,IDD_DLGSONARGAIN,hWin,addr SonarGainOptionProc,0
+			.elseif eax==IDM_OPTION_GPS
+				invoke DialogBoxParam,hInstance,IDD_DLGGPSSETUP,hWin,addr GPSOptionProc,0
 ;Context
 			.elseif eax==IDM_EDITPLACE
 				invoke DialogBoxParam,hInstance,IDD_DLGADDPLACE,hWin,addr AddPlaceProc,nPlace
@@ -1179,6 +1181,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke MoveWindow,hGPS,rect.right,rect.bottom,ebx,360,TRUE
 			.else
 				invoke MoveWindow,hSonar,rect.right,0,ebx,rect.bottom,TRUE
+				invoke MoveWindow,hGPS,rect.right,rect.bottom,0,0,TRUE
 			.endif
 			pop		rect.bottom
 			sub		rect.right,4
@@ -1299,6 +1302,10 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke ReleaseCapture
 		.endif
 	.elseif eax==WM_CLOSE
+		.if hCom
+			invoke CloseHandle,hCom
+			mov		hCom,0
+		.endif
 		invoke SaveStatus
 		invoke ShowWindow,hWin,SW_HIDE
 		; Terminate GPS Thread
@@ -1392,6 +1399,7 @@ WinMain proc hInst:HINSTANCE,hPrevInst:HINSTANCE,CmdLine:LPSTR,CmdShow:DWORD
 	invoke InitFonts
 	invoke InitMaps
 	invoke LoadSonarFromIni
+	invoke LoadGPSFromIni
 	invoke CreateDialogParam,hInstance,IDD_DIALOG,NULL,addr WndProc,NULL
 	invoke ShowWindow,hWnd,SW_SHOWNORMAL
 	invoke UpdateWindow,hWnd
@@ -1415,23 +1423,23 @@ WinMain proc hInst:HINSTANCE,hPrevInst:HINSTANCE,CmdLine:LPSTR,CmdShow:DWORD
 
 WinMain endp
 
-;NMEACheckSum proc
-;
-;.data
-;;NMEAstr		db 'PSRF100,1,4800,8,1,0',0
-;NMEAstr		db 'PSRF103,03,00,05,00',0
-;.code
-;
-;	mov		edx,offset NMEAstr
-;	xor		eax,eax
-;	.while byte ptr [edx]
-;		xor		al,[edx]
-;		inc		edx
-;	.endw
-;	PrintHex al
-;	ret
-;
-;NMEACheckSum endp
+NMEACheckSum proc
+
+.data
+;NMEAstr		db 'PSRF100,1,4800,8,1,0',0
+NMEAstr		db 'PSRF103,03,00,05,00',0
+.code
+
+	mov		edx,offset NMEAstr
+	xor		eax,eax
+	.while byte ptr [edx]
+		xor		al,[edx]
+		inc		edx
+	.endw
+	PrintHex al
+	ret
+
+NMEACheckSum endp
 
 start:
 

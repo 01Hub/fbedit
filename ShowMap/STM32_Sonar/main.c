@@ -88,7 +88,7 @@ int main(void)
   /* TIM3 configuration */
   TIM3_Configuration();
   /* ADC1 configuration */
-//  ADC_Startup();
+  ADC_Startup();
   /* ADC1 injected channel configuration */
   ADC_Configuration();
   /* Enable DAC channel1 */
@@ -110,7 +110,7 @@ int main(void)
   rs232_puts("$PSRF103,02,00,00,01*26\r\n\0");
   if (STM32_Sonar.Setup)
   {
-    /* Enable GSV message */
+    /* Enable GSV message without checksum, rate 5 second */
     rs232_puts("$PSRF103,03,00,05,00*23\r\n\0");
     /* Disable RMC message */
     rs232_puts("$PSRF103,04,00,00,01*20\r\n\0");
