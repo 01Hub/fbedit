@@ -1176,9 +1176,9 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			sub		rect.right,ebx
 			push	rect.bottom
 			.if sonardata.fGSV
-				sub		rect.bottom,360
+				sub		rect.bottom,SATHT
 				invoke MoveWindow,hSonar,rect.right,0,ebx,rect.bottom,TRUE
-				invoke MoveWindow,hGPS,rect.right,rect.bottom,ebx,360,TRUE
+				invoke MoveWindow,hGPS,rect.right,rect.bottom,ebx,SATHT,TRUE
 			.else
 				invoke MoveWindow,hSonar,rect.right,0,ebx,rect.bottom,TRUE
 				invoke MoveWindow,hGPS,rect.right,rect.bottom,0,0,TRUE
@@ -1389,8 +1389,8 @@ WinMain proc hInst:HINSTANCE,hPrevInst:HINSTANCE,CmdLine:LPSTR,CmdShow:DWORD
 
 	mov		wc.lpfnWndProc,offset GPSProc
 	mov		wc.lpszClassName,offset szGPSClassName
-	invoke GetStockObject,BLACK_BRUSH
-	mov		wc.hbrBackground,eax
+;	invoke GetStockObject,BLACK_BRUSH
+;	mov		wc.hbrBackground,eax
 	invoke RegisterClassEx,addr wc
 
 	invoke LoadMapPoints
