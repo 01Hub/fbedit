@@ -193,54 +193,6 @@ SetupPixelTimer proc uses ebx edi
 
 SetupPixelTimer endp
 
-SetupGainArray proc uses ebx esi edi
-	LOCAL	tmp:DWORD
-	LOCAL	ftmp1:REAL8
-	LOCAL	ftmp2:REAL8
-
-;	;Calculate the missing gain levels
-;	xor		ebx,ebx
-;	xor		edi,edi
-;	.while ebx<sonardata.MaxRange
-;		xor		esi,esi
-;		mov		ecx,sonardata.sonarrange.gain[edi+esi*DWORD]
-;		.while esi<MAXYECHO
-;			mov		eax,sonardata.sonarrange.gain[edi+esi*DWORD+32*DWORD]
-;			push	eax
-;			sub		eax,ecx
-;			mov		tmp,eax
-;			fild	tmp
-;			mov		tmp,32
-;			fild	tmp
-;			fdivp	st(1),st
-;			fstp	ftmp1
-;			mov		tmp,ecx
-;			fild	tmp
-;			fstp	ftmp2
-;			push	ebx
-;			mov		ebx,1
-;			.while ebx<32
-;				fld		ftmp1
-;				fld		ftmp2
-;				faddp	st(1),st
-;				fst		ftmp2
-;				fistp	tmp
-;				mov		eax,tmp
-;				lea		edx,[esi+ebx]
-;				mov		sonardata.sonarrange.gain[edi+edx*DWORD],eax
-;				inc		ebx
-;			.endw
-;			pop		ebx
-;			pop		ecx
-;			lea		esi,[esi+32]
-;		.endw
-;		lea		edi,[edi+sizeof RANGE]
-;		inc		ebx
-;	.endw
-	ret
-
-SetupGainArray endp
-
 SonarOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	hDC:HDC
 
@@ -708,7 +660,6 @@ SonarGainOptionProc proc uses ebx esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:L
 				mov		eax,pgain
 				.if dword ptr [eax]
 					dec		dword ptr [eax]
-					invoke SetupGainArray
 					call	Invalidate
 					inc		sonardata.fGainUpload
 				.endif
@@ -716,7 +667,6 @@ SonarGainOptionProc proc uses ebx esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:L
 				mov		eax,pgain
 				.if dword ptr [eax]<10000
 					inc		dword ptr [eax]
-					invoke SetupGainArray
 					call	Invalidate
 					inc		sonardata.fGainUpload
 				.endif
@@ -2793,7 +2743,6 @@ LoadSonarFromIni proc uses ebx esi edi
 	;Store the number of range definitions read from ini
 	mov		sonardata.MaxRange,ebx
 	invoke SetupPixelTimer
-	invoke SetupGainArray
 	ret
 
 LoadSonarFromIni endp

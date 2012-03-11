@@ -26,6 +26,38 @@ include Sonar.asm
 
 .code
 
+LoadWinPos proc
+	LOCAL	buffer[256]:BYTE
+
+	invoke GetPrivateProfileString,addr szIniWin,addr szIniWin,addr szNULL,addr buffer,sizeof buffer,addr szIniFileName
+	invoke GetItemInt,addr buffer,10
+	mov		winrect.left,eax
+	invoke GetItemInt,addr buffer,10
+	mov		winrect.top,eax
+	invoke GetItemInt,addr buffer,800
+	mov		winrect.right,eax
+	invoke GetItemInt,addr buffer,600
+	mov		winrect.bottom,eax
+	invoke GetItemInt,addr buffer,0
+	mov		fMaximize,eax
+	ret
+
+LoadWinPos endp
+
+SaveWinPos proc
+	LOCAL	buffer[256]:BYTE
+
+	mov		buffer,0
+	invoke PutItemInt,addr buffer,winrect.left
+	invoke PutItemInt,addr buffer,winrect.top
+	invoke PutItemInt,addr buffer,winrect.right
+	invoke PutItemInt,addr buffer,winrect.bottom
+	invoke PutItemInt,addr buffer,fMaximize
+	invoke WritePrivateProfileString,addr szIniWin,addr szIniWin,addr buffer[1],addr szIniFileName
+	ret
+
+SaveWinPos endp
+
 InitMaps proc uses ebx
 	LOCAL	buffer[MAX_PATH]:BYTE
 
@@ -737,6 +769,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		lpOldButtonProc,eax
 		invoke GetDlgItem,hWin,IDC_BTNRANGEUP
 		invoke SetWindowLong,eax,GWL_WNDPROC,offset ButtonProc
+		invoke MoveWindow,hWin,winrect.left,winrect.top,winrect.right,winrect.bottom,FALSE
 	.elseif eax==WM_COMMAND
 		mov		edx,wParam
 		movzx	eax,dx
@@ -1302,6 +1335,19 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke ReleaseCapture
 		.endif
 	.elseif eax==WM_CLOSE
+		invoke IsIconic,hWin
+		.if !eax
+			invoke IsZoomed,hWin
+			mov		fMaximize,eax
+			.if !eax
+				invoke GetWindowRect,hWin,addr winrect
+				mov		eax,rect.left
+				sub		rect.right,eax
+				mov		eax,rect.top
+				sub		rect.bottom,eax
+			.endif
+		.endif
+		invoke SaveWinPos
 		.if hCom
 			invoke CloseHandle,hCom
 			mov		hCom,0
@@ -1324,7 +1370,6 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.if sonardata.fSTLink && sonardata.fSTLink!=IDIGNORE
 			invoke STLinkDisconnect
 		.endif
-
 		mov		fExitMapThread,TRUE
 		invoke WaitForSingleObject,hMapThread,3000
 		.if eax==WAIT_TIMEOUT
@@ -1389,10 +1434,9 @@ WinMain proc hInst:HINSTANCE,hPrevInst:HINSTANCE,CmdLine:LPSTR,CmdShow:DWORD
 
 	mov		wc.lpfnWndProc,offset GPSProc
 	mov		wc.lpszClassName,offset szGPSClassName
-;	invoke GetStockObject,BLACK_BRUSH
-;	mov		wc.hbrBackground,eax
 	invoke RegisterClassEx,addr wc
 
+	invoke LoadWinPos
 	invoke LoadMapPoints
 	invoke InitZoom
 	invoke InitOptions
@@ -1401,7 +1445,11 @@ WinMain proc hInst:HINSTANCE,hPrevInst:HINSTANCE,CmdLine:LPSTR,CmdShow:DWORD
 	invoke LoadSonarFromIni
 	invoke LoadGPSFromIni
 	invoke CreateDialogParam,hInstance,IDD_DIALOG,NULL,addr WndProc,NULL
-	invoke ShowWindow,hWnd,SW_SHOWNORMAL
+	mov		eax,SW_SHOWNORMAL
+	.if fMaximize
+		mov		eax,SW_SHOWMAXIMIZED
+	.endif
+	invoke ShowWindow,hWnd,eax
 	invoke UpdateWindow,hWnd
 	;Create thread that comunicates with the GPS
 	invoke CreateThread,NULL,0,addr DoGPSComm,0,0,addr tid

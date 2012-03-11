@@ -12,7 +12,7 @@ szBaudRate			BYTE '4800',0
 					BYTE '9600',0
 					BYTE '19200',0
 					BYTE '38400',0,0
-szComFailed			BYTE 'Opening com port failed.',0Dh,'Retry?',0
+szComFailed			BYTE 'Opening com port failed.',0
 
 szGPRMC				BYTE '$GPRMC',0
 szGPGSV				BYTE '$GPGSV',0
@@ -47,23 +47,27 @@ OpenCom proc
 	.endif
 	.if COMActive
 		; Setup
+	  Retry:
 		invoke CreateFile,addr COMPort,GENERIC_READ or GENERIC_WRITE,NULL,NULL,OPEN_EXISTING,NULL,NULL
 		.if eax!=INVALID_HANDLE_VALUE
 			mov		hCom,eax
 			mov		dcb.DCBlength,sizeof DCB
+			invoke GetCommState,hCom,addr dcb
 			invoke DecToBin,addr BaudRate
 			mov		dcb.BaudRate,eax
 			mov		dcb.ByteSize,8
-			mov		dcb.Parity,0
-			mov		dcb.StopBits,1
+			mov		dcb.Parity,NOPARITY
+			mov		dcb.StopBits,ONESTOPBIT
 			invoke SetCommState,hCom,addr dcb
 			mov		to.ReadTotalTimeoutConstant,1
 			mov		to.WriteTotalTimeoutConstant,10
 			invoke SetCommTimeouts,hCom,addr to
 		.else
-			invoke MessageBox,hWnd,addr szComFailed,addr COMPort,MB_ICONERROR or MB_YESNO
-			.if eax==IDNO
+			invoke MessageBox,hWnd,addr szComFailed,addr COMPort,MB_ICONERROR or MB_ABORTRETRYIGNORE
+			.if eax==IDABORT
 				invoke SendMessage,hWnd,WM_CLOSE,0,0
+			.elseif eax==IDRETRY
+				jmp		Retry
 			.endif
 		.endif
 	.endif
@@ -154,7 +158,7 @@ DoGPSComm proc uses ebx esi edi,Param:DWORD
 			mov		nRead,0
 		.elseif hCom && !sonardata.hReplay
 			xor		ebx,ebx
-GetMore:
+		  GetMore:
 			.if hCom
 		 		invoke ReadFile,hCom,addr combuff[ebx],256,addr nRead,NULL
 		 		mov		eax,nRead

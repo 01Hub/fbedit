@@ -429,6 +429,7 @@ szCRLF				BYTE 0Dh,0Ah,0
 szIniFile			BYTE 'ShowMap.ini',0					;File name of ini file
 szFishWav			BYTE '\Wav\fish.wav',0
 
+szIniWin			BYTE 'Win',0
 szIniMap			BYTE 'Map',0
 szIniMapRect		BYTE 'MapRect',0
 szIniLatArray		BYTE 'LatArray',0
@@ -514,3 +515,5 @@ sonarreplay			SONARREPLAY <>
 lpOldButtonProc		DWORD ?									;Button subclass
 fSeaMap				DWORD ?
 szFileName			BYTE MAX_PATH dup(?)					;Format string to get map tile path & filename
+winrect				RECT <>
+fMaximize			DWORD ?
