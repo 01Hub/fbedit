@@ -1357,7 +1357,7 @@ STM32Thread proc uses ebx esi edi,lParam:DWORD
 				movzx	ebx,sonardata.GPSCounter
 				.if ebx!=sonardata.nGPSCounter
 					;Download GPS array
-					invoke STLinkRead,hWnd,STM32_Sonar+16+sizeof SONAR.EchoArray+sizeof SONAR.GainArray,addr sonardata.GPSArray,80
+					invoke STLinkRead,hWnd,STM32_Sonar+16+sizeof SONAR.EchoArray+sizeof SONAR.GainArray+sizeof SONAR.GainInit,addr sonardata.GPSArray,512
 					.if !eax || eax==IDABORT || eax==IDIGNORE
 						jmp		STLinkErr
 					.endif
@@ -1540,6 +1540,11 @@ STM32Thread proc uses ebx esi edi,lParam:DWORD
 			mov		sonardata.ADCBattery,08E0h
 			mov		sonardata.ADCWaterTemp,06A0h
 			mov		sonardata.ADCAirTemp,0780h
+			invoke strcpy,addr sonardata.GPSArray[0],addr szRMC
+			invoke strcpy,addr sonardata.GPSArray[128],addr szGSV1
+			invoke strcpy,addr sonardata.GPSArray[256],addr szGSV2
+			invoke strcpy,addr sonardata.GPSArray[384],addr szGSV3
+			inc		sonardata.nGPSCounter
 		.endif
 		.if sonardata.hLog
 			;Write to log file

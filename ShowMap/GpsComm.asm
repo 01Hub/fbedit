@@ -3,6 +3,7 @@ IDD_DLGGPSSETUP		equ 1400
 IDC_EDTCOMPORT		equ 1403
 IDC_CBOBAUDRATE		equ 1404
 IDC_CHKCOMACTIVE	equ 1405
+IDC_BTNCOM			equ 1402
 IDC_CHKSATELITE		equ 1401
 
 .const
@@ -176,7 +177,10 @@ DoGPSComm proc uses ebx esi edi,Param:DWORD
 			.endif
 		.elseif eax!=nGPSCount && !sonardata.hReplay
 			mov		nGPSCount,eax
-			invoke strcpy,addr combuff,addr sonardata.GPSArray
+			invoke strcpy,addr combuff,addr sonardata.GPSArray[0]
+			invoke strcat,addr combuff,addr sonardata.GPSArray[128]
+			invoke strcat,addr combuff,addr sonardata.GPSArray[256]
+			invoke strcat,addr combuff,addr sonardata.GPSArray[384]
 			xor		ebx,ebx
 			call	GPSExec
 		.endif
@@ -527,11 +531,17 @@ GPSOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPA
 				invoke IsDlgButtonChecked,hWin,IDC_CHKSATELITE
 				mov		sonardata.fGSV,eax
 				invoke SaveGPSToIni
-				invoke OpenCom
 				invoke SendMessage,hWnd,WM_SIZE,NULL,TRUE
 				invoke SendMessage,hWin,WM_CLOSE,NULL,TRUE
 			.elseif eax==IDCANCEL
 				invoke SendMessage,hWin,WM_CLOSE,NULL,NULL
+			.elseif eax==IDC_BTNCOM
+				invoke GetDlgItemText,hWin,IDC_EDTCOMPORT,addr COMPort,5
+				invoke SendDlgItemMessage,hWin,IDC_CBOBAUDRATE,CB_GETCURSEL,0,0
+				invoke SendDlgItemMessage,hWin,IDC_CBOBAUDRATE,CB_GETLBTEXT,eax,addr BaudRate
+				invoke IsDlgButtonChecked,hWin,IDC_CHKCOMACTIVE
+				mov		COMActive,eax
+				invoke OpenCom
 			.endif
 		.endif
 	.elseif eax==WM_CLOSE
@@ -565,8 +575,8 @@ GetPointOnCircle proc uses edi,radius:DWORD,angle:DWORD,lpPoint:ptr POINT
 
 GetPointOnCircle endp
 
-SATHT		equ 215
-SATRAD		equ SATHT/2-10
+SATHT		equ 220
+SATRAD		equ SATHT/2
 SATTXTWT	equ 80
 
 GPSProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
@@ -607,9 +617,9 @@ GPSProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		rect.top,5
 		mov		rect.right,SATRAD*2+5
 		mov		rect.bottom,SATRAD*2+5
-		mov		ptcenter.x,SATHT/2
-		mov		ptcenter.y,SATHT/2
-		invoke Ellipse,mDC,rect.left,10,rect.right,SATRAD*2+10
+		mov		ptcenter.x,SATHT/2-5
+		mov		ptcenter.y,SATHT/2-5
+		invoke Ellipse,mDC,5,5,SATHT-10,SATHT-10
 		mov		eax,ptcenter.x
 		mov		edx,ptcenter.y
 		sub		eax,8
@@ -682,7 +692,9 @@ GPSProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		eax,rect.bottom
 				sub		eax,27
 				mov		srect.bottom,eax
-				sub		eax,satelites.SNR[edi]
+				mov		edx,satelites.SNR[edi]
+				shr		edx,1
+				sub		eax,edx
 				mov		srect.top,eax
 				invoke GetTextColor,mDC
 				invoke CreateSolidBrush,eax

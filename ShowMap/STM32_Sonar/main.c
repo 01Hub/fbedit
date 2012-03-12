@@ -35,11 +35,8 @@ typedef struct
   u16 GPSCounter;                               // Incremented when GPS array valid
   u8 EchoArray[MAXECHO];                        // Echo array
   u16 GainArray[MAXECHO];                       // Gain array
-  u8 GPSArray[256];                             // GPS array
-  vu8 GPSPtr;                                   // GPS array pointer
-  vu8 Setup;                                    // Setup Mode
   vu16 GainInit[17];                            // Gain setup array
-  vu16 nGSV;                                    // Number of GSV messages
+  u8 GPSArray[512];                             // GPS array
 }STM32_SonarTypeDef;
 
 /* Private macro -------------------------------------------------------------*/
@@ -61,6 +58,7 @@ void USART_Configuration(u16 Baud);
 u16 GetADCValue(u8 Channel);
 void rs232_putc(char c);
 void rs232_puts(char *str);
+void rs232_gets(char *str);
 void GainSetup(void);
 
 /* Private functions ---------------------------------------------------------*/
@@ -96,7 +94,8 @@ int main(void)
 
   if (GPIO_ReadInputDataBit(GPIOA,GPIO_Pin_0))
   {
-    STM32_Sonar.Setup=1;
+    /* Enable TIM3 */
+    TIM_Cmd(TIM3, ENABLE);
   }
   /* Setup USART1 4800 baud */
   USART_Configuration(4800);
@@ -108,20 +107,10 @@ int main(void)
   rs232_puts("$PSRF103,01,00,00,01*25\r\n\0");
   /* Disable GSA message */
   rs232_puts("$PSRF103,02,00,00,01*26\r\n\0");
-  if (STM32_Sonar.Setup)
-  {
-    /* Enable GSV message without checksum, rate 5 second */
-    rs232_puts("$PSRF103,03,00,05,00*23\r\n\0");
-    /* Disable RMC message */
-    rs232_puts("$PSRF103,04,00,00,01*20\r\n\0");
-  }
-  else
-  {
-    /* Disable GSV message */
-    rs232_puts("$PSRF103,03,00,00,01*27\r\n\0");
-    /* Enable RMC message without checksum, rate 1 second */
-    rs232_puts("$PSRF103,04,00,01,00*20\r\n\0");
-  }
+  /* Disable GSV message */
+  rs232_puts("$PSRF103,03,00,00,01*27\r\n\0");
+  /* Disable RMC message */
+  rs232_puts("$PSRF103,04,00,00,01*20\r\n\0");
   /* Disable VTG message */
   rs232_puts("$PSRF103,05,00,00,01*21\r\n\0");
 
@@ -149,6 +138,29 @@ int main(void)
       STM32_Sonar.ADCAirTemp = GetADCValue(ADC_Channel_7);
       /* Setup gain array */
       GainSetup();
+
+      /* Poll RMC message, no checksum */
+      rs232_puts("$PSRF103,04,01,00,00*20\r\n\0");
+      rs232_gets(&STM32_Sonar.GPSArray[0]);
+      /* Poll first GSV message, no checksum */
+      rs232_puts("$PSRF103,03,01,00,00*27\r\n\0");
+      STM32_Sonar.GPSArray[128]=0;
+      STM32_Sonar.GPSArray[128+7]=0;
+      rs232_gets(&STM32_Sonar.GPSArray[128]);
+      STM32_Sonar.GPSArray[256]=0;
+      STM32_Sonar.GPSArray[384]=0;
+      i=STM32_Sonar.GPSArray[128+7] & 3;
+      if (i>1)
+      {
+        /* Poll 2nd GSV message */
+        rs232_gets(&STM32_Sonar.GPSArray[256]);
+      }
+      if (i>2)
+      {
+        /* Poll 3rd GSV message */
+        rs232_gets(&STM32_Sonar.GPSArray[384]);
+      }
+
       /* Clear the echo array */
       i = 1;
       while (i < MAXECHO)
@@ -174,11 +186,6 @@ int main(void)
       Ping = 0x2;
       /* Enable TIM1 */
       TIM_Cmd(TIM1, ENABLE);
-      if (STM32_Sonar.Setup)
-      {
-        /* Enable TIM3 */
-        TIM_Cmd(TIM3, ENABLE);
-      }
       /* Get the Echo array */
       while (STM32_Sonar.Start)
       {
@@ -195,8 +202,6 @@ int main(void)
       }
       /* Done, Disable TIM2 */
       TIM2->CR1 = 0;
-      /* Disable TIM3 */
-      TIM3->CR1 = 0;
       /* Disable ADC injected channel */
       ADC_AutoInjectedConvCmd(ADC1, DISABLE);
       /* Set the DAC to output lowest gain */
@@ -414,6 +419,32 @@ void rs232_puts(char *str)
 }
 
 /*******************************************************************************
+* Function Name  : rs232_gets
+* Description    : This function receives a zero terminated string
+* Input          : Pointer to zero terminated string
+* Output         : None
+* Return         : None
+*******************************************************************************/
+void rs232_gets(char *str)
+{
+  vu32 i;
+  char c;
+  /* Characters are received one at a time. */
+  i=0;
+  c=0;
+  while (i++<10000 && c!=0xA)
+  {
+    if (USART1->SR & USART_FLAG_RXNE)
+    {
+      i=0;
+      c=USART1->DR;
+      *str++=c;
+    }
+  }
+  *str=0;
+}
+
+/*******************************************************************************
 * Function Name  : USART1_IRQHandler
 * Description    : This function handles USART1 Receive interrupt request
 * Input          : None
@@ -422,42 +453,25 @@ void rs232_puts(char *str)
 *******************************************************************************/
 void USART1_IRQHandler(void)
 {
-  /* receive GPS data from the serial port */
-  vu8 c;
-  c=USART1->DR;
-  USART1->SR = (u16)~USART_FLAG_RXNE;
-  STM32_Sonar.GPSArray[STM32_Sonar.GPSPtr++]=c;
-  if (STM32_Sonar.Setup)
-  {
-    if (c==0xA)
-    {
-      if (STM32_Sonar.nGSV)
-      {
-        STM32_Sonar.nGSV--;
-      }
-      else
-      {
-        /* Get number of GSV messages - 1 */
-        STM32_Sonar.nGSV=(STM32_Sonar.GPSArray[7] & 0x3)-1;
-      }
-      if (!STM32_Sonar.nGSV)
-      {
-        STM32_Sonar.GPSArray[STM32_Sonar.GPSPtr]=0;
-        STM32_Sonar.GPSPtr=0;
-        STM32_Sonar.GPSCounter++;
-      }
-    }
-  }
-  else
-  {
-    /* Check if char is LF */
-    if (c==0xA)
-    {
-      STM32_Sonar.GPSArray[STM32_Sonar.GPSPtr]=0;
-      STM32_Sonar.GPSPtr=0;
-      STM32_Sonar.GPSCounter++;
-    }
-  }
+  // /* receive GPS data from the serial port */
+  // vu8 c;
+  // c=USART1->DR;
+  // USART1->SR = (u16)~USART_FLAG_RXNE;
+  // STM32_Sonar.GPSPtr=STM32_Sonar.GPSPtr & 511;
+  // STM32_Sonar.GPSArray[STM32_Sonar.GPSPtr++]=c;
+  // if (c==0xA)
+  // {
+    // if (STM32_Sonar.GPSArray[STM32_Sonar.StartGPSPtr+5]=='V')
+    // {
+      // if (STM32_Sonar.GPSArray[STM32_Sonar.StartGPSPtr+7]==STM32_Sonar.GPSArray[STM32_Sonar.StartGPSPtr+9])
+      // {
+        // STM32_Sonar.GPSArray[STM32_Sonar.GPSPtr]=0;
+        // STM32_Sonar.GPSPtr=0;
+        // STM32_Sonar.GPSCounter++;
+      // }
+    // }
+    // STM32_Sonar.StartGPSPtr=STM32_Sonar.GPSPtr;
+  // }
 
   // /* Get the 8 bit character */
   // asm("movw   r0,#0x3800");                   /* Get pointer to USART1 */
@@ -704,12 +718,12 @@ void NVIC_Configuration(void)
   NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
   NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
   NVIC_Init(&NVIC_InitStructure);
-	/* Enable USART1 interrupt */
-	NVIC_InitStructure.NVIC_IRQChannel = USART1_IRQChannel;
-	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
-  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
-	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-	NVIC_Init(&NVIC_InitStructure);
+	// /* Enable USART1 interrupt */
+	// NVIC_InitStructure.NVIC_IRQChannel = USART1_IRQChannel;
+	// NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
+  // NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+	// NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+	// NVIC_Init(&NVIC_InitStructure);
 }
 
 /*******************************************************************************
@@ -804,6 +818,7 @@ void USART_Configuration(u16 BaudRate)
   */
   USART_InitTypeDef USART_InitStructure;
 
+  USART_DeInit(USART1);
   USART_InitStructure.USART_BaudRate = BaudRate;
   USART_InitStructure.USART_WordLength = USART_WordLength_8b;
   USART_InitStructure.USART_StopBits = USART_StopBits_1;
@@ -811,9 +826,9 @@ void USART_Configuration(u16 BaudRate)
   USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
   USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;
   USART_Init(USART1, &USART_InitStructure);
-  /* Enable the USART Receive interrupt: this interrupt is generated when the 
-     USART1 receive data register is not empty */
-  USART_ITConfig(USART1, USART_IT_RXNE, ENABLE);
+  // /* Enable the USART Receive interrupt: this interrupt is generated when the 
+     // USART1 receive data register is not empty */
+  // USART_ITConfig(USART1, USART_IT_RXNE, ENABLE);
   /* Enable the USART2 */
   USART_Cmd(USART1, ENABLE);
 }
