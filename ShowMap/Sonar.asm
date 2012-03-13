@@ -1230,21 +1230,21 @@ STM32Thread proc uses ebx esi edi,lParam:DWORD
 			;Copy old echo
 			call	MoveEcho
 			;Read echo from file
-			.if sonarreplay.Version<200
+			.if sonarreplay200.Version<200
 				invoke ReadFile,sonardata.hReplay,addr STM32Echo,MAXYECHO,addr dwread,NULL
 			.else
-				invoke ReadFile,sonardata.hReplay,addr sonarreplay,sizeof SONARREPLAY,addr dwread,NULL
-				.if dwread==sizeof SONARREPLAY
+				invoke ReadFile,sonardata.hReplay,addr sonarreplay200,sizeof SONARREPLAY200,addr dwread,NULL
+				.if dwread==sizeof SONARREPLAY200
 					mov		map.fcursor,TRUE
-					movzx	eax,sonarreplay.SoundSpeed
+					movzx	eax,sonarreplay200.SoundSpeed
 					mov		sonardata.SoundSpeed,eax
-					mov		ax,sonarreplay.ADCBattery
+					mov		ax,sonarreplay200.ADCBattery
 					mov		sonardata.ADCBattery,ax
-					mov		ax,sonarreplay.ADCWaterTemp
+					mov		ax,sonarreplay200.ADCWaterTemp
 					mov		sonardata.ADCWaterTemp,ax
-					mov		ax,sonarreplay.ADCAirTemp
+					mov		ax,sonarreplay200.ADCAirTemp
 					mov		sonardata.ADCAirTemp,ax
-					mov		eax,sonarreplay.iTime
+					mov		eax,sonarreplay200.iTime
 					mov		map.iTime,eax
 					mov		ecx,eax
 					movzx	edx,ax
@@ -1266,13 +1266,13 @@ STM32Thread proc uses ebx esi edi,lParam:DWORD
 					movzx	eax,lst.wDay
 					push	eax
 					invoke wsprintf,addr map.options.text[sizeof OPTIONS*4],offset szFmtTime
-					mov		eax,sonarreplay.iLon
+					mov		eax,sonarreplay200.iLon
 					mov		map.iLon,eax
-					mov		eax,sonarreplay.iLat
+					mov		eax,sonarreplay200.iLat
 					mov		map.iLat,eax
-					movzx	eax,sonarreplay.iSpeed
+					movzx	eax,sonarreplay200.iSpeed
 					mov		map.iSpeed,eax
-					movzx	eax,sonarreplay.iBear
+					movzx	eax,sonarreplay200.iBear
 					mov		map.iBear,eax
 					invoke SetGPSCursor
 					mov		eax,map.iLon
@@ -1284,7 +1284,7 @@ STM32Thread proc uses ebx esi edi,lParam:DWORD
 						invoke SetDlgItemInt,hWnd,IDC_EDTEAST,map.iLon,TRUE
 						invoke SetDlgItemInt,hWnd,IDC_EDTNORTH,map.iLat,TRUE
 						invoke SetDlgItemInt,hWnd,IDC_EDTBEAR,map.iBear,FALSE
-						movzx	eax,sonarreplay.iSpeed
+						movzx	eax,sonarreplay200.iSpeed
 						invoke wsprintf,addr buffer,addr szFmtDec2,eax
 						invoke strlen,addr buffer
 						movzx	ecx,word ptr buffer[eax-1]
@@ -1357,7 +1357,7 @@ STM32Thread proc uses ebx esi edi,lParam:DWORD
 				movzx	ebx,sonardata.GPSCounter
 				.if ebx!=sonardata.nGPSCounter
 					;Download GPS array
-					invoke STLinkRead,hWnd,STM32_Sonar+16+sizeof SONAR.EchoArray+sizeof SONAR.GainArray+sizeof SONAR.GainInit,addr sonardata.GPSArray,512
+					invoke STLinkRead,hWnd,STM32_Sonar+16+sizeof SONAR.EchoArray+sizeof SONAR.GainArray+sizeof SONAR.GainInit,addr sonardata.GPSArray,384
 					.if !eax || eax==IDABORT || eax==IDIGNORE
 						jmp		STLinkErr
 					.endif
@@ -1541,38 +1541,36 @@ STM32Thread proc uses ebx esi edi,lParam:DWORD
 			mov		sonardata.ADCWaterTemp,06A0h
 			mov		sonardata.ADCAirTemp,0780h
 			invoke strcpy,addr sonardata.GPSArray[0],addr szRMC
-			invoke strcpy,addr sonardata.GPSArray[128],addr szGSV1
-			invoke strcpy,addr sonardata.GPSArray[256],addr szGSV2
-			invoke strcpy,addr sonardata.GPSArray[384],addr szGSV3
+			invoke strcpy,addr sonardata.GPSArray[128],addr szGSV
 			inc		sonardata.nGPSCounter
 		.endif
 		.if sonardata.hLog
 			;Write to log file
-			mov		sonarreplay.Version,200
+			mov		sonarreplay200.Version,200
 			mov		al,sonardata.PingPulses
-			mov		sonarreplay.PingPulses,al
+			mov		sonarreplay200.PingPulses,al
 			mov		eax,sonardata.GainSet
-			mov		sonarreplay.GainSet,ax
+			mov		sonarreplay200.GainSet,ax
 			mov		eax,sonardata.SoundSpeed
-			mov		sonarreplay.SoundSpeed,ax
-			mov		sonarreplay.ADCBattery,ax
+			mov		sonarreplay200.SoundSpeed,ax
+			mov		sonarreplay200.ADCBattery,ax
 			mov		ax,sonardata.ADCBattery
-			mov		sonarreplay.ADCBattery,ax
+			mov		sonarreplay200.ADCBattery,ax
 			mov		ax,sonardata.ADCWaterTemp
-			mov		sonarreplay.ADCWaterTemp,ax
+			mov		sonarreplay200.ADCWaterTemp,ax
 			mov		ax,sonardata.ADCAirTemp
-			mov		sonarreplay.ADCAirTemp,ax
+			mov		sonarreplay200.ADCAirTemp,ax
 			mov		eax,map.iTime
-			mov		sonarreplay.iTime,eax
+			mov		sonarreplay200.iTime,eax
 			mov		eax,map.iLon
-			mov		sonarreplay.iLon,eax
+			mov		sonarreplay200.iLon,eax
 			mov		eax,map.iLat
-			mov		sonarreplay.iLat,eax
+			mov		sonarreplay200.iLat,eax
 			mov		eax,map.iSpeed
-			mov		sonarreplay.iSpeed,ax
+			mov		sonarreplay200.iSpeed,ax
 			mov		eax,map.iBear
-			mov		sonarreplay.iBear,ax
-			invoke WriteFile,sonardata.hLog,addr sonarreplay,sizeof SONARREPLAY,addr dwwrite,NULL
+			mov		sonarreplay200.iBear,ax
+			invoke WriteFile,sonardata.hLog,addr sonarreplay200,sizeof SONARREPLAY200,addr dwwrite,NULL
 			invoke WriteFile,sonardata.hLog,addr STM32Echo,MAXYECHO,addr dwwrite,NULL
 		.endif
 		movzx	eax,STM32Echo
@@ -2912,6 +2910,7 @@ SonarProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke CreateCompatibleBitmap,ps.hdc,rect.right,rect.bottom
 		invoke SelectObject,mDC,eax
 		push	eax
+		invoke SetStretchBltMode,mDC,COLORONCOLOR
 		invoke FillRect,mDC,addr rect,sonardata.hBrBack
 		;Draw echo
 		mov		eax,RANGESCALE
@@ -2921,7 +2920,7 @@ SonarProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		ecx,MAXXECHO
 		sub		ecx,rect.right
 		invoke StretchBlt,mDC,0,6,rect.right,rect.bottom,sonardata.mDC,ecx,0,rect.right,MAXYECHO,SRCCOPY
-		;Draw signal
+		;Draw signal bar
 		add		rect.right,RANGESCALE
 		invoke StretchBlt,mDC,rect.right,6,sonardata.SignalBarWt,rect.bottom,sonardata.mDCS,0,0,sonardata.SignalBarWt,MAXYECHO,SRCCOPY
 		mov		eax,sonardata.SignalBarWt
@@ -2944,8 +2943,8 @@ SonarProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke SetScrollPos,hWin,SB_HORZ,eax,TRUE
 				pop		eax
 				mov		ecx,MAXYECHO
-				.if sonarreplay.Version>=200
-					add		ecx,sizeof SONARREPLAY
+				.if sonarreplay200.Version>=200
+					add		ecx,sizeof SONARREPLAY200
 				.endif
 				mul		ecx
 				invoke SetFilePointer,sonardata.hReplay,eax,NULL,FILE_BEGIN
@@ -2958,8 +2957,8 @@ SonarProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke SetScrollPos,hWin,SB_HORZ,eax,TRUE
 				pop		eax
 				mov		ecx,MAXYECHO
-				.if sonarreplay.Version>=200
-					add		ecx,sizeof SONARREPLAY
+				.if sonarreplay200.Version>=200
+					add		ecx,sizeof SONARREPLAY200
 				.endif
 				mul		ecx
 				invoke SetFilePointer,sonardata.hReplay,eax,NULL,FILE_BEGIN
@@ -2975,8 +2974,8 @@ SonarProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke SetScrollPos,hWin,SB_HORZ,eax,TRUE
 				pop		eax
 				mov		ecx,MAXYECHO
-				.if sonarreplay.Version>=200
-					add		ecx,sizeof SONARREPLAY
+				.if sonarreplay200.Version>=200
+					add		ecx,sizeof SONARREPLAY200
 				.endif
 				mul		ecx
 				invoke SetFilePointer,sonardata.hReplay,eax,NULL,FILE_BEGIN
@@ -2989,8 +2988,8 @@ SonarProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke SetScrollPos,hWin,SB_HORZ,eax,TRUE
 				pop		eax
 				mov		ecx,MAXYECHO
-				.if sonarreplay.Version>=200
-					add		ecx,sizeof SONARREPLAY
+				.if sonarreplay200.Version>=200
+					add		ecx,sizeof SONARREPLAY200
 				.endif
 				mul		ecx
 				invoke SetFilePointer,sonardata.hReplay,eax,NULL,FILE_BEGIN
@@ -3006,8 +3005,8 @@ SonarProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke SetScrollPos,hWin,SB_HORZ,eax,TRUE
 				pop		eax
 				mov		ecx,MAXYECHO
-				.if sonarreplay.Version>=200
-					add		ecx,sizeof SONARREPLAY
+				.if sonarreplay200.Version>=200
+					add		ecx,sizeof SONARREPLAY200
 				.endif
 				mul		ecx
 				invoke SetFilePointer,sonardata.hReplay,eax,NULL,FILE_BEGIN

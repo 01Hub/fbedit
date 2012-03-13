@@ -376,7 +376,14 @@ SONAR struct
 	fShowSat		DWORD ?
 SONAR ends
 
-SONARREPLAY struct
+SATELITE struct
+	SatelliteID		BYTE ?
+	Elevation		BYTE ?
+	Azimuth			WORD ?
+	SNR				WORD ?
+SATELITE ends
+
+SONARREPLAY200 struct
 	Version			BYTE ?									;200
 	PingPulses		BYTE ?									;Number of pulses in a ping (0 to 128)
 	GainSet			WORD ?									;Gain set level (0 to 4095)
@@ -389,14 +396,7 @@ SONARREPLAY struct
 	iLat			DWORD ?									;Lattitude, integer
 	iSpeed			WORD ?									;Speed in kts
 	iBear			WORD ?									;Degrees
-SONARREPLAY ends
-
-SATELITE struct
-	SatelliteID		DWORD ?
-	Elevation		DWORD ?
-	Azimuth			DWORD ?
-	SNR				DWORD ?
-SATELITE ends
+SONARREPLAY200 ends
 
 TEMP struct
 	adcvalue		DWORD ?									;Value rad from ADC
@@ -481,9 +481,9 @@ atemp				TEMP <3000,-200>,<2900,-150>,<2800,-100>,<2700,-50>,<2600,0>,<2522,50>,
 						 <2015,150>,<1820,200>,<1610,250>,<1441,300>,<1268,350>,<1116,400>,<980,450>
 
 szRMC				BYTE '$GPRMC,193409,A,6619.0367,N,01411.8237,E,0.0,356.4,230710,2.0,E',0Dh,0Ah,0
-szGSV1				BYTE '$GPGSV,3,1,12,21,64,118,40,6,53,259,,16,52,213,,3,38,272,',0Dh,0Ah,0
-szGSV2				BYTE '$GPGSV,3,2,12,18,29,140,36,24,27,216,40,7,24,329,38,26,13,59,38',0Dh,0Ah,0
-szGSV3				BYTE '$GPGSV,3,3,12,5,13,27,,29,12,108,,19,10,275,,15,9,76,',0Dh,0Ah,0
+szGSV				BYTE '$GPGSV,3,1,12,21,64,118,40,6,53,259,,16,52,213,,3,38,272,',0Dh,0Ah
+					BYTE '$GPGSV,3,2,12,18,29,140,36,24,27,216,40,7,24,329,38,26,13,59,38',0Dh,0Ah
+					BYTE '$GPGSV,3,3,12,5,13,27,,29,12,108,,19,10,275,,15,9,76,',0Dh,0Ah,0
 
 .data?
 
@@ -515,7 +515,7 @@ satelites			SATELITE 12 dup(<>)						;Data for 12 satelites
 hSplittV			HCURSOR ?								;Horizontal splitt cursor
 rseed				DWORD ?									;Random seed
 STM32Echo			BYTE MAXYECHO*4 dup(?)					;Echo work area
-sonarreplay			SONARREPLAY <>							;Sonar replay record
+sonarreplay200		SONARREPLAY200 <>						;Sonar replay record version 200
 lpOldButtonProc		DWORD ?									;Button subclass
 fSeaMap				DWORD ?									;If TRUE sea map is shown
 szFileName			BYTE MAX_PATH dup(?)					;Format string to get map tile path & filename

@@ -177,8 +177,6 @@ DoGPSComm proc uses ebx esi edi,Param:DWORD
 			mov		nGPSCount,eax
 			invoke strcpy,addr combuff,addr sonardata.GPSArray[0]
 			invoke strcat,addr combuff,addr sonardata.GPSArray[128]
-			invoke strcat,addr combuff,addr sonardata.GPSArray[256]
-			invoke strcat,addr combuff,addr sonardata.GPSArray[384]
 			xor		ebx,ebx
 			call	GPSExec
 		.endif
@@ -235,13 +233,13 @@ GPSExec:
 					mov		edi,SatPtr
 					.while nSatelites && ebx<4
 						invoke GetItemInt,addr linebuff,0			;Satellite ID
-						mov		satelites.SatelliteID[edi],eax
+						mov		satelites.SatelliteID[edi],al
 						invoke GetItemInt,addr linebuff,0			;Elevation
-						mov		satelites.Elevation[edi],eax
+						mov		satelites.Elevation[edi],al
 						invoke GetItemInt,addr linebuff,0			;Azimuth
-						mov		satelites.Azimuth[edi],eax
+						mov		satelites.Azimuth[edi],ax
 						invoke GetItemInt,addr linebuff,0			;SNR
-						mov		satelites.SNR[edi],eax
+						mov		satelites.SNR[edi],ax
 						lea		edi,[edi+sizeof SATELITE]
 						inc		ebx
 						dec		nSatelites
@@ -618,13 +616,13 @@ GPSProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 ;				invoke GetPointOnCircle,SATRAD,satelites.Elevation[edi],addr pt
 ;				mov		ecx,pt.x
 				mov		eax,90
-				sub		eax,satelites.Elevation[edi]
+				sub		al,satelites.Elevation[edi]
 				mov		ecx,SATRAD
 				mul		ecx
 				mov		ecx,180/2
 				div		ecx
 				mov		ecx,eax
-				mov		edx,satelites.Azimuth[edi]
+				movzx	edx,satelites.Azimuth[edi]
 				; North is 0 deg, sub 90 deg
 				sub		edx,90
 				invoke GetPointOnCircle,ecx,edx,addr pt
@@ -634,13 +632,17 @@ GPSProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		eax,ptcenter.y
 				sub		eax,8
 				add		pt.y,eax
-				invoke wsprintf,addr buffer,addr szFmtDec2,satelites.SatelliteID[edi]
+				movzx	eax,satelites.SatelliteID[edi]
+				invoke wsprintf,addr buffer,addr szFmtDec2,eax
 				invoke strcat,addr buffer,addr szColon
-				invoke wsprintf,addr buffer[4],addr szFmtDec2,satelites.SNR[edi]
+				movzx	eax,satelites.SNR[edi]
+				invoke wsprintf,addr buffer[4],addr szFmtDec2,eax
 				invoke strcat,addr buffer,addr szColon+1
-				invoke wsprintf,addr buffer[7],addr szFmtDec2,satelites.Elevation[edi]
+				movzx	eax,satelites.Elevation[edi]
+				invoke wsprintf,addr buffer[7],addr szFmtDec2,eax
 				invoke strcat,addr buffer,addr szColon+1
-				invoke wsprintf,addr buffer[10],addr szFmtDec3,satelites.Azimuth[edi]
+				movzx	eax,satelites.Azimuth[edi]
+				invoke wsprintf,addr buffer[10],addr szFmtDec3,eax
 				.if satelites.SNR[edi]
 					push	08000h
 					mov		eax,29
@@ -669,7 +671,7 @@ GPSProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		eax,rect.bottom
 				sub		eax,27
 				mov		srect.bottom,eax
-				mov		edx,satelites.SNR[edi]
+				movzx	edx,satelites.SNR[edi]
 				shr		edx,1
 				sub		eax,edx
 				mov		srect.top,eax

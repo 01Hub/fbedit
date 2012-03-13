@@ -924,14 +924,14 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						invoke CreateFile,addr buffer,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL
 						.if eax!=INVALID_HANDLE_VALUE
 							mov		ebx,eax
-							invoke ReadFile,ebx,addr sonarreplay,1,addr dwread,NULL
+							invoke ReadFile,ebx,addr sonarreplay200,1,addr dwread,NULL
 							invoke SetFilePointer,ebx,0,NULL,FILE_BEGIN
 							invoke EnableScrollBar,hSonar,SB_HORZ,ESB_ENABLE_BOTH
 							invoke GetFileSize,ebx,NULL
 							shr		eax,9
 							invoke SetScrollRange,hSonar,SB_HORZ,0,eax,TRUE
 							invoke SonarClear
-							.if sonarreplay.Version>=200
+							.if sonarreplay200.Version>=200
 								mov		npos,0
 								mov		map.trailhead,0
 								mov		map.trailtail,0
@@ -1286,7 +1286,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke GetDlgItem,hWin,IDC_SHP3
 		mov		edx,rect.right
 		sub		edx,7
-		invoke MoveWindow,eax,edx,rect.top,95,3,TRUE
+		invoke MoveWindow,eax,edx,rect.top,95,2,TRUE
 		add		rect.top,13
 		invoke GetDlgItem,hWin,IDC_CHKCHART
 		invoke MoveWindow,eax,rect.right,rect.top,80,16,TRUE
@@ -1353,10 +1353,10 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			mov		fMaximize,eax
 			.if !eax
 				invoke GetWindowRect,hWin,addr winrect
-				mov		eax,rect.left
-				sub		rect.right,eax
-				mov		eax,rect.top
-				sub		rect.bottom,eax
+				mov		eax,winrect.left
+				sub		winrect.right,eax
+				mov		eax,winrect.top
+				sub		winrect.bottom,eax
 			.endif
 		.endif
 		invoke SaveWinPos

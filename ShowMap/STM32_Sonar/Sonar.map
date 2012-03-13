@@ -699,7 +699,7 @@ END GROUP
  *(.flashtext)
                 0x0800010c                . = ALIGN (0x4)
 
-.text           0x0800010c     0x15f8
+.text           0x0800010c     0x15b0
                 0x0800010c                . = ALIGN (0x4)
  *(.text)
  *(.text.*)
@@ -742,311 +742,311 @@ END GROUP
                 0x0800038c       0x18 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.o
                 0x0800038c                rs232_puts
  .text.rs232_gets
-                0x080003a4       0x4c C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.o
+                0x080003a4       0x44 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.o
                 0x080003a4                rs232_gets
  .text.ADC_Startup
-                0x080003f0       0x8c C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.o
-                0x080003f0                ADC_Startup
+                0x080003e8       0x8c C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.o
+                0x080003e8                ADC_Startup
  .text.ADC_Configuration
-                0x0800047c       0x54 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.o
-                0x0800047c                ADC_Configuration
+                0x08000474       0x54 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.o
+                0x08000474                ADC_Configuration
  .text.RCC_Configuration
-                0x080004d0       0x98 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.o
-                0x080004d0                RCC_Configuration
+                0x080004c8       0x98 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.o
+                0x080004c8                RCC_Configuration
  .text.GPIO_Configuration
-                0x08000568       0xb0 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.o
-                0x08000568                GPIO_Configuration
+                0x08000560       0xb0 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.o
+                0x08000560                GPIO_Configuration
  .text.NVIC_Configuration
-                0x08000618       0x6c C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.o
-                0x08000618                NVIC_Configuration
+                0x08000610       0x6c C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.o
+                0x08000610                NVIC_Configuration
  .text.TIM1_Configuration
-                0x08000684       0x4c C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.o
-                0x08000684                TIM1_Configuration
+                0x0800067c       0x4c C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.o
+                0x0800067c                TIM1_Configuration
  .text.TIM2_Configuration
-                0x080006d0       0x50 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.o
-                0x080006d0                TIM2_Configuration
+                0x080006c8       0x50 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.o
+                0x080006c8                TIM2_Configuration
  .text.TIM1_UP_IRQHandler
-                0x08000720       0xac C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.o
-                0x08000720                TIM1_UP_IRQHandler
+                0x08000718       0xac C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.o
+                0x08000718                TIM1_UP_IRQHandler
  .text.TIM3_Configuration
-                0x080007cc       0x4c C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.o
-                0x080007cc                TIM3_Configuration
+                0x080007c4       0x4c C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.o
+                0x080007c4                TIM3_Configuration
  .text.USART_Configuration
-                0x08000818       0x48 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.o
-                0x08000818                USART_Configuration
- .text.main     0x08000860      0x244 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.o
-                0x08000860                main
+                0x08000810       0x48 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.o
+                0x08000810                USART_Configuration
+ .text.main     0x08000858      0x204 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.o
+                0x08000858                main
  .text.ADC_Init
-                0x08000aa4       0x50 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_adc.o
-                0x08000aa4                ADC_Init
- .text.ADC_Cmd  0x08000af4       0x18 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_adc.o
-                0x08000af4                ADC_Cmd
+                0x08000a5c       0x50 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_adc.o
+                0x08000a5c                ADC_Init
+ .text.ADC_Cmd  0x08000aac       0x18 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_adc.o
+                0x08000aac                ADC_Cmd
  .text.ADC_ResetCalibration
-                0x08000b0c        0xc C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_adc.o
-                0x08000b0c                ADC_ResetCalibration
+                0x08000ac4        0xc C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_adc.o
+                0x08000ac4                ADC_ResetCalibration
  .text.ADC_GetResetCalibrationStatus
-                0x08000b18        0x8 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_adc.o
-                0x08000b18                ADC_GetResetCalibrationStatus
+                0x08000ad0        0x8 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_adc.o
+                0x08000ad0                ADC_GetResetCalibrationStatus
  .text.ADC_StartCalibration
-                0x08000b20        0xc C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_adc.o
-                0x08000b20                ADC_StartCalibration
+                0x08000ad8        0xc C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_adc.o
+                0x08000ad8                ADC_StartCalibration
  .text.ADC_GetCalibrationStatus
-                0x08000b2c        0x8 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_adc.o
-                0x08000b2c                ADC_GetCalibrationStatus
+                0x08000ae4        0x8 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_adc.o
+                0x08000ae4                ADC_GetCalibrationStatus
  .text.ADC_SoftwareStartConvCmd
-                0x08000b34       0x18 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_adc.o
-                0x08000b34                ADC_SoftwareStartConvCmd
+                0x08000aec       0x18 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_adc.o
+                0x08000aec                ADC_SoftwareStartConvCmd
  .text.ADC_RegularChannelConfig
-                0x08000b4c       0xb4 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_adc.o
-                0x08000b4c                ADC_RegularChannelConfig
+                0x08000b04       0xb4 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_adc.o
+                0x08000b04                ADC_RegularChannelConfig
  .text.ADC_AutoInjectedConvCmd
-                0x08000c00       0x18 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_adc.o
-                0x08000c00                ADC_AutoInjectedConvCmd
+                0x08000bb8       0x18 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_adc.o
+                0x08000bb8                ADC_AutoInjectedConvCmd
  .text.ADC_InjectedChannelConfig
-                0x08000c18       0x70 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_adc.o
-                0x08000c18                ADC_InjectedChannelConfig
+                0x08000bd0       0x70 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_adc.o
+                0x08000bd0                ADC_InjectedChannelConfig
  .text.ADC_InjectedSequencerLengthConfig
-                0x08000c88       0x14 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_adc.o
-                0x08000c88                ADC_InjectedSequencerLengthConfig
+                0x08000c40       0x14 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_adc.o
+                0x08000c40                ADC_InjectedSequencerLengthConfig
  .text.ADC_GetFlagStatus
-                0x08000c9c        0xc C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_adc.o
-                0x08000c9c                ADC_GetFlagStatus
+                0x08000c54        0xc C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_adc.o
+                0x08000c54                ADC_GetFlagStatus
  .text.ADC_ClearFlag
-                0x08000ca8        0x8 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_adc.o
-                0x08000ca8                ADC_ClearFlag
+                0x08000c60        0x8 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_adc.o
+                0x08000c60                ADC_ClearFlag
  .text.FLASH_SetLatency
-                0x08000cb0       0x1c C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_flash.o
-                0x08000cb0                FLASH_SetLatency
+                0x08000c68       0x1c C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_flash.o
+                0x08000c68                FLASH_SetLatency
  .text.FLASH_PrefetchBufferCmd
-                0x08000ccc       0x1c C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_flash.o
-                0x08000ccc                FLASH_PrefetchBufferCmd
+                0x08000c84       0x1c C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_flash.o
+                0x08000c84                FLASH_PrefetchBufferCmd
  .text.GPIO_Init
-                0x08000ce8       0xc4 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_gpio.o
-                0x08000ce8                GPIO_Init
+                0x08000ca0       0xc4 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_gpio.o
+                0x08000ca0                GPIO_Init
  .text.GPIO_ReadInputDataBit
-                0x08000dac        0xc C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_gpio.o
-                0x08000dac                GPIO_ReadInputDataBit
+                0x08000d64        0xc C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_gpio.o
+                0x08000d64                GPIO_ReadInputDataBit
  .text.GPIO_ReadOutputDataBit
-                0x08000db8        0xc C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_gpio.o
-                0x08000db8                GPIO_ReadOutputDataBit
+                0x08000d70        0xc C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_gpio.o
+                0x08000d70                GPIO_ReadOutputDataBit
  .text.GPIO_SetBits
-                0x08000dc4        0x4 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_gpio.o
-                0x08000dc4                GPIO_SetBits
+                0x08000d7c        0x4 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_gpio.o
+                0x08000d7c                GPIO_SetBits
  .text.GPIO_ResetBits
-                0x08000dc8        0x4 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_gpio.o
-                0x08000dc8                GPIO_ResetBits
+                0x08000d80        0x4 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_gpio.o
+                0x08000d80                GPIO_ResetBits
  .text.GPIO_WriteBit
-                0x08000dcc        0xc C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_gpio.o
-                0x08000dcc                GPIO_WriteBit
+                0x08000d84        0xc C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_gpio.o
+                0x08000d84                GPIO_WriteBit
  .text.GPIO_Write
-                0x08000dd8        0x4 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_gpio.o
-                0x08000dd8                GPIO_Write
+                0x08000d90        0x4 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_gpio.o
+                0x08000d90                GPIO_Write
  .text.WWDG_IRQHandler
-                0x08000ddc        0x4 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_it.o
-                0x08000ddc                WWDG_IRQHandler
+                0x08000d94        0x4 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_it.o
+                0x08000d94                WWDG_IRQHandler
  .text.PVD_IRQHandler
-                0x08000de0        0x4 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_it.o
-                0x08000de0                PVD_IRQHandler
+                0x08000d98        0x4 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_it.o
+                0x08000d98                PVD_IRQHandler
  .text.TAMPER_IRQHandler
-                0x08000de4        0x4 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_it.o
-                0x08000de4                TAMPER_IRQHandler
+                0x08000d9c        0x4 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_it.o
+                0x08000d9c                TAMPER_IRQHandler
  .text.RTC_IRQHandler
-                0x08000de8        0x4 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_it.o
-                0x08000de8                RTC_IRQHandler
+                0x08000da0        0x4 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_it.o
+                0x08000da0                RTC_IRQHandler
  .text.FLASH_IRQHandler
-                0x08000dec        0x4 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_it.o
-                0x08000dec                FLASH_IRQHandler
+                0x08000da4        0x4 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_it.o
+                0x08000da4                FLASH_IRQHandler
  .text.RCC_IRQHandler
-                0x08000df0        0x4 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_it.o
-                0x08000df0                RCC_IRQHandler
+                0x08000da8        0x4 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_it.o
+                0x08000da8                RCC_IRQHandler
  .text.EXTI0_IRQHandler
-                0x08000df4        0x4 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_it.o
-                0x08000df4                EXTI0_IRQHandler
+                0x08000dac        0x4 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_it.o
+                0x08000dac                EXTI0_IRQHandler
  .text.EXTI1_IRQHandler
-                0x08000df8        0x4 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_it.o
-                0x08000df8                EXTI1_IRQHandler
+                0x08000db0        0x4 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_it.o
+                0x08000db0                EXTI1_IRQHandler
  .text.EXTI2_IRQHandler
-                0x08000dfc        0x4 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_it.o
-                0x08000dfc                EXTI2_IRQHandler
+                0x08000db4        0x4 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_it.o
+                0x08000db4                EXTI2_IRQHandler
  .text.EXTI3_IRQHandler
-                0x08000e00        0x4 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_it.o
-                0x08000e00                EXTI3_IRQHandler
+                0x08000db8        0x4 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_it.o
+                0x08000db8                EXTI3_IRQHandler
  .text.EXTI4_IRQHandler
-                0x08000e04        0x4 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_it.o
-                0x08000e04                EXTI4_IRQHandler
+                0x08000dbc        0x4 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_it.o
+                0x08000dbc                EXTI4_IRQHandler
  .text.DMA1_Channel1_IRQHandler
-                0x08000e08        0x4 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_it.o
-                0x08000e08                DMA1_Channel1_IRQHandler
+                0x08000dc0        0x4 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_it.o
+                0x08000dc0                DMA1_Channel1_IRQHandler
  .text.DMA1_Channel2_IRQHandler
-                0x08000e0c        0x4 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_it.o
-                0x08000e0c                DMA1_Channel2_IRQHandler
+                0x08000dc4        0x4 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_it.o
+                0x08000dc4                DMA1_Channel2_IRQHandler
  .text.DMA1_Channel3_IRQHandler
-                0x08000e10        0x4 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_it.o
-                0x08000e10                DMA1_Channel3_IRQHandler
+                0x08000dc8        0x4 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_it.o
+                0x08000dc8                DMA1_Channel3_IRQHandler
  .text.DMA1_Channel4_IRQHandler
-                0x08000e14        0x4 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_it.o
-                0x08000e14                DMA1_Channel4_IRQHandler
+                0x08000dcc        0x4 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_it.o
+                0x08000dcc                DMA1_Channel4_IRQHandler
  .text.DMA1_Channel5_IRQHandler
-                0x08000e18        0x4 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_it.o
-                0x08000e18                DMA1_Channel5_IRQHandler
+                0x08000dd0        0x4 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_it.o
+                0x08000dd0                DMA1_Channel5_IRQHandler
  .text.DMA1_Channel6_IRQHandler
-                0x08000e1c        0x4 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_it.o
-                0x08000e1c                DMA1_Channel6_IRQHandler
+                0x08000dd4        0x4 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_it.o
+                0x08000dd4                DMA1_Channel6_IRQHandler
  .text.DMA1_Channel7_IRQHandler
-                0x08000e20        0x4 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_it.o
-                0x08000e20                DMA1_Channel7_IRQHandler
+                0x08000dd8        0x4 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_it.o
+                0x08000dd8                DMA1_Channel7_IRQHandler
  .text.ADC1_2_IRQHandler
-                0x08000e24        0x4 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_it.o
-                0x08000e24                ADC1_2_IRQHandler
+                0x08000ddc        0x4 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_it.o
+                0x08000ddc                ADC1_2_IRQHandler
  .text.EXTI9_5_IRQHandler
-                0x08000e28        0x4 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_it.o
-                0x08000e28                EXTI9_5_IRQHandler
+                0x08000de0        0x4 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_it.o
+                0x08000de0                EXTI9_5_IRQHandler
  .text.TIM1_BRK_IRQHandler
-                0x08000e2c        0x4 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_it.o
-                0x08000e2c                TIM1_BRK_IRQHandler
+                0x08000de4        0x4 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_it.o
+                0x08000de4                TIM1_BRK_IRQHandler
  .text.TIM1_TRG_COM_IRQHandler
-                0x08000e30        0x4 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_it.o
-                0x08000e30                TIM1_TRG_COM_IRQHandler
+                0x08000de8        0x4 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_it.o
+                0x08000de8                TIM1_TRG_COM_IRQHandler
  .text.TIM1_CC_IRQHandler
-                0x08000e34        0x4 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_it.o
-                0x08000e34                TIM1_CC_IRQHandler
+                0x08000dec        0x4 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_it.o
+                0x08000dec                TIM1_CC_IRQHandler
  .text.TIM4_IRQHandler
-                0x08000e38        0x4 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_it.o
-                0x08000e38                TIM4_IRQHandler
+                0x08000df0        0x4 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_it.o
+                0x08000df0                TIM4_IRQHandler
  .text.I2C1_EV_IRQHandler
-                0x08000e3c        0x4 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_it.o
-                0x08000e3c                I2C1_EV_IRQHandler
+                0x08000df4        0x4 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_it.o
+                0x08000df4                I2C1_EV_IRQHandler
  .text.I2C1_ER_IRQHandler
-                0x08000e40        0x4 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_it.o
-                0x08000e40                I2C1_ER_IRQHandler
+                0x08000df8        0x4 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_it.o
+                0x08000df8                I2C1_ER_IRQHandler
  .text.I2C2_EV_IRQHandler
-                0x08000e44        0x4 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_it.o
-                0x08000e44                I2C2_EV_IRQHandler
+                0x08000dfc        0x4 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_it.o
+                0x08000dfc                I2C2_EV_IRQHandler
  .text.I2C2_ER_IRQHandler
-                0x08000e48        0x4 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_it.o
-                0x08000e48                I2C2_ER_IRQHandler
+                0x08000e00        0x4 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_it.o
+                0x08000e00                I2C2_ER_IRQHandler
  .text.SPI1_IRQHandler
-                0x08000e4c        0x4 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_it.o
-                0x08000e4c                SPI1_IRQHandler
+                0x08000e04        0x4 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_it.o
+                0x08000e04                SPI1_IRQHandler
  .text.SPI2_IRQHandler
-                0x08000e50        0x4 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_it.o
-                0x08000e50                SPI2_IRQHandler
+                0x08000e08        0x4 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_it.o
+                0x08000e08                SPI2_IRQHandler
  .text.USART1_IRQHandler
-                0x08000e54        0x4 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_it.o
-                0x08000e54                USART1_IRQHandler
+                0x08000e0c        0x4 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_it.o
+                0x08000e0c                USART1_IRQHandler
  .text.USART2_IRQHandler
-                0x08000e58        0x4 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_it.o
-                0x08000e58                USART2_IRQHandler
+                0x08000e10        0x4 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_it.o
+                0x08000e10                USART2_IRQHandler
  .text.USART3_IRQHandler
-                0x08000e5c        0x4 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_it.o
-                0x08000e5c                USART3_IRQHandler
+                0x08000e14        0x4 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_it.o
+                0x08000e14                USART3_IRQHandler
  .text.EXTI15_10_IRQHandler
-                0x08000e60        0x4 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_it.o
-                0x08000e60                EXTI15_10_IRQHandler
+                0x08000e18        0x4 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_it.o
+                0x08000e18                EXTI15_10_IRQHandler
  .text.RTCAlarm_IRQHandler
-                0x08000e64        0x4 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_it.o
-                0x08000e64                RTCAlarm_IRQHandler
+                0x08000e1c        0x4 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_it.o
+                0x08000e1c                RTCAlarm_IRQHandler
  .text.USBWakeUp_IRQHandler
-                0x08000e68        0x4 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_it.o
-                0x08000e68                USBWakeUp_IRQHandler
+                0x08000e20        0x4 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_it.o
+                0x08000e20                USBWakeUp_IRQHandler
  .text.NVIC_Init
-                0x08000e6c       0xac C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_nvic.o
-                0x08000e6c                NVIC_Init
+                0x08000e24       0xac C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_nvic.o
+                0x08000e24                NVIC_Init
  .text.NVIC_SetVectorTable
-                0x08000f18       0x18 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_nvic.o
-                0x08000f18                NVIC_SetVectorTable
+                0x08000ed0       0x18 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_nvic.o
+                0x08000ed0                NVIC_SetVectorTable
  .text.RCC_DeInit
-                0x08000f30       0x44 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_rcc.o
-                0x08000f30                RCC_DeInit
+                0x08000ee8       0x44 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_rcc.o
+                0x08000ee8                RCC_DeInit
  .text.RCC_HSEConfig
-                0x08000f74       0x4c C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_rcc.o
-                0x08000f74                RCC_HSEConfig
+                0x08000f2c       0x4c C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_rcc.o
+                0x08000f2c                RCC_HSEConfig
  .text.RCC_PLLConfig
-                0x08000fc0       0x18 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_rcc.o
-                0x08000fc0                RCC_PLLConfig
+                0x08000f78       0x18 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_rcc.o
+                0x08000f78                RCC_PLLConfig
  .text.RCC_PLLCmd
-                0x08000fd8        0xc C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_rcc.o
-                0x08000fd8                RCC_PLLCmd
+                0x08000f90        0xc C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_rcc.o
+                0x08000f90                RCC_PLLCmd
  .text.RCC_SYSCLKConfig
-                0x08000fe4       0x18 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_rcc.o
-                0x08000fe4                RCC_SYSCLKConfig
+                0x08000f9c       0x18 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_rcc.o
+                0x08000f9c                RCC_SYSCLKConfig
  .text.RCC_GetSYSCLKSource
-                0x08000ffc       0x10 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_rcc.o
-                0x08000ffc                RCC_GetSYSCLKSource
+                0x08000fb4       0x10 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_rcc.o
+                0x08000fb4                RCC_GetSYSCLKSource
  .text.RCC_HCLKConfig
-                0x0800100c       0x18 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_rcc.o
-                0x0800100c                RCC_HCLKConfig
+                0x08000fc4       0x18 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_rcc.o
+                0x08000fc4                RCC_HCLKConfig
  .text.RCC_PCLK1Config
-                0x08001024       0x18 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_rcc.o
-                0x08001024                RCC_PCLK1Config
+                0x08000fdc       0x18 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_rcc.o
+                0x08000fdc                RCC_PCLK1Config
  .text.RCC_PCLK2Config
-                0x0800103c       0x18 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_rcc.o
-                0x0800103c                RCC_PCLK2Config
+                0x08000ff4       0x18 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_rcc.o
+                0x08000ff4                RCC_PCLK2Config
  .text.RCC_ADCCLKConfig
-                0x08001054       0x18 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_rcc.o
-                0x08001054                RCC_ADCCLKConfig
+                0x0800100c       0x18 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_rcc.o
+                0x0800100c                RCC_ADCCLKConfig
  .text.RCC_GetClocksFreq
-                0x0800106c       0xe0 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_rcc.o
-                0x0800106c                RCC_GetClocksFreq
+                0x08001024       0xe0 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_rcc.o
+                0x08001024                RCC_GetClocksFreq
  .text.RCC_APB2PeriphClockCmd
-                0x0800114c       0x24 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_rcc.o
-                0x0800114c                RCC_APB2PeriphClockCmd
+                0x08001104       0x24 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_rcc.o
+                0x08001104                RCC_APB2PeriphClockCmd
  .text.RCC_APB1PeriphClockCmd
-                0x08001170       0x24 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_rcc.o
-                0x08001170                RCC_APB1PeriphClockCmd
+                0x08001128       0x24 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_rcc.o
+                0x08001128                RCC_APB1PeriphClockCmd
  .text.RCC_APB2PeriphResetCmd
-                0x08001194       0x24 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_rcc.o
-                0x08001194                RCC_APB2PeriphResetCmd
+                0x0800114c       0x24 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_rcc.o
+                0x0800114c                RCC_APB2PeriphResetCmd
  .text.RCC_APB1PeriphResetCmd
-                0x080011b8       0x24 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_rcc.o
-                0x080011b8                RCC_APB1PeriphResetCmd
+                0x08001170       0x24 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_rcc.o
+                0x08001170                RCC_APB1PeriphResetCmd
  .text.RCC_GetFlagStatus
-                0x080011dc       0x34 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_rcc.o
-                0x080011dc                RCC_GetFlagStatus
+                0x08001194       0x34 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_rcc.o
+                0x08001194                RCC_GetFlagStatus
  .text.RCC_WaitForHSEStartUp
-                0x08001210       0x38 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_rcc.o
-                0x08001210                RCC_WaitForHSEStartUp
+                0x080011c8       0x38 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_rcc.o
+                0x080011c8                RCC_WaitForHSEStartUp
  .text.TIM_TimeBaseInit
-                0x08001248       0x50 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_tim.o
-                0x08001248                TIM_TimeBaseInit
- .text.TIM_Cmd  0x08001298       0x20 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_tim.o
-                0x08001298                TIM_Cmd
+                0x08001200       0x50 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_tim.o
+                0x08001200                TIM_TimeBaseInit
+ .text.TIM_Cmd  0x08001250       0x20 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_tim.o
+                0x08001250                TIM_Cmd
  .text.TIM_ITConfig
-                0x080012b8       0x18 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_tim.o
-                0x080012b8                TIM_ITConfig
+                0x08001270       0x18 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_tim.o
+                0x08001270                TIM_ITConfig
  .text.TIM_ClearITPendingBit
-                0x080012d0        0xc C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_tim.o
-                0x080012d0                TIM_ClearITPendingBit
+                0x08001288        0xc C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_tim.o
+                0x08001288                TIM_ClearITPendingBit
  .text.USART_DeInit
-                0x080012dc       0xd0 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_usart.o
-                0x080012dc                USART_DeInit
+                0x08001294       0xd0 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_usart.o
+                0x08001294                USART_DeInit
  .text.USART_Init
-                0x080013ac       0xb4 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_usart.o
-                0x080013ac                USART_Init
+                0x08001364       0xb4 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_usart.o
+                0x08001364                USART_Init
  .text.USART_Cmd
-                0x08001460       0x20 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_usart.o
-                0x08001460                USART_Cmd
+                0x08001418       0x20 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_usart.o
+                0x08001418                USART_Cmd
  .text.__io_putchar
-                0x08001480      0x16c C:\Program Files\Raisonance\Ride\Lib\ARM\STM32x_io_putchar_thumb.a(STM32F10X_io_putchar.o)
-                0x08001480                __io_putchar
- .text._write   0x080015ec        0x4 C:\Program Files\Raisonance\Ride\Lib\ARM\std_sbrk_thumb.lib(write.o)
-                0x080015ec                _write
+                0x08001438      0x16c C:\Program Files\Raisonance\Ride\Lib\ARM\STM32x_io_putchar_thumb.a(STM32F10X_io_putchar.o)
+                0x08001438                __io_putchar
+ .text._write   0x080015a4        0x4 C:\Program Files\Raisonance\Ride\Lib\ARM\std_sbrk_thumb.lib(write.o)
+                0x080015a4                _write
  *(.rodata)
- .rodata        0x080015f0      0x100 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.o
- .rodata        0x080016f0       0x14 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_rcc.o
+ .rodata        0x080015a8      0x100 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.o
+ .rodata        0x080016a8       0x14 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_rcc.o
  *(.rodata*)
  *(.glue_7)
  .glue_7        0x00000000        0x0 linker stubs
  *(.glue_7t)
  .glue_7t       0x00000000        0x0 linker stubs
-                0x08001704                . = ALIGN (0x4)
-                0x08001704                _etext = .
-                0x08001704                _sidata = _etext
+                0x080016bc                . = ALIGN (0x4)
+                0x080016bc                _etext = .
+                0x080016bc                _sidata = _etext
 
-.vfp11_veneer   0x08001704        0x0
+.vfp11_veneer   0x080016bc        0x0
  .vfp11_veneer  0x00000000        0x0 linker stubs
 
-.v4_bx          0x08001704        0x0
+.v4_bx          0x080016bc        0x0
  .v4_bx         0x00000000        0x0 linker stubs
 
 .flashpatch     0x00000000        0x0
@@ -1060,7 +1060,7 @@ END GROUP
                 0x00000000                . = ALIGN (0x4)
                 0x00000000                _e_endflash = .
 
-.data           0x20000000        0x0 load address 0x08001704
+.data           0x20000000        0x0 load address 0x080016bc
                 0x20000000                . = ALIGN (0x4)
                 0x20000000                _sdata = .
                 0x20000000                _data = .
@@ -1069,7 +1069,7 @@ END GROUP
  *(.RAMtext)
                 0x20000000                . = ALIGN (0x4)
                 0x20000000                _edata = .
-                0x08001704                _eidata = ((_sidata + _edata) - _sdata)
+                0x080016bc                _eidata = ((_sidata + _edata) - _sdata)
                 0x08010000                _lastdataromaddress = 0x8010000
                 0x00000000                toobig = (_eidata > _lastdataromaddress)?!!!!!!!!! FLASH IS FULL !!!!!!!!!:0x0
 
@@ -1246,18 +1246,18 @@ END GROUP
  .debug_pubnames
                 0x00001b2e      0x25f C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_usart.o
 
-.debug_info     0x00000000     0x608a
+.debug_info     0x00000000     0x607c
  *(.debug_info .gnu.linkonce.wi.*)
- .debug_info    0x00000000      0xdd6 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.o
- .debug_info    0x00000dd6      0xb7a C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_adc.o
- .debug_info    0x00001950      0x16f C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_flash.o
- .debug_info    0x00001abf      0x690 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_gpio.o
- .debug_info    0x0000214f      0x5ae C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_it.o
- .debug_info    0x000026fd       0x53 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_lib.o
- .debug_info    0x00002750      0x964 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_nvic.o
- .debug_info    0x000030b4      0x8ac C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_rcc.o
- .debug_info    0x00003960     0x1d8d C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_tim.o
- .debug_info    0x000056ed      0x99d C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_usart.o
+ .debug_info    0x00000000      0xdc8 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.o
+ .debug_info    0x00000dc8      0xb7a C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_adc.o
+ .debug_info    0x00001942      0x16f C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_flash.o
+ .debug_info    0x00001ab1      0x690 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_gpio.o
+ .debug_info    0x00002141      0x5ae C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_it.o
+ .debug_info    0x000026ef       0x53 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_lib.o
+ .debug_info    0x00002742      0x964 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_nvic.o
+ .debug_info    0x000030a6      0x8ac C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_rcc.o
+ .debug_info    0x00003952     0x1d8d C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_tim.o
+ .debug_info    0x000056df      0x99d C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_usart.o
 
 .debug_abbrev   0x00000000      0xef0
  *(.debug_abbrev)
@@ -1272,30 +1272,30 @@ END GROUP
  .debug_abbrev  0x00000ae8      0x240 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_tim.o
  .debug_abbrev  0x00000d28      0x1c8 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_usart.o
 
-.debug_line     0x00000000     0x2165
+.debug_line     0x00000000     0x2148
  *(.debug_line)
- .debug_line    0x00000000      0x392 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.o
- .debug_line    0x00000392      0x3d5 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_adc.o
- .debug_line    0x00000767       0xd8 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_flash.o
- .debug_line    0x0000083f      0x255 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_gpio.o
- .debug_line    0x00000a94      0x4c5 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_it.o
- .debug_line    0x00000f59       0x1d C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_lib.o
- .debug_line    0x00000f76      0x336 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_nvic.o
- .debug_line    0x000012ac      0x35c C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_rcc.o
- .debug_line    0x00001608      0x850 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_tim.o
- .debug_line    0x00001e58      0x30d C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_usart.o
+ .debug_line    0x00000000      0x375 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.o
+ .debug_line    0x00000375      0x3d5 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_adc.o
+ .debug_line    0x0000074a       0xd8 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_flash.o
+ .debug_line    0x00000822      0x255 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_gpio.o
+ .debug_line    0x00000a77      0x4c5 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_it.o
+ .debug_line    0x00000f3c       0x1d C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_lib.o
+ .debug_line    0x00000f59      0x336 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_nvic.o
+ .debug_line    0x0000128f      0x35c C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_rcc.o
+ .debug_line    0x000015eb      0x850 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_tim.o
+ .debug_line    0x00001e3b      0x30d C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_usart.o
 
-.debug_frame    0x00000000     0x16e8
+.debug_frame    0x00000000     0x16e4
  *(.debug_frame)
- .debug_frame   0x00000000      0x204 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.o
- .debug_frame   0x00000204      0x278 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_adc.o
- .debug_frame   0x0000047c       0x40 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_flash.o
- .debug_frame   0x000004bc      0x158 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_gpio.o
- .debug_frame   0x00000614      0x430 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_it.o
- .debug_frame   0x00000a44      0x238 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_nvic.o
- .debug_frame   0x00000c7c      0x224 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_rcc.o
- .debug_frame   0x00000ea0      0x658 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_tim.o
- .debug_frame   0x000014f8      0x1f0 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_usart.o
+ .debug_frame   0x00000000      0x200 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.o
+ .debug_frame   0x00000200      0x278 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_adc.o
+ .debug_frame   0x00000478       0x40 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_flash.o
+ .debug_frame   0x000004b8      0x158 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_gpio.o
+ .debug_frame   0x00000610      0x430 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_it.o
+ .debug_frame   0x00000a40      0x238 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_nvic.o
+ .debug_frame   0x00000c78      0x224 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_rcc.o
+ .debug_frame   0x00000e9c      0x658 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_tim.o
+ .debug_frame   0x000014f4      0x1f0 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_usart.o
 
 .debug_str      0x00000000     0x2be6
  *(.debug_str)
@@ -1320,15 +1320,15 @@ END GROUP
  .debug_str     0x00002867      0x37f C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_usart.o
                                 0x583 (size before relaxing)
 
-.debug_loc      0x00000000     0x37d9
+.debug_loc      0x00000000     0x3799
  *(.debug_loc)
- .debug_loc     0x00000000      0x529 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.o
- .debug_loc     0x00000529      0x8a2 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_adc.o
- .debug_loc     0x00000dcb      0x490 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_gpio.o
- .debug_loc     0x0000125b      0x83d C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_nvic.o
- .debug_loc     0x00001a98      0x4d5 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_rcc.o
- .debug_loc     0x00001f6d     0x1382 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_tim.o
- .debug_loc     0x000032ef      0x4ea C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_usart.o
+ .debug_loc     0x00000000      0x4e9 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.o
+ .debug_loc     0x000004e9      0x8a2 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_adc.o
+ .debug_loc     0x00000d8b      0x490 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_gpio.o
+ .debug_loc     0x0000121b      0x83d C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_nvic.o
+ .debug_loc     0x00001a58      0x4d5 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_rcc.o
+ .debug_loc     0x00001f2d     0x1382 C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_tim.o
+ .debug_loc     0x000032af      0x4ea C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_usart.o
 
 .debug_macinfo
  *(.debug_macinfo)

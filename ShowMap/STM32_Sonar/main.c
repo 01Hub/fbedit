@@ -138,38 +138,8 @@ int main(void)
         GPIO_WriteBit(GPIOC, GPIO_Pin_8, Bit_SET);
         BlueLED = 1;
       }
-      /* Read battery */
-      STM32_Sonar.ADCBatt = GetADCValue(ADC_Channel_5);
-      /* Read water temprature */
-      STM32_Sonar.ADCWaterTemp = GetADCValue(ADC_Channel_6);
-      /* Read air temprature */
-      STM32_Sonar.ADCAirTemp = GetADCValue(ADC_Channel_7);
       /* Setup gain array */
       GainSetup();
-
-      /* Poll RMC message, no checksum */
-      rs232_puts("$PSRF103,04,01,00,00*20\r\n\0");
-      rs232_gets(&STM32_Sonar.GPSArray[0]);
-      /* Poll first GSV message, no checksum */
-      rs232_puts("$PSRF103,03,01,00,00*27\r\n\0");
-      STM32_Sonar.GPSArray[128]=0;
-      STM32_Sonar.GPSArray[128+7]=0;
-      rs232_gets(&STM32_Sonar.GPSArray[128]);
-      STM32_Sonar.GPSArray[256]=0;
-      STM32_Sonar.GPSArray[384]=0;
-      i=STM32_Sonar.GPSArray[128+7] & 3;
-      if (i>1)
-      {
-        /* Poll 2nd GSV message */
-        rs232_gets(&STM32_Sonar.GPSArray[256]);
-      }
-      if (i>2)
-      {
-        /* Poll 3rd GSV message */
-        rs232_gets(&STM32_Sonar.GPSArray[384]);
-      }
-      STM32_Sonar.GPSCounter++;
-
       /* Clear the echo array */
       i = 1;
       while (i < MAXECHO)
@@ -177,6 +147,21 @@ int main(void)
         STM32_Sonar.EchoArray[i] = 0;
         i++;
       }
+      /* Read battery */
+      STM32_Sonar.ADCBatt = GetADCValue(ADC_Channel_5);
+      /* Read water temprature */
+      STM32_Sonar.ADCWaterTemp = GetADCValue(ADC_Channel_6);
+      /* Read air temprature */
+      STM32_Sonar.ADCAirTemp = GetADCValue(ADC_Channel_7);
+
+      /* Poll RMC message, no checksum */
+      rs232_puts("$PSRF103,04,01,00,00*20\r\n\0");
+      rs232_gets(&STM32_Sonar.GPSArray[0]);
+      /* Poll GSV message, no checksum */
+      rs232_puts("$PSRF103,03,01,00,00*27\r\n\0");
+      rs232_gets(&STM32_Sonar.GPSArray[128]);
+      STM32_Sonar.GPSCounter++;
+
       /* Store the current range as the first byte in the echo array */
       STM32_Sonar.EchoArray[0] = STM32_Sonar.RangeInx;
       /* Reset echo index */
@@ -437,17 +422,14 @@ void rs232_puts(char *str)
 void rs232_gets(char *str)
 {
   vu32 i;
-  char c;
   /* Characters are received one at a time. */
   i=0;
-  c=0;
-  while (i++<100000 && c!=0xA)
+  while (i++<100000)
   {
     if (USART1->SR & USART_FLAG_RXNE)
     {
       i=0;
-      c=USART1->DR;
-      *str=c;
+      *str=USART1->DR;
     }
   }
   *str=0;
