@@ -383,7 +383,7 @@ SATELITE struct
 	SNR				WORD ?
 SATELITE ends
 
-SONARREPLAY200 struct
+SONARREPLAY struct
 	Version			BYTE ?									;200
 	PingPulses		BYTE ?									;Number of pulses in a ping (0 to 128)
 	GainSet			WORD ?									;Gain set level (0 to 4095)
@@ -396,7 +396,7 @@ SONARREPLAY200 struct
 	iLat			DWORD ?									;Lattitude, integer
 	iSpeed			WORD ?									;Speed in kts
 	iBear			WORD ?									;Degrees
-SONARREPLAY200 ends
+SONARREPLAY ends
 
 TEMP struct
 	adcvalue		DWORD ?									;Value rad from ADC
@@ -515,7 +515,7 @@ satelites			SATELITE 12 dup(<>)						;Data for 12 satelites
 hSplittV			HCURSOR ?								;Horizontal splitt cursor
 rseed				DWORD ?									;Random seed
 STM32Echo			BYTE MAXYECHO*4 dup(?)					;Echo work area
-sonarreplay200		SONARREPLAY200 <>						;Sonar replay record version 200
+sonarreplay			SONARREPLAY <>							;Sonar replay record version 200
 lpOldButtonProc		DWORD ?									;Button subclass
 fSeaMap				DWORD ?									;If TRUE sea map is shown
 szFileName			BYTE MAX_PATH dup(?)					;Format string to get map tile path & filename
