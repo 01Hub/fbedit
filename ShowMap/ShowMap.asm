@@ -1475,9 +1475,8 @@ NMEACheckSum proc
 
 .data
 ;NMEAstr		db 'PSRF100,1,4800,8,1,0',0
-NMEAstr		db 'PSRF103,04,00,00,01',0
+NMEAstr		db 'PSRF101,0,0,0,0,0,0,12,4',0
 .code
-
 	mov		edx,offset NMEAstr
 	xor		eax,eax
 	.while byte ptr [edx]

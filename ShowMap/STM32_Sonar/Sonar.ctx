@@ -9,17 +9,17 @@
 				<3>334</3>
 				<4>58</4>
 				<5>139</5>
-																																																																																																		
+																																																																																																																														
 			</CodeReport>
-																																																																						
+																																																																																										
 		</CodeView>
 		<MemoryView Focus="536871440" TopRow="536871400" NbPerLine="8" />
-																																										
+																																																						
 	</Sonar>
 	<Flags>
 		<Report>
 			<Def Header="FlagReport" NbCol="9" >
-				<Col Type="PT_BOOL" Header="Check" sizeCache="18" AutoSize="0" Edit="1" Sortable="1" Icon="C:\Program Files\Raisonance\Ride\Config\Resources\check.bmp" />
+				<Col Type="PT_BOOL" Header="Check" sizeCache="18" AutoSize="0" Edit="1" Sortable="1" Icon="D:\Ride\Ride\Config\Resources\check.bmp" />
 				<Col Type="PT_STRING" Header="Kind" sizeCache="DDDDDDDDDDD" AutoSize="1" Edit="0" Sortable="1" />
 				<Col Type="PT_STRING" Header="KindID" sizeCache="DD" AutoSize="1" Edit="0" Sortable="1" Visible="0" />
 				<Col Type="PT_STRING" Header="Space" sizeCache="DDDDDD" AutoSize="1" Edit="0" Sortable="1" />
@@ -38,9 +38,8 @@
 			
 	</Flags>
 	<Views>
-		<View File="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" Line="147" Index="0" focus="1" />
-		<View File="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_usart.c" Line="810" Index="1" />
-		<View File="C:\STM32\Inc\stm32f10x_usart.h" Line="196" Index="2" />
+		<View File="D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\main.c" Line="116" Index="0" focus="1" />
+		<View File="D:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\readme.txt" Line="94" Index="1" />
 	</Views>
 	<Grep>
 		<GrepIncludeSub>yes</GrepIncludeSub>
@@ -73,6 +72,7 @@
 		</GrepReplaceWhat>
 	</Grep>
 	<FindStrings>
+		<Find>GPSCounter</Find>
 		<Find>USART_FLAG_RXNE</Find>
 		<Find>RXNE</Find>
 		<Find>IS_USART_BAUDRATE</Find>

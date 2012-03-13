@@ -35,7 +35,7 @@ typedef struct
   u16 GPSCounter;                               // Incremented when GPS array valid
   u8 EchoArray[MAXECHO];                        // Echo array
   u16 GainArray[MAXECHO];                       // Gain array
-  vu16 GainInit[17];                            // Gain setup array
+  vu16 GainInit[18];                            // Gain setup array
   u8 GPSArray[512];                             // GPS array
 }STM32_SonarTypeDef;
 
@@ -114,6 +114,8 @@ int main(void)
   /* Disable VTG message */
   rs232_puts("$PSRF103,05,00,00,01*21\r\n\0");
 
+  // rs232_puts("$PSRF101,0,0,0,0,0,0,12,4*10\r\n\0");
+
   while (1)
   {
     if (STM32_Sonar.Start == 1)
@@ -160,6 +162,7 @@ int main(void)
         /* Poll 3rd GSV message */
         rs232_gets(&STM32_Sonar.GPSArray[384]);
       }
+      STM32_Sonar.GPSCounter++;
 
       /* Clear the echo array */
       i = 1;
@@ -432,7 +435,7 @@ void rs232_gets(char *str)
   /* Characters are received one at a time. */
   i=0;
   c=0;
-  while (i++<10000 && c!=0xA)
+  while (i++<100000 && c!=0xA)
   {
     if (USART1->SR & USART_FLAG_RXNE)
     {

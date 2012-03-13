@@ -576,7 +576,7 @@ GetPointOnCircle proc uses edi,radius:DWORD,angle:DWORD,lpPoint:ptr POINT
 GetPointOnCircle endp
 
 SATHT		equ 220
-SATRAD		equ SATHT/2
+SATRAD		equ (SATHT-10)/2
 SATTXTWT	equ 80
 
 GPSProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
@@ -629,7 +629,7 @@ GPSProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		rect.top,5
 		mov		eax,rect.right
 		mov		esi,eax
-		sub		esi,150
+		sub		esi,140
 		sub		eax,SATTXTWT+5
 		mov		rect.left,eax
 		xor		ebx,ebx

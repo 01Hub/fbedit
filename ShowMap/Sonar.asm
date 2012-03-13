@@ -1187,7 +1187,7 @@ GainUpload proc uses ebx edi
 		.endw
 	.endif
 	;Upload Gain array
-	invoke STLinkWrite,hWnd,STM32_Sonar+16+sizeof SONAR.EchoArray+sizeof SONAR.GainArray+sizeof SONAR.GPSArray+2,addr sonardata.GainInit,sizeof SONAR.GainInit
+	invoke STLinkWrite,hWnd,STM32_Sonar+16+sizeof SONAR.EchoArray+sizeof SONAR.GainArray,addr sonardata.GainInit,sizeof SONAR.GainInit
 	ret
 
 GainUpload endp
