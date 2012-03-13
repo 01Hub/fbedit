@@ -97,10 +97,18 @@ int main(void)
     /* Enable TIM3 */
     TIM_Cmd(TIM3, ENABLE);
   }
+  // /* Setup USART1 4800 baud */
+  // USART_Configuration(4800);
+  // /* Switch to NMEA protocol at 4800,8,N,1 */
+  // rs232_puts("$PSRF100,1,4800,8,1,0*0E\r\n\0");
+
   /* Setup USART1 4800 baud */
   USART_Configuration(4800);
-  /* Switch to NMEA protocol at 4800,8,N,1 */
-  rs232_puts("$PSRF100,1,4800,8,1,0*0E\r\n\0");
+  /* Switch to NMEA protocol at 38400,8,N,1 */
+  rs232_puts("$PSRF100,1,38400,8,1,0*3D\r\n\0");
+  /* Setup USART1 38400 baud */
+  USART_Configuration(38400);
+
   /* Disable GGA message */
   rs232_puts("$PSRF103,00,00,00,01*24\r\n\0");
   /* Disable GLL message */
@@ -113,8 +121,6 @@ int main(void)
   rs232_puts("$PSRF103,04,00,00,01*20\r\n\0");
   /* Disable VTG message */
   rs232_puts("$PSRF103,05,00,00,01*21\r\n\0");
-
-  // rs232_puts("$PSRF101,0,0,0,0,0,0,12,4*10\r\n\0");
 
   while (1)
   {
@@ -441,80 +447,10 @@ void rs232_gets(char *str)
     {
       i=0;
       c=USART1->DR;
-      *str++=c;
+      *str=c;
     }
   }
   *str=0;
-}
-
-/*******************************************************************************
-* Function Name  : USART1_IRQHandler
-* Description    : This function handles USART1 Receive interrupt request
-* Input          : None
-* Output         : None
-* Return         : None
-*******************************************************************************/
-void USART1_IRQHandler(void)
-{
-  // /* receive GPS data from the serial port */
-  // vu8 c;
-  // c=USART1->DR;
-  // USART1->SR = (u16)~USART_FLAG_RXNE;
-  // STM32_Sonar.GPSPtr=STM32_Sonar.GPSPtr & 511;
-  // STM32_Sonar.GPSArray[STM32_Sonar.GPSPtr++]=c;
-  // if (c==0xA)
-  // {
-    // if (STM32_Sonar.GPSArray[STM32_Sonar.StartGPSPtr+5]=='V')
-    // {
-      // if (STM32_Sonar.GPSArray[STM32_Sonar.StartGPSPtr+7]==STM32_Sonar.GPSArray[STM32_Sonar.StartGPSPtr+9])
-      // {
-        // STM32_Sonar.GPSArray[STM32_Sonar.GPSPtr]=0;
-        // STM32_Sonar.GPSPtr=0;
-        // STM32_Sonar.GPSCounter++;
-      // }
-    // }
-    // STM32_Sonar.StartGPSPtr=STM32_Sonar.GPSPtr;
-  // }
-
-  // /* Get the 8 bit character */
-  // asm("movw   r0,#0x3800");                   /* Get pointer to USART1 */
-  // asm("movt   r0,#0x4001");
-  // asm("ldrh   r12,[r0,#0x4]");                /* USART1->DR */
-  // asm("uxtb   r12,r12");                      /* Convert to 8 bit */
-
-  // /* Reset the RX Status */
-  // asm("movw   r3,#0xFFDF");                   /* Reset RX status */
-  // asm("strh   r3,[r0,#0x0]");                 /* Store USART1->SR */
-
-  // /* Store the byte in the GPSArray */
-  // asm("movw   r1,#0x0610");                   /* Get pointer to GPSArray */
-  // asm("movt   r1,#0x2000");
-  // asm("movw   r2,#0x0100");                   /* Get offset to GPSPtr */
-  // asm("ldrb   r3,[r1,r2]");                   /* Get GPSPtr */
-  // asm("strb   r12,[r1,r3]");                  /* Store GPSArray[GPSPtr] */
-
-  // /* Increment the GPSPtr */
-  // asm("add    r3,r3,#0x1");                   /* Increment GPSPtr */
-  // asm("strb   r3,[r1,r2]");                   /* Store GPSPtr */
-
-  // /* Check for end of message (LF character) */
-  // asm("cmp    r12,#0xA");                     /* LF */
-  // asm("bne    ex");                           /* Not LF, Exit */
-
-  // /* Zero terminate */
-  // asm("mov    r2,#0x0");                      /* 0 */
-  // asm("strb   r2,[r1,r3]");                  /* Store GPSArray[GPSPtr] */
-
-  // /* Reset GPSPtr */
-  // asm("strb   r2,[r1,r2]");                   /* Store GPSPtr */
-
-  // /* Increment the GPSCounter to signal that a new message is ready */
-  // asm("mov    r1,#0x20000000");               /* STM32_Sonar */
-  // asm("ldrh   r3,[r1,#0xE]");                 /* Get GPSCounter */
-  // asm("add    r3,r3,#0x1");                   /* Increment GPSCounter */
-  // asm("strh   r3,[r1,#0xE]");                 /* Store GPSCounter */
-  // asm("ex:");                                 /* Done */
-
 }
 
 /*******************************************************************************
@@ -721,12 +657,6 @@ void NVIC_Configuration(void)
   NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
   NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
   NVIC_Init(&NVIC_InitStructure);
-	// /* Enable USART1 interrupt */
-	// NVIC_InitStructure.NVIC_IRQChannel = USART1_IRQChannel;
-	// NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
-  // NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
-	// NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-	// NVIC_Init(&NVIC_InitStructure);
 }
 
 /*******************************************************************************
@@ -829,10 +759,7 @@ void USART_Configuration(u16 BaudRate)
   USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
   USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;
   USART_Init(USART1, &USART_InitStructure);
-  // /* Enable the USART Receive interrupt: this interrupt is generated when the 
-     // USART1 receive data register is not empty */
-  // USART_ITConfig(USART1, USART_IT_RXNE, ENABLE);
-  /* Enable the USART2 */
+  /* Enable the USART1 */
   USART_Cmd(USART1, ENABLE);
 }
 

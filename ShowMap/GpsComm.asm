@@ -3,8 +3,6 @@ IDD_DLGGPSSETUP		equ 1400
 IDC_EDTCOMPORT		equ 1403
 IDC_CBOBAUDRATE		equ 1404
 IDC_CHKCOMACTIVE	equ 1405
-IDC_BTNCOM			equ 1402
-IDC_CHKSATELITE		equ 1401
 
 .const
 
@@ -473,8 +471,6 @@ LoadGPSFromIni proc
 	invoke GetItemStr,addr buffer,addr szBaudRate,addr BaudRate,5
 	invoke GetItemInt,addr buffer,0
 	mov		COMActive,eax
-	invoke GetItemInt,addr buffer,0
-	mov		sonardata.fGSV,eax
 	ret
 
 LoadGPSFromIni endp
@@ -486,7 +482,6 @@ SaveGPSToIni proc
 	invoke PutItemStr,addr buffer,addr COMPort
 	invoke PutItemStr,addr buffer,addr BaudRate
 	invoke PutItemInt,addr buffer,COMActive
-	invoke PutItemInt,addr buffer,sonardata.fGSV
 	invoke WritePrivateProfileString,addr szIniGPS,addr szIniGPS,addr buffer[1],addr szIniFileName
 	ret
 
@@ -514,9 +509,6 @@ GPSOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPA
 		.if COMActive
 			invoke CheckDlgButton,hWin,IDC_CHKCOMACTIVE,BST_CHECKED
 		.endif
-		.if sonardata.fGSV
-			invoke CheckDlgButton,hWin,IDC_CHKSATELITE,BST_CHECKED
-		.endif
 	.elseif eax==WM_COMMAND
 		mov		edx,wParam
 		movzx	eax,dx
@@ -528,20 +520,11 @@ GPSOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPA
 				invoke SendDlgItemMessage,hWin,IDC_CBOBAUDRATE,CB_GETLBTEXT,eax,addr BaudRate
 				invoke IsDlgButtonChecked,hWin,IDC_CHKCOMACTIVE
 				mov		COMActive,eax
-				invoke IsDlgButtonChecked,hWin,IDC_CHKSATELITE
-				mov		sonardata.fGSV,eax
 				invoke SaveGPSToIni
-				invoke SendMessage,hWnd,WM_SIZE,NULL,TRUE
+				invoke OpenCom
 				invoke SendMessage,hWin,WM_CLOSE,NULL,TRUE
 			.elseif eax==IDCANCEL
 				invoke SendMessage,hWin,WM_CLOSE,NULL,NULL
-			.elseif eax==IDC_BTNCOM
-				invoke GetDlgItemText,hWin,IDC_EDTCOMPORT,addr COMPort,5
-				invoke SendDlgItemMessage,hWin,IDC_CBOBAUDRATE,CB_GETCURSEL,0,0
-				invoke SendDlgItemMessage,hWin,IDC_CBOBAUDRATE,CB_GETLBTEXT,eax,addr BaudRate
-				invoke IsDlgButtonChecked,hWin,IDC_CHKCOMACTIVE
-				mov		COMActive,eax
-				invoke OpenCom
 			.endif
 		.endif
 	.elseif eax==WM_CLOSE
@@ -577,7 +560,8 @@ GetPointOnCircle endp
 
 SATHT		equ 220
 SATRAD		equ (SATHT-10)/2
-SATTXTWT	equ 80
+SATTXTWT	equ 78
+SATSIGNALWT	equ 148
 
 GPSProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	rect:RECT
@@ -600,7 +584,6 @@ GPSProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke CreateCompatibleBitmap,ps.hdc,rect.right,rect.bottom
 		invoke SelectObject,mDC,eax
 		push	eax
-		invoke FillRect,mDC,addr rect,sonardata.hBrBack
 		invoke SetBkMode,mDC,TRANSPARENT
 		invoke CreatePen,PS_SOLID,1,0FFh
 		invoke SelectObject,mDC,eax
@@ -609,17 +592,13 @@ GPSProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		push	eax
 		invoke SelectObject,mDC,map.font[2*4]
 		push	eax
-		sub		rect.right,SATTXTWT+5
+		invoke FillRect,mDC,addr rect,sonardata.hBrBack
 		mov		eax,rect.right
-		sub		eax,SATRAD*2
-		mov		rect.left,eax
-		mov		rect.left,5
-		mov		rect.top,5
-		mov		rect.right,SATRAD*2+5
-		mov		rect.bottom,SATRAD*2+5
-		mov		ptcenter.x,SATHT/2-5
+		sub		eax,SATSIGNALWT+SATRAD+5
+		mov		ptcenter.x,eax
+		lea		edx,[eax-SATRAD]
 		mov		ptcenter.y,SATHT/2-5
-		invoke Ellipse,mDC,5,5,SATHT-10,SATHT-10
+		invoke Ellipse,mDC,edx,5,addr [edx+SATRAD*2],SATHT-10
 		mov		eax,ptcenter.x
 		mov		edx,ptcenter.y
 		sub		eax,8
@@ -629,7 +608,7 @@ GPSProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		rect.top,5
 		mov		eax,rect.right
 		mov		esi,eax
-		sub		esi,140
+		sub		esi,SATSIGNALWT
 		sub		eax,SATTXTWT+5
 		mov		rect.left,eax
 		xor		ebx,ebx
@@ -656,29 +635,27 @@ GPSProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				sub		eax,8
 				add		pt.y,eax
 				invoke wsprintf,addr buffer,addr szFmtDec2,satelites.SatelliteID[edi]
-				.if satelites.SNR[edi]
-					invoke ImageList_Draw,hIml,29,mDC,pt.x,pt.y,ILD_TRANSPARENT
-					add		pt.x,1
-					add		pt.y,1
-					invoke SetTextColor,mDC,0FFFFFFh
-					invoke TextOut,mDC,pt.x,pt.y,addr buffer,2
-					invoke SetTextColor,mDC,08000h
-				.else
-					invoke ImageList_Draw,hIml,30,mDC,pt.x,pt.y,ILD_TRANSPARENT
-					add		pt.x,1
-					add		pt.y,1
-					invoke SetTextColor,mDC,0FFFFFFh
-					invoke TextOut,mDC,pt.x,pt.y,addr buffer,2
-					invoke SetTextColor,mDC,080h
-				.endif
 				invoke strcat,addr buffer,addr szColon
 				invoke wsprintf,addr buffer[4],addr szFmtDec2,satelites.SNR[edi]
 				invoke strcat,addr buffer,addr szColon+1
 				invoke wsprintf,addr buffer[7],addr szFmtDec2,satelites.Elevation[edi]
 				invoke strcat,addr buffer,addr szColon+1
 				invoke wsprintf,addr buffer[10],addr szFmtDec3,satelites.Azimuth[edi]
-				invoke strlen,addr buffer
-				invoke TextOut,mDC,rect.left,rect.top,addr buffer,eax
+				.if satelites.SNR[edi]
+					push	08000h
+					mov		eax,29
+				.else
+					push	080h
+					mov		eax,30
+				.endif
+				invoke ImageList_Draw,hIml,eax,mDC,pt.x,pt.y,ILD_TRANSPARENT
+				add		pt.x,1
+				add		pt.y,1
+				invoke SetTextColor,mDC,0FFFFFFh
+				invoke TextOut,mDC,pt.x,pt.y,addr buffer,2
+				pop		eax
+				invoke SetTextColor,mDC,eax
+				invoke TextOut,mDC,rect.left,rect.top,addr buffer,13
 				add		rect.top,10
 				mov		edx,rect.bottom
 				sub		edx,25
@@ -700,20 +677,18 @@ GPSProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke CreateSolidBrush,eax
 				push	eax
 				invoke FillRect,mDC,addr srect,eax
-
+				pop		eax
+				invoke DeleteObject,eax
 				mov		eax,srect.bottom
 				sub		eax,50
 				mov		srect.top,eax
 				invoke GetStockObject,WHITE_BRUSH
 				invoke FrameRect,mDC,addr srect,eax
-				pop		eax
-				invoke DeleteObject,eax
 				add		esi,12
 			.endif
 			lea		edi,[edi+sizeof SATELITE]
 			inc		ebx
 		.endw
-		invoke GetClientRect,hWin,addr rect
 		invoke BitBlt,ps.hdc,0,0,rect.right,rect.bottom,mDC,0,0,SRCCOPY
 		pop		eax
 		invoke SelectObject,mDC,eax

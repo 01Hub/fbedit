@@ -40,6 +40,8 @@ LoadWinPos proc
 	mov		winrect.bottom,eax
 	invoke GetItemInt,addr buffer,0
 	mov		fMaximize,eax
+	invoke GetItemInt,addr buffer,0
+	mov		sonardata.fShowSat,eax
 	ret
 
 LoadWinPos endp
@@ -53,6 +55,7 @@ SaveWinPos proc
 	invoke PutItemInt,addr buffer,winrect.right
 	invoke PutItemInt,addr buffer,winrect.bottom
 	invoke PutItemInt,addr buffer,fMaximize
+	invoke PutItemInt,addr buffer,sonardata.fShowSat
 	invoke WritePrivateProfileString,addr szIniWin,addr szIniWin,addr buffer[1],addr szIniFileName
 	ret
 
@@ -752,6 +755,9 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		map.gpslock,TRUE
 		invoke CheckDlgButton,hWin,IDC_CHKTRAIL,BST_CHECKED
 		mov		map.gpstrail,TRUE
+		.if sonardata.fShowSat
+			invoke CheckDlgButton,hWin,IDC_CHKSHOWSAT,BST_CHECKED
+		.endif
 		invoke InitPlaces
 		mov		eax,BST_UNCHECKED
 		.if sonardata.AutoRange
@@ -1116,6 +1122,9 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke IsDlgButtonChecked,hWin,IDC_CHKGRID
 				mov		map.mapgrid,eax
 				inc		map.paintnow
+			.elseif eax==IDC_CHKSHOWSAT
+				xor		sonardata.fShowSat,TRUE
+				invoke SendMessage,hWin,WM_SIZE,0,0
 			.elseif eax==IDC_CBOGOTOPLACE
 				invoke SendDlgItemMessage,hWin,IDC_CBOGOTOPLACE,CB_GETCURSEL,0,0
 				invoke SendDlgItemMessage,hWin,IDC_CBOGOTOPLACE,CB_GETITEMDATA,eax,0
@@ -1208,7 +1217,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			mov		ebx,sonardata.wt
 			sub		rect.right,ebx
 			push	rect.bottom
-			.if sonardata.fGSV
+			.if sonardata.fShowSat
 				sub		rect.bottom,SATHT
 				invoke MoveWindow,hSonar,rect.right,0,ebx,rect.bottom,TRUE
 				invoke MoveWindow,hGPS,rect.right,rect.bottom,ebx,SATHT,TRUE
@@ -1244,6 +1253,9 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke GetDlgItem,hWin,IDC_CHKGRID
 		invoke MoveWindow,eax,rect.right,rect.top,80,16,TRUE
 		add		rect.top,17
+		invoke GetDlgItem,hWin,IDC_CHKSHOWSAT
+		invoke MoveWindow,eax,rect.right,rect.top,80,16,TRUE
+		add		rect.top,19
 		invoke GetDlgItem,hWin,IDC_CBOGOTOPLACE
 		invoke MoveWindow,eax,rect.right,rect.top,80,200,TRUE
 		add		rect.top,25
@@ -1475,7 +1487,7 @@ NMEACheckSum proc
 
 .data
 ;NMEAstr		db 'PSRF100,1,4800,8,1,0',0
-NMEAstr		db 'PSRF101,0,0,0,0,0,0,12,4',0
+NMEAstr		db 'PSRF100,1,38400,8,1,0',0
 .code
 	mov		edx,offset NMEAstr
 	xor		eax,eax

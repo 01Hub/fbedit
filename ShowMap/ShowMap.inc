@@ -50,6 +50,7 @@ IDC_CHKPAUSE			equ 1013
 IDC_CHKLOCK				equ 1007
 IDC_CHKTRAIL			equ 1008
 IDC_CHKGRID				equ 1014
+IDC_CHKSHOWSAT			equ 1024
 IDC_CBOGOTOPLACE        equ 1004
 IDC_EDTNORTH            equ 1005
 IDC_EDTEAST             equ 1006
@@ -372,7 +373,7 @@ SONAR struct
 	fTreadExit		DWORD ?
 	SignalBarWt		DWORD ?
 	hThreadSTM32	HANDLE ?
-	fGSV			DWORD ?
+	fShowSat		DWORD ?
 SONAR ends
 
 SONARREPLAY struct
@@ -510,13 +511,13 @@ szIniFileName		BYTE MAX_PATH dup(?)					;Path and filename of ini file
 szbuff				BYTE 512 dup(?)							;Temporary buffer
 tid					DWORD ?									;Thread ID
 sonardata			SONAR <>								;Sonar data
-satelites			SATELITE 12 dup(<>)
+satelites			SATELITE 12 dup(<>)						;Data for 12 satelites
 hSplittV			HCURSOR ?								;Horizontal splitt cursor
 rseed				DWORD ?									;Random seed
 STM32Echo			BYTE MAXYECHO*4 dup(?)					;Echo work area
-sonarreplay			SONARREPLAY <>
+sonarreplay			SONARREPLAY <>							;Sonar replay record
 lpOldButtonProc		DWORD ?									;Button subclass
-fSeaMap				DWORD ?
+fSeaMap				DWORD ?									;If TRUE sea map is shown
 szFileName			BYTE MAX_PATH dup(?)					;Format string to get map tile path & filename
-winrect				RECT <>
-fMaximize			DWORD ?
+winrect				RECT <>									;Main window rectangle
+fMaximize			DWORD ?									;Main window maximized
