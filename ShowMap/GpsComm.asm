@@ -157,7 +157,7 @@ DoGPSComm proc uses ebx esi edi,Param:DWORD
 			mov		nRead,0
 		.elseif hCom && !sonardata.hReplay
 			xor		ebx,ebx
-		  GetMore:
+		  COMGetMore:
 			.if hCom
 		 		invoke ReadFile,hCom,addr combuff[ebx],256,addr nRead,NULL
 		 		mov		eax,nRead
@@ -165,7 +165,7 @@ DoGPSComm proc uses ebx esi edi,Param:DWORD
 			 		add		ebx,eax
 			 		mov		combuff[ebx],0
 			 		invoke Sleep,10
-			 		jmp		GetMore
+			 		jmp		COMGetMore
 		 		.endif
 		 		.if combuff
 		 			xor		ebx,ebx

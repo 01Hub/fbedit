@@ -215,21 +215,21 @@ int main(void)
   }
   video_cls();
 
-  /* Switch to NMEA protocol at 4800,8,N,1 */
-  rs232_puts("$PSRF100,1,4800,8,1,0*0E\r\n\0");
-  // /* Switch to NMEA protocol at 38400,8,N,1 */
+  // /* Switch to NMEA protocol at 4800,8,N,1 */
+  // rs232_puts("$PSRF100,1,4800,8,1,0*0E\r\n\0");
+  /* Switch to NMEA protocol at 38400,8,N,1 */
   // rs232_puts("$PSRF100,1,38400,8,1,0*3D\r\n\0");
   // USART_Configuration(38400);
-  /* Disable GLL message */
-  rs232_puts("$PSRF103,01,00,00,01*25\r\n\0");
-  /* Disable GSA message */
-  rs232_puts("$PSRF103,02,00,00,01*26\r\n\0");
-  /* Disable GSV message */
-  rs232_puts("$PSRF103,03,00,00,01*27\r\n\0");
-  /* Disable RMC message */
-  rs232_puts("$PSRF103,04,00,00,01*20\r\n\0");
-  /* Disable VTG message */
-  rs232_puts("$PSRF103,05,00,00,01*21\r\n\0");
+  // /* Disable GLL message */
+  // rs232_puts("$PSRF103,01,00,00,01*25\r\n\0");
+  // /* Disable GSA message */
+  // rs232_puts("$PSRF103,02,00,00,01*26\r\n\0");
+  // /* Disable GSV message */
+  // rs232_puts("$PSRF103,03,00,00,01*27\r\n\0");
+  // /* Disable RMC message */
+  // rs232_puts("$PSRF103,04,00,00,01*20\r\n\0");
+  // /* Disable VTG message */
+  // rs232_puts("$PSRF103,05,00,00,01*21\r\n\0");
   /* Wait 200 frames */
   y=0;
   while (y<200)
@@ -250,16 +250,16 @@ int main(void)
       c=rs232buff[rs232tail++];
       video_putc(c);
     }
-    if ((FrameCount & 31)==0)
-    {
-      /* Query RMC message */
-      rs232_puts("$PSRF103,04,01,00,01*21\r\n\0");
-      /* Wait until frame changed */
-      x=FrameCount;
-      while (x==FrameCount)
-      {
-      }
-    }
+    // if ((FrameCount & 31)==0)
+    // {
+      // /* Query RMC message */
+      // rs232_puts("$PSRF103,04,01,00,01*21\r\n\0");
+      // /* Wait until frame changed */
+      // x=FrameCount;
+      // while (x==FrameCount)
+      // {
+      // }
+    // }
   }
 }
 

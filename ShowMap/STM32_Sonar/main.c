@@ -32,7 +32,7 @@ typedef struct
   u16 ADCBatt;                                  // Battery
   u16 ADCWaterTemp;                             // Water temprature
   u16 ADCAirTemp;                               // Air temprature
-  u16 GPSCounter;                               // Incremented when GPS array valid
+  vu16 GPSHead;                                 // GPSArray head
   u8 EchoArray[MAXECHO];                        // Echo array
   u16 GainArray[MAXECHO];                       // Gain array
   vu16 GainInit[18];                            // Gain setup array
@@ -97,28 +97,20 @@ int main(void)
     /* Enable TIM3 */
     TIM_Cmd(TIM3, ENABLE);
   }
-  // /* Setup USART1 4800 baud */
-  // USART_Configuration(4800);
-  // /* Switch to NMEA protocol at 4800,8,N,1 */
-  // rs232_puts("$PSRF100,1,4800,8,1,0*0E\r\n\0");
-
   /* Setup USART1 4800 baud */
   USART_Configuration(4800);
-  /* Switch to NMEA protocol at 38400,8,N,1 */
-  rs232_puts("$PSRF100,1,38400,8,1,0*3D\r\n\0");
-  /* Setup USART1 38400 baud */
-  USART_Configuration(38400);
-
+  /* Switch to NMEA protocol at 4800,8,N,1 */
+  rs232_puts("$PSRF100,1,4800,8,1,0*0E\r\n\0");
   /* Disable GGA message */
   rs232_puts("$PSRF103,00,00,00,01*24\r\n\0");
   /* Disable GLL message */
   rs232_puts("$PSRF103,01,00,00,01*25\r\n\0");
   /* Disable GSA message */
   rs232_puts("$PSRF103,02,00,00,01*26\r\n\0");
-  /* Disable GSV message */
-  rs232_puts("$PSRF103,03,00,00,01*27\r\n\0");
-  /* Disable RMC message */
-  rs232_puts("$PSRF103,04,00,00,01*20\r\n\0");
+  /* Enable GSV message */
+  rs232_puts("$PSRF103,03,00,01,00*27\r\n\0");
+  /* Ensable RMC message */
+  rs232_puts("$PSRF103,04,00,01,00*20\r\n\0");
   /* Disable VTG message */
   rs232_puts("$PSRF103,05,00,00,01*21\r\n\0");
 
@@ -153,15 +145,6 @@ int main(void)
       STM32_Sonar.ADCWaterTemp = GetADCValue(ADC_Channel_6);
       /* Read air temprature */
       STM32_Sonar.ADCAirTemp = GetADCValue(ADC_Channel_7);
-
-      /* Poll RMC message, no checksum */
-      rs232_puts("$PSRF103,04,01,00,00*20\r\n\0");
-      rs232_gets(&STM32_Sonar.GPSArray[0]);
-      /* Poll GSV message, no checksum */
-      rs232_puts("$PSRF103,03,01,00,00*27\r\n\0");
-      rs232_gets(&STM32_Sonar.GPSArray[128]);
-      STM32_Sonar.GPSCounter++;
-
       /* Store the current range as the first byte in the echo array */
       STM32_Sonar.EchoArray[0] = STM32_Sonar.RangeInx;
       /* Reset echo index */
@@ -413,26 +396,17 @@ void rs232_puts(char *str)
 }
 
 /*******************************************************************************
-* Function Name  : rs232_gets
-* Description    : This function receives a zero terminated string
-* Input          : Pointer to zero terminated string
+* Function Name  : USART1_IRQHandler
+* Description    : This function handles USART1 global interrupt request.
+*                  An interrupt is generated when a character is recieved.
+* Input          : None
 * Output         : None
 * Return         : None
 *******************************************************************************/
-void rs232_gets(char *str)
+void USART1_IRQHandler(void)
 {
-  vu32 i;
-  /* Characters are received one at a time. */
-  i=0;
-  while (i++<100000)
-  {
-    if (USART1->SR & USART_FLAG_RXNE)
-    {
-      i=0;
-      *str=USART1->DR;
-    }
-  }
-  *str=0;
+  STM32_Sonar.GPSArray[STM32_Sonar.GPSHead++]=USART1->DR;
+  STM32_Sonar.GPSHead&=0x1FF;
 }
 
 /*******************************************************************************
@@ -639,6 +613,12 @@ void NVIC_Configuration(void)
   NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
   NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
   NVIC_Init(&NVIC_InitStructure);
+	/* Enable USART interrupt */
+	NVIC_InitStructure.NVIC_IRQChannel = USART1_IRQChannel;
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
+  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+	NVIC_Init(&NVIC_InitStructure);
 }
 
 /*******************************************************************************
@@ -741,6 +721,9 @@ void USART_Configuration(u16 BaudRate)
   USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
   USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;
   USART_Init(USART1, &USART_InitStructure);
+  /* Enable the USART Receive interrupt: this interrupt is generated when the 
+     USART1 receive data register is not empty */
+  USART_ITConfig(USART1, USART_IT_RXNE, ENABLE);
   /* Enable the USART1 */
   USART_Cmd(USART1, ENABLE);
 }
