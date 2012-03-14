@@ -1366,30 +1366,59 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.endif
 		invoke SaveStatus
 		invoke ShowWindow,hWin,SW_HIDE
+
+		mov		fExitMAPThread,TRUE
+		mov		fExitGPSThread,TRUE
+		mov		fExitSTMThread,TRUE
+
+		invoke RtlZeroMemory,addr msg,sizeof MSG
+		invoke GetMessage,addr msg,NULL,0,0
+		invoke TranslateAccelerator,hWnd,hAccel,addr msg
+		.if !eax
+			invoke TranslateMessage,addr msg
+			invoke DispatchMessage,addr msg
+		.endif
+
+		invoke KillTimer,hSonar,1000
+		invoke KillTimer,hSonar,1001
+
 		; Terminate GPS Thread
-		mov		fExitGpsThread,TRUE
-		invoke WaitForSingleObject,hGpsThread,3000
+		invoke WaitForSingleObject,hGPSThread,3000
 		.if eax==WAIT_TIMEOUT
-			invoke TerminateThread,hGpsThread,0
+			invoke TerminateThread,hGPSThread,0
 		.endif
-		invoke CloseHandle,hGpsThread
-		; Terminate STM32 Thread
-		mov		sonardata.fTreadExit,1
-		.while sonardata.fTreadExit!=2
-			invoke GetMessage,addr msg,NULL,0,0
-			invoke Sleep,100
-		.endw
+		invoke CloseHandle,hGPSThread
+
+		; Terminate STM Thread
+		invoke WaitForSingleObject,hSTMThread,3000
+		.if eax==WAIT_TIMEOUT
+			invoke TerminateThread,hSTMThread,0
+		.endif
+		invoke CloseHandle,hSTMThread
+
+		; Terminate MAP Thread
+		invoke WaitForSingleObject,hMAPThread,3000
+		.if eax==WAIT_TIMEOUT
+			invoke TerminateThread,hMAPThread,0
+		.endif
+		invoke CloseHandle,hMAPThread
+
 		.if sonardata.fSTLink && sonardata.fSTLink!=IDIGNORE
-			invoke STLinkDisconnect
+			invoke STLinkDisconnect,hWnd
+			invoke STLinkDisconnect,hSonar
 		.endif
-		mov		fExitMapThread,TRUE
-		invoke WaitForSingleObject,hMapThread,3000
-		.if eax==WAIT_TIMEOUT
-			invoke TerminateThread,hMapThread,0
-		.endif
-		invoke CloseHandle,hMapThread
 		invoke GlobalFree,map.hMemLon
 		invoke GlobalFree,map.hMemLat
+;		.if fExitMAPThread==2
+;			PrintText "fExitMAPThread"
+;		.endif
+;		.if fExitGPSThread==2
+;			PrintText "fExitGPSThread"
+;		.endif
+;		.if fExitSTMThread==2
+;			PrintText "fExitSTMThread"
+;		.endif
+;		PrintText "Destroy"
 		invoke DestroyWindow,hWin
 	.elseif eax==WM_DESTROY
 		invoke PostQuitMessage,NULL
@@ -1464,11 +1493,15 @@ WinMain proc hInst:HINSTANCE,hPrevInst:HINSTANCE,CmdLine:LPSTR,CmdShow:DWORD
 	invoke ShowWindow,hWnd,eax
 	invoke UpdateWindow,hWnd
 	;Create thread that comunicates with the GPS
-	invoke CreateThread,NULL,0,addr DoGPSComm,0,0,addr tid
-	mov		hGpsThread,eax
+	invoke CreateThread,NULL,0,addr GPSThread,0,0,addr tid
+	mov		hGPSThread,eax
 	;Create thread that paints the map
-	invoke CreateThread,NULL,0,addr PaintMap,0,0,addr tid
-	mov		hMapThread,eax
+	invoke CreateThread,NULL,0,addr MAPThread,0,0,addr tid
+	mov		hMAPThread,eax
+	;Create thread that comunicates with the STM
+	invoke CreateThread,NULL,NULL,addr STMThread,0,0,addr tid
+	mov		hSTMThread,eax
+	invoke RtlZeroMemory,addr msg,sizeof MSG
 	.while TRUE
 		invoke GetMessage,addr msg,NULL,0,0
 	  .BREAK .if !eax
@@ -1487,7 +1520,7 @@ NMEACheckSum proc
 
 .data
 ;NMEAstr		db 'PSRF100,1,4800,8,1,0',0
-NMEAstr		db 'PSRF103,03,00,01,00',0
+NMEAstr		db 'PSRF103,03,00,05,00',0
 .code
 	mov		edx,offset NMEAstr
 	xor		eax,eax

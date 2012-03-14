@@ -107,9 +107,9 @@ int main(void)
   rs232_puts("$PSRF103,01,00,00,01*25\r\n\0");
   /* Disable GSA message */
   rs232_puts("$PSRF103,02,00,00,01*26\r\n\0");
-  /* Enable GSV message */
-  rs232_puts("$PSRF103,03,00,01,00*27\r\n\0");
-  /* Ensable RMC message */
+  /* Enable GSV message, rate 5 seconds */
+  rs232_puts("$PSRF103,03,00,05,00*23\r\n\0");
+  /* Ensable RMC message, rate 1 second */
   rs232_puts("$PSRF103,04,00,01,00*20\r\n\0");
   /* Disable VTG message */
   rs232_puts("$PSRF103,05,00,00,01*21\r\n\0");
@@ -119,6 +119,8 @@ int main(void)
     if (STM32_Sonar.Start == 1)
     {
       STM32_Sonar.Start = 2;
+      /* Set the DAC to output lowest gain */
+      DAC->DHR12R1 = (u16)0x0;
       /* Toggle blue led */
       if (BlueLED)
       {

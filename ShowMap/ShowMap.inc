@@ -32,7 +32,7 @@ includelib \RadASM30\masm\lib\debug.lib
 ;#########################################################################
 
 STLinkConnect			PROTO hWin:HWND
-STLinkDisconnect		PROTO
+STLinkDisconnect		PROTO hWin:HWND
 STLinkReset				PROTO hWin:HWND
 STLinkRead 				PROTO hWin:HWND,rdadr:DWORD,wradr:DWORD,nBytes:DWORD
 STLinkWrite				PROTO hWin:HWND,wradr:DWORD,rdadr:DWORD,nBytes:DWORD
@@ -363,17 +363,14 @@ SONAR struct
 		ADCBattery		WORD ?								;Battery level
 		ADCWaterTemp	WORD ?								;Water temprature
 		ADCAirTemp		WORD ?								;Air temprature
-		GPSCounter		WORD ?								;Incremented when GPS array valid
+		GPSHead			WORD ?								;Incremented when GPS array valid
 		EchoArray		BYTE MAXYECHO dup(?)				;Echo array, read from STM32 and processed
 		GainArray		WORD MAXYECHO dup(?)				;Gain array. Not downloaded or uploaded
 		GainInit		WORD 18 dup(?)						;First word is initial gain
 		GPSArray		BYTE 512 dup(?)						;GPS array, read from STM32 if GPSCouner incremented
 	ends
-	nGPSCounter		DWORD ?
-	fTreadExit		DWORD ?
-	SignalBarWt		DWORD ?
-	hThreadSTM32	HANDLE ?
-	fShowSat		DWORD ?
+	SignalBarWt		DWORD ?									;Width of signal bar
+	fShowSat		DWORD ?									;If TRUE satelites window is shown
 SONAR ends
 
 SATELITE struct
@@ -480,8 +477,8 @@ NATEMP				equ 14
 atemp				TEMP <3000,-200>,<2900,-150>,<2800,-100>,<2700,-50>,<2600,0>,<2522,50>,<2218,100>,
 						 <2015,150>,<1820,200>,<1610,250>,<1441,300>,<1268,350>,<1116,400>,<980,450>
 
-szRMC				BYTE '$GPRMC,193409,A,6619.0367,N,01411.8237,E,0.0,356.4,230710,2.0,E',0Dh,0Ah,0
-szGSV				BYTE '$GPGSV,3,1,12,21,64,118,40,6,53,259,,16,52,213,,3,38,272,',0Dh,0Ah
+szGPSDemoData		BYTE '$GPRMC,193409,A,6619.0367,N,01411.8237,E,0.0,356.4,230710,2.0,E',0Dh,0Ah
+					BYTE '$GPGSV,3,1,12,21,64,118,40,6,53,259,,16,52,213,,3,38,272,',0Dh,0Ah
 					BYTE '$GPGSV,3,2,12,18,29,140,36,24,27,216,40,7,24,329,38,26,13,59,38',0Dh,0Ah
 					BYTE '$GPGSV,3,3,12,5,13,27,,29,12,108,,19,10,275,,15,9,76,',0Dh,0Ah,0
 
@@ -503,10 +500,12 @@ szAppPath			BYTE MAX_PATH dup(?)					;Application path
 map					MAP <>									;Map data
 mousept				POINT <>								;Point where lbutton clicked
 bmpcache			BMP MAXBMP dup(<>)						;Cached bitmaps
-hMapThread			HANDLE ?								;Map drawing thread
-fExitMapThread		DWORD ?									;Flag to exit the map drawing thread
-hGpsThread			HANDLE ?								;Thread to comunicate with GPS
-fExitGpsThread		DWORD ?									;Flag to exit the GpsThread
+hMAPThread			HANDLE ?								;Map drawing thread
+fExitMAPThread		DWORD ?									;Flag to exit the map drawing thread
+hGPSThread			HANDLE ?								;Thread to comunicate with GPS
+fExitGPSThread		DWORD ?									;Flag to exit the GPSThread
+hSTMThread			HANDLE ?
+fExitSTMThread		DWORD ?									;Flag to exit the STMThread
 szIniFileName		BYTE MAX_PATH dup(?)					;Path and filename of ini file
 szbuff				BYTE 512 dup(?)							;Temporary buffer
 tid					DWORD ?									;Thread ID

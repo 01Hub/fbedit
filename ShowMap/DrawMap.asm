@@ -667,14 +667,14 @@ ShowGrid proc uses ebx esi edi,topx:DWORD,topy:DWORD,zoomval:DWORD
 ShowGrid endp
 
 ;This thread proc pains the map window
-PaintMap proc uses esi edi,Param:DWORD
+MAPThread proc uses esi edi,Param:DWORD
 	LOCAL	zoomval:DWORD
 	LOCAL	topx:DWORD
 	LOCAL	topy:DWORD
 	LOCAL	curx:DWORD
 	LOCAL	cury:DWORD
 
-	.while !fExitMapThread
+	.while !fExitMAPThread
 		.if map.paintnow
 			dec		map.paintnow
 			mov		eax,map.zoomval
@@ -712,7 +712,8 @@ PaintMap proc uses esi edi,Param:DWORD
 			invoke Sleep,100
 		.endif
 	.endw
-;PrintText "MAP Exit"
+	mov		fExitMAPThread,2
+	xor		eax,eax
 	ret
 
-PaintMap endp
+MAPThread endp

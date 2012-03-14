@@ -23,21 +23,6 @@ includelib user32.lib
 MAX_RDBLOCK						equ 4096
 MAX_WRBLOCK						equ 64
 
-ST_LINK struct
-	buff						BYTE 1000h dup(?)
-	buff2						BYTE 96h dup(?)
-	lpSTMass_Enum_GetNbDevices  DWORD ?
-	lpSTMass_Enum_GetDevice     DWORD ?
-	lpSTMass_GetDeviceInfo      DWORD ?
-	lpSTMass_Enum_Reenumerate   DWORD ?
-	lpSTMass_OpenDevice         DWORD ?
-	lpSTMass_CloseDevice        DWORD ?
-	lpSTMass_SendCommand        DWORD ?
-	hDevice						DWORD ?
-	hFile						DWORD ?
-	hModule						DWORD ?
-ST_LINK ends
-
 ST_LINKCMND struct
 	cmd0						BYTE ?
 	cmd1						BYTE ?
@@ -51,6 +36,23 @@ ST_LINKCMND struct
 	z							DWORD ?
 	reserved1					BYTE 13 dup(?)
 ST_LINKCMND ends
+
+ST_LINK struct
+	buff						BYTE 1000h dup(?)
+	buff2						BYTE 96h dup(?)
+	lpSTMass_Enum_GetNbDevices  DWORD ?
+	lpSTMass_Enum_GetDevice     DWORD ?
+	lpSTMass_GetDeviceInfo      DWORD ?
+	lpSTMass_Enum_Reenumerate   DWORD ?
+	lpSTMass_OpenDevice         DWORD ?
+	lpSTMass_CloseDevice        DWORD ?
+	lpSTMass_SendCommand        DWORD ?
+	hDevice						DWORD ?
+	hFile						DWORD ?
+	hModule						DWORD ?
+	hWnd						HWND ?
+	STLinkCmnd					ST_LINKCMND <>
+ST_LINK ends
 
 .const
 
@@ -72,7 +74,6 @@ szSTMass_SendCommand			BYTE 'STMass_SendCommand',0
 
 .data?
 
-STLink							ST_LINK <>
-STLinkCmnd						ST_LINKCMND <>
+STLink							ST_LINK 16 dup(<>)
 
 ;#########################################################################

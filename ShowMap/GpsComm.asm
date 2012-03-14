@@ -103,7 +103,7 @@ GetLine proc uses esi,pos:DWORD
 
 GetLine endp
 
-DoGPSComm proc uses ebx esi edi,Param:DWORD
+GPSThread proc uses ebx esi edi,Param:DWORD
 	LOCAL	nRead:DWORD
 	LOCAL	nWrite:DWORD
 	LOCAL	buffer[256]:BYTE
@@ -117,17 +117,16 @@ DoGPSComm proc uses ebx esi edi,Param:DWORD
 	LOCAL	fBear:REAL10
 	LOCAL	iTime:DWORD
 	LOCAL	iSumDist:DWORD
-	LOCAL	ft:FILETIME
-	LOCAL	lft:FILETIME
-	LOCAL	lst:SYSTEMTIME
+	LOCAL	utcst:SYSTEMTIME
+	LOCAL	localst:SYSTEMTIME
 	LOCAL	fValid:DWORD
-	LOCAL	nGPSCount:DWORD
+	LOCAL	GPSTail:DWORD
 	LOCAL	nSatelites:DWORD
 	LOCAL	SatPtr:DWORD
+	LOCAL	tmp:DWORD
 
 	invoke OpenCom
-	.while  !fExitGpsThread
-		mov		eax,sonardata.nGPSCounter
+	.while  !fExitGPSThread
 		.if hFileLogRead
 			.if !map.gpslogpause
 				invoke ReadFile,hFileLogRead,addr combuff,1024,addr nRead,NULL
@@ -173,10 +172,37 @@ DoGPSComm proc uses ebx esi edi,Param:DWORD
 					mov		combuff,0
 		 		.endif
 			.endif
-		.elseif eax!=nGPSCount && !sonardata.hReplay
-			mov		nGPSCount,eax
-			invoke strcpy,addr combuff,addr sonardata.GPSArray[0]
-			invoke strcat,addr combuff,addr sonardata.GPSArray[128]
+		.elseif sonardata.fSTLink && sonardata.fSTLink!=IDIGNORE && !sonardata.hReplay
+			xor		ebx,ebx
+		  STMGetMore:
+			;Download ADCAirTemp and GPSHead
+			invoke STLinkRead,hSonar,STM32_Sonar+12,addr tmp,4
+			.if !eax || eax==IDABORT || eax==IDIGNORE
+				jmp		STLinkErr
+			.endif
+			mov		edi,tmp
+			shr		edi,16
+			.if edi!=GPSTail
+				invoke STLinkRead,hSonar,STM32_Sonar+16+sizeof SONAR.EchoArray+sizeof SONAR.GainArray+sizeof SONAR.GainInit,addr sonardata.GPSArray,sizeof SONAR.GPSArray
+				.if !eax || eax==IDABORT || eax==IDIGNORE
+					jmp		STLinkErr
+				.endif
+				mov		esi,GPSTail
+				.while esi!=edi
+					mov		al,sonardata.GPSArray[esi]
+					mov		combuff[ebx],al
+					inc		esi
+					and		esi,sizeof SONAR.GPSArray-1
+					inc		ebx
+				.endw
+				mov		combuff[ebx],0
+				invoke Sleep,10
+				jmp		STMGetMore
+			.endif
+			xor		ebx,ebx
+			call	GPSExec
+		.elseif !sonardata.hReplay
+			invoke strcpy,addr combuff,addr szGPSDemoData
 			xor		ebx,ebx
 			call	GPSExec
 		.endif
@@ -190,7 +216,13 @@ DoGPSComm proc uses ebx esi edi,Param:DWORD
 		invoke CloseHandle,hFileLogWrite
 		mov		hFileLogWrite,0
 	.endif
-;PrintText "GPS Exit"
+	mov		fExitGPSThread,2
+	xor		eax,eax
+	ret
+
+STLinkErr:
+	invoke PostMessage,hWnd,WM_CLOSE,0,0
+	xor		eax,eax
 	ret
 
 GPSExec:
@@ -273,6 +305,10 @@ GPSExec:
 	retn
 
 PositionSpeedDirection:
+	mov		eax,map.iLon
+	mov		iLon,eax
+	mov		eax,map.iLat
+	mov		iLat,eax
 	;Time
 	invoke GetItemStr,addr linebuff,addr szNULL,addr bufftime,32
 	;Status
@@ -285,10 +321,6 @@ PositionSpeedDirection:
 		and		map.fcursor,1
 		mov		fValid,FALSE
 	.endif
-	mov		eax,map.iLon
-	mov		iLon,eax
-	mov		eax,map.iLat
-	mov		iLat,eax
 	.if fValid
 		;Lattitude
 		invoke GetItemStr,addr linebuff,addr szNULL,addr buffer,32
@@ -382,54 +414,59 @@ PositionSpeedDirection:
 	;0010 0100 0000 0000 0000 0000 0001 1111
 	;Get year
 	invoke DecToBin,addr buffdate[4]
+	mov		edx,eax
+	add		edx,2000
+	mov		utcst.wYear,dx
 	mov		buffdate[4],0
 	shl		eax,9
 	or		iTime,eax
 	;Get month
 	invoke DecToBin,addr buffdate[2]
+	mov		utcst.wMonth,ax
 	mov		buffdate[2],0
 	shl		eax,5
 	or		iTime,eax
 	;Get day
 	invoke DecToBin,addr buffdate
+	mov		utcst.wDayOfWeek,0
+	mov		utcst.wDay,ax
 	or		iTime,eax
 	shl		iTime,16
 	;HHHH HMMM MMS SSSS
 	;Get seconds
 	invoke DecToBin,addr bufftime[4]
+	mov		utcst.wMilliseconds,0
+	mov		utcst.wSecond,ax
 	mov		bufftime[4],0
 	shr		eax,1
 	or		iTime,eax
 	;Get minutes
 	invoke DecToBin,addr bufftime[2]
+	mov		utcst.wMinute,ax
 	mov		bufftime[2],0
 	shl		eax,5
 	or		iTime,eax
 	;Get hours
 	invoke DecToBin,addr bufftime
+	mov		utcst.wHour,ax
 	shl		eax,11
 	or		iTime,eax
 	mov		eax,iTime
 	mov		map.iTime,eax
-	mov		ecx,eax
-	movzx	edx,ax
-	shr		ecx,16
-	invoke DosDateTimeToFileTime,ecx,edx,addr ft
-	invoke FileTimeToLocalFileTime,addr ft,addr lft
-	invoke FileTimeToSystemTime,addr lft,addr lst
+	invoke SystemTimeToTzSpecificLocalTime,NULL,addr utcst,addr localst
 	mov		ebx,esp
-	movzx	eax,lst.wSecond
+	movzx	eax,localst.wSecond
 	push	eax
-	movzx	eax,lst.wMinute
+	movzx	eax,localst.wMinute
 	push	eax
-	movzx	eax,lst.wHour
+	movzx	eax,localst.wHour
 	push	eax
-	movzx	eax,lst.wYear
-	sub		eax,1980
+	movzx	eax,localst.wYear
+	sub		eax,2000
 	push	eax
-	movzx	eax,lst.wMonth
+	movzx	eax,localst.wMonth
 	push	eax
-	movzx	eax,lst.wDay
+	movzx	eax,localst.wDay
 	push	eax
 	push	offset szFmtTime
 	lea		eax,map.options.text[sizeof OPTIONS*4]
@@ -459,7 +496,7 @@ PositionSpeedDirection:
 	.endif
 	retn
 
-DoGPSComm endp
+GPSThread endp
 
 LoadGPSFromIni proc
 	LOCAL	buffer[256]:BYTE
