@@ -2,10 +2,10 @@
 Version=3000
 [Project]
 Assembler=Masm
-Path=C:\RadASM30\Masm\Projects\STM32_STLinkLib
+Path=D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\STM32_STLinkLib
 Group=2,-1,0,1,STLink library,-2,-1,1,Assembly,-3,-1,1,Include
-F1=-2,2,1,22,22,600,400,15,STLinkLib.asm
-F2=-3,0,1,44,44,600,400,76,STLinkLib.inc
+F1=-2,2,1,22,22,600,400,169,STLinkLib.asm
+F2=-3,0,1,44,44,600,400,77,STLinkLib.inc
 Open=0,1,2,3
 Api=
 C2=0

@@ -13,7 +13,7 @@ includelib gdi32.lib
 includelib STLinkLib.lib
 
 STLinkConnect					PROTO hWin:HWND
-STLinkDisconnect				PROTO
+STLinkDisconnect				PROTO hWin:HWND
 STLinkRead 						PROTO hWin:HWND,rdadr:DWORD,wradr:DWORD,nBytes:DWORD
 STLinkWrite						PROTO hWin:HWND,wradr:DWORD,rdadr:DWORD,nBytes:DWORD
 

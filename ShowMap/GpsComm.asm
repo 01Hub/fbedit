@@ -188,6 +188,7 @@ GPSThread proc uses ebx esi edi,Param:DWORD
 					jmp		STLinkErr
 				.endif
 				mov		esi,GPSTail
+				mov		GPSTail,edi
 				.while esi!=edi
 					mov		al,sonardata.GPSArray[esi]
 					mov		combuff[ebx],al

@@ -13,10 +13,10 @@ includelib user32.lib
 ;includelib masm32.lib
 ;includelib Debug.lib
 
-;include masm32.inc
-;include \RadASM30\masm\inc\debug.inc
-;includelib masm32.lib
-;includelib \RadASM30\masm\lib\debug.lib
+include masm32.inc
+include \RadASM30\masm\inc\debug.inc
+includelib masm32.lib
+includelib \RadASM30\masm\lib\debug.lib
 
 ;#########################################################################
 

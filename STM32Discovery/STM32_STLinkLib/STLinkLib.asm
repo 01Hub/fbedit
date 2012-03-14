@@ -1,4 +1,4 @@
-.386
+.586
 .model flat, stdcall  ;32 bit memory model
 option casemap :none  ;case sensitive
 
@@ -39,6 +39,7 @@ LoadSTLinkUSBDriver proc uses ebx,hWin:HWND
 		ret
 	.endif
 	mov		ebx,eax
+	inc eax
 	invoke LoadLibrary,addr szSTLinkUSBDriverDll
 	.if eax
 		mov		STLink.hModule[ebx],eax
@@ -82,6 +83,7 @@ ExErr:
 	invoke FreeLibrary,STLink.hModule[ebx]
 	xor		eax,eax
 	mov		STLink.hModule[ebx],eax
+	pop		ebx
 	ret
 
 LoadSTLinkUSBDriver endp
@@ -143,6 +145,7 @@ STLinkConnect proc uses ebx,hWin:HWND
 		or		eax,eax
 		jz		ExErr
 		lea		eax,STLink.hDevice[ebx]
+		push	eax
 		push	0
 		call STLink.lpSTMass_Enum_GetDevice[ebx]
 		or		eax,eax

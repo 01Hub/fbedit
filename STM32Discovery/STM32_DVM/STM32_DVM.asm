@@ -64,7 +64,7 @@ DlgProc	proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.endif
 	.elseif	eax==WM_CLOSE
 		invoke KillTimer,hWin,1000
-		invoke STLinkDisconnect
+		invoke STLinkDisconnect,hWin
 		invoke DeleteObject,hFont
 		invoke EndDialog,hWin,0
 	.else
