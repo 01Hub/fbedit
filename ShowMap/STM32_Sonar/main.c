@@ -345,27 +345,6 @@ void TIM2_IRQHandler(void)
 }
 
 /*******************************************************************************
-* Function Name  : TIM3_IRQHandler
-* Description    : This function handles TIM3 global interrupt request.
-* Input          : None
-* Output         : None
-* Return         : None
-*******************************************************************************/
-void TIM3_IRQHandler(void)
-{
-  /* Clear TIM3 Update interrupt pending bit */
-  TIM3->SR = (u16)~TIM_IT_Update;
-  if (GPIO_ReadOutputDataBit(GPIOC,GPIO_Pin_4))
-  {
-    GPIO_ResetBits(GPIOC,GPIO_Pin_4);
-  }
-  else
-  {
-    GPIO_SetBits(GPIOC,GPIO_Pin_4);
-  }
-}
-
-/*******************************************************************************
 * Function Name  : rs232_putc
 * Description    : This function transmits a character
 * Input          : Character
@@ -539,9 +518,9 @@ void RCC_Configuration(void)
     while(RCC_GetSYSCLKSource() != 0x08)
     {
     }
-    /* Enable TIM1, ADC1, USART1, GPIOA and GPIOC peripheral clocks */
-    RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM1 | RCC_APB2Periph_ADC1 | RCC_APB2Periph_USART1 | RCC_APB2Periph_GPIOA | RCC_APB2Periph_GPIOC, ENABLE);
-    /* Enable DAC and TIM2 peripheral clocks */
+    /* Enable TIM1, ADC1, USART1, GPIOA, GPIOB and GPIOC peripheral clocks */
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM1 | RCC_APB2Periph_ADC1 | RCC_APB2Periph_USART1 | RCC_APB2Periph_GPIOA | RCC_APB2Periph_GPIOB | RCC_APB2Periph_GPIOC, ENABLE);
+    /* Enable DAC, TIM2 and TIM3 peripheral clocks */
     RCC_APB1PeriphClockCmd(RCC_APB1Periph_DAC | RCC_APB1Periph_TIM2 | RCC_APB1Periph_TIM3, ENABLE);
   }
 }
@@ -577,11 +556,16 @@ void GPIO_Configuration(void)
   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10;
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
   GPIO_Init(GPIOA, &GPIO_InitStructure);
-  /* Configure PC.09 (LED3), PC.08 (LED4) and PC.04 (Setup mode) as output */
-  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9 | GPIO_Pin_8 | GPIO_Pin_4;
+  /* Configure PC.09 (LED3) and PC.08 (LED4) as output */
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9 | GPIO_Pin_8;
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
   GPIO_Init(GPIOC, &GPIO_InitStructure);
+  /* TIM3 channel 3 pin (PB0) configuration */
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0;
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+  GPIO_Init(GPIOB, &GPIO_InitStructure);
 }
 
 /*******************************************************************************
@@ -605,12 +589,6 @@ void NVIC_Configuration(void)
   NVIC_Init(&NVIC_InitStructure);
   /* Enable the TIM2 global Interrupt */
   NVIC_InitStructure.NVIC_IRQChannel = TIM2_IRQChannel;
-  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
-  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
-  NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-  NVIC_Init(&NVIC_InitStructure);
-  /* Enable the TIM3 global Interrupt */
-  NVIC_InitStructure.NVIC_IRQChannel = TIM3_IRQChannel;
   NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
   NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
   NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
@@ -672,7 +650,7 @@ void TIM2_Configuration(void)
 
 /*******************************************************************************
 * Function Name  : TIM3_Configuration
-* Description    : Configures TIM3 to count up and generate interrupt on overflow
+* Description    : Configures TIM3 to count up and generate PWM output on PB0
 * Input          : None
 * Output         : None
 * Return         : None
@@ -680,6 +658,7 @@ void TIM2_Configuration(void)
 void TIM3_Configuration(void)
 {
   TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructure;
+  TIM_OCInitTypeDef  TIM_OCInitStructure;
   TIM_TimeBaseStructure.TIM_ClockDivision = 0;
   TIM_TimeBaseStructure.TIM_Prescaler = 0;
   TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
@@ -688,12 +667,23 @@ void TIM3_Configuration(void)
   /* Time base configuration 48MHz clock */
   //TIM_TimeBaseStructure.TIM_Period = 119;
   /* Time base configuration 40MHz clock */
-  TIM_TimeBaseStructure.TIM_Period = 99;
+  TIM_TimeBaseStructure.TIM_Period = 199;
   TIM_TimeBaseStructure.TIM_RepetitionCounter = 0;
   TIM_TimeBaseInit(TIM3, &TIM_TimeBaseStructure);
-  /* Enable TIM3 Update interrupt */
-  TIM_ClearITPendingBit(TIM3,TIM_IT_Update);
-  TIM_ITConfig(TIM3, TIM_IT_Update, ENABLE);
+  /* PWM1 Mode configuration: Channel3 */
+  TIM_OCInitStructure.TIM_OCMode = TIM_OCMode_PWM1;
+  TIM_OCInitStructure.TIM_OutputState = TIM_OutputState_Enable;
+  TIM_OCInitStructure.TIM_OutputNState = TIM_OutputState_Disable;
+  TIM_OCInitStructure.TIM_Pulse = 99;
+  TIM_OCInitStructure.TIM_OCPolarity = TIM_OCPolarity_High;
+  TIM_OCInitStructure.TIM_OCNPolarity = TIM_OCPolarity_Low;
+  TIM_OCInitStructure.TIM_OCIdleState = TIM_OCIdleState_Reset;
+  TIM_OCInitStructure.TIM_OCNIdleState = TIM_OCIdleState_Reset;
+  TIM_OC3Init(TIM3, &TIM_OCInitStructure);
+  TIM_OC1PreloadConfig(TIM3, TIM_OCPreload_Enable);
+  TIM_ARRPreloadConfig(TIM3, ENABLE);
+  /* TIM3 Main Output Enable */
+  TIM_CtrlPWMOutputs(TIM3, ENABLE);
 }
 
 /*******************************************************************************
