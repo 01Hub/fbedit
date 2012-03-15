@@ -1,8 +1,8 @@
 /*******************************************************************************
 * File Name          : main.c
 * Author             : KetilO
-* Version            : V1.0.0
-* Date               : 05/13/2011
+* Version            : V1.1.0
+* Date               : 03/15/2012
 * Description        : Main program body
 ********************************************************************************
 
@@ -23,20 +23,20 @@
 
 typedef struct
 {
-  vu8 Start;                                    // 0=Wait/Done, 1=Start, 2=In progress
-  u8 PingPulses;                                // Number of ping pulses (0-255)
-  u8 PingTimer;                                 // TIM1 auto reload value
-  u8 RangeInx;                                  // Current range index
-  u16 PixelTimer;                               // TIM2 auto reload value
-  vu16 EchoIndex;                               // Current index in Echo array (0-511)
-  u16 ADCBatt;                                  // Battery
-  u16 ADCWaterTemp;                             // Water temprature
-  u16 ADCAirTemp;                               // Air temprature
-  vu16 GPSHead;                                 // GPSArray head
-  u8 EchoArray[MAXECHO];                        // Echo array
-  u16 GainArray[MAXECHO];                       // Gain array
-  vu16 GainInit[18];                            // Gain setup array
-  u8 GPSArray[512];                             // GPS array
+  vu8 Start;                                    // 0x20000000 0=Wait/Done, 1=Start, 2=In progress
+  u8 PingPulses;                                // 0x20000001 Number of ping pulses (0-255)
+  u8 PingTimer;                                 // 0x20000002 TIM1 auto reload value, ping frequency
+  u8 RangeInx;                                  // 0x20000003 Current range index
+  u16 PixelTimer;                               // 0x20000004 TIM2 auto reload value, sample rate
+  vu16 EchoIndex;                               // 0x20000006 Current index into EchoArray
+  u16 ADCBatt;                                  // 0x20000008 Battery
+  u16 ADCWaterTemp;                             // 0x2000000A Water temprature
+  u16 ADCAirTemp;                               // 0x2000000C Air temprature
+  vu16 GPSHead;                                 // 0x2000000E GPSArray head, index into GPSArray
+  u8 EchoArray[MAXECHO];                        // 0x20000010 Echo array
+  u16 GainArray[MAXECHO];                       // 0x20000210 Gain array
+  vu16 GainInit[18];                            // 0x20000610 Gain setup array, first half word is initial gain
+  u8 GPSArray[512];                             // 0x20000034 GPS array, received GPS NMEA 0183 messages
 }STM32_SonarTypeDef;
 
 /* Private macro -------------------------------------------------------------*/
@@ -56,7 +56,6 @@ void TIM2_Configuration(void);
 void TIM3_Configuration(void);
 void USART_Configuration(u16 Baud);
 u16 GetADCValue(u8 Channel);
-void rs232_putc(char c);
 void rs232_puts(char *str);
 void rs232_gets(char *str);
 void GainSetup(void);
@@ -138,8 +137,7 @@ int main(void)
       i = 1;
       while (i < MAXECHO)
       {
-        STM32_Sonar.EchoArray[i] = 0;
-        i++;
+        STM32_Sonar.EchoArray[i++] = 0;
       }
       /* Read battery */
       STM32_Sonar.ADCBatt = GetADCValue(ADC_Channel_5);
@@ -147,6 +145,8 @@ int main(void)
       STM32_Sonar.ADCWaterTemp = GetADCValue(ADC_Channel_6);
       /* Read air temprature */
       STM32_Sonar.ADCAirTemp = GetADCValue(ADC_Channel_7);
+      /* Enable ADC injected channel */
+      ADC_AutoInjectedConvCmd(ADC1, ENABLE);
       /* Store the current range as the first byte in the echo array */
       STM32_Sonar.EchoArray[0] = STM32_Sonar.RangeInx;
       /* Reset echo index */
@@ -154,7 +154,7 @@ int main(void)
       /* Set the TIM1 Autoreload value */
       TIM1->ARR = STM32_Sonar.PingTimer;
       /* Set the TIM3 Autoreload value */
-      TIM3->ARR = STM32_Sonar.PingTimer;
+      TIM3->ARR = STM32_Sonar.PingTimer*2+1;
       /* Reset TIM1 count */
       TIM1->CNT = 0;
       /* Reset TIM3 count */
@@ -243,35 +243,35 @@ u16 GetADCValue(u8 Channel)
 *******************************************************************************/
 void GainSetup(void)
 {
-  vu32 GainInitPtr;
+  vu32 GainInitInx;
   vu32 i;
-  vu32 GainPtr;
+  vu32 GainInx;
   vu32 GainInc;
   vu32 GainVal;
-  GainInitPtr=1;
-  GainPtr=0;
+  GainInitInx=1;
+  GainInx=0;
   GainVal=0;
-  while (GainInitPtr<17)
+  while (GainInitInx<17)
   {
-    GainVal=STM32_Sonar.GainInit[GainInitPtr]<<13;
-    GainInc=(STM32_Sonar.GainInit[GainInitPtr+1]-STM32_Sonar.GainInit[GainInitPtr])<<8;
+    GainVal=STM32_Sonar.GainInit[GainInitInx]<<13;
+    GainInc=(STM32_Sonar.GainInit[GainInitInx+1]-STM32_Sonar.GainInit[GainInitInx])<<8;
     i=0;
     while (i<32)
     {
-      STM32_Sonar.GainArray[GainPtr]=(GainVal>>13)+STM32_Sonar.GainInit[0];
+      STM32_Sonar.GainArray[GainInx]=(GainVal>>13)+STM32_Sonar.GainInit[0];
       if ((GainVal>>12) && 1)
       {
-        STM32_Sonar.GainArray[GainPtr]++;
+        STM32_Sonar.GainArray[GainInx]++;
       }
-      if (STM32_Sonar.GainArray[GainPtr]>4095)
+      if (STM32_Sonar.GainArray[GainInx]>4095)
       {
-        STM32_Sonar.GainArray[GainPtr]=4095;
+        STM32_Sonar.GainArray[GainInx]=4095;
       }
       GainVal+=GainInc;
-      GainPtr++;
+      GainInx++;
       i++;
     }
-    GainInitPtr++;
+    GainInitInx++;
   }
 }
 
@@ -305,8 +305,6 @@ void TIM1_UP_IRQHandler(void)
   {
     /* Ping done, Disable TIM1 */
     TIM_Cmd(TIM1, DISABLE);
-    /* Enable ADC injected channel */
-    ADC_AutoInjectedConvCmd(ADC1, ENABLE);
     /* TIM2 configuration */
     TIM2_Configuration();
     /* Enable TIM2 */
@@ -345,21 +343,6 @@ void TIM2_IRQHandler(void)
 }
 
 /*******************************************************************************
-* Function Name  : rs232_putc
-* Description    : This function transmits a character
-* Input          : Character
-* Output         : None
-* Return         : None
-*******************************************************************************/
-void rs232_putc(char c)
-{
-  /* Transmit Data */
-  USART1->DR = (u16)c;
-  /* Wait until transmit register empty*/
-  while((USART1->SR & USART_FLAG_TXE) == 0);          
-}
-
-/*******************************************************************************
 * Function Name  : rs232_puts
 * Description    : This function transmits a zero terminated string
 * Input          : Zero terminated string
@@ -372,7 +355,10 @@ void rs232_puts(char *str)
   /* Characters are transmitted one at a time. */
   while ((c = *str++))
   {
-    rs232_putc(c);
+    /* Transmit Data */
+    USART1->DR = (u16)c;
+    /* Wait until transmit register empty*/
+    while((USART1->SR & USART_FLAG_TXE) == 0);          
   }
 }
 

@@ -15,6 +15,7 @@ szComFailed			BYTE 'Opening com port failed.',0
 
 szGPRMC				BYTE '$GPRMC',0
 szGPGSV				BYTE '$GPGSV',0
+szGPGGA				BYTE '$GPGGA',0
 
 szBinToDec			BYTE '%06d',0
 szFmtTime			BYTE '%02d%02d%02d %02d:%02d:%02d',0
@@ -280,6 +281,42 @@ GPSExec:
 					mov		SatPtr,edi
 					.if !nSatelites
 						invoke InvalidateRect,hGPS,NULL,TRUE
+					.endif
+				.else
+					invoke strcmp,addr buffer,addr szGPGGA
+					.if !eax
+						;UTC time
+						invoke GetItemStr,addr linebuff,addr szNULL,addr buffer,32
+						;Lat
+						invoke GetItemStr,addr linebuff,addr szNULL,addr buffer,32
+						invoke GetItemStr,addr linebuff,addr szNULL,addr buffer,32
+						;Lon
+						invoke GetItemStr,addr linebuff,addr szNULL,addr buffer,32
+						invoke GetItemStr,addr linebuff,addr szNULL,addr buffer,32
+						;Fix quality
+						invoke GetItemInt,addr linebuff,0
+						mov		altitude.fixquality,al
+						;Number of satelites
+						invoke GetItemInt,addr linebuff,0
+						mov		altitude.nsat,al
+						;HDOP
+						invoke GetItemStr,addr linebuff,addr szNULL,addr buffer,32
+						lea		esi,buffer
+						mov		edi,esi
+						.while byte ptr [esi]
+							mov		al,[esi]
+							.if al!='.'
+								mov		[edi],al
+								inc		edi
+							.endif
+							inc		esi
+						.endw
+						mov		byte ptr [edi],0
+						invoke DecToBin,addr buffer
+						mov		altitude.hdop,ax
+						;Altitude
+						invoke GetItemInt,addr linebuff,0
+						mov		altitude.alt,ax
 					.endif
 				.endif
 			.endif

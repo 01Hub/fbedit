@@ -374,11 +374,18 @@ SONAR struct
 SONAR ends
 
 SATELITE struct
-	SatelliteID		BYTE ?
-	Elevation		BYTE ?
-	Azimuth			WORD ?
-	SNR				WORD ?
+	SatelliteID		BYTE ?									;Satelite ID
+	Elevation		BYTE ?									;Elevation in degrees (0-90)
+	Azimuth			WORD ?									;Azimuth in degrees (0-359)
+	SNR				WORD ?									;Signal strenght	(0-99, 0 not tracked) 
 SATELITE ends
+
+ALTITUDE struct
+	fixquality		BYTE ?									;Fix quality
+	nsat			BYTE ?									;Number of satelites tracked
+	hdop			WORD ?									;Horizontal dilution of position * 100
+	alt				WORD ?									;Altitude in meters
+ALTITUDE ends
 
 SONARREPLAY struct
 	Version			BYTE ?									;200
@@ -510,6 +517,7 @@ szIniFileName		BYTE MAX_PATH dup(?)					;Path and filename of ini file
 szbuff				BYTE 512 dup(?)							;Temporary buffer
 tid					DWORD ?									;Thread ID
 sonardata			SONAR <>								;Sonar data
+altitude			ALTITUDE <>								;GGA message info
 satelites			SATELITE 12 dup(<>)						;Data for 12 satelites
 hSplittV			HCURSOR ?								;Horizontal splitt cursor
 rseed				DWORD ?									;Random seed
