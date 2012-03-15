@@ -91,6 +91,10 @@ int main(void)
   /* Enable DAC channel1 */
   DAC->CR = 0x1;
 
+  i = 0;
+  while (i++ < 10000000)
+  {
+  }
   if (GPIO_ReadInputDataBit(GPIOA,GPIO_Pin_0))
   {
     /* Enable TIM3 */
@@ -100,8 +104,8 @@ int main(void)
   USART_Configuration(4800);
   /* Switch to NMEA protocol at 4800,8,N,1 */
   rs232_puts("$PSRF100,1,4800,8,1,0*0E\r\n\0");
-  /* Disable GGA message */
-  rs232_puts("$PSRF103,00,00,00,01*24\r\n\0");
+  /* Enable GGA message, rate 5 seconds */
+  rs232_puts("$PSRF103,00,00,05,00*20\r\n\0");
   /* Disable GLL message */
   rs232_puts("$PSRF103,01,00,00,01*25\r\n\0");
   /* Disable GSA message */

@@ -21,6 +21,9 @@ szBinToDec			BYTE '%06d',0
 szFmtTime			BYTE '%02d%02d%02d %02d:%02d:%02d',0
 szColon				BYTE ': ',0
 
+szQuality			BYTE 'Qua: %u',0
+szSatelites			BYTE 'Sat: %u',0
+szAltitude			BYTE 'Alt: %u',0
 
 .data?
 
@@ -766,6 +769,22 @@ GPSProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			lea		edi,[edi+sizeof SATELITE]
 			inc		ebx
 		.endw
+		invoke SetTextColor,mDC,0
+		mov		esi,rect.right
+		sub		esi,150
+		movzx	eax,altitude.fixquality
+		invoke wsprintf,addr buffer,addr szQuality,eax
+		invoke strlen,addr buffer
+		invoke TextOut,mDC,esi,5,addr buffer,eax
+		movzx	eax,altitude.nsat
+		invoke wsprintf,addr buffer,addr szSatelites,eax
+		invoke strlen,addr buffer
+		invoke TextOut,mDC,esi,15,addr buffer,eax
+		movzx	eax,altitude.alt
+		invoke wsprintf,addr buffer,addr szAltitude,eax
+		invoke strlen,addr buffer
+		invoke TextOut,mDC,esi,25,addr buffer,eax
+
 		invoke BitBlt,ps.hdc,0,0,rect.right,rect.bottom,mDC,0,0,SRCCOPY
 		pop		eax
 		invoke SelectObject,mDC,eax
