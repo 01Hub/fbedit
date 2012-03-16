@@ -72,7 +72,7 @@ void GainSetup(void);
 int main(void)
 {
   u32 i;
-  u32* ADC;
+  vu32* ADC;
   u8 Echo;
   /* System clocks configuration */
   RCC_Configuration();
@@ -118,6 +118,8 @@ int main(void)
   rs232_puts("$PSRF103,04,00,01,00*20\r\n\0");
   /* Disable VTG message */
   rs232_puts("$PSRF103,05,00,00,01*21\r\n\0");
+  /* Get pointer to injected channel */
+  ADC = ( (u32 *) ADC1_ICDR_Address);
 
   while (1)
   {
@@ -151,20 +153,16 @@ int main(void)
       STM32_Sonar.ADCAirTemp = GetADCValue(ADC_Channel_7);
       /* Enable ADC injected channel */
       ADC_AutoInjectedConvCmd(ADC1, ENABLE);
-      /* Store the current range as the first byte in the echo array */
-      STM32_Sonar.EchoArray[0] = STM32_Sonar.RangeInx;
-      /* Reset echo index */
-      STM32_Sonar.EchoIndex = 1;
       /* Set the TIM1 Autoreload value */
       TIM1->ARR = STM32_Sonar.PingTimer;
       /* Set the TIM3 Autoreload value */
       TIM3->ARR = STM32_Sonar.PingTimer*2+1;
       /* Reset TIM1 count */
       TIM1->CNT = 0;
-      /* Reset TIM3 count */
-      TIM3->CNT = 0;
       /* Set TIM1 repetirion counter */
       TIM1->RCR = 0;
+      /* Reset echo index */
+      STM32_Sonar.EchoIndex = 0;
       /* Init Ping */
       Ping = 0x2;
       /* Enable TIM1 */
@@ -175,7 +173,6 @@ int main(void)
         /* To eliminate the need for an advanced AM demodulator the largest */ 
         /* ADC reading is stored in its echo array element */
         /* Get echo */
-        ADC = ( (u32 *) ADC1_ICDR_Address);
         Echo = (u8) ( (u16) (*(vu32*) (((*(u32*)&ADC)))) >> 4);
         /* If echo larger than previous echo, update the echo array */
         if (Echo > STM32_Sonar.EchoArray[STM32_Sonar.EchoIndex])
@@ -183,6 +180,8 @@ int main(void)
           STM32_Sonar.EchoArray[STM32_Sonar.EchoIndex] = Echo;
         }
       }
+      /* Store the current range as the first byte in the echo array */
+      STM32_Sonar.EchoArray[0] = STM32_Sonar.RangeInx;
       /* Done, Disable TIM2 */
       TIM2->CR1 = 0;
       /* Disable ADC injected channel */
