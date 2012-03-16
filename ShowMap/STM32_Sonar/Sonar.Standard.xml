@@ -739,9 +739,9 @@
     <variable Name="HSEStatus" FileName="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_rcc.c" Line="202" Addr="0x10" TI="12657"/>
    </function >
    <type Family="array" ID="14636" toTI="12597"/>
-   <variable Name="APBAHBPrescTable" FileName="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_rcc.c" Line="111" Addr="0x8001794" TI="14669"/>
+   <variable Name="APBAHBPrescTable" FileName="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_rcc.c" Line="111" Addr="0x800178C" TI="14669"/>
    <type Family="array" ID="14674" toTI="12597"/>
-   <variable Name="ADCPrescTable" FileName="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_rcc.c" Line="112" Addr="0x80017A4" TI="14707"/>
+   <variable Name="ADCPrescTable" FileName="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_rcc.c" Line="112" Addr="0x800179C" TI="14707"/>
   </module>
   <module Name="C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_tim.c" >
    <type Family="Base" Name="long int" ID="14750"/>

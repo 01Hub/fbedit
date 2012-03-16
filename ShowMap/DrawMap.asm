@@ -676,7 +676,8 @@ MAPThread proc uses esi edi,Param:DWORD
 
 	.while !fExitMAPThread
 		.if map.paintnow
-			dec		map.paintnow
+;			dec		map.paintnow
+			mov		map.paintnow,0
 			mov		eax,map.zoomval
 			mov		zoomval,eax
 			mov		ecx,map.topx

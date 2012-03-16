@@ -90,6 +90,8 @@ int main(void)
   ADC_Configuration();
   /* Enable DAC channel1 */
   DAC->CR = 0x1;
+  /* Set the DAC to output lowest gain */
+  DAC->DHR12R1 = (u16)0x0;
   /* Setup USART1 4800 baud */
   USART_Configuration(4800);
   /* Wait until GPS module has started up */
@@ -122,8 +124,6 @@ int main(void)
     if (STM32_Sonar.Start == 1)
     {
       STM32_Sonar.Start = 2;
-      /* Set the DAC to output lowest gain */
-      DAC->DHR12R1 = (u16)0x0;
       /* Toggle blue led */
       if (BlueLED)
       {
@@ -230,7 +230,7 @@ u16 GetADCValue(u8 Channel)
     while (ADC_GetFlagStatus(ADC1, ADC_FLAG_EOC) == RESET)
     {
     }
-    ADCValue = ADCValue + ADC1->DR;
+    ADCValue += ADC1->DR;
   }
   /* Stop ADC1 Software Conversion */ 
   ADC_SoftwareStartConvCmd(ADC1, DISABLE);
