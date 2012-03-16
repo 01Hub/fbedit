@@ -35,7 +35,7 @@ typedef struct
   vu16 GPSHead;                                 // 0x2000000E GPSArray head, index into GPSArray
   u8 EchoArray[MAXECHO];                        // 0x20000010 Echo array
   u16 GainArray[MAXECHO];                       // 0x20000210 Gain array
-  vu16 GainInit[18];                            // 0x20000610 Gain setup array, first half word is initial gain
+  u16 GainInit[18];                             // 0x20000610 Gain setup array, first half word is initial gain
   u8 GPSArray[512];                             // 0x20000034 GPS array, received GPS NMEA 0183 messages
 }STM32_SonarTypeDef;
 
@@ -90,9 +90,11 @@ int main(void)
   ADC_Configuration();
   /* Enable DAC channel1 */
   DAC->CR = 0x1;
-
+  /* Setup USART1 4800 baud */
+  USART_Configuration(4800);
+  /* Wait until GPS module has started up */
   i = 0;
-  while (i++ < 10000000)
+  while (i++ < 20000000)
   {
   }
   if (GPIO_ReadInputDataBit(GPIOA,GPIO_Pin_0))
@@ -100,8 +102,6 @@ int main(void)
     /* Enable TIM3 */
     TIM_Cmd(TIM3, ENABLE);
   }
-  /* Setup USART1 4800 baud */
-  USART_Configuration(4800);
   /* Switch to NMEA protocol at 4800,8,N,1 */
   rs232_puts("$PSRF100,1,4800,8,1,0*0E\r\n\0");
   /* Enable GGA message, rate 5 seconds */
@@ -241,7 +241,7 @@ u16 GetADCValue(u8 Channel)
 /*******************************************************************************
 * Function Name  : GainSetup
 * Description    : This function sets up the gain levels for each pixel
-* Input          : Zero terminated string
+* Input          : None
 * Output         : None
 * Return         : None
 *******************************************************************************/
@@ -254,7 +254,6 @@ void GainSetup(void)
   vu32 GainVal;
   GainInitInx=1;
   GainInx=0;
-  GainVal=0;
   while (GainInitInx<17)
   {
     GainVal=STM32_Sonar.GainInit[GainInitInx]<<13;
@@ -288,10 +287,9 @@ void GainSetup(void)
 *******************************************************************************/
 void TIM1_UP_IRQHandler(void)
 {
-  /* Set ping outputs high (FET's off) */
+  /* Set ping outputs high (FET's off), 2 times to insert a delay and prevent overlapping */
   GPIO_WriteBit(GPIOA, GPIO_Pin_2 | GPIO_Pin_1, Bit_SET);
-  /* Clear TIM1 Update interrupt pending bit */
-  TIM1->SR = (u16)~TIM_IT_Update;
+  GPIO_WriteBit(GPIOA, GPIO_Pin_2 | GPIO_Pin_1, Bit_SET);
   if (STM32_Sonar.PingPulses)
   {
     GPIO_Write(GPIOA,Ping);
@@ -311,9 +309,13 @@ void TIM1_UP_IRQHandler(void)
     TIM_Cmd(TIM1, DISABLE);
     /* TIM2 configuration */
     TIM2_Configuration();
+    /* Clear TIM2 Update interrupt pending bit */
+    TIM2->SR = (u16)~TIM_IT_Update;
     /* Enable TIM2 */
     TIM_Cmd(TIM2, ENABLE);
   }
+  /* Clear TIM1 Update interrupt pending bit */
+  TIM1->SR = (u16)~TIM_IT_Update;
 }
 
 /*******************************************************************************
@@ -377,6 +379,7 @@ void rs232_puts(char *str)
 void USART1_IRQHandler(void)
 {
   STM32_Sonar.GPSArray[STM32_Sonar.GPSHead++]=USART1->DR;
+  /* Limit GPSHead to 512 bytes array*/
   STM32_Sonar.GPSHead&=0x1FF;
 }
 
