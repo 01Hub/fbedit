@@ -13,6 +13,7 @@ szBaudRate			BYTE '4800',0
 					BYTE '38400',0,0
 szComFailed			BYTE 'Opening com port failed.',0
 
+;NMEA Messages
 szGPRMC				BYTE '$GPRMC',0
 szGPGSV				BYTE '$GPGSV',0
 szGPGGA				BYTE '$GPGGA',0
@@ -21,9 +22,10 @@ szBinToDec			BYTE '%06d',0
 szFmtTime			BYTE '%02d%02d%02d %02d:%02d:%02d',0
 szColon				BYTE ': ',0
 
-szQuality			BYTE 'Qua: %u',0
-szSatelites			BYTE 'Sat: %u',0
-szAltitude			BYTE 'Alt: %u',0
+szFix				BYTE 'Fix: ',0
+szHDOP				BYTE 'HDop: ',0
+szSatelites			BYTE 'Sat: ',0
+szAltitude			BYTE 'Alt: ',0
 
 .data?
 
@@ -320,6 +322,7 @@ GPSExec:
 						;Altitude
 						invoke GetItemInt,addr linebuff,0
 						mov		altitude.alt,ax
+						invoke InvalidateRect,hGPS,NULL,TRUE
 					.endif
 				.endif
 			.endif
@@ -722,7 +725,7 @@ GPSProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				movzx	eax,satelites.Azimuth[edi]
 				invoke wsprintf,addr buffer[10],addr szFmtDec3,eax
 				.if satelites.SNR[edi]
-					push	08000h
+					push	06000h
 					mov		eax,29
 				.else
 					push	080h
@@ -771,20 +774,32 @@ GPSProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.endw
 		invoke SetTextColor,mDC,0
 		mov		esi,rect.right
-		sub		esi,150
+		sub		esi,165
+		invoke TextOut,mDC,esi,5,addr szFix,5
+		invoke TextOut,mDC,esi,15,addr szHDOP,6
+		invoke TextOut,mDC,esi,25,addr szSatelites,5
+		invoke TextOut,mDC,esi,35,addr szAltitude,5
+		add		esi,38
 		movzx	eax,altitude.fixquality
-		invoke wsprintf,addr buffer,addr szQuality,eax
+		invoke wsprintf,addr buffer,addr szFmtDec,eax
 		invoke strlen,addr buffer
 		invoke TextOut,mDC,esi,5,addr buffer,eax
-		movzx	eax,altitude.nsat
-		invoke wsprintf,addr buffer,addr szSatelites,eax
+		movzx	eax,altitude.hdop
+		invoke wsprintf,addr buffer,addr szFmtDec3,eax
 		invoke strlen,addr buffer
+		mov		edx,dword ptr buffer[eax-2]
+		mov		buffer[eax-2],'.'
+		mov		dword ptr buffer [eax-1],edx
+		inc		eax
 		invoke TextOut,mDC,esi,15,addr buffer,eax
-		movzx	eax,altitude.alt
-		invoke wsprintf,addr buffer,addr szAltitude,eax
+		movzx	eax,altitude.nsat
+		invoke wsprintf,addr buffer,addr szFmtDec,eax
 		invoke strlen,addr buffer
 		invoke TextOut,mDC,esi,25,addr buffer,eax
-
+		movzx	eax,altitude.alt
+		invoke wsprintf,addr buffer,addr szFmtDec,eax
+		invoke strlen,addr buffer
+		invoke TextOut,mDC,esi,35,addr buffer,eax
 		invoke BitBlt,ps.hdc,0,0,rect.right,rect.bottom,mDC,0,0,SRCCOPY
 		pop		eax
 		invoke SelectObject,mDC,eax

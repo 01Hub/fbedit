@@ -1230,9 +1230,7 @@ STMThread proc uses ebx esi edi,Param:DWORD
 				;Copy old echo
 				call	MoveEcho
 				;Read echo from file
-				.if sonarreplay.Version<200
-					invoke ReadFile,sonardata.hReplay,addr STM32Echo,MAXYECHO,addr dwread,NULL
-				.else
+				.if sonarreplay.Version>=200
 					invoke ReadFile,sonardata.hReplay,addr sonarreplay,sizeof SONARREPLAY,addr dwread,NULL
 					.if dwread==sizeof SONARREPLAY
 						mov		eax,map.iLon
@@ -1315,10 +1313,11 @@ STMThread proc uses ebx esi edi,Param:DWORD
 							inc		map.paintnow
 						.endif
 						.if sonarreplay.Version==201
-							invoke ReadFile,sonardata.hReplay,addr satelites,sizeof satelites,addr dwread,NULL
+							invoke ReadFile,sonardata.hReplay,addr satelites,sizeof SATELITE*12,addr dwread,NULL
+							invoke ReadFile,sonardata.hReplay,addr altitude,sizeof ALTITUDE,addr dwread,NULL
 						.endif
-						invoke ReadFile,sonardata.hReplay,addr STM32Echo,MAXYECHO,addr dwread,NULL
 					.endif
+					invoke ReadFile,sonardata.hReplay,addr STM32Echo,MAXYECHO,addr dwread,NULL
 				.endif
 				.if dwread!=MAXYECHO
 					invoke CloseHandle,sonardata.hReplay
@@ -2941,7 +2940,7 @@ SonarProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.if sonarreplay.Version==200
 					add		ecx,sizeof SONARREPLAY
 				.elseif sonarreplay.Version==201
-					add		ecx,sizeof SONARREPLAY+sizeof satelites
+					add		ecx,sizeof SONARREPLAY+sizeof SATELITE*12+sizeof ALTITUDE
 				.endif
 				mul		ecx
 				invoke SetFilePointer,sonardata.hReplay,eax,NULL,FILE_BEGIN
@@ -2957,7 +2956,7 @@ SonarProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 ;				.if sonarreplay.Version==200
 ;					add		ecx,sizeof SONARREPLAY
 ;				.elseif sonarreplay.Version==201
-;					add		ecx,sizeof SONARREPLAY+sizeof satelites
+;					add		ecx,sizeof SONARREPLAY+sizeof SATELITE*12+sizeof ALTITUDE
 ;				.endif
 ;				mul		ecx
 ;				invoke SetFilePointer,sonardata.hReplay,eax,NULL,FILE_BEGIN
@@ -2976,7 +2975,7 @@ SonarProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 ;				.if sonarreplay.Version==200
 ;					add		ecx,sizeof SONARREPLAY
 ;				.elseif sonarreplay.Version==201
-;					add		ecx,sizeof SONARREPLAY+sizeof satelites
+;					add		ecx,sizeof SONARREPLAY+sizeof SATELITE*12+sizeof ALTITUDE
 ;				.endif
 ;				mul		ecx
 ;				invoke SetFilePointer,sonardata.hReplay,eax,NULL,FILE_BEGIN
@@ -2992,7 +2991,7 @@ SonarProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.if sonarreplay.Version==200
 					add		ecx,sizeof SONARREPLAY
 				.elseif sonarreplay.Version==201
-					add		ecx,sizeof SONARREPLAY+sizeof satelites
+					add		ecx,sizeof SONARREPLAY+sizeof SATELITE*12+sizeof ALTITUDE
 				.endif
 				mul		ecx
 				invoke SetFilePointer,sonardata.hReplay,eax,NULL,FILE_BEGIN
@@ -3011,7 +3010,7 @@ SonarProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.if sonarreplay.Version==200
 					add		ecx,sizeof SONARREPLAY
 				.elseif sonarreplay.Version==201
-					add		ecx,sizeof SONARREPLAY+sizeof satelites
+					add		ecx,sizeof SONARREPLAY+sizeof SATELITE*12+sizeof ALTITUDE
 				.endif
 				mul		ecx
 				invoke SetFilePointer,sonardata.hReplay,eax,NULL,FILE_BEGIN
