@@ -586,9 +586,9 @@ SonarGainOptionProc proc uses ebx esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:L
 					invoke PutItemInt,addr szbuff,[esi].RANGE.interval
 					invoke PutItemInt,addr szbuff,[esi].RANGE.pingadd
 					xor		ebx,ebx
-					.while ebx<=MAXYECHO
+					.while ebx<18
 						invoke PutItemInt,addr szbuff,[esi].RANGE.gain[ebx*DWORD]
-						lea		ebx,[ebx+32]
+						inc		ebx
 					.endw
 					mov		ebx,[esi].RANGE.nticks
 					lea		esi,[esi].RANGE.scale
@@ -720,6 +720,7 @@ DrawGain:
 	mov		eax,[eax].RANGE.range
 	mov		xrange,eax
 	mov		eax,xp
+	shr		eax,5
 	lea		esi,[esi+eax*DWORD]
 	mov		pgain,esi
 	mov		eax,[esi]
@@ -771,7 +772,7 @@ DrawGain:
 	mul		ecx
 	lea		esi,[eax+offset sonardata.sonarrange.gain]
 	xor		ebx,ebx
-	.while ebx<512
+	.while ebx<16
 		mov		eax,[esi]
 		add		eax,sonardata.gainofs
 		.if eax>4095
@@ -782,17 +783,25 @@ DrawGain:
 		shr		eax,4
 		add		eax,GAINYOFS
 		mov		edx,ebx
-		shr		edx,1
+		shl		edx,4
 		add		edx,GAINXOFS+1
 		.if !ebx
-			push	eax
 			push	edx
 			invoke MoveToEx,ps.hdc,edx,eax,NULL
 			pop		edx
-			pop		eax
 		.endif
-		invoke LineTo,ps.hdc,edx,eax
 		lea		esi,[esi+DWORD]
+		mov		eax,[esi]
+		add		eax,sonardata.gainofs
+		.if eax>4095
+			mov		eax,4095
+		.endif
+		sub		eax,4095
+		neg		eax
+		shr		eax,4
+		add		eax,GAINYOFS
+		lea		edx,[edx+16]
+		invoke LineTo,ps.hdc,edx,eax
 		inc		ebx
 	.endw
 	pop		eax
@@ -1171,19 +1180,19 @@ GainUpload proc uses ebx edi
 	xor		edi,edi
 	.if sonardata.AutoGain
 		;Time dependent gain
-		.while ecx<=MAXYECHO
+		.while ecx<17
 			mov		eax,sonardata.sonarrange.gain[ebx+ecx*DWORD]
 			inc		edi
 			mov		sonardata.GainInit[edi*WORD],ax
-			lea		ecx,[ecx+32]
+			lea		ecx,[ecx+1]
 		.endw
 	.else
 		;Fixed gain
 		xor		eax,eax
-		.while ecx<=MAXYECHO
+		.while ecx<17
 			inc		edi
 			mov		sonardata.GainInit[edi*WORD],ax
-			lea		ecx,[ecx+32]
+			lea		ecx,[ecx+1]
 		.endw
 	.endif
 	;Upload Gain array
@@ -2719,10 +2728,10 @@ LoadSonarFromIni proc uses ebx esi edi
 		invoke GetItemInt,addr buffer,0
 		mov		sonardata.sonarrange.pingadd[edi],eax
 		xor		esi,esi
-		.while esi<=MAXYECHO
+		.while esi<17
 			invoke GetItemInt,addr buffer,0
 			mov		sonardata.sonarrange.gain[edi+esi*DWORD],eax
-			lea		esi,[esi+32]
+			inc		esi
 		.endw
 		lea		esi,sonardata.sonarrange.scale[edi]
 		invoke strcpy,esi,addr buffer
