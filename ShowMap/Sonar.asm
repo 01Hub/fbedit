@@ -1182,7 +1182,7 @@ GainUpload proc uses ebx edi
 		;Time dependent gain
 		.while ecx<17
 			mov		eax,sonardata.sonarrange.gain[ebx+ecx*DWORD]
-			inc		edi
+			lea		edi,[edi+1]
 			mov		sonardata.GainInit[edi*WORD],ax
 			lea		ecx,[ecx+1]
 		.endw
@@ -1190,7 +1190,7 @@ GainUpload proc uses ebx edi
 		;Fixed gain
 		xor		eax,eax
 		.while ecx<17
-			inc		edi
+			lea		edi,[edi+1]
 			mov		sonardata.GainInit[edi*WORD],ax
 			lea		ecx,[ecx+1]
 		.endw

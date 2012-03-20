@@ -189,7 +189,14 @@ GPSThread proc uses ebx esi edi,Param:DWORD
 			mov		edi,tmp
 			shr		edi,16
 			.if edi!=GPSTail
-				invoke STLinkRead,hSonar,STM32_Sonar+16+sizeof SONAR.EchoArray+sizeof SONAR.GainArray+sizeof SONAR.GainInit,addr sonardata.GPSArray,sizeof SONAR.GPSArray
+				.if edi>GPSTail
+					mov		edx,GPSTail
+					mov		eax,edi
+					sub		eax,edx
+					invoke STLinkRead,hSonar,STM32_Sonar+16+sizeof SONAR.EchoArray+sizeof SONAR.GainArray+sizeof SONAR.GainInit,addr sonardata.GPSArray[edx],eax
+				.else
+					invoke STLinkRead,hSonar,STM32_Sonar+16+sizeof SONAR.EchoArray+sizeof SONAR.GainArray+sizeof SONAR.GainInit,addr sonardata.GPSArray,sizeof SONAR.GPSArray
+				.endif
 				.if !eax || eax==IDABORT || eax==IDIGNORE
 					jmp		STLinkErr
 				.endif
