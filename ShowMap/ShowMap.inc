@@ -261,6 +261,8 @@ MAP struct
 	hMemLon			HGLOBAL ?								;Longitude array
 	nLatPoint		DWORD ?									;Number of lattitude entries in array
 	hMemLat			HGLOBAL ?								;Lattitude array
+	fSmoothTrack	DWORD ?
+	TrailRate		DWORD ?
 MAP ends
 
 ;STM32 constants

@@ -1229,28 +1229,52 @@ ZoomMap proc uses ebx esi edi,zoominx:DWORD
 ZoomMap endp
 
 ;In: Longitude, Lattitude,Bearing,Time
-AddTrailPoint proc x:DWORD,y:DWORD,iBearing:DWORD,iTime:DWORD
+AddTrailPoint proc x:DWORD,y:DWORD,iBearing:DWORD,iTime:DWORD,nTrailRate:DWORD
 
+	; If bearing is still the same, dont add a new point
 	mov		eax,map.trailhead
+	dec		eax
+	and		eax,MAXTRAIL-1
 	mov		edx,sizeof LOG
 	mul		edx
 	mov		ecx,eax
-	mov		edx,map.trailhead
-	mov		eax,x
-	mov		map.trail.iLon[ecx],eax
-	mov		eax,y
-	mov		map.trail.iLat[ecx],eax
 	mov		eax,iBearing
-	mov		map.trail.iBear[ecx],eax
-	mov		eax,iTime
-	mov		map.trail.iTime[ecx],eax
-	inc		edx
-	and		edx,MAXTRAIL-1
-	mov		map.trailhead,edx
-	.if edx==map.trailtail
+	mov		edx,map.trailhead
+	sub		edx,map.trailtail
+	.if edx<2
+		xor		edx,edx
+	.endif
+	.if (eax!=map.trail.iBear[ecx] && !nTrailRate) || !edx
+		mov		eax,map.trailhead
+		mov		edx,sizeof LOG
+		mul		edx
+		mov		ecx,eax
+		mov		edx,map.trailhead
+		mov		eax,x
+		mov		map.trail.iLon[ecx],eax
+		mov		eax,y
+		mov		map.trail.iLat[ecx],eax
+		mov		eax,iBearing
+		mov		map.trail.iBear[ecx],eax
+		mov		eax,iTime
+		mov		map.trail.iTime[ecx],eax
 		inc		edx
 		and		edx,MAXTRAIL-1
-		mov		map.trailtail,edx
+		mov		map.trailhead,edx
+		.if edx==map.trailtail
+			inc		edx
+			and		edx,MAXTRAIL-1
+			mov		map.trailtail,edx
+		.endif
+	.else
+		mov		eax,x
+		mov		map.trail.iLon[ecx],eax
+		mov		eax,y
+		mov		map.trail.iLat[ecx],eax
+		mov		eax,iBearing
+		mov		map.trail.iBear[ecx],eax
+		mov		eax,iTime
+		mov		map.trail.iTime[ecx],eax
 	.endif
 	ret
 
@@ -1507,3 +1531,45 @@ SetGPSCursor proc
 	ret
 
 SetGPSCursor endp
+
+ButtonProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+	.data?
+		nCount		DWORD ?
+	.code
+	mov		eax,uMsg
+	.if eax==WM_LBUTTONDOWN || eax==WM_LBUTTONDBLCLK
+		mov		nCount,16
+		invoke SetTimer,hWin,1000,500,NULL
+	.elseif eax==WM_LBUTTONUP
+		invoke KillTimer,hWin,1000
+		mov		nCount,16
+	.elseif eax==WM_TIMER
+		invoke GetWindowLong,hWin,GWL_ID
+		mov		ebx,eax
+		invoke GetParent,hWin
+		mov		esi,eax
+		.if esi==hWnd
+			invoke SendMessage,esi,WM_COMMAND,ebx,hWin
+		.else
+			invoke SendMessage,esi,WM_COMMAND,ebx,hWin
+			mov		edi,nCount
+			shr		edi,4
+			.if edi>40
+				mov		edi,40
+			.endif
+			.while edi
+				invoke SendMessage,esi,WM_COMMAND,ebx,hWin
+				dec		edi
+			.endw
+			invoke KillTimer,hWin,1000
+			invoke SetTimer,hWin,1000,50,NULL
+		.endif
+		inc		nCount
+		xor		eax,eax
+		ret
+	.endif
+	invoke CallWindowProc,lpOldButtonProc,hWin,uMsg,wParam,lParam
+	ret
+
+ButtonProc endp
+

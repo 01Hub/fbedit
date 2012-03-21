@@ -79,47 +79,6 @@ SetRange proc uses ebx,RangeInx:DWORD
 
 SetRange endp
 
-ButtonProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
-	.data?
-		nCount		DWORD ?
-	.code
-	mov		eax,uMsg
-	.if eax==WM_LBUTTONDOWN || eax==WM_LBUTTONDBLCLK
-		mov		nCount,16
-		invoke SetTimer,hWin,1000,500,NULL
-	.elseif eax==WM_LBUTTONUP
-		invoke KillTimer,hWin,1000
-		mov		nCount,16
-	.elseif eax==WM_TIMER
-		invoke GetWindowLong,hWin,GWL_ID
-		mov		ebx,eax
-		invoke GetParent,hWin
-		mov		esi,eax
-		.if esi==hWnd
-			invoke SendMessage,esi,WM_COMMAND,ebx,hWin
-		.else
-			invoke SendMessage,esi,WM_COMMAND,ebx,hWin
-			mov		edi,nCount
-			shr		edi,4
-			.if edi>40
-				mov		edi,40
-			.endif
-			.while edi
-				invoke SendMessage,esi,WM_COMMAND,ebx,hWin
-				dec		edi
-			.endw
-			invoke KillTimer,hWin,1000
-			invoke SetTimer,hWin,1000,50,NULL
-		.endif
-		inc		nCount
-		xor		eax,eax
-		ret
-	.endif
-	invoke CallWindowProc,lpOldButtonProc,hWin,uMsg,wParam,lParam
-	ret
-
-ButtonProc endp
-
 ;Description
 ;===========
 ;A short ping at 200KHz is transmitted at intervalls depending on range.
@@ -1220,7 +1179,9 @@ STMThread proc uses ebx esi edi,Param:DWORD
 	LOCAL	ft:FILETIME
 	LOCAL	lft:FILETIME
 	LOCAL	lst:SYSTEMTIME
+	LOCAL	nTrailRate:DWORD
 
+	mov		nTrailRate,0
 	mov		pixcnt,0
 	mov		pixdir,0
 	mov		pixmov,0
@@ -1300,7 +1261,7 @@ STMThread proc uses ebx esi edi,Param:DWORD
 							mov		cl,'.'
 							mov		dword ptr buffer[eax-1],ecx
 							invoke strcpy,addr map.options.text,addr buffer
-							invoke AddTrailPoint,map.iLon,map.iLat,map.iBear,map.iTime
+							invoke AddTrailPoint,map.iLon,map.iLat,map.iBear,map.iTime,nTrailRate
 							.if nTrail
 								mov		eax,map.iLon
 								mov		edx,map.iLat
@@ -1319,6 +1280,13 @@ STMThread proc uses ebx esi edi,Param:DWORD
 								.endif
 							.endif
 							inc		nTrail
+							.if !nTrailRate
+								mov		eax,map.TrailRate
+								dec		eax
+								mov		nTrailRate,eax
+							.else
+								dec		nTrailRate
+							.endif
 							inc		map.paintnow
 						.endif
 						.if sonarreplay.Version==201

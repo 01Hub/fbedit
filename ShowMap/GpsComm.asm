@@ -1,8 +1,12 @@
 
-IDD_DLGGPSSETUP		equ 1400
-IDC_EDTCOMPORT		equ 1403
-IDC_CBOBAUDRATE		equ 1404
-IDC_CHKCOMACTIVE	equ 1405
+IDD_DLGGPSSETUP			equ 1400
+IDC_EDTCOMPORT			equ 1403
+IDC_CBOBAUDRATE			equ 1404
+IDC_CHKCOMACTIVE		equ 1405
+IDC_CHKTRACKSMOOTHING	equ 1401
+IDC_BTNRATEDN			equ 1407
+IDC_TRBRATE				equ 1406
+IDC_BTNRATEUP			equ 1402
 
 .const
 
@@ -130,7 +134,9 @@ GPSThread proc uses ebx esi edi,Param:DWORD
 	LOCAL	nSatelites:DWORD
 	LOCAL	SatPtr:DWORD
 	LOCAL	tmp:DWORD
+	LOCAL	nTrailRate:DWORD
 
+	mov		nTrailRate,0
 	invoke OpenCom
 	.while  !fExitGPSThread
 		.if hFileLogRead
@@ -525,7 +531,7 @@ PositionSpeedDirection:
 	call	wsprintf
 	mov		esp,ebx
 	.if fValid
-		invoke AddTrailPoint,map.iLon,map.iLat,map.iBear,map.iTime
+		invoke AddTrailPoint,map.iLon,map.iLat,map.iBear,map.iTime,nTrailRate
 		.if nTrail
 			mov		eax,map.iLon
 			mov		edx,map.iLat
@@ -544,6 +550,13 @@ PositionSpeedDirection:
 			.endif
 		.endif
 		inc		nTrail
+		.if !nTrailRate
+			mov		eax,map.TrailRate
+			dec		eax
+			mov		nTrailRate,eax
+		.else
+			dec		nTrailRate
+		.endif
 	.endif
 	retn
 
@@ -557,6 +570,10 @@ LoadGPSFromIni proc
 	invoke GetItemStr,addr buffer,addr szBaudRate,addr BaudRate,5
 	invoke GetItemInt,addr buffer,0
 	mov		COMActive,eax
+	invoke GetItemInt,addr buffer,0
+	mov		map.fSmoothTrack,eax
+	invoke GetItemInt,addr buffer,1
+	mov		map.TrailRate,eax
 	ret
 
 LoadGPSFromIni endp
@@ -568,6 +585,8 @@ SaveGPSToIni proc
 	invoke PutItemStr,addr buffer,addr COMPort
 	invoke PutItemStr,addr buffer,addr BaudRate
 	invoke PutItemInt,addr buffer,COMActive
+	invoke PutItemInt,addr buffer,map.fSmoothTrack
+	invoke PutItemInt,addr buffer,map.TrailRate
 	invoke WritePrivateProfileString,addr szIniGPS,addr szIniGPS,addr buffer[1],addr szIniFileName
 	ret
 
@@ -595,6 +614,26 @@ GPSOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPA
 		.if COMActive
 			invoke CheckDlgButton,hWin,IDC_CHKCOMACTIVE,BST_CHECKED
 		.endif
+		invoke ImageList_GetIcon,hIml,12,ILD_NORMAL
+		mov		ebx,eax
+		invoke SendDlgItemMessage,hWin,IDC_BTNRATEDN,BM_SETIMAGE,IMAGE_ICON,ebx
+		invoke ImageList_GetIcon,hIml,4,ILD_NORMAL
+		mov		ebx,eax
+		invoke SendDlgItemMessage,hWin,IDC_BTNRATEUP,BM_SETIMAGE,IMAGE_ICON,ebx
+		push	0
+		push	IDC_BTNRATEDN
+		mov		eax,IDC_BTNRATEUP
+		.while eax
+			invoke GetDlgItem,hWin,eax
+			invoke SetWindowLong,eax,GWL_WNDPROC,offset ButtonProc
+			mov		lpOldButtonProc,eax
+			pop		eax
+		.endw
+		.if map.fSmoothTrack
+			invoke CheckDlgButton,hWin,IDC_CHKTRACKSMOOTHING,BST_CHECKED
+		.endif
+		invoke SendDlgItemMessage,hWin,IDC_TRBRATE,TBM_SETRANGE,FALSE,(99 SHL 16)+1
+		invoke SendDlgItemMessage,hWin,IDC_TRBRATE,TBM_SETPOS,TRUE,map.TrailRate
 	.elseif eax==WM_COMMAND
 		mov		edx,wParam
 		movzx	eax,dx
@@ -606,13 +645,28 @@ GPSOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPA
 				invoke SendDlgItemMessage,hWin,IDC_CBOBAUDRATE,CB_GETLBTEXT,eax,addr BaudRate
 				invoke IsDlgButtonChecked,hWin,IDC_CHKCOMACTIVE
 				mov		COMActive,eax
+				invoke IsDlgButtonChecked,hWin,IDC_CHKTRACKSMOOTHING
+				mov		map.fSmoothTrack,eax
 				invoke SaveGPSToIni
 				invoke OpenCom
 				invoke SendMessage,hWin,WM_CLOSE,NULL,TRUE
 			.elseif eax==IDCANCEL
 				invoke SendMessage,hWin,WM_CLOSE,NULL,NULL
+			.elseif eax==IDC_BTNRATEDN
+				.if map.TrailRate>1
+					dec		map.TrailRate
+					invoke SendDlgItemMessage,hWin,IDC_TRBRATE,TBM_SETPOS,TRUE,map.TrailRate
+				.endif
+			.elseif eax==IDC_BTNRATEUP
+				.if map.TrailRate<99
+					inc		map.TrailRate
+					invoke SendDlgItemMessage,hWin,IDC_TRBRATE,TBM_SETPOS,TRUE,map.TrailRate
+				.endif
 			.endif
 		.endif
+	.elseif eax==WM_HSCROLL
+		invoke SendMessage,lParam,TBM_GETPOS,0,0
+		mov		map.TrailRate,eax
 	.elseif eax==WM_CLOSE
 		invoke EndDialog,hWin,lParam
 	.else
