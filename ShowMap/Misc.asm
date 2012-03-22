@@ -1229,7 +1229,7 @@ ZoomMap proc uses ebx esi edi,zoominx:DWORD
 ZoomMap endp
 
 ;In: Longitude, Lattitude,Bearing,Time
-AddTrailPoint proc x:DWORD,y:DWORD,iBearing:DWORD,iTime:DWORD,nTrailRate:DWORD
+AddTrailPoint proc uses ebx,x:DWORD,y:DWORD,iBearing:DWORD,iTime:DWORD,iSpeed:DWORD
 
 	; If bearing is still the same, dont add a new point
 	mov		eax,map.trailhead
@@ -1241,10 +1241,11 @@ AddTrailPoint proc x:DWORD,y:DWORD,iBearing:DWORD,iTime:DWORD,nTrailRate:DWORD
 	mov		eax,iBearing
 	mov		edx,map.trailhead
 	sub		edx,map.trailtail
-	.if edx<2
-		xor		edx,edx
+	.if map.TrailCount
+		dec		map.TrailCount
 	.endif
-	.if (eax!=map.trail.iBear[ecx] && !nTrailRate) || !edx
+	mov		ebx,iSpeed
+	.if (eax!=map.trail.iBear[ecx] && ebx>map.TrackSmooth && !map.TrailCount) || edx<=2
 		mov		eax,map.trailhead
 		mov		edx,sizeof LOG
 		mul		edx
@@ -1266,6 +1267,8 @@ AddTrailPoint proc x:DWORD,y:DWORD,iBearing:DWORD,iTime:DWORD,nTrailRate:DWORD
 			and		edx,MAXTRAIL-1
 			mov		map.trailtail,edx
 		.endif
+		mov		eax,map.TrailRate
+		mov		map.TrailCount,eax
 	.else
 		mov		eax,x
 		mov		map.trail.iLon[ecx],eax

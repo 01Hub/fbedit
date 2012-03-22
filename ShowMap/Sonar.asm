@@ -1179,9 +1179,7 @@ STMThread proc uses ebx esi edi,Param:DWORD
 	LOCAL	ft:FILETIME
 	LOCAL	lft:FILETIME
 	LOCAL	lst:SYSTEMTIME
-	LOCAL	nTrailRate:DWORD
 
-	mov		nTrailRate,0
 	mov		pixcnt,0
 	mov		pixdir,0
 	mov		pixmov,0
@@ -1254,6 +1252,7 @@ STMThread proc uses ebx esi edi,Param:DWORD
 							invoke SetDlgItemInt,hWnd,IDC_EDTEAST,map.iLon,TRUE
 							invoke SetDlgItemInt,hWnd,IDC_EDTNORTH,map.iLat,TRUE
 							movzx	eax,sonarreplay.iSpeed
+							mov		map.iSpeed,eax
 							invoke wsprintf,addr buffer,addr szFmtDec2,eax
 							invoke strlen,addr buffer
 							movzx	ecx,word ptr buffer[eax-1]
@@ -1261,7 +1260,7 @@ STMThread proc uses ebx esi edi,Param:DWORD
 							mov		cl,'.'
 							mov		dword ptr buffer[eax-1],ecx
 							invoke strcpy,addr map.options.text,addr buffer
-							invoke AddTrailPoint,map.iLon,map.iLat,map.iBear,map.iTime,nTrailRate
+							invoke AddTrailPoint,map.iLon,map.iLat,map.iBear,map.iTime,map.iSpeed
 							.if nTrail
 								mov		eax,map.iLon
 								mov		edx,map.iLat
@@ -1280,13 +1279,6 @@ STMThread proc uses ebx esi edi,Param:DWORD
 								.endif
 							.endif
 							inc		nTrail
-							.if !nTrailRate
-								mov		eax,map.TrailRate
-								dec		eax
-								mov		nTrailRate,eax
-							.else
-								dec		nTrailRate
-							.endif
 							inc		map.paintnow
 						.endif
 						.if sonarreplay.Version==201

@@ -7,6 +7,9 @@ IDC_CHKTRACKSMOOTHING	equ 1401
 IDC_BTNRATEDN			equ 1407
 IDC_TRBRATE				equ 1406
 IDC_BTNRATEUP			equ 1402
+IDC_BTNSMOOTHDN			equ 1408
+IDC_TRBSMOOTH			equ 1409
+IDC_BTNSMOOTHUP			equ 1410
 
 .const
 
@@ -134,9 +137,7 @@ GPSThread proc uses ebx esi edi,Param:DWORD
 	LOCAL	nSatelites:DWORD
 	LOCAL	SatPtr:DWORD
 	LOCAL	tmp:DWORD
-	LOCAL	nTrailRate:DWORD
 
-	mov		nTrailRate,0
 	invoke OpenCom
 	.while  !fExitGPSThread
 		.if hFileLogRead
@@ -444,8 +445,7 @@ PositionSpeedDirection:
 		.endif
 		mov		map.iLon,eax
 		;Speed
-		invoke GetItemStr,addr linebuff,addr szNULL,addr map.options.text,sizeof OPTIONS.text
-		invoke strcpy,addr buffer,addr map.options.text
+		invoke GetItemStr,addr linebuff,addr szNULL,addr buffer,32
 		invoke strlen,addr buffer
 		.while buffer[eax]!='.' && eax
 			dec		eax
@@ -455,6 +455,13 @@ PositionSpeedDirection:
 		mov		dword ptr buffer[eax],ecx
 		invoke DecToBin,addr buffer
 		mov		map.iSpeed,eax
+		invoke wsprintf,addr buffer,addr szFmtDec2,map.iSpeed
+		invoke strlen,addr buffer
+		movzx	ecx,word ptr buffer[eax-1]
+		shl		ecx,8
+		mov		cl,'.'
+		mov		dword ptr buffer[eax-1],ecx
+		invoke strcpy,addr map.options.text,addr buffer
 		;Get the bearing
 		invoke GetItemStr,addr linebuff,addr szNULL,addr buffer,32
 		invoke DecToBin,addr buffer
@@ -535,7 +542,7 @@ PositionSpeedDirection:
 	call	wsprintf
 	mov		esp,ebx
 	.if fValid
-		invoke AddTrailPoint,map.iLon,map.iLat,map.iBear,map.iTime,nTrailRate
+		invoke AddTrailPoint,map.iLon,map.iLat,map.iBear,map.iTime,map.iSpeed
 		.if nTrail
 			mov		eax,map.iLon
 			mov		edx,map.iLat
@@ -554,13 +561,6 @@ PositionSpeedDirection:
 			.endif
 		.endif
 		inc		nTrail
-		.if !nTrailRate
-			mov		eax,map.TrailRate
-			dec		eax
-			mov		nTrailRate,eax
-		.else
-			dec		nTrailRate
-		.endif
 	.endif
 	retn
 
@@ -575,7 +575,7 @@ LoadGPSFromIni proc
 	invoke GetItemInt,addr buffer,0
 	mov		COMActive,eax
 	invoke GetItemInt,addr buffer,0
-	mov		map.fSmoothTrack,eax
+	mov		map.TrackSmooth,eax
 	invoke GetItemInt,addr buffer,1
 	mov		map.TrailRate,eax
 	ret
@@ -589,7 +589,7 @@ SaveGPSToIni proc
 	invoke PutItemStr,addr buffer,addr COMPort
 	invoke PutItemStr,addr buffer,addr BaudRate
 	invoke PutItemInt,addr buffer,COMActive
-	invoke PutItemInt,addr buffer,map.fSmoothTrack
+	invoke PutItemInt,addr buffer,map.TrackSmooth
 	invoke PutItemInt,addr buffer,map.TrailRate
 	invoke WritePrivateProfileString,addr szIniGPS,addr szIniGPS,addr buffer[1],addr szIniFileName
 	ret
@@ -620,11 +620,15 @@ GPSOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPA
 		.endif
 		invoke ImageList_GetIcon,hIml,12,ILD_NORMAL
 		mov		ebx,eax
+		invoke SendDlgItemMessage,hWin,IDC_BTNSMOOTHDN,BM_SETIMAGE,IMAGE_ICON,ebx
 		invoke SendDlgItemMessage,hWin,IDC_BTNRATEDN,BM_SETIMAGE,IMAGE_ICON,ebx
 		invoke ImageList_GetIcon,hIml,4,ILD_NORMAL
 		mov		ebx,eax
+		invoke SendDlgItemMessage,hWin,IDC_BTNSMOOTHUP,BM_SETIMAGE,IMAGE_ICON,ebx
 		invoke SendDlgItemMessage,hWin,IDC_BTNRATEUP,BM_SETIMAGE,IMAGE_ICON,ebx
 		push	0
+		push	IDC_BTNSMOOTHDN
+		push	IDC_BTNSMOOTHUP
 		push	IDC_BTNRATEDN
 		mov		eax,IDC_BTNRATEUP
 		.while eax
@@ -633,9 +637,8 @@ GPSOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPA
 			mov		lpOldButtonProc,eax
 			pop		eax
 		.endw
-		.if map.fSmoothTrack
-			invoke CheckDlgButton,hWin,IDC_CHKTRACKSMOOTHING,BST_CHECKED
-		.endif
+		invoke SendDlgItemMessage,hWin,IDC_TRBSMOOTH,TBM_SETRANGE,FALSE,(99 SHL 16)+0
+		invoke SendDlgItemMessage,hWin,IDC_TRBSMOOTH,TBM_SETPOS,TRUE,map.TrackSmooth
 		invoke SendDlgItemMessage,hWin,IDC_TRBRATE,TBM_SETRANGE,FALSE,(99 SHL 16)+1
 		invoke SendDlgItemMessage,hWin,IDC_TRBRATE,TBM_SETPOS,TRUE,map.TrailRate
 	.elseif eax==WM_COMMAND
@@ -649,13 +652,21 @@ GPSOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPA
 				invoke SendDlgItemMessage,hWin,IDC_CBOBAUDRATE,CB_GETLBTEXT,eax,addr BaudRate
 				invoke IsDlgButtonChecked,hWin,IDC_CHKCOMACTIVE
 				mov		COMActive,eax
-				invoke IsDlgButtonChecked,hWin,IDC_CHKTRACKSMOOTHING
-				mov		map.fSmoothTrack,eax
 				invoke SaveGPSToIni
 				invoke OpenCom
 				invoke SendMessage,hWin,WM_CLOSE,NULL,TRUE
 			.elseif eax==IDCANCEL
 				invoke SendMessage,hWin,WM_CLOSE,NULL,NULL
+			.elseif eax==IDC_BTNSMOOTHDN
+				.if map.TrackSmooth
+					dec		map.TrackSmooth
+					invoke SendDlgItemMessage,hWin,IDC_TRBSMOOTH,TBM_SETPOS,TRUE,map.TrackSmooth
+				.endif
+			.elseif eax==IDC_BTNSMOOTHUP
+				.if map.TrackSmooth<99
+					inc		map.TrackSmooth
+					invoke SendDlgItemMessage,hWin,IDC_TRBSMOOTH,TBM_SETPOS,TRUE,map.TrackSmooth
+				.endif
 			.elseif eax==IDC_BTNRATEDN
 				.if map.TrailRate>1
 					dec		map.TrailRate
@@ -670,7 +681,13 @@ GPSOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPA
 		.endif
 	.elseif eax==WM_HSCROLL
 		invoke SendMessage,lParam,TBM_GETPOS,0,0
-		mov		map.TrailRate,eax
+		mov		ebx,eax
+		invoke GetWindowLong,lParam,GWL_ID
+		.if eax==IDC_TRBSMOOTH
+			mov		map.TrackSmooth,ebx
+		.else
+			mov		map.TrailRate,ebx
+		.endif
 	.elseif eax==WM_CLOSE
 		invoke EndDialog,hWin,lParam
 	.else
