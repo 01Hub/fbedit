@@ -197,9 +197,13 @@ GPSThread proc uses ebx esi edi,Param:DWORD
 			.if edi!=GPSTail
 				.if edi>GPSTail
 					mov		edx,GPSTail
+					and		edx,sizeof SONAR.GPSArray-4
 					mov		eax,edi
+					shr		eax,2
+					inc		eax
+					shl		eax,2
 					sub		eax,edx
-					invoke STLinkRead,hSonar,STM32_Sonar+16+sizeof SONAR.EchoArray+sizeof SONAR.GainArray+sizeof SONAR.GainInit,addr sonardata.GPSArray[edx],eax
+					invoke STLinkRead,hSonar,addr [STM32_Sonar+16+sizeof SONAR.EchoArray+sizeof SONAR.GainArray+sizeof SONAR.GainInit+edx],addr sonardata.GPSArray[edx],eax
 				.else
 					invoke STLinkRead,hSonar,STM32_Sonar+16+sizeof SONAR.EchoArray+sizeof SONAR.GainArray+sizeof SONAR.GainInit,addr sonardata.GPSArray,sizeof SONAR.GPSArray
 				.endif
@@ -216,7 +220,7 @@ GPSThread proc uses ebx esi edi,Param:DWORD
 					inc		ebx
 				.endw
 				mov		combuff[ebx],0
-				invoke Sleep,10
+				invoke Sleep,50
 				jmp		STMGetMore
 			.endif
 			xor		ebx,ebx
