@@ -835,7 +835,7 @@ GPSProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				sub		eax,27
 				mov		srect.bottom,eax
 				movzx	edx,satelites.SNR[edi]
-				shr		edx,1
+				;shr		edx,1
 				sub		eax,edx
 				mov		srect.top,eax
 				invoke GetTextColor,mDC

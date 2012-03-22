@@ -1231,44 +1231,54 @@ ZoomMap endp
 ;In: Longitude, Lattitude,Bearing,Time
 AddTrailPoint proc uses ebx,x:DWORD,y:DWORD,iBearing:DWORD,iTime:DWORD,iSpeed:DWORD
 
-	; If bearing is still the same, dont add a new point
 	mov		eax,map.trailhead
-	dec		eax
-	and		eax,MAXTRAIL-1
-	mov		edx,sizeof LOG
-	mul		edx
+	.if eax
+		dec		eax
+		and		eax,MAXTRAIL-1
+		mov		edx,sizeof LOG
+		mul		edx
+	.endif
 	mov		ecx,eax
 	mov		eax,iBearing
 	mov		edx,map.trailhead
 	sub		edx,map.trailtail
-	.if map.TrailCount
-		dec		map.TrailCount
-	.endif
 	mov		ebx,iSpeed
-	.if (eax!=map.trail.iBear[ecx] && ebx>map.TrackSmooth && !map.TrailCount) || edx<=2
-		mov		eax,map.trailhead
-		mov		edx,sizeof LOG
-		mul		edx
-		mov		ecx,eax
-		mov		edx,map.trailhead
-		mov		eax,x
-		mov		map.trail.iLon[ecx],eax
-		mov		eax,y
-		mov		map.trail.iLat[ecx],eax
-		mov		eax,iBearing
-		mov		map.trail.iBear[ecx],eax
-		mov		eax,iTime
-		mov		map.trail.iTime[ecx],eax
-		inc		edx
-		and		edx,MAXTRAIL-1
-		mov		map.trailhead,edx
-		.if edx==map.trailtail
+	.if !map.TrailCount || edx<=2
+		; If bearing is still the same or speed is lower than TrackSmooth then dont add a new point
+		.if (eax!=map.trail.iBear[ecx] && ebx>map.TrackSmooth) || edx<=2
+			mov		eax,map.trailhead
+			mov		edx,sizeof LOG
+			mul		edx
+			mov		ecx,eax
+			mov		edx,map.trailhead
+			mov		eax,x
+			mov		map.trail.iLon[ecx],eax
+			mov		eax,y
+			mov		map.trail.iLat[ecx],eax
+			mov		eax,iBearing
+			mov		map.trail.iBear[ecx],eax
+			mov		eax,iTime
+			mov		map.trail.iTime[ecx],eax
 			inc		edx
 			and		edx,MAXTRAIL-1
-			mov		map.trailtail,edx
+			mov		map.trailhead,edx
+			.if edx==map.trailtail
+				inc		edx
+				and		edx,MAXTRAIL-1
+				mov		map.trailtail,edx
+			.endif
+			mov		eax,map.TrailRate
+			mov		map.TrailCount,eax
+		.else
+			mov		eax,x
+			mov		map.trail.iLon[ecx],eax
+			mov		eax,y
+			mov		map.trail.iLat[ecx],eax
+			mov		eax,iBearing
+			mov		map.trail.iBear[ecx],eax
+			mov		eax,iTime
+			mov		map.trail.iTime[ecx],eax
 		.endif
-		mov		eax,map.TrailRate
-		mov		map.TrailCount,eax
 	.else
 		mov		eax,x
 		mov		map.trail.iLon[ecx],eax
@@ -1278,6 +1288,7 @@ AddTrailPoint proc uses ebx,x:DWORD,y:DWORD,iBearing:DWORD,iTime:DWORD,iSpeed:DW
 		mov		map.trail.iBear[ecx],eax
 		mov		eax,iTime
 		mov		map.trail.iTime[ecx],eax
+		dec		map.TrailCount
 	.endif
 	ret
 
