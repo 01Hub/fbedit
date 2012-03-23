@@ -19,6 +19,7 @@
 //#define STM32Clock56MHz
 
 #define MAXECHO           ((u16)512)
+#define MAXGPS            ((u16)512)
 #define ADC1_ICDR_Address ((u32)0x4001243C)
 
 typedef struct
@@ -36,7 +37,7 @@ typedef struct
   u8 EchoArray[MAXECHO];                        // 0x20000010 Echo array
   u16 GainArray[MAXECHO];                       // 0x20000210 Gain array
   u16 GainInit[18];                             // 0x20000610 Gain setup array, first half word is initial gain
-  u8 GPSArray[512];                             // 0x20000034 GPS array, received GPS NMEA 0183 messages
+  u8 GPSArray[MAXGPS];                          // 0x20000634 GPS array, received GPS NMEA 0183 messages
 }STM32_SonarTypeDef;
 
 /* Private macro -------------------------------------------------------------*/
@@ -174,7 +175,7 @@ int main(void)
         /* ADC reading is stored in its echo array element */
         /* Get echo */
         Echo = (u8) ( (u16) (*(vu32*) (((*(u32*)&ADC)))) >> 4);
-        /* If echo larger than previous echo, update the echo array */
+        /* If echo larger than previous echo then update the echo array */
         if (Echo > STM32_Sonar.EchoArray[STM32_Sonar.EchoIndex])
         {
           STM32_Sonar.EchoArray[STM32_Sonar.EchoIndex] = Echo;
@@ -377,9 +378,32 @@ void rs232_puts(char *str)
 *******************************************************************************/
 void USART1_IRQHandler(void)
 {
-  STM32_Sonar.GPSArray[STM32_Sonar.GPSHead++]=USART1->DR;
-  /* Limit GPSHead to 512 bytes array*/
-  STM32_Sonar.GPSHead&=0x1FF;
+  /* Get pointer to USART1->DR */
+  asm("movw   r0,#0x3800");
+  asm("movt   r0,#0x4001");
+  /* Get recieved halfword */
+  asm("ldrh   r3,[r0,#0x2*2]");
+  /* Get pointer to STM32_Sonar */
+  asm("mov    r0,#0x20000000");
+  /* Get GPSHead value */
+  asm("ldrh   r2,[r0,#0x7*2]");
+  /* Get offset to GPSArray */
+  asm("movw   r1,#0x634");
+  /* Get pointer to GPSArray */
+  asm("add    r1,r1,r0");
+  /* Store received byte at GPSArray[GPSHead] */
+  asm("strb   r3,[r1,r2]");
+  /* Increment GPSHead */
+  asm("add    r2,r2,#0x1");
+  /* Limit GPSHead to 512 bytes*/
+  asm("mov    r2,r2,lsl #23");
+  asm("mov    r2,r2,lsr #23");
+  /* Store GPSHead */
+  asm("strh   r2,[r0,#0x7*2]");
+
+  // STM32_Sonar.GPSArray[STM32_Sonar.GPSHead++]=USART1->DR;
+  // /* Limit GPSHead to 512 bytes array*/
+  // STM32_Sonar.GPSHead&=MAXGPS-1;
 }
 
 /*******************************************************************************

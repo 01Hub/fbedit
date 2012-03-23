@@ -476,13 +476,14 @@ SetSignal:
 
 SonarOptionProc endp
 
-SonarGainOptionProc proc uses ebx esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+SonarGainOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	rect:RECT
 	LOCAL	ps:PAINTSTRUCT
 	LOCAL	buffer[256]:BYTE
 	LOCAL	tmp:DWORD
 	LOCAL	ftmp:REAL8
 	LOCAL	frng:REAL8
+	LOCAL	gain[MAXYECHO+1]:WORD
 
 	.data?
 		xrange	DWORD ?
@@ -545,7 +546,7 @@ SonarGainOptionProc proc uses ebx esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:L
 					invoke PutItemInt,addr szbuff,[esi].RANGE.interval
 					invoke PutItemInt,addr szbuff,[esi].RANGE.pingadd
 					xor		ebx,ebx
-					.while ebx<18
+					.while ebx<17
 						invoke PutItemInt,addr szbuff,[esi].RANGE.gain[ebx*DWORD]
 						inc		ebx
 					.endw
@@ -662,7 +663,47 @@ Invalidate:
 	invoke InvalidateRect,hWin,addr rect,TRUE
 	retn
 
+SetupGain:
+	invoke SendDlgItemMessage,hWin,IDC_CBORANGE,CB_GETCURSEL,0,0
+	mov		ecx,sizeof RANGE
+	mul		ecx
+	lea		esi,[eax+offset sonardata.sonarrange.gain]
+	xor		ebx,ebx
+	xor		edi,edi
+	.while ebx<16
+		;GainVal
+		mov		ecx,[esi]
+		shl		ecx,13
+		;GainInc
+		mov		edx,[esi+DWORD]
+		sub		edx,[esi]
+		shl		edx,8
+		push	ebx
+		xor		ebx,ebx
+		.while ebx<32
+			mov		eax,ecx
+			shr		eax,13
+			.if CARRY?
+				inc		eax
+			.endif
+			add		eax,sonardata.gainofs
+			.if eax>4095
+				mov		eax,4095
+			.endif
+			mov		gain[edi],ax
+			add		ecx,edx
+			lea		edi,[edi+WORD]
+			inc		ebx
+		.endw
+		pop		ebx
+		lea		esi,[esi+DWORD]
+		inc		ebx
+	.endw
+	mov		gain[edi],ax
+	retn
+
 DrawGain:
+	call	SetupGain
 	invoke CreatePen,PS_SOLID,1,0FFh
 	invoke SelectObject,ps.hdc,eax
 	push	eax
@@ -725,41 +766,29 @@ DrawGain:
 	invoke DeleteObject,eax
 	invoke CreatePen,PS_SOLID,2,0FF0000h
 	invoke SelectObject,ps.hdc,eax
-	push		eax
-	invoke SendDlgItemMessage,hWin,IDC_CBORANGE,CB_GETCURSEL,0,0
-	mov		ecx,sizeof RANGE
-	mul		ecx
-	lea		esi,[eax+offset sonardata.sonarrange.gain]
+	push	eax
+	lea		esi,gain
 	xor		ebx,ebx
-	.while ebx<16
-		mov		eax,[esi]
-		add		eax,sonardata.gainofs
-		.if eax>4095
-			mov		eax,4095
-		.endif
+	.while ebx<MAXYECHO
+		movzx	eax,word ptr [esi]
 		sub		eax,4095
 		neg		eax
 		shr		eax,4
 		add		eax,GAINYOFS
 		mov		edx,ebx
-		shl		edx,4
+		shr		edx,1
 		add		edx,GAINXOFS+1
 		.if !ebx
 			push	edx
 			invoke MoveToEx,ps.hdc,edx,eax,NULL
 			pop		edx
 		.endif
-		lea		esi,[esi+DWORD]
-		mov		eax,[esi]
-		add		eax,sonardata.gainofs
-		.if eax>4095
-			mov		eax,4095
-		.endif
+		lea		esi,[esi+WORD]
+		movzx	eax,word ptr [esi]
 		sub		eax,4095
 		neg		eax
 		shr		eax,4
 		add		eax,GAINYOFS
-		lea		edx,[edx+16]
 		invoke LineTo,ps.hdc,edx,eax
 		inc		ebx
 	.endw
