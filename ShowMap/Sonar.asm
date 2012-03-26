@@ -1205,7 +1205,6 @@ STMThread proc uses ebx esi edi,Param:DWORD
 	LOCAL	pixmov:DWORD
 	LOCAL	pixdpt:DWORD
 	LOCAL	rngchanged:DWORD
-	LOCAL	nTrail:DWORD
 	LOCAL	iLon:DWORD
 	LOCAL	iLat:DWORD
 	LOCAL	fDist:REAL10
@@ -1220,7 +1219,7 @@ STMThread proc uses ebx esi edi,Param:DWORD
 	mov		pixmov,0
 	mov		pixdpt,250
 	mov		rngchanged,4
-	mov		nTrail,0
+	mov		map.ntrail,0
 	mov		iLat,-1
 	mov		iLon,-1
 	invoke RtlZeroMemory,addr STM32Echo,sizeof STM32Echo
@@ -1296,7 +1295,7 @@ STMThread proc uses ebx esi edi,Param:DWORD
 							mov		dword ptr buffer[eax-1],ecx
 							invoke strcpy,addr map.options.text,addr buffer
 							invoke AddTrailPoint,map.iLon,map.iLat,map.iBear,map.iTime,map.iSpeed
-							.if nTrail
+							.if map.ntrail
 								mov		eax,map.iLon
 								mov		edx,map.iLat
 								.if eax!=iLon || edx!=iLat
@@ -1313,7 +1312,7 @@ STMThread proc uses ebx esi edi,Param:DWORD
 									invoke SetDlgItemInt,hWnd,IDC_EDTBEAR,map.iBear,FALSE
 								.endif
 							.endif
-							inc		nTrail
+							inc		map.ntrail
 							inc		map.paintnow
 						.endif
 						.if sonarreplay.Version==201
@@ -1329,12 +1328,14 @@ STMThread proc uses ebx esi edi,Param:DWORD
 					invoke SetScrollPos,hSonar,SB_HORZ,0,TRUE
 					mov		sonardata.dptinx,0
 					invoke EnableScrollBar,hSonar,SB_HORZ,ESB_DISABLE_BOTH
-					mov		nTrail,0
+					mov		map.ntrail,0
 					mov		iLat,-1
 					mov		iLon,-1
 					mov		map.trailhead,0
 					mov		map.trailtail,0
 					inc		map.paintnow
+					fldz
+					fstp	map.fSumDist
 					invoke SetDlgItemText,hWnd,IDC_EDTDIST,addr szNULL
 				.else
 					invoke GetScrollPos,hSonar,SB_HORZ

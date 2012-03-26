@@ -846,10 +846,16 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.if hFileLogRead
 					invoke CloseHandle,hFileLogRead
 					mov		hFileLogRead,0
+					mov		hFileLogWrite,0
+					mov		map.ntrail,0
+					mov		map.trailhead,0
+					mov		map.trailtail,0
+					fldz
+					fstp	map.fSumDist
+					invoke SetDlgItemText,hWin,IDC_EDTDIST,addr szNULL
 				.endif
 				.if hFileLogWrite
 					invoke CloseHandle,hFileLogWrite
-					mov		hFileLogWrite,0
 				.endif
 				invoke GetDlgItem,hWin,IDC_CHKPAUSE
 				invoke EnableWindow,eax,FALSE
@@ -866,8 +872,11 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						.if eax
 							mov		combuff,0
 							mov		npos,0
+							mov		map.ntrail,0
 							mov		map.trailhead,0
 							mov		map.trailtail,0
+							fldz
+							fstp	map.fSumDist
 							mov		hFileLogRead,eax
 						.endif
 					.endif
@@ -881,17 +890,15 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 							invoke DialogBoxParam,hInstance,IDD_DLGTRIPLOG,hWin,addr TripLogProc,IDM_FILE_SAVETRAIL
 							.if eax
 								invoke SaveTrail,eax
-								mov		map.trailhead,0
-								mov		map.trailtail,0
-								inc		map.paintnow
-								invoke SetDlgItemText,hWin,IDC_EDTDIST,addr szNULL
 							.endif
-						.else
-							mov		map.trailhead,0
-							mov		map.trailtail,0
-							inc		map.paintnow
-							invoke SetDlgItemText,hWin,IDC_EDTDIST,addr szNULL
 						.endif
+						mov		map.ntrail,0
+						mov		map.trailhead,0
+						mov		map.trailtail,0
+						inc		map.paintnow
+						fldz
+						fstp	map.fSumDist
+						invoke SetDlgItemText,hWin,IDC_EDTDIST,addr szNULL
 					.endif
 				.endif
 			.elseif eax==IDM_LOG_STARTSONAR
@@ -914,6 +921,13 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.if sonardata.hReplay
 					invoke CloseHandle,sonardata.hReplay
 					mov		sonardata.hReplay,0
+					mov		npos,0
+					mov		map.ntrail,0
+					mov		map.trailhead,0
+					mov		map.trailtail,0
+					fldz
+					fstp	map.fSumDist
+					invoke SetDlgItemText,hWin,IDC_EDTDIST,addr szNULL
 					invoke SetScrollPos,hSonar,SB_HORZ,0,TRUE
 					mov		sonardata.dptinx,0
 					invoke EnableScrollBar,hSonar,SB_HORZ,ESB_DISABLE_BOTH
@@ -933,8 +947,12 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 							invoke SonarClear
 							.if sonarreplay.Version>=200
 								mov		npos,0
+								mov		map.ntrail,0
 								mov		map.trailhead,0
 								mov		map.trailtail,0
+								fldz
+								fstp	map.fSumDist
+								invoke SetDlgItemText,hWin,IDC_EDTDIST,addr szNULL
 							.endif
 							mov		sonardata.dptinx,0
 							mov		sonardata.hReplay,ebx

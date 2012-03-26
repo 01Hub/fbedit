@@ -246,6 +246,7 @@ MAP struct
 	btrip			DWORD ?									;Trip planning flag, 0 not active, 1 active, 2 done, 3 edit
 	triphead		DWORD ?									;Head index in trip array
 	trip			LOG MAXTRIP dup(<>)						;Trip array
+	ntrail			DWORD ?									;Number of trail points
 	trailhead		DWORD ?									;Head index in trail array
 	trailtail		DWORD ?									;Tail index in trail array
 	trail			LOG MAXTRAIL dup(<>)					;Trail array

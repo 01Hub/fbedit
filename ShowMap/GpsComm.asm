@@ -123,7 +123,6 @@ GPSThread proc uses ebx esi edi,Param:DWORD
 	LOCAL	bufflog[256]:BYTE
 	LOCAL	bufftime[32]:BYTE
 	LOCAL	buffdate[32]:BYTE
-	LOCAL	nTrail:DWORD
 	LOCAL	iLon:DWORD
 	LOCAL	iLat:DWORD
 	LOCAL	fDist:REAL10
@@ -151,9 +150,14 @@ GPSThread proc uses ebx esi edi,Param:DWORD
 					mov		npos,0
 					fldz
 					fstp	fDist
-					mov		nTrail,0
+					fldz
+					fstp	map.fSumDist
+					mov		map.ntrail,0
+					mov		map.trailhead,0
+					mov		map.trailtail,0
+					invoke SetDlgItemText,hWnd,IDC_EDTDIST,addr szNULL
 				.else
-					.if !nTrail
+					.if !map.ntrail
 						fldz
 						fstp	map.fSumDist
 					.endif
@@ -543,7 +547,7 @@ PositionSpeedDirection:
 	mov		esp,ebx
 	.if fValid
 		invoke AddTrailPoint,map.iLon,map.iLat,map.iBear,map.iTime,map.iSpeed
-		.if nTrail
+		.if map.ntrail
 			mov		eax,map.iLon
 			mov		edx,map.iLat
 			.if eax!=iLon || edx!=iLat
@@ -560,7 +564,7 @@ PositionSpeedDirection:
 				invoke SetDlgItemInt,hWnd,IDC_EDTBEAR,map.iBear,FALSE
 			.endif
 		.endif
-		inc		nTrail
+		inc		map.ntrail
 	.endif
 	retn
 
