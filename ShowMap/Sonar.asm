@@ -10,6 +10,7 @@ IDC_TRBSONARNOISE       equ 1501
 IDC_TRBSONARREJECT		equ 1534
 IDC_TRBSONARFISH        equ 1530
 IDC_CHKSONARALARM       equ 1514
+IDC_CHKFISHDEPTH		equ 1540
 IDC_TRBSONARCHART       equ 1512
 IDC_CHKCHARTPAUSE       equ 1532
 IDC_TRBPINGTIMER        equ 1526
@@ -189,6 +190,9 @@ SonarOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:L
 		.if sonardata.FishAlarm
 			invoke CheckDlgButton,hWin,IDC_CHKSONARALARM,BST_CHECKED
 		.endif
+		.if sonardata.FishDepth
+			invoke CheckDlgButton,hWin,IDC_CHKFISHDEPTH,BST_CHECKED
+		.endif
 		invoke SendDlgItemMessage,hWin,IDC_TRBSONARCHART,TBM_SETRANGE,FALSE,(4 SHL 16)+1
 		invoke SendDlgItemMessage,hWin,IDC_TRBSONARCHART,TBM_SETPOS,TRUE,sonardata.ChartSpeed
 		invoke IsDlgButtonChecked,hWnd,IDC_CHKCHART
@@ -280,6 +284,8 @@ SonarOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:L
 				invoke CheckDlgButton,hWnd,IDC_CHKCHART,eax
 			.elseif eax==IDC_CHKSONARALARM
 				xor		sonardata.FishAlarm,1
+			.elseif eax==IDC_CHKFISHDEPTH
+				xor		sonardata.FishDepth,1
 			.elseif eax==IDC_BTNGD
 				.if sonardata.GainSet
 					dec		sonardata.GainSet
@@ -2465,6 +2471,7 @@ ShowRangeDepthTempScaleFish proc uses ebx esi edi,hDC:HDC
 	LOCAL	tmp:DWORD
 	LOCAL	nticks:DWORD
 	LOCAL	ntick:DWORD
+	LOCAL	buffer[32]:BYTE
 
 	invoke GetClientRect,hSonar,addr rcsonar
 	call	ShowFish
@@ -2488,6 +2495,7 @@ ShowRangeDepthTempScaleFish proc uses ebx esi edi,hDC:HDC
 	ret
 
 ShowFish:
+	invoke SetBkMode,hDC,TRANSPARENT
 	movzx	eax,sonardata.EchoArray
 	invoke GetRangePtr,eax
 	mov		eax,sonardata.sonarrange.range[eax]
@@ -2509,7 +2517,27 @@ ShowFish:
 			add		ecx,sonardata.SignalBarWt
 			sub		edx,ecx
 			add		edx,rcsonar.right
+			push	eax
+			push	edx
 			invoke ImageList_Draw,hIml,[esi].FISH.fishtype,hDC,addr [edx-8],eax,ILD_TRANSPARENT
+			pop		edx
+			pop		eax
+			.if sonardata.FishDepth
+				sub		edx,16
+				sub		eax,13
+				mov		rect.left,edx
+				mov		rect.top,eax
+				add		edx,32
+				mov		rect.right,edx
+				add		eax,16
+				mov		rect.bottom,eax
+				mov		eax,[esi].FISH.depth
+				xor		edx,edx
+				mov		ecx,10
+				div		ecx
+				invoke wsprintf,addr buffer,addr szFmtDec,eax
+				invoke TextDraw,hDC,map.font[0],addr rect,addr buffer,DT_CENTER or DT_SINGLELINE
+			.endif
 		.endif
 		pop		ecx
 		lea		esi,[esi+sizeof FISH]
@@ -2657,6 +2685,7 @@ SaveSonarToIni proc
 	invoke PutItemInt,addr buffer,eax
 	invoke PutItemInt,addr buffer,sonardata.SoundSpeed
 	invoke PutItemInt,addr buffer,sonardata.SignalBarWt
+	invoke PutItemInt,addr buffer,sonardata.FishDepth
 	invoke WritePrivateProfileString,addr szIniSonar,addr szIniSonar,addr buffer[1],addr szIniFileName
 	ret
 
@@ -2698,6 +2727,8 @@ LoadSonarFromIni proc uses ebx esi edi
 	mov		sonardata.SoundSpeed,eax
 	invoke GetItemInt,addr buffer,32+8
 	mov		sonardata.SignalBarWt,eax
+	invoke GetItemInt,addr buffer,1
+	mov		sonardata.FishDepth,eax
 	invoke GetPrivateProfileString,addr szIniSonarRange,addr szIniGainDef,addr szNULL,addr buffer,sizeof buffer,addr szIniFileName
 	invoke GetItemInt,addr buffer,0
 	mov		sonardata.gainofs,eax

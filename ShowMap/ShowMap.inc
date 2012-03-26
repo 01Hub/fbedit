@@ -333,6 +333,7 @@ SONAR struct
 	NoiseReject		DWORD ?									;If TRUE 2 adjacent pixels needed to show echo
 	FishDetect		DWORD ?									;If TRUE fish detect is on
 	FishAlarm		DWORD ?									;If TRUE fish alarm is on
+	FishDepth		DWORD ?									;If TRUE fish depth is shown
 	ChartSpeed		DWORD ?									;Sonar chart scroll speed.
 	SoundSpeed		DWORD ?									;Speed of sound in water
 	MaxRange		DWORD ?									;Number of range definitions read from ini
