@@ -2471,6 +2471,7 @@ ShowRangeDepthTempScaleFish proc uses ebx esi edi,hDC:HDC
 	LOCAL	tmp:DWORD
 	LOCAL	nticks:DWORD
 	LOCAL	ntick:DWORD
+	LOCAL	fishdepth:DWORD
 	LOCAL	buffer[32]:BYTE
 
 	invoke GetClientRect,hSonar,addr rcsonar
@@ -2531,10 +2532,17 @@ ShowFish:
 				mov		rect.right,edx
 				add		eax,16
 				mov		rect.bottom,eax
+				mov		fishdepth,0
+				invoke wsprintf,addr buffer,addr szFmtDec,[esi].FISH.depth
+				invoke strlen,addr buffer
+				.if buffer[eax-1]>='5'
+					mov		fishdepth,1
+				.endif
 				mov		eax,[esi].FISH.depth
 				xor		edx,edx
 				mov		ecx,10
 				div		ecx
+				add		eax,fishdepth
 				invoke wsprintf,addr buffer,addr szFmtDec,eax
 				invoke TextDraw,hDC,map.font[0],addr rect,addr buffer,DT_CENTER or DT_SINGLELINE
 			.endif
@@ -2667,7 +2675,7 @@ SaveSonarToIni proc
 	LOCAL	buffer[256]:BYTE
 
 	mov		buffer,0
-	;Width,AutoRange,AutoGain,AutoPing,FishDetect,FishAlarm,RangeInx,NoiseLevel,PingInit,GainSet,ChartSpeed,NoiseReject,PingTimer,SoundSpeed
+	;Width,AutoRange,AutoGain,AutoPing,FishDetect,FishAlarm,RangeInx,NoiseLevel,PingInit,GainSet,ChartSpeed,NoiseReject,PingTimer,SoundSpeed,SignalBarWt,FishDepth
 	invoke PutItemInt,addr buffer,sonardata.wt
 	invoke PutItemInt,addr buffer,sonardata.AutoRange
 	invoke PutItemInt,addr buffer,sonardata.AutoGain
@@ -2696,7 +2704,7 @@ LoadSonarFromIni proc uses ebx esi edi
 	
 	invoke RtlZeroMemory,addr buffer,sizeof buffer
 	invoke GetPrivateProfileString,addr szIniSonar,addr szIniSonar,addr szNULL,addr buffer,sizeof buffer,addr szIniFileName
-	;Width,AutoRange,AutoGain,AutoPing,FishDetect,FishAlarm,RangeInx,NoiseLevel,PingInit,GainSet,ChartSpeed,NoiseReject,PingTimer,SoundSpeed
+	;Width,AutoRange,AutoGain,AutoPing,FishDetect,FishAlarm,RangeInx,NoiseLevel,PingInit,GainSet,ChartSpeed,NoiseReject,PingTimer,SoundSpeed,SignalBarWt,FishDepth
 	invoke GetItemInt,addr buffer,250
 	mov		sonardata.wt,eax
 	invoke GetItemInt,addr buffer,1
