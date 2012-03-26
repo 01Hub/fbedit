@@ -137,6 +137,7 @@ GPSThread proc uses ebx esi edi,Param:DWORD
 	LOCAL	SatPtr:DWORD
 	LOCAL	tmp:DWORD
 
+	mov		GPSTail,0
 	invoke OpenCom
 	.while  !fExitGPSThread
 		.if hFileLogRead
@@ -574,8 +575,8 @@ LoadGPSFromIni proc
 	LOCAL	buffer[256]:BYTE
 
 	invoke GetPrivateProfileString,addr szIniGPS,addr szIniGPS,addr szNULL,addr buffer,sizeof buffer,addr szIniFileName
-	invoke GetItemStr,addr buffer,addr szCOM1,addr COMPort,5
-	invoke GetItemStr,addr buffer,addr szBaudRate,addr BaudRate,5
+	invoke GetItemStr,addr buffer,addr szCOM1,addr COMPort,6
+	invoke GetItemStr,addr buffer,addr szBaudRate,addr BaudRate,6
 	invoke GetItemInt,addr buffer,0
 	mov		COMActive,eax
 	invoke GetItemInt,addr buffer,0
@@ -651,7 +652,7 @@ GPSOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPA
 		shr		edx,16
 		.if edx==BN_CLICKED
 			.if eax==IDOK
-				invoke GetDlgItemText,hWin,IDC_EDTCOMPORT,addr COMPort,5
+				invoke GetDlgItemText,hWin,IDC_EDTCOMPORT,addr COMPort,6
 				invoke SendDlgItemMessage,hWin,IDC_CBOBAUDRATE,CB_GETCURSEL,0,0
 				invoke SendDlgItemMessage,hWin,IDC_CBOBAUDRATE,CB_GETLBTEXT,eax,addr BaudRate
 				invoke IsDlgButtonChecked,hWin,IDC_CHKCOMACTIVE
