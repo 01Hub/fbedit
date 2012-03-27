@@ -1,6 +1,6 @@
 
-<<<<<<< .mine
-<ApplicationBuild Header="Sonar" Extern=".\Sonar.rapp" Path=".\Sonar.rapp" AsyncBuild="" OutputFile=".\Sonar.elf" sate="98" >
+<ApplicationBuild Header="Sonar" Extern=".\Sonar.rapp" Path=".\Sonar.rapp" AsyncBuild="" OutputFile=".\Sonar.elf" sate="96" >
+	<NodeText Path=".\readme.txt" Header="readme.txt" Marker="-1" AsyncBuild="" OutputFile="" sate="0" />
 	<NodeC Path=".\main.c" Header="main.c" Marker="-1" AsyncBuild="" OutputFile=".\main.o" sate="0" />
 	<NodeC Path=".\stm32f10x_adc.c" Header="stm32f10x_adc.c" Marker="-1" AsyncBuild="" OutputFile=".\stm32f10x_adc.o" sate="0" />
 	<NodeH Path=".\stm32f10x_conf.h" Header="stm32f10x_conf.h" Marker="-1" AsyncBuild="" OutputFile="" sate="0" />
@@ -17,34 +17,32 @@
 			<Set Header="ApplicationBuild" >
 				<Section Header="General" >
 					<Property Header="TargetFamily" Value="ARM" />
-																																																																															
+																																											
 				</Section>
 				<Section Header="Directories" >
 					<Property Header="IncDir" Value="\STM32\Inc" Removable="1" />
-																																																																						
+																																		
 				</Section>
-																																																						
+																										
 			</Set>
 			<Set Header="Target" >
 				<Section Header="ProcessorARM" >
 					<Property Header="Processor" Value="STM32F100RB" />
-																																																																															
+																																											
 				</Section>
 				<Section Header="ToolSetARM" >
 					<Property Header="BuildToolSetARM" Value="ARM\GNU.config" Removable="1" />
-																																																																															
+																																											
 				</Section>
 				<Section Header="DebugARM" >
 					<Property Header="DebugTool_CORTEX" Value="SIM-ARM" Removable="1" />
-																																																				
+																
 				</Section>
-																																								
+												
 			</Set>
-																									
+					
 		</Config>
-															
+			
 	</Options>
-	<NodeC Path=".\stm32f10x_usart.c" Header="stm32f10x_usart.c" Marker="-1" AsyncBuild="" OutputFile=".\stm32f10x_usart.o" sate="0" />
-	<NodeText Path=".\readme.txt" Header="readme.txt" Marker="-1" AsyncBuild="" OutputFile="" sate="0" />
-</ApplicationBuild>=======
-<ApplicationBuild Header="Sonar" Extern=".\Sonar.rapp" Path=".\Sonar.rapp" AsyncBuild="" OutputFile=".\Sonar.elf" sate="96" />>>>>>>> .r2472
+	<NodeC Path=".\stm32f10x_usart.c" Header="stm32f10x_usart.c" Marker="-1" AsyncBuild="" OutputFile=".\stm32f10x_usart.o" sate="2" />
+</ApplicationBuild>
