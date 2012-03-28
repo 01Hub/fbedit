@@ -725,7 +725,7 @@ GetPointOnCircle proc uses edi,radius:DWORD,angle:DWORD,lpPoint:ptr POINT
 GetPointOnCircle endp
 
 SATHT		equ 220
-SATRAD		equ (SATHT-10)/2
+SATRAD		equ (SATHT-20)/2
 SATTXTWT	equ 78
 SATSIGNALWT	equ 148
 
@@ -751,7 +751,7 @@ GPSProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SelectObject,mDC,eax
 		push	eax
 		invoke SetBkMode,mDC,TRANSPARENT
-		invoke CreatePen,PS_SOLID,1,0FFh
+		invoke CreatePen,PS_SOLID,1,808080h
 		invoke SelectObject,mDC,eax
 		push	eax
 		invoke SelectObject,mDC,sonardata.hBrBack
@@ -762,9 +762,25 @@ GPSProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		eax,rect.right
 		sub		eax,SATSIGNALWT+SATRAD+5
 		mov		ptcenter.x,eax
-		lea		edx,[eax-SATRAD]
-		mov		ptcenter.y,SATHT/2-5
-		invoke Ellipse,mDC,edx,5,addr [edx+SATRAD*2],SATHT-10
+		mov		ptcenter.y,SATHT/2;-5
+		mov		ecx,ptcenter.x
+		mov		edx,ptcenter.y
+		invoke Ellipse,mDC,addr [ecx-SATRAD],addr [edx-SATRAD],addr [ecx+SATRAD],addr [edx+SATRAD]
+		mov		ecx,ptcenter.x
+		mov		edx,ptcenter.y
+		invoke Ellipse,mDC,addr [ecx-SATRAD/2],addr [edx-SATRAD/2],addr [ecx+SATRAD/2],addr [edx+SATRAD/2]
+		mov		ecx,ptcenter.x
+		mov		edx,ptcenter.y
+		invoke MoveToEx,mDC,addr [ecx-SATRAD],edx,NULL
+		mov		ecx,ptcenter.x
+		mov		edx,ptcenter.y
+		invoke LineTo,mDC,addr [ecx+SATRAD],edx
+		mov		ecx,ptcenter.x
+		mov		edx,ptcenter.y
+		invoke MoveToEx,mDC,ecx,addr [edx-SATRAD],NULL
+		mov		ecx,ptcenter.x
+		mov		edx,ptcenter.y
+		invoke LineTo,mDC,ecx,addr [edx+SATRAD]
 		mov		eax,ptcenter.x
 		mov		edx,ptcenter.y
 		sub		eax,8
