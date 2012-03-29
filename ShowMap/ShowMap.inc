@@ -265,6 +265,7 @@ MAP struct
 	TrackSmooth		DWORD ?
 	TrailRate		DWORD ?
 	TrailCount		DWORD ?
+	fSTLink			DWORD ?
 MAP ends
 
 ;STM32 constants
@@ -371,7 +372,7 @@ SONAR struct
 		GPSHead			WORD ?								;Incremented when GPS array valid
 		EchoArray		BYTE MAXYECHO dup(?)				;Echo array, read from STM32 and processed
 		GainArray		WORD MAXYECHO dup(?)				;Gain array. Not downloaded or uploaded
-		GainInit		WORD 18 dup(?)						;First word is initial gain
+		GainInit		WORD 18 dup(?)						;First word is initial gain, next words is gain increment
 		GPSArray		BYTE 512 dup(?)						;GPS array, read from STM32 if GPSCouner incremented
 	ends
 	SignalBarWt		DWORD ?									;Width of signal bar
@@ -510,7 +511,7 @@ hContext			HMENU ?									;Hamdle of context menu
 hAccel				HACCEL ?								;Handle of accelerator table
 hIml				HIMAGELIST ?							;Imagelist handle
 szAppPath			BYTE MAX_PATH dup(?)					;Application path
-map					MAP <>									;Map data
+mapdata				MAP <>									;Map data
 mousept				POINT <>								;Point where lbutton clicked
 bmpcache			BMP MAXBMP dup(<>)						;Cached bitmaps
 hMAPThread			HANDLE ?								;Map drawing thread

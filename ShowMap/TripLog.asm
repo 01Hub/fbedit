@@ -247,7 +247,7 @@ OpenTrip proc uses ebx esi edi,lpFileName:DWORD
 		mov		hMem,eax
 		pop		edx
 		invoke ReadFile,hFile,hMem,edx,addr dwread,NULL
-		mov		map.triphead,0
+		mov		mapdata.triphead,0
 		mov		esi,hMem
 		xor		ebx,ebx
 		.while byte ptr [esi] && ebx<MAXTRIP
@@ -264,8 +264,8 @@ OpenTrip proc uses ebx esi edi,lpFileName:DWORD
 			invoke DecToBin,addr buffer
 			mov		edx,ebx
 			shl		edx,4
-			mov		map.trip.iLon[edx],eax
-			mov		map.trip.iLon[edx+sizeof LOG],eax
+			mov		mapdata.trip.iLon[edx],eax
+			mov		mapdata.trip.iLon[edx+sizeof LOG],eax
 			lea		edi,buffer
 			.while byte ptr [esi] && byte ptr [esi]!=','
 				mov		al,[esi]
@@ -279,8 +279,8 @@ OpenTrip proc uses ebx esi edi,lpFileName:DWORD
 			invoke DecToBin,addr buffer
 			mov		edx,ebx
 			shl		edx,4
-			mov		map.trip.iLat[edx],eax
-			mov		map.trip.iLat[edx+sizeof LOG],eax
+			mov		mapdata.trip.iLat[edx],eax
+			mov		mapdata.trip.iLat[edx+sizeof LOG],eax
 			lea		edi,buffer
 			.while byte ptr [esi] && byte ptr [esi]!=','
 				mov		al,[esi]
@@ -294,7 +294,7 @@ OpenTrip proc uses ebx esi edi,lpFileName:DWORD
 			invoke DecToBin,addr buffer
 			mov		edx,ebx
 			shl		edx,4
-			mov		map.trip.iBear[edx],eax
+			mov		mapdata.trip.iBear[edx],eax
 			lea		edi,buffer
 			.while byte ptr [esi] && byte ptr [esi]!=0Dh
 				mov		al,[esi]
@@ -307,7 +307,7 @@ OpenTrip proc uses ebx esi edi,lpFileName:DWORD
 			invoke DecToBin,addr buffer
 			mov		edx,ebx
 			shl		edx,4
-			mov		map.trip.iTime[edx],eax
+			mov		mapdata.trip.iTime[edx],eax
 			.if byte ptr [esi]==0Dh
 				inc		esi
 			.endif
@@ -316,12 +316,12 @@ OpenTrip proc uses ebx esi edi,lpFileName:DWORD
 			.endif
 			inc		ebx
 		.endw
-		mov		map.triphead,ebx
+		mov		mapdata.triphead,ebx
 		invoke CloseHandle,hFile
 		invoke GlobalFree,hMem
-		mov		eax,map.triphead
+		mov		eax,mapdata.triphead
 		dec		eax
-		invoke GetDistance,addr map.trip,eax
+		invoke GetDistance,addr mapdata.trip,eax
 	.endif
 	ret
 
@@ -336,20 +336,20 @@ SaveTrip proc uses ebx,lpFileName:DWORD
 	.if eax!=INVALID_HANDLE_VALUE
 		mov		hFile,eax
 		xor		ebx,ebx
-		.while ebx<map.triphead
+		.while ebx<mapdata.triphead
 			mov		buffer,0
 			mov		edx,ebx
 			shl		edx,4
-			invoke PutItemInt,addr buffer,map.trip.iLon[edx]
+			invoke PutItemInt,addr buffer,mapdata.trip.iLon[edx]
 			mov		edx,ebx
 			shl		edx,4
-			invoke PutItemInt,addr buffer,map.trip.iLat[edx]
+			invoke PutItemInt,addr buffer,mapdata.trip.iLat[edx]
 			mov		edx,ebx
 			shl		edx,4
-			invoke PutItemInt,addr buffer,map.trip.iBear[edx]
+			invoke PutItemInt,addr buffer,mapdata.trip.iBear[edx]
 			mov		edx,ebx
 			shl		edx,4
-			invoke PutItemInt,addr buffer,map.trip.iTime[edx]
+			invoke PutItemInt,addr buffer,mapdata.trip.iTime[edx]
 			invoke strcat,addr buffer,addr szCRLF
 			invoke strlen,addr buffer[1]
 			mov		edx,eax
@@ -377,7 +377,7 @@ OpenDistance proc uses ebx esi edi,lpFileName:DWORD
 		mov		hMem,eax
 		pop		edx
 		invoke ReadFile,hFile,hMem,edx,addr dwread,NULL
-		mov		map.disthead,0
+		mov		mapdata.disthead,0
 		mov		esi,hMem
 		xor		ebx,ebx
 		.while byte ptr [esi] && ebx<MAXDIST
@@ -394,8 +394,8 @@ OpenDistance proc uses ebx esi edi,lpFileName:DWORD
 			invoke DecToBin,addr buffer
 			mov		edx,ebx
 			shl		edx,4
-			mov		map.dist.iLon[edx],eax
-			mov		map.dist.iLon[edx+sizeof LOG],eax
+			mov		mapdata.dist.iLon[edx],eax
+			mov		mapdata.dist.iLon[edx+sizeof LOG],eax
 			lea		edi,buffer
 			.while byte ptr [esi] && byte ptr [esi]!=','
 				mov		al,[esi]
@@ -409,8 +409,8 @@ OpenDistance proc uses ebx esi edi,lpFileName:DWORD
 			invoke DecToBin,addr buffer
 			mov		edx,ebx
 			shl		edx,4
-			mov		map.dist.iLat[edx],eax
-			mov		map.dist.iLat[edx+sizeof LOG],eax
+			mov		mapdata.dist.iLat[edx],eax
+			mov		mapdata.dist.iLat[edx+sizeof LOG],eax
 			lea		edi,buffer
 			.while byte ptr [esi] && byte ptr [esi]!=','
 				mov		al,[esi]
@@ -424,7 +424,7 @@ OpenDistance proc uses ebx esi edi,lpFileName:DWORD
 			invoke DecToBin,addr buffer
 			mov		edx,ebx
 			shl		edx,4
-			mov		map.dist.iBear[edx],eax
+			mov		mapdata.dist.iBear[edx],eax
 			lea		edi,buffer
 			.while byte ptr [esi] && byte ptr [esi]!=0Dh
 				mov		al,[esi]
@@ -437,7 +437,7 @@ OpenDistance proc uses ebx esi edi,lpFileName:DWORD
 			invoke DecToBin,addr buffer
 			mov		edx,ebx
 			shl		edx,4
-			mov		map.dist.iTime[edx],eax
+			mov		mapdata.dist.iTime[edx],eax
 			.if byte ptr [esi]==0Dh
 				inc		esi
 			.endif
@@ -446,12 +446,12 @@ OpenDistance proc uses ebx esi edi,lpFileName:DWORD
 			.endif
 			inc		ebx
 		.endw
-		mov		map.disthead,ebx
+		mov		mapdata.disthead,ebx
 		invoke CloseHandle,hFile
 		invoke GlobalFree,hMem
-		mov		eax,map.disthead
+		mov		eax,mapdata.disthead
 		dec		eax
-		invoke GetDistance,addr map.dist,eax
+		invoke GetDistance,addr mapdata.dist,eax
 	.endif
 	ret
 
@@ -466,20 +466,20 @@ SaveDistance proc uses ebx,lpFileName:DWORD
 	.if eax!=INVALID_HANDLE_VALUE
 		mov		hFile,eax
 		xor		ebx,ebx
-		.while ebx<map.disthead
+		.while ebx<mapdata.disthead
 			mov		buffer,0
 			mov		edx,ebx
 			shl		edx,4
-			invoke PutItemInt,addr buffer,map.dist.iLon[edx]
+			invoke PutItemInt,addr buffer,mapdata.dist.iLon[edx]
 			mov		edx,ebx
 			shl		edx,4
-			invoke PutItemInt,addr buffer,map.dist.iLat[edx]
+			invoke PutItemInt,addr buffer,mapdata.dist.iLat[edx]
 			mov		edx,ebx
 			shl		edx,4
-			invoke PutItemInt,addr buffer,map.dist.iBear[edx]
+			invoke PutItemInt,addr buffer,mapdata.dist.iBear[edx]
 			mov		edx,ebx
 			shl		edx,4
-			invoke PutItemInt,addr buffer,map.dist.iTime[edx]
+			invoke PutItemInt,addr buffer,mapdata.dist.iTime[edx]
 			invoke strcat,addr buffer,addr szCRLF
 			invoke strlen,addr buffer[1]
 			mov		edx,eax
@@ -507,8 +507,8 @@ OpenTrail proc uses ebx esi edi,lpFileName:DWORD
 		mov		hMem,eax
 		pop		edx
 		invoke ReadFile,hFile,hMem,edx,addr dwread,NULL
-		mov		map.trailhead,0
-		mov		map.trailtail,0
+		mov		mapdata.trailhead,0
+		mov		mapdata.trailtail,0
 		mov		esi,hMem
 		xor		ebx,ebx
 		.while byte ptr [esi]
@@ -525,7 +525,7 @@ OpenTrail proc uses ebx esi edi,lpFileName:DWORD
 			invoke DecToBin,addr buffer
 			mov		edx,ebx
 			shl		edx,4
-			mov		map.trail.iLon[edx],eax
+			mov		mapdata.trail.iLon[edx],eax
 			lea		edi,buffer
 			.while byte ptr [esi] && byte ptr [esi]!=','
 				mov		al,[esi]
@@ -539,7 +539,7 @@ OpenTrail proc uses ebx esi edi,lpFileName:DWORD
 			invoke DecToBin,addr buffer
 			mov		edx,ebx
 			shl		edx,4
-			mov		map.trail.iLat[edx],eax
+			mov		mapdata.trail.iLat[edx],eax
 			lea		edi,buffer
 			.while byte ptr [esi] && byte ptr [esi]!=','
 				mov		al,[esi]
@@ -553,7 +553,7 @@ OpenTrail proc uses ebx esi edi,lpFileName:DWORD
 			invoke DecToBin,addr buffer
 			mov		edx,ebx
 			shl		edx,4
-			mov		map.trail.iBear[edx],eax
+			mov		mapdata.trail.iBear[edx],eax
 			lea		edi,buffer
 			.while byte ptr [esi] && byte ptr [esi]!=0Dh
 				mov		al,[esi]
@@ -568,13 +568,13 @@ OpenTrail proc uses ebx esi edi,lpFileName:DWORD
 			invoke DecToBin,addr buffer
 			mov		edx,ebx
 			shl		edx,4
-			mov		map.trail.iTime[edx],eax
+			mov		mapdata.trail.iTime[edx],eax
 			inc		ebx
 			and		ebx,MAXTRAIL-1
-			mov		map.trailhead,ebx
-			.if ebx==map.trailtail
-				inc		map.trailtail
-				and		map.trailtail,MAXTRAIL-1
+			mov		mapdata.trailhead,ebx
+			.if ebx==mapdata.trailtail
+				inc		mapdata.trailtail
+				and		mapdata.trailtail,MAXTRAIL-1
 			.endif
 			.if byte ptr [esi]==0Dh
 				inc		esi
@@ -586,7 +586,7 @@ OpenTrail proc uses ebx esi edi,lpFileName:DWORD
 		invoke CloseHandle,hFile
 		invoke GlobalFree,hMem
 		invoke CheckDlgButton,hWnd,IDC_CHKTRAIL,BST_CHECKED
-		mov		map.gpstrail,TRUE
+		mov		mapdata.gpstrail,TRUE
 	.endif
 	ret
 
@@ -600,21 +600,21 @@ SaveTrail proc uses ebx,lpFileName:DWORD
 	invoke CreateFile,lpFileName,GENERIC_WRITE,FILE_SHARE_READ,NULL,CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL,NULL
 	.if eax!=INVALID_HANDLE_VALUE
 		mov		hFile,eax
-		mov		ebx,map.trailtail
-		.while ebx!=map.trailhead
+		mov		ebx,mapdata.trailtail
+		.while ebx!=mapdata.trailhead
 			mov		buffer,0
 			mov		edx,ebx
 			shl		edx,4
-			invoke PutItemInt,addr buffer,map.trail.iLon[edx]
+			invoke PutItemInt,addr buffer,mapdata.trail.iLon[edx]
 			mov		edx,ebx
 			shl		edx,4
-			invoke PutItemInt,addr buffer,map.trail.iLat[edx]
+			invoke PutItemInt,addr buffer,mapdata.trail.iLat[edx]
 			mov		edx,ebx
 			shl		edx,4
-			invoke PutItemInt,addr buffer,map.trail.iBear[edx]
+			invoke PutItemInt,addr buffer,mapdata.trail.iBear[edx]
 			mov		edx,ebx
 			shl		edx,4
-			invoke PutItemInt,addr buffer,map.trail.iTime[edx]
+			invoke PutItemInt,addr buffer,mapdata.trail.iTime[edx]
 			invoke strcat,addr buffer,addr szCRLF
 			invoke strlen,addr buffer[1]
 			mov		edx,eax

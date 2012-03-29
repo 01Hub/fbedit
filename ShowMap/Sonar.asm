@@ -945,7 +945,7 @@ SetBattery:
 		mov		cl,'.'
 		mov		dword ptr buffer[eax-1],ecx
 		invoke strcat,addr buffer,addr szVolts
-		invoke strcpy,addr map.options.text[sizeof OPTIONS],addr buffer
+		invoke strcpy,addr mapdata.options.text[sizeof OPTIONS],addr buffer
 		invoke InvalidateRect,hMap,NULL,TRUE
 	.endif
 	retn
@@ -1011,7 +1011,7 @@ SetATemp:
 			mov		cl,'.'
 			mov		dword ptr buffer[eax-1],ecx
 			invoke strcat,addr buffer,addr szCelcius
-			invoke strcpy,addr map.options.text[sizeof OPTIONS*2],addr buffer
+			invoke strcpy,addr mapdata.options.text[sizeof OPTIONS*2],addr buffer
 		.endif
 	.endif
 	retn
@@ -1219,7 +1219,7 @@ STMThread proc uses ebx esi edi,Param:DWORD
 	mov		pixmov,0
 	mov		pixdpt,250
 	mov		rngchanged,4
-	mov		map.ntrail,0
+	mov		mapdata.ntrail,0
 	mov		iLat,-1
 	mov		iLon,-1
 	invoke RtlZeroMemory,addr STM32Echo,sizeof STM32Echo
@@ -1229,17 +1229,18 @@ STMThread proc uses ebx esi edi,Param:DWORD
 			invoke Sleep,250
 		.else
 			.if sonardata.hReplay
+				;Replay mode
 				;Copy old echo
 				call	MoveEcho
 				;Read echo from file
 				.if sonarreplay.Version>=200
 					invoke ReadFile,sonardata.hReplay,addr sonarreplay,sizeof SONARREPLAY,addr dwread,NULL
 					.if dwread==sizeof SONARREPLAY
-						mov		eax,map.iLon
+						mov		eax,mapdata.iLon
 						mov		iLon,eax
-						mov		eax,map.iLat
+						mov		eax,mapdata.iLat
 						mov		iLat,eax
-						mov		map.fcursor,TRUE
+						mov		mapdata.fcursor,TRUE
 						movzx	eax,sonarreplay.SoundSpeed
 						mov		sonardata.SoundSpeed,eax
 						mov		ax,sonarreplay.ADCBattery
@@ -1249,7 +1250,7 @@ STMThread proc uses ebx esi edi,Param:DWORD
 						mov		ax,sonarreplay.ADCAirTemp
 						mov		sonardata.ADCAirTemp,ax
 						mov		eax,sonarreplay.iTime
-						mov		map.iTime,eax
+						mov		mapdata.iTime,eax
 						mov		ecx,eax
 						movzx	edx,ax
 						shr		ecx,16
@@ -1269,73 +1270,73 @@ STMThread proc uses ebx esi edi,Param:DWORD
 						push	eax
 						movzx	eax,lst.wDay
 						push	eax
-						invoke wsprintf,addr map.options.text[sizeof OPTIONS*4],offset szFmtTime
+						invoke wsprintf,addr mapdata.options.text[sizeof OPTIONS*4],offset szFmtTime
 						mov		eax,sonarreplay.iLon
-						mov		map.iLon,eax
+						mov		mapdata.iLon,eax
 						mov		eax,sonarreplay.iLat
-						mov		map.iLat,eax
+						mov		mapdata.iLat,eax
 						movzx	eax,sonarreplay.iSpeed
-						mov		map.iSpeed,eax
+						mov		mapdata.iSpeed,eax
 						movzx	eax,sonarreplay.iBear
-						mov		map.iBear,eax
+						mov		mapdata.iBear,eax
 						invoke SetGPSCursor
-						mov		eax,map.iLon
-						mov		edx,map.iLat
+						mov		eax,mapdata.iLon
+						mov		edx,mapdata.iLat
 						.if eax!=iLon || edx!=iLat
-							invoke DoGoto,map.iLon,map.iLat,map.gpslock,TRUE
-							invoke SetDlgItemInt,hWnd,IDC_EDTEAST,map.iLon,TRUE
-							invoke SetDlgItemInt,hWnd,IDC_EDTNORTH,map.iLat,TRUE
+							invoke DoGoto,mapdata.iLon,mapdata.iLat,mapdata.gpslock,TRUE
+							invoke SetDlgItemInt,hWnd,IDC_EDTEAST,mapdata.iLon,TRUE
+							invoke SetDlgItemInt,hWnd,IDC_EDTNORTH,mapdata.iLat,TRUE
 							movzx	eax,sonarreplay.iSpeed
-							mov		map.iSpeed,eax
+							mov		mapdata.iSpeed,eax
 							invoke wsprintf,addr buffer,addr szFmtDec2,eax
 							invoke strlen,addr buffer
 							movzx	ecx,word ptr buffer[eax-1]
 							shl		ecx,8
 							mov		cl,'.'
 							mov		dword ptr buffer[eax-1],ecx
-							invoke strcpy,addr map.options.text,addr buffer
-							invoke AddTrailPoint,map.iLon,map.iLat,map.iBear,map.iTime,map.iSpeed
-							.if map.ntrail
-								mov		eax,map.iLon
-								mov		edx,map.iLat
+							invoke strcpy,addr mapdata.options.text,addr buffer
+							invoke AddTrailPoint,mapdata.iLon,mapdata.iLat,mapdata.iBear,mapdata.iTime,mapdata.iSpeed
+							.if mapdata.ntrail
+								mov		eax,mapdata.iLon
+								mov		edx,mapdata.iLat
 								.if eax!=iLon || edx!=iLat
-									invoke BearingDistanceInt,iLon,iLat,map.iLon,map.iLat,addr fDist,addr fBear
+									invoke BearingDistanceInt,iLon,iLat,mapdata.iLon,mapdata.iLat,addr fDist,addr fBear
 									fld		fDist
-									fld		map.fSumDist
+									fld		mapdata.fSumDist
 									faddp	st(1),st(0)
 									fst		st(1)
-									lea		eax,map.fSumDist
+									lea		eax,mapdata.fSumDist
 									fstp	REAL10 PTR [eax]
 									lea		eax,iSumDist
 									fistp	dword ptr [eax]
 									invoke SetDlgItemInt,hWnd,IDC_EDTDIST,iSumDist,FALSE
-									invoke SetDlgItemInt,hWnd,IDC_EDTBEAR,map.iBear,FALSE
+									invoke SetDlgItemInt,hWnd,IDC_EDTBEAR,mapdata.iBear,FALSE
 								.endif
 							.endif
-							inc		map.ntrail
-							inc		map.paintnow
+							inc		mapdata.ntrail
+							inc		mapdata.paintnow
 						.endif
 						.if sonarreplay.Version==201
 							invoke ReadFile,sonardata.hReplay,addr satelites,sizeof SATELITE*12,addr dwread,NULL
 							invoke ReadFile,sonardata.hReplay,addr altitude,sizeof ALTITUDE,addr dwread,NULL
 						.endif
 					.endif
-					invoke ReadFile,sonardata.hReplay,addr STM32Echo,MAXYECHO,addr dwread,NULL
 				.endif
+				invoke ReadFile,sonardata.hReplay,addr STM32Echo,MAXYECHO,addr dwread,NULL
 				.if dwread!=MAXYECHO
 					invoke CloseHandle,sonardata.hReplay
 					mov		sonardata.hReplay,0
 					invoke SetScrollPos,hSonar,SB_HORZ,0,TRUE
 					mov		sonardata.dptinx,0
 					invoke EnableScrollBar,hSonar,SB_HORZ,ESB_DISABLE_BOTH
-					mov		map.ntrail,0
+					mov		mapdata.ntrail,0
 					mov		iLat,-1
 					mov		iLon,-1
-					mov		map.trailhead,0
-					mov		map.trailtail,0
-					inc		map.paintnow
+					mov		mapdata.trailhead,0
+					mov		mapdata.trailtail,0
+					inc		mapdata.paintnow
 					fldz
-					fstp	map.fSumDist
+					fstp	mapdata.fSumDist
 					invoke SetDlgItemText,hWnd,IDC_EDTDIST,addr szNULL
 				.else
 					invoke GetScrollPos,hSonar,SB_HORZ
@@ -1349,6 +1350,7 @@ STMThread proc uses ebx esi edi,Param:DWORD
 					call	ShowEcho
 				.endif
 			.elseif sonardata.fSTLink && sonardata.fSTLink!=IDIGNORE
+				;Sonar mode
 				;Download Start status (first byte)
 				invoke STLinkRead,hWnd,STM32_Sonar,addr status,4
 				.if !eax || eax==IDABORT || eax==IDIGNORE
@@ -1401,6 +1403,7 @@ STMThread proc uses ebx esi edi,Param:DWORD
 					invoke Sleep,10
 				.endif
 			.elseif sonardata.fSTLink==IDIGNORE
+				;Random demo mode
 				;Copy old echo
 				call	MoveEcho
 				;Clear echo
@@ -1447,9 +1450,9 @@ STMThread proc uses ebx esi edi,Param:DWORD
 					invoke Random,8
 					mov		pixdir,eax
 				.endif
-				.if !(pixcnt & 31)
+				.if !(pixcnt & 7)
 					;Random move
-					invoke Random,4
+					invoke Random,3
 					mov		pixmov,eax
 				.endif
 				mov		ebx,pixdpt
@@ -1573,15 +1576,15 @@ ShowEcho:
 		mov		sonarreplay.ADCWaterTemp,ax
 		mov		ax,sonardata.ADCAirTemp
 		mov		sonarreplay.ADCAirTemp,ax
-		mov		eax,map.iTime
+		mov		eax,mapdata.iTime
 		mov		sonarreplay.iTime,eax
-		mov		eax,map.iLon
+		mov		eax,mapdata.iLon
 		mov		sonarreplay.iLon,eax
-		mov		eax,map.iLat
+		mov		eax,mapdata.iLat
 		mov		sonarreplay.iLat,eax
-		mov		eax,map.iSpeed
+		mov		eax,mapdata.iSpeed
 		mov		sonarreplay.iSpeed,ax
-		mov		eax,map.iBear
+		mov		eax,mapdata.iBear
 		mov		sonarreplay.iBear,ax
 		invoke WriteFile,sonardata.hLog,addr sonarreplay,sizeof SONARREPLAY,addr dwwrite,NULL
 		invoke WriteFile,sonardata.hLog,addr satelites,sizeof satelites,addr dwwrite,NULL
@@ -2545,7 +2548,7 @@ ShowFish:
 				div		ecx
 				add		eax,fishdepth
 				invoke wsprintf,addr buffer,addr szFmtDec,eax
-				invoke TextDraw,hDC,map.font[0],addr rect,addr buffer,DT_CENTER or DT_SINGLELINE
+				invoke TextDraw,hDC,mapdata.font[0],addr rect,addr buffer,DT_CENTER or DT_SINGLELINE
 			.endif
 		.endif
 		pop		ecx
@@ -2567,7 +2570,7 @@ ShowOption:
 	mov		rect.bottom,eax
 	mov		eax,[esi].OPTIONS.font
 	add		eax,7
-	mov		ecx,map.font[eax*4]
+	mov		ecx,mapdata.font[eax*4]
 	mov		edx,[esi].OPTIONS.position
 	.if !edx
 		;Left, Top
@@ -2888,6 +2891,7 @@ SonarProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.if wParam==1000
 			.if !sonardata.fSTLink
 				mov		sonardata.fSTLink,IDIGNORE
+				mov		mapdata.fSTLink,IDIGNORE
 				invoke STLinkConnect,hWnd
 				.if eax==IDABORT
 					invoke SendMessage,hWnd,WM_CLOSE,0,0
@@ -2895,8 +2899,13 @@ SonarProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					mov		sonardata.fSTLink,eax
 				.endif
 				.if sonardata.fSTLink && sonardata.fSTLink!=IDIGNORE
-					invoke STLinkConnect,hSonar
 					invoke STLinkReset,hWnd
+					invoke STLinkConnect,hSonar
+					.if eax==IDABORT
+						invoke SendMessage,hWnd,WM_CLOSE,0,0
+					.else
+						mov		mapdata.fSTLink,eax
+					.endif
 					inc		sonardata.fGainUpload
 				.endif
 			.endif

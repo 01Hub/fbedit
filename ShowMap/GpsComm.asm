@@ -141,7 +141,7 @@ GPSThread proc uses ebx esi edi,Param:DWORD
 	invoke OpenCom
 	.while  !fExitGPSThread
 		.if hFileLogRead
-			.if !map.gpslogpause
+			.if !mapdata.gpslogpause
 				invoke ReadFile,hFileLogRead,addr combuff,1024,addr nRead,NULL
 				.if !nRead
 					invoke CloseHandle,hFileLogRead
@@ -152,15 +152,15 @@ GPSThread proc uses ebx esi edi,Param:DWORD
 					fldz
 					fstp	fDist
 					fldz
-					fstp	map.fSumDist
-					mov		map.ntrail,0
-					mov		map.trailhead,0
-					mov		map.trailtail,0
+					fstp	mapdata.fSumDist
+					mov		mapdata.ntrail,0
+					mov		mapdata.trailhead,0
+					mov		mapdata.trailtail,0
 					invoke SetDlgItemText,hWnd,IDC_EDTDIST,addr szNULL
 				.else
-					.if !map.ntrail
+					.if !mapdata.ntrail
 						fldz
-						fstp	map.fSumDist
+						fstp	mapdata.fSumDist
 					.endif
 					invoke strlen,addr combuff
 					lea		eax,[eax+1]
@@ -190,7 +190,7 @@ GPSThread proc uses ebx esi edi,Param:DWORD
 					mov		combuff,0
 		 		.endif
 			.endif
-		.elseif sonardata.fSTLink && sonardata.fSTLink!=IDIGNORE && !sonardata.hReplay
+		.elseif mapdata.fSTLink && mapdata.fSTLink!=IDIGNORE && !sonardata.hReplay
 			xor		ebx,ebx
 		  STMGetMore:
 			;Download ADCAirTemp and GPSHead
@@ -349,7 +349,7 @@ GPSExec:
 					.endif
 				.endif
 			.endif
-			.if hFileLogWrite && !map.gpslogpause
+			.if hFileLogWrite && !mapdata.gpslogpause
 				invoke strlen,addr logbuff
 				lea		edx,[eax+1]
 				invoke WriteFile,hFileLogWrite,addr logbuff,edx,addr nWrite,NULL
@@ -359,11 +359,11 @@ GPSExec:
 			.endif
 			mov		logbuff,0
 			mov		combuff,0
-			.if (!map.bdist || map.bdist==2) && (!map.btrip || map.btrip==2)
-				invoke DoGoto,map.iLon,map.iLat,map.gpslock,TRUE
-				invoke SetDlgItemInt,hWnd,IDC_EDTEAST,map.iLon,TRUE
-				invoke SetDlgItemInt,hWnd,IDC_EDTNORTH,map.iLat,TRUE
-				inc		map.paintnow
+			.if (!mapdata.bdist || mapdata.bdist==2) && (!mapdata.btrip || mapdata.btrip==2)
+				invoke DoGoto,mapdata.iLon,mapdata.iLat,mapdata.gpslock,TRUE
+				invoke SetDlgItemInt,hWnd,IDC_EDTEAST,mapdata.iLon,TRUE
+				invoke SetDlgItemInt,hWnd,IDC_EDTNORTH,mapdata.iLat,TRUE
+				inc		mapdata.paintnow
 			.endif
 			pop		ebx
 			jmp		GPSExec
@@ -372,20 +372,20 @@ GPSExec:
 	retn
 
 PositionSpeedDirection:
-	mov		eax,map.iLon
+	mov		eax,mapdata.iLon
 	mov		iLon,eax
-	mov		eax,map.iLat
+	mov		eax,mapdata.iLat
 	mov		iLat,eax
 	;Time
 	invoke GetItemStr,addr linebuff,addr szNULL,addr bufftime,32
 	;Status
 	invoke GetItemStr,addr linebuff,addr szNULL,addr buffer,32
 	.if buffer=='A'
-		mov		map.fcursor,TRUE
+		mov		mapdata.fcursor,TRUE
 		mov		fValid,TRUE
 	.else
-		inc		map.fcursor
-		and		map.fcursor,1
+		inc		mapdata.fcursor
+		and		mapdata.fcursor,1
 		mov		fValid,FALSE
 	.endif
 	.if fValid
@@ -418,7 +418,7 @@ PositionSpeedDirection:
 		.if buffer=='S'
 			neg		eax
 		.endif
-		mov		map.iLat,eax
+		mov		mapdata.iLat,eax
 		;Longitude
 		invoke GetItemStr,addr linebuff,addr szNULL,addr buffer,32
 		lea		esi,buffer
@@ -448,7 +448,7 @@ PositionSpeedDirection:
 		.if combuff=='W'
 			neg		eax
 		.endif
-		mov		map.iLon,eax
+		mov		mapdata.iLon,eax
 		;Speed
 		invoke GetItemStr,addr linebuff,addr szNULL,addr buffer,32
 		invoke strlen,addr buffer
@@ -459,18 +459,18 @@ PositionSpeedDirection:
 		mov		ecx,dword ptr buffer[eax+1]
 		mov		dword ptr buffer[eax],ecx
 		invoke DecToBin,addr buffer
-		mov		map.iSpeed,eax
-		invoke wsprintf,addr buffer,addr szFmtDec2,map.iSpeed
+		mov		mapdata.iSpeed,eax
+		invoke wsprintf,addr buffer,addr szFmtDec2,mapdata.iSpeed
 		invoke strlen,addr buffer
 		movzx	ecx,word ptr buffer[eax-1]
 		shl		ecx,8
 		mov		cl,'.'
 		mov		dword ptr buffer[eax-1],ecx
-		invoke strcpy,addr map.options.text,addr buffer
+		invoke strcpy,addr mapdata.options.text,addr buffer
 		;Get the bearing
 		invoke GetItemStr,addr linebuff,addr szNULL,addr buffer,32
 		invoke DecToBin,addr buffer
-		mov		map.iBear,eax
+		mov		mapdata.iBear,eax
 		invoke SetGPSCursor
 	.else
 		invoke GetItemStr,addr linebuff,addr szNULL,addr buffer,32
@@ -525,7 +525,7 @@ PositionSpeedDirection:
 	shl		eax,11
 	or		iTime,eax
 	mov		eax,iTime
-	mov		map.iTime,eax
+	mov		mapdata.iTime,eax
 	invoke SystemTimeToTzSpecificLocalTime,NULL,addr utcst,addr localst
 	mov		ebx,esp
 	movzx	eax,localst.wSecond
@@ -542,30 +542,30 @@ PositionSpeedDirection:
 	movzx	eax,localst.wDay
 	push	eax
 	push	offset szFmtTime
-	lea		eax,map.options.text[sizeof OPTIONS*4]
+	lea		eax,mapdata.options.text[sizeof OPTIONS*4]
 	push	eax
 	call	wsprintf
 	mov		esp,ebx
 	.if fValid
-		invoke AddTrailPoint,map.iLon,map.iLat,map.iBear,map.iTime,map.iSpeed
-		.if map.ntrail
-			mov		eax,map.iLon
-			mov		edx,map.iLat
+		invoke AddTrailPoint,mapdata.iLon,mapdata.iLat,mapdata.iBear,mapdata.iTime,mapdata.iSpeed
+		.if mapdata.ntrail
+			mov		eax,mapdata.iLon
+			mov		edx,mapdata.iLat
 			.if eax!=iLon || edx!=iLat
-				invoke BearingDistanceInt,iLon,iLat,map.iLon,map.iLat,addr fDist,addr fBear
+				invoke BearingDistanceInt,iLon,iLat,mapdata.iLon,mapdata.iLat,addr fDist,addr fBear
 				fld		fDist
-				fld		map.fSumDist
+				fld		mapdata.fSumDist
 				faddp	st(1),st(0)
 				fst		st(1)
-				lea		eax,map.fSumDist
+				lea		eax,mapdata.fSumDist
 				fstp	REAL10 PTR [eax]
 				lea		eax,iSumDist
 				fistp	dword ptr [eax]
 				invoke SetDlgItemInt,hWnd,IDC_EDTDIST,iSumDist,FALSE
-				invoke SetDlgItemInt,hWnd,IDC_EDTBEAR,map.iBear,FALSE
+				invoke SetDlgItemInt,hWnd,IDC_EDTBEAR,mapdata.iBear,FALSE
 			.endif
 		.endif
-		inc		map.ntrail
+		inc		mapdata.ntrail
 	.endif
 	retn
 
@@ -580,9 +580,9 @@ LoadGPSFromIni proc
 	invoke GetItemInt,addr buffer,0
 	mov		COMActive,eax
 	invoke GetItemInt,addr buffer,0
-	mov		map.TrackSmooth,eax
+	mov		mapdata.TrackSmooth,eax
 	invoke GetItemInt,addr buffer,1
-	mov		map.TrailRate,eax
+	mov		mapdata.TrailRate,eax
 	ret
 
 LoadGPSFromIni endp
@@ -594,8 +594,8 @@ SaveGPSToIni proc
 	invoke PutItemStr,addr buffer,addr COMPort
 	invoke PutItemStr,addr buffer,addr BaudRate
 	invoke PutItemInt,addr buffer,COMActive
-	invoke PutItemInt,addr buffer,map.TrackSmooth
-	invoke PutItemInt,addr buffer,map.TrailRate
+	invoke PutItemInt,addr buffer,mapdata.TrackSmooth
+	invoke PutItemInt,addr buffer,mapdata.TrailRate
 	invoke WritePrivateProfileString,addr szIniGPS,addr szIniGPS,addr buffer[1],addr szIniFileName
 	ret
 
@@ -643,9 +643,9 @@ GPSOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPA
 			pop		eax
 		.endw
 		invoke SendDlgItemMessage,hWin,IDC_TRBSMOOTH,TBM_SETRANGE,FALSE,(99 SHL 16)+0
-		invoke SendDlgItemMessage,hWin,IDC_TRBSMOOTH,TBM_SETPOS,TRUE,map.TrackSmooth
+		invoke SendDlgItemMessage,hWin,IDC_TRBSMOOTH,TBM_SETPOS,TRUE,mapdata.TrackSmooth
 		invoke SendDlgItemMessage,hWin,IDC_TRBRATE,TBM_SETRANGE,FALSE,(99 SHL 16)+1
-		invoke SendDlgItemMessage,hWin,IDC_TRBRATE,TBM_SETPOS,TRUE,map.TrailRate
+		invoke SendDlgItemMessage,hWin,IDC_TRBRATE,TBM_SETPOS,TRUE,mapdata.TrailRate
 	.elseif eax==WM_COMMAND
 		mov		edx,wParam
 		movzx	eax,dx
@@ -663,24 +663,24 @@ GPSOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPA
 			.elseif eax==IDCANCEL
 				invoke SendMessage,hWin,WM_CLOSE,NULL,NULL
 			.elseif eax==IDC_BTNSMOOTHDN
-				.if map.TrackSmooth
-					dec		map.TrackSmooth
-					invoke SendDlgItemMessage,hWin,IDC_TRBSMOOTH,TBM_SETPOS,TRUE,map.TrackSmooth
+				.if mapdata.TrackSmooth
+					dec		mapdata.TrackSmooth
+					invoke SendDlgItemMessage,hWin,IDC_TRBSMOOTH,TBM_SETPOS,TRUE,mapdata.TrackSmooth
 				.endif
 			.elseif eax==IDC_BTNSMOOTHUP
-				.if map.TrackSmooth<99
-					inc		map.TrackSmooth
-					invoke SendDlgItemMessage,hWin,IDC_TRBSMOOTH,TBM_SETPOS,TRUE,map.TrackSmooth
+				.if mapdata.TrackSmooth<99
+					inc		mapdata.TrackSmooth
+					invoke SendDlgItemMessage,hWin,IDC_TRBSMOOTH,TBM_SETPOS,TRUE,mapdata.TrackSmooth
 				.endif
 			.elseif eax==IDC_BTNRATEDN
-				.if map.TrailRate>1
-					dec		map.TrailRate
-					invoke SendDlgItemMessage,hWin,IDC_TRBRATE,TBM_SETPOS,TRUE,map.TrailRate
+				.if mapdata.TrailRate>1
+					dec		mapdata.TrailRate
+					invoke SendDlgItemMessage,hWin,IDC_TRBRATE,TBM_SETPOS,TRUE,mapdata.TrailRate
 				.endif
 			.elseif eax==IDC_BTNRATEUP
-				.if map.TrailRate<99
-					inc		map.TrailRate
-					invoke SendDlgItemMessage,hWin,IDC_TRBRATE,TBM_SETPOS,TRUE,map.TrailRate
+				.if mapdata.TrailRate<99
+					inc		mapdata.TrailRate
+					invoke SendDlgItemMessage,hWin,IDC_TRBRATE,TBM_SETPOS,TRUE,mapdata.TrailRate
 				.endif
 			.endif
 		.endif
@@ -689,9 +689,9 @@ GPSOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPA
 		mov		ebx,eax
 		invoke GetWindowLong,lParam,GWL_ID
 		.if eax==IDC_TRBSMOOTH
-			mov		map.TrackSmooth,ebx
+			mov		mapdata.TrackSmooth,ebx
 		.else
-			mov		map.TrailRate,ebx
+			mov		mapdata.TrailRate,ebx
 		.endif
 	.elseif eax==WM_CLOSE
 		invoke EndDialog,hWin,lParam
@@ -756,7 +756,7 @@ GPSProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		push	eax
 		invoke SelectObject,mDC,sonardata.hBrBack
 		push	eax
-		invoke SelectObject,mDC,map.font[2*4]
+		invoke SelectObject,mDC,mapdata.font[2*4]
 		push	eax
 		invoke FillRect,mDC,addr rect,sonardata.hBrBack
 		mov		eax,rect.right

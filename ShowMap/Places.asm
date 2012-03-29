@@ -8,7 +8,7 @@ nPlace				DWORD ?
 InitPlaces proc uses ebx esi
 	LOCAL	buffer[256]:BYTE
 
-	mov		esi,offset map.place
+	mov		esi,offset mapdata.place
 	invoke RtlZeroMemory,esi,sizeof MAP.place
 	invoke SendDlgItemMessage,hWnd,IDC_CBOGOTOPLACE,CB_RESETCONTENT,0,0
 	xor		ebx,ebx
@@ -34,7 +34,7 @@ InitPlaces proc uses ebx esi
 		lea		esi,[esi+sizeof PLACE]
 		inc		ebx
 	.endw
-	mov		map.freeplace,ebx
+	mov		mapdata.freeplace,ebx
 	invoke SendDlgItemMessage,hWnd,IDC_CBOGOTOPLACE,CB_SETCURSEL,0,0
 	ret
 
@@ -59,8 +59,8 @@ FindPlace proc uses ebx esi,iLon:DWORD,iLat:DWORD
 	lea		edx,[eax+100]
 	mov		ymax,edx
 	xor		ebx,ebx
-	mov		esi,offset map.place
-	.while ebx<map.freeplace
+	mov		esi,offset mapdata.place
+	.while ebx<mapdata.freeplace
 		mov		ecx,[esi].PLACE.iLon
 		mov		edx,[esi].PLACE.iLat
 		.if ecx>=xmin && ecx<=xmax && edx>=ymin && edx<=ymax
@@ -118,12 +118,12 @@ AddPlaceProc proc uses ebx esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			mov		eax,sizeof PLACE
 			mul		ebx
 			mov		ebx,eax
-			invoke SetDlgItemText,hWin,IDC_EDTNAME,addr map.place.text[ebx]
-			invoke SetDlgItemInt,hWin,IDC_EDTLONGITUDE,map.place.iLon[ebx],TRUE
-			invoke SetDlgItemInt,hWin,IDC_EDTLATTITUDE,map.place.iLat[ebx],TRUE
-			invoke SendDlgItemMessage,hWin,IDC_CBOFONT,CB_SETCURSEL,map.place.font[ebx],0
-			invoke SendDlgItemMessage,hWin,IDC_CBOICON,CB_SETCURSEL,map.place.icon[ebx],0
-			invoke SendDlgItemMessage,hWin,IDC_TRBZOOM,TBM_SETPOS,TRUE,map.place.zoom[ebx]
+			invoke SetDlgItemText,hWin,IDC_EDTNAME,addr mapdata.place.text[ebx]
+			invoke SetDlgItemInt,hWin,IDC_EDTLONGITUDE,mapdata.place.iLon[ebx],TRUE
+			invoke SetDlgItemInt,hWin,IDC_EDTLATTITUDE,mapdata.place.iLat[ebx],TRUE
+			invoke SendDlgItemMessage,hWin,IDC_CBOFONT,CB_SETCURSEL,mapdata.place.font[ebx],0
+			invoke SendDlgItemMessage,hWin,IDC_CBOICON,CB_SETCURSEL,mapdata.place.icon[ebx],0
+			invoke SendDlgItemMessage,hWin,IDC_TRBZOOM,TBM_SETPOS,TRUE,mapdata.place.zoom[ebx]
 		.endif
 	.elseif eax==WM_COMMAND
 		mov		edx,wParam
@@ -146,19 +146,19 @@ AddPlaceProc proc uses ebx esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke GetDlgItemText,hWin,IDC_EDTNAME,addr buffname,sizeof buffname
 				invoke PutItemStr,addr buffer,addr buffname
 				.if nPlace==-1
-					invoke BinToDec,map.freeplace,addr buffname
+					invoke BinToDec,mapdata.freeplace,addr buffname
 				.else
 					invoke BinToDec,nPlace,addr buffname
 				.endif
 				invoke WritePrivateProfileString,addr szIniPlace,addr buffname,addr buffer[1],addr szIniFileName
 				invoke InitPlaces
 				invoke SendMessage,hWin,WM_CLOSE,NULL,TRUE
-				inc		map.paintnow
+				inc		mapdata.paintnow
 			.elseif eax==IDCANCEL
 				invoke SendMessage,hWin,WM_CLOSE,NULL,FALSE
 			.elseif eax==IDC_BTNGPS
-				invoke SetDlgItemInt,hWin,IDC_EDTLONGITUDE,map.iLon,TRUE
-				invoke SetDlgItemInt,hWin,IDC_EDTLATTITUDE,map.iLat,TRUE
+				invoke SetDlgItemInt,hWin,IDC_EDTLONGITUDE,mapdata.iLon,TRUE
+				invoke SetDlgItemInt,hWin,IDC_EDTLATTITUDE,mapdata.iLat,TRUE
 			.endif
 		.endif
 	.elseif eax==WM_CLOSE

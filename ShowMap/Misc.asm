@@ -785,7 +785,7 @@ MakeLatPoints proc uses edi,iLatTop:DWORD,iLatBottom:DWORD,nTiles:DWORD,lpPoints
 	fidiv	nTiles
 	fstp	fDiff
 	mov		eax,nTiles
-	mov		map.nLatPoint,eax
+	mov		mapdata.nLatPoint,eax
 	shl		eax,9
 	mov		ypos,eax
 	mov		edi,lpPoints
@@ -857,9 +857,9 @@ LoadMapPoints proc uses ebx esi edi
 	inc		nx
 	inc		ny
 	invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,4096
-	mov		map.hMemLon,eax
+	mov		mapdata.hMemLon,eax
 	invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,4096
-	mov		map.hMemLat,eax
+	mov		mapdata.hMemLat,eax
 	;Get map rectangle
 	invoke GetPrivateProfileString,addr szIniMap,addr szIniMapRect,addr szNULL,addr buffer,sizeof buffer,addr szIniFileName
 	.if eax
@@ -872,7 +872,7 @@ LoadMapPoints proc uses ebx esi edi
 		invoke GetItemInt,addr buffer,0
 		mov		rect.bottom,eax
 		;Setup longitude
-		mov		edi,map.hMemLon
+		mov		edi,mapdata.hMemLon
 		mov		eax,rect.left
 		mov		[edi].LONPOINT.iLon,eax
 		mov		[edi].LONPOINT.ixpos,0
@@ -882,7 +882,7 @@ LoadMapPoints proc uses ebx esi edi
 		mov		eax,nx
 		shl		eax,9
 		mov		[edi].LONPOINT.ixpos,eax
-		mov		map.nLonPoint,2
+		mov		mapdata.nLonPoint,2
 		;Setup lattitude
 		invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,4096
 		mov		hMem,eax
@@ -890,9 +890,9 @@ LoadMapPoints proc uses ebx esi edi
 		.if eax
 			;A predefined array exists
 			mov		ebx,ny
-			mov		map.nLatPoint,ebx
+			mov		mapdata.nLatPoint,ebx
 			xor		esi,esi
-			mov		edi,map.hMemLat
+			mov		edi,mapdata.hMemLat
 			.while ebx
 				invoke GetItemInt,hMem,0
 				mov		[edi].LATPOINT.iLat,eax
@@ -903,10 +903,10 @@ LoadMapPoints proc uses ebx esi edi
 			.endw
 		.else
 			;Calculate the array
-			invoke MakeLatPoints,rect.top,rect.bottom,ny,map.hMemLat
+			invoke MakeLatPoints,rect.top,rect.bottom,ny,mapdata.hMemLat
 			;Save the array to ini
 			mov		edi,hMem
-			mov		esi,map.hMemLat
+			mov		esi,mapdata.hMemLat
 			mov		ebx,ny
 			invoke PutItemInt,edi,rect.top
 			.while ebx
@@ -975,16 +975,16 @@ GetMapSize proc	uses ebx esi edi,nx:DWORD,ny:DWORD,lpxPixels:DWORD,lpyPixels:DWO
 	mov		edx,lpyPixels
 	mov		[edx],eax
 	;Get the width of the map in meters
-	mov		esi,map.hMemLon
-	mov		edi,map.hMemLat
-	mov		ecx,map.nLonPoint
+	mov		esi,mapdata.hMemLon
+	mov		edi,mapdata.hMemLat
+	mov		ecx,mapdata.nLonPoint
 	dec		ecx
 	invoke BearingDistanceInt,[esi].LONPOINT.iLon,[edi].LATPOINT.iLat,[esi].LONPOINT.iLon[ecx*sizeof LONPOINT],[edi].LATPOINT.iLat,addr fDist,addr fBear
 	fld		fDist
 	mov		eax,lpxDist
 	fistp	dword ptr [eax]
 	;Get the height of the map in meters
-	mov		ecx,map.nLatPoint
+	mov		ecx,mapdata.nLatPoint
 	dec		ecx
 	invoke BearingDistanceInt,[esi].LONPOINT.iLon,[edi].LATPOINT.iLat,[esi].LONPOINT.iLon,[edi].LATPOINT.iLat[ecx*sizeof LATPOINT],addr fDist,addr fBear
 	fld		fDist
@@ -1001,16 +1001,16 @@ GetMapSize endp
 ScrnPosToMapPos proc x:DWORD,y:DWORD,lpX:DWORD,lpY:DWORD
 
 	mov		eax,x
-	imul	map.zoomval
+	imul	mapdata.zoomval
 	idiv	dd256
-	add		eax,map.topx
+	add		eax,mapdata.topx
 	mov		ecx,eax
 	mov		eax,y
-	imul	map.zoomval
+	imul	mapdata.zoomval
 	idiv	dd256
-	add		eax,map.topy
+	add		eax,mapdata.topy
 	mov		edx,eax
-	mov		eax,map.mapinx
+	mov		eax,mapdata.mapinx
 	.if eax==4
 		shl		ecx,1
 		shl		edx,1
@@ -1038,7 +1038,7 @@ MapPosToScrnPos proc x:DWORD,y:DWORD,lpX:DWORD,lpY:DWORD
 
 	mov		ecx,x
 	mov		edx,y
-	mov		eax,map.mapinx
+	mov		eax,mapdata.mapinx
 	.if eax==4
 		shr		ecx,1
 		shr		edx,1
@@ -1062,8 +1062,8 @@ MapPosToScrnPos endp
 
 MapPosToGpsPos proc uses ebx esi edi,x:DWORD,y:DWORD,lpiLon:DWORD,lpiLat:DWORD
 
-	mov		esi,map.hMemLon
-	mov		ebx,map.nLonPoint
+	mov		esi,mapdata.hMemLon
+	mov		ebx,mapdata.nLonPoint
 	mov		eax,x
 	.while eax>=[esi].LONPOINT.ixpos && ebx>1
 		mov		edi,esi
@@ -1082,8 +1082,8 @@ MapPosToGpsPos proc uses ebx esi edi,x:DWORD,y:DWORD,lpiLon:DWORD,lpiLat:DWORD
 	mov		edx,lpiLon
 	mov		[edx],eax
 
-	mov		esi,map.hMemLat
-	mov		ebx,map.nLatPoint
+	mov		esi,mapdata.hMemLat
+	mov		ebx,mapdata.nLatPoint
 	mov		eax,y
 	.while eax>=[esi].LATPOINT.iypos && ebx>1
 		mov		edi,esi
@@ -1108,9 +1108,9 @@ MapPosToGpsPos endp
 GpsPosToMapPos proc uses ebx esi edi,iLon:DWORD,iLat:DWORD,lpix:DWORD,lpiy:DWORD
 
 	;Get X pos
-	mov		esi,map.hMemLon
+	mov		esi,mapdata.hMemLon
 	lea		edi,[esi+sizeof LONPOINT]
-	mov		ebx,map.nLonPoint
+	mov		ebx,mapdata.nLonPoint
 	mov		eax,iLon
 	mov		eax,iLon
 	sub		eax,[esi].LONPOINT.iLon
@@ -1124,9 +1124,9 @@ GpsPosToMapPos proc uses ebx esi edi,iLon:DWORD,iLat:DWORD,lpix:DWORD,lpiy:DWORD
 	mov		edx,lpix
 	mov		[edx],eax
 	;Get Y pos
-	mov		esi,map.hMemLat
+	mov		esi,mapdata.hMemLat
 	mov		edi,esi
-	mov		ebx,map.nLatPoint
+	mov		ebx,mapdata.nLatPoint
 	mov		eax,iLat
 	.while sdword ptr eax<=[esi].LATPOINT.iLat && ebx>1
 		mov		edi,esi
@@ -1159,36 +1159,36 @@ DoGoto proc iLon:DWORD,iLat:DWORD,fLock:DWORD,fCursor
 	invoke GpsPosToMapPos,iLon,iLat,addr x,addr y
 	invoke MapPosToScrnPos,x,y,addr x,addr y
 	.if fLock
-		mov		eax,map.mapwt
-		imul	map.zoomval
+		mov		eax,mapdata.mapwt
+		imul	mapdata.zoomval
 		idiv	dd512
 		mov		edx,x
 		sub		edx,eax
 		.if SIGN?
 			xor		edx,edx
 		.endif
-		mov		map.topx,edx
-		mov		eax,map.mapht
-		imul	map.zoomval
+		mov		mapdata.topx,edx
+		mov		eax,mapdata.mapht
+		imul	mapdata.zoomval
 		idiv	dd512
 		mov		edx,y
 		sub		edx,eax
 		.if SIGN?
 			xor		edx,edx
 		.endif
-		mov		map.topy,edx
-		mov		eax,map.topx
+		mov		mapdata.topy,edx
+		mov		eax,mapdata.topx
 		shr		eax,4
 		invoke SetScrollPos,hMap,SB_HORZ,eax,TRUE
-		mov		eax,map.topy
+		mov		eax,mapdata.topy
 		shr		eax,4
 		invoke SetScrollPos,hMap,SB_VERT,eax,TRUE
 	.endif
 	.if fCursor
 		mov		eax,x
-		mov		map.cursorx,eax
+		mov		mapdata.cursorx,eax
 		mov		eax,y
-		mov		map.cursory,eax
+		mov		mapdata.cursory,eax
 	.endif
 	ret
 
@@ -1200,30 +1200,30 @@ ZoomMap proc uses ebx esi edi,zoominx:DWORD
 	LOCAL	iLon:DWORD
 	LOCAL	iLat:DWORD
 
-	mov		ecx,map.mapwt
+	mov		ecx,mapdata.mapwt
 	shr		ecx,1
-	mov		edx,map.mapht
+	mov		edx,mapdata.mapht
 	shr		edx,1
 	invoke ScrnPosToMapPos,ecx,edx,addr x,addr y
 	invoke MapPosToGpsPos,x,y,addr iLon,addr iLat
-	mov		edi,offset map.zoom
+	mov		edi,offset mapdata.zoom
 	mov		eax,zoominx
-	mov		map.zoominx,eax
+	mov		mapdata.zoominx,eax
 	mov		edx,sizeof ZOOM
 	mul		edx
 	lea		edi,[edi+eax]
 	mov		eax,[edi].ZOOM.zoomval
-	mov		map.zoomval,eax
+	mov		mapdata.zoomval,eax
 	mov		eax,[edi].ZOOM.mapinx
-	mov		map.mapinx,eax
+	mov		mapdata.mapinx,eax
 	mov		eax,[edi].ZOOM.nx
-	mov		map.nx,eax
+	mov		mapdata.nx,eax
 	mov		eax,[edi].ZOOM.ny
-	mov		map.ny,eax
-	invoke strcpy,addr map.options.text[sizeof OPTIONS*3],addr [edi].ZOOM.text
+	mov		mapdata.ny,eax
+	invoke strcpy,addr mapdata.options.text[sizeof OPTIONS*3],addr [edi].ZOOM.text
 	invoke DoGoto,iLon,iLat,TRUE,FALSE
 	invoke InitScroll
-	inc		map.paintnow
+	inc		mapdata.paintnow
 	ret
 
 ZoomMap endp
@@ -1231,7 +1231,7 @@ ZoomMap endp
 ;In: Longitude, Lattitude,Bearing,Time
 AddTrailPoint proc uses ebx,x:DWORD,y:DWORD,iBearing:DWORD,iTime:DWORD,iSpeed:DWORD
 
-	mov		eax,map.trailhead
+	mov		eax,mapdata.trailhead
 	.if eax
 		dec		eax
 		and		eax,MAXTRAIL-1
@@ -1240,55 +1240,55 @@ AddTrailPoint proc uses ebx,x:DWORD,y:DWORD,iBearing:DWORD,iTime:DWORD,iSpeed:DW
 	.endif
 	mov		ecx,eax
 	mov		eax,iBearing
-	mov		edx,map.trailhead
-	sub		edx,map.trailtail
+	mov		edx,mapdata.trailhead
+	sub		edx,mapdata.trailtail
 	mov		ebx,iSpeed
-	.if !map.TrailCount || edx<=2
+	.if !mapdata.TrailCount || edx<=2
 		; If bearing is still the same or speed is lower than TrackSmooth then dont add a new point
-		.if (eax!=map.trail.iBear[ecx] && ebx>map.TrackSmooth) || edx<=2
-			mov		eax,map.trailhead
+		.if (eax!=mapdata.trail.iBear[ecx] && ebx>mapdata.TrackSmooth) || edx<=2
+			mov		eax,mapdata.trailhead
 			mov		edx,sizeof LOG
 			mul		edx
 			mov		ecx,eax
-			mov		edx,map.trailhead
+			mov		edx,mapdata.trailhead
 			mov		eax,x
-			mov		map.trail.iLon[ecx],eax
+			mov		mapdata.trail.iLon[ecx],eax
 			mov		eax,y
-			mov		map.trail.iLat[ecx],eax
+			mov		mapdata.trail.iLat[ecx],eax
 			mov		eax,iBearing
-			mov		map.trail.iBear[ecx],eax
+			mov		mapdata.trail.iBear[ecx],eax
 			mov		eax,iTime
-			mov		map.trail.iTime[ecx],eax
+			mov		mapdata.trail.iTime[ecx],eax
 			inc		edx
 			and		edx,MAXTRAIL-1
-			mov		map.trailhead,edx
-			.if edx==map.trailtail
+			mov		mapdata.trailhead,edx
+			.if edx==mapdata.trailtail
 				inc		edx
 				and		edx,MAXTRAIL-1
-				mov		map.trailtail,edx
+				mov		mapdata.trailtail,edx
 			.endif
-			mov		eax,map.TrailRate
-			mov		map.TrailCount,eax
+			mov		eax,mapdata.TrailRate
+			mov		mapdata.TrailCount,eax
 		.else
 			mov		eax,x
-			mov		map.trail.iLon[ecx],eax
+			mov		mapdata.trail.iLon[ecx],eax
 			mov		eax,y
-			mov		map.trail.iLat[ecx],eax
+			mov		mapdata.trail.iLat[ecx],eax
 			mov		eax,iBearing
-			mov		map.trail.iBear[ecx],eax
+			mov		mapdata.trail.iBear[ecx],eax
 			mov		eax,iTime
-			mov		map.trail.iTime[ecx],eax
+			mov		mapdata.trail.iTime[ecx],eax
 		.endif
 	.else
 		mov		eax,x
-		mov		map.trail.iLon[ecx],eax
+		mov		mapdata.trail.iLon[ecx],eax
 		mov		eax,y
-		mov		map.trail.iLat[ecx],eax
+		mov		mapdata.trail.iLat[ecx],eax
 		mov		eax,iBearing
-		mov		map.trail.iBear[ecx],eax
+		mov		mapdata.trail.iBear[ecx],eax
 		mov		eax,iTime
-		mov		map.trail.iTime[ecx],eax
-		dec		map.TrailCount
+		mov		mapdata.trail.iTime[ecx],eax
+		dec		mapdata.TrailCount
 	.endif
 	ret
 
@@ -1304,7 +1304,7 @@ FindPoint proc uses ebx esi,x:DWORD,y:DWORD,lpLOG:DWORD,nCount:DWORD
 
 	mov		ecx,150
 	mov		edx,75
-	mov		eax,map.mapinx
+	mov		eax,mapdata.mapinx
 	.if eax==4
 		shl		ecx,1
 		shl		edx,1
@@ -1319,11 +1319,11 @@ FindPoint proc uses ebx esi,x:DWORD,y:DWORD,lpLOG:DWORD,nCount:DWORD
 		shl		edx,4
 	.endif
 	mov		eax,edx
-	imul	map.zoomval
+	imul	mapdata.zoomval
 	idiv	dd256
 	mov		dLat,eax
 	mov		eax,ecx
-	imul	map.zoomval
+	imul	mapdata.zoomval
 	idiv	dd256
 	mov		dLon,eax
 	invoke ScrnPosToMapPos,x,y,addr mx,addr my
@@ -1408,7 +1408,7 @@ InsertPoint proc uses ebx esi edi,nPoint:DWORD,lpLOG:DWORD,lpCount:DWORD
 		sar		eax,1
 		add		[edi].LOG.iLat,eax
 	.endif
-	inc		map.paintnow
+	inc		mapdata.paintnow
 	ret
 
 InsertPoint endp
@@ -1432,7 +1432,7 @@ DeletePoint proc nPoint:DWORD,lpLOG:DWORD,lpCount:DWORD
 		lea		edi,[edi+sizeof LOG]
 		lea		esi,[esi+sizeof LOG]
 	.endw
-	inc		map.paintnow
+	inc		mapdata.paintnow
 	ret
 
 DeletePoint endp
@@ -1441,15 +1441,15 @@ SaveStatus proc
 	LOCAL	buffer[256]:BYTE
 
 	mov		buffer,0
-	invoke PutItemInt,addr buffer,map.topx
-	invoke PutItemInt,addr buffer,map.topy
-	invoke PutItemInt,addr buffer,map.cursorx
-	invoke PutItemInt,addr buffer,map.cursory
-	invoke PutItemInt,addr buffer,map.iLon
-	invoke PutItemInt,addr buffer,map.iLat
+	invoke PutItemInt,addr buffer,mapdata.topx
+	invoke PutItemInt,addr buffer,mapdata.topy
+	invoke PutItemInt,addr buffer,mapdata.cursorx
+	invoke PutItemInt,addr buffer,mapdata.cursory
+	invoke PutItemInt,addr buffer,mapdata.iLon
+	invoke PutItemInt,addr buffer,mapdata.iLat
 	invoke WritePrivateProfileString,addr szIniMap,addr szIniPos,addr buffer[1],addr szIniFileName
 	mov		buffer,0
-	invoke PutItemInt,addr buffer,map.zoominx
+	invoke PutItemInt,addr buffer,mapdata.zoominx
 	invoke WritePrivateProfileString,addr szIniMap,addr szIniZoom,addr buffer[1],addr szIniFileName
 	ret
 
@@ -1489,58 +1489,58 @@ TextDraw endp
 
 SetGPSCursor proc
 	
-	mov		eax,map.iBear
+	mov		eax,mapdata.iBear
 	.if eax<=0+12
 		;N
-		mov		map.ncursor,0
+		mov		mapdata.ncursor,0
 	.elseif eax<=22+12
 		;NNE
-		mov		map.ncursor,1
+		mov		mapdata.ncursor,1
 	.elseif eax<=45+12
 		;NE
-		mov		map.ncursor,2
+		mov		mapdata.ncursor,2
 	.elseif eax<67+12
 		;NEE
-		mov		map.ncursor,3
+		mov		mapdata.ncursor,3
 	.elseif eax<=90+12
 		;E
-		mov		map.ncursor,4
+		mov		mapdata.ncursor,4
 	.elseif eax<=112+12
 		;SEE
-		mov		map.ncursor,5
+		mov		mapdata.ncursor,5
 	.elseif eax<=135+12
 		;SE
-		mov		map.ncursor,6
+		mov		mapdata.ncursor,6
 	.elseif eax<=157+12
 		;SSE
-		mov		map.ncursor,7
+		mov		mapdata.ncursor,7
 	.elseif eax<=180+12
 		;S
-		mov		map.ncursor,8
+		mov		mapdata.ncursor,8
 	.elseif eax<=202+12
 		;SSW
-		mov		map.ncursor,9
+		mov		mapdata.ncursor,9
 	.elseif eax<=225+12
 		;SW
-		mov		map.ncursor,10
+		mov		mapdata.ncursor,10
 	.elseif eax<=247+12
 		;SWW
-		mov		map.ncursor,11
+		mov		mapdata.ncursor,11
 	.elseif eax<=270+12
 		;W
-		mov		map.ncursor,12
+		mov		mapdata.ncursor,12
 	.elseif eax<=292+12
 		;NWW
-		mov		map.ncursor,13
+		mov		mapdata.ncursor,13
 	.elseif eax<=315+12
 		;NW
-		mov		map.ncursor,14
+		mov		mapdata.ncursor,14
 	.elseif eax<=337+12
 		;NNW
-		mov		map.ncursor,15
+		mov		mapdata.ncursor,15
 	.elseif eax<=360
 		;N
-		mov		map.ncursor,0
+		mov		mapdata.ncursor,0
 	.endif
 	ret
 

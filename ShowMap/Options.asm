@@ -39,7 +39,7 @@ InitOptions proc uses ebx esi
 	LOCAL	buffer[256]:BYTE
 
 	xor		ebx,ebx
-	mov		esi,offset map.options
+	mov		esi,offset mapdata.options
 	.while ebx<MAXMAPOPTION
 		invoke BinToDec,ebx,addr buffer
 		invoke GetPrivateProfileString,addr szIniOption,addr buffer,addr szNULL,addr buffer,sizeof buffer,addr szIniFileName
@@ -92,7 +92,7 @@ SaveOption proc uses ebx esi,nOpt:DWORD
 	mov		eax,nOpt
 	mov		ecx,sizeof OPTIONS
 	.if eax<10
-		mov		esi,offset map.options
+		mov		esi,offset mapdata.options
 	.else
 		mov		esi,offset sonardata.options
 		sub		eax,10
@@ -118,7 +118,7 @@ OptionsProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 	.if eax==WM_INITDIALOG
 		mov		eax,lParam
 		.if eax<10
-			mov		esi,offset map.options
+			mov		esi,offset mapdata.options
 			mov		ecx,sizeof OPTIONS*MAXMAPOPTION
 		.else
 			invoke SetDlgItemText,hWin,IDC_CHKSHOW,addr szShowOnSonar
@@ -150,7 +150,7 @@ OptionsProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 		mov		eax,nOptType
 		mov		ecx,sizeof OPTIONS
 		.if eax<10
-			mov		esi,offset map.options
+			mov		esi,offset mapdata.options
 		.else
 			mov		esi,offset sonardata.options
 			sub		eax,10
@@ -197,7 +197,7 @@ OptionsProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 			.elseif eax==IDCANCEL
 				;Restore old values
 				.if nOptType<10
-					mov		edi,offset map.options
+					mov		edi,offset mapdata.options
 					mov		ecx,sizeof OPTIONS*MAXMAPOPTION
 				.else
 					mov		edi,offset sonardata.options
@@ -206,13 +206,13 @@ OptionsProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 				mov		esi,offset coptions
 				rep		movsb
 				invoke SendMessage,hWin,WM_CLOSE,NULL,NULL
-				inc		map.paintnow
+				inc		mapdata.paintnow
 				invoke InvalidateRect,hSonar,NULL,TRUE
 			.elseif eax==IDC_CHKSHOW
 				invoke IsDlgButtonChecked,hWin,IDC_CHKSHOW
 				.if nOptType<10
-					mov		map.options.show[ebx],eax
-					inc		map.paintnow
+					mov		mapdata.options.show[ebx],eax
+					inc		mapdata.paintnow
 				.else
 					mov		sonardata.options.show[ebx],eax
 					invoke InvalidateRect,hSonar,NULL,TRUE
@@ -220,20 +220,20 @@ OptionsProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 			.elseif eax>=IDC_RBNLEFTTOP && eax<=IDC_RBNRIGHTBOTTOM
 				sub		eax,IDC_RBNLEFTTOP
 				.if nOptType<10
-					mov		map.options.position[ebx],eax
-					inc		map.paintnow
+					mov		mapdata.options.position[ebx],eax
+					inc		mapdata.paintnow
 				.else
 					mov		sonardata.options.position[ebx],eax
 					invoke InvalidateRect,hSonar,NULL,TRUE
 				.endif
 			.elseif eax==IDC_BTNUP
 				.if nOptType<10
-					.if map.options.position[ebx]<=2
-						sub		map.options.pt.y[ebx],2
+					.if mapdata.options.position[ebx]<=2
+						sub		mapdata.options.pt.y[ebx],2
 					.else
-						add		map.options.pt.y[ebx],2
+						add		mapdata.options.pt.y[ebx],2
 					.endif
-					inc		map.paintnow
+					inc		mapdata.paintnow
 				.else
 					.if sonardata.options.position[ebx]<=2
 						sub		sonardata.options.pt.y[ebx],2
@@ -244,13 +244,13 @@ OptionsProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 				.endif
 			.elseif eax==IDC_BTNRIGHT
 				.if nOptType<10
-					mov		eax,map.options.position[ebx]
+					mov		eax,mapdata.options.position[ebx]
 					.if eax==0 || eax==3
-						add		map.options.pt.x[ebx],2
+						add		mapdata.options.pt.x[ebx],2
 					.else
-						sub		map.options.pt.x[ebx],2
+						sub		mapdata.options.pt.x[ebx],2
 					.endif
-					inc		map.paintnow
+					inc		mapdata.paintnow
 				.else
 					mov		eax,sonardata.options.position[ebx]
 					.if eax==0 || eax==3
@@ -262,12 +262,12 @@ OptionsProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 				.endif
 			.elseif eax==IDC_BTNDOWN
 				.if nOptType<10
-					.if map.options.position[ebx]<=2
-						add		map.options.pt.y[ebx],2
+					.if mapdata.options.position[ebx]<=2
+						add		mapdata.options.pt.y[ebx],2
 					.else
-						sub		map.options.pt.y[ebx],2
+						sub		mapdata.options.pt.y[ebx],2
 					.endif
-					inc		map.paintnow
+					inc		mapdata.paintnow
 				.else
 					.if sonardata.options.position[ebx]<=2
 						add		sonardata.options.pt.y[ebx],2
@@ -278,13 +278,13 @@ OptionsProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 				.endif
 			.elseif eax==IDC_BTNLEFT
 				.if nOptType<10
-					mov		eax,map.options.position[ebx]
+					mov		eax,mapdata.options.position[ebx]
 					.if eax==0 || eax==3
-						sub		map.options.pt.x[ebx],2
+						sub		mapdata.options.pt.x[ebx],2
 					.else
-						add		map.options.pt.x[ebx],2
+						add		mapdata.options.pt.x[ebx],2
 					.endif
-					inc		map.paintnow
+					inc		mapdata.paintnow
 				.else
 					mov		eax,sonardata.options.position[ebx]
 					.if eax==0 || eax==3
@@ -298,8 +298,8 @@ OptionsProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 		.elseif edx==CBN_SELCHANGE
 			invoke SendDlgItemMessage,hWin,IDC_CBOOVLFONT,CB_GETCURSEL,0,0
 			.if nOptType<10
-				mov		map.options.font[ebx],eax
-				inc		map.paintnow
+				mov		mapdata.options.font[ebx],eax
+				inc		mapdata.paintnow
 			.else
 				mov		sonardata.options.font[ebx],eax
 				invoke InvalidateRect,hSonar,NULL,TRUE

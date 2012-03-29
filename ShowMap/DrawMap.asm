@@ -30,7 +30,7 @@ LoadDib proc uses ebx esi edi,mapinx:DWORD,dibx:DWORD,diby:DWORD
 	;Check if out of bounds
 	mov		eax,dibx
 	mov		edx,diby
-	.if eax>map.nx || edx>map.ny
+	.if eax>mapdata.nx || edx>mapdata.ny
 		mov		dibx,0FFh
 		mov		diby,0FFh
 	.endif
@@ -106,7 +106,7 @@ SetMapUsed proc uses ebx esi edi,topx:DWORD,topy:DWORD,zoomval:DWORD
 	mov		eax,topx
 	shr		eax,9
 	mov		stx,eax
-	mov		eax,map.mapwt
+	mov		eax,mapdata.mapwt
 	imul	zoomval
 	idiv	dd256
 	add		eax,topx
@@ -115,7 +115,7 @@ SetMapUsed proc uses ebx esi edi,topx:DWORD,topy:DWORD,zoomval:DWORD
 	mov		eax,topy
 	shr		eax,9
 	mov		sty,eax
-	mov		eax,map.mapht
+	mov		eax,mapdata.mapht
 	imul	zoomval
 	idiv	dd256
 	add		eax,topy
@@ -129,7 +129,7 @@ SetMapUsed proc uses ebx esi edi,topx:DWORD,topy:DWORD,zoomval:DWORD
 			mov		eax,[esi].BMP.mapinx
 			mov		ecx,[esi].BMP.nx
 			mov		edx,[esi].BMP.ny
-			.if eax==map.mapinx && ecx>=stx && ecx<=enx && edx>=sty && edx<=eny
+			.if eax==mapdata.mapinx && ecx>=stx && ecx<=enx && edx>=sty && edx<=eny
 				;The tile is needed
 				mov		[esi].BMP.inuse,TRUE
 			.endif
@@ -178,7 +178,7 @@ DrawY:
 		idiv	zoomval
 		add		mapy,eax
 		mov		eax,mapy
-		.break .if sdword ptr eax>=map.mapht
+		.break .if sdword ptr eax>=mapdata.mapht
 		inc		diby
 		mov		eax,diby
 	.endw
@@ -195,31 +195,31 @@ DrawX:
 		imul	dd256
 		idiv	zoomval
 		mov		ebx,eax
-		invoke LoadDib,map.mapinx,dibx,diby
+		invoke LoadDib,mapdata.mapinx,dibx,diby
 		.if eax
-			invoke SelectObject,map.tDC,eax
+			invoke SelectObject,mapdata.tDC,eax
 			push	eax
 ;			invoke wsprintf,addr buffer,addr szTile,diby,dibx
-;			invoke TextOut,map.tDC,10,10,addr buffer,8
-;			invoke MoveToEx,map.tDC,0,0,NULL
-;			invoke LineTo,map.tDC,512,0
-;			invoke MoveToEx,map.tDC,0,0,NULL
-;			invoke LineTo,map.tDC,0,512
-;			invoke MoveToEx,map.tDC,0,0,NULL
-;			invoke LineTo,map.tDC,512,512
-;			invoke MoveToEx,map.tDC,512,0,NULL
-;			invoke LineTo,map.tDC,0,512
+;			invoke TextOut,mapdata.tDC,10,10,addr buffer,8
+;			invoke MoveToEx,mapdata.tDC,0,0,NULL
+;			invoke LineTo,mapdata.tDC,512,0
+;			invoke MoveToEx,mapdata.tDC,0,0,NULL
+;			invoke LineTo,mapdata.tDC,0,512
+;			invoke MoveToEx,mapdata.tDC,0,0,NULL
+;			invoke LineTo,mapdata.tDC,512,512
+;			invoke MoveToEx,mapdata.tDC,512,0,NULL
+;			invoke LineTo,mapdata.tDC,0,512
 			mov		edi,512
 			mov		eax,edi
 			imul	dd256
 			idiv	zoomval
-			invoke StretchBlt,map.mDC,mapx,mapy,ebx,eax,map.tDC,ofsx,0,esi,edi,SRCCOPY
+			invoke StretchBlt,mapdata.mDC,mapx,mapy,ebx,eax,mapdata.tDC,ofsx,0,esi,edi,SRCCOPY
 			pop		eax
-			invoke SelectObject,map.tDC,eax
+			invoke SelectObject,mapdata.tDC,eax
 		.endif
 		add		mapx,ebx
 		mov		eax,mapx
-		.break .if eax>=map.mapwt
+		.break .if eax>=mapdata.mapwt
 		mov		ofsx,0
 		inc		dibx
 	.endw
@@ -235,8 +235,8 @@ ShowPlace proc uses ebx esi edi,topx:DWORD,topy:DWORD,zoomval:DWORD
 	LOCAL	y:DWORD
 
 	.if zoomval
-		invoke SetTextColor,map.mDC2,0
-		mov		esi,offset map.place
+		invoke SetTextColor,mapdata.mDC2,0
+		mov		esi,offset mapdata.place
 		xor		ebx,ebx
 		.while ebx<MAXPLACES
 			.if [esi].PLACE.zoom
@@ -254,19 +254,19 @@ ShowPlace proc uses ebx esi edi,topx:DWORD,topy:DWORD,zoomval:DWORD
 				imul	dd256
 				idiv	zoomval
 				mov		y,eax
-				mov		eax,map.zoominx
+				mov		eax,mapdata.zoominx
 				.if [esi].PLACE.font && eax<[esi].PLACE.zoom && [esi].PLACE.text
 					mov		eax,[esi].PLACE.font
-					invoke SelectObject,map.mDC2,map.font[eax*4]
+					invoke SelectObject,mapdata.mDC2,mapdata.font[eax*4]
 					push	eax
 					invoke strlen,addr [esi].PLACE.text
 					mov		ecx,x
 					add		ecx,8
 					mov		edx,y
 					sub		edx,10
-					invoke TextOut,map.mDC2,ecx,edx,addr [esi].PLACE.text,eax
+					invoke TextOut,mapdata.mDC2,ecx,edx,addr [esi].PLACE.text,eax
 					pop		eax
-					invoke SelectObject,map.mDC2,eax
+					invoke SelectObject,mapdata.mDC2,eax
 				.endif
 				.if [esi].PLACE.icon
 					mov		eax,[esi].PLACE.icon
@@ -274,7 +274,7 @@ ShowPlace proc uses ebx esi edi,topx:DWORD,topy:DWORD,zoomval:DWORD
 					sub		ecx,8
 					mov		edx,y
 					sub		edx,8
-					invoke ImageList_Draw,hIml,addr [eax+15],map.mDC2,ecx,edx,ILD_TRANSPARENT
+					invoke ImageList_Draw,hIml,addr [eax+15],mapdata.mDC2,ecx,edx,ILD_TRANSPARENT
 				.endif
 			.endif
 			lea		esi,[esi+sizeof PLACE]
@@ -288,7 +288,7 @@ ShowPlace endp
 ShowGpsCursor proc uses ebx esi edi,topx:DWORD,topy:DWORD,curx:DWORD,cury:DWORD,zoomval:DWORD
 	LOCAL	pt:POINT
 
-	.if zoomval && map.fcursor
+	.if zoomval && mapdata.fcursor
 		mov		eax,curx
 		sub		eax,topx
 		imul	dd256
@@ -301,7 +301,7 @@ ShowGpsCursor proc uses ebx esi edi,topx:DWORD,topy:DWORD,curx:DWORD,cury:DWORD,
 		idiv	zoomval
 		sub		eax,8
 		mov		pt.y,eax
-		invoke ImageList_Draw,hIml,map.ncursor,map.mDC2,pt.x,pt.y,ILD_TRANSPARENT
+		invoke ImageList_Draw,hIml,mapdata.ncursor,mapdata.mDC2,pt.x,pt.y,ILD_TRANSPARENT
 	.endif
 	ret
 
@@ -311,19 +311,19 @@ ShowSpeedBattTempTimeScale proc uses ebx esi edi
 	LOCAL	rect:RECT
 	LOCAL	x:DWORD
 
-	invoke SetTextColor,map.mDC2,0
+	invoke SetTextColor,mapdata.mDC2,0
 	xor		ebx,ebx
-	mov		esi,offset map.options
+	mov		esi,offset mapdata.options
 	.while ebx<MAXMAPOPTION
 		.if [esi].OPTIONS.show
 			mov		ecx,[esi].OPTIONS.pt.x
 			mov		edx,[esi].OPTIONS.pt.y
 			mov		rect.left,ecx
 			mov		rect.top,edx
-			mov		eax,map.mapwt
+			mov		eax,mapdata.mapwt
 			sub		eax,ecx
 			mov		rect.right,eax
-			mov		eax,map.mapht
+			mov		eax,mapdata.mapht
 			sub		eax,edx
 			mov		rect.bottom,eax
 			mov		eax,[esi].OPTIONS.font
@@ -332,7 +332,7 @@ ShowSpeedBattTempTimeScale proc uses ebx esi edi
 			.else
 				add		eax,7
 			.endif
-			mov		ecx,map.font[eax*4]
+			mov		ecx,mapdata.font[eax*4]
 			mov		edx,[esi].OPTIONS.position
 			.if !edx
 				;Left, Top
@@ -353,8 +353,8 @@ ShowSpeedBattTempTimeScale proc uses ebx esi edi
 				;Right, Bottom
 				mov		eax,DT_RIGHT or DT_BOTTOM or DT_SINGLELINE
 			.endif
-			.if ebx || map.fcursor
-				invoke TextDraw,map.mDC2,ecx,addr rect,addr [esi].OPTIONS.text,eax
+			.if ebx || mapdata.fcursor
+				invoke TextDraw,mapdata.mDC2,ecx,addr rect,addr [esi].OPTIONS.text,eax
 			.endif
 			.if ebx==3
 				call	ShowScale
@@ -366,10 +366,10 @@ ShowSpeedBattTempTimeScale proc uses ebx esi edi
 	ret
 
 ShowScale:
-	mov		eax,map.zoominx
+	mov		eax,mapdata.zoominx
 	mov		ecx,sizeof ZOOM
 	mul		ecx
-	mov		edi,map.zoom.scalep[eax]
+	mov		edi,mapdata.zoom.scalep[eax]
 	invoke strlen,addr [esi].OPTIONS.text
 	mov		ecx,eax
 	mov		edx,[esi].OPTIONS.position
@@ -380,7 +380,7 @@ ShowScale:
 		mov		eax,edi
 		shr		eax,1
 		sub		x,eax
-		invoke DrawText,map.mDC2,addr [esi].OPTIONS.text,ecx,addr rect,DT_LEFT or DT_SINGLELINE or DT_CALCRECT
+		invoke DrawText,mapdata.mDC2,addr [esi].OPTIONS.text,ecx,addr rect,DT_LEFT or DT_SINGLELINE or DT_CALCRECT
 		mov		eax,rect.right
 		sub		eax,rect.left
 		shr		eax,1
@@ -396,13 +396,13 @@ ShowScale:
 		mov		eax,edi
 		shr		eax,1
 		sub		x,eax
-		invoke DrawText,map.mDC2,addr [esi].OPTIONS.text,ecx,addr rect,DT_CENTER or DT_SINGLELINE or DT_CALCRECT
+		invoke DrawText,mapdata.mDC2,addr [esi].OPTIONS.text,ecx,addr rect,DT_CENTER or DT_SINGLELINE or DT_CALCRECT
 	.elseif edx==2
 		;Rioght, Top
 		mov		eax,rect.right
 		sub		eax,edi
 		mov		x,eax
-		invoke DrawText,map.mDC2,addr [esi].OPTIONS.text,ecx,addr rect,DT_RIGHT or DT_SINGLELINE or DT_CALCRECT
+		invoke DrawText,mapdata.mDC2,addr [esi].OPTIONS.text,ecx,addr rect,DT_RIGHT or DT_SINGLELINE or DT_CALCRECT
 		mov		eax,rect.right
 		sub		eax,rect.left
 		add		x,eax
@@ -413,7 +413,7 @@ ShowScale:
 		mov		eax,edi
 		shr		eax,1
 		sub		x,eax
-		invoke DrawText,map.mDC2,addr [esi].OPTIONS.text,ecx,addr rect,DT_LEFT or DT_BOTTOM or DT_SINGLELINE or DT_CALCRECT
+		invoke DrawText,mapdata.mDC2,addr [esi].OPTIONS.text,ecx,addr rect,DT_LEFT or DT_BOTTOM or DT_SINGLELINE or DT_CALCRECT
 		mov		eax,rect.right
 		sub		eax,rect.left
 		shr		eax,1
@@ -429,26 +429,26 @@ ShowScale:
 		mov		eax,edi
 		shr		eax,1
 		sub		x,eax
-		invoke DrawText,map.mDC2,addr [esi].OPTIONS.text,ecx,addr rect,DT_CENTER or DT_BOTTOM or DT_SINGLELINE or DT_CALCRECT
+		invoke DrawText,mapdata.mDC2,addr [esi].OPTIONS.text,ecx,addr rect,DT_CENTER or DT_BOTTOM or DT_SINGLELINE or DT_CALCRECT
 	.elseif edx==5
 		;Right, Bottom
 		mov		eax,rect.right
 		sub		eax,edi
 		mov		x,eax
-		invoke DrawText,map.mDC2,addr [esi].OPTIONS.text,ecx,addr rect,DT_RIGHT or DT_BOTTOM or DT_SINGLELINE or DT_CALCRECT
+		invoke DrawText,mapdata.mDC2,addr [esi].OPTIONS.text,ecx,addr rect,DT_RIGHT or DT_BOTTOM or DT_SINGLELINE or DT_CALCRECT
 		mov		eax,rect.right
 		sub		eax,rect.left
 		add		x,eax
 	.endif
 	mov		eax,rect.bottom
 	sub		eax,4
-	invoke MoveToEx,map.mDC2,x,eax,NULL
-	invoke LineTo,map.mDC2,x,rect.bottom
+	invoke MoveToEx,mapdata.mDC2,x,eax,NULL
+	invoke LineTo,mapdata.mDC2,x,rect.bottom
 	add		x,edi
-	invoke LineTo,map.mDC2,x,rect.bottom
+	invoke LineTo,mapdata.mDC2,x,rect.bottom
 	mov		eax,rect.bottom
 	sub		eax,5
-	invoke LineTo,map.mDC2,x,eax
+	invoke LineTo,mapdata.mDC2,x,eax
 	retn
 
 ShowSpeedBattTempTimeScale endp
@@ -457,28 +457,28 @@ ShowTrail proc uses ebx esi edi,topx:DWORD,topy:DWORD,zoomval:DWORD
 	LOCAL	pt:POINT
 
 	invoke CreatePen,PS_SOLID,2,0808080h
-	invoke SelectObject,map.mDC2,eax
+	invoke SelectObject,mapdata.mDC2,eax
 	push	eax
-	mov		ebx,map.trailtail
+	mov		ebx,mapdata.trailtail
 	call	ToScreen
-	invoke MoveToEx,map.mDC2,pt.x,pt.y,NULL
-	.while ebx!=map.trailhead
+	invoke MoveToEx,mapdata.mDC2,pt.x,pt.y,NULL
+	.while ebx!=mapdata.trailhead
 		inc		ebx
 		and		ebx,MAXTRAIL-1
-		.if ebx!=map.trailhead
+		.if ebx!=mapdata.trailhead
 			call	ToScreen
-			invoke LineTo,map.mDC2,pt.x,pt.y
+			invoke LineTo,mapdata.mDC2,pt.x,pt.y
 		.endif
 	.endw
 	pop		eax
-	invoke SelectObject,map.mDC2,eax
+	invoke SelectObject,mapdata.mDC2,eax
 	invoke DeleteObject,eax
 	ret
 
 ToScreen:
 	mov		edx,ebx
 	shl		edx,4
-	invoke GpsPosToMapPos,map.trail.iLon[edx],map.trail.iLat[edx],addr pt.x,addr pt.y
+	invoke GpsPosToMapPos,mapdata.trail.iLon[edx],mapdata.trail.iLat[edx],addr pt.x,addr pt.y
 	invoke MapPosToScrnPos,pt.x,pt.y,addr pt.x,addr pt.y
 	mov 	eax,pt.x
 	sub		eax,topx
@@ -499,24 +499,24 @@ ShowDist proc uses ebx esi edi,topx:DWORD,topy:DWORD,zoomval:DWORD
 
 	xor		ebx,ebx
 	call	ToScreen
-	invoke MoveToEx,map.mDC2,pt.x,pt.y,NULL
+	invoke MoveToEx,mapdata.mDC2,pt.x,pt.y,NULL
 	sub		pt.x,8
 	sub		pt.y,8
-	invoke ImageList_Draw,hIml,16,map.mDC2,pt.x,pt.y,ILD_TRANSPARENT
+	invoke ImageList_Draw,hIml,16,mapdata.mDC2,pt.x,pt.y,ILD_TRANSPARENT
 	inc		ebx
-	.while ebx<map.disthead && ebx<MAXDIST
+	.while ebx<mapdata.disthead && ebx<MAXDIST
 		call	ToScreen
 		lea		edx,[ebx+1]
 		mov		eax,17
-		.if edx==map.disthead
+		.if edx==mapdata.disthead
 			mov		eax,18
 		.endif
 		mov		ecx,pt.x
 		sub		ecx,8
 		mov		edx,pt.y
 		sub		edx,8
-		invoke ImageList_Draw,hIml,eax,map.mDC2,ecx,edx,ILD_TRANSPARENT
-		invoke LineTo,map.mDC2,pt.x,pt.y
+		invoke ImageList_Draw,hIml,eax,mapdata.mDC2,ecx,edx,ILD_TRANSPARENT
+		invoke LineTo,mapdata.mDC2,pt.x,pt.y
 		inc		ebx
 	.endw
 	ret
@@ -524,7 +524,7 @@ ShowDist proc uses ebx esi edi,topx:DWORD,topy:DWORD,zoomval:DWORD
 ToScreen:
 	mov		edx,ebx
 	shl		edx,4
-	invoke GpsPosToMapPos,map.dist.iLon[edx],map.dist.iLat[edx],addr pt.x,addr pt.y
+	invoke GpsPosToMapPos,mapdata.dist.iLon[edx],mapdata.dist.iLat[edx],addr pt.x,addr pt.y
 	invoke MapPosToScrnPos,pt.x,pt.y,addr pt.x,addr pt.y
 	mov 	eax,pt.x
 	sub		eax,topx
@@ -545,24 +545,24 @@ ShowTrip proc uses ebx esi edi,topx:DWORD,topy:DWORD,zoomval:DWORD
 
 	xor		ebx,ebx
 	call	ToScreen
-	invoke MoveToEx,map.mDC2,pt.x,pt.y,NULL
+	invoke MoveToEx,mapdata.mDC2,pt.x,pt.y,NULL
 	sub		pt.x,8
 	sub		pt.y,8
-	invoke ImageList_Draw,hIml,16,map.mDC2,pt.x,pt.y,ILD_TRANSPARENT
+	invoke ImageList_Draw,hIml,16,mapdata.mDC2,pt.x,pt.y,ILD_TRANSPARENT
 	inc		ebx
-	.while ebx<map.triphead && ebx<MAXTRIP
+	.while ebx<mapdata.triphead && ebx<MAXTRIP
 		call	ToScreen
 		lea		edx,[ebx+1]
 		mov		eax,17
-		.if edx==map.triphead
+		.if edx==mapdata.triphead
 			mov		eax,18
 		.endif
 		mov		ecx,pt.x
 		sub		ecx,8
 		mov		edx,pt.y
 		sub		edx,8
-		invoke ImageList_Draw,hIml,eax,map.mDC2,ecx,edx,ILD_TRANSPARENT
-		invoke LineTo,map.mDC2,pt.x,pt.y
+		invoke ImageList_Draw,hIml,eax,mapdata.mDC2,ecx,edx,ILD_TRANSPARENT
+		invoke LineTo,mapdata.mDC2,pt.x,pt.y
 		inc		ebx
 	.endw
 	ret
@@ -570,7 +570,7 @@ ShowTrip proc uses ebx esi edi,topx:DWORD,topy:DWORD,zoomval:DWORD
 ToScreen:
 	mov		edx,ebx
 	shl		edx,4
-	invoke GpsPosToMapPos,map.trip.iLon[edx],map.trip.iLat[edx],addr pt.x,addr pt.y
+	invoke GpsPosToMapPos,mapdata.trip.iLon[edx],mapdata.trip.iLat[edx],addr pt.x,addr pt.y
 	invoke MapPosToScrnPos,pt.x,pt.y,addr pt.x,addr pt.y
 	mov 	eax,pt.x
 	sub		eax,topx
@@ -593,14 +593,14 @@ ShowGrid proc uses ebx esi edi,topx:DWORD,topy:DWORD,zoomval:DWORD
 	LOCAL	y:DWORD
 
 	invoke CreatePen,PS_SOLID,1,0A0A0A0h
-	invoke SelectObject,map.mDC2,eax
+	invoke SelectObject,mapdata.mDC2,eax
 	push	eax
-	mov		eax,map.zoominx
+	mov		eax,mapdata.zoominx
 	mov		ecx,sizeof ZOOM
 	mul		ecx
-	lea		esi,[eax+offset map.zoom]
-	fild	map.zoom.xPixels[sizeof ZOOM]
-	fild	map.zoom.xMeters[sizeof ZOOM]
+	lea		esi,[eax+offset mapdata.zoom]
+	fild	mapdata.zoom.xPixels[sizeof ZOOM]
+	fild	mapdata.zoom.xMeters[sizeof ZOOM]
 	fdivp	st(1),st(0)
 	fstp	fpixm
 	fild	topx
@@ -622,15 +622,15 @@ ShowGrid proc uses ebx esi edi,topx:DWORD,topy:DWORD,zoomval:DWORD
 		imul	dd256
 		idiv	zoomval
 		mov		x,eax
-		.break .if sdword ptr eax>map.mapwt
+		.break .if sdword ptr eax>mapdata.mapwt
 		.if sdword ptr eax>=0
-			invoke MoveToEx,map.mDC2,x,0,NULL
-			invoke LineTo,map.mDC2,x,map.mapht
+			invoke MoveToEx,mapdata.mDC2,x,0,NULL
+			invoke LineTo,mapdata.mDC2,x,mapdata.mapht
 		.endif
 		inc		i
 	.endw
-	fild	map.zoom.yPixels[sizeof ZOOM]
-	fild	map.zoom.yMeters[sizeof ZOOM]
+	fild	mapdata.zoom.yPixels[sizeof ZOOM]
+	fild	mapdata.zoom.yMeters[sizeof ZOOM]
 	fdivp	st(1),st(0)
 	fstp	fpixm
 	fild	topy
@@ -652,15 +652,15 @@ ShowGrid proc uses ebx esi edi,topx:DWORD,topy:DWORD,zoomval:DWORD
 		imul	dd256
 		idiv	zoomval
 		mov		y,eax
-		.break .if sdword ptr eax>map.mapht
+		.break .if sdword ptr eax>mapdata.mapht
 		.if sdword ptr eax>=0
-			invoke MoveToEx,map.mDC2,0,y,NULL
-			invoke LineTo,map.mDC2,map.mapwt,y
+			invoke MoveToEx,mapdata.mDC2,0,y,NULL
+			invoke LineTo,mapdata.mDC2,mapdata.mapwt,y
 		.endif
 		inc		i
 	.endw
 	pop		eax
-	invoke SelectObject,map.mDC2,eax
+	invoke SelectObject,mapdata.mDC2,eax
 	invoke DeleteObject,eax
 	ret
 
@@ -675,39 +675,39 @@ MAPThread proc uses esi edi,Param:DWORD
 	LOCAL	cury:DWORD
 
 	.while !fExitMAPThread
-		.if map.paintnow
-			mov		map.paintnow,0
-			mov		eax,map.zoomval
+		.if mapdata.paintnow
+			mov		mapdata.paintnow,0
+			mov		eax,mapdata.zoomval
 			mov		zoomval,eax
-			mov		ecx,map.topx
-			mov		edx,map.topy
+			mov		ecx,mapdata.topx
+			mov		edx,mapdata.topy
 			mov		topx,ecx
 			mov		topy,edx
-			mov		ecx,map.cursorx
-			mov		edx,map.cursory
+			mov		ecx,mapdata.cursorx
+			mov		edx,mapdata.cursory
 			mov		curx,ecx
 			mov		cury,edx
 			invoke ShowMap,topx,topy,zoomval
-			invoke BitBlt,map.mDC2,0,0,map.mapwt,map.mapht,map.mDC,0,0,SRCCOPY
-			.if map.mapgrid
+			invoke BitBlt,mapdata.mDC2,0,0,mapdata.mapwt,mapdata.mapht,mapdata.mDC,0,0,SRCCOPY
+			.if mapdata.mapgrid
 				invoke ShowGrid,topx,topy,zoomval
 			.endif
-			.if map.gpstrail
-				mov		eax,map.trailhead
-				.if eax!=map.trailtail
+			.if mapdata.gpstrail
+				mov		eax,mapdata.trailhead
+				.if eax!=mapdata.trailtail
 					invoke ShowTrail,topx,topy,zoomval
 				.endif
 			.endif
 			invoke ShowPlace,topx,topy,zoomval
-			.if map.triphead
+			.if mapdata.triphead
 				invoke ShowTrip,topx,topy,zoomval
 			.endif
-			.if map.disthead
+			.if mapdata.disthead
 				invoke ShowDist,topx,topy,zoomval
 			.endif
 			invoke ShowGpsCursor,topx,topy,curx,cury,zoomval
 			invoke ShowSpeedBattTempTimeScale
-			invoke BitBlt,map.hDC,0,0,map.mapwt,map.mapht,map.mDC2,0,0,SRCCOPY
+			invoke BitBlt,mapdata.hDC,0,0,mapdata.mapwt,mapdata.mapht,mapdata.mDC2,0,0,SRCCOPY
 		.else
 			invoke Sleep,100
 		.endif
