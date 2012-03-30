@@ -74,8 +74,8 @@ szMimeType				db 'image/jpeg',0
 
 .data
 
-szDefUrlLand			db 'http://maps.google.com/',0
-;szDefUrlLand			db 'http://kart.gulesider.no/query?profile=no&mop=yp&what=map&advert_code=Z000KKXO',0
+;szDefUrlLand			db 'http://maps.google.com/',0
+szDefUrlLand			db 'http://kart.gulesider.no/query?profile=no&mop=yp&what=map&advert_code=Z000KKXO',0
 szDefUrlSea				db 'http://kart.gulesider.no/m/p4VdK',0
 
 mapright				INPUT <INPUT_MOUSE,-2048,-2048,0,MOUSEEVENTF_MOVE,0,0>

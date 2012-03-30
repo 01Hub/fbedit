@@ -1132,7 +1132,7 @@ Update:
 			.endif
 			invoke SetPixel,sonardata.mDC,MAXXECHO-1,ebx,eax
 		.endif
-		inc		ebx
+		lea		ebx,[ebx+1]
 	.endw
 	;Draw signal bar
 	mov		rect.left,0
@@ -1143,17 +1143,16 @@ Update:
 	invoke FillRect,sonardata.mDCS,addr rect,sonardata.hBrBack
 	mov		ebx,1
 	.while ebx<MAXYECHO
-		movzx	eax,sonardata.EchoArray[ebx]
+		movzx	eax,STM32Echo[ebx]
 		mov		ecx,sonardata.SignalBarWt
 		mul		ecx
 		shr		eax,8
 		.if eax
-			push	eax
+			mov		edi,eax
 			invoke MoveToEx,sonardata.mDCS,0,ebx,NULL
-			pop		eax
-			invoke LineTo,sonardata.mDCS,eax,ebx
+			invoke LineTo,sonardata.mDCS,edi,ebx
 		.endif
-		inc		ebx
+		lea		ebx,[ebx+1]
 	.endw
 	invoke InvalidateRect,hSonar,NULL,TRUE
 	invoke UpdateWindow,hSonar
