@@ -1134,26 +1134,28 @@ Update:
 		.endif
 		lea		ebx,[ebx+1]
 	.endw
-	;Draw signal bar
+	mov		ebx,sonardata.SignalBarWt
 	mov		rect.left,0
 	mov		rect.top,0
-	mov		eax,sonardata.SignalBarWt
-	mov		rect.right,eax
+	mov		rect.right,ebx
 	mov		rect.bottom,MAXYECHO
 	invoke FillRect,sonardata.mDCS,addr rect,sonardata.hBrBack
-	mov		ebx,1
-	.while ebx<MAXYECHO
-		movzx	eax,STM32Echo[ebx]
-		mov		ecx,sonardata.SignalBarWt
-		mul		ecx
-		shr		eax,8
-		.if eax
-			mov		edi,eax
-			invoke MoveToEx,sonardata.mDCS,0,ebx,NULL
-			invoke LineTo,sonardata.mDCS,edi,ebx
-		.endif
-		lea		ebx,[ebx+1]
-	.endw
+	.if ebx>8
+		;Draw signal bar
+		mov		ebx,1
+		.while ebx<MAXYECHO
+			movzx	eax,STM32Echo[ebx]
+			mov		ecx,sonardata.SignalBarWt
+			mul		ecx
+			shr		eax,8
+			.if eax
+				mov		edi,eax
+				invoke MoveToEx,sonardata.mDCS,0,ebx,NULL
+				invoke LineTo,sonardata.mDCS,edi,ebx
+			.endif
+			lea		ebx,[ebx+1]
+		.endw
+	.endif
 	invoke InvalidateRect,hSonar,NULL,TRUE
 	invoke UpdateWindow,hSonar
 	retn
