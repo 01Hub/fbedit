@@ -168,7 +168,6 @@ ZOOM struct
 	zoomval			DWORD ?									;Current zoom value
 	mapinx			DWORD ?									;Used in folder name to jpegs
 	scalem			DWORD ?									;Scale in meters
-	scalep			DWORD ?									;Scale bar in pixels
 	text			BYTE 16 dup(?)							;Scale bar text
 	nx				DWORD ?									;Number of x-jpegs in current zoom
 	ny				DWORD ?									;Number of y-jpegs in current zoom

@@ -310,6 +310,13 @@ ShowGpsCursor endp
 ShowSpeedBattTempTimeScale proc uses ebx esi edi
 	LOCAL	rect:RECT
 	LOCAL	x:DWORD
+	LOCAL	y:DWORD
+	LOCAL	lon1:DWORD
+	LOCAL	lat1:DWORD
+	LOCAL	lon2:DWORD
+	LOCAL	lat2:DWORD
+	LOCAL	fdist:REAL10
+	LOCAL	fbear:REAL10
 
 	invoke SetTextColor,mapdata.mDC2,0
 	xor		ebx,ebx
@@ -366,10 +373,43 @@ ShowSpeedBattTempTimeScale proc uses ebx esi edi
 	ret
 
 ShowScale:
+	;Get the width of the scale bar using vertical center of screen.
+	mov		edx,mapdata.mapht
+	shr		edx,1
+	invoke ScrnPosToMapPos,0,edx,addr x,addr y
+	invoke MapPosToGpsPos,x,y,addr lon1,addr lat1
+	add		x,2000
+	invoke MapPosToGpsPos,x,y,addr lon2,addr lat2
+	invoke BearingDistanceInt,lon1,lat1,lon2,lat2,addr fdist,addr fbear
 	mov		eax,mapdata.zoominx
 	mov		ecx,sizeof ZOOM
 	mul		ecx
-	mov		edi,mapdata.zoom.scalep[eax]
+	mov		eax,mapdata.zoom.scalem[eax]
+	mov		edx,2000
+	mul		edx
+	mov		lon1,eax
+	fild	lon1
+	lea		eax,fdist
+	fld		REAL10 PTR [eax]
+	fdiv
+	fistp	lon1
+	mov		eax,lon1
+	shl		eax,8
+	mov		edx,mapdata.mapinx
+	.if edx==4
+		shr		eax,1
+	.elseif edx==16
+		shr		eax,2
+	.elseif edx==64
+		shr		eax,3
+	.elseif edx==256
+		shr		eax,4
+	.endif
+	xor		edx,edx
+	mov		ecx,mapdata.zoomval
+	div		ecx
+	mov		edi,eax
+	;Draw the text
 	invoke strlen,addr [esi].OPTIONS.text
 	mov		ecx,eax
 	mov		edx,[esi].OPTIONS.position
@@ -440,6 +480,7 @@ ShowScale:
 		sub		eax,rect.left
 		add		x,eax
 	.endif
+	;Draw the scalebar
 	mov		eax,rect.bottom
 	sub		eax,4
 	invoke MoveToEx,mapdata.mDC2,x,eax,NULL

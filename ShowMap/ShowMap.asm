@@ -135,13 +135,6 @@ InitZoom proc uses ebx esi edi
 		imul	dd256
 		idiv	[esi].ZOOM.zoomval
 		mov		[esi].ZOOM.yPixels,eax
-		;I can now get the pixels/meter and calculate the lenght of the scale bar
-		fild	[esi].ZOOM.yPixels
-		fild	[esi].ZOOM.yMeters
-		fdivp	st(1),st(0)
-		fild	[esi].ZOOM.scalem
-		fmulp	st(1),st(0)
-		fistp	[esi].ZOOM.scalep
 		lea		esi,[esi+sizeof ZOOM]
 		inc		ebx
 	.endw
