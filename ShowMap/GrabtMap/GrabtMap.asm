@@ -200,7 +200,7 @@ SendMouse proc uses ebx esi,lpmi:DWORD,nSleep:DWORD
 	xor		ebx,ebx
 	.while ebx<5
 		invoke SendInput,1,esi,sizeof INPUT
-		invoke Sleep,500
+		invoke Sleep,300
 		inc		ebx
 		lea		esi,[esi+sizeof INPUT]
 	.endw
@@ -281,19 +281,19 @@ GrabMap proc uses ebx esi edi,Param:DWORD
 		xor		esi,esi
 		.while esi<x
 			invoke GrabScreen,edi,esi
-			invoke SendMouse,addr mapright,500
+			invoke SendMouse,addr mapright,300
 			inc		esi
 		.endw
 		invoke GrabScreen,edi,esi
-		invoke SendMouse,addr mapdown,500
+		invoke SendMouse,addr mapdown,300
 		inc		edi
 		.while esi
 			invoke GrabScreen,edi,esi
-			invoke SendMouse,addr mapleft,500
+			invoke SendMouse,addr mapleft,300
 			dec		esi
 		.endw
 		invoke GrabScreen,edi,esi
-		invoke SendMouse,addr mapdown,500
+		invoke SendMouse,addr mapdown,300
 		inc		edi
 	.endw
 	ret

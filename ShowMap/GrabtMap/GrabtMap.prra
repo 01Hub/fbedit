@@ -3,10 +3,10 @@ Version=3000
 [Project]
 Assembler=masm
 Group=2,-1,0,1,GrabtMap,-2,-1,1,Assembly,-3,-1,1,Include,-4,-1,1,Misc,-5,-1,1,Resource
-F1=-2,2,1,22,22,600,400,431,GrabtMap.asm
+F1=-2,2,1,22,22,600,400,166,GrabtMap.asm
 F2=-3,0,1,44,44,600,400,74,GrabtMap.inc
 F3=-5,2,4,66,66,600,400,0,GrabtMap.rc
-Path=D:\FbEdit\Projects\Applications\FbEdit\ShowMap\GrabtMap
+Path=C:\FbEdit\Projects\Applications\FbEdit\ShowMap\GrabtMap
 Open=0,1,2,3,4
 Api=
 C3=

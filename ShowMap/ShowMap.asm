@@ -1456,7 +1456,7 @@ WinMain proc hInst:HINSTANCE,hPrevInst:HINSTANCE,CmdLine:LPSTR,CmdShow:DWORD
 	pop		wc.hInstance
 	mov		wc.hbrBackground,COLOR_BTNFACE+1
 	mov		wc.lpszMenuName,IDM_MENU
-	mov		wc.lpszClassName,offset ClassName
+	mov		wc.lpszClassName,offset szMainClassName
 	invoke LoadIcon,NULL,IDI_APPLICATION
 	mov		wc.hIcon,eax
 	mov		wc.hIconSm,eax

@@ -2,6 +2,7 @@
 IDD_DLGTRIPLOG          equ 1300
 IDC_LSTFILES            equ 1301
 IDC_EDTFILE             equ 1302
+IDC_BTNDELETE			equ 1303
 
 .const
 
@@ -184,6 +185,10 @@ TripLogProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			or		eax,WS_DISABLED
 			invoke SetWindowLong,ebx,GWL_STYLE,eax
 		.endif
+		.if !fSaveFile
+			invoke GetDlgItem,hWin,IDC_BTNDELETE
+			invoke ShowWindow,eax,SW_SHOWNA
+		.endif
 	.elseif eax==WM_COMMAND
 		mov		edx,wParam
 		movzx	eax,dx
@@ -211,6 +216,26 @@ TripLogProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.endif
 			.elseif eax==IDCANCEL
 				invoke SendMessage,hWin,WM_CLOSE,NULL,NULL
+			.elseif eax==IDC_BTNDELETE
+				invoke GetDlgItemText,hWin,IDC_EDTFILE,addr buffer,sizeof buffer
+				invoke strlen,addr buffer
+				.if eax
+					invoke strcpy,addr szbuff,addr szAskDelete
+					invoke strcat,addr szbuff,addr buffer
+					invoke MessageBox,hWin,addr szbuff,addr szAppName,MB_ICONQUESTION or MB_YESNO
+					.if eax==IDYES
+						invoke strcpy,addr szFile,addr szPath
+						invoke strcat,addr szFile,addr szBS
+						invoke strcat,addr szFile,addr buffer
+						invoke GetFileAttributes,offset szFile
+						.if eax!=INVALID_HANDLE_VALUE
+							invoke DeleteFile,offset szFile
+							invoke SendDlgItemMessage,hWin,IDC_LSTFILES,LB_GETCURSEL,0,0
+							invoke SendDlgItemMessage,hWin,IDC_LSTFILES,LB_DELETESTRING,eax,0
+							invoke SetDlgItemText,hWin,IDC_EDTFILE,addr szNULL
+						.endif
+					.endif
+				.endif
 			.endif
 		.elseif edx==LBN_SELCHANGE
 			invoke SendDlgItemMessage,hWin,IDC_LSTFILES,LB_GETCURSEL,0,0

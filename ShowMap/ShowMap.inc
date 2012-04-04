@@ -418,7 +418,7 @@ dd256				DWORD 256
 dd512				DWORD 512
 dd72				DWORD 72
 
-ClassName			BYTE 'DLGCLASS',0						;Window class for main window
+szMainClassName		BYTE 'DLGCLASS',0						;Window class for main window
 szMapClassName		BYTE 'MAPCLASS',0						;Window class for map window
 szSonarClassName	BYTE 'SONARCLASS',0						;Window class for sonar window
 szGPSClassName		BYTE 'GPSCLASS',0						;Window class for GPS window
@@ -426,6 +426,7 @@ szAppName			BYTE 'Navigation',0						;Application name
 
 szAskSaveTrail		BYTE 'Save current trail?',0			;Messagebox string
 szAskOverwrite		BYTE 'Overwrite existing file?',0Dh,0Ah,0
+szAskDelete			BYTE 'Delete file?',0Dh,0Ah,0
 
 szLandFileName		BYTE '%s\Map\LandX%d\Land%02X%02X.jpg',0;Format string to get map tile path & filename
 szSeaFileName		BYTE '%s\Map\SeaX%d\Sea%02X%02X.jpg',0	;Format string to get map tile path & filename
@@ -480,6 +481,7 @@ szIcons				BYTE 'None',0							;Icon selection descriptions
 szFmtDec			BYTE '%d',0
 szFmtDec2			BYTE '%02u',0
 szFmtDec3			BYTE '%03u',0
+szFmtDec8			BYTE '%010d',0
 szFmtVolts			BYTE '%02u',0
 szVolts				BYTE 'V',0
 szCelcius			BYTE 'C',0

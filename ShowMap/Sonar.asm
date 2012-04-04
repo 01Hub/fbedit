@@ -1316,6 +1316,7 @@ STMThread proc uses ebx esi edi,Param:DWORD
 							.endif
 							inc		mapdata.ntrail
 							inc		mapdata.paintnow
+							invoke InvalidateRect,hGPS,NULL,TRUE
 						.endif
 						.if sonarreplay.Version==201
 							invoke ReadFile,sonardata.hReplay,addr satelites,sizeof SATELITE*12,addr dwread,NULL
@@ -1589,6 +1590,7 @@ ShowEcho:
 		mov		sonarreplay.iBear,ax
 		invoke WriteFile,sonardata.hLog,addr sonarreplay,sizeof SONARREPLAY,addr dwwrite,NULL
 		invoke WriteFile,sonardata.hLog,addr satelites,sizeof satelites,addr dwwrite,NULL
+		invoke WriteFile,sonardata.hLog,addr altitude,sizeof altitude,addr dwwrite,NULL
 		invoke WriteFile,sonardata.hLog,addr STM32Echo,MAXYECHO,addr dwwrite,NULL
 	.endif
 	movzx	eax,STM32Echo

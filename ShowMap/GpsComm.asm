@@ -33,6 +33,9 @@ szFix				BYTE 'Fix: ',0
 szHDOP				BYTE 'HDop: ',0
 szSatelites			BYTE 'Sat: ',0
 szAltitude			BYTE 'Alt: ',0
+szLattitude			BYTE 'Lattitude:',0
+szLongitude			BYTE 'Longitude:',0
+szBearing			BYTE 'Bearing:',0
 
 .data?
 
@@ -276,19 +279,22 @@ GPSExec:
 				invoke strcmp,addr buffer,addr szGPGSV
 				.if !eax
 					invoke GetItemInt,addr linebuff,0			;Number of Messages
+					push	eax
 					invoke GetItemInt,addr linebuff,0			;Message number
 					push	eax
 					invoke GetItemInt,addr linebuff,0			;Satellites in View
 					pop		edx
+					pop		ecx
+					shl		ecx,2
 					.if edx==1
 						mov		nSatelites,eax
-						xor		ebx,ebx
-						xor		edi,edi
-						mov		SatPtr,edi
-						.while ebx<12
+						mov		SatPtr,0
+						mov		ebx,12
+						mov		edi,sizeof SATELITE*11
+						.while ebx>ecx
 							mov		satelites.SatelliteID[edi],0
-							lea		edi,[edi+sizeof SATELITE]
-							inc		ebx
+							lea		edi,[edi-sizeof SATELITE]
+							dec		ebx
 						.endw
 					.endif
 					xor		ebx,ebx
@@ -364,6 +370,7 @@ GPSExec:
 				invoke SetDlgItemInt,hWnd,IDC_EDTEAST,mapdata.iLon,TRUE
 				invoke SetDlgItemInt,hWnd,IDC_EDTNORTH,mapdata.iLat,TRUE
 				inc		mapdata.paintnow
+				invoke InvalidateRect,hGPS,NULL,TRUE
 			.endif
 			pop		ebx
 			jmp		GPSExec
@@ -877,12 +884,16 @@ GPSProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.endw
 		invoke SetTextColor,mDC,0
 		mov		esi,rect.right
-		sub		esi,165
+		sub		esi,480
 		invoke TextOut,mDC,esi,5,addr szFix,5
 		invoke TextOut,mDC,esi,15,addr szHDOP,6
 		invoke TextOut,mDC,esi,25,addr szSatelites,5
 		invoke TextOut,mDC,esi,35,addr szAltitude,5
-		add		esi,38
+		invoke TextOut,mDC,esi,45,addr szLattitude,10
+		invoke TextOut,mDC,esi,55,addr szLongitude,10
+		invoke TextOut,mDC,esi,65,addr szBearing,8
+
+		add		esi,60
 		movzx	eax,altitude.fixquality
 		invoke wsprintf,addr buffer,addr szFmtDec,eax
 		invoke strlen,addr buffer
@@ -903,6 +914,37 @@ GPSProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke wsprintf,addr buffer,addr szFmtDec,eax
 		invoke strlen,addr buffer
 		invoke TextOut,mDC,esi,35,addr buffer,eax
+		invoke wsprintf,addr buffer,addr szFmtDec8,mapdata.iLat
+		invoke strlen,addr buffer
+		mov		edx,dword ptr buffer[eax-3]
+		mov		ecx,dword ptr buffer[eax-7]
+		mov		dword ptr buffer[eax-2],edx
+		mov		dword ptr buffer[eax-6],ecx
+		mov		buffer[eax-6],'.'
+		inc		eax
+		.if buffer=='0'
+			mov		word ptr buffer,' N'
+		.else
+			mov		word ptr buffer,' S'
+		.endif
+		invoke TextOut,mDC,esi,45,addr buffer,eax
+		invoke wsprintf,addr buffer,addr szFmtDec8,mapdata.iLon
+		invoke strlen,addr buffer
+		mov		edx,dword ptr buffer[eax-3]
+		mov		ecx,dword ptr buffer[eax-7]
+		mov		dword ptr buffer[eax-2],edx
+		mov		dword ptr buffer[eax-6],ecx
+		mov		buffer[eax-6],'.'
+		inc		eax
+		.if buffer=='0'
+			mov		word ptr buffer,' E'
+		.else
+			mov		word ptr buffer,' W'
+		.endif
+		invoke TextOut,mDC,esi,55,addr buffer,eax
+		invoke BinToDec,mapdata.iBear,addr buffer
+		invoke strlen,addr buffer
+		invoke TextOut,mDC,esi,65,addr buffer,eax
 		invoke BitBlt,ps.hdc,0,0,rect.right,rect.bottom,mDC,0,0,SRCCOPY
 		pop		eax
 		invoke SelectObject,mDC,eax
