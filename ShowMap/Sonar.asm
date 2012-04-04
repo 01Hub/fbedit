@@ -936,7 +936,7 @@ SetBattery:
 		mov		sonardata.Battery,eax
 		mov		ecx,100
 		mul		ecx
-		mov		ecx,1792
+		mov		ecx,1740
 		div		ecx
 		invoke wsprintf,addr buffer,addr szFmtVolts,eax
 		invoke strlen,addr buffer

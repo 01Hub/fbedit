@@ -428,6 +428,7 @@ WndProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		hWeb,eax
 		invoke SendMessage,hWeb,WBM_NAVIGATE,0,addr szurl
 		invoke SetTimer,hWin,1000,500,NULL
+		invoke SetWindowText,hWin,addr szHome
 	.elseif eax==WM_TIMER
 		invoke ShowRect
 	.elseif eax==WM_COMMAND

@@ -72,6 +72,8 @@ szFileNameLand			db 'Land\Land%02X%02X.bmp',0
 szFileNameSea			db 'Sea\Sea%02X%02X.bmp',0
 szMimeType				db 'image/jpeg',0
 
+szHome					db '66.533650,12.912960',0
+
 .data
 
 ;szDefUrlLand			db 'http://maps.google.com/',0
