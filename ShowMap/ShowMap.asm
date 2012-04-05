@@ -1232,6 +1232,8 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				sub		rect.bottom,SATHT
 				invoke MoveWindow,hSonar,rect.right,0,ebx,rect.bottom,TRUE
 				invoke MoveWindow,hGPS,rect.right,rect.bottom,ebx,SATHT,TRUE
+;				invoke GetDlgItem,hWin,IDC_EDTGPSLOGG
+;				invoke MoveWindow,eax,rect.right,rect.bottom,ebx,SATHT,TRUE
 			.else
 				invoke MoveWindow,hSonar,rect.right,0,ebx,rect.bottom,TRUE
 				invoke MoveWindow,hGPS,rect.right,rect.bottom,0,0,TRUE

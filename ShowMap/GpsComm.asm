@@ -229,7 +229,7 @@ GPSThread proc uses ebx esi edi,Param:DWORD
 					inc		ebx
 				.endw
 				mov		combuff[ebx],0
-				invoke Sleep,50
+				invoke Sleep,150
 				jmp		STMGetMore
 			.endif
 			xor		ebx,ebx
@@ -264,6 +264,17 @@ GPSExec:
 		.if eax
 			add		ebx,eax
 			push	ebx
+;			.while TRUE
+;				invoke SendDlgItemMessage,hWnd,IDC_EDTGPSLOGG,WM_GETTEXTLENGTH,0,0
+;			  .break .if eax<20000
+;				invoke SendDlgItemMessage,hWnd,IDC_EDTGPSLOGG,EM_LINELENGTH,0,0
+;				inc		eax
+;				invoke SendDlgItemMessage,hWnd,IDC_EDTGPSLOGG,EM_SETSEL,0,eax
+;				invoke SendDlgItemMessage,hWnd,IDC_EDTGPSLOGG,EM_REPLACESEL,FALSE,offset szNULL
+;			.endw
+;			invoke SendDlgItemMessage,hWnd,IDC_EDTGPSLOGG,EM_SETSEL,eax,eax
+;			invoke SendDlgItemMessage,hWnd,IDC_EDTGPSLOGG,EM_REPLACESEL,FALSE,offset linebuff
+;			invoke SendDlgItemMessage,hWnd,IDC_EDTGPSLOGG,EM_REPLACESEL,FALSE,offset szCRLF
 			.if hFileLogWrite
 				invoke strcpy,addr bufflog,addr linebuff
 				invoke strcat,addr bufflog,addr szCRLF
@@ -279,19 +290,17 @@ GPSExec:
 				invoke strcmp,addr buffer,addr szGPGSV
 				.if !eax
 					invoke GetItemInt,addr linebuff,0			;Number of Messages
-					push	eax
 					invoke GetItemInt,addr linebuff,0			;Message number
 					push	eax
 					invoke GetItemInt,addr linebuff,0			;Satellites in View
 					pop		edx
-					pop		ecx
-					shl		ecx,2
 					.if edx==1
 						mov		nSatelites,eax
 						mov		SatPtr,0
 						mov		ebx,12
+						sub		ebx,nSatelites
 						mov		edi,sizeof SATELITE*11
-						.while ebx>ecx
+						.while ebx
 							mov		satelites.SatelliteID[edi],0
 							lea		edi,[edi-sizeof SATELITE]
 							dec		ebx

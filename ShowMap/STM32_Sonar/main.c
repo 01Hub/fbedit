@@ -91,6 +91,7 @@ int main(void)
   ADC_Configuration();
   /* Enable DAC channel1 */
   DAC->CR = 0x1;
+  // DAC->CR = 0x3;
   /* Set the DAC to output lowest gain */
   DAC->DHR12R1 = (u16)0x0;
   /* Setup USART1 4800 baud */
@@ -105,8 +106,8 @@ int main(void)
     /* Enable TIM3 */
     TIM_Cmd(TIM3, ENABLE);
   }
-  /* Switch to NMEA protocol at 4800,8,N,1 */
-  rs232_puts("$PSRF100,1,4800,8,1,0*0E\r\n\0");
+  // /* Switch to NMEA protocol at 4800,8,N,1 */
+  // rs232_puts("$PSRF100,1,4800,8,1,0*0E\r\n\0");
   /* Enable GGA message, rate 5 seconds */
   rs232_puts("$PSRF103,00,00,05,00*20\r\n\0");
   /* Disable GLL message */
@@ -287,7 +288,8 @@ void GainSetup(void)
 *******************************************************************************/
 void TIM1_UP_IRQHandler(void)
 {
-  /* Set ping outputs high (FET's off), 2 times to insert a delay and prevent overlapping */
+  /* Set ping outputs high (FET's off), 3 times to insert a delay and prevent overlapping */
+  GPIO_WriteBit(GPIOA, GPIO_Pin_2 | GPIO_Pin_1, Bit_SET);
   GPIO_WriteBit(GPIOA, GPIO_Pin_2 | GPIO_Pin_1, Bit_SET);
   GPIO_WriteBit(GPIOA, GPIO_Pin_2 | GPIO_Pin_1, Bit_SET);
   if (STM32_Sonar.PingPulses)
@@ -361,10 +363,10 @@ void rs232_puts(char *str)
   /* Characters are transmitted one at a time. */
   while ((c = *str++))
   {
-    /* Transmit Data */
-    USART1->DR = (u16)c;
     /* Wait until transmit register empty*/
     while((USART1->SR & USART_FLAG_TXE) == 0);          
+    /* Transmit Data */
+    USART1->DR = (u16)c;
   }
 }
 
