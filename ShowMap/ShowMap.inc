@@ -370,10 +370,10 @@ SONAR struct
 		ADCWaterTemp	WORD ?								;Water temprature
 		ADCAirTemp		WORD ?								;Air temprature
 		GPSHead			WORD ?								;Incremented when GPS array valid
-		EchoArray		BYTE MAXYECHO dup(?)				;Echo array, read from STM32 and processed
-		GainArray		WORD MAXYECHO dup(?)				;Gain array. Not downloaded or uploaded
+		EchoArray		BYTE MAXYECHO dup(?)				;Echo array, processed using STM32Echo
+		GainArray		WORD MAXYECHO dup(?)				;Gain array. Not downloaded or uploaded it is calculated by STM32 using GainInit
 		GainInit		WORD 18 dup(?)						;First word is initial gain, next words is gain increment
-		GPSArray		BYTE 512 dup(?)						;GPS array, read from STM32 if GPSCouner incremented
+		GPSArray		BYTE 512 dup(?)						;GPS array, read from STM32 if GPSHead <> GPSTail
 	ends
 	SignalBarWt		DWORD ?									;Width of signal bar
 	fShowSat		DWORD ?									;If TRUE satelites window is shown
@@ -383,7 +383,7 @@ SATELITE struct
 	SatelliteID		BYTE ?									;Satelite ID
 	Elevation		BYTE ?									;Elevation in degrees (0-90)
 	Azimuth			WORD ?									;Azimuth in degrees (0-359)
-	SNR				WORD ?									;Signal strenght	(0-99, 0 not tracked) 
+	SNR				WORD ?									;Signal strenght	(0-50, 0 not tracked) 
 SATELITE ends
 
 ALTITUDE struct
@@ -394,14 +394,14 @@ ALTITUDE struct
 ALTITUDE ends
 
 SONARREPLAY struct
-	Version			BYTE ?									;200
+	Version			BYTE ?									;201
 	PingPulses		BYTE ?									;Number of pulses in a ping (0 to 128)
 	GainSet			WORD ?									;Gain set level (0 to 4095)
 	SoundSpeed		WORD ?									;Speed of sound in water
 	ADCBattery		WORD ?									;Battery level
 	ADCWaterTemp	WORD ?									;Water temprature
 	ADCAirTemp		WORD ?									;Air temprature
-	iTime			DWORD ?									;Dos file time
+	iTime			DWORD ?									;UTC Dos file time. 2 seconds resolution
 	iLon			DWORD ?									;Longitude, integer
 	iLat			DWORD ?									;Lattitude, integer
 	iSpeed			WORD ?									;Speed in kts
@@ -482,7 +482,7 @@ szIcons				BYTE 'None',0							;Icon selection descriptions
 szFmtDec			BYTE '%d',0
 szFmtDec2			BYTE '%02u',0
 szFmtDec3			BYTE '%03u',0
-szFmtDec8			BYTE '%010d',0
+szFmtDec10			BYTE '%010d',0
 szFmtVolts			BYTE '%02u',0
 szVolts				BYTE 'V',0
 szCelcius			BYTE 'C',0

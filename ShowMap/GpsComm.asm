@@ -923,7 +923,7 @@ GPSProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke wsprintf,addr buffer,addr szFmtDec,eax
 		invoke strlen,addr buffer
 		invoke TextOut,mDC,esi,35,addr buffer,eax
-		invoke wsprintf,addr buffer,addr szFmtDec8,mapdata.iLat
+		invoke wsprintf,addr buffer,addr szFmtDec10,mapdata.iLat
 		invoke strlen,addr buffer
 		mov		edx,dword ptr buffer[eax-3]
 		mov		ecx,dword ptr buffer[eax-7]
@@ -937,7 +937,7 @@ GPSProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			mov		word ptr buffer,' S'
 		.endif
 		invoke TextOut,mDC,esi,45,addr buffer,eax
-		invoke wsprintf,addr buffer,addr szFmtDec8,mapdata.iLon
+		invoke wsprintf,addr buffer,addr szFmtDec10,mapdata.iLon
 		invoke strlen,addr buffer
 		mov		edx,dword ptr buffer[eax-3]
 		mov		ecx,dword ptr buffer[eax-7]
