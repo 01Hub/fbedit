@@ -2659,13 +2659,15 @@ ShowScale:
 	mov		rect.right,eax
 	sub		eax,RANGESCALE
 	mov		rect.left,eax
-	mov		rect.top,6
 	.if sonardata.zoom
 		mov		eax,sonardata.zoomofs
-		sub		rect.top,eax
-		sub		eax,128
-		sub		rect.bottom,eax
+		neg		eax
+		mov		rect.top,eax
+;		sub		eax,128
+;		sub		rect.bottom,eax
+;		shl		rect.bottom,1
 	.else
+		mov		rect.top,6
 		sub		rect.bottom,5
 	.endif
 	invoke CreatePen,PS_SOLID,5,0FFFFFFh
@@ -2975,8 +2977,7 @@ SonarProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		eax,sonardata.zoomofs
 			.else
 				mov		eax,sonardata.dptinx
-				shr		eax,4
-				shl		eax,3
+				shr		eax,1
 				.if eax>256
 					mov		eax,256
 				.endif
@@ -2990,25 +2991,20 @@ SonarProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.endif
 				mov		sonardata.zoomofs,eax
 			.endif
-			mov		edx,MAXYECHO/3
-			add		edx,eax
+			mov		edx,MAXYECHO/2
 			invoke StretchBlt,mDC,0,6,rect.right,rect.bottom,sonardata.mDC,ecx,eax,rect.right,edx,SRCCOPY
 		.else
 			invoke StretchBlt,mDC,0,6,rect.right,rect.bottom,sonardata.mDC,ecx,0,rect.right,MAXYECHO,SRCCOPY
 		.endif
-
 		;Draw signal bar
 		add		rect.right,RANGESCALE
-
 		.if sonardata.zoom
 			mov		eax,sonardata.zoomofs
-			mov		edx,MAXYECHO/3
-			add		edx,eax
+			mov		edx,MAXYECHO/2
 			invoke StretchBlt,mDC,rect.right,6,sonardata.SignalBarWt,rect.bottom,sonardata.mDCS,0,eax,sonardata.SignalBarWt,edx,SRCCOPY
 		.else
 			invoke StretchBlt,mDC,rect.right,6,sonardata.SignalBarWt,rect.bottom,sonardata.mDCS,0,0,sonardata.SignalBarWt,MAXYECHO,SRCCOPY
 		.endif
-
 		mov		eax,sonardata.SignalBarWt
 		add		rect.right,eax
 		invoke ShowRangeDepthTempScaleFish,mDC
