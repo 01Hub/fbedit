@@ -813,8 +813,10 @@ GPSProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		xor		edi,edi
 		.while ebx<12
 			.if satelites.SatelliteID[edi]
-;				invoke GetPointOnCircle,SATRAD,satelites.Elevation[edi],addr pt
-;				mov		ecx,pt.x
+				;This would be the right way but gives poor graphic representation of the elevation angle.
+				;invoke GetPointOnCircle,SATRAD,satelites.Elevation[edi],addr pt
+				;mov		ecx,pt.x
+				;A linear function of the elevation angle gives better graphic representation
 				mov		eax,90
 				sub		al,satelites.Elevation[edi]
 				mov		ecx,SATRAD
