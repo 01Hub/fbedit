@@ -51,6 +51,7 @@ ST_LINK struct
 	hFile						DWORD ?
 	hModule						DWORD ?
 	hWnd						HWND ?
+	fInProgress					DWORD ?
 	STLinkCmnd					ST_LINKCMND <>
 ST_LINK ends
 

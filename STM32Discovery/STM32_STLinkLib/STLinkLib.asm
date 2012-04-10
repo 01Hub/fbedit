@@ -220,6 +220,10 @@ STLinkDisconnect endp
 
 STLinkReset proc uses ebx,hWin:HWND
 
+	.while STLink.fInProgress
+		invoke Sleep,10
+	.endw
+	mov		STLink.fInProgress,TRUE
 	invoke FindBlock,hWin
 	.if eax==-1
 ;***
@@ -242,9 +246,11 @@ STLinkReset proc uses ebx,hWin:HWND
 	invoke SendCommend,hWin,0F2h,007h,01FFFF800h,4,addr STLink.buff2[ebx],4
 	invoke SendCommend,hWin,0F2h,03Bh,00000000h,0000h,addr STLink.buff2[ebx],02h
 	invoke SendCommend,hWin,0F2h,035h,0E000EDF0h,0A05F0001h,addr STLink.buff2[ebx],02h
+	mov		STLink.fInProgress,FALSE
 	ret
 
 ExErr:
+	mov		STLink.fInProgress,FALSE
 	invoke MessageBox,hWin,addr szErrNotConnected,addr szError,MB_ABORTRETRYIGNORE or MB_ICONERROR
 	.if eax==IDRETRY
 		jmp		Retry
@@ -269,6 +275,10 @@ STLinkReset endp
 
 STLinkRead proc uses ebx,hWin:HWND,rdadr:DWORD,wradr:DWORD,nBytes:DWORD
 
+	.while STLink.fInProgress
+		invoke Sleep,10
+	.endw
+	mov		STLink.fInProgress,TRUE
 	invoke FindBlock,hWin
 	.if eax==-1
 ;***
@@ -296,9 +306,11 @@ STLinkRead proc uses ebx,hWin:HWND,rdadr:DWORD,wradr:DWORD,nBytes:DWORD
 	invoke SendCommend,hWin,0F2h,03Bh,00000000h,0000h,addr STLink.buff2[ebx],02h
 	cmp		eax,1
 	jnz		ExErr
+	mov		STLink.fInProgress,FALSE
 	ret
 
 ExErr:
+	mov		STLink.fInProgress,FALSE
 	invoke MessageBox,hWin,addr szErrNotConnected,addr szError,MB_ABORTRETRYIGNORE or MB_ICONERROR
 	.if eax==IDRETRY
 		jmp		Retry
@@ -323,6 +335,10 @@ STLinkRead endp
 
 STLinkWrite proc uses ebx,hWin:HWND,wradr:DWORD,rdadr:DWORD,nBytes:DWORD
 
+	.while STLink.fInProgress
+		invoke Sleep,10
+	.endw
+	mov		STLink.fInProgress,TRUE
 	invoke FindBlock,hWin
 	.if eax==-1
 ;***
@@ -350,9 +366,11 @@ STLinkWrite proc uses ebx,hWin:HWND,wradr:DWORD,rdadr:DWORD,nBytes:DWORD
 	invoke SendCommend,hWin,0F2h,03Bh,000000000h,000000000h,addr STLink.buff2[ebx],0002h
 	cmp		eax,1
 	jnz		ExErr
+	mov		STLink.fInProgress,FALSE
 	ret
 
 ExErr:
+	mov		STLink.fInProgress,FALSE
 	invoke MessageBox,hWin,addr szErrNotConnected,addr szError,MB_ABORTRETRYIGNORE or MB_ICONERROR
 	.if eax==IDRETRY
 		jmp		Retry
