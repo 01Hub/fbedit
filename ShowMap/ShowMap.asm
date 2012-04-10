@@ -1148,6 +1148,8 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					mov		eax,BST_CHECKED
 				.endif
 				invoke CheckDlgButton,hWin,IDC_CHKAUTORANGE,eax
+			.elseif eax==IDC_CHKZOOM
+				xor		sonardata.zoom,1
 			.elseif eax==IDC_BTNRANGEDN
 				.if sonardata.RangeInx
 					dec		sonardata.RangeInx
@@ -1305,6 +1307,9 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke MoveWindow,eax,rect.right,rect.top,80,16,TRUE
 		add		rect.top,17
 		invoke GetDlgItem,hWin,IDC_CHKAUTORANGE
+		invoke MoveWindow,eax,rect.right,rect.top,80,16,TRUE
+		add		rect.top,17
+		invoke GetDlgItem,hWin,IDC_CHKZOOM
 		invoke MoveWindow,eax,rect.right,rect.top,80,16,TRUE
 		add		rect.top,17
 		invoke GetDlgItem,hWin,IDC_BTNRANGEDN

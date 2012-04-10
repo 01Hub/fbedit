@@ -75,6 +75,7 @@ IDC_BTNRANGEDN			equ 1021
 IDC_BTNRANGEUP			equ 1020
 IDC_CHKAUTORANGE		equ 1022
 IDC_EDTGPSLOGG			equ 1025
+IDC_CHKZOOM				equ 1026
 
 IDM_MENU                equ 10000
 IDM_FILE_OPENTRIP       equ 10010
@@ -377,6 +378,8 @@ SONAR struct
 	ends
 	SignalBarWt		DWORD ?									;Width of signal bar
 	fShowSat		DWORD ?									;If TRUE satelites window is shown
+	zoom			DWORD ?
+	zoomofs			DWORD ?
 SONAR ends
 
 SATELITE struct
