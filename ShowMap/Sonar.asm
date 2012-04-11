@@ -53,6 +53,7 @@ IDC_BTNCALCULATE		equ 1610
 
 GAINXOFS				equ 60
 GAINYOFS				equ 117
+ZOOMHYSTERESIS			equ 7
 
 .code
 
@@ -2471,222 +2472,6 @@ TestRangeChange:
 
 STMThread endp
 
-ShowRangeDepthTempScaleFish proc uses ebx esi edi,hDC:HDC
-	LOCAL	rcsonar:RECT
-	LOCAL	rect:RECT
-	LOCAL	x:DWORD
-	LOCAL	tmp:DWORD
-	LOCAL	nticks:DWORD
-	LOCAL	ntick:DWORD
-	LOCAL	fishdepth:DWORD
-	LOCAL	buffer[32]:BYTE
-
-	invoke GetClientRect,hSonar,addr rcsonar
-	call	ShowFish
-	invoke SetBkMode,hDC,TRANSPARENT
-	call	ShowScale
-	xor		ebx,ebx
-	mov		esi,offset sonardata.options
-	.while ebx<MAXSONAROPTION
-		.if [esi].OPTIONS.show
-			.if ebx==1
-				.if (sonardata.ShowDepth & 1) || (sonardata.ShowDepth>1)
-					call ShowOption
-				.endif
-			.else
-				call ShowOption
-			.endif
-		.endif
-		lea		esi,[esi+sizeof OPTIONS]
-		inc		ebx
-	.endw
-	ret
-
-ShowFish:
-	invoke SetBkMode,hDC,TRANSPARENT
-	movzx	eax,sonardata.EchoArray
-	invoke GetRangePtr,eax
-	mov		eax,sonardata.sonarrange.range[eax]
-	mov		ebx,10
-	mul		ebx
-	mov		ebx,eax
-	mov		ecx,MAXFISH
-	mov		esi,offset sonardata.fishdata
-	.while ecx
-		push	ecx
-		.if [esi].FISH.fishtype && sdword ptr [esi].FISH.xpos>=-10 && [esi].FISH.depth<=ebx
-			mov		eax,[esi].FISH.depth
-			mov		edx,rcsonar.bottom
-			mul		edx
-			xor		edx,edx
-			div		ebx
-			mov		edx,[esi].FISH.xpos
-			mov		ecx,MAXXECHO
-			add		ecx,sonardata.SignalBarWt
-			sub		edx,ecx
-			add		edx,rcsonar.right
-			push	eax
-			push	edx
-			invoke ImageList_Draw,hIml,[esi].FISH.fishtype,hDC,addr [edx-8],eax,ILD_TRANSPARENT
-			pop		edx
-			pop		eax
-			.if sonardata.FishDepth
-				sub		edx,16
-				sub		eax,13
-				mov		rect.left,edx
-				mov		rect.top,eax
-				add		edx,32
-				mov		rect.right,edx
-				add		eax,16
-				mov		rect.bottom,eax
-				mov		fishdepth,0
-				invoke wsprintf,addr buffer,addr szFmtDec,[esi].FISH.depth
-				invoke strlen,addr buffer
-				.if buffer[eax-1]>='5'
-					mov		fishdepth,1
-				.endif
-				mov		eax,[esi].FISH.depth
-				xor		edx,edx
-				mov		ecx,10
-				div		ecx
-				add		eax,fishdepth
-				invoke wsprintf,addr buffer,addr szFmtDec,eax
-				invoke TextDraw,hDC,mapdata.font[0],addr rect,addr buffer,DT_CENTER or DT_SINGLELINE
-			.endif
-		.endif
-		pop		ecx
-		lea		esi,[esi+sizeof FISH]
-		dec		ecx
-	.endw
-	retn
-
-ShowOption:
-	mov		ecx,[esi].OPTIONS.pt.x
-	mov		edx,[esi].OPTIONS.pt.y
-	mov		rect.left,ecx
-	mov		rect.top,edx
-	mov		eax,rcsonar.right
-	sub		eax,ecx
-	mov		rect.right,eax
-	mov		eax,rcsonar.bottom
-	sub		eax,edx
-	mov		rect.bottom,eax
-	mov		eax,[esi].OPTIONS.font
-	add		eax,7
-	mov		ecx,mapdata.font[eax*4]
-	mov		edx,[esi].OPTIONS.position
-	.if !edx
-		;Left, Top
-		mov		eax,DT_LEFT or DT_SINGLELINE
-	.elseif edx==1
-		;Center, Top
-		mov		eax,DT_LEFT or DT_SINGLELINE
-	.elseif edx==2
-		;Rioght, Top
-		mov		eax,DT_RIGHT or DT_SINGLELINE
-	.elseif edx==3
-		;Left, Bottom
-		mov		eax,DT_LEFT or DT_BOTTOM or DT_SINGLELINE
-	.elseif edx==4
-		;Center, Bottom
-		mov		eax,DT_LEFT or DT_BOTTOM or DT_SINGLELINE
-	.elseif edx==5
-		;Right, Bottom
-		mov		eax,DT_RIGHT or DT_BOTTOM or DT_SINGLELINE
-	.endif
-	invoke TextDraw,hDC,ecx,addr rect,addr [esi].OPTIONS.text,eax
-	retn
-
-DrawTick:
-	mov		eax,rect.bottom
-	sub		eax,rect.top
-	mov		tmp,eax
-	fild	tmp
-	fild	nticks
-	fdivp	st(1),st
-	fild	ntick
-	fmulp	st(1),st
-	fistp	tmp
-	mov		eax,rect.top
-	add		tmp,eax
-	invoke MoveToEx,hDC,rect.left,tmp,NULL
-	invoke LineTo,hDC,rect.right,tmp
-	.if !ntick
-		add		tmp,2
-	.else
-		sub		tmp,18
-	.endif
-	push	rect.left
-	push	rect.top
-	push	rect.right
-	sub		rect.left,20
-	add		rect.right,20
-	mov		eax,tmp
-	mov		rect.top,eax
-	invoke TextDraw,hDC,NULL,addr rect,esi,DT_CENTER or DT_TOP or DT_SINGLELINE
-	pop		rect.right
-	pop		rect.top
-	pop		rect.left
-	retn
-
-DrawScaleBar:
-	mov		ebx,rect.right
-	sub		ebx,rect.left
-	shr		ebx,1
-	add		ebx,rect.left
-	invoke MoveToEx,hDC,ebx,rect.top,NULL
-	invoke LineTo,hDC,ebx,rect.bottom
-	movzx	eax,sonardata.EchoArray
-	invoke GetRangePtr,eax
-	mov		edx,sonardata.sonarrange.nticks[eax]
-	mov		nticks,edx
-	mov		ntick,0
-	lea		esi,sonardata.sonarrange.scale[eax]
-	.while dword ptr ntick<=edx
-		push	edx
-		call	DrawTick
-		invoke strlen,esi
-		lea		esi,[esi+eax+1]
-		pop		edx
-		inc		ntick
-	.endw
-	retn
-
-ShowScale:
-	invoke CopyRect,addr rect,addr rcsonar
-	mov		eax,rect.right
-	sub		eax,sonardata.SignalBarWt
-	mov		rect.right,eax
-	sub		eax,RANGESCALE
-	mov		rect.left,eax
-	.if sonardata.zoom
-		mov		eax,sonardata.zoomofs
-		neg		eax
-		mov		rect.top,eax
-;		sub		eax,128
-;		sub		rect.bottom,eax
-;		shl		rect.bottom,1
-	.else
-		mov		rect.top,6
-		sub		rect.bottom,5
-	.endif
-	invoke CreatePen,PS_SOLID,5,0FFFFFFh
-	invoke SelectObject,hDC,eax
-	push	eax
-	call	DrawScaleBar
-	pop		eax
-	invoke SelectObject,hDC,eax
-	invoke DeleteObject,eax
-	invoke GetStockObject,BLACK_PEN
-	invoke SelectObject,hDC,eax
-	push	eax
-	call	DrawScaleBar
-	pop		eax
-	invoke SelectObject,hDC,eax
-	retn
-
-ShowRangeDepthTempScaleFish endp
-
 SaveSonarToIni proc
 	LOCAL	buffer[256]:BYTE
 
@@ -2834,6 +2619,239 @@ SonarClear proc uses ebx esi
 
 SonarClear endp
 
+ShowRangeDepthTempScaleFish proc uses ebx esi edi,hDC:HDC
+	LOCAL	rcsonar:RECT
+	LOCAL	rctext:RECT
+	LOCAL	rect:RECT
+	LOCAL	x:DWORD
+	LOCAL	tmp:DWORD
+	LOCAL	nticks:DWORD
+	LOCAL	ntick:DWORD
+	LOCAL	fishdepth:DWORD
+	LOCAL	buffer[32]:BYTE
+
+	invoke GetClientRect,hSonar,addr rcsonar
+	call	ShowFish
+	invoke SetBkMode,hDC,TRANSPARENT
+	call	ShowScale
+	xor		ebx,ebx
+	mov		esi,offset sonardata.options
+	.while ebx<MAXSONAROPTION
+		.if [esi].OPTIONS.show
+			.if ebx==1
+				.if (sonardata.ShowDepth & 1) || (sonardata.ShowDepth>1)
+					call ShowOption
+				.endif
+			.else
+				call ShowOption
+			.endif
+		.endif
+		lea		esi,[esi+sizeof OPTIONS]
+		inc		ebx
+	.endw
+	ret
+
+ShowFish:
+	invoke CopyRect,addr rect,addr rcsonar
+	.if sonardata.zoom
+		shl		rect.bottom,1
+		mov		eax,sonardata.zoomofs
+		mov		ecx,rect.bottom
+		mul		ecx
+		mov		ecx,MAXYECHO
+		div		ecx
+		neg		eax
+		mov		rect.top,eax
+		add		rect.bottom,eax
+	.endif
+	invoke SetBkMode,hDC,TRANSPARENT
+	movzx	eax,sonardata.EchoArray
+	invoke GetRangePtr,eax
+	mov		eax,sonardata.sonarrange.range[eax]
+	mov		ebx,10
+	mul		ebx
+	mov		ebx,eax
+	mov		ecx,MAXFISH
+	mov		esi,offset sonardata.fishdata
+	.while ecx
+		push	ecx
+		.if [esi].FISH.fishtype && sdword ptr [esi].FISH.xpos>=-10 && [esi].FISH.depth<=ebx
+			mov		eax,[esi].FISH.depth
+			mov		ecx,rect.bottom
+			sub		ecx,rect.top
+			cdq
+			imul	ecx
+			idiv	ebx
+			add		eax,rect.top
+			mov		edx,[esi].FISH.xpos
+			mov		ecx,MAXXECHO
+			add		ecx,sonardata.SignalBarWt
+			sub		edx,ecx
+			add		edx,rect.right
+			push	eax
+			push	edx
+			invoke ImageList_Draw,hIml,[esi].FISH.fishtype,hDC,addr [edx-8],eax,ILD_TRANSPARENT
+			pop		edx
+			pop		eax
+			.if sonardata.FishDepth
+				sub		edx,16
+				sub		eax,13
+				mov		rctext.left,edx
+				mov		rctext.top,eax
+				add		edx,32
+				mov		rctext.right,edx
+				add		eax,16
+				mov		rctext.bottom,eax
+				mov		fishdepth,0
+				invoke wsprintf,addr buffer,addr szFmtDec,[esi].FISH.depth
+				invoke strlen,addr buffer
+				.if buffer[eax-1]>='5'
+					mov		fishdepth,1
+				.endif
+				mov		eax,[esi].FISH.depth
+				xor		edx,edx
+				mov		ecx,10
+				div		ecx
+				add		eax,fishdepth
+				invoke wsprintf,addr buffer,addr szFmtDec,eax
+				invoke TextDraw,hDC,mapdata.font[0],addr rctext,addr buffer,DT_CENTER or DT_SINGLELINE
+			.endif
+		.endif
+		pop		ecx
+		lea		esi,[esi+sizeof FISH]
+		dec		ecx
+	.endw
+	retn
+
+ShowOption:
+	mov		ecx,[esi].OPTIONS.pt.x
+	mov		edx,[esi].OPTIONS.pt.y
+	mov		rect.left,ecx
+	mov		rect.top,edx
+	mov		eax,rcsonar.right
+	sub		eax,ecx
+	mov		rect.right,eax
+	mov		eax,rcsonar.bottom
+	sub		eax,edx
+	mov		rect.bottom,eax
+	mov		eax,[esi].OPTIONS.font
+	add		eax,7
+	mov		ecx,mapdata.font[eax*4]
+	mov		edx,[esi].OPTIONS.position
+	.if !edx
+		;Left, Top
+		mov		eax,DT_LEFT or DT_SINGLELINE
+	.elseif edx==1
+		;Center, Top
+		mov		eax,DT_LEFT or DT_SINGLELINE
+	.elseif edx==2
+		;Rioght, Top
+		mov		eax,DT_RIGHT or DT_SINGLELINE
+	.elseif edx==3
+		;Left, Bottom
+		mov		eax,DT_LEFT or DT_BOTTOM or DT_SINGLELINE
+	.elseif edx==4
+		;Center, Bottom
+		mov		eax,DT_LEFT or DT_BOTTOM or DT_SINGLELINE
+	.elseif edx==5
+		;Right, Bottom
+		mov		eax,DT_RIGHT or DT_BOTTOM or DT_SINGLELINE
+	.endif
+	invoke TextDraw,hDC,ecx,addr rect,addr [esi].OPTIONS.text,eax
+	retn
+
+DrawTick:
+	mov		eax,rect.bottom
+	sub		eax,rect.top
+	mov		tmp,eax
+	fild	tmp
+	fild	nticks
+	fdivp	st(1),st
+	fild	ntick
+	fmulp	st(1),st
+	fistp	tmp
+	mov		eax,rect.top
+	add		tmp,eax
+	invoke MoveToEx,hDC,rect.left,tmp,NULL
+	invoke LineTo,hDC,rect.right,tmp
+	.if !ntick
+		add		tmp,2
+	.else
+		sub		tmp,18
+	.endif
+	push	rect.left
+	push	rect.top
+	push	rect.right
+	sub		rect.left,20
+	add		rect.right,20
+	mov		eax,tmp
+	mov		rect.top,eax
+	invoke TextDraw,hDC,NULL,addr rect,esi,DT_CENTER or DT_TOP or DT_SINGLELINE
+	pop		rect.right
+	pop		rect.top
+	pop		rect.left
+	retn
+
+DrawScaleBar:
+	mov		ebx,rect.right
+	sub		ebx,rect.left
+	shr		ebx,1
+	add		ebx,rect.left
+	invoke MoveToEx,hDC,ebx,rect.top,NULL
+	invoke LineTo,hDC,ebx,rect.bottom
+	movzx	eax,sonardata.EchoArray
+	invoke GetRangePtr,eax
+	mov		edx,sonardata.sonarrange.nticks[eax]
+	mov		nticks,edx
+	mov		ntick,0
+	lea		esi,sonardata.sonarrange.scale[eax]
+	.while dword ptr ntick<=edx
+		push	edx
+		call	DrawTick
+		invoke strlen,esi
+		lea		esi,[esi+eax+1]
+		pop		edx
+		inc		ntick
+	.endw
+	retn
+
+ShowScale:
+	invoke CopyRect,addr rect,addr rcsonar
+	mov		eax,rect.right
+	sub		eax,sonardata.SignalBarWt
+	mov		rect.right,eax
+	sub		eax,RANGESCALE
+	mov		rect.left,eax
+	add		rect.top,6
+	sub		rect.bottom,5
+	.if sonardata.zoom
+		shl		rect.bottom,1
+		mov		eax,sonardata.zoomofs
+		mov		ecx,rect.bottom
+		mul		ecx
+		mov		ecx,MAXYECHO
+		div		ecx
+		neg		eax
+		mov		rect.top,eax
+		add		rect.bottom,eax
+	.endif
+	invoke CreatePen,PS_SOLID,5,0FFFFFFh
+	invoke SelectObject,hDC,eax
+	push	eax
+	call	DrawScaleBar
+	pop		eax
+	invoke SelectObject,hDC,eax
+	invoke DeleteObject,eax
+	invoke GetStockObject,BLACK_PEN
+	invoke SelectObject,hDC,eax
+	push	eax
+	call	DrawScaleBar
+	pop		eax
+	invoke SelectObject,hDC,eax
+	retn
+
+ShowRangeDepthTempScaleFish endp
+
 SonarProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	ps:PAINTSTRUCT
 	LOCAL	rect:RECT
@@ -2899,6 +2917,66 @@ SonarProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
 		invoke SetTimer,hWin,1000,800,NULL
 		invoke SetTimer,hWin,1001,500,NULL
+	.elseif eax==WM_PAINT
+		invoke GetClientRect,hWin,addr rect
+		invoke BeginPaint,hWin,addr ps
+		invoke CreateCompatibleDC,ps.hdc
+		mov		mDC,eax
+		invoke CreateCompatibleBitmap,ps.hdc,rect.right,rect.bottom
+		invoke SelectObject,mDC,eax
+		push	eax
+		invoke SetStretchBltMode,mDC,COLORONCOLOR
+		invoke FillRect,mDC,addr rect,sonardata.hBrBack
+		;Draw echo
+		mov		eax,RANGESCALE
+		add		eax,sonardata.SignalBarWt
+		sub		rect.right,eax
+		sub		rect.bottom,12
+		mov		ecx,MAXXECHO
+		sub		ecx,rect.right
+		.if sonardata.zoom
+			.if !sonardata.dptinx
+				mov		eax,sonardata.zoomofs
+			.else
+				mov		eax,sonardata.dptinx
+				shr		eax,1
+				.if eax>256
+					mov		eax,256
+				.endif
+				mov		edx,eax
+				sub		edx,sonardata.zoomofs
+				.if sdword ptr edx<0
+					neg		edx
+				.endif
+				.if edx<ZOOMHYSTERESIS
+					mov		eax,sonardata.zoomofs
+				.endif
+				mov		sonardata.zoomofs,eax
+			.endif
+			mov		edx,MAXYECHO/2
+			invoke StretchBlt,mDC,0,6,rect.right,rect.bottom,sonardata.mDC,ecx,eax,rect.right,edx,SRCCOPY
+		.else
+			invoke StretchBlt,mDC,0,6,rect.right,rect.bottom,sonardata.mDC,ecx,0,rect.right,MAXYECHO,SRCCOPY
+		.endif
+		;Draw signal bar
+		add		rect.right,RANGESCALE
+		.if sonardata.zoom
+			mov		eax,sonardata.zoomofs
+			mov		edx,MAXYECHO/2
+			invoke StretchBlt,mDC,rect.right,6,sonardata.SignalBarWt,rect.bottom,sonardata.mDCS,0,eax,sonardata.SignalBarWt,edx,SRCCOPY
+		.else
+			invoke StretchBlt,mDC,rect.right,6,sonardata.SignalBarWt,rect.bottom,sonardata.mDCS,0,0,sonardata.SignalBarWt,MAXYECHO,SRCCOPY
+		.endif
+		mov		eax,sonardata.SignalBarWt
+		add		rect.right,eax
+		invoke ShowRangeDepthTempScaleFish,mDC
+		add		rect.bottom,12
+		invoke BitBlt,ps.hdc,0,0,rect.right,rect.bottom,mDC,0,0,SRCCOPY
+		pop		eax
+		invoke SelectObject,mDC,eax
+		invoke DeleteObject,eax
+		invoke DeleteDC,mDC
+		invoke EndPaint,hWin,addr ps
 	.elseif eax==WM_TIMER
 		.if wParam==1000
 			.if !sonardata.fSTLink
@@ -2955,66 +3033,6 @@ SonarProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke DeleteObject,sonardata.hPen
 		invoke DeleteDC,sonardata.mDCS
 		invoke SaveSonarToIni
-	.elseif eax==WM_PAINT
-		invoke GetClientRect,hWin,addr rect
-		invoke BeginPaint,hWin,addr ps
-		invoke CreateCompatibleDC,ps.hdc
-		mov		mDC,eax
-		invoke CreateCompatibleBitmap,ps.hdc,rect.right,rect.bottom
-		invoke SelectObject,mDC,eax
-		push	eax
-		invoke SetStretchBltMode,mDC,COLORONCOLOR
-		invoke FillRect,mDC,addr rect,sonardata.hBrBack
-		;Draw echo
-		mov		eax,RANGESCALE
-		add		eax,sonardata.SignalBarWt
-		sub		rect.right,eax
-		sub		rect.bottom,12
-		mov		ecx,MAXXECHO
-		sub		ecx,rect.right
-		.if sonardata.zoom
-			.if !sonardata.dptinx
-				mov		eax,sonardata.zoomofs
-			.else
-				mov		eax,sonardata.dptinx
-				shr		eax,1
-				.if eax>256
-					mov		eax,256
-				.endif
-				mov		edx,eax
-				sub		edx,sonardata.zoomofs
-				.if sdword ptr edx<0
-					neg		edx
-				.endif
-				.if edx<16
-					mov		eax,sonardata.zoomofs
-				.endif
-				mov		sonardata.zoomofs,eax
-			.endif
-			mov		edx,MAXYECHO/2
-			invoke StretchBlt,mDC,0,6,rect.right,rect.bottom,sonardata.mDC,ecx,eax,rect.right,edx,SRCCOPY
-		.else
-			invoke StretchBlt,mDC,0,6,rect.right,rect.bottom,sonardata.mDC,ecx,0,rect.right,MAXYECHO,SRCCOPY
-		.endif
-		;Draw signal bar
-		add		rect.right,RANGESCALE
-		.if sonardata.zoom
-			mov		eax,sonardata.zoomofs
-			mov		edx,MAXYECHO/2
-			invoke StretchBlt,mDC,rect.right,6,sonardata.SignalBarWt,rect.bottom,sonardata.mDCS,0,eax,sonardata.SignalBarWt,edx,SRCCOPY
-		.else
-			invoke StretchBlt,mDC,rect.right,6,sonardata.SignalBarWt,rect.bottom,sonardata.mDCS,0,0,sonardata.SignalBarWt,MAXYECHO,SRCCOPY
-		.endif
-		mov		eax,sonardata.SignalBarWt
-		add		rect.right,eax
-		invoke ShowRangeDepthTempScaleFish,mDC
-		add		rect.bottom,12
-		invoke BitBlt,ps.hdc,0,0,rect.right,rect.bottom,mDC,0,0,SRCCOPY
-		pop		eax
-		invoke SelectObject,mDC,eax
-		invoke DeleteObject,eax
-		invoke DeleteDC,mDC
-		invoke EndPaint,hWin,addr ps
 	.elseif eax==WM_HSCROLL
 		mov		eax,wParam
 		movzx	edx,ax

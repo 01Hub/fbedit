@@ -378,8 +378,8 @@ SONAR struct
 	ends
 	SignalBarWt		DWORD ?									;Width of signal bar
 	fShowSat		DWORD ?									;If TRUE satelites window is shown
-	zoom			DWORD ?
-	zoomofs			DWORD ?
+	zoom			DWORD ?									;If TRUE sonar zoom is on
+	zoomofs			DWORD ?									;zoom offset from top
 SONAR ends
 
 SATELITE struct

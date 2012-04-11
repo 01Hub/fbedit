@@ -1150,6 +1150,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke CheckDlgButton,hWin,IDC_CHKAUTORANGE,eax
 			.elseif eax==IDC_CHKZOOM
 				xor		sonardata.zoom,1
+				invoke InvalidateRect,hSonar,NULL,TRUE
 			.elseif eax==IDC_BTNRANGEDN
 				.if sonardata.RangeInx
 					dec		sonardata.RangeInx
