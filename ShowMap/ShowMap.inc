@@ -386,7 +386,8 @@ SATELITE struct
 	SatelliteID		BYTE ?									;Satelite ID
 	Elevation		BYTE ?									;Elevation in degrees (0-90)
 	Azimuth			WORD ?									;Azimuth in degrees (0-359)
-	SNR				WORD ?									;Signal strenght	(0-50, 0 not tracked) 
+	SNR				BYTE ?									;Signal strenght	(0-50, 0 not tracked) 
+	Fixed			BYTE ?									;TRUE if used in fix
 SATELITE ends
 
 ALTITUDE struct
@@ -499,7 +500,8 @@ szGPSDemoData		BYTE '$GPRMC,193409,A,6619.0367,N,01411.8237,E,0.0,356.4,230710,2
 					BYTE '$GPGGA,193409,6619.0367,N,01411.8237,E,1,5,1.10,57,M,,,,',0Dh,0Ah
 					BYTE '$GPGSV,3,1,12,21,64,118,40,6,53,259,,16,52,213,,3,38,272,',0Dh,0Ah
 					BYTE '$GPGSV,3,2,12,18,29,140,36,24,27,216,40,7,24,329,38,26,13,59,38',0Dh,0Ah
-					BYTE '$GPGSV,3,3,12,5,13,27,,29,12,108,,19,10,275,,15,9,76,',0Dh,0Ah,0
+					BYTE '$GPGSV,3,3,12,5,13,27,,29,12,108,,19,10,275,,15,9,76,',0Dh,0Ah
+					BYTE '$GPGSA,A,3,21,,,,,18,24,7,26,,,,,,,,',0Dh,0Ah,0
 
 .data?
 

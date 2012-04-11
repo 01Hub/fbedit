@@ -24,6 +24,7 @@ szComFailed			BYTE 'Opening com port failed.',0
 szGPRMC				BYTE '$GPRMC',0
 szGPGSV				BYTE '$GPGSV',0
 szGPGGA				BYTE '$GPGGA',0
+szGPGSA				BYTE '$GPGSA',0
 
 szBinToDec			BYTE '%06d',0
 szFmtTime			BYTE '%02d%02d%02d %02d:%02d:%02d',0
@@ -238,6 +239,7 @@ GPSThread proc uses ebx esi edi,Param:DWORD
 			invoke strcpy,addr combuff,addr szGPSDemoData
 			xor		ebx,ebx
 			call	GPSExec
+			invoke Sleep,900
 		.endif
 		invoke Sleep,100
 	.endw
@@ -316,7 +318,7 @@ GPSExec:
 						invoke GetItemInt,addr linebuff,0			;Azimuth
 						mov		satelites.Azimuth[edi],ax
 						invoke GetItemInt,addr linebuff,0			;SNR
-						mov		satelites.SNR[edi],ax
+						mov		satelites.SNR[edi],al
 						lea		edi,[edi+sizeof SATELITE]
 						inc		ebx
 						dec		nSatelites
@@ -361,6 +363,42 @@ GPSExec:
 						invoke GetItemInt,addr linebuff,0
 						mov		altitude.alt,ax
 						invoke InvalidateRect,hGPS,NULL,TRUE
+					.else
+						invoke strcmp,addr buffer,addr szGPGSA
+						.if !eax
+							;Mode M or A
+							invoke GetItemStr,addr linebuff,addr szNULL,addr buffer,32
+							;Mode 1 No fix,2 2D or 3 3D
+							invoke GetItemInt,addr linebuff,0
+							mov		altitude.fixquality,al
+							xor		ebx,ebx
+							xor		edi,edi
+							.while ebx<12
+								mov		satelites.Fixed[edi],FALSE
+								lea		edi,[edi+sizeof SATELITE]
+								inc		ebx
+							.endw
+							xor		ebx,ebx
+							.while ebx<12
+								invoke GetItemInt,addr linebuff,0
+								.if eax
+									push	ebx
+									xor		ebx,ebx
+									xor		edi,edi
+									.while ebx<12
+										.if al==satelites.SatelliteID[edi]
+											mov		satelites.Fixed[edi],TRUE
+										  .break
+										.endif
+										lea		edi,[edi+sizeof SATELITE]
+										inc		ebx
+									.endw
+									pop		ebx
+								.endif
+								inc		ebx
+							.endw
+							invoke InvalidateRect,hGPS,NULL,TRUE
+						.endif
 					.endif
 				.endif
 			.endif
@@ -846,8 +884,13 @@ GPSProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				movzx	eax,satelites.Azimuth[edi]
 				invoke wsprintf,addr buffer[10],addr szFmtDec3,eax
 				.if satelites.SNR[edi]
-					push	06000h
-					mov		eax,29
+					.if satelites.Fixed[edi]
+						push	06000h
+						mov		eax,29
+					.else
+						push	0800000h
+						mov		eax,31
+					.endif
 				.else
 					push	080h
 					mov		eax,30
