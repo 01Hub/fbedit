@@ -15,7 +15,7 @@ IDC_BTNLEFT             equ 1213
 
 .const
 
-szSpeed					BYTE 'Speed Options',0
+szSpeedOpt				BYTE 'Speed Options',0
 szBattery				BYTE 'Battery Options',0
 szTemprature			BYTE 'Temprature Options',0
 szScale					BYTE 'Map Scale Options',0
@@ -130,7 +130,7 @@ OptionsProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 		mov		eax,lParam
 		mov		nOptType,eax
 		.if !eax
-			mov		eax,offset szSpeed
+			mov		eax,offset szSpeedOpt
 		.elseif eax==1
 			mov		eax,offset szBattery
 		.elseif eax==2

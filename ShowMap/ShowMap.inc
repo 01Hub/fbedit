@@ -393,7 +393,9 @@ SATELITE ends
 ALTITUDE struct
 	fixquality		BYTE ?									;Fix quality
 	nsat			BYTE ?									;Number of satelites tracked
-	hdop			WORD ?									;Horizontal dilution of position * 100
+	hdop			WORD ?									;Horizontal dilution of position * 10
+	vdop			WORD ?									;Vertical dilution of position * 10
+	pdop			WORD ?									;Position dilution of position * 10
 	alt				WORD ?									;Altitude in meters
 ALTITUDE ends
 
@@ -501,7 +503,7 @@ szGPSDemoData		BYTE '$GPRMC,193409,A,6619.0367,N,01411.8237,E,0.0,356.4,230710,2
 					BYTE '$GPGSV,3,1,12,21,64,118,40,6,53,259,,16,52,213,,3,38,272,',0Dh,0Ah
 					BYTE '$GPGSV,3,2,12,18,29,140,36,24,27,216,40,7,24,329,38,26,13,59,38',0Dh,0Ah
 					BYTE '$GPGSV,3,3,12,5,13,27,,29,12,108,,19,10,275,,15,9,76,',0Dh,0Ah
-					BYTE '$GPGSA,A,3,21,,,,,18,24,7,26,,,,,,,,',0Dh,0Ah,0
+					BYTE '$GPGSA,A,3,21,,,,18,24,7,26,,,,,2.50,1.10,2.20',0Dh,0Ah,0
 
 .data?
 
@@ -525,7 +527,7 @@ hMAPThread			HANDLE ?								;Map drawing thread
 fExitMAPThread		DWORD ?									;Flag to exit the map drawing thread
 hGPSThread			HANDLE ?								;Thread to comunicate with GPS
 fExitGPSThread		DWORD ?									;Flag to exit the GPSThread
-hSTMThread			HANDLE ?
+hSTMThread			HANDLE ?								;Thread to comunicate with STM32
 fExitSTMThread		DWORD ?									;Flag to exit the STMThread
 szIniFileName		BYTE MAX_PATH dup(?)					;Path and filename of ini file
 szbuff				BYTE 512 dup(?)							;Temporary buffer

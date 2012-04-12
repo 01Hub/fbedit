@@ -30,13 +30,19 @@ szBinToDec			BYTE '%06d',0
 szFmtTime			BYTE '%02d%02d%02d %02d:%02d:%02d',0
 szColon				BYTE ': ',0
 
-szFix				BYTE 'Fix: ',0
-szHDOP				BYTE 'HDop: ',0
-szSatelites			BYTE 'Sat: ',0
-szAltitude			BYTE 'Alt: ',0
+szFix				BYTE 'Fix:',0
+szHDOP				BYTE 'HDOP:',0
+szVDOP				BYTE 'VDOP:',0
+szPDOP				BYTE 'PDOP:',0
+szSatelites			BYTE 'Sat:',0
+szAltitude			BYTE 'Alt:',0
 szLattitude			BYTE 'Lattitude:',0
 szLongitude			BYTE 'Longitude:',0
 szBearing			BYTE 'Bearing:',0
+szSpeed				BYTE 'Speed:',0
+szNoFix				BYTE 'No fix',0
+szFix2D				BYTE '2D',0
+szFix3D				BYTE '3D',0
 
 .data?
 
@@ -340,25 +346,11 @@ GPSExec:
 						invoke GetItemStr,addr linebuff,addr szNULL,addr buffer,32
 						;Fix quality
 						invoke GetItemInt,addr linebuff,0
-						mov		altitude.fixquality,al
 						;Number of satelites
 						invoke GetItemInt,addr linebuff,0
 						mov		altitude.nsat,al
 						;HDOP
 						invoke GetItemStr,addr linebuff,addr szNULL,addr buffer,32
-						lea		esi,buffer
-						mov		edi,esi
-						.while byte ptr [esi]
-							mov		al,[esi]
-							.if al!='.'
-								mov		[edi],al
-								inc		edi
-							.endif
-							inc		esi
-						.endw
-						mov		byte ptr [edi],0
-						invoke DecToBin,addr buffer
-						mov		altitude.hdop,ax
 						;Altitude
 						invoke GetItemInt,addr linebuff,0
 						mov		altitude.alt,ax
@@ -368,7 +360,7 @@ GPSExec:
 						.if !eax
 							;Mode M or A
 							invoke GetItemStr,addr linebuff,addr szNULL,addr buffer,32
-							;Mode 1 No fix,2 2D or 3 3D
+							;Mode 1=No fix,2=2D or 3=3D
 							invoke GetItemInt,addr linebuff,0
 							mov		altitude.fixquality,al
 							xor		ebx,ebx
@@ -397,6 +389,51 @@ GPSExec:
 								.endif
 								inc		ebx
 							.endw
+							;HDOP
+							invoke GetItemStr,addr linebuff,addr szNULL,addr buffer,32
+							lea		esi,buffer
+							mov		edi,esi
+							.while byte ptr [esi]
+								mov		al,[esi]
+								.if al!='.'
+									mov		[edi],al
+									inc		edi
+								.endif
+								inc		esi
+							.endw
+							mov		byte ptr [edi],0
+							invoke DecToBin,addr buffer
+							mov		altitude.hdop,ax
+							;VDOP
+							invoke GetItemStr,addr linebuff,addr szNULL,addr buffer,32
+							lea		esi,buffer
+							mov		edi,esi
+							.while byte ptr [esi]
+								mov		al,[esi]
+								.if al!='.'
+									mov		[edi],al
+									inc		edi
+								.endif
+								inc		esi
+							.endw
+							mov		byte ptr [edi],0
+							invoke DecToBin,addr buffer
+							mov		altitude.vdop,ax
+							;PDOP
+							invoke GetItemStr,addr linebuff,addr szNULL,addr buffer,32
+							lea		esi,buffer
+							mov		edi,esi
+							.while byte ptr [esi]
+								mov		al,[esi]
+								.if al!='.'
+									mov		[edi],al
+									inc		edi
+								.endif
+								inc		esi
+							.endw
+							mov		byte ptr [edi],0
+							invoke DecToBin,addr buffer
+							mov		altitude.pdop,ax
 							invoke InvalidateRect,hGPS,NULL,TRUE
 						.endif
 					.endif
@@ -938,20 +975,30 @@ GPSProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.endw
 		invoke SetTextColor,mDC,0
 		mov		esi,rect.right
-		sub		esi,480
-		invoke TextOut,mDC,esi,5,addr szFix,5
-		invoke TextOut,mDC,esi,15,addr szHDOP,6
-		invoke TextOut,mDC,esi,25,addr szSatelites,5
-		invoke TextOut,mDC,esi,35,addr szAltitude,5
-		invoke TextOut,mDC,esi,45,addr szLattitude,10
-		invoke TextOut,mDC,esi,55,addr szLongitude,10
-		invoke TextOut,mDC,esi,65,addr szBearing,8
-
+		sub		esi,485
+		invoke TextOut,mDC,esi,5,addr szFix,4
+		invoke TextOut,mDC,esi,15,addr szSatelites,4
+		invoke TextOut,mDC,esi,25,addr szHDOP,5
+		invoke TextOut,mDC,esi,35,addr szVDOP,5
+		invoke TextOut,mDC,esi,45,addr szPDOP,5
+		invoke TextOut,mDC,esi,55,addr szAltitude,4
+		invoke TextOut,mDC,esi,65,addr szLattitude,10
+		invoke TextOut,mDC,esi,75,addr szLongitude,10
+		invoke TextOut,mDC,esi,85,addr szBearing,8
+		invoke TextOut,mDC,esi,95,addr szSpeed,6
 		add		esi,60
 		movzx	eax,altitude.fixquality
+		.if eax==2
+			invoke TextOut,mDC,esi,5,addr szFix2D,2
+		.elseif eax==3
+			invoke TextOut,mDC,esi,5,addr szFix3D,2
+		.else
+			invoke TextOut,mDC,esi,5,addr szNoFix,6
+		.endif
+		movzx	eax,altitude.nsat
 		invoke wsprintf,addr buffer,addr szFmtDec,eax
 		invoke strlen,addr buffer
-		invoke TextOut,mDC,esi,5,addr buffer,eax
+		invoke TextOut,mDC,esi,15,addr buffer,eax
 		movzx	eax,altitude.hdop
 		invoke wsprintf,addr buffer,addr szFmtDec3,eax
 		invoke strlen,addr buffer
@@ -959,15 +1006,27 @@ GPSProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		buffer[eax-2],'.'
 		mov		dword ptr buffer [eax-1],edx
 		inc		eax
-		invoke TextOut,mDC,esi,15,addr buffer,eax
-		movzx	eax,altitude.nsat
-		invoke wsprintf,addr buffer,addr szFmtDec,eax
-		invoke strlen,addr buffer
 		invoke TextOut,mDC,esi,25,addr buffer,eax
+		movzx	eax,altitude.vdop
+		invoke wsprintf,addr buffer,addr szFmtDec3,eax
+		invoke strlen,addr buffer
+		mov		edx,dword ptr buffer[eax-2]
+		mov		buffer[eax-2],'.'
+		mov		dword ptr buffer [eax-1],edx
+		inc		eax
+		invoke TextOut,mDC,esi,35,addr buffer,eax
+		movzx	eax,altitude.pdop
+		invoke wsprintf,addr buffer,addr szFmtDec3,eax
+		invoke strlen,addr buffer
+		mov		edx,dword ptr buffer[eax-2]
+		mov		buffer[eax-2],'.'
+		mov		dword ptr buffer [eax-1],edx
+		inc		eax
+		invoke TextOut,mDC,esi,45,addr buffer,eax
 		movzx	eax,altitude.alt
 		invoke wsprintf,addr buffer,addr szFmtDec,eax
 		invoke strlen,addr buffer
-		invoke TextOut,mDC,esi,35,addr buffer,eax
+		invoke TextOut,mDC,esi,55,addr buffer,eax
 		invoke wsprintf,addr buffer,addr szFmtDec10,mapdata.iLat
 		invoke strlen,addr buffer
 		mov		edx,dword ptr buffer[eax-3]
@@ -981,7 +1040,7 @@ GPSProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.else
 			mov		word ptr buffer,' S'
 		.endif
-		invoke TextOut,mDC,esi,45,addr buffer,eax
+		invoke TextOut,mDC,esi,65,addr buffer,eax
 		invoke wsprintf,addr buffer,addr szFmtDec10,mapdata.iLon
 		invoke strlen,addr buffer
 		mov		edx,dword ptr buffer[eax-3]
@@ -995,10 +1054,17 @@ GPSProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.else
 			mov		word ptr buffer,' W'
 		.endif
-		invoke TextOut,mDC,esi,55,addr buffer,eax
+		invoke TextOut,mDC,esi,75,addr buffer,eax
 		invoke BinToDec,mapdata.iBear,addr buffer
 		invoke strlen,addr buffer
-		invoke TextOut,mDC,esi,65,addr buffer,eax
+		invoke TextOut,mDC,esi,85,addr buffer,eax
+		invoke wsprintf,addr buffer,addr szFmtDec2,mapdata.iSpeed
+		invoke strlen,addr buffer
+		mov		edx,dword ptr buffer[eax-1]
+		mov		buffer[eax-1],'.'
+		mov		dword ptr buffer [eax],edx
+		inc		eax
+		invoke TextOut,mDC,esi,95,addr buffer,eax
 		invoke BitBlt,ps.hdc,0,0,rect.right,rect.bottom,mDC,0,0,SRCCOPY
 		pop		eax
 		invoke SelectObject,mDC,eax
