@@ -52,7 +52,7 @@ Map top left
 
 Sonar Description
 =================
-A short ping at 200 KHz is transmitted at intervals depending on depth range (200 to 400 ms).
+A short ping at 200 KHz is transmitted at intervals depending on depth range (200 to 800 ms).
 From the time it takes for the echo to return we can calculate the depth.
 The ADC measures the strenght of the echo at intervalls depending on range
 and stores it in a 512 byte array.
@@ -73,12 +73,12 @@ Since it is the echo we are measuring: 690 * 2 = 1380 us
 
 Two timers are needed:
 1. Timer to generate the 200 KHz two phase none overlapping clock ping signal.
-   The number of pulses is variable (0 to 128).
+   The number of pulses is variable (0 to 255).
 2. Timer to generate an interrupt for every pixel. The interval depends on selected range.
 
 Time needed for the different ranges:
 =======================================================================================================================
-Range		Time for echo to return		Pixel time					cm / Pixel						Pixel Timer
+Range		Time for echo to return		Pixel time					cm / Pixel						Pixel Timer (40MHz)
 =======================================================================================================================
   2 m		1380 *   2 =   2760 us		  2760 / 512 =    5,4 us	   5,4 / 1380 * 100 =  0,39 cm		  215
   4 m		1380 *   4 =   5520 us		  5520 / 512 =   10,8 us	  10,8 / 1380 * 100 =  0,78 cm		  430
@@ -129,8 +129,7 @@ PA10  	USART1 RX, GPS Data
 
 Transmitter transformer
 =======================
-Primary 6+6 turns and secondary 300 turns on an 8mm air core.
-I used a core found in a 11W light bulb. The ferrite core was removed.
+Primary 4+4 turns and secondary 200 turns on an 7.5mm square core.
 
 Receiver transformers
 =====================
@@ -150,8 +149,8 @@ Mouser Number Impedance Application Slug Colour Turns Ratio Nominal Inductance T
 42IF301		  50K : 500 1st I.F		Yellow Type	20 : 1		680 uH			   77			 66			   7
 42IF102		  30K : 500 2nd I.F		White Type	22 : 1		680 uH			   98			 57			   7
 42IF302		  30K : 500 2nd I.F		White Type	22 : 1		680 uH			   95			 48			   7
-42IF103		  20K : 6K  3rd I.F		Black Type	6 : 1		680 uH			   103			 50			   27
-42IF303		  20K : 5K  3rd I.F		Black Type	7 : 1		680 uH			   102			 41			   21
+42IF103		  20K : 6K  3rd I.F		Black Type	 6 : 1		680 uH			   103			 50			   27
+42IF303		  20K : 5K  3rd I.F		Black Type	 7 : 1		680 uH			   102			 41			   21
 ========================================================================================================================
 
 3	o---+---C | C---o	4
@@ -184,82 +183,65 @@ Mouser IF coils:	http://www.mouser.com/catalog/specsheets/XC-600131.pdf
 Hybrid IF:			http://www.ka7exm.net/hycas/hycas_200712_qst.pdf
 JFET:				http://www.w7zoi.net/jfet101.pdf
 
-Air temprature readings
-===========================
-Temprature		ADC Reading
-===========================
-	45				 980
-	40				1116
-	35				1268
-	30				1441
-	25				1610
-	20				1820
-	17				1926
-	15				2015
-	10				2218
-	 5				2522
-	 2				2563
-===========================
- 
-(T1-Tx)/(V1-Vx)=(T1-T2)/(V1-V2)
-T1-Tx=(T1-T2)/(V1-V2)*(V1-Vx)
-Tx=-((T1-T2)/(V1-V2)*(V1-Vx)+T1)
-
-(15-20)/(2015-1820)*(2015-1900)+15
-
-dT1/dV1=dT2/dV2
-dT1=dT2/dV2*dV1
-
-Rx=15*Vx/(3-Vx)
-
-17C --> Vx = 3/4095*1926 = 1.41 = 13.3K
-27C --> Vx = 3/4095*1547 = 1.13 = 8.98K
-37C --> Vx = 3/4095*1208 = 0.88 = 6.23K
-
-Resiver sensivity for a full
+Receiver sensivity for a full
 scale reading:
-===============================
-Input voltage		 Gain level
-===============================
-1000mV					 533
- 500mV					 602
- 200mV					 695
- 100mV					 730
-  50mV					 760
-  20mV					 804
-  10mV					 836
-   5mV					 889
-   2mV					 990
-1000uV					1146
- 500uV					1324
- 200uV					1690
- 100uV					2046
-  50uV					2598
-  20uV					3700
-  15uV					4095
-===============================
+=============================
+Input voltage	   Gain level
+=============================
+1000mV					  533
+ 500mV					  602
+ 200mV					  695
+ 100mV					  730
+  50mV					  760
+  20mV					  804
+  10mV					  836
+   5mV					  889
+   2mV					  990
+1000uV					 1146
+ 500uV					 1324
+ 200uV					 1690
+ 100uV					 2046
+  50uV					 2598
+  20uV					 3700
+  15uV					 4095
+=============================
 
 Gain levels Ping 64
 =============================
 Range			Single bottom
 =============================
- 2						 750
- 4						 820
- 6						 840
- 8						 860
-10						 910
-14						 980
-20						1250
-30						1280
-40						1400
-50						1960
+ 2						  750
+ 4						  820
+ 6						  840
+ 8						  860
+10						  910
+14						  980
+20						 1250
+30						 1280
+40						 1400
+50						 1960
 =============================
 
 Gain levels Ping 128
 =============================
 Range			Single bottom
 =============================
- 70						2630
-100						3280
-============================
+ 70						 2630
+100						 3280
+=============================
 
+Water temprature readings
+===========================
+Temprature		ADC Reading
+===========================
+  18.8				    835
+  0.0				   1750
+===========================
+
+Air temprature readings
+===========================
+Temprature		ADC Reading
+===========================
+  23.5				   1165
+  0.0				   2485
+===========================

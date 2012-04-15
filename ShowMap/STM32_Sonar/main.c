@@ -89,9 +89,9 @@ int main(void)
   ADC_Startup();
   /* ADC1 injected channel configuration */
   ADC_Configuration();
-  /* Enable DAC channel1 */
+  /* Enable DAC channel1, buffered output */
   DAC->CR = 0x1;
-  // DAC->CR = 0x3;
+  //DAC->CR = 0x3;
   /* Set the DAC to output lowest gain */
   DAC->DHR12R1 = (u16)0x0;
   /* Setup USART1 4800 baud */
@@ -112,8 +112,8 @@ int main(void)
   rs232_puts("$PSRF103,00,00,05,00*20\r\n\0");
   /* Disable GLL message */
   rs232_puts("$PSRF103,01,00,00,01*25\r\n\0");
-  /* Disable GSA message */
-  rs232_puts("$PSRF103,02,00,00,01*26\r\n\0");
+  /* Enable GSA message, rate 5 seconds */
+  rs232_puts("$PSRF103,02,00,05,00*22\r\n\0");
   /* Enable GSV message, rate 5 seconds */
   rs232_puts("$PSRF103,03,00,05,00*23\r\n\0");
   /* Ensable RMC message, rate 1 second */

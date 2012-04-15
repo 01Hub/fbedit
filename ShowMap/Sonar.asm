@@ -48,7 +48,8 @@ IDC_CBORANGE			equ 1603
 IDC_STCX				equ 1606
 IDC_STCY				equ 1607
 IDC_EDTGAINOFS			equ 1608
-IDC_EDTGAINMAX			equ 1609
+IDC_EDTGAINMAX			equ 1611
+IDC_EDTGAINDEPTH		equ 1609
 IDC_BTNCALCULATE		equ 1610
 
 GAINXOFS				equ 60
@@ -100,18 +101,18 @@ SetRange endp
 ;
 ;1450m/s is probably a good estimate.
 ;
-;The timer is clocked at 56 MHz so it increments every 0,0178571 us.
-;For each tick the sound travels 1450 * 0,0178571 = 25,8929 um or 25,8929e-6 meters.
+;The timer is clocked at 40 MHz so it increments every 0,025us.
+;For each tick the sound travels 1450 * 0,025 = 36,25 um or 36,25e-6 meters.
 
 ;Timer value calculation
 ;=======================
-;Example 2m range and 56 MHz clock
-;Timer period Tp=1/56MHz
+;Example 2m range and 40 MHz clock
+;Timer period Tp=1/40MHz
 ;Each pixel is Px=2m/512.
 ;Time for each pixel is t=Px/1450/2
 ;Timer ticks Tt=t/Tp
 
-;Formula T=((Range/512)/(1450/2))56000000
+;Formula T=((Range/512)/(1450/2))40000000
 
 RangeToTimer proc RangeInx:DWORD
 	LOCAL	tmp:DWORD
@@ -488,6 +489,7 @@ SonarGainOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lPar
 	LOCAL	ps:PAINTSTRUCT
 	LOCAL	buffer[256]:BYTE
 	LOCAL	tmp:DWORD
+	LOCAL	max:DWORD
 	LOCAL	ftmp:REAL8
 	LOCAL	frng:REAL8
 	LOCAL	gain[MAXYECHO+1]:WORD
@@ -522,9 +524,11 @@ SonarGainOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lPar
 		invoke ImageList_GetIcon,hIml,4,ILD_NORMAL
 		invoke SendDlgItemMessage,hWin,IDC_BTNXU,BM_SETIMAGE,IMAGE_ICON,eax
 		invoke SetDlgItemInt,hWin,IDC_EDTGAINOFS,sonardata.gainofs,FALSE
-		invoke SendDlgItemMessage,hWin,IDC_EDTGAINOFS,EM_LIMITTEXT,3,0
+		invoke SendDlgItemMessage,hWin,IDC_EDTGAINOFS,EM_LIMITTEXT,4,0
 		invoke SetDlgItemInt,hWin,IDC_EDTGAINMAX,sonardata.gainmax,FALSE
-		invoke SendDlgItemMessage,hWin,IDC_EDTGAINMAX,EM_LIMITTEXT,3,0
+		invoke SendDlgItemMessage,hWin,IDC_EDTGAINMAX,EM_LIMITTEXT,4,0
+		invoke SetDlgItemInt,hWin,IDC_EDTGAINDEPTH,sonardata.gaindepth,FALSE
+		invoke SendDlgItemMessage,hWin,IDC_EDTGAINDEPTH,EM_LIMITTEXT,3,0
 		;Subclass buttons to get autorepeat
 		push	0
 		push	IDC_BTNXD
@@ -572,17 +576,25 @@ SonarGainOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lPar
 					lea		esi,[esi+sizeof RANGE]
 					inc		ebx
 				.endw
+				mov		szbuff,0
+				invoke PutItemInt,addr szbuff,sonardata.gainofs
+				invoke PutItemInt,addr szbuff,sonardata.gainmax
+				invoke PutItemInt,addr szbuff,sonardata.gaindepth
+				invoke WritePrivateProfileString,addr szIniSonarRange,addr szIniGainDef,addr szbuff+1,addr szIniFileName
 				invoke EndDialog,hWin,NULL
 			.elseif eax==IDC_BTNCALCULATE
 				invoke GetDlgItemInt,hWin,IDC_EDTGAINOFS,NULL,FALSE
 				mov		sonardata.gainofs,eax
 				invoke GetDlgItemInt,hWin,IDC_EDTGAINMAX,NULL,FALSE
 				mov		sonardata.gainmax,eax
-				mov		eax,4095
+				invoke GetDlgItemInt,hWin,IDC_EDTGAINDEPTH,NULL,FALSE
+				mov		sonardata.gaindepth,eax
+				mov		eax,sonardata.gainmax
 				sub		eax,sonardata.gainofs
 				mov		tmp,eax
+				mov		max,eax
 				fild	tmp
-				mov		eax,sonardata.gainmax
+				mov		eax,sonardata.gaindepth
 				mov		tmp,eax
 				fidiv	tmp
 				fstp	ftmp
@@ -597,16 +609,28 @@ SonarGainOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lPar
 					fstp	frng
 					fldz
 					xor		edi,edi
+					xor		edx,edx
 					.while edi<MAXYECHO
 						fist	tmp
-						mov		eax,tmp
-						mov		[esi].RANGE.gain[edi*DWORD],eax
+						mov		ecx,edi
+						and		ecx,31
+						.if !ecx
+							mov		eax,tmp
+							.if eax>max
+								mov		eax,max
+							.endif
+							mov		[esi].RANGE.gain[edx*DWORD],eax
+							inc		edx
+						.endif
 						fadd	frng
 						inc		edi
 					.endw
 					fistp	tmp
 					mov		eax,tmp
-					mov		[esi].RANGE.gain[edi*DWORD],eax
+					.if eax>max
+						mov		eax,max
+					.endif
+					mov		[esi].RANGE.gain[edx*DWORD],eax
 					lea		esi,[esi+sizeof RANGE]
 					inc		ebx
 				.endw
@@ -668,6 +692,7 @@ Invalidate:
 	add		eax,261
 	mov		rect.bottom,eax
 	invoke InvalidateRect,hWin,addr rect,TRUE
+	inc		sonardata.fGainUpload
 	retn
 
 SetupGain:
@@ -954,15 +979,18 @@ SetBattery:
 SetWTemp:
 	.if eax!=sonardata.WTemp
 		mov		sonardata.WTemp,eax
-		sub		eax,0BC8h
+		sub		eax,watertempoffset
 		neg		eax
 		mov		tmp,eax
 		fild	tmp
 		fld		watertempconv
 		fdivp	st(1),st
 		fistp	tmp
-		sub		tmp,164
-		invoke wsprintf,addr buffer,addr szFmtDec,tmp
+		.if sdword ptr tmp<0
+			invoke wsprintf,addr buffer,addr szFmtDec3,tmp
+		.else
+			invoke wsprintf,addr buffer,addr szFmtDec2,tmp
+		.endif
 		invoke strlen,addr buffer
 		movzx	ecx,word ptr buffer[eax-1]
 		shl		ecx,8
@@ -975,45 +1003,26 @@ SetWTemp:
 
 SetATemp:
 	.if eax!=sonardata.ATemp
-		xor		ebx,ebx
-		mov		esi,offset atemp
-		.while ebx<NATEMP
-			.if eax<[esi+ebx*sizeof TEMP].TEMP.adcvalue && eax>=[esi+ebx*sizeof TEMP+sizeof TEMP].TEMP.adcvalue
-				.break
-			.endif
-			inc		ebx
-		.endw
-		.if ebx<NATEMP
-			mov		sonardata.ATemp,eax
-			;Tx=(T1-T2)/(V1-V2)*(V1-Vx)+T1
-			mov		eax,[esi+ebx*sizeof TEMP].TEMP.temp
-			sub		eax,[esi+ebx*sizeof TEMP+sizeof TEMP].TEMP.temp
-			mov		tmp,eax
-			fild	tmp
-			mov		eax,[esi+ebx*sizeof TEMP].TEMP.adcvalue
-			sub		eax,[esi+ebx*sizeof TEMP+sizeof TEMP].TEMP.adcvalue
-			mov		tmp,eax
-			fild	tmp
-			fdivp	st(1),st
-			mov		eax,[esi+ebx*sizeof TEMP].TEMP.adcvalue
-			sub		eax,sonardata.ATemp
-			mov		tmp,eax
-			fild	tmp
-			fmulp	st(1),st
-			fistp	tmp
-			mov		eax,[esi+ebx*sizeof TEMP].TEMP.temp
-			sub		eax,tmp
-			sub		eax,20
-			mov		tmp,eax
-			invoke wsprintf,addr buffer,addr szFmtDec,tmp
-			invoke strlen,addr buffer
-			movzx	ecx,word ptr buffer[eax-1]
-			shl		ecx,8
-			mov		cl,'.'
-			mov		dword ptr buffer[eax-1],ecx
-			invoke strcat,addr buffer,addr szCelcius
-			invoke strcpy,addr mapdata.options.text[sizeof OPTIONS*2],addr buffer
+		mov		sonardata.ATemp,eax
+		sub		eax,airtempoffset
+		neg		eax
+		mov		tmp,eax
+		fild	tmp
+		fld		airtempconv
+		fdivp	st(1),st
+		fistp	tmp
+		.if sdword ptr tmp<0
+			invoke wsprintf,addr buffer,addr szFmtDec3,tmp
+		.else
+			invoke wsprintf,addr buffer,addr szFmtDec2,tmp
 		.endif
+		invoke strlen,addr buffer
+		movzx	ecx,word ptr buffer[eax-1]
+		shl		ecx,8
+		mov		cl,'.'
+		mov		dword ptr buffer[eax-1],ecx
+		invoke strcat,addr buffer,addr szCelcius
+		invoke strcpy,addr mapdata.options.text[sizeof OPTIONS*2],addr buffer
 	.endif
 	retn
 
@@ -2543,6 +2552,8 @@ LoadSonarFromIni proc uses ebx esi edi
 	mov		sonardata.gainofs,eax
 	invoke GetItemInt,addr buffer,0
 	mov		sonardata.gainmax,eax
+	invoke GetItemInt,addr buffer,0
+	mov		sonardata.gaindepth,eax
 	;Get the range definitions
 	xor		ebx,ebx
 	xor		edi,edi

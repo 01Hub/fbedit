@@ -1136,6 +1136,9 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.elseif eax==IDC_CHKSHOWSAT
 				xor		sonardata.fShowSat,TRUE
 				invoke SendMessage,hWin,WM_SIZE,0,0
+			.elseif eax==IDC_CHKSHOWNMEA
+				xor		mapdata.fShowNMEA,TRUE
+				invoke SendMessage,hWin,WM_SIZE,0,0
 			.elseif eax==IDC_CBOGOTOPLACE
 				invoke SendDlgItemMessage,hWin,IDC_CBOGOTOPLACE,CB_GETCURSEL,0,0
 				invoke SendDlgItemMessage,hWin,IDC_CBOGOTOPLACE,CB_GETITEMDATA,eax,0
@@ -1235,14 +1238,19 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				sub		rect.bottom,SATHT
 				invoke MoveWindow,hSonar,rect.right,0,ebx,rect.bottom,TRUE
 				invoke MoveWindow,hGPS,rect.right,rect.bottom,ebx,SATHT,TRUE
-;				invoke GetDlgItem,hWin,IDC_EDTGPSLOGG
-;				invoke MoveWindow,eax,rect.right,rect.bottom,ebx,SATHT,TRUE
 			.else
 				invoke MoveWindow,hSonar,rect.right,0,ebx,rect.bottom,TRUE
 				invoke MoveWindow,hGPS,rect.right,rect.bottom,0,0,TRUE
 			.endif
 			pop		rect.bottom
 			sub		rect.right,4
+			invoke GetDlgItem,hWin,IDC_EDTGPSLOGG
+			.if mapdata.fShowNMEA
+				sub		rect.bottom,SATHT
+				invoke MoveWindow,eax,0,rect.bottom,rect.right,SATHT,TRUE
+			.else
+				invoke MoveWindow,eax,0,rect.bottom,0,0,TRUE
+			.endif
 			invoke MoveWindow,hMap,0,0,rect.right,rect.bottom,TRUE
 			add		rect.right,ebx
 			add		rect.right,4
@@ -1270,6 +1278,9 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke MoveWindow,eax,rect.right,rect.top,80,16,TRUE
 		add		rect.top,17
 		invoke GetDlgItem,hWin,IDC_CHKSHOWSAT
+		invoke MoveWindow,eax,rect.right,rect.top,80,16,TRUE
+		add		rect.top,17
+		invoke GetDlgItem,hWin,IDC_CHKSHOWNMEA
 		invoke MoveWindow,eax,rect.right,rect.top,80,16,TRUE
 		add		rect.top,19
 		invoke GetDlgItem,hWin,IDC_CBOGOTOPLACE
@@ -1539,7 +1550,7 @@ NMEACheckSum proc
 
 .data
 ;NMEAstr		db 'PSRF100,1,4800,8,1,0',0
-NMEAstr		db 'PSRF103,00,00,05,00',0
+NMEAstr		db 'PSRF103,02,00,05,00',0
 .code
 	mov		edx,offset NMEAstr
 	xor		eax,eax

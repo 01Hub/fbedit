@@ -51,6 +51,7 @@ IDC_CHKLOCK				equ 1007
 IDC_CHKTRAIL			equ 1008
 IDC_CHKGRID				equ 1014
 IDC_CHKSHOWSAT			equ 1024
+IDC_CHKSHOWNMEA			equ 1027
 IDC_CBOGOTOPLACE        equ 1004
 IDC_EDTNORTH            equ 1005
 IDC_EDTEAST             equ 1006
@@ -187,15 +188,6 @@ OPTIONS struct
 	text			BYTE 16 dup(?)							;Text to plot on map screen
 OPTIONS ends
 
-COM struct
-	active			DWORD ?									;Communication with GPS is active if TRUE
-	szcom			BYTE 16 dup(?)							;Com port (COM1, COM2 ...)
-	nbaud			DWORD ?									;Baudrate (4800 to 38400)
-	nbits			DWORD ?									;Data bits (7 or 8)
-	nparity			DWORD ?									;Parity bit (False/True)
-	nstop			DWORD ?									;Stop bits (0 or 1)
-COM ends
-
 LOG struct
 	iLon			DWORD ?									;Longitude
 	iLat			DWORD ?									;Lattitude
@@ -243,7 +235,6 @@ MAP struct
 	zoom			ZOOM MAXZOOM dup(<>)					;Zoom definitions
 	font			HFONT MAXFONT dup(?)					;Font handles
 	options			OPTIONS MAXMAPOPTION dup(<>)			;Options for overlays on map screen
-	comopt			COM <>									;Comport
 	btrip			DWORD ?									;Trip planning flag, 0 not active, 1 active, 2 done, 3 edit
 	triphead		DWORD ?									;Head index in trip array
 	trip			LOG MAXTRIP dup(<>)						;Trip array
@@ -267,7 +258,25 @@ MAP struct
 	TrailRate		DWORD ?
 	TrailCount		DWORD ?
 	fSTLink			DWORD ?
+	fShowNMEA		DWORD ?
 MAP ends
+
+SATELITE struct
+	SatelliteID		BYTE ?									;Satelite ID
+	Elevation		BYTE ?									;Elevation in degrees (0-90)
+	Azimuth			WORD ?									;Azimuth in degrees (0-359)
+	SNR				BYTE ?									;Signal strenght	(0-50, 0 not tracked) 
+	Fixed			BYTE ?									;TRUE if used in fix
+SATELITE ends
+
+ALTITUDE struct
+	fixquality		BYTE ?									;Fix quality
+	nsat			BYTE ?									;Number of satelites tracked
+	hdop			WORD ?									;Horizontal dilution of position * 10
+	vdop			WORD ?									;Vertical dilution of position * 10
+	pdop			WORD ?									;Position dilution of position * 10
+	alt				WORD ?									;Altitude in meters
+ALTITUDE ends
 
 ;STM32 constants
 STM32_Sonar				equ 20000000h						;STM32 ram address
@@ -312,7 +321,7 @@ RANGE struct
 	pingadd			DWORD ?									;Number of pulses to add to the initial ping (0 to 128). Used when autoping is on
 	nticks			DWORD ?									;Number of ticks on the range scale
 	scale			BYTE 64 dup(?)							;Zero terminated strings of depths on range scale
-	gain			DWORD 17 dup(?)							;Gain levels read from ini file
+	gain			DWORD 17 dup(?)							;Gain increment levels read from ini file
 RANGE ends
 
 SONAR struct
@@ -359,6 +368,7 @@ SONAR struct
 	sonarbmp		SONARBMP MAXSONARBMP dup(<>)			;Array of bitmap tiles
 	gainofs			DWORD ?
 	gainmax			DWORD ?
+	gaindepth		DWORD ?
 	sonarrange		RANGE MAXRANGE dup(<?>)					;Sonar range definitions (max 32)
 	struct
 		Start			BYTE ?								;Set to 1 to init a new ping and echo reading
@@ -382,23 +392,6 @@ SONAR struct
 	zoomofs			DWORD ?									;zoom offset from top
 SONAR ends
 
-SATELITE struct
-	SatelliteID		BYTE ?									;Satelite ID
-	Elevation		BYTE ?									;Elevation in degrees (0-90)
-	Azimuth			WORD ?									;Azimuth in degrees (0-359)
-	SNR				BYTE ?									;Signal strenght	(0-50, 0 not tracked) 
-	Fixed			BYTE ?									;TRUE if used in fix
-SATELITE ends
-
-ALTITUDE struct
-	fixquality		BYTE ?									;Fix quality
-	nsat			BYTE ?									;Number of satelites tracked
-	hdop			WORD ?									;Horizontal dilution of position * 10
-	vdop			WORD ?									;Vertical dilution of position * 10
-	pdop			WORD ?									;Position dilution of position * 10
-	alt				WORD ?									;Altitude in meters
-ALTITUDE ends
-
 SONARREPLAY struct
 	Version			BYTE ?									;201
 	PingPulses		BYTE ?									;Number of pulses in a ping (0 to 128)
@@ -413,11 +406,6 @@ SONARREPLAY struct
 	iSpeed			WORD ?									;Speed in kts
 	iBear			WORD ?									;Degrees
 SONARREPLAY ends
-
-TEMP struct
-	adcvalue		DWORD ?									;Value rad from ADC
-	temp			DWORD ?									;Temprature in Celsius
-TEMP ends
 
 .const
 
@@ -486,24 +474,31 @@ szIcons				BYTE 'None',0							;Icon selection descriptions
 					BYTE 'Blue dot',0,0
 
 szFmtDec			BYTE '%d',0
-szFmtDec2			BYTE '%02u',0
-szFmtDec3			BYTE '%03u',0
+szFmtDec2			BYTE '%02d',0
+szFmtDec3			BYTE '%03d',0
 szFmtDec10			BYTE '%010d',0
 szFmtVolts			BYTE '%02u',0
 szVolts				BYTE 'V',0
-szCelcius			BYTE 'C',0
-watertempconv		REAL8 5.16982758620
 
-NATEMP				equ 14
-atemp				TEMP <3000,-200>,<2900,-150>,<2800,-100>,<2700,-50>,<2600,0>,<2522,50>,<2218,100>,
-						 <2015,150>,<1820,200>,<1610,250>,<1441,300>,<1268,350>,<1116,400>,<980,450>
+szCelcius			BYTE 'C',0
+watertempoffset		DWORD 1750
+watertempconv		REAL8 5.25
+airtempoffset		DWORD 2485
+airtempconv			REAL8 5.60
 
 szGPSDemoData		BYTE '$GPRMC,193409,A,6619.0367,N,01411.8237,E,0.0,356.4,230710,2.0,E',0Dh,0Ah
 					BYTE '$GPGGA,193409,6619.0367,N,01411.8237,E,1,5,1.10,57,M,,,,',0Dh,0Ah
 					BYTE '$GPGSV,3,1,12,21,64,118,40,6,53,259,,16,52,213,,3,38,272,',0Dh,0Ah
 					BYTE '$GPGSV,3,2,12,18,29,140,36,24,27,216,40,7,24,329,38,26,13,59,38',0Dh,0Ah
 					BYTE '$GPGSV,3,3,12,5,13,27,,29,12,108,,19,10,275,,15,9,76,',0Dh,0Ah
-					BYTE '$GPGSA,A,3,21,,,,18,24,7,26,,,,,2.50,1.10,2.20',0Dh,0Ah,0
+					BYTE '$GPGSA,A,3,21,,,,18,24,7,26,,,,,2.5,1.1,2.2',0Dh,0Ah,0
+
+szGPSInitData		BYTE '$PSRF103,00,00,05,00*20',0Dh,0Ah	;Enable GGA message, rate 5 seconds
+					BYTE '$PSRF103,01,00,00,01*25',0Dh,0Ah	;Disable GLL message
+					BYTE '$PSRF103,02,00,05,00*22',0Dh,0Ah	;Enable GSA message, rate 5 seconds
+					BYTE '$PSRF103,03,00,05,00*23',0Dh,0Ah	;Enable GSV message, rate 5 seconds
+					BYTE '$PSRF103,04,00,01,00*20',0Dh,0Ah	;Ensable RMC message, rate 1 second
+					BYTE '$PSRF103,05,00,00,01*21',0Dh,0Ah,0;Disable VTG message
 
 .data?
 

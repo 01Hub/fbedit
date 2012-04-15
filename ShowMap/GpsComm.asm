@@ -11,6 +11,11 @@ IDC_BTNSMOOTHDN			equ 1408
 IDC_TRBSMOOTH			equ 1409
 IDC_BTNSMOOTHUP			equ 1410
 
+SATHT					equ 220
+SATRAD					equ (SATHT-20)/2
+SATTXTWT				equ 78
+SATSIGNALWT				equ 148
+
 .const
 
 szCOM1				BYTE 'COM1',0
@@ -49,19 +54,20 @@ szFix3D				BYTE '3D',0
 hFileLogRead		HANDLE ?
 hFileLogWrite		HANDLE ?
 npos				DWORD ?
-combuff				BYTE 4096 dup(?)
-linebuff			BYTE 512 dup(?)
-logbuff				BYTE 1024 dup(?)
 COMPort				BYTE 16 dup(?)
 BaudRate			BYTE 16 dup(?)
 COMActive			DWORD ?
 hCom				HANDLE ?
 dcb					DCB <>
 to					COMMTIMEOUTS <>
+combuff				BYTE 4096 dup(?)
+linebuff			BYTE 512 dup(?)
+logbuff				BYTE 1024 dup(?)
 
 .code
 
 OpenCom proc
+	LOCAL	dwrrite:DWORD
 
 	.if hCom
 		invoke CloseHandle,hCom
@@ -84,6 +90,9 @@ OpenCom proc
 			mov		to.ReadTotalTimeoutConstant,1
 			mov		to.WriteTotalTimeoutConstant,10
 			invoke SetCommTimeouts,hCom,addr to
+			invoke strlen,addr szGPSInitData
+			mov		edx,eax
+			invoke WriteFile,hCom,addr szGPSInitData,edx,addr dwrrite,NULL
 		.else
 			invoke MessageBox,hWnd,addr szComFailed,addr COMPort,MB_ICONERROR or MB_ABORTRETRYIGNORE
 			.if eax==IDABORT
@@ -190,6 +199,7 @@ GPSThread proc uses ebx esi edi,Param:DWORD
 		 		mov		eax,nRead
 		 		.if eax
 			 		add		ebx,eax
+			 		and		ebx,(sizeof combuff/2)-1
 			 		mov		combuff[ebx],0
 			 		invoke Sleep,10
 			 		jmp		COMGetMore
@@ -272,17 +282,17 @@ GPSExec:
 		.if eax
 			add		ebx,eax
 			push	ebx
-;			.while TRUE
-;				invoke SendDlgItemMessage,hWnd,IDC_EDTGPSLOGG,WM_GETTEXTLENGTH,0,0
-;			  .break .if eax<20000
-;				invoke SendDlgItemMessage,hWnd,IDC_EDTGPSLOGG,EM_LINELENGTH,0,0
-;				inc		eax
-;				invoke SendDlgItemMessage,hWnd,IDC_EDTGPSLOGG,EM_SETSEL,0,eax
-;				invoke SendDlgItemMessage,hWnd,IDC_EDTGPSLOGG,EM_REPLACESEL,FALSE,offset szNULL
-;			.endw
-;			invoke SendDlgItemMessage,hWnd,IDC_EDTGPSLOGG,EM_SETSEL,eax,eax
-;			invoke SendDlgItemMessage,hWnd,IDC_EDTGPSLOGG,EM_REPLACESEL,FALSE,offset linebuff
-;			invoke SendDlgItemMessage,hWnd,IDC_EDTGPSLOGG,EM_REPLACESEL,FALSE,offset szCRLF
+			.while TRUE
+				invoke SendDlgItemMessage,hWnd,IDC_EDTGPSLOGG,WM_GETTEXTLENGTH,0,0
+			  .break .if eax<20000
+				invoke SendDlgItemMessage,hWnd,IDC_EDTGPSLOGG,EM_LINELENGTH,0,0
+				inc		eax
+				invoke SendDlgItemMessage,hWnd,IDC_EDTGPSLOGG,EM_SETSEL,0,eax
+				invoke SendDlgItemMessage,hWnd,IDC_EDTGPSLOGG,EM_REPLACESEL,FALSE,offset szNULL
+			.endw
+			invoke SendDlgItemMessage,hWnd,IDC_EDTGPSLOGG,EM_SETSEL,eax,eax
+			invoke SendDlgItemMessage,hWnd,IDC_EDTGPSLOGG,EM_REPLACESEL,FALSE,offset linebuff
+			invoke SendDlgItemMessage,hWnd,IDC_EDTGPSLOGG,EM_REPLACESEL,FALSE,offset szCRLF
 			.if hFileLogWrite
 				invoke strcpy,addr bufflog,addr linebuff
 				invoke strcat,addr bufflog,addr szCRLF
@@ -815,11 +825,6 @@ GetPointOnCircle proc uses edi,radius:DWORD,angle:DWORD,lpPoint:ptr POINT
 
 GetPointOnCircle endp
 
-SATHT		equ 220
-SATRAD		equ (SATHT-20)/2
-SATTXTWT	equ 78
-SATSIGNALWT	equ 148
-
 GPSProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	rect:RECT
 	LOCAL	srect:RECT
@@ -1000,30 +1005,15 @@ GPSProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke strlen,addr buffer
 		invoke TextOut,mDC,esi,15,addr buffer,eax
 		movzx	eax,altitude.hdop
-		invoke wsprintf,addr buffer,addr szFmtDec3,eax
-		invoke strlen,addr buffer
-		mov		edx,dword ptr buffer[eax-2]
-		mov		buffer[eax-2],'.'
-		mov		dword ptr buffer [eax-1],edx
-		inc		eax
-		invoke TextOut,mDC,esi,25,addr buffer,eax
+		mov		ebx,25
+		call	PrintDOP
 		movzx	eax,altitude.vdop
-		invoke wsprintf,addr buffer,addr szFmtDec3,eax
-		invoke strlen,addr buffer
-		mov		edx,dword ptr buffer[eax-2]
-		mov		buffer[eax-2],'.'
-		mov		dword ptr buffer [eax-1],edx
-		inc		eax
-		invoke TextOut,mDC,esi,35,addr buffer,eax
+		mov		ebx,35
+		call	PrintDOP
 		movzx	eax,altitude.pdop
-		invoke wsprintf,addr buffer,addr szFmtDec3,eax
-		invoke strlen,addr buffer
-		mov		edx,dword ptr buffer[eax-2]
-		mov		buffer[eax-2],'.'
-		mov		dword ptr buffer [eax-1],edx
-		inc		eax
-		invoke TextOut,mDC,esi,45,addr buffer,eax
-		movzx	eax,altitude.alt
+		mov		ebx,45
+		call	PrintDOP
+		movsx	eax,altitude.alt
 		invoke wsprintf,addr buffer,addr szFmtDec,eax
 		invoke strlen,addr buffer
 		invoke TextOut,mDC,esi,55,addr buffer,eax
@@ -1084,5 +1074,15 @@ GPSProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	.endif
 	xor    eax,eax
 	ret
+
+PrintDOP:
+	invoke wsprintf,addr buffer,addr szFmtDec2,eax
+	invoke strlen,addr buffer
+	mov		edx,dword ptr buffer[eax-1]
+	mov		buffer[eax-1],'.'
+	mov		dword ptr buffer [eax],edx
+	inc		eax
+	invoke TextOut,mDC,esi,ebx,addr buffer,eax
+	retn
 
 GPSProc endp
