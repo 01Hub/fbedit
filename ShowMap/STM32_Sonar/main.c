@@ -45,6 +45,8 @@ typedef struct
 static STM32_SonarTypeDef STM32_Sonar;          // 0x20000000
 vu8 BlueLED;                                    // Current state of the blue led
 vu16 Ping;                                      // Value to output to PA1 and PA2 pins
+vu16 Trim;                                      // Output trim value
+vu8 Setup;                                      // Setup mode
 
 /* Private function prototypes -----------------------------------------------*/
 void RCC_Configuration(void);
@@ -75,6 +77,7 @@ int main(void)
   u32 i;
   vu32* ADC;
   u8 Echo;
+  u16 TrimAdd;
   /* System clocks configuration */
   RCC_Configuration();
   /* NVIC configuration */
@@ -89,11 +92,13 @@ int main(void)
   ADC_Startup();
   /* ADC1 injected channel configuration */
   ADC_Configuration();
-  /* Enable DAC channel1, buffered output */
-  DAC->CR = 0x1;
-  //DAC->CR = 0x3;
-  /* Set the DAC to output lowest gain */
+  /* Enable DAC channel1 and channel2, buffered output */
+  DAC->CR = 0x10001;
+  /* Set the DAC channel1 to output lowest gain */
   DAC->DHR12R1 = (u16)0x0;
+  /* Set the DAC channel2 to output middle output trim */
+  DAC->DHR12R2 = (u16)0x80;
+  Trim = (u16)0x80;
   /* Setup USART1 4800 baud */
   USART_Configuration(4800);
   /* Wait until GPS module has started up */
@@ -101,10 +106,12 @@ int main(void)
   while (i++ < 20000000)
   {
   }
+  Setup = 0;
   if (GPIO_ReadInputDataBit(GPIOA,GPIO_Pin_0))
   {
     /* Enable TIM3 */
     TIM_Cmd(TIM3, ENABLE);
+    Setup = 1;
   }
   // /* Switch to NMEA protocol at 4800,8,N,1 */
   // rs232_puts("$PSRF100,1,4800,8,1,0*0E\r\n\0");
@@ -148,11 +155,35 @@ int main(void)
         STM32_Sonar.EchoArray[i++] = 0;
       }
       /* Read battery */
-      STM32_Sonar.ADCBatt = GetADCValue(ADC_Channel_5);
+      STM32_Sonar.ADCBatt = GetADCValue(ADC_Channel_14);
       /* Read water temprature */
       STM32_Sonar.ADCWaterTemp = GetADCValue(ADC_Channel_6);
       /* Read air temprature */
       STM32_Sonar.ADCAirTemp = GetADCValue(ADC_Channel_7);
+      if (Setup)
+      {
+        /* No ping in setup mode */
+        STM32_Sonar.PingPulses = 0;
+      }
+      else
+      {
+        /* Trim output to zero */
+        Trim = (u16)0x80;
+        TrimAdd = (u16)0x40;
+        while (TrimAdd)
+        {
+          DAC->DHR12R2 = Trim;
+          if (GetADCValue(ADC_Channel_3))
+          {
+            Trim = Trim + TrimAdd;
+          }
+          else
+          {
+            Trim = Trim - TrimAdd;
+          }
+          TrimAdd = TrimAdd / 2;
+        }
+      }
       /* Enable ADC injected channel */
       ADC_AutoInjectedConvCmd(ADC1, ENABLE);
       /* Set the TIM1 Autoreload value */
@@ -560,11 +591,16 @@ void GPIO_Configuration(void)
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
   GPIO_Init(GPIOA, &GPIO_InitStructure);
-  /* Configure ADC Channel7 (PA.07), ADC Channel6 (PA.06), ADC Channel5 (PA.05), DAC Channel1 (PA.04) and ADC Channel3 (PA.03) as analog input */
+  /* Configure ADC Channel7 (PA.07), ADC Channel6 (PA.06), DAC Channel2 (PA.05), DAC Channel1 (PA.04) and ADC Channel3 (PA.03) as analog input */
   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_7 | GPIO_Pin_6 | GPIO_Pin_5 | GPIO_Pin_4 | GPIO_Pin_3;
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AIN;
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
   GPIO_Init(GPIOA, &GPIO_InitStructure);
+  /* Configure ADC Channel14 (PC.04) */
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_4;
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AIN;
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+  GPIO_Init(GPIOC, &GPIO_InitStructure);
   /* Configure PA9 USART1 Tx as alternate function push-pull */
   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9;
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;

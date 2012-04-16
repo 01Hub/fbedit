@@ -431,13 +431,13 @@ szBS				BYTE '\',0
 szCRLF				BYTE 0Dh,0Ah,0
 
 szIniFile			BYTE 'ShowMap.ini',0					;File name of ini file
-szFishWav			BYTE '\Wav\fish.wav',0
+szFishWav			BYTE '\Wav\fish.wav',0					;File name of fish alarm
 
-szIniWin			BYTE 'Win',0
+szIniWin			BYTE 'Win',0							;Ini file app / key
 szIniMap			BYTE 'Map',0
 szIniMapRect		BYTE 'MapRect',0
 szIniLatArray		BYTE 'LatArray',0
-szIniPlace			BYTE 'Place',0							;Ini file app / key
+szIniPlace			BYTE 'Place',0
 szIniPos			BYTE 'Pos',0
 szIniZoom			BYTE 'Zoom',0
 szIniFont			BYTE 'Font',0
