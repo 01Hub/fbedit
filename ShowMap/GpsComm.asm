@@ -282,17 +282,15 @@ GPSExec:
 		.if eax
 			add		ebx,eax
 			push	ebx
-			.while TRUE
-				invoke SendDlgItemMessage,hWnd,IDC_EDTGPSLOGG,WM_GETTEXTLENGTH,0,0
-			  .break .if eax<20000
-				invoke SendDlgItemMessage,hWnd,IDC_EDTGPSLOGG,EM_LINELENGTH,0,0
-				inc		eax
-				invoke SendDlgItemMessage,hWnd,IDC_EDTGPSLOGG,EM_SETSEL,0,eax
-				invoke SendDlgItemMessage,hWnd,IDC_EDTGPSLOGG,EM_REPLACESEL,FALSE,offset szNULL
-			.endw
-			invoke SendDlgItemMessage,hWnd,IDC_EDTGPSLOGG,EM_SETSEL,eax,eax
-			invoke SendDlgItemMessage,hWnd,IDC_EDTGPSLOGG,EM_REPLACESEL,FALSE,offset linebuff
-			invoke SendDlgItemMessage,hWnd,IDC_EDTGPSLOGG,EM_REPLACESEL,FALSE,offset szCRLF
+			;Update NMEA logg
+			invoke SendDlgItemMessage,hWnd,IDC_LSTNMEA,LB_GETCOUNT,0,0
+			mov		ebx,eax
+			.if eax>10000
+				invoke SendDlgItemMessage,hWnd,IDC_LSTNMEA,LB_DELETESTRING,0,0
+				dec		ebx
+			.endif
+			invoke SendDlgItemMessage,hWnd,IDC_LSTNMEA,LB_ADDSTRING,0,offset linebuff
+			invoke SendDlgItemMessage,hWnd,IDC_LSTNMEA,LB_SETCURSEL,ebx,0
 			.if hFileLogWrite
 				invoke strcpy,addr bufflog,addr linebuff
 				invoke strcat,addr bufflog,addr szCRLF
@@ -403,45 +401,54 @@ GPSExec:
 							invoke GetItemStr,addr linebuff,addr szNULL,addr buffer,32
 							lea		esi,buffer
 							mov		edi,esi
+							mov		edx,esi
 							.while byte ptr [esi]
 								mov		al,[esi]
 								.if al!='.'
 									mov		[edi],al
 									inc		edi
+								.else
+									lea		edx,[edi+1]
 								.endif
 								inc		esi
 							.endw
-							mov		byte ptr [edi],0
+							mov		byte ptr [edx],0
 							invoke DecToBin,addr buffer
 							mov		altitude.hdop,ax
 							;VDOP
 							invoke GetItemStr,addr linebuff,addr szNULL,addr buffer,32
 							lea		esi,buffer
 							mov		edi,esi
+							mov		edx,esi
 							.while byte ptr [esi]
 								mov		al,[esi]
 								.if al!='.'
 									mov		[edi],al
 									inc		edi
+								.else
+									lea		edx,[edi+1]
 								.endif
 								inc		esi
 							.endw
-							mov		byte ptr [edi],0
+							mov		byte ptr [edx],0
 							invoke DecToBin,addr buffer
 							mov		altitude.vdop,ax
 							;PDOP
 							invoke GetItemStr,addr linebuff,addr szNULL,addr buffer,32
 							lea		esi,buffer
 							mov		edi,esi
+							mov		edx,esi
 							.while byte ptr [esi]
 								mov		al,[esi]
 								.if al!='.'
 									mov		[edi],al
 									inc		edi
+								.else
+									lea		edx,[edi+1]
 								.endif
 								inc		esi
 							.endw
-							mov		byte ptr [edi],0
+							mov		byte ptr [edx],0
 							invoke DecToBin,addr buffer
 							mov		altitude.pdop,ax
 							invoke InvalidateRect,hGPS,NULL,TRUE

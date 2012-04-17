@@ -1244,7 +1244,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.endif
 			pop		rect.bottom
 			sub		rect.right,4
-			invoke GetDlgItem,hWin,IDC_EDTGPSLOGG
+			invoke GetDlgItem,hWin,IDC_LSTNMEA
 			.if mapdata.fShowNMEA
 				sub		rect.bottom,SATHT
 				invoke MoveWindow,eax,0,rect.bottom,rect.right,SATHT,TRUE

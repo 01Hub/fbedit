@@ -119,10 +119,11 @@ PA2		Ping phase 1 out
 
 PA3		ADC Echo in, ADC_Channel_3
 PA4		DAC channel1 Gain control out
-PA5		ADC Battery in, ADC_Channel_5
+PA5		DAC channel2 Trim control out
 PA6		ADC Water temprature in, ADC_Channel_6
 PA7		ADC Air temprature in, ADC_Channel_7
 PB0		200 KHz Setup signal
+PC4		ADC Battery in, ADC_Channel_5
 
 PA9   	USART1 TX, GPS Configuration
 PA10  	USART1 RX, GPS Data
@@ -130,13 +131,15 @@ PA10  	USART1 RX, GPS Data
 Transmitter transformer
 =======================
 Primary 4+4 turns and secondary 200 turns on an 7.5mm square core.
+The secondary is wound in 4 layers, each layer insulated with tape.
 
 Receiver transformers
 =====================
 455KHz IF transformers, Toko type 7P core (http://www.toko.com.hk/Catalog/coils/7p.pdf).
 
-T1		Primary 70+7 turns, secondary 7 turns, Toko type 7P yellow IF coil rewound to spec.
-T2		455 KHz IF transformer, Toko type 7P white IF coil.
+T1		796 KHz IF transformer, Toko type 7P orange IF coil.
+T2		455 KHz IF transformer, Toko type 7P yellow IF coil.
+T3		455 KHz IF transformer, Toko type 7P white IF coil.
 
 Some specifications on Mouser 455KHz IF transformers
 ====================================================
