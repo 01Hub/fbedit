@@ -97,7 +97,7 @@ int main(void)
   /* Set the DAC channel1 to output lowest gain */
   DAC->DHR12R1 = (u16)0x0;
   /* Set the DAC channel2 to output middle output trim */
-  DAC->DHR12R2 = (u16)0x80;
+  DAC->DHR12R2 = (u16)0x400;
   Trim = (u16)0x80;
   /* Setup USART1 4800 baud */
   USART_Configuration(4800);
@@ -168,12 +168,14 @@ int main(void)
       else
       {
         /* Trim output to zero */
-        Trim = (u16)0x80;
-        TrimAdd = (u16)0x40;
+        Trim = (u16)0x400;
+        TrimAdd = (u16)0x200;
         while (TrimAdd)
         {
           DAC->DHR12R2 = Trim;
-          if (GetADCValue(ADC_Channel_3))
+          i = 1000;
+          while (i--);
+          if (GetADCValue(ADC_Channel_3)>2)
           {
             Trim = Trim + TrimAdd;
           }
