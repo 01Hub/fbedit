@@ -29,7 +29,7 @@ Since it is the echo we are measuring: 690 * 2 = 1380 us
 
 Two timers are needed:
 1. A timer to generate the 200 KHz two phase non overlapping clock to drive the ping
-   output signal. The number of pulses is variable (1 to 128). When the ping is done
+   output signal. The number of pulses is variable (0 to 255). When the ping is done
    the timer is disabled and a second timer and the ADC channel reading the echo is
    enabled.
 2. A timer to generate an interrupt for every pixel. The interval depends on range.
@@ -85,9 +85,10 @@ PA2		Ping phase 1 out
 
 PA3		ADC Echo in, ADC_Channel_3
 PA4		DAC channel1 Gain control out
-PA5		ADC Battery in, ADC_Channel_5
+PA5		DAC channel2 Output trim control out
 PA6		ADC Water temprature in, ADC_Channel_6
 PA7		ADC Air temprature in, ADC_Channel_7
+PC4		ADC Battery in, ADC_Channel_14
 
 PB0   200KHz output in setup mode
 

@@ -167,7 +167,7 @@ int main(void)
       }
       else
       {
-        /* Trim output to zero */
+        /* Trim echo output to near zero */
         Trim = (u16)0x400;
         TrimAdd = (u16)0x200;
         while (TrimAdd)
@@ -175,7 +175,7 @@ int main(void)
           DAC->DHR12R2 = Trim;
           i = 1000;
           while (i--);
-          if (GetADCValue(ADC_Channel_3)>2)
+          if (GetADCValue(ADC_Channel_3)>3)
           {
             Trim = Trim + TrimAdd;
           }
@@ -224,10 +224,8 @@ int main(void)
       /* Set the DAC to output lowest gain */
       DAC->DHR12R1 = (u16)0x0;
     }
-    i = 0;
-    while (i++ < 1000)
-    {
-    }
+    i = 1000;
+    while (i--);
   }
 }
 
