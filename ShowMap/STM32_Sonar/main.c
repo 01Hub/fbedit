@@ -173,9 +173,9 @@ int main(void)
         while (TrimAdd)
         {
           DAC->DHR12R2 = Trim;
-          i = 1000;
+          i = 10000;
           while (i--);
-          if (GetADCValue(ADC_Channel_3)>3)
+          if (GetADCValue(ADC_Channel_3)>5)
           {
             Trim = Trim + TrimAdd;
           }
