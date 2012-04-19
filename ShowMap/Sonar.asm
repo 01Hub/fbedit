@@ -1234,6 +1234,7 @@ STMThread proc uses ebx esi edi,Param:DWORD
 	mov		iLat,-1
 	mov		iLon,-1
 	invoke RtlZeroMemory,addr STM32Echo,sizeof STM32Echo
+	invoke Sleep,3000
 	.while !fExitSTMThread
 		invoke IsDlgButtonChecked,hWnd,IDC_CHKCHART
 		.if eax
