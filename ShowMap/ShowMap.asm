@@ -1154,6 +1154,14 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.elseif eax==IDC_CHKZOOM
 				xor		sonardata.zoom,1
 				invoke InvalidateRect,hSonar,NULL,TRUE
+			.elseif eax==IDC_CHKCURSOR
+				xor		sonardata.cursor,1
+				.if sonardata.cursor
+					invoke EnableScrollBar,hSonar,SB_VERT,ESB_ENABLE_BOTH
+				.else
+					invoke EnableScrollBar,hSonar,SB_VERT,ESB_DISABLE_BOTH
+				.endif
+				invoke InvalidateRect,hSonar,NULL,TRUE
 			.elseif eax==IDC_BTNRANGEDN
 				.if sonardata.RangeInx
 					dec		sonardata.RangeInx
@@ -1324,6 +1332,9 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke GetDlgItem,hWin,IDC_CHKZOOM
 		invoke MoveWindow,eax,rect.right,rect.top,80,16,TRUE
 		add		rect.top,17
+		invoke GetDlgItem,hWin,IDC_CHKCURSOR
+		invoke MoveWindow,eax,rect.right,rect.top,80,16,TRUE
+		add		rect.top,17
 		invoke GetDlgItem,hWin,IDC_BTNRANGEDN
 		invoke MoveWindow,eax,rect.right,rect.top,22,22,TRUE
 		invoke GetDlgItem,hWin,IDC_BTNRANGEUP
@@ -1337,7 +1348,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		movsx	ecx,dx
 		shr		edx,16
 		movsx	edx,dx
-		mov		ebx,MAXXECHO+RANGESCALE+4
+		mov		ebx,MAXXECHO+RANGESCALE+SCROLLWT+4
 		add		ebx,sonardata.SignalBarWt
 		.if eax==hWin
 			mov		eax,rect.right

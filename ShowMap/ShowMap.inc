@@ -77,6 +77,7 @@ IDC_BTNRANGEUP			equ 1020
 IDC_CHKAUTORANGE		equ 1022
 IDC_LSTNMEA				equ 1025
 IDC_CHKZOOM				equ 1026
+IDC_CHKCURSOR			equ 1028
 
 IDM_MENU                equ 10000
 IDM_FILE_OPENTRIP       equ 10010
@@ -287,7 +288,7 @@ STM32_PingTimer			equ (STM32_Clock/200000/2)-1
 MAXXECHO				equ 512								;Max number of sonar X-echos
 MAXYECHO				equ 512								;Max number of sonar Y-echos
 RANGESCALE				equ 5								;Width of range scale
-;SIGNALBAR				equ 32								;Width of signal strenght bar
+SCROLLWT				equ 18
 MAXRANGE				equ 32								;Max number of depth ranges that can be read from ini
 REPLAYSPEED				equ 5								;At replay, the ping interval is divided by REPLAYSPEED
 SONARBACKCOLOR			equ 00F4BD6Ch						;Back color of sonar
@@ -390,6 +391,8 @@ SONAR struct
 	fShowSat		DWORD ?									;If TRUE satelites window is shown
 	zoom			DWORD ?									;If TRUE sonar zoom is on
 	zoomofs			DWORD ?									;zoom offset from top
+	cursor			DWORD ?									;If TRUE depth cursor is shown
+	cursorpos		DWORD ?
 SONAR ends
 
 SONARREPLAY struct
