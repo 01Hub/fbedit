@@ -594,6 +594,7 @@ SonarOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:L
 				invoke SendMessage,hWin,WM_CLOSE,NULL,FALSE
 			.elseif eax==IDC_CHKSONARGAIN
 				xor		sonardata.AutoGain,1
+				inc		sonardata.fGainUpload
 			.elseif eax==IDC_CHKSONARPING
 				xor		sonardata.AutoPing,1
 			.elseif eax==IDC_CHKSONARRANGE
