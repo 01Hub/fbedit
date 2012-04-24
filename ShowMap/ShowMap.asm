@@ -973,6 +973,8 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke CreateDialogParam,hInstance,IDD_DLGSONAR,hWin,addr SonarOptionProc,0
 			.elseif eax==IDM_OPTION_GAIN
 				invoke DialogBoxParam,hInstance,IDD_DLGSONARGAIN,hWin,addr SonarGainOptionProc,0
+			.elseif eax==IDM_OPTION_SONARCOLOR
+				invoke DialogBoxParam,hInstance,IDD_DLGSONARCOLOR,hWin,addr SonarColorOptionProc,0
 			.elseif eax==IDM_OPTION_GPS
 				invoke DialogBoxParam,hInstance,IDD_DLGGPSSETUP,hWin,addr GPSOptionProc,0
 ;Context

@@ -97,6 +97,7 @@ IDM_OPTIO_DEPTH			equ 10019
 IDM_OPTION_WATERTEMP	equ 10021
 IDM_OPTION_SONAR		equ 10025
 IDM_OPTION_GAIN			equ 10018
+IDM_OPTION_SONARCOLOR	equ 10026
 IDM_OPTION_GPS			equ 10008
 IDM_LOG_START           equ 10005
 IDM_LOG_END             equ 10006
@@ -255,11 +256,11 @@ MAP struct
 	hMemLon			HGLOBAL ?								;Longitude array
 	nLatPoint		DWORD ?									;Number of lattitude entries in array
 	hMemLat			HGLOBAL ?								;Lattitude array
-	TrackSmooth		DWORD ?
-	TrailRate		DWORD ?
-	TrailCount		DWORD ?
+	TrackSmooth		DWORD ?									;Minimum speed to add a trail point
+	TrailRate		DWORD ?									;Number of seconds between trail points
+	TrailCount		DWORD ?									;TrailRate down counter
+	fShowNMEA		DWORD ?									;If TRUE NMEA log window is shown
 	fSTLink			DWORD ?
-	fShowNMEA		DWORD ?
 MAP ends
 
 SATELITE struct
@@ -288,11 +289,11 @@ STM32_PingTimer			equ (STM32_Clock/200000/2)-1
 MAXXECHO				equ 512								;Max number of sonar X-echos
 MAXYECHO				equ 512								;Max number of sonar Y-echos
 RANGESCALE				equ 5								;Width of range scale
-SCROLLWT				equ 18
+SCROLLWT				equ 18								;Width / height of scrollbar
 MAXRANGE				equ 32								;Max number of depth ranges that can be read from ini
 REPLAYSPEED				equ 5								;At replay, the ping interval is divided by REPLAYSPEED
-SONARBACKCOLOR			equ 00F4BD6Ch						;Back color of sonar
-SONARPENCOLOR			equ 0900000h						;Signal bar pen color
+;SONARBACKCOLOR			equ 00F4BD6Ch						;Back color of sonar
+;SONARPENCOLOR			equ 0900000h						;Signal bar pen color
 MAXFISH					equ 64								;Prevents showing repeated fish symbols and repeated fish alarms
 MAXSONARBMP				equ 64								;Max number of bitmap tiles, for each range change a tile is created
 SOUNDSPEEDMIN			equ 1400							;Minimum speed of sound in water
@@ -367,9 +368,9 @@ SONAR struct
 	szFishSound		BYTE MAX_PATH dup(?)					;Path & filename of fish.wav file
 	fGainUpload		DWORD ?									;If TRUE gain levels must be uploaded
 	sonarbmp		SONARBMP MAXSONARBMP dup(<>)			;Array of bitmap tiles
-	gainofs			DWORD ?
-	gainmax			DWORD ?
-	gaindepth		DWORD ?
+	gainofs			DWORD ?									;Initial gain for gain calculations
+	gainmax			DWORD ?									;Max gain for gain calculations
+	gaindepth		DWORD ?									;Dept at max gain
 	sonarrange		RANGE MAXRANGE dup(<?>)					;Sonar range definitions (max 32)
 	struct
 		Start			BYTE ?								;Set to 1 to init a new ping and echo reading
@@ -392,7 +393,8 @@ SONAR struct
 	zoom			DWORD ?									;If TRUE sonar zoom is on
 	zoomofs			DWORD ?									;zoom offset from top
 	cursor			DWORD ?									;If TRUE depth cursor is shown
-	cursorpos		DWORD ?
+	cursorpos		DWORD ?									;Position of depth cursor
+	sonarcolor		DWORD 18 dup(?)							;Color definitions
 SONAR ends
 
 SONARREPLAY struct
@@ -447,6 +449,7 @@ szIniFont			BYTE 'Font',0
 szIniOption			BYTE 'Option',0
 szIniSonar			BYTE 'Sonar',0
 szIniSonarRange		BYTE 'SonarRange',0
+szIniSonarColor		BYTE 'SonarColor',0
 szIniGainDef		BYTE 'GainDef',0
 szIniGPS			BYTE 'GPS',0
 
@@ -503,6 +506,8 @@ szGPSInitData		BYTE '$PSRF103,00,00,05,00*20',0Dh,0Ah	;Enable GGA message, rate 
 					BYTE '$PSRF103,04,00,01,00*20',0Dh,0Ah	;Ensable RMC message, rate 1 second
 					BYTE '$PSRF103,05,00,00,01*21',0Dh,0Ah,0;Disable VTG message
 
+szDefSonarColors	BYTE '16777215,12632256,10658466,8421504,65535,61680,54741,52942,45824,42496,40704,38400,255,242,223,215,8388608,16039276',0
+
 .data?
 
 hInstance			HINSTANCE ?								;Instance handle
@@ -542,3 +547,4 @@ fSeaMap				DWORD ?									;If TRUE sea map is shown
 szFileName			BYTE MAX_PATH dup(?)					;Format string to get map tile path & filename
 winrect				RECT <>									;Main window rectangle
 fMaximize			DWORD ?									;Main window maximized
+CustColors			DWORD 15 dup(?)							;Custom colors

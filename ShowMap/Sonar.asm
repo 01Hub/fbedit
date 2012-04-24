@@ -52,6 +52,8 @@ IDC_EDTGAINMAX			equ 1611
 IDC_EDTGAINDEPTH		equ 1609
 IDC_BTNCALCULATE		equ 1610
 
+IDD_DLGSONARCOLOR		equ 1700
+
 GAINXOFS				equ 60
 GAINYOFS				equ 117
 ZOOMHYSTERESIS			equ 7
@@ -430,23 +432,8 @@ Update:
 		.while ebx<MAXYECHO
 			movzx	eax,sonardata.EchoArray[ebx]
 			.if eax
-				.if eax>0D0h
-					;Red
-				.elseif eax>060h
-					;Green
-					shl		eax,8
-				.elseif eax>040h
-					;Yellow
-					add		al,080h
-					mov		ah,al
-				.else
-					;Gray
-					add		al,08h
-					xor		eax,0FFh
-					mov		ah,al
-					shl		eax,8
-					mov		al,ah
-				.endif
+				shr		eax,4
+				mov		eax,sonardata.sonarcolor[eax*DWORD]
 				invoke SetPixel,sonardata.mDC,MAXXECHO-1,ebx,eax
 			.endif
 			lea		ebx,[ebx+1]
@@ -1157,6 +1144,88 @@ DrawGain:
 	retn
 
 SonarGainOptionProc endp
+
+SonarColorOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+	LOCAL	cc:CHOOSECOLOR
+	LOCAL	buffer[256]:BYTE
+
+	mov		eax,uMsg
+	.if eax==WM_INITDIALOG
+	.elseif eax==WM_COMMAND
+		mov		edx,wParam
+		movzx	eax,dx
+		shr		edx,16
+		.if edx==BN_CLICKED
+			.if eax==IDOK
+				xor		ebx,ebx
+				mov		buffer,0
+				.while ebx<18
+					invoke PutItemInt,addr buffer,sonardata.sonarcolor[ebx*DWORD]
+					inc		ebx
+				.endw
+				invoke WritePrivateProfileString,addr szIniSonar,addr szIniSonarColor,addr buffer[1],addr szIniFileName
+				invoke EndDialog,hWin,NULL
+			.elseif eax>=1720 && eax<=1737
+				push	eax
+				lea		ebx,[eax-1720]
+				mov		cc.lStructSize,sizeof CHOOSECOLOR
+				mov		eax,hWin
+				mov		cc.hwndOwner,eax
+				mov		eax,hInstance
+				mov		cc.hInstance,eax
+				mov		cc.lpCustColors,offset CustColors
+				mov		cc.Flags,CC_FULLOPEN or CC_RGBINIT
+				mov		cc.lCustData,0
+				mov		cc.lpfnHook,0
+				mov		cc.lpTemplateName,0
+				mov		eax,sonardata.sonarcolor[ebx*DWORD]
+				mov		cc.rgbResult,eax
+				invoke ChooseColor,addr cc
+				.if eax
+					mov		eax,cc.rgbResult
+					mov		sonardata.sonarcolor[ebx*DWORD],eax
+					.if ebx==16
+						;Signal bar
+						invoke CreatePen,PS_SOLID,1,eax
+						push	eax
+						invoke SelectObject,sonardata.mDCS,eax
+						invoke DeleteObject,eax
+						pop		eax
+						mov		sonardata.hPen,eax
+					.elseif ebx==17
+						;Back color
+						invoke CreateSolidBrush,eax
+						push	eax
+						invoke DeleteObject,sonardata.hBrBack
+						pop		eax
+						mov		sonardata.hBrBack,eax
+					.endif
+				.endif
+				pop		eax
+				invoke GetDlgItem,hWin,eax
+				invoke InvalidateRect,eax,NULL,TRUE
+			.endif
+		.endif
+	.elseif eax==WM_DRAWITEM
+		mov		esi,lParam
+		mov		eax,wParam
+		sub		eax,1720
+		mov		eax,sonardata.sonarcolor[eax*DWORD]
+		invoke CreateSolidBrush,eax
+		push	eax
+		invoke FillRect,[esi].DRAWITEMSTRUCT.hdc,addr [esi].DRAWITEMSTRUCT.rcItem,eax
+		pop		eax
+		invoke DeleteObject,eax
+	.elseif eax==WM_CLOSE
+		invoke EndDialog,hWin,NULL
+	.else
+		mov		eax,FALSE
+		ret
+	.endif
+	mov		eax,TRUE
+	ret
+
+SonarColorOptionProc endp
 
 Random proc uses ecx edx,range:DWORD
 
@@ -2595,6 +2664,13 @@ LoadSonarFromIni proc uses ebx esi edi
 	;Store the number of range definitions read from ini
 	mov		sonardata.MaxRange,ebx
 	invoke SetupPixelTimer
+	invoke GetPrivateProfileString,addr szIniSonar,addr szIniSonarColor,addr szDefSonarColors,addr buffer,sizeof buffer,addr szIniFileName
+	xor		ebx,ebx
+	.while ebx<18
+		invoke GetItemInt,addr buffer,0
+		mov		sonardata.sonarcolor[ebx*DWORD],eax
+		inc		ebx
+	.endw
 	ret
 
 LoadSonarFromIni endp
@@ -2935,9 +3011,9 @@ SonarProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	.if eax==WM_CREATE
 		mov		eax,hWin
 		mov		hSonar,eax
-		invoke CreateSolidBrush,SONARBACKCOLOR
+		invoke CreateSolidBrush,sonardata.sonarcolor[17*DWORD]	;SONARBACKCOLOR
 		mov		sonardata.hBrBack,eax
-		invoke CreatePen,PS_SOLID,1,SONARPENCOLOR
+		invoke CreatePen,PS_SOLID,1,sonardata.sonarcolor[16*DWORD]	;SONARPENCOLOR
 		mov		sonardata.hPen,eax
 		invoke GetDC,hWin
 		mov		hDC,eax
