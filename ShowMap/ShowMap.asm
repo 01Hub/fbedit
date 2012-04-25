@@ -836,7 +836,10 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					.endif
 				.endif
 			.elseif eax==IDM_LOG_END
-				.if hFileLogRead
+				.if hFileLogWrite
+					invoke CloseHandle,hFileLogWrite
+					mov		hFileLogWrite,0
+				.elseif hFileLogRead
 					invoke CloseHandle,hFileLogRead
 					mov		hFileLogRead,0
 					mov		hFileLogWrite,0
@@ -846,9 +849,6 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					fldz
 					fstp	mapdata.fSumDist
 					invoke SetDlgItemText,hWin,IDC_EDTDIST,addr szNULL
-				.endif
-				.if hFileLogWrite
-					invoke CloseHandle,hFileLogWrite
 				.endif
 				invoke GetDlgItem,hWin,IDC_CHKPAUSE
 				invoke EnableWindow,eax,FALSE
@@ -909,9 +909,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.if sonardata.hLog
 					invoke CloseHandle,sonardata.hLog
 					mov		sonardata.hLog,0
-				.endif
-			.elseif eax==IDM_LOG_REPLAYSONAR
-				.if sonardata.hReplay
+				.elseif sonardata.hReplay
 					invoke CloseHandle,sonardata.hReplay
 					mov		sonardata.hReplay,0
 					mov		npos,0
@@ -924,32 +922,32 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					invoke SetScrollPos,hSonar,SB_HORZ,0,TRUE
 					mov		sonardata.dptinx,0
 					invoke EnableScrollBar,hSonar,SB_HORZ,ESB_DISABLE_BOTH
-				.else
-					invoke DialogBoxParam,hInstance,IDD_DLGTRIPLOG,hWin,addr TripLogProc,eax
-					.if eax
-						invoke strcpy,addr buffer,eax
-						invoke CreateFile,addr buffer,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL
-						.if eax!=INVALID_HANDLE_VALUE
-							mov		ebx,eax
-							invoke ReadFile,ebx,addr sonarreplay,1,addr dwread,NULL
-							invoke SetFilePointer,ebx,0,NULL,FILE_BEGIN
-							invoke EnableScrollBar,hSonar,SB_HORZ,ESB_ENABLE_BOTH
-							invoke GetFileSize,ebx,NULL
-							shr		eax,9
-							invoke SetScrollRange,hSonar,SB_HORZ,0,eax,TRUE
-							invoke SonarClear
-							.if sonarreplay.Version>=200
-								mov		npos,0
-								mov		mapdata.ntrail,0
-								mov		mapdata.trailhead,0
-								mov		mapdata.trailtail,0
-								fldz
-								fstp	mapdata.fSumDist
-								invoke SetDlgItemText,hWin,IDC_EDTDIST,addr szNULL
-							.endif
-							mov		sonardata.dptinx,0
-							mov		sonardata.hReplay,ebx
+				.endif
+			.elseif eax==IDM_LOG_REPLAYSONAR
+				invoke DialogBoxParam,hInstance,IDD_DLGTRIPLOG,hWin,addr TripLogProc,eax
+				.if eax
+					invoke strcpy,addr buffer,eax
+					invoke CreateFile,addr buffer,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL
+					.if eax!=INVALID_HANDLE_VALUE
+						mov		ebx,eax
+						invoke ReadFile,ebx,addr sonarreplay,1,addr dwread,NULL
+						invoke SetFilePointer,ebx,0,NULL,FILE_BEGIN
+						invoke EnableScrollBar,hSonar,SB_HORZ,ESB_ENABLE_BOTH
+						invoke GetFileSize,ebx,NULL
+						shr		eax,9
+						invoke SetScrollRange,hSonar,SB_HORZ,0,eax,TRUE
+						invoke SonarClear
+						.if sonarreplay.Version>=200
+							mov		npos,0
+							mov		mapdata.ntrail,0
+							mov		mapdata.trailhead,0
+							mov		mapdata.trailtail,0
+							fldz
+							fstp	mapdata.fSumDist
+							invoke SetDlgItemText,hWin,IDC_EDTDIST,addr szNULL
 						.endif
+						mov		sonardata.dptinx,0
+						mov		sonardata.hReplay,ebx
 					.endif
 				.endif
 ;Option
@@ -1229,8 +1227,15 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			mov		edx,MF_BYCOMMAND or MF_GRAYED
 		.endif
 		invoke EnableMenuItem,hMenu,IDM_LOG_STARTSONAR,edx
+
 		mov		edx,MF_BYCOMMAND or MF_ENABLED
-		.if !sonardata.hLog
+		.if sonardata.hReplay
+			mov		edx,MF_BYCOMMAND or MF_GRAYED
+		.endif
+		invoke EnableMenuItem,hMenu,IDM_LOG_REPLAYSONAR,edx
+
+		mov		edx,MF_BYCOMMAND or MF_ENABLED
+		.if !sonardata.hLog && !sonardata.hReplay
 			mov		edx,MF_BYCOMMAND or MF_GRAYED
 		.endif
 		invoke EnableMenuItem,hMenu,IDM_LOG_ENDSONAR,edx
