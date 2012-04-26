@@ -157,7 +157,7 @@ GPSThread proc uses ebx esi edi,Param:DWORD
 	LOCAL	tmp:DWORD
 
 	mov		GPSTail,0
-	invoke Sleep,3000
+	invoke Sleep,2000
 	invoke OpenCom
 	.while  !fExitGPSThread
 		.if hFileLogRead

@@ -1289,6 +1289,7 @@ STMThread proc uses ebx esi edi,Param:DWORD
 	LOCAL	pixmov:DWORD
 	LOCAL	pixdpt:DWORD
 	LOCAL	rngchanged:DWORD
+	LOCAL	rngdecrement:DWORD
 	LOCAL	iLon:DWORD
 	LOCAL	iLat:DWORD
 	LOCAL	fDist:REAL10
@@ -1307,7 +1308,7 @@ STMThread proc uses ebx esi edi,Param:DWORD
 	mov		iLat,-1
 	mov		iLon,-1
 	invoke RtlZeroMemory,addr STM32Echo,sizeof STM32Echo
-	invoke Sleep,3000
+	invoke Sleep,2000
 	.while !fExitSTMThread
 		invoke IsDlgButtonChecked,hWnd,IDC_CHKCHART
 		.if eax
@@ -1573,13 +1574,11 @@ STMThread proc uses ebx esi edi,Param:DWORD
 				.if sdword ptr ebx<=0
 					mov		ebx,1
 				.endif
-				.while edx
+				.while edx && ebx<MAXYECHO
 					;Random bottom vegetation
-					.if ebx<MAXYECHO
-						invoke Random,64
-						add		eax,32
-						mov		STM32Echo[ebx],al
-					.endif
+					invoke Random,64
+					add		eax,32
+					mov		STM32Echo[ebx],al
 					inc		ebx
 					dec		edx
 				.endw
@@ -1587,14 +1586,12 @@ STMThread proc uses ebx esi edi,Param:DWORD
 				push	ebx
 				shl		edx,2
 				xor		ecx,ecx
-				.while ecx<edx
+				.while ecx<edx && ebx<MAXYECHO
 					;Random bottom echo
 					invoke Random,64
-					.if ebx<MAXYECHO
-						add		eax,255-64
-						sub		eax,ecx
-						mov		STM32Echo[ebx],al
-					.endif
+					add		eax,255-64
+					sub		eax,ecx
+					mov		STM32Echo[ebx],al
 					inc		ebx
 					inc		ecx
 				.endw
@@ -1603,7 +1600,7 @@ STMThread proc uses ebx esi edi,Param:DWORD
 				invoke Random,eax
 				add		edx,eax
 				xor		ecx,ecx
-				.while ecx<edx
+				.while ecx<edx && ebx<MAXYECHO
 					;Random bottom weak echo
 					mov		eax,ecx
 					xor		al,0FFh
@@ -1611,11 +1608,15 @@ STMThread proc uses ebx esi edi,Param:DWORD
 						inc		eax
 					.endif
 					invoke Random,eax
-					.if ebx<MAXYECHO
-						mov		STM32Echo[ebx],al
-					.endif
+					mov		STM32Echo[ebx],al
 					inc		ebx
 					inc		ecx
+				.endw
+				xor		eax,eax
+				.while ebx<MAXYECHO
+					;Clear the rest
+					mov		STM32Echo[ebx],al
+					inc		ebx
 				.endw
 				pop		ebx
 				invoke Random,ebx
@@ -2523,16 +2524,32 @@ TestRangeChange:
 			;Bottom not found
 			.if sonardata.nodptinx>=10
 				mov		sonardata.nodptinx,0
-				.if eax<edx
-					;Range increment
-					inc		eax
-					invoke SetRange,eax
-					mov		rngchanged,8
-					mov		sonardata.dptinx,0
-					inc		sonardata.fGainUpload
+				.if rngdecrement
+					.if eax
+						;Range decrement
+						dec		eax
+						invoke SetRange,eax
+						mov		rngchanged,8
+						mov		sonardata.dptinx,0
+						inc		sonardata.fGainUpload
+					.else
+						mov		rngdecrement,FALSE
+					.endif
+				.else
+					.if eax<edx
+						;Range increment
+						inc		eax
+						invoke SetRange,eax
+						mov		rngchanged,8
+						mov		sonardata.dptinx,0
+						inc		sonardata.fGainUpload
+					.else
+						mov		rngdecrement,TRUE
+					.endif
 				.endif
 			.endif
 		.else
+			mov		rngdecrement,FALSE
 			;Check if range should be changed
 			.if eax && ebx<MAXYECHO/3
 				;Range decrement
