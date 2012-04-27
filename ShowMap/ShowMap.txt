@@ -50,6 +50,10 @@ y=a*ln[tan(lat/2+PI/4)]
 Map top left
 66.53365,12.91296
 
+Final solution.
+===============
+The Cuda 350 is no longer needed, only the swinger is used. A sonar with a GPS module has been constructed.
+
 Sonar Description
 =================
 A short ping at 200 KHz is transmitted at intervals depending on depth range (200 to 800 ms).
@@ -72,9 +76,12 @@ Time for sound to travel 100 cm: 1000000 / 1450 = 689,66 ~ 690 us
 Since it is the echo we are measuring: 690 * 2 = 1380 us
 
 Two timers are needed:
-1. Timer to generate the 200 KHz two phase none overlapping clock ping signal.
-   The number of pulses is variable (0 to 255).
-2. Timer to generate an interrupt for every pixel. The interval depends on selected range.
+1. Timer1 generates the 200 KHz two phase none overlapping clock ping signal.
+   The number of pulses is variable (0 to 255). When the ping is done Timer 2 is enabled.
+2. Timer2 generates an interrupt for every pixel (index in echo array). The interval depends on selected range.
+   The interrupt routine increments the index of the 512 byte echo array and at the same time it updates the
+   DAC gain control. In the main loop the echo ADC is read and the largest result is stored in the echo array
+   at current index. This method allows me to use a simple diode AM demodulator in the receiver.
 
 Time needed for the different ranges:
 =======================================================================================================================
@@ -104,7 +111,9 @@ Range		Time for echo to return		Pixel time					cm / Pixel						Pixel Timer (40MH
 
 Hardware environment
 ====================
-Runs on STM32 Discovery.
+Runs on STM32 valuline Discovery. The Discovery is perfect for this job. It's cheap and has all the pheriperals
+needed. 8K ram, USB, IO's, ADC, DAC, USART and timers.
+The Discovery operates as a thin server and the STLink USB connection is used to transfer data to the PC.
 
 Additional hardware
 ===================
