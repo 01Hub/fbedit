@@ -395,6 +395,7 @@ SONAR struct
 	cursor			DWORD ?									;If TRUE depth cursor is shown
 	cursorpos		DWORD ?									;Position of depth cursor
 	sonarcolor		DWORD 18 dup(?)							;Color definitions
+	PaintNow		DWORD ?
 SONAR ends
 
 SONARREPLAY struct
@@ -547,4 +548,4 @@ fSeaMap				DWORD ?									;If TRUE sea map is shown
 szFileName			BYTE MAX_PATH dup(?)					;Format string to get map tile path & filename
 winrect				RECT <>									;Main window rectangle
 fMaximize			DWORD ?									;Main window maximized
-CustColors			DWORD 15 dup(?)							;Custom colors
+CustColors			DWORD 16 dup(?)							;Custom colors

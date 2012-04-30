@@ -461,6 +461,7 @@ Update:
 			lea		ebx,[ebx+1]
 		.endw
 	.endif
+	mov		sonardata.PaintNow,0
 	invoke InvalidateRect,hSonar,NULL,TRUE
 	invoke UpdateWindow,hSonar
 	retn
@@ -1312,7 +1313,12 @@ STMThread proc uses ebx esi edi,Param:DWORD
 	.while !fExitSTMThread
 		invoke IsDlgButtonChecked,hWnd,IDC_CHKCHART
 		.if eax
-			invoke Sleep,250
+			invoke Sleep,100
+			.if sonardata.PaintNow
+				mov		sonardata.PaintNow,0
+				invoke InvalidateRect,hSonar,NULL,TRUE
+				invoke UpdateWindow,hSonar
+			.endif
 		.else
 			.if sonardata.hReplay
 				;Replay mode
@@ -1488,6 +1494,11 @@ STMThread proc uses ebx esi edi,Param:DWORD
 				.else
 					;Data not ready yet
 					invoke Sleep,10
+					.if sonardata.PaintNow
+						mov		sonardata.PaintNow,0
+						invoke InvalidateRect,hSonar,NULL,TRUE
+						invoke UpdateWindow,hSonar
+					.endif
 				.endif
 			.elseif sonardata.fSTLink==IDIGNORE
 				;Random demo mode
@@ -1588,8 +1599,8 @@ STMThread proc uses ebx esi edi,Param:DWORD
 				xor		ecx,ecx
 				.while ecx<edx && ebx<MAXYECHO
 					;Random bottom echo
-					invoke Random,64
-					add		eax,255-64
+					invoke Random,48
+					add		eax,255-48
 					sub		eax,ecx
 					mov		STM32Echo[ebx],al
 					inc		ebx
@@ -1631,9 +1642,9 @@ STMThread proc uses ebx esi edi,Param:DWORD
 						mov		word ptr STM32Echo[edx+MAXYECHO*2],ax
 					.endif
 				.endif
-				mov		sonardata.ADCBattery,08E0h
-				mov		sonardata.ADCWaterTemp,06A0h
-				mov		sonardata.ADCAirTemp,0780h
+				mov		sonardata.ADCBattery,08F0h
+				mov		sonardata.ADCWaterTemp,04A0h
+				mov		sonardata.ADCAirTemp,0620h
 				call	ShowEcho
 			.endif
 		.endif
@@ -2315,33 +2326,35 @@ FindDepth:
 		inc		ebx
 	.endw
 	mov		sonardata.minyecho,ebx
-	;Find the strongest echo in a 4x16 sqare
 	xor		esi,esi
 	xor		edi,edi
-	.while ebx<MAXYECHO
-		xor		ecx,ecx
-		xor		edx,edx
-		.while ecx<16
-			lea		eax,[ebx+ecx]
-			.break .if eax>=MAXYECHO
-			movzx	eax,STM32Echo[ebx+ecx+MAXYECHO*0]
-			add		edx,eax
-			movzx	eax,STM32Echo[ebx+ecx+MAXYECHO*1]
-			add		edx,eax
-			movzx	eax,STM32Echo[ebx+ecx+MAXYECHO*2]
-			add		edx,eax
-			movzx	eax,STM32Echo[ebx+ecx+MAXYECHO*3]
-			add		edx,eax
-			inc		ecx
+	.if ch==4
+		;Find the strongest echo in a 4x16 sqare
+		.while ebx<MAXYECHO
+			xor		ecx,ecx
+			xor		edx,edx
+			.while ecx<16
+				lea		eax,[ebx+ecx]
+				.break .if eax>=MAXYECHO
+				movzx	eax,STM32Echo[ebx+ecx+MAXYECHO*0]
+				add		edx,eax
+				movzx	eax,STM32Echo[ebx+ecx+MAXYECHO*1]
+				add		edx,eax
+				movzx	eax,STM32Echo[ebx+ecx+MAXYECHO*2]
+				add		edx,eax
+				movzx	eax,STM32Echo[ebx+ecx+MAXYECHO*3]
+				add		edx,eax
+				inc		ecx
+			.endw
+			;Put in a little hysteresis
+			lea		eax,[edx-4096]
+			.if sdword ptr eax>esi
+				mov		esi,edx
+				mov		edi,ebx
+			.endif
+			inc		ebx
 		.endw
-		;Put in a little hysteresis
-		lea		eax,[edx-4096]
-		.if sdword ptr eax>esi
-			mov		esi,edx
-			mov		edi,ebx
-		.endif
-		inc		ebx
-	.endw
+	.endif
 	.if edi>10
 		;A valid bottom signal has been found
 		mov		sonardata.nodptinx,0
@@ -2723,7 +2736,7 @@ SonarClear proc uses ebx esi
 	mov		sonardata.sonarbmp.xpos,MAXXECHO
 	mov		sonardata.sonarbmp.wt,0
 	mov		sonardata.sonarbmp.hBmp,0
-	invoke InvalidateRect,hSonar,NULL,TRUE
+	inc		sonardata.PaintNow
 	ret
 
 SonarClear endp
@@ -3167,7 +3180,7 @@ SonarProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.elseif wParam==1001
 			xor		sonardata.ShowDepth,1
 			.if sonardata.ShowDepth<2
-				invoke InvalidateRect,hSonar,NULL,TRUE
+				inc		sonardata.PaintNow
 			.endif
 			.if sonardata.fFishSound
 				dec		sonardata.fFishSound
@@ -3294,16 +3307,14 @@ SonarProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.if edx==SB_THUMBTRACK
 			mov		sonardata.cursorpos,eax
 			invoke SetScrollPos,hWin,SB_VERT,eax,TRUE
-			invoke InvalidateRect,hWin,NULL,TRUE
-			invoke UpdateWindow,hWin
+			inc		sonardata.PaintNow
 		.elseif edx==SB_LINERIGHT
 			invoke GetScrollPos,hWin,SB_VERT
 			.if eax<2048
 				inc		eax
 				mov		sonardata.cursorpos,eax
 				invoke SetScrollPos,hWin,SB_VERT,eax,TRUE
-				invoke InvalidateRect,hWin,NULL,TRUE
-				invoke UpdateWindow,hWin
+				inc		sonardata.PaintNow
 			.endif
 		.elseif edx==SB_LINELEFT
 			invoke GetScrollPos,hWin,SB_VERT
@@ -3311,8 +3322,7 @@ SonarProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				dec		eax
 				mov		sonardata.cursorpos,eax
 				invoke SetScrollPos,hWin,SB_VERT,eax,TRUE
-				invoke InvalidateRect,hWin,NULL,TRUE
-				invoke UpdateWindow,hWin
+				inc		sonardata.PaintNow
 			.endif
 		.elseif edx==SB_PAGERIGHT
 			invoke GetScrollPos,hWin,SB_VERT
@@ -3322,8 +3332,7 @@ SonarProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.endif
 			mov		sonardata.cursorpos,eax
 			invoke SetScrollPos,hWin,SB_VERT,eax,TRUE
-			invoke InvalidateRect,hWin,NULL,TRUE
-			invoke UpdateWindow,hWin
+			inc		sonardata.PaintNow
 		.elseif edx==SB_PAGELEFT
 			invoke GetScrollPos,hWin,SB_VERT
 			sub		eax,32
@@ -3332,8 +3341,7 @@ SonarProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.endif
 			mov		sonardata.cursorpos,eax
 			invoke SetScrollPos,hWin,SB_VERT,eax,TRUE
-			invoke InvalidateRect,hWin,NULL,TRUE
-			invoke UpdateWindow,hWin
+			inc		sonardata.PaintNow
 		.endif
 	.else
 		invoke DefWindowProc,hWin,uMsg,wParam,lParam

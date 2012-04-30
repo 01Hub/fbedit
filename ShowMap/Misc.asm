@@ -1455,7 +1455,6 @@ SaveStatus proc
 
 SaveStatus endp
 
-;TextDraw proc uses edi,hDC:HDC,hFont:HFONT,lpRect:PTR RECT,lpText:DWORD,pos:DWORD
 TextDraw proc uses edi,hDC:HDC,hFont:HFONT,lpRect:DWORD,lpText:DWORD,pos:DWORD
 	LOCAL	rect:RECT
 

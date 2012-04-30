@@ -207,7 +207,7 @@ OptionsProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 				rep		movsb
 				invoke SendMessage,hWin,WM_CLOSE,NULL,NULL
 				inc		mapdata.paintnow
-				invoke InvalidateRect,hSonar,NULL,TRUE
+				inc		sonardata.PaintNow
 			.elseif eax==IDC_CHKSHOW
 				invoke IsDlgButtonChecked,hWin,IDC_CHKSHOW
 				.if nOptType<10
@@ -215,7 +215,7 @@ OptionsProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 					inc		mapdata.paintnow
 				.else
 					mov		sonardata.options.show[ebx],eax
-					invoke InvalidateRect,hSonar,NULL,TRUE
+					inc		sonardata.PaintNow
 				.endif
 			.elseif eax>=IDC_RBNLEFTTOP && eax<=IDC_RBNRIGHTBOTTOM
 				sub		eax,IDC_RBNLEFTTOP
@@ -224,7 +224,7 @@ OptionsProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 					inc		mapdata.paintnow
 				.else
 					mov		sonardata.options.position[ebx],eax
-					invoke InvalidateRect,hSonar,NULL,TRUE
+					inc		sonardata.PaintNow
 				.endif
 			.elseif eax==IDC_BTNUP
 				.if nOptType<10
@@ -240,7 +240,7 @@ OptionsProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 					.else
 						add		sonardata.options.pt.y[ebx],2
 					.endif
-					invoke InvalidateRect,hSonar,NULL,TRUE
+					inc		sonardata.PaintNow
 				.endif
 			.elseif eax==IDC_BTNRIGHT
 				.if nOptType<10
@@ -258,7 +258,7 @@ OptionsProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 					.else
 						sub		sonardata.options.pt.x[ebx],2
 					.endif
-					invoke InvalidateRect,hSonar,NULL,TRUE
+					inc		sonardata.PaintNow
 				.endif
 			.elseif eax==IDC_BTNDOWN
 				.if nOptType<10
@@ -274,7 +274,7 @@ OptionsProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 					.else
 						sub		sonardata.options.pt.y[ebx],2
 					.endif
-					invoke InvalidateRect,hSonar,NULL,TRUE
+					inc		sonardata.PaintNow
 				.endif
 			.elseif eax==IDC_BTNLEFT
 				.if nOptType<10
@@ -292,7 +292,7 @@ OptionsProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 					.else
 						add		sonardata.options.pt.x[ebx],2
 					.endif
-					invoke InvalidateRect,hSonar,NULL,TRUE
+					inc		sonardata.PaintNow
 				.endif
 			.endif
 		.elseif edx==CBN_SELCHANGE
@@ -302,7 +302,7 @@ OptionsProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 				inc		mapdata.paintnow
 			.else
 				mov		sonardata.options.font[ebx],eax
-				invoke InvalidateRect,hSonar,NULL,TRUE
+				inc		sonardata.PaintNow
 			.endif
 		.endif
 	.elseif eax==WM_CLOSE
