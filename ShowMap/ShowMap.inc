@@ -292,8 +292,6 @@ RANGESCALE				equ 5								;Width of range scale
 SCROLLWT				equ 18								;Width / height of scrollbar
 MAXRANGE				equ 32								;Max number of depth ranges that can be read from ini
 REPLAYSPEED				equ 5								;At replay, the ping interval is divided by REPLAYSPEED
-;SONARBACKCOLOR			equ 00F4BD6Ch						;Back color of sonar
-;SONARPENCOLOR			equ 0900000h						;Signal bar pen color
 MAXFISH					equ 64								;Prevents showing repeated fish symbols and repeated fish alarms
 MAXSONARBMP				equ 64								;Max number of bitmap tiles, for each range change a tile is created
 SOUNDSPEEDMIN			equ 1400							;Minimum speed of sound in water
@@ -542,7 +540,7 @@ satelites			SATELITE 12 dup(<>)						;Data for 12 satelites
 hSplittV			HCURSOR ?								;Horizontal splitt cursor
 rseed				DWORD ?									;Random seed
 STM32Echo			BYTE MAXYECHO*4 dup(?)					;Echo work area
-sonarreplay			SONARREPLAY <>							;Sonar replay record version 200
+sonarreplay			SONARREPLAY <>							;Sonar replay record version 201
 lpOldButtonProc		DWORD ?									;Button subclass
 fSeaMap				DWORD ?									;If TRUE sea map is shown
 szFileName			BYTE MAX_PATH dup(?)					;Format string to get map tile path & filename
