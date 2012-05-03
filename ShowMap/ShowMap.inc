@@ -46,7 +46,7 @@ IDC_MAP                 equ 1001
 IDC_BTNZOOMIN           equ 1002
 IDC_BTNZOOMOUT          equ 1003
 IDC_BTNMAP				equ 1019
-IDC_CHKPAUSE			equ 1013
+IDC_CHKPAUSEGPS			equ 1013
 IDC_CHKLOCK				equ 1007
 IDC_CHKTRAIL			equ 1008
 IDC_CHKGRID				equ 1014
@@ -376,7 +376,7 @@ SONAR struct
 		PingTimer		BYTE ?								;Timer value to generate 200 KHz ping
 		RangeInx		BYTE ?								;Range index (0 to 31)
 		PixelTimer		WORD ?								;Pixel timer value
-		EchoIndex		WORD ?								;Echo index
+		PingWait		WORD ?								;Ping wait loop
 		ADCBattery		WORD ?								;Battery level
 		ADCWaterTemp	WORD ?								;Water temprature
 		ADCAirTemp		WORD ?								;Air temprature
@@ -394,6 +394,7 @@ SONAR struct
 	cursorpos		DWORD ?									;Position of depth cursor
 	sonarcolor		DWORD 18 dup(?)							;Color definitions
 	PaintNow		DWORD ?
+	GPSInit			DWORD ?
 SONAR ends
 
 SONARREPLAY struct
@@ -503,8 +504,10 @@ szGPSInitData		BYTE '$PSRF103,00,00,05,00*20',0Dh,0Ah	;Enable GGA message, rate 
 					BYTE '$PSRF103,02,00,05,00*22',0Dh,0Ah	;Enable GSA message, rate 5 seconds
 					BYTE '$PSRF103,03,00,05,00*23',0Dh,0Ah	;Enable GSV message, rate 5 seconds
 					BYTE '$PSRF103,04,00,01,00*20',0Dh,0Ah	;Ensable RMC message, rate 1 second
-					BYTE '$PSRF103,05,00,00,01*21',0Dh,0Ah,0;Disable VTG message
-
+					BYTE '$PSRF103,05,00,00,01*21',0Dh,0Ah	;Disable VTG message
+;					BYTE '$PSRF101,-2686700,-4304200,3851624,96000,497260,921,12,3*7F',0Dh,0Ah
+					BYTE '$PSRF104,66.307350,14.135830,0,96000,237759,922,12,3*22',0Dh,0Ah
+					BYTE 0
 szDefSonarColors	BYTE '16777215,12632256,10658466,8421504,65535,61680,54741,52942,45824,42496,40704,38400,255,242,223,215,8388608,16039276',0
 
 .data?

@@ -101,6 +101,8 @@ OpenCom proc
 				jmp		Retry
 			.endif
 		.endif
+	.else
+		mov		sonardata.GPSInit,TRUE
 	.endif
 	ret
 
@@ -160,103 +162,103 @@ GPSThread proc uses ebx esi edi,Param:DWORD
 	invoke Sleep,2000
 	invoke OpenCom
 	.while  !fExitGPSThread
-		.if hFileLogRead
-			.if !mapdata.gpslogpause
-				invoke ReadFile,hFileLogRead,addr combuff,1024,addr nRead,NULL
-				.if !nRead
-					invoke CloseHandle,hFileLogRead
-					invoke GetDlgItem,hWnd,IDC_CHKPAUSE
-					invoke EnableWindow,eax,FALSE
-					mov		hFileLogRead,0
-					mov		npos,0
-					fldz
-					fstp	fDist
-					fldz
-					fstp	mapdata.fSumDist
-					mov		mapdata.ntrail,0
-					mov		mapdata.trailhead,0
-					mov		mapdata.trailtail,0
-					invoke SetDlgItemText,hWnd,IDC_EDTDIST,addr szNULL
-				.else
-					.if !mapdata.ntrail
+		.if !mapdata.gpslogpause
+			.if hFileLogRead
+				.if !mapdata.gpslogpause
+					invoke ReadFile,hFileLogRead,addr combuff,1024,addr nRead,NULL
+					.if !nRead
+						invoke CloseHandle,hFileLogRead
+						mov		hFileLogRead,0
+						mov		npos,0
+						fldz
+						fstp	fDist
 						fldz
 						fstp	mapdata.fSumDist
+						mov		mapdata.ntrail,0
+						mov		mapdata.trailhead,0
+						mov		mapdata.trailtail,0
+						invoke SetDlgItemText,hWnd,IDC_EDTDIST,addr szNULL
+					.else
+						.if !mapdata.ntrail
+							fldz
+							fstp	mapdata.fSumDist
+						.endif
+						invoke strlen,addr combuff
+						lea		eax,[eax+1]
+						add		npos,eax
+						invoke SetFilePointer,hFileLogRead,npos,NULL,FILE_BEGIN
+						xor		ebx,ebx
+						call	GPSExec
+						invoke Sleep,100
 					.endif
-					invoke strlen,addr combuff
-					lea		eax,[eax+1]
-					add		npos,eax
-					invoke SetFilePointer,hFileLogRead,npos,NULL,FILE_BEGIN
-					xor		ebx,ebx
-					call	GPSExec
-					invoke Sleep,100
 				.endif
-			.endif
-			mov		nRead,0
-		.elseif hCom && !sonardata.hReplay
-			xor		ebx,ebx
-		  COMGetMore:
-			.if hCom
-		 		invoke ReadFile,hCom,addr combuff[ebx],256,addr nRead,NULL
-		 		mov		eax,nRead
-		 		.if eax
-			 		add		ebx,eax
-			 		and		ebx,(sizeof combuff/2)-1
-			 		mov		combuff[ebx],0
-			 		invoke Sleep,10
-			 		jmp		COMGetMore
-		 		.endif
-		 		.if combuff
-		 			xor		ebx,ebx
-					call	GPSExec
-					mov		combuff,0
-		 		.endif
-			.endif
-		.elseif mapdata.fSTLink && mapdata.fSTLink!=IDIGNORE && !sonardata.hReplay
-			xor		ebx,ebx
-		  STMGetMore:
-			;Download ADCAirTemp and GPSHead
-			invoke STLinkRead,hSonar,STM32_Sonar+12,addr tmp,4
-			.if !eax || eax==IDABORT || eax==IDIGNORE
-				jmp		STLinkErr
-			.endif
-			mov		edi,tmp
-			shr		edi,16
-			.if edi!=GPSTail
-				.if edi>GPSTail
-					mov		edx,GPSTail
-					and		edx,sizeof SONAR.GPSArray-4
-					mov		eax,edi
-					shr		eax,2
-					inc		eax
-					shl		eax,2
-					sub		eax,edx
-					invoke STLinkRead,hSonar,addr [STM32_Sonar+16+sizeof SONAR.EchoArray+sizeof SONAR.GainArray+sizeof SONAR.GainInit+edx],addr sonardata.GPSArray[edx],eax
-				.else
-					invoke STLinkRead,hSonar,STM32_Sonar+16+sizeof SONAR.EchoArray+sizeof SONAR.GainArray+sizeof SONAR.GainInit,addr sonardata.GPSArray,sizeof SONAR.GPSArray
+				mov		nRead,0
+			.elseif hCom && !sonardata.hReplay
+				xor		ebx,ebx
+			  COMGetMore:
+				.if hCom
+			 		invoke ReadFile,hCom,addr combuff[ebx],256,addr nRead,NULL
+			 		mov		eax,nRead
+			 		.if eax
+				 		add		ebx,eax
+				 		and		ebx,(sizeof combuff/2)-1
+				 		mov		combuff[ebx],0
+				 		invoke Sleep,10
+				 		jmp		COMGetMore
+			 		.endif
+			 		.if combuff
+			 			xor		ebx,ebx
+						call	GPSExec
+						mov		combuff,0
+			 		.endif
 				.endif
+			.elseif mapdata.fSTLink && mapdata.fSTLink!=IDIGNORE && !sonardata.hReplay
+				xor		ebx,ebx
+			  STMGetMore:
+				;Download ADCAirTemp and GPSHead
+				invoke STLinkRead,hSonar,STM32_Sonar+12,addr tmp,4
 				.if !eax || eax==IDABORT || eax==IDIGNORE
 					jmp		STLinkErr
 				.endif
-				mov		esi,GPSTail
-				mov		GPSTail,edi
-				.while esi!=edi
-					mov		al,sonardata.GPSArray[esi]
-					mov		combuff[ebx],al
-					inc		esi
-					and		esi,sizeof SONAR.GPSArray-1
-					inc		ebx
-				.endw
-				mov		combuff[ebx],0
-				invoke Sleep,150
-				jmp		STMGetMore
+				mov		edi,tmp
+				shr		edi,16
+				.if edi!=GPSTail
+					.if edi>GPSTail
+						mov		edx,GPSTail
+						and		edx,sizeof SONAR.GPSArray-4
+						mov		eax,edi
+						shr		eax,2
+						inc		eax
+						shl		eax,2
+						sub		eax,edx
+						invoke STLinkRead,hSonar,addr [STM32_Sonar+16+sizeof SONAR.EchoArray+sizeof SONAR.GainArray+sizeof SONAR.GainInit+edx],addr sonardata.GPSArray[edx],eax
+					.else
+						invoke STLinkRead,hSonar,STM32_Sonar+16+sizeof SONAR.EchoArray+sizeof SONAR.GainArray+sizeof SONAR.GainInit,addr sonardata.GPSArray,sizeof SONAR.GPSArray
+					.endif
+					.if !eax || eax==IDABORT || eax==IDIGNORE
+						jmp		STLinkErr
+					.endif
+					mov		esi,GPSTail
+					mov		GPSTail,edi
+					.while esi!=edi
+						mov		al,sonardata.GPSArray[esi]
+						mov		combuff[ebx],al
+						inc		esi
+						and		esi,sizeof SONAR.GPSArray-1
+						inc		ebx
+					.endw
+					mov		combuff[ebx],0
+					invoke Sleep,150
+					jmp		STMGetMore
+				.endif
+				xor		ebx,ebx
+				call	GPSExec
+			.elseif !sonardata.hReplay
+				invoke strcpy,addr combuff,addr szGPSDemoData
+				xor		ebx,ebx
+				call	GPSExec
+				invoke Sleep,900
 			.endif
-			xor		ebx,ebx
-			call	GPSExec
-		.elseif !sonardata.hReplay
-			invoke strcpy,addr combuff,addr szGPSDemoData
-			xor		ebx,ebx
-			call	GPSExec
-			invoke Sleep,900
 		.endif
 		invoke Sleep,100
 	.endw
@@ -291,7 +293,7 @@ GPSExec:
 				dec		ebx
 			.endif
 			invoke SendDlgItemMessage,hWnd,IDC_LSTNMEA,LB_ADDSTRING,0,offset linebuff
-			invoke SendDlgItemMessage,hWnd,IDC_LSTNMEA,LB_SETCURSEL,ebx,0
+			invoke SendDlgItemMessage,hWnd,IDC_LSTNMEA,LB_SETTOPINDEX,ebx,0
 			.if hFileLogWrite
 				invoke strcpy,addr bufflog,addr linebuff
 				invoke strcat,addr bufflog,addr szCRLF

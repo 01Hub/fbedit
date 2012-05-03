@@ -29,7 +29,7 @@ typedef struct
   u8 PingTimer;                                 // 0x20000002 TIM1 auto reload value, ping frequency
   u8 RangeInx;                                  // 0x20000003 Current range index
   u16 PixelTimer;                               // 0x20000004 TIM2 auto reload value, sample rate
-  vu16 EchoIndex;                               // 0x20000006 Current index into EchoArray
+  vu16 EchoIndex;                               // 0x20000006 Current index into EchoArray / PingWait
   u16 ADCBatt;                                  // 0x20000008 Battery
   u16 ADCWaterTemp;                             // 0x2000000A Water temprature
   u16 ADCAirTemp;                               // 0x2000000C Air temprature
@@ -47,6 +47,7 @@ vu8 BlueLED;                                    // Current state of the blue led
 vu16 Ping;                                      // Value to output to PA1 and PA2 pins
 vu16 Trim;                                      // Output trim value
 vu8 Setup;                                      // Setup mode
+vu16 PingWait;                                  // Wait loop in ping
 
 /* Private function prototypes -----------------------------------------------*/
 void RCC_Configuration(void);
@@ -134,7 +135,13 @@ int main(void)
   {
     if (STM32_Sonar.Start == 1)
     {
-      STM32_Sonar.Start = 2;
+      STM32_Sonar.Start = 99;
+      /* Get PingWait */
+      PingWait=STM32_Sonar.EchoIndex;
+      if (PingWait==0)
+      {
+        PingWait=100;
+      }
       /* Toggle blue led */
       if (BlueLED)
       {
@@ -223,6 +230,16 @@ int main(void)
       ADC_AutoInjectedConvCmd(ADC1, DISABLE);
       /* Set the DAC to output lowest gain */
       DAC->DHR12R1 = (u16)0x0;
+    }
+    else if (STM32_Sonar.Start == 2)
+    {
+      rs232_puts((char*) (u32 *)STM32_Sonar.EchoArray);
+      STM32_Sonar.Start=0;
+    }
+    else if (STM32_Sonar.Start == 3)
+    {
+      USART_Configuration(STM32_Sonar.EchoIndex);
+      STM32_Sonar.Start=0;
     }
     i = 1000;
     while (i--);
@@ -319,10 +336,12 @@ void GainSetup(void)
 *******************************************************************************/
 void TIM1_UP_IRQHandler(void)
 {
-  /* Set ping outputs high (FET's off), 3 times to insert a delay and prevent overlapping */
+  u16 i;
+  /* Set ping outputs high (FET's off) */
   GPIO_WriteBit(GPIOA, GPIO_Pin_2 | GPIO_Pin_1, Bit_SET);
-  GPIO_WriteBit(GPIOA, GPIO_Pin_2 | GPIO_Pin_1, Bit_SET);
-  GPIO_WriteBit(GPIOA, GPIO_Pin_2 | GPIO_Pin_1, Bit_SET);
+  /* Insert a delay to prevent overlapping */
+  i=PingWait;
+  while (i--);
   if (STM32_Sonar.PingPulses)
   {
     GPIO_Write(GPIOA,Ping);

@@ -1444,6 +1444,24 @@ STMThread proc uses ebx esi edi,Param:DWORD
 				.endif
 			.elseif sonardata.fSTLink && sonardata.fSTLink!=IDIGNORE
 				;Sonar mode
+				.if sonardata.GPSInit
+					invoke strcpy,addr sonardata.EchoArray,addr szGPSInitData
+				 	mov		sonardata.Start,2
+					invoke STLinkWrite,hWnd,STM32_Sonar,addr sonardata.Start,4
+					.if !eax || eax==IDABORT || eax==IDIGNORE
+						jmp		STLinkErr
+					.endif
+					.while TRUE
+						invoke Sleep,100
+						;Download Start status (first byte)
+						invoke STLinkRead,hWnd,STM32_Sonar,addr status,4
+						.if !eax || eax==IDABORT || eax==IDIGNORE
+							jmp		STLinkErr
+						.endif
+						.break .if !(status & 255)
+					.endw
+					mov		sonardata.GPSInit,0
+				.endif
 				;Download Start status (first byte)
 				invoke STLinkRead,hWnd,STM32_Sonar,addr status,4
 				.if !eax || eax==IDABORT || eax==IDIGNORE
@@ -1470,7 +1488,7 @@ STMThread proc uses ebx esi edi,Param:DWORD
 						dec		sonardata.fGainUpload
 						invoke GainUpload
 					.endif
-				 	;Upload Start, PingPulses, PingTimer, RangeInx and PixelTimer to init the next reading
+				 	;Upload Start, PingPulses, PingTimer, RangeInx, PixelTimer and PingWait to init the next reading
 					mov		eax,sonardata.PingInit
 					.if sonardata.AutoPing
 						add		eax,sonardata.sonarrange.pingadd[ebx]
@@ -1479,6 +1497,7 @@ STMThread proc uses ebx esi edi,Param:DWORD
 						.endif
 					.endif
 					mov		sonardata.PingPulses,al
+					mov		sonardata.PingWait,100
 				 	mov		sonardata.Start,0
 					invoke STLinkWrite,hWnd,STM32_Sonar,addr sonardata.Start,8
 					.if !eax || eax==IDABORT || eax==IDIGNORE

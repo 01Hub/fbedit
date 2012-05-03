@@ -742,8 +742,6 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		hContext,eax
 		invoke LoadAccelerators,hInstance,IDR_ACCEL
 		mov		hAccel,eax
-		invoke CheckDlgButton,hWin,IDC_CHKPAUSE,BST_CHECKED
-		mov		mapdata.gpslogpause,TRUE
 		invoke CheckDlgButton,hWin,IDC_CHKLOCK,BST_CHECKED
 		mov		mapdata.gpslock,TRUE
 		invoke CheckDlgButton,hWin,IDC_CHKTRAIL,BST_CHECKED
@@ -823,10 +821,6 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					invoke DialogBoxParam,hInstance,IDD_DLGTRIPLOG,hWin,addr TripLogProc,eax
 					.if eax
 						invoke strcpy,addr buffer,eax
-						mov		mapdata.gpslogpause,FALSE
-						invoke CheckDlgButton,hWin,IDC_CHKPAUSE,BST_UNCHECKED
-						invoke GetDlgItem,hWin,IDC_CHKPAUSE
-						invoke EnableWindow,eax,TRUE
 						invoke CreateFile,addr buffer,GENERIC_WRITE,FILE_SHARE_READ,NULL,CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL,NULL
 						.if eax!=INVALID_HANDLE_VALUE
 							mov		combuff,0
@@ -850,17 +844,11 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					fstp	mapdata.fSumDist
 					invoke SetDlgItemText,hWin,IDC_EDTDIST,addr szNULL
 				.endif
-				invoke GetDlgItem,hWin,IDC_CHKPAUSE
-				invoke EnableWindow,eax,FALSE
 			.elseif eax==IDM_LOG_REPLAY
 				.if !hFileLogRead
 					invoke DialogBoxParam,hInstance,IDD_DLGTRIPLOG,hWin,addr TripLogProc,eax
 					.if eax
 						invoke strcpy,addr buffer,eax
-						mov		mapdata.gpslogpause,FALSE
-						invoke CheckDlgButton,hWin,IDC_CHKPAUSE,BST_UNCHECKED
-						invoke GetDlgItem,hWin,IDC_CHKPAUSE
-						invoke EnableWindow,eax,TRUE
 						invoke CreateFile,addr buffer,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL
 						.if eax
 							mov		combuff,0
@@ -1118,8 +1106,8 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					mov		fSeaMap,TRUE
 				.endif
 				inc		mapdata.paintnow
-			.elseif eax==IDC_CHKPAUSE
-				invoke IsDlgButtonChecked,hWin,IDC_CHKPAUSE
+			.elseif eax==IDC_CHKPAUSEGPS
+				invoke IsDlgButtonChecked,hWin,IDC_CHKPAUSEGPS
 				mov		mapdata.gpslogpause,eax
 			.elseif eax==IDC_CHKLOCK
 				invoke IsDlgButtonChecked,hWin,IDC_CHKLOCK
@@ -1280,7 +1268,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke GetDlgItem,hWin,IDC_BTNMAP
 		invoke MoveWindow,eax,rect.right,rect.top,80,25,TRUE
 		add		rect.top,27
-		invoke GetDlgItem,hWin,IDC_CHKPAUSE
+		invoke GetDlgItem,hWin,IDC_CHKPAUSEGPS
 		invoke MoveWindow,eax,rect.right,rect.top,80,16,TRUE
 		add		rect.top,17
 		invoke GetDlgItem,hWin,IDC_CHKLOCK
@@ -1415,6 +1403,9 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SaveStatus
 		invoke ShowWindow,hWin,SW_HIDE
 
+		invoke KillTimer,hSonar,1000
+		invoke KillTimer,hSonar,1001
+
 		mov		fExitMAPThread,TRUE
 		mov		fExitGPSThread,TRUE
 		mov		fExitSTMThread,TRUE
@@ -1426,9 +1417,6 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke TranslateMessage,addr msg
 			invoke DispatchMessage,addr msg
 		.endif
-
-		invoke KillTimer,hSonar,1000
-		invoke KillTimer,hSonar,1001
 
 		; Terminate GPS Thread
 		invoke WaitForSingleObject,hGPSThread,3000
@@ -1568,7 +1556,7 @@ NMEACheckSum proc
 
 .data
 ;NMEAstr		db 'PSRF100,1,4800,8,1,0',0
-NMEAstr		db 'PSRF103,02,00,05,00',0
+NMEAstr		db 'PSRF104,66.307350,14.135830,0,96000,237759,922,12,3',0
 .code
 	mov		edx,offset NMEAstr
 	xor		eax,eax
