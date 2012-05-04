@@ -117,17 +117,17 @@ int main(void)
   // /* Switch to NMEA protocol at 4800,8,N,1 */
   // rs232_puts("$PSRF100,1,4800,8,1,0*0E\r\n\0");
   /* Enable GGA message, rate 5 seconds */
-  rs232_puts("$PSRF103,00,00,05,00*20\r\n\0");
+  // rs232_puts("$PSRF103,00,00,05,00*20\r\n\0");
   /* Disable GLL message */
-  rs232_puts("$PSRF103,01,00,00,01*25\r\n\0");
+  // rs232_puts("$PSRF103,01,00,00,01*25\r\n\0");
   /* Enable GSA message, rate 5 seconds */
-  rs232_puts("$PSRF103,02,00,05,00*22\r\n\0");
+  // rs232_puts("$PSRF103,02,00,05,00*22\r\n\0");
   /* Enable GSV message, rate 5 seconds */
-  rs232_puts("$PSRF103,03,00,05,00*23\r\n\0");
+  // rs232_puts("$PSRF103,03,00,05,00*23\r\n\0");
   /* Ensable RMC message, rate 1 second */
-  rs232_puts("$PSRF103,04,00,01,00*20\r\n\0");
+  // rs232_puts("$PSRF103,04,00,01,00*20\r\n\0");
   /* Disable VTG message */
-  rs232_puts("$PSRF103,05,00,00,01*21\r\n\0");
+  // rs232_puts("$PSRF103,05,00,00,01*21\r\n\0");
   /* Get pointer to injected channel */
   ADC = ( (u32 *) ADC1_ICDR_Address);
 
@@ -140,7 +140,7 @@ int main(void)
       PingWait=STM32_Sonar.EchoIndex;
       if (PingWait==0)
       {
-        PingWait=100;
+        PingWait=1;
       }
       /* Toggle blue led */
       if (BlueLED)
@@ -336,15 +336,17 @@ void GainSetup(void)
 *******************************************************************************/
 void TIM1_UP_IRQHandler(void)
 {
-  u16 i;
+  u32 i;
   /* Set ping outputs high (FET's off) */
-  GPIO_WriteBit(GPIOA, GPIO_Pin_2 | GPIO_Pin_1, Bit_SET);
-  /* Insert a delay to prevent overlapping */
-  i=PingWait;
-  while (i--);
+  // GPIO_WriteBit(GPIOA, GPIO_Pin_2 | GPIO_Pin_1, Bit_SET);
+  GPIOA->BSRR = (u16) (GPIO_Pin_2 | GPIO_Pin_1);
   if (STM32_Sonar.PingPulses)
   {
-    GPIO_Write(GPIOA,Ping);
+    /* Insert a delay to prevent overlapping */
+    i=PingWait;
+    while (i--);
+    // GPIO_Write(GPIOA,Ping);
+    GPIOA->ODR = Ping;
     if (Ping == 0x2)
     {
       Ping = 0x4;     // PA02

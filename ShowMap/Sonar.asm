@@ -1445,21 +1445,33 @@ STMThread proc uses ebx esi edi,Param:DWORD
 			.elseif sonardata.fSTLink && sonardata.fSTLink!=IDIGNORE
 				;Sonar mode
 				.if sonardata.GPSInit
-					invoke strcpy,addr sonardata.EchoArray,addr szGPSInitData
-				 	mov		sonardata.Start,2
-					invoke STLinkWrite,hWnd,STM32_Sonar,addr sonardata.Start,4
-					.if !eax || eax==IDABORT || eax==IDIGNORE
-						jmp		STLinkErr
-					.endif
-					.while TRUE
-						invoke Sleep,100
-						;Download Start status (first byte)
-						invoke STLinkRead,hWnd,STM32_Sonar,addr status,4
-						.if !eax || eax==IDABORT || eax==IDIGNORE
-							jmp		STLinkErr
-						.endif
-						.break .if !(status & 255)
-					.endw
+;					mov		status,1
+;					.while (status & 255)
+;						;Download Start status (first byte)
+;						invoke STLinkRead,hWnd,STM32_Sonar,addr status,4
+;						.if !eax || eax==IDABORT || eax==IDIGNORE
+;							jmp		STLinkErr
+;						.endif
+;					.endw
+;					invoke strcpy,addr sonardata.EchoArray,addr szGPSInitData
+;					invoke STLinkWrite,hWnd,STM32_Sonar+16,addr sonardata.EchoArray,512
+;					.if !eax || eax==IDABORT || eax==IDIGNORE
+;						jmp		STLinkErr
+;					.endif
+;				 	mov		sonardata.Start,2
+;					invoke STLinkWrite,hWnd,STM32_Sonar,addr sonardata.Start,4
+;					.if !eax || eax==IDABORT || eax==IDIGNORE
+;						jmp		STLinkErr
+;					.endif
+;					.while TRUE
+;						invoke Sleep,100
+;						;Download Start status (first byte)
+;						invoke STLinkRead,hWnd,STM32_Sonar,addr status,4
+;						.if !eax || eax==IDABORT || eax==IDIGNORE
+;							jmp		STLinkErr
+;						.endif
+;						.break .if !(status & 255)
+;					.endw
 					mov		sonardata.GPSInit,0
 				.endif
 				;Download Start status (first byte)
@@ -1497,7 +1509,8 @@ STMThread proc uses ebx esi edi,Param:DWORD
 						.endif
 					.endif
 					mov		sonardata.PingPulses,al
-					mov		sonardata.PingWait,100
+					mov		sonardata.PingWait,6
+					mov		sonardata.PingWait,3
 				 	mov		sonardata.Start,0
 					invoke STLinkWrite,hWnd,STM32_Sonar,addr sonardata.Start,8
 					.if !eax || eax==IDABORT || eax==IDIGNORE

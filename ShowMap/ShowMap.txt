@@ -257,3 +257,8 @@ Temprature		  ADC Reading
 23.5					1165
  0.0					2485
 =============================
+
+EM406 Version
+$PSRFTXT,Version:GSW3.5.0_3.5.00.00-3EP2.01 *46
+$PSRFTXT,Version2:F-GPS-03-1006232*29
+
