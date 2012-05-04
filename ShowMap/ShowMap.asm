@@ -767,6 +767,20 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke GetDlgItem,hWin,IDC_BTNRANGEUP
 		invoke SetWindowLong,eax,GWL_WNDPROC,offset ButtonProc
 		invoke MoveWindow,hWin,winrect.left,winrect.top,winrect.right,winrect.bottom,FALSE
+	.elseif eax==WM_CONTEXTMENU
+		invoke GetDlgItem,hWin,IDC_LSTNMEA
+		.if eax==wParam
+			mov		eax,lParam
+			.if eax!=-1
+				movsx	edx,ax
+				mov		mousept.x,edx
+				shr		eax,16
+				movsx	edx,ax
+				mov		mousept.y,edx
+				invoke GetSubMenu,hContext,6
+				invoke TrackPopupMenu,eax,TPM_LEFTALIGN or TPM_RIGHTBUTTON,mousept.x,mousept.y,0,hWin,0
+			.endif
+		.endif
 	.elseif eax==WM_COMMAND
 		mov		edx,wParam
 		movzx	eax,dx
@@ -1066,6 +1080,31 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					mov		eax,BST_CHECKED
 				.endif
 				invoke CheckDlgButton,hWin,IDC_CHKCHART,eax
+			.elseif eax==IDM_GPS_HIDE
+				invoke CheckDlgButton,hWin,IDC_CHKSHOWNMEA,BST_UNCHECKED
+				mov		mapdata.fShowNMEA,FALSE
+				invoke SendMessage,hWin,WM_SIZE,0,0
+			.elseif eax==IDM_GPS_PAUSE
+				invoke IsDlgButtonChecked,hWin,IDC_CHKPAUSEGPS
+				.if eax
+					invoke CheckDlgButton,hWin,IDC_CHKPAUSEGPS,BST_UNCHECKED
+					mov		mapdata.gpslogpause,FALSE
+				.else
+					invoke CheckDlgButton,hWin,IDC_CHKPAUSEGPS,BST_CHECKED
+					mov		mapdata.gpslogpause,TRUE
+				.endif
+				mov		edx,MF_BYCOMMAND or MF_UNCHECKED
+				.if mapdata.gpslogpause
+					mov		edx,MF_BYCOMMAND or MF_CHECKED
+				.endif
+				invoke CheckMenuItem,hContext,IDM_GPS_PAUSE,edx
+			.elseif eax==IDM_GPS_SAVE
+				invoke DialogBoxParam,hInstance,IDD_DLGTRIPLOG,hWin,addr TripLogProc,IDM_GPS_SAVE
+				.if eax
+					invoke SaveNMEALog,eax
+				.endif
+			.elseif eax==IDM_GPS_CLEAR
+				invoke SendDlgItemMessage,hWin,IDC_LSTNMEA,LB_RESETCONTENT,0,0
 ;Buttons
 			.elseif eax==IDC_BTNZOOMIN
 				mov		eax,mapdata.zoominx
@@ -1109,6 +1148,11 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.elseif eax==IDC_CHKPAUSEGPS
 				invoke IsDlgButtonChecked,hWin,IDC_CHKPAUSEGPS
 				mov		mapdata.gpslogpause,eax
+				mov		edx,MF_BYCOMMAND or MF_UNCHECKED
+				.if eax
+					mov		edx,MF_BYCOMMAND or MF_CHECKED
+				.endif
+				invoke CheckMenuItem,hContext,IDM_GPS_PAUSE,edx
 			.elseif eax==IDC_CHKLOCK
 				invoke IsDlgButtonChecked,hWin,IDC_CHKLOCK
 				mov		mapdata.gpslock,eax
@@ -1215,13 +1259,6 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			mov		edx,MF_BYCOMMAND or MF_GRAYED
 		.endif
 		invoke EnableMenuItem,hMenu,IDM_LOG_STARTSONAR,edx
-
-		mov		edx,MF_BYCOMMAND or MF_ENABLED
-		.if sonardata.hReplay
-			mov		edx,MF_BYCOMMAND or MF_GRAYED
-		.endif
-		invoke EnableMenuItem,hMenu,IDM_LOG_REPLAYSONAR,edx
-
 		mov		edx,MF_BYCOMMAND or MF_ENABLED
 		.if !sonardata.hLog && !sonardata.hReplay
 			mov		edx,MF_BYCOMMAND or MF_GRAYED
@@ -1552,27 +1589,7 @@ WinMain proc hInst:HINSTANCE,hPrevInst:HINSTANCE,CmdLine:LPSTR,CmdShow:DWORD
 
 WinMain endp
 
-NMEACheckSum proc
-
-.data
-;NMEAstr		db 'PSRF100,1,4800,8,1,0',0
-NMEAstr		db 'PSRF104,66.307350,14.135830,0,96000,237759,922,12,4',0
-.code
-	mov		edx,offset NMEAstr
-	xor		eax,eax
-	.while byte ptr [edx]
-		xor		al,[edx]
-		inc		edx
-	.endw
-	PrintHex al
-	ret
-
-NMEACheckSum endp
-
 start:
-
-;invoke NMEACheckSum
-;invoke ExitProcess,eax
 	invoke GetModuleHandle,NULL
 	mov    hInstance,eax
 	invoke GetCommandLine

@@ -31,6 +31,8 @@ szSonarFileName		BYTE 'Sonar%s.snr',0
 szStartSonarLog		BYTE 'Start Sonar Logging',0
 szPlaySonarLog		BYTE 'Replay Sonar Log',0
 
+szSaveNMEA			BYTE 'Save NMEA log',0
+
 szAllFiles			BYTE '\*.*',0
 
 
@@ -184,6 +186,16 @@ TripLogProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke GetWindowLong,ebx,GWL_STYLE
 			or		eax,WS_DISABLED
 			invoke SetWindowLong,ebx,GWL_STYLE,eax
+		.elseif eax==IDM_GPS_SAVE
+			invoke strcat,addr szPath,addr szLogPath
+			invoke strcpy,addr buffer,addr szPath
+			invoke strcat,addr buffer,addr szAllFiles
+			invoke DlgDirList,hWin,addr buffer,IDC_LSTFILES,NULL,DDL_READWRITE
+			invoke SetWindowText,hWin,addr szSaveNMEA
+			invoke GetDateFormat,NULL,NULL,NULL,offset szDateFmtFile,addr datebuff,sizeof datebuff
+			invoke wsprintf,addr buffer,addr szLogFileName,addr datebuff
+			invoke SetDlgItemText,hWin,IDC_EDTFILE,addr buffer
+			mov		fSaveFile,TRUE
 		.endif
 		.if !fSaveFile
 			invoke GetDlgItem,hWin,IDC_BTNDELETE
@@ -651,3 +663,36 @@ SaveTrail proc uses ebx,lpFileName:DWORD
 	ret
 
 SaveTrail endp
+
+SaveNMEALog proc uses ebx,lpFileName:DWORD
+	LOCAL	hFile:HANDLE
+	LOCAL	dwwrite:DWORD
+	LOCAL	buffer[256]:BYTE
+
+	push	mapdata.gpslogpause
+	mov		mapdata.gpslogpause,TRUE
+	invoke Sleep,100
+	invoke CreateFile,lpFileName,GENERIC_WRITE,FILE_SHARE_READ,NULL,CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL,NULL
+	.if eax!=INVALID_HANDLE_VALUE
+		mov		hFile,eax
+		xor		ebx,ebx
+		.while TRUE
+			invoke SendDlgItemMessage,hWnd,IDC_LSTNMEA,LB_GETTEXT,ebx,addr buffer
+		  .break .if eax==LB_ERR
+			invoke strcat,addr buffer,addr szCRLF
+			invoke strcmpn,addr buffer,addr szGPRMC,6
+			.if !eax
+				invoke WriteFile,hFile,addr szNULL,1,addr dwwrite,NULL
+			.else
+			.endif
+			invoke strlen,addr buffer
+			mov		edx,eax
+			invoke WriteFile,hFile,addr buffer,edx,addr dwwrite,NULL
+			inc		ebx
+		.endw
+		invoke CloseHandle,hFile
+	.endif
+	pop		mapdata.gpslogpause
+	ret
+
+SaveNMEALog endp

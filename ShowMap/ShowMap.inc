@@ -127,6 +127,10 @@ IDM_DIST_INSERT         equ 11015
 IDM_DIST_DELETE         equ 11016
 IDM_SONARCLEAR			equ 11018
 IDM_SONARPAUSE			equ 11019
+IDM_GPS_HIDE			equ 11022
+IDM_GPS_PAUSE			equ 11020
+IDM_GPS_SAVE			equ 11021
+IDM_GPS_CLEAR			equ 11023
 
 IDR_ACCEL				equ 1
 
@@ -260,7 +264,9 @@ MAP struct
 	TrailRate		DWORD ?									;Number of seconds between trail points
 	TrailCount		DWORD ?									;TrailRate down counter
 	fShowNMEA		DWORD ?									;If TRUE NMEA log window is shown
-	fSTLink			DWORD ?
+	fSTLink			DWORD ?									;If TRUE internal GPS module is present
+	GPSInit			DWORD ?									;If TRUE GPS initialization is performed
+	GPSReset		DWORD ?									;If TRUE GPS initialization icludes factory reset command
 MAP ends
 
 SATELITE struct
@@ -283,7 +289,7 @@ ALTITUDE ends
 ;STM32 constants
 STM32_Sonar				equ 20000000h						;STM32 ram address
 STM32_Clock				equ 40000000						;STM32 clock frequency
-STM32_PingTimer			equ (STM32_Clock/200000/2)-1
+STM32_PingTimer			equ (STM32_Clock/200000/2)-1		;Default ping timer
 
 ;Sonar constants
 MAXXECHO				equ 512								;Max number of sonar X-echos
@@ -393,8 +399,7 @@ SONAR struct
 	cursor			DWORD ?									;If TRUE depth cursor is shown
 	cursorpos		DWORD ?									;Position of depth cursor
 	sonarcolor		DWORD 18 dup(?)							;Color definitions
-	PaintNow		DWORD ?
-	GPSInit			DWORD ?
+	PaintNow		DWORD ?									;If TRUE sonar screen is updated
 SONAR ends
 
 SONARREPLAY struct
@@ -499,15 +504,16 @@ szGPSDemoData		BYTE '$GPRMC,193409,A,6619.0367,N,01411.8237,E,0.0,356.4,230710,2
 					BYTE '$GPGSV,3,3,12,5,13,27,,29,12,108,,19,10,275,,15,9,76,',0Dh,0Ah
 					BYTE '$GPGSA,A,3,21,,,,18,24,7,26,,,,,2.5,1.1,2.2',0Dh,0Ah,0
 
-szGPSInitData		BYTE '$PSRF103,00,00,05,00*20',0Dh,0Ah	;Enable GGA message, rate 5 seconds
-					BYTE '$PSRF103,01,00,00,01*25',0Dh,0Ah	;Disable GLL message
-					BYTE '$PSRF103,02,00,05,00*22',0Dh,0Ah	;Enable GSA message, rate 5 seconds
-					BYTE '$PSRF103,03,00,05,00*23',0Dh,0Ah	;Enable GSV message, rate 5 seconds
-					BYTE '$PSRF103,04,00,01,00*20',0Dh,0Ah	;Ensable RMC message, rate 1 second
-					BYTE '$PSRF103,05,00,00,01*21',0Dh,0Ah	;Disable VTG message
-;					BYTE '$PSRF101,-2686700,-4304200,3851624,96000,497260,921,12,3*7F',0Dh,0Ah
-;					BYTE '$PSRF104,66.307350,14.135830,0,96000,237759,922,12,4*25',0Dh,0Ah
+szGPSInitData		BYTE '$PSRF103,00,00,05,00*XX',0Dh,0Ah	;Enable GGA message, rate 5 seconds
+					BYTE '$PSRF103,01,00,00,00*XX',0Dh,0Ah	;Disable GLL message
+					BYTE '$PSRF103,02,00,05,00*XX',0Dh,0Ah	;Enable GSA message, rate 5 seconds
+					BYTE '$PSRF103,03,00,05,00*XX',0Dh,0Ah	;Enable GSV message, rate 5 seconds
+					BYTE '$PSRF103,04,00,01,00*XX',0Dh,0Ah	;Ensable RMC message, rate 1 second
+					BYTE '$PSRF103,05,00,00,00*XX',0Dh,0Ah	;Disable VTG message
 					BYTE 0
+szGPSReset			BYTE '$PSRF104,66.307350,14.135830,0,96000,237759,922,12,4*XX',0Dh,0Ah
+					BYTE 0
+
 szDefSonarColors	BYTE '16777215,12632256,10658466,8421504,65535,61680,54741,52942,45824,42496,40704,38400,255,242,223,215,8388608,16039276',0
 
 .data?

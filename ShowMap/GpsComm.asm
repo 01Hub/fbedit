@@ -3,6 +3,7 @@ IDD_DLGGPSSETUP			equ 1400
 IDC_EDTCOMPORT			equ 1403
 IDC_CBOBAUDRATE			equ 1404
 IDC_CHKCOMACTIVE		equ 1405
+IDC_CHKRESET			equ 1401
 IDC_CHKTRACKSMOOTHING	equ 1401
 IDC_BTNRATEDN			equ 1407
 IDC_TRBRATE				equ 1406
@@ -66,8 +67,101 @@ logbuff				BYTE 1024 dup(?)
 
 .code
 
+SendGPSConfig proc
+	LOCAL	status:DWORD
+	LOCAL	buffer[512]:BYTE
+
+	invoke RtlZeroMemory,addr buffer,sizeof buffer
+	invoke strcpy,addr buffer,addr szGPSInitData
+	.if mapdata.GPSReset
+		invoke strcat,addr buffer,addr szGPSReset
+		mov		mapdata.GPSReset,FALSE
+	.endif
+	call	GetCheckSum
+	.if hCom
+		invoke strlen,addr buffer
+		mov		edx,eax
+		invoke WriteFile,hCom,addr buffer,edx,addr status,NULL
+	.else
+		.while mapdata.GPSInit==1
+			invoke Sleep,100
+		.endw
+		mov		status,1
+		.while (status & 255)
+			;Download Start status (first byte)
+			invoke STLinkRead,hGPS,STM32_Sonar,addr status,4
+			.if !eax || eax==IDABORT || eax==IDIGNORE
+				jmp		STLinkErr
+			.endif
+		.endw
+		invoke STLinkWrite,hGPS,STM32_Sonar+16+512,addr buffer,512
+		.if !eax || eax==IDABORT || eax==IDIGNORE
+			jmp		STLinkErr
+		.endif
+	 	mov		sonardata.Start,2
+		invoke STLinkWrite,hGPS,STM32_Sonar,addr sonardata.Start,4
+		.if !eax || eax==IDABORT || eax==IDIGNORE
+			jmp		STLinkErr
+		.endif
+		.while TRUE
+			invoke Sleep,100
+			;Download Start status (first byte)
+			invoke STLinkRead,hGPS,STM32_Sonar,addr status,4
+			.if !eax || eax==IDABORT || eax==IDIGNORE
+				jmp		STLinkErr
+			.endif
+			.break .if !(status & 255)
+		.endw
+	.endif
+	mov		mapdata.GPSInit,0
+	ret
+
+STLinkErr:
+	invoke PostMessage,hWnd,WM_CLOSE,0,0
+	xor		eax,eax
+	ret
+
+CheckSum:
+	xor		eax,eax
+	.while byte ptr [edx]!='*'
+		xor		al,[edx]
+		inc		edx
+	.endw
+	push	eax
+	shr		eax,4
+	.if eax>=0ah
+		add		eax,'A'-0Ah
+	.else
+		or		eax,30h
+	.endif
+	mov		[edx+1],al
+	pop		eax
+	and		eax,0Fh
+	.if eax>=0ah
+		add		eax,'A'-0Ah
+	.else
+		or		eax,30h
+	.endif
+	mov		[edx+2],al
+	retn
+
+
+GetCheckSum:
+	lea		edx,buffer
+	.while byte ptr [edx]
+		.while byte ptr [edx] && byte ptr [edx]!='$'
+			inc		edx
+		.endw
+		.if byte ptr [edx]
+			inc		edx
+			call	CheckSum
+		.endif
+	.endw
+	retn
+
+SendGPSConfig endp
+
 OpenCom proc
-	LOCAL	dwrrite:DWORD
 
 	.if hCom
 		invoke CloseHandle,hCom
@@ -90,9 +184,7 @@ OpenCom proc
 			mov		to.ReadTotalTimeoutConstant,1
 			mov		to.WriteTotalTimeoutConstant,10
 			invoke SetCommTimeouts,hCom,addr to
-			invoke strlen,addr szGPSInitData
-			mov		edx,eax
-			invoke WriteFile,hCom,addr szGPSInitData,edx,addr dwrrite,NULL
+			invoke SendGPSConfig
 		.else
 			invoke MessageBox,hWnd,addr szComFailed,addr COMPort,MB_ICONERROR or MB_ABORTRETRYIGNORE
 			.if eax==IDABORT
@@ -102,7 +194,7 @@ OpenCom proc
 			.endif
 		.endif
 	.else
-		mov		sonardata.GPSInit,TRUE
+		mov		mapdata.GPSInit,TRUE
 	.endif
 	ret
 
@@ -213,10 +305,13 @@ GPSThread proc uses ebx esi edi,Param:DWORD
 			 		.endif
 				.endif
 			.elseif mapdata.fSTLink && mapdata.fSTLink!=IDIGNORE && !sonardata.hReplay
+				.if mapdata.GPSInit
+					invoke SendGPSConfig
+				.endif
 				xor		ebx,ebx
 			  STMGetMore:
 				;Download ADCAirTemp and GPSHead
-				invoke STLinkRead,hSonar,STM32_Sonar+12,addr tmp,4
+				invoke STLinkRead,hGPS,STM32_Sonar+12,addr tmp,4
 				.if !eax || eax==IDABORT || eax==IDIGNORE
 					jmp		STLinkErr
 				.endif
@@ -231,9 +326,9 @@ GPSThread proc uses ebx esi edi,Param:DWORD
 						inc		eax
 						shl		eax,2
 						sub		eax,edx
-						invoke STLinkRead,hSonar,addr [STM32_Sonar+16+sizeof SONAR.EchoArray+sizeof SONAR.GainArray+sizeof SONAR.GainInit+edx],addr sonardata.GPSArray[edx],eax
+						invoke STLinkRead,hGPS,addr [STM32_Sonar+16+sizeof SONAR.EchoArray+sizeof SONAR.GainArray+sizeof SONAR.GainInit+edx],addr sonardata.GPSArray[edx],eax
 					.else
-						invoke STLinkRead,hSonar,STM32_Sonar+16+sizeof SONAR.EchoArray+sizeof SONAR.GainArray+sizeof SONAR.GainInit,addr sonardata.GPSArray,sizeof SONAR.GPSArray
+						invoke STLinkRead,hGPS,STM32_Sonar+16+sizeof SONAR.EchoArray+sizeof SONAR.GainArray+sizeof SONAR.GainInit,addr sonardata.GPSArray,sizeof SONAR.GPSArray
 					.endif
 					.if !eax || eax==IDABORT || eax==IDIGNORE
 						jmp		STLinkErr
@@ -768,6 +863,8 @@ GPSOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPA
 				invoke SendDlgItemMessage,hWin,IDC_CBOBAUDRATE,CB_GETLBTEXT,eax,addr BaudRate
 				invoke IsDlgButtonChecked,hWin,IDC_CHKCOMACTIVE
 				mov		COMActive,eax
+				invoke IsDlgButtonChecked,hWin,IDC_CHKRESET
+				mov		mapdata.GPSReset,eax
 				invoke SaveGPSToIni
 				invoke OpenCom
 				invoke SendMessage,hWin,WM_CLOSE,NULL,TRUE

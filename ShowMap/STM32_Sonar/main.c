@@ -233,12 +233,22 @@ int main(void)
     }
     else if (STM32_Sonar.Start == 2)
     {
-      rs232_puts((char*) (u32 *)STM32_Sonar.EchoArray);
+      rs232_puts((char*) (u32 *)STM32_Sonar.GainArray);
       STM32_Sonar.Start=0;
     }
     else if (STM32_Sonar.Start == 3)
     {
       USART_Configuration(STM32_Sonar.EchoIndex);
+      STM32_Sonar.Start=0;
+    }
+    else if (STM32_Sonar.Start == 4)
+    {
+      /* Read battery */
+      STM32_Sonar.ADCBatt = GetADCValue(ADC_Channel_14);
+      /* Read water temprature */
+      STM32_Sonar.ADCWaterTemp = GetADCValue(ADC_Channel_6);
+      /* Read air temprature */
+      STM32_Sonar.ADCAirTemp = GetADCValue(ADC_Channel_7);
       STM32_Sonar.Start=0;
     }
     i = 1000;

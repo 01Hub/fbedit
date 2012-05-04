@@ -248,7 +248,7 @@ UpdateBitmap proc uses ebx esi edi,NewRange:DWORD
 
 UpdateBitmap endp
 
-SonarUpdateProc proc uses ebx esi edi,fScroll:DWORD
+SonarUpdateProc proc uses ebx esi edi,nUpdate:DWORD
 	LOCAL	rect:RECT
 	LOCAL	buffer[256]:BYTE
 	LOCAL	tmp:DWORD
@@ -397,16 +397,16 @@ UpdateBitmapArray:
 	retn
 
 Update:
-	.if fScroll
-		;Battery
-		movzx	eax,sonardata.ADCBattery
-		call	SetBattery
-		;Water temprature
-		movzx	eax,sonardata.ADCWaterTemp
-		call	SetWTemp
-		;Air temprature
-		movzx	eax,sonardata.ADCAirTemp
-		call	SetATemp
+	;Battery
+	movzx	eax,sonardata.ADCBattery
+	call	SetBattery
+	;Water temprature
+	movzx	eax,sonardata.ADCWaterTemp
+	call	SetWTemp
+	;Air temprature
+	movzx	eax,sonardata.ADCAirTemp
+	call	SetATemp
+	.if nUpdate==1
 		;Check if range is still the same
 		movzx	eax,STM32Echo
 		.if eax!=sonardata.sonarbmp.RangeInx
@@ -439,27 +439,29 @@ Update:
 			lea		ebx,[ebx+1]
 		.endw
 	.endif
-	mov		ebx,sonardata.SignalBarWt
-	mov		rect.left,0
-	mov		rect.top,0
-	mov		rect.right,ebx
-	mov		rect.bottom,MAXYECHO
-	invoke FillRect,sonardata.mDCS,addr rect,sonardata.hBrBack
-	.if ebx>8
-		;Draw signal bar
-		mov		ebx,1
-		.while ebx<MAXYECHO
-			movzx	eax,STM32Echo[ebx]
-			mov		ecx,sonardata.SignalBarWt
-			mul		ecx
-			shr		eax,8
-			.if eax
-				mov		edi,eax
-				invoke MoveToEx,sonardata.mDCS,0,ebx,NULL
-				invoke LineTo,sonardata.mDCS,edi,ebx
-			.endif
-			lea		ebx,[ebx+1]
-		.endw
+	.if nUpdate
+		mov		ebx,sonardata.SignalBarWt
+		mov		rect.left,0
+		mov		rect.top,0
+		mov		rect.right,ebx
+		mov		rect.bottom,MAXYECHO
+		invoke FillRect,sonardata.mDCS,addr rect,sonardata.hBrBack
+		.if ebx>8
+			;Draw signal bar
+			mov		ebx,1
+			.while ebx<MAXYECHO
+				movzx	eax,STM32Echo[ebx]
+				mov		ecx,sonardata.SignalBarWt
+				mul		ecx
+				shr		eax,8
+				.if eax
+					mov		edi,eax
+					invoke MoveToEx,sonardata.mDCS,0,ebx,NULL
+					invoke LineTo,sonardata.mDCS,edi,ebx
+				.endif
+				lea		ebx,[ebx+1]
+			.endw
+		.endif
 	.endif
 	mov		sonardata.PaintNow,0
 	invoke InvalidateRect,hSonar,NULL,TRUE
@@ -794,7 +796,7 @@ SetSignal:
 	invoke ReleaseDC,hWin,hDC
 	pop		eax
 	invoke DeleteObject,eax
-	invoke SonarUpdateProc,FALSE
+	invoke SonarUpdateProc,2
 	retn
 
 SonarOptionProc endp
@@ -1275,7 +1277,7 @@ GainUpload proc uses ebx edi
 		.endw
 	.endif
 	;Upload Gain array
-	invoke STLinkWrite,hWnd,STM32_Sonar+16+sizeof SONAR.EchoArray+sizeof SONAR.GainArray,addr sonardata.GainInit,sizeof SONAR.GainInit
+	invoke STLinkWrite,hSonar,STM32_Sonar+16+sizeof SONAR.EchoArray+sizeof SONAR.GainArray,addr sonardata.GainInit,sizeof SONAR.GainInit
 	ret
 
 GainUpload endp
@@ -1313,6 +1315,36 @@ STMThread proc uses ebx esi edi,Param:DWORD
 	.while !fExitSTMThread
 		invoke IsDlgButtonChecked,hWnd,IDC_CHKCHART
 		.if eax
+			.if sonardata.fSTLink && sonardata.fSTLink!=IDIGNORE
+				;Download Start status (first byte)
+				invoke STLinkRead,hSonar,STM32_Sonar,addr status,4
+				.if !eax || eax==IDABORT || eax==IDIGNORE
+					jmp		STLinkErr
+				.endif
+				.if !(status & 255)
+					;Download ADCBattery, ADCWaterTemp, ADCAirTemp and GPSHead
+					invoke STLinkRead,hSonar,STM32_Sonar+8,addr sonardata.ADCBattery,8
+					.if !eax || eax==IDABORT || eax==IDIGNORE
+						jmp		STLinkErr
+					.endif
+				 	;Upload Start and PingPulses
+					mov		eax,sonardata.PingInit
+					.if sonardata.AutoPing
+						add		eax,sonardata.sonarrange.pingadd[ebx]
+						.if eax>MAXPING
+							mov		eax,MAXPING
+						.endif
+					.endif
+					mov		sonardata.PingPulses,al
+					;Start the next reading
+				 	mov		sonardata.Start,4
+					invoke STLinkWrite,hSonar,STM32_Sonar,addr sonardata.Start,4
+					.if !eax || eax==IDABORT || eax==IDIGNORE
+						jmp		STLinkErr
+					.endif
+					invoke SonarUpdateProc,0
+				.endif
+			.endif
 			invoke Sleep,100
 			.if sonardata.PaintNow
 				mov		sonardata.PaintNow,0
@@ -1444,51 +1476,27 @@ STMThread proc uses ebx esi edi,Param:DWORD
 				.endif
 			.elseif sonardata.fSTLink && sonardata.fSTLink!=IDIGNORE
 				;Sonar mode
-				.if sonardata.GPSInit
-;					mov		status,1
-;					.while (status & 255)
-;						;Download Start status (first byte)
-;						invoke STLinkRead,hWnd,STM32_Sonar,addr status,4
-;						.if !eax || eax==IDABORT || eax==IDIGNORE
-;							jmp		STLinkErr
-;						.endif
-;					.endw
-;					invoke strcpy,addr sonardata.EchoArray,addr szGPSInitData
-;					invoke STLinkWrite,hWnd,STM32_Sonar+16,addr sonardata.EchoArray,512
-;					.if !eax || eax==IDABORT || eax==IDIGNORE
-;						jmp		STLinkErr
-;					.endif
-;				 	mov		sonardata.Start,2
-;					invoke STLinkWrite,hWnd,STM32_Sonar,addr sonardata.Start,4
-;					.if !eax || eax==IDABORT || eax==IDIGNORE
-;						jmp		STLinkErr
-;					.endif
-;					.while TRUE
-;						invoke Sleep,100
-;						;Download Start status (first byte)
-;						invoke STLinkRead,hWnd,STM32_Sonar,addr status,4
-;						.if !eax || eax==IDABORT || eax==IDIGNORE
-;							jmp		STLinkErr
-;						.endif
-;						.break .if !(status & 255)
-;					.endw
-					mov		sonardata.GPSInit,0
+				.if mapdata.GPSInit
+					mov		mapdata.GPSInit,2
+					.while mapdata.GPSInit
+						invoke Sleep,100
+					.endw
 				.endif
 				;Download Start status (first byte)
-				invoke STLinkRead,hWnd,STM32_Sonar,addr status,4
+				invoke STLinkRead,hSonar,STM32_Sonar,addr status,4
 				.if !eax || eax==IDABORT || eax==IDIGNORE
 					jmp		STLinkErr
 				.endif
 				.if !(status & 255)
 					;Download ADCBattery, ADCWaterTemp, ADCAirTemp and GPSHead
-					invoke STLinkRead,hWnd,STM32_Sonar+8,addr sonardata.ADCBattery,8
+					invoke STLinkRead,hSonar,STM32_Sonar+8,addr sonardata.ADCBattery,8
 					.if !eax || eax==IDABORT || eax==IDIGNORE
 						jmp		STLinkErr
 					.endif
 					;Copy old echo
 					call	MoveEcho
 					;Download sonar echo array
-					invoke STLinkRead,hWnd,STM32_Sonar+16,addr STM32Echo,MAXYECHO
+					invoke STLinkRead,hSonar,STM32_Sonar+16,addr STM32Echo,MAXYECHO
 					.if !eax || eax==IDABORT || eax==IDIGNORE
 						jmp		STLinkErr
 					.endif
@@ -1512,13 +1520,13 @@ STMThread proc uses ebx esi edi,Param:DWORD
 					mov		sonardata.PingWait,6
 					mov		sonardata.PingWait,3
 				 	mov		sonardata.Start,0
-					invoke STLinkWrite,hWnd,STM32_Sonar,addr sonardata.Start,8
+					invoke STLinkWrite,hSonar,STM32_Sonar,addr sonardata.Start,8
 					.if !eax || eax==IDABORT || eax==IDIGNORE
 						jmp		STLinkErr
 					.endif
 					;Start the next phase
 				 	mov		sonardata.Start,1
-					invoke STLinkWrite,hWnd,STM32_Sonar,addr sonardata.Start,4
+					invoke STLinkWrite,hSonar,STM32_Sonar,addr sonardata.Start,4
 					.if !eax || eax==IDABORT || eax==IDIGNORE
 						jmp		STLinkErr
 					.endif
@@ -1816,7 +1824,7 @@ Show0:
 	.endif
 	push	edi
 	call	ScrollFish
-	invoke SonarUpdateProc,TRUE
+	invoke SonarUpdateProc,1
 	pop		edi
 	invoke Sleep,edi
 	retn
@@ -1915,7 +1923,7 @@ Show25:
 		.endw
 	.endif
 	call	ScrollFish
-	invoke SonarUpdateProc,TRUE
+	invoke SonarUpdateProc,1
 	invoke Sleep,edi
 	retn
 
@@ -2025,7 +2033,7 @@ Show33:
 		.endw
 	.endif
 	call	ScrollFish
-	invoke SonarUpdateProc,TRUE
+	invoke SonarUpdateProc,1
 	invoke Sleep,edi
 	retn
 
@@ -2111,7 +2119,7 @@ Show50:
 		.endw
 	.endif
 	call	ScrollFish
-	invoke SonarUpdateProc,TRUE
+	invoke SonarUpdateProc,1
 	invoke Sleep,edi
 	retn
 
@@ -2205,7 +2213,7 @@ Show66:
 		.endw
 	.endif
 	call	ScrollFish
-	invoke SonarUpdateProc,TRUE
+	invoke SonarUpdateProc,1
 	invoke Sleep,edi
 	retn
 
@@ -2303,7 +2311,7 @@ Show75:
 		.endw
 	.endif
 	call	ScrollFish
-	invoke SonarUpdateProc,TRUE
+	invoke SonarUpdateProc,1
 	invoke Sleep,edi
 	retn
 
@@ -3192,15 +3200,15 @@ SonarProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.if !sonardata.fSTLink
 				mov		sonardata.fSTLink,IDIGNORE
 				mov		mapdata.fSTLink,IDIGNORE
-				invoke STLinkConnect,hWnd
+				invoke STLinkConnect,hSonar
 				.if eax==IDABORT
 					invoke SendMessage,hWnd,WM_CLOSE,0,0
 				.else
 					mov		sonardata.fSTLink,eax
 				.endif
 				.if sonardata.fSTLink && sonardata.fSTLink!=IDIGNORE
-					invoke STLinkReset,hWnd
-					invoke STLinkConnect,hSonar
+					invoke STLinkReset,hSonar
+					invoke STLinkConnect,hGPS
 					.if eax==IDABORT
 						invoke SendMessage,hWnd,WM_CLOSE,0,0
 					.else
