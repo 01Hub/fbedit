@@ -929,6 +929,10 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke DialogBoxParam,hInstance,IDD_DLGTRIPLOG,hWin,addr TripLogProc,eax
 				.if eax
 					invoke strcpy,addr buffer,eax
+					.if sonardata.hReplay
+						invoke CloseHandle,sonardata.hReplay
+						mov		sonardata.hReplay,0
+					.endif
 					invoke CreateFile,addr buffer,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL
 					.if eax!=INVALID_HANDLE_VALUE
 						mov		ebx,eax
@@ -1259,6 +1263,11 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			mov		edx,MF_BYCOMMAND or MF_GRAYED
 		.endif
 		invoke EnableMenuItem,hMenu,IDM_LOG_STARTSONAR,edx
+		mov		edx,MF_BYCOMMAND or MF_ENABLED
+		.if sonardata.hReplay
+			mov		edx,MF_BYCOMMAND or MF_GRAYED
+		.endif
+		invoke EnableMenuItem,hMenu,IDM_LOG_REPLAYSONAR,edx
 		mov		edx,MF_BYCOMMAND or MF_ENABLED
 		.if !sonardata.hLog && !sonardata.hReplay
 			mov		edx,MF_BYCOMMAND or MF_GRAYED

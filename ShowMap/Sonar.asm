@@ -53,6 +53,7 @@ IDC_EDTGAINDEPTH		equ 1609
 IDC_BTNCALCULATE		equ 1610
 
 IDD_DLGSONARCOLOR		equ 1700
+IDC_BTNDEFAULT			equ 1701
 
 GAINXOFS				equ 60
 GAINYOFS				equ 117
@@ -1168,6 +1169,31 @@ SonarColorOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lPa
 				.endw
 				invoke WritePrivateProfileString,addr szIniSonar,addr szIniSonarColor,addr buffer[1],addr szIniFileName
 				invoke EndDialog,hWin,NULL
+			.elseif eax==IDC_BTNDEFAULT
+				invoke strcpy,addr buffer,addr szDefSonarColors
+				xor		ebx,ebx
+				.while ebx<18
+					invoke GetItemInt,addr buffer,0
+					mov		sonardata.sonarcolor[ebx*DWORD],eax
+					.if ebx==16
+						;Signal bar
+						invoke CreatePen,PS_SOLID,1,eax
+						push	eax
+						invoke SelectObject,sonardata.mDCS,eax
+						invoke DeleteObject,eax
+						pop		eax
+						mov		sonardata.hPen,eax
+					.elseif ebx==17
+						;Back color
+						invoke CreateSolidBrush,eax
+						push	eax
+						invoke DeleteObject,sonardata.hBrBack
+						pop		eax
+						mov		sonardata.hBrBack,eax
+					.endif
+					inc		ebx
+				.endw
+				invoke InvalidateRect,hWin,NULL,TRUE
 			.elseif eax>=1720 && eax<=1737
 				push	eax
 				lea		ebx,[eax-1720]
