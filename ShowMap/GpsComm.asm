@@ -1005,7 +1005,8 @@ GPSProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				;mov		ecx,pt.x
 				;A linear function of the elevation angle gives better graphic representation
 				mov		eax,90
-				sub		al,satelites.Elevation[edi]
+				movsx	edx,satelites.Elevation[edi]
+				sub		eax,edx
 				mov		ecx,SATRAD
 				mul		ecx
 				mov		ecx,180/2
@@ -1027,7 +1028,7 @@ GPSProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				movzx	eax,satelites.SNR[edi]
 				invoke wsprintf,addr buffer[4],addr szFmtDec2,eax
 				invoke strcat,addr buffer,addr szColon+1
-				movzx	eax,satelites.Elevation[edi]
+				movsx	eax,satelites.Elevation[edi]
 				invoke wsprintf,addr buffer[7],addr szFmtDec2,eax
 				invoke strcat,addr buffer,addr szColon+1
 				movzx	eax,satelites.Azimuth[edi]
