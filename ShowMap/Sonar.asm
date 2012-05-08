@@ -1676,11 +1676,14 @@ STMThread proc uses ebx esi edi,Param:DWORD
 				shl		edx,2
 				invoke Random,eax
 				add		edx,eax
+				.if edx>255
+					mov		edx,255
+				.endif
 				xor		ecx,ecx
 				.while ecx<edx && ebx<MAXYECHO
 					;Random bottom weak echo
 					mov		eax,ecx
-					xor		al,0FFh
+					xor		eax,0FFh
 					.if !eax
 						inc		eax
 					.endif
@@ -1688,12 +1691,6 @@ STMThread proc uses ebx esi edi,Param:DWORD
 					mov		STM32Echo[ebx],al
 					inc		ebx
 					inc		ecx
-				.endw
-				xor		eax,eax
-				.while ebx<MAXYECHO
-					;Clear the rest
-					mov		STM32Echo[ebx],al
-					inc		ebx
 				.endw
 				pop		ebx
 				invoke Random,ebx
