@@ -505,8 +505,8 @@ szGPSDemoData		BYTE '$GPRMC,193409,A,6619.0367,N,01411.8237,E,0.0,356.4,230710,2
 					BYTE '$GPGSA,A,3,21,,,,18,24,7,26,,,,,2.5,1.1,2.2',0Dh,0Ah,0
 
 szGPSInitData		BYTE '$PSRF103,00,00,05,00*XX',0Dh,0Ah	;Enable GGA message, rate 5 seconds
-					BYTE '$PSRF103,02,00,05,00*XX',0Dh,0Ah	;Enable GSA message, rate 5 seconds
-					BYTE '$PSRF103,03,00,05,00*XX',0Dh,0Ah	;Enable GSV message, rate 5 seconds
+					BYTE '$PSRF103,02,00,05,00*X',0Dh,0Ah	;Enable GSA message, rate 5 seconds
+					BYTE '$PSRF103,03,00,05,00*X',0Dh,0Ah	;Enable GSV message, rate 5 seconds
 					BYTE '$PSRF103,04,00,01,00*XX',0Dh,0Ah	;Enable RMC message, rate 1 second
 					BYTE '$PSRF103,01,00,00,00*XX',0Dh,0Ah	;Disable GLL message
 					BYTE '$PSRF103,05,00,00,00*XX',0Dh,0Ah	;Disable VTG message
