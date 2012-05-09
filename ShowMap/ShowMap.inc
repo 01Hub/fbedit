@@ -533,6 +533,7 @@ hIml				HIMAGELIST ?							;Imagelist handle
 szAppPath			BYTE MAX_PATH dup(?)					;Application path
 mapdata				MAP <>									;Map data
 mousept				POINT <>								;Point where lbutton clicked
+mousemappt			POINT <>
 bmpcache			BMP MAXBMP dup(<>)						;Cached bitmaps
 hMAPThread			HANDLE ?								;Map drawing thread
 fExitMAPThread		DWORD ?									;Flag to exit the map drawing thread

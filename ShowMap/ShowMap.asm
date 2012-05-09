@@ -466,8 +466,44 @@ MapProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		mapdata.onpoint,eax
 			.endif
 			inc		mapdata.paintnow
+		.elseif wParam==MK_LBUTTON
+			;Drag the map
+			mov		eax,lParam
+			movsx	eax,ax
+			sub		eax,mousept.x
+			neg		eax
+			imul	mapdata.zoomval
+			idiv	dd256
+			add		eax,mousemappt.x
+			mov		mapdata.topx,eax
+			.if SIGN?
+				mov		mapdata.topx,0
+			.endif
+			mov		eax,lParam
+			shr		eax,16
+			movsx	eax,ax
+			sub		eax,mousept.y
+			neg		eax
+			imul	mapdata.zoomval
+			idiv	dd256
+			add		eax,mousemappt.y
+			mov		mapdata.topy,eax
+			.if SIGN?
+				mov		mapdata.topy,0
+			.endif
+			mov		eax,mapdata.topx
+			shr		eax,4
+			invoke SetScrollPos,hMap,SB_HORZ,eax,TRUE
+			mov		eax,mapdata.topy
+			shr		eax,4
+			invoke SetScrollPos,hMap,SB_VERT,eax,TRUE
+			inc		mapdata.paintnow
 		.endif
 	.elseif eax==WM_LBUTTONDOWN
+		mov		eax,mapdata.topx
+		mov		mousemappt.x,eax
+		mov		eax,mapdata.topy
+		mov		mousemappt.y,eax
 		mov		edx,lParam
 		movsx	eax,dx
 		mov		mousept.x,eax
@@ -507,37 +543,9 @@ MapProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.if (!mapdata.bdist || mapdata.bdist==2) && (!mapdata.btrip || mapdata.btrip==2)
 			invoke GetCapture
 			.if eax==hWin
-				mov		eax,lParam
-				movsx	eax,ax
-				sub		eax,mousept.x
-				neg		eax
-				imul	mapdata.zoomval
-				idiv	dd256
-				add		mapdata.topx,eax
-				.if SIGN?
-					mov		mapdata.topx,0
-				.endif
-				mov		eax,lParam
-				shr		eax,16
-				movsx	eax,ax
-				sub		eax,mousept.y
-				neg		eax
-				imul	mapdata.zoomval
-				idiv	dd256
-				add		mapdata.topy,eax
-				.if SIGN?
-					mov		mapdata.topy,0
-				.endif
 				invoke ReleaseCapture
 				invoke LoadCursor,0,IDC_ARROW
 				invoke SetCursor,eax
-				inc		mapdata.paintnow
-				mov		eax,mapdata.topx
-				shr		eax,4
-				invoke SetScrollPos,hMap,SB_HORZ,eax,TRUE
-				mov		eax,mapdata.topy
-				shr		eax,4
-				invoke SetScrollPos,hMap,SB_VERT,eax,TRUE
 			.endif
 		.endif
 		invoke SetFocus,hWnd

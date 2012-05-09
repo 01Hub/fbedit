@@ -207,6 +207,9 @@ int main(void)
       STM32_Sonar.EchoIndex = 0;
       /* Init Ping */
       Ping = 0x2;
+      /* Disable the USART Receive interrupt: this interrupt is generated when the 
+         USART1 receive data register is not empty */
+      USART_ITConfig(USART1, USART_IT_RXNE, DISABLE);
       /* Enable TIM1 */
       TIM_Cmd(TIM1, ENABLE);
       /* Get the Echo array */
@@ -377,6 +380,9 @@ void TIM1_UP_IRQHandler(void)
     TIM2->SR = (u16)~TIM_IT_Update;
     /* Enable TIM2 */
     TIM_Cmd(TIM2, ENABLE);
+    /* Enable the USART Receive interrupt: this interrupt is generated when the 
+       USART1 receive data register is not empty */
+    USART_ITConfig(USART1, USART_IT_RXNE, ENABLE);
   }
   /* Clear TIM1 Update interrupt pending bit */
   TIM1->SR = (u16)~TIM_IT_Update;
