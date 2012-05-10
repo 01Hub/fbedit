@@ -42,6 +42,8 @@ LoadWinPos proc
 	mov		fMaximize,eax
 	invoke GetItemInt,addr buffer,0
 	mov		sonardata.fShowSat,eax
+	invoke GetItemInt,addr buffer,0
+	mov		mapdata.fShowNMEA,eax
 	ret
 
 LoadWinPos endp
@@ -56,6 +58,7 @@ SaveWinPos proc
 	invoke PutItemInt,addr buffer,winrect.bottom
 	invoke PutItemInt,addr buffer,fMaximize
 	invoke PutItemInt,addr buffer,sonardata.fShowSat
+	invoke PutItemInt,addr buffer,mapdata.fShowNMEA
 	invoke WritePrivateProfileString,addr szIniWin,addr szIniWin,addr buffer[1],addr szIniFileName
 	ret
 
@@ -756,6 +759,9 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		mapdata.gpstrail,TRUE
 		.if sonardata.fShowSat
 			invoke CheckDlgButton,hWin,IDC_CHKSHOWSAT,BST_CHECKED
+		.endif
+		.if mapdata.fShowNMEA
+			invoke CheckDlgButton,hWin,IDC_CHKSHOWNMEA,BST_CHECKED
 		.endif
 		invoke InitPlaces
 		mov		eax,BST_UNCHECKED
