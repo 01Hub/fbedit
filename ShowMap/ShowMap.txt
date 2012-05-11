@@ -258,7 +258,20 @@ Temprature		  ADC Reading
  0.0					2485
 =============================
 
+Lowrance HST-WSU Transducer
+===========================
+No data can be found on the internet for this transducer.
+Some of the data (resonant, anti-resonant, and impedance characteristics)
+can be found using a signal generator, oscilloscope, ohm meter, 1K resistor and a 10K variable resistor.
+
+Below resonant frequencu the pizzo ceramic element acts as a capacitor.
+At resonant frequencu the pizzo ceramic element acts as a resistor.
+Abowe resonant frequencu the pizzo ceramic element acts as an inductor.
+
+http://airmartechnology.com/uploads/AirPDF/App_Notes.pdf
+
 EM406a Version
+==============
 $PSRFTXT,Version:GSW3.5.0_3.5.00.00-3EP2.01 *46
 $PSRFTXT,Version2:F-GPS-03-1006232*29
 

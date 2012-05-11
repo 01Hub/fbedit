@@ -67,21 +67,14 @@ logbuff				BYTE 1024 dup(?)
 
 .code
 
-SendGPSConfig proc
+SendGPSData proc lpData:DWORD
 	LOCAL	status:DWORD
-	LOCAL	buffer[512]:BYTE
 
-	invoke RtlZeroMemory,addr buffer,sizeof buffer
-	invoke strcpy,addr buffer,addr szGPSInitData
-	.if mapdata.GPSReset
-		invoke strcat,addr buffer,addr szGPSReset
-		mov		mapdata.GPSReset,FALSE
-	.endif
 	call	GetCheckSum
 	.if hCom
-		invoke strlen,addr buffer
+		invoke strlen,lpData
 		mov		edx,eax
-		invoke WriteFile,hCom,addr buffer,edx,addr status,NULL
+		invoke WriteFile,hCom,lpData,edx,addr status,NULL
 	.else
 		.while mapdata.GPSInit==1
 			invoke Sleep,100
@@ -94,7 +87,7 @@ SendGPSConfig proc
 				jmp		STLinkErr
 			.endif
 		.endw
-		invoke STLinkWrite,hGPS,STM32_Sonar+16+512,addr buffer,512
+		invoke STLinkWrite,hGPS,STM32_Sonar+16+512,lpData,512
 		.if !eax || eax==IDABORT || eax==IDIGNORE
 			jmp		STLinkErr
 		.endif
@@ -113,7 +106,6 @@ SendGPSConfig proc
 			.break .if !(status & 255)
 		.endw
 	.endif
-	mov		mapdata.GPSInit,0
 	ret
 
 STLinkErr:
@@ -125,6 +117,9 @@ CheckSum:
 	xor		eax,eax
 	.while byte ptr [edx]!='*'
 		xor		al,[edx]
+		.if byte ptr [edx]==0Dh
+			retn
+		.endif
 		inc		edx
 	.endw
 	push	eax
@@ -147,7 +142,7 @@ CheckSum:
 
 
 GetCheckSum:
-	lea		edx,buffer
+	mov		edx,lpData
 	.while byte ptr [edx]
 		.while byte ptr [edx] && byte ptr [edx]!='$'
 			inc		edx
@@ -158,6 +153,21 @@ GetCheckSum:
 		.endif
 	.endw
 	retn
+
+SendGPSData endp
+
+SendGPSConfig proc
+	LOCAL	buffer[512]:BYTE
+
+	invoke RtlZeroMemory,addr buffer,sizeof buffer
+	invoke strcpy,addr buffer,addr szGPSInitData
+	.if mapdata.GPSReset
+		invoke strcat,addr buffer,addr szGPSReset
+		mov		mapdata.GPSReset,FALSE
+	.endif
+	invoke SendGPSData,addr buffer
+	mov		mapdata.GPSInit,0
+	ret
 
 SendGPSConfig endp
 
@@ -308,6 +318,7 @@ GPSThread proc uses ebx esi edi,Param:DWORD
 				.if mapdata.GPSInit
 					invoke SendGPSConfig
 				.endif
+;invoke SendGPSData,addr szGPSDemoData
 				xor		ebx,ebx
 			  STMGetMore:
 				;Download ADCAirTemp and GPSHead
@@ -318,9 +329,9 @@ GPSThread proc uses ebx esi edi,Param:DWORD
 				mov		edi,tmp
 				shr		edi,16
 				.if edi!=GPSTail
+					mov		edx,GPSTail
+					and		edx,sizeof SONAR.GPSArray-4
 					.if edi>GPSTail
-						mov		edx,GPSTail
-						and		edx,sizeof SONAR.GPSArray-4
 						mov		eax,edi
 						shr		eax,2
 						inc		eax
@@ -328,7 +339,15 @@ GPSThread proc uses ebx esi edi,Param:DWORD
 						sub		eax,edx
 						invoke STLinkRead,hGPS,addr [STM32_Sonar+16+sizeof SONAR.EchoArray+sizeof SONAR.GainArray+sizeof SONAR.GainInit+edx],addr sonardata.GPSArray[edx],eax
 					.else
-						invoke STLinkRead,hGPS,STM32_Sonar+16+sizeof SONAR.EchoArray+sizeof SONAR.GainArray+sizeof SONAR.GainInit,addr sonardata.GPSArray,sizeof SONAR.GPSArray
+						;Buffer rollover
+						mov		eax,512
+						sub		eax,edx
+						invoke STLinkRead,hGPS,addr [STM32_Sonar+16+sizeof SONAR.EchoArray+sizeof SONAR.GainArray+sizeof SONAR.GainInit+edx],addr sonardata.GPSArray[edx],eax
+						mov		eax,edi
+						shr		eax,2
+						inc		eax
+						shl		eax,2
+						invoke STLinkRead,hGPS,STM32_Sonar+16+sizeof SONAR.EchoArray+sizeof SONAR.GainArray+sizeof SONAR.GainInit,addr sonardata.GPSArray,eax
 					.endif
 					.if !eax || eax==IDABORT || eax==IDIGNORE
 						jmp		STLinkErr
