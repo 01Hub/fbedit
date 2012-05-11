@@ -1544,7 +1544,7 @@ STMThread proc uses ebx esi edi,Param:DWORD
 					.endif
 					mov		sonardata.PingPulses,al
 					mov		sonardata.PingWait,6
-					mov		sonardata.PingWait,3
+					mov		sonardata.PingWait,6
 				 	mov		sonardata.Start,0
 					invoke STLinkWrite,hSonar,STM32_Sonar,addr sonardata.Start,8
 					.if !eax || eax==IDABORT || eax==IDIGNORE

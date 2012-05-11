@@ -355,9 +355,9 @@ void TIM1_UP_IRQHandler(void)
   GPIOA->BSRR = (u16) (GPIO_Pin_2 | GPIO_Pin_1);
   if (STM32_Sonar.PingPulses)
   {
-    /* Insert a delay to prevent overlapping */
-    i=PingWait;
-    while (i--);
+    // /* Insert a delay to prevent overlapping */
+    // i=PingWait;
+    // while (i--);
     // GPIO_Write(GPIOA,Ping);
     GPIOA->ODR = Ping;
     if (Ping == 0x2)
