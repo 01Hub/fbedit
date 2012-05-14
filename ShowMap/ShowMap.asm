@@ -1505,17 +1505,51 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.endif
 		invoke GlobalFree,mapdata.hMemLon
 		invoke GlobalFree,mapdata.hMemLat
-;		.if fExitMAPThread==2
-;			PrintText "fExitMAPThread"
-;		.endif
-;		.if fExitGPSThread==2
-;			PrintText "fExitGPSThread"
-;		.endif
-;		.if fExitSTMThread==2
-;			PrintText "fExitSTMThread"
-;		.endif
-;		PrintText "Destroy"
 		invoke DestroyWindow,hWin
+	.elseif eax==WM_POWERBROADCAST
+		.if wParam==PBT_APMSUSPEND
+;			;Standby
+;			invoke KillTimer,hSonar,1000
+;			invoke KillTimer,hSonar,1001
+;			mov		fExitGPSThread,TRUE
+;			mov		fExitSTMThread,TRUE
+;			; Terminate GPS Thread
+;			invoke WaitForSingleObject,hGPSThread,3000
+;			.if eax==WAIT_TIMEOUT
+;				invoke TerminateThread,hGPSThread,0
+;			.endif
+;			invoke CloseHandle,hGPSThread
+;			mov		hGPSThread,0
+;			; Terminate STM Thread
+;			invoke WaitForSingleObject,hSTMThread,3000
+;			.if eax==WAIT_TIMEOUT
+;				invoke TerminateThread,hSTMThread,0
+;			.endif
+;			invoke CloseHandle,hSTMThread
+;			mov		hSTMThread,0
+;			.if sonardata.fSTLink && sonardata.fSTLink!=IDIGNORE
+;				mov		sonardata.fSTLink,0
+;				invoke STLinkDisconnect,hWnd
+;				invoke STLinkDisconnect,hSonar
+;			.endif
+;			mov		fExitGPSThread,FALSE
+;			mov		fExitSTMThread,FALSE
+			mov		eax,TRUE
+			ret
+		.elseif wParam==PBT_APMRESUMEAUTOMATIC
+;			;Wakeup
+;			invoke SetTimer,hSonar,1000,800,NULL
+;			invoke SetTimer,hSonar,1001,500,NULL
+;			invoke Sleep,1000
+;			;Create thread that comunicates with the GPS
+;			invoke CreateThread,NULL,0,addr GPSThread,0,0,addr tid
+;			mov		hGPSThread,eax
+;			;Create thread that comunicates with the STM
+;			invoke CreateThread,NULL,NULL,addr STMThread,0,0,addr tid
+;			mov		hSTMThread,eax
+			mov		eax,TRUE
+			ret
+		.endif
 	.elseif eax==WM_DESTROY
 		invoke PostQuitMessage,NULL
 	.else
