@@ -1337,7 +1337,7 @@ STMThread proc uses ebx esi edi,Param:DWORD
 	mov		iLat,-1
 	mov		iLon,-1
 	invoke RtlZeroMemory,addr STM32Echo,sizeof STM32Echo
-	invoke Sleep,2000
+	invoke DoSleep,2000
 	.while !fExitSTMThread
 		invoke IsDlgButtonChecked,hWnd,IDC_CHKCHART
 		.if eax
@@ -1371,7 +1371,7 @@ STMThread proc uses ebx esi edi,Param:DWORD
 					invoke SonarUpdateProc,0
 				.endif
 			.endif
-			invoke Sleep,100
+			invoke DoSleep,100
 			.if sonardata.PaintNow
 				mov		sonardata.PaintNow,0
 				invoke InvalidateRect,hSonar,NULL,TRUE
@@ -1505,7 +1505,7 @@ STMThread proc uses ebx esi edi,Param:DWORD
 				.if mapdata.GPSInit
 					mov		mapdata.GPSInit,2
 					.while mapdata.GPSInit
-						invoke Sleep,100
+						invoke DoSleep,100
 					.endw
 				.endif
 				;Download Start status (first byte)
@@ -1849,7 +1849,7 @@ Show0:
 	call	ScrollFish
 	invoke SonarUpdateProc,1
 	pop		edi
-	invoke Sleep,edi
+	invoke DoSleep,edi
 	retn
 
 Show25:
@@ -1947,7 +1947,7 @@ Show25:
 	.endif
 	call	ScrollFish
 	invoke SonarUpdateProc,1
-	invoke Sleep,edi
+	invoke DoSleep,edi
 	retn
 
 Show33:
@@ -2057,7 +2057,7 @@ Show33:
 	.endif
 	call	ScrollFish
 	invoke SonarUpdateProc,1
-	invoke Sleep,edi
+	invoke DoSleep,edi
 	retn
 
 Show50:
@@ -2143,7 +2143,7 @@ Show50:
 	.endif
 	call	ScrollFish
 	invoke SonarUpdateProc,1
-	invoke Sleep,edi
+	invoke DoSleep,edi
 	retn
 
 Show66:
@@ -2237,7 +2237,7 @@ Show66:
 	.endif
 	call	ScrollFish
 	invoke SonarUpdateProc,1
-	invoke Sleep,edi
+	invoke DoSleep,edi
 	retn
 
 Show75:
@@ -2335,7 +2335,7 @@ Show75:
 	.endif
 	call	ScrollFish
 	invoke SonarUpdateProc,1
-	invoke Sleep,edi
+	invoke DoSleep,edi
 	retn
 
 MoveEcho:
@@ -3243,7 +3243,7 @@ SonarProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.elseif wParam==1001
 			xor		sonardata.ShowDepth,1
 			.if sonardata.ShowDepth<2
-				inc		sonardata.PaintNow
+				invoke InvalidateRect,hSonar,NULL,TRUE
 			.endif
 			.if sonardata.fFishSound
 				dec		sonardata.fFishSound

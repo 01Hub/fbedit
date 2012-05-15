@@ -144,6 +144,7 @@ MAXTRAIL				equ 2048							;Max number of trail positions
 MAXDIST					equ 256								;Max number of distance calculation poins
 MAXMAPOPTION			equ 5								;Max number of overlays on map scteen
 MAXSONAROPTION			equ 3								;Max number of overlays on sonar scteen
+MAXNMEA					equ 20000							;Max number of NMEA items in NMEA list
 
 LONPOINT struct
 	iLon			DWORD ?									;Longitude
@@ -187,11 +188,11 @@ ZOOM struct
 ZOOM ends
 
 OPTIONS struct
-	show			DWORD ?									;Show on map screen
-	position		DWORD ?									;Position on map screen
+	show			DWORD ?									;Show on map / sonar screen
+	position		DWORD ?									;Position on map / sonar screen
 	pt				POINT <>								;Offset from left/right and top/bottom
 	font			DWORD ?									;Index of font (1 to 6)
-	text			BYTE 16 dup(?)							;Text to plot on map screen
+	text			BYTE 16 dup(?)							;Text to plot on map / sonar screen
 OPTIONS ends
 
 LOG struct

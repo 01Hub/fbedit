@@ -750,7 +750,7 @@ MAPThread proc uses esi edi,Param:DWORD
 			invoke ShowSpeedBattTempTimeScale
 			invoke BitBlt,mapdata.hDC,0,0,mapdata.mapwt,mapdata.mapht,mapdata.mDC2,0,0,SRCCOPY
 		.else
-			invoke Sleep,100
+			invoke DoSleep,100
 		.endif
 	.endw
 	mov		fExitMAPThread,2

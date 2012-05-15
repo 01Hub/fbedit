@@ -1462,14 +1462,11 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.endif
 		invoke SaveStatus
 		invoke ShowWindow,hWin,SW_HIDE
-
 		invoke KillTimer,hSonar,1000
 		invoke KillTimer,hSonar,1001
-
 		mov		fExitMAPThread,TRUE
 		mov		fExitGPSThread,TRUE
 		mov		fExitSTMThread,TRUE
-
 		invoke RtlZeroMemory,addr msg,sizeof MSG
 		invoke GetMessage,addr msg,NULL,0,0
 		invoke TranslateAccelerator,hWnd,hAccel,addr msg
@@ -1477,28 +1474,24 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke TranslateMessage,addr msg
 			invoke DispatchMessage,addr msg
 		.endif
-
 		; Terminate GPS Thread
 		invoke WaitForSingleObject,hGPSThread,3000
 		.if eax==WAIT_TIMEOUT
 			invoke TerminateThread,hGPSThread,0
 		.endif
 		invoke CloseHandle,hGPSThread
-
 		; Terminate STM Thread
 		invoke WaitForSingleObject,hSTMThread,3000
 		.if eax==WAIT_TIMEOUT
 			invoke TerminateThread,hSTMThread,0
 		.endif
 		invoke CloseHandle,hSTMThread
-
 		; Terminate MAP Thread
 		invoke WaitForSingleObject,hMAPThread,3000
 		.if eax==WAIT_TIMEOUT
 			invoke TerminateThread,hMAPThread,0
 		.endif
 		invoke CloseHandle,hMAPThread
-
 		.if sonardata.fSTLink && sonardata.fSTLink!=IDIGNORE
 			invoke STLinkDisconnect,hWnd
 			invoke STLinkDisconnect,hSonar

@@ -77,7 +77,7 @@ SendGPSData proc lpData:DWORD
 		invoke WriteFile,hCom,lpData,edx,addr status,NULL
 	.else
 		.while mapdata.GPSInit==1
-			invoke Sleep,100
+			invoke DoSleep,100
 		.endw
 		mov		status,1
 		.while (status & 255)
@@ -97,7 +97,7 @@ SendGPSData proc lpData:DWORD
 			jmp		STLinkErr
 		.endif
 		.while TRUE
-			invoke Sleep,100
+			invoke DoSleep,100
 			;Download Start status (first byte)
 			invoke STLinkRead,hGPS,STM32_Sonar,addr status,4
 			.if !eax || eax==IDABORT || eax==IDIGNORE
@@ -261,7 +261,7 @@ GPSThread proc uses ebx esi edi,Param:DWORD
 	LOCAL	tmp:DWORD
 
 	mov		GPSTail,0
-	invoke Sleep,2000
+	invoke DoSleep,2000
 	invoke OpenCom
 	.while  !fExitGPSThread
 		.if !mapdata.gpslogpause
@@ -291,7 +291,7 @@ GPSThread proc uses ebx esi edi,Param:DWORD
 						invoke SetFilePointer,hFileLogRead,npos,NULL,FILE_BEGIN
 						xor		ebx,ebx
 						call	GPSExec
-						invoke Sleep,100
+						invoke DoSleep,100
 					.endif
 				.endif
 				mov		nRead,0
@@ -362,7 +362,7 @@ GPSThread proc uses ebx esi edi,Param:DWORD
 						inc		ebx
 					.endw
 					mov		combuff[ebx],0
-					invoke Sleep,150
+					invoke DoSleep,150
 					jmp		STMGetMore
 				.endif
 				xor		ebx,ebx
@@ -371,10 +371,10 @@ GPSThread proc uses ebx esi edi,Param:DWORD
 				invoke strcpy,addr combuff,addr szGPSDemoData
 				xor		ebx,ebx
 				call	GPSExec
-				invoke Sleep,900
+				invoke DoSleep,900
 			.endif
 		.endif
-		invoke Sleep,100
+		invoke DoSleep,100
 	.endw
 	.if hFileLogRead
 		invoke CloseHandle,hFileLogRead
@@ -402,7 +402,7 @@ GPSExec:
 			;Update NMEA logg
 			invoke SendDlgItemMessage,hWnd,IDC_LSTNMEA,LB_GETCOUNT,0,0
 			mov		ebx,eax
-			.if eax>10000
+			.if eax>MAXNMEA
 				invoke SendDlgItemMessage,hWnd,IDC_LSTNMEA,LB_DELETESTRING,0,0
 				dec		ebx
 			.endif
@@ -692,17 +692,23 @@ PositionSpeedDirection:
 		mov		cl,'.'
 		mov		dword ptr buffer[eax-1],ecx
 		invoke strcpy,addr mapdata.options.text,addr buffer
-		;Get the bearing
+		;Bearing
 		invoke GetItemStr,addr linebuff,addr szNULL,addr buffer,32
 		invoke DecToBin,addr buffer
 		mov		mapdata.iBear,eax
 		invoke SetGPSCursor
 	.else
+		;Lattitude
 		invoke GetItemStr,addr linebuff,addr szNULL,addr buffer,32
+		;N/S
 		invoke GetItemStr,addr linebuff,addr szNULL,addr buffer,32
+		;Longitude
 		invoke GetItemStr,addr linebuff,addr szNULL,addr buffer,32
+		;E/W
 		invoke GetItemStr,addr linebuff,addr szNULL,addr buffer,32
+		;Speed
 		invoke GetItemStr,addr linebuff,addr szNULL,addr buffer,32
+		;Bearing
 		invoke GetItemStr,addr linebuff,addr szNULL,addr buffer,32
 	.endif
 	mov		iTime,0
