@@ -306,7 +306,7 @@ SOUNDSPEEDMAX			equ 1550							;Maximum speed of sound in water
 SMALLFISHECHO			equ 96								;Minimum echo to detect small fish
 LARGEFISHECHO			equ SMALLFISHECHO+64				;Minimum echo to detect large fish
 MAXDEPTHJUMP			equ 10								;Max number of pixels to jump on depth detection
-MAXPING					equ 255								;Max number of ping pulses
+MAXPING					equ 128								;Max number of ping pulses
 
 SONARBMP struct
 	hBmp			HBITMAP ?								;Bitmap handle
@@ -401,6 +401,7 @@ SONAR struct
 	cursorpos		DWORD ?									;Position of depth cursor
 	sonarcolor		DWORD 18 dup(?)							;Color definitions
 	PaintNow		DWORD ?									;If TRUE sonar screen is updated
+	fReplayRead		DWORD ?
 SONAR ends
 
 SONARREPLAY struct
@@ -507,8 +508,8 @@ szGPSDemoData		BYTE '$GPRMC,193409,A,6619.0367,N,01411.8237,E,0.0,356.4,230710,2
 
 szGPSInitData		BYTE '$PSRF103,04,00,01,00*XX',0Dh,0Ah	;Enable RMC message, rate 1 second
 					BYTE '$PSRF103,03,00,05,00*XX',0Dh,0Ah	;Enable GSV message, rate 5 seconds
-					BYTE '$PSRF103,00,00,01,00*XX',0Dh,0Ah	;Enable GGA message, rate 5 seconds
-					BYTE '$PSRF103,02,00,01,00*XX',0Dh,0Ah	;Enable GSA message, rate 5 seconds
+					BYTE '$PSRF103,00,00,05,00*XX',0Dh,0Ah	;Enable GGA message, rate 5 seconds
+					BYTE '$PSRF103,02,00,05,00*XX',0Dh,0Ah	;Enable GSA message, rate 5 seconds
 					BYTE '$PSRF103,01,00,00,00*XX',0Dh,0Ah	;Disable GLL message
 					BYTE '$PSRF103,05,00,00,00*XX',0Dh,0Ah	;Disable VTG message
 					BYTE 0

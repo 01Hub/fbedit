@@ -1380,12 +1380,18 @@ STMThread proc uses ebx esi edi,Param:DWORD
 		.else
 			.if sonardata.hReplay
 				;Replay mode
+				mov		sonardata.fReplayRead,TRUE
 				;Copy old echo
 				call	MoveEcho
 				;Read echo from file
 				.if sonarreplay.Version>=200
 					invoke ReadFile,sonardata.hReplay,addr sonarreplay,sizeof SONARREPLAY,addr dwread,NULL
 					.if dwread==sizeof SONARREPLAY
+						.if sonarreplay.Version==201
+							invoke ReadFile,sonardata.hReplay,addr satelites,sizeof SATELITE*12,addr dwread,NULL
+							invoke ReadFile,sonardata.hReplay,addr altitude,sizeof ALTITUDE,addr dwread,NULL
+						.endif
+						invoke ReadFile,sonardata.hReplay,addr STM32Echo,MAXYECHO,addr dwread,NULL
 						mov		eax,mapdata.iLon
 						mov		iLon,eax
 						mov		eax,mapdata.iLat
@@ -1467,14 +1473,12 @@ STMThread proc uses ebx esi edi,Param:DWORD
 							inc		mapdata.paintnow
 							invoke InvalidateRect,hGPS,NULL,TRUE
 						.endif
-						.if sonarreplay.Version==201
-							invoke ReadFile,sonardata.hReplay,addr satelites,sizeof SATELITE*12,addr dwread,NULL
-							invoke ReadFile,sonardata.hReplay,addr altitude,sizeof ALTITUDE,addr dwread,NULL
-						.endif
 					.endif
+				.else
+					invoke ReadFile,sonardata.hReplay,addr STM32Echo,MAXYECHO,addr dwread,NULL
 				.endif
-				invoke ReadFile,sonardata.hReplay,addr STM32Echo,MAXYECHO,addr dwread,NULL
 				.if dwread!=MAXYECHO
+					mov		sonardata.fReplayRead,FALSE
 					invoke CloseHandle,sonardata.hReplay
 					mov		sonardata.hReplay,0
 					invoke SetScrollPos,hSonar,SB_HORZ,0,TRUE
@@ -1493,6 +1497,7 @@ STMThread proc uses ebx esi edi,Param:DWORD
 					invoke GetScrollPos,hSonar,SB_HORZ
 					inc		eax
 					invoke SetScrollPos,hSonar,SB_HORZ,eax,TRUE
+					mov		sonardata.fReplayRead,FALSE
 					movzx	eax,STM32Echo
 					.if al!=STM32Echo[MAXYECHO]
 						mov		rngchanged,4
@@ -3243,7 +3248,11 @@ SonarProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.elseif wParam==1001
 			xor		sonardata.ShowDepth,1
 			.if sonardata.ShowDepth<2
-				invoke InvalidateRect,hSonar,NULL,TRUE
+				mov		rect.left,0
+				mov		rect.top,0
+				mov		rect.right,150
+				mov		rect.bottom,64
+				invoke InvalidateRect,hSonar,addr rect,TRUE
 			.endif
 			.if sonardata.fFishSound
 				dec		sonardata.fFishSound
@@ -3293,42 +3302,46 @@ SonarProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke SetFilePointer,sonardata.hReplay,eax,NULL,FILE_BEGIN
 			.endif
 		.elseif edx==SB_LINERIGHT
-;			.if sonardata.hReplay
-;				invoke GetScrollPos,hWin,SB_HORZ
-;				add		eax,16
-;				push	eax
-;				invoke SetScrollPos,hWin,SB_HORZ,eax,TRUE
-;				pop		eax
-;				mov		ecx,MAXYECHO
-;				.if sonarreplay.Version==200
-;					add		ecx,sizeof SONARREPLAY
-;				.elseif sonarreplay.Version==201
-;					add		ecx,sizeof SONARREPLAY+sizeof SATELITE*12+sizeof ALTITUDE
-;				.endif
-;				mul		ecx
-;				invoke SetFilePointer,sonardata.hReplay,eax,NULL,FILE_BEGIN
-;			.endif
+			.if sonardata.hReplay
+				invoke GetScrollPos,hWin,SB_HORZ
+				add		eax,16
+				push	eax
+				invoke SetScrollPos,hWin,SB_HORZ,eax,TRUE
+				pop		eax
+				mov		ecx,MAXYECHO
+				.if sonarreplay.Version==200
+					add		ecx,sizeof SONARREPLAY
+				.elseif sonarreplay.Version==201
+					add		ecx,sizeof SONARREPLAY+sizeof SATELITE*12+sizeof ALTITUDE
+				.endif
+				mul		ecx
+				invoke SetFilePointer,sonardata.hReplay,eax,NULL,FILE_BEGIN
+			.endif
 		.elseif edx==SB_LINELEFT
-;			.if sonardata.hReplay
-;				invoke GetScrollPos,hWin,SB_HORZ
-;				sub		eax,16
-;				.if CARRY?
-;					xor		eax,eax
-;				.endif
-;				push	eax
-;				invoke SetScrollPos,hWin,SB_HORZ,eax,TRUE
-;				pop		eax
-;				mov		ecx,MAXYECHO
-;				.if sonarreplay.Version==200
-;					add		ecx,sizeof SONARREPLAY
-;				.elseif sonarreplay.Version==201
-;					add		ecx,sizeof SONARREPLAY+sizeof SATELITE*12+sizeof ALTITUDE
-;				.endif
-;				mul		ecx
-;				invoke SetFilePointer,sonardata.hReplay,eax,NULL,FILE_BEGIN
-;			.endif
+			.if sonardata.hReplay
+				.while sonardata.fReplayRead
+				.endw
+				invoke GetScrollPos,hWin,SB_HORZ
+				sub		eax,16
+				.if CARRY?
+					xor		eax,eax
+				.endif
+				push	eax
+				invoke SetScrollPos,hWin,SB_HORZ,eax,TRUE
+				pop		eax
+				mov		ecx,MAXYECHO
+				.if sonarreplay.Version==200
+					add		ecx,sizeof SONARREPLAY
+				.elseif sonarreplay.Version==201
+					add		ecx,sizeof SONARREPLAY+sizeof SATELITE*12+sizeof ALTITUDE
+				.endif
+				mul		ecx
+				invoke SetFilePointer,sonardata.hReplay,eax,NULL,FILE_BEGIN
+			.endif
 		.elseif edx==SB_PAGERIGHT
 			.if sonardata.hReplay
+				.while sonardata.fReplayRead
+				.endw
 				invoke GetScrollPos,hWin,SB_HORZ
 				add		eax,256
 				push	eax
@@ -3345,6 +3358,8 @@ SonarProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.endif
 		.elseif edx==SB_PAGELEFT
 			.if sonardata.hReplay
+				.while sonardata.fReplayRead
+				.endw
 				invoke GetScrollPos,hWin,SB_HORZ
 				sub		eax,256
 				.if CARRY?
@@ -3368,10 +3383,14 @@ SonarProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		movzx	edx,ax
 		shr		eax,16
 		.if edx==SB_THUMBTRACK
+			.while sonardata.fReplayRead
+			.endw
 			mov		sonardata.cursorpos,eax
 			invoke SetScrollPos,hWin,SB_VERT,eax,TRUE
 			inc		sonardata.PaintNow
 		.elseif edx==SB_LINERIGHT
+			.while sonardata.fReplayRead
+			.endw
 			invoke GetScrollPos,hWin,SB_VERT
 			.if eax<2048
 				inc		eax
@@ -3380,6 +3399,8 @@ SonarProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				inc		sonardata.PaintNow
 			.endif
 		.elseif edx==SB_LINELEFT
+			.while sonardata.fReplayRead
+			.endw
 			invoke GetScrollPos,hWin,SB_VERT
 			.if eax
 				dec		eax
@@ -3388,6 +3409,8 @@ SonarProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				inc		sonardata.PaintNow
 			.endif
 		.elseif edx==SB_PAGERIGHT
+			.while sonardata.fReplayRead
+			.endw
 			invoke GetScrollPos,hWin,SB_VERT
 			add		eax,32
 			.if eax>2048
@@ -3397,6 +3420,8 @@ SonarProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke SetScrollPos,hWin,SB_VERT,eax,TRUE
 			inc		sonardata.PaintNow
 		.elseif edx==SB_PAGELEFT
+			.while sonardata.fReplayRead
+			.endw
 			invoke GetScrollPos,hWin,SB_VERT
 			sub		eax,32
 			.if CARRY?
