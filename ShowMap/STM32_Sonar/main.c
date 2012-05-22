@@ -99,7 +99,6 @@ int main(void)
   DAC->DHR12R1 = (u16)0x0;
   /* Set the DAC channel2 to output middle output trim */
   DAC->DHR12R2 = (u16)0x400;
-  Trim = (u16)0x80;
   /* Setup USART1 4800 baud */
   USART_Configuration(4800);
   /* Wait until GPS module has started up */
@@ -182,7 +181,7 @@ int main(void)
           DAC->DHR12R2 = Trim;
           i = 10000;
           while (i--);
-          if (GetADCValue(ADC_Channel_3)>5)
+          if (GetADCValue(ADC_Channel_3)>32)
           {
             Trim = Trim + TrimAdd;
           }
