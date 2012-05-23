@@ -17,7 +17,8 @@ IDC_BTNLEFT             equ 1213
 
 szSpeedOpt				BYTE 'Speed Options',0
 szBattery				BYTE 'Battery Options',0
-szTemprature			BYTE 'Temprature Options',0
+szATemprature			BYTE 'Air Temprature Options',0
+szWTemprature			BYTE 'Water Temprature Options',0
 szScale					BYTE 'Map Scale Options',0
 szTime					BYTE 'Time Options',0
 szRange					BYTE 'Range Options',0
@@ -112,6 +113,198 @@ SaveOption proc uses ebx esi,nOpt:DWORD
 
 SaveOption endp
 
+GetMapOptionRect proc uses ebx edi,nOption:DWORD,lpRect:DWORD
+	LOCAL	rect:RECT
+	LOCAL	rctext:RECT
+	LOCAL	hDC:HDC
+
+	mov		rctext.left,0
+	mov		rctext.top,0
+	invoke GetDC,hMap
+	mov		hDC,eax
+	invoke GetClientRect,hMap,addr rect
+	mov		eax,nOption
+	mov		ebx,sizeof OPTIONS
+	mul		ebx
+	mov		ebx,eax
+	mov		eax,mapdata.options.font[ebx]
+	add		eax,7
+	invoke SelectObject,hDC,mapdata.font[eax*4]
+	push	eax
+	invoke strlen,addr mapdata.options.text[ebx]
+	mov		edx,eax
+	invoke DrawText,hDC,addr mapdata.options.text[ebx],edx,addr rctext,DT_LEFT or DT_SINGLELINE or DT_CALCRECT
+	mov		eax,mapdata.options.pt.x[ebx]
+	add		rctext.left,eax
+	add		rctext.right,eax
+	mov		eax,mapdata.options.pt.y[ebx]
+	add		rctext.top,eax
+	add		rctext.bottom,eax
+	pop		eax
+	invoke SelectObject,hDC,eax
+	invoke ReleaseDC,hMap,hDC
+	mov		eax,mapdata.options.position[ebx]
+	mov		ecx,rctext.right
+	sub		ecx,rctext.left
+	mov		edx,rctext.bottom
+	sub		edx,rctext.top
+	.if !eax
+		;Left, Top
+	.elseif eax==1
+		;Center, top
+		shr		rect.right,1
+		shr		ecx,1
+		inc		ecx
+		mov		eax,rect.right
+		add		eax,ecx
+		mov		rctext.right,eax
+		sub		eax,ecx
+		sub		eax,ecx
+		mov		rctext.left,eax
+	.elseif eax==2
+		;Right, Top
+		mov		eax,rect.right
+		sub		eax,rctext.left
+		mov		rctext.right,eax
+		sub		eax,ecx
+		mov		rctext.left,eax
+	.elseif eax==3
+		;Left, Bottom
+		mov		eax,rect.bottom
+		sub		eax,rctext.top
+		mov		rctext.bottom,eax
+		sub		eax,edx
+		mov		rctext.top,eax
+	.elseif eax==4
+		;Center, Bottom
+		shr		rect.right,1
+		shr		ecx,1
+		inc		ecx
+		mov		eax,rect.right
+		add		eax,ecx
+		mov		rctext.right,eax
+		sub		eax,ecx
+		sub		eax,ecx
+		mov		rctext.left,eax
+		mov		eax,rect.bottom
+		sub		eax,rctext.top
+		mov		rctext.bottom,eax
+		sub		eax,edx
+		mov		rctext.top,eax
+	.elseif eax==5
+		;Right, Bottom
+		mov		eax,rect.right
+		sub		eax,rctext.left
+		mov		rctext.right,eax
+		sub		eax,ecx
+		mov		rctext.left,eax
+		mov		eax,rect.bottom
+		sub		eax,rctext.top
+		mov		rctext.bottom,eax
+		sub		eax,edx
+		mov		rctext.top,eax
+	.endif
+	invoke CopyRect,lpRect,addr rctext
+	ret
+
+GetMapOptionRect endp
+
+GetSonarOptionRect proc uses ebx edi,nOption:DWORD,lpRect:DWORD
+	LOCAL	rect:RECT
+	LOCAL	rctext:RECT
+	LOCAL	hDC:HDC
+
+	mov		rctext.left,0
+	mov		rctext.top,0
+	invoke GetDC,hSonar
+	mov		hDC,eax
+	invoke GetClientRect,hSonar,addr rect
+	mov		eax,nOption
+	mov		ebx,sizeof OPTIONS
+	mul		ebx
+	mov		ebx,eax
+	mov		eax,sonardata.options.font[ebx]
+	add		eax,7
+	invoke SelectObject,hDC,mapdata.font[eax*4]
+	push	eax
+	invoke strlen,addr sonardata.options.text[ebx]
+	mov		edx,eax
+	invoke DrawText,hDC,addr sonardata.options.text[ebx],edx,addr rctext,DT_LEFT or DT_SINGLELINE or DT_CALCRECT
+	mov		eax,sonardata.options.pt.x[ebx]
+	add		rctext.left,eax
+	add		rctext.right,eax
+	mov		eax,sonardata.options.pt.y[ebx]
+	add		rctext.top,eax
+	add		rctext.bottom,eax
+	pop		eax
+	invoke SelectObject,hDC,eax
+	invoke ReleaseDC,hSonar,hDC
+	mov		eax,sonardata.options.position[ebx]
+	mov		ecx,rctext.right
+	sub		ecx,rctext.left
+	mov		edx,rctext.bottom
+	sub		edx,rctext.top
+	.if !eax
+		;Left, Top
+	.elseif eax==1
+		;Center, top
+		shr		rect.right,1
+		shr		ecx,1
+		inc		ecx
+		mov		eax,rect.right
+		add		eax,ecx
+		mov		rctext.right,eax
+		sub		eax,ecx
+		sub		eax,ecx
+		mov		rctext.left,eax
+	.elseif eax==2
+		;Right, Top
+		mov		eax,rect.right
+		sub		eax,rctext.left
+		mov		rctext.right,eax
+		sub		eax,ecx
+		mov		rctext.left,eax
+	.elseif eax==3
+		;Left, Bottom
+		mov		eax,rect.bottom
+		sub		eax,rctext.top
+		mov		rctext.bottom,eax
+		sub		eax,edx
+		mov		rctext.top,eax
+	.elseif eax==4
+		;Center, Bottom
+		shr		rect.right,1
+		shr		ecx,1
+		inc		ecx
+		mov		eax,rect.right
+		add		eax,ecx
+		mov		rctext.right,eax
+		sub		eax,ecx
+		sub		eax,ecx
+		mov		rctext.left,eax
+		mov		eax,rect.bottom
+		sub		eax,rctext.top
+		mov		rctext.bottom,eax
+		sub		eax,edx
+		mov		rctext.top,eax
+	.elseif eax==5
+		;Right, Bottom
+		mov		eax,rect.right
+		sub		eax,rctext.left
+		mov		rctext.right,eax
+		sub		eax,ecx
+		mov		rctext.left,eax
+		mov		eax,rect.bottom
+		sub		eax,rctext.top
+		mov		rctext.bottom,eax
+		sub		eax,edx
+		mov		rctext.top,eax
+	.endif
+	invoke CopyRect,lpRect,addr rctext
+	ret
+
+GetSonarOptionRect endp
+
 OptionsProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
 	mov		eax,uMsg
@@ -134,7 +327,7 @@ OptionsProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 		.elseif eax==1
 			mov		eax,offset szBattery
 		.elseif eax==2
-			mov		eax,offset szTemprature
+			mov		eax,offset szATemprature
 		.elseif eax==3
 			mov		eax,offset szScale
 		.elseif eax==4
@@ -144,7 +337,7 @@ OptionsProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 		.elseif eax==11
 			mov		eax,offset szDepth
 		.elseif eax==12
-			mov		eax,offset szTemprature
+			mov		eax,offset szWTemprature
 		.endif
 		invoke SetWindowText,hWin,eax
 		mov		eax,nOptType

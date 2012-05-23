@@ -606,10 +606,9 @@ PositionSpeedDirection:
 	;Status
 	invoke GetItemStr,addr linebuff,addr szNULL,addr buffer,32
 	.if buffer=='A'
-		mov		mapdata.fcursor,TRUE
+		or		mapdata.fcursor,2
 		mov		fValid,TRUE
 	.else
-		inc		mapdata.fcursor
 		and		mapdata.fcursor,1
 		mov		fValid,FALSE
 	.endif

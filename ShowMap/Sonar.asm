@@ -163,6 +163,7 @@ Resize_Image proc uses ebx esi edi,hBmp:HBITMAP,wt:DWORD,ht:DWORD
 	LOCAL	iht:DWORD
 	LOCAL	image1:DWORD
 	LOCAL	image2:DWORD
+	LOCAL	image3:DWORD
 	LOCAL	gfx:DWORD
 	LOCAL	lFormat:DWORD
 	LOCAL	hBmpRet:HBITMAP
@@ -171,6 +172,13 @@ Resize_Image proc uses ebx esi edi,hBmp:HBITMAP,wt:DWORD,ht:DWORD
 	invoke GdipGetImageWidth,image1,addr iwt
 	invoke GdipGetImageHeight,image1,addr iht
 	invoke GdipGetImagePixelFormat,image1,addr lFormat
+	.if ht>16384
+		invoke GdipCloneBitmapAreaI,0,0,wt,128,lFormat,image1,addr image3
+		invoke GdipDisposeImage,image1
+		mov		eax,image3
+		mov		image1,eax
+		shr		ht,2
+	.endif
 	invoke GdipCreateBitmapFromScan0,wt,ht,0,lFormat,0,addr image2
 	invoke GdipGetImageGraphicsContext,image2,addr gfx
 	invoke GdipSetInterpolationMode,gfx,InterpolationModeNearestNeighbor
@@ -2358,7 +2366,6 @@ CopyEcho:
 	retn
 
 FindDepth:
-	and		sonardata.ShowDepth,1
 	;Skip blank
 	mov		ebx,1
 	mov		ecx,sonardata.NoiseLevel
@@ -2443,6 +2450,7 @@ FindDepth:
 		call	SetDepth
 		or		sonardata.ShowDepth,2
 	.else
+		and		sonardata.ShowDepth,1
 		inc		sonardata.nodptinx
 	.endif
 	retn
@@ -2988,7 +2996,7 @@ ShowOption:
 		mov		eax,DT_LEFT or DT_SINGLELINE
 	.elseif edx==1
 		;Center, Top
-		mov		eax,DT_LEFT or DT_SINGLELINE
+		mov		eax,DT_CENTER or DT_SINGLELINE
 	.elseif edx==2
 		;Rioght, Top
 		mov		eax,DT_RIGHT or DT_SINGLELINE
@@ -2997,7 +3005,7 @@ ShowOption:
 		mov		eax,DT_LEFT or DT_BOTTOM or DT_SINGLELINE
 	.elseif edx==4
 		;Center, Bottom
-		mov		eax,DT_LEFT or DT_BOTTOM or DT_SINGLELINE
+		mov		eax,DT_CENTER or DT_BOTTOM or DT_SINGLELINE
 	.elseif edx==5
 		;Right, Bottom
 		mov		eax,DT_RIGHT or DT_BOTTOM or DT_SINGLELINE
@@ -3248,14 +3256,16 @@ SonarProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.elseif wParam==1001
 			xor		sonardata.ShowDepth,1
 			.if sonardata.ShowDepth<2
-				mov		rect.left,0
-				mov		rect.top,0
-				mov		rect.right,150
-				mov		rect.bottom,64
+				invoke GetSonarOptionRect,1,addr rect
 				invoke InvalidateRect,hSonar,addr rect,TRUE
 			.endif
 			.if sonardata.fFishSound
 				dec		sonardata.fFishSound
+			.endif
+			xor		mapdata.fcursor,1
+			.if mapdata.fcursor<2
+				invoke GetMapOptionRect,0,addr rect
+				invoke InvalidateRect,hMap,addr rect,TRUE
 			.endif
 		.endif
 	.elseif eax==WM_CONTEXTMENU

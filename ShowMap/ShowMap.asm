@@ -92,7 +92,6 @@ InitMaps proc uses ebx
 	mov		mapdata.cursorx,eax
 	invoke GetItemInt,addr buffer,256
 	mov		mapdata.cursory,eax
-	mov		mapdata.fcursor,TRUE
 	invoke GetItemInt,addr buffer,0
 	mov		mapdata.iLon,eax
 	invoke GetItemInt,addr buffer,0
