@@ -172,12 +172,15 @@ Resize_Image proc uses ebx esi edi,hBmp:HBITMAP,wt:DWORD,ht:DWORD
 	invoke GdipGetImageWidth,image1,addr iwt
 	invoke GdipGetImageHeight,image1,addr iht
 	invoke GdipGetImagePixelFormat,image1,addr lFormat
-	.if ht>16384
-		invoke GdipCloneBitmapAreaI,0,0,wt,128,lFormat,image1,addr image3
+	.if ht>1024
+		.while ht>1024
+			shr		iht,1
+			shr		ht,1
+		.endw
+		invoke GdipCloneBitmapAreaI,0,0,wt,iht,lFormat,image1,addr image3
 		invoke GdipDisposeImage,image1
 		mov		eax,image3
 		mov		image1,eax
-		shr		ht,2
 	.endif
 	invoke GdipCreateBitmapFromScan0,wt,ht,0,lFormat,0,addr image2
 	invoke GdipGetImageGraphicsContext,image2,addr gfx
