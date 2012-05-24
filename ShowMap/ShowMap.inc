@@ -402,6 +402,7 @@ SONAR struct
 	sonarcolor		DWORD 18 dup(?)							;Color definitions
 	PaintNow		DWORD ?									;If TRUE sonar screen is updated
 	fReplayRead		DWORD ?
+	fGrayScale		DWORD ?
 SONAR ends
 
 SONARREPLAY struct

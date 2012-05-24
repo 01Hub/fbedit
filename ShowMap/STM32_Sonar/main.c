@@ -45,7 +45,6 @@ typedef struct
 static STM32_SonarTypeDef STM32_Sonar;          // 0x20000000
 vu8 BlueLED;                                    // Current state of the blue led
 vu16 Ping;                                      // Value to output to PA1 and PA2 pins
-vu16 Trim;                                      // Output trim value
 vu8 Setup;                                      // Setup mode
 vu16 PingWait;                                  // Wait loop in ping
 
@@ -63,6 +62,8 @@ u16 GetADCValue(u8 Channel);
 void rs232_puts(char *str);
 void rs232_gets(char *str);
 void GainSetup(void);
+void TrimOutput(void);
+void GetEcho(void);
 
 /* Private functions ---------------------------------------------------------*/
 
@@ -76,9 +77,6 @@ void GainSetup(void);
 int main(void)
 {
   u32 i;
-  vu32* ADC;
-  u8 Echo;
-  u16 TrimAdd;
   /* System clocks configuration */
   RCC_Configuration();
   /* NVIC configuration */
@@ -113,23 +111,6 @@ int main(void)
     TIM_Cmd(TIM3, ENABLE);
     Setup = 1;
   }
-  // /* Switch to NMEA protocol at 4800,8,N,1 */
-  // rs232_puts("$PSRF100,1,4800,8,1,0*0E\r\n\0");
-  /* Enable GGA message, rate 5 seconds */
-  // rs232_puts("$PSRF103,00,00,05,00*20\r\n\0");
-  /* Disable GLL message */
-  // rs232_puts("$PSRF103,01,00,00,01*25\r\n\0");
-  /* Enable GSA message, rate 5 seconds */
-  // rs232_puts("$PSRF103,02,00,05,00*22\r\n\0");
-  /* Enable GSV message, rate 5 seconds */
-  // rs232_puts("$PSRF103,03,00,05,00*23\r\n\0");
-  /* Ensable RMC message, rate 1 second */
-  // rs232_puts("$PSRF103,04,00,01,00*20\r\n\0");
-  /* Disable VTG message */
-  // rs232_puts("$PSRF103,05,00,00,01*21\r\n\0");
-  /* Get pointer to injected channel */
-  ADC = ( (u32 *) ADC1_ICDR_Address);
-
   while (1)
   {
     if (STM32_Sonar.Start == 1)
@@ -173,24 +154,7 @@ int main(void)
       }
       else
       {
-        /* Trim echo output to near zero */
-        Trim = (u16)0x400;
-        TrimAdd = (u16)0x200;
-        while (TrimAdd)
-        {
-          DAC->DHR12R2 = Trim;
-          i = 10000;
-          while (i--);
-          if (GetADCValue(ADC_Channel_3)>32)
-          {
-            Trim = Trim + TrimAdd;
-          }
-          else
-          {
-            Trim = Trim - TrimAdd;
-          }
-          TrimAdd = TrimAdd / 2;
-        }
+        TrimOutput();
       }
       /* Enable ADC injected channel */
       ADC_AutoInjectedConvCmd(ADC1, ENABLE);
@@ -212,18 +176,7 @@ int main(void)
       /* Enable TIM1 */
       TIM_Cmd(TIM1, ENABLE);
       /* Get the Echo array */
-      while (STM32_Sonar.Start)
-      {
-        /* To eliminate the need for an advanced AM demodulator the largest */ 
-        /* ADC reading is stored in its echo array element */
-        /* Get echo */
-        Echo = (u8) ( (u16) (*(vu32*) (((*(u32*)&ADC)))) >> 4);
-        /* If echo larger than previous echo then update the echo array */
-        if (Echo > STM32_Sonar.EchoArray[STM32_Sonar.EchoIndex])
-        {
-          STM32_Sonar.EchoArray[STM32_Sonar.EchoIndex] = Echo;
-        }
-      }
+      GetEcho();
       /* Store the current range as the first byte in the echo array */
       STM32_Sonar.EchoArray[0] = STM32_Sonar.RangeInx;
       /* Done, Disable TIM2 */
@@ -235,11 +188,13 @@ int main(void)
     }
     else if (STM32_Sonar.Start == 2)
     {
+      /* Send initialization data to GPS */
       rs232_puts((char*) (u32 *)STM32_Sonar.GainArray);
       STM32_Sonar.Start=0;
     }
     else if (STM32_Sonar.Start == 3)
     {
+      /* Set USART baudrate */
       USART_Configuration(STM32_Sonar.EchoIndex);
       STM32_Sonar.Start=0;
     }
@@ -255,6 +210,54 @@ int main(void)
     }
     i = 1000;
     while (i--);
+  }
+}
+
+void TrimOutput(void)
+{
+  u16 Trim;
+  u16 TrimAdd;
+  vu32 i;
+
+  /* Trim echo output to near zero */
+  Trim = (u16)0x400;
+  TrimAdd = (u16)0x200;
+  while (TrimAdd)
+  {
+    DAC->DHR12R2 = Trim;
+    i = 10000;
+    while (i--);
+    if (GetADCValue(ADC_Channel_3)>32)
+    {
+      Trim = Trim + TrimAdd;
+    }
+    else
+    {
+      Trim = Trim - TrimAdd;
+    }
+    TrimAdd = TrimAdd / 2;
+  }
+}
+
+void GetEcho(void)
+{
+  u32* ADC;
+  u8 Echo;
+
+  /* Get pointer to injected channel */
+  ADC = ( (u32 *) ADC1_ICDR_Address);
+  while (STM32_Sonar.Start)
+  {
+    /* To eliminate the need for an advanced AM demodulator the largest */ 
+    /* ADC reading is stored in its echo array element */
+    /* Get echo */
+    //Echo = (u8) ( (u16) (*(vu32*) (((*(u32*)&ADC)))) >> 4);
+    Echo = ( (*(u32*) (((*(u32*)&ADC)))) >> 4);
+    /* If echo larger than previous echo then update the echo array */
+    if (Echo > STM32_Sonar.EchoArray[STM32_Sonar.EchoIndex])
+    {
+      STM32_Sonar.EchoArray[STM32_Sonar.EchoIndex] = Echo;
+    }
   }
 }
 

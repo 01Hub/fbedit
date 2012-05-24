@@ -54,6 +54,7 @@ IDC_BTNCALCULATE		equ 1610
 
 IDD_DLGSONARCOLOR		equ 1700
 IDC_BTNDEFAULT			equ 1701
+IDC_CHKGRAYSCALE		equ 1703
 
 GAINXOFS				equ 60
 GAINYOFS				equ 117
@@ -441,12 +442,30 @@ Update:
 		invoke FillRect,sonardata.mDC,addr rect,sonardata.hBrBack
 		;Draw echo
 		mov		ebx,1
+		.if sonardata.nodptinx
+			xor		esi,esi
+			xor		edi,edi
+		.else
+			mov		esi,sonardata.dptinx
+			lea		esi,[esi+1]
+			lea		edi,[esi-1]
+		.endif
 		.while ebx<MAXYECHO
 			movzx	eax,sonardata.EchoArray[ebx]
-			.if eax
-				shr		eax,4
-				mov		eax,sonardata.sonarcolor[eax*DWORD]
-				invoke SetPixel,sonardata.mDC,MAXXECHO-1,ebx,eax
+			.if ebx>=edi && ebx<=esi
+				invoke SetPixel,sonardata.mDC,MAXXECHO-1,ebx,0
+			.else
+				.if eax
+					.if sonardata.fGrayScale
+						mov		ah,al
+						shl		eax,8
+						mov		al,ah
+					.else
+						shr		eax,4
+						mov		eax,sonardata.sonarcolor[eax*DWORD]
+					.endif
+					invoke SetPixel,sonardata.mDC,MAXXECHO-1,ebx,eax
+				.endif
 			.endif
 			lea		ebx,[ebx+1]
 		.endw
@@ -1166,6 +1185,11 @@ SonarColorOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lPa
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
+		mov		eax,BST_UNCHECKED
+		.if sonardata.fGrayScale
+			mov		eax,BST_CHECKED
+		.endif
+		invoke CheckDlgButton,hWin,IDC_CHKGRAYSCALE,eax
 	.elseif eax==WM_COMMAND
 		mov		edx,wParam
 		movzx	eax,dx
@@ -1178,6 +1202,7 @@ SonarColorOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lPa
 					invoke PutItemInt,addr buffer,sonardata.sonarcolor[ebx*DWORD]
 					inc		ebx
 				.endw
+				invoke PutItemInt,addr buffer,sonardata.fGrayScale
 				invoke WritePrivateProfileString,addr szIniSonar,addr szIniSonarColor,addr buffer[1],addr szIniFileName
 				invoke EndDialog,hWin,NULL
 			.elseif eax==IDC_BTNDEFAULT
@@ -1205,6 +1230,8 @@ SonarColorOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lPa
 					inc		ebx
 				.endw
 				invoke InvalidateRect,hWin,NULL,TRUE
+			.elseif eax==IDC_CHKGRAYSCALE
+				xor		sonardata.fGrayScale,1
 			.elseif eax>=1720 && eax<=1737
 				push	eax
 				lea		ebx,[eax-1720]
@@ -1632,7 +1659,8 @@ STMThread proc uses ebx esi edi,Param:DWORD
 				.endif
 				.if !(pixcnt & 7)
 					;Random move
-					invoke Random,3
+					invoke Random,2
+					
 					mov		pixmov,eax
 				.endif
 				mov		ebx,pixdpt
@@ -1820,7 +1848,7 @@ Show0:
 		.while esi<MAXYECHO
 			mov		al,STM32Echo[esi]
 			mov		ah,STM32Echo[esi+MAXYECHO]
-			.if al<bl || ah<bl
+			.if (al<bl || ah<bl) && esi<sonardata.dptinx
 				mov		al,0
 			.endif
 			mov		sonardata.EchoArray[esi],al
@@ -1831,7 +1859,7 @@ Show0:
 		.while esi<MAXYECHO-1
 			mov		ax,word ptr STM32Echo[esi]
 			mov		dx,word ptr STM32Echo[esi+MAXYECHO]
-			.if al<bl || ah<bl || dl<bl || dh<bl 
+			.if (al<bl || ah<bl || dl<bl || dh<bl) && esi<sonardata.dptinx
 				mov		al,0
 			.endif
 			mov		sonardata.EchoArray[esi],al
@@ -1844,7 +1872,7 @@ Show0:
 			mov		ax,word ptr STM32Echo[esi]
 			mov		dx,word ptr STM32Echo[esi+MAXYECHO]
 			mov		cx,word ptr STM32Echo[esi+MAXYECHO*2]
-			.if al<bl || ah<bl || dl<bl || dh<bl || cl<bl || ch<bl 
+			.if (al<bl || ah<bl || dl<bl || dh<bl || cl<bl || ch<bl) && esi<sonardata.dptinx
 				mov		al,0
 			.endif
 			mov		sonardata.EchoArray[esi],al
@@ -1854,7 +1882,7 @@ Show0:
 	.else
 		.while esi<MAXYECHO
 			mov		al,STM32Echo[esi]
-			.if al<bl
+			.if al<bl && esi<sonardata.dptinx
 				mov		al,0
 			.endif
 			mov		sonardata.EchoArray[esi],al
@@ -1877,7 +1905,7 @@ Show25:
 		.while esi<MAXYECHO
 			mov		al,STM32Echo[esi]
 			mov		ah,STM32Echo[esi+MAXYECHO]
-			.if al<bl || ah<bl
+			.if (al<bl || ah<bl) && esi<sonardata.dptinx
 				mov		al,0
 			.else
 				;Blend in 25% of previous echo
@@ -1900,7 +1928,7 @@ Show25:
 		.while esi<MAXYECHO-1
 			mov		ax,word ptr STM32Echo[esi]
 			mov		dx,word ptr STM32Echo[esi+MAXYECHO]
-			.if al<bl || ah<bl || dl<bl || dh<bl 
+			.if (al<bl || ah<bl || dl<bl || dh<bl) && esi<sonardata.dptinx 
 				mov		al,0
 			.else
 				;Blend in 25% of previous echo
@@ -1925,7 +1953,7 @@ Show25:
 			mov		ax,word ptr STM32Echo[esi]
 			mov		dx,word ptr STM32Echo[esi+MAXYECHO]
 			mov		cx,word ptr STM32Echo[esi+MAXYECHO*2]
-			.if al<bl || ah<bl || dl<bl || dh<bl || cl<bl || ch<bl 
+			.if (al<bl || ah<bl || dl<bl || dh<bl || cl<bl || ch<bl) && esi<sonardata.dptinx 
 				mov		al,0
 			.else
 				;Blend in 25% of previous echo
@@ -1954,7 +1982,7 @@ Show25:
 			mov		ecx,5
 			xor		edx,edx
 			div		ecx
-			.if al<bl
+			.if al<bl && esi<sonardata.dptinx
 				mov		al,0
 			.endif
 			mov		sonardata.EchoArray[esi],al
@@ -1975,7 +2003,7 @@ Show33:
 		.while esi<MAXYECHO
 			mov		al,STM32Echo[esi]
 			mov		ah,STM32Echo[esi+MAXYECHO]
-			.if al<bl || ah<bl
+			.if (al<bl || ah<bl) && esi<sonardata.dptinx
 				mov		al,0
 			.else
 				;Blend in 33% of previous echo
@@ -2001,7 +2029,7 @@ Show33:
 		.while esi<MAXYECHO-1
 			mov		ax,word ptr STM32Echo[esi]
 			mov		dx,word ptr STM32Echo[esi+MAXYECHO]
-			.if al<bl || ah<bl || dl<bl || dh<bl 
+			.if (al<bl || ah<bl || dl<bl || dh<bl) && esi<sonardata.dptinx 
 				mov		al,0
 			.else
 				;Blend in 33% of previous echo
@@ -2029,7 +2057,7 @@ Show33:
 			mov		ax,word ptr STM32Echo[esi]
 			mov		dx,word ptr STM32Echo[esi+MAXYECHO]
 			mov		cx,word ptr STM32Echo[esi+MAXYECHO*2]
-			.if al<bl || ah<bl || dl<bl || dh<bl || cl<bl || ch<bl 
+			.if (al<bl || ah<bl || dl<bl || dh<bl || cl<bl || ch<bl) && esi<sonardata.dptinx 
 				mov		al,0
 			.else
 				;Blend in 33% of previous echo
@@ -2064,7 +2092,7 @@ Show33:
 			mov		ecx,3
 			mul		ecx
 			shr		eax,2
-			.if al<bl
+			.if al<bl && esi<sonardata.dptinx
 				mov		al,0
 			.endif
 			mov		sonardata.EchoArray[esi],al
@@ -2085,7 +2113,7 @@ Show50:
 		.while esi<MAXYECHO
 			mov		al,STM32Echo[esi]
 			mov		ah,STM32Echo[esi+MAXYECHO]
-			.if al<bl || ah<bl
+			.if (al<bl || ah<bl) && esi<sonardata.dptinx
 				mov		al,0
 			.else
 				;Blend in 50% of previous echo
@@ -2105,7 +2133,7 @@ Show50:
 		.while esi<MAXYECHO-1
 			mov		ax,word ptr STM32Echo[esi]
 			mov		dx,word ptr STM32Echo[esi+MAXYECHO]
-			.if al<bl || ah<bl || dl<bl || dh<bl 
+			.if (al<bl || ah<bl || dl<bl || dh<bl) && esi<sonardata.dptinx 
 				mov		al,0
 			.else
 				;Blend in 50% of previous echo
@@ -2127,7 +2155,7 @@ Show50:
 			mov		ax,word ptr STM32Echo[esi]
 			mov		dx,word ptr STM32Echo[esi+MAXYECHO]
 			mov		cx,word ptr STM32Echo[esi+MAXYECHO*2]
-			.if al<bl || ah<bl || dl<bl || dh<bl || cl<bl || ch<bl 
+			.if (al<bl || ah<bl || dl<bl || dh<bl || cl<bl || ch<bl) && esi<sonardata.dptinx 
 				mov		al,0
 			.else
 				;Blend in 50% of previous echo
@@ -2150,7 +2178,7 @@ Show50:
 			movzx	edx,STM32Echo[esi+MAXYECHO]
 			add		eax,edx
 			shr		eax,1
-			.if al<bl
+			.if al<bl && esi<sonardata.dptinx
 				mov		al,0
 			.endif
 			mov		sonardata.EchoArray[esi],al
@@ -2171,7 +2199,7 @@ Show66:
 		.while esi<MAXYECHO
 			mov		al,STM32Echo[esi]
 			mov		ah,STM32Echo[esi+MAXYECHO]
-			.if al<bl || ah<bl
+			.if (al<bl || ah<bl) && esi<sonardata.dptinx
 				mov		al,0
 			.else
 				;Blend in 66% of previous echo
@@ -2197,7 +2225,7 @@ Show66:
 		.while esi<MAXYECHO-1
 			mov		ax,word ptr STM32Echo[esi]
 			mov		dx,word ptr STM32Echo[esi+MAXYECHO]
-			.if al<bl || ah<bl || dl<bl || dh<bl 
+			.if (al<bl || ah<bl || dl<bl || dh<bl) && esi<sonardata.dptinx 
 				mov		al,0
 			.else
 				;Blend in 66% of previous echo
@@ -2225,7 +2253,7 @@ Show66:
 			mov		ax,word ptr STM32Echo[esi]
 			mov		dx,word ptr STM32Echo[esi+MAXYECHO]
 			mov		cx,word ptr STM32Echo[esi+MAXYECHO*2]
-			.if al<bl || ah<bl || dl<bl || dh<bl || cl<bl || ch<bl 
+			.if (al<bl || ah<bl || dl<bl || dh<bl || cl<bl || ch<bl) && esi<sonardata.dptinx 
 				mov		al,0
 			.endif
 			mov		sonardata.EchoArray[esi],al
@@ -2244,7 +2272,7 @@ Show66:
 			mov		ecx,3
 			mul		ecx
 			shr		eax,2
-			.if al<bl
+			.if al<bl && esi<sonardata.dptinx
 				mov		al,0
 			.endif
 			mov		sonardata.EchoArray[esi],al
@@ -2265,7 +2293,7 @@ Show75:
 		.while esi<MAXYECHO
 			mov		al,STM32Echo[esi]
 			mov		ah,STM32Echo[esi+MAXYECHO]
-			.if al<bl || ah<bl
+			.if (al<bl || ah<bl) && esi<sonardata.dptinx
 				mov		al,0
 			.else
 				;Blend in 75% of previous echo
@@ -2288,7 +2316,7 @@ Show75:
 		.while esi<MAXYECHO-1
 			mov		ax,word ptr STM32Echo[esi]
 			mov		dx,word ptr STM32Echo[esi+MAXYECHO]
-			.if al<bl || ah<bl || dl<bl || dh<bl 
+			.if (al<bl || ah<bl || dl<bl || dh<bl) && esi<sonardata.dptinx 
 				mov		al,0
 			.else
 				;Blend in 75% of previous echo
@@ -2313,7 +2341,7 @@ Show75:
 			mov		ax,word ptr STM32Echo[esi]
 			mov		dx,word ptr STM32Echo[esi+MAXYECHO]
 			mov		cx,word ptr STM32Echo[esi+MAXYECHO*2]
-			.if al<bl || ah<bl || dl<bl || dh<bl || cl<bl || ch<bl 
+			.if (al<bl || ah<bl || dl<bl || dh<bl || cl<bl || ch<bl) && esi<sonardata.dptinx 
 				mov		al,0
 			.else
 				;Blend in 75% of previous echo
@@ -2342,7 +2370,7 @@ Show75:
 			mov		ecx,5
 			xor		edx,edx
 			div		ecx
-			.if al<bl
+			.if al<bl && esi<sonardata.dptinx
 				mov		al,0
 			.endif
 			mov		sonardata.EchoArray[esi],al
@@ -2378,7 +2406,7 @@ FindDepth:
 		inc		ebx
 	.endw
 	;Skip ping and surface clutter
-	.while ebx<256
+	.while ebx<MAXYECHO/2
 		xor		ch,ch
 		mov		ax,word ptr STM32Echo[ebx+MAXYECHO*0]
 		mov		dx,word ptr STM32Echo[ebx+MAXYECHO*0+2]
@@ -2425,7 +2453,8 @@ FindDepth:
 				inc		ecx
 			.endw
 			;Put in a little hysteresis
-			lea		eax,[edx-4096]
+;			lea		eax,[edx-4096]
+			lea		eax,[edx-512]
 			.if sdword ptr eax>esi
 				mov		esi,edx
 				mov		edi,ebx
@@ -2439,12 +2468,27 @@ FindDepth:
 		mov		eax,sonardata.dptinx
 		.if eax
 			sub		eax,edi
-			.if sdword ptr eax>MAXDEPTHJUMP
-				mov		edi,sonardata.dptinx
-				sub		edi,MAXDEPTHJUMP
-			.elseif sdword ptr eax<-MAXDEPTHJUMP
-				mov		edi,sonardata.dptinx
-				add		edi,MAXDEPTHJUMP
+			mov		edx,eax
+			.if CARRY?
+				neg		edx
+			.endif
+			.if edx<MAXDEPTHJUMP
+				.if sdword ptr eax>1
+					mov		edi,sonardata.dptinx
+					sub		edi,1
+				.elseif sdword ptr eax<-1
+					mov		edi,sonardata.dptinx
+					add		edi,1
+				.endif
+			.else
+				.if sdword ptr eax>MAXDEPTHJUMP
+					mov		edi,sonardata.dptinx
+					sub		edi,MAXDEPTHJUMP
+				.elseif sdword ptr eax<-MAXDEPTHJUMP
+					mov		edi,sonardata.dptinx
+					add		edi,MAXDEPTHJUMP
+				.endif
+				mov		sonardata.nodptinx,1
 			.endif
 		.endif
 		mov		ebx,edi
@@ -2773,6 +2817,7 @@ LoadSonarFromIni proc uses ebx esi edi
 	;Store the number of range definitions read from ini
 	mov		sonardata.MaxRange,ebx
 	invoke SetupPixelTimer
+	;Get the sonar colors
 	invoke GetPrivateProfileString,addr szIniSonar,addr szIniSonarColor,addr szDefSonarColors,addr buffer,sizeof buffer,addr szIniFileName
 	xor		ebx,ebx
 	.while ebx<18
@@ -2780,6 +2825,8 @@ LoadSonarFromIni proc uses ebx esi edi
 		mov		sonardata.sonarcolor[ebx*DWORD],eax
 		inc		ebx
 	.endw
+	invoke GetItemInt,addr buffer,0
+	mov		sonardata.fGrayScale,eax
 	ret
 
 LoadSonarFromIni endp
