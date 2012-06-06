@@ -403,6 +403,7 @@ SONAR struct
 	PaintNow		DWORD ?									;If TRUE sonar screen is updated
 	fReplayRead		DWORD ?
 	fGrayScale		DWORD ?
+	fShowBottom		DWORD ?
 SONAR ends
 
 SONARREPLAY struct

@@ -6,6 +6,7 @@ IDC_TRBSONARPING        equ 1510
 IDC_CHKSONARPING        equ 1509
 IDC_TRBSONARRANGE       equ 1507
 IDC_CHKSONARRANGE       equ 1506
+IDC_CHKSONARBOTTOM		equ 1541
 IDC_TRBSONARNOISE       equ 1501
 IDC_TRBSONARREJECT		equ 1534
 IDC_TRBSONARFISH        equ 1530
@@ -452,11 +453,14 @@ Update:
 		.endif
 		.while ebx<MAXYECHO
 			movzx	eax,sonardata.EchoArray[ebx]
-			.if ebx>=edi && ebx<=esi
+			.if ebx>=edi && ebx<=esi && sonardata.fShowBottom
 				invoke SetPixel,sonardata.mDC,MAXXECHO-1,ebx,0
 			.else
 				.if eax
 					.if sonardata.fGrayScale
+						.if eax<72 && ebx<esi
+							mov		eax,72
+						.endif
 						mov		ah,al
 						shl		eax,8
 						mov		al,ah
@@ -508,6 +512,9 @@ SonarOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:L
 	.if eax==WM_INITDIALOG
 		.if sonardata.AutoRange
 			invoke CheckDlgButton,hWin,IDC_CHKSONARRANGE,BST_CHECKED
+		.endif
+		.if sonardata.fShowBottom
+			invoke CheckDlgButton,hWin,IDC_CHKSONARBOTTOM,BST_CHECKED
 		.endif
 		mov		eax,sonardata.MaxRange
 		dec		eax
@@ -625,6 +632,13 @@ SonarOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:L
 					mov		eax,BST_CHECKED
 				.endif
 				invoke CheckDlgButton,hWnd,IDC_CHKAUTORANGE,eax
+			.elseif eax==IDC_CHKSONARBOTTOM
+				xor		sonardata.fShowBottom,1
+				mov		eax,BST_UNCHECKED
+				.if sonardata.fShowBottom
+					mov		eax,BST_CHECKED
+				.endif
+				invoke CheckDlgButton,hWnd,IDC_CHKSONARBOTTOM,eax
 			.elseif eax==IDC_CHKCHARTPAUSE
 				invoke IsDlgButtonChecked,hWin,IDC_CHKCHARTPAUSE
 				.if eax
@@ -2712,7 +2726,7 @@ SaveSonarToIni proc
 	LOCAL	buffer[256]:BYTE
 
 	mov		buffer,0
-	;Width,AutoRange,AutoGain,AutoPing,FishDetect,FishAlarm,RangeInx,NoiseLevel,PingInit,GainSet,ChartSpeed,NoiseReject,PingTimer,SoundSpeed,SignalBarWt,FishDepth
+	;Width,AutoRange,AutoGain,AutoPing,FishDetect,FishAlarm,RangeInx,NoiseLevel,PingInit,GainSet,ChartSpeed,NoiseReject,PingTimer,SoundSpeed,SignalBarWt,FishDepth,ShowBottom
 	invoke PutItemInt,addr buffer,sonardata.wt
 	invoke PutItemInt,addr buffer,sonardata.AutoRange
 	invoke PutItemInt,addr buffer,sonardata.AutoGain
@@ -2731,6 +2745,7 @@ SaveSonarToIni proc
 	invoke PutItemInt,addr buffer,sonardata.SoundSpeed
 	invoke PutItemInt,addr buffer,sonardata.SignalBarWt
 	invoke PutItemInt,addr buffer,sonardata.FishDepth
+	invoke PutItemInt,addr buffer,sonardata.fShowBottom
 	invoke WritePrivateProfileString,addr szIniSonar,addr szIniSonar,addr buffer[1],addr szIniFileName
 	ret
 
@@ -2741,7 +2756,7 @@ LoadSonarFromIni proc uses ebx esi edi
 	
 	invoke RtlZeroMemory,addr buffer,sizeof buffer
 	invoke GetPrivateProfileString,addr szIniSonar,addr szIniSonar,addr szNULL,addr buffer,sizeof buffer,addr szIniFileName
-	;Width,AutoRange,AutoGain,AutoPing,FishDetect,FishAlarm,RangeInx,NoiseLevel,PingInit,GainSet,ChartSpeed,NoiseReject,PingTimer,SoundSpeed,SignalBarWt,FishDepth
+	;Width,AutoRange,AutoGain,AutoPing,FishDetect,FishAlarm,RangeInx,NoiseLevel,PingInit,GainSet,ChartSpeed,NoiseReject,PingTimer,SoundSpeed,SignalBarWt,FishDepth,ShowBottom
 	invoke GetItemInt,addr buffer,250
 	mov		sonardata.wt,eax
 	invoke GetItemInt,addr buffer,1
@@ -2774,6 +2789,8 @@ LoadSonarFromIni proc uses ebx esi edi
 	mov		sonardata.SignalBarWt,eax
 	invoke GetItemInt,addr buffer,1
 	mov		sonardata.FishDepth,eax
+	invoke GetItemInt,addr buffer,1
+	mov		sonardata.fShowBottom,eax
 	invoke GetPrivateProfileString,addr szIniSonarRange,addr szIniGainDef,addr szNULL,addr buffer,sizeof buffer,addr szIniFileName
 	invoke GetItemInt,addr buffer,0
 	mov		sonardata.gainofs,eax
