@@ -1448,7 +1448,7 @@ STMThread proc uses ebx esi edi,Param:DWORD
 						mov		iLon,eax
 						mov		eax,mapdata.iLat
 						mov		iLat,eax
-						mov		mapdata.fcursor,TRUE
+						mov		mapdata.fcursor,2
 						movzx	eax,sonarreplay.SoundSpeed
 						mov		sonardata.SoundSpeed,eax
 						mov		ax,sonarreplay.ADCBattery
