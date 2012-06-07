@@ -1,4 +1,13 @@
 
+IDD_DLGADDPLACE         equ 1100
+IDC_EDTNAME             equ 1101
+IDC_EDTLONGITUDE        equ 1102
+IDC_EDTLATTITUDE        equ 1103
+IDC_CBOFONT             equ 1104
+IDC_CBOICON             equ 1105
+IDC_BTNGPS              equ 1106
+IDC_TRBZOOM             equ 1107
+
 .data?
 
 nPlace				DWORD ?

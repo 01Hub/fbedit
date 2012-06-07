@@ -40,7 +40,7 @@ FpToAscii				PROTO :DWORD,:DWORD,:DWORD
 InitScroll				PROTO
 
 ;#########################################################################
-
+;Main dialog
 IDD_DIALOG              equ 1000
 IDC_MAP                 equ 1001
 IDC_BTNZOOMIN           equ 1002
@@ -62,23 +62,16 @@ IDC_STCDIST             equ 1012
 IDC_STCBEAR				equ 1016
 IDC_EDTBEAR				equ 1015
 
-IDD_DLGADDPLACE         equ 1100
-IDC_EDTNAME             equ 1101
-IDC_EDTLONGITUDE        equ 1102
-IDC_EDTLATTITUDE        equ 1103
-IDC_CBOFONT             equ 1104
-IDC_CBOICON             equ 1105
-IDC_BTNGPS              equ 1106
-IDC_TRBZOOM             equ 1107
 IDC_SHP3				equ 1018
 IDC_CHKCHART			equ 1033
 IDC_BTNRANGEDN			equ 1021
 IDC_BTNRANGEUP			equ 1020
 IDC_CHKAUTORANGE		equ 1022
-IDC_LSTNMEA				equ 1025
 IDC_CHKZOOM				equ 1026
 IDC_CHKCURSOR			equ 1028
+IDC_LSTNMEA				equ 1025
 
+;Menu items
 IDM_MENU                equ 10000
 IDM_FILE_OPENTRIP       equ 10010
 IDM_FILE_SAVETRIP       equ 10011
@@ -107,6 +100,7 @@ IDM_LOG_STARTSONAR		equ 10022
 IDM_LOG_ENDSONAR		equ 10023
 IDM_LOG_REPLAYSONAR		equ 10024
 
+;Context Menu items
 IDM_CONTEXT             equ 11000
 IDM_EDITPLACE           equ 11001
 IDM_ADDPLACE            equ 11002
@@ -401,9 +395,9 @@ SONAR struct
 	cursorpos		DWORD ?									;Position of depth cursor
 	sonarcolor		DWORD 18 dup(?)							;Color definitions
 	PaintNow		DWORD ?									;If TRUE sonar screen is updated
-	fReplayRead		DWORD ?
-	fGrayScale		DWORD ?
-	fShowBottom		DWORD ?
+	fReplayRead		DWORD ?									;If TRUE a file read operation is in progress
+	fGrayScale		DWORD ?									;If TRUE sonar echo is plotted using frayscale
+	fShowBottom		DWORD ?									;If TRUE bottom is marked with a black line
 SONAR ends
 
 SONARREPLAY struct

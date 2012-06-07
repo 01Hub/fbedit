@@ -60,6 +60,7 @@ IDC_CHKGRAYSCALE		equ 1703
 GAINXOFS				equ 60
 GAINYOFS				equ 117
 ZOOMHYSTERESIS			equ 7
+DEPTHHYSTERESIS			equ 512
 
 .code
 
@@ -453,7 +454,7 @@ Update:
 		.endif
 		.while ebx<MAXYECHO
 			movzx	eax,sonardata.EchoArray[ebx]
-			.if ebx>=edi && ebx<=esi && sonardata.fShowBottom
+			.if ebx>=edi && ebx<=esi && sonardata.fShowBottom && !sonardata.nodptinx
 				invoke SetPixel,sonardata.mDC,MAXXECHO-1,ebx,0
 			.else
 				.if eax
@@ -2467,8 +2468,7 @@ FindDepth:
 				inc		ecx
 			.endw
 			;Put in a little hysteresis
-;			lea		eax,[edx-4096]
-			lea		eax,[edx-512]
+			lea		eax,[edx-DEPTHHYSTERESIS]
 			.if sdword ptr eax>esi
 				mov		esi,edx
 				mov		edi,ebx
