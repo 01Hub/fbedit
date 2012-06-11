@@ -361,6 +361,7 @@ SONAR struct
 	minyecho		DWORD ?									;Ping and surface clutter skipped
 	nodptinx		DWORD ?									;Depth not found
 	dptinx			DWORD ?									;Index in echo array
+	prvdptinx		DWORD ?									;Index in echo array
 	fishinx			DWORD ?									;Current index in fishdata array
 	fishdata		FISH MAXFISH dup(<>)					;Array of fish detected
 	fFishSound		DWORD ?									;Countdown to avoid repeated fish sounds

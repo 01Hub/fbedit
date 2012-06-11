@@ -1128,6 +1128,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.if eax
 					dec		eax
 					invoke ZoomMap,eax
+					invoke DoGoto,mapdata.iLon,mapdata.iLat,mapdata.gpslock,TRUE
 				.endif
 			.elseif eax==IDC_BTNZOOMOUT
 				mov		eax,mapdata.zoominx
@@ -1140,6 +1141,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						mov		eax,mapdata.zoominx
 						inc		eax
 						invoke ZoomMap,eax
+						invoke DoGoto,mapdata.iLon,mapdata.iLat,mapdata.gpslock,TRUE
 					.endif
 				.endif
 			.elseif eax==IDC_BTNMAP

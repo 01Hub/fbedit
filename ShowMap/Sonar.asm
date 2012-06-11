@@ -444,36 +444,36 @@ Update:
 		invoke FillRect,sonardata.mDC,addr rect,sonardata.hBrBack
 		;Draw echo
 		mov		ebx,1
-		.if sonardata.nodptinx
-			xor		esi,esi
-			xor		edi,edi
-		.else
-			mov		esi,sonardata.dptinx
-			lea		esi,[esi+1]
-			lea		edi,[esi-1]
-		.endif
 		.while ebx<MAXYECHO
 			movzx	eax,sonardata.EchoArray[ebx]
-			.if ebx>=edi && ebx<=esi && sonardata.fShowBottom && !sonardata.nodptinx
-				invoke SetPixel,sonardata.mDC,MAXXECHO-1,ebx,0
-			.else
-				.if eax
-					.if sonardata.fGrayScale
-						.if eax<72 && ebx<esi
-							mov		eax,72
-						.endif
-						mov		ah,al
-						shl		eax,8
-						mov		al,ah
-					.else
-						shr		eax,4
-						mov		eax,sonardata.sonarcolor[eax*DWORD]
+			.if eax
+				.if sonardata.fGrayScale
+					;Grayscale
+					.if eax<72 && ebx<esi
+						mov		eax,72
 					.endif
-					invoke SetPixel,sonardata.mDC,MAXXECHO-1,ebx,eax
+					mov		ah,al
+					shl		eax,8
+					mov		al,ah
+				.else
+					;Color
+					shr		eax,4
+					mov		eax,sonardata.sonarcolor[eax*DWORD]
 				.endif
+				invoke SetPixel,sonardata.mDC,MAXXECHO-1,ebx,eax
 			.endif
 			lea		ebx,[ebx+1]
 		.endw
+		.if sonardata.fShowBottom && sonardata.dptinx && sonardata.prvdptinx; && !sonardata.nodptinx
+			invoke CreatePen,PS_SOLID,5,0
+			invoke SelectObject,sonardata.mDC,eax
+			push	eax
+			invoke MoveToEx,sonardata.mDC,MAXXECHO-2,sonardata.prvdptinx,NULL
+			invoke LineTo,sonardata.mDC,MAXXECHO-1,sonardata.dptinx
+			pop		eax
+			invoke SelectObject,sonardata.mDC,eax
+			invoke DeleteObject,eax
+		.endif
 	.endif
 	.if nUpdate
 		mov		ebx,sonardata.SignalBarWt
@@ -2412,6 +2412,8 @@ CopyEcho:
 	retn
 
 FindDepth:
+	mov		eax,sonardata.dptinx
+	mov		sonardata.prvdptinx,eax
 	;Skip blank
 	mov		ebx,1
 	mov		ecx,sonardata.NoiseLevel
@@ -2487,12 +2489,12 @@ FindDepth:
 				neg		edx
 			.endif
 			.if edx<MAXDEPTHJUMP
-				.if sdword ptr eax>1
+				.if sdword ptr eax>2
 					mov		edi,sonardata.dptinx
-					sub		edi,1
-				.elseif sdword ptr eax<-1
+					sub		edi,2
+				.elseif sdword ptr eax<-2
 					mov		edi,sonardata.dptinx
-					add		edi,1
+					add		edi,2
 				.endif
 			.else
 				.if sdword ptr eax>MAXDEPTHJUMP
