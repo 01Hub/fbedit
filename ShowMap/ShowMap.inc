@@ -548,7 +548,7 @@ altitude			ALTITUDE <>								;GGA message info
 satelites			SATELITE 12 dup(<>)						;Data for 12 satelites
 hSplittV			HCURSOR ?								;Horizontal splitt cursor
 rseed				DWORD ?									;Random seed
-STM32Echo			BYTE MAXYECHO*4 dup(?)					;Echo work area
+STM32Echo			BYTE MAXYECHO*4 dup(?)					;Echo work area, 4*raw echo data
 sonarreplay			SONARREPLAY <>							;Sonar replay record version 201
 lpOldButtonProc		DWORD ?									;Button subclass
 fSeaMap				DWORD ?									;If TRUE sea map is shown

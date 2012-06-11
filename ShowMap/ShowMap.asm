@@ -1215,6 +1215,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				inc		sonardata.PaintNow
 			.elseif eax==IDC_BTNRANGEDN
 				.if sonardata.RangeInx
+					mov		sonardata.dptinx,0
 					dec		sonardata.RangeInx
 					movzx	eax,sonardata.RangeInx
 					invoke SetRange,eax
@@ -1226,6 +1227,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		eax,sonardata.MaxRange
 				dec		eax
 				.if al>sonardata.RangeInx
+					mov		sonardata.dptinx,0
 					inc		sonardata.RangeInx
 					movzx	eax,sonardata.RangeInx
 					invoke SetRange,eax
