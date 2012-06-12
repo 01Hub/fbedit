@@ -119,6 +119,7 @@
 #define IDC_BTNLNRFONT 4025
 #define IDC_STCLNRFONT 4023
 #define IDC_BTNKWAPPLY 4002
+#define IDC_CHKSHIFTSPACE 4039
 #define IDD_LANGUAGECHILD 1810
 #define CBO_2 5001
 #define CBO_1 5002
@@ -694,6 +695,7 @@ BEGIN
   CONTROL "Show Codetip",IDC_CHKCODETIP,"Button",0x50010003,12,234,72,9
   CONTROL "Restore session",IDC_CHKSESSION,"Button",0x50010003,102,234,72,9
   CONTROL "Multiline tabtool",IDC_CHKMULTITAB,"Button",0x50010003,12,243,72,9
+  CONTROL "Shift+Space",IDC_CHKSHIFTSPACE,"Button",0x50010003,102,243,72,9
   CONTROL "Fonts",-1,"Button",0x50000007,189,183,174,81
   CONTROL "Code",IDC_RBNCODE,"Button",0x50010009,195,192,39,9
   CONTROL "Text",IDC_RBNTEXT,"Button",0x50010009,234,192,39,9
@@ -1236,8 +1238,8 @@ IDB_TBRBMP BITMAP DISCARDABLE "Res/Toolbar.bmp"
 32106 BITMAP DISCARDABLE "Res/Button.bmp"
 
 VERINF1 VERSIONINFO
-FILEVERSION 3,0,0,8
-PRODUCTVERSION 3,0,0,8
+FILEVERSION 3,0,0,9
+PRODUCTVERSION 3,0,0,9
 FILEOS 0x00000004
 FILETYPE 0x00000001
 BEGIN
@@ -1245,13 +1247,13 @@ BEGIN
   BEGIN
     BLOCK "040904E4"
     BEGIN
-      VALUE "FileVersion", "3.0.0.8\0"
+      VALUE "FileVersion", "3.0.0.9\0"
       VALUE "FileDescription", "Assembly programming IDE\0"
       VALUE "InternalName", "RadASM 3.0\0"
       VALUE "LegalCopyright", "KetilO (C) 2010 - 2011\0"
       VALUE "OriginalFilename", "RadASM.exe\0"
       VALUE "ProductName", "RadASM\0"
-      VALUE "ProductVersion", "3.0.0.8\0"
+      VALUE "ProductVersion", "3.0.0.9\0"
     END
   END
   BLOCK "VarFileInfo"

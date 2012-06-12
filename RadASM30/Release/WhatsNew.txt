@@ -4,6 +4,10 @@ Ini files, project files, template files, api files and addins are all incompati
 
 Do NOT install RadASM 3.0 in the same directory as an older version of RadASM.
 
+Version 3.0.0.9 2012-06-12
+--------------------------
+o Added option to use Shift+Space to show codecomplete list.
+
 Version 3.0.0.8 2012-02-13
 --------------------------
 o Fixed bug where running your app could generate an exception (thanks justice).

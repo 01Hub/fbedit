@@ -1555,6 +1555,7 @@ STMThread proc uses ebx esi edi,Param:DWORD
 					mov		sonardata.fReplayRead,FALSE
 					movzx	eax,STM32Echo
 					.if al!=STM32Echo[MAXYECHO]
+						mov		sonardata.dptinx,0
 						mov		rngchanged,4
 					.endif
 					invoke SetRange,eax

@@ -214,6 +214,10 @@ UpdateRadASMIni proc hWin:HWND
 			;3007 --> 3008, no update needed
 			mov		eax,3008
 		.endif
+		.if eax==3008
+			;3008 --> 3009, no update needed
+			mov		eax,3009
+		.endif
 		invoke wsprintf,addr buffer,addr szDecFormat,vernew
 		invoke WritePrivateProfileString,addr szIniVersion,addr szIniVersion,addr buffer,addr szto
 		invoke wsprintf,addr buffer,addr szUpdated,addr szto

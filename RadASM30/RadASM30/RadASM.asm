@@ -2456,7 +2456,11 @@ RAEditCodeProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LP
 			xor		eax,eax
 			jmp		Ex
 		.elseif eax==VK_SPACE
-			invoke GetKeyState,VK_CONTROL
+			.if da.edtopt.fopt & EDTOPT_SHIFTSPACE
+				invoke GetKeyState,VK_SHIFT
+			.else
+				invoke GetKeyState,VK_CONTROL
+			.endif
 			test		eax,80h
 			.if !ZERO?
 				mov		da.cctype,CCTYPE_ALL
