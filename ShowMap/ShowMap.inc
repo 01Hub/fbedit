@@ -317,6 +317,7 @@ FISH ends
 
 RANGE struct
 	range			DWORD ?									;Range in meters
+	mindepth		DWORD ?									;Min index for depth search
 	interval		DWORD ?									;Update rate
 	pixeltimer		DWORD ?									;Pixel timer value
 	pingadd			DWORD ?									;Number of pulses to add to the initial ping (0 to 128). Used when autoping is on

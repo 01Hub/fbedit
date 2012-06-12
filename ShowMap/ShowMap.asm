@@ -1219,8 +1219,6 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					dec		sonardata.RangeInx
 					movzx	eax,sonardata.RangeInx
 					invoke SetRange,eax
-					movzx	eax,sonardata.RangeInx
-					invoke SendDlgItemMessage,hWin,IDC_TRBSONARRANGE,TBM_SETPOS,TRUE,eax
 					inc		sonardata.fGainUpload
 				.endif
 			.elseif eax==IDC_BTNRANGEUP
@@ -1231,8 +1229,6 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					inc		sonardata.RangeInx
 					movzx	eax,sonardata.RangeInx
 					invoke SetRange,eax
-					movzx	eax,sonardata.RangeInx
-					invoke SendDlgItemMessage,hWin,IDC_TRBSONARRANGE,TBM_SETPOS,TRUE,eax
 					inc		sonardata.fGainUpload
 				.endif
 			.endif
