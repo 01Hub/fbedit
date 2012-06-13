@@ -949,6 +949,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					invoke CreateFile,addr buffer,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL
 					.if eax!=INVALID_HANDLE_VALUE
 						mov		ebx,eax
+						invoke ResetDepth
 						invoke ReadFile,ebx,addr sonarreplay,1,addr dwread,NULL
 						invoke SetFilePointer,ebx,0,NULL,FILE_BEGIN
 						invoke EnableScrollBar,hSonar,SB_HORZ,ESB_ENABLE_BOTH

@@ -326,6 +326,12 @@ RANGE struct
 	gain			DWORD 17 dup(?)							;Gain increment levels read from ini file
 RANGE ends
 
+DEPTH struct
+	x				DWORD ?									;x position
+	y				DWORD ?									;y position
+	range			DWORD ?									;Range in meters
+DEPTH ends
+
 SONAR struct
 	fSTLink			DWORD ?									;If TRUE STLink connected
 	mDC				HDC ?									;The memory DC holds the echo bitmap, 512*512 pixels,
@@ -362,7 +368,8 @@ SONAR struct
 	minyecho		DWORD ?									;Ping and surface clutter skipped
 	nodptinx		DWORD ?									;Depth not found
 	dptinx			DWORD ?									;Index in echo array
-	prvdptinx		DWORD ?									;Index in echo array
+	bottom			DEPTH <>								;Current bottom
+	prevbottom		DEPTH <>								;Previous bottom
 	fishinx			DWORD ?									;Current index in fishdata array
 	fishdata		FISH MAXFISH dup(<>)					;Array of fish detected
 	fFishSound		DWORD ?									;Countdown to avoid repeated fish sounds

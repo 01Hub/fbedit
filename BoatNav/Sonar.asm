@@ -64,6 +64,19 @@ DEPTHHYSTERESIS			equ 512
 
 .code
 
+ResetDepth proc
+
+	xor		eax,eax
+	mov		sonardata.bottom.x,eax
+	mov		sonardata.bottom.y,eax
+	mov		sonardata.bottom.range,eax
+	mov		sonardata.prevbottom.x,eax
+	mov		sonardata.prevbottom.y,eax
+	mov		sonardata.prevbottom.range,eax
+	ret
+
+ResetDepth endp
+
 GetRangePtr proc uses edx,RangeInx:DWORD
 
 	mov		eax,RangeInx
@@ -464,12 +477,27 @@ Update:
 			.endif
 			lea		ebx,[ebx+1]
 		.endw
-		.if sonardata.fShowBottom && sonardata.dptinx && sonardata.prvdptinx; && !sonardata.nodptinx
+;		.if sonardata.fShowBottom && sonardata.dptinx && sonardata.prvdptinx; && !sonardata.nodptinx
+;			invoke CreatePen,PS_SOLID,5,0
+;			invoke SelectObject,sonardata.mDC,eax
+;			push	eax
+;			invoke MoveToEx,sonardata.mDC,MAXXECHO-2,sonardata.prvdptinx,NULL
+;			invoke LineTo,sonardata.mDC,MAXXECHO-1,sonardata.dptinx
+;			pop		eax
+;			invoke SelectObject,sonardata.mDC,eax
+;			invoke DeleteObject,eax
+;		.endif
+		.if sonardata.fShowBottom && sonardata.bottom.x==511 && sonardata.prevbottom.x>450
 			invoke CreatePen,PS_SOLID,5,0
 			invoke SelectObject,sonardata.mDC,eax
 			push	eax
-			invoke MoveToEx,sonardata.mDC,MAXXECHO-2,sonardata.prvdptinx,NULL
-			invoke LineTo,sonardata.mDC,MAXXECHO-1,sonardata.dptinx
+			mov		eax,sonardata.prevbottom.y
+			mov		ecx,sonardata.prevbottom.range
+			mul		ecx
+			mov		ecx,sonardata.bottom.range
+			div		ecx
+			invoke MoveToEx,sonardata.mDC,sonardata.prevbottom.x,eax,NULL
+			invoke LineTo,sonardata.mDC,sonardata.bottom.x,sonardata.bottom.y
 			pop		eax
 			invoke SelectObject,sonardata.mDC,eax
 			invoke DeleteObject,eax
@@ -1549,6 +1577,7 @@ STMThread proc uses ebx esi edi,Param:DWORD
 					fldz
 					fstp	mapdata.fSumDist
 					invoke SetDlgItemText,hWnd,IDC_EDTDIST,addr szNULL
+					invoke ResetDepth
 				.else
 					invoke GetScrollPos,hSonar,SB_HORZ
 					inc		eax
@@ -1877,8 +1906,23 @@ CopyEcho:
 	retn
 
 FindDepth:
-	mov		eax,sonardata.dptinx
-	mov		sonardata.prvdptinx,eax
+	.if sonardata.bottom.y
+		mov		eax,sonardata.bottom.x
+		dec		eax
+		mov		sonardata.prevbottom.x,eax
+		mov		eax,sonardata.bottom.y
+		mov		sonardata.prevbottom.y,eax
+		mov		eax,sonardata.bottom.range
+		mov		sonardata.prevbottom.range,eax
+	.else
+		dec		sonardata.prevbottom.x
+		.if SIGN?
+			mov		sonardata.prevbottom.x,0
+			mov		sonardata.prevbottom.y,0
+		.endif
+	.endif
+	mov		sonardata.bottom.x,0
+	mov		sonardata.bottom.y,0
 ;	;Skip blank
 ;	mov		ebx,1
 ;	mov		ecx,sonardata.NoiseLevel
@@ -1890,7 +1934,10 @@ FindDepth:
 	;Skip ping and surface clutter
 	movzx	eax,STM32Echo
 	invoke GetRangePtr,eax
+	mov		ebx,sonardata.sonarrange.range[eax]
+	mov		sonardata.bottom.range,ebx
 	mov		ebx,sonardata.sonarrange.mindepth[eax]
+	push	ebx
 	.while ebx<MAXYECHO/2
 		xor		ch,ch
 		mov		ax,word ptr STM32Echo[ebx+MAXYECHO*0]
@@ -1946,7 +1993,8 @@ FindDepth:
 			inc		ebx
 		.endw
 	.endif
-	.if edi>10
+	pop		eax
+	.if edi>=eax
 		;A valid bottom signal has been found
 		mov		sonardata.nodptinx,0
 		mov		eax,sonardata.dptinx
@@ -1964,6 +2012,8 @@ FindDepth:
 					mov		edi,sonardata.dptinx
 					add		edi,2
 				.endif
+				mov		sonardata.bottom.x,511
+				mov		sonardata.bottom.y,edi
 			.else
 				.if sdword ptr eax>MAXDEPTHJUMP
 					mov		edi,sonardata.dptinx
