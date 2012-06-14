@@ -6,9 +6,9 @@ Group=2,-1,0,1,ShowMap,-2,-1,1,Assembly,-3,-1,1,Include,-4,-1,1,Misc,-5,-1,1,Res
 F1=-2,2,1,0,591,160,27,952,BoatNav.asm
 F2=-3,0,1,-6,7,901,534,294,BoatNav.inc
 F3=-5,2,4,-4,9,1044,620,75,BoatNav.rc
-Open=1,1,2,3,11,12,5,6,7,8,9,10,13
+Open=4,1,2,3,11,12,5,6,7,8,9,10,13
 Api=
-F4=-4,0,2,-6,-25,1202,623,98,BoatNav.ini
+F4=-4,0,2,-6,-25,1202,623,110,BoatNav.ini
 Misc.asm
 GpsComm.asm
 Options.asm

@@ -271,7 +271,7 @@ Abowe resonant frequency the pizzo ceramic element acts as an inductor.
 http://airmartechnology.com/uploads/AirPDF/App_Notes.pdf
 
 The impedance has been measured to be 780 Ohm at resonant frequency and the peak to peak voltage is 1400 Volt.
-Thus 314 Watts is delivered to the transducer.
+Thus 314 Watts RMS is delivered to the transducer.
 
 GPS EM406a Version
 ==================

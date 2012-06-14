@@ -9,7 +9,7 @@ IDC_BTNDELETE			equ 1303
 szStartLog			BYTE 'Start Trip Logging',0
 szPlayLog			BYTE 'Replay Trip Log',0
 szLogPath			BYTE '\TripLog',0
-szLogFileName		BYTE 'TripLog%s.log',0
+szLogFileName		BYTE 'TripLog%s_%s.log',0
 
 szOpenTrip			BYTE 'Open Trip',0
 szSaveTrip			BYTE 'Save Trip',0
@@ -37,7 +37,7 @@ szAllFiles			BYTE '\*.*',0
 
 
 szDateFmtFile		BYTE 'yyyyMMdd',0
-
+szTimeFmtFile		BYTE 'hhmm',0
 
 .data?
 
@@ -50,6 +50,7 @@ szFile				BYTE MAX_PATH dup(?)
 TripLogProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	buffer[MAX_PATH]:BYTE
 	LOCAL	datebuff[16]:BYTE
+	LOCAL	timebuff[16]:BYTE
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
@@ -63,7 +64,8 @@ TripLogProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke DlgDirList,hWin,addr buffer,IDC_LSTFILES,NULL,DDL_READWRITE
 			invoke SetWindowText,hWin,addr szStartLog
 			invoke GetDateFormat,NULL,NULL,NULL,offset szDateFmtFile,addr datebuff,sizeof datebuff
-			invoke wsprintf,addr buffer,addr szLogFileName,addr datebuff
+			invoke GetTimeFormat,NULL,NULL,NULL,offset szTimeFmtFile,addr timebuff,sizeof timebuff
+			invoke wsprintf,addr buffer,addr szLogFileName,addr datebuff,addr timebuff
 			invoke SetDlgItemText,hWin,IDC_EDTFILE,addr buffer
 			mov		fSaveFile,TRUE
 		.elseif eax==IDM_LOG_REPLAY
@@ -105,7 +107,8 @@ TripLogProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke DlgDirList,hWin,addr buffer,IDC_LSTFILES,NULL,DDL_READWRITE
 			invoke SetWindowText,hWin,addr szSaveTrip
 			invoke GetDateFormat,NULL,NULL,NULL,offset szDateFmtFile,addr datebuff,sizeof datebuff
-			invoke wsprintf,addr buffer,addr szTrpFileName,addr datebuff
+			invoke GetTimeFormat,NULL,NULL,NULL,offset szTimeFmtFile,addr timebuff,sizeof timebuff
+			invoke wsprintf,addr buffer,addr szLogFileName,addr datebuff,addr timebuff
 			invoke SetDlgItemText,hWin,IDC_EDTFILE,addr buffer
 			mov		fSaveFile,TRUE
 		.elseif eax==IDM_FILE_OPENDIST
@@ -131,7 +134,8 @@ TripLogProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke DlgDirList,hWin,addr buffer,IDC_LSTFILES,NULL,DDL_READWRITE
 			invoke SetWindowText,hWin,addr szSaveDist
 			invoke GetDateFormat,NULL,NULL,NULL,offset szDateFmtFile,addr datebuff,sizeof datebuff
-			invoke wsprintf,addr buffer,addr szDstFileName,addr datebuff
+			invoke GetTimeFormat,NULL,NULL,NULL,offset szTimeFmtFile,addr timebuff,sizeof timebuff
+			invoke wsprintf,addr buffer,addr szLogFileName,addr datebuff,addr timebuff
 			invoke SetDlgItemText,hWin,IDC_EDTFILE,addr buffer
 			mov		fSaveFile,TRUE
 		.elseif eax==IDM_FILE_OPENTRAIL
@@ -157,7 +161,8 @@ TripLogProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke DlgDirList,hWin,addr buffer,IDC_LSTFILES,NULL,DDL_READWRITE
 			invoke SetWindowText,hWin,addr szSaveTrail
 			invoke GetDateFormat,NULL,NULL,NULL,offset szDateFmtFile,addr datebuff,sizeof datebuff
-			invoke wsprintf,addr buffer,addr szTrlFileName,addr datebuff
+			invoke GetTimeFormat,NULL,NULL,NULL,offset szTimeFmtFile,addr timebuff,sizeof timebuff
+			invoke wsprintf,addr buffer,addr szLogFileName,addr datebuff,addr timebuff
 			invoke SetDlgItemText,hWin,IDC_EDTFILE,addr buffer
 			mov		fSaveFile,TRUE
 		.elseif eax==IDM_LOG_STARTSONAR
@@ -167,7 +172,8 @@ TripLogProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke DlgDirList,hWin,addr buffer,IDC_LSTFILES,NULL,DDL_READWRITE
 			invoke SetWindowText,hWin,addr szStartSonarLog
 			invoke GetDateFormat,NULL,NULL,NULL,offset szDateFmtFile,addr datebuff,sizeof datebuff
-			invoke wsprintf,addr buffer,addr szSonarFileName,addr datebuff
+			invoke GetTimeFormat,NULL,NULL,NULL,offset szTimeFmtFile,addr timebuff,sizeof timebuff
+			invoke wsprintf,addr buffer,addr szLogFileName,addr datebuff,addr timebuff
 			invoke SetDlgItemText,hWin,IDC_EDTFILE,addr buffer
 			mov		fSaveFile,TRUE
 		.elseif eax==IDM_LOG_REPLAYSONAR
@@ -193,7 +199,8 @@ TripLogProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke DlgDirList,hWin,addr buffer,IDC_LSTFILES,NULL,DDL_READWRITE
 			invoke SetWindowText,hWin,addr szSaveNMEA
 			invoke GetDateFormat,NULL,NULL,NULL,offset szDateFmtFile,addr datebuff,sizeof datebuff
-			invoke wsprintf,addr buffer,addr szLogFileName,addr datebuff
+			invoke GetTimeFormat,NULL,NULL,NULL,offset szTimeFmtFile,addr timebuff,sizeof timebuff
+			invoke wsprintf,addr buffer,addr szLogFileName,addr datebuff,addr timebuff
 			invoke SetDlgItemText,hWin,IDC_EDTFILE,addr buffer
 			mov		fSaveFile,TRUE
 		.endif

@@ -462,9 +462,6 @@ Update:
 			.if eax
 				.if sonardata.fGrayScale
 					;Grayscale
-					.if eax<72 && ebx<esi
-						mov		eax,72
-					.endif
 					mov		ah,al
 					shl		eax,8
 					mov		al,ah
@@ -477,16 +474,6 @@ Update:
 			.endif
 			lea		ebx,[ebx+1]
 		.endw
-;		.if sonardata.fShowBottom && sonardata.dptinx && sonardata.prvdptinx; && !sonardata.nodptinx
-;			invoke CreatePen,PS_SOLID,5,0
-;			invoke SelectObject,sonardata.mDC,eax
-;			push	eax
-;			invoke MoveToEx,sonardata.mDC,MAXXECHO-2,sonardata.prvdptinx,NULL
-;			invoke LineTo,sonardata.mDC,MAXXECHO-1,sonardata.dptinx
-;			pop		eax
-;			invoke SelectObject,sonardata.mDC,eax
-;			invoke DeleteObject,eax
-;		.endif
 		.if sonardata.fShowBottom && sonardata.bottom.x==511 && sonardata.prevbottom.x>450
 			invoke CreatePen,PS_SOLID,5,0
 			invoke SelectObject,sonardata.mDC,eax
@@ -1364,7 +1351,7 @@ GainUpload proc uses ebx edi
 	movzx	ebx,sonardata.RangeInx
 	invoke GetRangePtr,ebx
 	mov		ebx,eax
-	;Fixed gain
+	;Initial gain
 	mov		eax,sonardata.GainSet
 	mov		sonardata.GainInit[0],ax
 	xor		ecx,ecx
@@ -2101,7 +2088,7 @@ FindFish:
 	.if sonardata.FishDetect || sonardata.FishAlarm
 		mov		ebx,sonardata.minyecho
 		mov		edi,sonardata.dptinx
-		.if !edi
+		.if sonardata.nodptinx
 			;Depth unknowm
 			retn
 		.elseif edi>sonardata.minyecho
