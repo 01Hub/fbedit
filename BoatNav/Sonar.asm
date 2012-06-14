@@ -1043,34 +1043,7 @@ SonarOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:L
 		;Create advanced child dialog
 		invoke CreateDialogParam,hInstance,IDD_DLGSONARADVANCED,ebx,addr SonarAdvancedChildProc,0
 		mov		ChildDialog[12],eax
-		;Subclass buttons to get autorepeat
-;		push	0
-;		push	IDC_BTNSIGNALD
-;		push	IDC_BTNSIGNALU
-;		push	IDC_BTNNRD
-;		push	IDC_BTNNRU
-;		push	IDC_BTNGD
-;		push	IDC_BTNGU
-;		push	IDC_BTNPD
-;		push	IDC_BTNPU
-;		push	IDC_BTNRD
-;		push	IDC_BTNRU
-;		push	IDC_BTNCD
-;		push	IDC_BTNCU
-;		push	IDC_BTNND
-;		push	IDC_BTNNU
-;		push	IDC_BTNSSD
-;		push	IDC_BTNSSU
-;		push	IDC_BTNPTD
-;		push	IDC_BTNPTU
-;		push	IDC_BTNFD
-;		mov		eax,IDC_BTNFU
-;		.while eax
-;			invoke GetDlgItem,hWin,eax
-;			invoke SetWindowLong,eax,GWL_WNDPROC,offset ButtonProc
-;			mov		lpOldButtonProc,eax
-;			pop		eax
-;		.endw
+		mov		CurTab,0
 	.elseif eax==WM_COMMAND
 		mov		edx,wParam
 		movzx	eax,dx
@@ -1078,30 +1051,6 @@ SonarOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:L
 		.if edx==BN_CLICKED
 			.if eax==IDOK
 				invoke SendMessage,hWin,WM_CLOSE,NULL,FALSE
-;			.elseif eax==IDC_BTNPTD
-;				.if sonardata.PingTimer>STM32_PingTimer-2
-;					dec		sonardata.PingTimer
-;					movzx	eax,sonardata.PingTimer
-;					invoke SendDlgItemMessage,hWin,IDC_TRBPINGTIMER,TBM_SETPOS,TRUE,eax
-;				.endif
-;			.elseif eax==IDC_BTNPTU
-;				.if sonardata.PingTimer<STM32_PingTimer+2
-;					inc		sonardata.PingTimer
-;					movzx	eax,sonardata.PingTimer
-;					invoke SendDlgItemMessage,hWin,IDC_TRBPINGTIMER,TBM_SETPOS,TRUE,eax
-;				.endif
-;			.elseif eax==IDC_BTNSSU
-;				.if sonardata.SoundSpeed<SOUNDSPEEDMAX
-;					inc		sonardata.SoundSpeed
-;					invoke SendDlgItemMessage,hWin,IDC_TRBSOUNDSPEED,TBM_SETPOS,TRUE,sonardata.SoundSpeed
-;					invoke SetupPixelTimer
-;				.endif
-;			.elseif eax==IDC_BTNSSD
-;				.if sonardata.SoundSpeed>SOUNDSPEEDMIN
-;					dec		sonardata.SoundSpeed
-;					invoke SendDlgItemMessage,hWin,IDC_TRBSOUNDSPEED,TBM_SETPOS,TRUE,sonardata.SoundSpeed
-;					invoke SetupPixelTimer
-;				.endif
 			.endif
 		.endif
 	.elseif eax==WM_NOTIFY

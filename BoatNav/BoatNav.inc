@@ -499,7 +499,8 @@ szFmtVolts			BYTE '%02u',0
 szVolts				BYTE 'V',0
 
 szCelcius			BYTE 'C',0
-watertempoffset		DWORD 1750
+;watertempoffset		DWORD 1750
+watertempoffset		DWORD 2500
 watertempconv		REAL8 5.25
 airtempoffset		DWORD 2485
 airtempconv			REAL8 5.60
