@@ -1,13 +1,13 @@
 
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_usart.o:     file format elf32-littlearm
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar\stm32f10x_usart.o
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_usart.o:     file format elf32-littlearm
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_usart.o
 
 
 Disassembly of section .text.USART_DeInit:
 
 00000000 <USART_DeInit>:
 USART_DeInit():
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:91
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:91
 *                     - USART1, USART2, USART3, UART4 or UART5.
 * Output         : None
 * Return         : None
@@ -15,7 +15,7 @@ C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:91
 void USART_DeInit(USART_TypeDef* USARTx)
 {
    0:	b508      	push	{r3, lr}
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:95
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:95
   /* Check the parameters */
   assert_param(IS_USART_ALL_PERIPH(USARTx));
 
@@ -45,74 +45,74 @@ C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:95
   44:	f2c4 0301 	movt	r3, #16385	; 0x4001
   48:	4298      	cmp	r0, r3
   4a:	d13f      	bne.n	cc <USART_DeInit+0xcc>
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:98
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:98
   {
     case USART1_BASE:
       RCC_APB2PeriphResetCmd(RCC_APB2Periph_USART1, ENABLE);
   4c:	f44f 4080 	mov.w	r0, #16384	; 0x4000
   50:	f04f 0101 	mov.w	r1, #1
   54:	f7ff fffe 	bl	0 <RCC_APB2PeriphResetCmd>
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:99
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:99
       RCC_APB2PeriphResetCmd(RCC_APB2Periph_USART1, DISABLE);
   58:	f44f 4080 	mov.w	r0, #16384	; 0x4000
   5c:	f04f 0100 	mov.w	r1, #0
   60:	f7ff fffe 	bl	0 <RCC_APB2PeriphResetCmd>
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:100
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:100
       break;
   64:	bd08      	pop	{r3, pc}
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:103
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:103
 
     case USART2_BASE:
       RCC_APB1PeriphResetCmd(RCC_APB1Periph_USART2, ENABLE);
   66:	f44f 3000 	mov.w	r0, #131072	; 0x20000
   6a:	f04f 0101 	mov.w	r1, #1
   6e:	f7ff fffe 	bl	0 <RCC_APB1PeriphResetCmd>
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:104
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:104
       RCC_APB1PeriphResetCmd(RCC_APB1Periph_USART2, DISABLE);
   72:	f44f 3000 	mov.w	r0, #131072	; 0x20000
   76:	f04f 0100 	mov.w	r1, #0
   7a:	f7ff fffe 	bl	0 <RCC_APB1PeriphResetCmd>
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:105
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:105
       break;
   7e:	bd08      	pop	{r3, pc}
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:108
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:108
 
     case USART3_BASE:
       RCC_APB1PeriphResetCmd(RCC_APB1Periph_USART3, ENABLE);
   80:	f44f 2080 	mov.w	r0, #262144	; 0x40000
   84:	f04f 0101 	mov.w	r1, #1
   88:	f7ff fffe 	bl	0 <RCC_APB1PeriphResetCmd>
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:109
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:109
       RCC_APB1PeriphResetCmd(RCC_APB1Periph_USART3, DISABLE);
   8c:	f44f 2080 	mov.w	r0, #262144	; 0x40000
   90:	f04f 0100 	mov.w	r1, #0
   94:	f7ff fffe 	bl	0 <RCC_APB1PeriphResetCmd>
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:110
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:110
       break;
   98:	bd08      	pop	{r3, pc}
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:113
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:113
     
     case UART4_BASE:
       RCC_APB1PeriphResetCmd(RCC_APB1Periph_UART4, ENABLE);
   9a:	f44f 2000 	mov.w	r0, #524288	; 0x80000
   9e:	f04f 0101 	mov.w	r1, #1
   a2:	f7ff fffe 	bl	0 <RCC_APB1PeriphResetCmd>
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:114
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:114
       RCC_APB1PeriphResetCmd(RCC_APB1Periph_UART4, DISABLE);
   a6:	f44f 2000 	mov.w	r0, #524288	; 0x80000
   aa:	f04f 0100 	mov.w	r1, #0
   ae:	f7ff fffe 	bl	0 <RCC_APB1PeriphResetCmd>
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:115
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:115
       break;
   b2:	bd08      	pop	{r3, pc}
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:118
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:118
     
     case UART5_BASE:
       RCC_APB1PeriphResetCmd(RCC_APB1Periph_UART5, ENABLE);
   b4:	f44f 1080 	mov.w	r0, #1048576	; 0x100000
   b8:	f04f 0101 	mov.w	r1, #1
   bc:	f7ff fffe 	bl	0 <RCC_APB1PeriphResetCmd>
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:119
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:119
       RCC_APB1PeriphResetCmd(RCC_APB1Periph_UART5, DISABLE);
   c0:	f44f 1080 	mov.w	r0, #1048576	; 0x100000
   c4:	f04f 0100 	mov.w	r1, #0
@@ -124,7 +124,7 @@ Disassembly of section .text.USART_Init:
 
 00000000 <USART_Init>:
 USART_Init():
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:141
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:141
 *                    specified USART peripheral.
 * Output         : None
 * Return         : None
@@ -135,7 +135,7 @@ void USART_Init(USART_TypeDef* USARTx, USART_InitTypeDef* USART_InitStruct)
    2:	b087      	sub	sp, #28
    4:	4604      	mov	r4, r0
    6:	460d      	mov	r5, r1
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:162
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:162
   assert_param(IS_USART_PERIPH_HFC(USARTx, USART_InitStruct->USART_HardwareFlowControl));
   
   usartxbase = (*(u32*)&USARTx);
@@ -143,37 +143,37 @@ C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:162
 /*---------------------------- USART CR2 Configuration -----------------------*/
   tmpreg = USARTx->CR2;
    8:	8a03      	ldrh	r3, [r0, #16]
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:164
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:164
   /* Clear STOP[13:12] bits */
   tmpreg &= CR2_STOP_CLEAR_Mask;
    a:	f423 5340 	bic.w	r3, r3, #12288	; 0x3000
    e:	ea4f 4303 	mov.w	r3, r3, lsl #16
   12:	ea4f 4313 	mov.w	r3, r3, lsr #16
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:168
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:168
 
   /* Configure the USART Stop Bits, Clock, CPOL, CPHA and LastBit ------------*/
   /* Set STOP[13:12] bits according to USART_StopBits value */
   tmpreg |= (u32)USART_InitStruct->USART_StopBits;
   16:	88ca      	ldrh	r2, [r1, #6]
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:171
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:171
   
   /* Write to USART CR2 */
   USARTx->CR2 = (u16)tmpreg;
   18:	4313      	orrs	r3, r2
   1a:	8203      	strh	r3, [r0, #16]
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:174
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:174
 
 /*---------------------------- USART CR1 Configuration -----------------------*/
   tmpreg = USARTx->CR1;
   1c:	8983      	ldrh	r3, [r0, #12]
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:176
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:176
   /* Clear M, PCE, PS, TE and RE bits */
   tmpreg &= CR1_CLEAR_Mask;
   1e:	f423 53b0 	bic.w	r3, r3, #5632	; 0x1600
   22:	f023 030c 	bic.w	r3, r3, #12
   26:	ea4f 4303 	mov.w	r3, r3, lsl #16
   2a:	ea4f 4313 	mov.w	r3, r3, lsr #16
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:182
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:182
 
   /* Configure the USART Word Length, Parity and mode ----------------------- */
   /* Set the M bits according to USART_WordLength value */
@@ -186,60 +186,60 @@ C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:182
   36:	8969      	ldrh	r1, [r5, #10]
   38:	430a      	orrs	r2, r1
   3a:	b292      	uxth	r2, r2
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:186
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:186
             USART_InitStruct->USART_Mode;
 
   /* Write to USART CR1 */
   USARTx->CR1 = (u16)tmpreg;
   3c:	ea42 0303 	orr.w	r3, r2, r3
   40:	8183      	strh	r3, [r0, #12]
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:189
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:189
 
 /*---------------------------- USART CR3 Configuration -----------------------*/  
   tmpreg = USARTx->CR3;
   42:	8a83      	ldrh	r3, [r0, #20]
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:191
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:191
   /* Clear CTSE and RTSE bits */
   tmpreg &= CR3_CLEAR_Mask;
   44:	f423 7340 	bic.w	r3, r3, #768	; 0x300
   48:	ea4f 4303 	mov.w	r3, r3, lsl #16
   4c:	ea4f 4313 	mov.w	r3, r3, lsr #16
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:195
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:195
 
   /* Configure the USART HFC -------------------------------------------------*/
   /* Set CTSE and RTSE bits according to USART_HardwareFlowControl value */
   tmpreg |= USART_InitStruct->USART_HardwareFlowControl;
   50:	89aa      	ldrh	r2, [r5, #12]
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:198
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:198
 
   /* Write to USART CR3 */
   USARTx->CR3 = (u16)tmpreg;
   52:	4313      	orrs	r3, r2
   54:	8283      	strh	r3, [r0, #20]
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:202
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:202
 
 /*---------------------------- USART BRR Configuration -----------------------*/
   /* Configure the USART Baud Rate -------------------------------------------*/
   RCC_GetClocksFreq(&RCC_ClocksStatus);
   56:	a801      	add	r0, sp, #4
   58:	f7ff fffe 	bl	0 <RCC_GetClocksFreq>
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:203
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:203
   if (usartxbase == USART1_BASE)
   5c:	f44f 5360 	mov.w	r3, #14336	; 0x3800
   60:	f2c4 0301 	movt	r3, #16385	; 0x4001
   64:	429c      	cmp	r4, r3
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:205
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:205
   {
     apbclock = RCC_ClocksStatus.PCLK2_Frequency;
   66:	bf0c      	ite	eq
   68:	9904      	ldreq	r1, [sp, #16]
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:209
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:209
   }
   else
   {
     apbclock = RCC_ClocksStatus.PCLK1_Frequency;
   6a:	9903      	ldrne	r1, [sp, #12]
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:213
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:213
   }
 
   /* Determine the integer part */
@@ -249,32 +249,32 @@ C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:213
   74:	682b      	ldr	r3, [r5, #0]
   76:	ea4f 0383 	mov.w	r3, r3, lsl #2
   7a:	fbb1 f1f3 	udiv	r1, r1, r3
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:214
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:214
   tmpreg = (integerdivider / 0x64) << 0x04;
   7e:	f248 531f 	movw	r3, #34079	; 0x851f
   82:	f2c5 13eb 	movt	r3, #20971	; 0x51eb
   86:	fba3 0201 	umull	r0, r2, r3, r1
   8a:	ea4f 1252 	mov.w	r2, r2, lsr #5
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:217
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:217
 
   /* Determine the fractional part */
   fractionaldivider = integerdivider - (0x64 * (tmpreg >> 0x04));
   8e:	f04f 0064 	mov.w	r0, #100	; 0x64
   92:	fb02 1110 	mls	r1, r2, r0, r1
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:218
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:218
   tmpreg |= ((((fractionaldivider * 0x10) + 0x32) / 0x64)) & ((u8)0x0F);
   96:	ea4f 1101 	mov.w	r1, r1, lsl #4
   9a:	f101 0132 	add.w	r1, r1, #50	; 0x32
   9e:	fba3 0301 	umull	r0, r3, r3, r1
   a2:	f3c3 1343 	ubfx	r3, r3, #5, #4
   a6:	ea43 1202 	orr.w	r2, r3, r2, lsl #4
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:221
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:221
 
   /* Write to USART BRR */
   USARTx->BRR = (u16)tmpreg;
   aa:	b292      	uxth	r2, r2
   ac:	8122      	strh	r2, [r4, #8]
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:222
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:222
 }
   ae:	b007      	add	sp, #28
   b0:	bd30      	pop	{r4, r5, pc}
@@ -284,7 +284,7 @@ Disassembly of section .text.USART_StructInit:
 
 00000000 <USART_StructInit>:
 USART_StructInit():
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:235
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:235
 * Return         : None
 *******************************************************************************/
 void USART_StructInit(USART_InitTypeDef* USART_InitStruct)
@@ -293,24 +293,24 @@ void USART_StructInit(USART_InitTypeDef* USART_InitStruct)
   USART_InitStruct->USART_BaudRate = 9600;
    0:	f44f 5316 	mov.w	r3, #9600	; 0x2580
    4:	6003      	str	r3, [r0, #0]
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:236
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:236
   USART_InitStruct->USART_WordLength = USART_WordLength_8b;
    6:	f04f 0300 	mov.w	r3, #0
    a:	8083      	strh	r3, [r0, #4]
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:237
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:237
   USART_InitStruct->USART_StopBits = USART_StopBits_1;
    c:	80c3      	strh	r3, [r0, #6]
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:238
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:238
   USART_InitStruct->USART_Parity = USART_Parity_No ;
    e:	8103      	strh	r3, [r0, #8]
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:239
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:239
   USART_InitStruct->USART_Mode = USART_Mode_Rx | USART_Mode_Tx;
   10:	f04f 020c 	mov.w	r2, #12
   14:	8142      	strh	r2, [r0, #10]
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:240
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:240
   USART_InitStruct->USART_HardwareFlowControl = USART_HardwareFlowControl_None;  
   16:	8183      	strh	r3, [r0, #12]
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:241
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:241
 }
   18:	4770      	bx	lr
   1a:	bf00      	nop
@@ -319,7 +319,7 @@ Disassembly of section .text.USART_ClockInit:
 
 00000000 <USART_ClockInit>:
 USART_ClockInit():
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:256
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:256
 *                    the specified USART peripheral.
 * Output         : None
 * Return         : None
@@ -327,7 +327,7 @@ C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:256
 void USART_ClockInit(USART_TypeDef* USARTx, USART_ClockInitTypeDef* USART_ClockInitStruct)
 {
    0:	b410      	push	{r4}
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:267
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:267
   assert_param(IS_USART_CPOL(USART_ClockInitStruct->USART_CPOL));
   assert_param(IS_USART_CPHA(USART_ClockInitStruct->USART_CPHA));
   assert_param(IS_USART_LASTBIT(USART_ClockInitStruct->USART_LastBit));              
@@ -335,13 +335,13 @@ C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:267
 /*---------------------------- USART CR2 Configuration -----------------------*/
   tmpreg = USARTx->CR2;
    2:	8a03      	ldrh	r3, [r0, #16]
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:269
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:269
   /* Clear CLKEN, CPOL, CPHA and LBCL bits */
   tmpreg &= CR2_CLOCK_CLEAR_Mask;
    4:	f423 6370 	bic.w	r3, r3, #3840	; 0xf00
    8:	ea4f 4303 	mov.w	r3, r3, lsl #16
    c:	ea4f 4313 	mov.w	r3, r3, lsr #16
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:277
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:277
   /* Set CLKEN bit according to USART_Clock value */
   /* Set CPOL bit according to USART_CPOL value */
   /* Set CPHA bit according to USART_CPHA value */
@@ -356,13 +356,13 @@ C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:277
   1c:	88c9      	ldrh	r1, [r1, #6]
   1e:	430a      	orrs	r2, r1
   20:	b292      	uxth	r2, r2
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:280
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:280
 
   /* Write to USART CR2 */
   USARTx->CR2 = (u16)tmpreg;
   22:	ea42 0303 	orr.w	r3, r2, r3
   26:	8203      	strh	r3, [r0, #16]
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:281
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:281
 }
   28:	bc10      	pop	{r4}
   2a:	4770      	bx	lr
@@ -371,7 +371,7 @@ Disassembly of section .text.USART_ClockStructInit:
 
 00000000 <USART_ClockStructInit>:
 USART_ClockStructInit():
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:294
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:294
 * Return         : None
 *******************************************************************************/
 void USART_ClockStructInit(USART_ClockInitTypeDef* USART_ClockInitStruct)
@@ -380,16 +380,16 @@ void USART_ClockStructInit(USART_ClockInitTypeDef* USART_ClockInitStruct)
   USART_ClockInitStruct->USART_Clock = USART_Clock_Disable;
    0:	f04f 0300 	mov.w	r3, #0
    4:	8003      	strh	r3, [r0, #0]
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:295
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:295
   USART_ClockInitStruct->USART_CPOL = USART_CPOL_Low;
    6:	8043      	strh	r3, [r0, #2]
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:296
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:296
   USART_ClockInitStruct->USART_CPHA = USART_CPHA_1Edge;
    8:	8083      	strh	r3, [r0, #4]
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:297
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:297
   USART_ClockInitStruct->USART_LastBit = USART_LastBit_Disable;
    a:	80c3      	strh	r3, [r0, #6]
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:298
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:298
 }
    c:	4770      	bx	lr
    e:	bf00      	nop
@@ -398,7 +398,7 @@ Disassembly of section .text.USART_Cmd:
 
 00000000 <USART_Cmd>:
 USART_Cmd():
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:317
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:317
 {
   /* Check the parameters */
   assert_param(IS_USART_ALL_PERIPH(USARTx));
@@ -406,7 +406,7 @@ C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:317
   
   if (NewState != DISABLE)
    0:	b129      	cbz	r1, e <USART_Cmd+0xe>
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:320
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:320
   {
     /* Enable the selected USART by setting the UE bit in the CR1 register */
     USARTx->CR1 |= CR1_UE_Set;
@@ -415,7 +415,7 @@ C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:320
    6:	f443 5300 	orr.w	r3, r3, #8192	; 0x2000
    a:	8183      	strh	r3, [r0, #12]
    c:	4770      	bx	lr
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:325
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:325
   }
   else
   {
@@ -432,7 +432,7 @@ Disassembly of section .text.USART_ITConfig:
 
 00000000 <USART_ITConfig>:
 USART_ITConfig():
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:355
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:355
 *                    This parameter can be: ENABLE or DISABLE.
 * Output         : None
 * Return         : None
@@ -440,7 +440,7 @@ C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:355
 void USART_ITConfig(USART_TypeDef* USARTx, u16 USART_IT, FunctionalState NewState)
 {
    0:	b410      	push	{r4}
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:368
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:368
   assert_param(IS_FUNCTIONAL_STATE(NewState));
 
   usartxbase = (*(u32*)&(USARTx));
@@ -448,26 +448,26 @@ C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:368
   /* Get the USART register index */
   usartreg = (((u8)USART_IT) >> 0x05);
    2:	f3c1 1342 	ubfx	r3, r1, #5, #3
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:371
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:371
 
   /* Get the interrupt position */
   itpos = USART_IT & IT_Mask;
    6:	f001 011f 	and.w	r1, r1, #31
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:373
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:373
 
   itmask = (((u32)0x01) << itpos);
    a:	f04f 0401 	mov.w	r4, #1
    e:	fa04 f101 	lsl.w	r1, r4, r1
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:375
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:375
     
   if (usartreg == 0x01) /* The IT is in CR1 register */
   12:	42a3      	cmp	r3, r4
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:377
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:377
   {
     usartxbase += 0x0C;
   14:	bf08      	it	eq
   16:	300c      	addeq	r0, #12
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:375
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:375
   /* Get the interrupt position */
   itpos = USART_IT & IT_Mask;
 
@@ -475,35 +475,35 @@ C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:375
     
   if (usartreg == 0x01) /* The IT is in CR1 register */
   18:	d003      	beq.n	22 <USART_ITConfig+0x22>
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:379
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:379
   {
     usartxbase += 0x0C;
   }
   else if (usartreg == 0x02) /* The IT is in CR2 register */
   1a:	2b02      	cmp	r3, #2
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:381
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:381
   {
     usartxbase += 0x10;
   1c:	bf0c      	ite	eq
   1e:	3010      	addeq	r0, #16
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:385
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:385
   }
   else /* The IT is in CR3 register */
   {
     usartxbase += 0x14; 
   20:	3014      	addne	r0, #20
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:387
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:387
   }
   if (NewState != DISABLE)
   22:	b122      	cbz	r2, 2e <USART_ITConfig+0x2e>
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:389
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:389
   {
     *(vu32*)usartxbase  |= itmask;
   24:	6803      	ldr	r3, [r0, #0]
   26:	ea43 0101 	orr.w	r1, r3, r1
   2a:	6001      	str	r1, [r0, #0]
   2c:	e003      	b.n	36 <USART_ITConfig+0x36>
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:393
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:393
   }
   else
   {
@@ -511,7 +511,7 @@ C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:393
   2e:	6803      	ldr	r3, [r0, #0]
   30:	ea23 0101 	bic.w	r1, r3, r1
   34:	6001      	str	r1, [r0, #0]
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:395
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:395
   }
 }
   36:	bc10      	pop	{r4}
@@ -522,7 +522,7 @@ Disassembly of section .text.USART_DMACmd:
 
 00000000 <USART_DMACmd>:
 USART_DMACmd():
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:420
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:420
   /* Check the parameters */
   assert_param(IS_USART_1234_PERIPH(USARTx));
   assert_param(IS_USART_DMAREQ(USART_DMAReq));  
@@ -530,7 +530,7 @@ C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:420
 
   if (NewState != DISABLE)
    0:	b122      	cbz	r2, c <USART_DMACmd+0xc>
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:424
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:424
   {
     /* Enable the DMA transfer for selected requests by setting the DMAT and/or
        DMAR bits in the USART CR3 register */
@@ -540,7 +540,7 @@ C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:424
    6:	4319      	orrs	r1, r3
    8:	8281      	strh	r1, [r0, #20]
    a:	4770      	bx	lr
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:430
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:430
   }
   else
   {
@@ -557,7 +557,7 @@ Disassembly of section .text.USART_SetAddress:
 
 00000000 <USART_SetAddress>:
 USART_SetAddress():
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:451
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:451
   /* Check the parameters */
   assert_param(IS_USART_ALL_PERIPH(USARTx));
   assert_param(IS_USART_ADDRESS(USART_Address)); 
@@ -569,14 +569,14 @@ C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:451
    6:	ea4f 4303 	mov.w	r3, r3, lsl #16
    a:	ea4f 4313 	mov.w	r3, r3, lsr #16
    e:	8203      	strh	r3, [r0, #16]
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:453
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:453
   /* Set the USART address node */
   USARTx->CR2 |= USART_Address;
   10:	8a03      	ldrh	r3, [r0, #16]
   12:	b29b      	uxth	r3, r3
   14:	ea41 0303 	orr.w	r3, r1, r3
   18:	8203      	strh	r3, [r0, #16]
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:454
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:454
 }
   1a:	4770      	bx	lr
 
@@ -584,7 +584,7 @@ Disassembly of section .text.USART_WakeUpConfig:
 
 00000000 <USART_WakeUpConfig>:
 USART_WakeUpConfig():
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:475
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:475
 {
   /* Check the parameters */
   assert_param(IS_USART_ALL_PERIPH(USARTx));
@@ -596,13 +596,13 @@ C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:475
    6:	ea4f 4303 	mov.w	r3, r3, lsl #16
    a:	ea4f 4313 	mov.w	r3, r3, lsr #16
    e:	8183      	strh	r3, [r0, #12]
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:476
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:476
   USARTx->CR1 |= USART_WakeUp;
   10:	8983      	ldrh	r3, [r0, #12]
   12:	b29b      	uxth	r3, r3
   14:	ea41 0303 	orr.w	r3, r1, r3
   18:	8183      	strh	r3, [r0, #12]
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:477
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:477
 }
   1a:	4770      	bx	lr
 
@@ -610,7 +610,7 @@ Disassembly of section .text.USART_ReceiverWakeUpCmd:
 
 00000000 <USART_ReceiverWakeUpCmd>:
 USART_ReceiverWakeUpCmd():
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:496
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:496
 {
   /* Check the parameters */
   assert_param(IS_USART_ALL_PERIPH(USARTx));
@@ -618,7 +618,7 @@ C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:496
   
   if (NewState != DISABLE)
    0:	b129      	cbz	r1, e <USART_ReceiverWakeUpCmd+0xe>
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:499
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:499
   {
     /* Enable the USART mute mode  by setting the RWU bit in the CR1 register */
     USARTx->CR1 |= CR1_RWU_Set;
@@ -627,7 +627,7 @@ C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:499
    6:	f043 0302 	orr.w	r3, r3, #2
    a:	8183      	strh	r3, [r0, #12]
    c:	4770      	bx	lr
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:504
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:504
   }
   else
   {
@@ -644,7 +644,7 @@ Disassembly of section .text.USART_LINBreakDetectLengthConfig:
 
 00000000 <USART_LINBreakDetectLengthConfig>:
 USART_LINBreakDetectLengthConfig():
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:528
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:528
 {
   /* Check the parameters */
   assert_param(IS_USART_ALL_PERIPH(USARTx));
@@ -656,13 +656,13 @@ C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:528
    6:	ea4f 4303 	mov.w	r3, r3, lsl #16
    a:	ea4f 4313 	mov.w	r3, r3, lsr #16
    e:	8203      	strh	r3, [r0, #16]
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:529
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:529
   USARTx->CR2 |= USART_LINBreakDetectLength;  
   10:	8a03      	ldrh	r3, [r0, #16]
   12:	b29b      	uxth	r3, r3
   14:	ea41 0303 	orr.w	r3, r1, r3
   18:	8203      	strh	r3, [r0, #16]
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:530
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:530
 }
   1a:	4770      	bx	lr
 
@@ -670,7 +670,7 @@ Disassembly of section .text.USART_LINCmd:
 
 00000000 <USART_LINCmd>:
 USART_LINCmd():
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:549
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:549
 {
   /* Check the parameters */
   assert_param(IS_USART_ALL_PERIPH(USARTx));
@@ -678,7 +678,7 @@ C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:549
   
   if (NewState != DISABLE)
    0:	b129      	cbz	r1, e <USART_LINCmd+0xe>
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:552
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:552
   {
     /* Enable the LIN mode by setting the LINEN bit in the CR2 register */
     USARTx->CR2 |= CR2_LINEN_Set;
@@ -687,7 +687,7 @@ C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:552
    6:	f443 4380 	orr.w	r3, r3, #16384	; 0x4000
    a:	8203      	strh	r3, [r0, #16]
    c:	4770      	bx	lr
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:557
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:557
   }
   else
   {
@@ -704,7 +704,7 @@ Disassembly of section .text.USART_SendData:
 
 00000000 <USART_SendData>:
 USART_SendData():
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:578
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:578
   /* Check the parameters */
   assert_param(IS_USART_ALL_PERIPH(USARTx));
   assert_param(IS_USART_DATA(Data)); 
@@ -714,7 +714,7 @@ C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:578
    0:	ea4f 51c1 	mov.w	r1, r1, lsl #23
    4:	ea4f 51d1 	mov.w	r1, r1, lsr #23
    8:	8081      	strh	r1, [r0, #4]
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:579
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:579
 }
    a:	4770      	bx	lr
 
@@ -722,7 +722,7 @@ Disassembly of section .text.USART_ReceiveData:
 
 00000000 <USART_ReceiveData>:
 USART_ReceiveData():
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:596
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:596
 {
   /* Check the parameters */
   assert_param(IS_USART_ALL_PERIPH(USARTx));
@@ -730,7 +730,7 @@ C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:596
   /* Receive Data */
   return (u16)(USARTx->DR & (u16)0x01FF);
    0:	8880      	ldrh	r0, [r0, #4]
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:597
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:597
 }
    2:	ea4f 50c0 	mov.w	r0, r0, lsl #23
    6:	ea4f 50d0 	mov.w	r0, r0, lsr #23
@@ -740,7 +740,7 @@ Disassembly of section .text.USART_SendBreak:
 
 00000000 <USART_SendBreak>:
 USART_SendBreak():
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:614
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:614
 {
   /* Check the parameters */
   assert_param(IS_USART_ALL_PERIPH(USARTx));
@@ -751,7 +751,7 @@ C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:614
    2:	b29b      	uxth	r3, r3
    4:	f043 0301 	orr.w	r3, r3, #1
    8:	8183      	strh	r3, [r0, #12]
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:615
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:615
 }
    a:	4770      	bx	lr
 
@@ -759,7 +759,7 @@ Disassembly of section .text.USART_SetGuardTime:
 
 00000000 <USART_SetGuardTime>:
 USART_SetGuardTime():
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:633
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:633
 {    
   /* Check the parameters */
   assert_param(IS_USART_123_PERIPH(USARTx));
@@ -769,14 +769,14 @@ C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:633
    0:	8b03      	ldrh	r3, [r0, #24]
    2:	b2db      	uxtb	r3, r3
    4:	8303      	strh	r3, [r0, #24]
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:635
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:635
   /* Set the USART guard time */
   USARTx->GTPR |= (u16)((u16)USART_GuardTime << 0x08);
    6:	8b03      	ldrh	r3, [r0, #24]
    8:	b29b      	uxth	r3, r3
    a:	ea43 2301 	orr.w	r3, r3, r1, lsl #8
    e:	8303      	strh	r3, [r0, #24]
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:636
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:636
 }
   10:	4770      	bx	lr
   12:	bf00      	nop
@@ -785,7 +785,7 @@ Disassembly of section .text.USART_SetPrescaler:
 
 00000000 <USART_SetPrescaler>:
 USART_SetPrescaler():
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:655
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:655
 { 
   /* Check the parameters */
   assert_param(IS_USART_ALL_PERIPH(USARTx));
@@ -795,14 +795,14 @@ C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:655
    0:	8b03      	ldrh	r3, [r0, #24]
    2:	f403 437f 	and.w	r3, r3, #65280	; 0xff00
    6:	8303      	strh	r3, [r0, #24]
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:657
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:657
   /* Set the USART prescaler */
   USARTx->GTPR |= USART_Prescaler;
    8:	8b03      	ldrh	r3, [r0, #24]
    a:	b29b      	uxth	r3, r3
    c:	ea41 0303 	orr.w	r3, r1, r3
   10:	8303      	strh	r3, [r0, #24]
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:658
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:658
 }
   12:	4770      	bx	lr
 
@@ -810,7 +810,7 @@ Disassembly of section .text.USART_SmartCardCmd:
 
 00000000 <USART_SmartCardCmd>:
 USART_SmartCardCmd():
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:677
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:677
 {
   /* Check the parameters */
   assert_param(IS_USART_123_PERIPH(USARTx));
@@ -818,7 +818,7 @@ C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:677
 
   if (NewState != DISABLE)
    0:	b129      	cbz	r1, e <USART_SmartCardCmd+0xe>
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:680
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:680
   {
     /* Enable the SC mode by setting the SCEN bit in the CR3 register */
     USARTx->CR3 |= CR3_SCEN_Set;
@@ -827,7 +827,7 @@ C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:680
    6:	f043 0320 	orr.w	r3, r3, #32
    a:	8283      	strh	r3, [r0, #20]
    c:	4770      	bx	lr
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:685
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:685
   }
   else
   {
@@ -844,7 +844,7 @@ Disassembly of section .text.USART_SmartCardNACKCmd:
 
 00000000 <USART_SmartCardNACKCmd>:
 USART_SmartCardNACKCmd():
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:706
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:706
 {
   /* Check the parameters */
   assert_param(IS_USART_123_PERIPH(USARTx));  
@@ -852,7 +852,7 @@ C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:706
 
   if (NewState != DISABLE)
    0:	b129      	cbz	r1, e <USART_SmartCardNACKCmd+0xe>
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:709
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:709
   {
     /* Enable the NACK transmission by setting the NACK bit in the CR3 register */
     USARTx->CR3 |= CR3_NACK_Set;
@@ -861,7 +861,7 @@ C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:709
    6:	f043 0310 	orr.w	r3, r3, #16
    a:	8283      	strh	r3, [r0, #20]
    c:	4770      	bx	lr
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:714
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:714
   }
   else
   {
@@ -878,7 +878,7 @@ Disassembly of section .text.USART_HalfDuplexCmd:
 
 00000000 <USART_HalfDuplexCmd>:
 USART_HalfDuplexCmd():
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:735
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:735
 {
   /* Check the parameters */
   assert_param(IS_USART_ALL_PERIPH(USARTx));
@@ -886,7 +886,7 @@ C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:735
   
   if (NewState != DISABLE)
    0:	b129      	cbz	r1, e <USART_HalfDuplexCmd+0xe>
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:738
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:738
   {
     /* Enable the Half-Duplex mode by setting the HDSEL bit in the CR3 register */
     USARTx->CR3 |= CR3_HDSEL_Set;
@@ -895,7 +895,7 @@ C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:738
    6:	f043 0308 	orr.w	r3, r3, #8
    a:	8283      	strh	r3, [r0, #20]
    c:	4770      	bx	lr
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:743
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:743
   }
   else
   {
@@ -912,7 +912,7 @@ Disassembly of section .text.USART_IrDAConfig:
 
 00000000 <USART_IrDAConfig>:
 USART_IrDAConfig():
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:766
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:766
 {
   /* Check the parameters */
   assert_param(IS_USART_ALL_PERIPH(USARTx));
@@ -924,13 +924,13 @@ C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:766
    6:	ea4f 4303 	mov.w	r3, r3, lsl #16
    a:	ea4f 4313 	mov.w	r3, r3, lsr #16
    e:	8283      	strh	r3, [r0, #20]
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:767
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:767
   USARTx->CR3 |= USART_IrDAMode;
   10:	8a83      	ldrh	r3, [r0, #20]
   12:	b29b      	uxth	r3, r3
   14:	ea41 0303 	orr.w	r3, r1, r3
   18:	8283      	strh	r3, [r0, #20]
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:768
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:768
 }
   1a:	4770      	bx	lr
 
@@ -938,7 +938,7 @@ Disassembly of section .text.USART_IrDACmd:
 
 00000000 <USART_IrDACmd>:
 USART_IrDACmd():
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:787
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:787
 {
   /* Check the parameters */
   assert_param(IS_USART_ALL_PERIPH(USARTx));
@@ -946,7 +946,7 @@ C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:787
     
   if (NewState != DISABLE)
    0:	b129      	cbz	r1, e <USART_IrDACmd+0xe>
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:790
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:790
   {
     /* Enable the IrDA mode by setting the IREN bit in the CR3 register */
     USARTx->CR3 |= CR3_IREN_Set;
@@ -955,7 +955,7 @@ C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:790
    6:	f043 0302 	orr.w	r3, r3, #2
    a:	8283      	strh	r3, [r0, #20]
    c:	4770      	bx	lr
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:795
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:795
   }
   else
   {
@@ -972,7 +972,7 @@ Disassembly of section .text.USART_GetFlagStatus:
 
 00000000 <USART_GetFlagStatus>:
 USART_GetFlagStatus():
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:830
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:830
   /* Check the parameters */
   assert_param(IS_USART_ALL_PERIPH(USARTx));
   assert_param(IS_USART_FLAG(USART_FLAG));
@@ -980,11 +980,11 @@ C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:830
 
   if ((USARTx->SR & USART_FLAG) != (u16)RESET)
    0:	8803      	ldrh	r3, [r0, #0]
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:832
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:832
   {
     bitstatus = SET;
    2:	4219      	tst	r1, r3
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:839
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:839
   else
   {
     bitstatus = RESET;
@@ -1000,7 +1000,7 @@ Disassembly of section .text.USART_ClearFlag:
 
 00000000 <USART_ClearFlag>:
 USART_ClearFlag():
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:880
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:880
   /* Check the parameters */
   assert_param(IS_USART_ALL_PERIPH(USARTx));
   assert_param(IS_USART_CLEAR_FLAG(USART_FLAG));
@@ -1010,7 +1010,7 @@ C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:880
    0:	ea6f 0101 	mvn.w	r1, r1
    4:	b289      	uxth	r1, r1
    6:	8001      	strh	r1, [r0, #0]
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:881
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:881
 }
    8:	4770      	bx	lr
    a:	bf00      	nop
@@ -1019,7 +1019,7 @@ Disassembly of section .text.USART_GetITStatus:
 
 00000000 <USART_GetITStatus>:
 USART_GetITStatus():
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:907
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:907
 *                       - USART_IT_PE:   Parity Error interrupt
 * Output         : None
 * Return         : The new state of USART_IT (SET or RESET).
@@ -1027,7 +1027,7 @@ C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:907
 ITStatus USART_GetITStatus(USART_TypeDef* USARTx, u16 USART_IT)
 {
    0:	b410      	push	{r4}
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:917
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:917
   assert_param(IS_USART_ALL_PERIPH(USARTx));
   assert_param(IS_USART_GET_IT(USART_IT));
   assert_param(IS_USART_PERIPH_IT(USARTx, USART_IT)); /* The CTS interrupt is not available for UART4 and UART5 */  
@@ -1035,38 +1035,38 @@ C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:917
   /* Get the USART register index */
   usartreg = (((u8)USART_IT) >> 0x05);
    2:	f3c1 1342 	ubfx	r3, r1, #5, #3
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:920
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:920
 
   /* Get the interrupt position */
   itmask = USART_IT & IT_Mask;
    6:	f001 021f 	and.w	r2, r1, #31
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:922
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:922
 
   itmask = (u32)0x01 << itmask;
    a:	f04f 0401 	mov.w	r4, #1
    e:	fa04 f402 	lsl.w	r4, r4, r2
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:924
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:924
   
   if (usartreg == 0x01) /* The IT  is in CR1 register */
   12:	2b01      	cmp	r3, #1
   14:	d104      	bne.n	20 <USART_GetITStatus+0x20>
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:926
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:926
   {
     itmask &= USARTx->CR1;
   16:	8982      	ldrh	r2, [r0, #12]
   18:	b292      	uxth	r2, r2
   1a:	ea04 0202 	and.w	r2, r4, r2
   1e:	e006      	b.n	2e <USART_GetITStatus+0x2e>
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:928
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:928
   }
   else if (usartreg == 0x02) /* The IT  is in CR2 register */
   20:	2b02      	cmp	r3, #2
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:930
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:930
   {
     itmask &= USARTx->CR2;
   22:	bf0c      	ite	eq
   24:	8a02      	ldrheq	r2, [r0, #16]
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:934
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:934
   }
   else /* The IT  is in CR3 register */
   {
@@ -1074,28 +1074,28 @@ C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:934
   26:	8a82      	ldrhne	r2, [r0, #20]
   28:	b292      	uxth	r2, r2
   2a:	ea04 0202 	and.w	r2, r4, r2
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:937
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:937
   }
   
   bitpos = USART_IT >> 0x08;
   2e:	ea4f 2111 	mov.w	r1, r1, lsr #8
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:939
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:939
 
   bitpos = (u32)0x01 << bitpos;
   32:	f04f 0301 	mov.w	r3, #1
   36:	fa03 f101 	lsl.w	r1, r3, r1
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:940
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:940
   bitpos &= USARTx->SR;
   3a:	8803      	ldrh	r3, [r0, #0]
   3c:	b29b      	uxth	r3, r3
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:942
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:942
 
   if ((itmask != (u16)RESET)&&(bitpos != (u16)RESET))
   3e:	4219      	tst	r1, r3
   40:	bf0c      	ite	eq
   42:	2300      	moveq	r3, #0
   44:	2301      	movne	r3, #1
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:952
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:952
   {
     bitstatus = RESET;
   }
@@ -1113,7 +1113,7 @@ Disassembly of section .text.USART_ClearITPendingBit:
 
 00000000 <USART_ClearITPendingBit>:
 USART_ClearITPendingBit():
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:997
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:997
   assert_param(IS_USART_CLEAR_IT(USART_IT));
   assert_param(IS_USART_PERIPH_IT(USARTx, USART_IT)); /* The CTS interrupt is not available for UART4 and UART5 */
   
@@ -1123,12 +1123,12 @@ C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:997
    0:	ea4f 2111 	mov.w	r1, r1, lsr #8
    4:	f04f 0301 	mov.w	r3, #1
    8:	fa03 f301 	lsl.w	r3, r3, r1
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:998
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:998
   USARTx->SR = (u16)~itmask;
    c:	ea6f 0303 	mvn.w	r3, r3
   10:	b29b      	uxth	r3, r3
   12:	8003      	strh	r3, [r0, #0]
-C:\FbEdit\Projects\Applications\FbEdit\ShowMap\STM32_Sonar/stm32f10x_usart.c:999
+C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar/stm32f10x_usart.c:999
 }
   14:	4770      	bx	lr
   16:	bf00      	nop

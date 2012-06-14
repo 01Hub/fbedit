@@ -29,7 +29,7 @@ typedef struct
   u8 PingTimer;                                 // 0x20000002 TIM1 auto reload value, ping frequency
   u8 RangeInx;                                  // 0x20000003 Current range index
   u16 PixelTimer;                               // 0x20000004 TIM2 auto reload value, sample rate
-  vu16 EchoIndex;                               // 0x20000006 Current index into EchoArray / PingWait
+  vu16 EchoIndex;                               // 0x20000006 Current index into EchoArray
   u16 ADCBatt;                                  // 0x20000008 Battery
   u16 ADCWaterTemp;                             // 0x2000000A Water temprature
   u16 ADCAirTemp;                               // 0x2000000C Air temprature
@@ -46,7 +46,6 @@ static STM32_SonarTypeDef STM32_Sonar;          // 0x20000000
 vu8 BlueLED;                                    // Current state of the blue led
 vu16 Ping;                                      // Value to output to PA1 and PA2 pins
 vu8 Setup;                                      // Setup mode
-vu16 PingWait;                                  // Wait loop in ping
 
 /* Private function prototypes -----------------------------------------------*/
 void RCC_Configuration(void);
@@ -116,12 +115,6 @@ int main(void)
     if (STM32_Sonar.Start == 1)
     {
       STM32_Sonar.Start = 99;
-      /* Get PingWait */
-      PingWait=STM32_Sonar.EchoIndex;
-      if (PingWait==0)
-      {
-        PingWait=1;
-      }
       /* Toggle blue led */
       if (BlueLED)
       {
@@ -251,7 +244,6 @@ void GetEcho(void)
     /* To eliminate the need for an advanced AM demodulator the largest */ 
     /* ADC reading is stored in its echo array element */
     /* Get echo */
-    //Echo = (u8) ( (u16) (*(vu32*) (((*(u32*)&ADC)))) >> 4);
     Echo = ( (*(u32*) (((*(u32*)&ADC)))) >> 4);
     /* If echo larger than previous echo then update the echo array */
     if (Echo > STM32_Sonar.EchoArray[STM32_Sonar.EchoIndex])
@@ -351,16 +343,10 @@ void GainSetup(void)
 *******************************************************************************/
 void TIM1_UP_IRQHandler(void)
 {
-  u32 i;
   /* Set ping outputs high (FET's off) */
-  // GPIO_WriteBit(GPIOA, GPIO_Pin_2 | GPIO_Pin_1, Bit_SET);
   GPIOA->BSRR = (u16) (GPIO_Pin_2 | GPIO_Pin_1);
   if (STM32_Sonar.PingPulses)
   {
-    // /* Insert a delay to prevent overlapping */
-    // i=PingWait;
-    // while (i--);
-    // GPIO_Write(GPIOA,Ping);
     GPIOA->ODR = Ping;
     if (Ping == 0x2)
     {
