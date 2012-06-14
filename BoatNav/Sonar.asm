@@ -1,45 +1,78 @@
+IDD_DLGSONARSETUP       equ 1800
+IDC_CHKCHARTPAUSE       equ 1801
+IDC_BTNCU               equ 1802
+IDC_TRBCHARTSPEED       equ 1803
+IDC_BTNCD               equ 1804
+IDC_CHKFISHDEPTH        equ 1806
+IDC_CHKFISHALARM        equ 1807
+IDC_BTNFU               equ 1808
+IDC_TRBFISHDETECT       equ 1809
+IDC_BTNFD               equ 1810
+IDC_CHK4                equ 1812
+IDC_CHKRANGE            equ 1813
+IDC_BTNRU               equ 1814
+IDC_TRBRANGE            equ 1815
+IDC_BTNRD               equ 1816
+IDC_CHKAUTOPING         equ 1818
+IDC_BTNPU               equ 1819
+IDC_TRBPING             equ 1820
+IDC_BTNPD               equ 1821
+IDC_STCPING             equ 1822
+IDC_CHKAUTOGAIN         equ 1824
+IDC_BTNGU               equ 1825
+IDC_TRBGAIN             equ 1826
+IDC_BTNGD               equ 1827
+IDC_STCGAIN             equ 1828
+IDC_CHKSHOWBOTTOM		equ 1812
+
+IDD_DLGSONARALARM		equ 1900
+
+IDD_DLGSONARNOISE       equ 2000
+IDC_BTNNRU              equ 2001
+IDC_TRBNOISEREJECT      equ 2002
+IDC_BTNNRD              equ 2003
+IDC_BTNNU               equ 2005
+IDC_TRBNOISE            equ 2006
+IDC_BTNND               equ 2007
+
+IDD_DLGSONARADVANCED    equ 2100
+IDC_BTNSBU              equ 2101
+IDC_TRBSIGNALBAR        equ 2102
+IDC_BTNSBD              equ 2103
+IDC_BTNPTU              equ 2105
+IDC_TRBPINGTIMER        equ 2106
+IDC_BTNPTD              equ 2107
+IDC_BTNSSU              equ 2109
+IDC_TRBSOUNDSPEED       equ 2110
+IDC_BTNSSD              equ 2111
+
 
 IDD_DLGSONAR            equ 1500
-IDC_TRBSONARGAIN        equ 1504
-IDC_CHKSONARGAIN        equ 1503
-IDC_TRBSONARPING        equ 1510
-IDC_CHKSONARPING        equ 1509
-IDC_TRBSONARRANGE       equ 1507
-IDC_CHKSONARRANGE       equ 1506
-IDC_CHKSONARBOTTOM		equ 1541
-IDC_TRBSONARNOISE       equ 1501
-IDC_TRBSONARREJECT		equ 1534
-IDC_TRBSONARFISH        equ 1530
-IDC_CHKSONARALARM       equ 1514
-IDC_CHKFISHDEPTH		equ 1540
-IDC_TRBSONARCHART       equ 1512
-IDC_CHKCHARTPAUSE       equ 1532
-IDC_TRBPINGTIMER        equ 1526
-IDC_TRBSOUNDSPEED       equ 1528
-IDC_BTNGD               equ 1502
-IDC_BTNGU               equ 1505
-IDC_BTNPU               equ 1508
-IDC_BTNPD               equ 1511
-IDC_BTNRU               equ 1513
-IDC_BTNRD               equ 1516
-IDC_BTNCU               equ 1517
-IDC_BTNCD               equ 1518
-IDC_BTNNU               equ 1519
-IDC_BTNND               equ 1520
-IDC_BTNNRD				equ 1535
-IDC_BTNNRU				equ 1533
-IDC_BTNPTU              equ 1525
-IDC_BTNPTD              equ 1527
-IDC_BTNSSU              equ 1523
-IDC_BTNSSD              equ 1529
-IDC_BTNFU               equ 1515
-IDC_BTNFD               equ 1531
-IDC_STCGAIN				equ 1521
-IDC_STCPING				equ 1536
-IDC_BTNSIGNALD          equ 1539
-IDC_BTNSIGNALU          equ 1537
-IDC_TRBSIGNAL           equ 1538
+IDC_TABSONAR			equ 1502
+;IDC_TRBSONARGAIN        equ 1504
+;IDC_CHKSONARGAIN        equ 1503
+;IDC_TRBSONARPING        equ 1510
+;IDC_CHKSONARPING        equ 1509
+;IDC_TRBSONARRANGE       equ 1507
+;IDC_CHKSONARRANGE       equ 1506
+;IDC_CHKSONARBOTTOM		equ 1541
+;IDC_TRBSONARNOISE       equ 1501
+;IDC_TRBSONARREJECT		equ 1534
+;IDC_TRBSONARFISH        equ 1530
+;IDC_CHKSONARALARM       equ 1514
+;IDC_TRBSONARCHART       equ 1512
 
+;IDC_TRBPINGTIMER        equ 1526
+;IDC_TRBSOUNDSPEED       equ 1528
+;
+;IDC_BTNPTU              equ 1525
+;IDC_BTNPTD              equ 1527
+;IDC_BTNSSU              equ 1523
+;IDC_BTNSSD              equ 1529
+;IDC_BTNSIGNALD          equ 1539
+;IDC_BTNSIGNALU          equ 1537
+;IDC_TRBSIGNAL           equ 1538
+;
 IDD_DLGSONARGAIN		equ 1600
 IDC_BTNXD				equ 1604
 IDC_BTNXU				equ 1601
@@ -61,6 +94,18 @@ GAINXOFS				equ 60
 GAINYOFS				equ 117
 ZOOMHYSTERESIS			equ 7
 DEPTHHYSTERESIS			equ 512
+
+.const
+
+szTabTitleSonar			BYTE 'Sonar',0
+szTabTitleAlarm			BYTE 'Alarm',0
+szTabTitleNoise			BYTE 'Noise',0
+szTabTitleAdvanced		BYTE 'Advanced',0
+
+.data?
+
+ChildDialog				HWND 4 dup(?)
+CurTab					DWORD ?
 
 .code
 
@@ -521,106 +566,73 @@ Update:
 
 SonarUpdateProc endp
 
-SonarOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
-	LOCAL	hDC:HDC
-
+SonarSetupChildProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+	
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
-		.if sonardata.AutoRange
-			invoke CheckDlgButton,hWin,IDC_CHKSONARRANGE,BST_CHECKED
-		.endif
-		.if sonardata.fShowBottom
-			invoke CheckDlgButton,hWin,IDC_CHKSONARBOTTOM,BST_CHECKED
-		.endif
+
 		mov		eax,sonardata.MaxRange
 		dec		eax
 		shl		eax,16
-		invoke SendDlgItemMessage,hWin,IDC_TRBSONARRANGE,TBM_SETRANGE,FALSE,eax
+		invoke SendDlgItemMessage,hWin,IDC_TRBRANGE,TBM_SETRANGE,FALSE,eax
 		movzx	eax,sonardata.RangeInx
-		invoke SendDlgItemMessage,hWin,IDC_TRBSONARRANGE,TBM_SETPOS,TRUE,eax
+		invoke SendDlgItemMessage,hWin,IDC_TRBRANGE,TBM_SETPOS,TRUE,eax
+		invoke SendDlgItemMessage,hWin,IDC_TRBGAIN,TBM_SETRANGE,FALSE,(4095 SHL 16)+0
+		invoke SendDlgItemMessage,hWin,IDC_TRBGAIN,TBM_SETPOS,TRUE,sonardata.GainSet
+		invoke SendDlgItemMessage,hWin,IDC_TRBPING,TBM_SETRANGE,FALSE,(MAXPING SHL 16)+0
+		invoke SendDlgItemMessage,hWin,IDC_TRBPING,TBM_SETPOS,TRUE,sonardata.PingInit
+		invoke SendDlgItemMessage,hWin,IDC_TRBFISHDETECT,TBM_SETRANGE,FALSE,(3 SHL 16)+0
+		invoke SendDlgItemMessage,hWin,IDC_TRBFISHDETECT,TBM_SETPOS,TRUE,sonardata.FishDetect
+		invoke SendDlgItemMessage,hWin,IDC_TRBCHARTSPEED,TBM_SETRANGE,FALSE,(4 SHL 16)+1
+		invoke SendDlgItemMessage,hWin,IDC_TRBCHARTSPEED,TBM_SETPOS,TRUE,sonardata.ChartSpeed
+		invoke ImageList_GetIcon,hIml,12,ILD_NORMAL
+		mov		ebx,eax
+		invoke SendDlgItemMessage,hWin,IDC_BTNGD,BM_SETIMAGE,IMAGE_ICON,ebx
+		invoke SendDlgItemMessage,hWin,IDC_BTNPD,BM_SETIMAGE,IMAGE_ICON,ebx
+		invoke SendDlgItemMessage,hWin,IDC_BTNRD,BM_SETIMAGE,IMAGE_ICON,ebx
+		invoke SendDlgItemMessage,hWin,IDC_BTNFD,BM_SETIMAGE,IMAGE_ICON,ebx
+		invoke SendDlgItemMessage,hWin,IDC_BTNCD,BM_SETIMAGE,IMAGE_ICON,ebx
+		invoke ImageList_GetIcon,hIml,4,ILD_NORMAL
+		mov		ebx,eax
+		invoke SendDlgItemMessage,hWin,IDC_BTNGU,BM_SETIMAGE,IMAGE_ICON,ebx
+		invoke SendDlgItemMessage,hWin,IDC_BTNPU,BM_SETIMAGE,IMAGE_ICON,ebx
+		invoke SendDlgItemMessage,hWin,IDC_BTNRU,BM_SETIMAGE,IMAGE_ICON,ebx
+		invoke SendDlgItemMessage,hWin,IDC_BTNFU,BM_SETIMAGE,IMAGE_ICON,ebx
+		invoke SendDlgItemMessage,hWin,IDC_BTNCU,BM_SETIMAGE,IMAGE_ICON,ebx
 		.if sonardata.AutoGain
-			invoke CheckDlgButton,hWin,IDC_CHKSONARGAIN,BST_CHECKED
+			invoke CheckDlgButton,hWin,IDC_CHKAUTOGAIN,BST_CHECKED
 		.endif
-		invoke SendDlgItemMessage,hWin,IDC_TRBSONARGAIN,TBM_SETRANGE,FALSE,(4095 SHL 16)+0
-		invoke SendDlgItemMessage,hWin,IDC_TRBSONARGAIN,TBM_SETPOS,TRUE,sonardata.GainSet
 		.if sonardata.AutoPing
-			invoke CheckDlgButton,hWin,IDC_CHKSONARPING,BST_CHECKED
+			invoke CheckDlgButton,hWin,IDC_CHKAUTOPING,BST_CHECKED
 		.endif
-		invoke SendDlgItemMessage,hWin,IDC_TRBSONARPING,TBM_SETRANGE,FALSE,(MAXPING SHL 16)+0
-		invoke SendDlgItemMessage,hWin,IDC_TRBSONARPING,TBM_SETPOS,TRUE,sonardata.PingInit
-		invoke SendDlgItemMessage,hWin,IDC_TRBSONARNOISE,TBM_SETRANGE,FALSE,(255 SHL 16)+1
-		invoke SendDlgItemMessage,hWin,IDC_TRBSONARNOISE,TBM_SETPOS,TRUE,sonardata.NoiseLevel
-		invoke SendDlgItemMessage,hWin,IDC_TRBSONARREJECT,TBM_SETRANGE,FALSE,(3 SHL 16)+0
-		invoke SendDlgItemMessage,hWin,IDC_TRBSONARREJECT,TBM_SETPOS,TRUE,sonardata.NoiseReject
-		invoke SendDlgItemMessage,hWin,IDC_TRBSONARFISH,TBM_SETRANGE,FALSE,(3 SHL 16)+0
-		invoke SendDlgItemMessage,hWin,IDC_TRBSONARFISH,TBM_SETPOS,TRUE,sonardata.FishDetect
-		invoke SendDlgItemMessage,hWin,IDC_TRBSIGNAL,TBM_SETRANGE,FALSE,(16 shl 16)+0
-		mov		eax,sonardata.SignalBarWt
-		shr		eax,4
-		invoke SendDlgItemMessage,hWin,IDC_TRBSIGNAL,TBM_SETPOS,TRUE,eax
+		.if sonardata.AutoRange
+			invoke CheckDlgButton,hWin,IDC_CHKRANGE,BST_CHECKED
+		.endif
+		.if sonardata.fShowBottom
+			invoke CheckDlgButton,hWin,IDC_CHKSHOWBOTTOM,BST_CHECKED
+		.endif
 		.if sonardata.FishAlarm
-			invoke CheckDlgButton,hWin,IDC_CHKSONARALARM,BST_CHECKED
+			invoke CheckDlgButton,hWin,IDC_CHKFISHALARM,BST_CHECKED
 		.endif
 		.if sonardata.FishDepth
 			invoke CheckDlgButton,hWin,IDC_CHKFISHDEPTH,BST_CHECKED
 		.endif
-		invoke SendDlgItemMessage,hWin,IDC_TRBSONARCHART,TBM_SETRANGE,FALSE,(4 SHL 16)+1
-		invoke SendDlgItemMessage,hWin,IDC_TRBSONARCHART,TBM_SETPOS,TRUE,sonardata.ChartSpeed
 		invoke IsDlgButtonChecked,hWnd,IDC_CHKCHART
 		.if eax
 			invoke CheckDlgButton,hWin,IDC_CHKCHARTPAUSE,BST_CHECKED
 		.endif
-		invoke SendDlgItemMessage,hWin,IDC_TRBPINGTIMER,TBM_SETRANGE,FALSE,((STM32_PingTimer+1) SHL 16)+STM32_PingTimer-1
-		movzx	eax,sonardata.PingTimer
-		invoke SendDlgItemMessage,hWin,IDC_TRBPINGTIMER,TBM_SETPOS,TRUE,eax
-		invoke SendDlgItemMessage,hWin,IDC_TRBSOUNDSPEED,TBM_SETRANGE,FALSE,((SOUNDSPEEDMAX) SHL 16)+SOUNDSPEEDMIN
-		invoke SendDlgItemMessage,hWin,IDC_TRBSOUNDSPEED,TBM_SETPOS,TRUE,sonardata.SoundSpeed
-		invoke ImageList_GetIcon,hIml,12,ILD_NORMAL
-		mov		ebx,eax
-		invoke SendDlgItemMessage,hWin,IDC_BTNNRD,BM_SETIMAGE,IMAGE_ICON,ebx
-		invoke SendDlgItemMessage,hWin,IDC_BTNGD,BM_SETIMAGE,IMAGE_ICON,ebx
-		invoke SendDlgItemMessage,hWin,IDC_BTNPD,BM_SETIMAGE,IMAGE_ICON,ebx
-		invoke SendDlgItemMessage,hWin,IDC_BTNRD,BM_SETIMAGE,IMAGE_ICON,ebx
-		invoke SendDlgItemMessage,hWin,IDC_BTNCD,BM_SETIMAGE,IMAGE_ICON,ebx
-		invoke SendDlgItemMessage,hWin,IDC_BTNND,BM_SETIMAGE,IMAGE_ICON,ebx
-		invoke SendDlgItemMessage,hWin,IDC_BTNSSD,BM_SETIMAGE,IMAGE_ICON,ebx
-		invoke SendDlgItemMessage,hWin,IDC_BTNPTD,BM_SETIMAGE,IMAGE_ICON,ebx
-		invoke SendDlgItemMessage,hWin,IDC_BTNFD,BM_SETIMAGE,IMAGE_ICON,ebx
-		invoke SendDlgItemMessage,hWin,IDC_BTNSIGNALD,BM_SETIMAGE,IMAGE_ICON,ebx
-		invoke ImageList_GetIcon,hIml,4,ILD_NORMAL
-		mov		ebx,eax
-		invoke SendDlgItemMessage,hWin,IDC_BTNNRU,BM_SETIMAGE,IMAGE_ICON,ebx
-		invoke SendDlgItemMessage,hWin,IDC_BTNGU,BM_SETIMAGE,IMAGE_ICON,ebx
-		invoke SendDlgItemMessage,hWin,IDC_BTNPU,BM_SETIMAGE,IMAGE_ICON,ebx
-		invoke SendDlgItemMessage,hWin,IDC_BTNRU,BM_SETIMAGE,IMAGE_ICON,ebx
-		invoke SendDlgItemMessage,hWin,IDC_BTNCU,BM_SETIMAGE,IMAGE_ICON,ebx
-		invoke SendDlgItemMessage,hWin,IDC_BTNNU,BM_SETIMAGE,IMAGE_ICON,ebx
-		invoke SendDlgItemMessage,hWin,IDC_BTNSSU,BM_SETIMAGE,IMAGE_ICON,ebx
-		invoke SendDlgItemMessage,hWin,IDC_BTNPTU,BM_SETIMAGE,IMAGE_ICON,ebx
-		invoke SendDlgItemMessage,hWin,IDC_BTNFU,BM_SETIMAGE,IMAGE_ICON,ebx
-		invoke SendDlgItemMessage,hWin,IDC_BTNSIGNALU,BM_SETIMAGE,IMAGE_ICON,ebx
 		;Subclass buttons to get autorepeat
 		push	0
-		push	IDC_BTNSIGNALD
-		push	IDC_BTNSIGNALU
-		push	IDC_BTNNRD
-		push	IDC_BTNNRU
 		push	IDC_BTNGD
-		push	IDC_BTNGU
 		push	IDC_BTNPD
-		push	IDC_BTNPU
 		push	IDC_BTNRD
-		push	IDC_BTNRU
-		push	IDC_BTNCD
-		push	IDC_BTNCU
-		push	IDC_BTNND
-		push	IDC_BTNNU
-		push	IDC_BTNSSD
-		push	IDC_BTNSSU
-		push	IDC_BTNPTD
-		push	IDC_BTNPTU
 		push	IDC_BTNFD
-		mov		eax,IDC_BTNFU
+		push	IDC_BTNCD
+		push	IDC_BTNGU
+		push	IDC_BTNPU
+		push	IDC_BTNRU
+		push	IDC_BTNFU
+		mov		eax,IDC_BTNCU
 		.while eax
 			invoke GetDlgItem,hWin,eax
 			invoke SetWindowLong,eax,GWL_WNDPROC,offset ButtonProc
@@ -634,61 +646,30 @@ SonarOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:L
 		movzx	eax,dx
 		shr		edx,16
 		.if edx==BN_CLICKED
-			.if eax==IDOK
-				invoke SendMessage,hWin,WM_CLOSE,NULL,FALSE
-			.elseif eax==IDC_CHKSONARGAIN
-				xor		sonardata.AutoGain,1
-				inc		sonardata.fGainUpload
-			.elseif eax==IDC_CHKSONARPING
-				xor		sonardata.AutoPing,1
-			.elseif eax==IDC_CHKSONARRANGE
-				xor		sonardata.AutoRange,1
-				mov		eax,BST_UNCHECKED
-				.if sonardata.AutoRange
-					mov		eax,BST_CHECKED
-				.endif
-				invoke CheckDlgButton,hWnd,IDC_CHKAUTORANGE,eax
-			.elseif eax==IDC_CHKSONARBOTTOM
-				xor		sonardata.fShowBottom,1
-				mov		eax,BST_UNCHECKED
-				.if sonardata.fShowBottom
-					mov		eax,BST_CHECKED
-				.endif
-				invoke CheckDlgButton,hWnd,IDC_CHKSONARBOTTOM,eax
-			.elseif eax==IDC_CHKCHARTPAUSE
-				invoke IsDlgButtonChecked,hWin,IDC_CHKCHARTPAUSE
-				.if eax
-					mov		eax,BST_CHECKED
-				.endif
-				invoke CheckDlgButton,hWnd,IDC_CHKCHART,eax
-			.elseif eax==IDC_CHKSONARALARM
-				xor		sonardata.FishAlarm,1
-			.elseif eax==IDC_CHKFISHDEPTH
-				xor		sonardata.FishDepth,1
-			.elseif eax==IDC_BTNGD
+			.if eax==IDC_BTNGD
 				.if sonardata.GainSet
 					dec		sonardata.GainSet
-					invoke SendDlgItemMessage,hWin,IDC_TRBSONARGAIN,TBM_SETPOS,TRUE,sonardata.GainSet
+					invoke SendDlgItemMessage,hWin,IDC_TRBGAIN,TBM_SETPOS,TRUE,sonardata.GainSet
 					inc		sonardata.fGainUpload
 					call	SetGain
 				.endif
 			.elseif eax==IDC_BTNGU
 				.if sonardata.GainSet<4095
 					inc		sonardata.GainSet
-					invoke SendDlgItemMessage,hWin,IDC_TRBSONARGAIN,TBM_SETPOS,TRUE,sonardata.GainSet
+					invoke SendDlgItemMessage,hWin,IDC_TRBGAIN,TBM_SETPOS,TRUE,sonardata.GainSet
 					inc		sonardata.fGainUpload
 					call	SetGain
 				.endif
 			.elseif eax==IDC_BTNPD
 				.if sonardata.PingInit>1
 					dec		sonardata.PingInit
-					invoke SendDlgItemMessage,hWin,IDC_TRBSONARPING,TBM_SETPOS,TRUE,sonardata.PingInit
+					invoke SendDlgItemMessage,hWin,IDC_TRBPING,TBM_SETPOS,TRUE,sonardata.PingInit
 					call	SetPing
 				.endif
 			.elseif eax==IDC_BTNPU
 				.if sonardata.PingInit<MAXPING
 					inc		sonardata.PingInit
-					invoke SendDlgItemMessage,hWin,IDC_TRBSONARPING,TBM_SETPOS,TRUE,sonardata.PingInit
+					invoke SendDlgItemMessage,hWin,IDC_TRBPING,TBM_SETPOS,TRUE,sonardata.PingInit
 					call	SetPing
 				.endif
 			.elseif eax==IDC_BTNRD
@@ -698,7 +679,7 @@ SonarOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:L
 					movzx	eax,sonardata.RangeInx
 					invoke SetRange,eax
 					movzx	eax,sonardata.RangeInx
-					invoke SendDlgItemMessage,hWin,IDC_TRBSONARRANGE,TBM_SETPOS,TRUE,eax
+					invoke SendDlgItemMessage,hWin,IDC_TRBRANGE,TBM_SETPOS,TRUE,eax
 					inc		sonardata.fGainUpload
 				.endif
 			.elseif eax==IDC_BTNRU
@@ -710,50 +691,243 @@ SonarOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:L
 					movzx	eax,sonardata.RangeInx
 					invoke SetRange,eax
 					movzx	eax,sonardata.RangeInx
-					invoke SendDlgItemMessage,hWin,IDC_TRBSONARRANGE,TBM_SETPOS,TRUE,eax
+					invoke SendDlgItemMessage,hWin,IDC_TRBRANGE,TBM_SETPOS,TRUE,eax
 					inc		sonardata.fGainUpload
-				.endif
-			.elseif eax==IDC_BTNND
-				.if sonardata.NoiseLevel>1
-					dec		sonardata.NoiseLevel
-					invoke SendDlgItemMessage,hWin,IDC_TRBSONARNOISE,TBM_SETPOS,TRUE,sonardata.NoiseLevel
-				.endif
-			.elseif eax==IDC_BTNNU
-				.if sonardata.NoiseLevel<255
-					inc		sonardata.NoiseLevel
-					invoke SendDlgItemMessage,hWin,IDC_TRBSONARNOISE,TBM_SETPOS,TRUE,sonardata.NoiseLevel
-				.endif
-			.elseif eax==IDC_BTNNRD
-				.if sonardata.NoiseReject
-					dec		sonardata.NoiseReject
-					invoke SendDlgItemMessage,hWin,IDC_TRBSONARREJECT,TBM_SETPOS,TRUE,sonardata.NoiseReject
-				.endif
-			.elseif eax==IDC_BTNNRU
-				.if sonardata.NoiseReject<3
-					inc		sonardata.NoiseReject
-					invoke SendDlgItemMessage,hWin,IDC_TRBSONARREJECT,TBM_SETPOS,TRUE,sonardata.NoiseReject
 				.endif
 			.elseif eax==IDC_BTNFD
 				.if sonardata.FishDetect
 					dec		sonardata.FishDetect
-					invoke SendDlgItemMessage,hWin,IDC_TRBSONARFISH,TBM_SETPOS,TRUE,sonardata.FishDetect
+					invoke SendDlgItemMessage,hWin,IDC_TRBFISHDETECT,TBM_SETPOS,TRUE,sonardata.FishDetect
 				.endif
 			.elseif eax==IDC_BTNFU
 				.if sonardata.FishDetect<3
 					inc		sonardata.FishDetect
-					invoke SendDlgItemMessage,hWin,IDC_TRBSONARFISH,TBM_SETPOS,TRUE,sonardata.FishDetect
+					invoke SendDlgItemMessage,hWin,IDC_TRBFISHDETECT,TBM_SETPOS,TRUE,sonardata.FishDetect
 				.endif
 			.elseif eax==IDC_BTNCD
 				.if sonardata.ChartSpeed>1
 					dec		sonardata.ChartSpeed
-					invoke SendDlgItemMessage,hWin,IDC_TRBSONARCHART,TBM_SETPOS,TRUE,sonardata.ChartSpeed
+					invoke SendDlgItemMessage,hWin,IDC_TRBCHARTSPEED,TBM_SETPOS,TRUE,sonardata.ChartSpeed
 				.endif
 			.elseif eax==IDC_BTNCU
 				.if sonardata.ChartSpeed<4
 					inc		sonardata.ChartSpeed
-					invoke SendDlgItemMessage,hWin,IDC_TRBSONARCHART,TBM_SETPOS,TRUE,sonardata.ChartSpeed
+					invoke SendDlgItemMessage,hWin,IDC_TRBCHARTSPEED,TBM_SETPOS,TRUE,sonardata.ChartSpeed
 				.endif
-			.elseif eax==IDC_BTNPTD
+			.elseif eax==IDC_CHKAUTOGAIN
+				xor		sonardata.AutoGain,1
+				inc		sonardata.fGainUpload
+			.elseif eax==IDC_CHKAUTOPING
+				xor		sonardata.AutoPing,1
+			.elseif eax==IDC_CHKRANGE
+				xor		sonardata.AutoRange,1
+				mov		eax,BST_UNCHECKED
+				.if sonardata.AutoRange
+					mov		eax,BST_CHECKED
+				.endif
+				invoke CheckDlgButton,hWnd,IDC_CHKAUTORANGE,eax
+			.elseif eax==IDC_CHKSHOWBOTTOM
+				xor		sonardata.fShowBottom,1
+				mov		eax,BST_UNCHECKED
+				.if sonardata.fShowBottom
+					mov		eax,BST_CHECKED
+				.endif
+				invoke CheckDlgButton,hWnd,IDC_CHKSHOWBOTTOM,eax
+			.elseif eax==IDC_CHKCHARTPAUSE
+				invoke IsDlgButtonChecked,hWin,IDC_CHKCHARTPAUSE
+				.if eax
+					mov		eax,BST_CHECKED
+				.endif
+				invoke CheckDlgButton,hWnd,IDC_CHKCHART,eax
+			.elseif eax==IDC_CHKFISHALARM
+				xor		sonardata.FishAlarm,1
+			.elseif eax==IDC_CHKFISHDEPTH
+				xor		sonardata.FishDepth,1
+			.endif
+		.endif
+	.elseif eax==WM_HSCROLL
+		invoke SendMessage,lParam,TBM_GETPOS,0,0
+		mov		ebx,eax
+		invoke GetDlgCtrlID,lParam
+		.if eax==IDC_TRBGAIN
+			mov		sonardata.GainSet,ebx
+			inc		sonardata.fGainUpload
+			call	SetGain
+		.elseif eax==IDC_TRBPING
+			mov		sonardata.PingInit,ebx
+			call	SetPing
+		.elseif eax==IDC_TRBRANGE
+			mov		sonardata.RangeInx,bl
+			invoke SetRange,ebx
+			inc		sonardata.fGainUpload
+		.elseif eax==IDC_TRBFISHDETECT
+			mov		sonardata.FishDetect,ebx
+		.elseif eax==IDC_TRBCHARTSPEED
+			mov		sonardata.ChartSpeed,ebx
+		.endif
+	.elseif eax==WM_CLOSE
+		invoke DestroyWindow,hWin
+	.else
+		mov		eax,FALSE
+		ret
+	.endif
+	mov		eax,TRUE
+	ret
+
+SetGain:
+	invoke SetDlgItemInt,hWin,IDC_STCGAIN,sonardata.GainSet,FALSE
+	retn
+
+SetPing:
+	invoke SetDlgItemInt,hWin,IDC_STCPING,sonardata.PingInit,FALSE
+	retn
+
+SonarSetupChildProc endp
+
+SonarAlarmChildProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+
+	mov		eax,uMsg
+	.if eax==WM_INITDIALOG
+	.elseif eax==WM_COMMAND
+		mov		edx,wParam
+		movzx	eax,dx
+		shr		edx,16
+		.if edx==BN_CLICKED
+		.endif
+	.elseif eax==WM_HSCROLL
+		invoke SendMessage,lParam,TBM_GETPOS,0,0
+		mov		ebx,eax
+		invoke GetDlgCtrlID,lParam
+	.elseif eax==WM_CLOSE
+		invoke DestroyWindow,hWin
+	.else
+		mov		eax,FALSE
+		ret
+	.endif
+	mov		eax,TRUE
+	ret
+
+SonarAlarmChildProc endp
+
+SonarNoiseChildProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+
+	mov		eax,uMsg
+	.if eax==WM_INITDIALOG
+		invoke SendDlgItemMessage,hWin,IDC_TRBNOISE,TBM_SETRANGE,FALSE,(255 SHL 16)+1
+		invoke SendDlgItemMessage,hWin,IDC_TRBNOISE,TBM_SETPOS,TRUE,sonardata.NoiseLevel
+		invoke SendDlgItemMessage,hWin,IDC_TRBNOISEREJECT,TBM_SETRANGE,FALSE,(3 SHL 16)+0
+		invoke SendDlgItemMessage,hWin,IDC_TRBNOISEREJECT,TBM_SETPOS,TRUE,sonardata.NoiseReject
+		invoke ImageList_GetIcon,hIml,12,ILD_NORMAL
+		mov		ebx,eax
+		invoke SendDlgItemMessage,hWin,IDC_BTNND,BM_SETIMAGE,IMAGE_ICON,ebx
+		invoke SendDlgItemMessage,hWin,IDC_BTNNRD,BM_SETIMAGE,IMAGE_ICON,ebx
+		invoke ImageList_GetIcon,hIml,4,ILD_NORMAL
+		mov		ebx,eax
+		invoke SendDlgItemMessage,hWin,IDC_BTNNU,BM_SETIMAGE,IMAGE_ICON,ebx
+		invoke SendDlgItemMessage,hWin,IDC_BTNNRU,BM_SETIMAGE,IMAGE_ICON,ebx
+		;Subclass buttons to get autorepeat
+		push	0
+		push	IDC_BTNND
+		push	IDC_BTNNRD
+		push	IDC_BTNNU
+		mov		eax,IDC_BTNNRU
+		.while eax
+			invoke GetDlgItem,hWin,eax
+			invoke SetWindowLong,eax,GWL_WNDPROC,offset ButtonProc
+			mov		lpOldButtonProc,eax
+			pop		eax
+		.endw
+	.elseif eax==WM_COMMAND
+		mov		edx,wParam
+		movzx	eax,dx
+		shr		edx,16
+		.if edx==BN_CLICKED
+			.if eax==IDC_BTNND
+				.if sonardata.NoiseLevel>1
+					dec		sonardata.NoiseLevel
+					invoke SendDlgItemMessage,hWin,IDC_TRBNOISE,TBM_SETPOS,TRUE,sonardata.NoiseLevel
+				.endif
+			.elseif eax==IDC_BTNNU
+				.if sonardata.NoiseLevel<255
+					inc		sonardata.NoiseLevel
+					invoke SendDlgItemMessage,hWin,IDC_TRBNOISE,TBM_SETPOS,TRUE,sonardata.NoiseLevel
+				.endif
+			.elseif eax==IDC_BTNNRD
+				.if sonardata.NoiseReject
+					dec		sonardata.NoiseReject
+					invoke SendDlgItemMessage,hWin,IDC_TRBNOISEREJECT,TBM_SETPOS,TRUE,sonardata.NoiseReject
+				.endif
+			.elseif eax==IDC_BTNNRU
+				.if sonardata.NoiseReject<3
+					inc		sonardata.NoiseReject
+					invoke SendDlgItemMessage,hWin,IDC_TRBNOISEREJECT,TBM_SETPOS,TRUE,sonardata.NoiseReject
+				.endif
+			.endif
+		.endif
+	.elseif eax==WM_HSCROLL
+		invoke SendMessage,lParam,TBM_GETPOS,0,0
+		mov		ebx,eax
+		invoke GetDlgCtrlID,lParam
+		.if eax==IDC_TRBNOISE
+			mov		sonardata.NoiseLevel,ebx
+		.elseif eax==IDC_TRBNOISEREJECT
+			mov		sonardata.NoiseReject,ebx
+		.endif
+	.elseif eax==WM_CLOSE
+		invoke DestroyWindow,hWin
+	.else
+		mov		eax,FALSE
+		ret
+	.endif
+	mov		eax,TRUE
+	ret
+
+SonarNoiseChildProc endp
+
+SonarAdvancedChildProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+	LOCAL	hDC:HDC
+
+	mov		eax,uMsg
+	.if eax==WM_INITDIALOG
+		invoke SendDlgItemMessage,hWin,IDC_TRBPINGTIMER,TBM_SETRANGE,FALSE,((STM32_PingTimer+1) SHL 16)+STM32_PingTimer-1
+		movzx	eax,sonardata.PingTimer
+		invoke SendDlgItemMessage,hWin,IDC_TRBPINGTIMER,TBM_SETPOS,TRUE,eax
+		invoke SendDlgItemMessage,hWin,IDC_TRBSOUNDSPEED,TBM_SETRANGE,FALSE,((SOUNDSPEEDMAX) SHL 16)+SOUNDSPEEDMIN
+		invoke SendDlgItemMessage,hWin,IDC_TRBSOUNDSPEED,TBM_SETPOS,TRUE,sonardata.SoundSpeed
+		invoke SendDlgItemMessage,hWin,IDC_TRBSIGNALBAR,TBM_SETRANGE,FALSE,(16 shl 16)+0
+		mov		eax,sonardata.SignalBarWt
+		shr		eax,4
+		invoke SendDlgItemMessage,hWin,IDC_TRBSIGNALBAR,TBM_SETPOS,TRUE,eax
+		invoke ImageList_GetIcon,hIml,12,ILD_NORMAL
+		mov		ebx,eax
+		invoke SendDlgItemMessage,hWin,IDC_BTNSSD,BM_SETIMAGE,IMAGE_ICON,ebx
+		invoke SendDlgItemMessage,hWin,IDC_BTNPTD,BM_SETIMAGE,IMAGE_ICON,ebx
+		invoke SendDlgItemMessage,hWin,IDC_BTNSBD,BM_SETIMAGE,IMAGE_ICON,ebx
+		invoke ImageList_GetIcon,hIml,4,ILD_NORMAL
+		mov		ebx,eax
+		invoke SendDlgItemMessage,hWin,IDC_BTNSSU,BM_SETIMAGE,IMAGE_ICON,ebx
+		invoke SendDlgItemMessage,hWin,IDC_BTNPTU,BM_SETIMAGE,IMAGE_ICON,ebx
+		invoke SendDlgItemMessage,hWin,IDC_BTNSBU,BM_SETIMAGE,IMAGE_ICON,ebx
+		;Subclass buttons to get autorepeat
+		push	0
+		push	IDC_BTNSSD
+		push	IDC_BTNPTD
+		push	IDC_BTNSBD
+		push	IDC_BTNSSU
+		push	IDC_BTNPTU
+		mov		eax,IDC_BTNSBU
+		.while eax
+			invoke GetDlgItem,hWin,eax
+			invoke SetWindowLong,eax,GWL_WNDPROC,offset ButtonProc
+			mov		lpOldButtonProc,eax
+			pop		eax
+		.endw
+	.elseif eax==WM_COMMAND
+		mov		edx,wParam
+		movzx	eax,dx
+		shr		edx,16
+		.if edx==BN_CLICKED
+			.if eax==IDC_BTNPTD
 				.if sonardata.PingTimer>STM32_PingTimer-2
 					dec		sonardata.PingTimer
 					movzx	eax,sonardata.PingTimer
@@ -777,20 +951,20 @@ SonarOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:L
 					invoke SendDlgItemMessage,hWin,IDC_TRBSOUNDSPEED,TBM_SETPOS,TRUE,sonardata.SoundSpeed
 					invoke SetupPixelTimer
 				.endif
-			.elseif eax==IDC_BTNSIGNALU
+			.elseif eax==IDC_BTNSBU
 				.if sonardata.SignalBarWt<256+8
 					add		sonardata.SignalBarWt,16
 					mov		eax,sonardata.SignalBarWt
 					shr		eax,4
-					invoke SendDlgItemMessage,hWin,IDC_TRBSIGNAL,TBM_SETPOS,TRUE,eax
+					invoke SendDlgItemMessage,hWin,IDC_TRBSIGNALBAR,TBM_SETPOS,TRUE,eax
 					call	SetSignal
 				.endif
-			.elseif eax==IDC_BTNSIGNALD
+			.elseif eax==IDC_BTNSBD
 				.if sonardata.SignalBarWt>8
 					sub		sonardata.SignalBarWt,16
 					mov		eax,sonardata.SignalBarWt
 					shr		eax,4
-					invoke SendDlgItemMessage,hWin,IDC_TRBSIGNAL,TBM_SETPOS,TRUE,eax
+					invoke SendDlgItemMessage,hWin,IDC_TRBSIGNALBAR,TBM_SETPOS,TRUE,eax
 					call	SetSignal
 				.endif
 			.endif
@@ -799,31 +973,12 @@ SonarOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:L
 		invoke SendMessage,lParam,TBM_GETPOS,0,0
 		mov		ebx,eax
 		invoke GetDlgCtrlID,lParam
-		.if eax==IDC_TRBSONARGAIN
-			mov		sonardata.GainSet,ebx
-			inc		sonardata.fGainUpload
-			call	SetGain
-		.elseif eax==IDC_TRBSONARRANGE
-			mov		sonardata.RangeInx,bl
-			invoke SetRange,ebx
-			inc		sonardata.fGainUpload
-		.elseif eax==IDC_TRBSONARNOISE
-			mov		sonardata.NoiseLevel,ebx
-		.elseif eax==IDC_TRBSONARREJECT
-			mov		sonardata.NoiseReject,ebx
-		.elseif eax==IDC_TRBSONARPING
-			mov		sonardata.PingInit,ebx
-			call	SetPing
-		.elseif eax==IDC_TRBSONARFISH
-			mov		sonardata.FishDetect,ebx
-		.elseif eax==IDC_TRBSONARCHART
-			mov		sonardata.ChartSpeed,ebx
-		.elseif eax==IDC_TRBPINGTIMER
+		.if eax==IDC_TRBPINGTIMER
 			mov		sonardata.PingTimer,bl
 		.elseif eax==IDC_TRBSOUNDSPEED
 			mov		sonardata.SoundSpeed,ebx
 			invoke SetupPixelTimer
-		.elseif eax==IDC_TRBSIGNAL
+		.elseif eax==IDC_TRBSIGNALBAR
 			shl		ebx,4
 			add		ebx,8
 			.if ebx!=sonardata.SignalBarWt
@@ -840,14 +995,6 @@ SonarOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:L
 	mov		eax,TRUE
 	ret
 
-SetGain:
-	invoke SetDlgItemInt,hWin,IDC_STCGAIN,sonardata.GainSet,FALSE
-	retn
-
-SetPing:
-	invoke SetDlgItemInt,hWin,IDC_STCPING,sonardata.PingInit,FALSE
-	retn
-
 SetSignal:
 	invoke GetDC,hWin
 	mov		hDC,eax
@@ -861,6 +1008,120 @@ SetSignal:
 	invoke DeleteObject,eax
 	invoke SonarUpdateProc,2
 	retn
+
+SonarAdvancedChildProc endp
+
+SonarOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+	LOCAL	tci:TC_ITEM
+
+	mov		eax,uMsg
+	.if eax==WM_INITDIALOG
+		invoke GetDlgItem,hWin,IDC_TABSONAR
+		mov		ebx,eax
+		mov		tci.imask,TCIF_TEXT
+		mov		tci.lpReserved1,0
+		mov		tci.lpReserved2,0
+		mov		tci.iImage,-1
+		mov		tci.lParam,0
+		mov		tci.pszText,offset szTabTitleSonar
+		invoke SendMessage,ebx,TCM_INSERTITEM,0,addr tci
+		;Create setup child dialog
+		invoke CreateDialogParam,hInstance,IDD_DLGSONARSETUP,ebx,addr SonarSetupChildProc,0
+		mov		ChildDialog[0],eax
+		mov		tci.pszText,offset szTabTitleAlarm
+		invoke SendMessage,ebx,TCM_INSERTITEM,1,addr tci
+		;Create alarm child dialog
+		invoke CreateDialogParam,hInstance,IDD_DLGSONARALARM,ebx,addr SonarAlarmChildProc,0
+		mov		ChildDialog[4],eax
+		mov		tci.pszText,offset szTabTitleNoise
+		invoke SendMessage,ebx,TCM_INSERTITEM,2,addr tci
+		;Create noise child dialog
+		invoke CreateDialogParam,hInstance,IDD_DLGSONARNOISE,ebx,addr SonarNoiseChildProc,0
+		mov		ChildDialog[8],eax
+		mov		tci.pszText,offset szTabTitleAdvanced
+		invoke SendMessage,ebx,TCM_INSERTITEM,3,addr tci
+		;Create advanced child dialog
+		invoke CreateDialogParam,hInstance,IDD_DLGSONARADVANCED,ebx,addr SonarAdvancedChildProc,0
+		mov		ChildDialog[12],eax
+		;Subclass buttons to get autorepeat
+;		push	0
+;		push	IDC_BTNSIGNALD
+;		push	IDC_BTNSIGNALU
+;		push	IDC_BTNNRD
+;		push	IDC_BTNNRU
+;		push	IDC_BTNGD
+;		push	IDC_BTNGU
+;		push	IDC_BTNPD
+;		push	IDC_BTNPU
+;		push	IDC_BTNRD
+;		push	IDC_BTNRU
+;		push	IDC_BTNCD
+;		push	IDC_BTNCU
+;		push	IDC_BTNND
+;		push	IDC_BTNNU
+;		push	IDC_BTNSSD
+;		push	IDC_BTNSSU
+;		push	IDC_BTNPTD
+;		push	IDC_BTNPTU
+;		push	IDC_BTNFD
+;		mov		eax,IDC_BTNFU
+;		.while eax
+;			invoke GetDlgItem,hWin,eax
+;			invoke SetWindowLong,eax,GWL_WNDPROC,offset ButtonProc
+;			mov		lpOldButtonProc,eax
+;			pop		eax
+;		.endw
+	.elseif eax==WM_COMMAND
+		mov		edx,wParam
+		movzx	eax,dx
+		shr		edx,16
+		.if edx==BN_CLICKED
+			.if eax==IDOK
+				invoke SendMessage,hWin,WM_CLOSE,NULL,FALSE
+;			.elseif eax==IDC_BTNPTD
+;				.if sonardata.PingTimer>STM32_PingTimer-2
+;					dec		sonardata.PingTimer
+;					movzx	eax,sonardata.PingTimer
+;					invoke SendDlgItemMessage,hWin,IDC_TRBPINGTIMER,TBM_SETPOS,TRUE,eax
+;				.endif
+;			.elseif eax==IDC_BTNPTU
+;				.if sonardata.PingTimer<STM32_PingTimer+2
+;					inc		sonardata.PingTimer
+;					movzx	eax,sonardata.PingTimer
+;					invoke SendDlgItemMessage,hWin,IDC_TRBPINGTIMER,TBM_SETPOS,TRUE,eax
+;				.endif
+;			.elseif eax==IDC_BTNSSU
+;				.if sonardata.SoundSpeed<SOUNDSPEEDMAX
+;					inc		sonardata.SoundSpeed
+;					invoke SendDlgItemMessage,hWin,IDC_TRBSOUNDSPEED,TBM_SETPOS,TRUE,sonardata.SoundSpeed
+;					invoke SetupPixelTimer
+;				.endif
+;			.elseif eax==IDC_BTNSSD
+;				.if sonardata.SoundSpeed>SOUNDSPEEDMIN
+;					dec		sonardata.SoundSpeed
+;					invoke SendDlgItemMessage,hWin,IDC_TRBSOUNDSPEED,TBM_SETPOS,TRUE,sonardata.SoundSpeed
+;					invoke SetupPixelTimer
+;				.endif
+			.endif
+		.endif
+	.elseif eax==WM_NOTIFY
+		mov		eax,lParam
+		.if [eax].NMHDR.code==TCN_SELCHANGE
+			mov		eax,CurTab
+			invoke ShowWindow,ChildDialog[eax*HWND],SW_HIDE
+			invoke GetDlgItem,hWin,IDC_TABSONAR
+			invoke SendMessage,eax,TCM_GETCURSEL,0,0
+			mov		CurTab,eax
+			invoke ShowWindow,ChildDialog[eax*HWND],SW_SHOW
+		.endif
+	.elseif eax==WM_CLOSE
+		invoke DestroyWindow,hWin
+	.else
+		mov		eax,FALSE
+		ret
+	.endif
+	mov		eax,TRUE
+	ret
 
 SonarOptionProc endp
 
@@ -1950,7 +2211,8 @@ FindDepth:
 		.break .if ch==4
 		inc		ebx
 	.endw
-	mov		sonardata.minyecho,ebx
+	lea		eax,[ebx+32]
+	mov		sonardata.minyecho,eax
 	xor		esi,esi
 	xor		edi,edi
 	.if ch==4
