@@ -53,6 +53,8 @@ IDC_BTNDD               equ 1903
 IDC_BTNSU               equ 1905
 IDC_TRBSHALLOW          equ 1906
 IDC_BTNSD               equ 1907
+IDC_CHKSHALLOW			equ 1904
+IDC_CHKDEEP				equ 1908
 
 IDD_DLGSONARNOISE       equ 2000
 IDC_BTNNRU              equ 2001
@@ -779,6 +781,12 @@ SonarAlarmChildProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 		mov		ebx,eax
 		invoke SendDlgItemMessage,hWin,IDC_BTNSD,BM_SETIMAGE,IMAGE_ICON,ebx
 		invoke SendDlgItemMessage,hWin,IDC_BTNDD,BM_SETIMAGE,IMAGE_ICON,ebx
+		.if sonardata.ShallowAlarm
+			invoke CheckDlgButton,hWin,IDC_CHKSHALLOW,BST_CHECKED
+		.endif
+		.if sonardata.DeepAlarm
+			invoke CheckDlgButton,hWin,IDC_CHKDEEP,BST_CHECKED
+		.endif
 		invoke ImageList_GetIcon,hIml,4,ILD_NORMAL
 		mov		ebx,eax
 		invoke SendDlgItemMessage,hWin,IDC_BTNSU,BM_SETIMAGE,IMAGE_ICON,ebx
@@ -820,6 +828,10 @@ SonarAlarmChildProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 					inc		sonardata.Deep
 					invoke SendDlgItemMessage,hWin,IDC_TRBDEEP,TBM_SETPOS,TRUE,sonardata.Deep
 				.endif
+			.elseif eax==IDC_CHKSHALLOW
+				xor		sonardata.ShallowAlarm,1
+			.elseif eax==IDC_CHKDEEP
+				xor		sonardata.DeepAlarm,1
 			.endif
 		.endif
 	.elseif eax==WM_HSCROLL
@@ -2302,7 +2314,12 @@ SetDepth:
 	push	eax
 	mov		edx,sonardata.prevdepth
 	.if sonardata.prevdepth && !sonardata.fDepthSound
-		.if (edx>=sonardata.Shallow && eax<=sonardata.Shallow) || (edx<=sonardata.Deep && eax>=sonardata.Deep)
+		.if edx>=sonardata.Shallow && eax<=sonardata.Shallow && sonardata.ShallowAlarm
+			;Play a wav file
+			mov		sonardata.fDepthSound,6
+			invoke PlaySound,addr sonardata.szDepthSound,hInstance,SND_ASYNC
+		.endif
+		.if edx<=sonardata.Deep && eax>=sonardata.Deep && sonardata.DeepAlarm
 			;Play a wav file
 			mov		sonardata.fDepthSound,6
 			invoke PlaySound,addr sonardata.szDepthSound,hInstance,SND_ASYNC
@@ -3055,6 +3072,8 @@ SaveSonarToIni proc
 	invoke PutItemInt,addr buffer,sonardata.fShowBottom
 	invoke PutItemInt,addr buffer,sonardata.Shallow
 	invoke PutItemInt,addr buffer,sonardata.Deep
+	invoke PutItemInt,addr buffer,sonardata.ShallowAlarm
+	invoke PutItemInt,addr buffer,sonardata.DeepAlarm
 	invoke WritePrivateProfileString,addr szIniSonar,addr szIniSonar,addr buffer[1],addr szIniFileName
 	ret
 
@@ -3104,6 +3123,10 @@ LoadSonarFromIni proc uses ebx esi edi
 	mov		sonardata.Shallow,eax
 	invoke GetItemInt,addr buffer,0
 	mov		sonardata.Deep,eax
+	invoke GetItemInt,addr buffer,0
+	mov		sonardata.ShallowAlarm,eax
+	invoke GetItemInt,addr buffer,0
+	mov		sonardata.DeepAlarm,eax
 	invoke GetPrivateProfileString,addr szIniSonarRange,addr szIniGainDef,addr szNULL,addr buffer,sizeof buffer,addr szIniFileName
 	invoke GetItemInt,addr buffer,0
 	mov		sonardata.gainofs,eax

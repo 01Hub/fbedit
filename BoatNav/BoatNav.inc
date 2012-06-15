@@ -409,7 +409,9 @@ SONAR struct
 	fGrayScale		DWORD ?									;If TRUE sonar echo is plotted using frayscale
 	fShowBottom		DWORD ?									;If TRUE bottom is marked with a black line
 	Shallow			DWORD ?
+	ShallowAlarm	DWORD ?
 	Deep			DWORD ?
+	DeepAlarm		DWORD ?
 	depth			DWORD ?
 	prevdepth		DWORD ?
 	fDepthSound		DWORD ?									;Countdown to avoid repeated depth alarm sounds
