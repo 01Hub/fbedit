@@ -374,6 +374,7 @@ SONAR struct
 	fishdata		FISH MAXFISH dup(<>)					;Array of fish detected
 	fFishSound		DWORD ?									;Countdown to avoid repeated fish sounds
 	szFishSound		BYTE MAX_PATH dup(?)					;Path & filename of fish.wav file
+	szDepthSound	BYTE MAX_PATH dup(?)					;Path & filename of depth.wav file
 	fGainUpload		DWORD ?									;If TRUE gain levels must be uploaded
 	sonarbmp		SONARBMP MAXSONARBMP dup(<>)			;Array of bitmap tiles
 	gainofs			DWORD ?									;Initial gain for gain calculations
@@ -407,6 +408,10 @@ SONAR struct
 	fReplayRead		DWORD ?									;If TRUE a file read operation is in progress
 	fGrayScale		DWORD ?									;If TRUE sonar echo is plotted using frayscale
 	fShowBottom		DWORD ?									;If TRUE bottom is marked with a black line
+	Shallow			DWORD ?
+	Deep			DWORD ?
+	prevdepth		DWORD ?
+	fDepthSound		DWORD ?									;Countdown to avoid repeated depth alarm sounds
 SONAR ends
 
 SONARREPLAY struct
@@ -449,6 +454,7 @@ szCRLF				BYTE 0Dh,0Ah,0
 
 szIniFile			BYTE 'BoatNav.ini',0					;File name of ini file
 szFishWav			BYTE '\Wav\fish.wav',0					;File name of fish alarm
+szDepthWav			BYTE '\Wav\depth.wav',0					;File name of depth alarm
 
 szIniWin			BYTE 'Win',0							;Ini file app / key
 szIniMap			BYTE 'Map',0

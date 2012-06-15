@@ -1,3 +1,24 @@
+
+IDD_DLGSONAR            equ 1500
+IDC_TABSONAR			equ 1502
+
+IDD_DLGSONARGAIN		equ 1600
+IDC_BTNXD				equ 1604
+IDC_BTNXU				equ 1601
+IDC_BTNYD				equ 1602
+IDC_BTNYU				equ 1605
+IDC_CBORANGE			equ 1603
+IDC_STCX				equ 1606
+IDC_STCY				equ 1607
+IDC_EDTGAINOFS			equ 1608
+IDC_EDTGAINMAX			equ 1611
+IDC_EDTGAINDEPTH		equ 1609
+IDC_BTNCALCULATE		equ 1610
+
+IDD_DLGSONARCOLOR		equ 1700
+IDC_BTNDEFAULT			equ 1701
+IDC_CHKGRAYSCALE		equ 1703
+
 IDD_DLGSONARSETUP       equ 1800
 IDC_CHKCHARTPAUSE       equ 1801
 IDC_BTNCU               equ 1802
@@ -25,7 +46,13 @@ IDC_BTNGD               equ 1827
 IDC_STCGAIN             equ 1828
 IDC_CHKSHOWBOTTOM		equ 1812
 
-IDD_DLGSONARALARM		equ 1900
+IDD_DLGSONARALARM       equ 1900
+IDC_BTNDU               equ 1901
+IDC_TRBDEEP             equ 1902
+IDC_BTNDD               equ 1903
+IDC_BTNSU               equ 1905
+IDC_TRBSHALLOW          equ 1906
+IDC_BTNSD               equ 1907
 
 IDD_DLGSONARNOISE       equ 2000
 IDC_BTNNRU              equ 2001
@@ -45,50 +72,6 @@ IDC_BTNPTD              equ 2107
 IDC_BTNSSU              equ 2109
 IDC_TRBSOUNDSPEED       equ 2110
 IDC_BTNSSD              equ 2111
-
-
-IDD_DLGSONAR            equ 1500
-IDC_TABSONAR			equ 1502
-;IDC_TRBSONARGAIN        equ 1504
-;IDC_CHKSONARGAIN        equ 1503
-;IDC_TRBSONARPING        equ 1510
-;IDC_CHKSONARPING        equ 1509
-;IDC_TRBSONARRANGE       equ 1507
-;IDC_CHKSONARRANGE       equ 1506
-;IDC_CHKSONARBOTTOM		equ 1541
-;IDC_TRBSONARNOISE       equ 1501
-;IDC_TRBSONARREJECT		equ 1534
-;IDC_TRBSONARFISH        equ 1530
-;IDC_CHKSONARALARM       equ 1514
-;IDC_TRBSONARCHART       equ 1512
-
-;IDC_TRBPINGTIMER        equ 1526
-;IDC_TRBSOUNDSPEED       equ 1528
-;
-;IDC_BTNPTU              equ 1525
-;IDC_BTNPTD              equ 1527
-;IDC_BTNSSU              equ 1523
-;IDC_BTNSSD              equ 1529
-;IDC_BTNSIGNALD          equ 1539
-;IDC_BTNSIGNALU          equ 1537
-;IDC_TRBSIGNAL           equ 1538
-;
-IDD_DLGSONARGAIN		equ 1600
-IDC_BTNXD				equ 1604
-IDC_BTNXU				equ 1601
-IDC_BTNYD				equ 1602
-IDC_BTNYU				equ 1605
-IDC_CBORANGE			equ 1603
-IDC_STCX				equ 1606
-IDC_STCY				equ 1607
-IDC_EDTGAINOFS			equ 1608
-IDC_EDTGAINMAX			equ 1611
-IDC_EDTGAINDEPTH		equ 1609
-IDC_BTNCALCULATE		equ 1610
-
-IDD_DLGSONARCOLOR		equ 1700
-IDC_BTNDEFAULT			equ 1701
-IDC_CHKGRAYSCALE		equ 1703
 
 GAINXOFS				equ 60
 GAINYOFS				equ 117
@@ -788,16 +771,66 @@ SonarAlarmChildProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
+		invoke SendDlgItemMessage,hWin,IDC_TRBSHALLOW,TBM_SETRANGE,FALSE,999 SHL 16
+		invoke SendDlgItemMessage,hWin,IDC_TRBSHALLOW,TBM_SETPOS,TRUE,sonardata.Shallow
+		invoke SendDlgItemMessage,hWin,IDC_TRBDEEP,TBM_SETRANGE,FALSE,999 SHL 16
+		invoke SendDlgItemMessage,hWin,IDC_TRBDEEP,TBM_SETPOS,TRUE,sonardata.Deep
+		invoke ImageList_GetIcon,hIml,12,ILD_NORMAL
+		mov		ebx,eax
+		invoke SendDlgItemMessage,hWin,IDC_BTNSD,BM_SETIMAGE,IMAGE_ICON,ebx
+		invoke SendDlgItemMessage,hWin,IDC_BTNDD,BM_SETIMAGE,IMAGE_ICON,ebx
+		invoke ImageList_GetIcon,hIml,4,ILD_NORMAL
+		mov		ebx,eax
+		invoke SendDlgItemMessage,hWin,IDC_BTNSU,BM_SETIMAGE,IMAGE_ICON,ebx
+		invoke SendDlgItemMessage,hWin,IDC_BTNDU,BM_SETIMAGE,IMAGE_ICON,ebx
+		;Subclass buttons to get autorepeat
+		push	0
+		push	IDC_BTNSD
+		push	IDC_BTNDD
+		push	IDC_BTNSU
+		mov		eax,IDC_BTNDU
+		.while eax
+			invoke GetDlgItem,hWin,eax
+			invoke SetWindowLong,eax,GWL_WNDPROC,offset ButtonProc
+			mov		lpOldButtonProc,eax
+			pop		eax
+		.endw
 	.elseif eax==WM_COMMAND
 		mov		edx,wParam
 		movzx	eax,dx
 		shr		edx,16
 		.if edx==BN_CLICKED
+			.if eax==IDC_BTNSD
+				.if sonardata.Shallow
+					dec		sonardata.Shallow
+					invoke SendDlgItemMessage,hWin,IDC_TRBSHALLOW,TBM_SETPOS,TRUE,sonardata.Shallow
+				.endif
+			.elseif eax==IDC_BTNDD
+				.if sonardata.Deep
+					dec		sonardata.Deep
+					invoke SendDlgItemMessage,hWin,IDC_TRBDEEP,TBM_SETPOS,TRUE,sonardata.Deep
+				.endif
+			.elseif eax==IDC_BTNSU
+				.if sonardata.Shallow<999
+					inc		sonardata.Shallow
+					invoke SendDlgItemMessage,hWin,IDC_TRBSHALLOW,TBM_SETPOS,TRUE,sonardata.Shallow
+				.endif
+			.elseif eax==IDC_BTNDU
+				.if sonardata.Deep<999
+					inc		sonardata.Deep
+					invoke SendDlgItemMessage,hWin,IDC_TRBDEEP,TBM_SETPOS,TRUE,sonardata.Deep
+				.endif
+			.endif
 		.endif
 	.elseif eax==WM_HSCROLL
 		invoke SendMessage,lParam,TBM_GETPOS,0,0
 		mov		ebx,eax
 		invoke GetDlgCtrlID,lParam
+		.if eax==IDC_TRBSHALLOW
+			mov		sonardata.Shallow,ebx
+		.elseif eax==IDC_TRBDEEP
+			mov		sonardata.Deep,ebx
+		.endif
 	.elseif eax==WM_CLOSE
 		invoke DestroyWindow,hWin
 	.else
@@ -1899,7 +1932,7 @@ STMThread proc uses ebx esi edi,Param:DWORD
 				.endw
 				.if !(pixcnt & 63)
 					;Random direction
-					invoke Random,10
+					invoke Random,6
 					mov		pixdir,eax
 				.endif
 				.if !(pixcnt & 7)
@@ -2250,6 +2283,7 @@ CalculateDepth:
 	retn
 
 SetDepth:
+	push	eax
 	invoke wsprintf,addr buffer,addr szFmtDec2,eax
 	invoke strlen,addr buffer
 	.if eax>3
@@ -2263,6 +2297,17 @@ SetDepth:
 		mov		dword ptr buffer[eax-1],ecx
 	.endif
 	invoke strcpy,addr sonardata.options.text[1*sizeof OPTIONS],addr buffer
+	pop		eax
+	push	eax
+	mov		edx,sonardata.prevdepth
+	.if sonardata.prevdepth && !sonardata.fDepthSound
+		.if (edx>=sonardata.Shallow && eax<=sonardata.Shallow) || (edx<=sonardata.Deep && eax>=sonardata.Deep)
+			;Play a wav file
+			mov		sonardata.fDepthSound,6
+			invoke PlaySound,addr sonardata.szDepthSound,hInstance,SND_ASYNC
+		.endif
+	.endif
+	pop		sonardata.prevdepth
 	retn
 
 ScrollFish:
@@ -2987,7 +3032,7 @@ SaveSonarToIni proc
 	LOCAL	buffer[256]:BYTE
 
 	mov		buffer,0
-	;Width,AutoRange,AutoGain,AutoPing,FishDetect,FishAlarm,RangeInx,NoiseLevel,PingInit,GainSet,ChartSpeed,NoiseReject,PingTimer,SoundSpeed,SignalBarWt,FishDepth,ShowBottom,MinDepth
+	;Width,AutoRange,AutoGain,AutoPing,FishDetect,FishAlarm,RangeInx,NoiseLevel,PingInit,GainSet,ChartSpeed,NoiseReject,PingTimer,SoundSpeed,SignalBarWt,FishDepth,ShowBottom,Shallow,Deep
 	invoke PutItemInt,addr buffer,sonardata.wt
 	invoke PutItemInt,addr buffer,sonardata.AutoRange
 	invoke PutItemInt,addr buffer,sonardata.AutoGain
@@ -3007,6 +3052,8 @@ SaveSonarToIni proc
 	invoke PutItemInt,addr buffer,sonardata.SignalBarWt
 	invoke PutItemInt,addr buffer,sonardata.FishDepth
 	invoke PutItemInt,addr buffer,sonardata.fShowBottom
+	invoke PutItemInt,addr buffer,sonardata.Shallow
+	invoke PutItemInt,addr buffer,sonardata.Deep
 	invoke WritePrivateProfileString,addr szIniSonar,addr szIniSonar,addr buffer[1],addr szIniFileName
 	ret
 
@@ -3017,7 +3064,7 @@ LoadSonarFromIni proc uses ebx esi edi
 	
 	invoke RtlZeroMemory,addr buffer,sizeof buffer
 	invoke GetPrivateProfileString,addr szIniSonar,addr szIniSonar,addr szNULL,addr buffer,sizeof buffer,addr szIniFileName
-	;Width,AutoRange,AutoGain,AutoPing,FishDetect,FishAlarm,RangeInx,NoiseLevel,PingInit,GainSet,ChartSpeed,NoiseReject,PingTimer,SoundSpeed,SignalBarWt,FishDepth,ShowBottom,MinDepth
+	;Width,AutoRange,AutoGain,AutoPing,FishDetect,FishAlarm,RangeInx,NoiseLevel,PingInit,GainSet,ChartSpeed,NoiseReject,PingTimer,SoundSpeed,SignalBarWt,FishDepth,ShowBottom,Shallow,Deep
 	invoke GetItemInt,addr buffer,250
 	mov		sonardata.wt,eax
 	invoke GetItemInt,addr buffer,1
@@ -3052,6 +3099,10 @@ LoadSonarFromIni proc uses ebx esi edi
 	mov		sonardata.FishDepth,eax
 	invoke GetItemInt,addr buffer,1
 	mov		sonardata.fShowBottom,eax
+	invoke GetItemInt,addr buffer,0
+	mov		sonardata.Shallow,eax
+	invoke GetItemInt,addr buffer,0
+	mov		sonardata.Deep,eax
 	invoke GetPrivateProfileString,addr szIniSonarRange,addr szIniGainDef,addr szNULL,addr buffer,sizeof buffer,addr szIniFileName
 	invoke GetItemInt,addr buffer,0
 	mov		sonardata.gainofs,eax
@@ -3168,7 +3219,13 @@ ShowRangeDepthTempScaleFish proc uses ebx esi edi,hDC:HDC
 		.if [esi].OPTIONS.show
 			.if ebx==1
 				.if (sonardata.ShowDepth & 1) || (sonardata.ShowDepth>1)
-					call ShowOption
+					.if sonardata.fDepthSound
+						invoke SetTextColor,hDC,0FFh
+						call ShowOption
+						invoke SetTextColor,hDC,0
+					.else
+						call ShowOption
+					.endif
 				.endif
 			.else
 				call ShowOption
@@ -3484,6 +3541,8 @@ SonarProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke ReleaseDC,hWin,hDC
 		invoke strcpy,addr sonardata.szFishSound,addr szAppPath
 		invoke strcat,addr sonardata.szFishSound,addr szFishWav
+		invoke strcpy,addr sonardata.szDepthSound,addr szAppPath
+		invoke strcat,addr sonardata.szDepthSound,addr szDepthWav
 
 		;Sonar init
 		invoke EnableScrollBar,hSonar,SB_BOTH,ESB_DISABLE_BOTH
@@ -3591,6 +3650,9 @@ SonarProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.endif
 			.if sonardata.fFishSound
 				dec		sonardata.fFishSound
+			.endif
+			.if sonardata.fDepthSound
+				dec		sonardata.fDepthSound
 			.endif
 			xor		mapdata.fcursor,1
 			.if mapdata.fcursor<2

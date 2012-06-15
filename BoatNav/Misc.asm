@@ -1455,7 +1455,7 @@ SaveStatus proc
 
 SaveStatus endp
 
-TextDraw proc uses edi,hDC:HDC,hFont:HFONT,lpRect:DWORD,lpText:DWORD,pos:DWORD
+TextDraw proc uses ebx edi,hDC:HDC,hFont:HFONT,lpRect:DWORD,lpText:DWORD,pos:DWORD
 	LOCAL	rect:RECT
 
 	invoke strlen,lpText
@@ -1464,6 +1464,7 @@ TextDraw proc uses edi,hDC:HDC,hFont:HFONT,lpRect:DWORD,lpText:DWORD,pos:DWORD
 	invoke SelectObject,hDC,hFont
 	push	eax
 	invoke SetTextColor,hDC,0FFFFFFh
+	mov		ebx,eax
 	invoke DrawText,hDC,lpText,edi,addr rect,pos
 	add		rect.top,4
 	add		rect.bottom,4
@@ -1478,7 +1479,7 @@ TextDraw proc uses edi,hDC:HDC,hFont:HFONT,lpRect:DWORD,lpText:DWORD,pos:DWORD
 	invoke DrawText,hDC,lpText,edi,addr rect,pos
 	sub		rect.left,2
 	sub		rect.right,2
-	invoke SetTextColor,hDC,0
+	invoke SetTextColor,hDC,ebx
 	invoke DrawText,hDC,lpText,edi,addr rect,pos
 	pop		eax
 	invoke SelectObject,hDC,eax
