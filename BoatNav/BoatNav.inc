@@ -410,6 +410,7 @@ SONAR struct
 	fShowBottom		DWORD ?									;If TRUE bottom is marked with a black line
 	Shallow			DWORD ?
 	Deep			DWORD ?
+	depth			DWORD ?
 	prevdepth		DWORD ?
 	fDepthSound		DWORD ?									;Countdown to avoid repeated depth alarm sounds
 SONAR ends

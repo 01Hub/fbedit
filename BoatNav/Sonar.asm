@@ -2284,6 +2284,7 @@ CalculateDepth:
 
 SetDepth:
 	push	eax
+	mov		sonardata.depth,eax
 	invoke wsprintf,addr buffer,addr szFmtDec2,eax
 	invoke strlen,addr buffer
 	.if eax>3
@@ -3219,8 +3220,13 @@ ShowRangeDepthTempScaleFish proc uses ebx esi edi,hDC:HDC
 		.if [esi].OPTIONS.show
 			.if ebx==1
 				.if (sonardata.ShowDepth & 1) || (sonardata.ShowDepth>1)
-					.if sonardata.fDepthSound
-						invoke SetTextColor,hDC,0FFh
+					mov		eax,sonardata.depth
+					.if sonardata.fDepthSound || eax<=sonardata.Shallow
+						.if eax>=sonardata.Deep
+							invoke SetTextColor,hDC,07000h
+						.else
+							invoke SetTextColor,hDC,0C0h
+						.endif
 						call ShowOption
 						invoke SetTextColor,hDC,0
 					.else
