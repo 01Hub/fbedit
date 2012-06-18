@@ -77,8 +77,6 @@ IDC_BTNSSD              equ 2111
 
 GAINXOFS				equ 60
 GAINYOFS				equ 117
-ZOOMHYSTERESIS			equ 7
-DEPTHHYSTERESIS			equ 512
 
 .const
 
@@ -2239,6 +2237,27 @@ FindDepth:
 	pop		eax
 	.if edi>=eax
 		;A valid bottom signal has been found
+		mov		ebx,edi
+		xor		ecx,ecx
+		xor		esi,esi
+		.while ecx<16
+			xor		edx,edx
+			lea		eax,[ebx+ecx]
+			.break .if eax>=MAXYECHO
+			movzx	eax,STM32Echo[ebx+ecx+MAXYECHO*0]
+			add		edx,eax
+			movzx	eax,STM32Echo[ebx+ecx+MAXYECHO*1]
+			add		edx,eax
+			movzx	eax,STM32Echo[ebx+ecx+MAXYECHO*2]
+			add		edx,eax
+			movzx	eax,STM32Echo[ebx+ecx+MAXYECHO*3]
+			add		edx,eax
+			.if edx>esi
+				mov		esi,edx
+				lea		edi,[ebx+ecx]
+			.endif
+			inc		ecx
+		.endw
 		mov		sonardata.nodptinx,0
 		mov		eax,sonardata.dptinx
 		.if eax

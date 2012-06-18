@@ -140,6 +140,29 @@ MAXMAPOPTION			equ 5								;Max number of overlays on map scteen
 MAXSONAROPTION			equ 3								;Max number of overlays on sonar scteen
 MAXNMEA					equ 20000							;Max number of NMEA items in NMEA list
 
+;STM32 constants
+STM32_Sonar				equ 20000000h						;STM32 ram address
+STM32_Clock				equ 40000000						;STM32 clock frequency
+STM32_PingTimer			equ (STM32_Clock/200000/2)-1		;Default ping timer
+
+;Sonar constants
+MAXXECHO				equ 512								;Max number of sonar X-echos
+MAXYECHO				equ 512								;Max number of sonar Y-echos
+RANGESCALE				equ 5								;Width of range scale
+SCROLLWT				equ 18								;Width / height of scrollbar
+MAXRANGE				equ 32								;Max number of depth ranges that can be read from ini
+REPLAYSPEED				equ 5								;At replay, the ping interval is divided by REPLAYSPEED
+MAXFISH					equ 64								;Prevents showing repeated fish symbols and repeated fish alarms
+MAXSONARBMP				equ 64								;Max number of bitmap tiles, for each range change a tile is created
+SOUNDSPEEDMIN			equ 1400							;Minimum speed of sound in water
+SOUNDSPEEDMAX			equ 1550							;Maximum speed of sound in water
+SMALLFISHECHO			equ 96								;Minimum echo to detect small fish
+LARGEFISHECHO			equ SMALLFISHECHO+64				;Minimum echo to detect large fish
+MAXDEPTHJUMP			equ 10								;Max number of pixels to jump on depth detection
+MAXPING					equ 200								;Max number of ping pulses
+ZOOMHYSTERESIS			equ 7								;To avoid constant jumping while zoom is on
+DEPTHHYSTERESIS			equ 256								;Difference from previous sum of 4x16 must be larger
+
 LONPOINT struct
 	iLon			DWORD ?									;Longitude
 	ixpos			DWORD ?									;Map x position
@@ -208,7 +231,6 @@ MAP struct
 	cursorx			DWORD ?									;Cursor x position
 	cursory			DWORD ?									;Cursor y position
 	paintnow		DWORD ?									;Force a repaint counter
-
 	zoominx			DWORD ?									;Current index of the ZOOM array
 	zoommax			DWORD ?									;Index to first free ZOOM
 	hDC				HDC ?									;Map window DC
@@ -280,27 +302,6 @@ ALTITUDE struct
 	pdop			WORD ?									;Position dilution of position * 10
 	alt				WORD ?									;Altitude in meters
 ALTITUDE ends
-
-;STM32 constants
-STM32_Sonar				equ 20000000h						;STM32 ram address
-STM32_Clock				equ 40000000						;STM32 clock frequency
-STM32_PingTimer			equ (STM32_Clock/200000/2)-1		;Default ping timer
-
-;Sonar constants
-MAXXECHO				equ 512								;Max number of sonar X-echos
-MAXYECHO				equ 512								;Max number of sonar Y-echos
-RANGESCALE				equ 5								;Width of range scale
-SCROLLWT				equ 18								;Width / height of scrollbar
-MAXRANGE				equ 32								;Max number of depth ranges that can be read from ini
-REPLAYSPEED				equ 5								;At replay, the ping interval is divided by REPLAYSPEED
-MAXFISH					equ 64								;Prevents showing repeated fish symbols and repeated fish alarms
-MAXSONARBMP				equ 64								;Max number of bitmap tiles, for each range change a tile is created
-SOUNDSPEEDMIN			equ 1400							;Minimum speed of sound in water
-SOUNDSPEEDMAX			equ 1550							;Maximum speed of sound in water
-SMALLFISHECHO			equ 96								;Minimum echo to detect small fish
-LARGEFISHECHO			equ SMALLFISHECHO+64				;Minimum echo to detect large fish
-MAXDEPTHJUMP			equ 10								;Max number of pixels to jump on depth detection
-MAXPING					equ 128								;Max number of ping pulses
 
 SONARBMP struct
 	hBmp			HBITMAP ?								;Bitmap handle
@@ -408,12 +409,12 @@ SONAR struct
 	fReplayRead		DWORD ?									;If TRUE a file read operation is in progress
 	fGrayScale		DWORD ?									;If TRUE sonar echo is plotted using frayscale
 	fShowBottom		DWORD ?									;If TRUE bottom is marked with a black line
-	Shallow			DWORD ?
-	ShallowAlarm	DWORD ?
-	Deep			DWORD ?
-	DeepAlarm		DWORD ?
-	depth			DWORD ?
-	prevdepth		DWORD ?
+	Shallow			DWORD ?									;Shallow (dm)
+	ShallowAlarm	DWORD ?									;If TRUE an alarm sound is played
+	Deep			DWORD ?									;Deep (dm)
+	DeepAlarm		DWORD ?									;If TRUE an alarm sound is played
+	depth			DWORD ?									;Depth now
+	prevdepth		DWORD ?									;Previous depth
 	fDepthSound		DWORD ?									;Countdown to avoid repeated depth alarm sounds
 SONAR ends
 
