@@ -14,20 +14,20 @@ szLogFileName		BYTE 'TripLog%s_%s.log',0
 szOpenTrip			BYTE 'Open Trip',0
 szSaveTrip			BYTE 'Save Trip',0
 szTripPath			BYTE '\Trips',0
-szTrpFileName		BYTE 'Trip%s.trp',0
+szTrpFileName		BYTE 'Trip%s_%s.trp',0
 
 szOpenDist			BYTE 'Open Distance',0
 szSaveDist			BYTE 'Save Distance',0
 szDistPath			BYTE '\Distance',0
-szDstFileName		BYTE 'Dist%s.dst',0
+szDstFileName		BYTE 'Dist%s_%s.dst',0
 
 szOpenTrail			BYTE 'Open Trail',0
 szSaveTrail			BYTE 'Save Trail',0
 szTrailPath			BYTE '\Trails',0
-szTrlFileName		BYTE 'Trail%s.trl',0
+szTrlFileName		BYTE 'Trail%s_%s.trl',0
 
 szSonarPath			BYTE '\Sonar',0
-szSonarFileName		BYTE 'Sonar%s.snr',0
+szSonarFileName		BYTE 'Sonar%s_%s.snr',0
 szStartSonarLog		BYTE 'Start Sonar Logging',0
 szPlaySonarLog		BYTE 'Replay Sonar Log',0
 
@@ -108,7 +108,7 @@ TripLogProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke SetWindowText,hWin,addr szSaveTrip
 			invoke GetDateFormat,NULL,NULL,NULL,offset szDateFmtFile,addr datebuff,sizeof datebuff
 			invoke GetTimeFormat,NULL,NULL,NULL,offset szTimeFmtFile,addr timebuff,sizeof timebuff
-			invoke wsprintf,addr buffer,addr szLogFileName,addr datebuff,addr timebuff
+			invoke wsprintf,addr buffer,addr szTrpFileName,addr datebuff,addr timebuff
 			invoke SetDlgItemText,hWin,IDC_EDTFILE,addr buffer
 			mov		fSaveFile,TRUE
 		.elseif eax==IDM_FILE_OPENDIST
@@ -135,7 +135,7 @@ TripLogProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke SetWindowText,hWin,addr szSaveDist
 			invoke GetDateFormat,NULL,NULL,NULL,offset szDateFmtFile,addr datebuff,sizeof datebuff
 			invoke GetTimeFormat,NULL,NULL,NULL,offset szTimeFmtFile,addr timebuff,sizeof timebuff
-			invoke wsprintf,addr buffer,addr szLogFileName,addr datebuff,addr timebuff
+			invoke wsprintf,addr buffer,addr szDstFileName,addr datebuff,addr timebuff
 			invoke SetDlgItemText,hWin,IDC_EDTFILE,addr buffer
 			mov		fSaveFile,TRUE
 		.elseif eax==IDM_FILE_OPENTRAIL
@@ -162,7 +162,7 @@ TripLogProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke SetWindowText,hWin,addr szSaveTrail
 			invoke GetDateFormat,NULL,NULL,NULL,offset szDateFmtFile,addr datebuff,sizeof datebuff
 			invoke GetTimeFormat,NULL,NULL,NULL,offset szTimeFmtFile,addr timebuff,sizeof timebuff
-			invoke wsprintf,addr buffer,addr szLogFileName,addr datebuff,addr timebuff
+			invoke wsprintf,addr buffer,addr szTrlFileName,addr datebuff,addr timebuff
 			invoke SetDlgItemText,hWin,IDC_EDTFILE,addr buffer
 			mov		fSaveFile,TRUE
 		.elseif eax==IDM_LOG_STARTSONAR
@@ -173,7 +173,7 @@ TripLogProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke SetWindowText,hWin,addr szStartSonarLog
 			invoke GetDateFormat,NULL,NULL,NULL,offset szDateFmtFile,addr datebuff,sizeof datebuff
 			invoke GetTimeFormat,NULL,NULL,NULL,offset szTimeFmtFile,addr timebuff,sizeof timebuff
-			invoke wsprintf,addr buffer,addr szLogFileName,addr datebuff,addr timebuff
+			invoke wsprintf,addr buffer,addr szSonarFileName,addr datebuff,addr timebuff
 			invoke SetDlgItemText,hWin,IDC_EDTFILE,addr buffer
 			mov		fSaveFile,TRUE
 		.elseif eax==IDM_LOG_REPLAYSONAR
