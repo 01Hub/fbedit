@@ -34,7 +34,7 @@ ST_LINKCMND struct
 	wradr						DWORD ?
 	y							DWORD ?
 	z							DWORD ?
-	reserved1					BYTE 13 dup(?)
+	reserved1					BYTE 34 dup(?)
 ST_LINKCMND ends
 
 ST_LINK struct
