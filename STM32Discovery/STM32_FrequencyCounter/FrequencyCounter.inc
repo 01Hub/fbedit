@@ -25,10 +25,10 @@ STLinkWrite						PROTO hWin:HWND,wradr:DWORD,rdadr:DWORD,nBytes:DWORD
 ;includelib masm32.lib
 ;includelib Debug.lib
 
-;include masm32.inc
-;include \RadASM30\masm\inc\debug.inc
-;includelib masm32.lib
-;includelib \RadASM30\masm\lib\debug.lib
+include masm32.inc
+include \RadASM30\masm\inc\debug.inc
+includelib masm32.lib
+includelib \RadASM30\masm\lib\debug.lib
 
 ;#########################################################################
 
@@ -52,6 +52,7 @@ wc								WNDCLASSEX <>
 hWnd							HWND ?
 hFont							HFONT ?
 connected						DWORD ?
+frqprev							DWORD ?
 frqres							DWORD ?
 
 ;#########################################################################

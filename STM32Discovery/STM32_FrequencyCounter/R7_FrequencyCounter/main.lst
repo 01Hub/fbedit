@@ -1,0 +1,178 @@
+
+C:\STM32F4\MyProjects\R7_FrequencyCounter\main.o:     file format elf32-littlearm
+C:\STM32F4\MyProjects\R7_FrequencyCounter\main.o
+
+
+Disassembly of section .text.TIM_Config:
+
+00000000 <TIM_Config>:
+TIM_Config():
+C:\STM32F4\MyProjects\R7_FrequencyCounter/main.c:70
+  * @brief  Configure the TIM IRQ Handler.
+  * @param  None
+  * @retval None
+  */
+void TIM_Config(void)
+{
+   0:	b530      	push	{r4, r5, lr}
+   2:	b085      	sub	sp, #20
+C:\STM32F4\MyProjects\R7_FrequencyCounter/main.c:74
+  NVIC_InitTypeDef NVIC_InitStructure;
+  TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructure;
+  /* TIM2 and TIM3 clock enable */
+  RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2 | RCC_APB1Periph_TIM3, ENABLE);
+   4:	f04f 0003 	mov.w	r0, #3
+   8:	f04f 0101 	mov.w	r1, #1
+   c:	f7ff fffe 	bl	0 <RCC_APB1PeriphClockCmd>
+C:\STM32F4\MyProjects\R7_FrequencyCounter/main.c:76
+  /* Enable the TIM3 gloabal Interrupt */
+  NVIC_InitStructure.NVIC_IRQChannel = TIM3_IRQn;
+  10:	f04f 031d 	mov.w	r3, #29
+  14:	f88d 300c 	strb.w	r3, [sp, #12]
+C:\STM32F4\MyProjects\R7_FrequencyCounter/main.c:77
+  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
+  18:	f04f 0500 	mov.w	r5, #0
+  1c:	f88d 500d 	strb.w	r5, [sp, #13]
+C:\STM32F4\MyProjects\R7_FrequencyCounter/main.c:78
+  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
+  20:	f04f 0401 	mov.w	r4, #1
+  24:	f88d 400e 	strb.w	r4, [sp, #14]
+C:\STM32F4\MyProjects\R7_FrequencyCounter/main.c:79
+  NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+  28:	f88d 400f 	strb.w	r4, [sp, #15]
+C:\STM32F4\MyProjects\R7_FrequencyCounter/main.c:80
+  NVIC_Init(&NVIC_InitStructure);
+  2c:	a803      	add	r0, sp, #12
+  2e:	f7ff fffe 	bl	0 <NVIC_Init>
+C:\STM32F4\MyProjects\R7_FrequencyCounter/main.c:82
+  /* Initialize Leds mounted on STM32F4-Discovery board */
+  STM_EVAL_LEDInit(LED4);
+  32:	4628      	mov	r0, r5
+  34:	f7ff fffe 	bl	0 <STM_EVAL_LEDInit>
+C:\STM32F4\MyProjects\R7_FrequencyCounter/main.c:83
+  STM_EVAL_LEDInit(LED3);
+  38:	4620      	mov	r0, r4
+  3a:	f7ff fffe 	bl	0 <STM_EVAL_LEDInit>
+C:\STM32F4\MyProjects\R7_FrequencyCounter/main.c:84
+  STM_EVAL_LEDInit(LED5);
+  3e:	f04f 0002 	mov.w	r0, #2
+  42:	f7ff fffe 	bl	0 <STM_EVAL_LEDInit>
+C:\STM32F4\MyProjects\R7_FrequencyCounter/main.c:85
+  STM_EVAL_LEDInit(LED6);
+  46:	f04f 0003 	mov.w	r0, #3
+  4a:	f7ff fffe 	bl	0 <STM_EVAL_LEDInit>
+C:\STM32F4\MyProjects\R7_FrequencyCounter/main.c:87
+  /* Turn on LED3, LED4, LED5 and LED6 */
+  STM_EVAL_LEDOn(LED4);
+  4e:	4628      	mov	r0, r5
+  50:	f7ff fffe 	bl	0 <STM_EVAL_LEDOn>
+C:\STM32F4\MyProjects\R7_FrequencyCounter/main.c:88
+  STM_EVAL_LEDOn(LED3);
+  54:	4620      	mov	r0, r4
+  56:	f7ff fffe 	bl	0 <STM_EVAL_LEDOn>
+C:\STM32F4\MyProjects\R7_FrequencyCounter/main.c:89
+  STM_EVAL_LEDOn(LED5);
+  5a:	f04f 0002 	mov.w	r0, #2
+  5e:	f7ff fffe 	bl	0 <STM_EVAL_LEDOn>
+C:\STM32F4\MyProjects\R7_FrequencyCounter/main.c:90
+  STM_EVAL_LEDOn(LED6);
+  62:	f04f 0003 	mov.w	r0, #3
+  66:	f7ff fffe 	bl	0 <STM_EVAL_LEDOn>
+C:\STM32F4\MyProjects\R7_FrequencyCounter/main.c:93
+
+  /* TIM2 Time base configuration */
+  TIM_TimeBaseStructure.TIM_Period = 0xffffffff;
+  6a:	f04f 33ff 	mov.w	r3, #4294967295
+  6e:	9301      	str	r3, [sp, #4]
+C:\STM32F4\MyProjects\R7_FrequencyCounter/main.c:94
+  TIM_TimeBaseStructure.TIM_Prescaler = 0;
+  70:	f8ad 5000 	strh.w	r5, [sp]
+C:\STM32F4\MyProjects\R7_FrequencyCounter/main.c:95
+  TIM_TimeBaseStructure.TIM_ClockDivision = 0;
+  74:	f8ad 5008 	strh.w	r5, [sp, #8]
+C:\STM32F4\MyProjects\R7_FrequencyCounter/main.c:96
+  TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
+  78:	f8ad 5002 	strh.w	r5, [sp, #2]
+C:\STM32F4\MyProjects\R7_FrequencyCounter/main.c:97
+  TIM_TimeBaseInit(TIM2, &TIM_TimeBaseStructure);
+  7c:	f04f 4080 	mov.w	r0, #1073741824	; 0x40000000
+  80:	4669      	mov	r1, sp
+  82:	f7ff fffe 	bl	0 <TIM_TimeBaseInit>
+C:\STM32F4\MyProjects\R7_FrequencyCounter/main.c:99
+  /* TIM3 Time base configuration */
+  TIM_TimeBaseStructure.TIM_Period = 9999;
+  86:	f242 730f 	movw	r3, #9999	; 0x270f
+  8a:	9301      	str	r3, [sp, #4]
+C:\STM32F4\MyProjects\R7_FrequencyCounter/main.c:100
+  TIM_TimeBaseStructure.TIM_Prescaler = 8399;
+  8c:	f242 03cf 	movw	r3, #8399	; 0x20cf
+  90:	f8ad 3000 	strh.w	r3, [sp]
+C:\STM32F4\MyProjects\R7_FrequencyCounter/main.c:101
+  TIM_TimeBaseStructure.TIM_ClockDivision = 0;
+  94:	f8ad 5008 	strh.w	r5, [sp, #8]
+C:\STM32F4\MyProjects\R7_FrequencyCounter/main.c:102
+  TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
+  98:	f8ad 5002 	strh.w	r5, [sp, #2]
+C:\STM32F4\MyProjects\R7_FrequencyCounter/main.c:103
+  TIM_TimeBaseInit(TIM3, &TIM_TimeBaseStructure);
+  9c:	f44f 6580 	mov.w	r5, #1024	; 0x400
+  a0:	f2c4 0500 	movt	r5, #16384	; 0x4000
+  a4:	4628      	mov	r0, r5
+  a6:	4669      	mov	r1, sp
+  a8:	f7ff fffe 	bl	0 <TIM_TimeBaseInit>
+C:\STM32F4\MyProjects\R7_FrequencyCounter/main.c:107
+  // /* Prescaler configuration */
+  // TIM_PrescalerConfig(TIM3, 8399, TIM_PSCReloadMode_Immediate);
+  /* TIM Interrupts enable */
+  TIM_ITConfig(TIM3, TIM_IT_Update, ENABLE);
+  ac:	4628      	mov	r0, r5
+  ae:	4621      	mov	r1, r4
+  b0:	4622      	mov	r2, r4
+  b2:	f7ff fffe 	bl	0 <TIM_ITConfig>
+C:\STM32F4\MyProjects\R7_FrequencyCounter/main.c:109
+  /* TIM2 enable counter */
+  TIM_Cmd(TIM2, ENABLE);
+  b6:	f04f 4080 	mov.w	r0, #1073741824	; 0x40000000
+  ba:	4621      	mov	r1, r4
+  bc:	f7ff fffe 	bl	0 <TIM_Cmd>
+C:\STM32F4\MyProjects\R7_FrequencyCounter/main.c:111
+  /* TIM3 enable counter */
+  TIM_Cmd(TIM3, ENABLE);
+  c0:	4628      	mov	r0, r5
+  c2:	4621      	mov	r1, r4
+  c4:	f7ff fffe 	bl	0 <TIM_Cmd>
+C:\STM32F4\MyProjects\R7_FrequencyCounter/main.c:112
+}
+  c8:	b005      	add	sp, #20
+  ca:	bd30      	pop	{r4, r5, pc}
+
+Disassembly of section .text.main:
+
+00000000 <main>:
+main():
+C:\STM32F4\MyProjects\R7_FrequencyCounter/main.c:49
+  * @brief  Main program
+  * @param  None
+  * @retval None
+  */
+int main(void)
+{
+   0:	b508      	push	{r3, lr}
+C:\STM32F4\MyProjects\R7_FrequencyCounter/main.c:57
+       file (startup_stm32f4xx.s) before to branch to application main.
+       To reconfigure the default setting of SystemInit() function, refer to
+       system_stm32f4xx.c file
+     */
+
+  Frequency=0;
+   2:	f240 0300 	movw	r3, #0
+   6:	f2c0 0300 	movt	r3, #0
+   a:	f04f 0200 	mov.w	r2, #0
+   e:	601a      	str	r2, [r3, #0]
+C:\STM32F4\MyProjects\R7_FrequencyCounter/main.c:60
+
+  /* TIM Configuration */
+  TIM_Config();
+  10:	f7ff fffe 	bl	0 <main>
+  14:	e7fe      	b.n	14 <main+0x14>
+  16:	bf00      	nop

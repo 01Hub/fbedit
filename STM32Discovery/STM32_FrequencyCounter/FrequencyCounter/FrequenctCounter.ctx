@@ -25,7 +25,7 @@
 			
 	</Flags>
 	<Views>
-		<View File="C:\STM32\Projects\FrequencyCounter\main.c" Line="0" Index="0" focus="1" />
+		<View File="C:\STM32\Projects\FrequencyCounter\main.c" Line="28" Index="0" focus="1" />
 	</Views>
 	<Grep>
 		<GrepIncludeSub>yes</GrepIncludeSub>

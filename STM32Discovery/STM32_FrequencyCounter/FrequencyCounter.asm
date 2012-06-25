@@ -76,7 +76,7 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					.if eax && eax!=IDIGNORE && eax!=IDABORT
 						mov		connected,eax
 						;Create a timer. The event will read the frequency, format it and display the result
-						invoke SetTimer,hWin,1000,500,NULL
+						invoke SetTimer,hWin,1000,100,NULL
 					.endif
 				.endif
 			.elseif eax==IDCANCEL
@@ -86,24 +86,30 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	.elseif	eax==WM_TIMER
 		;The frequency is a 32 bit variable stored at 2000000Ch in STM32F100 ram
 		;Read 4 bytes from STM32F100 ram and store it in frqres.
-		invoke STLinkRead,hWin,2000000Ch,addr frqres,4
+		invoke STLinkRead,hWin,20000014h,addr frqres,4
 		.if eax
 			mov		eax,frqres
-			.if eax<1000
-				;Hz
-				invoke wsprintf,addr buffer,addr szFmtHz,eax
-			.elseif eax<1000000
-				;KHz
-				invoke wsprintf,addr buffer,addr szFmtKHz,eax
-				mov		ebx,6
-				call	InsertDot
-			.else
-				;MHz
-				invoke wsprintf,addr buffer,addr szFmtMHz,eax
-				mov		ebx,9
-				call	InsertDot
+			.if eax!=frqprev
+PrintHex eax
+				mov		edx,eax
+				sub		eax,frqprev
+				mov		frqprev,edx
+				.if eax<1000
+					;Hz
+					invoke wsprintf,addr buffer,addr szFmtHz,eax
+				.elseif eax<1000000
+					;KHz
+					invoke wsprintf,addr buffer,addr szFmtKHz,eax
+					mov		ebx,6
+					call	InsertDot
+				.else
+					;MHz
+					invoke wsprintf,addr buffer,addr szFmtMHz,eax
+					mov		ebx,9
+					call	InsertDot
+				.endif
+				invoke SetDlgItemText,hWin,IDC_FREQUENCY,addr buffer
 			.endif
-			invoke SetDlgItemText,hWin,IDC_FREQUENCY,addr buffer
 		.else
 			invoke KillTimer,hWin,1000
 			mov		connected,FALSE

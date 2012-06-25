@@ -1,0 +1,1063 @@
+Archive member included because of file (symbol)
+
+C:\Program Files\Raisonance\Ride\Lib\ARM\STM32x_io_putchar_thumb.a(STM32F10X_io_putchar.o)
+                              (__io_putchar)
+C:\Program Files\Raisonance\Ride\Lib\ARM\std_sbrk_thumb.lib(write.o)
+                              (_write)
+
+Allocating common symbols
+Common symbol       size              file
+
+Frequency           0x4               C:\STM32F4\MyProjects\R7_FrequencyCounter\main.o
+NVIC_InitStructure  0x4               C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4_discovery.o
+
+Discarded input sections
+
+ .text          0x00000000       0x14 C:\STM32F4\MyProjects\R7_FrequencyCounter\startup_stm32f4xx.o
+ .data          0x00000000        0x0 C:\STM32F4\MyProjects\R7_FrequencyCounter\startup_stm32f4xx.o
+ .bss           0x00000000        0x0 C:\STM32F4\MyProjects\R7_FrequencyCounter\startup_stm32f4xx.o
+ .text          0x00000000        0x0 C:\STM32F4\MyProjects\R7_FrequencyCounter\main.o
+ .data          0x00000000        0x0 C:\STM32F4\MyProjects\R7_FrequencyCounter\main.o
+ .bss           0x00000000        0x0 C:\STM32F4\MyProjects\R7_FrequencyCounter\main.o
+ .text          0x00000000        0x0 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_it.o
+ .data          0x00000000        0x0 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_it.o
+ .bss           0x00000000        0x0 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_it.o
+ .text          0x00000000        0x0 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_rcc.o
+ .data          0x00000000       0x10 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_rcc.o
+ .bss           0x00000000        0x0 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_rcc.o
+ .text.RCC_DeInit
+                0x00000000       0x38 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_rcc.o
+ .text.RCC_HSEConfig
+                0x00000000       0x14 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_rcc.o
+ .text.RCC_AdjustHSICalibrationValue
+                0x00000000       0x18 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_rcc.o
+ .text.RCC_HSICmd
+                0x00000000        0xc C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_rcc.o
+ .text.RCC_LSEConfig
+                0x00000000       0x3c C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_rcc.o
+ .text.RCC_LSICmd
+                0x00000000        0xc C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_rcc.o
+ .text.RCC_PLLConfig
+                0x00000000       0x24 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_rcc.o
+ .text.RCC_PLLCmd
+                0x00000000        0xc C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_rcc.o
+ .text.RCC_PLLI2SConfig
+                0x00000000       0x18 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_rcc.o
+ .text.RCC_PLLI2SCmd
+                0x00000000        0xc C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_rcc.o
+ .text.RCC_ClockSecuritySystemCmd
+                0x00000000        0xc C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_rcc.o
+ .text.RCC_MCO1Config
+                0x00000000       0x18 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_rcc.o
+ .text.RCC_MCO2Config
+                0x00000000       0x18 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_rcc.o
+ .text.RCC_SYSCLKConfig
+                0x00000000       0x18 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_rcc.o
+ .text.RCC_GetSYSCLKSource
+                0x00000000       0x10 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_rcc.o
+ .text.RCC_HCLKConfig
+                0x00000000       0x18 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_rcc.o
+ .text.RCC_PCLK1Config
+                0x00000000       0x18 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_rcc.o
+ .text.RCC_PCLK2Config
+                0x00000000       0x18 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_rcc.o
+ .text.RCC_GetClocksFreq
+                0x00000000       0xd8 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_rcc.o
+ .text.RCC_RTCCLKConfig
+                0x00000000       0x3c C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_rcc.o
+ .text.RCC_RTCCLKCmd
+                0x00000000        0xc C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_rcc.o
+ .text.RCC_BackupResetCmd
+                0x00000000        0xc C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_rcc.o
+ .text.RCC_I2SCLKConfig
+                0x00000000        0xc C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_rcc.o
+ .text.RCC_AHB2PeriphClockCmd
+                0x00000000       0x24 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_rcc.o
+ .text.RCC_AHB3PeriphClockCmd
+                0x00000000       0x24 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_rcc.o
+ .text.RCC_APB2PeriphClockCmd
+                0x00000000       0x24 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_rcc.o
+ .text.RCC_AHB1PeriphResetCmd
+                0x00000000       0x24 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_rcc.o
+ .text.RCC_AHB2PeriphResetCmd
+                0x00000000       0x24 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_rcc.o
+ .text.RCC_AHB3PeriphResetCmd
+                0x00000000       0x24 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_rcc.o
+ .text.RCC_APB1PeriphResetCmd
+                0x00000000       0x24 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_rcc.o
+ .text.RCC_APB2PeriphResetCmd
+                0x00000000       0x24 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_rcc.o
+ .text.RCC_AHB1PeriphClockLPModeCmd
+                0x00000000       0x24 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_rcc.o
+ .text.RCC_AHB2PeriphClockLPModeCmd
+                0x00000000       0x24 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_rcc.o
+ .text.RCC_AHB3PeriphClockLPModeCmd
+                0x00000000       0x24 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_rcc.o
+ .text.RCC_APB1PeriphClockLPModeCmd
+                0x00000000       0x24 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_rcc.o
+ .text.RCC_APB2PeriphClockLPModeCmd
+                0x00000000       0x24 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_rcc.o
+ .text.RCC_ITConfig
+                0x00000000       0x24 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_rcc.o
+ .text.RCC_GetFlagStatus
+                0x00000000       0x34 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_rcc.o
+ .text.RCC_WaitForHSEStartUp
+                0x00000000       0x3c C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_rcc.o
+ .text.RCC_ClearFlag
+                0x00000000       0x14 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_rcc.o
+ .text.RCC_GetITStatus
+                0x00000000       0x14 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_rcc.o
+ .text.RCC_ClearITPendingBit
+                0x00000000        0xc C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_rcc.o
+ .text          0x00000000        0x0 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_gpio.o
+ .data          0x00000000        0x0 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_gpio.o
+ .bss           0x00000000        0x0 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_gpio.o
+ .text.GPIO_DeInit
+                0x00000000      0x158 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_gpio.o
+ .text.GPIO_StructInit
+                0x00000000       0x14 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_gpio.o
+ .text.GPIO_PinLockConfig
+                0x00000000       0x28 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_gpio.o
+ .text.GPIO_ReadInputDataBit
+                0x00000000        0xc C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_gpio.o
+ .text.GPIO_ReadInputData
+                0x00000000        0x8 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_gpio.o
+ .text.GPIO_ReadOutputDataBit
+                0x00000000        0xc C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_gpio.o
+ .text.GPIO_ReadOutputData
+                0x00000000        0x8 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_gpio.o
+ .text.GPIO_SetBits
+                0x00000000        0x4 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_gpio.o
+ .text.GPIO_ResetBits
+                0x00000000        0x4 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_gpio.o
+ .text.GPIO_WriteBit
+                0x00000000        0xc C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_gpio.o
+ .text.GPIO_Write
+                0x00000000        0x4 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_gpio.o
+ .text.GPIO_ToggleBits
+                0x00000000        0xc C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_gpio.o
+ .text.GPIO_PinAFConfig
+                0x00000000       0x3c C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_gpio.o
+ .text          0x00000000        0x0 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o
+ .data          0x00000000        0x0 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o
+ .bss           0x00000000        0x0 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o
+ .text.TI1_Config
+                0x00000000       0x48 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o
+ .text.TI2_Config
+                0x00000000       0x4c C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o
+ .text.TIM_DeInit
+                0x00000000      0x20c C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o
+ .text.TIM_TimeBaseStructInit
+                0x00000000       0x14 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o
+ .text.TIM_PrescalerConfig
+                0x00000000        0x8 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o
+ .text.TIM_CounterModeConfig
+                0x00000000       0x18 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o
+ .text.TIM_SetCounter
+                0x00000000        0x4 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o
+ .text.TIM_SetAutoreload
+                0x00000000        0x4 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o
+ .text.TIM_GetCounter
+                0x00000000        0x4 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o
+ .text.TIM_GetPrescaler
+                0x00000000        0x8 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o
+ .text.TIM_UpdateDisableConfig
+                0x00000000       0x20 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o
+ .text.TIM_UpdateRequestConfig
+                0x00000000       0x20 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o
+ .text.TIM_ARRPreloadConfig
+                0x00000000       0x20 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o
+ .text.TIM_SelectOnePulseMode
+                0x00000000       0x1c C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o
+ .text.TIM_SetClockDivision
+                0x00000000       0x1c C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o
+ .text.TIM_OC1Init
+                0x00000000       0xa4 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o
+ .text.TIM_OC2Init
+                0x00000000       0xb0 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o
+ .text.TIM_OC3Init
+                0x00000000       0xac C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o
+ .text.TIM_OC4Init
+                0x00000000       0x8c C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o
+ .text.TIM_OCStructInit
+                0x00000000       0x18 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o
+ .text.TIM_SelectOCxM
+                0x00000000       0x6c C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o
+ .text.TIM_SetCompare1
+                0x00000000        0x4 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o
+ .text.TIM_SetCompare2
+                0x00000000        0x4 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o
+ .text.TIM_SetCompare3
+                0x00000000        0x4 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o
+ .text.TIM_SetCompare4
+                0x00000000        0x4 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o
+ .text.TIM_ForcedOC1Config
+                0x00000000       0x18 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o
+ .text.TIM_ForcedOC2Config
+                0x00000000       0x18 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o
+ .text.TIM_ForcedOC3Config
+                0x00000000       0x18 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o
+ .text.TIM_ForcedOC4Config
+                0x00000000       0x18 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o
+ .text.TIM_OC1PreloadConfig
+                0x00000000       0x18 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o
+ .text.TIM_OC2PreloadConfig
+                0x00000000       0x18 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o
+ .text.TIM_OC3PreloadConfig
+                0x00000000       0x18 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o
+ .text.TIM_OC4PreloadConfig
+                0x00000000       0x18 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o
+ .text.TIM_OC1FastConfig
+                0x00000000       0x18 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o
+ .text.TIM_OC2FastConfig
+                0x00000000       0x18 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o
+ .text.TIM_OC3FastConfig
+                0x00000000       0x18 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o
+ .text.TIM_OC4FastConfig
+                0x00000000       0x18 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o
+ .text.TIM_ClearOC1Ref
+                0x00000000       0x18 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o
+ .text.TIM_ClearOC2Ref
+                0x00000000       0x14 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o
+ .text.TIM_ClearOC3Ref
+                0x00000000       0x18 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o
+ .text.TIM_ClearOC4Ref
+                0x00000000       0x14 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o
+ .text.TIM_OC1PolarityConfig
+                0x00000000       0x18 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o
+ .text.TIM_OC1NPolarityConfig
+                0x00000000       0x18 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o
+ .text.TIM_OC2PolarityConfig
+                0x00000000       0x18 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o
+ .text.TIM_OC2NPolarityConfig
+                0x00000000       0x18 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o
+ .text.TIM_OC3PolarityConfig
+                0x00000000       0x18 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o
+ .text.TIM_OC3NPolarityConfig
+                0x00000000       0x18 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o
+ .text.TIM_OC4PolarityConfig
+                0x00000000       0x18 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o
+ .text.TIM_CCxCmd
+                0x00000000       0x28 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o
+ .text.TIM_CCxNCmd
+                0x00000000       0x28 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o
+ .text.TIM_ICStructInit
+                0x00000000       0x14 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o
+ .text.TIM_GetCapture1
+                0x00000000        0x4 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o
+ .text.TIM_GetCapture2
+                0x00000000        0x4 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o
+ .text.TIM_GetCapture3
+                0x00000000        0x4 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o
+ .text.TIM_GetCapture4
+                0x00000000        0x4 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o
+ .text.TIM_SetIC1Prescaler
+                0x00000000       0x1c C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o
+ .text.TIM_SetIC2Prescaler
+                0x00000000       0x20 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o
+ .text.TIM_PWMIConfig
+                0x00000000       0x68 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o
+ .text.TIM_SetIC3Prescaler
+                0x00000000       0x1c C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o
+ .text.TIM_SetIC4Prescaler
+                0x00000000       0x20 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o
+ .text.TIM_ICInit
+                0x00000000       0xe0 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o
+ .text.TIM_BDTRConfig
+                0x00000000       0x24 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o
+ .text.TIM_BDTRStructInit
+                0x00000000       0x14 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o
+ .text.TIM_CtrlPWMOutputs
+                0x00000000       0x28 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o
+ .text.TIM_SelectCOM
+                0x00000000       0x20 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o
+ .text.TIM_CCPreloadControl
+                0x00000000       0x20 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o
+ .text.TIM_GenerateEvent
+                0x00000000        0x4 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o
+ .text.TIM_GetFlagStatus
+                0x00000000        0xc C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o
+ .text.TIM_ClearFlag
+                0x00000000        0xc C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o
+ .text.TIM_GetITStatus
+                0x00000000       0x18 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o
+ .text.TIM_DMAConfig
+                0x00000000        0x8 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o
+ .text.TIM_DMACmd
+                0x00000000       0x18 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o
+ .text.TIM_SelectCCDMA
+                0x00000000       0x20 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o
+ .text.TIM_InternalClockConfig
+                0x00000000       0x14 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o
+ .text.TIM_SelectInputTrigger
+                0x00000000       0x18 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o
+ .text.TIM_TIxExternalClockConfig
+                0x00000000       0x34 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o
+ .text.TIM_ITRxExternalClockConfig
+                0x00000000       0x14 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o
+ .text.TIM_SelectOutputTrigger
+                0x00000000       0x1c C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o
+ .text.TIM_SelectSlaveMode
+                0x00000000       0x1c C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o
+ .text.TIM_SelectMasterSlaveMode
+                0x00000000       0x1c C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o
+ .text.TIM_ETRConfig
+                0x00000000       0x1c C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o
+ .text.TIM_ETRClockMode2Config
+                0x00000000       0x14 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o
+ .text.TIM_ETRClockMode1Config
+                0x00000000       0x20 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o
+ .text.TIM_EncoderInterfaceConfig
+                0x00000000       0x50 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o
+ .text.TIM_SelectHallSensor
+                0x00000000       0x20 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o
+ .text.TIM_RemapConfig
+                0x00000000        0x8 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o
+ .text          0x00000000        0x0 C:\STM32F4\MyProjects\R7_FrequencyCounter\misc.o
+ .data          0x00000000        0x0 C:\STM32F4\MyProjects\R7_FrequencyCounter\misc.o
+ .bss           0x00000000        0x0 C:\STM32F4\MyProjects\R7_FrequencyCounter\misc.o
+ .text.NVIC_PriorityGroupConfig
+                0x00000000       0x14 C:\STM32F4\MyProjects\R7_FrequencyCounter\misc.o
+ .text.NVIC_SetVectorTable
+                0x00000000       0x18 C:\STM32F4\MyProjects\R7_FrequencyCounter\misc.o
+ .text.NVIC_SystemLPConfig
+                0x00000000       0x24 C:\STM32F4\MyProjects\R7_FrequencyCounter\misc.o
+ .text.SysTick_CLKSourceConfig
+                0x00000000       0x1c C:\STM32F4\MyProjects\R7_FrequencyCounter\misc.o
+ .text          0x00000000        0x0 C:\STM32F4\MyProjects\R7_FrequencyCounter\system_stm32f4xx.o
+ .data          0x00000000       0x14 C:\STM32F4\MyProjects\R7_FrequencyCounter\system_stm32f4xx.o
+ .bss           0x00000000        0x0 C:\STM32F4\MyProjects\R7_FrequencyCounter\system_stm32f4xx.o
+ .text.SystemCoreClockUpdate
+                0x00000000       0xdc C:\STM32F4\MyProjects\R7_FrequencyCounter\system_stm32f4xx.o
+ .text          0x00000000        0x0 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4_discovery.o
+ .bss           0x00000000        0x0 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4_discovery.o
+ .text.STM_EVAL_LEDOff
+                0x00000000       0x20 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4_discovery.o
+ .text.STM_EVAL_PBInit
+                0x00000000       0xb8 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4_discovery.o
+ .text.STM_EVAL_PBGetState
+                0x00000000       0x24 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4_discovery.o
+ COMMON         0x00000000        0x4 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4_discovery.o
+ .text          0x00000000        0x0 C:\Program Files\Raisonance\Ride\Lib\ARM\STM32x_io_putchar_thumb.a(STM32F10X_io_putchar.o)
+ .data          0x00000000        0x0 C:\Program Files\Raisonance\Ride\Lib\ARM\STM32x_io_putchar_thumb.a(STM32F10X_io_putchar.o)
+ .bss           0x00000000        0x0 C:\Program Files\Raisonance\Ride\Lib\ARM\STM32x_io_putchar_thumb.a(STM32F10X_io_putchar.o)
+ .text.__io_init
+                0x00000000       0x94 C:\Program Files\Raisonance\Ride\Lib\ARM\STM32x_io_putchar_thumb.a(STM32F10X_io_putchar.o)
+ .text.__io_getchar
+                0x00000000       0xb4 C:\Program Files\Raisonance\Ride\Lib\ARM\STM32x_io_putchar_thumb.a(STM32F10X_io_putchar.o)
+ .text.getchar  0x00000000       0xb4 C:\Program Files\Raisonance\Ride\Lib\ARM\STM32x_io_putchar_thumb.a(STM32F10X_io_putchar.o)
+ .text.putchar  0x00000000       0xd4 C:\Program Files\Raisonance\Ride\Lib\ARM\STM32x_io_putchar_thumb.a(STM32F10X_io_putchar.o)
+ .text          0x00000000        0x0 C:\Program Files\Raisonance\Ride\Lib\ARM\std_sbrk_thumb.lib(write.o)
+ .data          0x00000000        0x0 C:\Program Files\Raisonance\Ride\Lib\ARM\std_sbrk_thumb.lib(write.o)
+ .bss           0x00000000        0x0 C:\Program Files\Raisonance\Ride\Lib\ARM\std_sbrk_thumb.lib(write.o)
+
+Memory Configuration
+
+Name             Origin             Length             Attributes
+RAM              0x20000000         0x00002000         xrw
+FLASH            0x08000000         0x00010000         xr
+STARTFLASH       0x00000000         0x00000000         xr
+CRPPATCH         0x00000000         0x00000000         r
+FLASHPATCH       0x00000000         0x00000000         r
+ENDFLASH         0x00000000         0x00000000         xr
+FLASHB1          0x00000000         0x00000000         xr
+EXTMEMB0         0x00000000         0x00000000         xr
+EXTMEMB1         0x00000000         0x00000000         xr
+EXTMEMB2         0x00000000         0x00000000         xr
+EXTMEMB3         0x00000000         0x00000000         xr
+*default*        0x00000000         0xffffffff
+
+Linker script and memory map
+
+LOAD C:\STM32F4\MyProjects\R7_FrequencyCounter\startup_stm32f4xx.o
+LOAD C:\STM32F4\MyProjects\R7_FrequencyCounter\main.o
+LOAD C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_it.o
+LOAD C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_rcc.o
+LOAD C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_gpio.o
+LOAD C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o
+LOAD C:\STM32F4\MyProjects\R7_FrequencyCounter\misc.o
+LOAD C:\STM32F4\MyProjects\R7_FrequencyCounter\system_stm32f4xx.o
+LOAD C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4_discovery.o
+START GROUP
+LOAD C:\Program Files\Raisonance\Ride\Lib\ARM\STM32x_io_putchar_thumb.a
+LOAD C:\Program Files\Raisonance\Ride\Lib\ARM\std_sbrk_thumb.lib
+LOAD C:\Program Files\Raisonance\Ride\Lib\ARM\smallprintf_thumb.a
+LOAD c:/program files/raisonance/ride/arm-gcc/bin/../lib/gcc/arm-none-eabi/4.5.1/../../../../arm-none-eabi/lib/thumb2\libc.a
+LOAD c:/program files/raisonance/ride/arm-gcc/bin/../lib/gcc/arm-none-eabi/4.5.1/../../../../arm-none-eabi/lib/thumb2\libm.a
+END GROUP
+                0x00000400                __Stack_Size = 0x400
+                0x00000400                PROVIDE (_Stack_Size, __Stack_Size)
+                0x20001c00                __Stack_Init = (_estack - __Stack_Size)
+                0x20001c00                PROVIDE (_Stack_Init, __Stack_Init)
+                0x00000100                _Minimum_Stack_Size = 0x100
+                0x00000000                PROVIDE (Undefined_Handler, 0x0)
+                0x00000000                PROVIDE (SWI_Handler, 0x0)
+                0x00000000                PROVIDE (IRQ_Handler, 0x0)
+                0x00000000                PROVIDE (Prefetch_Handler, 0x0)
+                0x00000000                PROVIDE (Abort_Handler, 0x0)
+                0x00000000                PROVIDE (FIQ_Handler, 0x0)
+                0x00000000                PROVIDE (NMIException, 0x0)
+                0x00000000                PROVIDE (NMI_Handler, 0x0)
+                0x00000000                PROVIDE (HardFaultException, 0x0)
+                0x00000000                PROVIDE (HardFault_Handler, 0x0)
+                0x00000000                PROVIDE (MemManageException, 0x0)
+                0x00000000                PROVIDE (MemManage_Handler, 0x0)
+                0x00000000                PROVIDE (BusFaultException, 0x0)
+                0x00000000                PROVIDE (BusFault_Handler, 0x0)
+                0x00000000                PROVIDE (UsageFaultException, 0x0)
+                0x00000000                PROVIDE (UsageFault_Handler, 0x0)
+                0x00000000                PROVIDE (SVCHandler, 0x0)
+                0x00000000                PROVIDE (SVC_Handler, 0x0)
+                0x00000000                PROVIDE (DebugMonitor, 0x0)
+                0x00000000                PROVIDE (DebugMon_Handler, 0x0)
+                0x00000000                PROVIDE (PendSVC, 0x0)
+                0x00000000                PROVIDE (PendSV_Handler, 0x0)
+                0x00000000                PROVIDE (SysTickHandler, 0x0)
+                0x00000000                PROVIDE (SysTick_Handler, 0x0)
+                0x00000000                PROVIDE (WWDG_IRQHandler, 0x0)
+                0x00000000                PROVIDE (PVD_IRQHandler, 0x0)
+                0x00000000                PROVIDE (TAMPER_IRQHandler, 0x0)
+                0x00000000                PROVIDE (RTC_IRQHandler, 0x0)
+                0x00000000                PROVIDE (FLASH_IRQHandler, 0x0)
+                0x00000000                PROVIDE (RCC_IRQHandler, 0x0)
+                0x00000000                PROVIDE (EXTI0_IRQHandler, 0x0)
+                0x00000000                PROVIDE (EXTI1_IRQHandler, 0x0)
+                0x00000000                PROVIDE (EXTI2_IRQHandler, 0x0)
+                0x00000000                PROVIDE (EXTI3_IRQHandler, 0x0)
+                0x00000000                PROVIDE (EXTI4_IRQHandler, 0x0)
+                0x00000000                PROVIDE (DMAChannel1_IRQHandler, 0x0)
+                0x00000000                PROVIDE (DMAChannel2_IRQHandler, 0x0)
+                0x00000000                PROVIDE (DMAChannel3_IRQHandler, 0x0)
+                0x00000000                PROVIDE (DMAChannel4_IRQHandler, 0x0)
+                0x00000000                PROVIDE (DMAChannel5_IRQHandler, 0x0)
+                0x00000000                PROVIDE (DMAChannel6_IRQHandler, 0x0)
+                0x00000000                PROVIDE (DMAChannel7_IRQHandler, 0x0)
+                0x00000000                PROVIDE (DMA1_Channel1_IRQHandler, 0x0)
+                0x00000000                PROVIDE (DMA1_Channel2_IRQHandler, 0x0)
+                0x00000000                PROVIDE (DMA1_Channel3_IRQHandler, 0x0)
+                0x00000000                PROVIDE (DMA1_Channel4_IRQHandler, 0x0)
+                0x00000000                PROVIDE (DMA1_Channel5_IRQHandler, 0x0)
+                0x00000000                PROVIDE (DMA1_Channel6_IRQHandler, 0x0)
+                0x00000000                PROVIDE (DMA1_Channel7_IRQHandler, 0x0)
+                0x00000000                PROVIDE (ADC_IRQHandler, 0x0)
+                0x00000000                PROVIDE (ADC1_2_IRQHandler, 0x0)
+                0x00000000                PROVIDE (USB_HP_CAN_TX_IRQHandler, 0x0)
+                0x00000000                PROVIDE (USB_HP_CAN1_TX_IRQHandler, 0x0)
+                0x00000000                PROVIDE (USB_LP_CAN_RX0_IRQHandler, 0x0)
+                0x00000000                PROVIDE (USB_LP_CAN1_RX0_IRQHandler, 0x0)
+                0x00000000                PROVIDE (CAN_RX1_IRQHandler, 0x0)
+                0x00000000                PROVIDE (CAN1_RX1_IRQHandler, 0x0)
+                0x00000000                PROVIDE (CAN_SCE_IRQHandler, 0x0)
+                0x00000000                PROVIDE (CAN1_SCE_IRQHandler, 0x0)
+                0x00000000                PROVIDE (EXTI9_5_IRQHandler, 0x0)
+                0x00000000                PROVIDE (TIM1_BRK_IRQHandler, 0x0)
+                0x00000000                PROVIDE (TIM1_UP_IRQHandler, 0x0)
+                0x00000000                PROVIDE (TIM1_TRG_COM_IRQHandler, 0x0)
+                0x00000000                PROVIDE (TIM1_CC_IRQHandler, 0x0)
+                0x00000000                PROVIDE (TIM2_IRQHandler, 0x0)
+                0x00000000                PROVIDE (TIM3_IRQHandler, 0x0)
+                0x00000000                PROVIDE (TIM4_IRQHandler, 0x0)
+                0x00000000                PROVIDE (I2C1_EV_IRQHandler, 0x0)
+                0x00000000                PROVIDE (I2C1_ER_IRQHandler, 0x0)
+                0x00000000                PROVIDE (I2C2_EV_IRQHandler, 0x0)
+                0x00000000                PROVIDE (I2C2_ER_IRQHandler, 0x0)
+                0x00000000                PROVIDE (SPI1_IRQHandler, 0x0)
+                0x00000000                PROVIDE (SPI2_IRQHandler, 0x0)
+                0x00000000                PROVIDE (USART1_IRQHandler, 0x0)
+                0x00000000                PROVIDE (USART2_IRQHandler, 0x0)
+                0x00000000                PROVIDE (USART3_IRQHandler, 0x0)
+                0x00000000                PROVIDE (EXTI15_10_IRQHandler, 0x0)
+                0x00000000                PROVIDE (RTCAlarm_IRQHandler, 0x0)
+                0x00000000                PROVIDE (USBWakeUp_IRQHandler, 0x0)
+                0x00000000                PROVIDE (TIM8_BRK_IRQHandler, 0x0)
+                0x00000000                PROVIDE (TIM8_UP_IRQHandler, 0x0)
+                0x00000000                PROVIDE (TIM8_TRG_COM_IRQHandler, 0x0)
+                0x00000000                PROVIDE (TIM8_CC_IRQHandler, 0x0)
+                0x00000000                PROVIDE (ADC3_IRQHandler, 0x0)
+                0x00000000                PROVIDE (FSMC_IRQHandler, 0x0)
+                0x00000000                PROVIDE (SDIO_IRQHandler, 0x0)
+                0x00000000                PROVIDE (TIM5_IRQHandler, 0x0)
+                0x00000000                PROVIDE (SPI3_IRQHandler, 0x0)
+                0x00000000                PROVIDE (UART4_IRQHandler, 0x0)
+                0x00000000                PROVIDE (UART5_IRQHandler, 0x0)
+                0x00000000                PROVIDE (TIM6_IRQHandler, 0x0)
+                0x00000000                PROVIDE (TIM7_IRQHandler, 0x0)
+                0x00000000                PROVIDE (DMA2_Channel1_IRQHandler, 0x0)
+                0x00000000                PROVIDE (DMA2_Channel2_IRQHandler, 0x0)
+                0x00000000                PROVIDE (DMA2_Channel3_IRQHandler, 0x0)
+                0x00000000                PROVIDE (DMA2_Channel4_5_IRQHandler, 0x0)
+                0x42000000                PERIPH_BB_BASE = 0x42000000
+                0x22000000                SRAM_BB_BASE = 0x22000000
+                0x20000000                SRAM_BASE = 0x20000000
+                0x40000000                PERIPH_BASE = 0x40000000
+                0x40022000                PROVIDE (FLASH_BASE, 0x40022000)
+                0x1ffff800                PROVIDE (OB_BASE, 0x1ffff800)
+                0x40000000                APB1PERIPH_BASE = PERIPH_BASE
+                0x40010000                APB2PERIPH_BASE = (PERIPH_BASE + 0x10000)
+                0x40020000                AHBPERIPH_BASE = (PERIPH_BASE + 0x20000)
+                0x40000000                PROVIDE (TIM2, (APB1PERIPH_BASE + 0x0))
+                0x40000400                PROVIDE (TIM3, (APB1PERIPH_BASE + 0x400))
+                0x40000800                PROVIDE (TIM4, (APB1PERIPH_BASE + 0x800))
+                0x40002800                PROVIDE (RTC, (APB1PERIPH_BASE + 0x2800))
+                0x40002c00                PROVIDE (WWDG, (APB1PERIPH_BASE + 0x2c00))
+                0x40003000                PROVIDE (IWDG, (APB1PERIPH_BASE + 0x3000))
+                0x40003800                PROVIDE (SPI2, (APB1PERIPH_BASE + 0x3800))
+                0x40004400                PROVIDE (USART2, (APB1PERIPH_BASE + 0x4400))
+                0x40004800                PROVIDE (USART3, (APB1PERIPH_BASE + 0x4800))
+                0x40005400                PROVIDE (I2C1, (APB1PERIPH_BASE + 0x5400))
+                0x40005800                PROVIDE (I2C2, (APB1PERIPH_BASE + 0x5800))
+                0x40006400                PROVIDE (CAN, (APB1PERIPH_BASE + 0x6400))
+                0x40006c00                PROVIDE (BKP, (APB1PERIPH_BASE + 0x6c00))
+                0x40007000                PROVIDE (PWR, (APB1PERIPH_BASE + 0x7000))
+                0x40010000                PROVIDE (AFIO, (APB2PERIPH_BASE + 0x0))
+                0x40010400                PROVIDE (EXTI, (APB2PERIPH_BASE + 0x400))
+                0x40010800                PROVIDE (GPIOA, (APB2PERIPH_BASE + 0x800))
+                0x40010c00                PROVIDE (GPIOB, (APB2PERIPH_BASE + 0xc00))
+                0x40011000                PROVIDE (GPIOC, (APB2PERIPH_BASE + 0x1000))
+                0x40011400                PROVIDE (GPIOD, (APB2PERIPH_BASE + 0x1400))
+                0x40011800                PROVIDE (GPIOE, (APB2PERIPH_BASE + 0x1800))
+                0x40012400                PROVIDE (ADC1, (APB2PERIPH_BASE + 0x2400))
+                0x40012800                PROVIDE (ADC2, (APB2PERIPH_BASE + 0x2800))
+                0x40012c00                PROVIDE (TIM1, (APB2PERIPH_BASE + 0x2c00))
+                0x40013000                PROVIDE (SPI1, (APB2PERIPH_BASE + 0x3000))
+                0x40013800                PROVIDE (USART1, (APB2PERIPH_BASE + 0x3800))
+                0x40020000                PROVIDE (DMA, (AHBPERIPH_BASE + 0x0))
+                0x40020008                PROVIDE (DMA_Channel1, (AHBPERIPH_BASE + 0x8))
+                0x4002001c                PROVIDE (DMA_Channel2, (AHBPERIPH_BASE + 0x1c))
+                0x40020030                PROVIDE (DMA_Channel3, (AHBPERIPH_BASE + 0x30))
+                0x40020044                PROVIDE (DMA_Channel4, (AHBPERIPH_BASE + 0x44))
+                0x40020058                PROVIDE (DMA_Channel5, (AHBPERIPH_BASE + 0x58))
+                0x4002006c                PROVIDE (DMA_Channel6, (AHBPERIPH_BASE + 0x6c))
+                0x40020080                PROVIDE (DMA_Channel7, (AHBPERIPH_BASE + 0x80))
+                0x40021000                PROVIDE (RCC, (AHBPERIPH_BASE + 0x1000))
+                0xe000e000                SCS_BASE = 0xe000e000
+                0xe000e010                PROVIDE (SysTick, (SCS_BASE + 0x10))
+                0xe000e100                PROVIDE (NVIC, (SCS_BASE + 0x100))
+                0xe000ed00                PROVIDE (SCB, (SCS_BASE + 0xd00))
+                0x20002000                _estack = 0x20002000
+
+.isr_vector     0x08000000      0x188
+                0x08000000                . = ALIGN (0x4)
+ *(.isr_vector)
+ .isr_vector    0x08000000      0x188 C:\STM32F4\MyProjects\R7_FrequencyCounter\startup_stm32f4xx.o
+                0x08000000                g_pfnVectors
+                0x08000188                . = ALIGN (0x4)
+
+.flash_start    0x00000000        0x0
+                0x00000000                . = ALIGN (0x4)
+ *(.flash_start)
+ *(.flash_start.*)
+                0x00000000                . = ALIGN (0x4)
+
+.crp_patch      0x00000000        0x0
+                0x00000000                . = ALIGN (0x4)
+ *(.crp_patch)
+                0x00000000                . = ALIGN (0x4)
+
+.flashtext      0x08000188        0x0
+                0x08000188                . = ALIGN (0x4)
+ *(.flashtext)
+                0x08000188                . = ALIGN (0x4)
+
+.text           0x08000188      0x780
+                0x08000188                . = ALIGN (0x4)
+ *(.text)
+ *(.text.*)
+ .text.Reset_Handler
+                0x08000188       0x44 C:\STM32F4\MyProjects\R7_FrequencyCounter\startup_stm32f4xx.o
+                0x08000188                Reset_Handler
+ .text.Default_Handler
+                0x080001cc        0x2 C:\STM32F4\MyProjects\R7_FrequencyCounter\startup_stm32f4xx.o
+                0x080001cc                RTC_Alarm_IRQHandler
+                0x080001cc                HASH_RNG_IRQHandler
+                0x080001cc                EXTI2_IRQHandler
+                0x080001cc                TIM8_CC_IRQHandler
+                0x080001cc                TIM1_CC_IRQHandler
+                0x080001cc                DMA2_Stream5_IRQHandler
+                0x080001cc                DMA1_Stream5_IRQHandler
+                0x080001cc                PVD_IRQHandler
+                0x080001cc                SDIO_IRQHandler
+                0x080001cc                TAMP_STAMP_IRQHandler
+                0x080001cc                CAN2_RX1_IRQHandler
+                0x080001cc                EXTI3_IRQHandler
+                0x080001cc                TIM8_TRG_COM_TIM14_IRQHandler
+                0x080001cc                TIM1_UP_TIM10_IRQHandler
+                0x080001cc                TIM8_UP_TIM13_IRQHandler
+                0x080001cc                I2C3_ER_IRQHandler
+                0x080001cc                EXTI0_IRQHandler
+                0x080001cc                I2C2_EV_IRQHandler
+                0x080001cc                DMA1_Stream2_IRQHandler
+                0x080001cc                CAN1_RX0_IRQHandler
+                0x080001cc                FPU_IRQHandler
+                0x080001cc                OTG_HS_WKUP_IRQHandler
+                0x080001cc                CAN2_SCE_IRQHandler
+                0x080001cc                DMA2_Stream2_IRQHandler
+                0x080001cc                SPI1_IRQHandler
+                0x080001cc                TIM6_DAC_IRQHandler
+                0x080001cc                TIM1_BRK_TIM9_IRQHandler
+                0x080001cc                DCMI_IRQHandler
+                0x080001cc                CAN2_RX0_IRQHandler
+                0x080001cc                DMA2_Stream3_IRQHandler
+                0x080001cc                USART6_IRQHandler
+                0x080001cc                USART3_IRQHandler
+                0x080001cc                CRYP_IRQHandler
+                0x080001cc                CAN1_RX1_IRQHandler
+                0x080001cc                UART5_IRQHandler
+                0x080001cc                DMA2_Stream0_IRQHandler
+                0x080001cc                TIM4_IRQHandler
+                0x080001cc                I2C1_EV_IRQHandler
+                0x080001cc                DMA1_Stream6_IRQHandler
+                0x080001cc                DMA1_Stream1_IRQHandler
+                0x080001cc                UART4_IRQHandler
+                0x080001cc                RCC_IRQHandler
+                0x080001cc                TIM8_BRK_TIM12_IRQHandler
+                0x080001cc                Default_Handler
+                0x080001cc                EXTI15_10_IRQHandler
+                0x080001cc                ADC_IRQHandler
+                0x080001cc                DMA1_Stream7_IRQHandler
+                0x080001cc                TIM7_IRQHandler
+                0x080001cc                CAN2_TX_IRQHandler
+                0x080001cc                TIM5_IRQHandler
+                0x080001cc                DMA2_Stream7_IRQHandler
+                0x080001cc                I2C3_EV_IRQHandler
+                0x080001cc                EXTI9_5_IRQHandler
+                0x080001cc                RTC_WKUP_IRQHandler
+                0x080001cc                ETH_WKUP_IRQHandler
+                0x080001cc                SPI2_IRQHandler
+                0x080001cc                OTG_HS_EP1_IN_IRQHandler
+                0x080001cc                DMA1_Stream0_IRQHandler
+                0x080001cc                CAN1_TX_IRQHandler
+                0x080001cc                EXTI4_IRQHandler
+                0x080001cc                FSMC_IRQHandler
+                0x080001cc                ETH_IRQHandler
+                0x080001cc                OTG_HS_EP1_OUT_IRQHandler
+                0x080001cc                WWDG_IRQHandler
+                0x080001cc                TIM2_IRQHandler
+                0x080001cc                OTG_FS_WKUP_IRQHandler
+                0x080001cc                TIM1_TRG_COM_TIM11_IRQHandler
+                0x080001cc                OTG_HS_IRQHandler
+                0x080001cc                EXTI1_IRQHandler
+                0x080001cc                USART2_IRQHandler
+                0x080001cc                I2C2_ER_IRQHandler
+                0x080001cc                DMA2_Stream1_IRQHandler
+                0x080001cc                CAN1_SCE_IRQHandler
+                0x080001cc                FLASH_IRQHandler
+                0x080001cc                DMA2_Stream4_IRQHandler
+                0x080001cc                USART1_IRQHandler
+                0x080001cc                OTG_FS_IRQHandler
+                0x080001cc                SPI3_IRQHandler
+                0x080001cc                DMA1_Stream4_IRQHandler
+                0x080001cc                I2C1_ER_IRQHandler
+                0x080001cc                DMA2_Stream6_IRQHandler
+                0x080001cc                DMA1_Stream3_IRQHandler
+ *fill*         0x080001ce        0x2 00
+ .text.TIM_Config
+                0x080001d0       0xcc C:\STM32F4\MyProjects\R7_FrequencyCounter\main.o
+                0x080001d0                TIM_Config
+ .text.main     0x0800029c       0x18 C:\STM32F4\MyProjects\R7_FrequencyCounter\main.o
+                0x0800029c                main
+ .text.NMI_Handler
+                0x080002b4        0x4 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_it.o
+                0x080002b4                NMI_Handler
+ .text.HardFault_Handler
+                0x080002b8        0x4 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_it.o
+                0x080002b8                HardFault_Handler
+ .text.MemManage_Handler
+                0x080002bc        0x4 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_it.o
+                0x080002bc                MemManage_Handler
+ .text.BusFault_Handler
+                0x080002c0        0x4 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_it.o
+                0x080002c0                BusFault_Handler
+ .text.UsageFault_Handler
+                0x080002c4        0x4 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_it.o
+                0x080002c4                UsageFault_Handler
+ .text.DebugMon_Handler
+                0x080002c8        0x4 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_it.o
+                0x080002c8                DebugMon_Handler
+ .text.SVC_Handler
+                0x080002cc        0x4 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_it.o
+                0x080002cc                SVC_Handler
+ .text.PendSV_Handler
+                0x080002d0        0x4 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_it.o
+                0x080002d0                PendSV_Handler
+ .text.SysTick_Handler
+                0x080002d4        0x4 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_it.o
+                0x080002d4                SysTick_Handler
+ .text.TIM3_IRQHandler
+                0x080002d8       0x44 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_it.o
+                0x080002d8                TIM3_IRQHandler
+ .text.RCC_AHB1PeriphClockCmd
+                0x0800031c       0x24 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_rcc.o
+                0x0800031c                RCC_AHB1PeriphClockCmd
+ .text.RCC_APB1PeriphClockCmd
+                0x08000340       0x24 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_rcc.o
+                0x08000340                RCC_APB1PeriphClockCmd
+ .text.GPIO_Init
+                0x08000364       0xbc C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_gpio.o
+                0x08000364                GPIO_Init
+ .text.TIM_TimeBaseInit
+                0x08000420       0xc0 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o
+                0x08000420                TIM_TimeBaseInit
+ .text.TIM_Cmd  0x080004e0       0x20 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o
+                0x080004e0                TIM_Cmd
+ .text.TIM_ITConfig
+                0x08000500       0x18 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o
+                0x08000500                TIM_ITConfig
+ .text.TIM_ClearITPendingBit
+                0x08000518        0xc C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o
+                0x08000518                TIM_ClearITPendingBit
+ .text.NVIC_Init
+                0x08000524       0x88 C:\STM32F4\MyProjects\R7_FrequencyCounter\misc.o
+                0x08000524                NVIC_Init
+ .text.SystemInit
+                0x080005ac      0x124 C:\STM32F4\MyProjects\R7_FrequencyCounter\system_stm32f4xx.o
+                0x080005ac                SystemInit
+ .text.STM_EVAL_LEDInit
+                0x080006d0       0x54 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4_discovery.o
+                0x080006d0                STM_EVAL_LEDInit
+ .text.STM_EVAL_LEDOn
+                0x08000724       0x20 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4_discovery.o
+                0x08000724                STM_EVAL_LEDOn
+ .text.STM_EVAL_LEDToggle
+                0x08000744       0x24 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4_discovery.o
+                0x08000744                STM_EVAL_LEDToggle
+ .text.__io_putchar
+                0x08000768      0x16c C:\Program Files\Raisonance\Ride\Lib\ARM\STM32x_io_putchar_thumb.a(STM32F10X_io_putchar.o)
+                0x08000768                __io_putchar
+ .text._write   0x080008d4        0x4 C:\Program Files\Raisonance\Ride\Lib\ARM\std_sbrk_thumb.lib(write.o)
+                0x080008d4                _write
+ *(.rodata)
+ .rodata        0x080008d8       0x30 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4_discovery.o
+                0x080008d8                GPIO_CLK
+                0x080008e8                GPIO_PIN
+                0x080008f0                BUTTON_CLK
+                0x080008f4                BUTTON_PIN
+                0x080008f8                BUTTON_PORT_SOURCE
+                0x080008fc                BUTTON_PIN_SOURCE
+                0x08000900                BUTTON_EXTI_LINE
+                0x08000904                BUTTON_IRQn
+ *(.rodata*)
+ *(.glue_7)
+ .glue_7        0x00000000        0x0 linker stubs
+ *(.glue_7t)
+ .glue_7t       0x00000000        0x0 linker stubs
+                0x08000908                . = ALIGN (0x4)
+                0x08000908                _etext = .
+                0x08000908                _sidata = _etext
+
+.vfp11_veneer   0x08000908        0x0
+ .vfp11_veneer  0x00000000        0x0 linker stubs
+
+.v4_bx          0x08000908        0x0
+ .v4_bx         0x00000000        0x0 linker stubs
+
+.flashpatch     0x00000000        0x0
+                0x00000000                . = ALIGN (0x4)
+ *(.flashpatch)
+                0x00000000                . = ALIGN (0x4)
+
+.endflash       0x00000000        0x0
+                0x00000000                . = ALIGN (0x4)
+ *(.endflash)
+                0x00000000                . = ALIGN (0x4)
+                0x00000000                _e_endflash = .
+
+.data           0x20000000       0x14 load address 0x08000908
+                0x20000000                . = ALIGN (0x4)
+                0x20000000                _sdata = .
+                0x20000000                _data = .
+ *(.data)
+ .data          0x20000000       0x14 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4_discovery.o
+                0x20000000                GPIO_PORT
+                0x20000010                BUTTON_PORT
+ *(.data.*)
+ *(.RAMtext)
+                0x20000014                . = ALIGN (0x4)
+                0x20000014                _edata = .
+                0x0800091c                _eidata = ((_sidata + _edata) - _sdata)
+                0x08010000                _lastdataromaddress = 0x8010000
+                0x00000000                toobig = (_eidata > _lastdataromaddress)?!!!!!!!!! FLASH IS FULL !!!!!!!!!:0x0
+
+.bss            0x20000014        0x4 load address 0x0800091c
+                0x20000014                . = ALIGN (0x4)
+                0x20000014                _sbss = .
+                0x20000014                _bss = .
+ *(.bss)
+ *(COMMON)
+ COMMON         0x20000014        0x4 C:\STM32F4\MyProjects\R7_FrequencyCounter\main.o
+                0x20000014                Frequency
+                0x20000018                . = ALIGN (0x4)
+                0x20000018                _ebss = .
+                0x20000018                PROVIDE (end, _ebss)
+                0x20000018                PROVIDE (_end, _ebss)
+
+._usrstack      0x20000018      0x100 load address 0x08000920
+                0x20000018                . = ALIGN (0x4)
+                0x20000018                _susrstack = .
+                0x20000118                . = (. + _Minimum_Stack_Size)
+ *fill*         0x20000018      0x100 00
+                0x20000118                . = ALIGN (0x4)
+                0x20000118                _eusrstack = .
+
+.b1text
+ *(.b1text)
+ *(.b1rodata)
+ *(.b1rodata*)
+
+.eb0text
+ *(.eb0text)
+ *(.eb0rodata)
+ *(.eb0rodata*)
+
+.eb1text
+ *(.eb1text)
+ *(.eb1rodata)
+ *(.eb1rodata*)
+
+.eb2text
+ *(.eb2text)
+ *(.eb2rodata)
+ *(.eb2rodata*)
+
+.eb3text
+ *(.eb3text)
+ *(.eb3rodata)
+ *(.eb3rodata*)
+                0x20000118                __exidx_start = .
+                0x20000118                __exidx_end = .
+
+/DISCARD/
+ libc.a(*)
+ libm.a(*)
+ libgcc.a(*)
+
+.stab
+ *(.stab)
+
+.stabstr
+ *(.stabstr)
+
+.stab.excl
+ *(.stab.excl)
+
+.stab.exclstr
+ *(.stab.exclstr)
+
+.stab.index
+ *(.stab.index)
+
+.stab.indexstr
+ *(.stab.indexstr)
+
+.ARM.attributes
+                0x00000000       0x2d
+ .ARM.attributes
+                0x00000000       0x21 C:\STM32F4\MyProjects\R7_FrequencyCounter\startup_stm32f4xx.o
+ .ARM.attributes
+                0x00000021       0x31 C:\STM32F4\MyProjects\R7_FrequencyCounter\main.o
+ .ARM.attributes
+                0x00000052       0x31 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_it.o
+ .ARM.attributes
+                0x00000083       0x31 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_rcc.o
+ .ARM.attributes
+                0x000000b4       0x31 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_gpio.o
+ .ARM.attributes
+                0x000000e5       0x31 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o
+ .ARM.attributes
+                0x00000116       0x31 C:\STM32F4\MyProjects\R7_FrequencyCounter\misc.o
+ .ARM.attributes
+                0x00000147       0x31 C:\STM32F4\MyProjects\R7_FrequencyCounter\system_stm32f4xx.o
+ .ARM.attributes
+                0x00000178       0x31 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4_discovery.o
+ .ARM.attributes
+                0x000001a9       0x31 C:\Program Files\Raisonance\Ride\Lib\ARM\STM32x_io_putchar_thumb.a(STM32F10X_io_putchar.o)
+ .ARM.attributes
+                0x000001da       0x2e C:\Program Files\Raisonance\Ride\Lib\ARM\std_sbrk_thumb.lib(write.o)
+
+.comment        0x00000000       0x7f
+ *(.comment)
+ .comment       0x00000000       0x2a C:\STM32F4\MyProjects\R7_FrequencyCounter\main.o
+                                 0x2b (size before relaxing)
+ .comment       0x00000000       0x2b C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_it.o
+ .comment       0x00000000       0x2b C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_rcc.o
+ .comment       0x00000000       0x2b C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_gpio.o
+ .comment       0x00000000       0x2b C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o
+ .comment       0x00000000       0x2b C:\STM32F4\MyProjects\R7_FrequencyCounter\misc.o
+ .comment       0x00000000       0x2b C:\STM32F4\MyProjects\R7_FrequencyCounter\system_stm32f4xx.o
+ .comment       0x00000000       0x2b C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4_discovery.o
+ .comment       0x0000002a       0x2b C:\Program Files\Raisonance\Ride\Lib\ARM\STM32x_io_putchar_thumb.a(STM32F10X_io_putchar.o)
+ .comment       0x00000055       0x2a C:\Program Files\Raisonance\Ride\Lib\ARM\std_sbrk_thumb.lib(write.o)
+
+.debug
+ *(.debug)
+
+.line
+ *(.line)
+
+.debug_srcinfo
+ *(.debug_srcinfo)
+
+.debug_sfnames
+ *(.debug_sfnames)
+
+.debug_aranges  0x00000000      0x628
+ *(.debug_aranges)
+ .debug_aranges
+                0x00000000       0x28 C:\STM32F4\MyProjects\R7_FrequencyCounter\main.o
+ .debug_aranges
+                0x00000028       0x68 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_it.o
+ .debug_aranges
+                0x00000090      0x178 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_rcc.o
+ .debug_aranges
+                0x00000208       0x88 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_gpio.o
+ .debug_aranges
+                0x00000290      0x2e8 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o
+ .debug_aranges
+                0x00000578       0x40 C:\STM32F4\MyProjects\R7_FrequencyCounter\misc.o
+ .debug_aranges
+                0x000005b8       0x28 C:\STM32F4\MyProjects\R7_FrequencyCounter\system_stm32f4xx.o
+ .debug_aranges
+                0x000005e0       0x48 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4_discovery.o
+
+.debug_pubnames
+                0x00000000     0x1054
+ *(.debug_pubnames)
+ .debug_pubnames
+                0x00000000       0x38 C:\STM32F4\MyProjects\R7_FrequencyCounter\main.o
+ .debug_pubnames
+                0x00000038       0xda C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_it.o
+ .debug_pubnames
+                0x00000112      0x417 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_rcc.o
+ .debug_pubnames
+                0x00000529      0x12d C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_gpio.o
+ .debug_pubnames
+                0x00000656      0x7c4 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o
+ .debug_pubnames
+                0x00000e1a       0x89 C:\STM32F4\MyProjects\R7_FrequencyCounter\misc.o
+ .debug_pubnames
+                0x00000ea3       0x61 C:\STM32F4\MyProjects\R7_FrequencyCounter\system_stm32f4xx.o
+ .debug_pubnames
+                0x00000f04      0x150 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4_discovery.o
+
+.debug_info     0x00000000     0x50fd
+ *(.debug_info .gnu.linkonce.wi.*)
+ .debug_info    0x00000000      0x685 C:\STM32F4\MyProjects\R7_FrequencyCounter\main.o
+ .debug_info    0x00000685      0x3ec C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_it.o
+ .debug_info    0x00000a71      0xd05 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_rcc.o
+ .debug_info    0x00001776      0x62d C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_gpio.o
+ .debug_info    0x00001da3     0x1e20 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o
+ .debug_info    0x00003bc3      0x598 C:\STM32F4\MyProjects\R7_FrequencyCounter\misc.o
+ .debug_info    0x0000415b      0x63f C:\STM32F4\MyProjects\R7_FrequencyCounter\system_stm32f4xx.o
+ .debug_info    0x0000479a      0x963 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4_discovery.o
+
+.debug_abbrev   0x00000000      0xc31
+ *(.debug_abbrev)
+ .debug_abbrev  0x00000000      0x134 C:\STM32F4\MyProjects\R7_FrequencyCounter\main.o
+ .debug_abbrev  0x00000134       0xd8 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_it.o
+ .debug_abbrev  0x0000020c      0x1f8 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_rcc.o
+ .debug_abbrev  0x00000404      0x1d0 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_gpio.o
+ .debug_abbrev  0x000005d4      0x207 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o
+ .debug_abbrev  0x000007db      0x14e C:\STM32F4\MyProjects\R7_FrequencyCounter\misc.o
+ .debug_abbrev  0x00000929      0x16c C:\STM32F4\MyProjects\R7_FrequencyCounter\system_stm32f4xx.o
+ .debug_abbrev  0x00000a95      0x19c C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4_discovery.o
+
+.debug_line     0x00000000     0x19a9
+ *(.debug_line)
+ .debug_line    0x00000000      0x1cc C:\STM32F4\MyProjects\R7_FrequencyCounter\main.o
+ .debug_line    0x000001cc      0x1dc C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_it.o
+ .debug_line    0x000003a8      0x4dc C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_rcc.o
+ .debug_line    0x00000884      0x294 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_gpio.o
+ .debug_line    0x00000b18      0x929 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o
+ .debug_line    0x00001441      0x1a8 C:\STM32F4\MyProjects\R7_FrequencyCounter\misc.o
+ .debug_line    0x000015e9      0x18c C:\STM32F4\MyProjects\R7_FrequencyCounter\system_stm32f4xx.o
+ .debug_line    0x00001775      0x234 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4_discovery.o
+
+.debug_frame    0x00000000      0xca4
+ *(.debug_frame)
+ .debug_frame   0x00000000       0x48 C:\STM32F4\MyProjects\R7_FrequencyCounter\main.o
+ .debug_frame   0x00000048       0xb8 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_it.o
+ .debug_frame   0x00000100      0x2e4 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_rcc.o
+ .debug_frame   0x000003e4      0x118 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_gpio.o
+ .debug_frame   0x000004fc      0x670 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o
+ .debug_frame   0x00000b6c       0x68 C:\STM32F4\MyProjects\R7_FrequencyCounter\misc.o
+ .debug_frame   0x00000bd4       0x34 C:\STM32F4\MyProjects\R7_FrequencyCounter\system_stm32f4xx.o
+ .debug_frame   0x00000c08       0x9c C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4_discovery.o
+
+.debug_str      0x00000000     0x2192
+ *(.debug_str)
+ .debug_str     0x00000000      0x7d7 C:\STM32F4\MyProjects\R7_FrequencyCounter\main.o
+                                0x822 (size before relaxing)
+ .debug_str     0x000007d7       0xd9 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_it.o
+                                0x28e (size before relaxing)
+ .debug_str     0x000008b0      0x66a C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_rcc.o
+                                0x7c8 (size before relaxing)
+ .debug_str     0x00000f1a      0x319 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_gpio.o
+                                0x41b (size before relaxing)
+ .debug_str     0x00001233      0xa77 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o
+                                0xd48 (size before relaxing)
+ .debug_str     0x00001caa      0x1a6 C:\STM32F4\MyProjects\R7_FrequencyCounter\misc.o
+                                0x351 (size before relaxing)
+ .debug_str     0x00001e50       0xbb C:\STM32F4\MyProjects\R7_FrequencyCounter\system_stm32f4xx.o
+                                0x2fe (size before relaxing)
+ .debug_str     0x00001f0b      0x287 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4_discovery.o
+                                0xa84 (size before relaxing)
+
+.debug_loc      0x00000000     0x2196
+ *(.debug_loc)
+ .debug_loc     0x00000000       0x4c C:\STM32F4\MyProjects\R7_FrequencyCounter\main.o
+ .debug_loc     0x0000004c       0x20 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_it.o
+ .debug_loc     0x0000006c      0x6ed C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_rcc.o
+ .debug_loc     0x00000759      0x26d C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_gpio.o
+ .debug_loc     0x000009c6     0x14bc C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o
+ .debug_loc     0x00001e82      0x11d C:\STM32F4\MyProjects\R7_FrequencyCounter\misc.o
+ .debug_loc     0x00001f9f      0x133 C:\STM32F4\MyProjects\R7_FrequencyCounter\system_stm32f4xx.o
+ .debug_loc     0x000020d2       0xc4 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4_discovery.o
+
+.debug_macinfo
+ *(.debug_macinfo)
+
+.debug_weaknames
+ *(.debug_weaknames)
+
+.debug_funcnames
+ *(.debug_funcnames)
+
+.debug_typenames
+ *(.debug_typenames)
+
+.debug_varnames
+ *(.debug_varnames)
+START GROUP
+LOAD c:/program files/raisonance/ride/arm-gcc/bin/../lib/gcc/arm-none-eabi/4.5.1/thumb2\libgcc.a
+LOAD c:/program files/raisonance/ride/arm-gcc/bin/../lib/gcc/arm-none-eabi/4.5.1/../../../../arm-none-eabi/lib/thumb2\libc.a
+END GROUP
+OUTPUT(C:\STM32F4\MyProjects\R7_FrequencyCounter\FrequencyCounter.elf elf32-littlearm)
+
+.debug_pubtypes
+                0x00000000      0x5c3
+ .debug_pubtypes
+                0x00000000       0xa2 C:\STM32F4\MyProjects\R7_FrequencyCounter\main.o
+ .debug_pubtypes
+                0x000000a2       0x48 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_it.o
+ .debug_pubtypes
+                0x000000ea       0xaa C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_rcc.o
+ .debug_pubtypes
+                0x00000194       0xce C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_gpio.o
+ .debug_pubtypes
+                0x00000262       0xe4 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o
+ .debug_pubtypes
+                0x00000346       0x8c C:\STM32F4\MyProjects\R7_FrequencyCounter\misc.o
+ .debug_pubtypes
+                0x000003d2       0x83 C:\STM32F4\MyProjects\R7_FrequencyCounter\system_stm32f4xx.o
+ .debug_pubtypes
+                0x00000455      0x16e C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4_discovery.o
+
+.debug_ranges   0x00000000      0x5a8
+ .debug_ranges  0x00000000       0x18 C:\STM32F4\MyProjects\R7_FrequencyCounter\main.o
+ .debug_ranges  0x00000018       0x58 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_it.o
+ .debug_ranges  0x00000070      0x168 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_rcc.o
+ .debug_ranges  0x000001d8       0x78 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_gpio.o
+ .debug_ranges  0x00000250      0x2d8 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o
+ .debug_ranges  0x00000528       0x30 C:\STM32F4\MyProjects\R7_FrequencyCounter\misc.o
+ .debug_ranges  0x00000558       0x18 C:\STM32F4\MyProjects\R7_FrequencyCounter\system_stm32f4xx.o
+ .debug_ranges  0x00000570       0x38 C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4_discovery.o
