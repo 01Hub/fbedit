@@ -54,5 +54,5 @@ hFont							HFONT ?
 connected						DWORD ?
 frqprev							DWORD ?
 frqres							DWORD ?
-
+frqequal						DWORD ?
 ;#########################################################################

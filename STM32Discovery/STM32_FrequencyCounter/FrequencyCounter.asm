@@ -90,10 +90,10 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.if eax
 			mov		eax,frqres
 			.if eax!=frqprev
-PrintHex eax
 				mov		edx,eax
 				sub		eax,frqprev
 				mov		frqprev,edx
+				mov		frqequal,20
 				.if eax<1000
 					;Hz
 					invoke wsprintf,addr buffer,addr szFmtHz,eax
@@ -109,6 +109,12 @@ PrintHex eax
 					call	InsertDot
 				.endif
 				invoke SetDlgItemText,hWin,IDC_FREQUENCY,addr buffer
+			.else
+				dec		frqequal
+				.if ZERO?
+					invoke wsprintf,addr buffer,addr szFmtHz,0
+					invoke SetDlgItemText,hWin,IDC_FREQUENCY,addr buffer
+				.endif
 			.endif
 		.else
 			invoke KillTimer,hWin,1000

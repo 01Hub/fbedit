@@ -3,11 +3,11 @@ Version=3000
 [Project]
 Assembler=masm
 Group=2,-1,0,1,FrequencyCounter,-2,-1,1,Assembly,-3,-1,1,Include,-4,-1,1,Misc,-5,-1,1,Resource
-F1=-2,2,1,-6,-25,1292,732,92,FrequencyCounter.asm
-F2=-3,0,1,44,44,600,400,27,FrequencyCounter.inc
+F1=-2,2,1,-6,-25,1292,732,112,FrequencyCounter.asm
+F2=-3,0,1,44,44,600,400,57,FrequencyCounter.inc
 F3=-5,2,4,66,66,600,400,0,FrequencyCounter.rc
 Path=C:\RadASM30\Masm\Projects\STM32_FrequencyCounter
-Open=1,1,2,3,4
+Open=0,1,2,3,4
 Api=
 C1=0
 B1=
