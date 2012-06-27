@@ -15,45 +15,53 @@
 					<Section Header="Build" >
 						<Property Header="Exclude" Value="Yes" Removable="1" />
 						<Property Header="LinkExclude" Value="Yes" Removable="1" />
-								
+																																									
 					</Section>
-						
+																																	
 				</Set>
+																					
 			</Config>
+															
 		</Options>
+									
 	</NodeASM>
 	<Options>
 		<Config Header="Standard" >
 			<Set Header="ApplicationBuild" >
 				<Section Header="General" >
 					<Property Header="TargetFamily" Value="ARM" />
-																
+																																											
 				</Section>
 				<Section Header="Directories" >
 					<Property Header="IncDir" Value=".;C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc" Removable="1" />
-							
+																																		
 				</Section>
-					
+																										
 			</Set>
 			<Set Header="Target" >
 				<Section Header="ProcessorARM" >
 					<Property Header="Processor" Value="STM32F100RB" />
-																
+							
 				</Section>
 				<Section Header="ToolSetARM" >
 					<Property Header="BuildToolSetARM" Value="ARM\GNU.config" Removable="1" />
-																
+																																											
 				</Section>
 				<Section Header="DebugARM" >
 					<Property Header="DebugTool_CORTEX" Value="SIM-ARM" Removable="1" />
-							
+																																		
 				</Section>
 					
 			</Set>
 			<Set Header="LD" >
 				<Section Header="Startup" >
-					<Property Header="DEFAULTSTARTUP" Value="No" Removable="1" />
-					<Property Header="File" Value="C:\STM32F4\MyProjects\R7_FrequencyCounter\startup_stm32f4xx.o" Removable="1" />
+					<Property Header="DEFAULTSTARTUP" Value="Yes" Removable="1" />
+					<Property Header="File" Value="\STM32F4\MyProjects\R7_FrequencyCounter\startup_stm32f4xx.o" Removable="1" />
+																
+				</Section>
+				<Section Header="Scripts" >
+					<Property Header="File" Value="C:\STM32F4\MyProjects\R7_FrequencyCounter\MySTM32F100_64K_8K_DEF.ld" Removable="1" />
+					<Property Header="SCRIPTFILES" Value="Yes" Removable="1" />
 							
 				</Section>
 					

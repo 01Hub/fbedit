@@ -8,7 +8,7 @@ It also includes the secondary/main linker script that is specified in the Ride 
 SEARCH_DIR(".")
 SEARCH_DIR("C:\STM32F4\MyProjects\R7_FrequencyCounter")
 SEARCH_DIR("C:\Program Files\Raisonance\Ride\Lib\ARM")
-STARTUP("C:\STM32F4\MyProjects\R7_FrequencyCounter\startup_stm32f4xx.o")
+STARTUP("startup_stm32f10x_md.o")
 INPUT("C:\STM32F4\MyProjects\R7_FrequencyCounter\main.o")
 INPUT("C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_it.o")
 INPUT("C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_rcc.o")

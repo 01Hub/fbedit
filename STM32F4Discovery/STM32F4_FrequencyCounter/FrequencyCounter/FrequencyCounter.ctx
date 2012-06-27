@@ -1,14 +1,14 @@
 
 <Debug>
 	<FrequencyCounter>
-		<CodeView TopRow="134218392" Focus="4294967295" >
+		<CodeView TopRow="134218288" Focus="4294967295" >
 			<CodeReport>
-				<0>112</0>
-				<1>123</1>
-				<2>67</2>
-				<3>372</3>
-				<4>67</4>
-				<5>142</5>
+				<0>78</0>
+				<1>85</1>
+				<2>46</2>
+				<3>261</3>
+				<4>47</4>
+				<5>100</5>
 														
 			</CodeReport>
 										
@@ -38,10 +38,13 @@
 			
 	</Flags>
 	<Views>
-		<View File="C:\STM32F4\MyProjects\R7_FrequencyCounter\main.c" Line="39" Index="0" />
-		<View File="C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_it.c" Line="154" Index="1" focus="1" />
-		<View File="C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.c" Line="437" Index="2" />
-		<View File="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_tim.h" Line="17" Index="3" />
+		<View File="C:\STM32F4\MyProjects\R7_FrequencyCounter\main.c" Line="40" Index="0" focus="1" />
+		<View File="C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_it.c" Line="148" Index="1" />
+		<View File="C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.c" Line="433" Index="2" />
+		<View File="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_tim.h" Line="13" Index="3" />
+		<View File="C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_gpio.c" Line="76" Index="4" />
+		<View File="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_gpio.h" Line="69" Index="5" />
+		<View File="C:\STM32F4\MyProjects\R7_FrequencyCounter\startup_stm32f4xx.s" Line="0" Index="6" />
 	</Views>
 	<Grep>
 		<GrepIncludeSub>yes</GrepIncludeSub>
@@ -74,6 +77,9 @@
 		</GrepReplaceWhat>
 	</Grep>
 	<FindStrings>
+		<Find>GPIO_OType_PP</Find>
+		<Find>GPIO_PuPd_UP</Find>
+		<Find>GPIO_PinAFConfig</Find>
 		<Find>DISCOVERY_EXTI_IRQHandler</Find>
 		<Find>EXTI_PortSourceGPIOA</Find>
 		<Find>// ass</Find>

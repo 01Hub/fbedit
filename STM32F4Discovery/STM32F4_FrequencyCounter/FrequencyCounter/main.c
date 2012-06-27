@@ -1,7 +1,7 @@
 /**
   ******************************************************************************
-  * @file    TIM_TimeBase/main.c 
-  * @author  MCD Application Team
+  * @file    FrequencyCounter/main.c 
+  * @author  MCD Application Team / KO
   * @version V1.0.0
   * @date    19-September-2011
   * @brief   Main program body
@@ -21,14 +21,6 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4_discovery.h"
-
-/** @addtogroup STM32F4_Discovery_Peripheral_Examples
-  * @{
-  */
-
-/** @addtogroup TIM_TimeBase
-  * @{
-  */ 
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
@@ -70,8 +62,11 @@ void TIM_Config(void)
 {
   NVIC_InitTypeDef NVIC_InitStructure;
   TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructure;
+  GPIO_InitTypeDef GPIO_InitStructure;
   /* TIM2 and TIM3 clock enable */
   RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2 | RCC_APB1Periph_TIM3, ENABLE);
+  /* GPIOA clock enable */
+  RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);
   /* Enable the TIM3 gloabal Interrupt */
   NVIC_InitStructure.NVIC_IRQChannel = TIM3_IRQn;
   NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
@@ -79,30 +74,34 @@ void TIM_Config(void)
   NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
   NVIC_Init(&NVIC_InitStructure);
   /* Initialize Leds mounted on STM32F4-Discovery board */
-  STM_EVAL_LEDInit(LED4);
   STM_EVAL_LEDInit(LED3);
-  STM_EVAL_LEDInit(LED5);
-  STM_EVAL_LEDInit(LED6);
-  /* Turn on LED3, LED4, LED5 and LED6 */
-  STM_EVAL_LEDOn(LED4);
-  STM_EVAL_LEDOn(LED3);
-  STM_EVAL_LEDOn(LED5);
-  STM_EVAL_LEDOn(LED6);
 
-  /* TIM2 Time base configuration */
+  /* TIM2 Counter configuration */
   TIM_TimeBaseStructure.TIM_Period = 0xffffffff;
   TIM_TimeBaseStructure.TIM_Prescaler = 0;
   TIM_TimeBaseStructure.TIM_ClockDivision = 0;
   TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
   TIM_TimeBaseInit(TIM2, &TIM_TimeBaseStructure);
-  /* TIM3 Time base configuration */
+  TIM2->CCMR1 = 0x0100;     //CC2S=01
+  TIM2->SMCR = 0x0067;      //TS=110, SMS=111
+
+  /* TIM2 chennel2 configuration : PA.01 */
+  GPIO_InitStructure.GPIO_Pin   = GPIO_Pin_1;
+  GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_AF;
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+  GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+  GPIO_InitStructure.GPIO_PuPd  = GPIO_PuPd_NOPULL ;
+  GPIO_Init(GPIOA, &GPIO_InitStructure);
+  
+  /* Connect TIM2 pin to AF2 */
+  GPIO_PinAFConfig(GPIOA, GPIO_PinSource1, GPIO_AF_TIM2);
+
+  /* TIM3 1 second Time base configuration */
   TIM_TimeBaseStructure.TIM_Period = 9999;
   TIM_TimeBaseStructure.TIM_Prescaler = 8399;
   TIM_TimeBaseStructure.TIM_ClockDivision = 0;
   TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
   TIM_TimeBaseInit(TIM3, &TIM_TimeBaseStructure);
-  // /* Prescaler configuration */
-  // TIM_PrescalerConfig(TIM3, 8399, TIM_PSCReloadMode_Immediate);
   /* TIM Interrupts enable */
   TIM_ITConfig(TIM3, TIM_IT_Update, ENABLE);
   /* TIM2 enable counter */

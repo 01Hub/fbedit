@@ -147,9 +147,6 @@ void TIM3_IRQHandler(void)
 {
   TIM_ClearITPendingBit(TIM3, TIM_IT_Update);
   STM_EVAL_LEDToggle(LED3);
-  STM_EVAL_LEDToggle(LED4);
-  STM_EVAL_LEDToggle(LED5);
-  STM_EVAL_LEDToggle(LED6);
   Frequency=TIM2->CNT;
 }
 
