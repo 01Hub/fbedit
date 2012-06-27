@@ -156,10 +156,13 @@ STLinkConnect proc uses ebx,hWin:HWND
 		call STLink.lpSTMass_OpenDevice[ebx]
 		or		eax,eax
 		jz		ExErr
+		invoke SendCommend,hWin,0F1h,080h,000000000h,0000h,addr STLink.buff2[ebx],06h
+		cmp		eax,1
+		jnz		ExErr
 		invoke SendCommend,hWin,0F5h,000h,000000000h,0000h,addr STLink.buff2[ebx],02h
 		cmp		eax,1
 		jnz		ExErr
-		movzx	eax,word ptr STLink.buff2[ebx]
+		movzx	eax,byte ptr STLink.buff2[ebx]
 		.if !eax
 			invoke SendCommend,hWin,0F3h,007h,000000000h,0000h,addr STLink.buff2[ebx],00h
 			cmp		eax,1

@@ -6,17 +6,17 @@ It also includes the secondary/main linker script that is specified in the Ride 
 */
 
 SEARCH_DIR(".")
-SEARCH_DIR("C:\STM32F4\MyProjects\R7_FrequencyCounter")
+SEARCH_DIR("C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_FrequencyCounter\FrequencyCounter")
 SEARCH_DIR("C:\Program Files\Raisonance\Ride\Lib\ARM")
-STARTUP("startup_stm32f10x_md.o")
-INPUT("C:\STM32F4\MyProjects\R7_FrequencyCounter\main.o")
-INPUT("C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_it.o")
-INPUT("C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_rcc.o")
-INPUT("C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_gpio.o")
-INPUT("C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.o")
-INPUT("C:\STM32F4\MyProjects\R7_FrequencyCounter\misc.o")
-INPUT("C:\STM32F4\MyProjects\R7_FrequencyCounter\system_stm32f4xx.o")
-INPUT("C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4_discovery.o")
+STARTUP(".\startup_stm32f4xx.o")
+INPUT("C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_FrequencyCounter\FrequencyCounter\main.o")
+INPUT("C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_FrequencyCounter\FrequencyCounter\stm32f4xx_it.o")
+INPUT("C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_FrequencyCounter\FrequencyCounter\stm32f4xx_rcc.o")
+INPUT("C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_FrequencyCounter\FrequencyCounter\stm32f4xx_gpio.o")
+INPUT("C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_FrequencyCounter\FrequencyCounter\stm32f4xx_tim.o")
+INPUT("C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_FrequencyCounter\FrequencyCounter\misc.o")
+INPUT("C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_FrequencyCounter\FrequencyCounter\system_stm32f4xx.o")
+INPUT("C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_FrequencyCounter\FrequencyCounter\stm32f4_discovery.o")
 EXTERN( __io_putchar )
 EXTERN( _write )
 GROUP(
@@ -27,5 +27,5 @@ GROUP(
 "libm.a"
 
 )
-INCLUDE "C:\STM32F4\MyProjects\R7_FrequencyCounter\STM32F100_64K_8K_FLASH.ld"
-OUTPUT("C:\STM32F4\MyProjects\R7_FrequencyCounter\FrequencyCounter.elf")
+INCLUDE "C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_FrequencyCounter\FrequencyCounter\STM32F100_64K_8K_FLASH.ld"
+OUTPUT("C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_FrequencyCounter\FrequencyCounter\FrequencyCounter.elf")

@@ -9,4 +9,5 @@ using the STM32 Discovery as a thin server and my PC as a fat client.
 
 The library needs STLinkUSBDriver.dll to work.
 
-KetilO 
+KetilO
+

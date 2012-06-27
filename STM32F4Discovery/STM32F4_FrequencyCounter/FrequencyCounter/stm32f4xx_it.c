@@ -38,6 +38,8 @@
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 extern __IO uint32_t Frequency;
+extern __IO uint32_t Timer;
+extern __IO uint32_t PreviousTimer;
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
 
@@ -147,7 +149,9 @@ void TIM3_IRQHandler(void)
 {
   TIM_ClearITPendingBit(TIM3, TIM_IT_Update);
   STM_EVAL_LEDToggle(LED3);
-  Frequency=TIM2->CNT;
+  Timer=TIM2->CNT;
+  Frequency=Timer-PreviousTimer;
+  PreviousTimer=Timer;
 }
 
 /******************************************************************************/

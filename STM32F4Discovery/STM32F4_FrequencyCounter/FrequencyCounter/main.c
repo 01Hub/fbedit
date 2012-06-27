@@ -27,6 +27,8 @@
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 __IO uint32_t Frequency;
+__IO uint32_t Timer;
+__IO uint32_t PreviousTimer;
 /* Private function prototypes -----------------------------------------------*/
 void TIM_Config(void);
 

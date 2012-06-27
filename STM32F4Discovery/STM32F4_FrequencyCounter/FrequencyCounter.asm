@@ -84,45 +84,33 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.endif
 		.endif
 	.elseif	eax==WM_TIMER
-		;The frequency is a 32 bit variable stored at 2000000Ch in STM32F100 ram
+		;The frequency is a 32 bit variable stored at 20000014h in STM32F4 ram
 		;Read 4 bytes from STM32F100 ram and store it in frqres.
-		invoke STLinkRead,hWin,20000014h,addr frqres,4
+		invoke STLinkRead,hWin,20000018h,addr frqres,4
 		.if eax
 			mov		eax,frqres
-			.if eax!=frqprev
-				mov		edx,eax
-				sub		eax,frqprev
-				mov		frqprev,edx
-				mov		frqequal,20
-				.if eax<1000
-					;Hz
-					invoke wsprintf,addr buffer,addr szFmtHz,eax
-				.elseif eax<1000000
-					;KHz
-					invoke wsprintf,addr buffer,addr szFmtKHz,eax
-					mov		ebx,6
-					call	InsertDot
-				.else
-					;MHz
-					invoke wsprintf,addr buffer,addr szFmtMHz,eax
-					mov		ebx,9
-					call	InsertDot
-				.endif
-				invoke SetDlgItemText,hWin,IDC_FREQUENCY,addr buffer
+			.if eax<1000
+				;Hz
+				invoke wsprintf,addr buffer,addr szFmtHz,eax
+			.elseif eax<1000000
+				;KHz
+				invoke wsprintf,addr buffer,addr szFmtKHz,eax
+				mov		ebx,6
+				call	InsertDot
 			.else
-				dec		frqequal
-				.if ZERO?
-					invoke wsprintf,addr buffer,addr szFmtHz,0
-					invoke SetDlgItemText,hWin,IDC_FREQUENCY,addr buffer
-				.endif
+				;MHz
+				invoke wsprintf,addr buffer,addr szFmtMHz,eax
+				mov		ebx,9
+				call	InsertDot
 			.endif
+			invoke SetDlgItemText,hWin,IDC_FREQUENCY,addr buffer
 		.else
 			invoke KillTimer,hWin,1000
 			mov		connected,FALSE
 		.endif
 	.elseif	eax==WM_CLOSE
 		invoke KillTimer,hWin,1000
-		invoke STLinkDisconnect
+		invoke STLinkDisconnect,hWin
 		invoke DeleteObject,hFont
 		invoke EndDialog,hWin,0
 	.else

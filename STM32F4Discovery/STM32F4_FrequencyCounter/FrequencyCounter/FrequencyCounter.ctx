@@ -9,12 +9,12 @@
 				<3>261</3>
 				<4>47</4>
 				<5>100</5>
-														
+																																																								
 			</CodeReport>
-										
+																																								
 		</CodeView>
 		<MemoryView Focus="134218120" TopRow="0" NbPerLine="8" />
-						
+																								
 	</FrequencyCounter>
 	<Flags>
 		<Report>
@@ -38,13 +38,8 @@
 			
 	</Flags>
 	<Views>
-		<View File="C:\STM32F4\MyProjects\R7_FrequencyCounter\main.c" Line="40" Index="0" focus="1" />
-		<View File="C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_it.c" Line="148" Index="1" />
-		<View File="C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_tim.c" Line="433" Index="2" />
-		<View File="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_tim.h" Line="13" Index="3" />
-		<View File="C:\STM32F4\MyProjects\R7_FrequencyCounter\stm32f4xx_gpio.c" Line="76" Index="4" />
-		<View File="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_gpio.h" Line="69" Index="5" />
-		<View File="C:\STM32F4\MyProjects\R7_FrequencyCounter\startup_stm32f4xx.s" Line="0" Index="6" />
+		<View File="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_FrequencyCounter\FrequencyCounter\main.c" Line="31" Index="0" />
+		<View File="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_FrequencyCounter\FrequencyCounter\stm32f4xx_it.c" Line="154" Index="1" focus="1" />
 	</Views>
 	<Grep>
 		<GrepIncludeSub>yes</GrepIncludeSub>
