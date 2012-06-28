@@ -1,0 +1,24 @@
+Digital voltmeter demo project:
+-------------------------------
+Software:
+---------
+The server uses the unmodified ADC3_DMA example.
+The client is my RadASM30 / masm32 project STM32_DVM included here.
+
+Additional Hardware:
+--------------------
+To test the DVM I used a 10K potmeter connected like this:
+
+
+     ------------o 3V3 (The real voltage is 3.0V due to a scottky diode)
+    |
+   --
+  |  |
+  |  |<----------o PC2 (The ADC3 Channel12 input)
+  |  |
+   --
+    |
+     ------------o GND
+
+KetilO
+ 
