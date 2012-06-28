@@ -296,6 +296,7 @@ HSClockProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 			mov		ecx,50000
 		.endif
 		mov		eax,STM32Clock
+		shr		eax,1
 		cdq
 		div		ecx
 		cdq

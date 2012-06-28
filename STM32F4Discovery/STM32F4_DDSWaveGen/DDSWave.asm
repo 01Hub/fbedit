@@ -400,10 +400,10 @@ DDSWaveProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 		fdivp	st(1),st
 		fild	ddswavedata.DDS_PhaseFrq
 		fmulp	st(1),st
-		fild	dds1000
+		fild	dds100
 		fmulp	st(1),st
 		fistp	tmp
-		invoke FormatFrequencyX1000,addr buffer,addr szFmtFrq,tmp
+		invoke FormatFrequencyX100,addr buffer,addr szFmtFrq,tmp
 		mov		eax,ddswavedata.DDS_VMin
 		mov		ecx,3000
 		mul		ecx

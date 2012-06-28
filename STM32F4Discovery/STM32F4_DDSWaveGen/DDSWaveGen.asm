@@ -61,9 +61,9 @@ MakeCommand proc
 	mov		command.HSC_div,ax
 	mov		eax,65536
 	sub		eax,hsclockdata.hsclockfrequency
-	mov		command.HSC_frq,ax
+	mov		command.HSC_frq,eax
 	mov		eax,hsclockdata.hsclockccr
-	mov		command.HSC_dutycycle,ax
+	mov		command.HSC_dutycycle,eax
 	;DDS wave generator
 	mov		eax,ddswavedata.DDS_PhaseFrq
 	mov		command.DDS_PhaseFrq,eax

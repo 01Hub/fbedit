@@ -33,47 +33,47 @@ FormatFrequency proc uses edi,lpBuff:DWORD,lpszFrequency:DWORD,Frequency:DWORD
 
 FormatFrequency endp
 
-FormatFrequencyX1000 proc uses edi,lpBuff:DWORD,lpszFrequency:DWORD,Frequency:DWORD
+FormatFrequencyX100 proc uses edi,lpBuff:DWORD,lpszFrequency:DWORD,Frequency:DWORD
 
 	mov		eax,Frequency
 	mov		edi,lpBuff
-	.if eax<1000000
+	.if eax<100000
 		;Hz
-		invoke wsprintf,edi,addr szFmtFrqHzX1000,lpszFrequency,eax
+		invoke wsprintf,edi,addr szFmtFrqHzX100,lpszFrequency,eax
 		invoke lstrlen,edi
 		mov		edx,[edi+eax-2]
 		mov		[edi+eax-1],edx
-		mov		edx,[edi+eax-6]
-		mov		[edi+eax-5],edx
-		mov		byte ptr [edi+eax-5],'.'
-	.elseif eax<1000000000
+		mov		edx,[edi+eax-5]
+		mov		[edi+eax-4],edx
+		mov		byte ptr [edi+eax-4],'.'
+	.elseif eax<100000000
 		;KHz
 		invoke wsprintf,edi,addr szFmtFrqKHz,lpszFrequency,eax
 		invoke lstrlen,edi
 		mov		edx,[edi+eax-3]
 		mov		[edi+eax-2],edx
-		mov		edx,[edi+eax-7]
+		mov		edx,[edi+eax-6]
 		mov		[edi+eax-6],edx
-		mov		edx,[edi+eax-10]
+		mov		edx,[edi+eax-9]
 		mov		[edi+eax-9],edx
-		mov		byte ptr [edi+eax-9],'.'
+		mov		byte ptr [edi+eax-8],'.'
 	.else
 		;MHz
 		invoke wsprintf,edi,addr szFmtFrqMHz,lpszFrequency,eax
 		invoke lstrlen,edi
 		mov		edx,[edi+eax-3]
 		mov		[edi+eax-2],edx
-		mov		edx,[edi+eax-7]
-		mov		[edi+eax-6],edx
-		mov		edx,[edi+eax-11]
-		mov		[edi+eax-10],edx
-		mov		edx,[edi+eax-13]
-		mov		[edi+eax-12],edx
-		mov		byte ptr [edi+eax-12],'.'
+		mov		edx,[edi+eax-6]
+		mov		[edi+eax-5],edx
+		mov		edx,[edi+eax-10]
+		mov		[edi+eax-9],edx
+		mov		edx,[edi+eax-12]
+		mov		[edi+eax-11],edx
+		mov		byte ptr [edi+eax-11],'.'
 	.endif
 	ret
 
-FormatFrequencyX1000 endp
+FormatFrequencyX100 endp
 
 FormatVoltage proc uses edi,lpBuff:DWORD,lpFmt:DWORD,Volts:DWORD
 

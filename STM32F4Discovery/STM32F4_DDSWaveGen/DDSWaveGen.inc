@@ -105,10 +105,11 @@ SWEEP_SubModeDown			equ 3
 SWEEP_SubModeUpDown			equ 4
 SWEEP_SubModePeak			equ 5
 
-STM32_Frequency				equ 20000000h
-STM32_Command				equ 20000010h
-STM32_Wave					equ 20000030h
-STM32_Peak					equ 20001030h
+STM32_Start					equ 20000014h
+STM32_Frequency				equ STM32_Start+0000h
+STM32_Command				equ STM32_Start+0010h
+STM32_Wave					equ STM32_Start+0030h
+STM32_Peak					equ STM32_Start+1030h
 STM32_DVM					equ 4001243Ch
 
 STM32_CMNDWait				equ 0
@@ -121,8 +122,8 @@ COMMAND struct
 	cmnd					BYTE ?
 	HSC_enable				BYTE ?
 	HSC_div					WORD ?
-	HSC_frq					WORD ?
-	HSC_dutycycle			WORD ?
+	HSC_frq					DWORD ?
+	HSC_dutycycle			DWORD ?
 	DDS_PhaseFrq			DWORD ?
 	DDS_SubMode				BYTE ?
 	DDS_DacBuffer			BYTE ?
@@ -213,7 +214,7 @@ szFmtFrq					BYTE ' Frequency: ',0
 szFmtFrqMin					BYTE ' Fmin: ',0
 szFmtFrqMax					BYTE '  Fmax: ',0
 szFmtFrqHz					BYTE '%s%uHz',0
-szFmtFrqHzX1000				BYTE '%s%04uHz',0
+szFmtFrqHzX100				BYTE '%s%03uHz',0
 szFmtFrqKHz					BYTE '%s%uKHz',0
 szFmtFrqMHz					BYTE '%s%uMHz',0
 szFmtDDSVmin				BYTE '  Vmin: %04uV',0
@@ -221,6 +222,7 @@ szFmtDDSVmax				BYTE '  Vmax: %04uV',0
 szFmtDDSVpp					BYTE '  Vpp: %04uV',0
 szFmtDuty					BYTE '  Pulse Width: %u%%',0
 szNULL						BYTE 0
+szZERO						BYTE '0',0
 
 szDDS_Waves					BYTE 'Sine Wave',0
 							BYTE 'Triangle Wave',0
@@ -873,17 +875,12 @@ DDS_RevSawToothWave			WORD 2048,2046,2044,2042,2040,2038,2036,2034,2032,2030,202
 							WORD 2112,2110,2108,2106,2104,2102,2100,2098,2096,2094,2092,2090,2088,2086,2084,2082
 							WORD 2080,2078,2076,2074,2072,2070,2068,2066,2064,2062,2060,2058,2056,2054,2052,2050
 
-;Uncomment the STM32F100RB frequency you will be using
-;STM32Clock					DWORD 24000000
-;STM32Clock					DWORD 28000000
-;STM32Clock					DWORD 32000000
-;STM32Clock					DWORD 40000000
-;STM32Clock					DWORD 48000000
-STM32Clock					DWORD 56000000
+STM32Clock					DWORD 168000000
+;STM32Clock					DWORD 56000000
 
 dds64						QWORD 100000000h
 ddscycles					DWORD 8
-dds1000						DWORD 1000
+dds100						DWORD 100
 float100					QWORD 100.0
 
 .data?

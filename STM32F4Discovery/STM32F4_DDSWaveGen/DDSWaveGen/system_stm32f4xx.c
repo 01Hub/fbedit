@@ -46,9 +46,9 @@
   *-----------------------------------------------------------------------------
   *        System Clock source                    | PLL (HSE)
   *-----------------------------------------------------------------------------
-  *        SYSCLK(Hz)                             | 144000000
+  *        SYSCLK(Hz)                             | 168000000
   *-----------------------------------------------------------------------------
-  *        HCLK(Hz)                               | 144000000
+  *        HCLK(Hz)                               | 168000000
   *-----------------------------------------------------------------------------
   *        AHB Prescaler                          | 1
   *-----------------------------------------------------------------------------
@@ -60,11 +60,11 @@
   *-----------------------------------------------------------------------------
   *        PLL_M                                  | 8
   *-----------------------------------------------------------------------------
-  *        PLL_N                                  | 288
+  *        PLL_N                                  | 336
   *-----------------------------------------------------------------------------
   *        PLL_P                                  | 2
   *-----------------------------------------------------------------------------
-  *        PLL_Q                                  | 6
+  *        PLL_Q                                  | 7
   *-----------------------------------------------------------------------------
   *        PLLI2S_N                               | NA
   *-----------------------------------------------------------------------------
@@ -145,13 +145,13 @@
 
 /* PLL_VCO = (HSE_VALUE or HSI_VALUE / PLL_M) * PLL_N */
 #define PLL_M      8
-#define PLL_N      288
+#define PLL_N      336
 
 /* SYSCLK = PLL_VCO / PLL_P */
 #define PLL_P      2
 
 /* USB OTG FS, SDIO and RNG Clock =  PLL_VCO / PLLQ */
-#define PLL_Q      6
+#define PLL_Q      7
 
 /**
   * @}
@@ -169,7 +169,7 @@
   * @{
   */
 
-  uint32_t SystemCoreClock = 144000000;
+  uint32_t SystemCoreClock = 168000000;
 
   __I uint8_t AHBPrescTable[16] = {0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 6, 7, 8, 9};
 
@@ -360,8 +360,8 @@ static void SetSysClock(void)
   {
     /* Enable high performance mode, System frequency up to 168 MHz */
     RCC->APB1ENR |= RCC_APB1ENR_PWREN;
-    PWR->CR |= PWR_CR_PMODE;
-    
+    PWR->CR |= PWR_CR_PMODE;  
+
     /* HCLK = SYSCLK / 1*/
     RCC->CFGR |= RCC_CFGR_HPRE_DIV1;
       
@@ -399,6 +399,7 @@ static void SetSysClock(void)
   { /* If HSE fails to start-up, the application will have wrong clock
          configuration. User can add here some code to deal with this error */
   }
+
 }
 
 /**

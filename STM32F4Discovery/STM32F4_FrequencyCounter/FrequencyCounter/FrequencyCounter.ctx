@@ -9,17 +9,17 @@
 				<3>261</3>
 				<4>47</4>
 				<5>100</5>
-																																																																						
+																																																																																				
 			</CodeReport>
-																																																		
+																																																												
 		</CodeView>
 		<MemoryView Focus="134218120" TopRow="0" NbPerLine="8" />
-																														
+																																				
 	</FrequencyCounter>
 	<Flags>
 		<Report>
 			<Def Header="FlagReport" NbCol="9" >
-				<Col Type="PT_BOOL" Header="Check" sizeCache="18" AutoSize="0" Edit="1" Sortable="1" Icon="D:\Ride\Ride\Config\Resources\check.bmp" />
+				<Col Type="PT_BOOL" Header="Check" sizeCache="18" AutoSize="0" Edit="1" Sortable="1" Icon="C:\Program Files\Raisonance\Ride\Config\Resources\check.bmp" />
 				<Col Type="PT_STRING" Header="Kind" sizeCache="DDDDDDDDDDD" AutoSize="1" Edit="0" Sortable="1" />
 				<Col Type="PT_STRING" Header="KindID" sizeCache="DD" AutoSize="1" Edit="0" Sortable="1" Visible="0" />
 				<Col Type="PT_STRING" Header="Space" sizeCache="DDDDDD" AutoSize="1" Edit="0" Sortable="1" />
@@ -38,7 +38,10 @@
 			
 	</Flags>
 	<Views>
-		<View File="D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_FrequencyCounter\FrequencyCounter\main.c" Line="0" Index="0" focus="1" />
+		<View File="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_FrequencyCounter\FrequencyCounter\main.c" Line="76" Index="0" />
+		<View File="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_FrequencyCounter\FrequencyCounter\stm32f4xx_it.c" Line="156" Index="1" />
+		<View File="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_FrequencyCounter\FrequencyCounter\stm32f4_discovery.c" Line="0" Index="2" />
+		<View File="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_FrequencyCounter\FrequencyCounter\misc.c" Line="0" Index="3" focus="1" />
 	</Views>
 	<Grep>
 		<GrepIncludeSub>yes</GrepIncludeSub>
@@ -51,7 +54,8 @@
 			<GrepFileType>*.c;*.h</GrepFileType>
 		</GrepFileTypes>
 		<GrepFindWhat>
-			<GrepFindWhatValue>#else</GrepFindWhatValue>
+			<GrepFindWhatValue>NVIC_Init</GrepFindWhatValue>
+			<GrepFindStr>NVIC_Init</GrepFindStr>
 			<GrepFindStr>#elif</GrepFindStr>
 			<GrepFindStr>#else</GrepFindStr>
 			<GrepFindStr>#elseif</GrepFindStr>
@@ -60,7 +64,7 @@
 			<GrepFindStr>ARR</GrepFindStr>
 		</GrepFindWhat>
 		<GrepFindWhere>
-			<GrepFindWhereValue>D:\STM32\Inc</GrepFindWhereValue>
+			<GrepFindWhereValue>Application Files</GrepFindWhereValue>
 			<GrepPathStr>Application Files</GrepPathStr>
 			<GrepPathStr>Application Path</GrepPathStr>
 			<GrepPathStr>D:\STM32\Inc</GrepPathStr>
