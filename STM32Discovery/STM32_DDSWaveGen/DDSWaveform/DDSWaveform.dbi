@@ -1,5 +1,5 @@
 [Application]
-ApplicationPath=C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\STM32_DDSWaveGen\DDSWaveform\DDSWaveform.elf
+ApplicationPath=D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\STM32_DDSWaveGen\DDSWaveform\DDSWaveform.elf
 CSX=0
 HighBankAddr=400000
 BootMode=0
