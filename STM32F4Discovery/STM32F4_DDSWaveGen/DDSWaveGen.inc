@@ -108,9 +108,9 @@ SWEEP_SubModePeak			equ 5
 STM32_Start					equ 20000014h
 STM32_Frequency				equ STM32_Start+0000h
 STM32_Command				equ STM32_Start+0010h
-STM32_Wave					equ STM32_Start+0030h
-STM32_Peak					equ STM32_Start+1030h
-STM32_DVM					equ 4001243Ch
+STM32_Wave					equ STM32_Start+0034h
+STM32_Peak					equ STM32_Start+1034h
+STM32_DVM					equ 4001204Ch
 
 STM32_CMNDWait				equ 0
 STM32_CMNDStart				equ 1

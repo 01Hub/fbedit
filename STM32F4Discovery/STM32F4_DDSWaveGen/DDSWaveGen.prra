@@ -2,19 +2,19 @@
 Version=3000
 [Project]
 Assembler=Masm
-Path=D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen
+Path=C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen
 Group=2,-1,0,1,DDS Waveform Generator,-2,-1,1,Assembly,-3,-1,1,Include,-4,-1,1,Misc,-5,-1,1,Resource
-F1=-2,2,1,-10,-29,909,543,60,DDSWaveGen.asm
-F2=-3,0,1,40,40,608,409,878,DDSWaveGen.inc
+F1=-2,2,1,-10,-29,909,543,99,DDSWaveGen.asm
+F2=-3,0,1,40,40,608,409,112,DDSWaveGen.inc
 F3=-5,2,4,-10,-29,909,543,36,DDSWaveGen.rc
-F4=-4,0,2,88,88,600,400,51,DDSWaveGen.txt
+F4=-4,0,2,88,88,600,400,4,DDSWaveGen.txt
 C3=
 B3=
 M3=
 F5=-2,0,1,62,62,883,336,71,Frequency.asm
 F6=-2,0,1,84,84,883,336,298,HSClock.asm
-F7=-2,0,1,106,106,883,336,405,DDSWave.asm
-Open=1,1,2,5,7,6,3,4
+F7=-2,0,1,106,106,883,336,3,DDSWave.asm
+Open=0,1,2,5,7,6,3,4
 Api=
 C6=0
 B6=

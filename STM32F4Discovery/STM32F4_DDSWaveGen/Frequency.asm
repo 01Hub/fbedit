@@ -53,9 +53,9 @@ FormatFrequencyX100 proc uses edi,lpBuff:DWORD,lpszFrequency:DWORD,Frequency:DWO
 		mov		edx,[edi+eax-3]
 		mov		[edi+eax-2],edx
 		mov		edx,[edi+eax-6]
-		mov		[edi+eax-6],edx
+		mov		[edi+eax-5],edx
 		mov		edx,[edi+eax-9]
-		mov		[edi+eax-9],edx
+		mov		[edi+eax-8],edx
 		mov		byte ptr [edi+eax-8],'.'
 	.else
 		;MHz

@@ -19,6 +19,17 @@
   ******************************************************************************
   */
 
+/*
+  Port pins
+  ------------------------------------
+  PA1       Frequency counter input
+  PA2       High speed clock output
+  PA3       DVM input
+  PA4       DDS wave output
+  PA5       Peak input
+  PA6       DDS sweep sync output
+  ------------------------------------
+*/
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4_discovery.h"
 #include <stdio.h>
@@ -79,7 +90,10 @@ static STM32_CMNDTypeDef STM32_Command;               // 0x20000014
 void FRQ_Config(void);
 void HSC_Config(void);
 void DAC_Config(void);
+void ADC_Config(void);
 void DDSWaveGenerator(void);
+void DDSSweepWaveGenerator(void);
+void DDSSweepWaveGeneratorPeak(void);
 /* Private functions ---------------------------------------------------------*/
 /**
   * @brief  Main program
@@ -101,11 +115,17 @@ int main(void)
   STM_EVAL_LEDInit(LED3);
   STM_EVAL_LEDInit(LED4);
   STM_EVAL_LEDInit(LED5);
+  STM_EVAL_LEDInit(LED6);
   STM_EVAL_LEDOff(LED3);
   STM_EVAL_LEDOff(LED4);
   STM_EVAL_LEDOff(LED5);
-  /* Setup frequency */
+  STM_EVAL_LEDOff(LED6);
+  /* Setup frequency counter */
   FRQ_Config();
+  /* Setup DVM */
+  ADC_Config();
+  /* Setup DDS */
+  DAC_Config();
 
   while (1)
   {
@@ -115,8 +135,6 @@ int main(void)
       STM32_Command.cmnd = STM32_CMNDWait;
       /* Setup high speed clock */
       HSC_Config();
-      /* DAC configuration */
-      DAC_Config();
       switch (STM32_Command.DDS_SubMode)
       {
         case SWEEP_SubModeOff:
@@ -124,16 +142,20 @@ int main(void)
           DDSWaveGenerator();
           break;
         case SWEEP_SubModeUp:
-          //DDSSweepWaveGenerator();
+          STM_EVAL_LEDOn(LED6);
+          DDSSweepWaveGenerator();
           break;
         case SWEEP_SubModeDown:
-          //DDSSweepWaveGenerator();
+          STM_EVAL_LEDOn(LED6);
+          DDSSweepWaveGenerator();
           break;
         case SWEEP_SubModeUpDown:
-          //DDSSweepWaveGenerator();
+          STM_EVAL_LEDOn(LED6);
+          DDSSweepWaveGenerator();
           break;
         case SWEEP_SubModePeak:
-          //DDSSweepWaveGeneratorPeak();
+          STM_EVAL_LEDOn(LED6);
+          DDSSweepWaveGeneratorPeak();
           break;
       }
     }
@@ -148,6 +170,7 @@ int main(void)
       TIM_Cmd(TIM2, ENABLE);
       /* Enable TIM3 */
       TIM_Cmd(TIM3, ENABLE);
+      STM_EVAL_LEDOn(LED3);
     }
     i=0;
     while (i < 100000)
@@ -163,7 +186,7 @@ void FRQ_Config(void)
   TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructure;
   GPIO_InitTypeDef GPIO_InitStructure;
   /* TIM2, TIM3, TIM5 and DAC clock enable */
-  RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2 | RCC_APB1Periph_TIM3 | RCC_APB1Periph_TIM5 | RCC_APB1Periph_DAC, ENABLE);
+  RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2 | RCC_APB1Periph_TIM3 | RCC_APB1Periph_TIM5 | RCC_APB1Periph_TIM6 | RCC_APB1Periph_TIM7 | RCC_APB1Periph_DAC, ENABLE);
   /* GPIOA clock enable */
   RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);
   /* Enable the TIM3 gloabal Interrupt */
@@ -273,6 +296,60 @@ void DAC_Config(void)
   DAC_Cmd(DAC_Channel_1, ENABLE);
 }
 
+void ADC_Config(void)
+{
+  ADC_InitTypeDef       ADC_InitStructure;
+  ADC_CommonInitTypeDef ADC_CommonInitStructure;
+  GPIO_InitTypeDef      GPIO_InitStructure;
+
+  ADC_CommonStructInit(&ADC_CommonInitStructure);
+  ADC_StructInit(&ADC_InitStructure);
+  /* Enable ADC1 and ADC2 clocks */
+  RCC_APB2PeriphClockCmd(RCC_APB2Periph_ADC1 | RCC_APB2Periph_ADC2, ENABLE);
+  /* Configure ADC1 Channel3 and and ADC2 Channel5 pins as analog inputs ******************************/
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_3 | GPIO_Pin_5;
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AN;
+  GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL ;
+  GPIO_Init(GPIOA, &GPIO_InitStructure);
+
+  /* ADC Common Init **********************************************************/
+  ADC_CommonInitStructure.ADC_Mode = ADC_Mode_Independent;
+  ADC_CommonInitStructure.ADC_Prescaler = ADC_Prescaler_Div2;
+  ADC_CommonInitStructure.ADC_DMAAccessMode = ADC_DMAAccessMode_Disabled;
+  ADC_CommonInitStructure.ADC_TwoSamplingDelay = ADC_TwoSamplingDelay_5Cycles;
+  ADC_CommonInit(&ADC_CommonInitStructure);
+
+  /* ADC1 Init ****************************************************************/
+  ADC_InitStructure.ADC_Resolution = ADC_Resolution_12b;
+  ADC_InitStructure.ADC_ScanConvMode = DISABLE;
+  ADC_InitStructure.ADC_ContinuousConvMode = ENABLE;
+  ADC_InitStructure.ADC_ExternalTrigConvEdge = ADC_ExternalTrigConvEdge_None;
+  ADC_InitStructure.ADC_DataAlign = ADC_DataAlign_Right;
+  ADC_InitStructure.ADC_NbrOfConversion = 1;
+  ADC_Init(ADC1, &ADC_InitStructure);
+  /* ADC1 regular channel3 configuration *************************************/
+  ADC_RegularChannelConfig(ADC1, ADC_Channel_3, 1, ADC_SampleTime_480Cycles);
+  /* Enable ADC1 */
+  ADC_Cmd(ADC1, ENABLE);
+  /* Start ADC1 Software Conversion */ 
+  ADC_SoftwareStartConv(ADC1);
+
+  /* ADC2 Init ****************************************************************/
+  ADC_InitStructure.ADC_Resolution = ADC_Resolution_12b;
+  ADC_InitStructure.ADC_ScanConvMode = DISABLE;
+  ADC_InitStructure.ADC_ContinuousConvMode = ENABLE;
+  ADC_InitStructure.ADC_ExternalTrigConvEdge = ADC_ExternalTrigConvEdge_None;
+  ADC_InitStructure.ADC_DataAlign = ADC_DataAlign_Right;
+  ADC_InitStructure.ADC_NbrOfConversion = 1;
+  ADC_Init(ADC2, &ADC_InitStructure);
+  /* ADC2 regular channel5 configuration *************************************/
+  ADC_RegularChannelConfig(ADC2, ADC_Channel_5, 1, ADC_SampleTime_3Cycles);
+  /* Enable ADC2 */
+  ADC_Cmd(ADC2, ENABLE);
+  /* Start ADC2 Software Conversion */ 
+  ADC_SoftwareStartConv(ADC2);
+}
+
 /*******************************************************************************
 * Function Name  : DDSWaveLoop
 * Description    : This function generates the DDS waveform
@@ -315,6 +392,190 @@ void DDSWaveGenerator(void)
   DDS_WaveLoop();
 }
 
+/*******************************************************************************
+* Function Name  : DDSSweepWaveGenerator
+* Description    : This function generates a sweep waveform using DDS
+* Input          : None
+* Output         : None
+* Return         : None
+*******************************************************************************/
+void DDSSweepWaveGenerator(void)
+{
+  GPIO_InitTypeDef GPIO_InitStructure;
+  TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;
+  NVIC_InitTypeDef NVIC_InitStructure;
+
+  GPIO_InitStructure.GPIO_Pin   = GPIO_Pin_6;
+  GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_OUT;
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+  GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+  GPIO_InitStructure.GPIO_PuPd  = GPIO_PuPd_NOPULL ;
+  GPIO_Init(GPIOA, &GPIO_InitStructure);
+
+  /* TIM6 configuration */
+  TIM_TimeBaseStructure.TIM_Period = STM32_Command.SWEEP_StepTime;
+  TIM_TimeBaseStructure.TIM_Prescaler = 8399;
+  TIM_TimeBaseStructure.TIM_ClockDivision = 0;
+  TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
+  TIM_TimeBaseInit(TIM6, &TIM_TimeBaseStructure);
+  TIM_InternalClockConfig(TIM6);
+
+  /* Enable the TIM6 gloabal Interrupt */
+  NVIC_InitStructure.NVIC_IRQChannel = TIM6_DAC_IRQn;
+  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
+  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
+  NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+  NVIC_Init(&NVIC_InitStructure);
+
+  TIM_Cmd(TIM6, ENABLE);
+  TIM_ClearITPendingBit(TIM6,TIM_IT_Update);
+  TIM_ITConfig(TIM6, TIM_IT_Update, ENABLE);
+
+  /* Used by Clear TIM6 Update interrupt pending bit */
+  asm("mov    r10,#0x1000");
+  asm("movt   r10,#0x4000");
+
+  asm("movw   r9,#0x0000");
+  asm("movt    r9,#0x4002");      /* GPIOA */
+  asm("movw   r1,#0x0048");
+  asm("movt   r1,#0x2000");       /* STM32_Command.Wave[0] = 0x20000048 */
+  asm("movw   r2,#0x7408");
+  asm("movt   r2,#0x4000");       /* DAC_DHR12R1 */
+  asm("mov    r3,#0x0");          /* DDSPhase pointer value */
+
+  asm("movw   r8,#0x0");          /* STM32_Command.SWEEP_UpDown = 0x20000038 */
+  asm("movt   r8,#0x2000");
+  asm("ldr    r0,[r8,#0x38]");    /* SWEEP up or down=0 / up and down=1 */
+  asm("ldr    r6,[r8,#0x3C]");    /* STM32_Command.SWEEP_Min = 0x2000003C */
+  asm("ldr    r7,[r8,#0x40]");    /* STM32_Command.SWEEP_Max = 0x20000040 */
+  asm("ldr    r8,[r8,#0x44]");    /* STM32_Command.SWEEP_Add = 0x20000044 */
+  asm("mov    r4,r6");            /* STM32_Command.SWEEP_Min */
+
+  DDS_WaveLoop();
+}
+
+/*******************************************************************************
+* Function Name  : TIM6_DAC_IRQHandler
+* Description    : This function handles TIM6 global interrupt request.
+*                  It is used by dds sweep
+* Input          : None
+* Output         : None
+* Return         : None
+*******************************************************************************/
+void TIM6_DAC_IRQHandler(void)
+{
+  /* Clear TIM6 Update interrupt pending bit */
+  asm("mov    r12,#0x0");
+  asm("strh   r12,[r10,#0x8 *2]");
+  /* Clear sweep sync */
+  asm("mov    r12,#0x4000");
+  asm("str    r12,[r9,#0x18]");
+  /* Prepare set sweep sync */
+  asm("mov    r12,#0x0040");
+
+  asm("cbnz   r0,lblupdown");
+  /* Up or Down*/
+  asm("add    r4,r8");            /* SWEEP_Add */
+  asm("cmp    r4,r7");            /* SWEEP_Max */
+  asm("itt     eq");              /* Make the next two instructions conditional */
+  asm("moveq  r4,r6");            /* Conditional load SWEEP_Min */
+  asm("streq  r12,[r9,#0x18]");   /* Conditional set sweep sync */
+  asm("bx     lr");               /* Return */
+
+  /* Up & Down */
+  asm("lblupdown:");
+  asm("add    r4,r8");            /* SWEEP_Add */
+  asm("cmp    r4,r7");            /* SWEEP_Max */
+  asm("it     ne");               /* Make the next instruction conditional */
+  asm("bxne   lr");               /*  Conditional return */
+  /* Change direction */
+  asm("mov    r11,r6");           /* tmp = SWEEP_Min */
+  asm("mov    r6,r7");            /* SWEEP_Min = SWEEP_Max */
+  asm("mov    r7,r11");           /* SWEEP_Max = tmp */
+  asm("sub    r8,r9,r8");         /* Negate SWEEP_Add */
+}
+
+/*******************************************************************************
+* Function Name  : DDSSweepWaveGeneratorPeak
+* Description    : This function generates a sweep waveform using DDS
+* Input          : None
+* Output         : None
+* Return         : None
+*******************************************************************************/
+void DDSSweepWaveGeneratorPeak(void)
+{
+  TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;
+  NVIC_InitTypeDef NVIC_InitStructure;
+
+  TIM_TimeBaseStructure.TIM_Period = STM32_Command.SWEEP_StepTime;
+  TIM_TimeBaseStructure.TIM_Prescaler = 8399;
+  TIM_TimeBaseStructure.TIM_ClockDivision = 0;
+  TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
+  TIM_TimeBaseInit(TIM7, &TIM_TimeBaseStructure);
+  TIM_InternalClockConfig(TIM7);
+  /* Enable the TIM7 gloabal Interrupt */
+  NVIC_InitStructure.NVIC_IRQChannel = TIM7_IRQn;
+  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
+  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
+  NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+  NVIC_Init(&NVIC_InitStructure);
+  /* TIM7 enable counter */
+  TIM_Cmd(TIM7, ENABLE);
+  TIM_ClearITPendingBit(TIM7,TIM_IT_Update);
+  TIM_ITConfig(TIM7, TIM_IT_Update, ENABLE);
+
+  /* Used by Clear TIM7 Update interrupt pending bit */
+  asm("mov    r9,#0x0");
+  asm("mov    r10,#0x1400");
+  asm("movt   r10,#0x4000");
+
+  asm("movw   r1,#0x0048");
+  asm("movt   r1,#0x2000");       /* STM32_Command.Wave[0] = 0x20000030 */
+  asm("movw   r2,#0x7408");
+  asm("movt   r2,#0x4000");       /* DAC_DHR12R1 */
+  asm("mov    r3,#0x0");          /* DDSPhase pointer value */
+
+  asm("movw   r8,#0x0");
+  asm("movt   r8,#0x2000");       /* Pointer to sweep init data */
+  asm("ldr    r11,[r8,#0x3C]");   /* SWEEP_Min */
+  asm("ldr    r12,[r8,#0x40]");   /* SWEEP_Max */
+  asm("ldr    r8,[r8,#0x44]");    /* SWEEP_Add */
+  asm("mov    r4,r11");           /* SWEEP_Min */
+  asm("mov    r6,#0x48");         /* Peak index */
+
+  DDS_WaveLoop();
+}
+
+/*******************************************************************************
+* Function Name  : TIM7_IRQHandler
+* Description    : This function handles TIM7 global interrupt request.
+*                  It is used by dds sweep
+* Input          : None
+* Output         : None
+* Return         : None
+*******************************************************************************/
+void TIM7_IRQHandler(void)
+{
+  /* Clear TIM7 Update interrupt pending bit */
+  asm("strh   r9,[r10,#0x8 *2]");
+
+  /* Read ADC2 channel 5 */
+  asm("mov    r0,#0x2100");
+  asm("movt   r0,#0x4001");
+  asm("ldrh   r7,[r0,#0x4C]");    /* Get ADC2 value */
+  asm("mov    r0,#0x1000");
+  asm("movt   r0,#0x2000");       /* ADC value start address */
+  asm("strh   r7,[r0,r6]");       /* Store value in ram */
+  asm("add    r6,r6,#0x2");       /* Increment index */
+
+  /* Up */
+  asm("add    r4,r8");            /* SWEEP add */
+  asm("cmp    r4,r12");           /* SWEEP max */
+  asm("itt    eq");               /* Make the next 2 instructions conditional */
+  asm("moveq  r4,r11");           /* Conditional load SWEEP min */
+  asm("moveq  r6,#0x48");         /* Conditional reset index */
+}
+
 /**
   * @brief  This function handles TIM3 global interrupt request.
   * @param  None
@@ -322,12 +583,16 @@ void DDSWaveGenerator(void)
   */
 void TIM3_IRQHandler(void)
 {
-  uint32_t Timer;
-  TIM_ClearITPendingBit(TIM3, TIM_IT_Update);
-  STM_EVAL_LEDToggle(LED3);
-  Timer=TIM2->CNT;
-  STM32_Command.STM32_Frequency.Frequency=Timer-STM32_Command.STM32_Frequency.PreviousCount;
-  STM32_Command.STM32_Frequency.PreviousCount=Timer;
+  /* Clear TIM3 Update interrupt pending bit */
+  asm("mov    r0,#0x40000000");     // TIM2
+  asm("strh   r0,[r0,#0x410]");     // TIM3->SR
+  /* Calculate frequency TIM2 */
+  asm("ldr    r2,[r0,#0x24]");      // TIM2->CNT
+  asm("mov    r1,#0x20000000");
+  asm("ldr    r3,[r1,#0x18]");      // STM32_Frequency.PreviousCount
+  asm("str    r2,[r1,#0x18]");      // STM32_Frequency.PreviousCount
+  asm("sub    r2,r2,r3");
+  asm("str    r2,[r1,#0x14]");      // STM32_Frequency.Frequency
 }
 
 #ifdef  USE_FULL_ASSERT
