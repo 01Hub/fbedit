@@ -647,7 +647,7 @@ END GROUP
  *(.flashtext)
                 0x08000188                . = ALIGN (0x4)
 
-.text           0x08000188     0x7220
+.text           0x08000188     0x713c
                 0x08000188                . = ALIGN (0x4)
  *(.text)
  *(.text.*)
@@ -737,185 +737,185 @@ END GROUP
                 0x080001cc                DMA2_Stream6_IRQHandler
                 0x080001cc                DMA1_Stream3_IRQHandler
  *fill*         0x080001ce        0x2 00
- .text.main     0x080001d0      0x390 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\main.o
+ .text.main     0x080001d0      0x2ac C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\main.o
                 0x080001d0                main
  .text.FRQ_Config
-                0x08000560       0xf4 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\main.o
-                0x08000560                FRQ_Config
+                0x0800047c       0xf4 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\main.o
+                0x0800047c                FRQ_Config
  .text.HSC_Config
-                0x08000654      0x12c C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\main.o
-                0x08000654                HSC_Config
+                0x08000570      0x12c C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\main.o
+                0x08000570                HSC_Config
  .text.DAC_Config
-                0x08000780       0x74 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\main.o
-                0x08000780                DAC_Config
+                0x0800069c       0x74 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\main.o
+                0x0800069c                DAC_Config
  .text.ADC_Config
-                0x080007f4      0x14c C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\main.o
-                0x080007f4                ADC_Config
+                0x08000710      0x14c C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\main.o
+                0x08000710                ADC_Config
  .text.DDS_WaveLoop
-                0x08000940       0x14 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\main.o
-                0x08000940                DDS_WaveLoop
+                0x0800085c       0x14 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\main.o
+                0x0800085c                DDS_WaveLoop
  .text.DDSWaveGenerator
-                0x08000954       0x28 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\main.o
-                0x08000954                DDSWaveGenerator
+                0x08000870       0x28 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\main.o
+                0x08000870                DDSWaveGenerator
  .text.DDSSweepWaveGenerator
-                0x0800097c      0x110 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\main.o
-                0x0800097c                DDSSweepWaveGenerator
+                0x08000898      0x110 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\main.o
+                0x08000898                DDSSweepWaveGenerator
  .text.TIM6_DAC_IRQHandler
-                0x08000a8c       0x40 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\main.o
-                0x08000a8c                TIM6_DAC_IRQHandler
+                0x080009a8       0x40 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\main.o
+                0x080009a8                TIM6_DAC_IRQHandler
  .text.DDSSweepWaveGeneratorPeak
-                0x08000acc       0xdc C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\main.o
-                0x08000acc                DDSSweepWaveGeneratorPeak
+                0x080009e8       0xdc C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\main.o
+                0x080009e8                DDSSweepWaveGeneratorPeak
  .text.TIM7_IRQHandler
-                0x08000ba8       0x34 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\main.o
-                0x08000ba8                TIM7_IRQHandler
+                0x08000ac4       0x34 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\main.o
+                0x08000ac4                TIM7_IRQHandler
  .text.TIM3_IRQHandler
-                0x08000bdc       0x24 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\main.o
-                0x08000bdc                TIM3_IRQHandler
+                0x08000af8       0x24 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\main.o
+                0x08000af8                TIM3_IRQHandler
  .text.STM_EVAL_LEDInit
-                0x08000c00       0x6c C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4_discovery.o
-                0x08000c00                STM_EVAL_LEDInit
+                0x08000b1c       0x6c C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4_discovery.o
+                0x08000b1c                STM_EVAL_LEDInit
  .text.STM_EVAL_LEDOn
-                0x08000c6c       0x34 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4_discovery.o
-                0x08000c6c                STM_EVAL_LEDOn
+                0x08000b88       0x34 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4_discovery.o
+                0x08000b88                STM_EVAL_LEDOn
  .text.STM_EVAL_LEDOff
-                0x08000ca0       0x34 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4_discovery.o
-                0x08000ca0                STM_EVAL_LEDOff
+                0x08000bbc       0x34 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4_discovery.o
+                0x08000bbc                STM_EVAL_LEDOff
  .text.SystemInit
-                0x08000cd4       0x94 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\system_stm32f4xx.o
-                0x08000cd4                SystemInit
+                0x08000bf0       0x94 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\system_stm32f4xx.o
+                0x08000bf0                SystemInit
  .text.SetSysClock
-                0x08000d68      0x188 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\system_stm32f4xx.o
+                0x08000c84      0x188 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\system_stm32f4xx.o
  .text.ADC_Init
-                0x08000ef0       0xc4 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_adc.o
-                0x08000ef0                ADC_Init
+                0x08000e0c       0xc4 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_adc.o
+                0x08000e0c                ADC_Init
  .text.ADC_StructInit
-                0x08000fb4       0x4c C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_adc.o
-                0x08000fb4                ADC_StructInit
+                0x08000ed0       0x4c C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_adc.o
+                0x08000ed0                ADC_StructInit
  .text.ADC_CommonInit
-                0x08001000       0x60 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_adc.o
-                0x08001000                ADC_CommonInit
+                0x08000f1c       0x60 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_adc.o
+                0x08000f1c                ADC_CommonInit
  .text.ADC_CommonStructInit
-                0x08001060       0x34 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_adc.o
-                0x08001060                ADC_CommonStructInit
- .text.ADC_Cmd  0x08001094       0x38 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_adc.o
-                0x08001094                ADC_Cmd
+                0x08000f7c       0x34 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_adc.o
+                0x08000f7c                ADC_CommonStructInit
+ .text.ADC_Cmd  0x08000fb0       0x38 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_adc.o
+                0x08000fb0                ADC_Cmd
  .text.ADC_RegularChannelConfig
-                0x080010cc      0x1d0 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_adc.o
-                0x080010cc                ADC_RegularChannelConfig
+                0x08000fe8      0x1d0 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_adc.o
+                0x08000fe8                ADC_RegularChannelConfig
  .text.ADC_SoftwareStartConv
-                0x0800129c       0x20 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_adc.o
-                0x0800129c                ADC_SoftwareStartConv
+                0x080011b8       0x20 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_adc.o
+                0x080011b8                ADC_SoftwareStartConv
  .text.DAC_Init
-                0x080012bc       0x78 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_dac.o
-                0x080012bc                DAC_Init
- .text.DAC_Cmd  0x08001334       0x6c C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_dac.o
-                0x08001334                DAC_Cmd
+                0x080011d8       0x78 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_dac.o
+                0x080011d8                DAC_Init
+ .text.DAC_Cmd  0x08001250       0x6c C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_dac.o
+                0x08001250                DAC_Cmd
  .text.GPIO_Init
-                0x080013a0      0x158 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_gpio.o
-                0x080013a0                GPIO_Init
+                0x080012bc      0x158 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_gpio.o
+                0x080012bc                GPIO_Init
  .text.GPIO_PinAFConfig
-                0x080014f8       0xb0 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_gpio.o
-                0x080014f8                GPIO_PinAFConfig
+                0x08001414       0xb0 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_gpio.o
+                0x08001414                GPIO_PinAFConfig
  .text.NMI_Handler
-                0x080015a8        0xc C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_it.o
-                0x080015a8                NMI_Handler
+                0x080014c4        0xc C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_it.o
+                0x080014c4                NMI_Handler
  .text.HardFault_Handler
-                0x080015b4        0x8 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_it.o
-                0x080015b4                HardFault_Handler
+                0x080014d0        0x8 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_it.o
+                0x080014d0                HardFault_Handler
  .text.MemManage_Handler
-                0x080015bc        0x8 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_it.o
-                0x080015bc                MemManage_Handler
+                0x080014d8        0x8 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_it.o
+                0x080014d8                MemManage_Handler
  .text.BusFault_Handler
-                0x080015c4        0x8 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_it.o
-                0x080015c4                BusFault_Handler
+                0x080014e0        0x8 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_it.o
+                0x080014e0                BusFault_Handler
  .text.UsageFault_Handler
-                0x080015cc        0x8 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_it.o
-                0x080015cc                UsageFault_Handler
+                0x080014e8        0x8 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_it.o
+                0x080014e8                UsageFault_Handler
  .text.SVC_Handler
-                0x080015d4        0xc C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_it.o
-                0x080015d4                SVC_Handler
+                0x080014f0        0xc C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_it.o
+                0x080014f0                SVC_Handler
  .text.DebugMon_Handler
-                0x080015e0        0xc C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_it.o
-                0x080015e0                DebugMon_Handler
+                0x080014fc        0xc C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_it.o
+                0x080014fc                DebugMon_Handler
  .text.PendSV_Handler
-                0x080015ec        0xc C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_it.o
-                0x080015ec                PendSV_Handler
+                0x08001508        0xc C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_it.o
+                0x08001508                PendSV_Handler
  .text.SysTick_Handler
-                0x080015f8        0xc C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_it.o
-                0x080015f8                SysTick_Handler
+                0x08001514        0xc C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_it.o
+                0x08001514                SysTick_Handler
  .text.RCC_AHB1PeriphClockCmd
-                0x08001604       0x5c C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_rcc.o
-                0x08001604                RCC_AHB1PeriphClockCmd
+                0x08001520       0x5c C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_rcc.o
+                0x08001520                RCC_AHB1PeriphClockCmd
  .text.RCC_APB1PeriphClockCmd
-                0x08001660       0x5c C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_rcc.o
-                0x08001660                RCC_APB1PeriphClockCmd
+                0x0800157c       0x5c C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_rcc.o
+                0x0800157c                RCC_APB1PeriphClockCmd
  .text.RCC_APB2PeriphClockCmd
-                0x080016bc       0x5c C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_rcc.o
-                0x080016bc                RCC_APB2PeriphClockCmd
+                0x080015d8       0x5c C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_rcc.o
+                0x080015d8                RCC_APB2PeriphClockCmd
  .text.TIM_TimeBaseInit
-                0x08001718       0xf8 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_tim.o
-                0x08001718                TIM_TimeBaseInit
+                0x08001634       0xf8 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_tim.o
+                0x08001634                TIM_TimeBaseInit
  .text.TIM_ARRPreloadConfig
-                0x08001810       0x40 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_tim.o
-                0x08001810                TIM_ARRPreloadConfig
- .text.TIM_Cmd  0x08001850       0x40 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_tim.o
-                0x08001850                TIM_Cmd
+                0x0800172c       0x40 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_tim.o
+                0x0800172c                TIM_ARRPreloadConfig
+ .text.TIM_Cmd  0x0800176c       0x40 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_tim.o
+                0x0800176c                TIM_Cmd
  .text.TIM_OC3Init
-                0x08001890      0x130 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_tim.o
-                0x08001890                TIM_OC3Init
+                0x080017ac      0x130 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_tim.o
+                0x080017ac                TIM_OC3Init
  .text.TIM_OC1PreloadConfig
-                0x080019c0       0x3c C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_tim.o
-                0x080019c0                TIM_OC1PreloadConfig
+                0x080018dc       0x3c C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_tim.o
+                0x080018dc                TIM_OC1PreloadConfig
  .text.TIM_CtrlPWMOutputs
-                0x080019fc       0x50 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_tim.o
-                0x080019fc                TIM_CtrlPWMOutputs
+                0x08001918       0x50 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_tim.o
+                0x08001918                TIM_CtrlPWMOutputs
  .text.TIM_ITConfig
-                0x08001a4c       0x4c C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_tim.o
-                0x08001a4c                TIM_ITConfig
+                0x08001968       0x4c C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_tim.o
+                0x08001968                TIM_ITConfig
  .text.TIM_ClearITPendingBit
-                0x08001a98       0x24 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_tim.o
-                0x08001a98                TIM_ClearITPendingBit
+                0x080019b4       0x24 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_tim.o
+                0x080019b4                TIM_ClearITPendingBit
  .text.TIM_InternalClockConfig
-                0x08001abc       0x24 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_tim.o
-                0x08001abc                TIM_InternalClockConfig
+                0x080019d8       0x24 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_tim.o
+                0x080019d8                TIM_InternalClockConfig
  .text.NVIC_Init
-                0x08001ae0       0xe8 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\misc.o
-                0x08001ae0                NVIC_Init
+                0x080019fc       0xe8 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\misc.o
+                0x080019fc                NVIC_Init
  .text.__io_putchar
-                0x08001bc8      0x16c C:\Program Files\Raisonance\Ride\Lib\ARM\STM32x_io_putchar_thumb.a(STM32F10X_io_putchar.o)
-                0x08001bc8                __io_putchar
- .text._write   0x08001d34        0x4 C:\Program Files\Raisonance\Ride\Lib\ARM\std_sbrk_thumb.lib(write.o)
-                0x08001d34                _write
+                0x08001ae4      0x16c C:\Program Files\Raisonance\Ride\Lib\ARM\STM32x_io_putchar_thumb.a(STM32F10X_io_putchar.o)
+                0x08001ae4                __io_putchar
+ .text._write   0x08001c50        0x4 C:\Program Files\Raisonance\Ride\Lib\ARM\std_sbrk_thumb.lib(write.o)
+                0x08001c50                _write
  *(.rodata)
- .rodata        0x08001d38     0x5640 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\main.o
-                0x08001d38                SineWave
-                0x08002d38                TriangleWave
-                0x08004378                SquareWave
-                0x08005378                SawToothWave
-                0x08006378                RevSawToothWave
- .rodata        0x08007378       0x30 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4_discovery.o
-                0x08007378                GPIO_PIN
-                0x08007380                GPIO_CLK
-                0x08007390                BUTTON_PIN
-                0x08007394                BUTTON_CLK
-                0x08007398                BUTTON_EXTI_LINE
-                0x0800739c                BUTTON_PORT_SOURCE
-                0x080073a0                BUTTON_PIN_SOURCE
-                0x080073a4                BUTTON_IRQn
+ .rodata        0x08001c54     0x5640 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\main.o
+                0x08001c54                SineWave
+                0x08002c54                TriangleWave
+                0x08004294                SquareWave
+                0x08005294                SawToothWave
+                0x08006294                RevSawToothWave
+ .rodata        0x08007294       0x30 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4_discovery.o
+                0x08007294                GPIO_PIN
+                0x0800729c                GPIO_CLK
+                0x080072ac                BUTTON_PIN
+                0x080072b0                BUTTON_CLK
+                0x080072b4                BUTTON_EXTI_LINE
+                0x080072b8                BUTTON_PORT_SOURCE
+                0x080072bc                BUTTON_PIN_SOURCE
+                0x080072c0                BUTTON_IRQn
  *(.rodata*)
  *(.glue_7)
  .glue_7        0x00000000        0x0 linker stubs
  *(.glue_7t)
  .glue_7t       0x00000000        0x0 linker stubs
-                0x080073a8                . = ALIGN (0x4)
-                0x080073a8                _etext = .
-                0x080073a8                _sidata = _etext
+                0x080072c4                . = ALIGN (0x4)
+                0x080072c4                _etext = .
+                0x080072c4                _sidata = _etext
 
-.vfp11_veneer   0x080073a8        0x0
+.vfp11_veneer   0x080072c4        0x0
  .vfp11_veneer  0x00000000        0x0 linker stubs
 
-.v4_bx          0x080073a8        0x0
+.v4_bx          0x080072c4        0x0
  .v4_bx         0x00000000        0x0 linker stubs
 
 .flashpatch     0x00000000        0x0
@@ -929,7 +929,7 @@ END GROUP
                 0x00000000                . = ALIGN (0x4)
                 0x00000000                _e_endflash = .
 
-.data           0x20000000       0x14 load address 0x080073a8
+.data           0x20000000       0x14 load address 0x080072c4
                 0x20000000                . = ALIGN (0x4)
                 0x20000000                _sdata = .
                 0x20000000                _data = .
@@ -941,29 +941,29 @@ END GROUP
  *(.RAMtext)
                 0x20000014                . = ALIGN (0x4)
                 0x20000014                _edata = .
-                0x080073bc                _eidata = ((_sidata + _edata) - _sdata)
+                0x080072d8                _eidata = ((_sidata + _edata) - _sdata)
                 0x08010000                _lastdataromaddress = 0x8010000
                 0x00000000                toobig = (_eidata > _lastdataromaddress)?!!!!!!!!! FLASH IS FULL !!!!!!!!!:0x0
 
-.bss            0x20000014     0x1c3c load address 0x080073bc
+.bss            0x20000014     0x1c40 load address 0x080072d8
                 0x20000014                . = ALIGN (0x4)
                 0x20000014                _sbss = .
                 0x20000014                _bss = .
  *(.bss)
- .bss           0x20000014     0x1c3c C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\main.o
+ .bss           0x20000014     0x1c40 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\main.o
  *(COMMON)
-                0x20001c50                . = ALIGN (0x4)
-                0x20001c50                _ebss = .
-                0x20001c50                PROVIDE (end, _ebss)
-                0x20001c50                PROVIDE (_end, _ebss)
+                0x20001c54                . = ALIGN (0x4)
+                0x20001c54                _ebss = .
+                0x20001c54                PROVIDE (end, _ebss)
+                0x20001c54                PROVIDE (_end, _ebss)
 
-._usrstack      0x20001c50      0x100 load address 0x08008ff8
-                0x20001c50                . = ALIGN (0x4)
-                0x20001c50                _susrstack = .
-                0x20001d50                . = (. + _Minimum_Stack_Size)
- *fill*         0x20001c50      0x100 00
-                0x20001d50                . = ALIGN (0x4)
-                0x20001d50                _eusrstack = .
+._usrstack      0x20001c54      0x100 load address 0x08008f18
+                0x20001c54                . = ALIGN (0x4)
+                0x20001c54                _susrstack = .
+                0x20001d54                . = (. + _Minimum_Stack_Size)
+ *fill*         0x20001c54      0x100 00
+                0x20001d54                . = ALIGN (0x4)
+                0x20001d54                _eusrstack = .
 
 .b1text
  *(.b1text)
@@ -989,8 +989,8 @@ END GROUP
  *(.eb3text)
  *(.eb3rodata)
  *(.eb3rodata*)
-                0x20001d50                __exidx_start = .
-                0x20001d50                __exidx_end = .
+                0x20001d54                __exidx_start = .
+                0x20001d54                __exidx_end = .
 
 /DISCARD/
  libc.a(*)
@@ -1119,44 +1119,44 @@ END GROUP
  .debug_pubnames
                 0x00001689       0x89 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\misc.o
 
-.debug_info     0x00000000     0x6ad9
+.debug_info     0x00000000     0x6ae1
  *(.debug_info .gnu.linkonce.wi.*)
- .debug_info    0x00000000      0xf59 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\main.o
- .debug_info    0x00000f59      0x965 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4_discovery.o
- .debug_info    0x000018be      0x61d C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\system_stm32f4xx.o
- .debug_info    0x00001edb      0xcf9 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_adc.o
- .debug_info    0x00002bd4      0x687 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_dac.o
- .debug_info    0x0000325b      0x63d C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_gpio.o
- .debug_info    0x00003898      0x155 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_it.o
- .debug_info    0x000039ed      0xd28 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_rcc.o
- .debug_info    0x00004715     0x1e2c C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_tim.o
- .debug_info    0x00006541      0x598 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\misc.o
+ .debug_info    0x00000000      0xf61 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\main.o
+ .debug_info    0x00000f61      0x965 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4_discovery.o
+ .debug_info    0x000018c6      0x61d C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\system_stm32f4xx.o
+ .debug_info    0x00001ee3      0xcf9 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_adc.o
+ .debug_info    0x00002bdc      0x687 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_dac.o
+ .debug_info    0x00003263      0x63d C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_gpio.o
+ .debug_info    0x000038a0      0x155 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_it.o
+ .debug_info    0x000039f5      0xd28 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_rcc.o
+ .debug_info    0x0000471d     0x1e2c C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_tim.o
+ .debug_info    0x00006549      0x598 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\misc.o
 
-.debug_abbrev   0x00000000      0xda5
+.debug_abbrev   0x00000000      0xdb2
  *(.debug_abbrev)
- .debug_abbrev  0x00000000      0x1c2 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\main.o
- .debug_abbrev  0x000001c2      0x176 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4_discovery.o
- .debug_abbrev  0x00000338      0x140 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\system_stm32f4xx.o
- .debug_abbrev  0x00000478      0x18b C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_adc.o
- .debug_abbrev  0x00000603      0x174 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_dac.o
- .debug_abbrev  0x00000777      0x184 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_gpio.o
- .debug_abbrev  0x000008fb       0x64 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_it.o
- .debug_abbrev  0x0000095f      0x1b9 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_rcc.o
- .debug_abbrev  0x00000b18      0x165 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_tim.o
- .debug_abbrev  0x00000c7d      0x128 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\misc.o
+ .debug_abbrev  0x00000000      0x1cf C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\main.o
+ .debug_abbrev  0x000001cf      0x176 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4_discovery.o
+ .debug_abbrev  0x00000345      0x140 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\system_stm32f4xx.o
+ .debug_abbrev  0x00000485      0x18b C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_adc.o
+ .debug_abbrev  0x00000610      0x174 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_dac.o
+ .debug_abbrev  0x00000784      0x184 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_gpio.o
+ .debug_abbrev  0x00000908       0x64 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_it.o
+ .debug_abbrev  0x0000096c      0x1b9 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_rcc.o
+ .debug_abbrev  0x00000b25      0x165 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_tim.o
+ .debug_abbrev  0x00000c8a      0x128 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\misc.o
 
-.debug_line     0x00000000     0x26b0
+.debug_line     0x00000000     0x2698
  *(.debug_line)
- .debug_line    0x00000000      0x45e C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\main.o
- .debug_line    0x0000045e      0x28c C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4_discovery.o
- .debug_line    0x000006ea      0x20e C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\system_stm32f4xx.o
- .debug_line    0x000008f8      0x4e3 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_adc.o
- .debug_line    0x00000ddb      0x2f1 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_dac.o
- .debug_line    0x000010cc      0x2ce C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_gpio.o
- .debug_line    0x0000139a      0x20b C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_it.o
- .debug_line    0x000015a5      0x52f C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_rcc.o
- .debug_line    0x00001ad4      0xa08 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_tim.o
- .debug_line    0x000024dc      0x1d4 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\misc.o
+ .debug_line    0x00000000      0x446 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\main.o
+ .debug_line    0x00000446      0x28c C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4_discovery.o
+ .debug_line    0x000006d2      0x20e C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\system_stm32f4xx.o
+ .debug_line    0x000008e0      0x4e3 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_adc.o
+ .debug_line    0x00000dc3      0x2f1 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_dac.o
+ .debug_line    0x000010b4      0x2ce C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_gpio.o
+ .debug_line    0x00001382      0x20b C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_it.o
+ .debug_line    0x0000158d      0x52f C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_rcc.o
+ .debug_line    0x00001abc      0xa08 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_tim.o
+ .debug_line    0x000024c4      0x1d4 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\misc.o
 
 .debug_frame    0x00000000     0x1ae8
  *(.debug_frame)
@@ -1171,27 +1171,27 @@ END GROUP
  .debug_frame   0x00001010      0xa3c C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_tim.o
  .debug_frame   0x00001a4c       0x9c C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\misc.o
 
-.debug_str      0x00000000     0x2e24
+.debug_str      0x00000000     0x2e2d
  *(.debug_str)
- .debug_str     0x00000000      0xe3c C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\main.o
-                                0xead (size before relaxing)
- .debug_str     0x00000e3c      0x2a0 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4_discovery.o
+ .debug_str     0x00000000      0xe45 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\main.o
+                                0xeb6 (size before relaxing)
+ .debug_str     0x00000e45      0x2a0 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4_discovery.o
                                 0xab0 (size before relaxing)
- .debug_str     0x000010dc      0x207 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\system_stm32f4xx.o
+ .debug_str     0x000010e5      0x207 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\system_stm32f4xx.o
                                 0x32a (size before relaxing)
- .debug_str     0x000012e3      0x535 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_adc.o
+ .debug_str     0x000012ec      0x535 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_adc.o
                                 0x7d4 (size before relaxing)
- .debug_str     0x00001818      0x23f C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_dac.o
+ .debug_str     0x00001821      0x23f C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_dac.o
                                 0x423 (size before relaxing)
- .debug_str     0x00001a57      0x1c0 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_gpio.o
+ .debug_str     0x00001a60      0x1c0 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_gpio.o
                                 0x473 (size before relaxing)
- .debug_str     0x00001c17       0xf5 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_it.o
+ .debug_str     0x00001c20       0xf5 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_it.o
                                 0x19a (size before relaxing)
- .debug_str     0x00001d0c      0x586 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_rcc.o
+ .debug_str     0x00001d15      0x586 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_rcc.o
                                 0x820 (size before relaxing)
- .debug_str     0x00002292      0xa1b C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_tim.o
+ .debug_str     0x0000229b      0xa1b C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\stm32f4xx_tim.o
                                 0xda0 (size before relaxing)
- .debug_str     0x00002cad      0x177 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\misc.o
+ .debug_str     0x00002cb6      0x177 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\misc.o
                                 0x3a9 (size before relaxing)
 
 .debug_loc      0x00000000     0x3384

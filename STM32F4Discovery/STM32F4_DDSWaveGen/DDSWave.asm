@@ -6,6 +6,12 @@ DDSGenWave proc uses ebx esi edi
 	mov		ddswavedata.DDS_VMin,4095
 	mov		ddswavedata.DDS_VMax,0
 	mov		eax,ddswavedata.DDS_WaveForm
+	lea		edx,[eax+1]
+	mov		command.WaveType,edx
+	mov		edx,ddswavedata.DDS_Amplitude
+	mov		command.Amplitude,edx
+	mov		edx,ddswavedata.DDS_DCOffset
+	mov		command.DCOffset,edx
 	.if !eax
 		mov		esi,offset DDS_SineWave
 		mov		edi,offset ddswavedata.DDS_WaveData

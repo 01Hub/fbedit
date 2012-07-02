@@ -24,20 +24,20 @@
  <type Header="TIM_TimeBaseInitTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_tim.h" DeclLine="72" Pointer="No"/>
  <type Header="TIM_OCInitTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_tim.h" DeclLine="107" Pointer="No"/>
  <type Header="NVIC_InitTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\misc.h" DeclLine="68" Pointer="No"/>
- <type Header="STM32_FRQTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\main.c" DeclLine="74" Pointer="No"/>
+ <type Header="STM32_FRQTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\main.c" DeclLine="73" Pointer="No"/>
  <type Header="STM32_CMNDTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\main.c" DeclLine="96" Pointer="No"/>
  <func Header="main" Icon="3" Type="func" Desc=":   long" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\main.c" DeclLine="114"/>
- <func Header="FRQ_Config" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\main.c" DeclLine="255"/>
- <func Header="HSC_Config" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\main.c" DeclLine="299"/>
- <func Header="DAC_Config" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\main.c" DeclLine="345"/>
- <func Header="ADC_Config" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\main.c" DeclLine="371"/>
- <func Header="DDS_WaveLoop" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\main.c" DeclLine="435"/>
- <func Header="DDSWaveGenerator" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\main.c" DeclLine="453"/>
- <func Header="DDSSweepWaveGenerator" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\main.c" DeclLine="474"/>
- <func Header="TIM6_DAC_IRQHandler" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\main.c" DeclLine="537"/>
- <func Header="DDSSweepWaveGeneratorPeak" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\main.c" DeclLine="577"/>
- <func Header="TIM7_IRQHandler" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\main.c" DeclLine="629"/>
- <func Header="TIM3_IRQHandler" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\main.c" DeclLine="656"/>
+ <func Header="FRQ_Config" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\main.c" DeclLine="250"/>
+ <func Header="HSC_Config" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\main.c" DeclLine="294"/>
+ <func Header="DAC_Config" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\main.c" DeclLine="340"/>
+ <func Header="ADC_Config" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\main.c" DeclLine="366"/>
+ <func Header="DDS_WaveLoop" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\main.c" DeclLine="430"/>
+ <func Header="DDSWaveGenerator" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\main.c" DeclLine="448"/>
+ <func Header="DDSSweepWaveGenerator" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\main.c" DeclLine="469"/>
+ <func Header="TIM6_DAC_IRQHandler" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\main.c" DeclLine="532"/>
+ <func Header="DDSSweepWaveGeneratorPeak" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\main.c" DeclLine="572"/>
+ <func Header="TIM7_IRQHandler" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\main.c" DeclLine="624"/>
+ <func Header="TIM3_IRQHandler" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\main.c" DeclLine="651"/>
  <variable Header="STM32_Command" Icon="2" Type="variable" Desc=":   struct " DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\main.c" DeclLine="99" Pointer="No"/>
  <variable Header="SineWave" Icon="2" Type="variable" Desc=":   unsigned int[2048]" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\wave.h" DeclLine="2" Pointer="No"/>
  <variable Header="TriangleWave" Icon="2" Type="variable" Desc=":   unsigned int[2848]" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\wave.h" DeclLine="134" Pointer="No"/>

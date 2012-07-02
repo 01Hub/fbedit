@@ -65,6 +65,13 @@ MakeCommand proc
 	mov		eax,hsclockdata.hsclockccr
 	mov		command.HSC_dutycycle,eax
 	;DDS wave generator
+	mov		eax,ddswavedata.DDS_WaveForm
+	lea		eax,[eax+1]
+	mov		command.WaveType,eax
+	mov		eax,ddswavedata.DDS_Amplitude
+	mov		command.Amplitude,eax
+	mov		eax,ddswavedata.DDS_DCOffset
+	mov		command.DCOffset,eax
 	mov		eax,ddswavedata.DDS_PhaseFrq
 	mov		command.DDS_PhaseFrq,eax
 	.if ddswavedata.DDS_Enable
@@ -109,9 +116,10 @@ SampleThreadProc proc lParam:DWORD
 		mov		fCommand,0
 		invoke STLinkReset,hWnd
 		.if ddswavedata.DDS_Enable
-			invoke STLinkWrite,hWnd,STM32_Wave,addr ddswavedata.DDS_WaveData,4096
+;			invoke STLinkWrite,hWnd,STM32_Wave,addr ddswavedata.DDS_WaveData,4096
 		.endif
 		invoke MakeCommand
+		mov		command.cmnd,STM32_CMNDWait
 		invoke STLinkWrite,hWnd,STM32_Command,addr command,sizeof COMMAND
 		.if ddswavedata.FRQ_Enable
 			mov		command.cmnd,STM32_CMNDFrqEnable
