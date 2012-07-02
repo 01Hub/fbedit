@@ -7,7 +7,8 @@ Format=ELF
 CodeOffset=0x0
 LoaderTool=ARM
 Target=ARM
-DebugTool=RLINK_CORTEX
+DebugTool=SIM-ARM
+ApplicationComponents=
 [Device]
 Name=STM32F100RB
 [ARMSigDrv options]
@@ -16,7 +17,9 @@ CXS=0
 Explore=No
 Startup=1
 StartupSymb=main
-ToolName=RLINK_CORTEX
+ToolName=SIM-ARM
+Information=0
+InfoExpr=
 [SIM-ARM]
 Crystal=8.000
 [General]

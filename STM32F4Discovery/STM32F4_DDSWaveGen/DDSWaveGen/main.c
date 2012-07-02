@@ -33,6 +33,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4_discovery.h"
 #include <stdio.h>
+#include "wave.h"
 
 /** @addtogroup STM32F4_Discovery_Peripheral_Examples
   * @{
@@ -48,6 +49,7 @@
 #define STM32_CMNDWait            ((uint8_t)0)
 #define STM32_CMNDStart           ((uint8_t)1)
 #define STM32_CMNDFrqEnable       ((uint8_t)2)
+#define STM32_CMNDSetWave         ((uint8_t)3)
 
 /* DDS SWEEP SubModes */
 #define SWEEP_SubModeOff          ((uint8_t)1)
@@ -55,6 +57,13 @@
 #define SWEEP_SubModeDown         ((uint8_t)3)
 #define SWEEP_SubModeUpDown       ((uint8_t)4)
 #define SWEEP_SubModePeak         ((uint8_t)5)
+
+/* DDS WAVE Submodes */
+#define WAVE_SubModeSine          ((uint8_t)1)
+#define WAVE_SubModeTriangle      ((uint8_t)2)
+#define WAVE_SubModeSquare        ((uint8_t)3)
+#define WAVE_SubModeSawTooth      ((uint8_t)4)
+#define WAVE_SubModeRevSawTooth   ((uint8_t)5)
 
 typedef struct
 {
@@ -80,8 +89,10 @@ typedef struct
   uint32_t SWEEP_Min;                                 // 0x2000003C
   uint32_t SWEEP_Max;                                 // 0x20000040
   uint32_t SWEEP_Add;                                 // 0x20000044
-  uint16_t Wave[2048];                                // 0x20000048
-  uint16_t Peak[1536];                                // 0x20001048
+  uint32_t Amplitude;                                 // 0x00000048
+  int32_t DCOffset;                                   // 0x0000004C
+  uint16_t Wave[2048];                                // 0x20000050
+  uint16_t Peak[1536];                                // 0x20001050
 }STM32_CMNDTypeDef;
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
@@ -110,6 +121,7 @@ int main(void)
      */
 
   uint32_t i;
+  int32_t tmp;
 
   /* Initialize Leds mounted on STM32F4-Discovery board */
   STM_EVAL_LEDInit(LED3);
@@ -171,6 +183,66 @@ int main(void)
       /* Enable TIM3 */
       TIM_Cmd(TIM3, ENABLE);
       STM_EVAL_LEDOn(LED3);
+    }
+    else if (STM32_Command.cmnd == STM32_CMNDSetWave)
+    {
+      /* Reset STM32_CMNDFrqEnable */
+      STM32_Command.cmnd = STM32_CMNDWait;
+      i=0;
+      switch (STM32_Command.DDS_SubMode)
+      {
+        case WAVE_SubModeSine:
+          while (i<2048);
+          {
+            STM32_Command.Wave[i] = SineWave[i];
+            i++;
+          }
+          break;
+        case WAVE_SubModeTriangle:
+          while (i<2048);
+          {
+            STM32_Command.Wave[i] = TriangleWave[i];
+            i++;
+          }
+          break;
+        case WAVE_SubModeSquare:
+          while (i<2048);
+          {
+            STM32_Command.Wave[i] = SquareWave[i];
+            i++;
+          }
+          break;
+        case WAVE_SubModeSawTooth:
+          while (i<2048);
+          {
+            STM32_Command.Wave[i] = SawToothWave[i];
+            i++;
+          }
+          break;
+        case WAVE_SubModeRevSawTooth:
+          while (i<2048);
+          {
+            STM32_Command.Wave[i] = RevSawToothWave[i];
+            i++;
+          }
+          break;
+      }
+      i=0;
+      while (i<2048)
+      {
+        tmp = (STM32_Command.Wave[i] * STM32_Command.Amplitude) / 4095;
+        tmp = tmp + STM32_Command.DCOffset;
+        if (tmp<0)
+        {
+          tmp = 0;
+        }
+        if (tmp>4095)
+        {
+          tmp = 4095;
+        }
+        STM32_Command.Wave[i] = tmp;
+        i++;
+      }
     }
     i=0;
     while (i < 100000)
@@ -380,8 +452,8 @@ void DDS_WaveLoop(void)
 *******************************************************************************/
 void DDSWaveGenerator(void)
 {
-  asm("movw   r1,#0x0048");
-  asm("movt   r1,#0x2000");       /* STM32_Command.Wave[0] = 0x20000048 */
+  asm("movw   r1,#0x0050");
+  asm("movt   r1,#0x2000");       /* STM32_Command.Wave[0] = 0x20000050 */
   asm("movw   r2,#0x7408");
   asm("movt   r2,#0x4000");       /* DAC_DHR12R1 */
   asm("mov    r3,#0x0");          /* DDSPhase pointer value */
@@ -437,8 +509,8 @@ void DDSSweepWaveGenerator(void)
 
   asm("movw   r9,#0x0000");
   asm("movt    r9,#0x4002");      /* GPIOA */
-  asm("movw   r1,#0x0048");
-  asm("movt   r1,#0x2000");       /* STM32_Command.Wave[0] = 0x20000048 */
+  asm("movw   r1,#0x0050");
+  asm("movt   r1,#0x2000");       /* STM32_Command.Wave[0] = 0x20000050 */
   asm("movw   r2,#0x7408");
   asm("movt   r2,#0x4000");       /* DAC_DHR12R1 */
   asm("mov    r3,#0x0");          /* DDSPhase pointer value */
@@ -529,8 +601,8 @@ void DDSSweepWaveGeneratorPeak(void)
   asm("mov    r10,#0x1400");
   asm("movt   r10,#0x4000");
 
-  asm("movw   r1,#0x0048");
-  asm("movt   r1,#0x2000");       /* STM32_Command.Wave[0] = 0x20000030 */
+  asm("movw   r1,#0x0050");
+  asm("movt   r1,#0x2000");       /* STM32_Command.Wave[0] = 0x20000050 */
   asm("movw   r2,#0x7408");
   asm("movt   r2,#0x4000");       /* DAC_DHR12R1 */
   asm("mov    r3,#0x0");          /* DDSPhase pointer value */
@@ -541,7 +613,7 @@ void DDSSweepWaveGeneratorPeak(void)
   asm("ldr    r12,[r8,#0x40]");   /* SWEEP_Max */
   asm("ldr    r8,[r8,#0x44]");    /* SWEEP_Add */
   asm("mov    r4,r11");           /* SWEEP_Min */
-  asm("mov    r6,#0x48");         /* Peak index */
+  asm("mov    r6,#0x50");         /* Peak index */
 
   DDS_WaveLoop();
 }
@@ -573,7 +645,7 @@ void TIM7_IRQHandler(void)
   asm("cmp    r4,r12");           /* SWEEP max */
   asm("itt    eq");               /* Make the next 2 instructions conditional */
   asm("moveq  r4,r11");           /* Conditional load SWEEP min */
-  asm("moveq  r6,#0x48");         /* Conditional reset index */
+  asm("moveq  r6,#0x50");         /* Conditional reset index */
 }
 
 /**
