@@ -115,9 +115,9 @@ SampleThreadProc proc lParam:DWORD
 	.if fCommand
 		mov		fCommand,0
 		invoke STLinkReset,hWnd
-		.if ddswavedata.DDS_Enable
+;		.if ddswavedata.DDS_Enable
 ;			invoke STLinkWrite,hWnd,STM32_Wave,addr ddswavedata.DDS_WaveData,4096
-		.endif
+;		.endif
 		invoke MakeCommand
 		mov		command.cmnd,STM32_CMNDWait
 		invoke STLinkWrite,hWnd,STM32_Command,addr command,sizeof COMMAND

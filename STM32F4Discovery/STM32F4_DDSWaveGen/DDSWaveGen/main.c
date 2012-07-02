@@ -136,8 +136,6 @@ int main(void)
   FRQ_Config();
   /* Setup DVM */
   ADC_Config();
-  /* Setup DDS */
-  DAC_Config();
 
   while (1)
   {
@@ -186,22 +184,24 @@ int main(void)
           }
           break;
       }
-      // i=0;
-      // while (i<2048)
-      // {
-        // tmp = (STM32_Command.Wave[i] * STM32_Command.Amplitude) / 4095;
-        // tmp = tmp + STM32_Command.DCOffset;
-        // if (tmp<0)
-        // {
-          // tmp = 0;
-        // }
-        // if (tmp>4095)
-        // {
-          // tmp = 4095;
-        // }
-        // STM32_Command.Wave[i] = tmp;
-        // i++;
-      // }
+      i=0;
+      while (i<2048)
+      {
+        tmp = (STM32_Command.Wave[i] * STM32_Command.Amplitude) / 4096;
+        tmp = (tmp - STM32_Command.Amplitude/2)+STM32_Command.DCOffset-2048;
+        if (tmp<0)
+        {
+          tmp = 0;
+        }
+        if (tmp>4095)
+        {
+          tmp = 4095;
+        }
+        STM32_Command.Wave[i] = tmp;
+        i++;
+      }
+      /* Setup DDS */
+      DAC_Config();
       switch (STM32_Command.DDS_SubMode)
       {
         case SWEEP_SubModeOff:
@@ -503,7 +503,7 @@ void DDSSweepWaveGenerator(void)
   asm("movt   r10,#0x4000");
 
   asm("movw   r9,#0x0000");
-  asm("movt    r9,#0x4002");      /* GPIOA */
+  asm("movt   r9,#0x4002");       /* GPIOA */
   asm("movw   r1,#0x0054");
   asm("movt   r1,#0x2000");       /* STM32_Command.Wave[0] = 0x20000054 */
   asm("movw   r2,#0x7408");
@@ -535,8 +535,8 @@ void TIM6_DAC_IRQHandler(void)
   asm("mov    r12,#0x0");
   asm("strh   r12,[r10,#0x8 *2]");
   /* Clear sweep sync */
-  asm("mov    r12,#0x4000");
-  asm("str    r12,[r9,#0x18]");
+  asm("mov    r12,#0x0");
+  asm("str    r12,[r9,#0x14]");
   /* Prepare set sweep sync */
   asm("mov    r12,#0x0040");
 
@@ -544,9 +544,9 @@ void TIM6_DAC_IRQHandler(void)
   /* Up or Down*/
   asm("add    r4,r8");            /* SWEEP_Add */
   asm("cmp    r4,r7");            /* SWEEP_Max */
-  asm("itt     eq");              /* Make the next two instructions conditional */
+  asm("itt    eq");               /* Make the next two instructions conditional */
   asm("moveq  r4,r6");            /* Conditional load SWEEP_Min */
-  asm("streq  r12,[r9,#0x18]");   /* Conditional set sweep sync */
+  asm("streq  r12,[r9,#0x14]");   /* Conditional set sweep sync */
   asm("bx     lr");               /* Return */
 
   /* Up & Down */
@@ -559,7 +559,7 @@ void TIM6_DAC_IRQHandler(void)
   asm("mov    r11,r6");           /* tmp = SWEEP_Min */
   asm("mov    r6,r7");            /* SWEEP_Min = SWEEP_Max */
   asm("mov    r7,r11");           /* SWEEP_Max = tmp */
-  asm("sub    r8,r9,r8");         /* Negate SWEEP_Add */
+  asm("neg    r8,r8");            /* Negate SWEEP_Add */
 }
 
 /*******************************************************************************
