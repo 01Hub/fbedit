@@ -66,7 +66,7 @@
 
 typedef struct
 {
-  uint32_t Frequency;
+  uint32_t Frequency;                                 // 0x20000014
   uint32_t PreviousCount;
   uint32_t Reserved1;
   uint32_t Reserved2;
