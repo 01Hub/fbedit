@@ -26,8 +26,8 @@
   PA2       High speed clock output
   PA3       DVM input
   PA4       DDS wave output
-  PA5       Peak input
-  PA6       DDS sweep sync output
+  PB0       Peak input
+  PB1       DDS sweep sync output
   ------------------------------------
 */
 /* Includes ------------------------------------------------------------------*/
@@ -255,7 +255,7 @@ void FRQ_Config(void)
   /* TIM2, TIM3, TIM5 and DAC clock enable */
   RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2 | RCC_APB1Periph_TIM3 | RCC_APB1Periph_TIM5 | RCC_APB1Periph_TIM6 | RCC_APB1Periph_TIM7 | RCC_APB1Periph_DAC, ENABLE);
   /* GPIOA clock enable */
-  RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);
+  RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA | RCC_AHB1Periph_GPIOB, ENABLE);
   /* Enable the TIM3 gloabal Interrupt */
   NVIC_InitStructure.NVIC_IRQChannel = TIM3_IRQn;
   NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
@@ -374,7 +374,7 @@ void ADC_Config(void)
   /* Enable ADC1 and ADC2 clocks */
   RCC_APB2PeriphClockCmd(RCC_APB2Periph_ADC1 | RCC_APB2Periph_ADC2, ENABLE);
   /* Configure ADC1 Channel3 and and ADC2 Channel5 pins as analog inputs ******************************/
-  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_3 | GPIO_Pin_5;
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_3;
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AN;
   GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL ;
   GPIO_Init(GPIOA, &GPIO_InitStructure);
@@ -401,6 +401,11 @@ void ADC_Config(void)
   /* Start ADC1 Software Conversion */ 
   ADC_SoftwareStartConv(ADC1);
 
+  /* Configure ADC2 Channel8 pins as analog inputs ******************************/
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0;
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AN;
+  GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL ;
+  GPIO_Init(GPIOB, &GPIO_InitStructure);
   /* ADC2 Init ****************************************************************/
   ADC_InitStructure.ADC_Resolution = ADC_Resolution_12b;
   ADC_InitStructure.ADC_ScanConvMode = DISABLE;
@@ -409,8 +414,8 @@ void ADC_Config(void)
   ADC_InitStructure.ADC_DataAlign = ADC_DataAlign_Right;
   ADC_InitStructure.ADC_NbrOfConversion = 1;
   ADC_Init(ADC2, &ADC_InitStructure);
-  /* ADC2 regular channel5 configuration *************************************/
-  ADC_RegularChannelConfig(ADC2, ADC_Channel_5, 1, ADC_SampleTime_3Cycles);
+  /* ADC2 regular channel8 configuration *************************************/
+  ADC_RegularChannelConfig(ADC2, ADC_Channel_8, 1, ADC_SampleTime_3Cycles);
   /* Enable ADC2 */
   ADC_Cmd(ADC2, ENABLE);
   /* Start ADC2 Software Conversion */ 
@@ -472,12 +477,12 @@ void DDSSweepWaveGenerator(void)
   TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;
   NVIC_InitTypeDef NVIC_InitStructure;
 
-  GPIO_InitStructure.GPIO_Pin   = GPIO_Pin_6;
+  GPIO_InitStructure.GPIO_Pin   = GPIO_Pin_1;
   GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_OUT;
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
   GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
   GPIO_InitStructure.GPIO_PuPd  = GPIO_PuPd_NOPULL ;
-  GPIO_Init(GPIOA, &GPIO_InitStructure);
+  GPIO_Init(GPIOB, &GPIO_InitStructure);
 
   /* TIM6 configuration */
   TIM_TimeBaseStructure.TIM_Period = STM32_Command.SWEEP_StepTime;
@@ -502,8 +507,8 @@ void DDSSweepWaveGenerator(void)
   asm("mov    r10,#0x1000");
   asm("movt   r10,#0x4000");
 
-  asm("movw   r9,#0x0000");
-  asm("movt   r9,#0x4002");       /* GPIOA */
+  asm("movw   r9,#0x0400");
+  asm("movt   r9,#0x4002");       /* GPIOB */
   asm("movw   r1,#0x0054");
   asm("movt   r1,#0x2000");       /* STM32_Command.Wave[0] = 0x20000054 */
   asm("movw   r2,#0x7408");
@@ -538,7 +543,7 @@ void TIM6_DAC_IRQHandler(void)
   asm("mov    r12,#0x0");
   asm("str    r12,[r9,#0x14]");
   /* Prepare set sweep sync */
-  asm("mov    r12,#0x0040");
+  asm("mov    r12,#0x0002");
 
   asm("cbnz   r0,lblupdown");
   /* Up or Down*/

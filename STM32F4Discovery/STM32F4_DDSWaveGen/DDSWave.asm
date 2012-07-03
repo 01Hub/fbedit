@@ -255,6 +255,7 @@ DDSWaveSetupProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:
 						mov		eax,1750000
 					.endif
 					invoke DDSHzToPhaseAdd,eax
+PrintDec eax
 					mov		ddswavedata.DDS_PhaseFrq,eax
 					dec		eax
 					mov		ddswavedata.DDS_Frequency,eax

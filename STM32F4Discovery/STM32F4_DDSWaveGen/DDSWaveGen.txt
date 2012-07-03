@@ -18,7 +18,7 @@ Features:
 -------------------------------------------------------------------------------
 o DDS Waveform generator.
   - 12 bit dac.
-  - 32 bit phase register gives 0.00163Hz resolution.
+  - 32 bit phase register gives 0.00489Hz resolution.
   - 2048 word amplitude lookup table.
   - Sine wave.
   - Triangle wave.
@@ -49,6 +49,6 @@ PA1					Frequency counter input
 PA2					High speed clock output
 PA3					DVM input
 PA4					DDS wave output
-PA5					Peak input
-PA6					DDS sweep sync output
+PB0					Peak input
+PB1					DDS sweep sync output
 -------------------------------------------------------------------------------
