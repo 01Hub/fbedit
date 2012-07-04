@@ -106,18 +106,22 @@ SampleThreadProc proc lParam:DWORD
 	invoke SetDlgItemText,childdialogs.hWndFrequency,IDC_UDCFREQUENCY,addr buffer
 	invoke STLinkRead,hWnd,STM32_DVM,addr tmp,4
 	mov		eax,tmp
-	mov		ecx,DVMMUL
-	mul		ecx
-	mov		ecx,DVMMAX
-	div		ecx
-	invoke FormatVoltage,addr buffer,addr szFmtVolts,eax
-	invoke SetDlgItemText,childdialogs.hWndFrequency,IDC_UDCVOLTSDVM,addr buffer
+	add		DVMSum,eax
+	inc		nDVMCount
+	.if nDVMCount==8
+		mov		eax,DVMSum
+		mov		ecx,DVMMUL
+		mul		ecx
+		mov		ecx,DVMMAX*8
+		div		ecx
+		invoke FormatVoltage,addr buffer,addr szFmtVolts,eax
+		invoke SetDlgItemText,childdialogs.hWndFrequency,IDC_UDCVOLTSDVM,addr buffer
+		mov		nDVMCount,0
+		mov		DVMSum,0
+	.endif
 	.if fCommand
 		mov		fCommand,0
 		invoke STLinkReset,hWnd
-;		.if ddswavedata.DDS_Enable
-;			invoke STLinkWrite,hWnd,STM32_Wave,addr ddswavedata.DDS_WaveData,4096
-;		.endif
 		invoke MakeCommand
 		mov		command.cmnd,STM32_CMNDWait
 		invoke STLinkWrite,hWnd,STM32_Command,addr command,sizeof COMMAND
@@ -168,7 +172,7 @@ MainDlgProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 		;Create frequency and DVM child dialog
 		invoke CreateDialogParam,hInstance,IDD_FREQUENCY,childdialogs.hWndDDSWaveDialog,addr FrequencyChildProc,0
 		mov		childdialogs.hWndFrequency,eax
-		invoke SetTimer,hWin,1000,333,NULL
+		invoke SetTimer,hWin,1000,100,NULL
 	.elseif eax==WM_TIMER
 		.if !fConnected
 			mov		fConnected,IDIGNORE

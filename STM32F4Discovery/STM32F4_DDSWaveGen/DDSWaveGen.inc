@@ -895,6 +895,8 @@ hWnd						HWND ?
 hFont						HFONT ?
 fConnected					DWORD ?
 fThread						DWORD ?
+nDVMCount					DWORD ?
+DVMSum						DWORD ?
 fCommand					DWORD ?
 childdialogs				CHILDDIALOGS <>
 ddswavedata					DDSWAVEDATA <>

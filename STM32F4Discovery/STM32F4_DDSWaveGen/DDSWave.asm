@@ -250,12 +250,11 @@ DDSWaveSetupProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:
 			.elseif eax==IDC_BTNDDSSET
 				invoke GetDlgItemInt,hWin,IDC_EDTDDSFREQUENCY,NULL,FALSE
 				.if eax
-					.if eax>1750000
-						invoke SetDlgItemInt,hWin,IDC_EDTDDSFREQUENCY,1750000,FALSE
-						mov		eax,1750000
+					.if eax>5255000
+						invoke SetDlgItemInt,hWin,IDC_EDTDDSFREQUENCY,5255000,FALSE
+						mov		eax,5255000
 					.endif
 					invoke DDSHzToPhaseAdd,eax
-PrintDec eax
 					mov		ddswavedata.DDS_PhaseFrq,eax
 					dec		eax
 					mov		ddswavedata.DDS_Frequency,eax
@@ -412,22 +411,24 @@ DDSWaveProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 		fistp	tmp
 		invoke FormatFrequencyX100,addr buffer,addr szFmtFrq,tmp
 		mov		eax,ddswavedata.DDS_VMin
-		mov		ecx,3000
+		mov		ecx,2658
 		mul		ecx
 		mov		ecx,4095
 		div		ecx
+		add		eax,21
 		invoke FormatVoltage,addr buffer1,addr szFmtDDSVmin,eax
 		invoke lstrcat,addr buffer,addr buffer1
 		mov		eax,ddswavedata.DDS_VMax
-		mov		ecx,3000
+		mov		ecx,2658
 		mul		ecx
 		mov		ecx,4095
 		div		ecx
+		add		eax,21
 		invoke FormatVoltage,addr buffer1,addr szFmtDDSVmax,eax
 		invoke lstrcat,addr buffer,addr buffer1
 		mov		eax,ddswavedata.DDS_VMax
 		sub		eax,ddswavedata.DDS_VMin
-		mov		ecx,3000
+		mov		ecx,2658
 		mul		ecx
 		mov		ecx,4095
 		div		ecx
@@ -532,9 +533,9 @@ GetPoint:
 	mov		ecx,rect.bottom
 	sub		ecx,10
 	mul		ecx
-	mov		ecx,DACMAX
+	mov		ecx,DACMAX+500
 	div		ecx
-	add		eax,5
+	add		eax,40
 	mov		pt.y,eax
 	retn
 

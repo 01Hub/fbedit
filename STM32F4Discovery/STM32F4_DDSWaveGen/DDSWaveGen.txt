@@ -49,6 +49,6 @@ PA1					Frequency counter input
 PA2					High speed clock output
 PA3					DVM input
 PA4					DDS wave output
-PB0					Peak input
-PB1					DDS sweep sync output
+PA5					Peak input
+PA6					DDS sweep sync output
 -------------------------------------------------------------------------------
