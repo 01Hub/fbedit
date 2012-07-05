@@ -701,12 +701,12 @@ GetPoint:
 	mov		pt.x,eax
 	;Get y position
 	movzx	eax,word ptr [esi+edi*WORD]
-	sub		eax,DACMAX
+	sub		eax,255;DACMAX
 	neg		eax
 	mov		ecx,rect.bottom
 	sub		ecx,10
 	mul		ecx
-	mov		ecx,DACMAX
+	mov		ecx,255;DACMAX
 	div		ecx
 	add		eax,5
 	mov		pt.y,eax

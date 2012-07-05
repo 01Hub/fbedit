@@ -10,10 +10,10 @@ F4=-4,0,2,88,88,600,400,47,Scope.txt
 Frequency.asm
 HSClock.asm
 DDSWave.asm
-Open=0,1,2,3,4,5,6,7
+Open=4,1,2,3,4,5,6,7
 Api=
-Path=C:\RadASM30
-F5=-2,0,1,176,176,1014,416,0,DDSWave.asm
+Path=D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope
+F5=-2,0,1,176,176,1014,416,708,DDSWave.asm
 F6=-2,0,1,0,0,1014,416,0,Frequency.asm
 F7=-2,0,1,22,22,1014,416,0,HSClock.asm
 C7=0

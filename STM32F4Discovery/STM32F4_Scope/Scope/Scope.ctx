@@ -1,9 +1,25 @@
 
 <Debug>
+	<Scope>
+		<CodeView TopRow="134218766" Focus="134218772" >
+			<CodeReport>
+				<0>93</0>
+				<1>102</1>
+				<2>56</2>
+				<3>309</3>
+				<4>56</4>
+				<5>118</5>
+														
+			</CodeReport>
+										
+		</CodeView>
+		<MemoryView Focus="134218120" TopRow="0" NbPerLine="8" />
+						
+	</Scope>
 	<Flags>
 		<Report>
 			<Def Header="FlagReport" NbCol="9" >
-				<Col Type="PT_BOOL" Header="Check" sizeCache="18" AutoSize="0" Edit="1" Sortable="1" Icon="C:\Program Files\Raisonance\Ride\Config\Resources\check.bmp" />
+				<Col Type="PT_BOOL" Header="Check" sizeCache="18" AutoSize="0" Edit="1" Sortable="1" Icon="D:\Ride\Ride\Config\Resources\check.bmp" />
 				<Col Type="PT_STRING" Header="Kind" sizeCache="DDDDDDDDDDD" AutoSize="1" Edit="0" Sortable="1" />
 				<Col Type="PT_STRING" Header="KindID" sizeCache="DD" AutoSize="1" Edit="0" Sortable="1" Visible="0" />
 				<Col Type="PT_STRING" Header="Space" sizeCache="DDDDDD" AutoSize="1" Edit="0" Sortable="1" />
@@ -22,7 +38,9 @@
 			
 	</Flags>
 	<Views>
-		<View File="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\main.c" Line="85" Index="0" focus="1" />
+		<View File="D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\main.c" Line="225" Index="0" focus="1" />
+		<View File="D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_adc.c" Line="1095" Index="1" />
+		<View File="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_adc.h" Line="119" Index="2" />
 	</Views>
 	<Grep>
 		<GrepIncludeSub>yes</GrepIncludeSub>
@@ -56,6 +74,9 @@
 		</GrepReplaceWhat>
 	</Grep>
 	<FindStrings>
+		<Find>ADC_MultiModeDMARequestAfterLastTransferCmd</Find>
+		<Find>ADC_TripleMode_Interl</Find>
+		<Find>ADC_TwoSamplingDelay_5Cycles</Find>
 		<Find>DMA_MemoryBurst_Single</Find>
 		<Find>ADC_SampleTime_480Cycles</Find>
 		<Find>DAC_OutputBuffer_Enable</Find>
