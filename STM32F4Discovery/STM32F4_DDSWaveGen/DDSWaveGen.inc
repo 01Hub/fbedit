@@ -83,6 +83,8 @@ IDC_TRBHSCLOCKDUTY			equ 1505
 
 ;#########################################################################
 
+WAVEVMAX					equ 2658
+WAVEVMIN					equ 21
 WAVEMAX						equ 0FFh
 DACMAX						equ 4095
 DDSMAX						equ 07FFFh
@@ -880,7 +882,6 @@ DDS_RevSawToothWave			WORD 2048,2046,2044,2042,2040,2038,2036,2034,2032,2030,202
 							WORD 2080,2078,2076,2074,2072,2070,2068,2066,2064,2062,2060,2058,2056,2054,2052,2050
 
 STM32Clock					DWORD 168000000
-;STM32Clock					DWORD 56000000
 
 dds64						QWORD 100000000h
 ddscycles					DWORD 8

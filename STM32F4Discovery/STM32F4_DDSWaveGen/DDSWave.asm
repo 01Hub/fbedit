@@ -411,24 +411,24 @@ DDSWaveProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 		fistp	tmp
 		invoke FormatFrequencyX100,addr buffer,addr szFmtFrq,tmp
 		mov		eax,ddswavedata.DDS_VMin
-		mov		ecx,2658
+		mov		ecx,WAVEVMAX
 		mul		ecx
 		mov		ecx,4095
 		div		ecx
-		add		eax,21
+		add		eax,WAVEVMIN
 		invoke FormatVoltage,addr buffer1,addr szFmtDDSVmin,eax
 		invoke lstrcat,addr buffer,addr buffer1
 		mov		eax,ddswavedata.DDS_VMax
-		mov		ecx,2658
+		mov		ecx,WAVEVMAX
 		mul		ecx
 		mov		ecx,4095
 		div		ecx
-		add		eax,21
+		add		eax,WAVEVMIN
 		invoke FormatVoltage,addr buffer1,addr szFmtDDSVmax,eax
 		invoke lstrcat,addr buffer,addr buffer1
 		mov		eax,ddswavedata.DDS_VMax
 		sub		eax,ddswavedata.DDS_VMin
-		mov		ecx,2658
+		mov		ecx,WAVEVMAX
 		mul		ecx
 		mov		ecx,4095
 		div		ecx
@@ -531,11 +531,14 @@ GetPoint:
 	sub		eax,DACMAX
 	neg		eax
 	mov		ecx,rect.bottom
-	sub		ecx,10
+	sub		ecx,30
+	.if SIGN?
+		xor		ecx,ecx
+	.endif
 	mul		ecx
-	mov		ecx,DACMAX+500
+	mov		ecx,DACMAX
 	div		ecx
-	add		eax,40
+	add		eax,20
 	mov		pt.y,eax
 	retn
 
