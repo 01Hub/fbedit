@@ -1,0 +1,54 @@
+
+-------------------------------------------------------------------------------
+STM32F4 Discovery DDS Waveform Generator demo project.
+-------------------------------------------------------------------------------
+
+IMPORTANT NOTICE!
+-----------------
+The use of the evaluation board is restricted:
+"This device is not, and may not be, offered for sale or lease, or sold or
+leased or otherwise distributed".
+
+For more info see this license agreement:
+http://www.st.com/internet/com/LEGAL_RESOURCES/LEGAL_AGREEMENT/
+LICENSE_AGREEMENT/EvaluationProductLicenseAgreement.pdf
+
+-------------------------------------------------------------------------------
+Features:
+-------------------------------------------------------------------------------
+o DDS Waveform generator.
+  - 12 bit dac.
+  - 32 bit phase register gives 0.00489Hz resolution.
+  - 2048 word amplitude lookup table.
+  - Sine wave.
+  - Triangle wave.
+  - Square wave.
+  - Sawtooth wave.
+  - Reverse sawtooth wave.
+  - Variable amplitude and DC offset.
+  - Sweep generator.
+  	Variable step time, 1ms to 6.5s.
+  	Variable frequency steps, 1Hz to 9999Hz.
+  	Variable number of steps, 1 to 1535.
+  	Sweep up, down or up and down.
+  - Peak detect mode samles peak ampltude for each step.
+o High speed clock output.
+  - Variable from 0.02Hz to 42.0MHz
+  - Variable pulse width, 0% to 100%.
+o Frequency counter.
+  - Counts frequency up to 42MHz.
+  - 1Hz resolution.
+  - Can be disabled to minimize waveform distortion.
+o Digital voltmeter.
+  - 12 bit resolution.
+
+-------------------------------------------------------------------------------
+Port pins used:
+-------------------------------------------------------------------------------
+PA1					Frequency counter input
+PA2					High speed clock output
+PA3					DVM input
+PA4					DDS wave output
+PA5					Peak input
+PA6					DDS sweep sync output
+-------------------------------------------------------------------------------

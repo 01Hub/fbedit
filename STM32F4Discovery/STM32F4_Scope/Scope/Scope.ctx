@@ -22,8 +22,7 @@
 			
 	</Flags>
 	<Views>
-		<View File="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\main.c" Line="174" Index="0" focus="1" />
-		<View File="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_tim.c" Line="284" Index="1" />
+		<View File="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\main.c" Line="85" Index="0" focus="1" />
 	</Views>
 	<Grep>
 		<GrepIncludeSub>yes</GrepIncludeSub>
@@ -57,6 +56,7 @@
 		</GrepReplaceWhat>
 	</Grep>
 	<FindStrings>
+		<Find>DMA_MemoryBurst_Single</Find>
 		<Find>ADC_SampleTime_480Cycles</Find>
 		<Find>DAC_OutputBuffer_Enable</Find>
 		<Find>ODR</Find>
