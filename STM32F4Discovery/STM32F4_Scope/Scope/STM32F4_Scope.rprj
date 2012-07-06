@@ -1,0 +1,4 @@
+
+<Project Header="Project 'STM32F4_Scope'" Path=".\STM32F4_Scope.rprj" Project="Yes" AsyncBuild="" OutputFile="" sate="96" ActiveApp="STM32F4_Scope" >
+	<ApplicationBuild Header="STM32F4_Scope" Extern=".\STM32F4_Scope.rapp" Path=".\STM32F4_Scope.rapp" AsyncBuild="" OutputFile=".\STM32F4_Scope.elf" sate="98" />
+</Project>
