@@ -231,27 +231,6 @@ SampleThreadProc proc lParam:DWORD
 	LOCAL	DVM[2]:DWORD
 
 	.while !fThreadExit
-;		.if !ddsdata.DDS_Enable
-;			mov		fDDSWave,0
-;			.if fWave==1
-;				mov		fWave,2
-;				invoke GetSample,lParam,offset rwdata.RW_CommandStruct,offset rwdata.RW_CommandStructDone
-;				mov		fWave,0
-;			.endif
-;			.if fSample==1
-;				mov		fSample,2
-;				mov		eax,lpSTM32_Command
-;				movzx	eax,[eax].STM32_CommandStructDef.STM32_Mode
-;				.if eax==STM32_ModeDDSWave
-;					invoke GetSample,lParam,lpSTM32_Command,lpSTM32_CommandDone
-;				.else
-;					.if !fWaveFile
-;						invoke GetSample,lParam,lpSTM32_Command,lpSTM32_CommandDone
-;					.endif
-;				.endif
-;				mov		fSample,0
-;			.endif
-;		.endif
 		.if fFRQDVM
 			.if fConnected
 				;Read frequency for CHA
