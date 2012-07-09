@@ -93,29 +93,32 @@ typedef struct
 static STM32_DataStructTypeDef STM32_DataStruct;        // 0x20000000
 
 /* Private function prototypes -----------------------------------------------*/
-void RCC_Configuration(void);
-void GPIO_Configuration(void);
-void NVIC_Configuration(void);
-void ADC_Startup(void);
-void ADC_Configuration(void);
-void DMA_ADC_Configuration(void);
-void DMA_LGA_Configuration(void);
-void TIM1_Configuration(void);
-void TIM2_Configuration(void);
-void TIM3_Configuration(void);
-void TIM4_Configuration(void);
-void TIM6_Configuration(void);
-void TIM7_Configuration(void);
-void TIM15_Configuration(void);
-void TIM16_Configuration(void);
-void TIM17_Configuration(void);
-void DAC_DDS_Configuration(void);
-void DDSWaveGenerator(void);
-void DDSSweepWaveGenerator(void);
-void DDSSweepWaveGeneratorPeak(void);
-void WaitForTrigger(void);
-void FAST_LGA_Read(void);
-void ADC_DVMConfiguration(void);
+void Clock_Config(void);
+void GPIO_Config(void);
+void TIM_Config(void);
+// void RCC_Configuration(void);
+// void GPIO_Configuration(void);
+// void NVIC_Configuration(void);
+// void ADC_Startup(void);
+// void ADC_Configuration(void);
+// void DMA_ADC_Configuration(void);
+// void DMA_LGA_Configuration(void);
+// void TIM1_Configuration(void);
+// void TIM2_Configuration(void);
+// void TIM3_Configuration(void);
+// void TIM4_Configuration(void);
+// void TIM6_Configuration(void);
+// void TIM7_Configuration(void);
+// void TIM15_Configuration(void);
+// void TIM16_Configuration(void);
+// void TIM17_Configuration(void);
+// void DAC_DDS_Configuration(void);
+// void DDSWaveGenerator(void);
+// void DDSSweepWaveGenerator(void);
+// void DDSSweepWaveGeneratorPeak(void);
+// void WaitForTrigger(void);
+// void FAST_LGA_Read(void);
+// void ADC_DVMConfiguration(void);
 
 /* Private functions ---------------------------------------------------------*/
 
@@ -131,6 +134,9 @@ int main(void)
   u32 i;
   u32 *adr;
 
+  Clock_Config();
+  GPIO_Config();
+  TIM_Config;
   // /* System clocks configuration ---------------------------------------------*/
   // RCC_Configuration();
   // /* NVIC configuration ------------------------------------------------------*/
@@ -582,8 +588,8 @@ void WaitForTrigger(void)
 * Output         : None
 * Return         : None
 *******************************************************************************/
-void ADC_Startup(void)
-{
+// void ADC_Startup(void)
+// {
   // ADC_InitTypeDef ADC_InitStructure;
   // /* ADCCLK = PCLK2/2 */
   // RCC_ADCCLKConfig(RCC_PCLK2_Div2);
@@ -607,7 +613,7 @@ void ADC_Startup(void)
   // ADC_StartCalibration(ADC1);
   // /* Check the end of ADC1 calibration */
   // while(ADC_GetCalibrationStatus(ADC1));
-}
+// }
 
 /*******************************************************************************
 * Function Name  : ADC_DVNConfiguration
@@ -617,8 +623,8 @@ void ADC_Startup(void)
 * Output         : None
 * Return         : None
 *******************************************************************************/
-void ADC_DVMConfiguration(void)
-{
+// void ADC_DVMConfiguration(void)
+// {
   // ADC_InitTypeDef ADC_InitStructure;
 
   // /* ADCCLK = PCLK2/8 */
@@ -636,7 +642,7 @@ void ADC_DVMConfiguration(void)
   // ADC_InjectedChannelConfig(ADC1,ADC_Channel_2,1,ADC_SampleTime_239Cycles5);
   // ADC_InjectedChannelConfig(ADC1,ADC_Channel_3,2,ADC_SampleTime_239Cycles5);
   // ADC_AutoInjectedConvCmd(ADC1, ENABLE);
-}
+// }
 
 /*******************************************************************************
 * Function Name  : ADC_Configuration
@@ -646,8 +652,8 @@ void ADC_DVMConfiguration(void)
 * Output         : None
 * Return         : None
 *******************************************************************************/
-void ADC_Configuration(void)
-{
+// void ADC_Configuration(void)
+// {
   // ADC_InitTypeDef ADC_InitStructure;
   // ADC_AutoInjectedConvCmd(ADC1, DISABLE);
   // /* Setup ADC Clock divisor */
@@ -691,7 +697,7 @@ void ADC_Configuration(void)
       // break;
   // }
   // ADC_Init(ADC1, &ADC_InitStructure);
-}
+// }
 
 /*******************************************************************************
 * Function Name  : DMA_ADC_Configuration
@@ -700,8 +706,8 @@ void ADC_Configuration(void)
 * Output         : None
 * Return         : None
 *******************************************************************************/
-void DMA_ADC_Configuration(void)
-{
+// void DMA_ADC_Configuration(void)
+// {
   // DMA_InitTypeDef DMA_InitStructure;
   // DMA_DeInit(DMA1_Channel1);
   // DMA_DeInit(DMA1_Channel5);
@@ -719,7 +725,7 @@ void DMA_ADC_Configuration(void)
   // DMA_Init(DMA1_Channel1, &DMA_InitStructure);
   // /* Clear all interrupt pending bits */
   // DMA1->IFCR =0x0FFFFFFF;
-}
+// }
 
 /*******************************************************************************
 * Function Name  : DMA_LGA_Configuration
@@ -729,8 +735,8 @@ void DMA_ADC_Configuration(void)
 * Output         : None
 * Return         : None
 *******************************************************************************/
-void DMA_LGA_Configuration(void)
-{
+// void DMA_LGA_Configuration(void)
+// {
   // DMA_InitTypeDef DMA_InitStructure;
   // DMA_DeInit(DMA1_Channel1);
   // DMA_DeInit(DMA1_Channel5);
@@ -748,7 +754,7 @@ void DMA_LGA_Configuration(void)
   // DMA_Init(DMA1_Channel5, &DMA_InitStructure);
   // /* Clear all interrupt pending bits */
   // DMA1->IFCR =0x0FFFFFFF;
-}
+// }
 
 /*******************************************************************************
 * Function Name  : RCC_Configuration
@@ -757,8 +763,8 @@ void DMA_LGA_Configuration(void)
 * Output         : None
 * Return         : None
 *******************************************************************************/
-void RCC_Configuration(void)
-{
+// void RCC_Configuration(void)
+// {
   // /* RCC system reset(for debug purpose) */
   // RCC_DeInit();
   // /* Enable HSE */
@@ -823,7 +829,7 @@ void RCC_Configuration(void)
   // RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM1 | RCC_APB2Periph_TIM15 | RCC_APB2Periph_TIM16 | RCC_APB2Periph_TIM17 | RCC_APB2Periph_ADC1 | RCC_APB2Periph_GPIOA | RCC_APB2Periph_GPIOB | RCC_APB2Periph_GPIOC, ENABLE);
   // /* Enable DAC, TIM2, TIM3, TIM4, TIM6 and TIM7 clock */
   // RCC_APB1PeriphClockCmd(RCC_APB1Periph_DAC | RCC_APB1Periph_TIM2 | RCC_APB1Periph_TIM3 | RCC_APB1Periph_TIM4 | RCC_APB1Periph_TIM6 | RCC_APB1Periph_TIM7, ENABLE);
-}
+// }
 
 /*******************************************************************************
 * Function Name  : GPIO_Configuration
@@ -832,8 +838,8 @@ void RCC_Configuration(void)
 * Output         : None
 * Return         : None
 *******************************************************************************/
-void GPIO_Configuration(void)
-{
+// void GPIO_Configuration(void)
+// {
   // GPIO_InitTypeDef GPIO_InitStructure;
   // /* Configure ADC Channel9 (PB.01) and ADC Channel8 (PB.00) as analog input */
   // GPIO_InitStructure.GPIO_Pin = GPIO_Pin_1 | GPIO_Pin_0;
@@ -880,7 +886,7 @@ void GPIO_Configuration(void)
   // GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_OD;
   // GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
   // GPIO_Init(GPIOB, &GPIO_InitStructure);
-}
+// }
 
 /*******************************************************************************
 * Function Name  : NVIC_Configuration
@@ -890,8 +896,8 @@ void GPIO_Configuration(void)
 * Output         : None
 * Return         : None
 *******************************************************************************/
-void NVIC_Configuration(void)
-{
+// void NVIC_Configuration(void)
+// {
   // NVIC_InitTypeDef NVIC_InitStructure;
 
   // /* Set the Vector Table base location at 0x08000000 */ 
@@ -914,7 +920,7 @@ void NVIC_Configuration(void)
   // NVIC_InitStructure.NVIC_IRQChannelSubPriority = 2;
   // NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
   // NVIC_Init(&NVIC_InitStructure);
-}
+// }
 
 /*******************************************************************************
 * Function Name  : TIM1_Configuration
@@ -923,8 +929,8 @@ void NVIC_Configuration(void)
 * Output         : None
 * Return         : None
 *******************************************************************************/
-void TIM1_Configuration(void)
-{
+// void TIM1_Configuration(void)
+// {
   /* -----------------------------------------------------------------------
     TIM1 Configuration: generate 4 PWM signals with 4 different duty cycles:
     TIM1CLK = 28 MHz, Prescaler = 0x0, TIM1 counter clock = 28 MHz
@@ -969,7 +975,7 @@ void TIM1_Configuration(void)
   // TIM_Cmd(TIM1, ENABLE);
   // /* TIM1 Main Output Enable */
   // TIM_CtrlPWMOutputs(TIM1, ENABLE);
-}
+// }
 
 /*******************************************************************************
 * Function Name  : TIM2_Configuration
@@ -979,8 +985,8 @@ void TIM1_Configuration(void)
 * Output         : None
 * Return         : None
 *******************************************************************************/
-void TIM2_Configuration(void)
-{
+// void TIM2_Configuration(void)
+// {
   // TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;
   // /* Time base configuration */
   // TIM_TimeBaseStructure.TIM_Period = 0xffff;
@@ -990,7 +996,7 @@ void TIM2_Configuration(void)
   // TIM_TimeBaseInit(TIM2, &TIM_TimeBaseStructure);
   // TIM2->CCMR1 = 0x0100;     //CC2S=01
   // TIM2->SMCR = 0x0067;      //TS=110, SMS=111
-}
+// }
 
 /*******************************************************************************
 * Function Name  : TIM3_Configuration
@@ -999,8 +1005,8 @@ void TIM2_Configuration(void)
 * Output         : None
 * Return         : None
 *******************************************************************************/
-void TIM3_Configuration(void)
-{
+// void TIM3_Configuration(void)
+// {
   // TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;
   // /* Time base configuration */
   // TIM_TimeBaseStructure.TIM_Period = 9999;
@@ -1026,7 +1032,7 @@ void TIM3_Configuration(void)
   // TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
   // TIM_TimeBaseInit(TIM3, &TIM_TimeBaseStructure);
   // TIM_InternalClockConfig(TIM3);
-}
+// }
 
 /*******************************************************************************
 * Function Name  : TIM4_Configuration
@@ -1036,8 +1042,8 @@ void TIM3_Configuration(void)
 * Output         : None
 * Return         : None
 *******************************************************************************/
-void TIM4_Configuration(void)
-{
+// void TIM4_Configuration(void)
+// {
   // TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;
   // /* Time base configuration */
   // TIM_TimeBaseStructure.TIM_Period = 0xffff;
@@ -1047,7 +1053,7 @@ void TIM4_Configuration(void)
   // TIM_TimeBaseInit(TIM4, &TIM_TimeBaseStructure);
   // TIM4->CCMR1 = 0x0001;     //CC2S=01
   // TIM4->SMCR = 0x0067;      //TS=110, SMS=111
-}
+// }
 
 /*******************************************************************************
 * Function Name  : TIM6_Configuration
@@ -1057,13 +1063,13 @@ void TIM4_Configuration(void)
 * Output         : None
 * Return         : None
 *******************************************************************************/
-void TIM6_Configuration(void)
-{
+// void TIM6_Configuration(void)
+// {
   // /* TIM6 TRGO selection */
   // TIM_SelectOutputTrigger(TIM6, TIM_TRGOSource_Update);
   // /* TIM6 enable counter */
   // TIM_Cmd(TIM6, ENABLE);
-}
+// }
 
 /*******************************************************************************
 * Function Name  : TIM7_Configuration
@@ -1073,13 +1079,13 @@ void TIM6_Configuration(void)
 * Output         : None
 * Return         : None
 *******************************************************************************/
-void TIM7_Configuration(void)
-{
+// void TIM7_Configuration(void)
+// {
   // /* TIM6 TRGO selection */
   // TIM_SelectOutputTrigger(TIM7, TIM_TRGOSource_Update);
   // /* TIM7 enable counter */
   // TIM_Cmd(TIM7, ENABLE);
-}
+// }
 
 /*******************************************************************************
 * Function Name  : TIM15_Configuration
@@ -1089,8 +1095,8 @@ void TIM7_Configuration(void)
 * Output         : None
 * Return         : None
 *******************************************************************************/
-void TIM15_Configuration()
-{
+// void TIM15_Configuration()
+// {
   // TIM_DeInit(TIM15);
   // TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;
   // /* Time base configuration */
@@ -1100,7 +1106,7 @@ void TIM15_Configuration()
   // TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
   // TIM_TimeBaseInit(TIM15, &TIM_TimeBaseStructure);
   // TIM_DMACmd(TIM15,TIM_DMA_Update,ENABLE);
-}
+// }
 
 /*******************************************************************************
 * Function Name  : TIM16_Configuration
@@ -1109,8 +1115,8 @@ void TIM15_Configuration()
 * Output         : None
 * Return         : None
 *******************************************************************************/
-void TIM16_Configuration(void)
-{
+// void TIM16_Configuration(void)
+// {
   // TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructure;
   // TIM_OCInitTypeDef  TIM_OCInitStructure;
   // /* Time base configuration */
@@ -1129,7 +1135,7 @@ void TIM16_Configuration(void)
   // TIM16->CCR1 = (u16)0x7F;
   // /* TIM16 Main Output Enable */
   // TIM_CtrlPWMOutputs(TIM16, ENABLE);
-}
+// }
 
 /*******************************************************************************
 * Function Name  : TIM17_Configuration
@@ -1138,8 +1144,8 @@ void TIM16_Configuration(void)
 * Output         : None
 * Return         : None
 *******************************************************************************/
-void TIM17_Configuration(void)
-{
+// void TIM17_Configuration(void)
+// {
   // TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructure;
   // TIM_OCInitTypeDef  TIM_OCInitStructure;
   // /* Time base configuration */
@@ -1158,6 +1164,155 @@ void TIM17_Configuration(void)
   // TIM17->CCR1 = (u16)0x7F;
   // /* TIM17 Main Output Enable */
   // TIM_CtrlPWMOutputs(TIM17, ENABLE);
+// }
+
+void Clock_Config(void)
+{
+  /* Enable GPIOA, GPIOB, GPIOC and GPIOE clocks ****************************************/
+  RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA | RCC_AHB1Periph_GPIOB | RCC_AHB1Periph_GPIOC | RCC_AHB1Periph_GPIOE, ENABLE);
+  /* Enable TIM2, TIM3, TIM4 and TIM5 clocks ****************************************/
+  RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2 | RCC_APB1Periph_TIM3 | RCC_APB1Periph_TIM4 | RCC_APB1Periph_TIM5, ENABLE);
+  /* Enable TIM10 clocks ****************************************/
+  RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM10, ENABLE);
+  // RCC_APB2PeriphClockCmd(RCC_APB2Periph_ADC3, ENABLE);
+}
+
+void GPIO_Config(void)
+{
+  GPIO_InitTypeDef        GPIO_InitStructure;
+
+  /* TIM4 chennel 2 and TIM10 channel 1 configuration : PB7, PB8 */
+  GPIO_InitStructure.GPIO_Pin   = GPIO_Pin_8 | GPIO_Pin_7;
+  GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_AF;
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+  GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+  GPIO_InitStructure.GPIO_PuPd  = GPIO_PuPd_NOPULL ;
+  GPIO_Init(GPIOB, &GPIO_InitStructure);
+  /* Connect TIM4 pin to AF2 */
+  GPIO_PinAFConfig(GPIOB, GPIO_PinSource7, GPIO_AF_TIM4);
+  /* Connect TIM10 pin to AF2 */
+  GPIO_PinAFConfig(GPIOB, GPIO_PinSource8, GPIO_AF_TIM10);
+
+  /* TIM2 chennel 2 and TIM5 channel 3 configuration : PA1, PA2 */
+  GPIO_InitStructure.GPIO_Pin   = GPIO_Pin_1;
+  GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_AF;
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+  GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+  GPIO_InitStructure.GPIO_PuPd  = GPIO_PuPd_NOPULL ;
+  GPIO_Init(GPIOA, &GPIO_InitStructure);
+  /* Connect TIM2 pin to AF2 */
+  GPIO_PinAFConfig(GPIOA, GPIO_PinSource1, GPIO_AF_TIM2);
+  /* Connect TIM5 pin to AF2 */
+  GPIO_PinAFConfig(GPIOA, GPIO_PinSource2, GPIO_AF_TIM5);
+
+  STM_EVAL_LEDInit(LED3);
+}
+
+void TIM_Config(void)
+{
+  TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;
+  TIM_OCInitTypeDef       TIM_OCInitStructure;
+
+  /* TIM2 Counter configuration */
+  TIM_TimeBaseStructure.TIM_Period = 0xffffffff;
+  TIM_TimeBaseStructure.TIM_Prescaler = 0;
+  TIM_TimeBaseStructure.TIM_ClockDivision = 0;
+  TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
+  TIM_TimeBaseInit(TIM2, &TIM_TimeBaseStructure);
+  TIM2->CCMR1 = 0x0100;     //CC2S=01
+  TIM2->SMCR = 0x0067;      //TS=110, SMS=111
+
+  /* TIM5 Counter configuration */
+  TIM_TimeBaseStructure.TIM_Period = 0xffffffff;
+  TIM_TimeBaseStructure.TIM_Prescaler = 0;
+  TIM_TimeBaseStructure.TIM_ClockDivision = 0;
+  TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
+  TIM_TimeBaseInit(TIM5, &TIM_TimeBaseStructure);
+  TIM5->CCMR1 = 0x0100;     //CC2S=01
+  TIM5->SMCR = 0x0067;      //TS=110, SMS=111
+
+  /* TIM3 1 second Time base configuration */
+  TIM_TimeBaseStructure.TIM_Period = 9999;
+  TIM_TimeBaseStructure.TIM_Prescaler = 8399;
+  TIM_TimeBaseStructure.TIM_ClockDivision = 0;
+  TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
+  TIM_TimeBaseInit(TIM3, &TIM_TimeBaseStructure);
+  /* TIM Interrupts enable */
+  TIM_ITConfig(TIM3, TIM_IT_Update, ENABLE);
+
+  TIM_Cmd(TIM2, ENABLE);
+  TIM_Cmd(TIM3, ENABLE);
+  TIM_Cmd(TIM5, ENABLE);
+
+  /* Time base configuration */
+  TIM_TimeBaseStructure.TIM_Period = 999;
+  TIM_TimeBaseStructure.TIM_Prescaler = 0;
+  TIM_TimeBaseStructure.TIM_ClockDivision = 0;
+  TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
+  TIM_TimeBaseStructure.TIM_RepetitionCounter = 0;
+  TIM_TimeBaseInit(TIM5, &TIM_TimeBaseStructure);
+  /* PWM1 Mode configuration: Channel3 */
+  TIM_OCInitStructure.TIM_OCMode = TIM_OCMode_PWM1;
+  TIM_OCInitStructure.TIM_OutputState = TIM_OutputState_Enable;
+  TIM_OCInitStructure.TIM_OutputNState = TIM_OutputState_Disable;
+  TIM_OCInitStructure.TIM_Pulse = 499;
+  TIM_OCInitStructure.TIM_OCPolarity = TIM_OCPolarity_High;
+  TIM_OCInitStructure.TIM_OCNPolarity = TIM_OCPolarity_Low;
+  TIM_OCInitStructure.TIM_OCIdleState = TIM_OCIdleState_Reset;
+  TIM_OCInitStructure.TIM_OCNIdleState = TIM_OCIdleState_Reset;
+  TIM_OC3Init(TIM4, &TIM_OCInitStructure);
+
+  TIM_OC1PreloadConfig(TIM4, TIM_OCPreload_Enable);
+  TIM_ARRPreloadConfig(TIM4, ENABLE);
+  /* TIM4 Main Output Enable */
+  TIM_CtrlPWMOutputs(TIM4, ENABLE);
+  /* TIM4 enable counter */
+  TIM_Cmd(TIM4, ENABLE);
+
+  /* Time base configuration */
+  TIM_TimeBaseStructure.TIM_Period = 999;
+  TIM_TimeBaseStructure.TIM_Prescaler = 0;
+  TIM_TimeBaseStructure.TIM_ClockDivision = 0;
+  TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
+  TIM_TimeBaseStructure.TIM_RepetitionCounter = 0;
+  TIM_TimeBaseInit(TIM10, &TIM_TimeBaseStructure);
+  /* PWM1 Mode configuration: Channel3 */
+  TIM_OCInitStructure.TIM_OCMode = TIM_OCMode_PWM1;
+  TIM_OCInitStructure.TIM_OutputState = TIM_OutputState_Enable;
+  TIM_OCInitStructure.TIM_OutputNState = TIM_OutputState_Disable;
+  TIM_OCInitStructure.TIM_Pulse = 499;
+  TIM_OCInitStructure.TIM_OCPolarity = TIM_OCPolarity_High;
+  TIM_OCInitStructure.TIM_OCNPolarity = TIM_OCPolarity_Low;
+  TIM_OCInitStructure.TIM_OCIdleState = TIM_OCIdleState_Reset;
+  TIM_OCInitStructure.TIM_OCNIdleState = TIM_OCIdleState_Reset;
+  TIM_OC3Init(TIM10, &TIM_OCInitStructure);
+
+  TIM_OC1PreloadConfig(TIM10, TIM_OCPreload_Enable);
+  TIM_ARRPreloadConfig(TIM10, ENABLE);
+  /* TIM4 Main Output Enable */
+  TIM_CtrlPWMOutputs(TIM10, ENABLE);
+  /* TIM4 enable counter */
+  TIM_Cmd(TIM10, ENABLE);
+
+}
+
+/**
+  * @brief  This function handles TIM3 global interrupt request.
+  * @param  None
+  * @retval None
+  */
+void TIM3_IRQHandler(void)
+{
+  uint32_t Count;
+
+  TIM_ClearITPendingBit(TIM3, TIM_IT_Update);
+  Count=TIM2->CNT;
+  STM32_DataStruct.FRQDataStructCHA.Frequency=Count-STM32_DataStruct.FRQDataStructCHA.PreviousCount;
+  STM32_DataStruct.FRQDataStructCHA.PreviousCount=Count;
+  Count=TIM5->CNT;
+  STM32_DataStruct.FRQDataStructCHB.Frequency=Count-STM32_DataStruct.FRQDataStructCHB.PreviousCount;
+  STM32_DataStruct.FRQDataStructCHB.PreviousCount=Count;
+  STM_EVAL_LEDToggle(LED3);
 }
 
 /*****END OF FILE****/

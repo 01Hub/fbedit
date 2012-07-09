@@ -1,4 +1,4 @@
 
-<Project Header="Project 'Scope'" Path=".\Scope.rprj" Project="Yes" AsyncBuild="" OutputFile="" sate="96" ActiveApp="Scope" >
-	<ApplicationBuild Header="Scope" Extern=".\Scope.rapp" Path=".\Scope.rapp" AsyncBuild="" OutputFile=".\Scope.elf" sate="98" />
+<Project Header="Project 'Scope'" Path=".\Scope.rprj" Project="Yes" AsyncBuild="" OutputFile="" sate="98" ActiveApp="Scope" >
+	<ApplicationBuild Header="Scope" Extern=".\Scope.rapp" Path=".\Scope.rapp" AsyncBuild="" OutputFile=".\Scope.elf" sate="96" />
 </Project>

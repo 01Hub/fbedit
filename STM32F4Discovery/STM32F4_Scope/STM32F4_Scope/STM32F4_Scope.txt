@@ -53,9 +53,9 @@ PB1					ADC12_IN9	Input for DVMB
 
 PC1					ADC123_IN11	Input for scope CHA
 PC2					ADC123_IN12	Input for scope CHB
--------------------------------------------------------------------------------
 
 PE8-PE15			PE8-PE15	Inputs for logic analyser
+-------------------------------------------------------------------------------
 
 PB.00				ADC Channel 8 Input for scope CHA
 PB.01				ADC Channel 9 Input for scope CHB

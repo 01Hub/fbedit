@@ -23,7 +23,7 @@
 	</Flags>
 	<Views>
 		<View File="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\readme.txt" Line="0" Index="0" />
-		<View File="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\main.c" Line="382" Index="1" focus="1" />
+		<View File="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\main.c" Line="1224" Index="1" focus="1" />
 	</Views>
 	<Grep>
 		<GrepIncludeSub>yes</GrepIncludeSub>
