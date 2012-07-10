@@ -45,8 +45,8 @@ Port pins used:
 PB7					TIM4_CH2	PWM Output. High speed clock output CLKA.
 PB8					TIM10_CH1	PWM Output. High speed clock output CLKB.
 
+PA0					TIM5_CH1	Input for frequency counter scope CHB
 PA1					TIM2_CH2	Input for frequency counter scope CHA
-PA2					TIM5_CH3	Input for frequency counter scope CHB
 
 PB0					ADC12_IN8	Input for DVMA
 PB1					ADC12_IN9	Input for DVMB

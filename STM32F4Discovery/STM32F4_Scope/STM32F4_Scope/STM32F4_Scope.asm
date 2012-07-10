@@ -31,6 +31,7 @@ GetSample proc uses ebx esi edi,hWin:HWND,lpCommand:DWORD,lpCommandDone:DWORD
 		;Connect to the STLink
 		invoke STLinkConnect,hWin
 		mov		fConnected,eax
+PrintHex eax
 		.if fConnected
 			invoke STLinkReset,hWin
 		.endif
@@ -233,6 +234,7 @@ SampleThreadProc proc lParam:DWORD
 	.while !fThreadExit
 		.if fFRQDVM
 			.if fConnected
+;PrintHex eax
 				;Read frequency for CHA
 				invoke STLinkRead,hWnd,STM32FrequencyCHA,addr scopedata.scopeCHAdata.frq_data,4
 				.if fConnected
@@ -240,7 +242,7 @@ SampleThreadProc proc lParam:DWORD
 					invoke STLinkRead,hWnd,STM32FrequencyCHB,addr scopedata.scopeCHBdata.frq_data,4
 					.if fConnected
 						;Read DVM data for CHA and CHB from injected channels
-						invoke STLinkRead,hWnd,4001243Ch,addr DVM,8
+						invoke STLinkRead,hWnd,4001203Ch,addr DVM,8
 						mov		eax,DVM[0]
 						mov		scopedata.scopeCHAdata.frq_data.DVM,ax
 						mov		eax,DVM[4]
@@ -251,6 +253,15 @@ SampleThreadProc proc lParam:DWORD
 						fild	scopedata.scopeCHBdata.frq_data.Frequency
 						fstp	scopedata.scopeCHBdata.frequency
 						invoke SetFrequencyAndDVM
+					.endif
+				.endif
+			.else
+				.if !fConnected
+					;Connect to the STLink
+					invoke STLinkConnect,hWnd
+					mov		fConnected,eax
+					.if fConnected
+						invoke STLinkReset,hWnd
 					.endif
 				.endif
 			.endif

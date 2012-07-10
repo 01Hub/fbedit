@@ -10,8 +10,12 @@
  <type Header="int32_t" Icon="1" Type="type" Desc=": long" DeclFile="c:\program files\raisonance\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="79" Pointer="No"/>
  <type Header="uint32_t" Icon="1" Type="type" Desc=": unsigned long" DeclFile="c:\program files\raisonance\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="80" Pointer="No"/>
  <type Header="u32" Icon="1" Type="type" Desc=": unsigned long" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx.h" DeclLine="269" Pointer="No"/>
+ <type Header="FunctionalState" Icon="1" Type="type" Desc=": unsigned char" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx.h" DeclLine="287" Pointer="No"/>
+ <type Header="ADC_TypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx.h" DeclLine="326" Pointer="No"/>
  <type Header="GPIO_TypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx.h" DeclLine="666" Pointer="No"/>
  <type Header="TIM_TypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx.h" DeclLine="911" Pointer="No"/>
+ <type Header="ADC_InitTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_adc.h" DeclLine="73" Pointer="No"/>
+ <type Header="ADC_CommonInitTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_adc.h" DeclLine="94" Pointer="No"/>
  <type Header="GPIOMode_TypeDef" Icon="1" Type="type" Desc=": unsigned char" DeclFile="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_gpio.h" DeclLine="63" Pointer="No"/>
  <type Header="GPIOOType_TypeDef" Icon="1" Type="type" Desc=": unsigned char" DeclFile="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_gpio.h" DeclLine="74" Pointer="No"/>
  <type Header="GPIOSpeed_TypeDef" Icon="1" Type="type" Desc=": unsigned char" DeclFile="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_gpio.h" DeclLine="87" Pointer="No"/>
@@ -19,15 +23,18 @@
  <type Header="GPIO_InitTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_gpio.h" DeclLine="133" Pointer="No"/>
  <type Header="TIM_TimeBaseInitTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_tim.h" DeclLine="72" Pointer="No"/>
  <type Header="TIM_OCInitTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_tim.h" DeclLine="107" Pointer="No"/>
- <type Header="CommandStructTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\main.c" DeclLine="62" Pointer="No"/>
- <type Header="FRQDataStructTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\main.c" DeclLine="70" Pointer="No"/>
- <type Header="DataStructTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\main.c" DeclLine="77" Pointer="No"/>
- <type Header="STM32_DataStructTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\main.c" DeclLine="89" Pointer="No"/>
- <func Header="Clock_Config" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\main.c" DeclLine="1169"/>
- <func Header="GPIO_Config" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\main.c" DeclLine="1180"/>
- <func Header="main" Icon="3" Type="func" Desc=":   long" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\main.c" DeclLine="132"/>
- <func Header="TIM3_IRQHandler" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\main.c" DeclLine="1304"/>
- <variable Header="STM32_DataStruct" Icon="2" Type="variable" Desc=":   struct " DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\main.c" DeclLine="93" Pointer="No"/>
+ <type Header="NVIC_InitTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\misc.h" DeclLine="68" Pointer="No"/>
+ <type Header="CommandStructTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4_discovery.h" DeclLine="85" Pointer="No"/>
+ <type Header="FRQDataStructTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4_discovery.h" DeclLine="93" Pointer="No"/>
+ <type Header="DataStructTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4_discovery.h" DeclLine="100" Pointer="No"/>
+ <type Header="STM32_DataStructTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4_discovery.h" DeclLine="114" Pointer="No"/>
+ <func Header="Clock_Config" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\main.c" DeclLine="1126"/>
+ <func Header="NVIC_Config" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\main.c" DeclLine="1136"/>
+ <func Header="GPIO_Config" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\main.c" DeclLine="1148"/>
+ <func Header="TIM_Config" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\main.c" DeclLine="1185"/>
+ <func Header="ADC_DVMConfig" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\main.c" DeclLine="1264"/>
+ <func Header="main" Icon="3" Type="func" Desc=":   long" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\main.c" DeclLine="88"/>
+ <variable Header="STM32_DataStruct" Icon="2" Type="variable" Desc=":   struct " DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\main.c" DeclLine="47" Pointer="No"/>
  <type Header="uint8_t" Icon="1" Type="type" Desc=": unsigned char" DeclFile="c:\program files\raisonance\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="42" Pointer="No"/>
  <type Header="uint16_t" Icon="1" Type="type" Desc=": unsigned int" DeclFile="c:\program files\raisonance\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="54" Pointer="No"/>
  <type Header="int32_t" Icon="1" Type="type" Desc=": long" DeclFile="c:\program files\raisonance\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="79" Pointer="No"/>
@@ -70,6 +77,15 @@
  <type Header="ADC_Common_TypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx.h" DeclLine="334" Pointer="No"/>
  <type Header="ADC_InitTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_adc.h" DeclLine="73" Pointer="No"/>
  <type Header="ADC_CommonInitTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_adc.h" DeclLine="94" Pointer="No"/>
+ <func Header="ADC_Init" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_adc.c" DeclLine="228"/>
+ <func Header="ADC_StructInit" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_adc.c" DeclLine="303"/>
+ <func Header="ADC_CommonInit" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_adc.c" DeclLine="334"/>
+ <func Header="ADC_CommonStructInit" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_adc.c" DeclLine="370"/>
+ <func Header="ADC_Cmd" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_adc.c" DeclLine="392"/>
+ <func Header="ADC_InjectedChannelConfig" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_adc.c" DeclLine="1186"/>
+ <func Header="ADC_InjectedSequencerLengthConfig" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_adc.c" DeclLine="1249"/>
+ <func Header="ADC_SoftwareStartInjectedConv" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_adc.c" DeclLine="1377"/>
+ <func Header="ADC_AutoInjectedConvCmd" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_adc.c" DeclLine="1419"/>
  <type Header="uint16_t" Icon="1" Type="type" Desc=": unsigned int" DeclFile="c:\program files\raisonance\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="54" Pointer="No"/>
  <type Header="int32_t" Icon="1" Type="type" Desc=": long" DeclFile="c:\program files\raisonance\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="79" Pointer="No"/>
  <type Header="uint32_t" Icon="1" Type="type" Desc=": unsigned long" DeclFile="c:\program files\raisonance\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="80" Pointer="No"/>
@@ -92,16 +108,25 @@
  <type Header="GPIO_InitTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_gpio.h" DeclLine="133" Pointer="No"/>
  <func Header="GPIO_Init" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_gpio.c" DeclLine="182"/>
  <func Header="GPIO_PinAFConfig" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_gpio.c" DeclLine="529"/>
+ <type Header="uint8_t" Icon="1" Type="type" Desc=": unsigned char" DeclFile="c:\program files\raisonance\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="42" Pointer="No"/>
+ <type Header="uint16_t" Icon="1" Type="type" Desc=": unsigned int" DeclFile="c:\program files\raisonance\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="54" Pointer="No"/>
  <type Header="int32_t" Icon="1" Type="type" Desc=": long" DeclFile="c:\program files\raisonance\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="79" Pointer="No"/>
- <func Header="NMI_Handler" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_it.c" DeclLine="51"/>
- <func Header="HardFault_Handler" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_it.c" DeclLine="60"/>
- <func Header="MemManage_Handler" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_it.c" DeclLine="73"/>
- <func Header="BusFault_Handler" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_it.c" DeclLine="86"/>
- <func Header="UsageFault_Handler" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_it.c" DeclLine="99"/>
- <func Header="SVC_Handler" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_it.c" DeclLine="112"/>
- <func Header="DebugMon_Handler" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_it.c" DeclLine="121"/>
- <func Header="PendSV_Handler" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_it.c" DeclLine="130"/>
- <func Header="SysTick_Handler" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_it.c" DeclLine="139"/>
+ <type Header="uint32_t" Icon="1" Type="type" Desc=": unsigned long" DeclFile="c:\program files\raisonance\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="80" Pointer="No"/>
+ <type Header="TIM_TypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx.h" DeclLine="911" Pointer="No"/>
+ <type Header="CommandStructTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4_discovery.h" DeclLine="85" Pointer="No"/>
+ <type Header="FRQDataStructTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4_discovery.h" DeclLine="93" Pointer="No"/>
+ <type Header="DataStructTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4_discovery.h" DeclLine="100" Pointer="No"/>
+ <type Header="STM32_DataStructTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4_discovery.h" DeclLine="114" Pointer="No"/>
+ <func Header="NMI_Handler" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_it.c" DeclLine="55"/>
+ <func Header="HardFault_Handler" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_it.c" DeclLine="64"/>
+ <func Header="MemManage_Handler" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_it.c" DeclLine="77"/>
+ <func Header="BusFault_Handler" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_it.c" DeclLine="90"/>
+ <func Header="UsageFault_Handler" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_it.c" DeclLine="103"/>
+ <func Header="SVC_Handler" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_it.c" DeclLine="116"/>
+ <func Header="DebugMon_Handler" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_it.c" DeclLine="125"/>
+ <func Header="PendSV_Handler" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_it.c" DeclLine="134"/>
+ <func Header="SysTick_Handler" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_it.c" DeclLine="143"/>
+ <func Header="TIM3_IRQHandler" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_it.c" DeclLine="168"/>
  <type Header="uint8_t" Icon="1" Type="type" Desc=": unsigned char" DeclFile="c:\program files\raisonance\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="42" Pointer="No"/>
  <type Header="uint16_t" Icon="1" Type="type" Desc=": unsigned int" DeclFile="c:\program files\raisonance\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="54" Pointer="No"/>
  <type Header="int32_t" Icon="1" Type="type" Desc=": long" DeclFile="c:\program files\raisonance\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="79" Pointer="No"/>
@@ -128,6 +153,15 @@
  <type Header="TIM_OCInitTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_tim.h" DeclLine="107" Pointer="No"/>
  <type Header="TIM_ICInitTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_tim.h" DeclLine="130" Pointer="No"/>
  <type Header="TIM_BDTRInitTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_tim.h" DeclLine="161" Pointer="No"/>
+ <func Header="TIM_TimeBaseInit" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_tim.c" DeclLine="282"/>
+ <func Header="TIM_ARRPreloadConfig" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_tim.c" DeclLine="516"/>
+ <func Header="TIM_Cmd" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_tim.c" DeclLine="586"/>
+ <func Header="TIM_OC1Init" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_tim.c" DeclLine="665"/>
+ <func Header="TIM_OC2Init" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_tim.c" DeclLine="746"/>
+ <func Header="TIM_OCStructInit" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_tim.c" DeclLine="970"/>
+ <func Header="TIM_OC1PreloadConfig" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_tim.c" DeclLine="1230"/>
+ <func Header="TIM_OC2PreloadConfig" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_tim.c" DeclLine="1260"/>
+ <func Header="TIM_ITConfig" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_tim.c" DeclLine="2362"/>
  <func Header="TIM_ClearITPendingBit" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_tim.c" DeclLine="2544"/>
  <type Header="uint8_t" Icon="1" Type="type" Desc=": unsigned char" DeclFile="c:\program files\raisonance\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="42" Pointer="No"/>
  <type Header="uint16_t" Icon="1" Type="type" Desc=": unsigned int" DeclFile="c:\program files\raisonance\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="54" Pointer="No"/>
@@ -148,5 +182,6 @@
  <type Header="SysTick_Type" Icon="1" Type="type" Desc=": struct " DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\core_cm4.h" DeclLine="596" Pointer="No"/>
  <type Header="FunctionalState" Icon="1" Type="type" Desc=": unsigned char" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx.h" DeclLine="287" Pointer="No"/>
  <type Header="NVIC_InitTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\misc.h" DeclLine="68" Pointer="No"/>
+ <func Header="NVIC_Init" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\misc.c" DeclLine="130"/>
 </aoffile>
 

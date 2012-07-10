@@ -42,60 +42,16 @@
 #define STM32_TriggerLGA          ((uint8_t)5)
 
 /* Private typedef -----------------------------------------------------------*/
-typedef struct
-{
-  uint8_t   Command;
-  uint8_t   Mode;
-  uint8_t   ScopeDataBits;
-  uint8_t   ScopeSampleClocks;
-  uint8_t   ScopeClockDiv;
-  uint8_t   ScopeDataBlocks;
-  uint8_t   ScopeTriggerMode;
-  uint8_t   ScopeTriggerValue;
-  uint8_t   ScopeAmplifyCHA;
-  uint8_t   ScopeAmplifyCHB;
-  uint8_t   ScopeDCNullOutCHA;
-  uint8_t   ScopeDCNullOutCHB;
-  uint8_t   LGATriggerValue;
-  uint8_t   LGATriggerMask;
-  uint16_t  TriggerWait;
-}CommandStructTypeDef;
-
-typedef struct
-{
-  uint32_t  Frequency;
-  uint32_t  PreviousCount;
-  uint32_t  Reserved;
-  uint32_t  DVM;
-}FRQDataStructTypeDef;
-
-typedef struct
-{
-  uint32_t  DataSize;
-  uint32_t  Adress;
-  uint32_t  Data;
-}DataStructTypeDef;
-
-typedef struct
-{
-  FRQDataStructTypeDef FRQDataStructCHA;                // 0x20000000
-  FRQDataStructTypeDef FRQDataStructCHB;                // 0x20000010
-  CommandStructTypeDef CommandStruct;                   // 0x20000020
-  union
-  {
-    uint8_t STM32_Data[STM32_DataSize];                 // 0x20000030
-    DataStructTypeDef DataStruct[100];                  // 0x20000030
-  };
-}STM32_DataStructTypeDef;
-
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
-static STM32_DataStructTypeDef STM32_DataStruct;        // 0x20000000
+__IO STM32_DataStructTypeDef STM32_DataStruct;        // 0x20000000
 
 /* Private function prototypes -----------------------------------------------*/
 void Clock_Config(void);
+void NVIC_Config(void);
 void GPIO_Config(void);
 void TIM_Config(void);
+void ADC_DVMConfig(void);
 // void RCC_Configuration(void);
 // void GPIO_Configuration(void);
 // void NVIC_Configuration(void);
@@ -135,8 +91,10 @@ int main(void)
   u32 *adr;
 
   Clock_Config();
+  NVIC_Config();
   GPIO_Config();
-  TIM_Config;
+  TIM_Config();
+  ADC_DVMConfig();
   // /* System clocks configuration ---------------------------------------------*/
   // RCC_Configuration();
   // /* NVIC configuration ------------------------------------------------------*/
@@ -387,12 +345,11 @@ int main(void)
       STM32_DataStruct.CommandStruct.Command = STM32_CommandDone;
     }
     i=0;
-    while (i < 10000)
+    while (i < 1000000)
     {
       i++;
     }
-    /* Turn off LED3 */
-    // GPIO_ResetBits(GPIOC,GPIO_Pin_9);
+    ADC_SoftwareStartInjectedConv(ADC1);
   }
 }
 
@@ -1173,8 +1130,19 @@ void Clock_Config(void)
   /* Enable TIM2, TIM3, TIM4 and TIM5 clocks ****************************************/
   RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2 | RCC_APB1Periph_TIM3 | RCC_APB1Periph_TIM4 | RCC_APB1Periph_TIM5, ENABLE);
   /* Enable TIM10 clocks ****************************************/
-  RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM10, ENABLE);
-  // RCC_APB2PeriphClockCmd(RCC_APB2Periph_ADC3, ENABLE);
+  RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM10 | RCC_APB2Periph_ADC1, ENABLE);
+}
+
+void NVIC_Config(void)
+{
+  NVIC_InitTypeDef NVIC_InitStructure;
+
+  /* Enable the TIM3 gloabal Interrupt */
+  NVIC_InitStructure.NVIC_IRQChannel = TIM3_IRQn;
+  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
+  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
+  NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+  NVIC_Init(&NVIC_InitStructure);
 }
 
 void GPIO_Config(void)
@@ -1186,15 +1154,15 @@ void GPIO_Config(void)
   GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_AF;
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
   GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-  GPIO_InitStructure.GPIO_PuPd  = GPIO_PuPd_NOPULL ;
+  GPIO_InitStructure.GPIO_PuPd  = GPIO_PuPd_UP ;
   GPIO_Init(GPIOB, &GPIO_InitStructure);
   /* Connect TIM4 pin to AF2 */
   GPIO_PinAFConfig(GPIOB, GPIO_PinSource7, GPIO_AF_TIM4);
   /* Connect TIM10 pin to AF2 */
   GPIO_PinAFConfig(GPIOB, GPIO_PinSource8, GPIO_AF_TIM10);
 
-  /* TIM2 chennel 2 and TIM5 channel 3 configuration : PA1, PA2 */
-  GPIO_InitStructure.GPIO_Pin   = GPIO_Pin_1;
+  /* TIM2 chennel 2 and TIM5 channel 1 configuration : PA1, PA0 */
+  GPIO_InitStructure.GPIO_Pin   = GPIO_Pin_1 | GPIO_Pin_0;
   GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_AF;
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
   GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
@@ -1203,7 +1171,13 @@ void GPIO_Config(void)
   /* Connect TIM2 pin to AF2 */
   GPIO_PinAFConfig(GPIOA, GPIO_PinSource1, GPIO_AF_TIM2);
   /* Connect TIM5 pin to AF2 */
-  GPIO_PinAFConfig(GPIOA, GPIO_PinSource2, GPIO_AF_TIM5);
+  GPIO_PinAFConfig(GPIOA, GPIO_PinSource0, GPIO_AF_TIM5);
+
+  /* Configure ADC1 Channel8 and ADC1 Channel9 pins as analog inputs ******************************/
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0 | GPIO_Pin_1;
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AN;
+  GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL ;
+  GPIO_Init(GPIOB, &GPIO_InitStructure);
 
   STM_EVAL_LEDInit(LED3);
 }
@@ -1212,6 +1186,9 @@ void TIM_Config(void)
 {
   TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;
   TIM_OCInitTypeDef       TIM_OCInitStructure;
+
+  //TIM_TimeBaseStructInit(&TIM_TimeBaseInitStruct);
+  TIM_OCStructInit(&TIM_OCInitStructure);
 
   /* TIM2 Counter configuration */
   TIM_TimeBaseStructure.TIM_Period = 0xffffffff;
@@ -1228,8 +1205,8 @@ void TIM_Config(void)
   TIM_TimeBaseStructure.TIM_ClockDivision = 0;
   TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
   TIM_TimeBaseInit(TIM5, &TIM_TimeBaseStructure);
-  TIM5->CCMR1 = 0x0100;     //CC2S=01
-  TIM5->SMCR = 0x0067;      //TS=110, SMS=111
+  TIM5->CCMR1 = 0x01;       //CC1S=01
+  TIM5->SMCR = 0x0057;      //TS=101, SMS=111
 
   /* TIM3 1 second Time base configuration */
   TIM_TimeBaseStructure.TIM_Period = 9999;
@@ -1250,22 +1227,17 @@ void TIM_Config(void)
   TIM_TimeBaseStructure.TIM_ClockDivision = 0;
   TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
   TIM_TimeBaseStructure.TIM_RepetitionCounter = 0;
-  TIM_TimeBaseInit(TIM5, &TIM_TimeBaseStructure);
-  /* PWM1 Mode configuration: Channel3 */
+  TIM_TimeBaseInit(TIM4, &TIM_TimeBaseStructure);
+  /* PWM1 Mode configuration: Channel2 */
+
   TIM_OCInitStructure.TIM_OCMode = TIM_OCMode_PWM1;
   TIM_OCInitStructure.TIM_OutputState = TIM_OutputState_Enable;
-  TIM_OCInitStructure.TIM_OutputNState = TIM_OutputState_Disable;
   TIM_OCInitStructure.TIM_Pulse = 499;
   TIM_OCInitStructure.TIM_OCPolarity = TIM_OCPolarity_High;
-  TIM_OCInitStructure.TIM_OCNPolarity = TIM_OCPolarity_Low;
-  TIM_OCInitStructure.TIM_OCIdleState = TIM_OCIdleState_Reset;
-  TIM_OCInitStructure.TIM_OCNIdleState = TIM_OCIdleState_Reset;
-  TIM_OC3Init(TIM4, &TIM_OCInitStructure);
+  TIM_OC2Init(TIM4, &TIM_OCInitStructure);
 
-  TIM_OC1PreloadConfig(TIM4, TIM_OCPreload_Enable);
+  TIM_OC2PreloadConfig(TIM4, TIM_OCPreload_Enable);
   TIM_ARRPreloadConfig(TIM4, ENABLE);
-  /* TIM4 Main Output Enable */
-  TIM_CtrlPWMOutputs(TIM4, ENABLE);
   /* TIM4 enable counter */
   TIM_Cmd(TIM4, ENABLE);
 
@@ -1279,40 +1251,46 @@ void TIM_Config(void)
   /* PWM1 Mode configuration: Channel3 */
   TIM_OCInitStructure.TIM_OCMode = TIM_OCMode_PWM1;
   TIM_OCInitStructure.TIM_OutputState = TIM_OutputState_Enable;
-  TIM_OCInitStructure.TIM_OutputNState = TIM_OutputState_Disable;
   TIM_OCInitStructure.TIM_Pulse = 499;
   TIM_OCInitStructure.TIM_OCPolarity = TIM_OCPolarity_High;
-  TIM_OCInitStructure.TIM_OCNPolarity = TIM_OCPolarity_Low;
-  TIM_OCInitStructure.TIM_OCIdleState = TIM_OCIdleState_Reset;
-  TIM_OCInitStructure.TIM_OCNIdleState = TIM_OCIdleState_Reset;
-  TIM_OC3Init(TIM10, &TIM_OCInitStructure);
+  TIM_OC1Init(TIM10, &TIM_OCInitStructure);
 
   TIM_OC1PreloadConfig(TIM10, TIM_OCPreload_Enable);
   TIM_ARRPreloadConfig(TIM10, ENABLE);
-  /* TIM4 Main Output Enable */
-  TIM_CtrlPWMOutputs(TIM10, ENABLE);
-  /* TIM4 enable counter */
+  /* TIM10 enable counter */
   TIM_Cmd(TIM10, ENABLE);
-
 }
 
-/**
-  * @brief  This function handles TIM3 global interrupt request.
-  * @param  None
-  * @retval None
-  */
-void TIM3_IRQHandler(void)
+void ADC_DVMConfig(void)
 {
-  uint32_t Count;
+  ADC_InitTypeDef       ADC_InitStructure;
+  ADC_CommonInitTypeDef ADC_CommonInitStructure;
 
-  TIM_ClearITPendingBit(TIM3, TIM_IT_Update);
-  Count=TIM2->CNT;
-  STM32_DataStruct.FRQDataStructCHA.Frequency=Count-STM32_DataStruct.FRQDataStructCHA.PreviousCount;
-  STM32_DataStruct.FRQDataStructCHA.PreviousCount=Count;
-  Count=TIM5->CNT;
-  STM32_DataStruct.FRQDataStructCHB.Frequency=Count-STM32_DataStruct.FRQDataStructCHB.PreviousCount;
-  STM32_DataStruct.FRQDataStructCHB.PreviousCount=Count;
-  STM_EVAL_LEDToggle(LED3);
+  ADC_StructInit(&ADC_InitStructure);
+  ADC_CommonStructInit(&ADC_CommonInitStructure);
+
+  /* ADC Common Init **********************************************************/
+  ADC_CommonInitStructure.ADC_Mode = ADC_Mode_Independent;
+  ADC_CommonInitStructure.ADC_Prescaler = ADC_Prescaler_Div2;
+  ADC_CommonInitStructure.ADC_DMAAccessMode = ADC_DMAAccessMode_Disabled;
+  ADC_CommonInitStructure.ADC_TwoSamplingDelay = ADC_TwoSamplingDelay_5Cycles;
+  ADC_CommonInit(&ADC_CommonInitStructure);
+
+  /* ADC1 Init ****************************************************************/
+  ADC_InitStructure.ADC_Resolution = ADC_Resolution_12b;
+  ADC_InitStructure.ADC_ScanConvMode = ENABLE;
+  ADC_InitStructure.ADC_ContinuousConvMode = ENABLE;
+  ADC_InitStructure.ADC_ExternalTrigConvEdge = ADC_ExternalTrigConvEdge_None;
+  ADC_InitStructure.ADC_DataAlign = ADC_DataAlign_Right;
+  ADC_InitStructure.ADC_NbrOfConversion = 1;
+  ADC_Init(ADC1, &ADC_InitStructure);
+  ADC_Cmd(ADC1, ENABLE);
+
+  ADC_InjectedSequencerLengthConfig(ADC1,2);
+  ADC_InjectedChannelConfig(ADC1,ADC_Channel_8,1,ADC_SampleTime_15Cycles);
+  ADC_InjectedChannelConfig(ADC1,ADC_Channel_9,2,ADC_SampleTime_15Cycles);
+  ADC_AutoInjectedConvCmd(ADC1, ENABLE);
+  ADC_SoftwareStartInjectedConv(ADC1);
 }
 
 /*****END OF FILE****/

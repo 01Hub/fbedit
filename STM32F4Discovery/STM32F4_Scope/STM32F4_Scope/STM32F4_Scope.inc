@@ -193,10 +193,10 @@ STM32_ModeHSClockCHACHB		equ 13
 
 
 ;STM32 ram addresses
-STM32FrequencyCHA			equ 20000000h
-STM32FrequencyCHB			equ 20000010h
-STM32CommandStart			equ 20000020h
-STM32DataStart				equ 20000030h
+STM32FrequencyCHA			equ 20000014h
+STM32FrequencyCHB			equ 20000024h
+STM32CommandStart			equ 20000034h
+STM32DataStart				equ 20000044h
 
 ;#########################################################################
 

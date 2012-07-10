@@ -22,7 +22,7 @@
 			
 	</Flags>
 	<Views>
-		<View File="C:\STM32\Projects\DIGScope\main.c" Line="15" Index="0" focus="1" />
+		<View File="C:\STM32\Projects\DIGScope\main.c" Line="1246" Index="0" focus="1" />
 	</Views>
 	<Grep>
 		<GrepIncludeSub>yes</GrepIncludeSub>

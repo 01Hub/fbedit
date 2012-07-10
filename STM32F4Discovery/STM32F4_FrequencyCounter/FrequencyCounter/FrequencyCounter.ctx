@@ -1,20 +1,20 @@
 
 <Debug>
 	<FrequencyCounter>
-		<CodeView TopRow="134218288" Focus="4294967295" >
+		<CodeView TopRow="134218544" Focus="4294967295" >
 			<CodeReport>
-				<0>78</0>
-				<1>85</1>
-				<2>46</2>
-				<3>261</3>
-				<4>47</4>
-				<5>100</5>
-																																																																																				
+				<0>111</0>
+				<1>121</1>
+				<2>65</2>
+				<3>374</3>
+				<4>67</4>
+				<5>145</5>
+														
 			</CodeReport>
-																																																												
+										
 		</CodeView>
 		<MemoryView Focus="134218120" TopRow="0" NbPerLine="8" />
-																																				
+						
 	</FrequencyCounter>
 	<Flags>
 		<Report>
@@ -38,10 +38,8 @@
 			
 	</Flags>
 	<Views>
-		<View File="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_FrequencyCounter\FrequencyCounter\main.c" Line="76" Index="0" />
-		<View File="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_FrequencyCounter\FrequencyCounter\stm32f4xx_it.c" Line="156" Index="1" />
-		<View File="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_FrequencyCounter\FrequencyCounter\stm32f4_discovery.c" Line="0" Index="2" />
-		<View File="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_FrequencyCounter\FrequencyCounter\misc.c" Line="0" Index="3" focus="1" />
+		<View File="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_FrequencyCounter\FrequencyCounter\main.c" Line="77" Index="0" focus="1" />
+		<View File="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_FrequencyCounter\FrequencyCounter\stm32f4xx_it.c" Line="26" Index="1" />
 	</Views>
 	<Grep>
 		<GrepIncludeSub>yes</GrepIncludeSub>
@@ -55,13 +53,13 @@
 		</GrepFileTypes>
 		<GrepFindWhat>
 			<GrepFindWhatValue>NVIC_Init</GrepFindWhatValue>
-			<GrepFindStr>NVIC_Init</GrepFindStr>
 			<GrepFindStr>#elif</GrepFindStr>
 			<GrepFindStr>#else</GrepFindStr>
 			<GrepFindStr>#elseif</GrepFindStr>
 			<GrepFindStr>#elseifdef</GrepFindStr>
 			<GrepFindStr>#ifdef</GrepFindStr>
 			<GrepFindStr>ARR</GrepFindStr>
+			<GrepFindStr>NVIC_Init</GrepFindStr>
 		</GrepFindWhat>
 		<GrepFindWhere>
 			<GrepFindWhereValue>Application Files</GrepFindWhereValue>

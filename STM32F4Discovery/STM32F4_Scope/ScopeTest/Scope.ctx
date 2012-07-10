@@ -9,12 +9,12 @@
 				<3>309</3>
 				<4>56</4>
 				<5>118</5>
-																																										
+																																																								
 			</CodeReport>
-																														
+																																								
 		</CodeView>
 		<MemoryView Focus="134218120" TopRow="0" NbPerLine="8" />
-																		
+																								
 	</Scope>
 	<Flags>
 		<Report>
@@ -39,8 +39,8 @@
 	</Flags>
 	<Views>
 		<View File="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\ScopeTest\readme.txt" Line="0" Index="0" />
-		<View File="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\ScopeTest\main.c" Line="258" Index="1" focus="1" />
-		<View File="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\ScopeTest\stm32f4xx_rcc.c" Line="1233" Index="2" />
+		<View File="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\ScopeTest\main.c" Line="24" Index="1" focus="1" />
+		<View File="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\ScopeTest\stm32f4xx_rcc.c" Line="1232" Index="2" />
 	</Views>
 	<Grep>
 		<GrepIncludeSub>yes</GrepIncludeSub>
