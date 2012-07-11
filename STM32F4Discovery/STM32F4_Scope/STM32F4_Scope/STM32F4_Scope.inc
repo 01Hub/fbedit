@@ -83,14 +83,16 @@ IDC_RBNFALLINGCHA			equ 1203
 IDC_RBNRISINGCHB			equ 1204
 IDC_RBNFALLINGCHB			equ 1205
 IDC_RBNTRIGLGA				equ 1206
-IDC_TRBTRIGLEVELCHA			equ 1207
+IDC_TRBTRIGLEVEL			equ 1207
 IDC_TRBDCNULLOUTCHA			equ 1208
 IDC_TRBAMPLIFYCHA			equ 1213
-IDC_TRBTRIGLEVELCHB			equ 1212
 IDC_TRBDCNULLOUTCHB			equ 1211
 IDC_TRBAMPLIFYCHB			equ 1215
-IDC_CBOSAMPLERATE			equ 1209
 IDC_TRBBUFFERSIZE			equ 1210
+IDC_CBODATABITS				equ 1214
+IDC_CBOSAMPLECLOCKS			equ 1216
+IDC_CBOCLOCKDIVISOR			equ 1209
+IDC_STCSAMPLERATE			equ 1217
 
 ;Frequency / DVM dialog
 IDD_DLGFREQUENCY			equ 1100
@@ -145,14 +147,14 @@ IDC_TRBHSCLOCKXMAG			equ 2201
 ;;High speed clock setup
 IDD_DLGHSCLOCKSETUP			equ 2100
 IDC_CHKHSCLOCKAENABLE		equ 2104
-IDC_TRBHSCLOCKADIV			equ 2105
-IDC_TRBHSCLOCKAH			equ 2101
-IDC_TRBHSCLOCKAL			equ 2102
+IDC_BTNFRQCHADN				equ 2101
+IDC_EDTFRQCHA				equ 2105
+IDC_BTNFRQCHAUP				equ 2102
 IDC_TRBHSCLOCKADUTY			equ 2103
 IDC_CHKHSCLOCKBENABLE		equ 2113
-IDC_TRBHSCLOCKBDIV			equ 2111
-IDC_TRBHSCLOCKBH			equ 2109
-IDC_TRBHSCLOCKBL			equ 2108
+IDC_BTNFRQCHBDN				equ 2109
+IDC_EDTFRQCHB				equ 2108
+IDC_BTNFRQCHBUP				equ 2107
 IDC_TRBHSCLOCKBDUTY			equ 2106
 
 ;#########################################################################
@@ -180,17 +182,12 @@ STM32_ModeNone				equ 0
 STM32_ModeScopeCHA			equ 1
 STM32_ModeScopeCHB			equ 2
 STM32_ModeScopeCHACHB		equ 3
-STM32_ModeLGA				equ 4
-STM32_ModeWriteByte			equ 5
-STM32_ModeWriteHalfWord		equ 6
-STM32_ModeWriteFullWord		equ 7
-STM32_ModeReadByte			equ 8
-STM32_ModeReadHalfWord		equ 9
-STM32_ModeReadFullWord		equ 10
-STM32_ModeHSClockCHA		equ 11
-STM32_ModeHSClockCHB		equ 12
-STM32_ModeHSClockCHACHB		equ 13
-
+STM32_ModeHSClockCHA		equ 4
+STM32_ModeHSClockCHB		equ 5
+STM32_ModeHSClockCHACHB		equ 6
+STM32_ModeLGA				equ 7
+STM32_ModeWriteData			equ 8
+STM32_ModeReadData			equ 9
 
 ;STM32 ram addresses
 STM32FrequencyCHA			equ 20000014h
@@ -214,56 +211,31 @@ TEXTHIGHT					equ 30
 ;#########################################################################
 
 STM32_CommandStructDef struct
-	STM32_Command			BYTE ?
-	STM32_Mode				BYTE ?
-	STM32_SampleRateL		BYTE ?
-	STM32_SampleRateH		BYTE ?
-	union
-		struct
-			STM32_DataBlocks		BYTE ?			;Sample size in STM32_BlockSize byte blocks.
-			STM32_TriggerMode		BYTE ?
-			ADC_TriggerValueCHA		BYTE ?			;PWM Channel 1
-			ADC_DCNullOutCHA		BYTE ?			;PWM Channel 2
-		ends
-		Address					DWORD ?
-		DDSPhaseFrq				DWORD ?
-	ends
-	union
-		struct
-			ADC_TriggerValueCHB		BYTE ?			;PWM Channel 3
-			ADC_DCNullOutCHB		BYTE ?			;PWM Channel 4
-			LGA_TriggerValue		BYTE ?
-			LGA_TriggerMask			BYTE ?
-		ends
-		struct
-			SWEEP_StepTime			WORD ?
-			SWEEP_SubMode			BYTE ?
-			DDSDacBuffer			BYTE ?
-		ends
-		dByte					BYTE ?
-		dHalfWord				WORD ?
-		dFullWord				DWORD ?
-	ends
-	union
-		struct
-			WAVE_SubModeCHA			BYTE ?
-			WAVE_SubModeCHB			BYTE ?
-			LGA_TriggerEdge			BYTE ?
-			TIM3_TimeOut			BYTE ?
-		ends
-		struct
-			ADC_AmplifyCHA			BYTE ?
-			ADC_AmplifyCHB			BYTE ?
-		ends
-	ends
+	Command					BYTE ?
+	Mode					BYTE ?
+	ScopeDataBits			BYTE ?
+	ScopeSampleClocks		BYTE ?
+	ScopeClockDiv			BYTE ?
+	ScopeDataBlocks			BYTE ?
+	ScopeTriggerMode		BYTE ?
+	ScopeTriggerValue		BYTE ?
+	ScopeAmplifyCHA			BYTE ?
+	ScopeAmplifyCHB			BYTE ?
+	ScopeDCNullOutCHA		BYTE ?
+	ScopeDCNullOutCHB		BYTE ?
+	LGATriggerValue			BYTE ?
+	LGATriggerMask			BYTE ?
+	LGATriggerEdge			BYTE ?
+	TriggerWait				BYTE ?
 STM32_CommandStructDef ends
 
 STM32_FRQDataStructDef struct
 	Frequency				DWORD ?
 	PreviousCount			DWORD ?
-	Reserved				DWORD ?
-	DVM						WORD ?
-	TIMxH					WORD ?
+	HSCEnable				WORD ?
+	HSCClockDiv				WORD ?
+	HSCCount				WORD ?
+	HSCDuty					WORD ?
 STM32_FRQDataStructDef ends
 
 ;#########################################################################
@@ -342,8 +314,9 @@ HSCLOCKCHDATA struct
 	xmag					DWORD ?
 	hsclockenable			DWORD ?
 	hsclockfrequency		DWORD ?
-	hsclockdutycycle		DWORD ?
+	hsclockdivisor			DWORD ?
 	hsclockccr				DWORD ?
+	hsclockdutycycle		DWORD ?
 	HSC_Data				BYTE HSCMAX dup(?)
 HSCLOCKCHDATA ends
 
@@ -352,6 +325,7 @@ HSCLOCKDATA struct
 	HSC_CommandStructDone	STM32_CommandStructDef <>
 	hscCHAData				HSCLOCKCHDATA <>
 	hscCHBData				HSCLOCKCHDATA <>
+	hscFRQ					STM32_FRQDataStructDef <>
 HSCLOCKDATA ends
 
 ;#########################################################################
@@ -379,13 +353,11 @@ CHILDDIALOGS ends
 
 .const
 
+szMAINCLASS					BYTE 'MAINCLASS',0
 szSCOPECLASS				BYTE 'SCOPECLASS',0
 szTEXTCLASS					BYTE 'TEXTCLASS',0
-szWAVEGENERATORCLASS		BYTE 'WAVEGENERATORCLASS',0
 szLOGICANALYSERCLASS		BYTE 'LOGICANALYSERCLASS',0
 szHSCLOCKCLASS				BYTE 'HSCLOCKCLASS',0
-szDDSWAVECLASS				BYTE 'DDSWAVECLASS',0
-szDDSPEAKCLASS				BYTE 'DDSPEAKCLASS',0
 
 Tahoma						LOGFONT <-20,0,0,0,400,0,0,0,0,3,2,1,34,"Tahoma">
 
@@ -412,18 +384,10 @@ szFmtDec					BYTE '%u',0
 szCOMMA						BYTE ',',0
 szCRLF						BYTE 0Dh,0Ah,0
 
-;Sample rate calculation
-;-----------------------------------
-;0 = 1.5+12.5=14 AdcClocks
-;1= 7.5+12.5=20 AdcClocks
-;2 = 13.5+12.5=26 AdcClocks
-;3 = 28.5+12.5=41 AdcClocks
-;4 = 41.5+12.5=54 AdcClocks
-;5 = 55.5+12.5=68 AdcClocks
-;6 = 71.5+12.5=84 AdcClocks
-;7 = 239.5+12.5=252 AdcClocks
+szADCDataBits				BYTE '6',0,'8',0,'10',0,'12',0,0
+szADCSampleClocks			BYTE '3',0,'15',0,'28',0,'56',0,'84',0,'112',0,'144',0,'480',0,0
+szADCClockDiv				BYTE '2',0,'4',0,'6',0,'8',0,0
 
-ADCClocks					DWORD 14,20,26,41,54,68,84,252
 LGAClockDiv					DWORD 6,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,38,56,112,224,0
 
 nsinasec					QWORD 1000000000.0
@@ -439,11 +403,14 @@ STM32Clock					DWORD 168000000
 hInstance					HINSTANCE ?
 wc							WNDCLASSEX <>
 hWnd						HWND ?
-
+hDlg						HWND ?
 fConnected					DWORD ?
+fNoSTLink					DWORD ?
 fSample						DWORD ?
 fWave						DWORD ?
 fFRQDVM						DWORD ?
+fINITHSCCHA					DWORD ?
+fINITHSCCHB					DWORD ?
 
 scopedata					SCOPEDATA <>
 lgadata						LGADATA <>
@@ -460,5 +427,6 @@ SamplePeriod				QWORD 8*4 dup(?)
 lpSTM32_Command				DWORD ?
 lpSTM32_CommandDone			DWORD ?
 STM32_Data					BYTE STM32_DataSize dup(?)
+msg							MSG <>
 
 ;#########################################################################

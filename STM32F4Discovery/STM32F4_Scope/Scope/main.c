@@ -14,6 +14,7 @@
 #define PC_IDR_Address            ((uint32_t)0x40011008)
 #define STM32_DataSize            ((uint16_t)1024*7)
 #define STM32_BlockSize           ((uint8_t)64)
+#define STM32_DataSize            ((uint16_t)1024*7)
 
 /* STM32_Command */
 #define STM32_CommandWait         ((uint8_t)0)
@@ -42,9 +43,58 @@
 #define STM32_TriggerLGA          ((uint8_t)5)
 
 /* Private typedef -----------------------------------------------------------*/
+typedef struct
+{
+  uint8_t   Command;
+  uint8_t   Mode;
+  uint8_t   ScopeDataBits;
+  uint8_t   ScopeSampleClocks;
+  uint8_t   ScopeClockDiv;
+  uint8_t   ScopeDataBlocks;
+  uint8_t   ScopeTriggerMode;
+  uint8_t   ScopeTriggerValue;
+  uint8_t   ScopeAmplifyCHA;
+  uint8_t   ScopeAmplifyCHB;
+  uint8_t   ScopeDCNullOutCHA;
+  uint8_t   ScopeDCNullOutCHB;
+  uint8_t   LGATriggerValue;
+  uint8_t   LGATriggerMask;
+  uint8_t   LGATriggerEdge;
+  uint8_t   TriggerWait;
+}CommandStructTypeDef;
+
+typedef struct
+{
+  uint32_t  Frequency;
+  uint32_t  PreviousCount;
+  uint16_t  HSCEnable;
+  uint16_t  HSCClockDiv;
+  uint16_t  HSCCount;
+  uint16_t  HSCDuty;
+}FRQDataStructTypeDef;
+
+typedef struct
+{
+  uint32_t  DataSize;
+  uint32_t  Adress;
+  uint32_t  Data;
+}DataStructTypeDef;
+
+typedef struct
+{
+  FRQDataStructTypeDef FRQDataStructCHA;                // 0x20000000
+  FRQDataStructTypeDef FRQDataStructCHB;                // 0x20000010
+  CommandStructTypeDef CommandStruct;                   // 0x20000020
+  union
+  {
+    uint8_t STM32_Data[STM32_DataSize];                 // 0x20000030
+    DataStructTypeDef DataStruct[100];                  // 0x20000030
+  };
+}STM32_DataStructTypeDef;
+
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
-__IO STM32_DataStructTypeDef STM32_DataStruct;        // 0x20000000
+__IO STM32_DataStructTypeDef STM32_DataStruct;        // 0x20000014
 
 /* Private function prototypes -----------------------------------------------*/
 void Clock_Config(void);
@@ -160,71 +210,75 @@ int main(void)
       // TIM1->CCR4 =  (u16)STM32_DataStruct.STM32_CommandStruct.ADC_DCNullOutCHB;
       // /* TIM1 enable counter */
       // TIM_Cmd(TIM1, ENABLE);
-      // switch (STM32_DataStruct.STM32_CommandStruct.STM32_Mode)
-      // {
-        // case STM32_ModeScopeCHA...STM32_ModeScopeCHACHB:
-          // /* Set CHA and CHB Amplification levels */
+      switch (STM32_DataStruct.CommandStruct.Mode)
+      {
+        case STM32_ModeScopeCHA...STM32_ModeScopeCHACHB:
+          /* Set CHA and CHB Amplification levels */
           // GPIOB->ODR = (u16)(GPIOB->ODR & 0x03FF) | ((STM32_DataStruct.STM32_CommandStruct.ADC_AmplifyCHB << 13) | (STM32_DataStruct.STM32_CommandStruct.ADC_AmplifyCHA << 10));
           // /* DMA1 channel1 configuration -----------------------------------------*/
           // DMA_ADC_Configuration();
           // /* ADC1 configuration --------------------------------------------------*/
           // ADC_Configuration();
-          // break;
-        // case STM32_ModeWaveCHA...STM32_ModeWaveCHACHB:
-          // break;
-        // case STM32_ModeLGA:
+          break;
+        case STM32_ModeHSClockCHA:
+          if (STM32_DataStruct.FRQDataStructCHA.HSCEnable)
+          {
+            /* TIM4 disable counter */
+            TIM_Cmd(TIM4, DISABLE);
+            /* Reset count */
+            TIM4->CNT = 0;
+            /* Set the Autoreload value */
+            TIM4->ARR = STM32_DataStruct.FRQDataStructCHA.HSCCount;
+            /* Set the Prescaler value */
+            TIM4->PSC = STM32_DataStruct.FRQDataStructCHA.HSCClockDiv;
+            /* Set the Capture Compare Register value */
+            TIM4->CCR2 = STM32_DataStruct.FRQDataStructCHA.HSCDuty;
+            /* TIM4 enable counter */
+            TIM_Cmd(TIM4, ENABLE);
+          }
+          else
+          {
+            /* TIM4 disable counter */
+            TIM_Cmd(TIM4, DISABLE);
+          }
+          break;
+        case STM32_ModeHSClockCHB:
+          if (STM32_DataStruct.FRQDataStructCHB.HSCEnable)
+          {
+            /* TIM10 disable counter */
+            TIM_Cmd(TIM10, DISABLE);
+            /* Reset count */
+            TIM10->CNT = 0;
+            /* Set the Autoreload value */
+            TIM10->ARR = STM32_DataStruct.FRQDataStructCHB.HSCCount;
+            /* Set the Prescaler value */
+            TIM10->PSC = STM32_DataStruct.FRQDataStructCHB.HSCClockDiv;
+            /* Set the Capture Compare Register value */
+            TIM10->CCR1 = STM32_DataStruct.FRQDataStructCHB.HSCDuty;
+            /* TIM10 enable counter */
+            TIM_Cmd(TIM10, ENABLE);
+          }
+          else
+          {
+            /* TIM10 disable counter */
+            TIM_Cmd(TIM10, DISABLE);
+          }
+          break;
+        case STM32_ModeLGA:
           // /* TIM15 configuration ------------------------------------------------*/
           // TIM15_Configuration();
           // /* DMA1 channel5 configuration ----------------------------------------*/
           // DMA_LGA_Configuration();
-          // break;
-        // case STM32_ModeDDSWave:
-          // ADC_DVMConfiguration();
-          // DAC_DDS_Configuration();
-          // switch ((u8) STM32_DataStruct.STM32_CommandStruct.SWEEP_SubMode)
-          // {
-            // case SWEEP_SubModeOff:
-              // DDSWaveGenerator();
-              // break;
-            // case SWEEP_SubModeUp:
-              // DDSSweepWaveGenerator();
-              // break;
-            // case SWEEP_SubModeDown:
-              // DDSSweepWaveGenerator();
-              // break;
-            // case SWEEP_SubModeUpDown:
-              // DDSSweepWaveGenerator();
-              // break;
-            // case SWEEP_SubModePeak:
-              // DDSSweepWaveGeneratorPeak();
-              // break;
-          // }
-          // break;
-        // case STM32_ModeWriteByte:
+          break;
+        case STM32_ModeWriteData:
           // adr = (u32 *)STM32_DataStruct.STM32_CommandStruct.Address;
           // *adr = STM32_DataStruct.STM32_CommandStruct.dByte;
-          // break;
-        // case STM32_ModeWriteHalfWord:
-          // adr = (u32 *)STM32_DataStruct.STM32_CommandStruct.Address;
-          // *adr = STM32_DataStruct.STM32_CommandStruct.dHalfWord;
-          // break;
-        // case STM32_ModeWriteWord:
-          // adr = (u32 *)STM32_DataStruct.STM32_CommandStruct.Address;
-          // *adr = STM32_DataStruct.STM32_CommandStruct.dWord;
-          // break;
-        // case STM32_ModeReadByte:
+          break;
+        case STM32_ModeReadData:
           // adr = (u32 *)STM32_DataStruct.STM32_CommandStruct.Address;
           // STM32_DataStruct.STM32_CommandStruct.dByte = *adr;
-          // break;
-        // case STM32_ModeReadHalfWord:
-          // adr = (u32 *)STM32_DataStruct.STM32_CommandStruct.Address;
-          // STM32_DataStruct.STM32_CommandStruct.dHalfWord = *adr;
-          // break;
-        // case STM32_ModeReadWord:
-          // adr = (u32 *)STM32_DataStruct.STM32_CommandStruct.Address;
-          // STM32_DataStruct.STM32_CommandStruct.dWord = *adr;
-          // break;
-      // }
+          break;
+      }
     }
     else if (STM32_DataStruct.CommandStruct.Command == STM32_CommandSampleStart)
     {
@@ -1238,8 +1292,6 @@ void TIM_Config(void)
 
   TIM_OC2PreloadConfig(TIM4, TIM_OCPreload_Enable);
   TIM_ARRPreloadConfig(TIM4, ENABLE);
-  /* TIM4 enable counter */
-  TIM_Cmd(TIM4, ENABLE);
 
   /* Time base configuration */
   TIM_TimeBaseStructure.TIM_Period = 999;
@@ -1257,8 +1309,6 @@ void TIM_Config(void)
 
   TIM_OC1PreloadConfig(TIM10, TIM_OCPreload_Enable);
   TIM_ARRPreloadConfig(TIM10, ENABLE);
-  /* TIM10 enable counter */
-  TIM_Cmd(TIM10, ENABLE);
 }
 
 void ADC_DVMConfig(void)
@@ -1291,6 +1341,25 @@ void ADC_DVMConfig(void)
   ADC_InjectedChannelConfig(ADC1,ADC_Channel_9,2,ADC_SampleTime_15Cycles);
   ADC_AutoInjectedConvCmd(ADC1, ENABLE);
   ADC_SoftwareStartInjectedConv(ADC1);
+}
+
+/**
+  * @brief  This function handles TIM3 global interrupt request.
+  * @param  None
+  * @retval None
+  */
+void TIM3_IRQHandler(void)
+{
+  uint32_t Count;
+
+  TIM_ClearITPendingBit(TIM3, TIM_IT_Update);
+  Count=TIM2->CNT;
+  STM32_DataStruct.FRQDataStructCHA.Frequency=Count-STM32_DataStruct.FRQDataStructCHA.PreviousCount;
+  STM32_DataStruct.FRQDataStructCHA.PreviousCount=Count;
+  Count=TIM5->CNT;
+  STM32_DataStruct.FRQDataStructCHB.Frequency=Count-STM32_DataStruct.FRQDataStructCHB.PreviousCount;
+  STM32_DataStruct.FRQDataStructCHB.PreviousCount=Count;
+  STM_EVAL_LEDToggle(LED3);
 }
 
 /*****END OF FILE****/

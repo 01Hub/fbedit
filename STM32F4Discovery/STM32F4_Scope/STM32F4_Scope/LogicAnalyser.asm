@@ -29,16 +29,16 @@ LGASetupProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
-		movzx	eax,lgadata.LGA_CommandStruct.STM32_TriggerMode
+		movzx	eax,lgadata.LGA_CommandStruct.ScopeTriggerMode
 		add		eax,IDC_RBNLGAMANUAL
 		invoke CheckRadioButton,hWin,IDC_RBNLGAMANUAL,IDC_RBNLGALGA,eax
 		mov		eax,BST_UNCHECKED
-		.if lgadata.LGA_CommandStruct.LGA_TriggerEdge
+		.if lgadata.LGA_CommandStruct.LGATriggerEdge
 			mov		eax,BST_CHECKED
 		.endif
 		invoke CheckDlgButton,hWin,IDC_CHKLGAEDGE,eax
 		xor		ecx,ecx
-		movzx	edi,lgadata.LGA_CommandStruct.LGA_TriggerValue
+		movzx	edi,lgadata.LGA_CommandStruct.LGATriggerValue
 		mov		ebx,0001h
 		.while ecx<8
 			push	ecx
@@ -53,7 +53,7 @@ LGASetupProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 			inc		ecx
 		.endw
 		xor		ecx,ecx
-		movzx	edi,lgadata.LGA_CommandStruct.LGA_TriggerMask
+		movzx	edi,lgadata.LGA_CommandStruct.LGATriggerMask
 		mov		ebx,0001h
 		.while ecx<8
 			push	ecx
@@ -67,22 +67,22 @@ LGASetupProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 			pop		ecx
 			inc		ecx
 		.endw
-		mov		esi,offset lgadata.LGA_SampleRate
-		movzx	ebx,lgadata.LGA_CommandStruct.STM32_SampleRateL
-		mov		bh,lgadata.LGA_CommandStruct.STM32_SampleRateH
-		xor		edi,edi
-		.while [esi].LGA_SAMPLERATE.szrate
-			invoke SendDlgItemMessage,hWin,IDC_CBOLGASAMPLERATE,CB_ADDSTRING,0,addr [esi].LGA_SAMPLERATE.szrate
-			mov		edx,[esi].LGA_SAMPLERATE.clkdiv
-			.if edx==ebx
-				mov		edi,eax
-			.endif
-			invoke SendDlgItemMessage,hWin,IDC_CBOLGASAMPLERATE,CB_SETITEMDATA,eax,edx
-			lea		esi,[esi+sizeof LGA_SAMPLERATE]
-		.endw
-		invoke SendDlgItemMessage,hWin,IDC_CBOLGASAMPLERATE,CB_SETCURSEL,edi,0
+;		mov		esi,offset lgadata.LGASampleRate
+;		movzx	ebx,lgadata.LGA_CommandStruct.STM32_SampleRateL
+;		mov		bh,lgadata.LGA_CommandStruct.STM32_SampleRateH
+;		xor		edi,edi
+;		.while [esi].LGA_SAMPLERATE.szrate
+;			invoke SendDlgItemMessage,hWin,IDC_CBOLGASAMPLERATE,CB_ADDSTRING,0,addr [esi].LGA_SAMPLERATE.szrate
+;			mov		edx,[esi].LGA_SAMPLERATE.clkdiv
+;			.if edx==ebx
+;				mov		edi,eax
+;			.endif
+;			invoke SendDlgItemMessage,hWin,IDC_CBOLGASAMPLERATE,CB_SETITEMDATA,eax,edx
+;			lea		esi,[esi+sizeof LGA_SAMPLERATE]
+;		.endw
+;		invoke SendDlgItemMessage,hWin,IDC_CBOLGASAMPLERATE,CB_SETCURSEL,edi,0
 		invoke SendDlgItemMessage,hWin,IDC_TRBLGABUFFERSIZE,TBM_SETRANGE,FALSE,(STM32_MAXBLOCK SHL 16)+1
-		movzx	eax,lgadata.LGA_CommandStruct.STM32_DataBlocks
+		movzx	eax,lgadata.LGA_CommandStruct.ScopeDataBlocks
 		invoke SendDlgItemMessage,hWin,IDC_TRBLGABUFFERSIZE,TBM_SETPOS,TRUE,eax
 	.elseif eax==WM_COMMAND
 		mov		edx,wParam
@@ -129,6 +129,12 @@ LGASetupProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 		.endif
 	.elseif eax==WM_HSCROLL
 		call	Update
+	.elseif eax==WM_ACTIVATE
+		mov		eax,wParam
+		.if eax!=WA_INACTIVE
+			mov		eax,hWin
+			mov		hDlg,eax
+		.endif
 	.elseif eax==WM_CLOSE
 		invoke DestroyWindow,hWin
 		mov		childdialogs.hWndLGASetup,0
@@ -148,7 +154,7 @@ Update:
 		.break .if eax
 		inc		ebx
 	.endw
-	mov		lgadata.LGA_CommandStruct.STM32_TriggerMode,bl
+	mov		lgadata.LGA_CommandStruct.ScopeTriggerMode,bl
 	xor		ecx,ecx
 	xor		ebx,ebx
 	mov		edi,0001h
@@ -163,7 +169,7 @@ Update:
 		pop		ecx
 		inc		ecx
 	.endw
-	mov		lgadata.LGA_CommandStruct.LGA_TriggerValue,bl
+	mov		lgadata.LGA_CommandStruct.LGATriggerValue,bl
 	xor		ecx,ecx
 	xor		ebx,ebx
 	mov		edi,0001h
@@ -178,24 +184,24 @@ Update:
 		pop		ecx
 		inc		ecx
 	.endw
-	mov		lgadata.LGA_CommandStruct.LGA_TriggerMask,bl
+	mov		lgadata.LGA_CommandStruct.LGATriggerMask,bl
 	invoke IsDlgButtonChecked,hWin,IDC_CHKLGAEDGE
-	mov		lgadata.LGA_CommandStruct.LGA_TriggerEdge,al
+	mov		lgadata.LGA_CommandStruct.LGATriggerEdge,al
 	;Get sample rate
-	invoke SendDlgItemMessage,hWin,IDC_CBOLGASAMPLERATE,CB_GETCURSEL,0,0
-	invoke SendDlgItemMessage,hWin,IDC_CBOLGASAMPLERATE,CB_GETITEMDATA,eax,0
-	.if ax==5
-		;FAST_LGA_Read 128 Bytes
-		mov		lgadata.LGA_CommandStruct.STM32_SampleRateL,0
-		mov		lgadata.LGA_CommandStruct.STM32_SampleRateH,0
-		mov		lgadata.LGA_CommandStruct.STM32_DataBlocks,2
-	.else
-		;Get buffer size
-		invoke SendDlgItemMessage,hWin,IDC_TRBLGABUFFERSIZE,TBM_GETPOS,0,0
-		mov		lgadata.LGA_CommandStruct.STM32_DataBlocks,al
-		mov		lgadata.LGA_CommandStruct.STM32_SampleRateL,al
-		mov		lgadata.LGA_CommandStruct.STM32_SampleRateH,ah
-	.endif
+;	invoke SendDlgItemMessage,hWin,IDC_CBOLGASAMPLERATE,CB_GETCURSEL,0,0
+;	invoke SendDlgItemMessage,hWin,IDC_CBOLGASAMPLERATE,CB_GETITEMDATA,eax,0
+;	.if ax==5
+;		;FAST_LGA_Read 128 Bytes
+;		mov		lgadata.LGA_CommandStruct.STM32_SampleRateL,0
+;		mov		lgadata.LGA_CommandStruct.STM32_SampleRateH,0
+;		mov		lgadata.LGA_CommandStruct.STM32_DataBlocks,2
+;	.else
+;		;Get buffer size
+;		invoke SendDlgItemMessage,hWin,IDC_TRBLGABUFFERSIZE,TBM_GETPOS,0,0
+;		mov		lgadata.LGA_CommandStruct.STM32_DataBlocks,al
+;		mov		lgadata.LGA_CommandStruct.STM32_SampleRateL,al
+;		mov		lgadata.LGA_CommandStruct.STM32_SampleRateH,ah
+;	.endif
 	retn
 
 LGASetupProc endp
@@ -463,7 +469,7 @@ LogicAnalyserProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam
 	ret
 
 SetScrooll:
-	movzx	eax,lgadata.LGA_CommandStructDone.STM32_DataBlocks
+	movzx	eax,lgadata.LGA_CommandStructDone.ScopeDataBlocks
 	mov		ecx,STM32_BlockSize
 	mul		ecx
 	mov		samplesize,eax
@@ -618,12 +624,12 @@ LogicAnalyserChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,l
 		invoke GetDlgItem,hWin,IDC_UDCLOGICANALYSER
 		mov		lgadata.hWndLGA,eax
 		mov		lgadata.xmag,256
-		mov		lgadata.LGA_CommandStruct.STM32_TriggerMode,STM32_TriggerLGA
-		mov		lgadata.LGA_CommandStruct.LGA_TriggerValue,00h
-		mov		lgadata.LGA_CommandStruct.LGA_TriggerMask,00h
-		mov		lgadata.LGA_CommandStruct.STM32_DataBlocks,04h
-		mov		lgadata.LGA_CommandStruct.STM32_SampleRateL,11
-		mov		lgadata.LGA_CommandStruct.STM32_SampleRateH,0
+		mov		lgadata.LGA_CommandStruct.ScopeTriggerMode,STM32_TriggerLGA
+		mov		lgadata.LGA_CommandStruct.LGATriggerValue,00h
+		mov		lgadata.LGA_CommandStruct.LGATriggerMask,00h
+		mov		lgadata.LGA_CommandStruct.ScopeDataBlocks,04h
+;		mov		lgadata.LGA_CommandStruct.STM32_SampleRateL,11
+;		mov		lgadata.LGA_CommandStruct.STM32_SampleRateH,0
 		invoke RtlMoveMemory,offset lgadata.LGA_CommandStructDone,offset lgadata.LGA_CommandStruct,sizeof STM32_CommandStructDef
 		invoke CreateDialogParam,hInstance,IDD_DLGLGATOOL,hWin,addr LogicAnalyserToolChildProc,0
 		mov		lgadata.hWndLGATool,eax

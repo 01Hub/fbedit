@@ -65,54 +65,6 @@ typedef enum
   BUTTON_MODE_EXTI = 1
 } ButtonMode_TypeDef;     
 
-typedef struct
-{
-  uint8_t   Command;
-  uint8_t   Mode;
-  uint8_t   ScopeDataBits;
-  uint8_t   ScopeSampleClocks;
-  uint8_t   ScopeClockDiv;
-  uint8_t   ScopeDataBlocks;
-  uint8_t   ScopeTriggerMode;
-  uint8_t   ScopeTriggerValue;
-  uint8_t   ScopeAmplifyCHA;
-  uint8_t   ScopeAmplifyCHB;
-  uint8_t   ScopeDCNullOutCHA;
-  uint8_t   ScopeDCNullOutCHB;
-  uint8_t   LGATriggerValue;
-  uint8_t   LGATriggerMask;
-  uint16_t  TriggerWait;
-}CommandStructTypeDef;
-
-typedef struct
-{
-  uint32_t  Frequency;
-  uint32_t  PreviousCount;
-  uint32_t  Reserved;
-  uint32_t  DVM;
-}FRQDataStructTypeDef;
-
-typedef struct
-{
-  uint32_t  DataSize;
-  uint32_t  Adress;
-  uint32_t  Data;
-}DataStructTypeDef;
-
-#define STM32_DataSize            ((uint16_t)1024*7)
-
-typedef struct
-{
-  FRQDataStructTypeDef FRQDataStructCHA;                // 0x20000000
-  FRQDataStructTypeDef FRQDataStructCHB;                // 0x20000010
-  CommandStructTypeDef CommandStruct;                   // 0x20000020
-  union
-  {
-    uint8_t STM32_Data[STM32_DataSize];                 // 0x20000030
-    DataStructTypeDef DataStruct[100];                  // 0x20000030
-  };
-}STM32_DataStructTypeDef;
-
 /**
   * @}
   */ 

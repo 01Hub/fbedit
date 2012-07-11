@@ -25,8 +25,6 @@
 #include "stm32f4xx_it.h"
 #include "stm32f4_discovery.h"
 
-extern __IO STM32_DataStructTypeDef STM32_DataStruct;
-
 /** @addtogroup STM32F4_Discovery_Peripheral_Examples
   * @{
   */
@@ -159,25 +157,6 @@ void SysTick_Handler(void)
 /*void PPP_IRQHandler(void)
 {
 }*/
-
-/**
-  * @brief  This function handles TIM3 global interrupt request.
-  * @param  None
-  * @retval None
-  */
-void TIM3_IRQHandler(void)
-{
-  uint32_t Count;
-
-  TIM_ClearITPendingBit(TIM3, TIM_IT_Update);
-  Count=TIM2->CNT;
-  STM32_DataStruct.FRQDataStructCHA.Frequency=Count-STM32_DataStruct.FRQDataStructCHA.PreviousCount;
-  STM32_DataStruct.FRQDataStructCHA.PreviousCount=Count;
-  Count=TIM5->CNT;
-  STM32_DataStruct.FRQDataStructCHB.Frequency=Count-STM32_DataStruct.FRQDataStructCHB.PreviousCount;
-  STM32_DataStruct.FRQDataStructCHB.PreviousCount=Count;
-  STM_EVAL_LEDToggle(LED3);
-}
 
 /**
   * @}

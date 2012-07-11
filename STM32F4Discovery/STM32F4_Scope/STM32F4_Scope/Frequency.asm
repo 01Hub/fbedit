@@ -108,7 +108,7 @@ ByteToBin proc uses edi,lpBuff:DWORD,nByte:DWORD
 
 ByteToBin endp
 
-SetFrequencyAndDVM proc uses ebx
+SetFrequencyAndDVM proc uses ebx,DVMCHA:DWORD,DVMCHB:DWORD
 	LOCAL	buffer[32]:BYTE
 	LOCAL	tmp:DWORD
 
@@ -120,14 +120,14 @@ SetFrequencyAndDVM proc uses ebx
 	fistp	tmp
 	invoke FormatFrequency,addr buffer,addr szNULL,tmp
 	invoke SetDlgItemText,childdialogs.hWndFrequency,IDC_UDCFREQUENCYCHB,addr buffer
-	movzx	eax,scopedata.scopeCHAdata.frq_data.DVM
+	mov		eax,DVMCHA
 	mov		ecx,DVMAMUL
 	mul		ecx
 	mov		ecx,DVMMAX
 	div		ecx
 	invoke FormatVoltage,addr buffer,addr szFmtVolts,eax
 	invoke SetDlgItemText,childdialogs.hWndFrequency,IDC_UDCVOLTSDVMA,addr buffer
-	movzx	eax,scopedata.scopeCHBdata.frq_data.DVM
+	mov		eax,DVMCHB
 	mov		ecx,DVMBMUL
 	mul		ecx
 	mov		ecx,DVMMAX
@@ -144,7 +144,7 @@ GetFrequency proc uses ebx esi edi,hWin:HWND
 
 	invoke GetWindowLong,hWin,GWL_USERDATA
 	mov		ebx,eax
-	movzx	eax,scopedata.ADC_CommandStruct.STM32_DataBlocks
+	movzx	eax,scopedata.ADC_CommandStruct.ScopeDataBlocks
 	mov		ecx,STM32_BlockSize
 	mul		ecx
 	dec		eax
