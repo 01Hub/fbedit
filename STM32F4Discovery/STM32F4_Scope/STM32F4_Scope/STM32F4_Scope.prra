@@ -3,12 +3,12 @@ Version=3000
 [Project]
 Assembler=masm
 Group=2,-1,0,1,STM32_Scope,-2,-1,1,Assembly,-3,-1,1,Include,-4,-1,1,Misc,-5,-1,1,Resource,-6,-1,1,Drawings,-7,-1,1,Pdf
-F1=-2,2,1,22,22,600,400,295,STM32F4_Scope.asm
-F2=-3,0,1,44,44,600,400,231,STM32F4_Scope.inc
+F1=-2,2,1,22,22,600,400,292,STM32F4_Scope.asm
+F2=-3,0,1,44,44,600,400,195,STM32F4_Scope.inc
 F3=-5,2,4,-6,-25,1041,537,506,STM32F4_Scope.rc
 Open=0,1,2,3,5,6,7,8,4
 Api=
-F4=-4,0,2,-6,-25,1028,538,45,STM32F4_Scope.txt
+F4=-4,0,2,-6,-25,1028,538,0,STM32F4_Scope.txt
 Scope.asm
 Frequency.asm
 LogicAnalyser.asm
@@ -20,7 +20,7 @@ F17=
 F16=
 F15=
 F14=
-Path=C:\RadASM30
+Path=D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\STM32F4_Scope
 F5=-2,0,1,88,88,1014,416,146,Frequency.asm
 F6=-2,0,1,110,110,1014,416,206,HSClock.asm
 F7=-2,0,1,132,132,1014,416,69,LogicAnalyser.asm

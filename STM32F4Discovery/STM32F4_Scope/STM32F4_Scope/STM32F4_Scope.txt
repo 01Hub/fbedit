@@ -1,4 +1,4 @@
-STM32 value line Discovery Digital Oscilloscope demo project.
+STM32F4 Discovery Digital Oscilloscope demo project.
 -------------------------------------------------------------------------------
 
 IMPORTANT NOTICE!
@@ -23,7 +23,7 @@ o Dual channel digital oscilloscope.
     With some additional hardware, variable trigger level and DC offset
     (Y-Position) adjustment.
 o Two high speed clock outputs.
-  - Variable from 0.02Hz to 28.0MHz
+  - Variable from 1Hz to 42MHz
   - Variable pulse width, 0% to 100%.
 o Logic analyser.
   - 8 bits.
@@ -48,57 +48,11 @@ PB8					TIM10_CH1	PWM Output. High speed clock output CLKB.
 PA0					TIM5_CH1	Input for frequency counter scope CHB
 PA1					TIM2_CH2	Input for frequency counter scope CHA
 
-PB0					ADC12_IN8	Input for DVMA
-PB1					ADC12_IN9	Input for DVMB
+PB0					ADC12_IN8	Input for scope CHA
+PB1					ADC12_IN9	Input for scope CHB
 
-PC1					ADC123_IN11	Input for scope CHA
-PC2					ADC123_IN12	Input for scope CHB
+PC1					ADC123_IN11	Input for DVMA
+PC2					ADC123_IN12	Input for DVMB
 
 PE8-PE15			PE8-PE15	Inputs for logic analyser
 -------------------------------------------------------------------------------
-
-PB.00				ADC Channel 8 Input for scope CHA
-PB.01				ADC Channel 9 Input for scope CHB
-
-PA.02				ADC Channel 2 Input for DVMA
-PA.03				ADC Channel 3 Input for DVMB
-
-PA.04				DAC Channel 1 output for WAVEA.
-PA.05				DAC Channel 2 output for WAVEB.
-
-PA.06				ADC Channel 6 Input for scope CHC / DDS Sweep Peak detector.
-PA.07				ADC Channel 7 Input for scope CHD
-
-PA.01				TIM2 Input for frequency counter scope CHA
-PB.07				TIM4 Input for frequency counter scope CHB
-
-PA.08				TIM1 PWM Output Channel 1. Sets CHA trigger level
-PA.09				TIM1 PWM Output Channel 2. Sets CHA DC offset level
-PA.10				TIM1 PWM Output Channel 3. Sets CHB trigger level
-PA.11				TIM1 PWM Output Channel 4. Sets CHB DC offset level
-
-PB.08				TIM16 PWM Output. High speed clock output CLKA.
-PB.09				TIM17 PWM Output. High speed clock output CLKB.
-
-PC.00 to PC.07		Inputs for logic analyser
-
-PB.10 to PB.12		Outputs for CHA amplification selector.
-PB.13 to PB.15		Outputs for CHB amplification selector.
-
--------------------------------------------------------------------------------
-Port pins used by discovery:
--------------------------------------------------------------------------------
-PA.00				User button input
-PA.13				TMS/SWDIO
-PA.14				TCK/SWCLK
-
-PB.02				BOOT1
-
-PC.08				LED4 Output (Blue)
-PC.09				LED3 Output (Green)
-
-PC.14				OSC In
-PC.15				OSC Out
-
-PD.00				OSC In
-PD.01				OSC Out

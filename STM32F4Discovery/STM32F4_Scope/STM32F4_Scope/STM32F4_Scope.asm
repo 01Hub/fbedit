@@ -252,7 +252,7 @@ SampleThreadProc proc lParam:DWORD
 					invoke STLinkRead,hWnd,STM32FrequencyCHB,addr scopedata.scopeCHBdata.frq_data,4
 					.if fConnected
 						;Read DVM data for CHA and CHB from injected channels
-						invoke STLinkRead,hWnd,4001203Ch,addr DVM,8
+						invoke STLinkRead,hWnd,4001223Ch,addr DVM,8
 						;Set frequency and DVM data
 						fild	scopedata.scopeCHAdata.frq_data.Frequency
 						fstp	scopedata.scopeCHAdata.frequency
@@ -261,6 +261,12 @@ SampleThreadProc proc lParam:DWORD
 						invoke SetFrequencyAndDVM,DVM[0],DVM[4]
 					.endif
 				.endif
+				invoke STLinkRead,hWnd,4001204Ch,addr DVM,4
+;mov		eax,DVM
+;PrintHex eax
+;				invoke STLinkRead,hWnd,4001214Ch,addr DVM,4
+;mov		eax,DVM
+;PrintHex eax
 			.elseif fINITHSCCHA
 				mov		fINITHSCCHA,0
 				;Send all initialisation data
@@ -278,21 +284,27 @@ SampleThreadProc proc lParam:DWORD
 				invoke STLinkWrite,hWnd,STM32CommandStart,addr hsclockdata.HSC_CommandStruct,sizeof STM32_CommandStructDef
 				mov		hsclockdata.HSC_CommandStruct.Command,STM32_CommandInit
 				invoke STLinkWrite,hWnd,STM32CommandStart,addr hsclockdata.HSC_CommandStruct,4
+invoke Sleep,100
+invoke STLinkRead,hWnd,STM32DataStart,addr scopedata.scopeCHAdata.ADC_Data,128*4
+mov		esi,offset scopedata.scopeCHAdata.ADC_Data
+xor		ebx,ebx
+.while ebx<128
+	mov		ax,[esi]
+	PrintHex ax
+	inc		ebx
+	lea		esi,[esi+4]
+.endw
 			.elseif fINITHSCCHB
 				mov		fINITHSCCHB,0
 				;Send all initialisation data
 				mov		eax,hsclockdata.hscCHBData.hsclockenable
 				mov		hsclockdata.hscFRQ.HSCEnable,ax
-PrintDec ax
 				mov		eax,hsclockdata.hscCHBData.hsclockfrequency
 				mov		hsclockdata.hscFRQ.HSCCount,ax
-PrintDec ax
 				mov		eax,hsclockdata.hscCHBData.hsclockdivisor
 				mov		hsclockdata.hscFRQ.HSCClockDiv,ax
-PrintDec ax
 				mov		eax,hsclockdata.hscCHBData.hsclockccr
 				mov		hsclockdata.hscFRQ.HSCDuty,ax
-PrintDec ax
 				invoke STLinkWrite,hWnd,STM32FrequencyCHB+8,addr hsclockdata.hscFRQ.HSCEnable,sizeof STM32_FRQDataStructDef-8
 				mov		hsclockdata.HSC_CommandStruct.Command,STM32_CommandWait
 				mov		hsclockdata.HSC_CommandStruct.Mode,STM32_ModeHSClockCHB

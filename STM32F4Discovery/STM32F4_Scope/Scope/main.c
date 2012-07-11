@@ -10,6 +10,8 @@
 #include "stm32f4_discovery.h"
 
 /* Private define ------------------------------------------------------------*/
+#define ADC_CDR_ADDRESS           ((uint32_t)0x40012308)
+
 #define ADC1_DR_Address           ((uint32_t)0x4001244C)
 #define PC_IDR_Address            ((uint32_t)0x40011008)
 #define STM32_DataSize            ((uint16_t)1024*7)
@@ -101,30 +103,8 @@ void Clock_Config(void);
 void NVIC_Config(void);
 void GPIO_Config(void);
 void TIM_Config(void);
-void ADC_DVMConfig(void);
-// void RCC_Configuration(void);
-// void GPIO_Configuration(void);
-// void NVIC_Configuration(void);
-// void ADC_Startup(void);
-// void ADC_Configuration(void);
-// void DMA_ADC_Configuration(void);
-// void DMA_LGA_Configuration(void);
-// void TIM1_Configuration(void);
-// void TIM2_Configuration(void);
-// void TIM3_Configuration(void);
-// void TIM4_Configuration(void);
-// void TIM6_Configuration(void);
-// void TIM7_Configuration(void);
-// void TIM15_Configuration(void);
-// void TIM16_Configuration(void);
-// void TIM17_Configuration(void);
-// void DAC_DDS_Configuration(void);
-// void DDSWaveGenerator(void);
-// void DDSSweepWaveGenerator(void);
-// void DDSSweepWaveGeneratorPeak(void);
-// void WaitForTrigger(void);
-// void FAST_LGA_Read(void);
-// void ADC_DVMConfiguration(void);
+void ADC_Config(void);
+void DMA_Config(void);
 
 /* Private functions ---------------------------------------------------------*/
 
@@ -144,53 +124,7 @@ int main(void)
   NVIC_Config();
   GPIO_Config();
   TIM_Config();
-  ADC_DVMConfig();
-  // /* System clocks configuration ---------------------------------------------*/
-  // RCC_Configuration();
-  // /* NVIC configuration ------------------------------------------------------*/
-  // NVIC_Configuration();
-  // /* GPIO configuration ------------------------------------------------------*/
-  // GPIO_Configuration();
-  // /* TIM1 configuration ------------------------------------------------------*/
-  // TIM1_Configuration();
-  // /* TIM2 configuration ------------------------------------------------------*/
-  // TIM2_Configuration();
-  // /* TIM3 configuration ------------------------------------------------------*/
-  // TIM3_Configuration();
-  // /* TIM4 configuration ------------------------------------------------------*/
-  // TIM4_Configuration();
-  // /* TIM6 configuration ------------------------------------------------------*/
-  // TIM6_Configuration();
-  // /* TIM7 configuration ------------------------------------------------------*/
-  // TIM7_Configuration();
-  // /* TIM15 configuration -----------------------------------------------------*/
-  // TIM15_Configuration();
-  // /* TIM16 configuration -----------------------------------------------------*/
-  // TIM16_Configuration();
-  // /* TIM17 configuration -----------------------------------------------------*/
-  // TIM17_Configuration();
-  // /* ADC1 sartup -------------------------------------------------------------*/
-  // ADC_Startup();
-  // /* ADC1 injected channels configuration ------------------------------------*/
-  // ADC_DVMConfiguration();
-  // /* Enable TIM1 */
-  // TIM_Cmd(TIM1, ENABLE);
-  // /* Enable TIM2 */
-  // TIM_Cmd(TIM2, ENABLE);
-  // /* Enable TIM3 */
-  // TIM_Cmd(TIM3, ENABLE);
-  // /* Enable TIM4 */
-  // TIM_Cmd(TIM4, ENABLE);
-  // /* Enable TIM2 Update interrupt */
-  // TIM_ClearITPendingBit(TIM2,TIM_IT_Update);
-  // TIM_ITConfig(TIM2, TIM_IT_Update, ENABLE);
-  // /* Enable TIM3 Update interrupt */
-  // TIM_ClearITPendingBit(TIM3,TIM_IT_Update);
-  // TIM_ITConfig(TIM3, TIM_IT_Update, ENABLE);
-  // /* Enable TIM4 Update interrupt */
-  // TIM_ClearITPendingBit(TIM4,TIM_IT_Update);
-  // TIM_ITConfig(TIM4, TIM_IT_Update, ENABLE);
-
+  ADC_Config();
   while (1)
   {
     if (STM32_DataStruct.CommandStruct.Command == STM32_CommandInit)
@@ -235,6 +169,7 @@ int main(void)
             TIM4->CCR2 = STM32_DataStruct.FRQDataStructCHA.HSCDuty;
             /* TIM4 enable counter */
             TIM_Cmd(TIM4, ENABLE);
+  DMA_Config();
           }
           else
           {
@@ -403,7 +338,7 @@ int main(void)
     {
       i++;
     }
-    ADC_SoftwareStartInjectedConv(ADC1);
+    ADC_SoftwareStartInjectedConv(ADC3);
   }
 }
 
@@ -1179,12 +1114,12 @@ void WaitForTrigger(void)
 
 void Clock_Config(void)
 {
-  /* Enable GPIOA, GPIOB, GPIOC and GPIOE clocks ****************************************/
-  RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA | RCC_AHB1Periph_GPIOB | RCC_AHB1Periph_GPIOC | RCC_AHB1Periph_GPIOE, ENABLE);
+  /* Enable DMA2, GPIOA, GPIOB, GPIOC and GPIOE clocks ****************************************/
+  RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA2 | RCC_AHB1Periph_GPIOA | RCC_AHB1Periph_GPIOB | RCC_AHB1Periph_GPIOC | RCC_AHB1Periph_GPIOE, ENABLE);
   /* Enable TIM2, TIM3, TIM4 and TIM5 clocks ****************************************/
   RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2 | RCC_APB1Periph_TIM3 | RCC_APB1Periph_TIM4 | RCC_APB1Periph_TIM5, ENABLE);
   /* Enable TIM10 clocks ****************************************/
-  RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM10 | RCC_APB2Periph_ADC1, ENABLE);
+  RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM10 | RCC_APB2Periph_ADC1 | RCC_APB2Periph_ADC2 | RCC_APB2Periph_ADC3, ENABLE);
 }
 
 void NVIC_Config(void)
@@ -1227,7 +1162,13 @@ void GPIO_Config(void)
   /* Connect TIM5 pin to AF2 */
   GPIO_PinAFConfig(GPIOA, GPIO_PinSource0, GPIO_AF_TIM5);
 
-  /* Configure ADC1 Channel8 and ADC1 Channel9 pins as analog inputs ******************************/
+  /* Configure ADC123 Channel1 and ADC123 Channel12 pins as analog inputs (DVM) ******************************/
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_1 | GPIO_Pin_2;
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AN;
+  GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL ;
+  GPIO_Init(GPIOC, &GPIO_InitStructure);
+
+  /* Configure ADC12 Channel8 and ADC12 Channel9 pins as analog inputs (Scope) ******************************/
   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0 | GPIO_Pin_1;
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AN;
   GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL ;
@@ -1311,7 +1252,7 @@ void TIM_Config(void)
   TIM_ARRPreloadConfig(TIM10, ENABLE);
 }
 
-void ADC_DVMConfig(void)
+void ADC_Config(void)
 {
   ADC_InitTypeDef       ADC_InitStructure;
   ADC_CommonInitTypeDef ADC_CommonInitStructure;
@@ -1320,27 +1261,89 @@ void ADC_DVMConfig(void)
   ADC_CommonStructInit(&ADC_CommonInitStructure);
 
   /* ADC Common Init **********************************************************/
-  ADC_CommonInitStructure.ADC_Mode = ADC_Mode_Independent;
+  ADC_CommonInitStructure.ADC_Mode = ADC_DualMode_RegSimult;//ADC_Mode_Independent;
   ADC_CommonInitStructure.ADC_Prescaler = ADC_Prescaler_Div2;
-  ADC_CommonInitStructure.ADC_DMAAccessMode = ADC_DMAAccessMode_Disabled;
+  ADC_CommonInitStructure.ADC_DMAAccessMode = ADC_DMAAccessMode_2;//ADC_DMAAccessMode_Disabled;
   ADC_CommonInitStructure.ADC_TwoSamplingDelay = ADC_TwoSamplingDelay_5Cycles;
   ADC_CommonInit(&ADC_CommonInitStructure);
 
-  /* ADC1 Init ****************************************************************/
+  /* ADC3 Init ****************************************************************/
   ADC_InitStructure.ADC_Resolution = ADC_Resolution_12b;
   ADC_InitStructure.ADC_ScanConvMode = ENABLE;
   ADC_InitStructure.ADC_ContinuousConvMode = ENABLE;
   ADC_InitStructure.ADC_ExternalTrigConvEdge = ADC_ExternalTrigConvEdge_None;
   ADC_InitStructure.ADC_DataAlign = ADC_DataAlign_Right;
   ADC_InitStructure.ADC_NbrOfConversion = 1;
-  ADC_Init(ADC1, &ADC_InitStructure);
-  ADC_Cmd(ADC1, ENABLE);
+  ADC_Init(ADC3, &ADC_InitStructure);
+  ADC_Cmd(ADC3, ENABLE);
 
-  ADC_InjectedSequencerLengthConfig(ADC1,2);
-  ADC_InjectedChannelConfig(ADC1,ADC_Channel_8,1,ADC_SampleTime_15Cycles);
-  ADC_InjectedChannelConfig(ADC1,ADC_Channel_9,2,ADC_SampleTime_15Cycles);
-  ADC_AutoInjectedConvCmd(ADC1, ENABLE);
-  ADC_SoftwareStartInjectedConv(ADC1);
+  ADC_InjectedSequencerLengthConfig(ADC3,2);
+  ADC_InjectedChannelConfig(ADC3,ADC_Channel_11,1,ADC_SampleTime_15Cycles);
+  ADC_InjectedChannelConfig(ADC3,ADC_Channel_12,2,ADC_SampleTime_15Cycles);
+  ADC_AutoInjectedConvCmd(ADC3, ENABLE);
+  ADC_SoftwareStartInjectedConv(ADC3);
+
+  /* ADC1 Init ****************************************************************/
+  ADC_InitStructure.ADC_Resolution = ADC_Resolution_6b;
+  ADC_InitStructure.ADC_ScanConvMode = ENABLE;
+  ADC_InitStructure.ADC_ContinuousConvMode = ENABLE;
+  ADC_InitStructure.ADC_ExternalTrigConvEdge = ADC_ExternalTrigConvEdge_None;
+  ADC_InitStructure.ADC_DataAlign = ADC_DataAlign_Right;
+  ADC_InitStructure.ADC_NbrOfConversion = 1;
+  ADC_Init(ADC1, &ADC_InitStructure);
+  /* ADC1 regular channel11 configuration *************************************/
+  ADC_RegularChannelConfig(ADC1, ADC_Channel_8, 1, ADC_SampleTime_3Cycles);
+  ADC_Cmd(ADC1, ENABLE);
+  ADC_SoftwareStartConv(ADC1);
+
+  /* ADC2 Init ****************************************************************/
+  ADC_InitStructure.ADC_Resolution = ADC_Resolution_6b;
+  ADC_InitStructure.ADC_ScanConvMode = ENABLE;
+  ADC_InitStructure.ADC_ContinuousConvMode = ENABLE;
+  ADC_InitStructure.ADC_ExternalTrigConvEdge = ADC_ExternalTrigConvEdge_None;
+  ADC_InitStructure.ADC_DataAlign = ADC_DataAlign_Right;
+  ADC_InitStructure.ADC_NbrOfConversion = 1;
+  ADC_Init(ADC2, &ADC_InitStructure);
+
+  /* ADC2 regular channel12 configuration *************************************/
+  ADC_RegularChannelConfig(ADC2, ADC_Channel_9, 1, ADC_SampleTime_3Cycles);
+  ADC_Cmd(ADC2, ENABLE);
+  ADC_SoftwareStartConv(ADC2);
+}
+
+void DMA_Config(void)
+{
+  DMA_InitTypeDef       DMA_InitStructure;
+
+  ADC_Cmd(ADC1, DISABLE);
+  ADC_Cmd(ADC2, DISABLE);
+
+  /* DMA2 Stream0 channel0 configuration */
+  DMA_InitStructure.DMA_Channel = DMA_Channel_0;  
+  DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)ADC_CDR_ADDRESS;
+  DMA_InitStructure.DMA_Memory0BaseAddr = (uint32_t)&STM32_DataStruct.STM32_Data;
+  DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralToMemory;
+  DMA_InitStructure.DMA_BufferSize = 128;
+  DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
+  DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;
+  DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Word;
+  DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_Word;
+  DMA_InitStructure.DMA_Mode = DMA_Mode_Normal;//DMA_Mode_Circular;
+  DMA_InitStructure.DMA_Priority = DMA_Priority_High;
+  DMA_InitStructure.DMA_FIFOMode = DMA_FIFOMode_Disable;         
+  DMA_InitStructure.DMA_FIFOThreshold = DMA_FIFOThreshold_HalfFull;
+  DMA_InitStructure.DMA_MemoryBurst = DMA_MemoryBurst_Single;
+  DMA_InitStructure.DMA_PeripheralBurst = DMA_PeripheralBurst_Single;
+  DMA_Init(DMA2_Stream0, &DMA_InitStructure);
+  /* DMA2_Stream0 enable */
+  DMA_Cmd(DMA2_Stream0, ENABLE);
+  ADC_MultiModeDMARequestAfterLastTransferCmd(ENABLE);
+  /* Enable ADC1 DMA */
+  ADC_DMACmd(ADC1, ENABLE);
+  ADC_Cmd(ADC1, ENABLE);
+  ADC_Cmd(ADC2, ENABLE);
+  /* Start ADC1 Software Conversion */ 
+  ADC_SoftwareStartConv(ADC1);
 }
 
 /**
