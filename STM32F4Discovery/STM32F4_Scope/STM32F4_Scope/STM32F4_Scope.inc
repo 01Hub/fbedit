@@ -45,6 +45,7 @@ IDM_FILE_OPEN_SCOPECHB		equ 10023
 IDM_FILE_SAVE				equ 10004
 IDM_FILE_SAVE_SCOPECHA		equ 10024
 IDM_FILE_SAVE_SCOPECHB		equ 10025
+IDM_FILE_SAMPLE				equ 10003
 IDM_FILE_EXIT				equ 10006
 IDM_VIEW					equ 10007
 IDM_VIEW_SCOPECHA			equ 10008
@@ -159,9 +160,9 @@ IDC_TRBHSCLOCKBDUTY			equ 2106
 
 ;#########################################################################
 
-STM32_DataSize				equ 1024*7
+STM32_DataSize				equ 1024*6
 STM32_BlockSize				equ 64
-STM32_MAXBLOCK				equ STM32_DataSize/STM32_BlockSize
+STM32_MAXBLOCK				equ STM32_DataSize/STM32_BlockSize/4
 
 ;Command
 STM32_CommandWait			equ 0
@@ -384,7 +385,7 @@ szFmtDec					BYTE '%u',0
 szCOMMA						BYTE ',',0
 szCRLF						BYTE 0Dh,0Ah,0
 
-szADCDataBits				BYTE '6',0,'8',0,'10',0,'12',0,0
+szADCDataBits				BYTE '12',0,'10',0,'8',0,'6',0,0
 szADCSampleClocks			BYTE '3',0,'15',0,'28',0,'56',0,'84',0,'112',0,'144',0,'480',0,0
 szADCClockDiv				BYTE '2',0,'4',0,'6',0,'8',0,0
 
@@ -406,11 +407,10 @@ hWnd						HWND ?
 hDlg						HWND ?
 fConnected					DWORD ?
 fNoSTLink					DWORD ?
-fSample						DWORD ?
-fWave						DWORD ?
 fFRQDVM						DWORD ?
 fINITHSCCHA					DWORD ?
 fINITHSCCHB					DWORD ?
+fSCOPE						DWORD ?
 
 scopedata					SCOPEDATA <>
 lgadata						LGADATA <>

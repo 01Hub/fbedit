@@ -3,102 +3,17 @@
 
 ;########################################################################
 
-SetupSamplePeriods proc ADCClockDiv:DWORD,MCUClock:DWORD
-
-;	xor		ecx,ecx
-;	.while ecx<8
-;		fld		qword ptr nsinasec
-;		fild	dword ptr MCUClock
-;		fild	dword ptr ADCClockDiv
-;		fdivp	st(1),st
-;		fdivp	st(1),st
-;		fild	ADCClocks[ecx*DWORD]
-;		fmulp	st(1),st
-;		fstp	qword ptr SamplePeriod[ecx*QWORD]
-;		inc		ecx
-;	.endw
-	ret
-
-SetupSamplePeriods endp
-
-ScopeSetupSampleRate proc uses ebx esi edi
-
-;	xor		ecx,ecx
-;	mov		edi,offset scopedata.ADC_SampleRate
-;	xor		ebx,ebx
-;	.while ecx<4
-;		xor		edx,edx
-;		.while edx<8
-;			.if !ecx
-;				mov		eax,2
-;			.elseif ecx==1
-;				mov		eax,4
-;			.elseif ecx==2
-;				mov		eax,6
-;			.elseif ecx==3
-;				mov		eax,8
-;			.endif
-;			mov		[edi].SCOPEDATA.ADC_SampleRate.clkdiv,eax
-;			mov		eax,ADCClocks[edx*DWORD]
-;			mov		[edi].SCOPEDATA.ADC_SampleRate.clkcycle,eax
-;			fild	STM32Clock
-;			fild	[edi].SCOPEDATA.ADC_SampleRate.clkdiv
-;			fdivp	st(1),st
-;			fild	[edi].SCOPEDATA.ADC_SampleRate.clkcycle
-;			fdivp	st(1),st
-;			fistp	[edi].SCOPEDATA.ADC_SampleRate.rate
-;			push	ecx
-;			push	edx
-;			shl		ecx,8
-;			or		ecx,edx
-;			mov		[edi].SCOPEDATA.ADC_SampleRate.adcset,ecx
-;			invoke FormatFrequency,addr [edi].SCOPEDATA.ADC_SampleRate.szrate,addr szNULL,[edi].SCOPEDATA.ADC_SampleRate.rate
-;			pop		edx
-;			pop		ecx
-;			mov		scopedata.ADC_SampleRateSort[ebx*DWORD],edi
-;			inc		edx
-;			inc		ebx
-;			lea		edi,[edi+sizeof ADC_SAMPLERATE]
-;		.endw
-;		inc		ecx
-;	.endw
-;	xor		ebx,ebx
-;	.while ebx<32
-;		mov		edi,scopedata.ADC_SampleRateSort[ebx*DWORD]
-;		mov		eax,[edi].SCOPEDATA.ADC_SampleRate.rate
-;		mov		esi,ebx
-;		inc		ebx
-;		push	ebx
-;		.while ebx<32
-;			mov		edx,scopedata.ADC_SampleRateSort[ebx*DWORD]
-;			mov		edx,[edx].SCOPEDATA.ADC_SampleRate.rate
-;			.if edx>eax
-;				push	edx
-;				mov		eax,scopedata.ADC_SampleRateSort[ebx*DWORD]
-;				mov		edx,scopedata.ADC_SampleRateSort[esi*DWORD]
-;				mov		scopedata.ADC_SampleRateSort[ebx*DWORD],edx
-;				mov		scopedata.ADC_SampleRateSort[esi*DWORD],eax
-;				pop		eax
-;			.endif
-;			inc		ebx
-;		.endw
-;		pop		ebx
-;	.endw
-	ret
-
-ScopeSetupSampleRate endp
-
 GetSampleRate proc uses ebx
 
 	movzx	eax,scopedata.ADC_CommandStruct.ScopeDataBits
 	.if !eax
-		mov		ebx,6
-	.elseif eax==1
-		mov		ebx,8
-	.elseif eax==2
-		mov		ebx,10
-	.elseif eax==3
 		mov		ebx,12
+	.elseif eax==1
+		mov		ebx,10
+	.elseif eax==2
+		mov		ebx,8
+	.elseif eax==3
+		mov		ebx,6
 	.endif
 	movzx	eax,scopedata.ADC_CommandStruct.ScopeSampleClocks
 	.if !eax
@@ -189,23 +104,10 @@ ScopeSetupProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LP
 		movzx	eax,scopedata.ADC_CommandStruct.ScopeClockDiv
 		invoke SendDlgItemMessage,hWin,IDC_CBOCLOCKDIVISOR,CB_SETCURSEL,eax,0
 		invoke GetSampleRate
-;		xor		ebx,ebx
-;		xor		edi,edi
-;		.while ebx<32
-;			mov		esi,scopedata.ADC_SampleRateSort[ebx*DWORD]
-;			invoke SendDlgItemMessage,hWin,IDC_CBOSAMPLERATE,CB_ADDSTRING,0,addr [esi].ADC_SAMPLERATE.szrate
-;			mov		edx,[esi].ADC_SAMPLERATE.adcset
-;			.if dx==word ptr scopedata.ADC_CommandStruct.STM32_SampleRateL
-;				mov		edi,ebx
-;			.endif
-;			
-;			invoke SendDlgItemMessage,hWin,IDC_CBOSAMPLERATE,CB_SETITEMDATA,eax,edx
-;			inc		ebx
-;		.endw
-;		invoke SendDlgItemMessage,hWin,IDC_CBOSAMPLERATE,CB_SETCURSEL,edi,0
 		invoke SendDlgItemMessage,hWin,IDC_TRBBUFFERSIZE,TBM_SETRANGE,FALSE,(STM32_MAXBLOCK SHL 16)+1
 		movzx	eax,scopedata.ADC_CommandStruct.ScopeDataBlocks
 		invoke SendDlgItemMessage,hWin,IDC_TRBBUFFERSIZE,TBM_SETPOS,TRUE,eax
+		call	Update
 	.elseif eax==WM_COMMAND
 		mov		edx,wParam
 		movzx	eax,dx

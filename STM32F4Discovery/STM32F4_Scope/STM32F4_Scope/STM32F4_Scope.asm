@@ -261,10 +261,10 @@ SampleThreadProc proc lParam:DWORD
 						invoke SetFrequencyAndDVM,DVM[0],DVM[4]
 					.endif
 				.endif
-				invoke STLinkRead,hWnd,4001204Ch,addr DVM,4
+;invoke STLinkRead,hWnd,4001204Ch,addr DVM,4
 ;mov		eax,DVM
 ;PrintHex eax
-;				invoke STLinkRead,hWnd,4001214Ch,addr DVM,4
+;invoke STLinkRead,hWnd,4001214Ch,addr DVM,4
 ;mov		eax,DVM
 ;PrintHex eax
 			.elseif fINITHSCCHA
@@ -284,16 +284,6 @@ SampleThreadProc proc lParam:DWORD
 				invoke STLinkWrite,hWnd,STM32CommandStart,addr hsclockdata.HSC_CommandStruct,sizeof STM32_CommandStructDef
 				mov		hsclockdata.HSC_CommandStruct.Command,STM32_CommandInit
 				invoke STLinkWrite,hWnd,STM32CommandStart,addr hsclockdata.HSC_CommandStruct,4
-invoke Sleep,100
-invoke STLinkRead,hWnd,STM32DataStart,addr scopedata.scopeCHAdata.ADC_Data,128*4
-mov		esi,offset scopedata.scopeCHAdata.ADC_Data
-xor		ebx,ebx
-.while ebx<128
-	mov		ax,[esi]
-	PrintHex ax
-	inc		ebx
-	lea		esi,[esi+4]
-.endw
 			.elseif fINITHSCCHB
 				mov		fINITHSCCHB,0
 				;Send all initialisation data
@@ -311,6 +301,55 @@ xor		ebx,ebx
 				invoke STLinkWrite,hWnd,STM32CommandStart,addr hsclockdata.HSC_CommandStruct,sizeof STM32_CommandStructDef
 				mov		hsclockdata.HSC_CommandStruct.Command,STM32_CommandInit
 				invoke STLinkWrite,hWnd,STM32CommandStart,addr hsclockdata.HSC_CommandStruct,4
+			.elseif fSCOPE
+				mov		fSCOPE,0
+				invoke RtlMoveMemory,addr scopedata.ADC_CommandStructDone,addr scopedata.ADC_CommandStruct,sizeof STM32_CommandStructDef
+				movzx	eax,scopedata.ADC_CommandStruct.Mode
+				push	eax
+				mov		scopedata.ADC_CommandStruct.Command,STM32_CommandWait
+				mov		scopedata.ADC_CommandStruct.Mode,STM32_ModeScopeCHA
+				invoke STLinkWrite,hWnd,STM32CommandStart,addr scopedata.ADC_CommandStruct,sizeof STM32_CommandStructDef
+				mov		scopedata.ADC_CommandStruct.Command,STM32_CommandInit
+				invoke STLinkWrite,hWnd,STM32CommandStart,addr scopedata.ADC_CommandStruct,4
+				.while TRUE
+					invoke STLinkRead,hWnd,STM32CommandStart,addr scopedata.ADC_CommandStruct,4
+					.break .if scopedata.ADC_CommandStruct.Command==STM32_CommandDone
+					invoke Sleep,10
+				.endw
+				movzx	eax,scopedata.ADC_CommandStructDone.ScopeDataBlocks
+				shl		eax,8
+				invoke STLinkRead,hWnd,STM32DataStart,addr scopedata.scopeCHAdata.ADC_Data,eax
+				xor		ebx,ebx
+				movzx	edi,scopedata.ADC_CommandStructDone.ScopeDataBlocks
+				shl		edi,6
+				.while ebx<edi;1024*6/4
+					mov		eax,dword ptr scopedata.scopeCHAdata.ADC_Data[ebx*4]
+					movzx	edx,ax
+					shr		eax,16
+					.if scopedata.ADC_CommandStructDone.ScopeDataBits==0
+						shr		edx,4
+						shr		eax,4
+					.elseif scopedata.ADC_CommandStructDone.ScopeDataBits==1
+						shr		edx,2
+						shr		eax,2
+					.elseif scopedata.ADC_CommandStructDone.ScopeDataBits==3
+						shl		edx,2
+						shl		eax,2
+					.endif
+					mov		scopedata.scopeCHAdata.ADC_Data[ebx],dl
+					mov		scopedata.scopeCHBdata.ADC_Data[ebx],al
+					inc		ebx
+				.endw
+				pop		eax
+				mov		scopedata.ADC_CommandStruct.Mode,al
+				invoke GetDlgItem,childdialogs.hWndScopeCHA,IDC_UDCSCOPE
+				mov		ebx,eax
+				invoke InvalidateRect,ebx,NULL,TRUE
+				invoke UpdateWindow,ebx
+				invoke GetDlgItem,childdialogs.hWndScopeCHB,IDC_UDCSCOPE
+				mov		ebx,eax
+				invoke InvalidateRect,ebx,NULL,TRUE
+				invoke UpdateWindow,ebx
 			.endif
 		.endif
 	.endw
@@ -378,7 +417,6 @@ MainDlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 			add		eax,edx
 			inc		ecx
 		.endw
-		invoke SetupSamplePeriods,2,STM32Clock
 ;		movzx	eax,scopedata.ADC_CommandStruct.STM32_SampleRateL
 ;		lea		eax,SamplePeriod[eax*8]
 ;		fld		qword ptr [eax]
@@ -388,25 +426,27 @@ MainDlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 		invoke GetFrequency,childdialogs.hWndScopeCHA
 		invoke GetFrequency,childdialogs.hWndScopeCHB
 		invoke SetFrequencyAndDVM,0,0
-		invoke ScopeSetupSampleRate
 		invoke LGASetupSampleRate
 		invoke SetTimer,hWin,1000,333,NULL
 		invoke CreateThread,NULL,NULL,addr SampleThreadProc,hWin,0,addr tid
 		mov		hThread,eax
 	.elseif eax==WM_TIMER
-		invoke IsDlgButtonChecked,hWin,IDC_CHKAUTO
-		.if eax && fSample==0
-			mov		fSample,1
-		.endif
+;		invoke IsDlgButtonChecked,hWin,IDC_CHKAUTO
+;		.if eax && fSample==0
+;			mov		fSample,1
+;		.endif
 		.if !fFRQDVM
 			mov		fFRQDVM,1
 		.endif
+		mov fSCOPE,1
 	.elseif eax==WM_COMMAND
 		mov		eax,wParam
 		.if eax==IDM_FILE_OPEN_SCOPECHA
 		.elseif eax==IDM_FILE_OPEN_SCOPECHB
 		.elseif eax==IDM_FILE_SAVE_SCOPECHA
 		.elseif eax==IDM_FILE_SAVE_SCOPECHB
+		.elseif eax==IDM_FILE_SAMPLE
+			mov		fSCOPE,TRUE
 		.elseif eax==IDM_FILE_EXIT || eax==IDCANCEL
 			invoke SendMessage,hWin,WM_CLOSE,0,0
 		.elseif eax==IDM_VIEW_SCOPECHA
@@ -502,7 +542,7 @@ MainDlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 			.endif
 		.elseif eax==IDM_HELP_ABOUT
 		.elseif eax==IDC_BTNSAMPLE
-			mov		fSample,TRUE
+			mov		fSCOPE,TRUE
 		.endif
 	.elseif	eax==WM_SIZE
 		invoke GetClientRect,hWin,addr rect
@@ -561,11 +601,11 @@ MainDlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 	.elseif	eax==WM_CLOSE
 		invoke KillTimer,hWin,1000
 		mov		fThreadExit,TRUE
-		.while fSample || fWave
-			invoke GetMessage,addr msg,0,0,0
-			invoke TranslateMessage,addr msg
-			invoke DispatchMessage,addr msg
-		.endw
+;		.while fSample || fWave
+;			invoke GetMessage,addr msg,0,0,0
+;			invoke TranslateMessage,addr msg
+;			invoke DispatchMessage,addr msg
+;		.endw
 		invoke WaitForSingleObject,hThread,250
 		invoke CloseHandle,hThread
 		.if fConnected

@@ -1,7 +1,7 @@
 
 <Debug>
 	<STM32F4_Scope>
-		<CodeView TopRow="134218714" Focus="4294967295" >
+		<CodeView TopRow="532" Focus="4294967295" >
 			<CodeReport>
 				<0>112</0>
 				<1>123</1>
@@ -9,17 +9,17 @@
 				<3>372</3>
 				<4>67</4>
 				<5>142</5>
-																																										
+																												
 			</CodeReport>
-																														
+																				
 		</CodeView>
 		<MemoryView Focus="134218120" TopRow="0" NbPerLine="8" />
-																		
+												
 	</STM32F4_Scope>
 	<Flags>
 		<Report>
 			<Def Header="FlagReport" NbCol="9" >
-				<Col Type="PT_BOOL" Header="Check" sizeCache="18" AutoSize="0" Edit="1" Sortable="1" Icon="D:\Ride\Ride\Config\Resources\check.bmp" />
+				<Col Type="PT_BOOL" Header="Check" sizeCache="18" AutoSize="0" Edit="1" Sortable="1" Icon="C:\Program Files\Raisonance\Ride\Config\Resources\check.bmp" />
 				<Col Type="PT_STRING" Header="Kind" sizeCache="DDDDDDDDDDD" AutoSize="1" Edit="0" Sortable="1" />
 				<Col Type="PT_STRING" Header="KindID" sizeCache="DD" AutoSize="1" Edit="0" Sortable="1" Visible="0" />
 				<Col Type="PT_STRING" Header="Space" sizeCache="DDDDDD" AutoSize="1" Edit="0" Sortable="1" />
@@ -37,13 +37,7 @@
 		</Report>
 			
 	</Flags>
-	<Views>
-		<View File="D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\main.c" Line="1286" Index="0" focus="1" />
-		<View File="D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_adc.c" Line="1096" Index="1" />
-		<View File="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_adc.h" Line="112" Index="2" />
-		<View File="D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_dma.c" Line="115" Index="3" />
-		<View File="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_dma.h" Line="239" Index="4" />
-	</Views>
+	<Views/>
 	<Grep>
 		<GrepIncludeSub>yes</GrepIncludeSub>
 		<GrepMatchCase>no</GrepMatchCase>
@@ -67,6 +61,10 @@
 		</GrepReplaceWhat>
 	</Grep>
 	<FindStrings>
+		<Find>DMA_BufferSize</Find>
+		<Find>ADC_SampleTime_3Cycles</Find>
+		<Find>ADC_Resolution_12b</Find>
+		<Find>ADC_Prescaler_Div2</Find>
 		<Find>ADC_DMAAccessMode_2</Find>
 		<Find>DMA_Mode_Circular</Find>
 		<Find>ADC_MultiModeDMARequestAfterLastTransferCmd</Find>
