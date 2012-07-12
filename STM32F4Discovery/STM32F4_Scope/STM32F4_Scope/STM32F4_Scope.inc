@@ -411,6 +411,7 @@ fFRQDVM						DWORD ?
 fINITHSCCHA					DWORD ?
 fINITHSCCHB					DWORD ?
 fSCOPE						DWORD ?
+fLGA						DWORD ?
 
 scopedata					SCOPEDATA <>
 lgadata						LGADATA <>

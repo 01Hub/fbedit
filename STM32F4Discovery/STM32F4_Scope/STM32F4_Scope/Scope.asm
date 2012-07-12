@@ -255,11 +255,24 @@ SubsamplingGetTrigger endp
 Subsampling proc uses ebx esi edi,hWin:HWND
 	LOCAL	tmp:DWORD
 
-;	invoke GetWindowLong,hWin,GWL_USERDATA
-;	mov		ebx,eax
-;	mov		[ebx].SCOPECHDATA.nusstart,0
-;	lea		edi,[ebx].SCOPECHDATA.ADC_USData
-;	invoke RtlZeroMemory,edi,sizeof SCOPECHDATA.ADC_USData
+	invoke GetWindowLong,hWin,GWL_USERDATA
+	mov		ebx,eax
+	mov		[ebx].SCOPECHDATA.nusstart,0
+	lea		edi,[ebx].SCOPECHDATA.ADC_USData
+	invoke RtlZeroMemory,edi,sizeof SCOPECHDATA.ADC_USData
+	fld		qword ptr nsinasec
+	fld		[ebx].SCOPECHDATA.frequency
+	fdivp	st(1),st
+	fstp	[ebx].SCOPECHDATA.period
+;	;Update the scope screen
+;	.if scopedata.scopeCHAdata.fSubsampling
+;		invoke Subsampling,childdialogs.hWndScopeCHA
+;	.endif
+	invoke GetSampleRate
+	mov		tmp,eax
+	fild	tmp
+	fld		qword ptr nsinasec
+	fmulp	st(1),st
 ;	movzx	eax,scopedata.ADC_CommandStructDone.STM32_SampleRateL
 ;	lea		eax,SamplePeriod[eax*8]
 ;	fld		qword ptr [eax]
@@ -267,57 +280,59 @@ Subsampling proc uses ebx esi edi,hWin:HWND
 ;		fld		float2
 ;		fmulp	st(1),st
 ;	.endif
-;	fstp	[ebx].SCOPECHDATA.convperiod
-;	fld		[ebx].SCOPECHDATA.period
-;	fistp	tmp
-;	.if tmp
-;		xor		edx,edx
-;		movzx	ecx,scopedata.ADC_CommandStructDone.STM32_DataBlocks
-;		mov		eax,STM32_BlockSize
-;		mul		ecx
-;		mov		ecx,eax
-;		lea		esi,[ebx].SCOPECHDATA.ADC_Data
-;		;The first byte seem to be corrupt, ignore it
-;		add		edx,4
-;		.while edx<ecx
-;			fld		[ebx].SCOPECHDATA.period
-;			.if [ebx].SCOPECHDATA.fTwoPeriods
-;				fld		[ebx].SCOPECHDATA.period
-;				faddp	st(1),st
-;			.endif
-;			mov		tmp,edx
-;			fild	tmp
-;			fld		[ebx].SCOPECHDATA.convperiod
-;			fmulp	st(1),st
-;			fprem
-;			fxch	st(1)
-;			fistp	tmp
-;			mov		tmp,STM32_DataSize-1
-;			fild	tmp
-;			fmulp	st(1),st
-;			fld		[ebx].SCOPECHDATA.period
-;			.if [ebx].SCOPECHDATA.fTwoPeriods
-;				fld		[ebx].SCOPECHDATA.period
-;				faddp	st(1),st
-;			.endif
-;			fdivp	st(1),st
-;			fistp	tmp
-;			mov		al,[esi+edx]
-;			.if !al
-;				;Avoid 0 as it is used to indicate not set bytes
-;				inc		al
-;			.endif
-;			push	edx
-;			mov		edx,tmp
-;			.if !byte ptr [edi+edx]
-;				;If set, dont set it again
-;				mov		[edi+edx],al
-;			.endif
-;			pop		edx
-;			inc		edx
-;		.endw
-;		invoke SubsamplingGetTrigger,hWin
-;	.endif
+	fstp	[ebx].SCOPECHDATA.convperiod
+	fld		[ebx].SCOPECHDATA.period
+	fistp	tmp
+	.if tmp
+		xor		edx,edx
+		movzx	ecx,scopedata.ADC_CommandStructDone.ScopeDataBlocks
+		mov		eax,STM32_BlockSize
+		mul		ecx
+		mov		ecx,eax
+PrintDec ecx
+		lea		esi,[ebx].SCOPECHDATA.ADC_Data
+		;The first byte seem to be corrupt, ignore it
+		add		edx,4
+		.while edx<ecx
+			fld		[ebx].SCOPECHDATA.period
+			.if [ebx].SCOPECHDATA.fTwoPeriods
+				fld		[ebx].SCOPECHDATA.period
+				faddp	st(1),st
+			.endif
+			mov		tmp,edx
+			fild	tmp
+			fld		[ebx].SCOPECHDATA.convperiod
+			fmulp	st(1),st
+			fprem
+			fxch	st(1)
+			fistp	tmp
+			mov		tmp,STM32_DataSize-1
+			fild	tmp
+			fmulp	st(1),st
+			fld		[ebx].SCOPECHDATA.period
+			.if [ebx].SCOPECHDATA.fTwoPeriods
+				fld		[ebx].SCOPECHDATA.period
+				faddp	st(1),st
+			.endif
+			fdivp	st(1),st
+			fistp	tmp
+PrintDec tmp
+			mov		al,[esi+edx]
+			.if !al
+				;Avoid 0 as it is used to indicate not set bytes
+				inc		al
+			.endif
+			push	edx
+			mov		edx,tmp
+			.if !byte ptr [edi+edx]
+				;If set, dont set it again
+				mov		[edi+edx],al
+			.endif
+			pop		edx
+			inc		edx
+		.endw
+		invoke SubsamplingGetTrigger,hWin
+	.endif
 	ret
 
 Subsampling endp

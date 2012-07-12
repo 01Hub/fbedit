@@ -350,6 +350,22 @@ SampleThreadProc proc lParam:DWORD
 				mov		ebx,eax
 				invoke InvalidateRect,ebx,NULL,TRUE
 				invoke UpdateWindow,ebx
+			.elseif fLGA
+				mov		fLGA,0
+				invoke RtlMoveMemory,addr lgadata.LGA_CommandStructDone,addr lgadata.LGA_CommandStruct,sizeof STM32_CommandStructDef
+				mov		lgadata.LGA_CommandStruct.Command,STM32_CommandWait
+				mov		lgadata.LGA_CommandStruct.Mode,STM32_ModeLGA
+				invoke STLinkWrite,hWnd,STM32CommandStart,addr lgadata.LGA_CommandStruct,sizeof STM32_CommandStructDef
+				mov		lgadata.LGA_CommandStruct.Command,STM32_CommandInit
+				invoke STLinkWrite,hWnd,STM32CommandStart,addr lgadata.LGA_CommandStruct,4
+				.while TRUE
+					invoke STLinkRead,hWnd,STM32CommandStart,addr lgadata.LGA_CommandStruct,4
+					.break .if lgadata.LGA_CommandStruct.Command==STM32_CommandDone
+					invoke Sleep,10
+				.endw
+				movzx	eax,lgadata.LGA_CommandStructDone.ScopeDataBlocks
+				shl		eax,8
+				invoke STLinkRead,hWnd,STM32DataStart,addr lgadata.LGA_Data,eax
 			.endif
 		.endif
 	.endw
@@ -438,7 +454,7 @@ MainDlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 		.if !fFRQDVM
 			mov		fFRQDVM,1
 		.endif
-		mov fSCOPE,1
+		mov 	fLGA,1
 	.elseif eax==WM_COMMAND
 		mov		eax,wParam
 		.if eax==IDM_FILE_OPEN_SCOPECHA

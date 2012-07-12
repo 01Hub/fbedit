@@ -11,6 +11,7 @@
 
 /* Private define ------------------------------------------------------------*/
 #define ADC_CDR_ADDRESS           ((uint32_t)0x40012308)
+#define PE_IDR_Address            ((uint32_t)0x40001011)
 
 #define PC_IDR_Address            ((uint32_t)0x40011008)
 #define STM32_DataSize            ((uint16_t)1024*6/2)
@@ -19,7 +20,6 @@
 /* STM32_Command */
 #define STM32_CommandWait         ((uint8_t)0)
 #define STM32_CommandInit         ((uint8_t)1)
-// #define STM32_CommandSampleStart  ((uint8_t)2)
 #define STM32_CommandDone         ((uint8_t)99)
 
 /* STM32_Modes */
@@ -104,6 +104,7 @@ void TIM_Config(void);
 void ADC_DVMConfig(void);
 void ADC_SCPConfig(void);
 void DMA_SCPConfig(void);
+void DMA_LGAConfig(void);
 void WaitForTrigger(void);
 
 /* Private functions ---------------------------------------------------------*/
@@ -120,7 +121,6 @@ int main(void)
   u32 i;
   u32 *adr;
 
-  //asm("add    sp,#0x8000");
   RCC_Config();
   NVIC_Config();
   GPIO_Config();
@@ -140,13 +140,11 @@ int main(void)
           STM32_DataStruct.CommandStruct.TriggerWait = 3;
           WaitForTrigger();
           /* Start ADC1 Software Conversion */ 
-          ADC_SoftwareStartConv(ADC1);
+          ADC1->CR2 |= (uint32_t)ADC_CR2_SWSTART;
           while (DMA_GetFlagStatus(DMA2_Stream0,DMA_FLAG_TCIF0)==RESET);
           STM32_DataStruct.CommandStruct.Command = STM32_CommandDone;
           ADC_Cmd(ADC1, DISABLE);
           ADC_Cmd(ADC2, DISABLE);
-          // /* DMA2_Stream0 disable */
-          // DMA_Cmd(DMA2_Stream0, DISABLE);
           DMA_DeInit(DMA2_Stream0);
           break;
         case STM32_ModeHSClockCHA:
@@ -194,10 +192,15 @@ int main(void)
           }
           break;
         case STM32_ModeLGA:
-          // /* TIM15 configuration ------------------------------------------------*/
-          // TIM15_Configuration();
-          // /* DMA1 channel5 configuration ----------------------------------------*/
-          // DMA_LGA_Configuration();
+          STM_EVAL_LEDToggle(LED4);
+          DMA_LGAConfig();
+          WaitForTrigger();
+          TIM_Cmd(TIM8, ENABLE);
+          TIM_DMACmd(TIM8, TIM_DMA_Update, ENABLE);
+          while (DMA_GetFlagStatus(DMA2_Stream1,DMA_FLAG_TCIF0)==RESET);
+          STM32_DataStruct.CommandStruct.Command = STM32_CommandDone;
+          DMA_DeInit(DMA2_Stream1);
+          TIM_Cmd(TIM8, DISABLE);
           break;
         case STM32_ModeWriteData:
           // adr = (u32 *)STM32_DataStruct.STM32_CommandStruct.Address;
@@ -209,124 +212,6 @@ int main(void)
           break;
       }
     }
-    // else if (STM32_DataStruct.CommandStruct.Command == STM32_CommandSampleStart)
-    // {
-      // /* Turn off LED4 */
-      // GPIO_ResetBits(GPIOC,GPIO_Pin_8);
-      // /* Turn on LED3 */
-      // GPIO_SetBits(GPIOC,GPIO_Pin_9);
-      // switch (STM32_DataStruct.STM32_CommandStruct.STM32_Mode)
-      // {
-        // case STM32_ModeScopeCHA:
-          // /* ADC1 regular channel 8 configuration */ 
-          // /* Set sample time for channel 8 */
-          // ADC1->SMPR2 = ((u32)STM32_DataStruct.STM32_CommandStruct.STM32_SampleRateL << 24);
-          // /* Set rank 1 for channel 8 */
-          // /* |00|Rank6|Rank5|Rank4|Rank3|Rank2|Rank1| */
-          // /* |00|00000|00000|00000|00000|00000|01000| */
-          // ADC1->SQR3 = (u32)0x00000008;
-          // /* Enable ADC1 DMA */
-          // ADC1->CR2 |=(u32)0x00000100;
-          // /* Enable ADC1 */
-          // ADC1->CR2 |= (u32)0x00000001;
-          // WaitForTrigger();
-          // /* Enable DMA1 channel1 */
-          // DMA1_Channel1->CCR |= (u32)0x00000001;
-          // /* Wait until DMA transfer complete */
-          // while ((DMA1->ISR && DMA1_FLAG_TC1) == 0)
-          // {
-          // }
-          // /* Disable DMA */
-          // DMA_Cmd(DMA1_Channel1, DISABLE);
-          // /* Disable ADC1 */
-          // ADC_SoftwareStartConvCmd(ADC1, DISABLE);
-          // break;
-        // case STM32_ModeScopeCHB:
-          // /* ADC1 regular channel 9 configuration */ 
-          // /* Set sample time for channel 9 */
-          // ADC1->SMPR2 = ((u32)STM32_DataStruct.STM32_CommandStruct.STM32_SampleRateL << 27);
-          // /* Set rank 1 for channel 9 */
-          // /* |00|Rank6|Rank5|Rank4|Rank3|Rank2|Rank1| */
-          // /* |00|00000|00000|00000|00000|00000|01001| */
-          // ADC1->SQR3 = (u32)0x00000009;
-          // /* Enable ADC1 DMA */
-          // ADC1->CR2 |=(u32)0x00000100;
-          // /* Enable ADC1 */
-          // ADC1->CR2 |= (u32)0x00000001;
-          // WaitForTrigger();
-          // /* Enable DMA1 channel1 */
-          // DMA1_Channel1->CCR |= (u32)0x00000001;
-          // /* Wait until DMA transfer complete */
-          // while ((DMA1->ISR && DMA1_FLAG_TC1) == 0)
-          // {
-          // }
-          // /* Disable DMA */
-          // DMA_Cmd(DMA1_Channel1, DISABLE);
-          // /* Disable ADC1 */
-          // ADC_SoftwareStartConvCmd(ADC1, DISABLE);
-          // break;
-        // case STM32_ModeScopeCHACHB:
-          // WaitForTrigger();
-          // /* ADC1 regular channel 8 and channel 9 configuration */ 
-          // /* Set sample time for channel 8 and channel 9 */
-          // ADC1->SMPR2 = (((u32)STM32_DataStruct.STM32_CommandStruct.STM32_SampleRateL << 24) | ((u32)STM32_DataStruct.STM32_CommandStruct.STM32_SampleRateL << 27));
-          // /* Set rank 2 for channel 8 and rank 1 for channel 9 */
-          // /* |00|Rank6|Rank5|Rank4|Rank3|Rank2|Rank1| */
-          // /* |00|00000|00000|00000|00000|01000|01001| */
-          // ADC1->SQR3 = (u32)0x00000109;
-          // /* Enable DMA1 channel1 */
-          // DMA1_Channel1->CCR |= (u32)0x00000001;
-          // /* Enable ADC1 DMA */
-          // ADC1->CR2 |=(u32)0x00000100;
-          // /* Enable ADC1 */
-          // ADC1->CR2 |= (u32)0x00000001;
-          /* Wait until DMA transfer complete */
-          // while ((DMA1->ISR && DMA1_FLAG_TC1) == 0)
-          // {
-          // }
-          // /* Disable DMA */
-          // DMA_Cmd(DMA1_Channel1, DISABLE);
-          // /* Disable ADC1 */
-          // ADC_SoftwareStartConvCmd(ADC1, DISABLE);
-          // break;
-        // case STM32_ModeWaveCHA:
-          // break;
-        // case STM32_ModeWaveCHB:
-          // break;
-        // case STM32_ModeWaveCHACHB:
-          // break;
-        // case STM32_ModeLGA:
-          // if ((STM32_DataStruct.STM32_CommandStruct.STM32_SampleRateH << 8) + STM32_DataStruct.STM32_CommandStruct.STM32_SampleRateL == 0)
-          // {
-            // /* Wait for trigger */
-            // WaitForTrigger();
-            // FAST_LGA_Read();
-          // }
-          // else
-          // {
-            // /* Enable DMA1 channel5 */
-            // DMA1_Channel5->CCR |= (u32)0x00000001;
-            // /* Set TIM15 Counter */
-            // TIM_SetCounter(TIM15,(u16)(STM32_DataStruct.STM32_CommandStruct.STM32_SampleRateH << 8) + STM32_DataStruct.STM32_CommandStruct.STM32_SampleRateL);
-            // /* Wait for trigger */
-            // WaitForTrigger();
-            // /* Enable TIM15 */
-            // TIM15->CR1 = (u16)0x0001;
-            // /* Wait until DMA transfer complete */
-            // while ((DMA1->ISR && DMA1_FLAG_TC5) == 0)
-            // {
-            // }
-            // /* Disable DMA */
-            // DMA_Cmd(DMA1_Channel5, DISABLE);
-            // /* Disable TIM15 */
-            // TIM_Cmd(TIM15, DISABLE);
-          // }
-          // break;
-      // }
-      // ADC_DVMConfiguration();
-      // /* Set sample ready to be read flag */
-      // STM32_DataStruct.CommandStruct.Command = STM32_CommandDone;
-    // }
     i=0;
     while (i < 1000000)
     {
@@ -346,13 +231,18 @@ int main(void)
 *******************************************************************************/
 void WaitForTrigger(void)
 {
-  u16 tmp;
+  uint32_t tmp;
   /* Syncronize with rising or falling edge or logic analyser */
   switch (STM32_DataStruct.CommandStruct.ScopeTriggerMode)
   {
     case (STM32_TriggerRisingCHA):
       /* Count on rising edge */
       TIM2->CCER = 0x0000;
+      // tmp=0;
+      // while (tmp < 1000)
+      // {
+        // tmp++;
+      // }
       /* Wait until TIM2 increments */
       tmp = TIM2->CNT;
       while (tmp == TIM2->CNT)
@@ -365,7 +255,7 @@ void WaitForTrigger(void)
       break;
     case (STM32_TriggerFallingCHA):
       /* Count on falling edge */
-      TIM2->CCER = 0x0022;
+      TIM2->CCER = 0x0020;
       /* Wait until TIM2 increments */
       tmp = TIM2->CNT;
       while (tmp == TIM2->CNT)
@@ -391,7 +281,7 @@ void WaitForTrigger(void)
       break;
     case (STM32_TriggerFallingCHB):
       /* Count on falling edge */
-      TIM5->CCER = 0x0022;
+      TIM5->CCER = 0x0002;
       /* Wait until TIM5 increments */
       tmp = TIM5->CNT;
       while (tmp == TIM5->CNT)
@@ -436,7 +326,7 @@ void RCC_Config(void)
   /* Enable TIM2, TIM3, TIM4 and TIM5 clocks ****************************************/
   RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2 | RCC_APB1Periph_TIM3 | RCC_APB1Periph_TIM4 | RCC_APB1Periph_TIM5, ENABLE);
   /* Enable TIM10 clocks ****************************************/
-  RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM10 | RCC_APB2Periph_ADC1 | RCC_APB2Periph_ADC2 | RCC_APB2Periph_ADC3, ENABLE);
+  RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM8 | RCC_APB2Periph_TIM10 | RCC_APB2Periph_ADC1 | RCC_APB2Periph_ADC2 | RCC_APB2Periph_ADC3, ENABLE);
 }
 
 void NVIC_Config(void)
@@ -492,6 +382,7 @@ void GPIO_Config(void)
   GPIO_Init(GPIOB, &GPIO_InitStructure);
 
   STM_EVAL_LEDInit(LED3);
+  STM_EVAL_LEDInit(LED4);
 }
 
 void TIM_Config(void)
@@ -567,6 +458,16 @@ void TIM_Config(void)
 
   TIM_OC1PreloadConfig(TIM10, TIM_OCPreload_Enable);
   TIM_ARRPreloadConfig(TIM10, ENABLE);
+
+  /* Time base configuration */
+  TIM_TimeBaseStructure.TIM_Period = 167;
+  TIM_TimeBaseStructure.TIM_Prescaler = 0;
+  TIM_TimeBaseStructure.TIM_ClockDivision = 0;
+  TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
+  TIM_TimeBaseStructure.TIM_RepetitionCounter = 0;
+  TIM_TimeBaseInit(TIM8, &TIM_TimeBaseStructure);
+  /* TIM8 TRGO selection */
+  TIM_SelectOutputTrigger(TIM8, TIM_TRGOSource_Update);
 }
 
 void ADC_DVMConfig(void)
@@ -671,6 +572,31 @@ void DMA_SCPConfig(void)
   DMA_Init(DMA2_Stream0, &DMA_InitStructure);
   /* DMA2_Stream0 enable */
   DMA_Cmd(DMA2_Stream0, ENABLE);
+}
+
+void DMA_LGAConfig(void)
+{
+  DMA_InitTypeDef       DMA_InitStructure;
+
+  /* DMA2 Stream0 channel0 configuration */
+  DMA_InitStructure.DMA_Channel = DMA_Channel_7;  
+  DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)PE_IDR_Address;
+  DMA_InitStructure.DMA_Memory0BaseAddr = (uint32_t)&STM32_DataStruct.STM32_Data;
+  DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralToMemory;
+  DMA_InitStructure.DMA_BufferSize = STM32_DataSize;
+  DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
+  DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;
+  DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Byte;
+  DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_Byte;
+  DMA_InitStructure.DMA_Mode = DMA_Mode_Normal;
+  DMA_InitStructure.DMA_Priority = DMA_Priority_High;
+  DMA_InitStructure.DMA_FIFOMode = DMA_FIFOMode_Disable;         
+  DMA_InitStructure.DMA_FIFOThreshold = DMA_FIFOThreshold_HalfFull;
+  DMA_InitStructure.DMA_MemoryBurst = DMA_MemoryBurst_Single;
+  DMA_InitStructure.DMA_PeripheralBurst = DMA_PeripheralBurst_Single;
+  DMA_Init(DMA2_Stream1, &DMA_InitStructure);
+  /* DMA2_Stream1 enable */
+  DMA_Cmd(DMA2_Stream1, ENABLE);
 }
 
 /**
