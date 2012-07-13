@@ -112,13 +112,52 @@ HSClockSetupProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:
 				mov		hsclockdata.hscCHAData.hsclockenable,eax
 				mov		fINITHSCCHA,TRUE
 			.elseif eax==IDC_BTNFRQCHADN
+				dec		hsclockdata.hscCHAData.hsclockfrequency
+				.if ZERO?
+					mov		hsclockdata.hscCHAData.hsclockfrequency,0FFFFh
+					dec		hsclockdata.hscCHAData.hsclockdivisor
+				.endif
 			.elseif eax==IDC_BTNFRQCHAUP
+				dec		hsclockdata.hscCHAData.hsclockfrequency
+				.if ZERO?
+					mov		hsclockdata.hscCHAData.hsclockfrequency,0FFFFh
+					dec		hsclockdata.hscCHAData.hsclockdivisor
+				.endif
+				invoke ClockToFrequency,hsclockdata.hscCHAData.hsclockfrequency,hsclockdata.hscCHAData.hsclockdivisor
+				invoke SetDlgItemInt,hWin,IDC_EDTFRQCHA,eax,FALSE
+				invoke SendDlgItemMessage,hWin,IDC_TRBHSCLOCKADUTY,TBM_GETPOS,0,0
+				mov		ecx,hsclockdata.hscCHAData.hsclockfrequency
+				inc		ecx
+				mul		ecx
+				mov		ecx,100
+				div		ecx
+				dec		eax
+				mov		hsclockdata.hscCHAData.hsclockccr,eax
+				invoke InvalidateRect,hsclockdata.hscCHAData.hWndHSClock,NULL,TRUE
+				mov		fINITHSCCHA,TRUE
 			.elseif eax==IDC_CHKHSCLOCKBENABLE
 				invoke IsDlgButtonChecked,hWin,IDC_CHKHSCLOCKBENABLE
 				mov		hsclockdata.hscCHBData.hsclockenable,eax
 				mov		fINITHSCCHB,TRUE
 			.elseif eax==IDC_BTNFRQCHBDN
 			.elseif eax==IDC_BTNFRQCHBUP
+				dec		hsclockdata.hscCHBData.hsclockfrequency
+				.if ZERO?
+					mov		hsclockdata.hscCHBData.hsclockfrequency,0FFFFh
+					dec		hsclockdata.hscCHBData.hsclockdivisor
+				.endif
+				invoke ClockToFrequency,hsclockdata.hscCHBData.hsclockfrequency,hsclockdata.hscCHBData.hsclockdivisor
+				invoke SetDlgItemInt,hWin,IDC_EDTFRQCHB,eax,FALSE
+				invoke SendDlgItemMessage,hWin,IDC_TRBHSCLOCKBDUTY,TBM_GETPOS,0,0
+				mov		ecx,hsclockdata.hscCHBData.hsclockfrequency
+				inc		ecx
+				mul		ecx
+				mov		ecx,100
+				div		ecx
+				dec		eax
+				mov		hsclockdata.hscCHBData.hsclockccr,eax
+				invoke InvalidateRect,hsclockdata.hscCHBData.hWndHSClock,NULL,TRUE
+				mov		fINITHSCCHB,TRUE
 			.endif
 		.elseif edx==EN_KILLFOCUS
 			.if eax==IDC_EDTFRQCHA

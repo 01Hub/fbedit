@@ -144,7 +144,7 @@ GetFrequency proc uses ebx esi edi,hWin:HWND
 
 	invoke GetWindowLong,hWin,GWL_USERDATA
 	mov		ebx,eax
-	movzx	eax,scopedata.ADC_CommandStruct.ScopeDataBlocks
+	movzx	eax,scopedata.ADC_CommandStruct.DataBlocks
 	mov		ecx,STM32_BlockSize
 	mul		ecx
 	dec		eax

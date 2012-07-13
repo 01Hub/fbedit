@@ -116,7 +116,7 @@ IDC_RBNTRGFALLINGCHA		equ 1706
 IDC_RBNLGARISINGCHB			equ 1707
 IDC_RBNLGAFALLINGCHB		equ 1708
 IDC_RBNLGALGA				equ 1709
-IDC_CHKLGAEDGE				equ 1703
+IDC_RBNLGALGAEDGE			equ 1710
 IDC_CHKLGATRIGALL			equ 1729
 IDC_CHKLGATRIGD0			equ 1720
 IDC_CHKLGATRIGD1			equ 1721
@@ -135,9 +135,9 @@ IDC_CHKLGAMASKD4			equ 1734
 IDC_CHKLGAMASKD5			equ 1735
 IDC_CHKLGAMASKD6			equ 1736
 IDC_CHKLGAMASKD7			equ 1737
-IDC_CBOLGASAMPLERATE		equ 1701
+IDC_TRBSAMPLERATE			equ 1701
 IDC_TRBLGABUFFERSIZE		equ 1702
-IDC_BTNLGAAPPLY				equ 1703
+;IDC_BTNLGAAPPLY				equ 1703
 
 ;High speed clock screen
 IDD_DLGHSCLOCK				equ 2300
@@ -177,6 +177,7 @@ STM32_TriggerFallingCHA		equ 2
 STM32_TriggerRisingCHB		equ 3
 STM32_TriggerFallingCHB		equ 4
 STM32_TriggerLGA			equ 5
+STM32_TriggerLGAEdge		equ 6
 
 ;Mode
 STM32_ModeNone				equ 0
@@ -214,20 +215,19 @@ TEXTHIGHT					equ 30
 STM32_CommandStructDef struct
 	Command					BYTE ?
 	Mode					BYTE ?
+	DataBlocks				BYTE ?
+	TriggerMode				BYTE ?
+	TriggerValue			BYTE ?
+	TriggerMask				BYTE ?
+	TriggerWait				BYTE ?
 	ScopeDataBits			BYTE ?
 	ScopeSampleClocks		BYTE ?
 	ScopeClockDiv			BYTE ?
-	ScopeDataBlocks			BYTE ?
-	ScopeTriggerMode		BYTE ?
-	ScopeTriggerValue		BYTE ?
 	ScopeAmplifyCHA			BYTE ?
 	ScopeAmplifyCHB			BYTE ?
 	ScopeDCNullOutCHA		BYTE ?
 	ScopeDCNullOutCHB		BYTE ?
-	LGATriggerValue			BYTE ?
-	LGATriggerMask			BYTE ?
-	LGATriggerEdge			BYTE ?
-	TriggerWait				BYTE ?
+	LGASampleRate			WORD ?
 STM32_CommandStructDef ends
 
 STM32_FRQDataStructDef struct
@@ -288,18 +288,18 @@ SCOPEDATA ends
 
 ;#########################################################################
 
-LGA_SAMPLERATE struct
-	rate					DWORD ?
-	szrate					BYTE 16 dup(?)
-	clkdiv					DWORD ?
-LGA_SAMPLERATE ends
-
+;LGA_SAMPLERATE struct
+;	rate					DWORD ?
+;	szrate					BYTE 16 dup(?)
+;	clkdiv					DWORD ?
+;LGA_SAMPLERATE ends
+;
 LGADATA struct
 	hWndDialog				HWND ?
 	hWndLGA					HWND ?
 	hWndLGATool				HWND ?
 	xmag					DWORD ?
-	LGA_SampleRate			LGA_SAMPLERATE 64 dup(<>)
+;	LGA_SampleRate			LGA_SAMPLERATE 64 dup(<>)
 	LGA_CommandStruct		STM32_CommandStructDef <>
 	LGA_CommandStructDone	STM32_CommandStructDef <>
 	LGA_Data				BYTE STM32_DataSize dup(?)

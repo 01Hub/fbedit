@@ -24,210 +24,6 @@ include HSClock.asm
 
 .code
 
-;GetSample proc uses ebx esi edi,hWin:HWND,lpCommand:DWORD,lpCommandDone:DWORD
-;	LOCAL	ADC_Command:STM32_CommandStructDef
-;
-;	.if !fConnected
-;		;Connect to the STLink
-;		invoke STLinkConnect,hWin
-;		mov		fConnected,eax
-;PrintHex eax
-;		.if fConnected
-;			invoke STLinkReset,hWin
-;		.endif
-;	.endif
-;  Again:
-;	.if fConnected
-;		;Make a local copy of initialisation data
-;		invoke RtlMoveMemory,addr ADC_Command,lpCommand,sizeof STM32_CommandStructDef
-;		.if ADC_Command.STM32_Mode>=STM32_ModeWriteByte && ADC_Command.STM32_Mode<=STM32_ModeReadFullWord
-;			;Send all initialisation data
-;			mov		ADC_Command.STM32_Command,STM32_CommandWait
-;			invoke STLinkWrite,hWin,STM32CommandStart,addr ADC_Command,sizeof STM32_CommandStructDef
-;			.if eax
-;				;Send initialisation command
-;				mov		ADC_Command.STM32_Command,STM32_CommandInit
-;				invoke STLinkWrite,hWin,STM32CommandStart,addr ADC_Command,4
-;				xor		ebx,ebx
-;				.while ebx<200
-;					invoke Sleep,10
-;					invoke STLinkRead,hWin,STM32CommandStart,addr ADC_Command,sizeof STM32_CommandStructDef
-;					.break .if ADC_Command.STM32_Command==STM32_CommandWait
-;					inc		ebx
-;				.endw
-;				invoke RtlMoveMemory,lpCommandDone,addr ADC_Command,sizeof STM32_CommandStructDef
-;				add		lpCommand,sizeof STM32_CommandStructDef
-;				add		lpCommandDone,sizeof STM32_CommandStructDef
-;				jmp		Again
-;			.endif
-;		.else
-;			;Copy the PWM initialization values
-;			mov		al,scopedata.ADC_CommandStruct.ADC_TriggerValueCHA
-;			mov		ADC_Command.ADC_TriggerValueCHA,al
-;			mov		al,scopedata.ADC_CommandStruct.ADC_DCNullOutCHA
-;			mov		ADC_Command.ADC_DCNullOutCHA,al
-;			mov		al,scopedata.ADC_CommandStruct.ADC_TriggerValueCHB
-;			mov		ADC_Command.ADC_TriggerValueCHB,al
-;			mov		al,scopedata.ADC_CommandStruct.ADC_DCNullOutCHB
-;			mov		ADC_Command.ADC_DCNullOutCHB,al
-;			;Copy the logic analyser trigger values
-;			mov		al,lgadata.LGA_CommandStruct.LGA_TriggerValue
-;			mov		ADC_Command.LGA_TriggerValue,al
-;			mov		al,lgadata.LGA_CommandStruct.LGA_TriggerMask
-;			mov		ADC_Command.LGA_TriggerMask,al
-;			mov		al,lgadata.LGA_CommandStruct.LGA_TriggerEdge
-;			mov		ADC_Command.LGA_TriggerEdge,al
-;			;Set the timeout to 5 seconds
-;			mov		ADC_Command.TIM3_TimeOut,5
-;			.if ADC_Command.STM32_Mode==STM32_ModeScopeCHACHB && ADC_Command.STM32_DataBlocks==1
-;				;If CHA and CHB then minimum 2 blocks are needed
-;				mov		ADC_Command.STM32_DataBlocks,2
-;			.endif
-;			;Send all initialisation data
-;			mov		ADC_Command.STM32_Command,STM32_CommandWait
-;			invoke STLinkWrite,hWin,STM32CommandStart,addr ADC_Command,sizeof STM32_CommandStructDef
-;			.if eax
-;				;Send initialisation command
-;				mov		ADC_Command.STM32_Command,STM32_CommandInit
-;				invoke STLinkWrite,hWin,STM32CommandStart,addr ADC_Command,4
-;				invoke Sleep,50
-;				;Send command to start data sampling
-;				mov		ADC_Command.STM32_Command,STM32_CommandSampleStart
-;				invoke STLinkWrite,hWin,STM32CommandStart,addr ADC_Command,4
-;				;Wait for sampled data to be ready
-;				xor		ebx,ebx
-;				.while ebx<200
-;					invoke Sleep,100
-;					invoke STLinkRead,hWin,STM32CommandStart,addr ADC_Command,4
-;					.break .if ADC_Command.STM32_Command==STM32_CommandDone
-;					inc		ebx
-;				.endw
-;				invoke RtlZeroMemory,addr STM32_Data,STM32_DataSize
-;				;Read sampled ADC data
-;				movzx	eax,ADC_Command.STM32_DataBlocks
-;				mov		ecx,STM32_BlockSize
-;				mul		ecx
-;				invoke STLinkRead,hWin,STM32DataStart,addr STM32_Data,eax
-;				;Signal that the data has been read
-;				mov		ADC_Command.STM32_Command,STM32_CommandWait
-;				invoke STLinkWrite,hWin,STM32CommandStart,addr ADC_Command,4
-;				;Copy executed command to 'done' command
-;				invoke RtlMoveMemory,lpCommandDone,addr ADC_Command,sizeof STM32_CommandStructDef
-;				;Update the screen
-;				.if ADC_Command.STM32_Mode==STM32_ModeScopeCHA
-;					mov		esi,offset STM32_Data
-;					mov		edi,offset scopedata.scopeCHAdata.ADC_Data
-;					mov		ecx,STM32_DataSize
-;					rep		movsb
-;					mov		al,scopedata.ADC_CommandStructDone.STM32_TriggerMode
-;					mov		scopedata.scopeCHAdata.ADC_TriggerEdge,al
-;					mov		al,scopedata.ADC_CommandStructDone.ADC_TriggerValueCHA
-;					mov		scopedata.scopeCHAdata.ADC_TriggerValue,al
-;					mov		al,scopedata.ADC_CommandStructDone.ADC_DCNullOutCHA
-;					mov		scopedata.scopeCHAdata.ADC_DCNullOut,al
-;					;Get frequency and period for CHA
-;					fld		nsinasec
-;					fild	scopedata.scopeCHAdata.frq_data.Frequency
-;					fst		scopedata.scopeCHAdata.frequency
-;					fdivp	st(1),st
-;					fstp	scopedata.scopeCHAdata.period
-;					;Update the scope screen
-;					.if scopedata.scopeCHAdata.fSubsampling
-;						invoke Subsampling,childdialogs.hWndScopeCHA
-;					.endif
-;					invoke InvalidateRect,scopedata.scopeCHAdata.hWndScope,NULL,TRUE
-;					invoke UpdateWindow,scopedata.scopeCHAdata.hWndScope
-;				.elseif ADC_Command.STM32_Mode==STM32_ModeScopeCHB
-;					mov		esi,offset STM32_Data
-;					mov		edi,offset scopedata.scopeCHBdata.ADC_Data
-;					mov		ecx,STM32_DataSize
-;					rep		movsb
-;					mov		al,scopedata.ADC_CommandStructDone.STM32_TriggerMode
-;					mov		scopedata.scopeCHBdata.ADC_TriggerEdge,al
-;					mov		al,scopedata.ADC_CommandStructDone.ADC_TriggerValueCHB
-;					mov		scopedata.scopeCHBdata.ADC_TriggerValue,al
-;					mov		al,scopedata.ADC_CommandStructDone.ADC_DCNullOutCHB
-;					mov		scopedata.scopeCHBdata.ADC_DCNullOut,al
-;					;Get frequency and period for CHB
-;					fld		nsinasec
-;					fild	scopedata.scopeCHBdata.frq_data.Frequency
-;					fst		scopedata.scopeCHBdata.frequency
-;					fdivp	st(1),st
-;					fstp	scopedata.scopeCHBdata.period
-;					;Update the scope screen
-;					.if scopedata.scopeCHBdata.fSubsampling
-;						invoke Subsampling,childdialogs.hWndScopeCHB
-;					.endif
-;					invoke InvalidateRect,scopedata.scopeCHBdata.hWndScope,NULL,TRUE
-;					invoke UpdateWindow,scopedata.scopeCHBdata.hWndScope
-;				.elseif ADC_Command.STM32_Mode==STM32_ModeScopeCHACHB
-;					mov		esi,offset STM32_Data
-;					mov		edi,offset scopedata.scopeCHAdata.ADC_Data
-;					mov		ebx,offset scopedata.scopeCHBdata.ADC_Data
-;					xor		ecx,ecx
-;					.while ecx<STM32_DataSize/2
-;						mov		ax,[esi+ecx*WORD]
-;						mov		[edi+ecx],al
-;						mov		[ebx+ecx],ah
-;						inc		ecx
-;					.endw
-;					mov		al,scopedata.ADC_CommandStructDone.STM32_TriggerMode
-;					mov		scopedata.scopeCHAdata.ADC_TriggerEdge,al
-;					mov		al,scopedata.ADC_CommandStructDone.ADC_TriggerValueCHA
-;					mov		scopedata.scopeCHAdata.ADC_TriggerValue,al
-;					mov		al,scopedata.ADC_CommandStructDone.ADC_DCNullOutCHA
-;					mov		scopedata.scopeCHAdata.ADC_DCNullOut,al
-;					mov		al,scopedata.ADC_CommandStructDone.STM32_TriggerMode
-;					mov		scopedata.scopeCHBdata.ADC_TriggerEdge,al
-;					mov		al,scopedata.ADC_CommandStructDone.ADC_TriggerValueCHB
-;					mov		scopedata.scopeCHBdata.ADC_TriggerValue,al
-;					mov		al,scopedata.ADC_CommandStructDone.ADC_DCNullOutCHB
-;					mov		scopedata.scopeCHBdata.ADC_DCNullOut,al
-;					movzx	eax,ADC_Command.STM32_DataBlocks
-;					shr		eax,1
-;					mov		scopedata.ADC_CommandStructDone.STM32_DataBlocks,al
-;					;Get frequency and period for CHA
-;					fld		nsinasec
-;					fild	scopedata.scopeCHAdata.frq_data.Frequency
-;					fst		scopedata.scopeCHAdata.frequency
-;					fdivp	st(1),st
-;					fstp	scopedata.scopeCHAdata.period
-;					;Get frequency and period for CHB
-;					fld		nsinasec
-;					fild	scopedata.scopeCHBdata.frq_data.Frequency
-;					fst		scopedata.scopeCHBdata.frequency
-;					fdivp	st(1),st
-;					fstp	scopedata.scopeCHBdata.period
-;					;Update the CHA scope screen
-;					.if scopedata.scopeCHAdata.fSubsampling
-;						invoke Subsampling,childdialogs.hWndScopeCHA
-;					.endif
-;					;Update the CHB scope screen
-;					.if scopedata.scopeCHBdata.fSubsampling
-;						invoke Subsampling,childdialogs.hWndScopeCHB
-;					.endif
-;					invoke InvalidateRect,scopedata.scopeCHAdata.hWndScope,NULL,TRUE
-;					invoke UpdateWindow,scopedata.scopeCHAdata.hWndScope
-;					invoke InvalidateRect,scopedata.scopeCHBdata.hWndScope,NULL,TRUE
-;					invoke UpdateWindow,scopedata.scopeCHBdata.hWndScope
-;				.elseif ADC_Command.STM32_Mode==STM32_ModeLGA
-;					;Update the logic analyser screen
-;					mov		esi,offset STM32_Data
-;					mov		edi,offset lgadata.LGA_Data
-;					mov		ecx,STM32_DataSize
-;					rep		movsb
-;					invoke InvalidateRect,lgadata.hWndLGA,NULL,TRUE
-;					invoke UpdateWindow,lgadata.hWndLGA
-;				.endif
-;			.endif
-;		.endif
-;	.else
-;		invoke CheckDlgButton,hWnd,IDC_CHKAUTO,BST_UNCHECKED
-;	.endif
-;	ret
-;
-;GetSample endp
-
 SampleThreadProc proc lParam:DWORD
 	LOCAL	DVM[2]:DWORD
 
@@ -261,12 +57,6 @@ SampleThreadProc proc lParam:DWORD
 						invoke SetFrequencyAndDVM,DVM[0],DVM[4]
 					.endif
 				.endif
-;invoke STLinkRead,hWnd,4001204Ch,addr DVM,4
-;mov		eax,DVM
-;PrintHex eax
-;invoke STLinkRead,hWnd,4001214Ch,addr DVM,4
-;mov		eax,DVM
-;PrintHex eax
 			.elseif fINITHSCCHA
 				mov		fINITHSCCHA,0
 				;Send all initialisation data
@@ -316,11 +106,11 @@ SampleThreadProc proc lParam:DWORD
 					.break .if scopedata.ADC_CommandStruct.Command==STM32_CommandDone
 					invoke Sleep,10
 				.endw
-				movzx	eax,scopedata.ADC_CommandStructDone.ScopeDataBlocks
+				movzx	eax,scopedata.ADC_CommandStructDone.DataBlocks
 				shl		eax,8
 				invoke STLinkRead,hWnd,STM32DataStart,addr scopedata.scopeCHAdata.ADC_Data,eax
 				xor		ebx,ebx
-				movzx	edi,scopedata.ADC_CommandStructDone.ScopeDataBlocks
+				movzx	edi,scopedata.ADC_CommandStructDone.DataBlocks
 				shl		edi,6
 				.while ebx<edi;1024*6/4
 					mov		eax,dword ptr scopedata.scopeCHAdata.ADC_Data[ebx*4]
@@ -342,10 +132,23 @@ SampleThreadProc proc lParam:DWORD
 				.endw
 				pop		eax
 				mov		scopedata.ADC_CommandStruct.Mode,al
+				;Get frequency and period for CHA
+				fld		nsinasec
+				fild	scopedata.scopeCHAdata.frq_data.Frequency
+				fst		scopedata.scopeCHAdata.frequency
+				fdivp	st(1),st
+				fstp	scopedata.scopeCHAdata.period
+				;Update the scope screens
+				.if scopedata.scopeCHAdata.fSubsampling
+					invoke Subsampling,childdialogs.hWndScopeCHA
+				.endif
 				invoke GetDlgItem,childdialogs.hWndScopeCHA,IDC_UDCSCOPE
 				mov		ebx,eax
 				invoke InvalidateRect,ebx,NULL,TRUE
 				invoke UpdateWindow,ebx
+				.if scopedata.scopeCHBdata.fSubsampling
+					invoke Subsampling,childdialogs.hWndScopeCHB
+				.endif
 				invoke GetDlgItem,childdialogs.hWndScopeCHB,IDC_UDCSCOPE
 				mov		ebx,eax
 				invoke InvalidateRect,ebx,NULL,TRUE
@@ -363,9 +166,13 @@ SampleThreadProc proc lParam:DWORD
 					.break .if lgadata.LGA_CommandStruct.Command==STM32_CommandDone
 					invoke Sleep,10
 				.endw
-				movzx	eax,lgadata.LGA_CommandStructDone.ScopeDataBlocks
+				movzx	eax,lgadata.LGA_CommandStructDone.DataBlocks
 				shl		eax,8
 				invoke STLinkRead,hWnd,STM32DataStart,addr lgadata.LGA_Data,eax
+				invoke GetDlgItem,childdialogs.hWndLogicAnalyser,IDC_UDCLOGICANALYSER
+				mov		ebx,eax
+				invoke InvalidateRect,ebx,NULL,TRUE
+				invoke UpdateWindow,ebx
 			.endif
 		.endif
 	.endw
@@ -386,17 +193,15 @@ MainDlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 		mov		hFont,eax
 		;Setup scopedata
 		mov		scopedata.ADC_CommandStruct.Mode,STM32_ModeScopeCHA
-;		mov		scopedata.ADC_CommandStruct.STM32_SampleRateL,0
-;		mov		scopedata.ADC_CommandStruct.STM32_SampleRateH,0
-		mov		scopedata.ADC_CommandStruct.ScopeDataBlocks,4
-		mov		scopedata.ADC_CommandStruct.ScopeTriggerMode,STM32_TriggerManual
-		mov		scopedata.ADC_CommandStruct.ScopeTriggerValue,ADCMAX/2
+		mov		scopedata.ADC_CommandStruct.DataBlocks,4
+		mov		scopedata.ADC_CommandStruct.TriggerMode,STM32_TriggerManual
+		mov		scopedata.ADC_CommandStruct.TriggerValue,ADCMAX/2
 		mov		scopedata.ADC_CommandStruct.ScopeDCNullOutCHA,ADCMAX/2
 		mov		scopedata.ADC_CommandStruct.ScopeAmplifyCHA,07h
 		mov		scopedata.ADC_CommandStruct.ScopeDCNullOutCHB,ADCMAX/2
 		mov		scopedata.ADC_CommandStruct.ScopeAmplifyCHB,07h
-		mov		scopedata.ADC_CommandStruct.LGATriggerValue,0FFh
-		mov		scopedata.ADC_CommandStruct.LGATriggerMask,0FFh
+		mov		scopedata.ADC_CommandStruct.TriggerValue,0FFh
+		mov		scopedata.ADC_CommandStruct.TriggerMask,0FFh
 		mov		lpSTM32_Command,offset scopedata.ADC_CommandStruct
 		mov		lpSTM32_CommandDone,offset scopedata.ADC_CommandStructDone
 		invoke RtlMoveMemory,offset scopedata.ADC_CommandStructDone,offset scopedata.ADC_CommandStruct,sizeof STM32_CommandStructDef
@@ -433,16 +238,10 @@ MainDlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 			add		eax,edx
 			inc		ecx
 		.endw
-;		movzx	eax,scopedata.ADC_CommandStruct.STM32_SampleRateL
-;		lea		eax,SamplePeriod[eax*8]
-;		fld		qword ptr [eax]
-;		fst		scopedata.scopeCHAdata.convperiod
-;		fstp	scopedata.scopeCHBdata.convperiod
 		invoke ShowWindow,childdialogs.hWndScopeCHA,SW_SHOWNA
 		invoke GetFrequency,childdialogs.hWndScopeCHA
 		invoke GetFrequency,childdialogs.hWndScopeCHB
 		invoke SetFrequencyAndDVM,0,0
-		invoke LGASetupSampleRate
 		invoke SetTimer,hWin,1000,333,NULL
 		invoke CreateThread,NULL,NULL,addr SampleThreadProc,hWin,0,addr tid
 		mov		hThread,eax
@@ -617,11 +416,6 @@ MainDlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 	.elseif	eax==WM_CLOSE
 		invoke KillTimer,hWin,1000
 		mov		fThreadExit,TRUE
-;		.while fSample || fWave
-;			invoke GetMessage,addr msg,0,0,0
-;			invoke TranslateMessage,addr msg
-;			invoke DispatchMessage,addr msg
-;		.endw
 		invoke WaitForSingleObject,hThread,250
 		invoke CloseHandle,hThread
 		.if fConnected

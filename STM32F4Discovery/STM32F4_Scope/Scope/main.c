@@ -11,9 +11,8 @@
 
 /* Private define ------------------------------------------------------------*/
 #define ADC_CDR_ADDRESS           ((uint32_t)0x40012308)
-#define PE_IDR_Address            ((uint32_t)0x40001011)
+#define PE_IDR_Address            ((uint32_t)0x40021011)
 
-#define PC_IDR_Address            ((uint32_t)0x40011008)
 #define STM32_DataSize            ((uint16_t)1024*6/2)
 #define STM32_BlockSize           ((uint8_t)64)
 
@@ -41,26 +40,26 @@
 #define STM32_TriggerRisingCHB    ((uint8_t)3)
 #define STM32_TriggerFallingCHB   ((uint8_t)4)
 #define STM32_TriggerLGA          ((uint8_t)5)
+#define STM32_TriggerLGAEdge      ((uint8_t)6)
 
 /* Private typedef -----------------------------------------------------------*/
 typedef struct
 {
   uint8_t   Command;
   uint8_t   Mode;
+  uint8_t   DataBlocks;
+  uint8_t   TriggerMode;
+  uint8_t   TriggerValue;
+  uint8_t   TriggerMask;
+  uint8_t   TriggerWait;
   uint8_t   ScopeDataBits;
   uint8_t   ScopeSampleClocks;
   uint8_t   ScopeClockDiv;
-  uint8_t   ScopeDataBlocks;
-  uint8_t   ScopeTriggerMode;
-  uint8_t   ScopeTriggerValue;
   uint8_t   ScopeAmplifyCHA;
   uint8_t   ScopeAmplifyCHB;
   uint8_t   ScopeDCNullOutCHA;
   uint8_t   ScopeDCNullOutCHB;
-  uint8_t   LGATriggerValue;
-  uint8_t   LGATriggerMask;
-  uint8_t   LGATriggerEdge;
-  uint8_t   TriggerWait;
+  uint16_t  LGASampleRate;
 }CommandStructTypeDef;
 
 typedef struct
@@ -119,7 +118,6 @@ void WaitForTrigger(void);
 int main(void)
 {
   u32 i;
-  u32 *adr;
 
   RCC_Config();
   NVIC_Config();
@@ -193,11 +191,16 @@ int main(void)
           break;
         case STM32_ModeLGA:
           STM_EVAL_LEDToggle(LED4);
+          TIM8->CNT=0;
+          TIM8->ARR=STM32_DataStruct.CommandStruct.LGASampleRate;
           DMA_LGAConfig();
+          STM32_DataStruct.CommandStruct.TriggerWait = 3;
+          TIM_DMACmd(TIM8, TIM_DMA_Update, ENABLE);
+          /* DMA2_Stream1 enable */
+          DMA_Cmd(DMA2_Stream1, ENABLE);
           WaitForTrigger();
           TIM_Cmd(TIM8, ENABLE);
-          TIM_DMACmd(TIM8, TIM_DMA_Update, ENABLE);
-          while (DMA_GetFlagStatus(DMA2_Stream1,DMA_FLAG_TCIF0)==RESET);
+          while (DMA_GetFlagStatus(DMA2_Stream1,DMA_FLAG_TCIF1)==RESET);
           STM32_DataStruct.CommandStruct.Command = STM32_CommandDone;
           DMA_DeInit(DMA2_Stream1);
           TIM_Cmd(TIM8, DISABLE);
@@ -233,16 +236,11 @@ void WaitForTrigger(void)
 {
   uint32_t tmp;
   /* Syncronize with rising or falling edge or logic analyser */
-  switch (STM32_DataStruct.CommandStruct.ScopeTriggerMode)
+  switch (STM32_DataStruct.CommandStruct.TriggerMode)
   {
     case (STM32_TriggerRisingCHA):
       /* Count on rising edge */
       TIM2->CCER = 0x0000;
-      // tmp=0;
-      // while (tmp < 1000)
-      // {
-        // tmp++;
-      // }
       /* Wait until TIM2 increments */
       tmp = TIM2->CNT;
       while (tmp == TIM2->CNT)
@@ -293,25 +291,22 @@ void WaitForTrigger(void)
       }
       break;
     case (STM32_TriggerLGA):
-      tmp = STM32_DataStruct.CommandStruct.LGATriggerValue & STM32_DataStruct.CommandStruct.LGATriggerMask;
-      if ((STM32_DataStruct.CommandStruct.LGATriggerEdge != 0) & (STM32_DataStruct.CommandStruct.LGATriggerMask != 0))
+      tmp = STM32_DataStruct.CommandStruct.TriggerValue & STM32_DataStruct.CommandStruct.TriggerMask;
+      /* Wait until conditions are met */
+      while ((((GPIOE->IDR>>8) & STM32_DataStruct.CommandStruct.TriggerMask) != tmp) & (STM32_DataStruct.CommandStruct.TriggerWait != 0))
       {
-        /* Edge sensitive */
-        /* Wait while conditions are met */
-        while (((GPIOE->IDR & STM32_DataStruct.CommandStruct.LGATriggerMask) == tmp) & (STM32_DataStruct.CommandStruct.TriggerWait != 0))
-        {
-        }
-        /* Wait until conditions are met */
-        while (((GPIOE->IDR & STM32_DataStruct.CommandStruct.LGATriggerMask) != tmp) & (STM32_DataStruct.CommandStruct.TriggerWait != 0))
-        {
-        }
       }
-      else
+      break;
+    case (STM32_TriggerLGAEdge):
+      tmp = STM32_DataStruct.CommandStruct.TriggerValue & STM32_DataStruct.CommandStruct.TriggerMask;
+      /* Edge sensitive */
+      /* Wait while conditions are met */
+      while ((((GPIOE->IDR>>8) & STM32_DataStruct.CommandStruct.TriggerMask) == tmp) & (STM32_DataStruct.CommandStruct.TriggerWait != 0))
       {
-        /* Wait until conditions are met */
-        while (((GPIOE->IDR & STM32_DataStruct.CommandStruct.LGATriggerMask) != tmp) & (STM32_DataStruct.CommandStruct.TriggerWait != 0))
-        {
-        }
+      }
+      /* Wait until conditions are met */
+      while ((((GPIOE->IDR>>8) & STM32_DataStruct.CommandStruct.TriggerMask) != tmp) & (STM32_DataStruct.CommandStruct.TriggerWait != 0))
+      {
       }
       break;
     default:
@@ -466,8 +461,6 @@ void TIM_Config(void)
   TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
   TIM_TimeBaseStructure.TIM_RepetitionCounter = 0;
   TIM_TimeBaseInit(TIM8, &TIM_TimeBaseStructure);
-  /* TIM8 TRGO selection */
-  TIM_SelectOutputTrigger(TIM8, TIM_TRGOSource_Update);
 }
 
 void ADC_DVMConfig(void)
@@ -553,6 +546,7 @@ void DMA_SCPConfig(void)
 {
   DMA_InitTypeDef       DMA_InitStructure;
 
+  DMA_DeInit(DMA2_Stream0);
   /* DMA2 Stream0 channel0 configuration */
   DMA_InitStructure.DMA_Channel = DMA_Channel_0;  
   DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)ADC_CDR_ADDRESS;
@@ -578,7 +572,8 @@ void DMA_LGAConfig(void)
 {
   DMA_InitTypeDef       DMA_InitStructure;
 
-  /* DMA2 Stream0 channel0 configuration */
+  DMA_DeInit(DMA2_Stream1);
+  /* DMA2 Stream1 channel7 configuration */
   DMA_InitStructure.DMA_Channel = DMA_Channel_7;  
   DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)PE_IDR_Address;
   DMA_InitStructure.DMA_Memory0BaseAddr = (uint32_t)&STM32_DataStruct.STM32_Data;
@@ -595,8 +590,6 @@ void DMA_LGAConfig(void)
   DMA_InitStructure.DMA_MemoryBurst = DMA_MemoryBurst_Single;
   DMA_InitStructure.DMA_PeripheralBurst = DMA_PeripheralBurst_Single;
   DMA_Init(DMA2_Stream1, &DMA_InitStructure);
-  /* DMA2_Stream1 enable */
-  DMA_Cmd(DMA2_Stream1, ENABLE);
 }
 
 /**
