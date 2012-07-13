@@ -137,7 +137,7 @@ int main(void)
           ADC_SCPConfig();
           STM32_DataStruct.CommandStruct.TriggerWait = 3;
           WaitForTrigger();
-          /* Start ADC1 Software Conversion */ 
+          /* Start ADC1 Software Conversion */
           ADC1->CR2 |= (uint32_t)ADC_CR2_SWSTART;
           while (DMA_GetFlagStatus(DMA2_Stream0,DMA_FLAG_TCIF0)==RESET);
           STM32_DataStruct.CommandStruct.Command = STM32_CommandDone;
@@ -199,7 +199,7 @@ int main(void)
           /* DMA2_Stream1 enable */
           DMA_Cmd(DMA2_Stream1, ENABLE);
           WaitForTrigger();
-          TIM_Cmd(TIM8, ENABLE);
+          TIM8->CR1 |= TIM_CR1_CEN;
           while (DMA_GetFlagStatus(DMA2_Stream1,DMA_FLAG_TCIF1)==RESET);
           STM32_DataStruct.CommandStruct.Command = STM32_CommandDone;
           DMA_DeInit(DMA2_Stream1);

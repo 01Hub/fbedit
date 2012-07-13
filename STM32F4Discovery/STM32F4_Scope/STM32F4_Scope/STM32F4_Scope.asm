@@ -186,7 +186,7 @@ MainDlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 	LOCAL	tid:DWORD
 
 	mov		eax,uMsg
-	.if eax==WM_CREATE
+	.if eax==WM_INITDIALOG
 		mov		eax,hWin
 		mov		hWnd,eax
 		invoke CreateFontIndirect,addr Tahoma
@@ -443,7 +443,7 @@ start:
 	mov		wc.lpfnWndProc,offset MainDlgProc
 	mov		wc.lpszClassName,offset szMAINCLASS
 	mov		wc.cbClsExtra,0
-	mov		wc.cbWndExtra,0
+	mov		wc.cbWndExtra,DLGWINDOWEXTRA
 	mov		eax,hInstance
 	mov		wc.hInstance,eax
 	mov		wc.hIcon,NULL
