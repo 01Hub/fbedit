@@ -1,7 +1,7 @@
 
 <Debug>
 	<STM32F4_Scope>
-		<CodeView TopRow="134218260" Focus="4294967295" >
+		<CodeView TopRow="134219798" Focus="4294967295" >
 			<CodeReport>
 				<0>93</0>
 				<1>102</1>
@@ -9,17 +9,17 @@
 				<3>309</3>
 				<4>56</4>
 				<5>119</5>
-																																																								
+														
 			</CodeReport>
-																																								
+										
 		</CodeView>
 		<MemoryView Focus="134218120" TopRow="0" NbPerLine="8" />
-																								
+						
 	</STM32F4_Scope>
 	<Flags>
 		<Report>
 			<Def Header="FlagReport" NbCol="9" >
-				<Col Type="PT_BOOL" Header="Check" sizeCache="18" AutoSize="0" Edit="1" Sortable="1" Icon="C:\Program Files\Raisonance\Ride\Config\Resources\check.bmp" />
+				<Col Type="PT_BOOL" Header="Check" sizeCache="18" AutoSize="0" Edit="1" Sortable="1" Icon="D:\Ride\Ride\Config\Resources\check.bmp" />
 				<Col Type="PT_STRING" Header="Kind" sizeCache="DDDDDDDDDDD" AutoSize="1" Edit="0" Sortable="1" />
 				<Col Type="PT_STRING" Header="KindID" sizeCache="DD" AutoSize="1" Edit="0" Sortable="1" Visible="0" />
 				<Col Type="PT_STRING" Header="Space" sizeCache="DDDDDD" AutoSize="1" Edit="0" Sortable="1" />
@@ -38,7 +38,7 @@
 			
 	</Flags>
 	<Views>
-		<View File="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\main.c" Line="108" Index="0" focus="1" />
+		<View File="D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\main.c" Line="540" Index="0" focus="1" />
 	</Views>
 	<Grep>
 		<GrepIncludeSub>yes</GrepIncludeSub>
@@ -63,6 +63,7 @@
 		</GrepReplaceWhat>
 	</Grep>
 	<FindStrings>
+		<Find>IS_DMA_BUFFER_SIZE</Find>
 		<Find>gpioe</Find>
 		<Find>TIM4</Find>
 		<Find>ADC_SoftwareStartConv</Find>

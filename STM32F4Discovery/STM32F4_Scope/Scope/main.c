@@ -536,7 +536,7 @@ void DMA_SCPConfig(void)
   DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)ADC_CDR_ADDRESS;
   DMA_InitStructure.DMA_Memory0BaseAddr = (uint32_t)&STM32_DataStruct.STM32_Data;
   DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralToMemory;
-  DMA_InitStructure.DMA_BufferSize = STM32_DataSize/2;
+  DMA_InitStructure.DMA_BufferSize = STM32_DataStruct.CommandStruct.DataBlocks * STM32_BlockSize * 4;
   DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
   DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;
   DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Word;
@@ -562,7 +562,7 @@ void DMA_LGAConfig(void)
   DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)PE_IDR_Address;
   DMA_InitStructure.DMA_Memory0BaseAddr = (uint32_t)&STM32_DataStruct.STM32_Data;
   DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralToMemory;
-  DMA_InitStructure.DMA_BufferSize = STM32_DataSize;
+  DMA_InitStructure.DMA_BufferSize = STM32_DataStruct.CommandStruct.DataBlocks * STM32_BlockSize;
   DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
   DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;
   DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Byte;

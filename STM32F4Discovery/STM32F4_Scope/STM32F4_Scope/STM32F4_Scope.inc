@@ -161,7 +161,7 @@ IDC_TRBHSCLOCKBDUTY			equ 2106
 ;#########################################################################
 
 STM32_DataSize				equ 1024*63
-STM32_BlockSize				equ 128
+STM32_BlockSize				equ 64
 STM32_MAXBLOCK				equ STM32_DataSize/STM32_BlockSize/4
 
 ;Command
