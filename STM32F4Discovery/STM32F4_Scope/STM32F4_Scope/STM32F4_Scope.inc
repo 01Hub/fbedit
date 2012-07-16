@@ -30,7 +30,7 @@ includelib \RadASM30\masm\lib\debug.lib
 ;#########################################################################
 
 STLinkConnect				PROTO hWin:HWND
-STLinkDisconnect			PROTO
+STLinkDisconnect			PROTO hWin:HWND
 STLinkReset					PROTO hWin:HWND
 STLinkRead 					PROTO hWin:HWND,rdadr:DWORD,wradr:DWORD,nBytes:DWORD
 STLinkWrite					PROTO hWin:HWND,wradr:DWORD,rdadr:DWORD,nBytes:DWORD
@@ -45,7 +45,6 @@ IDM_FILE_OPEN_SCOPECHB		equ 10023
 IDM_FILE_SAVE				equ 10004
 IDM_FILE_SAVE_SCOPECHA		equ 10024
 IDM_FILE_SAVE_SCOPECHB		equ 10025
-IDM_FILE_SAMPLE				equ 10003
 IDM_FILE_EXIT				equ 10006
 IDM_VIEW					equ 10007
 IDM_VIEW_SCOPECHA			equ 10008
@@ -84,7 +83,8 @@ IDC_RBNFALLINGCHA			equ 1203
 IDC_RBNRISINGCHB			equ 1204
 IDC_RBNFALLINGCHB			equ 1205
 IDC_RBNTRIGLGA				equ 1206
-IDC_TRBTRIGLEVEL			equ 1207
+IDC_RBNTRIGLGAEDGE			equ 1207
+IDC_TRBTRIGLEVEL			equ 1212
 IDC_TRBDCNULLOUTCHA			equ 1208
 IDC_TRBAMPLIFYCHA			equ 1213
 IDC_TRBDCNULLOUTCHB			equ 1211
@@ -136,8 +136,8 @@ IDC_CHKLGAMASKD5			equ 1735
 IDC_CHKLGAMASKD6			equ 1736
 IDC_CHKLGAMASKD7			equ 1737
 IDC_TRBSAMPLERATE			equ 1701
+IDC_STCLGASAMPLERATE		equ 1703
 IDC_TRBLGABUFFERSIZE		equ 1702
-;IDC_BTNLGAAPPLY				equ 1703
 
 ;High speed clock screen
 IDD_DLGHSCLOCK				equ 2300
@@ -160,14 +160,13 @@ IDC_TRBHSCLOCKBDUTY			equ 2106
 
 ;#########################################################################
 
-STM32_DataSize				equ 1024*6
-STM32_BlockSize				equ 64
+STM32_DataSize				equ 1024*63
+STM32_BlockSize				equ 128
 STM32_MAXBLOCK				equ STM32_DataSize/STM32_BlockSize/4
 
 ;Command
 STM32_CommandWait			equ 0
 STM32_CommandInit			equ 1
-STM32_CommandSampleStart	equ 2
 STM32_CommandDone			equ 99
 
 ;Trigger
@@ -188,8 +187,6 @@ STM32_ModeHSClockCHA		equ 4
 STM32_ModeHSClockCHB		equ 5
 STM32_ModeHSClockCHACHB		equ 6
 STM32_ModeLGA				equ 7
-STM32_ModeWriteData			equ 8
-STM32_ModeReadData			equ 9
 
 ;STM32 ram addresses
 STM32FrequencyCHA			equ 20000014h
@@ -278,8 +275,6 @@ ADC_SAMPLERATE struct
 ADC_SAMPLERATE ends
 
 SCOPEDATA struct
-	ADC_SampleRate			ADC_SAMPLERATE 32 dup(<>)
-	ADC_SampleRateSort		DWORD 32 dup(?)
 	ADC_CommandStruct		STM32_CommandStructDef <>
 	ADC_CommandStructDone	STM32_CommandStructDef <>
 	scopeCHAdata			SCOPECHDATA <>
@@ -288,18 +283,11 @@ SCOPEDATA ends
 
 ;#########################################################################
 
-;LGA_SAMPLERATE struct
-;	rate					DWORD ?
-;	szrate					BYTE 16 dup(?)
-;	clkdiv					DWORD ?
-;LGA_SAMPLERATE ends
-;
 LGADATA struct
 	hWndDialog				HWND ?
 	hWndLGA					HWND ?
 	hWndLGATool				HWND ?
 	xmag					DWORD ?
-;	LGA_SampleRate			LGA_SAMPLERATE 64 dup(<>)
 	LGA_CommandStruct		STM32_CommandStructDef <>
 	LGA_CommandStructDone	STM32_CommandStructDef <>
 	LGA_Data				BYTE STM32_DataSize dup(?)
@@ -328,13 +316,6 @@ HSCLOCKDATA struct
 	hscCHBData				HSCLOCKCHDATA <>
 	hscFRQ					STM32_FRQDataStructDef <>
 HSCLOCKDATA ends
-
-;#########################################################################
-
-RWDATA struct
-	RW_CommandStruct		STM32_CommandStructDef 128 dup(<>)
-	RW_CommandStructDone	STM32_CommandStructDef 128 dup(<>)
-RWDATA ends
 
 ;#########################################################################
 
@@ -389,8 +370,6 @@ szADCDataBits				BYTE '12',0,'10',0,'8',0,'6',0,0
 szADCSampleClocks			BYTE '3',0,'15',0,'28',0,'56',0,'84',0,'112',0,'144',0,'480',0,0
 szADCClockDiv				BYTE '2',0,'4',0,'6',0,'8',0,0
 
-LGAClockDiv					DWORD 6,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,38,56,112,224,0
-
 nsinasec					QWORD 1000000000.0
 float2						QWORD 2.0
 float100					QWORD 100.0
@@ -416,18 +395,14 @@ fLGA						DWORD ?
 scopedata					SCOPEDATA <>
 lgadata						LGADATA <>
 hsclockdata					HSCLOCKDATA <>
-rwdata						RWDATA <>
 childdialogs				CHILDDIALOGS <>
 
 hFont						HFONT ?
 hThread						HANDLE ?
 fThreadExit					DWORD ?
-rseed						DWORD ?
 
-SamplePeriod				QWORD 8*4 dup(?)
 lpSTM32_Command				DWORD ?
 lpSTM32_CommandDone			DWORD ?
-STM32_Data					BYTE STM32_DataSize dup(?)
 msg							MSG <>
 
 ;#########################################################################

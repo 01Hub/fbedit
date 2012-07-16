@@ -31,8 +31,11 @@ SampleThreadProc proc lParam:DWORD
 		.if !fConnected && !fNoSTLink
 			;Connect to the STLink
 			invoke STLinkConnect,hWnd
-			.if !eax
+			.if eax==IDIGNORE
 				mov		fNoSTLink,TRUE
+			.elseif eax==IDABORT
+				mov		fNoSTLink,TRUE
+				invoke SendMessage,hWnd,WM_CLOSE,0,0
 			.else
 				mov		fConnected,eax
 				invoke STLinkReset,hWnd
@@ -94,16 +97,20 @@ SampleThreadProc proc lParam:DWORD
 			.elseif fSCOPE
 				mov		fSCOPE,0
 				invoke RtlMoveMemory,addr scopedata.ADC_CommandStructDone,addr scopedata.ADC_CommandStruct,sizeof STM32_CommandStructDef
-				movzx	eax,scopedata.ADC_CommandStruct.Mode
-				push	eax
-				mov		scopedata.ADC_CommandStruct.Command,STM32_CommandWait
-				mov		scopedata.ADC_CommandStruct.Mode,STM32_ModeScopeCHA
-				invoke STLinkWrite,hWnd,STM32CommandStart,addr scopedata.ADC_CommandStruct,sizeof STM32_CommandStructDef
-				mov		scopedata.ADC_CommandStruct.Command,STM32_CommandInit
-				invoke STLinkWrite,hWnd,STM32CommandStart,addr scopedata.ADC_CommandStruct,4
+				mov		scopedata.ADC_CommandStructDone.Command,STM32_CommandWait
+				mov		scopedata.ADC_CommandStructDone.Mode,STM32_ModeScopeCHA
+				.if scopedata.ADC_CommandStructDone.TriggerMode==STM32_TriggerLGA || scopedata.ADC_CommandStructDone.TriggerMode==STM32_TriggerLGAEdge
+					movzx	eax,lgadata.LGA_CommandStruct.TriggerValue
+					mov		scopedata.ADC_CommandStructDone.TriggerValue,al
+					movzx	eax,lgadata.LGA_CommandStruct.TriggerMask
+					mov		scopedata.ADC_CommandStructDone.TriggerMask,al
+				.endif
+				invoke STLinkWrite,hWnd,STM32CommandStart,addr scopedata.ADC_CommandStructDone,sizeof STM32_CommandStructDef
+				mov		scopedata.ADC_CommandStructDone.Command,STM32_CommandInit
+				invoke STLinkWrite,hWnd,STM32CommandStart,addr scopedata.ADC_CommandStructDone,4
 				.while TRUE
-					invoke STLinkRead,hWnd,STM32CommandStart,addr scopedata.ADC_CommandStruct,4
-					.break .if scopedata.ADC_CommandStruct.Command==STM32_CommandDone
+					invoke STLinkRead,hWnd,STM32CommandStart,addr scopedata.ADC_CommandStructDone,4
+					.break .if scopedata.ADC_CommandStructDone.Command==STM32_CommandDone
 					invoke Sleep,10
 				.endw
 				movzx	eax,scopedata.ADC_CommandStructDone.DataBlocks
@@ -112,7 +119,7 @@ SampleThreadProc proc lParam:DWORD
 				xor		ebx,ebx
 				movzx	edi,scopedata.ADC_CommandStructDone.DataBlocks
 				shl		edi,6
-				.while ebx<edi;1024*6/4
+				.while ebx<edi
 					mov		eax,dword ptr scopedata.scopeCHAdata.ADC_Data[ebx*4]
 					movzx	edx,ax
 					shr		eax,16
@@ -130,8 +137,6 @@ SampleThreadProc proc lParam:DWORD
 					mov		scopedata.scopeCHBdata.ADC_Data[ebx],al
 					inc		ebx
 				.endw
-				pop		eax
-				mov		scopedata.ADC_CommandStruct.Mode,al
 				;Get frequency and period for CHA
 				fld		nsinasec
 				fild	scopedata.scopeCHAdata.frq_data.Frequency
@@ -156,14 +161,14 @@ SampleThreadProc proc lParam:DWORD
 			.elseif fLGA
 				mov		fLGA,0
 				invoke RtlMoveMemory,addr lgadata.LGA_CommandStructDone,addr lgadata.LGA_CommandStruct,sizeof STM32_CommandStructDef
-				mov		lgadata.LGA_CommandStruct.Command,STM32_CommandWait
-				mov		lgadata.LGA_CommandStruct.Mode,STM32_ModeLGA
-				invoke STLinkWrite,hWnd,STM32CommandStart,addr lgadata.LGA_CommandStruct,sizeof STM32_CommandStructDef
-				mov		lgadata.LGA_CommandStruct.Command,STM32_CommandInit
-				invoke STLinkWrite,hWnd,STM32CommandStart,addr lgadata.LGA_CommandStruct,4
+				mov		lgadata.LGA_CommandStructDone.Command,STM32_CommandWait
+				mov		lgadata.LGA_CommandStructDone.Mode,STM32_ModeLGA
+				invoke STLinkWrite,hWnd,STM32CommandStart,addr lgadata.LGA_CommandStructDone,sizeof STM32_CommandStructDef
+				mov		lgadata.LGA_CommandStructDone.Command,STM32_CommandInit
+				invoke STLinkWrite,hWnd,STM32CommandStart,addr lgadata.LGA_CommandStructDone,4
 				.while TRUE
-					invoke STLinkRead,hWnd,STM32CommandStart,addr lgadata.LGA_CommandStruct,4
-					.break .if lgadata.LGA_CommandStruct.Command==STM32_CommandDone
+					invoke STLinkRead,hWnd,STM32CommandStart,addr lgadata.LGA_CommandStructDone,4
+					.break .if lgadata.LGA_CommandStructDone.Command==STM32_CommandDone
 					invoke Sleep,10
 				.endw
 				movzx	eax,lgadata.LGA_CommandStructDone.DataBlocks
@@ -184,6 +189,7 @@ SampleThreadProc endp
 MainDlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	rect:RECT
 	LOCAL	tid:DWORD
+	LOCAL	tmp:DWORD
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
@@ -202,9 +208,9 @@ MainDlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 		mov		scopedata.ADC_CommandStruct.ScopeAmplifyCHB,07h
 		mov		scopedata.ADC_CommandStruct.TriggerValue,0FFh
 		mov		scopedata.ADC_CommandStruct.TriggerMask,0FFh
+		invoke RtlMoveMemory,offset scopedata.ADC_CommandStructDone,offset scopedata.ADC_CommandStruct,sizeof STM32_CommandStructDef
 		mov		lpSTM32_Command,offset scopedata.ADC_CommandStruct
 		mov		lpSTM32_CommandDone,offset scopedata.ADC_CommandStructDone
-		invoke RtlMoveMemory,offset scopedata.ADC_CommandStructDone,offset scopedata.ADC_CommandStruct,sizeof STM32_CommandStructDef
 		;Create scope child dialogs
 		invoke CreateDialogParam,hInstance,IDD_DLGSCOPE,hWin,addr ScopeChildProc,offset scopedata.scopeCHAdata
 		mov		childdialogs.hWndScopeCHA,eax
@@ -224,20 +230,25 @@ MainDlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 		;Insert some scope test data
 		mov		eax,07Fh
 		xor		ecx,ecx
-		mov		edx,11
-		mov		edi,offset STM32_Data
+		mov		edx,8
 		mov		esi,offset scopedata.scopeCHAdata.ADC_Data
-		mov		ebx,offset scopedata.scopeCHBdata.ADC_Data
+		mov		edi,offset scopedata.scopeCHBdata.ADC_Data
 		.while ecx<STM32_DataSize
 			mov		[edi+ecx],al
 			mov		[esi+ecx],al
-			mov		[ebx+ecx],al
 			.if sdword ptr eax>0E0h || sdword ptr eax<020h
 				neg		edx
 			.endif
 			add		eax,edx
 			inc		ecx
 		.endw
+		invoke GetSampleRate,addr scopedata.ADC_CommandStructDone
+		mov		tmp,eax
+		fld		qword ptr nsinasec
+		fild	tmp
+		fdivp	st(1),st
+		fst		scopedata.scopeCHAdata.convperiod
+		fstp	scopedata.scopeCHBdata.convperiod
 		invoke ShowWindow,childdialogs.hWndScopeCHA,SW_SHOWNA
 		invoke GetFrequency,childdialogs.hWndScopeCHA
 		invoke GetFrequency,childdialogs.hWndScopeCHB
@@ -246,22 +257,30 @@ MainDlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 		invoke CreateThread,NULL,NULL,addr SampleThreadProc,hWin,0,addr tid
 		mov		hThread,eax
 	.elseif eax==WM_TIMER
-;		invoke IsDlgButtonChecked,hWin,IDC_CHKAUTO
-;		.if eax && fSample==0
-;			mov		fSample,1
-;		.endif
+		invoke IsDlgButtonChecked,hWin,IDC_CHKAUTO
+		.if eax && !fSCOPE && !fLGA
+			invoke IsWindowVisible,childdialogs.hWndLogicAnalyser
+			.if eax
+				mov 	fLGA,1
+			.endif
+			invoke IsWindowVisible,childdialogs.hWndScopeCHA
+			.if eax
+				mov 	fSCOPE,1
+			.endif
+			invoke IsWindowVisible,childdialogs.hWndScopeCHB
+			.if eax
+				mov 	fSCOPE,1
+			.endif
+		.endif
 		.if !fFRQDVM
 			mov		fFRQDVM,1
 		.endif
-		mov 	fLGA,1
 	.elseif eax==WM_COMMAND
 		mov		eax,wParam
 		.if eax==IDM_FILE_OPEN_SCOPECHA
 		.elseif eax==IDM_FILE_OPEN_SCOPECHB
 		.elseif eax==IDM_FILE_SAVE_SCOPECHA
 		.elseif eax==IDM_FILE_SAVE_SCOPECHB
-		.elseif eax==IDM_FILE_SAMPLE
-			mov		fSCOPE,TRUE
 		.elseif eax==IDM_FILE_EXIT || eax==IDCANCEL
 			invoke SendMessage,hWin,WM_CLOSE,0,0
 		.elseif eax==IDM_VIEW_SCOPECHA
@@ -357,7 +376,18 @@ MainDlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 			.endif
 		.elseif eax==IDM_HELP_ABOUT
 		.elseif eax==IDC_BTNSAMPLE
-			mov		fSCOPE,TRUE
+			invoke IsWindowVisible,childdialogs.hWndLogicAnalyser
+			.if eax
+				mov 	fLGA,1
+			.endif
+			invoke IsWindowVisible,childdialogs.hWndScopeCHA
+			.if eax
+				mov 	fSCOPE,1
+			.endif
+			invoke IsWindowVisible,childdialogs.hWndScopeCHB
+			.if eax
+				mov 	fSCOPE,1
+			.endif
 		.endif
 	.elseif	eax==WM_SIZE
 		invoke GetClientRect,hWin,addr rect
@@ -419,7 +449,7 @@ MainDlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 		invoke WaitForSingleObject,hThread,250
 		invoke CloseHandle,hThread
 		.if fConnected
-			invoke STLinkDisconnect
+			invoke STLinkDisconnect,hWin
 		.endif
 		invoke DeleteObject,hFont
 		invoke DestroyWindow,hWin

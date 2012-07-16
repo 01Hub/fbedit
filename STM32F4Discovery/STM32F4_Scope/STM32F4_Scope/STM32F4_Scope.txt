@@ -14,10 +14,10 @@ LICENSE_AGREEMENT/EvaluationProductLicenseAgreement.pdf
 Features:
 -------------------------------------------------------------------------------
 o Dual channel digital oscilloscope.
-  - Variable sample rate 27.778KS/Sec to 2.0MS/Sec.
-  - 8 bit vertical resolution.
-  - 7K sample buffer.
-  - Subsampling gives 10MHz bandwidth in single channel mode.
+  - Variable sample rate 21.341KS/Sec to 4.667MS/Sec.
+  - 6, 8, 10 or 12 bit vertical resolution.
+  - 16K samples sample buffer/channel.
+  - Subsampling gives 10MHz bandwidth.
   - Minimum 4Hz frequency to sample one complete period.
   - Trigger: Manual, rising or falling edge or from digital analyser.
     With some additional hardware, variable trigger level and DC offset
@@ -27,13 +27,14 @@ o Two high speed clock outputs.
   - Variable pulse width, 0% to 100%.
 o Logic analyser.
   - 8 bits.
-  - Variable sample rate, max 4.667MHz (9.333MHz with fixed 128 byte buffer).
+  - Variable sample rate 42KS/Sec to 8.4MS/Sec.
+  - 64K samples sample buffer.
   - Trigger selection: Manual, rising or falling edge from oscilloscope CHA
     or CHB, or from logic analyser. Trigger from logic analyser can be any
     combination of high or low bits. There is also a mask to set dont care
     bits. The trigger can be set to be edge sensitive.
 o Two frequency counters.
-  - Counts frequency up to 28MHz.
+  - Counts frequency up to 42MHz.
   - 1Hz resolution.
 o Two digital voltmeters.
   - 12 bit resolution.
@@ -44,7 +45,7 @@ Port pins used:
 -------------------------------------------------------------------------------
 PB7					TIM4_CH2	PWM Output. High speed clock output CLKA.
 PB8					TIM10_CH1	PWM Output. High speed clock output CLKB.
-+
+
 PA0					TIM5_CH1	Input for frequency counter scope CHB
 PA1					TIM2_CH2	Input for frequency counter scope CHA
 

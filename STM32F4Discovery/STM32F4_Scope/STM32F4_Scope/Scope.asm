@@ -3,9 +3,10 @@
 
 ;########################################################################
 
-GetSampleRate proc uses ebx
+GetSampleRate proc uses ebx esi,lpADC_CommandStruct:DWORD
 
-	movzx	eax,scopedata.ADC_CommandStruct.ScopeDataBits
+	mov		esi,lpADC_CommandStruct
+	movzx	eax,[esi].STM32_CommandStructDef.ScopeDataBits
 	.if !eax
 		mov		ebx,12
 	.elseif eax==1
@@ -15,7 +16,7 @@ GetSampleRate proc uses ebx
 	.elseif eax==3
 		mov		ebx,6
 	.endif
-	movzx	eax,scopedata.ADC_CommandStruct.ScopeSampleClocks
+	movzx	eax,[esi].STM32_CommandStructDef.ScopeSampleClocks
 	.if !eax
 		add		ebx,3
 	.elseif eax==1
@@ -35,7 +36,7 @@ GetSampleRate proc uses ebx
 	.endif
 	mov		eax,STM32Clock
 	shr		eax,1
-	movzx	ecx,scopedata.ADC_CommandStruct.ScopeClockDiv
+	movzx	ecx,[esi].STM32_CommandStructDef.ScopeClockDiv
 	.if !ecx
 		shr		eax,1
 	.elseif ecx==1
@@ -61,7 +62,7 @@ ScopeSetupProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LP
 	.if eax==WM_INITDIALOG
 		movzx	eax,scopedata.ADC_CommandStruct.TriggerMode
 		add		eax,IDC_RBNTRIGMANUAL
-		invoke CheckRadioButton,hWin,IDC_RBNTRIGMANUAL,IDC_RBNTRIGLGA,eax
+		invoke CheckRadioButton,hWin,IDC_RBNTRIGMANUAL,IDC_RBNTRIGLGAEDGE,eax
 		invoke SendDlgItemMessage,hWin,IDC_TRBTRIGLEVEL,TBM_SETRANGE,FALSE,(ADCMAX SHL 16)
 		movzx	eax,scopedata.ADC_CommandStruct.TriggerValue
 		invoke SendDlgItemMessage,hWin,IDC_TRBTRIGLEVEL,TBM_SETPOS,TRUE,eax
@@ -103,7 +104,7 @@ ScopeSetupProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LP
 		.endw
 		movzx	eax,scopedata.ADC_CommandStruct.ScopeClockDiv
 		invoke SendDlgItemMessage,hWin,IDC_CBOCLOCKDIVISOR,CB_SETCURSEL,eax,0
-		invoke GetSampleRate
+		invoke GetSampleRate,addr scopedata.ADC_CommandStruct
 		invoke SendDlgItemMessage,hWin,IDC_TRBBUFFERSIZE,TBM_SETRANGE,FALSE,(STM32_MAXBLOCK SHL 16)+1
 		movzx	eax,scopedata.ADC_CommandStruct.DataBlocks
 		invoke SendDlgItemMessage,hWin,IDC_TRBBUFFERSIZE,TBM_SETPOS,TRUE,eax
@@ -143,7 +144,7 @@ ScopeSetupProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LP
 Update:
 	;Get trigger type
 	xor		ebx,ebx
-	.while ebx<6
+	.while ebx<7
 		invoke IsDlgButtonChecked,hWin,addr [ebx+IDC_RBNTRIGMANUAL]
 		.break .if eax
 		inc		ebx
@@ -177,7 +178,7 @@ Update:
 	;Get buffer size
 	invoke SendDlgItemMessage,hWin,IDC_TRBBUFFERSIZE,TBM_GETPOS,0,0
 	mov		scopedata.ADC_CommandStruct.DataBlocks,al
-	invoke GetSampleRate
+	invoke GetSampleRate,addr scopedata.ADC_CommandStruct
 	invoke SetDlgItemInt,hWin,IDC_STCSAMPLERATE,eax,FALSE
 	retn
 
@@ -264,7 +265,7 @@ Subsampling proc uses ebx esi edi,hWin:HWND
 	fld		[ebx].SCOPECHDATA.frequency
 	fdivp	st(1),st
 	fstp	[ebx].SCOPECHDATA.period
-	invoke GetSampleRate
+	invoke GetSampleRate,addr scopedata.ADC_CommandStructDone
 	fld		qword ptr nsinasec
 	mov		tmp,eax
 	fild	tmp
@@ -280,7 +281,7 @@ Subsampling proc uses ebx esi edi,hWin:HWND
 		mov		ecx,eax
 		lea		esi,[ebx].SCOPECHDATA.ADC_Data
 		;The first byte seem to be corrupt, ignore it
-		add		edx,4
+		add		edx,1
 		.while edx<ecx
 			fld		[ebx].SCOPECHDATA.period
 			.if [ebx].SCOPECHDATA.fTwoPeriods
@@ -305,14 +306,14 @@ Subsampling proc uses ebx esi edi,hWin:HWND
 			fdivp	st(1),st
 			fistp	tmp
 			mov		al,[esi+edx]
+			;Avoid 0 as it is used to indicate not set bytes
 			.if !al
-				;Avoid 0 as it is used to indicate not set bytes
 				inc		al
 			.endif
 			push	edx
 			mov		edx,tmp
+			;If set, dont set it again
 			.if !byte ptr [edi+edx]
-				;If set, dont set it again
 				mov		[edi+edx],al
 			.endif
 			pop		edx

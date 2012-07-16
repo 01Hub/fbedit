@@ -40,12 +40,13 @@ LGASetupProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 			pop		ecx
 			inc		ecx
 		.endw
-		invoke SendDlgItemMessage,hWin,IDC_TRBSAMPLERATE,TBM_SETRANGE,FALSE,(200 SHL 16)+4
+		invoke SendDlgItemMessage,hWin,IDC_TRBSAMPLERATE,TBM_SETRANGE,FALSE,(999 SHL 16)+4
 		movzx	eax,lgadata.LGA_CommandStruct.LGASampleRate
 		invoke SendDlgItemMessage,hWin,IDC_TRBSAMPLERATE,TBM_SETPOS,TRUE,eax
 		invoke SendDlgItemMessage,hWin,IDC_TRBLGABUFFERSIZE,TBM_SETRANGE,FALSE,(STM32_MAXBLOCK SHL 16)+1
 		movzx	eax,lgadata.LGA_CommandStruct.DataBlocks
 		invoke SendDlgItemMessage,hWin,IDC_TRBLGABUFFERSIZE,TBM_SETPOS,TRUE,eax
+		call	Update
 	.elseif eax==WM_COMMAND
 		mov		edx,wParam
 		movzx	eax,dx
@@ -149,6 +150,12 @@ Update:
 	mov		lgadata.LGA_CommandStruct.LGASampleRate,ax
 	invoke SendDlgItemMessage,hWin,IDC_TRBLGABUFFERSIZE,TBM_GETPOS,0,0
 	mov		lgadata.LGA_CommandStruct.DataBlocks,al
+	mov		eax,42000000
+	cdq
+	movzx	ecx,lgadata.LGA_CommandStruct.LGASampleRate
+	inc		ecx
+	div		ecx
+	invoke SetDlgItemInt,hWin,IDC_STCLGASAMPLERATE,eax,FALSE
 	retn
 
 LGASetupProc endp
