@@ -424,11 +424,9 @@ LogicAnalyserProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam
 
 SetScrooll:
 	movzx	eax,lgadata.LGA_CommandStructDone.DataBlocks
-PrintDec eax
 	mov		ecx,STM32_BlockSize
 	mul		ecx
 	mov		samplesize,eax
-PrintDec eax
 	invoke GetClientRect,hWin,addr rect
 	sub		rect.bottom,TEXTHIGHT
 	;Init horizontal scrollbar

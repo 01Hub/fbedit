@@ -23,7 +23,7 @@ o Dual channel digital oscilloscope.
     With some additional hardware, variable trigger level and DC offset
     (Y-Position) adjustment.
 o Two high speed clock outputs.
-  - Variable from 1Hz to 42MHz
+  - Variable from 1Hz to 84MHz
   - Variable pulse width, 0% to 100%.
 o Logic analyser.
   - 8 bits.

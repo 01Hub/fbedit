@@ -14,6 +14,8 @@ includelib comdlg32.lib
 
 includelib STLinkLib.lib
 
+include DDSWave.inc
+
 ;#########################################################################
 ;VKim's Debug
 
@@ -60,6 +62,8 @@ IDM_SETUP_LOGICANALYSER		equ 10020
 IDM_SETUP_HIGHSPEEDCLOCK	equ 10021
 IDM_HELP					equ 10015
 IDM_HELP_ABOUT				equ 10016
+IDM_VIEW_DDSWAVEGEN			equ 10003
+IDM_SETUP_DDSWAVEGEN		equ 10012
 
 ;Main dialog ID's
 IDD_MAIN					equ 101
@@ -158,6 +162,29 @@ IDC_EDTFRQCHB				equ 2108
 IDC_BTNFRQCHBUP				equ 2107
 IDC_TRBHSCLOCKBDUTY			equ 2106
 
+;DDS Wave screen
+IDD_DDSWAVE					equ 1000
+IDC_UDCDDSWAVE				equ 1001
+
+;DDS Wave setup
+IDD_DDSWAVESETUP			equ 1300
+IDC_TRBDDSAMP				equ 1304
+IDC_TRBDDSDCOFS				equ 1305
+IDC_TRBDDSFRQH				equ 1306
+IDC_TRBDDSFRQL				equ 1307
+IDC_EDTDDSFREQUENCY			equ 1308
+IDC_BTNDDSSET				equ 1309
+IDC_RBNSWEEPOFF				equ 1310
+IDC_RBNSWEEPUP				equ 1311
+IDC_RBNSWEEPDOWN			equ 1312
+IDC_RBNSWEEPUPDOWN			equ 1313
+IDC_RBNSWEEPPEAK			equ 1314
+IDC_EDTSWEEPSIZE			equ 1315
+IDC_EDTSWEEPTIME			equ 1316
+IDC_EDTSWEEPCOUNT			equ 1317
+IDC_BTNSWEEPSET				equ 1318
+IDC_CBODDSWAVE				equ 1303
+
 ;#########################################################################
 
 STM32_DataSize				equ 1024*63
@@ -169,15 +196,6 @@ STM32_CommandWait			equ 0
 STM32_CommandInit			equ 1
 STM32_CommandDone			equ 99
 
-;Trigger
-STM32_TriggerManual			equ 0
-STM32_TriggerRisingCHA		equ 1
-STM32_TriggerFallingCHA		equ 2
-STM32_TriggerRisingCHB		equ 3
-STM32_TriggerFallingCHB		equ 4
-STM32_TriggerLGA			equ 5
-STM32_TriggerLGAEdge		equ 6
-
 ;Mode
 STM32_ModeNone				equ 0
 STM32_ModeScopeCHA			equ 1
@@ -187,6 +205,30 @@ STM32_ModeHSClockCHA		equ 4
 STM32_ModeHSClockCHB		equ 5
 STM32_ModeHSClockCHACHB		equ 6
 STM32_ModeLGA				equ 7
+STM32_ModeDDSWave			equ 8
+STM32_ModeDDSSweep			equ 9
+
+;Trigger
+STM32_TriggerManual			equ 0
+STM32_TriggerRisingCHA		equ 1
+STM32_TriggerFallingCHA		equ 2
+STM32_TriggerRisingCHB		equ 3
+STM32_TriggerFallingCHB		equ 4
+STM32_TriggerLGA			equ 5
+STM32_TriggerLGAEdge		equ 6
+
+;DDS Waveforms
+DDS_ModeSinWave				equ 0
+DDS_ModeTriWave				equ 1
+DDS_ModeSqrWave				equ 2
+DDS_ModeSawWave				equ 3
+DDS_ModeRevSawWave			equ 4
+
+;DDS SWEEP SubModes
+SWEEP_SubModeOff			equ 0
+SWEEP_SubModeUp				equ 1
+SWEEP_SubModeDown			equ 2
+SWEEP_SubModeUpDown			equ 3
 
 ;STM32 ram addresses
 STM32FrequencyCHA			equ 20000014h
@@ -197,6 +239,8 @@ STM32DataStart				equ 20000044h
 ;#########################################################################
 
 ADCMAX						equ 0FFh
+DACMAX						equ 0FFFh
+DDSMAX						equ 07FFFh
 XMAGMAX						equ 512
 YMAGMAX						equ 128
 HSCMAX						equ 202
@@ -212,19 +256,35 @@ TEXTHIGHT					equ 30
 STM32_CommandStructDef struct
 	Command					BYTE ?
 	Mode					BYTE ?
-	DataBlocks				BYTE ?
-	TriggerMode				BYTE ?
-	TriggerValue			BYTE ?
-	TriggerMask				BYTE ?
-	TriggerWait				BYTE ?
-	ScopeDataBits			BYTE ?
-	ScopeSampleClocks		BYTE ?
-	ScopeClockDiv			BYTE ?
-	ScopeAmplifyCHA			BYTE ?
-	ScopeAmplifyCHB			BYTE ?
-	ScopeDCNullOutCHA		BYTE ?
-	ScopeDCNullOutCHB		BYTE ?
-	LGASampleRate			WORD ?
+	union
+		struct
+			DataBlocks				BYTE ?
+			TriggerMode				BYTE ?
+			TriggerValue			BYTE ?
+			TriggerMask				BYTE ?
+			TriggerWait				BYTE ?
+			ScopeDataBits			BYTE ?
+			ScopeSampleClocks		BYTE ?
+			ScopeClockDiv			BYTE ?
+			ScopeAmplifyCHA			BYTE ?
+			ScopeAmplifyCHB			BYTE ?
+			ScopeDCNullOutCHA		BYTE ?
+			ScopeDCNullOutCHB		BYTE ?
+			LGASampleRate			WORD ?
+		ends
+		struct
+			DDS_WaveType			BYTE ?
+			DDS_SubMode				BYTE ?
+			DDS_PhaseFrq			DWORD ?
+			Amplitude				WORD ?
+			DCOffset				WORD ?
+			SWEEP_Add				DWORD ?
+			SWEEP_StepTime			WORD ?
+			SWEEP_StepCount			WORD ?
+;			SWEEP_Min				DWORD ?
+;			SWEEP_Max				DWORD ?
+		ends
+	ends
 STM32_CommandStructDef ends
 
 STM32_FRQDataStructDef struct
@@ -266,14 +326,6 @@ SCOPECHDATA struct
 	ADC_USData				BYTE STM32_DataSize dup(?)
 SCOPECHDATA ends
 
-ADC_SAMPLERATE struct
-	rate					DWORD ?
-	szrate					BYTE 16 dup(?)
-	clkdiv					DWORD ?
-	clkcycle				DWORD ?
-	adcset					DWORD ?
-ADC_SAMPLERATE ends
-
 SCOPEDATA struct
 	ADC_CommandStruct		STM32_CommandStructDef <>
 	ADC_CommandStructDone	STM32_CommandStructDef <>
@@ -302,10 +354,10 @@ HSCLOCKCHDATA struct
 	hWndHSClockTool			HWND ?
 	xmag					DWORD ?
 	hsclockenable			DWORD ?
-	hsclockfrequency		DWORD ?
-	hsclockdivisor			DWORD ?
-	hsclockccr				DWORD ?
-	hsclockdutycycle		DWORD ?
+	hsclockfrequency		WORD ?
+	hsclockdivisor			WORD ?
+	hsclockccr				WORD ?
+	hsclockdutycycle		WORD ?
 	HSC_Data				BYTE HSCMAX dup(?)
 HSCLOCKCHDATA ends
 
@@ -319,16 +371,30 @@ HSCLOCKDATA ends
 
 ;#########################################################################
 
+DDSDATA struct
+	hWndDialog				HWND ?
+	hWndDDS					HWND ?
+	hWndDDSTool				HWND ?
+	xmag					DWORD ?
+	DDS_CommandStruct		STM32_CommandStructDef <>
+	DDS_CommandStructDone	STM32_CommandStructDef <>
+	DDS_WaveData			WORD 4098 dup(?)
+DDSDATA ends
+
+;#########################################################################
+
 CHILDDIALOGS struct
 	hWndScopeCHA			HWND ?
 	hWndScopeCHB			HWND ?
 	hWndHSClockCHA			HWND ?
 	hWndHSClockCHB			HWND ?
 	hWndLogicAnalyser		HWND ?
+	hWndDDSWave				HWND ?
 	hWndFrequency			HWND ?
 	hWndScopeSetup			HWND ?
 	hWndLGASetup			HWND ?
 	hWndHSClockSetup		HWND ?
+	hWndDDSWaveSetup		HWND ?
 CHILDDIALOGS ends
 
 ;#########################################################################
@@ -340,6 +406,7 @@ szSCOPECLASS				BYTE 'SCOPECLASS',0
 szTEXTCLASS					BYTE 'TEXTCLASS',0
 szLOGICANALYSERCLASS		BYTE 'LOGICANALYSERCLASS',0
 szHSCLOCKCLASS				BYTE 'HSCLOCKCLASS',0
+szDDSWAVECLASS				BYTE 'DDSWAVECLASS',0
 
 Tahoma						LOGFONT <-20,0,0,0,400,0,0,0,0,3,2,1,34,"Tahoma">
 
@@ -349,6 +416,12 @@ szFrequencyCHB				BYTE 'Frequency CHB',0
 szVoltsDVMA					BYTE 'Volts DVMA',0
 szVoltsDVMB					BYTE 'Volts DVMB',0
 szLGADataBits				BYTE 'D0',0,'D1',0,'D2',0,'D3',0,'D4',0,'D5',0,'D6',0,'D7',0,0
+
+szDDS_Waves					BYTE 'Sine Wave',0
+							BYTE 'Triangle Wave',0
+							BYTE 'Square Wave',0
+							BYTE 'Sawtooth Wave',0
+							BYTE 'Reverse Sawtooth Wave',0,0
 
 szFmtVolts					BYTE '%04uV',0
 szFmtFrq					BYTE ' Frequency: ',0
@@ -374,6 +447,9 @@ nsinasec					QWORD 1000000000.0
 float2						QWORD 2.0
 float100					QWORD 100.0
 
+dds64						QWORD 100000000h
+ddscycles					DWORD 8
+
 STM32Clock					DWORD 168000000
 
 ;#########################################################################
@@ -387,14 +463,15 @@ hDlg						HWND ?
 fConnected					DWORD ?
 fNoSTLink					DWORD ?
 fFRQDVM						DWORD ?
-fINITHSCCHA					DWORD ?
-fINITHSCCHB					DWORD ?
+fHSCCHA						DWORD ?
+fHSCCHB						DWORD ?
 fSCOPE						DWORD ?
 fLGA						DWORD ?
 
 scopedata					SCOPEDATA <>
 lgadata						LGADATA <>
 hsclockdata					HSCLOCKDATA <>
+ddsdata						DDSDATA <>
 childdialogs				CHILDDIALOGS <>
 
 hFont						HFONT ?
@@ -403,6 +480,7 @@ fThreadExit					DWORD ?
 
 lpSTM32_Command				DWORD ?
 lpSTM32_CommandDone			DWORD ?
+lpOldButtonProc				DWORD ?
 msg							MSG <>
 
 ;#########################################################################

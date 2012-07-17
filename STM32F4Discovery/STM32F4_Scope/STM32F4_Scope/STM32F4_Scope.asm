@@ -21,6 +21,7 @@ include Frequency.asm
 include Scope.asm
 include LogicAnalyser.asm
 include HSClock.asm
+include DDSWave.asm
 
 .code
 
@@ -60,43 +61,46 @@ SampleThreadProc proc lParam:DWORD
 						invoke SetFrequencyAndDVM,DVM[0],DVM[4]
 					.endif
 				.endif
-			.elseif fINITHSCCHA
-				mov		fINITHSCCHA,0
+			.elseif fHSCCHA
+				mov		fHSCCHA,0
 				;Send all initialisation data
+				invoke RtlMoveMemory,addr hsclockdata.HSC_CommandStructDone,addr hsclockdata.HSC_CommandStruct,sizeof STM32_CommandStructDef
 				mov		eax,hsclockdata.hscCHAData.hsclockenable
 				mov		hsclockdata.hscFRQ.HSCEnable,ax
-				mov		eax,hsclockdata.hscCHAData.hsclockfrequency
+				movzx	eax,hsclockdata.hscCHAData.hsclockfrequency
 				mov		hsclockdata.hscFRQ.HSCCount,ax
-				mov		eax,hsclockdata.hscCHAData.hsclockdivisor
+				movzx	eax,hsclockdata.hscCHAData.hsclockdivisor
 				mov		hsclockdata.hscFRQ.HSCClockDiv,ax
-				mov		eax,hsclockdata.hscCHAData.hsclockccr
+				movzx	eax,hsclockdata.hscCHAData.hsclockccr
 				mov		hsclockdata.hscFRQ.HSCDuty,ax
 				invoke STLinkWrite,hWnd,STM32FrequencyCHA+8,addr hsclockdata.hscFRQ.HSCEnable,sizeof STM32_FRQDataStructDef-8
-				mov		hsclockdata.HSC_CommandStruct.Command,STM32_CommandWait
-				mov		hsclockdata.HSC_CommandStruct.Mode,STM32_ModeHSClockCHA
-				invoke STLinkWrite,hWnd,STM32CommandStart,addr hsclockdata.HSC_CommandStruct,sizeof STM32_CommandStructDef
-				mov		hsclockdata.HSC_CommandStruct.Command,STM32_CommandInit
-				invoke STLinkWrite,hWnd,STM32CommandStart,addr hsclockdata.HSC_CommandStruct,4
-			.elseif fINITHSCCHB
-				mov		fINITHSCCHB,0
+				mov		hsclockdata.HSC_CommandStructDone.Command,STM32_CommandWait
+				mov		hsclockdata.HSC_CommandStructDone.Mode,STM32_ModeHSClockCHA
+				invoke STLinkWrite,hWnd,STM32CommandStart,addr hsclockdata.HSC_CommandStructDone,sizeof STM32_CommandStructDef
+				mov		hsclockdata.HSC_CommandStructDone.Command,STM32_CommandInit
+				invoke STLinkWrite,hWnd,STM32CommandStart,addr hsclockdata.HSC_CommandStructDone,4
+			.elseif fHSCCHB
+				mov		fHSCCHB,0
 				;Send all initialisation data
+				invoke RtlMoveMemory,addr hsclockdata.HSC_CommandStructDone,addr hsclockdata.HSC_CommandStruct,sizeof STM32_CommandStructDef
 				mov		eax,hsclockdata.hscCHBData.hsclockenable
 				mov		hsclockdata.hscFRQ.HSCEnable,ax
-				mov		eax,hsclockdata.hscCHBData.hsclockfrequency
+				movzx	eax,hsclockdata.hscCHBData.hsclockfrequency
 				mov		hsclockdata.hscFRQ.HSCCount,ax
-				mov		eax,hsclockdata.hscCHBData.hsclockdivisor
+				movzx	eax,hsclockdata.hscCHBData.hsclockdivisor
 				mov		hsclockdata.hscFRQ.HSCClockDiv,ax
-				mov		eax,hsclockdata.hscCHBData.hsclockccr
+				movzx	eax,hsclockdata.hscCHBData.hsclockccr
 				mov		hsclockdata.hscFRQ.HSCDuty,ax
 				invoke STLinkWrite,hWnd,STM32FrequencyCHB+8,addr hsclockdata.hscFRQ.HSCEnable,sizeof STM32_FRQDataStructDef-8
-				mov		hsclockdata.HSC_CommandStruct.Command,STM32_CommandWait
-				mov		hsclockdata.HSC_CommandStruct.Mode,STM32_ModeHSClockCHB
-				invoke STLinkWrite,hWnd,STM32CommandStart,addr hsclockdata.HSC_CommandStruct,sizeof STM32_CommandStructDef
-				mov		hsclockdata.HSC_CommandStruct.Command,STM32_CommandInit
-				invoke STLinkWrite,hWnd,STM32CommandStart,addr hsclockdata.HSC_CommandStruct,4
+				mov		hsclockdata.HSC_CommandStructDone.Command,STM32_CommandWait
+				mov		hsclockdata.HSC_CommandStructDone.Mode,STM32_ModeHSClockCHB
+				invoke STLinkWrite,hWnd,STM32CommandStart,addr hsclockdata.HSC_CommandStructDone,sizeof STM32_CommandStructDef
+				mov		hsclockdata.HSC_CommandStructDone.Command,STM32_CommandInit
+				invoke STLinkWrite,hWnd,STM32CommandStart,addr hsclockdata.HSC_CommandStructDone,4
 			.elseif fSCOPE
 				mov		fSCOPE,0
 				invoke RtlMoveMemory,addr scopedata.ADC_CommandStructDone,addr scopedata.ADC_CommandStruct,sizeof STM32_CommandStructDef
+				mov		scopedata.ADC_CommandStructDone.TriggerWait,3
 				mov		scopedata.ADC_CommandStructDone.Command,STM32_CommandWait
 				mov		scopedata.ADC_CommandStructDone.Mode,STM32_ModeScopeCHA
 				.if scopedata.ADC_CommandStructDone.TriggerMode==STM32_TriggerLGA || scopedata.ADC_CommandStructDone.TriggerMode==STM32_TriggerLGAEdge
@@ -143,7 +147,13 @@ SampleThreadProc proc lParam:DWORD
 				fst		scopedata.scopeCHAdata.frequency
 				fdivp	st(1),st
 				fstp	scopedata.scopeCHAdata.period
-				;Update the scope screens
+				;Get frequency and period for CHB
+				fld		nsinasec
+				fild	scopedata.scopeCHBdata.frq_data.Frequency
+				fst		scopedata.scopeCHBdata.frequency
+				fdivp	st(1),st
+				fstp	scopedata.scopeCHBdata.period
+				;Update the scope CHA screen
 				.if scopedata.scopeCHAdata.fSubsampling
 					invoke Subsampling,childdialogs.hWndScopeCHA
 				.endif
@@ -151,6 +161,7 @@ SampleThreadProc proc lParam:DWORD
 				mov		ebx,eax
 				invoke InvalidateRect,ebx,NULL,TRUE
 				invoke UpdateWindow,ebx
+				;Update the scope CHB screen
 				.if scopedata.scopeCHBdata.fSubsampling
 					invoke Subsampling,childdialogs.hWndScopeCHB
 				.endif
@@ -161,6 +172,7 @@ SampleThreadProc proc lParam:DWORD
 			.elseif fLGA
 				mov		fLGA,0
 				invoke RtlMoveMemory,addr lgadata.LGA_CommandStructDone,addr lgadata.LGA_CommandStruct,sizeof STM32_CommandStructDef
+				mov		lgadata.LGA_CommandStructDone.TriggerWait,3
 				mov		lgadata.LGA_CommandStructDone.Command,STM32_CommandWait
 				mov		lgadata.LGA_CommandStructDone.Mode,STM32_ModeLGA
 				invoke STLinkWrite,hWnd,STM32CommandStart,addr lgadata.LGA_CommandStructDone,sizeof STM32_CommandStructDef
@@ -224,6 +236,9 @@ MainDlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 		;Create logic analyser child dialog
 		invoke CreateDialogParam,hInstance,IDD_DLGLOGICANALYSER,hWin,addr LogicAnalyserChildProc,0
 		mov		childdialogs.hWndLogicAnalyser,eax
+		;Create DDS Wave child dialog
+		invoke CreateDialogParam,hInstance,IDD_DDSWAVE,hWin,addr DDSWaveChildProc,0
+		mov		childdialogs.hWndDDSWave,eax
 		;Create frequency and DVM child dialog
 		invoke CreateDialogParam,hInstance,IDD_DLGFREQUENCY,hWin,addr FrequencyChildProc,0
 		mov		childdialogs.hWndFrequency,eax
@@ -293,6 +308,7 @@ MainDlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 			invoke ShowWindow,childdialogs.hWndLogicAnalyser,SW_HIDE
 			invoke ShowWindow,childdialogs.hWndHSClockCHA,SW_HIDE
 			invoke ShowWindow,childdialogs.hWndHSClockCHB,SW_HIDE
+			invoke ShowWindow,childdialogs.hWndDDSWave,SW_HIDE
 		.elseif eax==IDM_VIEW_SCOPECHB
 			mov		scopedata.ADC_CommandStruct.Mode,STM32_ModeScopeCHB
 			mov		lpSTM32_Command,offset scopedata.ADC_CommandStruct
@@ -303,6 +319,7 @@ MainDlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 			invoke ShowWindow,childdialogs.hWndLogicAnalyser,SW_HIDE
 			invoke ShowWindow,childdialogs.hWndHSClockCHA,SW_HIDE
 			invoke ShowWindow,childdialogs.hWndHSClockCHB,SW_HIDE
+			invoke ShowWindow,childdialogs.hWndDDSWave,SW_HIDE
 		.elseif eax==IDM_VIEW_SCOPECHACHB
 			mov		scopedata.ADC_CommandStruct.Mode,STM32_ModeScopeCHACHB
 			mov		lpSTM32_Command,offset scopedata.ADC_CommandStruct
@@ -313,6 +330,7 @@ MainDlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 			invoke ShowWindow,childdialogs.hWndLogicAnalyser,SW_HIDE
 			invoke ShowWindow,childdialogs.hWndHSClockCHA,SW_HIDE
 			invoke ShowWindow,childdialogs.hWndHSClockCHB,SW_HIDE
+			invoke ShowWindow,childdialogs.hWndDDSWave,SW_HIDE
 		.elseif eax==IDM_VIEW_LOGICANALYSER
 			mov		lgadata.LGA_CommandStruct.Mode,STM32_ModeLGA
 			mov		lpSTM32_Command,offset lgadata.LGA_CommandStruct
@@ -323,6 +341,7 @@ MainDlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 			invoke ShowWindow,childdialogs.hWndScopeCHB,SW_HIDE
 			invoke ShowWindow,childdialogs.hWndHSClockCHA,SW_HIDE
 			invoke ShowWindow,childdialogs.hWndHSClockCHB,SW_HIDE
+			invoke ShowWindow,childdialogs.hWndDDSWave,SW_HIDE
 		.elseif eax==IDM_VIEW_HSCLOCKCHA
 			mov		hsclockdata.HSC_CommandStruct.Mode,STM32_ModeHSClockCHA
 			mov		lpSTM32_Command,offset hsclockdata.HSC_CommandStruct
@@ -333,6 +352,7 @@ MainDlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 			invoke ShowWindow,childdialogs.hWndScopeCHA,SW_HIDE
 			invoke ShowWindow,childdialogs.hWndScopeCHB,SW_HIDE
 			invoke ShowWindow,childdialogs.hWndHSClockCHB,SW_HIDE
+			invoke ShowWindow,childdialogs.hWndDDSWave,SW_HIDE
 		.elseif eax==IDM_VIEW_HSCLOCKCHB
 			mov		hsclockdata.HSC_CommandStruct.Mode,STM32_ModeHSClockCHB
 			mov		lpSTM32_Command,offset hsclockdata.HSC_CommandStruct
@@ -343,6 +363,7 @@ MainDlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 			invoke ShowWindow,childdialogs.hWndScopeCHA,SW_HIDE
 			invoke ShowWindow,childdialogs.hWndScopeCHB,SW_HIDE
 			invoke ShowWindow,childdialogs.hWndHSClockCHA,SW_HIDE
+			invoke ShowWindow,childdialogs.hWndDDSWave,SW_HIDE
 		.elseif eax==IDM_VIEW_HSCLOCKCHACHB
 			mov		hsclockdata.HSC_CommandStruct.Mode,STM32_ModeHSClockCHACHB
 			mov		lpSTM32_Command,offset hsclockdata.HSC_CommandStruct
@@ -350,6 +371,18 @@ MainDlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 			invoke SendMessage,hWin,WM_SIZE,0,0
 			invoke ShowWindow,childdialogs.hWndHSClockCHA,SW_SHOWNA
 			invoke ShowWindow,childdialogs.hWndHSClockCHB,SW_SHOWNA
+			invoke ShowWindow,childdialogs.hWndLogicAnalyser,SW_HIDE
+			invoke ShowWindow,childdialogs.hWndScopeCHA,SW_HIDE
+			invoke ShowWindow,childdialogs.hWndScopeCHB,SW_HIDE
+			invoke ShowWindow,childdialogs.hWndDDSWave,SW_HIDE
+		.elseif eax==IDM_VIEW_DDSWAVEGEN
+			mov		ddsdata.DDS_CommandStruct.Mode,STM32_ModeDDSWave
+			mov		lpSTM32_Command,offset ddsdata.DDS_CommandStruct
+			mov		lpSTM32_CommandDone,offset ddsdata.DDS_CommandStructDone
+			invoke SendMessage,hWin,WM_SIZE,0,0
+			invoke ShowWindow,childdialogs.hWndDDSWave,SW_SHOWNA
+			invoke ShowWindow,childdialogs.hWndHSClockCHA,SW_HIDE
+			invoke ShowWindow,childdialogs.hWndHSClockCHB,SW_HIDE
 			invoke ShowWindow,childdialogs.hWndLogicAnalyser,SW_HIDE
 			invoke ShowWindow,childdialogs.hWndScopeCHA,SW_HIDE
 			invoke ShowWindow,childdialogs.hWndScopeCHB,SW_HIDE
@@ -373,6 +406,13 @@ MainDlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 			.else
 				invoke CreateDialogParam,hInstance,IDD_DLGHSCLOCKSETUP,hWin,addr HSClockSetupProc,0
 				mov		childdialogs.hWndHSClockSetup,eax
+			.endif
+		.elseif eax==IDM_SETUP_DDSWAVEGEN
+			.if childdialogs.hWndDDSWaveSetup
+				invoke SetFocus,childdialogs.hWndDDSWaveSetup
+			.else
+				invoke CreateDialogParam,hInstance,IDD_DDSWAVESETUP,hWin,addr DDSWaveSetupProc,0
+				mov		childdialogs.hWndDDSWaveSetup,eax
 			.endif
 		.elseif eax==IDM_HELP_ABOUT
 		.elseif eax==IDC_BTNSAMPLE
@@ -423,6 +463,8 @@ MainDlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 			invoke MoveWindow,childdialogs.hWndScopeCHB,0,rect.top,rect.right,rect.bottom,TRUE
 		.elseif eax==STM32_ModeLGA
 			invoke MoveWindow,childdialogs.hWndLogicAnalyser,0,0,rect.right,rect.bottom,TRUE
+		.elseif eax==STM32_ModeDDSWave
+			invoke MoveWindow,childdialogs.hWndDDSWave,0,0,rect.right,rect.bottom,TRUE
 		.elseif eax==STM32_ModeHSClockCHA
 			invoke MoveWindow,childdialogs.hWndHSClockCHA,0,0,rect.right,rect.bottom,TRUE
 		.elseif eax==STM32_ModeHSClockCHB
@@ -498,6 +540,10 @@ start:
 	mov		wc.lpfnWndProc,offset HSClockProc
 	mov		wc.hbrBackground,NULL
 	mov		wc.lpszClassName,offset szHSCLOCKCLASS
+	invoke RegisterClassEx,addr wc
+	mov		wc.lpfnWndProc,offset DDSWaveProc
+	mov		wc.hbrBackground,NULL
+	mov		wc.lpszClassName,offset szDDSWAVECLASS
 	invoke RegisterClassEx,addr wc
 	invoke CreateDialogParam,hInstance,IDD_MAIN,NULL,addr MainDlgProc,NULL
 	invoke ShowWindow,hWnd,SW_SHOWNORMAL

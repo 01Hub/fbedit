@@ -127,7 +127,6 @@ int main(void)
         case STM32_ModeScopeCHA...STM32_ModeScopeCHACHB:
           DMA_SCPConfig();
           ADC_SCPConfig();
-          STM32_DataStruct.CommandStruct.TriggerWait = 3;
           WaitForTrigger();
           /* Start ADC1 Software Conversion */
           ADC1->CR2 |= (uint32_t)ADC_CR2_SWSTART;
@@ -186,7 +185,6 @@ int main(void)
           TIM8->CNT=0;
           TIM8->ARR=STM32_DataStruct.CommandStruct.LGASampleRate;
           DMA_LGAConfig();
-          STM32_DataStruct.CommandStruct.TriggerWait = 3;
           TIM_DMACmd(TIM8, TIM_DMA_Update, ENABLE);
           /* DMA2_Stream1 enable */
           DMA_Cmd(DMA2_Stream1, ENABLE);
@@ -277,20 +275,32 @@ void WaitForTrigger(void)
     case (STM32_TriggerLGA):
       tmp = STM32_DataStruct.CommandStruct.TriggerValue & STM32_DataStruct.CommandStruct.TriggerMask;
       /* Wait until conditions are met */
-      while ((((GPIOE->IDR>>8) & STM32_DataStruct.CommandStruct.TriggerMask) != tmp) & (STM32_DataStruct.CommandStruct.TriggerWait != 0))
+      while ((((GPIOE->IDR>>8) & STM32_DataStruct.CommandStruct.TriggerMask) != tmp))
       {
+        if (STM32_DataStruct.CommandStruct.TriggerWait == 0)
+        {
+          break;
+        }
       }
       break;
     case (STM32_TriggerLGAEdge):
       tmp = STM32_DataStruct.CommandStruct.TriggerValue & STM32_DataStruct.CommandStruct.TriggerMask;
       /* Edge sensitive */
       /* Wait while conditions are met */
-      while ((((GPIOE->IDR>>8) & STM32_DataStruct.CommandStruct.TriggerMask) == tmp) & (STM32_DataStruct.CommandStruct.TriggerWait != 0))
+      while ((((GPIOE->IDR>>8) & STM32_DataStruct.CommandStruct.TriggerMask) == tmp))
       {
+        if (STM32_DataStruct.CommandStruct.TriggerWait == 0)
+        {
+          break;
+        }
       }
       /* Wait until conditions are met */
-      while ((((GPIOE->IDR>>8) & STM32_DataStruct.CommandStruct.TriggerMask) != tmp) & (STM32_DataStruct.CommandStruct.TriggerWait != 0))
+      while ((((GPIOE->IDR>>8) & STM32_DataStruct.CommandStruct.TriggerMask) != tmp))
       {
+        if (STM32_DataStruct.CommandStruct.TriggerWait == 0)
+        {
+          break;
+        }
       }
       break;
     default:

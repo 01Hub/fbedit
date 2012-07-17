@@ -1,6 +1,47 @@
 
 .code
 
+ButtonProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+	.data?
+		nCount		DWORD ?
+	.code
+	mov		eax,uMsg
+	.if eax==WM_LBUTTONDOWN || eax==WM_LBUTTONDBLCLK
+		mov		nCount,16
+		invoke SetTimer,hWin,1000,500,NULL
+	.elseif eax==WM_LBUTTONUP
+		invoke KillTimer,hWin,1000
+		mov		nCount,16
+	.elseif eax==WM_TIMER
+		invoke GetWindowLong,hWin,GWL_ID
+		mov		ebx,eax
+		invoke GetParent,hWin
+		mov		esi,eax
+		.if esi==hWnd
+			invoke SendMessage,esi,WM_COMMAND,ebx,hWin
+		.else
+			invoke SendMessage,esi,WM_COMMAND,ebx,hWin
+			mov		edi,nCount
+			shr		edi,4
+			.if edi>40
+				mov		edi,40
+			.endif
+			.while edi
+				invoke SendMessage,esi,WM_COMMAND,ebx,hWin
+				dec		edi
+			.endw
+			invoke KillTimer,hWin,1000
+			invoke SetTimer,hWin,1000,50,NULL
+		.endif
+		inc		nCount
+		xor		eax,eax
+		ret
+	.endif
+	invoke CallWindowProc,lpOldButtonProc,hWin,uMsg,wParam,lParam
+	ret
+
+ButtonProc endp
+
 MakeHSCWave proc  uses ebx esi edi, lpWave:DWORD,Duty:DWORD
 
 	mov		edi,lpWave
@@ -86,7 +127,7 @@ HSClockSetupProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:
 			mov		eax,BST_CHECKED
 		.endif
 		invoke CheckDlgButton,hWin,IDC_CHKHSCLOCKAENABLE,eax
-		mov		eax,hsclockdata.hscCHAData.hsclockdutycycle
+		movzx	eax,hsclockdata.hscCHAData.hsclockdutycycle
 		invoke SendDlgItemMessage,hWin,IDC_TRBHSCLOCKADUTY,TBM_SETPOS,TRUE,eax
 		;Channel B
 		mov		eax,BST_UNCHECKED
@@ -94,12 +135,29 @@ HSClockSetupProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:
 			mov		eax,BST_CHECKED
 		.endif
 		invoke CheckDlgButton,hWin,IDC_CHKHSCLOCKBENABLE,eax
-		mov		eax,hsclockdata.hscCHBData.hsclockdutycycle
+		movzx	eax,hsclockdata.hscCHBData.hsclockdutycycle
 		invoke SendDlgItemMessage,hWin,IDC_TRBHSCLOCKBDUTY,TBM_SETPOS,TRUE,eax
-		invoke ClockToFrequency,hsclockdata.hscCHAData.hsclockfrequency,hsclockdata.hscCHAData.hsclockdivisor
+		movzx	eax,hsclockdata.hscCHAData.hsclockfrequency
+		movzx	edx,hsclockdata.hscCHAData.hsclockdivisor
+		invoke ClockToFrequency,eax,edx
 		invoke SetDlgItemInt,hWin,IDC_EDTFRQCHA,eax,FALSE
-		invoke ClockToFrequency,hsclockdata.hscCHBData.hsclockfrequency,hsclockdata.hscCHBData.hsclockdivisor
+		movzx	eax,hsclockdata.hscCHBData.hsclockfrequency
+		movzx	edx,hsclockdata.hscCHBData.hsclockdivisor
+		invoke ClockToFrequency,eax,edx
 		invoke SetDlgItemInt,hWin,IDC_EDTFRQCHB,eax,FALSE
+		push	0
+		push	IDC_BTNFRQCHADN
+		push	IDC_BTNFRQCHAUP
+		push	IDC_BTNFRQCHBDN
+		mov		eax,IDC_BTNFRQCHBUP
+		.while eax
+			invoke GetDlgItem,hWin,eax
+			invoke SetWindowLong,eax,GWL_WNDPROC,offset ButtonProc
+			mov		lpOldButtonProc,eax
+			pop		eax
+		.endw
+		invoke SendDlgItemMessage,hWin,IDC_EDTFRQCHA,EM_LIMITTEXT,8,0
+		invoke SendDlgItemMessage,hWin,IDC_EDTFRQCHB,EM_LIMITTEXT,8,0
 	.elseif eax==WM_COMMAND
 		mov		edx,wParam
 		movzx	eax,dx
@@ -110,140 +168,201 @@ HSClockSetupProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:
 			.elseif eax==IDC_CHKHSCLOCKAENABLE
 				invoke IsDlgButtonChecked,hWin,IDC_CHKHSCLOCKAENABLE
 				mov		hsclockdata.hscCHAData.hsclockenable,eax
-				mov		fINITHSCCHA,TRUE
+				mov		fHSCCHA,TRUE
 			.elseif eax==IDC_BTNFRQCHADN
-				dec		hsclockdata.hscCHAData.hsclockfrequency
-				.if ZERO?
-					mov		hsclockdata.hscCHAData.hsclockfrequency,0FFFFh
-					dec		hsclockdata.hscCHAData.hsclockdivisor
+				invoke GetDlgItemInt,hWin,IDC_EDTFRQCHA,NULL,FALSE
+				.if eax>1
+					mov		ebx,eax
+					mov		edi,eax
+					.while TRUE
+						dec		ebx
+						invoke FrequencyToClock,ebx
+						mov		hsclockdata.hscCHAData.hsclockfrequency,ax
+						mov		hsclockdata.hscCHAData.hsclockdivisor,dx
+						invoke ClockToFrequency,eax,edx
+						.break .if eax!=edi
+					.endw
+					invoke SetDlgItemInt,hWin,IDC_EDTFRQCHA,eax,FALSE
+					invoke SendDlgItemMessage,hWin,IDC_TRBHSCLOCKADUTY,TBM_GETPOS,0,0
+					movzx	ecx,hsclockdata.hscCHAData.hsclockfrequency
+					inc		ecx
+					mul		ecx
+					mov		ecx,100
+					div		ecx
+					dec		eax
+					mov		hsclockdata.hscCHAData.hsclockccr,ax
+					invoke InvalidateRect,hsclockdata.hscCHAData.hWndHSClock,NULL,TRUE
+					mov		fHSCCHA,TRUE
 				.endif
 			.elseif eax==IDC_BTNFRQCHAUP
-				dec		hsclockdata.hscCHAData.hsclockfrequency
-				.if ZERO?
-					mov		hsclockdata.hscCHAData.hsclockfrequency,0FFFFh
-					dec		hsclockdata.hscCHAData.hsclockdivisor
+				invoke GetDlgItemInt,hWin,IDC_EDTFRQCHA,NULL,FALSE
+				.if eax<84000000
+					mov		ebx,eax
+					mov		edi,eax
+					.while TRUE
+						inc		ebx
+						invoke FrequencyToClock,ebx
+						mov		hsclockdata.hscCHAData.hsclockfrequency,ax
+						mov		hsclockdata.hscCHAData.hsclockdivisor,dx
+						invoke ClockToFrequency,eax,edx
+						.break .if eax!=edi
+					.endw
+					invoke SetDlgItemInt,hWin,IDC_EDTFRQCHA,eax,FALSE
+					invoke SendDlgItemMessage,hWin,IDC_TRBHSCLOCKADUTY,TBM_GETPOS,0,0
+					movzx	ecx,hsclockdata.hscCHAData.hsclockfrequency
+					inc		ecx
+					mul		ecx
+					mov		ecx,100
+					div		ecx
+					dec		eax
+					mov		hsclockdata.hscCHAData.hsclockccr,ax
+					invoke InvalidateRect,hsclockdata.hscCHAData.hWndHSClock,NULL,TRUE
+					mov		fHSCCHA,TRUE
 				.endif
-				invoke ClockToFrequency,hsclockdata.hscCHAData.hsclockfrequency,hsclockdata.hscCHAData.hsclockdivisor
-				invoke SetDlgItemInt,hWin,IDC_EDTFRQCHA,eax,FALSE
-				invoke SendDlgItemMessage,hWin,IDC_TRBHSCLOCKADUTY,TBM_GETPOS,0,0
-				mov		ecx,hsclockdata.hscCHAData.hsclockfrequency
-				inc		ecx
-				mul		ecx
-				mov		ecx,100
-				div		ecx
-				dec		eax
-				mov		hsclockdata.hscCHAData.hsclockccr,eax
-				invoke InvalidateRect,hsclockdata.hscCHAData.hWndHSClock,NULL,TRUE
-				mov		fINITHSCCHA,TRUE
 			.elseif eax==IDC_CHKHSCLOCKBENABLE
 				invoke IsDlgButtonChecked,hWin,IDC_CHKHSCLOCKBENABLE
 				mov		hsclockdata.hscCHBData.hsclockenable,eax
-				mov		fINITHSCCHB,TRUE
+				mov		fHSCCHB,TRUE
 			.elseif eax==IDC_BTNFRQCHBDN
-			.elseif eax==IDC_BTNFRQCHBUP
-				dec		hsclockdata.hscCHBData.hsclockfrequency
-				.if ZERO?
-					mov		hsclockdata.hscCHBData.hsclockfrequency,0FFFFh
-					dec		hsclockdata.hscCHBData.hsclockdivisor
+				invoke GetDlgItemInt,hWin,IDC_EDTFRQCHB,NULL,FALSE
+				.if eax>1
+					mov		ebx,eax
+					mov		edi,eax
+					.while TRUE
+						dec		ebx
+						invoke FrequencyToClock,ebx
+						mov		hsclockdata.hscCHBData.hsclockfrequency,ax
+						mov		hsclockdata.hscCHBData.hsclockdivisor,dx
+						invoke ClockToFrequency,eax,edx
+						.break .if eax!=edi
+					.endw
+					invoke SetDlgItemInt,hWin,IDC_EDTFRQCHB,eax,FALSE
+					invoke SendDlgItemMessage,hWin,IDC_TRBHSCLOCKBDUTY,TBM_GETPOS,0,0
+					movzx	ecx,hsclockdata.hscCHBData.hsclockfrequency
+					inc		ecx
+					mul		ecx
+					mov		ecx,100
+					div		ecx
+					dec		eax
+					mov		hsclockdata.hscCHBData.hsclockccr,ax
+					invoke InvalidateRect,hsclockdata.hscCHBData.hWndHSClock,NULL,TRUE
+					mov		fHSCCHB,TRUE
 				.endif
-				invoke ClockToFrequency,hsclockdata.hscCHBData.hsclockfrequency,hsclockdata.hscCHBData.hsclockdivisor
-				invoke SetDlgItemInt,hWin,IDC_EDTFRQCHB,eax,FALSE
-				invoke SendDlgItemMessage,hWin,IDC_TRBHSCLOCKBDUTY,TBM_GETPOS,0,0
-				mov		ecx,hsclockdata.hscCHBData.hsclockfrequency
-				inc		ecx
-				mul		ecx
-				mov		ecx,100
-				div		ecx
-				dec		eax
-				mov		hsclockdata.hscCHBData.hsclockccr,eax
-				invoke InvalidateRect,hsclockdata.hscCHBData.hWndHSClock,NULL,TRUE
-				mov		fINITHSCCHB,TRUE
+			.elseif eax==IDC_BTNFRQCHBUP
+				invoke GetDlgItemInt,hWin,IDC_EDTFRQCHB,NULL,FALSE
+				.if eax<84000000
+					mov		ebx,eax
+					mov		edi,eax
+					.while TRUE
+						inc		ebx
+						invoke FrequencyToClock,ebx
+						mov		hsclockdata.hscCHBData.hsclockfrequency,ax
+						mov		hsclockdata.hscCHBData.hsclockdivisor,dx
+						invoke ClockToFrequency,eax,edx
+						.break .if eax!=edi
+					.endw
+					invoke SetDlgItemInt,hWin,IDC_EDTFRQCHB,eax,FALSE
+					invoke SendDlgItemMessage,hWin,IDC_TRBHSCLOCKBDUTY,TBM_GETPOS,0,0
+					movzx	ecx,hsclockdata.hscCHBData.hsclockfrequency
+					inc		ecx
+					mul		ecx
+					mov		ecx,100
+					div		ecx
+					dec		eax
+					mov		hsclockdata.hscCHBData.hsclockccr,ax
+					invoke InvalidateRect,hsclockdata.hscCHBData.hWndHSClock,NULL,TRUE
+					mov		fHSCCHB,TRUE
+				.endif
 			.endif
 		.elseif edx==EN_KILLFOCUS
 			.if eax==IDC_EDTFRQCHA
 				invoke GetDlgItemInt,hWin,IDC_EDTFRQCHA,0,FALSE
 				.if !eax
 					inc		eax
+				.elseif eax>84000000
+					mov		eax,84000000
 				.endif
 				invoke FrequencyToClock,eax
-				mov		hsclockdata.hscCHAData.hsclockfrequency,eax
-				mov		hsclockdata.hscCHAData.hsclockdivisor,edx
+				mov		hsclockdata.hscCHAData.hsclockfrequency,ax
+				mov		hsclockdata.hscCHAData.hsclockdivisor,dx
 				invoke ClockToFrequency,eax,edx
 				invoke SetDlgItemInt,hWin,IDC_EDTFRQCHA,eax,FALSE
 				invoke SendDlgItemMessage,hWin,IDC_TRBHSCLOCKADUTY,TBM_GETPOS,0,0
-				mov		ecx,hsclockdata.hscCHAData.hsclockfrequency
+				movzx	ecx,hsclockdata.hscCHAData.hsclockfrequency
 				inc		ecx
 				mul		ecx
 				mov		ecx,100
 				div		ecx
 				dec		eax
-				mov		hsclockdata.hscCHAData.hsclockccr,eax
+				mov		hsclockdata.hscCHAData.hsclockccr,ax
 				invoke InvalidateRect,hsclockdata.hscCHAData.hWndHSClock,NULL,TRUE
-				mov		fINITHSCCHA,TRUE
+				mov		fHSCCHA,TRUE
 			.elseif eax==IDC_EDTFRQCHB
 				invoke GetDlgItemInt,hWin,IDC_EDTFRQCHB,0,FALSE
 				.if !eax
 					inc		eax
+				.elseif eax>84000000
+					mov		eax,84000000
 				.endif
 				invoke FrequencyToClock,eax
-				mov		hsclockdata.hscCHBData.hsclockfrequency,eax
-				mov		hsclockdata.hscCHBData.hsclockdivisor,edx
+				mov		hsclockdata.hscCHBData.hsclockfrequency,ax
+				mov		hsclockdata.hscCHBData.hsclockdivisor,dx
 				invoke ClockToFrequency,eax,edx
 				invoke SetDlgItemInt,hWin,IDC_EDTFRQCHB,eax,FALSE
 				invoke SendDlgItemMessage,hWin,IDC_TRBHSCLOCKBDUTY,TBM_GETPOS,0,0
-				mov		ecx,hsclockdata.hscCHBData.hsclockfrequency
+				movzx	ecx,hsclockdata.hscCHBData.hsclockfrequency
 				inc		ecx
 				mul		ecx
 				mov		ecx,100
 				div		ecx
 				dec		eax
-				mov		hsclockdata.hscCHBData.hsclockccr,eax
+				mov		hsclockdata.hscCHBData.hsclockccr,ax
 				invoke InvalidateRect,hsclockdata.hscCHBData.hWndHSClock,NULL,TRUE
-				mov		fINITHSCCHB,TRUE
+				mov		fHSCCHB,TRUE
 			.endif
 		.endif
 	.elseif eax==WM_HSCROLL
 		invoke SendDlgItemMessage,hWin,IDC_TRBHSCLOCKADUTY,TBM_GETPOS,0,0
-		.if eax!=hsclockdata.hscCHAData.hsclockdutycycle
-			mov		hsclockdata.hscCHAData.hsclockdutycycle,eax
-			mov		ecx,hsclockdata.hscCHAData.hsclockfrequency
+		.if ax!=hsclockdata.hscCHAData.hsclockdutycycle
+			mov		hsclockdata.hscCHAData.hsclockdutycycle,ax
+			movzx	ecx,hsclockdata.hscCHAData.hsclockfrequency
 			inc		ecx
 			mul		ecx
 			mov		ecx,100
 			div		ecx
 			dec		eax
-			mov		hsclockdata.hscCHAData.hsclockccr,eax
-			mov		eax,hsclockdata.hscCHAData.hsclockccr
+			mov		hsclockdata.hscCHAData.hsclockccr,ax
+			movzx	eax,hsclockdata.hscCHAData.hsclockccr
 			inc		eax
 			mov		ecx,100
 			mul		ecx
-			mov		ecx,hsclockdata.hscCHAData.hsclockfrequency
+			movzx	ecx,hsclockdata.hscCHAData.hsclockfrequency
 			inc		ecx
 			div		ecx
 			invoke MakeHSCWave,addr hsclockdata.hscCHAData.HSC_Data,eax
 			invoke InvalidateRect,hsclockdata.hscCHAData.hWndHSClock,NULL,TRUE
-			mov		fINITHSCCHA,TRUE
+			mov		fHSCCHA,TRUE
 		.endif
 		invoke SendDlgItemMessage,hWin,IDC_TRBHSCLOCKBDUTY,TBM_GETPOS,0,0
-		.if eax!=hsclockdata.hscCHBData.hsclockdutycycle
-			mov		hsclockdata.hscCHBData.hsclockdutycycle,eax
-			mov		ecx,hsclockdata.hscCHBData.hsclockfrequency
+		.if ax!=hsclockdata.hscCHBData.hsclockdutycycle
+			mov		hsclockdata.hscCHBData.hsclockdutycycle,ax
+			movzx	ecx,hsclockdata.hscCHBData.hsclockfrequency
 			inc		ecx
 			mul		ecx
 			mov		ecx,100
 			div		ecx
 			dec		eax
-			mov		hsclockdata.hscCHBData.hsclockccr,eax
-			mov		eax,hsclockdata.hscCHBData.hsclockccr
+			mov		hsclockdata.hscCHBData.hsclockccr,ax
+			movzx	eax,hsclockdata.hscCHBData.hsclockccr
 			inc		eax
 			mov		ecx,100
 			mul		ecx
-			mov		ecx,hsclockdata.hscCHBData.hsclockfrequency
+			movzx	ecx,hsclockdata.hscCHBData.hsclockfrequency
 			inc		ecx
 			div		ecx
 			invoke MakeHSCWave,addr hsclockdata.hscCHBData.HSC_Data,eax
 			invoke InvalidateRect,hsclockdata.hscCHBData.hWndHSClock,NULL,TRUE
-			mov		fINITHSCCHB,TRUE
+			mov		fHSCCHB,TRUE
 		.endif
 	.elseif eax==WM_ACTIVATE
 		mov		eax,wParam
@@ -400,21 +519,21 @@ HSClockProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 		pop		eax
 		invoke SelectObject,mDC,eax
 		invoke DeleteObject,eax
-		mov		ecx,[ebx].HSCLOCKCHDATA.hsclockdivisor
+		movzx	ecx,[ebx].HSCLOCKCHDATA.hsclockdivisor
 		inc		ecx
 		mov		eax,STM32Clock
 		cdq
 		div		ecx
 		cdq
-		mov		ecx,[ebx].HSCLOCKCHDATA.hsclockfrequency
+		movzx	ecx,[ebx].HSCLOCKCHDATA.hsclockfrequency
 		inc		ecx
 		div		ecx
 		push	eax
-		mov		eax,[ebx].HSCLOCKCHDATA.hsclockccr
+		movzx	eax,[ebx].HSCLOCKCHDATA.hsclockccr
 		inc		eax
 		mov		ecx,100
 		mul		ecx
-		mov		ecx,[ebx].HSCLOCKCHDATA.hsclockfrequency
+		movzx	ecx,[ebx].HSCLOCKCHDATA.hsclockfrequency
 		inc		ecx
 		div		ecx
 		pop		edx
