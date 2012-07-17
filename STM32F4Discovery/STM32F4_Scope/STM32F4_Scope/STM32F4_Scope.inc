@@ -376,6 +376,8 @@ DDSDATA struct
 	hWndDDS					HWND ?
 	hWndDDSTool				HWND ?
 	xmag					DWORD ?
+	DDS_VMin				DWORD ?
+	DDS_VMax				DWORD ?
 	DDS_CommandStruct		STM32_CommandStructDef <>
 	DDS_CommandStructDone	STM32_CommandStructDef <>
 	DDS_WaveData			WORD 4098 dup(?)
@@ -467,6 +469,7 @@ fHSCCHA						DWORD ?
 fHSCCHB						DWORD ?
 fSCOPE						DWORD ?
 fLGA						DWORD ?
+fDDS						DWORD ?
 
 scopedata					SCOPEDATA <>
 lgadata						LGADATA <>
