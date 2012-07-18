@@ -79,6 +79,11 @@ SampleThreadProc proc lParam:DWORD
 				invoke STLinkWrite,hWnd,STM32CommandStart,addr hsclockdata.HSC_CommandStructDone,sizeof STM32_CommandStructDef
 				mov		hsclockdata.HSC_CommandStructDone.Command,STM32_CommandInit
 				invoke STLinkWrite,hWnd,STM32CommandStart,addr hsclockdata.HSC_CommandStructDone,4
+				.while TRUE
+					invoke STLinkRead,hWnd,STM32CommandStart,addr hsclockdata.HSC_CommandStructDone,4
+					.break .if hsclockdata.HSC_CommandStructDone.Command==STM32_CommandDone
+					invoke Sleep,10
+				.endw
 			.elseif fHSCCHB
 				mov		fHSCCHB,0
 				;Send all initialisation data
@@ -97,6 +102,11 @@ SampleThreadProc proc lParam:DWORD
 				invoke STLinkWrite,hWnd,STM32CommandStart,addr hsclockdata.HSC_CommandStructDone,sizeof STM32_CommandStructDef
 				mov		hsclockdata.HSC_CommandStructDone.Command,STM32_CommandInit
 				invoke STLinkWrite,hWnd,STM32CommandStart,addr hsclockdata.HSC_CommandStructDone,4
+				.while TRUE
+					invoke STLinkRead,hWnd,STM32CommandStart,addr hsclockdata.HSC_CommandStructDone,4
+					.break .if hsclockdata.HSC_CommandStructDone.Command==STM32_CommandDone
+					invoke Sleep,10
+				.endw
 			.elseif fSCOPE
 				mov		fSCOPE,0
 				invoke RtlMoveMemory,addr scopedata.ADC_CommandStructDone,addr scopedata.ADC_CommandStruct,sizeof STM32_CommandStructDef
@@ -190,6 +200,18 @@ SampleThreadProc proc lParam:DWORD
 				mov		ebx,eax
 				invoke InvalidateRect,ebx,NULL,TRUE
 				invoke UpdateWindow,ebx
+			.elseif fDDS
+				mov		fDDS,0
+				invoke RtlMoveMemory,addr ddsdata.DDS_CommandStructDone,addr ddsdata.DDS_CommandStruct,sizeof STM32_CommandStructDef
+				mov		ddsdata.DDS_CommandStructDone.Command,STM32_CommandWait
+				invoke STLinkWrite,hWnd,STM32CommandStart,addr ddsdata.DDS_CommandStructDone,sizeof STM32_CommandStructDef
+				mov		ddsdata.DDS_CommandStructDone.Command,STM32_CommandInit
+				invoke STLinkWrite,hWnd,STM32CommandStart,addr ddsdata.DDS_CommandStructDone,4
+				.while TRUE
+					invoke STLinkRead,hWnd,STM32CommandStart,addr ddsdata.DDS_CommandStructDone,4
+					.break .if ddsdata.DDS_CommandStructDone.Command==STM32_CommandDone
+					invoke Sleep,10
+				.endw
 			.endif
 		.endif
 	.endw

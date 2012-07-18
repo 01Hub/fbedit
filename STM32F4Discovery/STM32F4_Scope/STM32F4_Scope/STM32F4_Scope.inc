@@ -206,7 +206,6 @@ STM32_ModeHSClockCHB		equ 5
 STM32_ModeHSClockCHACHB		equ 6
 STM32_ModeLGA				equ 7
 STM32_ModeDDSWave			equ 8
-STM32_ModeDDSSweep			equ 9
 
 ;Trigger
 STM32_TriggerManual			equ 0
@@ -224,17 +223,17 @@ DDS_ModeSqrWave				equ 2
 DDS_ModeSawWave				equ 3
 DDS_ModeRevSawWave			equ 4
 
-;DDS SWEEP SubModes
-SWEEP_SubModeOff			equ 0
-SWEEP_SubModeUp				equ 1
-SWEEP_SubModeDown			equ 2
-SWEEP_SubModeUpDown			equ 3
+;DDS SWEEP Modes
+SWEEP_ModeOff				equ 0
+SWEEP_ModeUp				equ 1
+SWEEP_ModeDown				equ 2
+SWEEP_ModeUpDown			equ 3
 
 ;STM32 ram addresses
 STM32FrequencyCHA			equ 20000014h
 STM32FrequencyCHB			equ 20000024h
 STM32CommandStart			equ 20000034h
-STM32DataStart				equ 20000044h
+STM32DataStart				equ 2000005Eh
 
 ;#########################################################################
 
@@ -256,35 +255,29 @@ TEXTHIGHT					equ 30
 STM32_CommandStructDef struct
 	Command					BYTE ?
 	Mode					BYTE ?
-	union
-		struct
-			DataBlocks				BYTE ?
-			TriggerMode				BYTE ?
-			TriggerValue			BYTE ?
-			TriggerMask				BYTE ?
-			TriggerWait				BYTE ?
-			ScopeDataBits			BYTE ?
-			ScopeSampleClocks		BYTE ?
-			ScopeClockDiv			BYTE ?
-			ScopeAmplifyCHA			BYTE ?
-			ScopeAmplifyCHB			BYTE ?
-			ScopeDCNullOutCHA		BYTE ?
-			ScopeDCNullOutCHB		BYTE ?
-			LGASampleRate			WORD ?
-		ends
-		struct
-			DDS_WaveType			BYTE ?
-			DDS_SubMode				BYTE ?
-			DDS_PhaseFrq			DWORD ?
-			Amplitude				WORD ?
-			DCOffset				WORD ?
-			SWEEP_Add				DWORD ?
-			SWEEP_StepTime			WORD ?
-			SWEEP_StepCount			WORD ?
-;			SWEEP_Min				DWORD ?
-;			SWEEP_Max				DWORD ?
-		ends
-	ends
+	DataBlocks				BYTE ?
+	TriggerMode				BYTE ?
+	TriggerValue			BYTE ?
+	TriggerMask				BYTE ?
+	TriggerWait				BYTE ?
+	ScopeDataBits			BYTE ?
+	ScopeSampleClocks		BYTE ?
+	ScopeClockDiv			BYTE ?
+	ScopeAmplifyCHA			BYTE ?
+	ScopeAmplifyCHB			BYTE ?
+	ScopeDCNullOutCHA		BYTE ?
+	ScopeDCNullOutCHB		BYTE ?
+	LGASampleRate			WORD ?
+	DDS_WaveType			BYTE ?
+	DDS_SweepMode			BYTE ?
+	DDS_PhaseAdd			DWORD ?
+	DDS_Amplitude			WORD ?
+	DDS_DCOffset			WORD ?
+	SWEEP_Add				DWORD ?
+	SWEEP_StepTime			WORD ?
+	SWEEP_StepCount			WORD ?
+	SWEEP_Min				DWORD ?
+	SWEEP_Max				DWORD ?
 STM32_CommandStructDef ends
 
 STM32_FRQDataStructDef struct
@@ -431,9 +424,11 @@ szFmtFrqHz					BYTE '%s%uHz',0
 szFmtFrqHzX1000				BYTE '%s%04uHz',0
 szFmtFrqKHz					BYTE '%s%uKHz',0
 szFmtFrqMHz					BYTE '%s%uMHz',0
-szFmtScopeVmin				BYTE '  Vmin: %04uV',0
-szFmtScopeVmax				BYTE '  Vmax: %04uV',0
-szFmtScopeVpp				BYTE '  Vpp: %04uV',0
+szFmtFrqMin					BYTE ' Fmin: ',0
+szFmtFrqMax					BYTE '  Fmax: ',0
+szFmtVmin					BYTE '  Vmin: %04uV',0
+szFmtVmax					BYTE '  Vmax: %04uV',0
+szFmtVpp					BYTE '  Vpp: %04uV',0
 szFmtWaveDCOffset			BYTE '  DC Offset: %04uV',0
 szFmtDuty					BYTE '  Pulse Width: %u%%',0
 szFmtLGA					BYTE ' Hex: %02X  Bin: %s  Bytenbr: %u',0

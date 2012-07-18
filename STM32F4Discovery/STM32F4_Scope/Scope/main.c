@@ -30,6 +30,7 @@
 #define STM32_ModeHSClockCHB      ((uint8_t)5)
 #define STM32_ModeHSClockCHACHB   ((uint8_t)6)
 #define STM32_ModeLGA             ((uint8_t)7)
+#define STM32_ModeDDSWave         ((uint8_t)8)
 
 /* STM32_Triggers */
 #define STM32_TriggerManual       ((uint8_t)0)
@@ -58,6 +59,16 @@ typedef struct
   uint8_t   ScopeDCNullOutCHA;
   uint8_t   ScopeDCNullOutCHB;
   uint16_t  LGASampleRate;
+  uint8_t   DDS_WaveType;
+  uint8_t   DDS_SweepMode;
+  uint32_t  DDS_PhaseAdd;
+  uint16_t  DDS_Amplitude;
+  uint16_t  DDS_DCOffset;
+  uint32_t  SWEEP_Add;
+  uint16_t  SWEEP_StepTime;
+  uint16_t  SWEEP_StepCount;
+  uint32_t  SWEEP_Min;
+  uint32_t  SWEEP_Max;
 }CommandStructTypeDef;
 
 typedef struct
@@ -75,10 +86,7 @@ typedef struct
   FRQDataStructTypeDef FRQDataStructCHA;                // 0x20000014
   FRQDataStructTypeDef FRQDataStructCHB;                // 0x20000024
   CommandStructTypeDef CommandStruct;                   // 0x20000034
-  union
-  {
-    uint16_t STM32_Data[STM32_DataSize];                // 0x20000044
-  };
+  uint16_t STM32_Data[STM32_DataSize];                  // 0x2000005E
 }STM32_DataStructTypeDef;
 
 /* Private macro -------------------------------------------------------------*/
@@ -94,6 +102,7 @@ void ADC_DVMConfig(void);
 void ADC_SCPConfig(void);
 void DMA_SCPConfig(void);
 void DMA_LGAConfig(void);
+void USART_Config(void);
 void WaitForTrigger(void);
 
 /* Private functions ---------------------------------------------------------*/
@@ -108,6 +117,7 @@ void WaitForTrigger(void);
 int main(void)
 {
   u32 i;
+  uint8_t *Adr;
 
   asm("add  sp,#0x10000");
 
@@ -116,6 +126,7 @@ int main(void)
   GPIO_Config();
   TIM_Config();
   ADC_DVMConfig();
+  USART_Config();
   while (1)
   {
     if (STM32_DataStruct.CommandStruct.Command == STM32_CommandInit)
@@ -157,6 +168,7 @@ int main(void)
             /* TIM4 disable counter */
             TIM_Cmd(TIM4, DISABLE);
           }
+          STM32_DataStruct.CommandStruct.Command = STM32_CommandDone;
           break;
         case STM32_ModeHSClockCHB:
           if (STM32_DataStruct.FRQDataStructCHB.HSCEnable)
@@ -179,6 +191,7 @@ int main(void)
             /* TIM10 disable counter */
             TIM_Cmd(TIM10, DISABLE);
           }
+          STM32_DataStruct.CommandStruct.Command = STM32_CommandDone;
           break;
         case STM32_ModeLGA:
           STM_EVAL_LEDToggle(LED4);
@@ -194,6 +207,21 @@ int main(void)
           STM32_DataStruct.CommandStruct.Command = STM32_CommandDone;
           DMA_DeInit(DMA2_Stream1);
           TIM_Cmd(TIM8, DISABLE);
+          break;
+        case STM32_ModeDDSWave:
+          /* Send configuration data to DDS Wave Generator */
+          Adr = (uint8_t *)&STM32_DataStruct.CommandStruct.DDS_WaveType;
+          i=0;
+          while (i<26)
+          {
+            /* Wait until transmit register empty*/
+            while((USART6->SR & USART_FLAG_TXE) == 0);          
+            /* Transmit Data */
+            USART6->DR = (uint16_t)(uint8_t) *Adr;
+            i++;
+            Adr++;
+          }
+          STM32_DataStruct.CommandStruct.Command = STM32_CommandDone;
           break;
       }
     }
@@ -314,8 +342,8 @@ void RCC_Config(void)
   RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA2 | RCC_AHB1Periph_GPIOA | RCC_AHB1Periph_GPIOB | RCC_AHB1Periph_GPIOC | RCC_AHB1Periph_GPIOE, ENABLE);
   /* Enable TIM2, TIM3, TIM4 and TIM5 clocks ****************************************/
   RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2 | RCC_APB1Periph_TIM3 | RCC_APB1Periph_TIM4 | RCC_APB1Periph_TIM5, ENABLE);
-  /* Enable TIM10 clocks ****************************************/
-  RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM8 | RCC_APB2Periph_TIM10 | RCC_APB2Periph_ADC1 | RCC_APB2Periph_ADC2 | RCC_APB2Periph_ADC3, ENABLE);
+  /* Enable USART6, TIM8, TIM10, ADC1, ADC2 and ADC3 clocks ****************************************/
+  RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART6 | RCC_APB2Periph_TIM8 | RCC_APB2Periph_TIM10 | RCC_APB2Periph_ADC1 | RCC_APB2Periph_ADC2 | RCC_APB2Periph_ADC3, ENABLE);
 }
 
 void NVIC_Config(void)
@@ -369,6 +397,15 @@ void GPIO_Config(void)
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AN;
   GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL ;
   GPIO_Init(GPIOB, &GPIO_InitStructure);
+
+  /* USART6 TX (PC6) configuration */
+  GPIO_InitStructure.GPIO_Pin   = GPIO_Pin_6;
+  GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_AF;
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+  GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+  GPIO_InitStructure.GPIO_PuPd  = GPIO_PuPd_NOPULL ;
+  GPIO_Init(GPIOC, &GPIO_InitStructure);
+  GPIO_PinAFConfig(GPIOC, GPIO_PinSource6, GPIO_AF_USART6);
 
   STM_EVAL_LEDInit(LED3);
   STM_EVAL_LEDInit(LED4);
@@ -466,9 +503,9 @@ void ADC_DVMConfig(void)
   ADC_CommonStructInit(&ADC_CommonInitStructure);
 
   /* ADC Common Init **********************************************************/
-  ADC_CommonInitStructure.ADC_Mode = ADC_Mode_Independent;//ADC_DualMode_RegSimult;
+  ADC_CommonInitStructure.ADC_Mode = ADC_Mode_Independent;
   ADC_CommonInitStructure.ADC_Prescaler = ADC_Prescaler_Div2;
-  ADC_CommonInitStructure.ADC_DMAAccessMode = ADC_DMAAccessMode_Disabled;//ADC_DMAAccessMode_2;
+  ADC_CommonInitStructure.ADC_DMAAccessMode = ADC_DMAAccessMode_Disabled;
   ADC_CommonInitStructure.ADC_TwoSamplingDelay = ADC_TwoSamplingDelay_5Cycles;
   ADC_CommonInit(&ADC_CommonInitStructure);
 
@@ -584,6 +621,20 @@ void DMA_LGAConfig(void)
   DMA_InitStructure.DMA_MemoryBurst = DMA_MemoryBurst_Single;
   DMA_InitStructure.DMA_PeripheralBurst = DMA_PeripheralBurst_Single;
   DMA_Init(DMA2_Stream1, &DMA_InitStructure);
+}
+
+void USART_Config(void)
+{
+  USART_InitTypeDef     USART_InitStructure;
+
+  USART_InitStructure.USART_BaudRate == 9600;
+  USART_InitStructure.USART_WordLength = USART_WordLength_8b;
+  USART_InitStructure.USART_StopBits = USART_StopBits_1;
+  USART_InitStructure.USART_Parity = USART_Parity_No;
+  USART_InitStructure.USART_Mode = USART_Mode_Tx;
+  USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
+  USART_Init(USART6, &USART_InitStructure);
+  USART_Cmd(USART6, ENABLE);
 }
 
 /**

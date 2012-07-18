@@ -1,6 +1,36 @@
 
 .code
 
+DDSHzToPhaseAdd proc frq:DWORD
+
+	fild	frq
+	fild	dds64
+	fmulp	st(1),st
+	fild	ddscycles
+	fmulp	st(1),st
+	fild	STM32Clock
+	fdivp	st(1),st
+	fistp	frq
+	mov		eax,frq
+	ret
+
+DDSHzToPhaseAdd endp
+
+DDSPhaseAddToHz proc PhaseAdd:DWORD
+	
+	fild	STM32Clock
+	fild	dds64
+	fdivp	st(1),st
+	fild	ddscycles
+	fdivp	st(1),st
+	fild	PhaseAdd
+	fmulp	st(1),st
+	fistp	PhaseAdd
+	mov		eax,PhaseAdd
+	ret
+
+DDSPhaseAddToHz endp
+
 DDSGenWave proc uses ebx esi edi
 
 	mov		ddsdata.DDS_VMin,4095
@@ -61,15 +91,15 @@ DDSGenWave proc uses ebx esi edi
 	mov		edi,offset ddsdata.DDS_WaveData
 	.while ebx<4098
 		movzx	eax,word ptr [edi+ebx*WORD]
-		movzx	ecx,ddsdata.DDS_CommandStruct.Amplitude
+		movzx	ecx,ddsdata.DDS_CommandStruct.DDS_Amplitude
 		mul		ecx
 		mov		ecx,4096
 		div		ecx
-		movzx	ecx,ddsdata.DDS_CommandStruct.Amplitude
+		movzx	ecx,ddsdata.DDS_CommandStruct.DDS_Amplitude
 		shr		ecx,1
 		sub		ax,cx
 		add		ax,2048
-		movzx	ecx,ddsdata.DDS_CommandStruct.DCOffset
+		movzx	ecx,ddsdata.DDS_CommandStruct.DDS_DCOffset
 		add		ax,cx
 		sub		ax,4096
 		.if CARRY?
@@ -87,79 +117,23 @@ DDSGenWave proc uses ebx esi edi
 		.endif
 		inc		ebx
 	.endw
+	mov		eax,ddsdata.DDS_CommandStruct.SWEEP_Add
+	movzx	edx,ddsdata.DDS_CommandStruct.SWEEP_StepCount
+	mul		edx
+	shr		eax,1
+	mov		edi,eax
+	mov		ebx,ddsdata.DDS_CommandStruct.DDS_PhaseAdd
+	mov		eax,ebx
+	sub		eax,edi
+	mov		ddsdata.DDS_CommandStruct.SWEEP_Min,eax
+	mov		eax,ebx
+	add		eax,edi
+	mov		ddsdata.DDS_CommandStruct.SWEEP_Max,eax
 	invoke InvalidateRect,ddsdata.hWndDDS,NULL,TRUE
 	invoke UpdateWindow,ddsdata.hWndDDS
-;	mov		eax,ddswavedata.SWEEP_StepSize
-;	mov		ecx,ddswavedata.SWEEP_StepCount
-;	shr		ecx,1
-;	mul		ecx
-;	mov		ebx,ddswavedata.DDS_PhaseFrq
-;	sub		ebx,eax
-;	mov		eax,ddswavedata.SWEEP_StepSize
-;	mov		ecx,ddswavedata.SWEEP_StepCount
-;	mul		ecx
-;	mov		edx,ebx
-;	add		edx,eax
-;	mov		eax,ddswavedata.SWEEP_SubMode
-;	.if eax==SWEEP_SubModeUp
-;		mov		ddswavedata.DDS_Sweep.SWEEP_UpDovn,FALSE
-;		mov		ddswavedata.DDS_Sweep.SWEEP_Min,ebx
-;		mov		ddswavedata.DDS_Sweep.SWEEP_Max,edx
-;		mov		eax,ddswavedata.SWEEP_StepSize
-;		mov		ddswavedata.DDS_Sweep.SWEEP_Add,eax
-;	.elseif eax==SWEEP_SubModeDown
-;		mov		ddswavedata.DDS_Sweep.SWEEP_UpDovn,FALSE
-;		mov		ddswavedata.DDS_Sweep.SWEEP_Max,ebx
-;		mov		ddswavedata.DDS_Sweep.SWEEP_Min,edx
-;		mov		eax,ddswavedata.SWEEP_StepSize
-;		neg		eax
-;		mov		ddswavedata.DDS_Sweep.SWEEP_Add,eax
-;	.elseif eax==SWEEP_SubModeUpDown
-;		mov		ddswavedata.DDS_Sweep.SWEEP_UpDovn,TRUE
-;		mov		ddswavedata.DDS_Sweep.SWEEP_Min,ebx
-;		mov		ddswavedata.DDS_Sweep.SWEEP_Max,edx
-;		mov		eax,ddswavedata.SWEEP_StepSize
-;		mov		ddswavedata.DDS_Sweep.SWEEP_Add,eax
-;	.elseif eax==SWEEP_SubModePeak
-;		mov		ddswavedata.DDS_Sweep.SWEEP_UpDovn,FALSE
-;		mov		ddswavedata.DDS_Sweep.SWEEP_Min,ebx
-;		mov		ddswavedata.DDS_Sweep.SWEEP_Max,edx
-;		mov		eax,ddswavedata.SWEEP_StepSize
-;		mov		ddswavedata.DDS_Sweep.SWEEP_Add,eax
-;	.endif
 	ret
 
 DDSGenWave endp
-
-DDSHzToPhaseAdd proc frq:DWORD
-
-	fild	frq
-	fild	dds64
-	fmulp	st(1),st
-	fild	ddscycles
-	fmulp	st(1),st
-	fild	STM32Clock
-	fdivp	st(1),st
-	fistp	frq
-	mov		eax,frq
-	ret
-
-DDSHzToPhaseAdd endp
-
-DDSPhaseFrqToHz proc PhaseAdd:DWORD
-	
-	fild	STM32Clock
-	fild	dds64
-	fdivp	st(1),st
-	fild	ddscycles
-	fdivp	st(1),st
-	fild	PhaseAdd
-	fmulp	st(1),st
-	fistp	PhaseAdd
-	mov		eax,PhaseAdd
-	ret
-
-DDSPhaseFrqToHz endp
 
 DDSWaveSetupProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
@@ -176,38 +150,36 @@ DDSWaveSetupProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:
 		movzx	eax,ddsdata.DDS_CommandStruct.DDS_WaveType
 		invoke SendDlgItemMessage,hWin,IDC_CBODDSWAVE,CB_SETCURSEL,eax,0
 		invoke SendDlgItemMessage,hWin,IDC_TRBDDSAMP,TBM_SETRANGE,FALSE,(DACMAX SHL 16)
-		movzx	eax,ddsdata.DDS_CommandStruct.Amplitude
+		movzx	eax,ddsdata.DDS_CommandStruct.DDS_Amplitude
 		invoke SendDlgItemMessage,hWin,IDC_TRBDDSAMP,TBM_SETPOS,TRUE,eax
 		invoke SendDlgItemMessage,hWin,IDC_TRBDDSDCOFS,TBM_SETRANGE,FALSE,(((DACMAX+1)*2-1) SHL 16)
-		movzx	eax,ddsdata.DDS_CommandStruct.DCOffset
+		movzx	eax,ddsdata.DDS_CommandStruct.DDS_DCOffset
 		invoke SendDlgItemMessage,hWin,IDC_TRBDDSDCOFS,TBM_SETPOS,TRUE,eax
 		invoke SendDlgItemMessage,hWin,IDC_TRBDDSFRQH,TBM_SETRANGE,FALSE,(DDSMAX SHL 16)
-		mov		eax,ddsdata.DDS_CommandStruct.DDS_PhaseFrq
+		mov		eax,ddsdata.DDS_CommandStruct.DDS_PhaseAdd
 		shr		eax,15
 		invoke SendDlgItemMessage,hWin,IDC_TRBDDSFRQH,TBM_SETPOS,TRUE,eax
 		invoke SendDlgItemMessage,hWin,IDC_TRBDDSFRQL,TBM_SETRANGE,FALSE,(DDSMAX SHL 16)
-		mov		eax,ddsdata.DDS_CommandStruct.DDS_PhaseFrq
+		mov		eax,ddsdata.DDS_CommandStruct.DDS_PhaseAdd
 		and		eax,DDSMAX
 		invoke SendDlgItemMessage,hWin,IDC_TRBDDSFRQL,TBM_SETPOS,TRUE,eax
-		invoke DDSPhaseFrqToHz,ddsdata.DDS_CommandStruct.DDS_PhaseFrq
+		invoke DDSPhaseAddToHz,ddsdata.DDS_CommandStruct.DDS_PhaseAdd
 		invoke SetDlgItemInt,hWin,IDC_EDTDDSFREQUENCY,eax,FALSE
 		invoke SendDlgItemMessage,hWin,IDC_EDTDDSFREQUENCY,EM_LIMITTEXT,7,0
-		movzx	eax,ddsdata.DDS_CommandStruct.DDS_SubMode
+		movzx	eax,ddsdata.DDS_CommandStruct.DDS_SweepMode
 		add		eax,IDC_RBNSWEEPOFF
 		invoke CheckRadioButton,hWin,IDC_RBNSWEEPOFF,IDC_RBNSWEEPPEAK,eax
 		invoke SendDlgItemMessage,hWin,IDC_EDTSWEEPSIZE,EM_LIMITTEXT,4,0
-		invoke DDSPhaseFrqToHz,ddsdata.DDS_CommandStruct.SWEEP_Add
+		invoke DDSPhaseAddToHz,ddsdata.DDS_CommandStruct.SWEEP_Add
 		invoke SetDlgItemInt,hWin,IDC_EDTSWEEPSIZE,eax,FALSE
 		invoke SendDlgItemMessage,hWin,IDC_EDTSWEEPTIME,EM_LIMITTEXT,4,0
 		movzx	eax,ddsdata.DDS_CommandStruct.SWEEP_StepTime
-		inc		eax
 		cdq
 		mov		ecx,10
 		div		ecx
 		invoke SetDlgItemInt,hWin,IDC_EDTSWEEPTIME,eax,FALSE
 		invoke SendDlgItemMessage,hWin,IDC_EDTSWEEPCOUNT,EM_LIMITTEXT,4,0
 		movzx	eax,ddsdata.DDS_CommandStruct.SWEEP_StepCount
-		dec		eax
 		invoke SetDlgItemInt,hWin,IDC_EDTSWEEPCOUNT,eax,FALSE
 		invoke GetDlgItem,hWin,IDC_BTNDDSSET
 		invoke EnableWindow,eax,FALSE
@@ -228,7 +200,7 @@ DDSWaveSetupProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:
 						mov		eax,5255000
 					.endif
 					invoke DDSHzToPhaseAdd,eax
-					mov		ddsdata.DDS_CommandStruct.DDS_PhaseFrq,eax
+					mov		ddsdata.DDS_CommandStruct.DDS_PhaseAdd,eax
 					dec		eax
 					push	eax
 					shr		eax,15
@@ -242,46 +214,43 @@ DDSWaveSetupProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:
 					invoke EnableWindow,eax,FALSE
 				.endif
 			.elseif eax==IDC_RBNSWEEPOFF
-				mov		ddsdata.DDS_CommandStruct.DDS_SubMode,SWEEP_SubModeOff
+				mov		ddsdata.DDS_CommandStruct.DDS_SweepMode,SWEEP_ModeOff
 				invoke DDSGenWave
 				inc		fDDS
 			.elseif eax==IDC_RBNSWEEPUP
-				mov		ddsdata.DDS_CommandStruct.DDS_SubMode,SWEEP_SubModeUp
+				mov		ddsdata.DDS_CommandStruct.DDS_SweepMode,SWEEP_ModeUp
 				invoke DDSGenWave
 				inc		fDDS
 			.elseif eax==IDC_RBNSWEEPDOWN
-				mov		ddsdata.DDS_CommandStruct.DDS_SubMode,SWEEP_SubModeDown
+				mov		ddsdata.DDS_CommandStruct.DDS_SweepMode,SWEEP_ModeDown
 				invoke DDSGenWave
 				inc		fDDS
 			.elseif eax==IDC_RBNSWEEPUPDOWN
-				mov		ddsdata.DDS_CommandStruct.DDS_SubMode,SWEEP_SubModeUpDown
+				mov		ddsdata.DDS_CommandStruct.DDS_SweepMode,SWEEP_ModeUpDown
 				invoke DDSGenWave
 				inc		fDDS
 			.elseif eax==IDC_BTNSWEEPSET
-;				invoke GetDlgItemInt,hWin,IDC_EDTSWEEPSIZE,NULL,FALSE
-;				invoke DDSHzToPhaseAdd,eax
-;				mov		ddswavedata.SWEEP_StepSize,eax
-;				invoke GetDlgItemInt,hWin,IDC_EDTSWEEPTIME,NULL,FALSE
-;				.if eax>6500
-;					invoke SetDlgItemInt,hWin,IDC_EDTSWEEPTIME,6500,FALSE
-;					mov		eax,6500
-;				.endif
-;				mov		ecx,10
-;				mul		ecx
-;				dec		eax
-;				mov		ddswavedata.SWEEP_StepTime,eax
-;				invoke GetDlgItemInt,hWin,IDC_EDTSWEEPCOUNT,NULL,FALSE
-;				.if eax>1535
-;					invoke SetDlgItemInt,hWin,IDC_EDTSWEEPCOUNT,1536,FALSE
-;					mov		eax,1535
-;				.endif
-;				inc		eax
-;				mov		ddswavedata.SWEEP_StepCount,eax
-;				invoke DDSGenWave
-;				inc		fCommand
-;				invoke GetDlgItem,hWin,IDC_BTNSWEEPSET
-;				invoke EnableWindow,eax,FALSE
-;				invoke InvalidateRect,childdialogs.hWndDDSPeak,NULL,TRUE
+				invoke GetDlgItemInt,hWin,IDC_EDTSWEEPSIZE,NULL,FALSE
+				invoke DDSHzToPhaseAdd,eax
+				mov		ddsdata.DDS_CommandStruct.SWEEP_Add,eax
+				invoke GetDlgItemInt,hWin,IDC_EDTSWEEPTIME,NULL,FALSE
+				.if eax>6500
+					invoke SetDlgItemInt,hWin,IDC_EDTSWEEPTIME,6500,FALSE
+					mov		eax,6500
+				.endif
+				mov		ecx,10
+				mul		ecx
+				mov		ddsdata.DDS_CommandStruct.SWEEP_StepTime,ax
+				invoke GetDlgItemInt,hWin,IDC_EDTSWEEPCOUNT,NULL,FALSE
+				.if eax>1535
+					invoke SetDlgItemInt,hWin,IDC_EDTSWEEPCOUNT,1536,FALSE
+					mov		eax,1535
+				.endif
+				mov		ddsdata.DDS_CommandStruct.SWEEP_StepCount,ax
+				invoke DDSGenWave
+				inc		fDDS
+				invoke GetDlgItem,hWin,IDC_BTNSWEEPSET
+				invoke EnableWindow,eax,FALSE
 			.endif
 		.elseif edx==EN_CHANGE
 			.if eax==IDC_EDTDDSFREQUENCY
@@ -301,27 +270,27 @@ DDSWaveSetupProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:
 		invoke GetDlgCtrlID,lParam
 		.if eax==IDC_TRBDDSAMP
 			invoke SendDlgItemMessage,hWin,IDC_TRBDDSAMP,TBM_GETPOS,0,0
-			mov		ddsdata.DDS_CommandStruct.Amplitude,ax
+			mov		ddsdata.DDS_CommandStruct.DDS_Amplitude,ax
 			invoke DDSGenWave
 			inc		fDDS
 		.elseif eax==IDC_TRBDDSDCOFS
 			invoke SendDlgItemMessage,hWin,IDC_TRBDDSDCOFS,TBM_GETPOS,0,0
-			mov		ddsdata.DDS_CommandStruct.DCOffset,ax
+			mov		ddsdata.DDS_CommandStruct.DDS_DCOffset,ax
 			invoke DDSGenWave
 			inc		fDDS
 		.elseif eax==IDC_TRBDDSFRQH || eax==IDC_TRBDDSFRQL
 			invoke SendDlgItemMessage,hWin,IDC_TRBDDSFRQH,TBM_GETPOS,0,0
-			mov		edx,ddsdata.DDS_CommandStruct.DDS_PhaseFrq
+			mov		edx,ddsdata.DDS_CommandStruct.DDS_PhaseAdd
 			and		edx,DDSMAX
 			shl		eax,15
 			or		eax,edx
-			mov		ddsdata.DDS_CommandStruct.DDS_PhaseFrq,eax
+			mov		ddsdata.DDS_CommandStruct.DDS_PhaseAdd,eax
 			invoke SendDlgItemMessage,hWin,IDC_TRBDDSFRQL,TBM_GETPOS,0,0
-			mov		edx,ddsdata.DDS_CommandStruct.DDS_PhaseFrq
+			mov		edx,ddsdata.DDS_CommandStruct.DDS_PhaseAdd
 			and		edx,0FFFF8000h
 			or		eax,edx
 			inc		eax
-			mov		ddsdata.DDS_CommandStruct.DDS_PhaseFrq,eax
+			mov		ddsdata.DDS_CommandStruct.DDS_PhaseAdd,eax
 			invoke DDSGenWave
 			inc		fDDS
 		.endif
@@ -343,6 +312,9 @@ DDSWaveProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 	LOCAL	rect:RECT
 	LOCAL	mDC:HDC
 	LOCAL	pt:POINT
+	LOCAL	tmp:DWORD
+	LOCAL	buffer[256]:BYTE
+	LOCAL	buffer1[256]:BYTE
 
 	mov		eax,uMsg
 	.if eax==WM_PAINT
@@ -355,8 +327,46 @@ DDSWaveProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 		push	eax
 		invoke GetStockObject,BLACK_BRUSH
 		invoke FillRect,mDC,addr rect,eax
-		;Draw horizontal lines
 		sub		rect.bottom,TEXTHIGHT
+		invoke SetTextColor,mDC,00FF00h
+		invoke SetBkMode,mDC,TRANSPARENT
+		.if ddsdata.DDS_CommandStruct.DDS_SweepMode
+			invoke DDSPhaseAddToHz,ddsdata.DDS_CommandStruct.SWEEP_Min
+			invoke FormatFrequency,addr buffer,addr szFmtFrqMin,eax
+			invoke DDSPhaseAddToHz,ddsdata.DDS_CommandStruct.SWEEP_Max
+			invoke FormatFrequency,addr buffer1,addr szFmtFrqMax,eax
+			invoke lstrcat,addr buffer,addr buffer1
+		.else
+			invoke DDSPhaseAddToHz,ddsdata.DDS_CommandStruct.DDS_PhaseAdd
+			invoke FormatFrequency,addr buffer,addr szFmtFrq,eax
+		.endif
+		mov		eax,ddsdata.DDS_VMin
+		mov		ecx,3000
+		mul		ecx
+		mov		ecx,4095
+		div		ecx
+		invoke FormatVoltage,addr buffer1,addr szFmtVmin,eax
+		invoke lstrcat,addr buffer,addr buffer1
+		mov		eax,ddsdata.DDS_VMax
+		mov		ecx,3000
+		mul		ecx
+		mov		ecx,4095
+		div		ecx
+		invoke FormatVoltage,addr buffer1,addr szFmtVmax,eax
+		invoke lstrcat,addr buffer,addr buffer1
+		mov		eax,ddsdata.DDS_VMax
+		sub		eax,ddsdata.DDS_VMin
+		mov		ecx,3000
+		mul		ecx
+		mov		ecx,4095
+		div		ecx
+		invoke FormatVoltage,addr buffer1,addr szFmtVpp,eax
+		invoke lstrcat,addr buffer,addr buffer1
+		invoke lstrlen,addr buffer
+		mov		edx,rect.bottom
+		add		edx,8
+		invoke TextOut,mDC,0,edx,addr buffer,eax
+		;Draw horizontal lines
 		invoke CreatePen,PS_SOLID,1,0303030h
 		invoke SelectObject,mDC,eax
 		push	eax
@@ -444,13 +454,13 @@ GetPoint:
 	sub		eax,DACMAX
 	neg		eax
 	mov		ecx,rect.bottom
-	sub		ecx,2
 	.if SIGN?
 		xor		ecx,ecx
 	.endif
 	mul		ecx
 	mov		ecx,DACMAX
 	div		ecx
+	add		eax,1
 	mov		pt.y,eax
 	retn
 
@@ -466,11 +476,11 @@ DDSWaveChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:
 		invoke GetDlgItem,hWin,IDC_UDCDDSWAVE
 		mov		ddsdata.hWndDDS,eax
 		mov		ddsdata.DDS_CommandStruct.DDS_WaveType,DDS_ModeSinWave
-		mov		ddsdata.DDS_CommandStruct.DDS_SubMode,SWEEP_SubModeOff
-		mov		ddsdata.DDS_CommandStruct.DDS_PhaseFrq,100000
-		mov		ddsdata.DDS_CommandStruct.Amplitude,DACMAX
-		mov		ddsdata.DDS_CommandStruct.DCOffset,DACMAX
-		mov		ddsdata.DDS_CommandStruct.SWEEP_Add,1000
+		mov		ddsdata.DDS_CommandStruct.DDS_SweepMode,SWEEP_ModeOff
+		mov		ddsdata.DDS_CommandStruct.DDS_PhaseAdd,204522
+		mov		ddsdata.DDS_CommandStruct.DDS_Amplitude,DACMAX
+		mov		ddsdata.DDS_CommandStruct.DDS_DCOffset,DACMAX
+		mov		ddsdata.DDS_CommandStruct.SWEEP_Add,2045
 		mov		ddsdata.DDS_CommandStruct.SWEEP_StepTime,100
 		mov		ddsdata.DDS_CommandStruct.SWEEP_StepCount,10
 		invoke DDSGenWave

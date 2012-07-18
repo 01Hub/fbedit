@@ -55,5 +55,7 @@ PB1					ADC12_IN9	Input for scope CHB
 PC1					ADC123_IN11	Input for DVMA
 PC2					ADC123_IN12	Input for DVMB
 
+PC6					USART6_TX	Output to DDS Wave Generator
+
 PE8-PE15			PE8-PE15	Inputs for logic analyser
 -------------------------------------------------------------------------------

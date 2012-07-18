@@ -476,11 +476,11 @@ ScopeProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SetTextColor,mDC,eax
 		invoke SetBkMode,mDC,TRANSPARENT
 		invoke FormatFrequency,addr buffer,addr szFmtFrq,[ebx].SCOPECHDATA.frq_data.Frequency
-		invoke FormatVoltage,addr buffer1,addr szFmtScopeVmin,[ebx].SCOPECHDATA.vmin
+		invoke FormatVoltage,addr buffer1,addr szFmtVmin,[ebx].SCOPECHDATA.vmin
 		invoke lstrcat,addr buffer,addr buffer1
-		invoke FormatVoltage,addr buffer1,addr szFmtScopeVmax,[ebx].SCOPECHDATA.vmax
+		invoke FormatVoltage,addr buffer1,addr szFmtVmax,[ebx].SCOPECHDATA.vmax
 		invoke lstrcat,addr buffer,addr buffer1
-		invoke FormatVoltage,addr buffer1,addr szFmtScopeVpp,[ebx].SCOPECHDATA.vpp
+		invoke FormatVoltage,addr buffer1,addr szFmtVpp,[ebx].SCOPECHDATA.vpp
 		invoke lstrcat,addr buffer,addr buffer1
 		invoke lstrlen,addr buffer
 		mov		edx,rect.bottom

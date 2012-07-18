@@ -19,6 +19,7 @@ INPUT("C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Sco
 INPUT("C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_tim.o")
 INPUT("C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\system_stm32f4xx.o")
 INPUT("C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\misc.o")
+INPUT("C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_usart.o")
 EXTERN( __io_putchar )
 EXTERN( _write )
 GROUP(

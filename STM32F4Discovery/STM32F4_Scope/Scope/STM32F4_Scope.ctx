@@ -1,7 +1,7 @@
 
 <Debug>
 	<STM32F4_Scope>
-		<CodeView TopRow="134218574" Focus="4294967295" >
+		<CodeView TopRow="134220422" Focus="4294967295" >
 			<CodeReport>
 				<0>111</0>
 				<1>122</1>
@@ -38,8 +38,7 @@
 			
 	</Flags>
 	<Views>
-		<View File="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\main.c" Line="70" Index="0" focus="1" />
-		<View File="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\readme.txt" Line="0" Index="1" />
+		<View File="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\main.c" Line="508" Index="0" focus="1" />
 	</Views>
 	<Grep>
 		<GrepIncludeSub>yes</GrepIncludeSub>
@@ -64,6 +63,8 @@
 		</GrepReplaceWhat>
 	</Grep>
 	<FindStrings>
+		<Find>GPIO_PinAFConfig</Find>
+		<Find>USART_InitTypeDef</Find>
 		<Find>IS_DMA_BUFFER_SIZE</Find>
 		<Find>gpioe</Find>
 		<Find>TIM4</Find>
