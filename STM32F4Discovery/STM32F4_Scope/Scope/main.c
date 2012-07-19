@@ -69,6 +69,7 @@ typedef struct
   uint16_t  SWEEP_StepCount;
   uint32_t  SWEEP_Min;
   uint32_t  SWEEP_Max;
+  uint16_t  Reserved;
 }CommandStructTypeDef;
 
 typedef struct
@@ -83,15 +84,15 @@ typedef struct
 
 typedef struct
 {
-  FRQDataStructTypeDef FRQDataStructCHA;                // 0x20000014
-  FRQDataStructTypeDef FRQDataStructCHB;                // 0x20000024
-  CommandStructTypeDef CommandStruct;                   // 0x20000034
-  uint16_t STM32_Data[STM32_DataSize];                  // 0x2000005E
+  FRQDataStructTypeDef FRQDataStructCHA;                // 0x20000028
+  FRQDataStructTypeDef FRQDataStructCHB;                // 0x20000038
+  CommandStructTypeDef CommandStruct;                   // 0x20000048
+  uint16_t STM32_Data[STM32_DataSize];                  // 0x20000074
 }STM32_DataStructTypeDef;
 
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
-__IO STM32_DataStructTypeDef STM32_DataStruct;          // 0x20000014
+__IO STM32_DataStructTypeDef STM32_DataStruct;          // 0x20000028
 
 /* Private function prototypes -----------------------------------------------*/
 void RCC_Config(void);
@@ -127,6 +128,8 @@ int main(void)
   TIM_Config();
   ADC_DVMConfig();
   USART_Config();
+  STM32_DataStruct.CommandStruct.Command = 0x56;
+  STM32_DataStruct.STM32_Data[0] = 0x1234;
   while (1)
   {
     if (STM32_DataStruct.CommandStruct.Command == STM32_CommandInit)
@@ -194,7 +197,6 @@ int main(void)
           STM32_DataStruct.CommandStruct.Command = STM32_CommandDone;
           break;
         case STM32_ModeLGA:
-          STM_EVAL_LEDToggle(LED4);
           TIM8->CNT=0;
           TIM8->ARR=STM32_DataStruct.CommandStruct.LGASampleRate;
           DMA_LGAConfig();
@@ -209,20 +211,37 @@ int main(void)
           TIM_Cmd(TIM8, DISABLE);
           break;
         case STM32_ModeDDSWave:
+          STM_EVAL_LEDToggle(LED4);
           /* Send configuration data to DDS Wave Generator */
-          Adr = (uint8_t *)&STM32_DataStruct.CommandStruct.DDS_WaveType;
-          i=0;
-          while (i<26)
-          {
+          // Adr = (uint8_t *)&STM32_DataStruct.CommandStruct.DDS_WaveType;
+          // i=0;
+          // while (i<26)
+          // {
+            // /* Wait until transmit register empty*/
+            // while(!(USART6->SR & USART_FLAG_TXE));          
+            // /* Transmit Data */
+            // USART6->DR = (uint16_t)(uint8_t) *Adr;
+            // i++;
+            // Adr++;
+          // }
             /* Wait until transmit register empty*/
-            while((USART6->SR & USART_FLAG_TXE) == 0);          
-            /* Transmit Data */
-            USART6->DR = (uint16_t)(uint8_t) *Adr;
-            i++;
-            Adr++;
-          }
+            // while(!(USART6->SR & USART_FLAG_TXE));          
+            // /* Transmit Data */
+            // USART6->DR = (uint16_t)(uint8_t) 'h';
+            // while(!(USART6->SR & USART_FLAG_TXE));          
+            // /* Transmit Data */
+            // USART6->DR = (uint16_t)(uint8_t) 'e';
+          // while(USART_GetFlagStatus(USART6, USART_FLAG_TXE) == RESET);
+          // USART_SendData(USART6, (uint16_t)'h');
+          // while(USART_GetFlagStatus(USART6, USART_FLAG_TXE) == RESET);
+          // USART_SendData(USART6, (uint16_t)'h');
+
+          while (USART_GetFlagStatus(USART2, USART_FLAG_TXE) == RESET);
+          USART_SendData(USART2, (uint8_t)65);
+          while (USART_GetFlagStatus(USART2, USART_FLAG_TXE) == RESET);
+          USART_SendData(USART2, (uint8_t)66);
           STM32_DataStruct.CommandStruct.Command = STM32_CommandDone;
-          break;
+        break;
       }
     }
     i=0;
@@ -340,10 +359,10 @@ void RCC_Config(void)
 {
   /* Enable DMA2, GPIOA, GPIOB, GPIOC and GPIOE clocks ****************************************/
   RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA2 | RCC_AHB1Periph_GPIOA | RCC_AHB1Periph_GPIOB | RCC_AHB1Periph_GPIOC | RCC_AHB1Periph_GPIOE, ENABLE);
-  /* Enable TIM2, TIM3, TIM4 and TIM5 clocks ****************************************/
-  RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2 | RCC_APB1Periph_TIM3 | RCC_APB1Periph_TIM4 | RCC_APB1Periph_TIM5, ENABLE);
-  /* Enable USART6, TIM8, TIM10, ADC1, ADC2 and ADC3 clocks ****************************************/
-  RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART6 | RCC_APB2Periph_TIM8 | RCC_APB2Periph_TIM10 | RCC_APB2Periph_ADC1 | RCC_APB2Periph_ADC2 | RCC_APB2Periph_ADC3, ENABLE);
+  /* Enable USART2, TIM2, TIM3, TIM4 and TIM5 clocks ****************************************/
+  RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART2 | RCC_APB1Periph_TIM2 | RCC_APB1Periph_TIM3 | RCC_APB1Periph_TIM4 | RCC_APB1Periph_TIM5, ENABLE);
+  /* Enable TIM8, TIM10, ADC1, ADC2 and ADC3 clocks ****************************************/
+  RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM8 | RCC_APB2Periph_TIM10 | RCC_APB2Periph_ADC1 | RCC_APB2Periph_ADC2 | RCC_APB2Periph_ADC3, ENABLE);
 }
 
 void NVIC_Config(void)
@@ -398,14 +417,14 @@ void GPIO_Config(void)
   GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL ;
   GPIO_Init(GPIOB, &GPIO_InitStructure);
 
-  /* USART6 TX (PC6) configuration */
-  GPIO_InitStructure.GPIO_Pin   = GPIO_Pin_6;
+  /* USART2 TX (PA2) configuration */
+  GPIO_InitStructure.GPIO_Pin   = GPIO_Pin_2;
   GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_AF;
-  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
   GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-  GPIO_InitStructure.GPIO_PuPd  = GPIO_PuPd_NOPULL ;
-  GPIO_Init(GPIOC, &GPIO_InitStructure);
-  GPIO_PinAFConfig(GPIOC, GPIO_PinSource6, GPIO_AF_USART6);
+  GPIO_InitStructure.GPIO_PuPd  = GPIO_PuPd_UP;
+  GPIO_Init(GPIOA, &GPIO_InitStructure);
+  GPIO_PinAFConfig(GPIOA, GPIO_PinSource2, GPIO_AF_USART2);
 
   STM_EVAL_LEDInit(LED3);
   STM_EVAL_LEDInit(LED4);
@@ -528,7 +547,6 @@ void ADC_DVMConfig(void)
 
 void ADC_SCPConfig(void)
 {
-  uint32_t tmp;
   ADC_CommonInitTypeDef ADC_CommonInitStructure;
   ADC_InitTypeDef       ADC_InitStructure;
 
@@ -633,8 +651,8 @@ void USART_Config(void)
   USART_InitStructure.USART_Parity = USART_Parity_No;
   USART_InitStructure.USART_Mode = USART_Mode_Tx;
   USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
-  USART_Init(USART6, &USART_InitStructure);
-  USART_Cmd(USART6, ENABLE);
+  USART_Init(USART2, &USART_InitStructure);
+  USART_Cmd(USART2, ENABLE);
 }
 
 /**

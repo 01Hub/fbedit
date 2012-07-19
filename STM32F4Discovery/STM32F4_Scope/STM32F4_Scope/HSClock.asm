@@ -78,11 +78,11 @@ MakeHSCWave proc  uses ebx esi edi, lpWave:DWORD,Duty:DWORD
 
 MakeHSCWave endp
 
-FrequencyToClock proc uses ebx,frq:DWORD
+FrequencyToClock proc uses ebx,frq:DWORD,clk:DWORD
 
 	mov		ebx,1
 	.while TRUE
-		mov		eax,STM32Clock
+		mov		eax,clk
 		cdq
 		div		ebx
 		cdq
@@ -100,9 +100,9 @@ FrequencyToClock proc uses ebx,frq:DWORD
 
 FrequencyToClock endp
 
-ClockToFrequency proc count:DWORD,clkdiv:DWORD
+ClockToFrequency proc count:DWORD,clkdiv:DWORD,clk:DWORD
 
-	mov		eax,STM32Clock
+	mov		eax,clk
 	cdq
 	mov		ecx,clkdiv
 	inc		ecx
@@ -129,6 +129,12 @@ HSClockSetupProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:
 		invoke CheckDlgButton,hWin,IDC_CHKHSCLOCKAENABLE,eax
 		movzx	eax,hsclockdata.hscCHAData.hsclockdutycycle
 		invoke SendDlgItemMessage,hWin,IDC_TRBHSCLOCKADUTY,TBM_SETPOS,TRUE,eax
+		movzx	eax,hsclockdata.hscCHAData.hsclockfrequency
+		movzx	edx,hsclockdata.hscCHAData.hsclockdivisor
+		invoke ClockToFrequency,eax,edx,STM32ClockDiv2
+		invoke SetDlgItemInt,hWin,IDC_EDTFRQCHA,eax,FALSE
+		invoke SendDlgItemMessage,hWin,IDC_EDTFRQCHA,EM_LIMITTEXT,8,0
+
 		;Channel B
 		mov		eax,BST_UNCHECKED
 		.if hsclockdata.hscCHBData.hsclockenable
@@ -137,14 +143,11 @@ HSClockSetupProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:
 		invoke CheckDlgButton,hWin,IDC_CHKHSCLOCKBENABLE,eax
 		movzx	eax,hsclockdata.hscCHBData.hsclockdutycycle
 		invoke SendDlgItemMessage,hWin,IDC_TRBHSCLOCKBDUTY,TBM_SETPOS,TRUE,eax
-		movzx	eax,hsclockdata.hscCHAData.hsclockfrequency
-		movzx	edx,hsclockdata.hscCHAData.hsclockdivisor
-		invoke ClockToFrequency,eax,edx
-		invoke SetDlgItemInt,hWin,IDC_EDTFRQCHA,eax,FALSE
 		movzx	eax,hsclockdata.hscCHBData.hsclockfrequency
 		movzx	edx,hsclockdata.hscCHBData.hsclockdivisor
-		invoke ClockToFrequency,eax,edx
+		invoke ClockToFrequency,eax,edx,STM32Clock
 		invoke SetDlgItemInt,hWin,IDC_EDTFRQCHB,eax,FALSE
+		invoke SendDlgItemMessage,hWin,IDC_EDTFRQCHB,EM_LIMITTEXT,8,0
 		push	0
 		push	IDC_BTNFRQCHADN
 		push	IDC_BTNFRQCHAUP
@@ -156,8 +159,6 @@ HSClockSetupProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:
 			mov		lpOldButtonProc,eax
 			pop		eax
 		.endw
-		invoke SendDlgItemMessage,hWin,IDC_EDTFRQCHA,EM_LIMITTEXT,8,0
-		invoke SendDlgItemMessage,hWin,IDC_EDTFRQCHB,EM_LIMITTEXT,8,0
 	.elseif eax==WM_COMMAND
 		mov		edx,wParam
 		movzx	eax,dx
@@ -176,10 +177,10 @@ HSClockSetupProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:
 					mov		edi,eax
 					.while TRUE
 						dec		ebx
-						invoke FrequencyToClock,ebx
+						invoke FrequencyToClock,ebx,STM32ClockDiv2
 						mov		hsclockdata.hscCHAData.hsclockfrequency,ax
 						mov		hsclockdata.hscCHAData.hsclockdivisor,dx
-						invoke ClockToFrequency,eax,edx
+						invoke ClockToFrequency,eax,edx,STM32ClockDiv2
 						.break .if eax!=edi
 					.endw
 					invoke SetDlgItemInt,hWin,IDC_EDTFRQCHA,eax,FALSE
@@ -196,15 +197,15 @@ HSClockSetupProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:
 				.endif
 			.elseif eax==IDC_BTNFRQCHAUP
 				invoke GetDlgItemInt,hWin,IDC_EDTFRQCHA,NULL,FALSE
-				.if eax<84000000
+				.if eax<21000000
 					mov		ebx,eax
 					mov		edi,eax
 					.while TRUE
 						inc		ebx
-						invoke FrequencyToClock,ebx
+						invoke FrequencyToClock,ebx,STM32ClockDiv2
 						mov		hsclockdata.hscCHAData.hsclockfrequency,ax
 						mov		hsclockdata.hscCHAData.hsclockdivisor,dx
-						invoke ClockToFrequency,eax,edx
+						invoke ClockToFrequency,eax,edx,STM32ClockDiv2
 						.break .if eax!=edi
 					.endw
 					invoke SetDlgItemInt,hWin,IDC_EDTFRQCHA,eax,FALSE
@@ -230,10 +231,10 @@ HSClockSetupProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:
 					mov		edi,eax
 					.while TRUE
 						dec		ebx
-						invoke FrequencyToClock,ebx
+						invoke FrequencyToClock,ebx,STM32Clock
 						mov		hsclockdata.hscCHBData.hsclockfrequency,ax
 						mov		hsclockdata.hscCHBData.hsclockdivisor,dx
-						invoke ClockToFrequency,eax,edx
+						invoke ClockToFrequency,eax,edx,STM32Clock
 						.break .if eax!=edi
 					.endw
 					invoke SetDlgItemInt,hWin,IDC_EDTFRQCHB,eax,FALSE
@@ -250,15 +251,15 @@ HSClockSetupProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:
 				.endif
 			.elseif eax==IDC_BTNFRQCHBUP
 				invoke GetDlgItemInt,hWin,IDC_EDTFRQCHB,NULL,FALSE
-				.if eax<84000000
+				.if eax<42000000
 					mov		ebx,eax
 					mov		edi,eax
 					.while TRUE
 						inc		ebx
-						invoke FrequencyToClock,ebx
+						invoke FrequencyToClock,ebx,STM32Clock
 						mov		hsclockdata.hscCHBData.hsclockfrequency,ax
 						mov		hsclockdata.hscCHBData.hsclockdivisor,dx
-						invoke ClockToFrequency,eax,edx
+						invoke ClockToFrequency,eax,edx,STM32Clock
 						.break .if eax!=edi
 					.endw
 					invoke SetDlgItemInt,hWin,IDC_EDTFRQCHB,eax,FALSE
@@ -279,13 +280,13 @@ HSClockSetupProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:
 				invoke GetDlgItemInt,hWin,IDC_EDTFRQCHA,0,FALSE
 				.if !eax
 					inc		eax
-				.elseif eax>84000000
-					mov		eax,84000000
+				.elseif eax>21000000
+					mov		eax,21000000
 				.endif
-				invoke FrequencyToClock,eax
+				invoke FrequencyToClock,eax,STM32ClockDiv2
 				mov		hsclockdata.hscCHAData.hsclockfrequency,ax
 				mov		hsclockdata.hscCHAData.hsclockdivisor,dx
-				invoke ClockToFrequency,eax,edx
+				invoke ClockToFrequency,eax,edx,STM32ClockDiv2
 				invoke SetDlgItemInt,hWin,IDC_EDTFRQCHA,eax,FALSE
 				invoke SendDlgItemMessage,hWin,IDC_TRBHSCLOCKADUTY,TBM_GETPOS,0,0
 				movzx	ecx,hsclockdata.hscCHAData.hsclockfrequency
@@ -301,13 +302,13 @@ HSClockSetupProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:
 				invoke GetDlgItemInt,hWin,IDC_EDTFRQCHB,0,FALSE
 				.if !eax
 					inc		eax
-				.elseif eax>84000000
-					mov		eax,84000000
+				.elseif eax>42000000
+					mov		eax,42000000
 				.endif
-				invoke FrequencyToClock,eax
+				invoke FrequencyToClock,eax,STM32Clock
 				mov		hsclockdata.hscCHBData.hsclockfrequency,ax
 				mov		hsclockdata.hscCHBData.hsclockdivisor,dx
-				invoke ClockToFrequency,eax,edx
+				invoke ClockToFrequency,eax,edx,STM32Clock
 				invoke SetDlgItemInt,hWin,IDC_EDTFRQCHB,eax,FALSE
 				invoke SendDlgItemMessage,hWin,IDC_TRBHSCLOCKBDUTY,TBM_GETPOS,0,0
 				movzx	ecx,hsclockdata.hscCHBData.hsclockfrequency
@@ -521,7 +522,14 @@ HSClockProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 		invoke DeleteObject,eax
 		movzx	ecx,[ebx].HSCLOCKCHDATA.hsclockdivisor
 		inc		ecx
-		mov		eax,STM32Clock
+		mov		eax,hWin
+		.if eax==hsclockdata.hscCHAData.hWndHSClock
+			;Channel A
+			mov		eax,STM32ClockDiv2
+		.else
+			;Channel B
+			mov		eax,STM32Clock
+		.endif
 		cdq
 		div		ecx
 		cdq

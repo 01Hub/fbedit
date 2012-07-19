@@ -230,10 +230,10 @@ SWEEP_ModeDown				equ 2
 SWEEP_ModeUpDown			equ 3
 
 ;STM32 ram addresses
-STM32FrequencyCHA			equ 20000014h
-STM32FrequencyCHB			equ 20000024h
-STM32CommandStart			equ 20000034h
-STM32DataStart				equ 2000005Eh
+STM32FrequencyCHA			equ 20000024h
+STM32FrequencyCHB			equ 20000034h
+STM32CommandStart			equ 20000044h
+STM32DataStart				equ 20000074h
 
 ;#########################################################################
 
@@ -278,6 +278,7 @@ STM32_CommandStructDef struct
 	SWEEP_StepCount			WORD ?
 	SWEEP_Min				DWORD ?
 	SWEEP_Max				DWORD ?
+	Reserved				WORD ?
 STM32_CommandStructDef ends
 
 STM32_FRQDataStructDef struct
@@ -448,6 +449,7 @@ dds64						QWORD 100000000h
 ddscycles					DWORD 8
 
 STM32Clock					DWORD 168000000
+STM32ClockDiv2				DWORD 84000000
 
 ;#########################################################################
 

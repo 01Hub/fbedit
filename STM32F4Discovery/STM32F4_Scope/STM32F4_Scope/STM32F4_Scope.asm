@@ -204,14 +204,15 @@ SampleThreadProc proc lParam:DWORD
 				mov		fDDS,0
 				invoke RtlMoveMemory,addr ddsdata.DDS_CommandStructDone,addr ddsdata.DDS_CommandStruct,sizeof STM32_CommandStructDef
 				mov		ddsdata.DDS_CommandStructDone.Command,STM32_CommandWait
+				mov		ddsdata.DDS_CommandStructDone.Mode,STM32_ModeDDSWave
 				invoke STLinkWrite,hWnd,STM32CommandStart,addr ddsdata.DDS_CommandStructDone,sizeof STM32_CommandStructDef
 				mov		ddsdata.DDS_CommandStructDone.Command,STM32_CommandInit
 				invoke STLinkWrite,hWnd,STM32CommandStart,addr ddsdata.DDS_CommandStructDone,4
-				.while TRUE
-					invoke STLinkRead,hWnd,STM32CommandStart,addr ddsdata.DDS_CommandStructDone,4
-					.break .if ddsdata.DDS_CommandStructDone.Command==STM32_CommandDone
-					invoke Sleep,10
-				.endw
+;				.while TRUE
+;					invoke STLinkRead,hWnd,STM32CommandStart,addr ddsdata.DDS_CommandStructDone,4
+;					.break .if ddsdata.DDS_CommandStructDone.Command==STM32_CommandDone
+;					invoke Sleep,10
+;				.endw
 			.endif
 		.endif
 	.endw

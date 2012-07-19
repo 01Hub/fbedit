@@ -8,7 +8,7 @@ C:\Program Files\Raisonance\Ride\Lib\ARM\std_sbrk_thumb.lib(write.o)
 Allocating common symbols
 Common symbol       size              file
 
-STM32_DataStruct    0x184c            C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\main.o
+STM32_DataStruct    0x1850            C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\main.o
 NVIC_InitStructure  0x4               C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4_discovery.o
 
 Discarded input sections
@@ -424,8 +424,6 @@ Discarded input sections
                 0x00000000       0x20 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_usart.o
  .text.USART_OneBitMethodCmd
                 0x00000000       0x20 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_usart.o
- .text.USART_SendData
-                0x00000000        0xc C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_usart.o
  .text.USART_ReceiveData
                 0x00000000        0xc C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_usart.o
  .text.USART_SetAddress
@@ -456,8 +454,6 @@ Discarded input sections
                 0x00000000       0x18 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_usart.o
  .text.USART_ITConfig
                 0x00000000       0x3c C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_usart.o
- .text.USART_GetFlagStatus
-                0x00000000        0xc C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_usart.o
  .text.USART_ClearFlag
                 0x00000000        0xc C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_usart.o
  .text.USART_GetITStatus
@@ -688,7 +684,7 @@ END GROUP
  *(.flashtext)
                 0x08000188                . = ALIGN (0x4)
 
-.text           0x08000188     0x1904
+.text           0x08000188     0x194c
                 0x08000188                . = ALIGN (0x4)
  *(.text)
  *(.text.*)
@@ -784,14 +780,14 @@ END GROUP
                 0x080001d0      0x17c C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\main.o
                 0x080001d0                WaitForTrigger
  .text.RCC_Config
-                0x0800034c       0x30 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\main.o
+                0x0800034c       0x34 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\main.o
                 0x0800034c                RCC_Config
  .text.NVIC_Config
-                0x0800037c       0x2c C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\main.o
-                0x0800037c                NVIC_Config
+                0x08000380       0x2c C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\main.o
+                0x08000380                NVIC_Config
  .text.GPIO_Config
-                0x080003a8       0xf8 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\main.o
-                0x080003a8                GPIO_Config
+                0x080003ac       0xf4 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\main.o
+                0x080003ac                GPIO_Config
  .text.TIM_Config
                 0x080004a0      0x184 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\main.o
                 0x080004a0                TIM_Config
@@ -810,180 +806,186 @@ END GROUP
  .text.USART_Config
                 0x08000870       0x40 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\main.o
                 0x08000870                USART_Config
- .text.main     0x080008b0      0x24c C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\main.o
+ .text.main     0x080008b0      0x27c C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\main.o
                 0x080008b0                main
  .text.TIM3_IRQHandler
-                0x08000afc       0x54 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\main.o
-                0x08000afc                TIM3_IRQHandler
+                0x08000b2c       0x54 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\main.o
+                0x08000b2c                TIM3_IRQHandler
  .text.STM_EVAL_LEDInit
-                0x08000b50       0x54 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4_discovery.o
-                0x08000b50                STM_EVAL_LEDInit
+                0x08000b80       0x54 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4_discovery.o
+                0x08000b80                STM_EVAL_LEDInit
  .text.STM_EVAL_LEDToggle
-                0x08000ba4       0x24 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4_discovery.o
-                0x08000ba4                STM_EVAL_LEDToggle
+                0x08000bd4       0x24 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4_discovery.o
+                0x08000bd4                STM_EVAL_LEDToggle
  .text.ADC_Init
-                0x08000bc8       0x54 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_adc.o
-                0x08000bc8                ADC_Init
+                0x08000bf8       0x54 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_adc.o
+                0x08000bf8                ADC_Init
  .text.ADC_StructInit
-                0x08000c1c       0x18 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_adc.o
-                0x08000c1c                ADC_StructInit
+                0x08000c4c       0x18 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_adc.o
+                0x08000c4c                ADC_StructInit
  .text.ADC_CommonInit
-                0x08000c34       0x34 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_adc.o
-                0x08000c34                ADC_CommonInit
+                0x08000c64       0x34 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_adc.o
+                0x08000c64                ADC_CommonInit
  .text.ADC_CommonStructInit
-                0x08000c68       0x10 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_adc.o
-                0x08000c68                ADC_CommonStructInit
- .text.ADC_Cmd  0x08000c78       0x18 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_adc.o
-                0x08000c78                ADC_Cmd
+                0x08000c98       0x10 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_adc.o
+                0x08000c98                ADC_CommonStructInit
+ .text.ADC_Cmd  0x08000ca8       0x18 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_adc.o
+                0x08000ca8                ADC_Cmd
  .text.ADC_RegularChannelConfig
-                0x08000c90       0xb4 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_adc.o
-                0x08000c90                ADC_RegularChannelConfig
+                0x08000cc0       0xb4 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_adc.o
+                0x08000cc0                ADC_RegularChannelConfig
  .text.ADC_DMACmd
-                0x08000d44       0x18 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_adc.o
-                0x08000d44                ADC_DMACmd
+                0x08000d74       0x18 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_adc.o
+                0x08000d74                ADC_DMACmd
  .text.ADC_MultiModeDMARequestAfterLastTransferCmd
-                0x08000d5c       0x28 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_adc.o
-                0x08000d5c                ADC_MultiModeDMARequestAfterLastTransferCmd
+                0x08000d8c       0x28 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_adc.o
+                0x08000d8c                ADC_MultiModeDMARequestAfterLastTransferCmd
  .text.ADC_InjectedChannelConfig
-                0x08000d84       0x70 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_adc.o
-                0x08000d84                ADC_InjectedChannelConfig
+                0x08000db4       0x70 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_adc.o
+                0x08000db4                ADC_InjectedChannelConfig
  .text.ADC_InjectedSequencerLengthConfig
-                0x08000df4       0x14 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_adc.o
-                0x08000df4                ADC_InjectedSequencerLengthConfig
+                0x08000e24       0x14 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_adc.o
+                0x08000e24                ADC_InjectedSequencerLengthConfig
  .text.ADC_SoftwareStartInjectedConv
-                0x08000e08        0xc C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_adc.o
-                0x08000e08                ADC_SoftwareStartInjectedConv
+                0x08000e38        0xc C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_adc.o
+                0x08000e38                ADC_SoftwareStartInjectedConv
  .text.ADC_AutoInjectedConvCmd
-                0x08000e14       0x18 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_adc.o
-                0x08000e14                ADC_AutoInjectedConvCmd
+                0x08000e44       0x18 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_adc.o
+                0x08000e44                ADC_AutoInjectedConvCmd
  .text.DMA_DeInit
-                0x08000e2c      0x1f4 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_dma.o
-                0x08000e2c                DMA_DeInit
+                0x08000e5c      0x1f4 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_dma.o
+                0x08000e5c                DMA_DeInit
  .text.DMA_Init
-                0x08001020       0x60 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_dma.o
-                0x08001020                DMA_Init
- .text.DMA_Cmd  0x08001080       0x18 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_dma.o
-                0x08001080                DMA_Cmd
+                0x08001050       0x60 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_dma.o
+                0x08001050                DMA_Init
+ .text.DMA_Cmd  0x080010b0       0x18 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_dma.o
+                0x080010b0                DMA_Cmd
  .text.DMA_GetFlagStatus
-                0x08001098       0x44 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_dma.o
-                0x08001098                DMA_GetFlagStatus
+                0x080010c8       0x44 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_dma.o
+                0x080010c8                DMA_GetFlagStatus
  .text.GPIO_Init
-                0x080010dc       0xbc C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_gpio.o
-                0x080010dc                GPIO_Init
+                0x0800110c       0xbc C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_gpio.o
+                0x0800110c                GPIO_Init
  .text.GPIO_PinAFConfig
-                0x08001198       0x3c C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_gpio.o
-                0x08001198                GPIO_PinAFConfig
+                0x080011c8       0x3c C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_gpio.o
+                0x080011c8                GPIO_PinAFConfig
  .text.NMI_Handler
-                0x080011d4        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_it.o
-                0x080011d4                NMI_Handler
+                0x08001204        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_it.o
+                0x08001204                NMI_Handler
  .text.HardFault_Handler
-                0x080011d8        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_it.o
-                0x080011d8                HardFault_Handler
+                0x08001208        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_it.o
+                0x08001208                HardFault_Handler
  .text.MemManage_Handler
-                0x080011dc        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_it.o
-                0x080011dc                MemManage_Handler
+                0x0800120c        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_it.o
+                0x0800120c                MemManage_Handler
  .text.BusFault_Handler
-                0x080011e0        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_it.o
-                0x080011e0                BusFault_Handler
+                0x08001210        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_it.o
+                0x08001210                BusFault_Handler
  .text.UsageFault_Handler
-                0x080011e4        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_it.o
-                0x080011e4                UsageFault_Handler
+                0x08001214        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_it.o
+                0x08001214                UsageFault_Handler
  .text.SVC_Handler
-                0x080011e8        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_it.o
-                0x080011e8                SVC_Handler
+                0x08001218        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_it.o
+                0x08001218                SVC_Handler
  .text.DebugMon_Handler
-                0x080011ec        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_it.o
-                0x080011ec                DebugMon_Handler
+                0x0800121c        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_it.o
+                0x0800121c                DebugMon_Handler
  .text.PendSV_Handler
-                0x080011f0        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_it.o
-                0x080011f0                PendSV_Handler
+                0x08001220        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_it.o
+                0x08001220                PendSV_Handler
  .text.SysTick_Handler
-                0x080011f4        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_it.o
-                0x080011f4                SysTick_Handler
+                0x08001224        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_it.o
+                0x08001224                SysTick_Handler
  .text.RCC_GetClocksFreq
-                0x080011f8       0xd8 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_rcc.o
-                0x080011f8                RCC_GetClocksFreq
+                0x08001228       0xd8 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_rcc.o
+                0x08001228                RCC_GetClocksFreq
  .text.RCC_AHB1PeriphClockCmd
-                0x080012d0       0x24 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_rcc.o
-                0x080012d0                RCC_AHB1PeriphClockCmd
+                0x08001300       0x24 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_rcc.o
+                0x08001300                RCC_AHB1PeriphClockCmd
  .text.RCC_APB1PeriphClockCmd
-                0x080012f4       0x24 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_rcc.o
-                0x080012f4                RCC_APB1PeriphClockCmd
+                0x08001324       0x24 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_rcc.o
+                0x08001324                RCC_APB1PeriphClockCmd
  .text.RCC_APB2PeriphClockCmd
-                0x08001318       0x24 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_rcc.o
-                0x08001318                RCC_APB2PeriphClockCmd
+                0x08001348       0x24 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_rcc.o
+                0x08001348                RCC_APB2PeriphClockCmd
  .text.TIM_TimeBaseInit
-                0x0800133c       0xc0 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_tim.o
-                0x0800133c                TIM_TimeBaseInit
+                0x0800136c       0xc0 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_tim.o
+                0x0800136c                TIM_TimeBaseInit
  .text.TIM_ARRPreloadConfig
-                0x080013fc       0x20 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_tim.o
-                0x080013fc                TIM_ARRPreloadConfig
- .text.TIM_Cmd  0x0800141c       0x20 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_tim.o
-                0x0800141c                TIM_Cmd
+                0x0800142c       0x20 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_tim.o
+                0x0800142c                TIM_ARRPreloadConfig
+ .text.TIM_Cmd  0x0800144c       0x20 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_tim.o
+                0x0800144c                TIM_Cmd
  .text.TIM_OC1Init
-                0x0800143c       0xa4 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_tim.o
-                0x0800143c                TIM_OC1Init
+                0x0800146c       0xa4 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_tim.o
+                0x0800146c                TIM_OC1Init
  .text.TIM_OC2Init
-                0x080014e0       0xb0 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_tim.o
-                0x080014e0                TIM_OC2Init
+                0x08001510       0xb0 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_tim.o
+                0x08001510                TIM_OC2Init
  .text.TIM_OCStructInit
-                0x08001590       0x18 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_tim.o
-                0x08001590                TIM_OCStructInit
- .text.TIM_OC1PreloadConfig
-                0x080015a8       0x18 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_tim.o
-                0x080015a8                TIM_OC1PreloadConfig
- .text.TIM_OC2PreloadConfig
                 0x080015c0       0x18 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_tim.o
-                0x080015c0                TIM_OC2PreloadConfig
- .text.TIM_ITConfig
+                0x080015c0                TIM_OCStructInit
+ .text.TIM_OC1PreloadConfig
                 0x080015d8       0x18 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_tim.o
-                0x080015d8                TIM_ITConfig
+                0x080015d8                TIM_OC1PreloadConfig
+ .text.TIM_OC2PreloadConfig
+                0x080015f0       0x18 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_tim.o
+                0x080015f0                TIM_OC2PreloadConfig
+ .text.TIM_ITConfig
+                0x08001608       0x18 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_tim.o
+                0x08001608                TIM_ITConfig
  .text.TIM_ClearITPendingBit
-                0x080015f0        0xc C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_tim.o
-                0x080015f0                TIM_ClearITPendingBit
+                0x08001620        0xc C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_tim.o
+                0x08001620                TIM_ClearITPendingBit
  .text.TIM_DMACmd
-                0x080015fc       0x18 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_tim.o
-                0x080015fc                TIM_DMACmd
+                0x0800162c       0x18 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_tim.o
+                0x0800162c                TIM_DMACmd
  .text.SystemInit
-                0x08001614      0x124 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\system_stm32f4xx.o
-                0x08001614                SystemInit
+                0x08001644      0x124 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\system_stm32f4xx.o
+                0x08001644                SystemInit
  .text.NVIC_Init
-                0x08001738       0x88 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\misc.o
-                0x08001738                NVIC_Init
+                0x08001768       0x88 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\misc.o
+                0x08001768                NVIC_Init
  .text.USART_Init
-                0x080017c0      0x10c C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_usart.o
-                0x080017c0                USART_Init
+                0x080017f0      0x10c C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_usart.o
+                0x080017f0                USART_Init
  .text.USART_Cmd
-                0x080018cc       0x20 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_usart.o
-                0x080018cc                USART_Cmd
+                0x080018fc       0x20 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_usart.o
+                0x080018fc                USART_Cmd
+ .text.USART_SendData
+                0x0800191c        0xc C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_usart.o
+                0x0800191c                USART_SendData
+ .text.USART_GetFlagStatus
+                0x08001928        0xc C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_usart.o
+                0x08001928                USART_GetFlagStatus
  .text.__io_putchar
-                0x080018ec      0x16c C:\Program Files\Raisonance\Ride\Lib\ARM\STM32x_io_putchar_thumb.a(STM32F10X_io_putchar.o)
-                0x080018ec                __io_putchar
- .text._write   0x08001a58        0x4 C:\Program Files\Raisonance\Ride\Lib\ARM\std_sbrk_thumb.lib(write.o)
-                0x08001a58                _write
+                0x08001934      0x16c C:\Program Files\Raisonance\Ride\Lib\ARM\STM32x_io_putchar_thumb.a(STM32F10X_io_putchar.o)
+                0x08001934                __io_putchar
+ .text._write   0x08001aa0        0x4 C:\Program Files\Raisonance\Ride\Lib\ARM\std_sbrk_thumb.lib(write.o)
+                0x08001aa0                _write
  *(.rodata)
- .rodata        0x08001a5c       0x30 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4_discovery.o
-                0x08001a5c                GPIO_CLK
-                0x08001a6c                GPIO_PIN
-                0x08001a74                BUTTON_CLK
-                0x08001a78                BUTTON_PIN
-                0x08001a7c                BUTTON_PORT_SOURCE
-                0x08001a80                BUTTON_PIN_SOURCE
-                0x08001a84                BUTTON_EXTI_LINE
-                0x08001a88                BUTTON_IRQn
+ .rodata        0x08001aa4       0x30 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4_discovery.o
+                0x08001aa4                GPIO_CLK
+                0x08001ab4                GPIO_PIN
+                0x08001abc                BUTTON_CLK
+                0x08001ac0                BUTTON_PIN
+                0x08001ac4                BUTTON_PORT_SOURCE
+                0x08001ac8                BUTTON_PIN_SOURCE
+                0x08001acc                BUTTON_EXTI_LINE
+                0x08001ad0                BUTTON_IRQn
  *(.rodata*)
  *(.glue_7)
  .glue_7        0x00000000        0x0 linker stubs
  *(.glue_7t)
  .glue_7t       0x00000000        0x0 linker stubs
-                0x08001a8c                . = ALIGN (0x4)
-                0x08001a8c                _etext = .
-                0x08001a8c                _sidata = _etext
+                0x08001ad4                . = ALIGN (0x4)
+                0x08001ad4                _etext = .
+                0x08001ad4                _sidata = _etext
 
-.vfp11_veneer   0x08001a8c        0x0
+.vfp11_veneer   0x08001ad4        0x0
  .vfp11_veneer  0x00000000        0x0 linker stubs
 
-.v4_bx          0x08001a8c        0x0
+.v4_bx          0x08001ad4        0x0
  .v4_bx         0x00000000        0x0 linker stubs
 
 .flashpatch     0x00000000        0x0
@@ -997,7 +999,7 @@ END GROUP
                 0x00000000                . = ALIGN (0x4)
                 0x00000000                _e_endflash = .
 
-.data           0x20000000       0x24 load address 0x08001a8c
+.data           0x20000000       0x24 load address 0x08001ad4
                 0x20000000                . = ALIGN (0x4)
                 0x20000000                _sdata = .
                 0x20000000                _data = .
@@ -1010,30 +1012,30 @@ END GROUP
  *(.RAMtext)
                 0x20000024                . = ALIGN (0x4)
                 0x20000024                _edata = .
-                0x08001ab0                _eidata = ((_sidata + _edata) - _sdata)
+                0x08001af8                _eidata = ((_sidata + _edata) - _sdata)
                 0x08010000                _lastdataromaddress = 0x8010000
                 0x00000000                toobig = (_eidata > _lastdataromaddress)?!!!!!!!!! FLASH IS FULL !!!!!!!!!:0x0
 
-.bss            0x20000024     0x184c load address 0x08001ab0
+.bss            0x20000024     0x1850 load address 0x08001af8
                 0x20000024                . = ALIGN (0x4)
                 0x20000024                _sbss = .
                 0x20000024                _bss = .
  *(.bss)
  *(COMMON)
- COMMON         0x20000024     0x184c C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\main.o
+ COMMON         0x20000024     0x1850 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\main.o
                 0x20000024                STM32_DataStruct
-                0x20001870                . = ALIGN (0x4)
-                0x20001870                _ebss = .
-                0x20001870                PROVIDE (end, _ebss)
-                0x20001870                PROVIDE (_end, _ebss)
+                0x20001874                . = ALIGN (0x4)
+                0x20001874                _ebss = .
+                0x20001874                PROVIDE (end, _ebss)
+                0x20001874                PROVIDE (_end, _ebss)
 
-._usrstack      0x20001870      0x100 load address 0x080032fc
-                0x20001870                . = ALIGN (0x4)
-                0x20001870                _susrstack = .
-                0x20001970                . = (. + _Minimum_Stack_Size)
- *fill*         0x20001870      0x100 00
-                0x20001970                . = ALIGN (0x4)
-                0x20001970                _eusrstack = .
+._usrstack      0x20001874      0x100 load address 0x08003348
+                0x20001874                . = ALIGN (0x4)
+                0x20001874                _susrstack = .
+                0x20001974                . = (. + _Minimum_Stack_Size)
+ *fill*         0x20001874      0x100 00
+                0x20001974                . = ALIGN (0x4)
+                0x20001974                _eusrstack = .
 
 .b1text
  *(.b1text)
@@ -1059,8 +1061,8 @@ END GROUP
  *(.eb3text)
  *(.eb3rodata)
  *(.eb3rodata*)
-                0x20001970                __exidx_start = .
-                0x20001970                __exidx_end = .
+                0x20001974                __exidx_start = .
+                0x20001974                __exidx_end = .
 
 /DISCARD/
  libc.a(*)
@@ -1196,47 +1198,47 @@ END GROUP
  .debug_pubnames
                 0x00001705      0x294 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_usart.o
 
-.debug_info     0x00000000     0x780b
+.debug_info     0x00000000     0x780f
  *(.debug_info .gnu.linkonce.wi.*)
- .debug_info    0x00000000     0x11a8 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\main.o
- .debug_info    0x000011a8      0x963 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4_discovery.o
- .debug_info    0x00001b0b      0xcce C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_adc.o
- .debug_info    0x000027d9      0x78d C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_dma.o
- .debug_info    0x00002f66      0x62d C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_gpio.o
- .debug_info    0x00003593      0x14c C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_it.o
- .debug_info    0x000036df      0xd05 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_rcc.o
- .debug_info    0x000043e4     0x1e20 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_tim.o
- .debug_info    0x00006204      0x63f C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\system_stm32f4xx.o
- .debug_info    0x00006843      0x598 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\misc.o
- .debug_info    0x00006ddb      0xa30 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_usart.o
+ .debug_info    0x00000000     0x11ac C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\main.o
+ .debug_info    0x000011ac      0x963 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4_discovery.o
+ .debug_info    0x00001b0f      0xcce C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_adc.o
+ .debug_info    0x000027dd      0x78d C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_dma.o
+ .debug_info    0x00002f6a      0x62d C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_gpio.o
+ .debug_info    0x00003597      0x14c C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_it.o
+ .debug_info    0x000036e3      0xd05 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_rcc.o
+ .debug_info    0x000043e8     0x1e20 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_tim.o
+ .debug_info    0x00006208      0x63f C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\system_stm32f4xx.o
+ .debug_info    0x00006847      0x598 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\misc.o
+ .debug_info    0x00006ddf      0xa30 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_usart.o
 
-.debug_abbrev   0x00000000     0x117d
+.debug_abbrev   0x00000000     0x1168
  *(.debug_abbrev)
- .debug_abbrev  0x00000000      0x1e1 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\main.o
- .debug_abbrev  0x000001e1      0x19c C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4_discovery.o
- .debug_abbrev  0x0000037d      0x1d7 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_adc.o
- .debug_abbrev  0x00000554      0x19e C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_dma.o
- .debug_abbrev  0x000006f2      0x1d0 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_gpio.o
- .debug_abbrev  0x000008c2       0x64 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_it.o
- .debug_abbrev  0x00000926      0x1f8 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_rcc.o
- .debug_abbrev  0x00000b1e      0x207 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_tim.o
- .debug_abbrev  0x00000d25      0x16c C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\system_stm32f4xx.o
- .debug_abbrev  0x00000e91      0x14e C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\misc.o
- .debug_abbrev  0x00000fdf      0x19e C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_usart.o
+ .debug_abbrev  0x00000000      0x1cc C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\main.o
+ .debug_abbrev  0x000001cc      0x19c C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4_discovery.o
+ .debug_abbrev  0x00000368      0x1d7 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_adc.o
+ .debug_abbrev  0x0000053f      0x19e C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_dma.o
+ .debug_abbrev  0x000006dd      0x1d0 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_gpio.o
+ .debug_abbrev  0x000008ad       0x64 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_it.o
+ .debug_abbrev  0x00000911      0x1f8 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_rcc.o
+ .debug_abbrev  0x00000b09      0x207 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_tim.o
+ .debug_abbrev  0x00000d10      0x16c C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\system_stm32f4xx.o
+ .debug_abbrev  0x00000e7c      0x14e C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\misc.o
+ .debug_abbrev  0x00000fca      0x19e C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_usart.o
 
-.debug_line     0x00000000     0x2960
+.debug_line     0x00000000     0x2952
  *(.debug_line)
- .debug_line    0x00000000      0x471 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\main.o
- .debug_line    0x00000471      0x276 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4_discovery.o
- .debug_line    0x000006e7      0x4c1 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_adc.o
- .debug_line    0x00000ba8      0x347 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_dma.o
- .debug_line    0x00000eef      0x2b4 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_gpio.o
- .debug_line    0x000011a3      0x1e3 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_it.o
- .debug_line    0x00001386      0x4fc C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_rcc.o
- .debug_line    0x00001882      0x949 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_tim.o
- .debug_line    0x000021cb      0x1d0 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\system_stm32f4xx.o
- .debug_line    0x0000239b      0x1c8 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\misc.o
- .debug_line    0x00002563      0x3fd C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_usart.o
+ .debug_line    0x00000000      0x463 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\main.o
+ .debug_line    0x00000463      0x276 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4_discovery.o
+ .debug_line    0x000006d9      0x4c1 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_adc.o
+ .debug_line    0x00000b9a      0x347 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_dma.o
+ .debug_line    0x00000ee1      0x2b4 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_gpio.o
+ .debug_line    0x00001195      0x1e3 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_it.o
+ .debug_line    0x00001378      0x4fc C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_rcc.o
+ .debug_line    0x00001874      0x949 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_tim.o
+ .debug_line    0x000021bd      0x1d0 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\system_stm32f4xx.o
+ .debug_line    0x0000238d      0x1c8 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\misc.o
+ .debug_line    0x00002555      0x3fd C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_usart.o
 
 .debug_frame    0x00000000     0x13e8
  *(.debug_frame)
@@ -1252,43 +1254,43 @@ END GROUP
  .debug_frame   0x00001170       0x68 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\misc.o
  .debug_frame   0x000011d8      0x210 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_usart.o
 
-.debug_str      0x00000000     0x33d3
+.debug_str      0x00000000     0x33dc
  *(.debug_str)
- .debug_str     0x00000000      0xff7 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\main.o
-                               0x1053 (size before relaxing)
- .debug_str     0x00000ff7      0x296 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4_discovery.o
+ .debug_str     0x00000000     0x1000 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\main.o
+                               0x105c (size before relaxing)
+ .debug_str     0x00001000      0x296 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4_discovery.o
                                 0xaa6 (size before relaxing)
- .debug_str     0x0000128d      0x577 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_adc.o
+ .debug_str     0x00001296      0x577 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_adc.o
                                 0x7c0 (size before relaxing)
- .debug_str     0x00001804      0x27a C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_dma.o
+ .debug_str     0x0000180d      0x27a C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_dma.o
                                 0x508 (size before relaxing)
- .debug_str     0x00001a7e      0x1b6 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_gpio.o
+ .debug_str     0x00001a87      0x1b6 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_gpio.o
                                 0x45f (size before relaxing)
- .debug_str     0x00001c34       0xeb C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_it.o
+ .debug_str     0x00001c3d       0xeb C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_it.o
                                 0x190 (size before relaxing)
- .debug_str     0x00001d1f      0x648 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_rcc.o
+ .debug_str     0x00001d28      0x648 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_rcc.o
                                 0x80c (size before relaxing)
- .debug_str     0x00002367      0xa11 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_tim.o
+ .debug_str     0x00002370      0xa11 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_tim.o
                                 0xd8c (size before relaxing)
- .debug_str     0x00002d78      0x131 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\system_stm32f4xx.o
+ .debug_str     0x00002d81      0x131 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\system_stm32f4xx.o
                                 0x320 (size before relaxing)
- .debug_str     0x00002ea9      0x16d C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\misc.o
+ .debug_str     0x00002eb2      0x16d C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\misc.o
                                 0x395 (size before relaxing)
- .debug_str     0x00003016      0x3bd C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_usart.o
+ .debug_str     0x0000301f      0x3bd C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_usart.o
                                 0x64b (size before relaxing)
 
-.debug_loc      0x00000000     0x3555
+.debug_loc      0x00000000     0x353f
  *(.debug_loc)
- .debug_loc     0x00000000      0x294 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\main.o
- .debug_loc     0x00000294       0xc4 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4_discovery.o
- .debug_loc     0x00000358      0x94c C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_adc.o
- .debug_loc     0x00000ca4      0x343 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_dma.o
- .debug_loc     0x00000fe7      0x26d C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_gpio.o
- .debug_loc     0x00001254      0x6ed C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_rcc.o
- .debug_loc     0x00001941     0x14bc C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_tim.o
- .debug_loc     0x00002dfd      0x133 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\system_stm32f4xx.o
- .debug_loc     0x00002f30      0x11d C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\misc.o
- .debug_loc     0x0000304d      0x508 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_usart.o
+ .debug_loc     0x00000000      0x27e C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\main.o
+ .debug_loc     0x0000027e       0xc4 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4_discovery.o
+ .debug_loc     0x00000342      0x94c C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_adc.o
+ .debug_loc     0x00000c8e      0x343 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_dma.o
+ .debug_loc     0x00000fd1      0x26d C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_gpio.o
+ .debug_loc     0x0000123e      0x6ed C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_rcc.o
+ .debug_loc     0x0000192b     0x14bc C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_tim.o
+ .debug_loc     0x00002de7      0x133 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\system_stm32f4xx.o
+ .debug_loc     0x00002f1a      0x11d C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\misc.o
+ .debug_loc     0x00003037      0x508 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_usart.o
 
 .debug_macinfo
  *(.debug_macinfo)

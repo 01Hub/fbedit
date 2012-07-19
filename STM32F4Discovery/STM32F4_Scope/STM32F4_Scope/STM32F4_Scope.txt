@@ -23,7 +23,8 @@ o Dual channel digital oscilloscope.
     With some additional hardware, variable trigger level and DC offset
     (Y-Position) adjustment.
 o Two high speed clock outputs.
-  - Variable from 1Hz to 84MHz
+  - Variable from 1Hz to 21MHz on CHA
+  - Variable from 1Hz to 42MHz on CHB
   - Variable pulse width, 0% to 100%.
 o Logic analyser.
   - 8 bits.
@@ -55,7 +56,7 @@ PB1					ADC12_IN9	Input for scope CHB
 PC1					ADC123_IN11	Input for DVMA
 PC2					ADC123_IN12	Input for DVMB
 
-PC6					USART6_TX	Output to DDS Wave Generator
+PA2					USART2_TX	Output to DDS Wave Generator
 
 PE8-PE15			PE8-PE15	Inputs for logic analyser
 -------------------------------------------------------------------------------
