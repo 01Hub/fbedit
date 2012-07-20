@@ -1,5 +1,5 @@
 
-<ApplicationBuild Header="STM32F4_Scope" Extern=".\STM32F4_Scope.rapp" Path=".\STM32F4_Scope.rapp" AsyncBuild="" OutputFile=".\STM32F4_Scope.elf" sate="96" >
+<ApplicationBuild Header="STM32F4_Scope" Extern=".\STM32F4_Scope.rapp" Path=".\STM32F4_Scope.rapp" AsyncBuild="" OutputFile=".\STM32F4_Scope.elf" sate="98" >
 	<NodeText Path=".\readme.txt" Header="readme.txt" Marker="-1" AsyncBuild="" OutputFile="" sate="0" />
 	<NodeC Path=".\main.c" Header="main.c" Marker="-1" AsyncBuild="" OutputFile=".\main.o" sate="0" />
 	<NodeASM Path=".\startup_stm32f4xx.s" Header="startup_stm32f4xx.s" Marker="0" AsyncBuild="" OutputFile=".\startup_stm32f4xx.o" sate="0" >
@@ -24,7 +24,7 @@
 	<NodeC Path=".\stm32f4xx_dma.c" Header="stm32f4xx_dma.c" Marker="-1" AsyncBuild="" OutputFile=".\stm32f4xx_dma.o" sate="0" />
 	<NodeC Path=".\stm32f4xx_gpio.c" Header="stm32f4xx_gpio.c" Marker="-1" AsyncBuild="" OutputFile=".\stm32f4xx_gpio.o" sate="0" />
 	<NodeC Path=".\stm32f4xx_it.c" Header="stm32f4xx_it.c" Marker="-1" AsyncBuild="" OutputFile=".\stm32f4xx_it.o" sate="0" />
-	<NodeC Path=".\stm32f4xx_rcc.c" Header="stm32f4xx_rcc.c" Marker="-1" AsyncBuild="" OutputFile=".\stm32f4xx_rcc.o" sate="2" />
+	<NodeC Path=".\stm32f4xx_rcc.c" Header="stm32f4xx_rcc.c" Marker="-1" AsyncBuild="" OutputFile=".\stm32f4xx_rcc.o" sate="0" />
 	<NodeC Path=".\stm32f4xx_tim.c" Header="stm32f4xx_tim.c" Marker="-1" AsyncBuild="" OutputFile=".\stm32f4xx_tim.o" sate="0" />
 	<NodeC Path=".\system_stm32f4xx.c" Header="system_stm32f4xx.c" Marker="-1" AsyncBuild="" OutputFile=".\system_stm32f4xx.o" sate="0" />
 	<NodeC Path=".\misc.c" Header="misc.c" Marker="-1" AsyncBuild="" OutputFile=".\misc.o" sate="0" />
@@ -68,6 +68,5 @@
 		</Config>
 												
 	</Options>
-	<NodeC Path=".\stm32f4xx_usart.c" Header="stm32f4xx_usart.c" Marker="-1" AsyncBuild="" OutputFile=".\stm32f4xx_usart.o" sate="0" />
 	<NodeC Path=".\stm32f4xx_spi.c" Header="stm32f4xx_spi.c" Marker="-1" AsyncBuild="" OutputFile=".\stm32f4xx_spi.o" sate="0" />
 </ApplicationBuild>

@@ -3,12 +3,12 @@ Version=3000
 [Project]
 Assembler=masm
 Group=2,-1,0,1,STM32_Scope,-2,-1,1,Assembly,-3,-1,1,Include,-4,-1,1,Misc,-5,-1,1,Resource,-6,-1,1,Drawings,-7,-1,1,Pdf
-F1=-2,2,1,22,22,600,400,45,STM32F4_Scope.asm
-F2=-3,0,1,44,44,600,400,204,STM32F4_Scope.inc
+F1=-2,2,1,22,22,600,400,215,STM32F4_Scope.asm
+F2=-3,0,1,44,44,600,400,235,STM32F4_Scope.inc
 F3=-5,2,4,-4,-23,1247,593,343,STM32F4_Scope.rc
-Open=3,1,2,3,4,5,6,7,8,9,10
+Open=9,1,2,3,4,5,6,7,8,9,10
 Api=
-F4=-4,0,2,0,542,160,27,59,STM32F4_Scope.txt
+F4=-4,0,2,0,542,160,27,49,STM32F4_Scope.txt
 Scope.asm
 Frequency.asm
 LogicAnalyser.asm
@@ -50,7 +50,7 @@ C1=0,0
 B1=
 M1=
 F9=-3,0,1,176,176,992,451,0,DDSWave.inc
-F10=-3,0,1,198,198,992,451,456,DDSWave.asm
+F10=-3,0,1,198,198,992,451,484,DDSWave.asm
 C10=0
 B10=
 M10=

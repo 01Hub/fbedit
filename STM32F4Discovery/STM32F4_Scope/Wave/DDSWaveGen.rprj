@@ -1,0 +1,4 @@
+
+<Project Header="Project 'DDSWaveGen'" Path=".\DDSWaveGen.rprj" Project="Yes" AsyncBuild="" OutputFile="" sate="96" ActiveApp="DDSWaveGen" >
+	<ApplicationBuild Header="DDSWaveGen" Extern=".\DDSWaveGen.rapp" Path=".\DDSWaveGen.rapp" AsyncBuild="" OutputFile=".\DDSWaveGen.elf" sate="96" />
+</Project>

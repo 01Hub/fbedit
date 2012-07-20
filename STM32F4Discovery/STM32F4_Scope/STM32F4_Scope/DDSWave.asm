@@ -125,10 +125,12 @@ DDSGenWave proc uses ebx esi edi
 	mov		ebx,ddsdata.DDS_CommandStruct.DDS_PhaseAdd
 	mov		eax,ebx
 	sub		eax,edi
+PrintDec eax
 	mov		ddsdata.DDS_CommandStruct.SWEEP_Min,eax
 	mov		eax,ebx
 	add		eax,edi
 	mov		ddsdata.DDS_CommandStruct.SWEEP_Max,eax
+PrintDec eax
 	invoke InvalidateRect,ddsdata.hWndDDS,NULL,TRUE
 	invoke UpdateWindow,ddsdata.hWndDDS
 	ret

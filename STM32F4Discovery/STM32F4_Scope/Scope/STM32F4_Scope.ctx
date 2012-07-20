@@ -9,12 +9,12 @@
 				<3>372</3>
 				<4>67</4>
 				<5>145</5>
-																																										
+																																																																						
 			</CodeReport>
-																														
+																																																		
 		</CodeView>
 		<MemoryView Focus="134218120" TopRow="0" NbPerLine="8" />
-																		
+																														
 	</STM32F4_Scope>
 	<Flags>
 		<Report>
@@ -38,10 +38,13 @@
 			
 	</Flags>
 	<Views>
-		<View File="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\main.c" Line="662" Index="0" focus="1" />
-		<View File="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_usart.c" Line="1289" Index="1" />
-		<View File="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_usart.h" Line="327" Index="2" />
-		<View File="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_rcc.h" Line="0" Index="3" />
+		<View File="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\main.c" Line="421" Index="0" focus="1" />
+		<View File="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_usart.h" Line="325" Index="1" />
+		<View File="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_rcc.h" Line="0" Index="2" />
+		<View File="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_it.c" Line="132" Index="3" />
+		<View File="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_spi.c" Line="1122" Index="4" />
+		<View File="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_spi.h" Line="441" Index="5" />
+		<View File="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_rcc.c" Line="1077" Index="6" />
 	</Views>
 	<Grep>
 		<GrepIncludeSub>yes</GrepIncludeSub>
@@ -66,6 +69,12 @@
 		</GrepReplaceWhat>
 	</Grep>
 	<FindStrings>
+		<Find>spi</Find>
+		<Find>IS_SPI_CRC_POLYNOMIAL</Find>
+		<Find>SPI_Init</Find>
+		<Find>SPI_BaudRatePrescaler_8</Find>
+		<Find>RCC_AHB1PeriphClockCmd</Find>
+		<Find>SPI_SCK_GPIO_CLK</Find>
 		<Find>USART6</Find>
 		<Find>USART_DeInit</Find>
 		<Find>send</Find>

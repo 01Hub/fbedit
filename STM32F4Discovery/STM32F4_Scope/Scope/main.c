@@ -223,13 +223,6 @@ int main(void)
             i++;
             Adr++;
           }
-          // i=0;
-          // while (i < 1000)
-          // {
-            // while(!(SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE)));
-            // SPI_I2S_SendData(SPI2, 0x5555);
-            // i++;
-          // }
           STM32_DataStruct.CommandStruct.Command = STM32_CommandDone;
           break;
       }
