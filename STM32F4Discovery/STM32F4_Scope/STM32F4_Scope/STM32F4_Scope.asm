@@ -208,11 +208,11 @@ SampleThreadProc proc lParam:DWORD
 				invoke STLinkWrite,hWnd,STM32CommandStart,addr ddsdata.DDS_CommandStructDone,sizeof STM32_CommandStructDef
 				mov		ddsdata.DDS_CommandStructDone.Command,STM32_CommandInit
 				invoke STLinkWrite,hWnd,STM32CommandStart,addr ddsdata.DDS_CommandStructDone,4
-;				.while TRUE
-;					invoke STLinkRead,hWnd,STM32CommandStart,addr ddsdata.DDS_CommandStructDone,4
-;					.break .if ddsdata.DDS_CommandStructDone.Command==STM32_CommandDone
-;					invoke Sleep,10
-;				.endw
+				.while TRUE
+					invoke STLinkRead,hWnd,STM32CommandStart,addr ddsdata.DDS_CommandStructDone,4
+					.break .if ddsdata.DDS_CommandStructDone.Command==STM32_CommandDone
+					invoke Sleep,10
+				.endw
 			.endif
 		.endif
 	.endw

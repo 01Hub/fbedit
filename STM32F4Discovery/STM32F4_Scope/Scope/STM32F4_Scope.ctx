@@ -9,12 +9,12 @@
 				<3>372</3>
 				<4>67</4>
 				<5>145</5>
-																												
+																																										
 			</CodeReport>
-																				
+																														
 		</CodeView>
 		<MemoryView Focus="134218120" TopRow="0" NbPerLine="8" />
-												
+																		
 	</STM32F4_Scope>
 	<Flags>
 		<Report>
@@ -38,9 +38,9 @@
 			
 	</Flags>
 	<Views>
-		<View File="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\main.c" Line="549" Index="0" focus="1" />
-		<View File="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_usart.c" Line="1290" Index="1" />
-		<View File="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_usart.h" Line="328" Index="2" />
+		<View File="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\main.c" Line="662" Index="0" focus="1" />
+		<View File="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\stm32f4xx_usart.c" Line="1289" Index="1" />
+		<View File="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_usart.h" Line="327" Index="2" />
 		<View File="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_rcc.h" Line="0" Index="3" />
 	</Views>
 	<Grep>

@@ -230,10 +230,10 @@ SWEEP_ModeDown				equ 2
 SWEEP_ModeUpDown			equ 3
 
 ;STM32 ram addresses
-STM32FrequencyCHA			equ 20000024h
-STM32FrequencyCHB			equ 20000034h
-STM32CommandStart			equ 20000044h
-STM32DataStart				equ 20000074h
+STM32FrequencyCHA			equ 20000014h
+STM32FrequencyCHB			equ 20000024h
+STM32CommandStart			equ 20000034h
+STM32DataStart				equ 20000064h
 
 ;#########################################################################
 

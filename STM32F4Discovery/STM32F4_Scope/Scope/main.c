@@ -103,8 +103,8 @@ void ADC_DVMConfig(void);
 void ADC_SCPConfig(void);
 void DMA_SCPConfig(void);
 void DMA_LGAConfig(void);
-void USART_Config(void);
 void WaitForTrigger(void);
+void SPI_Config(void);
 
 /* Private functions ---------------------------------------------------------*/
 
@@ -118,7 +118,7 @@ void WaitForTrigger(void);
 int main(void)
 {
   u32 i;
-  uint8_t *Adr;
+  uint16_t *Adr;
 
   asm("add  sp,#0x10000");
 
@@ -127,7 +127,7 @@ int main(void)
   GPIO_Config();
   TIM_Config();
   ADC_DVMConfig();
-  USART_Config();
+  SPI_Config();
   STM32_DataStruct.CommandStruct.Command = 0x56;
   STM32_DataStruct.STM32_Data[0] = 0x1234;
   while (1)
@@ -211,37 +211,27 @@ int main(void)
           TIM_Cmd(TIM8, DISABLE);
           break;
         case STM32_ModeDDSWave:
-          STM_EVAL_LEDToggle(LED4);
           /* Send configuration data to DDS Wave Generator */
-          // Adr = (uint8_t *)&STM32_DataStruct.CommandStruct.DDS_WaveType;
-          // i=0;
-          // while (i<26)
-          // {
-            // /* Wait until transmit register empty*/
-            // while(!(USART6->SR & USART_FLAG_TXE));          
-            // /* Transmit Data */
-            // USART6->DR = (uint16_t)(uint8_t) *Adr;
-            // i++;
-            // Adr++;
-          // }
+          Adr = (uint16_t *)&STM32_DataStruct.CommandStruct.DDS_WaveType;
+          i=0;
+          while (i<13)
+          {
             /* Wait until transmit register empty*/
-            // while(!(USART6->SR & USART_FLAG_TXE));          
-            // /* Transmit Data */
-            // USART6->DR = (uint16_t)(uint8_t) 'h';
-            // while(!(USART6->SR & USART_FLAG_TXE));          
-            // /* Transmit Data */
-            // USART6->DR = (uint16_t)(uint8_t) 'e';
-          // while(USART_GetFlagStatus(USART6, USART_FLAG_TXE) == RESET);
-          // USART_SendData(USART6, (uint16_t)'h');
-          // while(USART_GetFlagStatus(USART6, USART_FLAG_TXE) == RESET);
-          // USART_SendData(USART6, (uint16_t)'h');
-
-          while (USART_GetFlagStatus(USART2, USART_FLAG_TXE) == RESET);
-          USART_SendData(USART2, (uint8_t)65);
-          while (USART_GetFlagStatus(USART2, USART_FLAG_TXE) == RESET);
-          USART_SendData(USART2, (uint8_t)66);
+            while(!(SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE)));
+            /* Send Data */
+            SPI_I2S_SendData(SPI2, *Adr);
+            i++;
+            Adr++;
+          }
+          // i=0;
+          // while (i < 1000)
+          // {
+            // while(!(SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE)));
+            // SPI_I2S_SendData(SPI2, 0x5555);
+            // i++;
+          // }
           STM32_DataStruct.CommandStruct.Command = STM32_CommandDone;
-        break;
+          break;
       }
     }
     i=0;
@@ -359,8 +349,8 @@ void RCC_Config(void)
 {
   /* Enable DMA2, GPIOA, GPIOB, GPIOC and GPIOE clocks ****************************************/
   RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA2 | RCC_AHB1Periph_GPIOA | RCC_AHB1Periph_GPIOB | RCC_AHB1Periph_GPIOC | RCC_AHB1Periph_GPIOE, ENABLE);
-  /* Enable USART2, TIM2, TIM3, TIM4 and TIM5 clocks ****************************************/
-  RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART2 | RCC_APB1Periph_TIM2 | RCC_APB1Periph_TIM3 | RCC_APB1Periph_TIM4 | RCC_APB1Periph_TIM5, ENABLE);
+  /* Enable SPI2, TIM3, TIM4 and TIM5 clocks ****************************************/
+  RCC_APB1PeriphClockCmd(RCC_APB1Periph_SPI2 | RCC_APB1Periph_TIM2 | RCC_APB1Periph_TIM3 | RCC_APB1Periph_TIM4 | RCC_APB1Periph_TIM5, ENABLE);
   /* Enable TIM8, TIM10, ADC1, ADC2 and ADC3 clocks ****************************************/
   RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM8 | RCC_APB2Periph_TIM10 | RCC_APB2Periph_ADC1 | RCC_APB2Periph_ADC2 | RCC_APB2Periph_ADC3, ENABLE);
 }
@@ -417,14 +407,20 @@ void GPIO_Config(void)
   GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL ;
   GPIO_Init(GPIOB, &GPIO_InitStructure);
 
-  /* USART2 TX (PA2) configuration */
-  GPIO_InitStructure.GPIO_Pin   = GPIO_Pin_2;
-  GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_AF;
-  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+  /* Configure SPI2 SCK and MOSI pins */
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
   GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
   GPIO_InitStructure.GPIO_PuPd  = GPIO_PuPd_UP;
-  GPIO_Init(GPIOA, &GPIO_InitStructure);
-  GPIO_PinAFConfig(GPIOA, GPIO_PinSource2, GPIO_AF_USART2);
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_25MHz;
+  /* SPI SCK pin configuration */
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_13;
+  GPIO_Init(GPIOB, &GPIO_InitStructure);
+  /* Connect SPI2 pins to AF5 */  
+  GPIO_PinAFConfig(GPIOB, GPIO_PinSource13, GPIO_AF_SPI2);
+  /* SPI MOSI pin configuration */
+  GPIO_InitStructure.GPIO_Pin =  GPIO_Pin_15;
+  GPIO_Init(GPIOB, &GPIO_InitStructure);
+  GPIO_PinAFConfig(GPIOB, GPIO_PinSource15, GPIO_AF_SPI2);
 
   STM_EVAL_LEDInit(LED3);
   STM_EVAL_LEDInit(LED4);
@@ -641,18 +637,29 @@ void DMA_LGAConfig(void)
   DMA_Init(DMA2_Stream1, &DMA_InitStructure);
 }
 
-void USART_Config(void)
+/*******************************************************************************
+* Function Name  : SPI_Configuration
+* Description    : Configures SPI2 to output DDS configuration
+* Input          : None
+* Output         : None
+* Return         : None
+*******************************************************************************/
+void SPI_Config(void)
 {
-  USART_InitTypeDef     USART_InitStructure;
+  SPI_InitTypeDef SPI_InitStructure;
 
-  USART_InitStructure.USART_BaudRate == 9600;
-  USART_InitStructure.USART_WordLength = USART_WordLength_8b;
-  USART_InitStructure.USART_StopBits = USART_StopBits_1;
-  USART_InitStructure.USART_Parity = USART_Parity_No;
-  USART_InitStructure.USART_Mode = USART_Mode_Tx;
-  USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
-  USART_Init(USART2, &USART_InitStructure);
-  USART_Cmd(USART2, ENABLE);
+	/* Set up SPI2 port */
+	SPI_InitStructure.SPI_Direction = SPI_Direction_1Line_Tx;
+	SPI_InitStructure.SPI_Mode = SPI_Mode_Master;
+	SPI_InitStructure.SPI_DataSize = SPI_DataSize_16b;
+	SPI_InitStructure.SPI_CPOL = SPI_CPOL_Low;
+	SPI_InitStructure.SPI_CPHA = SPI_CPHA_2Edge;
+	SPI_InitStructure.SPI_NSS = SPI_NSS_Soft;
+	SPI_InitStructure.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_8;
+	SPI_InitStructure.SPI_FirstBit = SPI_FirstBit_MSB;
+  SPI_InitStructure.SPI_CRCPolynomial = 7;
+	SPI_Init(SPI2, &SPI_InitStructure);
+	SPI_Cmd(SPI2, ENABLE);
 }
 
 /**
