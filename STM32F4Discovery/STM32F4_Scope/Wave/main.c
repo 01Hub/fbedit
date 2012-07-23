@@ -26,41 +26,16 @@
   PA1					TIM2_CH2	Input for frequency counter scope CHA
   PA4         DDS wave output
   PA6         DDS sweep sync output
+
+  PB13				SPI2_SCK
+  PB15				SPI2_MOSI
   ------------------------------------
 */
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4_discovery.h"
-#include <stdio.h>
 #include "wave.h"
 
-/** @addtogroup STM32F4_Discovery_Peripheral_Examples
-  * @{
-  */
-
-/** @addtogroup ADC_ADC3_DMA
-  * @{
-  */ 
-
 /* Private typedef -----------------------------------------------------------*/
-/* Private define ------------------------------------------------------------*/
-/* STM32_Command */
-#define STM32_CMNDWait            ((uint8_t)0)
-#define STM32_CMNDStart           ((uint8_t)1)
-#define STM32_CMNDFrqEnable       ((uint8_t)2)
-
-/* DDS SWEEP SubModes */
-#define SWEEP_ModeOff             ((uint8_t)0)
-#define SWEEP_ModeUp              ((uint8_t)1)
-#define SWEEP_ModeDown            ((uint8_t)2)
-#define SWEEP_ModeUpDown          ((uint8_t)3)
-
-/* DDS WaveType */
-#define WAVE_Sine                 ((uint8_t)0)
-#define WAVE_Triangle             ((uint8_t)1)
-#define WAVE_Square               ((uint8_t)2)
-#define WAVE_SawTooth             ((uint8_t)3)
-#define WAVE_RevSawTooth          ((uint8_t)4)
-
 typedef struct
 {
   uint32_t FrequencyCHA;                                  // 0x20000014
@@ -84,15 +59,34 @@ typedef struct
   uint32_t  SWEEP_Max;                                    // 0x2000003C
   uint16_t Wave[2048];                                    // 0x20000040
 }STM32_CMNDTypeDef;
+
+/* Private define ------------------------------------------------------------*/
+#define STM32_CMNDWait            ((uint8_t)0)
+#define STM32_CMNDStart           ((uint8_t)1)
+#define STM32_CMNDFrqEnable       ((uint8_t)2)
+
+/* DDS SWEEP SubModes */
+#define SWEEP_ModeOff             ((uint8_t)0)
+#define SWEEP_ModeUp              ((uint8_t)1)
+#define SWEEP_ModeDown            ((uint8_t)2)
+#define SWEEP_ModeUpDown          ((uint8_t)3)
+
+/* DDS WaveType */
+#define WAVE_Sine                 ((uint8_t)0)
+#define WAVE_Triangle             ((uint8_t)1)
+#define WAVE_Square               ((uint8_t)2)
+#define WAVE_SawTooth             ((uint8_t)3)
+#define WAVE_RevSawTooth          ((uint8_t)4)
+
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 static STM32_CMNDTypeDef STM32_Command;                   // 0x20000014
+uint16_t *Adr;                                            // 0x20001040
+
 /* Private function prototypes -----------------------------------------------*/
 void DDS_Config(void);
 void WaveSetup(void);
-void DDSSetup(void);
-void DDSWaveGenerator(void);
-void DDSSweepWaveGenerator(void);
+void DDS_WaveLoop(void);
 /* Private functions ---------------------------------------------------------*/
 /**
   * @brief  Main program
@@ -108,16 +102,6 @@ int main(void)
        system_stm32f4xx.c file
      */
 
-
-  /* Initialize Leds mounted on STM32F4-Discovery board */
-  STM_EVAL_LEDInit(LED3);
-  STM_EVAL_LEDInit(LED4);
-  STM_EVAL_LEDInit(LED5);
-  STM_EVAL_LEDInit(LED6);
-  STM_EVAL_LEDOff(LED3);
-  STM_EVAL_LEDOff(LED4);
-  STM_EVAL_LEDOff(LED5);
-  STM_EVAL_LEDOff(LED6);
   STM32_Command.DDS_WaveType = WAVE_Sine;
   STM32_Command.DDS_SweepMode = SWEEP_ModeOff;
   STM32_Command.DDS_PhaseAdd = 204522;
@@ -128,13 +112,21 @@ int main(void)
   STM32_Command.SWEEP_StepCount = 10;
   STM32_Command.SWEEP_Min = 194297;
   STM32_Command.SWEEP_Max = 214747;
-  /* Setup GPIO, TIM's and DAC */
+  Adr = 0;
+  /* Setup GPIO, TIM's, DAC and SPI */
   DDS_Config();
+  /* Setup wave data */
   WaveSetup();
-  DDSSetup();
-  while (1)
-  {
-  }
+  asm("movw   r1,#0x0040");
+  asm("movt   r1,#0x2000");       /* STM32_Command.Wave[0] = 0x20000040 */
+  asm("movw   r2,#0x7408");
+  asm("movt   r2,#0x4000");       /* DAC_DHR12R1 */
+  asm("mov    r3,#0x0");          /* DDSPhase pointer value */
+  asm("movw   r4,#0x0026");
+  asm("movt   r4,#0x2000");       /* STM32_Command.DDS_PhaseAdd = 0x20000026 */
+  asm("ldr    r4,[r4,#0x0]");     /* DDSPhaseFrq value */
+  /* Start wave generation */
+  DDS_WaveLoop();
 }
 
 void WaveSetup(void)
@@ -196,31 +188,6 @@ void WaveSetup(void)
     }
     STM32_Command.Wave[i] = tmp;
     i++;
-  }
-}
-
-void DDSSetup(void)
-{
-  TIM_Cmd(TIM6, DISABLE);
-  TIM6->ARR = STM32_Command.SWEEP_StepTime-1;
-  switch (STM32_Command.DDS_SweepMode)
-  {
-    case SWEEP_ModeOff:
-      STM_EVAL_LEDOn(LED5);
-      DDSWaveGenerator();
-      break;
-    case SWEEP_ModeUp:
-      STM_EVAL_LEDOn(LED6);
-      DDSSweepWaveGenerator();
-      break;
-    case SWEEP_ModeDown:
-      STM_EVAL_LEDOn(LED6);
-      DDSSweepWaveGenerator();
-      break;
-    case SWEEP_ModeUpDown:
-      STM_EVAL_LEDOn(LED6);
-      DDSSweepWaveGenerator();
-      break;
   }
 }
 
@@ -386,62 +353,6 @@ void DDS_WaveLoop(void)
 }
 
 /*******************************************************************************
-* Function Name  : DDSWaveGenerator
-* Description    : This function generates a waveform using DDS
-* Input          : None
-* Output         : None
-* Return         : None
-*******************************************************************************/
-void DDSWaveGenerator(void)
-{
-  asm("movw   r1,#0x0040");
-  asm("movt   r1,#0x2000");       /* STM32_Command.Wave[0] = 0x20000040 */
-  asm("movw   r2,#0x7408");
-  asm("movt   r2,#0x4000");       /* DAC_DHR12R1 */
-  asm("mov    r3,#0x0");          /* DDSPhase pointer value */
-  asm("movw   r4,#0x0026");
-  asm("movt   r4,#0x2000");       /* STM32_Command.DDS_PhaseAdd = 0x20000026 */
-  asm("ldr    r4,[r4,#0x0]");     /* DDSPhaseFrq value */
-
-  DDS_WaveLoop();
-}
-
-/*******************************************************************************
-* Function Name  : DDSSweepWaveGenerator
-* Description    : This function generates a sweep waveform using DDS
-* Input          : None
-* Output         : None
-* Return         : None
-*******************************************************************************/
-void DDSSweepWaveGenerator(void)
-{
-  TIM_Cmd(TIM6, ENABLE);
-
-  /* Used by Clear TIM6 Update interrupt pending bit */
-  asm("mov    r10,#0x1000");
-  asm("movt   r10,#0x4000");
-
-  asm("movw   r9,#0x0000");
-  asm("movt   r9,#0x4002");       /* GPIOA */
-  asm("movw   r1,#0x0040");
-  asm("movt   r1,#0x2000");       /* STM32_Command.Wave[0] = 0x20000040 */
-  asm("movw   r2,#0x7408");
-  asm("movt   r2,#0x4000");       /* DAC_DHR12R1 */
-  asm("mov    r3,#0x0");          /* DDSPhase pointer value */
-
-  asm("movw   r8,#0x0");
-  asm("movt   r8,#0x2000");
-  asm("ldrb   r0,[r8,#0x25]");    /* STM32_Command.SWEEP_UpDown = 0x20000025 */
-
-  asm("ldr    r6,[r8,#0x38]");    /* STM32_Command.SWEEP_Min = 0x20000038 */
-  asm("ldr    r7,[r8,#0x3C]");    /* STM32_Command.SWEEP_Max = 0x2000003C */
-  asm("ldr    r8,[r8,#0x2E]");    /* STM32_Command.SWEEP_Add = 0x2000002E */
-  asm("mov    r4,r6");            /* STM32_Command.SWEEP_Min */
-
-  DDS_WaveLoop();
-}
-
-/*******************************************************************************
 * Function Name  : TIM6_DAC_IRQHandler
 * Description    : This function handles TIM6 global interrupt request.
 *                  It is used by dds sweep
@@ -459,7 +370,9 @@ void TIM6_DAC_IRQHandler(void)
   /* Prepare set sweep sync */
   asm("mov    r12,#0x0040");
 
-  asm("cbnz   r0,lblupdown");
+  asm("cmp    r11,#0x3");         /* SWEEP_ModeUpDown */
+  asm("it     ne");               /* Make the next instruction conditional */
+  asm("bne    lblupdown");        /*  Conditional jump */
   /* Up or Down*/
   asm("add    r4,r8");            /* SWEEP_Add */
   asm("cmp    r4,r7");            /* SWEEP_Max */
@@ -475,9 +388,9 @@ void TIM6_DAC_IRQHandler(void)
   asm("it     ne");               /* Make the next instruction conditional */
   asm("bxne   lr");               /*  Conditional return */
   /* Change direction */
-  asm("mov    r11,r6");           /* tmp = SWEEP_Min */
+  asm("mov    r0,r6");            /* tmp = SWEEP_Min */
   asm("mov    r6,r7");            /* SWEEP_Min = SWEEP_Max */
-  asm("mov    r7,r11");           /* SWEEP_Max = tmp */
+  asm("mov    r7,r0");            /* SWEEP_Max = tmp */
   asm("neg    r8,r8");            /* Negate SWEEP_Add */
 }
 
@@ -508,36 +421,63 @@ void TIM3_IRQHandler(void)
 
 void SPI2_IRQHandler(void)
 {
-  SPI_ClearITPendingBit(SPI2,SPI_IT_RXNE);
-}
+  SPI_I2S_ClearITPendingBit(SPI2,SPI_IT_RXNE);
 
-#ifdef  USE_FULL_ASSERT
-
-/**
-  * @brief  Reports the name of the source file and the source line number
-  *         where the assert_param error has occurred.
-  * @param  file: pointer to the source file name
-  * @param  line: assert_param error line source number
-  * @retval None
-  */
-void assert_failed(uint8_t* file, uint32_t line)
-{ 
-  /* User can add his own implementation to report the file name and line number,
-     ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
-
-  /* Infinite loop */
-  while (1)
+  asm("movw   r0,#0x1040");
+  asm("movt   r0,#0x2000");       /* Pointer to Adr */
+  asm("ldr    r3,[r0,#0x0]");
+  asm("cbnz   r3,adrset");        /* if Adr == 0 */
+  asm("movw   r3,#0x0022");
+  asm("movt   r3,#0x2000");       /* Pointer to DDS_WaveType-2 */
+  asm("adrset:");
+  asm("add    r3,r3,#0x2");
+  asm("str    r3,[r0,#0x0]");
+  asm("movw   r1,#0x3800");
+  asm("movt   r1,#0x4000");
+  asm("ldrh   r2,[r1,#0x0C]");
+  asm("strh   r2,[r3,#0x0]");
+  if ((uint32_t)Adr == 0x2000003C)
   {
+    Adr = 0;
+    /* Disable the TIM6 Counter */
+    TIM6->CR1 &= (uint16_t)~TIM_CR1_CEN;
+    WaveSetup();
+    if (STM32_Command.DDS_SweepMode == SWEEP_ModeOff)
+    {
+      asm("movw   r4,#0x0026");
+      asm("movt   r4,#0x2000");       /* STM32_Command.DDS_PhaseAdd = 0x20000026 */
+      asm("ldr    r4,[r4,#0x0]");     /* DDSPhaseFrq value */
+    }
+    else
+    {
+      TIM6->CNT = 0;
+      TIM6->ARR = STM32_Command.SWEEP_StepTime-1;
+      /* Enable the TIM6 Counter */
+      TIM6->CR1 |= TIM_CR1_CEN;
+
+      /* Used by Clear TIM6 Update interrupt pending bit */
+      asm("mov    r10,#0x1000");
+      asm("movt   r10,#0x4000");
+
+      asm("movw   r9,#0x0000");
+      asm("movt   r9,#0x4002");       /* GPIOA */
+
+      asm("movw   r8,#0x0");
+      asm("movt   r8,#0x2000");
+      asm("mov    r11,#0x0");
+      asm("ldrb   r11,[r8,#0x25]");   /* STM32_Command.DDS_SweepMode = 0x20000025 */
+
+      asm("ldr    r6,[r8,#0x38]");    /* STM32_Command.SWEEP_Min = 0x20000038 */
+      asm("ldr    r7,[r8,#0x3C]");    /* STM32_Command.SWEEP_Max = 0x2000003C */
+      asm("ldr    r8,[r8,#0x2E]");    /* STM32_Command.SWEEP_Add = 0x2000002E */
+      asm("mov    r4,r6");            /* STM32_Command.SWEEP_Min */
+    }
+    asm("movw   r1,#0x0040");
+    asm("movt   r1,#0x2000");       /* STM32_Command.Wave[0] = 0x20000040 */
+    asm("movw   r2,#0x7408");
+    asm("movt   r2,#0x4000");       /* DAC_DHR12R1 */
+    asm("mov    r3,#0x0");          /* DDSPhase pointer value */
   }
 }
-#endif
-
-/**
-  * @}
-  */ 
-
-/**
-  * @}
-  */ 
 
 /******************* (C) COPYRIGHT 2011 STMicroelectronics *****END OF FILE****/

@@ -1,8 +1,7 @@
 
 <Debug>
 	<DDSWaveGen>
-		<MemoryView Focus="134218120" TopRow="0" NbPerLine="8" />
-		<CodeView TopRow="134219162" Focus="134219198" >
+		<CodeView TopRow="134219526" Focus="4294967295" >
 			<CodeReport>
 				<0>112</0>
 				<1>123</1>
@@ -14,6 +13,7 @@
 			</CodeReport>
 										
 		</CodeView>
+		<MemoryView Focus="134218120" TopRow="0" NbPerLine="8" />
 						
 	</DDSWaveGen>
 	<Flags>
@@ -38,17 +38,9 @@
 			
 	</Flags>
 	<Views>
-		<View File="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\main.c" Line="511" Index="0" focus="1" />
-		<View File="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_spi.c" Line="50" Index="1" />
-		<View File="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_spi.h" Line="457" Index="2" />
-		<View File="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\startup_stm32f4xx.s" Line="181" Index="3" />
-		<View File="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_it.c" Line="24" Index="4" />
-		<View File="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_it.h" Line="34" Index="5" />
-		<View File="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\misc.c" Line="69" Index="6" />
-		<View File="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\misc.h" Line="31" Index="7" />
-		<View File="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx.h" Line="0" Index="8" />
-		<View File="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.c" Line="113" Index="9" />
-		<View File="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_tim.h" Line="546" Index="10" />
+		<View File="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\main.c" Line="481" Index="0" focus="1" />
+		<View File="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_spi.c" Line="777" Index="1" />
+		<View File="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_spi.h" Line="520" Index="2" />
 	</Views>
 	<Grep>
 		<GrepIncludeSub>yes</GrepIncludeSub>
@@ -82,6 +74,14 @@
 		</GrepReplaceWhat>
 	</Grep>
 	<FindStrings>
+		<Find>44</Find>
+		<Find>SPI_I2S_ReceiveData</Find>
+		<Find>SPI_I2S_ClearITPendingBit</Find>
+		<Find>r11</Find>
+		<Find>r10</Find>
+		<Find>r9</Find>
+		<Find>send</Find>
+		<Find>getdata</Find>
 		<Find>SPI_IT</Find>
 		<Find>SPI_ITConfig</Find>
 		<Find>SPI_ClearITPendingBit</Find>

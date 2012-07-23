@@ -222,6 +222,7 @@ int main(void)
             SPI_I2S_SendData(SPI2, *Adr);
             i++;
             Adr++;
+            Adr++;
           }
           STM32_DataStruct.CommandStruct.Command = STM32_CommandDone;
           break;
