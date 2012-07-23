@@ -3,12 +3,12 @@ Version=3000
 [Project]
 Assembler=masm
 Group=2,-1,0,1,STM32_Scope,-2,-1,1,Assembly,-3,-1,1,Include,-4,-1,1,Misc,-5,-1,1,Resource,-6,-1,1,Drawings,-7,-1,1,Pdf
-F1=-2,2,1,22,22,600,400,587,STM32F4_Scope.asm
-F2=-3,0,1,44,44,600,400,235,STM32F4_Scope.inc
+F1=-2,2,1,22,22,600,400,131,STM32F4_Scope.asm
+F2=-3,0,1,44,44,600,400,184,STM32F4_Scope.inc
 F3=-5,2,4,-4,-23,1247,593,343,STM32F4_Scope.rc
-Open=9,1,2,3,4,5,6,7,8,9,10
+Open=0,1,2,3,4,5,6,7,8,9,10
 Api=
-F4=-4,0,2,0,542,160,27,58,STM32F4_Scope.txt
+F4=-4,0,2,0,542,160,27,20,STM32F4_Scope.txt
 Scope.asm
 Frequency.asm
 LogicAnalyser.asm
@@ -24,7 +24,7 @@ Path=C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\STM32
 F5=-2,0,1,88,88,1014,416,3,Frequency.asm
 F6=-2,0,1,110,110,1014,416,305,HSClock.asm
 F7=-2,0,1,132,132,1014,416,429,LogicAnalyser.asm
-F8=-2,0,1,160,542,160,27,482,Scope.asm
+F8=-2,0,1,160,542,160,27,107,Scope.asm
 C8=0,0,0
 B8=
 M8=

@@ -189,7 +189,7 @@ IDC_CBODDSWAVE				equ 1303
 
 STM32_DataSize				equ 1024*63
 STM32_BlockSize				equ 64
-STM32_MAXBLOCK				equ STM32_DataSize/STM32_BlockSize/4
+STM32_MAXBLOCK				equ 255;STM32_DataSize/STM32_BlockSize/4
 
 ;Command
 STM32_CommandWait			equ 0
@@ -316,8 +316,8 @@ SCOPECHDATA struct
 	vmin					DWORD ?
 	vmax					DWORD ?
 	vpp						DWORD ?
-	ADC_Data				BYTE STM32_DataSize dup(?)
-	ADC_USData				BYTE STM32_DataSize dup(?)
+	ADC_Data				BYTE STM32_DataSize*2 dup(?)
+	ADC_USData				BYTE STM32_DataSize*2 dup(?)
 SCOPECHDATA ends
 
 SCOPEDATA struct

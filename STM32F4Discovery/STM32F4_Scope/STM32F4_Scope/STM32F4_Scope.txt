@@ -16,9 +16,9 @@ Features:
 o Dual channel digital oscilloscope.
   - Variable sample rate 21.341KS/Sec to 4.667MS/Sec.
   - 6, 8, 10 or 12 bit vertical resolution.
-  - 16K samples sample buffer/channel.
+  - 16320 samples sample buffer/channel.
   - Subsampling gives 10MHz bandwidth.
-  - Minimum 6Hz frequency to sample one complete period.
+  - Minimum 2Hz frequency to sample one complete period.
   - Trigger: Manual, rising or falling edge or from digital analyser.
     With some additional hardware, variable trigger level and DC offset
     (Y-Position) adjustment.

@@ -105,7 +105,7 @@ ScopeSetupProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LP
 		movzx	eax,scopedata.ADC_CommandStruct.ScopeClockDiv
 		invoke SendDlgItemMessage,hWin,IDC_CBOCLOCKDIVISOR,CB_SETCURSEL,eax,0
 		invoke GetSampleRate,addr scopedata.ADC_CommandStruct
-		invoke SendDlgItemMessage,hWin,IDC_TRBBUFFERSIZE,TBM_SETRANGE,FALSE,((STM32_MAXBLOCK/4) SHL 16)+1
+		invoke SendDlgItemMessage,hWin,IDC_TRBBUFFERSIZE,TBM_SETRANGE,FALSE,((STM32_MAXBLOCK) SHL 16)+1
 		movzx	eax,scopedata.ADC_CommandStruct.DataBlocks
 		invoke SendDlgItemMessage,hWin,IDC_TRBBUFFERSIZE,TBM_SETPOS,TRUE,eax
 		call	Update
