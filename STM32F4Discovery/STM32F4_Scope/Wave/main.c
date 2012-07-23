@@ -38,26 +38,26 @@
 /* Private typedef -----------------------------------------------------------*/
 typedef struct
 {
-  uint32_t FrequencyCHA;                                  // 0x20000014
+  uint32_t FrequencyCHA;                                  // 0x20000002
   uint32_t PreviousCountCHA;
-  uint32_t FrequencyCHB;                                  // 0x2000001C
+  uint32_t FrequencyCHB;                                  // 0x2000000A
   uint32_t PreviousCountCHB;
 }STM32_FRQTypeDef;
 
 typedef struct
 {
-  STM32_FRQTypeDef STM32_Frequency;                       // 0x20000014
-  uint8_t   DDS_WaveType;                                 // 0x20000024
-  uint8_t   DDS_SweepMode;                                // 0x20000025
-  uint32_t  DDS_PhaseAdd;                                 // 0x20000026
-  uint16_t  DDS_Amplitude;                                // 0x2000002A
-  uint16_t  DDS_DCOffset;                                 // 0x2000002C
-  uint32_t  SWEEP_Add;                                    // 0x2000002E
-  uint16_t  SWEEP_StepTime;                               // 0x20000032
-  uint16_t  SWEEP_StepCount;                              // 0x20000036
-  uint32_t  SWEEP_Min;                                    // 0x20000038
-  uint32_t  SWEEP_Max;                                    // 0x2000003C
-  uint16_t Wave[2048];                                    // 0x20000040
+  STM32_FRQTypeDef STM32_Frequency;                       // 0x20000002
+  uint8_t   DDS_WaveType;                                 // 0x20000012
+  uint8_t   DDS_SweepMode;                                // 0x20000013
+  uint32_t  DDS_PhaseAdd;                                 // 0x20000014
+  uint16_t  DDS_Amplitude;                                // 0x20000018
+  uint16_t  DDS_DCOffset;                                 // 0x2000001A
+  uint32_t  SWEEP_Add;                                    // 0x2000001C
+  uint16_t  SWEEP_StepTime;                               // 0x20000020
+  uint16_t  SWEEP_StepCount;                              // 0x20000022
+  uint32_t  SWEEP_Min;                                    // 0x20000024
+  uint32_t  SWEEP_Max;                                    // 0x20000028
+  uint16_t Wave[2048];                                    // 0x2000002C
 }STM32_CMNDTypeDef;
 
 /* Private define ------------------------------------------------------------*/
@@ -80,8 +80,8 @@ typedef struct
 
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
-static STM32_CMNDTypeDef STM32_Command;                   // 0x20000014
-uint16_t *Adr;                                            // 0x20001040
+static STM32_CMNDTypeDef STM32_Command;                   // 0x20000002
+uint16_t *Adr;                                            // 0x2000102C
 
 /* Private function prototypes -----------------------------------------------*/
 void DDS_Config(void);
@@ -117,14 +117,14 @@ int main(void)
   DDS_Config();
   /* Setup wave data */
   WaveSetup();
-  asm("movw   r1,#0x0040");
-  asm("movt   r1,#0x2000");       /* STM32_Command.Wave[0] = 0x20000040 */
+  asm("movw   r1,#0x002C");
+  asm("movt   r1,#0x2000");           /* STM32_Command.Wave[0] = 0x2000002C */
   asm("movw   r2,#0x7408");
-  asm("movt   r2,#0x4000");       /* DAC_DHR12R1 */
-  asm("mov    r3,#0x0");          /* DDSPhase pointer value */
-  asm("movw   r4,#0x0026");
-  asm("movt   r4,#0x2000");       /* STM32_Command.DDS_PhaseAdd = 0x20000026 */
-  asm("ldr    r4,[r4,#0x0]");     /* DDSPhaseFrq value */
+  asm("movt   r2,#0x4000");           /* DAC_DHR12R1 */
+  asm("mov    r3,#0x0");              /* DDSPhase pointer value */
+  asm("movw   r4,#0x0014");
+  asm("movt   r4,#0x2000");           /* STM32_Command.DDS_PhaseAdd = 0x20000014 */
+  asm("ldr    r4,[r4,#0x0]");         /* DDSPhaseFrq value */
   /* Start wave generation */
   DDS_WaveLoop();
 }
@@ -370,28 +370,28 @@ void TIM6_DAC_IRQHandler(void)
   /* Prepare set sweep sync */
   asm("mov    r12,#0x0040");
 
-  asm("cmp    r11,#0x3");         /* SWEEP_ModeUpDown */
-  asm("it     ne");               /* Make the next instruction conditional */
-  asm("bne    lblupdown");        /*  Conditional jump */
+  asm("cmp    r11,#0x3");             /* SWEEP_ModeUpDown */
+  asm("it     ne");                   /* Make the next instruction conditional */
+  asm("bne    lblupdown");            /*  Conditional jump */
   /* Up or Down*/
-  asm("add    r4,r8");            /* SWEEP_Add */
-  asm("cmp    r4,r7");            /* SWEEP_Max */
-  asm("itt    eq");               /* Make the next two instructions conditional */
-  asm("moveq  r4,r6");            /* Conditional load SWEEP_Min */
-  asm("streq  r12,[r9,#0x14]");   /* Conditional set sweep sync */
-  asm("bx     lr");               /* Return */
+  asm("add    r4,r8");                /* SWEEP_Add */
+  asm("cmp    r4,r7");                /* SWEEP_Max */
+  asm("itt    eq");                   /* Make the next two instructions conditional */
+  asm("moveq  r4,r6");                /* Conditional load SWEEP_Min */
+  asm("streq  r12,[r9,#0x14]");       /* Conditional set sweep sync */
+  asm("bx     lr");                   /* Return */
 
   /* Up & Down */
   asm("lblupdown:");
-  asm("add    r4,r8");            /* SWEEP_Add */
-  asm("cmp    r4,r7");            /* SWEEP_Max */
-  asm("it     ne");               /* Make the next instruction conditional */
-  asm("bxne   lr");               /*  Conditional return */
+  asm("add    r4,r8");                /* SWEEP_Add */
+  asm("cmp    r4,r7");                /* SWEEP_Max */
+  asm("it     ne");                   /* Make the next instruction conditional */
+  asm("bxne   lr");                   /*  Conditional return */
   /* Change direction */
-  asm("mov    r0,r6");            /* tmp = SWEEP_Min */
-  asm("mov    r6,r7");            /* SWEEP_Min = SWEEP_Max */
-  asm("mov    r7,r0");            /* SWEEP_Max = tmp */
-  asm("neg    r8,r8");            /* Negate SWEEP_Add */
+  asm("mov    r0,r6");                /* tmp = SWEEP_Min */
+  asm("mov    r6,r7");                /* SWEEP_Min = SWEEP_Max */
+  asm("mov    r7,r0");                /* SWEEP_Max = tmp */
+  asm("neg    r8,r8");                /* Negate SWEEP_Add */
 }
 
 /**
@@ -401,34 +401,34 @@ void TIM6_DAC_IRQHandler(void)
   */
 void TIM3_IRQHandler(void)
 {
-  asm("mov    r1,#0x20000000");     // Ram start
+  asm("mov    r1,#0x20000000");       // Ram start
   /* Clear TIM3 Update interrupt pending bit */
-  asm("mov    r0,#0x40000000");     // TIM2
-  asm("strh   r0,[r0,#0x410]");     // TIM3->SR
+  asm("mov    r0,#0x40000000");       // TIM2
+  asm("strh   r0,[r0,#0x410]");       // TIM3->SR
   /* Calculate frequency TIM2 */
-  asm("ldr    r2,[r0,#0x24]");      // TIM2->CNT
-  asm("ldr    r3,[r1,#0x18]");      // STM32_Frequency.PreviousCountCHA
-  asm("str    r2,[r1,#0x18]");      // STM32_Frequency.PreviousCountCHA
+  asm("ldr    r2,[r0,#0x24]");        // TIM2->CNT
+  asm("ldr    r3,[r1,#0x06]");        // STM32_Frequency.PreviousCountCHA
+  asm("str    r2,[r1,#0x06]");        // STM32_Frequency.PreviousCountCHA
   asm("sub    r2,r2,r3");
-  asm("str    r2,[r1,#0x14]");      // STM32_Frequency.FrequencyCHA
+  asm("str    r2,[r1,#0x02]");        // STM32_Frequency.FrequencyCHA
   /* Calculate frequency TIM5 */
-  asm("ldr    r2,[r0,#0xC24]");     // TIM5->CNT
-  asm("ldr    r3,[r1,#0x20]");      // STM32_Frequency.PreviousCountCHB
-  asm("str    r2,[r1,#0x20]");      // STM32_Frequency.PreviousCountCHB
+  asm("ldr    r2,[r0,#0xC24]");       // TIM5->CNT
+  asm("ldr    r3,[r1,#0x0E]");        // STM32_Frequency.PreviousCountCHB
+  asm("str    r2,[r1,#0x0E]");        // STM32_Frequency.PreviousCountCHB
   asm("sub    r2,r2,r3");
-  asm("str    r2,[r1,#0x1C]");      // STM32_Frequency.FrequencyCHB
+  asm("str    r2,[r1,#0x0A]");        // STM32_Frequency.FrequencyCHB
 }
 
 void SPI2_IRQHandler(void)
 {
   SPI_I2S_ClearITPendingBit(SPI2,SPI_IT_RXNE);
 
-  asm("movw   r0,#0x1040");
-  asm("movt   r0,#0x2000");       /* Pointer to Adr */
+  asm("movw   r0,#0x102C");
+  asm("movt   r0,#0x2000");           /* Pointer to Adr */
   asm("ldr    r3,[r0,#0x0]");
-  asm("cbnz   r3,adrset");        /* if Adr == 0 */
-  asm("movw   r3,#0x0022");
-  asm("movt   r3,#0x2000");       /* Pointer to DDS_WaveType-2 */
+  asm("cbnz   r3,adrset");            /* if Adr == 0 */
+  asm("movw   r3,#0x0010");
+  asm("movt   r3,#0x2000");           /* Pointer to DDS_WaveType-2 */
   asm("adrset:");
   asm("add    r3,r3,#0x2");
   asm("str    r3,[r0,#0x0]");
@@ -436,7 +436,7 @@ void SPI2_IRQHandler(void)
   asm("movt   r1,#0x4000");
   asm("ldrh   r2,[r1,#0x0C]");
   asm("strh   r2,[r3,#0x0]");
-  if ((uint32_t)Adr == 0x2000003C)
+  if ((uint32_t)Adr == 0x20000028)
   {
     Adr = 0;
     /* Disable the TIM6 Counter */
@@ -444,8 +444,8 @@ void SPI2_IRQHandler(void)
     WaveSetup();
     if (STM32_Command.DDS_SweepMode == SWEEP_ModeOff)
     {
-      asm("movw   r4,#0x0026");
-      asm("movt   r4,#0x2000");       /* STM32_Command.DDS_PhaseAdd = 0x20000026 */
+      asm("movw   r4,#0x0014");
+      asm("movt   r4,#0x2000");       /* STM32_Command.DDS_PhaseAdd = 0x20000014 */
       asm("ldr    r4,[r4,#0x0]");     /* DDSPhaseFrq value */
     }
     else
@@ -465,18 +465,18 @@ void SPI2_IRQHandler(void)
       asm("movw   r8,#0x0");
       asm("movt   r8,#0x2000");
       asm("mov    r11,#0x0");
-      asm("ldrb   r11,[r8,#0x25]");   /* STM32_Command.DDS_SweepMode = 0x20000025 */
+      asm("ldrb   r11,[r8,#0x13]");   /* STM32_Command.DDS_SweepMode = 0x20000013 */
 
-      asm("ldr    r6,[r8,#0x38]");    /* STM32_Command.SWEEP_Min = 0x20000038 */
-      asm("ldr    r7,[r8,#0x3C]");    /* STM32_Command.SWEEP_Max = 0x2000003C */
-      asm("ldr    r8,[r8,#0x2E]");    /* STM32_Command.SWEEP_Add = 0x2000002E */
+      asm("ldr    r6,[r8,#0x24]");    /* STM32_Command.SWEEP_Min = 0x20000024 */
+      asm("ldr    r7,[r8,#0x28]");    /* STM32_Command.SWEEP_Max = 0x20000028 */
+      asm("ldr    r8,[r8,#0x1C]");    /* STM32_Command.SWEEP_Add = 0x2000001C */
       asm("mov    r4,r6");            /* STM32_Command.SWEEP_Min */
     }
-    asm("movw   r1,#0x0040");
-    asm("movt   r1,#0x2000");       /* STM32_Command.Wave[0] = 0x20000040 */
+    asm("movw   r1,#0x002C");
+    asm("movt   r1,#0x2000");         /* STM32_Command.Wave[0] = 0x2000002C */
     asm("movw   r2,#0x7408");
-    asm("movt   r2,#0x4000");       /* DAC_DHR12R1 */
-    asm("mov    r3,#0x0");          /* DDSPhase pointer value */
+    asm("movt   r2,#0x4000");         /* DAC_DHR12R1 */
+    asm("mov    r3,#0x0");            /* DDSPhase pointer value */
   }
 }
 

@@ -1,436 +1,436 @@
 Archive member included because of file (symbol)
 
-C:\Program Files\Raisonance\Ride\Lib\ARM\STM32x_io_putchar_thumb.a(STM32F10X_io_putchar.o)
+D:\Ride\Ride\Lib\ARM\STM32x_io_putchar_thumb.a(STM32F10X_io_putchar.o)
                               (__io_putchar)
-C:\Program Files\Raisonance\Ride\Lib\ARM\std_sbrk_thumb.lib(write.o)
+D:\Ride\Ride\Lib\ARM\std_sbrk_thumb.lib(write.o)
                               (_write)
 
 Allocating common symbols
 Common symbol       size              file
 
-Adr                 0x4               C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\main.o
-NVIC_InitStructure  0x4               C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4_discovery.o
+Adr                 0x4               D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\main.o
+NVIC_InitStructure  0x4               D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4_discovery.o
 
 Discarded input sections
 
  .text          0x00000000       0x14 .\startup_stm32f4xx.o
  .data          0x00000000        0x0 .\startup_stm32f4xx.o
  .bss           0x00000000        0x0 .\startup_stm32f4xx.o
- .text          0x00000000        0x0 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\main.o
- .data          0x00000000        0x0 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\main.o
- .text          0x00000000        0x0 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\misc.o
- .data          0x00000000        0x0 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\misc.o
- .bss           0x00000000        0x0 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\misc.o
+ .text          0x00000000        0x0 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\main.o
+ .data          0x00000000        0x0 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\main.o
+ .text          0x00000000        0x0 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\misc.o
+ .data          0x00000000        0x0 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\misc.o
+ .bss           0x00000000        0x0 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\misc.o
  .text.NVIC_PriorityGroupConfig
-                0x00000000       0x14 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\misc.o
+                0x00000000       0x14 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\misc.o
  .text.NVIC_SetVectorTable
-                0x00000000       0x18 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\misc.o
+                0x00000000       0x18 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\misc.o
  .text.NVIC_SystemLPConfig
-                0x00000000       0x24 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\misc.o
+                0x00000000       0x24 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\misc.o
  .text.SysTick_CLKSourceConfig
-                0x00000000       0x1c C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\misc.o
- .text          0x00000000        0x0 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4_discovery.o
- .data          0x00000000       0x14 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4_discovery.o
- .bss           0x00000000        0x0 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4_discovery.o
+                0x00000000       0x1c D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\misc.o
+ .text          0x00000000        0x0 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4_discovery.o
+ .data          0x00000000       0x14 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4_discovery.o
+ .bss           0x00000000        0x0 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4_discovery.o
  .text.STM_EVAL_LEDInit
-                0x00000000       0x54 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4_discovery.o
+                0x00000000       0x54 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4_discovery.o
  .text.STM_EVAL_LEDOn
-                0x00000000       0x20 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4_discovery.o
+                0x00000000       0x20 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4_discovery.o
  .text.STM_EVAL_LEDOff
-                0x00000000       0x20 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4_discovery.o
+                0x00000000       0x20 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4_discovery.o
  .text.STM_EVAL_LEDToggle
-                0x00000000       0x24 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4_discovery.o
+                0x00000000       0x24 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4_discovery.o
  .text.STM_EVAL_PBInit
-                0x00000000       0xb8 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4_discovery.o
+                0x00000000       0xb8 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4_discovery.o
  .text.STM_EVAL_PBGetState
-                0x00000000       0x24 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4_discovery.o
- .rodata        0x00000000       0x30 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4_discovery.o
- COMMON         0x00000000        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4_discovery.o
- .text          0x00000000        0x0 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_dac.o
- .data          0x00000000        0x0 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_dac.o
- .bss           0x00000000        0x0 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_dac.o
+                0x00000000       0x24 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4_discovery.o
+ .rodata        0x00000000       0x30 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4_discovery.o
+ COMMON         0x00000000        0x4 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4_discovery.o
+ .text          0x00000000        0x0 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_dac.o
+ .data          0x00000000        0x0 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_dac.o
+ .bss           0x00000000        0x0 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_dac.o
  .text.DAC_DeInit
-                0x00000000       0x1c C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_dac.o
+                0x00000000       0x1c D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_dac.o
  .text.DAC_StructInit
-                0x00000000       0x10 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_dac.o
- .text.DAC_Cmd  0x00000000       0x34 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_dac.o
+                0x00000000       0x10 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_dac.o
+ .text.DAC_Cmd  0x00000000       0x34 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_dac.o
  .text.DAC_SoftwareTriggerCmd
-                0x00000000       0x3c C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_dac.o
+                0x00000000       0x3c D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_dac.o
  .text.DAC_DualSoftwareTriggerCmd
-                0x00000000       0x28 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_dac.o
+                0x00000000       0x28 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_dac.o
  .text.DAC_WaveGenerationCmd
-                0x00000000       0x2c C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_dac.o
+                0x00000000       0x2c D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_dac.o
  .text.DAC_SetChannel1Data
-                0x00000000       0x24 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_dac.o
+                0x00000000       0x24 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_dac.o
  .text.DAC_SetChannel2Data
-                0x00000000       0x24 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_dac.o
+                0x00000000       0x24 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_dac.o
  .text.DAC_SetDualChannelData
-                0x00000000       0x18 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_dac.o
+                0x00000000       0x18 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_dac.o
  .text.DAC_GetDataOutputValue
-                0x00000000       0x28 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_dac.o
+                0x00000000       0x28 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_dac.o
  .text.DAC_DMACmd
-                0x00000000       0x34 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_dac.o
+                0x00000000       0x34 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_dac.o
  .text.DAC_ITConfig
-                0x00000000       0x2c C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_dac.o
+                0x00000000       0x2c D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_dac.o
  .text.DAC_GetFlagStatus
-                0x00000000       0x18 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_dac.o
+                0x00000000       0x18 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_dac.o
  .text.DAC_ClearFlag
-                0x00000000       0x10 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_dac.o
+                0x00000000       0x10 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_dac.o
  .text.DAC_GetITStatus
-                0x00000000       0x24 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_dac.o
+                0x00000000       0x24 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_dac.o
  .text.DAC_ClearITPendingBit
-                0x00000000       0x10 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_dac.o
- .text          0x00000000        0x0 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_gpio.o
- .data          0x00000000        0x0 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_gpio.o
- .bss           0x00000000        0x0 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_gpio.o
+                0x00000000       0x10 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_dac.o
+ .text          0x00000000        0x0 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_gpio.o
+ .data          0x00000000        0x0 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_gpio.o
+ .bss           0x00000000        0x0 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_gpio.o
  .text.GPIO_DeInit
-                0x00000000      0x158 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_gpio.o
+                0x00000000      0x158 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_gpio.o
  .text.GPIO_StructInit
-                0x00000000       0x14 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_gpio.o
+                0x00000000       0x14 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_gpio.o
  .text.GPIO_PinLockConfig
-                0x00000000       0x28 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_gpio.o
+                0x00000000       0x28 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_gpio.o
  .text.GPIO_ReadInputDataBit
-                0x00000000        0xc C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_gpio.o
+                0x00000000        0xc D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_gpio.o
  .text.GPIO_ReadInputData
-                0x00000000        0x8 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_gpio.o
+                0x00000000        0x8 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_gpio.o
  .text.GPIO_ReadOutputDataBit
-                0x00000000        0xc C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_gpio.o
+                0x00000000        0xc D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_gpio.o
  .text.GPIO_ReadOutputData
-                0x00000000        0x8 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_gpio.o
+                0x00000000        0x8 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_gpio.o
  .text.GPIO_SetBits
-                0x00000000        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_gpio.o
+                0x00000000        0x4 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_gpio.o
  .text.GPIO_ResetBits
-                0x00000000        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_gpio.o
+                0x00000000        0x4 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_gpio.o
  .text.GPIO_WriteBit
-                0x00000000        0xc C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_gpio.o
+                0x00000000        0xc D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_gpio.o
  .text.GPIO_Write
-                0x00000000        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_gpio.o
+                0x00000000        0x4 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_gpio.o
  .text.GPIO_ToggleBits
-                0x00000000        0xc C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_gpio.o
- .text          0x00000000        0x0 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_it.o
- .data          0x00000000        0x0 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_it.o
- .bss           0x00000000        0x0 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_it.o
- .text          0x00000000        0x0 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
- .data          0x00000000       0x10 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
- .bss           0x00000000        0x0 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
+                0x00000000        0xc D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_gpio.o
+ .text          0x00000000        0x0 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_it.o
+ .data          0x00000000        0x0 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_it.o
+ .bss           0x00000000        0x0 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_it.o
+ .text          0x00000000        0x0 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
+ .data          0x00000000       0x10 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
+ .bss           0x00000000        0x0 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
  .text.RCC_DeInit
-                0x00000000       0x38 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
+                0x00000000       0x38 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
  .text.RCC_HSEConfig
-                0x00000000       0x14 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
+                0x00000000       0x14 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
  .text.RCC_AdjustHSICalibrationValue
-                0x00000000       0x18 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
+                0x00000000       0x18 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
  .text.RCC_HSICmd
-                0x00000000        0xc C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
+                0x00000000        0xc D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
  .text.RCC_LSEConfig
-                0x00000000       0x3c C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
+                0x00000000       0x3c D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
  .text.RCC_LSICmd
-                0x00000000        0xc C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
+                0x00000000        0xc D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
  .text.RCC_PLLConfig
-                0x00000000       0x24 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
+                0x00000000       0x24 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
  .text.RCC_PLLCmd
-                0x00000000        0xc C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
+                0x00000000        0xc D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
  .text.RCC_PLLI2SConfig
-                0x00000000       0x18 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
+                0x00000000       0x18 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
  .text.RCC_PLLI2SCmd
-                0x00000000        0xc C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
+                0x00000000        0xc D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
  .text.RCC_ClockSecuritySystemCmd
-                0x00000000        0xc C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
+                0x00000000        0xc D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
  .text.RCC_MCO1Config
-                0x00000000       0x18 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
+                0x00000000       0x18 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
  .text.RCC_MCO2Config
-                0x00000000       0x18 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
+                0x00000000       0x18 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
  .text.RCC_SYSCLKConfig
-                0x00000000       0x18 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
+                0x00000000       0x18 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
  .text.RCC_GetSYSCLKSource
-                0x00000000       0x10 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
+                0x00000000       0x10 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
  .text.RCC_HCLKConfig
-                0x00000000       0x18 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
+                0x00000000       0x18 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
  .text.RCC_PCLK1Config
-                0x00000000       0x18 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
+                0x00000000       0x18 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
  .text.RCC_PCLK2Config
-                0x00000000       0x18 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
+                0x00000000       0x18 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
  .text.RCC_GetClocksFreq
-                0x00000000       0xd8 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
+                0x00000000       0xd8 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
  .text.RCC_RTCCLKConfig
-                0x00000000       0x3c C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
+                0x00000000       0x3c D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
  .text.RCC_RTCCLKCmd
-                0x00000000        0xc C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
+                0x00000000        0xc D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
  .text.RCC_BackupResetCmd
-                0x00000000        0xc C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
+                0x00000000        0xc D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
  .text.RCC_I2SCLKConfig
-                0x00000000        0xc C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
+                0x00000000        0xc D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
  .text.RCC_AHB1PeriphClockCmd
-                0x00000000       0x24 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
+                0x00000000       0x24 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
  .text.RCC_AHB2PeriphClockCmd
-                0x00000000       0x24 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
+                0x00000000       0x24 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
  .text.RCC_AHB3PeriphClockCmd
-                0x00000000       0x24 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
+                0x00000000       0x24 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
  .text.RCC_APB2PeriphClockCmd
-                0x00000000       0x24 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
+                0x00000000       0x24 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
  .text.RCC_AHB1PeriphResetCmd
-                0x00000000       0x24 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
+                0x00000000       0x24 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
  .text.RCC_AHB2PeriphResetCmd
-                0x00000000       0x24 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
+                0x00000000       0x24 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
  .text.RCC_AHB3PeriphResetCmd
-                0x00000000       0x24 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
+                0x00000000       0x24 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
  .text.RCC_APB1PeriphResetCmd
-                0x00000000       0x24 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
+                0x00000000       0x24 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
  .text.RCC_APB2PeriphResetCmd
-                0x00000000       0x24 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
+                0x00000000       0x24 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
  .text.RCC_AHB1PeriphClockLPModeCmd
-                0x00000000       0x24 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
+                0x00000000       0x24 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
  .text.RCC_AHB2PeriphClockLPModeCmd
-                0x00000000       0x24 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
+                0x00000000       0x24 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
  .text.RCC_AHB3PeriphClockLPModeCmd
-                0x00000000       0x24 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
+                0x00000000       0x24 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
  .text.RCC_APB1PeriphClockLPModeCmd
-                0x00000000       0x24 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
+                0x00000000       0x24 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
  .text.RCC_APB2PeriphClockLPModeCmd
-                0x00000000       0x24 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
+                0x00000000       0x24 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
  .text.RCC_ITConfig
-                0x00000000       0x24 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
+                0x00000000       0x24 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
  .text.RCC_GetFlagStatus
-                0x00000000       0x34 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
+                0x00000000       0x34 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
  .text.RCC_WaitForHSEStartUp
-                0x00000000       0x3c C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
+                0x00000000       0x3c D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
  .text.RCC_ClearFlag
-                0x00000000       0x14 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
+                0x00000000       0x14 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
  .text.RCC_GetITStatus
-                0x00000000       0x14 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
+                0x00000000       0x14 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
  .text.RCC_ClearITPendingBit
-                0x00000000        0xc C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
- .text          0x00000000        0x0 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
- .data          0x00000000        0x0 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
- .bss           0x00000000        0x0 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
+                0x00000000        0xc D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
+ .text          0x00000000        0x0 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
+ .data          0x00000000        0x0 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
+ .bss           0x00000000        0x0 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
  .text.TI1_Config
-                0x00000000       0x48 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
+                0x00000000       0x48 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
  .text.TI2_Config
-                0x00000000       0x4c C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
+                0x00000000       0x4c D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
  .text.TIM_DeInit
-                0x00000000      0x20c C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
+                0x00000000      0x20c D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
  .text.TIM_TimeBaseStructInit
-                0x00000000       0x14 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
+                0x00000000       0x14 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
  .text.TIM_PrescalerConfig
-                0x00000000        0x8 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
+                0x00000000        0x8 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
  .text.TIM_CounterModeConfig
-                0x00000000       0x18 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
+                0x00000000       0x18 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
  .text.TIM_SetCounter
-                0x00000000        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
+                0x00000000        0x4 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
  .text.TIM_SetAutoreload
-                0x00000000        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
+                0x00000000        0x4 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
  .text.TIM_GetCounter
-                0x00000000        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
+                0x00000000        0x4 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
  .text.TIM_GetPrescaler
-                0x00000000        0x8 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
+                0x00000000        0x8 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
  .text.TIM_UpdateDisableConfig
-                0x00000000       0x20 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
+                0x00000000       0x20 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
  .text.TIM_UpdateRequestConfig
-                0x00000000       0x20 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
+                0x00000000       0x20 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
  .text.TIM_SelectOnePulseMode
-                0x00000000       0x1c C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
+                0x00000000       0x1c D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
  .text.TIM_SetClockDivision
-                0x00000000       0x1c C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
+                0x00000000       0x1c D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
  .text.TIM_OC1Init
-                0x00000000       0xa4 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
+                0x00000000       0xa4 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
  .text.TIM_OC2Init
-                0x00000000       0xb0 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
+                0x00000000       0xb0 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
  .text.TIM_OC3Init
-                0x00000000       0xac C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
+                0x00000000       0xac D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
  .text.TIM_OC4Init
-                0x00000000       0x8c C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
+                0x00000000       0x8c D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
  .text.TIM_OCStructInit
-                0x00000000       0x18 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
+                0x00000000       0x18 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
  .text.TIM_SelectOCxM
-                0x00000000       0x6c C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
+                0x00000000       0x6c D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
  .text.TIM_SetCompare1
-                0x00000000        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
+                0x00000000        0x4 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
  .text.TIM_SetCompare2
-                0x00000000        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
+                0x00000000        0x4 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
  .text.TIM_SetCompare3
-                0x00000000        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
+                0x00000000        0x4 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
  .text.TIM_SetCompare4
-                0x00000000        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
+                0x00000000        0x4 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
  .text.TIM_ForcedOC1Config
-                0x00000000       0x18 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
+                0x00000000       0x18 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
  .text.TIM_ForcedOC2Config
-                0x00000000       0x18 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
+                0x00000000       0x18 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
  .text.TIM_ForcedOC3Config
-                0x00000000       0x18 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
+                0x00000000       0x18 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
  .text.TIM_ForcedOC4Config
-                0x00000000       0x18 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
+                0x00000000       0x18 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
  .text.TIM_OC1PreloadConfig
-                0x00000000       0x18 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
+                0x00000000       0x18 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
  .text.TIM_OC2PreloadConfig
-                0x00000000       0x18 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
+                0x00000000       0x18 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
  .text.TIM_OC3PreloadConfig
-                0x00000000       0x18 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
+                0x00000000       0x18 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
  .text.TIM_OC4PreloadConfig
-                0x00000000       0x18 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
+                0x00000000       0x18 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
  .text.TIM_OC1FastConfig
-                0x00000000       0x18 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
+                0x00000000       0x18 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
  .text.TIM_OC2FastConfig
-                0x00000000       0x18 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
+                0x00000000       0x18 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
  .text.TIM_OC3FastConfig
-                0x00000000       0x18 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
+                0x00000000       0x18 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
  .text.TIM_OC4FastConfig
-                0x00000000       0x18 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
+                0x00000000       0x18 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
  .text.TIM_ClearOC1Ref
-                0x00000000       0x18 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
+                0x00000000       0x18 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
  .text.TIM_ClearOC2Ref
-                0x00000000       0x14 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
+                0x00000000       0x14 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
  .text.TIM_ClearOC3Ref
-                0x00000000       0x18 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
+                0x00000000       0x18 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
  .text.TIM_ClearOC4Ref
-                0x00000000       0x14 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
+                0x00000000       0x14 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
  .text.TIM_OC1PolarityConfig
-                0x00000000       0x18 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
+                0x00000000       0x18 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
  .text.TIM_OC1NPolarityConfig
-                0x00000000       0x18 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
+                0x00000000       0x18 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
  .text.TIM_OC2PolarityConfig
-                0x00000000       0x18 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
+                0x00000000       0x18 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
  .text.TIM_OC2NPolarityConfig
-                0x00000000       0x18 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
+                0x00000000       0x18 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
  .text.TIM_OC3PolarityConfig
-                0x00000000       0x18 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
+                0x00000000       0x18 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
  .text.TIM_OC3NPolarityConfig
-                0x00000000       0x18 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
+                0x00000000       0x18 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
  .text.TIM_OC4PolarityConfig
-                0x00000000       0x18 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
+                0x00000000       0x18 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
  .text.TIM_CCxCmd
-                0x00000000       0x28 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
+                0x00000000       0x28 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
  .text.TIM_CCxNCmd
-                0x00000000       0x28 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
+                0x00000000       0x28 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
  .text.TIM_ICStructInit
-                0x00000000       0x14 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
+                0x00000000       0x14 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
  .text.TIM_GetCapture1
-                0x00000000        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
+                0x00000000        0x4 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
  .text.TIM_GetCapture2
-                0x00000000        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
+                0x00000000        0x4 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
  .text.TIM_GetCapture3
-                0x00000000        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
+                0x00000000        0x4 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
  .text.TIM_GetCapture4
-                0x00000000        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
+                0x00000000        0x4 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
  .text.TIM_SetIC1Prescaler
-                0x00000000       0x1c C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
+                0x00000000       0x1c D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
  .text.TIM_SetIC2Prescaler
-                0x00000000       0x20 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
+                0x00000000       0x20 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
  .text.TIM_PWMIConfig
-                0x00000000       0x68 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
+                0x00000000       0x68 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
  .text.TIM_SetIC3Prescaler
-                0x00000000       0x1c C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
+                0x00000000       0x1c D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
  .text.TIM_SetIC4Prescaler
-                0x00000000       0x20 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
+                0x00000000       0x20 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
  .text.TIM_ICInit
-                0x00000000       0xe0 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
+                0x00000000       0xe0 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
  .text.TIM_BDTRConfig
-                0x00000000       0x24 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
+                0x00000000       0x24 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
  .text.TIM_BDTRStructInit
-                0x00000000       0x14 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
+                0x00000000       0x14 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
  .text.TIM_CtrlPWMOutputs
-                0x00000000       0x28 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
+                0x00000000       0x28 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
  .text.TIM_SelectCOM
-                0x00000000       0x20 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
+                0x00000000       0x20 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
  .text.TIM_CCPreloadControl
-                0x00000000       0x20 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
+                0x00000000       0x20 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
  .text.TIM_GenerateEvent
-                0x00000000        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
+                0x00000000        0x4 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
  .text.TIM_GetFlagStatus
-                0x00000000        0xc C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
+                0x00000000        0xc D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
  .text.TIM_ClearFlag
-                0x00000000        0xc C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
+                0x00000000        0xc D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
  .text.TIM_GetITStatus
-                0x00000000       0x18 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
+                0x00000000       0x18 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
  .text.TIM_DMAConfig
-                0x00000000        0x8 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
+                0x00000000        0x8 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
  .text.TIM_DMACmd
-                0x00000000       0x18 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
+                0x00000000       0x18 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
  .text.TIM_SelectCCDMA
-                0x00000000       0x20 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
+                0x00000000       0x20 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
  .text.TIM_SelectInputTrigger
-                0x00000000       0x18 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
+                0x00000000       0x18 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
  .text.TIM_TIxExternalClockConfig
-                0x00000000       0x34 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
+                0x00000000       0x34 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
  .text.TIM_ITRxExternalClockConfig
-                0x00000000       0x14 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
+                0x00000000       0x14 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
  .text.TIM_SelectOutputTrigger
-                0x00000000       0x1c C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
+                0x00000000       0x1c D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
  .text.TIM_SelectSlaveMode
-                0x00000000       0x1c C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
+                0x00000000       0x1c D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
  .text.TIM_SelectMasterSlaveMode
-                0x00000000       0x1c C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
+                0x00000000       0x1c D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
  .text.TIM_ETRConfig
-                0x00000000       0x1c C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
+                0x00000000       0x1c D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
  .text.TIM_ETRClockMode2Config
-                0x00000000       0x14 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
+                0x00000000       0x14 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
  .text.TIM_ETRClockMode1Config
-                0x00000000       0x20 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
+                0x00000000       0x20 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
  .text.TIM_EncoderInterfaceConfig
-                0x00000000       0x50 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
+                0x00000000       0x50 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
  .text.TIM_SelectHallSensor
-                0x00000000       0x20 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
+                0x00000000       0x20 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
  .text.TIM_RemapConfig
-                0x00000000        0x8 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
- .text          0x00000000        0x0 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\system_stm32f4xx.o
- .data          0x00000000       0x14 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\system_stm32f4xx.o
- .bss           0x00000000        0x0 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\system_stm32f4xx.o
+                0x00000000        0x8 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
+ .text          0x00000000        0x0 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\system_stm32f4xx.o
+ .data          0x00000000       0x14 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\system_stm32f4xx.o
+ .bss           0x00000000        0x0 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\system_stm32f4xx.o
  .text.SystemCoreClockUpdate
-                0x00000000       0xdc C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\system_stm32f4xx.o
- .text          0x00000000        0x0 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_spi.o
- .data          0x00000000        0x0 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_spi.o
- .bss           0x00000000        0x0 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_spi.o
+                0x00000000       0xdc D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\system_stm32f4xx.o
+ .text          0x00000000        0x0 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_spi.o
+ .data          0x00000000        0x0 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_spi.o
+ .bss           0x00000000        0x0 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_spi.o
  .text.SPI_I2S_DeInit
-                0x00000000       0x74 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_spi.o
+                0x00000000       0x74 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_spi.o
  .text.I2S_Init
-                0x00000000      0x100 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_spi.o
+                0x00000000      0x100 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_spi.o
  .text.SPI_StructInit
-                0x00000000       0x1c C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_spi.o
+                0x00000000       0x1c D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_spi.o
  .text.I2S_StructInit
-                0x00000000       0x18 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_spi.o
- .text.I2S_Cmd  0x00000000       0x20 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_spi.o
+                0x00000000       0x18 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_spi.o
+ .text.I2S_Cmd  0x00000000       0x20 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_spi.o
  .text.SPI_DataSizeConfig
-                0x00000000       0x1c C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_spi.o
+                0x00000000       0x1c D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_spi.o
  .text.SPI_BiDirectionalLineConfig
-                0x00000000       0x1c C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_spi.o
+                0x00000000       0x1c D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_spi.o
  .text.SPI_NSSInternalSoftwareConfig
-                0x00000000       0x20 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_spi.o
+                0x00000000       0x20 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_spi.o
  .text.SPI_SSOutputCmd
-                0x00000000       0x20 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_spi.o
+                0x00000000       0x20 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_spi.o
  .text.SPI_TIModeCmd
-                0x00000000       0x20 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_spi.o
+                0x00000000       0x20 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_spi.o
  .text.I2S_FullDuplexConfig
-                0x00000000       0x54 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_spi.o
+                0x00000000       0x54 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_spi.o
  .text.SPI_I2S_ReceiveData
-                0x00000000        0x8 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_spi.o
+                0x00000000        0x8 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_spi.o
  .text.SPI_I2S_SendData
-                0x00000000        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_spi.o
+                0x00000000        0x4 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_spi.o
  .text.SPI_CalculateCRC
-                0x00000000       0x20 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_spi.o
+                0x00000000       0x20 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_spi.o
  .text.SPI_TransmitCRC
-                0x00000000        0xc C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_spi.o
+                0x00000000        0xc D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_spi.o
  .text.SPI_GetCRC
-                0x00000000       0x10 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_spi.o
+                0x00000000       0x10 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_spi.o
  .text.SPI_GetCRCPolynomial
-                0x00000000        0x8 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_spi.o
+                0x00000000        0x8 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_spi.o
  .text.SPI_I2S_DMACmd
-                0x00000000       0x18 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_spi.o
+                0x00000000       0x18 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_spi.o
  .text.SPI_I2S_GetFlagStatus
-                0x00000000        0xc C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_spi.o
+                0x00000000        0xc D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_spi.o
  .text.SPI_I2S_ClearFlag
-                0x00000000        0xc C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_spi.o
+                0x00000000        0xc D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_spi.o
  .text.SPI_I2S_GetITStatus
-                0x00000000       0x34 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_spi.o
- .text          0x00000000        0x0 C:\Program Files\Raisonance\Ride\Lib\ARM\STM32x_io_putchar_thumb.a(STM32F10X_io_putchar.o)
- .data          0x00000000        0x0 C:\Program Files\Raisonance\Ride\Lib\ARM\STM32x_io_putchar_thumb.a(STM32F10X_io_putchar.o)
- .bss           0x00000000        0x0 C:\Program Files\Raisonance\Ride\Lib\ARM\STM32x_io_putchar_thumb.a(STM32F10X_io_putchar.o)
+                0x00000000       0x34 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_spi.o
+ .text          0x00000000        0x0 D:\Ride\Ride\Lib\ARM\STM32x_io_putchar_thumb.a(STM32F10X_io_putchar.o)
+ .data          0x00000000        0x0 D:\Ride\Ride\Lib\ARM\STM32x_io_putchar_thumb.a(STM32F10X_io_putchar.o)
+ .bss           0x00000000        0x0 D:\Ride\Ride\Lib\ARM\STM32x_io_putchar_thumb.a(STM32F10X_io_putchar.o)
  .text.__io_init
-                0x00000000       0x94 C:\Program Files\Raisonance\Ride\Lib\ARM\STM32x_io_putchar_thumb.a(STM32F10X_io_putchar.o)
+                0x00000000       0x94 D:\Ride\Ride\Lib\ARM\STM32x_io_putchar_thumb.a(STM32F10X_io_putchar.o)
  .text.__io_getchar
-                0x00000000       0xb4 C:\Program Files\Raisonance\Ride\Lib\ARM\STM32x_io_putchar_thumb.a(STM32F10X_io_putchar.o)
- .text.getchar  0x00000000       0xb4 C:\Program Files\Raisonance\Ride\Lib\ARM\STM32x_io_putchar_thumb.a(STM32F10X_io_putchar.o)
- .text.putchar  0x00000000       0xd4 C:\Program Files\Raisonance\Ride\Lib\ARM\STM32x_io_putchar_thumb.a(STM32F10X_io_putchar.o)
- .text          0x00000000        0x0 C:\Program Files\Raisonance\Ride\Lib\ARM\std_sbrk_thumb.lib(write.o)
- .data          0x00000000        0x0 C:\Program Files\Raisonance\Ride\Lib\ARM\std_sbrk_thumb.lib(write.o)
- .bss           0x00000000        0x0 C:\Program Files\Raisonance\Ride\Lib\ARM\std_sbrk_thumb.lib(write.o)
+                0x00000000       0xb4 D:\Ride\Ride\Lib\ARM\STM32x_io_putchar_thumb.a(STM32F10X_io_putchar.o)
+ .text.getchar  0x00000000       0xb4 D:\Ride\Ride\Lib\ARM\STM32x_io_putchar_thumb.a(STM32F10X_io_putchar.o)
+ .text.putchar  0x00000000       0xd4 D:\Ride\Ride\Lib\ARM\STM32x_io_putchar_thumb.a(STM32F10X_io_putchar.o)
+ .text          0x00000000        0x0 D:\Ride\Ride\Lib\ARM\std_sbrk_thumb.lib(write.o)
+ .data          0x00000000        0x0 D:\Ride\Ride\Lib\ARM\std_sbrk_thumb.lib(write.o)
+ .bss           0x00000000        0x0 D:\Ride\Ride\Lib\ARM\std_sbrk_thumb.lib(write.o)
 
 Memory Configuration
 
@@ -451,22 +451,22 @@ EXTMEMB3         0x00000000         0x00000000         xr
 Linker script and memory map
 
 LOAD .\startup_stm32f4xx.o
-LOAD C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\main.o
-LOAD C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\misc.o
-LOAD C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4_discovery.o
-LOAD C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_dac.o
-LOAD C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_gpio.o
-LOAD C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_it.o
-LOAD C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
-LOAD C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
-LOAD C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\system_stm32f4xx.o
-LOAD C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_spi.o
+LOAD D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\main.o
+LOAD D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\misc.o
+LOAD D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4_discovery.o
+LOAD D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_dac.o
+LOAD D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_gpio.o
+LOAD D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_it.o
+LOAD D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
+LOAD D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
+LOAD D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\system_stm32f4xx.o
+LOAD D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_spi.o
 START GROUP
-LOAD C:\Program Files\Raisonance\Ride\Lib\ARM\STM32x_io_putchar_thumb.a
-LOAD C:\Program Files\Raisonance\Ride\Lib\ARM\std_sbrk_thumb.lib
-LOAD C:\Program Files\Raisonance\Ride\Lib\ARM\smallprintf_thumb.a
-LOAD c:/program files/raisonance/ride/arm-gcc/bin/../lib/gcc/arm-none-eabi/4.5.1/../../../../arm-none-eabi/lib/thumb2\libc.a
-LOAD c:/program files/raisonance/ride/arm-gcc/bin/../lib/gcc/arm-none-eabi/4.5.1/../../../../arm-none-eabi/lib/thumb2\libm.a
+LOAD D:\Ride\Ride\Lib\ARM\STM32x_io_putchar_thumb.a
+LOAD D:\Ride\Ride\Lib\ARM\std_sbrk_thumb.lib
+LOAD D:\Ride\Ride\Lib\ARM\smallprintf_thumb.a
+LOAD d:/ride/ride/arm-gcc/bin/../lib/gcc/arm-none-eabi/4.5.1/../../../../arm-none-eabi/lib/thumb2\libc.a
+LOAD d:/ride/ride/arm-gcc/bin/../lib/gcc/arm-none-eabi/4.5.1/../../../../arm-none-eabi/lib/thumb2\libm.a
 END GROUP
                 0x00000400                __Stack_Size = 0x400
                 0x00000400                PROVIDE (_Stack_Size, __Stack_Size)
@@ -642,7 +642,7 @@ END GROUP
  *(.flashtext)
                 0x08000188                . = ALIGN (0x4)
 
-.text           0x08000188     0x62cc
+.text           0x08000188     0x62d8
                 0x08000188                . = ALIGN (0x4)
  *(.text)
  *(.text.*)
@@ -733,123 +733,123 @@ END GROUP
                 0x080001cc                DMA1_Stream3_IRQHandler
  *fill*         0x080001ce        0x2 00
  .text.WaveSetup
-                0x080001d0      0x12c C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\main.o
+                0x080001d0      0x12c D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\main.o
                 0x080001d0                WaveSetup
  .text.DDS_Config
-                0x080002fc      0x2b4 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\main.o
+                0x080002fc      0x2b4 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\main.o
                 0x080002fc                DDS_Config
  .text.DDS_WaveLoop
-                0x080005b0       0x10 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\main.o
+                0x080005b0       0x10 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\main.o
                 0x080005b0                DDS_WaveLoop
- .text.main     0x080005c0       0x80 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\main.o
+ .text.main     0x080005c0       0x80 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\main.o
                 0x080005c0                main
  .text.TIM6_DAC_IRQHandler
-                0x08000640       0x3c C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\main.o
+                0x08000640       0x3c D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\main.o
                 0x08000640                TIM6_DAC_IRQHandler
  .text.TIM3_IRQHandler
-                0x0800067c       0x28 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\main.o
+                0x0800067c       0x34 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\main.o
                 0x0800067c                TIM3_IRQHandler
  .text.SPI2_IRQHandler
-                0x080006a4       0xfc C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\main.o
-                0x080006a4                SPI2_IRQHandler
+                0x080006b0       0xfc D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\main.o
+                0x080006b0                SPI2_IRQHandler
  .text.NVIC_Init
-                0x080007a0       0x88 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\misc.o
-                0x080007a0                NVIC_Init
+                0x080007ac       0x88 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\misc.o
+                0x080007ac                NVIC_Init
  .text.DAC_Init
-                0x08000828       0x38 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_dac.o
-                0x08000828                DAC_Init
+                0x08000834       0x38 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_dac.o
+                0x08000834                DAC_Init
  .text.GPIO_Init
-                0x08000860       0xbc C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_gpio.o
-                0x08000860                GPIO_Init
+                0x0800086c       0xbc D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_gpio.o
+                0x0800086c                GPIO_Init
  .text.GPIO_PinAFConfig
-                0x0800091c       0x3c C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_gpio.o
-                0x0800091c                GPIO_PinAFConfig
+                0x08000928       0x3c D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_gpio.o
+                0x08000928                GPIO_PinAFConfig
  .text.NMI_Handler
-                0x08000958        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_it.o
-                0x08000958                NMI_Handler
+                0x08000964        0x4 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_it.o
+                0x08000964                NMI_Handler
  .text.HardFault_Handler
-                0x0800095c        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_it.o
-                0x0800095c                HardFault_Handler
+                0x08000968        0x4 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_it.o
+                0x08000968                HardFault_Handler
  .text.MemManage_Handler
-                0x08000960        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_it.o
-                0x08000960                MemManage_Handler
+                0x0800096c        0x4 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_it.o
+                0x0800096c                MemManage_Handler
  .text.BusFault_Handler
-                0x08000964        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_it.o
-                0x08000964                BusFault_Handler
+                0x08000970        0x4 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_it.o
+                0x08000970                BusFault_Handler
  .text.UsageFault_Handler
-                0x08000968        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_it.o
-                0x08000968                UsageFault_Handler
+                0x08000974        0x4 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_it.o
+                0x08000974                UsageFault_Handler
  .text.SVC_Handler
-                0x0800096c        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_it.o
-                0x0800096c                SVC_Handler
+                0x08000978        0x4 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_it.o
+                0x08000978                SVC_Handler
  .text.DebugMon_Handler
-                0x08000970        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_it.o
-                0x08000970                DebugMon_Handler
+                0x0800097c        0x4 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_it.o
+                0x0800097c                DebugMon_Handler
  .text.PendSV_Handler
-                0x08000974        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_it.o
-                0x08000974                PendSV_Handler
+                0x08000980        0x4 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_it.o
+                0x08000980                PendSV_Handler
  .text.SysTick_Handler
-                0x08000978        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_it.o
-                0x08000978                SysTick_Handler
+                0x08000984        0x4 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_it.o
+                0x08000984                SysTick_Handler
  .text.RCC_APB1PeriphClockCmd
-                0x0800097c       0x24 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
-                0x0800097c                RCC_APB1PeriphClockCmd
+                0x08000988       0x24 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
+                0x08000988                RCC_APB1PeriphClockCmd
  .text.TIM_TimeBaseInit
-                0x080009a0       0xc0 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
-                0x080009a0                TIM_TimeBaseInit
+                0x080009ac       0xc0 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
+                0x080009ac                TIM_TimeBaseInit
  .text.TIM_ARRPreloadConfig
-                0x08000a60       0x20 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
-                0x08000a60                TIM_ARRPreloadConfig
- .text.TIM_Cmd  0x08000a80       0x20 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
-                0x08000a80                TIM_Cmd
+                0x08000a6c       0x20 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
+                0x08000a6c                TIM_ARRPreloadConfig
+ .text.TIM_Cmd  0x08000a8c       0x20 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
+                0x08000a8c                TIM_Cmd
  .text.TIM_ITConfig
-                0x08000aa0       0x18 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
-                0x08000aa0                TIM_ITConfig
+                0x08000aac       0x18 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
+                0x08000aac                TIM_ITConfig
  .text.TIM_ClearITPendingBit
-                0x08000ab8        0xc C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
-                0x08000ab8                TIM_ClearITPendingBit
+                0x08000ac4        0xc D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
+                0x08000ac4                TIM_ClearITPendingBit
  .text.TIM_InternalClockConfig
-                0x08000ac4       0x14 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
-                0x08000ac4                TIM_InternalClockConfig
+                0x08000ad0       0x14 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
+                0x08000ad0                TIM_InternalClockConfig
  .text.SystemInit
-                0x08000ad8      0x124 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\system_stm32f4xx.o
-                0x08000ad8                SystemInit
+                0x08000ae4      0x124 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\system_stm32f4xx.o
+                0x08000ae4                SystemInit
  .text.SPI_Init
-                0x08000bfc       0x48 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_spi.o
-                0x08000bfc                SPI_Init
- .text.SPI_Cmd  0x08000c44       0x20 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_spi.o
-                0x08000c44                SPI_Cmd
+                0x08000c08       0x48 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_spi.o
+                0x08000c08                SPI_Init
+ .text.SPI_Cmd  0x08000c50       0x20 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_spi.o
+                0x08000c50                SPI_Cmd
  .text.SPI_I2S_ITConfig
-                0x08000c64       0x28 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_spi.o
-                0x08000c64                SPI_I2S_ITConfig
+                0x08000c70       0x28 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_spi.o
+                0x08000c70                SPI_I2S_ITConfig
  .text.SPI_I2S_ClearITPendingBit
-                0x08000c8c       0x18 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_spi.o
-                0x08000c8c                SPI_I2S_ClearITPendingBit
+                0x08000c98       0x18 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_spi.o
+                0x08000c98                SPI_I2S_ClearITPendingBit
  .text.__io_putchar
-                0x08000ca4      0x16c C:\Program Files\Raisonance\Ride\Lib\ARM\STM32x_io_putchar_thumb.a(STM32F10X_io_putchar.o)
-                0x08000ca4                __io_putchar
- .text._write   0x08000e10        0x4 C:\Program Files\Raisonance\Ride\Lib\ARM\std_sbrk_thumb.lib(write.o)
-                0x08000e10                _write
+                0x08000cb0      0x16c D:\Ride\Ride\Lib\ARM\STM32x_io_putchar_thumb.a(STM32F10X_io_putchar.o)
+                0x08000cb0                __io_putchar
+ .text._write   0x08000e1c        0x4 D:\Ride\Ride\Lib\ARM\std_sbrk_thumb.lib(write.o)
+                0x08000e1c                _write
  *(.rodata)
- .rodata        0x08000e14     0x5640 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\main.o
-                0x08000e14                SineWave
-                0x08001e14                TriangleWave
-                0x08003454                SquareWave
-                0x08004454                SawToothWave
-                0x08005454                RevSawToothWave
+ .rodata        0x08000e20     0x5640 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\main.o
+                0x08000e20                SineWave
+                0x08001e20                TriangleWave
+                0x08003460                SquareWave
+                0x08004460                SawToothWave
+                0x08005460                RevSawToothWave
  *(.rodata*)
  *(.glue_7)
  .glue_7        0x00000000        0x0 linker stubs
  *(.glue_7t)
  .glue_7t       0x00000000        0x0 linker stubs
-                0x08006454                . = ALIGN (0x4)
-                0x08006454                _etext = .
-                0x08006454                _sidata = _etext
+                0x08006460                . = ALIGN (0x4)
+                0x08006460                _etext = .
+                0x08006460                _sidata = _etext
 
-.vfp11_veneer   0x08006454        0x0
+.vfp11_veneer   0x08006460        0x0
  .vfp11_veneer  0x00000000        0x0 linker stubs
 
-.v4_bx          0x08006454        0x0
+.v4_bx          0x08006460        0x0
  .v4_bx         0x00000000        0x0 linker stubs
 
 .flashpatch     0x00000000        0x0
@@ -863,7 +863,7 @@ END GROUP
                 0x00000000                . = ALIGN (0x4)
                 0x00000000                _e_endflash = .
 
-.data           0x20000000        0x0 load address 0x08006454
+.data           0x20000000        0x0 load address 0x08006460
                 0x20000000                . = ALIGN (0x4)
                 0x20000000                _sdata = .
                 0x20000000                _data = .
@@ -872,7 +872,7 @@ END GROUP
  *(.RAMtext)
                 0x20000000                . = ALIGN (0x4)
                 0x20000000                _edata = .
-                0x08006454                _eidata = ((_sidata + _edata) - _sdata)
+                0x08006460                _eidata = ((_sidata + _edata) - _sdata)
                 0x08010000                _lastdataromaddress = 0x8010000
                 0x00000000                toobig = (_eidata > _lastdataromaddress)?!!!!!!!!! FLASH IS FULL !!!!!!!!!:0x0
 
@@ -881,9 +881,9 @@ END GROUP
                 0x20000000                _sbss = .
                 0x20000000                _bss = .
  *(.bss)
- .bss           0x20000000     0x102c C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\main.o
+ .bss           0x20000000     0x102c D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\main.o
  *(COMMON)
- COMMON         0x2000102c        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\main.o
+ COMMON         0x2000102c        0x4 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\main.o
                 0x2000102c                Adr
                 0x20001030                . = ALIGN (0x4)
                 0x20001030                _ebss = .
@@ -953,45 +953,45 @@ END GROUP
  .ARM.attributes
                 0x00000000       0x21 .\startup_stm32f4xx.o
  .ARM.attributes
-                0x00000021       0x31 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\main.o
+                0x00000021       0x31 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\main.o
  .ARM.attributes
-                0x00000052       0x31 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\misc.o
+                0x00000052       0x31 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\misc.o
  .ARM.attributes
-                0x00000083       0x31 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4_discovery.o
+                0x00000083       0x31 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4_discovery.o
  .ARM.attributes
-                0x000000b4       0x31 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_dac.o
+                0x000000b4       0x31 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_dac.o
  .ARM.attributes
-                0x000000e5       0x31 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_gpio.o
+                0x000000e5       0x31 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_gpio.o
  .ARM.attributes
-                0x00000116       0x31 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_it.o
+                0x00000116       0x31 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_it.o
  .ARM.attributes
-                0x00000147       0x31 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
+                0x00000147       0x31 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
  .ARM.attributes
-                0x00000178       0x31 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
+                0x00000178       0x31 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
  .ARM.attributes
-                0x000001a9       0x31 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\system_stm32f4xx.o
+                0x000001a9       0x31 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\system_stm32f4xx.o
  .ARM.attributes
-                0x000001da       0x31 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_spi.o
+                0x000001da       0x31 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_spi.o
  .ARM.attributes
-                0x0000020b       0x31 C:\Program Files\Raisonance\Ride\Lib\ARM\STM32x_io_putchar_thumb.a(STM32F10X_io_putchar.o)
+                0x0000020b       0x31 D:\Ride\Ride\Lib\ARM\STM32x_io_putchar_thumb.a(STM32F10X_io_putchar.o)
  .ARM.attributes
-                0x0000023c       0x2e C:\Program Files\Raisonance\Ride\Lib\ARM\std_sbrk_thumb.lib(write.o)
+                0x0000023c       0x2e D:\Ride\Ride\Lib\ARM\std_sbrk_thumb.lib(write.o)
 
 .comment        0x00000000       0x7f
  *(.comment)
- .comment       0x00000000       0x2a C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\main.o
+ .comment       0x00000000       0x2a D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\main.o
                                  0x2b (size before relaxing)
- .comment       0x00000000       0x2b C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\misc.o
- .comment       0x00000000       0x2b C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4_discovery.o
- .comment       0x00000000       0x2b C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_dac.o
- .comment       0x00000000       0x2b C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_gpio.o
- .comment       0x00000000       0x2b C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_it.o
- .comment       0x00000000       0x2b C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
- .comment       0x00000000       0x2b C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
- .comment       0x00000000       0x2b C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\system_stm32f4xx.o
- .comment       0x00000000       0x2b C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_spi.o
- .comment       0x0000002a       0x2b C:\Program Files\Raisonance\Ride\Lib\ARM\STM32x_io_putchar_thumb.a(STM32F10X_io_putchar.o)
- .comment       0x00000055       0x2a C:\Program Files\Raisonance\Ride\Lib\ARM\std_sbrk_thumb.lib(write.o)
+ .comment       0x00000000       0x2b D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\misc.o
+ .comment       0x00000000       0x2b D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4_discovery.o
+ .comment       0x00000000       0x2b D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_dac.o
+ .comment       0x00000000       0x2b D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_gpio.o
+ .comment       0x00000000       0x2b D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_it.o
+ .comment       0x00000000       0x2b D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
+ .comment       0x00000000       0x2b D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
+ .comment       0x00000000       0x2b D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\system_stm32f4xx.o
+ .comment       0x00000000       0x2b D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_spi.o
+ .comment       0x0000002a       0x2b D:\Ride\Ride\Lib\ARM\STM32x_io_putchar_thumb.a(STM32F10X_io_putchar.o)
+ .comment       0x00000055       0x2a D:\Ride\Ride\Lib\ARM\std_sbrk_thumb.lib(write.o)
 
 .debug
  *(.debug)
@@ -1008,136 +1008,136 @@ END GROUP
 .debug_aranges  0x00000000      0x7c8
  *(.debug_aranges)
  .debug_aranges
-                0x00000000       0x50 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\main.o
+                0x00000000       0x50 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\main.o
  .debug_aranges
-                0x00000050       0x40 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\misc.o
+                0x00000050       0x40 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\misc.o
  .debug_aranges
-                0x00000090       0x48 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4_discovery.o
+                0x00000090       0x48 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4_discovery.o
  .debug_aranges
-                0x000000d8       0xa0 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_dac.o
+                0x000000d8       0xa0 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_dac.o
  .debug_aranges
-                0x00000178       0x88 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_gpio.o
+                0x00000178       0x88 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_gpio.o
  .debug_aranges
-                0x00000200       0x60 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_it.o
+                0x00000200       0x60 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_it.o
  .debug_aranges
-                0x00000260      0x178 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
+                0x00000260      0x178 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
  .debug_aranges
-                0x000003d8      0x2e8 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
+                0x000003d8      0x2e8 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
  .debug_aranges
-                0x000006c0       0x28 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\system_stm32f4xx.o
+                0x000006c0       0x28 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\system_stm32f4xx.o
  .debug_aranges
-                0x000006e8       0xe0 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_spi.o
+                0x000006e8       0xe0 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_spi.o
 
 .debug_pubnames
                 0x00000000     0x1489
  *(.debug_pubnames)
  .debug_pubnames
-                0x00000000       0xe3 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\main.o
+                0x00000000       0xe3 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\main.o
  .debug_pubnames
-                0x000000e3       0x89 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\misc.o
+                0x000000e3       0x89 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\misc.o
  .debug_pubnames
-                0x0000016c      0x150 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4_discovery.o
+                0x0000016c      0x150 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4_discovery.o
  .debug_pubnames
-                0x000002bc      0x17d C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_dac.o
+                0x000002bc      0x17d D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_dac.o
  .debug_pubnames
-                0x00000439      0x12d C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_gpio.o
+                0x00000439      0x12d D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_gpio.o
  .debug_pubnames
-                0x00000566       0xc6 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_it.o
+                0x00000566       0xc6 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_it.o
  .debug_pubnames
-                0x0000062c      0x417 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
+                0x0000062c      0x417 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
  .debug_pubnames
-                0x00000a43      0x7c4 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
+                0x00000a43      0x7c4 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
  .debug_pubnames
-                0x00001207       0x61 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\system_stm32f4xx.o
+                0x00001207       0x61 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\system_stm32f4xx.o
  .debug_pubnames
-                0x00001268      0x221 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_spi.o
+                0x00001268      0x221 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_spi.o
 
 .debug_info     0x00000000     0x67e9
  *(.debug_info .gnu.linkonce.wi.*)
- .debug_info    0x00000000      0xdcf C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\main.o
- .debug_info    0x00000dcf      0x598 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\misc.o
- .debug_info    0x00001367      0x963 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4_discovery.o
- .debug_info    0x00001cca      0x68d C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_dac.o
- .debug_info    0x00002357      0x62d C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_gpio.o
- .debug_info    0x00002984      0x14c C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_it.o
- .debug_info    0x00002ad0      0xd05 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
- .debug_info    0x000037d5     0x1e20 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
- .debug_info    0x000055f5      0x63f C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\system_stm32f4xx.o
- .debug_info    0x00005c34      0xbb5 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_spi.o
+ .debug_info    0x00000000      0xdcf D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\main.o
+ .debug_info    0x00000dcf      0x598 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\misc.o
+ .debug_info    0x00001367      0x963 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4_discovery.o
+ .debug_info    0x00001cca      0x68d D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_dac.o
+ .debug_info    0x00002357      0x62d D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_gpio.o
+ .debug_info    0x00002984      0x14c D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_it.o
+ .debug_info    0x00002ad0      0xd05 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
+ .debug_info    0x000037d5     0x1e20 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
+ .debug_info    0x000055f5      0x63f D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\system_stm32f4xx.o
+ .debug_info    0x00005c34      0xbb5 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_spi.o
 
 .debug_abbrev   0x00000000      0xfe8
  *(.debug_abbrev)
- .debug_abbrev  0x00000000      0x1d8 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\main.o
- .debug_abbrev  0x000001d8      0x14e C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\misc.o
- .debug_abbrev  0x00000326      0x19c C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4_discovery.o
- .debug_abbrev  0x000004c2      0x1d9 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_dac.o
- .debug_abbrev  0x0000069b      0x1d0 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_gpio.o
- .debug_abbrev  0x0000086b       0x64 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_it.o
- .debug_abbrev  0x000008cf      0x1f8 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
- .debug_abbrev  0x00000ac7      0x207 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
- .debug_abbrev  0x00000cce      0x16c C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\system_stm32f4xx.o
- .debug_abbrev  0x00000e3a      0x1ae C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_spi.o
+ .debug_abbrev  0x00000000      0x1d8 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\main.o
+ .debug_abbrev  0x000001d8      0x14e D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\misc.o
+ .debug_abbrev  0x00000326      0x19c D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4_discovery.o
+ .debug_abbrev  0x000004c2      0x1d9 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_dac.o
+ .debug_abbrev  0x0000069b      0x1d0 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_gpio.o
+ .debug_abbrev  0x0000086b       0x64 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_it.o
+ .debug_abbrev  0x000008cf      0x1f8 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
+ .debug_abbrev  0x00000ac7      0x207 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
+ .debug_abbrev  0x00000cce      0x16c D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\system_stm32f4xx.o
+ .debug_abbrev  0x00000e3a      0x1ae D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_spi.o
 
-.debug_line     0x00000000     0x22ec
+.debug_line     0x00000000     0x2224
  *(.debug_line)
- .debug_line    0x00000000      0x37e C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\main.o
- .debug_line    0x0000037e      0x1c7 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\misc.o
- .debug_line    0x00000545      0x274 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4_discovery.o
- .debug_line    0x000007b9      0x2d5 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_dac.o
- .debug_line    0x00000a8e      0x2b3 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_gpio.o
- .debug_line    0x00000d41      0x1e1 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_it.o
- .debug_line    0x00000f22      0x4fb C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
- .debug_line    0x0000141d      0x948 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
- .debug_line    0x00001d65      0x1ce C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\system_stm32f4xx.o
- .debug_line    0x00001f33      0x3b9 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_spi.o
+ .debug_line    0x00000000      0x36a D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\main.o
+ .debug_line    0x0000036a      0x1b3 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\misc.o
+ .debug_line    0x0000051d      0x260 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4_discovery.o
+ .debug_line    0x0000077d      0x2c1 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_dac.o
+ .debug_line    0x00000a3e      0x29f D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_gpio.o
+ .debug_line    0x00000cdd      0x1cd D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_it.o
+ .debug_line    0x00000eaa      0x4e7 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
+ .debug_line    0x00001391      0x934 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
+ .debug_line    0x00001cc5      0x1ba D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\system_stm32f4xx.o
+ .debug_line    0x00001e7f      0x3a5 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_spi.o
 
 .debug_frame    0x00000000     0x1004
  *(.debug_frame)
- .debug_frame   0x00000000       0xb8 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\main.o
- .debug_frame   0x000000b8       0x68 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\misc.o
- .debug_frame   0x00000120       0x9c C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4_discovery.o
- .debug_frame   0x000001bc      0x13c C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_dac.o
- .debug_frame   0x000002f8      0x118 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_gpio.o
- .debug_frame   0x00000410       0xa0 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_it.o
- .debug_frame   0x000004b0      0x2e4 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
- .debug_frame   0x00000794      0x670 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
- .debug_frame   0x00000e04       0x34 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\system_stm32f4xx.o
- .debug_frame   0x00000e38      0x1cc C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_spi.o
+ .debug_frame   0x00000000       0xb8 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\main.o
+ .debug_frame   0x000000b8       0x68 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\misc.o
+ .debug_frame   0x00000120       0x9c D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4_discovery.o
+ .debug_frame   0x000001bc      0x13c D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_dac.o
+ .debug_frame   0x000002f8      0x118 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_gpio.o
+ .debug_frame   0x00000410       0xa0 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_it.o
+ .debug_frame   0x000004b0      0x2e4 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
+ .debug_frame   0x00000794      0x670 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
+ .debug_frame   0x00000e04       0x34 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\system_stm32f4xx.o
+ .debug_frame   0x00000e38      0x1cc D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_spi.o
 
 .debug_str      0x00000000     0x2aab
  *(.debug_str)
- .debug_str     0x00000000      0xc86 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\main.o
+ .debug_str     0x00000000      0xc86 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\main.o
                                 0xce1 (size before relaxing)
- .debug_str     0x00000c86      0x214 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\misc.o
+ .debug_str     0x00000c86      0x214 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\misc.o
                                 0x393 (size before relaxing)
- .debug_str     0x00000e9a      0x2a9 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4_discovery.o
+ .debug_str     0x00000e9a      0x2a9 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4_discovery.o
                                 0xaa5 (size before relaxing)
- .debug_str     0x00001143      0x1f8 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_dac.o
+ .debug_str     0x00001143      0x1f8 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_dac.o
                                 0x40d (size before relaxing)
- .debug_str     0x0000133b      0x1b5 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_gpio.o
+ .debug_str     0x0000133b      0x1b5 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_gpio.o
                                 0x45d (size before relaxing)
- .debug_str     0x000014f0       0xea C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_it.o
+ .debug_str     0x000014f0       0xea D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_it.o
                                 0x18f (size before relaxing)
- .debug_str     0x000015da      0x64e C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
+ .debug_str     0x000015da      0x64e D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
                                 0x80a (size before relaxing)
- .debug_str     0x00001c28      0xa98 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
+ .debug_str     0x00001c28      0xa98 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
                                 0xd8a (size before relaxing)
- .debug_str     0x000026c0       0xdc C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\system_stm32f4xx.o
+ .debug_str     0x000026c0       0xdc D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\system_stm32f4xx.o
                                 0x31f (size before relaxing)
- .debug_str     0x0000279c      0x30f C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_spi.o
+ .debug_str     0x0000279c      0x30f D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_spi.o
                                 0x644 (size before relaxing)
 
 .debug_loc      0x00000000     0x2aca
  *(.debug_loc)
- .debug_loc     0x00000000       0xf3 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\main.o
- .debug_loc     0x000000f3      0x11d C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\misc.o
- .debug_loc     0x00000210       0xc4 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4_discovery.o
- .debug_loc     0x000002d4      0x425 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_dac.o
- .debug_loc     0x000006f9      0x26d C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_gpio.o
- .debug_loc     0x00000966      0x6ed C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
- .debug_loc     0x00001053     0x14bc C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
- .debug_loc     0x0000250f      0x133 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\system_stm32f4xx.o
- .debug_loc     0x00002642      0x488 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_spi.o
+ .debug_loc     0x00000000       0xf3 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\main.o
+ .debug_loc     0x000000f3      0x11d D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\misc.o
+ .debug_loc     0x00000210       0xc4 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4_discovery.o
+ .debug_loc     0x000002d4      0x425 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_dac.o
+ .debug_loc     0x000006f9      0x26d D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_gpio.o
+ .debug_loc     0x00000966      0x6ed D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
+ .debug_loc     0x00001053     0x14bc D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
+ .debug_loc     0x0000250f      0x133 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\system_stm32f4xx.o
+ .debug_loc     0x00002642      0x488 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_spi.o
 
 .debug_macinfo
  *(.debug_macinfo)
@@ -1154,42 +1154,42 @@ END GROUP
 .debug_varnames
  *(.debug_varnames)
 START GROUP
-LOAD c:/program files/raisonance/ride/arm-gcc/bin/../lib/gcc/arm-none-eabi/4.5.1/thumb2\libgcc.a
-LOAD c:/program files/raisonance/ride/arm-gcc/bin/../lib/gcc/arm-none-eabi/4.5.1/../../../../arm-none-eabi/lib/thumb2\libc.a
+LOAD d:/ride/ride/arm-gcc/bin/../lib/gcc/arm-none-eabi/4.5.1/thumb2\libgcc.a
+LOAD d:/ride/ride/arm-gcc/bin/../lib/gcc/arm-none-eabi/4.5.1/../../../../arm-none-eabi/lib/thumb2\libc.a
 END GROUP
-OUTPUT(C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\DDSWaveGen.elf elf32-littlearm)
+OUTPUT(D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\DDSWaveGen.elf elf32-littlearm)
 
 .debug_pubtypes
                 0x00000000      0x7dc
  .debug_pubtypes
-                0x00000000      0x191 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\main.o
+                0x00000000      0x191 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\main.o
  .debug_pubtypes
-                0x00000191       0x8c C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\misc.o
+                0x00000191       0x8c D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\misc.o
  .debug_pubtypes
-                0x0000021d      0x16e C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4_discovery.o
+                0x0000021d      0x16e D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4_discovery.o
  .debug_pubtypes
-                0x0000038b       0x98 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_dac.o
+                0x0000038b       0x98 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_dac.o
  .debug_pubtypes
-                0x00000423       0xce C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_gpio.o
+                0x00000423       0xce D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_gpio.o
  .debug_pubtypes
-                0x000004f1       0x1e C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_it.o
+                0x000004f1       0x1e D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_it.o
  .debug_pubtypes
-                0x0000050f       0xaa C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
+                0x0000050f       0xaa D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
  .debug_pubtypes
-                0x000005b9       0xe4 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
+                0x000005b9       0xe4 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
  .debug_pubtypes
-                0x0000069d       0x83 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\system_stm32f4xx.o
+                0x0000069d       0x83 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\system_stm32f4xx.o
  .debug_pubtypes
-                0x00000720       0xbc C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_spi.o
+                0x00000720       0xbc D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_spi.o
 
 .debug_ranges   0x00000000      0x728
- .debug_ranges  0x00000000       0x40 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\main.o
- .debug_ranges  0x00000040       0x30 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\misc.o
- .debug_ranges  0x00000070       0x38 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4_discovery.o
- .debug_ranges  0x000000a8       0x90 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_dac.o
- .debug_ranges  0x00000138       0x78 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_gpio.o
- .debug_ranges  0x000001b0       0x50 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_it.o
- .debug_ranges  0x00000200      0x168 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
- .debug_ranges  0x00000368      0x2d8 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
- .debug_ranges  0x00000640       0x18 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\system_stm32f4xx.o
- .debug_ranges  0x00000658       0xd0 C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_spi.o
+ .debug_ranges  0x00000000       0x40 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\main.o
+ .debug_ranges  0x00000040       0x30 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\misc.o
+ .debug_ranges  0x00000070       0x38 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4_discovery.o
+ .debug_ranges  0x000000a8       0x90 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_dac.o
+ .debug_ranges  0x00000138       0x78 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_gpio.o
+ .debug_ranges  0x000001b0       0x50 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_it.o
+ .debug_ranges  0x00000200      0x168 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_rcc.o
+ .debug_ranges  0x00000368      0x2d8 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_tim.o
+ .debug_ranges  0x00000640       0x18 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\system_stm32f4xx.o
+ .debug_ranges  0x00000658       0xd0 D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Wave\stm32f4xx_spi.o
