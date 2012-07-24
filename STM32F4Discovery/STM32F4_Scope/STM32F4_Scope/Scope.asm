@@ -295,7 +295,7 @@ Subsampling proc uses ebx esi edi,hWin:HWND
 			fprem
 			fxch	st(1)
 			fistp	tmp
-			mov		tmp,STM32_DataSize-1
+			mov		tmp,STM32_MAXBLOCK*STM32_BlockSize-1
 			fild	tmp
 			fmulp	st(1),st
 			fld		[ebx].SCOPECHDATA.period
@@ -380,7 +380,7 @@ ScopeProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		sub		eax,[ebx].SCOPECHDATA.vmin
 		mov		[ebx].SCOPECHDATA.vpp,eax
 		.if [ebx].SCOPECHDATA.fSubsampling
-			mov		samplesize,STM32_DataSize
+			mov		samplesize,STM32_MAXBLOCK*STM32_BlockSize
 		.endif
 		call	SetScrooll
 		.if [ebx].SCOPECHDATA.fYMagnify
@@ -515,8 +515,8 @@ ScopeProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.while edi<samplesize
 			mov		edx,edi
 			add		edx,[ebx].SCOPECHDATA.nusstart
-			.if edx>=STM32_DataSize
-				sub		edx,STM32_DataSize
+			.if edx>=STM32_MAXBLOCK*STM32_BlockSize
+				sub		edx,STM32_MAXBLOCK*STM32_BlockSize
 			.endif
 			.if byte ptr [esi+edx] || ![ebx].SCOPECHDATA.fSubsampling
 				call	GetPoint
@@ -533,6 +533,50 @@ ScopeProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		pop		eax
 		invoke SelectObject,mDC,eax
 		invoke DeleteObject,eax
+		.if [ebx].SCOPECHDATA.fBothChannels
+			movzx	eax,scopedata.ADC_CommandStructDone.DataBlocks
+			mov		ecx,STM32_BlockSize
+			mul		ecx
+			mov		samplesize,eax
+			mov		eax,hWin
+			.if eax==scopedata.scopeCHBdata.hWndScope
+				;Channel A
+				invoke GetParent,scopedata.scopeCHAdata.hWndScope
+				invoke GetWindowLong,eax,GWL_USERDATA
+				mov		ebx,eax
+				mov		eax,008000h
+			.else
+				;Channel B
+				invoke GetParent,scopedata.scopeCHBdata.hWndScope
+				invoke GetWindowLong,eax,GWL_USERDATA
+				mov		ebx,eax
+				mov		eax,0808000h
+			.endif
+			invoke CreatePen,PS_SOLID,2,eax
+			invoke SelectObject,mDC,eax
+			push	eax
+			lea		esi,[ebx].SCOPECHDATA.ADC_Data
+			mov		[ebx].SCOPECHDATA.nusstart,0
+			xor		edi,edi
+			call	GetPoint
+			invoke MoveToEx,mDC,pt.x,pt.y,NULL
+			.while edi<samplesize
+				mov		edx,edi
+				add		edx,[ebx].SCOPECHDATA.nusstart
+				call	GetPoint
+				.if sdword ptr pt.x>=0
+					invoke LineTo,mDC,pt.x,pt.y
+					mov		eax,pt.x
+					.break .if sdword ptr eax>rect.right
+				.else
+					invoke MoveToEx,mDC,pt.x,pt.y,NULL
+				.endif
+				inc		edi
+			.endw
+			pop		eax
+			invoke SelectObject,mDC,eax
+			invoke DeleteObject,eax
+		.endif
 		add		rect.bottom,TEXTHIGHT
 		invoke BitBlt,ps.hdc,0,0,rect.right,rect.bottom,mDC,0,0,SRCCOPY
 		pop		eax
@@ -802,6 +846,10 @@ ScopeToolChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lPara
 				invoke Subsampling,[ebx].SCOPECHDATA.hWndDialog
 				invoke InvalidateRect,[ebx].SCOPECHDATA.hWndScope,NULL,TRUE
 			.endif
+		.elseif eax==IDC_CHKBOTHCHANNELS
+			invoke IsDlgButtonChecked,hWin,IDC_CHKBOTHCHANNELS
+			mov		[ebx].SCOPECHDATA.fBothChannels,eax
+			invoke InvalidateRect,[ebx].SCOPECHDATA.hWndScope,NULL,TRUE
 		.endif
 	.elseif eax==WM_HSCROLL
 		invoke GetParent,hWin

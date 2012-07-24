@@ -197,7 +197,7 @@ int main(void)
           STM32_DataStruct.CommandStruct.Command = STM32_CommandDone;
           break;
         case STM32_ModeLGA:
-          TIM8->CNT=0;
+          TIM8->CNT=STM32_DataStruct.CommandStruct.LGASampleRate-1;
           TIM8->ARR=STM32_DataStruct.CommandStruct.LGASampleRate;
           DMA_LGAConfig();
           TIM_DMACmd(TIM8, TIM_DMA_Update, ENABLE);

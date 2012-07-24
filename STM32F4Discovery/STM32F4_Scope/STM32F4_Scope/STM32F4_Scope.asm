@@ -36,7 +36,7 @@ SampleThreadProc proc lParam:DWORD
 				mov		fNoSTLink,TRUE
 			.elseif eax==IDABORT
 				mov		fNoSTLink,TRUE
-				invoke SendMessage,hWnd,WM_CLOSE,0,0
+				invoke PostMessage,hWnd,WM_CLOSE,0,0
 			.else
 				mov		fConnected,eax
 				invoke STLinkReset,hWnd
@@ -129,12 +129,12 @@ SampleThreadProc proc lParam:DWORD
 				.endw
 				movzx	eax,scopedata.ADC_CommandStructDone.DataBlocks
 				shl		eax,8
-				invoke STLinkRead,hWnd,STM32DataStart,addr scopedata.scopeCHAdata.ADC_Data,eax
+				invoke STLinkRead,hWnd,STM32DataStart,addr scopedata.scopebuff,eax
 				xor		ebx,ebx
 				movzx	edi,scopedata.ADC_CommandStructDone.DataBlocks
 				shl		edi,6
 				.while ebx<edi
-					mov		eax,dword ptr scopedata.scopeCHAdata.ADC_Data[ebx*4]
+					mov		eax,dword ptr scopedata.scopebuff[ebx*4]
 					movzx	edx,ax
 					shr		eax,16
 					.if scopedata.ADC_CommandStructDone.ScopeDataBits==0
@@ -271,9 +271,11 @@ MainDlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 		mov		edx,8
 		mov		esi,offset scopedata.scopeCHAdata.ADC_Data
 		mov		edi,offset scopedata.scopeCHBdata.ADC_Data
-		.while ecx<STM32_DataSize
+		.while ecx<STM32_MAXBLOCK*STM32_BlockSize
 			mov		[edi+ecx],al
+			add		eax,16
 			mov		[esi+ecx],al
+			sub		eax,16
 			.if sdword ptr eax>0E0h || sdword ptr eax<020h
 				neg		edx
 			.endif
@@ -511,13 +513,15 @@ MainDlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 	.elseif	eax==WM_CLOSE
 		invoke KillTimer,hWin,1000
 		mov		fThreadExit,TRUE
-		invoke WaitForSingleObject,hThread,250
-		invoke CloseHandle,hThread
-		.if fConnected
-			invoke STLinkDisconnect,hWin
+		invoke WaitForSingleObject,hThread,2000
+		.if !fThreadExit
+			invoke CloseHandle,hThread
+			.if fConnected
+				invoke STLinkDisconnect,hWin
+			.endif
+			invoke DeleteObject,hFont
+			invoke DestroyWindow,hWin
 		.endif
-		invoke DeleteObject,hFont
-		invoke DestroyWindow,hWin
 	.elseif eax==WM_DESTROY
 		invoke PostQuitMessage,NULL
 	.else

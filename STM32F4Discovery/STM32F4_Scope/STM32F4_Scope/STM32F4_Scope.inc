@@ -79,6 +79,8 @@ IDC_TRBXMAG					equ 1503
 IDC_TRBYMAG					equ 1501
 IDC_CHKSUBSAMPLE			equ 1506
 IDC_CHKPERIODS				equ 1505
+IDC_CHKBOTHCHANNELS			equ 1502
+
 ;Scope setup
 IDD_DLGSCOPESETUP			equ 1200
 IDC_RBNTRIGMANUAL			equ 1201
@@ -187,7 +189,7 @@ IDC_CBODDSWAVE				equ 1303
 
 ;#########################################################################
 
-STM32_DataSize				equ 1024*63
+;STM32_DataSize				equ 1024*63
 STM32_BlockSize				equ 64
 STM32_MAXBLOCK				equ 255;STM32_DataSize/STM32_BlockSize/4
 
@@ -301,6 +303,7 @@ SCOPECHDATA struct
 	fYMagnify				DWORD ?
 	fSubsampling			DWORD ?
 	fTwoPeriods				DWORD ?
+	fBothChannels			DWORD ?
 	frq_data				STM32_FRQDataStructDef <>
 	nstart					DWORD ?
 	nend					DWORD ?
@@ -316,8 +319,8 @@ SCOPECHDATA struct
 	vmin					DWORD ?
 	vmax					DWORD ?
 	vpp						DWORD ?
-	ADC_Data				BYTE STM32_DataSize*2 dup(?)
-	ADC_USData				BYTE STM32_DataSize*2 dup(?)
+	ADC_Data				BYTE STM32_MAXBLOCK*STM32_BlockSize dup(?)
+	ADC_USData				BYTE STM32_MAXBLOCK*STM32_BlockSize dup(?)
 SCOPECHDATA ends
 
 SCOPEDATA struct
@@ -325,6 +328,7 @@ SCOPEDATA struct
 	ADC_CommandStructDone	STM32_CommandStructDef <>
 	scopeCHAdata			SCOPECHDATA <>
 	scopeCHBdata			SCOPECHDATA <>
+	scopebuff				WORD STM32_MAXBLOCK*STM32_BlockSize*2 dup(?)
 SCOPEDATA ends
 
 ;#########################################################################
@@ -336,7 +340,7 @@ LGADATA struct
 	xmag					DWORD ?
 	LGA_CommandStruct		STM32_CommandStructDef <>
 	LGA_CommandStructDone	STM32_CommandStructDef <>
-	LGA_Data				BYTE STM32_DataSize dup(?)
+	LGA_Data				BYTE STM32_MAXBLOCK*STM32_BlockSize dup(?)
 	LGA_Text				BYTE 128 dup(?)
 LGADATA ends
 
