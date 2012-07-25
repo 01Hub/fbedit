@@ -88,10 +88,8 @@ FrequencyToClock proc uses ebx,frq:DWORD,clk:DWORD
 		cdq
 		mov		ecx,frq
 		div		ecx
-		.if eax<=65536
+		.if eax<=65535
 			mov		edx,ebx
-			dec		eax
-			dec		edx
 			.break
 		.endif
 		inc		ebx
@@ -105,11 +103,9 @@ ClockToFrequency proc count:DWORD,clkdiv:DWORD,clk:DWORD
 	mov		eax,clk
 	cdq
 	mov		ecx,clkdiv
-	inc		ecx
 	div		ecx
 	cdq
 	mov		ecx,count
-	inc		ecx
 	div		ecx
 	ret
 
@@ -186,11 +182,9 @@ HSClockSetupProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:
 					invoke SetDlgItemInt,hWin,IDC_EDTFRQCHA,eax,FALSE
 					invoke SendDlgItemMessage,hWin,IDC_TRBHSCLOCKADUTY,TBM_GETPOS,0,0
 					movzx	ecx,hsclockdata.hscCHAData.hsclockfrequency
-					inc		ecx
 					mul		ecx
 					mov		ecx,100
 					div		ecx
-					dec		eax
 					mov		hsclockdata.hscCHAData.hsclockccr,ax
 					invoke InvalidateRect,hsclockdata.hscCHAData.hWndHSClock,NULL,TRUE
 					mov		fHSCCHA,TRUE
@@ -211,11 +205,9 @@ HSClockSetupProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:
 					invoke SetDlgItemInt,hWin,IDC_EDTFRQCHA,eax,FALSE
 					invoke SendDlgItemMessage,hWin,IDC_TRBHSCLOCKADUTY,TBM_GETPOS,0,0
 					movzx	ecx,hsclockdata.hscCHAData.hsclockfrequency
-					inc		ecx
 					mul		ecx
 					mov		ecx,100
 					div		ecx
-					dec		eax
 					mov		hsclockdata.hscCHAData.hsclockccr,ax
 					invoke InvalidateRect,hsclockdata.hscCHAData.hWndHSClock,NULL,TRUE
 					mov		fHSCCHA,TRUE
@@ -240,11 +232,9 @@ HSClockSetupProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:
 					invoke SetDlgItemInt,hWin,IDC_EDTFRQCHB,eax,FALSE
 					invoke SendDlgItemMessage,hWin,IDC_TRBHSCLOCKBDUTY,TBM_GETPOS,0,0
 					movzx	ecx,hsclockdata.hscCHBData.hsclockfrequency
-					inc		ecx
 					mul		ecx
 					mov		ecx,100
 					div		ecx
-					dec		eax
 					mov		hsclockdata.hscCHBData.hsclockccr,ax
 					invoke InvalidateRect,hsclockdata.hscCHBData.hWndHSClock,NULL,TRUE
 					mov		fHSCCHB,TRUE
@@ -265,11 +255,9 @@ HSClockSetupProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:
 					invoke SetDlgItemInt,hWin,IDC_EDTFRQCHB,eax,FALSE
 					invoke SendDlgItemMessage,hWin,IDC_TRBHSCLOCKBDUTY,TBM_GETPOS,0,0
 					movzx	ecx,hsclockdata.hscCHBData.hsclockfrequency
-					inc		ecx
 					mul		ecx
 					mov		ecx,100
 					div		ecx
-					dec		eax
 					mov		hsclockdata.hscCHBData.hsclockccr,ax
 					invoke InvalidateRect,hsclockdata.hscCHBData.hWndHSClock,NULL,TRUE
 					mov		fHSCCHB,TRUE
@@ -290,11 +278,9 @@ HSClockSetupProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:
 				invoke SetDlgItemInt,hWin,IDC_EDTFRQCHA,eax,FALSE
 				invoke SendDlgItemMessage,hWin,IDC_TRBHSCLOCKADUTY,TBM_GETPOS,0,0
 				movzx	ecx,hsclockdata.hscCHAData.hsclockfrequency
-				inc		ecx
 				mul		ecx
 				mov		ecx,100
 				div		ecx
-				dec		eax
 				mov		hsclockdata.hscCHAData.hsclockccr,ax
 				invoke InvalidateRect,hsclockdata.hscCHAData.hWndHSClock,NULL,TRUE
 				mov		fHSCCHA,TRUE
@@ -312,11 +298,9 @@ HSClockSetupProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:
 				invoke SetDlgItemInt,hWin,IDC_EDTFRQCHB,eax,FALSE
 				invoke SendDlgItemMessage,hWin,IDC_TRBHSCLOCKBDUTY,TBM_GETPOS,0,0
 				movzx	ecx,hsclockdata.hscCHBData.hsclockfrequency
-				inc		ecx
 				mul		ecx
 				mov		ecx,100
 				div		ecx
-				dec		eax
 				mov		hsclockdata.hscCHBData.hsclockccr,ax
 				invoke InvalidateRect,hsclockdata.hscCHBData.hWndHSClock,NULL,TRUE
 				mov		fHSCCHB,TRUE
@@ -327,18 +311,14 @@ HSClockSetupProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:
 		.if ax!=hsclockdata.hscCHAData.hsclockdutycycle
 			mov		hsclockdata.hscCHAData.hsclockdutycycle,ax
 			movzx	ecx,hsclockdata.hscCHAData.hsclockfrequency
-			inc		ecx
 			mul		ecx
 			mov		ecx,100
 			div		ecx
-			dec		eax
 			mov		hsclockdata.hscCHAData.hsclockccr,ax
 			movzx	eax,hsclockdata.hscCHAData.hsclockccr
-			inc		eax
 			mov		ecx,100
 			mul		ecx
 			movzx	ecx,hsclockdata.hscCHAData.hsclockfrequency
-			inc		ecx
 			div		ecx
 			invoke MakeHSCWave,addr hsclockdata.hscCHAData.HSC_Data,eax
 			invoke InvalidateRect,hsclockdata.hscCHAData.hWndHSClock,NULL,TRUE
@@ -348,18 +328,14 @@ HSClockSetupProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:
 		.if ax!=hsclockdata.hscCHBData.hsclockdutycycle
 			mov		hsclockdata.hscCHBData.hsclockdutycycle,ax
 			movzx	ecx,hsclockdata.hscCHBData.hsclockfrequency
-			inc		ecx
 			mul		ecx
 			mov		ecx,100
 			div		ecx
-			dec		eax
 			mov		hsclockdata.hscCHBData.hsclockccr,ax
 			movzx	eax,hsclockdata.hscCHBData.hsclockccr
-			inc		eax
 			mov		ecx,100
 			mul		ecx
 			movzx	ecx,hsclockdata.hscCHBData.hsclockfrequency
-			inc		ecx
 			div		ecx
 			invoke MakeHSCWave,addr hsclockdata.hscCHBData.HSC_Data,eax
 			invoke InvalidateRect,hsclockdata.hscCHBData.hWndHSClock,NULL,TRUE
@@ -534,15 +510,12 @@ HSClockProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 		div		ecx
 		cdq
 		movzx	ecx,[ebx].HSCLOCKCHDATA.hsclockfrequency
-		inc		ecx
 		div		ecx
 		push	eax
 		movzx	eax,[ebx].HSCLOCKCHDATA.hsclockccr
-		inc		eax
 		mov		ecx,100
 		mul		ecx
 		movzx	ecx,[ebx].HSCLOCKCHDATA.hsclockfrequency
-		inc		ecx
 		div		ecx
 		pop		edx
 		push	eax
