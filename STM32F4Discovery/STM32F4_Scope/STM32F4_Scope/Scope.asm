@@ -313,9 +313,9 @@ Subsampling proc uses ebx esi edi,hWin:HWND
 			push	edx
 			mov		edx,tmp
 			;If set, dont set it again
-			.if !byte ptr [edi+edx]
+;			.if !byte ptr [edi+edx]
 				mov		[edi+edx],al
-			.endif
+;			.endif
 			pop		edx
 			inc		edx
 		.endw
