@@ -497,7 +497,6 @@ HSClockProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 		invoke SelectObject,mDC,eax
 		invoke DeleteObject,eax
 		movzx	ecx,[ebx].HSCLOCKCHDATA.hsclockdivisor
-		inc		ecx
 		mov		eax,hWin
 		.if eax==hsclockdata.hscCHAData.hWndHSClock
 			;Channel A

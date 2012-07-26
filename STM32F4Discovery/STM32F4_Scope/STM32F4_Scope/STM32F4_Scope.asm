@@ -68,8 +68,10 @@ SampleThreadProc proc lParam:DWORD
 				mov		eax,hsclockdata.hscCHAData.hsclockenable
 				mov		hsclockdata.hscFRQ.HSCEnable,ax
 				movzx	eax,hsclockdata.hscCHAData.hsclockfrequency
+				dec		eax
 				mov		hsclockdata.hscFRQ.HSCCount,ax
 				movzx	eax,hsclockdata.hscCHAData.hsclockdivisor
+				dec		eax
 				mov		hsclockdata.hscFRQ.HSCClockDiv,ax
 				movzx	eax,hsclockdata.hscCHAData.hsclockccr
 				mov		hsclockdata.hscFRQ.HSCDuty,ax
@@ -91,8 +93,10 @@ SampleThreadProc proc lParam:DWORD
 				mov		eax,hsclockdata.hscCHBData.hsclockenable
 				mov		hsclockdata.hscFRQ.HSCEnable,ax
 				movzx	eax,hsclockdata.hscCHBData.hsclockfrequency
+				dec		eax
 				mov		hsclockdata.hscFRQ.HSCCount,ax
 				movzx	eax,hsclockdata.hscCHBData.hsclockdivisor
+				dec		eax
 				mov		hsclockdata.hscFRQ.HSCClockDiv,ax
 				movzx	eax,hsclockdata.hscCHBData.hsclockccr
 				mov		hsclockdata.hscFRQ.HSCDuty,ax
@@ -514,14 +518,12 @@ MainDlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 		invoke KillTimer,hWin,1000
 		mov		fThreadExit,TRUE
 		invoke WaitForSingleObject,hThread,2000
-		.if !fThreadExit
-			invoke CloseHandle,hThread
-			.if fConnected
-				invoke STLinkDisconnect,hWin
-			.endif
-			invoke DeleteObject,hFont
-			invoke DestroyWindow,hWin
+		invoke CloseHandle,hThread
+		.if fConnected
+			invoke STLinkDisconnect,hWin
 		.endif
+		invoke DeleteObject,hFont
+		invoke DestroyWindow,hWin
 	.elseif eax==WM_DESTROY
 		invoke PostQuitMessage,NULL
 	.else
