@@ -155,14 +155,6 @@ DDSWaveSetupProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:
 		invoke SendDlgItemMessage,hWin,IDC_TRBDDSDCOFS,TBM_SETRANGE,FALSE,(((DACMAX+1)*2-1) SHL 16)
 		movzx	eax,ddsdata.DDS_CommandStruct.DDS_DCOffset
 		invoke SendDlgItemMessage,hWin,IDC_TRBDDSDCOFS,TBM_SETPOS,TRUE,eax
-		invoke SendDlgItemMessage,hWin,IDC_TRBDDSFRQH,TBM_SETRANGE,FALSE,(DDSMAX SHL 16)
-		mov		eax,ddsdata.DDS_CommandStruct.DDS_PhaseAdd
-		shr		eax,15
-		invoke SendDlgItemMessage,hWin,IDC_TRBDDSFRQH,TBM_SETPOS,TRUE,eax
-		invoke SendDlgItemMessage,hWin,IDC_TRBDDSFRQL,TBM_SETRANGE,FALSE,(DDSMAX SHL 16)
-		mov		eax,ddsdata.DDS_CommandStruct.DDS_PhaseAdd
-		and		eax,DDSMAX
-		invoke SendDlgItemMessage,hWin,IDC_TRBDDSFRQL,TBM_SETPOS,TRUE,eax
 		invoke DDSPhaseAddToHz,ddsdata.DDS_CommandStruct.DDS_PhaseAdd
 		invoke SetDlgItemInt,hWin,IDC_EDTDDSFREQUENCY,eax,FALSE
 		invoke SendDlgItemMessage,hWin,IDC_EDTDDSFREQUENCY,EM_LIMITTEXT,7,0
@@ -181,10 +173,17 @@ DDSWaveSetupProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:
 		invoke SendDlgItemMessage,hWin,IDC_EDTSWEEPCOUNT,EM_LIMITTEXT,4,0
 		movzx	eax,ddsdata.DDS_CommandStruct.SWEEP_StepCount
 		invoke SetDlgItemInt,hWin,IDC_EDTSWEEPCOUNT,eax,FALSE
-		invoke GetDlgItem,hWin,IDC_BTNDDSSET
-		invoke EnableWindow,eax,FALSE
 		invoke GetDlgItem,hWin,IDC_BTNSWEEPSET
 		invoke EnableWindow,eax,FALSE
+		push	0
+		push	IDC_BTNDDSDN
+		mov		eax,IDC_BTNDDSUP
+		.while eax
+			invoke GetDlgItem,hWin,eax
+			invoke SetWindowLong,eax,GWL_WNDPROC,offset ButtonProc
+			mov		lpOldButtonProc,eax
+			pop		eax
+		.endw
 	.elseif eax==WM_COMMAND
 		mov		edx,wParam
 		movzx	eax,dx
@@ -192,26 +191,27 @@ DDSWaveSetupProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:
 		.if edx==BN_CLICKED
 			.if eax==IDCANCEL
 				invoke SendMessage,hWin,WM_CLOSE,0,0
-			.elseif eax==IDC_BTNDDSSET
+			.elseif eax==IDC_BTNDDSDN
 				invoke GetDlgItemInt,hWin,IDC_EDTDDSFREQUENCY,NULL,FALSE
-				.if eax
-					.if eax>5255000
-						invoke SetDlgItemInt,hWin,IDC_EDTDDSFREQUENCY,5255000,FALSE
-						mov		eax,5255000
-					.endif
-					invoke DDSHzToPhaseAdd,eax
-					mov		ddsdata.DDS_CommandStruct.DDS_PhaseAdd,eax
+				.if eax>1
 					dec		eax
-					push	eax
-					shr		eax,15
-					invoke SendDlgItemMessage,hWin,IDC_TRBDDSFRQH,TBM_SETPOS,TRUE,eax
-					pop		eax
-					and		eax,DDSMAX
-					invoke SendDlgItemMessage,hWin,IDC_TRBDDSFRQL,TBM_SETPOS,TRUE,eax
+					mov		ebx,eax
+					invoke SetDlgItemInt,hWin,IDC_EDTDDSFREQUENCY,ebx,FALSE
+					invoke DDSHzToPhaseAdd,ebx
+					mov		ddsdata.DDS_CommandStruct.DDS_PhaseAdd,eax
 					invoke DDSGenWave
 					inc		fDDS
-					invoke GetDlgItem,hWin,IDC_BTNDDSSET
-					invoke EnableWindow,eax,FALSE
+				.endif
+			.elseif eax==IDC_BTNDDSUP
+				invoke GetDlgItemInt,hWin,IDC_EDTDDSFREQUENCY,NULL,FALSE
+				.if eax<5250000
+					inc		eax
+					mov		ebx,eax
+					invoke SetDlgItemInt,hWin,IDC_EDTDDSFREQUENCY,ebx,FALSE
+					invoke DDSHzToPhaseAdd,ebx
+					mov		ddsdata.DDS_CommandStruct.DDS_PhaseAdd,eax
+					invoke DDSGenWave
+					inc		fDDS
 				.endif
 			.elseif eax==IDC_RBNSWEEPOFF
 				mov		ddsdata.DDS_CommandStruct.DDS_SweepMode,SWEEP_ModeOff
@@ -252,13 +252,19 @@ DDSWaveSetupProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:
 				invoke GetDlgItem,hWin,IDC_BTNSWEEPSET
 				invoke EnableWindow,eax,FALSE
 			.endif
-		.elseif edx==EN_CHANGE
+		.elseif edx==EN_KILLFOCUS
 			.if eax==IDC_EDTDDSFREQUENCY
-				invoke GetDlgItem,hWin,IDC_BTNDDSSET
-				invoke EnableWindow,eax,TRUE
-			.else
-				invoke GetDlgItem,hWin,IDC_BTNSWEEPSET
-				invoke EnableWindow,eax,TRUE
+				invoke GetDlgItemInt,hWin,IDC_EDTDDSFREQUENCY,NULL,FALSE
+				.if eax
+					.if eax>5255000
+						invoke SetDlgItemInt,hWin,IDC_EDTDDSFREQUENCY,5255000,FALSE
+						mov		eax,5255000
+					.endif
+					invoke DDSHzToPhaseAdd,eax
+					mov		ddsdata.DDS_CommandStruct.DDS_PhaseAdd,eax
+					invoke DDSGenWave
+					inc		fDDS
+				.endif
 			.endif
 		.elseif edx==CBN_SELCHANGE
 			invoke SendDlgItemMessage,hWin,IDC_CBODDSWAVE,CB_GETCURSEL,0,0
@@ -278,21 +284,12 @@ DDSWaveSetupProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:
 			mov		ddsdata.DDS_CommandStruct.DDS_DCOffset,ax
 			invoke DDSGenWave
 			inc		fDDS
-		.elseif eax==IDC_TRBDDSFRQH || eax==IDC_TRBDDSFRQL
-			invoke SendDlgItemMessage,hWin,IDC_TRBDDSFRQH,TBM_GETPOS,0,0
-			mov		edx,ddsdata.DDS_CommandStruct.DDS_PhaseAdd
-			and		edx,DDSMAX
-			shl		eax,15
-			or		eax,edx
-			mov		ddsdata.DDS_CommandStruct.DDS_PhaseAdd,eax
-			invoke SendDlgItemMessage,hWin,IDC_TRBDDSFRQL,TBM_GETPOS,0,0
-			mov		edx,ddsdata.DDS_CommandStruct.DDS_PhaseAdd
-			and		edx,0FFFF8000h
-			or		eax,edx
-			inc		eax
-			mov		ddsdata.DDS_CommandStruct.DDS_PhaseAdd,eax
-			invoke DDSGenWave
-			inc		fDDS
+		.endif
+	.elseif eax==WM_ACTIVATE
+		mov		eax,wParam
+		.if eax!=WA_INACTIVE
+			mov		eax,hWin
+			mov		hDlg,eax
 		.endif
 	.elseif eax==WM_CLOSE
 		invoke DestroyWindow,hWin
