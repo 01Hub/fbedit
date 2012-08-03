@@ -40,7 +40,7 @@ LGASetupProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 			pop		ecx
 			inc		ecx
 		.endw
-		invoke SendDlgItemMessage,hWin,IDC_TRBSAMPLERATE,TBM_SETRANGE,FALSE,(5995 SHL 16)+0
+		invoke SendDlgItemMessage,hWin,IDC_TRBSAMPLERATE,TBM_SETRANGE,FALSE,((5995+1) SHL 16)+0
 		movzx	edx,lgadata.LGA_CommandStruct.LGASampleRate
 		mov		eax,5995+4
 		sub		eax,edx
@@ -157,8 +157,12 @@ Update:
 	mov		eax,42000000
 	cdq
 	movzx	ecx,lgadata.LGA_CommandStruct.LGASampleRate
-	inc		ecx
-	div		ecx
+	.if ecx<4
+		mov		eax,168000000/7
+	.else
+		inc		ecx
+		div		ecx
+	.endif
 	invoke SetDlgItemInt,hWin,IDC_STCLGASAMPLERATE,eax,FALSE
 	retn
 
@@ -428,7 +432,7 @@ LogicAnalyserProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam
 
 SetScrooll:
 	movzx	eax,lgadata.LGA_CommandStructDone.DataBlocks
-	mov		ecx,STM32_BlockSize
+	mov		ecx,STM32_BlockSize*4
 	mul		ecx
 	mov		samplesize,eax
 	invoke GetClientRect,hWin,addr rect
@@ -458,9 +462,11 @@ SetScrooll:
 	.endif
 	mov		ecx,rect.right
 	dec		ecx
+	shl		ecx,1
 	sub		ecx,LGAXSTART
 	mul		ecx
 	mov		ecx,samplesize
+	shl		ecx,1
 	div		ecx
 	mov		xsinf.nMax,eax
 	mov		eax,rect.right

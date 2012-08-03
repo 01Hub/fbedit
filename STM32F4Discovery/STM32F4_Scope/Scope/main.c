@@ -105,6 +105,7 @@ void DMA_SCPConfig(void);
 void DMA_LGAConfig(void);
 void WaitForTrigger(void);
 void SPI_Config(void);
+void FastLGA(void);
 
 /* Private functions ---------------------------------------------------------*/
 
@@ -197,18 +198,27 @@ int main(void)
           STM32_DataStruct.CommandStruct.Command = STM32_CommandDone;
           break;
         case STM32_ModeLGA:
-          TIM8->CNT=STM32_DataStruct.CommandStruct.LGASampleRate-1;
-          TIM8->ARR=STM32_DataStruct.CommandStruct.LGASampleRate;
-          DMA_LGAConfig();
-          TIM_DMACmd(TIM8, TIM_DMA_Update, ENABLE);
-          /* DMA2_Stream1 enable */
-          DMA_Cmd(DMA2_Stream1, ENABLE);
-          WaitForTrigger();
-          TIM8->CR1 |= TIM_CR1_CEN;
-          while (DMA_GetFlagStatus(DMA2_Stream1,DMA_FLAG_TCIF1)==RESET);
-          STM32_DataStruct.CommandStruct.Command = STM32_CommandDone;
-          DMA_DeInit(DMA2_Stream1);
-          TIM_Cmd(TIM8, DISABLE);
+          if (STM32_DataStruct.CommandStruct.LGASampleRate<4)
+          {
+            WaitForTrigger();
+            FastLGA();
+            STM32_DataStruct.CommandStruct.Command = STM32_CommandDone;
+          }
+          else
+          {
+            TIM8->CNT=STM32_DataStruct.CommandStruct.LGASampleRate-1;
+            TIM8->ARR=STM32_DataStruct.CommandStruct.LGASampleRate;
+            DMA_LGAConfig();
+            TIM_DMACmd(TIM8, TIM_DMA_Update, ENABLE);
+            /* DMA2_Stream1 enable */
+            DMA_Cmd(DMA2_Stream1, ENABLE);
+            WaitForTrigger();
+            TIM8->CR1 |= TIM_CR1_CEN;
+            while (DMA_GetFlagStatus(DMA2_Stream1,DMA_FLAG_TCIF1)==RESET);
+            STM32_DataStruct.CommandStruct.Command = STM32_CommandDone;
+            DMA_DeInit(DMA2_Stream1);
+            TIM_Cmd(TIM8, DISABLE);
+          }
           break;
         case STM32_ModeDDSWave:
           /* Send configuration data to DDS Wave Generator */
@@ -235,6 +245,24 @@ int main(void)
     }
     ADC_SoftwareStartInjectedConv(ADC3);
   }
+}
+
+void FastLGA(void)
+{
+  asm("push   {r0-r4}");
+  asm("movw   r0,#0x1011");
+  asm("movt   r0,#0x4002");
+  asm("movw   r1,#0x0074");
+  asm("movt   r1,#0x2000");
+  asm("mov    r2,#0x00000000");
+  asm("mov    r3,#0x00000001");
+  asm("FastLGA1:");
+  asm("ldrb   r4,[r0]");
+  asm("strb   r4,[r1,r2]");
+  asm("add    r2,r2,r3");
+  asm("cmp    r2,#0x10000");
+  asm("bne    FastLGA1");
+  asm("pop    {r0-r4}");
 }
 
 /*******************************************************************************
@@ -617,7 +645,7 @@ void DMA_LGAConfig(void)
   DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)PE_IDR_Address;
   DMA_InitStructure.DMA_Memory0BaseAddr = (uint32_t)&STM32_DataStruct.STM32_Data;
   DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralToMemory;
-  DMA_InitStructure.DMA_BufferSize = STM32_DataStruct.CommandStruct.DataBlocks * STM32_BlockSize;
+  DMA_InitStructure.DMA_BufferSize = STM32_DataStruct.CommandStruct.DataBlocks * STM32_BlockSize * 4;
   DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
   DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;
   DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Byte;

@@ -1,8 +1,7 @@
 
 <Debug>
 	<STM32F4_Scope>
-		<RegistersView Focus="134223534" TopRow="0" NbPerLine="4" />
-		<CodeView TopRow="134223528" Focus="134223534" >
+		<CodeView TopRow="134218206" Focus="4294967295" >
 			<CodeReport>
 				<0>111</0>
 				<1>122</1>
@@ -14,6 +13,7 @@
 			</CodeReport>
 										
 		</CodeView>
+		<RegistersView Focus="134218120" TopRow="0" NbPerLine="4" />
 		<MemoryView Focus="134218120" TopRow="0" NbPerLine="8" />
 						
 	</STM32F4_Scope>
@@ -39,8 +39,8 @@
 			
 	</Flags>
 	<Views>
-		<View File="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\main.c" Line="622" Index="0" focus="1" />
-		<View File="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\startup_stm32f4xx.s" Line="51" Index="1" />
+		<View File="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\main.c" Line="649" Index="0" focus="1" />
+		<View File="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\startup_stm32f4xx.s" Line="50" Index="1" />
 		<View File="C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_Scope\Scope\system_stm32f4xx.c" Line="0" Index="2" />
 	</Views>
 	<Grep>

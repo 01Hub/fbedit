@@ -198,7 +198,7 @@ SampleThreadProc proc lParam:DWORD
 					invoke Sleep,10
 				.endw
 				movzx	eax,lgadata.LGA_CommandStructDone.DataBlocks
-				shl		eax,6
+				shl		eax,8
 				invoke STLinkRead,hWnd,STM32DataStart,addr lgadata.LGA_Data,eax
 				invoke GetDlgItem,childdialogs.hWndLogicAnalyser,IDC_UDCLOGICANALYSER
 				mov		ebx,eax
