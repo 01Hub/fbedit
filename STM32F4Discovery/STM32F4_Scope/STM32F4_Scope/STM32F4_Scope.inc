@@ -144,6 +144,8 @@ IDC_CHKLGAMASKD7			equ 1737
 IDC_TRBSAMPLERATE			equ 1701
 IDC_STCLGASAMPLERATE		equ 1703
 IDC_TRBLGABUFFERSIZE		equ 1702
+IDC_RBNTRANSRISING			equ 1711
+IDC_RBNTRANSFALLING			equ 1712
 
 ;High speed clock screen
 IDD_DLGHSCLOCK				equ 2300
@@ -337,9 +339,16 @@ LGADATA struct
 	hWndLGA					HWND ?
 	hWndLGATool				HWND ?
 	xmag					DWORD ?
+	leftbyte				DWORD ?
+	transcurpos				DWORD ?
+	transbit				DWORD ?
+	transrisingedge			DWORD ?
+	transstart				DWORD ?
+	transend				DWORD ?
+	transcount				DWORD ?
 	LGA_CommandStruct		STM32_CommandStructDef <>
 	LGA_CommandStructDone	STM32_CommandStructDef <>
-	LGA_Data				BYTE STM32_MAXBLOCK*STM32_BlockSize dup(?)
+	LGA_Data				BYTE STM32_MAXBLOCK*STM32_BlockSize*4 dup(?)
 	LGA_Text				BYTE 128 dup(?)
 LGADATA ends
 
@@ -435,7 +444,7 @@ szFmtVmax					BYTE '  Vmax: %04uV',0
 szFmtVpp					BYTE '  Vpp: %04uV',0
 szFmtWaveDCOffset			BYTE '  DC Offset: %04uV',0
 szFmtDuty					BYTE '  Pulse Width: %u%%',0
-szFmtLGA					BYTE ' Hex: %02X  Bin: %s  Bytenbr: %u',0
+szFmtLGA					BYTE ' Hex: %02X  Bin: %s  Bytenbr: %u Transitions: %u Time: %uns',0
 szFmtDec					BYTE '%u',0
 szCOMMA						BYTE ',',0
 szCRLF						BYTE 0Dh,0Ah,0

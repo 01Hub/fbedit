@@ -28,8 +28,8 @@ o Two high speed clock outputs.
   - Variable pulse width, 0% to 100%.
 o Logic analyser.
   - 8 bits.
-  - Variable sample rate 7KS/Sec to 8.4MS/Sec.
-  - 16320 samples sample buffer.
+  - Variable sample rate 28KS/Sec to 33.6MS/Sec.
+  - 65280 samples sample buffer.
   - Trigger selection: Manual, rising or falling edge from oscilloscope CHA
     or CHB, or from logic analyser. Trigger from logic analyser can be any
     combination of high or low bits. There is also a mask to set dont care
@@ -61,3 +61,8 @@ PB15				SPI2_MOSI	Output to DDS Wave Generator
 
 PE8-PE15			PE8-PE15	Inputs for logic analyser
 -------------------------------------------------------------------------------
+CPH1	9.655425MHz	655 Pixels
+STV		55Hz
+OEV		14.741KHz	268 Lines
+CKV		14.741KHz
+

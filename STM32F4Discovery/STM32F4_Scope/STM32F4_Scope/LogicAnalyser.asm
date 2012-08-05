@@ -40,7 +40,7 @@ LGASetupProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 			pop		ecx
 			inc		ecx
 		.endw
-		invoke SendDlgItemMessage,hWin,IDC_TRBSAMPLERATE,TBM_SETRANGE,FALSE,((5995+1) SHL 16)+0
+		invoke SendDlgItemMessage,hWin,IDC_TRBSAMPLERATE,TBM_SETRANGE,FALSE,(5995 SHL 16)+0
 		movzx	edx,lgadata.LGA_CommandStruct.LGASampleRate
 		mov		eax,5995+4
 		sub		eax,edx
@@ -48,6 +48,11 @@ LGASetupProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 		invoke SendDlgItemMessage,hWin,IDC_TRBLGABUFFERSIZE,TBM_SETRANGE,FALSE,(STM32_MAXBLOCK SHL 16)+1
 		movzx	eax,lgadata.LGA_CommandStruct.DataBlocks
 		invoke SendDlgItemMessage,hWin,IDC_TRBLGABUFFERSIZE,TBM_SETPOS,TRUE,eax
+		mov		eax,IDC_RBNTRANSFALLING
+		.if lgadata.transrisingedge
+			mov		eax,IDC_RBNTRANSRISING
+		.endif
+		invoke CheckDlgButton,hWin,eax,BST_CHECKED
 		call	Update
 	.elseif eax==WM_COMMAND
 		mov		edx,wParam
@@ -85,6 +90,12 @@ LGASetupProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 					pop		ecx
 					inc		ecx
 				.endw
+				call	Update
+			.elseif eax==IDC_RBNTRANSRISING
+				mov		lgadata.transrisingedge,TRUE
+				call	Update
+			.elseif eax==IDC_RBNTRANSFALLING
+				mov		lgadata.transrisingedge,FALSE
 				call	Update
 			.else
 				call	Update
@@ -154,15 +165,11 @@ Update:
 	mov		lgadata.LGA_CommandStruct.LGASampleRate,dx
 	invoke SendDlgItemMessage,hWin,IDC_TRBLGABUFFERSIZE,TBM_GETPOS,0,0
 	mov		lgadata.LGA_CommandStruct.DataBlocks,al
-	mov		eax,42000000
-	cdq
 	movzx	ecx,lgadata.LGA_CommandStruct.LGASampleRate
-	.if ecx<4
-		mov		eax,168000000/7
-	.else
-		inc		ecx
-		div		ecx
-	.endif
+	mov		eax,168000000
+	cdq
+	inc		ecx
+	div		ecx
 	invoke SetDlgItemInt,hWin,IDC_STCLGASAMPLERATE,eax,FALSE
 	retn
 
@@ -189,8 +196,10 @@ LogicAnalyserProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam
 
 	mov		eax,uMsg
 	.if eax==WM_PAINT
-		invoke GetClientRect,hWin,addr rect
 		call	SetScrooll
+		call	GetLeftByte
+		call	SetLGAText
+		invoke GetClientRect,hWin,addr rect
 		invoke BeginPaint,hWin,addr ps
 		invoke CreateCompatibleDC,ps.hdc
 		mov		mDC,eax
@@ -243,6 +252,7 @@ LogicAnalyserProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam
 		invoke CreatePen,PS_SOLID,2,202020h
 		invoke SelectObject,mDC,eax
 		push	eax
+		;Draw vertical lines
 		mov		edi,40
 		call	GetXPos
 		push	pt.x
@@ -273,6 +283,7 @@ LogicAnalyserProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam
 		.else
 			mov		ebx,3FFh
 		.endif
+		mov		edi,lgadata.leftbyte
 		.while edi<samplesize
 			mov		eax,ebx
 			and		eax,edi
@@ -285,6 +296,7 @@ LogicAnalyserProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam
 			.endif
 			inc		edi
 		.endw
+		;Draw horizontal lines
 		mov		edi,yinc
 		xor		ecx,ecx
 		.while ecx<8
@@ -300,6 +312,7 @@ LogicAnalyserProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam
 		pop		eax
 		invoke SelectObject,mDC,eax
 		invoke DeleteObject,eax
+		;Draw curve
 		xor		ecx,ecx
 		.while ecx<8
 			push	ecx
@@ -321,6 +334,22 @@ LogicAnalyserProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam
 			pop		ecx
 			inc		ecx
 		.endw
+		;Draw transition count lines
+		invoke CreatePen,PS_DOT,1,00ffFFh
+		invoke SelectObject,mDC,eax
+		push	eax
+		mov		edi,lgadata.transstart
+		call	GetXPos
+		invoke MoveToEx,mDC,pt.x,0,NULL
+		invoke LineTo,mDC,pt.x,rect.bottom
+		mov		edi,lgadata.transend
+		call	GetXPos
+		invoke MoveToEx,mDC,pt.x,0,NULL
+		invoke LineTo,mDC,pt.x,rect.bottom
+		pop		eax
+		invoke SelectObject,mDC,eax
+		invoke DeleteObject,eax
+		;Draw to screen
 		add		rect.bottom,TEXTHIGHT
 		invoke BitBlt,ps.hdc,0,0,rect.right,rect.bottom,mDC,0,0,SRCCOPY
 		pop		eax
@@ -329,60 +358,35 @@ LogicAnalyserProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam
 		invoke DeleteDC,mDC
 		invoke EndPaint,hWin,addr ps
 		xor		eax,eax
+	.elseif eax==WM_LBUTTONDOWN
+		.if lgadata.LGA_Text
+			mov		eax,lgadata.transcurpos
+			mov		lgadata.transstart,eax
+			invoke InvalidateRect,hWin,0,TRUE
+		.endif
 	.elseif eax==WM_MOUSEMOVE
-		invoke GetCursorPos,addr pt
- 		invoke WindowFromPoint,pt.x,pt.y
- 		.if eax==hWin
-			invoke GetClientRect,hWin,addr rect
-			mov		edx,lParam
-			movsx	eax,dx
-			shr		edx,16
-			movsx	edx,dx
-			mov		pt.x,eax
-			mov		pt.y,edx
-			invoke GetCapture
-			.if eax!=hWin
-				invoke SetCapture,hWin
-			.endif
-			mov		eax,pt.x
-			mov		edx,pt.y
-			.if eax>rect.right || edx>rect.bottom
-				invoke ReleaseCapture
-				.if lgadata.LGA_Text
+		invoke GetCapture
+		.if eax==hWin
+			invoke GetCursorPos,addr pt
+			invoke WindowFromPoint,pt.x,pt.y
+			.if eax==hWin
+				invoke ScreenToClient,hWin,addr pt
+				invoke GetClientRect,hWin,addr rect
+				mov		eax,pt.x
+				mov		edx,pt.y
+				.if eax>rect.right || edx>rect.bottom
 					mov		lgadata.LGA_Text,0
-					invoke InvalidateRect,hWin,0,TRUE
+					invoke ReleaseCapture
 				.endif
 			.else
-				call	SetScrooll
-				call	GetBytenbr
-				.if sdword ptr edi>=0
-					movzx	eax,lgadata.LGA_Data[edi]
-					push	eax
-					invoke ByteToBin,addr buffer1,eax
-					pop		edx
-					invoke wsprintf,addr buffer,addr szFmtLGA,edx,addr buffer1,edi
-					invoke lstrcmp,addr buffer,addr lgadata.LGA_Text
-					.if eax
-						invoke lstrcpy,addr lgadata.LGA_Text,addr buffer
-						invoke InvalidateRect,hWin,0,TRUE
-					.endif
-				.else
-					.if lgadata.LGA_Text
-						mov		lgadata.LGA_Text,0
-						invoke InvalidateRect,hWin,0,TRUE
-					.endif
-				.endif
-			.endif
- 		.else
-			invoke GetCapture
-			.if eax==hWin
+				mov		lgadata.LGA_Text,0
 				invoke ReleaseCapture
-				.if lgadata.LGA_Text
-					mov		lgadata.LGA_Text,0
-					invoke InvalidateRect,hWin,0,TRUE
-				.endif
 			.endif
- 		.endif
+			invoke InvalidateRect,hWin,0,TRUE
+		.else
+			invoke SetCapture,hWin
+			invoke InvalidateRect,hWin,0,TRUE
+		.endif
 	.elseif eax==WM_HSCROLL
 		mov		xsinf.cbSize,sizeof SCROLLINFO
 		mov		xsinf.fMask,SIF_ALL
@@ -506,9 +510,43 @@ GetXPos:
 	mov		pt.x,eax
 	retn
 
+GetLeftByte:
+	xor		edi,edi
+	.while TRUE
+		lea		edi,[edi+100]
+		call	GetXPos
+		.break .if sdword ptr pt.x>=0
+	.endw
+	lea		edi,[edi-100]
+	.while TRUE
+		lea		edi,[edi+1]
+		call	GetXPos
+		.break .if sdword ptr pt.x>=0
+	.endw
+	lea		edi,[edi-1]
+	mov		lgadata.leftbyte,edi
+	retn
+
+GetBitnbr:
+	invoke GetCursorPos,addr pt
+	invoke ScreenToClient,hWin,addr pt
+	invoke GetClientRect,hWin,addr rect
+	sub		rect.bottom,TEXTHIGHT
+	mov		eax,rect.bottom
+	sub		eax,10
+	shr		eax,3
+	mov		yinc,eax
+	xor		edx,edx
+	.while eax<pt.y && edx<7
+		inc		edx
+		add		eax,yinc
+	.endw
+	mov		lgadata.transbit,edx
+	retn
+
 GetBytenbr:
 	mov		ebx,pt.x
-	xor		edi,edi
+	mov		edi,lgadata.leftbyte
 	call	GetXPos
 	.while edi<samplesize
 		push	pt.x
@@ -525,11 +563,12 @@ GetBytenbr:
 
 DrawCurve:
 	mov		esi,offset lgadata.LGA_Data
-	xor		edi,edi
+	mov		edi,lgadata.leftbyte
+	call	GetXPos
 	invoke MoveToEx,mDC,LGAXSTART,pt.y,NULL
-	xor		ecx,ecx
+	mov		lgaoldbit,0
+	mov		ecx,edi
 	mov		ebx,pt.y
-	mov		lgaoldbit,cl
 	.while ecx<samplesize
 		push	ecx
 		mov		al,[esi+ecx]
@@ -556,13 +595,102 @@ DrawCurve:
 	.endw
 	retn
 
+GetTransitions:
+	mov		esi,lgadata.transstart
+	mov		edi,lgadata.transend
+	.if sdword ptr esi>edi
+		xchg	esi,edi
+	.endif
+	xor		ebx,ebx
+	mov		ecx,lgadata.transbit
+	mov		edx,1
+	shl		edx,cl
+	mov		ecx,edx
+	.if lgadata.transrisingedge
+		mov		edx,ecx
+		.while esi<=edi
+			movzx	eax,lgadata.LGA_Data[esi]
+			and		eax,ecx
+			.if eax!=edx
+				.if eax && !edx
+					inc		ebx
+				.endif
+				mov		edx,eax
+			.endif
+			inc		esi
+		.endw
+	.else
+		xor		edx,edx
+		.while esi<=edi
+			movzx	eax,lgadata.LGA_Data[esi]
+			and		eax,ecx
+			.if eax!=edx
+				.if !eax && edx
+					inc		ebx
+				.endif
+				mov		edx,eax
+			.endif
+			inc		esi
+		.endw
+	.endif
+	mov		lgadata.transcount,ebx
+	retn
+
+SetLGAText:
+	invoke GetClientRect,hWin,addr rect
+	invoke GetCursorPos,addr pt
+	invoke WindowFromPoint,pt.x,pt.y
+	push	eax
+	invoke ScreenToClient,hWin,addr pt
+	mov		eax,pt.x
+	mov		edx,pt.y
+	pop		ecx
+	.if eax>rect.right || edx>rect.bottom || ecx!=hWin
+		mov		lgadata.LGA_Text,0
+	.else
+		call	GetBytenbr
+		.if sdword ptr edi>=0
+			mov		lgadata.transcurpos,edi
+			mov		eax,lgadata.transcurpos
+			mov		lgadata.transend,eax
+			call	GetBitnbr
+			call	GetTransitions
+			movzx	eax,lgadata.LGA_Data[edi]
+			push	eax
+			invoke ByteToBin,addr buffer1,eax
+			mov		eax,16800000
+			cdq
+			movzx	ecx,lgadata.LGA_CommandStruct.LGASampleRate
+			inc		ecx
+			div		ecx
+			mov		ecx,eax
+			mov		eax,1000000000
+			cdq
+			div		ecx
+			mov		ecx,lgadata.transend
+			sub		ecx,lgadata.transstart
+			.if SIGN?
+				neg		ecx
+			.endif
+			mul		ecx
+			mov		ecx,10
+			div		ecx
+			pop		edx
+			invoke wsprintf,addr buffer,addr szFmtLGA,edx,addr buffer1,edi,lgadata.transcount,eax
+			invoke lstrcpy,addr lgadata.LGA_Text,addr buffer
+		.else
+			mov		lgadata.LGA_Text,0
+		.endif
+	.endif
+	retn
+
 LogicAnalyserProc endp
 
 LogicAnalyserToolChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
-		invoke SendDlgItemMessage,hWin,IDC_TRBLGAXMAG,TBM_SETRANGE,FALSE,(XMAGMAX SHL 16)+1
+		invoke SendDlgItemMessage,hWin,IDC_TRBLGAXMAG,TBM_SETRANGE,FALSE,(XMAGMAX*8 SHL 16)+1
 		invoke SendDlgItemMessage,hWin,IDC_TRBLGAXMAG,TBM_SETPOS,TRUE,XMAGMAX/2
 	.elseif eax==WM_HSCROLL
 		;X-Magnification
@@ -585,6 +713,7 @@ LogicAnalyserChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,l
 	.if eax==WM_INITDIALOG
 		mov		eax,hWin
 		mov		lgadata.hWndDialog,eax
+		mov		lgadata.transrisingedge,TRUE
 		invoke GetDlgItem,hWin,IDC_UDCLOGICANALYSER
 		mov		lgadata.hWndLGA,eax
 		mov		lgadata.xmag,256
