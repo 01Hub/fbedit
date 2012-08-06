@@ -190,9 +190,9 @@ IDC_CBODDSWAVE				equ 1303
 
 ;#########################################################################
 
-;STM32_DataSize				equ 1024*63
+STM32_Clock					equ 168000000
 STM32_BlockSize				equ 64
-STM32_MAXBLOCK				equ 255;STM32_DataSize/STM32_BlockSize/4
+STM32_MAXBLOCK				equ 255
 
 ;Command
 STM32_CommandWait			equ 0
@@ -464,8 +464,8 @@ float100					QWORD 100.0
 dds64						QWORD 100000000h
 ddscycles					DWORD 8
 
-STM32Clock					DWORD 168000000
-STM32ClockDiv2				DWORD 84000000
+STM32Clock					DWORD STM32_Clock
+STM32ClockDiv2				DWORD STM32_Clock/2
 
 ;#########################################################################
 

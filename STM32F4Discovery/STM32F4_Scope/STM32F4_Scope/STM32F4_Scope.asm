@@ -308,11 +308,10 @@ MainDlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 				mov 	fLGA,1
 			.endif
 			invoke IsWindowVisible,childdialogs.hWndScopeCHA
-			.if eax
-				mov 	fSCOPE,1
-			.endif
+			push	eax
 			invoke IsWindowVisible,childdialogs.hWndScopeCHB
-			.if eax
+			pop		edx
+			.if eax || edx
 				mov 	fSCOPE,1
 			.endif
 		.endif
@@ -450,11 +449,10 @@ MainDlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 				mov 	fLGA,1
 			.endif
 			invoke IsWindowVisible,childdialogs.hWndScopeCHA
-			.if eax
-				mov 	fSCOPE,1
-			.endif
+			push	eax
 			invoke IsWindowVisible,childdialogs.hWndScopeCHB
-			.if eax
+			pop		edx
+			.if eax || edx
 				mov 	fSCOPE,1
 			.endif
 		.endif

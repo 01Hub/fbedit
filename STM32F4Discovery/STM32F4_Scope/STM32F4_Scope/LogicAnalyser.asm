@@ -166,7 +166,7 @@ Update:
 	invoke SendDlgItemMessage,hWin,IDC_TRBLGABUFFERSIZE,TBM_GETPOS,0,0
 	mov		lgadata.LGA_CommandStruct.DataBlocks,al
 	movzx	ecx,lgadata.LGA_CommandStruct.LGASampleRate
-	mov		eax,168000000
+	mov		eax,STM32_Clock
 	cdq
 	inc		ecx
 	div		ecx
@@ -656,10 +656,11 @@ SetLGAText:
 			mov		lgadata.transend,eax
 			call	GetBitnbr
 			call	GetTransitions
+			mov		edi,lgadata.transcurpos
 			movzx	eax,lgadata.LGA_Data[edi]
 			push	eax
 			invoke ByteToBin,addr buffer1,eax
-			mov		eax,16800000
+			mov		eax,STM32_Clock/10
 			cdq
 			movzx	ecx,lgadata.LGA_CommandStructDone.LGASampleRate
 			inc		ecx
