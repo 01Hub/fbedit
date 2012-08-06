@@ -193,6 +193,7 @@ LogicAnalyserProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam
 	LOCAL	samplesize:DWORD
 	LOCAL	buffer[128]:BYTE
 	LOCAL	buffer1[128]:BYTE
+	LOCAL	buffer2[128]:BYTE
 
 	mov		eax,uMsg
 	.if eax==WM_PAINT
@@ -660,7 +661,7 @@ SetLGAText:
 			invoke ByteToBin,addr buffer1,eax
 			mov		eax,16800000
 			cdq
-			movzx	ecx,lgadata.LGA_CommandStruct.LGASampleRate
+			movzx	ecx,lgadata.LGA_CommandStructDone.LGASampleRate
 			inc		ecx
 			div		ecx
 			mov		ecx,eax
@@ -673,10 +674,33 @@ SetLGAText:
 				neg		ecx
 			.endif
 			mul		ecx
-			mov		ecx,10
-			div		ecx
+			.if eax<10000
+				invoke wsprintf,addr buffer2,addr szFmtLGATimens,eax
+				invoke lstrlen,addr buffer2
+				mov		edx,dword ptr buffer2[eax-3]
+				mov		buffer2[eax-3],'.'
+				mov		dword ptr buffer2[eax-2],edx
+			.elseif eax<10000000
+				invoke wsprintf,addr buffer2,addr szFmtLGATimeus,eax
+				invoke lstrlen,addr buffer2
+				mov		edx,dword ptr buffer2[eax-6]
+				mov		ecx,dword ptr buffer2[eax-2]
+				mov		buffer2[eax-6],'.'
+				mov		dword ptr buffer2[eax-5],edx
+				mov		dword ptr buffer2[eax-1],ecx
+			.else
+				invoke wsprintf,addr buffer2,addr szFmtLGATimems,eax
+				invoke lstrlen,addr buffer2
+				mov		edx,dword ptr buffer2[eax-9]
+				mov		ecx,dword ptr buffer2[eax-5]
+				mov		ebx,dword ptr buffer2[eax-1]
+				mov		buffer2[eax-9],'.'
+				mov		dword ptr buffer2[eax-8],edx
+				mov		dword ptr buffer2[eax-4],ecx
+				mov		dword ptr buffer2[eax-0],ebx
+			.endif
 			pop		edx
-			invoke wsprintf,addr buffer,addr szFmtLGA,edx,addr buffer1,edi,lgadata.transcount,eax
+			invoke wsprintf,addr buffer,addr szFmtLGA,edx,addr buffer1,edi,lgadata.transcount,addr buffer2
 			invoke lstrcpy,addr lgadata.LGA_Text,addr buffer
 		.else
 			mov		lgadata.LGA_Text,0

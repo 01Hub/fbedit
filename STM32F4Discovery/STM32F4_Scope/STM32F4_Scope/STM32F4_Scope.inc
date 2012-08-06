@@ -444,7 +444,11 @@ szFmtVmax					BYTE '  Vmax: %04uV',0
 szFmtVpp					BYTE '  Vpp: %04uV',0
 szFmtWaveDCOffset			BYTE '  DC Offset: %04uV',0
 szFmtDuty					BYTE '  Pulse Width: %u%%',0
-szFmtLGA					BYTE ' Hex: %02X  Bin: %s  Bytenbr: %u Transitions: %u Time: %uns',0
+szFmtLGA					BYTE ' Hex: %02X  Bin: %s  Bytenbr: %u Transitions: %u Time: %s',0
+szFmtLGATimens				BYTE '%02uns',0
+szFmtLGATimeus				BYTE '%uus',0
+szFmtLGATimems				BYTE '%ums',0
+
 szFmtDec					BYTE '%u',0
 szCOMMA						BYTE ',',0
 szCRLF						BYTE 0Dh,0Ah,0
