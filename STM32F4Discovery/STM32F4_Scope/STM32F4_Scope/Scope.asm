@@ -482,6 +482,67 @@ ScopeProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke lstrcat,addr buffer,addr buffer1
 		invoke FormatVoltage,addr buffer1,addr szFmtVpp,[ebx].SCOPECHDATA.vpp
 		invoke lstrcat,addr buffer,addr buffer1
+		.if ![ebx].SCOPECHDATA.fSubsampling
+			invoke GetCursorPos,addr pt
+			invoke WindowFromPoint,pt.x,pt.y
+			.if eax==hWin
+				invoke ScreenToClient,hWin,addr pt
+				mov		eax,pt.x
+				.if eax<=rect.right
+					;Get voltage and time at cursor
+					call	GetByteNbr
+					mov		[ebx].SCOPECHDATA.transcurpos,edi
+					mov		ecx,[ebx].SCOPECHDATA.transcurpos
+					movzx	eax,[ebx].SCOPECHDATA.ADC_Data[ecx]
+					mov		ecx,3000
+					mul		ecx
+					mov		ecx,255
+					div		ecx
+					invoke FormatVoltage,addr buffer1,addr szFmtV,eax
+					invoke lstrcat,addr buffer,addr buffer1
+					invoke GetSampleRate,addr scopedata.ADC_CommandStructDone
+					cdq
+					mov		ecx,10
+					div		ecx
+					mov		ecx,eax
+					mov		eax,1000000000
+					cdq
+					div		ecx
+					mov		ecx,[ebx].SCOPECHDATA.transcurpos
+					sub		ecx,[ebx].SCOPECHDATA.transstart
+					.if SIGN?
+						neg		ecx
+					.endif
+					mul		ecx
+					.if eax<10000
+						invoke wsprintf,addr buffer1,addr szFmtSCPTimens,eax
+						invoke lstrlen,addr buffer1
+						mov		edx,dword ptr buffer1[eax-3]
+						mov		buffer1[eax-3],'.'
+						mov		dword ptr buffer1[eax-2],edx
+					.elseif eax<10000000
+						invoke wsprintf,addr buffer1,addr szFmtSCPTimeus,eax
+						invoke lstrlen,addr buffer1
+						mov		edx,dword ptr buffer1[eax-6]
+						mov		ecx,dword ptr buffer1[eax-2]
+						mov		buffer1[eax-6],'.'
+						mov		dword ptr buffer1[eax-5],edx
+						mov		dword ptr buffer1[eax-1],ecx
+					.else
+						invoke wsprintf,addr buffer1,addr szFmtSCPTimems,eax
+						invoke lstrlen,addr buffer1
+						mov		edx,dword ptr buffer1[eax-9]
+						mov		ecx,dword ptr buffer1[eax-5]
+						mov		ebx,dword ptr buffer1[eax-1]
+						mov		buffer1[eax-9],'.'
+						mov		dword ptr buffer1[eax-8],edx
+						mov		dword ptr buffer1[eax-4],ecx
+						mov		dword ptr buffer1[eax-0],ebx
+					.endif
+					invoke lstrcat,addr buffer,addr buffer1
+				.endif
+			.endif
+		.endif
 		invoke lstrlen,addr buffer
 		mov		edx,rect.bottom
 		add		edx,8
@@ -492,6 +553,53 @@ ScopeProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SelectClipRgn,mDC,eax
 		pop		eax
 		invoke DeleteObject,eax
+		.if [ebx].SCOPECHDATA.fBothChannels
+			push	samplesize
+			push	[ebx].SCOPECHDATA.nusstart
+			movzx	eax,scopedata.ADC_CommandStructDone.DataBlocks
+			mov		ecx,STM32_BlockSize
+			mul		ecx
+			mov		samplesize,eax
+			mov		eax,hWin
+			.if eax==scopedata.scopeCHBdata.hWndScope
+				;Channel A
+				invoke GetParent,scopedata.scopeCHAdata.hWndScope
+				invoke GetWindowLong,eax,GWL_USERDATA
+				lea		esi,[eax].SCOPECHDATA.ADC_Data
+				mov		eax,008000h
+			.else
+				;Channel B
+				invoke GetParent,scopedata.scopeCHBdata.hWndScope
+				invoke GetWindowLong,eax,GWL_USERDATA
+				lea		esi,[eax].SCOPECHDATA.ADC_Data
+				mov		eax,0808000h
+			.endif
+			invoke CreatePen,PS_SOLID,2,eax
+			invoke SelectObject,mDC,eax
+			push	eax
+			mov		[ebx].SCOPECHDATA.nusstart,0
+			xor		edi,edi
+			call	GetPoint
+			invoke MoveToEx,mDC,pt.x,pt.y,NULL
+			.while edi<samplesize
+				mov		edx,edi
+				add		edx,[ebx].SCOPECHDATA.nusstart
+				call	GetPoint
+				.if sdword ptr pt.x>=0
+					invoke LineTo,mDC,pt.x,pt.y
+					mov		eax,pt.x
+					.break .if sdword ptr eax>rect.right
+				.else
+					invoke MoveToEx,mDC,pt.x,pt.y,NULL
+				.endif
+				inc		edi
+			.endw
+			pop		eax
+			invoke SelectObject,mDC,eax
+			invoke DeleteObject,eax
+			pop		[ebx].SCOPECHDATA.nusstart
+			pop		samplesize
+		.endif
 		mov		eax,hWin
 		.if eax==scopedata.scopeCHAdata.hWndScope
 			;Channel A
@@ -533,49 +641,30 @@ ScopeProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		pop		eax
 		invoke SelectObject,mDC,eax
 		invoke DeleteObject,eax
-		.if [ebx].SCOPECHDATA.fBothChannels
-			movzx	eax,scopedata.ADC_CommandStructDone.DataBlocks
-			mov		ecx,STM32_BlockSize
-			mul		ecx
-			mov		samplesize,eax
-			mov		eax,hWin
-			.if eax==scopedata.scopeCHBdata.hWndScope
-				;Channel A
-				invoke GetParent,scopedata.scopeCHAdata.hWndScope
-				invoke GetWindowLong,eax,GWL_USERDATA
-				mov		ebx,eax
-				mov		eax,008000h
-			.else
-				;Channel B
-				invoke GetParent,scopedata.scopeCHBdata.hWndScope
-				invoke GetWindowLong,eax,GWL_USERDATA
-				mov		ebx,eax
-				mov		eax,0808000h
-			.endif
-			invoke CreatePen,PS_SOLID,2,eax
-			invoke SelectObject,mDC,eax
-			push	eax
-			lea		esi,[ebx].SCOPECHDATA.ADC_Data
-			mov		[ebx].SCOPECHDATA.nusstart,0
-			xor		edi,edi
-			call	GetPoint
-			invoke MoveToEx,mDC,pt.x,pt.y,NULL
-			.while edi<samplesize
-				mov		edx,edi
-				add		edx,[ebx].SCOPECHDATA.nusstart
-				call	GetPoint
-				.if sdword ptr pt.x>=0
-					invoke LineTo,mDC,pt.x,pt.y
-					mov		eax,pt.x
-					.break .if sdword ptr eax>rect.right
-				.else
-					invoke MoveToEx,mDC,pt.x,pt.y,NULL
+		.if ![ebx].SCOPECHDATA.fSubsampling
+			invoke GetCursorPos,addr pt
+			invoke WindowFromPoint,pt.x,pt.y
+			.if eax==hWin
+				invoke ScreenToClient,hWin,addr pt
+				mov		eax,pt.x
+				.if eax<=rect.right
+					;Draw dotted lines
+					invoke CreatePen,PS_DOT,1,00FFFFh
+					invoke SelectObject,mDC,eax
+					push	eax
+					mov		edi,[ebx].SCOPECHDATA.transstart
+					call	GetXPos
+					invoke MoveToEx,mDC,pt.x,0,NULL
+					invoke LineTo,mDC,pt.x,rect.bottom
+					mov		edi,[ebx].SCOPECHDATA.transcurpos
+					call	GetXPos
+					invoke MoveToEx,mDC,pt.x,0,NULL
+					invoke LineTo,mDC,pt.x,rect.bottom
+					pop		eax
+					invoke SelectObject,mDC,eax
+					invoke DeleteObject,eax
 				.endif
-				inc		edi
-			.endw
-			pop		eax
-			invoke SelectObject,mDC,eax
-			invoke DeleteObject,eax
+			.endif
 		.endif
 		add		rect.bottom,TEXTHIGHT
 		invoke BitBlt,ps.hdc,0,0,rect.right,rect.bottom,mDC,0,0,SRCCOPY
@@ -585,6 +674,36 @@ ScopeProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke DeleteDC,mDC
 		invoke EndPaint,hWin,addr ps
 		xor		eax,eax
+	.elseif eax==WM_MOUSEMOVE
+		invoke GetCapture
+		.if eax==hWin
+			invoke GetCursorPos,addr pt
+			invoke WindowFromPoint,pt.x,pt.y
+			.if eax==hWin
+				invoke ScreenToClient,hWin,addr pt
+				invoke GetClientRect,hWin,addr rect
+				mov		eax,pt.x
+				mov		edx,pt.y
+				.if eax>rect.right || edx>rect.bottom
+					invoke ReleaseCapture
+				.endif
+			.else
+				invoke ReleaseCapture
+			.endif
+			invoke InvalidateRect,hWin,0,TRUE
+		.else
+			invoke SetCapture,hWin
+			invoke InvalidateRect,hWin,0,TRUE
+		.endif
+	.elseif eax==WM_LBUTTONDOWN
+		invoke GetParent,hWin
+		invoke GetWindowLong,eax,GWL_USERDATA
+		mov		ebx,eax
+		.if ebx
+			mov		eax,[ebx].SCOPECHDATA.transcurpos
+			mov		[ebx].SCOPECHDATA.transstart,eax
+			invoke InvalidateRect,hWin,0,TRUE
+		.endif
 	.elseif eax==WM_SIZE
 		invoke GetParent,hWin
 		invoke GetWindowLong,eax,GWL_USERDATA
@@ -753,6 +872,64 @@ SetScrooll:
 	mov		ysinf.nPage,eax
 	invoke SetScrollInfo,hWin,SB_VERT,addr ysinf,TRUE
 	add		rect.bottom,TEXTHIGHT
+	retn
+
+GetByteNbr:
+	xor		edi,edi
+	.while TRUE
+		mov		eax,edi
+		mov		ecx,[ebx].SCOPECHDATA.xmag
+		.if ecx>XMAGMAX/16
+			sub		ecx,XMAGMAX/16
+			add		ecx,10
+			mul		ecx
+			mov		ecx,10
+			div		ecx
+		.elseif ecx<XMAGMAX/16
+			push	ecx
+			mov		ecx,10
+			mul		ecx
+			pop		ecx
+			sub		ecx,XMAGMAX/16
+			neg		ecx
+			add		ecx,10
+			div		ecx
+		.endif
+		mov		ecx,rect.right
+		mul		ecx
+		mov		ecx,samplesize
+		div		ecx
+		sub		eax,xsinf.nPos
+		.break .if sdword ptr eax>=pt.x
+		inc		edi
+	.endw
+	retn
+
+GetXPos:
+	mov		eax,edi
+	mov		ecx,[ebx].SCOPECHDATA.xmag
+	.if ecx>XMAGMAX/16
+		sub		ecx,XMAGMAX/16
+		add		ecx,10
+		mul		ecx
+		mov		ecx,10
+		div		ecx
+	.elseif ecx<XMAGMAX/16
+		push	ecx
+		mov		ecx,10
+		mul		ecx
+		pop		ecx
+		sub		ecx,XMAGMAX/16
+		neg		ecx
+		add		ecx,10
+		div		ecx
+	.endif
+	mov		ecx,rect.right
+	mul		ecx
+	mov		ecx,samplesize
+	div		ecx
+	sub		eax,xsinf.nPos
+	mov		pt.x,eax
 	retn
 
 GetPoint:

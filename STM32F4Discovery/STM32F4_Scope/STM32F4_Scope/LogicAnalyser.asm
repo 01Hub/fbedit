@@ -336,7 +336,7 @@ LogicAnalyserProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam
 			inc		ecx
 		.endw
 		;Draw transition count lines
-		invoke CreatePen,PS_DOT,1,00ffFFh
+		invoke CreatePen,PS_DOT,1,00FFFFh
 		invoke SelectObject,mDC,eax
 		push	eax
 		mov		edi,lgadata.transstart
