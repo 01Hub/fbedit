@@ -1,0 +1,49 @@
+
+<ApplicationBuild Header="PhotoFrame" Extern=".\PhotoFrame.rapp" Path=".\PhotoFrame.rapp" AsyncBuild="" OutputFile=".\PhotoFrame.elf" sate="96" >
+	<Options>
+		<Config Header="Standard" >
+			<Set Header="ApplicationBuild" >
+				<Section Header="General" >
+					<Property Header="TargetFamily" Value="ARM" />
+																
+				</Section>
+				<Section Header="Directories" >
+					<Property Header="IncDir" Value=".;\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc" Removable="1" />
+							
+				</Section>
+					
+			</Set>
+			<Set Header="Target" >
+				<Section Header="ProcessorARM" >
+					<Property Header="Processor" Value="STM32F100RB" />
+																
+				</Section>
+				<Section Header="ToolSetARM" >
+					<Property Header="BuildToolSetARM" Value="ARM\GNU.config" Removable="1" />
+																
+				</Section>
+												
+			</Set>
+		</Config>
+	</Options>
+	<NodeC Path=".\main.c" Header="main.c" Marker="-1" AsyncBuild="" OutputFile=".\main.o" sate="0" />
+	<NodeASM Path=".\startup_stm32f4xx.s" Header="startup_stm32f4xx.s" Marker="0" AsyncBuild="" OutputFile=".\startup_stm32f4xx.o" sate="0" >
+		<Options>
+			<Config Header="Standard" >
+				<Set Header="NodeASM" >
+					<Section Header="Build" >
+						<Property Header="Exclude" Value="Yes" Removable="1" />
+						<Property Header="LinkExclude" Value="Yes" Removable="1" />
+								
+					</Section>
+						
+				</Set>
+			</Config>
+		</Options>
+	</NodeASM>
+	<NodeC Path=".\misc.c" Header="misc.c" Marker="-1" AsyncBuild="" OutputFile=".\misc.o" sate="0" />
+	<NodeC Path=".\stm32f4xx_gpio.c" Header="stm32f4xx_gpio.c" Marker="-1" AsyncBuild="" OutputFile=".\stm32f4xx_gpio.o" sate="2" />
+	<NodeC Path=".\stm32f4xx_it.c" Header="stm32f4xx_it.c" Marker="-1" AsyncBuild="" OutputFile=".\stm32f4xx_it.o" sate="0" />
+	<NodeC Path=".\stm32f4xx_rcc.c" Header="stm32f4xx_rcc.c" Marker="-1" AsyncBuild="" OutputFile=".\stm32f4xx_rcc.o" sate="0" />
+	<NodeC Path=".\system_stm32f4xx.c" Header="system_stm32f4xx.c" Marker="-1" AsyncBuild="" OutputFile=".\system_stm32f4xx.o" sate="0" />
+</ApplicationBuild>
