@@ -21,7 +21,11 @@
 		</Report>
 			
 	</Flags>
-	<Views/>
+	<Views>
+		<View File="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.c" Line="63" Index="0" focus="1" />
+		<View File="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_gpio.c" Line="78" Index="1" />
+		<View File="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_gpio.h" Line="95" Index="2" />
+	</Views>
 	<Grep>
 		<GrepIncludeSub>yes</GrepIncludeSub>
 		<GrepMatchCase>no</GrepMatchCase>
