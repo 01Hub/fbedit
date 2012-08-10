@@ -22,13 +22,15 @@
 			
 	</Flags>
 	<Views>
-		<View File="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.c" Line="74" Index="0" focus="1" />
-		<View File="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_gpio.c" Line="77" Index="1" />
-		<View File="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_gpio.h" Line="94" Index="2" />
-		<View File="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_syscfg.h" Line="153" Index="3" />
-		<View File="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_exti.c" Line="60" Index="4" />
+		<View File="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.c" Line="142" Index="0" focus="1" />
+		<View File="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_gpio.c" Line="76" Index="1" />
+		<View File="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_gpio.h" Line="93" Index="2" />
+		<View File="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_syscfg.h" Line="152" Index="3" />
+		<View File="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_exti.c" Line="59" Index="4" />
 		<View File="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_exti.h" Line="0" Index="5" />
-		<View File="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\startup_stm32f4xx.s" Line="168" Index="6" />
+		<View File="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\startup_stm32f4xx.s" Line="155" Index="6" />
+		<View File="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_it.c" Line="0" Index="7" />
+		<View File="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\misc.c" Line="134" Index="8" />
 	</Views>
 	<Grep>
 		<GrepIncludeSub>yes</GrepIncludeSub>
@@ -41,7 +43,8 @@
 			<GrepFileType>*.c;*.h</GrepFileType>
 		</GrepFileTypes>
 		<GrepFindWhat>
-			<GrepFindWhatValue/>
+			<GrepFindWhatValue>NVIC_Init</GrepFindWhatValue>
+			<GrepFindStr>NVIC_Init</GrepFindStr>
 			<GrepFindStr>#elif</GrepFindStr>
 			<GrepFindStr>#else</GrepFindStr>
 			<GrepFindStr>#elseif</GrepFindStr>
@@ -51,7 +54,8 @@
 			<GrepFindStr>TIM3_IRQn</GrepFindStr>
 		</GrepFindWhat>
 		<GrepFindWhere>
-			<GrepFindWhereValue/>
+			<GrepFindWhereValue>C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4</GrepFindWhereValue>
+			<GrepPathStr>C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4</GrepPathStr>
 			<GrepPathStr>Application Files</GrepPathStr>
 			<GrepPathStr>Application Path</GrepPathStr>
 			<GrepPathStr>D:\STM32\Inc</GrepPathStr>
