@@ -6,18 +6,18 @@ It also includes the secondary/main linker script that is specified in the Ride 
 */
 
 SEARCH_DIR(".")
-SEARCH_DIR("C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4")
-SEARCH_DIR("C:\Program Files\Raisonance\Ride\Lib\ARM")
+SEARCH_DIR("D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4")
+SEARCH_DIR("D:\Ride\Ride\Lib\ARM")
 STARTUP("startup_stm32f10x_md.o")
-INPUT("C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.o")
-INPUT("C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\misc.o")
-INPUT("C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_gpio.o")
-INPUT("C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_it.o")
-INPUT("C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o")
-INPUT("C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\system_stm32f4xx.o")
-INPUT("C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_exti.o")
-INPUT("C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_syscfg.o")
-INPUT("C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o")
+INPUT("D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.o")
+INPUT("D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\misc.o")
+INPUT("D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_gpio.o")
+INPUT("D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_it.o")
+INPUT("D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o")
+INPUT("D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\system_stm32f4xx.o")
+INPUT("D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_exti.o")
+INPUT("D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_syscfg.o")
+INPUT("D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o")
 EXTERN( __io_putchar )
 EXTERN( _write )
 GROUP(
@@ -28,5 +28,5 @@ GROUP(
 "libm.a"
 
 )
-INCLUDE "C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\STM32F100_64K_8K_FLASH.ld"
-OUTPUT("C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\PhotoFrame.elf")
+INCLUDE "D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\STM32F100_64K_8K_FLASH.ld"
+OUTPUT("D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\PhotoFrame.elf")

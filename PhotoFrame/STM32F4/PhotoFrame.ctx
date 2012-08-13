@@ -1,9 +1,25 @@
 
 <Debug>
+	<PhotoFrame>
+		<CodeView TopRow="134218406" Focus="4294967295" >
+			<CodeReport>
+				<0>93</0>
+				<1>102</1>
+				<2>56</2>
+				<3>309</3>
+				<4>56</4>
+				<5>118</5>
+														
+			</CodeReport>
+										
+		</CodeView>
+		<MemoryView Focus="134217996" TopRow="0" NbPerLine="8" />
+						
+	</PhotoFrame>
 	<Flags>
 		<Report>
 			<Def Header="FlagReport" NbCol="9" >
-				<Col Type="PT_BOOL" Header="Check" sizeCache="18" AutoSize="0" Edit="1" Sortable="1" Icon="C:\Program Files\Raisonance\Ride\Config\Resources\check.bmp" />
+				<Col Type="PT_BOOL" Header="Check" sizeCache="18" AutoSize="0" Edit="1" Sortable="1" Icon="D:\Ride\Ride\Config\Resources\check.bmp" />
 				<Col Type="PT_STRING" Header="Kind" sizeCache="DDDDDDDDDDD" AutoSize="1" Edit="0" Sortable="1" />
 				<Col Type="PT_STRING" Header="KindID" sizeCache="DD" AutoSize="1" Edit="0" Sortable="1" Visible="0" />
 				<Col Type="PT_STRING" Header="Space" sizeCache="DDDDDD" AutoSize="1" Edit="0" Sortable="1" />
@@ -22,15 +38,9 @@
 			
 	</Flags>
 	<Views>
-		<View File="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.c" Line="142" Index="0" focus="1" />
-		<View File="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_gpio.c" Line="76" Index="1" />
-		<View File="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_gpio.h" Line="93" Index="2" />
-		<View File="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_syscfg.h" Line="152" Index="3" />
-		<View File="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_exti.c" Line="59" Index="4" />
-		<View File="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_exti.h" Line="0" Index="5" />
-		<View File="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\startup_stm32f4xx.s" Line="155" Index="6" />
-		<View File="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_it.c" Line="0" Index="7" />
-		<View File="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\misc.c" Line="134" Index="8" />
+		<View File="D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.c" Line="50" Index="0" focus="1" />
+		<View File="D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.c" Line="2550" Index="1" />
+		<View File="D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_gpio.c" Line="386" Index="2" />
 	</Views>
 	<Grep>
 		<GrepIncludeSub>yes</GrepIncludeSub>
@@ -44,20 +54,20 @@
 		</GrepFileTypes>
 		<GrepFindWhat>
 			<GrepFindWhatValue>NVIC_Init</GrepFindWhatValue>
-			<GrepFindStr>NVIC_Init</GrepFindStr>
 			<GrepFindStr>#elif</GrepFindStr>
 			<GrepFindStr>#else</GrepFindStr>
 			<GrepFindStr>#elseif</GrepFindStr>
 			<GrepFindStr>#elseifdef</GrepFindStr>
 			<GrepFindStr>#ifdef</GrepFindStr>
 			<GrepFindStr>ARR</GrepFindStr>
+			<GrepFindStr>NVIC_Init</GrepFindStr>
 			<GrepFindStr>TIM3_IRQn</GrepFindStr>
 		</GrepFindWhat>
 		<GrepFindWhere>
 			<GrepFindWhereValue>C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4</GrepFindWhereValue>
-			<GrepPathStr>C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4</GrepPathStr>
 			<GrepPathStr>Application Files</GrepPathStr>
 			<GrepPathStr>Application Path</GrepPathStr>
+			<GrepPathStr>C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4</GrepPathStr>
 			<GrepPathStr>D:\STM32\Inc</GrepPathStr>
 			<GrepPathStr>D:\STM32\Projects\FrequencyCounter</GrepPathStr>
 		</GrepFindWhere>
@@ -66,6 +76,8 @@
 		</GrepReplaceWhat>
 	</Grep>
 	<FindStrings>
+		<Find>TIM_ClearITPendingBit</Find>
+		<Find>TIM_Cmd</Find>
 		<Find>exti</Find>
 		<Find>spi</Find>
 		<Find>IS_SPI_CRC_POLYNOMIAL</Find>

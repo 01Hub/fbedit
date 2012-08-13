@@ -1,5 +1,5 @@
 [Application]
-ApplicationPath=C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\PhotoFrame.elf
+ApplicationPath=D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\PhotoFrame.elf
 CSX=0
 HighBankAddr=400000
 BootMode=0
@@ -7,7 +7,8 @@ Format=ELF
 CodeOffset=0x0
 LoaderTool=ARM
 Target=ARM
-DebugTool=RLINK_CORTEX
+DebugTool=SIM-ARM
+ApplicationComponents=
 [Device]
 Name=STM32F100RB
 [ARMSigDrv options]
@@ -16,10 +17,12 @@ CXS=0
 Explore=No
 Startup=1
 StartupSymb=main
-ToolName=RLINK_CORTEX
+ToolName=SIM-ARM
+Information=0
+InfoExpr=
 [SIM-ARM]
 Crystal=8.000
 [General]
 FreqXTal=8.000
 [SimFile]
-path=C:\Program Files\Raisonance\Ride\sim\ARM\STM32F100RB.sim
+path=D:\Ride\Ride\sim\ARM\STM32F100RB.sim

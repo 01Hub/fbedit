@@ -16,7 +16,7 @@
 NVIC_InitTypeDef NVIC_InitStructure;
 uint16_t x;
 uint16_t y;
-uint16_t pix;
+uint8_t pix;
 uint8_t pixarray[480*3][5]; // Should be [480*3][234]
 /* Private function prototypes -----------------------------------------------*/
 void RCC_Config(void);
@@ -138,16 +138,23 @@ void TIM_Config(void)
   */
 void TIM2_IRQHandler(void)
 {
-  TIM_ClearITPendingBit(TIM2, TIM_IT_Update);
-  pix = pixarray[x][y] << 8 | 0x80;
-  GPIOE->ODR = pix;
-  pix = pixarray[x+1][y] << 8;
-  pix = pixarray[x+1][y] << 8;
-  x+=3;
+  /* Clear the IT pending Bit */
+  TIM2->SR = (uint16_t)~0x1;
+  /* Transfer data to shift registers by toggling Pin6*/
+  GPIOE->BSRRH = (uint16_t)GPIO_Pin_6;
+  GPIOE->BSRRL = (uint16_t)GPIO_Pin_6;
+
+  GPIOE->ODR = (uint16_t)pixarray[x++][y]<<8 | 0xFF;
+  GPIOE->BSRRH = (uint16_t)GPIO_Pin_7;
+  GPIOE->ODR = (uint16_t)pixarray[x++][y]<<8 | 0xFF;
+  GPIOE->BSRRH = (uint16_t)GPIO_Pin_7;
+  GPIOE->ODR = (uint16_t)pixarray[x++][y]<<8 | 0xFF;
+  GPIOE->BSRRH = (uint16_t)GPIO_Pin_7;
+
   if (x = 480*3)
   {
-    /* Disable TIM2 */
-    TIM_Cmd(TIM2, DISABLE);
+    /* Disable the TIM2 Counter */
+    TIM2->CR1 &= (uint16_t)~TIM_CR1_CEN;
   }
 }
 
