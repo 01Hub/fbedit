@@ -1,127 +1,128 @@
 <!-- DWF2XML 2.00.01 - Raisonance Dwarf information extractor -->
-<aoffile Header="PhotoFrame" Path="D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\PhotoFrame.elf">
+<aoffile Header="PhotoFrame" Path="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\PhotoFrame.elf">
  <Def>
   <Col Header="DeclFile" Desc="File"/>
   <Col Header="Type" Desc="Type"/>
   <Col Header="Header" Desc="Name"/>
  </Def>
- <type Header="uint8_t" Icon="1" Type="type" Desc=": unsigned char" DeclFile="d:\ride\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="42" Pointer="No"/>
- <type Header="uint16_t" Icon="1" Type="type" Desc=": unsigned int" DeclFile="d:\ride\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="54" Pointer="No"/>
- <type Header="int32_t" Icon="1" Type="type" Desc=": long" DeclFile="d:\ride\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="79" Pointer="No"/>
- <type Header="uint32_t" Icon="1" Type="type" Desc=": unsigned long" DeclFile="d:\ride\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="80" Pointer="No"/>
- <type Header="FunctionalState" Icon="1" Type="type" Desc=": unsigned char" DeclFile="D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx.h" DeclLine="287" Pointer="No"/>
- <type Header="GPIO_TypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx.h" DeclLine="666" Pointer="No"/>
- <type Header="TIM_TypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx.h" DeclLine="911" Pointer="No"/>
- <type Header="EXTIMode_TypeDef" Icon="1" Type="type" Desc=": unsigned char" DeclFile="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_exti.h" DeclLine="52" Pointer="No"/>
- <type Header="EXTITrigger_TypeDef" Icon="1" Type="type" Desc=": unsigned char" DeclFile="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_exti.h" DeclLine="65" Pointer="No"/>
- <type Header="EXTI_InitTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_exti.h" DeclLine="87" Pointer="No"/>
- <type Header="GPIOMode_TypeDef" Icon="1" Type="type" Desc=": unsigned char" DeclFile="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_gpio.h" DeclLine="63" Pointer="No"/>
- <type Header="GPIOOType_TypeDef" Icon="1" Type="type" Desc=": unsigned char" DeclFile="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_gpio.h" DeclLine="74" Pointer="No"/>
- <type Header="GPIOSpeed_TypeDef" Icon="1" Type="type" Desc=": unsigned char" DeclFile="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_gpio.h" DeclLine="87" Pointer="No"/>
- <type Header="GPIOPuPd_TypeDef" Icon="1" Type="type" Desc=": unsigned char" DeclFile="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_gpio.h" DeclLine="99" Pointer="No"/>
- <type Header="GPIO_InitTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_gpio.h" DeclLine="133" Pointer="No"/>
- <type Header="TIM_TimeBaseInitTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_tim.h" DeclLine="72" Pointer="No"/>
- <type Header="NVIC_InitTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\misc.h" DeclLine="68" Pointer="No"/>
- <func Header="RCC_Config" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.c" DeclLine="48"/>
- <func Header="NVIC_Config" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.c" DeclLine="56"/>
- <func Header="GPIO_Config" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.c" DeclLine="72"/>
- <func Header="TIM_Config" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.c" DeclLine="119"/>
- <func Header="main" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.c" DeclLine="35"/>
- <func Header="TIM2_IRQHandler" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.c" DeclLine="139"/>
- <func Header="EXTI4_IRQHandler" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.c" DeclLine="167"/>
- <func Header="EXTI9_5_IRQHandler" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.c" DeclLine="188"/>
- <variable Header="NVIC_InitStructure" Icon="2" Type="variable" Desc=":   struct " DeclFile="D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.c" DeclLine="16" Pointer="No"/>
- <variable Header="x" Icon="2" Type="variable" Desc=":   unsigned int" DeclFile="D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.c" DeclLine="17" Pointer="No"/>
- <variable Header="y" Icon="2" Type="variable" Desc=":   unsigned int" DeclFile="D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.c" DeclLine="18" Pointer="No"/>
- <variable Header="pix" Icon="2" Type="variable" Desc=":   unsigned char" DeclFile="D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.c" DeclLine="19" Pointer="No"/>
- <variable Header="pixarray" Icon="2" Type="variable" Desc=":   unsigned char[5][1440]" DeclFile="D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.c" DeclLine="20" Pointer="No"/>
- <type Header="uint8_t" Icon="1" Type="type" Desc=": unsigned char" DeclFile="d:\ride\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="42" Pointer="No"/>
- <type Header="int32_t" Icon="1" Type="type" Desc=": long" DeclFile="d:\ride\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="79" Pointer="No"/>
- <type Header="uint32_t" Icon="1" Type="type" Desc=": unsigned long" DeclFile="d:\ride\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="80" Pointer="No"/>
- <type Header="NVIC_Type" Icon="1" Type="type" Desc=": struct " DeclFile="D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\core_cm4.h" DeclLine="318" Pointer="No"/>
- <type Header="SCB_Type" Icon="1" Type="type" Desc=": struct " DeclFile="D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\core_cm4.h" DeclLine="358" Pointer="No"/>
- <type Header="SysTick_Type" Icon="1" Type="type" Desc=": struct " DeclFile="D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\core_cm4.h" DeclLine="596" Pointer="No"/>
- <type Header="FunctionalState" Icon="1" Type="type" Desc=": unsigned char" DeclFile="D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx.h" DeclLine="287" Pointer="No"/>
- <type Header="NVIC_InitTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\misc.h" DeclLine="68" Pointer="No"/>
- <func Header="NVIC_Init" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\misc.c" DeclLine="130"/>
- <type Header="uint8_t" Icon="1" Type="type" Desc=": unsigned char" DeclFile="d:\ride\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="42" Pointer="No"/>
- <type Header="uint16_t" Icon="1" Type="type" Desc=": unsigned int" DeclFile="d:\ride\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="54" Pointer="No"/>
- <type Header="int32_t" Icon="1" Type="type" Desc=": long" DeclFile="d:\ride\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="79" Pointer="No"/>
- <type Header="uint32_t" Icon="1" Type="type" Desc=": unsigned long" DeclFile="d:\ride\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="80" Pointer="No"/>
- <type Header="GPIO_TypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx.h" DeclLine="666" Pointer="No"/>
- <type Header="GPIOMode_TypeDef" Icon="1" Type="type" Desc=": unsigned char" DeclFile="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_gpio.h" DeclLine="63" Pointer="No"/>
- <type Header="GPIOOType_TypeDef" Icon="1" Type="type" Desc=": unsigned char" DeclFile="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_gpio.h" DeclLine="74" Pointer="No"/>
- <type Header="GPIOSpeed_TypeDef" Icon="1" Type="type" Desc=": unsigned char" DeclFile="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_gpio.h" DeclLine="87" Pointer="No"/>
- <type Header="GPIOPuPd_TypeDef" Icon="1" Type="type" Desc=": unsigned char" DeclFile="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_gpio.h" DeclLine="99" Pointer="No"/>
- <type Header="BitAction" Icon="1" Type="type" Desc=": unsigned char" DeclFile="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_gpio.h" DeclLine="110" Pointer="No"/>
- <type Header="GPIO_InitTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_gpio.h" DeclLine="133" Pointer="No"/>
- <func Header="GPIO_Init" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_gpio.c" DeclLine="182"/>
- <func Header="GPIO_PinAFConfig" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_gpio.c" DeclLine="529"/>
- <type Header="int32_t" Icon="1" Type="type" Desc=": long" DeclFile="d:\ride\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="79" Pointer="No"/>
- <func Header="NMI_Handler" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_it.c" DeclLine="53"/>
- <func Header="HardFault_Handler" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_it.c" DeclLine="62"/>
- <func Header="MemManage_Handler" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_it.c" DeclLine="75"/>
- <func Header="BusFault_Handler" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_it.c" DeclLine="88"/>
- <func Header="UsageFault_Handler" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_it.c" DeclLine="101"/>
- <func Header="SVC_Handler" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_it.c" DeclLine="114"/>
- <func Header="DebugMon_Handler" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_it.c" DeclLine="123"/>
- <func Header="PendSV_Handler" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_it.c" DeclLine="132"/>
- <func Header="SysTick_Handler" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_it.c" DeclLine="141"/>
- <type Header="uint8_t" Icon="1" Type="type" Desc=": unsigned char" DeclFile="d:\ride\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="42" Pointer="No"/>
- <type Header="uint16_t" Icon="1" Type="type" Desc=": unsigned int" DeclFile="d:\ride\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="54" Pointer="No"/>
- <type Header="int32_t" Icon="1" Type="type" Desc=": long" DeclFile="d:\ride\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="79" Pointer="No"/>
- <type Header="uint32_t" Icon="1" Type="type" Desc=": unsigned long" DeclFile="d:\ride\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="80" Pointer="No"/>
- <type Header="FlagStatus" Icon="1" Type="type" Desc=": unsigned char" DeclFile="D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx.h" DeclLine="285" Pointer="No"/>
- <type Header="ITStatus" Icon="1" Type="type" Desc=": unsigned char" DeclFile="D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx.h" DeclLine="285" Pointer="No"/>
- <type Header="FunctionalState" Icon="1" Type="type" Desc=": unsigned char" DeclFile="D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx.h" DeclLine="287" Pointer="No"/>
- <type Header="ErrorStatus" Icon="1" Type="type" Desc=": unsigned char" DeclFile="D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx.h" DeclLine="290" Pointer="No"/>
- <type Header="RCC_TypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx.h" DeclLine="765" Pointer="No"/>
- <type Header="RCC_ClocksTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_rcc.h" DeclLine="48" Pointer="No"/>
- <func Header="RCC_AHB1PeriphClockCmd" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.c" DeclLine="1085"/>
- <func Header="RCC_APB2PeriphClockCmd" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.c" DeclLine="1234"/>
- <variable Header="APBAHBPrescTable" Icon="2" Type="variable" Desc=":   unsigned char[16]" DeclFile="D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.c" DeclLine="127" Pointer="No"/>
- <type Header="uint8_t" Icon="1" Type="type" Desc=": unsigned char" DeclFile="d:\ride\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="42" Pointer="No"/>
- <type Header="uint16_t" Icon="1" Type="type" Desc=": unsigned int" DeclFile="d:\ride\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="54" Pointer="No"/>
- <type Header="int32_t" Icon="1" Type="type" Desc=": long" DeclFile="d:\ride\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="79" Pointer="No"/>
- <type Header="uint32_t" Icon="1" Type="type" Desc=": unsigned long" DeclFile="d:\ride\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="80" Pointer="No"/>
- <type Header="SCB_Type" Icon="1" Type="type" Desc=": struct " DeclFile="D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\core_cm4.h" DeclLine="358" Pointer="No"/>
- <type Header="FLASH_TypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx.h" DeclLine="589" Pointer="No"/>
- <type Header="PWR_TypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx.h" DeclLine="727" Pointer="No"/>
- <type Header="RCC_TypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx.h" DeclLine="765" Pointer="No"/>
- <variable Header="SystemCoreClock" Icon="2" Type="variable" Desc=":   unsigned long" DeclFile="D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\system_stm32f4xx.c" DeclLine="172" Pointer="No"/>
- <variable Header="AHBPrescTable" Icon="2" Type="variable" Desc=":   unsigned char[16]" DeclFile="D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\system_stm32f4xx.c" DeclLine="174" Pointer="No"/>
- <type Header="int32_t" Icon="1" Type="type" Desc=": long" DeclFile="d:\ride\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="79" Pointer="No"/>
- <type Header="uint32_t" Icon="1" Type="type" Desc=": unsigned long" DeclFile="d:\ride\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="80" Pointer="No"/>
- <type Header="FlagStatus" Icon="1" Type="type" Desc=": unsigned char" DeclFile="D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx.h" DeclLine="285" Pointer="No"/>
- <type Header="ITStatus" Icon="1" Type="type" Desc=": unsigned char" DeclFile="D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx.h" DeclLine="285" Pointer="No"/>
- <type Header="FunctionalState" Icon="1" Type="type" Desc=": unsigned char" DeclFile="D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx.h" DeclLine="287" Pointer="No"/>
- <type Header="EXTI_TypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx.h" DeclLine="575" Pointer="No"/>
- <type Header="EXTIMode_TypeDef" Icon="1" Type="type" Desc=": unsigned char" DeclFile="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_exti.h" DeclLine="52" Pointer="No"/>
- <type Header="EXTITrigger_TypeDef" Icon="1" Type="type" Desc=": unsigned char" DeclFile="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_exti.h" DeclLine="65" Pointer="No"/>
- <type Header="EXTI_InitTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_exti.h" DeclLine="87" Pointer="No"/>
- <func Header="EXTI_Init" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_exti.c" DeclLine="119"/>
- <func Header="EXTI_GetITStatus" Icon="3" Type="func" Desc=":   unsigned char" DeclFile="D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_exti.c" DeclLine="257"/>
- <func Header="EXTI_ClearITPendingBit" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_exti.c" DeclLine="282"/>
- <type Header="uint8_t" Icon="1" Type="type" Desc=": unsigned char" DeclFile="d:\ride\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="42" Pointer="No"/>
- <type Header="int32_t" Icon="1" Type="type" Desc=": long" DeclFile="d:\ride\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="79" Pointer="No"/>
- <type Header="uint32_t" Icon="1" Type="type" Desc=": unsigned long" DeclFile="d:\ride\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="80" Pointer="No"/>
- <type Header="FlagStatus" Icon="1" Type="type" Desc=": unsigned char" DeclFile="D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx.h" DeclLine="285" Pointer="No"/>
- <type Header="FunctionalState" Icon="1" Type="type" Desc=": unsigned char" DeclFile="D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx.h" DeclLine="287" Pointer="No"/>
- <type Header="SYSCFG_TypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx.h" DeclLine="679" Pointer="No"/>
- <func Header="SYSCFG_EXTILineConfig" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_syscfg.c" DeclLine="119"/>
- <type Header="uint8_t" Icon="1" Type="type" Desc=": unsigned char" DeclFile="d:\ride\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="42" Pointer="No"/>
- <type Header="uint16_t" Icon="1" Type="type" Desc=": unsigned int" DeclFile="d:\ride\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="54" Pointer="No"/>
- <type Header="int32_t" Icon="1" Type="type" Desc=": long" DeclFile="d:\ride\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="79" Pointer="No"/>
- <type Header="uint32_t" Icon="1" Type="type" Desc=": unsigned long" DeclFile="d:\ride\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="80" Pointer="No"/>
- <type Header="FlagStatus" Icon="1" Type="type" Desc=": unsigned char" DeclFile="D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx.h" DeclLine="285" Pointer="No"/>
- <type Header="ITStatus" Icon="1" Type="type" Desc=": unsigned char" DeclFile="D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx.h" DeclLine="285" Pointer="No"/>
- <type Header="FunctionalState" Icon="1" Type="type" Desc=": unsigned char" DeclFile="D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx.h" DeclLine="287" Pointer="No"/>
- <type Header="TIM_TypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx.h" DeclLine="911" Pointer="No"/>
- <type Header="TIM_TimeBaseInitTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_tim.h" DeclLine="72" Pointer="No"/>
- <type Header="TIM_OCInitTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_tim.h" DeclLine="107" Pointer="No"/>
- <type Header="TIM_ICInitTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_tim.h" DeclLine="130" Pointer="No"/>
- <type Header="TIM_BDTRInitTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_tim.h" DeclLine="161" Pointer="No"/>
- <func Header="TIM_TimeBaseInit" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.c" DeclLine="282"/>
- <func Header="TIM_Cmd" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.c" DeclLine="586"/>
+ <type Header="uint8_t" Icon="1" Type="type" Desc=": unsigned char" DeclFile="c:\program files\raisonance\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="42" Pointer="No"/>
+ <type Header="uint16_t" Icon="1" Type="type" Desc=": unsigned int" DeclFile="c:\program files\raisonance\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="54" Pointer="No"/>
+ <type Header="int32_t" Icon="1" Type="type" Desc=": long" DeclFile="c:\program files\raisonance\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="79" Pointer="No"/>
+ <type Header="uint32_t" Icon="1" Type="type" Desc=": unsigned long" DeclFile="c:\program files\raisonance\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="80" Pointer="No"/>
+ <type Header="FunctionalState" Icon="1" Type="type" Desc=": unsigned char" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx.h" DeclLine="287" Pointer="No"/>
+ <type Header="GPIO_TypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx.h" DeclLine="666" Pointer="No"/>
+ <type Header="TIM_TypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx.h" DeclLine="911" Pointer="No"/>
+ <type Header="EXTIMode_TypeDef" Icon="1" Type="type" Desc=": unsigned char" DeclFile="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_exti.h" DeclLine="52" Pointer="No"/>
+ <type Header="EXTITrigger_TypeDef" Icon="1" Type="type" Desc=": unsigned char" DeclFile="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_exti.h" DeclLine="65" Pointer="No"/>
+ <type Header="EXTI_InitTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_exti.h" DeclLine="87" Pointer="No"/>
+ <type Header="GPIOMode_TypeDef" Icon="1" Type="type" Desc=": unsigned char" DeclFile="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_gpio.h" DeclLine="63" Pointer="No"/>
+ <type Header="GPIOOType_TypeDef" Icon="1" Type="type" Desc=": unsigned char" DeclFile="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_gpio.h" DeclLine="74" Pointer="No"/>
+ <type Header="GPIOSpeed_TypeDef" Icon="1" Type="type" Desc=": unsigned char" DeclFile="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_gpio.h" DeclLine="87" Pointer="No"/>
+ <type Header="GPIOPuPd_TypeDef" Icon="1" Type="type" Desc=": unsigned char" DeclFile="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_gpio.h" DeclLine="99" Pointer="No"/>
+ <type Header="GPIO_InitTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_gpio.h" DeclLine="133" Pointer="No"/>
+ <type Header="TIM_TimeBaseInitTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_tim.h" DeclLine="72" Pointer="No"/>
+ <type Header="TIM_OCInitTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_tim.h" DeclLine="107" Pointer="No"/>
+ <type Header="NVIC_InitTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\misc.h" DeclLine="68" Pointer="No"/>
+ <func Header="RCC_Config" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.c" DeclLine="48"/>
+ <func Header="NVIC_Config" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.c" DeclLine="56"/>
+ <func Header="GPIO_Config" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.c" DeclLine="72"/>
+ <func Header="TIM_Config" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.c" DeclLine="129"/>
+ <func Header="main" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.c" DeclLine="35"/>
+ <func Header="TIM2_IRQHandler" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.c" DeclLine="160"/>
+ <func Header="EXTI4_IRQHandler" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.c" DeclLine="191"/>
+ <func Header="EXTI9_5_IRQHandler" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.c" DeclLine="217"/>
+ <variable Header="NVIC_InitStructure" Icon="2" Type="variable" Desc=":   struct " DeclFile="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.c" DeclLine="16" Pointer="No"/>
+ <variable Header="x" Icon="2" Type="variable" Desc=":   unsigned int" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.c" DeclLine="17" Pointer="No"/>
+ <variable Header="y" Icon="2" Type="variable" Desc=":   unsigned int" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.c" DeclLine="18" Pointer="No"/>
+ <variable Header="pix" Icon="2" Type="variable" Desc=":   unsigned char" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.c" DeclLine="19" Pointer="No"/>
+ <variable Header="pixarray" Icon="2" Type="variable" Desc=":   unsigned char[5][1440]" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.c" DeclLine="20" Pointer="No"/>
+ <type Header="uint8_t" Icon="1" Type="type" Desc=": unsigned char" DeclFile="c:\program files\raisonance\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="42" Pointer="No"/>
+ <type Header="int32_t" Icon="1" Type="type" Desc=": long" DeclFile="c:\program files\raisonance\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="79" Pointer="No"/>
+ <type Header="uint32_t" Icon="1" Type="type" Desc=": unsigned long" DeclFile="c:\program files\raisonance\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="80" Pointer="No"/>
+ <type Header="NVIC_Type" Icon="1" Type="type" Desc=": struct " DeclFile="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\core_cm4.h" DeclLine="318" Pointer="No"/>
+ <type Header="SCB_Type" Icon="1" Type="type" Desc=": struct " DeclFile="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\core_cm4.h" DeclLine="358" Pointer="No"/>
+ <type Header="SysTick_Type" Icon="1" Type="type" Desc=": struct " DeclFile="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\core_cm4.h" DeclLine="596" Pointer="No"/>
+ <type Header="FunctionalState" Icon="1" Type="type" Desc=": unsigned char" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx.h" DeclLine="287" Pointer="No"/>
+ <type Header="NVIC_InitTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\misc.h" DeclLine="68" Pointer="No"/>
+ <func Header="NVIC_Init" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\misc.c" DeclLine="130"/>
+ <type Header="uint8_t" Icon="1" Type="type" Desc=": unsigned char" DeclFile="c:\program files\raisonance\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="42" Pointer="No"/>
+ <type Header="uint16_t" Icon="1" Type="type" Desc=": unsigned int" DeclFile="c:\program files\raisonance\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="54" Pointer="No"/>
+ <type Header="int32_t" Icon="1" Type="type" Desc=": long" DeclFile="c:\program files\raisonance\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="79" Pointer="No"/>
+ <type Header="uint32_t" Icon="1" Type="type" Desc=": unsigned long" DeclFile="c:\program files\raisonance\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="80" Pointer="No"/>
+ <type Header="GPIO_TypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx.h" DeclLine="666" Pointer="No"/>
+ <type Header="GPIOMode_TypeDef" Icon="1" Type="type" Desc=": unsigned char" DeclFile="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_gpio.h" DeclLine="63" Pointer="No"/>
+ <type Header="GPIOOType_TypeDef" Icon="1" Type="type" Desc=": unsigned char" DeclFile="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_gpio.h" DeclLine="74" Pointer="No"/>
+ <type Header="GPIOSpeed_TypeDef" Icon="1" Type="type" Desc=": unsigned char" DeclFile="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_gpio.h" DeclLine="87" Pointer="No"/>
+ <type Header="GPIOPuPd_TypeDef" Icon="1" Type="type" Desc=": unsigned char" DeclFile="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_gpio.h" DeclLine="99" Pointer="No"/>
+ <type Header="BitAction" Icon="1" Type="type" Desc=": unsigned char" DeclFile="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_gpio.h" DeclLine="110" Pointer="No"/>
+ <type Header="GPIO_InitTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_gpio.h" DeclLine="133" Pointer="No"/>
+ <func Header="GPIO_Init" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_gpio.c" DeclLine="182"/>
+ <func Header="GPIO_PinAFConfig" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_gpio.c" DeclLine="529"/>
+ <type Header="int32_t" Icon="1" Type="type" Desc=": long" DeclFile="c:\program files\raisonance\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="79" Pointer="No"/>
+ <func Header="NMI_Handler" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_it.c" DeclLine="53"/>
+ <func Header="HardFault_Handler" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_it.c" DeclLine="62"/>
+ <func Header="MemManage_Handler" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_it.c" DeclLine="75"/>
+ <func Header="BusFault_Handler" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_it.c" DeclLine="88"/>
+ <func Header="UsageFault_Handler" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_it.c" DeclLine="101"/>
+ <func Header="SVC_Handler" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_it.c" DeclLine="114"/>
+ <func Header="DebugMon_Handler" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_it.c" DeclLine="123"/>
+ <func Header="PendSV_Handler" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_it.c" DeclLine="132"/>
+ <func Header="SysTick_Handler" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_it.c" DeclLine="141"/>
+ <type Header="uint8_t" Icon="1" Type="type" Desc=": unsigned char" DeclFile="c:\program files\raisonance\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="42" Pointer="No"/>
+ <type Header="uint16_t" Icon="1" Type="type" Desc=": unsigned int" DeclFile="c:\program files\raisonance\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="54" Pointer="No"/>
+ <type Header="int32_t" Icon="1" Type="type" Desc=": long" DeclFile="c:\program files\raisonance\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="79" Pointer="No"/>
+ <type Header="uint32_t" Icon="1" Type="type" Desc=": unsigned long" DeclFile="c:\program files\raisonance\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="80" Pointer="No"/>
+ <type Header="FlagStatus" Icon="1" Type="type" Desc=": unsigned char" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx.h" DeclLine="285" Pointer="No"/>
+ <type Header="ITStatus" Icon="1" Type="type" Desc=": unsigned char" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx.h" DeclLine="285" Pointer="No"/>
+ <type Header="FunctionalState" Icon="1" Type="type" Desc=": unsigned char" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx.h" DeclLine="287" Pointer="No"/>
+ <type Header="ErrorStatus" Icon="1" Type="type" Desc=": unsigned char" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx.h" DeclLine="290" Pointer="No"/>
+ <type Header="RCC_TypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx.h" DeclLine="765" Pointer="No"/>
+ <type Header="RCC_ClocksTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_rcc.h" DeclLine="48" Pointer="No"/>
+ <func Header="RCC_AHB1PeriphClockCmd" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.c" DeclLine="1085"/>
+ <func Header="RCC_APB2PeriphClockCmd" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.c" DeclLine="1234"/>
+ <variable Header="APBAHBPrescTable" Icon="2" Type="variable" Desc=":   unsigned char[16]" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.c" DeclLine="127" Pointer="No"/>
+ <type Header="uint8_t" Icon="1" Type="type" Desc=": unsigned char" DeclFile="c:\program files\raisonance\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="42" Pointer="No"/>
+ <type Header="uint16_t" Icon="1" Type="type" Desc=": unsigned int" DeclFile="c:\program files\raisonance\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="54" Pointer="No"/>
+ <type Header="int32_t" Icon="1" Type="type" Desc=": long" DeclFile="c:\program files\raisonance\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="79" Pointer="No"/>
+ <type Header="uint32_t" Icon="1" Type="type" Desc=": unsigned long" DeclFile="c:\program files\raisonance\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="80" Pointer="No"/>
+ <type Header="SCB_Type" Icon="1" Type="type" Desc=": struct " DeclFile="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\core_cm4.h" DeclLine="358" Pointer="No"/>
+ <type Header="FLASH_TypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx.h" DeclLine="589" Pointer="No"/>
+ <type Header="PWR_TypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx.h" DeclLine="727" Pointer="No"/>
+ <type Header="RCC_TypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx.h" DeclLine="765" Pointer="No"/>
+ <variable Header="SystemCoreClock" Icon="2" Type="variable" Desc=":   unsigned long" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\system_stm32f4xx.c" DeclLine="172" Pointer="No"/>
+ <variable Header="AHBPrescTable" Icon="2" Type="variable" Desc=":   unsigned char[16]" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\system_stm32f4xx.c" DeclLine="174" Pointer="No"/>
+ <type Header="int32_t" Icon="1" Type="type" Desc=": long" DeclFile="c:\program files\raisonance\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="79" Pointer="No"/>
+ <type Header="uint32_t" Icon="1" Type="type" Desc=": unsigned long" DeclFile="c:\program files\raisonance\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="80" Pointer="No"/>
+ <type Header="FlagStatus" Icon="1" Type="type" Desc=": unsigned char" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx.h" DeclLine="285" Pointer="No"/>
+ <type Header="ITStatus" Icon="1" Type="type" Desc=": unsigned char" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx.h" DeclLine="285" Pointer="No"/>
+ <type Header="FunctionalState" Icon="1" Type="type" Desc=": unsigned char" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx.h" DeclLine="287" Pointer="No"/>
+ <type Header="EXTI_TypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx.h" DeclLine="575" Pointer="No"/>
+ <type Header="EXTIMode_TypeDef" Icon="1" Type="type" Desc=": unsigned char" DeclFile="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_exti.h" DeclLine="52" Pointer="No"/>
+ <type Header="EXTITrigger_TypeDef" Icon="1" Type="type" Desc=": unsigned char" DeclFile="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_exti.h" DeclLine="65" Pointer="No"/>
+ <type Header="EXTI_InitTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_exti.h" DeclLine="87" Pointer="No"/>
+ <func Header="EXTI_Init" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_exti.c" DeclLine="119"/>
+ <func Header="EXTI_ClearITPendingBit" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_exti.c" DeclLine="282"/>
+ <type Header="uint8_t" Icon="1" Type="type" Desc=": unsigned char" DeclFile="c:\program files\raisonance\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="42" Pointer="No"/>
+ <type Header="int32_t" Icon="1" Type="type" Desc=": long" DeclFile="c:\program files\raisonance\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="79" Pointer="No"/>
+ <type Header="uint32_t" Icon="1" Type="type" Desc=": unsigned long" DeclFile="c:\program files\raisonance\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="80" Pointer="No"/>
+ <type Header="FlagStatus" Icon="1" Type="type" Desc=": unsigned char" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx.h" DeclLine="285" Pointer="No"/>
+ <type Header="FunctionalState" Icon="1" Type="type" Desc=": unsigned char" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx.h" DeclLine="287" Pointer="No"/>
+ <type Header="SYSCFG_TypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx.h" DeclLine="679" Pointer="No"/>
+ <func Header="SYSCFG_EXTILineConfig" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_syscfg.c" DeclLine="119"/>
+ <type Header="uint8_t" Icon="1" Type="type" Desc=": unsigned char" DeclFile="c:\program files\raisonance\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="42" Pointer="No"/>
+ <type Header="uint16_t" Icon="1" Type="type" Desc=": unsigned int" DeclFile="c:\program files\raisonance\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="54" Pointer="No"/>
+ <type Header="int32_t" Icon="1" Type="type" Desc=": long" DeclFile="c:\program files\raisonance\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="79" Pointer="No"/>
+ <type Header="uint32_t" Icon="1" Type="type" Desc=": unsigned long" DeclFile="c:\program files\raisonance\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="80" Pointer="No"/>
+ <type Header="FlagStatus" Icon="1" Type="type" Desc=": unsigned char" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx.h" DeclLine="285" Pointer="No"/>
+ <type Header="ITStatus" Icon="1" Type="type" Desc=": unsigned char" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx.h" DeclLine="285" Pointer="No"/>
+ <type Header="FunctionalState" Icon="1" Type="type" Desc=": unsigned char" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx.h" DeclLine="287" Pointer="No"/>
+ <type Header="TIM_TypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx.h" DeclLine="911" Pointer="No"/>
+ <type Header="TIM_TimeBaseInitTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_tim.h" DeclLine="72" Pointer="No"/>
+ <type Header="TIM_OCInitTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_tim.h" DeclLine="107" Pointer="No"/>
+ <type Header="TIM_ICInitTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_tim.h" DeclLine="130" Pointer="No"/>
+ <type Header="TIM_BDTRInitTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_tim.h" DeclLine="161" Pointer="No"/>
+ <func Header="TIM_TimeBaseInit" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.c" DeclLine="282"/>
+ <func Header="TIM_OC3Init" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.c" DeclLine="827"/>
+ <func Header="TIM_OCStructInit" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.c" DeclLine="970"/>
 </aoffile>
 

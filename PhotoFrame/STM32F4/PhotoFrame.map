@@ -1,379 +1,378 @@
 Archive member included because of file (symbol)
 
-D:\Ride\Ride\Lib\ARM\STM32x_io_putchar_thumb.a(STM32F10X_io_putchar.o)
+C:\Program Files\Raisonance\Ride\Lib\ARM\STM32x_io_putchar_thumb.a(STM32F10X_io_putchar.o)
                               (__io_putchar)
-D:\Ride\Ride\Lib\ARM\std_sbrk_thumb.lib(write.o)
+C:\Program Files\Raisonance\Ride\Lib\ARM\std_sbrk_thumb.lib(write.o)
                               (_write)
 
 Allocating common symbols
 Common symbol       size              file
 
-x                   0x2               D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.o
-y                   0x2               D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.o
-pix                 0x1               D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.o
-NVIC_InitStructure  0x4               D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.o
-pixarray            0x1c20            D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.o
+x                   0x2               C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.o
+y                   0x2               C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.o
+pix                 0x1               C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.o
+NVIC_InitStructure  0x4               C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.o
+pixarray            0x1c20            C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.o
 
 Discarded input sections
 
- .text          0x00000000       0x14 D:\Ride\Ride\Lib\ARM\startup_stm32f10x_md.o
- .data          0x00000000        0x0 D:\Ride\Ride\Lib\ARM\startup_stm32f10x_md.o
- .bss           0x00000000        0x0 D:\Ride\Ride\Lib\ARM\startup_stm32f10x_md.o
- .text          0x00000000        0x0 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.o
- .data          0x00000000        0x0 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.o
- .bss           0x00000000        0x0 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.o
- .text          0x00000000        0x0 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\misc.o
- .data          0x00000000        0x0 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\misc.o
- .bss           0x00000000        0x0 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\misc.o
+ .text          0x00000000       0x14 C:\Program Files\Raisonance\Ride\Lib\ARM\startup_stm32f10x_md.o
+ .data          0x00000000        0x0 C:\Program Files\Raisonance\Ride\Lib\ARM\startup_stm32f10x_md.o
+ .bss           0x00000000        0x0 C:\Program Files\Raisonance\Ride\Lib\ARM\startup_stm32f10x_md.o
+ .text          0x00000000        0x0 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.o
+ .data          0x00000000        0x0 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.o
+ .bss           0x00000000        0x0 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.o
+ .text          0x00000000        0x0 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\misc.o
+ .data          0x00000000        0x0 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\misc.o
+ .bss           0x00000000        0x0 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\misc.o
  .text.NVIC_PriorityGroupConfig
-                0x00000000       0x14 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\misc.o
+                0x00000000       0x14 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\misc.o
  .text.NVIC_SetVectorTable
-                0x00000000       0x18 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\misc.o
+                0x00000000       0x18 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\misc.o
  .text.NVIC_SystemLPConfig
-                0x00000000       0x24 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\misc.o
+                0x00000000       0x24 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\misc.o
  .text.SysTick_CLKSourceConfig
-                0x00000000       0x1c D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\misc.o
- .text          0x00000000        0x0 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_gpio.o
- .data          0x00000000        0x0 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_gpio.o
- .bss           0x00000000        0x0 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_gpio.o
+                0x00000000       0x1c C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\misc.o
+ .text          0x00000000        0x0 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_gpio.o
+ .data          0x00000000        0x0 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_gpio.o
+ .bss           0x00000000        0x0 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_gpio.o
  .text.GPIO_DeInit
-                0x00000000      0x158 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_gpio.o
+                0x00000000      0x158 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_gpio.o
  .text.GPIO_StructInit
-                0x00000000       0x14 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_gpio.o
+                0x00000000       0x14 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_gpio.o
  .text.GPIO_PinLockConfig
-                0x00000000       0x28 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_gpio.o
+                0x00000000       0x28 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_gpio.o
  .text.GPIO_ReadInputDataBit
-                0x00000000        0xc D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_gpio.o
+                0x00000000        0xc C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_gpio.o
  .text.GPIO_ReadInputData
-                0x00000000        0x8 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_gpio.o
+                0x00000000        0x8 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_gpio.o
  .text.GPIO_ReadOutputDataBit
-                0x00000000        0xc D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_gpio.o
+                0x00000000        0xc C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_gpio.o
  .text.GPIO_ReadOutputData
-                0x00000000        0x8 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_gpio.o
+                0x00000000        0x8 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_gpio.o
  .text.GPIO_SetBits
-                0x00000000        0x4 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_gpio.o
+                0x00000000        0x4 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_gpio.o
  .text.GPIO_ResetBits
-                0x00000000        0x4 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_gpio.o
+                0x00000000        0x4 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_gpio.o
  .text.GPIO_WriteBit
-                0x00000000        0xc D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_gpio.o
+                0x00000000        0xc C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_gpio.o
  .text.GPIO_Write
-                0x00000000        0x4 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_gpio.o
+                0x00000000        0x4 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_gpio.o
  .text.GPIO_ToggleBits
-                0x00000000        0xc D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_gpio.o
- .text          0x00000000        0x0 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_it.o
- .data          0x00000000        0x0 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_it.o
- .bss           0x00000000        0x0 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_it.o
- .text          0x00000000        0x0 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
- .data          0x00000000       0x10 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
- .bss           0x00000000        0x0 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
+                0x00000000        0xc C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_gpio.o
+ .text          0x00000000        0x0 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_it.o
+ .data          0x00000000        0x0 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_it.o
+ .bss           0x00000000        0x0 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_it.o
+ .text          0x00000000        0x0 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
+ .data          0x00000000       0x10 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
+ .bss           0x00000000        0x0 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
  .text.RCC_DeInit
-                0x00000000       0x38 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
+                0x00000000       0x38 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
  .text.RCC_HSEConfig
-                0x00000000       0x14 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
+                0x00000000       0x14 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
  .text.RCC_AdjustHSICalibrationValue
-                0x00000000       0x18 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
+                0x00000000       0x18 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
  .text.RCC_HSICmd
-                0x00000000        0xc D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
+                0x00000000        0xc C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
  .text.RCC_LSEConfig
-                0x00000000       0x3c D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
+                0x00000000       0x3c C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
  .text.RCC_LSICmd
-                0x00000000        0xc D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
+                0x00000000        0xc C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
  .text.RCC_PLLConfig
-                0x00000000       0x24 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
+                0x00000000       0x24 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
  .text.RCC_PLLCmd
-                0x00000000        0xc D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
+                0x00000000        0xc C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
  .text.RCC_PLLI2SConfig
-                0x00000000       0x18 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
+                0x00000000       0x18 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
  .text.RCC_PLLI2SCmd
-                0x00000000        0xc D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
+                0x00000000        0xc C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
  .text.RCC_ClockSecuritySystemCmd
-                0x00000000        0xc D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
+                0x00000000        0xc C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
  .text.RCC_MCO1Config
-                0x00000000       0x18 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
+                0x00000000       0x18 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
  .text.RCC_MCO2Config
-                0x00000000       0x18 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
+                0x00000000       0x18 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
  .text.RCC_SYSCLKConfig
-                0x00000000       0x18 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
+                0x00000000       0x18 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
  .text.RCC_GetSYSCLKSource
-                0x00000000       0x10 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
+                0x00000000       0x10 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
  .text.RCC_HCLKConfig
-                0x00000000       0x18 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
+                0x00000000       0x18 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
  .text.RCC_PCLK1Config
-                0x00000000       0x18 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
+                0x00000000       0x18 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
  .text.RCC_PCLK2Config
-                0x00000000       0x18 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
+                0x00000000       0x18 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
  .text.RCC_GetClocksFreq
-                0x00000000       0xd8 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
+                0x00000000       0xd8 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
  .text.RCC_RTCCLKConfig
-                0x00000000       0x3c D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
+                0x00000000       0x3c C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
  .text.RCC_RTCCLKCmd
-                0x00000000        0xc D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
+                0x00000000        0xc C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
  .text.RCC_BackupResetCmd
-                0x00000000        0xc D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
+                0x00000000        0xc C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
  .text.RCC_I2SCLKConfig
-                0x00000000        0xc D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
+                0x00000000        0xc C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
  .text.RCC_AHB2PeriphClockCmd
-                0x00000000       0x24 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
+                0x00000000       0x24 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
  .text.RCC_AHB3PeriphClockCmd
-                0x00000000       0x24 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
+                0x00000000       0x24 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
  .text.RCC_APB1PeriphClockCmd
-                0x00000000       0x24 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
+                0x00000000       0x24 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
  .text.RCC_AHB1PeriphResetCmd
-                0x00000000       0x24 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
+                0x00000000       0x24 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
  .text.RCC_AHB2PeriphResetCmd
-                0x00000000       0x24 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
+                0x00000000       0x24 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
  .text.RCC_AHB3PeriphResetCmd
-                0x00000000       0x24 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
+                0x00000000       0x24 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
  .text.RCC_APB1PeriphResetCmd
-                0x00000000       0x24 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
+                0x00000000       0x24 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
  .text.RCC_APB2PeriphResetCmd
-                0x00000000       0x24 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
+                0x00000000       0x24 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
  .text.RCC_AHB1PeriphClockLPModeCmd
-                0x00000000       0x24 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
+                0x00000000       0x24 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
  .text.RCC_AHB2PeriphClockLPModeCmd
-                0x00000000       0x24 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
+                0x00000000       0x24 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
  .text.RCC_AHB3PeriphClockLPModeCmd
-                0x00000000       0x24 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
+                0x00000000       0x24 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
  .text.RCC_APB1PeriphClockLPModeCmd
-                0x00000000       0x24 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
+                0x00000000       0x24 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
  .text.RCC_APB2PeriphClockLPModeCmd
-                0x00000000       0x24 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
+                0x00000000       0x24 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
  .text.RCC_ITConfig
-                0x00000000       0x24 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
+                0x00000000       0x24 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
  .text.RCC_GetFlagStatus
-                0x00000000       0x34 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
+                0x00000000       0x34 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
  .text.RCC_WaitForHSEStartUp
-                0x00000000       0x3c D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
+                0x00000000       0x3c C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
  .text.RCC_ClearFlag
-                0x00000000       0x14 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
+                0x00000000       0x14 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
  .text.RCC_GetITStatus
-                0x00000000       0x14 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
+                0x00000000       0x14 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
  .text.RCC_ClearITPendingBit
-                0x00000000        0xc D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
- .text          0x00000000        0x0 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\system_stm32f4xx.o
- .data          0x00000000       0x14 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\system_stm32f4xx.o
- .bss           0x00000000        0x0 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\system_stm32f4xx.o
+                0x00000000        0xc C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
+ .text          0x00000000        0x0 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\system_stm32f4xx.o
+ .data          0x00000000       0x14 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\system_stm32f4xx.o
+ .bss           0x00000000        0x0 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\system_stm32f4xx.o
  .text.SystemInit
-                0x00000000      0x124 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\system_stm32f4xx.o
+                0x00000000      0x124 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\system_stm32f4xx.o
  .text.SystemCoreClockUpdate
-                0x00000000       0xdc D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\system_stm32f4xx.o
- .text          0x00000000        0x0 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_exti.o
- .data          0x00000000        0x0 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_exti.o
- .bss           0x00000000        0x0 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_exti.o
+                0x00000000       0xdc C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\system_stm32f4xx.o
+ .text          0x00000000        0x0 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_exti.o
+ .data          0x00000000        0x0 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_exti.o
+ .bss           0x00000000        0x0 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_exti.o
  .text.EXTI_DeInit
-                0x00000000       0x20 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_exti.o
+                0x00000000       0x20 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_exti.o
  .text.EXTI_StructInit
-                0x00000000       0x14 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_exti.o
+                0x00000000       0x14 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_exti.o
  .text.EXTI_GenerateSWInterrupt
-                0x00000000       0x14 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_exti.o
+                0x00000000       0x14 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_exti.o
  .text.EXTI_GetFlagStatus
-                0x00000000       0x14 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_exti.o
+                0x00000000       0x14 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_exti.o
  .text.EXTI_ClearFlag
-                0x00000000        0xc D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_exti.o
- .text          0x00000000        0x0 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_syscfg.o
- .data          0x00000000        0x0 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_syscfg.o
- .bss           0x00000000        0x0 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_syscfg.o
+                0x00000000        0xc C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_exti.o
+ .text.EXTI_GetITStatus
+                0x00000000       0x20 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_exti.o
+ .text          0x00000000        0x0 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_syscfg.o
+ .data          0x00000000        0x0 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_syscfg.o
+ .bss           0x00000000        0x0 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_syscfg.o
  .text.SYSCFG_DeInit
-                0x00000000       0x1c D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_syscfg.o
+                0x00000000       0x1c C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_syscfg.o
  .text.SYSCFG_MemoryRemapConfig
-                0x00000000        0xc D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_syscfg.o
+                0x00000000        0xc C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_syscfg.o
  .text.SYSCFG_ETH_MediaInterfaceConfig
-                0x00000000        0xc D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_syscfg.o
+                0x00000000        0xc C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_syscfg.o
  .text.SYSCFG_CompensationCellCmd
-                0x00000000        0xc D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_syscfg.o
+                0x00000000        0xc C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_syscfg.o
  .text.SYSCFG_GetCompensationCellStatus
-                0x00000000       0x10 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_syscfg.o
- .text          0x00000000        0x0 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
- .data          0x00000000        0x0 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
- .bss           0x00000000        0x0 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
+                0x00000000       0x10 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_syscfg.o
+ .text          0x00000000        0x0 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
+ .data          0x00000000        0x0 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
+ .bss           0x00000000        0x0 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
  .text.TI1_Config
-                0x00000000       0x48 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
+                0x00000000       0x48 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
  .text.TI2_Config
-                0x00000000       0x4c D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
+                0x00000000       0x4c C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
  .text.TIM_DeInit
-                0x00000000      0x20c D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
+                0x00000000      0x20c C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
  .text.TIM_TimeBaseStructInit
-                0x00000000       0x14 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
+                0x00000000       0x14 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
  .text.TIM_PrescalerConfig
-                0x00000000        0x8 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
+                0x00000000        0x8 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
  .text.TIM_CounterModeConfig
-                0x00000000       0x18 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
+                0x00000000       0x18 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
  .text.TIM_SetCounter
-                0x00000000        0x4 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
+                0x00000000        0x4 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
  .text.TIM_SetAutoreload
-                0x00000000        0x4 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
+                0x00000000        0x4 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
  .text.TIM_GetCounter
-                0x00000000        0x4 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
+                0x00000000        0x4 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
  .text.TIM_GetPrescaler
-                0x00000000        0x8 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
+                0x00000000        0x8 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
  .text.TIM_UpdateDisableConfig
-                0x00000000       0x20 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
+                0x00000000       0x20 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
  .text.TIM_UpdateRequestConfig
-                0x00000000       0x20 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
+                0x00000000       0x20 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
  .text.TIM_ARRPreloadConfig
-                0x00000000       0x20 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
+                0x00000000       0x20 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
  .text.TIM_SelectOnePulseMode
-                0x00000000       0x1c D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
+                0x00000000       0x1c C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
  .text.TIM_SetClockDivision
-                0x00000000       0x1c D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
+                0x00000000       0x1c C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
+ .text.TIM_Cmd  0x00000000       0x20 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
  .text.TIM_OC1Init
-                0x00000000       0xa4 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
+                0x00000000       0xa4 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
  .text.TIM_OC2Init
-                0x00000000       0xb0 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
- .text.TIM_OC3Init
-                0x00000000       0xac D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
+                0x00000000       0xb0 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
  .text.TIM_OC4Init
-                0x00000000       0x8c D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
- .text.TIM_OCStructInit
-                0x00000000       0x18 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
+                0x00000000       0x8c C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
  .text.TIM_SelectOCxM
-                0x00000000       0x6c D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
+                0x00000000       0x6c C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
  .text.TIM_SetCompare1
-                0x00000000        0x4 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
+                0x00000000        0x4 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
  .text.TIM_SetCompare2
-                0x00000000        0x4 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
+                0x00000000        0x4 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
  .text.TIM_SetCompare3
-                0x00000000        0x4 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
+                0x00000000        0x4 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
  .text.TIM_SetCompare4
-                0x00000000        0x4 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
+                0x00000000        0x4 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
  .text.TIM_ForcedOC1Config
-                0x00000000       0x18 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
+                0x00000000       0x18 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
  .text.TIM_ForcedOC2Config
-                0x00000000       0x18 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
+                0x00000000       0x18 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
  .text.TIM_ForcedOC3Config
-                0x00000000       0x18 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
+                0x00000000       0x18 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
  .text.TIM_ForcedOC4Config
-                0x00000000       0x18 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
+                0x00000000       0x18 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
  .text.TIM_OC1PreloadConfig
-                0x00000000       0x18 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
+                0x00000000       0x18 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
  .text.TIM_OC2PreloadConfig
-                0x00000000       0x18 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
+                0x00000000       0x18 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
  .text.TIM_OC3PreloadConfig
-                0x00000000       0x18 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
+                0x00000000       0x18 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
  .text.TIM_OC4PreloadConfig
-                0x00000000       0x18 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
+                0x00000000       0x18 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
  .text.TIM_OC1FastConfig
-                0x00000000       0x18 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
+                0x00000000       0x18 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
  .text.TIM_OC2FastConfig
-                0x00000000       0x18 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
+                0x00000000       0x18 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
  .text.TIM_OC3FastConfig
-                0x00000000       0x18 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
+                0x00000000       0x18 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
  .text.TIM_OC4FastConfig
-                0x00000000       0x18 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
+                0x00000000       0x18 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
  .text.TIM_ClearOC1Ref
-                0x00000000       0x18 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
+                0x00000000       0x18 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
  .text.TIM_ClearOC2Ref
-                0x00000000       0x14 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
+                0x00000000       0x14 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
  .text.TIM_ClearOC3Ref
-                0x00000000       0x18 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
+                0x00000000       0x18 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
  .text.TIM_ClearOC4Ref
-                0x00000000       0x14 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
+                0x00000000       0x14 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
  .text.TIM_OC1PolarityConfig
-                0x00000000       0x18 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
+                0x00000000       0x18 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
  .text.TIM_OC1NPolarityConfig
-                0x00000000       0x18 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
+                0x00000000       0x18 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
  .text.TIM_OC2PolarityConfig
-                0x00000000       0x18 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
+                0x00000000       0x18 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
  .text.TIM_OC2NPolarityConfig
-                0x00000000       0x18 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
+                0x00000000       0x18 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
  .text.TIM_OC3PolarityConfig
-                0x00000000       0x18 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
+                0x00000000       0x18 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
  .text.TIM_OC3NPolarityConfig
-                0x00000000       0x18 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
+                0x00000000       0x18 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
  .text.TIM_OC4PolarityConfig
-                0x00000000       0x18 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
+                0x00000000       0x18 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
  .text.TIM_CCxCmd
-                0x00000000       0x28 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
+                0x00000000       0x28 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
  .text.TIM_CCxNCmd
-                0x00000000       0x28 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
+                0x00000000       0x28 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
  .text.TIM_ICStructInit
-                0x00000000       0x14 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
+                0x00000000       0x14 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
  .text.TIM_GetCapture1
-                0x00000000        0x4 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
+                0x00000000        0x4 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
  .text.TIM_GetCapture2
-                0x00000000        0x4 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
+                0x00000000        0x4 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
  .text.TIM_GetCapture3
-                0x00000000        0x4 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
+                0x00000000        0x4 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
  .text.TIM_GetCapture4
-                0x00000000        0x4 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
+                0x00000000        0x4 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
  .text.TIM_SetIC1Prescaler
-                0x00000000       0x1c D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
+                0x00000000       0x1c C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
  .text.TIM_SetIC2Prescaler
-                0x00000000       0x20 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
+                0x00000000       0x20 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
  .text.TIM_PWMIConfig
-                0x00000000       0x68 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
+                0x00000000       0x68 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
  .text.TIM_SetIC3Prescaler
-                0x00000000       0x1c D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
+                0x00000000       0x1c C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
  .text.TIM_SetIC4Prescaler
-                0x00000000       0x20 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
+                0x00000000       0x20 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
  .text.TIM_ICInit
-                0x00000000       0xe0 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
+                0x00000000       0xe0 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
  .text.TIM_BDTRConfig
-                0x00000000       0x24 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
+                0x00000000       0x24 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
  .text.TIM_BDTRStructInit
-                0x00000000       0x14 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
+                0x00000000       0x14 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
  .text.TIM_CtrlPWMOutputs
-                0x00000000       0x28 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
+                0x00000000       0x28 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
  .text.TIM_SelectCOM
-                0x00000000       0x20 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
+                0x00000000       0x20 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
  .text.TIM_CCPreloadControl
-                0x00000000       0x20 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
+                0x00000000       0x20 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
  .text.TIM_ITConfig
-                0x00000000       0x18 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
+                0x00000000       0x18 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
  .text.TIM_GenerateEvent
-                0x00000000        0x4 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
+                0x00000000        0x4 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
  .text.TIM_GetFlagStatus
-                0x00000000        0xc D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
+                0x00000000        0xc C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
  .text.TIM_ClearFlag
-                0x00000000        0xc D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
+                0x00000000        0xc C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
  .text.TIM_GetITStatus
-                0x00000000       0x18 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
+                0x00000000       0x18 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
  .text.TIM_ClearITPendingBit
-                0x00000000        0xc D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
+                0x00000000        0xc C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
  .text.TIM_DMAConfig
-                0x00000000        0x8 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
+                0x00000000        0x8 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
  .text.TIM_DMACmd
-                0x00000000       0x18 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
+                0x00000000       0x18 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
  .text.TIM_SelectCCDMA
-                0x00000000       0x20 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
+                0x00000000       0x20 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
  .text.TIM_InternalClockConfig
-                0x00000000       0x14 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
+                0x00000000       0x14 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
  .text.TIM_SelectInputTrigger
-                0x00000000       0x18 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
+                0x00000000       0x18 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
  .text.TIM_TIxExternalClockConfig
-                0x00000000       0x34 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
+                0x00000000       0x34 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
  .text.TIM_ITRxExternalClockConfig
-                0x00000000       0x14 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
+                0x00000000       0x14 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
  .text.TIM_SelectOutputTrigger
-                0x00000000       0x1c D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
+                0x00000000       0x1c C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
  .text.TIM_SelectSlaveMode
-                0x00000000       0x1c D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
+                0x00000000       0x1c C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
  .text.TIM_SelectMasterSlaveMode
-                0x00000000       0x1c D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
+                0x00000000       0x1c C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
  .text.TIM_ETRConfig
-                0x00000000       0x1c D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
+                0x00000000       0x1c C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
  .text.TIM_ETRClockMode2Config
-                0x00000000       0x14 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
+                0x00000000       0x14 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
  .text.TIM_ETRClockMode1Config
-                0x00000000       0x20 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
+                0x00000000       0x20 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
  .text.TIM_EncoderInterfaceConfig
-                0x00000000       0x50 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
+                0x00000000       0x50 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
  .text.TIM_SelectHallSensor
-                0x00000000       0x20 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
+                0x00000000       0x20 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
  .text.TIM_RemapConfig
-                0x00000000        0x8 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
- .text          0x00000000        0x0 D:\Ride\Ride\Lib\ARM\STM32x_io_putchar_thumb.a(STM32F10X_io_putchar.o)
- .data          0x00000000        0x0 D:\Ride\Ride\Lib\ARM\STM32x_io_putchar_thumb.a(STM32F10X_io_putchar.o)
- .bss           0x00000000        0x0 D:\Ride\Ride\Lib\ARM\STM32x_io_putchar_thumb.a(STM32F10X_io_putchar.o)
+                0x00000000        0x8 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
+ .text          0x00000000        0x0 C:\Program Files\Raisonance\Ride\Lib\ARM\STM32x_io_putchar_thumb.a(STM32F10X_io_putchar.o)
+ .data          0x00000000        0x0 C:\Program Files\Raisonance\Ride\Lib\ARM\STM32x_io_putchar_thumb.a(STM32F10X_io_putchar.o)
+ .bss           0x00000000        0x0 C:\Program Files\Raisonance\Ride\Lib\ARM\STM32x_io_putchar_thumb.a(STM32F10X_io_putchar.o)
  .text.__io_init
-                0x00000000       0x94 D:\Ride\Ride\Lib\ARM\STM32x_io_putchar_thumb.a(STM32F10X_io_putchar.o)
+                0x00000000       0x94 C:\Program Files\Raisonance\Ride\Lib\ARM\STM32x_io_putchar_thumb.a(STM32F10X_io_putchar.o)
  .text.__io_getchar
-                0x00000000       0xb4 D:\Ride\Ride\Lib\ARM\STM32x_io_putchar_thumb.a(STM32F10X_io_putchar.o)
- .text.getchar  0x00000000       0xb4 D:\Ride\Ride\Lib\ARM\STM32x_io_putchar_thumb.a(STM32F10X_io_putchar.o)
- .text.putchar  0x00000000       0xd4 D:\Ride\Ride\Lib\ARM\STM32x_io_putchar_thumb.a(STM32F10X_io_putchar.o)
- .text          0x00000000        0x0 D:\Ride\Ride\Lib\ARM\std_sbrk_thumb.lib(write.o)
- .data          0x00000000        0x0 D:\Ride\Ride\Lib\ARM\std_sbrk_thumb.lib(write.o)
- .bss           0x00000000        0x0 D:\Ride\Ride\Lib\ARM\std_sbrk_thumb.lib(write.o)
+                0x00000000       0xb4 C:\Program Files\Raisonance\Ride\Lib\ARM\STM32x_io_putchar_thumb.a(STM32F10X_io_putchar.o)
+ .text.getchar  0x00000000       0xb4 C:\Program Files\Raisonance\Ride\Lib\ARM\STM32x_io_putchar_thumb.a(STM32F10X_io_putchar.o)
+ .text.putchar  0x00000000       0xd4 C:\Program Files\Raisonance\Ride\Lib\ARM\STM32x_io_putchar_thumb.a(STM32F10X_io_putchar.o)
+ .text          0x00000000        0x0 C:\Program Files\Raisonance\Ride\Lib\ARM\std_sbrk_thumb.lib(write.o)
+ .data          0x00000000        0x0 C:\Program Files\Raisonance\Ride\Lib\ARM\std_sbrk_thumb.lib(write.o)
+ .bss           0x00000000        0x0 C:\Program Files\Raisonance\Ride\Lib\ARM\std_sbrk_thumb.lib(write.o)
 
 Memory Configuration
 
@@ -393,22 +392,22 @@ EXTMEMB3         0x00000000         0x00000000         xr
 
 Linker script and memory map
 
-LOAD D:\Ride\Ride\Lib\ARM\startup_stm32f10x_md.o
-LOAD D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.o
-LOAD D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\misc.o
-LOAD D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_gpio.o
-LOAD D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_it.o
-LOAD D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
-LOAD D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\system_stm32f4xx.o
-LOAD D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_exti.o
-LOAD D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_syscfg.o
-LOAD D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
+LOAD C:\Program Files\Raisonance\Ride\Lib\ARM\startup_stm32f10x_md.o
+LOAD C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.o
+LOAD C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\misc.o
+LOAD C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_gpio.o
+LOAD C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_it.o
+LOAD C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
+LOAD C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\system_stm32f4xx.o
+LOAD C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_exti.o
+LOAD C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_syscfg.o
+LOAD C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
 START GROUP
-LOAD D:\Ride\Ride\Lib\ARM\STM32x_io_putchar_thumb.a
-LOAD D:\Ride\Ride\Lib\ARM\std_sbrk_thumb.lib
-LOAD D:\Ride\Ride\Lib\ARM\smallprintf_thumb.a
-LOAD d:/ride/ride/arm-gcc/bin/../lib/gcc/arm-none-eabi/4.5.1/../../../../arm-none-eabi/lib/thumb2\libc.a
-LOAD d:/ride/ride/arm-gcc/bin/../lib/gcc/arm-none-eabi/4.5.1/../../../../arm-none-eabi/lib/thumb2\libm.a
+LOAD C:\Program Files\Raisonance\Ride\Lib\ARM\STM32x_io_putchar_thumb.a
+LOAD C:\Program Files\Raisonance\Ride\Lib\ARM\std_sbrk_thumb.lib
+LOAD C:\Program Files\Raisonance\Ride\Lib\ARM\smallprintf_thumb.a
+LOAD c:/program files/raisonance/ride/arm-gcc/bin/../lib/gcc/arm-none-eabi/4.5.1/../../../../arm-none-eabi/lib/thumb2\libc.a
+LOAD c:/program files/raisonance/ride/arm-gcc/bin/../lib/gcc/arm-none-eabi/4.5.1/../../../../arm-none-eabi/lib/thumb2\libm.a
 END GROUP
                 0x00000400                __Stack_Size = 0x400
                 0x00000400                PROVIDE (_Stack_Size, __Stack_Size)
@@ -564,7 +563,7 @@ END GROUP
 .isr_vector     0x08000000      0x10c
                 0x08000000                . = ALIGN (0x4)
  *(.isr_vector)
- .isr_vector    0x08000000      0x10c D:\Ride\Ride\Lib\ARM\startup_stm32f10x_md.o
+ .isr_vector    0x08000000      0x10c C:\Program Files\Raisonance\Ride\Lib\ARM\startup_stm32f10x_md.o
                 0x08000000                g_pfnVectors
                 0x0800010c                . = ALIGN (0x4)
 
@@ -584,15 +583,15 @@ END GROUP
  *(.flashtext)
                 0x0800010c                . = ALIGN (0x4)
 
-.text           0x0800010c      0x81c
+.text           0x0800010c      0x908
                 0x0800010c                . = ALIGN (0x4)
  *(.text)
  *(.text.*)
  .text.Reset_Handler
-                0x0800010c       0x40 D:\Ride\Ride\Lib\ARM\startup_stm32f10x_md.o
+                0x0800010c       0x40 C:\Program Files\Raisonance\Ride\Lib\ARM\startup_stm32f10x_md.o
                 0x0800010c                Reset_Handler
  .text.Default_Handler
-                0x0800014c        0x2 D:\Ride\Ride\Lib\ARM\startup_stm32f10x_md.o
+                0x0800014c        0x2 C:\Program Files\Raisonance\Ride\Lib\ARM\startup_stm32f10x_md.o
                 0x0800014c                EXTI2_IRQHandler
                 0x0800014c                TIM1_CC_IRQHandler
                 0x0800014c                PVD_IRQHandler
@@ -636,106 +635,107 @@ END GROUP
                 0x0800014c                USBWakeUp_IRQHandler
  *fill*         0x0800014e        0x2 00
  .text.RCC_Config
-                0x08000150       0x1c D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.o
+                0x08000150       0x1c C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.o
                 0x08000150                RCC_Config
  .text.NVIC_Config
-                0x0800016c       0x38 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.o
+                0x0800016c       0x38 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.o
                 0x0800016c                NVIC_Config
  .text.GPIO_Config
-                0x080001a4       0xc8 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.o
+                0x080001a4       0xf4 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.o
                 0x080001a4                GPIO_Config
  .text.TIM_Config
-                0x0800026c       0x38 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.o
-                0x0800026c                TIM_Config
- .text.main     0x080002a4       0x18 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.o
-                0x080002a4                main
+                0x08000298       0x60 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.o
+                0x08000298                TIM_Config
+ .text.main     0x080002f8       0x18 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.o
+                0x080002f8                main
  .text.TIM2_IRQHandler
-                0x080002bc       0xa0 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.o
-                0x080002bc                TIM2_IRQHandler
+                0x08000310       0xa4 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.o
+                0x08000310                TIM2_IRQHandler
  .text.EXTI4_IRQHandler
-                0x0800035c       0x44 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.o
-                0x0800035c                EXTI4_IRQHandler
+                0x080003b4       0x5c C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.o
+                0x080003b4                EXTI4_IRQHandler
  .text.EXTI9_5_IRQHandler
-                0x080003a0       0x40 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.o
-                0x080003a0                EXTI9_5_IRQHandler
+                0x08000410       0x38 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.o
+                0x08000410                EXTI9_5_IRQHandler
  .text.NVIC_Init
-                0x080003e0       0x88 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\misc.o
-                0x080003e0                NVIC_Init
+                0x08000448       0x88 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\misc.o
+                0x08000448                NVIC_Init
  .text.GPIO_Init
-                0x08000468       0xbc D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_gpio.o
-                0x08000468                GPIO_Init
+                0x080004d0       0xbc C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_gpio.o
+                0x080004d0                GPIO_Init
  .text.GPIO_PinAFConfig
-                0x08000524       0x3c D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_gpio.o
-                0x08000524                GPIO_PinAFConfig
+                0x0800058c       0x3c C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_gpio.o
+                0x0800058c                GPIO_PinAFConfig
  .text.NMI_Handler
-                0x08000560        0x4 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_it.o
-                0x08000560                NMI_Handler
+                0x080005c8        0x4 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_it.o
+                0x080005c8                NMI_Handler
  .text.HardFault_Handler
-                0x08000564        0x4 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_it.o
-                0x08000564                HardFault_Handler
+                0x080005cc        0x4 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_it.o
+                0x080005cc                HardFault_Handler
  .text.MemManage_Handler
-                0x08000568        0x4 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_it.o
-                0x08000568                MemManage_Handler
+                0x080005d0        0x4 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_it.o
+                0x080005d0                MemManage_Handler
  .text.BusFault_Handler
-                0x0800056c        0x4 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_it.o
-                0x0800056c                BusFault_Handler
+                0x080005d4        0x4 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_it.o
+                0x080005d4                BusFault_Handler
  .text.UsageFault_Handler
-                0x08000570        0x4 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_it.o
-                0x08000570                UsageFault_Handler
+                0x080005d8        0x4 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_it.o
+                0x080005d8                UsageFault_Handler
  .text.SVC_Handler
-                0x08000574        0x4 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_it.o
-                0x08000574                SVC_Handler
+                0x080005dc        0x4 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_it.o
+                0x080005dc                SVC_Handler
  .text.DebugMon_Handler
-                0x08000578        0x4 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_it.o
-                0x08000578                DebugMon_Handler
+                0x080005e0        0x4 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_it.o
+                0x080005e0                DebugMon_Handler
  .text.PendSV_Handler
-                0x0800057c        0x4 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_it.o
-                0x0800057c                PendSV_Handler
+                0x080005e4        0x4 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_it.o
+                0x080005e4                PendSV_Handler
  .text.SysTick_Handler
-                0x08000580        0x4 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_it.o
-                0x08000580                SysTick_Handler
+                0x080005e8        0x4 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_it.o
+                0x080005e8                SysTick_Handler
  .text.RCC_AHB1PeriphClockCmd
-                0x08000584       0x24 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
-                0x08000584                RCC_AHB1PeriphClockCmd
+                0x080005ec       0x24 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
+                0x080005ec                RCC_AHB1PeriphClockCmd
  .text.RCC_APB2PeriphClockCmd
-                0x080005a8       0x24 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
-                0x080005a8                RCC_APB2PeriphClockCmd
+                0x08000610       0x24 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
+                0x08000610                RCC_APB2PeriphClockCmd
  .text.EXTI_Init
-                0x080005cc       0x9c D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_exti.o
-                0x080005cc                EXTI_Init
- .text.EXTI_GetITStatus
-                0x08000668       0x20 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_exti.o
-                0x08000668                EXTI_GetITStatus
+                0x08000634       0x9c C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_exti.o
+                0x08000634                EXTI_Init
  .text.EXTI_ClearITPendingBit
-                0x08000688        0xc D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_exti.o
-                0x08000688                EXTI_ClearITPendingBit
+                0x080006d0        0xc C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_exti.o
+                0x080006d0                EXTI_ClearITPendingBit
  .text.SYSCFG_EXTILineConfig
-                0x08000694       0x44 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_syscfg.o
-                0x08000694                SYSCFG_EXTILineConfig
+                0x080006dc       0x44 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_syscfg.o
+                0x080006dc                SYSCFG_EXTILineConfig
  .text.TIM_TimeBaseInit
-                0x080006d8       0xc0 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
-                0x080006d8                TIM_TimeBaseInit
- .text.TIM_Cmd  0x08000798       0x20 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
-                0x08000798                TIM_Cmd
+                0x08000720       0xc0 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
+                0x08000720                TIM_TimeBaseInit
+ .text.TIM_OC3Init
+                0x080007e0       0xac C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
+                0x080007e0                TIM_OC3Init
+ .text.TIM_OCStructInit
+                0x0800088c       0x18 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
+                0x0800088c                TIM_OCStructInit
  .text.__io_putchar
-                0x080007b8      0x16c D:\Ride\Ride\Lib\ARM\STM32x_io_putchar_thumb.a(STM32F10X_io_putchar.o)
-                0x080007b8                __io_putchar
- .text._write   0x08000924        0x4 D:\Ride\Ride\Lib\ARM\std_sbrk_thumb.lib(write.o)
-                0x08000924                _write
+                0x080008a4      0x16c C:\Program Files\Raisonance\Ride\Lib\ARM\STM32x_io_putchar_thumb.a(STM32F10X_io_putchar.o)
+                0x080008a4                __io_putchar
+ .text._write   0x08000a10        0x4 C:\Program Files\Raisonance\Ride\Lib\ARM\std_sbrk_thumb.lib(write.o)
+                0x08000a10                _write
  *(.rodata)
  *(.rodata*)
  *(.glue_7)
  .glue_7        0x00000000        0x0 linker stubs
  *(.glue_7t)
  .glue_7t       0x00000000        0x0 linker stubs
-                0x08000928                . = ALIGN (0x4)
-                0x08000928                _etext = .
-                0x08000928                _sidata = _etext
+                0x08000a14                . = ALIGN (0x4)
+                0x08000a14                _etext = .
+                0x08000a14                _sidata = _etext
 
-.vfp11_veneer   0x08000928        0x0
+.vfp11_veneer   0x08000a14        0x0
  .vfp11_veneer  0x00000000        0x0 linker stubs
 
-.v4_bx          0x08000928        0x0
+.v4_bx          0x08000a14        0x0
  .v4_bx         0x00000000        0x0 linker stubs
 
 .flashpatch     0x00000000        0x0
@@ -749,7 +749,7 @@ END GROUP
                 0x00000000                . = ALIGN (0x4)
                 0x00000000                _e_endflash = .
 
-.data           0x20000000        0x0 load address 0x08000928
+.data           0x20000000        0x0 load address 0x08000a14
                 0x20000000                . = ALIGN (0x4)
                 0x20000000                _sdata = .
                 0x20000000                _data = .
@@ -758,7 +758,7 @@ END GROUP
  *(.RAMtext)
                 0x20000000                . = ALIGN (0x4)
                 0x20000000                _edata = .
-                0x08000928                _eidata = ((_sidata + _edata) - _sdata)
+                0x08000a14                _eidata = ((_sidata + _edata) - _sdata)
                 0x08010000                _lastdataromaddress = 0x8010000
                 0x00000000                toobig = (_eidata > _lastdataromaddress)?!!!!!!!!! FLASH IS FULL !!!!!!!!!:0x0
 
@@ -768,7 +768,7 @@ END GROUP
                 0x20000000                _bss = .
  *(.bss)
  *(COMMON)
- COMMON         0x20000000     0x1c2c D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.o
+ COMMON         0x20000000     0x1c2c C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.o
                 0x20000000                x
                 0x20000002                y
                 0x20000004                pix
@@ -840,44 +840,44 @@ END GROUP
 .ARM.attributes
                 0x00000000       0x2d
  .ARM.attributes
-                0x00000000       0x21 D:\Ride\Ride\Lib\ARM\startup_stm32f10x_md.o
+                0x00000000       0x21 C:\Program Files\Raisonance\Ride\Lib\ARM\startup_stm32f10x_md.o
  .ARM.attributes
-                0x00000021       0x31 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.o
+                0x00000021       0x31 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.o
  .ARM.attributes
-                0x00000052       0x31 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\misc.o
+                0x00000052       0x31 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\misc.o
  .ARM.attributes
-                0x00000083       0x31 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_gpio.o
+                0x00000083       0x31 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_gpio.o
  .ARM.attributes
-                0x000000b4       0x31 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_it.o
+                0x000000b4       0x31 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_it.o
  .ARM.attributes
-                0x000000e5       0x31 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
+                0x000000e5       0x31 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
  .ARM.attributes
-                0x00000116       0x31 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\system_stm32f4xx.o
+                0x00000116       0x31 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\system_stm32f4xx.o
  .ARM.attributes
-                0x00000147       0x31 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_exti.o
+                0x00000147       0x31 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_exti.o
  .ARM.attributes
-                0x00000178       0x31 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_syscfg.o
+                0x00000178       0x31 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_syscfg.o
  .ARM.attributes
-                0x000001a9       0x31 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
+                0x000001a9       0x31 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
  .ARM.attributes
-                0x000001da       0x31 D:\Ride\Ride\Lib\ARM\STM32x_io_putchar_thumb.a(STM32F10X_io_putchar.o)
+                0x000001da       0x31 C:\Program Files\Raisonance\Ride\Lib\ARM\STM32x_io_putchar_thumb.a(STM32F10X_io_putchar.o)
  .ARM.attributes
-                0x0000020b       0x2e D:\Ride\Ride\Lib\ARM\std_sbrk_thumb.lib(write.o)
+                0x0000020b       0x2e C:\Program Files\Raisonance\Ride\Lib\ARM\std_sbrk_thumb.lib(write.o)
 
 .comment        0x00000000       0x7f
  *(.comment)
- .comment       0x00000000       0x2a D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.o
+ .comment       0x00000000       0x2a C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.o
                                  0x2b (size before relaxing)
- .comment       0x00000000       0x2b D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\misc.o
- .comment       0x00000000       0x2b D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_gpio.o
- .comment       0x00000000       0x2b D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_it.o
- .comment       0x00000000       0x2b D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
- .comment       0x00000000       0x2b D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\system_stm32f4xx.o
- .comment       0x00000000       0x2b D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_exti.o
- .comment       0x00000000       0x2b D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_syscfg.o
- .comment       0x00000000       0x2b D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
- .comment       0x0000002a       0x2b D:\Ride\Ride\Lib\ARM\STM32x_io_putchar_thumb.a(STM32F10X_io_putchar.o)
- .comment       0x00000055       0x2a D:\Ride\Ride\Lib\ARM\std_sbrk_thumb.lib(write.o)
+ .comment       0x00000000       0x2b C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\misc.o
+ .comment       0x00000000       0x2b C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_gpio.o
+ .comment       0x00000000       0x2b C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_it.o
+ .comment       0x00000000       0x2b C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
+ .comment       0x00000000       0x2b C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\system_stm32f4xx.o
+ .comment       0x00000000       0x2b C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_exti.o
+ .comment       0x00000000       0x2b C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_syscfg.o
+ .comment       0x00000000       0x2b C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
+ .comment       0x0000002a       0x2b C:\Program Files\Raisonance\Ride\Lib\ARM\STM32x_io_putchar_thumb.a(STM32F10X_io_putchar.o)
+ .comment       0x00000055       0x2a C:\Program Files\Raisonance\Ride\Lib\ARM\std_sbrk_thumb.lib(write.o)
 
 .debug
  *(.debug)
@@ -894,125 +894,125 @@ END GROUP
 .debug_aranges  0x00000000      0x6a8
  *(.debug_aranges)
  .debug_aranges
-                0x00000000       0x58 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.o
+                0x00000000       0x58 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.o
  .debug_aranges
-                0x00000058       0x40 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\misc.o
+                0x00000058       0x40 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\misc.o
  .debug_aranges
-                0x00000098       0x88 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_gpio.o
+                0x00000098       0x88 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_gpio.o
  .debug_aranges
-                0x00000120       0x60 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_it.o
+                0x00000120       0x60 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_it.o
  .debug_aranges
-                0x00000180      0x178 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
+                0x00000180      0x178 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
  .debug_aranges
-                0x000002f8       0x28 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\system_stm32f4xx.o
+                0x000002f8       0x28 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\system_stm32f4xx.o
  .debug_aranges
-                0x00000320       0x58 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_exti.o
+                0x00000320       0x58 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_exti.o
  .debug_aranges
-                0x00000378       0x48 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_syscfg.o
+                0x00000378       0x48 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_syscfg.o
  .debug_aranges
-                0x000003c0      0x2e8 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
+                0x000003c0      0x2e8 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
 
 .debug_pubnames
                 0x00000000     0x1107
  *(.debug_pubnames)
  .debug_pubnames
-                0x00000000       0xd1 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.o
+                0x00000000       0xd1 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.o
  .debug_pubnames
-                0x000000d1       0x89 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\misc.o
+                0x000000d1       0x89 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\misc.o
  .debug_pubnames
-                0x0000015a      0x12d D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_gpio.o
+                0x0000015a      0x12d C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_gpio.o
  .debug_pubnames
-                0x00000287       0xc6 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_it.o
+                0x00000287       0xc6 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_it.o
  .debug_pubnames
-                0x0000034d      0x417 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
+                0x0000034d      0x417 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
  .debug_pubnames
-                0x00000764       0x61 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\system_stm32f4xx.o
+                0x00000764       0x61 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\system_stm32f4xx.o
  .debug_pubnames
-                0x000007c5       0xbb D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_exti.o
+                0x000007c5       0xbb C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_exti.o
  .debug_pubnames
-                0x00000880       0xc3 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_syscfg.o
+                0x00000880       0xc3 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_syscfg.o
  .debug_pubnames
-                0x00000943      0x7c4 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
+                0x00000943      0x7c4 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
 
-.debug_info     0x00000000     0x4e2e
+.debug_info     0x00000000     0x4eaa
  *(.debug_info .gnu.linkonce.wi.*)
- .debug_info    0x00000000      0x9d0 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.o
- .debug_info    0x000009d0      0x598 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\misc.o
- .debug_info    0x00000f68      0x62d D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_gpio.o
- .debug_info    0x00001595      0x14c D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_it.o
- .debug_info    0x000016e1      0xd05 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
- .debug_info    0x000023e6      0x63f D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\system_stm32f4xx.o
- .debug_info    0x00002a25      0x370 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_exti.o
- .debug_info    0x00002d95      0x279 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_syscfg.o
- .debug_info    0x0000300e     0x1e20 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
+ .debug_info    0x00000000      0xa4c C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.o
+ .debug_info    0x00000a4c      0x598 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\misc.o
+ .debug_info    0x00000fe4      0x62d C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_gpio.o
+ .debug_info    0x00001611      0x14c C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_it.o
+ .debug_info    0x0000175d      0xd05 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
+ .debug_info    0x00002462      0x63f C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\system_stm32f4xx.o
+ .debug_info    0x00002aa1      0x370 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_exti.o
+ .debug_info    0x00002e11      0x279 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_syscfg.o
+ .debug_info    0x0000308a     0x1e20 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
 
-.debug_abbrev   0x00000000      0xd86
+.debug_abbrev   0x00000000      0xd7d
  *(.debug_abbrev)
- .debug_abbrev  0x00000000      0x178 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.o
- .debug_abbrev  0x00000178      0x14e D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\misc.o
- .debug_abbrev  0x000002c6      0x1d0 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_gpio.o
- .debug_abbrev  0x00000496       0x64 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_it.o
- .debug_abbrev  0x000004fa      0x1f8 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
- .debug_abbrev  0x000006f2      0x16c D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\system_stm32f4xx.o
- .debug_abbrev  0x0000085e      0x1cf D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_exti.o
- .debug_abbrev  0x00000a2d      0x152 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_syscfg.o
- .debug_abbrev  0x00000b7f      0x207 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
+ .debug_abbrev  0x00000000      0x16f C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.o
+ .debug_abbrev  0x0000016f      0x14e C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\misc.o
+ .debug_abbrev  0x000002bd      0x1d0 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_gpio.o
+ .debug_abbrev  0x0000048d       0x64 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_it.o
+ .debug_abbrev  0x000004f1      0x1f8 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
+ .debug_abbrev  0x000006e9      0x16c C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\system_stm32f4xx.o
+ .debug_abbrev  0x00000855      0x1cf C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_exti.o
+ .debug_abbrev  0x00000a24      0x152 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_syscfg.o
+ .debug_abbrev  0x00000b76      0x207 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
 
-.debug_line     0x00000000     0x1b51
+.debug_line     0x00000000     0x1c19
  *(.debug_line)
- .debug_line    0x00000000      0x27b D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.o
- .debug_line    0x0000027b      0x1a2 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\misc.o
- .debug_line    0x0000041d      0x28e D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_gpio.o
- .debug_line    0x000006ab      0x1ab D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_it.o
- .debug_line    0x00000856      0x4d6 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
- .debug_line    0x00000d2c      0x198 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\system_stm32f4xx.o
- .debug_line    0x00000ec4      0x203 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_exti.o
- .debug_line    0x000010c7      0x167 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_syscfg.o
- .debug_line    0x0000122e      0x923 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
+ .debug_line    0x00000000      0x2a3 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.o
+ .debug_line    0x000002a3      0x1b6 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\misc.o
+ .debug_line    0x00000459      0x2a2 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_gpio.o
+ .debug_line    0x000006fb      0x1bf C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_it.o
+ .debug_line    0x000008ba      0x4ea C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
+ .debug_line    0x00000da4      0x1ac C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\system_stm32f4xx.o
+ .debug_line    0x00000f50      0x217 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_exti.o
+ .debug_line    0x00001167      0x17b C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_syscfg.o
+ .debug_line    0x000012e2      0x937 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
 
 .debug_frame    0x00000000      0xda8
  *(.debug_frame)
- .debug_frame   0x00000000       0xe8 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.o
- .debug_frame   0x000000e8       0x68 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\misc.o
- .debug_frame   0x00000150      0x118 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_gpio.o
- .debug_frame   0x00000268       0xa0 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_it.o
- .debug_frame   0x00000308      0x2e4 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
- .debug_frame   0x000005ec       0x34 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\system_stm32f4xx.o
- .debug_frame   0x00000620       0x98 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_exti.o
- .debug_frame   0x000006b8       0x80 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_syscfg.o
- .debug_frame   0x00000738      0x670 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
+ .debug_frame   0x00000000       0xe8 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.o
+ .debug_frame   0x000000e8       0x68 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\misc.o
+ .debug_frame   0x00000150      0x118 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_gpio.o
+ .debug_frame   0x00000268       0xa0 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_it.o
+ .debug_frame   0x00000308      0x2e4 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
+ .debug_frame   0x000005ec       0x34 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\system_stm32f4xx.o
+ .debug_frame   0x00000620       0x98 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_exti.o
+ .debug_frame   0x000006b8       0x80 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_syscfg.o
+ .debug_frame   0x00000738      0x670 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
 
-.debug_str      0x00000000     0x2326
+.debug_str      0x00000000     0x233a
  *(.debug_str)
- .debug_str     0x00000000      0xaab D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.o
-                                0xaf2 (size before relaxing)
- .debug_str     0x00000aab      0x1f9 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\misc.o
+ .debug_str     0x00000000      0xb47 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.o
+                                0xb88 (size before relaxing)
+ .debug_str     0x00000b47      0x1f9 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\misc.o
                                 0x371 (size before relaxing)
- .debug_str     0x00000ca4      0x1a8 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_gpio.o
+ .debug_str     0x00000d40      0x1a8 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_gpio.o
                                 0x43b (size before relaxing)
- .debug_str     0x00000e4c       0xd9 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_it.o
+ .debug_str     0x00000ee8       0xd9 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_it.o
                                 0x17e (size before relaxing)
- .debug_str     0x00000f25      0x63d D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
+ .debug_str     0x00000fc1      0x63d C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
                                 0x7e8 (size before relaxing)
- .debug_str     0x00001562       0xcb D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\system_stm32f4xx.o
+ .debug_str     0x000015fe       0xcb C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\system_stm32f4xx.o
                                 0x30e (size before relaxing)
- .debug_str     0x0000162d      0x10e D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_exti.o
+ .debug_str     0x000016c9      0x10e C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_exti.o
                                 0x306 (size before relaxing)
- .debug_str     0x0000173b      0x164 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_syscfg.o
+ .debug_str     0x000017d7      0x164 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_syscfg.o
                                 0x297 (size before relaxing)
- .debug_str     0x0000189f      0xa87 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
+ .debug_str     0x0000193b      0x9ff C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
                                 0xd68 (size before relaxing)
 
 .debug_loc      0x00000000     0x2361
  *(.debug_loc)
- .debug_loc     0x00000000      0x118 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.o
- .debug_loc     0x00000118      0x11d D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\misc.o
- .debug_loc     0x00000235      0x26d D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_gpio.o
- .debug_loc     0x000004a2      0x6ed D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
- .debug_loc     0x00000b8f      0x133 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\system_stm32f4xx.o
- .debug_loc     0x00000cc2      0x146 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_exti.o
- .debug_loc     0x00000e08       0x9d D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_syscfg.o
- .debug_loc     0x00000ea5     0x14bc D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
+ .debug_loc     0x00000000      0x118 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.o
+ .debug_loc     0x00000118      0x11d C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\misc.o
+ .debug_loc     0x00000235      0x26d C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_gpio.o
+ .debug_loc     0x000004a2      0x6ed C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
+ .debug_loc     0x00000b8f      0x133 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\system_stm32f4xx.o
+ .debug_loc     0x00000cc2      0x146 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_exti.o
+ .debug_loc     0x00000e08       0x9d C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_syscfg.o
+ .debug_loc     0x00000ea5     0x14bc C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
 
 .debug_macinfo
  *(.debug_macinfo)
@@ -1029,39 +1029,39 @@ END GROUP
 .debug_varnames
  *(.debug_varnames)
 START GROUP
-LOAD d:/ride/ride/arm-gcc/bin/../lib/gcc/arm-none-eabi/4.5.1/thumb2\libgcc.a
-LOAD d:/ride/ride/arm-gcc/bin/../lib/gcc/arm-none-eabi/4.5.1/../../../../arm-none-eabi/lib/thumb2\libc.a
+LOAD c:/program files/raisonance/ride/arm-gcc/bin/../lib/gcc/arm-none-eabi/4.5.1/thumb2\libgcc.a
+LOAD c:/program files/raisonance/ride/arm-gcc/bin/../lib/gcc/arm-none-eabi/4.5.1/../../../../arm-none-eabi/lib/thumb2\libc.a
 END GROUP
-OUTPUT(D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\PhotoFrame.elf elf32-littlearm)
+OUTPUT(C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\PhotoFrame.elf elf32-littlearm)
 
 .debug_pubtypes
-                0x00000000      0x604
+                0x00000000      0x61a
  .debug_pubtypes
-                0x00000000      0x160 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.o
+                0x00000000      0x176 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.o
  .debug_pubtypes
-                0x00000160       0x8c D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\misc.o
+                0x00000176       0x8c C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\misc.o
  .debug_pubtypes
-                0x000001ec       0xce D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_gpio.o
+                0x00000202       0xce C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_gpio.o
  .debug_pubtypes
-                0x000002ba       0x1e D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_it.o
+                0x000002d0       0x1e C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_it.o
  .debug_pubtypes
-                0x000002d8       0xaa D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
+                0x000002ee       0xaa C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
  .debug_pubtypes
-                0x00000382       0x83 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\system_stm32f4xx.o
+                0x00000398       0x83 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\system_stm32f4xx.o
  .debug_pubtypes
-                0x00000405       0xae D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_exti.o
+                0x0000041b       0xae C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_exti.o
  .debug_pubtypes
-                0x000004b3       0x6d D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_syscfg.o
+                0x000004c9       0x6d C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_syscfg.o
  .debug_pubtypes
-                0x00000520       0xe4 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
+                0x00000536       0xe4 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
 
 .debug_ranges   0x00000000      0x618
- .debug_ranges  0x00000000       0x48 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.o
- .debug_ranges  0x00000048       0x30 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\misc.o
- .debug_ranges  0x00000078       0x78 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_gpio.o
- .debug_ranges  0x000000f0       0x50 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_it.o
- .debug_ranges  0x00000140      0x168 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
- .debug_ranges  0x000002a8       0x18 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\system_stm32f4xx.o
- .debug_ranges  0x000002c0       0x48 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_exti.o
- .debug_ranges  0x00000308       0x38 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_syscfg.o
- .debug_ranges  0x00000340      0x2d8 D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o
+ .debug_ranges  0x00000000       0x48 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.o
+ .debug_ranges  0x00000048       0x30 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\misc.o
+ .debug_ranges  0x00000078       0x78 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_gpio.o
+ .debug_ranges  0x000000f0       0x50 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_it.o
+ .debug_ranges  0x00000140      0x168 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.o
+ .debug_ranges  0x000002a8       0x18 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\system_stm32f4xx.o
+ .debug_ranges  0x000002c0       0x48 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_exti.o
+ .debug_ranges  0x00000308       0x38 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_syscfg.o
+ .debug_ranges  0x00000340      0x2d8 C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.o

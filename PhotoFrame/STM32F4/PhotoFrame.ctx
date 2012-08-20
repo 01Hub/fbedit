@@ -1,25 +1,26 @@
 
 <Debug>
 	<PhotoFrame>
-		<CodeView TopRow="134218406" Focus="4294967295" >
+		<CodeView TopRow="134218640" Focus="4294967295" >
 			<CodeReport>
-				<0>93</0>
-				<1>102</1>
-				<2>56</2>
-				<3>309</3>
-				<4>56</4>
-				<5>118</5>
+				<0>111</0>
+				<1>122</1>
+				<2>67</2>
+				<3>372</3>
+				<4>67</4>
+				<5>144</5>
 														
 			</CodeReport>
 										
 		</CodeView>
+		<RegistersView Focus="134217996" TopRow="0" NbPerLine="4" />
 		<MemoryView Focus="134217996" TopRow="0" NbPerLine="8" />
 						
 	</PhotoFrame>
 	<Flags>
 		<Report>
 			<Def Header="FlagReport" NbCol="9" >
-				<Col Type="PT_BOOL" Header="Check" sizeCache="18" AutoSize="0" Edit="1" Sortable="1" Icon="D:\Ride\Ride\Config\Resources\check.bmp" />
+				<Col Type="PT_BOOL" Header="Check" sizeCache="18" AutoSize="0" Edit="1" Sortable="1" Icon="C:\Program Files\Raisonance\Ride\Config\Resources\check.bmp" />
 				<Col Type="PT_STRING" Header="Kind" sizeCache="DDDDDDDDDDD" AutoSize="1" Edit="0" Sortable="1" />
 				<Col Type="PT_STRING" Header="KindID" sizeCache="DD" AutoSize="1" Edit="0" Sortable="1" Visible="0" />
 				<Col Type="PT_STRING" Header="Space" sizeCache="DDDDDD" AutoSize="1" Edit="0" Sortable="1" />
@@ -38,9 +39,8 @@
 			
 	</Flags>
 	<Views>
-		<View File="D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.c" Line="50" Index="0" focus="1" />
-		<View File="D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.c" Line="2550" Index="1" />
-		<View File="D:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_gpio.c" Line="386" Index="2" />
+		<View File="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.c" Line="175" Index="0" focus="1" />
+		<View File="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.c" Line="593" Index="1" />
 	</Views>
 	<Grep>
 		<GrepIncludeSub>yes</GrepIncludeSub>
