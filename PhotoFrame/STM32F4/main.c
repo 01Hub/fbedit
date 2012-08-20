@@ -112,7 +112,7 @@ void GPIO_Config(void)
   GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
   GPIO_InitStructure.GPIO_PuPd  = GPIO_PuPd_NOPULL ;
   GPIO_Init(GPIOA, &GPIO_InitStructure);
-  /* Connect TIM2 pin to AF2 */
+  /* Connect TIM2 pin to AF1 */
   GPIO_PinAFConfig(GPIOA, GPIO_PinSource1, GPIO_AF_TIM2);
 
   /* TIM2 channel 3 configuration : PA2 */
@@ -122,7 +122,7 @@ void GPIO_Config(void)
   GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
   GPIO_InitStructure.GPIO_PuPd  = GPIO_PuPd_NOPULL ;
   GPIO_Init(GPIOA, &GPIO_InitStructure);
-  /* Connect TIM2 pin to AF2 */
+  /* Connect TIM2 pin to AF1 */
   GPIO_PinAFConfig(GPIOA, GPIO_PinSource2, GPIO_AF_TIM2);
 }
 
