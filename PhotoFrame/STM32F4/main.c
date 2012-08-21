@@ -14,15 +14,18 @@
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 NVIC_InitTypeDef NVIC_InitStructure;
-uint16_t x;
-uint16_t y;
-uint8_t pix;
-uint8_t pixarray[480*3][5]; // Should be [480*3][234]
+uint16_t vx;
+uint16_t vy;
+uint8_t pixarray[480*3/8][40]; // Should be [480*3/8][234]
+
 /* Private function prototypes -----------------------------------------------*/
+void Cls(void);
+void SetPixel(uint16_t x,uint16_t y,uint8_t c);
 void RCC_Config(void);
 void NVIC_Config(void);
 void GPIO_Config(void);
 void TIM_Config(void);
+
 /* Private functions ---------------------------------------------------------*/
 
 /*******************************************************************************
@@ -40,8 +43,67 @@ void main(void)
   GPIO_Config();
   TIM_Config();
   NVIC_Config();
+  Cls();
+  SetPixel(0,0,7);
+  SetPixel(1,0,7);
+  SetPixel(2,0,7);
+  SetPixel(3,0,7);
+  SetPixel(4,0,7);
+  SetPixel(5,0,7);
+  SetPixel(6,0,7);
+  SetPixel(7,0,7);
+  SetPixel(8,0,7);
+  SetPixel(9,0,7);
   while (1)
   {
+  }
+}
+
+void Cls(void)
+{
+  uint16_t x;
+  uint16_t y;
+  y=0;
+  while (y<234)
+  {
+    x=0;
+    while (x<480*3/8)
+    {
+      pixarray[x][y]=0;
+      x++;
+    }
+    y++;
+  }
+}
+
+void SetPixel(uint16_t x,uint16_t y,uint8_t c)
+{
+  uint8_t bit;
+  bit=x-(x/8)*8;
+  x=(x*3)/8;
+  if (c && 4)
+  {
+    pixarray[x][y] |= bit;
+  }
+  else
+  {
+    pixarray[x][y] &= ~bit;
+  }
+  if (c && 2)
+  {
+    pixarray[x+1][y] |= bit;
+  }
+  else
+  {
+    pixarray[x+1][y] &= ~bit;
+  }
+  if (c && 1)
+  {
+    pixarray[x+2][y] |= bit;
+  }
+  else
+  {
+    pixarray[x+2][y] &= ~bit;
   }
 }
 
@@ -74,17 +136,16 @@ void GPIO_Config(void)
   GPIO_InitTypeDef        GPIO_InitStructure;
   EXTI_InitTypeDef        EXTI_InitStructure;
 
-  /* GPIOE Pin15 to Pin7 as outputs */
-  GPIO_InitStructure.GPIO_Pin   = GPIO_Pin_15 | GPIO_Pin_14 | GPIO_Pin_13 | GPIO_Pin_12 | GPIO_Pin_11 | GPIO_Pin_10 | GPIO_Pin_9 | GPIO_Pin_8 | GPIO_Pin_7;
+  /* GPIOE Pin15 to Pin6 as outputs */
+  GPIO_InitStructure.GPIO_Pin   = GPIO_Pin_15 | GPIO_Pin_14 | GPIO_Pin_13 | GPIO_Pin_12 | GPIO_Pin_11 | GPIO_Pin_10 | GPIO_Pin_9 | GPIO_Pin_8 | GPIO_Pin_7 | GPIO_Pin_6;
   GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_OUT;
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
   GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
   GPIO_InitStructure.GPIO_PuPd  = GPIO_PuPd_NOPULL ;
   GPIO_Init(GPIOE, &GPIO_InitStructure);
-  /* GPIOE Pin6 and Pin5 as input floating */
+  /* GPIOE Pin5 and Pin4 as input floating */
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5 | GPIO_Pin_4;
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
-  GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
-  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_6 | GPIO_Pin_5;
   GPIO_Init(GPIOE, &GPIO_InitStructure);
 
   /* Connect EXTI Line4 to PE4 pin */
@@ -108,31 +169,14 @@ void GPIO_Config(void)
   /* TIM2 channel 2 configuration : PA1 */
   GPIO_InitStructure.GPIO_Pin   = GPIO_Pin_1;
   GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_AF;
-  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
-  GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-  GPIO_InitStructure.GPIO_PuPd  = GPIO_PuPd_NOPULL ;
   GPIO_Init(GPIOA, &GPIO_InitStructure);
   /* Connect TIM2 pin to AF1 */
   GPIO_PinAFConfig(GPIOA, GPIO_PinSource1, GPIO_AF_TIM2);
-
-  /* TIM2 channel 3 configuration : PA2 */
-  GPIO_InitStructure.GPIO_Pin   = GPIO_Pin_2;
-  GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_AF;
-  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
-  GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-  GPIO_InitStructure.GPIO_PuPd  = GPIO_PuPd_NOPULL ;
-  GPIO_Init(GPIOA, &GPIO_InitStructure);
-  /* Connect TIM2 pin to AF1 */
-  GPIO_PinAFConfig(GPIOA, GPIO_PinSource2, GPIO_AF_TIM2);
 }
 
 void TIM_Config(void)
 {
   TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;
-  TIM_OCInitTypeDef       TIM_OCInitStructure;
-
-  //TIM_TimeBaseStructInit(&TIM_TimeBaseInitStruct);
-  TIM_OCStructInit(&TIM_OCInitStructure);
 
   /* TIM2 Counter configuration */
   TIM_TimeBaseStructure.TIM_Period = 0x7;
@@ -142,40 +186,35 @@ void TIM_Config(void)
   TIM_TimeBaseInit(TIM2, &TIM_TimeBaseStructure);
   TIM2->CCMR1 = 0x0100;     //CC2S=01
   TIM2->SMCR = 0x0067;      //TS=110, SMS=111
-
-  /* PWM1 Mode configuration: Channel3 */
-  TIM_OCInitStructure.TIM_OCMode = TIM_OCMode_PWM1;
-  TIM_OCInitStructure.TIM_OutputState = TIM_OutputState_Enable;
-  TIM_OCInitStructure.TIM_Pulse = 6;
-  TIM_OCInitStructure.TIM_OCPolarity = TIM_OCPolarity_High;
-  TIM_OC3Init(TIM2, &TIM_OCInitStructure);
 }
 
 /**
   * @brief  This function handles TIM2 global interrupt request.
             The interrupt is generated for every 8 CLK pulses
+            The shift registers are updated while PE6 is low
+            The data latches are updated on a low to high transition on PE7
   * @param  None
   * @retval None
   */
 void TIM2_IRQHandler(void)
 {
+  GPIOE->BSRRH = (uint16_t)GPIO_Pin_6;
   /* Clear the IT pending Bit */
   TIM2->SR = (uint16_t)~0x1;
+  GPIOE->ODR = (uint16_t)((pixarray[vx++][vy])<<8) | 0x7F;
+  asm("nop");
+  asm("nop");
+  GPIOE->BSRRL = (uint16_t)GPIO_Pin_7;
+  GPIOE->ODR = (uint16_t)((pixarray[vx++][vy])<<8) | 0x7F;
+  asm("nop");
+  asm("nop");
+  GPIOE->BSRRL = (uint16_t)GPIO_Pin_7;
+  GPIOE->ODR = (uint16_t)((pixarray[vx++][vy])<<8) | 0x7F;
+  asm("nop");
+  asm("nop");
+  GPIOE->BSRRL = (uint16_t)GPIO_Pin_7;
 
-  GPIOE->ODR = (uint16_t)pixarray[x++][y]<<8 | 0xFF;
-  asm("nop");
-  asm("nop");
-  GPIOE->BSRRH = (uint16_t)GPIO_Pin_7;
-  GPIOE->ODR = (uint16_t)pixarray[x++][y]<<8 | 0xFF;
-  asm("nop");
-  asm("nop");
-  GPIOE->BSRRH = (uint16_t)GPIO_Pin_7;
-  GPIOE->ODR = (uint16_t)pixarray[x++][y]<<8 | 0xFF;
-  asm("nop");
-  asm("nop");
-  GPIOE->BSRRH = (uint16_t)GPIO_Pin_7;
-
-  if (x = 480*3)
+  if (vx = 480*3)
   {
     /* Disable the TIM2 Counter */
     TIM2->CR1 &= (uint16_t)~TIM_CR1_CEN;
@@ -193,15 +232,17 @@ void EXTI4_IRQHandler(void)
   /* Clear the EXTI line 4 pending bit */
   EXTI_ClearITPendingBit(EXTI_Line4);
   /* Increment line counter */
-  y++;
-  if (y >= 2 && y <= 234 + 2)
+  vy++;
+  if (vy >= 2 && vy <= 234 + 2)
   {
     /* Reset pixel byte counter */
-    x = 0;
+    vx = 0;
+    /* Reset TIM2 count*/
+    TIM2->CNT = 0;
     /* Enable TIM2 */
     TIM2->CR1 |= TIM_CR1_CEN;
   }
-  else if (y > 234 + 2)
+  else if (vy > 234 + 2)
   {
     NVIC_InitStructure.NVIC_IRQChannelCmd = DISABLE;
     NVIC_Init(&NVIC_InitStructure);
@@ -219,7 +260,7 @@ void EXTI9_5_IRQHandler(void)
   /* Clear the EXTI line 5 pending bit */
   EXTI_ClearITPendingBit(EXTI_Line5);
   /* Reset line counter */
-  y = 0;
+  vy = 0;
   /* Enable and set EXTI Line4 Interrupt to the lowest priority */
   NVIC_InitStructure.NVIC_IRQChannel = EXTI4_IRQn;
   NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0x01;
