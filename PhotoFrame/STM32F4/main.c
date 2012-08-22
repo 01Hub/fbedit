@@ -59,6 +59,11 @@ void main(void)
   }
 }
 
+/**
+  * @brief  This function clears the LCD screen.
+  * @param  None
+  * @retval None
+  */
 void Cls(void)
 {
   uint16_t x;
@@ -76,6 +81,11 @@ void Cls(void)
   }
 }
 
+/**
+  * @brief  This function sets a pixel at x, y with color c.
+  * @param  x, y, c
+  * @retval None
+  */
 void SetPixel(uint16_t x,uint16_t y,uint8_t c)
 {
   uint8_t bit;
@@ -107,6 +117,11 @@ void SetPixel(uint16_t x,uint16_t y,uint8_t c)
   }
 }
 
+/**
+  * @brief  This function enable the perperal clocks.
+  * @param  None
+  * @retval None
+  */
 void RCC_Config(void)
 {
   /* Enable TIM2, GPIOA and GPIOE clocks */
@@ -115,6 +130,11 @@ void RCC_Config(void)
   RCC_APB2PeriphClockCmd(RCC_APB2Periph_SYSCFG, ENABLE);
 }
 
+/**
+  * @brief  This function enables interrupts.
+  * @param  None
+  * @retval None
+  */
 void NVIC_Config(void)
 {
   /* Enable the TIM2 gloabal Interrupt */
@@ -131,6 +151,11 @@ void NVIC_Config(void)
   NVIC_Init(&NVIC_InitStructure);
 }
 
+/**
+  * @brief  This function setup the GPIO pins.
+  * @param  None
+  * @retval None
+  */
 void GPIO_Config(void)
 {
   GPIO_InitTypeDef        GPIO_InitStructure;
@@ -174,6 +199,11 @@ void GPIO_Config(void)
   GPIO_PinAFConfig(GPIOA, GPIO_PinSource1, GPIO_AF_TIM2);
 }
 
+/**
+  * @brief  This function setup TIM2.
+  * @param  None
+  * @retval None
+  */
 void TIM_Config(void)
 {
   TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;
@@ -198,20 +228,31 @@ void TIM_Config(void)
   */
 void TIM2_IRQHandler(void)
 {
+  /* Set PE6 pin low, this transfers the data latches to the shift registers */
   GPIOE->BSRRH = (uint16_t)GPIO_Pin_6;
   /* Clear the IT pending Bit */
   TIM2->SR = (uint16_t)~0x1;
+  /* Sets PE6 high, PE7 low and PE15 to PE8 the pixel data */
   GPIOE->ODR = (uint16_t)((pixarray[vx++][vy])<<8) | 0x7F;
   asm("nop");
   asm("nop");
+  /* Set PE7 high, this transfers the pixel data to the data latches */
   GPIOE->BSRRL = (uint16_t)GPIO_Pin_7;
+  asm("nop");
+  asm("nop");
+  /* Sets PE6 high, PE7 low and PE15 to PE8 the pixel data */
   GPIOE->ODR = (uint16_t)((pixarray[vx++][vy])<<8) | 0x7F;
   asm("nop");
   asm("nop");
+  /* Set PE7 high, this transfers the pixel data to the data latches */
   GPIOE->BSRRL = (uint16_t)GPIO_Pin_7;
+  asm("nop");
+  asm("nop");
+  /* Sets PE6 high, PE7 low and PE15 to PE8 the pixel data */
   GPIOE->ODR = (uint16_t)((pixarray[vx++][vy])<<8) | 0x7F;
   asm("nop");
   asm("nop");
+  /* Set PE7 high, this transfers the pixel data to the data latches */
   GPIOE->BSRRL = (uint16_t)GPIO_Pin_7;
 
   if (vx = 480*3)
