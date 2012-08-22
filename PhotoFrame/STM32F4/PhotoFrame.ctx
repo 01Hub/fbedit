@@ -10,12 +10,12 @@
 				<3>372</3>
 				<4>67</4>
 				<5>144</5>
-																																										
+																																																								
 			</CodeReport>
-																														
+																																								
 		</CodeView>
 		<MemoryView Focus="134217996" TopRow="0" NbPerLine="8" />
-																		
+																								
 	</PhotoFrame>
 	<Flags>
 		<Report>
@@ -39,7 +39,7 @@
 			
 	</Flags>
 	<Views>
-		<View File="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.c" Line="15" Index="0" focus="1" />
+		<View File="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.c" Line="243" Index="0" focus="1" />
 	</Views>
 	<Grep>
 		<GrepIncludeSub>yes</GrepIncludeSub>

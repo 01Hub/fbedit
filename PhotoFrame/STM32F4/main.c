@@ -21,6 +21,9 @@ uint8_t pixarray[480*3/8][40]; // Should be [480*3/8][234]
 /* Private function prototypes -----------------------------------------------*/
 void Cls(void);
 void SetPixel(uint16_t x,uint16_t y,uint8_t c);
+void Rectangle(uint16_t x, uint16_t y, uint16_t b, uint16_t a, uint8_t c);
+void Circle(uint16_t cx, uint16_t cy, uint16_t radius, uint8_t c);
+void Line(uint16_t X1,uint16_t Y1,uint16_t X2,uint16_t Y2, uint8_t c);
 void RCC_Config(void);
 void NVIC_Config(void);
 void GPIO_Config(void);
@@ -114,6 +117,132 @@ void SetPixel(uint16_t x,uint16_t y,uint8_t c)
   else
   {
     pixarray[x+2][y] &= ~bit;
+  }
+}
+
+/**
+  * @brief  This function draw a rectangle at x, y with color c.
+  * @param  x, y, b, a, c
+  * @retval None
+  */
+void Rectangle(uint16_t x, uint16_t y, uint16_t b, uint16_t a, uint8_t c)
+{
+  uint16_t j;
+  for (j = 0; j < a; j++) {
+		SetPixel(x, y + j, c);
+		SetPixel(x + b - 1, y + j, c);
+	}
+  for (j = 0; j < b; j++)	{
+		SetPixel(x + j, y, c);
+		SetPixel(x + j, y + a - 1, c);
+	}
+}
+
+/**
+  * @brief  This function draw a circle at x, y with color c.
+  * @param  cx, cy, radius, c
+  * @retval None
+  */
+void Circle(uint16_t cx, uint16_t cy, uint16_t radius, uint8_t c)
+{
+uint16_t x, y, xchange, ychange, radiusError;
+x = radius;
+y = 0;
+xchange = 1 - 2 * radius;
+ychange = 1;
+radiusError = 0;
+while(x >= y)
+  {
+  SetPixel(cx+x, cy+y, c); 
+  SetPixel(cx-x, cy+y, c); 
+  SetPixel(cx-x, cy-y, c);
+  SetPixel(cx+x, cy-y, c); 
+  SetPixel(cx+y, cy+x, c); 
+  SetPixel(cx-y, cy+x, c); 
+  SetPixel(cx-y, cy-x, c); 
+  SetPixel(cx+y, cy-x, c); 
+  y++;
+  radiusError += ychange;
+  ychange += 2;
+  if ( 2*radiusError + xchange > 0 )
+    {
+    x--;
+	radiusError += xchange;
+	xchange += 2;
+	}
+  }
+}
+
+/**
+  * @brief  This function draw a line from x1, y1 to x2,y2 with color c.
+  * @param  x1, y1, x2, y2, c
+  * @retval None
+  */
+void Line(uint16_t X1,uint16_t Y1,uint16_t X2,uint16_t Y2, uint8_t c)
+{
+uint16_t CurrentX, CurrentY, Xinc, Yinc, 
+         Dx, Dy, TwoDx, TwoDy, 
+         TwoDxAccumulatedError, TwoDyAccumulatedError;
+
+Dx = (X2-X1);
+Dy = (Y2-Y1);
+
+TwoDx = Dx + Dx;
+TwoDy = Dy + Dy;
+
+CurrentX = X1;
+CurrentY = Y1;
+
+Xinc = 1;
+Yinc = 1;
+
+if(Dx < 0)
+  {
+  Xinc = -1;
+  Dx = -Dx;
+  TwoDx = -TwoDx;
+  }
+
+if (Dy < 0)
+  {
+  Yinc = -1;
+  Dy = -Dy;
+  TwoDy = -TwoDy;
+  }
+SetPixel(X1,Y1, c);
+
+if ((Dx != 0) || (Dy != 0))
+  {
+  if (Dy <= Dx)
+    { 
+    TwoDxAccumulatedError = 0;
+    do
+	  {
+      CurrentX += Xinc;
+      TwoDxAccumulatedError += TwoDy;
+      if(TwoDxAccumulatedError > Dx)
+        {
+        CurrentY += Yinc;
+        TwoDxAccumulatedError -= TwoDx;
+        }
+       GLCD_SetPixel(CurrentX,CurrentY, c);
+       }while (CurrentX != X2);
+     }
+   else
+      {
+      TwoDyAccumulatedError = 0; 
+      do 
+	    {
+        CurrentY += Yinc; 
+        TwoDyAccumulatedError += TwoDx;
+        if(TwoDyAccumulatedError>Dy) 
+          {
+          CurrentX += Xinc;
+          TwoDyAccumulatedError -= TwoDy;
+          }
+         GLCD_SetPixel(CurrentX,CurrentY, c);
+         }while (CurrentY != Y2);
+    }
   }
 }
 

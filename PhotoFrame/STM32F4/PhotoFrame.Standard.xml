@@ -106,198 +106,198 @@
     <Component Name="NVIC_IRQChannelCmd" TI="2058" Line="65" Offs="3"/>
    </type>
    <type Family="typedef" Name="NVIC_InitTypeDef" Line="68" ID="2073" toTI="2008"/>
-   <function Name="Cls" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.c" Line="67">
-    <variable Name="x" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.c" Line="69" Addr="0x0" TI="640"/>
-    <variable Name="y" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.c" Line="70" Addr="0x0" TI="640"/>
+   <function Name="Cls" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.c" Line="70">
+    <variable Name="x" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.c" Line="72" Addr="0x0" TI="640"/>
+    <variable Name="y" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.c" Line="73" Addr="0x0" TI="640"/>
    </function >
-   <function Name="SetPixel" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.c" Line="89">
-    <parameter Name="x" TI="640" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.c" Line="89" Addr="0x0" Param="Yes"/>
-    <parameter Name="y" TI="640" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.c" Line="89" Addr="0x1" Param="Yes"/>
-    <parameter Name="c" TI="615" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.c" Line="89" Addr="0x2" Param="Yes"/>
-    <variable Name="bit" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.c" Line="91" Addr="0x3" TI="615"/>
+   <function Name="SetPixel" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.c" Line="92">
+    <parameter Name="x" TI="640" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.c" Line="92" Addr="0x0" Param="Yes"/>
+    <parameter Name="y" TI="640" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.c" Line="92" Addr="0x1" Param="Yes"/>
+    <parameter Name="c" TI="615" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.c" Line="92" Addr="0x2" Param="Yes"/>
+    <variable Name="bit" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.c" Line="94" Addr="0x3" TI="615"/>
    </function >
-   <function Name="RCC_Config" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.c" Line="125">
+   <function Name="RCC_Config" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.c" Line="254">
    </function >
-   <function Name="NVIC_Config" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.c" Line="138">
+   <function Name="NVIC_Config" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.c" Line="267">
    </function >
-   <function Name="GPIO_Config" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.c" Line="159">
-    <variable Name="GPIO_InitStructure" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.c" Line="161" Addr="0x34000008" TI="1907"/>
-    <variable Name="EXTI_InitStructure" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.c" Line="162" Addr="0x34000000" TI="1659"/>
+   <function Name="GPIO_Config" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.c" Line="288">
+    <variable Name="GPIO_InitStructure" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.c" Line="290" Addr="0x34000008" TI="1907"/>
+    <variable Name="EXTI_InitStructure" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.c" Line="291" Addr="0x34000000" TI="1659"/>
    </function >
-   <function Name="TIM_Config" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.c" Line="207">
-    <variable Name="TIM_TimeBaseStructure" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.c" Line="209" Addr="0x34000004" TI="1997"/>
+   <function Name="TIM_Config" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.c" Line="336">
+    <variable Name="TIM_TimeBaseStructure" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.c" Line="338" Addr="0x34000004" TI="1997"/>
    </function >
-   <function Name="main" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.c" Line="38">
+   <function Name="main" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.c" Line="41">
    </function >
-   <function Name="TIM2_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.c" Line="229">
+   <function Name="TIM2_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.c" Line="358">
    </function >
-   <function Name="EXTI4_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.c" Line="271">
+   <function Name="EXTI4_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.c" Line="400">
    </function >
-   <function Name="EXTI9_5_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.c" Line="299">
+   <function Name="EXTI9_5_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.c" Line="428">
    </function >
-   <type Family="array" ID="2489" toTI="615"/>
+   <type Family="array" ID="3041" toTI="615"/>
    <variable Name="NVIC_InitStructure" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.c" Line="16" Addr="0x20000004" TI="2073"/>
    <variable Name="vx" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.c" Line="17" Addr="0x20000000" TI="640"/>
    <variable Name="vy" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.c" Line="18" Addr="0x20000002" TI="640"/>
-   <variable Name="pixarray" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.c" Line="19" Addr="0x20000008" TI="2489"/>
+   <variable Name="pixarray" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.c" Line="19" Addr="0x20000008" TI="3041"/>
   </module>
   <module Name="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\misc.c" >
-   <type Family="Base" Name="signed char" ID="2650"/>
-   <type Family="Base" Name="unsigned char" ID="2668"/>
-   <type Family="typedef" Name="uint8_t" Line="42" ID="2657" toTI="2668"/>
-   <type Family="Base" Name="short int" ID="2675"/>
-   <type Family="Base" Name="short unsigned int" ID="2682"/>
-   <type Family="Base" Name="long int" ID="2700"/>
-   <type Family="typedef" Name="int32_t" Line="79" ID="2689" toTI="2700"/>
-   <type Family="Base" Name="long unsigned int" ID="2718"/>
-   <type Family="typedef" Name="uint32_t" Line="80" ID="2707" toTI="2718"/>
-   <type Family="Base" Name="long long int" ID="2725"/>
-   <type Family="Base" Name="long long unsigned int" ID="2732"/>
-   <type Family="Base" Name="int" ID="2739"/>
-   <type Family="Base" Name="unsigned int" ID="2746"/>
-   <type Family="ComponentList" Line="303" ID="2753">
-   <type Family="array" ID="2969" toTI="2707"/>
-    <Component Name="ISER" TI="2763" Line="305" Offs="0"/>
-   <type Family="array" ID="2990" toTI="2707"/>
-    <Component Name="RESERVED0" TI="2778" Line="306" Offs="32"/>
-    <Component Name="ICER" TI="2793" Line="307" Offs="128"/>
-    <Component Name="RSERVED1" TI="2809" Line="308" Offs="160"/>
-    <Component Name="ISPR" TI="2825" Line="309" Offs="256"/>
-    <Component Name="RESERVED2" TI="2841" Line="310" Offs="288"/>
-    <Component Name="ICPR" TI="2857" Line="311" Offs="384"/>
-    <Component Name="RESERVED3" TI="2873" Line="312" Offs="416"/>
-    <Component Name="IABR" TI="2889" Line="313" Offs="512"/>
-   <type Family="array" ID="3026" toTI="2707"/>
-    <Component Name="RESERVED4" TI="2905" Line="314" Offs="544"/>
-   <type Family="array" ID="3042" toTI="2657"/>
-    <Component Name="IP" TI="2921" Line="315" Offs="768"/>
-   <type Family="array" ID="3063" toTI="2707"/>
-    <Component Name="RESERVED5" TI="2936" Line="316" Offs="1008"/>
-    <Component Name="STIR" TI="2952" Line="317" Offs="3584"/>
+   <type Family="Base" Name="signed char" ID="3202"/>
+   <type Family="Base" Name="unsigned char" ID="3220"/>
+   <type Family="typedef" Name="uint8_t" Line="42" ID="3209" toTI="3220"/>
+   <type Family="Base" Name="short int" ID="3227"/>
+   <type Family="Base" Name="short unsigned int" ID="3234"/>
+   <type Family="Base" Name="long int" ID="3252"/>
+   <type Family="typedef" Name="int32_t" Line="79" ID="3241" toTI="3252"/>
+   <type Family="Base" Name="long unsigned int" ID="3270"/>
+   <type Family="typedef" Name="uint32_t" Line="80" ID="3259" toTI="3270"/>
+   <type Family="Base" Name="long long int" ID="3277"/>
+   <type Family="Base" Name="long long unsigned int" ID="3284"/>
+   <type Family="Base" Name="int" ID="3291"/>
+   <type Family="Base" Name="unsigned int" ID="3298"/>
+   <type Family="ComponentList" Line="303" ID="3305">
+   <type Family="array" ID="3521" toTI="3259"/>
+    <Component Name="ISER" TI="3315" Line="305" Offs="0"/>
+   <type Family="array" ID="3542" toTI="3259"/>
+    <Component Name="RESERVED0" TI="3330" Line="306" Offs="32"/>
+    <Component Name="ICER" TI="3345" Line="307" Offs="128"/>
+    <Component Name="RSERVED1" TI="3361" Line="308" Offs="160"/>
+    <Component Name="ISPR" TI="3377" Line="309" Offs="256"/>
+    <Component Name="RESERVED2" TI="3393" Line="310" Offs="288"/>
+    <Component Name="ICPR" TI="3409" Line="311" Offs="384"/>
+    <Component Name="RESERVED3" TI="3425" Line="312" Offs="416"/>
+    <Component Name="IABR" TI="3441" Line="313" Offs="512"/>
+   <type Family="array" ID="3578" toTI="3259"/>
+    <Component Name="RESERVED4" TI="3457" Line="314" Offs="544"/>
+   <type Family="array" ID="3594" toTI="3209"/>
+    <Component Name="IP" TI="3473" Line="315" Offs="768"/>
+   <type Family="array" ID="3615" toTI="3259"/>
+    <Component Name="RESERVED5" TI="3488" Line="316" Offs="1008"/>
+    <Component Name="STIR" TI="3504" Line="317" Offs="3584"/>
    </type>
-   <type Family="typedef" Name="NVIC_Type" Line="318" ID="3085" toTI="2753"/>
-   <type Family="ComponentList" Line="335" ID="3097">
-    <Component Name="CPUID" TI="3106" Line="337" Offs="0"/>
-    <Component Name="ICSR" TI="3121" Line="338" Offs="4"/>
-    <Component Name="VTOR" TI="3136" Line="339" Offs="8"/>
-    <Component Name="AIRCR" TI="3151" Line="340" Offs="12"/>
-    <Component Name="SCR" TI="3166" Line="341" Offs="16"/>
-    <Component Name="CCR" TI="3181" Line="342" Offs="20"/>
-   <type Family="array" ID="3428" toTI="2657"/>
-    <Component Name="SHP" TI="3196" Line="343" Offs="24"/>
-    <Component Name="SHCSR" TI="3211" Line="344" Offs="36"/>
-    <Component Name="CFSR" TI="3226" Line="345" Offs="40"/>
-    <Component Name="HFSR" TI="3241" Line="346" Offs="44"/>
-    <Component Name="DFSR" TI="3256" Line="347" Offs="48"/>
-    <Component Name="MMFAR" TI="3271" Line="348" Offs="52"/>
-    <Component Name="BFAR" TI="3286" Line="349" Offs="56"/>
-    <Component Name="AFSR" TI="3301" Line="350" Offs="60"/>
-   <type Family="array" ID="3449" toTI="2707"/>
-    <Component Name="PFR" TI="3316" Line="351" Offs="64"/>
-    <Component Name="DFR" TI="3331" Line="352" Offs="72"/>
-    <Component Name="ADR" TI="3346" Line="353" Offs="76"/>
-   <type Family="array" ID="3475" toTI="2707"/>
-    <Component Name="MMFR" TI="3361" Line="354" Offs="80"/>
-   <type Family="array" ID="3501" toTI="2707"/>
-    <Component Name="ISAR" TI="3376" Line="355" Offs="96"/>
-    <Component Name="RESERVED0" TI="3391" Line="356" Offs="116"/>
-    <Component Name="CPACR" TI="3406" Line="357" Offs="136"/>
+   <type Family="typedef" Name="NVIC_Type" Line="318" ID="3637" toTI="3305"/>
+   <type Family="ComponentList" Line="335" ID="3649">
+    <Component Name="CPUID" TI="3658" Line="337" Offs="0"/>
+    <Component Name="ICSR" TI="3673" Line="338" Offs="4"/>
+    <Component Name="VTOR" TI="3688" Line="339" Offs="8"/>
+    <Component Name="AIRCR" TI="3703" Line="340" Offs="12"/>
+    <Component Name="SCR" TI="3718" Line="341" Offs="16"/>
+    <Component Name="CCR" TI="3733" Line="342" Offs="20"/>
+   <type Family="array" ID="3980" toTI="3209"/>
+    <Component Name="SHP" TI="3748" Line="343" Offs="24"/>
+    <Component Name="SHCSR" TI="3763" Line="344" Offs="36"/>
+    <Component Name="CFSR" TI="3778" Line="345" Offs="40"/>
+    <Component Name="HFSR" TI="3793" Line="346" Offs="44"/>
+    <Component Name="DFSR" TI="3808" Line="347" Offs="48"/>
+    <Component Name="MMFAR" TI="3823" Line="348" Offs="52"/>
+    <Component Name="BFAR" TI="3838" Line="349" Offs="56"/>
+    <Component Name="AFSR" TI="3853" Line="350" Offs="60"/>
+   <type Family="array" ID="4001" toTI="3259"/>
+    <Component Name="PFR" TI="3868" Line="351" Offs="64"/>
+    <Component Name="DFR" TI="3883" Line="352" Offs="72"/>
+    <Component Name="ADR" TI="3898" Line="353" Offs="76"/>
+   <type Family="array" ID="4027" toTI="3259"/>
+    <Component Name="MMFR" TI="3913" Line="354" Offs="80"/>
+   <type Family="array" ID="4053" toTI="3259"/>
+    <Component Name="ISAR" TI="3928" Line="355" Offs="96"/>
+    <Component Name="RESERVED0" TI="3943" Line="356" Offs="116"/>
+    <Component Name="CPACR" TI="3958" Line="357" Offs="136"/>
    </type>
-   <type Family="typedef" Name="SCB_Type" Line="358" ID="3527" toTI="3097"/>
-   <type Family="ComponentList" Line="590" ID="3539">
-    <Component Name="CTRL" TI="3548" Line="592" Offs="0"/>
-    <Component Name="LOAD" TI="3563" Line="593" Offs="4"/>
-    <Component Name="VAL" TI="3578" Line="594" Offs="8"/>
-    <Component Name="CALIB" TI="3593" Line="595" Offs="12"/>
+   <type Family="typedef" Name="SCB_Type" Line="358" ID="4079" toTI="3649"/>
+   <type Family="ComponentList" Line="590" ID="4091">
+    <Component Name="CTRL" TI="4100" Line="592" Offs="0"/>
+    <Component Name="LOAD" TI="4115" Line="593" Offs="4"/>
+    <Component Name="VAL" TI="4130" Line="594" Offs="8"/>
+    <Component Name="CALIB" TI="4145" Line="595" Offs="12"/>
    </type>
-   <type Family="typedef" Name="SysTick_Type" Line="596" ID="3609" toTI="3539"/>
-   <type Family="typedef" Name="FunctionalState" Line="287" ID="3648" toTI="3626"/>
-   <type Family="ComponentList" Line="48" ID="3660">
-    <Component Name="NVIC_IRQChannel" TI="3668" Line="50" Offs="0"/>
-    <Component Name="NVIC_IRQChannelPreemptionPriority" TI="3682" Line="55" Offs="1"/>
-    <Component Name="NVIC_IRQChannelSubPriority" TI="3696" Line="60" Offs="2"/>
-    <Component Name="NVIC_IRQChannelCmd" TI="3710" Line="65" Offs="3"/>
+   <type Family="typedef" Name="SysTick_Type" Line="596" ID="4161" toTI="4091"/>
+   <type Family="typedef" Name="FunctionalState" Line="287" ID="4200" toTI="4178"/>
+   <type Family="ComponentList" Line="48" ID="4212">
+    <Component Name="NVIC_IRQChannel" TI="4220" Line="50" Offs="0"/>
+    <Component Name="NVIC_IRQChannelPreemptionPriority" TI="4234" Line="55" Offs="1"/>
+    <Component Name="NVIC_IRQChannelSubPriority" TI="4248" Line="60" Offs="2"/>
+    <Component Name="NVIC_IRQChannelCmd" TI="4262" Line="65" Offs="3"/>
    </type>
-   <type Family="typedef" Name="NVIC_InitTypeDef" Line="68" ID="3725" toTI="3660"/>
+   <type Family="typedef" Name="NVIC_InitTypeDef" Line="68" ID="4277" toTI="4212"/>
    <function Name="NVIC_Init" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\misc.c" Line="130">
-   <type Family="Pointer" TI="3862" toTI="3725"/>
-    <parameter Name="NVIC_InitStruct" TI="3862" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\misc.c" Line="130" Addr="0x0" Param="Yes"/>
-    <variable Name="tmppriority" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\misc.c" Line="132" Addr="0x0" TI="2657"/>
-    <variable Name="tmppre" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\misc.c" Line="132" Addr="0x0" TI="2657"/>
-    <variable Name="tmpsub" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\misc.c" Line="132" Addr="0x0" TI="2657"/>
+   <type Family="Pointer" TI="4414" toTI="4277"/>
+    <parameter Name="NVIC_InitStruct" TI="4414" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\misc.c" Line="130" Addr="0x0" Param="Yes"/>
+    <variable Name="tmppriority" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\misc.c" Line="132" Addr="0x0" TI="3209"/>
+    <variable Name="tmppre" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\misc.c" Line="132" Addr="0x0" TI="3209"/>
+    <variable Name="tmpsub" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\misc.c" Line="132" Addr="0x0" TI="3209"/>
    </function >
   </module>
   <module Name="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_gpio.c" >
-   <type Family="Base" Name="signed char" ID="4082"/>
-   <type Family="Base" Name="unsigned char" ID="4100"/>
-   <type Family="typedef" Name="uint8_t" Line="42" ID="4089" toTI="4100"/>
-   <type Family="Base" Name="short int" ID="4107"/>
-   <type Family="Base" Name="short unsigned int" ID="4125"/>
-   <type Family="typedef" Name="uint16_t" Line="54" ID="4114" toTI="4125"/>
-   <type Family="Base" Name="long int" ID="4143"/>
-   <type Family="typedef" Name="int32_t" Line="79" ID="4132" toTI="4143"/>
-   <type Family="Base" Name="long unsigned int" ID="4161"/>
-   <type Family="typedef" Name="uint32_t" Line="80" ID="4150" toTI="4161"/>
-   <type Family="Base" Name="long long int" ID="4168"/>
-   <type Family="Base" Name="long long unsigned int" ID="4175"/>
-   <type Family="Base" Name="int" ID="4182"/>
-   <type Family="Base" Name="unsigned int" ID="4189"/>
-   <type Family="array" ID="4201" toTI="4150"/>
-   <type Family="ComponentList" Line="654" ID="4249">
-    <Component Name="MODER" TI="4258" Line="656" Offs="0"/>
-    <Component Name="OTYPER" TI="4273" Line="657" Offs="4"/>
-    <Component Name="OSPEEDR" TI="4288" Line="658" Offs="8"/>
-    <Component Name="PUPDR" TI="4303" Line="659" Offs="12"/>
-    <Component Name="IDR" TI="4318" Line="660" Offs="16"/>
-    <Component Name="ODR" TI="4333" Line="661" Offs="20"/>
-    <Component Name="BSRRL" TI="4348" Line="662" Offs="24"/>
-    <Component Name="BSRRH" TI="4363" Line="663" Offs="26"/>
-    <Component Name="LCKR" TI="4378" Line="664" Offs="28"/>
-    <Component Name="AFR" TI="4393" Line="665" Offs="32"/>
+   <type Family="Base" Name="signed char" ID="4634"/>
+   <type Family="Base" Name="unsigned char" ID="4652"/>
+   <type Family="typedef" Name="uint8_t" Line="42" ID="4641" toTI="4652"/>
+   <type Family="Base" Name="short int" ID="4659"/>
+   <type Family="Base" Name="short unsigned int" ID="4677"/>
+   <type Family="typedef" Name="uint16_t" Line="54" ID="4666" toTI="4677"/>
+   <type Family="Base" Name="long int" ID="4695"/>
+   <type Family="typedef" Name="int32_t" Line="79" ID="4684" toTI="4695"/>
+   <type Family="Base" Name="long unsigned int" ID="4713"/>
+   <type Family="typedef" Name="uint32_t" Line="80" ID="4702" toTI="4713"/>
+   <type Family="Base" Name="long long int" ID="4720"/>
+   <type Family="Base" Name="long long unsigned int" ID="4727"/>
+   <type Family="Base" Name="int" ID="4734"/>
+   <type Family="Base" Name="unsigned int" ID="4741"/>
+   <type Family="array" ID="4753" toTI="4702"/>
+   <type Family="ComponentList" Line="654" ID="4801">
+    <Component Name="MODER" TI="4810" Line="656" Offs="0"/>
+    <Component Name="OTYPER" TI="4825" Line="657" Offs="4"/>
+    <Component Name="OSPEEDR" TI="4840" Line="658" Offs="8"/>
+    <Component Name="PUPDR" TI="4855" Line="659" Offs="12"/>
+    <Component Name="IDR" TI="4870" Line="660" Offs="16"/>
+    <Component Name="ODR" TI="4885" Line="661" Offs="20"/>
+    <Component Name="BSRRL" TI="4900" Line="662" Offs="24"/>
+    <Component Name="BSRRH" TI="4915" Line="663" Offs="26"/>
+    <Component Name="LCKR" TI="4930" Line="664" Offs="28"/>
+    <Component Name="AFR" TI="4945" Line="665" Offs="32"/>
    </type>
-   <type Family="typedef" Name="GPIO_TypeDef" Line="666" ID="4414" toTI="4249"/>
-   <type Family="typedef" Name="GPIOMode_TypeDef" Line="63" ID="4459" toTI="4426"/>
-   <type Family="typedef" Name="GPIOOType_TypeDef" Line="74" ID="4491" toTI="4470"/>
-   <type Family="typedef" Name="GPIOSpeed_TypeDef" Line="87" ID="4535" toTI="4502"/>
-   <type Family="typedef" Name="GPIOPuPd_TypeDef" Line="99" ID="4573" toTI="4546"/>
-   <type Family="typedef" Name="BitAction" Line="110" ID="4605" toTI="4584"/>
-   <type Family="ComponentList" Line="117" ID="4616">
-    <Component Name="GPIO_Pin" TI="4624" Line="119" Offs="0"/>
-    <Component Name="GPIO_Mode" TI="4638" Line="122" Offs="4"/>
-    <Component Name="GPIO_Speed" TI="4652" Line="125" Offs="5"/>
-    <Component Name="GPIO_OType" TI="4666" Line="128" Offs="6"/>
-    <Component Name="GPIO_PuPd" TI="4680" Line="131" Offs="7"/>
+   <type Family="typedef" Name="GPIO_TypeDef" Line="666" ID="4966" toTI="4801"/>
+   <type Family="typedef" Name="GPIOMode_TypeDef" Line="63" ID="5011" toTI="4978"/>
+   <type Family="typedef" Name="GPIOOType_TypeDef" Line="74" ID="5043" toTI="5022"/>
+   <type Family="typedef" Name="GPIOSpeed_TypeDef" Line="87" ID="5087" toTI="5054"/>
+   <type Family="typedef" Name="GPIOPuPd_TypeDef" Line="99" ID="5125" toTI="5098"/>
+   <type Family="typedef" Name="BitAction" Line="110" ID="5157" toTI="5136"/>
+   <type Family="ComponentList" Line="117" ID="5168">
+    <Component Name="GPIO_Pin" TI="5176" Line="119" Offs="0"/>
+    <Component Name="GPIO_Mode" TI="5190" Line="122" Offs="4"/>
+    <Component Name="GPIO_Speed" TI="5204" Line="125" Offs="5"/>
+    <Component Name="GPIO_OType" TI="5218" Line="128" Offs="6"/>
+    <Component Name="GPIO_PuPd" TI="5232" Line="131" Offs="7"/>
    </type>
-   <type Family="typedef" Name="GPIO_InitTypeDef" Line="133" ID="4695" toTI="4616"/>
-   <type Family="Pointer" TI="4747" toTI="4414"/>
+   <type Family="typedef" Name="GPIO_InitTypeDef" Line="133" ID="5247" toTI="5168"/>
+   <type Family="Pointer" TI="5299" toTI="4966"/>
    <function Name="GPIO_Init" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_gpio.c" Line="182">
-    <parameter Name="GPIOx" TI="4747" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_gpio.c" Line="182" Addr="0x0" Param="Yes"/>
-   <type Family="Pointer" TI="4850" toTI="4695"/>
-    <parameter Name="GPIO_InitStruct" TI="4850" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_gpio.c" Line="182" Addr="0x1" Param="Yes"/>
-    <variable Name="pinpos" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_gpio.c" Line="184" Addr="0x0" TI="4150"/>
-    <variable Name="pos" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_gpio.c" Line="184" Addr="0x0" TI="4150"/>
-    <variable Name="currentpin" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_gpio.c" Line="184" Addr="0x0" TI="4150"/>
+    <parameter Name="GPIOx" TI="5299" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_gpio.c" Line="182" Addr="0x0" Param="Yes"/>
+   <type Family="Pointer" TI="5402" toTI="5247"/>
+    <parameter Name="GPIO_InitStruct" TI="5402" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_gpio.c" Line="182" Addr="0x1" Param="Yes"/>
+    <variable Name="pinpos" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_gpio.c" Line="184" Addr="0x0" TI="4702"/>
+    <variable Name="pos" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_gpio.c" Line="184" Addr="0x0" TI="4702"/>
+    <variable Name="currentpin" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_gpio.c" Line="184" Addr="0x0" TI="4702"/>
    </function >
    <function Name="GPIO_PinAFConfig" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_gpio.c" Line="529">
-    <parameter Name="GPIOx" TI="4747" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_gpio.c" Line="529" Addr="0x0" Param="Yes"/>
-    <parameter Name="GPIO_PinSource" TI="4114" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_gpio.c" Line="529" Addr="0x1" Param="Yes"/>
-    <parameter Name="GPIO_AF" TI="4089" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_gpio.c" Line="529" Addr="0x2" Param="Yes"/>
-    <variable Name="temp" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_gpio.c" Line="531" Addr="0x0" TI="4150"/>
-    <variable Name="temp_2" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_gpio.c" Line="532" Addr="0x0" TI="4150"/>
+    <parameter Name="GPIOx" TI="5299" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_gpio.c" Line="529" Addr="0x0" Param="Yes"/>
+    <parameter Name="GPIO_PinSource" TI="4666" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_gpio.c" Line="529" Addr="0x1" Param="Yes"/>
+    <parameter Name="GPIO_AF" TI="4641" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_gpio.c" Line="529" Addr="0x2" Param="Yes"/>
+    <variable Name="temp" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_gpio.c" Line="531" Addr="0x0" TI="4702"/>
+    <variable Name="temp_2" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_gpio.c" Line="532" Addr="0x0" TI="4702"/>
    </function >
   </module>
   <module Name="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_it.c" >
-   <type Family="Base" Name="signed char" ID="5659"/>
-   <type Family="Base" Name="unsigned char" ID="5666"/>
-   <type Family="Base" Name="short int" ID="5673"/>
-   <type Family="Base" Name="short unsigned int" ID="5680"/>
-   <type Family="Base" Name="long int" ID="5698"/>
-   <type Family="typedef" Name="int32_t" Line="79" ID="5687" toTI="5698"/>
-   <type Family="Base" Name="long unsigned int" ID="5705"/>
-   <type Family="Base" Name="long long int" ID="5712"/>
-   <type Family="Base" Name="long long unsigned int" ID="5719"/>
-   <type Family="Base" Name="int" ID="5726"/>
-   <type Family="Base" Name="unsigned int" ID="5733"/>
+   <type Family="Base" Name="signed char" ID="6211"/>
+   <type Family="Base" Name="unsigned char" ID="6218"/>
+   <type Family="Base" Name="short int" ID="6225"/>
+   <type Family="Base" Name="short unsigned int" ID="6232"/>
+   <type Family="Base" Name="long int" ID="6250"/>
+   <type Family="typedef" Name="int32_t" Line="79" ID="6239" toTI="6250"/>
+   <type Family="Base" Name="long unsigned int" ID="6257"/>
+   <type Family="Base" Name="long long int" ID="6264"/>
+   <type Family="Base" Name="long long unsigned int" ID="6271"/>
+   <type Family="Base" Name="int" ID="6278"/>
+   <type Family="Base" Name="unsigned int" ID="6285"/>
    <function Name="NMI_Handler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_it.c" Line="53">
    </function >
    <function Name="HardFault_Handler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_it.c" Line="62">
@@ -318,350 +318,350 @@
    </function >
   </module>
   <module Name="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.c" >
-   <type Family="Base" Name="signed char" ID="5995"/>
-   <type Family="Base" Name="unsigned char" ID="6013"/>
-   <type Family="typedef" Name="uint8_t" Line="42" ID="6002" toTI="6013"/>
-   <type Family="Base" Name="short int" ID="6020"/>
-   <type Family="Base" Name="short unsigned int" ID="6038"/>
-   <type Family="typedef" Name="uint16_t" Line="54" ID="6027" toTI="6038"/>
-   <type Family="Base" Name="long int" ID="6056"/>
-   <type Family="typedef" Name="int32_t" Line="79" ID="6045" toTI="6056"/>
-   <type Family="Base" Name="long unsigned int" ID="6074"/>
-   <type Family="typedef" Name="uint32_t" Line="80" ID="6063" toTI="6074"/>
-   <type Family="Base" Name="long long int" ID="6081"/>
-   <type Family="Base" Name="long long unsigned int" ID="6088"/>
-   <type Family="Base" Name="int" ID="6095"/>
-   <type Family="Base" Name="unsigned int" ID="6102"/>
-   <type Family="array" ID="6114" toTI="6063"/>
-   <type Family="typedef" Name="FlagStatus" Line="285" ID="6157" toTI="6135"/>
-   <type Family="typedef" Name="ITStatus" Line="285" ID="6169" toTI="6135"/>
-   <type Family="typedef" Name="FunctionalState" Line="287" ID="6203" toTI="6181"/>
-   <type Family="typedef" Name="ErrorStatus" Line="290" ID="6237" toTI="6215"/>
-   <type Family="ComponentList" Line="733" ID="6249">
-    <Component Name="CR" TI="6258" Line="735" Offs="0"/>
-    <Component Name="PLLCFGR" TI="6272" Line="736" Offs="4"/>
-    <Component Name="CFGR" TI="6287" Line="737" Offs="8"/>
-    <Component Name="CIR" TI="6302" Line="738" Offs="12"/>
-    <Component Name="AHB1RSTR" TI="6317" Line="739" Offs="16"/>
-    <Component Name="AHB2RSTR" TI="6332" Line="740" Offs="20"/>
-    <Component Name="AHB3RSTR" TI="6347" Line="741" Offs="24"/>
-    <Component Name="RESERVED0" TI="6362" Line="742" Offs="28"/>
-    <Component Name="APB1RSTR" TI="6377" Line="743" Offs="32"/>
-    <Component Name="APB2RSTR" TI="6392" Line="744" Offs="36"/>
-    <Component Name="RESERVED1" TI="6407" Line="745" Offs="40"/>
-    <Component Name="AHB1ENR" TI="6422" Line="746" Offs="48"/>
-    <Component Name="AHB2ENR" TI="6437" Line="747" Offs="52"/>
-    <Component Name="AHB3ENR" TI="6452" Line="748" Offs="56"/>
-    <Component Name="RESERVED2" TI="6467" Line="749" Offs="60"/>
-    <Component Name="APB1ENR" TI="6482" Line="750" Offs="64"/>
-    <Component Name="APB2ENR" TI="6497" Line="751" Offs="68"/>
-    <Component Name="RESERVED3" TI="6512" Line="752" Offs="72"/>
-    <Component Name="AHB1LPENR" TI="6527" Line="753" Offs="80"/>
-    <Component Name="AHB2LPENR" TI="6542" Line="754" Offs="84"/>
-    <Component Name="AHB3LPENR" TI="6557" Line="755" Offs="88"/>
-    <Component Name="RESERVED4" TI="6572" Line="756" Offs="92"/>
-    <Component Name="APB1LPENR" TI="6587" Line="757" Offs="96"/>
-    <Component Name="APB2LPENR" TI="6602" Line="758" Offs="100"/>
-    <Component Name="RESERVED5" TI="6617" Line="759" Offs="104"/>
-    <Component Name="BDCR" TI="6632" Line="760" Offs="112"/>
-    <Component Name="CSR" TI="6647" Line="761" Offs="116"/>
-    <Component Name="RESERVED6" TI="6662" Line="762" Offs="120"/>
-    <Component Name="SSCGR" TI="6677" Line="763" Offs="128"/>
-    <Component Name="PLLI2SCFGR" TI="6693" Line="764" Offs="132"/>
+   <type Family="Base" Name="signed char" ID="6547"/>
+   <type Family="Base" Name="unsigned char" ID="6565"/>
+   <type Family="typedef" Name="uint8_t" Line="42" ID="6554" toTI="6565"/>
+   <type Family="Base" Name="short int" ID="6572"/>
+   <type Family="Base" Name="short unsigned int" ID="6590"/>
+   <type Family="typedef" Name="uint16_t" Line="54" ID="6579" toTI="6590"/>
+   <type Family="Base" Name="long int" ID="6608"/>
+   <type Family="typedef" Name="int32_t" Line="79" ID="6597" toTI="6608"/>
+   <type Family="Base" Name="long unsigned int" ID="6626"/>
+   <type Family="typedef" Name="uint32_t" Line="80" ID="6615" toTI="6626"/>
+   <type Family="Base" Name="long long int" ID="6633"/>
+   <type Family="Base" Name="long long unsigned int" ID="6640"/>
+   <type Family="Base" Name="int" ID="6647"/>
+   <type Family="Base" Name="unsigned int" ID="6654"/>
+   <type Family="array" ID="6666" toTI="6615"/>
+   <type Family="typedef" Name="FlagStatus" Line="285" ID="6709" toTI="6687"/>
+   <type Family="typedef" Name="ITStatus" Line="285" ID="6721" toTI="6687"/>
+   <type Family="typedef" Name="FunctionalState" Line="287" ID="6755" toTI="6733"/>
+   <type Family="typedef" Name="ErrorStatus" Line="290" ID="6789" toTI="6767"/>
+   <type Family="ComponentList" Line="733" ID="6801">
+    <Component Name="CR" TI="6810" Line="735" Offs="0"/>
+    <Component Name="PLLCFGR" TI="6824" Line="736" Offs="4"/>
+    <Component Name="CFGR" TI="6839" Line="737" Offs="8"/>
+    <Component Name="CIR" TI="6854" Line="738" Offs="12"/>
+    <Component Name="AHB1RSTR" TI="6869" Line="739" Offs="16"/>
+    <Component Name="AHB2RSTR" TI="6884" Line="740" Offs="20"/>
+    <Component Name="AHB3RSTR" TI="6899" Line="741" Offs="24"/>
+    <Component Name="RESERVED0" TI="6914" Line="742" Offs="28"/>
+    <Component Name="APB1RSTR" TI="6929" Line="743" Offs="32"/>
+    <Component Name="APB2RSTR" TI="6944" Line="744" Offs="36"/>
+    <Component Name="RESERVED1" TI="6959" Line="745" Offs="40"/>
+    <Component Name="AHB1ENR" TI="6974" Line="746" Offs="48"/>
+    <Component Name="AHB2ENR" TI="6989" Line="747" Offs="52"/>
+    <Component Name="AHB3ENR" TI="7004" Line="748" Offs="56"/>
+    <Component Name="RESERVED2" TI="7019" Line="749" Offs="60"/>
+    <Component Name="APB1ENR" TI="7034" Line="750" Offs="64"/>
+    <Component Name="APB2ENR" TI="7049" Line="751" Offs="68"/>
+    <Component Name="RESERVED3" TI="7064" Line="752" Offs="72"/>
+    <Component Name="AHB1LPENR" TI="7079" Line="753" Offs="80"/>
+    <Component Name="AHB2LPENR" TI="7094" Line="754" Offs="84"/>
+    <Component Name="AHB3LPENR" TI="7109" Line="755" Offs="88"/>
+    <Component Name="RESERVED4" TI="7124" Line="756" Offs="92"/>
+    <Component Name="APB1LPENR" TI="7139" Line="757" Offs="96"/>
+    <Component Name="APB2LPENR" TI="7154" Line="758" Offs="100"/>
+    <Component Name="RESERVED5" TI="7169" Line="759" Offs="104"/>
+    <Component Name="BDCR" TI="7184" Line="760" Offs="112"/>
+    <Component Name="CSR" TI="7199" Line="761" Offs="116"/>
+    <Component Name="RESERVED6" TI="7214" Line="762" Offs="120"/>
+    <Component Name="SSCGR" TI="7229" Line="763" Offs="128"/>
+    <Component Name="PLLI2SCFGR" TI="7245" Line="764" Offs="132"/>
    </type>
-   <type Family="typedef" Name="RCC_TypeDef" Line="765" ID="6710" toTI="6249"/>
-   <type Family="ComponentList" Line="42" ID="6722">
-    <Component Name="SYSCLK_Frequency" TI="6730" Line="44" Offs="0"/>
-    <Component Name="HCLK_Frequency" TI="6744" Line="45" Offs="4"/>
-    <Component Name="PCLK1_Frequency" TI="6758" Line="46" Offs="8"/>
-    <Component Name="PCLK2_Frequency" TI="6772" Line="47" Offs="12"/>
+   <type Family="typedef" Name="RCC_TypeDef" Line="765" ID="7262" toTI="6801"/>
+   <type Family="ComponentList" Line="42" ID="7274">
+    <Component Name="SYSCLK_Frequency" TI="7282" Line="44" Offs="0"/>
+    <Component Name="HCLK_Frequency" TI="7296" Line="45" Offs="4"/>
+    <Component Name="PCLK1_Frequency" TI="7310" Line="46" Offs="8"/>
+    <Component Name="PCLK2_Frequency" TI="7324" Line="47" Offs="12"/>
    </type>
-   <type Family="typedef" Name="RCC_ClocksTypeDef" Line="48" ID="6787" toTI="6722"/>
-   <type Family="Pointer" TI="7839" toTI="6787"/>
+   <type Family="typedef" Name="RCC_ClocksTypeDef" Line="48" ID="7339" toTI="7274"/>
+   <type Family="Pointer" TI="8391" toTI="7339"/>
    <function Name="RCC_AHB1PeriphClockCmd" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.c" Line="1085">
-    <parameter Name="RCC_AHB1Periph" TI="6063" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.c" Line="1085" Addr="0x0" Param="Yes"/>
-    <parameter Name="NewState" TI="6203" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.c" Line="1085" Addr="0x1" Param="Yes"/>
+    <parameter Name="RCC_AHB1Periph" TI="6615" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.c" Line="1085" Addr="0x0" Param="Yes"/>
+    <parameter Name="NewState" TI="6755" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.c" Line="1085" Addr="0x1" Param="Yes"/>
    </function >
    <function Name="RCC_APB2PeriphClockCmd" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.c" Line="1234">
-    <parameter Name="RCC_APB2Periph" TI="6063" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.c" Line="1234" Addr="0x0" Param="Yes"/>
-    <parameter Name="NewState" TI="6203" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.c" Line="1234" Addr="0x1" Param="Yes"/>
+    <parameter Name="RCC_APB2Periph" TI="6615" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.c" Line="1234" Addr="0x0" Param="Yes"/>
+    <parameter Name="NewState" TI="6755" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.c" Line="1234" Addr="0x1" Param="Yes"/>
    </function >
-   <type Family="array" ID="9229" toTI="6002"/>
-   <variable Name="APBAHBPrescTable" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.c" Line="127" Addr="0x0" TI="9262"/>
+   <type Family="array" ID="9781" toTI="6554"/>
+   <variable Name="APBAHBPrescTable" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_rcc.c" Line="127" Addr="0x0" TI="9814"/>
   </module>
   <module Name="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\system_stm32f4xx.c" >
-   <type Family="Base" Name="signed char" ID="9324"/>
-   <type Family="Base" Name="unsigned char" ID="9342"/>
-   <type Family="typedef" Name="uint8_t" Line="42" ID="9331" toTI="9342"/>
-   <type Family="Base" Name="short int" ID="9349"/>
-   <type Family="Base" Name="short unsigned int" ID="9367"/>
-   <type Family="typedef" Name="uint16_t" Line="54" ID="9356" toTI="9367"/>
-   <type Family="Base" Name="long int" ID="9385"/>
-   <type Family="typedef" Name="int32_t" Line="79" ID="9374" toTI="9385"/>
-   <type Family="Base" Name="long unsigned int" ID="9403"/>
-   <type Family="typedef" Name="uint32_t" Line="80" ID="9392" toTI="9403"/>
-   <type Family="Base" Name="long long int" ID="9410"/>
-   <type Family="Base" Name="long long unsigned int" ID="9417"/>
-   <type Family="Base" Name="int" ID="9424"/>
-   <type Family="Base" Name="unsigned int" ID="9431"/>
-   <type Family="ComponentList" Line="335" ID="9443">
-    <Component Name="CPUID" TI="9452" Line="337" Offs="0"/>
-    <Component Name="ICSR" TI="9467" Line="338" Offs="4"/>
-    <Component Name="VTOR" TI="9482" Line="339" Offs="8"/>
-    <Component Name="AIRCR" TI="9497" Line="340" Offs="12"/>
-    <Component Name="SCR" TI="9512" Line="341" Offs="16"/>
-    <Component Name="CCR" TI="9527" Line="342" Offs="20"/>
-   <type Family="array" ID="9774" toTI="9331"/>
-    <Component Name="SHP" TI="9542" Line="343" Offs="24"/>
-    <Component Name="SHCSR" TI="9557" Line="344" Offs="36"/>
-    <Component Name="CFSR" TI="9572" Line="345" Offs="40"/>
-    <Component Name="HFSR" TI="9587" Line="346" Offs="44"/>
-    <Component Name="DFSR" TI="9602" Line="347" Offs="48"/>
-    <Component Name="MMFAR" TI="9617" Line="348" Offs="52"/>
-    <Component Name="BFAR" TI="9632" Line="349" Offs="56"/>
-    <Component Name="AFSR" TI="9647" Line="350" Offs="60"/>
-   <type Family="array" ID="9795" toTI="9392"/>
-    <Component Name="PFR" TI="9662" Line="351" Offs="64"/>
-    <Component Name="DFR" TI="9677" Line="352" Offs="72"/>
-    <Component Name="ADR" TI="9692" Line="353" Offs="76"/>
-   <type Family="array" ID="9821" toTI="9392"/>
-    <Component Name="MMFR" TI="9707" Line="354" Offs="80"/>
-   <type Family="array" ID="9847" toTI="9392"/>
-    <Component Name="ISAR" TI="9722" Line="355" Offs="96"/>
-    <Component Name="RESERVED0" TI="9737" Line="356" Offs="116"/>
-    <Component Name="CPACR" TI="9752" Line="357" Offs="136"/>
+   <type Family="Base" Name="signed char" ID="9876"/>
+   <type Family="Base" Name="unsigned char" ID="9894"/>
+   <type Family="typedef" Name="uint8_t" Line="42" ID="9883" toTI="9894"/>
+   <type Family="Base" Name="short int" ID="9901"/>
+   <type Family="Base" Name="short unsigned int" ID="9919"/>
+   <type Family="typedef" Name="uint16_t" Line="54" ID="9908" toTI="9919"/>
+   <type Family="Base" Name="long int" ID="9937"/>
+   <type Family="typedef" Name="int32_t" Line="79" ID="9926" toTI="9937"/>
+   <type Family="Base" Name="long unsigned int" ID="9955"/>
+   <type Family="typedef" Name="uint32_t" Line="80" ID="9944" toTI="9955"/>
+   <type Family="Base" Name="long long int" ID="9962"/>
+   <type Family="Base" Name="long long unsigned int" ID="9969"/>
+   <type Family="Base" Name="int" ID="9976"/>
+   <type Family="Base" Name="unsigned int" ID="9983"/>
+   <type Family="ComponentList" Line="335" ID="9995">
+    <Component Name="CPUID" TI="10004" Line="337" Offs="0"/>
+    <Component Name="ICSR" TI="10019" Line="338" Offs="4"/>
+    <Component Name="VTOR" TI="10034" Line="339" Offs="8"/>
+    <Component Name="AIRCR" TI="10049" Line="340" Offs="12"/>
+    <Component Name="SCR" TI="10064" Line="341" Offs="16"/>
+    <Component Name="CCR" TI="10079" Line="342" Offs="20"/>
+   <type Family="array" ID="10326" toTI="9883"/>
+    <Component Name="SHP" TI="10094" Line="343" Offs="24"/>
+    <Component Name="SHCSR" TI="10109" Line="344" Offs="36"/>
+    <Component Name="CFSR" TI="10124" Line="345" Offs="40"/>
+    <Component Name="HFSR" TI="10139" Line="346" Offs="44"/>
+    <Component Name="DFSR" TI="10154" Line="347" Offs="48"/>
+    <Component Name="MMFAR" TI="10169" Line="348" Offs="52"/>
+    <Component Name="BFAR" TI="10184" Line="349" Offs="56"/>
+    <Component Name="AFSR" TI="10199" Line="350" Offs="60"/>
+   <type Family="array" ID="10347" toTI="9944"/>
+    <Component Name="PFR" TI="10214" Line="351" Offs="64"/>
+    <Component Name="DFR" TI="10229" Line="352" Offs="72"/>
+    <Component Name="ADR" TI="10244" Line="353" Offs="76"/>
+   <type Family="array" ID="10373" toTI="9944"/>
+    <Component Name="MMFR" TI="10259" Line="354" Offs="80"/>
+   <type Family="array" ID="10399" toTI="9944"/>
+    <Component Name="ISAR" TI="10274" Line="355" Offs="96"/>
+    <Component Name="RESERVED0" TI="10289" Line="356" Offs="116"/>
+    <Component Name="CPACR" TI="10304" Line="357" Offs="136"/>
    </type>
-   <type Family="typedef" Name="SCB_Type" Line="358" ID="9873" toTI="9443"/>
-   <type Family="ComponentList" Line="581" ID="9912">
-    <Component Name="ACR" TI="9921" Line="583" Offs="0"/>
-    <Component Name="KEYR" TI="9936" Line="584" Offs="4"/>
-    <Component Name="OPTKEYR" TI="9951" Line="585" Offs="8"/>
-    <Component Name="SR" TI="9966" Line="586" Offs="12"/>
-    <Component Name="CR" TI="9980" Line="587" Offs="16"/>
-    <Component Name="OPTCR" TI="9994" Line="588" Offs="20"/>
+   <type Family="typedef" Name="SCB_Type" Line="358" ID="10425" toTI="9995"/>
+   <type Family="ComponentList" Line="581" ID="10464">
+    <Component Name="ACR" TI="10473" Line="583" Offs="0"/>
+    <Component Name="KEYR" TI="10488" Line="584" Offs="4"/>
+    <Component Name="OPTKEYR" TI="10503" Line="585" Offs="8"/>
+    <Component Name="SR" TI="10518" Line="586" Offs="12"/>
+    <Component Name="CR" TI="10532" Line="587" Offs="16"/>
+    <Component Name="OPTCR" TI="10546" Line="588" Offs="20"/>
    </type>
-   <type Family="typedef" Name="FLASH_TypeDef" Line="589" ID="10010" toTI="9912"/>
-   <type Family="ComponentList" Line="723" ID="10022">
-    <Component Name="CR" TI="10031" Line="725" Offs="0"/>
-    <Component Name="CSR" TI="10045" Line="726" Offs="4"/>
+   <type Family="typedef" Name="FLASH_TypeDef" Line="589" ID="10562" toTI="10464"/>
+   <type Family="ComponentList" Line="723" ID="10574">
+    <Component Name="CR" TI="10583" Line="725" Offs="0"/>
+    <Component Name="CSR" TI="10597" Line="726" Offs="4"/>
    </type>
-   <type Family="typedef" Name="PWR_TypeDef" Line="727" ID="10061" toTI="10022"/>
-   <type Family="ComponentList" Line="733" ID="10073">
-    <Component Name="CR" TI="10082" Line="735" Offs="0"/>
-    <Component Name="PLLCFGR" TI="10096" Line="736" Offs="4"/>
-    <Component Name="CFGR" TI="10111" Line="737" Offs="8"/>
-    <Component Name="CIR" TI="10126" Line="738" Offs="12"/>
-    <Component Name="AHB1RSTR" TI="10141" Line="739" Offs="16"/>
-    <Component Name="AHB2RSTR" TI="10156" Line="740" Offs="20"/>
-    <Component Name="AHB3RSTR" TI="10171" Line="741" Offs="24"/>
-    <Component Name="RESERVED0" TI="10186" Line="742" Offs="28"/>
-    <Component Name="APB1RSTR" TI="10201" Line="743" Offs="32"/>
-    <Component Name="APB2RSTR" TI="10216" Line="744" Offs="36"/>
-    <Component Name="RESERVED1" TI="10231" Line="745" Offs="40"/>
-    <Component Name="AHB1ENR" TI="10246" Line="746" Offs="48"/>
-    <Component Name="AHB2ENR" TI="10261" Line="747" Offs="52"/>
-    <Component Name="AHB3ENR" TI="10276" Line="748" Offs="56"/>
-    <Component Name="RESERVED2" TI="10291" Line="749" Offs="60"/>
-    <Component Name="APB1ENR" TI="10306" Line="750" Offs="64"/>
-    <Component Name="APB2ENR" TI="10321" Line="751" Offs="68"/>
-    <Component Name="RESERVED3" TI="10336" Line="752" Offs="72"/>
-    <Component Name="AHB1LPENR" TI="10351" Line="753" Offs="80"/>
-    <Component Name="AHB2LPENR" TI="10366" Line="754" Offs="84"/>
-    <Component Name="AHB3LPENR" TI="10381" Line="755" Offs="88"/>
-    <Component Name="RESERVED4" TI="10396" Line="756" Offs="92"/>
-    <Component Name="APB1LPENR" TI="10411" Line="757" Offs="96"/>
-    <Component Name="APB2LPENR" TI="10426" Line="758" Offs="100"/>
-    <Component Name="RESERVED5" TI="10441" Line="759" Offs="104"/>
-    <Component Name="BDCR" TI="10456" Line="760" Offs="112"/>
-    <Component Name="CSR" TI="10471" Line="761" Offs="116"/>
-    <Component Name="RESERVED6" TI="10486" Line="762" Offs="120"/>
-    <Component Name="SSCGR" TI="10501" Line="763" Offs="128"/>
-    <Component Name="PLLI2SCFGR" TI="10517" Line="764" Offs="132"/>
+   <type Family="typedef" Name="PWR_TypeDef" Line="727" ID="10613" toTI="10574"/>
+   <type Family="ComponentList" Line="733" ID="10625">
+    <Component Name="CR" TI="10634" Line="735" Offs="0"/>
+    <Component Name="PLLCFGR" TI="10648" Line="736" Offs="4"/>
+    <Component Name="CFGR" TI="10663" Line="737" Offs="8"/>
+    <Component Name="CIR" TI="10678" Line="738" Offs="12"/>
+    <Component Name="AHB1RSTR" TI="10693" Line="739" Offs="16"/>
+    <Component Name="AHB2RSTR" TI="10708" Line="740" Offs="20"/>
+    <Component Name="AHB3RSTR" TI="10723" Line="741" Offs="24"/>
+    <Component Name="RESERVED0" TI="10738" Line="742" Offs="28"/>
+    <Component Name="APB1RSTR" TI="10753" Line="743" Offs="32"/>
+    <Component Name="APB2RSTR" TI="10768" Line="744" Offs="36"/>
+    <Component Name="RESERVED1" TI="10783" Line="745" Offs="40"/>
+    <Component Name="AHB1ENR" TI="10798" Line="746" Offs="48"/>
+    <Component Name="AHB2ENR" TI="10813" Line="747" Offs="52"/>
+    <Component Name="AHB3ENR" TI="10828" Line="748" Offs="56"/>
+    <Component Name="RESERVED2" TI="10843" Line="749" Offs="60"/>
+    <Component Name="APB1ENR" TI="10858" Line="750" Offs="64"/>
+    <Component Name="APB2ENR" TI="10873" Line="751" Offs="68"/>
+    <Component Name="RESERVED3" TI="10888" Line="752" Offs="72"/>
+    <Component Name="AHB1LPENR" TI="10903" Line="753" Offs="80"/>
+    <Component Name="AHB2LPENR" TI="10918" Line="754" Offs="84"/>
+    <Component Name="AHB3LPENR" TI="10933" Line="755" Offs="88"/>
+    <Component Name="RESERVED4" TI="10948" Line="756" Offs="92"/>
+    <Component Name="APB1LPENR" TI="10963" Line="757" Offs="96"/>
+    <Component Name="APB2LPENR" TI="10978" Line="758" Offs="100"/>
+    <Component Name="RESERVED5" TI="10993" Line="759" Offs="104"/>
+    <Component Name="BDCR" TI="11008" Line="760" Offs="112"/>
+    <Component Name="CSR" TI="11023" Line="761" Offs="116"/>
+    <Component Name="RESERVED6" TI="11038" Line="762" Offs="120"/>
+    <Component Name="SSCGR" TI="11053" Line="763" Offs="128"/>
+    <Component Name="PLLI2SCFGR" TI="11069" Line="764" Offs="132"/>
    </type>
-   <type Family="typedef" Name="RCC_TypeDef" Line="765" ID="10534" toTI="10073"/>
-   <type Family="array" ID="10786" toTI="9331"/>
-   <variable Name="SystemCoreClock" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\system_stm32f4xx.c" Line="172" Addr="0x0" TI="9392"/>
-   <variable Name="AHBPrescTable" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\system_stm32f4xx.c" Line="174" Addr="0x0" TI="10875"/>
+   <type Family="typedef" Name="RCC_TypeDef" Line="765" ID="11086" toTI="10625"/>
+   <type Family="array" ID="11338" toTI="9883"/>
+   <variable Name="SystemCoreClock" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\system_stm32f4xx.c" Line="172" Addr="0x0" TI="9944"/>
+   <variable Name="AHBPrescTable" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\system_stm32f4xx.c" Line="174" Addr="0x0" TI="11427"/>
   </module>
   <module Name="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_exti.c" >
-   <type Family="Base" Name="signed char" ID="10927"/>
-   <type Family="Base" Name="unsigned char" ID="10934"/>
-   <type Family="Base" Name="short int" ID="10941"/>
-   <type Family="Base" Name="short unsigned int" ID="10948"/>
-   <type Family="Base" Name="long int" ID="10966"/>
-   <type Family="typedef" Name="int32_t" Line="79" ID="10955" toTI="10966"/>
-   <type Family="Base" Name="long unsigned int" ID="10984"/>
-   <type Family="typedef" Name="uint32_t" Line="80" ID="10973" toTI="10984"/>
-   <type Family="Base" Name="long long int" ID="10991"/>
-   <type Family="Base" Name="long long unsigned int" ID="10998"/>
-   <type Family="Base" Name="int" ID="11005"/>
-   <type Family="Base" Name="unsigned int" ID="11012"/>
-   <type Family="typedef" Name="FlagStatus" Line="285" ID="11051" toTI="11029"/>
-   <type Family="typedef" Name="ITStatus" Line="285" ID="11063" toTI="11029"/>
-   <type Family="typedef" Name="FunctionalState" Line="287" ID="11097" toTI="11075"/>
-   <type Family="ComponentList" Line="567" ID="11109">
-    <Component Name="IMR" TI="11118" Line="569" Offs="0"/>
-    <Component Name="EMR" TI="11133" Line="570" Offs="4"/>
-    <Component Name="RTSR" TI="11148" Line="571" Offs="8"/>
-    <Component Name="FTSR" TI="11163" Line="572" Offs="12"/>
-    <Component Name="SWIER" TI="11178" Line="573" Offs="16"/>
-    <Component Name="PR" TI="11193" Line="574" Offs="20"/>
+   <type Family="Base" Name="signed char" ID="11479"/>
+   <type Family="Base" Name="unsigned char" ID="11486"/>
+   <type Family="Base" Name="short int" ID="11493"/>
+   <type Family="Base" Name="short unsigned int" ID="11500"/>
+   <type Family="Base" Name="long int" ID="11518"/>
+   <type Family="typedef" Name="int32_t" Line="79" ID="11507" toTI="11518"/>
+   <type Family="Base" Name="long unsigned int" ID="11536"/>
+   <type Family="typedef" Name="uint32_t" Line="80" ID="11525" toTI="11536"/>
+   <type Family="Base" Name="long long int" ID="11543"/>
+   <type Family="Base" Name="long long unsigned int" ID="11550"/>
+   <type Family="Base" Name="int" ID="11557"/>
+   <type Family="Base" Name="unsigned int" ID="11564"/>
+   <type Family="typedef" Name="FlagStatus" Line="285" ID="11603" toTI="11581"/>
+   <type Family="typedef" Name="ITStatus" Line="285" ID="11615" toTI="11581"/>
+   <type Family="typedef" Name="FunctionalState" Line="287" ID="11649" toTI="11627"/>
+   <type Family="ComponentList" Line="567" ID="11661">
+    <Component Name="IMR" TI="11670" Line="569" Offs="0"/>
+    <Component Name="EMR" TI="11685" Line="570" Offs="4"/>
+    <Component Name="RTSR" TI="11700" Line="571" Offs="8"/>
+    <Component Name="FTSR" TI="11715" Line="572" Offs="12"/>
+    <Component Name="SWIER" TI="11730" Line="573" Offs="16"/>
+    <Component Name="PR" TI="11745" Line="574" Offs="20"/>
    </type>
-   <type Family="typedef" Name="EXTI_TypeDef" Line="575" ID="11208" toTI="11109"/>
-   <type Family="typedef" Name="EXTIMode_TypeDef" Line="52" ID="11241" toTI="11220"/>
-   <type Family="typedef" Name="EXTITrigger_TypeDef" Line="65" ID="11279" toTI="11252"/>
-   <type Family="ComponentList" Line="74" ID="11290">
-    <Component Name="EXTI_Line" TI="11298" Line="76" Offs="0"/>
-    <Component Name="EXTI_Mode" TI="11312" Line="79" Offs="4"/>
-    <Component Name="EXTI_Trigger" TI="11326" Line="82" Offs="5"/>
-    <Component Name="EXTI_LineCmd" TI="11340" Line="85" Offs="6"/>
+   <type Family="typedef" Name="EXTI_TypeDef" Line="575" ID="11760" toTI="11661"/>
+   <type Family="typedef" Name="EXTIMode_TypeDef" Line="52" ID="11793" toTI="11772"/>
+   <type Family="typedef" Name="EXTITrigger_TypeDef" Line="65" ID="11831" toTI="11804"/>
+   <type Family="ComponentList" Line="74" ID="11842">
+    <Component Name="EXTI_Line" TI="11850" Line="76" Offs="0"/>
+    <Component Name="EXTI_Mode" TI="11864" Line="79" Offs="4"/>
+    <Component Name="EXTI_Trigger" TI="11878" Line="82" Offs="5"/>
+    <Component Name="EXTI_LineCmd" TI="11892" Line="85" Offs="6"/>
    </type>
-   <type Family="typedef" Name="EXTI_InitTypeDef" Line="87" ID="11355" toTI="11290"/>
+   <type Family="typedef" Name="EXTI_InitTypeDef" Line="87" ID="11907" toTI="11842"/>
    <function Name="EXTI_Init" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_exti.c" Line="119">
-   <type Family="Pointer" TI="11440" toTI="11355"/>
-    <parameter Name="EXTI_InitStruct" TI="11440" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_exti.c" Line="119" Addr="0x0" Param="Yes"/>
-    <variable Name="tmp" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_exti.c" Line="121" Addr="0x0" TI="10973"/>
+   <type Family="Pointer" TI="11992" toTI="11907"/>
+    <parameter Name="EXTI_InitStruct" TI="11992" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_exti.c" Line="119" Addr="0x0" Param="Yes"/>
+    <variable Name="tmp" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_exti.c" Line="121" Addr="0x0" TI="11525"/>
    </function >
    <function Name="EXTI_ClearITPendingBit" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_exti.c" Line="282">
-    <parameter Name="EXTI_Line" TI="10973" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_exti.c" Line="282" Addr="0x0" Param="Yes"/>
+    <parameter Name="EXTI_Line" TI="11525" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_exti.c" Line="282" Addr="0x0" Param="Yes"/>
    </function >
   </module>
   <module Name="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_syscfg.c" >
-   <type Family="Base" Name="signed char" ID="11807"/>
-   <type Family="Base" Name="unsigned char" ID="11825"/>
-   <type Family="typedef" Name="uint8_t" Line="42" ID="11814" toTI="11825"/>
-   <type Family="Base" Name="short int" ID="11832"/>
-   <type Family="Base" Name="short unsigned int" ID="11839"/>
-   <type Family="Base" Name="long int" ID="11857"/>
-   <type Family="typedef" Name="int32_t" Line="79" ID="11846" toTI="11857"/>
-   <type Family="Base" Name="long unsigned int" ID="11875"/>
-   <type Family="typedef" Name="uint32_t" Line="80" ID="11864" toTI="11875"/>
-   <type Family="Base" Name="long long int" ID="11882"/>
-   <type Family="Base" Name="long long unsigned int" ID="11889"/>
-   <type Family="Base" Name="int" ID="11896"/>
-   <type Family="Base" Name="unsigned int" ID="11903"/>
-   <type Family="array" ID="11915" toTI="11864"/>
-   <type Family="array" ID="11931" toTI="11864"/>
-   <type Family="typedef" Name="FlagStatus" Line="285" ID="11974" toTI="11952"/>
-   <type Family="typedef" Name="FunctionalState" Line="287" ID="12008" toTI="11986"/>
-   <type Family="ComponentList" Line="672" ID="12020">
-    <Component Name="MEMRMP" TI="12029" Line="674" Offs="0"/>
-    <Component Name="PMC" TI="12044" Line="675" Offs="4"/>
-    <Component Name="EXTICR" TI="12059" Line="676" Offs="8"/>
-    <Component Name="RESERVED" TI="12074" Line="677" Offs="24"/>
-    <Component Name="CMPCR" TI="12089" Line="678" Offs="32"/>
+   <type Family="Base" Name="signed char" ID="12359"/>
+   <type Family="Base" Name="unsigned char" ID="12377"/>
+   <type Family="typedef" Name="uint8_t" Line="42" ID="12366" toTI="12377"/>
+   <type Family="Base" Name="short int" ID="12384"/>
+   <type Family="Base" Name="short unsigned int" ID="12391"/>
+   <type Family="Base" Name="long int" ID="12409"/>
+   <type Family="typedef" Name="int32_t" Line="79" ID="12398" toTI="12409"/>
+   <type Family="Base" Name="long unsigned int" ID="12427"/>
+   <type Family="typedef" Name="uint32_t" Line="80" ID="12416" toTI="12427"/>
+   <type Family="Base" Name="long long int" ID="12434"/>
+   <type Family="Base" Name="long long unsigned int" ID="12441"/>
+   <type Family="Base" Name="int" ID="12448"/>
+   <type Family="Base" Name="unsigned int" ID="12455"/>
+   <type Family="array" ID="12467" toTI="12416"/>
+   <type Family="array" ID="12483" toTI="12416"/>
+   <type Family="typedef" Name="FlagStatus" Line="285" ID="12526" toTI="12504"/>
+   <type Family="typedef" Name="FunctionalState" Line="287" ID="12560" toTI="12538"/>
+   <type Family="ComponentList" Line="672" ID="12572">
+    <Component Name="MEMRMP" TI="12581" Line="674" Offs="0"/>
+    <Component Name="PMC" TI="12596" Line="675" Offs="4"/>
+    <Component Name="EXTICR" TI="12611" Line="676" Offs="8"/>
+    <Component Name="RESERVED" TI="12626" Line="677" Offs="24"/>
+    <Component Name="CMPCR" TI="12641" Line="678" Offs="32"/>
    </type>
-   <type Family="typedef" Name="SYSCFG_TypeDef" Line="679" ID="12110" toTI="12020"/>
+   <type Family="typedef" Name="SYSCFG_TypeDef" Line="679" ID="12662" toTI="12572"/>
    <function Name="SYSCFG_EXTILineConfig" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_syscfg.c" Line="119">
-    <parameter Name="EXTI_PortSourceGPIOx" TI="11814" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_syscfg.c" Line="119" Addr="0x0" Param="Yes"/>
-    <parameter Name="EXTI_PinSourcex" TI="11814" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_syscfg.c" Line="119" Addr="0x1" Param="Yes"/>
-    <variable Name="tmp" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_syscfg.c" Line="121" Addr="0x0" TI="11864"/>
+    <parameter Name="EXTI_PortSourceGPIOx" TI="12366" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_syscfg.c" Line="119" Addr="0x0" Param="Yes"/>
+    <parameter Name="EXTI_PinSourcex" TI="12366" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_syscfg.c" Line="119" Addr="0x1" Param="Yes"/>
+    <variable Name="tmp" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_syscfg.c" Line="121" Addr="0x0" TI="12416"/>
    </function >
   </module>
   <module Name="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.c" >
-   <type Family="Base" Name="signed char" ID="12440"/>
-   <type Family="Base" Name="unsigned char" ID="12458"/>
-   <type Family="typedef" Name="uint8_t" Line="42" ID="12447" toTI="12458"/>
-   <type Family="Base" Name="short int" ID="12465"/>
-   <type Family="Base" Name="short unsigned int" ID="12483"/>
-   <type Family="typedef" Name="uint16_t" Line="54" ID="12472" toTI="12483"/>
-   <type Family="Base" Name="long int" ID="12501"/>
-   <type Family="typedef" Name="int32_t" Line="79" ID="12490" toTI="12501"/>
-   <type Family="Base" Name="long unsigned int" ID="12519"/>
-   <type Family="typedef" Name="uint32_t" Line="80" ID="12508" toTI="12519"/>
-   <type Family="Base" Name="long long int" ID="12526"/>
-   <type Family="Base" Name="long long unsigned int" ID="12533"/>
-   <type Family="Base" Name="int" ID="12540"/>
-   <type Family="Base" Name="unsigned int" ID="12547"/>
-   <type Family="typedef" Name="FlagStatus" Line="285" ID="12591" toTI="12569"/>
-   <type Family="typedef" Name="ITStatus" Line="285" ID="12603" toTI="12569"/>
-   <type Family="typedef" Name="FunctionalState" Line="287" ID="12637" toTI="12615"/>
-   <type Family="ComponentList" Line="873" ID="12649">
-    <Component Name="CR1" TI="12658" Line="875" Offs="0"/>
-    <Component Name="RESERVED0" TI="12673" Line="876" Offs="2"/>
-    <Component Name="CR2" TI="12688" Line="877" Offs="4"/>
-    <Component Name="RESERVED1" TI="12703" Line="878" Offs="6"/>
-    <Component Name="SMCR" TI="12718" Line="879" Offs="8"/>
-    <Component Name="RESERVED2" TI="12733" Line="880" Offs="10"/>
-    <Component Name="DIER" TI="12748" Line="881" Offs="12"/>
-    <Component Name="RESERVED3" TI="12763" Line="882" Offs="14"/>
-    <Component Name="SR" TI="12778" Line="883" Offs="16"/>
-    <Component Name="RESERVED4" TI="12792" Line="884" Offs="18"/>
-    <Component Name="EGR" TI="12807" Line="885" Offs="20"/>
-    <Component Name="RESERVED5" TI="12822" Line="886" Offs="22"/>
-    <Component Name="CCMR1" TI="12837" Line="887" Offs="24"/>
-    <Component Name="RESERVED6" TI="12852" Line="888" Offs="26"/>
-    <Component Name="CCMR2" TI="12867" Line="889" Offs="28"/>
-    <Component Name="RESERVED7" TI="12882" Line="890" Offs="30"/>
-    <Component Name="CCER" TI="12897" Line="891" Offs="32"/>
-    <Component Name="RESERVED8" TI="12912" Line="892" Offs="34"/>
-    <Component Name="CNT" TI="12927" Line="893" Offs="36"/>
-    <Component Name="PSC" TI="12942" Line="894" Offs="40"/>
-    <Component Name="RESERVED9" TI="12957" Line="895" Offs="42"/>
-    <Component Name="ARR" TI="12972" Line="896" Offs="44"/>
-    <Component Name="RCR" TI="12987" Line="897" Offs="48"/>
-    <Component Name="RESERVED10" TI="13002" Line="898" Offs="50"/>
-    <Component Name="CCR1" TI="13017" Line="899" Offs="52"/>
-    <Component Name="CCR2" TI="13032" Line="900" Offs="56"/>
-    <Component Name="CCR3" TI="13047" Line="901" Offs="60"/>
-    <Component Name="CCR4" TI="13062" Line="902" Offs="64"/>
-    <Component Name="BDTR" TI="13077" Line="903" Offs="68"/>
-    <Component Name="RESERVED11" TI="13092" Line="904" Offs="70"/>
-    <Component Name="DCR" TI="13107" Line="905" Offs="72"/>
-    <Component Name="RESERVED12" TI="13122" Line="906" Offs="74"/>
-    <Component Name="DMAR" TI="13137" Line="907" Offs="76"/>
-    <Component Name="RESERVED13" TI="13152" Line="908" Offs="78"/>
-    <Component Name="OR" TI="13167" Line="909" Offs="80"/>
-    <Component Name="RESERVED14" TI="13181" Line="910" Offs="82"/>
+   <type Family="Base" Name="signed char" ID="12992"/>
+   <type Family="Base" Name="unsigned char" ID="13010"/>
+   <type Family="typedef" Name="uint8_t" Line="42" ID="12999" toTI="13010"/>
+   <type Family="Base" Name="short int" ID="13017"/>
+   <type Family="Base" Name="short unsigned int" ID="13035"/>
+   <type Family="typedef" Name="uint16_t" Line="54" ID="13024" toTI="13035"/>
+   <type Family="Base" Name="long int" ID="13053"/>
+   <type Family="typedef" Name="int32_t" Line="79" ID="13042" toTI="13053"/>
+   <type Family="Base" Name="long unsigned int" ID="13071"/>
+   <type Family="typedef" Name="uint32_t" Line="80" ID="13060" toTI="13071"/>
+   <type Family="Base" Name="long long int" ID="13078"/>
+   <type Family="Base" Name="long long unsigned int" ID="13085"/>
+   <type Family="Base" Name="int" ID="13092"/>
+   <type Family="Base" Name="unsigned int" ID="13099"/>
+   <type Family="typedef" Name="FlagStatus" Line="285" ID="13143" toTI="13121"/>
+   <type Family="typedef" Name="ITStatus" Line="285" ID="13155" toTI="13121"/>
+   <type Family="typedef" Name="FunctionalState" Line="287" ID="13189" toTI="13167"/>
+   <type Family="ComponentList" Line="873" ID="13201">
+    <Component Name="CR1" TI="13210" Line="875" Offs="0"/>
+    <Component Name="RESERVED0" TI="13225" Line="876" Offs="2"/>
+    <Component Name="CR2" TI="13240" Line="877" Offs="4"/>
+    <Component Name="RESERVED1" TI="13255" Line="878" Offs="6"/>
+    <Component Name="SMCR" TI="13270" Line="879" Offs="8"/>
+    <Component Name="RESERVED2" TI="13285" Line="880" Offs="10"/>
+    <Component Name="DIER" TI="13300" Line="881" Offs="12"/>
+    <Component Name="RESERVED3" TI="13315" Line="882" Offs="14"/>
+    <Component Name="SR" TI="13330" Line="883" Offs="16"/>
+    <Component Name="RESERVED4" TI="13344" Line="884" Offs="18"/>
+    <Component Name="EGR" TI="13359" Line="885" Offs="20"/>
+    <Component Name="RESERVED5" TI="13374" Line="886" Offs="22"/>
+    <Component Name="CCMR1" TI="13389" Line="887" Offs="24"/>
+    <Component Name="RESERVED6" TI="13404" Line="888" Offs="26"/>
+    <Component Name="CCMR2" TI="13419" Line="889" Offs="28"/>
+    <Component Name="RESERVED7" TI="13434" Line="890" Offs="30"/>
+    <Component Name="CCER" TI="13449" Line="891" Offs="32"/>
+    <Component Name="RESERVED8" TI="13464" Line="892" Offs="34"/>
+    <Component Name="CNT" TI="13479" Line="893" Offs="36"/>
+    <Component Name="PSC" TI="13494" Line="894" Offs="40"/>
+    <Component Name="RESERVED9" TI="13509" Line="895" Offs="42"/>
+    <Component Name="ARR" TI="13524" Line="896" Offs="44"/>
+    <Component Name="RCR" TI="13539" Line="897" Offs="48"/>
+    <Component Name="RESERVED10" TI="13554" Line="898" Offs="50"/>
+    <Component Name="CCR1" TI="13569" Line="899" Offs="52"/>
+    <Component Name="CCR2" TI="13584" Line="900" Offs="56"/>
+    <Component Name="CCR3" TI="13599" Line="901" Offs="60"/>
+    <Component Name="CCR4" TI="13614" Line="902" Offs="64"/>
+    <Component Name="BDTR" TI="13629" Line="903" Offs="68"/>
+    <Component Name="RESERVED11" TI="13644" Line="904" Offs="70"/>
+    <Component Name="DCR" TI="13659" Line="905" Offs="72"/>
+    <Component Name="RESERVED12" TI="13674" Line="906" Offs="74"/>
+    <Component Name="DMAR" TI="13689" Line="907" Offs="76"/>
+    <Component Name="RESERVED13" TI="13704" Line="908" Offs="78"/>
+    <Component Name="OR" TI="13719" Line="909" Offs="80"/>
+    <Component Name="RESERVED14" TI="13733" Line="910" Offs="82"/>
    </type>
-   <type Family="typedef" Name="TIM_TypeDef" Line="911" ID="13197" toTI="12649"/>
-   <type Family="ComponentList" Line="49" ID="13209">
-    <Component Name="TIM_Prescaler" TI="13217" Line="51" Offs="0"/>
-    <Component Name="TIM_CounterMode" TI="13231" Line="54" Offs="2"/>
-    <Component Name="TIM_Period" TI="13245" Line="57" Offs="4"/>
-    <Component Name="TIM_ClockDivision" TI="13259" Line="61" Offs="8"/>
-    <Component Name="TIM_RepetitionCounter" TI="13273" Line="64" Offs="10"/>
+   <type Family="typedef" Name="TIM_TypeDef" Line="911" ID="13749" toTI="13201"/>
+   <type Family="ComponentList" Line="49" ID="13761">
+    <Component Name="TIM_Prescaler" TI="13769" Line="51" Offs="0"/>
+    <Component Name="TIM_CounterMode" TI="13783" Line="54" Offs="2"/>
+    <Component Name="TIM_Period" TI="13797" Line="57" Offs="4"/>
+    <Component Name="TIM_ClockDivision" TI="13811" Line="61" Offs="8"/>
+    <Component Name="TIM_RepetitionCounter" TI="13825" Line="64" Offs="10"/>
    </type>
-   <type Family="typedef" Name="TIM_TimeBaseInitTypeDef" Line="72" ID="13288" toTI="13209"/>
-   <type Family="ComponentList" Line="78" ID="13299">
-    <Component Name="TIM_OCMode" TI="13307" Line="80" Offs="0"/>
-    <Component Name="TIM_OutputState" TI="13321" Line="83" Offs="2"/>
-    <Component Name="TIM_OutputNState" TI="13335" Line="86" Offs="4"/>
-    <Component Name="TIM_Pulse" TI="13349" Line="90" Offs="8"/>
-    <Component Name="TIM_OCPolarity" TI="13363" Line="93" Offs="12"/>
-    <Component Name="TIM_OCNPolarity" TI="13377" Line="96" Offs="14"/>
-    <Component Name="TIM_OCIdleState" TI="13391" Line="100" Offs="16"/>
-    <Component Name="TIM_OCNIdleState" TI="13405" Line="104" Offs="18"/>
+   <type Family="typedef" Name="TIM_TimeBaseInitTypeDef" Line="72" ID="13840" toTI="13761"/>
+   <type Family="ComponentList" Line="78" ID="13851">
+    <Component Name="TIM_OCMode" TI="13859" Line="80" Offs="0"/>
+    <Component Name="TIM_OutputState" TI="13873" Line="83" Offs="2"/>
+    <Component Name="TIM_OutputNState" TI="13887" Line="86" Offs="4"/>
+    <Component Name="TIM_Pulse" TI="13901" Line="90" Offs="8"/>
+    <Component Name="TIM_OCPolarity" TI="13915" Line="93" Offs="12"/>
+    <Component Name="TIM_OCNPolarity" TI="13929" Line="96" Offs="14"/>
+    <Component Name="TIM_OCIdleState" TI="13943" Line="100" Offs="16"/>
+    <Component Name="TIM_OCNIdleState" TI="13957" Line="104" Offs="18"/>
    </type>
-   <type Family="typedef" Name="TIM_OCInitTypeDef" Line="107" ID="13420" toTI="13299"/>
-   <type Family="ComponentList" Line="113" ID="13431">
-    <Component Name="TIM_Channel" TI="13439" Line="116" Offs="0"/>
-    <Component Name="TIM_ICPolarity" TI="13453" Line="119" Offs="2"/>
-    <Component Name="TIM_ICSelection" TI="13467" Line="122" Offs="4"/>
-    <Component Name="TIM_ICPrescaler" TI="13481" Line="125" Offs="6"/>
-    <Component Name="TIM_ICFilter" TI="13495" Line="128" Offs="8"/>
+   <type Family="typedef" Name="TIM_OCInitTypeDef" Line="107" ID="13972" toTI="13851"/>
+   <type Family="ComponentList" Line="113" ID="13983">
+    <Component Name="TIM_Channel" TI="13991" Line="116" Offs="0"/>
+    <Component Name="TIM_ICPolarity" TI="14005" Line="119" Offs="2"/>
+    <Component Name="TIM_ICSelection" TI="14019" Line="122" Offs="4"/>
+    <Component Name="TIM_ICPrescaler" TI="14033" Line="125" Offs="6"/>
+    <Component Name="TIM_ICFilter" TI="14047" Line="128" Offs="8"/>
    </type>
-   <type Family="typedef" Name="TIM_ICInitTypeDef" Line="130" ID="13510" toTI="13431"/>
-   <type Family="ComponentList" Line="137" ID="13521">
-    <Component Name="TIM_OSSRState" TI="13529" Line="140" Offs="0"/>
-    <Component Name="TIM_OSSIState" TI="13543" Line="143" Offs="2"/>
-    <Component Name="TIM_LOCKLevel" TI="13557" Line="146" Offs="4"/>
-    <Component Name="TIM_DeadTime" TI="13571" Line="149" Offs="6"/>
-    <Component Name="TIM_Break" TI="13585" Line="153" Offs="8"/>
-    <Component Name="TIM_BreakPolarity" TI="13599" Line="156" Offs="10"/>
-    <Component Name="TIM_AutomaticOutput" TI="13613" Line="159" Offs="12"/>
+   <type Family="typedef" Name="TIM_ICInitTypeDef" Line="130" ID="14062" toTI="13983"/>
+   <type Family="ComponentList" Line="137" ID="14073">
+    <Component Name="TIM_OSSRState" TI="14081" Line="140" Offs="0"/>
+    <Component Name="TIM_OSSIState" TI="14095" Line="143" Offs="2"/>
+    <Component Name="TIM_LOCKLevel" TI="14109" Line="146" Offs="4"/>
+    <Component Name="TIM_DeadTime" TI="14123" Line="149" Offs="6"/>
+    <Component Name="TIM_Break" TI="14137" Line="153" Offs="8"/>
+    <Component Name="TIM_BreakPolarity" TI="14151" Line="156" Offs="10"/>
+    <Component Name="TIM_AutomaticOutput" TI="14165" Line="159" Offs="12"/>
    </type>
-   <type Family="typedef" Name="TIM_BDTRInitTypeDef" Line="161" ID="13628" toTI="13521"/>
-   <type Family="Pointer" TI="13753" toTI="13197"/>
+   <type Family="typedef" Name="TIM_BDTRInitTypeDef" Line="161" ID="14180" toTI="14073"/>
+   <type Family="Pointer" TI="14305" toTI="13749"/>
    <function Name="TIM_TimeBaseInit" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.c" Line="282">
-    <parameter Name="TIMx" TI="13753" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.c" Line="282" Addr="0x0" Param="Yes"/>
-   <type Family="Pointer" TI="14001" toTI="13288"/>
-    <parameter Name="TIM_TimeBaseInitStruct" TI="14001" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.c" Line="282" Addr="0x1" Param="Yes"/>
-    <variable Name="tmpcr1" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.c" Line="284" Addr="0x0" TI="12472"/>
+    <parameter Name="TIMx" TI="14305" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.c" Line="282" Addr="0x0" Param="Yes"/>
+   <type Family="Pointer" TI="14553" toTI="13840"/>
+    <parameter Name="TIM_TimeBaseInitStruct" TI="14553" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.c" Line="282" Addr="0x1" Param="Yes"/>
+    <variable Name="tmpcr1" FileName="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\stm32f4xx_tim.c" Line="284" Addr="0x0" TI="13024"/>
    </function >
-   <type Family="Pointer" TI="14812" toTI="13420"/>
-   <type Family="Pointer" TI="17314" toTI="13510"/>
-   <type Family="Pointer" TI="18300" toTI="13628"/>
+   <type Family="Pointer" TI="15364" toTI="13972"/>
+   <type Family="Pointer" TI="17866" toTI="14062"/>
+   <type Family="Pointer" TI="18852" toTI="14180"/>
   </module>
  </modulelist>
 </aoffile>

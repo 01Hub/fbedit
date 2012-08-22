@@ -22,16 +22,16 @@
  <type Header="GPIO_InitTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_gpio.h" DeclLine="133" Pointer="No"/>
  <type Header="TIM_TimeBaseInitTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_tim.h" DeclLine="72" Pointer="No"/>
  <type Header="NVIC_InitTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\misc.h" DeclLine="68" Pointer="No"/>
- <func Header="Cls" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.c" DeclLine="67"/>
- <func Header="SetPixel" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.c" DeclLine="89"/>
- <func Header="RCC_Config" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.c" DeclLine="125"/>
- <func Header="NVIC_Config" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.c" DeclLine="138"/>
- <func Header="GPIO_Config" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.c" DeclLine="159"/>
- <func Header="TIM_Config" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.c" DeclLine="207"/>
- <func Header="main" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.c" DeclLine="38"/>
- <func Header="TIM2_IRQHandler" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.c" DeclLine="229"/>
- <func Header="EXTI4_IRQHandler" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.c" DeclLine="271"/>
- <func Header="EXTI9_5_IRQHandler" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.c" DeclLine="299"/>
+ <func Header="Cls" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.c" DeclLine="70"/>
+ <func Header="SetPixel" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.c" DeclLine="92"/>
+ <func Header="RCC_Config" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.c" DeclLine="254"/>
+ <func Header="NVIC_Config" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.c" DeclLine="267"/>
+ <func Header="GPIO_Config" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.c" DeclLine="288"/>
+ <func Header="TIM_Config" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.c" DeclLine="336"/>
+ <func Header="main" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.c" DeclLine="41"/>
+ <func Header="TIM2_IRQHandler" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.c" DeclLine="358"/>
+ <func Header="EXTI4_IRQHandler" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.c" DeclLine="400"/>
+ <func Header="EXTI9_5_IRQHandler" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.c" DeclLine="428"/>
  <variable Header="NVIC_InitStructure" Icon="2" Type="variable" Desc=":   struct " DeclFile="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.c" DeclLine="16" Pointer="No"/>
  <variable Header="vx" Icon="2" Type="variable" Desc=":   unsigned int" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.c" DeclLine="17" Pointer="No"/>
  <variable Header="vy" Icon="2" Type="variable" Desc=":   unsigned int" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\PhotoFrame\STM32F4\main.c" DeclLine="18" Pointer="No"/>
