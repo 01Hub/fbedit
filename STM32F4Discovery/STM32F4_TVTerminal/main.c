@@ -106,21 +106,39 @@
 #define SCREEN_HEIGHT       25  // 25 lines.
 #define TILE_WIDTH          8   // Width of a character tile.
 #define TILE_HEIGHT         10  // Height of a character tile.
+#define SPI_DR              0x4001300C
 
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
-uint16_t LineCount;
-uint16_t FrameCount;
+__IO uint16_t LineCount;
+__IO uint16_t FrameCount;
 uint8_t ScreenChars[SCREEN_HEIGHT][SCREEN_WIDTH];
 uint8_t PixelBuff[SCREEN_WIDTH+2];
+
+static uint8_t cx;
+static uint8_t cy;
+static uint8_t showcursor;
 
 /* Private function prototypes -----------------------------------------------*/
 void RCC_Config(void);
 void NVIC_Config(void);
 void GPIO_Config(void);
 void TIM_Config(void);
-void DMA_Config(void);
 void SPI_Config(void);
+void video_show_cursor();
+void video_hide_cursor();
+void video_scrollup();
+void video_cls();
+void video_cfwd();
+void video_lfwd();
+void video_lf();
+void video_putc(char c);
+void video_puts(char *str);
+void video_puthex(uint8_t n);
+void * memmove(void *dest, void *source, uint32_t count);
+void * memset(void *dest, uint32_t c, uint32_t count); 
+static void CURSOR_INVERT() __attribute__((noinline));
+
 
 /* Private functions ---------------------------------------------------------*/
 
@@ -131,40 +149,268 @@ void SPI_Config(void);
   */
 int main(void)
 {
+  uint32_t i;
+  uint16_t x,y;
+  uint8_t c;
+  y=0;
+  c=0;
+  while (y<SCREEN_HEIGHT)
+  {
+    x=0;
+    while (x<SCREEN_WIDTH)
+    {
+      ScreenChars[y][x]=c;
+      c++;
+      x++;
+    }
+    y++;
+  }
+
   RCC_Config();
   NVIC_Config();
   GPIO_Config();
   TIM_Config();
-  DMA_Config();
   SPI_Config();
-
+  /* Enable TIM3 */
+  TIM_Cmd(TIM3, ENABLE);
+  STM_EVAL_LEDInit(LED3);
   while (1)
   {
+    if (FrameCount==50)
+    {
+      FrameCount=0;
+      STM_EVAL_LEDToggle(LED3);
+    }
   }
+}
+
+static void CURSOR_INVERT()
+{
+  ScreenChars[cy][cx] ^= showcursor;
+}
+
+static void _video_scrollup()
+{
+  memmove(&ScreenChars[0],&ScreenChars[1], (SCREEN_HEIGHT-1)*SCREEN_WIDTH);
+  memset(&ScreenChars[SCREEN_HEIGHT-1], 0, SCREEN_WIDTH);
+}
+
+static void _video_lfwd()
+{
+  cx = 0;
+  if (++cy > SCREEN_HEIGHT-1)
+  {
+    cy = SCREEN_HEIGHT-1;
+    _video_scrollup();
+  }
+}
+
+static inline void _video_cfwd()
+{
+  if (++cx > SCREEN_WIDTH-1)
+    _video_lfwd();
+}
+
+static inline void _video_putc(char c)
+{
+  /* If the last character printed exceeded the right boundary,
+   * we have to go to a new line. */
+  if (cx >= SCREEN_WIDTH) _video_lfwd();
+
+  if (c == '\r') cx = 0;
+  else if (c == '\n') _video_lfwd();
+  else
+  {
+    ScreenChars[cy][cx] = c;
+    _video_cfwd();
+  }
+}
+
+/*******************************************************************************
+* Function Name  : video_show_cursor
+* Description    : This function shows the cursor
+* Input          : None
+* Output         : None
+* Return         : None
+*******************************************************************************/
+void video_show_cursor()
+{
+  if (!showcursor)
+  {
+    showcursor = 0x80;
+    CURSOR_INVERT();
+  }
+}
+
+/*******************************************************************************
+* Function Name  : video_hide_cursor
+* Description    : This function hides the cursor
+* Input          : None
+* Output         : None
+* Return         : None
+*******************************************************************************/
+void video_hide_cursor()
+{
+  if (showcursor)
+  {
+    CURSOR_INVERT();
+    showcursor = 0;
+  }
+}
+
+/*******************************************************************************
+* Function Name  : video_scrollup
+* Description    : This function scrolls the screen up
+* Input          : None
+* Output         : None
+* Return         : None
+*******************************************************************************/
+void video_scrollup()
+{
+  CURSOR_INVERT();
+  _video_scrollup();
+  CURSOR_INVERT();
+}
+
+/*******************************************************************************
+* Function Name  : video_cls
+* Description    : This function clears the screen and homes the cursor
+* Input          : None
+* Output         : None
+* Return         : None
+*******************************************************************************/
+void video_cls()
+{
+  CURSOR_INVERT();
+  memset(&ScreenChars, 0, SCREEN_HEIGHT*SCREEN_WIDTH);
+  cx=0;
+  cy=0;
+  CURSOR_INVERT();
+}
+
+/*******************************************************************************
+* Function Name  : video_cfwd
+* Description    : This function 
+* Input          : None
+* Output         : None
+* Return         : None
+*******************************************************************************/
+void video_cfwd()
+{
+  CURSOR_INVERT();
+  _video_cfwd();
+  CURSOR_INVERT();
+}
+
+/*******************************************************************************
+* Function Name  : video_lfwd
+* Description    : This function handles a crlf
+* Input          : None
+* Output         : None
+* Return         : None
+*******************************************************************************/
+void video_lfwd()
+{
+  CURSOR_INVERT();
+  cx = 0;
+  if (++cy > SCREEN_HEIGHT-1)
+  {
+    cy = SCREEN_HEIGHT-1;
+    _video_scrollup();
+  }
+  CURSOR_INVERT();
+}
+
+/*******************************************************************************
+* Function Name  : video_lf
+* Description    : This function handles a lf
+* Input          : None
+* Output         : None
+* Return         : None
+*******************************************************************************/
+void video_lf()
+{
+  CURSOR_INVERT();
+  if (++cy > SCREEN_HEIGHT-1)
+  {
+    cy = SCREEN_HEIGHT-1;
+    _video_scrollup();
+  }
+  CURSOR_INVERT();
+}
+
+/*******************************************************************************
+* Function Name  : video_putc
+* Description    : This function prints a character
+* Input          : Character
+* Output         : None
+* Return         : None
+*******************************************************************************/
+void video_putc(char c)
+{
+  CURSOR_INVERT();
+  _video_putc(c);
+  CURSOR_INVERT();
+}
+
+/*******************************************************************************
+* Function Name  : video_puts
+* Description    : This function prints a zero terminated string
+* Input          : Zero terminated string
+* Output         : None
+* Return         : None
+*******************************************************************************/
+void video_puts(char *str)
+{
+  /* Characters are interpreted and printed one at a time. */
+  char c;
+  CURSOR_INVERT();
+  while ((c = *str++))
+    _video_putc(c);
+  CURSOR_INVERT();
+}
+
+/*******************************************************************************
+* Function Name  : video_puthex
+* Description    : This function prints a byte as hex
+* Input          : Byte
+* Output         : None
+* Return         : None
+*******************************************************************************/
+void video_puthex(u8 n)
+{
+	static char hexchars[] = "0123456789ABCDEF";
+	char hexstr[5];
+	hexstr[0] = hexchars[(n >> 4) & 0xF];
+	hexstr[1] = hexchars[n & 0xF];
+	hexstr[2] = '\r';
+	hexstr[3] = '\n';
+	hexstr[4] = '\0';
+  video_puts(hexstr);
 }
 
 void RCC_Config(void)
 {
-  /* Enable DMA2, GPIOA, GPIOB clocks */
-  RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA2 | RCC_AHB1Periph_GPIOA | RCC_AHB1Periph_GPIOB, ENABLE);
+  /* Enable DMA1, GPIOA, GPIOB clocks */
+  RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA1 | RCC_AHB1Periph_GPIOA | RCC_AHB1Periph_GPIOB, ENABLE);
   /* Enable SPI2 clock */
   RCC_APB1PeriphClockCmd(RCC_APB1Periph_SPI2, ENABLE);
-  /* Enable TIM10 and TIM11 clocks */
-  RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM10 | RCC_APB2Periph_TIM11, ENABLE);
+  /* Enable TIM3 and TIM4 clocks */
+  RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3 | RCC_APB1Periph_TIM4, ENABLE);
 }
 
 void NVIC_Config(void)
 {
   NVIC_InitTypeDef NVIC_InitStructure;
 
-  /* Enable the TIM10 gloabal Interrupt */
-  NVIC_InitStructure.NVIC_IRQChannel = TIM1_UP_TIM10_IRQn;
+  /* Enable the TIM3 gloabal Interrupt */
+  NVIC_InitStructure.NVIC_IRQChannel = TIM3_IRQn;
   NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
   NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
   NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
   NVIC_Init(&NVIC_InitStructure);
-  /* Enable the TIM11 gloabal Interrupt */
-  NVIC_InitStructure.NVIC_IRQChannel = TIM1_TRG_COM_TIM11_IRQn;
+  /* Enable the TIM4 gloabal Interrupt */
+  NVIC_InitStructure.NVIC_IRQChannel = TIM4_IRQn;
   NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
   NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
   NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
@@ -184,19 +430,15 @@ void GPIO_Config(void)
   /* H-Sync and V-Sync signal High */
   GPIO_SetBits(GPIOA,GPIO_Pin_1);
 
-  /* Configure SPI2 SCK and MOSI pins */
+  /* SPI MOSI and SPI SCK pin configuration */
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
   GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
   GPIO_InitStructure.GPIO_PuPd  = GPIO_PuPd_UP;
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
-  // /* SPI SCK pin configuration */
-  // GPIO_InitStructure.GPIO_Pin = GPIO_Pin_13;
-  // GPIO_Init(GPIOB, &GPIO_InitStructure);
-  // /* Connect SPI2 pins to AF5 */  
-  // GPIO_PinAFConfig(GPIOB, GPIO_PinSource13, GPIO_AF_SPI2);
-  /* SPI MOSI pin configuration */
-  GPIO_InitStructure.GPIO_Pin =  GPIO_Pin_15;
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_15 | GPIO_Pin_13;
   GPIO_Init(GPIOB, &GPIO_InitStructure);
+  /* Connect SPI2 pins */  
+  GPIO_PinAFConfig(GPIOB, GPIO_PinSource13, GPIO_AF_SPI2);
   GPIO_PinAFConfig(GPIOB, GPIO_PinSource15, GPIO_AF_SPI2);
 }
 
@@ -205,54 +447,28 @@ void TIM_Config(void)
   TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;
 
   /* Time base configuration */
-  TIM_TimeBaseStructure.TIM_Period = 168*64-1;                // 64uS
+  TIM_TimeBaseStructure.TIM_Period = 84*64-1;                 // 64uS
   TIM_TimeBaseStructure.TIM_Prescaler = 0;
   TIM_TimeBaseStructure.TIM_ClockDivision = 0;
   TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
-  TIM_TimeBaseInit(TIM10, &TIM_TimeBaseStructure);
-  /* Enable TIM10 Update interrupt */
-  TIM_ClearITPendingBit(TIM10,TIM_IT_Update);
-  TIM_ITConfig(TIM10, TIM_IT_Update, ENABLE);
+  TIM_TimeBaseInit(TIM3, &TIM_TimeBaseStructure);
+  /* Enable TIM3 Update interrupt */
+  TIM_ClearITPendingBit(TIM4,TIM_IT_Update);
+  TIM_ITConfig(TIM3, TIM_IT_Update, ENABLE);
   /* Time base configuration */
-  TIM_TimeBaseStructure.TIM_Period = 789;                     // 4,70uS
+  TIM_TimeBaseStructure.TIM_Period = (84*470)/100;                     // 4,70uS
   TIM_TimeBaseStructure.TIM_Prescaler = 0;
   TIM_TimeBaseStructure.TIM_ClockDivision = 0;
   TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
-  TIM_TimeBaseInit(TIM11, &TIM_TimeBaseStructure);
-  /* Enable TIM11 Update interrupt */
-  TIM_ClearITPendingBit(TIM11,TIM_IT_Update);
-  TIM_ITConfig(TIM11, TIM_IT_Update, ENABLE);
-}
-
-void DMA_Config(void)
-{
-  // DMA_InitTypeDef       DMA_InitStructure;
-
-  // DMA_DeInit(DMA2_Stream0);
-  // /* DMA2 Stream0 channel0 configuration */
-  // DMA_InitStructure.DMA_Channel = DMA_Channel_0;  
-  // DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)ADC_CDR_ADDRESS;
-  // DMA_InitStructure.DMA_Memory0BaseAddr = (uint32_t)&STM32_DataStruct.STM32_Data;
-  // DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralToMemory;
-  // DMA_InitStructure.DMA_BufferSize = STM32_DataStruct.CommandStruct.DataBlocks * STM32_BlockSize;
-  // DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
-  // DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;
-  // DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Word;
-  // DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_Word;
-  // DMA_InitStructure.DMA_Mode = DMA_Mode_Normal;
-  // DMA_InitStructure.DMA_Priority = DMA_Priority_High;
-  // DMA_InitStructure.DMA_FIFOMode = DMA_FIFOMode_Disable;         
-  // DMA_InitStructure.DMA_FIFOThreshold = DMA_FIFOThreshold_HalfFull;
-  // DMA_InitStructure.DMA_MemoryBurst = DMA_MemoryBurst_Single;
-  // DMA_InitStructure.DMA_PeripheralBurst = DMA_PeripheralBurst_Single;
-  // DMA_Init(DMA2_Stream0, &DMA_InitStructure);
-  // /* DMA2_Stream0 enable */
-  // DMA_Cmd(DMA2_Stream0, ENABLE);
+  TIM_TimeBaseInit(TIM4, &TIM_TimeBaseStructure);
+  /* Enable TIM4 Update interrupt */
+  TIM_ClearITPendingBit(TIM4,TIM_IT_Update);
+  TIM_ITConfig(TIM4, TIM_IT_Update, ENABLE);
 }
 
 /*******************************************************************************
 * Function Name  : SPI_Configuration
-* Description    : Configures SPI2 to output DDS configuration
+* Description    : Configures SPI2 to output pixel data
 * Input          : None
 * Output         : None
 * Return         : None
@@ -262,6 +478,8 @@ void SPI_Config(void)
   SPI_InitTypeDef SPI_InitStructure;
 
 	/* Set up SPI2 port */
+  SPI_I2S_DeInit(SPI2);
+  SPI_StructInit(&SPI_InitStructure);
 	SPI_InitStructure.SPI_Direction = SPI_Direction_1Line_Tx;
 	SPI_InitStructure.SPI_Mode = SPI_Mode_Master;
 	SPI_InitStructure.SPI_DataSize = SPI_DataSize_16b;
@@ -276,20 +494,20 @@ void SPI_Config(void)
 }
 
 /**
-  * @brief  This function handles TIM10 global interrupt request.
+  * @brief  This function handles TIM3 global interrupt request.
   * @param  None
   * @retval None
   */
-void TIM1_UP_TIM10_IRQHandler(void)
+void TIM3_IRQHandler(void)
 {
   uint16_t i,j,k;
   /* Clear the IT pending Bit */
-  TIM10->SR=(u16)~TIM_IT_Update;
-  /* TIM11 is used to time the H-Sync (4,70uS) */
-  /* Reset TIM11 count */
-  TIM11->CNT=0;
-  /* Enable TIM11 */
-  TIM11->CR1=1;
+  TIM3->SR=(u16)~TIM_IT_Update;
+  /* TIM4 is used to time the H-Sync (4,70uS) */
+  /* Reset TIM4 count */
+  TIM4->CNT=0;
+  /* Enable TIM4 */
+  TIM4->CR1=1;
   /* H-Sync or V-Sync low */
   GPIOA->BSRRH = (uint16_t)GPIO_Pin_1;
   if (LineCount>=TOP_MARGIN && LineCount<SCREEN_HEIGHT*TILE_HEIGHT+TOP_MARGIN)
@@ -310,17 +528,18 @@ void TIM1_UP_TIM10_IRQHandler(void)
 }
 
 /**
-  * @brief  This function handles TIM11 global interrupt request.
+  * @brief  This function handles TIM4 global interrupt request.
   * @param  None
   * @retval None
   */
-void TIM1_TRG_COM_TIM11_IRQHandler(void)
+void TIM4_IRQHandler(void)
 {
-  u32 tmp;
-  /* Disable TIM11 */
-  TIM11->CR1=0;
+  DMA_InitTypeDef       DMA_InitStructure;
+  uint32_t tmp;
+  /* Disable TIM4 */
+  TIM4->CR1=0;
   /* Clear the IT pending Bit */
-  TIM11->SR=(u16)~TIM_IT_Update;
+  TIM4->SR=(u16)~TIM_IT_Update;
   if (LineCount<303)
   {
     /* H-Sync high */
@@ -333,27 +552,38 @@ void TIM1_TRG_COM_TIM11_IRQHandler(void)
       {
         tmp++;
       }
-      /* Set up the DMA to keep the SPI port fed from the pixelbuffer. */
-      /* Disable the selected DMA1 Channel3 */
-      DMA1_Stream0->CR &= (u32)0xFFFFFFFE;
-      /* Reset DMA1 Channel3 control register */
-      DMA1_Stream0->CR  = 0;
-      // /* Reset interrupt pending bits for DMA1 Channel3 */
-      // DMA1->IFCR |= (u32)0x00000F00;
-
-      // DMA1_Stream0->CR = (u32)DMA_DIR_PeripheralDST | DMA_Mode_Normal |
-                              // DMA_PeripheralInc_Disable | DMA_MemoryInc_Enable |
-                              // DMA_PeripheralDataSize_HalfWord | DMA_MemoryDataSize_HalfWord |
-                              // DMA_Priority_VeryHigh | DMA_M2M_Disable;
-      // /* Write to DMA1 Channel3 CNDTR */
-      // /* Add 1 halfword to ensure MOSI is low when transfer is done. */
-      // DMA1_Channel3->CNDTR = (u32)SCREEN_WIDTH/2+1;
-      // /* Write to DMA1 Channel3 CPAR */
-      // DMA1_Channel3->CPAR = (u32)0x4001300C;
-      // /* Write to DMA1 Channel3 CMAR */
-      // DMA1_Channel3->CMAR = (u32)PixelBuff;
-      // /* Enable DMA1 Channel3 */
-      // DMA1_Channel3->CCR |= (u32)0x00000001;
+      // /* Set up the DMA to keep the SPI port fed from the pixelbuffer. */
+      // DMA_DeInit(DMA1_Stream4);
+      // DMA_StructInit(&DMA_InitStructure);
+      // /* DMA1 Stream4 channel0 configuration */
+      // DMA_InitStructure.DMA_Channel = DMA_Channel_0;  
+      // DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)SPI_DR;
+      // DMA_InitStructure.DMA_Memory0BaseAddr = (uint32_t)PixelBuff;
+      // DMA_InitStructure.DMA_DIR = DMA_DIR_MemoryToPeripheral;
+      // DMA_InitStructure.DMA_BufferSize = (uint32_t)SCREEN_WIDTH/2+1;
+      // DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
+      // DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;
+      // DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_HalfWord;
+      // DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_HalfWord;
+      // DMA_InitStructure.DMA_Mode = DMA_Mode_Normal;
+      // DMA_InitStructure.DMA_Priority = DMA_Priority_High;
+      // DMA_InitStructure.DMA_FIFOMode = DMA_FIFOMode_Disable;         
+      // DMA_InitStructure.DMA_FIFOThreshold = DMA_FIFOThreshold_HalfFull;
+      // DMA_InitStructure.DMA_MemoryBurst = DMA_MemoryBurst_Single;
+      // DMA_InitStructure.DMA_PeripheralBurst = DMA_PeripheralBurst_Single;
+      // DMA_Init(DMA1_Stream4, &DMA_InitStructure);
+      // SPI_I2S_DMACmd(SPI2, SPI_I2S_DMAReq_Tx, ENABLE);
+      // /* DMA1_Stream4 enable */
+      // DMA_Cmd(DMA1_Stream4, ENABLE);
+      // tmp=0;
+      // while (tmp<20)
+      // {
+        // /* Wait until transmit register empty*/
+        // while(!(SPI2->SR & SPI_I2S_FLAG_TXE));
+        // /* Send Data */
+        // SPI2->DR = 0xAAAA;
+        // tmp++;
+      // }
     }
   }
   else if (LineCount==313)
