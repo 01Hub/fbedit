@@ -55,7 +55,7 @@
 *                  330
 * PA1     O-------[  ]---o---------O  Video output
 *                  1k0   |
-* PA7     O-------[  ]---o
+* PB15    O-------[  ]---o
 *                        |
 *                       ---
 *                       | |  82
@@ -393,10 +393,8 @@ void RCC_Config(void)
 {
   /* Enable DMA1, GPIOA, GPIOB clocks */
   RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA1 | RCC_AHB1Periph_GPIOA | RCC_AHB1Periph_GPIOB, ENABLE);
-  /* Enable SPI2 clock */
-  RCC_APB1PeriphClockCmd(RCC_APB1Periph_SPI2, ENABLE);
-  /* Enable TIM3 and TIM4 clocks */
-  RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3 | RCC_APB1Periph_TIM4, ENABLE);
+  /* Enable TIM3, TIM4 and SPI2 clocks */
+  RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3 | RCC_APB1Periph_TIM4 | RCC_APB1Periph_SPI2, ENABLE);
 }
 
 void NVIC_Config(void)
@@ -575,15 +573,15 @@ void TIM4_IRQHandler(void)
       // SPI_I2S_DMACmd(SPI2, SPI_I2S_DMAReq_Tx, ENABLE);
       // /* DMA1_Stream4 enable */
       // DMA_Cmd(DMA1_Stream4, ENABLE);
-      // tmp=0;
-      // while (tmp<20)
-      // {
-        // /* Wait until transmit register empty*/
-        // while(!(SPI2->SR & SPI_I2S_FLAG_TXE));
-        // /* Send Data */
-        // SPI2->DR = 0xAAAA;
-        // tmp++;
-      // }
+      tmp=0;
+      while (tmp<20)
+      {
+        /* Wait until transmit register empty*/
+        while(!(SPI2->SR & SPI_I2S_FLAG_TXE));
+        /* Send Data */
+        SPI2->DR = 0xAAAA;
+        tmp++;
+      }
     }
   }
   else if (LineCount==313)
