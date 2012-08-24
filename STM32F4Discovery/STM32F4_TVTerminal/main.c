@@ -2,7 +2,7 @@
 * File Name          : main.c
 * Author             : KetilO
 * Version            : V1.0.0
-* Date               : 01/30/2012
+* Date               : 14/08/2012
 * Description        : Main program body
 *******************************************************************************/
 
@@ -125,6 +125,7 @@ void NVIC_Config(void);
 void GPIO_Config(void);
 void TIM_Config(void);
 void SPI_Config(void);
+void DMA_Config(void);
 void video_show_cursor();
 void video_hide_cursor();
 void video_scrollup();
@@ -171,6 +172,7 @@ int main(void)
   GPIO_Config();
   TIM_Config();
   SPI_Config();
+  DMA_Config();
   /* Enable TIM3 */
   TIM_Cmd(TIM3, ENABLE);
   STM_EVAL_LEDInit(LED3);
@@ -389,6 +391,13 @@ void video_puthex(u8 n)
   video_puts(hexstr);
 }
 
+/*******************************************************************************
+* Function Name  : RCC_Config
+* Description    : Configures peripheral clocks
+* Input          : None
+* Output         : None
+* Return         : None
+*******************************************************************************/
 void RCC_Config(void)
 {
   /* Enable DMA1, GPIOA, GPIOB clocks */
@@ -397,6 +406,13 @@ void RCC_Config(void)
   RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3 | RCC_APB1Periph_TIM4 | RCC_APB1Periph_SPI2, ENABLE);
 }
 
+/*******************************************************************************
+* Function Name  : NVIC_Config
+* Description    : Configures interrupts
+* Input          : None
+* Output         : None
+* Return         : None
+*******************************************************************************/
 void NVIC_Config(void)
 {
   NVIC_InitTypeDef NVIC_InitStructure;
@@ -415,6 +431,13 @@ void NVIC_Config(void)
   NVIC_Init(&NVIC_InitStructure);
 }
 
+/*******************************************************************************
+* Function Name  : GPIO_Config
+* Description    : Configures GPIO
+* Input          : None
+* Output         : None
+* Return         : None
+*******************************************************************************/
 void GPIO_Config(void)
 {
   GPIO_InitTypeDef GPIO_InitStructure;
@@ -440,12 +463,19 @@ void GPIO_Config(void)
   GPIO_PinAFConfig(GPIOB, GPIO_PinSource15, GPIO_AF_SPI2);
 }
 
+/*******************************************************************************
+* Function Name  : TIM_Config
+* Description    : Configures timers
+* Input          : None
+* Output         : None
+* Return         : None
+*******************************************************************************/
 void TIM_Config(void)
 {
   TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;
 
   /* Time base configuration */
-  TIM_TimeBaseStructure.TIM_Period = 84*64-1;                 // 64uS
+  TIM_TimeBaseStructure.TIM_Period = 84*64-1;                     // 64uS
   TIM_TimeBaseStructure.TIM_Prescaler = 0;
   TIM_TimeBaseStructure.TIM_ClockDivision = 0;
   TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
@@ -454,7 +484,7 @@ void TIM_Config(void)
   TIM_ClearITPendingBit(TIM4,TIM_IT_Update);
   TIM_ITConfig(TIM3, TIM_IT_Update, ENABLE);
   /* Time base configuration */
-  TIM_TimeBaseStructure.TIM_Period = (84*470)/100;                     // 4,70uS
+  TIM_TimeBaseStructure.TIM_Period = (84*470)/100;                // 4,70uS
   TIM_TimeBaseStructure.TIM_Prescaler = 0;
   TIM_TimeBaseStructure.TIM_ClockDivision = 0;
   TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
@@ -465,7 +495,7 @@ void TIM_Config(void)
 }
 
 /*******************************************************************************
-* Function Name  : SPI_Configuration
+* Function Name  : SPI_Config
 * Description    : Configures SPI2 to output pixel data
 * Input          : None
 * Output         : None
@@ -478,17 +508,37 @@ void SPI_Config(void)
 	/* Set up SPI2 port */
   SPI_I2S_DeInit(SPI2);
   SPI_StructInit(&SPI_InitStructure);
-	SPI_InitStructure.SPI_Direction = SPI_Direction_1Line_Tx;
-	SPI_InitStructure.SPI_Mode = SPI_Mode_Master;
-	SPI_InitStructure.SPI_DataSize = SPI_DataSize_16b;
-	SPI_InitStructure.SPI_CPOL = SPI_CPOL_Low;
-	SPI_InitStructure.SPI_CPHA = SPI_CPHA_2Edge;
-	SPI_InitStructure.SPI_NSS = SPI_NSS_Soft;
-	SPI_InitStructure.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_8;
-	SPI_InitStructure.SPI_FirstBit = SPI_FirstBit_MSB;
-  SPI_InitStructure.SPI_CRCPolynomial = 7;
-	SPI_Init(SPI2, &SPI_InitStructure);
-	SPI_Cmd(SPI2, ENABLE);
+  SPI_InitStructure.SPI_Mode = SPI_Mode_Master;
+  SPI_InitStructure.SPI_Direction = SPI_Direction_1Line_Tx;
+  SPI_InitStructure.SPI_NSS = SPI_NSS_Soft;
+  /* 168/4(4=10,5 */
+  SPI_InitStructure.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_4;
+  SPI_Init(SPI2, &SPI_InitStructure);
+  /* Enable the SPI port */
+  SPI_Cmd(SPI2, ENABLE);
+}
+
+/*******************************************************************************
+* Function Name  : DMA_Config
+* Description    : Configures DMA
+* Input          : None
+* Output         : None
+* Return         : None
+*******************************************************************************/
+void DMA_Config(void)
+{
+  DMA_InitTypeDef DMA_InitStructure;
+
+  DMA_DeInit(DMA1_Stream4);
+  DMA_StructInit(&DMA_InitStructure);
+  DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t) & (SPI2->DR);
+  DMA_InitStructure.DMA_Channel = DMA_Channel_0;
+  DMA_InitStructure.DMA_DIR = DMA_DIR_MemoryToPeripheral;
+  DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;
+  DMA_InitStructure.DMA_Memory0BaseAddr = (uint32_t) PixelBuff;
+  DMA_InitStructure.DMA_BufferSize = (uint32_t)SCREEN_WIDTH/2+1;
+  DMA_Init(DMA1_Stream4, &DMA_InitStructure);
+  SPI_I2S_DMACmd(SPI2, SPI_I2S_DMAReq_Tx, ENABLE);
 }
 
 /**
@@ -550,38 +600,19 @@ void TIM4_IRQHandler(void)
       {
         tmp++;
       }
-      // /* Set up the DMA to keep the SPI port fed from the pixelbuffer. */
-      // DMA_DeInit(DMA1_Stream4);
-      // DMA_StructInit(&DMA_InitStructure);
-      // /* DMA1 Stream4 channel0 configuration */
-      // DMA_InitStructure.DMA_Channel = DMA_Channel_0;  
-      // DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)SPI_DR;
-      // DMA_InitStructure.DMA_Memory0BaseAddr = (uint32_t)PixelBuff;
-      // DMA_InitStructure.DMA_DIR = DMA_DIR_MemoryToPeripheral;
-      // DMA_InitStructure.DMA_BufferSize = (uint32_t)SCREEN_WIDTH/2+1;
-      // DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
-      // DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;
-      // DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_HalfWord;
-      // DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_HalfWord;
-      // DMA_InitStructure.DMA_Mode = DMA_Mode_Normal;
-      // DMA_InitStructure.DMA_Priority = DMA_Priority_High;
-      // DMA_InitStructure.DMA_FIFOMode = DMA_FIFOMode_Disable;         
-      // DMA_InitStructure.DMA_FIFOThreshold = DMA_FIFOThreshold_HalfFull;
-      // DMA_InitStructure.DMA_MemoryBurst = DMA_MemoryBurst_Single;
-      // DMA_InitStructure.DMA_PeripheralBurst = DMA_PeripheralBurst_Single;
-      // DMA_Init(DMA1_Stream4, &DMA_InitStructure);
-      // SPI_I2S_DMACmd(SPI2, SPI_I2S_DMAReq_Tx, ENABLE);
-      // /* DMA1_Stream4 enable */
-      // DMA_Cmd(DMA1_Stream4, ENABLE);
-      tmp=0;
-      while (tmp<20)
-      {
-        /* Wait until transmit register empty*/
-        while(!(SPI2->SR & SPI_I2S_FLAG_TXE));
-        /* Send Data */
-        SPI2->DR = 0xAAAA;
-        tmp++;
-      }
+      /* Enable the DMA to keep the SPI port fed from the pixelbuffer. */
+      DMA1_Stream4->NDTR = (uint32_t)SCREEN_WIDTH/2+1;
+      DMA1_Stream4->M0AR = (uint32_t) PixelBuff;
+      DMA_Cmd(DMA1_Stream4, ENABLE);
+      // tmp=0;
+      // while (tmp<20)
+      // {
+        // /* Wait until transmit register empty*/
+        // while(!(SPI2->SR & SPI_I2S_FLAG_TXE));
+        // /* Send Data */
+        // SPI2->DR = 0xAAAA;
+        // tmp++;
+      // }
     }
   }
   else if (LineCount==313)
