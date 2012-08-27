@@ -181,12 +181,25 @@ int main(void)
   /* Enable TIM3 */
   TIM_Cmd(TIM3, ENABLE);
   STM_EVAL_LEDInit(LED3);
+  /* Wait 200 frames */
+  y=0;
+  while (y<200)
+  {
+    x=FrameCount;
+    while (x==FrameCount)
+    {
+    }
+    y++;
+  }
+  video_cls();
+
   while (1)
   {
     if (FrameCount==50)
     {
       FrameCount=0;
       STM_EVAL_LEDToggle(LED3);
+      rs232_puts("This is a test.\r\n\0");
     }
     while (rs232tail!=rs232head)
     {
