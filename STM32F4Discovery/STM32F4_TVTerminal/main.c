@@ -38,16 +38,14 @@
 * PA1   H-Sync and V-Sync
 * PB15  Video out SPI2_MOSI
 * RS232
-* PA9   USART1 Tx
-* PA10  USART1 Rx
+* PA2   USART2 Tx
+* PA3   USART2 Rx
 * Keyboard
 * PA8   Keyboard clock in
 * PA11  Keyboard data in
 * Leds
-* PC08  Led
-* PC09  Led
 * User button
-* PA1   User button
+* PA0   User button
 *******************************************************************************/
 
 /*******************************************************************************
@@ -119,6 +117,10 @@ static uint8_t cx;
 static uint8_t cy;
 static uint8_t showcursor;
 
+uint8_t rs232buff[256];
+__IO uint8_t rs232tail;
+__IO uint8_t rs232head;
+
 /* Private function prototypes -----------------------------------------------*/
 void RCC_Config(void);
 void NVIC_Config(void);
@@ -126,6 +128,7 @@ void GPIO_Config(void);
 void TIM_Config(void);
 void SPI_Config(void);
 void DMA_Config(void);
+void USART_Config(u16 Baud);
 void video_show_cursor();
 void video_hide_cursor();
 void video_scrollup();
@@ -139,7 +142,8 @@ void video_puthex(uint8_t n);
 void * memmove(void *dest, void *source, uint32_t count);
 void * memset(void *dest, uint32_t c, uint32_t count); 
 static void CURSOR_INVERT() __attribute__((noinline));
-
+void rs232_putc(char c);
+void rs232_puts(char *str);
 
 /* Private functions ---------------------------------------------------------*/
 
@@ -173,6 +177,7 @@ int main(void)
   TIM_Config();
   SPI_Config();
   DMA_Config();
+  USART_Config(4800);
   /* Enable TIM3 */
   TIM_Cmd(TIM3, ENABLE);
   STM_EVAL_LEDInit(LED3);
@@ -182,6 +187,11 @@ int main(void)
     {
       FrameCount=0;
       STM_EVAL_LEDToggle(LED3);
+    }
+    while (rs232tail!=rs232head)
+    {
+      c=rs232buff[rs232tail++];
+      video_putc(c);
     }
   }
 }
@@ -392,6 +402,36 @@ void video_puthex(u8 n)
 }
 
 /*******************************************************************************
+* Function Name  : rs232_putc
+* Description    : This function transmits a character
+* Input          : Character
+* Output         : None
+* Return         : None
+*******************************************************************************/
+void rs232_putc(char c)
+{
+  /* Wait until transmit register empty*/
+  while((USART1->SR & USART_FLAG_TXE) == 0);          
+  /* Transmit Data */
+  USART1->DR = (u16)c;
+}
+
+/*******************************************************************************
+* Function Name  : rs232_puts
+* Description    : This function transmits a zero terminated string
+* Input          : Zero terminated string
+* Output         : None
+* Return         : None
+*******************************************************************************/
+void rs232_puts(char *str)
+{
+  char c;
+  /* Characters are transmitted one at a time. */
+  while ((c = *str++))
+    rs232_putc(c);
+}
+
+/*******************************************************************************
 * Function Name  : RCC_Config
 * Description    : Configures peripheral clocks
 * Input          : None
@@ -402,8 +442,8 @@ void RCC_Config(void)
 {
   /* Enable DMA1, GPIOA, GPIOB clocks */
   RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA1 | RCC_AHB1Periph_GPIOA | RCC_AHB1Periph_GPIOB, ENABLE);
-  /* Enable TIM3, TIM4 and SPI2 clocks */
-  RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3 | RCC_APB1Periph_TIM4 | RCC_APB1Periph_SPI2, ENABLE);
+  /* Enable USART2, TIM3, TIM4 and SPI2 clocks */
+  RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART2 | RCC_APB1Periph_TIM3 | RCC_APB1Periph_TIM4 | RCC_APB1Periph_SPI2, ENABLE);
 }
 
 /*******************************************************************************
@@ -429,6 +469,12 @@ void NVIC_Config(void)
   NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
   NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
   NVIC_Init(&NVIC_InitStructure);
+	/* Enable USART interrupt */
+	NVIC_InitStructure.NVIC_IRQChannel = USART2_IRQn;
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
+  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+	NVIC_Init(&NVIC_InitStructure);
 }
 
 /*******************************************************************************
@@ -461,6 +507,13 @@ void GPIO_Config(void)
   /* Connect SPI2 pins */  
   GPIO_PinAFConfig(GPIOB, GPIO_PinSource13, GPIO_AF_SPI2);
   GPIO_PinAFConfig(GPIOB, GPIO_PinSource15, GPIO_AF_SPI2);
+
+  /* USART Tx and Rx pin configuration */
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_2 | GPIO_Pin_3;
+  GPIO_Init(GPIOA, &GPIO_InitStructure);
+  /* Connect USART2 pins */  
+  GPIO_PinAFConfig(GPIOA, GPIO_PinSource2, GPIO_AF_USART2);
+  GPIO_PinAFConfig(GPIOA, GPIO_PinSource3, GPIO_AF_USART2);
 }
 
 /*******************************************************************************
@@ -539,6 +592,39 @@ void DMA_Config(void)
   DMA_InitStructure.DMA_BufferSize = (uint32_t)SCREEN_WIDTH/2+1;
   DMA_Init(DMA1_Stream4, &DMA_InitStructure);
   SPI_I2S_DMACmd(SPI2, SPI_I2S_DMAReq_Tx, ENABLE);
+}
+
+/*******************************************************************************
+* Function Name  : USART_Config
+* Description    : Configures USART1 Rx and Tx
+* Input          : None
+* Output         : None
+* Return         : None
+*******************************************************************************/
+void USART_Config(u16 Baud)
+{
+  /* USART1 configured as follow:
+        - BaudRate = 4800 baud  
+        - Word Length = 8 Bits
+        - One Stop Bit
+        - No parity
+        - Hardware flow control disabled
+        - Receive and transmit enabled
+  */
+  USART_InitTypeDef USART_InitStructure;
+ 
+  USART_InitStructure.USART_BaudRate = Baud;
+  USART_InitStructure.USART_WordLength = USART_WordLength_8b;
+  USART_InitStructure.USART_StopBits = USART_StopBits_1;
+  USART_InitStructure.USART_Parity = USART_Parity_No ;
+  USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
+  USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;
+  USART_Init(USART2, &USART_InitStructure);
+  /* Enable the USART Receive interrupt: this interrupt is generated when the 
+     USART1 receive data register is not empty */
+  USART_ITConfig(USART2, USART_IT_RXNE, ENABLE);
+  /* Enable the USART2 */
+  USART_Cmd(USART2, ENABLE);
 }
 
 /**
@@ -623,6 +709,20 @@ void TIM4_IRQHandler(void)
     LineCount=0xffff;
   }
   LineCount++;
+}
+
+/*******************************************************************************
+* Function Name  : USART1_IRQHandler
+* Description    : This function handles USART1 global interrupt request.
+*                  An interrupt is generated when a character is recieved.
+* Input          : None
+* Output         : None
+* Return         : None
+*******************************************************************************/
+void USART2_IRQHandler(void)
+{
+  rs232buff[rs232head++]=USART2->DR;
+  USART2->SR = (u16)~USART_FLAG_RXNE;
 }
 
 /*****END OF FILE****/
