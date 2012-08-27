@@ -176,22 +176,22 @@ int main(void)
   GPIO_Config();
   TIM_Config();
   SPI_Config();
-  DMA_Config();
+  // DMA_Config();
   USART_Config(4800);
   /* Enable TIM3 */
   TIM_Cmd(TIM3, ENABLE);
   STM_EVAL_LEDInit(LED3);
-  /* Wait 200 frames */
-  y=0;
-  while (y<200)
-  {
-    x=FrameCount;
-    while (x==FrameCount)
-    {
-    }
-    y++;
-  }
-  video_cls();
+  // /* Wait 200 frames */
+  // y=0;
+  // while (y<200)
+  // {
+    // x=FrameCount;
+    // while (x==FrameCount)
+    // {
+    // }
+    // y++;
+  // }
+  // video_cls();
 
   while (1)
   {
@@ -199,7 +199,7 @@ int main(void)
     {
       FrameCount=0;
       STM_EVAL_LEDToggle(LED3);
-      rs232_puts("This is a test.\r\n\0");
+      rs232_puts("Hi world\r\n\0");
     }
     while (rs232tail!=rs232head)
     {
@@ -424,9 +424,9 @@ void video_puthex(u8 n)
 void rs232_putc(char c)
 {
   /* Wait until transmit register empty*/
-  while((USART1->SR & USART_FLAG_TXE) == 0);          
+  while((USART2->SR & USART_FLAG_TXE) == 0);          
   /* Transmit Data */
-  USART1->DR = (u16)c;
+  USART2->DR = (u16)c;
 }
 
 /*******************************************************************************
@@ -577,9 +577,10 @@ void SPI_Config(void)
   SPI_InitStructure.SPI_Mode = SPI_Mode_Master;
   SPI_InitStructure.SPI_Direction = SPI_Direction_1Line_Tx;
   SPI_InitStructure.SPI_NSS = SPI_NSS_Soft;
-  /* 168/4(4=10,5 */
+  /* 168/4/4=10,5 */
   SPI_InitStructure.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_4;
   SPI_Init(SPI2, &SPI_InitStructure);
+  SPI_I2S_DMACmd(SPI2, SPI_I2S_DMAReq_Tx, ENABLE);
   /* Enable the SPI port */
   SPI_Cmd(SPI2, ENABLE);
 }
@@ -597,6 +598,8 @@ void DMA_Config(void)
 
   DMA_DeInit(DMA1_Stream4);
   DMA_StructInit(&DMA_InitStructure);
+  DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_HalfWord;
+  DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_HalfWord;
   DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t) & (SPI2->DR);
   DMA_InitStructure.DMA_Channel = DMA_Channel_0;
   DMA_InitStructure.DMA_DIR = DMA_DIR_MemoryToPeripheral;
@@ -604,7 +607,6 @@ void DMA_Config(void)
   DMA_InitStructure.DMA_Memory0BaseAddr = (uint32_t) PixelBuff;
   DMA_InitStructure.DMA_BufferSize = (uint32_t)SCREEN_WIDTH/2+1;
   DMA_Init(DMA1_Stream4, &DMA_InitStructure);
-  SPI_I2S_DMACmd(SPI2, SPI_I2S_DMAReq_Tx, ENABLE);
 }
 
 /*******************************************************************************
@@ -699,9 +701,10 @@ void TIM4_IRQHandler(void)
       {
         tmp++;
       }
+      DMA_Config();
       /* Enable the DMA to keep the SPI port fed from the pixelbuffer. */
-      DMA1_Stream4->NDTR = (uint32_t)SCREEN_WIDTH/2+1;
-      DMA1_Stream4->M0AR = (uint32_t) PixelBuff;
+      // DMA1_Stream4->NDTR = (uint32_t)SCREEN_WIDTH/2+1;
+      // DMA1_Stream4->M0AR = (uint32_t) PixelBuff;
       DMA_Cmd(DMA1_Stream4, ENABLE);
       // tmp=0;
       // while (tmp<20)
