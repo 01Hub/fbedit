@@ -154,7 +154,6 @@ void rs232_puts(char *str);
   */
 int main(void)
 {
-  uint32_t i;
   uint16_t x,y;
   uint8_t c;
   y=0;
@@ -176,22 +175,21 @@ int main(void)
   GPIO_Config();
   TIM_Config();
   SPI_Config();
-  // DMA_Config();
   USART_Config(4800);
   /* Enable TIM3 */
   TIM_Cmd(TIM3, ENABLE);
   STM_EVAL_LEDInit(LED3);
-  // /* Wait 200 frames */
-  // y=0;
-  // while (y<200)
-  // {
-    // x=FrameCount;
-    // while (x==FrameCount)
-    // {
-    // }
-    // y++;
-  // }
-  // video_cls();
+  /* Wait 200 frames */
+  y=0;
+  while (y<200)
+  {
+    x=FrameCount;
+    while (x==FrameCount)
+    {
+    }
+    y++;
+  }
+  video_cls();
 
   while (1)
   {
@@ -587,7 +585,7 @@ void SPI_Config(void)
 
 /*******************************************************************************
 * Function Name  : DMA_Config
-* Description    : Configures DMA
+* Description    : Configures DMA1_Stream4, DMA_Channel_0
 * Input          : None
 * Output         : None
 * Return         : None
@@ -597,21 +595,27 @@ void DMA_Config(void)
   DMA_InitTypeDef DMA_InitStructure;
 
   DMA_DeInit(DMA1_Stream4);
-  DMA_StructInit(&DMA_InitStructure);
+  DMA_InitStructure.DMA_Channel = DMA_Channel_0;
+  DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t) & (SPI2->DR);
+  DMA_InitStructure.DMA_Memory0BaseAddr = (uint32_t) PixelBuff;
+  DMA_InitStructure.DMA_DIR = DMA_DIR_MemoryToPeripheral;
+  DMA_InitStructure.DMA_BufferSize = (uint32_t)SCREEN_WIDTH/2+1;
+  DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
+  DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;
   DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_HalfWord;
   DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_HalfWord;
-  DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t) & (SPI2->DR);
-  DMA_InitStructure.DMA_Channel = DMA_Channel_0;
-  DMA_InitStructure.DMA_DIR = DMA_DIR_MemoryToPeripheral;
-  DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;
-  DMA_InitStructure.DMA_Memory0BaseAddr = (uint32_t) PixelBuff;
-  DMA_InitStructure.DMA_BufferSize = (uint32_t)SCREEN_WIDTH/2+1;
+  DMA_InitStructure.DMA_Mode = DMA_Mode_Normal;
+  DMA_InitStructure.DMA_Priority = DMA_Priority_Low;
+  DMA_InitStructure.DMA_FIFOMode = DMA_FIFOMode_Disable;
+  DMA_InitStructure.DMA_FIFOThreshold = DMA_FIFOThreshold_1QuarterFull;
+  DMA_InitStructure.DMA_MemoryBurst = DMA_MemoryBurst_Single;
+  DMA_InitStructure.DMA_PeripheralBurst = DMA_PeripheralBurst_Single;
   DMA_Init(DMA1_Stream4, &DMA_InitStructure);
 }
 
 /*******************************************************************************
 * Function Name  : USART_Config
-* Description    : Configures USART1 Rx and Tx
+* Description    : Configures USART2 Rx and Tx
 * Input          : None
 * Output         : None
 * Return         : None
@@ -636,7 +640,7 @@ void USART_Config(u16 Baud)
   USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;
   USART_Init(USART2, &USART_InitStructure);
   /* Enable the USART Receive interrupt: this interrupt is generated when the 
-     USART1 receive data register is not empty */
+     USART2 receive data register is not empty */
   USART_ITConfig(USART2, USART_IT_RXNE, ENABLE);
   /* Enable the USART2 */
   USART_Cmd(USART2, ENABLE);
@@ -703,18 +707,7 @@ void TIM4_IRQHandler(void)
       }
       DMA_Config();
       /* Enable the DMA to keep the SPI port fed from the pixelbuffer. */
-      // DMA1_Stream4->NDTR = (uint32_t)SCREEN_WIDTH/2+1;
-      // DMA1_Stream4->M0AR = (uint32_t) PixelBuff;
       DMA_Cmd(DMA1_Stream4, ENABLE);
-      // tmp=0;
-      // while (tmp<20)
-      // {
-        // /* Wait until transmit register empty*/
-        // while(!(SPI2->SR & SPI_I2S_FLAG_TXE));
-        // /* Send Data */
-        // SPI2->DR = 0xAAAA;
-        // tmp++;
-      // }
     }
   }
   else if (LineCount==313)
