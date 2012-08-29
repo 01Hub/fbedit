@@ -25,7 +25,7 @@
 * |    |                                     |
 * -----                                      ----
 *
-* Vertical
+* PAL timing Vertical
 * V-sync        0,576mS (9 lines)
 * Frame         20mS (312,5 lines)
 * Video signal  288 lines
@@ -44,6 +44,12 @@
 * PA8   Keyboard clock in
 * PA11  Keyboard data in
 * Leds
+* PA9   Green
+* PD5   Red
+* PD12  Green
+* PD13  Orange
+* PD14  Red
+* PD15  Blue
 * User button
 * PA0   User button
 *******************************************************************************/
@@ -175,6 +181,7 @@ int main(void)
   GPIO_Config();
   TIM_Config();
   SPI_Config();
+  DMA_Config();
   USART_Config(4800);
   /* Enable TIM3 */
   TIM_Cmd(TIM3, ENABLE);
@@ -599,7 +606,7 @@ void DMA_Config(void)
   DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t) & (SPI2->DR);
   DMA_InitStructure.DMA_Memory0BaseAddr = (uint32_t) PixelBuff;
   DMA_InitStructure.DMA_DIR = DMA_DIR_MemoryToPeripheral;
-  DMA_InitStructure.DMA_BufferSize = (uint32_t)SCREEN_WIDTH/2+1;
+  DMA_InitStructure.DMA_BufferSize = (uint16_t)SCREEN_WIDTH/2+1;
   DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
   DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;
   DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_HalfWord;
@@ -705,9 +712,18 @@ void TIM4_IRQHandler(void)
       {
         tmp++;
       }
-      DMA_Config();
+      // DMA_Config();
+      // DMA_Cmd(DMA1_Stream4, ENABLE);
+
+      /* Reset DMA1 Stream4 control register */
+      DMA1_Stream4->CR  = 0;
+      /* Reset interrupt pending bits for DMA1 Stream4 */
+      DMA1->HIFCR = (uint32_t)(DMA_LISR_FEIF0 | DMA_LISR_DMEIF0 | DMA_LISR_TEIF0 | DMA_LISR_HTIF0 | DMA_LISR_TCIF0 | (uint32_t)0x20000000);
+      DMA1_Stream4->NDTR = (uint16_t)SCREEN_WIDTH/2+1;
+      DMA1_Stream4->PAR = (uint32_t) & (SPI2->DR);
+      DMA1_Stream4->M0AR = (uint32_t) PixelBuff;
       /* Enable the DMA to keep the SPI port fed from the pixelbuffer. */
-      DMA_Cmd(DMA1_Stream4, ENABLE);
+      DMA1_Stream4->CR |= (uint32_t)DMA_SxCR_EN;
     }
   }
   else if (LineCount==313)
