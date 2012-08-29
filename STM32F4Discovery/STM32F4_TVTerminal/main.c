@@ -187,16 +187,11 @@ int main(void)
   TIM_Cmd(TIM3, ENABLE);
   STM_EVAL_LEDInit(LED3);
   /* Wait 200 frames */
-  y=0;
-  while (y<200)
+  while (FrameCount<200)
   {
-    x=FrameCount;
-    while (x==FrameCount)
-    {
-    }
-    y++;
   }
   video_cls();
+  FrameCount=0;
 
   while (1)
   {
@@ -712,17 +707,14 @@ void TIM4_IRQHandler(void)
       {
         tmp++;
       }
-      // DMA_Config();
-      // DMA_Cmd(DMA1_Stream4, ENABLE);
-
-      /* Reset DMA1 Stream4 control register */
-      DMA1_Stream4->CR  = 0;
+      /* Disable DMA1 Stream4 */
+      DMA1_Stream4->CR &= ~((uint32_t)DMA_SxCR_EN);
       /* Reset interrupt pending bits for DMA1 Stream4 */
       DMA1->HIFCR = (uint32_t)(DMA_LISR_FEIF0 | DMA_LISR_DMEIF0 | DMA_LISR_TEIF0 | DMA_LISR_HTIF0 | DMA_LISR_TCIF0 | (uint32_t)0x20000000);
       DMA1_Stream4->NDTR = (uint16_t)SCREEN_WIDTH/2+1;
       DMA1_Stream4->PAR = (uint32_t) & (SPI2->DR);
       DMA1_Stream4->M0AR = (uint32_t) PixelBuff;
-      /* Enable the DMA to keep the SPI port fed from the pixelbuffer. */
+      /* Enable DMA1 Stream4 to keep the SPI port fed from the pixelbuffer. */
       DMA1_Stream4->CR |= (uint32_t)DMA_SxCR_EN;
     }
   }
