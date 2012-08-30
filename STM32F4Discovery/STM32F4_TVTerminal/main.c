@@ -41,8 +41,8 @@
 * PA2   USART2 Tx
 * PA3   USART2 Rx
 * Keyboard
-* PA8   Keyboard clock in
-* PA11  Keyboard data in
+* PB0   Keyboard clock in
+* PB1   Keyboard data in
 * Leds
 * PA9   Green
 * PD5   Red
@@ -689,7 +689,6 @@ void TIM3_IRQHandler(void)
   */
 void TIM4_IRQHandler(void)
 {
-  DMA_InitTypeDef       DMA_InitStructure;
   uint32_t tmp;
   /* Disable TIM4 */
   TIM4->CR1=0;
