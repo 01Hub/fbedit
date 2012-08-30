@@ -127,6 +127,14 @@ uint8_t rs232buff[256];
 __IO uint8_t rs232tail;
 __IO uint8_t rs232head;
 
+__IO uint8_t tmpscancode;
+__IO uint8_t scancode;
+__IO uint8_t bitcount = 11;
+
+extern uint8_t charbuf[256];
+extern uint8_t charbuftail;
+extern uint8_t charbufhead;
+
 /* Private function prototypes -----------------------------------------------*/
 void RCC_Config(void);
 void NVIC_Config(void);
@@ -150,6 +158,7 @@ void * memset(void *dest, uint32_t c, uint32_t count);
 static void CURSOR_INVERT() __attribute__((noinline));
 void rs232_putc(char c);
 void rs232_puts(char *str);
+void decode(uint8_t scancode);
 
 /* Private functions ---------------------------------------------------------*/
 
@@ -205,6 +214,11 @@ int main(void)
     {
       c=rs232buff[rs232tail++];
       video_putc(c);
+    }
+    while (charbuftail!=charbufhead)
+    {
+      c=charbuf[charbuftail++];
+      rs232_putc(c);
     }
   }
 }
@@ -479,7 +493,7 @@ void NVIC_Config(void)
   /* Enable the TIM4 gloabal Interrupt */
   NVIC_InitStructure.NVIC_IRQChannel = TIM4_IRQn;
   NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
-  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
+  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
   NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
   NVIC_Init(&NVIC_InitStructure);
 	/* Enable USART interrupt */
@@ -488,6 +502,12 @@ void NVIC_Config(void)
   NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
 	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
 	NVIC_Init(&NVIC_InitStructure);
+  /* Enable and set EXTI Line0 Interrupt to the lowest priority */
+  NVIC_InitStructure.NVIC_IRQChannel = EXTI0_IRQn;
+  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0x01;
+  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0x01;
+  NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+  NVIC_Init(&NVIC_InitStructure);
 }
 
 /*******************************************************************************
@@ -500,6 +520,8 @@ void NVIC_Config(void)
 void GPIO_Config(void)
 {
   GPIO_InitTypeDef GPIO_InitStructure;
+  EXTI_InitTypeDef EXTI_InitStructure;
+
   /* Configure PA1 as output, H-Sync and V-Sync*/
   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_1;
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
@@ -527,6 +549,20 @@ void GPIO_Config(void)
   /* Connect USART2 pins */  
   GPIO_PinAFConfig(GPIOA, GPIO_PinSource2, GPIO_AF_USART2);
   GPIO_PinAFConfig(GPIOA, GPIO_PinSource3, GPIO_AF_USART2);
+
+  /* GPIOB Pin1 and Pin0 as input floating */
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_1 | GPIO_Pin_0;
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
+  GPIO_Init(GPIOB, &GPIO_InitStructure);
+
+  /* Connect EXTI Line0 to PB0 pin */
+  SYSCFG_EXTILineConfig(EXTI_PortSourceGPIOB, EXTI_PinSource0);
+  /* Configure EXTI Line0 */
+  EXTI_InitStructure.EXTI_Line = EXTI_Line0;
+  EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
+  EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Rising;  
+  EXTI_InitStructure.EXTI_LineCmd = ENABLE;
+  EXTI_Init(&EXTI_InitStructure);
 }
 
 /*******************************************************************************
@@ -739,6 +775,33 @@ void USART2_IRQHandler(void)
 {
   rs232buff[rs232head++]=USART2->DR;
   USART2->SR = (u16)~USART_FLAG_RXNE;
+}
+
+/**
+  * @brief  This function handles EXTI4_IRQHandler interrupt request.
+            The interrupt is generated on STHL transition
+  * @param  None
+  * @retval None
+  */
+void EXTI0_IRQHandler(void)
+{
+  /* Clear the EXTI line 0 pending bit */
+  EXTI_ClearITPendingBit(EXTI_Line0);
+
+	/* figure out what the keyboard is sending us */
+	--bitcount;
+	if (bitcount >= 2 && bitcount <= 9)
+	{
+		tmpscancode >>= 1;
+		if (GPIOB->IDR & GPIO_Pin_1)
+			tmpscancode |= 0x80;
+	}
+	else if (bitcount == 0)
+	{
+    scancode=tmpscancode;
+		bitcount = 11;
+    decode(scancode);
+	}
 }
 
 /*****END OF FILE****/
