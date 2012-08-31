@@ -123,9 +123,9 @@ static uint8_t cx;
 static uint8_t cy;
 static uint8_t showcursor;
 
-uint8_t rs232buff[256];
-__IO uint8_t rs232tail;
-__IO uint8_t rs232head;
+uint8_t rs232buf[256];
+__IO uint8_t rs232buftail;
+__IO uint8_t rs232bufhead;
 
 __IO uint8_t tmpscancode;
 __IO uint8_t scancode;
@@ -170,7 +170,7 @@ void decode(uint8_t scancode);
 int main(void)
 {
   uint16_t x,y;
-  uint8_t c;
+  char c;
   y=0;
   c=0;
   while (y<SCREEN_HEIGHT)
@@ -210,9 +210,9 @@ int main(void)
       STM_EVAL_LEDToggle(LED3);
       rs232_puts("Hi world\r\n\0");
     }
-    while (rs232tail!=rs232head)
+    while (rs232buftail!=rs232bufhead)
     {
-      c=rs232buff[rs232tail++];
+      c=rs232buf[rs232buftail++];
       video_putc(c);
     }
     while (charbuftail!=charbufhead)
@@ -773,7 +773,7 @@ void TIM4_IRQHandler(void)
 *******************************************************************************/
 void USART2_IRQHandler(void)
 {
-  rs232buff[rs232head++]=USART2->DR;
+  rs232buf[rs232bufhead++]=USART2->DR;
   USART2->SR = (u16)~USART_FLAG_RXNE;
 }
 
