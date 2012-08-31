@@ -152,7 +152,7 @@ void decode(uint8_t scancode);
   * @param  None
   * @retval None
   */
-int main(void)
+void main(void)
 {
   uint16_t x,y;
   char c;
@@ -208,13 +208,11 @@ int main(void)
   }
 }
 
-/*******************************************************************************
-* Function Name  : rs232_putc
-* Description    : This function transmits a character
-* Input          : Character
-* Output         : None
-* Return         : None
-*******************************************************************************/
+/**
+  * @brief  This function transmits a character
+  * @param  Character
+  * @retval None
+  */
 void rs232_putc(char c)
 {
   /* Wait until transmit register empty*/
@@ -223,13 +221,11 @@ void rs232_putc(char c)
   USART2->DR = (u16)c;
 }
 
-/*******************************************************************************
-* Function Name  : rs232_puts
-* Description    : This function transmits a zero terminated string
-* Input          : Zero terminated string
-* Output         : None
-* Return         : None
-*******************************************************************************/
+/**
+  * @brief  This function transmits a zero terminated string
+  * @param  Zero terminated string
+  * @retval None
+  */
 void rs232_puts(char *str)
 {
   char c;
@@ -238,13 +234,11 @@ void rs232_puts(char *str)
     rs232_putc(c);
 }
 
-/*******************************************************************************
-* Function Name  : RCC_Config
-* Description    : Configures peripheral clocks
-* Input          : None
-* Output         : None
-* Return         : None
-*******************************************************************************/
+/**
+  * @brief  Configure peripheral clocks
+  * @param  None
+  * @retval None
+  */
 void RCC_Config(void)
 {
   /* Enable DMA1, GPIOA, GPIOB clocks */
@@ -253,13 +247,11 @@ void RCC_Config(void)
   RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART2 | RCC_APB1Periph_TIM3 | RCC_APB1Periph_TIM4 | RCC_APB1Periph_SPI2, ENABLE);
 }
 
-/*******************************************************************************
-* Function Name  : NVIC_Config
-* Description    : Configures interrupts
-* Input          : None
-* Output         : None
-* Return         : None
-*******************************************************************************/
+/**
+  * @brief  Configure interrupts
+  * @param  None
+  * @retval None
+  */
 void NVIC_Config(void)
 {
   NVIC_InitTypeDef NVIC_InitStructure;
@@ -290,13 +282,11 @@ void NVIC_Config(void)
   NVIC_Init(&NVIC_InitStructure);
 }
 
-/*******************************************************************************
-* Function Name  : GPIO_Config
-* Description    : Configures GPIO
-* Input          : None
-* Output         : None
-* Return         : None
-*******************************************************************************/
+/**
+  * @brief  Configure GPIO
+  * @param  None
+  * @retval None
+  */
 void GPIO_Config(void)
 {
   GPIO_InitTypeDef GPIO_InitStructure;
@@ -345,13 +335,11 @@ void GPIO_Config(void)
   EXTI_Init(&EXTI_InitStructure);
 }
 
-/*******************************************************************************
-* Function Name  : TIM_Config
-* Description    : Configures timers
-* Input          : None
-* Output         : None
-* Return         : None
-*******************************************************************************/
+/**
+  * @brief  Configure timers
+  * @param  None
+  * @retval None
+  */
 void TIM_Config(void)
 {
   TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;
@@ -376,13 +364,11 @@ void TIM_Config(void)
   TIM_ITConfig(TIM4, TIM_IT_Update, ENABLE);
 }
 
-/*******************************************************************************
-* Function Name  : SPI_Config
-* Description    : Configures SPI2 to output pixel data
-* Input          : None
-* Output         : None
-* Return         : None
-*******************************************************************************/
+/**
+  * @brief  Configures SPI2 to output pixel data
+  * @param  None
+  * @retval None
+  */
 void SPI_Config(void)
 {
   SPI_InitTypeDef SPI_InitStructure;
@@ -401,13 +387,11 @@ void SPI_Config(void)
   SPI_Cmd(SPI2, ENABLE);
 }
 
-/*******************************************************************************
-* Function Name  : DMA_Config
-* Description    : Configures DMA1_Stream4, DMA_Channel_0
-* Input          : None
-* Output         : None
-* Return         : None
-*******************************************************************************/
+/**
+  * @brief  Configures DMA1_Stream4, DMA_Channel_0
+  * @param  None
+  * @retval None
+  */
 void DMA_Config(void)
 {
   DMA_InitTypeDef DMA_InitStructure;
@@ -431,13 +415,11 @@ void DMA_Config(void)
   DMA_Init(DMA1_Stream4, &DMA_InitStructure);
 }
 
-/*******************************************************************************
-* Function Name  : USART_Config
-* Description    : Configures USART2 Rx and Tx
-* Input          : None
-* Output         : None
-* Return         : None
-*******************************************************************************/
+/**
+  * @brief  Configures USART2 Rx and Tx
+  * @param  Baudrate
+  * @retval None
+  */
 void USART_Config(u16 Baud)
 {
   /* USART1 configured as follow:
@@ -543,14 +525,12 @@ void TIM4_IRQHandler(void)
   LineCount++;
 }
 
-/*******************************************************************************
-* Function Name  : USART1_IRQHandler
-* Description    : This function handles USART1 global interrupt request.
-*                  An interrupt is generated when a character is recieved.
-* Input          : None
-* Output         : None
-* Return         : None
-*******************************************************************************/
+/**
+  * @brief  This function handles USART2_IRQHandler interrupt request.
+            An interrupt is generated when a character is recieved
+  * @param  None
+  * @retval None
+  */
 void USART2_IRQHandler(void)
 {
   rs232buf[rs232bufhead++]=USART2->DR;
