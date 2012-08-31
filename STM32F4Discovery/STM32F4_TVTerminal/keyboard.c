@@ -1,5 +1,4 @@
 
-/* Includes ------------------------------------------------------------------*/
 #include "stm32f4_discovery.h"
 #include "keycodes.h"
 
