@@ -1,4 +1,33 @@
 
+/*******************************************************************************
+* Keyboard connector 5 pin female DIN
+*        2
+*        o
+*   4 o    o 5
+*   1 o    o 3
+* 
+* Pin 1   CLK     Clock signal
+* Pin 2   DATA    Data
+* Pin 3   N/C     Not connected. Reset on older keyboards
+* Pin 4   GND     Ground
+* Pin 5   VCC     +5V DC
+*******************************************************************************/
+
+/*******************************************************************************
+* Keyboard connector 6 pin female mini DIN
+*
+*   5 o    o 6
+*   3 o    o 4
+*    1 o o 2 
+*
+* Pin 1   DATA    Data
+* Pin 2   N/C     Not connected.
+* Pin 3   GND     Ground
+* Pin 4   VCC     +5V DC
+* Pin 5   CLK     Clock signal
+* Pin 6   N/C     Not connected.
+*******************************************************************************/
+
 #include "stm32f4_discovery.h"
 #include "keycodes.h"
 
@@ -32,6 +61,8 @@
 #define BRK K_BREAK
 #define _BV(bit) (1 << (bit))  //Useful macro to ease the transition from using avrlibc.
 
+/* Private function prototypes -----------------------------------------------*/
+void decode(uint8_t scancode);
 
 //Keyboard lookup tables
 __attribute__((section("FLASH"))) const char codetable[] = {
@@ -75,7 +106,6 @@ __attribute__((section("FLASH"))) const char codetable_extended[] = {
 	0,   0,   0,   0
 };
 
-
 /* keyboard init */
 static uint8_t keyup = 0;
 static uint8_t extended = 0;
@@ -84,6 +114,10 @@ static uint8_t mods = 0;
 __IO uint8_t charbuf[256];
 __IO uint8_t charbufhead = 0;
 __IO uint8_t charbuftail = 0;
+
+__IO uint8_t tmpscancode;
+__IO uint8_t scancode;
+__IO uint8_t bitcount = 11;
 
 //Decode PS/2 keycodes
 void decode(uint8_t scancode)
@@ -131,6 +165,33 @@ void decode(uint8_t scancode)
 		}
 		extended = 0;
 		keyup = 0;
+	}
+}
+
+/**
+  * @brief  This function handles EXTI4_IRQHandler interrupt request.
+            The interrupt is generated on STHL transition
+  * @param  None
+  * @retval None
+  */
+void EXTI0_IRQHandler(void)
+{
+  /* Clear the EXTI line 0 pending bit */
+  EXTI_ClearITPendingBit(EXTI_Line0);
+
+	/* figure out what the keyboard is sending us */
+	--bitcount;
+	if (bitcount >= 2 && bitcount <= 9)
+	{
+		tmpscancode >>= 1;
+		if (GPIOB->IDR & GPIO_Pin_1)
+			tmpscancode |= 0x80;
+	}
+	else if (bitcount == 0)
+	{
+    scancode=tmpscancode;
+		bitcount = 11;
+    decode(scancode);
 	}
 }
 

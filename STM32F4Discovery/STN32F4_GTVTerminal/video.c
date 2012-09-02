@@ -1,3 +1,29 @@
+
+/*******************************************************************************
+* PAL timing Horizontal
+* H-sync         4,70uS
+* Back porch     5,70uS
+* Active video  51,95uS
+* Front porch    1,65uS
+* Line total     64,0uS
+*
+* |                 64.00uS                      |
+* |4,70|  5,70  |          51,95uS          |1,65|
+*
+*                ---------------------------
+*               |                           |
+*               |                           |
+*               |                           |
+*       --------                             ----
+* |    |                                         |
+* -----                                          ----
+*
+* PAL timing Vertical
+* V-sync        0,576mS (9 lines)
+* Frame         20mS (312,5 lines)
+* Video signal  288 lines
+*******************************************************************************/
+
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4_discovery.h"
 #include "video.h"
@@ -5,6 +31,8 @@
 
 /* Private variables ---------------------------------------------------------*/
 uint8_t ScreenBuff[SCREEN_HEIGHT][SCREEN_WIDTH];
+__IO uint16_t LineCount;
+__IO uint16_t FrameCount;
 
 /* Private function prototypes -----------------------------------------------*/
 void Cls(void);
@@ -41,7 +69,7 @@ void Cls(void)
 void SetPixel(uint16_t x,uint16_t y,uint8_t c)
 {
   uint8_t bit;
-  if (x < (SCREEN_WIDTH-2) * 8 && y < SCREEN_HEIGHT)
+  if (x < (SCREEN_WIDTH-4) * 8 && y < SCREEN_HEIGHT)
   {
     bit = 1 << (x & 0x7);
     if (c)
@@ -268,3 +296,79 @@ void ScrollDown(void)
   }
   memset(&ScreenBuff[0], 0, SCREEN_WIDTH);
 }
+
+/**
+  * @brief  This function handles TIM3 global interrupt request.
+  * @param  None
+  * @retval None
+  */
+void TIM3_IRQHandler(void)
+{
+  uint16_t i,j,k;
+  /* Clear the IT pending Bit */
+  TIM3->SR=(u16)~TIM_IT_Update;
+  /* TIM4 is used to time the H-Sync (4,70uS) */
+  /* Reset TIM4 count */
+  TIM4->CNT=0;
+  /* This loop eliminate differences in interrupt latency */
+  i=32-((TIM3->CNT)>>1);
+  while (i)
+  {
+    i--;
+  }
+  /* Enable TIM4 */
+  TIM4->CR1=1;
+  /* H-Sync or V-Sync low */
+  GPIOA->BSRRH = (uint16_t)GPIO_Pin_1;
+  if (LineCount<SCREEN_HEIGHT)
+  {
+    /* Disable DMA1 Stream4 */
+    DMA1_Stream4->CR &= ~((uint32_t)DMA_SxCR_EN);
+    /* Reset interrupt pending bits for DMA1 Stream4 */
+    DMA1->HIFCR = (uint32_t)(DMA_LISR_FEIF0 | DMA_LISR_DMEIF0 | DMA_LISR_TEIF0 | DMA_LISR_HTIF0 | DMA_LISR_TCIF0 | (uint32_t)0x20000000);
+    DMA1_Stream4->NDTR = (uint16_t)SCREEN_WIDTH/2;
+    DMA1_Stream4->PAR = (uint32_t) & (SPI2->DR);
+    DMA1_Stream4->M0AR = (uint32_t) & (ScreenBuff[LineCount][0]);
+  }
+}
+
+/**
+  * @brief  This function handles TIM4 global interrupt request.
+  * @param  None
+  * @retval None
+  */
+void TIM4_IRQHandler(void)
+{
+  uint32_t tmp;
+
+  /* Disable TIM4 */
+  TIM4->CR1=0;
+  /* Clear the IT pending Bit */
+  TIM4->SR=(u16)~TIM_IT_Update;
+  if (LineCount<303-TOP_MARGIN)
+  {
+    /* H-Sync high */
+    GPIOA->BSRRL=(u16)GPIO_Pin_1;
+    if (LineCount<SCREEN_HEIGHT)
+    {
+      /* The time it takes to run the loop and enable the DMA is the Back porch */
+      /* The loop is adjusted to eliminate differences in interrupt latency */
+      tmp=BACK_POCH-((TIM4->CNT)>>1);
+      while (tmp)
+      {
+        tmp--;
+      }
+      /* Enable DMA1 Stream4 to keep the SPI port fed from the pixelbuffer. */
+      DMA1_Stream4->CR |= (uint32_t)DMA_SxCR_EN;
+    }
+  }
+  else if (LineCount==313-TOP_MARGIN)
+  {
+    /* V-Sync high after 313-303=10 lines) */
+    GPIOA->BSRRL=(u16)GPIO_Pin_1;
+    FrameCount++;
+    LineCount=-(TOP_MARGIN+1);
+  }
+  LineCount++;
+}
+

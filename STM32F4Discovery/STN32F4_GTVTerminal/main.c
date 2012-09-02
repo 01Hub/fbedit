@@ -7,31 +7,6 @@
 *******************************************************************************/
 
 /*******************************************************************************
-* PAL timing Horizontal
-* H-sync         4,70uS
-* Back porch     5,70uS
-* Active video  51,95uS
-* Front porch    1,65uS
-* Line total     64,0uS
-*
-* |                 64.00uS                      |
-* |4,70|  5,70  |          51,95uS          |1,65|
-*
-*                ---------------------------
-*               |                           |
-*               |                           |
-*               |                           |
-*       --------                             ----
-* |    |                                         |
-* -----                                          ----
-*
-* PAL timing Vertical
-* V-sync        0,576mS (9 lines)
-* Frame         20mS (312,5 lines)
-* Video signal  288 lines
-*******************************************************************************/
-
-/*******************************************************************************
 * Port pins used
 *
 * Video out
@@ -69,58 +44,20 @@
 * 
 *******************************************************************************/
 
-/*******************************************************************************
-* Keyboard connector 5 pin female DIN
-*        2
-*        o
-*   4 o    o 5
-*   1 o    o 3
-* 
-* Pin 1   CLK     Clock signal
-* Pin 2   DATA    Data
-* Pin 3   N/C     Not connected. Reset on older keyboards
-* Pin 4   GND     Ground
-* Pin 5   VCC     +5V DC
-*******************************************************************************/
-
-/*******************************************************************************
-* Keyboard connector 6 pin female mini DIN
-*
-*   5 o    o 6
-*   3 o    o 4
-*    1 o o 2 
-*
-* Pin 1   DATA    Data
-* Pin 2   N/C     Not connected.
-* Pin 3   GND     Ground
-* Pin 4   VCC     +5V DC
-* Pin 5   CLK     Clock signal
-* Pin 6   N/C     Not connected.
-*******************************************************************************/
-
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4_discovery.h"
 #include "video.h"
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
-#define TOP_MARGIN          30    // Number of lines before video signal starts
-#define BACK_POCH           475   // Back poch timing, adjust it to center the screen
-#define SPI_DR              0x4001300C
-
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
-__IO uint16_t LineCount;
-__IO uint16_t FrameCount;
-extern uint8_t ScreenBuff[SCREEN_HEIGHT][SCREEN_WIDTH];
+extern uint16_t LineCount;
+extern uint16_t FrameCount;
 
-uint8_t rs232buf[256];
-__IO uint8_t rs232buftail;
-__IO uint8_t rs232bufhead;
-
-__IO uint8_t tmpscancode;
-__IO uint8_t scancode;
-__IO uint8_t bitcount = 11;
+extern uint8_t rs232buf[256];
+extern uint8_t rs232buftail;
+extern uint8_t rs232bufhead;
 
 extern uint8_t charbuf[256];
 extern uint8_t charbuftail;
@@ -134,10 +71,6 @@ void TIM_Config(void);
 void SPI_Config(void);
 void DMA_Config(void);
 void USART_Config(uint32_t Baud);
-void rs232_putc(char c);
-void rs232_puts(char *str);
-void decode(uint8_t scancode);
-void * memmove(void *dest, void *source, uint32_t count);
 
 /* Private functions ---------------------------------------------------------*/
 
@@ -148,8 +81,7 @@ void * memmove(void *dest, void *source, uint32_t count);
   */
 void main(void)
 {
-  uint16_t x,y;
-  char c;
+  uint16_t x,y,c,fc;
 
   RCC_Config();
   NVIC_Config();
@@ -162,75 +94,52 @@ void main(void)
   TIM_Cmd(TIM3, ENABLE);
   STM_EVAL_LEDInit(LED3);
   Rectangle(0,0,480,250,1);
-  Rectangle(10,10,460,230,1);
-  Line(0,0,479,249,1);
-  DrawString(100,100,"Hello World!\0",1);
-  Circle(100,100,50,1);
-  x=GetPixel(0,0);
-  if (x)
-  {
-    DrawString(100,110,"Set\0",1);
-  }
-  else
-  {
-    DrawString(100,110,"Clear\0",1);
-  }
-  x=GetPixel(200,200);
-  if (x)
-  {
-    DrawString(100,120,"Set\0",1);
-  }
-  else
-  {
-    DrawString(100,120,"Clear\0",1);
-  }
+  // Rectangle(10,10,460,230,1);
+  // Line(0,0,479,249,1);
+  // DrawString(100,100,"Hello World!\0",1);
+  // Circle(100,100,50,1);
+  // x=GetPixel(0,0);
+  // if (x)
+  // {
+    // DrawString(100,110,"Set\0",1);
+  // }
+  // else
+  // {
+    // DrawString(100,110,"Clear\0",1);
+  // }
+  // x=GetPixel(200,200);
+  // if (x)
+  // {
+    // DrawString(100,120,"Set\0",1);
+  // }
+  // else
+  // {
+    // DrawString(100,120,"Clear\0",1);
+  // }
+  c=1;
+  x=1;
+  y=0;
   while (1)
   {
     if (FrameCount==25)
     {
       FrameCount=0;
       STM_EVAL_LEDToggle(LED3);
-      ScrollDown();
-      // rs232_puts("Hello world! Hello world! Hello world! Hello world! Hello world!\r\n\0");
-      // rs232_puts("Hello world! \0");
     }
-    // while (rs232buftail!=rs232bufhead)
-    // {
-      // c=rs232buf[rs232buftail++];
-      // video_putc(c);
-    // }
-    // while (charbuftail!=charbufhead)
-    // {
-      // c=charbuf[charbuftail++];
-      // rs232_putc(c);
-    // }
+    if (FrameCount!=fc)
+    {
+      fc=FrameCount;
+      Circle(125,125,y,c);
+      Rectangle(250,10,y,y,c);
+      y+=x;
+      if(y>120)
+      {
+        c^=1;
+        x=-x;
+        y+=x;
+      }
+    }
   }
-}
-
-/**
-  * @brief  This function transmits a character
-  * @param  Character
-  * @retval None
-  */
-void rs232_putc(char c)
-{
-  /* Wait until transmit register empty*/
-  while((USART2->SR & USART_FLAG_TXE) == 0);          
-  /* Transmit Data */
-  USART2->DR = (u16)c;
-}
-
-/**
-  * @brief  This function transmits a zero terminated string
-  * @param  Zero terminated string
-  * @retval None
-  */
-void rs232_puts(char *str)
-{
-  char c;
-  /* Characters are transmitted one at a time. */
-  while ((c = *str++))
-    rs232_putc(c);
 }
 
 /**
@@ -446,120 +355,6 @@ void USART_Config(uint32_t Baud)
   USART_ITConfig(USART2, USART_IT_RXNE, ENABLE);
   /* Enable the USART2 */
   USART_Cmd(USART2, ENABLE);
-}
-
-/**
-  * @brief  This function handles TIM3 global interrupt request.
-  * @param  None
-  * @retval None
-  */
-void TIM3_IRQHandler(void)
-{
-  uint16_t i,j,k;
-  /* Clear the IT pending Bit */
-  TIM3->SR=(u16)~TIM_IT_Update;
-  /* TIM4 is used to time the H-Sync (4,70uS) */
-  /* Reset TIM4 count */
-  TIM4->CNT=0;
-  /* This loop eliminate differences in interrupt latency */
-  i=32-((TIM3->CNT)>>1);
-  while (i)
-  {
-    i--;
-  }
-  /* Enable TIM4 */
-  TIM4->CR1=1;
-  /* H-Sync or V-Sync low */
-  GPIOA->BSRRH = (uint16_t)GPIO_Pin_1;
-  if (LineCount>=TOP_MARGIN && LineCount<SCREEN_HEIGHT+TOP_MARGIN)
-  {
-    /* Disable DMA1 Stream4 */
-    DMA1_Stream4->CR &= ~((uint32_t)DMA_SxCR_EN);
-    /* Reset interrupt pending bits for DMA1 Stream4 */
-    DMA1->HIFCR = (uint32_t)(DMA_LISR_FEIF0 | DMA_LISR_DMEIF0 | DMA_LISR_TEIF0 | DMA_LISR_HTIF0 | DMA_LISR_TCIF0 | (uint32_t)0x20000000);
-    DMA1_Stream4->NDTR = (uint16_t)SCREEN_WIDTH/2;
-    DMA1_Stream4->PAR = (uint32_t) & (SPI2->DR);
-    DMA1_Stream4->M0AR = (uint32_t) & (ScreenBuff[LineCount-TOP_MARGIN][0]);
-  }
-}
-
-/**
-  * @brief  This function handles TIM4 global interrupt request.
-  * @param  None
-  * @retval None
-  */
-void TIM4_IRQHandler(void)
-{
-  uint32_t tmp;
-
-  /* Disable TIM4 */
-  TIM4->CR1=0;
-  /* Clear the IT pending Bit */
-  TIM4->SR=(u16)~TIM_IT_Update;
-  if (LineCount<303)
-  {
-    /* H-Sync high */
-    GPIOA->BSRRL=(u16)GPIO_Pin_1;
-    if (LineCount>=TOP_MARGIN && LineCount<SCREEN_HEIGHT+TOP_MARGIN)
-    {
-      /* The time it takes to run the loop and enable the DMA is the Back porch */
-      /* The loop is adjusted to eliminate differences in interrupt latency */
-      tmp=BACK_POCH-((TIM4->CNT)>>1);
-      while (tmp)
-      {
-        tmp--;
-      }
-      /* Enable DMA1 Stream4 to keep the SPI port fed from the pixelbuffer. */
-      DMA1_Stream4->CR |= (uint32_t)DMA_SxCR_EN;
-    }
-  }
-  else if (LineCount==313)
-  {
-    /* V-Sync high after 313-303=10 lines) */
-    GPIOA->BSRRL=(u16)GPIO_Pin_1;
-    FrameCount++;
-    LineCount=0xffff;
-  }
-  LineCount++;
-}
-
-/**
-  * @brief  This function handles USART2_IRQHandler interrupt request.
-            An interrupt is generated when a character is recieved
-  * @param  None
-  * @retval None
-  */
-void USART2_IRQHandler(void)
-{
-  rs232buf[rs232bufhead++]=USART2->DR;
-  USART2->SR = (u16)~USART_FLAG_RXNE;
-}
-
-/**
-  * @brief  This function handles EXTI4_IRQHandler interrupt request.
-            The interrupt is generated on STHL transition
-  * @param  None
-  * @retval None
-  */
-void EXTI0_IRQHandler(void)
-{
-  /* Clear the EXTI line 0 pending bit */
-  EXTI_ClearITPendingBit(EXTI_Line0);
-
-	/* figure out what the keyboard is sending us */
-	--bitcount;
-	if (bitcount >= 2 && bitcount <= 9)
-	{
-		tmpscancode >>= 1;
-		if (GPIOB->IDR & GPIO_Pin_1)
-			tmpscancode |= 0x80;
-	}
-	else if (bitcount == 0)
-	{
-    scancode=tmpscancode;
-		bitcount = 11;
-    decode(scancode);
-	}
 }
 
 /*****END OF FILE****/
