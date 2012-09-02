@@ -9,21 +9,21 @@
 /*******************************************************************************
 * PAL timing Horizontal
 * H-sync         4,70uS
-* Front porch    1,65uS
-* Active video  51,95uS
 * Back porch     5,70uS
+* Active video  51,95uS
+* Front porch    1,65uS
 * Line total     64,0uS
 *
-* |                64.00uS                   |
-* |4,70|1,65|          51,95uS          |5,70|
+* |                64.00uS                     |
+* |4,70| 5,70 |          51,95uS          |1,65|
 *
-*            ---------------------------
-*           |                           |
-*           |                           |
-*           |                           |
-*       ----                             ----
-* |    |                                     |
-* -----                                      ----
+*              ---------------------------
+*             |                           |
+*             |                           |
+*             |                           |
+*       ------                             ----
+* |    |                                       |
+* -----                                        ----
 *
 * PAL timing Vertical
 * V-sync        0,576mS (9 lines)
@@ -105,9 +105,10 @@
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
-#define TOP_MARGIN          30  // Number of lines before video signal starts
-#define TILE_WIDTH          8   // Width of a character tile.
-#define TILE_HEIGHT         10  // Height of a character tile.
+#define TOP_MARGIN          30    // Number of lines before video signal starts
+#define BACK_POCH           475   // Back poch timing, adjust it to center the screen
+#define TILE_WIDTH          8     // Width of a character tile
+#define TILE_HEIGHT         10    // Height of a character tile
 #define SPI_DR              0x4001300C
 
 /* Private macro -------------------------------------------------------------*/
@@ -116,6 +117,7 @@ __IO uint16_t LineCount;
 __IO uint16_t FrameCount;
 extern uint8_t ScreenChars[SCREEN_HEIGHT][SCREEN_WIDTH];
 extern uint8_t PixelBuff[SCREEN_WIDTH+2];
+uint8_t Font[256][TILE_HEIGHT];
 
 extern uint8_t cx;
 extern uint8_t cy;
@@ -140,10 +142,11 @@ void GPIO_Config(void);
 void TIM_Config(void);
 void SPI_Config(void);
 void DMA_Config(void);
-void USART_Config(u16 Baud);
+void USART_Config(uint32_t Baud);
 void rs232_putc(char c);
 void rs232_puts(char *str);
 void decode(uint8_t scancode);
+void * memmove(void *dest, void *source, uint32_t count);
 
 /* Private functions ---------------------------------------------------------*/
 
@@ -156,6 +159,18 @@ void main(void)
 {
   uint16_t x,y;
   char c;
+
+  RCC_Config();
+  NVIC_Config();
+  GPIO_Config();
+  TIM_Config();
+  SPI_Config();
+  DMA_Config();
+  USART_Config(115200);
+  memmove(&Font[0],&Font8x10[0], 256*TILE_HEIGHT);
+  /* Enable TIM3 */
+  TIM_Cmd(TIM3, ENABLE);
+  STM_EVAL_LEDInit(LED3);
   y=0;
   c=0;
   while (y<SCREEN_HEIGHT)
@@ -169,19 +184,8 @@ void main(void)
     }
     y++;
   }
-
-  RCC_Config();
-  NVIC_Config();
-  GPIO_Config();
-  TIM_Config();
-  SPI_Config();
-  DMA_Config();
-  USART_Config(4800);
-  /* Enable TIM3 */
-  TIM_Cmd(TIM3, ENABLE);
-  STM_EVAL_LEDInit(LED3);
-  /* Wait 200 frames */
-  while (FrameCount<200)
+  /* Wait 500 frames */
+  while (FrameCount<500)
   {
   }
   video_cls();
@@ -193,7 +197,8 @@ void main(void)
     {
       FrameCount=0;
       STM_EVAL_LEDToggle(LED3);
-      rs232_puts("Hi world\r\n\0");
+      // rs232_puts("Hello world! Hello world! Hello world! Hello world! Hello world!\r\n\0");
+      rs232_puts("Hello world! \0");
     }
     while (rs232buftail!=rs232bufhead)
     {
@@ -256,10 +261,11 @@ void NVIC_Config(void)
 {
   NVIC_InitTypeDef NVIC_InitStructure;
 
+  NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);
   /* Enable the TIM3 gloabal Interrupt */
   NVIC_InitStructure.NVIC_IRQChannel = TIM3_IRQn;
   NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
-  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
+  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
   NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
   NVIC_Init(&NVIC_InitStructure);
   /* Enable the TIM4 gloabal Interrupt */
@@ -270,14 +276,14 @@ void NVIC_Config(void)
   NVIC_Init(&NVIC_InitStructure);
 	/* Enable USART interrupt */
 	NVIC_InitStructure.NVIC_IRQChannel = USART2_IRQn;
-	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
   NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
 	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
 	NVIC_Init(&NVIC_InitStructure);
   /* Enable and set EXTI Line0 Interrupt to the lowest priority */
   NVIC_InitStructure.NVIC_IRQChannel = EXTI0_IRQn;
-  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0x01;
-  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0x01;
+  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
+  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
   NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
   NVIC_Init(&NVIC_InitStructure);
 }
@@ -378,6 +384,7 @@ void SPI_Config(void)
   SPI_StructInit(&SPI_InitStructure);
   SPI_InitStructure.SPI_Mode = SPI_Mode_Master;
   SPI_InitStructure.SPI_Direction = SPI_Direction_1Line_Tx;
+  SPI_InitStructure.SPI_DataSize = SPI_DataSize_16b;
   SPI_InitStructure.SPI_NSS = SPI_NSS_Soft;
   /* 168/4/4=10,5 */
   SPI_InitStructure.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_4;
@@ -407,7 +414,7 @@ void DMA_Config(void)
   DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_HalfWord;
   DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_HalfWord;
   DMA_InitStructure.DMA_Mode = DMA_Mode_Normal;
-  DMA_InitStructure.DMA_Priority = DMA_Priority_Low;
+  DMA_InitStructure.DMA_Priority = DMA_Priority_High;
   DMA_InitStructure.DMA_FIFOMode = DMA_FIFOMode_Disable;
   DMA_InitStructure.DMA_FIFOThreshold = DMA_FIFOThreshold_1QuarterFull;
   DMA_InitStructure.DMA_MemoryBurst = DMA_MemoryBurst_Single;
@@ -420,7 +427,7 @@ void DMA_Config(void)
   * @param  Baudrate
   * @retval None
   */
-void USART_Config(u16 Baud)
+void USART_Config(uint32_t Baud)
 {
   /* USART1 configured as follow:
         - BaudRate = 4800 baud  
@@ -459,12 +466,25 @@ void TIM3_IRQHandler(void)
   /* TIM4 is used to time the H-Sync (4,70uS) */
   /* Reset TIM4 count */
   TIM4->CNT=0;
+  /* This loop eliminate differences in interrupt latency */
+  i=32-((TIM3->CNT)>>1);
+  while (i)
+  {
+    i--;
+  }
   /* Enable TIM4 */
   TIM4->CR1=1;
   /* H-Sync or V-Sync low */
   GPIOA->BSRRH = (uint16_t)GPIO_Pin_1;
   if (LineCount>=TOP_MARGIN && LineCount<SCREEN_HEIGHT*TILE_HEIGHT+TOP_MARGIN)
   {
+    /* Disable DMA1 Stream4 */
+    DMA1_Stream4->CR &= ~((uint32_t)DMA_SxCR_EN);
+    /* Reset interrupt pending bits for DMA1 Stream4 */
+    DMA1->HIFCR = (uint32_t)(DMA_LISR_FEIF0 | DMA_LISR_DMEIF0 | DMA_LISR_TEIF0 | DMA_LISR_HTIF0 | DMA_LISR_TCIF0 | (uint32_t)0x20000000);
+    DMA1_Stream4->NDTR = (uint16_t)SCREEN_WIDTH/2+1;
+    DMA1_Stream4->PAR = (uint32_t) & (SPI2->DR);
+    DMA1_Stream4->M0AR = (uint32_t) PixelBuff;
     /* Make a video line. Since the SPI operates in halfword mode
        odd character first then even character stored in pixel buffer. */
     j=k=LineCount-TOP_MARGIN;
@@ -473,8 +493,8 @@ void TIM3_IRQHandler(void)
     i=0;
     while (i<SCREEN_WIDTH)
     {
-      PixelBuff[i]=Font8x10[ScreenChars[j][i+1]][k];
-      PixelBuff[i+1]=Font8x10[ScreenChars[j][i]][k];
+      PixelBuff[i]=Font[ScreenChars[j][i+1]][k];
+      PixelBuff[i+1]=Font[ScreenChars[j][i]][k];
       i+=2;
     }
   }
@@ -488,6 +508,7 @@ void TIM3_IRQHandler(void)
 void TIM4_IRQHandler(void)
 {
   uint32_t tmp;
+
   /* Disable TIM4 */
   TIM4->CR1=0;
   /* Clear the IT pending Bit */
@@ -498,19 +519,13 @@ void TIM4_IRQHandler(void)
     GPIOA->BSRRL=(u16)GPIO_Pin_1;
     if (LineCount>=TOP_MARGIN && LineCount<SCREEN_HEIGHT*TILE_HEIGHT+TOP_MARGIN)
     {
-      /* The time it takes to init the DMA and run the loop is the Front porch */
-      tmp=0;
-      while (tmp<20)
+      /* The time it takes to run the loop and enable the DMA is the Back porch */
+      /* The loop is adjusted to eliminate differences in interrupt latency */
+      tmp=BACK_POCH-((TIM4->CNT)>>1);
+      while (tmp)
       {
-        tmp++;
+        tmp--;
       }
-      /* Disable DMA1 Stream4 */
-      DMA1_Stream4->CR &= ~((uint32_t)DMA_SxCR_EN);
-      /* Reset interrupt pending bits for DMA1 Stream4 */
-      DMA1->HIFCR = (uint32_t)(DMA_LISR_FEIF0 | DMA_LISR_DMEIF0 | DMA_LISR_TEIF0 | DMA_LISR_HTIF0 | DMA_LISR_TCIF0 | (uint32_t)0x20000000);
-      DMA1_Stream4->NDTR = (uint16_t)SCREEN_WIDTH/2+1;
-      DMA1_Stream4->PAR = (uint32_t) & (SPI2->DR);
-      DMA1_Stream4->M0AR = (uint32_t) PixelBuff;
       /* Enable DMA1 Stream4 to keep the SPI port fed from the pixelbuffer. */
       DMA1_Stream4->CR |= (uint32_t)DMA_SxCR_EN;
     }

@@ -1,6 +1,6 @@
 
 /* Private define ------------------------------------------------------------*/
-#define SCREEN_WIDTH        40  // 40 characters on each line.
+#define SCREEN_WIDTH        60  // 40 characters on each line.
 #define SCREEN_HEIGHT       25  // 25 lines.
 
 /* Private function prototypes -----------------------------------------------*/

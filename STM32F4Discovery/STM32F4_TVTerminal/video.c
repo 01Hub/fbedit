@@ -3,8 +3,8 @@
 #include "video.h"
 
 /* Private variables ---------------------------------------------------------*/
-uint8_t ScreenChars[SCREEN_HEIGHT][SCREEN_WIDTH];
 uint8_t PixelBuff[SCREEN_WIDTH+2];
+uint8_t ScreenChars[SCREEN_HEIGHT][SCREEN_WIDTH];
 static uint8_t cx;
 static uint8_t cy;
 static uint8_t showcursor;
