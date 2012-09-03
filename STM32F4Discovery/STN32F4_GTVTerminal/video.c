@@ -31,10 +31,16 @@
 
 /* Private variables ---------------------------------------------------------*/
 uint8_t ScreenBuff[SCREEN_HEIGHT][SCREEN_WIDTH];
+uint8_t ScreenLine[SCREEN_WIDTH];
 __IO uint16_t LineCount;
 __IO uint16_t FrameCount;
+__IO uint16_t BackPochFlag;
+CURSOR Cursor;
 
 /* Private function prototypes -----------------------------------------------*/
+void SetCursor(uint8_t cur);
+void MoveCursor(uint16_t x,uint16_t y);
+void ShowCursor(uint8_t z);
 void Cls(void);
 void SetPixel(uint16_t x,uint16_t y,uint8_t c);
 uint8_t GetPixel(uint16_t x,uint16_t y);
@@ -52,13 +58,55 @@ void * memset(void *dest, uint32_t c, uint32_t count);
 /* Private functions ---------------------------------------------------------*/
 
 /**
+  * @brief  This function sets the cursor (mouse icon) type.
+  * @param  cur
+  * @retval None
+  */
+void SetCursor(uint8_t cur)
+{
+  switch (cur)
+  {
+    case 0:
+      memmove(&Cursor.icon,&SelectCur,10*8);
+      break;
+  }
+}
+
+/**
+  * @brief  This function sets the cursor (mouse icon) position.
+  * @param  x, y
+  * @retval None
+  */
+void MoveCursor(uint16_t x,uint16_t y)
+{
+  Cursor.x=x;
+  Cursor.y=y;
+}
+
+/**
+  * @brief  This function show / hide the cursor (mouse icon).
+  * @param  x, y
+  * @retval None
+  */
+void ShowCursor(uint8_t z)
+{
+  if (z)
+  {
+    Cursor.z=0x0;   // Show
+  }
+  {
+    Cursor.z=0xFF;  // Hide
+  }
+}
+
+/**
   * @brief  This function clears the screen.
   * @param  None
   * @retval None
   */
 void Cls(void)
 {
-  memset(&ScreenBuff[0], 0, SCREEN_HEIGHT*SCREEN_WIDTH);
+  memset(&ScreenBuff, 0, SCREEN_HEIGHT*SCREEN_WIDTH);
 }
 
 /**
@@ -110,17 +158,91 @@ void DrawChar(uint16_t x, uint16_t y, char chr, uint8_t c)
   uint16_t cx, cy;
 
   cy=0;
-  while (cy<TILE_HEIGHT)
+  switch (c)
   {
-    cl=Font8x10[chr][cy];
-    cx=0;
-    while (cx<TILE_WIDTH)
-    {
-      SetPixel(x+cx,y+cy,(cl & 0x80));
-      cl=cl<<1;
-      cx++;
-    }
-    cy++;
+    case 0:
+    case 2:
+      /* Clear opaque and inverted opaque */
+      while (cy<TILE_HEIGHT)
+      {
+        cx=0;
+        while (cx<TILE_WIDTH)
+        {
+          SetPixel(x+cx,y+cy,0);
+          cx++;
+        }
+        cy++;
+      }
+      break;
+    case 3:
+      chr ^= 0x80;
+    case 1:
+      /* Draw opaque and inverted opaque */
+      // if (c==3)
+      // {
+        // chr ^= 0x80;
+      // }
+      while (cy<TILE_HEIGHT)
+      {
+        cl=Font8x10[chr][cy];
+        cx=0;
+        while (cx<TILE_WIDTH)
+        {
+          SetPixel(x+cx,y+cy,(cl & 0x80));
+          cl=cl<<1;
+          cx++;
+        }
+        cy++;
+      }
+      break;
+    case 6:
+      chr ^= 0x80;
+    case 4:
+      /* Clear transparent and inverted transparent */
+      // if (c==6)
+      // {
+        // chr ^= 0x80;
+      // }
+      while (cy<TILE_HEIGHT)
+      {
+        cl=Font8x10[chr][cy];
+        cx=0;
+        while (cx<TILE_WIDTH)
+        {
+          if (cl & 0x80)
+          {
+            SetPixel(x+cx,y+cy,0);
+          }
+          cl=cl<<1;
+          cx++;
+        }
+        cy++;
+      }
+      break;
+    case 7:
+      chr ^= 0x80;
+    case 5:
+      /* Draw transparent and inverted transparent */
+      // if (c==7)
+      // {
+        // chr ^= 0x80;
+      // }
+      while (cy<TILE_HEIGHT)
+      {
+        cl=Font8x10[chr][cy];
+        cx=0;
+        while (cx<TILE_WIDTH)
+        {
+          if (cl & 0x80)
+          {
+            SetPixel(x+cx,y+cy,1);
+          }
+          cl=cl<<1;
+          cx++;
+        }
+        cy++;
+      }
+      break;
   }
 }
 
@@ -135,13 +257,13 @@ void DrawString(uint16_t x, uint16_t y, char *str, uint8_t c)
   while ((chr = *str++))
   {
     DrawChar(x, y, chr, c);
-    x+=8;
+    x+=TILE_WIDTH;
   }
 }
 
 /**
   * @brief  This function draw a rectangle at x, y with color c.
-  * @param  x, y, b, a, c
+  * @param  x, y, wdt, hgt, c
   * @retval None
   */
 void Rectangle(uint16_t x, uint16_t y, uint16_t wdt, uint16_t hgt, uint8_t c)
@@ -204,68 +326,68 @@ void Circle(uint16_t x0, uint16_t y0, uint16_t radius, uint8_t c)
   */
 void Line(uint16_t X1,uint16_t Y1,uint16_t X2,uint16_t Y2, uint8_t c)
 {
-uint16_t CurrentX, CurrentY, Xinc, Yinc, 
-         Dx, Dy, TwoDx, TwoDy, 
-         TwoDxAccumulatedError, TwoDyAccumulatedError;
+  uint16_t CurrentX, CurrentY, Xinc, Yinc, 
+           Dx, Dy, TwoDx, TwoDy, 
+           TwoDxAccumulatedError, TwoDyAccumulatedError;
 
-Dx = (X2-X1);
-Dy = (Y2-Y1);
+  Dx = (X2-X1);
+  Dy = (Y2-Y1);
 
-TwoDx = Dx + Dx;
-TwoDy = Dy + Dy;
+  TwoDx = Dx + Dx;
+  TwoDy = Dy + Dy;
 
-CurrentX = X1;
-CurrentY = Y1;
+  CurrentX = X1;
+  CurrentY = Y1;
 
-Xinc = 1;
-Yinc = 1;
+  Xinc = 1;
+  Yinc = 1;
 
-if(Dx < 0)
+  if(Dx < 0)
   {
-  Xinc = -1;
-  Dx = -Dx;
-  TwoDx = -TwoDx;
+    Xinc = -1;
+    Dx = -Dx;
+    TwoDx = -TwoDx;
   }
 
-if (Dy < 0)
+  if (Dy < 0)
   {
-  Yinc = -1;
-  Dy = -Dy;
-  TwoDy = -TwoDy;
+    Yinc = -1;
+    Dy = -Dy;
+    TwoDy = -TwoDy;
   }
-SetPixel(X1,Y1, c);
+  SetPixel(X1,Y1, c);
 
-if ((Dx != 0) || (Dy != 0))
+  if ((Dx != 0) || (Dy != 0))
   {
-  if (Dy <= Dx)
+    if (Dy <= Dx)
     { 
-    TwoDxAccumulatedError = 0;
-    do
-	  {
-      CurrentX += Xinc;
-      TwoDxAccumulatedError += TwoDy;
-      if(TwoDxAccumulatedError > Dx)
-        {
-        CurrentY += Yinc;
-        TwoDxAccumulatedError -= TwoDx;
-        }
-       SetPixel(CurrentX,CurrentY, c);
-       }while (CurrentX != X2);
-     }
-   else
+      TwoDxAccumulatedError = 0;
+      do
       {
+        CurrentX += Xinc;
+        TwoDxAccumulatedError += TwoDy;
+        if(TwoDxAccumulatedError > Dx)
+        {
+          CurrentY += Yinc;
+          TwoDxAccumulatedError -= TwoDx;
+        }
+        SetPixel(CurrentX,CurrentY, c);
+      }while (CurrentX != X2);
+    }
+    else
+    {
       TwoDyAccumulatedError = 0; 
       do 
-	    {
-        CurrentY += Yinc; 
-        TwoDyAccumulatedError += TwoDx;
-        if(TwoDyAccumulatedError>Dy) 
+        {
+          CurrentY += Yinc; 
+          TwoDyAccumulatedError += TwoDx;
+          if(TwoDyAccumulatedError>Dy) 
           {
-          CurrentX += Xinc;
-          TwoDyAccumulatedError -= TwoDy;
+            CurrentX += Xinc;
+            TwoDyAccumulatedError -= TwoDy;
           }
-         SetPixel(CurrentX,CurrentY, c);
-         }while (CurrentY != Y2);
+          SetPixel(CurrentX,CurrentY, c);
+        }while (CurrentY != Y2);
     }
   }
 }
@@ -307,28 +429,32 @@ void TIM3_IRQHandler(void)
   uint16_t i,j,k;
   /* Clear the IT pending Bit */
   TIM3->SR=(u16)~TIM_IT_Update;
-  /* TIM4 is used to time the H-Sync (4,70uS) */
-  /* Reset TIM4 count */
-  TIM4->CNT=0;
   /* This loop eliminate differences in interrupt latency */
   i=32-((TIM3->CNT)>>1);
   while (i)
   {
     i--;
   }
+  /* TIM4 is used to time the H-Sync (4,70uS) and the Back poch (5,70uS) */
+  /* Set TIM4 auto reload */
+  TIM4->ARR=(84*H_SYNC)/1000;                // 4,70uS
+  /* Reset TIM4 count */
+  TIM4->CNT=0;
   /* Enable TIM4 */
   TIM4->CR1=1;
   /* H-Sync or V-Sync low */
   GPIOA->BSRRH = (uint16_t)GPIO_Pin_1;
   if (LineCount<SCREEN_HEIGHT)
   {
+    BackPochFlag = 0;
     /* Disable DMA1 Stream4 */
     DMA1_Stream4->CR &= ~((uint32_t)DMA_SxCR_EN);
     /* Reset interrupt pending bits for DMA1 Stream4 */
     DMA1->HIFCR = (uint32_t)(DMA_LISR_FEIF0 | DMA_LISR_DMEIF0 | DMA_LISR_TEIF0 | DMA_LISR_HTIF0 | DMA_LISR_TCIF0 | (uint32_t)0x20000000);
     DMA1_Stream4->NDTR = (uint16_t)SCREEN_WIDTH/2;
     DMA1_Stream4->PAR = (uint32_t) & (SPI2->DR);
-    DMA1_Stream4->M0AR = (uint32_t) & (ScreenBuff[LineCount][0]);
+    DMA1_Stream4->M0AR = (uint32_t) & (ScreenLine);
+    memmove(&ScreenLine,&ScreenBuff[LineCount],SCREEN_WIDTH);
   }
 }
 
@@ -339,36 +465,48 @@ void TIM3_IRQHandler(void)
   */
 void TIM4_IRQHandler(void)
 {
-  uint32_t tmp;
+  uint16_t i;
 
-  /* Disable TIM4 */
-  TIM4->CR1=0;
   /* Clear the IT pending Bit */
   TIM4->SR=(u16)~TIM_IT_Update;
-  if (LineCount<303-TOP_MARGIN)
+  /* This loop eliminate differences in interrupt latency */
+  i=32-((TIM4->CNT)>>1);
+  while (i)
   {
-    /* H-Sync high */
-    GPIOA->BSRRL=(u16)GPIO_Pin_1;
-    if (LineCount<SCREEN_HEIGHT)
+    i--;
+  }
+  /* Set TIM4 auto reload */
+  TIM4->ARR=(84*BACK_POCH)/1000;                // 5,70uS
+  if (BackPochFlag)
+  {
+    /* Disable TIM4 */
+    TIM4->CR1=0;
+    if (LineCount<SCREEN_HEIGHT+BOTTOM_MARGIN)
     {
-      /* The time it takes to run the loop and enable the DMA is the Back porch */
-      /* The loop is adjusted to eliminate differences in interrupt latency */
-      tmp=BACK_POCH-((TIM4->CNT)>>1);
-      while (tmp)
+      /* H-Sync high */
+      GPIOA->BSRRL=(u16)GPIO_Pin_1;
+      if (LineCount<SCREEN_HEIGHT)
       {
-        tmp--;
+        /* The time it takes to run the loop and enable the DMA is the Back porch */
+        // /* The loop is adjusted to eliminate differences in interrupt latency */
+        // tmp=BACK_POCH;//-((TIM4->CNT)>>1);
+        // while (tmp)
+        // {
+          // tmp--;
+        // }
+        /* Enable DMA1 Stream4 to keep the SPI port fed from the pixelbuffer. */
+        DMA1_Stream4->CR |= (uint32_t)DMA_SxCR_EN;
       }
-      /* Enable DMA1 Stream4 to keep the SPI port fed from the pixelbuffer. */
-      DMA1_Stream4->CR |= (uint32_t)DMA_SxCR_EN;
     }
+    else if (LineCount==SCREEN_HEIGHT+BOTTOM_MARGIN+V_SYNC)
+    {
+      /* V-Sync high after 313 lines) */
+      GPIOA->BSRRL=(u16)GPIO_Pin_1;
+      FrameCount++;
+      LineCount=-(TOP_MARGIN+1);
+    }
+    LineCount++;
   }
-  else if (LineCount==313-TOP_MARGIN)
-  {
-    /* V-Sync high after 313-303=10 lines) */
-    GPIOA->BSRRL=(u16)GPIO_Pin_1;
-    FrameCount++;
-    LineCount=-(TOP_MARGIN+1);
-  }
-  LineCount++;
+  BackPochFlag = 1;
 }
 

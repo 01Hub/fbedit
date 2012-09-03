@@ -83,6 +83,9 @@ void main(void)
 {
   uint16_t x,y,c,fc;
 
+  SetCursor(0);
+  MoveCursor(240,125);
+  ShowCursor(1);
   RCC_Config();
   NVIC_Config();
   GPIO_Config();
@@ -130,7 +133,7 @@ void main(void)
     {
       fc=FrameCount;
       Circle(125,125,y,c);
-      Rectangle(250,10,y,y,c);
+      Rectangle(300-y/2,125-y/2,y,y,c);
       y+=x;
       if(y>120)
       {
@@ -263,7 +266,7 @@ void TIM_Config(void)
   TIM_ClearITPendingBit(TIM4,TIM_IT_Update);
   TIM_ITConfig(TIM3, TIM_IT_Update, ENABLE);
   /* Time base configuration */
-  TIM_TimeBaseStructure.TIM_Period = (84*470)/100;                // 4,70uS
+  TIM_TimeBaseStructure.TIM_Period = (84*H_SYNC)/1000;            // 4,70uS
   TIM_TimeBaseStructure.TIM_Prescaler = 0;
   TIM_TimeBaseStructure.TIM_ClockDivision = 0;
   TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
