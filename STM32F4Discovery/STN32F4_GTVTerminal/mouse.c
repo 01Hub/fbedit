@@ -21,7 +21,7 @@ void EXTI2_IRQHandler(void)
   /* Clear the EXTI line 2 pending bit */
   EXTI_ClearITPendingBit(EXTI_Line2);
 
-	/* figure out what the keyboard is sending us */
+	/* figure out what the mouse is sending us */
 	--mbitcount;
 	if (mbitcount >= 2 && mbitcount <= 9)
 	{
