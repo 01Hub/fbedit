@@ -410,28 +410,6 @@ void ScrollDown(void)
 }
 
 /**
-  * @brief  This function sets / clears a pixel in ScreenLine at x.
-  * @param  x, c
-  * @retval None
-  */
-void SetLinePixel(uint16_t x,uint8_t c)
-{
-  uint8_t bit;
-  if (x < (SCREEN_WIDTH-4) * 8)
-  {
-    bit = 1 << (x & 0x7);
-    if (c)
-    {
-      ScreenLine[x >> 3] |= bit;
-    }
-    else
-    {
-      ScreenLine[x >> 3] &= ~bit;
-    }
-  }
-}
-
-/**
   * @brief  This function handles TIM3 global interrupt request.
   * @param  None
   * @retval None
@@ -439,7 +417,9 @@ void SetLinePixel(uint16_t x,uint8_t c)
 void TIM3_IRQHandler(void)
 {
   uint16_t i,x;
-  uint8_t cx,cy,cb;
+  uint8_t cx,cy,cb,bit;
+  uint32_t *pd,*ps;
+
   /* Clear the IT pending Bit */
   TIM3->SR=(u16)~TIM_IT_Update;
   /* This loop eliminate differences in interrupt latency */
@@ -467,7 +447,15 @@ void TIM3_IRQHandler(void)
     DMA1_Stream4->NDTR = (uint16_t)SCREEN_WIDTH/2;
     DMA1_Stream4->PAR = (uint32_t) & (SPI2->DR);
     DMA1_Stream4->M0AR = (uint32_t) & (ScreenLine);
-    memmove(&ScreenLine,&ScreenBuff[LineCount],SCREEN_WIDTH);
+    //memmove(&ScreenLine,&ScreenBuff[LineCount],SCREEN_WIDTH-4);
+    pd=(uint32_t *)&ScreenLine;
+    ps=(uint32_t *)&ScreenBuff[LineCount];
+    x=0;
+    while (x<15)
+    {
+      pd[x]=ps[x];
+      x++;
+    }
     /* Draw cursor icon */
     if (LineCount>=Cursor.y && LineCount<Cursor.y+Cursor.icon.ht && Cursor.z!=0)
     {
@@ -481,8 +469,20 @@ void TIM3_IRQHandler(void)
         if (cb!=2)
         {
           /* Set / Clear bit */
-          SetLinePixel(x+cx,cb);
+          if (x < (SCREEN_WIDTH-4) * 8)
+          {
+            bit = 1 << (x & 0x7);
+            if (cb)
+            {
+              ScreenLine[x >> 3] |= bit;
+            }
+            else
+            {
+              ScreenLine[x >> 3] &= ~bit;
+            }
+          }
         }
+        x++;
         cx++;
       }
     }
