@@ -18,6 +18,9 @@
 * Keyboard
 * PB0   Keyboard clock in
 * PB1   Keyboard data in
+* Mouse
+* PB2   Mouse clock in
+* PB3   Mouse data in
 * Leds
 * PA9   Green
 * PD5   Red
@@ -83,9 +86,6 @@ void main(void)
 {
   uint16_t x,y,c,fc;
 
-  SetCursor(0);
-  MoveCursor(240,125);
-  ShowCursor(1);
   RCC_Config();
   NVIC_Config();
   GPIO_Config();
@@ -96,29 +96,10 @@ void main(void)
   /* Enable TIM3 */
   TIM_Cmd(TIM3, ENABLE);
   STM_EVAL_LEDInit(LED3);
+  SetCursor(0);
+  MoveCursor(240,125);
+  ShowCursor(1);
   Rectangle(0,0,480,250,1);
-  // Rectangle(10,10,460,230,1);
-  // Line(0,0,479,249,1);
-  // DrawString(100,100,"Hello World!\0",1);
-  // Circle(100,100,50,1);
-  // x=GetPixel(0,0);
-  // if (x)
-  // {
-    // DrawString(100,110,"Set\0",1);
-  // }
-  // else
-  // {
-    // DrawString(100,110,"Clear\0",1);
-  // }
-  // x=GetPixel(200,200);
-  // if (x)
-  // {
-    // DrawString(100,120,"Set\0",1);
-  // }
-  // else
-  // {
-    // DrawString(100,120,"Clear\0",1);
-  // }
   c=1;
   x=1;
   y=0;
@@ -132,6 +113,7 @@ void main(void)
     if (FrameCount!=fc)
     {
       fc=FrameCount;
+      MoveCursor(y,y);
       Circle(125,125,y,c);
       Rectangle(350-y/2,125-y/2,y,y,c);
       y+=x;
@@ -171,7 +153,7 @@ void NVIC_Config(void)
   /* Enable the TIM3 gloabal Interrupt */
   NVIC_InitStructure.NVIC_IRQChannel = TIM3_IRQn;
   NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
-  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
   NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
   NVIC_Init(&NVIC_InitStructure);
   /* Enable the TIM4 gloabal Interrupt */
@@ -182,13 +164,19 @@ void NVIC_Config(void)
   NVIC_Init(&NVIC_InitStructure);
 	/* Enable USART interrupt */
 	NVIC_InitStructure.NVIC_IRQChannel = USART2_IRQn;
-	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
   NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
 	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
 	NVIC_Init(&NVIC_InitStructure);
   /* Enable and set EXTI Line0 Interrupt to the lowest priority */
   NVIC_InitStructure.NVIC_IRQChannel = EXTI0_IRQn;
-  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
+  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
+  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+  NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+  NVIC_Init(&NVIC_InitStructure);
+  /* Enable and set EXTI Line2 Interrupt to the lowest priority */
+  NVIC_InitStructure.NVIC_IRQChannel = EXTI2_IRQn;
+  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
   NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
   NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
   NVIC_Init(&NVIC_InitStructure);
@@ -232,8 +220,8 @@ void GPIO_Config(void)
   GPIO_PinAFConfig(GPIOA, GPIO_PinSource2, GPIO_AF_USART2);
   GPIO_PinAFConfig(GPIOA, GPIO_PinSource3, GPIO_AF_USART2);
 
-  /* GPIOB Pin1 and Pin0 as input floating */
-  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_1 | GPIO_Pin_0;
+  /* GPIOB Pin3, Pin2, Pin1 and Pin0 as input floating */
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_3 | GPIO_Pin_2 | GPIO_Pin_1 | GPIO_Pin_0;
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
   GPIO_Init(GPIOB, &GPIO_InitStructure);
 
@@ -242,7 +230,16 @@ void GPIO_Config(void)
   /* Configure EXTI Line0 */
   EXTI_InitStructure.EXTI_Line = EXTI_Line0;
   EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
-  EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Rising;  
+  EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Falling;  
+  EXTI_InitStructure.EXTI_LineCmd = ENABLE;
+  EXTI_Init(&EXTI_InitStructure);
+
+  /* Connect EXTI Line2 to PB2 pin */
+  SYSCFG_EXTILineConfig(EXTI_PortSourceGPIOB, EXTI_PinSource2);
+  /* Configure EXTI Line2 */
+  EXTI_InitStructure.EXTI_Line = EXTI_Line2;
+  EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
+  EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Falling;  
   EXTI_InitStructure.EXTI_LineCmd = ENABLE;
   EXTI_Init(&EXTI_InitStructure);
 }

@@ -35,7 +35,7 @@ uint8_t ScreenLine[SCREEN_WIDTH];
 __IO uint16_t LineCount;
 __IO uint16_t FrameCount;
 __IO uint16_t BackPochFlag;
-CURSOR Cursor;
+SPRITE Cursor;
 
 /* Private function prototypes -----------------------------------------------*/
 void SetCursor(uint8_t cur);
@@ -67,7 +67,9 @@ void SetCursor(uint8_t cur)
   switch (cur)
   {
     case 0:
-      memmove(&Cursor.icon,&SelectCur,10*8);
+      Cursor.icon.wt=8;
+      Cursor.icon.ht=10;
+      Cursor.icon.icondata=*SelectCur;
       break;
   }
 }
@@ -92,10 +94,10 @@ void ShowCursor(uint8_t z)
 {
   if (z)
   {
-    Cursor.z=0x0;   // Show
+    Cursor.z=0xFF;   // Show
   }
   {
-    Cursor.z=0xFF;  // Hide
+    Cursor.z=0x0;  // Hide
   }
 }
 
@@ -178,10 +180,6 @@ void DrawChar(uint16_t x, uint16_t y, char chr, uint8_t c)
       chr ^= 0x80;
     case 1:
       /* Draw opaque and inverted opaque */
-      // if (c==3)
-      // {
-        // chr ^= 0x80;
-      // }
       while (cy<TILE_HEIGHT)
       {
         cl=Font8x10[chr][cy];
@@ -199,10 +197,6 @@ void DrawChar(uint16_t x, uint16_t y, char chr, uint8_t c)
       chr ^= 0x80;
     case 4:
       /* Clear transparent and inverted transparent */
-      // if (c==6)
-      // {
-        // chr ^= 0x80;
-      // }
       while (cy<TILE_HEIGHT)
       {
         cl=Font8x10[chr][cy];
@@ -223,10 +217,6 @@ void DrawChar(uint16_t x, uint16_t y, char chr, uint8_t c)
       chr ^= 0x80;
     case 5:
       /* Draw transparent and inverted transparent */
-      // if (c==7)
-      // {
-        // chr ^= 0x80;
-      // }
       while (cy<TILE_HEIGHT)
       {
         cl=Font8x10[chr][cy];
@@ -378,16 +368,16 @@ void Line(uint16_t X1,uint16_t Y1,uint16_t X2,uint16_t Y2, uint8_t c)
     {
       TwoDyAccumulatedError = 0; 
       do 
+      {
+        CurrentY += Yinc; 
+        TwoDyAccumulatedError += TwoDx;
+        if(TwoDyAccumulatedError>Dy) 
         {
-          CurrentY += Yinc; 
-          TwoDyAccumulatedError += TwoDx;
-          if(TwoDyAccumulatedError>Dy) 
-          {
-            CurrentX += Xinc;
-            TwoDyAccumulatedError -= TwoDy;
-          }
-          SetPixel(CurrentX,CurrentY, c);
-        }while (CurrentY != Y2);
+          CurrentX += Xinc;
+          TwoDyAccumulatedError -= TwoDy;
+        }
+        SetPixel(CurrentX,CurrentY, c);
+      }while (CurrentY != Y2);
     }
   }
 }
@@ -420,13 +410,36 @@ void ScrollDown(void)
 }
 
 /**
+  * @brief  This function sets / clears a pixel in ScreenLine at x.
+  * @param  x, c
+  * @retval None
+  */
+void SetLinePixel(uint16_t x,uint8_t c)
+{
+  uint8_t bit;
+  if (x < (SCREEN_WIDTH-4) * 8)
+  {
+    bit = 1 << (x & 0x7);
+    if (c)
+    {
+      ScreenLine[x >> 3] |= bit;
+    }
+    else
+    {
+      ScreenLine[x >> 3] &= ~bit;
+    }
+  }
+}
+
+/**
   * @brief  This function handles TIM3 global interrupt request.
   * @param  None
   * @retval None
   */
 void TIM3_IRQHandler(void)
 {
-  uint16_t i,j,k;
+  uint16_t i,x;
+  uint8_t cx,cy,cb;
   /* Clear the IT pending Bit */
   TIM3->SR=(u16)~TIM_IT_Update;
   /* This loop eliminate differences in interrupt latency */
@@ -455,6 +468,24 @@ void TIM3_IRQHandler(void)
     DMA1_Stream4->PAR = (uint32_t) & (SPI2->DR);
     DMA1_Stream4->M0AR = (uint32_t) & (ScreenLine);
     memmove(&ScreenLine,&ScreenBuff[LineCount],SCREEN_WIDTH);
+    /* Draw cursor icon */
+    if (LineCount>=Cursor.y && LineCount<Cursor.y+Cursor.icon.ht && Cursor.z!=0)
+    {
+      x=Cursor.x;
+      /* Get icon line */
+      cy=LineCount-Cursor.y;
+      cx=0;
+      while (cx<8)
+      {
+        cb=Cursor.icon.icondata[cy*Cursor.icon.wt+cx];
+        if (cb!=2)
+        {
+          /* Set / Clear bit */
+          SetLinePixel(x+cx,cb);
+        }
+        cx++;
+      }
+    }
   }
 }
 
@@ -487,13 +518,6 @@ void TIM4_IRQHandler(void)
       GPIOA->BSRRL=(u16)GPIO_Pin_1;
       if (LineCount<SCREEN_HEIGHT)
       {
-        /* The time it takes to run the loop and enable the DMA is the Back porch */
-        // /* The loop is adjusted to eliminate differences in interrupt latency */
-        // tmp=BACK_POCH;//-((TIM4->CNT)>>1);
-        // while (tmp)
-        // {
-          // tmp--;
-        // }
         /* Enable DMA1 Stream4 to keep the SPI port fed from the pixelbuffer. */
         DMA1_Stream4->CR |= (uint32_t)DMA_SxCR_EN;
       }

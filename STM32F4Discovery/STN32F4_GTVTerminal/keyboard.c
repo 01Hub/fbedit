@@ -117,7 +117,7 @@ __IO uint8_t charbuftail = 0;
 
 __IO uint8_t tmpscancode;
 __IO uint8_t scancode;
-__IO uint8_t bitcount = 11;
+__IO uint8_t kbitcount = 11;
 
 //Decode PS/2 keycodes
 void decode(uint8_t scancode)
@@ -169,7 +169,7 @@ void decode(uint8_t scancode)
 }
 
 /**
-  * @brief  This function handles EXTI4_IRQHandler interrupt request.
+  * @brief  This function handles EXTI0_IRQHandler interrupt request.
             The interrupt is generated on STHL transition
   * @param  None
   * @retval None
@@ -180,17 +180,17 @@ void EXTI0_IRQHandler(void)
   EXTI_ClearITPendingBit(EXTI_Line0);
 
 	/* figure out what the keyboard is sending us */
-	--bitcount;
-	if (bitcount >= 2 && bitcount <= 9)
+	--kbitcount;
+	if (kbitcount >= 2 && kbitcount <= 9)
 	{
 		tmpscancode >>= 1;
 		if (GPIOB->IDR & GPIO_Pin_1)
 			tmpscancode |= 0x80;
 	}
-	else if (bitcount == 0)
+	else if (kbitcount == 0)
 	{
     scancode=tmpscancode;
-		bitcount = 11;
+		kbitcount = 11;
     decode(scancode);
 	}
 }
