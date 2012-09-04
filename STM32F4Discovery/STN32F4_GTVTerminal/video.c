@@ -436,12 +436,12 @@ void TIM3_IRQHandler(void)
   TIM4->CNT=0;
   /* Enable TIM4 */
   TIM4->CR1=1;
+  BackPochFlag = 0;
   /* H-Sync or V-Sync low */
   GPIOA->BSRRH = (uint16_t)GPIO_Pin_1;
   if (LineCount<SCREEN_HEIGHT)
   {
     ts=TIM3->CNT;
-    BackPochFlag = 0;
     /* Disable DMA1 Stream4 */
     DMA1_Stream4->CR &= ~((uint32_t)DMA_SxCR_EN);
     /* Reset interrupt pending bits for DMA1 Stream4 */
@@ -513,31 +513,34 @@ void TIM4_IRQHandler(void)
   {
     i--;
   }
-  /* Set TIM4 auto reload */
-  TIM4->ARR=(84*BACK_POCH)/1000;                // 5,70uS
-  if (BackPochFlag)
+  if (!BackPochFlag)
   {
-    /* Disable TIM4 */
-    TIM4->CR1=0;
     if (LineCount<SCREEN_HEIGHT+BOTTOM_MARGIN)
     {
       /* H-Sync high */
       GPIOA->BSRRL=(u16)GPIO_Pin_1;
-      if (LineCount<SCREEN_HEIGHT)
-      {
-        /* Enable DMA1 Stream4 to keep the SPI port fed from the pixelbuffer. */
-        DMA1_Stream4->CR |= (uint32_t)DMA_SxCR_EN;
-      }
     }
     else if (LineCount==SCREEN_HEIGHT+BOTTOM_MARGIN+V_SYNC)
     {
-      /* V-Sync high after 313 lines) */
+      /* V-Sync high */
       GPIOA->BSRRL=(u16)GPIO_Pin_1;
       FrameCount++;
       LineCount=-(TOP_MARGIN+1);
     }
+    /* Set TIM4 auto reload */
+    TIM4->ARR=(84*BACK_POCH)/1000;                // 5,70uS
+    BackPochFlag = 1;
+  }
+  else
+  {
+    /* Disable TIM4 */
+    TIM4->CR1=0;
+    if (LineCount<SCREEN_HEIGHT)
+    {
+      /* Enable DMA1 Stream4 to keep the SPI port fed from the pixelbuffer. */
+      DMA1_Stream4->CR |= (uint32_t)DMA_SxCR_EN;
+    }
     LineCount++;
   }
-  BackPochFlag = 1;
 }
 
