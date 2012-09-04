@@ -11,6 +11,13 @@
 #define BACK_POCH           7700  // Back poch timing (nano seconds), adjust it to center the screen horizontaly
 #define SPI_DR              0x4001300C
 
+/* Private typedef -----------------------------------------------------------*/
+typedef struct
+{
+  uint16_t id;
+  uint16_t count;
+} TIME;
+
 typedef struct
 {
   uint8_t wt;

@@ -36,6 +36,7 @@ __IO uint16_t LineCount;
 __IO uint16_t FrameCount;
 __IO uint16_t BackPochFlag;
 SPRITE Cursor;
+__IO TIME time;
 
 /* Private function prototypes -----------------------------------------------*/
 void SetCursor(uint8_t cur);
@@ -416,7 +417,7 @@ void ScrollDown(void)
   */
 void TIM3_IRQHandler(void)
 {
-  uint16_t i,x;
+  uint16_t i,x,ts,tt;
   uint8_t cx,cy,cb,bit;
   uint32_t *pd,*ps;
 
@@ -439,6 +440,7 @@ void TIM3_IRQHandler(void)
   GPIOA->BSRRH = (uint16_t)GPIO_Pin_1;
   if (LineCount<SCREEN_HEIGHT)
   {
+    ts=TIM3->CNT;
     BackPochFlag = 0;
     /* Disable DMA1 Stream4 */
     DMA1_Stream4->CR &= ~((uint32_t)DMA_SxCR_EN);
@@ -447,7 +449,7 @@ void TIM3_IRQHandler(void)
     DMA1_Stream4->NDTR = (uint16_t)SCREEN_WIDTH/2;
     DMA1_Stream4->PAR = (uint32_t) & (SPI2->DR);
     DMA1_Stream4->M0AR = (uint32_t) & (ScreenLine);
-    //memmove(&ScreenLine,&ScreenBuff[LineCount],SCREEN_WIDTH-4);
+    /* Copy ScreenBuff[LineCount] to ScreenLine */
     pd=(uint32_t *)&ScreenLine;
     ps=(uint32_t *)&ScreenBuff[LineCount];
     x=0;
@@ -485,6 +487,11 @@ void TIM3_IRQHandler(void)
         x++;
         cx++;
       }
+    }
+    tt=(TIM3->CNT)-ts;
+    if (tt>time.count)
+    {
+      time.count=tt;
     }
   }
 }

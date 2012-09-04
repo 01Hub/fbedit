@@ -66,6 +66,8 @@ extern uint8_t charbuf[256];
 extern uint8_t charbuftail;
 extern uint8_t charbufhead;
 
+extern TIME time;
+
 /* Private function prototypes -----------------------------------------------*/
 void RCC_Config(void);
 void NVIC_Config(void);
@@ -86,6 +88,7 @@ void main(void)
 {
   uint16_t x,y,c,fc;
 
+  time.id=0x1234;
   RCC_Config();
   NVIC_Config();
   GPIO_Config();
@@ -96,6 +99,7 @@ void main(void)
   /* Enable TIM3 */
   TIM_Cmd(TIM3, ENABLE);
   STM_EVAL_LEDInit(LED3);
+
   SetCursor(0);
   MoveCursor(240,125);
   ShowCursor(1);
