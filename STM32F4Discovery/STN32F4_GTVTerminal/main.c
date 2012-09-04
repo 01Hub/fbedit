@@ -133,7 +133,7 @@ void main(void)
     {
       fc=FrameCount;
       Circle(125,125,y,c);
-      Rectangle(300-y/2,125-y/2,y,y,c);
+      Rectangle(350-y/2,125-y/2,y,y,c);
       y+=x;
       if(y>120)
       {

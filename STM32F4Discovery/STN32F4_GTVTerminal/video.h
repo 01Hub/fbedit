@@ -8,7 +8,7 @@
 #define TILE_WIDTH          8     // Width of a character tile
 #define TILE_HEIGHT         10    // Height of a character tile
 #define H_SYNC              4700  // Horisontal sync timing (nano seconds)
-#define BACK_POCH           5700  // Back poch timing (nano seconds), adjust it to center the screen
+#define BACK_POCH           7700  // Back poch timing (nano seconds), adjust it to center the screen
 #define SPI_DR              0x4001300C
 
 typedef struct
