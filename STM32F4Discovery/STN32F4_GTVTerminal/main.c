@@ -55,8 +55,7 @@
 /* Private define ------------------------------------------------------------*/
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
-extern uint16_t LineCount;
-extern uint16_t FrameCount;
+extern volatile uint16_t FrameCount;
 
 extern uint8_t rs232buf[256];
 extern uint8_t rs232buftail;
@@ -66,12 +65,12 @@ extern uint8_t charbuf[256];
 extern uint8_t charbuftail;
 extern uint8_t charbufhead;
 
-// extern TIME time;
-extern SPRITE* Sprites[];//[MAX_SPRITES];
+extern SPRITE* Sprites[];
 SPRITE Sprite[32];
 extern SPRITE Cursor;
+RECT AlienBound;
 
-uint8_t Alien[16][16] = {
+uint8_t Alien1[16][16] = {
 {2,2,1,1,1,1,1,1,1,1,1,1,1,1,2,2},
 {2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2},
 {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
@@ -87,7 +86,26 @@ uint8_t Alien[16][16] = {
 {2,2,2,1,1,2,2,2,2,2,2,1,1,2,2,2},
 {2,2,1,1,2,2,2,2,2,2,2,2,1,1,2,2},
 {2,1,1,2,2,2,2,2,2,2,2,2,2,1,1,2},
-{1,1,1,2,2,2,2,2,2,2,2,2,2,1,1,1},
+{1,1,1,2,2,2,2,2,2,2,2,2,2,1,1,1}
+};
+
+uint8_t Alien2[16][16] = {
+{2,2,1,1,1,1,1,1,1,1,1,1,1,1,2,2},
+{2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2},
+{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+{1,1,1,1,0,1,1,1,1,1,1,0,1,1,1,1},
+{1,1,1,0,0,0,1,1,1,1,0,0,0,1,1,1},
+{1,1,1,1,0,1,1,1,1,1,1,0,1,1,1,1},
+{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+{1,1,1,1,0,0,1,1,1,1,0,0,1,1,1,1},
+{1,1,1,1,0,0,0,0,0,0,0,0,1,1,1,1},
+{1,1,1,1,1,1,1,0,0,1,1,1,1,1,1,1},
+{2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2},
+{2,2,2,2,1,1,2,2,2,2,1,1,2,2,2,2},
+{2,2,2,1,1,2,2,2,2,2,2,1,1,2,2,2},
+{2,2,1,1,2,2,2,2,2,2,2,2,1,1,2,2},
+{2,2,1,1,2,2,2,2,2,2,2,2,1,1,2,2},
+{2,2,1,1,1,1,2,2,2,2,1,1,1,1,2,2}
 };
 
 /* Private function prototypes -----------------------------------------------*/
@@ -108,7 +126,7 @@ void USART_Config(uint32_t Baud);
   */
 void main(void)
 {
-  uint16_t x,y,c,fc;
+  int16_t x,i,fc,coll;
 
   // time.id=0x1234;
   RCC_Config();
@@ -118,54 +136,97 @@ void main(void)
   SPI_Config();
   DMA_Config();
   USART_Config(115200);
+  // RNG_Cmd(ENABLE);
   /* Enable TIM3 */
   TIM_Cmd(TIM3, ENABLE);
   STM_EVAL_LEDInit(LED3);
 
   /* Setup sprites */
-  x=0;
-  while (x<32)
+  AlienBound.left=10;
+  AlienBound.top=10;
+  AlienBound.right=469;
+  AlienBound.bottom=239;
+  i=0;
+  while (i<32)
   {
-    Sprite[x].icon.icondata=*Alien;
-    Sprite[x].icon.wt=16;
-    Sprite[x].icon.ht=16;
-    Sprite[x].x=(x & 7)*25+10;
-    Sprite[x].y=(x>>3)*20+10;
-    Sprite[x].visible=1;
-    Sprites[x]=&Sprite[x];
-    x++;
+    if (i & 1)
+    {
+      Sprite[i].icon.icondata=*Alien2;
+    }
+    else
+    {
+      Sprite[i].icon.icondata=*Alien1;
+    }
+    Sprite[i].icon.wt=16;
+    Sprite[i].icon.ht=16;
+    Sprite[i].x=(i & 7)*25+10;
+    Sprite[i].y=(i>>3)*20+10;
+    Sprite[i].visible=1;
+    Sprite[i].collision=0;
+    Sprite[i].boundary=&AlienBound;
+    Sprites[i]=&Sprite[i];
+    i++;
   }
   /* Setup cursor */
   SetCursor(0);
   MoveCursor(240,125);
   ShowCursor(1);
-  Sprites[64]=&Cursor;
+  Sprites[32]=&Cursor;
 
   Rectangle(0,0,480,250,1);
-  c=1;
-  x=1;
-  y=0;
+  x=2;
   while (1)
   {
     if (FrameCount!=fc)
     {
-      fc=FrameCount;
-      MoveCursor(y*2,y);
-      Circle(125,125,y,c);
-      Rectangle(350-y/2,125-y/2,y,y,c);
-      y+=x;
-      if(y>120)
+      if (FrameCount>=25)
       {
-        c^=1;
-        x=-x;
-        y+=x;
+        // i=RNG_GetRandomNumber();
+        // DrawHex(100,0,i,1);
+        FrameCount=0;
+        STM_EVAL_LEDToggle(LED3);
       }
-    }
-    if (FrameCount==25)
-    {
-      FrameCount=0;
-      fc=0;
-      STM_EVAL_LEDToggle(LED3);
+      fc=FrameCount;
+      i=0;
+      coll=0;
+      while (i<32)
+      {
+        coll|=Sprite[i].collision;
+        i++;
+      }
+      if (!(coll & COLL_BOTTOM))
+      {
+        if ((x>0 && (coll & COLL_RIGHT)) || (x<0 && (coll & COLL_LEFT)))
+        {
+          i=0;
+          while (i<32)
+          {
+            Sprite[i].y+=4;
+            i++;
+          }
+          x=-x;
+        }
+        else
+        {
+          i=0;
+          while (i<32)
+          {
+            if (!FrameCount)
+            {
+              if (Sprite[i].icon.icondata==*Alien1)
+              {
+                Sprite[i].icon.icondata=*Alien2;
+              }
+              else
+              {
+                Sprite[i].icon.icondata=*Alien1;
+              }
+            }
+            Sprite[i].x+=x;
+            i++;
+          }
+        }
+      }
     }
   }
 }
@@ -181,6 +242,8 @@ void RCC_Config(void)
   RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA1 | RCC_AHB1Periph_GPIOA | RCC_AHB1Periph_GPIOB, ENABLE);
   /* Enable USART2, TIM3, TIM4, TIM5 and SPI2 clocks */
   RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART2 | RCC_APB1Periph_TIM3 | RCC_APB1Periph_TIM4 | RCC_APB1Periph_TIM5 | RCC_APB1Periph_SPI2, ENABLE);
+  // /* Enable random generator clock */
+  // RCC_AHB2PeriphClockCmd(RCC_AHB2Periph_RNG, ENABLE);
 }
 
 /**
@@ -321,7 +384,7 @@ void TIM_Config(void)
   TIM_ClearITPendingBit(TIM4,TIM_IT_Update);
   TIM_ITConfig(TIM4, TIM_IT_Update, ENABLE);
   /* Time base configuration */
-  TIM_TimeBaseStructure.TIM_Period = 1;
+  TIM_TimeBaseStructure.TIM_Period = 32;
   TIM_TimeBaseStructure.TIM_Prescaler = 0;
   TIM_TimeBaseStructure.TIM_ClockDivision = 0;
   TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;

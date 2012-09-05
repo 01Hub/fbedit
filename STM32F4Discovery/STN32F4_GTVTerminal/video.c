@@ -33,7 +33,7 @@
 uint8_t ScreenBuff[SCREEN_HEIGHT][SCREEN_WIDTH];
 uint8_t WorkBuff[SCREEN_HEIGHT][SCREEN_WIDTH];
 __IO int16_t LineCount;
-__IO int16_t FrameCount;
+__IO uint16_t FrameCount;
 __IO int8_t BackPochFlag;
 SPRITE Cursor;
 // __IO TIME time;
@@ -48,6 +48,7 @@ void SetPixel(uint16_t x,uint16_t y,uint8_t c);
 uint8_t GetPixel(uint16_t x,uint16_t y);
 void DrawChar(uint16_t x, uint16_t y, char chr, uint8_t c);
 void DrawString(uint16_t x, uint16_t y, char *str, uint8_t c);
+void DrawHex(uint16_t x, uint16_t y, uint16_t n, uint8_t c);
 void Rectangle(uint16_t x, uint16_t y, uint16_t b, uint16_t a, uint8_t c);
 void Circle(uint16_t cx, uint16_t cy, uint16_t radius, uint8_t c);
 void Line(uint16_t X1,uint16_t Y1,uint16_t X2,uint16_t Y2, uint8_t c);
@@ -256,6 +257,23 @@ void DrawString(uint16_t x, uint16_t y, char *str, uint8_t c)
 }
 
 /**
+  * @brief  This function draws a hex value at x, y.
+  * @param  x, y, n, c
+  * @retval None
+  */
+void DrawHex(uint16_t x, uint16_t y, uint16_t n, uint8_t c)
+{
+	static char hexchars[] = "0123456789ABCDEF";
+	char hexstr[5];
+	hexstr[0] = hexchars[(n >> 12) & 0xF];
+	hexstr[1] = hexchars[(n >> 8) & 0xF];
+	hexstr[2] = hexchars[(n >> 4) & 0xF];
+	hexstr[3] = hexchars[n & 0xF];
+	hexstr[4] = '\0';
+  DrawString(x,y,hexstr,c);
+}
+
+/**
   * @brief  This function draw a rectangle at x, y with color c.
   * @param  x, y, wdt, hgt, c
   * @retval None
@@ -422,6 +440,10 @@ void DrawSprite(const SPRITE* ps)
   {
     /* Draw the sprite */
     ym=ps->y+ps->icon.ht;
+    if (ym>SCREEN_HEIGHT)
+    {
+      ym=SCREEN_HEIGHT;
+    }
     xm=ps->x+ps->icon.wt;
     y=ps->y;
     picon=ps->icon.icondata;
@@ -550,7 +572,7 @@ void TIM4_IRQHandler(void)
   */
 void TIM5_IRQHandler(void)
 {
-  uint32_t *pd,*ps,x;
+  uint32_t *pd,*ps,i,pos,coll;
 
   /* Disable TIM5 */
   TIM5->CR1=0;
@@ -559,21 +581,45 @@ void TIM5_IRQHandler(void)
   /* Copy ScreenBuff to WorkBuff */
   pd=(uint32_t *)&WorkBuff;
   ps=(uint32_t *)&ScreenBuff;
-  x=0;
-  while (x<SCREEN_HEIGHT*SCREEN_WIDTH)
+  i=0;
+  while (i<SCREEN_HEIGHT*SCREEN_WIDTH/4)
   {
-    pd[x]=ps[x];
-    x++;
+    pd[i]=ps[i];
+    i++;
   }
-  x=0;
-  while (x<MAX_SPRITES)
+  i=0;
+  while (Sprites[i])
   {
-    if (Sprites[x])
+    DrawSprite(Sprites[i]);
+    /* Boundary check */
+    coll=0;
+    if (Sprites[i]->boundary)
     {
-      DrawSprite(Sprites[x]);
+      pos=Sprites[i]->x;
+      if (pos<=Sprites[i]->boundary->left)
+      {
+        coll|=COLL_LEFT;
+      }
+      pos+=Sprites[i]->icon.wt;
+      if (pos>=Sprites[i]->boundary->right)
+      {
+        coll|=COLL_RIGHT;
+      }
+      pos=Sprites[i]->y;
+      if (pos<=Sprites[i]->boundary->top)
+      {
+        coll|=COLL_TOP;
+      }
+      pos+=Sprites[i]->icon.ht;
+      if (pos>=Sprites[i]->boundary->bottom)
+      {
+        coll|=COLL_BOTTOM;
+      }
     }
-    x++;
+    Sprites[i]->collision=coll;
+    i++;
   }
+  DrawHex(0,0,LineCount,1);
   FrameCount++;
 }
 

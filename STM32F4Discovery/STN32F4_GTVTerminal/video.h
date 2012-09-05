@@ -10,6 +10,11 @@
 #define H_SYNC              4700  // Horisontal sync timing (nano seconds)
 #define BACK_POCH           7700  // Back poch timing (nano seconds), adjust it to center the screen horizontaly
 #define MAX_SPRITES         65    // 64 + 1 for cursor
+#define COLL_LEFT           1     // Left boundary collision
+#define COLL_TOP            2     // Top boundary collision
+#define COLL_RIGHT          4     // Right boundary collision
+#define COLL_BOTTOM         8     // Bottom boundary collision
+
 #define SPI_DR              0x4001300C
 
 /* Private typedef -----------------------------------------------------------*/
@@ -24,6 +29,14 @@ typedef struct
 
 typedef struct
 {
+  int16_t left;
+  int16_t top;
+  int16_t right;
+  int16_t bottom;
+} RECT;
+
+typedef struct
+{
   uint8_t wt;
   uint8_t ht;
   uint8_t* icondata;
@@ -31,10 +44,11 @@ typedef struct
 
 typedef struct
 {
-  uint16_t x;
-  uint16_t y;
+  int16_t x;
+  int16_t y;
   uint8_t visible;
   uint8_t collision;
+  RECT* boundary;
   ICON icon;
 } SPRITE;
 

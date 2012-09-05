@@ -3,7 +3,7 @@
 	<NodeC Path=".\main.c" Header="main.c" Marker="-1" AsyncBuild="" OutputFile=".\main.o" sate="0" />
 	<NodeC Path=".\video.c" Header="video.c" Marker="-1" AsyncBuild="" OutputFile=".\video.o" sate="0" />
 	<NodeC Path=".\keyboard.c" Header="keyboard.c" Marker="-1" AsyncBuild="" OutputFile=".\keyboard.o" sate="0" />
-	<NodeC Path=".\mouse.c" Header="mouse.c" Marker="-1" AsyncBuild="" OutputFile=".\mouse.o" sate="2" />
+	<NodeC Path=".\mouse.c" Header="mouse.c" Marker="-1" AsyncBuild="" OutputFile=".\mouse.o" sate="0" />
 	<NodeC Path=".\usart.c" Header="usart.c" Marker="-1" AsyncBuild="" OutputFile=".\usart.o" sate="0" />
 	<NodeC Path=".\misc.c" Header="misc.c" Marker="-1" AsyncBuild="" OutputFile=".\misc.o" sate="0" />
 	<NodeASM Path=".\startup_stm32f4xx.s" Header="startup_stm32f4xx.s" Marker="0" AsyncBuild="" OutputFile=".\startup_stm32f4xx.o" sate="0" >
@@ -13,15 +13,15 @@
 					<Section Header="Build" >
 						<Property Header="Exclude" Value="Yes" Removable="1" />
 						<Property Header="LinkExclude" Value="Yes" Removable="1" />
-																			
+																														
 					</Section>
-															
+																								
 				</Set>
-							
+														
 			</Config>
-					
+										
 		</Options>
-												
+															
 	</NodeASM>
 	<NodeC Path=".\stm32f4_discovery.c" Header="stm32f4_discovery.c" Marker="-1" AsyncBuild="" OutputFile=".\stm32f4_discovery.o" sate="0" />
 	<NodeC Path=".\stm32f4xx_dma.c" Header="stm32f4xx_dma.c" Marker="-1" AsyncBuild="" OutputFile=".\stm32f4xx_dma.o" sate="0" />
@@ -33,51 +33,52 @@
 	<NodeC Path=".\stm32f4xx_syscfg.c" Header="stm32f4xx_syscfg.c" Marker="-1" AsyncBuild="" OutputFile=".\stm32f4xx_syscfg.o" sate="0" />
 	<NodeC Path=".\stm32f4xx_tim.c" Header="stm32f4xx_tim.c" Marker="-1" AsyncBuild="" OutputFile=".\stm32f4xx_tim.o" sate="0" />
 	<NodeC Path=".\stm32f4xx_usart.c" Header="stm32f4xx_usart.c" Marker="-1" AsyncBuild="" OutputFile=".\stm32f4xx_usart.o" sate="0" />
-	<NodeC Path=".\system_stm32f4xx.c" Header="system_stm32f4xx.c" Marker="-1" AsyncBuild="" OutputFile=".\system_stm32f4xx.o" sate="0" />
+	<NodeC Path=".\system_stm32f4xx.c" Header="system_stm32f4xx.c" Marker="-1" AsyncBuild="" OutputFile=".\system_stm32f4xx.o" sate="2" />
 	<Options>
 		<Config Header="Standard" >
 			<Set Header="ApplicationBuild" >
 				<Section Header="General" >
 					<Property Header="TargetFamily" Value="ARM" />
-																																																				
+																																																													
 				</Section>
 				<Section Header="Directories" >
 					<Property Header="IncDir" Value=".;\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc" Removable="1" />
 					<Property Header="LibDir" Value="$(RkitLib)\ARM" Removable="1" />
-																
+																									
 				</Section>
-												
+																			
 			</Set>
 			<Set Header="Target" >
 				<Section Header="ProcessorARM" >
 					<Property Header="Processor" Value="STM32F100RB" />
-																																																				
+																																																													
 				</Section>
 				<Section Header="ToolSetARM" >
 					<Property Header="BuildToolSetARM" Value="ARM\GNU.config" Removable="1" />
-																																																				
+																																																													
 				</Section>
 				<Section Header="DebugARM" >
 					<Property Header="DebugTool_CORTEX" Value="SIM-ARM" Removable="1" />
-																																											
+																																																				
 				</Section>
-																																	
+																																								
 			</Set>
 			<Set Header="LD" >
 				<Section Header="Startup" >
 					<Property Header="DEFAULTSTARTUP" Value="No" Removable="1" />
 					<Property Header="File" Value=".\startup_stm32f4xx.o" Removable="1" />
-																																											
+																																																				
 				</Section>
 				<Section Header="Scripts" >
 					<Property Header="SCRIPTFILES" Value="No" Removable="1" />
 					<Property Header="File" Value="STM32F100_64K_8K_FLASH.ld" Removable="1" />
-																																		
+																																											
 				</Section>
-																										
+																																	
 			</Set>
-					
+										
 		</Config>
-			
+						
 	</Options>
+	<NodeC Path=".\stm32f4xx_rng.c" Header="stm32f4xx_rng.c" Marker="-1" AsyncBuild="" OutputFile=".\stm32f4xx_rng.o" sate="0" />
 </ApplicationBuild>
