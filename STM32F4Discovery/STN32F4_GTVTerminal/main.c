@@ -66,29 +66,29 @@ extern uint8_t charbuf[256];
 extern uint8_t charbuftail;
 extern uint8_t charbufhead;
 
-extern TIME time;
-extern SPRITE Sprite0;
-extern SPRITE Sprite1;
-extern SPRITE Sprite2;
-extern SPRITE Sprite3;
+// extern TIME time;
+extern SPRITE* Sprites[];//[MAX_SPRITES];
+SPRITE Sprite[32];
+extern SPRITE Cursor;
 
-uint8_t Sprite16x16[16][16] = {
-{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-{0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0},
-{0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0},
-{0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0},
-{0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0},
-{0,1,0,0,0,2,2,2,2,2,2,0,0,0,1,0},
-{0,1,0,0,0,2,2,2,2,2,2,0,0,0,1,0},
-{0,1,0,0,0,2,2,2,2,2,2,0,0,0,1,0},
-{0,1,0,0,0,2,2,2,2,2,2,0,0,0,1,0},
-{0,1,0,0,0,2,2,2,2,2,2,0,0,0,1,0},
-{0,1,0,0,0,2,2,2,2,2,2,0,0,0,1,0},
-{0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0},
-{0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0},
-{0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0},
-{0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0},
-{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}};
+uint8_t Alien[16][16] = {
+{2,2,1,1,1,1,1,1,1,1,1,1,1,1,2,2},
+{2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2},
+{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+{1,1,1,1,0,1,1,1,1,1,1,0,1,1,1,1},
+{1,1,1,0,0,0,1,1,1,1,0,0,0,1,1,1},
+{1,1,1,1,0,1,1,1,1,1,1,0,1,1,1,1},
+{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+{1,1,1,1,1,1,1,0,0,1,1,1,1,1,1,1},
+{1,1,1,1,0,0,0,0,0,0,0,0,1,1,1,1},
+{1,1,1,1,0,0,1,1,1,1,0,0,1,1,1,1},
+{2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2},
+{2,2,2,2,1,1,2,2,2,2,1,1,2,2,2,2},
+{2,2,2,1,1,2,2,2,2,2,2,1,1,2,2,2},
+{2,2,1,1,2,2,2,2,2,2,2,2,1,1,2,2},
+{2,1,1,2,2,2,2,2,2,2,2,2,2,1,1,2},
+{1,1,1,2,2,2,2,2,2,2,2,2,2,1,1,1},
+};
 
 /* Private function prototypes -----------------------------------------------*/
 void RCC_Config(void);
@@ -110,7 +110,7 @@ void main(void)
 {
   uint16_t x,y,c,fc;
 
-  time.id=0x1234;
+  // time.id=0x1234;
   RCC_Config();
   NVIC_Config();
   GPIO_Config();
@@ -122,37 +122,25 @@ void main(void)
   TIM_Cmd(TIM3, ENABLE);
   STM_EVAL_LEDInit(LED3);
 
-  Sprite0.icon.icondata=*Sprite16x16;
-  Sprite0.icon.wt=16;
-  Sprite0.icon.ht=16;
-  Sprite0.x=50;
-  Sprite0.y=10;
-  Sprite0.z=1;
-
-  Sprite1.icon.icondata=*Sprite16x16;
-  Sprite1.icon.wt=16;
-  Sprite1.icon.ht=16;
-  Sprite1.x=100;
-  Sprite1.y=10;
-  Sprite1.z=1;
-
-  Sprite2.icon.icondata=*Sprite16x16;
-  Sprite2.icon.wt=16;
-  Sprite2.icon.ht=16;
-  Sprite2.x=150;
-  Sprite2.y=10;
-  Sprite2.z=0;
-
-  Sprite3.icon.icondata=*Sprite16x16;
-  Sprite3.icon.wt=16;
-  Sprite3.icon.ht=16;
-  Sprite3.x=200;
-  Sprite3.y=10;
-  Sprite3.z=0;
-
+  /* Setup sprites */
+  x=0;
+  while (x<32)
+  {
+    Sprite[x].icon.icondata=*Alien;
+    Sprite[x].icon.wt=16;
+    Sprite[x].icon.ht=16;
+    Sprite[x].x=(x & 7)*25+10;
+    Sprite[x].y=(x>>3)*20+10;
+    Sprite[x].visible=1;
+    Sprites[x]=&Sprite[x];
+    x++;
+  }
+  /* Setup cursor */
   SetCursor(0);
   MoveCursor(240,125);
   ShowCursor(1);
+  Sprites[64]=&Cursor;
+
   Rectangle(0,0,480,250,1);
   c=1;
   x=1;
@@ -191,8 +179,8 @@ void RCC_Config(void)
 {
   /* Enable DMA1, GPIOA, GPIOB clocks */
   RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA1 | RCC_AHB1Periph_GPIOA | RCC_AHB1Periph_GPIOB, ENABLE);
-  /* Enable USART2, TIM3, TIM4 and SPI2 clocks */
-  RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART2 | RCC_APB1Periph_TIM3 | RCC_APB1Periph_TIM4 | RCC_APB1Periph_SPI2, ENABLE);
+  /* Enable USART2, TIM3, TIM4, TIM5 and SPI2 clocks */
+  RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART2 | RCC_APB1Periph_TIM3 | RCC_APB1Periph_TIM4 | RCC_APB1Periph_TIM5 | RCC_APB1Periph_SPI2, ENABLE);
 }
 
 /**
@@ -214,6 +202,12 @@ void NVIC_Config(void)
   /* Enable the TIM4 gloabal Interrupt */
   NVIC_InitStructure.NVIC_IRQChannel = TIM4_IRQn;
   NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
+  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+  NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+  NVIC_Init(&NVIC_InitStructure);
+  /* Enable the TIM5 gloabal Interrupt */
+  NVIC_InitStructure.NVIC_IRQChannel = TIM5_IRQn;
+  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 3;
   NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
   NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
   NVIC_Init(&NVIC_InitStructure);
@@ -326,6 +320,15 @@ void TIM_Config(void)
   /* Enable TIM4 Update interrupt */
   TIM_ClearITPendingBit(TIM4,TIM_IT_Update);
   TIM_ITConfig(TIM4, TIM_IT_Update, ENABLE);
+  /* Time base configuration */
+  TIM_TimeBaseStructure.TIM_Period = 1;
+  TIM_TimeBaseStructure.TIM_Prescaler = 0;
+  TIM_TimeBaseStructure.TIM_ClockDivision = 0;
+  TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
+  TIM_TimeBaseInit(TIM5, &TIM_TimeBaseStructure);
+  /* Enable TIM5 Update interrupt */
+  TIM_ClearITPendingBit(TIM5,TIM_IT_Update);
+  TIM_ITConfig(TIM5, TIM_IT_Update, ENABLE);
 }
 
 /**

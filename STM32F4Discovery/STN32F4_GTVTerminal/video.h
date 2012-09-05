@@ -9,6 +9,7 @@
 #define TILE_HEIGHT         10    // Height of a character tile
 #define H_SYNC              4700  // Horisontal sync timing (nano seconds)
 #define BACK_POCH           7700  // Back poch timing (nano seconds), adjust it to center the screen horizontaly
+#define MAX_SPRITES         65    // 64 + 1 for cursor
 #define SPI_DR              0x4001300C
 
 /* Private typedef -----------------------------------------------------------*/
@@ -32,7 +33,8 @@ typedef struct
 {
   uint16_t x;
   uint16_t y;
-  uint8_t z;
+  uint8_t visible;
+  uint8_t collision;
   ICON icon;
 } SPRITE;
 

@@ -31,16 +31,13 @@
 
 /* Private variables ---------------------------------------------------------*/
 uint8_t ScreenBuff[SCREEN_HEIGHT][SCREEN_WIDTH];
-uint8_t ScreenLine[SCREEN_WIDTH];
+uint8_t WorkBuff[SCREEN_HEIGHT][SCREEN_WIDTH];
 __IO int16_t LineCount;
 __IO int16_t FrameCount;
 __IO int8_t BackPochFlag;
-__IO SPRITE Cursor;
-__IO SPRITE Sprite0;
-__IO SPRITE Sprite1;
-__IO SPRITE Sprite2;
-__IO SPRITE Sprite3;
-__IO TIME time;
+SPRITE Cursor;
+// __IO TIME time;
+SPRITE* Sprites[MAX_SPRITES];
 
 /* Private function prototypes -----------------------------------------------*/
 void SetCursor(uint8_t cur);
@@ -56,6 +53,7 @@ void Circle(uint16_t cx, uint16_t cy, uint16_t radius, uint8_t c);
 void Line(uint16_t X1,uint16_t Y1,uint16_t X2,uint16_t Y2, uint8_t c);
 void ScrollUp(void);
 void ScrollDown(void);
+void DrawSprite(const SPRITE* ps);
 
 void * memmove(void *dest, void *source, uint32_t count);
 void * memset(void *dest, uint32_t c, uint32_t count); 
@@ -99,11 +97,11 @@ void ShowCursor(uint8_t z)
 {
   if (z)
   {
-    Cursor.z=0xFF;    // Show
+    Cursor.visible=1;     // Show
   }
   else
   {
-    Cursor.z=0x0;     // Hide
+    Cursor.visible=0;     // Hide
   }
 }
 
@@ -415,6 +413,45 @@ void ScrollDown(void)
   memset(&ScreenBuff[0], 0, SCREEN_WIDTH);
 }
 
+void DrawSprite(const SPRITE* ps)
+{
+  uint32_t x,y,xm,ym;
+  uint8_t bt,cb,*picon;;
+
+  if (ps->visible)
+  {
+    /* Draw the sprite */
+    ym=ps->y+ps->icon.ht;
+    xm=ps->x+ps->icon.wt;
+    y=ps->y;
+    picon=ps->icon.icondata;
+    while (y<ym)
+    {
+      x=ps->x;
+      while (x<xm)
+      {
+        cb=picon[0];
+        if (cb!=2)
+        {
+          /* Set / Clear bit */
+          bt = 1 << (x & 0x7);
+          if (cb)
+          {
+            WorkBuff[y][x >> 3] |= bt;
+          }
+          else
+          {
+            WorkBuff[y][x >> 3] &= ~bt;
+          }
+        }
+        x++;
+        picon++;
+      }
+      y++;
+    }
+  }
+}
+
 /**
   * @brief  This function handles TIM3 global interrupt request.
   * @param  None
@@ -422,9 +459,7 @@ void ScrollDown(void)
   */
 void TIM3_IRQHandler(void)
 {
-  uint16_t i,ts,tt;
-  uint8_t cb,bit,*pc;
-  uint32_t *pd,*ps,cx,cy,x;
+  uint16_t i;
 
   /* Clear the IT pending Bit */
   TIM3->SR=(u16)~TIM_IT_Update;
@@ -446,171 +481,13 @@ void TIM3_IRQHandler(void)
   GPIOA->BSRRH = (uint16_t)GPIO_Pin_1;
   if (LineCount<SCREEN_HEIGHT)
   {
-    ts=TIM3->CNT;
     /* Disable DMA1 Stream4 */
     DMA1_Stream4->CR &= ~((uint32_t)DMA_SxCR_EN);
     /* Reset interrupt pending bits for DMA1 Stream4 */
     DMA1->HIFCR = (uint32_t)(DMA_LISR_FEIF0 | DMA_LISR_DMEIF0 | DMA_LISR_TEIF0 | DMA_LISR_HTIF0 | DMA_LISR_TCIF0 | (uint32_t)0x20000000);
     DMA1_Stream4->NDTR = (uint16_t)SCREEN_WIDTH/2;
     DMA1_Stream4->PAR = (uint32_t) & (SPI2->DR);
-    DMA1_Stream4->M0AR = (uint32_t) & (ScreenLine);
-    /* Copy ScreenBuff[LineCount] to ScreenLine */
-    pd=(uint32_t *)&ScreenLine;
-    ps=(uint32_t *)&ScreenBuff[LineCount];
-    x=0;
-    while (x<15)
-    {
-      pd[x]=ps[x];
-      x++;
-    }
-    /* Draw sprite */
-    if (LineCount>=Sprite0.y && LineCount<Sprite0.y+Sprite0.icon.ht && Sprite0.z!=0)
-    {
-      x=Sprite0.x;
-      /* Get icon line */
-      cy=LineCount-Sprite0.y;
-      cx=0;
-      pc=Sprite0.icon.icondata;
-      pc+=cy*Sprite0.icon.wt;
-      while (cx<Sprite0.icon.wt && x < (SCREEN_WIDTH-4) * 8)
-      {
-        cb=pc[cx];
-        if (cb!=2)
-        {
-          /* Set / Clear bit */
-          bit = 1 << (x & 0x7);
-          if (cb)
-          {
-            ScreenLine[x >> 3] |= bit;
-          }
-          else
-          {
-            ScreenLine[x >> 3] &= ~bit;
-          }
-        }
-        x++;
-        cx++;
-      }
-    }
-    if (LineCount>=Sprite1.y && LineCount<Sprite1.y+Sprite1.icon.ht && Sprite1.z!=0)
-    {
-      x=Sprite1.x;
-      /* Get icon line */
-      cy=LineCount-Sprite1.y;
-      cx=0;
-      pc=Sprite1.icon.icondata;
-      pc+=cy*Sprite1.icon.wt;
-      while (cx<Sprite1.icon.wt && x < (SCREEN_WIDTH-4) * 8)
-      {
-        cb=pc[cx];
-        if (cb!=2)
-        {
-          /* Set / Clear bit */
-          bit = 1 << (x & 0x7);
-          if (cb)
-          {
-            ScreenLine[x >> 3] |= bit;
-          }
-          else
-          {
-            ScreenLine[x >> 3] &= ~bit;
-          }
-        }
-        x++;
-        cx++;
-      }
-    }
-    if (LineCount>=Sprite2.y && LineCount<Sprite2.y+Sprite2.icon.ht && Sprite2.z!=0)
-    {
-      x=Sprite2.x;
-      /* Get icon line */
-      cy=LineCount-Sprite2.y;
-      cx=0;
-      pc=Sprite2.icon.icondata;
-      pc+=cy*Sprite2.icon.wt;
-      while (cx<Sprite2.icon.wt && x < (SCREEN_WIDTH-4) * 8)
-      {
-        cb=pc[cx];
-        if (cb!=2)
-        {
-          /* Set / Clear bit */
-          bit = 1 << (x & 0x7);
-          if (cb)
-          {
-            ScreenLine[x >> 3] |= bit;
-          }
-          else
-          {
-            ScreenLine[x >> 3] &= ~bit;
-          }
-        }
-        x++;
-        cx++;
-      }
-    }
-    if (LineCount>=Sprite3.y && LineCount<Sprite3.y+Sprite3.icon.ht && Sprite3.z!=0)
-    {
-      x=Sprite3.x;
-      /* Get icon line */
-      cy=LineCount-Sprite3.y;
-      cx=0;
-      pc=Sprite3.icon.icondata;
-      pc+=cy*Sprite3.icon.wt;
-      while (cx<Sprite3.icon.wt && x < (SCREEN_WIDTH-4) * 8)
-      {
-        cb=pc[cx];
-        if (cb!=2)
-        {
-          /* Set / Clear bit */
-          bit = 1 << (x & 0x7);
-          if (cb)
-          {
-            ScreenLine[x >> 3] |= bit;
-          }
-          else
-          {
-            ScreenLine[x >> 3] &= ~bit;
-          }
-        }
-        x++;
-        cx++;
-      }
-    }
-    /* Draw cursor icon */
-    if (LineCount>=Cursor.y && LineCount<Cursor.y+Cursor.icon.ht && Cursor.z!=0)
-    {
-      x=Cursor.x;
-      /* Get icon line */
-      cy=LineCount-Cursor.y;
-      cx=0;
-      pc=Cursor.icon.icondata;
-      pc+=cy*Cursor.icon.wt;
-      while (cx<Cursor.icon.wt && x < (SCREEN_WIDTH-4) * 8)
-      {
-        cb=pc[cx];
-        if (cb!=2)
-        {
-          /* Set / Clear bit */
-          bit = 1 << (x & 0x7);
-          if (cb)
-          {
-            ScreenLine[x >> 3] |= bit;
-          }
-          else
-          {
-            ScreenLine[x >> 3] &= ~bit;
-          }
-        }
-        x++;
-        cx++;
-      }
-    }
-// 0x6AE
-    tt=(TIM3->CNT)-ts;
-    if (tt>time.count)
-    {
-      time.count=tt;
-    }
+    DMA1_Stream4->M0AR = (uint32_t) & (WorkBuff[LineCount]);
   }
 }
 
@@ -642,7 +519,6 @@ void TIM4_IRQHandler(void)
     {
       /* V-Sync high */
       GPIOA->BSRRL=(u16)GPIO_Pin_1;
-      FrameCount++;
       LineCount=-(TOP_MARGIN+1);
     }
     /* Set TIM4 auto reload */
@@ -658,7 +534,46 @@ void TIM4_IRQHandler(void)
       /* Enable DMA1 Stream4 to keep the SPI port fed from the pixelbuffer. */
       DMA1_Stream4->CR |= (uint32_t)DMA_SxCR_EN;
     }
+    else if (LineCount==SCREEN_HEIGHT)
+    {
+      /* Enable TIM5 */
+      TIM5->CR1=1;
+    }
     LineCount++;
   }
+}
+
+/**
+  * @brief  This function handles TIM5 global interrupt request.
+  * @param  None
+  * @retval None
+  */
+void TIM5_IRQHandler(void)
+{
+  uint32_t *pd,*ps,x;
+
+  /* Disable TIM5 */
+  TIM5->CR1=0;
+  /* Clear the IT pending Bit */
+  TIM5->SR=(u16)~TIM_IT_Update;
+  /* Copy ScreenBuff to WorkBuff */
+  pd=(uint32_t *)&WorkBuff;
+  ps=(uint32_t *)&ScreenBuff;
+  x=0;
+  while (x<SCREEN_HEIGHT*SCREEN_WIDTH)
+  {
+    pd[x]=ps[x];
+    x++;
+  }
+  x=0;
+  while (x<MAX_SPRITES)
+  {
+    if (Sprites[x])
+    {
+      DrawSprite(Sprites[x]);
+    }
+    x++;
+  }
+  FrameCount++;
 }
 
