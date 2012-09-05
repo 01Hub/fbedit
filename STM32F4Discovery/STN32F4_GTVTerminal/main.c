@@ -67,6 +67,28 @@ extern uint8_t charbuftail;
 extern uint8_t charbufhead;
 
 extern TIME time;
+extern SPRITE Sprite0;
+extern SPRITE Sprite1;
+extern SPRITE Sprite2;
+extern SPRITE Sprite3;
+
+uint8_t Sprite16x16[16][16] = {
+{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+{0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0},
+{0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0},
+{0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0},
+{0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0},
+{0,1,0,0,0,2,2,2,2,2,2,0,0,0,1,0},
+{0,1,0,0,0,2,2,2,2,2,2,0,0,0,1,0},
+{0,1,0,0,0,2,2,2,2,2,2,0,0,0,1,0},
+{0,1,0,0,0,2,2,2,2,2,2,0,0,0,1,0},
+{0,1,0,0,0,2,2,2,2,2,2,0,0,0,1,0},
+{0,1,0,0,0,2,2,2,2,2,2,0,0,0,1,0},
+{0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0},
+{0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0},
+{0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0},
+{0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0},
+{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}};
 
 /* Private function prototypes -----------------------------------------------*/
 void RCC_Config(void);
@@ -100,6 +122,34 @@ void main(void)
   TIM_Cmd(TIM3, ENABLE);
   STM_EVAL_LEDInit(LED3);
 
+  Sprite0.icon.icondata=*Sprite16x16;
+  Sprite0.icon.wt=16;
+  Sprite0.icon.ht=16;
+  Sprite0.x=50;
+  Sprite0.y=10;
+  Sprite0.z=1;
+
+  Sprite1.icon.icondata=*Sprite16x16;
+  Sprite1.icon.wt=16;
+  Sprite1.icon.ht=16;
+  Sprite1.x=100;
+  Sprite1.y=10;
+  Sprite1.z=1;
+
+  Sprite2.icon.icondata=*Sprite16x16;
+  Sprite2.icon.wt=16;
+  Sprite2.icon.ht=16;
+  Sprite2.x=150;
+  Sprite2.y=10;
+  Sprite2.z=0;
+
+  Sprite3.icon.icondata=*Sprite16x16;
+  Sprite3.icon.wt=16;
+  Sprite3.icon.ht=16;
+  Sprite3.x=200;
+  Sprite3.y=10;
+  Sprite3.z=0;
+
   SetCursor(0);
   MoveCursor(240,125);
   ShowCursor(1);
@@ -109,15 +159,10 @@ void main(void)
   y=0;
   while (1)
   {
-    if (FrameCount==25)
-    {
-      FrameCount=0;
-      STM_EVAL_LEDToggle(LED3);
-    }
     if (FrameCount!=fc)
     {
       fc=FrameCount;
-      MoveCursor(y,y);
+      MoveCursor(y*2,y);
       Circle(125,125,y,c);
       Rectangle(350-y/2,125-y/2,y,y,c);
       y+=x;
@@ -127,6 +172,12 @@ void main(void)
         x=-x;
         y+=x;
       }
+    }
+    if (FrameCount==25)
+    {
+      FrameCount=0;
+      fc=0;
+      STM_EVAL_LEDToggle(LED3);
     }
   }
 }
@@ -156,8 +207,8 @@ void NVIC_Config(void)
   NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);
   /* Enable the TIM3 gloabal Interrupt */
   NVIC_InitStructure.NVIC_IRQChannel = TIM3_IRQn;
-  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
-  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
+  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
+  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
   NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
   NVIC_Init(&NVIC_InitStructure);
   /* Enable the TIM4 gloabal Interrupt */
@@ -168,19 +219,19 @@ void NVIC_Config(void)
   NVIC_Init(&NVIC_InitStructure);
 	/* Enable USART interrupt */
 	NVIC_InitStructure.NVIC_IRQChannel = USART2_IRQn;
-	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 2;
   NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
 	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
 	NVIC_Init(&NVIC_InitStructure);
   /* Enable and set EXTI Line0 Interrupt to the lowest priority */
   NVIC_InitStructure.NVIC_IRQChannel = EXTI0_IRQn;
-  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
+  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 2;
   NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
   NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
   NVIC_Init(&NVIC_InitStructure);
   /* Enable and set EXTI Line2 Interrupt to the lowest priority */
   NVIC_InitStructure.NVIC_IRQChannel = EXTI2_IRQn;
-  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
+  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 2;
   NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
   NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
   NVIC_Init(&NVIC_InitStructure);
