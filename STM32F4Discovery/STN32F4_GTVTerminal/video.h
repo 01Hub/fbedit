@@ -14,6 +14,7 @@
 #define COLL_TOP            2     // Top boundary collision
 #define COLL_RIGHT          4     // Right boundary collision
 #define COLL_BOTTOM         8     // Bottom boundary collision
+#define COLL_SPRITE         16    // Collision with background or another sprite 
 
 #define SPI_DR              0x4001300C
 

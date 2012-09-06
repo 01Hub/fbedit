@@ -47,14 +47,17 @@ void Cls(void);
 void SetPixel(uint16_t x,uint16_t y,uint8_t c);
 uint8_t GetPixel(uint16_t x,uint16_t y);
 void DrawChar(uint16_t x, uint16_t y, char chr, uint8_t c);
+void DrawLargeChar(uint16_t x, uint16_t y, char chr, uint8_t c);
 void DrawString(uint16_t x, uint16_t y, char *str, uint8_t c);
+void DrawLargeString(uint16_t x, uint16_t y, char *str, uint8_t c);
 void DrawHex(uint16_t x, uint16_t y, uint16_t n, uint8_t c);
 void Rectangle(uint16_t x, uint16_t y, uint16_t b, uint16_t a, uint8_t c);
 void Circle(uint16_t cx, uint16_t cy, uint16_t radius, uint8_t c);
 void Line(uint16_t X1,uint16_t Y1,uint16_t X2,uint16_t Y2, uint8_t c);
+void DrawIcon(uint16_t x,uint16_t y,const ICON* icon,uint8_t c);
 void ScrollUp(void);
 void ScrollDown(void);
-void DrawSprite(const SPRITE* ps);
+uint32_t DrawSprite(const SPRITE* ps);
 
 void * memmove(void *dest, void *source, uint32_t count);
 void * memset(void *dest, uint32_t c, uint32_t count); 
@@ -242,6 +245,105 @@ void DrawChar(uint16_t x, uint16_t y, char chr, uint8_t c)
 }
 
 /**
+  * @brief  This function draws a large character at x, y.
+  * @param  x, y, chr, c
+  * @retval None
+  */
+void DrawLargeChar(uint16_t x, uint16_t y, char chr, uint8_t c)
+{
+  uint8_t cl;
+  uint16_t cx, cy;
+
+  cy=0;
+  switch (c)
+  {
+    case 0:
+    case 2:
+      /* Clear opaque and inverted opaque */
+      while (cy<TILE_HEIGHT*2)
+      {
+        cx=0;
+        while (cx<TILE_WIDTH*2)
+        {
+          SetPixel(x+cx,y+cy,0);
+          SetPixel(x+cx+1,y+cy,0);
+          SetPixel(x+cx,y+cy+1,0);
+          SetPixel(x+cx+1,y+cy+1,0);
+          cx+=2;
+        }
+        cy+=2;
+      }
+      break;
+    case 3:
+      chr ^= 0x80;
+    case 1:
+      /* Draw opaque and inverted opaque */
+      while (cy<TILE_HEIGHT*2)
+      {
+        cl=Font8x10[chr][cy];
+        cx=0;
+        while (cx<TILE_WIDTH*2)
+        {
+          SetPixel(x+cx,y+cy,(cl & 0x80));
+          SetPixel(x+cx+1,y+cy,(cl & 0x80));
+          SetPixel(x+cx,y+cy+1,(cl & 0x80));
+          SetPixel(x+cx+1,y+cy+1,(cl & 0x80));
+          cl=cl<<1;
+          cx+=2;
+        }
+        cy+=2;
+      }
+      break;
+    case 6:
+      chr ^= 0x80;
+    case 4:
+      /* Clear transparent and inverted transparent */
+      while (cy<TILE_HEIGHT*2)
+      {
+        cl=Font8x10[chr][cy];
+        cx=0;
+        while (cx<TILE_WIDTH*2)
+        {
+          if (cl & 0x80)
+          {
+            SetPixel(x+cx,y+cy,0);
+            SetPixel(x+cx+1,y+cy,0);
+            SetPixel(x+cx,y+cy+1,0);
+            SetPixel(x+cx+1,y+cy+1,0);
+          }
+          cl=cl<<1;
+          cx+=2;
+        }
+        cy+=2;
+      }
+      break;
+    case 7:
+      chr ^= 0x80;
+    case 5:
+      /* Draw transparent and inverted transparent */
+      while (cy<TILE_HEIGHT*2)
+      {
+        cl=Font8x10[chr][cy];
+        cx=0;
+        while (cx<TILE_WIDTH*2)
+        {
+          if (cl & 0x80)
+          {
+            SetPixel(x+cx,y+cy,1);
+            SetPixel(x+cx+1,y+cy,1);
+            SetPixel(x+cx,y+cy+1,1);
+            SetPixel(x+cx+1,y+cy+1,1);
+          }
+          cl=cl<<1;
+          cx+=2;
+        }
+        cy+=2;
+      }
+      break;
+  }
+}
+
+/**
   * @brief  This function draws a zero terminated string at x, y.
   * @param  x, y, *str, c
   * @retval None
@@ -253,6 +355,21 @@ void DrawString(uint16_t x, uint16_t y, char *str, uint8_t c)
   {
     DrawChar(x, y, chr, c);
     x+=TILE_WIDTH;
+  }
+}
+
+/**
+  * @brief  This function draws a large zero terminated string at x, y.
+  * @param  x, y, *str, c
+  * @retval None
+  */
+void DrawLargeString(uint16_t x, uint16_t y, char *str, uint8_t c)
+{
+  char chr;
+  while ((chr = *str++))
+  {
+    DrawLargeChar(x, y, chr, c);
+    x+=TILE_WIDTH*2;
   }
 }
 
@@ -404,6 +521,47 @@ void Line(uint16_t X1,uint16_t Y1,uint16_t X2,uint16_t Y2, uint8_t c)
   }
 }
 
+void DrawIcon(uint16_t x,uint16_t y,const ICON* icon,uint8_t c)
+{
+  uint32_t xm,ym,i;
+  uint8_t cb,*picon;
+
+  /* Draw the icon */
+  ym=y+icon->ht;
+  xm=x+icon->wt;
+  picon=icon->icondata;
+  while (y<ym)
+  {
+    i=x;
+    while (i<xm)
+    {
+      cb=picon[0];
+      if (cb!=2)
+      {
+        if (c)
+        {
+          /* Set / Clear bit */
+          if (cb)
+          {
+            SetPixel(i,y, 1);
+          }
+          else
+          {
+            SetPixel(i,y, 0);
+          }
+        }
+        else if (cb)
+        {
+          SetPixel(i,y, 0);
+        }
+      }
+      i++;
+      picon++;
+    }
+    y++;
+  }
+}
+
 /**
   * @brief  This function scrolls the screen 1 line up
   * @param  None
@@ -431,47 +589,55 @@ void ScrollDown(void)
   memset(&ScreenBuff[0], 0, SCREEN_WIDTH);
 }
 
-void DrawSprite(const SPRITE* ps)
+uint32_t DrawSprite(const SPRITE* ps)
 {
   uint32_t x,y,xm,ym;
-  uint8_t bt,cb,*picon;;
+  uint8_t bt,coll,cb,*picon;
 
-  if (ps->visible)
+  coll=0;
+  /* Draw the sprite */
+  ym=ps->y+ps->icon.ht;
+  if (ym>SCREEN_HEIGHT)
   {
-    /* Draw the sprite */
-    ym=ps->y+ps->icon.ht;
-    if (ym>SCREEN_HEIGHT)
-    {
-      ym=SCREEN_HEIGHT;
-    }
-    xm=ps->x+ps->icon.wt;
-    y=ps->y;
-    picon=ps->icon.icondata;
-    while (y<ym)
-    {
-      x=ps->x;
-      while (x<xm)
-      {
-        cb=picon[0];
-        if (cb!=2)
-        {
-          /* Set / Clear bit */
-          bt = 1 << (x & 0x7);
-          if (cb)
-          {
-            WorkBuff[y][x >> 3] |= bt;
-          }
-          else
-          {
-            WorkBuff[y][x >> 3] &= ~bt;
-          }
-        }
-        x++;
-        picon++;
-      }
-      y++;
-    }
+    ym=SCREEN_HEIGHT;
   }
+  xm=ps->x+ps->icon.wt;
+  if (xm>(SCREEN_WIDTH-4)*8)
+  {
+    xm=(SCREEN_WIDTH-4)*8;
+  }
+  y=ps->y;
+  picon=ps->icon.icondata;
+  while (y<ym)
+  {
+    x=ps->x;
+    while (x<xm)
+    {
+      cb=picon[0];
+      if (cb!=2)
+      {
+        bt = 1 << (x & 0x7);
+        /* Test collision with background or another sprite */
+        if (WorkBuff[y][x >> 3] & bt)
+        {
+          coll |= COLL_SPRITE;
+        }
+        /* Set / Clear bit */
+        if (cb)
+        {
+          WorkBuff[y][x >> 3] |= bt;
+        }
+        else
+        {
+          WorkBuff[y][x >> 3] &= ~bt;
+        }
+      }
+      x++;
+      picon++;
+    }
+    y++;
+  }
+  return coll;
 }
 
 /**
@@ -587,39 +753,43 @@ void TIM5_IRQHandler(void)
     pd[i]=ps[i];
     i++;
   }
+  /* Draw sprites onto WorkBuff */
   i=0;
   while (Sprites[i])
   {
-    DrawSprite(Sprites[i]);
-    /* Boundary check */
     coll=0;
-    if (Sprites[i]->boundary)
+    if (Sprites[i]->visible)
     {
-      pos=Sprites[i]->x;
-      if (pos<=Sprites[i]->boundary->left)
+      coll=DrawSprite(Sprites[i]);
+      /* Boundary check */
+      if (Sprites[i]->boundary)
       {
-        coll|=COLL_LEFT;
-      }
-      pos+=Sprites[i]->icon.wt;
-      if (pos>=Sprites[i]->boundary->right)
-      {
-        coll|=COLL_RIGHT;
-      }
-      pos=Sprites[i]->y;
-      if (pos<=Sprites[i]->boundary->top)
-      {
-        coll|=COLL_TOP;
-      }
-      pos+=Sprites[i]->icon.ht;
-      if (pos>=Sprites[i]->boundary->bottom)
-      {
-        coll|=COLL_BOTTOM;
+        pos=Sprites[i]->x;
+        if (pos<=Sprites[i]->boundary->left)
+        {
+          coll|=COLL_LEFT;
+        }
+        pos+=Sprites[i]->icon.wt;
+        if (pos>=Sprites[i]->boundary->right)
+        {
+          coll|=COLL_RIGHT;
+        }
+        pos=Sprites[i]->y;
+        if (pos<=Sprites[i]->boundary->top)
+        {
+          coll|=COLL_TOP;
+        }
+        pos+=Sprites[i]->icon.ht;
+        if (pos>=Sprites[i]->boundary->bottom)
+        {
+          coll|=COLL_BOTTOM;
+        }
       }
     }
     Sprites[i]->collision=coll;
     i++;
   }
-  DrawHex(0,0,LineCount,1);
+  //DrawHex(0,0,LineCount,1);
   FrameCount++;
 }
 

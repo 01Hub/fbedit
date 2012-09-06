@@ -53,6 +53,8 @@
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
+#define SHIELD_TOP      210
+
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 extern volatile uint16_t FrameCount;
@@ -65,12 +67,22 @@ extern uint8_t charbuf[256];
 extern uint8_t charbuftail;
 extern uint8_t charbufhead;
 
-extern SPRITE* Sprites[];
-SPRITE Sprite[32];
-extern SPRITE Cursor;
-RECT AlienBound;
+volatile int8_t Shooters;       // Number of spare shooters
+volatile uint8_t Shots;         // Number of active shots
+volatile uint8_t Bombs;         // Number of active bombs
+volatile GameOver;              // Game over flag
 
-uint8_t Alien1[16][16] = {
+RECT AlienBound;
+extern SPRITE* Sprites[];
+SPRITE Alien[32];
+SPRITE Shooter;
+SPRITE Bomb[8];
+SPRITE Shot[4];
+extern SPRITE Cursor;
+ICON Shield;
+volatile uint32_t RNDSeed;
+
+uint8_t Alien1Icon[16][16] = {
 {2,2,1,1,1,1,1,1,1,1,1,1,1,1,2,2},
 {2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2},
 {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
@@ -89,7 +101,7 @@ uint8_t Alien1[16][16] = {
 {1,1,1,2,2,2,2,2,2,2,2,2,2,1,1,1}
 };
 
-uint8_t Alien2[16][16] = {
+uint8_t Alien2Icon[16][16] = {
 {2,2,1,1,1,1,1,1,1,1,1,1,1,1,2,2},
 {2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2},
 {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
@@ -108,6 +120,55 @@ uint8_t Alien2[16][16] = {
 {2,2,1,1,1,1,2,2,2,2,1,1,1,1,2,2}
 };
 
+uint8_t ShooterIcon[16][20] = {
+{2,2,2,2,2,2,1,1,1,1,1,1,1,1,2,2,2,2,2,2},
+{2,2,2,2,2,2,1,1,1,1,1,1,1,1,2,2,2,2,2,2},
+{2,2,2,2,2,2,1,1,1,1,1,1,1,1,2,2,2,2,2,2},
+{2,2,2,2,2,2,1,1,1,1,1,1,1,1,2,2,2,2,2,2},
+{2,2,2,2,2,2,1,1,1,1,1,1,1,1,2,2,2,2,2,2},
+{2,2,2,2,2,2,1,1,1,1,1,1,1,1,2,2,2,2,2,2},
+{2,2,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2},
+{2,2,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2},
+{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}
+};
+
+uint8_t ShieldIcon[16][32] = {
+{2,2,2,2,2,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2},
+{2,2,2,2,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2},
+{2,2,2,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2},
+{2,2,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2},
+{2,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2},
+{2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2},
+{1,1,1,1,1,1,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,1,1,1,1,1,1},
+{1,1,1,1,2,2,2,2,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,1,1,1,1},
+{1,1,1,2,2,2,2,2,2,2,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,1,1,1},
+{1,1,2,2,2,2,2,2,2,2,2,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,1,1},
+{1,1,2,2,2,2,2,2,2,2,2,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,1,1},
+{1,1,2,2,2,2,2,2,2,2,2,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,1,1},
+{1,1,2,2,2,2,2,2,2,2,2,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,1,1},
+{1,1,2,2,2,2,2,2,2,2,2,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,1,1},
+{1,1,2,2,2,2,2,2,2,2,2,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,1,1},
+{1,1,2,2,2,2,2,2,2,2,2,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,1,1}
+};
+
+uint8_t ShotIcon[8][4] = {
+{1,1,1,1},
+{1,1,1,1},
+{1,1,1,1},
+{1,1,1,1},
+{1,1,1,1},
+{1,1,1,1},
+{1,1,1,1},
+{1,1,1,1}
+};
+
 /* Private function prototypes -----------------------------------------------*/
 void RCC_Config(void);
 void NVIC_Config(void);
@@ -116,9 +177,22 @@ void TIM_Config(void);
 void SPI_Config(void);
 void DMA_Config(void);
 void USART_Config(uint32_t Baud);
+uint32_t Random(uint32_t Range);
 
 /* Private functions ---------------------------------------------------------*/
 
+/**
+  * @brief  This function generates a random number
+  * @param  None
+  * @retval None
+  */
+uint32_t Random(uint32_t Range)
+{
+  uint32_t rnd;
+  RNDSeed=(((RNDSeed*23+7) & 0xFFFFFFFF)>>1)^RNDSeed;
+  rnd=RNDSeed/Range;
+  return rnd;
+}
 /**
   * @brief  Main program
   * @param  None
@@ -126,9 +200,9 @@ void USART_Config(uint32_t Baud);
   */
 void main(void)
 {
-  int16_t x,i,fc,coll;
+  int16_t dir,i,fc,coll;
+  volatile uint32_t rnd;
 
-  // time.id=0x1234;
   RCC_Config();
   NVIC_Config();
   GPIO_Config();
@@ -136,12 +210,13 @@ void main(void)
   SPI_Config();
   DMA_Config();
   USART_Config(115200);
-  // RNG_Cmd(ENABLE);
   /* Enable TIM3 */
   TIM_Cmd(TIM3, ENABLE);
   STM_EVAL_LEDInit(LED3);
 
-  /* Setup sprites */
+  /* Draw game frame */
+  Rectangle(0,0,480,250,1);
+  /* Setup alien sprites */
   AlienBound.left=10;
   AlienBound.top=10;
   AlienBound.right=469;
@@ -149,82 +224,237 @@ void main(void)
   i=0;
   while (i<32)
   {
+    Alien[i].icon.wt=16;
+    Alien[i].icon.ht=16;
     if (i & 1)
     {
-      Sprite[i].icon.icondata=*Alien2;
+      Alien[i].icon.icondata=*Alien2Icon;
     }
     else
     {
-      Sprite[i].icon.icondata=*Alien1;
+      Alien[i].icon.icondata=*Alien1Icon;
     }
-    Sprite[i].icon.wt=16;
-    Sprite[i].icon.ht=16;
-    Sprite[i].x=(i & 7)*25+10;
-    Sprite[i].y=(i>>3)*20+10;
-    Sprite[i].visible=1;
-    Sprite[i].collision=0;
-    Sprite[i].boundary=&AlienBound;
-    Sprites[i]=&Sprite[i];
+    Alien[i].x=(i & 7)*25+10;
+    Alien[i].y=(i>>3)*20+30;
+    Alien[i].visible=1;
+    Alien[i].collision=0;
+    Alien[i].boundary=&AlienBound;
+    Sprites[i]=&Alien[i];
     i++;
   }
+  /* Setup bomb sprites */
+  while (i<40)
+  {
+    Bomb[i-32].icon.wt=4;
+    Bomb[i-32].icon.ht=8;
+    Bomb[i-32].icon.icondata=*ShotIcon;
+    Bomb[i-32].x=0;
+    Bomb[i-32].y=0;
+    Bomb[i-32].visible=0;
+    Bomb[i-32].collision=0;
+    Bomb[i-32].boundary=&AlienBound;
+    Sprites[i]=&Bomb[i-32];
+    i++;
+  }
+  /* Setup shot sprites */
+  while (i<44)
+  {
+    Shot[i-40].icon.wt=4;
+    Shot[i-40].icon.ht=8;
+    Shot[i-40].icon.icondata=*ShotIcon;
+    Shot[i-40].x=0;
+    Shot[i-40].y=0;
+    Shot[i-40].visible=0;
+    Shot[i-40].collision=0;
+    Shot[i-40].boundary=&AlienBound;
+    Sprites[i]=&Shot[i-40];
+    i++;
+  }
+  /* Setup shooter sprite */
+  Shooter.icon.wt=20;
+  Shooter.icon.ht=16;
+  Shooter.icon.icondata=*ShooterIcon;
+  Shooter.x=10;
+  Shooter.y=SCREEN_HEIGHT-10-16;
+  Shooter.visible=1;
+  Shooter.collision=0;
+  Shooter.boundary=&AlienBound;
+  Sprites[i]=&Shooter;
+  i++;
   /* Setup cursor */
   SetCursor(0);
   MoveCursor(240,125);
   ShowCursor(1);
-  Sprites[32]=&Cursor;
-
-  Rectangle(0,0,480,250,1);
-  x=2;
+  Sprites[i]=&Cursor;
+  /* Draw spare shooters */
+  Shooters=3;
+  i=0;
+  while (i<3)
+  {
+    DrawIcon(i*25+10,10,Shooter.icon,1);
+    i++;
+  }
+  /* Setup shield icon */
+  Shield.wt=32;
+  Shield.ht=16;
+  Shield.icondata=*ShieldIcon;
+  /* Draw shields */
+  i=0;
+  while (i<4)
+  {
+    DrawIcon(i*125+20,SHIELD_TOP,Shield,1);
+    i++;
+  }
+  /* Game loop */
+  dir=2;
   while (1)
   {
+    /* Syncronize with frame count */
     if (FrameCount!=fc)
     {
       if (FrameCount>=25)
       {
-        // i=RNG_GetRandomNumber();
-        // DrawHex(100,0,i,1);
         FrameCount=0;
         STM_EVAL_LEDToggle(LED3);
+        rnd=Random(0xFF);
+        DrawHex(0,0,rnd,1);
       }
       fc=FrameCount;
-      i=0;
-      coll=0;
-      while (i<32)
+      if (!GameOver)
       {
-        coll|=Sprite[i].collision;
-        i++;
-      }
-      if (!(coll & COLL_BOTTOM))
-      {
-        if ((x>0 && (coll & COLL_RIGHT)) || (x<0 && (coll & COLL_LEFT)))
+        /* Check shot boundary and collision */
+        i=0;
+        while (i<4)
         {
-          i=0;
-          while (i<32)
+          coll=Shot[i].collision;
+          if (coll & COLL_TOP)
           {
-            Sprite[i].y+=4;
-            i++;
+            Shot[i].visible=0;
+            Shots--;
           }
-          x=-x;
+          else if (coll & COLL_SPRITE)
+          {
+            /* Find what the shot collided with */
+            Shot[i].visible=0;
+            Shots--;
+          }
+          Shot[i].y--;
+          i++;
+        }
+        /* Check bomb boundary and collision */
+        i=0;
+        while (i<8)
+        {
+          coll=Bomb[i].collision;
+          if (coll & COLL_BOTTOM)
+          {
+            Bomb[i].visible=0;
+            Bombs--;
+          }
+          else if (coll & COLL_SPRITE)
+          {
+            /* Find what the bomb collided with, only shields need to be tested */
+            Bomb[i].visible=0;
+            Bombs--;
+            if (Bomb[i].y+8>=SHIELD_TOP)
+            {
+              /* Make some damage to the shield */
+              SetPixel(Bomb[i].x-1,Bomb[i].y+8,0);
+              SetPixel(Bomb[i].x,Bomb[i].y+8,0);
+              SetPixel(Bomb[i].x+1,Bomb[i].y+8,0);
+              SetPixel(Bomb[i].x-1,Bomb[i].y+9,0);
+              SetPixel(Bomb[i].x,Bomb[i].y+9,0);
+              SetPixel(Bomb[i].x+1,Bomb[i].y+9,0);
+              SetPixel(Bomb[i].x,Bomb[i].y+10,0);
+            }
+          }
+          Bomb[i].y++;
+          i++;
+        }
+        /* Drop a bomb */
+        if (Bombs<8)
+        {
+          rnd=Random(31);
+          if (Alien[rnd].visible)
+          {
+            /* Find what bomb sprite to use */
+            i=0;
+            while (i<8)
+            {
+              if (!Bomb[i].visible)
+              {
+                Bomb[i].visible=1;
+                Bomb[i].x=Alien[rnd].x+8;
+                Bomb[i].y=Alien[rnd].y+16;
+                break;
+              }
+              i++;
+            }
+          }
+        }
+        /* Check if shooter hit */
+        if (Shooter.collision & COLL_SPRITE)
+        {
+          Shooters--;
+          if (Shooters<0)
+          {
+            Shooter.visible=0;
+            GameOver=1;
+          }
+          else
+          {
+            /* Remove spare shooter */
+            DrawIcon(Shooters*25+10,10,Shooter.icon,0);
+          }
+          Shooter.x=0;
+        }
+        /* Check alien boundaries, there is no need to check collision */
+        i=0;
+        coll=0;
+        while (i<32)
+        {
+          coll|=Alien[i].collision;
+          i++;
+        }
+        if (!(coll & COLL_BOTTOM))
+        {
+          if ((dir>0 && (coll & COLL_RIGHT)) || (dir<0 && (coll & COLL_LEFT)))
+          {
+            /* Move aliens down and change direction */
+            i=0;
+            while (i<32)
+            {
+              Alien[i].y+=4;
+              i++;
+            }
+            dir=-dir;
+          }
+          else
+          {
+            i=0;
+            while (i<32)
+            {
+              if (!FrameCount)
+              {
+                /* Change alien icon */
+                if (Alien[i].icon.icondata==*Alien1Icon)
+                {
+                  Alien[i].icon.icondata=*Alien2Icon;
+                }
+                else
+                {
+                  Alien[i].icon.icondata=*Alien1Icon;
+                }
+              }
+              /* Move alien left or right */
+              Alien[i].x+=dir;
+              i++;
+            }
+          }
         }
         else
         {
-          i=0;
-          while (i<32)
-          {
-            if (!FrameCount)
-            {
-              if (Sprite[i].icon.icondata==*Alien1)
-              {
-                Sprite[i].icon.icondata=*Alien2;
-              }
-              else
-              {
-                Sprite[i].icon.icondata=*Alien1;
-              }
-            }
-            Sprite[i].x+=x;
-            i++;
-          }
+          GameOver=1;
         }
       }
     }
@@ -242,8 +472,6 @@ void RCC_Config(void)
   RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA1 | RCC_AHB1Periph_GPIOA | RCC_AHB1Periph_GPIOB, ENABLE);
   /* Enable USART2, TIM3, TIM4, TIM5 and SPI2 clocks */
   RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART2 | RCC_APB1Periph_TIM3 | RCC_APB1Periph_TIM4 | RCC_APB1Periph_TIM5 | RCC_APB1Periph_SPI2, ENABLE);
-  // /* Enable random generator clock */
-  // RCC_AHB2PeriphClockCmd(RCC_AHB2Periph_RNG, ENABLE);
 }
 
 /**
