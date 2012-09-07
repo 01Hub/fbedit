@@ -51,10 +51,11 @@ void DrawLargeChar(uint16_t x, uint16_t y, char chr, uint8_t c);
 void DrawString(uint16_t x, uint16_t y, char *str, uint8_t c);
 void DrawLargeString(uint16_t x, uint16_t y, char *str, uint8_t c);
 void DrawHex(uint16_t x, uint16_t y, uint16_t n, uint8_t c);
+void DrawDec(uint16_t x, uint16_t y, uint16_t n, uint8_t c);
 void Rectangle(uint16_t x, uint16_t y, uint16_t b, uint16_t a, uint8_t c);
 void Circle(uint16_t cx, uint16_t cy, uint16_t radius, uint8_t c);
 void Line(uint16_t X1,uint16_t Y1,uint16_t X2,uint16_t Y2, uint8_t c);
-void DrawIcon(uint16_t x,uint16_t y,const ICON* icon,uint8_t c);
+void DrawIcon(uint16_t x,uint16_t y,ICON* icon,uint8_t c);
 void ScrollUp(void);
 void ScrollDown(void);
 uint32_t DrawSprite(const SPRITE* ps);
@@ -280,7 +281,7 @@ void DrawLargeChar(uint16_t x, uint16_t y, char chr, uint8_t c)
       /* Draw opaque and inverted opaque */
       while (cy<TILE_HEIGHT*2)
       {
-        cl=Font8x10[chr][cy];
+        cl=Font8x10[chr][cy/2];
         cx=0;
         while (cx<TILE_WIDTH*2)
         {
@@ -371,6 +372,33 @@ void DrawLargeString(uint16_t x, uint16_t y, char *str, uint8_t c)
     DrawLargeChar(x, y, chr, c);
     x+=TILE_WIDTH*2;
   }
+}
+
+/**
+  * @brief  This function draws a decimal value at x, y.
+  * @param  x, y, n, c
+  * @retval None
+  */
+void DrawDec(uint16_t x, uint16_t y, uint16_t n, uint8_t c)
+{
+	char decstr[6];
+  int8_t i,d;
+
+  d=n/10000;
+  n-=d*10000;
+  decstr[0]=d | 0x30;
+  d=n/1000;
+  n-=d*1000;
+  decstr[1]=d | 0x30;
+  d=n/100;
+  n-=d*100;
+  decstr[2]=d | 0x30;
+  d=n/10;
+  n-=d*10;
+  decstr[3]=d | 0x30;
+  decstr[4]=n | 0x30;
+  decstr[5]='\0';
+  DrawString(x,y,decstr,c);
 }
 
 /**
@@ -521,7 +549,7 @@ void Line(uint16_t X1,uint16_t Y1,uint16_t X2,uint16_t Y2, uint8_t c)
   }
 }
 
-void DrawIcon(uint16_t x,uint16_t y,const ICON* icon,uint8_t c)
+void DrawIcon(uint16_t x,uint16_t y,ICON* icon,uint8_t c)
 {
   uint32_t xm,ym,i;
   uint8_t cb,*picon;
@@ -529,6 +557,8 @@ void DrawIcon(uint16_t x,uint16_t y,const ICON* icon,uint8_t c)
   /* Draw the icon */
   ym=y+icon->ht;
   xm=x+icon->wt;
+  // DrawHex(x,y,xm,1);
+  // DrawHex(x,y+8,ym,1);
   picon=icon->icondata;
   while (y<ym)
   {
@@ -617,8 +647,14 @@ uint32_t DrawSprite(const SPRITE* ps)
       if (cb!=2)
       {
         bt = 1 << (x & 0x7);
-        /* Test collision with background or another sprite */
-        if (WorkBuff[y][x >> 3] & bt)
+        
+        /* Test collision with background */
+        if (ScreenBuff[y][x >> 3] & bt)
+        {
+          coll |= COLL_BACKGROUND;
+        }
+        /* Test collision with another sprite */
+        else if (WorkBuff[y][x >> 3] & bt)
         {
           coll |= COLL_SPRITE;
         }

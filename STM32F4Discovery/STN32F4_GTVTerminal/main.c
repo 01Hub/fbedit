@@ -53,7 +53,7 @@
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
-#define SHIELD_TOP      210
+#define SHIELD_TOP      200
 
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
@@ -139,34 +139,34 @@ uint8_t ShooterIcon[16][20] = {
 {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}
 };
 
-uint8_t ShieldIcon[16][32] = {
-{2,2,2,2,2,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2},
-{2,2,2,2,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2},
-{2,2,2,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2},
-{2,2,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2},
-{2,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2},
-{2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2},
-{1,1,1,1,1,1,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,1,1,1,1,1,1},
-{1,1,1,1,2,2,2,2,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,1,1,1,1},
-{1,1,1,2,2,2,2,2,2,2,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,1,1,1},
-{1,1,2,2,2,2,2,2,2,2,2,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,1,1},
-{1,1,2,2,2,2,2,2,2,2,2,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,1,1},
-{1,1,2,2,2,2,2,2,2,2,2,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,1,1},
-{1,1,2,2,2,2,2,2,2,2,2,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,1,1},
-{1,1,2,2,2,2,2,2,2,2,2,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,1,1},
-{1,1,2,2,2,2,2,2,2,2,2,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,1,1},
-{1,1,2,2,2,2,2,2,2,2,2,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,1,1}
+uint8_t ShieldIcon[16][36] = {
+{2,2,2,2,2,2,2,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2},
+{2,2,2,2,2,2,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2},
+{2,2,2,2,2,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2},
+{2,2,2,2,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2},
+{2,2,2,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2},
+{2,2,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2},
+{2,2,1,1,1,1,1,1,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,1,1,1,1,1,1,2,2},
+{2,1,1,1,1,1,2,2,2,2,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,1,1,1,1,1,2},
+{1,1,1,1,1,2,2,2,2,2,2,2,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,1,1,1,1,1},
+{1,1,1,1,2,2,2,2,2,2,2,2,2,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,1,1,1,1},
+{1,1,1,1,2,2,2,2,2,2,2,2,2,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,1,1,1,1},
+{1,1,1,1,2,2,2,2,2,2,2,2,2,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,1,1,1,1},
+{1,1,1,1,2,2,2,2,2,2,2,2,2,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,1,1,1,1},
+{1,1,1,1,2,2,2,2,2,2,2,2,2,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,1,1,1,1},
+{1,1,1,1,2,2,2,2,2,2,2,2,2,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,1,1,1,1},
+{1,1,1,1,2,2,2,2,2,2,2,2,2,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,1,1,1,1}
 };
 
-uint8_t ShotIcon[8][4] = {
-{1,1,1,1},
-{1,1,1,1},
-{1,1,1,1},
-{1,1,1,1},
-{1,1,1,1},
-{1,1,1,1},
-{1,1,1,1},
-{1,1,1,1}
+uint8_t ShotIcon[8][3] = {
+{1,1,1},
+{1,1,1},
+{1,1,1},
+{1,1,1},
+{1,1,1},
+{1,1,1},
+{1,1,1},
+{1,1,1}
 };
 
 /* Private function prototypes -----------------------------------------------*/
@@ -190,76 +190,64 @@ uint32_t Random(uint32_t Range)
 {
   uint32_t rnd;
   RNDSeed=(((RNDSeed*23+7) & 0xFFFFFFFF)>>1)^RNDSeed;
-  rnd=RNDSeed/Range;
+  rnd=RNDSeed-(RNDSeed/Range)*Range;
   return rnd;
 }
-/**
-  * @brief  Main program
-  * @param  None
-  * @retval None
-  */
-void main(void)
+
+void GameSetup(void)
 {
-  int16_t dir,i,fc,coll;
-  volatile uint32_t rnd;
+  int16_t i;
 
-  RCC_Config();
-  NVIC_Config();
-  GPIO_Config();
-  TIM_Config();
-  SPI_Config();
-  DMA_Config();
-  USART_Config(115200);
-  /* Enable TIM3 */
-  TIM_Cmd(TIM3, ENABLE);
-  STM_EVAL_LEDInit(LED3);
-
+  Shots=0;
+  Bombs=0;
+  GameOver=0;
+  Cls();
   /* Draw game frame */
   Rectangle(0,0,480,250,1);
   /* Setup alien sprites */
   AlienBound.left=10;
-  AlienBound.top=10;
+  AlienBound.top=26;
   AlienBound.right=469;
   AlienBound.bottom=239;
   i=0;
-  while (i<32)
+  /* Setup bomb sprites */
+  while (i<8)
   {
-    Alien[i].icon.wt=16;
-    Alien[i].icon.ht=16;
+    Bomb[i].icon.wt=3;
+    Bomb[i].icon.ht=8;
+    Bomb[i].icon.icondata=*ShotIcon;
+    Bomb[i].x=0;
+    Bomb[i].y=0;
+    Bomb[i].visible=0;
+    Bomb[i].collision=0;
+    Bomb[i].boundary=&AlienBound;
+    Sprites[i]=&Bomb[i];
+    i++;
+  }
+  while (i<40)
+  {
+    Alien[i-8].icon.wt=16;
+    Alien[i-8].icon.ht=16;
     if (i & 1)
     {
-      Alien[i].icon.icondata=*Alien2Icon;
+      Alien[i-8].icon.icondata=*Alien2Icon;
     }
     else
     {
-      Alien[i].icon.icondata=*Alien1Icon;
+      Alien[i-8].icon.icondata=*Alien1Icon;
     }
-    Alien[i].x=(i & 7)*25+10;
-    Alien[i].y=(i>>3)*20+30;
-    Alien[i].visible=1;
-    Alien[i].collision=0;
-    Alien[i].boundary=&AlienBound;
-    Sprites[i]=&Alien[i];
-    i++;
-  }
-  /* Setup bomb sprites */
-  while (i<40)
-  {
-    Bomb[i-32].icon.wt=4;
-    Bomb[i-32].icon.ht=8;
-    Bomb[i-32].icon.icondata=*ShotIcon;
-    Bomb[i-32].x=0;
-    Bomb[i-32].y=0;
-    Bomb[i-32].visible=0;
-    Bomb[i-32].collision=0;
-    Bomb[i-32].boundary=&AlienBound;
-    Sprites[i]=&Bomb[i-32];
+    Alien[i-8].x=(i & 7)*25+10;
+    Alien[i-8].y=(i>>3)*20+30;
+    Alien[i-8].visible=1;
+    Alien[i-8].collision=0;
+    Alien[i-8].boundary=&AlienBound;
+    Sprites[i]=&Alien[i-8];
     i++;
   }
   /* Setup shot sprites */
   while (i<44)
   {
-    Shot[i-40].icon.wt=4;
+    Shot[i-40].icon.wt=3;
     Shot[i-40].icon.ht=8;
     Shot[i-40].icon.icondata=*ShotIcon;
     Shot[i-40].x=0;
@@ -291,23 +279,34 @@ void main(void)
   i=0;
   while (i<3)
   {
-    DrawIcon(i*25+10,10,Shooter.icon,1);
+    DrawIcon(i*25+10,10,&Shooter.icon,1);
     i++;
   }
   /* Setup shield icon */
-  Shield.wt=32;
+  Shield.wt=36;
   Shield.ht=16;
   Shield.icondata=*ShieldIcon;
   /* Draw shields */
   i=0;
   while (i<4)
   {
-    DrawIcon(i*125+20,SHIELD_TOP,Shield,1);
+    DrawIcon(i*125+40,SHIELD_TOP,&Shield,1);
     i++;
   }
-  /* Game loop */
+}
+
+void GameLoop(void)
+{
+  int16_t dir,i,j,fc,coll;
+  volatile int16_t sdir,slen,Points;
+  volatile uint32_t rnd;
+
   dir=2;
-  while (1)
+  sdir=3;
+  slen=20;
+  Points=0;
+  DrawDec(420,3,Points,1);
+  while (!GameOver)
   {
     /* Syncronize with frame count */
     if (FrameCount!=fc)
@@ -320,144 +319,311 @@ void main(void)
         DrawHex(0,0,rnd,1);
       }
       fc=FrameCount;
-      if (!GameOver)
+      /* Check shot boundary and collision */
+      i=0;
+      while (i<4)
       {
-        /* Check shot boundary and collision */
-        i=0;
-        while (i<4)
+        coll=Shot[i].collision;
+        if (coll & COLL_TOP)
         {
-          coll=Shot[i].collision;
-          if (coll & COLL_TOP)
-          {
-            Shot[i].visible=0;
-            Shots--;
-          }
-          else if (coll & COLL_SPRITE)
-          {
-            /* Find what the shot collided with */
-            Shot[i].visible=0;
-            Shots--;
-          }
-          Shot[i].y--;
-          i++;
+          Shot[i].visible=0;
+          Shots--;
         }
-        /* Check bomb boundary and collision */
+        else if (coll & COLL_SPRITE)
+        {
+          /* Collision with a sprite */
+          Shot[i].visible=0;
+          Shots--;
+          /* Find what the shot collided with */
+          j=0;
+          while (j<32)
+          {
+            if (Alien[j].visible)
+            {
+              if (Shot[i].x+3>=Alien[j].x && Shot[i].x<Alien[j].x+16)
+              {
+                if (Alien[j].y+16>Shot[i].y && Alien[j].y<=Shot[i].y)
+                {
+                  Alien[j].visible=0;
+                  Points+=5;
+                  DrawDec(420,3,Points,1);
+                  break;
+                }
+              }
+            }
+            j++;
+          }
+        }
+        else if (coll & COLL_BACKGROUND)
+        {
+          /* Collision with a shield */
+          Shot[i].visible=0;
+          Shots--;
+          /* Make some damage to the shield */
+          SetPixel(Shot[i].x-3,Shot[i].y,0);
+          SetPixel(Shot[i].x-2,Shot[i].y,0);
+          SetPixel(Shot[i].x-1,Shot[i].y,0);
+          SetPixel(Shot[i].x,Shot[i].y,0);
+          SetPixel(Shot[i].x+1,Shot[i].y,0);
+          SetPixel(Shot[i].x+2,Shot[i].y,0);
+          SetPixel(Shot[i].x+3,Shot[i].y,0);
+
+          SetPixel(Shot[i].x-2,Shot[i].y-1,0);
+          SetPixel(Shot[i].x-1,Shot[i].y-1,0);
+          SetPixel(Shot[i].x,Shot[i].y-1,0);
+          SetPixel(Shot[i].x+1,Shot[i].y-1,0);
+          SetPixel(Shot[i].x+2,Shot[i].y-1,0);
+
+          SetPixel(Shot[i].x-1,Shot[i].y-2,0);
+          SetPixel(Shot[i].x,Shot[i].y-2,0);
+          SetPixel(Shot[i].x+1,Shot[i].y-2,0);
+
+          SetPixel(Shot[i].x,Shot[i].y-3,0);
+        }
+        Shot[i].y-=2;
+        i++;
+      }
+      /* Check bomb boundary and collision */
+      i=0;
+      while (i<8)
+      {
+        coll=Bomb[i].collision;
+        if (coll & COLL_BOTTOM)
+        {
+          Bomb[i].visible=0;
+          Bombs--;
+        }
+        else if (coll & COLL_BACKGROUND)
+        {
+          /* Collision with a shield */
+          Bomb[i].visible=0;
+          Bombs--;
+          /* Make some damage to the shield */
+          SetPixel(Bomb[i].x-3,Bomb[i].y+6,0);
+          SetPixel(Bomb[i].x-2,Bomb[i].y+6,0);
+          SetPixel(Bomb[i].x-1,Bomb[i].y+6,0);
+          SetPixel(Bomb[i].x,Bomb[i].y+6,0);
+          SetPixel(Bomb[i].x+1,Bomb[i].y+6,0);
+          SetPixel(Bomb[i].x+2,Bomb[i].y+6,0);
+          SetPixel(Bomb[i].x+3,Bomb[i].y+6,0);
+
+          SetPixel(Bomb[i].x-3,Bomb[i].y+7,0);
+          SetPixel(Bomb[i].x-2,Bomb[i].y+7,0);
+          SetPixel(Bomb[i].x-1,Bomb[i].y+7,0);
+          SetPixel(Bomb[i].x,Bomb[i].y+7,0);
+          SetPixel(Bomb[i].x+1,Bomb[i].y+7,0);
+          SetPixel(Bomb[i].x+2,Bomb[i].y+7,0);
+          SetPixel(Bomb[i].x+3,Bomb[i].y+7,0);
+
+          SetPixel(Bomb[i].x-2,Bomb[i].y+8,0);
+          SetPixel(Bomb[i].x-1,Bomb[i].y+8,0);
+          SetPixel(Bomb[i].x,Bomb[i].y+8,0);
+          SetPixel(Bomb[i].x+1,Bomb[i].y+8,0);
+          SetPixel(Bomb[i].x+2,Bomb[i].y+8,0);
+
+          SetPixel(Bomb[i].x-1,Bomb[i].y+9,0);
+          SetPixel(Bomb[i].x,Bomb[i].y+9,0);
+          SetPixel(Bomb[i].x+1,Bomb[i].y+9,0);
+
+          SetPixel(Bomb[i].x,Bomb[i].y+10,0);
+        }
+        Bomb[i].y+=2;
+        i++;
+      }
+      /* Drop a bomb */
+      if (Bombs<8)
+      {
+        rnd=Random(31);
+        while (!Alien[rnd].visible)
+        {
+          rnd++;
+          rnd&=31;
+        }
+        /* Find what bomb sprite to use */
         i=0;
         while (i<8)
         {
-          coll=Bomb[i].collision;
-          if (coll & COLL_BOTTOM)
+          if (!Bomb[i].visible)
           {
-            Bomb[i].visible=0;
-            Bombs--;
+            Bomb[i].visible=1;
+            Bomb[i].x=Alien[rnd].x+8;
+            Bomb[i].y=Alien[rnd].y+16;
+            Bombs++;
+            break;
           }
-          else if (coll & COLL_SPRITE)
-          {
-            /* Find what the bomb collided with, only shields need to be tested */
-            Bomb[i].visible=0;
-            Bombs--;
-            if (Bomb[i].y+8>=SHIELD_TOP)
-            {
-              /* Make some damage to the shield */
-              SetPixel(Bomb[i].x-1,Bomb[i].y+8,0);
-              SetPixel(Bomb[i].x,Bomb[i].y+8,0);
-              SetPixel(Bomb[i].x+1,Bomb[i].y+8,0);
-              SetPixel(Bomb[i].x-1,Bomb[i].y+9,0);
-              SetPixel(Bomb[i].x,Bomb[i].y+9,0);
-              SetPixel(Bomb[i].x+1,Bomb[i].y+9,0);
-              SetPixel(Bomb[i].x,Bomb[i].y+10,0);
-            }
-          }
-          Bomb[i].y++;
           i++;
         }
-        /* Drop a bomb */
-        if (Bombs<8)
-        {
-          rnd=Random(31);
-          if (Alien[rnd].visible)
-          {
-            /* Find what bomb sprite to use */
-            i=0;
-            while (i<8)
-            {
-              if (!Bomb[i].visible)
-              {
-                Bomb[i].visible=1;
-                Bomb[i].x=Alien[rnd].x+8;
-                Bomb[i].y=Alien[rnd].y+16;
-                break;
-              }
-              i++;
-            }
-          }
-        }
-        /* Check if shooter hit */
-        if (Shooter.collision & COLL_SPRITE)
-        {
-          Shooters--;
-          if (Shooters<0)
-          {
-            Shooter.visible=0;
-            GameOver=1;
-          }
-          else
-          {
-            /* Remove spare shooter */
-            DrawIcon(Shooters*25+10,10,Shooter.icon,0);
-          }
-          Shooter.x=0;
-        }
-        /* Check alien boundaries, there is no need to check collision */
+      }
+      /* Check if shooter hit */
+      if (Shooter.collision & COLL_SPRITE)
+      {
+        /* Find bomb(s) */
         i=0;
-        coll=0;
-        while (i<32)
+        while (i<8)
         {
-          coll|=Alien[i].collision;
+          if (Bomb[i].y+8>220)
+          {
+            if (Bomb[i].x>=Shooter.x && Bomb[i].x<Shooter.x+20)
+            {
+              Bomb[i].visible=0;
+            }
+          }
           i++;
         }
-        if (!(coll & COLL_BOTTOM))
+        Shooters--;
+        if (Shooters<0)
         {
-          if ((dir>0 && (coll & COLL_RIGHT)) || (dir<0 && (coll & COLL_LEFT)))
-          {
-            /* Move aliens down and change direction */
-            i=0;
-            while (i<32)
-            {
-              Alien[i].y+=4;
-              i++;
-            }
-            dir=-dir;
-          }
-          else
-          {
-            i=0;
-            while (i<32)
-            {
-              if (!FrameCount)
-              {
-                /* Change alien icon */
-                if (Alien[i].icon.icondata==*Alien1Icon)
-                {
-                  Alien[i].icon.icondata=*Alien2Icon;
-                }
-                else
-                {
-                  Alien[i].icon.icondata=*Alien1Icon;
-                }
-              }
-              /* Move alien left or right */
-              Alien[i].x+=dir;
-              i++;
-            }
-          }
+          Shooter.visible=0;
+          GameOver=1;
         }
         else
         {
-          GameOver=1;
+          /* Remove spare shooter */
+          DrawIcon(Shooters*25+10,10,&Shooter.icon,0);
+        }
+        Shooter.x=10;
+        sdir=3;
+        slen=10;
+      }
+      /* Move shooter */
+      if (slen)
+      {
+        if ((sdir>0 && (Shooter.collision & COLL_RIGHT)) || (sdir<0 && (Shooter.collision & COLL_LEFT)))
+        {
+          sdir=-sdir;
+        }
+        Shooter.x+=sdir;
+        slen--;
+      }
+      else
+      {
+        i=Random(100);
+        if (i<5)
+        {
+          slen=Random(40);
+          i=Random(9);
+          if (i<5)
+          {
+            sdir=-3;
+          }
+          else
+          {
+            sdir=3;
+          }
         }
       }
+      /* Shoot */
+      if (Shots<4)
+      {
+        i=Random(100);
+        if (i<5)
+        {
+          i=0;
+          while(i<4)
+          {
+            if (!Shot[i].visible)
+            {
+              Shot[i].x=Shooter.x+10;
+              Shot[i].y=216;
+              Shot[i].visible=1;
+              Shots++;
+              break;
+            }
+            i++;
+          }
+        }
+      }
+      /* Check alien boundaries, there is no need to check collision */
+      i=0;
+      coll=0;
+      while (i<32)
+      {
+        coll|=Alien[i].collision;
+        i++;
+      }
+      if (!(coll & COLL_BOTTOM))
+      {
+        if ((dir>0 && (coll & COLL_RIGHT)) || (dir<0 && (coll & COLL_LEFT)))
+        {
+          /* Move aliens down and change direction */
+          i=0;
+          while (i<32)
+          {
+            Alien[i].y+=4;
+            i++;
+          }
+          dir=-dir;
+        }
+        else
+        {
+          i=0;
+          while (i<32)
+          {
+            if (!FrameCount)
+            {
+              /* Change alien icon */
+              if (Alien[i].icon.icondata==*Alien1Icon)
+              {
+                Alien[i].icon.icondata=*Alien2Icon;
+              }
+              else
+              {
+                Alien[i].icon.icondata=*Alien1Icon;
+              }
+            }
+            /* Move alien left or right */
+            Alien[i].x+=dir;
+            i++;
+          }
+        }
+      }
+      else
+      {
+        GameOver=1;
+      }
     }
+  }
+  /* Remove shots */
+  i=0;
+  while (i<4)
+  {
+    Shot[i].visible=0;
+    i++;
+  }
+  /* Remove bombs */
+  i=0;
+  while (i<8)
+  {
+    Bomb[i].visible=0;
+    i++;
+  }
+  DrawLargeString(168,115,"Game Over\0",1);
+  FrameCount=0;
+  while (FrameCount<1000);
+}
+
+/**
+  * @brief  Main program
+  * @param  None
+  * @retval None
+  */
+void main(void)
+{
+  RCC_Config();
+  NVIC_Config();
+  GPIO_Config();
+  TIM_Config();
+  SPI_Config();
+  DMA_Config();
+  USART_Config(115200);
+  /* Enable TIM3 */
+  TIM_Cmd(TIM3, ENABLE);
+  STM_EVAL_LEDInit(LED3);
+
+  while (1)
+  {
+    GameSetup();
+    GameLoop();
   }
 }
 
