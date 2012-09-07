@@ -74,6 +74,7 @@ volatile GameOver;              // Game over flag
 
 RECT AlienBound;
 extern SPRITE* Sprites[];
+extern WINDOW* Windows[];
 SPRITE Alien[32];
 SPRITE Shooter;
 SPRITE Bomb[8];
@@ -81,6 +82,8 @@ SPRITE Shot[4];
 extern SPRITE Cursor;
 ICON Shield;
 volatile uint32_t RNDSeed;
+WINDOW MsgBox;
+char Caption[]="Alien\0";
 
 uint8_t Alien1Icon[16][16] = {
 {2,2,1,1,1,1,1,1,1,1,1,1,1,1,2,2},
@@ -194,6 +197,10 @@ uint32_t Random(uint32_t Range)
   return rnd;
 }
 
+void MsgBoxHandler(void)
+{
+}
+
 void GameSetup(void)
 {
   int16_t i;
@@ -204,7 +211,6 @@ void GameSetup(void)
   Cls();
   /* Draw game frame */
   Rectangle(0,0,480,250,1);
-  /* Setup alien sprites */
   AlienBound.left=10;
   AlienBound.top=26;
   AlienBound.right=469;
@@ -218,12 +224,13 @@ void GameSetup(void)
     Bomb[i].icon.icondata=*ShotIcon;
     Bomb[i].x=0;
     Bomb[i].y=0;
-    Bomb[i].visible=0;
+    Bomb[i].visible=1;
     Bomb[i].collision=0;
     Bomb[i].boundary=&AlienBound;
     Sprites[i]=&Bomb[i];
     i++;
   }
+  /* Setup alien sprites */
   while (i<40)
   {
     Alien[i-8].icon.wt=16;
@@ -273,7 +280,6 @@ void GameSetup(void)
   SetCursor(0);
   MoveCursor(240,125);
   ShowCursor(1);
-  Sprites[i]=&Cursor;
   /* Draw spare shooters */
   Shooters=3;
   i=0;
@@ -293,6 +299,15 @@ void GameSetup(void)
     DrawIcon(i*125+40,SHIELD_TOP,&Shield,1);
     i++;
   }
+  /* Setup the message box */
+  MsgBox.x=64;
+  MsgBox.y=32;
+  MsgBox.wt=128;
+  MsgBox.ht=64;
+  MsgBox.visible=1;
+  MsgBox.caption=Caption;
+  MsgBox.handler=&MsgBoxHandler;
+  Windows[0]=&MsgBox;
 }
 
 void GameLoop(void)
@@ -305,7 +320,7 @@ void GameLoop(void)
   sdir=3;
   slen=20;
   Points=0;
-  DrawDec(420,3,Points,1);
+  DrawLargeDec(480-10-16*5,3,Points,1);
   while (!GameOver)
   {
     /* Syncronize with frame count */
@@ -346,7 +361,7 @@ void GameLoop(void)
                 {
                   Alien[j].visible=0;
                   Points+=5;
-                  DrawDec(420,3,Points,1);
+                  DrawLargeDec(480-10-16*5,3,Points,1);
                   break;
                 }
               }

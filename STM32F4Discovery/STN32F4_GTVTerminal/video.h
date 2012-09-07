@@ -9,15 +9,18 @@
 #define TILE_HEIGHT         10    // Height of a character tile
 #define H_SYNC              4700  // Horisontal sync timing (nano seconds)
 #define BACK_POCH           7700  // Back poch timing (nano seconds), adjust it to center the screen horizontaly
-#define MAX_SPRITES         65    // 64 + 1 for cursor
+#define MAX_SPRITES         64    // Max number of sprites
 #define COLL_LEFT           1     // Left boundary collision
 #define COLL_TOP            2     // Top boundary collision
 #define COLL_RIGHT          4     // Right boundary collision
 #define COLL_BOTTOM         8     // Bottom boundary collision
 #define COLL_SPRITE         16    // Collision with another sprite 
 #define COLL_BACKGROUND     32    // Collision with background
+#define MAX_WINDOWS         4     // Max number of windows
 
 #define SPI_DR              0x4001300C
+
+typedef void (*handler)(void);
 
 /* Private typedef -----------------------------------------------------------*/
 typedef struct
@@ -54,3 +57,13 @@ typedef struct
   ICON icon;
 } SPRITE;
 
+typedef struct
+{
+  int16_t x;
+  int16_t y;
+  int16_t wt;
+  int16_t ht;
+  uint8_t visible;
+  char *caption;
+  void (*handler)(void);
+} WINDOW;

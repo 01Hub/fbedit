@@ -38,6 +38,7 @@ __IO int8_t BackPochFlag;
 SPRITE Cursor;
 // __IO TIME time;
 SPRITE* Sprites[MAX_SPRITES];
+WINDOW* Windows[MAX_WINDOWS];
 
 /* Private function prototypes -----------------------------------------------*/
 void SetCursor(uint8_t cur);
@@ -50,8 +51,9 @@ void DrawChar(uint16_t x, uint16_t y, char chr, uint8_t c);
 void DrawLargeChar(uint16_t x, uint16_t y, char chr, uint8_t c);
 void DrawString(uint16_t x, uint16_t y, char *str, uint8_t c);
 void DrawLargeString(uint16_t x, uint16_t y, char *str, uint8_t c);
-void DrawHex(uint16_t x, uint16_t y, uint16_t n, uint8_t c);
 void DrawDec(uint16_t x, uint16_t y, uint16_t n, uint8_t c);
+void DrawLargeDec(uint16_t x, uint16_t y, uint16_t n, uint8_t c);
+void DrawHex(uint16_t x, uint16_t y, uint16_t n, uint8_t c);
 void Rectangle(uint16_t x, uint16_t y, uint16_t b, uint16_t a, uint8_t c);
 void Circle(uint16_t cx, uint16_t cy, uint16_t radius, uint8_t c);
 void Line(uint16_t X1,uint16_t Y1,uint16_t X2,uint16_t Y2, uint8_t c);
@@ -246,7 +248,7 @@ void DrawChar(uint16_t x, uint16_t y, char chr, uint8_t c)
 }
 
 /**
-  * @brief  This function draws a large character at x, y.
+  * @brief  This function draws a character using large font at x, y.
   * @param  x, y, chr, c
   * @retval None
   */
@@ -360,7 +362,7 @@ void DrawString(uint16_t x, uint16_t y, char *str, uint8_t c)
 }
 
 /**
-  * @brief  This function draws a large zero terminated string at x, y.
+  * @brief  This function draws a zero terminated string using large font at x, y.
   * @param  x, y, *str, c
   * @retval None
   */
@@ -398,7 +400,52 @@ void DrawDec(uint16_t x, uint16_t y, uint16_t n, uint8_t c)
   decstr[3]=d | 0x30;
   decstr[4]=n | 0x30;
   decstr[5]='\0';
+  i=0;
+  while (i<4)
+  {
+    if (decstr[i]='0')
+    {
+      decstr[i]=' ';
+    }
+    i++;
+  }
   DrawString(x,y,decstr,c);
+}
+
+/**
+  * @brief  This function draws a decimal value using large font at x, y.
+  * @param  x, y, n, c
+  * @retval None
+  */
+void DrawLargeDec(uint16_t x, uint16_t y, uint16_t n, uint8_t c)
+{
+	char decstr[6];
+  int8_t i,d;
+
+  d=n/10000;
+  n-=d*10000;
+  decstr[0]=d | 0x30;
+  d=n/1000;
+  n-=d*1000;
+  decstr[1]=d | 0x30;
+  d=n/100;
+  n-=d*100;
+  decstr[2]=d | 0x30;
+  d=n/10;
+  n-=d*10;
+  decstr[3]=d | 0x30;
+  decstr[4]=n | 0x30;
+  decstr[5]='\0';
+  i=0;
+  while (i<4)
+  {
+    if (decstr[i]='0')
+    {
+      decstr[i]=' ';
+    }
+    i++;
+  }
+  DrawLargeString(x,y,decstr,c);
 }
 
 /**
@@ -677,6 +724,90 @@ uint32_t DrawSprite(const SPRITE* ps)
 }
 
 /**
+  * @brief  This function draws transparent an inverted character at x, y.
+  * @param  x, y, chr
+  * @retval None
+  */
+void DrawWBChar(uint16_t x, uint16_t y, char chr)
+{
+  uint8_t cl,bit;
+  uint16_t cx, cy;
+
+  cy=0;
+  while (cy<TILE_HEIGHT)
+  {
+    cl=Font8x10[chr][cy];
+    cx=0;
+    while (cx<TILE_WIDTH)
+    {
+      if (cl & 0x80)
+      {
+        if (cx < (SCREEN_WIDTH-4) * 8 && cy < SCREEN_HEIGHT)
+        {
+          bit = 1 << (cx & 0x7);
+          WorkBuff[cy][cx >> 3] &= ~bit;
+        }
+      }
+      cl=cl<<1;
+      cx++;
+    }
+    cy++;
+  }
+}
+
+/**
+  * @brief  This function draws a zero terminated string at x, y.
+  * @param  x, y, *str
+  * @retval None
+  */
+void DrawWBString(uint16_t x, uint16_t y, char *str)
+{
+  char chr;
+  while ((chr = *str++))
+  {
+    DrawWBChar(x, y, chr);
+    x+=TILE_WIDTH;
+  }
+}
+
+void DrawWindow(const WINDOW* win)
+{
+  int32_t x,y,xm,ym,i,j;
+  uint8_t cl,cr;
+  x=win->x;
+  xm=x+win->wt;
+  y=win->y;
+  ym=y+win->ht;
+  /* Get left fill */
+  cl=0xFF>>((8-(x & 7)) & 7);
+  /* Get right fill */
+  cr=0xFF<<((8-(xm & 7)) & 7);
+  /* Fill left & right*/
+  j=y;
+  while (j<ym)
+  {
+    WorkBuff[j][x >> 3] |= cl;
+    WorkBuff[j][xm >> 3] |= cr;
+    j++;
+  }
+  j=y;
+  while (j<ym)
+  {
+    i=(x >> 3)+1;
+    while (i<(xm >> 3)-1)
+    {
+      WorkBuff[j][i] = 0xFF;
+      i++;
+    }
+    j++;
+  }
+  if (win->caption)
+  {
+    DrawWBString(x,y,win->caption);
+  }
+}
+
+/**
   * @brief  This function handles TIM3 global interrupt request.
   * @param  None
   * @retval None
@@ -825,6 +956,22 @@ void TIM5_IRQHandler(void)
     Sprites[i]->collision=coll;
     i++;
   }
+  /* Draw windows onto WorkBuff */
+  i=0;
+  while (Windows[i])
+  {
+    if (Windows[i]->visible)
+    {
+      DrawWindow(Windows[i]);
+    }
+    i++;
+  }
+  /* Draw cursor */
+  if (Cursor.visible)
+  {
+    DrawSprite(&Cursor);
+  }
+
   //DrawHex(0,0,LineCount,1);
   FrameCount++;
 }
