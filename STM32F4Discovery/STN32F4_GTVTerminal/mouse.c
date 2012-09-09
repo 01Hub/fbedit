@@ -2,13 +2,13 @@
 #include "stm32f4_discovery.h"
 
 /* circular buffer for mouse */
-__IO uint8_t mousebuf[256];
-__IO uint8_t mousebufhead = 0;
-__IO uint8_t mousebuftail = 0;
+volatile uint8_t mousebuf[256];
+volatile uint8_t mousebufhead = 0;
+volatile uint8_t mousebuftail = 0;
 
-__IO uint8_t tmpmousecode;
-__IO uint8_t mousecode;
-__IO uint8_t mbitcount = 11;
+volatile uint8_t tmpmousecode;
+volatile uint8_t mousecode;
+volatile uint8_t mbitcount = 11;
 
 /**
   * @brief  This function handles EXTI2_IRQHandler interrupt request.

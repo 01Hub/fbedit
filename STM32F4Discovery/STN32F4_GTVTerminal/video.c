@@ -32,13 +32,21 @@
 /* Private variables ---------------------------------------------------------*/
 uint8_t ScreenBuff[SCREEN_HEIGHT][SCREEN_WIDTH];
 uint8_t WorkBuff[SCREEN_HEIGHT][SCREEN_WIDTH];
-__IO int16_t LineCount;
-__IO uint16_t FrameCount;
-__IO int8_t BackPochFlag;
+volatile int16_t LineCount;
+volatile uint16_t FrameCount;
+volatile int8_t BackPochFlag;
 SPRITE Cursor;
-// __IO TIME time;
 SPRITE* Sprites[MAX_SPRITES];
 WINDOW* Windows[MAX_WINDOWS];
+WINDOW* Focus;
+volatile uint16_t nKeys;
+
+/* circular buffer for keys */
+extern volatile uint8_t charbuf[256];
+extern volatile uint8_t charbufhead;
+extern volatile uint8_t charbuftail;
+
+extern volatile DemoMode;
 
 /* Private function prototypes -----------------------------------------------*/
 void SetCursor(uint8_t cur);
@@ -401,12 +409,9 @@ void DrawDec(uint16_t x, uint16_t y, uint16_t n, uint8_t c)
   decstr[4]=n | 0x30;
   decstr[5]='\0';
   i=0;
-  while (i<4)
+  while (i<4 && decstr[i]==0x30)
   {
-    if (decstr[i]='0')
-    {
-      decstr[i]=' ';
-    }
+    decstr[i]=0x20;
     i++;
   }
   DrawString(x,y,decstr,c);
@@ -437,12 +442,9 @@ void DrawLargeDec(uint16_t x, uint16_t y, uint16_t n, uint8_t c)
   decstr[4]=n | 0x30;
   decstr[5]='\0';
   i=0;
-  while (i<4)
+  while (i<4 && decstr[i]==0x30)
   {
-    if (decstr[i]='0')
-    {
-      decstr[i]=' ';
-    }
+    decstr[i]=0x20;
     i++;
   }
   DrawLargeString(x,y,decstr,c);
@@ -596,16 +598,20 @@ void Line(uint16_t X1,uint16_t Y1,uint16_t X2,uint16_t Y2, uint8_t c)
   }
 }
 
+/**
+  * @brief  This function draws an icon
+  * @param  x, y, icon, c
+  * @retval None
+  */
 void DrawIcon(uint16_t x,uint16_t y,ICON* icon,uint8_t c)
 {
   uint32_t xm,ym,i;
-  uint8_t cb,*picon;
+  uint8_t cb;
+  const uint8_t *picon;
 
   /* Draw the icon */
   ym=y+icon->ht;
   xm=x+icon->wt;
-  // DrawHex(x,y,xm,1);
-  // DrawHex(x,y+8,ym,1);
   picon=icon->icondata;
   while (y<ym)
   {
@@ -666,10 +672,16 @@ void ScrollDown(void)
   memset(&ScreenBuff[0], 0, SCREEN_WIDTH);
 }
 
+/**
+  * @brief  This function draws a sprite
+  * @param  None
+  * @retval None
+  */
 uint32_t DrawSprite(const SPRITE* ps)
 {
   uint32_t x,y,xm,ym;
-  uint8_t bt,coll,cb,*picon;
+  uint8_t bt,coll,cb;
+  const uint8_t *picon;
 
   coll=0;
   /* Draw the sprite */
@@ -744,8 +756,8 @@ void DrawWBChar(uint16_t x, uint16_t y, char chr)
       {
         if (cx < (SCREEN_WIDTH-4) * 8 && cy < SCREEN_HEIGHT)
         {
-          bit = 1 << (cx & 0x7);
-          WorkBuff[cy][cx >> 3] &= ~bit;
+          bit = 1 << ((x+cx) & 0x7);
+          WorkBuff[y+cy][(x+cx >> 3)] &= ~bit;
         }
       }
       cl=cl<<1;
@@ -756,55 +768,197 @@ void DrawWBChar(uint16_t x, uint16_t y, char chr)
 }
 
 /**
-  * @brief  This function draws a zero terminated string at x, y.
-  * @param  x, y, *str
+  * @brief  This function draws a string with length len at x, y.
+  * @param  x, y, len, *str
   * @retval None
   */
-void DrawWBString(uint16_t x, uint16_t y, char *str)
+void DrawWBString(uint16_t x, uint16_t y,uint8_t len, char *str)
 {
   char chr;
-  while ((chr = *str++))
+  while (len)
   {
-    DrawWBChar(x, y, chr);
+    DrawWBChar(x, y, *str);
     x+=TILE_WIDTH;
+    str++;
+    len--;
   }
 }
 
-void DrawWindow(const WINDOW* win)
+/**
+  * @brief  This function draws a window.
+  * @param  win
+  * @retval None
+  */
+void DrawWindow(WINDOW* hwin)
 {
   int32_t x,y,xm,ym,i,j;
   uint8_t cl,cr;
-  x=win->x;
-  xm=x+win->wt;
-  y=win->y;
-  ym=y+win->ht;
-  /* Get left fill */
-  cl=0xFF>>((8-(x & 7)) & 7);
-  /* Get right fill */
-  cr=0xFF<<((8-(xm & 7)) & 7);
-  /* Fill left & right*/
-  j=y;
-  while (j<ym)
+  WINDOW* hpar;
+
+  x=hwin->x;
+  y=hwin->y;
+  if (hwin->owner)
   {
-    WorkBuff[j][x >> 3] |= cl;
-    WorkBuff[j][xm >> 3] |= cr;
-    j++;
+    hpar=hwin->owner;
+    x+=hpar->x;
+    y+=hpar->y;
   }
-  j=y;
-  while (j<ym)
+  xm=x+hwin->wt;
+  ym=y+hwin->ht;
+  switch (hwin->winclass)
   {
-    i=(x >> 3)+1;
-    while (i<(xm >> 3)-1)
-    {
-      WorkBuff[j][i] = 0xFF;
-      i++;
-    }
-    j++;
+    case CLASS_WINDOW:
+      /* Get left fill */
+      cl=0xFF<<((x & 7) & 7);
+      /* Get right fill */
+      cr=0xFF>>((xm & 7) & 7);
+      /* Fill left & right*/
+      j=y;
+      while (j<ym)
+      {
+        if (j==y+9)
+        {
+          WorkBuff[j][x >> 3] &= ~cl;
+          WorkBuff[j][xm >> 3] &= ~cr;
+        }
+        else
+        {
+          WorkBuff[j][x >> 3] |= cl;
+          WorkBuff[j][xm >> 3] |= cr;
+        }
+        j++;
+      }
+      j=y;
+      while (j<ym)
+      {
+        i=(x >> 3)+1;
+        while (i<(xm >> 3))
+        {
+          if (j==y+9)
+          {
+            WorkBuff[j][i] = 0x0;
+          }
+          else
+          {
+            WorkBuff[j][i] = 0xFF;
+          }
+          i++;
+        }
+        j++;
+      }
+      if (hwin->caption)
+      {
+        DrawWBString(x+2,y,hwin->caplen,hwin->caption);
+      }
+      break;
+    case CLASS_BUTTON:
+      if (FrameCount & 1)
+      {
+        /* Get left fill */
+        cl=0xFF<<((x & 7) & 7);
+        /* Get right fill */
+        cr=0xFF>>((xm & 7) & 7);
+        /* Fill left & right*/
+        j=y;
+        while (j<ym)
+        {
+          WorkBuff[j][x >> 3] &= ~cl;
+          WorkBuff[j][xm >> 3] &= ~cr;
+          j++;
+        }
+        j=y;
+        while (j<ym)
+        {
+          i=(x >> 3)+1;
+          while (i<(xm >> 3))
+          {
+            WorkBuff[j][i] = 0;
+            i++;
+          }
+          j++;
+        }
+      }
+      if (hwin->caption)
+      {
+        x=x+(hwin->wt-hwin->caplen*TILE_WIDTH)/2;
+        y=y+(hwin->ht-TILE_HEIGHT)/2;
+        DrawWBString(x,y,hwin->caplen,hwin->caption);
+      }
+      break;
+    case CLASS_STATIC:
+      if (hwin->caption)
+      {
+        x=x+(hwin->wt-hwin->caplen*TILE_WIDTH)/2;
+        y=y+(hwin->ht-TILE_HEIGHT)/2;
+        DrawWBString(x,y,hwin->caplen,hwin->caption);
+      }
   }
-  if (win->caption)
+  i=0;
+  while (hwin->control[i] && i<MAX_CONTROLS)
   {
-    DrawWBString(x,y,win->caption);
+    DrawWindow(hwin->control[i]);
+    i++;
   }
+}
+
+/**
+  * @brief  This function handles default window events.
+  * @param  hwin, event, param, ID
+  * @retval None
+  */
+void DefWindowHandler(WINDOW* hwin,uint8_t event,uint16_t param,uint8_t ID)
+{
+  WINDOW* howner;
+
+  switch (event)
+  {
+    // case EVENT_KEYDOWN:
+    // case EVENT_KEYUP:
+    // case EVENT_CHAR:
+    // case EVENT_MOUSMOVE:
+    // case EVENT_LBUTTOMDOWN:
+    // case EVENT_LBUTTONUP:
+    // case EVENT_BTNCLICK:
+      // break;
+    case EVENT_PAINT:
+      DrawWindow(hwin);
+      break;
+    case EVENT_SHOW:
+      if (param & STATE_VISIBLE)
+      {
+        hwin->state|=STATE_VISIBLE;
+      }
+      else
+      {
+        hwin->state&=~STATE_VISIBLE;
+      }
+      break;
+    case EVENT_GOTFOCUS:
+      hwin->state|=STATE_FOCUS;
+      Focus=hwin;
+      break;
+    case EVENT_LOSTFOCUS:
+      hwin->state&=~STATE_FOCUS;
+      Focus=0;
+      break;
+    default:
+      howner=hwin->owner;
+      if (howner)
+      {
+        SendEvent(howner,event,param,ID);
+      }
+      break;
+  }
+}
+
+/**
+  * @brief  This function sends an event to a window
+  * @param  hwin, event, param, ID
+  * @retval None
+  */
+void SendEvent(WINDOW* hwin,uint8_t event,uint16_t param,uint8_t ID)
+{
+  hwin->handler(hwin,event,param,ID);
 }
 
 /**
@@ -906,6 +1060,7 @@ void TIM4_IRQHandler(void)
 void TIM5_IRQHandler(void)
 {
   uint32_t *pd,*ps,i,pos,coll;
+  char key;
 
   /* Disable TIM5 */
   TIM5->CR1=0;
@@ -960,9 +1115,9 @@ void TIM5_IRQHandler(void)
   i=0;
   while (Windows[i])
   {
-    if (Windows[i]->visible)
+    if (Windows[i]->state & STATE_VISIBLE)
     {
-      DrawWindow(Windows[i]);
+      Windows[i]->handler(Windows[i],EVENT_PAINT,0,0);
     }
     i++;
   }
@@ -971,8 +1126,16 @@ void TIM5_IRQHandler(void)
   {
     DrawSprite(&Cursor);
   }
-
-  //DrawHex(0,0,LineCount,1);
+DrawHex(0,0,LineCount,1);
+  /* Send a key to the control that has the keyboard focus */
+  if (Focus)
+  {
+    key=GetKey();
+    if (key)
+    {
+      SendEvent(Focus,EVENT_CHAR,key,Focus->ID);
+    }
+  }
   FrameCount++;
 }
 

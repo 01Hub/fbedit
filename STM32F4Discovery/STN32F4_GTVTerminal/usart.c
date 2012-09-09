@@ -8,8 +8,8 @@ void rs232_puts(char *str);
 
 /* Private variables ---------------------------------------------------------*/
 uint8_t rs232buf[256];
-__IO uint8_t rs232buftail;
-__IO uint8_t rs232bufhead;
+volatile uint8_t rs232buftail;
+volatile uint8_t rs232bufhead;
 
 /**
   * @brief  This function transmits a character

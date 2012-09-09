@@ -30,6 +30,7 @@
 
 #include "stm32f4_discovery.h"
 #include "keycodes.h"
+#include "video.h"
 
 #define ESC K_ESC
 #define CLK K_CAPSLK
@@ -72,7 +73,7 @@ __attribute__((section("FLASH"))) const char codetable[] = {
 	0,   'c', 'x', 'd', 'e', '4', '3', 0,   0,   ' ', 'v', 'f', 't', 'r', '5', 0,
 	0,   'n', 'b', 'h', 'g', 'y', '6', 0,   0,   0,   'm', 'j', 'u', '7', '8', 0,
 	0,   ',', 'k', 'i', 'o', '0', '9', 0,   0,   '.', '/', 'l', ';', 'p', '-', 0,
-	0,   0,   '\'',0,   '[', '=', 0,   0,   CLK, 0,   '\n',']', 0,   '\\',0,   0,
+	0,   0,   '\'',0,   '[', '=', 0,   0,   CLK, 0,   '\r',']', 0,   '\\',0,   0,
 	0,   0,   0,   0,   0,   0,   '\b',0,   0,   '1', 0,   '4', '7', 0,   0,   0,
 	'0', '.', '2', '5', '6', '8', ESC,  NLK, F11, '+', '3', '-', '*', '9', SLK, 0,
 	0,   0,   0,   F7
@@ -85,7 +86,7 @@ __attribute__((section("FLASH"))) const char codetable_shifted[] = {
 	0,   'C', 'X', 'D', 'E', '$', '#', 0,   0,   ' ', 'V', 'F', 'T', 'R', '%', 0,
 	0,   'N', 'B', 'H', 'G', 'Y', '^', 0,   0,   0,   'M', 'J', 'U', '&', '*', 0,
 	0,   '<', 'K', 'I', 'O', ')', '(', 0,   0,   '>', '?', 'L', ':', 'P', '_', 0,
-	0,   0,   '"', 0,   '{', '+', 0,   0,   CLK, 0,   '\n','}', 0,   '|', 0,   0,
+	0,   0,   '"', 0,   '{', '+', 0,   0,   CLK, 0,   '\r','}', 0,   '|', 0,   0,
 	0,   0,   0,   0,   0,   0,   '\b',0,   0,   '1', 0,   '4', '7', 0,   0,   0,
 	'0', '.', '2', '5', '6', '8', ESC, NLK, F11, '+', '3', '-', '*', '9', SLK, 0,
 	0,   0,   0,   F7
@@ -100,7 +101,7 @@ __attribute__((section("FLASH"))) const char codetable_extended[] = {
 	0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
 	0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
 	0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   '/', 0,   0,   0,   0,   0,
-	0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   '\n',0,   0,   0,   0,   0,
+	0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   '\r',0,   0,   0,   0,   0,
 	0,   0,   0,   0,   0,   0,   0,   0,   0,   END, 0,   ARL, HOM, 0,   0,   0,
 	INS, DEL, ARD, '5', ARR, ARU, 0,   BRK, 0,   0,   PGD, 0,   PRS, PGU, 0,   0,
 	0,   0,   0,   0
@@ -111,57 +112,100 @@ static uint8_t keyup = 0;
 static uint8_t extended = 0;
 static uint8_t mods = 0;
 /* circular buffer for keys */
-__IO uint8_t charbuf[256];
-__IO uint8_t charbufhead = 0;
-__IO uint8_t charbuftail = 0;
+volatile uint8_t charbuf[256];
+volatile uint8_t charbufhead = 0;
+volatile uint8_t charbuftail = 0;
 
-__IO uint8_t tmpscancode;
-__IO uint8_t scancode;
-__IO uint8_t kbitcount = 11;
+volatile uint8_t tmpscancode;
+volatile uint8_t scancode;
+volatile uint8_t kbitcount = 11;
 
-//Decode PS/2 keycodes
+/**
+  * @brief  This function gets a character from keyboard buffer
+  * @param  None
+  * @retval char
+  */
+char GetKey()
+{
+  if (charbuftail!=charbufhead)
+  {
+    return charbuf[charbuftail++];
+  }
+  return 0;
+}
+
+/**
+  * @brief  This function decodes PS/2 keycodes
+  * @param  scancode
+  * @retval None
+  */
 void decode(uint8_t scancode)
 {
 	if (scancode == 0xF0)
+  {
 		keyup = 1;
+  }
 	else if (scancode == 0xE0 || scancode == 0xE1)
+  {
 		extended = 1;
+  }
 	else
 	{
 		if (keyup) // handling a key release; don't do anything
 		{
 			if (scancode == 0x12) // left shift
-				mods &= ~_BV(0);
+        {
+          mods &= ~_BV(0);
+        }
 			else if (scancode == 0x59) // right shift
-				mods &= ~_BV(1);
+        {
+          mods &= ~_BV(1);
+        }
 			else if (scancode == 0x14) // left/right ctrl
-				mods &= (extended) ? ~_BV(3) : ~_BV(2);
+        {
+          mods &= (extended) ? ~_BV(3) : ~_BV(2);
+        }
 		}
 		else // handling a key press; store character
 		{
 			if (scancode == 0x12) // left shift
+      {
 				mods |= _BV(0);
+      }
 			else if (scancode == 0x59) // right shift
+      {
 				mods |= _BV(1);
+      }
 			else if (scancode == 0x14) // left/right ctrl
+      {
 				mods |= (extended) ? _BV(3) : _BV(2);
+      }
 			else if (scancode <= 0x83)
 			{
 				u8 chr;
 				if (extended)
+        {
 					chr = codetable_extended[scancode];
+        }
 				else if (mods & 0b1100) // ctrl
+        {
 					chr = codetable[scancode] & 31;
+        }
 				else if (mods & 0b0011) // shift
+        {
 					chr = codetable_shifted[scancode];
+        }
 				else
+        {
 					chr = codetable[scancode];
-				
-				if (!chr) chr = '?';
-				
-				/* add to buffer */
-				charbuf[charbufhead++] = chr;
-			}
+          if (!chr)
+          {
+            chr = '?';
+          }
+          /* add to buffer */
+          charbuf[charbufhead++] = chr;
+        }
+      }
 		}
 		extended = 0;
 		keyup = 0;
@@ -178,6 +222,7 @@ void EXTI0_IRQHandler(void)
 {
   /* Clear the EXTI line 0 pending bit */
   EXTI_ClearITPendingBit(EXTI_Line0);
+  STM_EVAL_LEDToggle(LED4);
 
 	/* figure out what the keyboard is sending us */
 	--kbitcount;
