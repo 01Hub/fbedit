@@ -74,15 +74,14 @@ __attribute__((section("FLASH"))) const char codetable_extended[] = {
 	0,   0,   0,   0
 };
 
-char GetKey(void);
-void PutKey(void);
-
 /* circular buffer for keys */
 uint8_t charbuf[256];
 volatile uint8_t charbufhead = 0;
 volatile uint8_t charbuftail = 0;
-volatile uint32_t kkey;
+/* Key state tables */
 volatile uint16_t keytab[16];
+volatile uint16_t ext1keytab[16];
+volatile uint16_t ext2keytab[16];
 
 /**
   * @brief  This function handles EXTI0_IRQHandler interrupt request.
@@ -93,7 +92,7 @@ volatile uint16_t keytab[16];
 void EXTI0_IRQHandler(void)
 {
   static uint16_t scancode = 0x0800;
-  static uint16_t keyup;
+  static uint16_t keyflag;
 
   /* Clear the EXTI line 0 pending bit */
   EXTI->PR = EXTI_Line0;
@@ -108,14 +107,48 @@ void EXTI0_IRQHandler(void)
     scancode=(scancode>>1) & 0xFF;
     if (scancode==0xF0)
     {
-      keyup=1;
+      keyflag|=1;
+    }
+    else if (scancode==0xE0)
+    {
+      keyflag|=2;
+    }
+    else if (scancode==0xE1)
+    {
+      keyflag|=4;
+    }
+    else if (keyflag & 4)
+    {
+      if (keyflag & 1)
+      {
+        ext2keytab[scancode>>4] &= ~(0x01<<(scancode & 0x0F));
+        keyflag&=~1;
+      }
+      else
+      {
+        ext1keytab[scancode>>4] |= (uint16_t)(0x01<<(scancode & 0x0F));
+      }
+      keyflag&=~4;
+    }
+    else if (keyflag & 2)
+    {
+      if (keyflag & 1)
+      {
+        ext1keytab[scancode>>4] &= ~(0x01<<(scancode & 0x0F));
+        keyflag&=~1;
+      }
+      else
+      {
+        ext1keytab[scancode>>4] |= (uint16_t)(0x01<<(scancode & 0x0F));
+      }
+      keyflag&=~2;
     }
     else
     {
-      if (keyup)
+      if (keyflag & 1)
       {
         keytab[scancode>>4] &= ~(0x01<<(scancode & 0x0F));
-        keyup=0;
+        keyflag&=~1;
       }
       else
       {
@@ -126,48 +159,23 @@ void EXTI0_IRQHandler(void)
 	}
 }
 
-void PutKey(void)
-{
-  static uint32_t key;
-  static uint8_t mods;
-  static uint8_t ext;
-  u8 chr;
-
-  if (kkey)
-  {
-    key=kkey;
-    kkey=0;
-    mods=(key>>8) & 0xFF;
-    ext=(key>>16) & 0xFF;
-    key&=0xFF;
-    // if (mods & 0b0011) // shift
-      // chr = codetable_shifted[key];
-    // else if (ext)
-      // chr = codetable_extended[key];
-    // else if (mods & 0b1100) // ctrl
-      // chr = codetable[key] & 31;
-    // else
-      // chr = codetable[key];
-
-    // if (!chr) chr = '?';
-
-    /* add to buffer */
-    charbuf[charbufhead++] = key;
-  }
-}
-
 /**
-  * @brief  This function gets a character from keyboard buffer
-  * @param  None
-  * @retval char
+  * @brief  This function returns the requested keys state
+  * @param  SC, one of th SC_??? scan codes
+  * @retval TRUE or FALSE
   */
-char GetKey(void)
+uint8_t GetKeyState(uint16_t SC)
 {
-  char chr=0;
-  if (charbuftail!=charbufhead)
+  if (SC<0x100)
   {
-    chr=charbuf[charbuftail++];
+    return (keytab[SC>>4] & (uint16_t)(0x01<<(SC & 0x0F)))!=0;
   }
-  return chr;
+  else if (SC<0x200)
+  {
+    return (ext1keytab[(SC & 0xFF)>>4] & (uint16_t)(0x01<<(SC & 0x0F)))!=0;
+  }
+  else
+  {
+    return (ext2keytab[(SC & 0xFF)>>4] & (uint16_t)(0x01<<(SC & 0x0F)))!=0;
+  }
 }
-

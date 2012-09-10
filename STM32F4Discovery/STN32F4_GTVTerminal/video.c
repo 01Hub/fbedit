@@ -54,6 +54,7 @@ void DrawLargeString(uint16_t x, uint16_t y, char *str, uint8_t c);
 void DrawDec(uint16_t x, uint16_t y, uint16_t n, uint8_t c);
 void DrawLargeDec(uint16_t x, uint16_t y, uint16_t n, uint8_t c);
 void DrawHex(uint16_t x, uint16_t y, uint16_t n, uint8_t c);
+void DrawBin(uint16_t x, uint16_t y, uint16_t n, uint8_t c);
 void Rectangle(uint16_t x, uint16_t y, uint16_t b, uint16_t a, uint8_t c);
 void Circle(uint16_t cx, uint16_t cy, uint16_t radius, uint8_t c);
 void Line(uint16_t X1,uint16_t Y1,uint16_t X2,uint16_t Y2, uint8_t c);
@@ -443,7 +444,7 @@ void DrawLargeDec(uint16_t x, uint16_t y, uint16_t n, uint8_t c)
 }
 
 /**
-  * @brief  This function draws a hex value at x, y.
+  * @brief  This function draws a 16 bit hex value at x, y.
   * @param  x, y, n, c
   * @retval None
   */
@@ -457,6 +458,31 @@ void DrawHex(uint16_t x, uint16_t y, uint16_t n, uint8_t c)
 	hexstr[3] = hexchars[n & 0xF];
 	hexstr[4] = '\0';
   DrawString(x,y,hexstr,c);
+}
+
+/**
+  * @brief  This function draws a 16 bit binary value at x, y.
+  * @param  x, y, n, c
+  * @retval None
+  */
+void DrawBin(uint16_t x, uint16_t y, uint16_t n, uint8_t c)
+{
+  uint8_t i;
+  i=0;
+  while (i<16)
+  {
+    if (n & 0x8000)
+    {
+      DrawChar(x,y,0x31,1);
+    }
+    else
+    {
+      DrawChar(x,y,0x30,1);
+    }
+    x+=8;
+    n<<=1;
+    i++;
+  }
 }
 
 /**
@@ -1117,17 +1143,6 @@ void TIM5_IRQHandler(void)
   {
     DrawSprite(&Cursor);
   }
-//DrawHex(0,0,LineCount,1);
-  //PutKey();
-  /* Send a key to the control that has the keyboard focus */
-  // if (Focus)
-  // {
-    // key=GetKey();
-    // if (key)
-    // {
-      // SendEvent(Focus,EVENT_CHAR,key,Focus->ID);
-    // }
-  // }
   FrameCount++;
 }
 

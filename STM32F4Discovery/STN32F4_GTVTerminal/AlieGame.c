@@ -3,6 +3,7 @@
 #include "stm32f4_discovery.h"
 #include "video.h"
 #include "alien.h"
+#include "keycodes.h"
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
@@ -429,7 +430,7 @@ void AlienGameLoop(void)
       }
       if (DemoMode)
       {
-        GameOver=(GetKey()!=0) | GameOver;
+        GameOver=(GetKeyState(SC_SPACE)) | GameOver;
         /* Move shooter */
         if (slen)
         {
@@ -481,32 +482,39 @@ void AlienGameLoop(void)
       }
       else
       {
-        key=GetKey();
-        switch (key)
+        if (GetKeyState(SC_SPACE))
         {
-          case 0:
-            break;
-          case 0x20:
-            /* Shoot */
-            if (Shots<MAX_SHOTS)
+          /* Shoot */
+          if (Shots<MAX_SHOTS)
+          {
+            i=0;
+            while(i<MAX_SHOTS)
             {
-              i=0;
-              while(i<MAX_SHOTS)
+              if (!Shot[i].visible)
               {
-                if (!Shot[i].visible)
-                {
-                  Shot[i].x=Shooter.x+10;
-                  Shot[i].y=216;
-                  Shot[i].visible=1;
-                  Shots++;
-                  break;
-                }
-                i++;
+                Shot[i].x=Shooter.x+10;
+                Shot[i].y=216;
+                Shot[i].visible=1;
+                Shots++;
+                break;
               }
+              i++;
             }
-            break;
-          default:
-DrawHex(50,0,key,1);
+          }
+        }
+        if (GetKeyState(SC_L_ARROW) && !GetKeyState(SC_R_ARROW))
+        {
+          if (!(Shooter.collision & COLL_LEFT))
+          {
+            Shooter.x-=3;
+          }
+        }
+        else if (GetKeyState(SC_R_ARROW) && !GetKeyState(SC_L_ARROW))
+        {
+          if (!(Shooter.collision & COLL_RIGHT))
+          {
+            Shooter.x+=3;
+          }
         }
       }
       /* Check alien boundaries, there is no need to check collision */

@@ -10,6 +10,7 @@
 volatile int16_t i,x,y;
 extern volatile uint16_t FrameCount;// Frame counter
 extern volatile uint16_t keytab[16];
+extern volatile uint16_t ext1keytab[16];
 
 
 /* Private function prototypes -----------------------------------------------*/
@@ -27,26 +28,10 @@ void DebugKeyboard(void)
       i=0;
       while (i<16)
       {
-        DrawHex(0,i*10,keytab[i],1);
+        DrawBin(0,i*10,keytab[i],1);
+        DrawBin(18*8,i*10,ext1keytab[i],1);
         i++;
       }
     }
-
-    // chr=GetKey();
-    // if (chr)
-    // {
-      // DrawHex(x,y,chr,1);
-      // x+=TILE_WIDTH*5;
-      // if (x>440)
-      // {
-        // x=0;
-        // y+=TILE_HEIGHT;
-        // if (y>=SCREEN_HEIGHT)
-        // {
-          // Cls();
-          // y=0;
-        // }
-      // }
-    // }
   }
 }
