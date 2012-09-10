@@ -39,14 +39,6 @@ SPRITE Cursor;
 SPRITE* Sprites[MAX_SPRITES];
 WINDOW* Windows[MAX_WINDOWS];
 WINDOW* Focus;
-volatile uint16_t nKeys;
-
-/* circular buffer for keys */
-extern volatile uint8_t charbuf[256];
-extern volatile uint8_t charbufhead;
-extern volatile uint8_t charbuftail;
-
-extern volatile DemoMode;
 
 /* Private function prototypes -----------------------------------------------*/
 void SetCursor(uint8_t cur);
@@ -994,7 +986,7 @@ void TIM3_IRQHandler(void)
     DMA1_Stream4->CR &= ~((uint32_t)DMA_SxCR_EN);
     /* Reset interrupt pending bits for DMA1 Stream4 */
     DMA1->HIFCR = (uint32_t)(DMA_LISR_FEIF0 | DMA_LISR_DMEIF0 | DMA_LISR_TEIF0 | DMA_LISR_HTIF0 | DMA_LISR_TCIF0 | (uint32_t)0x20000000);
-    DMA1_Stream4->NDTR = (uint16_t)SCREEN_WIDTH/2;
+    DMA1_Stream4->NDTR = (uint16_t)SCREEN_WIDTH/2-1;
     DMA1_Stream4->PAR = (uint32_t) & (SPI2->DR);
     DMA1_Stream4->M0AR = (uint32_t) & (WorkBuff[LineCount]);
   }
@@ -1060,7 +1052,6 @@ void TIM4_IRQHandler(void)
 void TIM5_IRQHandler(void)
 {
   uint32_t *pd,*ps,i,pos,coll;
-  char key;
 
   /* Disable TIM5 */
   TIM5->CR1=0;
@@ -1126,16 +1117,17 @@ void TIM5_IRQHandler(void)
   {
     DrawSprite(&Cursor);
   }
-DrawHex(0,0,LineCount,1);
+//DrawHex(0,0,LineCount,1);
+  //PutKey();
   /* Send a key to the control that has the keyboard focus */
-  if (Focus)
-  {
-    key=GetKey();
-    if (key)
-    {
-      SendEvent(Focus,EVENT_CHAR,key,Focus->ID);
-    }
-  }
+  // if (Focus)
+  // {
+    // key=GetKey();
+    // if (key)
+    // {
+      // SendEvent(Focus,EVENT_CHAR,key,Focus->ID);
+    // }
+  // }
   FrameCount++;
 }
 

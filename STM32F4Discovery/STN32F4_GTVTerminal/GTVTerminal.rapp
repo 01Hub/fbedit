@@ -1,5 +1,5 @@
 
-<ApplicationBuild Header="GTVTerminal" Extern=".\GTVTerminal.rapp" Path=".\GTVTerminal.rapp" AsyncBuild="" OutputFile=".\GTVTerminal.elf" sate="32" >
+<ApplicationBuild Header="GTVTerminal" Extern=".\GTVTerminal.rapp" Path=".\GTVTerminal.rapp" AsyncBuild="" OutputFile=".\GTVTerminal.elf" sate="96" >
 	<NodeC Path=".\main.c" Header="main.c" Marker="-1" AsyncBuild="" OutputFile=".\main.o" sate="0" />
 	<NodeC Path=".\AlieGame.c" Header="AlieGame.c" Marker="-1" AsyncBuild="" OutputFile=".\AlieGame.o" sate="0" />
 	<NodeC Path=".\video.c" Header="video.c" Marker="-1" AsyncBuild="" OutputFile=".\video.o" sate="0" />
@@ -33,7 +33,7 @@
 	<NodeC Path=".\stm32f4xx_spi.c" Header="stm32f4xx_spi.c" Marker="-1" AsyncBuild="" OutputFile=".\stm32f4xx_spi.o" sate="0" />
 	<NodeC Path=".\stm32f4xx_syscfg.c" Header="stm32f4xx_syscfg.c" Marker="-1" AsyncBuild="" OutputFile=".\stm32f4xx_syscfg.o" sate="0" />
 	<NodeC Path=".\stm32f4xx_tim.c" Header="stm32f4xx_tim.c" Marker="-1" AsyncBuild="" OutputFile=".\stm32f4xx_tim.o" sate="0" />
-	<NodeC Path=".\stm32f4xx_usart.c" Header="stm32f4xx_usart.c" Marker="-1" AsyncBuild="" OutputFile=".\stm32f4xx_usart.o" sate="0" />
+	<NodeC Path=".\stm32f4xx_usart.c" Header="stm32f4xx_usart.c" Marker="-1" AsyncBuild="" OutputFile=".\stm32f4xx_usart.o" sate="2" />
 	<NodeC Path=".\system_stm32f4xx.c" Header="system_stm32f4xx.c" Marker="-1" AsyncBuild="" OutputFile=".\system_stm32f4xx.o" sate="0" />
 	<Options>
 		<Config Header="Standard" >
@@ -82,5 +82,5 @@
 												
 	</Options>
 	<NodeH Path=".\Alien.h" Header="Alien.h" Marker="-1" AsyncBuild="" OutputFile="" sate="0" />
-	<NodeC Path=".\Debug.c" Header="Debug.c" Marker="-1" AsyncBuild="" OutputFile=".\Debug.o" />
+	<NodeC Path=".\Debug.c" Header="Debug.c" Marker="-1" AsyncBuild="" OutputFile=".\Debug.o" sate="0" />
 </ApplicationBuild>

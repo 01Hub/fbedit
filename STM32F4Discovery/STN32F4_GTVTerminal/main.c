@@ -57,16 +57,6 @@
 
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
-extern volatile uint16_t FrameCount;
-
-extern uint8_t rs232buf[256];
-extern uint8_t rs232buftail;
-extern uint8_t rs232bufhead;
-
-extern uint8_t charbuf[256];
-extern uint8_t charbuftail;
-extern uint8_t charbufhead;
-
 /* Private function prototypes -----------------------------------------------*/
 void RCC_Config(void);
 void NVIC_Config(void);
@@ -98,8 +88,9 @@ void main(void)
 
   while (1)
   {
-    AlienGameSetup();
-    AlienGameLoop();
+    DebugKeyboard();
+    // AlienGameSetup();
+    // AlienGameLoop();
   }
 }
 
@@ -160,7 +151,7 @@ void NVIC_Config(void)
   NVIC_Init(&NVIC_InitStructure);
   /* Enable and set EXTI Line2 Interrupt to the lowest priority */
   NVIC_InitStructure.NVIC_IRQChannel = EXTI2_IRQn;
-  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 2;
+  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 3;
   NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
   NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
   NVIC_Init(&NVIC_InitStructure);
@@ -214,7 +205,7 @@ void GPIO_Config(void)
   /* Configure EXTI Line0 */
   EXTI_InitStructure.EXTI_Line = EXTI_Line0;
   EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
-  EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Falling;  
+  EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Rising;  
   EXTI_InitStructure.EXTI_LineCmd = ENABLE;
   EXTI_Init(&EXTI_InitStructure);
 

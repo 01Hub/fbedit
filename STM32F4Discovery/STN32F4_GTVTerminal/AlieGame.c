@@ -9,32 +9,32 @@
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 
-extern volatile uint16_t FrameCount;
+extern volatile uint16_t FrameCount;// Frame counter
 
-volatile int8_t Shooters;       // Number of spare shooters
-volatile uint8_t Bombs;         // Number of active bombs
-volatile uint8_t Aliens;        // Number of active aliens
-volatile uint8_t Shots;         // Number of active shots
-volatile DemoMode=1;            // Demo mode flag
-volatile GameOver;              // Game over flag
+volatile int8_t Shooters;           // Number of spare shooters
+volatile uint8_t Bombs;             // Number of active bombs
+volatile uint8_t Aliens;            // Number of active aliens
+volatile uint8_t Shots;             // Number of active shots
+volatile DemoMode=1;                // Demo mode flag
+volatile GameOver;                  // Game over flag
 
-RECT AlienBound;
-extern SPRITE* Sprites[];       // Max 64 sprites
-extern WINDOW* Windows[];       // Max 4 windows
-extern WINDOW* Focus;
-SPRITE Alien[32];
-SPRITE Shooter;
-SPRITE Bomb[8];
-SPRITE Shot[4];
+RECT AlienBound;                    // Game bounds
+extern SPRITE* Sprites[];           // Max 64 sprites
+extern WINDOW* Windows[];           // Max 4 windows
+extern WINDOW* Focus;               // The windpw that has the keyboard focus
+SPRITE Alien[MAX_ALIEN];            // Alien sprites
+SPRITE Shooter;                     // Shooter sprite
+SPRITE Bomb[MAX_BOMBS];             // Bomb sprites
+SPRITE Shot[MAX_SHOTS];             // Shot sprites
 
-ICON Shield;
-volatile uint32_t RNDSeed;
-WINDOW MsgBox;
-WINDOW Static1;
-WINDOW Button1;
+ICON Shield;                        // Shield icon
+volatile uint32_t RNDSeed;          // Random seed
+WINDOW MsgBox;                      // Message box window
+WINDOW Static1;                     // Static control
+WINDOW Button1;                     // Button control
 
 /* Private function prototypes -----------------------------------------------*/
-uint32_t Random(uint32_t Range);
+uint32_t Random(uint32_t Range);    // Random generator
 
 /* Private functions ---------------------------------------------------------*/
 

@@ -1,36 +1,6 @@
 
-/*******************************************************************************
-* Keyboard connector 5 pin female DIN
-*        2
-*        o
-*   4 o    o 5
-*   1 o    o 3
-* 
-* Pin 1   CLK     Clock signal
-* Pin 2   DATA    Data
-* Pin 3   N/C     Not connected. Reset on older keyboards
-* Pin 4   GND     Ground
-* Pin 5   VCC     +5V DC
-*******************************************************************************/
-
-/*******************************************************************************
-* Keyboard connector 6 pin female mini DIN
-*
-*   5 o    o 6
-*   3 o    o 4
-*    1 o o 2 
-*
-* Pin 1   DATA    Data
-* Pin 2   N/C     Not connected.
-* Pin 3   GND     Ground
-* Pin 4   VCC     +5V DC
-* Pin 5   CLK     Clock signal
-* Pin 6   N/C     Not connected.
-*******************************************************************************/
-
 #include "stm32f4_discovery.h"
 #include "keycodes.h"
-#include "video.h"
 
 #define ESC K_ESC
 #define CLK K_CAPSLK
@@ -62,9 +32,6 @@
 #define BRK K_BREAK
 #define _BV(bit) (1 << (bit))  //Useful macro to ease the transition from using avrlibc.
 
-/* Private function prototypes -----------------------------------------------*/
-void decode(uint8_t scancode);
-
 //Keyboard lookup tables
 __attribute__((section("FLASH"))) const char codetable[] = {
 	//   1    2    3    4    5    6    7    8    9    A    B    C    D    E    F
@@ -73,7 +40,7 @@ __attribute__((section("FLASH"))) const char codetable[] = {
 	0,   'c', 'x', 'd', 'e', '4', '3', 0,   0,   ' ', 'v', 'f', 't', 'r', '5', 0,
 	0,   'n', 'b', 'h', 'g', 'y', '6', 0,   0,   0,   'm', 'j', 'u', '7', '8', 0,
 	0,   ',', 'k', 'i', 'o', '0', '9', 0,   0,   '.', '/', 'l', ';', 'p', '-', 0,
-	0,   0,   '\'',0,   '[', '=', 0,   0,   CLK, 0,   '\r',']', 0,   '\\',0,   0,
+	0,   0,   '\'',0,   '[', '=', 0,   0,   CLK, 0,   '\n',']', 0,   '\\',0,   0,
 	0,   0,   0,   0,   0,   0,   '\b',0,   0,   '1', 0,   '4', '7', 0,   0,   0,
 	'0', '.', '2', '5', '6', '8', ESC,  NLK, F11, '+', '3', '-', '*', '9', SLK, 0,
 	0,   0,   0,   F7
@@ -86,7 +53,7 @@ __attribute__((section("FLASH"))) const char codetable_shifted[] = {
 	0,   'C', 'X', 'D', 'E', '$', '#', 0,   0,   ' ', 'V', 'F', 'T', 'R', '%', 0,
 	0,   'N', 'B', 'H', 'G', 'Y', '^', 0,   0,   0,   'M', 'J', 'U', '&', '*', 0,
 	0,   '<', 'K', 'I', 'O', ')', '(', 0,   0,   '>', '?', 'L', ':', 'P', '_', 0,
-	0,   0,   '"', 0,   '{', '+', 0,   0,   CLK, 0,   '\r','}', 0,   '|', 0,   0,
+	0,   0,   '"', 0,   '{', '+', 0,   0,   CLK, 0,   '\n','}', 0,   '|', 0,   0,
 	0,   0,   0,   0,   0,   0,   '\b',0,   0,   '1', 0,   '4', '7', 0,   0,   0,
 	'0', '.', '2', '5', '6', '8', ESC, NLK, F11, '+', '3', '-', '*', '9', SLK, 0,
 	0,   0,   0,   F7
@@ -101,116 +68,21 @@ __attribute__((section("FLASH"))) const char codetable_extended[] = {
 	0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
 	0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
 	0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   '/', 0,   0,   0,   0,   0,
-	0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   '\r',0,   0,   0,   0,   0,
+	0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   '\n',0,   0,   0,   0,   0,
 	0,   0,   0,   0,   0,   0,   0,   0,   0,   END, 0,   ARL, HOM, 0,   0,   0,
 	INS, DEL, ARD, '5', ARR, ARU, 0,   BRK, 0,   0,   PGD, 0,   PRS, PGU, 0,   0,
 	0,   0,   0,   0
 };
 
-/* keyboard init */
-static uint8_t keyup = 0;
-static uint8_t extended = 0;
-static uint8_t mods = 0;
+char GetKey(void);
+void PutKey(void);
+
 /* circular buffer for keys */
-volatile uint8_t charbuf[256];
+uint8_t charbuf[256];
 volatile uint8_t charbufhead = 0;
 volatile uint8_t charbuftail = 0;
-
-volatile uint8_t tmpscancode;
-volatile uint8_t scancode;
-volatile uint8_t kbitcount = 11;
-
-/**
-  * @brief  This function gets a character from keyboard buffer
-  * @param  None
-  * @retval char
-  */
-char GetKey()
-{
-  if (charbuftail!=charbufhead)
-  {
-    return charbuf[charbuftail++];
-  }
-  return 0;
-}
-
-/**
-  * @brief  This function decodes PS/2 keycodes
-  * @param  scancode
-  * @retval None
-  */
-void decode(uint8_t scancode)
-{
-	if (scancode == 0xF0)
-  {
-		keyup = 1;
-  }
-	else if (scancode == 0xE0 || scancode == 0xE1)
-  {
-		extended = 1;
-  }
-	else
-	{
-		if (keyup) // handling a key release; don't do anything
-		{
-			if (scancode == 0x12) // left shift
-        {
-          mods &= ~_BV(0);
-        }
-			else if (scancode == 0x59) // right shift
-        {
-          mods &= ~_BV(1);
-        }
-			else if (scancode == 0x14) // left/right ctrl
-        {
-          mods &= (extended) ? ~_BV(3) : ~_BV(2);
-        }
-		}
-		else // handling a key press; store character
-		{
-			if (scancode == 0x12) // left shift
-      {
-				mods |= _BV(0);
-      }
-			else if (scancode == 0x59) // right shift
-      {
-				mods |= _BV(1);
-      }
-			else if (scancode == 0x14) // left/right ctrl
-      {
-				mods |= (extended) ? _BV(3) : _BV(2);
-      }
-			else if (scancode <= 0x83)
-			{
-				u8 chr;
-				if (extended)
-        {
-					chr = codetable_extended[scancode];
-        }
-				else if (mods & 0b1100) // ctrl
-        {
-					chr = codetable[scancode] & 31;
-        }
-				else if (mods & 0b0011) // shift
-        {
-					chr = codetable_shifted[scancode];
-        }
-				else
-        {
-					chr = codetable[scancode];
-          if (!chr)
-          {
-            chr = '?';
-          }
-          /* add to buffer */
-          charbuf[charbufhead++] = chr;
-        }
-      }
-		}
-		extended = 0;
-		keyup = 0;
-	}
-}
+volatile uint32_t kkey;
+volatile uint16_t keytab[16];
 
 /**
   * @brief  This function handles EXTI0_IRQHandler interrupt request.
@@ -220,23 +92,82 @@ void decode(uint8_t scancode)
   */
 void EXTI0_IRQHandler(void)
 {
-  /* Clear the EXTI line 0 pending bit */
-  EXTI_ClearITPendingBit(EXTI_Line0);
-  STM_EVAL_LEDToggle(LED4);
+  static uint16_t scancode = 0x0800;
+  static uint16_t keyup;
 
-	/* figure out what the keyboard is sending us */
-	--kbitcount;
-	if (kbitcount >= 2 && kbitcount <= 9)
+  /* Clear the EXTI line 0 pending bit */
+  EXTI->PR = EXTI_Line0;
+
+  scancode >>= 1;
+	if (GPIOB->IDR & GPIO_Pin_1)
+  {
+    scancode |= 0x0400;
+  }
+  if (scancode & 0x0001)
 	{
-		tmpscancode >>= 1;
-		if (GPIOB->IDR & GPIO_Pin_1)
-			tmpscancode |= 0x80;
+    scancode=(scancode>>1) & 0xFF;
+    if (scancode==0xF0)
+    {
+      keyup=1;
+    }
+    else
+    {
+      if (keyup)
+      {
+        keytab[scancode>>4] &= ~(0x01<<(scancode & 0x0F));
+        keyup=0;
+      }
+      else
+      {
+        keytab[scancode>>4] |= (uint16_t)(0x01<<(scancode & 0x0F));
+      }
+    }
+    scancode=0x0800;
 	}
-	else if (kbitcount == 0)
-	{
-    scancode=tmpscancode;
-		kbitcount = 11;
-    decode(scancode);
-	}
+}
+
+void PutKey(void)
+{
+  static uint32_t key;
+  static uint8_t mods;
+  static uint8_t ext;
+  u8 chr;
+
+  if (kkey)
+  {
+    key=kkey;
+    kkey=0;
+    mods=(key>>8) & 0xFF;
+    ext=(key>>16) & 0xFF;
+    key&=0xFF;
+    // if (mods & 0b0011) // shift
+      // chr = codetable_shifted[key];
+    // else if (ext)
+      // chr = codetable_extended[key];
+    // else if (mods & 0b1100) // ctrl
+      // chr = codetable[key] & 31;
+    // else
+      // chr = codetable[key];
+
+    // if (!chr) chr = '?';
+
+    /* add to buffer */
+    charbuf[charbufhead++] = key;
+  }
+}
+
+/**
+  * @brief  This function gets a character from keyboard buffer
+  * @param  None
+  * @retval char
+  */
+char GetKey(void)
+{
+  char chr=0;
+  if (charbuftail!=charbufhead)
+  {
+    chr=charbuf[charbuftail++];
+  }
+  return chr;
 }
 
