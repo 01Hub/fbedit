@@ -42,10 +42,10 @@
 /* Private typedef -----------------------------------------------------------*/
 typedef struct
 {
-  int16_t left;
-  int16_t top;
-  int16_t right;
-  int16_t bottom;
+  uint16_t left;
+  uint16_t top;
+  uint16_t right;
+  uint16_t bottom;
 } RECT;
 
 typedef struct
@@ -57,8 +57,8 @@ typedef struct
 
 typedef struct
 {
-  int16_t x;
-  int16_t y;
+  uint16_t x;
+  uint16_t y;
   uint8_t visible;
   uint8_t collision;
   RECT* boundary;
@@ -72,10 +72,10 @@ typedef struct
   void* owner;
   uint8_t winclass;
   uint8_t ID;
-  int16_t x;
-  int16_t y;
-  int16_t wt;
-  int16_t ht;
+  uint16_t x;
+  uint16_t y;
+  uint16_t wt;
+  uint16_t ht;
   uint8_t state;
   uint8_t caplen;
   char *caption;
