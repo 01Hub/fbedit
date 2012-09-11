@@ -271,6 +271,6 @@ PAUSE             E1,14,77,E1,F0,14,F0,77        - NONE -
 #define SC_R_ARROW           0x174
 #define SC_U_ARROW           0x175
 #define SC_PG_DN             0x17A
+#define SC_PRNTSCRN          0x17C
 #define SC_PG_UP             0x17D
-// #define SC_PRNTSCRN          0xE0,12,E0,7C
 // #define SC_PAUSE             0xE1,14,77,E1,F0,14,F0,77

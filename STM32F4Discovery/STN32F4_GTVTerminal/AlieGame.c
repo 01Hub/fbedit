@@ -16,6 +16,7 @@ volatile int8_t Shooters;           // Number of spare shooters
 volatile uint8_t Bombs;             // Number of active bombs
 volatile uint8_t Aliens;            // Number of active aliens
 volatile uint8_t Shots;             // Number of active shots
+volatile uint8_t ShootWait;         // Number of frames between shots
 volatile DemoMode=1;                // Demo mode flag
 volatile GameOver;                  // Game over flag
 
@@ -52,43 +53,38 @@ uint32_t Random(uint32_t Range)
   return rnd;
 }
 
-void MsgBoxHandler(WINDOW* hwin,uint8_t event,uint16_t param,uint8_t ID)
-{
-  switch (event)
-  {
-    case EVENT_CHAR:
-      if ((param & 0xFF)==13)
-      {
-        DemoMode=0;
-      }
-      break;
-    default:
-      DefWindowHandler(hwin,event,param,ID);
-  }
-}
+// void MsgBoxHandler(WINDOW* hwin,uint8_t event,uint16_t param,uint8_t ID)
+// {
+  // switch (event)
+  // {
+    // case EVENT_CHAR:
+      // if ((param & 0xFF)==13)
+      // {
+        // DemoMode=0;
+      // }
+      // break;
+    // default:
+      // DefWindowHandler(hwin,event,param,ID);
+  // }
+// }
 
 void AlienGameSetup(void)
 {
-  int16_t i;
+  int16_t i,j,wtshield;
 
   Focus=0;
   Bombs=0;
-  Aliens=32;
+  Aliens=MAX_ALIEN;
   Shots=0;
   GameOver=0;
   i=0;
-  while (i<MAX_WINDOWS)
-  {
-    Windows[i]=0;
-    i++;
-  }
   Cls();
   /* Draw game frame */
-  Rectangle(0,0,480,250,1);
+  Rectangle(0,0,SCREEN_WIDTH,SCREEN_HEIGHT,1);
   AlienBound.left=10;
   AlienBound.top=26;
-  AlienBound.right=469;
-  AlienBound.bottom=239;
+  AlienBound.right=SCREEN_WIDTH-11;
+  AlienBound.bottom=SCREEN_HEIGHT-11;
   i=0;
   /* Setup bomb sprites */
   while (i<MAX_BOMBS)
@@ -105,26 +101,31 @@ void AlienGameSetup(void)
     i++;
   }
   /* Setup alien sprites */
-  i=0;
-  while (i<MAX_ALIEN)
+  j=0;
+  while (j<ALIEN_ROWS)
   {
-    Alien[i].icon.wt=16;
-    Alien[i].icon.ht=16;
-    if (i & 1)
+    i=0;
+    while (i<ALIEN_COLS)
     {
-      Alien[i].icon.icondata=*Alien2Icon;
+      Alien[j*ALIEN_COLS+i].icon.wt=16;
+      Alien[j*ALIEN_COLS+i].icon.ht=16;
+      if (i & 1)
+      {
+        Alien[j*ALIEN_COLS+i].icon.icondata=*Alien2Icon;
+      }
+      else
+      {
+        Alien[j*ALIEN_COLS+i].icon.icondata=*Alien1Icon;
+      }
+      Alien[j*ALIEN_COLS+i].x=i*25+10;
+      Alien[j*ALIEN_COLS+i].y=j*20+30;
+      Alien[j*ALIEN_COLS+i].collision=0;
+      Alien[j*ALIEN_COLS+i].boundary=&AlienBound;
+      Alien[j*ALIEN_COLS+i].visible=1;
+      Sprites[j*ALIEN_COLS+i+MAX_BOMBS]=&Alien[j*ALIEN_COLS+i];
+      i++;
     }
-    else
-    {
-      Alien[i].icon.icondata=*Alien1Icon;
-    }
-    Alien[i].x=(i & 7)*25+10;
-    Alien[i].y=(i>>3)*20+30;
-    Alien[i].collision=0;
-    Alien[i].boundary=&AlienBound;
-    Alien[i].visible=1;
-    Sprites[i+MAX_BOMBS]=&Alien[i];
-    i++;
+    j++;
   }
   /* Setup shot sprites */
   i=0;
@@ -153,8 +154,8 @@ void AlienGameSetup(void)
   Sprites[MAX_BOMBS+MAX_ALIEN+MAX_SHOTS]=&Shooter;
   /* Setup cursor */
   SetCursor(0);
-  MoveCursor(240,125);
-  ShowCursor(1);
+  MoveCursor(SCREEN_WIDTH/2,SCREEN_HEIGHT/2);
+  ShowCursor(0);
   /* Draw spare shooters */
   Shooters=MAX_SHOOTERS;
   i=0;
@@ -168,11 +169,12 @@ void AlienGameSetup(void)
   Shield.ht=16;
   Shield.icondata=*ShieldIcon;
   /* Draw shields */
+  wtshield=SCREEN_WIDTH/(MAX_SHIELDS+1);
   i=0;
   while (i<MAX_SHIELDS)
   {
-    DrawIcon(i*125+40,SHIELD_TOP,&Shield,1);
     i++;
+    DrawIcon(i*wtshield-36/2,SHIELD_TOP,&Shield,1);
   }
   /* Setup the message box */
   Static1.hwin=&Static1;
@@ -180,7 +182,7 @@ void AlienGameSetup(void)
   Static1.winclass=CLASS_STATIC;
   Static1.ID=1;
   Static1.x=4;
-  Static1.y=20;
+  Static1.y=15;
   Static1.wt=130-8;
   Static1.ht=20;
   Static1.state=STATE_VISIBLE;
@@ -207,7 +209,7 @@ void AlienGameSetup(void)
   MsgBox.owner=0;
   MsgBox.winclass=CLASS_WINDOW;
   MsgBox.ID=0;
-  MsgBox.x=(SCREEN_WIDTH-4)*8/2-130/2;
+  MsgBox.x=SCREEN_WIDTH/2-130/2;
   MsgBox.y=SCREEN_HEIGHT/2-64/2;
   MsgBox.wt=130;
   MsgBox.ht=64;
@@ -216,7 +218,7 @@ void AlienGameSetup(void)
   MsgBox.caption="Alien";
   MsgBox.control[0]=&Button1;
   MsgBox.control[1]=&Static1;
-  MsgBox.handler=(void*)&MsgBoxHandler;
+  MsgBox.handler=(void*)&DefWindowHandler;// &MsgBoxHandler;
   Windows[0]=&MsgBox;
   SendEvent(MsgBox.hwin,EVENT_SHOW,STATE_HIDDEN,0);
 }
@@ -232,7 +234,7 @@ void AlienGameLoop(void)
   sdir=3;
   slen=20;
   Points=0;
-  DrawLargeDec(480-10-16*5,3,Points,1);
+  DrawLargeDec(SCREEN_WIDTH-10-16*5,3,Points,1);
   while (!GameOver)
   {
     /* Syncronize with frame count */
@@ -272,7 +274,7 @@ void AlienGameLoop(void)
                   Alien[j].visible=0;
                   Aliens--;
                   Points+=5;
-                  DrawLargeDec(480-10-16*5,3,Points,1);
+                  DrawLargeDec(SCREEN_WIDTH-10-16*5,3,Points,1);
                   break;
                 }
               }
@@ -286,6 +288,14 @@ void AlienGameLoop(void)
           Shot[i].visible=0;
           Shots--;
           /* Make some damage to the shield */
+          SetPixel(Shot[i].x-3,Shot[i].y+1,0);
+          SetPixel(Shot[i].x-2,Shot[i].y+1,0);
+          SetPixel(Shot[i].x-1,Shot[i].y+1,0);
+          SetPixel(Shot[i].x,Shot[i].y+1,0);
+          SetPixel(Shot[i].x+1,Shot[i].y+1,0);
+          SetPixel(Shot[i].x+2,Shot[i].y+1,0);
+          SetPixel(Shot[i].x+3,Shot[i].y+1,0);
+
           SetPixel(Shot[i].x-3,Shot[i].y,0);
           SetPixel(Shot[i].x-2,Shot[i].y,0);
           SetPixel(Shot[i].x-1,Shot[i].y,0);
@@ -312,15 +322,21 @@ void AlienGameLoop(void)
       /* Setup new alien army */
       if (!Aliens)
       {
-        i=0;
-        while (i<32)
+        j=0;
+        while (j<ALIEN_ROWS)
         {
-          Alien[i].x=(i & 7)*25+10;
-          Alien[i].y=(i>>3)*20+30;
-          Alien[i].visible=1;
-          i++;
+          i=0;
+          while (i<ALIEN_COLS)
+          {
+            Alien[j*ALIEN_COLS+i].x=i*25+10;
+            Alien[j*ALIEN_COLS+i].y=j*20+30;
+            Alien[j*ALIEN_COLS+i].collision=0;
+            Alien[j*ALIEN_COLS+i].visible=1;
+            i++;
+          }
+          j++;
         }
-        Aliens=32;
+        Aliens=MAX_ALIEN;
       }
       /* Check bomb boundary and background collision */
       i=0;
@@ -375,11 +391,14 @@ void AlienGameLoop(void)
       /* Drop a bomb */
       if (Bombs<MAX_BOMBS)
       {
-        rnd=Random(31);
+        rnd=Random(MAX_ALIEN-1);
         while (!Alien[rnd].visible)
         {
           rnd++;
-          rnd&=31;
+          if (rnd==MAX_ALIEN)
+          {
+            rnd=0;
+          }
         }
         /* Find what bomb sprite to use */
         i=0;
@@ -482,26 +501,36 @@ void AlienGameLoop(void)
       }
       else
       {
-        if (GetKeyState(SC_SPACE))
+        /* Shoot */
+        if (ShootWait)
         {
-          /* Shoot */
-          if (Shots<MAX_SHOTS)
+          ShootWait--;
+        }
+        else
+        {
+          if (GetKeyState(SC_SPACE))
           {
-            i=0;
-            while(i<MAX_SHOTS)
+            /* Shoot */
+            if (Shots<MAX_SHOTS)
             {
-              if (!Shot[i].visible)
+              i=0;
+              while(i<MAX_SHOTS)
               {
-                Shot[i].x=Shooter.x+10;
-                Shot[i].y=216;
-                Shot[i].visible=1;
-                Shots++;
-                break;
+                if (!Shot[i].visible)
+                {
+                  Shot[i].x=Shooter.x+10;
+                  Shot[i].y=216;
+                  Shot[i].visible=1;
+                  Shots++;
+                  ShootWait=SHOOT_WAIT;
+                  break;
+                }
+                i++;
               }
-              i++;
             }
           }
         }
+        /* Move shooter */
         if (GetKeyState(SC_L_ARROW) && !GetKeyState(SC_R_ARROW))
         {
           if (!(Shooter.collision & COLL_LEFT))
@@ -583,8 +612,50 @@ void AlienGameLoop(void)
   }
   SendEvent(MsgBox.hwin,EVENT_SHOW,STATE_VISIBLE,0);
   SendEvent(Button1.hwin,EVENT_GOTFOCUS,0,0);
+  ShowCursor(1);
   DemoMode=1;
   /* Wait 1000 frames */
-  fc=FrameCount+1000;
-  while (fc!=FrameCount && DemoMode);
+  i=1000;
+  while (i && DemoMode)
+  {
+    if (fc!=FrameCount)
+    {
+      fc=FrameCount;
+      if (FrameCount==(FrameCount/25)*25)
+      {
+        STM_EVAL_LEDToggle(LED3);
+        rnd=Random(0xFF);
+      }
+      i--;
+      if (GetKeyState(SC_ENTER))
+      {
+        DemoMode=0;
+      }
+    }
+  }
+  SendEvent(MsgBox.hwin,EVENT_SHOW,STATE_HIDDEN,0);
+  ShowCursor(0);
+  /* Remove aliens */
+  i=0;
+  while (i<MAX_ALIEN)
+  {
+    Alien[i].visible=0;
+    i++;
+  }
+  /* Remove shooter */
+  Shooter.visible=0;
+  i=0;
+  while (i<MAX_WINDOWS)
+  {
+    Windows[i]=0;
+    i++;
+  }
+  i=0;
+  while (i<MAX_SPRITES)
+  {
+    Sprites[i]=0;
+    i++;
+  }
+  /* Clear screen */
+  Cls();
 }

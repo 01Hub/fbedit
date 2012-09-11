@@ -80,8 +80,9 @@ volatile uint8_t charbufhead = 0;
 volatile uint8_t charbuftail = 0;
 /* Key state tables */
 volatile uint16_t keytab[16];
-volatile uint16_t ext1keytab[16];
-volatile uint16_t ext2keytab[16];
+volatile uint16_t extkeytab[16];
+/* Pause flag */
+volatile uint8_t Pause;
 
 /**
   * @brief  This function handles EXTI0_IRQHandler interrupt request.
@@ -93,6 +94,7 @@ void EXTI0_IRQHandler(void)
 {
   static uint16_t scancode = 0x0800;
   static uint16_t keyflag;
+  uint16_t tmp;
 
   /* Clear the EXTI line 0 pending bit */
   EXTI->PR = EXTI_Line0;
@@ -104,58 +106,62 @@ void EXTI0_IRQHandler(void)
   }
   if (scancode & 0x0001)
 	{
-    scancode=(scancode>>1) & 0xFF;
-    if (scancode==0xF0)
+    scancode = (scancode >> 1) & 0xFF;
+    if (scancode == 0xF0)
     {
-      keyflag|=1;
+      /* Key up */
+      keyflag |= 1;
     }
-    else if (scancode==0xE0)
+    else if (scancode == 0xE0)
     {
-      keyflag|=2;
+      /* Extended */
+      keyflag |= 2;
     }
-    else if (scancode==0xE1)
+    else if (scancode == 0xE1)
     {
-      keyflag|=4;
-    }
-    else if (keyflag & 4)
-    {
-      if (keyflag & 1)
-      {
-        ext2keytab[scancode>>4] &= ~(0x01<<(scancode & 0x0F));
-        keyflag&=~1;
-      }
-      else
-      {
-        ext1keytab[scancode>>4] |= (uint16_t)(0x01<<(scancode & 0x0F));
-      }
-      keyflag&=~4;
-    }
-    else if (keyflag & 2)
-    {
-      if (keyflag & 1)
-      {
-        ext1keytab[scancode>>4] &= ~(0x01<<(scancode & 0x0F));
-        keyflag&=~1;
-      }
-      else
-      {
-        ext1keytab[scancode>>4] |= (uint16_t)(0x01<<(scancode & 0x0F));
-      }
-      keyflag&=~2;
+      /* Extended2 */
+      keyflag |= 4;
     }
     else
     {
-      if (keyflag & 1)
+      if (keyflag & 4)
       {
-        keytab[scancode>>4] &= ~(0x01<<(scancode & 0x0F));
-        keyflag&=~1;
+        if (keyflag=5 && scancode == 0x77)
+        {
+          keyflag = 0;
+          Pause ^=1;
+        }
+      }
+      else if (keyflag & 2)
+      {
+        tmp = extkeytab[scancode>>4];
+        if (keyflag & 1)
+        {
+          tmp ^= (0x01<<(scancode & 0x0F));
+        }
+        else
+        {
+          tmp |= (uint16_t)(0x01<<(scancode & 0x0F));
+        }
+        extkeytab[scancode>>4] = tmp;
+        keyflag = 0;
       }
       else
       {
-        keytab[scancode>>4] |= (uint16_t)(0x01<<(scancode & 0x0F));
+        tmp = keytab[scancode>>4];
+        if (keyflag & 1)
+        {
+          tmp ^= (0x01<<(scancode & 0x0F));
+        }
+        else
+        {
+          tmp |= (uint16_t)(0x01<<(scancode & 0x0F));
+        }
+        keytab[scancode>>4] = tmp;
+        keyflag = 0;
       }
     }
-    scancode=0x0800;
+    scancode = 0x0800;
 	}
 }
 
@@ -166,16 +172,12 @@ void EXTI0_IRQHandler(void)
   */
 uint8_t GetKeyState(uint16_t SC)
 {
-  if (SC<0x100)
+  if (SC < 0x100)
   {
-    return (keytab[SC>>4] & (uint16_t)(0x01<<(SC & 0x0F)))!=0;
-  }
-  else if (SC<0x200)
-  {
-    return (ext1keytab[(SC & 0xFF)>>4] & (uint16_t)(0x01<<(SC & 0x0F)))!=0;
+    return (keytab[SC >> 4] & (uint16_t)(0x01 << (SC & 0x0F))) != 0;
   }
   else
   {
-    return (ext2keytab[(SC & 0xFF)>>4] & (uint16_t)(0x01<<(SC & 0x0F)))!=0;
+    return (extkeytab[(SC & 0xFF) >> 4] & (uint16_t)(0x01 << (SC & 0x0F))) != 0;
   }
 }

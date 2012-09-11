@@ -2,7 +2,10 @@
 /* Private define ------------------------------------------------------------*/
 #define SPI_DR              0x4001300C
 
-#define SCREEN_WIDTH        64    // 60*8=480 pixels on each line.
+#define SCREEN_BUFFWIDTH    64    // Number of bytes on each buffer line.
+#define SCREEN_BUFFHEIGHT   250   // Screen buffers are 64*250 bytes.
+
+#define SCREEN_WIDTH        480   // 480 pixels on each line.
 #define TOP_MARGIN          30    // Number of lines before video signal starts
 #define SCREEN_HEIGHT       250   // 250 lines.
 #define BOTTOM_MARGIN       23    // Number of lines after video signal ends
@@ -27,17 +30,10 @@
 #define CLASS_BUTTON        2
 #define CLASS_STATIC        3
 
-#define EVENT_KEYDOWN       1
-#define EVENT_KEYUP         2
-#define EVENT_CHAR          3
-#define EVENT_MOUSMOVE      4
-#define EVENT_LBUTTOMDOWN   5
-#define EVENT_LBUTTONUP     6
-#define EVENT_PAINT         7
-#define EVENT_SHOW          8
-#define EVENT_BTNCLICK      9
-#define EVENT_GOTFOCUS      10
-#define EVENT_LOSTFOCUS     11
+#define EVENT_PAINT         1
+#define EVENT_SHOW          2
+#define EVENT_GOTFOCUS      3
+#define EVENT_LOSTFOCUS     4
 
 #define STATE_HIDDEN        0
 #define STATE_VISIBLE       1

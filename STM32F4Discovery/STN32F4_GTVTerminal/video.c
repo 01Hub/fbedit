@@ -30,8 +30,8 @@
 #include "Font8x10.h"
 
 /* Private variables ---------------------------------------------------------*/
-uint8_t ScreenBuff[SCREEN_HEIGHT][SCREEN_WIDTH];
-uint8_t WorkBuff[SCREEN_HEIGHT][SCREEN_WIDTH];
+uint8_t ScreenBuff[SCREEN_BUFFHEIGHT][SCREEN_BUFFWIDTH];
+uint8_t WorkBuff[SCREEN_BUFFHEIGHT][SCREEN_BUFFWIDTH];
 volatile int16_t LineCount;
 volatile uint16_t FrameCount;
 volatile int8_t BackPochFlag;
@@ -39,6 +39,7 @@ SPRITE Cursor;
 SPRITE* Sprites[MAX_SPRITES];
 WINDOW* Windows[MAX_WINDOWS];
 WINDOW* Focus;
+volatile FrameDraw;
 
 /* Private function prototypes -----------------------------------------------*/
 void SetCursor(uint8_t cur);
@@ -120,7 +121,7 @@ void ShowCursor(uint8_t z)
   */
 void Cls(void)
 {
-  memset(&ScreenBuff, 0, SCREEN_HEIGHT*SCREEN_WIDTH);
+  memset(&ScreenBuff, 0, SCREEN_BUFFHEIGHT*SCREEN_BUFFWIDTH);
 }
 
 /**
@@ -131,7 +132,7 @@ void Cls(void)
 void SetPixel(uint16_t x,uint16_t y,uint8_t c)
 {
   uint8_t bit;
-  if (x < (SCREEN_WIDTH-4) * 8 && y < SCREEN_HEIGHT)
+  if (x < SCREEN_WIDTH && y < SCREEN_HEIGHT)
   {
     bit = 1 << (x & 0x7);
     if (c)
@@ -153,7 +154,7 @@ void SetPixel(uint16_t x,uint16_t y,uint8_t c)
 uint8_t GetPixel(uint16_t x,uint16_t y)
 {
   uint8_t bit;
-  if (x < (SCREEN_WIDTH-2) * 8 && y < SCREEN_HEIGHT)
+  if (x < SCREEN_WIDTH && y < SCREEN_HEIGHT)
   {
     bit = 1 << (x & 0x7);
     return ((ScreenBuff[y][x >> 3]) & bit) > 0;
@@ -670,8 +671,8 @@ void DrawIcon(uint16_t x,uint16_t y,ICON* icon,uint8_t c)
   */
 void ScrollUp(void)
 {
-  memmove(&ScreenBuff[0], &ScreenBuff[1], (SCREEN_HEIGHT-1)*SCREEN_WIDTH);
-  memset(&ScreenBuff[SCREEN_HEIGHT-1], 0, SCREEN_WIDTH);
+  memmove(&ScreenBuff[0], &ScreenBuff[1], (SCREEN_BUFFHEIGHT-1)*SCREEN_BUFFWIDTH);
+  memset(&ScreenBuff[SCREEN_BUFFHEIGHT-1], 0, SCREEN_BUFFWIDTH);
 }
 
 /**
@@ -681,13 +682,13 @@ void ScrollUp(void)
   */
 void ScrollDown(void)
 {
-  uint16_t y=SCREEN_HEIGHT-1;
+  uint16_t y=SCREEN_BUFFHEIGHT-1;
   while (y)
   {
-    memmove(&ScreenBuff[y], &ScreenBuff[y-1], SCREEN_WIDTH);
+    memmove(&ScreenBuff[y], &ScreenBuff[y-1], SCREEN_BUFFWIDTH);
     y--;
   }
-  memset(&ScreenBuff[0], 0, SCREEN_WIDTH);
+  memset(&ScreenBuff[0], 0, SCREEN_BUFFWIDTH);
 }
 
 /**
@@ -709,9 +710,9 @@ uint32_t DrawSprite(const SPRITE* ps)
     ym=SCREEN_HEIGHT;
   }
   xm=ps->x+ps->icon.wt;
-  if (xm>(SCREEN_WIDTH-4)*8)
+  if (xm>SCREEN_WIDTH)
   {
-    xm=(SCREEN_WIDTH-4)*8;
+    xm=SCREEN_WIDTH;
   }
   y=ps->y;
   picon=ps->icon.icondata;
@@ -772,7 +773,7 @@ void DrawWBChar(uint16_t x, uint16_t y, char chr)
     {
       if (cl & 0x80)
       {
-        if (cx < (SCREEN_WIDTH-4) * 8 && cy < SCREEN_HEIGHT)
+        if (cx < SCREEN_WIDTH && cy < SCREEN_HEIGHT)
         {
           bit = 1 << ((x+cx) & 0x7);
           WorkBuff[y+cy][(x+cx >> 3)] &= ~bit;
@@ -930,14 +931,6 @@ void DefWindowHandler(WINDOW* hwin,uint8_t event,uint16_t param,uint8_t ID)
 
   switch (event)
   {
-    // case EVENT_KEYDOWN:
-    // case EVENT_KEYUP:
-    // case EVENT_CHAR:
-    // case EVENT_MOUSMOVE:
-    // case EVENT_LBUTTOMDOWN:
-    // case EVENT_LBUTTONUP:
-    // case EVENT_BTNCLICK:
-      // break;
     case EVENT_PAINT:
       DrawWindow(hwin);
       break;
@@ -1012,7 +1005,7 @@ void TIM3_IRQHandler(void)
     DMA1_Stream4->CR &= ~((uint32_t)DMA_SxCR_EN);
     /* Reset interrupt pending bits for DMA1 Stream4 */
     DMA1->HIFCR = (uint32_t)(DMA_LISR_FEIF0 | DMA_LISR_DMEIF0 | DMA_LISR_TEIF0 | DMA_LISR_HTIF0 | DMA_LISR_TCIF0 | (uint32_t)0x20000000);
-    DMA1_Stream4->NDTR = (uint16_t)SCREEN_WIDTH/2-1;
+    DMA1_Stream4->NDTR = (uint16_t)SCREEN_BUFFWIDTH/2-1;
     DMA1_Stream4->PAR = (uint32_t) & (SPI2->DR);
     DMA1_Stream4->M0AR = (uint32_t) & (WorkBuff[LineCount]);
   }
@@ -1063,8 +1056,12 @@ void TIM4_IRQHandler(void)
     }
     else if (LineCount==SCREEN_HEIGHT)
     {
-      /* Enable TIM5 */
-      TIM5->CR1=1;
+      /* If frame drawing busy, skip a frame */
+      if (!FrameDraw)
+      {
+        /* Enable TIM5 */
+        TIM5->CR1=1;
+      }
     }
     LineCount++;
   }
@@ -1083,18 +1080,19 @@ void TIM5_IRQHandler(void)
   TIM5->CR1=0;
   /* Clear the IT pending Bit */
   TIM5->SR=(u16)~TIM_IT_Update;
+  FrameDraw=1;
   /* Copy ScreenBuff to WorkBuff */
   pd=(uint32_t *)&WorkBuff;
   ps=(uint32_t *)&ScreenBuff;
   i=0;
-  while (i<SCREEN_HEIGHT*SCREEN_WIDTH/4)
+  while (i<SCREEN_BUFFHEIGHT*SCREEN_BUFFWIDTH/4)
   {
     pd[i]=ps[i];
     i++;
   }
   /* Draw sprites onto WorkBuff */
   i=0;
-  while (Sprites[i])
+  while (Sprites[i] && i<MAX_SPRITES)
   {
     coll=0;
     if (Sprites[i]->visible)
@@ -1130,7 +1128,7 @@ void TIM5_IRQHandler(void)
   }
   /* Draw windows onto WorkBuff */
   i=0;
-  while (Windows[i])
+  while (Windows[i] && i<MAX_WINDOWS)
   {
     if (Windows[i]->state & STATE_VISIBLE)
     {
@@ -1143,6 +1141,8 @@ void TIM5_IRQHandler(void)
   {
     DrawSprite(&Cursor);
   }
+  DrawHex(0,0,LineCount,1);
   FrameCount++;
+  FrameDraw=0;
 }
 

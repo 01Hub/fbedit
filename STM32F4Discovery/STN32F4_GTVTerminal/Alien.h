@@ -1,12 +1,15 @@
 
 /* Private define ------------------------------------------------------------*/
 #define SHIELD_TOP      200
+#define SHOOT_WAIT      5             // 5 frames between shots
 
 #define MAX_BOMBS       8
-#define MAX_ALIEN       32
+#define ALIEN_COLS      9
+#define ALIEN_ROWS      5
+#define MAX_ALIEN       ALIEN_COLS*ALIEN_ROWS
 #define MAX_SHOTS       4
 #define MAX_SHOOTERS    3
-#define MAX_SHIELDS     4
+#define MAX_SHIELDS     5
 
 const uint8_t Alien1Icon[16][16] = {
 {2,2,1,1,1,1,1,1,1,1,1,1,1,1,2,2},

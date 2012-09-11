@@ -86,9 +86,9 @@ void main(void)
 
   while (1)
   {
-    DebugKeyboard();
-    // AlienGameSetup();
-    // AlienGameLoop();
+    // DebugKeyboard();
+    AlienGameSetup();
+    AlienGameLoop();
   }
 }
 
@@ -117,42 +117,42 @@ void NVIC_Config(void)
   NVIC_InitTypeDef NVIC_InitStructure;
 
   NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);
-  /* Enable the TIM3 gloabal Interrupt */
+  /* Enable and set TIM4 interrupt to high priority */
   NVIC_InitStructure.NVIC_IRQChannel = TIM3_IRQn;
   NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
   NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
   NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
   NVIC_Init(&NVIC_InitStructure);
-  /* Enable the TIM4 gloabal Interrupt */
+  /* Enable and set TIM4 interrupt to the highest priority */
   NVIC_InitStructure.NVIC_IRQChannel = TIM4_IRQn;
   NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
   NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
   NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
   NVIC_Init(&NVIC_InitStructure);
-  /* Enable the TIM5 gloabal Interrupt */
+  /* Enable and set TIM5 interrupt to low priority */
   NVIC_InitStructure.NVIC_IRQChannel = TIM5_IRQn;
   NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 3;
   NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
   NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
   NVIC_Init(&NVIC_InitStructure);
-	/* Enable USART interrupt */
-	NVIC_InitStructure.NVIC_IRQChannel = USART2_IRQn;
-	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 2;
-  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
-	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-	NVIC_Init(&NVIC_InitStructure);
-  /* Enable and set EXTI Line0 Interrupt to the lowest priority */
+	// /* Enable and set USART interrupt to the lowest priority */
+	// NVIC_InitStructure.NVIC_IRQChannel = USART2_IRQn;
+	// NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 3;
+  // NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+	// NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+	// NVIC_Init(&NVIC_InitStructure);
+  /* Enable and set EXTI Line0 Interrupt to low priority */
   NVIC_InitStructure.NVIC_IRQChannel = EXTI0_IRQn;
   NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 2;
   NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
   NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
   NVIC_Init(&NVIC_InitStructure);
-  /* Enable and set EXTI Line2 Interrupt to the lowest priority */
-  NVIC_InitStructure.NVIC_IRQChannel = EXTI2_IRQn;
-  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 3;
-  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
-  NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-  NVIC_Init(&NVIC_InitStructure);
+  // /* Enable and set EXTI Line2 Interrupt to low priority */
+  // NVIC_InitStructure.NVIC_IRQChannel = EXTI2_IRQn;
+  // NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 3;
+  // NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+  // NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+  // NVIC_Init(&NVIC_InitStructure);
 }
 
 /**
@@ -294,7 +294,7 @@ void DMA_Config(void)
   DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t) & (SPI2->DR);
   DMA_InitStructure.DMA_Memory0BaseAddr = 0;
   DMA_InitStructure.DMA_DIR = DMA_DIR_MemoryToPeripheral;
-  DMA_InitStructure.DMA_BufferSize = (uint16_t)SCREEN_WIDTH/2;
+  DMA_InitStructure.DMA_BufferSize = (uint16_t)SCREEN_BUFFWIDTH/2;
   DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
   DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;
   DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_HalfWord;
