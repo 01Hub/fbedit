@@ -25,9 +25,15 @@
 *******************************************************************************/
 
 /* Includes ------------------------------------------------------------------*/
-#include "stm32f4_discovery.h"
 #include "video.h"
 #include "Font8x10.h"
+#include "window.h"
+
+/* External variables --------------------------------------------------------*/
+extern WINDOW* Windows[];
+extern WINDOW* Focus;
+extern volatile uint16_t scancode;
+
 
 /* Private variables ---------------------------------------------------------*/
 uint8_t BackBuff[SCREEN_BUFFHEIGHT][SCREEN_BUFFWIDTH];
@@ -37,25 +43,21 @@ volatile uint16_t FrameCount;
 volatile int8_t BackPochFlag;
 SPRITE Cursor;
 SPRITE* Sprites[MAX_SPRITES];
-WINDOW* Windows[MAX_WINDOWS];
-WINDOW* Focus;
 volatile uint8_t FrameDraw;
-
-volatile uint32_t LcMin;
-volatile uint32_t LcMax;
-
+volatile uint32_t RNDSeed;          // Random seed
 
 /* Private function prototypes -----------------------------------------------*/
+uint32_t Random(uint32_t Range);    // Random generator
 void SetCursor(uint8_t cur);
 void MoveCursor(uint16_t x,uint16_t y);
 void ShowCursor(uint8_t z);
 void Cls(void);
 void SetPixel(uint16_t x,uint16_t y,uint8_t c);
 uint8_t GetPixel(uint16_t x,uint16_t y);
-void DrawChar(uint16_t x, uint16_t y, char chr, uint8_t c);
-void DrawLargeChar(uint16_t x, uint16_t y, char chr, uint8_t c);
-void DrawString(uint16_t x, uint16_t y, char *str, uint8_t c);
-void DrawLargeString(uint16_t x, uint16_t y, char *str, uint8_t c);
+void DrawChar(uint16_t x, uint16_t y, uint8_t chr, uint8_t c);
+void DrawLargeChar(uint16_t x, uint16_t y, uint8_t chr, uint8_t c);
+void DrawString(uint16_t x, uint16_t y, uint8_t *str, uint8_t c);
+void DrawLargeString(uint16_t x, uint16_t y, uint8_t *str, uint8_t c);
 void DrawDec(uint16_t x, uint16_t y, uint16_t n, uint8_t c);
 void DrawLargeDec(uint16_t x, uint16_t y, uint16_t n, uint8_t c);
 void DrawHex(uint16_t x, uint16_t y, uint16_t n, uint8_t c);
@@ -72,6 +74,19 @@ void * memmove(void *dest, void *source, uint32_t count);
 void * memset(void *dest, uint32_t c, uint32_t count); 
 
 /* Private functions ---------------------------------------------------------*/
+
+/**
+  * @brief  This function generates a random number
+  * @param  None
+  * @retval None
+  */
+uint32_t Random(uint32_t Range)
+{
+  uint32_t rnd;
+  RNDSeed=(((RNDSeed*23+7) & 0xFFFFFFFF)>>1)^RNDSeed;
+  rnd=RNDSeed-(RNDSeed/Range)*Range;
+  return rnd;
+}
 
 /**
   * @brief  This function sets the cursor (mouse icon) type.
@@ -171,7 +186,7 @@ uint8_t GetPixel(uint16_t x,uint16_t y)
   * @param  x, y, chr, c
   * @retval None
   */
-void DrawChar(uint16_t x, uint16_t y, char chr, uint8_t c)
+void DrawChar(uint16_t x, uint16_t y, uint8_t chr, uint8_t c)
 {
   uint8_t cl;
   uint16_t cx, cy;
@@ -258,7 +273,7 @@ void DrawChar(uint16_t x, uint16_t y, char chr, uint8_t c)
   * @param  x, y, chr, c
   * @retval None
   */
-void DrawLargeChar(uint16_t x, uint16_t y, char chr, uint8_t c)
+void DrawLargeChar(uint16_t x, uint16_t y, uint8_t chr, uint8_t c)
 {
   uint8_t cl;
   uint16_t cx, cy;
@@ -357,9 +372,9 @@ void DrawLargeChar(uint16_t x, uint16_t y, char chr, uint8_t c)
   * @param  x, y, *str, c
   * @retval None
   */
-void DrawString(uint16_t x, uint16_t y, char *str, uint8_t c)
+void DrawString(uint16_t x, uint16_t y, uint8_t *str, uint8_t c)
 {
-  char chr;
+  uint8_t chr;
   while ((chr = *str++))
   {
     DrawChar(x, y, chr, c);
@@ -372,9 +387,9 @@ void DrawString(uint16_t x, uint16_t y, char *str, uint8_t c)
   * @param  x, y, *str, c
   * @retval None
   */
-void DrawLargeString(uint16_t x, uint16_t y, char *str, uint8_t c)
+void DrawLargeString(uint16_t x, uint16_t y, uint8_t *str, uint8_t c)
 {
-  char chr;
+  uint8_t chr;
   while ((chr = *str++))
   {
     DrawLargeChar(x, y, chr, c);
@@ -389,7 +404,7 @@ void DrawLargeString(uint16_t x, uint16_t y, char *str, uint8_t c)
   */
 void DrawDec(uint16_t x, uint16_t y, uint16_t n, uint8_t c)
 {
-	char decstr[6];
+	uint8_t decstr[6];
   int8_t i,d;
 
   d=n/10000;
@@ -422,7 +437,7 @@ void DrawDec(uint16_t x, uint16_t y, uint16_t n, uint8_t c)
   */
 void DrawLargeDec(uint16_t x, uint16_t y, uint16_t n, uint8_t c)
 {
-	char decstr[6];
+	uint8_t decstr[6];
   int8_t i,d;
 
   d=n/10000;
@@ -455,8 +470,8 @@ void DrawLargeDec(uint16_t x, uint16_t y, uint16_t n, uint8_t c)
   */
 void DrawHex(uint16_t x, uint16_t y, uint16_t n, uint8_t c)
 {
-	static char hexchars[] = "0123456789ABCDEF";
-	char hexstr[5];
+	static uint8_t hexchars[] = "0123456789ABCDEF";
+	uint8_t hexstr[5];
 	hexstr[0] = hexchars[(n >> 12) & 0xF];
 	hexstr[1] = hexchars[(n >> 8) & 0xF];
 	hexstr[2] = hexchars[(n >> 4) & 0xF];
@@ -695,20 +710,35 @@ void ScrollDown(void)
   memset(&BackBuff[0], 0, SCREEN_BUFFWIDTH);
 }
 
-/*********** Draw onto WorkBuff ***********/
+/*********** Draw onto FrameBuff ***********/
 
 /**
   * @brief  This function clears a pixel at x, y.
   * @param  x, y
   * @retval None
   */
-void ClearWBPixel(uint16_t x,uint16_t y)
+void ClearFBPixel(uint16_t x,uint16_t y)
 {
   uint8_t bit;
   if (x < SCREEN_WIDTH && y < SCREEN_HEIGHT)
   {
     bit = 1 << (x & 0x7);
     FrameBuff[y][x >> 3] &= ~bit;
+  }
+}
+
+/**
+  * @brief  This function sets a pixel at x, y.
+  * @param  x, y
+  * @retval None
+  */
+void SetFBPixel(uint16_t x,uint16_t y)
+{
+  uint8_t bit;
+  if (x < SCREEN_WIDTH && y < SCREEN_HEIGHT)
+  {
+    bit = 1 << (x & 0x7);
+    FrameBuff[y][x >> 3] |= bit;
   }
 }
 
@@ -775,256 +805,15 @@ uint32_t DrawSprite(const SPRITE* ps)
   return coll;
 }
 
-/**
-  * @brief  This function draws transparent an inverted character at x, y.
-  * @param  x, y, chr
-  * @retval None
-  */
-void DrawWBChar(uint16_t x, uint16_t y, char chr)
+RemoveSprites(void)
 {
-  uint8_t cl,bit;
-  uint16_t cx, cy;
+  uint32_t i;
 
-  cy=0;
-  while (cy<TILE_HEIGHT)
+  while (i<MAX_SPRITES)
   {
-    cl=Font8x10[chr][cy];
-    cx=0;
-    while (cx<TILE_WIDTH)
-    {
-      if (cl & 0x80)
-      {
-        if (cx < SCREEN_WIDTH && cy < SCREEN_HEIGHT)
-        {
-          bit = 1 << ((x+cx) & 0x7);
-          FrameBuff[y+cy][(x+cx >> 3)] &= ~bit;
-        }
-      }
-      cl=cl<<1;
-      cx++;
-    }
-    cy++;
-  }
-}
-
-/**
-  * @brief  This function draws a string with length len at x, y.
-  * @param  x, y, len, *str
-  * @retval None
-  */
-void DrawWBString(uint16_t x, uint16_t y,uint8_t len, char *str)
-{
-  char chr;
-  while (len)
-  {
-    DrawWBChar(x, y, *str);
-    x+=TILE_WIDTH;
-    str++;
-    len--;
-  }
-}
-
-/**
-  * @brief  This function draws a black rectangle.
-  * @param  x,y,wdt,hgt)
-  * @retval None
-  */
-void FrameRect(uint16_t x,uint16_t y,uint16_t wdt,uint16_t hgt)
-{
- uint16_t j;
-  for (j = 0; j < hgt; j++) {
-		ClearWBPixel(x, y + j);
-		ClearWBPixel(x + wdt - 1, y + j);
-	}
-  for (j = 0; j < wdt; j++)	{
-		ClearWBPixel(x + j, y);
-		ClearWBPixel(x + j, y + hgt - 1);
-	}
-}
-
-/**
-  * @brief  This function draws a window.
-  * @param  win
-  * @retval None
-  */
-void DrawWindow(WINDOW* hwin)
-{
-  uint32_t x,y,xm,ym,i,j;
-  uint8_t cl,cr;
-  WINDOW* hpar;
-
-  x=hwin->x;
-  y=hwin->y;
-  if (hwin->owner)
-  {
-    hpar=hwin->owner;
-    x+=hpar->x;
-    y+=hpar->y;
-  }
-  xm=x+hwin->wt;
-  ym=y+hwin->ht;
-  switch (hwin->winclass)
-  {
-    case CLASS_WINDOW:
-      /* Get left fill */
-      cl=0xFF<<((x & 7) & 7);
-      /* Get right fill */
-      cr=0xFF>>((xm & 7) & 7);
-      /* Fill left & right*/
-      j=y;
-      while (j<ym)
-      {
-        if (j==y+11)
-        {
-          FrameBuff[j][x >> 3] &= ~cl;
-          FrameBuff[j][xm >> 3] &= ~cr;
-        }
-        else
-        {
-          FrameBuff[j][x >> 3] |= cl;
-          FrameBuff[j][xm >> 3] |= cr;
-        }
-        j++;
-      }
-      j=y;
-      while (j<ym)
-      {
-        i=(x >> 3)+1;
-        while (i<(xm >> 3))
-        {
-          if (j==y+11)
-          {
-            FrameBuff[j][i] = 0x0;
-          }
-          else
-          {
-            FrameBuff[j][i] = 0xFF;
-          }
-          i++;
-        }
-        j++;
-      }
-      if (hwin->caption)
-      {
-        DrawWBString(x+3,y+1,hwin->caplen,hwin->caption);
-      }
-      FrameRect(x,y,xm-x,ym-y);
-      break;
-    case CLASS_BUTTON:
-      if (FrameCount & 1)
-      {
-        /* Draw black to make the button appear graw */
-        /* Get left fill */
-        cl=0xFF<<((x & 7) & 7);
-        /* Get right fill */
-        cr=0xFF>>((xm & 7) & 7);
-        /* Fill left & right*/
-        j=y;
-        while (j<ym)
-        {
-          FrameBuff[j][x >> 3] &= ~cl;
-          FrameBuff[j][xm >> 3] &= ~cr;
-          j++;
-        }
-        j=y;
-        while (j<ym)
-        {
-          i=(x >> 3)+1;
-          while (i<(xm >> 3))
-          {
-            FrameBuff[j][i] = 0;
-            i++;
-          }
-          j++;
-        }
-      }
-      else
-      {
-        if (hwin->caption)
-        {
-          x=x+(hwin->wt-hwin->caplen*TILE_WIDTH)/2;
-          y=y+(hwin->ht-TILE_HEIGHT)/2;
-          DrawWBString(x,y,hwin->caplen,hwin->caption);
-        }
-        if (hwin==Focus)
-        {
-          if (!(FrameCount & 3))
-          {
-            FrameRect(x,y,xm-x,ym-y);
-          }
-        }
-        else
-        {
-          FrameRect(x,y,xm-x,ym-y);
-        }
-      }
-      break;
-    case CLASS_STATIC:
-      if (hwin->caption)
-      {
-        x=x+(hwin->wt-hwin->caplen*TILE_WIDTH)/2;
-        y=y+(hwin->ht-TILE_HEIGHT)/2;
-        DrawWBString(x,y,hwin->caplen,hwin->caption);
-      }
-  }
-  i=0;
-  while (hwin->control[i] && i<MAX_CONTROLS)
-  {
-    DrawWindow(hwin->control[i]);
+    Sprites[i]=0;
     i++;
   }
-}
-
-/**
-  * @brief  This function handles default window events.
-  * @param  hwin, event, param, ID
-  * @retval None
-  */
-void DefWindowHandler(WINDOW* hwin,uint8_t event,uint16_t param,uint8_t ID)
-{
-  WINDOW* howner;
-
-  switch (event)
-  {
-    case EVENT_PAINT:
-      DrawWindow(hwin);
-      break;
-    case EVENT_SHOW:
-      if (param & STATE_VISIBLE)
-      {
-        hwin->state|=STATE_VISIBLE;
-      }
-      else
-      {
-        hwin->state&=~STATE_VISIBLE;
-      }
-      break;
-    case EVENT_GOTFOCUS:
-      hwin->state|=STATE_FOCUS;
-      Focus=hwin;
-      break;
-    case EVENT_LOSTFOCUS:
-      hwin->state&=~STATE_FOCUS;
-      Focus=0;
-      break;
-    default:
-      howner=hwin->owner;
-      if (howner)
-      {
-        SendEvent(howner,event,param,ID);
-      }
-      break;
-  }
-}
-
-/**
-  * @brief  This function sends an event to a window
-  * @param  hwin, event, param, ID
-  * @retval None
-  */
-void SendEvent(WINDOW* hwin,uint8_t event,uint16_t param,uint8_t ID)
-{
-  hwin->handler(hwin,event,param,ID);
 }
 
 /**
@@ -1039,15 +828,7 @@ void TIM3_IRQHandler(void)
   /* Clear the IT pending Bit */
   TIM3->SR=(u16)~TIM_IT_Update;
   /* This loop eliminate differences in interrupt latency */
-  i=32-((TIM3->CNT)>>1);
-  if (i<LcMin)
-  {
-    LcMin=i;
-  }
-  if (i>LcMax)
-  {
-    LcMax=i;
-  }
+  i=32-(TIM3->CNT);
   while (i)
   {
     i--;
@@ -1086,7 +867,7 @@ void TIM4_IRQHandler(void)
   /* Clear the IT pending Bit */
   TIM4->SR=(u16)~TIM_IT_Update;
   /* This loop eliminate differences in interrupt latency */
-  i=32-((TIM4->CNT)>>1);
+  i=32-(TIM4->CNT);
   while (i)
   {
     i--;
@@ -1130,29 +911,10 @@ void TIM4_IRQHandler(void)
   }
 }
 
-/**
-  * @brief  This function handles TIM5 global interrupt request.
-  * @param  None
-  * @retval None
-  */
-void TIM5_IRQHandler(void)
+void FrameBuffDraw(void)
 {
-  uint32_t *pd,*ps,i,pos,coll;
+  uint32_t i,pos,coll;
 
-  /* Disable TIM5 */
-  TIM5->CR1=0;
-  /* Clear the IT pending Bit */
-  TIM5->SR=(u16)~TIM_IT_Update;
-  FrameDraw=1;
-  /* Copy ScreenBuff to WorkBuff */
-  pd=(uint32_t *)&FrameBuff;
-  ps=(uint32_t *)&BackBuff;
-  i=0;
-  while (i<SCREEN_BUFFHEIGHT*SCREEN_BUFFWIDTH/4)
-  {
-    pd[i]=ps[i];
-    i++;
-  }
   /* Draw sprites onto WorkBuff */
   i=0;
   while (Sprites[i] && i<MAX_SPRITES)
@@ -1204,8 +966,48 @@ void TIM5_IRQHandler(void)
   {
     DrawSprite(&Cursor);
   }
-  DrawHex(0,0,LineCount,1);
+}
+
+/**
+  * @brief  This function handles TIM5 global interrupt request.
+  * @param  None
+  * @retval None
+  */
+void TIM5_IRQHandler(void)
+{
+  uint32_t *pd,*ps,i;
+  uint8_t chr;
+
+  /* Disable TIM5 */
+  TIM5->CR1=0;
+  /* Clear the IT pending Bit */
+  TIM5->SR=(u16)~TIM_IT_Update;
+  FrameDraw=1;
+  /* Copy ScreenBuff to WorkBuff */
+  pd=(uint32_t *)&FrameBuff;
+  ps=(uint32_t *)&BackBuff;
+  i=0;
+  while (i<SCREEN_BUFFHEIGHT*SCREEN_BUFFWIDTH/4)
+  {
+    pd[i]=ps[i];
+    i++;
+  }
+  FrameBuffDraw();
+  KeyboardReset();
+  if (Focus)
+  {
+    chr=GetChar();
+    if (chr)
+    {
+      Focus->handler(Focus,EVENT_CHAR,chr,Focus->ID);
+    }
+  }
   FrameCount++;
+  if (FrameCount==(FrameCount/25)*25)
+  {
+    STM_EVAL_LEDToggle(LED3);
+  }
+//  DrawHex(0,210,LineCount,1);
   FrameDraw=0;
 }
 

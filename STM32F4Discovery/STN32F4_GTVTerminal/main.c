@@ -54,10 +54,15 @@
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
 /* Private macro -------------------------------------------------------------*/
+/* External variables --------------------------------------------------------*/
+extern volatile uint16_t FrameCount;  // Frame counter
+extern volatile uint8_t nStuck;
+
 /* Private variables ---------------------------------------------------------*/
 /* Private function prototypes -----------------------------------------------*/
 void RCC_Config(void);
 void NVIC_Config(void);
+void NVIC_KBDConfig(void);
 void GPIO_Config(void);
 void TIM_Config(void);
 void SPI_Config(void);
@@ -71,24 +76,50 @@ void USART_Config(uint32_t Baud);
   */
 void main(void)
 {
+  int32_t i,fc;
+
   RCC_Config();
   NVIC_Config();
   GPIO_Config();
   TIM_Config();
   SPI_Config();
   DMA_Config();
-  USART_Config(115200);
+  USART_Config(9600);
   /* Enable TIM3 */
   TIM_Cmd(TIM3, ENABLE);
   STM_EVAL_LEDInit(LED3);
   STM_EVAL_LEDInit(LED4);
   STM_EVAL_PBInit(BUTTON_USER,BUTTON_MODE_GPIO);
 
+  SetCursor(0);
+  MoveCursor(SCREEN_WIDTH/2,SCREEN_HEIGHT/2);
+
+  /* Wait 25 frames */
+  i=25;
+  while (i)
+  {
+    if (fc!=FrameCount)
+    {
+      fc=FrameCount;
+      i--;
+    }
+  }
+  NVIC_KBDConfig();
+  /* Wait 25 frames */
+  i=25;
+  while (i)
+  {
+    if (fc!=FrameCount)
+    {
+      fc=FrameCount;
+      i--;
+    }
+  }
+  nStuck=10;
+  KeyboardReset();
   while (1)
   {
-    // DebugKeyboard();
-    AlienGameSetup();
-    AlienGameLoop();
+    DeskTopSetup();
   }
 }
 
@@ -117,7 +148,7 @@ void NVIC_Config(void)
   NVIC_InitTypeDef NVIC_InitStructure;
 
   NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);
-  /* Enable and set TIM4 interrupt to high priority */
+  /* Enable and set TIM3 interrupt to high priority */
   NVIC_InitStructure.NVIC_IRQChannel = TIM3_IRQn;
   NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
   NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
@@ -135,24 +166,30 @@ void NVIC_Config(void)
   NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
   NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
   NVIC_Init(&NVIC_InitStructure);
-	// /* Enable and set USART interrupt to the lowest priority */
-	// NVIC_InitStructure.NVIC_IRQChannel = USART2_IRQn;
-	// NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 3;
-  // NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
-	// NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-	// NVIC_Init(&NVIC_InitStructure);
+	/* Enable and set USART interrupt to the lowest priority */
+	NVIC_InitStructure.NVIC_IRQChannel = USART2_IRQn;
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 3;
+  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+	NVIC_Init(&NVIC_InitStructure);
+}
+
+void NVIC_KBDConfig(void)
+{
+  NVIC_InitTypeDef NVIC_InitStructure;
+
   /* Enable and set EXTI Line0 Interrupt to low priority */
   NVIC_InitStructure.NVIC_IRQChannel = EXTI0_IRQn;
   NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 2;
   NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
   NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
   NVIC_Init(&NVIC_InitStructure);
-  // /* Enable and set EXTI Line2 Interrupt to low priority */
-  // NVIC_InitStructure.NVIC_IRQChannel = EXTI2_IRQn;
-  // NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 3;
-  // NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
-  // NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-  // NVIC_Init(&NVIC_InitStructure);
+  /* Enable and set EXTI Line2 Interrupt to low priority */
+  NVIC_InitStructure.NVIC_IRQChannel = EXTI2_IRQn;
+  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 2;
+  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+  NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+  NVIC_Init(&NVIC_InitStructure);
 }
 
 /**

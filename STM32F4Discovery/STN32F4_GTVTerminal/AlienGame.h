@@ -1,15 +1,26 @@
 
-/* Private define ------------------------------------------------------------*/
-#define SHIELD_TOP      200
-#define SHOOT_WAIT      5             // 5 frames between shots
+/* Includes ------------------------------------------------------------------*/
+#include "stm32f4_discovery.h"
+#include "window.h"
+#include "video.h"
+#include "keycodes.h"
 
-#define MAX_BOMBS       8
-#define ALIEN_COLS      9
-#define ALIEN_ROWS      5
-#define MAX_ALIEN       ALIEN_COLS*ALIEN_ROWS
-#define MAX_SHOTS       4
-#define MAX_SHOOTERS    3
-#define MAX_SHIELDS     5
+/* Private define ------------------------------------------------------------*/
+#define ALIEN_BOUND_LEFT      10
+#define ALIEN_BOUND_TOP       26
+#define ALIEN_BOUND_RIGHT     470
+#define ALIEN_BOUND_BOTTOM    240
+
+#define ALIEN_SHIELD_TOP      ALIEN_BOUND_BOTTOM-40
+#define ALIEN_SHOOT_WAIT      25                      // 25 frames between shots
+
+#define ALIEN_MAX_BOMBS       4
+#define ALIEN_ALIEN_COLS      9
+#define ALIEN_ALIEN_ROWS      5
+#define ALIEN_MAX_ALIEN       ALIEN_ALIEN_COLS*ALIEN_ALIEN_ROWS
+#define ALIEN_MAX_SHOTS       4
+#define ALIEN_MAX_CANNONS     3
+#define ALIEN_MAX_SHIELDS     5
 
 const uint8_t Alien1Icon[16][16] = {
 {2,2,1,1,1,1,1,1,1,1,1,1,1,1,2,2},
@@ -49,7 +60,7 @@ const uint8_t Alien2Icon[16][16] = {
 {2,2,1,1,1,1,2,2,2,2,1,1,1,1,2,2}
 };
 
-const uint8_t ShooterIcon[16][20] = {
+const uint8_t AlienCannonIcon[16][20] = {
 {2,2,2,2,2,2,1,1,1,1,1,1,1,1,2,2,2,2,2,2},
 {2,2,2,2,2,2,1,1,1,1,1,1,1,1,2,2,2,2,2,2},
 {2,2,2,2,2,2,1,1,1,1,1,1,1,1,2,2,2,2,2,2},
@@ -68,7 +79,7 @@ const uint8_t ShooterIcon[16][20] = {
 {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}
 };
 
-const uint8_t ShieldIcon[16][36] = {
+const uint8_t AlienShieldIcon[16][36] = {
 {2,2,2,2,2,2,2,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2},
 {2,2,2,2,2,2,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2},
 {2,2,2,2,2,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2},
@@ -87,7 +98,7 @@ const uint8_t ShieldIcon[16][36] = {
 {1,1,1,1,2,2,2,2,2,2,2,2,2,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,1,1,1,1}
 };
 
-const uint8_t ShotIcon[8][3] = {
+const uint8_t AlienShotIcon[8][3] = {
 {1,1,1},
 {1,1,1},
 {1,1,1},
@@ -98,3 +109,26 @@ const uint8_t ShotIcon[8][3] = {
 {1,1,1}
 };
 
+typedef struct
+{
+  volatile uint8_t DemoMode;          // Demo mode flag
+  volatile uint8_t GameOver;          // Game over flag
+  volatile uint8_t Quit;              // Quit flag
+  volatile int8_t Cannons;            // Number of spare Cannons
+  volatile uint8_t Bombs;             // Number of active bombs
+  volatile uint8_t Aliens;            // Number of active aliens
+  volatile uint8_t Shots;             // Number of active shots
+  volatile uint8_t ShootWait;         // Number of frames between shots
+  volatile uint16_t Points;           // Points
+  volatile int16_t sdir,slen,adir;    // Cannon move
+  RECT AlienBound;                    // Game bounds
+  SPRITE Alien[ALIEN_MAX_ALIEN];      // Alien sprites
+  SPRITE Cannon;                      // Cannon sprite
+  SPRITE Bomb[ALIEN_MAX_BOMBS];       // Bomb sprites
+  SPRITE Shot[ALIEN_MAX_SHOTS];       // Shot sprites
+  ICON Shield;                        // Shield icon
+  WINDOW MsgBox;                      // Message box window
+  WINDOW Static1;                     // Static control
+  WINDOW Button1;                     // Button control
+  WINDOW Button2;                     // Button control
+} ALIEN_GAME;
