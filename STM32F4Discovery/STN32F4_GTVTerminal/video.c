@@ -710,6 +710,47 @@ void ScrollDown(void)
   memset(&BackBuff[0], 0, SCREEN_BUFFWIDTH);
 }
 
+void DrawStatus(uint8_t *str,uint8_t caps,uint8_t num)
+{
+  uint32_t i;
+  uint8_t chr;
+  static uint8_t ccaps[]="|CAPS\0";
+  static uint8_t cnocaps[]="|    \0";
+  static uint8_t cnum[]="|NUM|\0";
+  static uint8_t cnonum[]="|   |\0";
+
+  i=0;
+  if (str)
+  {
+    while ((chr = *str++))
+    {
+      DrawChar(i, 240, chr, 3);
+      i+=TILE_WIDTH;
+    }
+  }
+  while (i<SCREEN_WIDTH-10*TILE_WIDTH)
+  {
+    DrawChar(i,240,0x80,1);
+    i+=TILE_WIDTH;
+  }
+  if (caps)
+  {
+    DrawString(SCREEN_WIDTH-10*TILE_WIDTH,240,ccaps,3);
+  }
+  else
+  {
+    DrawString(SCREEN_WIDTH-10*TILE_WIDTH,240,cnocaps,3);
+  }
+  if (num)
+  {
+    DrawString(SCREEN_WIDTH-5*TILE_WIDTH,240,cnum,3);
+  }
+  else
+  {
+    DrawString(SCREEN_WIDTH-5*TILE_WIDTH,240,cnonum,3);
+  }
+}
+
 /*********** Draw onto FrameBuff ***********/
 
 /**

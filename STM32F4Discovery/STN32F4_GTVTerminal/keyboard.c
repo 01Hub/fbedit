@@ -104,13 +104,13 @@ uint32_t parity1(uint32_t x)
   * @param  None
   * @retval None
   */
-void EXTI0_IRQHandler(void)
+void EXTI2_IRQHandler(void)
 {
   static uint16_t keyflag;
   uint16_t tmp;
 
   /* Clear the EXTI line 0 pending bit */
-  EXTI->PR = EXTI_Line0;
+  EXTI->PR = EXTI_Line2;
 
   scancode >>= 1;
 	if (GPIOB->IDR & GPIO_Pin_1)

@@ -6,6 +6,8 @@
 extern volatile uint16_t FrameCount;
 extern WINDOW* Windows[];             // Max 16 windows
 extern WINDOW* Focus;                 // The windpw that has the keyboard focus
+extern volatile uint8_t Caps;
+extern volatile uint8_t Num;
 
 /* Private variables ---------------------------------------------------------*/
 DESKTOP Desktop;
@@ -93,6 +95,7 @@ void MenuPopupHandler(WINDOW* hwin,uint8_t event,uint16_t param,uint8_t ID)
 void DeskTopSetup(void)
 {
   uint32_t i;
+  uint8_t caps,num;
 
   RemoveWindows();
   Cls();
@@ -338,9 +341,16 @@ void DeskTopSetup(void)
   }
   Windows[4]=&Desktop.Menu4Popup;
   SendEvent(Desktop.MenuBar.hwin,EVENT_ACTIVATE,0,0);
+  DrawStatus(0,Caps,Num);
 
   while (!Desktop.SelectedID)
   {
+    if (caps!=Caps || num!=Num)
+    {
+      caps=Caps;
+      num=Num;
+      DrawStatus(0,caps,num);
+    }
   }
   RemoveWindows();
   switch (Desktop.SelectedID)

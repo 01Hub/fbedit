@@ -1,5 +1,5 @@
 
-<ApplicationBuild Header="GTVTerminal" Extern=".\GTVTerminal.rapp" Path=".\GTVTerminal.rapp" AsyncBuild="" OutputFile=".\GTVTerminal.elf" sate="32" >
+<ApplicationBuild Header="GTVTerminal" Extern=".\GTVTerminal.rapp" Path=".\GTVTerminal.rapp" AsyncBuild="" OutputFile=".\GTVTerminal.elf" sate="96" >
 	<NodeC Path=".\main.c" Header="main.c" Marker="-1" AsyncBuild="" OutputFile=".\main.o" sate="0" />
 	<NodeC Path=".\AlieGame.c" Header="AlieGame.c" Marker="-1" AsyncBuild="" OutputFile=".\AlieGame.o" sate="0" />
 	<NodeC Path=".\video.c" Header="video.c" Marker="-1" AsyncBuild="" OutputFile=".\video.o" sate="0" />
@@ -27,7 +27,7 @@
 	<NodeC Path=".\stm32f4_discovery.c" Header="stm32f4_discovery.c" Marker="-1" AsyncBuild="" OutputFile=".\stm32f4_discovery.o" sate="0" />
 	<NodeC Path=".\stm32f4xx_dma.c" Header="stm32f4xx_dma.c" Marker="-1" AsyncBuild="" OutputFile=".\stm32f4xx_dma.o" sate="0" />
 	<NodeC Path=".\stm32f4xx_exti.c" Header="stm32f4xx_exti.c" Marker="-1" AsyncBuild="" OutputFile=".\stm32f4xx_exti.o" sate="0" />
-	<NodeC Path=".\stm32f4xx_gpio.c" Header="stm32f4xx_gpio.c" Marker="-1" AsyncBuild="" OutputFile=".\stm32f4xx_gpio.o" sate="0" />
+	<NodeC Path=".\stm32f4xx_gpio.c" Header="stm32f4xx_gpio.c" Marker="-1" AsyncBuild="" OutputFile=".\stm32f4xx_gpio.o" sate="2" />
 	<NodeC Path=".\stm32f4xx_it.c" Header="stm32f4xx_it.c" Marker="-1" AsyncBuild="" OutputFile=".\stm32f4xx_it.o" sate="0" />
 	<NodeC Path=".\stm32f4xx_rcc.c" Header="stm32f4xx_rcc.c" Marker="-1" AsyncBuild="" OutputFile=".\stm32f4xx_rcc.o" sate="0" />
 	<NodeC Path=".\stm32f4xx_spi.c" Header="stm32f4xx_spi.c" Marker="-1" AsyncBuild="" OutputFile=".\stm32f4xx_spi.o" sate="0" />
@@ -87,5 +87,6 @@
 	<NodeH Path=".\desktop.h" Header="desktop.h" Marker="-1" AsyncBuild="" OutputFile="" sate="0" />
 	<NodeC Path=".\pong.c" Header="pong.c" Marker="-1" AsyncBuild="" OutputFile=".\pong.o" sate="0" />
 	<NodeH Path=".\pong.h" Header="pong.h" Marker="-1" AsyncBuild="" OutputFile="" sate="0" />
-	<NodeC Path=".\keystate.c" Header="keystate.c" Marker="-1" AsyncBuild="" OutputFile=".\keystate.o" />
+	<NodeC Path=".\keystate.c" Header="keystate.c" Marker="-1" AsyncBuild="" OutputFile=".\keystate.o" sate="0" />
+	<NodeC Path=".\terminal.c" Header="terminal.c" Marker="-1" AsyncBuild="" OutputFile=".\terminal.o" sate="0" />
 </ApplicationBuild>

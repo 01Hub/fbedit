@@ -1,7 +1,6 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4_discovery.h"
-#include "video.h"
 #include "keycodes.h"
 
 /* Private typedef -----------------------------------------------------------*/
@@ -11,29 +10,52 @@
 extern volatile uint16_t FrameCount;// Frame counter
 extern volatile uint16_t keytab[16];
 extern volatile uint16_t extkeytab[16];
+extern volatile uint16_t keyscan;
 extern volatile uint8_t Pause;
+extern volatile uint8_t Caps;
+extern volatile uint8_t Num;
 
 /* Private variables ---------------------------------------------------------*/
-volatile int16_t i,x,y;
-
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
 
 void KeyState(void)
 {
+  int16_t y,fc;
+  uint8_t caps,num,chr;
+
+  RemoveSprites();
   RemoveWindows();
-  while (!GetKeyState(SC_ESC))
+  Cls();
+  ShowCursor(0);
+  DrawString(76,20,"Key States      \0",3);
+  DrawString(277,20,"Extended States \0",3);
+  DrawString(75,200,"Scancode :\0",1);
+  DrawString(75,210,"Character:\0",1);
+  while (!(GetKeyState(SC_ESC) && (GetKeyState(SC_L_CTRL) | GetKeyState(SC_R_CTRL))))
   {
-    if (x!=FrameCount)
+    if (fc!=FrameCount)
     {
-      x=FrameCount;
-      DrawHex(0,0,Pause,1);
-      i=0;
-      while (i<16)
+      fc=FrameCount;
+      // DrawHex(0,0,Pause,1);
+      y=0;
+      while (y<16)
       {
-        DrawBin(0,i*10+10,keytab[i],1);
-        DrawBin(30*8,i*10+10,extkeytab[i],1);
-        i++;
+        DrawBin(75,y*10+30,keytab[y],1);
+        DrawBin(277,y*10+30,extkeytab[y],1);
+        y++;
+      }
+      if (keyscan)
+      {
+        DrawHex(75+88,200,keyscan,1);
+        chr=GetChar();
+        DrawHex(75+88,210,chr,1);
+      }
+      if (caps!=Caps || num!=Num)
+      {
+        caps=Caps;
+        num=Num;
+        DrawStatus("Ctrl+Esc to quit\0",Caps,Num);
       }
     }
   }

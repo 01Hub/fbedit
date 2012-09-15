@@ -57,6 +57,8 @@
 /* External variables --------------------------------------------------------*/
 extern volatile uint16_t FrameCount;  // Frame counter
 extern volatile uint8_t nStuck;
+extern volatile uint8_t mousebufhead;
+extern volatile uint8_t mousebuftail;
 
 /* Private variables ---------------------------------------------------------*/
 /* Private function prototypes -----------------------------------------------*/
@@ -85,11 +87,14 @@ void main(void)
   SPI_Config();
   DMA_Config();
   USART_Config(9600);
-  /* Enable TIM3 */
-  TIM_Cmd(TIM3, ENABLE);
   STM_EVAL_LEDInit(LED3);
   STM_EVAL_LEDInit(LED4);
   STM_EVAL_PBInit(BUTTON_USER,BUTTON_MODE_GPIO);
+
+  MouseInit();
+
+  /* Enable TIM3 */
+  TIM_Cmd(TIM3, ENABLE);
 
   SetCursor(0);
   MoveCursor(SCREEN_WIDTH/2,SCREEN_HEIGHT/2);
@@ -104,7 +109,7 @@ void main(void)
       i--;
     }
   }
-  NVIC_KBDConfig();
+  //NVIC_KBDConfig();
   /* Wait 25 frames */
   i=25;
   while (i)
@@ -115,6 +120,8 @@ void main(void)
       i--;
     }
   }
+  mousebufhead = 0;
+  mousebuftail = 0;
   nStuck=10;
   KeyboardReset();
   while (1)
@@ -178,18 +185,18 @@ void NVIC_KBDConfig(void)
 {
   NVIC_InitTypeDef NVIC_InitStructure;
 
-  /* Enable and set EXTI Line0 Interrupt to low priority */
-  NVIC_InitStructure.NVIC_IRQChannel = EXTI0_IRQn;
-  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 2;
-  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
-  NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-  NVIC_Init(&NVIC_InitStructure);
-  /* Enable and set EXTI Line2 Interrupt to low priority */
-  NVIC_InitStructure.NVIC_IRQChannel = EXTI2_IRQn;
-  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 2;
-  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
-  NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-  NVIC_Init(&NVIC_InitStructure);
+  // /* Enable and set EXTI Line0 Interrupt to low priority */
+  // NVIC_InitStructure.NVIC_IRQChannel = EXTI0_IRQn;
+  // NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 2;
+  // NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+  // NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+  // NVIC_Init(&NVIC_InitStructure);
+  // /* Enable and set EXTI Line2 Interrupt to low priority */
+  // NVIC_InitStructure.NVIC_IRQChannel = EXTI2_IRQn;
+  // NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 2;
+  // NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+  // NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+  // NVIC_Init(&NVIC_InitStructure);
 }
 
 /**
@@ -230,28 +237,6 @@ void GPIO_Config(void)
   GPIO_PinAFConfig(GPIOA, GPIO_PinSource2, GPIO_AF_USART2);
   GPIO_PinAFConfig(GPIOA, GPIO_PinSource3, GPIO_AF_USART2);
 
-  /* GPIOB Pin3, Pin2, Pin1 and Pin0 as input floating */
-  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_3 | GPIO_Pin_2 | GPIO_Pin_1 | GPIO_Pin_0;
-  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
-  GPIO_Init(GPIOB, &GPIO_InitStructure);
-
-  /* Connect EXTI Line0 to PB0 pin */
-  SYSCFG_EXTILineConfig(EXTI_PortSourceGPIOB, EXTI_PinSource0);
-  /* Configure EXTI Line0 */
-  EXTI_InitStructure.EXTI_Line = EXTI_Line0;
-  EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
-  EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Falling;  
-  EXTI_InitStructure.EXTI_LineCmd = ENABLE;
-  EXTI_Init(&EXTI_InitStructure);
-
-  /* Connect EXTI Line2 to PB2 pin */
-  SYSCFG_EXTILineConfig(EXTI_PortSourceGPIOB, EXTI_PinSource2);
-  /* Configure EXTI Line2 */
-  EXTI_InitStructure.EXTI_Line = EXTI_Line2;
-  EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
-  EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Falling;  
-  EXTI_InitStructure.EXTI_LineCmd = ENABLE;
-  EXTI_Init(&EXTI_InitStructure);
 }
 
 /**
