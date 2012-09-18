@@ -23,7 +23,7 @@ void PongGameSetup(void)
   Line(0,0,479,0,1);
   Line(0,249,479,249,1);
   Line(480/2,0,480/2,249,1);
-  DrawLargeDec(SCREEN_WIDTH/2+5,3,0,1);
+  DrawLargeDec16(SCREEN_WIDTH/2+5,3,0,1);
   PongGame.Paddle[0].visible=1;
   if (PongGame.Mode==0)
   {
@@ -34,13 +34,13 @@ void PongGameSetup(void)
   else if (PongGame.Mode==1)
   {
     SetCaption(GetControlHandle(PongGame.hmsgbox,3),"1P VS STM\0");
-    DrawLargeDec(SCREEN_WIDTH/2-50-16*5,3,0,1);
+    DrawLargeDec16(SCREEN_WIDTH/2-50-16*5,3,0,1);
     PongGame.Paddle[1].visible=1;
   }
   else
   {
     SetCaption(GetControlHandle(PongGame.hmsgbox,3),"2 Player\0");
-    DrawLargeDec(SCREEN_WIDTH/2-50-16*5,3,0,1);
+    DrawLargeDec16(SCREEN_WIDTH/2-50-16*5,3,0,1);
     PongGame.Paddle[1].visible=1;
   }
   PongGame.bxdir=4;
@@ -279,7 +279,7 @@ void PongBallMove()
     {
       /* Ball went out to the left */
       PongGame.Points[1]++;
-      DrawLargeDec(SCREEN_WIDTH/2+5,3,PongGame.Points[1],1);
+      DrawLargeDec16(SCREEN_WIDTH/2+5,3,PongGame.Points[1],1);
       PongGame.Ball.x=480-16;
       PongGame.Ball.y=Random(200)+20;
       PongGame.bxdir=-4;
@@ -297,7 +297,7 @@ void PongBallMove()
       {
         /* Ball went out to the right */
         PongGame.Points[0]++;
-        DrawLargeDec(SCREEN_WIDTH/2-50-16*5,3,PongGame.Points[0],1);
+        DrawLargeDec16(SCREEN_WIDTH/2-50-16*5,3,PongGame.Points[0],1);
         PongGame.Ball.x=16;
         PongGame.Ball.y=Random(200)+20;
         PongGame.bxdir=4;

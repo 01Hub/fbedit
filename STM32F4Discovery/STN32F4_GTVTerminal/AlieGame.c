@@ -165,7 +165,7 @@ void AlienGameSetup(void)
     i++;
     DrawIcon(i*wtshield-36/2,ALIEN_SHIELD_TOP,&AlienGame.Shield,1);
   }
-  DrawLargeDec(SCREEN_WIDTH-10-16*5,3,AlienGame.Points,1);
+  DrawLargeDec16(SCREEN_WIDTH-10-16*5,3,AlienGame.Points,1);
 }
 
 void BombDrop(void)
@@ -316,7 +316,7 @@ void ShotMove(void)
                 AlienGame.Alien[j].visible=0;
                 AlienGame.Aliens--;
                 AlienGame.Points+=5;
-                DrawLargeDec(SCREEN_WIDTH-10-16*5,3,AlienGame.Points,1);
+                DrawLargeDec16(SCREEN_WIDTH-10-16*5,3,AlienGame.Points,1);
                 break;
               }
             }
@@ -335,7 +335,7 @@ void ShotMove(void)
                 AlienGame.Bomb[j].visible=0;
                 AlienGame.Bombs--;
                 AlienGame.Points++;
-                DrawLargeDec(SCREEN_WIDTH-10-16*5,3,AlienGame.Points,1);
+                DrawLargeDec16(SCREEN_WIDTH-10-16*5,3,AlienGame.Points,1);
                 break;
               }
             }

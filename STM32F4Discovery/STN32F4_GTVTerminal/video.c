@@ -372,11 +372,11 @@ void DrawLargeString(uint16_t x, uint16_t y, uint8_t *str, uint8_t c)
 }
 
 /**
-  * @brief  This function draws a decimal value at x, y.
+  * @brief  This function draws a 16bit decimal value at x, y.
   * @param  x, y, n, c
   * @retval None
   */
-void DrawDec(uint16_t x, uint16_t y, uint16_t n, uint8_t c)
+void DrawDec16(uint16_t x, uint16_t y, uint16_t n, uint8_t c)
 {
 	uint8_t decstr[6];
   int8_t i,d;
@@ -409,7 +409,7 @@ void DrawDec(uint16_t x, uint16_t y, uint16_t n, uint8_t c)
   * @param  x, y, n, c
   * @retval None
   */
-void DrawLargeDec(uint16_t x, uint16_t y, uint16_t n, uint8_t c)
+void DrawLargeDec16(uint16_t x, uint16_t y, uint16_t n, uint8_t c)
 {
 	uint8_t decstr[6];
   int8_t i,d;
@@ -442,7 +442,7 @@ void DrawLargeDec(uint16_t x, uint16_t y, uint16_t n, uint8_t c)
   * @param  x, y, n, c
   * @retval None
   */
-void DrawHex(uint16_t x, uint16_t y, uint16_t n, uint8_t c)
+void DrawHex16(uint16_t x, uint16_t y, uint16_t n, uint8_t c)
 {
 	static uint8_t hexchars[] = "0123456789ABCDEF";
 	uint8_t hexstr[5];
@@ -459,7 +459,7 @@ void DrawHex(uint16_t x, uint16_t y, uint16_t n, uint8_t c)
   * @param  x, y, n, c
   * @retval None
   */
-void DrawBin(uint16_t x, uint16_t y, uint16_t n, uint8_t c)
+void DrawBin16(uint16_t x, uint16_t y, uint16_t n, uint8_t c)
 {
   uint8_t i;
   i=0;

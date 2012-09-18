@@ -8,8 +8,9 @@
 	<NodeC Path=".\keystate.c" Header="keystate.c" Marker="-1" AsyncBuild="" OutputFile=".\keystate.o" sate="0" />
 	<NodeC Path=".\window.c" Header="window.c" Marker="-1" AsyncBuild="" OutputFile=".\window.o" sate="0" />
 	<NodeC Path=".\desktop.c" Header="desktop.c" Marker="-1" AsyncBuild="" OutputFile=".\desktop.o" sate="0" />
-	<NodeC Path=".\pong.c" Header="pong.c" Marker="-1" AsyncBuild="" OutputFile=".\pong.o" sate="2" />
-	<NodeC Path=".\terminal.c" Header="terminal.c" Marker="-1" AsyncBuild="" OutputFile=".\terminal.o" sate="0" />
+	<NodeC Path=".\pong.c" Header="pong.c" Marker="-1" AsyncBuild="" OutputFile=".\pong.o" sate="0" />
+	<NodeC Path=".\terminal.c" Header="terminal.c" Marker="-1" AsyncBuild="" OutputFile=".\terminal.o" sate="2" />
+	<NodeC Path=".\logicanalyser.c" Header="logicanalyser.c" Marker="-1" AsyncBuild="" OutputFile=".\logicanalyser.o" sate="0" />
 	<NodeC Path=".\AlieGame.c" Header="AlieGame.c" Marker="-1" AsyncBuild="" OutputFile=".\AlieGame.o" sate="0" />
 	<NodeC Path=".\misc.c" Header="misc.c" Marker="-1" AsyncBuild="" OutputFile=".\misc.o" sate="0" />
 	<NodeC Path=".\stm32f4_discovery.c" Header="stm32f4_discovery.c" Marker="-1" AsyncBuild="" OutputFile=".\stm32f4_discovery.o" sate="0" />
@@ -28,46 +29,46 @@
 			<Set Header="ApplicationBuild" >
 				<Section Header="General" >
 					<Property Header="TargetFamily" Value="ARM" />
-																																																																																																																			
+																																																																																																																												
 				</Section>
 				<Section Header="Directories" >
 					<Property Header="IncDir" Value=".;\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc" Removable="1" />
 					<Property Header="LibDir" Value="$(RkitLib)\ARM" Removable="1" />
-																																																																															
+																																																																																								
 				</Section>
-																																																													
+																																																																				
 			</Set>
 			<Set Header="Target" >
 				<Section Header="ProcessorARM" >
 					<Property Header="Processor" Value="STM32F100RB" />
-																																																																																																																			
+																																																																																																																												
 				</Section>
 				<Section Header="ToolSetARM" >
 					<Property Header="BuildToolSetARM" Value="ARM\GNU.config" Removable="1" />
-																																																																																																																			
+																																																																																																																												
 				</Section>
 				<Section Header="DebugARM" >
 					<Property Header="DebugTool_CORTEX" Value="SIM-ARM" Removable="1" />
-																																																																																																										
+																																																																																																																			
 				</Section>
-																																																																																		
+																																																																																									
 			</Set>
 			<Set Header="LD" >
 				<Section Header="Startup" >
 					<Property Header="DEFAULTSTARTUP" Value="No" Removable="1" />
 					<Property Header="File" Value=".\startup_stm32f4xx.o" Removable="1" />
-																																																																																																										
+																																																																																																																			
 				</Section>
 				<Section Header="Scripts" >
 					<Property Header="SCRIPTFILES" Value="No" Removable="1" />
 					<Property Header="File" Value="STM32F100_64K_8K_FLASH.ld" Removable="1" />
-																																																																																																	
+																																																																																																										
 				</Section>
-																																																																											
+																																																																																		
 			</Set>
-																																								
+																																													
 		</Config>
-																								
+																											
 	</Options>
 	<NodeASM Path=".\startup_stm32f4xx.s" Header="startup_stm32f4xx.s" Marker="0" AsyncBuild="" OutputFile=".\startup_stm32f4xx.o" sate="0" >
 		<Options>
@@ -76,20 +77,19 @@
 					<Section Header="Build" >
 						<Property Header="Exclude" Value="Yes" Removable="1" />
 						<Property Header="LinkExclude" Value="Yes" Removable="1" />
-																																																																																																
+																																																																																																											
 					</Section>
-																																																																														
+																																																																																							
 				</Set>
-																																																								
+																																																															
 			</Config>
-																																								
+																																													
 		</Options>
-																																	
+																																				
 	</NodeASM>
 	<NodeH Path=".\window.h" Header="window.h" Marker="-1" AsyncBuild="" OutputFile="" sate="0" />
 	<NodeH Path=".\pong.h" Header="pong.h" Marker="-1" AsyncBuild="" OutputFile="" sate="0" />
 	<NodeH Path=".\mouse.h" Header="mouse.h" Marker="-1" AsyncBuild="" OutputFile="" sate="0" />
 	<NodeH Path=".\desktop.h" Header="desktop.h" Marker="-1" AsyncBuild="" OutputFile="" sate="0" />
-	<NodeC Path=".\logicanalyser.c" Header="logicanalyser.c" Marker="-1" AsyncBuild="" OutputFile=".\logicanalyser.o" sate="0" />
 	<NodeH Path=".\logicanalyser.h" Header="logicanalyser.h" Marker="-1" AsyncBuild="" OutputFile="" sate="0" />
 </ApplicationBuild>

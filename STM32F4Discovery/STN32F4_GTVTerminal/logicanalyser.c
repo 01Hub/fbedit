@@ -21,11 +21,51 @@ void LgaMainHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
   switch (event)
   {
     case EVENT_CHAR:
-      if (param==0x0D && ID==99)
+      if (param==0x0D)
       {
-        /* Quit */
-        Lga.Quit=1;
-        break;
+        switch (ID)
+        {
+          case 1:
+            /* Fast left */
+            Lga.dataofs-=64;
+            if (Lga.dataofs<0)
+            {
+              Lga.dataofs=0;
+            }
+            break;
+          case 2:
+            /* Fast right */
+            Lga.dataofs+=64;
+            if (Lga.dataofs<LGA_DATASIZE-64)
+            {
+              Lga.dataofs=LGA_DATASIZE-64;
+            }
+            break;
+          case 3:
+            /* Left */
+            Lga.dataofs--;
+            if (Lga.dataofs<0)
+            {
+              Lga.dataofs=0;
+            }
+            break;
+          case 4:
+            /* Right */
+            Lga.dataofs++;
+            if (Lga.dataofs<LGA_DATASIZE-64)
+            {
+              Lga.dataofs=LGA_DATASIZE-64;
+            }
+            break;
+          case 98:
+            /* Sample */
+            Lga.Sample=1;
+            break;
+          case 99:
+            /* Quit */
+            Lga.Quit=1;
+            break;
+        }
       }
     default:
       DefWindowHandler(hwin,event,param,ID);
@@ -41,9 +81,9 @@ void LgaHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
       DefWindowHandler(hwin,event,param,ID);
       if (FrameCount & 1)
       {
-        DrawLgaGrid();
+        LgaDrawGrid();
       }
-      DrawLgaData();
+      LgaDrawData();
       break;
     default:
       DefWindowHandler(hwin,event,param,ID);
@@ -51,75 +91,27 @@ void LgaHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
   }
 }
 
-void DrawLgaLine(uint16_t X1,uint16_t Y1,uint16_t X2,uint16_t Y2)
+void LgaDrawHLine(uint16_t x,uint16_t y,uint16_t wdt)
 {
-  uint16_t CurrentX, CurrentY, Xinc, Yinc, 
-           Dx, Dy, TwoDx, TwoDy, 
-           TwoDxAccumulatedError, TwoDyAccumulatedError;
-
-  Dx = (X2-X1);
-  Dy = (Y2-Y1);
-
-  TwoDx = Dx + Dx;
-  TwoDy = Dy + Dy;
-
-  CurrentX = X1;
-  CurrentY = Y1;
-
-  Xinc = 1;
-  Yinc = 1;
-
-  if(Dx < 0)
+  while (wdt)
   {
-    Xinc = -1;
-    Dx = -Dx;
-    TwoDx = -TwoDx;
-  }
-
-  if (Dy < 0)
-  {
-    Yinc = -1;
-    Dy = -Dy;
-    TwoDy = -TwoDy;
-  }
-  SetFBPixel(X1,Y1);
-
-  if ((Dx != 0) || (Dy != 0))
-  {
-    if (Dy <= Dx)
-    { 
-      TwoDxAccumulatedError = 0;
-      do
-      {
-        CurrentX += Xinc;
-        TwoDxAccumulatedError += TwoDy;
-        if(TwoDxAccumulatedError > Dx)
-        {
-          CurrentY += Yinc;
-          TwoDxAccumulatedError -= TwoDx;
-        }
-        SetFBPixel(CurrentX,CurrentY);
-      }while (CurrentX != X2);
-    }
-    else
-    {
-      TwoDyAccumulatedError = 0; 
-      do 
-      {
-        CurrentY += Yinc; 
-        TwoDyAccumulatedError += TwoDx;
-        if(TwoDyAccumulatedError>Dy) 
-        {
-          CurrentX += Xinc;
-          TwoDyAccumulatedError -= TwoDy;
-        }
-        SetFBPixel(CurrentX,CurrentY);
-      }while (CurrentY != Y2);
-    }
+    SetFBPixel(x,y);
+    x++;
+    wdt--;
   }
 }
 
-void DrawLgaGrid(void)
+void LgaDrawVLine(uint16_t x,uint16_t y,uint16_t hgt)
+{
+  while (hgt)
+  {
+    SetFBPixel(x,y);
+    y++;
+    hgt--;
+  }
+}
+
+void LgaDrawGrid(void)
 {
   int16_t y=LGA_TOP+16;
   int16_t x=LGA_LEFT+30;
@@ -127,57 +119,78 @@ void DrawLgaGrid(void)
 
   while (y<=LGA_TOP+LGA_HEIGHT-30)
   {
-    DrawLgaLine(LGA_LEFT,y,LGA_LEFT+LGA_WIDTH,y);
-    DrawInvWinString(LGA_LEFT+5,y-12,2,lgacap[i]);
+    LgaDrawHLine(LGA_LEFT,y,LGA_WIDTH);
+    DrawWinString(LGA_LEFT+5,y-12,2,lgacap[i],2);
     y+=16;
     i++;
   }
   while (x<LGA_LEFT+30+8*32)
   {
-    DrawLgaLine(x,LGA_TOP,x,LGA_TOP+LGA_HEIGHT-30);
+    LgaDrawVLine(x,LGA_TOP,LGA_HEIGHT-30);
     x+=32;
   }
 }
 
-void DrawLgaByte(uint16_t x,uint8_t byte,uint8_t pbyte)
+void LgaDrawByte(uint32_t x,uint8_t byte,uint8_t pbyte)
 {
   uint8_t bit=1;
-  uint16_t y=LGA_TOP+16;
+  uint32_t y=LGA_TOP+16;
 
   while (bit)
   {
     if ((byte & bit) != (pbyte & bit))
     {
       /* Transition */
-      DrawLgaLine(x,y-13,x,y-3);
+      LgaDrawVLine(x,y-13,10);
     }
     if (byte & bit)
     {
       /* High */
-      DrawLgaLine(x,y-13,x+4,y-13);
+      LgaDrawHLine(x,y-13,4);
     }
     else
     {
       /* Low */
-      DrawLgaLine(x,y-3,x+4,y-3);
+      LgaDrawHLine(x,y-3,4);
     }
     bit <<=1;
     y+=16;
   }
 }
 
-void DrawLgaData(void)
+void LgaDrawData(void)
 {
-  uint16_t x=LGA_LEFT+30;
-  uint8_t b=0;
-  uint8_t pb=0;
-  uint16_t i;
-  while (i<64)
+  uint32_t x=LGA_LEFT+30;
+  uint32_t i=0;
+  uint8_t byte;
+  uint8_t pbyte;
+  uint8_t* ptr;
+
+  ptr=(uint8_t*)(LGA_DATAPTR+Lga.dataofs);
+  byte=*ptr;
+  pbyte=byte;
+  while (i<LGA_BYTES)
   {
-    DrawLgaByte(x,b,pb);
-    pb=b;
-    b++;
+    LgaDrawByte(x,byte,pbyte);
+    pbyte=byte;
+    ptr++;
+    byte=*ptr;
     x+=4;
+    i++;
+  }
+}
+
+void LgaSample(void)
+{
+  uint32_t i=0;
+  uint8_t byte;
+  uint8_t* ptr;
+  ptr=(uint8_t*)LGA_DATAPTR;
+  while (i<0x8000)
+  {
+    byte=Random(255);
+    *ptr=byte;
+    ptr++;
     i++;
   }
 }
@@ -191,19 +204,38 @@ void LogicAnalyserSetup(void)
   Cls();
   ShowCursor(1);
   Lga.Quit=0;
-  /* Create logic analyser window */
-  Lga.hmain=CreateWindow(0,CLASS_WINDOW,0,0,0,480,238,"Logic Analyser\0");
+  /* Create main logic analyser window */
+  Lga.hmain=CreateWindow(0,CLASS_WINDOW,0,LGA_MAINLEFT,LGA_MAINTOP,LGA_MAINWIDTH,LGA_MAINHEIGHT,"Logic Analyser\0");
   SetHandler(Lga.hmain,&LgaMainHandler);
+  /* Fast left button */
+  CreateWindow(Lga.hmain,CLASS_BUTTON,1,LGA_LEFT,LGA_BOTTOM,20,20,"<<\0");
+  /* Fast right button */
+  CreateWindow(Lga.hmain,CLASS_BUTTON,2,LGA_RIGHT-20,LGA_BOTTOM,20,20,"<<\0");
+  /* Left button */
+  CreateWindow(Lga.hmain,CLASS_BUTTON,3,LGA_LEFT+20,LGA_BOTTOM,20,20,"<\0");
+  /* Right button */
+  CreateWindow(Lga.hmain,CLASS_BUTTON,4,LGA_RIGHT-20-20,LGA_BOTTOM,20,20,"<\0");
+  /* Sample button */
+  CreateWindow(Lga.hmain,CLASS_BUTTON,98,480-75,238-50,70,20,"Sample\0");
+  /* Quit button */
   CreateWindow(Lga.hmain,CLASS_BUTTON,99,480-75,238-25,70,20,"Quit\0");
+
   Lga.hlga=CreateWindow(Lga.hmain,CLASS_STATIC,1,LGA_LEFT,LGA_TOP,LGA_WIDTH,LGA_HEIGHT,0);
   SetStyle(Lga.hlga,STYLE_BLACK);
   SetHandler(Lga.hlga,&LgaHandler);
 
   SendEvent(Lga.hmain,EVENT_ACTIVATE,0,0);
   DrawStatus(0,Caps,Num);
+  Lga.dataofs=0;
 
   while (!Lga.Quit)
   {
+    if (Lga.Sample)
+    {
+      Lga.Sample=0;
+      LgaSample();
+      Lga.dataofs=0;
+    }
     if (caps!=Caps || num!=Num)
     {
       caps=Caps;

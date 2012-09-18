@@ -10,6 +10,7 @@
 #define CLASS_WINDOW        1
 #define CLASS_BUTTON        2
 #define CLASS_STATIC        3
+#define CLASS_CHKBOX        4
 
 #define EVENT_PAINT         1
 #define EVENT_SHOW          2
@@ -25,10 +26,12 @@
 #define STATE_HIDDEN        0
 #define STATE_VISIBLE       1
 #define STATE_FOCUS         2
+#define STATE_CHECKED       4
 
 #define DEF_WINSTATE        STATE_HIDDEN
 #define DEF_STCSTATE        STATE_VISIBLE
 #define DEF_BTNSTATE        STATE_VISIBLE
+#define DEF_CHKSTATE        STATE_VISIBLE
 
 #define STYLE_GRAY          1
 #define STYLE_BLACK         2
@@ -41,6 +44,7 @@
 #define DEF_WINSTYLE        STYLE_LEFT | STYLE_CANFOCUS
 #define DEF_STCSTYLE        STYLE_CENTER
 #define DEF_BTNSTYLE        STYLE_CENTER | STYLE_CANFOCUS
+#define DEF_CHKSTYLE        STYLE_LEFT | STYLE_CANFOCUS
 
 /* Private typedef -----------------------------------------------------------*/
 typedef uint32_t (*handler)(void*,uint8_t,uint32_t,uint8_t);
@@ -66,12 +70,12 @@ typedef struct
 /* Private function prototypes -----------------------------------------------*/
 void FocusNext(WINDOW* hpar);
 void FocusPrevious(WINDOW* hpar);
-void DrawWinChar(uint16_t x, uint16_t y, uint8_t chr);
-void DrawNormalWinChar(uint16_t x, uint16_t y, uint8_t chr);
-void DrawWinString(uint16_t x, uint16_t y,uint8_t len, uint8_t *str);
-void DrawNormalWinString(uint16_t x, uint16_t y,uint8_t len, uint8_t *str);
-void DrawInvWinString(uint16_t x, uint16_t y,uint8_t len, uint8_t *str);
+void DrawBlackWinChar(uint16_t x, uint16_t y, uint8_t chr);
+void DrawWhiteWinChar(uint16_t x, uint16_t y, uint8_t chr);
+void DrawWinString(uint16_t x, uint16_t y,uint8_t len, uint8_t *str,uint8_t c);
+void DrawWinDec16(uint16_t x, uint16_t y, uint16_t n, uint8_t c);
 void FrameRect(uint16_t x,uint16_t y,uint16_t wdt,uint16_t hgt);
+void BlackRect(uint16_t x,uint16_t y,uint16_t xm,uint16_t ym);
 void DrawCaption(WINDOW* hwin,uint16_t x,uint16_t y);
 void DrawWindow(WINDOW* hwin);
 WINDOW* WindowFromPoint(uint16_t x,uint16_t y);
@@ -82,7 +86,6 @@ WINDOW* FindControlCanFocus(WINDOW* hwin);
 uint32_t WindowToFront(WINDOW* hwin);
 uint32_t DefWindowHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID);
 uint32_t SendEvent(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID);
-void RemoveWindows(void);
 
 WINDOW* FindFree(void);
 uint8_t StrLen(uint8_t* str);
@@ -94,4 +97,5 @@ void SetHandler(WINDOW* hwin,void* hdlr);
 WINDOW* GetControlHandle(WINDOW* howner,uint8_t ID);
 void SetCaption(WINDOW* hwin,uint8_t *caption);
 void SetStyle(WINDOW* hwin,uint8_t style);
+void SetState(WINDOW* hwin,uint8_t state);
 void SetParam(WINDOW* hwin,uint32_t param);

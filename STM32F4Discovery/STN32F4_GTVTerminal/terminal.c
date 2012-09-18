@@ -189,7 +189,7 @@ void Terminal(void)
   uint8_t chr,caps,num;
   uint32_t i,Quit;
 
-  RemoveWindows();
+  RemoveSprites();
   video_show_cursor();
   video_cls();
   RefreshScreen();

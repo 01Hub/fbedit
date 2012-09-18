@@ -123,11 +123,11 @@ void FocusPrevious(WINDOW* hpar)
 }
 
 /**
-  * @brief  This function draws transparent an inverted character at x, y.
+  * @brief  This function draws transparent a black character at x, y.
   * @param  x, y, chr
   * @retval None
   */
-void DrawWinChar(uint16_t x, uint16_t y, uint8_t chr)
+void DrawBlackWinChar(uint16_t x, uint16_t y, uint8_t chr)
 {
   uint8_t cl,bit;
   uint16_t cx, cy;
@@ -155,11 +155,11 @@ void DrawWinChar(uint16_t x, uint16_t y, uint8_t chr)
 }
 
 /**
-  * @brief  This function draws transparent character at x, y.
+  * @brief  This function draws transparent a white character at x, y.
   * @param  x, y, chr
   * @retval None
   */
-void DrawNormalWinChar(uint16_t x, uint16_t y, uint8_t chr)
+void DrawWhiteWinChar(uint16_t x, uint16_t y, uint8_t chr)
 {
   uint8_t cl,bit;
   uint16_t cx, cy;
@@ -187,54 +187,79 @@ void DrawNormalWinChar(uint16_t x, uint16_t y, uint8_t chr)
 }
 
 /**
-  * @brief  This function draws a string with length len at x, y.
-  * @param  x, y, len, *str
+  * @brief  This function draws a string with length len at x, y with color c (0=black, 1=white).
+  * @param  x, y, len, *str, c
   * @retval None
   */
-void DrawWinString(uint16_t x, uint16_t y,uint8_t len, uint8_t *str)
+void DrawWinString(uint16_t x, uint16_t y,uint8_t len, uint8_t *str,uint8_t c)
 {
   uint8_t chr;
-  while (len)
+  switch (c)
   {
-    DrawWinChar(x, y, *str);
-    x+=TILE_WIDTH;
-    str++;
-    len--;
+    case 0:
+      while (len)
+      {
+        DrawBlackWinChar(x, y, *str);
+        x+=TILE_WIDTH;
+        str++;
+        len--;
+      }
+      break;
+    case 1:
+      while (len)
+      {
+        DrawWhiteWinChar(x, y, *str);
+        x+=TILE_WIDTH;
+        str++;
+        len--;
+      }
+      break;
+    case 2:
+      while (len)
+      {
+        chr=*str | 0x80;
+        DrawWhiteWinChar(x, y, *str);
+        x+=TILE_WIDTH;
+        str++;
+        len--;
+      }
+      break;
   }
 }
 
 /**
-  * @brief  This function draws a string with length len at x, y.
-  * @param  x, y, len, *str
+  * @brief  This function draws a 16bit decimal value at x, y.
+  * @param  x, y, n
   * @retval None
   */
-void DrawNormalWinString(uint16_t x, uint16_t y,uint8_t len, uint8_t *str)
+void DrawWinDec16(uint16_t x, uint16_t y, uint16_t n, uint8_t c)
 {
-  uint8_t chr;
-  while (len)
-  {
-    DrawNormalWinChar(x, y, *str);
-    x+=TILE_WIDTH;
-    str++;
-    len--;
-  }
-}
+	uint8_t decstr[5];
+  uint8_t i,d;
+  uint16_t dm;
 
-/**
-  * @brief  This function draws a string with length len at x, y.
-  * @param  x, y, len, *str
-  * @retval None
-  */
-void DrawInvWinString(uint16_t x, uint16_t y,uint8_t len, uint8_t *str)
-{
-  uint8_t chr;
-  while (len)
+  i=0;
+  dm=10000;
+  while (i<5)
   {
-    DrawNormalWinChar(x, y, *str | 0x80);
-    x+=TILE_WIDTH;
-    str++;
-    len--;
+    d=n/dm;
+    n-=d*dm;
+    decstr[0]=d | 0x30;
+    i++;
+    dm /=10;
   }
+  i=0;
+  while (i<4 && decstr[i]==0x30)
+  {
+    decstr[i]=0x20;
+    i++;
+  }
+  if (c & 4)
+  {
+    /* Right aligned */
+    x+=i*TILE_WIDTH;
+  }
+  DrawWinString(x,y,5-i,&decstr[i],c & 3);
 }
 
 /**
@@ -253,6 +278,40 @@ void FrameRect(uint16_t x,uint16_t y,uint16_t wdt,uint16_t hgt)
 		ClearFBPixel(x + j, y);
 		ClearFBPixel(x + j, y + hgt - 1);
 	}
+}
+
+void BlackRect(uint16_t x,uint16_t y,uint16_t xm,uint16_t ym)
+{
+  uint32_t i,j,k;
+  uint8_t cl,cr;
+
+  /* Draw black */
+  /* Get left fill */
+  cl=0xFF<<(x & 7);
+  /* Get right fill */
+  cr=0xFF>>(8-(xm & 7));
+  /* Fill left & right*/
+  j=y;
+  i=x>>3;
+  k=xm>>3;
+  while (j<ym)
+  {
+    FrameBuff[j][i] &= ~cl;
+    FrameBuff[j][k] &= ~cr;
+    j++;
+  }
+  j=y;
+  while (j<ym)
+  {
+    i=(x>>3)+1;
+    k=xm>>3;
+    while (i<k)
+    {
+      FrameBuff[j][i] = 0;
+      i++;
+    }
+    j++;
+  }
 }
 
 /**
@@ -276,7 +335,7 @@ void DrawCaption(WINDOW* hwin,uint16_t x,uint16_t y)
         x+=(hwin->wt-hwin->caplen*TILE_WIDTH)-2;
         break;
     }
-    DrawWinString(x,y,hwin->caplen,hwin->caption);
+    DrawWinString(x,y,hwin->caplen,hwin->caption,0);
   }
 }
 
@@ -429,32 +488,7 @@ void DrawWindow(WINDOW* hwin)
         if (FrameCount & 1)
         {
           /* Draw black to make the button appear gray */
-          /* Get left fill */
-          cl=0xFF<<(x & 7);
-          /* Get right fill */
-          cr=0xFF>>(8-(xm & 7));
-          /* Fill left & right*/
-          j=y;
-          i=x>>3;
-          k=xm>>3;
-          while (j<ym)
-          {
-            FrameBuff[j][i] &= ~cl;
-            FrameBuff[j][k] &= ~cr;
-            j++;
-          }
-          j=y;
-          while (j<ym)
-          {
-            i=(x>>3)+1;
-            k=xm>>3;
-            while (i<k)
-            {
-              FrameBuff[j][i] = 0;
-              i++;
-            }
-            j++;
-          }
+          BlackRect(x,y,xm,ym);
         }
       }
       y=y+(hwin->ht-TILE_HEIGHT)/2;
@@ -463,32 +497,13 @@ void DrawWindow(WINDOW* hwin)
     case CLASS_STATIC:
       if ((hwin->style & 3)==STYLE_BLACK)
       {
-        /* Draw black */
-        /* Get left fill */
-        cl=0xFF<<(x & 7);
-        /* Get right fill */
-        cr=0xFF>>(8-(xm & 7));
-        /* Fill left & right*/
-        j=y;
-        i=x>>3;
-        k=xm>>3;
-        while (j<ym)
+        BlackRect(x,y,xm,ym);
+      }
+      else if ((hwin->style & 3)==STYLE_GRAY)
+      {
+        if (FrameCount & 1)
         {
-          FrameBuff[j][i] &= ~cl;
-          FrameBuff[j][k] &= ~cr;
-          j++;
-        }
-        j=y;
-        while (j<ym)
-        {
-          i=(x>>3)+1;
-          k=xm>>3;
-          while (i<k)
-          {
-            FrameBuff[j][i] = 0;
-            i++;
-          }
-          j++;
+          BlackRect(x,y,xm,ym);
         }
       }
       else
@@ -742,23 +757,10 @@ uint32_t SendEvent(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
   hwin->handler(hwin,event,param,ID);
 }
 
-void RemoveWindows(void)
-{
-  uint32_t i;
-
-  Focus=0;
-  i=0;
-  while (i<MAX_WINDOWS)
-  {
-    Windows[i]=0;
-    i++;
-  }
-}
-
 /**
   * @brief  This function returns a free WinColl pointer.
-  * @param  hpar,hwin
-  * @retval None
+  * @param  None
+  * @retval Window handle
   */
 WINDOW* FindFree(void)
 {
@@ -777,8 +779,8 @@ WINDOW* FindFree(void)
 
 /**
   * @brief  This function returns the lenght of a zero terminated string.
-  * @param  hpar,hwin
-  * @retval None
+  * @param  str
+  * @retval lenght of string
   */
 uint8_t StrLen(uint8_t *str)
 {
@@ -805,6 +807,11 @@ void AddControl(WINDOW* hwin,WINDOW* hctl)
   hwin->control=hctl;
 }
 
+/**
+  * @brief  This function adds a window to Windows collection.
+  * @param  hwin
+  * @retval None
+  */
 void AddWindow(WINDOW* hwin)
 {
   uint32_t i=0;
@@ -820,6 +827,11 @@ void AddWindow(WINDOW* hwin)
   }
 }
 
+/**
+  * @brief  This function creates a window.
+  * @param  howner,winclass,ID,x,y,wt,ht,caption
+  * @retval window handle
+  */
 WINDOW* CreateWindow(WINDOW* howner,uint8_t winclass,uint8_t ID,uint16_t x,uint16_t y,uint16_t wt,uint16_t ht,uint8_t *caption)
 {
   WINDOW* hwin;
@@ -857,6 +869,10 @@ WINDOW* CreateWindow(WINDOW* howner,uint8_t winclass,uint8_t ID,uint16_t x,uint1
         hwin->state=DEF_STCSTATE;
         hwin->style=DEF_STCSTYLE;
         break;
+      case CLASS_CHKBOX:
+        hwin->state=DEF_CHKSTATE;
+        hwin->style=DEF_CHKSTYLE;
+        break;
     }
     hwin->handler=(void*)&DefWindowHandler;
     if (howner)
@@ -871,6 +887,11 @@ WINDOW* CreateWindow(WINDOW* howner,uint8_t winclass,uint8_t ID,uint16_t x,uint1
   return hwin;
 }
 
+/**
+  * @brief  This function destroys a window.
+  * @param  hwin
+  * @retval None
+  */
 void DestroyWindow(WINDOW* hwin)
 {
   WINDOW* hctl;
@@ -901,11 +922,21 @@ void DestroyWindow(WINDOW* hwin)
   }
 }
 
+/**
+  * @brief  This function sets the window handler function.
+  * @param  hwin,hdlr
+  * @retval None
+  */
 void SetHandler(WINDOW* hwin,void* hdlr)
 {
   hwin->handler=hdlr;
 }
 
+/**
+  * @brief  This function gets a controls window handle.
+  * @param  howner,ID
+  * @retval wwindow handle
+  */
 WINDOW* GetControlHandle(WINDOW* howner,uint8_t ID)
 {
   WINDOW* hctl;
@@ -935,6 +966,11 @@ void SetCaption(WINDOW* hwin,uint8_t *caption)
 void SetStyle(WINDOW* hwin,uint8_t style)
 {
   hwin->style=style;
+}
+
+void SetState(WINDOW* hwin,uint8_t state)
+{
+  hwin->state=state;
 }
 
 void SetParam(WINDOW* hwin,uint32_t param)

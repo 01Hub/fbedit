@@ -6,24 +6,37 @@
 #include "keycodes.h"
 
 /* Private define ------------------------------------------------------------*/
+#define LGA_MAINLEFT      0
+#define LGA_MAINTOP       0
+#define LGA_MAINWIDTH     480
+#define LGA_MAINHEIGHT    238
 #define LGA_LEFT          4
 #define LGA_TOP           16
 #define LGA_WIDTH         256+30
 #define LGA_HEIGHT        128+30
+#define LGA_RIGHT         LGA_LEFT+LGA_WIDTH
+#define LGA_BOTTOM        LGA_TOP+LGA_HEIGHT
+#define LGA_DATAPTR       0x20010000
+#define LGA_DATASIZE      0x8000
+#define LGA_BYTES         64
 
 /* Private typedef -----------------------------------------------------------*/
 typedef struct
 {
   WINDOW* hmain;
   WINDOW* hlga;
+  int32_t dataofs;
+  uint8_t Sample;
   uint8_t Quit;
 } LGA;
 
 /* Private function prototypes -----------------------------------------------*/
 void LgaMainHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID);
 void LgaHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID);
-void DrawLgaLine(uint16_t X1,uint16_t Y1,uint16_t X2,uint16_t Y2);
-void DrawLgaGrid(void);
-void DrawLgaByte(uint16_t x,uint8_t byte,uint8_t pbyte);
-void DrawLgaData();
+void LgaDrawHLine(uint16_t x,uint16_t y,uint16_t wdt);
+void LgaDrawVLine(uint16_t x,uint16_t y,uint16_t hgt);
+void LgaDrawGrid(void);
+void LgaDrawByte(uint32_t x,uint8_t byte,uint8_t pbyte);
+void LgaDrawData();
+void LgaSample(void);
 void LogicAnalyserSetup(void);

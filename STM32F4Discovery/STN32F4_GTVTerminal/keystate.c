@@ -24,7 +24,6 @@ void KeyState(void)
   uint8_t caps,num,chr;
 
   RemoveSprites();
-  RemoveWindows();
   Cls();
   ShowCursor(0);
   DrawString(76,20,"Key States      \0",3);
@@ -37,15 +36,15 @@ void KeyState(void)
     y=0;
     while (y<16)
     {
-      DrawBin(75,y*10+30,keytab[y],1);
-      DrawBin(277,y*10+30,extkeytab[y],1);
+      DrawBin16(75,y*10+30,keytab[y],1);
+      DrawBin16(277,y*10+30,extkeytab[y],1);
       y++;
     }
     if (keyscan)
     {
-      DrawHex(75+88,200,keyscan,1);
+      DrawHex16(75+88,200,keyscan,1);
       chr=GetChar();
-      DrawHex(75+88,210,chr,1);
+      DrawHex16(75+88,210,chr,1);
     }
     if (caps!=Caps || num!=Num)
     {

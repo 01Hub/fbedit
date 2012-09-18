@@ -198,7 +198,7 @@ void KeyboardReset(void)
         nStuck++;
       }
       nStuck=0;
-      DrawHex(200,0,scancode,1);
+      DrawHex16(200,0,scancode,1);
       scancode=0x0800;
     }
   }
