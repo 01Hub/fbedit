@@ -6,7 +6,6 @@
 /* Private define ------------------------------------------------------------*/
 /* Private macro -------------------------------------------------------------*/
 /* External variables --------------------------------------------------------*/
-extern volatile uint16_t FrameCount;  // Frame counter
 extern SPRITE* Sprites[];             // Max 64 sprites
 extern WINDOW* Windows[];             // Max 16 windows
 extern WINDOW* Focus;                 // The windpw that has the keyboard focus
@@ -20,7 +19,6 @@ PONG_GAME PongGame;
 void PongGameSetup(void)
 {
   Cls();
-  ShowCursor(0);
   /* Draw game frame */
   Line(0,0,479,0,1);
   Line(0,249,479,249,1);
@@ -31,21 +29,17 @@ void PongGameSetup(void)
   {
     Line(479,0,479,249,1);
     PongGame.Paddle[1].visible=0;
-    PongGame.Button3.caplen=10;
-    PongGame.Button3.caption="1P VS Wall";
+    SetCaption(GetControlHandle(PongGame.hmsgbox,3),"1P VS Wall\0");
+  }
+  else if (PongGame.Mode==1)
+  {
+    SetCaption(GetControlHandle(PongGame.hmsgbox,3),"1P VS STM\0");
+    DrawLargeDec(SCREEN_WIDTH/2-50-16*5,3,0,1);
+    PongGame.Paddle[1].visible=1;
   }
   else
   {
-    if (PongGame.Mode==1)
-    {
-      PongGame.Button3.caplen=9;
-      PongGame.Button3.caption="1P VS STM";
-    }
-    else
-    {
-      PongGame.Button3.caplen=8;
-      PongGame.Button3.caption="2 Player";
-    }
+    SetCaption(GetControlHandle(PongGame.hmsgbox,3),"2 Player\0");
     DrawLargeDec(SCREEN_WIDTH/2-50-16*5,3,0,1);
     PongGame.Paddle[1].visible=1;
   }
@@ -58,24 +52,24 @@ void PongGameSetup(void)
   PongGame.Ball.collision=0;
 }
 
-void PongMsgBoxHandler(WINDOW* hwin,uint8_t event,uint16_t param,uint8_t ID)
+void PongMsgBoxHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
 {
   switch (event)
   {
     case EVENT_CHAR:
-      if (param==0x0D && ID==3)
+      if (param==0x0D && ID==5)
       {
         /* New Game */
         PongGame.DemoMode=0;
         break;
       }
-      else if (param==0x0D && ID==2)
+      else if (param==0x0D && ID==4)
       {
         /* Quit */
         PongGame.Quit=1;
         break;
       }
-      else if (param==0x0D && ID==4)
+      else if (param==0x0D && ID==3)
       {
         /* Mode select */
         PongGame.Mode++;
@@ -96,87 +90,12 @@ void PongGameInit(void)
 {
   uint32_t i;
 
-  RemoveWindows();
-  /* Setup the message box */
-  PongGame.Static1.hwin=&PongGame.Static1;
-  PongGame.Static1.owner=&PongGame.MsgBox;
-  PongGame.Static1.winclass=CLASS_STATIC;
-  PongGame.Static1.ID=1;
-  PongGame.Static1.x=4;
-  PongGame.Static1.y=15;
-  PongGame.Static1.wt=170-8;
-  PongGame.Static1.ht=20;
-  PongGame.Static1.state=STATE_VISIBLE;
-  PongGame.Static1.style=STYLE_CENTER;
-  PongGame.Static1.caplen=9;
-  PongGame.Static1.caption="Game Over";
-  PongGame.Static1.control=0;
-  PongGame.Static1.handler=(void*)&DefWindowHandler;
-
-  PongGame.Button1.hwin=&PongGame.Button1;
-  PongGame.Button1.owner=&PongGame.MsgBox;
-  PongGame.Button1.winclass=CLASS_BUTTON;
-  PongGame.Button1.ID=2;
-  PongGame.Button1.x=5;
-  PongGame.Button1.y=90-25;
-  PongGame.Button1.wt=70;
-  PongGame.Button1.ht=20;
-  PongGame.Button1.state=STATE_VISIBLE;
-  PongGame.Button1.style=STYLE_NORMAL | STYLE_CENTER | STYLE_CANFOCUS;
-  PongGame.Button1.caplen=4;
-  PongGame.Button1.caption="Quit";
-  PongGame.Button1.control=0;
-  PongGame.Button1.handler=(void*)&DefWindowHandler;
-
-  PongGame.Button2.hwin=&PongGame.Button2;
-  PongGame.Button2.owner=&PongGame.MsgBox;
-  PongGame.Button2.winclass=CLASS_BUTTON;
-  PongGame.Button2.ID=3;
-  PongGame.Button2.x=160-75;
-  PongGame.Button2.y=90-25;
-  PongGame.Button2.wt=70;
-  PongGame.Button2.ht=20;
-  PongGame.Button2.state=STATE_VISIBLE | STATE_FOCUS;
-  PongGame.Button2.style=STYLE_NORMAL | STYLE_CENTER | STYLE_CANFOCUS;
-  PongGame.Button2.caplen=8;
-  PongGame.Button2.caption="New Game";
-  PongGame.Button2.control=0;
-  PongGame.Button2.handler=(void*)&DefWindowHandler;
-
-  PongGame.Button3.hwin=&PongGame.Button3;
-  PongGame.Button3.owner=&PongGame.MsgBox;
-  PongGame.Button3.winclass=CLASS_BUTTON;
-  PongGame.Button3.ID=4;
-  PongGame.Button3.x=5;
-  PongGame.Button3.y=90-50;
-  PongGame.Button3.wt=150;
-  PongGame.Button3.ht=20;
-  PongGame.Button3.state=STATE_VISIBLE;
-  PongGame.Button3.style=STYLE_NORMAL | STYLE_CENTER | STYLE_CANFOCUS;
-  PongGame.Button3.control=0;
-  PongGame.Button3.handler=(void*)&DefWindowHandler;
-
-  PongGame.MsgBox.hwin=&PongGame.MsgBox;
-  PongGame.MsgBox.owner=0;
-  PongGame.MsgBox.winclass=CLASS_WINDOW;
-  PongGame.MsgBox.ID=0;
-  PongGame.MsgBox.x=(SCREEN_WIDTH-160)/2;
-  PongGame.MsgBox.y=(SCREEN_HEIGHT-90)/2;
-  PongGame.MsgBox.wt=160;
-  PongGame.MsgBox.ht=90;
-  PongGame.MsgBox.state=STATE_HIDDEN | STATE_FOCUS;
-  PongGame.MsgBox.style=STYLE_NORMAL | STYLE_LEFT;
-  PongGame.MsgBox.caplen=4;
-  PongGame.MsgBox.caption="Pong";
-  PongGame.MsgBox.control=0;
-  AddControl(PongGame.MsgBox.hwin,PongGame.Static1.hwin);
-  AddControl(PongGame.MsgBox.hwin,PongGame.Button1.hwin);
-  AddControl(PongGame.MsgBox.hwin,PongGame.Button2.hwin);
-  AddControl(PongGame.MsgBox.hwin,PongGame.Button3.hwin);
-  PongGame.MsgBox.handler=(void*)&PongMsgBoxHandler;
-  Focus=0;
-  Windows[0]=&PongGame.MsgBox;
-  SendEvent(PongGame.MsgBox.hwin,EVENT_SHOW,STATE_HIDDEN,0);
+  PongGame.hmsgbox=CreateWindow(0,CLASS_WINDOW,1,(SCREEN_WIDTH-160)/2,(SCREEN_HEIGHT-90)/2,160,90,"Pong\0");
+  CreateWindow(PongGame.hmsgbox,CLASS_STATIC,2,4,15,160-8,20,"GameOver\0");
+  CreateWindow(PongGame.hmsgbox,CLASS_BUTTON,3,5,90-50,150,20,0);
+  CreateWindow(PongGame.hmsgbox,CLASS_BUTTON,4,5,90-25,70,20,"Quit\0");
+  CreateWindow(PongGame.hmsgbox,CLASS_BUTTON,5,160-75,90-25,70,20,"New Game\0");
+  SetHandler(PongGame.hmsgbox,&PongMsgBoxHandler);
 
   PongGame.PongBound.left=5;
   PongGame.PongBound.top=5;
@@ -411,57 +330,42 @@ void PongBallMove()
 
 void PongGamePlay(void)
 {
-  uint32_t i,fc,rnd;
+  uint32_t i,rnd;
 
   /* Wait 25 frames */
-  i=25;
-  while (i)
-  {
-    if (fc!=FrameCount)
-    {
-      fc=FrameCount;
-      i--;
-    }
-  }
+  FrameWait(25);
   while (!PongGame.GameOver)
   {
     /* Syncronize with frame count */
-    if (FrameCount!=fc)
+    FrameWait(1);
+    PongBallMove();
+    if (PongGame.Mode==0)
     {
-      fc=FrameCount;
-      PongBallMove();
-      if (PongGame.Mode==0)
-      {
-        /* Paddle VS Wall */
-        PongPaddleMove(0);
-      }
-      else
-      {
-        /* Paddle VS STM or Paddle VS Paddle */
-        PongPaddleMove(0);
-        PongPaddleMove(1);
-      }
-      PongGame.GameOver=PongGame.Points[0]==10 || PongGame.Points[1]==10 || GetKeyState(SC_ESC);
+      /* Paddle VS Wall */
+      PongPaddleMove(0);
     }
+    else
+    {
+      /* Paddle VS STM or Paddle VS Paddle */
+      PongPaddleMove(0);
+      PongPaddleMove(1);
+    }
+    PongGame.GameOver=PongGame.Points[0]==10 || PongGame.Points[1]==10 || GetKeyState(SC_ESC);
   }
   PongGame.GameOver=0;
   PongGame.Ball.visible=0;
   ShowCursor(1);
   /* Show message box */
-  SendEvent(PongGame.MsgBox.hwin,EVENT_ACTIVATE,0,0);
+  SendEvent(PongGame.hmsgbox,EVENT_ACTIVATE,0,PongGame.hmsgbox->ID);
   PongGame.DemoMode=1;
   /* Wait 2000 frames */
   i=2000;
   while (i && PongGame.DemoMode && !PongGame.Quit)
   {
-    if (fc!=FrameCount)
-    {
-      rnd=Random(100);
-      fc=FrameCount;
-      i--;
-    }
+    FrameWait(1);
+    i--;
   }
-  SendEvent(PongGame.MsgBox.hwin,EVENT_SHOW,STATE_HIDDEN,0);
+  SendEvent(PongGame.hmsgbox,EVENT_SHOW,STATE_HIDDEN,0);
   ShowCursor(0);
 }
 
@@ -475,10 +379,11 @@ void PongGameLoop(void)
   while (!PongGame.Quit)
   {
     PongGameSetup();
+    ShowCursor(0);
     PongGame.Ball.visible=1;
     PongGamePlay();
   }
-  RemoveWindows();
+  DestroyWindow(PongGame.hmsgbox);
   RemoveSprites();
   /* Clear screen */
   Cls();

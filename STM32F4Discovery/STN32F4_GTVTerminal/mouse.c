@@ -1,18 +1,15 @@
 
 #include "stm32f4_discovery.h"
 #include "video.h"
+#include "window.h"
 
-extern volatile int16_t LineCount;
 extern SPRITE Cursor;
+extern WINDOW* Focus;
 
-/* circular buffer for mouse */
-volatile uint8_t mousebuf[256];
-volatile uint8_t mousebufhead = 0;
-volatile uint8_t mousebuftail = 0;
-
-volatile uint8_t tmpmousecode;
 volatile uint8_t mousecode;
 volatile uint8_t mbitcount = 11;
+volatile uint8_t mbytecount = 0;
+volatile uint8_t mb,pmb;
 volatile int32_t mx,my;
 
 void SendData(uint16_t d)
@@ -47,10 +44,6 @@ void MouseInit(void)
   GPIO_InitTypeDef GPIO_InitStructure;
   EXTI_InitTypeDef EXTI_InitStructure;
   NVIC_InitTypeDef NVIC_InitStructure;
-
-  /* Enable TIM3 */
-  TIM_Cmd(TIM3, ENABLE);
-
   /* Configure PB1 and PB0 as open drain outputs */
   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_1 | GPIO_Pin_0;
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
@@ -59,49 +52,30 @@ void MouseInit(void)
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
   GPIO_Init(GPIOB, &GPIO_InitStructure);
   GPIO_SetBits(GPIOB,GPIO_Pin_1 | GPIO_Pin_0);
-
-  lc=LineCount;;
-  while (lc==LineCount)
-  {
-  }
+  FrameWait(2);
+  LineWait(1);
   /* Clock low */
   GPIO_ResetBits(GPIOB,GPIO_Pin_0);
-
-  lc=LineCount;;
-  while (lc==LineCount)
-  {
-  }
-  lc=LineCount;;
-  while (lc==LineCount)
-  {
-  }
+  LineWait(2);
   TIM_Cmd(TIM3, DISABLE);
   /* Data low */
   GPIO_ResetBits(GPIOB,GPIO_Pin_1);
   /* Clock as input */
   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0;
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
-
   /* Clock high */
   GPIO_SetBits(GPIOB,GPIO_Pin_0);
-  // lc=0;
-  // while (lc<5)
-  // {
-    // lc++;
-  // }
   GPIO_Init(GPIOB, &GPIO_InitStructure);
   /* Wait until clock low */
-  while (GPIO_ReadInputDataBit(GPIOB,GPIO_Pin_0))
+  while (GPIO_ReadInputDataBit(GPIOB,GPIO_Pin_0)!=Bit_SET)
   {
   }
   /* Send the F4 command to the mouse */
   SendData(0b10111101000);
-
   /* GPIOB Pin3, Pin2, Pin1 and Pin0 as input floating */
   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_3 | GPIO_Pin_2 | GPIO_Pin_1 | GPIO_Pin_0;
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
   GPIO_Init(GPIOB, &GPIO_InitStructure);
-
   /* Connect EXTI Line0 to PB0 pin */
   SYSCFG_EXTILineConfig(EXTI_PortSourceGPIOB, EXTI_PinSource0);
   /* Configure EXTI Line0 */
@@ -110,7 +84,6 @@ void MouseInit(void)
   EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Falling;  
   EXTI_InitStructure.EXTI_LineCmd = ENABLE;
   EXTI_Init(&EXTI_InitStructure);
-
   /* Connect EXTI Line2 to PB2 pin */
   SYSCFG_EXTILineConfig(EXTI_PortSourceGPIOB, EXTI_PinSource2);
   /* Configure EXTI Line2 */
@@ -119,7 +92,6 @@ void MouseInit(void)
   EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Falling;  
   EXTI_InitStructure.EXTI_LineCmd = ENABLE;
   EXTI_Init(&EXTI_InitStructure);
-
   /* Enable and set EXTI Line0 Interrupt to low priority */
   NVIC_InitStructure.NVIC_IRQChannel = EXTI0_IRQn;
   NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 2;
@@ -132,13 +104,9 @@ void MouseInit(void)
   NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
   NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
   NVIC_Init(&NVIC_InitStructure);
-  lc=0;
-  while (lc<168000000)
-  {
-    lc++;
-  }
-  mousebufhead=0;
-  mousebuftail=0;
+  /* Enable TIM3 */
+  TIM_Cmd(TIM3, ENABLE);
+  FrameWait(2);
 }
 
 /**
@@ -149,8 +117,6 @@ void MouseInit(void)
   */
 void EXTI0_IRQHandler(void)
 {
-  uint8_t ms;
-
   /* Clear the EXTI line 2 pending bit */
   EXTI_ClearITPendingBit(EXTI_Line0);
 
@@ -158,43 +124,115 @@ void EXTI0_IRQHandler(void)
 	--mbitcount;
 	if (mbitcount >= 2 && mbitcount <= 9)
 	{
-		tmpmousecode >>= 1;
+		mousecode >>= 1;
 		if (GPIOB->IDR & GPIO_Pin_1)
-			tmpmousecode |= 0x80;
+			mousecode |= 0x80;
 	}
 	else if (mbitcount == 0)
 	{
-    mousecode=tmpmousecode;
-    mousebuf[mousebufhead]=mousecode;
-    mousebufhead++;
-//DrawHex(0,200,mousecode,1);
-    if (mousebufhead==3)
-    {
-      ms=mousebuf[0];
-      mx=Cursor.x+(int8_t)mousebuf[1];
-      if (mx<0)
-      {
-        mx=0;
-      }
-      if (mx>479)
-      {
-        mx=479;
-      }
-      Cursor.x=mx;
-      my=Cursor.y+(int8_t)mousebuf[2];
-      if (my<0)
-      {
-        my=0;
-      }
-      if (my>249)
-      {
-        my=249;
-      }
-      Cursor.y=my;
-      mousebufhead=0;
-      mousebuftail=0;
-    }
 		mbitcount = 11;
+    switch (mbytecount)
+    {
+      case (0):
+        mb=mousecode & 7;
+        mbytecount++;
+        break;
+      case (1):
+        mx=Cursor.x+(int8_t)mousecode;
+        mbytecount++;
+        break;
+      case (2):
+        my=Cursor.y-(int8_t)mousecode;
+        mbytecount=0;
+        if (mx<0)
+        {
+          mx=0;
+        }
+        if (mx>479)
+        {
+          mx=479;
+        }
+        if (my<0)
+        {
+          my=0;
+        }
+        if (my>249)
+        {
+          my=249;
+        }
+        Cursor.x=mx;
+        Cursor.y=my;
+        break;
+    }
 	}
 }
 
+void GetMouseClick(void)
+{
+  static volatile WINDOW* hdn;
+  static volatile WINDOW* hup;
+  WINDOW* hwin;
+  uint16_t x,y;
+
+  if (mb!=pmb)
+  {
+    if ((mb & 1)&& !(pmb & 1))
+    {
+      /* Left button down */
+      hdn=0;
+      hwin=(WINDOW*)WindowFromPoint(Cursor.x,Cursor.y);
+      if (hwin)
+      {
+        hdn=hwin;
+        /* Activate the window */
+        SendEvent(hwin,EVENT_ACTIVATE,0,hwin->ID);
+        x=Cursor.x-hwin->x;
+        y=Cursor.y-hwin->y;
+        hwin=ControlFromPoint((WINDOW*)hwin,x,y);
+        if (hwin)
+        {
+          SendEvent(hwin,EVENT_LDOWN,(y<<16) | x,hwin->ID);
+          hdn=hwin;
+          if (Focus)
+          {
+            Focus->state &= ~STATE_FOCUS;
+          }
+          hwin->state |= STATE_FOCUS;
+          Focus=hwin;
+        }
+        else
+        {
+          SendEvent((WINDOW*)hdn,EVENT_LDOWN,((Cursor.y<<16) | Cursor.x),hdn->ID);
+        }
+      }
+    }
+    else if (!(mb & 1)&& (pmb & 1))
+    {
+      /* Left button up */
+      hup=0;
+      hwin=(WINDOW*)WindowFromPoint(Cursor.x,Cursor.y);
+      if (hwin)
+      {
+        hup=hwin;
+        x=Cursor.x-hwin->x;
+        y=Cursor.y-hwin->y;
+        hwin=ControlFromPoint((WINDOW*)hwin,x,y);
+        if (hwin)
+        {
+          hup=hwin;
+        }
+        else
+        {
+          x=Cursor.x-hwin->x;
+          y=Cursor.y-hwin->y;
+        }
+        SendEvent((WINDOW*)hup,EVENT_LUP,((y<<16) | x),hup->ID);
+        if (hdn==hup && hup!=0)
+        {
+          SendEvent((WINDOW*)hup,EVENT_LCLICK,(y<<16) | x,hup->ID);
+        }
+      }
+    }
+    pmb=mb;
+  }
+}

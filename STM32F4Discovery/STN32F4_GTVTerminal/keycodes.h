@@ -1,16 +1,10 @@
-/*
- * keycodes.h
- * 
- * non-ASCII keycodes from PS/2 keyboard
- *
- * Originally by Matt Sarnoff, 
- * hacked up by David Cranor and Max Lobovsky to work with STM32F and thinnerclient
- * 8/30/10
- *
- * (c) Massachusetts Institute of Technology 2010
- * Permission granted for experimental and personal use;
- * license for commercial sale available from MIT.
- */
+
+uint32_t parity1(uint32_t x);
+void KeyboardReset(void);
+uint8_t GetKeyState(uint16_t SC);
+uint8_t Shifted(void);
+uint8_t Ctrled(void);
+uint8_t GetChar(void);
 
 #ifndef _KEYCODES_H_
 #define _KEYCODES_H_

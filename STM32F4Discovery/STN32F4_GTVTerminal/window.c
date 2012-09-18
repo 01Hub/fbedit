@@ -9,28 +9,12 @@ extern uint8_t FrameBuff[SCREEN_BUFFHEIGHT][SCREEN_BUFFWIDTH];
 extern const uint8_t Font8x10[256][10];
 
 /* Private variables ---------------------------------------------------------*/
-WINDOW* Windows[MAX_WINDOWS+1];
+WINDOW WinColl[MAX_WINCOLL];      // Holds windows and controls data
+WINDOW* Windows[MAX_WINDOWS+1];   // Poiners to WinColl, windows only
 WINDOW* Focus;
-uint16_t nevent;
 
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
-
-/**
-  * @brief  This function adds a control to a window.
-  * @param  hpar,hwin
-  * @retval None
-  */
-void AddControl(WINDOW* hpar,WINDOW* hwin)
-{
-  WINDOW* hcld;
-  hcld=hpar;
-  while (hcld->control)
-  {
-    hcld=hcld->control;
-  }
-  hcld->control=hwin;
-}
 
 void FocusNext(WINDOW* hpar)
 {
@@ -143,7 +127,7 @@ void FocusPrevious(WINDOW* hpar)
   * @param  x, y, chr
   * @retval None
   */
-void DrawFBChar(uint16_t x, uint16_t y, uint8_t chr)
+void DrawWinChar(uint16_t x, uint16_t y, uint8_t chr)
 {
   uint8_t cl,bit;
   uint16_t cx, cy;
@@ -171,16 +155,82 @@ void DrawFBChar(uint16_t x, uint16_t y, uint8_t chr)
 }
 
 /**
+  * @brief  This function draws transparent character at x, y.
+  * @param  x, y, chr
+  * @retval None
+  */
+void DrawNormalWinChar(uint16_t x, uint16_t y, uint8_t chr)
+{
+  uint8_t cl,bit;
+  uint16_t cx, cy;
+
+  cy=0;
+  while (cy<TILE_HEIGHT)
+  {
+    cl=Font8x10[chr][cy];
+    cx=0;
+    while (cx<TILE_WIDTH)
+    {
+      if (cl & 0x80)
+      {
+        if (cx < SCREEN_WIDTH && cy < SCREEN_HEIGHT)
+        {
+          bit = 1 << ((x+cx) & 0x7);
+          FrameBuff[y+cy][(x+cx >> 3)] |= bit;
+        }
+      }
+      cl=cl<<1;
+      cx++;
+    }
+    cy++;
+  }
+}
+
+/**
   * @brief  This function draws a string with length len at x, y.
   * @param  x, y, len, *str
   * @retval None
   */
-void DrawFBString(uint16_t x, uint16_t y,uint8_t len, uint8_t *str)
+void DrawWinString(uint16_t x, uint16_t y,uint8_t len, uint8_t *str)
 {
   uint8_t chr;
   while (len)
   {
-    DrawFBChar(x, y, *str);
+    DrawWinChar(x, y, *str);
+    x+=TILE_WIDTH;
+    str++;
+    len--;
+  }
+}
+
+/**
+  * @brief  This function draws a string with length len at x, y.
+  * @param  x, y, len, *str
+  * @retval None
+  */
+void DrawNormalWinString(uint16_t x, uint16_t y,uint8_t len, uint8_t *str)
+{
+  uint8_t chr;
+  while (len)
+  {
+    DrawNormalWinChar(x, y, *str);
+    x+=TILE_WIDTH;
+    str++;
+    len--;
+  }
+}
+
+/**
+  * @brief  This function draws a string with length len at x, y.
+  * @param  x, y, len, *str
+  * @retval None
+  */
+void DrawInvWinString(uint16_t x, uint16_t y,uint8_t len, uint8_t *str)
+{
+  uint8_t chr;
+  while (len)
+  {
+    DrawNormalWinChar(x, y, *str | 0x80);
     x+=TILE_WIDTH;
     str++;
     len--;
@@ -206,7 +256,7 @@ void FrameRect(uint16_t x,uint16_t y,uint16_t wdt,uint16_t hgt)
 }
 
 /**
-  * @brief  This function draws a window caption.
+  * @brief  This function draws a window caption (Black).
   * @param  hwin
   * @retval None
   */
@@ -226,7 +276,7 @@ void DrawCaption(WINDOW* hwin,uint16_t x,uint16_t y)
         x+=(hwin->wt-hwin->caplen*TILE_WIDTH)-2;
         break;
     }
-    DrawFBString(x,y,hwin->caplen,hwin->caption);
+    DrawWinString(x,y,hwin->caplen,hwin->caption);
   }
 }
 
@@ -411,14 +461,195 @@ void DrawWindow(WINDOW* hwin)
       DrawCaption(hwin,x,y);
       break;
     case CLASS_STATIC:
-      y=y+(hwin->ht-TILE_HEIGHT)/2;
-      DrawCaption(hwin,x,y);
+      if ((hwin->style & 3)==STYLE_BLACK)
+      {
+        /* Draw black */
+        /* Get left fill */
+        cl=0xFF<<(x & 7);
+        /* Get right fill */
+        cr=0xFF>>(8-(xm & 7));
+        /* Fill left & right*/
+        j=y;
+        i=x>>3;
+        k=xm>>3;
+        while (j<ym)
+        {
+          FrameBuff[j][i] &= ~cl;
+          FrameBuff[j][k] &= ~cr;
+          j++;
+        }
+        j=y;
+        while (j<ym)
+        {
+          i=(x>>3)+1;
+          k=xm>>3;
+          while (i<k)
+          {
+            FrameBuff[j][i] = 0;
+            i++;
+          }
+          j++;
+        }
+      }
+      else
+      {
+        y=y+(hwin->ht-TILE_HEIGHT)/2;
+        DrawCaption(hwin,x,y);
+      }
       break;
   }
   if (hwin->control)
   {
-    DrawWindow(hwin->control);
+    hwin=hwin->control;
+    SendEvent(hwin,EVENT_PAINT,0,hwin->ID);
   }
+}
+
+WINDOW* WindowFromPoint(uint16_t x,uint16_t y)
+{
+  uint32_t i;
+  WINDOW* hwin;
+
+  i=MAX_WINDOWS;
+
+  while (i)
+  {
+    i--;
+    if (Windows[i])
+    {
+      hwin=Windows[i];
+      if ((hwin->state & STATE_VISIBLE) && (hwin->style & STYLE_CANFOCUS))
+      {
+        if ((x>=hwin->x) && (x<hwin->x+hwin->wt))
+        {
+          if ((y>=hwin->y) && (y<hwin->y+hwin->ht))
+          {
+            /* Found the window */
+            return hwin;
+          }
+        }
+      }
+    }
+  }
+  /* No window found */
+  return 0;
+}
+
+WINDOW* ControlFromPoint(WINDOW* howner,uint16_t x,uint16_t y)
+{
+  uint32_t i;
+  WINDOW* hwin;
+
+  hwin=howner->control;
+  while (hwin)
+  {
+    if (hwin->state & STATE_VISIBLE)
+    {
+      if (hwin->style & STYLE_CANFOCUS)
+      {
+        if (x>=hwin->x && x<hwin->x+hwin->wt)
+        {
+          if (y>=hwin->y && y<hwin->y+hwin->ht)
+          {
+            /* Found the control */
+            return hwin;
+          }
+        }
+      }
+    }
+    hwin=hwin->control;
+  }
+  /* No control found */
+  return 0;
+}
+
+/**
+  * @brief  This function finds a windpws position.
+  * @param  hwin
+  * @retval Windows Index
+  */
+uint32_t FindWindowPos(WINDOW* hwin)
+{
+  uint32_t i=0;
+
+  while (i<MAX_WINDOWS)
+  {
+    if (hwin==Windows[i])
+    {
+      break;
+    }
+    i++;
+  }
+  return i;
+}
+
+WINDOW* FindControlFocus(WINDOW* hwin)
+{
+  hwin=hwin->control;
+  while (hwin)
+  {
+    if (hwin->state & STATE_FOCUS)
+    {
+      break;
+    }
+    hwin=hwin->control;
+  }
+  return hwin;
+}
+
+WINDOW* FindControlCanFocus(WINDOW* hwin)
+{
+  hwin=hwin->control;
+  while (hwin)
+  {
+    if (hwin->style & STYLE_CANFOCUS)
+    {
+      break;
+    }
+    hwin=hwin->control;
+  }
+  return hwin;
+}
+
+/**
+  * @brief  This function brigs a windpw to front.
+  * @param  hwin
+  * @retval Windows Index
+  */
+uint32_t WindowToFront(WINDOW* hwin)
+{
+  uint32_t i;
+  WINDOW* hctl;
+
+  /* Find the windows position */
+  i=FindWindowPos(hwin);
+  /* Bring window to front */
+  while (i<MAX_WINDOWS-1 && Windows[i+1])
+  {
+    Windows[i]=Windows[i+1];
+    i++;
+  }
+  Windows[i]=hwin;
+  if (i)
+  {
+    /* Remove focus from previous window */
+    Windows[i-1]->state&=(uint8_t)~STATE_FOCUS;
+  }
+  /* Make the window visible and give it focus */
+  hwin->state|=(STATE_VISIBLE | STATE_FOCUS);
+  /* Find control with focus */
+  hctl=FindControlFocus(hwin);
+  if (!hctl)
+  {
+    /* Find control that can have focus */
+    hctl=FindControlCanFocus(hwin);
+    if (hctl)
+    {
+      hctl->state |= STATE_FOCUS;
+    }
+  }
+  Focus=hctl;
+  return i;
 }
 
 /**
@@ -426,10 +657,11 @@ void DrawWindow(WINDOW* hwin)
   * @param  hwin, event, param, ID
   * @retval None
   */
-void DefWindowHandler(WINDOW* hwin,uint8_t event,uint16_t param,uint8_t ID)
+uint32_t DefWindowHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
 {
   WINDOW* howner;
-  uint32_t i;
+  WINDOW* hctl;
+  uint32_t i,x,y;
 
   switch (event)
   {
@@ -467,56 +699,7 @@ void DefWindowHandler(WINDOW* hwin,uint8_t event,uint16_t param,uint8_t ID)
     case EVENT_ACTIVATE:
       if (hwin->winclass==CLASS_WINDOW)
       {
-        /* Make it visible */
-        hwin->state|=STATE_VISIBLE;
-        /* Bring window to front */
-        i=0;
-        while (i<MAX_WINDOWS && hwin!=Windows[i])
-        {
-          i++;
-        }
-        if (Windows[i+1])
-        {
-          while (i<MAX_WINDOWS-1 && Windows[i+1])
-          {
-            Windows[i]=Windows[i+1];
-            i++;
-          }
-          Windows[i]=hwin;
-        }
-        if (i)
-        {
-          Windows[i-1]->state&=(uint8_t)~STATE_FOCUS;
-          Focus=0;
-        }
-        hwin->state|=STATE_FOCUS;
-        howner=hwin;
-        /* Find control with focus */
-        hwin=hwin->control;
-        while (hwin)
-        {
-          if (hwin->state & STATE_FOCUS)
-          {
-            Focus=hwin;
-            break;
-          }
-          hwin=hwin->control;
-        }
-        if (!hwin)
-        {
-          /* No sontrol had focus, find first control that can have focus */
-          hwin=howner->control;
-          while (hwin)
-          {
-            if (hwin->style & STYLE_CANFOCUS)
-            {
-              hwin->state|=STATE_FOCUS;
-              Focus=hwin;
-              break;
-            }
-            hwin=hwin->control;
-          }
-        }
+        i=WindowToFront(hwin);
       }
       break;
     case EVENT_CHAR:
@@ -531,10 +714,18 @@ void DefWindowHandler(WINDOW* hwin,uint8_t event,uint16_t param,uint8_t ID)
         SendEvent(howner,event,param,ID);
       }
       break;
+    case EVENT_LDOWN:
+      break;
+    case EVENT_LUP:
+      break;
+    case EVENT_LCLICK:
+       SendEvent(hwin,EVENT_CHAR,0x0D,hwin->ID);
+      break;
     default:
       howner=hwin->owner;
       if (howner)
       {
+        /* Send the event to the owner */
         SendEvent(howner,event,param,ID);
       }
       break;
@@ -546,7 +737,7 @@ void DefWindowHandler(WINDOW* hwin,uint8_t event,uint16_t param,uint8_t ID)
   * @param  hwin, event, param, ID
   * @retval None
   */
-void SendEvent(WINDOW* hwin,uint8_t event,uint16_t param,uint8_t ID)
+uint32_t SendEvent(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
 {
   hwin->handler(hwin,event,param,ID);
 }
@@ -563,3 +754,191 @@ void RemoveWindows(void)
     i++;
   }
 }
+
+/**
+  * @brief  This function returns a free WinColl pointer.
+  * @param  hpar,hwin
+  * @retval None
+  */
+WINDOW* FindFree(void)
+{
+  uint32_t i=0;
+
+  while (i<MAX_WINCOLL)
+  {
+    if (!WinColl[i].hwin)
+    {
+      return &WinColl[i];
+    }
+    i++;
+  }
+  return 0;
+}
+
+/**
+  * @brief  This function returns the lenght of a zero terminated string.
+  * @param  hpar,hwin
+  * @retval None
+  */
+uint8_t StrLen(uint8_t *str)
+{
+  uint32_t len=0;
+  uint8_t chr;
+  while ((*str++))
+  {
+    len++;
+  }
+  return len;
+}
+
+/**
+  * @brief  This function adds a control to a window.
+  * @param  hpar,hwin
+  * @retval None
+  */
+void AddControl(WINDOW* hwin,WINDOW* hctl)
+{
+  while (hwin->control)
+  {
+    hwin=hwin->control;
+  }
+  hwin->control=hctl;
+}
+
+void AddWindow(WINDOW* hwin)
+{
+  uint32_t i=0;
+
+  while (i<MAX_WINDOWS)
+  {
+    if (!Windows[i])
+    {
+      Windows[i]=hwin;
+      break;
+    }
+    i++;
+  }
+}
+
+WINDOW* CreateWindow(WINDOW* howner,uint8_t winclass,uint8_t ID,uint16_t x,uint16_t y,uint16_t wt,uint16_t ht,uint8_t *caption)
+{
+  WINDOW* hwin;
+
+  hwin=FindFree();
+  if (hwin)
+  {
+    hwin->hwin=hwin;
+    hwin->owner=howner;
+    hwin->param=0;
+    hwin->winclass=winclass;
+    hwin->ID=ID;
+    hwin->x=x;
+    hwin->y=y;
+    hwin->wt=wt;
+    hwin->ht=ht;
+    hwin->caplen=0;
+    hwin->caption=caption;
+    if (caption)
+    {
+      hwin->caplen=StrLen(caption);
+    }
+    hwin->control=0;
+    switch (winclass)
+    {
+      case CLASS_WINDOW:
+        hwin->state=DEF_WINSTATE;
+        hwin->style=DEF_WINSTYLE;
+        break;
+      case CLASS_BUTTON:
+        hwin->state=DEF_BTNSTATE;
+        hwin->style=DEF_BTNSTYLE;
+        break;
+      case CLASS_STATIC:
+        hwin->state=DEF_STCSTATE;
+        hwin->style=DEF_STCSTYLE;
+        break;
+    }
+    hwin->handler=(void*)&DefWindowHandler;
+    if (howner)
+    {
+      AddControl(howner,hwin);
+    }
+    else
+    {
+      AddWindow(hwin);
+    }
+  }
+  return hwin;
+}
+
+void DestroyWindow(WINDOW* hwin)
+{
+  WINDOW* hctl;
+  uint32_t i=0;
+
+  if (!hwin->owner)
+  {
+    while (i<MAX_WINDOWS)
+    {
+      if (hwin=Windows[i])
+      {
+        break;
+      }
+    }
+    while (i<MAX_WINDOWS)
+    {
+      Windows[i]=Windows[i+1];
+      i++;
+    }
+    /* Destroy controls */
+    hctl=hwin->control;
+    while (hctl)
+    {
+      hctl=hctl->control;
+      hctl->hwin=0;
+    }
+    hwin->hwin=0;
+  }
+}
+
+void SetHandler(WINDOW* hwin,void* hdlr)
+{
+  hwin->handler=hdlr;
+}
+
+WINDOW* GetControlHandle(WINDOW* howner,uint8_t ID)
+{
+  WINDOW* hctl;
+
+  hctl=howner->control;
+  while (hctl)
+  {
+    if (ID==hctl->ID)
+    {
+      return hctl;
+    }
+    hctl=hctl->control;
+  }
+  return hctl;
+}
+
+void SetCaption(WINDOW* hwin,uint8_t *caption)
+{
+  hwin->caplen=0;
+  hwin->caption=caption;
+  if (caption)
+  {
+    hwin->caplen=StrLen(caption);
+  }
+}
+
+void SetStyle(WINDOW* hwin,uint8_t style)
+{
+  hwin->style=style;
+}
+
+void SetParam(WINDOW* hwin,uint32_t param)
+{
+  hwin->param=param;
+}
+

@@ -52,3 +52,38 @@ typedef struct
   ICON icon;
 } SPRITE;
 
+/* Private function prototypes -----------------------------------------------*/
+uint32_t Random(uint32_t Range);    // Random generator
+void SetCursor(uint8_t cur);
+void MoveCursor(uint16_t x,uint16_t y);
+void ShowCursor(uint8_t z);
+void Cls(void);
+void SetPixel(uint16_t x,uint16_t y,uint8_t c);
+uint8_t GetPixel(uint16_t x,uint16_t y);
+void DrawChar(uint16_t x, uint16_t y, uint8_t chr, uint8_t c);
+void DrawLargeChar(uint16_t x, uint16_t y, uint8_t chr, uint8_t c);
+void DrawString(uint16_t x, uint16_t y, uint8_t *str, uint8_t c);
+void DrawLargeString(uint16_t x, uint16_t y, uint8_t *str, uint8_t c);
+void DrawDec(uint16_t x, uint16_t y, uint16_t n, uint8_t c);
+void DrawLargeDec(uint16_t x, uint16_t y, uint16_t n, uint8_t c);
+void DrawHex(uint16_t x, uint16_t y, uint16_t n, uint8_t c);
+void DrawBin(uint16_t x, uint16_t y, uint16_t n, uint8_t c);
+void Rectangle(uint16_t x, uint16_t y, uint16_t b, uint16_t a, uint8_t c);
+void Circle(uint16_t cx, uint16_t cy, uint16_t radius, uint8_t c);
+void Line(uint16_t X1,uint16_t Y1,uint16_t X2,uint16_t Y2, uint8_t c);
+void DrawIcon(uint16_t x,uint16_t y,ICON* icon,uint8_t c);
+void ScrollUp(void);
+void ScrollDown(void);
+void DrawStatus(uint8_t *str,uint8_t caps,uint8_t num);
+void ClearFBPixel(uint16_t x,uint16_t y);
+void SetFBPixel(uint16_t x,uint16_t y);
+uint32_t DrawSprite(const SPRITE* ps);
+void RemoveSprites(void);
+void LineWait(uint32_t n);
+void FrameWait(uint32_t n);
+void FrameBuffDraw(void);
+
+void * memmove(void *dest, void *source, uint32_t count);
+void * memset(void *dest, uint32_t c, uint32_t count); 
+
+

@@ -9,15 +9,16 @@
 /* Private typedef -----------------------------------------------------------*/
 typedef struct
 {
-  WINDOW MenuBar;                       // Menubar window
-  WINDOW MenuBarButtons[4];             // Button controls for mrnubar
-  WINDOW Menu1Popup;                    // Menu popup windpw
-  WINDOW Menu1ItemButtons[4];           // Button controls
-  WINDOW Menu2Popup;                    // Menu popup windpw
-  WINDOW Menu2ItemButtons[4];           // Button controls
-  WINDOW Menu3Popup;                    // Menu popup windpw
-  WINDOW Menu3ItemButtons[4];           // Button controls
-  WINDOW Menu4Popup;                    // Menu popup windpw
-  WINDOW Menu4ItemButtons[2];           // Button controls
+  WINDOW* hmnubar;
+  WINDOW* hpopup1;
+  WINDOW* hpopup2;
+  WINDOW* hpopup3;
+  WINDOW* hpopup4;
   volatile uint8_t SelectedID;
 } DESKTOP;
+
+/* Private function prototypes -----------------------------------------------*/
+void MenuBarHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID);
+void MenuPopupHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID);
+void DeskTopSetup(void);
+

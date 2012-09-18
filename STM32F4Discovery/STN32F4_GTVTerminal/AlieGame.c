@@ -8,8 +8,9 @@
 /* External variables --------------------------------------------------------*/
 extern volatile uint16_t FrameCount;  // Frame counter
 extern SPRITE* Sprites[];             // Max 64 sprites
-extern WINDOW* Windows[];             // Max 16 windows
-extern WINDOW* Focus;                 // The windpw that has the keyboard focus
+extern WINDOW WinColl[MAX_WINCOLL];
+extern WINDOW* Windows[MAX_WINDOWS+1];
+
 
 /* Private variables ---------------------------------------------------------*/
 ALIEN_GAME AlienGame;
@@ -17,18 +18,18 @@ ALIEN_GAME AlienGame;
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
 
-void AlienMsgBoxHandler(WINDOW* hwin,uint8_t event,uint16_t param,uint8_t ID)
+void AlienMsgBoxHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
 {
   switch (event)
   {
     case EVENT_CHAR:
-      if (param==0x0D && ID==3)
+      if (param==0x0D && ID==4)
       {
         /* New Game */
         AlienGame.DemoMode=0;
         break;
       }
-      else if (param==0x0D && ID==2)
+      else if (param==0x0D && ID==3)
       {
         /* Quit */
         AlienGame.Quit=1;
@@ -44,73 +45,13 @@ void AlenGameInit(void)
 {
   uint32_t i,j;
 
-  RemoveWindows();
-  /* Setup the message box */
-  AlienGame.Static1.hwin=&AlienGame.Static1;
-  AlienGame.Static1.owner=&AlienGame.MsgBox;
-  AlienGame.Static1.winclass=CLASS_STATIC;
-  AlienGame.Static1.ID=1;
-  AlienGame.Static1.x=4;
-  AlienGame.Static1.y=15;
-  AlienGame.Static1.wt=170-8;
-  AlienGame.Static1.ht=20;
-  AlienGame.Static1.state=STATE_VISIBLE;
-  AlienGame.Static1.style=STYLE_CENTER;
-  AlienGame.Static1.caplen=9;
-  AlienGame.Static1.caption="Game Over";
-  AlienGame.Static1.control=0;
-  AlienGame.Static1.handler=(void*)&DefWindowHandler;
+  /* Create message box */
+  AlienGame.hmsgbox=CreateWindow(0,CLASS_WINDOW,1,(SCREEN_WIDTH-160)/2,(SCREEN_HEIGHT-64)/2,160,64,"Alien\0");
+  CreateWindow(AlienGame.hmsgbox,CLASS_STATIC,2,4,15,160-8,20,"GameOver\0");
+  CreateWindow(AlienGame.hmsgbox,CLASS_BUTTON,3,5,64-25,70,20,"Quit\0");
+  CreateWindow(AlienGame.hmsgbox,CLASS_BUTTON,4,160-75,64-25,70,20,"New Game\0");
+  SetHandler(AlienGame.hmsgbox,&AlienMsgBoxHandler);
 
-  AlienGame.Button1.hwin=&AlienGame.Button1;
-  AlienGame.Button1.owner=&AlienGame.MsgBox;
-  AlienGame.Button1.winclass=CLASS_BUTTON;
-  AlienGame.Button1.ID=2;
-  AlienGame.Button1.x=5;
-  AlienGame.Button1.y=64-25;
-  AlienGame.Button1.wt=70;
-  AlienGame.Button1.ht=20;
-  AlienGame.Button1.state=STATE_VISIBLE;
-  AlienGame.Button1.style=STYLE_NORMAL | STYLE_CENTER | STYLE_CANFOCUS;
-  AlienGame.Button1.caplen=4;
-  AlienGame.Button1.caption="Quit";
-  AlienGame.Button1.control=0;
-  AlienGame.Button1.handler=(void*)&DefWindowHandler;
-
-  AlienGame.Button2.hwin=&AlienGame.Button2;
-  AlienGame.Button2.owner=&AlienGame.MsgBox;
-  AlienGame.Button2.winclass=CLASS_BUTTON;
-  AlienGame.Button2.ID=3;
-  AlienGame.Button2.x=160-75;
-  AlienGame.Button2.y=64-25;
-  AlienGame.Button2.wt=70;
-  AlienGame.Button2.ht=20;
-  AlienGame.Button2.state=STATE_VISIBLE | STATE_FOCUS;
-  AlienGame.Button2.style=STYLE_NORMAL | STYLE_CENTER | STYLE_CANFOCUS;
-  AlienGame.Button2.caplen=8;
-  AlienGame.Button2.caption="New Game";
-  AlienGame.Button2.control=0;
-  AlienGame.Button2.handler=(void*)&DefWindowHandler;
-
-  AlienGame.MsgBox.hwin=&AlienGame.MsgBox;
-  AlienGame.MsgBox.owner=0;
-  AlienGame.MsgBox.winclass=CLASS_WINDOW;
-  AlienGame.MsgBox.ID=0;
-  AlienGame.MsgBox.x=(SCREEN_WIDTH-160)/2;
-  AlienGame.MsgBox.y=(SCREEN_HEIGHT-64)/2;
-  AlienGame.MsgBox.wt=160;
-  AlienGame.MsgBox.ht=64;
-  AlienGame.MsgBox.state=STATE_HIDDEN | STATE_FOCUS;
-  AlienGame.MsgBox.style=STYLE_NORMAL | STYLE_LEFT;
-  AlienGame.MsgBox.caplen=5;
-  AlienGame.MsgBox.caption="Alien";
-  AlienGame.MsgBox.control=0;
-  AddControl(AlienGame.MsgBox.hwin,AlienGame.Static1.hwin);
-  AddControl(AlienGame.MsgBox.hwin,AlienGame.Button1.hwin);
-  AddControl(AlienGame.MsgBox.hwin,AlienGame.Button2.hwin);
-  AlienGame.MsgBox.handler=(void*)&AlienMsgBoxHandler;
-  Focus=0;
-  Windows[0]=&AlienGame.MsgBox;
-  SendEvent(AlienGame.MsgBox.hwin,EVENT_SHOW,STATE_HIDDEN,0);
   /* Setup game boundary */
   AlienGame.AlienBound.left=ALIEN_BOUND_LEFT;
   AlienGame.AlienBound.top=ALIEN_BOUND_TOP;
@@ -618,41 +559,30 @@ void AlienMove(void)
 
 void AlienGamePlay(void)
 {
-  uint16_t i,fc;
+  uint16_t i;
   uint32_t rnd;
 
   AlienSetup();
   /* Wait 25 frames */
-  i=25;
-  while (i)
-  {
-    if (fc!=FrameCount)
-    {
-      fc=FrameCount;
-      i--;
-    }
-  }
+  FrameWait(25);
   while (!AlienGame.GameOver)
   {
     /* Syncronize with frame count */
-    if (FrameCount!=fc)
+    FrameWait(1);
+    ShotMove();
+    if (!AlienGame.Aliens)
     {
-      fc=FrameCount;
-      ShotMove();
-      if (!AlienGame.Aliens)
-      {
-        /* Setup new alien army */
-        AlienSetup();
-      }
-      BombMove();
-      BombDrop();
-      CannonHit();
-      CannonMove();
-      AlienMove();
-      if (GetKeyState(SC_ESC))
-      {
-        AlienGame.GameOver=1;
-      }
+      /* Setup new alien army */
+      AlienSetup();
+    }
+    BombMove();
+    BombDrop();
+    CannonHit();
+    CannonMove();
+    AlienMove();
+    if (GetKeyState(SC_ESC))
+    {
+      AlienGame.GameOver=1;
     }
   }
   /* Game Over, Remove shots */
@@ -671,19 +601,16 @@ void AlienGamePlay(void)
   }
   ShowCursor(1);
   /* Show message box */
-  SendEvent(AlienGame.MsgBox.hwin,EVENT_ACTIVATE,0,0);
+  SendEvent(AlienGame.hmsgbox,EVENT_ACTIVATE,0,AlienGame.hmsgbox->ID);
   AlienGame.DemoMode=1;
-  /* Wait 2000 frames */
+  /* Wait 2000 frames for a response */
   i=2000;
   while (i && AlienGame.DemoMode && !AlienGame.Quit)
   {
-    if (fc!=FrameCount)
-    {
-      fc=FrameCount;
-      i--;
-    }
+    FrameWait(1);
+    i--;
   }
-  SendEvent(AlienGame.MsgBox.hwin,EVENT_SHOW,STATE_HIDDEN,0);
+  SendEvent(AlienGame.hmsgbox,EVENT_SHOW,STATE_HIDDEN,AlienGame.hmsgbox->ID);
   ShowCursor(0);
   /* Remove aliens */
   i=0;
@@ -705,7 +632,7 @@ void AlienGameLoop(void)
     AlienGame.Cannon.visible=1;
     AlienGamePlay();
   }
-  RemoveWindows();
+  DestroyWindow(AlienGame.hmsgbox);
   RemoveSprites();
   /* Clear screen */
   Cls();

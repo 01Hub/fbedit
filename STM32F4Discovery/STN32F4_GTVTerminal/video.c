@@ -47,32 +47,6 @@ volatile uint8_t FrameDraw;
 volatile uint32_t RNDSeed;          // Random seed
 
 /* Private function prototypes -----------------------------------------------*/
-uint32_t Random(uint32_t Range);    // Random generator
-void SetCursor(uint8_t cur);
-void MoveCursor(uint16_t x,uint16_t y);
-void ShowCursor(uint8_t z);
-void Cls(void);
-void SetPixel(uint16_t x,uint16_t y,uint8_t c);
-uint8_t GetPixel(uint16_t x,uint16_t y);
-void DrawChar(uint16_t x, uint16_t y, uint8_t chr, uint8_t c);
-void DrawLargeChar(uint16_t x, uint16_t y, uint8_t chr, uint8_t c);
-void DrawString(uint16_t x, uint16_t y, uint8_t *str, uint8_t c);
-void DrawLargeString(uint16_t x, uint16_t y, uint8_t *str, uint8_t c);
-void DrawDec(uint16_t x, uint16_t y, uint16_t n, uint8_t c);
-void DrawLargeDec(uint16_t x, uint16_t y, uint16_t n, uint8_t c);
-void DrawHex(uint16_t x, uint16_t y, uint16_t n, uint8_t c);
-void DrawBin(uint16_t x, uint16_t y, uint16_t n, uint8_t c);
-void Rectangle(uint16_t x, uint16_t y, uint16_t b, uint16_t a, uint8_t c);
-void Circle(uint16_t cx, uint16_t cy, uint16_t radius, uint8_t c);
-void Line(uint16_t X1,uint16_t Y1,uint16_t X2,uint16_t Y2, uint8_t c);
-void DrawIcon(uint16_t x,uint16_t y,ICON* icon,uint8_t c);
-void ScrollUp(void);
-void ScrollDown(void);
-uint32_t DrawSprite(const SPRITE* ps);
-
-void * memmove(void *dest, void *source, uint32_t count);
-void * memset(void *dest, uint32_t c, uint32_t count); 
-
 /* Private functions ---------------------------------------------------------*/
 
 /**
@@ -846,7 +820,7 @@ uint32_t DrawSprite(const SPRITE* ps)
   return coll;
 }
 
-RemoveSprites(void)
+void RemoveSprites(void)
 {
   uint32_t i;
 
@@ -854,6 +828,30 @@ RemoveSprites(void)
   {
     Sprites[i]=0;
     i++;
+  }
+}
+
+void LineWait(uint32_t n)
+{
+  uint16_t lc;
+
+  while (n)
+  {
+    lc=LineCount;
+    while (lc==LineCount);
+    n--;
+  }
+}
+
+void FrameWait(uint32_t n)
+{
+  uint16_t fc;
+
+  while (n)
+  {
+    fc=FrameCount;
+    while (fc==FrameCount);
+    n--;
   }
 }
 
@@ -1043,6 +1041,7 @@ void TIM5_IRQHandler(void)
       Focus->handler(Focus,EVENT_CHAR,chr,Focus->ID);
     }
   }
+  GetMouseClick();
   FrameCount++;
   if (FrameCount==(FrameCount/25)*25)
   {

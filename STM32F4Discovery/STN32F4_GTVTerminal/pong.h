@@ -56,9 +56,5 @@ typedef struct
   RECT PongBound;                         // Game bounds
   SPRITE Ball;                            // Ball sprite
   SPRITE Paddle[2];                       // Paddle sprites
-  WINDOW MsgBox;                          // Message box window
-  WINDOW Static1;                         // Static control
-  WINDOW Button1;                         // Button control
-  WINDOW Button2;                         // Button control
-  WINDOW Button3;                         // Button control
+  WINDOW* hmsgbox;                        // Handle to message box
 } PONG_GAME;

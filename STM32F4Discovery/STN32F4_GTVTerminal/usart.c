@@ -3,9 +3,6 @@
 #include "stm32f4_discovery.h"
 
 /* Private function prototypes -----------------------------------------------*/
-void rs232_putc(uint8_t c);
-void rs232_puts(uint8_t *str);
-
 /* External variables --------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 uint8_t rs232buf[256];

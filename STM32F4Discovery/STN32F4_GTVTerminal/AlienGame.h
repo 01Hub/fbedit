@@ -127,8 +127,5 @@ typedef struct
   SPRITE Bomb[ALIEN_MAX_BOMBS];       // Bomb sprites
   SPRITE Shot[ALIEN_MAX_SHOTS];       // Shot sprites
   ICON Shield;                        // Shield icon
-  WINDOW MsgBox;                      // Message box window
-  WINDOW Static1;                     // Static control
-  WINDOW Button1;                     // Button control
-  WINDOW Button2;                     // Button control
+  WINDOW* hmsgbox;                    // Handle to message box
 } ALIEN_GAME;

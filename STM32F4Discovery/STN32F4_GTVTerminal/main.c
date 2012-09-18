@@ -55,16 +55,13 @@
 /* Private define ------------------------------------------------------------*/
 /* Private macro -------------------------------------------------------------*/
 /* External variables --------------------------------------------------------*/
-extern volatile uint16_t FrameCount;  // Frame counter
 extern volatile uint8_t nStuck;
-extern volatile uint8_t mousebufhead;
-extern volatile uint8_t mousebuftail;
+extern volatile uint8_t mbytecount;
 
 /* Private variables ---------------------------------------------------------*/
 /* Private function prototypes -----------------------------------------------*/
 void RCC_Config(void);
 void NVIC_Config(void);
-void NVIC_KBDConfig(void);
 void GPIO_Config(void);
 void TIM_Config(void);
 void SPI_Config(void);
@@ -91,37 +88,14 @@ void main(void)
   STM_EVAL_LEDInit(LED4);
   STM_EVAL_PBInit(BUTTON_USER,BUTTON_MODE_GPIO);
 
-  MouseInit();
-
   /* Enable TIM3 */
   TIM_Cmd(TIM3, ENABLE);
-
+  MouseInit();
   SetCursor(0);
   MoveCursor(SCREEN_WIDTH/2,SCREEN_HEIGHT/2);
-
   /* Wait 25 frames */
-  i=25;
-  while (i)
-  {
-    if (fc!=FrameCount)
-    {
-      fc=FrameCount;
-      i--;
-    }
-  }
-  //NVIC_KBDConfig();
-  /* Wait 25 frames */
-  i=25;
-  while (i)
-  {
-    if (fc!=FrameCount)
-    {
-      fc=FrameCount;
-      i--;
-    }
-  }
-  mousebufhead = 0;
-  mousebuftail = 0;
+  FrameWait(25);
+  mbytecount=0;
   nStuck=10;
   KeyboardReset();
   while (1)
@@ -179,24 +153,6 @@ void NVIC_Config(void)
   NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
 	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
 	NVIC_Init(&NVIC_InitStructure);
-}
-
-void NVIC_KBDConfig(void)
-{
-  NVIC_InitTypeDef NVIC_InitStructure;
-
-  // /* Enable and set EXTI Line0 Interrupt to low priority */
-  // NVIC_InitStructure.NVIC_IRQChannel = EXTI0_IRQn;
-  // NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 2;
-  // NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
-  // NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-  // NVIC_Init(&NVIC_InitStructure);
-  // /* Enable and set EXTI Line2 Interrupt to low priority */
-  // NVIC_InitStructure.NVIC_IRQChannel = EXTI2_IRQn;
-  // NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 2;
-  // NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
-  // NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-  // NVIC_Init(&NVIC_InitStructure);
 }
 
 /**
