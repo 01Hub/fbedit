@@ -36,7 +36,7 @@ void LgaMainHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
           case 2:
             /* Fast right */
             Lga.dataofs+=64;
-            if (Lga.dataofs<LGA_DATASIZE-64)
+            if (Lga.dataofs>LGA_DATASIZE-64)
             {
               Lga.dataofs=LGA_DATASIZE-64;
             }
@@ -52,7 +52,7 @@ void LgaMainHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
           case 4:
             /* Right */
             Lga.dataofs++;
-            if (Lga.dataofs<LGA_DATASIZE-64)
+            if (Lga.dataofs>LGA_DATASIZE-64)
             {
               Lga.dataofs=LGA_DATASIZE-64;
             }
@@ -207,18 +207,18 @@ void LogicAnalyserSetup(void)
   /* Create main logic analyser window */
   Lga.hmain=CreateWindow(0,CLASS_WINDOW,0,LGA_MAINLEFT,LGA_MAINTOP,LGA_MAINWIDTH,LGA_MAINHEIGHT,"Logic Analyser\0");
   SetHandler(Lga.hmain,&LgaMainHandler);
-  /* Fast left button */
-  CreateWindow(Lga.hmain,CLASS_BUTTON,1,LGA_LEFT,LGA_BOTTOM,20,20,"<<\0");
-  /* Fast right button */
-  CreateWindow(Lga.hmain,CLASS_BUTTON,2,LGA_RIGHT-20,LGA_BOTTOM,20,20,"<<\0");
-  /* Left button */
-  CreateWindow(Lga.hmain,CLASS_BUTTON,3,LGA_LEFT+20,LGA_BOTTOM,20,20,"<\0");
-  /* Right button */
-  CreateWindow(Lga.hmain,CLASS_BUTTON,4,LGA_RIGHT-20-20,LGA_BOTTOM,20,20,"<\0");
   /* Sample button */
   CreateWindow(Lga.hmain,CLASS_BUTTON,98,480-75,238-50,70,20,"Sample\0");
   /* Quit button */
   CreateWindow(Lga.hmain,CLASS_BUTTON,99,480-75,238-25,70,20,"Quit\0");
+  /* Fast left button */
+  CreateWindow(Lga.hmain,CLASS_BUTTON,1,LGA_LEFT,LGA_BOTTOM,20,20,"<<\0");
+  /* Left button */
+  CreateWindow(Lga.hmain,CLASS_BUTTON,3,LGA_LEFT+20,LGA_BOTTOM,20,20,"<\0");
+  /* Right button */
+  CreateWindow(Lga.hmain,CLASS_BUTTON,4,LGA_RIGHT-20-20,LGA_BOTTOM,20,20,">\0");
+  /* Fast right button */
+  CreateWindow(Lga.hmain,CLASS_BUTTON,2,LGA_RIGHT-20,LGA_BOTTOM,20,20,">>\0");
 
   Lga.hlga=CreateWindow(Lga.hmain,CLASS_STATIC,1,LGA_LEFT,LGA_TOP,LGA_WIDTH,LGA_HEIGHT,0);
   SetStyle(Lga.hlga,STYLE_BLACK);
