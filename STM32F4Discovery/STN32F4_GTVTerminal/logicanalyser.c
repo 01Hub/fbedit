@@ -12,8 +12,7 @@ extern uint8_t FrameBuff[SCREEN_BUFFHEIGHT][SCREEN_BUFFWIDTH];
 /* Private variables ---------------------------------------------------------*/
 LGA Lga;
 uint8_t lgacap[8][2]={{"D0"},{"D1"},{"D2"},{"D3"},{"D4"},{"D5"},{"D6"},{"D7"}};
-//SAMPLE rate[10]={{4,"33.6MHz\0"},{7,"21.0MHz\0"},{15,"10.5MHz\0"},{32,"5.1MHz\0"},{83,"2.0MHz\0"},{167,"1.0MHz\0"},{335,"500KHz\0"},{839,"200KHz\0"},{1679,"100KHz\0"}};
-  SAMPLE rate[10]={{4,"33.6MHz\0"},{7,"21.0MHz\0"},{15,"10.5MHz\0"},{32,"5.1MHz\0"},{83,"2.0MHz\0"},{167,"1.0MHz\0"},{335,"500KHz\0"},{839,"200KHz\0"},{1679,"100KHz\0"}};
+SAMPLE rate[LGA_RATEMAX]={{1679,"100KHz\0"},{839,"200KHz\0"},{335,"500KHz\0"},{167,"1.0MHz\0"},{83,"2.0MHz\0"},{32,"5.1MHz\0"},{15,"10.5MHz\0"},{7,"21.0MHz\0"},{4,"33.6MHz\0"}};
 
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
@@ -57,6 +56,22 @@ void LgaMainHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
             if (Lga.dataofs>LGA_DATASIZE-64)
             {
               Lga.dataofs=LGA_DATASIZE-64;
+            }
+            break;
+          case 40:
+            /* Rate Left */
+            if (Lga.rate)
+            {
+              Lga.rate--;
+              SetCaption(GetControlHandle(Lga.hmain,41),rate[Lga.rate].str);
+            }
+            break;
+          case 42:
+            /* Rate Right */
+            if (Lga.rate<LGA_RATEMAX-1)
+            {
+              Lga.rate++;
+              SetCaption(GetControlHandle(Lga.hmain,41),rate[Lga.rate].str);
             }
             break;
           case 98:
@@ -232,7 +247,7 @@ void LogicAnalyserSetup(void)
   Lga.hmain=CreateWindow(0,CLASS_WINDOW,0,LGA_MAINLEFT,LGA_MAINTOP,LGA_MAINWIDTH,LGA_MAINHEIGHT,"Logic Analyser\0");
   SetHandler(Lga.hmain,&LgaMainHandler);
   /* Sample button */
-  CreateWindow(Lga.hmain,CLASS_BUTTON,98,LGA_MAINRIGHT-75,LGA_MAINBOTTOM-50,70,20,"Sample\0");
+  CreateWindow(Lga.hmain,CLASS_BUTTON,98,LGA_MAINRIGHT-75-75,LGA_MAINBOTTOM-25,70,20,"Sample\0");
   /* Quit button */
   CreateWindow(Lga.hmain,CLASS_BUTTON,99,LGA_MAINRIGHT-75,LGA_MAINBOTTOM-25,70,20,"Quit\0");
   /* Fast left button */
@@ -244,25 +259,37 @@ void LogicAnalyserSetup(void)
   /* Fast right button */
   CreateWindow(Lga.hmain,CLASS_BUTTON,2,LGA_RIGHT-20,LGA_BOTTOM,20,20,">>\0");
 
-  CreateWindow(Lga.hmain,CLASS_GROUPBOX,97,LGA_MAINRIGHT-75,LGA_TOP,70,145,"Trigger\0");
+  CreateWindow(Lga.hmain,CLASS_GROUPBOX,97,LGA_MAINRIGHT-75-75,LGA_TOP+5,145,150,"Trigger\0");
 
-  CreateWindow(Lga.hmain,CLASS_CHKBOX,20,LGA_MAINRIGHT-70,LGA_TOP+30,30,10,"D0\0");
-  CreateWindow(Lga.hmain,CLASS_CHKBOX,21,LGA_MAINRIGHT-70,LGA_TOP+30+15,30,10,"D1\0");
-  CreateWindow(Lga.hmain,CLASS_CHKBOX,22,LGA_MAINRIGHT-70,LGA_TOP+30+30,30,10,"D2\0");
-  CreateWindow(Lga.hmain,CLASS_CHKBOX,23,LGA_MAINRIGHT-70,LGA_TOP+30+45,30,10,"D3\0");
-  CreateWindow(Lga.hmain,CLASS_CHKBOX,24,LGA_MAINRIGHT-70,LGA_TOP+30+60,30,10,"D4\0");
-  CreateWindow(Lga.hmain,CLASS_CHKBOX,25,LGA_MAINRIGHT-70,LGA_TOP+30+75,30,10,"D5\0");
-  CreateWindow(Lga.hmain,CLASS_CHKBOX,26,LGA_MAINRIGHT-70,LGA_TOP+30+90,30,10,"D6\0");
-  CreateWindow(Lga.hmain,CLASS_CHKBOX,27,LGA_MAINRIGHT-70,LGA_TOP+30+105,30,10,"D7\0");
+  CreateWindow(Lga.hmain,CLASS_CHKBOX,20,LGA_MAINRIGHT-140,LGA_TOP+30,30,10,"D0\0");
+  CreateWindow(Lga.hmain,CLASS_CHKBOX,21,LGA_MAINRIGHT-140,LGA_TOP+30+15,30,10,"D1\0");
+  CreateWindow(Lga.hmain,CLASS_CHKBOX,22,LGA_MAINRIGHT-140,LGA_TOP+30+30,30,10,"D2\0");
+  CreateWindow(Lga.hmain,CLASS_CHKBOX,23,LGA_MAINRIGHT-140,LGA_TOP+30+45,30,10,"D3\0");
+  CreateWindow(Lga.hmain,CLASS_CHKBOX,24,LGA_MAINRIGHT-140,LGA_TOP+30+60,30,10,"D4\0");
+  CreateWindow(Lga.hmain,CLASS_CHKBOX,25,LGA_MAINRIGHT-140,LGA_TOP+30+75,30,10,"D5\0");
+  CreateWindow(Lga.hmain,CLASS_CHKBOX,26,LGA_MAINRIGHT-140,LGA_TOP+30+90,30,10,"D6\0");
+  CreateWindow(Lga.hmain,CLASS_CHKBOX,27,LGA_MAINRIGHT-140,LGA_TOP+30+105,30,10,"D7\0");
+  i=0;
+  while (i<8)
+  {
+    SetStyle(GetControlHandle(Lga.hmain,i+20),STYLE_RIGHT | STYLE_CANFOCUS);
+    i++;
+  }
+  CreateWindow(Lga.hmain,CLASS_CHKBOX,30,LGA_MAINRIGHT-55,LGA_TOP+30,30,10,0);
+  CreateWindow(Lga.hmain,CLASS_CHKBOX,31,LGA_MAINRIGHT-55,LGA_TOP+30+15,10,10,0);
+  CreateWindow(Lga.hmain,CLASS_CHKBOX,32,LGA_MAINRIGHT-55,LGA_TOP+30+30,10,10,0);
+  CreateWindow(Lga.hmain,CLASS_CHKBOX,33,LGA_MAINRIGHT-55,LGA_TOP+30+45,10,10,0);
+  CreateWindow(Lga.hmain,CLASS_CHKBOX,34,LGA_MAINRIGHT-55,LGA_TOP+30+60,10,10,0);
+  CreateWindow(Lga.hmain,CLASS_CHKBOX,35,LGA_MAINRIGHT-55,LGA_TOP+30+75,10,10,0);
+  CreateWindow(Lga.hmain,CLASS_CHKBOX,36,LGA_MAINRIGHT-55,LGA_TOP+30+90,10,10,0);
+  CreateWindow(Lga.hmain,CLASS_CHKBOX,37,LGA_MAINRIGHT-55,LGA_TOP+30+105,10,10,0);
 
-  CreateWindow(Lga.hmain,CLASS_CHKBOX,30,LGA_MAINRIGHT-40,LGA_TOP+30,30,10,0);
-  CreateWindow(Lga.hmain,CLASS_CHKBOX,31,LGA_MAINRIGHT-40,LGA_TOP+30+15,30,10,0);
-  CreateWindow(Lga.hmain,CLASS_CHKBOX,32,LGA_MAINRIGHT-40,LGA_TOP+30+30,30,10,0);
-  CreateWindow(Lga.hmain,CLASS_CHKBOX,33,LGA_MAINRIGHT-40,LGA_TOP+30+45,30,10,0);
-  CreateWindow(Lga.hmain,CLASS_CHKBOX,34,LGA_MAINRIGHT-40,LGA_TOP+30+60,30,10,0);
-  CreateWindow(Lga.hmain,CLASS_CHKBOX,35,LGA_MAINRIGHT-40,LGA_TOP+30+75,30,10,0);
-  CreateWindow(Lga.hmain,CLASS_CHKBOX,36,LGA_MAINRIGHT-40,LGA_TOP+30+90,30,10,0);
-  CreateWindow(Lga.hmain,CLASS_CHKBOX,37,LGA_MAINRIGHT-40,LGA_TOP+30+105,30,10,0);
+  /* Rate Left button */
+  CreateWindow(Lga.hmain,CLASS_BUTTON,40,LGA_MAINRIGHT-145,LGA_MAINBOTTOM-50,20,20,"<\0");
+  /* Rate */
+  CreateWindow(Lga.hmain,CLASS_STATIC,41,LGA_MAINRIGHT-145+20,LGA_MAINBOTTOM-50,105,20,"33.6MHz\0");
+  /* Rate Right button */
+  CreateWindow(Lga.hmain,CLASS_BUTTON,42,LGA_MAINRIGHT-25,LGA_MAINBOTTOM-50,20,20,">\0");
 
   /* Create logic analyser window */
   Lga.hlga=CreateWindow(Lga.hmain,CLASS_STATIC,1,LGA_LEFT,LGA_TOP,LGA_WIDTH,LGA_HEIGHT,0);
@@ -272,6 +299,7 @@ void LogicAnalyserSetup(void)
   SendEvent(Lga.hmain,EVENT_ACTIVATE,0,0);
   DrawStatus(0,Caps,Num);
   Lga.dataofs=0;
+  Lga.rate=LGA_RATEMAX-1;
 
   while (!Lga.Quit)
   {

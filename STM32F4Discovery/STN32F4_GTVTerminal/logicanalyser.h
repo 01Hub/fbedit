@@ -9,7 +9,7 @@
 #define LGA_MAINLEFT      0
 #define LGA_MAINTOP       0
 #define LGA_MAINWIDTH     480
-#define LGA_MAINHEIGHT    238
+#define LGA_MAINHEIGHT    231
 #define LGA_MAINRIGHT     LGA_MAINLEFT+LGA_MAINWIDTH
 #define LGA_MAINBOTTOM    LGA_MAINTOP+LGA_MAINHEIGHT
 
@@ -26,12 +26,13 @@
 
 #define LGA_DATAPTR       0x20010000
 #define LGA_DATASIZE      0x8000
+#define LGA_RATEMAX       9
 
 /* Private typedef -----------------------------------------------------------*/
 typedef struct
 {
   uint16_t cnt;
-  uint8_t* str[16];
+  uint8_t str[16];
 } SAMPLE;
 
 typedef struct
