@@ -1,6 +1,11 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4_discovery.h"
+#include "window.h"
+
+
+#ifndef _VIDEO_H_
+#define _VIDEO_H_
 
 /* Private define ------------------------------------------------------------*/
 #define SPI_DR              0x4001300C
@@ -86,4 +91,4 @@ void FrameBuffDraw(void);
 void * memmove(void *dest, void *source, uint32_t count);
 void * memset(void *dest, uint32_t c, uint32_t count); 
 
-
+#endif

@@ -27,7 +27,6 @@
 /* Includes ------------------------------------------------------------------*/
 #include "video.h"
 #include "Font8x10.h"
-#include "window.h"
 
 /* External variables --------------------------------------------------------*/
 extern WINDOW* Windows[];

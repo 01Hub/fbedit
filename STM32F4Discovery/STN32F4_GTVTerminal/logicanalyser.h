@@ -10,21 +10,35 @@
 #define LGA_MAINTOP       0
 #define LGA_MAINWIDTH     480
 #define LGA_MAINHEIGHT    238
+#define LGA_MAINRIGHT     LGA_MAINLEFT+LGA_MAINWIDTH
+#define LGA_MAINBOTTOM    LGA_MAINTOP+LGA_MAINHEIGHT
+
+#define LGA_BITWIDTH      4
+#define LGA_BITHEIGHT     20
+#define LGA_BYTES         64
+
 #define LGA_LEFT          4
 #define LGA_TOP           16
-#define LGA_WIDTH         256+30
-#define LGA_HEIGHT        128+30
+#define LGA_WIDTH         LGA_BITWIDTH*LGA_BYTES+30
+#define LGA_HEIGHT        LGA_BITHEIGHT*8+30
 #define LGA_RIGHT         LGA_LEFT+LGA_WIDTH
 #define LGA_BOTTOM        LGA_TOP+LGA_HEIGHT
+
 #define LGA_DATAPTR       0x20010000
 #define LGA_DATASIZE      0x8000
-#define LGA_BYTES         64
 
 /* Private typedef -----------------------------------------------------------*/
 typedef struct
 {
+  uint16_t cnt;
+  uint8_t* str[16];
+} SAMPLE;
+
+typedef struct
+{
   WINDOW* hmain;
   WINDOW* hlga;
+  uint8_t rate;
   int32_t dataofs;
   uint8_t Sample;
   uint8_t Quit;

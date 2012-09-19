@@ -1,7 +1,6 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "window.h"
-#include "video.h"
 
 /* External variables --------------------------------------------------------*/
 extern volatile uint16_t FrameCount;
@@ -12,6 +11,32 @@ extern const uint8_t Font8x10[256][10];
 WINDOW WinColl[MAX_WINCOLL];      // Holds windows and controls data
 WINDOW* Windows[MAX_WINDOWS+1];   // Poiners to WinColl, windows only
 WINDOW* Focus;
+
+const uint8_t UncheckedIcon[10][10] = {
+{0,0,0,0,0,0,0,0,0,0},
+{0,1,1,1,1,1,1,1,1,0},
+{0,1,1,1,1,1,1,1,1,0},
+{0,1,1,1,1,1,1,1,1,0},
+{0,1,1,1,1,1,1,1,1,0},
+{0,1,1,1,1,1,1,1,1,0},
+{0,1,1,1,1,1,1,1,1,0},
+{0,1,1,1,1,1,1,1,1,0},
+{0,1,1,1,1,1,1,1,1,0},
+{0,0,0,0,0,0,0,0,0,0}
+};
+
+const uint8_t CheckedIcon[10][10] = {
+{0,0,0,0,0,0,0,0,0,0},
+{0,1,1,1,1,1,1,1,1,0},
+{0,1,0,1,1,1,1,1,1,0},
+{0,1,1,0,1,1,1,0,1,0},
+{0,1,1,0,1,1,0,1,1,0},
+{0,1,1,0,1,0,1,1,1,0},
+{0,1,1,0,0,1,1,1,1,0},
+{0,1,1,0,1,1,1,1,1,0},
+{0,1,1,1,1,1,1,1,1,0},
+{0,0,0,0,0,0,0,0,0,0}
+};
 
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
@@ -187,13 +212,51 @@ void DrawWhiteWinChar(uint16_t x, uint16_t y, uint8_t chr)
 }
 
 /**
+  * @brief  This function draws a character at x, y.
+  * @param  x, y, chr
+  * @retval None
+  */
+void DrawWinChar(uint16_t x, uint16_t y, uint8_t chr)
+{
+  uint8_t cl,bit;
+  uint16_t cx, cy;
+
+  cy=0;
+  while (cy<TILE_HEIGHT)
+  {
+    cl=Font8x10[chr][cy];
+    cx=0;
+    while (cx<TILE_WIDTH)
+    {
+      bit = 1 << ((x+cx) & 0x7);
+      if (cl & 0x80)
+      {
+        if (cx < SCREEN_WIDTH && cy < SCREEN_HEIGHT)
+        {
+          FrameBuff[y+cy][(x+cx >> 3)] |= bit;
+        }
+      }
+      else
+      {
+        if (cx < SCREEN_WIDTH && cy < SCREEN_HEIGHT)
+        {
+          FrameBuff[y+cy][(x+cx >> 3)] &= ~bit;
+        }
+      }
+      cl=cl<<1;
+      cx++;
+    }
+    cy++;
+  }
+}
+
+/**
   * @brief  This function draws a string with length len at x, y with color c (0=black, 1=white).
   * @param  x, y, len, *str, c
   * @retval None
   */
 void DrawWinString(uint16_t x, uint16_t y,uint8_t len, uint8_t *str,uint8_t c)
 {
-  uint8_t chr;
   switch (c)
   {
     case 0:
@@ -217,8 +280,25 @@ void DrawWinString(uint16_t x, uint16_t y,uint8_t len, uint8_t *str,uint8_t c)
     case 2:
       while (len)
       {
-        chr=*str | 0x80;
-        DrawWhiteWinChar(x, y, *str);
+        DrawWhiteWinChar(x, y, *str | 0x80);
+        x+=TILE_WIDTH;
+        str++;
+        len--;
+      }
+      break;
+    case 3:
+      while (len)
+      {
+        DrawWinChar(x, y, *str);
+        x+=TILE_WIDTH;
+        str++;
+        len--;
+      }
+      break;
+    case 4:
+      while (len)
+      {
+        DrawWinChar(x, y, *str | 0x80);
         x+=TILE_WIDTH;
         str++;
         len--;
@@ -229,7 +309,7 @@ void DrawWinString(uint16_t x, uint16_t y,uint8_t len, uint8_t *str,uint8_t c)
 
 /**
   * @brief  This function draws a 16bit decimal value at x, y.
-  * @param  x, y, n
+  * @param  x, y, n, c
   * @retval None
   */
 void DrawWinDec16(uint16_t x, uint16_t y, uint16_t n, uint8_t c)
@@ -260,6 +340,46 @@ void DrawWinDec16(uint16_t x, uint16_t y, uint16_t n, uint8_t c)
     x+=i*TILE_WIDTH;
   }
   DrawWinString(x,y,5-i,&decstr[i],c & 3);
+}
+
+/**
+  * @brief  This function draws an icon
+  * @param  x, y, icon
+  * @retval None
+  */
+void DrawWinIcon(uint16_t x,uint16_t y,ICON* icon)
+{
+  uint32_t xm,ym,i;
+  uint8_t cb;
+  const uint8_t *picon;
+
+  /* Draw the icon */
+  ym=y+icon->ht;
+  xm=x+icon->wt;
+  picon=icon->icondata;
+  while (y<ym)
+  {
+    i=x;
+    while (i<xm)
+    {
+      cb=picon[0];
+      if (cb!=2)
+      {
+      /* Set / Clear bit */
+      if (cb)
+      {
+        SetFBPixel(i,y);
+      }
+      else
+      {
+        ClearFBPixel(i,y);
+      }
+      }
+      i++;
+      picon++;
+    }
+    y++;
+  }
 }
 
 /**
@@ -349,6 +469,7 @@ void DrawWindow(WINDOW* hwin)
   uint32_t x,y,xm,ym,i,j,k;
   uint8_t cl,cr;
   WINDOW* hpar;
+  ICON icon;
 
   x=hwin->x;
   y=hwin->y;
@@ -511,6 +632,33 @@ void DrawWindow(WINDOW* hwin)
         y=y+(hwin->ht-TILE_HEIGHT)/2;
         DrawCaption(hwin,x,y);
       }
+      break;
+    case CLASS_CHKBOX:
+      icon.wt=10;
+      icon.ht=10;
+      if (hwin->state & STATE_CHECKED)
+      {
+        icon.icondata=*CheckedIcon;
+      }
+      else
+      {
+        icon.icondata=*UncheckedIcon;
+      }
+      y=y+(hwin->ht-TILE_HEIGHT)/2;
+      if (hwin->style & STYLE_RIGHT)
+      {
+        DrawWinIcon(x+hwin->wt-10,y,&icon);
+        DrawWinString(x,y,hwin->caplen,hwin->caption,0);
+      }
+      else
+      {
+        DrawWinIcon(x,y,&icon);
+        DrawWinString(x+12,y,hwin->caplen,hwin->caption,0);
+      }
+      break;
+    case CLASS_GROUPBOX:
+      FrameRect(x,y+5,xm-x,ym-y-5);
+      DrawWinString(x+3,y,hwin->caplen,hwin->caption,4);
       break;
   }
   if (hwin->control)
@@ -694,14 +842,13 @@ uint32_t DefWindowHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
       }
       break;
     case EVENT_SETFOCUS:
-      if (hwin->winclass==CLASS_WINDOW)
+      if (hwin->style & STYLE_CANFOCUS)
       {
         hwin->state|=(uint8_t)STATE_FOCUS;
-      }
-      else if (hwin->style & STYLE_CANFOCUS)
-      {
-        hwin->state|=(uint8_t)STATE_FOCUS;
-        Focus=hwin;
+        if (hwin->winclass!=CLASS_WINDOW)
+        {
+          Focus=hwin;
+        }
       }
       break;
     case EVENT_KILLFOCUS:
@@ -725,6 +872,10 @@ uint32_t DefWindowHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
         {
           FocusNext(howner);
           break;
+        }
+        if (hwin->winclass==CLASS_CHKBOX && param==0x0D)
+        {
+          hwin->state^=STATE_CHECKED;
         }
         SendEvent(howner,event,param,ID);
       }
@@ -872,6 +1023,10 @@ WINDOW* CreateWindow(WINDOW* howner,uint8_t winclass,uint8_t ID,uint16_t x,uint1
       case CLASS_CHKBOX:
         hwin->state=DEF_CHKSTATE;
         hwin->style=DEF_CHKSTYLE;
+        break;
+      case CLASS_GROUPBOX:
+        hwin->state=DEF_GROUPSTATE;
+        hwin->style=DEF_GROUPSTYLE;
         break;
     }
     hwin->handler=(void*)&DefWindowHandler;

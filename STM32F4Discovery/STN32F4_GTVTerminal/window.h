@@ -2,6 +2,11 @@
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4_discovery.h"
 
+#ifndef _WINDOW_H_
+#define _WINDOW_H_
+
+#include "video.h"
+
 /* Private define ------------------------------------------------------------*/
 /* Windows */
 #define MAX_WINDOWS         16      // Max number of windows
@@ -11,6 +16,7 @@
 #define CLASS_BUTTON        2
 #define CLASS_STATIC        3
 #define CLASS_CHKBOX        4
+#define CLASS_GROUPBOX      5
 
 #define EVENT_PAINT         1
 #define EVENT_SHOW          2
@@ -32,6 +38,7 @@
 #define DEF_STCSTATE        STATE_VISIBLE
 #define DEF_BTNSTATE        STATE_VISIBLE
 #define DEF_CHKSTATE        STATE_VISIBLE
+#define DEF_GROUPSTATE      STATE_VISIBLE
 
 #define STYLE_GRAY          1
 #define STYLE_BLACK         2
@@ -45,6 +52,7 @@
 #define DEF_STCSTYLE        STYLE_CENTER
 #define DEF_BTNSTYLE        STYLE_CENTER | STYLE_CANFOCUS
 #define DEF_CHKSTYLE        STYLE_LEFT | STYLE_CANFOCUS
+#define DEF_GROUPSTYLE      STYLE_LEFT
 
 /* Private typedef -----------------------------------------------------------*/
 typedef uint32_t (*handler)(void*,uint8_t,uint32_t,uint8_t);
@@ -72,8 +80,10 @@ void FocusNext(WINDOW* hpar);
 void FocusPrevious(WINDOW* hpar);
 void DrawBlackWinChar(uint16_t x, uint16_t y, uint8_t chr);
 void DrawWhiteWinChar(uint16_t x, uint16_t y, uint8_t chr);
+void DrawWinChar(uint16_t x, uint16_t y, uint8_t chr);
 void DrawWinString(uint16_t x, uint16_t y,uint8_t len, uint8_t *str,uint8_t c);
 void DrawWinDec16(uint16_t x, uint16_t y, uint16_t n, uint8_t c);
+void DrawWinIcon(uint16_t x,uint16_t y,ICON* icon);
 void FrameRect(uint16_t x,uint16_t y,uint16_t wdt,uint16_t hgt);
 void BlackRect(uint16_t x,uint16_t y,uint16_t xm,uint16_t ym);
 void DrawCaption(WINDOW* hwin,uint16_t x,uint16_t y);
@@ -99,3 +109,5 @@ void SetCaption(WINDOW* hwin,uint8_t *caption);
 void SetStyle(WINDOW* hwin,uint8_t style);
 void SetState(WINDOW* hwin,uint8_t state);
 void SetParam(WINDOW* hwin,uint32_t param);
+
+#endif

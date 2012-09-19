@@ -1,4 +1,8 @@
 
+
+#ifndef _FONT8X10_H_
+#define _FONT8X10_H_
+
 /* Font 8x10 */
 const uint8_t Font8x10[256][10] = {
 { // 0
@@ -3089,3 +3093,4 @@ const uint8_t SelectCur[10][8] = {
 {2,2,2,2,0,2,2,2}
 };
 
+#endif

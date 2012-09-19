@@ -186,6 +186,7 @@ void GetMouseClick(void)
         hdn=hwin;
         /* Activate the window */
         SendEvent(hwin,EVENT_ACTIVATE,0,hwin->ID);
+        /* Find the control */
         x=Cursor.x-hwin->x;
         y=Cursor.y-hwin->y;
         hwin=ControlFromPoint((WINDOW*)hwin,x,y);
