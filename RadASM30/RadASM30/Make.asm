@@ -500,6 +500,11 @@ SetOutputFile proc uses ebx esi edi,lpOut:DWORD,lpMain:DWORD
 		invoke iniInStr,edi,addr szDollarR
 		.if eax==-1
 			invoke iniInStr,edi,addr szDollarA
+			.if eax==-1
+				invoke iniInStr,edi,addr szDollarP
+				mov		edx,offset da.szProjectFile
+				mov		lpMain,edx
+			.endif
 		.endif
 	.endif
 	.if eax==-1
@@ -697,6 +702,14 @@ OutputMake proc uses ebx esi edi,nCommand:DWORD,fClear:DWORD
 			.endif
 			invoke InsertMain,addr makeexe.output,addr szDollarO
 			invoke InsertMain,addr da.szAppPath,addr szDollarA
+			
+			invoke iniInStr,addr makeexe.buffer,addr szDollarP
+			.if eax!=-1
+				invoke strcpy,addr buffer,addr da.szProjectFile
+				invoke RemovePath,addr buffer,addr da.szProjectPath,addr buffer
+				invoke RemoveFileExt,addr buffer
+				invoke InsertMain,addr buffer,addr szDollarP
+			.endif
 			mov		eax,TRUE
 			call	MakeIt
 		.elseif da.make.szLib[esi]

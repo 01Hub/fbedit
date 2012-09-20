@@ -221,6 +221,7 @@ szDollarF						db '$F',0						;Main code file without extention
 szDollarM						db '$M',0						;Modules file
 szDollarO						db '$O',0						;Output file
 szDollarR						db '$R',0						;Main resource script file without extention
+szDollarP						db '$P',0						;Project file without extention
 
 szDefUserExport					db '%name %id',0
 szDefFilter						db '.asm.inc.rc.prra.',0

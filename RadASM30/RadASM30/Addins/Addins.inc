@@ -486,14 +486,14 @@ EXTERNAL struct
 EXTERNAL ends
 
 MAKE struct
-	szType				BYTE 128 dup(?)
-	szCompileRC			BYTE 128 dup(?)
+	szType				BYTE 256 dup(?)
+	szCompileRC			BYTE 256 dup(?)
 	szOutCompileRC		BYTE 32 dup(?)
-	szAssemble			BYTE 128 dup(?)
+	szAssemble			BYTE 256 dup(?)
 	szOutAssemble		BYTE 32 dup(?)
-	szLink				BYTE 128 dup(?)
+	szLink				BYTE 256 dup(?)
 	szOutLink			BYTE 32 dup(?)
-	szLib				BYTE 128 dup(?)
+	szLib				BYTE 256 dup(?)
 	szOutLib			BYTE 32 dup(?)
 MAKE ends
 
