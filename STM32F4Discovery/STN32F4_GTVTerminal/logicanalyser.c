@@ -163,12 +163,12 @@ void LgaDrawByte(uint32_t x,uint8_t byte,uint8_t pbyte)
     if (byte & bit)
     {
       /* High */
-      LgaDrawHLine(x,y-16,LGA_BITWIDTH);
+      LgaDrawHLine(x,y-16,LGA_BITWIDTH+1);
     }
     else
     {
       /* Low */
-      LgaDrawHLine(x,y-4,LGA_BITWIDTH);
+      LgaDrawHLine(x,y-4,LGA_BITWIDTH+1);
     }
     bit <<=1;
     y+=LGA_BITHEIGHT;
@@ -199,39 +199,21 @@ void LgaDrawData(void)
 
 void LgaSample(void)
 {
-  uint8_t trg=0;
-  uint8_t trgignore=0;
-  uint8_t bit=1;
   uint32_t i;
   uint8_t byte;
   uint8_t* ptr;
-  WINDOW* hwin;
   ptr=(uint8_t*)LGA_DATAPTR;
-  /* Get trigger and mask */
-  i=0;
-  while (i<8)
-  {
-    hwin=GetControlHandle(Lga.hmain,i+20);
-    if (hwin->state & STATE_CHECKED)
-    {
-      trg|=bit;
-    }
-    hwin=GetControlHandle(Lga.hmain,i+30);
-    if (hwin->state & STATE_CHECKED)
-    {
-      trgignore|=bit;
-    }
-    bit<<=1;
-    i++;
-  }
-  i=0;
-  while (i<0x8000)
-  {
-    byte=Random(255);
-    *ptr=byte;
-    ptr++;
-    i++;
-  }
+  TIM8->CNT=4-1;
+  TIM8->ARR=4;
+  DMA_LGAConfig();
+  TIM_DMACmd(TIM8, TIM_DMA_Update, ENABLE);
+  /* DMA2_Stream1 enable */
+  DMA_Cmd(DMA2_Stream1, ENABLE);
+  WaitForTrigger();
+  TIM8->CR1 |= TIM_CR1_CEN;
+  while (DMA_GetFlagStatus(DMA2_Stream1,DMA_FLAG_TCIF1)==RESET);
+  DMA_DeInit(DMA2_Stream1);
+  TIM_Cmd(TIM8, DISABLE);
 }
 
 void LogicAnalyserSetup(void)
@@ -285,9 +267,9 @@ void LogicAnalyserSetup(void)
   CreateWindow(Lga.hmain,CLASS_CHKBOX,37,LGA_MAINRIGHT-55,LGA_TOP+30+105,10,10,0);
 
   /* Rate Left button */
-  CreateWindow(Lga.hmain,CLASS_BUTTON,40,LGA_MAINRIGHT-145,LGA_MAINBOTTOM-50,20,20,"<\0");
+  CreateWindow(Lga.hmain,CLASS_BUTTON,40,LGA_MAINRIGHT-150,LGA_MAINBOTTOM-50,20,20,"<\0");
   /* Rate */
-  CreateWindow(Lga.hmain,CLASS_STATIC,41,LGA_MAINRIGHT-145+20,LGA_MAINBOTTOM-50,105,20,"33.6MHz\0");
+  CreateWindow(Lga.hmain,CLASS_STATIC,41,LGA_MAINRIGHT-150+20,LGA_MAINBOTTOM-50,105,20,"33.6MHz\0");
   /* Rate Right button */
   CreateWindow(Lga.hmain,CLASS_BUTTON,42,LGA_MAINRIGHT-25,LGA_MAINBOTTOM-50,20,20,">\0");
 
@@ -318,3 +300,65 @@ void LogicAnalyserSetup(void)
   }
   DestroyWindow(Lga.hmain);
 }
+
+void WaitForTrigger(void)
+{
+  uint8_t bit=1;
+  uint8_t trg=0;
+  uint8_t trgmask=0;
+  WINDOW* hwin;
+  uint16_t fc;
+  uint32_t tmp,i;
+
+  /* Get trigger and mask */
+  i=0;
+  while (i<8)
+  {
+    hwin=GetControlHandle(Lga.hmain,i+20);
+    if (hwin->state & STATE_CHECKED)
+    {
+      trg|=bit;
+    }
+    hwin=GetControlHandle(Lga.hmain,i+30);
+    if (hwin->state & STATE_CHECKED)
+    {
+      trgmask|=bit;
+    }
+    bit<<=1;
+    i++;
+  }
+  tmp = trg & trgmask;
+  fc=FrameCount+50*5;
+  while (1)
+  {
+    if ((FrameCount==fc) || (((GPIOE->IDR>>8) & trgmask) == tmp))
+    {
+      break;
+    }
+  }
+}
+
+void DMA_LGAConfig(void)
+{
+  DMA_InitTypeDef       DMA_InitStructure;
+
+  DMA_DeInit(DMA2_Stream1);
+  /* DMA2 Stream1 channel7 configuration */
+  DMA_InitStructure.DMA_Channel = DMA_Channel_7;  
+  DMA_InitStructure.DMA_PeripheralBaseAddr = PE_IDR_ADDRESS;
+  DMA_InitStructure.DMA_Memory0BaseAddr = LGA_DATAPTR;
+  DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralToMemory;
+  DMA_InitStructure.DMA_BufferSize = LGA_DATASIZE;
+  DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
+  DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;
+  DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Byte;
+  DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_Byte;
+  DMA_InitStructure.DMA_Mode = DMA_Mode_Normal;
+  DMA_InitStructure.DMA_Priority = DMA_Priority_High;
+  DMA_InitStructure.DMA_FIFOMode = DMA_FIFOMode_Disable;         
+  DMA_InitStructure.DMA_FIFOThreshold = DMA_FIFOThreshold_HalfFull;
+  DMA_InitStructure.DMA_MemoryBurst = DMA_MemoryBurst_Single;
+  DMA_InitStructure.DMA_PeripheralBurst = DMA_PeripheralBurst_Single;
+  DMA_Init(DMA2_Stream1, &DMA_InitStructure);
+}
+

@@ -24,8 +24,9 @@
 #define LGA_RIGHT         LGA_LEFT+LGA_WIDTH
 #define LGA_BOTTOM        LGA_TOP+LGA_HEIGHT
 
-#define LGA_DATAPTR       0x20010000
-#define LGA_DATASIZE      0x8000
+#define PE_IDR_ADDRESS    ((uint32_t)0x40021011)
+#define LGA_DATAPTR       ((uint32_t)0x20010000)
+#define LGA_DATASIZE      ((uint32_t)0x8000)
 #define LGA_RATEMAX       9
 
 /* Private typedef -----------------------------------------------------------*/
@@ -55,3 +56,5 @@ void LgaDrawByte(uint32_t x,uint8_t byte,uint8_t pbyte);
 void LgaDrawData();
 void LgaSample(void);
 void LogicAnalyserSetup(void);
+void WaitForTrigger(void);
+void DMA_LGAConfig(void);

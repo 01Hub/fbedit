@@ -111,12 +111,12 @@ void main(void)
   */
 void RCC_Config(void)
 {
-  /* Enable DMA1, GPIOA, GPIOB clocks */
-  RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA1 | RCC_AHB1Periph_GPIOA | RCC_AHB1Periph_GPIOB, ENABLE);
+  /* Enable DMA1, GPIOA, GPIOB and GPIOE clocks */
+  RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA1 | RCC_AHB1Periph_GPIOA | RCC_AHB1Periph_GPIOB | RCC_AHB1Periph_GPIOE, ENABLE);
   /* Enable USART2, TIM3, TIM4, TIM5 and SPI2 clocks */
   RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART2 | RCC_APB1Periph_TIM3 | RCC_APB1Periph_TIM4 | RCC_APB1Periph_TIM5 | RCC_APB1Periph_SPI2, ENABLE);
-  /* Enable SYSCFG clock */
-  RCC_APB2PeriphClockCmd(RCC_APB2Periph_SYSCFG, ENABLE);
+  /* Enable TIM8 and SYSCFG clock */
+  RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM8 | RCC_APB2Periph_SYSCFG, ENABLE);
 }
 
 /**
@@ -231,6 +231,14 @@ void TIM_Config(void)
   /* Enable TIM5 Update interrupt */
   TIM_ClearITPendingBit(TIM5,TIM_IT_Update);
   TIM_ITConfig(TIM5, TIM_IT_Update, ENABLE);
+
+  /* Time base configuration */
+  TIM_TimeBaseStructure.TIM_Period = 167;
+  TIM_TimeBaseStructure.TIM_Prescaler = 0;
+  TIM_TimeBaseStructure.TIM_ClockDivision = 0;
+  TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
+  TIM_TimeBaseStructure.TIM_RepetitionCounter = 0;
+  TIM_TimeBaseInit(TIM8, &TIM_TimeBaseStructure);
 }
 
 /**
