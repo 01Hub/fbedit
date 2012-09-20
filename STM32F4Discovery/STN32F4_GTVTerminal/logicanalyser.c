@@ -203,8 +203,8 @@ void LgaSample(void)
   uint8_t byte;
   uint8_t* ptr;
   ptr=(uint8_t*)LGA_DATAPTR;
-  TIM8->CNT=4-1;
-  TIM8->ARR=4;
+  TIM8->CNT=rate[Lga.rate].cnt-1;
+  TIM8->ARR=rate[Lga.rate].cnt;
   DMA_LGAConfig();
   TIM_DMACmd(TIM8, TIM_DMA_Update, ENABLE);
   /* DMA2_Stream1 enable */
@@ -288,7 +288,11 @@ void LogicAnalyserSetup(void)
     if (Lga.Sample)
     {
       Lga.Sample=0;
+      SetStyle(Lga.hmain,STATE_VISIBLE);
+      SetStyle(Lga.hmain,STYLE_LEFT);
       LgaSample();
+      SetStyle(Lga.hmain,STYLE_LEFT | STYLE_CANFOCUS);
+      SetState(Lga.hmain,STATE_VISIBLE | STATE_FOCUS);
       Lga.dataofs=0;
     }
     if (caps!=Caps || num!=Num)
