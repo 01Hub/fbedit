@@ -170,67 +170,92 @@ void EXTI0_IRQHandler(void)
 void GetMouseClick(void)
 {
   static volatile WINDOW* hdn;
-  static volatile WINDOW* hup;
+  static volatile uint16_t px;
+  static volatile uint16_t py;
   WINDOW* hwin;
+  WINDOW* hctl;
   uint16_t x,y;
 
+  if (Cursor.x!=px || Cursor.y!=py)
+  {
+    /* Find the window */
+    px=Cursor.x;
+    py=Cursor.y;
+    hwin=WindowFromPoint(px,py);
+    if (hwin)
+    {
+      x=Cursor.x-hwin->x;
+      y=Cursor.y-hwin->y;
+      /* Find the control */
+      hctl=ControlFromPoint(hwin,x,y);
+      if (hctl)
+      {
+        hwin=hctl;
+        x=x-hwin->x;
+        y=y-hwin->y;
+      }
+      SendEvent(hwin,EVENT_MOVE,(y<<16) | x,hwin->ID);
+    }
+  }
   if (mb!=pmb)
   {
     if ((mb & 1)&& !(pmb & 1))
     {
       /* Left button down */
-      hdn=0;
-      hwin=(WINDOW*)WindowFromPoint(Cursor.x,Cursor.y);
+      hwin=WindowFromPoint(Cursor.x,Cursor.y);
       if (hwin)
       {
-        hdn=hwin;
         /* Activate the window */
         SendEvent(hwin,EVENT_ACTIVATE,0,hwin->ID);
         /* Find the control */
         x=Cursor.x-hwin->x;
         y=Cursor.y-hwin->y;
-        hwin=ControlFromPoint((WINDOW*)hwin,x,y);
-        if (hwin)
+        hctl=ControlFromPoint(hwin,x,y);
+        if (hctl)
         {
+          hwin=hctl;
+          x=x-hwin->x;
+          y=y-hwin->y;
           SendEvent(hwin,EVENT_LDOWN,(y<<16) | x,hwin->ID);
-          hdn=hwin;
-          if (Focus)
+          if (hwin->style & STYLE_CANFOCUS)
           {
-            Focus->state &= ~STATE_FOCUS;
+            if (Focus)
+            {
+              Focus->state &= ~STATE_FOCUS;
+            }
+            hwin->state |= STATE_FOCUS;
+            Focus=hwin;
           }
-          hwin->state |= STATE_FOCUS;
-          Focus=hwin;
         }
         else
         {
-          SendEvent((WINDOW*)hdn,EVENT_LDOWN,((Cursor.y<<16) | Cursor.x),hdn->ID);
+          SendEvent(hwin,EVENT_LDOWN,((y<<16) | x),hwin->ID);
         }
       }
+      hdn=hwin;
     }
     else if (!(mb & 1)&& (pmb & 1))
     {
       /* Left button up */
-      hup=0;
-      hwin=(WINDOW*)WindowFromPoint(Cursor.x,Cursor.y);
+      hwin=WindowFromPoint(Cursor.x,Cursor.y);
       if (hwin)
       {
-        hup=hwin;
         x=Cursor.x-hwin->x;
         y=Cursor.y-hwin->y;
-        hwin=ControlFromPoint((WINDOW*)hwin,x,y);
-        if (hwin)
+        hctl=ControlFromPoint(hwin,x,y);
+        if (hctl)
         {
-          hup=hwin;
+          hwin=hctl;
+          x=x-hwin->x;
+          y=y-hwin->y;
         }
-        else
+        if (hdn)
         {
-          x=Cursor.x-hwin->x;
-          y=Cursor.y-hwin->y;
-        }
-        SendEvent((WINDOW*)hup,EVENT_LUP,((y<<16) | x),hup->ID);
-        if (hdn==hup && hup!=0)
-        {
-          SendEvent((WINDOW*)hup,EVENT_LCLICK,(y<<16) | x,hup->ID);
+          SendEvent((WINDOW*)hdn,EVENT_LUP,((y<<16) | x),hdn->ID);
+          if (hdn==hwin)
+          {
+            SendEvent(hwin,EVENT_LCLICK,(y<<16) | x,hwin->ID);
+          }
         }
       }
     }

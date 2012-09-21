@@ -44,6 +44,7 @@ SPRITE Cursor;
 SPRITE* Sprites[MAX_SPRITES];
 volatile uint8_t FrameDraw;
 volatile uint32_t RNDSeed;          // Random seed
+TIMER timer;
 
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
@@ -1039,6 +1040,10 @@ void TIM5_IRQHandler(void)
     {
       Focus->handler(Focus,EVENT_CHAR,chr,Focus->ID);
     }
+  }
+  if (timer)
+  {
+    timer();
   }
   GetMouseClick();
   FrameCount++;

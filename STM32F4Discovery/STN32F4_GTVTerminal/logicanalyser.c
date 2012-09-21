@@ -11,8 +11,9 @@ extern uint8_t FrameBuff[SCREEN_BUFFHEIGHT][SCREEN_BUFFWIDTH];
 
 /* Private variables ---------------------------------------------------------*/
 LGA Lga;
+uint8_t lgastr[8][6]={{"Ofs:"},{"Mark:"},{"Pos:"},{"Bytes:"},{"Hex:"},{"Bin:"},{"Trans:"},{"Time:"}};
 uint8_t lgacap[8][2]={{"D0"},{"D1"},{"D2"},{"D3"},{"D4"},{"D5"},{"D6"},{"D7"}};
-SAMPLE rate[LGA_RATEMAX]={{1679,"100KHz\0"},{839,"200KHz\0"},{335,"500KHz\0"},{167,"1.0MHz\0"},{83,"2.0MHz\0"},{32,"5.1MHz\0"},{15,"10.5MHz\0"},{7,"21.0MHz\0"},{4,"33.6MHz\0"}};
+SAMPLE rate[LGA_RATEMAX]={{1000000,1679,"100KHz\0"},{5000000,839,"200KHz\0"},{2000000,335,"500KHz\0"},{1000000,167,"1.0MHz\0"},{500000,83,"2.0MHz\0"},{196429,32,"5.1MHz\0"},{95238,15,"10.5MHz\0"},{47619,7,"21.0MHz\0"},{29762,4,"33.6MHz\0"}};
 
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
@@ -33,6 +34,7 @@ void LgaMainHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
             {
               Lga.dataofs=0;
             }
+            Lga.tmrid=ID;
             break;
           case 2:
             /* Fast right */
@@ -41,6 +43,7 @@ void LgaMainHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
             {
               Lga.dataofs=LGA_DATASIZE-64;
             }
+            Lga.tmrid=ID;
             break;
           case 3:
             /* Left */
@@ -49,6 +52,7 @@ void LgaMainHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
             {
               Lga.dataofs=0;
             }
+            Lga.tmrid=ID;
             break;
           case 4:
             /* Right */
@@ -57,6 +61,7 @@ void LgaMainHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
             {
               Lga.dataofs=LGA_DATASIZE-64;
             }
+            Lga.tmrid=ID;
             break;
           case 40:
             /* Rate Left */
@@ -65,6 +70,7 @@ void LgaMainHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
               Lga.rate--;
               SetCaption(GetControlHandle(Lga.hmain,41),rate[Lga.rate].str);
             }
+            Lga.tmrid=ID;
             break;
           case 42:
             /* Rate Right */
@@ -73,6 +79,7 @@ void LgaMainHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
               Lga.rate++;
               SetCaption(GetControlHandle(Lga.hmain,41),rate[Lga.rate].str);
             }
+            Lga.tmrid=ID;
             break;
           case 98:
             /* Sample */
@@ -84,6 +91,10 @@ void LgaMainHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
             break;
         }
       }
+    case EVENT_LUP:
+      Lga.tmrid=0;
+      Lga.tmrmax=25;
+      Lga.tmrcnt=0;
     default:
       DefWindowHandler(hwin,event,param,ID);
       break;
@@ -92,6 +103,8 @@ void LgaMainHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
 
 void LgaHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
 {
+  uint16_t x,y,pos;
+
   switch (event)
   {
     case EVENT_PAINT:
@@ -100,7 +113,25 @@ void LgaHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
       {
         LgaDrawGrid();
       }
+      LgaDrawMark();
       LgaDrawData();
+      LgaDrawInfo();
+      break;
+    case EVENT_LDOWN:
+      x=param & 0xFFFF;
+      y=param>>16;
+      if (x>30)
+      {
+        Lga.mark=((x-30)/4)+Lga.dataofs;
+      }
+      break;
+    case EVENT_MOVE:
+      x=param & 0xFFFF;
+      y=param>>16;
+      if (x>30)
+      {
+        Lga.cur=((x-30)/4)+Lga.dataofs;
+      }
       break;
     default:
       DefWindowHandler(hwin,event,param,ID);
@@ -146,6 +177,64 @@ void LgaDrawGrid(void)
     LgaDrawVLine(x,LGA_TOP,LGA_HEIGHT-30);
     x+=32;
   }
+}
+
+void LgaDrawMark(void)
+{
+  uint16_t x;
+
+  if (Lga.markshow)
+  {
+    if ((Lga.mark>=Lga.dataofs) && (Lga.mark<Lga.dataofs+LGA_BYTES))
+    {
+      /* Draw mark */
+      x=(Lga.mark-Lga.dataofs)*4+30+2;
+      LgaDrawVLine(x,LGA_TOP,LGA_HEIGHT-25);
+    }
+    if ((Lga.cur>=Lga.dataofs) && (Lga.cur<Lga.dataofs+LGA_BYTES))
+    {
+      /* Draw mark */
+      x=(Lga.cur-Lga.dataofs)*4+30+2;
+      LgaDrawVLine(x,LGA_TOP,LGA_HEIGHT-25);
+    }
+  }
+}
+
+void LgaDrawInfo(void)
+{
+  uint16_t nbytes;
+  uint8_t byte;
+  uint8_t* ptr;
+
+  /* Offset */
+  DrawWinString(LGA_LEFT+4,LGA_TOP+LGA_BOTTOM-30,4,lgastr[0],1);
+  DrawWinDec16(LGA_LEFT+4+48,LGA_TOP+LGA_BOTTOM-30,Lga.dataofs,1);
+  /* Mark */
+  DrawWinString(LGA_LEFT+4,LGA_TOP+LGA_BOTTOM-20,5,lgastr[1],1);
+  DrawWinDec16(LGA_LEFT+4+48,LGA_TOP+LGA_BOTTOM-20,Lga.mark,1);
+  /* Position */
+  DrawWinString(LGA_LEFT+4+48,LGA_BOTTOM-10,4,lgastr[2],1);
+  DrawWinDec16(LGA_LEFT+4+48+48,LGA_BOTTOM-10,Lga.cur,1);
+
+  /* Bytes */
+  nbytes=Lga.cur-Lga.mark;
+  if (Lga.cur<Lga.mark)
+  {
+    nbytes=Lga.mark-Lga.cur;
+  }
+  DrawWinString(LGA_LEFT+4+48+48+48,LGA_BOTTOM-30,6,lgastr[3],1);
+  DrawWinDec16(LGA_LEFT+4+48+48+48+48,LGA_TOP+LGA_BOTTOM-30,nbytes,1);
+  ptr=(uint8_t*)(LGA_DATAPTR+Lga.cur);
+  byte=*ptr;
+  /* Hex */
+  DrawWinString(LGA_LEFT+4+48+48+48,LGA_BOTTOM-20,4,lgastr[4],1);
+  DrawWinHex8(LGA_LEFT+4+48+48+48+48,LGA_TOP+LGA_BOTTOM-20,byte,1);
+  /* Bin */
+  DrawWinString(LGA_LEFT+4+48+48+48,LGA_BOTTOM-10,4,lgastr[5],1);
+  DrawWinBin8(LGA_LEFT+4+48+48+48+48,LGA_TOP+LGA_BOTTOM-10,byte,1);
+
+  // /**/
+  // DrawWinString(LGA_LEFT+4,LGA_BOTTOM-20,4,lgastr[0],1);
 }
 
 void LgaDrawByte(uint32_t x,uint8_t byte,uint8_t pbyte)
@@ -280,8 +369,14 @@ void LogicAnalyserSetup(void)
 
   SendEvent(Lga.hmain,EVENT_ACTIVATE,0,0);
   DrawStatus(0,Caps,Num);
+  Lga.cur=0;
+  Lga.mark=0;
   Lga.dataofs=0;
   Lga.rate=LGA_RATEMAX-1;
+  Lga.tmrid=0;
+  Lga.tmrmax=25;
+  Lga.tmrcnt=0;
+  CreateTimer(LgaTimer);
 
   while (!Lga.Quit)
   {
@@ -294,6 +389,8 @@ void LogicAnalyserSetup(void)
       SetStyle(Lga.hmain,STYLE_LEFT | STYLE_CANFOCUS);
       SetState(Lga.hmain,STATE_VISIBLE | STATE_FOCUS);
       Lga.dataofs=0;
+      Lga.cur=0;
+      Lga.mark=0;
     }
     if (caps!=Caps || num!=Num)
     {
@@ -302,6 +399,7 @@ void LogicAnalyserSetup(void)
       DrawStatus(0,caps,num);
     }
   }
+  KillTimer();
   DestroyWindow(Lga.hmain);
 }
 
@@ -333,9 +431,9 @@ void WaitForTrigger(void)
   }
   tmp = trg & trgmask;
   fc=FrameCount+50*5;
-  while (1)
+  while (FrameCount!=fc)
   {
-    if ((FrameCount==fc) || (((GPIOE->IDR>>8) & trgmask) == tmp))
+    if (((GPIOE->IDR>>8) & trgmask) == tmp)
     {
       break;
     }
@@ -366,3 +464,19 @@ void DMA_LGAConfig(void)
   DMA_Init(DMA2_Stream1, &DMA_InitStructure);
 }
 
+void LgaTimer(void)
+{
+  if (Lga.tmrid)
+  {
+    Lga.tmrcnt++;
+    if (Lga.tmrcnt>=Lga.tmrmax)
+    {
+      SendEvent(Lga.hmain,EVENT_CHAR,0x0D,Lga.tmrid);
+    }
+  }
+  Lga.markcnt++;
+  if (!(Lga.markcnt & 0x0F))
+  {
+    Lga.markshow^=1;
+  }
+}

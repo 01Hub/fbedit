@@ -56,6 +56,7 @@
 
 /* Private typedef -----------------------------------------------------------*/
 typedef uint32_t (*handler)(void*,uint8_t,uint32_t,uint8_t);
+
 typedef struct
 {
   void* hwin;
@@ -83,6 +84,8 @@ void DrawWhiteWinChar(uint16_t x, uint16_t y, uint8_t chr);
 void DrawWinChar(uint16_t x, uint16_t y, uint8_t chr);
 void DrawWinString(uint16_t x, uint16_t y,uint8_t len, uint8_t *str,uint8_t c);
 void DrawWinDec16(uint16_t x, uint16_t y, uint16_t n, uint8_t c);
+void DrawWinHex8(uint16_t x, uint16_t y, uint8_t n, uint8_t c);
+void DrawWinBin8(uint16_t x, uint16_t y, uint8_t n, uint8_t c);
 void DrawWinIcon(uint16_t x,uint16_t y,ICON* icon);
 void FrameRect(uint16_t x,uint16_t y,uint16_t wdt,uint16_t hgt);
 void BlackRect(uint16_t x,uint16_t y,uint16_t xm,uint16_t ym);
@@ -109,5 +112,7 @@ void SetCaption(WINDOW* hwin,uint8_t *caption);
 void SetStyle(WINDOW* hwin,uint8_t style);
 void SetState(WINDOW* hwin,uint8_t state);
 void SetParam(WINDOW* hwin,uint32_t param);
+void CreateTimer(TIMER tmr);
+void KillTimer(void);
 
 #endif

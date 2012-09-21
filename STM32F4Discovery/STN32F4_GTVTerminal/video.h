@@ -32,6 +32,8 @@
 #define COLL_BACKGROUND     32    // Collision with background
 
 /* Private typedef -----------------------------------------------------------*/
+typedef void (*TIMER)(void);
+
 typedef struct
 {
   uint16_t left;

@@ -6,10 +6,11 @@
 extern volatile uint16_t FrameCount;
 extern uint8_t FrameBuff[SCREEN_BUFFHEIGHT][SCREEN_BUFFWIDTH];
 extern const uint8_t Font8x10[256][10];
+extern TIMER timer;
 
 /* Private variables ---------------------------------------------------------*/
 WINDOW WinColl[MAX_WINCOLL];      // Holds windows and controls data
-WINDOW* Windows[MAX_WINDOWS+1];   // Poiners to WinColl, windows only
+WINDOW* Windows[MAX_WINDOWS+1];   // Pointers to WinColl, windows only
 WINDOW* Focus;
 
 const uint8_t UncheckedIcon[10][10] = {
@@ -340,6 +341,59 @@ void DrawWinDec16(uint16_t x, uint16_t y, uint16_t n, uint8_t c)
     x+=i*TILE_WIDTH;
   }
   DrawWinString(x,y,5-i,&decstr[i],c & 3);
+}
+
+/**
+  * @brief  This function draws a 8 bit hex value at x, y.
+  * @param  x, y, n, c
+  * @retval None
+  */
+void DrawWinHex8(uint16_t x, uint16_t y, uint8_t n, uint8_t c)
+{
+	static uint8_t hexchars[] = "0123456789ABCDEF";
+	uint8_t hexstr[2];
+	hexstr[0] = hexchars[(n >> 4) & 0xF];
+	hexstr[1] = hexchars[n & 0xF];
+  DrawWinString(x,y,2,hexstr,c);
+}
+
+/**
+  * @brief  This function draws a 8 bit binary value at x, y.
+  * @param  x, y, n, c
+  * @retval None
+  */
+void DrawWinBin8(uint16_t x, uint16_t y, uint8_t n, uint8_t c)
+{
+  uint8_t i;
+  i=0;
+  while (i<8)
+  {
+    if (n & 0x80)
+    {
+      if (c)
+      {
+        DrawWhiteWinChar(x,y,0x31);
+      }
+      else
+      {
+        DrawBlackWinChar(x,y,0x31);
+      }
+    }
+    else
+    {
+      if (c)
+      {
+        DrawWhiteWinChar(x,y,0x31);
+      }
+      else
+      {
+        DrawBlackWinChar(x,y,0x31);
+      }
+    }
+    x+=8;
+    n<<=1;
+    i++;
+  }
 }
 
 /**
@@ -708,15 +762,12 @@ WINDOW* ControlFromPoint(WINDOW* howner,uint16_t x,uint16_t y)
   {
     if (hwin->state & STATE_VISIBLE)
     {
-      if (hwin->style & STYLE_CANFOCUS)
+      if (x>=hwin->x && x<hwin->x+hwin->wt)
       {
-        if (x>=hwin->x && x<hwin->x+hwin->wt)
+        if (y>=hwin->y && y<hwin->y+hwin->ht)
         {
-          if (y>=hwin->y && y<hwin->y+hwin->ht)
-          {
-            /* Found the control */
-            return hwin;
-          }
+          /* Found the control */
+          return hwin;
         }
       }
     }
@@ -1131,5 +1182,15 @@ void SetState(WINDOW* hwin,uint8_t state)
 void SetParam(WINDOW* hwin,uint32_t param)
 {
   hwin->param=param;
+}
+
+void CreateTimer(TIMER tmr)
+{
+  timer=tmr;
+}
+
+void KillTimer(void)
+{
+  timer=0;
 }
 
