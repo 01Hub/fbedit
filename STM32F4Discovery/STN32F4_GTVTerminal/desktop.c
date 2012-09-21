@@ -11,7 +11,7 @@ extern volatile uint8_t Num;
 DESKTOP Desktop;
 uint8_t barcap[4][8]={{"Games\0"},{"Tools\0"},{"Options\0"},{"Help\0"}};
 uint8_t pop1cap[4][8]={{"Alien\0"},{"Pong\0"},{"Volcano\0"},{"Tetris\0"}};
-uint8_t pop2cap[4][15]={{"Terminal\0"},{"Key State\0"},{"Logic Analyser\0"},{"Wave Generator\0"}};
+uint8_t pop2cap[4][15]={{"Terminal\0"},{"Key State\0"},{"Logic Analyser\0"},{"Digital Scope\0"}};
 uint8_t pop3cap[4][8]={{"Option1\0"},{"Option2\0"},{"Option3\0"},{"Option4\0"}};
 uint8_t pop4cap[2][6]={{"Help\0"},{"About\0"}};
 
@@ -214,6 +214,9 @@ void DeskTopSetup(void)
       break;
     case 23:
       LogicAnalyserSetup();
+      break;
+    case 24:
+      ScopeSetup();
       break;
   }
 }
