@@ -325,7 +325,7 @@ void DrawWinDec16(uint16_t x, uint16_t y, uint16_t n, uint8_t c)
   {
     d=n/dm;
     n-=d*dm;
-    decstr[0]=d | 0x30;
+    decstr[i]=d | 0x30;
     i++;
     dm /=10;
   }
@@ -383,11 +383,11 @@ void DrawWinBin8(uint16_t x, uint16_t y, uint8_t n, uint8_t c)
     {
       if (c)
       {
-        DrawWhiteWinChar(x,y,0x31);
+        DrawWhiteWinChar(x,y,0x30);
       }
       else
       {
-        DrawBlackWinChar(x,y,0x31);
+        DrawBlackWinChar(x,y,0x30);
       }
     }
     x+=8;
@@ -930,10 +930,6 @@ uint32_t DefWindowHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
         }
         SendEvent(howner,event,param,ID);
       }
-      break;
-    case EVENT_LDOWN:
-      break;
-    case EVENT_LUP:
       break;
     case EVENT_LCLICK:
        SendEvent(hwin,EVENT_CHAR,0x0D,hwin->ID);

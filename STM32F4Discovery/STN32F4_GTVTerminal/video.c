@@ -1051,7 +1051,6 @@ void TIM5_IRQHandler(void)
   {
     STM_EVAL_LEDToggle(LED3);
   }
-//  DrawHex(0,210,LineCount,1);
   FrameDraw=0;
 }
 
