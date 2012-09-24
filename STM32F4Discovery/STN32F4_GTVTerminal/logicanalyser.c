@@ -83,6 +83,9 @@ void LgaMainHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
             /* Quit */
             Lga.Quit=1;
             break;
+          default:
+            DefWindowHandler(hwin,event,param,ID);
+            break;
         }
       }
       break;
@@ -212,13 +215,13 @@ void LgaDrawInfo(void)
 
   /* Offset */
   DrawWinString(LGA_LEFT+4,LGA_BOTTOM-30,4,lgastr[0],1);
-  DrawWinDec16(LGA_LEFT+4+48,LGA_BOTTOM-30,Lga.dataofs,1);
+  DrawWinDec16(LGA_LEFT+4+40,LGA_BOTTOM-30,Lga.dataofs,1);
   /* Mark */
   DrawWinString(LGA_LEFT+4,LGA_BOTTOM-20,5,lgastr[1],1);
-  DrawWinDec16(LGA_LEFT+4+48,LGA_BOTTOM-20,Lga.mark,1);
+  DrawWinDec16(LGA_LEFT+4+40,LGA_BOTTOM-20,Lga.mark,1);
   /* Position */
   DrawWinString(LGA_LEFT+4,LGA_BOTTOM-10,4,lgastr[2],1);
-  DrawWinDec16(LGA_LEFT+4+48,LGA_BOTTOM-10,Lga.cur,1);
+  DrawWinDec16(LGA_LEFT+4+40,LGA_BOTTOM-10,Lga.cur,1);
 
   /* Bytes */
   nbytes=Lga.cur-Lga.mark;
@@ -226,16 +229,16 @@ void LgaDrawInfo(void)
   {
     nbytes=Lga.mark-Lga.cur;
   }
-  DrawWinString(LGA_LEFT+4+48+48,LGA_BOTTOM-30,6,lgastr[3],1);
-  DrawWinDec16(LGA_LEFT+4+48+48+48,LGA_BOTTOM-30,nbytes,1);
+  DrawWinString(LGA_LEFT+4+40+48,LGA_BOTTOM-30,6,lgastr[3],1);
+  DrawWinDec16(LGA_LEFT+4+40+48+48,LGA_BOTTOM-30,nbytes,1);
   ptr=(uint8_t*)(LGA_DATAPTR+Lga.cur);
   byte=*ptr;
   /* Hex */
-  DrawWinString(LGA_LEFT+4+48+48,LGA_BOTTOM-20,4,lgastr[4],1);
-  DrawWinHex8(LGA_LEFT+4+48+48+48,LGA_BOTTOM-20,byte,1);
+  DrawWinString(LGA_LEFT+4+40+48,LGA_BOTTOM-20,4,lgastr[4],1);
+  DrawWinHex8(LGA_LEFT+4+40+48+48,LGA_BOTTOM-20,byte,1);
   /* Bin */
-  DrawWinString(LGA_LEFT+4+48+48,LGA_BOTTOM-10,4,lgastr[5],1);
-  DrawWinBin8(LGA_LEFT+4+48+48+48,LGA_BOTTOM-10,byte,1);
+  DrawWinString(LGA_LEFT+4+40+48,LGA_BOTTOM-10,4,lgastr[5],1);
+  DrawWinBin8(LGA_LEFT+4+40+48+48,LGA_BOTTOM-10,byte,1);
 
   // /**/
   // DrawWinString(LGA_LEFT+4,LGA_BOTTOM-20,4,lgastr[0],1);
@@ -474,6 +477,7 @@ void LgaTimer(void)
     Lga.tmrcnt++;
     if (Lga.tmrcnt>=Lga.tmrmax)
     {
+      Lga.tmrmax=4;
       Lga.tmrcnt=0;
       SendEvent(Lga.hmain,EVENT_CHAR,0x0D,Lga.tmrid);
     }
