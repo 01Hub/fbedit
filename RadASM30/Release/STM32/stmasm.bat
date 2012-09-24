@@ -1,0 +1,1 @@
+"C:\Program Files\Raisonance\Ride\arm-gcc\bin\arm-none-eabi-gcc.exe"  -MD -D_STM32F100RB_ -D_STM3x_ -D_STM32x_ -mthumb -mcpu=cortex-m3 %1 -o %2 -I "." -I "C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc" -c -fsigned-char -g -O1 -ffunction-sections -mlittle-endian

@@ -260,7 +260,7 @@ CppSkipScope1:
 		.endif
 	.elseif al==VK_RETURN
 		.if byte ptr [esi]==0Ah
-			inc		eax
+			inc		esi
 		.endif
 		inc		dword ptr [edx]
 	.endif
@@ -441,7 +441,7 @@ _Begin:
 	mov		edx,npos
 	.while byte ptr [esi]!=';' && byte ptr [esi]!='{' && byte ptr [esi]
 		.if byte ptr [esi]==VK_RETURN
-			.if byte ptr [esi]==0Ah
+			.if byte ptr [esi+1]==0Ah
 				inc		esi
 			.endif
 			inc		dword ptr npos
@@ -531,9 +531,6 @@ _Skip:
 	or		eax,eax
 	jne		SkipSc
   _SkipDf:
-	invoke IsWord,esi,len,offset szVolatile,lpCharTab
-	or		eax,eax
-	jne		SkipSc
 	invoke IsWord,esi,len,offset szInclude,lpCharTab
 	or		eax,eax
 	jne		SkipLn
@@ -571,6 +568,9 @@ _Skip:
 	or		eax,eax
 	jne		SkipWd
 	invoke IsWord,esi,len,offset szConst,lpCharTab
+	or		eax,eax
+	jne		SkipWd
+	invoke IsWord,esi,len,offset szVolatile,lpCharTab
 	or		eax,eax
 	jne		SkipWd
 	xor		eax,eax
@@ -886,7 +886,9 @@ _Function:
 			mov		lpParamSt,esi
 			invoke CppSkipScope,addr npos
 			mov		lpParamEn,esi
-		.elseif byte ptr [esi]==VK_RETURN || byte ptr [esi]=='*'
+		.elseif byte ptr [esi]=='*'
+			inc		esi
+		.elseif byte ptr [esi]==VK_RETURN
 			inc		esi
 			.if byte ptr [esi]==0Ah
 				inc		esi
@@ -1062,6 +1064,8 @@ _Unknown1:
 			inc		esi
 		.endw
 		pop		eax
+		call	GetLineNo
+		mov		npos,eax
 		mov		eax,TRUE
 		retn
 	.elseif byte ptr [esi]=='*'

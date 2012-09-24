@@ -1,0 +1,2138 @@
+Archive member included because of file (symbol)
+
+libc.a(lib_a-memmove.o)       .\video.o (memmove)
+libc.a(lib_a-memset.o)        .\video.o (memset)
+
+Allocating common symbols
+Common symbol       size              file
+
+Num                 0x1               .\keyboard.o
+rs232buftail        0x1               .\usart.o
+Sprites             0x100             .\video.o
+cy                  0x4               .\terminal.o
+RNDSeed             0x4               .\video.o
+timer               0x4               .\video.o
+WinColl             0x2800            .\window.o
+FrameCount          0x2               .\video.o
+FrameDraw           0x1               .\video.o
+cx                  0x4               .\terminal.o
+mb                  0x1               .\mouse.o
+Pause               0x1               .\keyboard.o
+Focus               0x4               .\window.o
+ScreenChars         0x5a0             .\terminal.o
+Scope               0x14              .\scope.o
+my                  0x4               .\mouse.o
+BackBuff            0x3e80            .\video.o
+showcursor          0x1               .\terminal.o
+PongGame            0x58              .\pong.o
+nStuck              0x1               .\keyboard.o
+Caps                0x1               .\keyboard.o
+keyscan             0x2               .\keyboard.o
+Desktop             0x18              .\desktop.o
+keytab              0x20              .\keyboard.o
+Lga                 0x18              .\logicanalyser.o
+rs232bufhead        0x1               .\usart.o
+AlienGame           0x45c             .\AlieGame.o
+Windows             0x44              .\window.o
+Cursor              0x14              .\video.o
+LineCount           0x2               .\video.o
+mousecode           0x1               .\mouse.o
+charbuf             0x100             .\keyboard.o
+rs232buf            0x100             .\usart.o
+NVIC_InitStructure  0x4               .\stm32f4_discovery.o
+pmb                 0x1               .\mouse.o
+FrameBuff           0x3e80            .\video.o
+mx                  0x4               .\mouse.o
+extkeytab           0x20              .\keyboard.o
+BackPochFlag        0x1               .\video.o
+
+Discarded input sections
+
+ .text          0x00000000       0x14 .\startup_stm32f4xx.o
+ .data          0x00000000        0x0 .\startup_stm32f4xx.o
+ .bss           0x00000000        0x0 .\startup_stm32f4xx.o
+ .text          0x00000000        0x0 .\main.o
+ .data          0x00000000        0x0 .\main.o
+ .bss           0x00000000        0x0 .\main.o
+ .text          0x00000000        0x0 .\video.o
+ .bss           0x00000000        0x0 .\video.o
+ .text.GetPixel
+                0x00000000       0x44 .\video.o
+ .text.DrawDec16
+                0x00000000      0x110 .\video.o
+ .text.Circle   0x00000000      0x140 .\video.o
+ .text.ScrollUp
+                0x00000000       0x2c .\video.o
+ .text.ScrollDown
+                0x00000000       0x38 .\video.o
+ .text          0x00000000        0x0 .\keyboard.o
+ .text.parity1  0x00000000       0x14 .\keyboard.o
+ .text          0x00000000        0x0 .\mouse.o
+ .text          0x00000000        0x0 .\usart.o
+ .data          0x00000000        0x0 .\usart.o
+ .bss           0x00000000        0x0 .\usart.o
+ .text.rs232_puts
+                0x00000000       0x18 .\usart.o
+ .text          0x00000000        0x0 .\keystate.o
+ .data          0x00000000        0x0 .\keystate.o
+ .bss           0x00000000        0x0 .\keystate.o
+ .text          0x00000000        0x0 .\window.o
+ .data          0x00000000        0x0 .\window.o
+ .bss           0x00000000        0x0 .\window.o
+ .text          0x00000000        0x0 .\desktop.o
+ .bss           0x00000000        0x0 .\desktop.o
+ .text          0x00000000        0x0 .\pong.o
+ .data          0x00000000        0x0 .\pong.o
+ .bss           0x00000000        0x0 .\pong.o
+ .text          0x00000000        0x0 .\terminal.o
+ .data          0x00000000        0x0 .\terminal.o
+ .bss           0x00000000        0x0 .\terminal.o
+ .text.video_hide_cursor
+                0x00000000       0x24 .\terminal.o
+ .text.video_scrollup
+                0x00000000       0x10 .\terminal.o
+ .text.video_cfwd
+                0x00000000       0x28 .\terminal.o
+ .text.video_lfwd
+                0x00000000       0x44 .\terminal.o
+ .text.video_lf
+                0x00000000       0x34 .\terminal.o
+ .text.video_puts
+                0x00000000       0x74 .\terminal.o
+ .text.video_puthex
+                0x00000000       0x44 .\terminal.o
+ .text          0x00000000        0x0 .\logicanalyser.o
+ .bss           0x00000000        0x0 .\logicanalyser.o
+ .text          0x00000000        0x0 .\AlieGame.o
+ .data          0x00000000        0x0 .\AlieGame.o
+ .bss           0x00000000        0x0 .\AlieGame.o
+ .text          0x00000000        0x0 .\scope.o
+ .data          0x00000000        0x0 .\scope.o
+ .bss           0x00000000        0x0 .\scope.o
+ .text          0x00000000        0x0 .\misc.o
+ .data          0x00000000        0x0 .\misc.o
+ .bss           0x00000000        0x0 .\misc.o
+ .text.NVIC_SetVectorTable
+                0x00000000       0x18 .\misc.o
+ .text.NVIC_SystemLPConfig
+                0x00000000       0x24 .\misc.o
+ .text.SysTick_CLKSourceConfig
+                0x00000000       0x1c .\misc.o
+ .text          0x00000000        0x0 .\stm32f4_discovery.o
+ .bss           0x00000000        0x0 .\stm32f4_discovery.o
+ .text.STM_EVAL_LEDOn
+                0x00000000       0x20 .\stm32f4_discovery.o
+ .text.STM_EVAL_LEDOff
+                0x00000000       0x20 .\stm32f4_discovery.o
+ .text.STM_EVAL_PBGetState
+                0x00000000       0x24 .\stm32f4_discovery.o
+ COMMON         0x00000000        0x4 .\stm32f4_discovery.o
+ .text          0x00000000        0x0 .\stm32f4xx_dma.o
+ .data          0x00000000        0x0 .\stm32f4xx_dma.o
+ .bss           0x00000000        0x0 .\stm32f4xx_dma.o
+ .text.DMA_StructInit
+                0x00000000       0x24 .\stm32f4xx_dma.o
+ .text.DMA_PeriphIncOffsetSizeConfig
+                0x00000000       0x18 .\stm32f4xx_dma.o
+ .text.DMA_FlowControllerConfig
+                0x00000000       0x18 .\stm32f4xx_dma.o
+ .text.DMA_SetCurrDataCounter
+                0x00000000        0x4 .\stm32f4xx_dma.o
+ .text.DMA_GetCurrDataCounter
+                0x00000000        0x8 .\stm32f4xx_dma.o
+ .text.DMA_DoubleBufferModeConfig
+                0x00000000       0x18 .\stm32f4xx_dma.o
+ .text.DMA_DoubleBufferModeCmd
+                0x00000000       0x18 .\stm32f4xx_dma.o
+ .text.DMA_MemoryTargetConfig
+                0x00000000        0xc .\stm32f4xx_dma.o
+ .text.DMA_GetCurrentMemoryTarget
+                0x00000000        0x8 .\stm32f4xx_dma.o
+ .text.DMA_GetCmdStatus
+                0x00000000        0x8 .\stm32f4xx_dma.o
+ .text.DMA_GetFIFOStatus
+                0x00000000        0x8 .\stm32f4xx_dma.o
+ .text.DMA_ClearFlag
+                0x00000000       0x3c .\stm32f4xx_dma.o
+ .text.DMA_ITConfig
+                0x00000000       0x3c .\stm32f4xx_dma.o
+ .text.DMA_GetITStatus
+                0x00000000       0x6c .\stm32f4xx_dma.o
+ .text.DMA_ClearITPendingBit
+                0x00000000       0x3c .\stm32f4xx_dma.o
+ .text          0x00000000        0x0 .\stm32f4xx_exti.o
+ .data          0x00000000        0x0 .\stm32f4xx_exti.o
+ .bss           0x00000000        0x0 .\stm32f4xx_exti.o
+ .text.EXTI_DeInit
+                0x00000000       0x20 .\stm32f4xx_exti.o
+ .text.EXTI_StructInit
+                0x00000000       0x14 .\stm32f4xx_exti.o
+ .text.EXTI_GenerateSWInterrupt
+                0x00000000       0x14 .\stm32f4xx_exti.o
+ .text.EXTI_GetFlagStatus
+                0x00000000       0x14 .\stm32f4xx_exti.o
+ .text.EXTI_ClearFlag
+                0x00000000        0xc .\stm32f4xx_exti.o
+ .text.EXTI_GetITStatus
+                0x00000000       0x20 .\stm32f4xx_exti.o
+ .text          0x00000000        0x0 .\stm32f4xx_gpio.o
+ .data          0x00000000        0x0 .\stm32f4xx_gpio.o
+ .bss           0x00000000        0x0 .\stm32f4xx_gpio.o
+ .text.GPIO_DeInit
+                0x00000000      0x158 .\stm32f4xx_gpio.o
+ .text.GPIO_StructInit
+                0x00000000       0x14 .\stm32f4xx_gpio.o
+ .text.GPIO_PinLockConfig
+                0x00000000       0x28 .\stm32f4xx_gpio.o
+ .text.GPIO_ReadInputData
+                0x00000000        0x8 .\stm32f4xx_gpio.o
+ .text.GPIO_ReadOutputDataBit
+                0x00000000        0xc .\stm32f4xx_gpio.o
+ .text.GPIO_ReadOutputData
+                0x00000000        0x8 .\stm32f4xx_gpio.o
+ .text.GPIO_WriteBit
+                0x00000000        0xc .\stm32f4xx_gpio.o
+ .text.GPIO_Write
+                0x00000000        0x4 .\stm32f4xx_gpio.o
+ .text.GPIO_ToggleBits
+                0x00000000        0xc .\stm32f4xx_gpio.o
+ .text          0x00000000        0x0 .\stm32f4xx_it.o
+ .data          0x00000000        0x0 .\stm32f4xx_it.o
+ .bss           0x00000000        0x0 .\stm32f4xx_it.o
+ .text          0x00000000        0x0 .\stm32f4xx_rcc.o
+ .bss           0x00000000        0x0 .\stm32f4xx_rcc.o
+ .text.RCC_DeInit
+                0x00000000       0x38 .\stm32f4xx_rcc.o
+ .text.RCC_HSEConfig
+                0x00000000       0x14 .\stm32f4xx_rcc.o
+ .text.RCC_AdjustHSICalibrationValue
+                0x00000000       0x18 .\stm32f4xx_rcc.o
+ .text.RCC_HSICmd
+                0x00000000        0xc .\stm32f4xx_rcc.o
+ .text.RCC_LSEConfig
+                0x00000000       0x3c .\stm32f4xx_rcc.o
+ .text.RCC_LSICmd
+                0x00000000        0xc .\stm32f4xx_rcc.o
+ .text.RCC_PLLConfig
+                0x00000000       0x24 .\stm32f4xx_rcc.o
+ .text.RCC_PLLCmd
+                0x00000000        0xc .\stm32f4xx_rcc.o
+ .text.RCC_PLLI2SConfig
+                0x00000000       0x18 .\stm32f4xx_rcc.o
+ .text.RCC_PLLI2SCmd
+                0x00000000        0xc .\stm32f4xx_rcc.o
+ .text.RCC_ClockSecuritySystemCmd
+                0x00000000        0xc .\stm32f4xx_rcc.o
+ .text.RCC_MCO1Config
+                0x00000000       0x18 .\stm32f4xx_rcc.o
+ .text.RCC_MCO2Config
+                0x00000000       0x18 .\stm32f4xx_rcc.o
+ .text.RCC_SYSCLKConfig
+                0x00000000       0x18 .\stm32f4xx_rcc.o
+ .text.RCC_GetSYSCLKSource
+                0x00000000       0x10 .\stm32f4xx_rcc.o
+ .text.RCC_HCLKConfig
+                0x00000000       0x18 .\stm32f4xx_rcc.o
+ .text.RCC_PCLK1Config
+                0x00000000       0x18 .\stm32f4xx_rcc.o
+ .text.RCC_PCLK2Config
+                0x00000000       0x18 .\stm32f4xx_rcc.o
+ .text.RCC_RTCCLKConfig
+                0x00000000       0x3c .\stm32f4xx_rcc.o
+ .text.RCC_RTCCLKCmd
+                0x00000000        0xc .\stm32f4xx_rcc.o
+ .text.RCC_BackupResetCmd
+                0x00000000        0xc .\stm32f4xx_rcc.o
+ .text.RCC_I2SCLKConfig
+                0x00000000        0xc .\stm32f4xx_rcc.o
+ .text.RCC_AHB2PeriphClockCmd
+                0x00000000       0x24 .\stm32f4xx_rcc.o
+ .text.RCC_AHB3PeriphClockCmd
+                0x00000000       0x24 .\stm32f4xx_rcc.o
+ .text.RCC_AHB1PeriphResetCmd
+                0x00000000       0x24 .\stm32f4xx_rcc.o
+ .text.RCC_AHB2PeriphResetCmd
+                0x00000000       0x24 .\stm32f4xx_rcc.o
+ .text.RCC_AHB3PeriphResetCmd
+                0x00000000       0x24 .\stm32f4xx_rcc.o
+ .text.RCC_AHB1PeriphClockLPModeCmd
+                0x00000000       0x24 .\stm32f4xx_rcc.o
+ .text.RCC_AHB2PeriphClockLPModeCmd
+                0x00000000       0x24 .\stm32f4xx_rcc.o
+ .text.RCC_AHB3PeriphClockLPModeCmd
+                0x00000000       0x24 .\stm32f4xx_rcc.o
+ .text.RCC_APB1PeriphClockLPModeCmd
+                0x00000000       0x24 .\stm32f4xx_rcc.o
+ .text.RCC_APB2PeriphClockLPModeCmd
+                0x00000000       0x24 .\stm32f4xx_rcc.o
+ .text.RCC_ITConfig
+                0x00000000       0x24 .\stm32f4xx_rcc.o
+ .text.RCC_GetFlagStatus
+                0x00000000       0x34 .\stm32f4xx_rcc.o
+ .text.RCC_WaitForHSEStartUp
+                0x00000000       0x3c .\stm32f4xx_rcc.o
+ .text.RCC_ClearFlag
+                0x00000000       0x14 .\stm32f4xx_rcc.o
+ .text.RCC_GetITStatus
+                0x00000000       0x14 .\stm32f4xx_rcc.o
+ .text.RCC_ClearITPendingBit
+                0x00000000        0xc .\stm32f4xx_rcc.o
+ .text          0x00000000        0x0 .\stm32f4xx_spi.o
+ .data          0x00000000        0x0 .\stm32f4xx_spi.o
+ .bss           0x00000000        0x0 .\stm32f4xx_spi.o
+ .text.I2S_Init
+                0x00000000      0x100 .\stm32f4xx_spi.o
+ .text.I2S_StructInit
+                0x00000000       0x18 .\stm32f4xx_spi.o
+ .text.I2S_Cmd  0x00000000       0x20 .\stm32f4xx_spi.o
+ .text.SPI_DataSizeConfig
+                0x00000000       0x1c .\stm32f4xx_spi.o
+ .text.SPI_BiDirectionalLineConfig
+                0x00000000       0x1c .\stm32f4xx_spi.o
+ .text.SPI_NSSInternalSoftwareConfig
+                0x00000000       0x20 .\stm32f4xx_spi.o
+ .text.SPI_SSOutputCmd
+                0x00000000       0x20 .\stm32f4xx_spi.o
+ .text.SPI_TIModeCmd
+                0x00000000       0x20 .\stm32f4xx_spi.o
+ .text.I2S_FullDuplexConfig
+                0x00000000       0x54 .\stm32f4xx_spi.o
+ .text.SPI_I2S_ReceiveData
+                0x00000000        0x8 .\stm32f4xx_spi.o
+ .text.SPI_I2S_SendData
+                0x00000000        0x4 .\stm32f4xx_spi.o
+ .text.SPI_CalculateCRC
+                0x00000000       0x20 .\stm32f4xx_spi.o
+ .text.SPI_TransmitCRC
+                0x00000000        0xc .\stm32f4xx_spi.o
+ .text.SPI_GetCRC
+                0x00000000       0x10 .\stm32f4xx_spi.o
+ .text.SPI_GetCRCPolynomial
+                0x00000000        0x8 .\stm32f4xx_spi.o
+ .text.SPI_I2S_ITConfig
+                0x00000000       0x28 .\stm32f4xx_spi.o
+ .text.SPI_I2S_GetFlagStatus
+                0x00000000        0xc .\stm32f4xx_spi.o
+ .text.SPI_I2S_ClearFlag
+                0x00000000        0xc .\stm32f4xx_spi.o
+ .text.SPI_I2S_GetITStatus
+                0x00000000       0x34 .\stm32f4xx_spi.o
+ .text.SPI_I2S_ClearITPendingBit
+                0x00000000       0x18 .\stm32f4xx_spi.o
+ .text          0x00000000        0x0 .\stm32f4xx_syscfg.o
+ .data          0x00000000        0x0 .\stm32f4xx_syscfg.o
+ .bss           0x00000000        0x0 .\stm32f4xx_syscfg.o
+ .text.SYSCFG_DeInit
+                0x00000000       0x1c .\stm32f4xx_syscfg.o
+ .text.SYSCFG_MemoryRemapConfig
+                0x00000000        0xc .\stm32f4xx_syscfg.o
+ .text.SYSCFG_ETH_MediaInterfaceConfig
+                0x00000000        0xc .\stm32f4xx_syscfg.o
+ .text.SYSCFG_CompensationCellCmd
+                0x00000000        0xc .\stm32f4xx_syscfg.o
+ .text.SYSCFG_GetCompensationCellStatus
+                0x00000000       0x10 .\stm32f4xx_syscfg.o
+ .text          0x00000000        0x0 .\stm32f4xx_tim.o
+ .data          0x00000000        0x0 .\stm32f4xx_tim.o
+ .bss           0x00000000        0x0 .\stm32f4xx_tim.o
+ .text.TI1_Config
+                0x00000000       0x48 .\stm32f4xx_tim.o
+ .text.TI2_Config
+                0x00000000       0x4c .\stm32f4xx_tim.o
+ .text.TIM_DeInit
+                0x00000000      0x20c .\stm32f4xx_tim.o
+ .text.TIM_TimeBaseStructInit
+                0x00000000       0x14 .\stm32f4xx_tim.o
+ .text.TIM_PrescalerConfig
+                0x00000000        0x8 .\stm32f4xx_tim.o
+ .text.TIM_CounterModeConfig
+                0x00000000       0x18 .\stm32f4xx_tim.o
+ .text.TIM_SetCounter
+                0x00000000        0x4 .\stm32f4xx_tim.o
+ .text.TIM_SetAutoreload
+                0x00000000        0x4 .\stm32f4xx_tim.o
+ .text.TIM_GetCounter
+                0x00000000        0x4 .\stm32f4xx_tim.o
+ .text.TIM_GetPrescaler
+                0x00000000        0x8 .\stm32f4xx_tim.o
+ .text.TIM_UpdateDisableConfig
+                0x00000000       0x20 .\stm32f4xx_tim.o
+ .text.TIM_UpdateRequestConfig
+                0x00000000       0x20 .\stm32f4xx_tim.o
+ .text.TIM_ARRPreloadConfig
+                0x00000000       0x20 .\stm32f4xx_tim.o
+ .text.TIM_SelectOnePulseMode
+                0x00000000       0x1c .\stm32f4xx_tim.o
+ .text.TIM_SetClockDivision
+                0x00000000       0x1c .\stm32f4xx_tim.o
+ .text.TIM_OC1Init
+                0x00000000       0xa4 .\stm32f4xx_tim.o
+ .text.TIM_OC2Init
+                0x00000000       0xb0 .\stm32f4xx_tim.o
+ .text.TIM_OC3Init
+                0x00000000       0xac .\stm32f4xx_tim.o
+ .text.TIM_OC4Init
+                0x00000000       0x8c .\stm32f4xx_tim.o
+ .text.TIM_OCStructInit
+                0x00000000       0x18 .\stm32f4xx_tim.o
+ .text.TIM_SelectOCxM
+                0x00000000       0x6c .\stm32f4xx_tim.o
+ .text.TIM_SetCompare1
+                0x00000000        0x4 .\stm32f4xx_tim.o
+ .text.TIM_SetCompare2
+                0x00000000        0x4 .\stm32f4xx_tim.o
+ .text.TIM_SetCompare3
+                0x00000000        0x4 .\stm32f4xx_tim.o
+ .text.TIM_SetCompare4
+                0x00000000        0x4 .\stm32f4xx_tim.o
+ .text.TIM_ForcedOC1Config
+                0x00000000       0x18 .\stm32f4xx_tim.o
+ .text.TIM_ForcedOC2Config
+                0x00000000       0x18 .\stm32f4xx_tim.o
+ .text.TIM_ForcedOC3Config
+                0x00000000       0x18 .\stm32f4xx_tim.o
+ .text.TIM_ForcedOC4Config
+                0x00000000       0x18 .\stm32f4xx_tim.o
+ .text.TIM_OC1PreloadConfig
+                0x00000000       0x18 .\stm32f4xx_tim.o
+ .text.TIM_OC2PreloadConfig
+                0x00000000       0x18 .\stm32f4xx_tim.o
+ .text.TIM_OC3PreloadConfig
+                0x00000000       0x18 .\stm32f4xx_tim.o
+ .text.TIM_OC4PreloadConfig
+                0x00000000       0x18 .\stm32f4xx_tim.o
+ .text.TIM_OC1FastConfig
+                0x00000000       0x18 .\stm32f4xx_tim.o
+ .text.TIM_OC2FastConfig
+                0x00000000       0x18 .\stm32f4xx_tim.o
+ .text.TIM_OC3FastConfig
+                0x00000000       0x18 .\stm32f4xx_tim.o
+ .text.TIM_OC4FastConfig
+                0x00000000       0x18 .\stm32f4xx_tim.o
+ .text.TIM_ClearOC1Ref
+                0x00000000       0x18 .\stm32f4xx_tim.o
+ .text.TIM_ClearOC2Ref
+                0x00000000       0x14 .\stm32f4xx_tim.o
+ .text.TIM_ClearOC3Ref
+                0x00000000       0x18 .\stm32f4xx_tim.o
+ .text.TIM_ClearOC4Ref
+                0x00000000       0x14 .\stm32f4xx_tim.o
+ .text.TIM_OC1PolarityConfig
+                0x00000000       0x18 .\stm32f4xx_tim.o
+ .text.TIM_OC1NPolarityConfig
+                0x00000000       0x18 .\stm32f4xx_tim.o
+ .text.TIM_OC2PolarityConfig
+                0x00000000       0x18 .\stm32f4xx_tim.o
+ .text.TIM_OC2NPolarityConfig
+                0x00000000       0x18 .\stm32f4xx_tim.o
+ .text.TIM_OC3PolarityConfig
+                0x00000000       0x18 .\stm32f4xx_tim.o
+ .text.TIM_OC3NPolarityConfig
+                0x00000000       0x18 .\stm32f4xx_tim.o
+ .text.TIM_OC4PolarityConfig
+                0x00000000       0x18 .\stm32f4xx_tim.o
+ .text.TIM_CCxCmd
+                0x00000000       0x28 .\stm32f4xx_tim.o
+ .text.TIM_CCxNCmd
+                0x00000000       0x28 .\stm32f4xx_tim.o
+ .text.TIM_ICStructInit
+                0x00000000       0x14 .\stm32f4xx_tim.o
+ .text.TIM_GetCapture1
+                0x00000000        0x4 .\stm32f4xx_tim.o
+ .text.TIM_GetCapture2
+                0x00000000        0x4 .\stm32f4xx_tim.o
+ .text.TIM_GetCapture3
+                0x00000000        0x4 .\stm32f4xx_tim.o
+ .text.TIM_GetCapture4
+                0x00000000        0x4 .\stm32f4xx_tim.o
+ .text.TIM_SetIC1Prescaler
+                0x00000000       0x1c .\stm32f4xx_tim.o
+ .text.TIM_SetIC2Prescaler
+                0x00000000       0x20 .\stm32f4xx_tim.o
+ .text.TIM_PWMIConfig
+                0x00000000       0x68 .\stm32f4xx_tim.o
+ .text.TIM_SetIC3Prescaler
+                0x00000000       0x1c .\stm32f4xx_tim.o
+ .text.TIM_SetIC4Prescaler
+                0x00000000       0x20 .\stm32f4xx_tim.o
+ .text.TIM_ICInit
+                0x00000000       0xe0 .\stm32f4xx_tim.o
+ .text.TIM_BDTRConfig
+                0x00000000       0x24 .\stm32f4xx_tim.o
+ .text.TIM_BDTRStructInit
+                0x00000000       0x14 .\stm32f4xx_tim.o
+ .text.TIM_CtrlPWMOutputs
+                0x00000000       0x28 .\stm32f4xx_tim.o
+ .text.TIM_SelectCOM
+                0x00000000       0x20 .\stm32f4xx_tim.o
+ .text.TIM_CCPreloadControl
+                0x00000000       0x20 .\stm32f4xx_tim.o
+ .text.TIM_GenerateEvent
+                0x00000000        0x4 .\stm32f4xx_tim.o
+ .text.TIM_GetFlagStatus
+                0x00000000        0xc .\stm32f4xx_tim.o
+ .text.TIM_ClearFlag
+                0x00000000        0xc .\stm32f4xx_tim.o
+ .text.TIM_GetITStatus
+                0x00000000       0x18 .\stm32f4xx_tim.o
+ .text.TIM_DMAConfig
+                0x00000000        0x8 .\stm32f4xx_tim.o
+ .text.TIM_SelectCCDMA
+                0x00000000       0x20 .\stm32f4xx_tim.o
+ .text.TIM_InternalClockConfig
+                0x00000000       0x14 .\stm32f4xx_tim.o
+ .text.TIM_SelectInputTrigger
+                0x00000000       0x18 .\stm32f4xx_tim.o
+ .text.TIM_TIxExternalClockConfig
+                0x00000000       0x34 .\stm32f4xx_tim.o
+ .text.TIM_ITRxExternalClockConfig
+                0x00000000       0x14 .\stm32f4xx_tim.o
+ .text.TIM_SelectOutputTrigger
+                0x00000000       0x1c .\stm32f4xx_tim.o
+ .text.TIM_SelectSlaveMode
+                0x00000000       0x1c .\stm32f4xx_tim.o
+ .text.TIM_SelectMasterSlaveMode
+                0x00000000       0x1c .\stm32f4xx_tim.o
+ .text.TIM_ETRConfig
+                0x00000000       0x1c .\stm32f4xx_tim.o
+ .text.TIM_ETRClockMode2Config
+                0x00000000       0x14 .\stm32f4xx_tim.o
+ .text.TIM_ETRClockMode1Config
+                0x00000000       0x20 .\stm32f4xx_tim.o
+ .text.TIM_EncoderInterfaceConfig
+                0x00000000       0x50 .\stm32f4xx_tim.o
+ .text.TIM_SelectHallSensor
+                0x00000000       0x20 .\stm32f4xx_tim.o
+ .text.TIM_RemapConfig
+                0x00000000        0x8 .\stm32f4xx_tim.o
+ .text          0x00000000        0x0 .\stm32f4xx_usart.o
+ .data          0x00000000        0x0 .\stm32f4xx_usart.o
+ .bss           0x00000000        0x0 .\stm32f4xx_usart.o
+ .text.USART_DeInit
+                0x00000000       0xe8 .\stm32f4xx_usart.o
+ .text.USART_StructInit
+                0x00000000       0x1c .\stm32f4xx_usart.o
+ .text.USART_ClockInit
+                0x00000000       0x2c .\stm32f4xx_usart.o
+ .text.USART_ClockStructInit
+                0x00000000       0x10 .\stm32f4xx_usart.o
+ .text.USART_SetPrescaler
+                0x00000000       0x14 .\stm32f4xx_usart.o
+ .text.USART_OverSampling8Cmd
+                0x00000000       0x20 .\stm32f4xx_usart.o
+ .text.USART_OneBitMethodCmd
+                0x00000000       0x20 .\stm32f4xx_usart.o
+ .text.USART_SendData
+                0x00000000        0xc .\stm32f4xx_usart.o
+ .text.USART_ReceiveData
+                0x00000000        0xc .\stm32f4xx_usart.o
+ .text.USART_SetAddress
+                0x00000000       0x1c .\stm32f4xx_usart.o
+ .text.USART_ReceiverWakeUpCmd
+                0x00000000       0x20 .\stm32f4xx_usart.o
+ .text.USART_WakeUpConfig
+                0x00000000       0x1c .\stm32f4xx_usart.o
+ .text.USART_LINBreakDetectLengthConfig
+                0x00000000       0x1c .\stm32f4xx_usart.o
+ .text.USART_LINCmd
+                0x00000000       0x20 .\stm32f4xx_usart.o
+ .text.USART_SendBreak
+                0x00000000        0xc .\stm32f4xx_usart.o
+ .text.USART_HalfDuplexCmd
+                0x00000000       0x20 .\stm32f4xx_usart.o
+ .text.USART_SetGuardTime
+                0x00000000       0x14 .\stm32f4xx_usart.o
+ .text.USART_SmartCardCmd
+                0x00000000       0x20 .\stm32f4xx_usart.o
+ .text.USART_SmartCardNACKCmd
+                0x00000000       0x20 .\stm32f4xx_usart.o
+ .text.USART_IrDAConfig
+                0x00000000       0x1c .\stm32f4xx_usart.o
+ .text.USART_IrDACmd
+                0x00000000       0x20 .\stm32f4xx_usart.o
+ .text.USART_DMACmd
+                0x00000000       0x18 .\stm32f4xx_usart.o
+ .text.USART_GetFlagStatus
+                0x00000000        0xc .\stm32f4xx_usart.o
+ .text.USART_ClearFlag
+                0x00000000        0xc .\stm32f4xx_usart.o
+ .text.USART_GetITStatus
+                0x00000000       0x54 .\stm32f4xx_usart.o
+ .text.USART_ClearITPendingBit
+                0x00000000       0x18 .\stm32f4xx_usart.o
+ .text          0x00000000        0x0 .\system_stm32f4xx.o
+ .data          0x00000000       0x14 .\system_stm32f4xx.o
+ .bss           0x00000000        0x0 .\system_stm32f4xx.o
+ .text.SystemCoreClockUpdate
+                0x00000000       0xdc .\system_stm32f4xx.o
+ .data          0x00000000        0x0 libc.a(lib_a-memmove.o)
+ .bss           0x00000000        0x0 libc.a(lib_a-memmove.o)
+ .ARM.attributes
+                0x00000000       0x29 libc.a(lib_a-memmove.o)
+ .debug_frame   0x00000000       0x2c libc.a(lib_a-memmove.o)
+ .data          0x00000000        0x0 libc.a(lib_a-memset.o)
+ .bss           0x00000000        0x0 libc.a(lib_a-memset.o)
+ .ARM.attributes
+                0x00000000       0x29 libc.a(lib_a-memset.o)
+ .debug_frame   0x00000000       0x2c libc.a(lib_a-memset.o)
+
+Memory Configuration
+
+Name             Origin             Length             Attributes
+RAM              0x20000000         0x00020000         xrw
+FLASH            0x08000000         0x00020000         xr
+STARTFLASH       0x00000000         0x00000000         xr
+CRPPATCH         0x00000000         0x00000000         r
+FLASHPATCH       0x00000000         0x00000000         r
+ENDFLASH         0x00000000         0x00000000         xr
+FLASHB1          0x00000000         0x00000000         xr
+EXTMEMB0         0x00000000         0x00000000         xr
+EXTMEMB1         0x00000000         0x00000000         xr
+EXTMEMB2         0x00000000         0x00000000         xr
+EXTMEMB3         0x00000000         0x00000000         xr
+*default*        0x00000000         0xffffffff
+
+Linker script and memory map
+
+LOAD .\startup_stm32f4xx.o
+LOAD .\main.o
+LOAD .\video.o
+LOAD .\keyboard.o
+LOAD .\mouse.o
+LOAD .\usart.o
+LOAD .\keystate.o
+LOAD .\window.o
+LOAD .\desktop.o
+LOAD .\pong.o
+LOAD .\terminal.o
+LOAD .\logicanalyser.o
+LOAD .\AlieGame.o
+LOAD .\scope.o
+LOAD .\misc.o
+LOAD .\stm32f4_discovery.o
+LOAD .\stm32f4xx_dma.o
+LOAD .\stm32f4xx_exti.o
+LOAD .\stm32f4xx_gpio.o
+LOAD .\stm32f4xx_it.o
+LOAD .\stm32f4xx_rcc.o
+LOAD .\stm32f4xx_spi.o
+LOAD .\stm32f4xx_syscfg.o
+LOAD .\stm32f4xx_tim.o
+LOAD .\stm32f4xx_usart.o
+LOAD .\system_stm32f4xx.o
+                0x00000400                __Stack_Size = 0x400
+                0x00000400                PROVIDE (_Stack_Size, __Stack_Size)
+                0x2001fc00                __Stack_Init = (_estack - __Stack_Size)
+                0x2001fc00                PROVIDE (_Stack_Init, __Stack_Init)
+                0x00000100                _Minimum_Stack_Size = 0x100
+                0x00000000                PROVIDE (Undefined_Handler, 0x0)
+                0x00000000                PROVIDE (SWI_Handler, 0x0)
+                0x00000000                PROVIDE (IRQ_Handler, 0x0)
+                0x00000000                PROVIDE (Prefetch_Handler, 0x0)
+                0x00000000                PROVIDE (Abort_Handler, 0x0)
+                0x00000000                PROVIDE (FIQ_Handler, 0x0)
+                0x00000000                PROVIDE (NMIException, 0x0)
+                0x00000000                PROVIDE (NMI_Handler, 0x0)
+                0x00000000                PROVIDE (HardFaultException, 0x0)
+                0x00000000                PROVIDE (HardFault_Handler, 0x0)
+                0x00000000                PROVIDE (MemManageException, 0x0)
+                0x00000000                PROVIDE (MemManage_Handler, 0x0)
+                0x00000000                PROVIDE (BusFaultException, 0x0)
+                0x00000000                PROVIDE (BusFault_Handler, 0x0)
+                0x00000000                PROVIDE (UsageFaultException, 0x0)
+                0x00000000                PROVIDE (UsageFault_Handler, 0x0)
+                0x00000000                PROVIDE (SVCHandler, 0x0)
+                0x00000000                PROVIDE (SVC_Handler, 0x0)
+                0x00000000                PROVIDE (DebugMonitor, 0x0)
+                0x00000000                PROVIDE (DebugMon_Handler, 0x0)
+                0x00000000                PROVIDE (PendSVC, 0x0)
+                0x00000000                PROVIDE (PendSV_Handler, 0x0)
+                0x00000000                PROVIDE (SysTickHandler, 0x0)
+                0x00000000                PROVIDE (SysTick_Handler, 0x0)
+                0x00000000                PROVIDE (WWDG_IRQHandler, 0x0)
+                0x00000000                PROVIDE (PVD_IRQHandler, 0x0)
+                0x00000000                PROVIDE (TAMPER_IRQHandler, 0x0)
+                0x00000000                PROVIDE (RTC_IRQHandler, 0x0)
+                0x00000000                PROVIDE (FLASH_IRQHandler, 0x0)
+                0x00000000                PROVIDE (RCC_IRQHandler, 0x0)
+                0x00000000                PROVIDE (EXTI0_IRQHandler, 0x0)
+                0x00000000                PROVIDE (EXTI1_IRQHandler, 0x0)
+                0x00000000                PROVIDE (EXTI2_IRQHandler, 0x0)
+                0x00000000                PROVIDE (EXTI3_IRQHandler, 0x0)
+                0x00000000                PROVIDE (EXTI4_IRQHandler, 0x0)
+                0x00000000                PROVIDE (DMAChannel1_IRQHandler, 0x0)
+                0x00000000                PROVIDE (DMAChannel2_IRQHandler, 0x0)
+                0x00000000                PROVIDE (DMAChannel3_IRQHandler, 0x0)
+                0x00000000                PROVIDE (DMAChannel4_IRQHandler, 0x0)
+                0x00000000                PROVIDE (DMAChannel5_IRQHandler, 0x0)
+                0x00000000                PROVIDE (DMAChannel6_IRQHandler, 0x0)
+                0x00000000                PROVIDE (DMAChannel7_IRQHandler, 0x0)
+                0x00000000                PROVIDE (DMA1_Channel1_IRQHandler, 0x0)
+                0x00000000                PROVIDE (DMA1_Channel2_IRQHandler, 0x0)
+                0x00000000                PROVIDE (DMA1_Channel3_IRQHandler, 0x0)
+                0x00000000                PROVIDE (DMA1_Channel4_IRQHandler, 0x0)
+                0x00000000                PROVIDE (DMA1_Channel5_IRQHandler, 0x0)
+                0x00000000                PROVIDE (DMA1_Channel6_IRQHandler, 0x0)
+                0x00000000                PROVIDE (DMA1_Channel7_IRQHandler, 0x0)
+                0x00000000                PROVIDE (ADC_IRQHandler, 0x0)
+                0x00000000                PROVIDE (ADC1_2_IRQHandler, 0x0)
+                0x00000000                PROVIDE (USB_HP_CAN_TX_IRQHandler, 0x0)
+                0x00000000                PROVIDE (USB_HP_CAN1_TX_IRQHandler, 0x0)
+                0x00000000                PROVIDE (USB_LP_CAN_RX0_IRQHandler, 0x0)
+                0x00000000                PROVIDE (USB_LP_CAN1_RX0_IRQHandler, 0x0)
+                0x00000000                PROVIDE (CAN_RX1_IRQHandler, 0x0)
+                0x00000000                PROVIDE (CAN1_RX1_IRQHandler, 0x0)
+                0x00000000                PROVIDE (CAN_SCE_IRQHandler, 0x0)
+                0x00000000                PROVIDE (CAN1_SCE_IRQHandler, 0x0)
+                0x00000000                PROVIDE (EXTI9_5_IRQHandler, 0x0)
+                0x00000000                PROVIDE (TIM1_BRK_IRQHandler, 0x0)
+                0x00000000                PROVIDE (TIM1_UP_IRQHandler, 0x0)
+                0x00000000                PROVIDE (TIM1_TRG_COM_IRQHandler, 0x0)
+                0x00000000                PROVIDE (TIM1_CC_IRQHandler, 0x0)
+                0x00000000                PROVIDE (TIM2_IRQHandler, 0x0)
+                0x00000000                PROVIDE (TIM3_IRQHandler, 0x0)
+                0x00000000                PROVIDE (TIM4_IRQHandler, 0x0)
+                0x00000000                PROVIDE (I2C1_EV_IRQHandler, 0x0)
+                0x00000000                PROVIDE (I2C1_ER_IRQHandler, 0x0)
+                0x00000000                PROVIDE (I2C2_EV_IRQHandler, 0x0)
+                0x00000000                PROVIDE (I2C2_ER_IRQHandler, 0x0)
+                0x00000000                PROVIDE (SPI1_IRQHandler, 0x0)
+                0x00000000                PROVIDE (SPI2_IRQHandler, 0x0)
+                0x00000000                PROVIDE (USART1_IRQHandler, 0x0)
+                0x00000000                PROVIDE (USART2_IRQHandler, 0x0)
+                0x00000000                PROVIDE (USART3_IRQHandler, 0x0)
+                0x00000000                PROVIDE (EXTI15_10_IRQHandler, 0x0)
+                0x00000000                PROVIDE (RTCAlarm_IRQHandler, 0x0)
+                0x00000000                PROVIDE (USBWakeUp_IRQHandler, 0x0)
+                0x00000000                PROVIDE (TIM8_BRK_IRQHandler, 0x0)
+                0x00000000                PROVIDE (TIM8_UP_IRQHandler, 0x0)
+                0x00000000                PROVIDE (TIM8_TRG_COM_IRQHandler, 0x0)
+                0x00000000                PROVIDE (TIM8_CC_IRQHandler, 0x0)
+                0x00000000                PROVIDE (ADC3_IRQHandler, 0x0)
+                0x00000000                PROVIDE (FSMC_IRQHandler, 0x0)
+                0x00000000                PROVIDE (SDIO_IRQHandler, 0x0)
+                0x00000000                PROVIDE (TIM5_IRQHandler, 0x0)
+                0x00000000                PROVIDE (SPI3_IRQHandler, 0x0)
+                0x00000000                PROVIDE (UART4_IRQHandler, 0x0)
+                0x00000000                PROVIDE (UART5_IRQHandler, 0x0)
+                0x00000000                PROVIDE (TIM6_IRQHandler, 0x0)
+                0x00000000                PROVIDE (TIM7_IRQHandler, 0x0)
+                0x00000000                PROVIDE (DMA2_Channel1_IRQHandler, 0x0)
+                0x00000000                PROVIDE (DMA2_Channel2_IRQHandler, 0x0)
+                0x00000000                PROVIDE (DMA2_Channel3_IRQHandler, 0x0)
+                0x00000000                PROVIDE (DMA2_Channel4_5_IRQHandler, 0x0)
+                0x42000000                PERIPH_BB_BASE = 0x42000000
+                0x22000000                SRAM_BB_BASE = 0x22000000
+                0x20000000                SRAM_BASE = 0x20000000
+                0x40000000                PERIPH_BASE = 0x40000000
+                0x40022000                PROVIDE (FLASH_BASE, 0x40022000)
+                0x1ffff800                PROVIDE (OB_BASE, 0x1ffff800)
+                0x40000000                APB1PERIPH_BASE = PERIPH_BASE
+                0x40010000                APB2PERIPH_BASE = (PERIPH_BASE + 0x10000)
+                0x40020000                AHBPERIPH_BASE = (PERIPH_BASE + 0x20000)
+                0x40000000                PROVIDE (TIM2, (APB1PERIPH_BASE + 0x0))
+                0x40000400                PROVIDE (TIM3, (APB1PERIPH_BASE + 0x400))
+                0x40000800                PROVIDE (TIM4, (APB1PERIPH_BASE + 0x800))
+                0x40002800                PROVIDE (RTC, (APB1PERIPH_BASE + 0x2800))
+                0x40002c00                PROVIDE (WWDG, (APB1PERIPH_BASE + 0x2c00))
+                0x40003000                PROVIDE (IWDG, (APB1PERIPH_BASE + 0x3000))
+                0x40003800                PROVIDE (SPI2, (APB1PERIPH_BASE + 0x3800))
+                0x40004400                PROVIDE (USART2, (APB1PERIPH_BASE + 0x4400))
+                0x40004800                PROVIDE (USART3, (APB1PERIPH_BASE + 0x4800))
+                0x40005400                PROVIDE (I2C1, (APB1PERIPH_BASE + 0x5400))
+                0x40005800                PROVIDE (I2C2, (APB1PERIPH_BASE + 0x5800))
+                0x40006400                PROVIDE (CAN, (APB1PERIPH_BASE + 0x6400))
+                0x40006c00                PROVIDE (BKP, (APB1PERIPH_BASE + 0x6c00))
+                0x40007000                PROVIDE (PWR, (APB1PERIPH_BASE + 0x7000))
+                0x40010000                PROVIDE (AFIO, (APB2PERIPH_BASE + 0x0))
+                0x40010400                PROVIDE (EXTI, (APB2PERIPH_BASE + 0x400))
+                0x40010800                PROVIDE (GPIOA, (APB2PERIPH_BASE + 0x800))
+                0x40010c00                PROVIDE (GPIOB, (APB2PERIPH_BASE + 0xc00))
+                0x40011000                PROVIDE (GPIOC, (APB2PERIPH_BASE + 0x1000))
+                0x40011400                PROVIDE (GPIOD, (APB2PERIPH_BASE + 0x1400))
+                0x40011800                PROVIDE (GPIOE, (APB2PERIPH_BASE + 0x1800))
+                0x40012400                PROVIDE (ADC1, (APB2PERIPH_BASE + 0x2400))
+                0x40012800                PROVIDE (ADC2, (APB2PERIPH_BASE + 0x2800))
+                0x40012c00                PROVIDE (TIM1, (APB2PERIPH_BASE + 0x2c00))
+                0x40013000                PROVIDE (SPI1, (APB2PERIPH_BASE + 0x3000))
+                0x40013800                PROVIDE (USART1, (APB2PERIPH_BASE + 0x3800))
+                0x40020000                PROVIDE (DMA, (AHBPERIPH_BASE + 0x0))
+                0x40020008                PROVIDE (DMA_Channel1, (AHBPERIPH_BASE + 0x8))
+                0x4002001c                PROVIDE (DMA_Channel2, (AHBPERIPH_BASE + 0x1c))
+                0x40020030                PROVIDE (DMA_Channel3, (AHBPERIPH_BASE + 0x30))
+                0x40020044                PROVIDE (DMA_Channel4, (AHBPERIPH_BASE + 0x44))
+                0x40020058                PROVIDE (DMA_Channel5, (AHBPERIPH_BASE + 0x58))
+                0x4002006c                PROVIDE (DMA_Channel6, (AHBPERIPH_BASE + 0x6c))
+                0x40020080                PROVIDE (DMA_Channel7, (AHBPERIPH_BASE + 0x80))
+                0x40021000                PROVIDE (RCC, (AHBPERIPH_BASE + 0x1000))
+                0xe000e000                SCS_BASE = 0xe000e000
+                0xe000e010                PROVIDE (SysTick, (SCS_BASE + 0x10))
+                0xe000e100                PROVIDE (NVIC, (SCS_BASE + 0x100))
+                0xe000ed00                PROVIDE (SCB, (SCS_BASE + 0xd00))
+                0x20020000                _estack = 0x20020000
+
+.isr_vector     0x08000000      0x188
+                0x08000000                . = ALIGN (0x4)
+ *(.isr_vector)
+ .isr_vector    0x08000000      0x188 .\startup_stm32f4xx.o
+                0x08000000                g_pfnVectors
+                0x08000188                . = ALIGN (0x4)
+
+FLASH           0x08000188      0x18c
+                0x08000188                . = ALIGN (0x4)
+                0x08000188                PROVIDE (__start_FLASH, ABSOLUTE (.))
+ FLASH          0x08000188      0x18c .\keyboard.o
+                0x08000188                codetable
+                0x0800020c                codetable_shifted
+                0x08000290                codetable_extended
+                0x08000314                PROVIDE (__stop_FLASH, .)
+
+.flash_start    0x00000000        0x0
+                0x00000000                . = ALIGN (0x4)
+ *(.flash_start)
+ *(.flash_start.*)
+                0x00000000                . = ALIGN (0x4)
+
+.crp_patch      0x00000000        0x0
+                0x00000000                . = ALIGN (0x4)
+ *(.crp_patch)
+                0x00000000                . = ALIGN (0x4)
+
+.flashtext      0x08000314        0x0
+                0x08000314                . = ALIGN (0x4)
+ *(.flashtext)
+                0x08000314                . = ALIGN (0x4)
+
+.text           0x08000314     0x807c
+                0x08000314                . = ALIGN (0x4)
+ *(.text)
+ .text          0x08000314       0xa0 libc.a(lib_a-memmove.o)
+                0x08000314                memmove
+ .text          0x080003b4       0xb4 libc.a(lib_a-memset.o)
+                0x080003b4                memset
+ *(.text.*)
+ .text.Reset_Handler
+                0x08000468       0x44 .\startup_stm32f4xx.o
+                0x08000468                Reset_Handler
+ .text.Default_Handler
+                0x080004ac        0x2 .\startup_stm32f4xx.o
+                0x080004ac                RTC_Alarm_IRQHandler
+                0x080004ac                HASH_RNG_IRQHandler
+                0x080004ac                TIM8_CC_IRQHandler
+                0x080004ac                TIM1_CC_IRQHandler
+                0x080004ac                DMA2_Stream5_IRQHandler
+                0x080004ac                DMA1_Stream5_IRQHandler
+                0x080004ac                PVD_IRQHandler
+                0x080004ac                SDIO_IRQHandler
+                0x080004ac                TAMP_STAMP_IRQHandler
+                0x080004ac                CAN2_RX1_IRQHandler
+                0x080004ac                EXTI3_IRQHandler
+                0x080004ac                TIM8_TRG_COM_TIM14_IRQHandler
+                0x080004ac                TIM1_UP_TIM10_IRQHandler
+                0x080004ac                TIM8_UP_TIM13_IRQHandler
+                0x080004ac                I2C3_ER_IRQHandler
+                0x080004ac                I2C2_EV_IRQHandler
+                0x080004ac                DMA1_Stream2_IRQHandler
+                0x080004ac                CAN1_RX0_IRQHandler
+                0x080004ac                FPU_IRQHandler
+                0x080004ac                OTG_HS_WKUP_IRQHandler
+                0x080004ac                CAN2_SCE_IRQHandler
+                0x080004ac                DMA2_Stream2_IRQHandler
+                0x080004ac                SPI1_IRQHandler
+                0x080004ac                TIM6_DAC_IRQHandler
+                0x080004ac                TIM1_BRK_TIM9_IRQHandler
+                0x080004ac                DCMI_IRQHandler
+                0x080004ac                CAN2_RX0_IRQHandler
+                0x080004ac                DMA2_Stream3_IRQHandler
+                0x080004ac                USART6_IRQHandler
+                0x080004ac                USART3_IRQHandler
+                0x080004ac                CRYP_IRQHandler
+                0x080004ac                CAN1_RX1_IRQHandler
+                0x080004ac                UART5_IRQHandler
+                0x080004ac                DMA2_Stream0_IRQHandler
+                0x080004ac                I2C1_EV_IRQHandler
+                0x080004ac                DMA1_Stream6_IRQHandler
+                0x080004ac                DMA1_Stream1_IRQHandler
+                0x080004ac                UART4_IRQHandler
+                0x080004ac                RCC_IRQHandler
+                0x080004ac                TIM8_BRK_TIM12_IRQHandler
+                0x080004ac                Default_Handler
+                0x080004ac                EXTI15_10_IRQHandler
+                0x080004ac                ADC_IRQHandler
+                0x080004ac                DMA1_Stream7_IRQHandler
+                0x080004ac                TIM7_IRQHandler
+                0x080004ac                CAN2_TX_IRQHandler
+                0x080004ac                DMA2_Stream7_IRQHandler
+                0x080004ac                I2C3_EV_IRQHandler
+                0x080004ac                EXTI9_5_IRQHandler
+                0x080004ac                RTC_WKUP_IRQHandler
+                0x080004ac                ETH_WKUP_IRQHandler
+                0x080004ac                SPI2_IRQHandler
+                0x080004ac                OTG_HS_EP1_IN_IRQHandler
+                0x080004ac                DMA1_Stream0_IRQHandler
+                0x080004ac                CAN1_TX_IRQHandler
+                0x080004ac                EXTI4_IRQHandler
+                0x080004ac                FSMC_IRQHandler
+                0x080004ac                ETH_IRQHandler
+                0x080004ac                OTG_HS_EP1_OUT_IRQHandler
+                0x080004ac                WWDG_IRQHandler
+                0x080004ac                TIM2_IRQHandler
+                0x080004ac                OTG_FS_WKUP_IRQHandler
+                0x080004ac                TIM1_TRG_COM_TIM11_IRQHandler
+                0x080004ac                OTG_HS_IRQHandler
+                0x080004ac                EXTI1_IRQHandler
+                0x080004ac                I2C2_ER_IRQHandler
+                0x080004ac                DMA2_Stream1_IRQHandler
+                0x080004ac                CAN1_SCE_IRQHandler
+                0x080004ac                FLASH_IRQHandler
+                0x080004ac                DMA2_Stream4_IRQHandler
+                0x080004ac                USART1_IRQHandler
+                0x080004ac                OTG_FS_IRQHandler
+                0x080004ac                SPI3_IRQHandler
+                0x080004ac                DMA1_Stream4_IRQHandler
+                0x080004ac                I2C1_ER_IRQHandler
+                0x080004ac                DMA2_Stream6_IRQHandler
+                0x080004ac                DMA1_Stream3_IRQHandler
+ *fill*         0x080004ae        0x2 00
+ .text.RCC_Config
+                0x080004b0       0x30 .\main.o
+                0x080004b0                RCC_Config
+ .text.NVIC_Config
+                0x080004e0       0x84 .\main.o
+                0x080004e0                NVIC_Config
+ .text.GPIO_Config
+                0x08000564       0xac .\main.o
+                0x08000564                GPIO_Config
+ .text.TIM_Config
+                0x08000610       0xdc .\main.o
+                0x08000610                TIM_Config
+ .text.SPI_Config
+                0x080006ec       0x6c .\main.o
+                0x080006ec                SPI_Config
+ .text.DMA_Config
+                0x08000758       0x60 .\main.o
+                0x08000758                DMA_Config
+ .text.USART_Config
+                0x080007b8       0x50 .\main.o
+                0x080007b8                USART_Config
+ .text.main     0x08000808       0x94 .\main.o
+                0x08000808                main
+ .text.Random   0x0800089c       0x30 .\video.o
+                0x0800089c                Random
+ .text.SetCursor
+                0x080008cc       0x24 .\video.o
+                0x080008cc                SetCursor
+ .text.MoveCursor
+                0x080008f0       0x10 .\video.o
+                0x080008f0                MoveCursor
+ .text.ShowCursor
+                0x08000900       0x24 .\video.o
+                0x08000900                ShowCursor
+ .text.Cls      0x08000924       0x18 .\video.o
+                0x08000924                Cls
+ .text.SetPixel
+                0x0800093c       0x5c .\video.o
+                0x0800093c                SetPixel
+ .text.DrawChar
+                0x08000998      0x174 .\video.o
+                0x08000998                DrawChar
+ .text.DrawLargeChar
+                0x08000b0c      0x23c .\video.o
+                0x08000b0c                DrawLargeChar
+ .text.DrawString
+                0x08000d48       0x28 .\video.o
+                0x08000d48                DrawString
+ .text.DrawLargeString
+                0x08000d70       0x28 .\video.o
+                0x08000d70                DrawLargeString
+ .text.DrawLargeDec16
+                0x08000d98      0x110 .\video.o
+                0x08000d98                DrawLargeDec16
+ .text.DrawHex16
+                0x08000ea8       0x54 .\video.o
+                0x08000ea8                DrawHex16
+ .text.DrawBin16
+                0x08000efc       0x48 .\video.o
+                0x08000efc                DrawBin16
+ .text.Rectangle
+                0x08000f44       0x80 .\video.o
+                0x08000f44                Rectangle
+ .text.Line     0x08000fc4       0xa0 .\video.o
+                0x08000fc4                Line
+ .text.DrawIcon
+                0x08001064       0x90 .\video.o
+                0x08001064                DrawIcon
+ .text.DrawStatus
+                0x080010f4       0xd8 .\video.o
+                0x080010f4                DrawStatus
+ .text.ClearFBPixel
+                0x080011cc       0x3c .\video.o
+                0x080011cc                ClearFBPixel
+ .text.SetFBPixel
+                0x08001208       0x3c .\video.o
+                0x08001208                SetFBPixel
+ .text.DrawSprite
+                0x08001244       0xd8 .\video.o
+                0x08001244                DrawSprite
+ .text.RemoveSprites
+                0x0800131c       0x20 .\video.o
+                0x0800131c                RemoveSprites
+ .text.LineWait
+                0x0800133c       0x20 .\video.o
+                0x0800133c                LineWait
+ .text.FrameWait
+                0x0800135c       0x20 .\video.o
+                0x0800135c                FrameWait
+ .text.TIM3_IRQHandler
+                0x0800137c       0xac .\video.o
+                0x0800137c                TIM3_IRQHandler
+ .text.TIM4_IRQHandler
+                0x08001428      0x118 .\video.o
+                0x08001428                TIM4_IRQHandler
+ .text.FrameBuffDraw
+                0x08001540       0xf4 .\video.o
+                0x08001540                FrameBuffDraw
+ .text.TIM5_IRQHandler
+                0x08001634       0xd4 .\video.o
+                0x08001634                TIM5_IRQHandler
+ .text.EXTI2_IRQHandler
+                0x08001708      0x240 .\keyboard.o
+                0x08001708                EXTI2_IRQHandler
+ .text.KeyboardReset
+                0x08001948       0xb4 .\keyboard.o
+                0x08001948                KeyboardReset
+ .text.GetKeyState
+                0x080019fc       0x54 .\keyboard.o
+                0x080019fc                GetKeyState
+ .text.Shifted  0x08001a50       0x1c .\keyboard.o
+                0x08001a50                Shifted
+ .text.Ctrled   0x08001a6c       0x1c .\keyboard.o
+                0x08001a6c                Ctrled
+ .text.GetChar  0x08001a88       0xd0 .\keyboard.o
+                0x08001a88                GetChar
+ .text.SendData
+                0x08001b58       0x4c .\mouse.o
+                0x08001b58                SendData
+ .text.MouseInit
+                0x08001ba4      0x158 .\mouse.o
+                0x08001ba4                MouseInit
+ .text.EXTI0_IRQHandler
+                0x08001cfc      0x1b8 .\mouse.o
+                0x08001cfc                EXTI0_IRQHandler
+ .text.GetMouseClick
+                0x08001eb4      0x240 .\mouse.o
+                0x08001eb4                GetMouseClick
+ .text.rs232_putc
+                0x080020f4       0x1c .\usart.o
+                0x080020f4                rs232_putc
+ .text.USART2_IRQHandler
+                0x08002110       0x34 .\usart.o
+                0x08002110                USART2_IRQHandler
+ .text.KeyState
+                0x08002144      0x16c .\keystate.o
+                0x08002144                KeyState
+ .text.DrawBlackWinChar
+                0x080022b0       0x98 .\window.o
+                0x080022b0                DrawBlackWinChar
+ .text.DrawWhiteWinChar
+                0x08002348       0x98 .\window.o
+                0x08002348                DrawWhiteWinChar
+ .text.DrawWinChar
+                0x080023e0       0xc0 .\window.o
+                0x080023e0                DrawWinChar
+ .text.DrawWinString
+                0x080024a0       0xd4 .\window.o
+                0x080024a0                DrawWinString
+ .text.DrawWinDec16
+                0x08002574       0xb8 .\window.o
+                0x08002574                DrawWinDec16
+ .text.DrawWinHex8
+                0x0800262c       0x30 .\window.o
+                0x0800262c                DrawWinHex8
+ .text.DrawWinBin8
+                0x0800265c       0x74 .\window.o
+                0x0800265c                DrawWinBin8
+ .text.DrawWinIcon
+                0x080026d0       0x5c .\window.o
+                0x080026d0                DrawWinIcon
+ .text.FrameRect
+                0x0800272c       0x70 .\window.o
+                0x0800272c                FrameRect
+ .text.BlackRect
+                0x0800279c       0xac .\window.o
+                0x0800279c                BlackRect
+ .text.DrawCaption
+                0x08002848       0x5c .\window.o
+                0x08002848                DrawCaption
+ .text.WindowFromPoint
+                0x080028a4       0x4c .\window.o
+                0x080028a4                WindowFromPoint
+ .text.ControlFromPoint
+                0x080028f0       0x34 .\window.o
+                0x080028f0                ControlFromPoint
+ .text.FindWindowPos
+                0x08002924       0x34 .\window.o
+                0x08002924                FindWindowPos
+ .text.FindControlFocus
+                0x08002958       0x20 .\window.o
+                0x08002958                FindControlFocus
+ .text.FindControlCanFocus
+                0x08002978       0x20 .\window.o
+                0x08002978                FindControlCanFocus
+ .text.WindowToFront
+                0x08002998       0xac .\window.o
+                0x08002998                WindowToFront
+ .text.SendEvent
+                0x08002a44        0x8 .\window.o
+                0x08002a44                SendEvent
+ .text.DrawWindow
+                0x08002a4c      0x4b8 .\window.o
+                0x08002a4c                DrawWindow
+ .text.FocusPrevious
+                0x08002f04       0x90 .\window.o
+                0x08002f04                FocusPrevious
+ .text.FocusNext
+                0x08002f94       0x94 .\window.o
+                0x08002f94                FocusNext
+ .text.DefWindowHandler
+                0x08003028       0xe0 .\window.o
+                0x08003028                DefWindowHandler
+ .text.FindFree
+                0x08003108       0x48 .\window.o
+                0x08003108                FindFree
+ .text.StrLen   0x08003150       0x1c .\window.o
+                0x08003150                StrLen
+ .text.AddControl
+                0x0800316c       0x10 .\window.o
+                0x0800316c                AddControl
+ .text.AddWindow
+                0x0800317c       0x3c .\window.o
+                0x0800317c                AddWindow
+ .text.CreateWindow
+                0x080031b8       0xd8 .\window.o
+                0x080031b8                CreateWindow
+ .text.DestroyWindow
+                0x08003290       0x44 .\window.o
+                0x08003290                DestroyWindow
+ .text.SetHandler
+                0x080032d4        0x4 .\window.o
+                0x080032d4                SetHandler
+ .text.GetControlHandle
+                0x080032d8       0x1c .\window.o
+                0x080032d8                GetControlHandle
+ .text.SetCaption
+                0x080032f4       0x18 .\window.o
+                0x080032f4                SetCaption
+ .text.SetStyle
+                0x0800330c        0x4 .\window.o
+                0x0800330c                SetStyle
+ .text.SetState
+                0x08003310        0x4 .\window.o
+                0x08003310                SetState
+ .text.SetParam
+                0x08003314        0x4 .\window.o
+                0x08003314                SetParam
+ .text.CreateTimer
+                0x08003318        0xc .\window.o
+                0x08003318                CreateTimer
+ .text.KillTimer
+                0x08003324       0x10 .\window.o
+                0x08003324                KillTimer
+ .text.MenuPopupHandler
+                0x08003334      0x104 .\desktop.o
+                0x08003334                MenuPopupHandler
+ .text.MenuBarHandler
+                0x08003438       0x70 .\desktop.o
+                0x08003438                MenuBarHandler
+ .text.DeskTopSetup
+                0x080034a8      0x440 .\desktop.o
+                0x080034a8                DeskTopSetup
+ .text.PongGameSetup
+                0x080038e8      0x154 .\pong.o
+                0x080038e8                PongGameSetup
+ .text.PongMsgBoxHandler
+                0x08003a3c       0x84 .\pong.o
+                0x08003a3c                PongMsgBoxHandler
+ .text.PongGameInit
+                0x08003ac0      0x18c .\pong.o
+                0x08003ac0                PongGameInit
+ .text.PongPaddleMove
+                0x08003c4c      0x274 .\pong.o
+                0x08003c4c                PongPaddleMove
+ .text.PongBallMove
+                0x08003ec0      0x254 .\pong.o
+                0x08003ec0                PongBallMove
+ .text.PongGamePlay
+                0x08004114      0x104 .\pong.o
+                0x08004114                PongGamePlay
+ .text.PongGameLoop
+                0x08004218       0x5c .\pong.o
+                0x08004218                PongGameLoop
+ .text.CURSOR_INVERT
+                0x08004274       0x38 .\terminal.o
+ .text._video_scrollup
+                0x080042ac       0x30 .\terminal.o
+ .text._video_lfwd
+                0x080042dc       0x3c .\terminal.o
+ .text.video_show_cursor
+                0x08004318       0x24 .\terminal.o
+                0x08004318                video_show_cursor
+ .text.video_cls
+                0x0800433c       0x38 .\terminal.o
+                0x0800433c                video_cls
+ .text.video_putc
+                0x08004374       0x78 .\terminal.o
+                0x08004374                video_putc
+ .text.RefreshScreen
+                0x080043ec       0x5c .\terminal.o
+                0x080043ec                RefreshScreen
+ .text.Terminal
+                0x08004448      0x114 .\terminal.o
+                0x08004448                Terminal
+ .text.LgaTimer
+                0x0800455c       0x70 .\logicanalyser.o
+                0x0800455c                LgaTimer
+ .text.LgaMainHandler
+                0x080045cc      0x1c0 .\logicanalyser.o
+                0x080045cc                LgaMainHandler
+ .text.LgaDrawHLine
+                0x0800478c       0x24 .\logicanalyser.o
+                0x0800478c                LgaDrawHLine
+ .text.LgaDrawVLine
+                0x080047b0       0x24 .\logicanalyser.o
+                0x080047b0                LgaDrawVLine
+ .text.LgaDrawGrid
+                0x080047d4       0x78 .\logicanalyser.o
+                0x080047d4                LgaDrawGrid
+ .text.LgaDrawMark
+                0x0800484c       0x80 .\logicanalyser.o
+                0x0800484c                LgaDrawMark
+ .text.LgaDrawInfo
+                0x080048cc      0x12c .\logicanalyser.o
+                0x080048cc                LgaDrawInfo
+ .text.LgaDrawByte
+                0x080049f8       0x58 .\logicanalyser.o
+                0x080049f8                LgaDrawByte
+ .text.LgaDrawData
+                0x08004a50       0x3c .\logicanalyser.o
+                0x08004a50                LgaDrawData
+ .text.LgaHandler
+                0x08004a8c       0x8c .\logicanalyser.o
+                0x08004a8c                LgaHandler
+ .text.WaitForTrigger
+                0x08004b18       0x8c .\logicanalyser.o
+                0x08004b18                WaitForTrigger
+ .text.DMA_LGAConfig
+                0x08004ba4       0x64 .\logicanalyser.o
+                0x08004ba4                DMA_LGAConfig
+ .text.LgaSample
+                0x08004c08       0x9c .\logicanalyser.o
+                0x08004c08                LgaSample
+ .text.LogicAnalyserSetup
+                0x08004ca4      0x530 .\logicanalyser.o
+                0x08004ca4                LogicAnalyserSetup
+ .text.AlienMsgBoxHandler
+                0x080051d4       0x4c .\AlieGame.o
+                0x080051d4                AlienMsgBoxHandler
+ .text.AlenGameInit
+                0x08005220      0x2c0 .\AlieGame.o
+                0x08005220                AlenGameInit
+ .text.AlienGameSetup
+                0x080054e0       0xe0 .\AlieGame.o
+                0x080054e0                AlienGameSetup
+ .text.BombDrop
+                0x080055c0       0xd4 .\AlieGame.o
+                0x080055c0                BombDrop
+ .text.AlienShieldDamage
+                0x08005694       0x98 .\AlieGame.o
+                0x08005694                AlienShieldDamage
+ .text.BombMove
+                0x0800572c       0x80 .\AlieGame.o
+                0x0800572c                BombMove
+ .text.ShotShoot
+                0x080057ac       0x84 .\AlieGame.o
+                0x080057ac                ShotShoot
+ .text.ShotMove
+                0x08005830      0x198 .\AlieGame.o
+                0x08005830                ShotMove
+ .text.CannonHit
+                0x080059c8       0xd8 .\AlieGame.o
+                0x080059c8                CannonHit
+ .text.CannonMove
+                0x08005aa0      0x1c8 .\AlieGame.o
+                0x08005aa0                CannonMove
+ .text.AlienSetup
+                0x08005c68       0x64 .\AlieGame.o
+                0x08005c68                AlienSetup
+ .text.AlienMove
+                0x08005ccc       0xd4 .\AlieGame.o
+                0x08005ccc                AlienMove
+ .text.AlienGamePlay
+                0x08005da0      0x12c .\AlieGame.o
+                0x08005da0                AlienGamePlay
+ .text.AlienGameLoop
+                0x08005ecc       0x4c .\AlieGame.o
+                0x08005ecc                AlienGameLoop
+ .text.ScopeTimer
+                0x08005f18       0x68 .\scope.o
+                0x08005f18                ScopeTimer
+ .text.ScopeMainHandler
+                0x08005f80       0xdc .\scope.o
+                0x08005f80                ScopeMainHandler
+ .text.ScopeDrawHLine
+                0x0800605c       0x24 .\scope.o
+                0x0800605c                ScopeDrawHLine
+ .text.ScopeDrawVLine
+                0x08006080       0x24 .\scope.o
+                0x08006080                ScopeDrawVLine
+ .text.ScopeDrawGrid
+                0x080060a4       0x50 .\scope.o
+                0x080060a4                ScopeDrawGrid
+ .text.ScopeHandler
+                0x080060f4       0x30 .\scope.o
+                0x080060f4                ScopeHandler
+ .text.ScopeSetup
+                0x08006124      0x230 .\scope.o
+                0x08006124                ScopeSetup
+ .text.NVIC_PriorityGroupConfig
+                0x08006354       0x14 .\misc.o
+                0x08006354                NVIC_PriorityGroupConfig
+ .text.NVIC_Init
+                0x08006368       0x88 .\misc.o
+                0x08006368                NVIC_Init
+ .text.STM_EVAL_LEDInit
+                0x080063f0       0x54 .\stm32f4_discovery.o
+                0x080063f0                STM_EVAL_LEDInit
+ .text.STM_EVAL_LEDToggle
+                0x08006444       0x24 .\stm32f4_discovery.o
+                0x08006444                STM_EVAL_LEDToggle
+ .text.STM_EVAL_PBInit
+                0x08006468       0xb8 .\stm32f4_discovery.o
+                0x08006468                STM_EVAL_PBInit
+ .text.DMA_DeInit
+                0x08006520      0x1f4 .\stm32f4xx_dma.o
+                0x08006520                DMA_DeInit
+ .text.DMA_Init
+                0x08006714       0x60 .\stm32f4xx_dma.o
+                0x08006714                DMA_Init
+ .text.DMA_Cmd  0x08006774       0x18 .\stm32f4xx_dma.o
+                0x08006774                DMA_Cmd
+ .text.DMA_GetFlagStatus
+                0x0800678c       0x44 .\stm32f4xx_dma.o
+                0x0800678c                DMA_GetFlagStatus
+ .text.EXTI_Init
+                0x080067d0       0x9c .\stm32f4xx_exti.o
+                0x080067d0                EXTI_Init
+ .text.EXTI_ClearITPendingBit
+                0x0800686c        0xc .\stm32f4xx_exti.o
+                0x0800686c                EXTI_ClearITPendingBit
+ .text.GPIO_Init
+                0x08006878       0xbc .\stm32f4xx_gpio.o
+                0x08006878                GPIO_Init
+ .text.GPIO_ReadInputDataBit
+                0x08006934        0xc .\stm32f4xx_gpio.o
+                0x08006934                GPIO_ReadInputDataBit
+ .text.GPIO_SetBits
+                0x08006940        0x4 .\stm32f4xx_gpio.o
+                0x08006940                GPIO_SetBits
+ .text.GPIO_ResetBits
+                0x08006944        0x4 .\stm32f4xx_gpio.o
+                0x08006944                GPIO_ResetBits
+ .text.GPIO_PinAFConfig
+                0x08006948       0x3c .\stm32f4xx_gpio.o
+                0x08006948                GPIO_PinAFConfig
+ .text.NMI_Handler
+                0x08006984        0x4 .\stm32f4xx_it.o
+                0x08006984                NMI_Handler
+ .text.HardFault_Handler
+                0x08006988        0x4 .\stm32f4xx_it.o
+                0x08006988                HardFault_Handler
+ .text.MemManage_Handler
+                0x0800698c        0x4 .\stm32f4xx_it.o
+                0x0800698c                MemManage_Handler
+ .text.BusFault_Handler
+                0x08006990        0x4 .\stm32f4xx_it.o
+                0x08006990                BusFault_Handler
+ .text.UsageFault_Handler
+                0x08006994        0x4 .\stm32f4xx_it.o
+                0x08006994                UsageFault_Handler
+ .text.SVC_Handler
+                0x08006998        0x4 .\stm32f4xx_it.o
+                0x08006998                SVC_Handler
+ .text.DebugMon_Handler
+                0x0800699c        0x4 .\stm32f4xx_it.o
+                0x0800699c                DebugMon_Handler
+ .text.PendSV_Handler
+                0x080069a0        0x4 .\stm32f4xx_it.o
+                0x080069a0                PendSV_Handler
+ .text.SysTick_Handler
+                0x080069a4        0x4 .\stm32f4xx_it.o
+                0x080069a4                SysTick_Handler
+ .text.RCC_GetClocksFreq
+                0x080069a8       0xd8 .\stm32f4xx_rcc.o
+                0x080069a8                RCC_GetClocksFreq
+ .text.RCC_AHB1PeriphClockCmd
+                0x08006a80       0x24 .\stm32f4xx_rcc.o
+                0x08006a80                RCC_AHB1PeriphClockCmd
+ .text.RCC_APB1PeriphClockCmd
+                0x08006aa4       0x24 .\stm32f4xx_rcc.o
+                0x08006aa4                RCC_APB1PeriphClockCmd
+ .text.RCC_APB2PeriphClockCmd
+                0x08006ac8       0x24 .\stm32f4xx_rcc.o
+                0x08006ac8                RCC_APB2PeriphClockCmd
+ .text.RCC_APB1PeriphResetCmd
+                0x08006aec       0x24 .\stm32f4xx_rcc.o
+                0x08006aec                RCC_APB1PeriphResetCmd
+ .text.RCC_APB2PeriphResetCmd
+                0x08006b10       0x24 .\stm32f4xx_rcc.o
+                0x08006b10                RCC_APB2PeriphResetCmd
+ .text.SPI_I2S_DeInit
+                0x08006b34       0x74 .\stm32f4xx_spi.o
+                0x08006b34                SPI_I2S_DeInit
+ .text.SPI_Init
+                0x08006ba8       0x48 .\stm32f4xx_spi.o
+                0x08006ba8                SPI_Init
+ .text.SPI_StructInit
+                0x08006bf0       0x1c .\stm32f4xx_spi.o
+                0x08006bf0                SPI_StructInit
+ .text.SPI_Cmd  0x08006c0c       0x20 .\stm32f4xx_spi.o
+                0x08006c0c                SPI_Cmd
+ .text.SPI_I2S_DMACmd
+                0x08006c2c       0x18 .\stm32f4xx_spi.o
+                0x08006c2c                SPI_I2S_DMACmd
+ .text.SYSCFG_EXTILineConfig
+                0x08006c44       0x44 .\stm32f4xx_syscfg.o
+                0x08006c44                SYSCFG_EXTILineConfig
+ .text.TIM_TimeBaseInit
+                0x08006c88       0xc0 .\stm32f4xx_tim.o
+                0x08006c88                TIM_TimeBaseInit
+ .text.TIM_Cmd  0x08006d48       0x20 .\stm32f4xx_tim.o
+                0x08006d48                TIM_Cmd
+ .text.TIM_ITConfig
+                0x08006d68       0x18 .\stm32f4xx_tim.o
+                0x08006d68                TIM_ITConfig
+ .text.TIM_ClearITPendingBit
+                0x08006d80        0xc .\stm32f4xx_tim.o
+                0x08006d80                TIM_ClearITPendingBit
+ .text.TIM_DMACmd
+                0x08006d8c       0x18 .\stm32f4xx_tim.o
+                0x08006d8c                TIM_DMACmd
+ .text.USART_Init
+                0x08006da4      0x10c .\stm32f4xx_usart.o
+                0x08006da4                USART_Init
+ .text.USART_Cmd
+                0x08006eb0       0x20 .\stm32f4xx_usart.o
+                0x08006eb0                USART_Cmd
+ .text.USART_ITConfig
+                0x08006ed0       0x3c .\stm32f4xx_usart.o
+                0x08006ed0                USART_ITConfig
+ .text.SystemInit
+                0x08006f0c      0x124 .\system_stm32f4xx.o
+                0x08006f0c                SystemInit
+ *(.rodata)
+ .rodata        0x08007030      0xa64 .\video.o
+                0x08007030                SelectCur
+                0x08007080                Font8x10
+ .rodata        0x08007a94       0x54 .\keystate.o
+ .rodata        0x08007ae8       0xdc .\window.o
+                0x08007afc                CheckedIcon
+                0x08007b60                UncheckedIcon
+ .rodata        0x08007bc4      0x11c .\pong.o
+                0x08007c10                PongPaddleIcon
+                0x08007ca0                PongBallIcon
+ .rodata        0x08007ce0       0x28 .\terminal.o
+ .rodata        0x08007d08       0x68 .\logicanalyser.o
+ .rodata        0x08007d70      0x5c0 .\AlieGame.o
+                0x08007d98                AlienShotIcon
+                0x08007db0                Alien2Icon
+                0x08007eb0                Alien1Icon
+                0x08007fb0                AlienCannonIcon
+                0x080080f0                AlienShieldIcon
+ .rodata        0x08008330       0x30 .\scope.o
+ .rodata        0x08008360       0x30 .\stm32f4_discovery.o
+                0x08008360                GPIO_CLK
+                0x08008370                GPIO_PIN
+                0x08008378                BUTTON_CLK
+                0x0800837c                BUTTON_PIN
+                0x08008380                BUTTON_PORT_SOURCE
+                0x08008384                BUTTON_PIN_SOURCE
+                0x08008388                BUTTON_EXTI_LINE
+                0x0800838c                BUTTON_IRQn
+ *(.rodata*)
+ *(.glue_7)
+ .glue_7        0x00000000        0x0 linker stubs
+ *(.glue_7t)
+ .glue_7t       0x00000000        0x0 linker stubs
+                0x08008390                . = ALIGN (0x4)
+                0x08008390                _etext = .
+                0x08008390                _sidata = _etext
+
+.vfp11_veneer   0x08008390        0x0
+ .vfp11_veneer  0x00000000        0x0 linker stubs
+
+.v4_bx          0x08008390        0x0
+ .v4_bx         0x00000000        0x0 linker stubs
+
+.flashpatch     0x00000000        0x0
+                0x00000000                . = ALIGN (0x4)
+ *(.flashpatch)
+                0x00000000                . = ALIGN (0x4)
+
+.endflash       0x00000000        0x0
+                0x00000000                . = ALIGN (0x4)
+ *(.endflash)
+                0x00000000                . = ALIGN (0x4)
+                0x00000000                _e_endflash = .
+
+.data           0x20000000      0x208 load address 0x08008390
+                0x20000000                . = ALIGN (0x4)
+                0x20000000                _sdata = .
+                0x20000000                _data = .
+ *(.data)
+ .data          0x20000000       0x20 .\video.o
+ .data          0x20000020        0x2 .\keyboard.o
+                0x20000020                scancode
+ .data          0x20000022        0x1 .\mouse.o
+                0x20000022                mbitcount
+ *fill*         0x20000023        0x1 00
+ .data          0x20000024       0xa8 .\desktop.o
+                0x20000024                barcap
+                0x20000044                pop1cap
+                0x20000064                pop2cap
+                0x200000a0                pop3cap
+                0x200000c0                pop4cap
+ .data          0x200000cc      0x118 .\logicanalyser.o
+                0x200000cc                rate
+                0x200001a4                lgacap
+                0x200001b4                lgastr
+ .data          0x200001e4       0x14 .\stm32f4_discovery.o
+                0x200001e4                GPIO_PORT
+                0x200001f4                BUTTON_PORT
+ .data          0x200001f8       0x10 .\stm32f4xx_rcc.o
+ *(.data.*)
+ *(.RAMtext)
+                0x20000208                . = ALIGN (0x4)
+                0x20000208                _edata = .
+                0x08008598                _eidata = ((_sidata + _edata) - _sdata)
+                0x08020000                _lastdataromaddress = 0x8020000
+                0x00000000                toobig = (_eidata > _lastdataromaddress)?!!!!!!!!! FLASH IS FULL !!!!!!!!!:0x0
+
+.bss            0x20000208     0xb380 load address 0x08008598
+                0x20000208                . = ALIGN (0x4)
+                0x20000208                _sbss = .
+                0x20000208                _bss = .
+ *(.bss)
+ .bss           0x20000208        0x4 .\keyboard.o
+                0x2000020a                charbufhead
+                0x2000020b                charbuftail
+ .bss           0x2000020c        0xc .\mouse.o
+                0x2000020c                mbytecount
+ *(COMMON)
+ COMMON         0x20000218     0x7e25 .\video.o
+                0x20000218                Sprites
+                0x20000318                RNDSeed
+                0x2000031c                timer
+                0x20000320                FrameCount
+                0x20000322                FrameDraw
+                0x20000324                BackBuff
+                0x200041a4                Cursor
+                0x200041b8                LineCount
+                0x200041bc                FrameBuff
+                0x2000803c                BackPochFlag
+ *fill*         0x2000803d        0x3 00
+ COMMON         0x20008040      0x148 .\keyboard.o
+                0x20008040                Num
+                0x20008041                Pause
+                0x20008042                nStuck
+                0x20008043                Caps
+                0x20008044                keyscan
+                0x20008048                keytab
+                0x20008068                charbuf
+                0x20008168                extkeytab
+ COMMON         0x20008188       0x10 .\mouse.o
+                0x20008188                mb
+                0x2000818c                my
+                0x20008190                mousecode
+                0x20008191                pmb
+                0x20008194                mx
+ COMMON         0x20008198      0x104 .\usart.o
+                0x20008198                rs232buftail
+                0x20008199                rs232bufhead
+                0x2000819c                rs232buf
+ COMMON         0x2000829c     0x2848 .\window.o
+                0x2000829c                WinColl
+                0x2000aa9c                Focus
+                0x2000aaa0                Windows
+ COMMON         0x2000aae4       0x18 .\desktop.o
+                0x2000aae4                Desktop
+ COMMON         0x2000aafc       0x58 .\pong.o
+                0x2000aafc                PongGame
+ COMMON         0x2000ab54      0x5a9 .\terminal.o
+                0x2000ab54                cy
+                0x2000ab58                cx
+                0x2000ab5c                ScreenChars
+                0x2000b0fc                showcursor
+ *fill*         0x2000b0fd        0x3 00
+ COMMON         0x2000b100       0x18 .\logicanalyser.o
+                0x2000b100                Lga
+ COMMON         0x2000b118      0x45c .\AlieGame.o
+                0x2000b118                AlienGame
+ COMMON         0x2000b574       0x14 .\scope.o
+                0x2000b574                Scope
+                0x2000b588                . = ALIGN (0x4)
+                0x2000b588                _ebss = .
+                0x2000b588                PROVIDE (end, _ebss)
+                0x2000b588                PROVIDE (_end, _ebss)
+
+._usrstack      0x2000b588      0x100 load address 0x08013918
+                0x2000b588                . = ALIGN (0x4)
+                0x2000b588                _susrstack = .
+                0x2000b688                . = (. + _Minimum_Stack_Size)
+ *fill*         0x2000b588      0x100 00
+                0x2000b688                . = ALIGN (0x4)
+                0x2000b688                _eusrstack = .
+
+.b1text
+ *(.b1text)
+ *(.b1rodata)
+ *(.b1rodata*)
+
+.eb0text
+ *(.eb0text)
+ *(.eb0rodata)
+ *(.eb0rodata*)
+
+.eb1text
+ *(.eb1text)
+ *(.eb1rodata)
+ *(.eb1rodata*)
+
+.eb2text
+ *(.eb2text)
+ *(.eb2rodata)
+ *(.eb2rodata*)
+
+.eb3text
+ *(.eb3text)
+ *(.eb3rodata)
+ *(.eb3rodata*)
+                0x2000b688                __exidx_start = .
+                0x2000b688                __exidx_end = .
+
+/DISCARD/
+ libc.a(*)
+ libm.a(*)
+ libgcc.a(*)
+
+.stab
+ *(.stab)
+
+.stabstr
+ *(.stabstr)
+
+.stab.excl
+ *(.stab.excl)
+
+.stab.exclstr
+ *(.stab.exclstr)
+
+.stab.index
+ *(.stab.index)
+
+.stab.indexstr
+ *(.stab.indexstr)
+
+.ARM.attributes
+                0x00000000       0x2d
+ .ARM.attributes
+                0x00000000       0x21 .\startup_stm32f4xx.o
+ .ARM.attributes
+                0x00000021       0x31 .\main.o
+ .ARM.attributes
+                0x00000052       0x31 .\video.o
+ .ARM.attributes
+                0x00000083       0x31 .\keyboard.o
+ .ARM.attributes
+                0x000000b4       0x31 .\mouse.o
+ .ARM.attributes
+                0x000000e5       0x31 .\usart.o
+ .ARM.attributes
+                0x00000116       0x31 .\keystate.o
+ .ARM.attributes
+                0x00000147       0x31 .\window.o
+ .ARM.attributes
+                0x00000178       0x31 .\desktop.o
+ .ARM.attributes
+                0x000001a9       0x31 .\pong.o
+ .ARM.attributes
+                0x000001da       0x31 .\terminal.o
+ .ARM.attributes
+                0x0000020b       0x31 .\logicanalyser.o
+ .ARM.attributes
+                0x0000023c       0x31 .\AlieGame.o
+ .ARM.attributes
+                0x0000026d       0x31 .\scope.o
+ .ARM.attributes
+                0x0000029e       0x31 .\misc.o
+ .ARM.attributes
+                0x000002cf       0x31 .\stm32f4_discovery.o
+ .ARM.attributes
+                0x00000300       0x31 .\stm32f4xx_dma.o
+ .ARM.attributes
+                0x00000331       0x31 .\stm32f4xx_exti.o
+ .ARM.attributes
+                0x00000362       0x31 .\stm32f4xx_gpio.o
+ .ARM.attributes
+                0x00000393       0x31 .\stm32f4xx_it.o
+ .ARM.attributes
+                0x000003c4       0x31 .\stm32f4xx_rcc.o
+ .ARM.attributes
+                0x000003f5       0x31 .\stm32f4xx_spi.o
+ .ARM.attributes
+                0x00000426       0x31 .\stm32f4xx_syscfg.o
+ .ARM.attributes
+                0x00000457       0x31 .\stm32f4xx_tim.o
+ .ARM.attributes
+                0x00000488       0x31 .\stm32f4xx_usart.o
+ .ARM.attributes
+                0x000004b9       0x31 .\system_stm32f4xx.o
+
+.comment        0x00000000       0x2a
+ *(.comment)
+ .comment       0x00000000       0x2a .\main.o
+                                 0x2b (size before relaxing)
+ .comment       0x00000000       0x2b .\video.o
+ .comment       0x00000000       0x2b .\keyboard.o
+ .comment       0x00000000       0x2b .\mouse.o
+ .comment       0x00000000       0x2b .\usart.o
+ .comment       0x00000000       0x2b .\keystate.o
+ .comment       0x00000000       0x2b .\window.o
+ .comment       0x00000000       0x2b .\desktop.o
+ .comment       0x00000000       0x2b .\pong.o
+ .comment       0x00000000       0x2b .\terminal.o
+ .comment       0x00000000       0x2b .\logicanalyser.o
+ .comment       0x00000000       0x2b .\AlieGame.o
+ .comment       0x00000000       0x2b .\scope.o
+ .comment       0x00000000       0x2b .\misc.o
+ .comment       0x00000000       0x2b .\stm32f4_discovery.o
+ .comment       0x00000000       0x2b .\stm32f4xx_dma.o
+ .comment       0x00000000       0x2b .\stm32f4xx_exti.o
+ .comment       0x00000000       0x2b .\stm32f4xx_gpio.o
+ .comment       0x00000000       0x2b .\stm32f4xx_it.o
+ .comment       0x00000000       0x2b .\stm32f4xx_rcc.o
+ .comment       0x00000000       0x2b .\stm32f4xx_spi.o
+ .comment       0x00000000       0x2b .\stm32f4xx_syscfg.o
+ .comment       0x00000000       0x2b .\stm32f4xx_tim.o
+ .comment       0x00000000       0x2b .\stm32f4xx_usart.o
+ .comment       0x00000000       0x2b .\system_stm32f4xx.o
+
+.debug
+ *(.debug)
+
+.line
+ *(.line)
+
+.debug_srcinfo
+ *(.debug_srcinfo)
+
+.debug_sfnames
+ *(.debug_sfnames)
+
+.debug_aranges  0x00000000      0xf18
+ *(.debug_aranges)
+ .debug_aranges
+                0x00000000       0x58 .\main.o
+ .debug_aranges
+                0x00000058      0x118 .\video.o
+ .debug_aranges
+                0x00000170       0x50 .\keyboard.o
+ .debug_aranges
+                0x000001c0       0x38 .\mouse.o
+ .debug_aranges
+                0x000001f8       0x30 .\usart.o
+ .debug_aranges
+                0x00000228       0x20 .\keystate.o
+ .debug_aranges
+                0x00000248      0x138 .\window.o
+ .debug_aranges
+                0x00000380       0x30 .\desktop.o
+ .debug_aranges
+                0x000003b0       0x50 .\pong.o
+ .debug_aranges
+                0x00000400       0x90 .\terminal.o
+ .debug_aranges
+                0x00000490       0x88 .\logicanalyser.o
+ .debug_aranges
+                0x00000518       0x88 .\AlieGame.o
+ .debug_aranges
+                0x000005a0       0x50 .\scope.o
+ .debug_aranges
+                0x000005f0       0x40 .\misc.o
+ .debug_aranges
+                0x00000630       0x48 .\stm32f4_discovery.o
+ .debug_aranges
+                0x00000678       0xb0 .\stm32f4xx_dma.o
+ .debug_aranges
+                0x00000728       0x58 .\stm32f4xx_exti.o
+ .debug_aranges
+                0x00000780       0x88 .\stm32f4xx_gpio.o
+ .debug_aranges
+                0x00000808       0x60 .\stm32f4xx_it.o
+ .debug_aranges
+                0x00000868      0x178 .\stm32f4xx_rcc.o
+ .debug_aranges
+                0x000009e0       0xe0 .\stm32f4xx_spi.o
+ .debug_aranges
+                0x00000ac0       0x48 .\stm32f4xx_syscfg.o
+ .debug_aranges
+                0x00000b08      0x2e8 .\stm32f4xx_tim.o
+ .debug_aranges
+                0x00000df0      0x100 .\stm32f4xx_usart.o
+ .debug_aranges
+                0x00000ef0       0x28 .\system_stm32f4xx.o
+
+.debug_pubnames
+                0x00000000     0x259c
+ *(.debug_pubnames)
+ .debug_pubnames
+                0x00000000       0x88 .\main.o
+ .debug_pubnames
+                0x00000088      0x28d .\video.o
+ .debug_pubnames
+                0x00000315      0x137 .\keyboard.o
+ .debug_pubnames
+                0x0000044c       0x9c .\mouse.o
+ .debug_pubnames
+                0x000004e8       0x75 .\usart.o
+ .debug_pubnames
+                0x0000055d       0x1f .\keystate.o
+ .debug_pubnames
+                0x0000057c      0x2ab .\window.o
+ .debug_pubnames
+                0x00000827       0x92 .\desktop.o
+ .debug_pubnames
+                0x000008b9       0xc2 .\pong.o
+ .debug_pubnames
+                0x0000097b      0x105 .\terminal.o
+ .debug_pubnames
+                0x00000a80      0x124 .\logicanalyser.o
+ .debug_pubnames
+                0x00000ba4      0x15c .\AlieGame.o
+ .debug_pubnames
+                0x00000d00       0x98 .\scope.o
+ .debug_pubnames
+                0x00000d98       0x89 .\misc.o
+ .debug_pubnames
+                0x00000e21      0x150 .\stm32f4_discovery.o
+ .debug_pubnames
+                0x00000f71      0x1c9 .\stm32f4xx_dma.o
+ .debug_pubnames
+                0x0000113a       0xbb .\stm32f4xx_exti.o
+ .debug_pubnames
+                0x000011f5      0x12d .\stm32f4xx_gpio.o
+ .debug_pubnames
+                0x00001322       0xc6 .\stm32f4xx_it.o
+ .debug_pubnames
+                0x000013e8      0x417 .\stm32f4xx_rcc.o
+ .debug_pubnames
+                0x000017ff      0x221 .\stm32f4xx_spi.o
+ .debug_pubnames
+                0x00001a20       0xc3 .\stm32f4xx_syscfg.o
+ .debug_pubnames
+                0x00001ae3      0x7c4 .\stm32f4xx_tim.o
+ .debug_pubnames
+                0x000022a7      0x294 .\stm32f4xx_usart.o
+ .debug_pubnames
+                0x0000253b       0x61 .\system_stm32f4xx.o
+
+.debug_info     0x00000000     0xe0d0
+ *(.debug_info .gnu.linkonce.wi.*)
+ .debug_info    0x00000000      0xe98 .\main.o
+ .debug_info    0x00000e98     0x1610 .\video.o
+ .debug_info    0x000024a8      0x517 .\keyboard.o
+ .debug_info    0x000029bf      0xc43 .\mouse.o
+ .debug_info    0x00003602      0x28e .\usart.o
+ .debug_info    0x00003890      0x275 .\keystate.o
+ .debug_info    0x00003b05     0x105c .\window.o
+ .debug_info    0x00004b61      0x503 .\desktop.o
+ .debug_info    0x00005064      0x5d7 .\pong.o
+ .debug_info    0x0000563b      0x522 .\terminal.o
+ .debug_info    0x00005b5d      0xc92 .\logicanalyser.o
+ .debug_info    0x000067ef      0x8d3 .\AlieGame.o
+ .debug_info    0x000070c2      0x4cf .\scope.o
+ .debug_info    0x00007591      0x598 .\misc.o
+ .debug_info    0x00007b29      0x967 .\stm32f4_discovery.o
+ .debug_info    0x00008490      0x78d .\stm32f4xx_dma.o
+ .debug_info    0x00008c1d      0x370 .\stm32f4xx_exti.o
+ .debug_info    0x00008f8d      0x62d .\stm32f4xx_gpio.o
+ .debug_info    0x000095ba      0x150 .\stm32f4xx_it.o
+ .debug_info    0x0000970a      0xd05 .\stm32f4xx_rcc.o
+ .debug_info    0x0000a40f      0xbb5 .\stm32f4xx_spi.o
+ .debug_info    0x0000afc4      0x279 .\stm32f4xx_syscfg.o
+ .debug_info    0x0000b23d     0x1e20 .\stm32f4xx_tim.o
+ .debug_info    0x0000d05d      0xa30 .\stm32f4xx_usart.o
+ .debug_info    0x0000da8d      0x643 .\system_stm32f4xx.o
+
+.debug_abbrev   0x00000000     0x2a2c
+ *(.debug_abbrev)
+ .debug_abbrev  0x00000000      0x1a9 .\main.o
+ .debug_abbrev  0x000001a9      0x313 .\video.o
+ .debug_abbrev  0x000004bc      0x1a9 .\keyboard.o
+ .debug_abbrev  0x00000665      0x1e7 .\mouse.o
+ .debug_abbrev  0x0000084c      0x143 .\usart.o
+ .debug_abbrev  0x0000098f      0x11a .\keystate.o
+ .debug_abbrev  0x00000aa9      0x238 .\window.o
+ .debug_abbrev  0x00000ce1      0x173 .\desktop.o
+ .debug_abbrev  0x00000e54      0x1a1 .\pong.o
+ .debug_abbrev  0x00000ff5      0x219 .\terminal.o
+ .debug_abbrev  0x0000120e      0x256 .\logicanalyser.o
+ .debug_abbrev  0x00001464      0x1dd .\AlieGame.o
+ .debug_abbrev  0x00001641      0x151 .\scope.o
+ .debug_abbrev  0x00001792      0x14e .\misc.o
+ .debug_abbrev  0x000018e0      0x19e .\stm32f4_discovery.o
+ .debug_abbrev  0x00001a7e      0x19e .\stm32f4xx_dma.o
+ .debug_abbrev  0x00001c1c      0x1cf .\stm32f4xx_exti.o
+ .debug_abbrev  0x00001deb      0x1d0 .\stm32f4xx_gpio.o
+ .debug_abbrev  0x00001fbb       0x66 .\stm32f4xx_it.o
+ .debug_abbrev  0x00002021      0x1f8 .\stm32f4xx_rcc.o
+ .debug_abbrev  0x00002219      0x1ae .\stm32f4xx_spi.o
+ .debug_abbrev  0x000023c7      0x152 .\stm32f4xx_syscfg.o
+ .debug_abbrev  0x00002519      0x207 .\stm32f4xx_tim.o
+ .debug_abbrev  0x00002720      0x19e .\stm32f4xx_usart.o
+ .debug_abbrev  0x000028be      0x16e .\system_stm32f4xx.o
+
+.debug_line     0x00000000     0x47f7
+ *(.debug_line)
+ .debug_line    0x00000000      0x2a8 .\main.o
+ .debug_line    0x000002a8      0x5f2 .\video.o
+ .debug_line    0x0000089a      0x190 .\keyboard.o
+ .debug_line    0x00000a2a      0x248 .\mouse.o
+ .debug_line    0x00000c72       0xfd .\usart.o
+ .debug_line    0x00000d6f       0xf2 .\keystate.o
+ .debug_line    0x00000e61      0x6a2 .\window.o
+ .debug_line    0x00001503      0x18e .\desktop.o
+ .debug_line    0x00001691      0x276 .\pong.o
+ .debug_line    0x00001907      0x26e .\terminal.o
+ .debug_line    0x00001b75      0x37a .\logicanalyser.o
+ .debug_line    0x00001eef      0x416 .\AlieGame.o
+ .debug_line    0x00002305      0x1b9 .\scope.o
+ .debug_line    0x000024be      0x17e .\misc.o
+ .debug_line    0x0000263c      0x1df .\stm32f4_discovery.o
+ .debug_line    0x0000281b      0x2fd .\stm32f4xx_dma.o
+ .debug_line    0x00002b18      0x1df .\stm32f4xx_exti.o
+ .debug_line    0x00002cf7      0x26a .\stm32f4xx_gpio.o
+ .debug_line    0x00002f61      0x14a .\stm32f4xx_it.o
+ .debug_line    0x000030ab      0x4b2 .\stm32f4xx_rcc.o
+ .debug_line    0x0000355d      0x370 .\stm32f4xx_spi.o
+ .debug_line    0x000038cd      0x141 .\stm32f4xx_syscfg.o
+ .debug_line    0x00003a0e      0x8ff .\stm32f4xx_tim.o
+ .debug_line    0x0000430d      0x3b3 .\stm32f4xx_usart.o
+ .debug_line    0x000046c0      0x137 .\system_stm32f4xx.o
+
+.debug_frame    0x00000000     0x23b0
+ *(.debug_frame)
+ .debug_frame   0x00000000       0xfc .\main.o
+ .debug_frame   0x000000fc      0x38c .\video.o
+ .debug_frame   0x00000488       0xa4 .\keyboard.o
+ .debug_frame   0x0000052c       0x8c .\mouse.o
+ .debug_frame   0x000005b8       0x50 .\usart.o
+ .debug_frame   0x00000608       0x34 .\keystate.o
+ .debug_frame   0x0000063c      0x3b4 .\window.o
+ .debug_frame   0x000009f0       0x68 .\desktop.o
+ .debug_frame   0x00000a58       0xd8 .\pong.o
+ .debug_frame   0x00000b30      0x198 .\terminal.o
+ .debug_frame   0x00000cc8      0x1b4 .\logicanalyser.o
+ .debug_frame   0x00000e7c      0x1bc .\AlieGame.o
+ .debug_frame   0x00001038       0xd8 .\scope.o
+ .debug_frame   0x00001110       0x68 .\misc.o
+ .debug_frame   0x00001178       0x9c .\stm32f4_discovery.o
+ .debug_frame   0x00001214      0x168 .\stm32f4xx_dma.o
+ .debug_frame   0x0000137c       0x98 .\stm32f4xx_exti.o
+ .debug_frame   0x00001414      0x118 .\stm32f4xx_gpio.o
+ .debug_frame   0x0000152c       0xa0 .\stm32f4xx_it.o
+ .debug_frame   0x000015cc      0x2e4 .\stm32f4xx_rcc.o
+ .debug_frame   0x000018b0      0x1cc .\stm32f4xx_spi.o
+ .debug_frame   0x00001a7c       0x80 .\stm32f4xx_syscfg.o
+ .debug_frame   0x00001afc      0x670 .\stm32f4xx_tim.o
+ .debug_frame   0x0000216c      0x210 .\stm32f4xx_usart.o
+ .debug_frame   0x0000237c       0x34 .\system_stm32f4xx.o
+
+.debug_str      0x00000000     0x396a
+ *(.debug_str)
+ .debug_str     0x00000000      0xd7a .\main.o
+                                0xdc8 (size before relaxing)
+ .debug_str     0x00000d7a      0x337 .\video.o
+                                0x5da (size before relaxing)
+ .debug_str     0x000010b1       0xd9 .\keyboard.o
+                                0x21f (size before relaxing)
+ .debug_str     0x0000118a       0x44 .\mouse.o
+                                0xaf8 (size before relaxing)
+ .debug_str     0x000011ce       0x4b .\usart.o
+                                0x18b (size before relaxing)
+ .debug_str     0x00001219        0xb .\keystate.o
+                                0x162 (size before relaxing)
+ .debug_str     0x00001224      0x21e .\window.o
+                                0x3b6 (size before relaxing)
+ .debug_str     0x00001442       0xdb .\desktop.o
+                                0x232 (size before relaxing)
+ .debug_str     0x0000151d       0xda .\pong.o
+                                0x27e (size before relaxing)
+ .debug_str     0x000015f7       0xc1 .\terminal.o
+                                0x231 (size before relaxing)
+ .debug_str     0x000016b8      0x124 .\logicanalyser.o
+                                0x4f9 (size before relaxing)
+ .debug_str     0x000017dc      0x16b .\AlieGame.o
+                                0x34e (size before relaxing)
+ .debug_str     0x00001947       0x70 .\scope.o
+                                0x208 (size before relaxing)
+ .debug_str     0x000019b7      0x185 .\misc.o
+                                0x31d (size before relaxing)
+ .debug_str     0x00001b3c      0x13c .\stm32f4_discovery.o
+                                0xa7a (size before relaxing)
+ .debug_str     0x00001c78      0x224 .\stm32f4xx_dma.o
+                                0x490 (size before relaxing)
+ .debug_str     0x00001e9c       0xaa .\stm32f4xx_exti.o
+                                0x2b2 (size before relaxing)
+ .debug_str     0x00001f46      0x152 .\stm32f4xx_gpio.o
+                                0x3e7 (size before relaxing)
+ .debug_str     0x00002098       0x9f .\stm32f4xx_it.o
+                                0x164 (size before relaxing)
+ .debug_str     0x00002137      0x5fc .\stm32f4xx_rcc.o
+                                0x794 (size before relaxing)
+ .debug_str     0x00002733      0x2be .\stm32f4xx_spi.o
+                                0x5ce (size before relaxing)
+ .debug_str     0x000029f1      0x12a .\stm32f4xx_syscfg.o
+                                0x243 (size before relaxing)
+ .debug_str     0x00002b1b      0xa4d .\stm32f4xx_tim.o
+                                0xd14 (size before relaxing)
+ .debug_str     0x00003568      0x371 .\stm32f4xx_usart.o
+                                0x5d3 (size before relaxing)
+ .debug_str     0x000038d9       0x91 .\system_stm32f4xx.o
+                                0x2f4 (size before relaxing)
+
+.debug_loc      0x00000000     0x7ac8
+ *(.debug_loc)
+ .debug_loc     0x00000000      0x168 .\main.o
+ .debug_loc     0x00000168     0x1504 .\video.o
+ .debug_loc     0x0000166c      0x1dc .\keyboard.o
+ .debug_loc     0x00001848      0x259 .\mouse.o
+ .debug_loc     0x00001aa1       0x7e .\usart.o
+ .debug_loc     0x00001b1f       0x8e .\keystate.o
+ .debug_loc     0x00001bad     0x1506 .\window.o
+ .debug_loc     0x000030b3      0x369 .\desktop.o
+ .debug_loc     0x0000341c      0x29a .\pong.o
+ .debug_loc     0x000036b6      0x37f .\terminal.o
+ .debug_loc     0x00003a35      0x74e .\logicanalyser.o
+ .debug_loc     0x00004183      0x69b .\AlieGame.o
+ .debug_loc     0x0000481e      0x2ca .\scope.o
+ .debug_loc     0x00004ae8      0x11d .\misc.o
+ .debug_loc     0x00004c05       0xc4 .\stm32f4_discovery.o
+ .debug_loc     0x00004cc9      0x343 .\stm32f4xx_dma.o
+ .debug_loc     0x0000500c      0x146 .\stm32f4xx_exti.o
+ .debug_loc     0x00005152      0x26d .\stm32f4xx_gpio.o
+ .debug_loc     0x000053bf      0x6ed .\stm32f4xx_rcc.o
+ .debug_loc     0x00005aac      0x488 .\stm32f4xx_spi.o
+ .debug_loc     0x00005f34       0x9d .\stm32f4xx_syscfg.o
+ .debug_loc     0x00005fd1     0x14bc .\stm32f4xx_tim.o
+ .debug_loc     0x0000748d      0x508 .\stm32f4xx_usart.o
+ .debug_loc     0x00007995      0x133 .\system_stm32f4xx.o
+
+.debug_macinfo
+ *(.debug_macinfo)
+
+.debug_weaknames
+ *(.debug_weaknames)
+
+.debug_funcnames
+ *(.debug_funcnames)
+
+.debug_typenames
+ *(.debug_typenames)
+
+.debug_varnames
+ *(.debug_varnames)
+START GROUP
+LOAD c:/program files/raisonance/ride/arm-gcc/bin/../lib/gcc/arm-none-eabi/4.5.1/thumb2\libgcc.a
+LOAD c:/program files/raisonance/ride/arm-gcc/bin/../lib/gcc/arm-none-eabi/4.5.1/../../../../arm-none-eabi/lib/thumb2\libc.a
+END GROUP
+OUTPUT(a.out elf32-littlearm)
+
+.debug_pubtypes
+                0x00000000     0x10d1
+ .debug_pubtypes
+                0x00000000      0x1d7 .\main.o
+ .debug_pubtypes
+                0x000001d7       0xed .\video.o
+ .debug_pubtypes
+                0x000002c4       0x66 .\keyboard.o
+ .debug_pubtypes
+                0x0000032a      0x177 .\mouse.o
+ .debug_pubtypes
+                0x000004a1       0x5e .\usart.o
+ .debug_pubtypes
+                0x000004ff       0x43 .\keystate.o
+ .debug_pubtypes
+                0x00000542       0x62 .\window.o
+ .debug_pubtypes
+                0x000005a4       0x5b .\desktop.o
+ .debug_pubtypes
+                0x000005ff       0x86 .\pong.o
+ .debug_pubtypes
+                0x00000685       0x4b .\terminal.o
+ .debug_pubtypes
+                0x000006d0       0xba .\logicanalyser.o
+ .debug_pubtypes
+                0x0000078a       0xa4 .\AlieGame.o
+ .debug_pubtypes
+                0x0000082e       0x65 .\scope.o
+ .debug_pubtypes
+                0x00000893       0x8c .\misc.o
+ .debug_pubtypes
+                0x0000091f      0x16e .\stm32f4_discovery.o
+ .debug_pubtypes
+                0x00000a8d       0xa3 .\stm32f4xx_dma.o
+ .debug_pubtypes
+                0x00000b30       0xae .\stm32f4xx_exti.o
+ .debug_pubtypes
+                0x00000bde       0xce .\stm32f4xx_gpio.o
+ .debug_pubtypes
+                0x00000cac       0x1e .\stm32f4xx_it.o
+ .debug_pubtypes
+                0x00000cca       0xaa .\stm32f4xx_rcc.o
+ .debug_pubtypes
+                0x00000d74       0xbc .\stm32f4xx_spi.o
+ .debug_pubtypes
+                0x00000e30       0x6d .\stm32f4xx_syscfg.o
+ .debug_pubtypes
+                0x00000e9d       0xe4 .\stm32f4xx_tim.o
+ .debug_pubtypes
+                0x00000f81       0xcd .\stm32f4xx_usart.o
+ .debug_pubtypes
+                0x0000104e       0x83 .\system_stm32f4xx.o
+
+.debug_ranges   0x00000000      0xdd0
+ .debug_ranges  0x00000000       0x48 .\main.o
+ .debug_ranges  0x00000048      0x108 .\video.o
+ .debug_ranges  0x00000150       0x40 .\keyboard.o
+ .debug_ranges  0x00000190       0x28 .\mouse.o
+ .debug_ranges  0x000001b8       0x20 .\usart.o
+ .debug_ranges  0x000001d8       0x40 .\keystate.o
+ .debug_ranges  0x00000218      0x128 .\window.o
+ .debug_ranges  0x00000340       0x20 .\desktop.o
+ .debug_ranges  0x00000360       0x40 .\pong.o
+ .debug_ranges  0x000003a0       0x98 .\terminal.o
+ .debug_ranges  0x00000438       0x78 .\logicanalyser.o
+ .debug_ranges  0x000004b0       0x78 .\AlieGame.o
+ .debug_ranges  0x00000528       0x40 .\scope.o
+ .debug_ranges  0x00000568       0x30 .\misc.o
+ .debug_ranges  0x00000598       0x38 .\stm32f4_discovery.o
+ .debug_ranges  0x000005d0       0xa0 .\stm32f4xx_dma.o
+ .debug_ranges  0x00000670       0x48 .\stm32f4xx_exti.o
+ .debug_ranges  0x000006b8       0x78 .\stm32f4xx_gpio.o
+ .debug_ranges  0x00000730       0x50 .\stm32f4xx_it.o
+ .debug_ranges  0x00000780      0x168 .\stm32f4xx_rcc.o
+ .debug_ranges  0x000008e8       0xd0 .\stm32f4xx_spi.o
+ .debug_ranges  0x000009b8       0x38 .\stm32f4xx_syscfg.o
+ .debug_ranges  0x000009f0      0x2d8 .\stm32f4xx_tim.o
+ .debug_ranges  0x00000cc8       0xf0 .\stm32f4xx_usart.o
+ .debug_ranges  0x00000db8       0x18 .\system_stm32f4xx.o
