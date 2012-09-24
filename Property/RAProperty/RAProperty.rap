@@ -107,7 +107,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=11
+MilestoneOnDateDate=24
 MilestoneOnDateTimeYear=2006
 MilestoneOnDateTimeMonth=6
 MilestoneOnDateTimeDate=23
@@ -178,7 +178,7 @@ ProductVer4Range=0
 15=0,0,0,0,5431
 16=0,0,0,0,18624
 17=0,0,0,0,19222
-18=0,0,0,0,19182
+18=0,0,0,0,16541
 19=0,0,0,0,1305
 20=0,0,0,0,10483
 [BookMark]
@@ -196,9 +196,9 @@ ProductVer4Range=0
 0=
 
 [AutoLoad]
-AutoLoad=1,11,13,2,7,9,20,17,14,10
+AutoLoad=1,11,13,2,7,9,20,17,14,10,18
 [PTimer]
-PTimer=346410221
+PTimer=351125071
 [Find]
 1="GlobalAlloc"
 2="nASEMW"

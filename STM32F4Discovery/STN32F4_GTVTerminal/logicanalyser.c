@@ -333,9 +333,9 @@ void LogicAnalyserSetup(void)
   CreateWindow(Lga.hmain,CLASS_BUTTON,4,LGA_RIGHT-20-20,LGA_BOTTOM,20,20,">\0");
   /* Fast right button */
   CreateWindow(Lga.hmain,CLASS_BUTTON,2,LGA_RIGHT-20,LGA_BOTTOM,20,20,">>\0");
-
+  /* Groupbox */
   CreateWindow(Lga.hmain,CLASS_GROUPBOX,97,LGA_MAINRIGHT-75-75,LGA_TOP+5,145,150,"Trigger\0");
-
+  /* Trigger checkboxes */
   CreateWindow(Lga.hmain,CLASS_CHKBOX,20,LGA_MAINRIGHT-140,LGA_TOP+30,30,10,"D0\0");
   CreateWindow(Lga.hmain,CLASS_CHKBOX,21,LGA_MAINRIGHT-140,LGA_TOP+30+15,30,10,"D1\0");
   CreateWindow(Lga.hmain,CLASS_CHKBOX,22,LGA_MAINRIGHT-140,LGA_TOP+30+30,30,10,"D2\0");
@@ -350,6 +350,7 @@ void LogicAnalyserSetup(void)
     SetStyle(GetControlHandle(Lga.hmain,i+20),STYLE_RIGHT | STYLE_CANFOCUS);
     i++;
   }
+  /* Mask checkboxes */
   CreateWindow(Lga.hmain,CLASS_CHKBOX,30,LGA_MAINRIGHT-55,LGA_TOP+30,30,10,0);
   CreateWindow(Lga.hmain,CLASS_CHKBOX,31,LGA_MAINRIGHT-55,LGA_TOP+30+15,10,10,0);
   CreateWindow(Lga.hmain,CLASS_CHKBOX,32,LGA_MAINRIGHT-55,LGA_TOP+30+30,10,10,0);
@@ -358,20 +359,18 @@ void LogicAnalyserSetup(void)
   CreateWindow(Lga.hmain,CLASS_CHKBOX,35,LGA_MAINRIGHT-55,LGA_TOP+30+75,10,10,0);
   CreateWindow(Lga.hmain,CLASS_CHKBOX,36,LGA_MAINRIGHT-55,LGA_TOP+30+90,10,10,0);
   CreateWindow(Lga.hmain,CLASS_CHKBOX,37,LGA_MAINRIGHT-55,LGA_TOP+30+105,10,10,0);
-
   /* Rate Left button */
   CreateWindow(Lga.hmain,CLASS_BUTTON,40,LGA_MAINRIGHT-150,LGA_MAINBOTTOM-50,20,20,"<\0");
   /* Rate */
   CreateWindow(Lga.hmain,CLASS_STATIC,41,LGA_MAINRIGHT-150+20,LGA_MAINBOTTOM-50,105,20,"33.6MHz\0");
   /* Rate Right button */
   CreateWindow(Lga.hmain,CLASS_BUTTON,42,LGA_MAINRIGHT-25,LGA_MAINBOTTOM-50,20,20,">\0");
-
   /* Create logic analyser window */
   Lga.hlga=CreateWindow(Lga.hmain,CLASS_STATIC,1,LGA_LEFT,LGA_TOP,LGA_WIDTH,LGA_HEIGHT,0);
   SetStyle(Lga.hlga,STYLE_BLACK);
   SetHandler(Lga.hlga,&LgaHandler);
-
   SendEvent(Lga.hmain,EVENT_ACTIVATE,0,0);
+
   DrawStatus(0,Caps,Num);
   Lga.cur=0;
   Lga.mark=0;

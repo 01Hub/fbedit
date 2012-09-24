@@ -75,8 +75,6 @@ void USART_Config(uint32_t Baud);
   */
 void main(void)
 {
-  int32_t i,fc;
-
   RCC_Config();
   NVIC_Config();
   GPIO_Config();
