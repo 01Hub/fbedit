@@ -15,6 +15,10 @@
 * RS232
 * PA2   USART2 Tx
 * PA3   USART2 Rx
+* Logic analyser
+* PE8 to PE15
+* Frequency counter
+* PB11  TIM2_CH4
 * Keyboard
 * PB0   Keyboard clock in
 * PB1   Keyboard data in
@@ -109,10 +113,10 @@ void main(void)
   */
 void RCC_Config(void)
 {
-  /* Enable DMA1, GPIOA, GPIOB and GPIOE clocks */
+  /* Enable DMA1, DMA2, GPIOA, GPIOB and GPIOE clocks */
   RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA1 | RCC_AHB1Periph_DMA2 | RCC_AHB1Periph_GPIOA | RCC_AHB1Periph_GPIOB | RCC_AHB1Periph_GPIOE, ENABLE);
-  /* Enable USART2, TIM3, TIM4, TIM5 and SPI2 clocks */
-  RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART2 | RCC_APB1Periph_TIM3 | RCC_APB1Periph_TIM4 | RCC_APB1Periph_TIM5 | RCC_APB1Periph_SPI2, ENABLE);
+  /* Enable USART2, TIM2, TIM3, TIM4, TIM5 and SPI2 clocks */
+  RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART2 | RCC_APB1Periph_TIM2 | RCC_APB1Periph_TIM3 | RCC_APB1Periph_TIM4 | RCC_APB1Periph_TIM5 | RCC_APB1Periph_SPI2, ENABLE);
   /* Enable TIM8 and SYSCFG clock */
   RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM8 | RCC_APB2Periph_SYSCFG, ENABLE);
 }
@@ -191,6 +195,15 @@ void GPIO_Config(void)
   GPIO_PinAFConfig(GPIOA, GPIO_PinSource2, GPIO_AF_USART2);
   GPIO_PinAFConfig(GPIOA, GPIO_PinSource3, GPIO_AF_USART2);
 
+  /* TIM2 chennel4 configuration : PB.11 */
+  GPIO_InitStructure.GPIO_Pin   = GPIO_Pin_11;
+  GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_AF;
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+  GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+  GPIO_InitStructure.GPIO_PuPd  = GPIO_PuPd_NOPULL ;
+  GPIO_Init(GPIOB, &GPIO_InitStructure);
+  /* Connect TIM2 pin to AF2 */
+  GPIO_PinAFConfig(GPIOB, GPIO_PinSource11, GPIO_AF_TIM2);
 }
 
 /**
@@ -202,6 +215,14 @@ void TIM_Config(void)
 {
   TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;
 
+  /* TIM2 Counter configuration */
+  TIM_TimeBaseStructure.TIM_Period = 0xffffffff;
+  TIM_TimeBaseStructure.TIM_Prescaler = 0;
+  TIM_TimeBaseStructure.TIM_ClockDivision = 0;
+  TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
+  TIM_TimeBaseInit(TIM2, &TIM_TimeBaseStructure);
+  TIM2->CCMR2 = 0x0100;     //CC4S=01
+  TIM2->SMCR = 0x0067;      //TS=110, SMS=111
   /* Time base configuration */
   TIM_TimeBaseStructure.TIM_Period = 84*64-1;                     // 64uS
   TIM_TimeBaseStructure.TIM_Prescaler = 0;
@@ -229,7 +250,6 @@ void TIM_Config(void)
   /* Enable TIM5 Update interrupt */
   TIM_ClearITPendingBit(TIM5,TIM_IT_Update);
   TIM_ITConfig(TIM5, TIM_IT_Update, ENABLE);
-
   /* Time base configuration */
   TIM_TimeBaseStructure.TIM_Period = 167;
   TIM_TimeBaseStructure.TIM_Prescaler = 0;

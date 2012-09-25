@@ -8,9 +8,11 @@ extern WINDOW* Focus;                 // The control that has the keyboard focus
 extern volatile uint8_t Caps;
 extern volatile uint8_t Num;
 extern uint8_t FrameBuff[SCREEN_BUFFHEIGHT][SCREEN_BUFFWIDTH];
+extern uint32_t frequency;
 
 /* Private variables ---------------------------------------------------------*/
 SCOPE Scope;
+uint8_t scopestr[9][6]={{"Ofs:"},{"Mrk:"},{"Pos:"},{"Frq:"},{"Tme:"},{"Vcu:"},{"Vpp:"},{"Vmn:"},{"Vmx:"}};
 
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
@@ -92,22 +94,19 @@ void ScopeHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
       {
         ScopeDrawGrid();
       }
+      ScopeDrawMark();
+      ScopeDrawData();
+      ScopeDrawInfo();
       break;
     case EVENT_LDOWN:
-      // x=param & 0xFFFF;
-      // y=param>>16;
-      // if (x>30)
-      // {
-        // Lga.mark=((x-30)/4)+Lga.dataofs;
-      // }
+      x=param & 0xFFFF;
+      y=param>>16;
+      Scope.mark=x+Scope.dataofs;
       break;
     case EVENT_MOVE:
-      // x=param & 0xFFFF;
-      // y=param>>16;
-      // if (x>30)
-      // {
-        // Lga.cur=((x-30)/4)+Lga.dataofs;
-      // }
+      x=param & 0xFFFF;
+      y=param>>16;
+      Scope.cur=x+Scope.dataofs;
       break;
     default:
       DefWindowHandler(hwin,event,param,ID);
@@ -147,9 +146,52 @@ void ScopeDrawGrid(void)
   }
   while (x<SCOPE_WIDTH)
   {
-    ScopeDrawVLine(x,SCOPE_TOP,SCOPE_HEIGHT-30);
+    ScopeDrawVLine(x,SCOPE_TOP,8*16);
     x+=32;
   }
+}
+
+void ScopeDrawMark(void)
+{
+  uint16_t x;
+
+  if (Scope.markshow)
+  {
+    if ((Scope.mark>=Scope.dataofs) && (Scope.mark<Scope.dataofs+SCOPE_BYTES))
+    {
+      /* Draw mark */
+      x=(Scope.mark-Scope.dataofs)*4+30+2;
+      ScopeDrawVLine(x,SCOPE_TOP,8*16);
+    }
+    if ((Scope.cur>=Scope.dataofs) && (Scope.cur<Scope.dataofs+SCOPE_BYTES))
+    {
+      /* Draw mark */
+      x=(Scope.cur-Scope.dataofs)*4+30+2;
+      ScopeDrawVLine(x,SCOPE_TOP,8*16);
+    }
+  }
+}
+
+void ScopeDrawData(void)
+{
+}
+
+void ScopeDrawInfo(void)
+{
+  /* Offset */
+  DrawWinString(SCOPE_LEFT+4,SCOPE_BOTTOM-30,4,scopestr[0],1);
+  /* Mark */
+  DrawWinString(SCOPE_LEFT+4,SCOPE_BOTTOM-20,4,scopestr[1],1);
+  /* Position */
+  DrawWinString(SCOPE_LEFT+4,SCOPE_BOTTOM-10,4,scopestr[2],1);
+
+  /* Frequency */
+  DrawWinString(SCOPE_LEFT+4+9*8,SCOPE_BOTTOM-30,4,scopestr[3],1);
+  DrawWinDec32(SCOPE_LEFT+4+14*8,SCOPE_BOTTOM-30,frequency,5);
+  /* Time */
+  DrawWinString(SCOPE_LEFT+4+9*8,SCOPE_BOTTOM-20,4,scopestr[4],1);
+  /* Vcurrent */
+  DrawWinString(SCOPE_LEFT+4+9*8,SCOPE_BOTTOM-10,4,scopestr[5],1);
 }
 
 void ScopeSetup(void)
@@ -248,6 +290,8 @@ void ScopeTimer(void)
     Scope.tmrcnt++;
     if (Scope.tmrcnt>=Scope.tmrmax)
     {
+      Scope.tmrmax=4;
+      Scope.tmrcnt=0;
       SendEvent(Scope.hmain,EVENT_CHAR,0x0D,Scope.tmrid);
     }
   }

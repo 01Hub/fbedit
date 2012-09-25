@@ -83,6 +83,7 @@ void DrawBlackWinChar(uint16_t x, uint16_t y, uint8_t chr);
 void DrawWhiteWinChar(uint16_t x, uint16_t y, uint8_t chr);
 void DrawWinChar(uint16_t x, uint16_t y, uint8_t chr);
 void DrawWinString(uint16_t x, uint16_t y,uint8_t len, uint8_t *str,uint8_t c);
+void DrawWinDec32(uint16_t x, uint16_t y, uint32_t n, uint8_t c);
 void DrawWinDec16(uint16_t x, uint16_t y, uint16_t n, uint8_t c);
 void DrawWinHex8(uint16_t x, uint16_t y, uint8_t n, uint8_t c);
 void DrawWinBin8(uint16_t x, uint16_t y, uint8_t n, uint8_t c);

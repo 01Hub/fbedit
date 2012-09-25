@@ -45,6 +45,7 @@ SPRITE* Sprites[MAX_SPRITES];
 volatile uint8_t FrameDraw;
 volatile uint32_t RNDSeed;          // Random seed
 TIMER timer;
+volatile uint32_t pcount, frequency;
 
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
@@ -922,7 +923,22 @@ void TIM4_IRQHandler(void)
     {
       /* V-Sync high */
       GPIOA->BSRRL=(u16)GPIO_Pin_1;
-      LineCount=-(TOP_MARGIN+1);
+      FrameCount++;
+      if (FrameCount==(FrameCount/50)*50)
+      {
+        i=TIM2->CNT;
+        frequency=i-pcount;
+        pcount=i;
+        STM_EVAL_LEDToggle(LED3);
+      }
+      if (FrameCount & 1)
+      {
+        LineCount=-(TOP_MARGIN+1);
+      }
+      else
+      {
+        LineCount=-TOP_MARGIN;
+      }
     }
     /* Set TIM4 auto reload */
     TIM4->ARR=(84*BACK_POCH)/1000;                // 5,70uS
@@ -1046,11 +1062,6 @@ void TIM5_IRQHandler(void)
     timer();
   }
   GetMouseClick();
-  FrameCount++;
-  if (FrameCount==(FrameCount/25)*25)
-  {
-    STM_EVAL_LEDToggle(LED3);
-  }
   FrameDraw=0;
 }
 

@@ -74,10 +74,6 @@ __attribute__((section("FLASH"))) const uint8_t codetable_extended[] = {
 	0,   0,   0,   0
 };
 
-/* circular buffer for keys */
-uint8_t charbuf[256];
-volatile uint8_t charbufhead = 0;
-volatile uint8_t charbuftail = 0;
 /* Key state tables */
 volatile uint16_t keytab[16];
 volatile uint16_t extkeytab[16];

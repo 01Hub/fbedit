@@ -213,7 +213,7 @@ void DrawWhiteWinChar(uint16_t x, uint16_t y, uint8_t chr)
 }
 
 /**
-  * @brief  This function draws a character at x, y.
+  * @brief  This function draws opaque a character at x, y.
   * @param  x, y, chr
   * @retval None
   */
@@ -309,6 +309,41 @@ void DrawWinString(uint16_t x, uint16_t y,uint8_t len, uint8_t *str,uint8_t c)
 }
 
 /**
+  * @brief  This function draws a 32bit decimal value at x, y.
+  * @param  x, y, n, c
+  * @retval None
+  */
+void DrawWinDec32(uint16_t x, uint16_t y, uint32_t n, uint8_t c)
+{
+	uint8_t decstr[10];
+  uint8_t i,d;
+  uint32_t dm;
+
+  i=0;
+  dm=1000000000;
+  while (i<10)
+  {
+    d=n/dm;
+    n-=d*dm;
+    decstr[i]=d | 0x30;
+    i++;
+    dm /=10;
+  }
+  i=0;
+  while (i<9 && decstr[i]==0x30)
+  {
+    decstr[i]=0x20;
+    i++;
+  }
+  if (c & 4)
+  {
+    /* Right aligned */
+    x+=i*TILE_WIDTH;
+  }
+  DrawWinString(x,y,10-i,&decstr[i],c & 3);
+}
+
+/**
   * @brief  This function draws a 16bit decimal value at x, y.
   * @param  x, y, n, c
   * @retval None
@@ -352,6 +387,7 @@ void DrawWinHex8(uint16_t x, uint16_t y, uint8_t n, uint8_t c)
 {
 	static uint8_t hexchars[] = "0123456789ABCDEF";
 	uint8_t hexstr[2];
+
 	hexstr[0] = hexchars[(n >> 4) & 0xF];
 	hexstr[1] = hexchars[n & 0xF];
   DrawWinString(x,y,2,hexstr,c);
@@ -364,8 +400,8 @@ void DrawWinHex8(uint16_t x, uint16_t y, uint8_t n, uint8_t c)
   */
 void DrawWinBin8(uint16_t x, uint16_t y, uint8_t n, uint8_t c)
 {
-  uint8_t i;
-  i=0;
+  uint8_t i=0;
+
   while (i<8)
   {
     if (n & 0x80)
@@ -443,7 +479,8 @@ void DrawWinIcon(uint16_t x,uint16_t y,ICON* icon)
   */
 void FrameRect(uint16_t x,uint16_t y,uint16_t wdt,uint16_t hgt)
 {
- uint16_t j;
+  uint16_t j;
+
   for (j = 0; j < hgt; j++) {
 		ClearFBPixel(x, y + j);
 		ClearFBPixel(x + wdt - 1, y + j);
@@ -932,7 +969,7 @@ uint32_t DefWindowHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
       }
       break;
     case EVENT_LCLICK:
-       SendEvent(hwin,EVENT_CHAR,0x0D,hwin->ID);
+      SendEvent(hwin,EVENT_CHAR,0x0D,hwin->ID);
       break;
     default:
       howner=hwin->owner;
