@@ -146,7 +146,7 @@ void LgaHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
   }
 }
 
-void LgaDrawHLine(uint16_t x,uint16_t y,int16_t wdt)
+void LgaDrawDotHLine(uint16_t x,uint16_t y,int16_t wdt)
 {
   while (wdt>=0)
   {
@@ -156,13 +156,33 @@ void LgaDrawHLine(uint16_t x,uint16_t y,int16_t wdt)
   }
 }
 
-void LgaDrawVLine(uint16_t x,uint16_t y,int16_t hgt)
+void LgaDrawDotVLine(uint16_t x,uint16_t y,int16_t hgt)
 {
   while (hgt>=0)
   {
     SetFBPixel(x,y);
     y+=2;
     hgt-=2;
+  }
+}
+
+void LgaDrawHLine(uint16_t x,uint16_t y,int16_t wdt)
+{
+  while (wdt)
+  {
+    SetFBPixel(x,y);
+    x++;
+    wdt--;
+  }
+}
+
+void LgaDrawVLine(uint16_t x,uint16_t y,int16_t hgt)
+{
+  while (hgt)
+  {
+    SetFBPixel(x,y);
+    y++;
+    hgt--;
   }
 }
 
@@ -174,14 +194,14 @@ void LgaDrawGrid(void)
 
   while (y<=LGA_TOP+LGA_HEIGHT-30)
   {
-    LgaDrawHLine(LGA_LEFT,y,LGA_WIDTH);
+    LgaDrawDotHLine(LGA_LEFT,y,LGA_WIDTH);
     DrawWinString(LGA_LEFT+5,y-12,2,lgacap[i],2);
     y+=LGA_BITHEIGHT;
     i++;
   }
   while (x<LGA_LEFT+30+8*32)
   {
-    LgaDrawVLine(x,LGA_TOP,LGA_BITHEIGHT*8);
+    LgaDrawDotVLine(x,LGA_TOP,LGA_BITHEIGHT*8);
     x+=32;
   }
 }
@@ -196,13 +216,13 @@ void LgaDrawMark(void)
     {
       /* Draw mark */
       x=(Lga.mark-Lga.dataofs)*4+30+2;
-      LgaDrawVLine(x,LGA_TOP,LGA_BITHEIGHT*8);
+      LgaDrawDotVLine(x,LGA_TOP,LGA_BITHEIGHT*8);
     }
     if ((Lga.cur>=Lga.dataofs) && (Lga.cur<Lga.dataofs+LGA_BYTES))
     {
       /* Draw mark */
       x=(Lga.cur-Lga.dataofs)*4+30+2;
-      LgaDrawVLine(x,LGA_TOP,LGA_BITHEIGHT*8);
+      LgaDrawDotVLine(x,LGA_TOP,LGA_BITHEIGHT*8);
     }
   }
 }
@@ -298,6 +318,7 @@ void LgaSample(void)
   uint32_t i;
   uint8_t byte;
   uint8_t* ptr;
+
   ptr=(uint8_t*)LGA_DATAPTR;
   TIM8->CNT=rate[Lga.rate].cnt-1;
   TIM8->ARR=rate[Lga.rate].cnt;
@@ -310,6 +331,7 @@ void LgaSample(void)
   while (DMA_GetFlagStatus(DMA2_Stream1,DMA_FLAG_TCIF1)==RESET);
   DMA_DeInit(DMA2_Stream1);
   TIM_Cmd(TIM8, DISABLE);
+  DMA_Cmd(DMA2_Stream1, DISABLE);
 }
 
 void LogicAnalyserSetup(void)
@@ -336,8 +358,6 @@ void LogicAnalyserSetup(void)
   CreateWindow(Lga.hmain,CLASS_BUTTON,4,LGA_RIGHT-20-20,LGA_BOTTOM,20,20,">\0");
   /* Fast right button */
   CreateWindow(Lga.hmain,CLASS_BUTTON,2,LGA_RIGHT-20,LGA_BOTTOM,20,20,">>\0");
-  /* Groupbox */
-  CreateWindow(Lga.hmain,CLASS_GROUPBOX,97,LGA_MAINRIGHT-75-75,LGA_TOP+5,145,150,"Trigger\0");
   /* Trigger checkboxes */
   CreateWindow(Lga.hmain,CLASS_CHKBOX,20,LGA_MAINRIGHT-140,LGA_TOP+30,30,10,"D0\0");
   CreateWindow(Lga.hmain,CLASS_CHKBOX,21,LGA_MAINRIGHT-140,LGA_TOP+30+15,30,10,"D1\0");
@@ -362,6 +382,8 @@ void LogicAnalyserSetup(void)
   CreateWindow(Lga.hmain,CLASS_CHKBOX,35,LGA_MAINRIGHT-55,LGA_TOP+30+75,10,10,0);
   CreateWindow(Lga.hmain,CLASS_CHKBOX,36,LGA_MAINRIGHT-55,LGA_TOP+30+90,10,10,0);
   CreateWindow(Lga.hmain,CLASS_CHKBOX,37,LGA_MAINRIGHT-55,LGA_TOP+30+105,10,10,0);
+  /* Groupbox */
+  CreateWindow(Lga.hmain,CLASS_GROUPBOX,97,LGA_MAINRIGHT-75-75,LGA_TOP+5,145,150,"Trigger\0");
   /* Rate Left button */
   CreateWindow(Lga.hmain,CLASS_BUTTON,40,LGA_MAINRIGHT-150,LGA_MAINBOTTOM-50,20,20,"<\0");
   /* Rate */
@@ -389,7 +411,7 @@ void LogicAnalyserSetup(void)
     if (Lga.Sample)
     {
       Lga.Sample=0;
-      SetStyle(Lga.hmain,STATE_VISIBLE);
+      SetState(Lga.hmain,STATE_VISIBLE);
       SetStyle(Lga.hmain,STYLE_LEFT);
       LgaSample();
       SetStyle(Lga.hmain,STYLE_LEFT | STYLE_CANFOCUS);
@@ -437,6 +459,15 @@ void WaitForTrigger(void)
   }
   tmp = trg & trgmask;
   fc=FrameCount+50*5;
+  /* Wait while conditions are met */
+  while (FrameCount!=fc)
+  {
+    if (((GPIOE->IDR>>8) & trgmask) != tmp)
+    {
+      break;
+    }
+  }
+  /* Wait until conditions are met */
   while (FrameCount!=fc)
   {
     if (((GPIOE->IDR>>8) & trgmask) == tmp)

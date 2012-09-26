@@ -246,8 +246,10 @@ void TIM_Config(void)
   TIM_TimeBaseStructure.TIM_Prescaler = 0;
   TIM_TimeBaseStructure.TIM_ClockDivision = 0;
   TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
+  TIM_TimeBaseStructure.TIM_RepetitionCounter=0;
   TIM_TimeBaseInit(TIM1, &TIM_TimeBaseStructure);
-  /* PWM1 Mode configuration: Channel1 */
+  /* PWM1 Mode configuration: Channel 1 */
+  TIM_OCStructInit(&TIM_OCInitStructure);
   TIM_OCInitStructure.TIM_OCMode = TIM_OCMode_PWM1;
   TIM_OCInitStructure.TIM_OutputState = TIM_OutputState_Enable;
   TIM_OCInitStructure.TIM_Pulse = 41;
