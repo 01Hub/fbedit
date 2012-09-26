@@ -958,8 +958,8 @@ void TIM4_IRQHandler(void)
       /* If frame drawing busy, skip a frame */
       if (!FrameDraw)
       {
-        /* Enable TIM5 */
-        TIM5->CR1=1;
+        /* Enable TIM7 */
+        TIM7->CR1=1;
       }
     }
     LineCount++;
@@ -1024,19 +1024,19 @@ void FrameBuffDraw(void)
 }
 
 /**
-  * @brief  This function handles TIM5 global interrupt request.
+  * @brief  This function handles TIM7 global interrupt request.
   * @param  None
   * @retval None
   */
-void TIM5_IRQHandler(void)
+void TIM7_IRQHandler(void)
 {
   uint32_t *pd,*ps,i;
   uint8_t chr;
 
-  /* Disable TIM5 */
-  TIM5->CR1=0;
+  /* Disable TIM7 */
+  TIM7->CR1=0;
   /* Clear the IT pending Bit */
-  TIM5->SR=(u16)~TIM_IT_Update;
+  TIM7->SR=(u16)~TIM_IT_Update;
   FrameDraw=1;
   /* Copy ScreenBuff to WorkBuff */
   pd=(uint32_t *)&FrameBuff;

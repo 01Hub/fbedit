@@ -74,8 +74,9 @@ void ScopeMainHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
       }
     case EVENT_LUP:
       Scope.tmrid=0;
-      Scope.tmrmax=25;
+      Scope.tmrmax=32;
       Scope.tmrcnt=0;
+      break;
     default:
       DefWindowHandler(hwin,event,param,ID);
       break;
@@ -84,7 +85,7 @@ void ScopeMainHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
 
 void ScopeHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
 {
-  uint16_t x,y,pos;
+  uint16_t x;
 
   switch (event)
   {
@@ -100,12 +101,10 @@ void ScopeHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
       break;
     case EVENT_LDOWN:
       x=param & 0xFFFF;
-      y=param>>16;
       Scope.mark=x+Scope.dataofs;
       break;
     case EVENT_MOVE:
       x=param & 0xFFFF;
-      y=param>>16;
       Scope.cur=x+Scope.dataofs;
       break;
     default:
@@ -114,23 +113,23 @@ void ScopeHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
   }
 }
 
-void ScopeDrawHLine(uint16_t x,uint16_t y,uint16_t wdt)
+void ScopeDrawHLine(uint16_t x,uint16_t y,int16_t wdt)
 {
-  while (wdt)
+  while (wdt>=0)
   {
     SetFBPixel(x,y);
-    x++;
-    wdt--;
+    x+=2;
+    wdt-=2;
   }
 }
 
-void ScopeDrawVLine(uint16_t x,uint16_t y,uint16_t hgt)
+void ScopeDrawVLine(uint16_t x,uint16_t y,int16_t hgt)
 {
-  while (hgt)
+  while (hgt>=0)
   {
     SetFBPixel(x,y);
-    y++;
-    hgt--;
+    y+=2;
+    hgt-=2;
   }
 }
 
@@ -160,13 +159,13 @@ void ScopeDrawMark(void)
     if ((Scope.mark>=Scope.dataofs) && (Scope.mark<Scope.dataofs+SCOPE_BYTES))
     {
       /* Draw mark */
-      x=(Scope.mark-Scope.dataofs)*4+30+2;
+      x=Scope.mark-Scope.dataofs+SCOPE_LEFT;
       ScopeDrawVLine(x,SCOPE_TOP,8*16);
     }
     if ((Scope.cur>=Scope.dataofs) && (Scope.cur<Scope.dataofs+SCOPE_BYTES))
     {
       /* Draw mark */
-      x=(Scope.cur-Scope.dataofs)*4+30+2;
+      x=Scope.cur-Scope.dataofs+SCOPE_LEFT;
       ScopeDrawVLine(x,SCOPE_TOP,8*16);
     }
   }
@@ -258,6 +257,12 @@ void ScopeSetup(void)
 
   SendEvent(Scope.hmain,EVENT_ACTIVATE,0,0);
   DrawStatus(0,Caps,Num);
+  Scope.cur=0;
+  Scope.mark=0;
+  Scope.dataofs=0;
+  Scope.tmrid=0;
+  Scope.tmrmax=32;
+  Scope.tmrcnt=0;
   CreateTimer(ScopeTimer);
 
   while (!Scope.Quit)
@@ -290,7 +295,7 @@ void ScopeTimer(void)
     Scope.tmrcnt++;
     if (Scope.tmrcnt>=Scope.tmrmax)
     {
-      Scope.tmrmax=4;
+      Scope.tmrmax=2;
       Scope.tmrcnt=0;
       SendEvent(Scope.hmain,EVENT_CHAR,0x0D,Scope.tmrid);
     }

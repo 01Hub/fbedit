@@ -11,7 +11,7 @@ extern uint8_t FrameBuff[SCREEN_BUFFHEIGHT][SCREEN_BUFFWIDTH];
 
 /* Private variables ---------------------------------------------------------*/
 LGA Lga;
-uint8_t lgastr[8][6]={{"Ofs:"},{"Mark:"},{"Pos:"},{"Bytes:"},{"Hex:"},{"Bin:"},{"Trans:"},{"Time:"}};
+uint8_t lgastr[8][6]={{"Ofs:"},{"Mrk:"},{"Pos:"},{"Bytes:"},{"Hex:"},{"Bin:"},{"Trans:"},{"Time:"}};
 uint8_t lgacap[8][2]={{"D0"},{"D1"},{"D2"},{"D3"},{"D4"},{"D5"},{"D6"},{"D7"}};
 SAMPLE rate[LGA_RATEMAX]={{1000000,1679,"100KHz\0"},{5000000,839,"200KHz\0"},{2000000,335,"500KHz\0"},{1000000,167,"1.0MHz\0"},{500000,83,"2.0MHz\0"},{196429,32,"5.1MHz\0"},{95238,15,"10.5MHz\0"},{47619,7,"21.0MHz\0"},{29762,4,"33.6MHz\0"}};
 
@@ -97,7 +97,7 @@ void LgaMainHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
       break;
     case EVENT_LUP:
       Lga.tmrid=0;
-      Lga.tmrmax=25;
+      Lga.tmrmax=32;
       Lga.tmrcnt=0;
       break;
     default:
@@ -146,23 +146,23 @@ void LgaHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
   }
 }
 
-void LgaDrawHLine(uint16_t x,uint16_t y,uint16_t wdt)
+void LgaDrawHLine(uint16_t x,uint16_t y,int16_t wdt)
 {
-  while (wdt)
+  while (wdt>=0)
   {
     SetFBPixel(x,y);
-    x++;
-    wdt--;
+    x+=2;
+    wdt-=2;
   }
 }
 
-void LgaDrawVLine(uint16_t x,uint16_t y,uint16_t hgt)
+void LgaDrawVLine(uint16_t x,uint16_t y,int16_t hgt)
 {
-  while (hgt)
+  while (hgt>=0)
   {
     SetFBPixel(x,y);
-    y++;
-    hgt--;
+    y+=2;
+    hgt-=2;
   }
 }
 
@@ -215,13 +215,13 @@ void LgaDrawInfo(void)
 
   /* Offset */
   DrawWinString(LGA_LEFT+4,LGA_BOTTOM-30,4,lgastr[0],1);
-  DrawWinDec16(LGA_LEFT+4+40,LGA_BOTTOM-30,Lga.dataofs,1);
+  DrawWinDec16(LGA_LEFT+4+4*8,LGA_BOTTOM-30,Lga.dataofs,1);
   /* Mark */
-  DrawWinString(LGA_LEFT+4,LGA_BOTTOM-20,5,lgastr[1],1);
-  DrawWinDec16(LGA_LEFT+4+40,LGA_BOTTOM-20,Lga.mark,1);
+  DrawWinString(LGA_LEFT+4,LGA_BOTTOM-20,4,lgastr[1],1);
+  DrawWinDec16(LGA_LEFT+4+4*8,LGA_BOTTOM-20,Lga.mark,1);
   /* Position */
   DrawWinString(LGA_LEFT+4,LGA_BOTTOM-10,4,lgastr[2],1);
-  DrawWinDec16(LGA_LEFT+4+40,LGA_BOTTOM-10,Lga.cur,1);
+  DrawWinDec16(LGA_LEFT+4+4*8,LGA_BOTTOM-10,Lga.cur,1);
 
   /* Bytes */
   nbytes=Lga.cur-Lga.mark;
@@ -380,7 +380,7 @@ void LogicAnalyserSetup(void)
   Lga.dataofs=0;
   Lga.rate=LGA_RATEMAX-1;
   Lga.tmrid=0;
-  Lga.tmrmax=25;
+  Lga.tmrmax=32;
   Lga.tmrcnt=0;
   CreateTimer(LgaTimer);
 
@@ -477,7 +477,7 @@ void LgaTimer(void)
     Lga.tmrcnt++;
     if (Lga.tmrcnt>=Lga.tmrmax)
     {
-      Lga.tmrmax=4;
+      Lga.tmrmax=2;
       Lga.tmrcnt=0;
       SendEvent(Lga.hmain,EVENT_CHAR,0x0D,Lga.tmrid);
     }

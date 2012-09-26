@@ -56,8 +56,8 @@ typedef struct
 /* Private function prototypes -----------------------------------------------*/
 void LgaMainHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID);
 void LgaHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID);
-void LgaDrawHLine(uint16_t x,uint16_t y,uint16_t wdt);
-void LgaDrawVLine(uint16_t x,uint16_t y,uint16_t hgt);
+void LgaDrawHLine(uint16_t x,uint16_t y,int16_t wdt);
+void LgaDrawVLine(uint16_t x,uint16_t y,int16_t hgt);
 void LgaDrawGrid(void);
 void LgaDrawMark(void);
 void LgaDrawInfo(void);

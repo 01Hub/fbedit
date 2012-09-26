@@ -44,8 +44,8 @@ typedef struct
 /* Private function prototypes -----------------------------------------------*/
 void ScopeMainHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID);
 void ScopeHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID);
-void ScopeDrawHLine(uint16_t x,uint16_t y,uint16_t wdt);
-void ScopeDrawVLine(uint16_t x,uint16_t y,uint16_t hgt);
+void ScopeDrawHLine(uint16_t x,uint16_t y,int16_t wdt);
+void ScopeDrawVLine(uint16_t x,uint16_t y,int16_t hgt);
 void ScopeDrawGrid(void);
 void ScopeDrawMark(void);
 void ScopeDrawData(void);

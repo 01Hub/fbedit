@@ -11,7 +11,7 @@ extern volatile uint8_t Num;
 DESKTOP Desktop;
 uint8_t barcap[4][8]={{"Games\0"},{"Tools\0"},{"Options\0"},{"Help\0"}};
 uint8_t pop1cap[4][8]={{"Alien\0"},{"Pong\0"},{"Volcano\0"},{"Tetris\0"}};
-uint8_t pop2cap[4][15]={{"Terminal\0"},{"Key State\0"},{"Logic Analyser\0"},{"Digital Scope\0"}};
+uint8_t pop2cap[5][17]={{"Terminal\0"},{"Key State\0"},{"Logic Analyser\0"},{"Digital Scope\0"},{"High Speed Clock\0"}};
 uint8_t pop3cap[4][8]={{"Option1\0"},{"Option2\0"},{"Option3\0"},{"Option4\0"}};
 uint8_t pop4cap[2][6]={{"Help\0"},{"About\0"}};
 
@@ -142,13 +142,13 @@ void DeskTopSetup(void)
     i++;
   }
   /* Create popup2 window (Tools) */
-  Desktop.hpopup2=CreateWindow(0,CLASS_WINDOW,2,72,16,120,13*4+2,0);
+  Desktop.hpopup2=CreateWindow(0,CLASS_WINDOW,2,72,16,120,13*5+2,0);
   SetStyle(Desktop.hpopup2,STYLE_NOCAPTION | STYLE_CANFOCUS);
   SetHandler(Desktop.hpopup2,&MenuPopupHandler);
   SetParam(GetControlHandle(Desktop.hmnubar,2),(uint32_t)Desktop.hpopup2);
   /* Create popup2 buttons */
   i=0;
-  while (i<4)
+  while (i<5)
   {
     hwin=CreateWindow(Desktop.hpopup2,CLASS_BUTTON,i+21,2,i*13+2,120-4,12,pop2cap[i]);
     SetStyle(hwin,STYLE_LEFT | STYLE_CANFOCUS);
@@ -168,7 +168,7 @@ void DeskTopSetup(void)
     i++;
   }
   /* Create popup4 window (Help) */
-  Desktop.hpopup4=CreateWindow(0,CLASS_WINDOW,4,72+72+72,16,74,13*4+2,0);
+  Desktop.hpopup4=CreateWindow(0,CLASS_WINDOW,4,72+72+72,16,74,13*2+2,0);
   SetStyle(Desktop.hpopup4,STYLE_NOCAPTION | STYLE_CANFOCUS);
   SetHandler(Desktop.hpopup4,&MenuPopupHandler);
   SetParam(GetControlHandle(Desktop.hmnubar,4),(uint32_t)Desktop.hpopup4);
@@ -217,6 +217,9 @@ void DeskTopSetup(void)
       break;
     case 24:
       ScopeSetup();
+      break;
+    case 25:
+      HSClkSetup();
       break;
   }
 }

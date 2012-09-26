@@ -12,19 +12,28 @@
 * Video out
 * PA1   H-Sync and V-Sync
 * PB15  Video out SPI2_MOSI
+*
 * RS232
 * PA2   USART2 Tx
 * PA3   USART2 Rx
+*
 * Logic analyser
 * PE8 to PE15
+*
 * Frequency counter
 * PA15  TIM2_CH1
+*
+* High speed clock
+* PA8   TIM1_CH1
+*
 * Keyboard
 * PB0   Keyboard clock in
 * PB1   Keyboard data in
+*
 * Mouse
 * PB2   Mouse clock in
 * PB3   Mouse data in
+*
 * Leds
 * PA9   Green
 * PD5   Red
@@ -32,8 +41,10 @@
 * PD13  Orange
 * PD14  Red
 * PD15  Blue
+*
 * User button
 * PA0   User button
+*
 *******************************************************************************/
 
 /*******************************************************************************
@@ -90,6 +101,8 @@ void main(void)
   STM_EVAL_LEDInit(LED4);
   STM_EVAL_PBInit(BUTTON_USER,BUTTON_MODE_GPIO);
 
+  /* Enable TIM1 */
+  TIM_Cmd(TIM1, ENABLE);
   /* Enable TIM2 */
   TIM_Cmd(TIM2, ENABLE);
   /* Enable TIM3 */
@@ -117,10 +130,10 @@ void RCC_Config(void)
 {
   /* Enable DMA1, DMA2, GPIOA, GPIOB and GPIOE clocks */
   RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA1 | RCC_AHB1Periph_DMA2 | RCC_AHB1Periph_GPIOA | RCC_AHB1Periph_GPIOB | RCC_AHB1Periph_GPIOE, ENABLE);
-  /* Enable USART2, TIM2, TIM3, TIM4, TIM5 and SPI2 clocks */
-  RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART2 | RCC_APB1Periph_TIM2 | RCC_APB1Periph_TIM3 | RCC_APB1Periph_TIM4 | RCC_APB1Periph_TIM5 | RCC_APB1Periph_SPI2, ENABLE);
-  /* Enable TIM8 and SYSCFG clock */
-  RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM8 | RCC_APB2Periph_SYSCFG, ENABLE);
+  /* Enable USART2, TIM2, TIM3, TIM4, TIM6 and SPI2 clocks */
+  RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART2 | RCC_APB1Periph_TIM2 | RCC_APB1Periph_TIM3 | RCC_APB1Periph_TIM4 | RCC_APB1Periph_TIM7 | RCC_APB1Periph_SPI2, ENABLE);
+  /* Enable TIM1, TIM8 and SYSCFG clock */
+  RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM1 | RCC_APB2Periph_TIM8 | RCC_APB2Periph_SYSCFG, ENABLE);
 }
 
 /**
@@ -145,8 +158,8 @@ void NVIC_Config(void)
   NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
   NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
   NVIC_Init(&NVIC_InitStructure);
-  /* Enable and set TIM5 interrupt to low priority */
-  NVIC_InitStructure.NVIC_IRQChannel = TIM5_IRQn;
+  /* Enable and set TIM7 interrupt to low priority */
+  NVIC_InitStructure.NVIC_IRQChannel = TIM7_IRQn;
   NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 3;
   NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
   NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
@@ -197,7 +210,17 @@ void GPIO_Config(void)
   GPIO_PinAFConfig(GPIOA, GPIO_PinSource2, GPIO_AF_USART2);
   GPIO_PinAFConfig(GPIOA, GPIO_PinSource3, GPIO_AF_USART2);
 
-  /* TIM2 chennel4 configuration : PB.11 */
+  /* TIM1 chennel 1 configuration : PA8 */
+  GPIO_InitStructure.GPIO_Pin   = GPIO_Pin_8;
+  GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_AF;
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+  GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+  GPIO_InitStructure.GPIO_PuPd  = GPIO_PuPd_NOPULL ;
+  GPIO_Init(GPIOA, &GPIO_InitStructure);
+  /* Connect TIM1 pin to AF1 */
+  GPIO_PinAFConfig(GPIOA, GPIO_PinSource8, GPIO_AF_TIM1);
+
+  /* TIM2 chennel 1 configuration : PB.11 */
   GPIO_InitStructure.GPIO_Pin   = GPIO_Pin_15;
   GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_AF;
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
@@ -208,48 +231,6 @@ void GPIO_Config(void)
   GPIO_PinAFConfig(GPIOA, GPIO_PinSource15, GPIO_AF_TIM2);
 }
 
-/*  For example, to configure the upcounter to count in response to a rising edge on the TI2
-    input, use the following procedure:
-    1. Configure channel 2 to detect rising edges on the TI2 input by writing CC2S=01 in the
-       TIMx_CCMR1 register.
-    2. Configure the input filter duration by writing the IC2F[3:0] bits in the TIMx_CCMR1
-       register (if no filter is needed, keep IC2F=0000).
-Note:  The capture prescaler is not used for triggering, so you don’t need to configure it.
-    3. Select rising edge polarity by writing CC2P=0 and CC2NP=0 in the TIMx_CCER
-       register.
-    4. Configure the timer in external clock mode 1 by writing SMS=111 in the TIMx_SMCR
-       register.
-    5. Select TI2 as the input source by writing TS=110 in the TIMx_SMCR register.
-    6. Enable the counter by writing CEN=1 in the TIMx_CR1 register.
-       When a rising edge occurs on TI2, the counter counts once and the TIF flag is set.
-       The delay between the rising edge on TI2 and the actual clock of the counter is due to the
-       resynchronization circuit on TI2 input.
-
-
-TIMx_CCMR1
----------------------------------------------------------------------------------------------
-15    14    13    12    11    10    9     8     7     6     5     4     3     2     1     0
----------------------------------------------------------------------------------------------
-OC2CE OC2M[2:0]         OC2PE OC2FE CC2S[1:0]   OC1CE OC1M[2:0]         OC1PE OC1FE CC1S[1:0]
----------------------------------------------------------------------------------------------
-IC2F[3:0]               IC2PSC[1:0]             IC1F[3:0]               IC1PSC[1:0]
----------------------------------------------------------------------------------------------
-
-TIMx_CCER
----------------------------------------------------------------------------------------------
-15    14    13    12    11    10    9     8     7     6     5     4     3     2     1     0
----------------------------------------------------------------------------------------------
-CC4NP Res.  CC4P  CC4E  CC3NP Res.  CC3P  CC3E  CC2NP Res.  CC2P  CC2E  CC1NP Res.  CC1P  CC1E
----------------------------------------------------------------------------------------------
-
-TIMx_SMCR
----------------------------------------------------------------------------------------------
-15    14    13    12    11    10    9     8     7     6     5     4     3     2     1     0
----------------------------------------------------------------------------------------------
-ETP   ECE   ETPS[1:0]   ETF[3:0]                MSM   TS[2:0]           Res.  SMS[2:0]
----------------------------------------------------------------------------------------------
-*/
-
 /**
   * @brief  Configure timers
   * @param  None
@@ -258,7 +239,22 @@ ETP   ECE   ETPS[1:0]   ETF[3:0]                MSM   TS[2:0]           Res.  SM
 void TIM_Config(void)
 {
   TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;
+  TIM_OCInitTypeDef       TIM_OCInitStructure;
 
+  /* TIM1 Counter configuration */
+  TIM_TimeBaseStructure.TIM_Period = 83;
+  TIM_TimeBaseStructure.TIM_Prescaler = 0;
+  TIM_TimeBaseStructure.TIM_ClockDivision = 0;
+  TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
+  TIM_TimeBaseInit(TIM1, &TIM_TimeBaseStructure);
+  /* PWM1 Mode configuration: Channel1 */
+  TIM_OCInitStructure.TIM_OCMode = TIM_OCMode_PWM1;
+  TIM_OCInitStructure.TIM_OutputState = TIM_OutputState_Enable;
+  TIM_OCInitStructure.TIM_Pulse = 41;
+  TIM_OCInitStructure.TIM_OCPolarity = TIM_OCPolarity_High;
+  TIM_OC1Init(TIM1, &TIM_OCInitStructure);
+  TIM_OC1PreloadConfig(TIM1, TIM_OCPreload_Enable);
+  TIM_ARRPreloadConfig(TIM1, ENABLE);
   /* TIM2 Counter configuration */
   TIM_TimeBaseStructure.TIM_Period = 0xffffffff;
   TIM_TimeBaseStructure.TIM_Prescaler = 0;
@@ -290,10 +286,10 @@ void TIM_Config(void)
   TIM_TimeBaseStructure.TIM_Prescaler = 0;
   TIM_TimeBaseStructure.TIM_ClockDivision = 0;
   TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
-  TIM_TimeBaseInit(TIM5, &TIM_TimeBaseStructure);
-  /* Enable TIM5 Update interrupt */
-  TIM_ClearITPendingBit(TIM5,TIM_IT_Update);
-  TIM_ITConfig(TIM5, TIM_IT_Update, ENABLE);
+  TIM_TimeBaseInit(TIM7, &TIM_TimeBaseStructure);
+  /* Enable TIM7 Update interrupt */
+  TIM_ClearITPendingBit(TIM7,TIM_IT_Update);
+  TIM_ITConfig(TIM7, TIM_IT_Update, ENABLE);
   /* Time base configuration */
   TIM_TimeBaseStructure.TIM_Period = 167;
   TIM_TimeBaseStructure.TIM_Prescaler = 0;
