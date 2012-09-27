@@ -24,7 +24,7 @@
 * PA15  TIM2_CH1
 *
 * High speed clock
-* PA8   TIM1_CH1
+* PB8   TIM10_CH1
 *
 * Keyboard
 * PB0   Keyboard clock in
@@ -100,9 +100,11 @@ void main(void)
   STM_EVAL_LEDInit(LED3);
   STM_EVAL_LEDInit(LED4);
   STM_EVAL_PBInit(BUTTON_USER,BUTTON_MODE_GPIO);
+  HSClkInit();
+  LgaInit();
 
-  /* Enable TIM1 */
-  TIM_Cmd(TIM1, ENABLE);
+  /* Enable TIM10 */
+  TIM_Cmd(TIM10, ENABLE);
   /* Enable TIM2 */
   TIM_Cmd(TIM2, ENABLE);
   /* Enable TIM3 */
@@ -132,8 +134,8 @@ void RCC_Config(void)
   RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA1 | RCC_AHB1Periph_DMA2 | RCC_AHB1Periph_GPIOA | RCC_AHB1Periph_GPIOB | RCC_AHB1Periph_GPIOE, ENABLE);
   /* Enable USART2, TIM2, TIM3, TIM4, TIM6 and SPI2 clocks */
   RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART2 | RCC_APB1Periph_TIM2 | RCC_APB1Periph_TIM3 | RCC_APB1Periph_TIM4 | RCC_APB1Periph_TIM7 | RCC_APB1Periph_SPI2, ENABLE);
-  /* Enable TIM1, TIM8 and SYSCFG clock */
-  RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM1 | RCC_APB2Periph_TIM8 | RCC_APB2Periph_SYSCFG, ENABLE);
+  /* Enable TIM10, TIM8 and SYSCFG clock */
+  RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM10 | RCC_APB2Periph_TIM8 | RCC_APB2Periph_SYSCFG, ENABLE);
 }
 
 /**
@@ -210,15 +212,15 @@ void GPIO_Config(void)
   GPIO_PinAFConfig(GPIOA, GPIO_PinSource2, GPIO_AF_USART2);
   GPIO_PinAFConfig(GPIOA, GPIO_PinSource3, GPIO_AF_USART2);
 
-  /* TIM1 chennel 1 configuration : PA8 */
+  /* TIM10 chennel 1 configuration : PB8 */
   GPIO_InitStructure.GPIO_Pin   = GPIO_Pin_8;
   GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_AF;
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
   GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
   GPIO_InitStructure.GPIO_PuPd  = GPIO_PuPd_NOPULL ;
-  GPIO_Init(GPIOA, &GPIO_InitStructure);
-  /* Connect TIM1 pin to AF1 */
-  GPIO_PinAFConfig(GPIOA, GPIO_PinSource8, GPIO_AF_TIM1);
+  GPIO_Init(GPIOB, &GPIO_InitStructure);
+  /* Connect TIM10 pin to AF1 */
+  GPIO_PinAFConfig(GPIOB, GPIO_PinSource8, GPIO_AF_TIM10);
 
   /* TIM2 chennel 1 configuration : PA.15 */
   GPIO_InitStructure.GPIO_Pin   = GPIO_Pin_15;
@@ -241,22 +243,22 @@ void TIM_Config(void)
   TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;
   TIM_OCInitTypeDef       TIM_OCInitStructure;
 
-  /* TIM1 Counter configuration */
-  TIM_TimeBaseStructure.TIM_Period = 83;
+  /* TIM10 Counter configuration */
+  TIM_TimeBaseStructure.TIM_Period = 167;
   TIM_TimeBaseStructure.TIM_Prescaler = 0;
   TIM_TimeBaseStructure.TIM_ClockDivision = 0;
   TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
   TIM_TimeBaseStructure.TIM_RepetitionCounter=0;
-  TIM_TimeBaseInit(TIM1, &TIM_TimeBaseStructure);
+  TIM_TimeBaseInit(TIM10, &TIM_TimeBaseStructure);
   /* PWM1 Mode configuration: Channel 1 */
   TIM_OCStructInit(&TIM_OCInitStructure);
   TIM_OCInitStructure.TIM_OCMode = TIM_OCMode_PWM1;
   TIM_OCInitStructure.TIM_OutputState = TIM_OutputState_Enable;
-  TIM_OCInitStructure.TIM_Pulse = 41;
+  TIM_OCInitStructure.TIM_Pulse = 83;
   TIM_OCInitStructure.TIM_OCPolarity = TIM_OCPolarity_High;
-  TIM_OC1Init(TIM1, &TIM_OCInitStructure);
-  TIM_OC1PreloadConfig(TIM1, TIM_OCPreload_Enable);
-  TIM_ARRPreloadConfig(TIM1, ENABLE);
+  TIM_OC1Init(TIM10, &TIM_OCInitStructure);
+  TIM_OC1PreloadConfig(TIM10, TIM_OCPreload_Enable);
+  TIM_ARRPreloadConfig(TIM10, ENABLE);
   /* TIM2 Counter configuration */
   TIM_TimeBaseStructure.TIM_Period = 0xffffffff;
   TIM_TimeBaseStructure.TIM_Prescaler = 0;

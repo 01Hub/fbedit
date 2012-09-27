@@ -66,6 +66,7 @@ void LgaDrawInfo(void);
 void LgaDrawByte(uint32_t x,uint8_t byte,uint8_t pbyte);
 void LgaDrawData();
 void LgaSample(void);
+void LgaInit(void);
 void LogicAnalyserSetup(void);
 void WaitForTrigger(void);
 void DMA_LGAConfig(void);

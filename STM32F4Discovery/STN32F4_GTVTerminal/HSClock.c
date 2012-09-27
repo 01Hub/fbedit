@@ -25,7 +25,7 @@ void FrequencyToClock(void)
   clkdiv=1;
   while (1)
   {
-    clk==84000000;
+    clk==168000000;
     clk /=clkdiv;
     clk /=HSClk.frq;
     if (clk<=65535)
@@ -41,7 +41,7 @@ void ClockToFrequency(void)
 {
   uint32_t frq;
 
-  frq=84000000;
+  frq=168000000;
   frq /=HSClk.clkdiv;
   frq /=HSClk.clk;
   HSClk.frq=frq;
@@ -50,12 +50,15 @@ void ClockToFrequency(void)
 void HSClkSetTimer(void)
 {
   int32_t duty;
-  TIM1->PSC=HSClk.clkdiv-1;
-  TIM1->ARR=HSClk.clk-1;
+
+  TIM10->CR1=0;
+  TIM10->PSC=HSClk.clkdiv-1;
+  TIM10->ARR=HSClk.clk-1;
   /* Set the Capture Compare Register value */
   duty=((HSClk.clk*HSClk.duty)/100)+1;
-  TIM1->CCR1=duty-1;
-  TIM1->CNT=0;
+  TIM10->CCR1=duty-1;
+  TIM10->CNT=0;
+  TIM10->CR1=TIM_CR1_CEN;
 }
 
 void HSClkMainHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
@@ -72,41 +75,43 @@ void HSClkMainHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
           case 1:
             /* Fast left */
             frq=HSClk.frq;
-            HSClk.frq-=100;
+            HSClk.frq-=1000;
             if (HSClk.frq<1)
             {
               HSClk.frq=1;
             }
-            while (1)
-            {
-              FrequencyToClock();
-              ClockToFrequency();
-              if (frq!=HSClk.frq)
-              {
-                break;
-              }
-              HSClk.frq--;
-            }
+            // while (1)
+            // {
+              // FrequencyToClock();
+              // ClockToFrequency();
+              // if (frq!=HSClk.frq)
+              // {
+                // break;
+              // }
+              // HSClk.frq--;
+            // }
+            FrequencyToClock();
             HSClkSetTimer();
             break;
           case 2:
             /* Fast right */
             frq=HSClk.frq;
-            HSClk.frq+=100;
+            HSClk.frq+=1000;
             if (HSClk.frq>21000000)
             {
               HSClk.frq=21000000;
             }
-            while (1)
-            {
-              FrequencyToClock();
-              ClockToFrequency();
-              if (frq!=HSClk.frq)
-              {
-                break;
-              }
-              HSClk.frq++;
-            }
+            // while (1)
+            // {
+              // FrequencyToClock();
+              // ClockToFrequency();
+              // if (frq!=HSClk.frq)
+              // {
+                // break;
+              // }
+              // HSClk.frq++;
+            // }
+            FrequencyToClock();
             HSClkSetTimer();
             break;
           case 3:
@@ -117,16 +122,17 @@ void HSClkMainHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
             {
               HSClk.frq=1;
             }
-            while (1)
-            {
-              FrequencyToClock();
-              ClockToFrequency();
-              if (frq!=HSClk.frq)
-              {
-                break;
-              }
-              HSClk.frq--;
-            }
+            // while (1)
+            // {
+              // FrequencyToClock();
+              // ClockToFrequency();
+              // if (frq!=HSClk.frq)
+              // {
+                // break;
+              // }
+              // HSClk.frq--;
+            // }
+            FrequencyToClock();
             HSClkSetTimer();
             break;
           case 4:
@@ -137,16 +143,17 @@ void HSClkMainHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
             {
               HSClk.frq=21000000;
             }
-            while (1)
-            {
-              FrequencyToClock();
-              ClockToFrequency();
-              if (frq!=HSClk.frq)
-              {
-                break;
-              }
-              HSClk.frq++;
-            }
+            // while (1)
+            // {
+              // FrequencyToClock();
+              // ClockToFrequency();
+              // if (frq!=HSClk.frq)
+              // {
+                // break;
+              // }
+              // HSClk.frq++;
+            // }
+            FrequencyToClock();
             HSClkSetTimer();
             break;
           case 99:
@@ -155,6 +162,13 @@ void HSClkMainHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
             break;
         }
       }
+      break;
+    case EVENT_LDOWN:
+      if (ID>=1 && ID<=4)
+      {
+        HSClk.tmrid=ID;
+      }
+      break;
     case EVENT_LUP:
       HSClk.tmrid=0;
       HSClk.tmrmax=32;
@@ -252,8 +266,8 @@ void HSClkDrawData(void)
   HSClkDrawHLine(HSCLK_LEFT+4,HSCLK_TOP+4,wdt);
   x=wdt+HSCLK_LEFT+4;
   HSClkDrawVLine(x,HSCLK_TOP+4,HSCLK_HEIGHT-38-8);
-  wdt=(HSCLK_WIDTH-8)-8;
-  HSClkDrawHLine(x,HSCLK_TOP+4,wdt);
+  wdt=(HSCLK_WIDTH-8)-wdt;
+  HSClkDrawHLine(x,HSCLK_BOTTOM-38-4,wdt);
   x+=wdt;
   HSClkDrawVLine(x,HSCLK_TOP+4,HSCLK_HEIGHT-38-8);
 }
@@ -262,10 +276,20 @@ void HSClkDrawInfo(void)
 {
   /* Frequency */
   DrawWinString(HSCLK_LEFT+4,HSCLK_BOTTOM-15,10,hsclkstr[0],1);
-  DrawWinDec32(HSCLK_LEFT+4+11*8,HSCLK_BOTTOM-15,HSClk.frq,5);
+  DrawWinDec32(HSCLK_LEFT+4+11*8,HSCLK_BOTTOM-15,HSClk.frq,1);
   /* Dutycycle */
-  DrawWinString(HSCLK_LEFT+4+128,HSCLK_BOTTOM-15,10,hsclkstr[1],1);
-  DrawWinDec16(HSCLK_LEFT+4+128+11*8,HSCLK_BOTTOM-15,HSClk.duty,5);
+  DrawWinString(HSCLK_LEFT+4+150,HSCLK_BOTTOM-15,10,hsclkstr[1],1);
+  DrawWinDec16(HSCLK_LEFT+4+150+11*8,HSCLK_BOTTOM-15,HSClk.duty,1);
+}
+
+void HSClkInit(void)
+{
+  HSClk.tmrid=0;
+  HSClk.tmrmax=32;
+  HSClk.tmrcnt=0;
+  HSClk.duty=50;
+  HSClk.frq=1000000;
+  FrequencyToClock();
 }
 
 void HSClkSetup(void)
@@ -298,12 +322,6 @@ void HSClkSetup(void)
 
   SendEvent(HSClk.hmain,EVENT_ACTIVATE,0,0);
   DrawStatus(0,Caps,Num);
-  HSClk.tmrid=0;
-  HSClk.tmrmax=32;
-  HSClk.tmrcnt=0;
-  HSClk.frq=1000000;
-  FrequencyToClock();
-  HSClk.duty=50;
   CreateTimer(HSClkTimer);
 
   while (!HSClk.Quit)

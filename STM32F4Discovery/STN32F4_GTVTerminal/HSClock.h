@@ -52,5 +52,6 @@ void HSClkDrawVLine(uint16_t x,uint16_t y,int16_t hgt);
 void HSClkDrawGrid(void);
 void HSClkDrawData(void);
 void HSClkDrawInfo(void);
+void HSClkInit(void);
 void HSClkSetup(void);
 void HSClkTimer(void);

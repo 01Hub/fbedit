@@ -327,11 +327,21 @@ void LgaSample(void)
   /* DMA2_Stream1 enable */
   DMA_Cmd(DMA2_Stream1, ENABLE);
   WaitForTrigger();
-  TIM8->CR1 |= TIM_CR1_CEN;
   while (DMA_GetFlagStatus(DMA2_Stream1,DMA_FLAG_TCIF1)==RESET);
   DMA_DeInit(DMA2_Stream1);
   TIM_Cmd(TIM8, DISABLE);
   DMA_Cmd(DMA2_Stream1, DISABLE);
+}
+
+void LgaInit(void)
+{
+  Lga.cur=0;
+  Lga.mark=0;
+  Lga.dataofs=0;
+  Lga.rate=LGA_RATEMAX-1;
+  Lga.tmrid=0;
+  Lga.tmrmax=32;
+  Lga.tmrcnt=0;
 }
 
 void LogicAnalyserSetup(void)
@@ -397,13 +407,6 @@ void LogicAnalyserSetup(void)
   SendEvent(Lga.hmain,EVENT_ACTIVATE,0,0);
 
   DrawStatus(0,Caps,Num);
-  Lga.cur=0;
-  Lga.mark=0;
-  Lga.dataofs=0;
-  Lga.rate=LGA_RATEMAX-1;
-  Lga.tmrid=0;
-  Lga.tmrmax=32;
-  Lga.tmrcnt=0;
   CreateTimer(LgaTimer);
 
   while (!Lga.Quit)
@@ -457,24 +460,28 @@ void WaitForTrigger(void)
     bit<<=1;
     i++;
   }
-  tmp = trg & trgmask;
-  fc=FrameCount+50*5;
-  /* Wait while conditions are met */
-  while (FrameCount!=fc)
+  if (trgmask)
   {
-    if (((GPIOE->IDR>>8) & trgmask) != tmp)
+    tmp = trg & trgmask;
+    fc=FrameCount+50*5;
+    /* Wait while conditions are met */
+    while (FrameCount!=fc)
     {
-      break;
+      if (((GPIOE->IDR>>8) & trgmask) != tmp)
+      {
+        break;
+      }
+    }
+    /* Wait until conditions are met */
+    while (FrameCount!=fc)
+    {
+      if (((GPIOE->IDR>>8) & trgmask) == tmp)
+      {
+        break;
+      }
     }
   }
-  /* Wait until conditions are met */
-  while (FrameCount!=fc)
-  {
-    if (((GPIOE->IDR>>8) & trgmask) == tmp)
-    {
-      break;
-    }
-  }
+  TIM8->CR1 |= TIM_CR1_CEN;
 }
 
 void DMA_LGAConfig(void)
