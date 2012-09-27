@@ -29,25 +29,25 @@ typedef struct
 {
   WINDOW* hmain;
   WINDOW* hhsclk;
-  uint16_t mark;
-  uint16_t cur;
-  uint16_t dataofs;
-  uint8_t markcnt;
-  uint8_t markshow;
   uint8_t tmrid;
   uint8_t tmrmax;
   uint8_t tmrcnt;
-  uint8_t Sample;
+  int32_t frq;
+  int32_t clk;
+  int32_t clkdiv;
+  int16_t duty;
   uint8_t Quit;
 } HSCLK;
 
 /* Private function prototypes -----------------------------------------------*/
+void FrequencyToClock(void);
+void ClockToFrequency(void);
+void HSClkSetTimer(void);
 void HSClkMainHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID);
 void HSClkHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID);
-void HSClkDrawHLine(uint16_t x,uint16_t y,int16_t wdt);
-void HSClkDrawVLine(uint16_t x,uint16_t y,int16_t hgt);
+void HSClkDrawDotHLine(uint16_t x,uint16_t y,int16_t wdt);
+void HSClkDrawDotVLine(uint16_t x,uint16_t y,int16_t hgt);
 void HSClkDrawGrid(void);
-void HSClkDrawMark(void);
 void HSClkDrawData(void);
 void HSClkDrawInfo(void);
 void HSClkSetup(void);

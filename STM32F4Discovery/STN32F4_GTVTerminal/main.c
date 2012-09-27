@@ -220,7 +220,7 @@ void GPIO_Config(void)
   /* Connect TIM1 pin to AF1 */
   GPIO_PinAFConfig(GPIOA, GPIO_PinSource8, GPIO_AF_TIM1);
 
-  /* TIM2 chennel 1 configuration : PB.11 */
+  /* TIM2 chennel 1 configuration : PA.15 */
   GPIO_InitStructure.GPIO_Pin   = GPIO_Pin_15;
   GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_AF;
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
