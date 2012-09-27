@@ -295,7 +295,7 @@ void ScopeTimer(void)
     Scope.tmrcnt++;
     if (Scope.tmrcnt>=Scope.tmrmax)
     {
-      Scope.tmrmax=2;
+      Scope.tmrmax=1;
       Scope.tmrcnt=0;
       SendEvent(Scope.hmain,EVENT_CHAR,0x0D,Scope.tmrid);
     }

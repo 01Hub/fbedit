@@ -508,7 +508,7 @@ void LgaTimer(void)
     Lga.tmrcnt++;
     if (Lga.tmrcnt>=Lga.tmrmax)
     {
-      Lga.tmrmax=2;
+      Lga.tmrmax=1;
       Lga.tmrcnt=0;
       SendEvent(Lga.hmain,EVENT_CHAR,0x0D,Lga.tmrid);
     }

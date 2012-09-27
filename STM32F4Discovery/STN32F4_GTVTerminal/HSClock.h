@@ -47,6 +47,8 @@ void HSClkMainHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID);
 void HSClkHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID);
 void HSClkDrawDotHLine(uint16_t x,uint16_t y,int16_t wdt);
 void HSClkDrawDotVLine(uint16_t x,uint16_t y,int16_t hgt);
+void HSClkDrawHLine(uint16_t x,uint16_t y,int16_t wdt);
+void HSClkDrawVLine(uint16_t x,uint16_t y,int16_t hgt);
 void HSClkDrawGrid(void);
 void HSClkDrawData(void);
 void HSClkDrawInfo(void);

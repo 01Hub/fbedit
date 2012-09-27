@@ -178,6 +178,7 @@ void HSClkHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
       {
         HSClkDrawGrid();
       }
+      HSClkDrawData();
       HSClkDrawInfo();
       break;
     default:
@@ -206,6 +207,26 @@ void HSClkDrawDotVLine(uint16_t x,uint16_t y,int16_t hgt)
   }
 }
 
+void HSClkDrawHLine(uint16_t x,uint16_t y,int16_t wdt)
+{
+  while (wdt)
+  {
+    SetFBPixel(x,y);
+    x++;
+    wdt--;
+  }
+}
+
+void HSClkDrawVLine(uint16_t x,uint16_t y,int16_t hgt)
+{
+  while (hgt)
+  {
+    SetFBPixel(x,y);
+    y++;
+    hgt--;
+  }
+}
+
 void HSClkDrawGrid(void)
 {
   int16_t y=HSCLK_TOP+16;
@@ -225,6 +246,16 @@ void HSClkDrawGrid(void)
 
 void HSClkDrawData(void)
 {
+  uint16_t wdt,x;
+  HSClkDrawVLine(HSCLK_LEFT+4,HSCLK_TOP+4,HSCLK_HEIGHT-38-8);
+  wdt=((HSCLK_WIDTH-8)*HSClk.duty)/100;
+  HSClkDrawHLine(HSCLK_LEFT+4,HSCLK_TOP+4,wdt);
+  x=wdt+HSCLK_LEFT+4;
+  HSClkDrawVLine(x,HSCLK_TOP+4,HSCLK_HEIGHT-38-8);
+  wdt=(HSCLK_WIDTH-8)-8;
+  HSClkDrawHLine(x,HSCLK_TOP+4,wdt);
+  x+=wdt;
+  HSClkDrawVLine(x,HSCLK_TOP+4,HSCLK_HEIGHT-38-8);
 }
 
 void HSClkDrawInfo(void)
@@ -295,7 +326,7 @@ void HSClkTimer(void)
     HSClk.tmrcnt++;
     if (HSClk.tmrcnt>=HSClk.tmrmax)
     {
-      HSClk.tmrmax=2;
+      HSClk.tmrmax=1;
       HSClk.tmrcnt=0;
       SendEvent(HSClk.hmain,EVENT_CHAR,0x0D,HSClk.tmrid);
     }
