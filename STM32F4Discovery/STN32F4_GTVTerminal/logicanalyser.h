@@ -34,7 +34,7 @@ typedef struct
   uint32_t picosec;
   uint16_t cnt;
   uint8_t str[16];
-} SAMPLE;
+} LGASAMPLE;
 
 typedef struct
 {
@@ -42,6 +42,7 @@ typedef struct
   WINDOW* hlga;
   uint16_t mark;
   uint16_t cur;
+  uint16_t curbit;
   int32_t dataofs;
   uint8_t markcnt;
   uint8_t markshow;

@@ -11,9 +11,9 @@ extern uint8_t FrameBuff[SCREEN_BUFFHEIGHT][SCREEN_BUFFWIDTH];
 
 /* Private variables ---------------------------------------------------------*/
 LGA Lga;
-uint8_t lgastr[8][6]={{"Ofs:"},{"Mrk:"},{"Pos:"},{"Bytes:"},{"Hex:"},{"Bin:"},{"Trans:"},{"Time:"}};
+uint8_t lgastr[8][6]={{"Ofs:"},{"Mrk:"},{"Pos:"},{"Bytes:"},{"Hex:"},{"Bin:"},{"Time:"},{"Trans:"}};
 uint8_t lgacap[8][2]={{"D0"},{"D1"},{"D2"},{"D3"},{"D4"},{"D5"},{"D6"},{"D7"}};
-SAMPLE rate[LGA_RATEMAX]={{1000000,1679,"100KHz\0"},{5000000,839,"200KHz\0"},{2000000,335,"500KHz\0"},{1000000,167,"1.0MHz\0"},{500000,83,"2.0MHz\0"},{196429,32,"5.1MHz\0"},{95238,15,"10.5MHz\0"},{47619,7,"21.0MHz\0"},{29762,4,"33.6MHz\0"}};
+LGASAMPLE lgarate[LGA_RATEMAX]={{10000000,1679,"100KHz\0"},{5000000,839,"200KHz\0"},{2000000,335,"500KHz\0"},{1000000,167,"1.0MHz\0"},{500000,83,"2.0MHz\0"},{196429,32,"5.1MHz\0"},{95238,15,"10.5MHz\0"},{47619,7,"21.0MHz\0"},{29762,4,"33.6MHz\0"}};
 
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
@@ -64,7 +64,7 @@ void LgaMainHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
             if (Lga.rate)
             {
               Lga.rate--;
-              SetCaption(GetControlHandle(Lga.hmain,41),rate[Lga.rate].str);
+              SetCaption(GetControlHandle(Lga.hmain,41),lgarate[Lga.rate].str);
             }
             break;
           case 42:
@@ -72,7 +72,7 @@ void LgaMainHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
             if (Lga.rate<LGA_RATEMAX-1)
             {
               Lga.rate++;
-              SetCaption(GetControlHandle(Lga.hmain,41),rate[Lga.rate].str);
+              SetCaption(GetControlHandle(Lga.hmain,41),lgarate[Lga.rate].str);
             }
             break;
           case 98:
@@ -137,6 +137,8 @@ void LgaHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
       {
         Lga.cur=((x-30)/4)+Lga.dataofs;
       }
+      y-=LGA_TOP;
+      Lga.curbit=y/LGA_BITHEIGHT;
       break;
     case EVENT_CHAR:
       break;
@@ -230,8 +232,10 @@ void LgaDrawMark(void)
 void LgaDrawInfo(void)
 {
   uint16_t nbytes;
-  uint8_t byte;
+  uint8_t byte,pbyte,bit;
   uint8_t* ptr;
+  uint64_t time;
+  uint16_t ntrans;
 
   /* Offset */
   DrawWinString(LGA_LEFT+4,LGA_BOTTOM-30,4,lgastr[0],1);
@@ -260,8 +264,37 @@ void LgaDrawInfo(void)
   DrawWinString(LGA_LEFT+4+40+48,LGA_BOTTOM-10,4,lgastr[5],1);
   DrawWinBin8(LGA_LEFT+4+40+48+48,LGA_BOTTOM-10,byte,1);
 
-  // /**/
-  // DrawWinString(LGA_LEFT+4,LGA_BOTTOM-20,4,lgastr[0],1);
+  /* Time */
+  DrawWinString(LGA_LEFT+4+40+48+48+48,LGA_BOTTOM-30,5,lgastr[6],1);
+  time=(lgarate[Lga.rate].picosec*nbytes)/1000;
+  DrawWinDec32(LGA_LEFT+4+40+48+48+48+48,LGA_BOTTOM-30,time,1);
+  /* Transitions */
+  DrawWinString(LGA_LEFT+4+40+48+48+48,LGA_BOTTOM-20,5,lgastr[7],1);
+  if (Lga.curbit<8)
+  {
+    ntrans=0;
+    bit=1<<Lga.curbit;
+    if (Lga.cur<Lga.mark)
+    {
+      ptr=(uint8_t*)(LGA_DATAPTR+Lga.cur);
+    }
+    else
+    {
+      ptr=(uint8_t*)(LGA_DATAPTR+Lga.mark);
+    }
+    while (nbytes)
+    {
+      pbyte=byte;
+      ptr++;
+      nbytes--;
+      byte=*ptr;
+      if ((pbyte & bit)==0 && (byte & bit)!=0)
+      {
+        ntrans++;
+      }
+    }
+    DrawWinDec16(LGA_LEFT+4+40+48+48+48+48,LGA_BOTTOM-20,ntrans,1);
+  }
 }
 
 void LgaDrawByte(uint32_t x,uint8_t byte,uint8_t pbyte)
@@ -320,8 +353,8 @@ void LgaSample(void)
   uint8_t* ptr;
 
   ptr=(uint8_t*)LGA_DATAPTR;
-  TIM8->CNT=rate[Lga.rate].cnt-1;
-  TIM8->ARR=rate[Lga.rate].cnt;
+  TIM8->CNT=lgarate[Lga.rate].cnt-1;
+  TIM8->ARR=lgarate[Lga.rate].cnt;
   DMA_LGAConfig();
   TIM_DMACmd(TIM8, TIM_DMA_Update, ENABLE);
   /* DMA2_Stream1 enable */
@@ -397,7 +430,8 @@ void LogicAnalyserSetup(void)
   /* Rate Left button */
   CreateWindow(Lga.hmain,CLASS_BUTTON,40,LGA_MAINRIGHT-150,LGA_MAINBOTTOM-50,20,20,"<\0");
   /* Rate */
-  CreateWindow(Lga.hmain,CLASS_STATIC,41,LGA_MAINRIGHT-150+20,LGA_MAINBOTTOM-50,105,20,"33.6MHz\0");
+  CreateWindow(Lga.hmain,CLASS_STATIC,41,LGA_MAINRIGHT-150+20,LGA_MAINBOTTOM-50,105,20,0);
+  SetCaption(GetControlHandle(Lga.hmain,41),lgarate[Lga.rate].str);
   /* Rate Right button */
   CreateWindow(Lga.hmain,CLASS_BUTTON,42,LGA_MAINRIGHT-25,LGA_MAINBOTTOM-50,20,20,">\0");
   /* Create logic analyser window */
