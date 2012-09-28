@@ -11,9 +11,9 @@
 	<NodeC Path=".\window.c" Header="window.c" Marker="-1" AsyncBuild="" OutputFile=".\window.o" sate="0" />
 	<NodeC Path=".\desktop.c" Header="desktop.c" Marker="-1" AsyncBuild="" OutputFile=".\desktop.o" sate="0" />
 	<NodeC Path=".\pong.c" Header="pong.c" Marker="-1" AsyncBuild="" OutputFile=".\pong.o" sate="0" />
-	<NodeC Path=".\terminal.c" Header="terminal.c" Marker="-1" AsyncBuild="" OutputFile=".\terminal.o" sate="0" />
+	<NodeC Path=".\terminal.c" Header="terminal.c" Marker="-1" AsyncBuild="" OutputFile=".\terminal.o" sate="2" />
 	<NodeC Path=".\logicanalyser.c" Header="logicanalyser.c" Marker="-1" AsyncBuild="" OutputFile=".\logicanalyser.o" sate="0" />
-	<NodeC Path=".\AlieGame.c" Header="AlieGame.c" Marker="-1" AsyncBuild="" OutputFile=".\AlieGame.o" sate="2" />
+	<NodeC Path=".\AlieGame.c" Header="AlieGame.c" Marker="-1" AsyncBuild="" OutputFile=".\AlieGame.o" sate="0" />
 	<NodeC Path=".\scope.c" Header="scope.c" Marker="-1" AsyncBuild="" OutputFile=".\scope.o" sate="0" />
 	<NodeC Path=".\misc.c" Header="misc.c" Marker="-1" AsyncBuild="" OutputFile=".\misc.o" sate="0" />
 	<NodeC Path=".\stm32f4_discovery.c" Header="stm32f4_discovery.c" Marker="-1" AsyncBuild="" OutputFile=".\stm32f4_discovery.o" sate="0" />

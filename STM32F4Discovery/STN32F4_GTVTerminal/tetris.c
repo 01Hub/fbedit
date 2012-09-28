@@ -9,6 +9,7 @@
 extern SPRITE* Sprites[];             // Max 64 sprites
 extern WINDOW* Windows[];             // Max 16 windows
 extern WINDOW* Focus;                 // The windpw that has the keyboard focus
+extern uint8_t BackBuff[SCREEN_BUFFHEIGHT][SCREEN_BUFFWIDTH];
 
 /* Private variables ---------------------------------------------------------*/
 TETRIS_GAME TetrisGame;
@@ -16,7 +17,7 @@ TETRIS_GAME TetrisGame;
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
 
-void TetrisGameSetup(void)
+void TetrisSetup(void)
 {
   uint32_t x,y;
 
@@ -64,7 +65,7 @@ void TetrisMsgBoxHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
         {
           TetrisGame.Mode=0;
         }
-        TetrisGameSetup();
+        TetrisSetup();
         break;
       }
     default:
@@ -73,7 +74,7 @@ void TetrisMsgBoxHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
   }
 }
 
-void TetrisGameInit(void)
+void TetrisInit(void)
 {
   TetrisGame.hmsgbox=CreateWindow(0,CLASS_WINDOW,1,(SCREEN_WIDTH-160)/2,(SCREEN_HEIGHT-90)/2,160,90,"Tetris\0");
   CreateWindow(TetrisGame.hmsgbox,CLASS_STATIC,2,4,15,160-8,20,"GameOver\0");
@@ -84,6 +85,23 @@ void TetrisGameInit(void)
   TetrisGame.tile.wt=12;
   TetrisGame.tile.ht=12;
   TetrisGame.tile.icondata=*TetrisIcon;
+}
+
+void TetrisClearBoard(void)
+{
+  uint32_t x,y;
+
+  y=1;
+  while (y<249)
+  {
+    x=16;
+    while (x<16+15)
+    {
+      BackBuff[y][x]=0;
+      x++;
+    }
+    y++;
+  }
 }
 
 void TetrisDrawBoard(void)
@@ -106,19 +124,48 @@ void TetrisDrawBoard(void)
   }
 }
 
+void TetrisRotateShape(void)
+{
+  uint8_t Shape[5][5];
+  uint32_t x,y;
+
+  y=0;
+  while (y<5)
+  {
+    x=0;
+    while (x<5)
+    {
+      Shape[7-x][y]=TetrisGame.Shape[y][x];
+      x++;
+    }
+    y++;
+  }
+  y=0;
+  while (y<5)
+  {
+    x=0;
+    while (x<5)
+    {
+      TetrisGame.Shape[y][x]=Shape[y][x];
+      x++;
+    }
+    y++;
+  }
+}
+
 void TetrisDrawShape(void)
 {
   uint32_t x,y;
 
   y=0;
-  while (y<20)
+  while (y<5)
   {
     x=0;
-    while (x<10)
+    while (x<5)
     {
       if (TetrisGame.Shape[y][x])
       {
-        DrawIcon(x*12+128,y*12+1,&TetrisGame.tile,1);
+        DrawIcon((TetrisGame.curshapex+x)*12+128,(TetrisGame.curshapey+y)*12+1,&TetrisGame.tile,1);
       }
       x++;
     }
@@ -128,15 +175,15 @@ void TetrisDrawShape(void)
 
 void TetrisDrawNextShape(void)
 {
-  uint32_t x,y;
+  int32_t x,y;
   uint8_t byte;
 
   y=0;
-  while (y<4)
+  while (y<5)
   {
-    byte=*TetrisShape[TetrisGame.nxtshape-1][y];
+    byte=TetrisShape[TetrisGame.nxtshape-1][y];
     x=0;
-    while (x<4)
+    while (x<5)
     {
       if (byte & 0x80)
       {
@@ -153,9 +200,10 @@ void TetrisGetChar(void)
 {
 }
 
-void TetrisGamePlay(void)
+void TetrisPlay(void)
 {
-  uint32_t i,rnd;
+  uint32_t i,rnd,x,y;
+  uint8_t byte;
 
   TetrisGame.nxtshape=Random(7)+1;
   /* Wait 25 frames */
@@ -165,16 +213,39 @@ void TetrisGamePlay(void)
     if (!TetrisGame.curshape)
     {
       TetrisGame.curshape=TetrisGame.nxtshape;
+      y=0;
+      while (y<5)
+      {
+        byte=TetrisShape[TetrisGame.curshape-1][y];
+        x=0;
+        while (x<5)
+        {
+          TetrisGame.Shape[y][x]=0;
+          if (byte & 0x80)
+          {
+            TetrisGame.Shape[y][x]=1;
+          }
+          byte<<=1;
+          x++;
+        }
+        y++;
+      }
+      TetrisGame.curshapex=2;
+      TetrisGame.curshapey=0;
       TetrisGame.nxtshape=Random(7)+1;
       TetrisDrawNextShape();
     }
+    TetrisClearBoard();
     TetrisDrawBoard();
+    TetrisDrawShape();
     TetrisGetChar();
     FrameWait(TetrisGame.Speed);
     TetrisGetChar();
     FrameWait(TetrisGame.Speed);
     TetrisGetChar();
     FrameWait(TetrisGame.Speed);
+
+    TetrisRotateShape();
   }
   TetrisGame.GameOver=0;
   ShowCursor(1);
@@ -198,12 +269,12 @@ void TetrisGameLoop(void)
   TetrisGame.DemoMode=0;
   TetrisGame.GameOver=0;
   TetrisGame.Quit=0;
-  TetrisGameInit();
+  TetrisInit();
   while (!TetrisGame.Quit)
   {
-    TetrisGameSetup();
+    TetrisSetup();
     ShowCursor(0);
-    TetrisGamePlay();
+    TetrisPlay();
   }
   DestroyWindow(TetrisGame.hmsgbox);
   /* Clear screen */
