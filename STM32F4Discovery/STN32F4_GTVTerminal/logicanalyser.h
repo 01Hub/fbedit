@@ -49,6 +49,8 @@ typedef struct
   uint8_t tmrid;
   uint8_t tmrmax;
   uint8_t tmrcnt;
+  uint8_t tmrrep;
+  uint32_t tmradd;
   uint8_t rate;
   uint8_t Sample;
   uint8_t Quit;
@@ -68,7 +70,7 @@ void LgaDrawByte(uint32_t x,uint8_t byte,uint8_t pbyte);
 void LgaDrawData();
 void LgaSample(void);
 void LgaInit(void);
-void LogicAnalyserSetup(void);
-void WaitForTrigger(void);
+void LgaSetup(void);
+void LgaWaitForTrigger(void);
 void DMA_LGAConfig(void);
 void LgaTimer(void);

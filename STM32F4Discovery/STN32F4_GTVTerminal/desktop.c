@@ -142,7 +142,7 @@ void DeskTopSetup(void)
     i++;
   }
   /* Create popup2 window (Tools) */
-  Desktop.hpopup2=CreateWindow(0,CLASS_WINDOW,2,72,16,120,13*5+2,0);
+  Desktop.hpopup2=CreateWindow(0,CLASS_WINDOW,2,72,16,140,13*5+2,0);
   SetStyle(Desktop.hpopup2,STYLE_NOCAPTION | STYLE_CANFOCUS);
   SetHandler(Desktop.hpopup2,&MenuPopupHandler);
   SetParam(GetControlHandle(Desktop.hmnubar,2),(uint32_t)Desktop.hpopup2);
@@ -150,7 +150,7 @@ void DeskTopSetup(void)
   i=0;
   while (i<5)
   {
-    hwin=CreateWindow(Desktop.hpopup2,CLASS_BUTTON,i+21,2,i*13+2,120-4,12,pop2cap[i]);
+    hwin=CreateWindow(Desktop.hpopup2,CLASS_BUTTON,i+21,2,i*13+2,140-4,12,pop2cap[i]);
     SetStyle(hwin,STYLE_LEFT | STYLE_CANFOCUS);
     i++;
   }
@@ -206,6 +206,11 @@ void DeskTopSetup(void)
     case 12:
       PongGameLoop();
       break;
+    case 13:
+      break;
+    case 14:
+      TetrisGameLoop();
+      break;
     case 21:
       Terminal();
       break;
@@ -213,7 +218,7 @@ void DeskTopSetup(void)
       KeyState();
       break;
     case 23:
-      LogicAnalyserSetup();
+      LgaSetup();
       break;
     case 24:
       ScopeSetup();

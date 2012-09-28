@@ -37,6 +37,8 @@ typedef struct
   uint8_t tmrid;
   uint8_t tmrmax;
   uint8_t tmrcnt;
+  uint8_t tmrrep;
+  uint32_t tmradd;
   uint8_t Sample;
   uint8_t Quit;
 } SCOPE;
@@ -50,5 +52,6 @@ void ScopeDrawGrid(void);
 void ScopeDrawMark(void);
 void ScopeDrawData(void);
 void ScopeDrawInfo(void);
+void ScopeInit(void);
 void ScopeSetup(void);
 void ScopeTimer(void);

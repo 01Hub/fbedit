@@ -32,6 +32,8 @@ typedef struct
   uint8_t tmrid;
   uint8_t tmrmax;
   uint8_t tmrcnt;
+  uint8_t tmrrep;
+  uint32_t tmradd;
   int32_t frq;
   int32_t clk;
   int32_t clkdiv;

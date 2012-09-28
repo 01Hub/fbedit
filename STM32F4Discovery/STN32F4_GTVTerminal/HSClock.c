@@ -73,9 +73,9 @@ void HSClkMainHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
         switch (ID)
         {
           case 1:
-            /* Fast left */
+            /* Frequency left */
             frq=HSClk.frq;
-            HSClk.frq-=1000;
+            HSClk.frq-=HSClk.tmradd;
             if (HSClk.frq<1)
             {
               HSClk.frq=1;
@@ -94,9 +94,9 @@ void HSClkMainHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
             HSClkSetTimer();
             break;
           case 2:
-            /* Fast right */
+            /* Frequency right */
             frq=HSClk.frq;
-            HSClk.frq+=1000;
+            HSClk.frq+=HSClk.tmradd;
             if (HSClk.frq>21000000)
             {
               HSClk.frq=21000000;
@@ -115,46 +115,20 @@ void HSClkMainHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
             HSClkSetTimer();
             break;
           case 3:
-            /* Left */
-            frq=HSClk.frq;
-            HSClk.frq-=1;
-            if (HSClk.frq<1)
+            /* Duty left */
+            if (HSClk.duty)
             {
-              HSClk.frq=1;
+              HSClk.duty--;
+              HSClkSetTimer();
             }
-            // while (1)
-            // {
-              // FrequencyToClock();
-              // ClockToFrequency();
-              // if (frq!=HSClk.frq)
-              // {
-                // break;
-              // }
-              // HSClk.frq--;
-            // }
-            FrequencyToClock();
-            HSClkSetTimer();
             break;
           case 4:
-            /* Right */
-            frq=HSClk.frq;
-            HSClk.frq+=1;
-            if (HSClk.frq>21000000)
+            /* Duty right */
+            if (HSClk.duty<100)
             {
-              HSClk.frq=21000000;
+              HSClk.duty++;
+              HSClkSetTimer();
             }
-            // while (1)
-            // {
-              // FrequencyToClock();
-              // ClockToFrequency();
-              // if (frq!=HSClk.frq)
-              // {
-                // break;
-              // }
-              // HSClk.frq++;
-            // }
-            FrequencyToClock();
-            HSClkSetTimer();
             break;
           case 99:
             /* Quit */
@@ -171,8 +145,10 @@ void HSClkMainHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
       break;
     case EVENT_LUP:
       HSClk.tmrid=0;
-      HSClk.tmrmax=32;
+      HSClk.tmrmax=25;
       HSClk.tmrcnt=0;
+      HSClk.tmrrep=0;
+      HSClk.tmradd=1;
       break;
     default:
       DefWindowHandler(hwin,event,param,ID);
@@ -285,8 +261,10 @@ void HSClkDrawInfo(void)
 void HSClkInit(void)
 {
   HSClk.tmrid=0;
-  HSClk.tmrmax=32;
+  HSClk.tmrmax=25;
   HSClk.tmrcnt=0;
+  HSClk.tmrrep=0;
+  HSClk.tmradd=1;
   HSClk.duty=50;
   HSClk.frq=1000000;
   FrequencyToClock();
@@ -306,14 +284,14 @@ void HSClkSetup(void)
   SetHandler(HSClk.hmain,&HSClkMainHandler);
   /* Quit button */
   CreateWindow(HSClk.hmain,CLASS_BUTTON,99,HSCLK_MAINRIGHT-75,HSCLK_MAINBOTTOM-25,70,20,"Quit\0");
-  /* Fast left button */
-  CreateWindow(HSClk.hmain,CLASS_BUTTON,1,HSCLK_LEFT,HSCLK_BOTTOM,20,20,"<<\0");
-  /* Left button */
-  CreateWindow(HSClk.hmain,CLASS_BUTTON,3,HSCLK_LEFT+20,HSCLK_BOTTOM,20,20,"<\0");
-  /* Right button */
+  /* Frequency left button */
+  CreateWindow(HSClk.hmain,CLASS_BUTTON,1,HSCLK_LEFT,HSCLK_BOTTOM,20,20,"<\0");
+  /* Frequency right button */
+  CreateWindow(HSClk.hmain,CLASS_BUTTON,2,HSCLK_LEFT+80,HSCLK_BOTTOM,20,20,">\0");
+  /* Duty left button */
+  CreateWindow(HSClk.hmain,CLASS_BUTTON,3,HSCLK_RIGHT-80,HSCLK_BOTTOM,20,20,"<\0");
+  /* Duty right button */
   CreateWindow(HSClk.hmain,CLASS_BUTTON,4,HSCLK_RIGHT-20-20,HSCLK_BOTTOM,20,20,">\0");
-  /* Fast right button */
-  CreateWindow(HSClk.hmain,CLASS_BUTTON,2,HSCLK_RIGHT-20,HSCLK_BOTTOM,20,20,">>\0");
 
   /* Create HSClk window */
   HSClk.hhsclk=CreateWindow(HSClk.hmain,CLASS_STATIC,1,HSCLK_LEFT,HSCLK_TOP,HSCLK_WIDTH,HSCLK_HEIGHT,0);
@@ -347,6 +325,15 @@ void HSClkTimer(void)
       HSClk.tmrmax=1;
       HSClk.tmrcnt=0;
       SendEvent(HSClk.hmain,EVENT_CHAR,0x0D,HSClk.tmrid);
+      HSClk.tmrrep++;
+      if (HSClk.tmrrep>=25)
+      {
+        HSClk.tmrrep=0;
+        if (HSClk.tmradd<1000000)
+        {
+          HSClk.tmradd*=10;
+        }
+      }
     }
   }
 }

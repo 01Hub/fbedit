@@ -100,8 +100,9 @@ void main(void)
   STM_EVAL_LEDInit(LED3);
   STM_EVAL_LEDInit(LED4);
   STM_EVAL_PBInit(BUTTON_USER,BUTTON_MODE_GPIO);
-  HSClkInit();
   LgaInit();
+  ScopeInit();
+  HSClkInit();
 
   /* Enable TIM10 */
   TIM_Cmd(TIM10, ENABLE);

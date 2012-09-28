@@ -28,32 +28,16 @@ void LgaMainHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
         switch (ID)
         {
           case 1:
-            /* Fast left */
-            Lga.dataofs-=64;
+            /* Left */
+            Lga.dataofs-=Lga.tmradd;
             if (Lga.dataofs<0)
             {
               Lga.dataofs=0;
             }
             break;
           case 2:
-            /* Fast right */
-            Lga.dataofs+=64;
-            if (Lga.dataofs>LGA_DATASIZE-64)
-            {
-              Lga.dataofs=LGA_DATASIZE-64;
-            }
-            break;
-          case 3:
-            /* Left */
-            Lga.dataofs--;
-            if (Lga.dataofs<0)
-            {
-              Lga.dataofs=0;
-            }
-            break;
-          case 4:
             /* Right */
-            Lga.dataofs++;
+            Lga.dataofs+=Lga.tmradd;
             if (Lga.dataofs>LGA_DATASIZE-64)
             {
               Lga.dataofs=LGA_DATASIZE-64;
@@ -90,15 +74,17 @@ void LgaMainHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
       }
       break;
     case EVENT_LDOWN:
-      if (ID>=1 && ID<=4)
+      if (ID>=1 && ID<=2)
       {
         Lga.tmrid=ID;
       }
       break;
     case EVENT_LUP:
       Lga.tmrid=0;
-      Lga.tmrmax=32;
+      Lga.tmrmax=25;
       Lga.tmrcnt=0;
+      Lga.tmrrep=0;
+      Lga.tmradd=1;
       break;
     default:
       DefWindowHandler(hwin,event,param,ID);
@@ -359,7 +345,7 @@ void LgaSample(void)
   TIM_DMACmd(TIM8, TIM_DMA_Update, ENABLE);
   /* DMA2_Stream1 enable */
   DMA_Cmd(DMA2_Stream1, ENABLE);
-  WaitForTrigger();
+  LgaWaitForTrigger();
   while (DMA_GetFlagStatus(DMA2_Stream1,DMA_FLAG_TCIF1)==RESET);
   DMA_DeInit(DMA2_Stream1);
   TIM_Cmd(TIM8, DISABLE);
@@ -373,11 +359,13 @@ void LgaInit(void)
   Lga.dataofs=0;
   Lga.rate=LGA_RATEMAX-1;
   Lga.tmrid=0;
-  Lga.tmrmax=32;
+  Lga.tmrmax=25;
   Lga.tmrcnt=0;
+  Lga.tmrrep=0;
+  Lga.tmradd=1;
 }
 
-void LogicAnalyserSetup(void)
+void LgaSetup(void)
 {
   uint32_t i;
   WINDOW* hwin;
@@ -393,14 +381,10 @@ void LogicAnalyserSetup(void)
   CreateWindow(Lga.hmain,CLASS_BUTTON,98,LGA_MAINRIGHT-75-75,LGA_MAINBOTTOM-25,70,20,"Sample\0");
   /* Quit button */
   CreateWindow(Lga.hmain,CLASS_BUTTON,99,LGA_MAINRIGHT-75,LGA_MAINBOTTOM-25,70,20,"Quit\0");
-  /* Fast left button */
-  CreateWindow(Lga.hmain,CLASS_BUTTON,1,LGA_LEFT,LGA_BOTTOM,20,20,"<<\0");
   /* Left button */
-  CreateWindow(Lga.hmain,CLASS_BUTTON,3,LGA_LEFT+20,LGA_BOTTOM,20,20,"<\0");
+  CreateWindow(Lga.hmain,CLASS_BUTTON,1,LGA_LEFT,LGA_BOTTOM,20,20,"<\0");
   /* Right button */
-  CreateWindow(Lga.hmain,CLASS_BUTTON,4,LGA_RIGHT-20-20,LGA_BOTTOM,20,20,">\0");
-  /* Fast right button */
-  CreateWindow(Lga.hmain,CLASS_BUTTON,2,LGA_RIGHT-20,LGA_BOTTOM,20,20,">>\0");
+  CreateWindow(Lga.hmain,CLASS_BUTTON,2,LGA_RIGHT-20,LGA_BOTTOM,20,20,">\0");
   /* Trigger checkboxes */
   CreateWindow(Lga.hmain,CLASS_CHKBOX,20,LGA_MAINRIGHT-140,LGA_TOP+30,30,10,"D0\0");
   CreateWindow(Lga.hmain,CLASS_CHKBOX,21,LGA_MAINRIGHT-140,LGA_TOP+30+15,30,10,"D1\0");
@@ -468,7 +452,7 @@ void LogicAnalyserSetup(void)
   DestroyWindow(Lga.hmain);
 }
 
-void WaitForTrigger(void)
+void LgaWaitForTrigger(void)
 {
   uint8_t bit=1;
   uint8_t trg=0;
@@ -552,6 +536,15 @@ void LgaTimer(void)
       Lga.tmrmax=1;
       Lga.tmrcnt=0;
       SendEvent(Lga.hmain,EVENT_CHAR,0x0D,Lga.tmrid);
+      Lga.tmrrep++;
+      if (Lga.tmrrep>=25)
+      {
+        Lga.tmrrep=0;
+        if (Lga.tmradd<1000)
+        {
+          Lga.tmradd*=10;
+        }
+      }
     }
   }
   Lga.markcnt++;

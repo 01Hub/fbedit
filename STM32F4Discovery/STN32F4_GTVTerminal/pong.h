@@ -5,8 +5,6 @@
 #include "video.h"
 #include "keycodes.h"
 
-
-
 const uint8_t PongPaddleIcon[24][6] = {
 {1,1,1,1,1,1},
 {1,1,1,1,1,1},
