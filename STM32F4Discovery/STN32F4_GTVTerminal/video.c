@@ -544,9 +544,9 @@ void Circle(uint16_t x0, uint16_t y0, uint16_t radius, uint8_t c)
   * @param  x1, y1, x2, y2, c
   * @retval None
   */
-void Line(uint16_t X1,uint16_t Y1,uint16_t X2,uint16_t Y2, uint8_t c)
+void Line(int16_t X1,int16_t Y1,int16_t X2,int16_t Y2, uint8_t c)
 {
-  uint16_t CurrentX, CurrentY, Xinc, Yinc, 
+  int16_t CurrentX, CurrentY, Xinc, Yinc, 
            Dx, Dy, TwoDx, TwoDy, 
            TwoDxAccumulatedError, TwoDyAccumulatedError;
 

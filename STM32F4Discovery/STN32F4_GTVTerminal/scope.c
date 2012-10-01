@@ -24,7 +24,7 @@ void ScopeSetStrings(void)
 {
   uint32_t rate;
   uint32_t clk=84000000;
-	uint8_t decstr[11];
+	static uint8_t decstr[11];
   uint8_t i,d;
   uint32_t dm;
 
@@ -92,7 +92,7 @@ void ScopeSetStrings(void)
     decstr[i]=0x20;
     i++;
   }
-  SetCaption(GetControlHandle(Scope.hmain,95),decstr);
+  SetCaption(GetControlHandle(Scope.hmain,94),&decstr[i]);
 }
 
 void ScopeMainHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
@@ -115,9 +115,9 @@ void ScopeMainHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
           case 2:
             /* Right */
             Scope.dataofs+=Scope.tmradd;
-            if (Scope.dataofs>SCOPE_DATASIZE-256)
+            if (Scope.dataofs>SCOPE_DATASIZE-512)
             {
-              Scope.dataofs=SCOPE_DATASIZE-256;
+              Scope.dataofs=SCOPE_DATASIZE-512;
             }
             break;
           case 10:
@@ -193,7 +193,7 @@ void ScopeMainHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
       Scope.tmrmax=25;
       Scope.tmrcnt=0;
       Scope.tmrrep=0;
-      Scope.tmradd=1;
+      Scope.tmradd=2;
       break;
     default:
       DefWindowHandler(hwin,event,param,ID);
@@ -298,11 +298,11 @@ void ScopeDrawData(void)
 
   ptr=(uint16_t*)(SCOPE_DATAPTR+Scope.dataofs);
   x1=0;
-  y1=*ptr;
+  y1=127-(*ptr & 127);
   while (x1<255)
   {
     ptr++;
-    y2=*ptr;
+    y2=127-(*ptr & 127);
     DrawWinLine(x1+SCOPE_LEFT,y1+SCOPE_TOP,x1+1+SCOPE_LEFT,y2+SCOPE_TOP);
     y1=y2;
     x1++;
@@ -339,7 +339,7 @@ void ScopeInit(void)
   Scope.tmrmax=25;
   Scope.tmrcnt=0;
   Scope.tmrrep=0;
-  Scope.tmradd=1;
+  Scope.tmradd=2;
   Scope.databits=0;
   Scope.sampletime=0;
   Scope.clockdiv=0;
@@ -347,7 +347,7 @@ void ScopeInit(void)
   i=0;
   while (i<SCOPE_DATASIZE/2)
   {
-    ptr[i]=0;
+    ptr[i]= (i & 63)+32;
     i++;
   }
 }
@@ -381,7 +381,7 @@ void ScopeSetup(void)
   CreateWindow(Scope.hmain,CLASS_BUTTON,10,SCOPE_MAINRIGHT-100,SCOPE_TOP+10,20,20,"<\0");
   /* Databits right button */
   CreateWindow(Scope.hmain,CLASS_BUTTON,11,SCOPE_MAINRIGHT-25,SCOPE_TOP+10,20,20,">\0");
-  CreateWindow(Scope.hmain,CLASS_STATIC,12,SCOPE_MAINRIGHT-80,SCOPE_TOP,55,20,0);
+  CreateWindow(Scope.hmain,CLASS_STATIC,12,SCOPE_MAINRIGHT-80,SCOPE_TOP+10,55,20,0);
 
   /* Sample time left button */
   CreateWindow(Scope.hmain,CLASS_BUTTON,20,SCOPE_MAINRIGHT-100,SCOPE_TOP+50,20,20,"<\0");
@@ -402,6 +402,7 @@ void ScopeSetup(void)
   CreateWindow(Scope.hmain,CLASS_STATIC,93,SCOPE_MAINRIGHT-100,SCOPE_TOP+120,95,10,"Sample rate\0");
   CreateWindow(Scope.hmain,CLASS_STATIC,94,SCOPE_MAINRIGHT-100,SCOPE_TOP+130,95,20,0);
 
+  ScopeSetStrings();
   SendEvent(Scope.hmain,EVENT_ACTIVATE,0,0);
   DrawStatus(0,Caps,Num);
   CreateTimer(ScopeTimer);
@@ -443,7 +444,7 @@ void ScopeTimer(void)
       if (Scope.tmrrep>=25)
       {
         Scope.tmrrep=0;
-        if (Scope.tmradd<1000)
+        if (Scope.tmradd<2000)
         {
           Scope.tmradd*=10;
         }
@@ -459,6 +460,7 @@ void ScopeTimer(void)
 
 void ScopeSample(void)
 {
+  DMA_DeInit(DMA2_Stream0);
   ADC_SCPConfig();
   DMA_SCPConfig;
   /* Start ADC1 Software Conversion */
@@ -476,7 +478,7 @@ void ADC_SCPConfig(void)
   ADC_StructInit(&ADC_InitStructure);
   ADC_CommonStructInit(&ADC_CommonInitStructure);
 
-  ADC_MultiModeDMARequestAfterLastTransferCmd(DISABLE);
+ // ADC_MultiModeDMARequestAfterLastTransferCmd(DISABLE);
 
   /* ADC Common Init **********************************************************/
   ADC_CommonInitStructure.ADC_Mode = ADC_Mode_Independent;
@@ -494,12 +496,13 @@ void ADC_SCPConfig(void)
   ADC_InitStructure.ADC_DataAlign = ADC_DataAlign_Right;
   ADC_InitStructure.ADC_NbrOfConversion = 1;
   ADC_Init(ADC1, &ADC_InitStructure);
-  /* ADC1 regular channel11 configuration *************************************/
+  /* ADC1 regular channel 8 configuration *************************************/
   ADC_RegularChannelConfig(ADC1, ADC_Channel_8, 1, Scope.sampletime);
   /* Enable ADC1 DMA */
   ADC_DMACmd(ADC1, ENABLE);
 
-  // ADC_MultiModeDMARequestAfterLastTransferCmd(ENABLE);
+  //ADC_MultiModeDMARequestAfterLastTransferCmd(ENABLE);
+  ADC_DMARequestAfterLastTransferCmd(ADC1, ENABLE);
   ADC_Cmd(ADC1, ENABLE);
 }
 

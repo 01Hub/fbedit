@@ -153,9 +153,9 @@ void FocusPrevious(WINDOW* hpar)
   * @param  x1, y1, x2, y2
   * @retval None
   */
-void DrawWinLine(uint16_t X1,uint16_t Y1,uint16_t X2,uint16_t Y2)
+void DrawWinLine(int16_t X1,int16_t Y1,int16_t X2,int16_t Y2)
 {
-  uint16_t CurrentX, CurrentY, Xinc, Yinc, 
+  int16_t CurrentX, CurrentY, Xinc, Yinc, 
            Dx, Dy, TwoDx, TwoDy, 
            TwoDxAccumulatedError, TwoDyAccumulatedError;
 

@@ -77,7 +77,7 @@ void DrawHex16(uint16_t x, uint16_t y, uint16_t n, uint8_t c);
 void DrawBin16(uint16_t x, uint16_t y, uint16_t n, uint8_t c);
 void Rectangle(uint16_t x, uint16_t y, uint16_t b, uint16_t a, uint8_t c);
 void Circle(uint16_t cx, uint16_t cy, uint16_t radius, uint8_t c);
-void Line(uint16_t X1,uint16_t Y1,uint16_t X2,uint16_t Y2, uint8_t c);
+void Line(int16_t X1,int16_t Y1,int16_t X2,int16_t Y2, uint8_t c);
 void DrawIcon(uint16_t x,uint16_t y,ICON* icon,uint8_t c);
 void ScrollUp(void);
 void ScrollDown(void);
