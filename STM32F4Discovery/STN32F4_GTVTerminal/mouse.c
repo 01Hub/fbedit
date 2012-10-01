@@ -2,6 +2,7 @@
 #include "stm32f4_discovery.h"
 #include "video.h"
 #include "window.h"
+#include "mouse.h"
 
 extern SPRITE Cursor;
 extern WINDOW* Focus;
@@ -11,6 +12,7 @@ volatile uint8_t mbitcount = 11;
 volatile uint8_t mbytecount = 0;
 volatile uint8_t mb,pmb;
 volatile int32_t mx,my;
+volatile   uint8_t mclk;
 
 void SendData(uint16_t d)
 {
@@ -258,7 +260,34 @@ void GetMouseClick(void)
           }
         }
       }
+      mclk|=1;
+    }
+    if ((mb & 2)&& !(pmb & 2))
+    {
+      /* Right button down */
+    }
+    else if (!(mb & 2)&& (pmb & 2))
+    {
+      /* Right button up */
+      mclk|=2;
+    }
+    if ((mb & 4)&& !(pmb & 4))
+    {
+      /* Right button down */
+    }
+    else if (!(mb & 4)&& (pmb & 4))
+    {
+      /* Right button up */
+      mclk|=4;
     }
     pmb=mb;
   }
+}
+
+uint8_t GetClick(void)
+{
+  uint8_t clk=mclk;
+
+  mclk=0;
+  return clk;
 }

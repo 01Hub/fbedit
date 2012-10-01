@@ -39,6 +39,7 @@ uint8_t BackBuff[SCREEN_BUFFHEIGHT][SCREEN_BUFFWIDTH];
 uint8_t FrameBuff[SCREEN_BUFFHEIGHT][SCREEN_BUFFWIDTH];
 volatile int16_t LineCount;
 volatile uint16_t FrameCount;
+volatile uint16_t FrameSkip;
 volatile int8_t BackPochFlag;
 SPRITE Cursor;
 SPRITE* Sprites[MAX_SPRITES];
@@ -864,6 +865,7 @@ void FrameWait(uint32_t n)
 void TIM3_IRQHandler(void)
 {
   uint32_t i;
+  static volatile uint32_t lcnt;
 
   /* Clear the IT pending Bit */
   TIM3->SR=(u16)~TIM_IT_Update;
@@ -883,6 +885,14 @@ void TIM3_IRQHandler(void)
   BackPochFlag = 0;
   /* H-Sync or V-Sync low */
   GPIOA->BSRRH = (uint16_t)GPIO_Pin_1;
+  lcnt++;
+  if (lcnt==625*25)
+  {
+    i=TIM2->CNT;
+    frequency=i-pcount;
+    pcount=i;
+    lcnt=0;
+  }
   if (LineCount<SCREEN_HEIGHT)
   {
     /* Disable DMA1 Stream4 */
@@ -923,22 +933,18 @@ void TIM4_IRQHandler(void)
     {
       /* V-Sync high */
       GPIOA->BSRRL=(u16)GPIO_Pin_1;
-      FrameCount++;
       if (FrameCount==(FrameCount/50)*50)
       {
-        i=TIM2->CNT;
-        frequency=i-pcount;
-        pcount=i;
         STM_EVAL_LEDToggle(LED3);
       }
-      if (FrameCount & 1)
-      {
-        LineCount=-(TOP_MARGIN+1);
-      }
-      else
-      {
+      // if (FrameCount & 1)
+      // {
+        // LineCount=-(TOP_MARGIN+1);
+      // }
+      // else
+      // {
         LineCount=-TOP_MARGIN;
-      }
+      // }
     }
     /* Set TIM4 auto reload */
     TIM4->ARR=(84*BACK_POCH)/1000;                // 5,70uS
@@ -960,6 +966,10 @@ void TIM4_IRQHandler(void)
       {
         /* Enable TIM7 */
         TIM7->CR1=1;
+      }
+      else
+      {
+        FrameSkip++;
       }
     }
     LineCount++;
@@ -1049,8 +1059,7 @@ void TIM7_IRQHandler(void)
   }
   FrameBuffDraw();
   KeyboardReset();
-  if (Focus)
-  {
+  if (Focus)  {
     chr=GetChar();
     if (chr)
     {
@@ -1062,6 +1071,9 @@ void TIM7_IRQHandler(void)
     timer();
   }
   GetMouseClick();
+DrawHex16(0,240,LineCount,1);
+DrawHex16(50,240,FrameSkip,1);
+  FrameCount++;
   FrameDraw=0;
 }
 

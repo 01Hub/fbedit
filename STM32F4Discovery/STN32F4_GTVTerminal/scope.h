@@ -31,7 +31,7 @@ typedef struct
   WINDOW* hscope;
   uint16_t mark;
   uint16_t cur;
-  uint16_t dataofs;
+  int32_t dataofs;
   uint8_t markcnt;
   uint8_t markshow;
   uint8_t tmrid;
@@ -46,8 +46,8 @@ typedef struct
 /* Private function prototypes -----------------------------------------------*/
 void ScopeMainHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID);
 void ScopeHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID);
-void ScopeDrawHLine(uint16_t x,uint16_t y,int16_t wdt);
-void ScopeDrawVLine(uint16_t x,uint16_t y,int16_t hgt);
+void ScopeDrawDotHLine(uint16_t x,uint16_t y,int16_t wdt);
+void ScopeDrawDotVLine(uint16_t x,uint16_t y,int16_t hgt);
 void ScopeDrawGrid(void);
 void ScopeDrawMark(void);
 void ScopeDrawData(void);

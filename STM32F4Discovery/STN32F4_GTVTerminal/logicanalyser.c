@@ -11,7 +11,7 @@ extern uint8_t FrameBuff[SCREEN_BUFFHEIGHT][SCREEN_BUFFWIDTH];
 
 /* Private variables ---------------------------------------------------------*/
 LGA Lga;
-uint8_t lgastr[8][6]={{"Ofs:"},{"Mrk:"},{"Pos:"},{"Bytes:"},{"Hex:"},{"Bin:"},{"Time:"},{"Trans:"}};
+uint8_t lgastr[8][6]={{"Ofs:"},{"Mrk:"},{"Pos:"},{"Bytes:"},{"Hex:"},{"Bin:"},{"Time:"},{"Trns:"}};
 uint8_t lgacap[8][2]={{"D0"},{"D1"},{"D2"},{"D3"},{"D4"},{"D5"},{"D6"},{"D7"}};
 LGASAMPLE lgarate[LGA_RATEMAX]={{10000000,1679,"100KHz\0"},{5000000,839,"200KHz\0"},{2000000,335,"500KHz\0"},{1000000,167,"1.0MHz\0"},{500000,83,"2.0MHz\0"},{196429,32,"5.1MHz\0"},{95238,15,"10.5MHz\0"},{47619,7,"21.0MHz\0"},{29762,4,"33.6MHz\0"}};
 
@@ -123,7 +123,6 @@ void LgaHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
       {
         Lga.cur=((x-30)/4)+Lga.dataofs;
       }
-      y-=LGA_TOP;
       Lga.curbit=y/LGA_BITHEIGHT;
       break;
     case EVENT_CHAR:
@@ -239,23 +238,23 @@ void LgaDrawInfo(void)
   {
     nbytes=Lga.mark-Lga.cur;
   }
-  DrawWinString(LGA_LEFT+4+40+48,LGA_BOTTOM-30,6,lgastr[3],1);
-  DrawWinDec16(LGA_LEFT+4+40+48+48,LGA_BOTTOM-30,nbytes,1);
+  DrawWinString(LGA_LEFT+4+32+48,LGA_BOTTOM-30,6,lgastr[3],1);
+  DrawWinDec16(LGA_LEFT+4+32+48+48,LGA_BOTTOM-30,nbytes,1);
   ptr=(uint8_t*)(LGA_DATAPTR+Lga.cur);
   byte=*ptr;
   /* Hex */
-  DrawWinString(LGA_LEFT+4+40+48,LGA_BOTTOM-20,4,lgastr[4],1);
-  DrawWinHex8(LGA_LEFT+4+40+48+48,LGA_BOTTOM-20,byte,1);
+  DrawWinString(LGA_LEFT+4+32+48,LGA_BOTTOM-20,4,lgastr[4],1);
+  DrawWinHex8(LGA_LEFT+4+32+48+48,LGA_BOTTOM-20,byte,1);
   /* Bin */
-  DrawWinString(LGA_LEFT+4+40+48,LGA_BOTTOM-10,4,lgastr[5],1);
-  DrawWinBin8(LGA_LEFT+4+40+48+48,LGA_BOTTOM-10,byte,1);
+  DrawWinString(LGA_LEFT+4+32+48,LGA_BOTTOM-10,4,lgastr[5],1);
+  DrawWinBin8(LGA_LEFT+4+32+48+48,LGA_BOTTOM-10,byte,1);
 
   /* Time */
-  DrawWinString(LGA_LEFT+4+40+48+48+48,LGA_BOTTOM-30,5,lgastr[6],1);
+  DrawWinString(LGA_LEFT+4+32+48+48+48,LGA_BOTTOM-30,5,lgastr[6],1);
   time=(lgarate[Lga.rate].picosec*nbytes)/1000;
-  DrawWinDec32(LGA_LEFT+4+40+48+48+48+48,LGA_BOTTOM-30,time,1);
+  DrawWinDec32(LGA_LEFT+4+32+48+48+48+40,LGA_BOTTOM-30,time,1);
   /* Transitions */
-  DrawWinString(LGA_LEFT+4+40+48+48+48,LGA_BOTTOM-20,5,lgastr[7],1);
+  DrawWinString(LGA_LEFT+4+32+48+48+48,LGA_BOTTOM-20,5,lgastr[7],1);
   if (Lga.curbit<8)
   {
     ntrans=0;
@@ -279,7 +278,7 @@ void LgaDrawInfo(void)
         ntrans++;
       }
     }
-    DrawWinDec16(LGA_LEFT+4+40+48+48+48+48,LGA_BOTTOM-20,ntrans,1);
+    DrawWinDec16(LGA_LEFT+4+32+48+48+48+40,LGA_BOTTOM-20,ntrans,1);
   }
 }
 

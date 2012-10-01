@@ -25,13 +25,14 @@ void FrequencyToClock(void)
   clkdiv=1;
   while (1)
   {
-    clk==168000000;
+    clk=168000000;
     clk /=clkdiv;
     clk /=HSClk.frq;
     if (clk<=65535)
     {
       break;
     }
+    clkdiv++;
   }
   HSClk.clk=clk;
   HSClk.clkdiv=clkdiv;
@@ -51,19 +52,22 @@ void HSClkSetTimer(void)
 {
   int32_t duty;
 
-  TIM10->CR1=0;
+  TIM10->CR1&=~TIM_CR1_CEN;
   TIM10->PSC=HSClk.clkdiv-1;
   TIM10->ARR=HSClk.clk-1;
   /* Set the Capture Compare Register value */
   duty=((HSClk.clk*HSClk.duty)/100)+1;
   TIM10->CCR1=duty-1;
   TIM10->CNT=0;
-  TIM10->CR1=TIM_CR1_CEN;
+  TIM10->CR1|=TIM_CR1_CEN;
+DrawHex16(0,240,HSClk.clkdiv,1);
+DrawHex16(50,240,HSClk.clk,1);
+DrawHex16(100,240,duty,1);
 }
 
 void HSClkMainHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
 {
-  int32_t frq;
+  int32_t frq,f;
 
   switch (event)
   {
@@ -80,17 +84,18 @@ void HSClkMainHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
             {
               HSClk.frq=1;
             }
-            // while (1)
-            // {
-              // FrequencyToClock();
-              // ClockToFrequency();
-              // if (frq!=HSClk.frq)
-              // {
-                // break;
-              // }
-              // HSClk.frq--;
-            // }
-            FrequencyToClock();
+            f=HSClk.frq;
+            while (1)
+            {
+              HSClk.frq=f;
+              FrequencyToClock();
+              ClockToFrequency();
+              if (frq!=HSClk.frq)
+              {
+                break;
+              }
+              f--;
+            }
             HSClkSetTimer();
             break;
           case 2:
@@ -101,17 +106,18 @@ void HSClkMainHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
             {
               HSClk.frq=21000000;
             }
-            // while (1)
-            // {
-              // FrequencyToClock();
-              // ClockToFrequency();
-              // if (frq!=HSClk.frq)
-              // {
-                // break;
-              // }
-              // HSClk.frq++;
-            // }
-            FrequencyToClock();
+            f=HSClk.frq;
+            while (1)
+            {
+              HSClk.frq=f;
+              FrequencyToClock();
+              ClockToFrequency();
+              if (frq!=HSClk.frq)
+              {
+                break;
+              }
+              f++;
+            }
             HSClkSetTimer();
             break;
           case 3:
@@ -252,10 +258,10 @@ void HSClkDrawInfo(void)
 {
   /* Frequency */
   DrawWinString(HSCLK_LEFT+4,HSCLK_BOTTOM-15,10,hsclkstr[0],1);
-  DrawWinDec32(HSCLK_LEFT+4+11*8,HSCLK_BOTTOM-15,HSClk.frq,1);
+  DrawWinDec32(HSCLK_LEFT+4+10*8,HSCLK_BOTTOM-15,HSClk.frq,1);
   /* Dutycycle */
   DrawWinString(HSCLK_LEFT+4+150,HSCLK_BOTTOM-15,10,hsclkstr[1],1);
-  DrawWinDec16(HSCLK_LEFT+4+150+11*8,HSCLK_BOTTOM-15,HSClk.duty,1);
+  DrawWinDec16(HSCLK_LEFT+4+150+10*8,HSCLK_BOTTOM-15,HSClk.duty,1);
 }
 
 void HSClkInit(void)
@@ -291,7 +297,7 @@ void HSClkSetup(void)
   /* Duty left button */
   CreateWindow(HSClk.hmain,CLASS_BUTTON,3,HSCLK_RIGHT-80,HSCLK_BOTTOM,20,20,"<\0");
   /* Duty right button */
-  CreateWindow(HSClk.hmain,CLASS_BUTTON,4,HSCLK_RIGHT-20-20,HSCLK_BOTTOM,20,20,">\0");
+  CreateWindow(HSClk.hmain,CLASS_BUTTON,4,HSCLK_RIGHT-20,HSCLK_BOTTOM,20,20,">\0");
 
   /* Create HSClk window */
   HSClk.hhsclk=CreateWindow(HSClk.hmain,CLASS_STATIC,1,HSCLK_LEFT,HSCLK_TOP,HSCLK_WIDTH,HSCLK_HEIGHT,0);

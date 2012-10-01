@@ -50,6 +50,9 @@ void ScopeMainHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
             /* Quit */
             Scope.Quit=1;
             break;
+          default:
+            DefWindowHandler(hwin,event,param,ID);
+            break;
         }
       }
       break;
@@ -96,13 +99,15 @@ void ScopeHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
       x=param & 0xFFFF;
       Scope.cur=x+Scope.dataofs;
       break;
+    case EVENT_CHAR:
+      break;
     default:
       DefWindowHandler(hwin,event,param,ID);
       break;
   }
 }
 
-void ScopeDrawHLine(uint16_t x,uint16_t y,int16_t wdt)
+void ScopeDrawDotHLine(uint16_t x,uint16_t y,int16_t wdt)
 {
   while (wdt>=0)
   {
@@ -112,7 +117,7 @@ void ScopeDrawHLine(uint16_t x,uint16_t y,int16_t wdt)
   }
 }
 
-void ScopeDrawVLine(uint16_t x,uint16_t y,int16_t hgt)
+void ScopeDrawDotVLine(uint16_t x,uint16_t y,int16_t hgt)
 {
   while (hgt>=0)
   {
@@ -129,12 +134,12 @@ void ScopeDrawGrid(void)
 
   while (y<=SCOPE_BOTTOM-30)
   {
-    ScopeDrawHLine(SCOPE_LEFT,y,SCOPE_WIDTH);
+    ScopeDrawDotHLine(SCOPE_LEFT,y,SCOPE_WIDTH);
     y+=16;
   }
   while (x<SCOPE_WIDTH)
   {
-    ScopeDrawVLine(x,SCOPE_TOP,8*16);
+    ScopeDrawDotVLine(x,SCOPE_TOP,8*16);
     x+=32;
   }
 }
@@ -149,13 +154,13 @@ void ScopeDrawMark(void)
     {
       /* Draw mark */
       x=Scope.mark-Scope.dataofs+SCOPE_LEFT;
-      ScopeDrawVLine(x,SCOPE_TOP,8*16);
+      ScopeDrawDotVLine(x,SCOPE_TOP,8*16);
     }
     if ((Scope.cur>=Scope.dataofs) && (Scope.cur<Scope.dataofs+SCOPE_BYTES))
     {
       /* Draw mark */
       x=Scope.cur-Scope.dataofs+SCOPE_LEFT;
-      ScopeDrawVLine(x,SCOPE_TOP,8*16);
+      ScopeDrawDotVLine(x,SCOPE_TOP,8*16);
     }
   }
 }
@@ -219,6 +224,25 @@ void ScopeSetup(void)
   SetStyle(Scope.hscope,STYLE_BLACK);
   SetHandler(Scope.hscope,&ScopeHandler);
 
+  /* Databits left button */
+  CreateWindow(Scope.hmain,CLASS_BUTTON,3,SCOPE_MAINRIGHT-100,SCOPE_TOP+10,20,20,"<\0");
+  /* Databits right button */
+  CreateWindow(Scope.hmain,CLASS_BUTTON,4,SCOPE_MAINRIGHT-25,SCOPE_TOP+10,20,20,">\0");
+
+  /* Sample time left button */
+  CreateWindow(Scope.hmain,CLASS_BUTTON,5,SCOPE_MAINRIGHT-100,SCOPE_TOP+50,20,20,"<\0");
+  /* Sample time right button */
+  CreateWindow(Scope.hmain,CLASS_BUTTON,6,SCOPE_MAINRIGHT-25,SCOPE_TOP+50,20,20,">\0");
+
+  /* Clock division left button */
+  CreateWindow(Scope.hmain,CLASS_BUTTON,7,SCOPE_MAINRIGHT-100,SCOPE_TOP+90,20,20,"<\0");
+  /* Clock division right button */
+  CreateWindow(Scope.hmain,CLASS_BUTTON,8,SCOPE_MAINRIGHT-25,SCOPE_TOP+90,20,20,">\0");
+
+  CreateWindow(Scope.hmain,CLASS_STATIC,90,SCOPE_MAINRIGHT-100,SCOPE_TOP,95,10,"Data bits\0");
+  CreateWindow(Scope.hmain,CLASS_STATIC,91,SCOPE_MAINRIGHT-100,SCOPE_TOP+40,95,10,"Sample time\0");
+  CreateWindow(Scope.hmain,CLASS_STATIC,92,SCOPE_MAINRIGHT-100,SCOPE_TOP+80,95,10,"Clock div\0");
+  
   SendEvent(Scope.hmain,EVENT_ACTIVATE,0,0);
   DrawStatus(0,Caps,Num);
   CreateTimer(ScopeTimer);
