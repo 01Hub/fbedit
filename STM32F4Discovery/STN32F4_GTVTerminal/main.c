@@ -235,7 +235,7 @@ void GPIO_Config(void)
   GPIO_Init(GPIOA, &GPIO_InitStructure);
   /* Connect TIM2 pin to AF1 */
   GPIO_PinAFConfig(GPIOA, GPIO_PinSource15, GPIO_AF_TIM2);
-  /* Configure ADC12 Channel8 pin as analog inputs (Scope) ******************************/
+  /* Configure ADC12 Channel 8 pin as analog input (Scope) ******************************/
   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0;
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AN;
   GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL ;
