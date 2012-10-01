@@ -207,10 +207,11 @@ typedef struct
   volatile uint8_t Board[20][10];         // Board
   volatile uint8_t Shape[5][5];           // Current Shape array
   volatile uint8_t curshape;              // Current Shape
-  volatile uint8_t curshapeo;             // Current Shape orientation
+  volatile uint8_t curshapeo;              // Current Shape orientation
   volatile int8_t curshapex;              // Current Shape x
   volatile int8_t curshapey;              // Current Shape y
   volatile uint8_t nxtshape;              // Next Shape
+  RECT TetrisBound;                       // Game bounds
   ICON tile;                              // Tile sprite
   WINDOW* hmsgbox;                        // Handle to message box
 } TETRIS_GAME;
