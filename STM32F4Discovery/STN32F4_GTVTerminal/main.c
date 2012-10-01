@@ -26,6 +26,9 @@
 * High speed clock
 * PB8   TIM10_CH1
 *
+* Scope
+* PB0   ADC12 channel 8
+
 * Keyboard
 * PB0   Keyboard clock in
 * PB1   Keyboard data in
@@ -133,10 +136,10 @@ void RCC_Config(void)
 {
   /* Enable DMA1, DMA2, GPIOA, GPIOB and GPIOE clocks */
   RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA1 | RCC_AHB1Periph_DMA2 | RCC_AHB1Periph_GPIOA | RCC_AHB1Periph_GPIOB | RCC_AHB1Periph_GPIOE, ENABLE);
-  /* Enable USART2, TIM2, TIM3, TIM4, TIM6 and SPI2 clocks */
+  /* Enable USART2, TIM2, TIM3, TIM4, TIM7 and SPI2 clocks */
   RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART2 | RCC_APB1Periph_TIM2 | RCC_APB1Periph_TIM3 | RCC_APB1Periph_TIM4 | RCC_APB1Periph_TIM7 | RCC_APB1Periph_SPI2, ENABLE);
-  /* Enable TIM10, TIM8 and SYSCFG clock */
-  RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM10 | RCC_APB2Periph_TIM8 | RCC_APB2Periph_SYSCFG, ENABLE);
+  /* Enable ADC1, TIM8, TIM10 and SYSCFG clock */
+  RCC_APB2PeriphClockCmd(RCC_APB2Periph_ADC1 | RCC_APB2Periph_TIM8 | RCC_APB2Periph_TIM10 | RCC_APB2Periph_SYSCFG, ENABLE);
 }
 
 /**
@@ -232,6 +235,11 @@ void GPIO_Config(void)
   GPIO_Init(GPIOA, &GPIO_InitStructure);
   /* Connect TIM2 pin to AF1 */
   GPIO_PinAFConfig(GPIOA, GPIO_PinSource15, GPIO_AF_TIM2);
+  /* Configure ADC12 Channel8 pin as analog inputs (Scope) ******************************/
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0;
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AN;
+  GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL ;
+  GPIO_Init(GPIOB, &GPIO_InitStructure);
 }
 
 /**

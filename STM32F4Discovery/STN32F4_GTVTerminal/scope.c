@@ -487,7 +487,7 @@ void ADC_SCPConfig(void)
 
   /* ADC1 Init ****************************************************************/
   ADC_InitStructure.ADC_Resolution = (uint32_t)(3-Scope.databits)<<24;
-  ADC_InitStructure.ADC_ScanConvMode = ENABLE;
+  ADC_InitStructure.ADC_ScanConvMode = DISABLE;
   ADC_InitStructure.ADC_ContinuousConvMode = ENABLE;
   ADC_InitStructure.ADC_ExternalTrigConvEdge = ADC_ExternalTrigConvEdge_None;
   ADC_InitStructure.ADC_DataAlign = ADC_DataAlign_Right;

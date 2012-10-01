@@ -13,7 +13,7 @@ extern uint8_t FrameBuff[SCREEN_BUFFHEIGHT][SCREEN_BUFFWIDTH];
 LGA Lga;
 uint8_t lgastr[8][6]={{"Ofs:"},{"Mrk:"},{"Pos:"},{"Bytes:"},{"Hex:"},{"Bin:"},{"Time:"},{"Trns:"}};
 uint8_t lgacap[8][2]={{"D0"},{"D1"},{"D2"},{"D3"},{"D4"},{"D5"},{"D6"},{"D7"}};
-LGASAMPLE lgarate[LGA_RATEMAX]={{10000000,1679,"100KHz\0"},{5000000,839,"200KHz\0"},{2000000,335,"500KHz\0"},{1000000,167,"1.0MHz\0"},{500000,83,"2.0MHz\0"},{196429,32,"5.1MHz\0"},{95238,15,"10.5MHz\0"},{47619,7,"21.0MHz\0"},{29762,4,"33.6MHz\0"}};
+LGASAMPLE lgarate[LGA_RATEMAX]={{10000000,1680,"100KHz\0"},{5000000,840,"200KHz\0"},{2000000,336,"500KHz\0"},{1000000,168,"1.0MHz\0"},{500000,84,"2.0MHz\0"},{196429,33,"5.1MHz\0"},{95238,16,"10.5MHz\0"},{47619,8,"21.0MHz\0"},{29762,5,"33.6MHz\0"}};
 
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
@@ -249,9 +249,9 @@ void LgaDrawInfo(void)
   DrawWinString(LGA_LEFT+4+32+48,LGA_BOTTOM-10,4,lgastr[5],1);
   DrawWinBin8(LGA_LEFT+4+32+48+48,LGA_BOTTOM-10,byte,1);
 
-  /* Time */
+  /* Time in pico seconds */
   DrawWinString(LGA_LEFT+4+32+48+48+48,LGA_BOTTOM-30,5,lgastr[6],1);
-  time=(lgarate[Lga.rate].picosec*nbytes)/1000;
+  time=(lgarate[Lga.rate].cnt*nbytes*1000)/168;
   DrawWinDec32(LGA_LEFT+4+32+48+48+48+40,LGA_BOTTOM-30,time,1);
   /* Transitions */
   DrawWinString(LGA_LEFT+4+32+48+48+48,LGA_BOTTOM-20,5,lgastr[7],1);
@@ -338,8 +338,8 @@ void LgaSample(void)
   uint8_t* ptr;
 
   ptr=(uint8_t*)LGA_DATAPTR;
-  TIM8->CNT=lgarate[Lga.rate].cnt-1;
-  TIM8->ARR=lgarate[Lga.rate].cnt;
+  TIM8->CNT=lgarate[Lga.rate].cnt-2;
+  TIM8->ARR=lgarate[Lga.rate].cnt-1;
   DMA_LGAConfig();
   TIM_DMACmd(TIM8, TIM_DMA_Update, ENABLE);
   /* DMA2_Stream1 enable */
