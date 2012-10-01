@@ -39,11 +39,15 @@ typedef struct
   uint8_t tmrcnt;
   uint8_t tmrrep;
   uint32_t tmradd;
+  uint8_t databits;
+  uint8_t sampletime;
+  uint8_t clockdiv;
   uint8_t Sample;
   uint8_t Quit;
 } SCOPE;
 
 /* Private function prototypes -----------------------------------------------*/
+void ScopeSetStrings(void);
 void ScopeMainHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID);
 void ScopeHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID);
 void ScopeDrawDotHLine(uint16_t x,uint16_t y,int16_t wdt);

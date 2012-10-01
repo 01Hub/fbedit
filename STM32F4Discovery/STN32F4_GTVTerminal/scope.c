@@ -13,9 +13,87 @@ extern uint32_t frequency;
 /* Private variables ---------------------------------------------------------*/
 SCOPE Scope;
 uint8_t scopestr[9][6]={{"Ofs:"},{"Mrk:"},{"Pos:"},{"Frq:"},{"Tme:"},{"Vcu:"},{"Vpp:"},{"Vmn:"},{"Vmx:"}};
+uint8_t scopedbstr[4][3]={{"6\0"},{"8\0"},{"10\0"},{"12\0"}};
+uint8_t scopeststr[8][4]={{"3\0"},{"15\0"},{"28\0"},{"56\0"},{"84\0"},{"112\0"},{"144\0"},{"480\0"}};
+uint8_t scopecdstr[4][2]={{"2\0"},{"4\0"},{"6\0"},{"8\0"}};
 
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
+
+void ScopeSetStrings(void)
+{
+  uint32_t rate;
+  uint32_t clk=84000000;
+	uint8_t decstr[11];
+  uint8_t i,d;
+  uint32_t dm;
+
+  SetCaption(GetControlHandle(Scope.hmain,12),scopedbstr[Scope.databits]);
+  SetCaption(GetControlHandle(Scope.hmain,22),scopeststr[Scope.sampletime]);
+  SetCaption(GetControlHandle(Scope.hmain,32),scopecdstr[Scope.clockdiv]);
+  rate=6+Scope.databits*2;
+  switch (Scope.sampletime)
+  {
+    case 0:
+      rate+=3;
+      break;
+    case 1:
+      rate+=15;
+      break;
+    case 2:
+      rate+=28;
+      break;
+    case 3:
+      rate+=56;
+      break;
+    case 4:
+      rate+=84;
+      break;
+    case 5:
+      rate+=112;
+      break;
+    case 6:
+      rate+=144;
+      break;
+    case 7:
+      rate+=480;
+      break;
+  }
+  switch (Scope.clockdiv)
+  {
+    case 0:
+      clk/=2;
+      break;
+    case 1:
+      clk/=4;
+      break;
+    case 2:
+      clk/=6;
+      break;
+    case 3:
+      clk/=8;
+      break;
+  }
+  rate=clk/rate;
+  i=0;
+  dm=1000000000;
+  while (i<10)
+  {
+    d=rate/dm;
+    rate-=d*dm;
+    decstr[i]=d | 0x30;
+    i++;
+    dm /=10;
+  }
+  decstr[i]=0;
+  i=0;
+  while (i<9 && decstr[i]==0x30)
+  {
+    decstr[i]=0x20;
+    i++;
+  }
+  SetCaption(GetControlHandle(Scope.hmain,95),decstr);
+}
 
 void ScopeMainHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
 {
@@ -40,6 +118,54 @@ void ScopeMainHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
             if (Scope.dataofs>SCOPE_DATASIZE-256)
             {
               Scope.dataofs=SCOPE_DATASIZE-256;
+            }
+            break;
+          case 10:
+            /* Data bits left */
+            if (Scope.databits)
+            {
+              Scope.databits--;
+              ScopeSetStrings();
+            }
+            break;
+          case 11:
+            /* Data bits right */
+            if (Scope.databits<3)
+            {
+              Scope.databits++;
+              ScopeSetStrings();
+            }
+            break;
+          case 20:
+            /* Sample time left */
+            if (Scope.sampletime)
+            {
+              Scope.sampletime--;
+              ScopeSetStrings();
+            }
+            break;
+          case 21:
+            /* Sample time right */
+            if (Scope.sampletime<7)
+            {
+              Scope.sampletime++;
+              ScopeSetStrings();
+            }
+            break;
+          case 30:
+            /* Clock div left */
+            if (Scope.clockdiv)
+            {
+              Scope.clockdiv--;
+              ScopeSetStrings();
+            }
+            break;
+          case 31:
+            /* Clock div right */
+            if (Scope.clockdiv<3)
+            {
+              Scope.clockdiv++;
+              ScopeSetStrings();
             }
             break;
           case 98:
@@ -197,6 +323,9 @@ void ScopeInit(void)
   Scope.tmrcnt=0;
   Scope.tmrrep=0;
   Scope.tmradd=1;
+  Scope.databits=0;
+  Scope.sampletime=0;
+  Scope.clockdiv=0;
 }
 
 void ScopeSetup(void)
@@ -225,24 +354,30 @@ void ScopeSetup(void)
   SetHandler(Scope.hscope,&ScopeHandler);
 
   /* Databits left button */
-  CreateWindow(Scope.hmain,CLASS_BUTTON,3,SCOPE_MAINRIGHT-100,SCOPE_TOP+10,20,20,"<\0");
+  CreateWindow(Scope.hmain,CLASS_BUTTON,10,SCOPE_MAINRIGHT-100,SCOPE_TOP+10,20,20,"<\0");
   /* Databits right button */
-  CreateWindow(Scope.hmain,CLASS_BUTTON,4,SCOPE_MAINRIGHT-25,SCOPE_TOP+10,20,20,">\0");
+  CreateWindow(Scope.hmain,CLASS_BUTTON,11,SCOPE_MAINRIGHT-25,SCOPE_TOP+10,20,20,">\0");
+  CreateWindow(Scope.hmain,CLASS_STATIC,12,SCOPE_MAINRIGHT-80,SCOPE_TOP,55,20,0);
 
   /* Sample time left button */
-  CreateWindow(Scope.hmain,CLASS_BUTTON,5,SCOPE_MAINRIGHT-100,SCOPE_TOP+50,20,20,"<\0");
+  CreateWindow(Scope.hmain,CLASS_BUTTON,20,SCOPE_MAINRIGHT-100,SCOPE_TOP+50,20,20,"<\0");
   /* Sample time right button */
-  CreateWindow(Scope.hmain,CLASS_BUTTON,6,SCOPE_MAINRIGHT-25,SCOPE_TOP+50,20,20,">\0");
+  CreateWindow(Scope.hmain,CLASS_BUTTON,21,SCOPE_MAINRIGHT-25,SCOPE_TOP+50,20,20,">\0");
+  CreateWindow(Scope.hmain,CLASS_STATIC,22,SCOPE_MAINRIGHT-80,SCOPE_TOP+50,55,20,0);
 
   /* Clock division left button */
-  CreateWindow(Scope.hmain,CLASS_BUTTON,7,SCOPE_MAINRIGHT-100,SCOPE_TOP+90,20,20,"<\0");
+  CreateWindow(Scope.hmain,CLASS_BUTTON,30,SCOPE_MAINRIGHT-100,SCOPE_TOP+90,20,20,"<\0");
   /* Clock division right button */
-  CreateWindow(Scope.hmain,CLASS_BUTTON,8,SCOPE_MAINRIGHT-25,SCOPE_TOP+90,20,20,">\0");
+  CreateWindow(Scope.hmain,CLASS_BUTTON,31,SCOPE_MAINRIGHT-25,SCOPE_TOP+90,20,20,">\0");
+  CreateWindow(Scope.hmain,CLASS_STATIC,32,SCOPE_MAINRIGHT-80,SCOPE_TOP+90,55,20,0);
 
   CreateWindow(Scope.hmain,CLASS_STATIC,90,SCOPE_MAINRIGHT-100,SCOPE_TOP,95,10,"Data bits\0");
   CreateWindow(Scope.hmain,CLASS_STATIC,91,SCOPE_MAINRIGHT-100,SCOPE_TOP+40,95,10,"Sample time\0");
   CreateWindow(Scope.hmain,CLASS_STATIC,92,SCOPE_MAINRIGHT-100,SCOPE_TOP+80,95,10,"Clock div\0");
-  
+
+  CreateWindow(Scope.hmain,CLASS_STATIC,93,SCOPE_MAINRIGHT-100,SCOPE_TOP+120,95,10,"Sample rate\0");
+  CreateWindow(Scope.hmain,CLASS_STATIC,94,SCOPE_MAINRIGHT-100,SCOPE_TOP+130,95,20,0);
+
   SendEvent(Scope.hmain,EVENT_ACTIVATE,0,0);
   DrawStatus(0,Caps,Num);
   CreateTimer(ScopeTimer);

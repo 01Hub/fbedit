@@ -60,9 +60,6 @@ void HSClkSetTimer(void)
   TIM10->CCR1=duty-1;
   TIM10->CNT=0;
   TIM10->CR1|=TIM_CR1_CEN;
-DrawHex16(0,240,HSClk.clkdiv,1);
-DrawHex16(50,240,HSClk.clk,1);
-DrawHex16(100,240,duty,1);
 }
 
 void HSClkMainHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
