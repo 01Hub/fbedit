@@ -149,6 +149,79 @@ void FocusPrevious(WINDOW* hpar)
 }
 
 /**
+  * @brief  This function draw a line from x1, y1 to x2,y2.
+  * @param  x1, y1, x2, y2
+  * @retval None
+  */
+void DrawWinLine(uint16_t X1,uint16_t Y1,uint16_t X2,uint16_t Y2)
+{
+  uint16_t CurrentX, CurrentY, Xinc, Yinc, 
+           Dx, Dy, TwoDx, TwoDy, 
+           TwoDxAccumulatedError, TwoDyAccumulatedError;
+
+  Dx = (X2-X1);
+  Dy = (Y2-Y1);
+
+  TwoDx = Dx + Dx;
+  TwoDy = Dy + Dy;
+
+  CurrentX = X1;
+  CurrentY = Y1;
+
+  Xinc = 1;
+  Yinc = 1;
+
+  if(Dx < 0)
+  {
+    Xinc = -1;
+    Dx = -Dx;
+    TwoDx = -TwoDx;
+  }
+
+  if (Dy < 0)
+  {
+    Yinc = -1;
+    Dy = -Dy;
+    TwoDy = -TwoDy;
+  }
+  SetFBPixel(X1,Y1);
+
+  if ((Dx != 0) || (Dy != 0))
+  {
+    if (Dy <= Dx)
+    { 
+      TwoDxAccumulatedError = 0;
+      do
+      {
+        CurrentX += Xinc;
+        TwoDxAccumulatedError += TwoDy;
+        if(TwoDxAccumulatedError > Dx)
+        {
+          CurrentY += Yinc;
+          TwoDxAccumulatedError -= TwoDx;
+        }
+        SetFBPixel(CurrentX,CurrentY);
+      }while (CurrentX != X2);
+    }
+    else
+    {
+      TwoDyAccumulatedError = 0; 
+      do 
+      {
+        CurrentY += Yinc; 
+        TwoDyAccumulatedError += TwoDx;
+        if(TwoDyAccumulatedError>Dy) 
+        {
+          CurrentX += Xinc;
+          TwoDyAccumulatedError -= TwoDy;
+        }
+        SetFBPixel(CurrentX,CurrentY);
+      }while (CurrentY != Y2);
+    }
+  }
+}
+
+/**
   * @brief  This function draws transparent a black character at x, y.
   * @param  x, y, chr
   * @retval None

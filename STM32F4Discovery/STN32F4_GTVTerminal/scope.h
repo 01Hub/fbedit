@@ -20,7 +20,7 @@
 
 #define SCOPE_BYTES         256
 
-#define ADC_ADDRESS         ((uint32_t)0x40021011)
+#define ADC_CDR_ADDRESS     ((uint32_t)0x40012308)
 #define SCOPE_DATAPTR       ((uint32_t)0x20010000)
 #define SCOPE_DATASIZE      ((uint32_t)0x8000)
 
@@ -59,3 +59,6 @@ void ScopeDrawInfo(void);
 void ScopeInit(void);
 void ScopeSetup(void);
 void ScopeTimer(void);
+void ScopeSample(void);
+void ADC_SCPConfig(void);
+void DMA_SCPConfig(void);
