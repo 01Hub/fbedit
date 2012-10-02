@@ -204,6 +204,7 @@ void ScopeMainHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
 void ScopeHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
 {
   uint16_t x;
+  uint16_t* adc;
 
   switch (event)
   {
@@ -216,6 +217,9 @@ void ScopeHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
       ScopeDrawMark();
       ScopeDrawData();
       ScopeDrawInfo();
+adc=(uint16_t*)ADC1_DR_ADDRESS;
+x=*adc;
+DrawHex16(100,240,x,1);
       break;
     case EVENT_LDOWN:
       x=param & 0xFFFF;
@@ -467,15 +471,14 @@ void ScopeTimer(void)
 
 void ScopeSample(void)
 {
-  DMA_DeInit(DMA2_Stream0);
   DMA_SCPConfig;
   ADC_SCPConfig();
   /* Start ADC1 Software Conversion */
   ADC_SoftwareStartConv(ADC1);
   //ADC1->CR2 |= (uint32_t)ADC_CR2_SWSTART;
   while (DMA_GetFlagStatus(DMA2_Stream0,DMA_FLAG_TCIF0)==RESET);
-  ADC_Cmd(ADC1, DISABLE);
-  DMA_DeInit(DMA2_Stream0);
+  //ADC_Cmd(ADC1, DISABLE);
+  //DMA_DeInit(DMA2_Stream0);
 }
 
 void DMA_SCPConfig(void)
@@ -514,13 +517,13 @@ void ADC_SCPConfig(void)
 
   /* ADC Common Init **********************************************************/
   ADC_CommonInitStructure.ADC_Mode = ADC_Mode_Independent;
-  ADC_CommonInitStructure.ADC_Prescaler = (uint32_t)Scope.clockdiv<<16;
+  ADC_CommonInitStructure.ADC_Prescaler = ADC_Prescaler_Div2;//(uint32_t)Scope.clockdiv<<16;
   ADC_CommonInitStructure.ADC_DMAAccessMode = ADC_DMAAccessMode_Disabled;
   ADC_CommonInitStructure.ADC_TwoSamplingDelay = ADC_TwoSamplingDelay_5Cycles;
   ADC_CommonInit(&ADC_CommonInitStructure);
 
   /* ADC1 Init ****************************************************************/
-  ADC_InitStructure.ADC_Resolution = (uint32_t)(3-Scope.databits)<<24;
+  ADC_InitStructure.ADC_Resolution =ADC_Resolution_12b;// (uint32_t)(3-Scope.databits)<<24;
   ADC_InitStructure.ADC_ScanConvMode = DISABLE;
   ADC_InitStructure.ADC_ContinuousConvMode = ENABLE;
   ADC_InitStructure.ADC_ExternalTrigConvEdge = ADC_ExternalTrigConvEdge_None;
@@ -528,8 +531,9 @@ void ADC_SCPConfig(void)
   ADC_InitStructure.ADC_DataAlign = ADC_DataAlign_Right;
   ADC_InitStructure.ADC_NbrOfConversion = 1;
   ADC_Init(ADC1, &ADC_InitStructure);
-  /* ADC1 regular channel 8 configuration *************************************/
-  ADC_RegularChannelConfig(ADC1, ADC_Channel_8, 1, Scope.sampletime);
+  /* ADC1 regular channel 12 configuration *************************************/
+  //ADC_RegularChannelConfig(ADC1, ADC_Channel_12, 1, Scope.sampletime);
+  ADC_RegularChannelConfig(ADC1, ADC_Channel_12, 1,ADC_SampleTime_3Cycles);
   /* Enable DMA request after last transfer (Single-ADC mode) */
   ADC_DMARequestAfterLastTransferCmd(ADC1, ENABLE);
   /* Enable ADC1 DMA */
