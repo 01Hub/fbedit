@@ -99,9 +99,9 @@ void HSClkMainHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
             /* Frequency right */
             frq=HSClk.frq;
             HSClk.frq+=HSClk.tmradd;
-            if (HSClk.frq>21000000)
+            if (HSClk.frq>HSCLK_MAXFRQ)
             {
-              HSClk.frq=21000000;
+              HSClk.frq=HSCLK_MAXFRQ;
             }
             f=HSClk.frq;
             while (1)

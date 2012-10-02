@@ -23,6 +23,7 @@
 #define ADC_ADDRESS         ((uint32_t)0x40021011)
 #define HSCLK_DATAPTR       ((uint32_t)0x20010000)
 #define HSCLK_DATASIZE      ((uint32_t)0x8000)
+#define HSCLK_MAXFRQ        ((uint32_t)42000000)
 
 /* Private typedef -----------------------------------------------------------*/
 typedef struct
