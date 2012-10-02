@@ -42,6 +42,7 @@ typedef struct
   uint8_t databits;
   uint8_t sampletime;
   uint8_t clockdiv;
+  uint8_t sampledone;
   uint8_t Sample;
   uint8_t Quit;
 } SCOPE;

@@ -296,16 +296,19 @@ void ScopeDrawData(void)
   uint16_t x1,y1,y2;
   uint16_t* ptr;
 
-  ptr=(uint16_t*)(SCOPE_DATAPTR+Scope.dataofs);
-  x1=0;
-  y1=127-(*ptr & 127);
-  while (x1<255)
+  if (Scope.sampledone)
   {
-    ptr++;
-    y2=127-(*ptr & 127);
-    DrawWinLine(x1+SCOPE_LEFT,y1+SCOPE_TOP,x1+1+SCOPE_LEFT,y2+SCOPE_TOP);
-    y1=y2;
-    x1++;
+    ptr=(uint16_t*)(SCOPE_DATAPTR+Scope.dataofs);
+    x1=0;
+    y1=127-(*ptr & 127);
+    while (x1<255)
+    {
+      ptr++;
+      y2=127-(*ptr & 127);
+      DrawWinLine(x1+SCOPE_LEFT,y1+SCOPE_TOP,x1+1+SCOPE_LEFT,y2+SCOPE_TOP);
+      y1=y2;
+      x1++;
+    }
   }
 }
 
@@ -350,6 +353,7 @@ void ScopeInit(void)
     ptr[i]= (i & 63)+32;
     i++;
   }
+  Scope.sampledone=1;
 }
 
 void ScopeSetup(void)
@@ -412,12 +416,14 @@ void ScopeSetup(void)
     if (Scope.Sample)
     {
       Scope.Sample=0;
+      Scope.sampledone=0;
       SetStyle(Scope.hmain,STATE_VISIBLE);
       SetStyle(Scope.hmain,STYLE_LEFT);
       ScopeSample();
       SetStyle(Scope.hmain,STYLE_LEFT | STYLE_CANFOCUS);
       SetState(Scope.hmain,STATE_VISIBLE | STATE_FOCUS);
       Scope.dataofs=0;
+      Scope.sampledone=1;
     }
     if (caps!=Caps || num!=Num)
     {
@@ -426,6 +432,7 @@ void ScopeSetup(void)
       DrawStatus(0,caps,num);
     }
   }
+  Scope.sampledone=0;
   KillTimer();
   DestroyWindow(Scope.hmain);
 }
