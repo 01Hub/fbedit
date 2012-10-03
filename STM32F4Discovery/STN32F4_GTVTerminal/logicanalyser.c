@@ -107,6 +107,11 @@ void LgaHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
       LgaDrawMark();
       LgaDrawData();
       LgaDrawInfo();
+// DrawHex16(100,240,DMA2->LISR,1);
+// DrawHex16(150,240,DMA2->HISR,1);
+// DrawHex16(200,240,DMA2_Stream1->CR,1);
+// DrawHex16(250,240,DMA2_Stream1->NDTR,1);
+// DrawHex16(300,240,DMA2_Stream1->M0AR,1);
       break;
     case EVENT_LDOWN:
       x=param & 0xFFFF;
@@ -138,8 +143,8 @@ void LgaDrawDotHLine(uint16_t x,uint16_t y,int16_t wdt)
   while (wdt>=0)
   {
     SetFBPixel(x,y);
-    x+=2;
-    wdt-=2;
+    x+=4;
+    wdt-=4;
   }
 }
 
@@ -148,8 +153,8 @@ void LgaDrawDotVLine(uint16_t x,uint16_t y,int16_t hgt)
   while (hgt>=0)
   {
     SetFBPixel(x,y);
-    y+=2;
-    hgt-=2;
+    y+=4;
+    hgt-=4;
   }
 }
 

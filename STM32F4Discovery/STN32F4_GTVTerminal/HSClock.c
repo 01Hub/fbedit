@@ -185,8 +185,8 @@ void HSClkDrawDotHLine(uint16_t x,uint16_t y,int16_t wdt)
   while (wdt>=0)
   {
     SetFBPixel(x,y);
-    x+=2;
-    wdt-=2;
+    x+=4;
+    wdt-=4;
   }
 }
 
@@ -195,8 +195,8 @@ void HSClkDrawDotVLine(uint16_t x,uint16_t y,int16_t hgt)
   while (hgt>=0)
   {
     SetFBPixel(x,y);
-    y+=2;
-    hgt-=2;
+    y+=4;
+    hgt-=4;
   }
 }
 

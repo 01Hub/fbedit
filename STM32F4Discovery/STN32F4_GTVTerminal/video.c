@@ -937,14 +937,7 @@ void TIM4_IRQHandler(void)
       {
         STM_EVAL_LEDToggle(LED3);
       }
-      // if (FrameCount & 1)
-      // {
-        // LineCount=-(TOP_MARGIN+1);
-      // }
-      // else
-      // {
-        LineCount=-TOP_MARGIN;
-      // }
+      LineCount=-TOP_MARGIN;
     }
     /* Set TIM4 auto reload */
     TIM4->ARR=(84*BACK_POCH)/1000;                // 5,70uS
@@ -1071,8 +1064,8 @@ void TIM7_IRQHandler(void)
     timer();
   }
   GetMouseClick();
-DrawHex16(0,240,LineCount,1);
-DrawHex16(50,240,FrameSkip,1);
+// DrawHex16(0,240,LineCount,1);
+// DrawHex16(50,240,FrameSkip,1);
   FrameCount++;
   FrameDraw=0;
 }
