@@ -138,8 +138,8 @@ void RCC_Config(void)
   RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA1 | RCC_AHB1Periph_DMA2 | RCC_AHB1Periph_GPIOA | RCC_AHB1Periph_GPIOB | RCC_AHB1Periph_GPIOC | RCC_AHB1Periph_GPIOE, ENABLE);
   /* Enable USART2, TIM2, TIM3, TIM4, TIM7 and SPI2 clocks */
   RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART2 | RCC_APB1Periph_TIM2 | RCC_APB1Periph_TIM3 | RCC_APB1Periph_TIM4 | RCC_APB1Periph_TIM7 | RCC_APB1Periph_SPI2, ENABLE);
-  /* Enable ADC1, TIM8, TIM10 and SYSCFG clock */
-  RCC_APB2PeriphClockCmd(RCC_APB2Periph_ADC1 | RCC_APB2Periph_TIM8 | RCC_APB2Periph_TIM10 | RCC_APB2Periph_SYSCFG, ENABLE);
+  /* Enable ADC3, TIM8, TIM10 and SYSCFG clock */
+  RCC_APB2PeriphClockCmd(RCC_APB2Periph_ADC3 | RCC_APB2Periph_TIM8 | RCC_APB2Periph_TIM10 | RCC_APB2Periph_SYSCFG, ENABLE);
 }
 
 /**
