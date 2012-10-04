@@ -79,7 +79,8 @@ typedef struct
 /* Private function prototypes -----------------------------------------------*/
 void FocusNext(WINDOW* hpar);
 void FocusPrevious(WINDOW* hpar);
-void DrawWinLine(int16_t X1,int16_t Y1,int16_t X2,int16_t Y2);
+void DrawWinLine(int32_t xl, int32_t yl, int32_t xr, int32_t yr);
+//void DrawWinLine(int16_t X1,int16_t Y1,int16_t X2,int16_t Y2);
 void DrawBlackWinChar(uint16_t x, uint16_t y, uint8_t chr);
 void DrawWhiteWinChar(uint16_t x, uint16_t y, uint8_t chr);
 void DrawWinChar(uint16_t x, uint16_t y, uint8_t chr);
