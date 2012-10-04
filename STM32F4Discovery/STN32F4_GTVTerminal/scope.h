@@ -40,6 +40,7 @@ typedef struct
   uint8_t tmrcnt;
   uint8_t tmrrep;
   uint32_t tmradd;
+  uint8_t magnify;
   uint8_t databits;
   uint8_t sampletime;
   uint8_t clockdiv;

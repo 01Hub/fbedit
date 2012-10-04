@@ -120,6 +120,20 @@ void ScopeMainHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
               Scope.dataofs=SCOPE_DATASIZE-1024;
             }
             break;
+          case 3:
+            /* Left magnify */
+            if (Scope.magnify)
+            {
+              Scope.magnify--;
+            }
+            break;
+          case 4:
+            /* Right magnify */
+            if (Scope.magnify<17)
+            {
+              Scope.magnify++;
+            }
+            break;
           case 10:
             /* Data bits left */
             if (Scope.databits)
@@ -309,14 +323,176 @@ void ScopeDrawData(void)
     ptr=(uint16_t*)(SCOPE_DATAPTR+Scope.dataofs);
     x1=0;
     y1=127-(*ptr & 127);
-    while (x1<255)
+    switch (Scope.magnify)
     {
-      ptr++;
-      ptr++;
-      y2=127-(*ptr & 127);
-      DrawWinLine(x1+SCOPE_LEFT,y1+SCOPE_TOP,x1+1+SCOPE_LEFT,y2+SCOPE_TOP);
-      y1=y2;
-      x1++;
+      case 0:
+        while (x1<256-1)
+        {
+          ptr+=18;
+          y2=127-(*ptr & 127);
+          DrawWinLine(x1+SCOPE_LEFT,y1+SCOPE_TOP,x1+1+SCOPE_LEFT,y2+SCOPE_TOP);
+          y1=y2;
+          x1+=1;
+        }
+        break;
+      case 1:
+        while (x1<256-1)
+        {
+          ptr+=16;
+          y2=127-(*ptr & 127);
+          DrawWinLine(x1+SCOPE_LEFT,y1+SCOPE_TOP,x1+1+SCOPE_LEFT,y2+SCOPE_TOP);
+          y1=y2;
+          x1+=1;
+        }
+        break;
+      case 2:
+        while (x1<256-1)
+        {
+          ptr+=14;
+          y2=127-(*ptr & 127);
+          DrawWinLine(x1+SCOPE_LEFT,y1+SCOPE_TOP,x1+1+SCOPE_LEFT,y2+SCOPE_TOP);
+          y1=y2;
+          x1+=1;
+        }
+        break;
+      case 3:
+        while (x1<256-1)
+        {
+          ptr+=12;
+          y2=127-(*ptr & 127);
+          DrawWinLine(x1+SCOPE_LEFT,y1+SCOPE_TOP,x1+1+SCOPE_LEFT,y2+SCOPE_TOP);
+          y1=y2;
+          x1+=1;
+        }
+        break;
+      case 4:
+        while (x1<256-1)
+        {
+          ptr+=10;
+          y2=127-(*ptr & 127);
+          DrawWinLine(x1+SCOPE_LEFT,y1+SCOPE_TOP,x1+1+SCOPE_LEFT,y2+SCOPE_TOP);
+          y1=y2;
+          x1+=1;
+        }
+        break;
+      case 5:
+        while (x1<256-1)
+        {
+          ptr+=8;
+          y2=127-(*ptr & 127);
+          DrawWinLine(x1+SCOPE_LEFT,y1+SCOPE_TOP,x1+1+SCOPE_LEFT,y2+SCOPE_TOP);
+          y1=y2;
+          x1+=1;
+        }
+        break;
+      case 6:
+        while (x1<256-1)
+        {
+          ptr+=6;
+          y2=127-(*ptr & 127);
+          DrawWinLine(x1+SCOPE_LEFT,y1+SCOPE_TOP,x1+1+SCOPE_LEFT,y2+SCOPE_TOP);
+          y1=y2;
+          x1+=1;
+        }
+        break;
+      case 7:
+        while (x1<256-1)
+        {
+          ptr+=4;
+          y2=127-(*ptr & 127);
+          DrawWinLine(x1+SCOPE_LEFT,y1+SCOPE_TOP,x1+1+SCOPE_LEFT,y2+SCOPE_TOP);
+          y1=y2;
+          x1+=1;
+        }
+        break;
+      case 8:
+        while (x1<256-1)
+        {
+          ptr+=2;
+          y2=127-(*ptr & 127);
+          DrawWinLine(x1+SCOPE_LEFT,y1+SCOPE_TOP,x1+1+SCOPE_LEFT,y2+SCOPE_TOP);
+          y1=y2;
+          x1+=1;
+        }
+        break;
+      case 9:
+        while (x1<256-1)
+        {
+          ptr+=2;
+          y2=127-(*ptr & 127);
+          DrawWinLine(x1+SCOPE_LEFT,y1+SCOPE_TOP,x1+2+SCOPE_LEFT,y2+SCOPE_TOP);
+          y1=y2;
+          x1+=2;
+        }
+        break;
+      case 10:
+        while (x1<256-1)
+        {
+          ptr+=2;
+          y2=127-(*ptr & 127);
+          DrawWinLine(x1+SCOPE_LEFT,y1+SCOPE_TOP,x1+2+SCOPE_LEFT,y2+SCOPE_TOP);
+          y1=y2;
+          x1+=3;
+        }
+        break;
+      case 11:
+        while (x1<256-1)
+        {
+          ptr+=2;
+          y2=127-(*ptr & 127);
+          DrawWinLine(x1+SCOPE_LEFT,y1+SCOPE_TOP,x1+2+SCOPE_LEFT,y2+SCOPE_TOP);
+          y1=y2;
+          x1+=4;
+        }
+        break;
+      case 12:
+        while (x1<256-1)
+        {
+          ptr+=2;
+          y2=127-(*ptr & 127);
+          DrawWinLine(x1+SCOPE_LEFT,y1+SCOPE_TOP,x1+2+SCOPE_LEFT,y2+SCOPE_TOP);
+          y1=y2;
+          x1+=5;
+        }
+        break;
+      case 13:
+        while (x1<256-1)
+        {
+          ptr+=2;
+          y2=127-(*ptr & 127);
+          DrawWinLine(x1+SCOPE_LEFT,y1+SCOPE_TOP,x1+2+SCOPE_LEFT,y2+SCOPE_TOP);
+          y1=y2;
+          x1+=6;
+        }
+        break;
+      case 14:
+        while (x1<256-1)
+        {
+          ptr+=2;
+          y2=127-(*ptr & 127);
+          DrawWinLine(x1+SCOPE_LEFT,y1+SCOPE_TOP,x1+2+SCOPE_LEFT,y2+SCOPE_TOP);
+          y1=y2;
+          x1+=7;
+        }
+        break;
+      case 15:
+        {
+          ptr+=2;
+          y2=127-(*ptr & 127);
+          DrawWinLine(x1+SCOPE_LEFT,y1+SCOPE_TOP,x1+2+SCOPE_LEFT,y2+SCOPE_TOP);
+          y1=y2;
+          x1+=8;
+        }
+        break;
+      case 16:
+        {
+          ptr+=2;
+          y2=127-(*ptr & 127);
+          DrawWinLine(x1+SCOPE_LEFT,y1+SCOPE_TOP,x1+2+SCOPE_LEFT,y2+SCOPE_TOP);
+          y1=y2;
+          x1+=9;
+        }
+        break;
     }
   }
 }
@@ -352,6 +528,7 @@ void ScopeInit(void)
   Scope.tmrcnt=0;
   Scope.tmrrep=0;
   Scope.tmradd=4;
+  Scope.magnify=8;
   Scope.databits=0;
   Scope.sampletime=0;
   Scope.clockdiv=0;
@@ -385,6 +562,10 @@ void ScopeSetup(void)
   CreateWindow(Scope.hmain,CLASS_BUTTON,1,SCOPE_LEFT,SCOPE_BOTTOM,20,20,"<\0");
   /* Right button */
   CreateWindow(Scope.hmain,CLASS_BUTTON,2,SCOPE_LEFT+80,SCOPE_BOTTOM,20,20,">\0");
+  /* Left magnify button */
+  CreateWindow(Scope.hmain,CLASS_BUTTON,3,SCOPE_RIGHT-100,SCOPE_BOTTOM,20,20,"<\0");
+  /* Right magnify button */
+  CreateWindow(Scope.hmain,CLASS_BUTTON,4,SCOPE_RIGHT-20,SCOPE_BOTTOM,20,20,">\0");
   /* Create scope window */
   Scope.hscope=CreateWindow(Scope.hmain,CLASS_STATIC,1,SCOPE_LEFT,SCOPE_TOP,SCOPE_WIDTH,SCOPE_HEIGHT,0);
   SetStyle(Scope.hscope,STYLE_BLACK);
