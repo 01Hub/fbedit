@@ -236,8 +236,8 @@ void GPIO_Config(void)
   GPIO_Init(GPIOA, &GPIO_InitStructure);
   /* Connect TIM2 pin to AF1 */
   GPIO_PinAFConfig(GPIOA, GPIO_PinSource15, GPIO_AF_TIM2);
-  /* Configure ADC123 Channel 11 pin as analog input (Scope) ******************************/
-  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_1;
+  /* Configure ADC123 Channel 11 and 12 pins as analog input (Scope) ******************************/
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_1 | GPIO_Pin_2;
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AN;
   GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL ;
   GPIO_Init(GPIOC, &GPIO_InitStructure);

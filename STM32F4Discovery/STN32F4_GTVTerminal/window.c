@@ -153,100 +153,116 @@ void FocusPrevious(WINDOW* hpar)
   * @param  x1, y1, x2, y2
   * @retval None
   */
-void DrawWinLine(int32_t xl, int32_t yl, int32_t xr, int32_t yr)
-{
-  int32_t x,y;                    /* coordinates of pixel being drawn */
-  int32_t dy, dx;
-  int32_t ne, ie;                 /* integer scaled error term */
-  uint8_t bit;
-
-  x = xl; y = yl;                 /* start at left endpoint */
-  ie = 2 * dy - dx;               /* initialize the error term */
-  while (x <= xr)
-  {                               /* pixel-drawing loop */
-//    SetFBPixel (x,y);             /* draw the pixel */
-    if (x < SCREEN_WIDTH && y < SCREEN_HEIGHT)
-    {
-      bit = 1 << (x & 0x7);
-      FrameBuff[y][x >> 3] |= bit;
-    }
-    if (ie > 0)
-    {
-      y = y + 1;
-      ne = ne - 2 * dx;           /* replaces e = e - 1 */
-    }
-    x = x + 1;
-    ne = ne + 2 * dy;             /* replaces e = e + m */
-  }
-}
-
-// void DrawWinLine(int16_t X1,int16_t Y1,int16_t X2,int16_t Y2)
+// void DrawWinLine(int32_t xl, int32_t yl, int32_t xr, int32_t yr)
 // {
-  // int16_t CurrentX, CurrentY, Xinc, Yinc, 
-           // Dx, Dy, TwoDx, TwoDy, 
-           // TwoDxAccumulatedError, TwoDyAccumulatedError;
+  // int32_t x,y;                    /* coordinates of pixel being drawn */
+  // int32_t dy, dx;
+  // int32_t ne, ie;                 /* integer scaled error term */
+  // uint8_t bit;
 
-  // Dx = (X2-X1);
-  // Dy = (Y2-Y1);
-
-  // TwoDx = Dx + Dx;
-  // TwoDy = Dy + Dy;
-
-  // CurrentX = X1;
-  // CurrentY = Y1;
-
-  // Xinc = 1;
-  // Yinc = 1;
-
-  // if(Dx < 0)
-  // {
-    // Xinc = -1;
-    // Dx = -Dx;
-    // TwoDx = -TwoDx;
-  // }
-
-  // if (Dy < 0)
-  // {
-    // Yinc = -1;
-    // Dy = -Dy;
-    // TwoDy = -TwoDy;
-  // }
-  // SetFBPixel(X1,Y1);
-
-  // if ((Dx != 0) || (Dy != 0))
-  // {
-    // if (Dy <= Dx)
-    // { 
-      // TwoDxAccumulatedError = 0;
-      // do
-      // {
-        // CurrentX += Xinc;
-        // TwoDxAccumulatedError += TwoDy;
-        // if(TwoDxAccumulatedError > Dx)
-        // {
-          // CurrentY += Yinc;
-          // TwoDxAccumulatedError -= TwoDx;
-        // }
-        // SetFBPixel(CurrentX,CurrentY);
-      // }while (CurrentX != X2);
-    // }
-    // else
+  // x = xl; y = yl;                 /* start at left endpoint */
+  // ie = 2 * dy - dx;               /* initialize the error term */
+  // while (x <= xr)
+  // {                               /* pixel-drawing loop */
+    // SetFBPixel (x,y);             /* draw the pixel */
+    // if (x < SCREEN_WIDTH && y < SCREEN_HEIGHT)
     // {
-      // TwoDyAccumulatedError = 0; 
-      // do 
-      // {
-        // CurrentY += Yinc; 
-        // TwoDyAccumulatedError += TwoDx;
-        // if(TwoDyAccumulatedError>Dy) 
-        // {
-          // CurrentX += Xinc;
-          // TwoDyAccumulatedError -= TwoDy;
-        // }
-        // SetFBPixel(CurrentX,CurrentY);
-      // }while (CurrentY != Y2);
+      // bit = 1 << (x & 0x7);
+      // FrameBuff[y][x >> 3] |= bit;
     // }
+    // if (ie > 0)
+    // {
+      // y = y + 1;
+      // ne = ne - 2 * dx;           /* replaces e = e - 1 */
+    // }
+    // x = x + 1;
+    // ne = ne + 2 * dy;             /* replaces e = e + m */
   // }
 // }
+
+void DrawWinLine(int16_t X1,int16_t Y1,int16_t X2,int16_t Y2)
+{
+  int16_t CurrentX, CurrentY, Xinc, Yinc, 
+           Dx, Dy, TwoDx, TwoDy, 
+           TwoDxAccumulatedError, TwoDyAccumulatedError;
+  uint8_t bit;
+
+  Dx = (X2-X1);
+  Dy = (Y2-Y1);
+
+  TwoDx = Dx + Dx;
+  TwoDy = Dy + Dy;
+
+  CurrentX = X1;
+  CurrentY = Y1;
+
+  Xinc = 1;
+  Yinc = 1;
+
+  if(Dx < 0)
+  {
+    Xinc = -1;
+    Dx = -Dx;
+    TwoDx = -TwoDx;
+  }
+
+  if (Dy < 0)
+  {
+    Yinc = -1;
+    Dy = -Dy;
+    TwoDy = -TwoDy;
+  }
+  // SetFBPixel(X1,Y1);
+  if (X1 < SCREEN_WIDTH && Y1 < SCREEN_HEIGHT)
+  {
+    bit = 1 << (X1 & 0x7);
+    FrameBuff[Y1][X1 >> 3] |= bit;
+  }
+
+  if ((Dx != 0) || (Dy != 0))
+  {
+    if (Dy <= Dx)
+    { 
+      TwoDxAccumulatedError = 0;
+      do
+      {
+        CurrentX += Xinc;
+        TwoDxAccumulatedError += TwoDy;
+        if(TwoDxAccumulatedError > Dx)
+        {
+          CurrentY += Yinc;
+          TwoDxAccumulatedError -= TwoDx;
+        }
+        // SetFBPixel(CurrentX,CurrentY);
+        if (CurrentX < SCREEN_WIDTH && CurrentY < SCREEN_HEIGHT)
+        {
+          bit = 1 << (CurrentX & 0x7);
+          FrameBuff[CurrentY][CurrentX >> 3] |= bit;
+        }
+      }while (CurrentX != X2);
+    }
+    else
+    {
+      TwoDyAccumulatedError = 0; 
+      do 
+      {
+        CurrentY += Yinc; 
+        TwoDyAccumulatedError += TwoDx;
+        if(TwoDyAccumulatedError>Dy) 
+        {
+          CurrentX += Xinc;
+          TwoDyAccumulatedError -= TwoDy;
+        }
+        // SetFBPixel(CurrentX,CurrentY);
+        if (CurrentX < SCREEN_WIDTH && CurrentY < SCREEN_HEIGHT)
+        {
+          bit = 1 << (CurrentX & 0x7);
+          FrameBuff[CurrentY][CurrentX >> 3] |= bit;
+        }
+      }while (CurrentY != Y2);
+    }
+  }
+}
 
 /**
   * @brief  This function draws transparent a black character at x, y.
