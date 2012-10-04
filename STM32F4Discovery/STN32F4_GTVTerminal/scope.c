@@ -207,7 +207,7 @@ void ScopeMainHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
       Scope.tmrmax=25;
       Scope.tmrcnt=0;
       Scope.tmrrep=0;
-      Scope.tmradd=4;
+      Scope.tmradd=2;
       break;
     default:
       DefWindowHandler(hwin,event,param,ID);
@@ -416,7 +416,7 @@ void ScopeDrawData(void)
         }
         break;
       case 9:
-        while (x1<256-1)
+        while (x1<256-2)
         {
           ptr+=2;
           y2=127-(*ptr & 127);
@@ -426,69 +426,71 @@ void ScopeDrawData(void)
         }
         break;
       case 10:
-        while (x1<256-1)
+        while (x1<256-3)
         {
           ptr+=2;
           y2=127-(*ptr & 127);
-          DrawWinLine(x1+SCOPE_LEFT,y1+SCOPE_TOP,x1+2+SCOPE_LEFT,y2+SCOPE_TOP);
+          DrawWinLine(x1+SCOPE_LEFT,y1+SCOPE_TOP,x1+3+SCOPE_LEFT,y2+SCOPE_TOP);
           y1=y2;
           x1+=3;
         }
         break;
       case 11:
-        while (x1<256-1)
+        while (x1<256-4)
         {
           ptr+=2;
           y2=127-(*ptr & 127);
-          DrawWinLine(x1+SCOPE_LEFT,y1+SCOPE_TOP,x1+2+SCOPE_LEFT,y2+SCOPE_TOP);
+          DrawWinLine(x1+SCOPE_LEFT,y1+SCOPE_TOP,x1+4+SCOPE_LEFT,y2+SCOPE_TOP);
           y1=y2;
           x1+=4;
         }
         break;
       case 12:
-        while (x1<256-1)
+        while (x1<256-5)
         {
           ptr+=2;
           y2=127-(*ptr & 127);
-          DrawWinLine(x1+SCOPE_LEFT,y1+SCOPE_TOP,x1+2+SCOPE_LEFT,y2+SCOPE_TOP);
+          DrawWinLine(x1+SCOPE_LEFT,y1+SCOPE_TOP,x1+5+SCOPE_LEFT,y2+SCOPE_TOP);
           y1=y2;
           x1+=5;
         }
         break;
       case 13:
-        while (x1<256-1)
+        while (x1<256-6)
         {
           ptr+=2;
           y2=127-(*ptr & 127);
-          DrawWinLine(x1+SCOPE_LEFT,y1+SCOPE_TOP,x1+2+SCOPE_LEFT,y2+SCOPE_TOP);
+          DrawWinLine(x1+SCOPE_LEFT,y1+SCOPE_TOP,x1+6+SCOPE_LEFT,y2+SCOPE_TOP);
           y1=y2;
           x1+=6;
         }
         break;
       case 14:
-        while (x1<256-1)
+        while (x1<256-7)
         {
           ptr+=2;
           y2=127-(*ptr & 127);
-          DrawWinLine(x1+SCOPE_LEFT,y1+SCOPE_TOP,x1+2+SCOPE_LEFT,y2+SCOPE_TOP);
+          DrawWinLine(x1+SCOPE_LEFT,y1+SCOPE_TOP,x1+7+SCOPE_LEFT,y2+SCOPE_TOP);
           y1=y2;
           x1+=7;
         }
         break;
       case 15:
+        while (x1<256-8)
         {
           ptr+=2;
           y2=127-(*ptr & 127);
-          DrawWinLine(x1+SCOPE_LEFT,y1+SCOPE_TOP,x1+2+SCOPE_LEFT,y2+SCOPE_TOP);
+          DrawWinLine(x1+SCOPE_LEFT,y1+SCOPE_TOP,x1+8+SCOPE_LEFT,y2+SCOPE_TOP);
           y1=y2;
           x1+=8;
         }
         break;
       case 16:
+        while (x1<256-9)
         {
           ptr+=2;
           y2=127-(*ptr & 127);
-          DrawWinLine(x1+SCOPE_LEFT,y1+SCOPE_TOP,x1+2+SCOPE_LEFT,y2+SCOPE_TOP);
+          DrawWinLine(x1+SCOPE_LEFT,y1+SCOPE_TOP,x1+9+SCOPE_LEFT,y2+SCOPE_TOP);
           y1=y2;
           x1+=9;
         }
@@ -527,7 +529,7 @@ void ScopeInit(void)
   Scope.tmrmax=25;
   Scope.tmrcnt=0;
   Scope.tmrrep=0;
-  Scope.tmradd=4;
+  Scope.tmradd=2;
   Scope.magnify=8;
   Scope.databits=0;
   Scope.sampletime=0;
@@ -702,14 +704,14 @@ void DMA_SCPConfig(void)
   DMA_StructInit(&DMA_InitStructure);
   /* DMA2 Stream0 channel0 configuration */
   DMA_InitStructure.DMA_Channel = DMA_Channel_0;  
-  DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)ADC_CDR_ADDRESS;
+  DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)ADC1_DR_ADDRESS;
   DMA_InitStructure.DMA_Memory0BaseAddr = (uint32_t)SCOPE_DATAPTR;
   DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralToMemory;
-  DMA_InitStructure.DMA_BufferSize = SCOPE_DATASIZE/4;
+  DMA_InitStructure.DMA_BufferSize = SCOPE_DATASIZE/2;
   DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
   DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;
-  DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Word;
-  DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_Word;
+  DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_HalfWord;
+  DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_HalfWord;
   DMA_InitStructure.DMA_Mode = DMA_Mode_Normal;
   DMA_InitStructure.DMA_Priority = DMA_Priority_High;
   DMA_InitStructure.DMA_FIFOMode = DMA_FIFOMode_Disable;         
@@ -729,40 +731,64 @@ void ADC_SCPConfig(void)
   ADC_StructInit(&ADC_InitStructure);
   ADC_CommonStructInit(&ADC_CommonInitStructure);
 
-  ADC_MultiModeDMARequestAfterLastTransferCmd(DISABLE);
-
   /* ADC Common Init **********************************************************/
-  ADC_CommonInitStructure.ADC_Mode = ADC_DualMode_RegSimult;
+  ADC_CommonInitStructure.ADC_Mode = ADC_Mode_Independent;
   ADC_CommonInitStructure.ADC_Prescaler = (uint32_t)Scope.clockdiv<<16;
-  ADC_CommonInitStructure.ADC_DMAAccessMode = ADC_DMAAccessMode_2;
+  ADC_CommonInitStructure.ADC_DMAAccessMode = ADC_DMAAccessMode_Disabled;
   ADC_CommonInitStructure.ADC_TwoSamplingDelay = ADC_TwoSamplingDelay_5Cycles;
   ADC_CommonInit(&ADC_CommonInitStructure);
 
   /* ADC1 Init ****************************************************************/
   ADC_InitStructure.ADC_Resolution = (7-Scope.databits)<<24;
-  ADC_InitStructure.ADC_ScanConvMode = ENABLE;
+  ADC_InitStructure.ADC_ScanConvMode = DISABLE;
   ADC_InitStructure.ADC_ContinuousConvMode = ENABLE;
   ADC_InitStructure.ADC_ExternalTrigConvEdge = ADC_ExternalTrigConvEdge_None;
   ADC_InitStructure.ADC_DataAlign = ADC_DataAlign_Right;
   ADC_InitStructure.ADC_NbrOfConversion = 1;
   ADC_Init(ADC1, &ADC_InitStructure);
-  /* ADC1 regular channel11 configuration *************************************/
+  /* ADC1 regular channel12 configuration *************************************/
   ADC_RegularChannelConfig(ADC1, ADC_Channel_11, 1, Scope.sampletime);
+ /* Enable DMA request after last transfer (Single-ADC mode) */
+  ADC_DMARequestAfterLastTransferCmd(ADC1, ENABLE);
   /* Enable ADC1 DMA */
   ADC_DMACmd(ADC1, ENABLE);
-
-  /* ADC2 Init ****************************************************************/
-  ADC_InitStructure.ADC_Resolution = (7-Scope.databits)<<24;
-  ADC_InitStructure.ADC_ScanConvMode = ENABLE;
-  ADC_InitStructure.ADC_ContinuousConvMode = ENABLE;
-  ADC_InitStructure.ADC_ExternalTrigConvEdge = ADC_ExternalTrigConvEdge_None;
-  ADC_InitStructure.ADC_DataAlign = ADC_DataAlign_Right;
-  ADC_InitStructure.ADC_NbrOfConversion = 1;
-  ADC_Init(ADC2, &ADC_InitStructure);
-  /* ADC2 regular channel12 configuration *************************************/
-  ADC_RegularChannelConfig(ADC2, ADC_Channel_12, 1, Scope.sampletime);
-
-  ADC_MultiModeDMARequestAfterLastTransferCmd(ENABLE);
+  /* Enable ADC1 */
   ADC_Cmd(ADC1, ENABLE);
-  ADC_Cmd(ADC2, ENABLE);
+
+  // ADC_MultiModeDMARequestAfterLastTransferCmd(DISABLE);
+
+  // /* ADC Common Init **********************************************************/
+  // ADC_CommonInitStructure.ADC_Mode = ADC_DualMode_RegSimult;
+  // ADC_CommonInitStructure.ADC_Prescaler = (uint32_t)Scope.clockdiv<<16;
+  // ADC_CommonInitStructure.ADC_DMAAccessMode = ADC_DMAAccessMode_2;
+  // ADC_CommonInitStructure.ADC_TwoSamplingDelay = ADC_TwoSamplingDelay_5Cycles;
+  // ADC_CommonInit(&ADC_CommonInitStructure);
+
+  // /* ADC1 Init ****************************************************************/
+  // ADC_InitStructure.ADC_Resolution = (7-Scope.databits)<<24;
+  // ADC_InitStructure.ADC_ScanConvMode = ENABLE;
+  // ADC_InitStructure.ADC_ContinuousConvMode = ENABLE;
+  // ADC_InitStructure.ADC_ExternalTrigConvEdge = ADC_ExternalTrigConvEdge_None;
+  // ADC_InitStructure.ADC_DataAlign = ADC_DataAlign_Right;
+  // ADC_InitStructure.ADC_NbrOfConversion = 1;
+  // ADC_Init(ADC1, &ADC_InitStructure);
+  // /* ADC1 regular channel11 configuration *************************************/
+  // ADC_RegularChannelConfig(ADC1, ADC_Channel_11, 1, Scope.sampletime);
+  // /* Enable ADC1 DMA */
+  // ADC_DMACmd(ADC1, ENABLE);
+
+  // /* ADC2 Init ****************************************************************/
+  // ADC_InitStructure.ADC_Resolution = (7-Scope.databits)<<24;
+  // ADC_InitStructure.ADC_ScanConvMode = ENABLE;
+  // ADC_InitStructure.ADC_ContinuousConvMode = ENABLE;
+  // ADC_InitStructure.ADC_ExternalTrigConvEdge = ADC_ExternalTrigConvEdge_None;
+  // ADC_InitStructure.ADC_DataAlign = ADC_DataAlign_Right;
+  // ADC_InitStructure.ADC_NbrOfConversion = 1;
+  // ADC_Init(ADC2, &ADC_InitStructure);
+  // /* ADC2 regular channel12 configuration *************************************/
+  // ADC_RegularChannelConfig(ADC2, ADC_Channel_12, 1, Scope.sampletime);
+
+  // ADC_MultiModeDMARequestAfterLastTransferCmd(ENABLE);
+  // ADC_Cmd(ADC1, ENABLE);
+  // ADC_Cmd(ADC2, ENABLE);
 }
