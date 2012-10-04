@@ -158,12 +158,18 @@ void DrawWinLine(int32_t xl, int32_t yl, int32_t xr, int32_t yr)
   int32_t x,y;                    /* coordinates of pixel being drawn */
   int32_t dy, dx;
   int32_t ne, ie;                 /* integer scaled error term */
+  uint8_t bit;
 
   x = xl; y = yl;                 /* start at left endpoint */
   ie = 2 * dy - dx;               /* initialize the error term */
   while (x <= xr)
   {                               /* pixel-drawing loop */
-    SetFBPixel (x,y);             /* draw the pixel */
+//    SetFBPixel (x,y);             /* draw the pixel */
+    if (x < SCREEN_WIDTH && y < SCREEN_HEIGHT)
+    {
+      bit = 1 << (x & 0x7);
+      FrameBuff[y][x >> 3] |= bit;
+    }
     if (ie > 0)
     {
       y = y + 1;
