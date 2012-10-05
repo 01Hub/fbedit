@@ -207,7 +207,7 @@ void ScopeMainHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
       Scope.tmrmax=25;
       Scope.tmrcnt=0;
       Scope.tmrrep=0;
-      Scope.tmradd=2;
+      Scope.tmradd=4;
       break;
     default:
       DefWindowHandler(hwin,event,param,ID);
@@ -315,14 +315,14 @@ void ScopeDrawData(void)
   {
     ptr=(uint16_t*)(SCOPE_DATAPTR+Scope.dataofs);
     x1=0;
-    y1=127-(*ptr & 127);
+    y1=*ptr;
     switch (Scope.magnify)
     {
       case 0:
         while (x1<256-1)
         {
-          ptr+=18;
-          y2=127-(*ptr & 127);
+          ptr+=36;
+          y2=*ptr;
           DrawWinLine(x1+SCOPE_LEFT,y1+SCOPE_TOP,x1+1+SCOPE_LEFT,y2+SCOPE_TOP);
           y1=y2;
           x1+=1;
@@ -331,8 +331,8 @@ void ScopeDrawData(void)
       case 1:
         while (x1<256-1)
         {
-          ptr+=16;
-          y2=127-(*ptr & 127);
+          ptr+=32;
+          y2=*ptr;
           DrawWinLine(x1+SCOPE_LEFT,y1+SCOPE_TOP,x1+1+SCOPE_LEFT,y2+SCOPE_TOP);
           y1=y2;
           x1+=1;
@@ -341,8 +341,8 @@ void ScopeDrawData(void)
       case 2:
         while (x1<256-1)
         {
-          ptr+=14;
-          y2=127-(*ptr & 127);
+          ptr+=28;
+          y2=*ptr;
           DrawWinLine(x1+SCOPE_LEFT,y1+SCOPE_TOP,x1+1+SCOPE_LEFT,y2+SCOPE_TOP);
           y1=y2;
           x1+=1;
@@ -351,8 +351,8 @@ void ScopeDrawData(void)
       case 3:
         while (x1<256-1)
         {
-          ptr+=12;
-          y2=127-(*ptr & 127);
+          ptr+=24;
+          y2=*ptr;
           DrawWinLine(x1+SCOPE_LEFT,y1+SCOPE_TOP,x1+1+SCOPE_LEFT,y2+SCOPE_TOP);
           y1=y2;
           x1+=1;
@@ -361,8 +361,8 @@ void ScopeDrawData(void)
       case 4:
         while (x1<256-1)
         {
-          ptr+=10;
-          y2=127-(*ptr & 127);
+          ptr+=20;
+          y2=*ptr;
           DrawWinLine(x1+SCOPE_LEFT,y1+SCOPE_TOP,x1+1+SCOPE_LEFT,y2+SCOPE_TOP);
           y1=y2;
           x1+=1;
@@ -371,8 +371,8 @@ void ScopeDrawData(void)
       case 5:
         while (x1<256-1)
         {
-          ptr+=8;
-          y2=127-(*ptr & 127);
+          ptr+=16;
+          y2=*ptr;
           DrawWinLine(x1+SCOPE_LEFT,y1+SCOPE_TOP,x1+1+SCOPE_LEFT,y2+SCOPE_TOP);
           y1=y2;
           x1+=1;
@@ -381,8 +381,8 @@ void ScopeDrawData(void)
       case 6:
         while (x1<256-1)
         {
-          ptr+=6;
-          y2=127-(*ptr & 127);
+          ptr+=12;
+          y2=*ptr;
           DrawWinLine(x1+SCOPE_LEFT,y1+SCOPE_TOP,x1+1+SCOPE_LEFT,y2+SCOPE_TOP);
           y1=y2;
           x1+=1;
@@ -391,8 +391,8 @@ void ScopeDrawData(void)
       case 7:
         while (x1<256-1)
         {
-          ptr+=4;
-          y2=127-(*ptr & 127);
+          ptr+=8;
+          y2=*ptr;
           DrawWinLine(x1+SCOPE_LEFT,y1+SCOPE_TOP,x1+1+SCOPE_LEFT,y2+SCOPE_TOP);
           y1=y2;
           x1+=1;
@@ -401,8 +401,8 @@ void ScopeDrawData(void)
       case 8:
         while (x1<256-1)
         {
-          ptr+=2;
-          y2=127-(*ptr & 127);
+          ptr+=4;
+          y2=*ptr;
           DrawWinLine(x1+SCOPE_LEFT,y1+SCOPE_TOP,x1+1+SCOPE_LEFT,y2+SCOPE_TOP);
           y1=y2;
           x1+=1;
@@ -411,8 +411,8 @@ void ScopeDrawData(void)
       case 9:
         while (x1<256-2)
         {
-          ptr+=2;
-          y2=127-(*ptr & 127);
+          ptr+=4;
+          y2=*ptr;
           DrawWinLine(x1+SCOPE_LEFT,y1+SCOPE_TOP,x1+2+SCOPE_LEFT,y2+SCOPE_TOP);
           y1=y2;
           x1+=2;
@@ -421,8 +421,8 @@ void ScopeDrawData(void)
       case 10:
         while (x1<256-3)
         {
-          ptr+=2;
-          y2=127-(*ptr & 127);
+          ptr+=4;
+          y2=*ptr;
           DrawWinLine(x1+SCOPE_LEFT,y1+SCOPE_TOP,x1+3+SCOPE_LEFT,y2+SCOPE_TOP);
           y1=y2;
           x1+=3;
@@ -431,8 +431,8 @@ void ScopeDrawData(void)
       case 11:
         while (x1<256-4)
         {
-          ptr+=2;
-          y2=127-(*ptr & 127);
+          ptr+=4;
+          y2=*ptr;
           DrawWinLine(x1+SCOPE_LEFT,y1+SCOPE_TOP,x1+4+SCOPE_LEFT,y2+SCOPE_TOP);
           y1=y2;
           x1+=4;
@@ -441,8 +441,8 @@ void ScopeDrawData(void)
       case 12:
         while (x1<256-5)
         {
-          ptr+=2;
-          y2=127-(*ptr & 127);
+          ptr+=4;
+          y2=*ptr;
           DrawWinLine(x1+SCOPE_LEFT,y1+SCOPE_TOP,x1+5+SCOPE_LEFT,y2+SCOPE_TOP);
           y1=y2;
           x1+=5;
@@ -451,8 +451,8 @@ void ScopeDrawData(void)
       case 13:
         while (x1<256-6)
         {
-          ptr+=2;
-          y2=127-(*ptr & 127);
+          ptr+=4;
+          y2=*ptr;
           DrawWinLine(x1+SCOPE_LEFT,y1+SCOPE_TOP,x1+6+SCOPE_LEFT,y2+SCOPE_TOP);
           y1=y2;
           x1+=6;
@@ -461,8 +461,8 @@ void ScopeDrawData(void)
       case 14:
         while (x1<256-7)
         {
-          ptr+=2;
-          y2=127-(*ptr & 127);
+          ptr+=4;
+          y2=*ptr;
           DrawWinLine(x1+SCOPE_LEFT,y1+SCOPE_TOP,x1+7+SCOPE_LEFT,y2+SCOPE_TOP);
           y1=y2;
           x1+=7;
@@ -471,8 +471,8 @@ void ScopeDrawData(void)
       case 15:
         while (x1<256-8)
         {
-          ptr+=2;
-          y2=127-(*ptr & 127);
+          ptr+=4;
+          y2=*ptr;
           DrawWinLine(x1+SCOPE_LEFT,y1+SCOPE_TOP,x1+8+SCOPE_LEFT,y2+SCOPE_TOP);
           y1=y2;
           x1+=8;
@@ -481,8 +481,8 @@ void ScopeDrawData(void)
       case 16:
         while (x1<256-9)
         {
-          ptr+=2;
-          y2=127-(*ptr & 127);
+          ptr+=4;
+          y2=*ptr;
           DrawWinLine(x1+SCOPE_LEFT,y1+SCOPE_TOP,x1+9+SCOPE_LEFT,y2+SCOPE_TOP);
           y1=y2;
           x1+=9;
@@ -522,7 +522,7 @@ void ScopeInit(void)
   Scope.tmrmax=25;
   Scope.tmrcnt=0;
   Scope.tmrrep=0;
-  Scope.tmradd=2;
+  Scope.tmradd=4;
   Scope.magnify=8;
   Scope.databits=0;
   Scope.sampletime=0;
@@ -531,8 +531,9 @@ void ScopeInit(void)
   i=0;
   while (i<SCOPE_DATASIZE/2)
   {
-    ptr[i]= (i & 63)+32;
-    i++;
+    ptr[i]= (i & 31)+64;
+    ptr[i+1]= (i & 31);
+    i+=2;
   }
   Scope.sampledone=1;
 }
@@ -685,6 +686,7 @@ void ScopeSample(void)
         ptr[i]>>=5;
         break;
     }
+    ptr[i]=127-(ptr[i] & 127);
     i++;
   }
 }

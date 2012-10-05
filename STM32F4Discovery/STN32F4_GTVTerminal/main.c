@@ -21,7 +21,7 @@
 * PE8 to PE15
 *
 * Frequency counter
-* PA15  TIM2_CH1
+* PA15  TIM2_CH1_ETR
 *
 * High speed clock
 * PB8   TIM10_CH1
@@ -253,7 +253,49 @@ void TIM_Config(void)
   TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;
   TIM_OCInitTypeDef       TIM_OCInitStructure;
 
-  /* TIM10 Counter configuration */
+  /* TIM2 Counter configuration (Frequency counter) */
+  TIM_TimeBaseStructure.TIM_Period = 0xffffffff;
+  TIM_TimeBaseStructure.TIM_Prescaler = 0;
+  TIM_TimeBaseStructure.TIM_ClockDivision = 0;
+  TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
+  TIM_TimeBaseInit(TIM2, &TIM_TimeBaseStructure);
+  TIM2->CCMR1 = 0x0001;     //CC1S=01
+  TIM2->SMCR = 0x0057;      //TS=101, SMS=111
+  /* Time base configuration (Video) */
+  TIM_TimeBaseStructure.TIM_Period = 84*64-1;                     // 64uS
+  TIM_TimeBaseStructure.TIM_Prescaler = 0;
+  TIM_TimeBaseStructure.TIM_ClockDivision = 0;
+  TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
+  TIM_TimeBaseInit(TIM3, &TIM_TimeBaseStructure);
+  /* Enable TIM3 Update interrupt (Video) */
+  TIM_ClearITPendingBit(TIM4,TIM_IT_Update);
+  TIM_ITConfig(TIM3, TIM_IT_Update, ENABLE);
+  /* Time base configuration (Video) */
+  TIM_TimeBaseStructure.TIM_Period = (84*H_SYNC)/1000;            // 4,70uS
+  TIM_TimeBaseStructure.TIM_Prescaler = 0;
+  TIM_TimeBaseStructure.TIM_ClockDivision = 0;
+  TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
+  TIM_TimeBaseInit(TIM4, &TIM_TimeBaseStructure);
+  /* Enable TIM4 Update interrupt (Video) */
+  TIM_ClearITPendingBit(TIM4,TIM_IT_Update);
+  TIM_ITConfig(TIM4, TIM_IT_Update, ENABLE);
+  /* Time base configuration (Video) */
+  TIM_TimeBaseStructure.TIM_Period = 32;
+  TIM_TimeBaseStructure.TIM_Prescaler = 0;
+  TIM_TimeBaseStructure.TIM_ClockDivision = 0;
+  TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
+  TIM_TimeBaseInit(TIM7, &TIM_TimeBaseStructure);
+  /* Enable TIM7 Update interrupt (Video) */
+  TIM_ClearITPendingBit(TIM7,TIM_IT_Update);
+  TIM_ITConfig(TIM7, TIM_IT_Update, ENABLE);
+  /* Time base configuration (Logic analyser) */
+  TIM_TimeBaseStructure.TIM_Period = 167;
+  TIM_TimeBaseStructure.TIM_Prescaler = 0;
+  TIM_TimeBaseStructure.TIM_ClockDivision = 0;
+  TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
+  TIM_TimeBaseStructure.TIM_RepetitionCounter = 0;
+  TIM_TimeBaseInit(TIM8, &TIM_TimeBaseStructure);
+  /* TIM10 Counter configuration (HS Clock) */
   TIM_TimeBaseStructure.TIM_Period = 167;
   TIM_TimeBaseStructure.TIM_Prescaler = 0;
   TIM_TimeBaseStructure.TIM_ClockDivision = 0;
@@ -269,48 +311,6 @@ void TIM_Config(void)
   TIM_OC1Init(TIM10, &TIM_OCInitStructure);
   TIM_OC1PreloadConfig(TIM10, TIM_OCPreload_Enable);
   TIM_ARRPreloadConfig(TIM10, ENABLE);
-  /* TIM2 Counter configuration */
-  TIM_TimeBaseStructure.TIM_Period = 0xffffffff;
-  TIM_TimeBaseStructure.TIM_Prescaler = 0;
-  TIM_TimeBaseStructure.TIM_ClockDivision = 0;
-  TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
-  TIM_TimeBaseInit(TIM2, &TIM_TimeBaseStructure);
-  TIM2->CCMR1 = 0x0001;     //CC1S=01
-  TIM2->SMCR = 0x0057;      //TS=101, SMS=111
-  /* Time base configuration */
-  TIM_TimeBaseStructure.TIM_Period = 84*64-1;                     // 64uS
-  TIM_TimeBaseStructure.TIM_Prescaler = 0;
-  TIM_TimeBaseStructure.TIM_ClockDivision = 0;
-  TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
-  TIM_TimeBaseInit(TIM3, &TIM_TimeBaseStructure);
-  /* Enable TIM3 Update interrupt */
-  TIM_ClearITPendingBit(TIM4,TIM_IT_Update);
-  TIM_ITConfig(TIM3, TIM_IT_Update, ENABLE);
-  /* Time base configuration */
-  TIM_TimeBaseStructure.TIM_Period = (84*H_SYNC)/1000;            // 4,70uS
-  TIM_TimeBaseStructure.TIM_Prescaler = 0;
-  TIM_TimeBaseStructure.TIM_ClockDivision = 0;
-  TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
-  TIM_TimeBaseInit(TIM4, &TIM_TimeBaseStructure);
-  /* Enable TIM4 Update interrupt */
-  TIM_ClearITPendingBit(TIM4,TIM_IT_Update);
-  TIM_ITConfig(TIM4, TIM_IT_Update, ENABLE);
-  /* Time base configuration */
-  TIM_TimeBaseStructure.TIM_Period = 32;
-  TIM_TimeBaseStructure.TIM_Prescaler = 0;
-  TIM_TimeBaseStructure.TIM_ClockDivision = 0;
-  TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
-  TIM_TimeBaseInit(TIM7, &TIM_TimeBaseStructure);
-  /* Enable TIM7 Update interrupt */
-  TIM_ClearITPendingBit(TIM7,TIM_IT_Update);
-  TIM_ITConfig(TIM7, TIM_IT_Update, ENABLE);
-  /* Time base configuration */
-  TIM_TimeBaseStructure.TIM_Period = 167;
-  TIM_TimeBaseStructure.TIM_Prescaler = 0;
-  TIM_TimeBaseStructure.TIM_ClockDivision = 0;
-  TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
-  TIM_TimeBaseStructure.TIM_RepetitionCounter = 0;
-  TIM_TimeBaseInit(TIM8, &TIM_TimeBaseStructure);
 }
 
 /**
