@@ -129,7 +129,7 @@ void ScopeMainHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
             break;
           case 4:
             /* Right magnify */
-            if (Scope.magnify<17)
+            if (Scope.magnify<16)
             {
               Scope.magnify++;
             }
@@ -231,13 +231,6 @@ void ScopeHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
       ScopeDrawMark();
       ScopeDrawData();
       ScopeDrawInfo();
-// adc=(uint16_t*)ADC3_DR_ADDRESS;
-// x=*adc;
-// DrawHex16(100,240,DMA2->LISR,1);
-// DrawHex16(150,240,DMA2->HISR,1);
-// DrawHex16(200,240,DMA2_Stream4->CR,1);
-// DrawHex16(250,240,DMA2_Stream4->NDTR,1);
-// DrawHex16(300,240,DMA2_Stream4->M0AR,1);
       break;
     case EVENT_LDOWN:
       x=param & 0xFFFF;
@@ -730,32 +723,6 @@ void ADC_SCPConfig(void)
 
   ADC_StructInit(&ADC_InitStructure);
   ADC_CommonStructInit(&ADC_CommonInitStructure);
-
-  // /* ADC Common Init **********************************************************/
-  // ADC_CommonInitStructure.ADC_Mode = ADC_Mode_Independent;
-  // ADC_CommonInitStructure.ADC_Prescaler = (uint32_t)Scope.clockdiv<<16;
-  // ADC_CommonInitStructure.ADC_DMAAccessMode = ADC_DMAAccessMode_Disabled;
-  // ADC_CommonInitStructure.ADC_TwoSamplingDelay = ADC_TwoSamplingDelay_5Cycles;
-  // ADC_CommonInit(&ADC_CommonInitStructure);
-
-  // /* ADC1 Init ****************************************************************/
-  // ADC_InitStructure.ADC_Resolution = (7-Scope.databits)<<24;
-  // ADC_InitStructure.ADC_ScanConvMode = ENABLE;
-  // ADC_InitStructure.ADC_ContinuousConvMode = ENABLE;
-  // ADC_InitStructure.ADC_ExternalTrigConvEdge = ADC_ExternalTrigConvEdge_None;
-  // ADC_InitStructure.ADC_DataAlign = ADC_DataAlign_Right;
-  // ADC_InitStructure.ADC_NbrOfConversion = 1;
-  // ADC_Init(ADC1, &ADC_InitStructure);
-  // /* ADC1 regular channel12 configuration *************************************/
-  // ADC_RegularChannelConfig(ADC1, ADC_Channel_11, 1, Scope.sampletime);
- // /* Enable DMA request after last transfer (Single-ADC mode) */
-  // ADC_DMARequestAfterLastTransferCmd(ADC1, ENABLE);
-  // /* Enable ADC1 DMA */
-  // ADC_DMACmd(ADC1, ENABLE);
-  // /* Enable ADC1 */
-  // ADC_Cmd(ADC1, ENABLE);
-
-  // ADC_MultiModeDMARequestAfterLastTransferCmd(DISABLE);
 
   /* ADC Common Init **********************************************************/
   ADC_CommonInitStructure.ADC_Mode = ADC_DualMode_RegSimult;

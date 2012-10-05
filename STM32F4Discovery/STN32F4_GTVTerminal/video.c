@@ -407,7 +407,7 @@ void DrawDec16(uint16_t x, uint16_t y, uint16_t n, uint8_t c)
 }
 
 /**
-  * @brief  This function draws a decimal value using large font at x, y.
+  * @brief  This function draws a 16 bit decimal value using large font at x, y.
   * @param  x, y, n, c
   * @retval None
   */
@@ -686,6 +686,11 @@ void ScrollDown(void)
   memset(&BackBuff[0], 0, SCREEN_BUFFWIDTH);
 }
 
+/**
+  * @brief  This function draws the status bar
+  * @param  *str,caps,num
+  * @retval None
+  */
 void DrawStatus(uint8_t *str,uint8_t caps,uint8_t num)
 {
   uint32_t i;
@@ -822,6 +827,11 @@ uint32_t DrawSprite(const SPRITE* ps)
   return coll;
 }
 
+/**
+  * @brief  This function removes all sprites
+  * @param  None
+  * @retval None
+  */
 void RemoveSprites(void)
 {
   uint32_t i;
@@ -833,6 +843,11 @@ void RemoveSprites(void)
   }
 }
 
+/**
+  * @brief  This function waits n lines
+  * @param  n
+  * @retval None
+  */
 void LineWait(uint32_t n)
 {
   uint16_t lc;
@@ -845,6 +860,11 @@ void LineWait(uint32_t n)
   }
 }
 
+/**
+  * @brief  This function waits n frames
+  * @param  n
+  * @retval None
+  */
 void FrameWait(uint32_t n)
 {
   uint16_t fc;
@@ -1064,8 +1084,6 @@ void TIM7_IRQHandler(void)
     timer();
   }
   GetMouseClick();
-// DrawHex16(0,240,LineCount,1);
-// DrawHex16(50,240,FrameSkip,1);
   FrameCount++;
   FrameDraw=0;
 }

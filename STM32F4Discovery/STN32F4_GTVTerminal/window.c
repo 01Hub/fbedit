@@ -42,6 +42,11 @@ const uint8_t CheckedIcon[10][10] = {
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
 
+/**
+  * @brief  This function sets focus to next control
+  * @param  hpar
+  * @retval None
+  */
 void FocusNext(WINDOW* hpar)
 {
   WINDOW* hnext;
@@ -90,6 +95,11 @@ void FocusNext(WINDOW* hpar)
   }
 }
 
+/**
+  * @brief  This function sets focus to previous control
+  * @param  hpar
+  * @retval None
+  */
 void FocusPrevious(WINDOW* hpar)
 {
   WINDOW* hnext;
@@ -153,33 +163,6 @@ void FocusPrevious(WINDOW* hpar)
   * @param  x1, y1, x2, y2
   * @retval None
   */
-// void DrawWinLine(int32_t xl, int32_t yl, int32_t xr, int32_t yr)
-// {
-  // int32_t x,y;                    /* coordinates of pixel being drawn */
-  // int32_t dy, dx;
-  // int32_t ne, ie;                 /* integer scaled error term */
-  // uint8_t bit;
-
-  // x = xl; y = yl;                 /* start at left endpoint */
-  // ie = 2 * dy - dx;               /* initialize the error term */
-  // while (x <= xr)
-  // {                               /* pixel-drawing loop */
-    // SetFBPixel (x,y);             /* draw the pixel */
-    // if (x < SCREEN_WIDTH && y < SCREEN_HEIGHT)
-    // {
-      // bit = 1 << (x & 0x7);
-      // FrameBuff[y][x >> 3] |= bit;
-    // }
-    // if (ie > 0)
-    // {
-      // y = y + 1;
-      // ne = ne - 2 * dx;           /* replaces e = e - 1 */
-    // }
-    // x = x + 1;
-    // ne = ne + 2 * dy;             /* replaces e = e + m */
-  // }
-// }
-
 void DrawWinLine(int16_t X1,int16_t Y1,int16_t X2,int16_t Y2)
 {
   int16_t CurrentX, CurrentY, Xinc, Yinc, 
@@ -607,6 +590,11 @@ void FrameRect(uint16_t x,uint16_t y,uint16_t wdt,uint16_t hgt)
 	}
 }
 
+/**
+  * @brief  This function draws a black filled rectangle.
+  * @param  x,y,xm,ym
+  * @retval None
+  */
 void BlackRect(uint16_t x,uint16_t y,uint16_t xm,uint16_t ym)
 {
   uint32_t i,j,k;
@@ -875,6 +863,11 @@ void DrawWindow(WINDOW* hwin)
   }
 }
 
+/**
+  * @brief  This function finds a window from a point.
+  * @param  x,y
+  * @retval hwin
+  */
 WINDOW* WindowFromPoint(uint16_t x,uint16_t y)
 {
   uint32_t i;
@@ -905,6 +898,11 @@ WINDOW* WindowFromPoint(uint16_t x,uint16_t y)
   return 0;
 }
 
+/**
+  * @brief  This function finds a control from a point.
+  * @param  howner,x,y
+  * @retval hwin
+  */
 WINDOW* ControlFromPoint(WINDOW* howner,uint16_t x,uint16_t y)
 {
   uint32_t i;
@@ -950,6 +948,11 @@ uint32_t FindWindowPos(WINDOW* hwin)
   return i;
 }
 
+/**
+  * @brief  This function finds a control with focus.
+  * @param  hwin
+  * @retval hwin
+  */
 WINDOW* FindControlFocus(WINDOW* hwin)
 {
   hwin=hwin->control;
@@ -964,6 +967,11 @@ WINDOW* FindControlFocus(WINDOW* hwin)
   return hwin;
 }
 
+/**
+  * @brief  This function finds first control that can focus.
+  * @param  hwin
+  * @retval hwin
+  */
 WINDOW* FindControlCanFocus(WINDOW* hwin)
 {
   hwin=hwin->control;
@@ -1308,6 +1316,11 @@ WINDOW* GetControlHandle(WINDOW* howner,uint8_t ID)
   return hctl;
 }
 
+/**
+  * @brief  This function sets a controls caption.
+  * @param  hwin,*caption
+  * @retval none
+  */
 void SetCaption(WINDOW* hwin,uint8_t *caption)
 {
   hwin->caplen=0;
@@ -1318,26 +1331,51 @@ void SetCaption(WINDOW* hwin,uint8_t *caption)
   }
 }
 
+/**
+  * @brief  This function sets a controls style.
+  * @param  hwin,style
+  * @retval none
+  */
 void SetStyle(WINDOW* hwin,uint8_t style)
 {
   hwin->style=style;
 }
 
+/**
+  * @brief  This function sets a controls state.
+  * @param  hwin,state
+  * @retval none
+  */
 void SetState(WINDOW* hwin,uint8_t state)
 {
   hwin->state=state;
 }
 
+/**
+  * @brief  This function sets a controls param.
+  * @param  hwin,param
+  * @retval none
+  */
 void SetParam(WINDOW* hwin,uint32_t param)
 {
   hwin->param=param;
 }
 
+/**
+  * @brief  This function creates the timer.
+  * @param  tmr
+  * @retval none
+  */
 void CreateTimer(TIMER tmr)
 {
   timer=tmr;
 }
 
+/**
+  * @brief  This function destroyes the timer.
+  * @param  none
+  * @retval none
+  */
 void KillTimer(void)
 {
   timer=0;
