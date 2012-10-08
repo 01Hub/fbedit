@@ -904,7 +904,7 @@ void TIM3_IRQHandler(void)
   TIM4->CR1=1;
   BackPochFlag = 0;
   /* H-Sync or V-Sync low */
-  GPIOA->BSRRH = (uint16_t)GPIO_Pin_1;
+  GPIOC->BSRRH = (uint16_t)GPIO_Pin_4;
   lcnt++;
   if (lcnt==625*25)
   {
@@ -947,12 +947,12 @@ void TIM4_IRQHandler(void)
     if (LineCount<SCREEN_HEIGHT+BOTTOM_MARGIN)
     {
       /* H-Sync high */
-      GPIOA->BSRRL=(u16)GPIO_Pin_1;
+      GPIOC->BSRRL=(u16)GPIO_Pin_4;
     }
     else if (LineCount==SCREEN_HEIGHT+BOTTOM_MARGIN+V_SYNC)
     {
       /* V-Sync high */
-      GPIOA->BSRRL=(u16)GPIO_Pin_1;
+      GPIOC->BSRRL=(u16)GPIO_Pin_4;
       if (FrameCount==(FrameCount/50)*50)
       {
         STM_EVAL_LEDToggle(LED3);

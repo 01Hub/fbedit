@@ -105,11 +105,11 @@ void EXTI2_IRQHandler(void)
   static uint16_t keyflag;
   uint16_t tmp;
 
-  /* Clear the EXTI line 0 pending bit */
+  /* Clear the EXTI line 2 pending bit */
   EXTI->PR = EXTI_Line2;
 
   scancode >>= 1;
-	if (GPIOB->IDR & GPIO_Pin_1)
+	if (GPIOB->IDR & GPIO_Pin_4)
   {
     scancode |= 0x0400;
   }

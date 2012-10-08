@@ -75,7 +75,7 @@ void MouseInit(void)
   /* Send the F4 command to the mouse */
   SendData(0b10111101000);
   /* GPIOB Pin3, Pin2, Pin1 and Pin0 as input floating */
-  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_3 | GPIO_Pin_2 | GPIO_Pin_1 | GPIO_Pin_0;
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_4 | GPIO_Pin_2 | GPIO_Pin_1 | GPIO_Pin_0;
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
   GPIO_Init(GPIOB, &GPIO_InitStructure);
   /* Connect EXTI Line0 to PB0 pin */

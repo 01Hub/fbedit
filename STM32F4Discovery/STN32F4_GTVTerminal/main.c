@@ -10,7 +10,7 @@
 * Port pins used
 *
 * Video out
-* PA1   H-Sync and V-Sync
+* PC4   H-Sync and V-Sync
 * PB15  Video out SPI2_MOSI
 *
 * RS232
@@ -31,12 +31,12 @@
 * PC2   ADC2 channel 12
 
 * Keyboard
-* PB0   Keyboard clock in
-* PB1   Keyboard data in
+* PB2   Keyboard clock in
+* PB4   Keyboard data in
 *
 * Mouse
-* PB2   Mouse clock in
-* PB3   Mouse data in
+* PB0   Mouse clock in
+* PB1   Mouse data in
 *
 * Leds
 * PA9   Green
@@ -189,15 +189,15 @@ void GPIO_Config(void)
   GPIO_InitTypeDef GPIO_InitStructure;
   EXTI_InitTypeDef EXTI_InitStructure;
 
-  /* Configure PA1 as output, H-Sync and V-Sync*/
-  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_1;
+  /* Configure PC4 as output, H-Sync and V-Sync*/
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_4;
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
   GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
   GPIO_InitStructure.GPIO_PuPd  = GPIO_PuPd_NOPULL ;
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
-  GPIO_Init(GPIOA, &GPIO_InitStructure);
+  GPIO_Init(GPIOC, &GPIO_InitStructure);
   /* H-Sync and V-Sync signal High */
-  GPIO_SetBits(GPIOA,GPIO_Pin_1);
+  GPIO_SetBits(GPIOC,GPIO_Pin_4);
 
   /* SPI MOSI and SPI SCK pin configuration */
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
