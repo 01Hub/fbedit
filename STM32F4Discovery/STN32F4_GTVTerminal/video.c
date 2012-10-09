@@ -1072,7 +1072,8 @@ void TIM7_IRQHandler(void)
   }
   FrameBuffDraw();
   KeyboardReset();
-  if (Focus)  {
+  if (Focus)
+  {
     chr=GetChar();
     if (chr)
     {
