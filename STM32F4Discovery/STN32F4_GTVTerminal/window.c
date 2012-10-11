@@ -591,6 +591,45 @@ void FrameRect(uint16_t x,uint16_t y,uint16_t wdt,uint16_t hgt)
 }
 
 /**
+  * @brief  This function draws a white filled rectangle.
+  * @param  x,y,xm,ym
+  * @retval None
+  */
+void WhiteRect(uint16_t x,uint16_t y,uint16_t xm,uint16_t ym)
+{
+  uint32_t i,j,k;
+  uint8_t cl,cr;
+
+  /* Draw black */
+  /* Get left fill */
+  cl=0xFF<<(x & 7);
+  /* Get right fill */
+  cr=0xFF>>(8-(xm & 7));
+  /* Fill left & right*/
+  j=y;
+  i=x>>3;
+  k=xm>>3;
+  while (j<ym)
+  {
+    FrameBuff[j][i] |= cl;
+    FrameBuff[j][k] |= cr;
+    j++;
+  }
+  j=y;
+  while (j<ym)
+  {
+    i=(x>>3)+1;
+    k=xm>>3;
+    while (i<k)
+    {
+      FrameBuff[j][i] = 0xFF;
+      i++;
+    }
+    j++;
+  }
+}
+
+/**
   * @brief  This function draws a black filled rectangle.
   * @param  x,y,xm,ym
   * @retval None
@@ -661,8 +700,7 @@ void DrawCaption(WINDOW* hwin,uint16_t x,uint16_t y)
   */
 void DrawWindow(WINDOW* hwin)
 {
-  uint32_t x,y,xm,ym,i,j,k;
-  uint8_t cl,cr;
+  uint32_t x,y,xm,ym;
   WINDOW* hpar;
   ICON icon;
 
@@ -679,118 +717,22 @@ void DrawWindow(WINDOW* hwin)
   switch (hwin->winclass)
   {
     case CLASS_WINDOW:
-      /* Get left fill */
-      cl=0xFF<<(x & 7);
-      /* Get right fill */
-      cr=0xFF>>(8-(xm & 7));
       if ((hwin->style & 3)==STYLE_NOCAPTION)
       {
-        /* Fill left & right*/
-        j=y+1;
-        i=x>>3;
-        k=xm>>3;
-        while (j<ym-1)
-        {
-          FrameBuff[j][i] |= cl;
-          FrameBuff[j][k] |= cr;
-          j++;
-        }
-        j=y+1;
-        while (j<ym-1)
-        {
-          i=(x>>3)+1;
-          k=xm>>3;
-          while (i<k)
-          {
-            FrameBuff[j][i] = 0xFF;
-            i++;
-          }
-          j++;
-        }
+        WhiteRect(x,y,xm,ym);
       }
       else
       {
         if ((!(hwin->state & STATE_FOCUS)) && (FrameCount & 1))
         {
-          /* Fill left & right*/
-          j=y+1;
-          i=x>>3;
-          k=xm>>3;
-          while (j<ym-1)
-          {
-            if (j<y+14)
-            {
-              FrameBuff[j][i] &= ~cl;
-              FrameBuff[j][k] &= ~cr;
-            }
-            else
-            {
-              FrameBuff[j][i] |= cl;
-              FrameBuff[j][k] |= cr;
-            }
-            j++;
-          }
-          j=y+1;
-          while (j<ym-1)
-          {
-            i=(x>>3)+1;
-            k=xm>>3;
-            while (i<k)
-            {
-              if (j<y+14)
-              {
-                FrameBuff[j][i] = 0x0;
-              }
-              else
-              {
-                FrameBuff[j][i] = 0xFF;
-              }
-              i++;
-            }
-            j++;
-          }
+          BlackRect(x,y,xm,y+13);
         }
         else
         {
-          /* Fill left & right*/
-          j=y+1;
-          i=x>>3;
-          k=xm>>3;
-          while (j<ym-1)
-          {
-            if (j==y+14)
-            {
-              FrameBuff[j][i] &= ~cl;
-              FrameBuff[j][k] &= ~cr;
-            }
-            else
-            {
-              FrameBuff[j][i] |= cl;
-              FrameBuff[j][k] |= cr;
-            }
-            j++;
-          }
-          j=y+1;
-          while (j<ym-1)
-          {
-            i=(x>>3)+1;
-            k=xm>>3;
-            while (i<k)
-            {
-              if (j==y+14)
-              {
-                FrameBuff[j][i] = 0x0;
-              }
-              else
-              {
-                FrameBuff[j][i] = 0xFF;
-              }
-              i++;
-            }
-            j++;
-          }
+          WhiteRect(x,y,xm,y+13);
+          DrawCaption(hwin,x,y+2);
         }
-        DrawCaption(hwin,x,y+2);
+        WhiteRect(x,y+14,xm,ym);
       }
       FrameRect(x,y,xm-x,ym-y);
       break;
@@ -798,6 +740,8 @@ void DrawWindow(WINDOW* hwin)
       if (hwin->state & STATE_FOCUS)
       {
         FrameRect(x,y,xm-x,ym-y);
+        y=y+(hwin->ht-TILE_HEIGHT)/2;
+        DrawCaption(hwin,x,y);
       }
       else
       {
@@ -807,8 +751,6 @@ void DrawWindow(WINDOW* hwin)
           BlackRect(x,y,xm,ym);
         }
       }
-      y=y+(hwin->ht-TILE_HEIGHT)/2;
-      DrawCaption(hwin,x,y);
       break;
     case CLASS_STATIC:
       if ((hwin->style & 3)==STYLE_BLACK)
@@ -820,6 +762,11 @@ void DrawWindow(WINDOW* hwin)
         if (FrameCount & 1)
         {
           BlackRect(x,y,xm,ym);
+        }
+        else
+        {
+          y=y+(hwin->ht-TILE_HEIGHT)/2;
+          DrawCaption(hwin,x,y);
         }
       }
       else
@@ -853,7 +800,7 @@ void DrawWindow(WINDOW* hwin)
       break;
     case CLASS_GROUPBOX:
       FrameRect(x,y+5,xm-x,ym-y-5);
-      DrawWinString(x+3,y,hwin->caplen,hwin->caption,4);
+      DrawWinString(x+5,y,hwin->caplen,hwin->caption,4);
       break;
   }
   if (hwin->control)
