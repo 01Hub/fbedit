@@ -576,7 +576,7 @@ void DrawWinIcon(uint16_t x,uint16_t y,ICON* icon)
   * @param  x,y,wdt,hgt)
   * @retval None
   */
-void FrameRect(uint16_t x,uint16_t y,uint16_t wdt,uint16_t hgt)
+void BlackWinFrame(uint16_t x,uint16_t y,uint16_t wdt,uint16_t hgt)
 {
   uint16_t j;
 
@@ -595,7 +595,7 @@ void FrameRect(uint16_t x,uint16_t y,uint16_t wdt,uint16_t hgt)
   * @param  x,y,xm,ym
   * @retval None
   */
-void WhiteRect(uint16_t x,uint16_t y,uint16_t xm,uint16_t ym)
+void WhiteWinRect(uint16_t x,uint16_t y,uint16_t xm,uint16_t ym)
 {
   uint32_t i,j,k;
   uint8_t cl,cr;
@@ -634,7 +634,7 @@ void WhiteRect(uint16_t x,uint16_t y,uint16_t xm,uint16_t ym)
   * @param  x,y,xm,ym
   * @retval None
   */
-void BlackRect(uint16_t x,uint16_t y,uint16_t xm,uint16_t ym)
+void BlackWinRect(uint16_t x,uint16_t y,uint16_t xm,uint16_t ym)
 {
   uint32_t i,j,k;
   uint8_t cl,cr;
@@ -673,7 +673,7 @@ void BlackRect(uint16_t x,uint16_t y,uint16_t xm,uint16_t ym)
   * @param  hwin
   * @retval None
   */
-void DrawCaption(WINDOW* hwin,uint16_t x,uint16_t y)
+void DrawWinCaption(WINDOW* hwin,uint16_t x,uint16_t y)
 {
   if (hwin->caplen)
   {
@@ -719,60 +719,60 @@ void DrawWindow(WINDOW* hwin)
     case CLASS_WINDOW:
       if ((hwin->style & 3)==STYLE_NOCAPTION)
       {
-        WhiteRect(x,y,xm,ym);
+        WhiteWinRect(x,y,xm,ym);
       }
       else
       {
         if ((!(hwin->state & STATE_FOCUS)) && (FrameCount & 1))
         {
-          BlackRect(x,y,xm,y+13);
+          BlackWinRect(x,y,xm,y+13);
         }
         else
         {
-          WhiteRect(x,y,xm,y+13);
-          DrawCaption(hwin,x,y+2);
+          WhiteWinRect(x,y,xm,y+13);
+          DrawWinCaption(hwin,x,y+2);
         }
-        WhiteRect(x,y+14,xm,ym);
+        WhiteWinRect(x,y+14,xm,ym);
       }
-      FrameRect(x,y,xm-x,ym-y);
+      BlackWinFrame(x,y,xm-x,ym-y);
       break;
     case CLASS_BUTTON:
       if (hwin->state & STATE_FOCUS)
       {
-        FrameRect(x,y,xm-x,ym-y);
+        BlackWinFrame(x,y,xm-x,ym-y);
         y=y+(hwin->ht-TILE_HEIGHT)/2;
-        DrawCaption(hwin,x,y);
+        DrawWinCaption(hwin,x,y);
       }
       else
       {
         if (FrameCount & 1)
         {
           /* Draw black to make the button appear gray */
-          BlackRect(x,y,xm,ym);
+          BlackWinRect(x,y,xm,ym);
         }
       }
       break;
     case CLASS_STATIC:
       if ((hwin->style & 3)==STYLE_BLACK)
       {
-        BlackRect(x,y,xm,ym);
+        BlackWinRect(x,y,xm,ym);
       }
       else if ((hwin->style & 3)==STYLE_GRAY)
       {
         if (FrameCount & 1)
         {
-          BlackRect(x,y,xm,ym);
+          BlackWinRect(x,y,xm,ym);
         }
         else
         {
           y=y+(hwin->ht-TILE_HEIGHT)/2;
-          DrawCaption(hwin,x,y);
+          DrawWinCaption(hwin,x,y);
         }
       }
       else
       {
         y=y+(hwin->ht-TILE_HEIGHT)/2;
-        DrawCaption(hwin,x,y);
+        DrawWinCaption(hwin,x,y);
       }
       break;
     case CLASS_CHKBOX:
@@ -799,7 +799,7 @@ void DrawWindow(WINDOW* hwin)
       }
       break;
     case CLASS_GROUPBOX:
-      FrameRect(x,y+5,xm-x,ym-y-5);
+      BlackWinFrame(x,y+5,xm-x,ym-y-5);
       DrawWinString(x+5,y,hwin->caplen,hwin->caption,4);
       break;
   }
