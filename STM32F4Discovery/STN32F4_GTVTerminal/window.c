@@ -750,6 +750,11 @@ void DrawWindow(WINDOW* hwin)
           /* Draw black to make the button appear gray */
           BlackWinRect(x,y,xm,ym);
         }
+        else
+        {
+          y=y+(hwin->ht-TILE_HEIGHT)/2;
+          DrawWinCaption(hwin,x,y);
+        }
       }
       break;
     case CLASS_STATIC:
