@@ -1857,6 +1857,8 @@ EnableMenu proc uses ebx esi edi,hMnu:HMENU,nPos:DWORD
 			push	edi
 			push	IDM_PROJECT_REMOVEGROUP
 			push	eax
+			push	IDM_PROJECT_COPYNAME
+			push	eax
 			push	IDM_PROJECT_TEMPLATE
 			mov		eax,TRUE
 			.if da.fProject

@@ -1084,6 +1084,26 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.if da.fProject
 					invoke OpenProjectItemGroup
 				.endif
+			.elseif eax==IDM_PROJECT_COPYNAME
+				.if ha.hMdi
+					invoke GetWindowLong,ha.hEdt,GWL_ID
+					.if eax==ID_EDITCODE || eax==ID_EDITTEXT
+						invoke SendMessage,ha.hProjectBrowser,RPBM_GETSELECTED,0,0
+						.if eax
+							mov		ebx,eax
+							invoke strcpy,addr buffer,addr [ebx].PBITEM.szitem
+							invoke RemovePath,addr buffer,addr da.szProjectPath,addr tmpbuff
+							.if da.nAsm==nMASM
+								invoke strcpy,addr buffer,addr tmpbuff
+								invoke strcpy,addr tmpbuff,addr szInclude
+								invoke strcat,addr tmpbuff,addr szSpc
+								invoke strcat,addr tmpbuff,addr buffer
+							.endif
+							invoke SendMessage,ha.hEdt,EM_REPLACESEL,TRUE,addr tmpbuff
+							invoke SetFocus,ha.hEdt
+						.endif
+					.endif
+				.endif
 			.elseif eax==IDM_PROJECT_OPTION
 				.if da.fProject
 					invoke DialogBoxParam,ha.hInstance,IDD_DLGPO,hWin,offset ProjectOptionProc,0
