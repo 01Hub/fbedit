@@ -1,0 +1,119 @@
+
+<Debug>
+	<Lenr>
+		<RegistersView Focus="134217996" TopRow="0" NbPerLine="4" />
+		<RegistersView Focus="134217996" TopRow="0" NbPerLine="4" />
+		<CodeView TopRow="134218466" Focus="4294967295" >
+			<CodeReport>
+				<0>93</0>
+				<1>102</1>
+				<2>56</2>
+				<3>309</3>
+				<4>56</4>
+				<5>118</5>
+														
+			</CodeReport>
+										
+		</CodeView>
+		<MemoryView Focus="134217996" TopRow="0" NbPerLine="8" />
+						
+	</Lenr>
+	<Flags>
+		<Report>
+			<Def Header="FlagReport" NbCol="9" >
+				<Col Type="PT_BOOL" Header="Check" sizeCache="18" AutoSize="0" Edit="1" Sortable="1" Icon="D:\Ride\Ride\Config\Resources\check.bmp" />
+				<Col Type="PT_STRING" Header="Kind" sizeCache="DDDDDDDDDDD" AutoSize="1" Edit="0" Sortable="1" />
+				<Col Type="PT_STRING" Header="KindID" sizeCache="DD" AutoSize="1" Edit="0" Sortable="1" Visible="0" />
+				<Col Type="PT_STRING" Header="Space" sizeCache="DDDDDD" AutoSize="1" Edit="0" Sortable="1" />
+				<Col Type="PT_STRING" Header="SpaceID" sizeCache="DD" AutoSize="0" Edit="0" Sortable="0" Visible="0" />
+				<Col Type="PT_STRING" Header="Line" sizeCache="DDDDDDDDD" AutoSize="1" Edit="0" Sortable="1" Visible="1" />
+				<Col Type="PT_STRING" Header="File" sizeCache="DDDDDDDDDDDDDDDDDDDD" AutoSize="1" Edit="0" Sortable="1" Visible="1" />
+				<Col Type="PT_STRING" Header="Path" sizeCache="DDDDDDDDDDDDDDDDDDDD" AutoSize="1" Edit="0" Sortable="0" Visible="0" />
+				<Col Type="PT_STRING" Header="Condition" sizeCache="DDDDDDDDDDDDDDDDDDDDDDDD" AutoSize="1" Edit="0" Sortable="0" />
+				<Col Type="PT_STRING" Header="Condexpr" sizeCache="DD" AutoSize="1" Edit="0" Sortable="0" Visible="0" />
+				<Col Type="PT_STRING" Header="Condcount" sizeCache="DD" AutoSize="1" Edit="0" Sortable="0" Visible="0" />
+							
+			</Def>
+			<Rows/>
+					
+		</Report>
+			
+	</Flags>
+	<Views>
+		<View File="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\main.c" Line="16" Index="0" focus="1" />
+	</Views>
+	<Grep>
+		<GrepIncludeSub>yes</GrepIncludeSub>
+		<GrepMatchCase>no</GrepMatchCase>
+		<GrepMatchWhole>no</GrepMatchWhole>
+		<GrepRegExp>no</GrepRegExp>
+		<GrepReplaceMode>no</GrepReplaceMode>
+		<GrepFileTypes>
+			<GrepFileTypesValue>*.c;*.h</GrepFileTypesValue>
+			<GrepFileType>*.c;*.h</GrepFileType>
+		</GrepFileTypes>
+		<GrepFindWhat>
+			<GrepFindWhatValue>DefWindowHandler</GrepFindWhatValue>
+			<GrepFindStr>DefWindowHandler</GrepFindStr>
+			<GrepFindStr>GetChar</GrepFindStr>
+			<GrepFindStr>GetKey</GrepFindStr>
+		</GrepFindWhat>
+		<GrepFindWhere>
+			<GrepFindWhereValue>D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STN32F4_GTVTerminal</GrepFindWhereValue>
+			<GrepPathStr>Application Files</GrepPathStr>
+			<GrepPathStr>Application Path</GrepPathStr>
+			<GrepPathStr>D:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STN32F4_GTVTerminal</GrepPathStr>
+		</GrepFindWhere>
+		<GrepReplaceWhat>
+			<GrepReplaceWhatValue/>
+		</GrepReplaceWhat>
+	</Grep>
+	<FindStrings>
+		<Find>DMA_Stream_TypeDef</Find>
+		<Find>DMA_DeInit</Find>
+		<Find>ADC_DMAAccessMode_Disabled</Find>
+		<Find>ADC_CR2_CONT</Find>
+		<Find>ADC_continuousModeCmd</Find>
+		<Find>ADC_Init</Find>
+		<Find>TetrisGame.Speed</Find>
+		<Find>TIM1</Find>
+		<Find>GPIO_AF_TIM2</Find>
+		<Find>tmrid</Find>
+		<Find>tmrid=0</Find>
+		<Find>DrawFB</Find>
+		<Find>GPIO_OType_PP</Find>
+		<Find>KeyboardStuck</Find>
+		<Find>char</Find>
+		<Find>_video_scrollup</Find>
+		<Find>!showcursor</Find>
+		<Find>SCREEN_HEIGHT</Find>
+		<Find>SCREEN_WIDTH</Find>
+		<Find>SetCursor</Find>
+		<Find>windows</Find>
+		<Find>demo</Find>
+		<Find>Cannons</Find>
+		<Find>Cannons=3</Find>
+		<Find>cur</Find>
+		<Find>MAX_SHOOTERS</Find>
+		<Find>Shooter</Find>
+		<Find>DMA_DIR</Find>
+		<Find>ShowCursor</Find>
+		<Find>GetKey</Find>
+		<Find>EXTI_ClearITPendingBit</Find>
+		<Find>\n</Find>
+		<Find>Sprites</Find>
+		<Find>Sprite1</Find>
+		<Find>=Sprite1</Find>
+		<Find>Sprite0</Find>
+	</FindStrings>
+	<ReplaceStrings>
+		<Find>uint8_t</Find>
+		<Find>TERM_SCREEN_HEIGHT</Find>
+		<Find>TERM_SCREEN_WIDTH</Find>
+		<Find>MAX_CANNONS</Find>
+		<Find>Cannon</Find>
+		<Find>Sprite3</Find>
+		<Find>Sprite2</Find>
+		<Find>Sprite1</Find>
+	</ReplaceStrings>
+</Debug>
