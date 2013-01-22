@@ -6,17 +6,83 @@ include Lenr.inc
 
 .code
 
+DisplayProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+	LOCAL	ps:PAINTSTRUCT
+	LOCAL	rect:RECT
+	LOCAL	mDC:HDC
+
+	mov		eax,uMsg
+	.if	eax==WM_CREATE
+		invoke MoveWindow,hWin,GRPWDT+GRPXPS+GRPXPS-202,GRPHGT+GRPYPS+GRPYPS,200,74,FALSE
+		xor		eax,eax
+	.elseif eax==WM_PAINT
+		mov		eax,graph
+		.if eax==IDC_RBNVOLT
+			mov		eax,1500
+			invoke wsprintf,addr display,addr szFmtVolt,eax
+		.elseif eax==IDC_RBNAMP
+			mov		eax,150
+			invoke wsprintf,addr display,addr szFmtAmp,eax
+		.elseif eax==IDC_RBNPOWER
+			mov		eax,2250
+			invoke wsprintf,addr display,addr szFmtPower,eax
+		.elseif eax==IDC_RBNAMB
+			mov		eax,2500
+			invoke wsprintf,addr display,addr szFmtTemp,eax
+		.elseif eax==IDC_RBNCELL
+			mov		eax,8000
+			invoke wsprintf,addr display,addr szFmtTemp,eax
+		.endif
+		invoke lstrlen,addr display
+		mov		edx,dword ptr display[eax-3]
+		mov		display[eax-3],'.'
+		mov		dword ptr display[eax-2],edx
+		invoke GetClientRect,hWin,addr rect
+		invoke BeginPaint,hWin,addr ps
+		invoke CreateCompatibleDC,ps.hdc
+		mov		mDC,eax
+		invoke CreateCompatibleBitmap,ps.hdc,rect.right,rect.bottom
+		invoke SelectObject,mDC,eax
+		push	eax
+		invoke CreateSolidBrush,0C0FFFFh
+		push	eax
+		invoke FillRect,mDC,addr rect,eax
+		pop		eax
+		invoke DeleteObject,eax
+
+		invoke SelectObject,mDC,hFont
+		push	eax
+		invoke SetBkMode,mDC,TRANSPARENT
+		invoke lstrlen,addr display
+		mov		edx,eax
+		invoke DrawText,mDC,addr display,edx,addr rect,DT_CENTER or DT_VCENTER or DT_SINGLELINE
+		pop		eax
+		invoke SelectObject,mDC,eax
+
+		invoke BitBlt,ps.hdc,0,0,rect.right,rect.bottom,mDC,0,0,SRCCOPY
+		;Delete bitmap
+		pop		eax
+		invoke SelectObject,mDC,eax
+		invoke DeleteObject,eax
+		invoke DeleteDC,mDC
+		invoke EndPaint,hWin,addr ps
+		xor		eax,eax
+	.else
+		invoke DefWindowProc,hWin,uMsg,wParam,lParam
+	.endif
+	ret
+
+DisplayProc endp
+
 GraphProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	ps:PAINTSTRUCT
 	LOCAL	rect:RECT
 	LOCAL	mDC:HDC
-	LOCAL	pt:POINT
-	LOCAL	buffer[128]:BYTE
-	LOCAL	buffer1[128]:BYTE
 
 	mov		eax,uMsg
 	.if	eax==WM_CREATE
-		invoke MoveWindow,hWin,0,0,GRPWDT+60+30,GRPHGT+60,FALSE
+		invoke MoveWindow,hWin,0,0,GRPWDT+GRPXPS+30,GRPHGT+GRPYPS+30,FALSE
+		xor		eax,eax
 	.elseif eax==WM_PAINT
 		invoke GetClientRect,hWin,addr rect
 		invoke BeginPaint,hWin,addr ps
@@ -31,23 +97,23 @@ GraphProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SelectObject,mDC,eax
 		push	eax
 		;Draw horizontal lines
-		mov		edi,30
+		mov		edi,GRPXPS
 		xor		ecx,ecx
 		.while ecx<=10
 			push	ecx
-			invoke MoveToEx,mDC,60,edi,NULL
-			invoke LineTo,mDC,GRPWDT+30,edi
+			invoke MoveToEx,mDC,GRPXPS,edi,NULL
+			invoke LineTo,mDC,GRPWDT+GRPXPS,edi
 			add		edi,GRPYST
 			pop		ecx
 			inc		ecx
 		.endw
 		;Draw vertical lines
-		mov		edi,60
+		mov		edi,GRPXPS
 		xor		ecx,ecx
 		.while ecx<=12
 			push	ecx
-			invoke MoveToEx,mDC,edi,30,NULL
-			invoke LineTo,mDC,edi,GRPHGT+30
+			invoke MoveToEx,mDC,edi,GRPYPS,NULL
+			invoke LineTo,mDC,edi,GRPHGT+GRPYPS
 			add		edi,GRPXST
 			pop		ecx
 			inc		ecx
@@ -60,7 +126,7 @@ GraphProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SetBkMode,mDC,TRANSPARENT
 		;Draw time scale
 		mov		esi,offset szTime
-		mov		ecx,45
+		mov		ecx,GRPXPS-15
 		.while byte ptr [esi]
 			push	ecx
 			mov		edx,rect.bottom
@@ -96,10 +162,15 @@ GraphProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	ret
 
 DrawYScale:
-	mov		ecx,25
+	invoke lstrlen,esi
+	push	eax
+	invoke TextOut,mDC,400,5,esi,eax
+	pop		eax
+	lea		esi,[esi+eax+1]
+	mov		ecx,20
 	.while byte ptr [esi]
 		push	ecx
-		invoke TextOut,mDC,25,ecx,esi,3
+		invoke TextOut,mDC,GRPXPS-22,ecx,esi,3
 		lea		esi,[esi+4]
 		pop		ecx
 		lea		ecx,[ecx+GRPYST]
@@ -122,16 +193,16 @@ DrawVolt:
 		mov		ecx,4
 		xor		edx,edx
 		div		ecx
-		sub		eax,GRPHGT+30
+		sub		eax,GRPHGT+GRPYPS
 		neg		eax
-		invoke MoveToEx,mDC,addr [esi+60],eax,NULL
+		invoke MoveToEx,mDC,addr [esi+GRPXPS],eax,NULL
 		movzx	eax,log.Volt[ebx+sizeof LOG]
 		mov		ecx,4
 		xor		edx,edx
 		div		ecx
-		sub		eax,GRPHGT+30
+		sub		eax,GRPHGT+GRPYPS
 		neg		eax
-		invoke LineTo,mDC,addr [esi+61],eax
+		invoke LineTo,mDC,addr [esi+GRPXPS+1],eax
 		lea		esi,[esi+1]
 	.endw
 	;Delete pen
@@ -153,19 +224,13 @@ DrawAmp:
 		mul		esi
 		mov		ebx,eax
 		movzx	eax,log.Amp[ebx]
-;		mov		ecx,20
-;		xor		edx,edx
-;		div		ecx
-		sub		eax,GRPHGT+30
+		sub		eax,GRPHGT+GRPYPS
 		neg		eax
-		invoke MoveToEx,mDC,addr [esi+60],eax,NULL
+		invoke MoveToEx,mDC,addr [esi+GRPXPS],eax,NULL
 		movzx	eax,log.Amp[ebx+sizeof LOG]
-;		mov		ecx,20
-;		xor		edx,edx
-;		div		ecx
-		sub		eax,GRPHGT+30
+		sub		eax,GRPHGT+GRPYPS
 		neg		eax
-		invoke LineTo,mDC,addr [esi+61],eax
+		invoke LineTo,mDC,addr [esi+GRPXPS+1],eax
 		lea		esi,[esi+1]
 	.endw
 	;Delete pen
@@ -192,16 +257,16 @@ DrawPower:
 		mov		ecx,2000
 		xor		edx,edx
 		div		ecx
-		sub		eax,GRPHGT+30
+		sub		eax,GRPHGT+GRPYPS
 		neg		eax
-		invoke MoveToEx,mDC,addr [esi+60],eax,NULL
+		invoke MoveToEx,mDC,addr [esi+GRPXPS],eax,NULL
 		movzx	eax,log.Amp[ebx+sizeof LOG]
 		mov		ecx,20
 		xor		edx,edx
 		div		ecx
-		sub		eax,GRPHGT+30
+		sub		eax,GRPHGT+GRPYPS
 		neg		eax
-		invoke LineTo,mDC,addr [esi+61],eax
+		invoke LineTo,mDC,addr [esi+GRPXPS+1],eax
 		lea		esi,[esi+1]
 	.endw
 	;Delete pen
@@ -226,16 +291,16 @@ DrawTemp1:
 		mov		ecx,20
 		xor		edx,edx
 		div		ecx
-		sub		eax,GRPHGT+30
+		sub		eax,GRPHGT+GRPYPS
 		neg		eax
-		invoke MoveToEx,mDC,addr [esi+60],eax,NULL
+		invoke MoveToEx,mDC,addr [esi+GRPXPS],eax,NULL
 		movzx	eax,log.Temp1[ebx+sizeof LOG]
 		mov		ecx,20
 		xor		edx,edx
 		div		ecx
-		sub		eax,GRPHGT+30
+		sub		eax,GRPHGT+GRPYPS
 		neg		eax
-		invoke LineTo,mDC,addr [esi+61],eax
+		invoke LineTo,mDC,addr [esi+GRPXPS+1],eax
 		lea		esi,[esi+1]
 	.endw
 	;Delete pen
@@ -260,16 +325,16 @@ DrawTemp2:
 		mov		ecx,20
 		xor		edx,edx
 		div		ecx
-		sub		eax,GRPHGT+30
+		sub		eax,GRPHGT+GRPYPS
 		neg		eax
-		invoke MoveToEx,mDC,addr [esi+60],eax,NULL
+		invoke MoveToEx,mDC,addr [esi+GRPXPS],eax,NULL
 		movzx	eax,log.Temp2[ebx+sizeof LOG]
 		mov		ecx,20
 		xor		edx,edx
 		div		ecx
-		sub		eax,GRPHGT+30
+		sub		eax,GRPHGT+GRPYPS
 		neg		eax
-		invoke LineTo,mDC,addr [esi+61],eax
+		invoke LineTo,mDC,addr [esi+GRPXPS+1],eax
 		lea		esi,[esi+1]
 	.endw
 	;Delete pen
@@ -293,19 +358,28 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			mov		connected,eax
 			invoke STLinkWrite,hWin,20000000h,addr lenr,DWORD*2+WORD*4
 		.endif
+		invoke CreateFontIndirect,addr Tahoma_36
+		mov		hFont,eax
 		;Create a timer.
 		invoke SetTimer,hWin,1000,100,NULL
-		invoke MoveWindow,hWin,0,0,1060,512+100,FALSE
+		invoke MoveWindow,hWin,0,0,GRPWDT+GRPXPS+GRPXPS+6,GRPHGT+GRPYPS+GRPYPS+120,FALSE
 		mov		ebx,IDC_RBNVOLT
 		xor		edi,edi
 		.while ebx<=IDC_RBNCELL
 			invoke GetDlgItem,hWin,ebx
-			invoke MoveWindow,eax,960,edi,90,15,FALSE
-			add		edi,15
+			invoke MoveWindow,eax,edi,560,90,15,FALSE
+			add		edi,100
 			inc		ebx
 		.endw
 		invoke CheckDlgButton,hWin,IDC_RBNVOLT,BST_CHECKED
 		mov		graph,IDC_RBNVOLT
+		invoke GetDlgItem,hWin,IDC_STCPOWER
+		invoke MoveWindow,eax,0,585,90,15,FALSE
+		invoke GetDlgItem,hWin,IDC_EDTPOWER
+		invoke MoveWindow,eax,0,600,90,25,FALSE
+		invoke GetDlgItem,hWin,IDC_UDNPOWER
+		invoke MoveWindow,eax,90,600,16,25,FALSE
+		invoke SendDlgItemMessage,hWin,IDC_UDNPOWER,UDM_SETRANGE,0,00000028h
 	.elseif eax==WM_COMMAND
 		mov		edx,wParam
 		movzx	eax,dx
@@ -318,6 +392,8 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.elseif eax>=IDC_RBNVOLT && eax<=IDC_RBNCELL
 				mov		graph,eax
 				invoke GetDlgItem,hWin,IDC_GRAPH
+				invoke InvalidateRect,eax,NULL,TRUE
+				invoke GetDlgItem,hWin,IDC_DISPLAY
 				invoke InvalidateRect,eax,NULL,TRUE
 			.endif
 		.endif
@@ -366,12 +442,15 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke GetDlgItem,hWin,IDC_GRAPH
 				invoke InvalidateRect,eax,NULL,TRUE
 			.endif
+			invoke GetDlgItem,hWin,IDC_DISPLAY
+			invoke InvalidateRect,eax,NULL,TRUE
 		.endif
 	.elseif eax==WM_CLOSE
 		invoke KillTimer,hWin,1000
 		.if connected
 			invoke STLinkDisconnect,hWin
 		.endif
+		invoke DeleteObject,hFont
 		invoke DestroyWindow,hWin
 	.elseif uMsg==WM_DESTROY
 		invoke PostQuitMessage,NULL
@@ -406,6 +485,10 @@ WinMain proc hInst:HINSTANCE,hPrevInst:HINSTANCE,CmdLine:LPSTR,CmdShow:DWORD
 	invoke RegisterClassEx,addr wc
 	mov		wc.lpfnWndProc,offset GraphProc
 	mov		wc.lpszClassName,offset szGraphClass
+	mov		wc.hbrBackground,NULL
+	invoke RegisterClassEx,addr wc
+	mov		wc.lpfnWndProc,offset DisplayProc
+	mov		wc.lpszClassName,offset szDisplayClass
 	mov		wc.hbrBackground,NULL
 	invoke RegisterClassEx,addr wc
 
