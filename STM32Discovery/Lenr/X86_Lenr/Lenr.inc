@@ -86,10 +86,10 @@ szTemp				BYTE 'Temprature',0,'100',0,' 90',0,' 80',0,' 70',0,' 60',0,' 50',0,' 
 
 Tahoma_36			LOGFONT <-36,0,0,0,400,0,0,0,0,3,2,1,34,"Tahoma">
 
-szFmtVolt			BYTE '%dV',0
-szFmtAmp			BYTE '%dA',0
-szFmtPower			BYTE '%dW',0
-szFmtTemp			BYTE '%dC',0
+szFmtVolt			BYTE '%.3dV',0
+szFmtAmp			BYTE '%.3dA',0
+szFmtPower			BYTE '%.3dW',0
+szFmtTemp			BYTE '%.3dC',0
 
 .data?
 

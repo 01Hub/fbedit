@@ -18,19 +18,29 @@ DisplayProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 	.elseif eax==WM_PAINT
 		mov		eax,graph
 		.if eax==IDC_RBNVOLT
-			mov		eax,1500
+			movzx	eax,lenr.Volt
+			shr		eax,1
 			invoke wsprintf,addr display,addr szFmtVolt,eax
 		.elseif eax==IDC_RBNAMP
-			mov		eax,150
+			movzx	eax,lenr.Amp
+			shr		eax,3
 			invoke wsprintf,addr display,addr szFmtAmp,eax
 		.elseif eax==IDC_RBNPOWER
-			mov		eax,2250
+			movzx	eax,lenr.Volt
+			shr		eax,1
+			movzx	ecx,lenr.Amp
+			shr		ecx,3
+			mul		ecx
+			mov		ecx,100
+			xor		edx,edx
+			div		ecx
 			invoke wsprintf,addr display,addr szFmtPower,eax
 		.elseif eax==IDC_RBNAMB
-			mov		eax,2500
+			movzx	eax,lenr.Temp1
 			invoke wsprintf,addr display,addr szFmtTemp,eax
 		.elseif eax==IDC_RBNCELL
-			mov		eax,8000
+			movzx	eax,lenr.Temp2
+			shl		eax,2
 			invoke wsprintf,addr display,addr szFmtTemp,eax
 		.endif
 		invoke lstrlen,addr display
@@ -260,8 +270,10 @@ DrawPower:
 		sub		eax,GRPHGT+GRPYPS
 		neg		eax
 		invoke MoveToEx,mDC,addr [esi+GRPXPS],eax,NULL
-		movzx	eax,log.Amp[ebx+sizeof LOG]
-		mov		ecx,20
+		movzx	eax,log.Volt[ebx+sizeof LOG]
+		movzx	ecx,log.Amp[ebx+sizeof LOG]
+		mul		ecx
+		mov		ecx,2000
 		xor		edx,edx
 		div		ecx
 		sub		eax,GRPHGT+GRPYPS
@@ -405,11 +417,8 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		eax,res
 				.if eax!=lenr.SecCount
 					mov		lenr.SecCount,eax
-					PrintDec eax
 					invoke STLinkWrite,hWin,20000004h,addr lenr.Pwm,DWORD
 					invoke STLinkRead,hWin,20000008h,addr lenr.Volt,WORD*4
-					PrintDec lenr.Volt
-					PrintDec lenr.Amp
 				.endif
 			.endif
 		.endif
@@ -435,10 +444,19 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.if !edx
 				mov		ecx,sizeof LOG
 				mul		ecx
-				mov		log.Volt[eax],1500
-				mov		log.Amp[eax],150
-				mov		log.Temp1[eax],2500
-				mov		log.Temp2[eax],8000
+				mov		ebx,eax
+				mov		ax,lenr.Volt
+				shr		ax,1
+				mov		log.Volt[ebx],ax
+				mov		ax,lenr.Amp
+				shr		ax,3
+				mov		log.Amp[ebx],ax
+				mov		ax,lenr.Temp1
+				shl		ax,1
+				mov		log.Temp1[ebx],ax
+				mov		ax,lenr.Temp2
+				shl		ax,2
+				mov		log.Temp2[ebx],ax
 				invoke GetDlgItem,hWin,IDC_GRAPH
 				invoke InvalidateRect,eax,NULL,TRUE
 			.endif
@@ -491,7 +509,6 @@ WinMain proc hInst:HINSTANCE,hPrevInst:HINSTANCE,CmdLine:LPSTR,CmdShow:DWORD
 	mov		wc.lpszClassName,offset szDisplayClass
 	mov		wc.hbrBackground,NULL
 	invoke RegisterClassEx,addr wc
-
 	invoke CreateDialogParam,hInstance,IDD_DIALOG,NULL,addr WndProc,NULL
 	invoke ShowWindow,hWnd,SW_SHOWNORMAL
 	invoke UpdateWindow,hWnd
