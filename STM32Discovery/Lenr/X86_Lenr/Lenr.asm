@@ -18,17 +18,17 @@ DisplayProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 	.elseif eax==WM_PAINT
 		mov		eax,graph
 		.if eax==IDC_RBNVOLT
-			movzx	eax,lenr.Volt
+			movzx	eax,lenr.log.Volt
 			shr		eax,1
 			invoke wsprintf,addr display,addr szFmtVolt,eax
 		.elseif eax==IDC_RBNAMP
-			movzx	eax,lenr.Amp
+			movzx	eax,lenr.log.Amp
 			shr		eax,3
 			invoke wsprintf,addr display,addr szFmtAmp,eax
 		.elseif eax==IDC_RBNPOWER
-			movzx	eax,lenr.Volt
+			movzx	eax,lenr.log.Volt
 			shr		eax,1
-			movzx	ecx,lenr.Amp
+			movzx	ecx,lenr.log.Amp
 			shr		ecx,3
 			mul		ecx
 			mov		ecx,100
@@ -36,10 +36,10 @@ DisplayProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 			div		ecx
 			invoke wsprintf,addr display,addr szFmtPower,eax
 		.elseif eax==IDC_RBNAMB
-			movzx	eax,lenr.Temp1
+			movzx	eax,lenr.log.Temp1
 			invoke wsprintf,addr display,addr szFmtTemp,eax
 		.elseif eax==IDC_RBNCELL
-			movzx	eax,lenr.Temp2
+			movzx	eax,lenr.log.Temp2
 			shl		eax,2
 			invoke wsprintf,addr display,addr szFmtTemp,eax
 		.endif
@@ -417,8 +417,20 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		eax,res
 				.if eax!=lenr.SecCount
 					mov		lenr.SecCount,eax
+					mov		ecx,199*sizeof LOG
+					.while ecx
+						mov		ax,lenr.log.Volt[ecx-sizeof LOG]
+						mov		lenr.log.Volt[ecx],ax
+						mov		ax,lenr.log.Amp[ecx-sizeof LOG]
+						mov		lenr.log.Amp[ecx],ax
+						mov		ax,lenr.log.Temp1[ecx-sizeof LOG]
+						mov		lenr.log.Temp1[ecx],ax
+						mov		ax,lenr.log.Temp2[ecx-sizeof LOG]
+						mov		lenr.log.Temp2[ecx],ax
+						sub		ecx,sizeof LOG
+					.endw
 					invoke STLinkWrite,hWin,20000004h,addr lenr.Pwm,DWORD
-					invoke STLinkRead,hWin,20000008h,addr lenr.Volt,WORD*4
+					invoke STLinkRead,hWin,20000008h,addr lenr.log.Volt,WORD*4
 				.endif
 			.endif
 		.endif
@@ -445,16 +457,16 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		ecx,sizeof LOG
 				mul		ecx
 				mov		ebx,eax
-				mov		ax,lenr.Volt
+				mov		ax,lenr.log.Volt
 				shr		ax,1
 				mov		log.Volt[ebx],ax
-				mov		ax,lenr.Amp
+				mov		ax,lenr.log.Amp
 				shr		ax,3
 				mov		log.Amp[ebx],ax
-				mov		ax,lenr.Temp1
+				mov		ax,lenr.log.Temp1
 				shl		ax,1
 				mov		log.Temp1[ebx],ax
-				mov		ax,lenr.Temp2
+				mov		ax,lenr.log.Temp2
 				shl		ax,2
 				mov		log.Temp2[ebx],ax
 				invoke GetDlgItem,hWin,IDC_GRAPH

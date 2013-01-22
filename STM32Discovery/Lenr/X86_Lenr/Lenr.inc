@@ -53,21 +53,18 @@ IDM_MENU			equ 10000
 IDM_FILE_EXIT		equ 10001
 IDM_HELP_ABOUT		equ 10101
 
-LENR struct
-	SecCount		DWORD ?
-	Pwm				DWORD ?
-	Volt			WORD ?
-	Amp				WORD ?
-	Temp1			WORD ?
-	Temp2			WORD ?
-LENR ends
-
 LOG struct
 	Volt			WORD ?
 	Amp				WORD ?
 	Temp1			WORD ?
 	Temp2			WORD ?
 LOG ends
+
+LENR struct
+	SecCount		DWORD ?
+	Pwm				DWORD ?
+	log				LOG 200 dup(<>)
+LENR ends
 
 .const
 
