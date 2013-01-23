@@ -19,17 +19,13 @@ DisplayProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 		mov		eax,graph
 		.if eax==IDC_RBNVOLT
 			movzx	eax,lenr.log.Volt
-			shr		eax,1
 			invoke wsprintf,addr display,addr szFmtVolt,eax
 		.elseif eax==IDC_RBNAMP
 			movzx	eax,lenr.log.Amp
-			shr		eax,3
 			invoke wsprintf,addr display,addr szFmtAmp,eax
 		.elseif eax==IDC_RBNPOWER
 			movzx	eax,lenr.log.Volt
-			shr		eax,1
 			movzx	ecx,lenr.log.Amp
-			shr		ecx,3
 			mul		ecx
 			mov		ecx,100
 			xor		edx,edx
@@ -40,7 +36,6 @@ DisplayProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 			invoke wsprintf,addr display,addr szFmtTemp,eax
 		.elseif eax==IDC_RBNCELL
 			movzx	eax,lenr.log.Temp2
-			shl		eax,2
 			invoke wsprintf,addr display,addr szFmtTemp,eax
 		.endif
 		invoke lstrlen,addr display
@@ -391,6 +386,8 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.endif
 		invoke CreateFontIndirect,addr Tahoma_36
 		mov		hFont,eax
+		mov		lenr.Pwm1,255
+		mov		lenr.Pwm2,255
 		;Create a timer.
 		invoke SetTimer,hWin,1000,100,NULL
 		invoke MoveWindow,hWin,0,0,GRPWDT+GRPXPS+GRPXPS+6,GRPHGT+GRPYPS+GRPYPS+120,FALSE
@@ -483,8 +480,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					;Convert values
 					shr		lenr.log.Volt,1
 					shr		lenr.log.Amp,3
-					shl		lenr.log.Temp1,1
-					shl		lenr.log.Temp1,2
+					shl		lenr.log.Temp2,2
 					invoke GetDlgItem,hWin,IDC_DISPLAY
 					invoke InvalidateRect,eax,NULL,TRUE
 					;Adjust power
@@ -499,14 +495,14 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					xor		edx,edx
 					div		ecx
 					.if eax>ebx
-						.if lenr.Pwm1
-							dec		lenr.Pwm1
+						.if lenr.Pwm1<255
+							inc		lenr.Pwm1
 							invoke GetDlgItem,hWin,IDC_GRAPH
 							invoke InvalidateRect,eax,NULL,TRUE
 						.endif
 					.elseif eax<ebx
-						.if lenr.Pwm1<255
-							inc		lenr.Pwm1
+						.if lenr.Pwm1
+							dec		lenr.Pwm1
 							invoke GetDlgItem,hWin,IDC_GRAPH
 							invoke InvalidateRect,eax,NULL,TRUE
 						.endif
@@ -550,6 +546,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					add		edi,eax
 					inc		ecx
 				.endw
+				mov		eax,edi
 				mov		ecx,200
 				xor		edx,edx
 				div		ecx
@@ -564,6 +561,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					add		edi,eax
 					inc		ecx
 				.endw
+				mov		eax,edi
 				mov		ecx,200
 				xor		edx,edx
 				div		ecx
@@ -578,6 +576,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					add		edi,eax
 					inc		ecx
 				.endw
+				mov		eax,edi
 				mov		ecx,200
 				xor		edx,edx
 				div		ecx
@@ -592,6 +591,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					add		edi,eax
 					inc		ecx
 				.endw
+				mov		eax,edi
 				mov		ecx,200
 				xor		edx,edx
 				div		ecx
@@ -632,14 +632,14 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		edx,100
 				mul		edx
 				.if ebx>eax
-					.if lenr.Pwm2
-						dec		lenr.Pwm2
+					.if lenr.Pwm2<255
+						inc		lenr.Pwm2
 						invoke GetDlgItem,hWin,IDC_GRAPH
 						invoke InvalidateRect,eax,NULL,TRUE
 					.endif
 				.elseif ebx<eax
-					.if lenr.Pwm2<255
-						inc		lenr.Pwm2
+					.if lenr.Pwm2
+						dec		lenr.Pwm2
 						invoke GetDlgItem,hWin,IDC_GRAPH
 						invoke InvalidateRect,eax,NULL,TRUE
 					.endif

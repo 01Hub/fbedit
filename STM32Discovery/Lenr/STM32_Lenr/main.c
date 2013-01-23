@@ -58,6 +58,8 @@ u16 GetADCValue(u8 Channel);
 *******************************************************************************/
 int main(void)
 {
+  Lenr.Pwm1 = 0xFF;
+  Lenr.Pwm2 = 0xFF;
   /* System Clocks Configuration */
   RCC_Configuration();
   /* Configure the GPIO ports */
@@ -252,8 +254,8 @@ void TIM1_Configuration(void)
   TIM_OCInitStructure.TIM_OCMode = TIM_OCMode_PWM1;
   TIM_OCInitStructure.TIM_OutputState = TIM_OutputState_Enable;
   TIM_OCInitStructure.TIM_OutputNState = TIM_OutputState_Disable;
-  TIM_OCInitStructure.TIM_Pulse = (u16)0x0;
-  TIM_OCInitStructure.TIM_OCPolarity = TIM_OCPolarity_High;
+  TIM_OCInitStructure.TIM_Pulse = (u16)0xFF;
+  TIM_OCInitStructure.TIM_OCPolarity = TIM_OCPolarity_Low;
   TIM_OCInitStructure.TIM_OCNPolarity = TIM_OCPolarity_Low;
   TIM_OCInitStructure.TIM_OCIdleState = TIM_OCIdleState_Reset;
   TIM_OCInitStructure.TIM_OCNIdleState = TIM_OCIdleState_Reset;
