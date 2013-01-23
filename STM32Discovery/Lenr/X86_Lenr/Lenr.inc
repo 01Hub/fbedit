@@ -48,6 +48,13 @@ IDC_DISPLAY			equ 1007
 IDC_EDTPOWER        equ 1008
 IDC_UDNPOWER        equ 1009
 IDC_STCPOWER		equ 1010
+IDC_CHKSTEP			equ 1011
+IDC_STCPOWERMIN     equ 1012
+IDC_EDTPOWERMIN     equ 1013
+IDC_UDNPOWERMIN     equ 1014
+IDC_STCPOWERMAX     equ 1015
+IDC_EDTPOWERMAX     equ 1016
+IDC_UDNPOWERMAX     equ 1017
 
 IDM_MENU			equ 10000
 IDM_FILE_EXIT		equ 10001
@@ -102,3 +109,4 @@ logpos				DWORD ?
 log					LOG GRPWDT dup(<>)
 graph				DWORD ?
 display				BYTE 16 dup (?)
+rampupdown			DWORD ?

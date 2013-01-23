@@ -406,6 +406,22 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke GetDlgItem,hWin,IDC_UDNPOWER
 		invoke MoveWindow,eax,90,600,16,25,FALSE
 		invoke SendDlgItemMessage,hWin,IDC_UDNPOWER,UDM_SETRANGE,0,00000028h
+		invoke GetDlgItem,hWin,IDC_CHKSTEP
+		invoke MoveWindow,eax,130,605,170,16,FALSE
+		invoke GetDlgItem,hWin,IDC_STCPOWERMIN
+		invoke MoveWindow,eax,300,585,90,15,FALSE
+		invoke GetDlgItem,hWin,IDC_EDTPOWERMIN
+		invoke MoveWindow,eax,300,605,90,25,FALSE
+		invoke GetDlgItem,hWin,IDC_UDNPOWERMIN
+		invoke MoveWindow,eax,390,605,16,25,FALSE
+		invoke SendDlgItemMessage,hWin,IDC_UDNPOWERMIN,UDM_SETRANGE,0,00000028h
+		invoke GetDlgItem,hWin,IDC_STCPOWERMAX
+		invoke MoveWindow,eax,420,585,90,15,FALSE
+		invoke GetDlgItem,hWin,IDC_EDTPOWERMAX
+		invoke MoveWindow,eax,420,605,90,25,FALSE
+		invoke GetDlgItem,hWin,IDC_UDNPOWERMAX
+		invoke MoveWindow,eax,510,605,16,25,FALSE
+		invoke SendDlgItemMessage,hWin,IDC_UDNPOWERMAX,UDM_SETRANGE,0,00000028h
 	.elseif eax==WM_COMMAND
 		mov		edx,wParam
 		movzx	eax,dx
@@ -421,6 +437,12 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke InvalidateRect,eax,NULL,TRUE
 				invoke GetDlgItem,hWin,IDC_DISPLAY
 				invoke InvalidateRect,eax,NULL,TRUE
+			.elseif eax==IDC_CHKSTEP
+				invoke IsDlgButtonChecked,hWin,IDC_CHKSTEP
+				mov		rampupdown,0
+				.if eax
+					mov		rampupdown,1
+				.endif
 			.endif
 		.endif
 	.elseif	eax==WM_TIMER
@@ -563,6 +585,29 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		log.Temp2[ebx],ax
 				invoke GetDlgItem,hWin,IDC_GRAPH
 				invoke InvalidateRect,eax,NULL,TRUE
+			.endif
+			invoke IsDlgButtonChecked,hWin,IDC_CHKSTEP
+			.if eax
+				.if systime.wSecond==0 && systime.wMinute==0
+					invoke GetDlgItemInt,hWin,IDC_EDTPOWER,NULL,FALSE
+					mov		ebx,eax
+					.if rampupdown==1
+						;Up
+						invoke GetDlgItemInt,hWin,IDC_EDTPOWERMAX,NULL,FALSE
+						.if ebx>=eax
+							mov		rampupdown,-1
+						.endif
+					.elseif rampupdown==-1
+						;Down
+						invoke GetDlgItemInt,hWin,IDC_EDTPOWERMIN,NULL,FALSE
+						.if ebx<=eax
+							mov		rampupdown,1
+						.endif
+					.endif
+					invoke SendDlgItemMessage,hWin,IDC_UDNPOWER,UDM_GETPOS,0,0
+					add		eax,rampupdown
+					invoke SendDlgItemMessage,hWin,IDC_UDNPOWER,UDM_SETPOS,0,eax
+				.endif
 			.endif
 		.endif
 	.elseif eax==WM_CLOSE
