@@ -20,19 +20,19 @@
  <type Header="NVIC_InitTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="C:\STM32\Inc\stm32f10x_nvic.h" DeclLine="32" Pointer="No"/>
  <type Header="TIM_TimeBaseInitTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="C:\STM32\Inc\stm32f10x_tim.h" DeclLine="34" Pointer="No"/>
  <type Header="TIM_OCInitTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="C:\STM32\Inc\stm32f10x_tim.h" DeclLine="47" Pointer="No"/>
- <type Header="LenrTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\main.c" DeclLine="21" Pointer="No"/>
- <func Header="TIM1_UP_IRQHandler" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\main.c" DeclLine="76"/>
- <func Header="GetADCValue" Icon="3" Type="func" Desc=":   unsigned int" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\main.c" DeclLine="114"/>
- <func Header="TIM3_IRQHandler" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\main.c" DeclLine="91"/>
- <func Header="RCC_Configuration" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\main.c" DeclLine="147"/>
- <func Header="GPIO_Configuration" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\main.c" DeclLine="193"/>
- <func Header="TIM1_Configuration" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\main.c" DeclLine="220"/>
- <func Header="TIM3_Configuration" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\main.c" DeclLine="265"/>
- <func Header="ADC_Configuration" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\main.c" DeclLine="285"/>
- <func Header="NVIC_Configuration" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\main.c" DeclLine="320"/>
- <func Header="main" Icon="3" Type="func" Desc=":   long" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\main.c" DeclLine="48"/>
- <variable Header="Lenr" Icon="2" Type="variable" Desc=":   struct " DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\main.c" DeclLine="27" Pointer="No"/>
- <variable Header="HSEStartUpStatus" Icon="2" Type="variable" Desc=":   unsigned char" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\main.c" DeclLine="26" Pointer="No"/>
+ <type Header="LenrTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\main.c" DeclLine="32" Pointer="No"/>
+ <func Header="TIM1_UP_IRQHandler" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\main.c" DeclLine="87"/>
+ <func Header="GetADCValue" Icon="3" Type="func" Desc=":   unsigned int" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\main.c" DeclLine="126"/>
+ <func Header="TIM3_IRQHandler" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\main.c" DeclLine="103"/>
+ <func Header="RCC_Configuration" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\main.c" DeclLine="159"/>
+ <func Header="GPIO_Configuration" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\main.c" DeclLine="205"/>
+ <func Header="TIM1_Configuration" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\main.c" DeclLine="232"/>
+ <func Header="TIM3_Configuration" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\main.c" DeclLine="280"/>
+ <func Header="ADC_Configuration" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\main.c" DeclLine="300"/>
+ <func Header="NVIC_Configuration" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\main.c" DeclLine="335"/>
+ <func Header="main" Icon="3" Type="func" Desc=":   long" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\main.c" DeclLine="59"/>
+ <variable Header="Lenr" Icon="2" Type="variable" Desc=":   struct " DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\main.c" DeclLine="38" Pointer="No"/>
+ <variable Header="HSEStartUpStatus" Icon="2" Type="variable" Desc=":   unsigned char" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\main.c" DeclLine="37" Pointer="No"/>
  <type Header="u32" Icon="1" Type="type" Desc=": unsigned long" DeclFile="C:\STM32\Inc\stm32f10x_type.h" DeclLine="39" Pointer="No"/>
  <type Header="u16" Icon="1" Type="type" Desc=": unsigned int" DeclFile="C:\STM32\Inc\stm32f10x_type.h" DeclLine="40" Pointer="No"/>
  <type Header="u8" Icon="1" Type="type" Desc=": unsigned char" DeclFile="C:\STM32\Inc\stm32f10x_type.h" DeclLine="41" Pointer="No"/>
@@ -158,11 +158,13 @@
  <type Header="TIM_BDTRInitTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="C:\STM32\Inc\stm32f10x_tim.h" DeclLine="69" Pointer="No"/>
  <func Header="TIM_TimeBaseInit" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_tim.c" DeclLine="198"/>
  <func Header="TIM_OC1Init" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_tim.c" DeclLine="237"/>
+ <func Header="TIM_OC2Init" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_tim.c" DeclLine="328"/>
  <func Header="TIM_Cmd" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_tim.c" DeclLine="828"/>
  <func Header="TIM_CtrlPWMOutputs" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_tim.c" DeclLine="855"/>
  <func Header="TIM_ITConfig" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_tim.c" DeclLine="893"/>
  <func Header="TIM_InternalClockConfig" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_tim.c" DeclLine="1016"/>
  <func Header="TIM_OC1PreloadConfig" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_tim.c" DeclLine="1652"/>
+ <func Header="TIM_OC2PreloadConfig" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_tim.c" DeclLine="1685"/>
  <func Header="TIM_ClearITPendingBit" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_tim.c" DeclLine="3021"/>
 </aoffile>
 

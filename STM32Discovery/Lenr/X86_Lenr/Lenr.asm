@@ -169,9 +169,14 @@ GraphProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			call	DrawTemp2
 		.endif
 		;Draw PWM
-		invoke wsprintf,addr buffer,addr szFmtPwm,lenr.Pwm
+		movzx	eax,lenr.Pwm1
+		invoke wsprintf,addr buffer,addr szFmtPwm1,eax
 		invoke lstrlen,addr buffer
 		invoke TextOut,mDC,15,5,addr buffer,eax
+		movzx	eax,lenr.Pwm2
+		invoke wsprintf,addr buffer,addr szFmtPwm2,eax
+		invoke lstrlen,addr buffer
+		invoke TextOut,mDC,100,5,addr buffer,eax
 		invoke BitBlt,ps.hdc,0,0,rect.right,rect.bottom,mDC,0,0,SRCCOPY
 		;Delete bitmap
 		pop		eax
@@ -422,6 +427,14 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke GetDlgItem,hWin,IDC_UDNPOWERMAX
 		invoke MoveWindow,eax,510,605,16,25,FALSE
 		invoke SendDlgItemMessage,hWin,IDC_UDNPOWERMAX,UDM_SETRANGE,0,00000028h
+		invoke GetDlgItem,hWin,IDC_STCAMBTEMP
+		invoke MoveWindow,eax,540,585,90,15,FALSE
+		invoke GetDlgItem,hWin,IDC_EDTAMBTEMP
+		invoke MoveWindow,eax,540,605,90,25,FALSE
+		invoke GetDlgItem,hWin,IDC_UDNAMBTEMP
+		invoke MoveWindow,eax,630,605,16,25,FALSE
+		invoke SendDlgItemMessage,hWin,IDC_UDNAMBTEMP,UDM_SETRANGE,0,000A0028h
+		invoke SendDlgItemMessage,hWin,IDC_UDNAMBTEMP,UDM_SETPOS,0,0019h
 	.elseif eax==WM_COMMAND
 		mov		edx,wParam
 		movzx	eax,dx
@@ -486,20 +499,20 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					xor		edx,edx
 					div		ecx
 					.if eax>ebx
-						.if lenr.Pwm
-							dec		lenr.Pwm
+						.if lenr.Pwm1
+							dec		lenr.Pwm1
 							invoke GetDlgItem,hWin,IDC_GRAPH
 							invoke InvalidateRect,eax,NULL,TRUE
 						.endif
 					.elseif eax<ebx
-						.if lenr.Pwm<255
-							inc		lenr.Pwm
+						.if lenr.Pwm1<255
+							inc		lenr.Pwm1
 							invoke GetDlgItem,hWin,IDC_GRAPH
 							invoke InvalidateRect,eax,NULL,TRUE
 						.endif
 					.endif
-					;Update pwm
-					invoke STLinkWrite,hWin,20000004h,addr lenr.Pwm,DWORD
+					;Update pwm1 and pwm2
+					invoke STLinkWrite,hWin,20000004h,addr lenr.Pwm1,DWORD
 				.endif
 			.endif
 		.endif
@@ -607,6 +620,29 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					invoke SendDlgItemMessage,hWin,IDC_UDNPOWER,UDM_GETPOS,0,0
 					add		eax,rampupdown
 					invoke SendDlgItemMessage,hWin,IDC_UDNPOWER,UDM_SETPOS,0,eax
+				.endif
+			.endif
+			.if !(systime.wSecond & 1)
+				;Ambient temprature
+				mov		eax,logpos
+				mov		ecx,sizeof LOG
+				mul		ecx
+				movzx	ebx,log.Temp1[eax]
+				invoke GetDlgItemInt,hWin,IDC_EDTAMBTEMP,NULL,FALSE
+				mov		edx,100
+				mul		edx
+				.if ebx>eax
+					.if lenr.Pwm2
+						dec		lenr.Pwm2
+						invoke GetDlgItem,hWin,IDC_GRAPH
+						invoke InvalidateRect,eax,NULL,TRUE
+					.endif
+				.elseif ebx<eax
+					.if lenr.Pwm2<255
+						inc		lenr.Pwm2
+						invoke GetDlgItem,hWin,IDC_GRAPH
+						invoke InvalidateRect,eax,NULL,TRUE
+					.endif
 				.endif
 			.endif
 		.endif

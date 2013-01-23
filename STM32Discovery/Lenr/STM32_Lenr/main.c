@@ -6,6 +6,16 @@
 * Description        : Main program body
 *******************************************************************************/
 
+/*******************************************************************************
+* Port pins
+* PA.08 Heater pvm voltage
+* PA.09 Fan pwm voltage
+* PC.00 Heater voltage
+* PC.01 Heater current
+* PC.02 Ambient temprature
+* PC.03 Cell temprature
+*******************************************************************************/
+
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f10x_lib.h"
 
@@ -13,11 +23,12 @@
 typedef struct
 {
   vu32 SecCount;         // @0x20000000
-  vu32 Pwm;              // @0x20000004
-  vu16 Volts;            // @0x20000008
-  vu16 Amps;             // @0x2000000A
-  vu16 Temp1;            // @0x2000000C
-  vu16 Temp2;            // @0x2000000E
+  vu16 Pwm1;             // @0x20000004 Heater
+  vu16 Pwm2;             // @0x20000006 Fan
+  vu16 Volts;            // @0x20000008 Heater
+  vu16 Amps;             // @0x2000000A Heater
+  vu16 Temp1;            // @0x2000000C Ambient
+  vu16 Temp2;            // @0x2000000E Cell
 }LenrTypeDef;
 
 /* Private define ------------------------------------------------------------*/
@@ -76,7 +87,8 @@ int main(void)
 void TIM1_UP_IRQHandler(void)
 {
   /* Set the Capture Compare Register value */
-  TIM1->CCR1 = Lenr.Pwm;
+  TIM1->CCR1 = Lenr.Pwm1;
+  TIM1->CCR2 = Lenr.Pwm2;
   /* Clear TIM1 Update interrupt pending bit */
   TIM_ClearITPendingBit(TIM1, TIM_IT_Update);
 }
@@ -193,8 +205,8 @@ void RCC_Configuration(void)
 void GPIO_Configuration(void)
 {
   GPIO_InitTypeDef GPIO_InitStructure;
-  /* TIM1 channel 1 pin (PA.08) configuration */
-  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_8;
+  /* TIM1 channel 1 and 2 pin (PA.08 and PA.09) configuration */
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9 | GPIO_Pin_8;
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
   GPIO_Init(GPIOA, &GPIO_InitStructure);
@@ -248,6 +260,9 @@ void TIM1_Configuration(void)
   /* PWM1 Mode configuration: Channel1 */
   TIM_OC1Init(TIM1, &TIM_OCInitStructure);
   TIM_OC1PreloadConfig(TIM1, TIM_OCPreload_Enable);
+  /* PWM1 Mode configuration: Channel2 */
+  TIM_OC2Init(TIM1, &TIM_OCInitStructure);
+  TIM_OC2PreloadConfig(TIM1, TIM_OCPreload_Enable);
   /* TIM1 enable counter */
   TIM_Cmd(TIM1, ENABLE);
   /* TIM1 Main Output Enable */

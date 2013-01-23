@@ -280,8 +280,6 @@ Discarded input sections
                 0x00000000       0x4c C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_tim.o
  .text.TIM_DeInit
                 0x00000000      0x14c C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_tim.o
- .text.TIM_OC2Init
-                0x00000000       0xb0 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_tim.o
  .text.TIM_OC3Init
                 0x00000000       0xac C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_tim.o
  .text.TIM_OC4Init
@@ -336,8 +334,6 @@ Discarded input sections
                 0x00000000       0x20 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_tim.o
  .text.TIM_CCPreloadControl
                 0x00000000       0x20 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_tim.o
- .text.TIM_OC2PreloadConfig
-                0x00000000       0x18 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_tim.o
  .text.TIM_OC3PreloadConfig
                 0x00000000       0x18 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_tim.o
  .text.TIM_OC4PreloadConfig
@@ -657,7 +653,7 @@ END GROUP
  *(.flashtext)
                 0x0800010c                . = ALIGN (0x4)
 
-.text           0x0800010c      0xd28
+.text           0x0800010c      0xe04
                 0x0800010c                . = ALIGN (0x4)
  *(.text)
  *(.text.*)
@@ -682,276 +678,282 @@ END GROUP
                 0x0800014c                BusFault_Handler
  *fill*         0x0800014e        0x2 00
  .text.TIM1_UP_IRQHandler
-                0x08000150       0x24 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\main.o
+                0x08000150       0x28 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\main.o
                 0x08000150                TIM1_UP_IRQHandler
  .text.GetADCValue
-                0x08000174       0xa0 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\main.o
-                0x08000174                GetADCValue
+                0x08000178       0xa0 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\main.o
+                0x08000178                GetADCValue
  .text.TIM3_IRQHandler
-                0x08000214       0x84 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\main.o
-                0x08000214                TIM3_IRQHandler
+                0x08000218       0x84 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\main.o
+                0x08000218                TIM3_IRQHandler
  .text.RCC_Configuration
-                0x08000298       0x94 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\main.o
-                0x08000298                RCC_Configuration
+                0x0800029c       0x94 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\main.o
+                0x0800029c                RCC_Configuration
  .text.GPIO_Configuration
-                0x0800032c       0x70 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\main.o
-                0x0800032c                GPIO_Configuration
+                0x08000330       0x6c C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\main.o
+                0x08000330                GPIO_Configuration
  .text.TIM1_Configuration
-                0x0800039c       0x8c C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\main.o
+                0x0800039c       0xa0 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\main.o
                 0x0800039c                TIM1_Configuration
  .text.TIM3_Configuration
-                0x08000428       0x48 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\main.o
-                0x08000428                TIM3_Configuration
+                0x0800043c       0x48 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\main.o
+                0x0800043c                TIM3_Configuration
  .text.ADC_Configuration
-                0x08000470       0x8c C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\main.o
-                0x08000470                ADC_Configuration
+                0x08000484       0x8c C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\main.o
+                0x08000484                ADC_Configuration
  .text.NVIC_Configuration
-                0x080004fc       0x54 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\main.o
-                0x080004fc                NVIC_Configuration
- .text.main     0x08000550       0x2c C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\main.o
-                0x08000550                main
+                0x08000510       0x54 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\main.o
+                0x08000510                NVIC_Configuration
+ .text.main     0x08000564       0x2c C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\main.o
+                0x08000564                main
  .text.ADC_Init
-                0x0800057c       0x50 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_adc.o
-                0x0800057c                ADC_Init
- .text.ADC_Cmd  0x080005cc       0x18 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_adc.o
-                0x080005cc                ADC_Cmd
+                0x08000590       0x50 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_adc.o
+                0x08000590                ADC_Init
+ .text.ADC_Cmd  0x080005e0       0x18 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_adc.o
+                0x080005e0                ADC_Cmd
  .text.ADC_ResetCalibration
-                0x080005e4        0xc C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_adc.o
-                0x080005e4                ADC_ResetCalibration
- .text.ADC_GetResetCalibrationStatus
-                0x080005f0        0x8 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_adc.o
-                0x080005f0                ADC_GetResetCalibrationStatus
- .text.ADC_StartCalibration
                 0x080005f8        0xc C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_adc.o
-                0x080005f8                ADC_StartCalibration
- .text.ADC_GetCalibrationStatus
+                0x080005f8                ADC_ResetCalibration
+ .text.ADC_GetResetCalibrationStatus
                 0x08000604        0x8 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_adc.o
-                0x08000604                ADC_GetCalibrationStatus
+                0x08000604                ADC_GetResetCalibrationStatus
+ .text.ADC_StartCalibration
+                0x0800060c        0xc C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_adc.o
+                0x0800060c                ADC_StartCalibration
+ .text.ADC_GetCalibrationStatus
+                0x08000618        0x8 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_adc.o
+                0x08000618                ADC_GetCalibrationStatus
  .text.ADC_SoftwareStartConvCmd
-                0x0800060c       0x18 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_adc.o
-                0x0800060c                ADC_SoftwareStartConvCmd
+                0x08000620       0x18 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_adc.o
+                0x08000620                ADC_SoftwareStartConvCmd
  .text.ADC_RegularChannelConfig
-                0x08000624       0xb4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_adc.o
-                0x08000624                ADC_RegularChannelConfig
+                0x08000638       0xb4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_adc.o
+                0x08000638                ADC_RegularChannelConfig
  .text.ADC_GetFlagStatus
-                0x080006d8        0xc C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_adc.o
-                0x080006d8                ADC_GetFlagStatus
+                0x080006ec        0xc C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_adc.o
+                0x080006ec                ADC_GetFlagStatus
  .text.ADC_ClearFlag
-                0x080006e4        0x8 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_adc.o
-                0x080006e4                ADC_ClearFlag
+                0x080006f8        0x8 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_adc.o
+                0x080006f8                ADC_ClearFlag
  .text.FLASH_SetLatency
-                0x080006ec       0x1c C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_flash.o
-                0x080006ec                FLASH_SetLatency
+                0x08000700       0x1c C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_flash.o
+                0x08000700                FLASH_SetLatency
  .text.FLASH_PrefetchBufferCmd
-                0x08000708       0x1c C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_flash.o
-                0x08000708                FLASH_PrefetchBufferCmd
+                0x0800071c       0x1c C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_flash.o
+                0x0800071c                FLASH_PrefetchBufferCmd
  .text.GPIO_Init
-                0x08000724       0xc4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_gpio.o
-                0x08000724                GPIO_Init
+                0x08000738       0xc4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_gpio.o
+                0x08000738                GPIO_Init
  .text.GPIO_WriteBit
-                0x080007e8        0xc C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_gpio.o
-                0x080007e8                GPIO_WriteBit
+                0x080007fc        0xc C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_gpio.o
+                0x080007fc                GPIO_WriteBit
  .text.WWDG_IRQHandler
-                0x080007f4        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_it.o
-                0x080007f4                WWDG_IRQHandler
- .text.PVD_IRQHandler
-                0x080007f8        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_it.o
-                0x080007f8                PVD_IRQHandler
- .text.TAMPER_IRQHandler
-                0x080007fc        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_it.o
-                0x080007fc                TAMPER_IRQHandler
- .text.RTC_IRQHandler
-                0x08000800        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_it.o
-                0x08000800                RTC_IRQHandler
- .text.FLASH_IRQHandler
-                0x08000804        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_it.o
-                0x08000804                FLASH_IRQHandler
- .text.RCC_IRQHandler
                 0x08000808        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_it.o
-                0x08000808                RCC_IRQHandler
- .text.EXTI0_IRQHandler
+                0x08000808                WWDG_IRQHandler
+ .text.PVD_IRQHandler
                 0x0800080c        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_it.o
-                0x0800080c                EXTI0_IRQHandler
- .text.EXTI1_IRQHandler
+                0x0800080c                PVD_IRQHandler
+ .text.TAMPER_IRQHandler
                 0x08000810        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_it.o
-                0x08000810                EXTI1_IRQHandler
- .text.EXTI2_IRQHandler
+                0x08000810                TAMPER_IRQHandler
+ .text.RTC_IRQHandler
                 0x08000814        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_it.o
-                0x08000814                EXTI2_IRQHandler
- .text.EXTI3_IRQHandler
+                0x08000814                RTC_IRQHandler
+ .text.FLASH_IRQHandler
                 0x08000818        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_it.o
-                0x08000818                EXTI3_IRQHandler
- .text.EXTI4_IRQHandler
+                0x08000818                FLASH_IRQHandler
+ .text.RCC_IRQHandler
                 0x0800081c        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_it.o
-                0x0800081c                EXTI4_IRQHandler
- .text.DMA1_Channel1_IRQHandler
+                0x0800081c                RCC_IRQHandler
+ .text.EXTI0_IRQHandler
                 0x08000820        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_it.o
-                0x08000820                DMA1_Channel1_IRQHandler
- .text.DMA1_Channel2_IRQHandler
+                0x08000820                EXTI0_IRQHandler
+ .text.EXTI1_IRQHandler
                 0x08000824        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_it.o
-                0x08000824                DMA1_Channel2_IRQHandler
- .text.DMA1_Channel3_IRQHandler
+                0x08000824                EXTI1_IRQHandler
+ .text.EXTI2_IRQHandler
                 0x08000828        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_it.o
-                0x08000828                DMA1_Channel3_IRQHandler
- .text.DMA1_Channel4_IRQHandler
+                0x08000828                EXTI2_IRQHandler
+ .text.EXTI3_IRQHandler
                 0x0800082c        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_it.o
-                0x0800082c                DMA1_Channel4_IRQHandler
- .text.DMA1_Channel5_IRQHandler
+                0x0800082c                EXTI3_IRQHandler
+ .text.EXTI4_IRQHandler
                 0x08000830        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_it.o
-                0x08000830                DMA1_Channel5_IRQHandler
- .text.DMA1_Channel6_IRQHandler
+                0x08000830                EXTI4_IRQHandler
+ .text.DMA1_Channel1_IRQHandler
                 0x08000834        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_it.o
-                0x08000834                DMA1_Channel6_IRQHandler
- .text.DMA1_Channel7_IRQHandler
+                0x08000834                DMA1_Channel1_IRQHandler
+ .text.DMA1_Channel2_IRQHandler
                 0x08000838        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_it.o
-                0x08000838                DMA1_Channel7_IRQHandler
- .text.ADC1_2_IRQHandler
+                0x08000838                DMA1_Channel2_IRQHandler
+ .text.DMA1_Channel3_IRQHandler
                 0x0800083c        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_it.o
-                0x0800083c                ADC1_2_IRQHandler
- .text.EXTI9_5_IRQHandler
+                0x0800083c                DMA1_Channel3_IRQHandler
+ .text.DMA1_Channel4_IRQHandler
                 0x08000840        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_it.o
-                0x08000840                EXTI9_5_IRQHandler
- .text.TIM1_BRK_IRQHandler
+                0x08000840                DMA1_Channel4_IRQHandler
+ .text.DMA1_Channel5_IRQHandler
                 0x08000844        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_it.o
-                0x08000844                TIM1_BRK_IRQHandler
- .text.TIM1_TRG_COM_IRQHandler
+                0x08000844                DMA1_Channel5_IRQHandler
+ .text.DMA1_Channel6_IRQHandler
                 0x08000848        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_it.o
-                0x08000848                TIM1_TRG_COM_IRQHandler
- .text.TIM1_CC_IRQHandler
+                0x08000848                DMA1_Channel6_IRQHandler
+ .text.DMA1_Channel7_IRQHandler
                 0x0800084c        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_it.o
-                0x0800084c                TIM1_CC_IRQHandler
- .text.TIM2_IRQHandler
+                0x0800084c                DMA1_Channel7_IRQHandler
+ .text.ADC1_2_IRQHandler
                 0x08000850        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_it.o
-                0x08000850                TIM2_IRQHandler
- .text.TIM4_IRQHandler
+                0x08000850                ADC1_2_IRQHandler
+ .text.EXTI9_5_IRQHandler
                 0x08000854        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_it.o
-                0x08000854                TIM4_IRQHandler
- .text.I2C1_EV_IRQHandler
+                0x08000854                EXTI9_5_IRQHandler
+ .text.TIM1_BRK_IRQHandler
                 0x08000858        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_it.o
-                0x08000858                I2C1_EV_IRQHandler
- .text.I2C1_ER_IRQHandler
+                0x08000858                TIM1_BRK_IRQHandler
+ .text.TIM1_TRG_COM_IRQHandler
                 0x0800085c        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_it.o
-                0x0800085c                I2C1_ER_IRQHandler
- .text.I2C2_EV_IRQHandler
+                0x0800085c                TIM1_TRG_COM_IRQHandler
+ .text.TIM1_CC_IRQHandler
                 0x08000860        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_it.o
-                0x08000860                I2C2_EV_IRQHandler
- .text.I2C2_ER_IRQHandler
+                0x08000860                TIM1_CC_IRQHandler
+ .text.TIM2_IRQHandler
                 0x08000864        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_it.o
-                0x08000864                I2C2_ER_IRQHandler
- .text.SPI1_IRQHandler
+                0x08000864                TIM2_IRQHandler
+ .text.TIM4_IRQHandler
                 0x08000868        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_it.o
-                0x08000868                SPI1_IRQHandler
- .text.SPI2_IRQHandler
+                0x08000868                TIM4_IRQHandler
+ .text.I2C1_EV_IRQHandler
                 0x0800086c        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_it.o
-                0x0800086c                SPI2_IRQHandler
- .text.USART1_IRQHandler
+                0x0800086c                I2C1_EV_IRQHandler
+ .text.I2C1_ER_IRQHandler
                 0x08000870        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_it.o
-                0x08000870                USART1_IRQHandler
- .text.USART2_IRQHandler
+                0x08000870                I2C1_ER_IRQHandler
+ .text.I2C2_EV_IRQHandler
                 0x08000874        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_it.o
-                0x08000874                USART2_IRQHandler
- .text.USART3_IRQHandler
+                0x08000874                I2C2_EV_IRQHandler
+ .text.I2C2_ER_IRQHandler
                 0x08000878        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_it.o
-                0x08000878                USART3_IRQHandler
- .text.EXTI15_10_IRQHandler
+                0x08000878                I2C2_ER_IRQHandler
+ .text.SPI1_IRQHandler
                 0x0800087c        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_it.o
-                0x0800087c                EXTI15_10_IRQHandler
- .text.RTCAlarm_IRQHandler
+                0x0800087c                SPI1_IRQHandler
+ .text.SPI2_IRQHandler
                 0x08000880        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_it.o
-                0x08000880                RTCAlarm_IRQHandler
- .text.USBWakeUp_IRQHandler
+                0x08000880                SPI2_IRQHandler
+ .text.USART1_IRQHandler
                 0x08000884        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_it.o
-                0x08000884                USBWakeUp_IRQHandler
+                0x08000884                USART1_IRQHandler
+ .text.USART2_IRQHandler
+                0x08000888        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_it.o
+                0x08000888                USART2_IRQHandler
+ .text.USART3_IRQHandler
+                0x0800088c        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_it.o
+                0x0800088c                USART3_IRQHandler
+ .text.EXTI15_10_IRQHandler
+                0x08000890        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_it.o
+                0x08000890                EXTI15_10_IRQHandler
+ .text.RTCAlarm_IRQHandler
+                0x08000894        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_it.o
+                0x08000894                RTCAlarm_IRQHandler
+ .text.USBWakeUp_IRQHandler
+                0x08000898        0x4 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_it.o
+                0x08000898                USBWakeUp_IRQHandler
  .text.NVIC_Init
-                0x08000888       0xac C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_nvic.o
-                0x08000888                NVIC_Init
+                0x0800089c       0xac C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_nvic.o
+                0x0800089c                NVIC_Init
  .text.NVIC_SetVectorTable
-                0x08000934       0x18 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_nvic.o
-                0x08000934                NVIC_SetVectorTable
+                0x08000948       0x18 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_nvic.o
+                0x08000948                NVIC_SetVectorTable
  .text.RCC_DeInit
-                0x0800094c       0x44 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_rcc.o
-                0x0800094c                RCC_DeInit
+                0x08000960       0x44 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_rcc.o
+                0x08000960                RCC_DeInit
  .text.RCC_HSEConfig
-                0x08000990       0x4c C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_rcc.o
-                0x08000990                RCC_HSEConfig
+                0x080009a4       0x4c C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_rcc.o
+                0x080009a4                RCC_HSEConfig
  .text.RCC_PLLConfig
-                0x080009dc       0x18 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_rcc.o
-                0x080009dc                RCC_PLLConfig
+                0x080009f0       0x18 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_rcc.o
+                0x080009f0                RCC_PLLConfig
  .text.RCC_PLLCmd
-                0x080009f4        0xc C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_rcc.o
-                0x080009f4                RCC_PLLCmd
+                0x08000a08        0xc C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_rcc.o
+                0x08000a08                RCC_PLLCmd
  .text.RCC_SYSCLKConfig
-                0x08000a00       0x18 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_rcc.o
-                0x08000a00                RCC_SYSCLKConfig
+                0x08000a14       0x18 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_rcc.o
+                0x08000a14                RCC_SYSCLKConfig
  .text.RCC_GetSYSCLKSource
-                0x08000a18       0x10 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_rcc.o
-                0x08000a18                RCC_GetSYSCLKSource
+                0x08000a2c       0x10 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_rcc.o
+                0x08000a2c                RCC_GetSYSCLKSource
  .text.RCC_HCLKConfig
-                0x08000a28       0x18 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_rcc.o
-                0x08000a28                RCC_HCLKConfig
+                0x08000a3c       0x18 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_rcc.o
+                0x08000a3c                RCC_HCLKConfig
  .text.RCC_PCLK1Config
-                0x08000a40       0x18 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_rcc.o
-                0x08000a40                RCC_PCLK1Config
+                0x08000a54       0x18 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_rcc.o
+                0x08000a54                RCC_PCLK1Config
  .text.RCC_PCLK2Config
-                0x08000a58       0x18 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_rcc.o
-                0x08000a58                RCC_PCLK2Config
+                0x08000a6c       0x18 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_rcc.o
+                0x08000a6c                RCC_PCLK2Config
  .text.RCC_ADCCLKConfig
-                0x08000a70       0x18 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_rcc.o
-                0x08000a70                RCC_ADCCLKConfig
+                0x08000a84       0x18 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_rcc.o
+                0x08000a84                RCC_ADCCLKConfig
  .text.RCC_APB2PeriphClockCmd
-                0x08000a88       0x24 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_rcc.o
-                0x08000a88                RCC_APB2PeriphClockCmd
+                0x08000a9c       0x24 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_rcc.o
+                0x08000a9c                RCC_APB2PeriphClockCmd
  .text.RCC_APB1PeriphClockCmd
-                0x08000aac       0x24 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_rcc.o
-                0x08000aac                RCC_APB1PeriphClockCmd
+                0x08000ac0       0x24 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_rcc.o
+                0x08000ac0                RCC_APB1PeriphClockCmd
  .text.RCC_GetFlagStatus
-                0x08000ad0       0x34 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_rcc.o
-                0x08000ad0                RCC_GetFlagStatus
+                0x08000ae4       0x34 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_rcc.o
+                0x08000ae4                RCC_GetFlagStatus
  .text.RCC_WaitForHSEStartUp
-                0x08000b04       0x38 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_rcc.o
-                0x08000b04                RCC_WaitForHSEStartUp
+                0x08000b18       0x38 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_rcc.o
+                0x08000b18                RCC_WaitForHSEStartUp
  .text.TIM_TimeBaseInit
-                0x08000b3c       0x50 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_tim.o
-                0x08000b3c                TIM_TimeBaseInit
+                0x08000b50       0x50 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_tim.o
+                0x08000b50                TIM_TimeBaseInit
  .text.TIM_OC1Init
-                0x08000b8c       0xa0 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_tim.o
-                0x08000b8c                TIM_OC1Init
- .text.TIM_Cmd  0x08000c2c       0x20 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_tim.o
-                0x08000c2c                TIM_Cmd
+                0x08000ba0       0xa0 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_tim.o
+                0x08000ba0                TIM_OC1Init
+ .text.TIM_OC2Init
+                0x08000c40       0xb0 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_tim.o
+                0x08000c40                TIM_OC2Init
+ .text.TIM_Cmd  0x08000cf0       0x20 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_tim.o
+                0x08000cf0                TIM_Cmd
  .text.TIM_CtrlPWMOutputs
-                0x08000c4c       0x28 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_tim.o
-                0x08000c4c                TIM_CtrlPWMOutputs
+                0x08000d10       0x28 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_tim.o
+                0x08000d10                TIM_CtrlPWMOutputs
  .text.TIM_ITConfig
-                0x08000c74       0x18 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_tim.o
-                0x08000c74                TIM_ITConfig
+                0x08000d38       0x18 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_tim.o
+                0x08000d38                TIM_ITConfig
  .text.TIM_InternalClockConfig
-                0x08000c8c       0x14 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_tim.o
-                0x08000c8c                TIM_InternalClockConfig
+                0x08000d50       0x14 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_tim.o
+                0x08000d50                TIM_InternalClockConfig
  .text.TIM_OC1PreloadConfig
-                0x08000ca0       0x18 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_tim.o
-                0x08000ca0                TIM_OC1PreloadConfig
+                0x08000d64       0x18 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_tim.o
+                0x08000d64                TIM_OC1PreloadConfig
+ .text.TIM_OC2PreloadConfig
+                0x08000d7c       0x18 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_tim.o
+                0x08000d7c                TIM_OC2PreloadConfig
  .text.TIM_ClearITPendingBit
-                0x08000cb8        0xc C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_tim.o
-                0x08000cb8                TIM_ClearITPendingBit
+                0x08000d94        0xc C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_tim.o
+                0x08000d94                TIM_ClearITPendingBit
  .text.__io_putchar
-                0x08000cc4      0x16c C:\Program Files\Raisonance\Ride\Lib\ARM\STM32x_io_putchar_thumb.a(STM32F10X_io_putchar.o)
-                0x08000cc4                __io_putchar
- .text._write   0x08000e30        0x4 C:\Program Files\Raisonance\Ride\Lib\ARM\std_sbrk_thumb.lib(write.o)
-                0x08000e30                _write
+                0x08000da0      0x16c C:\Program Files\Raisonance\Ride\Lib\ARM\STM32x_io_putchar_thumb.a(STM32F10X_io_putchar.o)
+                0x08000da0                __io_putchar
+ .text._write   0x08000f0c        0x4 C:\Program Files\Raisonance\Ride\Lib\ARM\std_sbrk_thumb.lib(write.o)
+                0x08000f0c                _write
  *(.rodata)
  *(.rodata*)
  *(.glue_7)
  .glue_7        0x00000000        0x0 linker stubs
  *(.glue_7t)
  .glue_7t       0x00000000        0x0 linker stubs
-                0x08000e34                . = ALIGN (0x4)
-                0x08000e34                _etext = .
-                0x08000e34                _sidata = _etext
+                0x08000f10                . = ALIGN (0x4)
+                0x08000f10                _etext = .
+                0x08000f10                _sidata = _etext
 
-.vfp11_veneer   0x08000e34        0x0
+.vfp11_veneer   0x08000f10        0x0
  .vfp11_veneer  0x00000000        0x0 linker stubs
 
-.v4_bx          0x08000e34        0x0
+.v4_bx          0x08000f10        0x0
  .v4_bx         0x00000000        0x0 linker stubs
 
 .flashpatch     0x00000000        0x0
@@ -965,7 +967,7 @@ END GROUP
                 0x00000000                . = ALIGN (0x4)
                 0x00000000                _e_endflash = .
 
-.data           0x20000000        0x0 load address 0x08000e34
+.data           0x20000000        0x0 load address 0x08000f10
                 0x20000000                . = ALIGN (0x4)
                 0x20000000                _sdata = .
                 0x20000000                _data = .
@@ -974,7 +976,7 @@ END GROUP
  *(.RAMtext)
                 0x20000000                . = ALIGN (0x4)
                 0x20000000                _edata = .
-                0x08000e34                _eidata = ((_sidata + _edata) - _sdata)
+                0x08000f10                _eidata = ((_sidata + _edata) - _sdata)
                 0x08010000                _lastdataromaddress = 0x8010000
                 0x00000000                toobig = (_eidata > _lastdataromaddress)?!!!!!!!!! FLASH IS FULL !!!!!!!!!:0x0
 
@@ -1141,16 +1143,16 @@ END GROUP
  .debug_pubnames
                 0x00001304      0x7b0 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_tim.o
 
-.debug_info     0x00000000     0x5236
+.debug_info     0x00000000     0x5244
  *(.debug_info .gnu.linkonce.wi.*)
- .debug_info    0x00000000      0x95d C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\main.o
- .debug_info    0x0000095d      0xb7a C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_adc.o
- .debug_info    0x000014d7      0x16f C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_flash.o
- .debug_info    0x00001646      0x690 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_gpio.o
- .debug_info    0x00001cd6      0x5c3 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_it.o
- .debug_info    0x00002299      0x964 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_nvic.o
- .debug_info    0x00002bfd      0x8ac C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_rcc.o
- .debug_info    0x000034a9     0x1d8d C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_tim.o
+ .debug_info    0x00000000      0x96b C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\main.o
+ .debug_info    0x0000096b      0xb7a C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_adc.o
+ .debug_info    0x000014e5      0x16f C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_flash.o
+ .debug_info    0x00001654      0x690 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_gpio.o
+ .debug_info    0x00001ce4      0x5c3 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_it.o
+ .debug_info    0x000022a7      0x964 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_nvic.o
+ .debug_info    0x00002c0b      0x8ac C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_rcc.o
+ .debug_info    0x000034b7     0x1d8d C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_tim.o
 
 .debug_abbrev   0x00000000      0xc91
  *(.debug_abbrev)
@@ -1163,16 +1165,16 @@ END GROUP
  .debug_abbrev  0x0000085b      0x1f6 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_rcc.o
  .debug_abbrev  0x00000a51      0x240 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_tim.o
 
-.debug_line     0x00000000     0x1d2b
+.debug_line     0x00000000     0x1d2e
  *(.debug_line)
- .debug_line    0x00000000      0x224 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\main.o
- .debug_line    0x00000224      0x3e0 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_adc.o
- .debug_line    0x00000604       0xe3 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_flash.o
- .debug_line    0x000006e7      0x260 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_gpio.o
- .debug_line    0x00000947      0x4e1 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_it.o
- .debug_line    0x00000e28      0x341 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_nvic.o
- .debug_line    0x00001169      0x367 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_rcc.o
- .debug_line    0x000014d0      0x85b C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_tim.o
+ .debug_line    0x00000000      0x227 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\main.o
+ .debug_line    0x00000227      0x3e0 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_adc.o
+ .debug_line    0x00000607       0xe3 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_flash.o
+ .debug_line    0x000006ea      0x260 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_gpio.o
+ .debug_line    0x0000094a      0x4e1 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_it.o
+ .debug_line    0x00000e2b      0x341 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_nvic.o
+ .debug_line    0x0000116c      0x367 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_rcc.o
+ .debug_line    0x000014d3      0x85b C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_tim.o
 
 .debug_frame    0x00000000     0x1430
  *(.debug_frame)
@@ -1185,23 +1187,23 @@ END GROUP
  .debug_frame   0x00000bb4      0x224 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_rcc.o
  .debug_frame   0x00000dd8      0x658 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_tim.o
 
-.debug_str      0x00000000     0x267f
+.debug_str      0x00000000     0x2689
  *(.debug_str)
- .debug_str     0x00000000      0x695 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\main.o
-                                0x6c5 (size before relaxing)
- .debug_str     0x00000695      0x4a7 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_adc.o
+ .debug_str     0x00000000      0x69f C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\main.o
+                                0x6cf (size before relaxing)
+ .debug_str     0x0000069f      0x4a7 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_adc.o
                                 0x626 (size before relaxing)
- .debug_str     0x00000b3c       0xf7 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_flash.o
+ .debug_str     0x00000b46       0xf7 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_flash.o
                                 0x167 (size before relaxing)
- .debug_str     0x00000c33      0x226 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_gpio.o
+ .debug_str     0x00000c3d      0x226 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_gpio.o
                                 0x3fe (size before relaxing)
- .debug_str     0x00000e59      0x548 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_it.o
+ .debug_str     0x00000e63      0x548 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_it.o
                                 0x5b3 (size before relaxing)
- .debug_str     0x000013a1      0x4a5 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_nvic.o
+ .debug_str     0x000013ab      0x4a5 C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_nvic.o
                                 0x610 (size before relaxing)
- .debug_str     0x00001846      0x44d C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_rcc.o
+ .debug_str     0x00001850      0x44d C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_rcc.o
                                 0x545 (size before relaxing)
- .debug_str     0x00001c93      0x9ec C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_tim.o
+ .debug_str     0x00001c9d      0x9ec C:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\stm32f10x_tim.o
                                 0xd03 (size before relaxing)
 
 .debug_loc      0x00000000     0x2fce

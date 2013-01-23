@@ -55,6 +55,9 @@ IDC_UDNPOWERMIN     equ 1014
 IDC_STCPOWERMAX     equ 1015
 IDC_EDTPOWERMAX     equ 1016
 IDC_UDNPOWERMAX     equ 1017
+IDC_STCAMBTEMP      equ 1018
+IDC_EDTAMBTEMP      equ 1019
+IDC_UDNAMBTEMP      equ 1020
 
 IDM_MENU			equ 10000
 IDM_FILE_EXIT		equ 10001
@@ -69,7 +72,8 @@ LOG ends
 
 LENR struct
 	SecCount		DWORD ?
-	Pwm				DWORD ?
+	Pwm1			WORD ?
+	Pwm2			WORD ?
 	log				LOG 200 dup(<>)
 LENR ends
 
@@ -94,7 +98,8 @@ szFmtVolt			BYTE '%.3dV',0
 szFmtAmp			BYTE '%.3dA',0
 szFmtPower			BYTE '%.3dW',0
 szFmtTemp			BYTE '%.3dC',0
-szFmtPwm			BYTE 'PWM: %d',0
+szFmtPwm1			BYTE 'PWM1: %d',0
+szFmtPwm2			BYTE 'PWM2: %d',0
 
 .data?
 
