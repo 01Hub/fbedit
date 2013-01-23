@@ -425,9 +425,9 @@ void TIM1_BRK_IRQHandler(void)
 * Output         : None
 * Return         : None
 *******************************************************************************/
-void TIM1_UP_IRQHandler(void)
-{
-}
+// void TIM1_UP_IRQHandler(void)
+// {
+// }
 
 /*******************************************************************************
 * Function Name  : TIM1_TRG_COM_IRQHandler

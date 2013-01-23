@@ -67,6 +67,21 @@ int main(void)
 }
 
 /*******************************************************************************
+* Function Name  : TIM1_UP_IRQHandler
+* Description    : This function handles TIM1 global interrupt request.
+* Input          : None
+* Output         : None
+* Return         : None
+*******************************************************************************/
+void TIM1_UP_IRQHandler(void)
+{
+  /* Set the Capture Compare Register value */
+  TIM1->CCR1 = Lenr.Pwm;
+  /* Clear TIM1 Update interrupt pending bit */
+  TIM_ClearITPendingBit(TIM1, TIM_IT_Update);
+}
+
+/*******************************************************************************
 * Function Name  : TIM3_IRQHandler
 * Description    : This function handles TIM3 global interrupt request.
 * Input          : None
@@ -84,8 +99,6 @@ void TIM3_IRQHandler(void)
   Lenr.Amps = GetADCValue(ADC_Channel_11);
   Lenr.Temp1 = GetADCValue(ADC_Channel_12);
   Lenr.Temp2 = GetADCValue(ADC_Channel_13);
-  /* Set the Capture Compare Register value */
-  TIM1->CCR1 = Lenr.Pwm;
   /* Clear TIM3 Update interrupt pending bit */
   TIM_ClearITPendingBit(TIM3, TIM_IT_Update);
   Lenr.SecCount++;
@@ -217,10 +230,11 @@ void TIM1_Configuration(void)
   TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructure;
   TIM_OCInitTypeDef  TIM_OCInitStructure;
   /* Time base configuration */
-  TIM_TimeBaseStructure.TIM_Period = 4095;
+  TIM_TimeBaseStructure.TIM_Period = 255;
   TIM_TimeBaseStructure.TIM_Prescaler = 0;
   TIM_TimeBaseStructure.TIM_ClockDivision = 0;
   TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
+  TIM_TimeBaseStructure.TIM_RepetitionCounter = 0;
   TIM_TimeBaseInit(TIM1, &TIM_TimeBaseStructure);
 
   TIM_OCInitStructure.TIM_OCMode = TIM_OCMode_PWM1;
@@ -238,6 +252,7 @@ void TIM1_Configuration(void)
   TIM_Cmd(TIM1, ENABLE);
   /* TIM1 Main Output Enable */
   TIM_CtrlPWMOutputs(TIM1, ENABLE);
+  TIM_ITConfig(TIM1, TIM_IT_Update, ENABLE);
 }
 
 /*******************************************************************************
@@ -307,6 +322,12 @@ void NVIC_Configuration(void)
   NVIC_InitTypeDef NVIC_InitStructure;
   /* Set the Vector Table base location at 0x08000000 */
   NVIC_SetVectorTable(NVIC_VectTab_FLASH, 0x0);
+  /* Enable the TIM1 global Interrupt */
+  NVIC_InitStructure.NVIC_IRQChannel = TIM1_UP_IRQChannel;
+  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
+  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 2;
+  NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+  NVIC_Init(&NVIC_InitStructure);
   /* Enable the TIM3 global Interrupt */
   NVIC_InitStructure.NVIC_IRQChannel = TIM3_IRQChannel;
   NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
