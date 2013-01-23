@@ -87,6 +87,7 @@ szFmtVolt			BYTE '%.3dV',0
 szFmtAmp			BYTE '%.3dA',0
 szFmtPower			BYTE '%.3dW',0
 szFmtTemp			BYTE '%.3dC',0
+szFmtPwm			BYTE 'PWM: %d',0
 
 .data?
 
@@ -97,6 +98,7 @@ hFont				HFONT ?
 connected			DWORD ?
 lastsec				DWORD ?
 lenr				LENR <>
+logpos				DWORD ?
 log					LOG GRPWDT dup(<>)
 graph				DWORD ?
 display				BYTE 16 dup (?)

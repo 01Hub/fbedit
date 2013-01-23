@@ -59,7 +59,6 @@ DisplayProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 		invoke FillRect,mDC,addr rect,eax
 		pop		eax
 		invoke DeleteObject,eax
-
 		invoke SelectObject,mDC,hFont
 		push	eax
 		invoke SetBkMode,mDC,TRANSPARENT
@@ -68,7 +67,6 @@ DisplayProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 		invoke DrawText,mDC,addr display,edx,addr rect,DT_CENTER or DT_VCENTER or DT_SINGLELINE
 		pop		eax
 		invoke SelectObject,mDC,eax
-
 		invoke BitBlt,ps.hdc,0,0,rect.right,rect.bottom,mDC,0,0,SRCCOPY
 		;Delete bitmap
 		pop		eax
@@ -88,6 +86,7 @@ GraphProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	ps:PAINTSTRUCT
 	LOCAL	rect:RECT
 	LOCAL	mDC:HDC
+	LOCAL	buffer[32]:BYTE
 
 	mov		eax,uMsg
 	.if	eax==WM_CREATE
@@ -132,6 +131,17 @@ GraphProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		pop		eax
 		invoke SelectObject,mDC,eax
 		invoke DeleteObject,eax
+		invoke CreatePen,PS_SOLID,1,0FFFFFFh
+		invoke SelectObject,mDC,eax
+		push	eax
+		mov		ebx,logpos
+		add		ebx,GRPXPS
+		invoke MoveToEx,mDC,ebx,GRPYPS,NULL
+		invoke LineTo,mDC,ebx,GRPHGT+GRPYPS
+		;Delete pen
+		pop		eax
+		invoke SelectObject,mDC,eax
+		invoke DeleteObject,eax
 		invoke SetTextColor,mDC,0FFFFFFh
 		invoke SetBkMode,mDC,TRANSPARENT
 		;Draw time scale
@@ -158,6 +168,10 @@ GraphProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.elseif eax==IDC_RBNCELL
 			call	DrawTemp2
 		.endif
+		;Draw PWM
+		invoke wsprintf,addr buffer,addr szFmtPwm,lenr.Pwm
+		invoke lstrlen,addr buffer
+		invoke TextOut,mDC,15,5,addr buffer,eax
 		invoke BitBlt,ps.hdc,0,0,rect.right,rect.bottom,mDC,0,0,SRCCOPY
 		;Delete bitmap
 		pop		eax
@@ -417,6 +431,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		eax,res
 				.if eax!=lenr.SecCount
 					mov		lenr.SecCount,eax
+					;Scroll the readings
 					mov		ecx,199*sizeof LOG
 					.while ecx
 						mov		ax,lenr.log.Volt[ecx-sizeof LOG]
@@ -429,8 +444,40 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						mov		lenr.log.Temp2[ecx],ax
 						sub		ecx,sizeof LOG
 					.endw
-					invoke STLinkWrite,hWin,20000004h,addr lenr.Pwm,DWORD
 					invoke STLinkRead,hWin,20000008h,addr lenr.log.Volt,WORD*4
+					;Convert values
+					shr		lenr.log.Volt,1
+					shr		lenr.log.Amp,3
+					shl		lenr.log.Temp1,1
+					shl		lenr.log.Temp1,2
+					invoke GetDlgItem,hWin,IDC_DISPLAY
+					invoke InvalidateRect,eax,NULL,TRUE
+					;Adjust power
+					invoke GetDlgItemInt,hWin,IDC_EDTPOWER,NULL,FALSE
+					mov		edx,100
+					mul		edx
+					mov		ebx,eax
+					movzx	eax,lenr.log.Volt
+					movzx	edx,lenr.log.Amp
+					mul		edx
+					mov		ecx,100
+					xor		edx,edx
+					div		ecx
+					.if eax>ebx
+						.if lenr.Pwm
+							dec		lenr.Pwm
+							invoke GetDlgItem,hWin,IDC_GRAPH
+							invoke InvalidateRect,eax,NULL,TRUE
+						.endif
+					.elseif eax<ebx
+						.if lenr.Pwm<255
+							inc		lenr.Pwm
+							invoke GetDlgItem,hWin,IDC_GRAPH
+							invoke InvalidateRect,eax,NULL,TRUE
+						.endif
+					.endif
+					;Update pwm
+					invoke STLinkWrite,hWin,20000004h,addr lenr.Pwm,DWORD
 				.endif
 			.endif
 		.endif
@@ -454,26 +501,69 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			xor		edx,edx
 			div		ecx
 			.if !edx
+				mov		logpos,eax
 				mov		ecx,sizeof LOG
 				mul		ecx
 				mov		ebx,eax
-				mov		ax,lenr.log.Volt
-				shr		ax,1
+				;Average 200 voltage readings
+				xor		ecx,ecx
+				xor		edi,edi
+				.while ecx<200
+					mov		eax,sizeof LOG
+					mul		ecx
+					movzx	eax,lenr.log.Volt[eax]
+					add		edi,eax
+					inc		ecx
+				.endw
+				mov		ecx,200
+				xor		edx,edx
+				div		ecx
 				mov		log.Volt[ebx],ax
-				mov		ax,lenr.log.Amp
-				shr		ax,3
+				;Average 200 current readings
+				xor		ecx,ecx
+				xor		edi,edi
+				.while ecx<200
+					mov		eax,sizeof LOG
+					mul		ecx
+					movzx	eax,lenr.log.Amp[eax]
+					add		edi,eax
+					inc		ecx
+				.endw
+				mov		ecx,200
+				xor		edx,edx
+				div		ecx
 				mov		log.Amp[ebx],ax
-				mov		ax,lenr.log.Temp1
-				shl		ax,1
+				;Average 200 ambient temp readings
+				xor		ecx,ecx
+				xor		edi,edi
+				.while ecx<200
+					mov		eax,sizeof LOG
+					mul		ecx
+					movzx	eax,lenr.log.Temp1[eax]
+					add		edi,eax
+					inc		ecx
+				.endw
+				mov		ecx,200
+				xor		edx,edx
+				div		ecx
 				mov		log.Temp1[ebx],ax
-				mov		ax,lenr.log.Temp2
-				shl		ax,2
+				;Average 200 cell temp readings
+				xor		ecx,ecx
+				xor		edi,edi
+				.while ecx<200
+					mov		eax,sizeof LOG
+					mul		ecx
+					movzx	eax,lenr.log.Temp2[eax]
+					add		edi,eax
+					inc		ecx
+				.endw
+				mov		ecx,200
+				xor		edx,edx
+				div		ecx
 				mov		log.Temp2[ebx],ax
 				invoke GetDlgItem,hWin,IDC_GRAPH
 				invoke InvalidateRect,eax,NULL,TRUE
 			.endif
-			invoke GetDlgItem,hWin,IDC_DISPLAY
-			invoke InvalidateRect,eax,NULL,TRUE
 		.endif
 	.elseif eax==WM_CLOSE
 		invoke KillTimer,hWin,1000
