@@ -60,6 +60,9 @@ IDC_EDTAMBTEMP      equ 1019
 IDC_UDNAMBTEMP      equ 1020
 
 IDM_MENU			equ 10000
+IDM_FILE_OPEN       equ 10002
+IDM_FILE_CLOSE      equ 10003
+IDM_FILE_SAVE       equ 10004
 IDM_FILE_EXIT		equ 10001
 IDM_HELP_ABOUT		equ 10101
 
@@ -100,6 +103,9 @@ szFmtPower			BYTE '%.3dW',0
 szFmtTemp			BYTE '%.3dC',0
 szFmtPwm1			BYTE 'PWM1: %d',0
 szFmtPwm2			BYTE 'PWM2: %d',0
+szFmtFile			BYTE '%s\Log\Lenr%.4d%.2d%.2d.log',0
+
+szLOGFilterString	BYTE 'LOG Files (*.log)',0,'*.log',0,0
 
 .data?
 
@@ -112,6 +118,9 @@ lastsec				DWORD ?
 lenr				LENR <>
 logpos				DWORD ?
 log					LOG GRPWDT dup(<>)
+fileshow			DWORD ?
+filelog				LOG GRPWDT dup(<>)
 graph				DWORD ?
 display				BYTE 16 dup (?)
 rampupdown			DWORD ?
+apppath				BYTE MAX_PATH dup (?)

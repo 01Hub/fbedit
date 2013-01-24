@@ -152,6 +152,10 @@ GraphProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			lea		ecx,[ecx+GRPXST]
 		.endw
 		mov		eax,graph
+		mov		edi,offset log
+		.if fileshow
+			mov		edi,offset filelog
+		.endif
 		.if eax==IDC_RBNVOLT
 			call	DrawVolt
 		.elseif eax==IDC_RBNAMP
@@ -213,14 +217,14 @@ DrawVolt:
 		mov		eax,sizeof LOG
 		mul		esi
 		mov		ebx,eax
-		movzx	eax,log.Volt[ebx]
+		movzx	eax,[edi].LOG.Volt[ebx]
 		mov		ecx,4
 		xor		edx,edx
 		div		ecx
 		sub		eax,GRPHGT+GRPYPS
 		neg		eax
 		invoke MoveToEx,mDC,addr [esi+GRPXPS],eax,NULL
-		movzx	eax,log.Volt[ebx+sizeof LOG]
+		movzx	eax,[edi].LOG.Volt[ebx+sizeof LOG]
 		mov		ecx,4
 		xor		edx,edx
 		div		ecx
@@ -247,11 +251,11 @@ DrawAmp:
 		mov		eax,sizeof LOG
 		mul		esi
 		mov		ebx,eax
-		movzx	eax,log.Amp[ebx]
+		movzx	eax,[edi].LOG.Amp[ebx]
 		sub		eax,GRPHGT+GRPYPS
 		neg		eax
 		invoke MoveToEx,mDC,addr [esi+GRPXPS],eax,NULL
-		movzx	eax,log.Amp[ebx+sizeof LOG]
+		movzx	eax,[edi].LOG.Amp[ebx+sizeof LOG]
 		sub		eax,GRPHGT+GRPYPS
 		neg		eax
 		invoke LineTo,mDC,addr [esi+GRPXPS+1],eax
@@ -275,8 +279,8 @@ DrawPower:
 		mov		eax,sizeof LOG
 		mul		esi
 		mov		ebx,eax
-		movzx	eax,log.Volt[ebx]
-		movzx	ecx,log.Amp[ebx]
+		movzx	eax,[edi].LOG.Volt[ebx]
+		movzx	ecx,[edi].LOG.Amp[ebx]
 		mul		ecx
 		mov		ecx,2000
 		xor		edx,edx
@@ -284,8 +288,8 @@ DrawPower:
 		sub		eax,GRPHGT+GRPYPS
 		neg		eax
 		invoke MoveToEx,mDC,addr [esi+GRPXPS],eax,NULL
-		movzx	eax,log.Volt[ebx+sizeof LOG]
-		movzx	ecx,log.Amp[ebx+sizeof LOG]
+		movzx	eax,[edi].LOG.Volt[ebx+sizeof LOG]
+		movzx	ecx,[edi].LOG.Amp[ebx+sizeof LOG]
 		mul		ecx
 		mov		ecx,2000
 		xor		edx,edx
@@ -313,14 +317,14 @@ DrawTemp1:
 		mov		eax,sizeof LOG
 		mul		esi
 		mov		ebx,eax
-		movzx	eax,log.Temp1[ebx]
+		movzx	eax,[edi].LOG.Temp1[ebx]
 		mov		ecx,20
 		xor		edx,edx
 		div		ecx
 		sub		eax,GRPHGT+GRPYPS
 		neg		eax
 		invoke MoveToEx,mDC,addr [esi+GRPXPS],eax,NULL
-		movzx	eax,log.Temp1[ebx+sizeof LOG]
+		movzx	eax,[edi].LOG.Temp1[ebx+sizeof LOG]
 		mov		ecx,20
 		xor		edx,edx
 		div		ecx
@@ -347,14 +351,14 @@ DrawTemp2:
 		mov		eax,sizeof LOG
 		mul		esi
 		mov		ebx,eax
-		movzx	eax,log.Temp2[ebx]
+		movzx	eax,[edi].LOG.Temp2[ebx]
 		mov		ecx,20
 		xor		edx,edx
 		div		ecx
 		sub		eax,GRPHGT+GRPYPS
 		neg		eax
 		invoke MoveToEx,mDC,addr [esi+GRPXPS],eax,NULL
-		movzx	eax,log.Temp2[ebx+sizeof LOG]
+		movzx	eax,[edi].LOG.Temp2[ebx+sizeof LOG]
 		mov		ecx,20
 		xor		edx,edx
 		div		ecx
@@ -371,9 +375,44 @@ DrawTemp2:
 
 GraphProc endp
 
+; File handling
+ReadTheFile proc uses ebx,lpFileName:DWORD
+	LOCAL	hFile:HANDLE
+	LOCAL	BytesRead:DWORD
+
+	invoke CreateFile,lpFileName,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL
+	.if eax!=INVALID_HANDLE_VALUE
+		mov		hFile,eax
+		invoke GetFileSize,hFile,0
+		mov		ebx,eax
+		invoke ReadFile,hFile,addr filelog,ebx,addr BytesRead,NULL
+		invoke CloseHandle,hFile
+		xor		eax,eax
+	.endif
+	ret
+
+ReadTheFile endp
+
+WriteTheFile proc lpFileName:DWORD
+	LOCAL	hFile:HANDLE
+	LOCAL	BytesWritten:DWORD
+
+	invoke CreateFile,lpFileName,GENERIC_WRITE,FILE_SHARE_READ,NULL,CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL,NULL
+	.if eax!=INVALID_HANDLE_VALUE
+		mov		hFile,eax
+		invoke WriteFile,hFile,addr log,GRPWDT*sizeof LOG,addr BytesWritten,NULL
+		invoke CloseHandle,hFile
+		xor		eax,eax
+	.endif
+	ret
+
+WriteTheFile endp
+
 WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	res:DWORD
 	LOCAL	systime:SYSTEMTIME
+	LOCAL	ofn:OPENFILENAME
+	LOCAL	buffer[MAX_PATH]:BYTE
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
@@ -439,6 +478,43 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.if edx==BN_CLICKED
 			.if eax==IDM_FILE_EXIT
 				invoke SendMessage,hWin,WM_CLOSE,0,0
+			.elseif eax==IDM_FILE_OPEN
+				;Zero out the ofn struct
+				invoke RtlZeroMemory,addr ofn,sizeof ofn
+				;Setup the ofn struct
+				mov		ofn.lStructSize,sizeof ofn
+				push	hWin
+				pop		ofn.hwndOwner
+				push	hInstance
+				pop		ofn.hInstance
+				mov		ofn.lpstrFilter,offset szLOGFilterString
+				mov		buffer[0],0
+				lea		eax,buffer
+				mov		ofn.lpstrFile,eax
+				mov		ofn.nMaxFile,sizeof buffer
+				mov		ofn.lpstrDefExt,NULL
+				mov		ofn.Flags,OFN_FILEMUSTEXIST or OFN_HIDEREADONLY or OFN_PATHMUSTEXIST
+				;Show the Open dialog
+				invoke GetOpenFileName,addr ofn
+				.if eax
+					invoke ReadTheFile,addr buffer
+					.if !eax
+						mov		fileshow,1
+						invoke GetDlgItem,hWin,IDC_GRAPH
+						invoke InvalidateRect,eax,NULL,TRUE
+					.endif
+				.endif
+			.elseif eax==IDM_FILE_CLOSE
+				mov		fileshow,0
+				invoke GetDlgItem,hWin,IDC_GRAPH
+				invoke InvalidateRect,eax,NULL,TRUE
+			.elseif eax==IDM_FILE_SAVE
+				invoke GetLocalTime,addr systime
+				movzx	eax,systime.wYear
+				movzx	ecx,systime.wMonth
+				movzx	edx,systime.wDay
+				invoke wsprintf,addr buffer,addr szFmtFile,addr apppath,eax,ecx,edx
+				invoke WriteTheFile,addr buffer
 			.elseif eax==IDM_HELP_ABOUT
 				invoke ShellAbout,hWin,addr AppName,addr AboutMsg,NULL
 			.elseif eax>=IDC_RBNVOLT && eax<=IDC_RBNCELL
@@ -463,7 +539,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		eax,res
 				.if eax!=lenr.SecCount
 					mov		lenr.SecCount,eax
-					;Scroll the readings
+					;Scroll the adc readings
 					mov		ecx,199*sizeof LOG
 					.while ecx
 						mov		ax,lenr.log.Volt[ecx-sizeof LOG]
@@ -476,6 +552,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						mov		lenr.log.Temp2[ecx],ax
 						sub		ecx,sizeof LOG
 					.endw
+					;Read adc values
 					invoke STLinkRead,hWin,20000008h,addr lenr.log.Volt,WORD*4
 					;Convert values
 					shr		lenr.log.Volt,1
@@ -602,6 +679,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke IsDlgButtonChecked,hWin,IDC_CHKSTEP
 			.if eax
 				.if systime.wSecond==0 && systime.wMinute==0
+					;Adjust power every hour
 					invoke GetDlgItemInt,hWin,IDC_EDTPOWER,NULL,FALSE
 					mov		ebx,eax
 					.if rampupdown==1
@@ -644,6 +722,13 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						invoke InvalidateRect,eax,NULL,TRUE
 					.endif
 				.endif
+			.endif
+			.if systime.wSecond==59
+				movzx	eax,systime.wYear
+				movzx	ecx,systime.wMonth
+				movzx	edx,systime.wDay
+				invoke wsprintf,addr buffer,addr szFmtFile,addr apppath,eax,ecx,edx
+				invoke WriteTheFile,addr buffer
 			.endif
 		.endif
 	.elseif eax==WM_CLOSE
@@ -692,6 +777,11 @@ WinMain proc hInst:HINSTANCE,hPrevInst:HINSTANCE,CmdLine:LPSTR,CmdShow:DWORD
 	mov		wc.lpszClassName,offset szDisplayClass
 	mov		wc.hbrBackground,NULL
 	invoke RegisterClassEx,addr wc
+	invoke GetModuleFileName,hInstance,addr apppath,sizeof apppath
+	.while apppath[eax]!='\' && eax
+		dec		eax
+	.endw
+	mov		apppath[eax],0
 	invoke CreateDialogParam,hInstance,IDD_DIALOG,NULL,addr WndProc,NULL
 	invoke ShowWindow,hWnd,SW_SHOWNORMAL
 	invoke UpdateWindow,hWnd
@@ -711,8 +801,8 @@ start:
 	invoke GetModuleHandle,NULL
 	mov    hInstance,eax
 	invoke GetCommandLine
-	invoke InitCommonControls
 	mov		CommandLine,eax
+	invoke InitCommonControls
 	invoke WinMain,hInstance,NULL,CommandLine,SW_SHOWDEFAULT
 	invoke ExitProcess,eax
 
