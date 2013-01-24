@@ -14,6 +14,7 @@
 * PC.01 Heater current
 * PC.02 Ambient temprature
 * PC.03 Cell temprature
+* PC.04 Cell heater temprature
 *******************************************************************************/
 
 /* Includes ------------------------------------------------------------------*/
@@ -29,6 +30,8 @@ typedef struct
   vu16 Amps;             // @0x2000000A Heater
   vu16 Temp1;            // @0x2000000C Ambient
   vu16 Temp2;            // @0x2000000E Cell
+  vu16 Temp3;            // @0x20000010 Heater
+  vu16 Dummy;            // @0x20000012
 }LenrTypeDef;
 
 /* Private define ------------------------------------------------------------*/
@@ -113,6 +116,7 @@ void TIM3_IRQHandler(void)
   Lenr.Amps = GetADCValue(ADC_Channel_11);
   Lenr.Temp1 = GetADCValue(ADC_Channel_12);
   Lenr.Temp2 = GetADCValue(ADC_Channel_13);
+  Lenr.Temp3 = GetADCValue(ADC_Channel_14);
   /* Clear TIM3 Update interrupt pending bit */
   TIM_ClearITPendingBit(TIM3, TIM_IT_Update);
   Lenr.SecCount++;
@@ -217,8 +221,8 @@ void GPIO_Configuration(void)
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
   GPIO_Init(GPIOC, &GPIO_InitStructure);
-  /* Configure ADC Channel10,11,12,13 (PC0,PC1,PC2,PC3) */
-  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_3 | GPIO_Pin_2 | GPIO_Pin_1 | GPIO_Pin_0;
+  /* Configure ADC Channel10,11,12,13 and 14 (PC0,PC1,PC2,PC3,PC4) */
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_4 | GPIO_Pin_3 | GPIO_Pin_2 | GPIO_Pin_1 | GPIO_Pin_0;
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AIN;
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
   GPIO_Init(GPIOC, &GPIO_InitStructure);

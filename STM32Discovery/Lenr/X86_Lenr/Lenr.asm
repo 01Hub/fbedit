@@ -37,6 +37,9 @@ DisplayProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 		.elseif eax==IDC_RBNCELL
 			movzx	eax,lenr.log.Temp2
 			invoke wsprintf,addr display,addr szFmtTemp,eax
+		.elseif eax==IDC_RBNHEATER
+			movzx	eax,lenr.log.Temp3
+			invoke wsprintf,addr display,addr szFmtTemp,eax
 		.endif
 		invoke lstrlen,addr display
 		mov		edx,dword ptr display[eax-3]
@@ -166,6 +169,8 @@ GraphProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			call	DrawTemp1
 		.elseif eax==IDC_RBNCELL
 			call	DrawTemp2
+		.elseif eax==IDC_RBNHEATER
+			call	DrawTemp3
 		.endif
 		;Draw PWM
 		movzx	eax,lenr.Pwm1
@@ -198,7 +203,7 @@ DrawYScale:
 	mov		ecx,20
 	.while byte ptr [esi]
 		push	ecx
-		invoke TextOut,mDC,GRPXPS-22,ecx,esi,3
+		invoke TextOut,mDC,GRPXPS-26,ecx,esi,3
 		lea		esi,[esi+4]
 		pop		ecx
 		lea		ecx,[ecx+GRPYST]
@@ -373,6 +378,40 @@ DrawTemp2:
 	invoke DeleteObject,eax
 	retn
 
+DrawTemp3:
+	;Draw temp scale
+	mov		esi,offset szTempHeater
+	call DrawYScale
+	invoke CreatePen,PS_SOLID,2,0FF00FFh
+	invoke SelectObject,mDC,eax
+	push	eax
+	xor		esi,esi
+	.while esi<864-1
+		mov		eax,sizeof LOG
+		mul		esi
+		mov		ebx,eax
+		movzx	eax,[edi].LOG.Temp3[ebx]
+		mov		ecx,40
+		xor		edx,edx
+		div		ecx
+		sub		eax,GRPHGT+GRPYPS
+		neg		eax
+		invoke MoveToEx,mDC,addr [esi+GRPXPS],eax,NULL
+		movzx	eax,[edi].LOG.Temp3[ebx+sizeof LOG]
+		mov		ecx,40
+		xor		edx,edx
+		div		ecx
+		sub		eax,GRPHGT+GRPYPS
+		neg		eax
+		invoke LineTo,mDC,addr [esi+GRPXPS+1],eax
+		lea		esi,[esi+1]
+	.endw
+	;Delete pen
+	pop		eax
+	invoke SelectObject,mDC,eax
+	invoke DeleteObject,eax
+	retn
+
 GraphProc endp
 
 ; File handling
@@ -432,7 +471,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke MoveWindow,hWin,0,0,GRPWDT+GRPXPS+GRPXPS+6,GRPHGT+GRPYPS+GRPYPS+120,FALSE
 		mov		ebx,IDC_RBNVOLT
 		xor		edi,edi
-		.while ebx<=IDC_RBNCELL
+		.while ebx<=IDC_RBNHEATER
 			invoke GetDlgItem,hWin,ebx
 			invoke MoveWindow,eax,edi,560,90,15,FALSE
 			add		edi,100
@@ -517,7 +556,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke WriteTheFile,addr buffer
 			.elseif eax==IDM_HELP_ABOUT
 				invoke ShellAbout,hWin,addr AppName,addr AboutMsg,NULL
-			.elseif eax>=IDC_RBNVOLT && eax<=IDC_RBNCELL
+			.elseif eax>=IDC_RBNVOLT && eax<=IDC_RBNHEATER
 				mov		graph,eax
 				invoke GetDlgItem,hWin,IDC_GRAPH
 				invoke InvalidateRect,eax,NULL,TRUE
@@ -550,6 +589,8 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						mov		lenr.log.Temp1[ecx],ax
 						mov		ax,lenr.log.Temp2[ecx-sizeof LOG]
 						mov		lenr.log.Temp2[ecx],ax
+						mov		ax,lenr.log.Temp3[ecx-sizeof LOG]
+						mov		lenr.log.Temp3[ecx],ax
 						sub		ecx,sizeof LOG
 					.endw
 					;Read adc values
@@ -557,7 +598,9 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					;Convert values
 					shr		lenr.log.Volt,1
 					shr		lenr.log.Amp,3
+					shl		lenr.log.Temp1,0
 					shl		lenr.log.Temp2,2
+					shl		lenr.log.Temp3,3
 					invoke GetDlgItem,hWin,IDC_DISPLAY
 					invoke InvalidateRect,eax,NULL,TRUE
 					;Adjust power
@@ -673,6 +716,21 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				xor		edx,edx
 				div		ecx
 				mov		log.Temp2[ebx],ax
+				;Average 200 cell heater temp readings
+				xor		ecx,ecx
+				xor		edi,edi
+				.while ecx<200
+					mov		eax,sizeof LOG
+					mul		ecx
+					movzx	eax,lenr.log.Temp3[eax]
+					add		edi,eax
+					inc		ecx
+				.endw
+				mov		eax,edi
+				mov		ecx,200
+				xor		edx,edx
+				div		ecx
+				mov		log.Temp3[ebx],ax
 				invoke GetDlgItem,hWin,IDC_GRAPH
 				invoke InvalidateRect,eax,NULL,TRUE
 			.endif

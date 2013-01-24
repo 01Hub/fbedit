@@ -44,7 +44,8 @@ IDC_RBNAMP          equ 1003
 IDC_RBNPOWER        equ 1004
 IDC_RBNAMB          equ 1005
 IDC_RBNCELL         equ 1006
-IDC_DISPLAY			equ 1007
+IDC_RBNHEATER		equ 1007
+IDC_DISPLAY			equ 1021
 IDC_EDTPOWER        equ 1008
 IDC_UDNPOWER        equ 1009
 IDC_STCPOWER		equ 1010
@@ -71,6 +72,8 @@ LOG struct
 	Amp				WORD ?
 	Temp1			WORD ?
 	Temp2			WORD ?
+	Temp3			WORD ?
+	Dummy			WORD ?
 LOG ends
 
 LENR struct
@@ -94,6 +97,7 @@ szVolt				BYTE 'Voltage',0,' 20',0,' 18',0,' 16',0,' 14',0,' 12',0,' 10',0,'  8'
 szAmp				BYTE 'Current',0,'5.0',0,'4.5',0,'4.0',0,'3.5',0,'3.0',0,'2.5',0,'2.0',0,'1.5',0,'1.0',0,'0.5',0,'  0',0,0
 szPower				BYTE 'Power',0,'100',0,' 90',0,' 80',0,' 70',0,' 60',0,' 50',0,' 40',0,' 30',0,' 20',0,' 10',0,'  0',0,0
 szTemp				BYTE 'Temprature',0,'100',0,' 90',0,' 80',0,' 70',0,' 60',0,' 50',0,' 40',0,' 30',0,' 20',0,' 10',0,'  0',0,0
+szTempHeater		BYTE 'Temprature',0,'400',0,'360',0,'320',0,'280',0,'240',0,'200',0,'160',0,'120',0,' 80',0,' 40',0,'  0',0,0
 
 Tahoma_36			LOGFONT <-36,0,0,0,400,0,0,0,0,3,2,1,34,"Tahoma">
 
