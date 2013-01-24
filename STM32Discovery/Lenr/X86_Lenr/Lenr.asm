@@ -391,14 +391,14 @@ DrawTemp3:
 		mul		esi
 		mov		ebx,eax
 		movzx	eax,[edi].LOG.Temp3[ebx]
-		mov		ecx,40
+		mov		ecx,80
 		xor		edx,edx
 		div		ecx
 		sub		eax,GRPHGT+GRPYPS
 		neg		eax
 		invoke MoveToEx,mDC,addr [esi+GRPXPS],eax,NULL
 		movzx	eax,[edi].LOG.Temp3[ebx+sizeof LOG]
-		mov		ecx,40
+		mov		ecx,80
 		xor		edx,edx
 		div		ecx
 		sub		eax,GRPHGT+GRPYPS
@@ -594,7 +594,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						sub		ecx,sizeof LOG
 					.endw
 					;Read adc values
-					invoke STLinkRead,hWin,20000008h,addr lenr.log.Volt,WORD*4
+					invoke STLinkRead,hWin,20000008h,addr lenr.log.Volt,sizeof LOG
 					;Convert values
 					shr		lenr.log.Volt,1
 					shr		lenr.log.Amp,3
