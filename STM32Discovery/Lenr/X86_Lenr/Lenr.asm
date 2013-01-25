@@ -218,7 +218,7 @@ DrawVolt:
 	invoke SelectObject,mDC,eax
 	push	eax
 	xor		esi,esi
-	.while esi<864-1
+	.while esi<GRPWDT-1
 		mov		eax,sizeof LOG
 		mul		esi
 		mov		ebx,eax
@@ -252,7 +252,7 @@ DrawAmp:
 	invoke SelectObject,mDC,eax
 	push	eax
 	xor		esi,esi
-	.while esi<864-1
+	.while esi<GRPWDT-1
 		mov		eax,sizeof LOG
 		mul		esi
 		mov		ebx,eax
@@ -280,7 +280,7 @@ DrawPower:
 	invoke SelectObject,mDC,eax
 	push	eax
 	xor		esi,esi
-	.while esi<864-1
+	.while esi<GRPWDT-1
 		mov		eax,sizeof LOG
 		mul		esi
 		mov		ebx,eax
@@ -318,7 +318,7 @@ DrawTemp1:
 	invoke SelectObject,mDC,eax
 	push	eax
 	xor		esi,esi
-	.while esi<864-1
+	.while esi<GRPWDT-1
 		mov		eax,sizeof LOG
 		mul		esi
 		mov		ebx,eax
@@ -352,7 +352,7 @@ DrawTemp2:
 	invoke SelectObject,mDC,eax
 	push	eax
 	xor		esi,esi
-	.while esi<864-1
+	.while esi<GRPWDT-1
 		mov		eax,sizeof LOG
 		mul		esi
 		mov		ebx,eax
@@ -386,7 +386,7 @@ DrawTemp3:
 	invoke SelectObject,mDC,eax
 	push	eax
 	xor		esi,esi
-	.while esi<864-1
+	.while esi<GRPWDT-1
 		mov		eax,sizeof LOG
 		mul		esi
 		mov		ebx,eax
@@ -603,34 +603,40 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					shl		lenr.log.Temp3,3
 					invoke GetDlgItem,hWin,IDC_DISPLAY
 					invoke InvalidateRect,eax,NULL,TRUE
-					;Adjust power
-					invoke GetDlgItemInt,hWin,IDC_EDTPOWER,NULL,FALSE
-					mov		edx,100
-					mul		edx
-					mov		ebx,eax
-					movzx	eax,lenr.log.Volt
-					movzx	edx,lenr.log.Amp
-					mul		edx
-					mov		ecx,100
-					xor		edx,edx
-					div		ecx
-					.if eax>ebx
-						.if lenr.Pwm1<255
-							inc		lenr.Pwm1
-							invoke GetDlgItem,hWin,IDC_GRAPH
-							invoke InvalidateRect,eax,NULL,TRUE
-						.endif
-					.elseif eax<ebx
-						.if lenr.Pwm1
-							dec		lenr.Pwm1
-							invoke GetDlgItem,hWin,IDC_GRAPH
-							invoke InvalidateRect,eax,NULL,TRUE
-						.endif
-					.endif
 					;Update pwm1 and pwm2
-					invoke STLinkWrite,hWin,20000004h,addr lenr.Pwm1,DWORD
+					invoke STLinkWrite,hWin,20000004h,addr lenr.Pwm1,WORD*2
 				.endif
 			.endif
+		.else
+			;Scroll the adc readings
+			mov		ecx,199*sizeof LOG
+			.while ecx
+				mov		ax,lenr.log.Volt[ecx-sizeof LOG]
+				mov		lenr.log.Volt[ecx],ax
+				mov		ax,lenr.log.Amp[ecx-sizeof LOG]
+				mov		lenr.log.Amp[ecx],ax
+				mov		ax,lenr.log.Temp1[ecx-sizeof LOG]
+				mov		lenr.log.Temp1[ecx],ax
+				mov		ax,lenr.log.Temp2[ecx-sizeof LOG]
+				mov		lenr.log.Temp2[ecx],ax
+				mov		ax,lenr.log.Temp3[ecx-sizeof LOG]
+				mov		lenr.log.Temp3[ecx],ax
+				sub		ecx,sizeof LOG
+			.endw
+			mov		eax,2000
+			mov		lenr.log.Volt,ax
+			mov		lenr.log.Amp,ax
+			mov		lenr.log.Temp1,ax
+			mov		lenr.log.Temp2,ax
+			mov		lenr.log.Temp3,ax
+			;Convert values
+			shr		lenr.log.Volt,1
+			shr		lenr.log.Amp,3
+			shl		lenr.log.Temp1,0
+			shl		lenr.log.Temp2,2
+			shl		lenr.log.Temp3,3
+			invoke GetDlgItem,hWin,IDC_DISPLAY
+			invoke InvalidateRect,eax,NULL,TRUE
 		.endif
 		invoke GetLocalTime,addr systime
 		movzx	eax,systime.wSecond
@@ -731,8 +737,6 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				xor		edx,edx
 				div		ecx
 				mov		log.Temp3[ebx],ax
-				invoke GetDlgItem,hWin,IDC_GRAPH
-				invoke InvalidateRect,eax,NULL,TRUE
 			.endif
 			invoke IsDlgButtonChecked,hWin,IDC_CHKSTEP
 			.if eax
@@ -758,36 +762,51 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					invoke SendDlgItemMessage,hWin,IDC_UDNPOWER,UDM_SETPOS,0,eax
 				.endif
 			.endif
-			.if !(systime.wSecond & 1)
-				;Ambient temprature
-				mov		eax,logpos
-				mov		ecx,sizeof LOG
-				mul		ecx
-				movzx	ebx,log.Temp1[eax]
-				invoke GetDlgItemInt,hWin,IDC_EDTAMBTEMP,NULL,FALSE
-				mov		edx,100
-				mul		edx
-				.if ebx>eax
-					.if lenr.Pwm2<255
-						inc		lenr.Pwm2
-						invoke GetDlgItem,hWin,IDC_GRAPH
-						invoke InvalidateRect,eax,NULL,TRUE
-					.endif
-				.elseif ebx<eax
-					.if lenr.Pwm2
-						dec		lenr.Pwm2
-						invoke GetDlgItem,hWin,IDC_GRAPH
-						invoke InvalidateRect,eax,NULL,TRUE
-					.endif
+			;Adjust heater power
+			invoke GetDlgItemInt,hWin,IDC_EDTPOWER,NULL,FALSE
+			mov		edx,100
+			mul		edx
+			mov		ebx,eax
+			movzx	eax,lenr.log.Volt
+			movzx	edx,lenr.log.Amp
+			mul		edx
+			mov		ecx,100
+			xor		edx,edx
+			div		ecx
+			.if eax>ebx
+				.if lenr.Pwm1<255
+					inc		lenr.Pwm1
+				.endif
+			.elseif eax<ebx
+				.if lenr.Pwm1
+					dec		lenr.Pwm1
+				.endif
+			.endif
+			;Adjust fan for ambient temprature
+			invoke GetDlgItemInt,hWin,IDC_EDTAMBTEMP,NULL,FALSE
+			mov		edx,100
+			mul		edx
+			mov		ebx,eax
+			movzx	eax,lenr.log.Temp1
+			.if eax>ebx
+				.if lenr.Pwm2<255
+					inc		lenr.Pwm2
+				.endif
+			.elseif eax<ebx
+				.if lenr.Pwm2
+					dec		lenr.Pwm2
 				.endif
 			.endif
 			.if systime.wSecond==59
+				;Save log file
 				movzx	eax,systime.wYear
 				movzx	ecx,systime.wMonth
 				movzx	edx,systime.wDay
 				invoke wsprintf,addr buffer,addr szFmtFile,addr apppath,eax,ecx,edx
 				invoke WriteTheFile,addr buffer
 			.endif
+			invoke GetDlgItem,hWin,IDC_GRAPH
+			invoke InvalidateRect,eax,NULL,TRUE
 		.endif
 	.elseif eax==WM_CLOSE
 		invoke KillTimer,hWin,1000
