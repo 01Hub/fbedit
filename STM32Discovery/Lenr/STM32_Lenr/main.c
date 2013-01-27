@@ -124,7 +124,7 @@ void TIM3_IRQHandler(void)
 
 /*******************************************************************************
 * Function Name  : GetADCValue
-* Description    : This function sums 16 ADC conversions and returns the average.
+* Description    : This function sums 32 ADC conversions and returns the average.
 * Input          : ADC channel
 * Output         : None
 * Return         : The ADC cannel reading
@@ -132,27 +132,28 @@ void TIM3_IRQHandler(void)
 u16 GetADCValue(u8 Channel)
 {
   vu8 i;
-  vu16 ADCValue;
+  vu32 ADCValue;
 
   ADCValue = 0;
   /* ADC1 regular channel configuration */ 
   ADC_RegularChannelConfig(ADC1, Channel, 1, ADC_SampleTime_7Cycles5);
   /* Start ADC1 Software Conversion */ 
   ADC_SoftwareStartConvCmd(ADC1, ENABLE);
-  /* Add 16 conversions to reduce thermal noise */
-  i = 16;
+  /* Add 32 conversions to reduce thermal noise */
+  i = 128;
   while (i--)
   {
     ADC_ClearFlag(ADC1, ADC_FLAG_EOC);
     while (ADC_GetFlagStatus(ADC1, ADC_FLAG_EOC) == RESET)
     {
     }
-    ADCValue += ADC1->DR;
+    ADCValue += (u32)ADC1->DR;
   }
   /* Stop ADC1 Software Conversion */ 
   ADC_SoftwareStartConvCmd(ADC1, DISABLE);
-  /* Return average of the 16 added conversions */
-  return (ADCValue >> 4);
+  /* Return average of the 32 added conversions */
+  ADCValue = (ADCValue >> 7);
+  return ADCValue;
 }
 
 /*******************************************************************************
@@ -307,7 +308,7 @@ void ADC_Configuration(void)
 {
   ADC_InitTypeDef ADC_InitStructure;
   /* ADCCLK = PCLK2/2 */
-  RCC_ADCCLKConfig(RCC_PCLK2_Div2);
+  RCC_ADCCLKConfig(RCC_PCLK2_Div4);
   /* ADC1 configuration ------------------------------------------------------*/
   ADC_InitStructure.ADC_Mode = ADC_Mode_Independent;
   ADC_InitStructure.ADC_ScanConvMode = ENABLE;

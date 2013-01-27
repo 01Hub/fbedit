@@ -595,10 +595,18 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					.endw
 					;Read adc values
 					invoke STLinkRead,hWin,20000008h,addr lenr.log.Volt,sizeof LOG
+PrintDec lenr.log.Temp1
 					;Convert values
 					shr		lenr.log.Volt,1
 					shr		lenr.log.Amp,3
-					shl		lenr.log.Temp1,0
+					movzx	eax,lenr.log.Temp1
+					sub		eax,1870
+					cdq
+					mov		ecx,6860
+					imul	ecx
+					mov		ecx,2378-1870
+					idiv	ecx
+					mov		lenr.log.Temp1,ax
 					shl		lenr.log.Temp2,2
 					shl		lenr.log.Temp3,3
 					invoke GetDlgItem,hWin,IDC_DISPLAY

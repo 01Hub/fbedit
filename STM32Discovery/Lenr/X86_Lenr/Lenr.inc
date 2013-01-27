@@ -128,3 +128,9 @@ graph				DWORD ?
 display				BYTE 16 dup (?)
 rampupdown			DWORD ?
 apppath				BYTE MAX_PATH dup (?)
+
+;68.6C 2384
+;36.5C 2136
+;20.0C 2018
+; 3.4C 1891
+; 0.0C 1860

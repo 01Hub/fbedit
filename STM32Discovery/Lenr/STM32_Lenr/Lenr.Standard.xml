@@ -150,27 +150,27 @@
    <function Name="GetADCValue" TI="76" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\main.c" Line="132">
     <parameter Name="Channel" TI="94" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\main.c" Line="132" Addr="0x0" Param="Yes"/>
     <variable Name="i" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\main.c" Line="134" Addr="0x34000007" TI="121"/>
-    <variable Name="ADCValue" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\main.c" Line="135" Addr="0x34000004" TI="116"/>
+    <variable Name="ADCValue" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\main.c" Line="135" Addr="0x34000000" TI="111"/>
    </function >
    <function Name="TIM3_IRQHandler" TI="0" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\main.c" Line="108">
    </function >
-   <function Name="RCC_Configuration" TI="0" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\main.c" Line="165">
+   <function Name="RCC_Configuration" TI="0" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\main.c" Line="166">
    </function >
-   <function Name="GPIO_Configuration" TI="0" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\main.c" Line="211">
-    <variable Name="GPIO_InitStructure" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\main.c" Line="213" Addr="0x34000004" TI="1526"/>
+   <function Name="GPIO_Configuration" TI="0" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\main.c" Line="212">
+    <variable Name="GPIO_InitStructure" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\main.c" Line="214" Addr="0x34000004" TI="1526"/>
    </function >
-   <function Name="TIM1_Configuration" TI="0" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\main.c" Line="238">
-    <variable Name="TIM_TimeBaseStructure" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\main.c" Line="248" Addr="0x34000014" TI="1713"/>
-    <variable Name="TIM_OCInitStructure" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\main.c" Line="249" Addr="0x34000004" TI="1845"/>
+   <function Name="TIM1_Configuration" TI="0" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\main.c" Line="239">
+    <variable Name="TIM_TimeBaseStructure" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\main.c" Line="249" Addr="0x34000014" TI="1713"/>
+    <variable Name="TIM_OCInitStructure" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\main.c" Line="250" Addr="0x34000004" TI="1845"/>
    </function >
-   <function Name="TIM3_Configuration" TI="0" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\main.c" Line="286">
-    <variable Name="TIM_TimeBaseStructure" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\main.c" Line="288" Addr="0x34000004" TI="1713"/>
+   <function Name="TIM3_Configuration" TI="0" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\main.c" Line="287">
+    <variable Name="TIM_TimeBaseStructure" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\main.c" Line="289" Addr="0x34000004" TI="1713"/>
    </function >
-   <function Name="ADC_Configuration" TI="0" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\main.c" Line="306">
-    <variable Name="ADC_InitStructure" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\main.c" Line="308" Addr="0x34000004" TI="1357"/>
+   <function Name="ADC_Configuration" TI="0" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\main.c" Line="307">
+    <variable Name="ADC_InitStructure" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\main.c" Line="309" Addr="0x34000004" TI="1357"/>
    </function >
-   <function Name="NVIC_Configuration" TI="0" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\main.c" Line="341">
-    <variable Name="NVIC_InitStructure" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\main.c" Line="343" Addr="0x34000004" TI="1623"/>
+   <function Name="NVIC_Configuration" TI="0" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\main.c" Line="342">
+    <variable Name="NVIC_InitStructure" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\main.c" Line="344" Addr="0x34000004" TI="1623"/>
    </function >
    <type Family="Base" Name="int" ID="2383"/>
    <function Name="main" TI="2383" FileName="D:\FbEdit\Projects\Applications\FbEdit\STM32Discovery\Lenr\STM32_Lenr\main.c" Line="62">
