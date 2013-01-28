@@ -124,7 +124,7 @@ void TIM3_IRQHandler(void)
 
 /*******************************************************************************
 * Function Name  : GetADCValue
-* Description    : This function sums 32 ADC conversions and returns the average.
+* Description    : This function sums 128 ADC conversions and returns the average.
 * Input          : ADC channel
 * Output         : None
 * Return         : The ADC cannel reading
@@ -139,7 +139,7 @@ u16 GetADCValue(u8 Channel)
   ADC_RegularChannelConfig(ADC1, Channel, 1, ADC_SampleTime_7Cycles5);
   /* Start ADC1 Software Conversion */ 
   ADC_SoftwareStartConvCmd(ADC1, ENABLE);
-  /* Add 32 conversions to reduce thermal noise */
+  /* Add 128 conversions to reduce thermal noise */
   i = 128;
   while (i--)
   {
@@ -151,7 +151,7 @@ u16 GetADCValue(u8 Channel)
   }
   /* Stop ADC1 Software Conversion */ 
   ADC_SoftwareStartConvCmd(ADC1, DISABLE);
-  /* Return average of the 32 added conversions */
+  /* Return average of the 128 added conversions */
   ADCValue = (ADCValue >> 7);
   return ADCValue;
 }
