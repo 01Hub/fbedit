@@ -131,7 +131,7 @@ void TIM3_IRQHandler(void)
 *******************************************************************************/
 u16 GetADCValue(u8 Channel)
 {
-  vu8 i;
+  vu16 i;
   vu32 ADCValue;
 
   ADCValue = 0;
@@ -140,7 +140,7 @@ u16 GetADCValue(u8 Channel)
   /* Start ADC1 Software Conversion */ 
   ADC_SoftwareStartConvCmd(ADC1, ENABLE);
   /* Add 128 conversions to reduce thermal noise */
-  i = 128;
+  i = 256;
   while (i--)
   {
     ADC_ClearFlag(ADC1, ADC_FLAG_EOC);
@@ -152,7 +152,7 @@ u16 GetADCValue(u8 Channel)
   /* Stop ADC1 Software Conversion */ 
   ADC_SoftwareStartConvCmd(ADC1, DISABLE);
   /* Return average of the 128 added conversions */
-  ADCValue = (ADCValue >> 7);
+  ADCValue = (ADCValue >> 8);
   return ADCValue;
 }
 
