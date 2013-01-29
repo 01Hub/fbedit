@@ -134,3 +134,6 @@ apppath				BYTE MAX_PATH dup (?)
 ;20.0C 2018
 ; 3.4C 1891
 ; 0.0C 1860
+
+;Pt1000: 1000 ohm at 0°C
+;4,0 ohm/Kelvin with Pt 1000 sensor
