@@ -595,7 +595,6 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					.endw
 					;Read adc values
 					invoke STLinkRead,hWin,20000008h,addr lenr.log.Volt,sizeof LOG
-PrintDec lenr.log.Temp1
 					;Convert values
 					shr		lenr.log.Volt,1
 					shr		lenr.log.Amp,3
@@ -782,10 +781,12 @@ PrintDec lenr.log.Temp1
 			xor		edx,edx
 			div		ecx
 			.if eax>ebx
+				;Decrement power
 				.if lenr.Pwm1<255
 					inc		lenr.Pwm1
 				.endif
 			.elseif eax<ebx
+				;Increment power
 				.if lenr.Pwm1
 					dec		lenr.Pwm1
 				.endif
@@ -796,11 +797,13 @@ PrintDec lenr.log.Temp1
 			mul		edx
 			mov		ebx,eax
 			movzx	eax,lenr.log.Temp1
-			.if eax>ebx
+			.if eax<ebx
+				;Decrement fan speed
 				.if lenr.Pwm2<255
 					inc		lenr.Pwm2
 				.endif
-			.elseif eax<ebx
+			.elseif eax>ebx
+				;Increment fan speed
 				.if lenr.Pwm2
 					dec		lenr.Pwm2
 				.endif

@@ -139,7 +139,7 @@ u16 GetADCValue(u8 Channel)
   ADC_RegularChannelConfig(ADC1, Channel, 1, ADC_SampleTime_7Cycles5);
   /* Start ADC1 Software Conversion */ 
   ADC_SoftwareStartConvCmd(ADC1, ENABLE);
-  /* Add 128 conversions to reduce thermal noise */
+  /* Add 256 conversions to reduce thermal noise */
   i = 256;
   while (i--)
   {
@@ -151,7 +151,7 @@ u16 GetADCValue(u8 Channel)
   }
   /* Stop ADC1 Software Conversion */ 
   ADC_SoftwareStartConvCmd(ADC1, DISABLE);
-  /* Return average of the 128 added conversions */
+  /* Return average of the 256 added conversions */
   ADCValue = (ADCValue >> 8);
   return ADCValue;
 }
