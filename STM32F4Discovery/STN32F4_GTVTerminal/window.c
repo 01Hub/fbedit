@@ -7,7 +7,6 @@ extern volatile uint16_t FrameCount;
 extern uint8_t FrameBuff[SCREEN_BUFFHEIGHT][SCREEN_BUFFWIDTH];
 extern const uint8_t Font8x10[256][10];
 extern TIMER timer;
-extern volatile uint16_t ReDraw;
 
 /* Private variables ---------------------------------------------------------*/
 WINDOW WinColl[MAX_WINCOLL];      // Holds windows and controls data
@@ -94,7 +93,6 @@ void FocusNext(WINDOW* hpar)
     }
     SendEvent(hnext,EVENT_SETFOCUS,0,hnext->ID);
   }
-  ReDraw=1;
 }
 
 /**
@@ -158,7 +156,6 @@ void FocusPrevious(WINDOW* hpar)
     }
     SendEvent(hprevious,EVENT_SETFOCUS,0,hnext->ID);
   }
-  ReDraw=1;
 }
 
 /**
@@ -248,7 +245,6 @@ void DrawWinLine(int16_t X1,int16_t Y1,int16_t X2,int16_t Y2)
       }while (CurrentY != Y2);
     }
   }
-  ReDraw=1;
 }
 
 /**
@@ -281,7 +277,6 @@ void DrawBlackWinChar(uint16_t x, uint16_t y, uint8_t chr)
     }
     cy++;
   }
-  ReDraw=1;
 }
 
 /**
@@ -314,7 +309,6 @@ void DrawWhiteWinChar(uint16_t x, uint16_t y, uint8_t chr)
     }
     cy++;
   }
-  ReDraw=1;
 }
 
 /**
@@ -354,7 +348,6 @@ void DrawWinChar(uint16_t x, uint16_t y, uint8_t chr)
     }
     cy++;
   }
-  ReDraw=1;
 }
 
 /**
@@ -576,7 +569,6 @@ void DrawWinIcon(uint16_t x,uint16_t y,ICON* icon)
     }
     y++;
   }
-  ReDraw=1;
 }
 
 /**
@@ -596,7 +588,25 @@ void BlackWinFrame(uint16_t x,uint16_t y,uint16_t wdt,uint16_t hgt)
 		ClearFBPixel(x + j, y);
 		ClearFBPixel(x + j, y + hgt - 1);
 	}
-  ReDraw=1;
+}
+
+/**
+  * @brief  This function draws a white rectangle.
+  * @param  x,y,wdt,hgt)
+  * @retval None
+  */
+void WhiteWinFrame(uint16_t x,uint16_t y,uint16_t wdt,uint16_t hgt)
+{
+  uint16_t j;
+
+  for (j = 0; j < hgt; j++) {
+		SetFBPixel(x, y + j);
+		SetFBPixel(x + wdt - 1, y + j);
+	}
+  for (j = 0; j < wdt; j++)	{
+		SetFBPixel(x + j, y);
+		SetFBPixel(x + j, y + hgt - 1);
+	}
 }
 
 /**
@@ -636,7 +646,6 @@ void WhiteWinRect(uint16_t x,uint16_t y,uint16_t xm,uint16_t ym)
     }
     j++;
   }
-  ReDraw=1;
 }
 
 /**
@@ -676,7 +685,6 @@ void BlackWinRect(uint16_t x,uint16_t y,uint16_t xm,uint16_t ym)
     }
     j++;
   }
-  ReDraw=1;
 }
 
 /**
@@ -701,6 +709,31 @@ void DrawWinCaption(WINDOW* hwin,uint16_t x,uint16_t y)
         break;
     }
     DrawWinString(x,y,hwin->caplen,hwin->caption,0);
+  }
+}
+
+/**
+  * @brief  This function draws a window caption (Black).
+  * @param  hwin
+  * @retval None
+  */
+void DrawWhiteWinCaption(WINDOW* hwin,uint16_t x,uint16_t y)
+{
+  if (hwin->caplen)
+  {
+    switch (hwin->style & 0x0C)
+    {
+      case STYLE_LEFT:
+        x+=2;
+        break;
+      case STYLE_CENTER:
+        x+=(hwin->wt-hwin->caplen*TILE_WIDTH)/2;
+        break;
+      case STYLE_RIGHT:
+        x+=(hwin->wt-hwin->caplen*TILE_WIDTH)-2;
+        break;
+    }
+    DrawWinString(x,y,hwin->caplen,hwin->caption,1);
   }
 }
 
@@ -756,16 +789,20 @@ void DrawWindow(WINDOW* hwin)
       }
       else
       {
-        if (FrameCount & 1)
-        {
-          /* Draw black to make the button appear gray */
-          BlackWinRect(x,y,xm,ym);
-        }
-        else
-        {
-          y=y+(hwin->ht-TILE_HEIGHT)/2;
-          DrawWinCaption(hwin,x,y);
-        }
+        BlackWinRect(x,y,xm,ym);
+        WhiteWinFrame(x,y,xm-x,ym-y);
+        y=y+(hwin->ht-TILE_HEIGHT)/2;
+        DrawWhiteWinCaption(hwin,x,y);
+        // if (FrameCount & 1)
+        // {
+          // /* Draw black to make the button appear gray */
+          // BlackWinRect(x,y,xm,ym);
+        // }
+        // else
+        // {
+          // y=y+(hwin->ht-TILE_HEIGHT)/2;
+          // DrawWinCaption(hwin,x,y);
+        // }
       }
       break;
     case CLASS_STATIC:
@@ -987,7 +1024,6 @@ uint32_t WindowToFront(WINDOW* hwin)
     }
   }
   Focus=hctl;
-  ReDraw=1;
   return i;
 }
 
@@ -1016,7 +1052,6 @@ uint32_t DefWindowHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
       {
         hwin->state&=~STATE_VISIBLE;
       }
-      ReDraw=1;
       break;
     case EVENT_SETFOCUS:
       if (hwin->style & STYLE_CANFOCUS)
@@ -1026,7 +1061,6 @@ uint32_t DefWindowHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
         {
           Focus=hwin;
         }
-        ReDraw=1;
       }
       break;
     case EVENT_KILLFOCUS:
@@ -1034,7 +1068,6 @@ uint32_t DefWindowHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
       if (hwin==Focus)
       {
         Focus=0;
-        ReDraw=1;
       }
       break;
     case EVENT_ACTIVATE:
@@ -1057,7 +1090,6 @@ uint32_t DefWindowHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
           hwin->state^=STATE_CHECKED;
         }
         SendEvent(howner,event,param,ID);
-        ReDraw=1;
       }
       break;
     case EVENT_LCLICK:
@@ -1132,7 +1164,6 @@ void AddControl(WINDOW* hwin,WINDOW* hctl)
     hwin=hwin->control;
   }
   hwin->control=hctl;
-  ReDraw=1;
 }
 
 /**
@@ -1153,7 +1184,6 @@ void AddWindow(WINDOW* hwin)
     }
     i++;
   }
-  ReDraw=1;
 }
 
 /**
@@ -1217,7 +1247,6 @@ WINDOW* CreateWindow(WINDOW* howner,uint8_t winclass,uint8_t ID,uint16_t x,uint1
       AddWindow(hwin);
     }
   }
-  ReDraw=1;
   return hwin;
 }
 
@@ -1254,7 +1283,6 @@ void DestroyWindow(WINDOW* hwin)
     }
     hwin->hwin=0;
   }
-  ReDraw=1;
 }
 
 /**
@@ -1301,7 +1329,6 @@ void SetCaption(WINDOW* hwin,uint8_t *caption)
   {
     hwin->caplen=StrLen(caption);
   }
-  ReDraw=1;
 }
 
 /**
@@ -1312,7 +1339,6 @@ void SetCaption(WINDOW* hwin,uint8_t *caption)
 void SetStyle(WINDOW* hwin,uint8_t style)
 {
   hwin->style=style;
-  ReDraw=1;
 }
 
 /**
@@ -1323,7 +1349,6 @@ void SetStyle(WINDOW* hwin,uint8_t style)
 void SetState(WINDOW* hwin,uint8_t state)
 {
   hwin->state=state;
-  ReDraw=1;
 }
 
 /**

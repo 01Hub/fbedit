@@ -18,7 +18,6 @@ extern volatile uint8_t Num;
 extern uint8_t rs232buf[256];
 extern volatile uint8_t rs232buftail;
 extern volatile uint8_t rs232bufhead;
-extern volatile uint16_t ReDraw;
 
 /* Private variables ---------------------------------------------------------*/
 volatile uint32_t cx,cy;
@@ -30,7 +29,6 @@ volatile uint8_t ScreenChars[TERM_SCREEN_HEIGHT][TERM_SCREEN_WIDTH];
 static void CURSOR_INVERT()
 {
   ScreenChars[cy][cx] ^= showcursor;
-  ReDraw=1;
 }
 
 static void _video_scrollup()
