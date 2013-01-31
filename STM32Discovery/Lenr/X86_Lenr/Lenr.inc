@@ -30,12 +30,13 @@ STLinkDisconnect	PROTO hWin:HWND
 STLinkRead 			PROTO hWin:HWND,rdadr:DWORD,wradr:DWORD,nBytes:DWORD
 STLinkWrite			PROTO hWin:HWND,wradr:DWORD,rdadr:DWORD,nBytes:DWORD
 
-GRPWDT				equ 864
-GRPXST				equ 72
+GRPWDT				equ 864*4
+GRPXST				equ 72*4
 GRPXPS				equ 30
 GRPHGT				equ 500
 GRPYST				equ 50
 GRPYPS				equ 30
+AVGCOUNT			equ 50
 
 IDD_DIALOG			equ 1000
 IDC_GRAPH			equ 1001
@@ -59,7 +60,8 @@ IDC_UDNPOWERMAX     equ 1017
 IDC_STCAMBTEMP      equ 1018
 IDC_EDTAMBTEMP      equ 1019
 IDC_UDNAMBTEMP      equ 1020
-
+IDC_UDNOFS			equ 1022
+			
 IDM_MENU			equ 10000
 IDM_FILE_OPEN       equ 10002
 IDM_FILE_CLOSE      equ 10003
@@ -80,7 +82,7 @@ LENR struct
 	SecCount		DWORD ?
 	Pwm1			WORD ?
 	Pwm2			WORD ?
-	log				LOG 200 dup(<>)
+	log				LOG AVGCOUNT dup(<>)
 LENR ends
 
 .const
@@ -96,7 +98,8 @@ szTime				BYTE '00:00',0,'02:00',0,'04:00',0,'06:00',0,'08:00',0,'10:00',0,'12:0
 szVolt				BYTE 'Voltage',0,' 20',0,' 18',0,' 16',0,' 14',0,' 12',0,' 10',0,'  8',0,'  6',0,'  4',0,'  2',0,'  0',0,0
 szAmp				BYTE 'Current',0,'5.0',0,'4.5',0,'4.0',0,'3.5',0,'3.0',0,'2.5',0,'2.0',0,'1.5',0,'1.0',0,'0.5',0,'  0',0,0
 szPower				BYTE 'Power',0,'100',0,' 90',0,' 80',0,' 70',0,' 60',0,' 50',0,' 40',0,' 30',0,' 20',0,' 10',0,'  0',0,0
-szTemp				BYTE 'Temprature',0,'100',0,' 90',0,' 80',0,' 70',0,' 60',0,' 50',0,' 40',0,' 30',0,' 20',0,' 10',0,'  0',0,0
+szTempAmbient		BYTE 'Temprature',0,' 40',0,' 36',0,' 32',0,' 28',0,' 24',0,' 20',0,' 16',0,' 12',0,'  8',0,'  4',0,'  0',0,0
+szTempCell			BYTE 'Temprature',0,'100',0,' 90',0,' 80',0,' 70',0,' 60',0,' 50',0,' 40',0,' 30',0,' 20',0,' 10',0,'  0',0,0
 szTempHeater		BYTE 'Temprature',0,'400',0,'360',0,'320',0,'280',0,'240',0,'200',0,'160',0,'120',0,' 80',0,' 40',0,'  0',0,0
 
 Tahoma_36			LOGFONT <-36,0,0,0,400,0,0,0,0,3,2,1,34,"Tahoma">
@@ -107,9 +110,9 @@ szFmtPower			BYTE '%.3dW',0
 szFmtTemp			BYTE '%.3dC',0
 szFmtPwm1			BYTE 'PWM1: %d',0
 szFmtPwm2			BYTE 'PWM2: %d',0
-szFmtFile			BYTE '%s\Log\Lenr%.4d%.2d%.2d.log',0
+szFmtFile			BYTE '%s\Log\Lenr%.4d%.2d%.2d.dat',0
 
-szLOGFilterString	BYTE 'LOG Files (*.log)',0,'*.log',0,0
+szLOGFilterString	BYTE 'DATA Files (*.dat)',0,'*.dat',0,0
 
 .data?
 
@@ -128,6 +131,7 @@ graph				DWORD ?
 display				BYTE 16 dup (?)
 rampupdown			DWORD ?
 apppath				BYTE MAX_PATH dup (?)
+xofs				DWORD ?
 
 ;68.6C 2384
 ;36.5C 2136
