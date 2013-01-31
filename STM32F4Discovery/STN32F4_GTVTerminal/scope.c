@@ -7,7 +7,7 @@ extern volatile uint16_t FrameCount;
 extern WINDOW* Focus;                 // The control that has the keyboard focus
 extern volatile uint8_t Caps;
 extern volatile uint8_t Num;
-extern uint8_t FrameBuff[SCREEN_BUFFHEIGHT][SCREEN_BUFFWIDTH];
+//extern uint8_t FrameBuff[SCREEN_BUFFHEIGHT][SCREEN_BUFFWIDTH];
 extern uint32_t frequency;
 
 /* Private variables ---------------------------------------------------------*/

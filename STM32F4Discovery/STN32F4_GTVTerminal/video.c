@@ -40,10 +40,11 @@ uint8_t FrameBuff[SCREEN_BUFFHEIGHT][SCREEN_BUFFWIDTH];
 volatile int16_t LineCount;
 volatile uint16_t FrameCount;
 volatile uint16_t FrameSkip;
-volatile int8_t BackPochFlag;
+volatile uint16_t BackPochFlag;
 SPRITE Cursor;
 SPRITE* Sprites[MAX_SPRITES];
-volatile uint8_t FrameDraw;
+volatile uint16_t ReDraw;
+volatile uint16_t FrameDraw;
 volatile uint32_t RNDSeed;          // Random seed
 TIMER timer;
 volatile uint32_t pcount, frequency;
@@ -77,6 +78,7 @@ void SetCursor(uint8_t cur)
       Cursor.icon.wt=8;
       Cursor.icon.ht=10;
       Cursor.icon.icondata=*SelectCur;
+      ReDraw=1;
       break;
   }
 }
@@ -90,6 +92,7 @@ void MoveCursor(uint16_t x,uint16_t y)
 {
   Cursor.x=x;
   Cursor.y=y;
+  ReDraw=1;
 }
 
 /**
@@ -107,6 +110,7 @@ void ShowCursor(uint8_t z)
   {
     Cursor.visible=0;     // Hide
   }
+  ReDraw=1;
 }
 
 /**
@@ -117,6 +121,7 @@ void ShowCursor(uint8_t z)
 void Cls(void)
 {
   memset(&BackBuff, 0, SCREEN_BUFFHEIGHT*SCREEN_BUFFWIDTH);
+  ReDraw=1;
 }
 
 /**
@@ -242,6 +247,7 @@ void DrawChar(uint16_t x, uint16_t y, uint8_t chr, uint8_t c)
       }
       break;
   }
+  ReDraw=1;
 }
 
 /**
@@ -341,6 +347,7 @@ void DrawLargeChar(uint16_t x, uint16_t y, uint8_t chr, uint8_t c)
       }
       break;
   }
+  ReDraw=1;
 }
 
 /**
@@ -497,6 +504,7 @@ void Rectangle(uint16_t x, uint16_t y, uint16_t wdt, uint16_t hgt, uint8_t c)
 		SetPixel(x + j, y, c);
 		SetPixel(x + j, y + hgt - 1, c);
 	}
+  ReDraw=1;
 }
 
 /**
@@ -537,6 +545,7 @@ void Circle(uint16_t x0, uint16_t y0, uint16_t radius, uint8_t c)
     SetPixel(x0 + y, y0 - x, c);
     SetPixel(x0 - y, y0 - x, c);
   }
+  ReDraw=1;
 }
 
 /**
@@ -610,6 +619,7 @@ void Line(int16_t X1,int16_t Y1,int16_t X2,int16_t Y2, uint8_t c)
       }while (CurrentY != Y2);
     }
   }
+  ReDraw=1;
 }
 
 /**
@@ -657,6 +667,7 @@ void DrawIcon(uint16_t x,uint16_t y,ICON* icon,uint8_t c)
     }
     y++;
   }
+  ReDraw=1;
 }
 
 /**
@@ -668,6 +679,7 @@ void ScrollUp(void)
 {
   memmove(&BackBuff[0], &BackBuff[1], (SCREEN_BUFFHEIGHT-1)*SCREEN_BUFFWIDTH);
   memset(&BackBuff[SCREEN_BUFFHEIGHT-1], 0, SCREEN_BUFFWIDTH);
+  ReDraw=1;
 }
 
 /**
@@ -684,6 +696,7 @@ void ScrollDown(void)
     y--;
   }
   memset(&BackBuff[0], 0, SCREEN_BUFFWIDTH);
+  ReDraw=1;
 }
 
 /**
@@ -747,6 +760,7 @@ void ClearFBPixel(uint16_t x,uint16_t y)
     bit = 1 << (x & 0x7);
     FrameBuff[y][x >> 3] &= ~bit;
   }
+  ReDraw=1;
 }
 
 /**
@@ -762,6 +776,7 @@ void SetFBPixel(uint16_t x,uint16_t y)
     bit = 1 << (x & 0x7);
     FrameBuff[y][x >> 3] |= bit;
   }
+  ReDraw=1;
 }
 
 /**
@@ -824,6 +839,7 @@ uint32_t DrawSprite(const SPRITE* ps)
     }
     y++;
   }
+  ReDraw=1;
   return coll;
 }
 
@@ -841,6 +857,7 @@ void RemoveSprites(void)
     Sprites[i]=0;
     i++;
   }
+  ReDraw=1;
 }
 
 /**
@@ -1061,16 +1078,20 @@ void TIM7_IRQHandler(void)
   /* Clear the IT pending Bit */
   TIM7->SR=(u16)~TIM_IT_Update;
   FrameDraw=1;
-  /* Copy ScreenBuff to WorkBuff */
-  pd=(uint32_t *)&FrameBuff;
-  ps=(uint32_t *)&BackBuff;
-  i=0;
-  while (i<SCREEN_BUFFHEIGHT*SCREEN_BUFFWIDTH/4)
+  if (ReDraw)
   {
-    pd[i]=ps[i];
-    i++;
+    ReDraw=0;
+    /* Copy ScreenBuff to WorkBuff */
+    pd=(uint32_t *)&FrameBuff;
+    ps=(uint32_t *)&BackBuff;
+    i=0;
+    while (i<SCREEN_BUFFHEIGHT*SCREEN_BUFFWIDTH/4)
+    {
+      pd[i]=ps[i];
+      i++;
+    }
+    FrameBuffDraw();
   }
-  FrameBuffDraw();
   KeyboardReset();
   if (Focus)
   {
