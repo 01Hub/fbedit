@@ -117,11 +117,11 @@ GraphProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		;Draw vertical lines
 		mov		edi,GRPXPS
 		xor		ecx,ecx
-		.while ecx<=3
+		.while ecx<=12
 			push	ecx
 			invoke MoveToEx,mDC,edi,GRPYPS,NULL
 			invoke LineTo,mDC,edi,GRPHGT+GRPYPS
-			add		edi,GRPXST
+			add		edi,GRPXST/4
 			pop		ecx
 			inc		ecx
 		.endw
@@ -154,7 +154,7 @@ GraphProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke TextOut,mDC,ecx,edx,esi,5
 			lea		esi,[esi+6]
 			pop		ecx
-			lea		ecx,[ecx+GRPXST]
+			lea		ecx,[ecx+GRPXST/2]
 		.endw
 		mov		eax,graph
 		mov		edi,offset log
@@ -178,11 +178,11 @@ GraphProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		movzx	eax,lenr.Pwm1
 		invoke wsprintf,addr buffer,addr szFmtPwm1,eax
 		invoke lstrlen,addr buffer
-		invoke TextOut,mDC,15,5,addr buffer,eax
+		invoke TextOut,mDC,700,5,addr buffer,eax
 		movzx	eax,lenr.Pwm2
 		invoke wsprintf,addr buffer,addr szFmtPwm2,eax
 		invoke lstrlen,addr buffer
-		invoke TextOut,mDC,100,5,addr buffer,eax
+		invoke TextOut,mDC,800,5,addr buffer,eax
 		invoke BitBlt,ps.hdc,0,0,rect.right,rect.bottom,mDC,0,0,SRCCOPY
 		;Delete bitmap
 		pop		eax
