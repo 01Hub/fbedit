@@ -12,6 +12,7 @@ extern TIMER timer;
 WINDOW WinColl[MAX_WINCOLL];      // Holds windows and controls data
 WINDOW* Windows[MAX_WINDOWS+1];   // Pointers to WinColl, windows only
 WINDOW* Focus;
+uint16_t FocusBlink;
 
 const uint8_t UncheckedIcon[10][10] = {
 {0,0,0,0,0,0,0,0,0,0},
@@ -783,26 +784,22 @@ void DrawWindow(WINDOW* hwin)
     case CLASS_BUTTON:
       if (hwin->state & STATE_FOCUS)
       {
-        BlackWinFrame(x,y,xm-x,ym-y);
+        if ((FrameCount & 7)==0)
+        {
+          FocusBlink ^=1;
+        }
+        if (FocusBlink)
+        {
+          BlackWinFrame(x,y,xm-x,ym-y);
+        }
         y=y+(hwin->ht-TILE_HEIGHT)/2;
         DrawWinCaption(hwin,x,y);
       }
       else
       {
-        BlackWinRect(x,y,xm,ym);
-        WhiteWinFrame(x,y,xm-x,ym-y);
+        BlackWinFrame(x,y,xm-x,ym-y);
         y=y+(hwin->ht-TILE_HEIGHT)/2;
-        DrawWhiteWinCaption(hwin,x,y);
-        // if (FrameCount & 1)
-        // {
-          // /* Draw black to make the button appear gray */
-          // BlackWinRect(x,y,xm,ym);
-        // }
-        // else
-        // {
-          // y=y+(hwin->ht-TILE_HEIGHT)/2;
-          // DrawWinCaption(hwin,x,y);
-        // }
+        DrawWinCaption(hwin,x,y);
       }
       break;
     case CLASS_STATIC:

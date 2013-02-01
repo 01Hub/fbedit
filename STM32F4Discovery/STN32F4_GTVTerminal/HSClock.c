@@ -167,10 +167,7 @@ void HSClkHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
   {
     case EVENT_PAINT:
       DefWindowHandler(hwin,event,param,ID);
-      if (FrameCount & 1)
-      {
-        HSClkDrawGrid();
-      }
+      HSClkDrawGrid();
       HSClkDrawData();
       HSClkDrawInfo();
       break;
