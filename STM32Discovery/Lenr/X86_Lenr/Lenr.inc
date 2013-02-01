@@ -122,6 +122,7 @@ hWnd				HWND ?
 hFont				HFONT ?
 connected			DWORD ?
 lastsec				DWORD ?
+lasthour			DWORD ?
 lenr				LENR <>
 logpos				DWORD ?
 log					LOG GRPWDT dup(<>)

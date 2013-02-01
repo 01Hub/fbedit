@@ -551,8 +551,23 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke GetDlgItem,hWin,IDC_UDNOFS
 		invoke MoveWindow,eax,660,560,60,25,FALSE
 		invoke SendDlgItemMessage,hWin,IDC_UDNOFS,UDM_SETRANGE,0,00000009h
-		invoke SendDlgItemMessage,hWin,IDC_UDNOFS,UDM_SETPOS,0,0000h
-		mov		xofs,0
+
+		invoke GetLocalTime,addr systime
+		movzx	eax,systime.wHour
+		mov		lasthour,eax
+		shr		eax,1
+		.if eax<2
+			mov		xofs,0
+			invoke SendDlgItemMessage,hWin,IDC_UDNOFS,UDM_SETPOS,0,0000h
+		.else
+			sub		eax,2
+			push	eax
+			invoke SendDlgItemMessage,hWin,IDC_UDNOFS,UDM_SETPOS,0,eax
+			pop		eax
+			mov		edx,GRPXST
+			mul		edx
+			mov		xofs,eax
+		.endif
 	.elseif eax==WM_HSCROLL
 		invoke SendDlgItemMessage,hWin,IDC_UDNOFS,UDM_GETPOS,0,0
 		movzx	eax,ax
@@ -866,6 +881,23 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				movzx	edx,systime.wDay
 				invoke wsprintf,addr buffer,addr szFmtFile,addr apppath,eax,ecx,edx
 				invoke WriteTheFile,addr buffer
+			.endif
+			movzx	eax,systime.wHour
+			.if eax!=lasthour
+				mov		lasthour,eax
+				shr		eax,1
+				.if eax<2
+					mov		xofs,0
+					invoke SendDlgItemMessage,hWin,IDC_UDNOFS,UDM_SETPOS,0,0000h
+				.else
+					sub		eax,2
+					push	eax
+					invoke SendDlgItemMessage,hWin,IDC_UDNOFS,UDM_SETPOS,0,eax
+					pop		eax
+					mov		edx,GRPXST
+					mul		edx
+					mov		xofs,eax
+				.endif
 			.endif
 			invoke GetDlgItem,hWin,IDC_GRAPH
 			invoke InvalidateRect,eax,NULL,TRUE
