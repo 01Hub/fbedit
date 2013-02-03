@@ -32,13 +32,13 @@ DisplayProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 			div		ecx
 			invoke wsprintf,addr display,addr szFmtPower,eax
 		.elseif eax==IDC_RBNAMB
-			movzx	eax,lenr.log.Temp1
+			movsx	eax,lenr.log.Temp1
 			invoke wsprintf,addr display,addr szFmtTemp,eax
 		.elseif eax==IDC_RBNCELL
-			movzx	eax,lenr.log.Temp2
+			movsx	eax,lenr.log.Temp2
 			invoke wsprintf,addr display,addr szFmtTemp,eax
 		.elseif eax==IDC_RBNHEATER
-			movzx	eax,lenr.log.Temp3
+			movsx	eax,lenr.log.Temp3
 			invoke wsprintf,addr display,addr szFmtTemp,eax
 		.endif
 		invoke lstrlen,addr display
@@ -637,10 +637,11 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.endif
 		.endif
 	.elseif	eax==WM_TIMER
+		invoke KillTimer,hWin,1000
 		.if connected
 			;Read 4 bytes from STM32 ram and store it in res.
 			invoke STLinkRead,hWin,20000000h,addr res,DWORD
-			.if eax
+			.if eax && eax!=IDIGNORE && eax!=IDABORT
 				mov		eax,res
 				.if eax!=lenr.SecCount
 					mov		lenr.SecCount,eax
@@ -661,24 +662,30 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					.endw
 					;Read adc values
 					invoke STLinkRead,hWin,20000008h,addr lenr.log.Volt,sizeof LOG
-					;Convert values
-					shr		lenr.log.Volt,1
-					shr		lenr.log.Amp,3
-					movzx	eax,lenr.log.Temp1
-					sub		eax,1870
-					cdq
-					mov		ecx,6860
-					imul	ecx
-					mov		ecx,2378-1870
-					idiv	ecx
-					mov		lenr.log.Temp1,ax
-					shl		lenr.log.Temp2,2
-					shl		lenr.log.Temp3,3
-					invoke GetDlgItem,hWin,IDC_DISPLAY
-					invoke InvalidateRect,eax,NULL,TRUE
-					;Update pwm1 and pwm2
-					invoke STLinkWrite,hWin,20000004h,addr lenr.Pwm1,WORD*2
+					.if eax && eax!=IDIGNORE && eax!=IDABORT
+						;Convert values
+						shr		lenr.log.Volt,1
+						shr		lenr.log.Amp,3
+						movzx	eax,lenr.log.Temp1
+;PrintDec eax
+						sub		eax,2746
+						mov		ecx,2500
+						imul	ecx
+						mov		ecx,3035-2746
+						idiv	ecx
+						mov		lenr.log.Temp1,ax
+						shl		lenr.log.Temp2,2
+						shl		lenr.log.Temp3,3
+						invoke GetDlgItem,hWin,IDC_DISPLAY
+						invoke InvalidateRect,eax,NULL,TRUE
+						;Update pwm1 and pwm2
+						invoke STLinkWrite,hWin,20000004h,addr lenr.Pwm1,WORD*2
+					.else
+						mov		connected,FALSE
+					.endif
 				.endif
+			.else
+				mov		connected,FALSE
 			.endif
 		.else
 			;Scroll the adc readings
@@ -902,6 +909,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke GetDlgItem,hWin,IDC_GRAPH
 			invoke InvalidateRect,eax,NULL,TRUE
 		.endif
+		invoke SetTimer,hWin,1000,100,NULL
 	.elseif eax==WM_CLOSE
 		invoke KillTimer,hWin,1000
 		.if connected

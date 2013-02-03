@@ -137,3 +137,6 @@ xofs				DWORD ?
 
 ;Pt1000: 1000 ohm at 0°C
 ;4,0 ohm/Kelvin with Pt 1000 sensor
+
+;2746 at 0C
+;3025 at 25C
