@@ -207,6 +207,7 @@ void DeskTopSetup(void)
       PongGameLoop();
       break;
     case 13:
+      VolcanoGameLoop();
       break;
     case 14:
       TetrisGameLoop();

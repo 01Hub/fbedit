@@ -115,6 +115,7 @@ void main(void)
   /* Enable TIM3 */
   TIM_Cmd(TIM3, ENABLE);
   MouseInit();
+  KeyboardInit();
   SetCursor(0);
   MoveCursor(SCREEN_WIDTH/2,SCREEN_HEIGHT/2);
   /* Wait 25 frames */

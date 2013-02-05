@@ -1,6 +1,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "logicanalyser.h"
+#include "keycodes.h"
 
 /* External variables --------------------------------------------------------*/
 extern volatile uint16_t FrameCount;
@@ -140,8 +141,8 @@ void LgaDrawDotHLine(uint16_t x,uint16_t y,int16_t wdt)
   while (wdt>=0)
   {
     SetFBPixel(x,y);
-    x+=4;
-    wdt-=4;
+    x+=2;
+    wdt-=2;
   }
 }
 
@@ -150,8 +151,8 @@ void LgaDrawDotVLine(uint16_t x,uint16_t y,int16_t hgt)
   while (hgt>=0)
   {
     SetFBPixel(x,y);
-    y+=4;
-    hgt-=4;
+    y+=2;
+    hgt-=2;
   }
 }
 
@@ -430,6 +431,7 @@ void LgaSetup(void)
 
   while (!Lga.Quit)
   {
+    Lga.Quit=(GetKeyState(SC_ESC) && (GetKeyState(SC_L_CTRL) | GetKeyState(SC_R_CTRL)));
     if (Lga.Sample)
     {
       Lga.Sample=0;

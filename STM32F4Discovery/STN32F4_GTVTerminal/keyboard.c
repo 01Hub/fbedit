@@ -85,6 +85,63 @@ volatile uint16_t scancode = 0x0800;
 volatile uint8_t nStuck;
 volatile uint16_t keyscan;
 
+void KeyboardInit(void)
+{
+  volatile uint32_t lc;
+  GPIO_InitTypeDef GPIO_InitStructure;
+  EXTI_InitTypeDef EXTI_InitStructure;
+  NVIC_InitTypeDef NVIC_InitStructure;
+  /* Configure PB4 and PB2 as open drain outputs */
+  // GPIO_InitStructure.GPIO_Pin = GPIO_Pin_4 | GPIO_Pin_2;
+  // GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
+  // GPIO_InitStructure.GPIO_OType = GPIO_OType_OD;
+  // GPIO_InitStructure.GPIO_PuPd  = GPIO_PuPd_NOPULL ;
+  // GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
+  // GPIO_Init(GPIOB, &GPIO_InitStructure);
+  // GPIO_SetBits(GPIOB,GPIO_Pin_4 | GPIO_Pin_2);
+  // FrameWait(2);
+  // LineWait(1);
+  // /* Clock low */
+  // GPIO_ResetBits(GPIOB,GPIO_Pin_2);
+  // LineWait(2);
+  // TIM_Cmd(TIM3, DISABLE);
+  // /* Data low */
+  // GPIO_ResetBits(GPIOB,GPIO_Pin_4);
+  // /* Clock as input */
+  // GPIO_InitStructure.GPIO_Pin = GPIO_Pin_2;
+  // GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
+  // /* Clock high */
+  // GPIO_SetBits(GPIOB,GPIO_Pin_2);
+  // GPIO_Init(GPIOB, &GPIO_InitStructure);
+  // /* Wait until clock low */
+  // while (GPIO_ReadInputDataBit(GPIOB,GPIO_Pin_2)!=Bit_SET)
+  // {
+  // }
+  /* Send the F4 command to the mouse */
+  //SendData(0b10111101000);
+  /* GPIOB Pin4 and Pin2 as input floating */
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_4 | GPIO_Pin_5;
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
+  GPIO_Init(GPIOB, &GPIO_InitStructure);
+  /* Connect EXTI Line5 to PB5 pin */
+  SYSCFG_EXTILineConfig(EXTI_PortSourceGPIOB, EXTI_PinSource5);
+  /* Configure EXTI Line5 */
+  EXTI_InitStructure.EXTI_Line = EXTI_Line5;
+  EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
+  EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Falling;  
+  EXTI_InitStructure.EXTI_LineCmd = ENABLE;
+  EXTI_Init(&EXTI_InitStructure);
+  /* Enable and set EXTI Line5 Interrupt to low priority */
+  NVIC_InitStructure.NVIC_IRQChannel = EXTI9_5_IRQn;
+  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 2;
+  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+  NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+  NVIC_Init(&NVIC_InitStructure);
+  /* Enable TIM3 */
+  TIM_Cmd(TIM3, ENABLE);
+  FrameWait(2);
+}
+
 /* Returns parity of byte in x. */
 uint32_t parity1(uint32_t x)
 {
@@ -95,19 +152,18 @@ uint32_t parity1(uint32_t x)
 }
 
 /**
-  * @brief  This function handles EXTI0_IRQHandler interrupt request.
+  * @brief  This function handles EXTI9_5_IRQHandler interrupt request.
             The interrupt is generated on STHL transition
   * @param  None
   * @retval None
   */
-void EXTI2_IRQHandler(void)
+void EXTI9_5_IRQHandler(void)
 {
   static uint16_t keyflag;
   uint16_t tmp;
 
-  /* Clear the EXTI line 2 pending bit */
-  EXTI->PR = EXTI_Line2;
-
+  /* Clear the EXTI line 5 pending bit */
+  EXTI->PR = EXTI_Line5;
   scancode >>= 1;
 	if (GPIOB->IDR & GPIO_Pin_4)
   {

@@ -18,6 +18,7 @@ extern volatile uint8_t Num;
 extern uint8_t rs232buf[256];
 extern volatile uint8_t rs232buftail;
 extern volatile uint8_t rs232bufhead;
+extern WINDOW* Focus;                 // The control that has the keyboard focus
 
 /* Private variables ---------------------------------------------------------*/
 volatile uint32_t cx,cy;
@@ -194,6 +195,7 @@ void Terminal(void)
   video_cls();
   RefreshScreen();
   Quit=0;
+  Focus=0;
   while (!Quit)
   {
     if (i!=FrameCount)

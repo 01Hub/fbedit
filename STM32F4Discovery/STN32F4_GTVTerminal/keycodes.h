@@ -1,4 +1,5 @@
 
+void KeyboardInit(void);
 uint32_t parity1(uint32_t x);
 void KeyboardReset(void);
 uint8_t GetKeyState(uint16_t SC);

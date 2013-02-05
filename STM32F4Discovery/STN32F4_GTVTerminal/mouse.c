@@ -74,8 +74,8 @@ void MouseInit(void)
   }
   /* Send the F4 command to the mouse */
   SendData(0b10111101000);
-  /* GPIOB Pin3, Pin2, Pin1 and Pin0 as input floating */
-  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_4 | GPIO_Pin_2 | GPIO_Pin_1 | GPIO_Pin_0;
+  /* GPIOB Pin1 and Pin0 as input floating */
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_1 | GPIO_Pin_0;
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
   GPIO_Init(GPIOB, &GPIO_InitStructure);
   /* Connect EXTI Line0 to PB0 pin */
@@ -86,22 +86,8 @@ void MouseInit(void)
   EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Falling;  
   EXTI_InitStructure.EXTI_LineCmd = ENABLE;
   EXTI_Init(&EXTI_InitStructure);
-  /* Connect EXTI Line2 to PB2 pin */
-  SYSCFG_EXTILineConfig(EXTI_PortSourceGPIOB, EXTI_PinSource2);
-  /* Configure EXTI Line2 */
-  EXTI_InitStructure.EXTI_Line = EXTI_Line2;
-  EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
-  EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Falling;  
-  EXTI_InitStructure.EXTI_LineCmd = ENABLE;
-  EXTI_Init(&EXTI_InitStructure);
   /* Enable and set EXTI Line0 Interrupt to low priority */
   NVIC_InitStructure.NVIC_IRQChannel = EXTI0_IRQn;
-  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 2;
-  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
-  NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-  NVIC_Init(&NVIC_InitStructure);
-  /* Enable and set EXTI Line2 Interrupt to low priority */
-  NVIC_InitStructure.NVIC_IRQChannel = EXTI2_IRQn;
   NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 2;
   NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
   NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
@@ -112,7 +98,7 @@ void MouseInit(void)
 }
 
 /**
-  * @brief  This function handles EXTI2_IRQHandler interrupt request.
+  * @brief  This function handles EXTI0_IRQHandler interrupt request.
             The interrupt is generated on STHL transition
   * @param  None
   * @retval None

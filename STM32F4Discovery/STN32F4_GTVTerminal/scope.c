@@ -1,6 +1,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "scope.h"
+#include "keycodes.h"
 
 /* External variables --------------------------------------------------------*/
 extern volatile uint16_t FrameCount;
@@ -115,9 +116,9 @@ void ScopeMainHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
           case 2:
             /* Right */
             Scope.dataofs+=Scope.tmradd;
-            if (Scope.dataofs>SCOPE_DATASIZE-1024)
+            if (Scope.dataofs>SCOPE_DATASIZE)
             {
-              Scope.dataofs=SCOPE_DATASIZE-1024;
+              Scope.dataofs=SCOPE_DATASIZE;
             }
             break;
           case 3:
@@ -319,6 +320,10 @@ void ScopeDrawData(void)
         while (x1<256-1)
         {
           ptr+=36;
+          if ((uint32_t)ptr>=(SCOPE_DATAPTR+SCOPE_DATASIZE))
+          {
+            break;
+          }
           y2=*ptr;
           DrawWinLine(x1+SCOPE_LEFT,y1+SCOPE_TOP,x1+1+SCOPE_LEFT,y2+SCOPE_TOP);
           y1=y2;
@@ -329,6 +334,10 @@ void ScopeDrawData(void)
         while (x1<256-1)
         {
           ptr+=32;
+          if ((uint32_t)ptr>=SCOPE_DATAPTR+SCOPE_DATASIZE)
+          {
+            break;
+          }
           y2=*ptr;
           DrawWinLine(x1+SCOPE_LEFT,y1+SCOPE_TOP,x1+1+SCOPE_LEFT,y2+SCOPE_TOP);
           y1=y2;
@@ -339,6 +348,10 @@ void ScopeDrawData(void)
         while (x1<256-1)
         {
           ptr+=28;
+          if ((uint32_t)ptr>=SCOPE_DATAPTR+SCOPE_DATASIZE)
+          {
+            break;
+          }
           y2=*ptr;
           DrawWinLine(x1+SCOPE_LEFT,y1+SCOPE_TOP,x1+1+SCOPE_LEFT,y2+SCOPE_TOP);
           y1=y2;
@@ -349,6 +362,10 @@ void ScopeDrawData(void)
         while (x1<256-1)
         {
           ptr+=24;
+          if ((uint32_t)ptr>=SCOPE_DATAPTR+SCOPE_DATASIZE)
+          {
+            break;
+          }
           y2=*ptr;
           DrawWinLine(x1+SCOPE_LEFT,y1+SCOPE_TOP,x1+1+SCOPE_LEFT,y2+SCOPE_TOP);
           y1=y2;
@@ -359,6 +376,10 @@ void ScopeDrawData(void)
         while (x1<256-1)
         {
           ptr+=20;
+          if ((uint32_t)ptr>=SCOPE_DATAPTR+SCOPE_DATASIZE)
+          {
+            break;
+          }
           y2=*ptr;
           DrawWinLine(x1+SCOPE_LEFT,y1+SCOPE_TOP,x1+1+SCOPE_LEFT,y2+SCOPE_TOP);
           y1=y2;
@@ -369,6 +390,10 @@ void ScopeDrawData(void)
         while (x1<256-1)
         {
           ptr+=16;
+          if ((uint32_t)ptr>=SCOPE_DATAPTR+SCOPE_DATASIZE)
+          {
+            break;
+          }
           y2=*ptr;
           DrawWinLine(x1+SCOPE_LEFT,y1+SCOPE_TOP,x1+1+SCOPE_LEFT,y2+SCOPE_TOP);
           y1=y2;
@@ -379,6 +404,10 @@ void ScopeDrawData(void)
         while (x1<256-1)
         {
           ptr+=12;
+          if ((uint32_t)ptr>=SCOPE_DATAPTR+SCOPE_DATASIZE)
+          {
+            break;
+          }
           y2=*ptr;
           DrawWinLine(x1+SCOPE_LEFT,y1+SCOPE_TOP,x1+1+SCOPE_LEFT,y2+SCOPE_TOP);
           y1=y2;
@@ -389,6 +418,10 @@ void ScopeDrawData(void)
         while (x1<256-1)
         {
           ptr+=8;
+          if ((uint32_t)ptr>=SCOPE_DATAPTR+SCOPE_DATASIZE)
+          {
+            break;
+          }
           y2=*ptr;
           DrawWinLine(x1+SCOPE_LEFT,y1+SCOPE_TOP,x1+1+SCOPE_LEFT,y2+SCOPE_TOP);
           y1=y2;
@@ -399,6 +432,10 @@ void ScopeDrawData(void)
         while (x1<256-1)
         {
           ptr+=4;
+          if ((uint32_t)ptr>=SCOPE_DATAPTR+SCOPE_DATASIZE)
+          {
+            break;
+          }
           y2=*ptr;
           DrawWinLine(x1+SCOPE_LEFT,y1+SCOPE_TOP,x1+1+SCOPE_LEFT,y2+SCOPE_TOP);
           y1=y2;
@@ -409,6 +446,10 @@ void ScopeDrawData(void)
         while (x1<256-2)
         {
           ptr+=4;
+          if ((uint32_t)ptr>=SCOPE_DATAPTR+SCOPE_DATASIZE)
+          {
+            break;
+          }
           y2=*ptr;
           DrawWinLine(x1+SCOPE_LEFT,y1+SCOPE_TOP,x1+2+SCOPE_LEFT,y2+SCOPE_TOP);
           y1=y2;
@@ -419,6 +460,10 @@ void ScopeDrawData(void)
         while (x1<256-3)
         {
           ptr+=4;
+          if ((uint32_t)ptr>=SCOPE_DATAPTR+SCOPE_DATASIZE)
+          {
+            break;
+          }
           y2=*ptr;
           DrawWinLine(x1+SCOPE_LEFT,y1+SCOPE_TOP,x1+3+SCOPE_LEFT,y2+SCOPE_TOP);
           y1=y2;
@@ -429,6 +474,10 @@ void ScopeDrawData(void)
         while (x1<256-4)
         {
           ptr+=4;
+          if ((uint32_t)ptr>=SCOPE_DATAPTR+SCOPE_DATASIZE)
+          {
+            break;
+          }
           y2=*ptr;
           DrawWinLine(x1+SCOPE_LEFT,y1+SCOPE_TOP,x1+4+SCOPE_LEFT,y2+SCOPE_TOP);
           y1=y2;
@@ -439,6 +488,10 @@ void ScopeDrawData(void)
         while (x1<256-5)
         {
           ptr+=4;
+          if ((uint32_t)ptr>=SCOPE_DATAPTR+SCOPE_DATASIZE)
+          {
+            break;
+          }
           y2=*ptr;
           DrawWinLine(x1+SCOPE_LEFT,y1+SCOPE_TOP,x1+5+SCOPE_LEFT,y2+SCOPE_TOP);
           y1=y2;
@@ -449,6 +502,10 @@ void ScopeDrawData(void)
         while (x1<256-6)
         {
           ptr+=4;
+          if ((uint32_t)ptr>=SCOPE_DATAPTR+SCOPE_DATASIZE)
+          {
+            break;
+          }
           y2=*ptr;
           DrawWinLine(x1+SCOPE_LEFT,y1+SCOPE_TOP,x1+6+SCOPE_LEFT,y2+SCOPE_TOP);
           y1=y2;
@@ -459,6 +516,10 @@ void ScopeDrawData(void)
         while (x1<256-7)
         {
           ptr+=4;
+          if ((uint32_t)ptr>=SCOPE_DATAPTR+SCOPE_DATASIZE)
+          {
+            break;
+          }
           y2=*ptr;
           DrawWinLine(x1+SCOPE_LEFT,y1+SCOPE_TOP,x1+7+SCOPE_LEFT,y2+SCOPE_TOP);
           y1=y2;
@@ -469,6 +530,10 @@ void ScopeDrawData(void)
         while (x1<256-8)
         {
           ptr+=4;
+          if ((uint32_t)ptr>=SCOPE_DATAPTR+SCOPE_DATASIZE)
+          {
+            break;
+          }
           y2=*ptr;
           DrawWinLine(x1+SCOPE_LEFT,y1+SCOPE_TOP,x1+8+SCOPE_LEFT,y2+SCOPE_TOP);
           y1=y2;
@@ -479,6 +544,10 @@ void ScopeDrawData(void)
         while (x1<256-9)
         {
           ptr+=4;
+          if ((uint32_t)ptr>=SCOPE_DATAPTR+SCOPE_DATASIZE)
+          {
+            break;
+          }
           y2=*ptr;
           DrawWinLine(x1+SCOPE_LEFT,y1+SCOPE_TOP,x1+9+SCOPE_LEFT,y2+SCOPE_TOP);
           y1=y2;
@@ -493,10 +562,13 @@ void ScopeDrawInfo(void)
 {
   /* Offset */
   DrawWinString(SCOPE_LEFT+4,SCOPE_BOTTOM-30,4,scopestr[0],1);
+  DrawWinDec16(SCOPE_LEFT+28,SCOPE_BOTTOM-30,Scope.dataofs>>2,5);
   /* Mark */
   DrawWinString(SCOPE_LEFT+4,SCOPE_BOTTOM-20,4,scopestr[1],1);
+  DrawWinDec16(SCOPE_LEFT+28,SCOPE_BOTTOM-20,Scope.mark>>2,5);
   /* Position */
   DrawWinString(SCOPE_LEFT+4,SCOPE_BOTTOM-10,4,scopestr[2],1);
+  DrawWinDec16(SCOPE_LEFT+28,SCOPE_BOTTOM-10,Scope.cur>>2,5);
 
   /* Frequency */
   DrawWinString(SCOPE_LEFT+4+9*8,SCOPE_BOTTOM-30,4,scopestr[3],1);
@@ -596,6 +668,7 @@ void ScopeSetup(void)
 
   while (!Scope.Quit)
   {
+    Scope.Quit=(GetKeyState(SC_ESC) && (GetKeyState(SC_L_CTRL) | GetKeyState(SC_R_CTRL)));
     if (Scope.Sample)
     {
       Scope.Sample=0;
@@ -634,7 +707,7 @@ void ScopeTimer(void)
       if (Scope.tmrrep>=25)
       {
         Scope.tmrrep=0;
-        if (Scope.tmradd<2000)
+        if (Scope.tmradd<1000)
         {
           Scope.tmradd*=10;
         }

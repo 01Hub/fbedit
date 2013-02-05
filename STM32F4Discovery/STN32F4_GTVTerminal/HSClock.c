@@ -1,13 +1,12 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "HSClock.h"
+#include "keycodes.h"
 
 /* External variables --------------------------------------------------------*/
-extern volatile uint16_t FrameCount;
 extern WINDOW* Focus;                 // The control that has the keyboard focus
 extern volatile uint8_t Caps;
 extern volatile uint8_t Num;
-//extern uint8_t FrameBuff[SCREEN_BUFFHEIGHT][SCREEN_BUFFWIDTH];
 extern uint32_t frequency;
 
 /* Private variables ---------------------------------------------------------*/
@@ -102,18 +101,22 @@ void HSClkMainHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
             if (HSClk.frq>HSCLK_MAXFRQ)
             {
               HSClk.frq=HSCLK_MAXFRQ;
-            }
-            f=HSClk.frq;
-            while (1)
-            {
-              HSClk.frq=f;
               FrequencyToClock();
-              ClockToFrequency();
-              if (frq!=HSClk.frq)
+            }
+            else
+            {
+              f=HSClk.frq;
+              while (1)
               {
-                break;
+                HSClk.frq=f;
+                FrequencyToClock();
+                ClockToFrequency();
+                if (frq!=HSClk.frq)
+                {
+                  break;
+                }
+                f++;
               }
-              f++;
             }
             HSClkSetTimer();
             break;
@@ -304,6 +307,7 @@ void HSClkSetup(void)
 
   while (!HSClk.Quit)
   {
+    HSClk.Quit=(GetKeyState(SC_ESC) && (GetKeyState(SC_L_CTRL) | GetKeyState(SC_R_CTRL)));
     if (caps!=Caps || num!=Num)
     {
       caps=Caps;
