@@ -288,6 +288,25 @@ void VolcanoMove(void)
 {
   uint32_t i,coll;
 
+  if (VolcanoGame.VolcanoWait)
+  {
+    VolcanoGame.VolcanoWait--;
+  }
+  else
+  {
+    // Show new volcano
+    i=0;
+    while (i<VOLCANO_MAX_VOLCANO)
+    {
+      if (VolcanoGame.Volcano[i].VolcanoSprite.visible==0 && VolcanoGame.Volcano[i].vdir==2)
+      {
+        VolcanoGame.Volcano[i].VolcanoSprite.visible=1;
+        break;
+      }
+      i++;
+    }
+    VolcanoGame.VolcanoWait=VOLCANO_WAIT;
+  }
   /* Check volcano boundaries and collision */
   i=0;
   while (i<VOLCANO_MAX_VOLCANO)
