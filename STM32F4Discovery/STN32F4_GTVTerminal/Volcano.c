@@ -288,57 +288,37 @@ void VolcanoMove(void)
 {
   uint32_t i,coll;
 
-  /* Check volcano boundaries, there is no need to check collision */
+  /* Check volcano boundaries and collision */
   i=0;
-  coll=0;
   while (i<VOLCANO_MAX_VOLCANO)
   {
-    coll|=VolcanoGame.Volcano[i].VolcanoSprite.collision;
+    if (VolcanoGame.Volcano[i].VolcanoSprite.visible)
+    {
+      coll=VolcanoGame.Volcano[i].VolcanoSprite.collision;
+      if ((coll & COLL_RIGHT)!=0 && VolcanoGame.Volcano[i].vdir>0)
+      {
+        VolcanoGame.Volcano[i].vdir=-2;
+        VolcanoGame.Volcano[i].VolcanoSprite.y+=16;
+      }
+      else if ((coll & COLL_LEFT)!=0 && VolcanoGame.Volcano[i].vdir<0)
+      {
+        VolcanoGame.Volcano[i].vdir=2;
+        VolcanoGame.Volcano[i].VolcanoSprite.y+=16;
+      }
+      else if (coll & COLL_BOTTOM)
+      {
+        VolcanoGame.GameOver=1;
+      }
+      else if (coll & COLL_SPRITE)
+      {
+      }
+      else
+      {
+        VolcanoGame.Volcano[i].VolcanoSprite.x+=VolcanoGame.Volcano[i].vdir;
+      }
+    }
     i++;
   }
-  // if (!(coll & COLL_BOTTOM))
-  // {
-    // if ((AlienGame.adir>0 && (coll & COLL_RIGHT)) || (AlienGame.adir<0 && (coll & COLL_LEFT)))
-    // {
-      // /* Move aliens down and change direction */
-      // i=0;
-      // while (i<ALIEN_MAX_ALIEN)
-      // {
-        // AlienGame.Alien[i].y+=4;
-        // i++;
-      // }
-      // AlienGame.adir=-AlienGame.adir;
-    // }
-    // else
-    // {
-      // i=0;
-      // while (i<ALIEN_MAX_ALIEN)
-      // {
-        // if (AlienGame.Alien[i].visible)
-        // {
-          // if (!(FrameCount & 15))
-          // {
-            // /* Change alien icon */
-            // if (AlienGame.Alien[i].icon.icondata==*Alien1Icon)
-            // {
-              // AlienGame.Alien[i].icon.icondata=*Alien2Icon;
-            // }
-            // else
-            // {
-              // AlienGame.Alien[i].icon.icondata=*Alien1Icon;
-            // }
-          // }
-          // /* Move alien left or right */
-          // AlienGame.Alien[i].x+=AlienGame.adir;
-        // }
-        // i++;
-      // }
-    // }
-  // }
-  // else
-  // {
-    // AlienGame.GameOver=1;
-  // }
 }
 
 void VolcanoSetup(void)
