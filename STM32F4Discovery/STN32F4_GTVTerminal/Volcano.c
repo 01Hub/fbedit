@@ -292,9 +292,100 @@ void VolcanoCannonMove(void)
   }
 }
 
+void VolcanoMoveDown(uint32_t i)
+{
+  uint32_t j,coll;
+
+  coll=0;
+  j=0;
+  while (j<VOLCANO_MAX_VOLCANO)
+  {
+    if (i!=j && VolcanoGame.Volcano[j].VolcanoSprite.visible!=0 && VolcanoGame.Volcano[i].VolcanoSprite.y+16==VolcanoGame.Volcano[j].VolcanoSprite.y)
+    {
+      if (VolcanoGame.Volcano[i].VolcanoSprite.x>=VolcanoGame.Volcano[j].VolcanoSprite.x && VolcanoGame.Volcano[i].VolcanoSprite.x<=VolcanoGame.Volcano[j].VolcanoSprite.x+16)
+      {
+        coll=1;
+      }
+      if (VolcanoGame.Volcano[i].VolcanoSprite.x+16>=VolcanoGame.Volcano[j].VolcanoSprite.x && VolcanoGame.Volcano[i].VolcanoSprite.x+16<=VolcanoGame.Volcano[j].VolcanoSprite.x+16)
+      {
+        coll=1;
+      }
+    }
+    j++;
+  }
+  if (coll==0)
+  {
+    VolcanoGame.Volcano[i].VolcanoSprite.y+=16;
+  }
+}
+
+void VolcanoMoveRight(uint32_t i)
+{
+  uint32_t j,coll;
+
+  coll=0;
+  j=0;
+  while (j<VOLCANO_MAX_VOLCANO)
+  {
+    if (i!=j && VolcanoGame.Volcano[j].VolcanoSprite.visible!=0 && VolcanoGame.Volcano[i].VolcanoSprite.y==VolcanoGame.Volcano[j].VolcanoSprite.y)
+    {
+      if (VolcanoGame.Volcano[i].VolcanoSprite.x+2>=VolcanoGame.Volcano[j].VolcanoSprite.x && VolcanoGame.Volcano[i].VolcanoSprite.x+2<=VolcanoGame.Volcano[j].VolcanoSprite.x+16)
+      {
+        coll=1;
+      }
+      if (VolcanoGame.Volcano[i].VolcanoSprite.x+16+2>=VolcanoGame.Volcano[j].VolcanoSprite.x && VolcanoGame.Volcano[i].VolcanoSprite.x+16+2<=VolcanoGame.Volcano[j].VolcanoSprite.x+16)
+      {
+        coll=1;
+      }
+    }
+    j++;
+  }
+  if (coll)
+  {
+    VolcanoMoveDown(i);
+    VolcanoGame.Volcano[i].vdir=-2;
+  }
+  else
+  {
+    VolcanoGame.Volcano[i].VolcanoSprite.x+=2;
+  }
+}
+
+void VolcanoMoveLeft(uint32_t i)
+{
+  uint32_t j,coll;
+
+  coll=0;
+  j=0;
+  while (j<VOLCANO_MAX_VOLCANO)
+  {
+    if (i!=j && VolcanoGame.Volcano[j].VolcanoSprite.visible!=0 && VolcanoGame.Volcano[i].VolcanoSprite.y==VolcanoGame.Volcano[j].VolcanoSprite.y)
+    {
+      if (VolcanoGame.Volcano[i].VolcanoSprite.x-2>=VolcanoGame.Volcano[j].VolcanoSprite.x && VolcanoGame.Volcano[i].VolcanoSprite.x-2<=VolcanoGame.Volcano[j].VolcanoSprite.x+16)
+      {
+        coll=1;
+      }
+      if (VolcanoGame.Volcano[i].VolcanoSprite.x+16-2>=VolcanoGame.Volcano[j].VolcanoSprite.x && VolcanoGame.Volcano[i].VolcanoSprite.x+16-2<=VolcanoGame.Volcano[j].VolcanoSprite.x+16)
+      {
+        coll=1;
+      }
+    }
+    j++;
+  }
+  if (coll)
+  {
+    VolcanoMoveDown(i);
+    VolcanoGame.Volcano[i].vdir=2;
+  }
+  else
+  {
+    VolcanoGame.Volcano[i].VolcanoSprite.x-=2;
+  }
+}
+
 void VolcanoMove(void)
 {
-  uint32_t i,j,coll;
+  uint32_t i,coll;
 
   if (VolcanoGame.VolcanoWait)
   {
@@ -322,85 +413,31 @@ void VolcanoMove(void)
     if (VolcanoGame.Volcano[i].VolcanoSprite.visible)
     {
       coll=VolcanoGame.Volcano[i].VolcanoSprite.collision;
-      if ((coll & COLL_RIGHT)!=0 && VolcanoGame.Volcano[i].vdir>0)
+      if (coll & COLL_BOTTOM)
+      {
+        VolcanoGame.GameOver=1;
+        break;
+      }
+      else if ((coll & COLL_RIGHT)!=0 && VolcanoGame.Volcano[i].vdir>0)
       {
         VolcanoGame.Volcano[i].vdir=-2;
-        VolcanoGame.Volcano[i].VolcanoSprite.y+=16;
+        VolcanoMoveDown(i);
       }
       else if ((coll & COLL_LEFT)!=0 && VolcanoGame.Volcano[i].vdir<0)
       {
         VolcanoGame.Volcano[i].vdir=2;
-        VolcanoGame.Volcano[i].VolcanoSprite.y+=16;
-      }
-      else if (coll & COLL_BOTTOM)
-      {
-        VolcanoGame.GameOver=1;
-      }
-      else if (coll & COLL_SPRITE)
-      {
-        j=0;
-        if (VolcanoGame.Volcano[i].vdir==0) // Dead
-        {
-          while (j<VOLCANO_MAX_VOLCANO)
-          {
-            if (i!=j && VolcanoGame.Volcano[j].VolcanoSprite.visible!=0 && VolcanoGame.Volcano[i].VolcanoSprite.y==VolcanoGame.Volcano[j].VolcanoSprite.y)
-            {
-              if (VolcanoGame.Volcano[j].vdir==2) // Right
-              {
-                if (VolcanoGame.Volcano[i].VolcanoSprite.x>=VolcanoGame.Volcano[j].VolcanoSprite.x+16)
-                {
-                  VolcanoGame.Volcano[j].VolcanoSprite.y+=16;
-                }
-              }
-              else // Left
-              {
-                if (VolcanoGame.Volcano[i].VolcanoSprite.x+16>=VolcanoGame.Volcano[j].VolcanoSprite.x)
-                {
-                  VolcanoGame.Volcano[j].VolcanoSprite.y+=16;
-                }
-              }
-            }
-            j++;
-          }
-        }
-        else if (VolcanoGame.Volcano[i].vdir==2) // Right
-        {
-          while (j<VOLCANO_MAX_VOLCANO)
-          {
-            if (i!=j && VolcanoGame.Volcano[j].VolcanoSprite.visible!=0 && VolcanoGame.Volcano[i].VolcanoSprite.y==VolcanoGame.Volcano[j].VolcanoSprite.y && VolcanoGame.Volcano[i].vdir==-2)
-            {
-              if (VolcanoGame.Volcano[i].VolcanoSprite.x+16>=VolcanoGame.Volcano[j].VolcanoSprite.x)
-              {
-                VolcanoGame.Volcano[i].VolcanoSprite.y+=16;
-                VolcanoGame.Volcano[i].vdir=-2;
-                VolcanoGame.Volcano[j].VolcanoSprite.y+=16;
-                VolcanoGame.Volcano[j].vdir=2;
-              }
-            }
-            j++;
-          }
-        }
-        else // Left
-        {
-          while (j<VOLCANO_MAX_VOLCANO)
-          {
-            if (i!=j && VolcanoGame.Volcano[j].VolcanoSprite.visible!=0 && VolcanoGame.Volcano[i].VolcanoSprite.y==VolcanoGame.Volcano[j].VolcanoSprite.y && VolcanoGame.Volcano[i].vdir==2)
-            {
-              if (VolcanoGame.Volcano[i].VolcanoSprite.x>=VolcanoGame.Volcano[j].VolcanoSprite.x+16)
-              {
-                VolcanoGame.Volcano[i].VolcanoSprite.y+=16;
-                VolcanoGame.Volcano[i].vdir=2;
-                VolcanoGame.Volcano[j].VolcanoSprite.y+=16;
-                VolcanoGame.Volcano[j].vdir=-2;
-              }
-            }
-            j++;
-          }
-        }
+        VolcanoMoveDown(i);
       }
       else
       {
-        VolcanoGame.Volcano[i].VolcanoSprite.x+=VolcanoGame.Volcano[i].vdir;
+        if (VolcanoGame.Volcano[i].vdir==2)
+        {
+          VolcanoMoveRight(i);
+        }
+        else if (VolcanoGame.Volcano[i].vdir==-2)
+        {
+          VolcanoMoveLeft(i);
+        }
       }
     }
     i++;
@@ -470,13 +507,6 @@ void VolcanoGamePlay(void)
   ShowCursor(0);
   /* Remove volcanos */
   VolcanoSetup();
-  // /* Remove volcanos */
-  // i=0;
-  // while (i<VOLCANO_MAX_VOLCANO)
-  // {
-    // VolcanoGame.Volcano[i].VolcanoSprite.visible=0;
-    // i++;
-  // }
   /* Remove Cannon */
   VolcanoGame.Cannon.visible=0;
 }
