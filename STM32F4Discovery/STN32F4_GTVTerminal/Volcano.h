@@ -158,7 +158,9 @@ typedef struct
   volatile uint8_t Volcanos;            // Number of active volcanos
   volatile uint8_t Shots;               // Number of active shots
   volatile uint8_t ShootWait;           // Number of frames between shots
+  volatile uint8_t ShotsCount;          // Number of shots fired
   volatile uint16_t Points;             // Points
+  volatile uint16_t PointsCount;        // Points counter
   volatile int16_t sdir,slen;           // Cannon move
   volatile uint16_t VolcanoWait;        // Number of frames between new volcano
   RECT VolcanoBound;                    // Game bounds
