@@ -75,7 +75,7 @@ void VolcanoGameInit(void)
     VolcanoGame.Volcano[i].VolcanoSprite.boundary=&VolcanoGame.VolcanoBound;
     VolcanoGame.Volcano[i].VolcanoSprite.visible=0;
     VolcanoGame.Volcano[i].vdir=2;
-    VolcanoGame.Volcano[i].vicon=i & 1;
+    VolcanoGame.Volcano[i].vicon=(i & 1)*8;
     Sprites[i]=&VolcanoGame.Volcano[i].VolcanoSprite;
     i++;
   }
@@ -392,7 +392,7 @@ void VolcanoMoveRight(uint32_t i)
   }
   else
   {
-    if (VolcanoGame.Volcano[i].vicon)
+    if (VolcanoGame.Volcano[i].vicon<8)
     {
       VolcanoGame.Volcano[i].VolcanoSprite.icon.icondata=*Volcano2Icon;
     }
@@ -432,7 +432,7 @@ void VolcanoMoveLeft(uint32_t i)
   }
   else
   {
-    if (VolcanoGame.Volcano[i].vicon)
+    if (VolcanoGame.Volcano[i].vicon<8)
     {
       VolcanoGame.Volcano[i].VolcanoSprite.icon.icondata=*Volcano4Icon;
     }
@@ -492,7 +492,7 @@ void VolcanoMove(void)
       }
       else
       {
-        VolcanoGame.Volcano[i].vicon=(VolcanoGame.Volcano[i].vicon+1) & 1;
+        VolcanoGame.Volcano[i].vicon=(VolcanoGame.Volcano[i].vicon+1) & 15;
         if (VolcanoGame.Volcano[i].vdir==2)
         {
           VolcanoMoveRight(i);
@@ -530,7 +530,7 @@ void VolcanoSetup(void)
         VolcanoGame.Volcano[i].VolcanoSprite.icon.icondata=*Volcano1Icon;
       }
       VolcanoGame.Volcano[i].vdir=2;
-      VolcanoGame.Volcano[i].vicon=j & 1;
+      VolcanoGame.Volcano[i].vicon=(j & 1)*8;
       j++;
     }
     i++;
