@@ -40,8 +40,8 @@ AVGCOUNT			equ 50
 
 IDD_DIALOG			equ 1000
 IDC_GRAPH			equ 1001
-IDC_RBNVOLT         equ 1002
-IDC_RBNAMP          equ 1003
+IDC_RBNVOLTAGE      equ 1002
+IDC_RBNCURRENT      equ 1003
 IDC_RBNPOWER        equ 1004
 IDC_RBNAMB          equ 1005
 IDC_RBNCELL         equ 1006
@@ -61,7 +61,10 @@ IDC_STCAMBTEMP      equ 1018
 IDC_EDTAMBTEMP      equ 1019
 IDC_UDNAMBTEMP      equ 1020
 IDC_UDNOFS			equ 1022
-			
+IDC_STCCELLTEMP     equ 1023
+IDC_EDTCELLTEMP     equ 1024
+IDC_UDNCELLTEMP     equ 1025
+
 IDM_MENU			equ 10000
 IDM_FILE_OPEN       equ 10002
 IDM_FILE_CLOSE      equ 10003
@@ -82,6 +85,8 @@ LENR struct
 	SecCount		DWORD ?
 	Pwm1			WORD ?
 	Pwm2			WORD ?
+	Pwm3			WORD ?
+	Pwm4			WORD ?
 	log				LOG AVGCOUNT dup(<>)
 LENR ends
 
@@ -111,6 +116,8 @@ szFmtPower			BYTE '%.3dW',0
 szFmtTemp			BYTE '%.3dC',0
 szFmtPwm1			BYTE 'PWM1: %d',0
 szFmtPwm2			BYTE 'PWM2: %d',0
+szFmtPwm3			BYTE 'PWM3: %d',0
+szFmtPwm4			BYTE 'PWM4: %d',0
 szFmtFile			BYTE '%s\Log\Lenr%.4d%.2d%.2d.dat',0
 
 szLOGFilterString	BYTE 'DATA Files (*.dat)',0,'*.dat',0,0
