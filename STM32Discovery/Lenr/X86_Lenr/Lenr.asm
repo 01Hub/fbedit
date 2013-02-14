@@ -174,23 +174,32 @@ GraphProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.elseif eax==IDC_RBNHEATER
 			call	DrawTemp3
 		.endif
+
 		;Draw PWM
 		movzx	eax,lenr.Pwm1
+		sub		eax,255
+		neg		eax
 		invoke wsprintf,addr buffer,addr szFmtPwm1,eax
 		invoke lstrlen,addr buffer
 		invoke TextOut,mDC,500,5,addr buffer,eax
 
 		movzx	eax,lenr.Pwm2
+		sub		eax,255
+		neg		eax
 		invoke wsprintf,addr buffer,addr szFmtPwm2,eax
 		invoke lstrlen,addr buffer
 		invoke TextOut,mDC,600,5,addr buffer,eax
 
 		movzx	eax,lenr.Pwm3
+		sub		eax,255
+		neg		eax
 		invoke wsprintf,addr buffer,addr szFmtPwm3,eax
 		invoke lstrlen,addr buffer
 		invoke TextOut,mDC,700,5,addr buffer,eax
 
 		movzx	eax,lenr.Pwm4
+		sub		eax,255
+		neg		eax
 		invoke wsprintf,addr buffer,addr szFmtPwm4,eax
 		invoke lstrlen,addr buffer
 		invoke TextOut,mDC,800,5,addr buffer,eax
@@ -571,8 +580,19 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SendDlgItemMessage,hWin,IDC_UDNCELLTEMP,UDM_SETRANGE,0,00000063h
 		invoke SendDlgItemMessage,hWin,IDC_UDNCELLTEMP,UDM_SETPOS,0,0000h
 		invoke GetDlgItem,hWin,IDC_UDNOFS
-		invoke MoveWindow,eax,660,560,60,25,FALSE
+		invoke MoveWindow,eax,660,560,60,20,FALSE
 		invoke SendDlgItemMessage,hWin,IDC_UDNOFS,UDM_SETRANGE,0,00000009h
+
+		invoke GetDlgItem,hWin,IDC_UDNPWM3
+		invoke MoveWindow,eax,660,585,60,20,FALSE
+		invoke SendDlgItemMessage,hWin,IDC_UDNPWM3,UDM_SETRANGE,0,000000FFh
+		invoke SendDlgItemMessage,hWin,IDC_UDNPWM3,UDM_SETPOS,0,0000h
+
+		invoke GetDlgItem,hWin,IDC_UDNPWM4
+		invoke MoveWindow,eax,660,610,60,20,FALSE
+		invoke SendDlgItemMessage,hWin,IDC_UDNPWM4,UDM_SETRANGE,0,000000FFh
+		invoke SendDlgItemMessage,hWin,IDC_UDNPWM4,UDM_SETPOS,0,0000h
+
 		invoke GetLocalTime,addr systime
 		movzx	eax,systime.wHour
 		mov		lasthour,eax
@@ -595,6 +615,15 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		edx,GRPXST
 		mul		edx
 		mov		xofs,eax
+
+		invoke SendDlgItemMessage,hWin,IDC_UDNPWM3,UDM_GETPOS,0,0
+		sub		eax,255
+		neg		eax
+		mov		lenr.Pwm3,ax
+		invoke SendDlgItemMessage,hWin,IDC_UDNPWM4,UDM_GETPOS,0,0
+		sub		eax,255
+		neg		eax
+		mov		lenr.Pwm4,ax
 		invoke GetDlgItem,hWin,IDC_GRAPH
 		invoke InvalidateRect,eax,NULL,TRUE
 	.elseif eax==WM_COMMAND
