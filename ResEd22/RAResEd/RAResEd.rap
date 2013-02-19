@@ -154,12 +154,12 @@ Options=52
 5=0,0,0,0,4212
 3=0,0,0,0,0
 4=0,0,0,0,8
-1=0,0,718,485,78
+1=0,0,718,485,5213
 7=0,0,718,485,2137
 6=0,0,0,0,407
-9=0,0,718,485,22074
+9=0,0,718,485,51360
 2=0,0,584,498,8911
-8=0,0,0,0,27000
+8=0,0,0,0,19236
 10=0,0,0,0,7356
 16=0,0,718,485,14069
 15=0,0,0,0
@@ -203,16 +203,16 @@ Options=52
 
 
 [Find]
-1="ES_DISABLENOSCROLL"
-2="ES_NUMBER"
-3="syslink"
-4="Name already"
-5="SysLnk"
-6="PRO_INCVERSION"
-7="IsNameDefault"
-8="PRO_EXPORTNAMES"
-9="szIDC_ST"
-10="szIDOK"
+1="registerclass"
+2="ES_DISABLENOSCROLL"
+3="ES_NUMBER"
+4="syslink"
+5="Name already"
+6="SysLnk"
+7="PRO_INCVERSION"
+8="IsNameDefault"
+9="PRO_EXPORTNAMES"
+10="szIDC_ST"
 
 [AutoLoad]
 AutoLoad=1,8,2,10,18,6,9,21,7,13,16,51,24,26,17
@@ -260,7 +260,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=17
+MilestoneOnDateDate=18
 MilestoneOnDateTimeYear=2003
 MilestoneOnDateTimeMonth=10
 MilestoneOnDateTimeDate=16
@@ -359,7 +359,7 @@ Group=Assembly,Resources,Misc,Include
 36=
 51=,,
 [PTimer]
-PTimer=1089954999
+PTimer=1093637465
 
 [Exports]
 1=ResEdInstall

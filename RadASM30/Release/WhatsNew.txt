@@ -4,6 +4,10 @@ Ini files, project files, template files, api files and addins are all incompati
 
 Do NOT install RadASM 3.0 in the same directory as an older version of RadASM.
 
+Version 3.0.0.9c 2013-02-18
+---------------------------
+o Fixed a dialog editor bug when deleting controls.
+
 Version 3.0.0.9b 2012-10-29
 ---------------------------
 o Added Copy Name To Code to project menu.

@@ -1,1 +1,1 @@
-RadASM version 3.0.0.9b
+RadASM version 3.0.0.9c
