@@ -228,8 +228,8 @@ ntbrbtns			equ 19
 szDlgClass			db 'DLGCLASS',0
 szAppName			db 'Resource editor',0
 szResEdExe			db 'ResEd',0
-szVersion			db 'ResEd version 2.2.0.7',0
-szAboutMsg			db 'Resource editor 2.2.0.7',13,10,'KetilO © 2011',13,10,13,10,'radasmide@hotmail.com',0
+szVersion			db 'ResEd version 2.2.0.8',0
+szAboutMsg			db 'Resource editor 2.2.0.8',13,10,'KetilO © 2013',13,10,13,10,'radasmide@hotmail.com',0
 szAboutUrl1			db 'http://radasm.cherrytree.at/',0
 szAboutUrl2			db 'http://radasm.cherrytree.at/',0
 szOpen				db 'Open',0

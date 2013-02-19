@@ -107,7 +107,7 @@ Options=52
 4=0,0,0,0
 1=580,0,290,688,31992
 6=
-2=0,0,0,0,6316
+2=0,0,0,0,6266
 7=0,0,699,490,9833
 9=
 8=
@@ -192,7 +192,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=17
+MilestoneOnDateDate=19
 MilestoneOnDateTimeYear=2003
 MilestoneOnDateTimeMonth=10
 MilestoneOnDateTimeDate=18
@@ -201,9 +201,9 @@ MilestoneOnDateTimeMin=16
 MilestoneOnDateTimeSec=23
 MilestoneOnDateTimeStatus=0
 [VerInf]
-FV=2.2.0.7
+FV=2.2.0.8
 FileVersion=2.2.0.7
-PV=2.2.0.7
+PV=2.2.0.8
 ProductVersion=2.2.0.7
 Nme=VERINF1
 ID=1
@@ -307,9 +307,9 @@ ID=105
 34=,,
 35=
 [PTimer]
-PTimer=351296028
+PTimer=351479828
 [AutoLoad]
-AutoLoad=1,7,2,21,34,35,30,13,29
+AutoLoad=1,7,2,21,34,35,30,13,29,19,3
 [RADebugBP]
 1=
 2=
