@@ -529,7 +529,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		lenr.Pwm4,255
 		;Create a timer.
 		invoke SetTimer,hWin,1000,100,NULL
-		invoke MoveWindow,hWin,0,0,GRPWDT/4+GRPXPS+GRPXPS+6,GRPHGT+GRPYPS+GRPYPS+120,FALSE
+		invoke MoveWindow,hWin,0,0,GRPWDT/4+GRPXPS+GRPXPS+6,GRPHGT+GRPYPS+GRPYPS+165,FALSE
 		mov		ebx,IDC_RBNVOLTAGE
 		xor		edi,edi
 		.while ebx<=IDC_RBNHEATER
@@ -592,6 +592,24 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke MoveWindow,eax,660,610,60,20,FALSE
 		invoke SendDlgItemMessage,hWin,IDC_UDNPWM4,UDM_SETRANGE,0,000000FFh
 		invoke SendDlgItemMessage,hWin,IDC_UDNPWM4,UDM_SETPOS,0,0000h
+
+		invoke GetDlgItem,hWin,IDC_STCPWM1MAX
+		invoke MoveWindow,eax,0,630,90,15,FALSE
+		invoke GetDlgItem,hWin,IDC_EDTPWM1MAX
+		invoke MoveWindow,eax,0,645,50,25,FALSE
+		invoke GetDlgItem,hWin,IDC_UDNPWM1MAX
+		invoke MoveWindow,eax,50,645,16,25,FALSE
+		invoke SendDlgItemMessage,hWin,IDC_UDNPWM1MAX,UDM_SETRANGE,0,000000FFh
+		invoke SendDlgItemMessage,hWin,IDC_UDNPWM1MAX,UDM_SETPOS,0,0014h
+
+		invoke GetDlgItem,hWin,IDC_STCPWM2MAX
+		invoke MoveWindow,eax,450,630,90,15,FALSE
+		invoke GetDlgItem,hWin,IDC_EDTPWM2MAX
+		invoke MoveWindow,eax,450,645,50,25,FALSE
+		invoke GetDlgItem,hWin,IDC_UDNPWM2MAX
+		invoke MoveWindow,eax,500,645,16,25,FALSE
+		invoke SendDlgItemMessage,hWin,IDC_UDNPWM2MAX,UDM_SETRANGE,0,000000FFh
+		invoke SendDlgItemMessage,hWin,IDC_UDNPWM2MAX,UDM_SETPOS,0,0014h
 
 		invoke GetLocalTime,addr systime
 		movzx	eax,systime.wHour
@@ -910,6 +928,10 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					.endif
 				.endif
 			.else
+				invoke GetDlgItemInt,hWin,IDC_EDTPWM1MAX,NULL,FALSE
+				sub		eax,255
+				neg		eax
+				push	eax
 				invoke GetDlgItemInt,hWin,IDC_EDTPOWER,NULL,FALSE
 				mov		edx,100
 				mul		edx
@@ -920,6 +942,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		ecx,100
 				xor		edx,edx
 				div		ecx
+				pop		edx
 				.if eax>ebx
 					;Decrement cell heater power
 					.if lenr.Pwm1<255
@@ -927,8 +950,10 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					.endif
 				.elseif eax<ebx
 					;Increment cell heater power
-					.if lenr.Pwm1
+					.if lenr.Pwm1>dx
 						dec		lenr.Pwm1
+					.elseif lenr.Pwm1<dx
+						inc		lenr.Pwm1
 					.endif
 				.endif
 			.endif
@@ -937,6 +962,10 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			mov		edx,100
 			mul		edx
 			mov		ebx,eax
+			invoke GetDlgItemInt,hWin,IDC_EDTPWM2MAX,NULL,FALSE
+			sub		eax,255
+			neg		eax
+			mov		edx,eax
 			movzx	eax,lenr.log.Temp1
 			.if eax>ebx
 				;Decrement ambient heater power
@@ -945,8 +974,10 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.endif
 			.elseif eax<ebx
 				;Increment ambient heater power
-				.if lenr.Pwm2
+				.if lenr.Pwm2>dx
 					dec		lenr.Pwm2
+				.elseif lenr.Pwm2<dx
+					inc		lenr.Pwm2
 				.endif
 			.endif
 			.if systime.wSecond==59
