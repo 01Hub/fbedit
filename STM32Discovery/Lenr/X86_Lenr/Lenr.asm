@@ -910,28 +910,31 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.endif
 			.endif
 			;Adjust power for cell heater
+			invoke GetDlgItemInt,hWin,IDC_EDTPWM1MAX,NULL,FALSE
+			sub		eax,255
+			neg		eax
+			push	eax
 			invoke GetDlgItemInt,hWin,IDC_EDTCELLTEMP,NULL,FALSE
 			.if eax
 				mov		edx,100
 				mul		edx
 				mov		ebx,eax
 				movzx	eax,lenr.log.Temp2
+				pop		edx
 				.if eax>ebx
-					;Decrement ambient heater power
+					;Decrement cell heater power
 					.if lenr.Pwm1<255
 						inc		lenr.Pwm1
 					.endif
 				.elseif eax<ebx
-					;Increment ambient heater power
-					.if lenr.Pwm1
+					;Increment cell heater power
+					.if lenr.Pwm1>dx
 						dec		lenr.Pwm1
+					.elseif lenr.Pwm1<dx
+						inc		lenr.Pwm1
 					.endif
 				.endif
 			.else
-				invoke GetDlgItemInt,hWin,IDC_EDTPWM1MAX,NULL,FALSE
-				sub		eax,255
-				neg		eax
-				push	eax
 				invoke GetDlgItemInt,hWin,IDC_EDTPOWER,NULL,FALSE
 				mov		edx,100
 				mul		edx
