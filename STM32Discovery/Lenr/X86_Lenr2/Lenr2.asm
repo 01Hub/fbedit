@@ -31,10 +31,10 @@ DisplayProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 			xor		edx,edx
 			div		ecx
 			invoke wsprintf,addr display,addr szFmtPower,eax
-		.elseif eax==IDC_RBNAMB
+		.elseif eax==IDC_RBNCELL
 			movsx	eax,lenr.log.Temp1
 			invoke wsprintf,addr display,addr szFmtTemp,eax
-		.elseif eax==IDC_RBNCELL
+		.elseif eax==IDC_RBNAMB
 			movsx	eax,lenr.log.Temp2
 			invoke wsprintf,addr display,addr szFmtTemp,eax
 		.endif
@@ -164,9 +164,9 @@ GraphProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			call	DrawAmp
 		.elseif eax==IDC_RBNPOWER
 			call	DrawPower
-		.elseif eax==IDC_RBNAMB
-			call	DrawTemp1
 		.elseif eax==IDC_RBNCELL
+			call	DrawTemp1
+		.elseif eax==IDC_RBNAMB
 			call	DrawTemp2
 		.endif
 
@@ -346,7 +346,7 @@ DrawPower:
 	invoke DeleteObject,eax
 	retn
 
-DrawTemp1:
+DrawTemp2:
 	;Draw temp scale
 	mov		esi,offset szTempAmbient
 	call DrawYScale
@@ -358,7 +358,7 @@ DrawTemp1:
 		mov		eax,sizeof LOG
 		mul		esi
 		mov		ebx,eax
-		movzx	eax,[edi].LOG.Temp1[ebx]
+		movzx	eax,[edi].LOG.Temp2[ebx]
 		mov		ecx,8
 		xor		edx,edx
 		div		ecx
@@ -369,7 +369,7 @@ DrawTemp1:
 		.if sdword ptr edx>=GRPXPS && edx<GRPWDT/4+GRPXPS
 			push	edx
 			invoke MoveToEx,mDC,edx,eax,NULL
-			movzx	eax,[edi].LOG.Temp1[ebx+sizeof LOG]
+			movzx	eax,[edi].LOG.Temp2[ebx+sizeof LOG]
 			mov		ecx,8
 			xor		edx,edx
 			div		ecx
@@ -386,7 +386,7 @@ DrawTemp1:
 	invoke DeleteObject,eax
 	retn
 
-DrawTemp2:
+DrawTemp1:
 	;Draw temp scale
 	mov		esi,offset szTempCell
 	call DrawYScale
@@ -398,7 +398,7 @@ DrawTemp2:
 		mov		eax,sizeof LOG
 		mul		esi
 		mov		ebx,eax
-		movzx	eax,[edi].LOG.Temp2[ebx]
+		movzx	eax,[edi].LOG.Temp1[ebx]
 		mov		ecx,20
 		xor		edx,edx
 		div		ecx
@@ -409,7 +409,7 @@ DrawTemp2:
 		.if sdword ptr edx>=GRPXPS && edx<GRPWDT/4+GRPXPS
 			push	edx
 			invoke MoveToEx,mDC,edx,eax,NULL
-			movzx	eax,[edi].LOG.Temp2[ebx+sizeof LOG]
+			movzx	eax,[edi].LOG.Temp1[ebx+sizeof LOG]
 			mov		ecx,20
 			xor		edx,edx
 			div		ecx
@@ -701,8 +701,8 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			;Convert values
 			shr		lenr.log.Volt,1
 			shr		lenr.log.Amp,3
-			shl		lenr.log.Temp1,0
-			shl		lenr.log.Temp2,2
+			shl		lenr.log.Temp1,2
+			shl		lenr.log.Temp2,0
 			invoke GetDlgItem,hWin,IDC_DISPLAY
 			invoke InvalidateRect,eax,NULL,TRUE
 		.endif
@@ -760,7 +760,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				xor		edx,edx
 				div		ecx
 				mov		log.Amp[ebx],ax
-				;Average AVGCOUNT ambient temp readings
+				;Average AVGCOUNT cell temp readings
 				xor		ecx,ecx
 				xor		edi,edi
 				.while ecx<AVGCOUNT
@@ -775,7 +775,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				xor		edx,edx
 				div		ecx
 				mov		log.Temp1[ebx],ax
-				;Average AVGCOUNT cell temp readings
+				;Average AVGCOUNT ambient temp readings
 				xor		ecx,ecx
 				xor		edi,edi
 				.while ecx<AVGCOUNT
@@ -791,53 +791,61 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				div		ecx
 				mov		log.Temp2[ebx],ax
 			.endif
-			;Adjust power for cell heater
-			invoke GetDlgItemInt,hWin,IDC_EDTPWM1MAX,NULL,FALSE
-			sub		eax,255
-			neg		eax
-			push	eax
-			invoke GetDlgItemInt,hWin,IDC_EDTCELLTEMP,NULL,FALSE
-			.if eax
+			movzx	eax,systime.wSecond
+			xor		edx,edx
+			mov		ecx,5
+			div		ecx
+			.if !edx
+				;Adjust power for cell heater
+				invoke GetDlgItemInt,hWin,IDC_EDTPWM1MAX,NULL,FALSE
+				sub		eax,255
+				neg		eax
+				push	eax
+				invoke GetDlgItemInt,hWin,IDC_EDTCELLTEMP,NULL,FALSE
+				.if eax
+					mov		edx,100
+					mul		edx
+					mov		ebx,eax
+					movzx	eax,lenr.log.Temp1
+					pop		edx
+					push	edx
+					.if eax>ebx
+						;Decrement cell heater power
+						.if lenr.Pwm1<255
+							inc		lenr.Pwm1
+						.endif
+					.elseif eax<ebx
+						;Increment cell heater power
+						.if lenr.Pwm1>dx
+							dec		lenr.Pwm1
+						.elseif lenr.Pwm1<dx
+							inc		lenr.Pwm1
+						.endif
+					.endif
+				.endif
+				pop		eax
+				;Adjust power for ambient temprature heater
+				invoke GetDlgItemInt,hWin,IDC_EDTAMBTEMP,NULL,FALSE
 				mov		edx,100
 				mul		edx
 				mov		ebx,eax
+				invoke GetDlgItemInt,hWin,IDC_EDTPWM2MAX,NULL,FALSE
+				sub		eax,255
+				neg		eax
+				mov		edx,eax
 				movzx	eax,lenr.log.Temp2
-				pop		edx
 				.if eax>ebx
-					;Decrement cell heater power
-					.if lenr.Pwm1<255
-						inc		lenr.Pwm1
+					;Decrement ambient heater power
+					.if lenr.Pwm2<255
+						inc		lenr.Pwm2
 					.endif
 				.elseif eax<ebx
-					;Increment cell heater power
-					.if lenr.Pwm1>dx
-						dec		lenr.Pwm1
-					.elseif lenr.Pwm1<dx
-						inc		lenr.Pwm1
+					;Increment ambient heater power
+					.if lenr.Pwm2>dx
+						dec		lenr.Pwm2
+					.elseif lenr.Pwm2<dx
+						inc		lenr.Pwm2
 					.endif
-				.endif
-			.endif
-			;Adjust power for ambient temprature heater
-			invoke GetDlgItemInt,hWin,IDC_EDTAMBTEMP,NULL,FALSE
-			mov		edx,100
-			mul		edx
-			mov		ebx,eax
-			invoke GetDlgItemInt,hWin,IDC_EDTPWM2MAX,NULL,FALSE
-			sub		eax,255
-			neg		eax
-			mov		edx,eax
-			movzx	eax,lenr.log.Temp1
-			.if eax>ebx
-				;Decrement ambient heater power
-				.if lenr.Pwm2<255
-					inc		lenr.Pwm2
-				.endif
-			.elseif eax<ebx
-				;Increment ambient heater power
-				.if lenr.Pwm2>dx
-					dec		lenr.Pwm2
-				.elseif lenr.Pwm2<dx
-					inc		lenr.Pwm2
 				.endif
 			.endif
 			.if systime.wSecond==59
