@@ -13,7 +13,6 @@ DisplayProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 
 	mov		eax,uMsg
 	.if	eax==WM_CREATE
-		invoke MoveWindow,hWin,GRPWDT/4+GRPXPS+GRPXPS-202,GRPHGT+GRPYPS+GRPYPS,200,74,FALSE
 		xor		eax,eax
 	.elseif eax==WM_PAINT
 		mov		eax,graph
@@ -484,67 +483,21 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		lenr.Pwm4,255
 		;Create a timer.
 		invoke SetTimer,hWin,1000,100,NULL
-		invoke MoveWindow,hWin,0,0,GRPWDT/4+GRPXPS+GRPXPS+6,GRPHGT+GRPYPS+GRPYPS+165,FALSE
-		mov		ebx,IDC_RBNVOLTAGE
-		xor		edi,edi
-		.while ebx<=IDC_RBNAMB
-			invoke GetDlgItem,hWin,ebx
-			invoke MoveWindow,eax,edi,560,90,15,FALSE
-			add		edi,100
-			inc		ebx
-		.endw
 		invoke CheckDlgButton,hWin,IDC_RBNVOLTAGE,BST_CHECKED
 		mov		graph,IDC_RBNVOLTAGE
-		invoke GetDlgItem,hWin,IDC_STCAMBTEMP
-		invoke MoveWindow,eax,100,585,90,15,FALSE
-		invoke GetDlgItem,hWin,IDC_EDTAMBTEMP
-		invoke MoveWindow,eax,100,600,50,25,FALSE
-		invoke GetDlgItem,hWin,IDC_UDNAMBTEMP
-		invoke MoveWindow,eax,150,600,16,25,FALSE
 		invoke SendDlgItemMessage,hWin,IDC_UDNAMBTEMP,UDM_SETRANGE,0,000A0028h
 		invoke SendDlgItemMessage,hWin,IDC_UDNAMBTEMP,UDM_SETPOS,0,0019h
-
-		invoke GetDlgItem,hWin,IDC_STCCELLTEMP
-		invoke MoveWindow,eax,0,585,90,15,FALSE
-		invoke GetDlgItem,hWin,IDC_EDTCELLTEMP
-		invoke MoveWindow,eax,0,600,50,25,FALSE
-		invoke GetDlgItem,hWin,IDC_UDNCELLTEMP
-		invoke MoveWindow,eax,50,600,16,25,FALSE
 		invoke SendDlgItemMessage,hWin,IDC_UDNCELLTEMP,UDM_SETRANGE,0,00000063h
 		invoke SendDlgItemMessage,hWin,IDC_UDNCELLTEMP,UDM_SETPOS,0,0000h
-
-		invoke GetDlgItem,hWin,IDC_UDNOFS
-		invoke MoveWindow,eax,660,560,60,20,FALSE
 		invoke SendDlgItemMessage,hWin,IDC_UDNOFS,UDM_SETRANGE,0,00000009h
-
-		invoke GetDlgItem,hWin,IDC_UDNPWM3
-		invoke MoveWindow,eax,660,585,60,20,FALSE
 		invoke SendDlgItemMessage,hWin,IDC_UDNPWM3,UDM_SETRANGE,0,000000FFh
 		invoke SendDlgItemMessage,hWin,IDC_UDNPWM3,UDM_SETPOS,0,0000h
-
-		invoke GetDlgItem,hWin,IDC_UDNPWM4
-		invoke MoveWindow,eax,660,610,60,20,FALSE
 		invoke SendDlgItemMessage,hWin,IDC_UDNPWM4,UDM_SETRANGE,0,000000FFh
 		invoke SendDlgItemMessage,hWin,IDC_UDNPWM4,UDM_SETPOS,0,0000h
-
-		invoke GetDlgItem,hWin,IDC_STCPWM1MAX
-		invoke MoveWindow,eax,0,630,90,15,FALSE
-		invoke GetDlgItem,hWin,IDC_EDTPWM1MAX
-		invoke MoveWindow,eax,0,645,50,25,FALSE
-		invoke GetDlgItem,hWin,IDC_UDNPWM1MAX
-		invoke MoveWindow,eax,50,645,16,25,FALSE
 		invoke SendDlgItemMessage,hWin,IDC_UDNPWM1MAX,UDM_SETRANGE,0,000000FFh
 		invoke SendDlgItemMessage,hWin,IDC_UDNPWM1MAX,UDM_SETPOS,0,0014h
-
-		invoke GetDlgItem,hWin,IDC_STCPWM2MAX
-		invoke MoveWindow,eax,100,630,90,15,FALSE
-		invoke GetDlgItem,hWin,IDC_EDTPWM2MAX
-		invoke MoveWindow,eax,100,645,50,25,FALSE
-		invoke GetDlgItem,hWin,IDC_UDNPWM2MAX
-		invoke MoveWindow,eax,150,645,16,25,FALSE
 		invoke SendDlgItemMessage,hWin,IDC_UDNPWM2MAX,UDM_SETRANGE,0,000000FFh
 		invoke SendDlgItemMessage,hWin,IDC_UDNPWM2MAX,UDM_SETPOS,0,0014h
-
 		invoke GetLocalTime,addr systime
 		movzx	eax,systime.wHour
 		mov		lasthour,eax

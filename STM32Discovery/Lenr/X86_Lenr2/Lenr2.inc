@@ -102,7 +102,7 @@ szPower				BYTE 'Power',0,'100',0,' 90',0,' 80',0,' 70',0,' 60',0,' 50',0,' 40',
 szTempAmbient		BYTE 'Ambient Temprature',0,' 40',0,' 36',0,' 32',0,' 28',0,' 24',0,' 20',0,' 16',0,' 12',0,'  8',0,'  4',0,'  0',0,0
 szTempCell			BYTE 'Cell Temprature',0,'100',0,' 90',0,' 80',0,' 70',0,' 60',0,' 50',0,' 40',0,' 30',0,' 20',0,' 10',0,'  0',0,0
 
-Tahoma_36			LOGFONT <-36,0,0,0,400,0,0,0,0,3,2,1,34,"Tahoma">
+Tahoma_36			LOGFONT <-24,0,0,0,400,0,0,0,0,3,2,1,34,"Tahoma">
 
 szFmtVolt			BYTE '%.3dV',0
 szFmtAmp			BYTE '%.3dA',0
