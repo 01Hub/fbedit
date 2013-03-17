@@ -614,13 +614,26 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						shr		lenr.log.Volt,1
 						shr		lenr.log.Amp,3
 						movzx	eax,lenr.log.Temp1
-						sub		eax,2746
+						sub		eax,633
 						mov		ecx,2500
 						imul	ecx
-						mov		ecx,3035-2746
+						mov		ecx,953-633
 						idiv	ecx
 						mov		lenr.log.Temp1,ax
-						shl		lenr.log.Temp2,2
+
+						movzx	eax,lenr.log.Temp2
+PrintDec eax
+						sub		eax,675
+						.if sdword ptr eax<0
+							xor		eax,eax
+						.endif
+
+						mov		ecx,2500
+						imul	ecx
+						mov		ecx,1041-675
+						idiv	ecx
+
+						mov		lenr.log.Temp2,ax
 						invoke GetDlgItem,hWin,IDC_DISPLAY
 						invoke InvalidateRect,eax,NULL,TRUE
 						;Update pwm1, pwm2, pwm3 and pwm4
