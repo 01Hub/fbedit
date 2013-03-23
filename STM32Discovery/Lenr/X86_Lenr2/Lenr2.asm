@@ -1,3 +1,16 @@
+;/*******************************************************************************
+;* Port pins
+;* PA.08 Cell heater pvm voltage
+;* PA.09 Ambient heater pwm voltage
+;* PA.10 Catalyser pwm voltage
+;* PA.11 Not used
+;* PC.00 Heater voltage
+;* PC.01 Heater current
+;* PC.02 Ambient temprature
+;* PC.03 Cell temprature
+;* PC.04 Cell heater temprature
+;*******************************************************************************/
+
 .386
 .model flat,stdcall
 option casemap:none
@@ -613,24 +626,27 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						;Convert values
 						shr		lenr.log.Volt,1
 						shr		lenr.log.Amp,3
+
 						movzx	eax,lenr.log.Temp1
-						sub		eax,633
+;PrintDec eax
+						sub		eax,687
+						.if sdword ptr eax<0
+							xor		eax,eax
+						.endif
 						mov		ecx,2500
 						imul	ecx
-						mov		ecx,953-633
+						mov		ecx,1055-687
 						idiv	ecx
 						mov		lenr.log.Temp1,ax
 
 						movzx	eax,lenr.log.Temp2
-PrintDec eax
-						sub		eax,675
+						sub		eax,687
 						.if sdword ptr eax<0
 							xor		eax,eax
 						.endif
-
 						mov		ecx,2500
 						imul	ecx
-						mov		ecx,1041-675
+						mov		ecx,1055-687
 						idiv	ecx
 
 						mov		lenr.log.Temp2,ax
