@@ -499,7 +499,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke CheckDlgButton,hWin,IDC_RBNVOLTAGE,BST_CHECKED
 		mov		graph,IDC_RBNVOLTAGE
 		invoke SendDlgItemMessage,hWin,IDC_UDNAMBTEMP,UDM_SETRANGE,0,000A0028h
-		invoke SendDlgItemMessage,hWin,IDC_UDNAMBTEMP,UDM_SETPOS,0,0019h
+		invoke SendDlgItemMessage,hWin,IDC_UDNAMBTEMP,UDM_SETPOS,0,001Ch
 		invoke SendDlgItemMessage,hWin,IDC_UDNCELLTEMP,UDM_SETRANGE,0,00000063h
 		invoke SendDlgItemMessage,hWin,IDC_UDNCELLTEMP,UDM_SETPOS,0,0000h
 		invoke SendDlgItemMessage,hWin,IDC_UDNOFS,UDM_SETRANGE,0,00000009h
@@ -508,9 +508,9 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SendDlgItemMessage,hWin,IDC_UDNPWM4,UDM_SETRANGE,0,000000FFh
 		invoke SendDlgItemMessage,hWin,IDC_UDNPWM4,UDM_SETPOS,0,0000h
 		invoke SendDlgItemMessage,hWin,IDC_UDNPWM1MAX,UDM_SETRANGE,0,000000FFh
-		invoke SendDlgItemMessage,hWin,IDC_UDNPWM1MAX,UDM_SETPOS,0,0014h
+		invoke SendDlgItemMessage,hWin,IDC_UDNPWM1MAX,UDM_SETPOS,0,00FFh
 		invoke SendDlgItemMessage,hWin,IDC_UDNPWM2MAX,UDM_SETRANGE,0,000000FFh
-		invoke SendDlgItemMessage,hWin,IDC_UDNPWM2MAX,UDM_SETPOS,0,0014h
+		invoke SendDlgItemMessage,hWin,IDC_UDNPWM2MAX,UDM_SETPOS,0,00FFh
 		invoke GetLocalTime,addr systime
 		movzx	eax,systime.wHour
 		mov		lasthour,eax
@@ -773,6 +773,8 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				div		ecx
 				mov		log.Temp2[ebx],ax
 			.endif
+			movzx	eax,lenr.log.Temp2
+			add		sumamb,eax
 			movzx	eax,systime.wSecond
 			xor		edx,edx
 			mov		ecx,5
@@ -806,6 +808,11 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					.endif
 				.endif
 				pop		eax
+				mov		eax,sumamb
+				xor		edx,edx
+				mov		ecx,5
+				div		ecx
+				mov		sumamb,eax
 				;Adjust power for ambient temprature heater
 				invoke GetDlgItemInt,hWin,IDC_EDTAMBTEMP,NULL,FALSE
 				mov		edx,100
@@ -815,7 +822,8 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				sub		eax,255
 				neg		eax
 				mov		edx,eax
-				movzx	eax,lenr.log.Temp2
+				mov		eax,sumamb
+				mov		sumamb,0
 				.if eax>ebx
 					;Decrement ambient heater power
 					.if lenr.Pwm2<255

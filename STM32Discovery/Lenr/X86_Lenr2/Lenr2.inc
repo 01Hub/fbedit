@@ -135,6 +135,7 @@ display				BYTE 16 dup (?)
 rampupdown			DWORD ?
 apppath				BYTE MAX_PATH dup (?)
 xofs				DWORD ?
+sumamb				DWORD ?
 
 ;Pt1000: 1000 ohm at 0°C
 ;4,0 ohm/Kelvin with Pt 1000 sensor
