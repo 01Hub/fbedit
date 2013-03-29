@@ -94,12 +94,17 @@ GraphProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	rect:RECT
 	LOCAL	mDC:HDC
 	LOCAL	buffer[32]:BYTE
+	LOCAL	pt:POINT
 
 	mov		eax,uMsg
 	.if	eax==WM_CREATE
 		invoke MoveWindow,hWin,0,0,GRPWDT/4+GRPXPS+30,GRPHGT+GRPYPS+30,FALSE
 		xor		eax,eax
+	.elseif eax==WM_MOUSEMOVE
+		invoke InvalidateRect,hWin,NULL,TRUE
 	.elseif eax==WM_PAINT
+		invoke GetCursorPos,addr pt
+		invoke ScreenToClient,hWin,addr pt
 		invoke GetClientRect,hWin,addr rect
 		invoke BeginPaint,hWin,addr ps
 		invoke CreateCompatibleDC,ps.hdc
@@ -141,6 +146,16 @@ GraphProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke CreatePen,PS_SOLID,1,0FFFFFFh
 		invoke SelectObject,mDC,eax
 		push	eax
+		invoke SetTextColor,mDC,0FFFFFFh
+		invoke SetBkMode,mDC,TRANSPARENT
+		mov		eax,pt.x
+		mov		edx,pt.y
+		.if eax<rect.right && edx<rect.bottom
+			invoke MoveToEx,mDC,GRPXPS,pt.y,NULL
+			invoke LineTo,mDC,rect.right,pt.y
+			invoke MoveToEx,mDC,pt.x,GRPYPS,NULL
+			invoke LineTo,mDC,pt.x,GRPHGT+GRPYPS
+		.endif
 		mov		ebx,logpos
 		sub		ebx,xofs
 		add		ebx,GRPXPS
@@ -150,8 +165,6 @@ GraphProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		pop		eax
 		invoke SelectObject,mDC,eax
 		invoke DeleteObject,eax
-		invoke SetTextColor,mDC,0FFFFFFh
-		invoke SetBkMode,mDC,TRANSPARENT
 		;Draw time scale
 		mov		esi,offset szTime
 		mov		ecx,GRPXPS-15
@@ -441,7 +454,7 @@ DrawTemp1:
 GraphProc endp
 
 ; File handling
-ReadTheFile proc uses ebx,lpFileName:DWORD
+ReadTheFile proc uses ebx,lpFileName:DWORD,fLoad:DWORD
 	LOCAL	hFile:HANDLE
 	LOCAL	BytesRead:DWORD
 
@@ -450,7 +463,11 @@ ReadTheFile proc uses ebx,lpFileName:DWORD
 		mov		hFile,eax
 		invoke GetFileSize,hFile,0
 		mov		ebx,eax
-		invoke ReadFile,hFile,addr filelog,ebx,addr BytesRead,NULL
+		.if fLoad
+			invoke ReadFile,hFile,addr log,ebx,addr BytesRead,NULL
+		.else
+			invoke ReadFile,hFile,addr filelog,ebx,addr BytesRead,NULL
+		.endif
 		invoke CloseHandle,hFile
 		xor		eax,eax
 	.endif
@@ -494,6 +511,12 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		lenr.Pwm2,255
 		mov		lenr.Pwm3,255
 		mov		lenr.Pwm4,255
+		invoke GetLocalTime,addr systime
+		movzx	eax,systime.wYear
+		movzx	ecx,systime.wMonth
+		movzx	edx,systime.wDay
+		invoke wsprintf,addr buffer,addr szFmtFile,addr apppath,eax,ecx,edx
+		invoke ReadTheFile,addr buffer,TRUE
 		;Create a timer.
 		invoke SetTimer,hWin,1000,100,NULL
 		invoke CheckDlgButton,hWin,IDC_RBNVOLTAGE,BST_CHECKED
@@ -570,7 +593,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				;Show the Open dialog
 				invoke GetOpenFileName,addr ofn
 				.if eax
-					invoke ReadTheFile,addr buffer
+					invoke ReadTheFile,addr buffer,FALSE
 					.if !eax
 						mov		fileshow,1
 						invoke GetDlgItem,hWin,IDC_GRAPH
