@@ -95,6 +95,7 @@ GraphProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	mDC:HDC
 	LOCAL	buffer[32]:BYTE
 	LOCAL	pt:POINT
+	LOCAL	hWinPt:HWND
 
 	mov		eax,uMsg
 	.if	eax==WM_CREATE
@@ -104,6 +105,8 @@ GraphProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke InvalidateRect,hWin,NULL,TRUE
 	.elseif eax==WM_PAINT
 		invoke GetCursorPos,addr pt
+		invoke WindowFromPoint,pt.x,pt.y
+		mov		hWinPt,eax
 		invoke ScreenToClient,hWin,addr pt
 		invoke GetClientRect,hWin,addr rect
 		invoke BeginPaint,hWin,addr ps
@@ -148,13 +151,63 @@ GraphProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		push	eax
 		invoke SetTextColor,mDC,0FFFFFFh
 		invoke SetBkMode,mDC,TRANSPARENT
-		mov		eax,pt.x
-		mov		edx,pt.y
-		.if eax<rect.right && edx<rect.bottom
-			invoke MoveToEx,mDC,GRPXPS,pt.y,NULL
-			invoke LineTo,mDC,rect.right,pt.y
-			invoke MoveToEx,mDC,pt.x,GRPYPS,NULL
-			invoke LineTo,mDC,pt.x,GRPHGT+GRPYPS
+		mov		edi,offset log
+		.if fileshow
+			mov		edi,offset filelog
+		.endif
+		mov		eax,hWinPt
+		.if eax==hWin
+			mov		eax,pt.x
+			mov		ecx,rect.right
+			sub		ecx,25
+			.if eax>GRPXPS && eax<ecx
+				mov		edx,pt.y
+				mov		ecx,rect.bottom
+				sub		ecx,25
+				.if edx>GRPYPS && edx<ecx
+					invoke MoveToEx,mDC,GRPXPS,pt.y,NULL
+					mov		eax,rect.right
+					sub		eax,25
+					invoke LineTo,mDC,eax,pt.y
+					invoke MoveToEx,mDC,pt.x,GRPYPS,NULL
+					invoke LineTo,mDC,pt.x,GRPHGT+GRPYPS
+					mov		eax,pt.x
+					sub		eax,GRPXPS
+					add		eax,xofs
+					mov		edx,sizeof LOG
+					mul		edx
+					mov		edx,graph
+					.if edx==IDC_RBNVOLTAGE
+						movzx	eax,[edi].LOG.Volt[eax]
+						mov		edx,offset szFmtVolt
+					.elseif edx==IDC_RBNCURRENT
+						movzx	eax,[edi].LOG.Amp[eax]
+						mov		edx,offset szFmtAmp
+					.elseif edx==IDC_RBNPOWER
+						movzx	ecx,[edi].LOG.Amp[eax]
+						movzx	eax,[edi].LOG.Volt[eax]
+						mul		ecx
+						mov		ecx,100
+						xor		edx,edx
+						div		ecx
+						mov		edx,offset szFmtPower
+					.elseif edx==IDC_RBNCELL
+						movzx	eax,[edi].LOG.Temp1[eax]
+						mov		edx,offset szFmtTemp
+					.elseif edx==IDC_RBNAMB
+						movzx	eax,[edi].LOG.Temp2[eax]
+						mov		edx,offset szFmtTemp
+					.endif
+					invoke wsprintf,addr buffer,edx,eax
+					invoke lstrlen,addr buffer
+					mov		edx,dword ptr buffer[eax-3]
+					mov		buffer[eax-3],'.'
+					mov		dword ptr buffer[eax-2],edx
+					mov		edx,pt.x
+					add		edx,20
+					invoke TextOut,mDC,edx,pt.y,addr buffer,addr [eax+1]
+				.endif
+			.endif
 		.endif
 		mov		ebx,logpos
 		sub		ebx,xofs
@@ -179,10 +232,6 @@ GraphProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			lea		ecx,[ecx+GRPXST/2]
 		.endw
 		mov		eax,graph
-		mov		edi,offset log
-		.if fileshow
-			mov		edi,offset filelog
-		.endif
 		.if eax==IDC_RBNVOLTAGE
 			call	DrawVolt
 		.elseif eax==IDC_RBNCURRENT
@@ -194,7 +243,6 @@ GraphProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.elseif eax==IDC_RBNAMB
 			call	DrawTemp2
 		.endif
-
 		;Draw PWM
 		movzx	eax,lenr.Pwm1
 		sub		eax,255
@@ -202,28 +250,24 @@ GraphProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke wsprintf,addr buffer,addr szFmtPwm1,eax
 		invoke lstrlen,addr buffer
 		invoke TextOut,mDC,500,5,addr buffer,eax
-
 		movzx	eax,lenr.Pwm2
 		sub		eax,255
 		neg		eax
 		invoke wsprintf,addr buffer,addr szFmtPwm2,eax
 		invoke lstrlen,addr buffer
 		invoke TextOut,mDC,600,5,addr buffer,eax
-
 		movzx	eax,lenr.Pwm3
 		sub		eax,255
 		neg		eax
 		invoke wsprintf,addr buffer,addr szFmtPwm3,eax
 		invoke lstrlen,addr buffer
 		invoke TextOut,mDC,700,5,addr buffer,eax
-
 		movzx	eax,lenr.Pwm4
 		sub		eax,255
 		neg		eax
 		invoke wsprintf,addr buffer,addr szFmtPwm4,eax
 		invoke lstrlen,addr buffer
 		invoke TextOut,mDC,800,5,addr buffer,eax
-
 		invoke BitBlt,ps.hdc,0,0,rect.right,rect.bottom,mDC,0,0,SRCCOPY
 		;Delete bitmap
 		pop		eax
@@ -651,7 +695,6 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						shr		lenr.log.Amp,3
 
 						movzx	eax,lenr.log.Temp1
-;PrintDec eax
 						sub		eax,687
 						.if sdword ptr eax<0
 							xor		eax,eax
