@@ -350,6 +350,10 @@ DrawAmp:
 		mul		esi
 		mov		ebx,eax
 		movzx	eax,[edi].LOG.Amp[ebx]
+		mov		ecx,25
+		mul		ecx
+		mov		ecx,10
+		div		ecx
 		sub		eax,GRPHGT+GRPYPS
 		neg		eax
 		lea		edx,[esi+GRPXPS]
@@ -358,6 +362,10 @@ DrawAmp:
 			push	edx
 			invoke MoveToEx,mDC,edx,eax,NULL
 			movzx	eax,[edi].LOG.Amp[ebx+sizeof LOG]
+			mov		ecx,25
+			mul		ecx
+			mov		ecx,10
+			div		ecx
 			sub		eax,GRPHGT+GRPYPS
 			neg		eax
 			pop		edx
@@ -386,7 +394,7 @@ DrawPower:
 		movzx	eax,[edi].LOG.Volt[ebx]
 		movzx	ecx,[edi].LOG.Amp[ebx]
 		mul		ecx
-		mov		ecx,2000
+		mov		ecx,400
 		xor		edx,edx
 		div		ecx
 		sub		eax,GRPHGT+GRPYPS
@@ -399,7 +407,7 @@ DrawPower:
 			movzx	eax,[edi].LOG.Volt[ebx+sizeof LOG]
 			movzx	ecx,[edi].LOG.Amp[ebx+sizeof LOG]
 			mul		ecx
-			mov		ecx,2000
+			mov		ecx,400
 			xor		edx,edx
 			div		ecx
 			sub		eax,GRPHGT+GRPYPS
@@ -553,7 +561,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		hFont,eax
 		mov		lenr.Pwm1,255
 		mov		lenr.Pwm2,255
-		mov		lenr.Pwm3,255
+		mov		lenr.Pwm3,254
 		mov		lenr.Pwm4,255
 		invoke GetLocalTime,addr systime
 		movzx	eax,systime.wYear
@@ -566,12 +574,12 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke CheckDlgButton,hWin,IDC_RBNVOLTAGE,BST_CHECKED
 		mov		graph,IDC_RBNVOLTAGE
 		invoke SendDlgItemMessage,hWin,IDC_UDNAMBTEMP,UDM_SETRANGE,0,000A0028h
-		invoke SendDlgItemMessage,hWin,IDC_UDNAMBTEMP,UDM_SETPOS,0,001Ch
+		invoke SendDlgItemMessage,hWin,IDC_UDNAMBTEMP,UDM_SETPOS,0,0020h
 		invoke SendDlgItemMessage,hWin,IDC_UDNCELLTEMP,UDM_SETRANGE,0,00000063h
 		invoke SendDlgItemMessage,hWin,IDC_UDNCELLTEMP,UDM_SETPOS,0,0000h
 		invoke SendDlgItemMessage,hWin,IDC_UDNOFS,UDM_SETRANGE,0,00000009h
 		invoke SendDlgItemMessage,hWin,IDC_UDNPWM3,UDM_SETRANGE,0,000000FFh
-		invoke SendDlgItemMessage,hWin,IDC_UDNPWM3,UDM_SETPOS,0,0000h
+		invoke SendDlgItemMessage,hWin,IDC_UDNPWM3,UDM_SETPOS,0,0001h
 		invoke SendDlgItemMessage,hWin,IDC_UDNPWM4,UDM_SETRANGE,0,000000FFh
 		invoke SendDlgItemMessage,hWin,IDC_UDNPWM4,UDM_SETPOS,0,0000h
 		invoke SendDlgItemMessage,hWin,IDC_UDNPWM1MAX,UDM_SETRANGE,0,000000FFh
@@ -741,16 +749,10 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		lenr.log.Temp2[ecx],ax
 				sub		ecx,sizeof LOG
 			.endw
-			mov		eax,2000
-			mov		lenr.log.Volt,ax
-			mov		lenr.log.Amp,ax
-			mov		lenr.log.Temp1,ax
-			mov		lenr.log.Temp2,ax
-			;Convert values
-			shr		lenr.log.Volt,1
-			shr		lenr.log.Amp,3
-			shl		lenr.log.Temp1,2
-			shl		lenr.log.Temp2,0
+			mov		lenr.log.Volt,1200
+			mov		lenr.log.Amp,125
+			mov		lenr.log.Temp1,8000
+			mov		lenr.log.Temp2,2000
 			invoke GetDlgItem,hWin,IDC_DISPLAY
 			invoke InvalidateRect,eax,NULL,TRUE
 		.endif
