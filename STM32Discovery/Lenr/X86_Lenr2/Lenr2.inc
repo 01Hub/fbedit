@@ -45,6 +45,7 @@ IDC_RBNCURRENT      equ 1003
 IDC_RBNPOWER        equ 1004
 IDC_RBNCELL         equ 1005
 IDC_RBNAMB          equ 1006
+IDC_RBNPWM2			equ 1007
 IDC_DISPLAY			equ 1021
 IDC_STCAMBTEMP      equ 1018
 IDC_EDTAMBTEMP      equ 1019
@@ -70,6 +71,10 @@ IDM_FILE_EXIT		equ 10001
 IDM_HELP_ABOUT		equ 10101
 
 LOG struct
+	Pwm1			WORD ?
+	Pwm2			WORD ?
+	Pwm3			WORD ?
+	Pwm4			WORD ?
 	Volt			WORD ?
 	Amp				WORD ?
 	Temp1			WORD ?
@@ -101,6 +106,7 @@ szAmp				BYTE 'Current',0,'2.0',0,'1.8',0,'1.6',0,'1.4',0,'1.2',0,'1.0',0,'0.8',
 szPower				BYTE 'Power',0,' 20',0,' 18',0,' 16',0,' 14',0,' 12',0,' 10',0,'  8',0,'  6',0,'  4',0,'  2',0,'  0',0,0
 szTempAmbient		BYTE 'Ambient Temprature',0,' 40',0,' 36',0,' 32',0,' 28',0,' 24',0,' 20',0,' 16',0,' 12',0,'  8',0,'  4',0,'  0',0,0
 szTempCell			BYTE 'Cell Temprature',0,'100',0,' 90',0,' 80',0,' 70',0,' 60',0,' 50',0,' 40',0,' 30',0,' 20',0,' 10',0,'  0',0,0
+szPWM				BYTE 'PWM',0,'250',0,'225',0,'200',0,'175',0,'150',0,'125',0,'100',0,' 75',0,' 50',0,' 25',0,'  0',0,0
 
 Tahoma_36			LOGFONT <-24,0,0,0,400,0,0,0,0,3,2,1,34,"Tahoma">
 
@@ -108,6 +114,7 @@ szFmtVolt			BYTE '%.3dV',0
 szFmtAmp			BYTE '%.3dA',0
 szFmtPower			BYTE '%.3dW',0
 szFmtTemp			BYTE '%.3dC',0
+szFmtPWM			BYTE '%d',0
 szFmtPwm1			BYTE 'PWM1: %d',0
 szFmtPwm2			BYTE 'PWM2: %d',0
 szFmtPwm3			BYTE 'PWM3: %d',0

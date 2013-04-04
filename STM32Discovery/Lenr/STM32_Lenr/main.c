@@ -29,12 +29,12 @@ typedef struct
   vu16 Pwm1;             // @0x20000004 Cell Heater
   vu16 Pwm2;             // @0x20000006 Ambient heater
   vu16 Pwm3;             // @0x20000008 Call catalyser
-  vu16 Pwm4;             // @0x2000000A Ambient heater
+  vu16 Pwm4;             // @0x2000000A Not used
   vu16 Volts;            // @0x2000000C Heater
   vu16 Amps;             // @0x2000000E Heater
   vu16 Temp1;            // @0x20000010 Ambient
   vu16 Temp2;            // @0x20000012 Cell
-  vu16 Temp3;            // @0x20000014 Heater
+  vu16 Temp3;            // @0x20000014 Not used
   vu16 Dummy;            // @0x20000016
 }LenrTypeDef;
 
