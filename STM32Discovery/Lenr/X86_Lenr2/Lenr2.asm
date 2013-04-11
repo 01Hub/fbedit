@@ -465,7 +465,7 @@ DrawTemp2:
 		mul		esi
 		mov		ebx,eax
 		movzx	eax,[edi].LOG.Temp2[ebx]
-		mov		ecx,8
+		mov		ecx,10
 		xor		edx,edx
 		div		ecx
 		sub		eax,GRPHGT+GRPYPS
@@ -476,7 +476,7 @@ DrawTemp2:
 			push	edx
 			invoke MoveToEx,mDC,edx,eax,NULL
 			movzx	eax,[edi].LOG.Temp2[ebx+sizeof LOG]
-			mov		ecx,8
+			mov		ecx,10
 			xor		edx,edx
 			div		ecx
 			sub		eax,GRPHGT+GRPYPS
@@ -644,7 +644,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SetTimer,hWin,1000,100,NULL
 		invoke CheckDlgButton,hWin,IDC_RBNVOLTAGE,BST_CHECKED
 		mov		graph,IDC_RBNVOLTAGE
-		invoke SendDlgItemMessage,hWin,IDC_UDNAMBTEMP,UDM_SETRANGE,0,000A0028h
+		invoke SendDlgItemMessage,hWin,IDC_UDNAMBTEMP,UDM_SETRANGE,0,000A0032h
 		invoke SendDlgItemMessage,hWin,IDC_UDNAMBTEMP,UDM_SETPOS,0,0020h
 		invoke SendDlgItemMessage,hWin,IDC_UDNCELLTEMP,UDM_SETRANGE,0,00000063h
 		invoke SendDlgItemMessage,hWin,IDC_UDNCELLTEMP,UDM_SETPOS,0,0000h
@@ -775,9 +775,25 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						sub		ecx,sizeof LOG
 					.endw
 					;Read adc values
-					invoke STLinkRead,hWin,20000004h,addr lenr.log.Volt,sizeof LOG
+					invoke STLinkRead,hWin,20000004h,addr lenr.log,sizeof LOG
 					.if eax && eax!=IDIGNORE && eax!=IDABORT
 						;Convert values
+						mov		ax,lenr.log.Pwm1
+						sub		ax,256
+						neg		ax
+						mov		lenr.log.Pwm1,ax
+						mov		ax,lenr.log.Pwm2
+						sub		ax,256
+						neg		ax
+						mov		lenr.log.Pwm2,ax
+						mov		ax,lenr.log.Pwm3
+						sub		ax,256
+						neg		ax
+						mov		lenr.log.Pwm3,ax
+						mov		ax,lenr.log.Pwm4
+						sub		ax,256
+						neg		ax
+						mov		lenr.log.Pwm4,ax
 						shr		lenr.log.Volt,1
 						shr		lenr.log.Amp,3
 						movzx	eax,lenr.log.Temp1
