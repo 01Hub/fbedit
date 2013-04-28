@@ -115,6 +115,7 @@ WINDOW* GetControlHandle(WINDOW* howner,uint8_t ID);
 void SetCaption(WINDOW* hwin,uint8_t *caption);
 void SetStyle(WINDOW* hwin,uint8_t style);
 void SetState(WINDOW* hwin,uint8_t state);
+void ClearState(WINDOW* hwin,uint8_t state);
 void SetParam(WINDOW* hwin,uint32_t param);
 void CreateTimer(TIMER tmr);
 void KillTimer(void);

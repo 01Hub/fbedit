@@ -39,6 +39,7 @@ uint8_t BackBuff[SCREEN_BUFFHEIGHT][SCREEN_BUFFWIDTH];
 uint8_t FrameBuff[SCREEN_BUFFHEIGHT][SCREEN_BUFFWIDTH];
 volatile int16_t LineCount;
 volatile uint16_t FrameCount;
+volatile uint32_t SecCount;
 volatile uint16_t FrameSkip;
 volatile uint16_t BackPochFlag;
 SPRITE Cursor;
@@ -912,6 +913,8 @@ void TIM3_IRQHandler(void)
     frequency=i-pcount;
     pcount=i;
     lcnt=0;
+    STM_EVAL_LEDToggle(LED3);
+    SecCount++;
   }
   if (LineCount<SCREEN_HEIGHT)
   {
@@ -953,10 +956,6 @@ void TIM4_IRQHandler(void)
     {
       /* V-Sync high */
       GPIOC->BSRRL=(u16)GPIO_Pin_4;
-      if (FrameCount==(FrameCount/50)*50)
-      {
-        STM_EVAL_LEDToggle(LED3);
-      }
       LineCount=-TOP_MARGIN;
     }
     /* Set TIM4 auto reload */
@@ -1061,16 +1060,19 @@ void TIM7_IRQHandler(void)
   /* Clear the IT pending Bit */
   TIM7->SR=(u16)~TIM_IT_Update;
   FrameDraw=1;
-  /* Copy ScreenBuff to WorkBuff */
-  pd=(uint32_t *)&FrameBuff;
-  ps=(uint32_t *)&BackBuff;
-  i=0;
-  while (i<SCREEN_BUFFHEIGHT*SCREEN_BUFFWIDTH/4)
+  if (!(FrameCount & 1))
   {
-    pd[i]=ps[i];
-    i++;
+    /* Copy ScreenBuff to WorkBuff */
+    pd=(uint32_t *)&FrameBuff;
+    ps=(uint32_t *)&BackBuff;
+    i=0;
+    while (i<SCREEN_BUFFHEIGHT*SCREEN_BUFFWIDTH/4)
+    {
+      pd[i]=ps[i];
+      i++;
+    }
+    FrameBuffDraw();
   }
-  FrameBuffDraw();
   KeyboardReset();
   if (Focus)
   {

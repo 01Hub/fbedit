@@ -307,7 +307,10 @@ void HSClkSetup(void)
 
   while (!HSClk.Quit)
   {
-    HSClk.Quit=(GetKeyState(SC_ESC) && (GetKeyState(SC_L_CTRL) | GetKeyState(SC_R_CTRL)));
+    if ((GetKeyState(SC_ESC) && (GetKeyState(SC_L_CTRL) | GetKeyState(SC_R_CTRL))))
+    {
+      HSClk.Quit=1;
+    }
     if (caps!=Caps || num!=Num)
     {
       caps=Caps;

@@ -14,7 +14,7 @@
 #define SCOPE_LEFT          4
 #define SCOPE_TOP           16
 #define SCOPE_WIDTH         256
-#define SCOPE_HEIGHT        128+38
+#define SCOPE_HEIGHT        128+70
 #define SCOPE_RIGHT         SCOPE_LEFT+SCOPE_WIDTH
 #define SCOPE_BOTTOM        SCOPE_TOP+SCOPE_HEIGHT
 
@@ -44,9 +44,14 @@ typedef struct
   uint8_t databits;
   uint8_t sampletime;
   uint8_t clockdiv;
-  uint8_t sampledone;
+  uint32_t rate;
+  uint8_t autosample;
+  uint8_t trigger;
   uint8_t Sample;
   uint8_t Quit;
+  uint8_t samplebits;
+  uint32_t samplerate;
+  uint8_t scopebuff[255];
 } SCOPE;
 
 /* Private function prototypes -----------------------------------------------*/
@@ -58,6 +63,8 @@ void ScopeDrawDotVLine(uint16_t x,uint16_t y,int16_t hgt);
 void ScopeDrawGrid(void);
 void ScopeDrawMark(void);
 void ScopeDrawData(void);
+uint8_t ScopeConvert(uint16_t val);
+void ScopeGetData(void);
 void ScopeDrawInfo(void);
 void ScopeInit(void);
 void ScopeSetup(void);

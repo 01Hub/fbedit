@@ -41,8 +41,9 @@ void MenuBarHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
               }
               hwin=hwin->control;
             }
-            /* Activate popup menu */
             hwin=(WINDOW*)Focus->param;
+            SendEvent(Focus->hwin,EVENT_KILLFOCUS,0,0);
+            /* Activate popup menu */
             SendEvent(hwin,EVENT_ACTIVATE,0,hwin->ID);
             break;
           }

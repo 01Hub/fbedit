@@ -1349,6 +1349,16 @@ void SetState(WINDOW* hwin,uint8_t state)
 }
 
 /**
+  * @brief  This function clears a controls state.
+  * @param  hwin,state
+  * @retval none
+  */
+void ClearState(WINDOW* hwin,uint8_t state)
+{
+  hwin->state&=~state;
+}
+
+/**
   * @brief  This function sets a controls param.
   * @param  hwin,param
   * @retval none

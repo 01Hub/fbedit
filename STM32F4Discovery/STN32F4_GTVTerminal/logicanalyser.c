@@ -12,7 +12,7 @@ extern uint8_t FrameBuff[SCREEN_BUFFHEIGHT][SCREEN_BUFFWIDTH];
 
 /* Private variables ---------------------------------------------------------*/
 LGA Lga;
-uint8_t lgastr[8][6]={{"Ofs:"},{"Mrk:"},{"Pos:"},{"Bytes:"},{"Hex:"},{"Bin:"},{"Time:"},{"Trns:"}};
+uint8_t lgastr[8][6]={{"Ofs:"},{"Mrk:"},{"Pos:"},{"Bts:"},{"Hex:"},{"Bin:"},{"Time:"},{"Trns:"}};
 uint8_t lgacap[8][2]={{"D0"},{"D1"},{"D2"},{"D3"},{"D4"},{"D5"},{"D6"},{"D7"}};
 LGASAMPLE lgarate[LGA_RATEMAX]={{10000000,1680,"100KHz\0"},{5000000,840,"200KHz\0"},{2000000,336,"500KHz\0"},{1000000,168,"1.0MHz\0"},{500000,84,"2.0MHz\0"},{196429,33,"5.1MHz\0"},{95238,16,"10.5MHz\0"},{47619,8,"21.0MHz\0"},{29762,5,"33.6MHz\0"}};
 
@@ -105,11 +105,6 @@ void LgaHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
       LgaDrawMark();
       LgaDrawData();
       LgaDrawInfo();
-// DrawHex16(100,240,DMA2->LISR,1);
-// DrawHex16(150,240,DMA2->HISR,1);
-// DrawHex16(200,240,DMA2_Stream1->CR,1);
-// DrawHex16(250,240,DMA2_Stream1->NDTR,1);
-// DrawHex16(300,240,DMA2_Stream1->M0AR,1);
       break;
     case EVENT_LDOWN:
       x=param & 0xFFFF;
@@ -222,7 +217,7 @@ void LgaDrawInfo(void)
   uint16_t nbytes;
   uint8_t byte,pbyte,bit;
   uint8_t* ptr;
-  uint64_t time;
+  uint32_t time;
   uint16_t ntrans;
 
   /* Offset */
@@ -241,23 +236,23 @@ void LgaDrawInfo(void)
   {
     nbytes=Lga.mark-Lga.cur;
   }
-  DrawWinString(LGA_LEFT+4+32+48,LGA_BOTTOM-30,6,lgastr[3],1);
-  DrawWinDec16(LGA_LEFT+4+32+48+48,LGA_BOTTOM-30,nbytes,1);
+  DrawWinString(LGA_LEFT+4+32+48,LGA_BOTTOM-30,4,lgastr[3],1);
+  DrawWinDec16(LGA_LEFT+4+32+48+32,LGA_BOTTOM-30,nbytes,1);
   ptr=(uint8_t*)(LGA_DATAPTR+Lga.cur);
   byte=*ptr;
   /* Hex */
   DrawWinString(LGA_LEFT+4+32+48,LGA_BOTTOM-20,4,lgastr[4],1);
-  DrawWinHex8(LGA_LEFT+4+32+48+48,LGA_BOTTOM-20,byte,1);
+  DrawWinHex8(LGA_LEFT+4+32+48+32,LGA_BOTTOM-20,byte,1);
   /* Bin */
   DrawWinString(LGA_LEFT+4+32+48,LGA_BOTTOM-10,4,lgastr[5],1);
-  DrawWinBin8(LGA_LEFT+4+32+48+48,LGA_BOTTOM-10,byte,1);
+  DrawWinBin8(LGA_LEFT+4+32+48+32,LGA_BOTTOM-10,byte,1);
 
-  /* Time in pico seconds */
-  DrawWinString(LGA_LEFT+4+32+48+48+48,LGA_BOTTOM-30,5,lgastr[6],1);
-  time=(lgarate[Lga.rate].cnt*nbytes*1000)/168;
-  DrawWinDec32(LGA_LEFT+4+32+48+48+48+40,LGA_BOTTOM-30,time,1);
+  /* Time in nano seconds */
+  DrawWinString(LGA_LEFT+4+32+48+32+48,LGA_BOTTOM-30,5,lgastr[6],1);
+  time=((uint32_t)lgarate[Lga.rate].cnt*(uint32_t)nbytes*(uint32_t)1000)/(uint32_t)168;
+  DrawWinDec32(LGA_LEFT+4+32+48+32+48+40,LGA_BOTTOM-30,time,1);
   /* Transitions */
-  DrawWinString(LGA_LEFT+4+32+48+48+48,LGA_BOTTOM-20,5,lgastr[7],1);
+  DrawWinString(LGA_LEFT+4+32+48+32+48,LGA_BOTTOM-20,5,lgastr[7],1);
   if (Lga.curbit<8)
   {
     ntrans=0;
@@ -281,7 +276,7 @@ void LgaDrawInfo(void)
         ntrans++;
       }
     }
-    DrawWinDec16(LGA_LEFT+4+32+48+48+48+40,LGA_BOTTOM-20,ntrans,1);
+    DrawWinDec16(LGA_LEFT+4+32+48+32+48+40,LGA_BOTTOM-20,ntrans,1);
   }
 }
 
@@ -431,7 +426,10 @@ void LgaSetup(void)
 
   while (!Lga.Quit)
   {
-    Lga.Quit=(GetKeyState(SC_ESC) && (GetKeyState(SC_L_CTRL) | GetKeyState(SC_R_CTRL)));
+    if ((GetKeyState(SC_ESC) && (GetKeyState(SC_L_CTRL) | GetKeyState(SC_R_CTRL))))
+    {
+      Lga.Quit=1;
+    }
     if (Lga.Sample)
     {
       Lga.Sample=0;
