@@ -1,7 +1,6 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "scope.h"
-#include "keycodes.h"
 
 /* External variables --------------------------------------------------------*/
 extern volatile uint16_t FrameCount;
@@ -9,7 +8,6 @@ extern volatile uint32_t SecCount;
 extern WINDOW* Focus;                 // The control that has the keyboard focus
 extern volatile uint8_t Caps;
 extern volatile uint8_t Num;
-//extern uint8_t FrameBuff[SCREEN_BUFFHEIGHT][SCREEN_BUFFWIDTH];
 extern uint32_t frequency;
 
 /* Private variables ---------------------------------------------------------*/
@@ -18,6 +16,7 @@ uint8_t scopestr[9][6]={{"Ofs:"},{"Mrk:"},{"Pos:"},{"Frq:"},{"Tme:"},{"Vcu:"},{"
 uint8_t scopedbstr[4][3]={{"6\0"},{"8\0"},{"10\0"},{"12\0"}};
 uint8_t scopeststr[8][4]={{"3\0"},{"15\0"},{"28\0"},{"56\0"},{"84\0"},{"112\0"},{"144\0"},{"480\0"}};
 uint8_t scopecdstr[4][2]={{"2\0"},{"4\0"},{"6\0"},{"8\0"}};
+uint8_t scopemagstr[17][3]={{"/9\0"},{"/8\0"},{"/7\0"},{"/6\0"},{"/5\0"},{"/4\0"},{"/3\0"},{"/2\0"},{"*1\0"},{"*2\0"},{"*3\0"},{"*4\0"},{"*5\0"},{"*6\0"},{"*7\0"},{"*8\0"},{"*9\0"}};
 
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
@@ -96,6 +95,7 @@ void ScopeSetStrings(void)
     i++;
   }
   SetCaption(GetControlHandle(Scope.hmain,94),&decstr[i]);
+  SetCaption(GetControlHandle(Scope.hmain,71),scopemagstr[Scope.magnify]);
 }
 
 void ScopeMainHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
@@ -643,6 +643,8 @@ void ScopeSetup(void)
   CreateWindow(Scope.hmain,CLASS_BUTTON,2,SCOPE_LEFT+80,SCOPE_BOTTOM,20,20,">\0");
   /* Left magnify button */
   CreateWindow(Scope.hmain,CLASS_BUTTON,3,SCOPE_RIGHT-100,SCOPE_BOTTOM,20,20,"<\0");
+  /* Magnify static */
+  CreateWindow(Scope.hmain,CLASS_STATIC,71,SCOPE_RIGHT-100+20,SCOPE_BOTTOM,60,10,"\0");
   /* Right magnify button */
   CreateWindow(Scope.hmain,CLASS_BUTTON,4,SCOPE_RIGHT-20,SCOPE_BOTTOM,20,20,">\0");
   /* Auto sample checkbox */

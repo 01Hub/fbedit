@@ -2,6 +2,7 @@
 #include "stm32f4_discovery.h"
 #include "window.h"
 #include "video.h"
+#include "keycodes.h"
 
 /* Private define ------------------------------------------------------------*/
 #define SCOPE_MAINLEFT      0
