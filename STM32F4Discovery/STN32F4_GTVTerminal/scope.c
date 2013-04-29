@@ -12,11 +12,11 @@ extern uint32_t frequency;
 
 /* Private variables ---------------------------------------------------------*/
 SCOPE Scope;
-uint8_t scopestr[9][6]={{"Ofs:"},{"Mrk:"},{"Pos:"},{"Frq:"},{"Tme:"},{"Vcu:"},{"Vpp:"},{"Vmn:"},{"Vmx:"}};
+uint8_t scopestr[10][6]={{"Ofs:"},{"Mrk:"},{"Pos:"},{"Frq:"},{"Per:"},{"Tme:"},{"Vcu:"},{"Vpp:"},{"Vmn:"},{"Vmx:"}};
 uint8_t scopedbstr[4][3]={{"6\0"},{"8\0"},{"10\0"},{"12\0"}};
 uint8_t scopeststr[8][4]={{"3\0"},{"15\0"},{"28\0"},{"56\0"},{"84\0"},{"112\0"},{"144\0"},{"480\0"}};
 uint8_t scopecdstr[4][2]={{"2\0"},{"4\0"},{"6\0"},{"8\0"}};
-uint8_t scopemagstr[17][3]={{"/9\0"},{"/8\0"},{"/7\0"},{"/6\0"},{"/5\0"},{"/4\0"},{"/3\0"},{"/2\0"},{"*1\0"},{"*2\0"},{"*3\0"},{"*4\0"},{"*5\0"},{"*6\0"},{"*7\0"},{"*8\0"},{"*9\0"}};
+uint8_t scopemagstr[18][5]={{"/9\0"},{"/8\0"},{"/7\0"},{"/6\0"},{"/5\0"},{"/4\0"},{"/3\0"},{"/2\0"},{"*1\0"},{"*2\0"},{"*3\0"},{"*4\0"},{"*5\0"},{"*6\0"},{"*7\0"},{"*8\0"},{"*9\0"},{"Auto\0"}};
 
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
@@ -135,7 +135,7 @@ void ScopeMainHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
             break;
           case 4:
             /* Right magnify */
-            if (Scope.magnify<16)
+            if (Scope.magnify<17)
             {
               Scope.magnify++;
             }
@@ -339,105 +339,116 @@ void ScopeDrawData(void)
   uint16_t x1,x2,y1,y2;
 
   x1=0;
-  x2=0;
+  x2=1;
   y1=Scope.scopebuff[x1];
-  switch (Scope.magnify)
+  while (x2<256)
   {
-    case 9:
-      while (x1<255-2)
-      {
-        y2=Scope.scopebuff[x2+1];
-        DrawWinLine(x1+SCOPE_LEFT,y1+SCOPE_TOP,x1+2+SCOPE_LEFT,y2+SCOPE_TOP);
-        y1=y2;
-        x1+=2;
-        x2++;
-      }
-      break;
-    case 10:
-      while (x1<255-3)
-      {
-        y2=Scope.scopebuff[x2+1];
-        DrawWinLine(x1+SCOPE_LEFT,y1+SCOPE_TOP,x1+3+SCOPE_LEFT,y2+SCOPE_TOP);
-        y1=y2;
-        x1+=3;
-        x2++;
-      }
-      break;
-    case 11:
-      while (x1<255-4)
-      {
-        y2=Scope.scopebuff[x2+1];
-        DrawWinLine(x1+SCOPE_LEFT,y1+SCOPE_TOP,x1+4+SCOPE_LEFT,y2+SCOPE_TOP);
-        y1=y2;
-        x1+=4;
-        x2++;
-      }
-      break;
-    case 12:
-      while (x1<255-5)
-      {
-        y2=Scope.scopebuff[x2+1];
-        DrawWinLine(x1+SCOPE_LEFT,y1+SCOPE_TOP,x1+5+SCOPE_LEFT,y2+SCOPE_TOP);
-        y1=y2;
-        x1+=5;
-        x2++;
-      }
-      break;
-    case 13:
-      while (x1<255-6)
-      {
-        y2=Scope.scopebuff[x2+1];
-        DrawWinLine(x1+SCOPE_LEFT,y1+SCOPE_TOP,x1+6+SCOPE_LEFT,y2+SCOPE_TOP);
-        y1=y2;
-        x1+=6;
-        x2++;
-      }
-      break;
-    case 14:
-      while (x1<255-7)
-      {
-        y2=Scope.scopebuff[x2+1];
-        DrawWinLine(x1+SCOPE_LEFT,y1+SCOPE_TOP,x1+7+SCOPE_LEFT,y2+SCOPE_TOP);
-        y1=y2;
-        x1+=7;
-        x2++;
-      }
-      break;
-    case 15:
-      while (x1<255-8)
-      {
-        y2=Scope.scopebuff[x2+1];
-        DrawWinLine(x1+SCOPE_LEFT,y1+SCOPE_TOP,x1+8+SCOPE_LEFT,y2+SCOPE_TOP);
-        y1=y2;
-        x1+=8;
-        x2++;
-      }
-      break;
-    case 16:
-      while (x1<255-9)
-      {
-        y2=Scope.scopebuff[x2+1];
-        DrawWinLine(x1+SCOPE_LEFT,y1+SCOPE_TOP,x1+9+SCOPE_LEFT,y2+SCOPE_TOP);
-        y1=y2;
-        x1+=9;
-        x2++;
-      }
-      break;
-    default:
-      while (x1<255-1)
-      {
-        y2=Scope.scopebuff[x1+1];
-        DrawWinLine(x1+SCOPE_LEFT,y1+SCOPE_TOP,x1+1+SCOPE_LEFT,y2+SCOPE_TOP);
-        y1=y2;
-        x1++;
-      }
-      break;
+    y2=Scope.scopebuff[x2];
+    if (y2!=255)
+    {
+      DrawWinLine(x1+SCOPE_LEFT,y1+SCOPE_TOP,x2+SCOPE_LEFT,y2+SCOPE_TOP);
+      x1=x2;
+      y1=y2;
+    }
+    x2++;
   }
+  // switch (Scope.magnify)
+  // {
+    // case 9:
+      // while (x1<255-2)
+      // {
+        // y2=Scope.scopebuff[x2+1];
+        // DrawWinLine(x1+SCOPE_LEFT,y1+SCOPE_TOP,x1+2+SCOPE_LEFT,y2+SCOPE_TOP);
+        // y1=y2;
+        // x1+=2;
+        // x2++;
+      // }
+      // break;
+    // case 10:
+      // while (x1<255-3)
+      // {
+        // y2=Scope.scopebuff[x2+1];
+        // DrawWinLine(x1+SCOPE_LEFT,y1+SCOPE_TOP,x1+3+SCOPE_LEFT,y2+SCOPE_TOP);
+        // y1=y2;
+        // x1+=3;
+        // x2++;
+      // }
+      // break;
+    // case 11:
+      // while (x1<255-4)
+      // {
+        // y2=Scope.scopebuff[x2+1];
+        // DrawWinLine(x1+SCOPE_LEFT,y1+SCOPE_TOP,x1+4+SCOPE_LEFT,y2+SCOPE_TOP);
+        // y1=y2;
+        // x1+=4;
+        // x2++;
+      // }
+      // break;
+    // case 12:
+      // while (x1<255-5)
+      // {
+        // y2=Scope.scopebuff[x2+1];
+        // DrawWinLine(x1+SCOPE_LEFT,y1+SCOPE_TOP,x1+5+SCOPE_LEFT,y2+SCOPE_TOP);
+        // y1=y2;
+        // x1+=5;
+        // x2++;
+      // }
+      // break;
+    // case 13:
+      // while (x1<255-6)
+      // {
+        // y2=Scope.scopebuff[x2+1];
+        // DrawWinLine(x1+SCOPE_LEFT,y1+SCOPE_TOP,x1+6+SCOPE_LEFT,y2+SCOPE_TOP);
+        // y1=y2;
+        // x1+=6;
+        // x2++;
+      // }
+      // break;
+    // case 14:
+      // while (x1<255-7)
+      // {
+        // y2=Scope.scopebuff[x2+1];
+        // DrawWinLine(x1+SCOPE_LEFT,y1+SCOPE_TOP,x1+7+SCOPE_LEFT,y2+SCOPE_TOP);
+        // y1=y2;
+        // x1+=7;
+        // x2++;
+      // }
+      // break;
+    // case 15:
+      // while (x1<255-8)
+      // {
+        // y2=Scope.scopebuff[x2+1];
+        // DrawWinLine(x1+SCOPE_LEFT,y1+SCOPE_TOP,x1+8+SCOPE_LEFT,y2+SCOPE_TOP);
+        // y1=y2;
+        // x1+=8;
+        // x2++;
+      // }
+      // break;
+    // case 16:
+      // while (x1<255-9)
+      // {
+        // y2=Scope.scopebuff[x2+1];
+        // DrawWinLine(x1+SCOPE_LEFT,y1+SCOPE_TOP,x1+9+SCOPE_LEFT,y2+SCOPE_TOP);
+        // y1=y2;
+        // x1+=9;
+        // x2++;
+      // }
+      // break;
+    // default:
+      // while (x1<255-1)
+      // {
+        // y2=Scope.scopebuff[x1+1];
+        // DrawWinLine(x1+SCOPE_LEFT,y1+SCOPE_TOP,x1+1+SCOPE_LEFT,y2+SCOPE_TOP);
+        // y1=y2;
+        // x1++;
+      // }
+      // break;
+  // }
 }
 
 uint8_t ScopeConvert(uint16_t val)
 {
-  switch (Scope.samplebits)
+  switch (Scope.adcsamplebits)
   {
     case 0:
       /* 6 bits */
@@ -462,17 +473,29 @@ uint8_t ScopeConvert(uint16_t val)
 
 void ScopeGetData(void)
 {
-  uint16_t x1;
+  uint16_t x1,x2;
   uint16_t* ptr;
+  uint32_t t;
 
   ptr=(uint16_t*)(SCOPE_DATAPTR+Scope.dataofs);
   x1=0;
+  while (x1<256)
+  {
+    Scope.scopebuff[x1]=255;
+    x1++;
+  }
+  x1=0;
+  x2=0;
   switch (Scope.magnify)
   {
     case 0:
       while (x1<256)
       {
         Scope.scopebuff[x1]=ScopeConvert(*ptr);
+        if (Scope.scopebuff[x1]==255)
+        {
+          Scope.scopebuff[x1]=254;
+        }
         ptr+=36;
         if ((uint32_t)ptr>=(SCOPE_DATAPTR+SCOPE_DATASIZE))
         {
@@ -485,6 +508,10 @@ void ScopeGetData(void)
       while (x1<256)
       {
         Scope.scopebuff[x1]=ScopeConvert(*ptr);
+        if (Scope.scopebuff[x1]==255)
+        {
+          Scope.scopebuff[x1]=254;
+        }
         ptr+=32;
         if ((uint32_t)ptr>=SCOPE_DATAPTR+SCOPE_DATASIZE)
         {
@@ -497,6 +524,10 @@ void ScopeGetData(void)
       while (x1<256)
       {
         Scope.scopebuff[x1]=ScopeConvert(*ptr);
+        if (Scope.scopebuff[x1]==255)
+        {
+          Scope.scopebuff[x1]=254;
+        }
         ptr+=28;
         if ((uint32_t)ptr>=SCOPE_DATAPTR+SCOPE_DATASIZE)
         {
@@ -509,6 +540,10 @@ void ScopeGetData(void)
       while (x1<256)
       {
         Scope.scopebuff[x1]=ScopeConvert(*ptr);
+        if (Scope.scopebuff[x1]==255)
+        {
+          Scope.scopebuff[x1]=254;
+        }
         ptr+=24;
         if ((uint32_t)ptr>=SCOPE_DATAPTR+SCOPE_DATASIZE)
         {
@@ -521,6 +556,10 @@ void ScopeGetData(void)
       while (x1<256)
       {
         Scope.scopebuff[x1]=ScopeConvert(*ptr);
+        if (Scope.scopebuff[x1]==255)
+        {
+          Scope.scopebuff[x1]=254;
+        }
         ptr+=20;
         if ((uint32_t)ptr>=SCOPE_DATAPTR+SCOPE_DATASIZE)
         {
@@ -533,6 +572,10 @@ void ScopeGetData(void)
       while (x1<256)
       {
         Scope.scopebuff[x1]=ScopeConvert(*ptr);
+        if (Scope.scopebuff[x1]==255)
+        {
+          Scope.scopebuff[x1]=254;
+        }
         ptr+=16;
         if ((uint32_t)ptr>=SCOPE_DATAPTR+SCOPE_DATASIZE)
         {
@@ -545,6 +588,10 @@ void ScopeGetData(void)
       while (x1<256)
       {
         Scope.scopebuff[x1]=ScopeConvert(*ptr);
+        if (Scope.scopebuff[x1]==255)
+        {
+          Scope.scopebuff[x1]=254;
+        }
         ptr+=12;
         if ((uint32_t)ptr>=SCOPE_DATAPTR+SCOPE_DATASIZE)
         {
@@ -557,6 +604,10 @@ void ScopeGetData(void)
       while (x1<256)
       {
         Scope.scopebuff[x1]=ScopeConvert(*ptr);
+        if (Scope.scopebuff[x1]==255)
+        {
+          Scope.scopebuff[x1]=254;
+        }
         ptr+=8;
         if ((uint32_t)ptr>=SCOPE_DATAPTR+SCOPE_DATASIZE)
         {
@@ -565,10 +616,14 @@ void ScopeGetData(void)
         x1++;
       }
       break;
-    default:
+    case 8:
       while (x1<256)
       {
         Scope.scopebuff[x1]=ScopeConvert(*ptr);
+        if (Scope.scopebuff[x1]==255)
+        {
+          Scope.scopebuff[x1]=254;
+        }
         ptr+=4;
         if ((uint32_t)ptr>=SCOPE_DATAPTR+SCOPE_DATASIZE)
         {
@@ -576,7 +631,192 @@ void ScopeGetData(void)
         }
         x1++;
       }
+    case 9:
+      while (x1<256)
+      {
+        Scope.scopebuff[x1]=ScopeConvert(*ptr);
+        if (Scope.scopebuff[x1]==255)
+        {
+          Scope.scopebuff[x1]=254;
+        }
+        ptr+=4;
+        if ((uint32_t)ptr>=SCOPE_DATAPTR+SCOPE_DATASIZE)
+        {
+          break;
+        }
+        x1+=2;
+      }
+    case 10:
+      while (x1<256)
+      {
+        Scope.scopebuff[x1]=ScopeConvert(*ptr);
+        if (Scope.scopebuff[x1]==255)
+        {
+          Scope.scopebuff[x1]=254;
+        }
+        ptr+=4;
+        if ((uint32_t)ptr>=SCOPE_DATAPTR+SCOPE_DATASIZE)
+        {
+          break;
+        }
+        x1+=3;
+      }
+    case 11:
+      while (x1<256)
+      {
+        Scope.scopebuff[x1]=ScopeConvert(*ptr);
+        if (Scope.scopebuff[x1]==255)
+        {
+          Scope.scopebuff[x1]=254;
+        }
+        ptr+=4;
+        if ((uint32_t)ptr>=SCOPE_DATAPTR+SCOPE_DATASIZE)
+        {
+          break;
+        }
+        x1+=4;
+      }
+    case 12:
+      while (x1<256)
+      {
+        Scope.scopebuff[x1]=ScopeConvert(*ptr);
+        if (Scope.scopebuff[x1]==255)
+        {
+          Scope.scopebuff[x1]=254;
+        }
+        ptr+=4;
+        if ((uint32_t)ptr>=SCOPE_DATAPTR+SCOPE_DATASIZE)
+        {
+          break;
+        }
+        x1+=5;
+      }
+    case 13:
+      while (x1<256)
+      {
+        Scope.scopebuff[x1]=ScopeConvert(*ptr);
+        if (Scope.scopebuff[x1]==255)
+        {
+          Scope.scopebuff[x1]=254;
+        }
+        ptr+=4;
+        if ((uint32_t)ptr>=SCOPE_DATAPTR+SCOPE_DATASIZE)
+        {
+          break;
+        }
+        x1+=6;
+      }
+    case 14:
+      while (x1<256)
+      {
+        Scope.scopebuff[x1]=ScopeConvert(*ptr);
+        if (Scope.scopebuff[x1]==255)
+        {
+          Scope.scopebuff[x1]=254;
+        }
+        ptr+=4;
+        if ((uint32_t)ptr>=SCOPE_DATAPTR+SCOPE_DATASIZE)
+        {
+          break;
+        }
+        x1+=7;
+      }
+    case 15:
+      while (x1<256)
+      {
+        Scope.scopebuff[x1]=ScopeConvert(*ptr);
+        if (Scope.scopebuff[x1]==255)
+        {
+          Scope.scopebuff[x1]=254;
+        }
+        ptr+=4;
+        if ((uint32_t)ptr>=SCOPE_DATAPTR+SCOPE_DATASIZE)
+        {
+          break;
+        }
+        x1+=8;
+      }
+    case 16:
+      while (x1<256)
+      {
+        Scope.scopebuff[x1]=ScopeConvert(*ptr);
+        if (Scope.scopebuff[x1]==255)
+        {
+          Scope.scopebuff[x1]=254;
+        }
+        ptr+=4;
+        if ((uint32_t)ptr>=SCOPE_DATAPTR+SCOPE_DATASIZE)
+        {
+          break;
+        }
+        x1+=9;
+      }
+    case 17:
+      /* Auto */
+      if (Scope.adcperiod/Scope.adcsampletime<64)
+      {
+        while (x2<1024)
+        {
+          /* Get the points time */
+          t=Scope.adcsampletime*x2;
+          if (t>Scope.adcperiod)
+          {
+            x1=t/Scope.adcperiod;
+            t-=Scope.adcperiod*x1;
+          }
+          x1=Scope.adcperiod/t;
+          if (Scope.scopebuff[x1]==255)
+          {
+            Scope.scopebuff[x1]=ScopeConvert(*ptr);
+            if (Scope.scopebuff[x1]==255)
+            {
+              Scope.scopebuff[x1]=254;
+            }
+          }
+          ptr+=4;
+          x2++;
+        }
+      }
+      else
+      {
+        while (x2<8192)
+        {
+          /* Get the points time */
+          t=Scope.adcsampletime*x2;
+          if (t>Scope.adcperiod)
+          {
+            break;
+          }
+          x1=Scope.adcperiod/t;
+          if (Scope.scopebuff[x1]==255)
+          {
+            Scope.scopebuff[x1]=ScopeConvert(*ptr);
+            if (Scope.scopebuff[x1]==255)
+            {
+              Scope.scopebuff[x1]=254;
+            }
+          }
+          ptr+=4;
+          x2++;
+        }
+      }
       break;
+    // default:
+      // while (x1<256)
+      // {
+        // Scope.scopebuff[x1]=ScopeConvert(*ptr);
+        // if (Scope.scopebuff[x1]==255)
+        // {
+          // Scope.scopebuff[x1]=254;
+        // }
+        // ptr+=4;
+        // if ((uint32_t)ptr>=SCOPE_DATAPTR+SCOPE_DATASIZE)
+        // {
+          // break;
+        // }
+        // x1++;
+      // }
+      // break;
   }
 }
 
@@ -593,12 +833,15 @@ void ScopeDrawInfo(void)
   DrawWinDec16(SCOPE_LEFT+28,SCOPE_BOTTOM-10,Scope.cur>>2,5);
 
   /* Frequency */
-  DrawWinString(SCOPE_LEFT+4+9*8,SCOPE_BOTTOM-30,4,scopestr[3],1);
-  DrawWinDec32(SCOPE_LEFT+4+14*8,SCOPE_BOTTOM-30,frequency,5);
+  DrawWinString(SCOPE_LEFT+4+9*8,SCOPE_BOTTOM-40,4,scopestr[3],1);
+  DrawWinDec32(SCOPE_LEFT+4+14*8,SCOPE_BOTTOM-50,Scope.adcfrequency,5);
+  /* Period */
+  DrawWinString(SCOPE_LEFT+4+9*8,SCOPE_BOTTOM-30,4,scopestr[4],1);
+  DrawWinDec32(SCOPE_LEFT+4+14*8,SCOPE_BOTTOM-30,Scope.adcperiod,5);
   /* Time */
-  DrawWinString(SCOPE_LEFT+4+9*8,SCOPE_BOTTOM-20,4,scopestr[4],1);
+  DrawWinString(SCOPE_LEFT+4+9*8,SCOPE_BOTTOM-20,4,scopestr[5],1);
   /* Vcurrent */
-  DrawWinString(SCOPE_LEFT+4+9*8,SCOPE_BOTTOM-10,4,scopestr[5],1);
+  DrawWinString(SCOPE_LEFT+4+9*8,SCOPE_BOTTOM-10,4,scopestr[6],1);
 }
 
 void ScopeInit(void)
@@ -771,8 +1014,9 @@ void ScopeSample(void)
   uint32_t sec;
   uint32_t cnt;
 
-  Scope.samplebits=Scope.databits;
-  Scope.samplerate=Scope.rate;
+  Scope.adcsamplebits=Scope.databits;
+  Scope.adcsamplerate=Scope.rate;
+  Scope.adcsampletime=1000000000/Scope.rate;
   DMA_SCPConfig();
   ADC_SCPConfig();
   if (Scope.trigger==1)
@@ -800,6 +1044,8 @@ void ScopeSample(void)
   while (DMA_GetFlagStatus(DMA2_Stream0,DMA_FLAG_TCIF0)==RESET);
   ADC_Cmd(ADC1, DISABLE);
   ADC_Cmd(ADC2, DISABLE);
+  Scope.adcfrequency=frequency;
+  Scope.adcperiod=1000000000/Scope.adcfrequency;
   ScopeGetData();
 }
 
@@ -846,7 +1092,7 @@ void ADC_SCPConfig(void)
   ADC_CommonInit(&ADC_CommonInitStructure);
 
   /* ADC1 Init ****************************************************************/
-  ADC_InitStructure.ADC_Resolution = (3-Scope.samplebits)<<24;
+  ADC_InitStructure.ADC_Resolution = (3-Scope.adcsamplebits)<<24;
   ADC_InitStructure.ADC_ScanConvMode = ENABLE;
   ADC_InitStructure.ADC_ContinuousConvMode = ENABLE;
   ADC_InitStructure.ADC_ExternalTrigConvEdge = ADC_ExternalTrigConvEdge_None;
@@ -860,7 +1106,7 @@ void ADC_SCPConfig(void)
   ADC_DMACmd(ADC1, ENABLE);
 
   /* ADC2 Init ****************************************************************/
-  ADC_InitStructure.ADC_Resolution = (3-Scope.samplebits)<<24;
+  ADC_InitStructure.ADC_Resolution = (3-Scope.adcsamplebits)<<24;
   ADC_InitStructure.ADC_ScanConvMode = ENABLE;
   ADC_InitStructure.ADC_ContinuousConvMode = ENABLE;
   ADC_InitStructure.ADC_ExternalTrigConvEdge = ADC_ExternalTrigConvEdge_None;

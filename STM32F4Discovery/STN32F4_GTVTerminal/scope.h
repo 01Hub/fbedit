@@ -50,8 +50,11 @@ typedef struct
   uint8_t trigger;
   uint8_t Sample;
   uint8_t Quit;
-  uint8_t samplebits;
-  uint32_t samplerate;
+  uint8_t adcsamplebits;
+  uint32_t adcsamplerate;
+  uint32_t adcsampletime;
+  uint32_t adcfrequency;
+  uint32_t adcperiod;
   uint8_t scopebuff[255];
 } SCOPE;
 
