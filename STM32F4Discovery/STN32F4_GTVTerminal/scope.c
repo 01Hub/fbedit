@@ -130,16 +130,18 @@ void ScopeMainHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
             if (Scope.magnify)
             {
               Scope.magnify--;
+              ScopeSetStrings();
+              ScopeGetData();
             }
-            ScopeGetData();
             break;
           case 4:
             /* Right magnify */
             if (Scope.magnify<17)
             {
               Scope.magnify++;
+              ScopeSetStrings();
+              ScopeGetData();
             }
-            ScopeGetData();
             break;
           case 10:
             /* Data bits left */
@@ -352,98 +354,6 @@ void ScopeDrawData(void)
     }
     x2++;
   }
-  // switch (Scope.magnify)
-  // {
-    // case 9:
-      // while (x1<255-2)
-      // {
-        // y2=Scope.scopebuff[x2+1];
-        // DrawWinLine(x1+SCOPE_LEFT,y1+SCOPE_TOP,x1+2+SCOPE_LEFT,y2+SCOPE_TOP);
-        // y1=y2;
-        // x1+=2;
-        // x2++;
-      // }
-      // break;
-    // case 10:
-      // while (x1<255-3)
-      // {
-        // y2=Scope.scopebuff[x2+1];
-        // DrawWinLine(x1+SCOPE_LEFT,y1+SCOPE_TOP,x1+3+SCOPE_LEFT,y2+SCOPE_TOP);
-        // y1=y2;
-        // x1+=3;
-        // x2++;
-      // }
-      // break;
-    // case 11:
-      // while (x1<255-4)
-      // {
-        // y2=Scope.scopebuff[x2+1];
-        // DrawWinLine(x1+SCOPE_LEFT,y1+SCOPE_TOP,x1+4+SCOPE_LEFT,y2+SCOPE_TOP);
-        // y1=y2;
-        // x1+=4;
-        // x2++;
-      // }
-      // break;
-    // case 12:
-      // while (x1<255-5)
-      // {
-        // y2=Scope.scopebuff[x2+1];
-        // DrawWinLine(x1+SCOPE_LEFT,y1+SCOPE_TOP,x1+5+SCOPE_LEFT,y2+SCOPE_TOP);
-        // y1=y2;
-        // x1+=5;
-        // x2++;
-      // }
-      // break;
-    // case 13:
-      // while (x1<255-6)
-      // {
-        // y2=Scope.scopebuff[x2+1];
-        // DrawWinLine(x1+SCOPE_LEFT,y1+SCOPE_TOP,x1+6+SCOPE_LEFT,y2+SCOPE_TOP);
-        // y1=y2;
-        // x1+=6;
-        // x2++;
-      // }
-      // break;
-    // case 14:
-      // while (x1<255-7)
-      // {
-        // y2=Scope.scopebuff[x2+1];
-        // DrawWinLine(x1+SCOPE_LEFT,y1+SCOPE_TOP,x1+7+SCOPE_LEFT,y2+SCOPE_TOP);
-        // y1=y2;
-        // x1+=7;
-        // x2++;
-      // }
-      // break;
-    // case 15:
-      // while (x1<255-8)
-      // {
-        // y2=Scope.scopebuff[x2+1];
-        // DrawWinLine(x1+SCOPE_LEFT,y1+SCOPE_TOP,x1+8+SCOPE_LEFT,y2+SCOPE_TOP);
-        // y1=y2;
-        // x1+=8;
-        // x2++;
-      // }
-      // break;
-    // case 16:
-      // while (x1<255-9)
-      // {
-        // y2=Scope.scopebuff[x2+1];
-        // DrawWinLine(x1+SCOPE_LEFT,y1+SCOPE_TOP,x1+9+SCOPE_LEFT,y2+SCOPE_TOP);
-        // y1=y2;
-        // x1+=9;
-        // x2++;
-      // }
-      // break;
-    // default:
-      // while (x1<255-1)
-      // {
-        // y2=Scope.scopebuff[x1+1];
-        // DrawWinLine(x1+SCOPE_LEFT,y1+SCOPE_TOP,x1+1+SCOPE_LEFT,y2+SCOPE_TOP);
-        // y1=y2;
-        // x1++;
-      // }
-      // break;
-  // }
 }
 
 uint8_t ScopeConvert(uint16_t val)
@@ -492,10 +402,6 @@ void ScopeGetData(void)
       while (x1<256)
       {
         Scope.scopebuff[x1]=ScopeConvert(*ptr);
-        if (Scope.scopebuff[x1]==255)
-        {
-          Scope.scopebuff[x1]=254;
-        }
         ptr+=36;
         if ((uint32_t)ptr>=(SCOPE_DATAPTR+SCOPE_DATASIZE))
         {
@@ -508,10 +414,6 @@ void ScopeGetData(void)
       while (x1<256)
       {
         Scope.scopebuff[x1]=ScopeConvert(*ptr);
-        if (Scope.scopebuff[x1]==255)
-        {
-          Scope.scopebuff[x1]=254;
-        }
         ptr+=32;
         if ((uint32_t)ptr>=SCOPE_DATAPTR+SCOPE_DATASIZE)
         {
@@ -524,10 +426,6 @@ void ScopeGetData(void)
       while (x1<256)
       {
         Scope.scopebuff[x1]=ScopeConvert(*ptr);
-        if (Scope.scopebuff[x1]==255)
-        {
-          Scope.scopebuff[x1]=254;
-        }
         ptr+=28;
         if ((uint32_t)ptr>=SCOPE_DATAPTR+SCOPE_DATASIZE)
         {
@@ -540,10 +438,6 @@ void ScopeGetData(void)
       while (x1<256)
       {
         Scope.scopebuff[x1]=ScopeConvert(*ptr);
-        if (Scope.scopebuff[x1]==255)
-        {
-          Scope.scopebuff[x1]=254;
-        }
         ptr+=24;
         if ((uint32_t)ptr>=SCOPE_DATAPTR+SCOPE_DATASIZE)
         {
@@ -556,10 +450,6 @@ void ScopeGetData(void)
       while (x1<256)
       {
         Scope.scopebuff[x1]=ScopeConvert(*ptr);
-        if (Scope.scopebuff[x1]==255)
-        {
-          Scope.scopebuff[x1]=254;
-        }
         ptr+=20;
         if ((uint32_t)ptr>=SCOPE_DATAPTR+SCOPE_DATASIZE)
         {
@@ -572,10 +462,6 @@ void ScopeGetData(void)
       while (x1<256)
       {
         Scope.scopebuff[x1]=ScopeConvert(*ptr);
-        if (Scope.scopebuff[x1]==255)
-        {
-          Scope.scopebuff[x1]=254;
-        }
         ptr+=16;
         if ((uint32_t)ptr>=SCOPE_DATAPTR+SCOPE_DATASIZE)
         {
@@ -588,10 +474,6 @@ void ScopeGetData(void)
       while (x1<256)
       {
         Scope.scopebuff[x1]=ScopeConvert(*ptr);
-        if (Scope.scopebuff[x1]==255)
-        {
-          Scope.scopebuff[x1]=254;
-        }
         ptr+=12;
         if ((uint32_t)ptr>=SCOPE_DATAPTR+SCOPE_DATASIZE)
         {
@@ -604,10 +486,6 @@ void ScopeGetData(void)
       while (x1<256)
       {
         Scope.scopebuff[x1]=ScopeConvert(*ptr);
-        if (Scope.scopebuff[x1]==255)
-        {
-          Scope.scopebuff[x1]=254;
-        }
         ptr+=8;
         if ((uint32_t)ptr>=SCOPE_DATAPTR+SCOPE_DATASIZE)
         {
@@ -620,10 +498,6 @@ void ScopeGetData(void)
       while (x1<256)
       {
         Scope.scopebuff[x1]=ScopeConvert(*ptr);
-        if (Scope.scopebuff[x1]==255)
-        {
-          Scope.scopebuff[x1]=254;
-        }
         ptr+=4;
         if ((uint32_t)ptr>=SCOPE_DATAPTR+SCOPE_DATASIZE)
         {
@@ -631,14 +505,11 @@ void ScopeGetData(void)
         }
         x1++;
       }
+      break;
     case 9:
       while (x1<256)
       {
         Scope.scopebuff[x1]=ScopeConvert(*ptr);
-        if (Scope.scopebuff[x1]==255)
-        {
-          Scope.scopebuff[x1]=254;
-        }
         ptr+=4;
         if ((uint32_t)ptr>=SCOPE_DATAPTR+SCOPE_DATASIZE)
         {
@@ -646,14 +517,11 @@ void ScopeGetData(void)
         }
         x1+=2;
       }
+      break;
     case 10:
       while (x1<256)
       {
         Scope.scopebuff[x1]=ScopeConvert(*ptr);
-        if (Scope.scopebuff[x1]==255)
-        {
-          Scope.scopebuff[x1]=254;
-        }
         ptr+=4;
         if ((uint32_t)ptr>=SCOPE_DATAPTR+SCOPE_DATASIZE)
         {
@@ -661,14 +529,11 @@ void ScopeGetData(void)
         }
         x1+=3;
       }
+      break;
     case 11:
       while (x1<256)
       {
         Scope.scopebuff[x1]=ScopeConvert(*ptr);
-        if (Scope.scopebuff[x1]==255)
-        {
-          Scope.scopebuff[x1]=254;
-        }
         ptr+=4;
         if ((uint32_t)ptr>=SCOPE_DATAPTR+SCOPE_DATASIZE)
         {
@@ -676,14 +541,11 @@ void ScopeGetData(void)
         }
         x1+=4;
       }
+      break;
     case 12:
       while (x1<256)
       {
         Scope.scopebuff[x1]=ScopeConvert(*ptr);
-        if (Scope.scopebuff[x1]==255)
-        {
-          Scope.scopebuff[x1]=254;
-        }
         ptr+=4;
         if ((uint32_t)ptr>=SCOPE_DATAPTR+SCOPE_DATASIZE)
         {
@@ -691,14 +553,11 @@ void ScopeGetData(void)
         }
         x1+=5;
       }
+      break;
     case 13:
       while (x1<256)
       {
         Scope.scopebuff[x1]=ScopeConvert(*ptr);
-        if (Scope.scopebuff[x1]==255)
-        {
-          Scope.scopebuff[x1]=254;
-        }
         ptr+=4;
         if ((uint32_t)ptr>=SCOPE_DATAPTR+SCOPE_DATASIZE)
         {
@@ -706,14 +565,11 @@ void ScopeGetData(void)
         }
         x1+=6;
       }
+      break;
     case 14:
       while (x1<256)
       {
         Scope.scopebuff[x1]=ScopeConvert(*ptr);
-        if (Scope.scopebuff[x1]==255)
-        {
-          Scope.scopebuff[x1]=254;
-        }
         ptr+=4;
         if ((uint32_t)ptr>=SCOPE_DATAPTR+SCOPE_DATASIZE)
         {
@@ -721,14 +577,11 @@ void ScopeGetData(void)
         }
         x1+=7;
       }
+      break;
     case 15:
       while (x1<256)
       {
         Scope.scopebuff[x1]=ScopeConvert(*ptr);
-        if (Scope.scopebuff[x1]==255)
-        {
-          Scope.scopebuff[x1]=254;
-        }
         ptr+=4;
         if ((uint32_t)ptr>=SCOPE_DATAPTR+SCOPE_DATASIZE)
         {
@@ -736,14 +589,11 @@ void ScopeGetData(void)
         }
         x1+=8;
       }
+      break;
     case 16:
       while (x1<256)
       {
         Scope.scopebuff[x1]=ScopeConvert(*ptr);
-        if (Scope.scopebuff[x1]==255)
-        {
-          Scope.scopebuff[x1]=254;
-        }
         ptr+=4;
         if ((uint32_t)ptr>=SCOPE_DATAPTR+SCOPE_DATASIZE)
         {
@@ -751,10 +601,11 @@ void ScopeGetData(void)
         }
         x1+=9;
       }
+      break;
     case 17:
       /* Auto */
-      if (Scope.adcperiod/Scope.adcsampletime<64)
-      {
+      // if (Scope.adcperiod/Scope.adcsampletime<64)
+      // {
         while (x2<1024)
         {
           /* Get the points time */
@@ -768,38 +619,30 @@ void ScopeGetData(void)
           if (Scope.scopebuff[x1]==255)
           {
             Scope.scopebuff[x1]=ScopeConvert(*ptr);
-            if (Scope.scopebuff[x1]==255)
-            {
-              Scope.scopebuff[x1]=254;
-            }
           }
           ptr+=4;
           x2++;
         }
-      }
-      else
-      {
-        while (x2<8192)
-        {
-          /* Get the points time */
-          t=Scope.adcsampletime*x2;
-          if (t>Scope.adcperiod)
-          {
-            break;
-          }
-          x1=Scope.adcperiod/t;
-          if (Scope.scopebuff[x1]==255)
-          {
-            Scope.scopebuff[x1]=ScopeConvert(*ptr);
-            if (Scope.scopebuff[x1]==255)
-            {
-              Scope.scopebuff[x1]=254;
-            }
-          }
-          ptr+=4;
-          x2++;
-        }
-      }
+      // }
+      // else
+      // {
+        // while (x2<8192)
+        // {
+          // /* Get the points time */
+          // t=Scope.adcsampletime*x2;
+          // if (t>Scope.adcperiod)
+          // {
+            // break;
+          // }
+          // x1=Scope.adcperiod/t;
+          // if (Scope.scopebuff[x1]==255)
+          // {
+            // Scope.scopebuff[x1]=ScopeConvert(*ptr);
+          // }
+          // ptr+=4;
+          // x2++;
+        // }
+      // }
       break;
     // default:
       // while (x1<256)
@@ -834,7 +677,7 @@ void ScopeDrawInfo(void)
 
   /* Frequency */
   DrawWinString(SCOPE_LEFT+4+9*8,SCOPE_BOTTOM-40,4,scopestr[3],1);
-  DrawWinDec32(SCOPE_LEFT+4+14*8,SCOPE_BOTTOM-50,Scope.adcfrequency,5);
+  DrawWinDec32(SCOPE_LEFT+4+14*8,SCOPE_BOTTOM-40,Scope.adcfrequency,5);
   /* Period */
   DrawWinString(SCOPE_LEFT+4+9*8,SCOPE_BOTTOM-30,4,scopestr[4],1);
   DrawWinDec32(SCOPE_LEFT+4+14*8,SCOPE_BOTTOM-30,Scope.adcperiod,5);
