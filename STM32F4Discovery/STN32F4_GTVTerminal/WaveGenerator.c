@@ -178,7 +178,7 @@ void WaveGetData()
   while (x<256)
   {
     Wave.wavebuff[x]=*ptr>>5;
-    ptr+=2;
+    ptr++;
     x++;
   }
 }
@@ -199,7 +199,7 @@ void WaveSetup(void)
   ShowCursor(1);
   Wave.Quit=0;
   /* Create main scope window */
-  Wave.hmain=CreateWindow(0,CLASS_WINDOW,0,WAVE_MAINLEFT,WAVE_MAINTOP,WAVE_MAINWIDTH,WAVE_MAINHEIGHT,"Digital Scope\0");
+  Wave.hmain=CreateWindow(0,CLASS_WINDOW,0,WAVE_MAINLEFT,WAVE_MAINTOP,WAVE_MAINWIDTH,WAVE_MAINHEIGHT,"Wave Generator\0");
   SetHandler(Wave.hmain,&WaveMainHandler);
   /* Quit button */
   CreateWindow(Wave.hmain,CLASS_BUTTON,99,WAVE_MAINRIGHT-75,WAVE_MAINBOTTOM-25,70,20,"Quit\0");
@@ -228,7 +228,7 @@ void WaveSetup(void)
   /* Sawtoothwave checkbox */
   CreateWindow(Wave.hmain,CLASS_CHKBOX,83,WAVE_RIGHT+16,WAVE_TOP+90,45,10,"Sawtooth\0");
   /* Rev Sawtoothwave checkbox */
-  CreateWindow(Wave.hmain,CLASS_CHKBOX,84,WAVE_RIGHT+16,WAVE_TOP+105,45,10,"Rev Sawtooth\0");
+  CreateWindow(Wave.hmain,CLASS_CHKBOX,84,WAVE_RIGHT+16,WAVE_TOP+105,45,10,"Rev Sawt\0");
   SetState(GetControlHandle(Wave.hmain,80+Wave.waveform),STATE_VISIBLE | STATE_CHECKED);
   /* Wave Groupbox */
   CreateWindow(Wave.hmain,CLASS_GROUPBOX,85,WAVE_RIGHT+8,WAVE_TOP+30,90,95,"Wave\0");
