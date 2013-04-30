@@ -440,6 +440,7 @@ void ScopeAuto(void)
     {
       Scope.scopebuff[x1]=sample[x1][0]/sample[x1][1];
     }
+    x1++;
   }
 }
 

@@ -143,7 +143,7 @@ void DeskTopSetup(void)
     i++;
   }
   /* Create popup2 window (Tools) */
-  Desktop.hpopup2=CreateWindow(0,CLASS_WINDOW,2,72,16,140,13*5+2,0);
+  Desktop.hpopup2=CreateWindow(0,CLASS_WINDOW,2,72,16,140,13*6+2,0);
   SetStyle(Desktop.hpopup2,STYLE_NOCAPTION | STYLE_CANFOCUS);
   SetHandler(Desktop.hpopup2,&MenuPopupHandler);
   SetParam(GetControlHandle(Desktop.hmnubar,2),(uint32_t)Desktop.hpopup2);
