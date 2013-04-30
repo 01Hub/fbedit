@@ -116,6 +116,7 @@ void SetCaption(WINDOW* hwin,uint8_t *caption);
 void SetStyle(WINDOW* hwin,uint8_t style);
 void SetState(WINDOW* hwin,uint8_t state);
 void ClearState(WINDOW* hwin,uint8_t state);
+void CheckGroup(WINDOW* hmain,uint8_t FirstID,uint8_t LastID,uint8_t CheckID);
 void SetParam(WINDOW* hwin,uint32_t param);
 void CreateTimer(TIMER tmr);
 void KillTimer(void);

@@ -1359,6 +1359,30 @@ void ClearState(WINDOW* hwin,uint8_t state)
 }
 
 /**
+  * @brief  This function sets checed in a group of checkboxes.
+  * @param  hmain,FirstID,LastID,CheckID
+  * @retval none
+  */
+void CheckGroup(WINDOW* hmain,uint8_t FirstID,uint8_t LastID,uint8_t CheckID)
+{
+  uint32_t ID;
+
+  ID=FirstID;
+  while (ID<=LastID)
+  {
+    if (ID!=CheckID)
+    {
+      SetState(GetControlHandle(hmain,ID),STATE_VISIBLE | STATE_CHECKED);
+    }
+    else
+    {
+      ClearState(GetControlHandle(hmain,ID),STATE_CHECKED);
+    }
+    ID++;
+  }
+}
+
+/**
   * @brief  This function sets a controls param.
   * @param  hwin,param
   * @retval none
