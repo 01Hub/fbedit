@@ -55,7 +55,7 @@ typedef struct
   uint32_t adcsampletime;
   uint32_t adcfrequency;
   uint32_t adcperiod;
-  uint8_t scopebuff[255];
+  uint8_t scopebuff[256];
 } SCOPE;
 
 /* Private function prototypes -----------------------------------------------*/

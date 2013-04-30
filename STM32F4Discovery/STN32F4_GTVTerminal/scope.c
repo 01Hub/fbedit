@@ -381,6 +381,68 @@ uint8_t ScopeConvert(uint16_t val)
   return val;
 }
 
+void ScopeAuto(void)
+{
+  uint32_t x1,x2;
+  uint16_t* ptr;
+  uint32_t t;
+  uint32_t sample[256][2];
+
+  x1=0;
+  while (x1<256)
+  {
+    sample[x1][0]=0;
+    sample[x1][1]=0;
+    x1++;
+  }
+  x2=0;
+  ptr=(uint16_t*)(SCOPE_DATAPTR+Scope.dataofs);
+  // if (Scope.adcperiod/Scope.adcsampletime<256)
+  // {
+    while (x2<1024)
+    {
+      x1=(uint32_t)(((float)Scope.adcsampletime*(float)256*(float)x2)/(float)Scope.adcperiod);
+      while (x1>255)
+      {
+        x1-=256;
+      }
+      sample[x1][0]+=ScopeConvert(*ptr);
+      sample[x1][1]++;
+      // if (Scope.scopebuff[x1]==255)
+      // {
+        // Scope.scopebuff[(x1]=ScopeConvert(*ptr);
+      // }
+      ptr+=4;
+      x2++;
+    }
+  // }
+  // else
+  // {
+    // while (x2<8192)
+    // {
+      // x1=(uint32_t)(((float)Scope.adcsampletime*(float)256*(float)x2)/(float)Scope.adcperiod);
+      // while (x1>255)
+      // {
+        // x1-=256;
+      // }
+      // if (Scope.scopebuff[x1]==255)
+      // {
+        // Scope.scopebuff[(x1]=ScopeConvert(*ptr);
+      // }
+      // ptr+=4;
+      // x2++;
+    // }
+  // }
+  x1=0;
+  while (x1<256)
+  {
+    if (sample[x1][1])
+    {
+      Scope.scopebuff[x1]=sample[x1][0]/sample[x1][1];
+    }
+  }
+}
+
 void ScopeGetData(void)
 {
   uint32_t x1,x2;
@@ -604,49 +666,7 @@ void ScopeGetData(void)
       break;
     case 17:
       /* Auto */
-      // if (Scope.adcperiod/Scope.adcsampletime<64)
-      // {
-        while (x2<1024)
-        {
-          /* Get the points time */
-          t=Scope.adcsampletime*x2;
-          // if (t>Scope.adcperiod)
-          // {
-            // x1=t/Scope.adcperiod;
-            // t-=Scope.adcperiod*x1;
-          // }
-          x1=Scope.adcperiod/t;
-          while (x1>255)
-          {
-            x1-=256;
-          }
-          if (Scope.scopebuff[x1]==255)
-          {
-            Scope.scopebuff[x1]=ScopeConvert(*ptr);
-          }
-          ptr+=4;
-          x2++;
-        }
-      // }
-      // else
-      // {
-        // while (x2<8192)
-        // {
-          // /* Get the points time */
-          // t=Scope.adcsampletime*x2;
-          // if (t>Scope.adcperiod)
-          // {
-            // break;
-          // }
-          // x1=Scope.adcperiod/t;
-          // if (Scope.scopebuff[x1]==255)
-          // {
-            // Scope.scopebuff[x1]=ScopeConvert(*ptr);
-          // }
-          // ptr+=4;
-          // x2++;
-        // }
-      // }
+      ScopeAuto();
       break;
   }
 }

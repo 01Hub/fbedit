@@ -107,6 +107,7 @@ void main(void)
   LgaInit();
   ScopeInit();
   HSClkInit();
+  WaveInit();
 
   /* Enable TIM10 */
   TIM_Cmd(TIM10, ENABLE);
