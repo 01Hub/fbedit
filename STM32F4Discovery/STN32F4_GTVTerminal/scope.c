@@ -383,7 +383,7 @@ uint8_t ScopeConvert(uint16_t val)
 
 void ScopeGetData(void)
 {
-  uint16_t x1,x2;
+  uint32_t x1,x2;
   uint16_t* ptr;
   uint32_t t;
 
@@ -610,12 +610,16 @@ void ScopeGetData(void)
         {
           /* Get the points time */
           t=Scope.adcsampletime*x2;
-          if (t>Scope.adcperiod)
-          {
-            x1=t/Scope.adcperiod;
-            t-=Scope.adcperiod*x1;
-          }
+          // if (t>Scope.adcperiod)
+          // {
+            // x1=t/Scope.adcperiod;
+            // t-=Scope.adcperiod*x1;
+          // }
           x1=Scope.adcperiod/t;
+          while (x1>255)
+          {
+            x1-=256;
+          }
           if (Scope.scopebuff[x1]==255)
           {
             Scope.scopebuff[x1]=ScopeConvert(*ptr);
@@ -644,22 +648,6 @@ void ScopeGetData(void)
         // }
       // }
       break;
-    // default:
-      // while (x1<256)
-      // {
-        // Scope.scopebuff[x1]=ScopeConvert(*ptr);
-        // if (Scope.scopebuff[x1]==255)
-        // {
-          // Scope.scopebuff[x1]=254;
-        // }
-        // ptr+=4;
-        // if ((uint32_t)ptr>=SCOPE_DATAPTR+SCOPE_DATASIZE)
-        // {
-          // break;
-        // }
-        // x1++;
-      // }
-      // break;
   }
 }
 
@@ -683,6 +671,7 @@ void ScopeDrawInfo(void)
   DrawWinDec32(SCOPE_LEFT+4+14*8,SCOPE_BOTTOM-30,Scope.adcperiod,5);
   /* Time */
   DrawWinString(SCOPE_LEFT+4+9*8,SCOPE_BOTTOM-20,4,scopestr[5],1);
+  DrawWinDec32(SCOPE_LEFT+4+14*8,SCOPE_BOTTOM-20,Scope.adcsampletime,5);
   /* Vcurrent */
   DrawWinString(SCOPE_LEFT+4+9*8,SCOPE_BOTTOM-10,4,scopestr[6],1);
 }
