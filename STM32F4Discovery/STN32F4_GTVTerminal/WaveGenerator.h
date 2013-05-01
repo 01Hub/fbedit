@@ -5,6 +5,9 @@
 #include "keycodes.h"
 
 /* Private define ------------------------------------------------------------*/
+#define DAC_DHR12R1_ADDRESS    0x40007408
+#define DAC_DHR8R1_ADDRESS     0x40007410
+
 #define WAVE_MAINLEFT      0
 #define WAVE_MAINTOP       0
 #define WAVE_MAINWIDTH     480
@@ -33,6 +36,7 @@ typedef struct
   uint8_t magnify;
   uint8_t Quit;
   uint8_t wavebuff[256];
+  uint16_t wave[256];
 } WAVE;
 
 /* Private function prototypes -----------------------------------------------*/
@@ -46,3 +50,4 @@ void WaveGetData();
 void WaveInit(void);
 void WaveSetup(void);
 void WaveTimer(void);
+void WaveConfig();

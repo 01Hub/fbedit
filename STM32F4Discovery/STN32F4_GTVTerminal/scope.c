@@ -4,6 +4,7 @@
 
 /* External variables --------------------------------------------------------*/
 extern volatile uint16_t FrameCount;
+extern volatile uint16_t LineCount;
 extern volatile uint32_t SecCount;
 extern WINDOW* Focus;                 // The control that has the keyboard focus
 extern volatile uint8_t Caps;
@@ -391,48 +392,29 @@ void ScopeAuto(void)
   x1=0;
   while (x1<256)
   {
+    Scope.scopebuff[x1]=255;
     sample[x1][0]=0;
     sample[x1][1]=0;
     x1++;
   }
   x2=0;
   ptr=(uint16_t*)(SCOPE_DATAPTR+Scope.dataofs);
-  // if (Scope.adcperiod/Scope.adcsampletime<256)
-  // {
-    while (x2<1024)
+  while (x2<1024)
+  {
+    x1=(uint32_t)(((float)Scope.adcsampletime*(float)256*(float)x2)/(float)Scope.adcperiod);
+    while (x1>255)
     {
-      x1=(uint32_t)(((float)Scope.adcsampletime*(float)256*(float)x2)/(float)Scope.adcperiod);
-      while (x1>255)
-      {
-        x1-=256;
-      }
-      sample[x1][0]+=ScopeConvert(*ptr);
-      sample[x1][1]++;
-      // if (Scope.scopebuff[x1]==255)
-      // {
-        // Scope.scopebuff[(x1]=ScopeConvert(*ptr);
-      // }
-      ptr+=4;
-      x2++;
+      x1-=256;
     }
-  // }
-  // else
-  // {
-    // while (x2<8192)
-    // {
-      // x1=(uint32_t)(((float)Scope.adcsampletime*(float)256*(float)x2)/(float)Scope.adcperiod);
-      // while (x1>255)
-      // {
-        // x1-=256;
-      // }
-      // if (Scope.scopebuff[x1]==255)
-      // {
-        // Scope.scopebuff[(x1]=ScopeConvert(*ptr);
-      // }
-      // ptr+=4;
-      // x2++;
-    // }
-  // }
+    sample[x1][0]+=ScopeConvert(*ptr);
+    sample[x1][1]++;
+    ptr+=2;
+    if ((uint32_t)ptr>=SCOPE_DATAPTR+SCOPE_DATASIZE)
+    {
+      break;
+    }
+    x2++;
+  }
   x1=0;
   while (x1<256)
   {
@@ -444,226 +426,85 @@ void ScopeAuto(void)
   }
 }
 
-void ScopeGetData(void)
+void ScopeMagnify(uint32_t xadd,uint32_t ptradd)
 {
-  uint32_t x1,x2;
+  uint32_t x;
   uint16_t* ptr;
-  uint32_t t;
 
   ptr=(uint16_t*)(SCOPE_DATAPTR+Scope.dataofs);
-  x1=0;
-  while (x1<256)
+  x=0;
+  while (x<256)
   {
-    Scope.scopebuff[x1]=255;
-    x1++;
+    Scope.scopebuff[x]=255;
+    x++;
   }
-  x1=0;
-  x2=0;
+  x=0;
+  while (x<256)
+  {
+    Scope.scopebuff[x]=ScopeConvert(*ptr);
+    ptr+=ptradd;
+    if ((uint32_t)ptr>=SCOPE_DATAPTR+SCOPE_DATASIZE)
+    {
+      break;
+    }
+    x+=xadd;
+  }
+}
+
+void ScopeGetData(void)
+{
   switch (Scope.magnify)
   {
     case 0:
-      while (x1<256)
-      {
-        Scope.scopebuff[x1]=ScopeConvert(*ptr);
-        ptr+=36;
-        if ((uint32_t)ptr>=(SCOPE_DATAPTR+SCOPE_DATASIZE))
-        {
-          break;
-        }
-        x1++;
-      }
+      ScopeMagnify(1,18);
       break;
     case 1:
-      while (x1<256)
-      {
-        Scope.scopebuff[x1]=ScopeConvert(*ptr);
-        ptr+=32;
-        if ((uint32_t)ptr>=SCOPE_DATAPTR+SCOPE_DATASIZE)
-        {
-          break;
-        }
-        x1++;
-      }
+      ScopeMagnify(1,16);
       break;
     case 2:
-      while (x1<256)
-      {
-        Scope.scopebuff[x1]=ScopeConvert(*ptr);
-        ptr+=28;
-        if ((uint32_t)ptr>=SCOPE_DATAPTR+SCOPE_DATASIZE)
-        {
-          break;
-        }
-        x1++;
-      }
+      ScopeMagnify(1,14);
       break;
     case 3:
-      while (x1<256)
-      {
-        Scope.scopebuff[x1]=ScopeConvert(*ptr);
-        ptr+=24;
-        if ((uint32_t)ptr>=SCOPE_DATAPTR+SCOPE_DATASIZE)
-        {
-          break;
-        }
-        x1++;
-      }
+      ScopeMagnify(1,12);
       break;
     case 4:
-      while (x1<256)
-      {
-        Scope.scopebuff[x1]=ScopeConvert(*ptr);
-        ptr+=20;
-        if ((uint32_t)ptr>=SCOPE_DATAPTR+SCOPE_DATASIZE)
-        {
-          break;
-        }
-        x1++;
-      }
+      ScopeMagnify(1,10);
       break;
     case 5:
-      while (x1<256)
-      {
-        Scope.scopebuff[x1]=ScopeConvert(*ptr);
-        ptr+=16;
-        if ((uint32_t)ptr>=SCOPE_DATAPTR+SCOPE_DATASIZE)
-        {
-          break;
-        }
-        x1++;
-      }
+      ScopeMagnify(1,8);
       break;
     case 6:
-      while (x1<256)
-      {
-        Scope.scopebuff[x1]=ScopeConvert(*ptr);
-        ptr+=12;
-        if ((uint32_t)ptr>=SCOPE_DATAPTR+SCOPE_DATASIZE)
-        {
-          break;
-        }
-        x1++;
-      }
+      ScopeMagnify(1,6);
       break;
     case 7:
-      while (x1<256)
-      {
-        Scope.scopebuff[x1]=ScopeConvert(*ptr);
-        ptr+=8;
-        if ((uint32_t)ptr>=SCOPE_DATAPTR+SCOPE_DATASIZE)
-        {
-          break;
-        }
-        x1++;
-      }
+      ScopeMagnify(1,4);
       break;
     case 8:
-      while (x1<256)
-      {
-        Scope.scopebuff[x1]=ScopeConvert(*ptr);
-        ptr+=4;
-        if ((uint32_t)ptr>=SCOPE_DATAPTR+SCOPE_DATASIZE)
-        {
-          break;
-        }
-        x1++;
-      }
+      ScopeMagnify(1,2);
       break;
     case 9:
-      while (x1<256)
-      {
-        Scope.scopebuff[x1]=ScopeConvert(*ptr);
-        ptr+=4;
-        if ((uint32_t)ptr>=SCOPE_DATAPTR+SCOPE_DATASIZE)
-        {
-          break;
-        }
-        x1+=2;
-      }
+      ScopeMagnify(2,2);
       break;
     case 10:
-      while (x1<256)
-      {
-        Scope.scopebuff[x1]=ScopeConvert(*ptr);
-        ptr+=4;
-        if ((uint32_t)ptr>=SCOPE_DATAPTR+SCOPE_DATASIZE)
-        {
-          break;
-        }
-        x1+=3;
-      }
+      ScopeMagnify(3,2);
       break;
     case 11:
-      while (x1<256)
-      {
-        Scope.scopebuff[x1]=ScopeConvert(*ptr);
-        ptr+=4;
-        if ((uint32_t)ptr>=SCOPE_DATAPTR+SCOPE_DATASIZE)
-        {
-          break;
-        }
-        x1+=4;
-      }
+      ScopeMagnify(4,2);
       break;
     case 12:
-      while (x1<256)
-      {
-        Scope.scopebuff[x1]=ScopeConvert(*ptr);
-        ptr+=4;
-        if ((uint32_t)ptr>=SCOPE_DATAPTR+SCOPE_DATASIZE)
-        {
-          break;
-        }
-        x1+=5;
-      }
+      ScopeMagnify(5,2);
       break;
     case 13:
-      while (x1<256)
-      {
-        Scope.scopebuff[x1]=ScopeConvert(*ptr);
-        ptr+=4;
-        if ((uint32_t)ptr>=SCOPE_DATAPTR+SCOPE_DATASIZE)
-        {
-          break;
-        }
-        x1+=6;
-      }
+      ScopeMagnify(6,2);
       break;
     case 14:
-      while (x1<256)
-      {
-        Scope.scopebuff[x1]=ScopeConvert(*ptr);
-        ptr+=4;
-        if ((uint32_t)ptr>=SCOPE_DATAPTR+SCOPE_DATASIZE)
-        {
-          break;
-        }
-        x1+=7;
-      }
+      ScopeMagnify(7,2);
       break;
     case 15:
-      while (x1<256)
-      {
-        Scope.scopebuff[x1]=ScopeConvert(*ptr);
-        ptr+=4;
-        if ((uint32_t)ptr>=SCOPE_DATAPTR+SCOPE_DATASIZE)
-        {
-          break;
-        }
-        x1+=8;
-      }
+      ScopeMagnify(8,2);
       break;
     case 16:
-      while (x1<256)
-      {
-        Scope.scopebuff[x1]=ScopeConvert(*ptr);
-        ptr+=4;
-        if ((uint32_t)ptr>=SCOPE_DATAPTR+SCOPE_DATASIZE)
-        {
-          break;
-        }
-        x1+=9;
-      }
+      ScopeMagnify(9,2);
       break;
     case 17:
       /* Auto */

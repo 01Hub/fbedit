@@ -1370,7 +1370,7 @@ void CheckGroup(WINDOW* hmain,uint8_t FirstID,uint8_t LastID,uint8_t CheckID)
   ID=FirstID;
   while (ID<=LastID)
   {
-    if (ID!=CheckID)
+    if (ID==CheckID)
     {
       SetState(GetControlHandle(hmain,ID),STATE_VISIBLE | STATE_CHECKED);
     }
