@@ -21,25 +21,31 @@
 #define WAVE_HEIGHT        128+70
 #define WAVE_RIGHT         WAVE_LEFT+WAVE_WIDTH
 #define WAVE_BOTTOM        WAVE_TOP+WAVE_HEIGHT
+
 /* Private typedef -----------------------------------------------------------*/
 typedef struct
 {
   WINDOW* hmain;
   WINDOW* hwave;
   uint8_t tmrid;
-  // uint8_t tmrmax;
-  // uint8_t tmrcnt;
-  // uint8_t tmrrep;
-  // uint32_t tmradd;
+  uint8_t tmrmax;
+  uint8_t tmrcnt;
+  uint8_t tmrrep;
+  uint32_t tmradd;
   uint8_t enable;
   uint8_t waveform;
+  uint8_t amplitude;
+  uint8_t dcoffset;
   uint8_t magnify;
+  int32_t timer;
+  uint32_t frequency;
   uint8_t Quit;
   uint8_t wavebuff[256];
   uint16_t wave[256];
 } WAVE;
 
 /* Private function prototypes -----------------------------------------------*/
+void WaveSetStrings();
 void WaveMainHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID);
 void WaveHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID);
 void WaveDrawDotHLine(uint16_t x,uint16_t y,int16_t wdt);

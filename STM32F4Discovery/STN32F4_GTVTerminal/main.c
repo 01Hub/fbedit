@@ -325,6 +325,10 @@ void TIM_Config(void)
   TIM_TimeBaseStructure.TIM_ClockDivision = 0;
   TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up; 
   TIM_TimeBaseInit(TIM6, &TIM_TimeBaseStructure);
+  /* TIM6 TRGO selection */
+  TIM_SelectOutputTrigger(TIM6, TIM_TRGOSource_Update);
+  /* TIM6 enable counter */
+  TIM_Cmd(TIM6, ENABLE);
 }
 
 /**

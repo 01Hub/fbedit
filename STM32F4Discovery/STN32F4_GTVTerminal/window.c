@@ -408,6 +408,35 @@ void DrawWinString(uint16_t x, uint16_t y,uint8_t len, uint8_t *str,uint8_t c)
   }
 }
 
+uint8_t BinDec32(uint32_t n,uint8_t* decstr)
+{
+  uint8_t i,d;
+  uint32_t dm;
+  uint8_t* ptr;
+
+  i=0;
+  ptr=decstr;
+  dm=1000000000;
+  while (i<10)
+  {
+    d=n/dm;
+    n-=d*dm;
+    *ptr=d | 0x30;
+    ptr++;
+    i++;
+    dm /=10;
+  }
+  *ptr=0;
+  i=0;
+  ptr=decstr;
+  while (i<9 && *ptr==0x30)
+  {
+    *ptr=0x20;
+    i++;
+  }
+  return i;
+}
+
 /**
   * @brief  This function draws a 32bit decimal value at x, y.
   * @param  x, y, n, c
@@ -415,32 +444,64 @@ void DrawWinString(uint16_t x, uint16_t y,uint8_t len, uint8_t *str,uint8_t c)
   */
 void DrawWinDec32(uint16_t x, uint16_t y, uint32_t n, uint8_t c)
 {
-	uint8_t decstr[10];
-  uint8_t i,d;
-  uint32_t dm;
+	uint8_t decstr[11];
+  uint8_t i;
+  // uint8_t i,d;
+  // uint32_t dm;
 
-  i=0;
-  dm=1000000000;
-  while (i<10)
-  {
-    d=n/dm;
-    n-=d*dm;
-    decstr[i]=d | 0x30;
-    i++;
-    dm /=10;
-  }
-  i=0;
-  while (i<9 && decstr[i]==0x30)
-  {
-    decstr[i]=0x20;
-    i++;
-  }
+  i=BinDec32(n,decstr);
+  // i=0;
+  // dm=1000000000;
+  // while (i<10)
+  // {
+    // d=n/dm;
+    // n-=d*dm;
+    // decstr[i]=d | 0x30;
+    // i++;
+    // dm /=10;
+  // }
+  // i=0;
+  // while (i<9 && decstr[i]==0x30)
+  // {
+    // decstr[i]=0x20;
+    // i++;
+  // }
   if (c & 4)
   {
     /* Right aligned */
     x+=i*TILE_WIDTH;
   }
   DrawWinString(x,y,10-i,&decstr[i],c & 3);
+}
+
+uint8_t BinDec16(uint16_t n,uint8_t* decstr)
+{
+  uint8_t i,d;
+  uint32_t dm;
+  uint8_t* ptr;
+
+  i=0;
+  ptr=decstr;
+  dm=10000;
+  while (i<5)
+  {
+    d=n/dm;
+    n-=d*dm;
+    *ptr=d | 0x30;
+    ptr++;
+    i++;
+    dm /=10;
+  }
+  *ptr=0;
+  i=0;
+  ptr=decstr;
+  while (i<4 && decstr[i]==0x30)
+  {
+    *ptr=0x20;
+    ptr++;
+    i++;
+  }
+  return i;
 }
 
 /**
@@ -450,26 +511,29 @@ void DrawWinDec32(uint16_t x, uint16_t y, uint32_t n, uint8_t c)
   */
 void DrawWinDec16(uint16_t x, uint16_t y, uint16_t n, uint8_t c)
 {
-	uint8_t decstr[5];
-  uint8_t i,d;
-  uint16_t dm;
+	uint8_t decstr[6];
+  uint8_t i;
 
-  i=0;
-  dm=10000;
-  while (i<5)
-  {
-    d=n/dm;
-    n-=d*dm;
-    decstr[i]=d | 0x30;
-    i++;
-    dm /=10;
-  }
-  i=0;
-  while (i<4 && decstr[i]==0x30)
-  {
-    decstr[i]=0x20;
-    i++;
-  }
+  i=BinDec16(n,decstr);
+  // uint8_t i,d;
+  // uint16_t dm;
+
+  // i=0;
+  // dm=10000;
+  // while (i<5)
+  // {
+    // d=n/dm;
+    // n-=d*dm;
+    // decstr[i]=d | 0x30;
+    // i++;
+    // dm /=10;
+  // }
+  // i=0;
+  // while (i<4 && decstr[i]==0x30)
+  // {
+    // decstr[i]=0x20;
+    // i++;
+  // }
   if (c & 4)
   {
     /* Right aligned */
