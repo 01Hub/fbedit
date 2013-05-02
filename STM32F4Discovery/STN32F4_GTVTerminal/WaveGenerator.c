@@ -25,18 +25,20 @@ const uint16_t RevSawtoothWave[256]={2048,2032,2016,2000,1984,1968,1952,1936,192
 
 void WaveSetStrings()
 {
-	uint8_t decstr[11];
-  uint8_t i;
+	static uint8_t ampdecstr[6],i;
+	static uint8_t ofsdecstr[6];
+	static uint8_t magdecstr[6];
+	static uint8_t frqdecstr[11];
 
-  i=BinDec16(Wave.amplitude,decstr);
-  SetCaption(GetControlHandle(Wave.hmain,90),&decstr[i]);
-  i=BinDec16(Wave.dcoffset,decstr);
-  SetCaption(GetControlHandle(Wave.hmain,91),&decstr[i]);
-  i=BinDec16(Wave.magnify,decstr);
-  SetCaption(GetControlHandle(Wave.hmain,92),&decstr[i]);
-  Wave.frequency=((42000000/(Wave.timer+1))*Wave.magnify)/256;
-  i=BinDec32(Wave.frequency,decstr);
-  SetCaption(GetControlHandle(Wave.hmain,3),&decstr[i]);
+  i=BinDec16(Wave.amplitude,ampdecstr);
+  SetCaption(GetControlHandle(Wave.hmain,12),&ampdecstr[i]);
+  i=BinDec16(Wave.dcoffset,ofsdecstr);
+  SetCaption(GetControlHandle(Wave.hmain,22),&ofsdecstr[i]);
+  i=BinDec16(Wave.magnify,magdecstr);
+  SetCaption(GetControlHandle(Wave.hmain,32),&magdecstr[i]);
+  Wave.frequency=((84000000/(Wave.timer+1))*Wave.magnify)/256;
+  i=BinDec32(Wave.frequency,frqdecstr);
+  SetCaption(GetControlHandle(Wave.hmain,3),&frqdecstr[i]);
 }
 
 void WaveMainHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
@@ -49,20 +51,24 @@ void WaveMainHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
         switch (ID)
         {
           case 1:
-            Wave.timer-=Wave.tmradd;
-            if (Wave.timer<1)
-            {
-              Wave.timer=1;
-            }
-            WaveSetStrings();
-            break;
-          case 2:
             Wave.timer+=Wave.tmradd;
             if (Wave.timer>0xFFFF)
             {
               Wave.timer=0xFFFF;
             }
             WaveSetStrings();
+            TIM6->CNT=0;
+            TIM6->ARR=Wave.timer;
+            break;
+          case 2:
+            Wave.timer-=Wave.tmradd;
+            if (Wave.timer<7)
+            {
+              Wave.timer=7;
+            }
+            WaveSetStrings();
+            TIM6->CNT=0;
+            TIM6->ARR=Wave.timer;
             break;
           case 10:
             if (Wave.amplitude)
@@ -229,13 +235,10 @@ void WaveDrawData(void)
   y1=Wave.wavebuff[x1];
   while (x2<256)
   {
-    y2=Wave.wavebuff[x2];
-    if (y2!=255)
-    {
-      DrawWinLine(x1+WAVE_LEFT,y1+WAVE_TOP,x2+WAVE_LEFT,y2+WAVE_TOP);
-      x1=x2;
-      y1=y2;
-    }
+    y2=Wave.wavebuff[x2/Wave.magnify];
+    DrawWinLine(x1+WAVE_LEFT,y1+WAVE_TOP,x2+WAVE_LEFT,y2+WAVE_TOP);
+    x1=x2;
+    y1=y2;
     x2+=Wave.magnify;
   }
 }
@@ -303,7 +306,7 @@ void WaveGetData()
     {
       w=0;
     }
-    Wave.wavebuff[x]=w>>5;
+    Wave.wavebuff[x]=127-(w>>5);
     Wave.wave[x]=w;
     ptr+=Wave.magnify;
     x++;
@@ -337,7 +340,7 @@ void WaveSetup(void)
   /* Left button */
   CreateWindow(Wave.hmain,CLASS_BUTTON,1,WAVE_LEFT,WAVE_BOTTOM,20,20,"<\0");
   /* Frequency static */
-  CreateWindow(Wave.hmain,CLASS_STATIC,3,WAVE_LEFT+50,WAVE_BOTTOM,55,20,0);
+  CreateWindow(Wave.hmain,CLASS_STATIC,3,WAVE_LEFT+100,WAVE_BOTTOM,55,20,0);
   /* Right button */
   CreateWindow(Wave.hmain,CLASS_BUTTON,2,WAVE_RIGHT-20,WAVE_BOTTOM,20,20,">\0");
   /* Enable checkbox */
@@ -397,12 +400,12 @@ void WaveSetup(void)
   {
     if (FrameCount & 1)
     {
-      DrawDec16(0,240,DMA1_Stream5->NDTR,1);
-      DrawDec16(50,240,TIM6->CNT,1);
-      DrawDec16(100,240,DMA_GetFlagStatus(DMA1_Stream5,DMA_FLAG_TEIF5),1);
-      DrawDec16(150,240,DMA_GetFlagStatus(DMA1_Stream5,DMA_FLAG_DMEIF5),1);
-      DrawDec16(200,240,DMA_GetFlagStatus(DMA1_Stream5,DMA_FLAG_FEIF5),1);
-      DrawDec16(250,240,DMA_GetCmdStatus(DMA1_Stream5),1);
+      // DrawDec16(0,240,DMA1_Stream5->NDTR,1);
+      // DrawDec16(50,240,TIM6->CNT,1);
+      // DrawDec16(100,240,DMA_GetFlagStatus(DMA1_Stream5,DMA_FLAG_TEIF5),1);
+      // DrawDec16(150,240,DMA_GetFlagStatus(DMA1_Stream5,DMA_FLAG_DMEIF5),1);
+      // DrawDec16(200,240,DMA_GetFlagStatus(DMA1_Stream5,DMA_FLAG_FEIF5),1);
+      // DrawDec16(250,240,DMA_GetCmdStatus(DMA1_Stream5),1);
     }
     if ((GetKeyState(SC_ESC) && (GetKeyState(SC_L_CTRL) | GetKeyState(SC_R_CTRL))))
     {

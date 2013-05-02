@@ -320,8 +320,8 @@ void TIM_Config(void)
   TIM_ARRPreloadConfig(TIM10, ENABLE);
   /* Time base configuration */
   TIM_TimeBaseStructInit(&TIM_TimeBaseStructure);
-  TIM_TimeBaseStructure.TIM_Period = 0xFFFF;
-  TIM_TimeBaseStructure.TIM_Prescaler = 0xFFF;
+  TIM_TimeBaseStructure.TIM_Period = 0xFF;
+  TIM_TimeBaseStructure.TIM_Prescaler = 0x0;
   TIM_TimeBaseStructure.TIM_ClockDivision = 0;
   TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up; 
   TIM_TimeBaseInit(TIM6, &TIM_TimeBaseStructure);
@@ -376,7 +376,7 @@ void DMA_Config(void)
   DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_HalfWord;
   DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_HalfWord;
   DMA_InitStructure.DMA_Mode = DMA_Mode_Normal;
-  DMA_InitStructure.DMA_Priority = DMA_Priority_High;
+  DMA_InitStructure.DMA_Priority = DMA_Priority_VeryHigh;
   DMA_InitStructure.DMA_FIFOMode = DMA_FIFOMode_Disable;
   DMA_InitStructure.DMA_FIFOThreshold = DMA_FIFOThreshold_1QuarterFull;
   DMA_InitStructure.DMA_MemoryBurst = DMA_MemoryBurst_Single;

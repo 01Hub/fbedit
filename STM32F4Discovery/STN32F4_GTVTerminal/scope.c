@@ -26,10 +26,7 @@ void ScopeSetStrings(void)
 {
   uint32_t rate;
   uint32_t clk=84000000;
-	static uint8_t decstr[11];
-  uint8_t i;
-  // uint8_t i,d;
-  // uint32_t dm;
+	static uint8_t decstr[11],i;
 
   SetCaption(GetControlHandle(Scope.hmain,12),scopedbstr[Scope.databits]);
   SetCaption(GetControlHandle(Scope.hmain,22),scopeststr[Scope.sampletime]);
@@ -81,23 +78,6 @@ void ScopeSetStrings(void)
   Scope.rate=rate;
 
   i=BinDec32(rate,decstr);
-  // i=0;
-  // dm=1000000000;
-  // while (i<10)
-  // {
-    // d=rate/dm;
-    // rate-=d*dm;
-    // decstr[i]=d | 0x30;
-    // i++;
-    // dm /=10;
-  // }
-  // decstr[i]=0;
-  // i=0;
-  // while (i<9 && decstr[i]==0x30)
-  // {
-    // decstr[i]=0x20;
-    // i++;
-  // }
   SetCaption(GetControlHandle(Scope.hmain,94),&decstr[i]);
   SetCaption(GetControlHandle(Scope.hmain,71),scopemagstr[Scope.magnify]);
 }
