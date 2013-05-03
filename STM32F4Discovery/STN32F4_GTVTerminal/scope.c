@@ -538,6 +538,7 @@ void ScopeInit(void)
   Scope.databits=0;
   Scope.sampletime=0;
   Scope.clockdiv=0;
+  Scope.triggerlevel=0;
 }
 
 void ScopeSetup(void)
@@ -694,6 +695,7 @@ void ScopeSample(void)
   Scope.adcsamplebits=Scope.databits;
   Scope.adcsamplerate=Scope.rate;
   Scope.adcsampletime=1000000000/Scope.rate;
+  DAC_SPCConfig();
   DMA_SCPConfig();
   ADC_SCPConfig();
   if (Scope.trigger==1)
@@ -797,4 +799,18 @@ void ADC_SCPConfig(void)
   ADC_MultiModeDMARequestAfterLastTransferCmd(ENABLE);
   ADC_Cmd(ADC1, ENABLE);
   ADC_Cmd(ADC2, ENABLE);
+}
+
+void DAC_SPCConfig(void)
+{
+  DAC_InitTypeDef  DAC_InitStructure;
+
+  /* DAC channel2 Configuration */
+  DAC_StructInit(&DAC_InitStructure);
+  DAC_InitStructure.DAC_Trigger = DAC_Trigger_None;
+  DAC_InitStructure.DAC_WaveGeneration = DAC_WaveGeneration_None;
+  DAC_InitStructure.DAC_OutputBuffer = DAC_OutputBuffer_Enable;
+  DAC_Init(DAC_Channel_2, &DAC_InitStructure);
+  /* Enable DAC Channel2 */
+  DAC_Cmd(DAC_Channel_2, ENABLE);
 }

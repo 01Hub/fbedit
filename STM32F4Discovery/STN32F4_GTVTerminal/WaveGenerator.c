@@ -23,6 +23,37 @@ const uint16_t RevSawtoothWave[256]={2048,2032,2016,2000,1984,1968,1952,1936,192
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
 
+void WaveFrequencyToClock()
+{
+  uint32_t clkdiv;
+  uint32_t clk;
+
+  clkdiv=1;
+  while (1)
+  {
+    clk=(84000000*Wave.magnify)/256;
+    clk /=clkdiv;
+    clk /=Wave.frequency;
+    if (clk<=65535)
+    {
+      break;
+    }
+    clkdiv++;
+  }
+  Wave.timer=clk-1;
+  Wave.timerdiv=clkdiv-1;
+}
+
+void WaveClockToFrequency(void)
+{
+  uint32_t frq;
+
+  frq=(84000000*Wave.magnify)/256;
+  frq /=(Wave.timerdiv+1);
+  frq /=(Wave.timer+1);
+  Wave.frequency=frq;
+}
+
 void WaveSetStrings()
 {
 	static uint8_t ampdecstr[6],i;
@@ -36,13 +67,15 @@ void WaveSetStrings()
   SetCaption(GetControlHandle(Wave.hmain,22),&ofsdecstr[i]);
   i=BinDec16(Wave.magnify,magdecstr);
   SetCaption(GetControlHandle(Wave.hmain,32),&magdecstr[i]);
-  Wave.frequency=((84000000/(Wave.timer+1))*Wave.magnify)/256;
+  Wave.frequency=(((84000000/(Wave.timerdiv+1))/(Wave.timer+1))*Wave.magnify)/256;
   i=BinDec32(Wave.frequency,frqdecstr);
   SetCaption(GetControlHandle(Wave.hmain,3),&frqdecstr[i]);
 }
 
 void WaveMainHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
 {
+  int32_t frq,f;
+
   switch (event)
   {
     case EVENT_CHAR:
@@ -51,22 +84,77 @@ void WaveMainHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
         switch (ID)
         {
           case 1:
-            Wave.timer+=Wave.tmradd;
-            if (Wave.timer>0xFFFF)
+            /* Frequency down */
+            frq=Wave.frequency;
+            Wave.frequency-=Wave.tmradd;
+            if (Wave.frequency<1)
             {
-              Wave.timer=0xFFFF;
+              Wave.frequency=1;
             }
+            f=Wave.frequency;
+            while (1)
+            {
+              Wave.frequency=f;
+              WaveFrequencyToClock();
+              WaveClockToFrequency();
+              if (frq!=Wave.frequency)
+              {
+                break;
+              }
+              f--;
+            }
+            // frq=((84000000/(Wave.timer+1))*Wave.magnify)/256;
+            // while (frq==((84000000/(Wave.timer+1))*Wave.magnify)/256)
+            // {
+              // Wave.timer++;
+            // }
+            // Wave.timer+=Wave.tmradd;
+            // if (Wave.timer>0xFFFF)
+            // {
+              // Wave.timer=0xFFFF;
+            // }
             WaveSetStrings();
+            TIM6->PSC=Wave.timerdiv;
             TIM6->CNT=0;
             TIM6->ARR=Wave.timer;
             break;
           case 2:
-            Wave.timer-=Wave.tmradd;
-            if (Wave.timer<7)
+            /* Frequency up */
+            frq=Wave.frequency;
+            Wave.frequency+=Wave.tmradd;
+            if (Wave.frequency>WAVE_MAXFRQ)
             {
-              Wave.timer=7;
+              Wave.frequency=WAVE_MAXFRQ;
+              WaveFrequencyToClock();
             }
+            else
+            {
+              f=Wave.frequency;
+              while (1)
+              {
+                Wave.frequency=f;
+                WaveFrequencyToClock();
+                WaveClockToFrequency();
+                if (frq!=Wave.frequency)
+                {
+                  break;
+                }
+                f++;
+              }
+            }
+
+            // frq=((84000000/(Wave.timer+1))*Wave.magnify)/256;
+            // while (frq==((84000000/(Wave.timer+1))*Wave.magnify)/256)
+            // {
+              // Wave.timer--;
+            // }
+            // Wave.timer-=Wave.tmradd;
+            // if (Wave.timer<8)
+            // {
+              // Wave.timer=8;
+            // }
             WaveSetStrings();
+            TIM6->PSC=Wave.timerdiv;
             TIM6->CNT=0;
             TIM6->ARR=Wave.timer;
             break;
@@ -241,6 +329,8 @@ void WaveDrawData(void)
     y1=y2;
     x2+=Wave.magnify;
   }
+  y2=Wave.wavebuff[0];
+  DrawWinLine(x1+WAVE_LEFT,y1+WAVE_TOP,x2+WAVE_LEFT,y2+WAVE_TOP);
 }
 
 void WaveGetData()
@@ -296,8 +386,15 @@ void WaveGetData()
     {
       w=*ptr;
     }
-    w=(w*Wave.amplitude)/100;
-    w+=((4096*Wave.dcoffset)/100);
+    w=((w*Wave.amplitude)/100)+2048;
+    if (w*Wave.amplitude>50)
+    {
+      w+=((4096*(Wave.dcoffset-50))/100);
+    }
+    else if (w*Wave.amplitude<50)
+    {
+      w-=((4096*(50-Wave.dcoffset))/100);
+    }
     if (w>4095)
     {
       w=4095;
@@ -398,15 +495,6 @@ void WaveSetup(void)
 
   while (!Wave.Quit)
   {
-    if (FrameCount & 1)
-    {
-      // DrawDec16(0,240,DMA1_Stream5->NDTR,1);
-      // DrawDec16(50,240,TIM6->CNT,1);
-      // DrawDec16(100,240,DMA_GetFlagStatus(DMA1_Stream5,DMA_FLAG_TEIF5),1);
-      // DrawDec16(150,240,DMA_GetFlagStatus(DMA1_Stream5,DMA_FLAG_DMEIF5),1);
-      // DrawDec16(200,240,DMA_GetFlagStatus(DMA1_Stream5,DMA_FLAG_FEIF5),1);
-      // DrawDec16(250,240,DMA_GetCmdStatus(DMA1_Stream5),1);
-    }
     if ((GetKeyState(SC_ESC) && (GetKeyState(SC_L_CTRL) | GetKeyState(SC_R_CTRL))))
     {
       Wave.Quit=1;
@@ -461,6 +549,11 @@ void WaveConfig()
     DAC_InitStructure.DAC_WaveGeneration = DAC_WaveGeneration_None;
     DAC_InitStructure.DAC_OutputBuffer = DAC_OutputBuffer_Enable;
     DAC_Init(DAC_Channel_1, &DAC_InitStructure);
+    /* DAC channel2 Configuration */
+    DAC_InitStructure.DAC_Trigger = DAC_Trigger_None;
+    DAC_InitStructure.DAC_WaveGeneration = DAC_WaveGeneration_None;
+    DAC_InitStructure.DAC_OutputBuffer = DAC_OutputBuffer_Enable;
+    DAC_Init(DAC_Channel_2, &DAC_InitStructure);
     /* DMA1_Stream5 channel7 configuration **************************************/  
     DMA_InitStructure.DMA_Channel = DMA_Channel_7;  
     DMA_InitStructure.DMA_PeripheralBaseAddr = DAC_DHR12R1_ADDRESS;

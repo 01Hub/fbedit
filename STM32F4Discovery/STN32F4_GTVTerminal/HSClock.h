@@ -43,8 +43,8 @@ typedef struct
 } HSCLK;
 
 /* Private function prototypes -----------------------------------------------*/
-void FrequencyToClock(void);
-void ClockToFrequency(void);
+void HSClkFrequencyToClock(void);
+void HSClkClockToFrequency(void);
 void HSClkSetTimer(void);
 void HSClkMainHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID);
 void HSClkHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID);

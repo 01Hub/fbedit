@@ -48,6 +48,7 @@ typedef struct
   uint32_t rate;
   uint8_t autosample;
   uint8_t trigger;
+  uint16_t triggerlevel;
   uint8_t Sample;
   uint8_t Quit;
   uint8_t adcsamplebits;
@@ -76,3 +77,4 @@ void ScopeTimer(void);
 void ScopeSample(void);
 void DMA_SCPConfig(void);
 void ADC_SCPConfig(void);
+void DAC_SPCConfig(void);

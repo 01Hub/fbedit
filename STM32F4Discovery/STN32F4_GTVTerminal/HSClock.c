@@ -16,7 +16,7 @@ uint8_t hsclkstr[2][10]={{"Frequency:"},{"Dutycycle:"}};
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
 
-void FrequencyToClock(void)
+void HSClkFrequencyToClock(void)
 {
   uint32_t clkdiv;
   uint32_t clk;
@@ -37,7 +37,7 @@ void FrequencyToClock(void)
   HSClk.clkdiv=clkdiv;
 }
 
-void ClockToFrequency(void)
+void HSClkClockToFrequency(void)
 {
   uint32_t frq;
 
@@ -84,8 +84,8 @@ void HSClkMainHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
             while (1)
             {
               HSClk.frq=f;
-              FrequencyToClock();
-              ClockToFrequency();
+              HSClkFrequencyToClock();
+              HSClkClockToFrequency();
               if (frq!=HSClk.frq)
               {
                 break;
@@ -101,7 +101,7 @@ void HSClkMainHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
             if (HSClk.frq>HSCLK_MAXFRQ)
             {
               HSClk.frq=HSCLK_MAXFRQ;
-              FrequencyToClock();
+              HSClkFrequencyToClock();
             }
             else
             {
@@ -109,8 +109,8 @@ void HSClkMainHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
               while (1)
               {
                 HSClk.frq=f;
-                FrequencyToClock();
-                ClockToFrequency();
+                HSClkFrequencyToClock();
+                HSClkClockToFrequency();
                 if (frq!=HSClk.frq)
                 {
                   break;
@@ -270,7 +270,7 @@ void HSClkInit(void)
   HSClk.tmradd=1;
   HSClk.duty=50;
   HSClk.frq=1000000;
-  FrequencyToClock();
+  HSClkFrequencyToClock();
 }
 
 void HSClkSetup(void)
