@@ -705,7 +705,7 @@ void ScopeSample(void)
     cnt=TIM2->CNT;
     while (cnt==TIM2->CNT && SecCount<sec);
     /* Start ADC1 Software Conversion */
-    ADC_SoftwareStartConv(ADC1);
+    ADC1->CR2 |= (uint32_t)ADC_CR2_SWSTART;
   }
   else if (Scope.trigger==2)
   {
@@ -714,11 +714,11 @@ void ScopeSample(void)
     cnt=TIM2->CNT;
     while (cnt==TIM2->CNT && SecCount<sec);
     /* Start ADC1 Software Conversion */
-    ADC_SoftwareStartConv(ADC1);
+    ADC1->CR2 |= (uint32_t)ADC_CR2_SWSTART;
   }
   else
   {
-    ADC_SoftwareStartConv(ADC1);
+    ADC1->CR2 |= (uint32_t)ADC_CR2_SWSTART;
   }
   while (DMA_GetFlagStatus(DMA2_Stream0,DMA_FLAG_TCIF0)==RESET);
   ADC_Cmd(ADC1, DISABLE);
