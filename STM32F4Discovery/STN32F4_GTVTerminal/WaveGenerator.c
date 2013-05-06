@@ -103,16 +103,6 @@ void WaveMainHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
               }
               f--;
             }
-            // frq=((84000000/(Wave.timer+1))*Wave.magnify)/256;
-            // while (frq==((84000000/(Wave.timer+1))*Wave.magnify)/256)
-            // {
-              // Wave.timer++;
-            // }
-            // Wave.timer+=Wave.tmradd;
-            // if (Wave.timer>0xFFFF)
-            // {
-              // Wave.timer=0xFFFF;
-            // }
             WaveSetStrings();
             TIM6->PSC=Wave.timerdiv;
             TIM6->CNT=0;
@@ -125,34 +115,19 @@ void WaveMainHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
             if (Wave.frequency>WAVE_MAXFRQ)
             {
               Wave.frequency=WAVE_MAXFRQ;
-              WaveFrequencyToClock();
             }
-            else
+            f=Wave.frequency;
+            while (1)
             {
-              f=Wave.frequency;
-              while (1)
+              Wave.frequency=f;
+              WaveFrequencyToClock();
+              WaveClockToFrequency();
+              if (frq!=Wave.frequency)
               {
-                Wave.frequency=f;
-                WaveFrequencyToClock();
-                WaveClockToFrequency();
-                if (frq!=Wave.frequency)
-                {
-                  break;
-                }
-                f++;
+                break;
               }
+              f++;
             }
-
-            // frq=((84000000/(Wave.timer+1))*Wave.magnify)/256;
-            // while (frq==((84000000/(Wave.timer+1))*Wave.magnify)/256)
-            // {
-              // Wave.timer--;
-            // }
-            // Wave.timer-=Wave.tmradd;
-            // if (Wave.timer<8)
-            // {
-              // Wave.timer=8;
-            // }
             WaveSetStrings();
             TIM6->PSC=Wave.timerdiv;
             TIM6->CNT=0;
@@ -386,14 +361,14 @@ void WaveGetData()
     {
       w=*ptr;
     }
-    w=((w*Wave.amplitude)/100)+2048;
+    w=((w*Wave.amplitude)/100)+2048-((2048*Wave.amplitude)/100);
     if (w*Wave.amplitude>50)
     {
-      w+=((4096*(Wave.dcoffset-50))/100);
+      w+=((8192*(Wave.dcoffset-50))/100);
     }
     else if (w*Wave.amplitude<50)
     {
-      w-=((4096*(50-Wave.dcoffset))/100);
+      w-=((8192*(50-Wave.dcoffset))/100);
     }
     if (w>4095)
     {

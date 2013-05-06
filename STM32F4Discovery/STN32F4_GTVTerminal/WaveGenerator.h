@@ -7,7 +7,7 @@
 /* Private define ------------------------------------------------------------*/
 #define DAC_DHR12R1_ADDRESS 0x40007408
 #define DAC_DHR8R1_ADDRESS  0x40007410
-#define WAVE_MAXFRQ         1000000
+#define WAVE_MAXFRQ         250000
 #define WAVE_MAINLEFT       0
 #define WAVE_MAINTOP        0
 #define WAVE_MAINWIDTH      480
@@ -39,7 +39,7 @@ typedef struct
   uint8_t magnify;
   int32_t timerdiv;
   int32_t timer;
-  uint32_t frequency;
+  int32_t frequency;
   uint8_t Quit;
   uint8_t wavebuff[256];
   uint16_t wave[256];
