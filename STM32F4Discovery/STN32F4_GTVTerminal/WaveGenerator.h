@@ -34,8 +34,8 @@ typedef struct
   uint32_t tmradd;
   uint8_t enable;
   uint8_t waveform;
-  uint8_t amplitude;
-  uint8_t dcoffset;
+  int16_t amplitude;
+  int16_t dcoffset;
   uint8_t magnify;
   int32_t timerdiv;
   int32_t timer;

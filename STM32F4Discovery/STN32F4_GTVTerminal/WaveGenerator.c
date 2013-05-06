@@ -40,8 +40,8 @@ void WaveFrequencyToClock()
     }
     clkdiv++;
   }
-  Wave.timer=clk-1;
   Wave.timerdiv=clkdiv-1;
+  Wave.timer=clk-1;
 }
 
 void WaveClockToFrequency(void)
@@ -67,7 +67,7 @@ void WaveSetStrings()
   SetCaption(GetControlHandle(Wave.hmain,22),&ofsdecstr[i]);
   i=BinDec16(Wave.magnify,magdecstr);
   SetCaption(GetControlHandle(Wave.hmain,32),&magdecstr[i]);
-  Wave.frequency=(((84000000/(Wave.timerdiv+1))/(Wave.timer+1))*Wave.magnify)/256;
+  // Wave.frequency=(((84000000/(Wave.timerdiv+1))/(Wave.timer+1))*Wave.magnify)/256;
   i=BinDec32(Wave.frequency,frqdecstr);
   SetCaption(GetControlHandle(Wave.hmain,3),&frqdecstr[i]);
 }
@@ -211,12 +211,9 @@ void WaveMainHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
       }
       break;
     case EVENT_LDOWN:
-      if (ID>=1 && ID<=2)
-      {
-      if (ID>=1 && ID<=2)
+      if ((ID>=1 && ID<=2) || (ID>=10 && ID<=11) || (ID>=20 && ID<=21))
       {
         Wave.tmrid=ID;
-      }
       }
       break;
     case EVENT_LUP:
@@ -244,8 +241,8 @@ void WaveHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
       WaveDrawGrid();
       WaveDrawData();
       break;
-    case EVENT_CHAR:
-      break;
+    // case EVENT_CHAR:
+      // break;
     default:
       DefWindowHandler(hwin,event,param,ID);
       break;
@@ -390,7 +387,9 @@ void WaveInit(void)
   Wave.amplitude=50;
   Wave.dcoffset=50;
   Wave.magnify=1;
+  Wave.timerdiv=0;
   Wave.timer=0xFF;
+  WaveClockToFrequency();
   WaveGetData();
 }
 
@@ -540,7 +539,7 @@ void WaveConfig()
     DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
     DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;
     DMA_InitStructure.DMA_Mode = DMA_Mode_Circular;
-    DMA_InitStructure.DMA_Priority = DMA_Priority_High;
+    DMA_InitStructure.DMA_Priority = DMA_Priority_VeryHigh;
     DMA_InitStructure.DMA_FIFOMode = DMA_FIFOMode_Disable;         
     DMA_InitStructure.DMA_FIFOThreshold = DMA_FIFOThreshold_HalfFull;
     DMA_InitStructure.DMA_MemoryBurst = DMA_MemoryBurst_Single;
