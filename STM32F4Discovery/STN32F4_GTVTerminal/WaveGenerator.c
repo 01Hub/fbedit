@@ -67,9 +67,64 @@ void WaveSetStrings()
   SetCaption(GetControlHandle(Wave.hmain,22),&ofsdecstr[i]);
   i=BinDec16(Wave.magnify,magdecstr);
   SetCaption(GetControlHandle(Wave.hmain,32),&magdecstr[i]);
-  // Wave.frequency=(((84000000/(Wave.timerdiv+1))/(Wave.timer+1))*Wave.magnify)/256;
   i=BinDec32(Wave.frequency,frqdecstr);
   SetCaption(GetControlHandle(Wave.hmain,3),&frqdecstr[i]);
+}
+
+void WaveGetFrequency(int32_t frqadd)
+{
+  int32_t frq,f;
+
+  frq=Wave.frequency;
+  Wave.frequency+=frqadd;
+  if (frqadd<0)
+  {
+    if (Wave.frequency<1)
+    {
+      Wave.frequency=1;
+      WaveFrequencyToClock();
+      WaveClockToFrequency();
+    }
+    else
+    {
+      f=Wave.frequency;
+      while (1)
+      {
+        Wave.frequency=f;
+        WaveFrequencyToClock();
+        WaveClockToFrequency();
+        if (frq!=Wave.frequency)
+        {
+          break;
+        }
+        f--;
+      }
+    }
+  }
+  else
+  {
+    if (Wave.frequency>WAVE_MAXFRQ*Wave.magnify)
+    {
+      Wave.frequency=WAVE_MAXFRQ*Wave.magnify;
+      WaveFrequencyToClock();
+      WaveClockToFrequency();
+    }
+    else
+    {
+      f=Wave.frequency;
+      while (1)
+      {
+        Wave.frequency=f;
+        WaveFrequencyToClock();
+        WaveClockToFrequency();
+        if (frq!=Wave.frequency)
+        {
+          break;
+        }
+        f++;
+      }
+    }
+  }
 }
 
 void WaveMainHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
@@ -85,24 +140,7 @@ void WaveMainHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
         {
           case 1:
             /* Frequency down */
-            frq=Wave.frequency;
-            Wave.frequency-=Wave.tmradd;
-            if (Wave.frequency<1)
-            {
-              Wave.frequency=1;
-            }
-            f=Wave.frequency;
-            while (1)
-            {
-              Wave.frequency=f;
-              WaveFrequencyToClock();
-              WaveClockToFrequency();
-              if (frq!=Wave.frequency)
-              {
-                break;
-              }
-              f--;
-            }
+            WaveGetFrequency(-Wave.tmradd);
             WaveSetStrings();
             TIM6->PSC=Wave.timerdiv;
             TIM6->CNT=0;
@@ -110,24 +148,7 @@ void WaveMainHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
             break;
           case 2:
             /* Frequency up */
-            frq=Wave.frequency;
-            Wave.frequency+=Wave.tmradd;
-            if (Wave.frequency>WAVE_MAXFRQ)
-            {
-              Wave.frequency=WAVE_MAXFRQ;
-            }
-            f=Wave.frequency;
-            while (1)
-            {
-              Wave.frequency=f;
-              WaveFrequencyToClock();
-              WaveClockToFrequency();
-              if (frq!=Wave.frequency)
-              {
-                break;
-              }
-              f++;
-            }
+            WaveGetFrequency(Wave.tmradd);
             WaveSetStrings();
             TIM6->PSC=Wave.timerdiv;
             TIM6->CNT=0;
@@ -169,6 +190,7 @@ void WaveMainHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
             if (Wave.magnify>1)
             {
               Wave.magnify>>=1;
+              WaveGetFrequency(0);
               WaveGetData();
               WaveSetStrings();
               if (Wave.enable)
@@ -181,6 +203,7 @@ void WaveMainHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
             if (Wave.magnify<16)
             {
               Wave.magnify<<=1;
+              WaveGetFrequency(0);
               WaveGetData();
               WaveSetStrings();
               if (Wave.enable)
@@ -221,7 +244,7 @@ void WaveMainHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
       Wave.tmrmax=25;
       Wave.tmrcnt=0;
       Wave.tmrrep=0;
-      Wave.tmradd=4;
+      Wave.tmradd=1;
       break;
     default:
       DefWindowHandler(hwin,event,param,ID);
@@ -241,8 +264,6 @@ void WaveHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
       WaveDrawGrid();
       WaveDrawData();
       break;
-    // case EVENT_CHAR:
-      // break;
     default:
       DefWindowHandler(hwin,event,param,ID);
       break;
@@ -384,12 +405,16 @@ void WaveGetData()
 
 void WaveInit(void)
 {
+  Wave.tmrid=0;
+  Wave.tmrmax=25;
+  Wave.tmrcnt=0;
+  Wave.tmrrep=0;
+  Wave.tmradd=1;
   Wave.amplitude=50;
   Wave.dcoffset=50;
   Wave.magnify=1;
-  Wave.timerdiv=0;
-  Wave.timer=0xFF;
-  WaveClockToFrequency();
+  Wave.frequency=1000;
+  WaveGetFrequency(0);
   WaveGetData();
 }
 

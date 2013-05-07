@@ -499,26 +499,33 @@ void ScopeGetData(void)
 void ScopeDrawInfo(void)
 {
   /* Offset */
-  DrawWinString(SCOPE_LEFT+4,SCOPE_BOTTOM-30,4,scopestr[0],1);
-  DrawWinDec16(SCOPE_LEFT+28,SCOPE_BOTTOM-30,Scope.dataofs>>2,5);
+  DrawWinString(SCOPE_LEFT+4,SCOPE_BOTTOM-50,4,scopestr[0],1);
+  DrawWinDec16(SCOPE_LEFT+28,SCOPE_BOTTOM-50,Scope.dataofs>>2,5);
   /* Mark */
-  DrawWinString(SCOPE_LEFT+4,SCOPE_BOTTOM-20,4,scopestr[1],1);
-  DrawWinDec16(SCOPE_LEFT+28,SCOPE_BOTTOM-20,Scope.mark>>2,5);
+  DrawWinString(SCOPE_LEFT+4,SCOPE_BOTTOM-40,4,scopestr[1],1);
+  DrawWinDec16(SCOPE_LEFT+28,SCOPE_BOTTOM-40,Scope.mark>>2,5);
   /* Position */
-  DrawWinString(SCOPE_LEFT+4,SCOPE_BOTTOM-10,4,scopestr[2],1);
-  DrawWinDec16(SCOPE_LEFT+28,SCOPE_BOTTOM-10,Scope.cur>>2,5);
+  DrawWinString(SCOPE_LEFT+4,SCOPE_BOTTOM-30,4,scopestr[2],1);
+  DrawWinDec16(SCOPE_LEFT+28,SCOPE_BOTTOM-30,Scope.cur>>2,5);
+  /* Vcurrent */
+  DrawWinString(SCOPE_LEFT+4,SCOPE_BOTTOM-20,4,scopestr[6],1);
+  /* Vpeaktopeak */
+  DrawWinString(SCOPE_LEFT+4,SCOPE_BOTTOM-10,4,scopestr[7],1);
 
   /* Frequency */
-  DrawWinString(SCOPE_LEFT+4+9*8,SCOPE_BOTTOM-40,4,scopestr[3],1);
-  DrawWinDec32(SCOPE_LEFT+4+14*8,SCOPE_BOTTOM-40,Scope.adcfrequency,5);
+  DrawWinString(SCOPE_LEFT+4+9*8,SCOPE_BOTTOM-50,4,scopestr[3],1);
+  DrawWinDec32(SCOPE_LEFT+4+14*8,SCOPE_BOTTOM-50,Scope.adcfrequency,5);
   /* Period */
-  DrawWinString(SCOPE_LEFT+4+9*8,SCOPE_BOTTOM-30,4,scopestr[4],1);
-  DrawWinDec32(SCOPE_LEFT+4+14*8,SCOPE_BOTTOM-30,Scope.adcperiod,5);
+  DrawWinString(SCOPE_LEFT+4+9*8,SCOPE_BOTTOM-40,4,scopestr[4],1);
+  DrawWinDec32(SCOPE_LEFT+4+14*8,SCOPE_BOTTOM-40,Scope.adcperiod,5);
   /* Time */
-  DrawWinString(SCOPE_LEFT+4+9*8,SCOPE_BOTTOM-20,4,scopestr[5],1);
-  DrawWinDec32(SCOPE_LEFT+4+14*8,SCOPE_BOTTOM-20,Scope.adcsampletime,5);
-  /* Vcurrent */
-  DrawWinString(SCOPE_LEFT+4+9*8,SCOPE_BOTTOM-10,4,scopestr[6],1);
+  DrawWinString(SCOPE_LEFT+4+9*8,SCOPE_BOTTOM-30,4,scopestr[5],1);
+  DrawWinDec32(SCOPE_LEFT+4+14*8,SCOPE_BOTTOM-30,Scope.adcsampletime,5);
+  /* Vmin */
+  DrawWinString(SCOPE_LEFT+4+9*8,SCOPE_BOTTOM-20,4,scopestr[8],1);
+  /* Vmax */
+  DrawWinString(SCOPE_LEFT+4+9*8,SCOPE_BOTTOM-10,4,scopestr[9],1);
+  DrawWinDec32Fixed(SCOPE_LEFT+4+14*8,SCOPE_BOTTOM-10,1234,1);
 }
 
 void ScopeInit(void)

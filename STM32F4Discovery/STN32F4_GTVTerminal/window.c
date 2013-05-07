@@ -453,6 +453,56 @@ void DrawWinDec32(uint16_t x, uint16_t y, uint32_t n, uint8_t c)
   DrawWinString(x,y,10-i,&decstr[i],c & 3);
 }
 
+uint8_t BinDec32Fixed(uint32_t n,uint8_t* decstr)
+{
+  volatile uint8_t i;
+  uint8_t d;
+  uint32_t dm;
+
+  i=0;
+  dm=1000000000;
+  while (i<11)
+  {
+    d=n/dm;
+    n-=d*dm;
+    decstr[i]=d | 0x30;
+    i++;
+    dm /=10;
+    if (i==7)
+    {
+      decstr[i]=0x2E;
+      i++;
+    }
+  }
+  decstr[i]=0;
+  i=0;
+  while (i<5 && decstr[i]==0x30)
+  {
+    decstr[i]=0x20;
+    i++;
+  }
+  return i;
+}
+
+/**
+  * @brief  This function draws a 3 decimal fixed point 32bit decimal value at x, y.
+  * @param  x, y, n, c
+  * @retval None
+  */
+void DrawWinDec32Fixed(uint16_t x, uint16_t y, uint32_t n, uint8_t c)
+{
+	uint8_t decstr[12];
+  volatile uint8_t i;
+
+  i=BinDec32Fixed(n,decstr);
+  if (c & 4)
+  {
+    /* Right aligned */
+    x+=i*TILE_WIDTH;
+  }
+  DrawWinString(x,y,11-i,&decstr[i],c & 3);
+}
+
 uint8_t BinDec16(uint16_t n,uint8_t* decstr)
 {
   volatile uint8_t i;
@@ -496,6 +546,56 @@ void DrawWinDec16(uint16_t x, uint16_t y, uint16_t n, uint8_t c)
     x+=i*TILE_WIDTH;
   }
   DrawWinString(x,y,5-i,&decstr[i],c & 3);
+}
+
+uint8_t BinDec16Fixed(uint16_t n,uint8_t* decstr)
+{
+  volatile uint8_t i;
+  uint8_t d;
+  uint32_t dm;
+
+  i=0;
+  dm=10000;
+  while (i<6)
+  {
+    d=n/dm;
+    n-=d*dm;
+    decstr[i]=d | 0x30;
+    i++;
+    dm /=10;
+    if (i=2)
+    {
+      decstr[i]=0x2E;
+      i++;
+    }
+  }
+  decstr[i]=0;
+  i=0;
+  while (i<1 && decstr[i]==0x30)
+  {
+    decstr[i]=0x20;
+    i++;
+  }
+  return i;
+}
+
+/**
+  * @brief  This function draws a 3 decimal fixed point 16bit decimal value at x, y.
+  * @param  x, y, n, c
+  * @retval None
+  */
+void DrawWinDec16Fixed(uint16_t x, uint16_t y, uint16_t n, uint8_t c)
+{
+	uint8_t decstr[7];
+  volatile uint8_t i;
+
+  i=BinDec16Fixed(n,decstr);
+  if (c & 4)
+  {
+    /* Right aligned */
+    x+=i*TILE_WIDTH;
+  }
+  DrawWinString(x,y,6-i,&decstr[i],c & 3);
 }
 
 /**

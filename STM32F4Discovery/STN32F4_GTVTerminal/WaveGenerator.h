@@ -7,7 +7,7 @@
 /* Private define ------------------------------------------------------------*/
 #define DAC_DHR12R1_ADDRESS 0x40007408
 #define DAC_DHR8R1_ADDRESS  0x40007410
-#define WAVE_MAXFRQ         250000
+#define WAVE_MAXFRQ         16384
 #define WAVE_MAINLEFT       0
 #define WAVE_MAINTOP        0
 #define WAVE_MAINWIDTH      480
