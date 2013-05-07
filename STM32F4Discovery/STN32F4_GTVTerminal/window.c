@@ -476,7 +476,7 @@ uint8_t BinDec32Fixed(uint32_t n,uint8_t* decstr)
   }
   decstr[i]=0;
   i=0;
-  while (i<5 && decstr[i]==0x30)
+  while (i<6 && decstr[i]==0x30)
   {
     decstr[i]=0x20;
     i++;

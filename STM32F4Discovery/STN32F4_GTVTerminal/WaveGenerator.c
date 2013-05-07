@@ -125,6 +125,10 @@ void WaveGetFrequency(int32_t frqadd)
       }
     }
   }
+  WaveSetStrings();
+  TIM6->PSC=Wave.timerdiv;
+  TIM6->CNT=0;
+  TIM6->ARR=Wave.timer;
 }
 
 void WaveMainHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
@@ -141,18 +145,10 @@ void WaveMainHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
           case 1:
             /* Frequency down */
             WaveGetFrequency(-Wave.tmradd);
-            WaveSetStrings();
-            TIM6->PSC=Wave.timerdiv;
-            TIM6->CNT=0;
-            TIM6->ARR=Wave.timer;
             break;
           case 2:
             /* Frequency up */
             WaveGetFrequency(Wave.tmradd);
-            WaveSetStrings();
-            TIM6->PSC=Wave.timerdiv;
-            TIM6->CNT=0;
-            TIM6->ARR=Wave.timer;
             break;
           case 10:
             if (Wave.amplitude)
@@ -190,9 +186,10 @@ void WaveMainHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
             if (Wave.magnify>1)
             {
               Wave.magnify>>=1;
+              Wave.frequency--;
               WaveGetFrequency(0);
               WaveGetData();
-              WaveSetStrings();
+              // WaveSetStrings();
               if (Wave.enable)
               {
                 WaveConfig();
@@ -203,9 +200,10 @@ void WaveMainHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
             if (Wave.magnify<16)
             {
               Wave.magnify<<=1;
+              Wave.frequency--;
               WaveGetFrequency(0);
               WaveGetData();
-              WaveSetStrings();
+              // WaveSetStrings();
               if (Wave.enable)
               {
                 WaveConfig();
@@ -413,7 +411,7 @@ void WaveInit(void)
   Wave.amplitude=50;
   Wave.dcoffset=50;
   Wave.magnify=1;
-  Wave.frequency=1000;
+  Wave.frequency=1000-1;
   WaveGetFrequency(0);
   WaveGetData();
 }
