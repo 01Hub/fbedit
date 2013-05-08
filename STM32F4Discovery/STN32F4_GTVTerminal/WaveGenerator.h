@@ -40,6 +40,9 @@ typedef struct
   int32_t timerdiv;
   int32_t timer;
   int32_t frequency;
+  uint32_t fs;
+  uint32_t min;
+  uint32_t max;
   uint8_t Quit;
   uint8_t wavebuff[256];
   uint16_t wave[256];
@@ -56,6 +59,7 @@ void WaveDrawDotVLine(uint16_t x,uint16_t y,int16_t hgt);
 void WaveDrawGrid(void);
 void WaveDrawData(void);
 void WaveGetData();
+void WaveDrawInfo(void);
 void WaveInit(void);
 void WaveSetup(void);
 void WaveTimer(void);
