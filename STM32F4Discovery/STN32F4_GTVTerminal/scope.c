@@ -434,8 +434,49 @@ void ScopeMagnify(uint32_t xadd,uint32_t ptradd)
   }
 }
 
+void ScopeGetMinMax(void)
+{
+  uint32_t x;
+  uint16_t* ptr;
+  uint16_t val;
+
+  Scope.adcmin=4096;
+  Scope.adcmax=0;
+  x=0;
+  while (x<SCOPE_DATASIZE/4)
+  {
+    val=*ptr;
+    switch (Scope.adcsamplebits)
+    {
+      case 0:
+        /* 6 bits */
+        val<<=6;
+        break;
+      case 1:
+        /* 8 bits */
+        val<<=4;
+        break;
+      case 2:
+         /* 10 bits */
+        val<<=2;
+        break;
+    }
+    if (val<Scope.adcmin)
+    {
+      Scope.adcmin=val;
+    }
+    else if (val>Scope.adcmax)
+    {
+      Scope.adcmax=val;
+    }
+    ptr+=2;
+    x++;
+  }
+}
+
 void ScopeGetData(void)
 {
+  ScopeGetMinMax();
   switch (Scope.magnify)
   {
     case 0:
@@ -498,6 +539,8 @@ void ScopeGetData(void)
 
 void ScopeDrawInfo(void)
 {
+  uint32_t val;
+
   /* Offset */
   DrawWinString(SCOPE_LEFT+4,SCOPE_BOTTOM-50,4,scopestr[0],1);
   DrawWinDec16(SCOPE_LEFT+28,SCOPE_BOTTOM-50,Scope.dataofs>>2,5);
@@ -511,6 +554,8 @@ void ScopeDrawInfo(void)
   DrawWinString(SCOPE_LEFT+4,SCOPE_BOTTOM-20,4,scopestr[6],1);
   /* Vpeaktopeak */
   DrawWinString(SCOPE_LEFT+4,SCOPE_BOTTOM-10,4,scopestr[7],1);
+  val=((Scope.adcmax-Scope.adcmin)*Scope.adcfs)/4095;
+  DrawWinDec32Fixed(SCOPE_LEFT+28,SCOPE_BOTTOM-10,val,1);
 
   /* Frequency */
   DrawWinString(SCOPE_LEFT+4+9*8,SCOPE_BOTTOM-50,4,scopestr[3],1);
@@ -523,9 +568,12 @@ void ScopeDrawInfo(void)
   DrawWinDec32(SCOPE_LEFT+4+14*8,SCOPE_BOTTOM-30,Scope.adcsampletime,5);
   /* Vmin */
   DrawWinString(SCOPE_LEFT+4+9*8,SCOPE_BOTTOM-20,4,scopestr[8],1);
+  val=(Scope.adcmin*Scope.adcfs)/4095;
+  DrawWinDec32Fixed(SCOPE_LEFT+4+14*8,SCOPE_BOTTOM-20,val,1);
   /* Vmax */
   DrawWinString(SCOPE_LEFT+4+9*8,SCOPE_BOTTOM-10,4,scopestr[9],1);
-  DrawWinDec32Fixed(SCOPE_LEFT+4+14*8,SCOPE_BOTTOM-10,1234,1);
+  val=(Scope.adcmax*Scope.adcfs)/4095;
+  DrawWinDec32Fixed(SCOPE_LEFT+4+14*8,SCOPE_BOTTOM-10,val,1);
 }
 
 void ScopeInit(void)
@@ -546,6 +594,7 @@ void ScopeInit(void)
   Scope.sampletime=0;
   Scope.clockdiv=0;
   Scope.triggerlevel=0;
+  Scope.adcfs=3000;
 }
 
 void ScopeSetup(void)

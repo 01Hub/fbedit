@@ -56,6 +56,9 @@ typedef struct
   uint32_t adcsampletime;
   uint32_t adcfrequency;
   uint32_t adcperiod;
+  uint32_t adcfs;
+  uint32_t adcmin;
+  uint32_t adcmax;
   uint8_t scopebuff[256];
 } SCOPE;
 
@@ -69,6 +72,7 @@ void ScopeDrawGrid(void);
 void ScopeDrawMark(void);
 void ScopeDrawData(void);
 uint8_t ScopeConvert(uint16_t val);
+void ScopeGetMinMax(void);
 void ScopeGetData(void);
 void ScopeDrawInfo(void);
 void ScopeInit(void);
