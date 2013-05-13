@@ -371,6 +371,7 @@ void ScopeAuto(void)
   uint16_t* ptr;
   uint32_t t;
   uint32_t sample[256][2];
+  uint32_t nsample;
 
   x1=0;
   while (x1<256)
@@ -382,7 +383,20 @@ void ScopeAuto(void)
   }
   x2=0;
   ptr=(uint16_t*)(SCOPE_DATAPTR+Scope.dataofs);
-  while (x2<1024)
+  nsample=1024;
+  if (Scope.adcfrequency<50)
+  {
+    nsample=8192;
+  }
+  else if (Scope.adcfrequency<100)
+  {
+    nsample=4096;
+  }
+  else if (Scope.adcfrequency<200)
+  {
+    nsample=2048;
+  }
+  while (x2<nsample)
   {
     x1=(uint32_t)(((float)Scope.adcsampletime*(float)256*(float)x2)/(float)Scope.adcperiod);
     while (x1>255)
@@ -569,11 +583,11 @@ void ScopeDrawInfo(void)
   /* Vmin */
   DrawWinString(SCOPE_LEFT+4+11*8,SCOPE_BOTTOM-20,4,scopestr[8],1);
   val=(Scope.adcmin*Scope.adcfs)/4095;
-  DrawWinDec32Fixed(SCOPE_LEFT+4+16*8,SCOPE_BOTTOM-20,val,1);
+  DrawWinDec32Fixed(SCOPE_LEFT+4+21*8,SCOPE_BOTTOM-20,val,1);
   /* Vmax */
   DrawWinString(SCOPE_LEFT+4+11*8,SCOPE_BOTTOM-10,4,scopestr[9],1);
   val=(Scope.adcmax*Scope.adcfs)/4095;
-  DrawWinDec32Fixed(SCOPE_LEFT+4+16*8,SCOPE_BOTTOM-10,val,1);
+  DrawWinDec32Fixed(SCOPE_LEFT+4+21*8,SCOPE_BOTTOM-10,val,1);
 }
 
 void ScopeInit(void)
