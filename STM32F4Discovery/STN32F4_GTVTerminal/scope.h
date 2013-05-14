@@ -82,3 +82,5 @@ void ScopeSample(void);
 void DMA_SCPConfig(void);
 void ADC_SCPConfig(void);
 void DAC_SPCConfig(void);
+void DMA_TripleConfig(void);
+void ADC_TripleConfig(void);
