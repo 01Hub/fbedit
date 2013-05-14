@@ -768,35 +768,41 @@ void ScopeSample(void)
   DAC_SPCConfig();
   // DMA_SCPConfig();
   // ADC_SCPConfig();
-  // if (Scope.trigger==1)
-  // {
-    // TIM2->CCER=0;
-    // sec=SecCount+5;
-    // cnt=TIM2->CNT;
-    // while (cnt==TIM2->CNT && SecCount<sec);
-    // /* Start ADC1 Software Conversion */
-    // ADC1->CR2 |= (uint32_t)ADC_CR2_SWSTART;
-  // }
-  // else if (Scope.trigger==2)
-  // {
-    // TIM2->CCER=2;
-    // sec=SecCount+5;
-    // cnt=TIM2->CNT;
-    // while (cnt==TIM2->CNT && SecCount<sec);
-    // /* Start ADC1 Software Conversion */
-    // ADC1->CR2 |= (uint32_t)ADC_CR2_SWSTART;
-  // }
-  // else
-  // {
-    // ADC1->CR2 |= (uint32_t)ADC_CR2_SWSTART;
-  // }
   DMA_TripleConfig();
   ADC_TripleConfig();
-  ADC1->CR2 |= (uint32_t)ADC_CR2_SWSTART;
+  if (Scope.trigger==1)
+  {
+    TIM2->CCER=0;
+    sec=SecCount+5;
+    cnt=TIM2->CNT;
+    while (cnt==TIM2->CNT && SecCount<sec);
+    /* Start ADC1 Software Conversion */
+    ADC1->CR2 |= (uint32_t)ADC_CR2_SWSTART;
+  }
+  else if (Scope.trigger==2)
+  {
+    TIM2->CCER=2;
+    sec=SecCount+5;
+    cnt=TIM2->CNT;
+    while (cnt==TIM2->CNT && SecCount<sec);
+    /* Start ADC1 Software Conversion */
+    ADC1->CR2 |= (uint32_t)ADC_CR2_SWSTART;
+  }
+  else
+  {
+    ADC1->CR2 |= (uint32_t)ADC_CR2_SWSTART;
+  }
   while (DMA_GetFlagStatus(DMA2_Stream0,DMA_FLAG_TCIF0)==RESET);
+  /* Disable DMA request after last transfer (multi-ADC mode) ******************/
+  ADC_MultiModeDMARequestAfterLastTransferCmd(DISABLE);
+
+  /* Disable ADC1 DMA */
+  ADC_DMACmd(ADC1, DISABLE);
+
   ADC_Cmd(ADC1, DISABLE);
   ADC_Cmd(ADC2, DISABLE);
   ADC_Cmd(ADC3, DISABLE);
+
   Scope.adcfrequency=frequency;
   Scope.adcperiod=1000000000/Scope.adcfrequency;
   ScopeGetMinMax();
@@ -896,19 +902,19 @@ void DMA_TripleConfig(void)
 
   DMA_DeInit(DMA2_Stream0);
   DMA_StructInit(&DMA_InitStructure);
-
-  DMA_InitStructure.DMA_Channel = DMA_Channel_0;
-  DMA_InitStructure.DMA_Memory0BaseAddr = (uint32_t)SCOPE_DATAPTR;
+  /* DMA2 Stream0 channel0 configuration */
+  DMA_InitStructure.DMA_Channel = DMA_Channel_0;  
   DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)ADC_CDR_ADDRESS;
+  DMA_InitStructure.DMA_Memory0BaseAddr = (uint32_t)SCOPE_DATAPTR;
   DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralToMemory;
-  DMA_InitStructure.DMA_BufferSize = 3000;
+  DMA_InitStructure.DMA_BufferSize = SCOPE_DATASIZE/4;
   DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
   DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;
   DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Word;
   DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_Word;
   DMA_InitStructure.DMA_Mode = DMA_Mode_Normal;
   DMA_InitStructure.DMA_Priority = DMA_Priority_High;
-  DMA_InitStructure.DMA_FIFOMode = DMA_FIFOMode_Enable;
+  DMA_InitStructure.DMA_FIFOMode = DMA_FIFOMode_Disable;         
   DMA_InitStructure.DMA_FIFOThreshold = DMA_FIFOThreshold_HalfFull;
   DMA_InitStructure.DMA_MemoryBurst = DMA_MemoryBurst_Single;
   DMA_InitStructure.DMA_PeripheralBurst = DMA_PeripheralBurst_Single;
@@ -926,61 +932,41 @@ void ADC_TripleConfig(void)
   ADC_StructInit(&ADC_InitStructure);
   ADC_CommonStructInit(&ADC_CommonInitStructure);
 
-  /* ADC Common configuration -- ADC_CCR Register */
-  ADC_CommonInitStructure.ADC_Mode = ADC_TripleMode_RegSimult ;
+  /* ADC Common configuration *************************************************/
+  ADC_CommonInitStructure.ADC_Mode = ADC_TripleMode_Interl;
   ADC_CommonInitStructure.ADC_TwoSamplingDelay = ADC_TwoSamplingDelay_5Cycles;
-  ADC_CommonInitStructure.ADC_DMAAccessMode = ADC_DMAAccessMode_1;
-  ADC_CommonInitStructure.ADC_Prescaler = ADC_Prescaler_Div2;
+  ADC_CommonInitStructure.ADC_DMAAccessMode = ADC_DMAAccessMode_2;  
+  ADC_CommonInitStructure.ADC_Prescaler = (uint32_t)Scope.clockdiv<<16; 
   ADC_CommonInit(&ADC_CommonInitStructure);
 
-  /* ADC1 regular channel 6 configuration -- ADC_CR1, ADC_CR2, ADC_SQR1 Register */
-  ADC_InitStructure.ADC_Resolution = ADC_Resolution_12b;
+  /* ADC1 regular channel 11 configuration ************************************/
+  ADC_InitStructure.ADC_Resolution = (3-Scope.adcsamplebits)<<24;
   ADC_InitStructure.ADC_ScanConvMode = DISABLE;
-  ADC_InitStructure.ADC_ContinuousConvMode = DISABLE;
+  ADC_InitStructure.ADC_ContinuousConvMode = ENABLE;
   ADC_InitStructure.ADC_ExternalTrigConvEdge = ADC_ExternalTrigConvEdge_None;
   ADC_InitStructure.ADC_DataAlign = ADC_DataAlign_Right;
   ADC_InitStructure.ADC_NbrOfConversion = 1;
   ADC_Init(ADC1, &ADC_InitStructure);
-
-  /* ADC1 regular channel11 configuration -- ADCx->SMPR1,SMPR2 et ADCx->SQR1,SQR2,SQR3  */
   ADC_RegularChannelConfig(ADC1, ADC_Channel_11, 1, ADC_SampleTime_3Cycles);
+  /* Enable ADC1 DMA */
+  ADC_DMACmd(ADC1, ENABLE);
 
-  /* ADC2 regular channel 11 configuration -- ADC_CR1, ADC_CR2, ADC_SQR1 Register */
-  ADC_InitStructure.ADC_Resolution = ADC_Resolution_12b;
-  ADC_InitStructure.ADC_ScanConvMode = DISABLE;
-  ADC_InitStructure.ADC_ContinuousConvMode = DISABLE;
-  ADC_InitStructure.ADC_ExternalTrigConvEdge = ADC_ExternalTrigConvEdge_None;
-  ADC_InitStructure.ADC_DataAlign = ADC_DataAlign_Right;
-  ADC_InitStructure.ADC_NbrOfConversion = 1;
+  /* ADC2 regular channel 11 configuration ************************************/
   ADC_Init(ADC2, &ADC_InitStructure);
-
-  /* ADC2 regular channel11 configuration -- ADCx->SMPR1,SMPR2 et ADCx->SQR1,SQR2,SQR3  */
+  /* ADC2 regular channel11 configuration */ 
   ADC_RegularChannelConfig(ADC2, ADC_Channel_11, 1, ADC_SampleTime_3Cycles);
 
-  /* ADC3 regular channel 11 configuration -- ADC_CR1, ADC_CR2, ADC_SQR1 Register */
-  ADC_InitStructure.ADC_Resolution = ADC_Resolution_12b;
-  ADC_InitStructure.ADC_ScanConvMode = DISABLE;
-  ADC_InitStructure.ADC_ContinuousConvMode = DISABLE;
-  ADC_InitStructure.ADC_ExternalTrigConvEdge = ADC_ExternalTrigConvEdge_None;
-  ADC_InitStructure.ADC_DataAlign = ADC_DataAlign_Right;
-  ADC_InitStructure.ADC_NbrOfConversion = 1;
-  ADC_Init(ADC3, &ADC_InitStructure);
-
-  /* ADC3 regular channel11 configuration -- ADCx->SMPR1,SMPR2 et ADCx->SQR1,SQR2,SQR3  */
+  /* ADC3 regular channel 11 configuration ************************************/
+  ADC_Init(ADC3, &ADC_InitStructure); 
+    /* ADC3 regular channel11 configuration *************************************/
   ADC_RegularChannelConfig(ADC3, ADC_Channel_11, 1, ADC_SampleTime_3Cycles);
 
-  /* Enable DMA request after last transfer (Multi-ADC mode)  */
+  /* Enable DMA request after last transfer (multi-ADC mode) ******************/
   ADC_MultiModeDMARequestAfterLastTransferCmd(ENABLE);
-
-  /* Enable ADC1 -- ADC_CR2_ADON */
+  /* Enable ADC1 **************************************************************/
   ADC_Cmd(ADC1, ENABLE);
-
-  /* Enable ADC2 */
+  /* Enable ADC2 **************************************************************/
   ADC_Cmd(ADC2, ENABLE);
-
-  /* Enable ADC3 */
+  /* Enable ADC3 **************************************************************/
   ADC_Cmd(ADC3, ENABLE);
-
-  /* Enable ADC1 DMA since ADC1 is the Master*/
-  ADC_DMACmd(ADC1, ENABLE);
 }
