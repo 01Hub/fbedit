@@ -47,6 +47,8 @@ typedef struct
   uint8_t clockdiv;
   uint32_t rate;
   uint8_t autosample;
+  uint8_t triple;
+  uint32_t tripledelay;
   uint8_t trigger;
   uint16_t triggerlevel;
   uint8_t Sample;
