@@ -836,7 +836,7 @@ void ScopeSample(void)
     TIM2->CCER=0;
     sec=SecCount+5;
     cnt=TIM2->CNT;
-    while (cnt==TIM2->CNT && SecCount<sec);
+    while (cnt==TIM2->CNT && SecCount!=sec);
     /* Start ADC1 Software Conversion */
     ADC1->CR2 |= (uint32_t)ADC_CR2_SWSTART;
   }
@@ -845,7 +845,7 @@ void ScopeSample(void)
     TIM2->CCER=2;
     sec=SecCount+5;
     cnt=TIM2->CNT;
-    while (cnt==TIM2->CNT && SecCount<sec);
+    while (cnt==TIM2->CNT && SecCount!=sec);
     /* Start ADC1 Software Conversion */
     ADC1->CR2 |= (uint32_t)ADC_CR2_SWSTART;
   }
@@ -854,15 +854,19 @@ void ScopeSample(void)
     ADC1->CR2 |= (uint32_t)ADC_CR2_SWSTART;
   }
   sec=SecCount+5;
-  while (DMA_GetFlagStatus(DMA2_Stream0,DMA_FLAG_TCIF0)==RESET && SecCount<sec);
+  while (DMA_GetFlagStatus(DMA2_Stream0,DMA_FLAG_TCIF0)==RESET && SecCount!=sec);
+  ADC->CCR=0;
+  ADC1->CR2=0;
+  ADC2->CR2=0;
+  ADC3->CR2=0;
   // /* Disable DMA request after last transfer (multi-ADC mode) ******************/
   // ADC_MultiModeDMARequestAfterLastTransferCmd(DISABLE);
   // /* Disable ADC1 DMA */
   // ADC_DMACmd(ADC1, DISABLE);
   // DMA_Cmd(DMA2_Stream0,DISABLE);
-  ADC_Cmd(ADC1, DISABLE);
-  ADC_Cmd(ADC2, DISABLE);
-  ADC_Cmd(ADC3, DISABLE);
+  // ADC_Cmd(ADC1, DISABLE);
+  // ADC_Cmd(ADC2, DISABLE);
+  // ADC_Cmd(ADC3, DISABLE);
   // ADC_DeInit();
   // DMA_DeInit(DMA2_Stream0);
   Scope.adcfrequency=frequency;
