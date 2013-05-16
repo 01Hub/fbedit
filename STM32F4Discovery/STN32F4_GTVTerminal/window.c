@@ -869,114 +869,117 @@ void DrawWindow(WINDOW* hwin)
   WINDOW* hpar;
   ICON icon;
 
-  x=hwin->x;
-  y=hwin->y;
-  if (hwin->owner)
+  if (hwin->state & STATE_VISIBLE)
   {
-    hpar=hwin->owner;
-    x+=hpar->x;
-    y+=hpar->y;
-  }
-  xm=x+hwin->wt;
-  ym=y+hwin->ht;
-  switch (hwin->winclass)
-  {
-    case CLASS_WINDOW:
-      if ((hwin->style & 3)==STYLE_NOCAPTION)
-      {
-        WhiteWinRect(x,y,xm,ym);
-      }
-      else
-      {
-        if ((!(hwin->state & STATE_FOCUS)) && (FrameCount & 1))
+    x=hwin->x;
+    y=hwin->y;
+    if (hwin->owner)
+    {
+      hpar=hwin->owner;
+      x+=hpar->x;
+      y+=hpar->y;
+    }
+    xm=x+hwin->wt;
+    ym=y+hwin->ht;
+    switch (hwin->winclass)
+    {
+      case CLASS_WINDOW:
+        if ((hwin->style & 3)==STYLE_NOCAPTION)
         {
-          BlackWinRect(x,y,xm,y+13);
+          WhiteWinRect(x,y,xm,ym);
         }
         else
         {
-          WhiteWinRect(x,y,xm,y+13);
-          DrawWinCaption(hwin,x,y+2);
+          if ((!(hwin->state & STATE_FOCUS)) && (FrameCount & 1))
+          {
+            BlackWinRect(x,y,xm,y+13);
+          }
+          else
+          {
+            WhiteWinRect(x,y,xm,y+13);
+            DrawWinCaption(hwin,x,y+2);
+          }
+          WhiteWinRect(x,y+14,xm,ym);
         }
-        WhiteWinRect(x,y+14,xm,ym);
-      }
-      BlackWinFrame(x,y,xm-x,ym-y);
-      break;
-    case CLASS_BUTTON:
-      if (hwin->state & STATE_FOCUS)
-      {
-        if ((FrameCount & 7)==0)
+        BlackWinFrame(x,y,xm-x,ym-y);
+        break;
+      case CLASS_BUTTON:
+        if (hwin->state & STATE_FOCUS)
         {
-          FocusBlink ^=1;
+          if ((FrameCount & 7)==0)
+          {
+            FocusBlink ^=1;
+          }
+          if (FocusBlink)
+          {
+            BlackWinFrame(x,y,xm-x,ym-y);
+          }
+          y=y+(hwin->ht-TILE_HEIGHT)/2;
+          DrawWinCaption(hwin,x,y);
         }
-        if (FocusBlink)
+        else
         {
           BlackWinFrame(x,y,xm-x,ym-y);
+          y=y+(hwin->ht-TILE_HEIGHT)/2;
+          DrawWinCaption(hwin,x,y);
         }
-        y=y+(hwin->ht-TILE_HEIGHT)/2;
-        DrawWinCaption(hwin,x,y);
-      }
-      else
-      {
-        BlackWinFrame(x,y,xm-x,ym-y);
-        y=y+(hwin->ht-TILE_HEIGHT)/2;
-        DrawWinCaption(hwin,x,y);
-      }
-      break;
-    case CLASS_STATIC:
-      if ((hwin->style & 3)==STYLE_BLACK)
-      {
-        BlackWinRect(x,y,xm,ym);
-      }
-      else if ((hwin->style & 3)==STYLE_GRAY)
-      {
-        if (FrameCount & 1)
+        break;
+      case CLASS_STATIC:
+        if ((hwin->style & 3)==STYLE_BLACK)
         {
           BlackWinRect(x,y,xm,ym);
+        }
+        else if ((hwin->style & 3)==STYLE_GRAY)
+        {
+          if (FrameCount & 1)
+          {
+            BlackWinRect(x,y,xm,ym);
+          }
+          else
+          {
+            y=y+(hwin->ht-TILE_HEIGHT)/2;
+            DrawWinCaption(hwin,x,y);
+          }
         }
         else
         {
           y=y+(hwin->ht-TILE_HEIGHT)/2;
           DrawWinCaption(hwin,x,y);
         }
-      }
-      else
-      {
+        break;
+      case CLASS_CHKBOX:
+        icon.wt=10;
+        icon.ht=10;
+        if (hwin->state & STATE_CHECKED)
+        {
+          icon.icondata=*CheckedIcon;
+        }
+        else
+        {
+          icon.icondata=*UncheckedIcon;
+        }
         y=y+(hwin->ht-TILE_HEIGHT)/2;
-        DrawWinCaption(hwin,x,y);
-      }
-      break;
-    case CLASS_CHKBOX:
-      icon.wt=10;
-      icon.ht=10;
-      if (hwin->state & STATE_CHECKED)
-      {
-        icon.icondata=*CheckedIcon;
-      }
-      else
-      {
-        icon.icondata=*UncheckedIcon;
-      }
-      y=y+(hwin->ht-TILE_HEIGHT)/2;
-      if (hwin->style & STYLE_RIGHT)
-      {
-        DrawWinIcon(x+hwin->wt-10,y,&icon);
-        DrawWinString(x,y,hwin->caplen,hwin->caption,0);
-      }
-      else
-      {
-        DrawWinIcon(x,y,&icon);
-        DrawWinString(x+12,y,hwin->caplen,hwin->caption,0);
-      }
-      break;
-    case CLASS_GROUPBOX:
-      BlackWinFrame(x,y+5,xm-x,ym-y-5);
-      DrawWinString(x+5,y,hwin->caplen,hwin->caption,4);
-      break;
-  }
-  if (hwin->control)
-  {
-    hwin=hwin->control;
-    SendEvent(hwin,EVENT_PAINT,0,hwin->ID);
+        if (hwin->style & STYLE_RIGHT)
+        {
+          DrawWinIcon(x+hwin->wt-10,y,&icon);
+          DrawWinString(x,y,hwin->caplen,hwin->caption,0);
+        }
+        else
+        {
+          DrawWinIcon(x,y,&icon);
+          DrawWinString(x+12,y,hwin->caplen,hwin->caption,0);
+        }
+        break;
+      case CLASS_GROUPBOX:
+        BlackWinFrame(x,y+5,xm-x,ym-y-5);
+        DrawWinString(x+5,y,hwin->caplen,hwin->caption,4);
+        break;
+    }
+    if (hwin->control)
+    {
+      hwin=hwin->control;
+      SendEvent(hwin,EVENT_PAINT,0,hwin->ID);
+    }
   }
 }
 

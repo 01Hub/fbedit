@@ -816,7 +816,7 @@ void ScopeSample(void)
   uint32_t sec;
   uint32_t cnt;
 
-  DAC_SPCConfig();
+  DAC_ScopeConfig();
   Scope.adcsamplerate=Scope.rate;
   Scope.adcsampletime=1000000000/Scope.rate;
   if (Scope.triple)
@@ -828,8 +828,8 @@ void ScopeSample(void)
   else
   {
     Scope.adcsamplebits=Scope.databits;
-    DMA_SCPConfig();
-    ADC_SCPConfig();
+    DMA_SingleConfig();
+    ADC_SingleConfig();
   }
   if (Scope.trigger==1)
   {
@@ -853,30 +853,45 @@ void ScopeSample(void)
   {
     ADC1->CR2 |= (uint32_t)ADC_CR2_SWSTART;
   }
-  while (DMA_GetFlagStatus(DMA2_Stream0,DMA_FLAG_TCIF0)==RESET);
+  sec=SecCount+5;
+  while (DMA_GetFlagStatus(DMA2_Stream0,DMA_FLAG_TCIF0)==RESET && SecCount<sec);
   // /* Disable DMA request after last transfer (multi-ADC mode) ******************/
   // ADC_MultiModeDMARequestAfterLastTransferCmd(DISABLE);
   // /* Disable ADC1 DMA */
   // ADC_DMACmd(ADC1, DISABLE);
-  DMA_Cmd(DMA2_Stream0,DISABLE);
+  // DMA_Cmd(DMA2_Stream0,DISABLE);
   ADC_Cmd(ADC1, DISABLE);
   ADC_Cmd(ADC2, DISABLE);
   ADC_Cmd(ADC3, DISABLE);
-  ADC_DeInit();
-  DMA_DeInit(DMA2_Stream0);
+  // ADC_DeInit();
+  // DMA_DeInit(DMA2_Stream0);
   Scope.adcfrequency=frequency;
   Scope.adcperiod=1000000000/Scope.adcfrequency;
   ScopeGetMinMax();
   ScopeGetData();
 }
 
-void DMA_SCPConfig(void)
+void DAC_ScopeConfig(void)
+{
+  DAC_InitTypeDef  DAC_InitStructure;
+
+  /* DAC channel2 Configuration */
+  DAC_StructInit(&DAC_InitStructure);
+  DAC_InitStructure.DAC_Trigger = DAC_Trigger_None;
+  DAC_InitStructure.DAC_WaveGeneration = DAC_WaveGeneration_None;
+  DAC_InitStructure.DAC_OutputBuffer = DAC_OutputBuffer_Enable;
+  DAC_Init(DAC_Channel_2, &DAC_InitStructure);
+  /* Enable DAC Channel2 */
+  DAC_Cmd(DAC_Channel_2, ENABLE);
+}
+
+void DMA_SingleConfig(void)
 {
   DMA_InitTypeDef       DMA_InitStructure;
 
-  DMA_DeInit(DMA2_Stream0);
   DMA_StructInit(&DMA_InitStructure);
-  /* DMA2 Stream0 channel0 configuration */
+  DMA_DeInit(DMA2_Stream0);
+  /* DMA2 Stream0 channel0 configuration **************************************/
   DMA_InitStructure.DMA_Channel = DMA_Channel_0;  
   DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)ADC1_DR_ADDRESS;
   DMA_InitStructure.DMA_Memory0BaseAddr = (uint32_t)SCOPE_DATAPTR;
@@ -897,7 +912,7 @@ void DMA_SCPConfig(void)
   DMA_Cmd(DMA2_Stream0, ENABLE);
 }
 
-void ADC_SCPConfig(void)
+void ADC_SingleConfig(void)
 {
   ADC_CommonInitTypeDef ADC_CommonInitStructure;
   ADC_InitTypeDef       ADC_InitStructure;
@@ -921,51 +936,24 @@ void ADC_SCPConfig(void)
   ADC_InitStructure.ADC_DataAlign = ADC_DataAlign_Right;
   ADC_InitStructure.ADC_NbrOfConversion = 1;
   ADC_Init(ADC1, &ADC_InitStructure);
+
   /* ADC1 regular channel11 configuration *************************************/
   ADC_RegularChannelConfig(ADC1, ADC_Channel_11, 1, Scope.sampletime);
- /* Enable DMA request after last transfer (Single-ADC mode) */
+  /* Enable DMA request after last transfer (Single-ADC mode) */
   ADC_DMARequestAfterLastTransferCmd(ADC1, ENABLE);
   /* Enable ADC1 DMA */
   ADC_DMACmd(ADC1, ENABLE);
+  /* Enable ADC1 */
   ADC_Cmd(ADC1, ENABLE);
 
-  // /* ADC2 Init ****************************************************************/
-  // ADC_InitStructure.ADC_Resolution = (3-Scope.adcsamplebits)<<24;
-  // ADC_InitStructure.ADC_ScanConvMode = ENABLE;
-  // ADC_InitStructure.ADC_ContinuousConvMode = ENABLE;
-  // ADC_InitStructure.ADC_ExternalTrigConvEdge = ADC_ExternalTrigConvEdge_None;
-  // ADC_InitStructure.ADC_ExternalTrigConv = ADC_ExternalTrigConv_T1_CC1;
-  // ADC_InitStructure.ADC_DataAlign = ADC_DataAlign_Right;
-  // ADC_InitStructure.ADC_NbrOfConversion = 1;
-  // ADC_Init(ADC2, &ADC_InitStructure);
-  // /* ADC2 regular channel12 configuration *************************************/
-  // ADC_RegularChannelConfig(ADC2, ADC_Channel_12, 1, Scope.sampletime);
-
-  // ADC_MultiModeDMARequestAfterLastTransferCmd(ENABLE);
-  // ADC_Cmd(ADC1, ENABLE);
-  // ADC_Cmd(ADC2, ENABLE);
-}
-
-void DAC_SPCConfig(void)
-{
-  DAC_InitTypeDef  DAC_InitStructure;
-
-  /* DAC channel2 Configuration */
-  DAC_StructInit(&DAC_InitStructure);
-  DAC_InitStructure.DAC_Trigger = DAC_Trigger_None;
-  DAC_InitStructure.DAC_WaveGeneration = DAC_WaveGeneration_None;
-  DAC_InitStructure.DAC_OutputBuffer = DAC_OutputBuffer_Enable;
-  DAC_Init(DAC_Channel_2, &DAC_InitStructure);
-  /* Enable DAC Channel2 */
-  DAC_Cmd(DAC_Channel_2, ENABLE);
 }
 
 void DMA_TripleConfig(void)
 {
   DMA_InitTypeDef DMA_InitStructure;
 
-  DMA_DeInit(DMA2_Stream0);
   DMA_StructInit(&DMA_InitStructure);
+  DMA_DeInit(DMA2_Stream0);
   /* DMA2 Stream0 channel0 configuration */
   DMA_InitStructure.DMA_Channel = DMA_Channel_0;  
   DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)ADC_CDR_ADDRESS;
@@ -983,7 +971,6 @@ void DMA_TripleConfig(void)
   DMA_InitStructure.DMA_MemoryBurst = DMA_MemoryBurst_Single;
   DMA_InitStructure.DMA_PeripheralBurst = DMA_PeripheralBurst_Single;
   DMA_Init(DMA2_Stream0, &DMA_InitStructure);
-
   /* DMA2_Stream0 enable */
   DMA_Cmd(DMA2_Stream0, ENABLE);
 }
