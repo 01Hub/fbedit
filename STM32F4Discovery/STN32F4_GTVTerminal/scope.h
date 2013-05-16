@@ -21,7 +21,7 @@
 
 #define SCOPE_BYTES         256
 
-#define ADC1_DR_ADDRESS     ((uint32_t)0x4001024C)
+#define ADC1_DR_ADDRESS     ((uint32_t)0x4001204C)
 #define ADC_CDR_ADDRESS     ((uint32_t)0x40012308)
 #define SCOPE_DATAPTR       ((uint32_t)0x20010000)
 #define SCOPE_DATASIZE      ((uint32_t)0x8000)

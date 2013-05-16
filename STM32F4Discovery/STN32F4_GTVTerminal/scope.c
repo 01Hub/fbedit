@@ -266,7 +266,7 @@ void ScopeMainHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
       Scope.tmrmax=25;
       Scope.tmrcnt=0;
       Scope.tmrrep=0;
-      Scope.tmradd=4;
+      Scope.tmradd=2;
       break;
     default:
       DefWindowHandler(hwin,event,param,ID);
@@ -652,7 +652,7 @@ void ScopeInit(void)
   Scope.tmrmax=25;
   Scope.tmrcnt=0;
   Scope.tmrrep=0;
-  Scope.tmradd=4;
+  Scope.tmradd=2;
   Scope.magnify=8;
   Scope.databits=0;
   Scope.sampletime=0;
@@ -893,7 +893,7 @@ void DMA_SingleConfig(void)
   DMA_DeInit(DMA2_Stream0);
   /* DMA2 Stream0 channel0 configuration **************************************/
   DMA_InitStructure.DMA_Channel = DMA_Channel_0;  
-  DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)ADC1_DR_ADDRESS;
+  DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)&ADC1->DR;//ADC1_DR_ADDRESS;
   DMA_InitStructure.DMA_Memory0BaseAddr = (uint32_t)SCOPE_DATAPTR;
   DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralToMemory;
   DMA_InitStructure.DMA_BufferSize = SCOPE_DATASIZE/2;
