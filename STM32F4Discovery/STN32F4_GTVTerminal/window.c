@@ -975,11 +975,11 @@ void DrawWindow(WINDOW* hwin)
         DrawWinString(x+5,y,hwin->caplen,hwin->caption,4);
         break;
     }
-    if (hwin->control)
-    {
-      hwin=hwin->control;
-      SendEvent(hwin,EVENT_PAINT,0,hwin->ID);
-    }
+  }
+  if (hwin->control)
+  {
+    hwin=hwin->control;
+    SendEvent(hwin,EVENT_PAINT,0,hwin->ID);
   }
 }
 

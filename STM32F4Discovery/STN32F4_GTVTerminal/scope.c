@@ -743,10 +743,12 @@ void ScopeSetup(void)
   /* Clock division right button */
   CreateWindow(Scope.hmain,CLASS_BUTTON,31,SCOPE_MAINRIGHT-25,SCOPE_TOP+90,20,20,">\0");
   CreateWindow(Scope.hmain,CLASS_STATIC,32,SCOPE_MAINRIGHT-80,SCOPE_TOP+90,55,20,0);
-
   /* Triple interleaved checkbox */
   CreateWindow(Scope.hmain,CLASS_CHKBOX,84,SCOPE_MAINRIGHT-100,SCOPE_TOP+130,90,10,"Triple adc\0");
-
+  if (Scope.triple)
+  {
+    SetState(GetControlHandle(Scope.hmain,84),STATE_VISIBLE | STATE_CHECKED);
+  }
   CreateWindow(Scope.hmain,CLASS_STATIC,93,SCOPE_MAINRIGHT-100,SCOPE_TOP+150,95,10,"Sample rate\0");
   CreateWindow(Scope.hmain,CLASS_STATIC,94,SCOPE_MAINRIGHT-100,SCOPE_TOP+160,95,20,0);
 
@@ -859,16 +861,6 @@ void ScopeSample(void)
   ADC1->CR2=0;
   ADC2->CR2=0;
   ADC3->CR2=0;
-  // /* Disable DMA request after last transfer (multi-ADC mode) ******************/
-  // ADC_MultiModeDMARequestAfterLastTransferCmd(DISABLE);
-  // /* Disable ADC1 DMA */
-  // ADC_DMACmd(ADC1, DISABLE);
-  // DMA_Cmd(DMA2_Stream0,DISABLE);
-  // ADC_Cmd(ADC1, DISABLE);
-  // ADC_Cmd(ADC2, DISABLE);
-  // ADC_Cmd(ADC3, DISABLE);
-  // ADC_DeInit();
-  // DMA_DeInit(DMA2_Stream0);
   Scope.adcfrequency=frequency;
   Scope.adcperiod=1000000000/Scope.adcfrequency;
   ScopeGetMinMax();
@@ -968,7 +960,7 @@ void DMA_TripleConfig(void)
   DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;
   DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Word;
   DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_Word;
-  DMA_InitStructure.DMA_Mode = DMA_Mode_Circular;
+  DMA_InitStructure.DMA_Mode = DMA_Mode_Normal;
   DMA_InitStructure.DMA_Priority = DMA_Priority_High;
   DMA_InitStructure.DMA_FIFOMode = DMA_FIFOMode_Disable;         
   DMA_InitStructure.DMA_FIFOThreshold = DMA_FIFOThreshold_HalfFull;
@@ -1016,12 +1008,12 @@ void ADC_TripleConfig(void)
     /* ADC3 regular channel11 configuration *************************************/
   ADC_RegularChannelConfig(ADC3, ADC_Channel_11, 1, ADC_SampleTime_3Cycles);
 
-  /* Enable DMA request after last transfer (multi-ADC mode) ******************/
-  ADC_MultiModeDMARequestAfterLastTransferCmd(ENABLE);
-  /* Enable ADC1 **************************************************************/
-  ADC_Cmd(ADC1, ENABLE);
-  /* Enable ADC2 **************************************************************/
-  ADC_Cmd(ADC2, ENABLE);
   /* Enable ADC3 **************************************************************/
   ADC_Cmd(ADC3, ENABLE);
+  /* Enable ADC2 **************************************************************/
+  ADC_Cmd(ADC2, ENABLE);
+  /* Enable ADC1 **************************************************************/
+  ADC_Cmd(ADC1, ENABLE);
+  /* Enable DMA request after last transfer (multi-ADC mode) ******************/
+  ADC_MultiModeDMARequestAfterLastTransferCmd(ENABLE);
 }
