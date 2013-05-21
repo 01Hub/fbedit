@@ -991,6 +991,7 @@ void ADC_TripleConfig(void)
   ADC_InitStructure.ADC_ScanConvMode = DISABLE;
   ADC_InitStructure.ADC_ContinuousConvMode = ENABLE;
   ADC_InitStructure.ADC_ExternalTrigConvEdge = ADC_ExternalTrigConvEdge_None;
+  ADC_InitStructure.ADC_ExternalTrigConv = ADC_ExternalTrigConv_T1_CC1;
   ADC_InitStructure.ADC_DataAlign = ADC_DataAlign_Right;
   ADC_InitStructure.ADC_NbrOfConversion = 1;
   ADC_Init(ADC1, &ADC_InitStructure);
@@ -1008,12 +1009,12 @@ void ADC_TripleConfig(void)
     /* ADC3 regular channel11 configuration *************************************/
   ADC_RegularChannelConfig(ADC3, ADC_Channel_11, 1, ADC_SampleTime_3Cycles);
 
-  /* Enable ADC3 **************************************************************/
-  ADC_Cmd(ADC3, ENABLE);
-  /* Enable ADC2 **************************************************************/
-  ADC_Cmd(ADC2, ENABLE);
   /* Enable ADC1 **************************************************************/
   ADC_Cmd(ADC1, ENABLE);
+  /* Enable ADC2 **************************************************************/
+  ADC_Cmd(ADC2, ENABLE);
+  /* Enable ADC3 **************************************************************/
+  ADC_Cmd(ADC3, ENABLE);
   /* Enable DMA request after last transfer (multi-ADC mode) ******************/
   ADC_MultiModeDMARequestAfterLastTransferCmd(ENABLE);
 }
