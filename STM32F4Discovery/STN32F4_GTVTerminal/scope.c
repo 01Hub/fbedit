@@ -853,6 +853,7 @@ void ScopeSample(void)
   }
   else
   {
+    /* Start ADC1 Software Conversion */
     ADC1->CR2 |= (uint32_t)ADC_CR2_SWSTART;
   }
   sec=SecCount+5;
