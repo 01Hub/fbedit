@@ -834,7 +834,7 @@ void DrawWinCaption(WINDOW* hwin,uint16_t x,uint16_t y)
 }
 
 /**
-  * @brief  This function draws a window caption (Black).
+  * @brief  This function draws a window caption (White).
   * @param  hwin
   * @retval None
   */

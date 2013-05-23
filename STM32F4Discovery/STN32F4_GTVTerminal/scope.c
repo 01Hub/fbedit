@@ -13,6 +13,9 @@ extern uint32_t frequency;
 
 /* Private variables ---------------------------------------------------------*/
 SCOPE Scope;
+DMA_InitTypeDef DMA_InitStructure;
+ADC_CommonInitTypeDef ADC_CommonInitStructure;
+ADC_InitTypeDef ADC_InitStructure;
 uint8_t scopestr[10][6]={{"Ofs:"},{"Mrk:"},{"Pos:"},{"Frq:"},{"Per:"},{"Tme:"},{"Vcu:"},{"Vpp:"},{"Vmn:"},{"Vmx:"}};
 uint8_t scopedbstr[4][3]={{"6\0"},{"8\0"},{"10\0"},{"12\0"}};
 uint8_t scopeststr[8][4]={{"3\0"},{"15\0"},{"28\0"},{"56\0"},{"84\0"},{"112\0"},{"144\0"},{"480\0"}};
@@ -266,7 +269,7 @@ void ScopeMainHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
       Scope.tmrmax=25;
       Scope.tmrcnt=0;
       Scope.tmrrep=0;
-      Scope.tmradd=2;
+      Scope.tmradd=1;
       break;
     default:
       DefWindowHandler(hwin,event,param,ID);
@@ -277,7 +280,6 @@ void ScopeMainHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
 void ScopeHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
 {
   uint16_t x;
-  uint16_t* adc;
 
   switch (event)
   {
@@ -607,13 +609,13 @@ void ScopeDrawInfo(void)
 
   /* Offset */
   DrawWinString(SCOPE_LEFT+4,SCOPE_BOTTOM-50,4,scopestr[0],1);
-  DrawWinDec16(SCOPE_LEFT+4+5*8,SCOPE_BOTTOM-50,Scope.dataofs>>2,5);
+  DrawWinDec16(SCOPE_LEFT+4+5*8,SCOPE_BOTTOM-50,Scope.dataofs,5);
   /* Mark */
   DrawWinString(SCOPE_LEFT+4,SCOPE_BOTTOM-40,4,scopestr[1],1);
-  DrawWinDec16(SCOPE_LEFT+4+5*8,SCOPE_BOTTOM-40,Scope.mark>>2,5);
+  DrawWinDec16(SCOPE_LEFT+4+5*8,SCOPE_BOTTOM-40,Scope.mark,5);
   /* Position */
   DrawWinString(SCOPE_LEFT+4,SCOPE_BOTTOM-30,4,scopestr[2],1);
-  DrawWinDec16(SCOPE_LEFT+4+5*8,SCOPE_BOTTOM-30,Scope.cur>>2,5);
+  DrawWinDec16(SCOPE_LEFT+4+5*8,SCOPE_BOTTOM-30,Scope.cur,5);
   /* Vcurrent */
   DrawWinString(SCOPE_LEFT+4,SCOPE_BOTTOM-20,4,scopestr[6],1);
   /* Vpeaktopeak */
@@ -652,7 +654,7 @@ void ScopeInit(void)
   Scope.tmrmax=25;
   Scope.tmrcnt=0;
   Scope.tmrrep=0;
-  Scope.tmradd=2;
+  Scope.tmradd=1;
   Scope.magnify=8;
   Scope.databits=0;
   Scope.sampletime=0;
@@ -884,8 +886,6 @@ void DAC_ScopeConfig(void)
 
 void DMA_SingleConfig(void)
 {
-  DMA_InitTypeDef       DMA_InitStructure;
-
   DMA_StructInit(&DMA_InitStructure);
   DMA_DeInit(DMA2_Stream0);
   /* DMA2 Stream0 channel0 configuration **************************************/
@@ -911,9 +911,6 @@ void DMA_SingleConfig(void)
 
 void ADC_SingleConfig(void)
 {
-  ADC_CommonInitTypeDef ADC_CommonInitStructure;
-  ADC_InitTypeDef       ADC_InitStructure;
-
   ADC_StructInit(&ADC_InitStructure);
   ADC_CommonStructInit(&ADC_CommonInitStructure);
 
@@ -947,8 +944,6 @@ void ADC_SingleConfig(void)
 
 void DMA_TripleConfig(void)
 {
-  DMA_InitTypeDef DMA_InitStructure;
-
   DMA_StructInit(&DMA_InitStructure);
   DMA_DeInit(DMA2_Stream0);
   /* DMA2 Stream0 channel0 configuration */
@@ -974,9 +969,6 @@ void DMA_TripleConfig(void)
 
 void ADC_TripleConfig(void)
 {
-  ADC_CommonInitTypeDef ADC_CommonInitStructure;
-  ADC_InitTypeDef       ADC_InitStructure;
-
   ADC_StructInit(&ADC_InitStructure);
   ADC_CommonStructInit(&ADC_CommonInitStructure);
 
@@ -990,7 +982,7 @@ void ADC_TripleConfig(void)
   /* ADC1 regular channel 11 configuration ************************************/
   ADC_InitStructure.ADC_Resolution = ADC_Resolution_12b;
   ADC_InitStructure.ADC_ScanConvMode = DISABLE;
-  ADC_InitStructure.ADC_ContinuousConvMode = ENABLE;
+  ADC_InitStructure.ADC_ContinuousConvMode = DISABLE;
   ADC_InitStructure.ADC_ExternalTrigConvEdge = ADC_ExternalTrigConvEdge_None;
   ADC_InitStructure.ADC_ExternalTrigConv = ADC_ExternalTrigConv_T1_CC1;
   ADC_InitStructure.ADC_DataAlign = ADC_DataAlign_Right;
