@@ -438,13 +438,17 @@ void ScopeAuto(void)
   nsample=1024;
   if (Scope.adcfrequency<50)
   {
-    nsample=8192;
+    nsample=16384;
   }
   else if (Scope.adcfrequency<100)
   {
-    nsample=4096;
+    nsample=8192;
   }
   else if (Scope.adcfrequency<200)
+  {
+    nsample=4095;
+  }
+  else if (Scope.adcfrequency<500)
   {
     nsample=2048;
   }
@@ -972,17 +976,6 @@ void ADC_TripleConfig(void)
   ADC_StructInit(&ADC_InitStructure);
   ADC_CommonStructInit(&ADC_CommonInitStructure);
 
-  // /* Note: If the conversion sequence is interrupted (for instance when DMA end of transfer occurs),
-     // the multi-ADC sequencer must be reset by configuring it in independent mode first (bits
-     // DUAL[4:0] = 00000) before reprogramming the interleaved mode. */
-
-  // /* ADC Common Init **********************************************************/
-  // ADC_CommonInitStructure.ADC_Mode = ADC_Mode_Independent;
-  // ADC_CommonInitStructure.ADC_Prescaler = (uint32_t)Scope.clockdiv<<16;
-  // ADC_CommonInitStructure.ADC_DMAAccessMode = ADC_DMAAccessMode_Disabled;
-  // ADC_CommonInitStructure.ADC_TwoSamplingDelay = ADC_TwoSamplingDelay_5Cycles;
-  // ADC_CommonInit(&ADC_CommonInitStructure);
-
   /* ADC Common configuration *************************************************/
   ADC_CommonInitStructure.ADC_Mode = ADC_TripleMode_Interl;
   ADC_CommonInitStructure.ADC_TwoSamplingDelay = Scope.tripledelay<<8;
@@ -1010,8 +1003,6 @@ void ADC_TripleConfig(void)
   ADC_Init(ADC3, &ADC_InitStructure); 
   ADC_RegularChannelConfig(ADC3, ADC_Channel_11, 1, ADC_SampleTime_3Cycles);
 
-  // /* Enable ADC1 DMA */
-  // ADC_DMACmd(ADC1, ENABLE);
   /* Enable ADC1 **************************************************************/
   ADC_Cmd(ADC1, ENABLE);
   /* Enable ADC2 **************************************************************/
