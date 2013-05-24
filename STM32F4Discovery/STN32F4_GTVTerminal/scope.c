@@ -954,8 +954,8 @@ void DMA_TripleConfig(void)
   DMA_InitStructure.DMA_BufferSize = SCOPE_DATASIZE/4;
   DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
   DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;
-  DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_HalfWord;
-  DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_HalfWord;
+  DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Word;
+  DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_Word;
   DMA_InitStructure.DMA_Mode = DMA_Mode_Normal;
   DMA_InitStructure.DMA_Priority = DMA_Priority_High;
   DMA_InitStructure.DMA_FIFOMode = DMA_FIFOMode_Disable;         
@@ -972,6 +972,17 @@ void ADC_TripleConfig(void)
   ADC_StructInit(&ADC_InitStructure);
   ADC_CommonStructInit(&ADC_CommonInitStructure);
 
+  // /* Note: If the conversion sequence is interrupted (for instance when DMA end of transfer occurs),
+     // the multi-ADC sequencer must be reset by configuring it in independent mode first (bits
+     // DUAL[4:0] = 00000) before reprogramming the interleaved mode. */
+
+  // /* ADC Common Init **********************************************************/
+  // ADC_CommonInitStructure.ADC_Mode = ADC_Mode_Independent;
+  // ADC_CommonInitStructure.ADC_Prescaler = (uint32_t)Scope.clockdiv<<16;
+  // ADC_CommonInitStructure.ADC_DMAAccessMode = ADC_DMAAccessMode_Disabled;
+  // ADC_CommonInitStructure.ADC_TwoSamplingDelay = ADC_TwoSamplingDelay_5Cycles;
+  // ADC_CommonInit(&ADC_CommonInitStructure);
+
   /* ADC Common configuration *************************************************/
   ADC_CommonInitStructure.ADC_Mode = ADC_TripleMode_Interl;
   ADC_CommonInitStructure.ADC_TwoSamplingDelay = Scope.tripledelay<<8;
@@ -979,7 +990,6 @@ void ADC_TripleConfig(void)
   ADC_CommonInitStructure.ADC_Prescaler = (uint32_t)Scope.clockdiv<<16; 
   ADC_CommonInit(&ADC_CommonInitStructure);
 
-  /* ADC1 regular channel 11 configuration ************************************/
   ADC_InitStructure.ADC_Resolution = ADC_Resolution_12b;
   ADC_InitStructure.ADC_ScanConvMode = DISABLE;
   ADC_InitStructure.ADC_ContinuousConvMode = ENABLE;
@@ -987,6 +997,8 @@ void ADC_TripleConfig(void)
   ADC_InitStructure.ADC_ExternalTrigConv = ADC_ExternalTrigConv_T1_CC1;
   ADC_InitStructure.ADC_DataAlign = ADC_DataAlign_Right;
   ADC_InitStructure.ADC_NbrOfConversion = 1;
+
+  /* ADC1 regular channel 11 configuration ************************************/
   ADC_Init(ADC1, &ADC_InitStructure);
   ADC_RegularChannelConfig(ADC1, ADC_Channel_11, 1, ADC_SampleTime_3Cycles);
 
@@ -998,8 +1010,8 @@ void ADC_TripleConfig(void)
   ADC_Init(ADC3, &ADC_InitStructure); 
   ADC_RegularChannelConfig(ADC3, ADC_Channel_11, 1, ADC_SampleTime_3Cycles);
 
-  /* Enable ADC1 DMA */
-  ADC_DMACmd(ADC1, ENABLE);
+  // /* Enable ADC1 DMA */
+  // ADC_DMACmd(ADC1, ENABLE);
   /* Enable ADC1 **************************************************************/
   ADC_Cmd(ADC1, ENABLE);
   /* Enable ADC2 **************************************************************/

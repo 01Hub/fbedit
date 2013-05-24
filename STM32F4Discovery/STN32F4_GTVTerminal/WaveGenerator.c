@@ -431,6 +431,8 @@ void WaveDrawInfo(void)
   DrawWinDec32Fixed(WAVE_LEFT+4+8*8,WAVE_BOTTOM-30,val,1);
   /* Period */
   DrawWinString(WAVE_LEFT+4,WAVE_BOTTOM-20,7,wavestr[3],1);
+  val=1000000000/Wave.frequency;
+  DrawWinDec32(WAVE_LEFT+4+18*8,WAVE_BOTTOM-20,val,5);
 }
 
 void WaveInit(void)
