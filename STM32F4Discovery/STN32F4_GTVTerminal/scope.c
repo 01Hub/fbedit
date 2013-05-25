@@ -113,7 +113,7 @@ void ScopeMainHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
             {
               Scope.dataofs=0;
             }
-            ScopeGetData();
+            ScopeGetDataSample();
             break;
           case 2:
             /* Right Offset */
@@ -122,7 +122,7 @@ void ScopeMainHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
             {
               Scope.dataofs=SCOPE_DATASIZE;
             }
-            ScopeGetData();
+            ScopeGetDataSample();
             break;
           case 3:
             /* Left magnify */
@@ -130,7 +130,7 @@ void ScopeMainHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
             {
               Scope.magnify--;
               ScopeSetStrings();
-              ScopeGetData();
+              ScopeGetDataSample();
             }
             break;
           case 4:
@@ -139,7 +139,7 @@ void ScopeMainHandler(WINDOW* hwin,uint8_t event,uint32_t param,uint8_t ID)
             {
               Scope.magnify++;
               ScopeSetStrings();
-              ScopeGetData();
+              ScopeGetDataSample();
             }
             break;
           case 10:
@@ -542,6 +542,14 @@ void ScopeGetMinMax(void)
     }
     ptr+=1;
     x++;
+  }
+}
+
+void ScopeGetDataSample(void)
+{
+  if (!Scope.autosample)
+  {
+    ScopeGetData();
   }
 }
 

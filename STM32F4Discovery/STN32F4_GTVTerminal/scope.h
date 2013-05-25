@@ -75,6 +75,7 @@ void ScopeDrawMark(void);
 void ScopeDrawData(void);
 uint8_t ScopeConvert(uint16_t val);
 void ScopeGetMinMax(void);
+void ScopeGetDataSample(void);
 void ScopeGetData(void);
 void ScopeDrawInfo(void);
 void ScopeInit(void);
