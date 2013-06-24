@@ -1,7 +1,7 @@
 <!-- DWF2XML 2.00.01 - Raisonance Dwarf information extractor -->
 <aoffile Filename="Sonar" dwarf="1">
  <modulelist>
-  <module Name="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\main.c" >
+  <module Name="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\main.c" >
    <type Family="Base" Name="long int" ID="37"/>
    <type Family="Base" Name="short int" ID="44"/>
    <type Family="Base" Name="signed char" ID="51"/>
@@ -195,79 +195,79 @@
     <Component Name="GPSArray" TI="2584" Line="40" Offs="1588"/>
    </type>
    <type Family="typedef" Name="STM32_SonarTypeDef" Line="41" ID="2650" toTI="2391"/>
-   <function Name="GetEcho" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\main.c" Line="235">
+   <function Name="GetEcho" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\main.c" Line="235">
    <type Family="Pointer" TI="2716" toTI="58"/>
-    <variable Name="Echo" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\main.c" Line="238" Addr="0x2" TI="94"/>
+    <variable Name="Echo" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\main.c" Line="238" Addr="0x2" TI="94"/>
    </function >
-   <function Name="GetADCValue" TI="76" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\main.c" Line="263">
-    <parameter Name="Channel" TI="94" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\main.c" Line="263" Addr="0x0" Param="Yes"/>
-    <variable Name="i" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\main.c" Line="265" Addr="0x34000017" TI="121"/>
-    <variable Name="ADCValue" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\main.c" Line="266" Addr="0x34000014" TI="116"/>
-    <variable Name="ADC_InitStructure" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\main.c" Line="267" Addr="0x34000000" TI="1788"/>
+   <function Name="GetADCValue" TI="76" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\main.c" Line="263">
+    <parameter Name="Channel" TI="94" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\main.c" Line="263" Addr="0x0" Param="Yes"/>
+    <variable Name="i" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\main.c" Line="265" Addr="0x34000017" TI="121"/>
+    <variable Name="ADCValue" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\main.c" Line="266" Addr="0x34000014" TI="116"/>
+    <variable Name="ADC_InitStructure" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\main.c" Line="267" Addr="0x34000000" TI="1788"/>
    </function >
-   <function Name="TrimOutput" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\main.c" Line="209">
-    <variable Name="Trim" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\main.c" Line="211" Addr="0x0" TI="76"/>
-    <variable Name="TrimAdd" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\main.c" Line="212" Addr="0x0" TI="76"/>
-    <variable Name="i" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\main.c" Line="213" Addr="0x34000004" TI="111"/>
+   <function Name="TrimOutput" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\main.c" Line="209">
+    <variable Name="Trim" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\main.c" Line="211" Addr="0x0" TI="76"/>
+    <variable Name="TrimAdd" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\main.c" Line="212" Addr="0x0" TI="76"/>
+    <variable Name="i" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\main.c" Line="213" Addr="0x34000004" TI="111"/>
    </function >
-   <function Name="GainSetup" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\main.c" Line="304">
-    <variable Name="GainInitInx" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\main.c" Line="306" Addr="0x34000014" TI="111"/>
-    <variable Name="i" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\main.c" Line="307" Addr="0x34000010" TI="111"/>
-    <variable Name="GainInx" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\main.c" Line="308" Addr="0x3400000C" TI="111"/>
-    <variable Name="GainInc" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\main.c" Line="309" Addr="0x34000008" TI="111"/>
-    <variable Name="GainVal" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\main.c" Line="310" Addr="0x34000004" TI="111"/>
+   <function Name="GainSetup" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\main.c" Line="304">
+    <variable Name="GainInitInx" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\main.c" Line="306" Addr="0x34000014" TI="111"/>
+    <variable Name="i" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\main.c" Line="307" Addr="0x34000010" TI="111"/>
+    <variable Name="GainInx" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\main.c" Line="308" Addr="0x3400000C" TI="111"/>
+    <variable Name="GainInc" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\main.c" Line="309" Addr="0x34000008" TI="111"/>
+    <variable Name="GainVal" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\main.c" Line="310" Addr="0x34000004" TI="111"/>
    </function >
-   <function Name="TIM2_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\main.c" Line="386">
+   <function Name="TIM2_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\main.c" Line="386">
    </function >
-   <function Name="rs232_puts" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\main.c" Line="416">
+   <function Name="rs232_puts" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\main.c" Line="416">
    <type Family="Base" Name="char" ID="3071"/>
    <type Family="Pointer" TI="3065" toTI="3071"/>
-    <parameter Name="str" TI="3065" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\main.c" Line="416" Addr="0x0" Param="Yes"/>
-    <variable Name="c" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\main.c" Line="418" Addr="0x1" TI="3071"/>
+    <parameter Name="str" TI="3065" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\main.c" Line="416" Addr="0x0" Param="Yes"/>
+    <variable Name="c" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\main.c" Line="418" Addr="0x1" TI="3071"/>
    </function >
-   <function Name="USART1_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\main.c" Line="437">
+   <function Name="USART1_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\main.c" Line="437">
    </function >
-   <function Name="ADC_Startup" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\main.c" Line="474">
-    <variable Name="ADC_InitStructure" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\main.c" Line="476" Addr="0x34000004" TI="1788"/>
+   <function Name="ADC_Startup" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\main.c" Line="474">
+    <variable Name="ADC_InitStructure" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\main.c" Line="476" Addr="0x34000004" TI="1788"/>
    </function >
-   <function Name="ADC_Configuration" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\main.c" Line="509">
-    <variable Name="ADC_InitStructure" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\main.c" Line="511" Addr="0x34000004" TI="1788"/>
+   <function Name="ADC_Configuration" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\main.c" Line="509">
+    <variable Name="ADC_InitStructure" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\main.c" Line="511" Addr="0x34000004" TI="1788"/>
    </function >
-   <function Name="RCC_Configuration" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\main.c" Line="536">
-    <variable Name="HSEStartUpStatus" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\main.c" Line="538" Addr="0x0" TI="200"/>
+   <function Name="RCC_Configuration" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\main.c" Line="536">
+    <variable Name="HSEStartUpStatus" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\main.c" Line="538" Addr="0x0" TI="200"/>
    </function >
-   <function Name="GPIO_Configuration" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\main.c" Line="609">
-    <variable Name="GPIO_InitStructure" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\main.c" Line="611" Addr="0x34000004" TI="1957"/>
+   <function Name="GPIO_Configuration" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\main.c" Line="609">
+    <variable Name="GPIO_InitStructure" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\main.c" Line="611" Addr="0x34000004" TI="1957"/>
    </function >
-   <function Name="NVIC_Configuration" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\main.c" Line="658">
-    <variable Name="NVIC_InitStructure" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\main.c" Line="660" Addr="0x34000004" TI="2054"/>
+   <function Name="NVIC_Configuration" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\main.c" Line="658">
+    <variable Name="NVIC_InitStructure" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\main.c" Line="660" Addr="0x34000004" TI="2054"/>
    </function >
-   <function Name="TIM1_Configuration" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\main.c" Line="690">
-    <variable Name="TIM_TimeBaseStructure" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\main.c" Line="692" Addr="0x34000004" TI="2144"/>
+   <function Name="TIM1_Configuration" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\main.c" Line="690">
+    <variable Name="TIM_TimeBaseStructure" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\main.c" Line="692" Addr="0x34000004" TI="2144"/>
    </function >
-   <function Name="TIM2_Configuration" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\main.c" Line="716">
-    <variable Name="TIM_TimeBaseStructure" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\main.c" Line="718" Addr="0x34000004" TI="2144"/>
+   <function Name="TIM2_Configuration" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\main.c" Line="716">
+    <variable Name="TIM_TimeBaseStructure" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\main.c" Line="718" Addr="0x34000004" TI="2144"/>
    </function >
-   <function Name="TIM1_UP_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\main.c" Line="344">
+   <function Name="TIM1_UP_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\main.c" Line="344">
    </function >
-   <function Name="TIM3_Configuration" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\main.c" Line="737">
-    <variable Name="TIM_TimeBaseStructure" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\main.c" Line="739" Addr="0x34000014" TI="2144"/>
-    <variable Name="TIM_OCInitStructure" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\main.c" Line="740" Addr="0x34000004" TI="2276"/>
+   <function Name="TIM3_Configuration" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\main.c" Line="737">
+    <variable Name="TIM_TimeBaseStructure" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\main.c" Line="739" Addr="0x34000014" TI="2144"/>
+    <variable Name="TIM_OCInitStructure" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\main.c" Line="740" Addr="0x34000004" TI="2276"/>
    </function >
-   <function Name="USART_Configuration" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\main.c" Line="775">
-    <parameter Name="BaudRate" TI="76" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\main.c" Line="775" Addr="0x0" Param="Yes"/>
-    <variable Name="USART_InitStructure" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\main.c" Line="785" Addr="0x34000000" TI="2380"/>
+   <function Name="USART_Configuration" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\main.c" Line="775">
+    <parameter Name="BaudRate" TI="76" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\main.c" Line="775" Addr="0x0" Param="Yes"/>
+    <variable Name="USART_InitStructure" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\main.c" Line="785" Addr="0x34000000" TI="2380"/>
    </function >
    <type Family="Base" Name="int" ID="3574"/>
-   <function Name="main" TI="3574" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\main.c" Line="76">
-    <variable Name="i" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\main.c" Line="78" Addr="0x0" TI="58"/>
+   <function Name="main" TI="3574" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\main.c" Line="76">
+    <variable Name="i" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\main.c" Line="78" Addr="0x0" TI="58"/>
    </function >
-   <variable Name="STM32_Sonar" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\main.c" Line="45" Addr="0x20000000" TI="2650"/>
-   <variable Name="BlueLED" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\main.c" Line="46" Addr="0x20000834" TI="121"/>
-   <variable Name="Ping" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\main.c" Line="47" Addr="0x20000836" TI="116"/>
-   <variable Name="Setup" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\main.c" Line="48" Addr="0x20000838" TI="121"/>
+   <variable Name="STM32_Sonar" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\main.c" Line="45" Addr="0x20000000" TI="2650"/>
+   <variable Name="BlueLED" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\main.c" Line="46" Addr="0x20000834" TI="121"/>
+   <variable Name="Ping" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\main.c" Line="47" Addr="0x20000836" TI="116"/>
+   <variable Name="Setup" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\main.c" Line="48" Addr="0x20000838" TI="121"/>
   </module>
-  <module Name="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_adc.c" >
+  <module Name="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_adc.c" >
    <type Family="Base" Name="long int" ID="3729"/>
    <type Family="Base" Name="short int" ID="3736"/>
    <type Family="Base" Name="signed char" ID="3743"/>
@@ -315,73 +315,73 @@
    </type>
    <type Family="typedef" Name="ADC_InitTypeDef" Line="34" ID="4292" toTI="4199"/>
    <type Family="Pointer" TI="4344" toTI="4181"/>
-   <function Name="ADC_Init" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_adc.c" Line="174">
-    <parameter Name="ADCx" TI="4344" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_adc.c" Line="174" Addr="0x0" Param="Yes"/>
+   <function Name="ADC_Init" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_adc.c" Line="174">
+    <parameter Name="ADCx" TI="4344" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_adc.c" Line="174" Addr="0x0" Param="Yes"/>
    <type Family="Pointer" TI="4432" toTI="4292"/>
-    <parameter Name="ADC_InitStruct" TI="4432" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_adc.c" Line="174" Addr="0x1" Param="Yes"/>
-    <variable Name="tmpreg1" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_adc.c" Line="176" Addr="0x0" TI="3750"/>
-    <variable Name="tmpreg2" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_adc.c" Line="177" Addr="0x0" TI="3786"/>
+    <parameter Name="ADC_InitStruct" TI="4432" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_adc.c" Line="174" Addr="0x1" Param="Yes"/>
+    <variable Name="tmpreg1" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_adc.c" Line="176" Addr="0x0" TI="3750"/>
+    <variable Name="tmpreg2" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_adc.c" Line="177" Addr="0x0" TI="3786"/>
    </function >
-   <function Name="ADC_Cmd" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_adc.c" Line="266">
-    <parameter Name="ADCx" TI="4344" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_adc.c" Line="266" Addr="0x0" Param="Yes"/>
-    <parameter Name="NewState" TI="3883" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_adc.c" Line="266" Addr="0x1" Param="Yes"/>
+   <function Name="ADC_Cmd" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_adc.c" Line="266">
+    <parameter Name="ADCx" TI="4344" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_adc.c" Line="266" Addr="0x0" Param="Yes"/>
+    <parameter Name="NewState" TI="3883" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_adc.c" Line="266" Addr="0x1" Param="Yes"/>
    </function >
-   <function Name="ADC_ResetCalibration" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_adc.c" Line="358">
-    <parameter Name="ADCx" TI="4344" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_adc.c" Line="358" Addr="0x0" Param="Yes"/>
+   <function Name="ADC_ResetCalibration" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_adc.c" Line="358">
+    <parameter Name="ADCx" TI="4344" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_adc.c" Line="358" Addr="0x0" Param="Yes"/>
    </function >
-   <function Name="ADC_GetResetCalibrationStatus" TI="3840" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_adc.c" Line="374">
-    <parameter Name="ADCx" TI="4344" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_adc.c" Line="374" Addr="0x0" Param="Yes"/>
-    <variable Name="bitstatus" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_adc.c" Line="376" Addr="0x0" TI="3840"/>
+   <function Name="ADC_GetResetCalibrationStatus" TI="3840" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_adc.c" Line="374">
+    <parameter Name="ADCx" TI="4344" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_adc.c" Line="374" Addr="0x0" Param="Yes"/>
+    <variable Name="bitstatus" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_adc.c" Line="376" Addr="0x0" TI="3840"/>
    </function >
-   <function Name="ADC_StartCalibration" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_adc.c" Line="404">
-    <parameter Name="ADCx" TI="4344" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_adc.c" Line="404" Addr="0x0" Param="Yes"/>
+   <function Name="ADC_StartCalibration" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_adc.c" Line="404">
+    <parameter Name="ADCx" TI="4344" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_adc.c" Line="404" Addr="0x0" Param="Yes"/>
    </function >
-   <function Name="ADC_GetCalibrationStatus" TI="3840" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_adc.c" Line="420">
-    <parameter Name="ADCx" TI="4344" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_adc.c" Line="420" Addr="0x0" Param="Yes"/>
-    <variable Name="bitstatus" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_adc.c" Line="422" Addr="0x0" TI="3840"/>
+   <function Name="ADC_GetCalibrationStatus" TI="3840" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_adc.c" Line="420">
+    <parameter Name="ADCx" TI="4344" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_adc.c" Line="420" Addr="0x0" Param="Yes"/>
+    <variable Name="bitstatus" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_adc.c" Line="422" Addr="0x0" TI="3840"/>
    </function >
-   <function Name="ADC_SoftwareStartConvCmd" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_adc.c" Line="452">
-    <parameter Name="ADCx" TI="4344" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_adc.c" Line="452" Addr="0x0" Param="Yes"/>
-    <parameter Name="NewState" TI="3883" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_adc.c" Line="452" Addr="0x1" Param="Yes"/>
+   <function Name="ADC_SoftwareStartConvCmd" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_adc.c" Line="452">
+    <parameter Name="ADCx" TI="4344" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_adc.c" Line="452" Addr="0x0" Param="Yes"/>
+    <parameter Name="NewState" TI="3883" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_adc.c" Line="452" Addr="0x1" Param="Yes"/>
    </function >
-   <function Name="ADC_RegularChannelConfig" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_adc.c" Line="602">
-    <parameter Name="ADCx" TI="4344" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_adc.c" Line="602" Addr="0x0" Param="Yes"/>
-    <parameter Name="ADC_Channel" TI="3786" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_adc.c" Line="602" Addr="0x1" Param="Yes"/>
-    <parameter Name="Rank" TI="3786" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_adc.c" Line="602" Addr="0x2" Param="Yes"/>
-    <parameter Name="ADC_SampleTime" TI="3786" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_adc.c" Line="602" Addr="0x3" Param="Yes"/>
-    <variable Name="tmpreg1" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_adc.c" Line="604" Addr="0x0" TI="3750"/>
-    <variable Name="tmpreg2" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_adc.c" Line="604" Addr="0x0" TI="3750"/>
+   <function Name="ADC_RegularChannelConfig" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_adc.c" Line="602">
+    <parameter Name="ADCx" TI="4344" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_adc.c" Line="602" Addr="0x0" Param="Yes"/>
+    <parameter Name="ADC_Channel" TI="3786" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_adc.c" Line="602" Addr="0x1" Param="Yes"/>
+    <parameter Name="Rank" TI="3786" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_adc.c" Line="602" Addr="0x2" Param="Yes"/>
+    <parameter Name="ADC_SampleTime" TI="3786" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_adc.c" Line="602" Addr="0x3" Param="Yes"/>
+    <variable Name="tmpreg1" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_adc.c" Line="604" Addr="0x0" TI="3750"/>
+    <variable Name="tmpreg2" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_adc.c" Line="604" Addr="0x0" TI="3750"/>
    </function >
-   <function Name="ADC_AutoInjectedConvCmd" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_adc.c" Line="760">
-    <parameter Name="ADCx" TI="4344" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_adc.c" Line="760" Addr="0x0" Param="Yes"/>
-    <parameter Name="NewState" TI="3883" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_adc.c" Line="760" Addr="0x1" Param="Yes"/>
+   <function Name="ADC_AutoInjectedConvCmd" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_adc.c" Line="760">
+    <parameter Name="ADCx" TI="4344" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_adc.c" Line="760" Addr="0x0" Param="Yes"/>
+    <parameter Name="NewState" TI="3883" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_adc.c" Line="760" Addr="0x1" Param="Yes"/>
    </function >
-   <function Name="ADC_InjectedChannelConfig" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_adc.c" Line="994">
-    <parameter Name="ADCx" TI="4344" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_adc.c" Line="994" Addr="0x0" Param="Yes"/>
-    <parameter Name="ADC_Channel" TI="3786" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_adc.c" Line="994" Addr="0x1" Param="Yes"/>
-    <parameter Name="Rank" TI="3786" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_adc.c" Line="994" Addr="0x2" Param="Yes"/>
-    <parameter Name="ADC_SampleTime" TI="3786" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_adc.c" Line="994" Addr="0x3" Param="Yes"/>
-    <variable Name="tmpreg1" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_adc.c" Line="996" Addr="0x0" TI="3750"/>
-    <variable Name="tmpreg2" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_adc.c" Line="996" Addr="0x0" TI="3750"/>
-    <variable Name="tmpreg3" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_adc.c" Line="996" Addr="0x0" TI="3750"/>
+   <function Name="ADC_InjectedChannelConfig" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_adc.c" Line="994">
+    <parameter Name="ADCx" TI="4344" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_adc.c" Line="994" Addr="0x0" Param="Yes"/>
+    <parameter Name="ADC_Channel" TI="3786" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_adc.c" Line="994" Addr="0x1" Param="Yes"/>
+    <parameter Name="Rank" TI="3786" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_adc.c" Line="994" Addr="0x2" Param="Yes"/>
+    <parameter Name="ADC_SampleTime" TI="3786" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_adc.c" Line="994" Addr="0x3" Param="Yes"/>
+    <variable Name="tmpreg1" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_adc.c" Line="996" Addr="0x0" TI="3750"/>
+    <variable Name="tmpreg2" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_adc.c" Line="996" Addr="0x0" TI="3750"/>
+    <variable Name="tmpreg3" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_adc.c" Line="996" Addr="0x0" TI="3750"/>
    </function >
-   <function Name="ADC_InjectedSequencerLengthConfig" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_adc.c" Line="1062">
-    <parameter Name="ADCx" TI="4344" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_adc.c" Line="1062" Addr="0x0" Param="Yes"/>
-    <parameter Name="Length" TI="3786" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_adc.c" Line="1062" Addr="0x1" Param="Yes"/>
-    <variable Name="tmpreg1" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_adc.c" Line="1064" Addr="0x0" TI="3750"/>
-    <variable Name="tmpreg2" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_adc.c" Line="1065" Addr="0x0" TI="3750"/>
+   <function Name="ADC_InjectedSequencerLengthConfig" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_adc.c" Line="1062">
+    <parameter Name="ADCx" TI="4344" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_adc.c" Line="1062" Addr="0x0" Param="Yes"/>
+    <parameter Name="Length" TI="3786" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_adc.c" Line="1062" Addr="0x1" Param="Yes"/>
+    <variable Name="tmpreg1" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_adc.c" Line="1064" Addr="0x0" TI="3750"/>
+    <variable Name="tmpreg2" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_adc.c" Line="1065" Addr="0x0" TI="3750"/>
    </function >
-   <function Name="ADC_GetFlagStatus" TI="3840" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_adc.c" Line="1284">
-    <parameter Name="ADCx" TI="4344" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_adc.c" Line="1284" Addr="0x0" Param="Yes"/>
-    <parameter Name="ADC_FLAG" TI="3786" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_adc.c" Line="1284" Addr="0x1" Param="Yes"/>
-    <variable Name="bitstatus" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_adc.c" Line="1286" Addr="0x0" TI="3840"/>
+   <function Name="ADC_GetFlagStatus" TI="3840" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_adc.c" Line="1284">
+    <parameter Name="ADCx" TI="4344" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_adc.c" Line="1284" Addr="0x0" Param="Yes"/>
+    <parameter Name="ADC_FLAG" TI="3786" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_adc.c" Line="1284" Addr="0x1" Param="Yes"/>
+    <variable Name="bitstatus" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_adc.c" Line="1286" Addr="0x0" TI="3840"/>
    </function >
-   <function Name="ADC_ClearFlag" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_adc.c" Line="1322">
-    <parameter Name="ADCx" TI="4344" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_adc.c" Line="1322" Addr="0x0" Param="Yes"/>
-    <parameter Name="ADC_FLAG" TI="3786" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_adc.c" Line="1322" Addr="0x1" Param="Yes"/>
+   <function Name="ADC_ClearFlag" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_adc.c" Line="1322">
+    <parameter Name="ADCx" TI="4344" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_adc.c" Line="1322" Addr="0x0" Param="Yes"/>
+    <parameter Name="ADC_FLAG" TI="3786" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_adc.c" Line="1322" Addr="0x1" Param="Yes"/>
    </function >
   </module>
-  <module Name="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_flash.c" >
+  <module Name="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_flash.c" >
    <type Family="Base" Name="long int" ID="6667"/>
    <type Family="Base" Name="short int" ID="6674"/>
    <type Family="Base" Name="signed char" ID="6681"/>
@@ -402,14 +402,14 @@
     <Component Name="WRPR" TI="6858" Line="278" Offs="32"/>
    </type>
    <type Family="typedef" Name="FLASH_TypeDef" Line="279" ID="6874" toTI="6732"/>
-   <function Name="FLASH_SetLatency" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_flash.c" Line="86">
-    <parameter Name="FLASH_Latency" TI="6688" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_flash.c" Line="86" Addr="0x0" Param="Yes"/>
+   <function Name="FLASH_SetLatency" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_flash.c" Line="86">
+    <parameter Name="FLASH_Latency" TI="6688" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_flash.c" Line="86" Addr="0x0" Param="Yes"/>
    </function >
-   <function Name="FLASH_PrefetchBufferCmd" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_flash.c" Line="126">
-    <parameter Name="FLASH_PrefetchBuffer" TI="6688" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_flash.c" Line="126" Addr="0x0" Param="Yes"/>
+   <function Name="FLASH_PrefetchBufferCmd" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_flash.c" Line="126">
+    <parameter Name="FLASH_PrefetchBuffer" TI="6688" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_flash.c" Line="126" Addr="0x0" Param="Yes"/>
    </function >
   </module>
-  <module Name="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_gpio.c" >
+  <module Name="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_gpio.c" >
    <type Family="Base" Name="long int" ID="7034"/>
    <type Family="Base" Name="short int" ID="7041"/>
    <type Family="Base" Name="signed char" ID="7048"/>
@@ -449,29 +449,29 @@
    <type Family="typedef" Name="GPIO_InitTypeDef" Line="67" ID="7536" toTI="7485"/>
    <type Family="typedef" Name="BitAction" Line="73" ID="7568" toTI="7547"/>
    <type Family="Pointer" TI="7620" toTI="7278"/>
-   <function Name="GPIO_Init" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_gpio.c" Line="124">
-    <parameter Name="GPIOx" TI="7620" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_gpio.c" Line="124" Addr="0x0" Param="Yes"/>
+   <function Name="GPIO_Init" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_gpio.c" Line="124">
+    <parameter Name="GPIOx" TI="7620" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_gpio.c" Line="124" Addr="0x0" Param="Yes"/>
    <type Family="Pointer" TI="7789" toTI="7536"/>
-    <parameter Name="GPIO_InitStruct" TI="7789" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_gpio.c" Line="124" Addr="0x1" Param="Yes"/>
-    <variable Name="currentmode" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_gpio.c" Line="126" Addr="0x0" TI="7055"/>
-    <variable Name="currentpin" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_gpio.c" Line="126" Addr="0x0" TI="7055"/>
-    <variable Name="pinpos" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_gpio.c" Line="126" Addr="0x0" TI="7055"/>
-    <variable Name="pos" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_gpio.c" Line="126" Addr="0x0" TI="7055"/>
-    <variable Name="tmpreg" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_gpio.c" Line="127" Addr="0x0" TI="7055"/>
-    <variable Name="pinmask" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_gpio.c" Line="127" Addr="0x0" TI="7055"/>
+    <parameter Name="GPIO_InitStruct" TI="7789" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_gpio.c" Line="124" Addr="0x1" Param="Yes"/>
+    <variable Name="currentmode" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_gpio.c" Line="126" Addr="0x0" TI="7055"/>
+    <variable Name="currentpin" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_gpio.c" Line="126" Addr="0x0" TI="7055"/>
+    <variable Name="pinpos" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_gpio.c" Line="126" Addr="0x0" TI="7055"/>
+    <variable Name="pos" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_gpio.c" Line="126" Addr="0x0" TI="7055"/>
+    <variable Name="tmpreg" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_gpio.c" Line="127" Addr="0x0" TI="7055"/>
+    <variable Name="pinmask" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_gpio.c" Line="127" Addr="0x0" TI="7055"/>
    </function >
-   <function Name="GPIO_ReadInputDataBit" TI="7091" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_gpio.c" Line="246">
-    <parameter Name="GPIOx" TI="7620" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_gpio.c" Line="246" Addr="0x0" Param="Yes"/>
-    <parameter Name="GPIO_Pin" TI="7073" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_gpio.c" Line="246" Addr="0x1" Param="Yes"/>
-    <variable Name="bitstatus" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_gpio.c" Line="248" Addr="0x0" TI="7091"/>
+   <function Name="GPIO_ReadInputDataBit" TI="7091" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_gpio.c" Line="246">
+    <parameter Name="GPIOx" TI="7620" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_gpio.c" Line="246" Addr="0x0" Param="Yes"/>
+    <parameter Name="GPIO_Pin" TI="7073" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_gpio.c" Line="246" Addr="0x1" Param="Yes"/>
+    <variable Name="bitstatus" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_gpio.c" Line="248" Addr="0x0" TI="7091"/>
    </function >
-   <function Name="GPIO_WriteBit" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_gpio.c" Line="374">
-    <parameter Name="GPIOx" TI="7620" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_gpio.c" Line="374" Addr="0x0" Param="Yes"/>
-    <parameter Name="GPIO_Pin" TI="7073" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_gpio.c" Line="374" Addr="0x1" Param="Yes"/>
-    <parameter Name="BitVal" TI="7568" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_gpio.c" Line="374" Addr="0x2" Param="Yes"/>
+   <function Name="GPIO_WriteBit" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_gpio.c" Line="374">
+    <parameter Name="GPIOx" TI="7620" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_gpio.c" Line="374" Addr="0x0" Param="Yes"/>
+    <parameter Name="GPIO_Pin" TI="7073" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_gpio.c" Line="374" Addr="0x1" Param="Yes"/>
+    <parameter Name="BitVal" TI="7568" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_gpio.c" Line="374" Addr="0x2" Param="Yes"/>
    </function >
   </module>
-  <module Name="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_it.c" >
+  <module Name="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_it.c" >
    <type Family="Base" Name="long int" ID="8714"/>
    <type Family="Base" Name="short int" ID="8721"/>
    <type Family="Base" Name="signed char" ID="8728"/>
@@ -479,80 +479,80 @@
    <type Family="Base" Name="short unsigned int" ID="8742"/>
    <type Family="Base" Name="unsigned char" ID="8749"/>
    <type Family="Base" Name="unsigned int" ID="8756"/>
-   <function Name="WWDG_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_it.c" Line="150">
+   <function Name="WWDG_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_it.c" Line="150">
    </function >
-   <function Name="PVD_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_it.c" Line="161">
+   <function Name="PVD_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_it.c" Line="161">
    </function >
-   <function Name="TAMPER_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_it.c" Line="172">
+   <function Name="TAMPER_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_it.c" Line="172">
    </function >
-   <function Name="RTC_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_it.c" Line="183">
+   <function Name="RTC_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_it.c" Line="183">
    </function >
-   <function Name="FLASH_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_it.c" Line="194">
+   <function Name="FLASH_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_it.c" Line="194">
    </function >
-   <function Name="RCC_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_it.c" Line="205">
+   <function Name="RCC_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_it.c" Line="205">
    </function >
-   <function Name="EXTI0_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_it.c" Line="216">
+   <function Name="EXTI0_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_it.c" Line="216">
    </function >
-   <function Name="EXTI1_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_it.c" Line="227">
+   <function Name="EXTI1_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_it.c" Line="227">
    </function >
-   <function Name="EXTI2_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_it.c" Line="238">
+   <function Name="EXTI2_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_it.c" Line="238">
    </function >
-   <function Name="EXTI3_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_it.c" Line="249">
+   <function Name="EXTI3_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_it.c" Line="249">
    </function >
-   <function Name="EXTI4_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_it.c" Line="260">
+   <function Name="EXTI4_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_it.c" Line="260">
    </function >
-   <function Name="DMA1_Channel1_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_it.c" Line="271">
+   <function Name="DMA1_Channel1_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_it.c" Line="271">
    </function >
-   <function Name="DMA1_Channel2_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_it.c" Line="282">
+   <function Name="DMA1_Channel2_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_it.c" Line="282">
    </function >
-   <function Name="DMA1_Channel3_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_it.c" Line="293">
+   <function Name="DMA1_Channel3_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_it.c" Line="293">
    </function >
-   <function Name="DMA1_Channel4_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_it.c" Line="304">
+   <function Name="DMA1_Channel4_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_it.c" Line="304">
    </function >
-   <function Name="DMA1_Channel5_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_it.c" Line="315">
+   <function Name="DMA1_Channel5_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_it.c" Line="315">
    </function >
-   <function Name="DMA1_Channel6_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_it.c" Line="326">
+   <function Name="DMA1_Channel6_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_it.c" Line="326">
    </function >
-   <function Name="DMA1_Channel7_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_it.c" Line="337">
+   <function Name="DMA1_Channel7_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_it.c" Line="337">
    </function >
-   <function Name="ADC1_2_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_it.c" Line="348">
+   <function Name="ADC1_2_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_it.c" Line="348">
    </function >
-   <function Name="EXTI9_5_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_it.c" Line="405">
+   <function Name="EXTI9_5_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_it.c" Line="405">
    </function >
-   <function Name="TIM1_BRK_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_it.c" Line="416">
+   <function Name="TIM1_BRK_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_it.c" Line="416">
    </function >
-   <function Name="TIM1_TRG_COM_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_it.c" Line="440">
+   <function Name="TIM1_TRG_COM_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_it.c" Line="440">
    </function >
-   <function Name="TIM1_CC_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_it.c" Line="451">
+   <function Name="TIM1_CC_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_it.c" Line="451">
    </function >
-   <function Name="TIM3_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_it.c" Line="473">
+   <function Name="TIM3_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_it.c" Line="473">
    </function >
-   <function Name="TIM4_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_it.c" Line="484">
+   <function Name="TIM4_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_it.c" Line="484">
    </function >
-   <function Name="I2C1_EV_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_it.c" Line="495">
+   <function Name="I2C1_EV_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_it.c" Line="495">
    </function >
-   <function Name="I2C1_ER_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_it.c" Line="506">
+   <function Name="I2C1_ER_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_it.c" Line="506">
    </function >
-   <function Name="I2C2_EV_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_it.c" Line="517">
+   <function Name="I2C2_EV_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_it.c" Line="517">
    </function >
-   <function Name="I2C2_ER_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_it.c" Line="528">
+   <function Name="I2C2_ER_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_it.c" Line="528">
    </function >
-   <function Name="SPI1_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_it.c" Line="539">
+   <function Name="SPI1_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_it.c" Line="539">
    </function >
-   <function Name="SPI2_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_it.c" Line="550">
+   <function Name="SPI2_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_it.c" Line="550">
    </function >
-   <function Name="USART2_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_it.c" Line="572">
+   <function Name="USART2_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_it.c" Line="572">
    </function >
-   <function Name="USART3_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_it.c" Line="583">
+   <function Name="USART3_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_it.c" Line="583">
    </function >
-   <function Name="EXTI15_10_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_it.c" Line="594">
+   <function Name="EXTI15_10_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_it.c" Line="594">
    </function >
-   <function Name="RTCAlarm_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_it.c" Line="605">
+   <function Name="RTCAlarm_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_it.c" Line="605">
    </function >
-   <function Name="USBWakeUp_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_it.c" Line="616">
+   <function Name="USBWakeUp_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_it.c" Line="616">
    </function >
   </module>
-  <module Name="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_lib.c" >
+  <module Name="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_lib.c" >
    <type Family="Base" Name="long int" ID="10164"/>
    <type Family="Base" Name="short int" ID="10171"/>
    <type Family="Base" Name="signed char" ID="10178"/>
@@ -561,7 +561,7 @@
    <type Family="Base" Name="unsigned char" ID="10199"/>
    <type Family="Base" Name="unsigned int" ID="10206"/>
   </module>
-  <module Name="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_nvic.c" >
+  <module Name="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_nvic.c" >
    <type Family="Base" Name="long int" ID="10251"/>
    <type Family="Base" Name="short int" ID="10258"/>
    <type Family="Base" Name="signed char" ID="10265"/>
@@ -618,21 +618,21 @@
     <Component Name="NVIC_IRQChannelCmd" TI="11011" Line="31" Offs="3"/>
    </type>
    <type Family="typedef" Name="NVIC_InitTypeDef" Line="32" ID="11026" toTI="10961"/>
-   <function Name="NVIC_Init" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_nvic.c" Line="116">
+   <function Name="NVIC_Init" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_nvic.c" Line="116">
    <type Family="Pointer" TI="11273" toTI="11026"/>
-    <parameter Name="NVIC_InitStruct" TI="11273" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_nvic.c" Line="116" Addr="0x0" Param="Yes"/>
-    <variable Name="tmppriority" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_nvic.c" Line="118" Addr="0x0" TI="10272"/>
-    <variable Name="tmpreg" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_nvic.c" Line="118" Addr="0x0" TI="10272"/>
-    <variable Name="tmpmask" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_nvic.c" Line="118" Addr="0x0" TI="10272"/>
-    <variable Name="tmppre" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_nvic.c" Line="119" Addr="0x0" TI="10272"/>
-    <variable Name="tmpsub" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_nvic.c" Line="119" Addr="0x0" TI="10272"/>
+    <parameter Name="NVIC_InitStruct" TI="11273" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_nvic.c" Line="116" Addr="0x0" Param="Yes"/>
+    <variable Name="tmppriority" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_nvic.c" Line="118" Addr="0x0" TI="10272"/>
+    <variable Name="tmpreg" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_nvic.c" Line="118" Addr="0x0" TI="10272"/>
+    <variable Name="tmpmask" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_nvic.c" Line="118" Addr="0x0" TI="10272"/>
+    <variable Name="tmppre" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_nvic.c" Line="119" Addr="0x0" TI="10272"/>
+    <variable Name="tmpsub" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_nvic.c" Line="119" Addr="0x0" TI="10272"/>
    </function >
-   <function Name="NVIC_SetVectorTable" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_nvic.c" Line="393">
-    <parameter Name="NVIC_VectTab" TI="10272" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_nvic.c" Line="393" Addr="0x0" Param="Yes"/>
-    <parameter Name="Offset" TI="10272" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_nvic.c" Line="393" Addr="0x1" Param="Yes"/>
+   <function Name="NVIC_SetVectorTable" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_nvic.c" Line="393">
+    <parameter Name="NVIC_VectTab" TI="10272" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_nvic.c" Line="393" Addr="0x0" Param="Yes"/>
+    <parameter Name="Offset" TI="10272" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_nvic.c" Line="393" Addr="0x1" Param="Yes"/>
    </function >
   </module>
-  <module Name="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_rcc.c" >
+  <module Name="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_rcc.c" >
    <type Family="Base" Name="long int" ID="12655"/>
    <type Family="Base" Name="short int" ID="12662"/>
    <type Family="Base" Name="signed char" ID="12669"/>
@@ -670,82 +670,82 @@
     <Component Name="ADCCLK_Frequency" TI="13110" Line="31" Offs="16"/>
    </type>
    <type Family="typedef" Name="RCC_ClocksTypeDef" Line="32" ID="13125" toTI="13046"/>
-   <function Name="RCC_DeInit" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="124">
+   <function Name="RCC_DeInit" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="124">
    </function >
-   <function Name="RCC_HSEConfig" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="159">
-    <parameter Name="RCC_HSE" TI="12676" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="159" Addr="0x0" Param="Yes"/>
+   <function Name="RCC_HSEConfig" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="159">
+    <parameter Name="RCC_HSE" TI="12676" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="159" Addr="0x0" Param="Yes"/>
    </function >
-   <function Name="RCC_PLLConfig" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="287">
-    <parameter Name="RCC_PLLSource" TI="12676" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="287" Addr="0x0" Param="Yes"/>
-    <parameter Name="RCC_PLLMul" TI="12676" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="287" Addr="0x1" Param="Yes"/>
-    <variable Name="tmpreg" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="289" Addr="0x0" TI="12676"/>
+   <function Name="RCC_PLLConfig" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="287">
+    <parameter Name="RCC_PLLSource" TI="12676" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="287" Addr="0x0" Param="Yes"/>
+    <parameter Name="RCC_PLLMul" TI="12676" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="287" Addr="0x1" Param="Yes"/>
+    <variable Name="tmpreg" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="289" Addr="0x0" TI="12676"/>
    </function >
-   <function Name="RCC_PLLCmd" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="316">
-    <parameter Name="NewState" TI="12825" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="316" Addr="0x0" Param="Yes"/>
+   <function Name="RCC_PLLCmd" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="316">
+    <parameter Name="NewState" TI="12825" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="316" Addr="0x0" Param="Yes"/>
    </function >
-   <function Name="RCC_SYSCLKConfig" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="335">
-    <parameter Name="RCC_SYSCLKSource" TI="12676" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="335" Addr="0x0" Param="Yes"/>
-    <variable Name="tmpreg" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="337" Addr="0x0" TI="12676"/>
+   <function Name="RCC_SYSCLKConfig" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="335">
+    <parameter Name="RCC_SYSCLKSource" TI="12676" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="335" Addr="0x0" Param="Yes"/>
+    <variable Name="tmpreg" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="337" Addr="0x0" TI="12676"/>
    </function >
-   <function Name="RCC_GetSYSCLKSource" TI="12712" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="365">
+   <function Name="RCC_GetSYSCLKSource" TI="12712" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="365">
    </function >
-   <function Name="RCC_HCLKConfig" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="388">
-    <parameter Name="RCC_SYSCLK" TI="12676" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="388" Addr="0x0" Param="Yes"/>
-    <variable Name="tmpreg" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="390" Addr="0x0" TI="12676"/>
+   <function Name="RCC_HCLKConfig" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="388">
+    <parameter Name="RCC_SYSCLK" TI="12676" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="388" Addr="0x0" Param="Yes"/>
+    <variable Name="tmpreg" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="390" Addr="0x0" TI="12676"/>
    </function >
-   <function Name="RCC_PCLK1Config" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="421">
-    <parameter Name="RCC_HCLK" TI="12676" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="421" Addr="0x0" Param="Yes"/>
-    <variable Name="tmpreg" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="423" Addr="0x0" TI="12676"/>
+   <function Name="RCC_PCLK1Config" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="421">
+    <parameter Name="RCC_HCLK" TI="12676" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="421" Addr="0x0" Param="Yes"/>
+    <variable Name="tmpreg" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="423" Addr="0x0" TI="12676"/>
    </function >
-   <function Name="RCC_PCLK2Config" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="454">
-    <parameter Name="RCC_HCLK" TI="12676" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="454" Addr="0x0" Param="Yes"/>
-    <variable Name="tmpreg" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="456" Addr="0x0" TI="12676"/>
+   <function Name="RCC_PCLK2Config" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="454">
+    <parameter Name="RCC_HCLK" TI="12676" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="454" Addr="0x0" Param="Yes"/>
+    <variable Name="tmpreg" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="456" Addr="0x0" TI="12676"/>
    </function >
-   <function Name="RCC_ADCCLKConfig" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="541">
-    <parameter Name="RCC_PCLK2" TI="12676" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="541" Addr="0x0" Param="Yes"/>
-    <variable Name="tmpreg" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="543" Addr="0x0" TI="12676"/>
+   <function Name="RCC_ADCCLKConfig" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="541">
+    <parameter Name="RCC_PCLK2" TI="12676" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="541" Addr="0x0" Param="Yes"/>
+    <variable Name="tmpreg" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="543" Addr="0x0" TI="12676"/>
    </function >
-   <function Name="RCC_GetClocksFreq" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="668">
+   <function Name="RCC_GetClocksFreq" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="668">
    <type Family="Pointer" TI="14063" toTI="13125"/>
-    <parameter Name="RCC_Clocks" TI="14063" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="668" Addr="0x0" Param="Yes"/>
-    <variable Name="tmp" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="670" Addr="0x0" TI="12676"/>
-    <variable Name="pllmull" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="670" Addr="0x0" TI="12676"/>
-    <variable Name="pllsource" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="670" Addr="0x0" TI="12676"/>
-    <variable Name="presc" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="670" Addr="0x0" TI="12676"/>
+    <parameter Name="RCC_Clocks" TI="14063" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="668" Addr="0x0" Param="Yes"/>
+    <variable Name="tmp" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="670" Addr="0x0" TI="12676"/>
+    <variable Name="pllmull" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="670" Addr="0x0" TI="12676"/>
+    <variable Name="pllsource" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="670" Addr="0x0" TI="12676"/>
+    <variable Name="presc" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="670" Addr="0x0" TI="12676"/>
    </function >
-   <function Name="RCC_APB2PeriphClockCmd" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="801">
-    <parameter Name="RCC_APB2Periph" TI="12676" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="801" Addr="0x0" Param="Yes"/>
-    <parameter Name="NewState" TI="12825" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="801" Addr="0x1" Param="Yes"/>
+   <function Name="RCC_APB2PeriphClockCmd" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="801">
+    <parameter Name="RCC_APB2Periph" TI="12676" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="801" Addr="0x0" Param="Yes"/>
+    <parameter Name="NewState" TI="12825" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="801" Addr="0x1" Param="Yes"/>
    </function >
-   <function Name="RCC_APB1PeriphClockCmd" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="835">
-    <parameter Name="RCC_APB1Periph" TI="12676" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="835" Addr="0x0" Param="Yes"/>
-    <parameter Name="NewState" TI="12825" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="835" Addr="0x1" Param="Yes"/>
+   <function Name="RCC_APB1PeriphClockCmd" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="835">
+    <parameter Name="RCC_APB1Periph" TI="12676" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="835" Addr="0x0" Param="Yes"/>
+    <parameter Name="NewState" TI="12825" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="835" Addr="0x1" Param="Yes"/>
    </function >
-   <function Name="RCC_APB2PeriphResetCmd" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="867">
-    <parameter Name="RCC_APB2Periph" TI="12676" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="867" Addr="0x0" Param="Yes"/>
-    <parameter Name="NewState" TI="12825" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="867" Addr="0x1" Param="Yes"/>
+   <function Name="RCC_APB2PeriphResetCmd" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="867">
+    <parameter Name="RCC_APB2Periph" TI="12676" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="867" Addr="0x0" Param="Yes"/>
+    <parameter Name="NewState" TI="12825" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="867" Addr="0x1" Param="Yes"/>
    </function >
-   <function Name="RCC_APB1PeriphResetCmd" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="900">
-    <parameter Name="RCC_APB1Periph" TI="12676" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="900" Addr="0x0" Param="Yes"/>
-    <parameter Name="NewState" TI="12825" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="900" Addr="0x1" Param="Yes"/>
+   <function Name="RCC_APB1PeriphResetCmd" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="900">
+    <parameter Name="RCC_APB1Periph" TI="12676" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="900" Addr="0x0" Param="Yes"/>
+    <parameter Name="NewState" TI="12825" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="900" Addr="0x1" Param="Yes"/>
    </function >
-   <function Name="RCC_GetFlagStatus" TI="12782" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="989">
-    <parameter Name="RCC_FLAG" TI="12712" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="989" Addr="0x0" Param="Yes"/>
-    <variable Name="tmp" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="991" Addr="0x0" TI="12676"/>
-    <variable Name="statusreg" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="992" Addr="0x0" TI="12676"/>
-    <variable Name="bitstatus" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="993" Addr="0x0" TI="12782"/>
+   <function Name="RCC_GetFlagStatus" TI="12782" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="989">
+    <parameter Name="RCC_FLAG" TI="12712" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="989" Addr="0x0" Param="Yes"/>
+    <variable Name="tmp" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="991" Addr="0x0" TI="12676"/>
+    <variable Name="statusreg" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="992" Addr="0x0" TI="12676"/>
+    <variable Name="bitstatus" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="993" Addr="0x0" TI="12782"/>
    </function >
-   <function Name="RCC_WaitForHSEStartUp" TI="12857" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="198">
-    <variable Name="StartUpCounter" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="200" Addr="0x34000004" TI="12740"/>
-    <variable Name="status" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="201" Addr="0x34000010" TI="12857"/>
-    <variable Name="HSEStatus" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="202" Addr="0x10" TI="12782"/>
+   <function Name="RCC_WaitForHSEStartUp" TI="12857" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="198">
+    <variable Name="StartUpCounter" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="200" Addr="0x34000004" TI="12740"/>
+    <variable Name="status" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="201" Addr="0x34000010" TI="12857"/>
+    <variable Name="HSEStatus" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="202" Addr="0x10" TI="12782"/>
    </function >
    <type Family="array" ID="14761" toTI="12722"/>
-   <variable Name="APBAHBPrescTable" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="111" Addr="0x8001798" TI="14794"/>
+   <variable Name="APBAHBPrescTable" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="111" Addr="0x8001798" TI="14794"/>
    <type Family="array" ID="14799" toTI="12722"/>
-   <variable Name="ADCPrescTable" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="112" Addr="0x80017A8" TI="14832"/>
+   <variable Name="ADCPrescTable" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_rcc.c" Line="112" Addr="0x80017A8" TI="14832"/>
   </module>
-  <module Name="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_tim.c" >
+  <module Name="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_tim.c" >
    <type Family="Base" Name="long int" ID="14875"/>
    <type Family="Base" Name="short int" ID="14882"/>
    <type Family="Base" Name="signed char" ID="14889"/>
@@ -841,49 +841,49 @@
    </type>
    <type Family="typedef" Name="TIM_BDTRInitTypeDef" Line="69" ID="16092" toTI="15985"/>
    <type Family="Pointer" TI="16217" toTI="15661"/>
-   <function Name="TIM_TimeBaseInit" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_tim.c" Line="199">
-    <parameter Name="TIMx" TI="16217" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_tim.c" Line="199" Addr="0x0" Param="Yes"/>
+   <function Name="TIM_TimeBaseInit" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_tim.c" Line="199">
+    <parameter Name="TIMx" TI="16217" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_tim.c" Line="199" Addr="0x0" Param="Yes"/>
    <type Family="Pointer" TI="16445" toTI="15752"/>
-    <parameter Name="TIM_TimeBaseInitStruct" TI="16445" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_tim.c" Line="199" Addr="0x1" Param="Yes"/>
+    <parameter Name="TIM_TimeBaseInitStruct" TI="16445" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_tim.c" Line="199" Addr="0x1" Param="Yes"/>
    </function >
    <type Family="Pointer" TI="16550" toTI="15884"/>
-   <function Name="TIM_OC3Init" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_tim.c" Line="421">
-    <parameter Name="TIMx" TI="16217" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_tim.c" Line="421" Addr="0x0" Param="Yes"/>
-    <parameter Name="TIM_OCInitStruct" TI="16550" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_tim.c" Line="421" Addr="0x1" Param="Yes"/>
-    <variable Name="tmpccmrx" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_tim.c" Line="423" Addr="0x0" TI="14914"/>
-    <variable Name="tmpccer" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_tim.c" Line="423" Addr="0x0" TI="14914"/>
-    <variable Name="tmpcr2" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_tim.c" Line="423" Addr="0x0" TI="14914"/>
+   <function Name="TIM_OC3Init" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_tim.c" Line="421">
+    <parameter Name="TIMx" TI="16217" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_tim.c" Line="421" Addr="0x0" Param="Yes"/>
+    <parameter Name="TIM_OCInitStruct" TI="16550" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_tim.c" Line="421" Addr="0x1" Param="Yes"/>
+    <variable Name="tmpccmrx" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_tim.c" Line="423" Addr="0x0" TI="14914"/>
+    <variable Name="tmpccer" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_tim.c" Line="423" Addr="0x0" TI="14914"/>
+    <variable Name="tmpcr2" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_tim.c" Line="423" Addr="0x0" TI="14914"/>
    </function >
    <type Family="Pointer" TI="16921" toTI="16092"/>
    <type Family="Pointer" TI="17047" toTI="15974"/>
-   <function Name="TIM_Cmd" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_tim.c" Line="829">
-    <parameter Name="TIMx" TI="16217" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_tim.c" Line="829" Addr="0x0" Param="Yes"/>
-    <parameter Name="NewState" TI="15034" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_tim.c" Line="829" Addr="0x1" Param="Yes"/>
+   <function Name="TIM_Cmd" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_tim.c" Line="829">
+    <parameter Name="TIMx" TI="16217" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_tim.c" Line="829" Addr="0x0" Param="Yes"/>
+    <parameter Name="NewState" TI="15034" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_tim.c" Line="829" Addr="0x1" Param="Yes"/>
    </function >
-   <function Name="TIM_CtrlPWMOutputs" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_tim.c" Line="856">
-    <parameter Name="TIMx" TI="16217" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_tim.c" Line="856" Addr="0x0" Param="Yes"/>
-    <parameter Name="NewState" TI="15034" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_tim.c" Line="856" Addr="0x1" Param="Yes"/>
+   <function Name="TIM_CtrlPWMOutputs" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_tim.c" Line="856">
+    <parameter Name="TIMx" TI="16217" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_tim.c" Line="856" Addr="0x0" Param="Yes"/>
+    <parameter Name="NewState" TI="15034" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_tim.c" Line="856" Addr="0x1" Param="Yes"/>
    </function >
-   <function Name="TIM_ITConfig" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_tim.c" Line="894">
-    <parameter Name="TIMx" TI="16217" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_tim.c" Line="894" Addr="0x0" Param="Yes"/>
-    <parameter Name="TIM_IT" TI="14914" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_tim.c" Line="894" Addr="0x1" Param="Yes"/>
-    <parameter Name="NewState" TI="15034" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_tim.c" Line="894" Addr="0x2" Param="Yes"/>
+   <function Name="TIM_ITConfig" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_tim.c" Line="894">
+    <parameter Name="TIMx" TI="16217" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_tim.c" Line="894" Addr="0x0" Param="Yes"/>
+    <parameter Name="TIM_IT" TI="14914" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_tim.c" Line="894" Addr="0x1" Param="Yes"/>
+    <parameter Name="NewState" TI="15034" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_tim.c" Line="894" Addr="0x2" Param="Yes"/>
    </function >
-   <function Name="TIM_ARRPreloadConfig" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_tim.c" Line="1539">
-    <parameter Name="TIMx" TI="16217" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_tim.c" Line="1539" Addr="0x0" Param="Yes"/>
-    <parameter Name="NewState" TI="15034" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_tim.c" Line="1539" Addr="0x1" Param="Yes"/>
+   <function Name="TIM_ARRPreloadConfig" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_tim.c" Line="1539">
+    <parameter Name="TIMx" TI="16217" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_tim.c" Line="1539" Addr="0x0" Param="Yes"/>
+    <parameter Name="NewState" TI="15034" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_tim.c" Line="1539" Addr="0x1" Param="Yes"/>
    </function >
-   <function Name="TIM_OC1PreloadConfig" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_tim.c" Line="1653">
-    <parameter Name="TIMx" TI="16217" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_tim.c" Line="1653" Addr="0x0" Param="Yes"/>
-    <parameter Name="TIM_OCPreload" TI="14914" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_tim.c" Line="1653" Addr="0x1" Param="Yes"/>
-    <variable Name="tmpccmr1" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_tim.c" Line="1655" Addr="0x0" TI="14914"/>
+   <function Name="TIM_OC1PreloadConfig" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_tim.c" Line="1653">
+    <parameter Name="TIMx" TI="16217" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_tim.c" Line="1653" Addr="0x0" Param="Yes"/>
+    <parameter Name="TIM_OCPreload" TI="14914" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_tim.c" Line="1653" Addr="0x1" Param="Yes"/>
+    <variable Name="tmpccmr1" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_tim.c" Line="1655" Addr="0x0" TI="14914"/>
    </function >
-   <function Name="TIM_ClearITPendingBit" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_tim.c" Line="3022">
-    <parameter Name="TIMx" TI="16217" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_tim.c" Line="3022" Addr="0x0" Param="Yes"/>
-    <parameter Name="TIM_IT" TI="14914" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_tim.c" Line="3022" Addr="0x1" Param="Yes"/>
+   <function Name="TIM_ClearITPendingBit" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_tim.c" Line="3022">
+    <parameter Name="TIMx" TI="16217" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_tim.c" Line="3022" Addr="0x0" Param="Yes"/>
+    <parameter Name="TIM_IT" TI="14914" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_tim.c" Line="3022" Addr="0x1" Param="Yes"/>
    </function >
   </module>
-  <module Name="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_usart.c" >
+  <module Name="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_usart.c" >
    <type Family="Base" Name="long int" ID="22440"/>
    <type Family="Base" Name="short int" ID="22447"/>
    <type Family="Base" Name="signed char" ID="22454"/>
@@ -939,34 +939,34 @@
     <Component Name="ADCCLK_Frequency" TI="23091" Line="31" Offs="16"/>
    </type>
    <type Family="typedef" Name="RCC_ClocksTypeDef" Line="32" ID="23106" toTI="23027"/>
-   <function Name="USART_DeInit" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_usart.c" Line="90">
+   <function Name="USART_DeInit" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_usart.c" Line="90">
    <type Family="Pointer" TI="23158" toTI="22835"/>
-    <parameter Name="USARTx" TI="23158" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_usart.c" Line="90" Addr="0x0" Param="Yes"/>
+    <parameter Name="USARTx" TI="23158" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_usart.c" Line="90" Addr="0x0" Param="Yes"/>
    </function >
-   <function Name="USART_Init" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_usart.c" Line="140">
-    <parameter Name="USARTx" TI="23158" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_usart.c" Line="140" Addr="0x0" Param="Yes"/>
+   <function Name="USART_Init" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_usart.c" Line="140">
+    <parameter Name="USARTx" TI="23158" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_usart.c" Line="140" Addr="0x0" Param="Yes"/>
    <type Family="Pointer" TI="23309" toTI="22940"/>
-    <parameter Name="USART_InitStruct" TI="23309" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_usart.c" Line="140" Addr="0x1" Param="Yes"/>
-    <variable Name="tmpreg" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_usart.c" Line="142" Addr="0x0" TI="22461"/>
-    <variable Name="apbclock" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_usart.c" Line="142" Addr="0x0" TI="22461"/>
-    <variable Name="integerdivider" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_usart.c" Line="143" Addr="0x0" TI="22461"/>
-    <variable Name="fractionaldivider" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_usart.c" Line="144" Addr="0x0" TI="22461"/>
-    <variable Name="usartxbase" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_usart.c" Line="145" Addr="0x0" TI="22461"/>
-    <variable Name="RCC_ClocksStatus" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_usart.c" Line="146" Addr="0x4000004" TI="23106"/>
+    <parameter Name="USART_InitStruct" TI="23309" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_usart.c" Line="140" Addr="0x1" Param="Yes"/>
+    <variable Name="tmpreg" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_usart.c" Line="142" Addr="0x0" TI="22461"/>
+    <variable Name="apbclock" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_usart.c" Line="142" Addr="0x0" TI="22461"/>
+    <variable Name="integerdivider" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_usart.c" Line="143" Addr="0x0" TI="22461"/>
+    <variable Name="fractionaldivider" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_usart.c" Line="144" Addr="0x0" TI="22461"/>
+    <variable Name="usartxbase" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_usart.c" Line="145" Addr="0x0" TI="22461"/>
+    <variable Name="RCC_ClocksStatus" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_usart.c" Line="146" Addr="0x4000004" TI="23106"/>
    </function >
    <type Family="Pointer" TI="23423" toTI="23016"/>
-   <function Name="USART_Cmd" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_usart.c" Line="311">
-    <parameter Name="USARTx" TI="23158" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_usart.c" Line="311" Addr="0x0" Param="Yes"/>
-    <parameter Name="NewState" TI="22599" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_usart.c" Line="311" Addr="0x1" Param="Yes"/>
+   <function Name="USART_Cmd" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_usart.c" Line="311">
+    <parameter Name="USARTx" TI="23158" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_usart.c" Line="311" Addr="0x0" Param="Yes"/>
+    <parameter Name="NewState" TI="22599" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_usart.c" Line="311" Addr="0x1" Param="Yes"/>
    </function >
-   <function Name="USART_ITConfig" TI="0" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_usart.c" Line="354">
-    <parameter Name="USARTx" TI="23158" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_usart.c" Line="354" Addr="0x0" Param="Yes"/>
-    <parameter Name="USART_IT" TI="22479" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_usart.c" Line="354" Addr="0x1" Param="Yes"/>
-    <parameter Name="NewState" TI="22599" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_usart.c" Line="354" Addr="0x2" Param="Yes"/>
-    <variable Name="usartreg" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_usart.c" Line="356" Addr="0x0" TI="22461"/>
-    <variable Name="itpos" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_usart.c" Line="356" Addr="0x0" TI="22461"/>
-    <variable Name="itmask" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_usart.c" Line="356" Addr="0x0" TI="22461"/>
-    <variable Name="usartxbase" FileName="C:\FbEdit\Projects\Applications\FbEdit\BoatNav\STM32_Sonar\stm32f10x_usart.c" Line="357" Addr="0x0" TI="22461"/>
+   <function Name="USART_ITConfig" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_usart.c" Line="354">
+    <parameter Name="USARTx" TI="23158" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_usart.c" Line="354" Addr="0x0" Param="Yes"/>
+    <parameter Name="USART_IT" TI="22479" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_usart.c" Line="354" Addr="0x1" Param="Yes"/>
+    <parameter Name="NewState" TI="22599" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_usart.c" Line="354" Addr="0x2" Param="Yes"/>
+    <variable Name="usartreg" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_usart.c" Line="356" Addr="0x0" TI="22461"/>
+    <variable Name="itpos" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_usart.c" Line="356" Addr="0x0" TI="22461"/>
+    <variable Name="itmask" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_usart.c" Line="356" Addr="0x0" TI="22461"/>
+    <variable Name="usartxbase" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNav\STM32_Sonar\stm32f10x_usart.c" Line="357" Addr="0x0" TI="22461"/>
    </function >
   </module>
  </modulelist>
