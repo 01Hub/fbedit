@@ -1952,7 +1952,7 @@ STMThread proc uses ebx esi edi,Param:DWORD
 				.endif
 				mov		ebx,pixdpt
 				mov		eax,pixdir
-				.if eax<=1 && ebx>100
+				.if eax<=1 && ebx>50
 					;Up
 					sub		ebx,pixmov
 				.elseif eax>=3 && ebx<15000
