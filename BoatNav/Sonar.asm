@@ -368,13 +368,33 @@ SetWTemp:
 SetATemp:
 	.if eax!=sonardata.ATemp
 		mov		sonardata.ATemp,eax
-		sub		eax,airtempoffset
-		neg		eax
+		mov		ebx,offset AirTempArray
+		.while dword ptr [ebx+dword]
+			.break .if eax<dword ptr [ebx]
+			lea		ebx,[ebx+dword*2]
+		.endw
+		mov		edx,dword ptr [ebx+dword]
+		mov		ecx,dword ptr [ebx-dword]
+		sub		ecx,edx
+		mov		tmp,ecx
+		fild	tmp
+
+		mov		ecx,dword ptr [ebx]
+		mov		edx,dword ptr [ebx-dword*2]
+		sub		ecx,edx
+		mov		tmp,ecx
+		fild	tmp
+
+		fdivp	st(1),st
+		sub		eax,dword ptr [ebx-dword*2]
 		mov		tmp,eax
 		fild	tmp
-		fld		airtempconv
-		fdivp	st(1),st
+		fmulp	st(1),st
 		fistp	tmp
+		mov		eax,dword ptr [ebx-dword]
+		sub		eax,tmp
+		mov		tmp,eax
+
 		.if sdword ptr tmp<0
 			invoke wsprintf,addr buffer,addr szFmtDec3,tmp
 		.else
