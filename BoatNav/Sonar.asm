@@ -2183,14 +2183,6 @@ FindDepth:
 	.endif
 	mov		sonardata.bottom.x,0
 	mov		sonardata.bottom.y,0
-;	;Skip blank
-;	mov		ebx,1
-;	mov		ecx,sonardata.NoiseLevel
-;	.while ebx<32
-;		mov		ax,word ptr STM32Echo[ebx]
-;		.break .if al>=cl && ah>cl
-;		inc		ebx
-;	.endw
 	;Skip ping and surface clutter
 	movzx	eax,STM32Echo
 	invoke GetRangePtr,eax

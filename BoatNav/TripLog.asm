@@ -1,8 +1,8 @@
 
-IDD_DLGTRIPLOG          equ 1300
-IDC_LSTFILES            equ 1301
-IDC_EDTFILE             equ 1302
-IDC_BTNDELETE			equ 1303
+IDD_DLGTRIPLOG      equ 1300
+IDC_LSTFILES        equ 1301
+IDC_EDTFILE         equ 1302
+IDC_BTNDELETE		equ 1303
 
 .const
 

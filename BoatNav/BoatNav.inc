@@ -512,8 +512,6 @@ szCelcius			BYTE 'C',0
 ;watertempoffset		DWORD 1750
 watertempoffset		DWORD 2500
 watertempconv		REAL8 5.25
-;airtempoffset		DWORD 2485
-;airtempconv			REAL8 5.60
 
 szGPSDemoData		BYTE '$GPRMC,193409,A,6619.0367,N,01411.8237,E,0.0,356.4,230710,2.0,E',0Dh,0Ah
 					BYTE '$GPGGA,193409,6619.0367,N,01411.8237,E,1,5,1.10,57,M,,,,',0Dh,0Ah

@@ -318,7 +318,6 @@ GPSThread proc uses ebx esi edi,Param:DWORD
 				.if mapdata.GPSInit
 					invoke SendGPSConfig
 				.endif
-;invoke SendGPSData,addr szGPSDemoData
 				xor		ebx,ebx
 			  STMGetMore:
 				;Download ADCAirTemp and GPSHead

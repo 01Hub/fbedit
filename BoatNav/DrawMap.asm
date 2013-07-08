@@ -199,16 +199,6 @@ DrawX:
 		.if eax
 			invoke SelectObject,mapdata.tDC,eax
 			push	eax
-;			invoke wsprintf,addr buffer,addr szTile,diby,dibx
-;			invoke TextOut,mapdata.tDC,10,10,addr buffer,8
-;			invoke MoveToEx,mapdata.tDC,0,0,NULL
-;			invoke LineTo,mapdata.tDC,512,0
-;			invoke MoveToEx,mapdata.tDC,0,0,NULL
-;			invoke LineTo,mapdata.tDC,0,512
-;			invoke MoveToEx,mapdata.tDC,0,0,NULL
-;			invoke LineTo,mapdata.tDC,512,512
-;			invoke MoveToEx,mapdata.tDC,512,0,NULL
-;			invoke LineTo,mapdata.tDC,0,512
 			mov		edi,512
 			mov		eax,edi
 			imul	dd256
