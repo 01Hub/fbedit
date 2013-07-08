@@ -542,7 +542,7 @@ AirTempArray		DWORD 537,500	;*
 					DWORD 1600,150	;*
 					DWORD 1846,105	;*
 					DWORD 2090,65
-					DWORD 22515,0
+					DWORD 2510,0
 
 .data?
 
