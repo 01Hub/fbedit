@@ -316,6 +316,20 @@ GPSThread proc uses ebx esi edi,Param:DWORD
 				.endif
 			.elseif mapdata.fSTLink && mapdata.fSTLink!=IDIGNORE && !sonardata.hReplay
 				.if mapdata.GPSInit
+					xor		edi,edi
+					.while edi<10
+						invoke STLinkRead,hGPS,offset STM32_Sonar+16+sizeof SONAR.EchoArray+sizeof SONAR.GainArray+sizeof SONAR.GainInit,addr buffer,256
+						xor		ebx,ebx
+						mov		eax,-1
+						.while ebx<250 && buffer[ebx]!=0
+							invoke strcmpn,addr buffer[ebx],addr szGPRMC,6
+							.break .if !eax
+							inc		ebx
+						.endw
+						.break .if !eax
+						invoke DoSleep,1000
+						inc		edi
+					.endw
 					invoke SendGPSConfig
 				.endif
 				xor		ebx,ebx

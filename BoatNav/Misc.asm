@@ -1587,7 +1587,7 @@ ButtonProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
 ButtonProc endp
 
-DoSleep proc uses ebx,time:DWORD
+DoSleep proc uses ebx eax,time:DWORD
 
 	mov		ebx,time
 	.while sdword ptr ebx>0 && !fExitSTMThread && !fExitGPSThread
