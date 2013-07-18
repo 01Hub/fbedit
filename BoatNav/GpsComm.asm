@@ -242,7 +242,7 @@ GetLine endp
 GPSThread proc uses ebx esi edi,Param:DWORD
 	LOCAL	nRead:DWORD
 	LOCAL	nWrite:DWORD
-	LOCAL	buffer[256]:BYTE
+	LOCAL	buffer[512]:BYTE
 	LOCAL	bufflog[256]:BYTE
 	LOCAL	bufftime[32]:BYTE
 	LOCAL	buffdate[32]:BYTE
@@ -317,8 +317,8 @@ GPSThread proc uses ebx esi edi,Param:DWORD
 			.elseif mapdata.fSTLink && mapdata.fSTLink!=IDIGNORE && !sonardata.hReplay
 				.if mapdata.GPSInit
 					xor		edi,edi
-					.while edi<10
-						invoke STLinkRead,hGPS,offset STM32_Sonar+16+sizeof SONAR.EchoArray+sizeof SONAR.GainArray+sizeof SONAR.GainInit,addr buffer,256
+					.while edi<3
+						invoke STLinkRead,hGPS,STM32_Sonar+16+sizeof SONAR.EchoArray+sizeof SONAR.GainArray+sizeof SONAR.GainInit,addr buffer,256
 						xor		ebx,ebx
 						mov		eax,-1
 						.while ebx<250 && buffer[ebx]!=0
@@ -330,6 +330,23 @@ GPSThread proc uses ebx esi edi,Param:DWORD
 						invoke DoSleep,1000
 						inc		edi
 					.endw
+					.if !eax
+						invoke RtlZeroMemory,addr buffer,sizeof buffer
+						invoke strcpy,addr buffer,offset szSetBaud
+						invoke SendGPSData,addr buffer
+						invoke DoSleep,100
+					.endif
+					mov		tmp,1
+					.while (tmp & 255)
+						;Download Start status (first byte)
+						invoke STLinkRead,hGPS,STM32_Sonar,addr tmp,4
+						.if !eax || eax==IDABORT || eax==IDIGNORE
+							jmp		STLinkErr
+						.endif
+					.endw
+				 	mov		sonardata.Start,3
+					invoke STLinkWrite,hGPS,STM32_Sonar,addr sonardata.Start,4
+					invoke DoSleep,100
 					invoke SendGPSConfig
 				.endif
 				xor		ebx,ebx

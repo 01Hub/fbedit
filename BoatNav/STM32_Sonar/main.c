@@ -187,8 +187,8 @@ int main(void)
     }
     else if (STM32_Sonar.Start == 3)
     {
-      /* Set USART baudrate */
-      USART_Configuration(STM32_Sonar.EchoIndex);
+      /* Set USART baudrate to 9600 */
+      USART_Configuration(9600);
       STM32_Sonar.Start=0;
     }
     else if (STM32_Sonar.Start == 4)

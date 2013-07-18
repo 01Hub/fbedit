@@ -4,7 +4,7 @@ Version=3000
 Assembler=masm
 Group=2,-1,0,1,ShowMap,-2,-1,1,Assembly,-3,-1,1,Include,-4,-1,1,Misc,-5,-1,1,Resource
 F1=-2,2,1,0,591,160,27,0,BoatNav.asm
-F2=-3,0,1,-6,7,901,534,534,BoatNav.inc
+F2=-3,0,1,-6,7,901,534,532,BoatNav.inc
 F3=-5,2,4,-4,9,1044,620,75,BoatNav.rc
 Open=7,1,2,3,11,12,5,6,7,8,9,10,13
 Api=
@@ -23,14 +23,14 @@ cur.bmp
 F16=-5,0,0,0,0,0,0,0,Res\cur.bmp
 SonarTransmitter.cad
 F18=-5,0,3,-6,-25,1202,623,0,Res\SplitV.cur
-Path=C:\FbEdit\Projects\Applications\FbEdit\BoatNav
+Path=D:\FbEdit\Projects\Applications\fbe\BoatNav
 F5=-2,0,1,154,154,1014,416,0,Distance.asm
 F6=-2,0,1,176,176,1014,416,201,DrawMap.asm
-F7=-2,0,1,0,0,1014,416,329,GpsComm.asm
+F7=-2,0,1,0,0,1014,416,331,GpsComm.asm
 F8=-2,0,1,22,22,1014,416,1590,Misc.asm
 F9=-2,0,1,44,44,1014,416,0,Options.asm
 F10=-2,0,1,66,66,1014,416,0,Places.asm
-F12=-2,0,1,88,88,1014,416,2185,Sonar.asm
+F12=-2,0,1,88,88,1014,416,1709,Sonar.asm
 C13=0,0
 B13=
 M13=
