@@ -620,7 +620,7 @@ SonarSetupChildProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 		.if sonardata.FishDepth
 			invoke CheckDlgButton,hWin,IDC_CHKFISHDEPTH,BST_CHECKED
 		.endif
-		invoke IsDlgButtonChecked,hWnd,IDC_CHKCHART
+		invoke IsDlgButtonChecked,hControls,IDC_CHKPAUSE
 		.if eax
 			invoke CheckDlgButton,hWin,IDC_CHKCHARTPAUSE,BST_CHECKED
 		.endif
@@ -741,7 +741,7 @@ SonarSetupChildProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 				.if eax
 					mov		eax,BST_CHECKED
 				.endif
-				invoke CheckDlgButton,hWnd,IDC_CHKCHART,eax
+				invoke CheckDlgButton,hControls,IDC_CHKPAUSE,eax
 			.elseif eax==IDC_CHKFISHALARM
 				xor		sonardata.FishAlarm,1
 			.elseif eax==IDC_CHKFISHDEPTH
@@ -1683,7 +1683,7 @@ STMThread proc uses ebx esi edi,Param:DWORD
 	invoke RtlZeroMemory,addr STM32Echo,sizeof STM32Echo
 	invoke DoSleep,2000
 	.while !fExitSTMThread
-		invoke IsDlgButtonChecked,hWnd,IDC_CHKCHART
+		invoke IsDlgButtonChecked,hControls,IDC_CHKPAUSE
 		.if eax
 			.if sonardata.fSTLink && sonardata.fSTLink!=IDIGNORE
 				;Download Start status (first byte)
@@ -1784,8 +1784,8 @@ STMThread proc uses ebx esi edi,Param:DWORD
 						mov		edx,mapdata.iLat
 						.if eax!=iLon || edx!=iLat
 							invoke DoGoto,mapdata.iLon,mapdata.iLat,mapdata.gpslock,TRUE
-							invoke SetDlgItemInt,hWnd,IDC_EDTEAST,mapdata.iLon,TRUE
-							invoke SetDlgItemInt,hWnd,IDC_EDTNORTH,mapdata.iLat,TRUE
+							invoke SetDlgItemInt,hControls,IDC_STCLON,mapdata.iLon,TRUE
+							invoke SetDlgItemInt,hControls,IDC_STCLAT,mapdata.iLat,TRUE
 							movzx	eax,sonarreplay.iSpeed
 							mov		mapdata.iSpeed,eax
 							invoke wsprintf,addr buffer,addr szFmtDec2,eax
@@ -1809,8 +1809,8 @@ STMThread proc uses ebx esi edi,Param:DWORD
 									fstp	REAL10 PTR [eax]
 									lea		eax,iSumDist
 									fistp	dword ptr [eax]
-									invoke SetDlgItemInt,hWnd,IDC_EDTDIST,iSumDist,FALSE
-									invoke SetDlgItemInt,hWnd,IDC_EDTBEAR,mapdata.iBear,FALSE
+									invoke SetDlgItemInt,hControls,IDC_STCDIST,iSumDist,FALSE
+									invoke SetDlgItemInt,hControls,IDC_STCBEARING,mapdata.iBear,FALSE
 								.endif
 							.endif
 							inc		mapdata.ntrail
@@ -1836,7 +1836,7 @@ STMThread proc uses ebx esi edi,Param:DWORD
 					inc		mapdata.paintnow
 					fldz
 					fstp	mapdata.fSumDist
-					invoke SetDlgItemText,hWnd,IDC_EDTDIST,addr szNULL
+					invoke SetDlgItemText,hControls,IDC_STCDIST,addr szNULL
 					invoke ResetDepth
 				.else
 					invoke GetScrollPos,hSonar,SB_HORZ

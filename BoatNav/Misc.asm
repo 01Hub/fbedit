@@ -950,8 +950,8 @@ GetDistance proc uses ebx esi edi,lpLOG:DWORD,nCount:DWORD
 	.endw
 	fld		fSumDist
 	fistp	iSumDist
-	invoke SetDlgItemInt,hWnd,IDC_EDTDIST,iSumDist,FALSE
-	invoke SetDlgItemInt,hWnd,IDC_EDTBEAR,[esi].LOG.iBear[edi],FALSE
+	invoke SetDlgItemInt,hControls,IDC_STCDIST,iSumDist,FALSE
+	invoke SetDlgItemInt,hControls,IDC_STCBEARING,[esi].LOG.iBear[edi],FALSE
 	ret
 
 GetDistance endp
@@ -1562,7 +1562,7 @@ ButtonProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		ebx,eax
 		invoke GetParent,hWin
 		mov		esi,eax
-		.if esi==hWnd
+		.if esi==hControls
 			invoke SendMessage,esi,WM_COMMAND,ebx,hWin
 		.else
 			invoke SendMessage,esi,WM_COMMAND,ebx,hWin

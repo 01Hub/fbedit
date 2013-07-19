@@ -40,35 +40,33 @@ FpToAscii				PROTO :DWORD,:DWORD,:DWORD
 InitScroll				PROTO
 
 ;#########################################################################
+
+IDD_DLGCONTROLS			equ 2200
+IDD_DLGCONTROLS         equ 2200
+IDC_BTNZOOMIN           equ 2201
+IDC_BTNZOOMOUT          equ 2202
+IDC_BTNMAP              equ 2203
+IDC_CHKPAUSEGPS         equ 2204
+IDC_CHKLOCKTOGPS        equ 2205
+IDC_CHKSHOWTRAIL        equ 2206
+IDC_CHKSHOWGRID         equ 2207
+IDC_CHKSHOWSAT          equ 2208
+IDC_CHKSHOWNMEA         equ 2209
+IDC_CBOPLACES           equ 2210
+IDC_STCLAT              equ 2211
+IDC_STCLON              equ 2212
+IDC_STCDIST             equ 2213
+IDC_STCBEARING          equ 2214
+IDC_CHKPAUSE            equ 2215
+IDC_CHKAUTORANGE        equ 2216
+IDC_CHKZOOM             equ 2217
+IDC_CHKDEPTHCURSOR      equ 2218
+IDC_BTNDEPTHDOWN        equ 2219
+IDC_BTNDEPTHUP          equ 2220
+
 ;Main dialog
 IDD_DIALOG              equ 1000
 IDC_MAP                 equ 1001
-IDC_BTNZOOMIN           equ 1002
-IDC_BTNZOOMOUT          equ 1003
-IDC_BTNMAP				equ 1019
-IDC_CHKPAUSEGPS			equ 1013
-IDC_CHKLOCK				equ 1007
-IDC_CHKTRAIL			equ 1008
-IDC_CHKGRID				equ 1014
-IDC_CHKSHOWSAT			equ 1024
-IDC_CHKSHOWNMEA			equ 1027
-IDC_CBOGOTOPLACE        equ 1004
-IDC_EDTNORTH            equ 1005
-IDC_EDTEAST             equ 1006
-IDC_EDTDIST				equ 1009
-IDC_STCLAT              equ 1010
-IDC_STCLON              equ 1011
-IDC_STCDIST             equ 1012
-IDC_STCBEAR				equ 1016
-IDC_EDTBEAR				equ 1015
-
-IDC_SHP3				equ 1018
-IDC_CHKCHART			equ 1033
-IDC_BTNRANGEDN			equ 1021
-IDC_BTNRANGEUP			equ 1020
-IDC_CHKAUTORANGE		equ 1022
-IDC_CHKZOOM				equ 1026
-IDC_CHKCURSOR			equ 1028
 IDC_LSTNMEA				equ 1025
 
 ;Menu items
@@ -554,6 +552,7 @@ CommandLine			DWORD ?									;Pointer to command line
 gdiplSTI			GdiplusStartupInput <>					;Gdi+ structure
 token				DWORD ?									;Gdi+ token
 hWnd				HWND ?									;Handle of main window
+hControls			HWND ?									;Handle of controls window
 hMap				HWND ?									;Handle of map screen
 hSonar				HWND ?									;Handle of sonar screen
 hGPS				HWND ?									;Handle of GPS screen

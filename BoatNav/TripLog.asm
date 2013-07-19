@@ -629,7 +629,7 @@ OpenTrail proc uses ebx esi edi,lpFileName:DWORD
 		.endw
 		invoke CloseHandle,hFile
 		invoke GlobalFree,hMem
-		invoke CheckDlgButton,hWnd,IDC_CHKTRAIL,BST_CHECKED
+		invoke CheckDlgButton,hWnd,IDC_CHKSHOWTRAIL,BST_CHECKED
 		mov		mapdata.gpstrail,TRUE
 	.endif
 	ret

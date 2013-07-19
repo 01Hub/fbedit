@@ -341,9 +341,9 @@ MapProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		push	edx
 		invoke ScrnPosToMapPos,pt.x,pt.y,addr x,addr y
 		invoke MapPosToGpsPos,x,y,addr iLon,addr iLat
-		invoke SetDlgItemInt,hWnd,IDC_EDTNORTH,iLat,TRUE
+		invoke SetDlgItemInt,hControls,IDC_STCLAT,iLat,TRUE
 		mov		eax,iLon
-		invoke SetDlgItemInt,hWnd,IDC_EDTEAST,eax,TRUE
+		invoke SetDlgItemInt,hControls,IDC_STCLON,eax,TRUE
 		pop		edx
 		pop		eax
 		.if mapdata.bdist==1 && mapdata.disthead
@@ -734,6 +734,166 @@ HScroll:
 
 MapProc endp
 
+ControlsChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+	
+	mov		eax,uMsg
+	.if eax==WM_INITDIALOG
+		mov		ebx,hWin
+		mov		hControls,ebx
+		invoke CheckDlgButton,hWin,IDC_CHKLOCKTOGPS,BST_CHECKED
+		mov		mapdata.gpslock,TRUE
+		invoke CheckDlgButton,hWin,IDC_CHKSHOWTRAIL,BST_CHECKED
+		mov		mapdata.gpstrail,TRUE
+		.if sonardata.fShowSat
+			invoke CheckDlgButton,hWin,IDC_CHKSHOWSAT,BST_CHECKED
+		.endif
+		.if mapdata.fShowNMEA
+			invoke CheckDlgButton,hWin,IDC_CHKSHOWNMEA,BST_CHECKED
+		.endif
+		invoke InitPlaces
+		mov		eax,BST_UNCHECKED
+		.if sonardata.AutoRange
+			mov		eax,BST_CHECKED
+		.endif
+		invoke CheckDlgButton,hWin,IDC_CHKAUTORANGE,eax
+		invoke ImageList_GetIcon,hIml,12,ILD_NORMAL
+		mov		ebx,eax
+		invoke SendDlgItemMessage,hWin,IDC_BTNDEPTHDOWN,BM_SETIMAGE,IMAGE_ICON,ebx
+		invoke ImageList_GetIcon,hIml,4,ILD_NORMAL
+		mov		ebx,eax
+		invoke SendDlgItemMessage,hWin,IDC_BTNDEPTHUP,BM_SETIMAGE,IMAGE_ICON,ebx
+		invoke GetDlgItem,hWin,IDC_BTNDEPTHDOWN
+		invoke SetWindowLong,eax,GWL_WNDPROC,offset ButtonProc
+		mov		lpOldButtonProc,eax
+		invoke GetDlgItem,hWin,IDC_BTNDEPTHUP
+		invoke SetWindowLong,eax,GWL_WNDPROC,offset ButtonProc
+		mov		eax,FALSE
+		ret
+	.elseif eax==WM_COMMAND
+		mov		edx,wParam
+		movzx	eax,dx
+		shr		edx,16
+		.if edx==BN_CLICKED || edx==1
+			.if eax==IDC_BTNZOOMIN
+				mov		eax,mapdata.zoominx
+				.if eax
+					dec		eax
+					invoke ZoomMap,eax
+					invoke DoGoto,mapdata.iLon,mapdata.iLat,mapdata.gpslock,TRUE
+				.endif
+			.elseif eax==IDC_BTNZOOMOUT
+				mov		eax,mapdata.zoominx
+				inc		eax
+				.if eax<32
+					mov		edx,sizeof ZOOM
+					mul		edx
+					mov		ebx,eax
+					.if mapdata.zoom.zoomval[ebx]
+						mov		eax,mapdata.zoominx
+						inc		eax
+						invoke ZoomMap,eax
+						invoke DoGoto,mapdata.iLon,mapdata.iLat,mapdata.gpslock,TRUE
+					.endif
+				.endif
+			.elseif eax==IDC_BTNMAP
+				xor		ebx,ebx
+				mov		esi,offset bmpcache
+				.while ebx<MAXBMP
+					.if [esi].BMP.hBmp
+						invoke DeleteObject,[esi].BMP.hBmp
+						mov		[esi].BMP.hBmp,0
+						mov		[esi].BMP.inuse,0
+					.endif
+					lea		esi,[esi+sizeof BMP]
+					inc		ebx
+				.endw
+				.if fSeaMap
+					invoke strcpy,addr szFileName,addr szLandFileName
+					mov		fSeaMap,FALSE
+				.else
+					invoke strcpy,addr szFileName,addr szSeaFileName
+					mov		fSeaMap,TRUE
+				.endif
+				inc		mapdata.paintnow
+			.elseif eax==IDC_CHKPAUSEGPS
+				invoke IsDlgButtonChecked,hWin,IDC_CHKPAUSEGPS
+				mov		mapdata.gpslogpause,eax
+				mov		edx,MF_BYCOMMAND or MF_UNCHECKED
+				.if eax
+					mov		edx,MF_BYCOMMAND or MF_CHECKED
+				.endif
+				invoke CheckMenuItem,hContext,IDM_GPS_PAUSE,edx
+			.elseif eax==IDC_CHKLOCKTOGPS
+				invoke IsDlgButtonChecked,hWin,IDC_CHKLOCKTOGPS
+				mov		mapdata.gpslock,eax
+				inc		mapdata.paintnow
+			.elseif eax==IDC_CHKSHOWTRAIL
+				invoke IsDlgButtonChecked,hWin,IDC_CHKSHOWTRAIL
+				mov		mapdata.gpstrail,eax
+				inc		mapdata.paintnow
+			.elseif eax==IDC_CHKSHOWGRID
+				invoke IsDlgButtonChecked,hWin,IDC_CHKSHOWGRID
+				mov		mapdata.mapgrid,eax
+				inc		mapdata.paintnow
+			.elseif eax==IDC_CHKSHOWSAT
+				xor		sonardata.fShowSat,TRUE
+				invoke SendMessage,hWnd,WM_SIZE,0,0
+			.elseif eax==IDC_CHKSHOWNMEA
+				xor		mapdata.fShowNMEA,TRUE
+				invoke SendMessage,hWnd,WM_SIZE,0,0
+			.elseif eax==IDC_CBOPLACES
+				invoke SendDlgItemMessage,hWin,IDC_CBOPLACES,CB_GETCURSEL,0,0
+				invoke SendDlgItemMessage,hWin,IDC_CBOPLACES,CB_GETITEMDATA,eax,0
+				invoke DoGoto,[eax].PLACE.iLon,[eax].PLACE.iLat,TRUE,FALSE
+				inc		mapdata.paintnow
+			.elseif eax==IDC_CHKAUTORANGE
+				xor		sonardata.AutoRange,1
+				mov		eax,BST_UNCHECKED
+				.if sonardata.AutoRange
+					mov		eax,BST_CHECKED
+				.endif
+				invoke CheckDlgButton,hWin,IDC_CHKAUTORANGE,eax
+			.elseif eax==IDC_CHKZOOM
+				xor		sonardata.zoom,1
+				inc		sonardata.PaintNow
+			.elseif eax==IDC_CHKDEPTHCURSOR
+				xor		sonardata.cursor,1
+				.if sonardata.cursor
+					invoke EnableScrollBar,hSonar,SB_VERT,ESB_ENABLE_BOTH
+				.else
+					invoke EnableScrollBar,hSonar,SB_VERT,ESB_DISABLE_BOTH
+				.endif
+				inc		sonardata.PaintNow
+			.elseif eax==IDC_BTNDEPTHDOWN
+				.if sonardata.RangeInx
+					mov		sonardata.dptinx,0
+					dec		sonardata.RangeInx
+					movzx	eax,sonardata.RangeInx
+					invoke SetRange,eax
+					inc		sonardata.fGainUpload
+				.endif
+			.elseif eax==IDC_BTNDEPTHUP
+				mov		eax,sonardata.MaxRange
+				dec		eax
+				.if al>sonardata.RangeInx
+					mov		sonardata.dptinx,0
+					inc		sonardata.RangeInx
+					movzx	eax,sonardata.RangeInx
+					invoke SetRange,eax
+					inc		sonardata.fGainUpload
+				.endif
+			.endif
+		.endif
+	.else
+		mov		eax,FALSE
+		ret
+	.endif
+	mov		eax,TRUE
+	ret
+
+
+ControlsChildProc endp
+
 WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	rect:RECT
 	LOCAL	buffer[MAX_PATH]:BYTE
@@ -752,34 +912,8 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		hContext,eax
 		invoke LoadAccelerators,hInstance,IDR_ACCEL
 		mov		hAccel,eax
-		invoke CheckDlgButton,hWin,IDC_CHKLOCK,BST_CHECKED
-		mov		mapdata.gpslock,TRUE
-		invoke CheckDlgButton,hWin,IDC_CHKTRAIL,BST_CHECKED
-		mov		mapdata.gpstrail,TRUE
-		.if sonardata.fShowSat
-			invoke CheckDlgButton,hWin,IDC_CHKSHOWSAT,BST_CHECKED
-		.endif
-		.if mapdata.fShowNMEA
-			invoke CheckDlgButton,hWin,IDC_CHKSHOWNMEA,BST_CHECKED
-		.endif
-		invoke InitPlaces
-		mov		eax,BST_UNCHECKED
-		.if sonardata.AutoRange
-			mov		eax,BST_CHECKED
-		.endif
-		invoke CheckDlgButton,hWin,IDC_CHKAUTORANGE,eax
-		invoke ImageList_GetIcon,hIml,12,ILD_NORMAL
-		mov		ebx,eax
-		invoke SendDlgItemMessage,hWin,IDC_BTNRANGEDN,BM_SETIMAGE,IMAGE_ICON,ebx
-		invoke ImageList_GetIcon,hIml,4,ILD_NORMAL
-		mov		ebx,eax
-		invoke SendDlgItemMessage,hWin,IDC_BTNRANGEUP,BM_SETIMAGE,IMAGE_ICON,ebx
-		invoke GetDlgItem,hWin,IDC_BTNRANGEDN
-		invoke SetWindowLong,eax,GWL_WNDPROC,offset ButtonProc
-		mov		lpOldButtonProc,eax
-		invoke GetDlgItem,hWin,IDC_BTNRANGEUP
-		invoke SetWindowLong,eax,GWL_WNDPROC,offset ButtonProc
 		invoke MoveWindow,hWin,winrect.left,winrect.top,winrect.right,winrect.bottom,FALSE
+		invoke CreateDialogParam,hInstance,IDD_DLGCONTROLS,hWin,addr ControlsChildProc,0
 	.elseif eax==WM_CONTEXTMENU
 		invoke GetDlgItem,hWin,IDC_LSTNMEA
 		.if eax==wParam
@@ -869,7 +1003,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					mov		mapdata.trailtail,0
 					fldz
 					fstp	mapdata.fSumDist
-					invoke SetDlgItemText,hWin,IDC_EDTDIST,addr szNULL
+					invoke SetDlgItemText,hControls,IDC_STCDIST,addr szNULL
 				.endif
 			.elseif eax==IDM_LOG_REPLAY
 				.if !hFileLogRead
@@ -906,7 +1040,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						inc		mapdata.paintnow
 						fldz
 						fstp	mapdata.fSumDist
-						invoke SetDlgItemText,hWin,IDC_EDTDIST,addr szNULL
+						invoke SetDlgItemText,hControls,IDC_STCDIST,addr szNULL
 					.endif
 				.endif
 			.elseif eax==IDM_LOG_STARTSONAR
@@ -933,7 +1067,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					mov		mapdata.trailtail,0
 					fldz
 					fstp	mapdata.fSumDist
-					invoke SetDlgItemText,hWin,IDC_EDTDIST,addr szNULL
+					invoke SetDlgItemText,hControls,IDC_STCDIST,addr szNULL
 					invoke SetScrollPos,hSonar,SB_HORZ,0,TRUE
 					mov		sonardata.dptinx,0
 					invoke EnableScrollBar,hSonar,SB_HORZ,ESB_DISABLE_BOTH
@@ -964,7 +1098,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 							mov		mapdata.trailtail,0
 							fldz
 							fstp	mapdata.fSumDist
-							invoke SetDlgItemText,hWin,IDC_EDTDIST,addr szNULL
+							invoke SetDlgItemText,hControls,IDC_STCDIST,addr szNULL
 						.endif
 						mov		sonardata.dptinx,0
 						mov		sonardata.hReplay,ebx
@@ -1048,7 +1182,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		mapdata.btrip,0
 				mov		mapdata.triphead,0
 				inc		mapdata.paintnow
-				invoke SetDlgItemText,hWin,IDC_EDTDIST,addr szNULL
+				invoke SetDlgItemText,hControls,IDC_STCDIST,addr szNULL
 			.elseif eax==IDM_TRIP_INSERT
 				invoke InsertPoint,mapdata.onpoint,addr mapdata.trip,addr mapdata.triphead
 			.elseif eax==IDM_TRIP_DELETE
@@ -1083,7 +1217,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		mapdata.bdist,0
 				mov		mapdata.disthead,0
 				inc		mapdata.paintnow
-				invoke SetDlgItemText,hWin,IDC_EDTDIST,addr szNULL
+				invoke SetDlgItemText,hControls,IDC_STCDIST,addr szNULL
 			.elseif eax==IDM_DIST_INSERT
 				invoke InsertPoint,mapdata.onpoint,addr mapdata.dist,addr mapdata.disthead
 			.elseif eax==IDM_DIST_DELETE
@@ -1091,13 +1225,13 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.elseif eax==IDM_SONARCLEAR
 				invoke SonarClear
 			.elseif eax==IDM_SONARPAUSE
-				invoke IsDlgButtonChecked,hWin,IDC_CHKCHART
+				invoke IsDlgButtonChecked,hControls,IDC_CHKPAUSE
 				.if eax
 					mov		eax,BST_UNCHECKED
 				.else
 					mov		eax,BST_CHECKED
 				.endif
-				invoke CheckDlgButton,hWin,IDC_CHKCHART,eax
+				invoke CheckDlgButton,hControls,IDC_CHKPAUSE,eax
 			.elseif eax==IDM_GPS_HIDE
 				invoke CheckDlgButton,hWin,IDC_CHKSHOWNMEA,BST_UNCHECKED
 				mov		mapdata.fShowNMEA,FALSE
@@ -1123,115 +1257,6 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.endif
 			.elseif eax==IDM_GPS_CLEAR
 				invoke SendDlgItemMessage,hWin,IDC_LSTNMEA,LB_RESETCONTENT,0,0
-;Buttons
-			.elseif eax==IDC_BTNZOOMIN
-				mov		eax,mapdata.zoominx
-				.if eax
-					dec		eax
-					invoke ZoomMap,eax
-					invoke DoGoto,mapdata.iLon,mapdata.iLat,mapdata.gpslock,TRUE
-				.endif
-			.elseif eax==IDC_BTNZOOMOUT
-				mov		eax,mapdata.zoominx
-				inc		eax
-				.if eax<32
-					mov		edx,sizeof ZOOM
-					mul		edx
-					mov		ebx,eax
-					.if mapdata.zoom.zoomval[ebx]
-						mov		eax,mapdata.zoominx
-						inc		eax
-						invoke ZoomMap,eax
-						invoke DoGoto,mapdata.iLon,mapdata.iLat,mapdata.gpslock,TRUE
-					.endif
-				.endif
-			.elseif eax==IDC_BTNMAP
-				xor		ebx,ebx
-				mov		esi,offset bmpcache
-				.while ebx<MAXBMP
-					.if [esi].BMP.hBmp
-						invoke DeleteObject,[esi].BMP.hBmp
-						mov		[esi].BMP.hBmp,0
-						mov		[esi].BMP.inuse,0
-					.endif
-					lea		esi,[esi+sizeof BMP]
-					inc		ebx
-				.endw
-				.if fSeaMap
-					invoke strcpy,addr szFileName,addr szLandFileName
-					mov		fSeaMap,FALSE
-				.else
-					invoke strcpy,addr szFileName,addr szSeaFileName
-					mov		fSeaMap,TRUE
-				.endif
-				inc		mapdata.paintnow
-			.elseif eax==IDC_CHKPAUSEGPS
-				invoke IsDlgButtonChecked,hWin,IDC_CHKPAUSEGPS
-				mov		mapdata.gpslogpause,eax
-				mov		edx,MF_BYCOMMAND or MF_UNCHECKED
-				.if eax
-					mov		edx,MF_BYCOMMAND or MF_CHECKED
-				.endif
-				invoke CheckMenuItem,hContext,IDM_GPS_PAUSE,edx
-			.elseif eax==IDC_CHKLOCK
-				invoke IsDlgButtonChecked,hWin,IDC_CHKLOCK
-				mov		mapdata.gpslock,eax
-				inc		mapdata.paintnow
-			.elseif eax==IDC_CHKTRAIL
-				invoke IsDlgButtonChecked,hWin,IDC_CHKTRAIL
-				mov		mapdata.gpstrail,eax
-				inc		mapdata.paintnow
-			.elseif eax==IDC_CHKGRID
-				invoke IsDlgButtonChecked,hWin,IDC_CHKGRID
-				mov		mapdata.mapgrid,eax
-				inc		mapdata.paintnow
-			.elseif eax==IDC_CHKSHOWSAT
-				xor		sonardata.fShowSat,TRUE
-				invoke SendMessage,hWin,WM_SIZE,0,0
-			.elseif eax==IDC_CHKSHOWNMEA
-				xor		mapdata.fShowNMEA,TRUE
-				invoke SendMessage,hWin,WM_SIZE,0,0
-			.elseif eax==IDC_CBOGOTOPLACE
-				invoke SendDlgItemMessage,hWin,IDC_CBOGOTOPLACE,CB_GETCURSEL,0,0
-				invoke SendDlgItemMessage,hWin,IDC_CBOGOTOPLACE,CB_GETITEMDATA,eax,0
-				invoke DoGoto,[eax].PLACE.iLon,[eax].PLACE.iLat,TRUE,FALSE
-				inc		mapdata.paintnow
-			.elseif eax==IDC_CHKAUTORANGE
-				xor		sonardata.AutoRange,1
-				mov		eax,BST_UNCHECKED
-				.if sonardata.AutoRange
-					mov		eax,BST_CHECKED
-				.endif
-				invoke CheckDlgButton,hWin,IDC_CHKAUTORANGE,eax
-			.elseif eax==IDC_CHKZOOM
-				xor		sonardata.zoom,1
-				inc		sonardata.PaintNow
-			.elseif eax==IDC_CHKCURSOR
-				xor		sonardata.cursor,1
-				.if sonardata.cursor
-					invoke EnableScrollBar,hSonar,SB_VERT,ESB_ENABLE_BOTH
-				.else
-					invoke EnableScrollBar,hSonar,SB_VERT,ESB_DISABLE_BOTH
-				.endif
-				inc		sonardata.PaintNow
-			.elseif eax==IDC_BTNRANGEDN
-				.if sonardata.RangeInx
-					mov		sonardata.dptinx,0
-					dec		sonardata.RangeInx
-					movzx	eax,sonardata.RangeInx
-					invoke SetRange,eax
-					inc		sonardata.fGainUpload
-				.endif
-			.elseif eax==IDC_BTNRANGEUP
-				mov		eax,sonardata.MaxRange
-				dec		eax
-				.if al>sonardata.RangeInx
-					mov		sonardata.dptinx,0
-					inc		sonardata.RangeInx
-					movzx	eax,sonardata.RangeInx
-					invoke SetRange,eax
-					inc		sonardata.fGainUpload
-				.endif
 			.endif
 		.endif
 	.elseif eax==WM_INITMENUPOPUP
@@ -1291,7 +1316,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SendMessage,hMap,uMsg,wParam,lParam
 	.elseif eax==WM_SIZE
 		invoke GetClientRect,hWin,addr rect
-		sub		rect.right,95
+		;sub		rect.right,95
 		invoke GetParent,hMap
 		.if eax==hWin
 			mov		ebx,sonardata.wt
@@ -1307,95 +1332,18 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.endif
 			pop		rect.bottom
 			sub		rect.right,4
+			sub		rect.right,95
 			invoke GetDlgItem,hWin,IDC_LSTNMEA
 			.if mapdata.fShowNMEA
 				sub		rect.bottom,SATHT
-				invoke MoveWindow,eax,0,rect.bottom,rect.right,SATHT,TRUE
+				invoke MoveWindow,eax,95,rect.bottom,rect.right,SATHT,TRUE
 			.else
-				invoke MoveWindow,eax,0,rect.bottom,0,0,TRUE
+				invoke MoveWindow,eax,95,rect.bottom,0,0,TRUE
 			.endif
-			invoke MoveWindow,hMap,0,0,rect.right,rect.bottom,TRUE
+			invoke MoveWindow,hMap,95,0,rect.right,rect.bottom,TRUE
 			add		rect.right,ebx
-			add		rect.right,4
+			add		rect.right,4+95
 		.endif
-		add		rect.right,8
-		invoke GetDlgItem,hWin,IDC_BTNZOOMIN
-		invoke MoveWindow,eax,rect.right,rect.top,80,25,TRUE
-		add		rect.top,27
-		invoke GetDlgItem,hWin,IDC_BTNZOOMOUT
-		invoke MoveWindow,eax,rect.right,rect.top,80,25,TRUE
-		add		rect.top,27
-		invoke GetDlgItem,hWin,IDC_BTNMAP
-		invoke MoveWindow,eax,rect.right,rect.top,80,25,TRUE
-		add		rect.top,27
-		invoke GetDlgItem,hWin,IDC_CHKPAUSEGPS
-		invoke MoveWindow,eax,rect.right,rect.top,80,16,TRUE
-		add		rect.top,17
-		invoke GetDlgItem,hWin,IDC_CHKLOCK
-		invoke MoveWindow,eax,rect.right,rect.top,80,16,TRUE
-		add		rect.top,17
-		invoke GetDlgItem,hWin,IDC_CHKTRAIL
-		invoke MoveWindow,eax,rect.right,rect.top,80,16,TRUE
-		add		rect.top,17
-		invoke GetDlgItem,hWin,IDC_CHKGRID
-		invoke MoveWindow,eax,rect.right,rect.top,80,16,TRUE
-		add		rect.top,17
-		invoke GetDlgItem,hWin,IDC_CHKSHOWSAT
-		invoke MoveWindow,eax,rect.right,rect.top,80,16,TRUE
-		add		rect.top,17
-		invoke GetDlgItem,hWin,IDC_CHKSHOWNMEA
-		invoke MoveWindow,eax,rect.right,rect.top,80,16,TRUE
-		add		rect.top,19
-		invoke GetDlgItem,hWin,IDC_CBOGOTOPLACE
-		invoke MoveWindow,eax,rect.right,rect.top,80,200,TRUE
-		add		rect.top,25
-		invoke GetDlgItem,hWin,IDC_STCLAT
-		invoke MoveWindow,eax,rect.right,rect.top,80,16,TRUE
-		add		rect.top,17
-		invoke GetDlgItem,hWin,IDC_EDTNORTH
-		invoke MoveWindow,eax,rect.right,rect.top,80,16,TRUE
-		add		rect.top,17
-		invoke GetDlgItem,hWin,IDC_STCLON
-		invoke MoveWindow,eax,rect.right,rect.top,80,16,TRUE
-		add		rect.top,17
-		invoke GetDlgItem,hWin,IDC_EDTEAST
-		invoke MoveWindow,eax,rect.right,rect.top,80,16,TRUE
-		add		rect.top,17
-		invoke GetDlgItem,hWin,IDC_STCDIST
-		invoke MoveWindow,eax,rect.right,rect.top,80,16,TRUE
-		add		rect.top,17
-		invoke GetDlgItem,hWin,IDC_EDTDIST
-		invoke MoveWindow,eax,rect.right,rect.top,80,16,TRUE
-		add		rect.top,17
-		invoke GetDlgItem,hWin,IDC_STCBEAR
-		invoke MoveWindow,eax,rect.right,rect.top,80,16,TRUE
-		add		rect.top,17
-		invoke GetDlgItem,hWin,IDC_EDTBEAR
-		invoke MoveWindow,eax,rect.right,rect.top,80,16,TRUE
-		add		rect.top,30
-		invoke GetDlgItem,hWin,IDC_SHP3
-		mov		edx,rect.right
-		sub		edx,7
-		invoke MoveWindow,eax,edx,rect.top,95,2,TRUE
-		add		rect.top,13
-		invoke GetDlgItem,hWin,IDC_CHKCHART
-		invoke MoveWindow,eax,rect.right,rect.top,80,16,TRUE
-		add		rect.top,17
-		invoke GetDlgItem,hWin,IDC_CHKAUTORANGE
-		invoke MoveWindow,eax,rect.right,rect.top,80,16,TRUE
-		add		rect.top,17
-		invoke GetDlgItem,hWin,IDC_CHKZOOM
-		invoke MoveWindow,eax,rect.right,rect.top,80,16,TRUE
-		add		rect.top,17
-		invoke GetDlgItem,hWin,IDC_CHKCURSOR
-		invoke MoveWindow,eax,rect.right,rect.top,80,16,TRUE
-		add		rect.top,17
-		invoke GetDlgItem,hWin,IDC_BTNRANGEDN
-		invoke MoveWindow,eax,rect.right,rect.top,22,22,TRUE
-		invoke GetDlgItem,hWin,IDC_BTNRANGEUP
-		mov		edx,rect.right
-		add		edx,80-22
-		invoke MoveWindow,eax,edx,rect.top,22,22,TRUE
 	.elseif eax==WM_MOUSEMOVE
 		invoke GetClientRect,hWin,addr rect
 		invoke GetCapture
@@ -1407,10 +1355,10 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		add		ebx,sonardata.SignalBarWt
 		.if eax==hWin
 			mov		eax,rect.right
-			sub		eax,95
+			;sub		eax,95
 			sub		eax,ecx
-			.if sdword ptr eax<100
-				mov		eax,100
+			.if sdword ptr eax<50
+				mov		eax,50
 			.elseif sdword ptr eax>ebx
 				mov		eax,ebx
 			.endif
@@ -1421,7 +1369,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.else
 			mov		eax,rect.right
 			sub		eax,ecx
-			.if eax>100
+			.if eax>50
 				invoke SetCursor,hSplittV
 			.endif
 		.endif
@@ -1433,7 +1381,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		movsx	edx,dx
 		mov		eax,rect.right
 		sub		eax,ecx
-		.if eax>100
+		.if eax>50
 			invoke SetCursor,hSplittV
 			invoke SetCapture,hWin
 		.endif

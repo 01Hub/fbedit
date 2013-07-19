@@ -19,7 +19,7 @@ InitPlaces proc uses ebx esi
 
 	mov		esi,offset mapdata.place
 	invoke RtlZeroMemory,esi,sizeof MAP.place
-	invoke SendDlgItemMessage,hWnd,IDC_CBOGOTOPLACE,CB_RESETCONTENT,0,0
+	invoke SendDlgItemMessage,hControls,IDC_CBOPLACES,CB_RESETCONTENT,0,0
 	xor		ebx,ebx
 	.while ebx<MAXPLACES
 		invoke BinToDec,ebx,addr buffer
@@ -37,14 +37,14 @@ InitPlaces proc uses ebx esi
 		mov		[esi].PLACE.iLat,eax
 		invoke strcpyn,addr [esi].PLACE.text,addr buffer,sizeof PLACE.text
 		.if [esi].PLACE.text
-			invoke SendDlgItemMessage,hWnd,IDC_CBOGOTOPLACE,CB_ADDSTRING,0,addr [esi].PLACE.text
-			invoke SendDlgItemMessage,hWnd,IDC_CBOGOTOPLACE,CB_SETITEMDATA,eax,esi
+			invoke SendDlgItemMessage,hControls,IDC_CBOPLACES,CB_ADDSTRING,0,addr [esi].PLACE.text
+			invoke SendDlgItemMessage,hControls,IDC_CBOPLACES,CB_SETITEMDATA,eax,esi
 		.endif
 		lea		esi,[esi+sizeof PLACE]
 		inc		ebx
 	.endw
 	mov		mapdata.freeplace,ebx
-	invoke SendDlgItemMessage,hWnd,IDC_CBOGOTOPLACE,CB_SETCURSEL,0,0
+	invoke SendDlgItemMessage,hControls,IDC_CBOPLACES,CB_SETCURSEL,0,0
 	ret
 
 InitPlaces endp

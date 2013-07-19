@@ -279,7 +279,7 @@ GPSThread proc uses ebx esi edi,Param:DWORD
 						mov		mapdata.ntrail,0
 						mov		mapdata.trailhead,0
 						mov		mapdata.trailtail,0
-						invoke SetDlgItemText,hWnd,IDC_EDTDIST,addr szNULL
+						invoke SetDlgItemText,hControls,IDC_STCDIST,addr szNULL
 					.else
 						.if !mapdata.ntrail
 							fldz
@@ -615,8 +615,8 @@ GPSExec:
 			mov		combuff,0
 			.if (!mapdata.bdist || mapdata.bdist==2) && (!mapdata.btrip || mapdata.btrip==2)
 				invoke DoGoto,mapdata.iLon,mapdata.iLat,mapdata.gpslock,TRUE
-				invoke SetDlgItemInt,hWnd,IDC_EDTEAST,mapdata.iLon,TRUE
-				invoke SetDlgItemInt,hWnd,IDC_EDTNORTH,mapdata.iLat,TRUE
+				invoke SetDlgItemInt,hControls,IDC_STCLON,mapdata.iLon,TRUE
+				invoke SetDlgItemInt,hControls,IDC_STCLAT,mapdata.iLat,TRUE
 				inc		mapdata.paintnow
 				invoke InvalidateRect,hGPS,NULL,TRUE
 			.endif
@@ -821,8 +821,8 @@ PositionSpeedDirection:
 				fstp	REAL10 PTR [eax]
 				lea		eax,iSumDist
 				fistp	dword ptr [eax]
-				invoke SetDlgItemInt,hWnd,IDC_EDTDIST,iSumDist,FALSE
-				invoke SetDlgItemInt,hWnd,IDC_EDTBEAR,mapdata.iBear,FALSE
+				invoke SetDlgItemInt,hControls,IDC_STCDIST,iSumDist,FALSE
+				invoke SetDlgItemInt,hControls,IDC_STCBEARING,mapdata.iBear,FALSE
 			.endif
 		.endif
 		inc		mapdata.ntrail
