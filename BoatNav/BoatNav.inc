@@ -282,6 +282,8 @@ MAP struct
 	fSTLink			DWORD ?									;If TRUE internal GPS module is present
 	GPSInit			DWORD ?									;If TRUE GPS initialization is performed
 	GPSReset		DWORD ?									;If TRUE GPS initialization icludes factory reset command
+	ShowCtrl		DWORD ?									;1 Show,2 Hide,0 Do nothing
+	CtrlWt			DWORD ?									;Width of controls window
 MAP ends
 
 SATELITE struct

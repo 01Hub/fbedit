@@ -899,6 +899,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	buffer[MAX_PATH]:BYTE
 	LOCAL	dwread:DWORD
 	LOCAL	msg:MSG
+	LOCAL	pt:POINT
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
@@ -914,6 +915,44 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		hAccel,eax
 		invoke MoveWindow,hWin,winrect.left,winrect.top,winrect.right,winrect.bottom,FALSE
 		invoke CreateDialogParam,hInstance,IDD_DLGCONTROLS,hWin,addr ControlsChildProc,0
+		invoke SetTimer,hWin,1000,50,NULL
+	.elseif eax==WM_TIMER
+		.if mapdata.ShowCtrl==0
+			invoke GetCursorPos,addr pt
+			invoke ScreenToClient,hWin,addr pt
+			invoke GetClientRect,hWin,addr rect
+			mov		eax,pt.x
+			mov		edx,pt.y
+			.if eax<rect.right && edx<rect.bottom
+				.if pt.x<20 && mapdata.CtrlWt<95
+					mov		mapdata.ShowCtrl,1
+				.elseif sdword ptr pt.x>115 && mapdata.CtrlWt
+					mov		mapdata.ShowCtrl,2
+				.endif
+			.endif
+		.elseif mapdata.ShowCtrl==1
+			.if mapdata.CtrlWt<95
+				add		mapdata.CtrlWt,15
+				.if mapdata.CtrlWt>=95
+					mov		mapdata.CtrlWt,95
+					mov		mapdata.ShowCtrl,0
+				.endif
+				invoke SendMessage,hWin,WM_SIZE,0,0
+				invoke UpdateWindow,hWin
+				invoke UpdateWindow,hMap
+			.endif
+		.elseif mapdata.ShowCtrl==2
+			.if mapdata.CtrlWt
+				sub		mapdata.CtrlWt,15
+				.if sdword ptr mapdata.CtrlWt<=0
+					mov		mapdata.CtrlWt,0
+					mov		mapdata.ShowCtrl,0
+				.endif
+				invoke SendMessage,hWin,WM_SIZE,0,0
+				invoke UpdateWindow,hWin
+				invoke UpdateWindow,hMap
+			.endif
+		.endif
 	.elseif eax==WM_CONTEXTMENU
 		invoke GetDlgItem,hWin,IDC_LSTNMEA
 		.if eax==wParam
@@ -1321,28 +1360,30 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.if eax==hWin
 			mov		ebx,sonardata.wt
 			sub		rect.right,ebx
-			push	rect.bottom
 			.if sonardata.fShowSat
 				sub		rect.bottom,SATHT
 				invoke MoveWindow,hSonar,rect.right,0,ebx,rect.bottom,TRUE
 				invoke MoveWindow,hGPS,rect.right,rect.bottom,ebx,SATHT,TRUE
+				add		rect.bottom,SATHT
 			.else
 				invoke MoveWindow,hSonar,rect.right,0,ebx,rect.bottom,TRUE
 				invoke MoveWindow,hGPS,rect.right,rect.bottom,0,0,TRUE
 			.endif
-			pop		rect.bottom
 			sub		rect.right,4
-			sub		rect.right,95
+			mov		ebx,mapdata.CtrlWt
+			sub		rect.right,ebx
+			push	rect.bottom
 			invoke GetDlgItem,hWin,IDC_LSTNMEA
 			.if mapdata.fShowNMEA
 				sub		rect.bottom,SATHT
-				invoke MoveWindow,eax,95,rect.bottom,rect.right,SATHT,TRUE
+				invoke MoveWindow,eax,ebx,rect.bottom,rect.right,SATHT,TRUE
 			.else
-				invoke MoveWindow,eax,95,rect.bottom,0,0,TRUE
+				invoke MoveWindow,eax,ebx,rect.bottom,0,0,TRUE
 			.endif
-			invoke MoveWindow,hMap,95,0,rect.right,rect.bottom,TRUE
-			add		rect.right,ebx
-			add		rect.right,4+95
+			invoke MoveWindow,hMap,ebx,0,rect.right,rect.bottom,TRUE
+			pop		rect.bottom
+			sub		ebx,95
+			invoke MoveWindow,hControls,ebx,0,95,rect.bottom,TRUE
 		.endif
 	.elseif eax==WM_MOUSEMOVE
 		invoke GetClientRect,hWin,addr rect
@@ -1410,6 +1451,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.endif
 		invoke SaveStatus
 		invoke ShowWindow,hWin,SW_HIDE
+		invoke KillTimer,hWin,1000
 		invoke KillTimer,hSonar,1000
 		invoke KillTimer,hSonar,1001
 		mov		fExitMAPThread,TRUE
