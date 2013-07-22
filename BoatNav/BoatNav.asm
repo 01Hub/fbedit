@@ -64,87 +64,6 @@ SaveWinPos proc
 
 SaveWinPos endp
 
-InitMaps proc uses ebx
-	LOCAL	buffer[MAX_PATH]:BYTE
-
-	;Get zoom index
-	invoke GetPrivateProfileInt,addr szIniMap,addr szIniZoom,1,addr szIniFileName
-	mov		mapdata.zoominx,eax
-	;Get zoom level
-	mov		edx,sizeof ZOOM
-	mul		edx
-	mov		edx,mapdata.zoom.zoomval[eax]
-	mov		mapdata.zoomval,edx
-	mov		edx,mapdata.zoom.mapinx[eax]
-	mov		mapdata.mapinx,edx
-	mov		edx,mapdata.zoom.nx[eax]
-	mov		mapdata.nx,edx
-	mov		edx,mapdata.zoom.ny[eax]
-	mov		mapdata.ny,edx
-	invoke strcpy,addr mapdata.options.text[sizeof OPTIONS*3],addr mapdata.zoom.text[eax]
-	;Get map pixel positions, left top and right bottom
-	invoke GetPrivateProfileString,addr szIniMap,addr szIniPos,addr szNULL,addr buffer,sizeof buffer,addr szIniFileName
-	invoke GetItemInt,addr buffer,0
-	mov		mapdata.topx,eax
-	invoke GetItemInt,addr buffer,0
-	mov		mapdata.topy,eax
-	invoke GetItemInt,addr buffer,256
-	mov		mapdata.cursorx,eax
-	invoke GetItemInt,addr buffer,256
-	mov		mapdata.cursory,eax
-	invoke GetItemInt,addr buffer,0
-	mov		mapdata.iLon,eax
-	invoke GetItemInt,addr buffer,0
-	mov		mapdata.iLat,eax
-	ret
-
-InitMaps endp
-
-InitZoom proc uses ebx esi edi
-
-	mov		esi,offset mapdata.zoom
-	xor		ebx,ebx
-	.while ebx<MAXZOOM
-		invoke wsprintf,addr szbuff,addr szFmtDec,ebx
-		invoke GetPrivateProfileString,addr szIniZoom,addr szbuff,addr szNULL,addr szbuff,sizeof szbuff,addr szIniFileName
-		.break .if !eax
-		invoke GetItemInt,addr szbuff,0
-		mov		[esi].ZOOM.zoomval,eax
-		invoke GetItemInt,addr szbuff,0
-		mov		[esi].ZOOM.mapinx,eax
-		invoke GetItemInt,addr szbuff,0
-		mov		[esi].ZOOM.scalem,eax
-		invoke strcpyn,addr [esi].ZOOM.text,addr szbuff,sizeof ZOOM.text
-		invoke CountMapTiles,[esi].ZOOM.mapinx,addr [esi].ZOOM.nx,addr [esi].ZOOM.ny
-		invoke GetMapSize,[esi].ZOOM.nx,[esi].ZOOM.ny,addr [esi].ZOOM.xPixels,addr [esi].ZOOM.yPixels,addr [esi].ZOOM.xMeters,addr [esi].ZOOM.yMeters
-		.if !ebx
-			mov		eax,[esi].ZOOM.xPixels
-			mov		mapdata.xPixels,eax
-			mov		eax,[esi].ZOOM.yPixels
-			mov		mapdata.yPixels,eax
-			mov		eax,[esi].ZOOM.xMeters
-			mov		mapdata.xMeters,eax
-			mov		eax,[esi].ZOOM.yMeters
-			mov		mapdata.yMeters,eax
-		.endif
-		;Convert xPixels to zoomval
-		mov		eax,[esi].ZOOM.xPixels
-		imul	dd256
-		idiv	[esi].ZOOM.zoomval
-		mov		[esi].ZOOM.xPixels,eax
-		;Convert yPixels to zoomval
-		mov		eax,[esi].ZOOM.yPixels
-		imul	dd256
-		idiv	[esi].ZOOM.zoomval
-		mov		[esi].ZOOM.yPixels,eax
-		lea		esi,[esi+sizeof ZOOM]
-		inc		ebx
-	.endw
-	mov		mapdata.zoommax,ebx
-	ret
-
-InitZoom endp
-
 InitFonts proc uses ebx
 	LOCAL	buffer[256]:BYTE
 	LOCAL	lf:LOGFONT
@@ -183,556 +102,6 @@ InitFonts proc uses ebx
 	ret
 
 InitFonts endp
-
-InitScroll proc
-
-	mov		eax,mapdata.nx
-	inc		eax
-	shl		eax,9
-	sub		eax,mapdata.mapwt
-	shr		eax,4
-	invoke SetScrollRange,hMap,SB_HORZ,0,eax,TRUE
-	mov		eax,mapdata.topx
-	shr		eax,4
-	invoke SetScrollPos,hMap,SB_HORZ,eax,TRUE
-	mov		eax,mapdata.ny
-	inc		eax
-	shl		eax,9
-	sub		eax,mapdata.mapht
-	shr		eax,4
-	invoke SetScrollRange,hMap,SB_VERT,0,eax,TRUE
-	mov		eax,mapdata.topy
-	shr		eax,4
-	invoke SetScrollPos,hMap,SB_VERT,eax,TRUE
-	ret
-
-InitScroll endp
-
-MapProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
-	LOCAL	rect:RECT
-	LOCAL	pt:POINT
-	LOCAL	x:DWORD
-	LOCAL	y:DWORD
-	LOCAL	iLon:DWORD
-	LOCAL	iLat:DWORD
-	LOCAL	fDist:REAL10
-	LOCAL	fBear:REAL10
-
-	mov		eax,uMsg
-	.if eax==WM_CREATE
-		mov		eax,hWin
-		mov		hMap,eax
-		invoke ImageList_Create,16,16,ILC_COLOR24 or ILC_MASK,8+16,0
-		mov		hIml,eax
-		invoke LoadBitmap,hInstance,100
-		mov		ebx,eax
-		invoke ImageList_AddMasked,hIml,ebx,0FF00FFh
-		invoke DeleteObject,ebx
-		invoke GetDC,hWin
-		mov		mapdata.hDC,eax
-		invoke CreateCompatibleDC,mapdata.hDC
-		mov		mapdata.mDC,eax
-		invoke GetSystemMetrics,SM_CXSCREEN
-		mov		mapdata.cxs,eax
-		invoke GetSystemMetrics,SM_CYSCREEN
-		mov		mapdata.cys,eax
-		invoke CreateCompatibleBitmap,mapdata.hDC,mapdata.cxs,mapdata.cys
-		invoke SelectObject,mapdata.mDC,eax
-		mov		mapdata.hmBmpOld,eax
-		invoke CreateCompatibleDC,mapdata.hDC
-		mov		mapdata.mDC2,eax
-		invoke CreateCompatibleBitmap,mapdata.hDC,1,1
-		invoke SelectObject,mapdata.mDC2,eax
-		mov		mapdata.hmBmpOld2,eax
-		invoke CreateCompatibleDC,mapdata.hDC
-		mov		mapdata.tDC,eax
-		invoke SetStretchBltMode,mapdata.mDC,COLORONCOLOR
-		invoke SetBkMode,mapdata.mDC2,TRANSPARENT
-	.elseif eax==WM_CONTEXTMENU
-		mov		eax,lParam
-		.if eax!=-1
-			movsx	edx,ax
-			mov		mousept.x,edx
-			mov		pt.x,edx
-			shr		eax,16
-			movsx	edx,ax
-			mov		mousept.y,edx
-			mov		pt.y,edx
-			.if mapdata.btrip
-				mov		eax,MF_BYCOMMAND or MF_UNCHECKED
-				.if mapdata.btrip==2
-					mov		eax,MF_BYCOMMAND or MF_CHECKED
-				.endif
-				invoke CheckMenuItem,hContext,IDM_TRIP_DONE,eax
-				mov		eax,MF_BYCOMMAND or MF_UNCHECKED
-				.if mapdata.btrip==3
-					mov		eax,MF_BYCOMMAND or MF_CHECKED
-				.endif
-				invoke CheckMenuItem,hContext,IDM_TRIP_EDIT,eax
-				.if mapdata.btrip==3 && mapdata.onpoint!=-1
-					mov		eax,MF_BYCOMMAND or MF_ENABLED
-					.if mapdata.triphead==1
-						mov		eax,MF_BYCOMMAND or MF_GRAYED
-					.endif
-					invoke EnableMenuItem,hContext,IDM_TRIP_DELETE,eax
-					invoke GetSubMenu,hContext,2
-				.else
-					invoke GetSubMenu,hContext,1
-				.endif
-			.elseif mapdata.bdist
-				mov		eax,MF_BYCOMMAND or MF_UNCHECKED
-				.if mapdata.bdist==2
-					mov		eax,MF_BYCOMMAND or MF_CHECKED
-				.endif
-				invoke CheckMenuItem,hContext,IDM_DIST_DONE,eax
-				mov		eax,MF_BYCOMMAND or MF_UNCHECKED
-				.if mapdata.bdist==3
-					mov		eax,MF_BYCOMMAND or MF_CHECKED
-				.endif
-				invoke CheckMenuItem,hContext,IDM_DIST_EDIT,eax
-				.if mapdata.bdist==3 && mapdata.onpoint!=-1
-					mov		eax,MF_BYCOMMAND or MF_ENABLED
-					.if mapdata.disthead==1
-						mov		eax,MF_BYCOMMAND or MF_GRAYED
-					.endif
-					invoke EnableMenuItem,hContext,IDM_DIST_DELETE,eax
-					invoke GetSubMenu,hContext,4
-				.else
-					invoke GetSubMenu,hContext,3
-				.endif
-			.else
-				invoke ScreenToClient,hWin,addr pt
-				invoke ScrnPosToMapPos,pt.x,pt.y,addr x,addr y
-				invoke MapPosToGpsPos,x,y,addr iLon,addr iLat
-				invoke FindPlace,iLon,iLat
-				mov		nPlace,eax
-				mov		edx,MF_BYCOMMAND or MF_GRAYED
-				.if eax!=-1
-					mov		edx,MF_BYCOMMAND or MF_ENABLED
-				.endif
-				invoke EnableMenuItem,hContext,IDM_EDITPLACE,edx
-				invoke GetSubMenu,hContext,0
-			.endif
-			invoke TrackPopupMenu,eax,TPM_LEFTALIGN or TPM_RIGHTBUTTON,mousept.x,mousept.y,0,hWnd,0
-			invoke ScreenToClient,hWin,addr mousept
-		.endif
-	.elseif eax==WM_PAINT
-		inc		mapdata.paintnow
-		invoke DefWindowProc,hWin,uMsg,wParam,lParam
-		ret
-	.elseif eax==WM_SIZE
-		invoke GetClientRect,hWin,addr rect
-		mov		eax,rect.right
-		mov		mapdata.mapwt,eax
-		mov		eax,rect.bottom
-		mov		mapdata.mapht,eax
-		invoke CreateCompatibleBitmap,mapdata.hDC,mapdata.mapwt,mapdata.mapht
-		invoke SelectObject,mapdata.mDC2,eax
-		invoke DeleteObject,eax
-		invoke InitScroll
-	.elseif eax==WM_MOUSEMOVE
-		mov		edx,lParam
-		movsx	eax,dx
-		shr		edx,16
-		movsx	edx,dx
-		mov		pt.x,eax
-		mov		pt.y,edx
-		push	eax
-		push	edx
-		invoke ScrnPosToMapPos,pt.x,pt.y,addr x,addr y
-		invoke MapPosToGpsPos,x,y,addr iLon,addr iLat
-		invoke SetDlgItemInt,hControls,IDC_STCLAT,iLat,TRUE
-		mov		eax,iLon
-		invoke SetDlgItemInt,hControls,IDC_STCLON,eax,TRUE
-		pop		edx
-		pop		eax
-		.if mapdata.bdist==1 && mapdata.disthead
-			.if eax>mapdata.mapwt || edx>mapdata.mapht
-				invoke ReleaseCapture
-				.if mapdata.disthead
-					inc		mapdata.paintnow
-				.endif
-			.else
-				mov		pt.x,eax
-				mov		pt.y,edx
-				invoke BitBlt,mapdata.hDC,0,0,mapdata.mapwt,mapdata.mapht,mapdata.mDC2,0,0,SRCCOPY
-				mov		edi,mapdata.disthead
-				dec		edi
-				mov		eax,sizeof LOG
-				mul		edi
-				mov		ebx,eax
-				invoke GpsPosToMapPos,mapdata.dist.iLon[ebx],mapdata.dist.iLat[ebx],addr x,addr y
-				invoke MapPosToScrnPos,x,y,addr x,addr y
-				mov 	eax,x
-				sub		eax,mapdata.topx
-				imul	dd256
-				idiv	mapdata.zoomval
-				mov		x,eax
-				mov 	eax,y
-				sub		eax,mapdata.topy
-				imul	dd256
-				idiv	mapdata.zoomval
-				mov		y,eax
-				invoke MoveToEx,mapdata.hDC,x,y,NULL
-				invoke LineTo,mapdata.hDC,pt.x,pt.y
-				inc		edi
-				mov		eax,sizeof LOG
-				mul		edi
-				mov		ebx,eax
-				invoke ScrnPosToMapPos,pt.x,pt.y,addr x,addr y
-				invoke MapPosToGpsPos,x,y,addr mapdata.dist.iLon[ebx],addr mapdata.dist.iLat[ebx]
-				invoke GetCapture
-				.if eax!=hWin
-					invoke SetCapture,hWin
-				.endif
-				invoke GetDistance,addr mapdata.dist,mapdata.disthead
-			.endif
-		.elseif mapdata.bdist==3 && mapdata.disthead
-			.if (wParam & MK_LBUTTON) && mapdata.onpoint!=-1
-				mov		ebx,mapdata.onpoint
-				shl		ebx,4
-				mov		ecx,eax
-				invoke ScrnPosToMapPos,ecx,edx,addr x,addr y
-				invoke MapPosToGpsPos,x,y,addr mapdata.dist.iLon[ebx],addr mapdata.dist.iLat[ebx]
-				.if mapdata.onpoint
-					invoke BearingDistanceInt,mapdata.dist.iLon[ebx-sizeof LOG],addr mapdata.dist.iLat[ebx-sizeof LOG],mapdata.dist.iLon[ebx],addr mapdata.dist.iLat[ebx],addr fDist,addr fBear
-					fld		fBear
-					fistp	mapdata.dist.iBear[ebx-sizeof LOG]
-				.endif
-				mov		eax,mapdata.disthead
-				dec		eax
-				invoke GetDistance,addr mapdata.dist,eax
-			.else
-				invoke FindPoint,eax,edx,addr mapdata.dist,mapdata.disthead
-				mov		mapdata.onpoint,eax
-			.endif
-			inc		mapdata.paintnow
-		.elseif mapdata.btrip==1 && mapdata.triphead
-			.if eax>mapdata.mapwt || edx>mapdata.mapht
-				invoke ReleaseCapture
-				.if mapdata.triphead
-					inc		mapdata.paintnow
-				.endif
-			.else
-				mov		pt.x,eax
-				mov		pt.y,edx
-				invoke BitBlt,mapdata.hDC,0,0,mapdata.mapwt,mapdata.mapht,mapdata.mDC2,0,0,SRCCOPY
-				mov		edi,mapdata.triphead
-				dec		edi
-				mov		eax,sizeof LOG
-				mul		edi
-				mov		ebx,eax
-				invoke GpsPosToMapPos,mapdata.trip.iLon[ebx],mapdata.trip.iLat[ebx],addr x,addr y
-				invoke MapPosToScrnPos,x,y,addr x,addr y
-				mov 	eax,x
-				sub		eax,mapdata.topx
-				imul	dd256
-				idiv	mapdata.zoomval
-				mov		x,eax
-				mov 	eax,y
-				sub		eax,mapdata.topy
-				imul	dd256
-				idiv	mapdata.zoomval
-				mov		y,eax
-				invoke MoveToEx,mapdata.hDC,x,y,NULL
-				invoke LineTo,mapdata.hDC,pt.x,pt.y
-				inc		edi
-				mov		eax,sizeof LOG
-				mul		edi
-				mov		ebx,eax
-				invoke ScrnPosToMapPos,pt.x,pt.y,addr x,addr y
-				invoke MapPosToGpsPos,x,y,addr mapdata.trip.iLon[ebx],addr mapdata.trip.iLat[ebx]
-				invoke GetCapture
-				.if eax!=hWin
-					invoke SetCapture,hWin
-				.endif
-				invoke GetDistance,addr mapdata.trip,mapdata.triphead
-			.endif
-		.elseif mapdata.btrip==3 && mapdata.triphead
-			.if (wParam & MK_LBUTTON) && mapdata.onpoint!=-1
-				mov		ebx,mapdata.onpoint
-				shl		ebx,4
-				mov		ecx,eax
-				invoke ScrnPosToMapPos,ecx,edx,addr x,addr y
-				invoke MapPosToGpsPos,x,y,addr mapdata.trip.iLon[ebx],addr mapdata.trip.iLat[ebx]
-				.if mapdata.onpoint
-					invoke BearingDistanceInt,mapdata.trip.iLon[ebx-sizeof LOG],addr mapdata.trip.iLat[ebx-sizeof LOG],mapdata.trip.iLon[ebx],addr mapdata.trip.iLat[ebx],addr fDist,addr fBear
-					fld		fBear
-					fistp	mapdata.trip.iBear[ebx-sizeof LOG]
-				.endif
-				mov		eax,mapdata.triphead
-				dec		eax
-				invoke GetDistance,addr mapdata.trip,eax
-			.else
-				invoke FindPoint,eax,edx,addr mapdata.trip,mapdata.triphead
-				mov		mapdata.onpoint,eax
-			.endif
-			inc		mapdata.paintnow
-		.elseif wParam==MK_LBUTTON
-			;Drag the map
-			mov		eax,lParam
-			movsx	eax,ax
-			sub		eax,mousept.x
-			neg		eax
-			imul	mapdata.zoomval
-			idiv	dd256
-			add		eax,mousemappt.x
-			mov		mapdata.topx,eax
-			.if SIGN?
-				mov		mapdata.topx,0
-			.endif
-			mov		eax,lParam
-			shr		eax,16
-			movsx	eax,ax
-			sub		eax,mousept.y
-			neg		eax
-			imul	mapdata.zoomval
-			idiv	dd256
-			add		eax,mousemappt.y
-			mov		mapdata.topy,eax
-			.if SIGN?
-				mov		mapdata.topy,0
-			.endif
-			mov		eax,mapdata.topx
-			shr		eax,4
-			invoke SetScrollPos,hMap,SB_HORZ,eax,TRUE
-			mov		eax,mapdata.topy
-			shr		eax,4
-			invoke SetScrollPos,hMap,SB_VERT,eax,TRUE
-			inc		mapdata.paintnow
-		.endif
-	.elseif eax==WM_LBUTTONDOWN
-		mov		eax,mapdata.topx
-		mov		mousemappt.x,eax
-		mov		eax,mapdata.topy
-		mov		mousemappt.y,eax
-		mov		edx,lParam
-		movsx	eax,dx
-		mov		mousept.x,eax
-		shr		edx,16
-		movsx	edx,dx
-		mov		mousept.y,edx
-		.if mapdata.bdist==1
-			;Add new point
-			mov		edi,mapdata.disthead
-			.if edi<MAXDIST-1
-				mov		ecx,eax
-				mov		ebx,edi
-				shl		ebx,4
-				invoke ScrnPosToMapPos,ecx,edx,addr x,addr y
-				invoke MapPosToGpsPos,x,y,addr mapdata.dist.iLon[ebx],addr mapdata.dist.iLat[ebx]
-				inc		mapdata.disthead
-				inc		mapdata.paintnow
-			.endif
-		.elseif mapdata.btrip==1
-			;Add new point
-			mov		edi,mapdata.triphead
-			.if edi<MAXTRIP-1
-				mov		ecx,eax
-				mov		ebx,edi
-				shl		ebx,4
-				invoke ScrnPosToMapPos,ecx,edx,addr x,addr y
-				invoke MapPosToGpsPos,x,y,addr mapdata.trip.iLon[ebx],addr mapdata.trip.iLat[ebx]
-				inc		mapdata.triphead
-				inc		mapdata.paintnow
-			.endif
-		.elseif (!mapdata.bdist || mapdata.bdist==2) && (!mapdata.btrip || mapdata.btrip==2)
-			invoke SetCapture,hWin
-			invoke LoadCursor,0,IDC_SIZEALL
-			invoke SetCursor,eax
-		.endif
-	.elseif eax==WM_LBUTTONUP
-		.if (!mapdata.bdist || mapdata.bdist==2) && (!mapdata.btrip || mapdata.btrip==2)
-			invoke GetCapture
-			.if eax==hWin
-				invoke ReleaseCapture
-				invoke LoadCursor,0,IDC_ARROW
-				invoke SetCursor,eax
-			.endif
-		.endif
-		invoke SetFocus,hWnd
-	.elseif eax==WM_SETCURSOR
-		.if mapdata.bdist==1 || mapdata.btrip==1 || (mapdata.bdist==3 && mapdata.onpoint!=-1) || (mapdata.btrip==3 && mapdata.onpoint!=-1)
-			invoke LoadCursor,0,IDC_CROSS
-		.else
-			invoke LoadCursor,0,IDC_ARROW
-		.endif
-		invoke SetCursor,eax
-	.elseif eax==WM_MOUSEWHEEL
-		mov		eax,wParam
-		movzx	edx,ax
-		shr		eax,16
-		movsx	eax,ax
-		test	edx,MK_CONTROL
-		.if ZERO?
-			.if sdword ptr eax<0
-				invoke GetScrollPos,hWin,SB_VERT
-				add		eax,4
-				call	VScroll
-			.else
-				invoke GetScrollPos,hWin,SB_VERT
-				sub		eax,4
-				call	VScroll
-			.endif
-		.else
-			.if sdword ptr eax<0
-				invoke GetScrollPos,hWin,SB_HORZ
-				add		eax,4
-				call	HScroll
-			.else
-				invoke GetScrollPos,hWin,SB_HORZ
-				sub		eax,4
-				call	HScroll
-			.endif
-		.endif
-	.elseif eax==WM_KEYDOWN
-		mov		eax,wParam
-		.if eax==VK_RIGHT
-			invoke GetScrollPos,hWin,SB_HORZ
-			add		eax,4
-			call	HScroll
-		.elseif eax==VK_LEFT
-			invoke GetScrollPos,hWin,SB_HORZ
-			sub		eax,4
-			call	HScroll
-		.elseif eax==VK_DOWN
-			invoke GetScrollPos,hWin,SB_VERT
-			add		eax,4
-			call	VScroll
-		.elseif eax==VK_UP
-			invoke GetScrollPos,hWin,SB_VERT
-			sub		eax,4
-			call	VScroll
-		.endif
-	.elseif eax==WM_VSCROLL
-		mov		eax,wParam
-		movzx	edx,ax
-		shr		eax,16
-		.if edx==SB_THUMBPOSITION
-			call	VScroll
-		.elseif edx==SB_LINEDOWN
-			invoke GetScrollPos,hWin,SB_VERT
-			add		eax,4
-			call	VScroll
-		.elseif edx==SB_LINEUP
-			invoke GetScrollPos,hWin,SB_VERT
-			sub		eax,4
-			.if CARRY?
-				xor		eax,eax
-			.endif
-			call	VScroll
-		.elseif edx==SB_PAGEDOWN
-			invoke GetScrollPos,hWin,SB_VERT
-			mov		edx,mapdata.mapht
-			shr		edx,4
-			add		eax,edx
-			call	VScroll
-		.elseif edx==SB_PAGEUP
-			invoke GetScrollPos,hWin,SB_VERT
-			mov		edx,mapdata.mapht
-			shr		edx,4
-			sub		eax,edx
-			call	VScroll
-		.endif
-	.elseif eax==WM_HSCROLL
-		mov		eax,wParam
-		movzx	edx,ax
-		shr		eax,16
-		.if edx==SB_THUMBPOSITION
-			call	HScroll
-		.elseif edx==SB_LINEDOWN
-			invoke GetScrollPos,hWin,SB_HORZ
-			add		eax,4
-			call	HScroll
-		.elseif edx==SB_LINEUP
-			invoke GetScrollPos,hWin,SB_HORZ
-			sub		eax,4
-			call	HScroll
-		.elseif edx==SB_PAGEDOWN
-			invoke GetScrollPos,hWin,SB_HORZ
-			mov		edx,mapdata.mapwt
-			shr		edx,4
-			add		eax,edx
-			call	HScroll
-		.elseif edx==SB_PAGEUP
-			invoke GetScrollPos,hWin,SB_HORZ
-			mov		edx,mapdata.mapwt
-			shr		edx,4
-			sub		eax,edx
-			call	HScroll
-		.endif
-	.elseif eax==WM_DESTROY
-		invoke SelectObject,mapdata.mDC,mapdata.hmBmpOld
-		invoke DeleteObject,eax
-		invoke DeleteDC,mapdata.mDC
-		invoke SelectObject,mapdata.mDC2,mapdata.hmBmpOld2
-		invoke DeleteObject,eax
-		invoke DeleteDC,mapdata.mDC2
-		invoke DeleteDC,mapdata.tDC
-		invoke ReleaseDC,hWin,mapdata.hDC
-		xor		ebx,ebx
-		mov		esi,offset bmpcache
-		.while ebx<MAXBMP
-			.if [esi].BMP.hBmp
-				invoke DeleteObject,[esi].BMP.hBmp
-			.endif
-			lea		esi,[esi+sizeof BMP]
-			inc		ebx
-		.endw
-		xor		ebx,ebx
-		.while ebx<MAXFONT
-			.if mapdata.font[ebx*4]
-				invoke DeleteObject,mapdata.font[ebx*4]
-			.endif
-			inc		ebx
-		.endw
-		invoke ImageList_Destroy,hIml
-	.else
-		invoke DefWindowProc,hWin,uMsg,wParam,lParam
-		ret
-	.endif
-	xor    eax,eax
-	ret
-
-VScroll:
-	.if sdword ptr eax<0
-		xor		eax,eax
-	.endif
-	push	eax
-	invoke SetScrollPos,hWin,SB_VERT,eax,TRUE
-	pop		eax
-	shl		eax,4
-	mov		edx,mapdata.ny
-	inc		edx
-	shl		edx,9
-	sub		edx,mapdata.mapht
-	.if eax>edx
-		mov		eax,edx
-	.endif
-	mov		mapdata.topy,eax
-	inc		mapdata.paintnow
-	retn
-
-HScroll:
-	.if sdword ptr eax<0
-		xor		eax,eax
-	.endif
-	push	eax
-	invoke SetScrollPos,hWin,SB_HORZ,eax,TRUE
-	pop		eax
-	shl		eax,4
-	mov		edx,mapdata.nx
-	inc		edx
-	shl		edx,9
-	sub		edx,mapdata.mapwt
-	.if eax>edx
-		mov		eax,edx
-	.endif
-	mov		mapdata.topx,eax
-	inc		mapdata.paintnow
-	retn
-
-MapProc endp
 
 ControlsChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	
@@ -924,9 +293,13 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			mov		eax,pt.x
 			mov		edx,pt.y
 			.if eax<rect.right && edx<rect.bottom
-				.if pt.x<20 && mapdata.CtrlWt<95
+				mov		ecx,rect.right
+				mov		edx,ecx
+				sub		ecx,40
+				sub		edx,95+40
+				.if eax>ecx && mapdata.CtrlWt<95
 					mov		mapdata.ShowCtrl,1
-				.elseif sdword ptr pt.x>115 && mapdata.CtrlWt
+				.elseif eax<edx && mapdata.CtrlWt
 					mov		mapdata.ShowCtrl,2
 				.endif
 			.endif
@@ -938,8 +311,6 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					mov		mapdata.ShowCtrl,0
 				.endif
 				invoke SendMessage,hWin,WM_SIZE,0,0
-				invoke UpdateWindow,hWin
-				invoke UpdateWindow,hMap
 			.endif
 		.elseif mapdata.ShowCtrl==2
 			.if mapdata.CtrlWt
@@ -949,8 +320,6 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					mov		mapdata.ShowCtrl,0
 				.endif
 				invoke SendMessage,hWin,WM_SIZE,0,0
-				invoke UpdateWindow,hWin
-				invoke UpdateWindow,hMap
 			.endif
 		.endif
 	.elseif eax==WM_CONTEXTMENU
@@ -1354,11 +723,14 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	.elseif eax==WM_KEYDOWN || eax==WM_MOUSEWHEEL
 		invoke SendMessage,hMap,uMsg,wParam,lParam
 	.elseif eax==WM_SIZE
-		invoke GetClientRect,hWin,addr rect
-		;sub		rect.right,95
 		invoke GetParent,hMap
 		.if eax==hWin
+			invoke GetClientRect,hWin,addr rect
+			mov		eax,mapdata.CtrlWt
+			sub		rect.right,eax
+			invoke MoveWindow,hControls,rect.right,0,95,rect.bottom,TRUE
 			mov		ebx,sonardata.wt
+			sub		ebx,mapdata.CtrlWt
 			sub		rect.right,ebx
 			.if sonardata.fShowSat
 				sub		rect.bottom,SATHT
@@ -1369,21 +741,18 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke MoveWindow,hSonar,rect.right,0,ebx,rect.bottom,TRUE
 				invoke MoveWindow,hGPS,rect.right,rect.bottom,0,0,TRUE
 			.endif
+			; Make a sizebar
 			sub		rect.right,4
-			mov		ebx,mapdata.CtrlWt
-			sub		rect.right,ebx
-			push	rect.bottom
 			invoke GetDlgItem,hWin,IDC_LSTNMEA
+			mov		ebx,eax
 			.if mapdata.fShowNMEA
 				sub		rect.bottom,SATHT
-				invoke MoveWindow,eax,ebx,rect.bottom,rect.right,SATHT,TRUE
+				invoke MoveWindow,hMap,0,0,rect.right,rect.bottom,TRUE
+				invoke MoveWindow,ebx,0,rect.bottom,rect.right,SATHT,TRUE
 			.else
-				invoke MoveWindow,eax,ebx,rect.bottom,0,0,TRUE
+				invoke MoveWindow,hMap,0,0,rect.right,rect.bottom,TRUE
+				invoke MoveWindow,ebx,0,rect.bottom,0,0,TRUE
 			.endif
-			invoke MoveWindow,hMap,ebx,0,rect.right,rect.bottom,TRUE
-			pop		rect.bottom
-			sub		ebx,95
-			invoke MoveWindow,hControls,ebx,0,95,rect.bottom,TRUE
 		.endif
 	.elseif eax==WM_MOUSEMOVE
 		invoke GetClientRect,hWin,addr rect
@@ -1396,10 +765,9 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		add		ebx,sonardata.SignalBarWt
 		.if eax==hWin
 			mov		eax,rect.right
-			;sub		eax,95
 			sub		eax,ecx
-			.if sdword ptr eax<50
-				mov		eax,50
+			.if sdword ptr eax<100
+				mov		eax,100
 			.elseif sdword ptr eax>ebx
 				mov		eax,ebx
 			.endif
@@ -1568,7 +936,7 @@ WinMain proc hInst:HINSTANCE,hPrevInst:HINSTANCE,CmdLine:LPSTR,CmdShow:DWORD
 
 	mov		wc.cbSize,sizeof WNDCLASSEX
 	mov		wc.style,CS_HREDRAW or CS_VREDRAW
-	mov		wc.lpfnWndProc,offset MapProc
+	mov		wc.lpfnWndProc,offset MapChildProc
 	mov		wc.cbClsExtra,NULL
 	mov		wc.cbWndExtra,0
 	push	hInst
@@ -1582,7 +950,7 @@ WinMain proc hInst:HINSTANCE,hPrevInst:HINSTANCE,CmdLine:LPSTR,CmdShow:DWORD
 	mov		wc.hCursor,eax
 	invoke RegisterClassEx,addr wc
 
-	mov		wc.lpfnWndProc,offset SonarProc
+	mov		wc.lpfnWndProc,offset SonarChildProc
 	mov		wc.lpszClassName,offset szSonarClassName
 	invoke RegisterClassEx,addr wc
 

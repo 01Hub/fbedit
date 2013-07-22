@@ -3,8 +3,8 @@ Version=3000
 [Project]
 Assembler=masm
 Group=2,-1,0,1,ShowMap,-2,-1,1,Assembly,-3,-1,1,Include,-4,-1,1,Misc,-5,-1,1,Resource
-F1=-2,2,1,0,591,160,27,925,BoatNav.asm
-F2=-3,0,1,-6,7,901,534,285,BoatNav.inc
+F1=-2,2,1,0,591,160,27,66,BoatNav.asm
+F2=-3,0,1,-6,7,901,534,39,BoatNav.inc
 F3=-5,2,4,-6,-25,1457,731,572,BoatNav.rc
 Open=0,1,2,3,11,12,5,6,7,8,9,10,13
 Api=
@@ -17,7 +17,7 @@ TripLog.asm
 DrawMap.asm
 F11=-4,0,2,-6,-25,1452,720,114,BoatNav.txt
 Distance.asm
-F13=-2,0,1,110,110,1014,416,631,TripLog.asm
+F13=-2,0,1,110,110,1014,416,0,TripLog.asm
 Sonar.asm
 cur.bmp
 F16=-5,0,0,0,0,0,0,0,Res\cur.bmp
@@ -25,12 +25,12 @@ SonarTransmitter.cad
 F18=-5,0,3,-6,-25,1457,731,0,Res\SplitV.cur
 Path=C:\FbEdit\Projects\Applications\FbEdit\BoatNav
 F5=-2,0,1,154,154,1014,416,0,Distance.asm
-F6=-2,0,1,176,176,1014,416,0,DrawMap.asm
+F6=-2,0,1,176,176,1014,416,832,DrawMap.asm
 F7=-2,0,1,0,0,1014,416,0,GpsComm.asm
-F8=-2,0,1,22,22,1014,416,1565,Misc.asm
+F8=-2,0,1,22,22,1014,416,1224,Misc.asm
 F9=-2,0,1,44,44,1014,416,0,Options.asm
 F10=-2,0,1,66,66,1014,416,46,Places.asm
-F12=-2,0,1,88,88,1014,416,3620,Sonar.asm
+F12=-2,0,1,88,88,1014,416,3554,Sonar.asm
 C13=0,0
 B13=
 M13=
@@ -49,7 +49,7 @@ M8=
 C7=0,0,0,0
 B7=
 M7=
-C6=0,0,0
+C6=0,0,0,0
 B6=
 M6=
 C5=0
@@ -64,7 +64,7 @@ M3=
 C2=0
 B2=
 M2=
-C1=0,0,0,0,0,0
+C1=0,0,0,0
 B1=
 M1=
 C4=

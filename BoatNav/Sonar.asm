@@ -3552,7 +3552,7 @@ ShowScale:
 
 ShowRangeDepthTempScaleFish endp
 
-SonarProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+SonarChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	ps:PAINTSTRUCT
 	LOCAL	rect:RECT
 	LOCAL	hDC:HDC
@@ -3900,4 +3900,4 @@ SonarProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	xor    eax,eax
 	ret
 
-SonarProc endp
+SonarChildProc endp
