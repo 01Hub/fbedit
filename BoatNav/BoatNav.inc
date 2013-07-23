@@ -144,7 +144,7 @@ STM32_Clock				equ 40000000						;STM32 clock frequency
 STM32_PingTimer			equ (STM32_Clock/200000/2)-1		;Default ping timer
 
 ;Sonar constants
-MAXXECHO				equ 512								;Max number of sonar X-echos
+MAXXECHO				equ 768								;Max number of sonar X-echos
 MAXYECHO				equ 512								;Max number of sonar Y-echos
 RANGESCALE				equ 5								;Width of range scale
 SCROLLWT				equ 18								;Width / height of scrollbar

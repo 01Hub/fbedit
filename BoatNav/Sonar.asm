@@ -2453,7 +2453,7 @@ FindFish:
 						.endif
 						;Update the fishdata array
 						mov		sonardata.fishdata.fishtype[esi],edx
-						mov		sonardata.fishdata.xpos[esi],511
+						mov		sonardata.fishdata.xpos[esi],MAXXECHO-1
 						mov		sonardata.fishdata.depth[esi],eax
 						;Increment the fishdata index
 						mov		eax,sonardata.fishinx
