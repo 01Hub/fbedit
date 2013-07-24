@@ -217,6 +217,23 @@ LOG struct
 	iTime			DWORD ?									;Dos time
 LOG ends
 
+SATELITE struct
+	SatelliteID		BYTE ?									;Satelite ID
+	Elevation		BYTE ?									;Elevation in degrees (0-90)
+	Azimuth			WORD ?									;Azimuth in degrees (0-359)
+	SNR				BYTE ?									;Signal strenght	(0-50, 0 not tracked) 
+	Fixed			BYTE ?									;TRUE if used in fix
+SATELITE ends
+
+ALTITUDE struct
+	fixquality		BYTE ?									;Fix quality
+	nsat			BYTE ?									;Number of satelites tracked
+	hdop			WORD ?									;Horizontal dilution of position * 10
+	vdop			WORD ?									;Vertical dilution of position * 10
+	pdop			WORD ?									;Position dilution of position * 10
+	alt				WORD ?									;Altitude in meters
+ALTITUDE ends
+
 MAP struct
 	zoomval			DWORD ?									;Current zoom value
 	mapinx			DWORD ?									;Used in folder name to map jpegs
@@ -284,24 +301,10 @@ MAP struct
 	GPSReset		DWORD ?									;If TRUE GPS initialization icludes factory reset command
 	ShowCtrl		DWORD ?									;1 Show,2 Hide,0 Do nothing
 	CtrlWt			DWORD ?									;Width of controls window
+	bmpcache		BMP MAXBMP dup(<>)						;Cached bitmaps
+	altitude		ALTITUDE <>								;GGA message info
+	satelites		SATELITE 12 dup(<>)						;Data for 12 satelites
 MAP ends
-
-SATELITE struct
-	SatelliteID		BYTE ?									;Satelite ID
-	Elevation		BYTE ?									;Elevation in degrees (0-90)
-	Azimuth			WORD ?									;Azimuth in degrees (0-359)
-	SNR				BYTE ?									;Signal strenght	(0-50, 0 not tracked) 
-	Fixed			BYTE ?									;TRUE if used in fix
-SATELITE ends
-
-ALTITUDE struct
-	fixquality		BYTE ?									;Fix quality
-	nsat			BYTE ?									;Number of satelites tracked
-	hdop			WORD ?									;Horizontal dilution of position * 10
-	vdop			WORD ?									;Vertical dilution of position * 10
-	pdop			WORD ?									;Position dilution of position * 10
-	alt				WORD ?									;Altitude in meters
-ALTITUDE ends
 
 SONARBMP struct
 	hBmp			HBITMAP ?								;Bitmap handle
@@ -563,29 +566,26 @@ hContext			HMENU ?									;Hamdle of context menu
 hAccel				HACCEL ?								;Handle of accelerator table
 hIml				HIMAGELIST ?							;Imagelist handle
 szAppPath			BYTE MAX_PATH dup(?)					;Application path
+szFileName			BYTE MAX_PATH dup(?)					;Format string to get map tile path & filename
+szIniFileName		BYTE MAX_PATH dup(?)					;Path and filename of ini file
 mapdata				MAP <>									;Map data
 mousept				POINT <>								;Point where lbutton clicked
 mousemappt			POINT <>
-bmpcache			BMP MAXBMP dup(<>)						;Cached bitmaps
 hMAPThread			HANDLE ?								;Map drawing thread
 fExitMAPThread		DWORD ?									;Flag to exit the map drawing thread
 hGPSThread			HANDLE ?								;Thread to comunicate with GPS
 fExitGPSThread		DWORD ?									;Flag to exit the GPSThread
 hSTMThread			HANDLE ?								;Thread to comunicate with STM32
 fExitSTMThread		DWORD ?									;Flag to exit the STMThread
-szIniFileName		BYTE MAX_PATH dup(?)					;Path and filename of ini file
 szbuff				BYTE 512 dup(?)							;Temporary buffer
 tid					DWORD ?									;Thread ID
 sonardata			SONAR <>								;Sonar data
-altitude			ALTITUDE <>								;GGA message info
-satelites			SATELITE 12 dup(<>)						;Data for 12 satelites
 hSplittV			HCURSOR ?								;Horizontal splitt cursor
 rseed				DWORD ?									;Random seed
 STM32Echo			BYTE MAXYECHO*4 dup(?)					;Echo work area, 4*raw echo data
 sonarreplay			SONARREPLAY <>							;Sonar replay record version 201
 lpOldButtonProc		DWORD ?									;Button subclass
 fSeaMap				DWORD ?									;If TRUE sea map is shown
-szFileName			BYTE MAX_PATH dup(?)					;Format string to get map tile path & filename
 winrect				RECT <>									;Main window rectangle
 fMaximize			DWORD ?									;Main window maximized
 CustColors			DWORD 16 dup(?)							;Custom colors

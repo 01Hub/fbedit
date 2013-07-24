@@ -522,7 +522,7 @@ Update:
 			.endif
 			lea		ebx,[ebx+1]
 		.endw
-		.if sonardata.fShowBottom && sonardata.bottom.x==511 && sonardata.prevbottom.x>450
+		.if sonardata.fShowBottom && sonardata.bottom.x==MAXXECHO-1 && sonardata.prevbottom.x>MAXXECHO-50
 			invoke CreatePen,PS_SOLID,5,0
 			invoke SelectObject,sonardata.mDC,eax
 			push	eax
@@ -1732,8 +1732,8 @@ STMThread proc uses ebx esi edi,Param:DWORD
 					invoke ReadFile,sonardata.hReplay,addr sonarreplay,sizeof SONARREPLAY,addr dwread,NULL
 					.if dwread==sizeof SONARREPLAY
 						.if sonarreplay.Version==201
-							invoke ReadFile,sonardata.hReplay,addr satelites,sizeof SATELITE*12,addr dwread,NULL
-							invoke ReadFile,sonardata.hReplay,addr altitude,sizeof ALTITUDE,addr dwread,NULL
+							invoke ReadFile,sonardata.hReplay,addr mapdata.satelites,sizeof SATELITE*12,addr dwread,NULL
+							invoke ReadFile,sonardata.hReplay,addr mapdata.altitude,sizeof ALTITUDE,addr dwread,NULL
 						.endif
 						invoke ReadFile,sonardata.hReplay,addr STM32Echo,MAXYECHO,addr dwread,NULL
 						mov		eax,mapdata.iLon
@@ -2099,8 +2099,8 @@ ShowEcho:
 		mov		eax,mapdata.iBear
 		mov		sonarreplay.iBear,ax
 		invoke WriteFile,sonardata.hLog,addr sonarreplay,sizeof SONARREPLAY,addr dwwrite,NULL
-		invoke WriteFile,sonardata.hLog,addr satelites,sizeof satelites,addr dwwrite,NULL
-		invoke WriteFile,sonardata.hLog,addr altitude,sizeof altitude,addr dwwrite,NULL
+		invoke WriteFile,sonardata.hLog,addr mapdata.satelites,sizeof SATELITE*12,addr dwwrite,NULL
+		invoke WriteFile,sonardata.hLog,addr mapdata.altitude,sizeof ALTITUDE,addr dwwrite,NULL
 		invoke WriteFile,sonardata.hLog,addr STM32Echo,MAXYECHO,addr dwwrite,NULL
 	.endif
 	movzx	eax,STM32Echo
@@ -2286,7 +2286,7 @@ FindDepth:
 					mov		edi,sonardata.dptinx
 					add		edi,2
 				.endif
-				mov		sonardata.bottom.x,511
+				mov		sonardata.bottom.x,MAXXECHO-1
 				mov		sonardata.bottom.y,edi
 			.else
 				.if sdword ptr eax>MAXDEPTHJUMP

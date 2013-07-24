@@ -36,7 +36,7 @@ LoadDib proc uses ebx esi edi,mapinx:DWORD,dibx:DWORD,diby:DWORD
 	.endif
 	;Check if tile is loaded
 	xor		ebx,ebx
-	mov		esi,offset bmpcache
+	mov		esi,offset mapdata.bmpcache
 	mov		edi,mapinx
 	mov		ecx,dibx
 	mov		edx,diby
@@ -63,7 +63,7 @@ LoadDib proc uses ebx esi edi,mapinx:DWORD,dibx:DWORD,diby:DWORD
 			;Find free or unused tile
 			xor		ebx,ebx
 			xor		edi,edi
-			mov		esi,offset bmpcache
+			mov		esi,offset mapdata.bmpcache
 			.while ebx<MAXBMP-1
 				.if ![esi].BMP.inuse
 					mov		edi,esi
@@ -122,7 +122,7 @@ SetMapUsed proc uses ebx esi edi,topx:DWORD,topy:DWORD,zoomval:DWORD
 	shr		eax,9
 	mov		eny,eax
 	xor		ebx,ebx
-	mov		esi,offset bmpcache
+	mov		esi,offset mapdata.bmpcache
 	.while ebx<MAXBMP
 		mov		[esi].BMP.inuse,0
 		.if [esi].BMP.hBmp
@@ -1317,7 +1317,7 @@ MapChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 		invoke DeleteDC,mapdata.tDC
 		invoke ReleaseDC,hWin,mapdata.hDC
 		xor		ebx,ebx
-		mov		esi,offset bmpcache
+		mov		esi,offset mapdata.bmpcache
 		.while ebx<MAXBMP
 			.if [esi].BMP.hBmp
 				invoke DeleteObject,[esi].BMP.hBmp

@@ -166,7 +166,7 @@ ControlsChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam
 				.endif
 			.elseif eax==IDC_BTNMAP
 				xor		ebx,ebx
-				mov		esi,offset bmpcache
+				mov		esi,offset mapdata.bmpcache
 				.while ebx<MAXBMP
 					.if [esi].BMP.hBmp
 						invoke DeleteObject,[esi].BMP.hBmp

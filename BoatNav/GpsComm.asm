@@ -464,7 +464,7 @@ GPSExec:
 						sub		ebx,nSatelites
 						mov		edi,sizeof SATELITE*11
 						.while ebx
-							mov		satelites.SatelliteID[edi],0
+							mov		mapdata.satelites.SatelliteID[edi],0
 							lea		edi,[edi-sizeof SATELITE]
 							dec		ebx
 						.endw
@@ -473,13 +473,13 @@ GPSExec:
 					mov		edi,SatPtr
 					.while nSatelites && ebx<4
 						invoke GetItemInt,addr linebuff,0			;Satellite ID
-						mov		satelites.SatelliteID[edi],al
+						mov		mapdata.satelites.SatelliteID[edi],al
 						invoke GetItemInt,addr linebuff,0			;Elevation
-						mov		satelites.Elevation[edi],al
+						mov		mapdata.satelites.Elevation[edi],al
 						invoke GetItemInt,addr linebuff,0			;Azimuth
-						mov		satelites.Azimuth[edi],ax
+						mov		mapdata.satelites.Azimuth[edi],ax
 						invoke GetItemInt,addr linebuff,0			;SNR
-						mov		satelites.SNR[edi],al
+						mov		mapdata.satelites.SNR[edi],al
 						lea		edi,[edi+sizeof SATELITE]
 						inc		ebx
 						dec		nSatelites
@@ -503,12 +503,12 @@ GPSExec:
 						invoke GetItemInt,addr linebuff,0
 						;Number of satelites
 						invoke GetItemInt,addr linebuff,0
-						mov		altitude.nsat,al
+						mov		mapdata.altitude.nsat,al
 						;HDOP
 						invoke GetItemStr,addr linebuff,addr szNULL,addr buffer,32
 						;Altitude
 						invoke GetItemInt,addr linebuff,0
-						mov		altitude.alt,ax
+						mov		mapdata.altitude.alt,ax
 						invoke InvalidateRect,hGPS,NULL,TRUE
 					.else
 						invoke strcmp,addr buffer,addr szGPGSA
@@ -517,11 +517,11 @@ GPSExec:
 							invoke GetItemStr,addr linebuff,addr szNULL,addr buffer,32
 							;Mode 1=No fix,2=2D or 3=3D
 							invoke GetItemInt,addr linebuff,0
-							mov		altitude.fixquality,al
+							mov		mapdata.altitude.fixquality,al
 							xor		ebx,ebx
 							xor		edi,edi
 							.while ebx<12
-								mov		satelites.Fixed[edi],FALSE
+								mov		mapdata.satelites.Fixed[edi],FALSE
 								lea		edi,[edi+sizeof SATELITE]
 								inc		ebx
 							.endw
@@ -533,8 +533,8 @@ GPSExec:
 									xor		ebx,ebx
 									xor		edi,edi
 									.while ebx<12
-										.if al==satelites.SatelliteID[edi]
-											mov		satelites.Fixed[edi],TRUE
+										.if al==mapdata.satelites.SatelliteID[edi]
+											mov		mapdata.satelites.Fixed[edi],TRUE
 										  .break
 										.endif
 										lea		edi,[edi+sizeof SATELITE]
@@ -561,7 +561,7 @@ GPSExec:
 							.endw
 							mov		byte ptr [edx],0
 							invoke DecToBin,addr buffer
-							mov		altitude.hdop,ax
+							mov		mapdata.altitude.hdop,ax
 							;VDOP
 							invoke GetItemStr,addr linebuff,addr szNULL,addr buffer,32
 							lea		esi,buffer
@@ -579,7 +579,7 @@ GPSExec:
 							.endw
 							mov		byte ptr [edx],0
 							invoke DecToBin,addr buffer
-							mov		altitude.vdop,ax
+							mov		mapdata.altitude.vdop,ax
 							;PDOP
 							invoke GetItemStr,addr linebuff,addr szNULL,addr buffer,32
 							lea		esi,buffer
@@ -597,7 +597,7 @@ GPSExec:
 							.endw
 							mov		byte ptr [edx],0
 							invoke DecToBin,addr buffer
-							mov		altitude.pdop,ax
+							mov		mapdata.altitude.pdop,ax
 							invoke InvalidateRect,hGPS,NULL,TRUE
 						.endif
 					.endif
@@ -1053,20 +1053,20 @@ GPSProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		xor		ebx,ebx
 		xor		edi,edi
 		.while ebx<12
-			.if satelites.SatelliteID[edi]
+			.if mapdata.satelites.SatelliteID[edi]
 				;This would be the right way but gives poor graphic representation of the elevation angle.
 				;invoke GetPointOnCircle,SATRAD,satelites.Elevation[edi],addr pt
 				;mov		ecx,pt.x
 				;A linear function of the elevation angle gives better graphic representation
 				mov		eax,90
-				movsx	edx,satelites.Elevation[edi]
+				movsx	edx,mapdata.satelites.Elevation[edi]
 				sub		eax,edx
 				mov		ecx,SATRAD
 				mul		ecx
 				mov		ecx,180/2
 				div		ecx
 				mov		ecx,eax
-				movzx	edx,satelites.Azimuth[edi]
+				movzx	edx,mapdata.satelites.Azimuth[edi]
 				; North is 0 deg, sub 90 deg
 				sub		edx,90
 				invoke GetPointOnCircle,ecx,edx,addr pt
@@ -1076,19 +1076,19 @@ GPSProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		eax,ptcenter.y
 				sub		eax,8
 				add		pt.y,eax
-				movzx	eax,satelites.SatelliteID[edi]
+				movzx	eax,mapdata.satelites.SatelliteID[edi]
 				invoke wsprintf,addr buffer,addr szFmtDec2,eax
 				invoke strcat,addr buffer,addr szColon
-				movzx	eax,satelites.SNR[edi]
+				movzx	eax,mapdata.satelites.SNR[edi]
 				invoke wsprintf,addr buffer[4],addr szFmtDec2,eax
 				invoke strcat,addr buffer,addr szColon+1
-				movsx	eax,satelites.Elevation[edi]
+				movsx	eax,mapdata.satelites.Elevation[edi]
 				invoke wsprintf,addr buffer[7],addr szFmtDec2,eax
 				invoke strcat,addr buffer,addr szColon+1
-				movzx	eax,satelites.Azimuth[edi]
+				movzx	eax,mapdata.satelites.Azimuth[edi]
 				invoke wsprintf,addr buffer[10],addr szFmtDec3,eax
-				.if satelites.SNR[edi]
-					.if satelites.Fixed[edi]
+				.if mapdata.satelites.SNR[edi]
+					.if mapdata.satelites.Fixed[edi]
 						push	06000h
 						mov		eax,29
 					.else
@@ -1120,7 +1120,7 @@ GPSProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		eax,rect.bottom
 				sub		eax,27
 				mov		srect.bottom,eax
-				movzx	edx,satelites.SNR[edi]
+				movzx	edx,mapdata.satelites.SNR[edi]
 				;shr		edx,1
 				sub		eax,edx
 				mov		srect.top,eax
@@ -1154,7 +1154,7 @@ GPSProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke TextOut,mDC,esi,85,addr szBearing,8
 		invoke TextOut,mDC,esi,95,addr szSpeed,6
 		add		esi,60
-		movzx	eax,altitude.fixquality
+		movzx	eax,mapdata.altitude.fixquality
 		.if eax==2
 			invoke TextOut,mDC,esi,5,addr szFix2D,2
 		.elseif eax==3
@@ -1162,20 +1162,20 @@ GPSProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.else
 			invoke TextOut,mDC,esi,5,addr szNoFix,6
 		.endif
-		movzx	eax,altitude.nsat
+		movzx	eax,mapdata.altitude.nsat
 		invoke wsprintf,addr buffer,addr szFmtDec,eax
 		invoke strlen,addr buffer
 		invoke TextOut,mDC,esi,15,addr buffer,eax
-		movzx	eax,altitude.hdop
+		movzx	eax,mapdata.altitude.hdop
 		mov		ebx,25
 		call	PrintDOP
-		movzx	eax,altitude.vdop
+		movzx	eax,mapdata.altitude.vdop
 		mov		ebx,35
 		call	PrintDOP
-		movzx	eax,altitude.pdop
+		movzx	eax,mapdata.altitude.pdop
 		mov		ebx,45
 		call	PrintDOP
-		movsx	eax,altitude.alt
+		movsx	eax,mapdata.altitude.alt
 		invoke wsprintf,addr buffer,addr szFmtDec,eax
 		invoke strlen,addr buffer
 		invoke TextOut,mDC,esi,55,addr buffer,eax
