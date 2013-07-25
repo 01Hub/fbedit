@@ -636,6 +636,19 @@ OpenTrail proc uses ebx esi edi,lpFileName:DWORD
 
 OpenTrail endp
 
+ClearTrail proc
+	
+	mov		mapdata.ntrail,0
+	mov		mapdata.trailhead,0
+	mov		mapdata.trailtail,0
+	inc		mapdata.paintnow
+	fldz
+	fstp	mapdata.fSumDist
+	invoke SetDlgItemText,hControls,IDC_STCDIST,addr szNULL
+	ret
+
+ClearTrail endp
+
 SaveTrail proc uses ebx,lpFileName:DWORD
 	LOCAL	buffer[256]:BYTE
 	LOCAL	hFile:HANDLE

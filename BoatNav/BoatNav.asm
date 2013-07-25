@@ -302,6 +302,8 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.elseif eax<edx && mapdata.CtrlWt
 					mov		mapdata.ShowCtrl,2
 				.endif
+			.elseif mapdata.CtrlWt==95
+				mov		mapdata.ShowCtrl,2
 			.endif
 		.elseif mapdata.ShowCtrl==1
 			.if mapdata.CtrlWt<95
@@ -442,13 +444,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 								invoke SaveTrail,eax
 							.endif
 						.endif
-						mov		mapdata.ntrail,0
-						mov		mapdata.trailhead,0
-						mov		mapdata.trailtail,0
-						inc		mapdata.paintnow
-						fldz
-						fstp	mapdata.fSumDist
-						invoke SetDlgItemText,hControls,IDC_STCDIST,addr szNULL
+						invoke ClearTrail
 					.endif
 				.endif
 			.elseif eax==IDM_LOG_STARTSONAR
@@ -499,17 +495,11 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						shr		eax,9
 						invoke SetScrollRange,hSonar,SB_HORZ,0,eax,TRUE
 						invoke SonarClear
-						.if sonarreplay.Version>=200
-							mov		npos,0
-							mov		mapdata.ntrail,0
-							mov		mapdata.trailhead,0
-							mov		mapdata.trailtail,0
-							fldz
-							fstp	mapdata.fSumDist
-							invoke SetDlgItemText,hControls,IDC_STCDIST,addr szNULL
-						.endif
 						mov		sonardata.dptinx,0
 						mov		sonardata.hReplay,ebx
+						.if sonarreplay.Version>=200
+							invoke ClearTrail
+						.endif
 					.endif
 				.endif
 ;Option

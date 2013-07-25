@@ -124,7 +124,6 @@ SetRange proc uses ebx,RangeInx:DWORD
 	mov		sonardata.PixelTimer,ax
 	mov		eax,sonardata.sonarrange.range[ebx]
 	mov		sonardata.RangeVal,eax
-	invoke wsprintf,addr sonardata.options.text,addr szFmtDec,eax
 	ret
 
 SetRange endp
@@ -491,6 +490,7 @@ Update:
 			call	ScrollBitmapArray
 			invoke GetRangePtr,sonardata.sonarbmp.RangeInx
 			invoke UpdateBitmap,sonardata.sonarrange.range[eax]
+			invoke wsprintf,addr sonardata.options.text,addr szFmtDec,sonardata.RangeVal
 		.endif
 		call	UpdateBitmapArray
 		mov		rect.left,0
