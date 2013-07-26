@@ -1128,6 +1128,7 @@ SonarOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:L
 		.endif
 	.elseif eax==WM_CLOSE
 		invoke DestroyWindow,hWin
+		invoke SetWindowPos,hSonar,HWND_TOP,0,0,0,0,SWP_NOMOVE or SWP_NOSIZE
 	.else
 		mov		eax,FALSE
 		ret
@@ -3213,6 +3214,9 @@ LoadSonarFromIni proc uses ebx esi edi
 	.endw
 	invoke GetItemInt,addr buffer,0
 	mov		sonardata.fGrayScale,eax
+	movzx	eax,sonardata.RangeInx
+	invoke SetRange,eax
+	invoke wsprintf,addr sonardata.options.text,addr szFmtDec,sonardata.RangeVal
 	ret
 
 LoadSonarFromIni endp

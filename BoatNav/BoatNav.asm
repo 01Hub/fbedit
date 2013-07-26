@@ -520,7 +520,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.elseif eax==IDM_OPTION_WATERTEMP
 				invoke DialogBoxParam,hInstance,IDD_DLGOPTION,hWin,addr OptionsProc,12
 			.elseif eax==IDM_OPTION_SONAR
-				invoke CreateDialogParam,hInstance,IDD_DLGSONAR,hWin,addr SonarOptionProc,0
+				invoke CreateDialogParam,hInstance,IDD_DLGSONAR,hSonar,addr SonarOptionProc,0
 			.elseif eax==IDM_OPTION_GAIN
 				invoke DialogBoxParam,hInstance,IDD_DLGSONARGAIN,hWin,addr SonarGainOptionProc,0
 			.elseif eax==IDM_OPTION_SONARCOLOR
@@ -547,7 +547,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					invoke ShowWindow,hMap,SW_SHOWMAXIMIZED
 				.else
 					invoke SetParent,hMap,hWin
-					invoke ShowWindow,hWin,SW_RESTORE
+					invoke ShowWindow,hMap,SW_RESTORE
 				.endif
 				invoke SetActiveWindow,hMap
 			.elseif eax==IDM_TRIP_DONE
@@ -630,6 +630,17 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					mov		eax,BST_CHECKED
 				.endif
 				invoke CheckDlgButton,hControls,IDC_CHKPAUSE,eax
+			.elseif eax==IDM_SONAR_FULLSCREEN
+				invoke GetParent,hSonar
+				.if eax==hWin
+					invoke ShowWindow,hSonar,SW_HIDE
+					invoke SetParent,hSonar,0
+					invoke ShowWindow,hSonar,SW_SHOWMAXIMIZED
+				.else
+					invoke SetParent,hSonar,hWin
+					invoke ShowWindow,hSonar,SW_RESTORE
+				.endif
+				invoke SetActiveWindow,hSonar
 			.elseif eax==IDM_GPS_HIDE
 				invoke CheckDlgButton,hWin,IDC_CHKSHOWNMEA,BST_UNCHECKED
 				mov		mapdata.fShowNMEA,FALSE
@@ -715,49 +726,57 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	.elseif eax==WM_SIZE
 		invoke GetParent,hMap
 		.if eax==hWin
-			invoke GetClientRect,hWin,addr rect
-			mov		eax,mapdata.CtrlWt
-			sub		rect.right,eax
-			invoke MoveWindow,hControls,rect.right,0,95,rect.bottom,TRUE
-			mov		ebx,sonardata.wt
-			sub		ebx,mapdata.CtrlWt
-			sub		rect.right,ebx
-			.if sonardata.fShowSat
-				sub		rect.bottom,SATHT
-				invoke MoveWindow,hSonar,rect.right,0,ebx,rect.bottom,TRUE
-				invoke MoveWindow,hGPS,rect.right,rect.bottom,ebx,SATHT,TRUE
-				add		rect.bottom,SATHT
-			.else
-				invoke MoveWindow,hSonar,rect.right,0,ebx,rect.bottom,TRUE
-				invoke MoveWindow,hGPS,rect.right,rect.bottom,0,0,TRUE
-			.endif
-			; Make a sizebar
-			sub		rect.right,4
-			invoke GetDlgItem,hWin,IDC_LSTNMEA
-			mov		ebx,eax
-			.if mapdata.fShowNMEA
-				sub		rect.bottom,SATHT
-				invoke MoveWindow,hMap,0,0,rect.right,rect.bottom,TRUE
-				invoke MoveWindow,ebx,0,rect.bottom,rect.right,SATHT,TRUE
-			.else
-				invoke MoveWindow,hMap,0,0,rect.right,rect.bottom,TRUE
-				invoke MoveWindow,ebx,0,rect.bottom,0,0,TRUE
+			invoke GetParent,hSonar
+			.if eax==hWin
+				invoke GetClientRect,hWin,addr rect
+				mov		eax,mapdata.CtrlWt
+				sub		rect.right,eax
+				invoke MoveWindow,hControls,rect.right,0,95,rect.bottom,TRUE
+				mov		ebx,sonardata.wt
+				sub		ebx,mapdata.CtrlWt
+				sub		rect.right,ebx
+				.if sonardata.fShowSat
+					sub		rect.bottom,SATHT
+					invoke MoveWindow,hSonar,rect.right,0,ebx,rect.bottom,TRUE
+					invoke MoveWindow,hGPS,rect.right,rect.bottom,ebx,SATHT,TRUE
+					add		rect.bottom,SATHT
+				.else
+					invoke MoveWindow,hSonar,rect.right,0,ebx,rect.bottom,TRUE
+					invoke MoveWindow,hGPS,rect.right,rect.bottom,0,0,TRUE
+				.endif
+				; Make a sizebar
+				sub		rect.right,4
+				invoke GetDlgItem,hWin,IDC_LSTNMEA
+				mov		ebx,eax
+				.if mapdata.fShowNMEA
+					sub		rect.bottom,SATHT
+					invoke MoveWindow,hMap,0,0,rect.right,rect.bottom,TRUE
+					invoke MoveWindow,ebx,0,rect.bottom,rect.right,SATHT,TRUE
+				.else
+					invoke MoveWindow,hMap,0,0,rect.right,rect.bottom,TRUE
+					invoke MoveWindow,ebx,0,rect.bottom,0,0,TRUE
+				.endif
 			.endif
 		.endif
 	.elseif eax==WM_MOUSEMOVE
 		invoke GetClientRect,hWin,addr rect
+		mov		ebx,MAXXECHO+RANGESCALE+SCROLLWT+4
+		add		ebx,sonardata.SignalBarWt
+		mov		eax,rect.right
+		sub		eax,4
+		.if ebx>eax
+			mov		ebx,eax
+		.endif
 		invoke GetCapture
 		mov		edx,lParam
 		movsx	ecx,dx
 		shr		edx,16
 		movsx	edx,dx
-		mov		ebx,MAXXECHO+RANGESCALE+SCROLLWT+4
-		add		ebx,sonardata.SignalBarWt
 		.if eax==hWin
 			mov		eax,rect.right
 			sub		eax,ecx
-			.if sdword ptr eax<100
-				mov		eax,100
+			.if sdword ptr eax<95
+				mov		eax,95
 			.elseif sdword ptr eax>ebx
 				mov		eax,ebx
 			.endif

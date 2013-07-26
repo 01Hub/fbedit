@@ -119,6 +119,7 @@ IDM_DIST_INSERT         equ 11015
 IDM_DIST_DELETE         equ 11016
 IDM_SONARCLEAR			equ 11018
 IDM_SONARPAUSE			equ 11019
+IDM_SONAR_FULLSCREEN	equ 11024
 IDM_GPS_HIDE			equ 11022
 IDM_GPS_PAUSE			equ 11020
 IDM_GPS_SAVE			equ 11021
@@ -144,7 +145,7 @@ STM32_Clock				equ 40000000						;STM32 clock frequency
 STM32_PingTimer			equ (STM32_Clock/200000/2)-1		;Default ping timer
 
 ;Sonar constants
-MAXXECHO				equ 768								;Max number of sonar X-echos
+MAXXECHO				equ 1024							;Max number of sonar X-echos
 MAXYECHO				equ 512								;Max number of sonar Y-echos
 RANGESCALE				equ 5								;Width of range scale
 SCROLLWT				equ 18								;Width / height of scrollbar
