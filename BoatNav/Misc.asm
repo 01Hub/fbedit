@@ -1245,7 +1245,7 @@ AddTrailPoint proc uses ebx,x:DWORD,y:DWORD,iBearing:DWORD,iTime:DWORD,iSpeed:DW
 	mov		ebx,iSpeed
 	.if !mapdata.TrailCount || edx<=2
 		; If bearing is still the same or speed is lower than TrackSmooth then dont add a new point
-		.if (eax!=mapdata.trail.iBear[ecx] && ebx>mapdata.TrackSmooth) || edx<=2
+		.if (eax!=mapdata.trail.iBear[ecx] && ebx>=mapdata.TrackSmooth) || edx<=2
 			mov		eax,mapdata.trailhead
 			mov		edx,sizeof LOG
 			mul		edx
