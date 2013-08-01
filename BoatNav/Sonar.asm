@@ -1963,7 +1963,7 @@ STMThread proc uses ebx esi edi,Param:DWORD
 				.endw
 				.if !(pixcnt & 63)
 					;Random direction
-					invoke Random,6
+					invoke Random,3;6
 					mov		pixdir,eax
 				.endif
 				.if !(pixcnt & 7)
@@ -2191,7 +2191,8 @@ FindDepth:
 	mov		sonardata.bottom.range,ebx
 	mov		ebx,sonardata.sonarrange.mindepth[eax]
 	push	ebx
-	.while ebx<MAXYECHO/2
+	mov		ecx,sonardata.NoiseLevel
+	.while ebx<MAXYECHO/3
 		xor		ch,ch
 		mov		ax,word ptr STM32Echo[ebx+MAXYECHO*0]
 		mov		dx,word ptr STM32Echo[ebx+MAXYECHO*0+2]
