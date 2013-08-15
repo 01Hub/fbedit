@@ -37,7 +37,7 @@ szAllFiles			BYTE '\*.*',0
 
 
 szDateFmtFile		BYTE 'yyyyMMdd',0
-szTimeFmtFile		BYTE 'hhmm',0
+szTimeFmtFile		BYTE 'HHmm',0
 
 .data?
 

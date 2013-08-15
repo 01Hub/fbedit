@@ -1955,6 +1955,7 @@ STMThread proc uses ebx esi edi,Param:DWORD
 				;Show surface clutter
 				invoke Random,edi
 				mov		ecx,edi
+				shr		eax,1
 				add		ecx,eax
 				.while edx<ecx
 					invoke Random,255
@@ -1963,7 +1964,7 @@ STMThread proc uses ebx esi edi,Param:DWORD
 				.endw
 				.if !(pixcnt & 63)
 					;Random direction
-					invoke Random,3;6
+					invoke Random,5;6
 					mov		pixdir,eax
 				.endif
 				.if !(pixcnt & 7)
@@ -2020,6 +2021,9 @@ STMThread proc uses ebx esi edi,Param:DWORD
 					invoke Random,48
 					add		eax,255-48
 					sub		eax,ecx
+					.if CARRY?
+						xor		eax,eax
+					.endif
 					mov		STM32Echo[ebx],al
 					inc		ebx
 					inc		ecx
@@ -2192,7 +2196,7 @@ FindDepth:
 	mov		ebx,sonardata.sonarrange.mindepth[eax]
 	push	ebx
 	mov		ecx,sonardata.NoiseLevel
-	.while ebx<MAXYECHO/3
+	.while ebx<MAXYECHO/2
 		xor		ch,ch
 		mov		ax,word ptr STM32Echo[ebx+MAXYECHO*0]
 		mov		dx,word ptr STM32Echo[ebx+MAXYECHO*0+2]
