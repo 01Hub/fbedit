@@ -3567,6 +3567,7 @@ SonarChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LP
 	LOCAL	hDC:HDC
 	LOCAL	mDC:HDC
 	LOCAL	hBmp:HBITMAP
+	LOCAL	msg:MSG
 	LOCAL	pt:POINT
 
 	mov		eax,uMsg
@@ -3762,6 +3763,7 @@ SonarChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LP
 			.if sonardata.hReplay
 				push	eax
 				invoke SetScrollPos,hWin,SB_HORZ,eax,TRUE
+				call	GetMsg
 				pop		eax
 				mov		ecx,MAXYECHO
 				.if sonarreplay.Version==200
@@ -3774,6 +3776,7 @@ SonarChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LP
 			.endif
 		.elseif edx==SB_LINERIGHT
 			.if sonardata.hReplay
+				call	GetMsg
 				invoke GetScrollPos,hWin,SB_HORZ
 				add		eax,16
 				push	eax
@@ -3790,8 +3793,7 @@ SonarChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LP
 			.endif
 		.elseif edx==SB_LINELEFT
 			.if sonardata.hReplay
-				.while sonardata.fReplayRead
-				.endw
+				call	GetMsg
 				invoke GetScrollPos,hWin,SB_HORZ
 				sub		eax,16
 				.if CARRY?
@@ -3811,8 +3813,7 @@ SonarChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LP
 			.endif
 		.elseif edx==SB_PAGERIGHT
 			.if sonardata.hReplay
-				.while sonardata.fReplayRead
-				.endw
+				call	GetMsg
 				invoke GetScrollPos,hWin,SB_HORZ
 				add		eax,256
 				push	eax
@@ -3829,8 +3830,7 @@ SonarChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LP
 			.endif
 		.elseif edx==SB_PAGELEFT
 			.if sonardata.hReplay
-				.while sonardata.fReplayRead
-				.endw
+				call	GetMsg
 				invoke GetScrollPos,hWin,SB_HORZ
 				sub		eax,256
 				.if CARRY?
@@ -3854,14 +3854,10 @@ SonarChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LP
 		movzx	edx,ax
 		shr		eax,16
 		.if edx==SB_THUMBTRACK
-			.while sonardata.fReplayRead
-			.endw
 			mov		sonardata.cursorpos,eax
 			invoke SetScrollPos,hWin,SB_VERT,eax,TRUE
 			inc		sonardata.PaintNow
 		.elseif edx==SB_LINERIGHT
-			.while sonardata.fReplayRead
-			.endw
 			invoke GetScrollPos,hWin,SB_VERT
 			.if eax<2048
 				inc		eax
@@ -3870,8 +3866,6 @@ SonarChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LP
 				inc		sonardata.PaintNow
 			.endif
 		.elseif edx==SB_LINELEFT
-			.while sonardata.fReplayRead
-			.endw
 			invoke GetScrollPos,hWin,SB_VERT
 			.if eax
 				dec		eax
@@ -3880,8 +3874,6 @@ SonarChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LP
 				inc		sonardata.PaintNow
 			.endif
 		.elseif edx==SB_PAGERIGHT
-			.while sonardata.fReplayRead
-			.endw
 			invoke GetScrollPos,hWin,SB_VERT
 			add		eax,32
 			.if eax>2048
@@ -3891,8 +3883,6 @@ SonarChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LP
 			invoke SetScrollPos,hWin,SB_VERT,eax,TRUE
 			inc		sonardata.PaintNow
 		.elseif edx==SB_PAGELEFT
-			.while sonardata.fReplayRead
-			.endw
 			invoke GetScrollPos,hWin,SB_VERT
 			sub		eax,32
 			.if CARRY?
@@ -3908,5 +3898,17 @@ SonarChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LP
 	.endif
 	xor    eax,eax
 	ret
+
+GetMsg:
+	invoke RtlZeroMemory,addr msg,sizeof MSG
+	.while sonardata.fReplayRead
+		invoke GetMessage,addr msg,NULL,0,0
+		invoke TranslateAccelerator,hWnd,hAccel,addr msg
+		.if !eax
+			invoke TranslateMessage,addr msg
+			invoke DispatchMessage,addr msg
+		.endif
+	.endw
+	retn
 
 SonarChildProc endp
