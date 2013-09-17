@@ -21,6 +21,7 @@ szATemprature			BYTE 'Air Temprature Options',0
 szWTemprature			BYTE 'Water Temprature Options',0
 szScale					BYTE 'Map Scale Options',0
 szTime					BYTE 'Time Options',0
+szDistance				BYTE 'Distance Options',0
 szRange					BYTE 'Range Options',0
 szDepth					BYTE 'Depth Options',0
 szShowOnSonar			BYTE 'Show on sonar screen',0
@@ -332,6 +333,8 @@ OptionsProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 			mov		eax,offset szScale
 		.elseif eax==4
 			mov		eax,offset szTime
+		.elseif eax==5
+			mov		eax,offset szDistance
 		.elseif eax==10
 			mov		eax,offset szRange
 		.elseif eax==11

@@ -645,6 +645,7 @@ ClearTrail proc
 	fldz
 	fstp	mapdata.fSumDist
 	invoke SetDlgItemText,hControls,IDC_STCDIST,addr szNULL
+	invoke wsprintf,addr mapdata.options.text[sizeof OPTIONS*5],addr szFmtDist,0
 	ret
 
 ClearTrail endp

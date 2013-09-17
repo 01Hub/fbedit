@@ -280,6 +280,7 @@ GPSThread proc uses ebx esi edi,Param:DWORD
 						mov		mapdata.trailhead,0
 						mov		mapdata.trailtail,0
 						invoke SetDlgItemText,hControls,IDC_STCDIST,addr szNULL
+						invoke wsprintf,addr mapdata.options.text[sizeof OPTIONS*5],addr szFmtDist,0
 					.else
 						.if !mapdata.ntrail
 							fldz
@@ -823,6 +824,7 @@ PositionSpeedDirection:
 				fistp	dword ptr [eax]
 				invoke SetDlgItemInt,hControls,IDC_STCDIST,iSumDist,FALSE
 				invoke SetDlgItemInt,hControls,IDC_STCBEARING,mapdata.iBear,FALSE
+				invoke wsprintf,addr mapdata.options.text[sizeof OPTIONS*5],addr szFmtDist,iSumDist
 			.endif
 		.endif
 		inc		mapdata.ntrail

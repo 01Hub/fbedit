@@ -951,6 +951,7 @@ GetDistance proc uses ebx esi edi,lpLOG:DWORD,nCount:DWORD
 	fld		fSumDist
 	fistp	iSumDist
 	invoke SetDlgItemInt,hControls,IDC_STCDIST,iSumDist,FALSE
+	invoke wsprintf,addr mapdata.options.text[sizeof OPTIONS*5],addr szFmtDist,iSumDist
 	invoke SetDlgItemInt,hControls,IDC_STCBEARING,[esi].LOG.iBear[edi],FALSE
 	ret
 

@@ -83,6 +83,7 @@ IDM_OPTION_BATTERY      equ 10003
 IDM_OPTION_AIRTEMP      equ 10004
 IDM_OPTION_SCALE		equ 10009
 IDM_OPTION_TIME			equ 10016
+IDM_OPTION_DISTANCE		equ 10027
 IDM_OPTION_RANGE		equ 10020
 IDM_OPTIO_DEPTH			equ 10019
 IDM_OPTION_WATERTEMP	equ 10021
@@ -135,7 +136,7 @@ MAXFONT					equ 16								;Max number of font definitions
 MAXTRIP					equ 1024							;Max number of trip positions
 MAXTRAIL				equ 2048							;Max number of trail positions
 MAXDIST					equ 256								;Max number of distance calculation poins
-MAXMAPOPTION			equ 5								;Max number of overlays on map scteen
+MAXMAPOPTION			equ 6								;Max number of overlays on map scteen
 MAXSONAROPTION			equ 3								;Max number of overlays on sonar scteen
 MAXNMEA					equ 20000							;Max number of NMEA items in NMEA list
 
@@ -511,6 +512,7 @@ szFmtDec3			BYTE '%03d',0
 szFmtDec10			BYTE '%010d',0
 szFmtVolts			BYTE '%02u',0
 szVolts				BYTE 'V',0
+szFmtDist			BYTE '%dm',0
 
 szCelcius			BYTE 'C',0
 ;watertempoffset		DWORD 1750

@@ -414,6 +414,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					fldz
 					fstp	mapdata.fSumDist
 					invoke SetDlgItemText,hControls,IDC_STCDIST,addr szNULL
+					invoke wsprintf,addr mapdata.options.text[sizeof OPTIONS*5],addr szFmtDist,0
 				.endif
 			.elseif eax==IDM_LOG_REPLAY
 				.if !hFileLogRead
@@ -472,6 +473,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					fldz
 					fstp	mapdata.fSumDist
 					invoke SetDlgItemText,hControls,IDC_STCDIST,addr szNULL
+					invoke wsprintf,addr mapdata.options.text[sizeof OPTIONS*5],addr szFmtDist,0
 					invoke SetScrollPos,hSonar,SB_HORZ,0,TRUE
 					mov		sonardata.dptinx,0
 					invoke EnableScrollBar,hSonar,SB_HORZ,ESB_DISABLE_BOTH
@@ -513,6 +515,8 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke DialogBoxParam,hInstance,IDD_DLGOPTION,hWin,addr OptionsProc,3
 			.elseif eax==IDM_OPTION_TIME
 				invoke DialogBoxParam,hInstance,IDD_DLGOPTION,hWin,addr OptionsProc,4
+			.elseif eax==IDM_OPTION_DISTANCE
+				invoke DialogBoxParam,hInstance,IDD_DLGOPTION,hWin,addr OptionsProc,5
 			.elseif eax==IDM_OPTION_RANGE
 				invoke DialogBoxParam,hInstance,IDD_DLGOPTION,hWin,addr OptionsProc,10
 			.elseif eax==IDM_OPTIO_DEPTH
@@ -581,6 +585,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		mapdata.triphead,0
 				inc		mapdata.paintnow
 				invoke SetDlgItemText,hControls,IDC_STCDIST,addr szNULL
+				invoke wsprintf,addr mapdata.options.text[sizeof OPTIONS*5],addr szFmtDist,0
 			.elseif eax==IDM_TRIP_INSERT
 				invoke InsertPoint,mapdata.onpoint,addr mapdata.trip,addr mapdata.triphead
 			.elseif eax==IDM_TRIP_DELETE
@@ -616,6 +621,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		mapdata.disthead,0
 				inc		mapdata.paintnow
 				invoke SetDlgItemText,hControls,IDC_STCDIST,addr szNULL
+				invoke wsprintf,addr mapdata.options.text[sizeof OPTIONS*5],addr szFmtDist,0
 			.elseif eax==IDM_DIST_INSERT
 				invoke InsertPoint,mapdata.onpoint,addr mapdata.dist,addr mapdata.disthead
 			.elseif eax==IDM_DIST_DELETE

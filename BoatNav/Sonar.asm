@@ -1811,6 +1811,7 @@ STMThread proc uses ebx esi edi,Param:DWORD
 									lea		eax,iSumDist
 									fistp	dword ptr [eax]
 									invoke SetDlgItemInt,hControls,IDC_STCDIST,iSumDist,FALSE
+									invoke wsprintf,addr mapdata.options.text[sizeof OPTIONS*5],addr szFmtDist,iSumDist
 									invoke SetDlgItemInt,hControls,IDC_STCBEARING,mapdata.iBear,FALSE
 								.endif
 							.endif
@@ -1838,6 +1839,7 @@ STMThread proc uses ebx esi edi,Param:DWORD
 					fldz
 					fstp	mapdata.fSumDist
 					invoke SetDlgItemText,hControls,IDC_STCDIST,addr szNULL
+					invoke wsprintf,addr mapdata.options.text[sizeof OPTIONS*5],addr szFmtDist,0
 					invoke ResetDepth
 				.else
 					invoke GetScrollPos,hSonar,SB_HORZ
