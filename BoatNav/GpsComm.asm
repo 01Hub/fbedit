@@ -744,7 +744,7 @@ PositionSpeedDirection:
 	mov		iTime,0
 	;Date
 	invoke GetItemStr,addr linebuff,addr szNULL,addr buffdate,32
-	;YYYY YYYM MMMD DDDD
+	;YYYY YYYM MMMD DDDD HHHH HMMM MMMS SSSS
 	;0010 0100 0000 0000 0000 0000 0001 1111
 	;Get year
 	invoke DecToBin,addr buffdate[4]
@@ -766,7 +766,7 @@ PositionSpeedDirection:
 	mov		utcst.wDay,ax
 	or		iTime,eax
 	shl		iTime,16
-	;HHHH HMMM MMS SSSS
+	;HHHH HMMM MMMS SSSS
 	;Get seconds
 	invoke DecToBin,addr bufftime[4]
 	mov		utcst.wMilliseconds,0
