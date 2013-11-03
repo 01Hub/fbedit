@@ -5,10 +5,11 @@ include comdlg32.inc
 include comctl32.inc
 include gdi32.inc
 include gdiplus.inc
-include gdiplus_structs.inc
 include ole32.inc
 include oleaut32.inc
 include winmm.inc
+include wsock32.inc
+include ws2_32.inc
 
 includelib user32.lib
 includelib kernel32.lib
@@ -20,6 +21,8 @@ includelib ole32.lib
 includelib oleaut32.lib 
 includelib winmm.lib
 includelib STLinkLib.lib 
+includelib wsock32.lib
+includelib ws2_32.lib
 
 ;#########################################################################
 ;VKim's Debug
@@ -553,42 +556,47 @@ AirTempArray		DWORD 537,500	;*
 					DWORD 2090,65
 					DWORD 2510,0
 
+Bluetooth			DWORD 0
+
 .data?
 
-hInstance			HINSTANCE ?								;Instance handle
-CommandLine			DWORD ?									;Pointer to command line
-gdiplSTI			GdiplusStartupInput <>					;Gdi+ structure
-token				DWORD ?									;Gdi+ token
-hWnd				HWND ?									;Handle of main window
-hControls			HWND ?									;Handle of controls window
-hMap				HWND ?									;Handle of map screen
-hSonar				HWND ?									;Handle of sonar screen
-hGPS				HWND ?									;Handle of GPS screen
-hMenu				HMENU ?									;Hamdle of menu
-hContext			HMENU ?									;Hamdle of context menu
-hAccel				HACCEL ?								;Handle of accelerator table
-hIml				HIMAGELIST ?							;Imagelist handle
-szAppPath			BYTE MAX_PATH dup(?)					;Application path
-szFileName			BYTE MAX_PATH dup(?)					;Format string to get map tile path & filename
-szIniFileName		BYTE MAX_PATH dup(?)					;Path and filename of ini file
-mapdata				MAP <>									;Map data
-mousept				POINT <>								;Point where lbutton clicked
-mousemappt			POINT <>
-hMAPThread			HANDLE ?								;Map drawing thread
-fExitMAPThread		DWORD ?									;Flag to exit the map drawing thread
-hGPSThread			HANDLE ?								;Thread to comunicate with GPS
-fExitGPSThread		DWORD ?									;Flag to exit the GPSThread
-hSTMThread			HANDLE ?								;Thread to comunicate with STM32
-fExitSTMThread		DWORD ?									;Flag to exit the STMThread
-szbuff				BYTE 512 dup(?)							;Temporary buffer
-tid					DWORD ?									;Thread ID
-sonardata			SONAR <>								;Sonar data
-hSplittV			HCURSOR ?								;Horizontal splitt cursor
-rseed				DWORD ?									;Random seed
-STM32Echo			BYTE MAXYECHO*4 dup(?)					;Echo work area, 4*raw echo data
-sonarreplay			SONARREPLAY <>							;Sonar replay record version 201
-lpOldButtonProc		DWORD ?									;Button subclass
-fSeaMap				DWORD ?									;If TRUE sea map is shown
-winrect				RECT <>									;Main window rectangle
-fMaximize			DWORD ?									;Main window maximized
-CustColors			DWORD 16 dup(?)							;Custom colors
+hInstance				HINSTANCE ?								;Instance handle
+CommandLine				DWORD ?									;Pointer to command line
+gdiplSTI				GdiplusStartupInput <>					;Gdi+ structure
+token					DWORD ?									;Gdi+ token
+hWnd					HWND ?									;Handle of main window
+hControls				HWND ?									;Handle of controls window
+hMap					HWND ?									;Handle of map screen
+hSonar					HWND ?									;Handle of sonar screen
+hGPS					HWND ?									;Handle of GPS screen
+hMenu					HMENU ?									;Hamdle of menu
+hContext				HMENU ?									;Hamdle of context menu
+hAccel					HACCEL ?								;Handle of accelerator table
+hIml					HIMAGELIST ?							;Imagelist handle
+szAppPath				BYTE MAX_PATH dup(?)					;Application path
+szFileName				BYTE MAX_PATH dup(?)					;Format string to get map tile path & filename
+szIniFileName			BYTE MAX_PATH dup(?)					;Path and filename of ini file
+mapdata					MAP <>									;Map data
+mousept					POINT <>								;Point where lbutton clicked
+mousemappt				POINT <>
+hMAPThread				HANDLE ?								;Map drawing thread
+fExitMAPThread			DWORD ?									;Flag to exit the map drawing thread
+hGPSThread				HANDLE ?								;Thread to comunicate with GPS
+fExitGPSThread			DWORD ?									;Flag to exit the GPSThread
+hSTMThread				HANDLE ?								;Thread to comunicate with STM32
+fExitSTMThread			DWORD ?									;Flag to exit the STMThread
+szbuff					BYTE 512 dup(?)							;Temporary buffer
+tid						DWORD ?									;Thread ID
+sonardata				SONAR <>								;Sonar data
+hSplittV				HCURSOR ?								;Horizontal splitt cursor
+rseed					DWORD ?									;Random seed
+STM32Echo				BYTE MAXYECHO*4 dup(?)					;Echo work area, 4*raw echo data
+sonarreplay				SONARREPLAY <>							;Sonar replay record version 201
+lpOldButtonProc			DWORD ?									;Button subclass
+fSeaMap					DWORD ?									;If TRUE sea map is shown
+winrect					RECT <>									;Main window rectangle
+fMaximize				DWORD ?									;Main window maximized
+CustColors				DWORD 16 dup(?)							;Custom colors
+hBluetoothThread		HANDLE ?								;Thread to comunicate with STM32 using Bluetooth
+fExitBluetoothThread	DWORD ?
+

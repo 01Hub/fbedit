@@ -398,7 +398,7 @@ GPSThread proc uses ebx esi edi,Param:DWORD
 				.endif
 				xor		ebx,ebx
 				call	GPSExec
-			.elseif !sonardata.hReplay
+			.elseif !sonardata.hReplay && !Bluetooth
 				invoke strcpy,addr combuff,addr szGPSDemoData
 				xor		ebx,ebx
 				call	GPSExec

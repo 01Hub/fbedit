@@ -1854,6 +1854,117 @@ STMThread proc uses ebx esi edi,Param:DWORD
 					invoke SetRange,eax
 					call	ShowEcho
 				.endif
+			.elseif Bluetooth
+				.if fdataready
+					mov		fdataready,FALSE
+					;Copy old echo
+					call	MoveEcho
+					mov		esi,offset serversenddata.bData
+					mov		edi,offset sonarreplay
+					mov		ecx,sizeof SONARREPLAY
+					rep movsb
+					mov		edi,offset mapdata.satelites
+					mov		ecx,sizeof SATELITE*12
+					rep movsb
+					mov		edi,offset mapdata.altitude
+					mov		ecx,sizeof ALTITUDE
+					rep movsb
+					mov		edi,offset STM32Echo
+					mov		ecx,MAXYECHO
+					rep movsb
+	
+					mov		eax,mapdata.iLon
+					mov		iLon,eax
+					mov		eax,mapdata.iLat
+					mov		iLat,eax
+					mov		mapdata.fcursor,2
+					movzx	eax,sonarreplay.SoundSpeed
+					mov		sonardata.SoundSpeed,eax
+					mov		ax,sonarreplay.ADCBattery
+					mov		sonardata.ADCBattery,ax
+					mov		ax,sonarreplay.ADCWaterTemp
+					mov		sonardata.ADCWaterTemp,ax
+					mov		ax,sonarreplay.ADCAirTemp
+					mov		sonardata.ADCAirTemp,ax
+					mov		eax,sonarreplay.iTime
+					mov		mapdata.iTime,eax
+					mov		ecx,eax
+					movzx	edx,ax
+					shr		ecx,16
+					invoke DosDateTimeToFileTime,ecx,edx,addr ft
+					invoke FileTimeToLocalFileTime,addr ft,addr lft
+					invoke FileTimeToSystemTime,addr lft,addr lst
+					movzx	eax,lst.wSecond
+					push	eax
+					movzx	eax,lst.wMinute
+					push	eax
+					movzx	eax,lst.wHour
+					push	eax
+					movzx	eax,lst.wYear
+					sub		eax,1980
+					push	eax
+					movzx	eax,lst.wMonth
+					push	eax
+					movzx	eax,lst.wDay
+					push	eax
+					invoke wsprintf,addr mapdata.options.text[sizeof OPTIONS*4],offset szFmtTime
+					mov		eax,sonarreplay.iLon
+					mov		mapdata.iLon,eax
+					mov		eax,sonarreplay.iLat
+					mov		mapdata.iLat,eax
+					movzx	eax,sonarreplay.iSpeed
+					mov		mapdata.iSpeed,eax
+					movzx	eax,sonarreplay.iBear
+					mov		mapdata.iBear,eax
+					invoke SetGPSCursor
+					mov		eax,mapdata.iLon
+					mov		edx,mapdata.iLat
+					.if eax!=iLon || edx!=iLat
+						invoke DoGoto,mapdata.iLon,mapdata.iLat,mapdata.gpslock,TRUE
+						invoke SetDlgItemInt,hControls,IDC_STCLON,mapdata.iLon,TRUE
+						invoke SetDlgItemInt,hControls,IDC_STCLAT,mapdata.iLat,TRUE
+						movzx	eax,sonarreplay.iSpeed
+						mov		mapdata.iSpeed,eax
+						invoke wsprintf,addr buffer,addr szFmtDec2,eax
+						invoke strlen,addr buffer
+						movzx	ecx,word ptr buffer[eax-1]
+						shl		ecx,8
+						mov		cl,'.'
+						mov		dword ptr buffer[eax-1],ecx
+						invoke strcpy,addr mapdata.options.text,addr buffer
+						invoke AddTrailPoint,mapdata.iLon,mapdata.iLat,mapdata.iBear,mapdata.iTime,mapdata.iSpeed
+						.if mapdata.ntrail
+							mov		eax,mapdata.iLon
+							mov		edx,mapdata.iLat
+							.if eax!=iLon || edx!=iLat
+								invoke BearingDistanceInt,iLon,iLat,mapdata.iLon,mapdata.iLat,addr fDist,addr fBear
+								fld		fDist
+								fld		mapdata.fSumDist
+								faddp	st(1),st(0)
+								fst		st(1)
+								lea		eax,mapdata.fSumDist
+								fstp	REAL10 PTR [eax]
+								lea		eax,iSumDist
+								fistp	dword ptr [eax]
+								invoke SetDlgItemInt,hControls,IDC_STCDIST,iSumDist,FALSE
+								invoke wsprintf,addr mapdata.options.text[sizeof OPTIONS*5],addr szFmtDist,iSumDist
+								invoke SetDlgItemInt,hControls,IDC_STCBEARING,mapdata.iBear,FALSE
+							.endif
+						.endif
+						inc		mapdata.ntrail
+						inc		mapdata.paintnow
+						invoke InvalidateRect,hGPS,NULL,TRUE
+					.endif
+					movzx	eax,STM32Echo
+					.if al!=STM32Echo[MAXYECHO]
+						mov		sonardata.dptinx,0
+						mov		rngchanged,4
+					.endif
+					invoke SetRange,eax
+					call	ShowEcho
+				.else
+					invoke Sleep,30
+				.endif
 			.elseif sonardata.fSTLink && sonardata.fSTLink!=IDIGNORE
 				;Sonar mode
 				.if mapdata.GPSInit
@@ -3694,25 +3805,30 @@ SonarChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LP
 		invoke EndPaint,hWin,addr ps
 	.elseif eax==WM_TIMER
 		.if wParam==1000
-			.if !sonardata.fSTLink
-				mov		sonardata.fSTLink,IDIGNORE
-				mov		mapdata.fSTLink,IDIGNORE
-				invoke STLinkConnect,hSonar
-				.if eax==IDABORT
-					invoke SendMessage,hWnd,WM_CLOSE,0,0
-				.else
-					mov		sonardata.fSTLink,eax
-				.endif
-				.if sonardata.fSTLink && sonardata.fSTLink!=IDIGNORE
-					invoke STLinkReset,hSonar
-					invoke STLinkConnect,hGPS
+			.if  !Bluetooth
+				.if !sonardata.fSTLink
+					mov		sonardata.fSTLink,IDIGNORE
+					mov		mapdata.fSTLink,IDIGNORE
+					invoke STLinkConnect,hSonar
 					.if eax==IDABORT
 						invoke SendMessage,hWnd,WM_CLOSE,0,0
 					.else
-						mov		mapdata.fSTLink,eax
+						mov		sonardata.fSTLink,eax
 					.endif
-					inc		sonardata.fGainUpload
+					.if sonardata.fSTLink && sonardata.fSTLink!=IDIGNORE
+						invoke STLinkReset,hSonar
+						invoke STLinkConnect,hGPS
+						.if eax==IDABORT
+							invoke SendMessage,hWnd,WM_CLOSE,0,0
+						.else
+							mov		mapdata.fSTLink,eax
+						.endif
+						inc		sonardata.fGainUpload
+					.endif
 				.endif
+			.else
+				mov		sonardata.fSTLink,IDIGNORE
+				mov		mapdata.fSTLink,IDIGNORE
 			.endif
 		.elseif wParam==1001
 			xor		sonardata.ShowDepth,1

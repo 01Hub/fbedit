@@ -23,6 +23,7 @@ include Options.asm
 include TripLog.asm
 include DrawMap.asm
 include Sonar.asm
+include Bluetooth.asm
 
 .code
 
@@ -859,6 +860,12 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke TerminateThread,hSTMThread,0
 		.endif
 		invoke CloseHandle,hSTMThread
+		; Terminate Bluetooth Thread
+		invoke WaitForSingleObject,hBluetoothThread,3000
+		.if eax==WAIT_TIMEOUT
+			invoke TerminateThread,hBluetoothThread,0
+		.endif
+		invoke CloseHandle,hBluetoothThread
 		; Terminate MAP Thread
 		invoke WaitForSingleObject,hMAPThread,3000
 		.if eax==WAIT_TIMEOUT
@@ -997,6 +1004,11 @@ WinMain proc hInst:HINSTANCE,hPrevInst:HINSTANCE,CmdLine:LPSTR,CmdShow:DWORD
 	;Create thread that comunicates with the STM
 	invoke CreateThread,NULL,NULL,addr STMThread,0,0,addr tid
 	mov		hSTMThread,eax
+	.if Bluetooth
+		;Create thread that comunicates with the STM using Bluetooth
+		invoke CreateThread,NULL,NULL,addr BlueToothClient,0,0,addr tid
+		mov		hBluetoothThread,eax
+	.endif
 	invoke RtlZeroMemory,addr msg,sizeof MSG
 	.while TRUE
 		invoke GetMessage,addr msg,NULL,0,0
