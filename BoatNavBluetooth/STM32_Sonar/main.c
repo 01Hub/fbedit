@@ -40,9 +40,50 @@ typedef struct
   u8 GPSArray[MAXGPS];                          // 0x20000634 GPS array, received GPS NMEA 0183 messages
 }STM32_SonarTypeDef;
 
+typedef struct
+{
+	u8 SatelliteID;									              // Satelite ID
+	u8 Elevation;									                // Elevation in degrees (0-90)
+	u16 Azimuth;									                // Azimuth in degrees (0-359)
+	u8 SNR;									                      // Signal strenght	(0-50, 0 not tracked) 
+	u8 Fixed;									                    // TRUE if used in fix
+} STM32_SateliteTypeDef;
+
+typedef struct
+{
+	u8 fixquality;									              // Fix quality
+	u8 nsat;									                    // Number of satelites tracked
+	u16 hdop;									                    // Horizontal dilution of position * 10
+	u16 vdop;									                    // Vertical dilution of position * 10
+	u16 pdop;									                    // Position dilution of position * 10
+	u16 alt;									                    // Altitude in meters
+} STM32_AltitudeTypeDef;
+
+typedef struct
+{
+  u16 Lenght;                                   // 
+  u16 Chksum;                                   // 
+  u8 Version;                                   // 201
+  u8 PingPulses;                                // Number of pulses in a ping (0 to 128)
+  u16 GainSet;                                  // Gain set level (0 to 4095)
+  u16 SoundSpeed;                               // Speed of sound in water
+  u16 ADCBattery;                               // Battery level
+  u16 ADCWaterTemp;                             // Water temprature
+  u16 ADCAirTemp;                               // Air temprature
+  u32 iTime;                                    // UTC Dos file time. 2 seconds resolution
+  u32 iLon;                                     // Longitude, integer
+  u32 iLat;                                     // Lattitude, integer
+  u16 iSpeed;                                   // Speed in kts
+  u16 iBear;                                    // Bearing in degrees
+  STM32_SateliteTypeDef Satelite[12];           // 12 Satelites
+  STM32_AltitudeTypeDef Altitude;               // Alttude + more
+  u8 EchoArray[MAXECHO];                        // Echo array
+} STM32_SonarDataTypeDef;
+
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 static STM32_SonarTypeDef STM32_Sonar;          // 0x20000000
+static STM32_SonarDataTypeDef STM32_SonarData;
 vu8 BlueLED;                                    // Current state of the blue led
 vu16 Ping;                                      // Value to output to PA1 and PA2 pins
 vu8 Setup;                                      // Setup mode
@@ -76,6 +117,7 @@ void GetEcho(void);
 int main(void)
 {
   u32 i;
+STM32_SonarData.Lenght = sizeof STM32_SonarData;
   /* System clocks configuration */
   RCC_Configuration();
   /* NVIC configuration */
