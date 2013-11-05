@@ -1,0 +1,132 @@
+
+
+http://msdn.microsoft.com/en-us/library/ms881660.aspx
+ 
+1.
+WSADATA wsd;
+WSAStartup (MAKEWORD(1,0), &wsd);
+ 
+2.
+SOCKET client_socket = socket (AF_BT, SOCK_STREAM, BTHPROTO_RFCOMM);
+ 
+3.
+a.
+SOCKADDR_BTH sa;
+memset (&sa, 0, sizeof(sa));
+b.
+sa.btAddr = b; //b is a BT_ADDR variable
+c.
+sa.port = channel & 0xff;
+
+4.
+if (connect (client_socket, (SOCKADDR *)&sa, sizeof(sa))) 
+{
+  //Perform error handling.
+  closesocket (client_socket);
+  return 0;
+}
+
+5.
+closesocket(client_socket);
+CloseHandle ((LPVOID)client_socket);
+
+6.
+WSACleanup
+
+--------------------------
+
+Before you create a connection between two Bluetooth devices, you must have the following information:
+    The address of the remote Bluetooth device to query, as a BT_ADDR type, as defined in Ws2bth.h:
+
+    typedef ULONGLONG bt_addr, *pbt_addr, BT_ADDR, *PBT_ADDR;
+    Note   This requirement is for client ports only.
+
+    Service identifier as a GUID type variable.
+    - or -
+    RFCOMM channel (between 1 and 31).
+
+The Ssa sample that ships with Windows CE, contains source code for creating a Bluetooth connection by using Winsock. For more information about this sample, see Winsock Interface Sample.
+
+To create a client socket
+    Prepare the caller application by providing data about Winsock such as the version and implementation details. This data can be retrieved by calling the WSAStartup function as the following example code shows.
+
+    WSADATA wsd;
+    WSAStartup (MAKEWORD(1,0), &wsd);
+
+    Create a Bluetooth socket by calling the socket function, as the following example code shows.
+
+    SOCKET client_socket = socket (AF_BT, SOCK_STREAM, BTHPROTO_RFCOMM);
+
+    The parameter values for the socket function configures this socket for Bluetooth services.
+    Store information about the remote Bluetooth device that the client is connecting to, by configuring a SOCKADDR_BTH structure.
+        Create and initialize a SOCKADDR_BTH variable as the following example code shows:
+
+        SOCKADDR_BTH sa;
+        memset (&sa, 0, sizeof(sa));
+
+        Set the btAddr member to a BT_ADDR variable that contains the address of the target device.
+
+        sa.btAddr = b; //b is a BT_ADDR variable
+
+        Your application can accept the device address as a string but must convert the address and store it in a variable of type BT_ADDR.
+        If the service identifier is available, then set the serviceClassId member of SOCKADDR_BTH to the GUID of the RFCOMM-based service. In this case, the client performs an SDP query and then uses the resulting server channel.
+        - or-
+        If you want to use a hard-coded channel number, set the port member of SOCKADDR_BTH to the server channel number as the following example code shows.
+
+        sa.port = channel & 0xff;
+
+    Connect to the Bluetooth socket, created in step 2, by calling the connect function, as the following example code shows.
+
+    if (connect (client_socket, (SOCKADDR *)&sa, sizeof(sa))) 
+    {
+      //Perform error handling.
+      closesocket (client_socket);
+      return 0;
+    }
+
+    Specify the attributes of the target device by passing a SOCKADDR_BTH, configured in step 3.
+    After the connection is established, you can communicate with the target device by sending and receiving data.
+    To close the connection to the target device, call the closesocket function to close the Bluetooth socket. Also, ensure that you release the socket by calling the CloseHandle function, as the following example code shows.
+
+    closesocket(client_socket);
+ 
+    CloseHandle ((LPVOID)client_socket);
+
+    To terminate the use of Winsock services, call the WSACleanup function. There must be a call to WSACleanup for every successful call to WSAStartup made by an application.
+ 
+To create a server socket
+    Prepare the caller application by providing Winsock-related data such as the version and implementation details. This data can be retrieved by calling the WSAStartup function as the following example code shows.
+    WSADATA wsd;
+    WSAStartup (MAKEWORD(1,0), &wsd);
+    Create a Bluetooth socket by calling the socket function, as the following example code shows.
+    SOCKET server_socket = socket (AF_BT, SOCK_STREAM, BTHPROTO_RFCOMM);
+    The parameter values for the socket function configures this socket for Bluetooth services.
+    Configure a SOCKADDR_BTH structure to store information about the server Bluetooth device. The following example code shows the values to set in SOCKADDR_BTH members.
+    SOCKADDR_BTH sa;
+    memset (&sa, 0, sizeof(sa));
+    sa.addressFamily = AF_BT;
+    sa.port = channel & 0xff;
+        Note   To avoid conflicts, when you are selecting the server channel, it is recommended that you set channel to 0. This configures RFCOMM to use the next available channel.
+    The information that is stored in this structure is used to bind a Bluetooth socket to the local address of the server device.
+    Bind the socket created in step 2, by calling the bind function, as the following example code shows. Pass a reference to SOCKADDR_BTH, created in step 3, to specify the device information.
+    if (bind (server_socket, (SOCKADDR *)&sa, sizeof(sa))) 
+    {
+      ...  //Perform error handling
+      closesocket (server_socket);
+      return 0;
+    }
+    Listen for incoming connections from remote Bluetooth client devices, by calling the listen function as the following example code shows.
+    if (listen (server_socket, 5))
+    {
+      ...  //Perform error handling
+      closesocket (server_socket);
+      return 0;
+    }
+    Accept incoming connections, by calling the accept function as the following example shows.
+    SOCKADDR_BTH sa2;
+    int size = sizeof(sa2);
+    SOCKET s2 = accept (server_socket, (SOCKADDR *)&sa2, &size);
+    A call to accept from the server returns the address of the client in a SOCKADDR_BTH variable.
+    Close the Bluetooth socket, by calling the closesocket as the following example code shows.
+    closesocket(server_socket);
+    To terminate the use of Winsock services, call the WSACleanup function. There must be a call to WSACleanup for every successful call to WSAStartup made by an application.
