@@ -172,15 +172,14 @@ SendData proc uses ebx esi edi,hWin:HWND
 	.endif
 	.if hfile
 		invoke recv,server_recsendsocket,addr buff,3,0
-PrintText "recv"
 		; Read from file
 		invoke ReadFile,hfile,offset serversenddata.bData,FILEREPLAYSIZE,addr dwread,NULL
 		mov		eax,dwread
+PrintDec eax
 		.if eax==FILEREPLAYSIZE
 			; Send the data
 			mov		serversenddata.wLenght,FILEREPLAYSIZE
 			invoke send,server_recsendsocket,offset serversenddata,FILEREPLAYSIZE+4,0
-PrintText "send"
 		.else
 			; Done sending the file
 			invoke CloseHandle,hfile
@@ -296,11 +295,13 @@ BlueToothServer proc uses ebx esi edi,hWin:HWND
 	LOCAL	buff[512]:BYTE
 
 	invoke SendToLog,hWin,offset szServerStart,0
+	invoke RtlZeroMemory,offset wsdata,sizeof WSADATA
 	invoke WSAStartup,wVersionRequested, offset wsdata
 	.if !eax
 		invoke socket,AF_BTH,SOCK_STREAM,BTHPROTO_RFCOMM
 		.if eax!=INVALID_SOCKET
 			mov		server_socket,eax
+			invoke RtlZeroMemory,offset protocolInfo,sizeof WSAPROTOCOL_INFO
 			mov		protocolInfoSize,sizeof WSAPROTOCOL_INFO
 			invoke getsockopt,server_socket,SOL_SOCKET,SO_PROTOCOL_INFO,offset protocolInfo,offset protocolInfoSize
 			.if !eax
@@ -338,7 +339,7 @@ BlueToothServer proc uses ebx esi edi,hWin:HWND
 							.if eax!=INVALID_SOCKET
 								mov		server_recsendsocket,eax
 								invoke SendToLog,hWin,offset szServerConnect,0
-								.while eax!=INVALID_SOCKET && eax!=0
+								.while eax!=INVALID_SOCKET && eax!=0 && fExitBlueToothServerThread==0
 									invoke SendData,hWin
 								.endw
 								.if eax!=INVALID_SOCKET
@@ -394,6 +395,8 @@ BlueToothServer proc uses ebx esi edi,hWin:HWND
 	.endif
 	invoke WSACleanup
 	invoke SendToLog,hWin,offset szServerStop,0
+	invoke CloseHandle,hBlueToothServer
+	mov		hBlueToothServer,0
 	xor		eax,eax
 	ret
 
@@ -416,11 +419,10 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.if hBlueToothServer
 					; Terminate BlueToothServer Thread
 					mov		fExitBlueToothServerThread,TRUE
-					invoke WaitForSingleObject,hBlueToothServer,3000
-					.if eax==WAIT_TIMEOUT
-						invoke TerminateThread,hBlueToothServer,0
-					.endif
-					mov		hBlueToothServer,0
+;					invoke WaitForSingleObject,hBlueToothServer,3000
+;					.if eax==WAIT_TIMEOUT
+;						invoke TerminateThread,hBlueToothServer,0
+;					.endif
 				.else
 					invoke CreateThread,NULL,NULL,addr BlueToothServer,hWin,0,addr tid
 					mov		hBlueToothServer,eax
