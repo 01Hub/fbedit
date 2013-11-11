@@ -137,6 +137,11 @@ PC4		ADC Battery in, ADC_Channel_14
 PA9   	USART1 TX, GPS Configuration
 PA10  	USART1 RX, GPS Data
 
+PB10	USART3 TX, Bluetooth send
+PB11	USART3 RX, Bluetooth receive
+PB13	USART3 CTS, 
+PB14	USART3 RTS,
+
 Transmitter transformer
 =======================
 Primary 4+4 turns and secondary 200 turns on an 7.5mm square core.

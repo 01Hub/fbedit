@@ -20,6 +20,7 @@
 
 #define MAXECHO           ((u16)512)
 #define MAXGPS            ((u16)512)
+#define MAXBLUETOOTH      ((u16)512)
 #define ADC1_ICDR_Address ((u32)0x4001243C)
 
 typedef struct
@@ -38,6 +39,8 @@ typedef struct
   u16 GainArray[MAXECHO];                       // 0x20000210 Gain array
   u16 GainInit[18];                             // 0x20000610 Gain setup array, first half word is initial gain
   u8 GPSArray[MAXGPS];                          // 0x20000634 GPS array, received GPS NMEA 0183 messages
+  vu16 BLUETOOTHHead;                           // 0x20000834 BLUETOOTHArray head, index into BLUETOOTHArray
+  u8 BLUETOOTHArray[MAXBLUETOOTH];              // 0x20000836 Bluetooth array, received bluetooth messages
 }STM32_SonarTypeDef;
 
 typedef struct
@@ -97,7 +100,8 @@ void ADC_Configuration(void);
 void TIM1_Configuration(void);
 void TIM2_Configuration(void);
 void TIM3_Configuration(void);
-void USART_Configuration(u16 Baud);
+void USART1_Configuration(u16 Baud);
+void USART3_Configuration(u16 Baud);
 u16 GetADCValue(u8 Channel);
 void rs232_puts(char *str);
 void rs232_gets(char *str);
@@ -139,7 +143,9 @@ STM32_SonarData.Lenght = sizeof STM32_SonarData;
   /* Set the DAC channel2 to output middle output trim */
   DAC->DHR12R2 = (u16)0x400;
   /* Setup USART1 4800 baud */
-  USART_Configuration(4800);
+  USART1_Configuration(4800);
+  /* Setup USART3 9600 baud */
+  USART3_Configuration(9600);
   /* Wait until GPS module has started up */
   i = 0;
   while (i++ < 20000000)
@@ -230,7 +236,7 @@ STM32_SonarData.Lenght = sizeof STM32_SonarData;
     else if (STM32_Sonar.Start == 3)
     {
       /* Set USART baudrate to 9600 */
-      USART_Configuration(9600);
+      USART1_Configuration(9600);
       STM32_Sonar.Start=0;
     }
     else if (STM32_Sonar.Start == 4)
@@ -507,6 +513,44 @@ void USART1_IRQHandler(void)
 }
 
 /*******************************************************************************
+* Function Name  : USART3_IRQHandler
+* Description    : This function handles USART3 global interrupt request.
+*                  An interrupt is generated when a character is recieved.
+* Input          : None
+* Output         : None
+* Return         : None
+*******************************************************************************/
+void USART3_IRQHandler(void)
+{
+  /* Get pointer to USART3->DR */
+  asm("movw   r0,#0x4800");
+  asm("movt   r0,#0x4000");
+  /* Get recieved halfword */
+  asm("ldrh   r3,[r0,#0x2*2]");
+  /* Get pointer to STM32_Sonar */
+  asm("mov    r0,#0x20000000");
+  /* Get BLUETOOTHHead value */
+  asm("ldrh   r2,[r0,#0x834]");
+  /* Get offset to BLUETOOTHArray */
+  asm("movw   r1,#0x836");
+  /* Get pointer to BLUETOOTHArray */
+  asm("add    r1,r1,r0");
+  /* Store received byte at GPSArray[GPSHead] */
+  asm("strb   r3,[r1,r2]");
+  /* Increment BLUETOOTHHead */
+  asm("add    r2,r2,#0x1");
+  /* Limit BLUETOOTHHead to 512 bytes*/
+  asm("mov    r2,r2,lsl #23");
+  asm("mov    r2,r2,lsr #23");
+  /* Store BLUETOOTHHead */
+  asm("strh   r2,[r0,#0x834]");
+
+  // STM32_Sonar.BLUETOOTHArray[STM32_Sonar.BLUETOOTHHead++]=USART3->DR;
+  // /* Limit BLUETOOTHHead to 512 bytes array*/
+  // STM32_Sonar.BLUETOOTHHead&=MAXBLUETOOTH-1;
+}
+
+/*******************************************************************************
 * Function Name  : ADC_Startup
 * Description    : This function calibrates ADC1.
 * Input          : None
@@ -637,7 +681,7 @@ void RCC_Configuration(void)
     /* Enable TIM1, ADC1, USART1, GPIOA, GPIOB and GPIOC peripheral clocks */
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM1 | RCC_APB2Periph_ADC1 | RCC_APB2Periph_USART1 | RCC_APB2Periph_GPIOA | RCC_APB2Periph_GPIOB | RCC_APB2Periph_GPIOC, ENABLE);
     /* Enable DAC, TIM2 and TIM3 peripheral clocks */
-    RCC_APB1PeriphClockCmd(RCC_APB1Periph_DAC | RCC_APB1Periph_TIM2 | RCC_APB1Periph_TIM3, ENABLE);
+    RCC_APB1PeriphClockCmd(RCC_APB1Periph_DAC | RCC_APB1Periph_TIM2 | RCC_APB1Periph_TIM3 | RCC_APB1Periph_USART3, ENABLE);
   }
 }
 
@@ -687,6 +731,25 @@ void GPIO_Configuration(void)
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
   GPIO_Init(GPIOB, &GPIO_InitStructure);
+  /* Configure PB10 USART3 Tx as alternate function push-pull */
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10;
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
+  GPIO_Init(GPIOB, &GPIO_InitStructure);
+  /* Configure PB11 USART3 Rx as input floating */
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_11;
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+  GPIO_Init(GPIOB, &GPIO_InitStructure);
+  /* Configure PB13 USART3 CTS as alternate function push-pull */
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_13;
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+  GPIO_Init(GPIOB, &GPIO_InitStructure);
+  /* Configure PB14 USART3 RTS as input floating */
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_14;
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+  GPIO_Init(GPIOB, &GPIO_InitStructure);
 }
 
 /*******************************************************************************
@@ -714,8 +777,14 @@ void NVIC_Configuration(void)
   NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
   NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
   NVIC_Init(&NVIC_InitStructure);
-	/* Enable USART interrupt */
+	/* Enable USART1 interrupt */
 	NVIC_InitStructure.NVIC_IRQChannel = USART1_IRQChannel;
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
+  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+	NVIC_Init(&NVIC_InitStructure);
+	/* Enable USART3 interrupt */
+	NVIC_InitStructure.NVIC_IRQChannel = USART3_IRQChannel;
 	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
   NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
 	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
@@ -808,13 +877,13 @@ void TIM3_Configuration(void)
 }
 
 /*******************************************************************************
-* Function Name  : USART_Configuration
+* Function Name  : USART1_Configuration
 * Description    : Configures USART1 Rx and Tx for communication with GPS module.
 * Input          : None
 * Output         : None
 * Return         : None
 *******************************************************************************/
-void USART_Configuration(u16 BaudRate)
+void USART1_Configuration(u16 BaudRate)
 {
   /* USART1 configured as follow:
         - BaudRate = 1200,2400,4800,9600,19200 or 38400 baud  
@@ -839,6 +908,40 @@ void USART_Configuration(u16 BaudRate)
   USART_ITConfig(USART1, USART_IT_RXNE, ENABLE);
   /* Enable the USART1 */
   USART_Cmd(USART1, ENABLE);
+}
+
+/*******************************************************************************
+* Function Name  : USART3_Configuration
+* Description    : Configures USART3 Rx and Tx for communication with Bluetooth module.
+* Input          : None
+* Output         : None
+* Return         : None
+*******************************************************************************/
+void USART3_Configuration(u16 BaudRate)
+{
+  /* USART3 configured as follow:
+        - BaudRate = 1200,2400,4800,9600,19200 or 38400 baud  
+        - Word Length = 8 Bits
+        - One Stop Bit
+        - No parity
+        - Hardware flow control enabled
+        - Receive and transmit enabled
+  */
+  USART_InitTypeDef USART_InitStructure;
+
+  USART_DeInit(USART3);
+  USART_InitStructure.USART_BaudRate = BaudRate;
+  USART_InitStructure.USART_WordLength = USART_WordLength_8b;
+  USART_InitStructure.USART_StopBits = USART_StopBits_1;
+  USART_InitStructure.USART_Parity = USART_Parity_No ;
+  USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
+  USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;
+  USART_Init(USART1, &USART_InitStructure);
+  /* Enable the USART Receive interrupt: this interrupt is generated when the 
+     USART3 receive data register is not empty */
+  USART_ITConfig(USART3, USART_IT_RXNE, ENABLE);
+  /* Enable the USART3 */
+  USART_Cmd(USART3, ENABLE);
 }
 
 /*****END OF FILE****/
