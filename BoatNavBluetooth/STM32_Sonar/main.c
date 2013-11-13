@@ -45,21 +45,21 @@ typedef struct
 
 typedef struct
 {
-	u8 SatelliteID;									              // Satelite ID
-	u8 Elevation;									                // Elevation in degrees (0-90)
-	u16 Azimuth;									                // Azimuth in degrees (0-359)
-	u8 SNR;									                      // Signal strenght	(0-50, 0 not tracked) 
-	u8 Fixed;									                    // TRUE if used in fix
+	u8 SatelliteID;								// Satelite ID
+	u8 Elevation;								// Elevation in degrees (0-90)
+	u16 Azimuth;								// Azimuth in degrees (0-359)
+	u8 SNR;									    // Signal strenght	(0-50, 0 not tracked) 
+	u8 Fixed;									// TRUE if used in fix
 } STM32_SateliteTypeDef;
 
 typedef struct
 {
-	u8 fixquality;									              // Fix quality
-	u8 nsat;									                    // Number of satelites tracked
-	u16 hdop;									                    // Horizontal dilution of position * 10
-	u16 vdop;									                    // Vertical dilution of position * 10
-	u16 pdop;									                    // Position dilution of position * 10
-	u16 alt;									                    // Altitude in meters
+	u8 fixquality;								// Fix quality
+	u8 nsat;									// Number of satelites tracked
+	u16 hdop;									// Horizontal dilution of position * 10
+	u16 vdop;									// Vertical dilution of position * 10
+	u16 pdop;									// Position dilution of position * 10
+	u16 alt;									// Altitude in meters
 } STM32_AltitudeTypeDef;
 
 typedef struct
