@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
+
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="5dp"
+        android:text="Noise Level:" />
+
+    <SeekBar
+        android:id="@+id/sbNoiseLevel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/textView1"
+        android:layout_marginLeft="5dp"
+        android:max="32" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/sbNoiseLevel"
+        android:layout_marginLeft="5dp"
+        android:layout_marginTop="16dp"
+        android:text="Noise Reject:" />
+
+    <SeekBar
+        android:id="@+id/sbNoiseReject"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/textView2"
+        android:layout_marginLeft="5dp"
+        android:max="3" />
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/sbNoiseReject"
+        android:layout_below="@+id/sbNoiseReject"
+        android:layout_marginTop="16dp"
+        android:layout_marginLeft="5dp"
+        android:text="Fish Detect:" />
+    
+    <SeekBar
+        android:id="@+id/sbFishDetect"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/textView3"
+        android:layout_marginLeft="5dp"
+        android:max="3" />
+
+    <CheckBox
+        android:id="@+id/chkFishSound"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/sbFishDetect"
+        android:layout_marginTop="14dp"
+        android:layout_marginLeft="5dp"
+        android:text="Fish Sound" />
+
+    <CheckBox
+        android:id="@+id/chkFishDepth"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/chkFishSound"
+		android:layout_toRightOf="@+id/chkFishSound"
+        android:layout_marginLeft="15dp"
+        android:text="Fish Depth" />
+
+    <CheckBox
+        android:id="@+id/chkFishIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/chkFishSound"
+		android:layout_toRightOf="@+id/chkFishDepth"
+        android:layout_marginLeft="15dp"
+        android:text="Fish Icon" />
+
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/sbFishDetect"
+        android:layout_below="@+id/chkFishIcon"
+        android:layout_marginLeft="5dp"
+        android:text="Range:" />
+
+    <SeekBar
+        android:id="@+id/sbRange"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textView4"
+        android:layout_marginLeft="5dp"
+        android:max="19" />
+
+    <CheckBox
+        android:id="@+id/chkAutoRange"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/sbRange"
+        android:layout_marginLeft="5dp"
+        android:text="Auto Range" />
+
+    <Button
+        android:id="@+id/btnOK"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/chkAutoRange"
+        android:layout_marginTop="29dp"
+        android:text="@string/OK" />
+
+</RelativeLayout>

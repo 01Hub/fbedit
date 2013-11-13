@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+    <!-- Search, should appear as action button -->
+    <item android:id="@+id/action_mode"
+          android:icon="@drawable/mode"
+          android:title="@string/action_mode"
+          android:showAsAction="ifRoom" />
+    <item android:id="@+id/action_zoomout"
+          android:icon="@drawable/zoomout"
+          android:title="@string/action_zoomout"
+          android:showAsAction="ifRoom" />
+    <item android:id="@+id/action_zoomin"
+          android:icon="@drawable/zoomin"
+          android:title="@string/action_zoomin"
+          android:showAsAction="ifRoom" />
+    <item android:id="@+id/action_lock"
+          android:icon="@drawable/lock"
+          android:title="@string/action_lock"
+          android:showAsAction="ifRoom" />
+    <item android:id="@+id/item3" android:title="@string/Land" android:orderInCategory="3"></item>
+    <item android:id="@+id/item5" android:title="@string/GoTo" android:orderInCategory="5">
+        <!-- Sub menu Declaration  of MENU_VIEW_AS menu--> 
+	    <menu>
+	        <item android:id="@+id/item6" android:title="@string/AddNewPlace" />
+	        <item android:id="@+id/item7" android:title="@string/EditPlace" />
+	    </menu>    
+    </item>
+    <item android:id="@+id/item8" android:orderInCategory="6" android:title="@string/Replay"></item>
+    <item android:id="@+id/item9" android:title="@string/Setup" android:orderInCategory="7">
+        <menu>
+            <item android:id="@+id/item12" android:title="@string/Bluetooth" /><item android:id="@+id/item10" android:title="@string/GPS"/>
+            <item android:id="@+id/item11" android:title="@string/Sonar"/>
+            
+        </menu>
+    </item>
+    
+
+</menu>

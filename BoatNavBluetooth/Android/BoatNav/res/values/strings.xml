@@ -1,0 +1,24 @@
+<resources>
+    <string name="app_name">Boat Navigation</string>
+    <string name="ZoomIn">Zoom In</string>
+    <string name="ZoomOut">Zoom Out</string>
+    <string name="Land">Show Land / Sea</string>
+    <string name="GoTo">Goto</string>
+    <string name="AddNewPlace">Add New Place</string><string name="EditPlace">Edit Place</string>
+    <string name="action_lock">Lock</string>
+    <string name="Replay">Replay</string>
+    <string name="action_zoomin">Zoom In</string>
+    <string name="action_zoomout">Zoom Out</string>
+    <string name="action_mode">Mode</string>
+    <string name="Setup">Setup</string>
+    <string name="GPS">GPS</string>
+    <string name="Sonar">Sonar</string>
+    <string name="Bluetooth">Bluetooth</string>
+    <string name="OK">OK</string>
+    <string name="Cancel">Cancel</string>
+    <string name="Next">Next</string>
+    <string name="Delete">Delete</string>
+    <string name="Connect">Connect</string>
+    <string name="ClearTrail">Clear Trail</string>
+    
+</resources>

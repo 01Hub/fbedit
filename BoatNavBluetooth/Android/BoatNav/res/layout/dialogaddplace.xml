@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
+ 
+    
+    <RadioGroup
+        android:id="@+id/rgIcons1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+		android:orientation="horizontal" >
+        
+        <RadioButton
+			android:id="@+id/rbn1"
+        	android:layout_width="140dp"
+        	android:layout_height="wrap_content"
+        	android:layout_marginTop="5dp"
+        	android:layout_marginRight="5dp"
+        	android:checked="true"
+        	android:text="None" />
+    
+    	<RadioButton
+	        android:id="@+id/rbn2"
+	        android:layout_width="140dp"
+	        android:layout_height="wrap_content"
+	        android:layout_marginTop="5dp"
+	        android:layout_marginRight="5dp"
+	        android:text="Buildning" />
+    
+	    <RadioButton
+	        android:id="@+id/rbn3"
+	        android:layout_width="140dp"
+	        android:layout_height="wrap_content"
+	        android:layout_marginTop="5dp"
+	        android:layout_marginRight="5dp"
+	        android:text="House" />
+	    
+	    <RadioButton
+	        android:id="@+id/rbn4"
+	        android:layout_width="140dp"
+	        android:layout_height="wrap_content"
+	        android:layout_marginTop="5dp"
+	        android:layout_marginRight="5dp"
+	        android:text="Shallow" />
+    
+	</RadioGroup>
+	<RadioGroup
+        android:id="@+id/rgIcons2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+		android:orientation="horizontal"
+        android:layout_below="@+id/rgIcons1" >
+	    
+	    <RadioButton
+			android:id="@+id/rbn5"
+        	android:layout_width="140dp"
+        	android:layout_height="wrap_content"
+        	android:layout_marginTop="5dp"
+        	android:layout_marginRight="5dp"
+        	android:text="Big Fish" />
+    
+    	<RadioButton
+	        android:id="@+id/rbn6"
+	        android:layout_width="140dp"
+	        android:layout_height="wrap_content"
+	        android:layout_marginTop="5dp"
+	        android:layout_marginRight="5dp"
+	        android:text="Small Fish" />
+    
+	    <RadioButton
+	        android:id="@+id/rbn7"
+	        android:layout_width="140dp"
+	        android:layout_height="wrap_content"
+	        android:layout_marginTop="5dp"
+	        android:layout_marginRight="5dp"
+	        android:text="Cross" />
+	    
+	    <RadioButton
+	        android:id="@+id/rbn8"
+	        android:layout_width="140dp"
+	        android:layout_height="wrap_content"
+	        android:layout_marginTop="5dp"
+	        android:layout_marginRight="5dp"
+	        android:text="City" />
+    
+	</RadioGroup>
+
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_marginTop="15dp"
+        android:layout_marginLeft="5dp"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/rgIcons2"
+        android:text="Lattitude"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
+
+    <EditText
+        android:id="@+id/editLat"
+        android:layout_marginLeft="5dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/textView1"
+        android:layout_below="@+id/textView1"
+        android:inputType="numberDecimal"
+		android:maxLength="9"
+        android:ems="10" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_marginLeft="5dp"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_alignRight="@+id/textView1"
+        android:layout_below="@+id/editLat"
+        android:text="Longitude"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
+
+    <EditText
+        android:id="@+id/editLon"
+        android:layout_marginLeft="5dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/textView2"
+        android:inputType="numberDecimal"
+		android:maxLength="9"
+        android:ems="10" />
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_marginLeft="5dp"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/textView2"
+        android:layout_below="@+id/editLon"
+        android:text="Title"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
+
+    <EditText
+        android:id="@+id/editTitle"
+        android:layout_marginLeft="5dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/textView3"
+        android:inputType="text"
+		android:maxLength="20"
+        android:ems="10" />
+
+    <CheckBox
+        android:id="@+id/chkMenu"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="150dp"
+		android:layout_toRightOf="@+id/editTitle"
+        android:layout_below="@+id/editLat"
+       	android:checked="true"
+        android:text="Add to menu" />
+
+    <CheckBox
+        android:id="@+id/chkMap"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="150dp"
+        android:layout_marginTop="20dp"
+		android:layout_toRightOf="@+id/editTitle"
+        android:layout_below="@+id/chkMenu"
+       	android:checked="true"
+        android:text="Draw title on map" />
+
+    <Button
+        android:id="@+id/btnCancel"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/editTitle"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginTop="5dp"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:text="@string/Cancel" />
+    
+    <Button
+        android:id="@+id/btnOK"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/editTitle"
+        android:layout_marginRight="5dp"
+        android:layout_marginTop="5dp"
+        android:layout_toRightOf="@+id/btnCancel"
+        android:text="@string/OK" />
+    
+    <Button
+        android:id="@+id/btnNext"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:layout_marginRight="5dp"
+        android:visibility="invisible"
+        android:layout_below="@+id/editTitle"
+        android:layout_toRightOf="@+id/btnOK"
+        android:text="@string/Next" />
+
+    <Button
+        android:id="@+id/btnDelete"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:layout_marginRight="5dp"
+        android:visibility="invisible"
+        android:layout_toRightOf="@+id/btnNext"
+        android:layout_below="@+id/editTitle"
+        android:text="@string/Delete" />
+    
+</RelativeLayout>
