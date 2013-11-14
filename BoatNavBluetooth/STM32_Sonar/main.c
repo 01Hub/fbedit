@@ -105,8 +105,8 @@ void TIM3_Configuration(void);
 void USART1_Configuration(u16 Baud);
 void USART3_Configuration(u16 Baud);
 u16 GetADCValue(u8 Channel);
-void rs232_puts(char *str);
-void rs232_gets(char *str);
+void USART1_puts(char *str);
+void USART3_putdata(char *data,u16 lenght);
 void GainSetup(void);
 void TrimOutput(void);
 void GetEcho(void);
@@ -153,10 +153,10 @@ int main(void)
   while (i++ < 20000000)
   {
   }
-  rs232_puts((char*) &GPSBaud);
+  USART1_puts((char*) &GPSBaud);
   /* Set USART1 baudrate to 9600 */
   USART1_Configuration(9600);
-  rs232_puts((char*) &GPSInit);
+  USART1_puts((char*) &GPSInit);
 
   Setup = 0;
   if (GPIO_ReadInputDataBit(GPIOA,GPIO_Pin_0))
@@ -187,14 +187,19 @@ int main(void)
       i = 1;
       while (i < MAXECHO)
       {
-        STM32_Sonar.EchoArray[i++] = 0;
+        STM32_Sonar.EchoArray[i] = 0;
+        STM32_SonarData.EchoArray[i] = 0;
+        i++;
       }
       /* Read battery */
       STM32_Sonar.ADCBatt = GetADCValue(ADC_Channel_14);
+      STM32_SonarData.ADCBattery = STM32_Sonar.ADCBatt;
       /* Read water temprature */
       STM32_Sonar.ADCWaterTemp = GetADCValue(ADC_Channel_6);
+      STM32_SonarData.ADCWaterTemp = STM32_Sonar.ADCWaterTemp;
       /* Read air temprature */
       STM32_Sonar.ADCAirTemp = GetADCValue(ADC_Channel_7);
+      STM32_SonarData.ADCAirTemp = STM32_Sonar.ADCAirTemp;
       if (Setup)
       {
         /* No ping in setup mode */
@@ -218,7 +223,7 @@ int main(void)
       STM32_Sonar.EchoIndex = 0;
       /* Init Ping */
       Ping = 0x2;
-      /* Disable the USART Receive interrupt: this interrupt is generated when the 
+      /* Disable the USART1 Receive interrupt: this interrupt is generated when the 
          USART1 receive data register is not empty */
       USART_ITConfig(USART1, USART_IT_RXNE, DISABLE);
       /* Enable TIM1 */
@@ -227,6 +232,7 @@ int main(void)
       GetEcho();
       /* Store the current range as the first byte in the echo array */
       STM32_Sonar.EchoArray[0] = STM32_Sonar.RangeInx;
+      STM32_SonarData.EchoArray[0] = STM32_Sonar.RangeInx;
       /* Done, Disable TIM2 */
       TIM2->CR1 = 0;
       /* Disable ADC injected channel */
@@ -237,7 +243,7 @@ int main(void)
     else if (STM32_Sonar.Start == 2)
     {
       /* Send initialization data to GPS */
-      // rs232_puts((char*) (u32 *)STM32_Sonar.GainArray);
+      // USART1_puts((char*) (u32 *)STM32_Sonar.GainArray);
       STM32_Sonar.Start=0;
     }
     else if (STM32_Sonar.Start == 3)
@@ -304,6 +310,7 @@ void GetEcho(void)
     if (Echo > STM32_Sonar.EchoArray[STM32_Sonar.EchoIndex])
     {
       STM32_Sonar.EchoArray[STM32_Sonar.EchoIndex] = Echo;
+      STM32_SonarData.EchoArray[STM32_Sonar.EchoIndex] = Echo;
     }
   }
 }
@@ -423,7 +430,7 @@ void TIM1_UP_IRQHandler(void)
     TIM2->SR = (u16)~TIM_IT_Update;
     /* Enable TIM2 */
     TIM_Cmd(TIM2, ENABLE);
-    /* Enable the USART Receive interrupt: this interrupt is generated when the 
+    /* Enable the USART1 Receive interrupt: this interrupt is generated when the 
        USART1 receive data register is not empty */
     USART_ITConfig(USART1, USART_IT_RXNE, ENABLE);
   }
@@ -462,22 +469,43 @@ void TIM2_IRQHandler(void)
 }
 
 /*******************************************************************************
-* Function Name  : rs232_puts
+* Function Name  : USART1_puts
 * Description    : This function transmits a zero terminated string
 * Input          : Zero terminated string
 * Output         : None
 * Return         : None
 *******************************************************************************/
-void rs232_puts(char *str)
+void USART1_puts(char *str)
 {
   char c;
   /* Characters are transmitted one at a time. */
   while ((c = *str++))
   {
-    /* Wait until transmit register empty*/
+    /* Wait until transmit register empty */
     while((USART1->SR & USART_FLAG_TXE) == 0);          
     /* Transmit Data */
     USART1->DR = (u16)c;
+  }
+}
+
+/*******************************************************************************
+* Function Name  : USART3_putdata
+* Description    : This function transmits data
+* Input          : data, lenght
+* Output         : None
+* Return         : None
+*******************************************************************************/
+void USART3_putdata(char *data,u16 lenght)
+{
+  char c;
+  /* Characters are transmitted one at a time. */
+  while (lenght--)
+  {
+    /* Wait until transmit register empty */
+    while((USART3->SR & USART_FLAG_TXE) == 0);          
+    /* Transmit Data */
+    USART3->DR = (u16)c;
+    *data++;
   }
 }
 

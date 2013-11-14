@@ -235,301 +235,301 @@
     <Component Name="EchoArray" TI="3118" Line="83" Offs="114"/>
    </type>
    <type Family="typedef" Name="STM32_SonarDataTypeDef" Line="84" ID="3149" toTI="2885"/>
-   <function Name="GetEcho" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="290">
+   <function Name="GetEcho" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="296">
    <type Family="Pointer" TI="3218" toTI="58"/>
-    <variable Name="Echo" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="293" Addr="0x2" TI="94"/>
+    <variable Name="Echo" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="299" Addr="0x2" TI="94"/>
    </function >
-   <function Name="GetADCValue" TI="76" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="318">
-    <parameter Name="Channel" TI="94" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="318" Addr="0x0" Param="Yes"/>
-    <variable Name="i" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="320" Addr="0x34000017" TI="121"/>
-    <variable Name="ADCValue" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="321" Addr="0x34000014" TI="116"/>
-    <variable Name="ADC_InitStructure" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="322" Addr="0x34000000" TI="1788"/>
+   <function Name="GetADCValue" TI="76" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="325">
+    <parameter Name="Channel" TI="94" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="325" Addr="0x0" Param="Yes"/>
+    <variable Name="i" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="327" Addr="0x34000017" TI="121"/>
+    <variable Name="ADCValue" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="328" Addr="0x34000014" TI="116"/>
+    <variable Name="ADC_InitStructure" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="329" Addr="0x34000000" TI="1788"/>
    </function >
-   <function Name="TrimOutput" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="264">
-    <variable Name="Trim" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="266" Addr="0x0" TI="76"/>
-    <variable Name="TrimAdd" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="267" Addr="0x0" TI="76"/>
-    <variable Name="i" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="268" Addr="0x34000004" TI="111"/>
+   <function Name="TrimOutput" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="270">
+    <variable Name="Trim" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="272" Addr="0x0" TI="76"/>
+    <variable Name="TrimAdd" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="273" Addr="0x0" TI="76"/>
+    <variable Name="i" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="274" Addr="0x34000004" TI="111"/>
    </function >
-   <function Name="GainSetup" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="359">
-    <variable Name="GainInitInx" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="361" Addr="0x34000014" TI="111"/>
-    <variable Name="i" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="362" Addr="0x34000010" TI="111"/>
-    <variable Name="GainInx" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="363" Addr="0x3400000C" TI="111"/>
-    <variable Name="GainInc" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="364" Addr="0x34000008" TI="111"/>
-    <variable Name="GainVal" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="365" Addr="0x34000004" TI="111"/>
+   <function Name="GainSetup" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="366">
+    <variable Name="GainInitInx" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="368" Addr="0x34000014" TI="111"/>
+    <variable Name="i" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="369" Addr="0x34000010" TI="111"/>
+    <variable Name="GainInx" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="370" Addr="0x3400000C" TI="111"/>
+    <variable Name="GainInc" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="371" Addr="0x34000008" TI="111"/>
+    <variable Name="GainVal" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="372" Addr="0x34000004" TI="111"/>
    </function >
-   <function Name="TIM2_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="441">
+   <function Name="TIM2_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="448">
    </function >
-   <function Name="rs232_puts" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="471">
+   <function Name="USART1_puts" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="478">
    <type Family="Base" Name="char" ID="3577"/>
    <type Family="Pointer" TI="3571" toTI="3577"/>
-    <parameter Name="str" TI="3571" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="471" Addr="0x0" Param="Yes"/>
-    <variable Name="c" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="473" Addr="0x1" TI="3577"/>
+    <parameter Name="str" TI="3571" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="478" Addr="0x0" Param="Yes"/>
+    <variable Name="c" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="480" Addr="0x1" TI="3577"/>
    </function >
-   <function Name="USART1_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="492">
+   <function Name="USART1_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="520">
    </function >
-   <function Name="USART3_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="530">
+   <function Name="USART3_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="558">
    </function >
-   <function Name="ADC_Startup" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="567">
-    <variable Name="ADC_InitStructure" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="569" Addr="0x34000004" TI="1788"/>
+   <function Name="ADC_Startup" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="595">
+    <variable Name="ADC_InitStructure" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="597" Addr="0x34000004" TI="1788"/>
    </function >
-   <function Name="ADC_Configuration" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="602">
-    <variable Name="ADC_InitStructure" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="604" Addr="0x34000004" TI="1788"/>
+   <function Name="ADC_Configuration" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="630">
+    <variable Name="ADC_InitStructure" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="632" Addr="0x34000004" TI="1788"/>
    </function >
-   <function Name="RCC_Configuration" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="629">
-    <variable Name="HSEStartUpStatus" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="631" Addr="0x0" TI="200"/>
+   <function Name="RCC_Configuration" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="657">
+    <variable Name="HSEStartUpStatus" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="659" Addr="0x0" TI="200"/>
    </function >
-   <function Name="GPIO_Configuration" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="702">
-    <variable Name="GPIO_InitStructure" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="704" Addr="0x34000004" TI="1957"/>
+   <function Name="GPIO_Configuration" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="730">
+    <variable Name="GPIO_InitStructure" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="732" Addr="0x34000004" TI="1957"/>
    </function >
-   <function Name="NVIC_Configuration" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="770">
-    <variable Name="NVIC_InitStructure" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="772" Addr="0x34000004" TI="2054"/>
+   <function Name="NVIC_Configuration" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="798">
+    <variable Name="NVIC_InitStructure" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="800" Addr="0x34000004" TI="2054"/>
    </function >
-   <function Name="TIM1_Configuration" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="808">
-    <variable Name="TIM_TimeBaseStructure" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="810" Addr="0x34000004" TI="2144"/>
+   <function Name="TIM1_Configuration" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="836">
+    <variable Name="TIM_TimeBaseStructure" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="838" Addr="0x34000004" TI="2144"/>
    </function >
-   <function Name="TIM2_Configuration" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="834">
-    <variable Name="TIM_TimeBaseStructure" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="836" Addr="0x34000004" TI="2144"/>
+   <function Name="TIM2_Configuration" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="862">
+    <variable Name="TIM_TimeBaseStructure" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="864" Addr="0x34000004" TI="2144"/>
    </function >
-   <function Name="TIM1_UP_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="399">
+   <function Name="TIM1_UP_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="406">
    </function >
-   <function Name="TIM3_Configuration" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="855">
-    <variable Name="TIM_TimeBaseStructure" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="857" Addr="0x34000014" TI="2144"/>
-    <variable Name="TIM_OCInitStructure" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="858" Addr="0x34000004" TI="2276"/>
+   <function Name="TIM3_Configuration" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="883">
+    <variable Name="TIM_TimeBaseStructure" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="885" Addr="0x34000014" TI="2144"/>
+    <variable Name="TIM_OCInitStructure" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="886" Addr="0x34000004" TI="2276"/>
    </function >
-   <function Name="USART1_Configuration" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="893">
-    <parameter Name="BaudRate" TI="76" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="893" Addr="0x0" Param="Yes"/>
-    <variable Name="USART_InitStructure" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="903" Addr="0x34000000" TI="2380"/>
+   <function Name="USART1_Configuration" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="921">
+    <parameter Name="BaudRate" TI="76" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="921" Addr="0x0" Param="Yes"/>
+    <variable Name="USART_InitStructure" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="931" Addr="0x34000000" TI="2380"/>
    </function >
-   <function Name="USART3_Configuration" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="927">
-    <parameter Name="BaudRate" TI="76" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="927" Addr="0x0" Param="Yes"/>
-    <variable Name="USART_InitStructure" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="937" Addr="0x34000000" TI="2380"/>
+   <function Name="USART3_Configuration" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="955">
+    <parameter Name="BaudRate" TI="76" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="955" Addr="0x0" Param="Yes"/>
+    <variable Name="USART_InitStructure" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="965" Addr="0x34000000" TI="2380"/>
    </function >
-   <type Family="Base" Name="int" ID="4159"/>
-   <function Name="main" TI="4159" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="123">
+   <type Family="Base" Name="int" ID="4227"/>
+   <function Name="main" TI="4227" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="123">
     <variable Name="i" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="125" Addr="0x0" TI="58"/>
    </function >
    <variable Name="STM32_Sonar" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="88" Addr="0x20000000" TI="2680"/>
    <variable Name="STM32_SonarData" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="89" Addr="0x20000A38" TI="3149"/>
-   <type Family="array" ID="4239" toTI="94"/>
-   <type Family="array" ID="4273" toTI="94"/>
+   <type Family="array" ID="4307" toTI="94"/>
+   <type Family="array" ID="4341" toTI="94"/>
    <variable Name="BlueLED" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="90" Addr="0x20000CAC" TI="121"/>
    <variable Name="Ping" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="91" Addr="0x20000CAE" TI="116"/>
    <variable Name="Setup" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="92" Addr="0x20000CB0" TI="121"/>
-   <variable Name="GPSBaud" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="93" Addr="0x80018BC" TI="4379"/>
-   <variable Name="GPSInit" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="94" Addr="0x80018D8" TI="4402"/>
+   <variable Name="GPSBaud" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="93" Addr="0x80018E4" TI="4447"/>
+   <variable Name="GPSInit" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="94" Addr="0x8001900" TI="4470"/>
   </module>
   <module Name="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.c" >
-   <type Family="Base" Name="long int" ID="4445"/>
-   <type Family="Base" Name="short int" ID="4452"/>
-   <type Family="Base" Name="signed char" ID="4459"/>
-   <type Family="Base" Name="long unsigned int" ID="4477"/>
-   <type Family="typedef" Name="u32" Line="39" ID="4466" toTI="4477"/>
-   <type Family="Base" Name="short unsigned int" ID="4495"/>
-   <type Family="typedef" Name="u16" Line="40" ID="4484" toTI="4495"/>
-   <type Family="Base" Name="unsigned char" ID="4512"/>
-   <type Family="typedef" Name="u8" Line="41" ID="4502" toTI="4512"/>
-   <type Family="typedef" Name="vu32" Line="47" ID="4519" toTI="4530"/>
-   <type Family="typedef" Name="FlagStatus" Line="57" ID="4556" toTI="4535"/>
-   <type Family="typedef" Name="ITStatus" Line="57" ID="4567" toTI="4535"/>
-   <type Family="typedef" Name="FunctionalState" Line="59" ID="4599" toTI="4578"/>
-   <type Family="ComponentList" Line="36" ID="4610">
-    <Component Name="SR" TI="4618" Line="38" Offs="0"/>
-    <Component Name="CR1" TI="4631" Line="39" Offs="4"/>
-    <Component Name="CR2" TI="4645" Line="40" Offs="8"/>
-    <Component Name="SMPR1" TI="4659" Line="41" Offs="12"/>
-    <Component Name="SMPR2" TI="4673" Line="42" Offs="16"/>
-    <Component Name="JOFR1" TI="4687" Line="43" Offs="20"/>
-    <Component Name="JOFR2" TI="4701" Line="44" Offs="24"/>
-    <Component Name="JOFR3" TI="4715" Line="45" Offs="28"/>
-    <Component Name="JOFR4" TI="4729" Line="46" Offs="32"/>
-    <Component Name="HTR" TI="4743" Line="47" Offs="36"/>
-    <Component Name="LTR" TI="4757" Line="48" Offs="40"/>
-    <Component Name="SQR1" TI="4771" Line="49" Offs="44"/>
-    <Component Name="SQR2" TI="4785" Line="50" Offs="48"/>
-    <Component Name="SQR3" TI="4799" Line="51" Offs="52"/>
-    <Component Name="JSQR" TI="4813" Line="52" Offs="56"/>
-    <Component Name="JDR1" TI="4827" Line="53" Offs="60"/>
-    <Component Name="JDR2" TI="4841" Line="54" Offs="64"/>
-    <Component Name="JDR3" TI="4855" Line="55" Offs="68"/>
-    <Component Name="JDR4" TI="4869" Line="56" Offs="72"/>
-    <Component Name="DR" TI="4883" Line="57" Offs="76"/>
+   <type Family="Base" Name="long int" ID="4513"/>
+   <type Family="Base" Name="short int" ID="4520"/>
+   <type Family="Base" Name="signed char" ID="4527"/>
+   <type Family="Base" Name="long unsigned int" ID="4545"/>
+   <type Family="typedef" Name="u32" Line="39" ID="4534" toTI="4545"/>
+   <type Family="Base" Name="short unsigned int" ID="4563"/>
+   <type Family="typedef" Name="u16" Line="40" ID="4552" toTI="4563"/>
+   <type Family="Base" Name="unsigned char" ID="4580"/>
+   <type Family="typedef" Name="u8" Line="41" ID="4570" toTI="4580"/>
+   <type Family="typedef" Name="vu32" Line="47" ID="4587" toTI="4598"/>
+   <type Family="typedef" Name="FlagStatus" Line="57" ID="4624" toTI="4603"/>
+   <type Family="typedef" Name="ITStatus" Line="57" ID="4635" toTI="4603"/>
+   <type Family="typedef" Name="FunctionalState" Line="59" ID="4667" toTI="4646"/>
+   <type Family="ComponentList" Line="36" ID="4678">
+    <Component Name="SR" TI="4686" Line="38" Offs="0"/>
+    <Component Name="CR1" TI="4699" Line="39" Offs="4"/>
+    <Component Name="CR2" TI="4713" Line="40" Offs="8"/>
+    <Component Name="SMPR1" TI="4727" Line="41" Offs="12"/>
+    <Component Name="SMPR2" TI="4741" Line="42" Offs="16"/>
+    <Component Name="JOFR1" TI="4755" Line="43" Offs="20"/>
+    <Component Name="JOFR2" TI="4769" Line="44" Offs="24"/>
+    <Component Name="JOFR3" TI="4783" Line="45" Offs="28"/>
+    <Component Name="JOFR4" TI="4797" Line="46" Offs="32"/>
+    <Component Name="HTR" TI="4811" Line="47" Offs="36"/>
+    <Component Name="LTR" TI="4825" Line="48" Offs="40"/>
+    <Component Name="SQR1" TI="4839" Line="49" Offs="44"/>
+    <Component Name="SQR2" TI="4853" Line="50" Offs="48"/>
+    <Component Name="SQR3" TI="4867" Line="51" Offs="52"/>
+    <Component Name="JSQR" TI="4881" Line="52" Offs="56"/>
+    <Component Name="JDR1" TI="4895" Line="53" Offs="60"/>
+    <Component Name="JDR2" TI="4909" Line="54" Offs="64"/>
+    <Component Name="JDR3" TI="4923" Line="55" Offs="68"/>
+    <Component Name="JDR4" TI="4937" Line="56" Offs="72"/>
+    <Component Name="DR" TI="4951" Line="57" Offs="76"/>
    </type>
-   <type Family="typedef" Name="ADC_TypeDef" Line="58" ID="4897" toTI="4610"/>
-   <type Family="Base" Name="unsigned int" ID="4908"/>
-   <type Family="ComponentList" Line="26" ID="4915">
-    <Component Name="ADC_Mode" TI="4923" Line="28" Offs="0"/>
-    <Component Name="ADC_ScanConvMode" TI="4937" Line="29" Offs="4"/>
-    <Component Name="ADC_ContinuousConvMode" TI="4951" Line="30" Offs="5"/>
-    <Component Name="ADC_ExternalTrigConv" TI="4965" Line="31" Offs="8"/>
-    <Component Name="ADC_DataAlign" TI="4979" Line="32" Offs="12"/>
-    <Component Name="ADC_NbrOfChannel" TI="4993" Line="33" Offs="16"/>
+   <type Family="typedef" Name="ADC_TypeDef" Line="58" ID="4965" toTI="4678"/>
+   <type Family="Base" Name="unsigned int" ID="4976"/>
+   <type Family="ComponentList" Line="26" ID="4983">
+    <Component Name="ADC_Mode" TI="4991" Line="28" Offs="0"/>
+    <Component Name="ADC_ScanConvMode" TI="5005" Line="29" Offs="4"/>
+    <Component Name="ADC_ContinuousConvMode" TI="5019" Line="30" Offs="5"/>
+    <Component Name="ADC_ExternalTrigConv" TI="5033" Line="31" Offs="8"/>
+    <Component Name="ADC_DataAlign" TI="5047" Line="32" Offs="12"/>
+    <Component Name="ADC_NbrOfChannel" TI="5061" Line="33" Offs="16"/>
    </type>
-   <type Family="typedef" Name="ADC_InitTypeDef" Line="34" ID="5008" toTI="4915"/>
-   <type Family="Pointer" TI="5060" toTI="4897"/>
+   <type Family="typedef" Name="ADC_InitTypeDef" Line="34" ID="5076" toTI="4983"/>
+   <type Family="Pointer" TI="5128" toTI="4965"/>
    <function Name="ADC_Init" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.c" Line="174">
-    <parameter Name="ADCx" TI="5060" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.c" Line="174" Addr="0x0" Param="Yes"/>
-   <type Family="Pointer" TI="5148" toTI="5008"/>
-    <parameter Name="ADC_InitStruct" TI="5148" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.c" Line="174" Addr="0x1" Param="Yes"/>
-    <variable Name="tmpreg1" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.c" Line="176" Addr="0x0" TI="4466"/>
-    <variable Name="tmpreg2" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.c" Line="177" Addr="0x0" TI="4502"/>
+    <parameter Name="ADCx" TI="5128" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.c" Line="174" Addr="0x0" Param="Yes"/>
+   <type Family="Pointer" TI="5216" toTI="5076"/>
+    <parameter Name="ADC_InitStruct" TI="5216" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.c" Line="174" Addr="0x1" Param="Yes"/>
+    <variable Name="tmpreg1" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.c" Line="176" Addr="0x0" TI="4534"/>
+    <variable Name="tmpreg2" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.c" Line="177" Addr="0x0" TI="4570"/>
    </function >
    <function Name="ADC_Cmd" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.c" Line="266">
-    <parameter Name="ADCx" TI="5060" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.c" Line="266" Addr="0x0" Param="Yes"/>
-    <parameter Name="NewState" TI="4599" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.c" Line="266" Addr="0x1" Param="Yes"/>
+    <parameter Name="ADCx" TI="5128" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.c" Line="266" Addr="0x0" Param="Yes"/>
+    <parameter Name="NewState" TI="4667" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.c" Line="266" Addr="0x1" Param="Yes"/>
    </function >
    <function Name="ADC_ResetCalibration" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.c" Line="358">
-    <parameter Name="ADCx" TI="5060" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.c" Line="358" Addr="0x0" Param="Yes"/>
+    <parameter Name="ADCx" TI="5128" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.c" Line="358" Addr="0x0" Param="Yes"/>
    </function >
-   <function Name="ADC_GetResetCalibrationStatus" TI="4556" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.c" Line="374">
-    <parameter Name="ADCx" TI="5060" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.c" Line="374" Addr="0x0" Param="Yes"/>
-    <variable Name="bitstatus" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.c" Line="376" Addr="0x0" TI="4556"/>
+   <function Name="ADC_GetResetCalibrationStatus" TI="4624" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.c" Line="374">
+    <parameter Name="ADCx" TI="5128" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.c" Line="374" Addr="0x0" Param="Yes"/>
+    <variable Name="bitstatus" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.c" Line="376" Addr="0x0" TI="4624"/>
    </function >
    <function Name="ADC_StartCalibration" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.c" Line="404">
-    <parameter Name="ADCx" TI="5060" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.c" Line="404" Addr="0x0" Param="Yes"/>
+    <parameter Name="ADCx" TI="5128" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.c" Line="404" Addr="0x0" Param="Yes"/>
    </function >
-   <function Name="ADC_GetCalibrationStatus" TI="4556" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.c" Line="420">
-    <parameter Name="ADCx" TI="5060" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.c" Line="420" Addr="0x0" Param="Yes"/>
-    <variable Name="bitstatus" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.c" Line="422" Addr="0x0" TI="4556"/>
+   <function Name="ADC_GetCalibrationStatus" TI="4624" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.c" Line="420">
+    <parameter Name="ADCx" TI="5128" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.c" Line="420" Addr="0x0" Param="Yes"/>
+    <variable Name="bitstatus" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.c" Line="422" Addr="0x0" TI="4624"/>
    </function >
    <function Name="ADC_SoftwareStartConvCmd" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.c" Line="452">
-    <parameter Name="ADCx" TI="5060" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.c" Line="452" Addr="0x0" Param="Yes"/>
-    <parameter Name="NewState" TI="4599" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.c" Line="452" Addr="0x1" Param="Yes"/>
+    <parameter Name="ADCx" TI="5128" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.c" Line="452" Addr="0x0" Param="Yes"/>
+    <parameter Name="NewState" TI="4667" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.c" Line="452" Addr="0x1" Param="Yes"/>
    </function >
    <function Name="ADC_RegularChannelConfig" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.c" Line="602">
-    <parameter Name="ADCx" TI="5060" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.c" Line="602" Addr="0x0" Param="Yes"/>
-    <parameter Name="ADC_Channel" TI="4502" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.c" Line="602" Addr="0x1" Param="Yes"/>
-    <parameter Name="Rank" TI="4502" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.c" Line="602" Addr="0x2" Param="Yes"/>
-    <parameter Name="ADC_SampleTime" TI="4502" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.c" Line="602" Addr="0x3" Param="Yes"/>
-    <variable Name="tmpreg1" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.c" Line="604" Addr="0x0" TI="4466"/>
-    <variable Name="tmpreg2" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.c" Line="604" Addr="0x0" TI="4466"/>
+    <parameter Name="ADCx" TI="5128" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.c" Line="602" Addr="0x0" Param="Yes"/>
+    <parameter Name="ADC_Channel" TI="4570" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.c" Line="602" Addr="0x1" Param="Yes"/>
+    <parameter Name="Rank" TI="4570" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.c" Line="602" Addr="0x2" Param="Yes"/>
+    <parameter Name="ADC_SampleTime" TI="4570" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.c" Line="602" Addr="0x3" Param="Yes"/>
+    <variable Name="tmpreg1" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.c" Line="604" Addr="0x0" TI="4534"/>
+    <variable Name="tmpreg2" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.c" Line="604" Addr="0x0" TI="4534"/>
    </function >
    <function Name="ADC_AutoInjectedConvCmd" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.c" Line="760">
-    <parameter Name="ADCx" TI="5060" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.c" Line="760" Addr="0x0" Param="Yes"/>
-    <parameter Name="NewState" TI="4599" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.c" Line="760" Addr="0x1" Param="Yes"/>
+    <parameter Name="ADCx" TI="5128" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.c" Line="760" Addr="0x0" Param="Yes"/>
+    <parameter Name="NewState" TI="4667" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.c" Line="760" Addr="0x1" Param="Yes"/>
    </function >
    <function Name="ADC_InjectedChannelConfig" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.c" Line="994">
-    <parameter Name="ADCx" TI="5060" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.c" Line="994" Addr="0x0" Param="Yes"/>
-    <parameter Name="ADC_Channel" TI="4502" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.c" Line="994" Addr="0x1" Param="Yes"/>
-    <parameter Name="Rank" TI="4502" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.c" Line="994" Addr="0x2" Param="Yes"/>
-    <parameter Name="ADC_SampleTime" TI="4502" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.c" Line="994" Addr="0x3" Param="Yes"/>
-    <variable Name="tmpreg1" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.c" Line="996" Addr="0x0" TI="4466"/>
-    <variable Name="tmpreg2" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.c" Line="996" Addr="0x0" TI="4466"/>
-    <variable Name="tmpreg3" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.c" Line="996" Addr="0x0" TI="4466"/>
+    <parameter Name="ADCx" TI="5128" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.c" Line="994" Addr="0x0" Param="Yes"/>
+    <parameter Name="ADC_Channel" TI="4570" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.c" Line="994" Addr="0x1" Param="Yes"/>
+    <parameter Name="Rank" TI="4570" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.c" Line="994" Addr="0x2" Param="Yes"/>
+    <parameter Name="ADC_SampleTime" TI="4570" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.c" Line="994" Addr="0x3" Param="Yes"/>
+    <variable Name="tmpreg1" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.c" Line="996" Addr="0x0" TI="4534"/>
+    <variable Name="tmpreg2" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.c" Line="996" Addr="0x0" TI="4534"/>
+    <variable Name="tmpreg3" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.c" Line="996" Addr="0x0" TI="4534"/>
    </function >
    <function Name="ADC_InjectedSequencerLengthConfig" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.c" Line="1062">
-    <parameter Name="ADCx" TI="5060" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.c" Line="1062" Addr="0x0" Param="Yes"/>
-    <parameter Name="Length" TI="4502" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.c" Line="1062" Addr="0x1" Param="Yes"/>
-    <variable Name="tmpreg1" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.c" Line="1064" Addr="0x0" TI="4466"/>
-    <variable Name="tmpreg2" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.c" Line="1065" Addr="0x0" TI="4466"/>
+    <parameter Name="ADCx" TI="5128" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.c" Line="1062" Addr="0x0" Param="Yes"/>
+    <parameter Name="Length" TI="4570" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.c" Line="1062" Addr="0x1" Param="Yes"/>
+    <variable Name="tmpreg1" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.c" Line="1064" Addr="0x0" TI="4534"/>
+    <variable Name="tmpreg2" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.c" Line="1065" Addr="0x0" TI="4534"/>
    </function >
-   <function Name="ADC_GetFlagStatus" TI="4556" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.c" Line="1284">
-    <parameter Name="ADCx" TI="5060" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.c" Line="1284" Addr="0x0" Param="Yes"/>
-    <parameter Name="ADC_FLAG" TI="4502" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.c" Line="1284" Addr="0x1" Param="Yes"/>
-    <variable Name="bitstatus" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.c" Line="1286" Addr="0x0" TI="4556"/>
+   <function Name="ADC_GetFlagStatus" TI="4624" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.c" Line="1284">
+    <parameter Name="ADCx" TI="5128" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.c" Line="1284" Addr="0x0" Param="Yes"/>
+    <parameter Name="ADC_FLAG" TI="4570" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.c" Line="1284" Addr="0x1" Param="Yes"/>
+    <variable Name="bitstatus" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.c" Line="1286" Addr="0x0" TI="4624"/>
    </function >
    <function Name="ADC_ClearFlag" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.c" Line="1322">
-    <parameter Name="ADCx" TI="5060" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.c" Line="1322" Addr="0x0" Param="Yes"/>
-    <parameter Name="ADC_FLAG" TI="4502" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.c" Line="1322" Addr="0x1" Param="Yes"/>
+    <parameter Name="ADCx" TI="5128" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.c" Line="1322" Addr="0x0" Param="Yes"/>
+    <parameter Name="ADC_FLAG" TI="4570" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.c" Line="1322" Addr="0x1" Param="Yes"/>
    </function >
   </module>
   <module Name="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_flash.c" >
-   <type Family="Base" Name="long int" ID="7383"/>
-   <type Family="Base" Name="short int" ID="7390"/>
-   <type Family="Base" Name="signed char" ID="7397"/>
-   <type Family="Base" Name="long unsigned int" ID="7415"/>
-   <type Family="typedef" Name="u32" Line="39" ID="7404" toTI="7415"/>
-   <type Family="Base" Name="short unsigned int" ID="7422"/>
-   <type Family="Base" Name="unsigned char" ID="7429"/>
-   <type Family="Base" Name="unsigned int" ID="7441"/>
-   <type Family="ComponentList" Line="268" ID="7448">
-    <Component Name="ACR" TI="7457" Line="270" Offs="0"/>
-    <Component Name="KEYR" TI="7472" Line="271" Offs="4"/>
-    <Component Name="OPTKEYR" TI="7487" Line="272" Offs="8"/>
-    <Component Name="SR" TI="7502" Line="273" Offs="12"/>
-    <Component Name="CR" TI="7516" Line="274" Offs="16"/>
-    <Component Name="AR" TI="7530" Line="275" Offs="20"/>
-    <Component Name="RESERVED" TI="7544" Line="276" Offs="24"/>
-    <Component Name="OBR" TI="7559" Line="277" Offs="28"/>
-    <Component Name="WRPR" TI="7574" Line="278" Offs="32"/>
+   <type Family="Base" Name="long int" ID="7451"/>
+   <type Family="Base" Name="short int" ID="7458"/>
+   <type Family="Base" Name="signed char" ID="7465"/>
+   <type Family="Base" Name="long unsigned int" ID="7483"/>
+   <type Family="typedef" Name="u32" Line="39" ID="7472" toTI="7483"/>
+   <type Family="Base" Name="short unsigned int" ID="7490"/>
+   <type Family="Base" Name="unsigned char" ID="7497"/>
+   <type Family="Base" Name="unsigned int" ID="7509"/>
+   <type Family="ComponentList" Line="268" ID="7516">
+    <Component Name="ACR" TI="7525" Line="270" Offs="0"/>
+    <Component Name="KEYR" TI="7540" Line="271" Offs="4"/>
+    <Component Name="OPTKEYR" TI="7555" Line="272" Offs="8"/>
+    <Component Name="SR" TI="7570" Line="273" Offs="12"/>
+    <Component Name="CR" TI="7584" Line="274" Offs="16"/>
+    <Component Name="AR" TI="7598" Line="275" Offs="20"/>
+    <Component Name="RESERVED" TI="7612" Line="276" Offs="24"/>
+    <Component Name="OBR" TI="7627" Line="277" Offs="28"/>
+    <Component Name="WRPR" TI="7642" Line="278" Offs="32"/>
    </type>
-   <type Family="typedef" Name="FLASH_TypeDef" Line="279" ID="7590" toTI="7448"/>
+   <type Family="typedef" Name="FLASH_TypeDef" Line="279" ID="7658" toTI="7516"/>
    <function Name="FLASH_SetLatency" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_flash.c" Line="86">
-    <parameter Name="FLASH_Latency" TI="7404" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_flash.c" Line="86" Addr="0x0" Param="Yes"/>
+    <parameter Name="FLASH_Latency" TI="7472" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_flash.c" Line="86" Addr="0x0" Param="Yes"/>
    </function >
    <function Name="FLASH_PrefetchBufferCmd" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_flash.c" Line="126">
-    <parameter Name="FLASH_PrefetchBuffer" TI="7404" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_flash.c" Line="126" Addr="0x0" Param="Yes"/>
+    <parameter Name="FLASH_PrefetchBuffer" TI="7472" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_flash.c" Line="126" Addr="0x0" Param="Yes"/>
    </function >
   </module>
   <module Name="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_gpio.c" >
-   <type Family="Base" Name="long int" ID="7750"/>
-   <type Family="Base" Name="short int" ID="7757"/>
-   <type Family="Base" Name="signed char" ID="7764"/>
-   <type Family="Base" Name="long unsigned int" ID="7782"/>
-   <type Family="typedef" Name="u32" Line="39" ID="7771" toTI="7782"/>
-   <type Family="Base" Name="short unsigned int" ID="7800"/>
-   <type Family="typedef" Name="u16" Line="40" ID="7789" toTI="7800"/>
-   <type Family="Base" Name="unsigned char" ID="7817"/>
-   <type Family="typedef" Name="u8" Line="41" ID="7807" toTI="7817"/>
-   <type Family="typedef" Name="vu32" Line="47" ID="7824" toTI="7835"/>
-   <type Family="typedef" Name="FunctionalState" Line="59" ID="7861" toTI="7840"/>
-   <type Family="Base" Name="unsigned int" ID="7872"/>
-   <type Family="ComponentList" Line="334" ID="7879">
-    <Component Name="CRL" TI="7888" Line="336" Offs="0"/>
-    <Component Name="CRH" TI="7903" Line="337" Offs="4"/>
-    <Component Name="IDR" TI="7918" Line="338" Offs="8"/>
-    <Component Name="ODR" TI="7933" Line="339" Offs="12"/>
-    <Component Name="BSRR" TI="7948" Line="340" Offs="16"/>
-    <Component Name="BRR" TI="7963" Line="341" Offs="20"/>
-    <Component Name="LCKR" TI="7978" Line="342" Offs="24"/>
+   <type Family="Base" Name="long int" ID="7818"/>
+   <type Family="Base" Name="short int" ID="7825"/>
+   <type Family="Base" Name="signed char" ID="7832"/>
+   <type Family="Base" Name="long unsigned int" ID="7850"/>
+   <type Family="typedef" Name="u32" Line="39" ID="7839" toTI="7850"/>
+   <type Family="Base" Name="short unsigned int" ID="7868"/>
+   <type Family="typedef" Name="u16" Line="40" ID="7857" toTI="7868"/>
+   <type Family="Base" Name="unsigned char" ID="7885"/>
+   <type Family="typedef" Name="u8" Line="41" ID="7875" toTI="7885"/>
+   <type Family="typedef" Name="vu32" Line="47" ID="7892" toTI="7903"/>
+   <type Family="typedef" Name="FunctionalState" Line="59" ID="7929" toTI="7908"/>
+   <type Family="Base" Name="unsigned int" ID="7940"/>
+   <type Family="ComponentList" Line="334" ID="7947">
+    <Component Name="CRL" TI="7956" Line="336" Offs="0"/>
+    <Component Name="CRH" TI="7971" Line="337" Offs="4"/>
+    <Component Name="IDR" TI="7986" Line="338" Offs="8"/>
+    <Component Name="ODR" TI="8001" Line="339" Offs="12"/>
+    <Component Name="BSRR" TI="8016" Line="340" Offs="16"/>
+    <Component Name="BRR" TI="8031" Line="341" Offs="20"/>
+    <Component Name="LCKR" TI="8046" Line="342" Offs="24"/>
    </type>
-   <type Family="typedef" Name="GPIO_TypeDef" Line="343" ID="7994" toTI="7879"/>
-   <type Family="ComponentList" Line="345" ID="8006">
-    <Component Name="EVCR" TI="8015" Line="347" Offs="0"/>
-    <Component Name="MAPR" TI="8030" Line="348" Offs="4"/>
-   <type Family="array" ID="8061" toTI="7782"/>
-    <Component Name="EXTICR" TI="8045" Line="349" Offs="8"/>
+   <type Family="typedef" Name="GPIO_TypeDef" Line="343" ID="8062" toTI="7947"/>
+   <type Family="ComponentList" Line="345" ID="8074">
+    <Component Name="EVCR" TI="8083" Line="347" Offs="0"/>
+    <Component Name="MAPR" TI="8098" Line="348" Offs="4"/>
+   <type Family="array" ID="8129" toTI="7850"/>
+    <Component Name="EXTICR" TI="8113" Line="349" Offs="8"/>
    </type>
-   <type Family="typedef" Name="AFIO_TypeDef" Line="350" ID="8082" toTI="8006"/>
-   <type Family="typedef" Name="GPIOSpeed_TypeDef" Line="39" ID="8121" toTI="8094"/>
-   <type Family="typedef" Name="GPIOMode_TypeDef" Line="54" ID="8190" toTI="8132"/>
-   <type Family="ComponentList" Line="62" ID="8201">
-    <Component Name="GPIO_Pin" TI="8209" Line="64" Offs="0"/>
-    <Component Name="GPIO_Speed" TI="8223" Line="65" Offs="2"/>
-    <Component Name="GPIO_Mode" TI="8237" Line="66" Offs="3"/>
+   <type Family="typedef" Name="AFIO_TypeDef" Line="350" ID="8150" toTI="8074"/>
+   <type Family="typedef" Name="GPIOSpeed_TypeDef" Line="39" ID="8189" toTI="8162"/>
+   <type Family="typedef" Name="GPIOMode_TypeDef" Line="54" ID="8258" toTI="8200"/>
+   <type Family="ComponentList" Line="62" ID="8269">
+    <Component Name="GPIO_Pin" TI="8277" Line="64" Offs="0"/>
+    <Component Name="GPIO_Speed" TI="8291" Line="65" Offs="2"/>
+    <Component Name="GPIO_Mode" TI="8305" Line="66" Offs="3"/>
    </type>
-   <type Family="typedef" Name="GPIO_InitTypeDef" Line="67" ID="8252" toTI="8201"/>
-   <type Family="typedef" Name="BitAction" Line="73" ID="8284" toTI="8263"/>
-   <type Family="Pointer" TI="8336" toTI="7994"/>
+   <type Family="typedef" Name="GPIO_InitTypeDef" Line="67" ID="8320" toTI="8269"/>
+   <type Family="typedef" Name="BitAction" Line="73" ID="8352" toTI="8331"/>
+   <type Family="Pointer" TI="8404" toTI="8062"/>
    <function Name="GPIO_Init" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_gpio.c" Line="124">
-    <parameter Name="GPIOx" TI="8336" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_gpio.c" Line="124" Addr="0x0" Param="Yes"/>
-   <type Family="Pointer" TI="8505" toTI="8252"/>
-    <parameter Name="GPIO_InitStruct" TI="8505" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_gpio.c" Line="124" Addr="0x1" Param="Yes"/>
-    <variable Name="currentmode" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_gpio.c" Line="126" Addr="0x0" TI="7771"/>
-    <variable Name="currentpin" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_gpio.c" Line="126" Addr="0x0" TI="7771"/>
-    <variable Name="pinpos" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_gpio.c" Line="126" Addr="0x0" TI="7771"/>
-    <variable Name="pos" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_gpio.c" Line="126" Addr="0x0" TI="7771"/>
-    <variable Name="tmpreg" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_gpio.c" Line="127" Addr="0x0" TI="7771"/>
-    <variable Name="pinmask" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_gpio.c" Line="127" Addr="0x0" TI="7771"/>
+    <parameter Name="GPIOx" TI="8404" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_gpio.c" Line="124" Addr="0x0" Param="Yes"/>
+   <type Family="Pointer" TI="8573" toTI="8320"/>
+    <parameter Name="GPIO_InitStruct" TI="8573" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_gpio.c" Line="124" Addr="0x1" Param="Yes"/>
+    <variable Name="currentmode" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_gpio.c" Line="126" Addr="0x0" TI="7839"/>
+    <variable Name="currentpin" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_gpio.c" Line="126" Addr="0x0" TI="7839"/>
+    <variable Name="pinpos" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_gpio.c" Line="126" Addr="0x0" TI="7839"/>
+    <variable Name="pos" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_gpio.c" Line="126" Addr="0x0" TI="7839"/>
+    <variable Name="tmpreg" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_gpio.c" Line="127" Addr="0x0" TI="7839"/>
+    <variable Name="pinmask" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_gpio.c" Line="127" Addr="0x0" TI="7839"/>
    </function >
-   <function Name="GPIO_ReadInputDataBit" TI="7807" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_gpio.c" Line="246">
-    <parameter Name="GPIOx" TI="8336" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_gpio.c" Line="246" Addr="0x0" Param="Yes"/>
-    <parameter Name="GPIO_Pin" TI="7789" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_gpio.c" Line="246" Addr="0x1" Param="Yes"/>
-    <variable Name="bitstatus" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_gpio.c" Line="248" Addr="0x0" TI="7807"/>
+   <function Name="GPIO_ReadInputDataBit" TI="7875" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_gpio.c" Line="246">
+    <parameter Name="GPIOx" TI="8404" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_gpio.c" Line="246" Addr="0x0" Param="Yes"/>
+    <parameter Name="GPIO_Pin" TI="7857" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_gpio.c" Line="246" Addr="0x1" Param="Yes"/>
+    <variable Name="bitstatus" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_gpio.c" Line="248" Addr="0x0" TI="7875"/>
    </function >
    <function Name="GPIO_WriteBit" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_gpio.c" Line="374">
-    <parameter Name="GPIOx" TI="8336" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_gpio.c" Line="374" Addr="0x0" Param="Yes"/>
-    <parameter Name="GPIO_Pin" TI="7789" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_gpio.c" Line="374" Addr="0x1" Param="Yes"/>
-    <parameter Name="BitVal" TI="8284" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_gpio.c" Line="374" Addr="0x2" Param="Yes"/>
+    <parameter Name="GPIOx" TI="8404" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_gpio.c" Line="374" Addr="0x0" Param="Yes"/>
+    <parameter Name="GPIO_Pin" TI="7857" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_gpio.c" Line="374" Addr="0x1" Param="Yes"/>
+    <parameter Name="BitVal" TI="8352" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_gpio.c" Line="374" Addr="0x2" Param="Yes"/>
    </function >
   </module>
   <module Name="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_it.c" >
-   <type Family="Base" Name="long int" ID="9430"/>
-   <type Family="Base" Name="short int" ID="9437"/>
-   <type Family="Base" Name="signed char" ID="9444"/>
-   <type Family="Base" Name="long unsigned int" ID="9451"/>
-   <type Family="Base" Name="short unsigned int" ID="9458"/>
-   <type Family="Base" Name="unsigned char" ID="9465"/>
-   <type Family="Base" Name="unsigned int" ID="9472"/>
+   <type Family="Base" Name="long int" ID="9498"/>
+   <type Family="Base" Name="short int" ID="9505"/>
+   <type Family="Base" Name="signed char" ID="9512"/>
+   <type Family="Base" Name="long unsigned int" ID="9519"/>
+   <type Family="Base" Name="short unsigned int" ID="9526"/>
+   <type Family="Base" Name="unsigned char" ID="9533"/>
+   <type Family="Base" Name="unsigned int" ID="9540"/>
    <function Name="WWDG_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_it.c" Line="150">
    </function >
    <function Name="PVD_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_it.c" Line="161">
@@ -602,420 +602,420 @@
    </function >
   </module>
   <module Name="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_lib.c" >
-   <type Family="Base" Name="long int" ID="10859"/>
-   <type Family="Base" Name="short int" ID="10866"/>
-   <type Family="Base" Name="signed char" ID="10873"/>
-   <type Family="Base" Name="long unsigned int" ID="10880"/>
-   <type Family="Base" Name="short unsigned int" ID="10887"/>
-   <type Family="Base" Name="unsigned char" ID="10894"/>
-   <type Family="Base" Name="unsigned int" ID="10901"/>
+   <type Family="Base" Name="long int" ID="10927"/>
+   <type Family="Base" Name="short int" ID="10934"/>
+   <type Family="Base" Name="signed char" ID="10941"/>
+   <type Family="Base" Name="long unsigned int" ID="10948"/>
+   <type Family="Base" Name="short unsigned int" ID="10955"/>
+   <type Family="Base" Name="unsigned char" ID="10962"/>
+   <type Family="Base" Name="unsigned int" ID="10969"/>
   </module>
   <module Name="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_nvic.c" >
-   <type Family="Base" Name="long int" ID="10946"/>
-   <type Family="Base" Name="short int" ID="10953"/>
-   <type Family="Base" Name="signed char" ID="10960"/>
-   <type Family="Base" Name="long unsigned int" ID="10978"/>
-   <type Family="typedef" Name="u32" Line="39" ID="10967" toTI="10978"/>
-   <type Family="Base" Name="short unsigned int" ID="10996"/>
-   <type Family="typedef" Name="u16" Line="40" ID="10985" toTI="10996"/>
-   <type Family="Base" Name="unsigned char" ID="11013"/>
-   <type Family="typedef" Name="u8" Line="41" ID="11003" toTI="11013"/>
-   <type Family="typedef" Name="vu32" Line="47" ID="11020" toTI="11031"/>
-   <type Family="typedef" Name="ITStatus" Line="57" ID="11062" toTI="11041"/>
-   <type Family="typedef" Name="FunctionalState" Line="59" ID="11094" toTI="11073"/>
-   <type Family="Base" Name="unsigned int" ID="11105"/>
-   <type Family="ComponentList" Line="385" ID="11112">
-   <type Family="array" ID="11297" toTI="10978"/>
-    <Component Name="ISER" TI="11122" Line="387" Offs="0"/>
-   <type Family="array" ID="11318" toTI="10967"/>
-    <Component Name="RESERVED0" TI="11137" Line="388" Offs="8"/>
-    <Component Name="ICER" TI="11152" Line="389" Offs="128"/>
-    <Component Name="RSERVED1" TI="11168" Line="390" Offs="136"/>
-    <Component Name="ISPR" TI="11184" Line="391" Offs="256"/>
-    <Component Name="RESERVED2" TI="11200" Line="392" Offs="264"/>
-    <Component Name="ICPR" TI="11216" Line="393" Offs="384"/>
-    <Component Name="RESERVED3" TI="11232" Line="394" Offs="392"/>
-    <Component Name="IABR" TI="11248" Line="395" Offs="512"/>
-   <type Family="array" ID="11354" toTI="10967"/>
-    <Component Name="RESERVED4" TI="11264" Line="396" Offs="520"/>
-   <type Family="array" ID="11370" toTI="10978"/>
-    <Component Name="IPR" TI="11280" Line="397" Offs="768"/>
+   <type Family="Base" Name="long int" ID="11014"/>
+   <type Family="Base" Name="short int" ID="11021"/>
+   <type Family="Base" Name="signed char" ID="11028"/>
+   <type Family="Base" Name="long unsigned int" ID="11046"/>
+   <type Family="typedef" Name="u32" Line="39" ID="11035" toTI="11046"/>
+   <type Family="Base" Name="short unsigned int" ID="11064"/>
+   <type Family="typedef" Name="u16" Line="40" ID="11053" toTI="11064"/>
+   <type Family="Base" Name="unsigned char" ID="11081"/>
+   <type Family="typedef" Name="u8" Line="41" ID="11071" toTI="11081"/>
+   <type Family="typedef" Name="vu32" Line="47" ID="11088" toTI="11099"/>
+   <type Family="typedef" Name="ITStatus" Line="57" ID="11130" toTI="11109"/>
+   <type Family="typedef" Name="FunctionalState" Line="59" ID="11162" toTI="11141"/>
+   <type Family="Base" Name="unsigned int" ID="11173"/>
+   <type Family="ComponentList" Line="385" ID="11180">
+   <type Family="array" ID="11365" toTI="11046"/>
+    <Component Name="ISER" TI="11190" Line="387" Offs="0"/>
+   <type Family="array" ID="11386" toTI="11035"/>
+    <Component Name="RESERVED0" TI="11205" Line="388" Offs="8"/>
+    <Component Name="ICER" TI="11220" Line="389" Offs="128"/>
+    <Component Name="RSERVED1" TI="11236" Line="390" Offs="136"/>
+    <Component Name="ISPR" TI="11252" Line="391" Offs="256"/>
+    <Component Name="RESERVED2" TI="11268" Line="392" Offs="264"/>
+    <Component Name="ICPR" TI="11284" Line="393" Offs="384"/>
+    <Component Name="RESERVED3" TI="11300" Line="394" Offs="392"/>
+    <Component Name="IABR" TI="11316" Line="395" Offs="512"/>
+   <type Family="array" ID="11422" toTI="11035"/>
+    <Component Name="RESERVED4" TI="11332" Line="396" Offs="520"/>
+   <type Family="array" ID="11438" toTI="11046"/>
+    <Component Name="IPR" TI="11348" Line="397" Offs="768"/>
    </type>
-   <type Family="typedef" Name="NVIC_TypeDef" Line="398" ID="11391" toTI="11112"/>
-   <type Family="ComponentList" Line="400" ID="11403">
-    <Component Name="CPUID" TI="11412" Line="402" Offs="0"/>
-    <Component Name="ICSR" TI="11427" Line="403" Offs="4"/>
-    <Component Name="VTOR" TI="11442" Line="404" Offs="8"/>
-    <Component Name="AIRCR" TI="11457" Line="405" Offs="12"/>
-    <Component Name="SCR" TI="11472" Line="406" Offs="16"/>
-    <Component Name="CCR" TI="11487" Line="407" Offs="20"/>
-   <type Family="array" ID="11623" toTI="10978"/>
-    <Component Name="SHPR" TI="11502" Line="408" Offs="24"/>
-    <Component Name="SHCSR" TI="11517" Line="409" Offs="36"/>
-    <Component Name="CFSR" TI="11532" Line="410" Offs="40"/>
-    <Component Name="HFSR" TI="11547" Line="411" Offs="44"/>
-    <Component Name="DFSR" TI="11562" Line="412" Offs="48"/>
-    <Component Name="MMFAR" TI="11577" Line="413" Offs="52"/>
-    <Component Name="BFAR" TI="11592" Line="414" Offs="56"/>
-    <Component Name="AFSR" TI="11607" Line="415" Offs="60"/>
+   <type Family="typedef" Name="NVIC_TypeDef" Line="398" ID="11459" toTI="11180"/>
+   <type Family="ComponentList" Line="400" ID="11471">
+    <Component Name="CPUID" TI="11480" Line="402" Offs="0"/>
+    <Component Name="ICSR" TI="11495" Line="403" Offs="4"/>
+    <Component Name="VTOR" TI="11510" Line="404" Offs="8"/>
+    <Component Name="AIRCR" TI="11525" Line="405" Offs="12"/>
+    <Component Name="SCR" TI="11540" Line="406" Offs="16"/>
+    <Component Name="CCR" TI="11555" Line="407" Offs="20"/>
+   <type Family="array" ID="11691" toTI="11046"/>
+    <Component Name="SHPR" TI="11570" Line="408" Offs="24"/>
+    <Component Name="SHCSR" TI="11585" Line="409" Offs="36"/>
+    <Component Name="CFSR" TI="11600" Line="410" Offs="40"/>
+    <Component Name="HFSR" TI="11615" Line="411" Offs="44"/>
+    <Component Name="DFSR" TI="11630" Line="412" Offs="48"/>
+    <Component Name="MMFAR" TI="11645" Line="413" Offs="52"/>
+    <Component Name="BFAR" TI="11660" Line="414" Offs="56"/>
+    <Component Name="AFSR" TI="11675" Line="415" Offs="60"/>
    </type>
-   <type Family="typedef" Name="SCB_TypeDef" Line="416" ID="11644" toTI="11403"/>
-   <type Family="ComponentList" Line="26" ID="11656">
-    <Component Name="NVIC_IRQChannel" TI="11664" Line="28" Offs="0"/>
-    <Component Name="NVIC_IRQChannelPreemptionPriority" TI="11678" Line="29" Offs="1"/>
-    <Component Name="NVIC_IRQChannelSubPriority" TI="11692" Line="30" Offs="2"/>
-    <Component Name="NVIC_IRQChannelCmd" TI="11706" Line="31" Offs="3"/>
+   <type Family="typedef" Name="SCB_TypeDef" Line="416" ID="11712" toTI="11471"/>
+   <type Family="ComponentList" Line="26" ID="11724">
+    <Component Name="NVIC_IRQChannel" TI="11732" Line="28" Offs="0"/>
+    <Component Name="NVIC_IRQChannelPreemptionPriority" TI="11746" Line="29" Offs="1"/>
+    <Component Name="NVIC_IRQChannelSubPriority" TI="11760" Line="30" Offs="2"/>
+    <Component Name="NVIC_IRQChannelCmd" TI="11774" Line="31" Offs="3"/>
    </type>
-   <type Family="typedef" Name="NVIC_InitTypeDef" Line="32" ID="11721" toTI="11656"/>
+   <type Family="typedef" Name="NVIC_InitTypeDef" Line="32" ID="11789" toTI="11724"/>
    <function Name="NVIC_Init" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_nvic.c" Line="116">
-   <type Family="Pointer" TI="11968" toTI="11721"/>
-    <parameter Name="NVIC_InitStruct" TI="11968" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_nvic.c" Line="116" Addr="0x0" Param="Yes"/>
-    <variable Name="tmppriority" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_nvic.c" Line="118" Addr="0x0" TI="10967"/>
-    <variable Name="tmpreg" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_nvic.c" Line="118" Addr="0x0" TI="10967"/>
-    <variable Name="tmpmask" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_nvic.c" Line="118" Addr="0x0" TI="10967"/>
-    <variable Name="tmppre" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_nvic.c" Line="119" Addr="0x0" TI="10967"/>
-    <variable Name="tmpsub" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_nvic.c" Line="119" Addr="0x0" TI="10967"/>
+   <type Family="Pointer" TI="12036" toTI="11789"/>
+    <parameter Name="NVIC_InitStruct" TI="12036" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_nvic.c" Line="116" Addr="0x0" Param="Yes"/>
+    <variable Name="tmppriority" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_nvic.c" Line="118" Addr="0x0" TI="11035"/>
+    <variable Name="tmpreg" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_nvic.c" Line="118" Addr="0x0" TI="11035"/>
+    <variable Name="tmpmask" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_nvic.c" Line="118" Addr="0x0" TI="11035"/>
+    <variable Name="tmppre" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_nvic.c" Line="119" Addr="0x0" TI="11035"/>
+    <variable Name="tmpsub" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_nvic.c" Line="119" Addr="0x0" TI="11035"/>
    </function >
    <function Name="NVIC_SetVectorTable" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_nvic.c" Line="393">
-    <parameter Name="NVIC_VectTab" TI="10967" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_nvic.c" Line="393" Addr="0x0" Param="Yes"/>
-    <parameter Name="Offset" TI="10967" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_nvic.c" Line="393" Addr="0x1" Param="Yes"/>
+    <parameter Name="NVIC_VectTab" TI="11035" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_nvic.c" Line="393" Addr="0x0" Param="Yes"/>
+    <parameter Name="Offset" TI="11035" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_nvic.c" Line="393" Addr="0x1" Param="Yes"/>
    </function >
   </module>
   <module Name="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.c" >
-   <type Family="Base" Name="long int" ID="13350"/>
-   <type Family="Base" Name="short int" ID="13357"/>
-   <type Family="Base" Name="signed char" ID="13364"/>
-   <type Family="Base" Name="long unsigned int" ID="13382"/>
-   <type Family="typedef" Name="u32" Line="39" ID="13371" toTI="13382"/>
-   <type Family="Base" Name="short unsigned int" ID="13400"/>
-   <type Family="typedef" Name="u16" Line="40" ID="13389" toTI="13400"/>
-   <type Family="Base" Name="unsigned char" ID="13417"/>
-   <type Family="typedef" Name="u8" Line="41" ID="13407" toTI="13417"/>
-   <type Family="typedef" Name="vu32" Line="47" ID="13424" toTI="13435"/>
-   <type Family="typedef" Name="vu8" Line="49" ID="13440" toTI="13451"/>
-   <type Family="typedef" Name="FlagStatus" Line="57" ID="13477" toTI="13456"/>
-   <type Family="typedef" Name="ITStatus" Line="57" ID="13488" toTI="13456"/>
-   <type Family="typedef" Name="FunctionalState" Line="59" ID="13520" toTI="13499"/>
-   <type Family="typedef" Name="ErrorStatus" Line="62" ID="13552" toTI="13531"/>
-   <type Family="Base" Name="unsigned int" ID="13563"/>
-   <type Family="ComponentList" Line="426" ID="13570">
-    <Component Name="CR" TI="13579" Line="428" Offs="0"/>
-    <Component Name="CFGR" TI="13593" Line="429" Offs="4"/>
-    <Component Name="CIR" TI="13608" Line="430" Offs="8"/>
-    <Component Name="APB2RSTR" TI="13623" Line="431" Offs="12"/>
-    <Component Name="APB1RSTR" TI="13638" Line="432" Offs="16"/>
-    <Component Name="AHBENR" TI="13653" Line="433" Offs="20"/>
-    <Component Name="APB2ENR" TI="13668" Line="434" Offs="24"/>
-    <Component Name="APB1ENR" TI="13683" Line="435" Offs="28"/>
-    <Component Name="BDCR" TI="13698" Line="436" Offs="32"/>
-    <Component Name="CSR" TI="13713" Line="437" Offs="36"/>
+   <type Family="Base" Name="long int" ID="13418"/>
+   <type Family="Base" Name="short int" ID="13425"/>
+   <type Family="Base" Name="signed char" ID="13432"/>
+   <type Family="Base" Name="long unsigned int" ID="13450"/>
+   <type Family="typedef" Name="u32" Line="39" ID="13439" toTI="13450"/>
+   <type Family="Base" Name="short unsigned int" ID="13468"/>
+   <type Family="typedef" Name="u16" Line="40" ID="13457" toTI="13468"/>
+   <type Family="Base" Name="unsigned char" ID="13485"/>
+   <type Family="typedef" Name="u8" Line="41" ID="13475" toTI="13485"/>
+   <type Family="typedef" Name="vu32" Line="47" ID="13492" toTI="13503"/>
+   <type Family="typedef" Name="vu8" Line="49" ID="13508" toTI="13519"/>
+   <type Family="typedef" Name="FlagStatus" Line="57" ID="13545" toTI="13524"/>
+   <type Family="typedef" Name="ITStatus" Line="57" ID="13556" toTI="13524"/>
+   <type Family="typedef" Name="FunctionalState" Line="59" ID="13588" toTI="13567"/>
+   <type Family="typedef" Name="ErrorStatus" Line="62" ID="13620" toTI="13599"/>
+   <type Family="Base" Name="unsigned int" ID="13631"/>
+   <type Family="ComponentList" Line="426" ID="13638">
+    <Component Name="CR" TI="13647" Line="428" Offs="0"/>
+    <Component Name="CFGR" TI="13661" Line="429" Offs="4"/>
+    <Component Name="CIR" TI="13676" Line="430" Offs="8"/>
+    <Component Name="APB2RSTR" TI="13691" Line="431" Offs="12"/>
+    <Component Name="APB1RSTR" TI="13706" Line="432" Offs="16"/>
+    <Component Name="AHBENR" TI="13721" Line="433" Offs="20"/>
+    <Component Name="APB2ENR" TI="13736" Line="434" Offs="24"/>
+    <Component Name="APB1ENR" TI="13751" Line="435" Offs="28"/>
+    <Component Name="BDCR" TI="13766" Line="436" Offs="32"/>
+    <Component Name="CSR" TI="13781" Line="437" Offs="36"/>
    </type>
-   <type Family="typedef" Name="RCC_TypeDef" Line="438" ID="13729" toTI="13570"/>
-   <type Family="ComponentList" Line="25" ID="13741">
-    <Component Name="SYSCLK_Frequency" TI="13749" Line="27" Offs="0"/>
-    <Component Name="HCLK_Frequency" TI="13763" Line="28" Offs="4"/>
-    <Component Name="PCLK1_Frequency" TI="13777" Line="29" Offs="8"/>
-    <Component Name="PCLK2_Frequency" TI="13791" Line="30" Offs="12"/>
-    <Component Name="ADCCLK_Frequency" TI="13805" Line="31" Offs="16"/>
+   <type Family="typedef" Name="RCC_TypeDef" Line="438" ID="13797" toTI="13638"/>
+   <type Family="ComponentList" Line="25" ID="13809">
+    <Component Name="SYSCLK_Frequency" TI="13817" Line="27" Offs="0"/>
+    <Component Name="HCLK_Frequency" TI="13831" Line="28" Offs="4"/>
+    <Component Name="PCLK1_Frequency" TI="13845" Line="29" Offs="8"/>
+    <Component Name="PCLK2_Frequency" TI="13859" Line="30" Offs="12"/>
+    <Component Name="ADCCLK_Frequency" TI="13873" Line="31" Offs="16"/>
    </type>
-   <type Family="typedef" Name="RCC_ClocksTypeDef" Line="32" ID="13820" toTI="13741"/>
+   <type Family="typedef" Name="RCC_ClocksTypeDef" Line="32" ID="13888" toTI="13809"/>
    <function Name="RCC_DeInit" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.c" Line="124">
    </function >
    <function Name="RCC_HSEConfig" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.c" Line="159">
-    <parameter Name="RCC_HSE" TI="13371" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.c" Line="159" Addr="0x0" Param="Yes"/>
+    <parameter Name="RCC_HSE" TI="13439" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.c" Line="159" Addr="0x0" Param="Yes"/>
    </function >
    <function Name="RCC_PLLConfig" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.c" Line="287">
-    <parameter Name="RCC_PLLSource" TI="13371" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.c" Line="287" Addr="0x0" Param="Yes"/>
-    <parameter Name="RCC_PLLMul" TI="13371" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.c" Line="287" Addr="0x1" Param="Yes"/>
-    <variable Name="tmpreg" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.c" Line="289" Addr="0x0" TI="13371"/>
+    <parameter Name="RCC_PLLSource" TI="13439" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.c" Line="287" Addr="0x0" Param="Yes"/>
+    <parameter Name="RCC_PLLMul" TI="13439" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.c" Line="287" Addr="0x1" Param="Yes"/>
+    <variable Name="tmpreg" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.c" Line="289" Addr="0x0" TI="13439"/>
    </function >
    <function Name="RCC_PLLCmd" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.c" Line="316">
-    <parameter Name="NewState" TI="13520" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.c" Line="316" Addr="0x0" Param="Yes"/>
+    <parameter Name="NewState" TI="13588" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.c" Line="316" Addr="0x0" Param="Yes"/>
    </function >
    <function Name="RCC_SYSCLKConfig" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.c" Line="335">
-    <parameter Name="RCC_SYSCLKSource" TI="13371" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.c" Line="335" Addr="0x0" Param="Yes"/>
-    <variable Name="tmpreg" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.c" Line="337" Addr="0x0" TI="13371"/>
+    <parameter Name="RCC_SYSCLKSource" TI="13439" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.c" Line="335" Addr="0x0" Param="Yes"/>
+    <variable Name="tmpreg" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.c" Line="337" Addr="0x0" TI="13439"/>
    </function >
-   <function Name="RCC_GetSYSCLKSource" TI="13407" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.c" Line="365">
+   <function Name="RCC_GetSYSCLKSource" TI="13475" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.c" Line="365">
    </function >
    <function Name="RCC_HCLKConfig" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.c" Line="388">
-    <parameter Name="RCC_SYSCLK" TI="13371" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.c" Line="388" Addr="0x0" Param="Yes"/>
-    <variable Name="tmpreg" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.c" Line="390" Addr="0x0" TI="13371"/>
+    <parameter Name="RCC_SYSCLK" TI="13439" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.c" Line="388" Addr="0x0" Param="Yes"/>
+    <variable Name="tmpreg" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.c" Line="390" Addr="0x0" TI="13439"/>
    </function >
    <function Name="RCC_PCLK1Config" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.c" Line="421">
-    <parameter Name="RCC_HCLK" TI="13371" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.c" Line="421" Addr="0x0" Param="Yes"/>
-    <variable Name="tmpreg" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.c" Line="423" Addr="0x0" TI="13371"/>
+    <parameter Name="RCC_HCLK" TI="13439" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.c" Line="421" Addr="0x0" Param="Yes"/>
+    <variable Name="tmpreg" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.c" Line="423" Addr="0x0" TI="13439"/>
    </function >
    <function Name="RCC_PCLK2Config" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.c" Line="454">
-    <parameter Name="RCC_HCLK" TI="13371" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.c" Line="454" Addr="0x0" Param="Yes"/>
-    <variable Name="tmpreg" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.c" Line="456" Addr="0x0" TI="13371"/>
+    <parameter Name="RCC_HCLK" TI="13439" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.c" Line="454" Addr="0x0" Param="Yes"/>
+    <variable Name="tmpreg" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.c" Line="456" Addr="0x0" TI="13439"/>
    </function >
    <function Name="RCC_ADCCLKConfig" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.c" Line="541">
-    <parameter Name="RCC_PCLK2" TI="13371" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.c" Line="541" Addr="0x0" Param="Yes"/>
-    <variable Name="tmpreg" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.c" Line="543" Addr="0x0" TI="13371"/>
+    <parameter Name="RCC_PCLK2" TI="13439" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.c" Line="541" Addr="0x0" Param="Yes"/>
+    <variable Name="tmpreg" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.c" Line="543" Addr="0x0" TI="13439"/>
    </function >
    <function Name="RCC_GetClocksFreq" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.c" Line="668">
-   <type Family="Pointer" TI="14758" toTI="13820"/>
-    <parameter Name="RCC_Clocks" TI="14758" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.c" Line="668" Addr="0x0" Param="Yes"/>
-    <variable Name="tmp" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.c" Line="670" Addr="0x0" TI="13371"/>
-    <variable Name="pllmull" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.c" Line="670" Addr="0x0" TI="13371"/>
-    <variable Name="pllsource" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.c" Line="670" Addr="0x0" TI="13371"/>
-    <variable Name="presc" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.c" Line="670" Addr="0x0" TI="13371"/>
+   <type Family="Pointer" TI="14826" toTI="13888"/>
+    <parameter Name="RCC_Clocks" TI="14826" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.c" Line="668" Addr="0x0" Param="Yes"/>
+    <variable Name="tmp" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.c" Line="670" Addr="0x0" TI="13439"/>
+    <variable Name="pllmull" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.c" Line="670" Addr="0x0" TI="13439"/>
+    <variable Name="pllsource" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.c" Line="670" Addr="0x0" TI="13439"/>
+    <variable Name="presc" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.c" Line="670" Addr="0x0" TI="13439"/>
    </function >
    <function Name="RCC_APB2PeriphClockCmd" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.c" Line="801">
-    <parameter Name="RCC_APB2Periph" TI="13371" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.c" Line="801" Addr="0x0" Param="Yes"/>
-    <parameter Name="NewState" TI="13520" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.c" Line="801" Addr="0x1" Param="Yes"/>
+    <parameter Name="RCC_APB2Periph" TI="13439" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.c" Line="801" Addr="0x0" Param="Yes"/>
+    <parameter Name="NewState" TI="13588" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.c" Line="801" Addr="0x1" Param="Yes"/>
    </function >
    <function Name="RCC_APB1PeriphClockCmd" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.c" Line="835">
-    <parameter Name="RCC_APB1Periph" TI="13371" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.c" Line="835" Addr="0x0" Param="Yes"/>
-    <parameter Name="NewState" TI="13520" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.c" Line="835" Addr="0x1" Param="Yes"/>
+    <parameter Name="RCC_APB1Periph" TI="13439" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.c" Line="835" Addr="0x0" Param="Yes"/>
+    <parameter Name="NewState" TI="13588" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.c" Line="835" Addr="0x1" Param="Yes"/>
    </function >
    <function Name="RCC_APB2PeriphResetCmd" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.c" Line="867">
-    <parameter Name="RCC_APB2Periph" TI="13371" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.c" Line="867" Addr="0x0" Param="Yes"/>
-    <parameter Name="NewState" TI="13520" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.c" Line="867" Addr="0x1" Param="Yes"/>
+    <parameter Name="RCC_APB2Periph" TI="13439" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.c" Line="867" Addr="0x0" Param="Yes"/>
+    <parameter Name="NewState" TI="13588" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.c" Line="867" Addr="0x1" Param="Yes"/>
    </function >
    <function Name="RCC_APB1PeriphResetCmd" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.c" Line="900">
-    <parameter Name="RCC_APB1Periph" TI="13371" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.c" Line="900" Addr="0x0" Param="Yes"/>
-    <parameter Name="NewState" TI="13520" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.c" Line="900" Addr="0x1" Param="Yes"/>
+    <parameter Name="RCC_APB1Periph" TI="13439" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.c" Line="900" Addr="0x0" Param="Yes"/>
+    <parameter Name="NewState" TI="13588" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.c" Line="900" Addr="0x1" Param="Yes"/>
    </function >
-   <function Name="RCC_GetFlagStatus" TI="13477" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.c" Line="989">
-    <parameter Name="RCC_FLAG" TI="13407" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.c" Line="989" Addr="0x0" Param="Yes"/>
-    <variable Name="tmp" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.c" Line="991" Addr="0x0" TI="13371"/>
-    <variable Name="statusreg" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.c" Line="992" Addr="0x0" TI="13371"/>
-    <variable Name="bitstatus" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.c" Line="993" Addr="0x0" TI="13477"/>
+   <function Name="RCC_GetFlagStatus" TI="13545" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.c" Line="989">
+    <parameter Name="RCC_FLAG" TI="13475" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.c" Line="989" Addr="0x0" Param="Yes"/>
+    <variable Name="tmp" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.c" Line="991" Addr="0x0" TI="13439"/>
+    <variable Name="statusreg" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.c" Line="992" Addr="0x0" TI="13439"/>
+    <variable Name="bitstatus" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.c" Line="993" Addr="0x0" TI="13545"/>
    </function >
-   <function Name="RCC_WaitForHSEStartUp" TI="13552" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.c" Line="198">
-    <variable Name="StartUpCounter" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.c" Line="200" Addr="0x34000004" TI="13435"/>
-    <variable Name="status" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.c" Line="201" Addr="0x34000010" TI="13552"/>
-    <variable Name="HSEStatus" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.c" Line="202" Addr="0x10" TI="13477"/>
+   <function Name="RCC_WaitForHSEStartUp" TI="13620" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.c" Line="198">
+    <variable Name="StartUpCounter" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.c" Line="200" Addr="0x34000004" TI="13503"/>
+    <variable Name="status" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.c" Line="201" Addr="0x34000010" TI="13620"/>
+    <variable Name="HSEStatus" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.c" Line="202" Addr="0x10" TI="13545"/>
    </function >
-   <type Family="array" ID="15456" toTI="13417"/>
-   <variable Name="APBAHBPrescTable" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.c" Line="111" Addr="0x8001970" TI="15489"/>
-   <type Family="array" ID="15494" toTI="13417"/>
-   <variable Name="ADCPrescTable" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.c" Line="112" Addr="0x8001980" TI="15527"/>
+   <type Family="array" ID="15524" toTI="13485"/>
+   <variable Name="APBAHBPrescTable" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.c" Line="111" Addr="0x8001998" TI="15557"/>
+   <type Family="array" ID="15562" toTI="13485"/>
+   <variable Name="ADCPrescTable" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.c" Line="112" Addr="0x80019A8" TI="15595"/>
   </module>
   <module Name="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_tim.c" >
-   <type Family="Base" Name="long int" ID="15570"/>
-   <type Family="Base" Name="short int" ID="15577"/>
-   <type Family="Base" Name="signed char" ID="15584"/>
-   <type Family="Base" Name="long unsigned int" ID="15602"/>
-   <type Family="typedef" Name="u32" Line="39" ID="15591" toTI="15602"/>
-   <type Family="Base" Name="short unsigned int" ID="15620"/>
-   <type Family="typedef" Name="u16" Line="40" ID="15609" toTI="15620"/>
-   <type Family="Base" Name="unsigned char" ID="15637"/>
-   <type Family="typedef" Name="u8" Line="41" ID="15627" toTI="15637"/>
-   <type Family="typedef" Name="vu32" Line="47" ID="15644" toTI="15655"/>
-   <type Family="typedef" Name="FlagStatus" Line="57" ID="15686" toTI="15665"/>
-   <type Family="typedef" Name="ITStatus" Line="57" ID="15697" toTI="15665"/>
-   <type Family="typedef" Name="FunctionalState" Line="59" ID="15729" toTI="15708"/>
-   <type Family="Base" Name="unsigned int" ID="15740"/>
-   <type Family="ComponentList" Line="523" ID="15747">
-    <Component Name="CR1" TI="15756" Line="525" Offs="0"/>
-    <Component Name="RESERVED0" TI="15771" Line="526" Offs="2"/>
-    <Component Name="CR2" TI="15786" Line="527" Offs="4"/>
-    <Component Name="RESERVED1" TI="15801" Line="528" Offs="6"/>
-    <Component Name="SMCR" TI="15816" Line="529" Offs="8"/>
-    <Component Name="RESERVED2" TI="15831" Line="530" Offs="10"/>
-    <Component Name="DIER" TI="15846" Line="531" Offs="12"/>
-    <Component Name="RESERVED3" TI="15861" Line="532" Offs="14"/>
-    <Component Name="SR" TI="15876" Line="533" Offs="16"/>
-    <Component Name="RESERVED4" TI="15890" Line="534" Offs="18"/>
-    <Component Name="EGR" TI="15905" Line="535" Offs="20"/>
-    <Component Name="RESERVED5" TI="15920" Line="536" Offs="22"/>
-    <Component Name="CCMR1" TI="15935" Line="537" Offs="24"/>
-    <Component Name="RESERVED6" TI="15950" Line="538" Offs="26"/>
-    <Component Name="CCMR2" TI="15965" Line="539" Offs="28"/>
-    <Component Name="RESERVED7" TI="15980" Line="540" Offs="30"/>
-    <Component Name="CCER" TI="15995" Line="541" Offs="32"/>
-    <Component Name="RESERVED8" TI="16010" Line="542" Offs="34"/>
-    <Component Name="CNT" TI="16025" Line="543" Offs="36"/>
-    <Component Name="RESERVED9" TI="16040" Line="544" Offs="38"/>
-    <Component Name="PSC" TI="16055" Line="545" Offs="40"/>
-    <Component Name="RESERVED10" TI="16070" Line="546" Offs="42"/>
-    <Component Name="ARR" TI="16085" Line="547" Offs="44"/>
-    <Component Name="RESERVED11" TI="16100" Line="548" Offs="46"/>
-    <Component Name="RCR" TI="16115" Line="549" Offs="48"/>
-    <Component Name="RESERVED12" TI="16130" Line="550" Offs="50"/>
-    <Component Name="CCR1" TI="16145" Line="551" Offs="52"/>
-    <Component Name="RESERVED13" TI="16160" Line="552" Offs="54"/>
-    <Component Name="CCR2" TI="16175" Line="553" Offs="56"/>
-    <Component Name="RESERVED14" TI="16190" Line="554" Offs="58"/>
-    <Component Name="CCR3" TI="16205" Line="555" Offs="60"/>
-    <Component Name="RESERVED15" TI="16220" Line="556" Offs="62"/>
-    <Component Name="CCR4" TI="16235" Line="557" Offs="64"/>
-    <Component Name="RESERVED16" TI="16250" Line="558" Offs="66"/>
-    <Component Name="BDTR" TI="16265" Line="559" Offs="68"/>
-    <Component Name="RESERVED17" TI="16280" Line="560" Offs="70"/>
-    <Component Name="DCR" TI="16295" Line="561" Offs="72"/>
-    <Component Name="RESERVED18" TI="16310" Line="562" Offs="74"/>
-    <Component Name="DMAR" TI="16325" Line="563" Offs="76"/>
-    <Component Name="RESERVED19" TI="16340" Line="564" Offs="78"/>
+   <type Family="Base" Name="long int" ID="15638"/>
+   <type Family="Base" Name="short int" ID="15645"/>
+   <type Family="Base" Name="signed char" ID="15652"/>
+   <type Family="Base" Name="long unsigned int" ID="15670"/>
+   <type Family="typedef" Name="u32" Line="39" ID="15659" toTI="15670"/>
+   <type Family="Base" Name="short unsigned int" ID="15688"/>
+   <type Family="typedef" Name="u16" Line="40" ID="15677" toTI="15688"/>
+   <type Family="Base" Name="unsigned char" ID="15705"/>
+   <type Family="typedef" Name="u8" Line="41" ID="15695" toTI="15705"/>
+   <type Family="typedef" Name="vu32" Line="47" ID="15712" toTI="15723"/>
+   <type Family="typedef" Name="FlagStatus" Line="57" ID="15754" toTI="15733"/>
+   <type Family="typedef" Name="ITStatus" Line="57" ID="15765" toTI="15733"/>
+   <type Family="typedef" Name="FunctionalState" Line="59" ID="15797" toTI="15776"/>
+   <type Family="Base" Name="unsigned int" ID="15808"/>
+   <type Family="ComponentList" Line="523" ID="15815">
+    <Component Name="CR1" TI="15824" Line="525" Offs="0"/>
+    <Component Name="RESERVED0" TI="15839" Line="526" Offs="2"/>
+    <Component Name="CR2" TI="15854" Line="527" Offs="4"/>
+    <Component Name="RESERVED1" TI="15869" Line="528" Offs="6"/>
+    <Component Name="SMCR" TI="15884" Line="529" Offs="8"/>
+    <Component Name="RESERVED2" TI="15899" Line="530" Offs="10"/>
+    <Component Name="DIER" TI="15914" Line="531" Offs="12"/>
+    <Component Name="RESERVED3" TI="15929" Line="532" Offs="14"/>
+    <Component Name="SR" TI="15944" Line="533" Offs="16"/>
+    <Component Name="RESERVED4" TI="15958" Line="534" Offs="18"/>
+    <Component Name="EGR" TI="15973" Line="535" Offs="20"/>
+    <Component Name="RESERVED5" TI="15988" Line="536" Offs="22"/>
+    <Component Name="CCMR1" TI="16003" Line="537" Offs="24"/>
+    <Component Name="RESERVED6" TI="16018" Line="538" Offs="26"/>
+    <Component Name="CCMR2" TI="16033" Line="539" Offs="28"/>
+    <Component Name="RESERVED7" TI="16048" Line="540" Offs="30"/>
+    <Component Name="CCER" TI="16063" Line="541" Offs="32"/>
+    <Component Name="RESERVED8" TI="16078" Line="542" Offs="34"/>
+    <Component Name="CNT" TI="16093" Line="543" Offs="36"/>
+    <Component Name="RESERVED9" TI="16108" Line="544" Offs="38"/>
+    <Component Name="PSC" TI="16123" Line="545" Offs="40"/>
+    <Component Name="RESERVED10" TI="16138" Line="546" Offs="42"/>
+    <Component Name="ARR" TI="16153" Line="547" Offs="44"/>
+    <Component Name="RESERVED11" TI="16168" Line="548" Offs="46"/>
+    <Component Name="RCR" TI="16183" Line="549" Offs="48"/>
+    <Component Name="RESERVED12" TI="16198" Line="550" Offs="50"/>
+    <Component Name="CCR1" TI="16213" Line="551" Offs="52"/>
+    <Component Name="RESERVED13" TI="16228" Line="552" Offs="54"/>
+    <Component Name="CCR2" TI="16243" Line="553" Offs="56"/>
+    <Component Name="RESERVED14" TI="16258" Line="554" Offs="58"/>
+    <Component Name="CCR3" TI="16273" Line="555" Offs="60"/>
+    <Component Name="RESERVED15" TI="16288" Line="556" Offs="62"/>
+    <Component Name="CCR4" TI="16303" Line="557" Offs="64"/>
+    <Component Name="RESERVED16" TI="16318" Line="558" Offs="66"/>
+    <Component Name="BDTR" TI="16333" Line="559" Offs="68"/>
+    <Component Name="RESERVED17" TI="16348" Line="560" Offs="70"/>
+    <Component Name="DCR" TI="16363" Line="561" Offs="72"/>
+    <Component Name="RESERVED18" TI="16378" Line="562" Offs="74"/>
+    <Component Name="DMAR" TI="16393" Line="563" Offs="76"/>
+    <Component Name="RESERVED19" TI="16408" Line="564" Offs="78"/>
    </type>
-   <type Family="typedef" Name="TIM_TypeDef" Line="565" ID="16356" toTI="15747"/>
-   <type Family="ComponentList" Line="27" ID="16368">
-    <Component Name="TIM_Prescaler" TI="16376" Line="29" Offs="0"/>
-    <Component Name="TIM_CounterMode" TI="16390" Line="30" Offs="2"/>
-    <Component Name="TIM_Period" TI="16404" Line="31" Offs="4"/>
-    <Component Name="TIM_ClockDivision" TI="16418" Line="32" Offs="6"/>
-    <Component Name="TIM_RepetitionCounter" TI="16432" Line="33" Offs="8"/>
+   <type Family="typedef" Name="TIM_TypeDef" Line="565" ID="16424" toTI="15815"/>
+   <type Family="ComponentList" Line="27" ID="16436">
+    <Component Name="TIM_Prescaler" TI="16444" Line="29" Offs="0"/>
+    <Component Name="TIM_CounterMode" TI="16458" Line="30" Offs="2"/>
+    <Component Name="TIM_Period" TI="16472" Line="31" Offs="4"/>
+    <Component Name="TIM_ClockDivision" TI="16486" Line="32" Offs="6"/>
+    <Component Name="TIM_RepetitionCounter" TI="16500" Line="33" Offs="8"/>
    </type>
-   <type Family="typedef" Name="TIM_TimeBaseInitTypeDef" Line="34" ID="16447" toTI="16368"/>
-   <type Family="ComponentList" Line="37" ID="16458">
-    <Component Name="TIM_OCMode" TI="16466" Line="39" Offs="0"/>
-    <Component Name="TIM_OutputState" TI="16480" Line="40" Offs="2"/>
-    <Component Name="TIM_OutputNState" TI="16494" Line="41" Offs="4"/>
-    <Component Name="TIM_Pulse" TI="16508" Line="42" Offs="6"/>
-    <Component Name="TIM_OCPolarity" TI="16522" Line="43" Offs="8"/>
-    <Component Name="TIM_OCNPolarity" TI="16536" Line="44" Offs="10"/>
-    <Component Name="TIM_OCIdleState" TI="16550" Line="45" Offs="12"/>
-    <Component Name="TIM_OCNIdleState" TI="16564" Line="46" Offs="14"/>
+   <type Family="typedef" Name="TIM_TimeBaseInitTypeDef" Line="34" ID="16515" toTI="16436"/>
+   <type Family="ComponentList" Line="37" ID="16526">
+    <Component Name="TIM_OCMode" TI="16534" Line="39" Offs="0"/>
+    <Component Name="TIM_OutputState" TI="16548" Line="40" Offs="2"/>
+    <Component Name="TIM_OutputNState" TI="16562" Line="41" Offs="4"/>
+    <Component Name="TIM_Pulse" TI="16576" Line="42" Offs="6"/>
+    <Component Name="TIM_OCPolarity" TI="16590" Line="43" Offs="8"/>
+    <Component Name="TIM_OCNPolarity" TI="16604" Line="44" Offs="10"/>
+    <Component Name="TIM_OCIdleState" TI="16618" Line="45" Offs="12"/>
+    <Component Name="TIM_OCNIdleState" TI="16632" Line="46" Offs="14"/>
    </type>
-   <type Family="typedef" Name="TIM_OCInitTypeDef" Line="47" ID="16579" toTI="16458"/>
-   <type Family="ComponentList" Line="50" ID="16590">
-    <Component Name="TIM_Channel" TI="16598" Line="52" Offs="0"/>
-    <Component Name="TIM_ICPolarity" TI="16612" Line="53" Offs="2"/>
-    <Component Name="TIM_ICSelection" TI="16626" Line="54" Offs="4"/>
-    <Component Name="TIM_ICPrescaler" TI="16640" Line="55" Offs="6"/>
-    <Component Name="TIM_ICFilter" TI="16654" Line="56" Offs="8"/>
+   <type Family="typedef" Name="TIM_OCInitTypeDef" Line="47" ID="16647" toTI="16526"/>
+   <type Family="ComponentList" Line="50" ID="16658">
+    <Component Name="TIM_Channel" TI="16666" Line="52" Offs="0"/>
+    <Component Name="TIM_ICPolarity" TI="16680" Line="53" Offs="2"/>
+    <Component Name="TIM_ICSelection" TI="16694" Line="54" Offs="4"/>
+    <Component Name="TIM_ICPrescaler" TI="16708" Line="55" Offs="6"/>
+    <Component Name="TIM_ICFilter" TI="16722" Line="56" Offs="8"/>
    </type>
-   <type Family="typedef" Name="TIM_ICInitTypeDef" Line="57" ID="16669" toTI="16590"/>
-   <type Family="ComponentList" Line="60" ID="16680">
-    <Component Name="TIM_OSSRState" TI="16688" Line="62" Offs="0"/>
-    <Component Name="TIM_OSSIState" TI="16702" Line="63" Offs="2"/>
-    <Component Name="TIM_LOCKLevel" TI="16716" Line="64" Offs="4"/>
-    <Component Name="TIM_DeadTime" TI="16730" Line="65" Offs="6"/>
-    <Component Name="TIM_Break" TI="16744" Line="66" Offs="8"/>
-    <Component Name="TIM_BreakPolarity" TI="16758" Line="67" Offs="10"/>
-    <Component Name="TIM_AutomaticOutput" TI="16772" Line="68" Offs="12"/>
+   <type Family="typedef" Name="TIM_ICInitTypeDef" Line="57" ID="16737" toTI="16658"/>
+   <type Family="ComponentList" Line="60" ID="16748">
+    <Component Name="TIM_OSSRState" TI="16756" Line="62" Offs="0"/>
+    <Component Name="TIM_OSSIState" TI="16770" Line="63" Offs="2"/>
+    <Component Name="TIM_LOCKLevel" TI="16784" Line="64" Offs="4"/>
+    <Component Name="TIM_DeadTime" TI="16798" Line="65" Offs="6"/>
+    <Component Name="TIM_Break" TI="16812" Line="66" Offs="8"/>
+    <Component Name="TIM_BreakPolarity" TI="16826" Line="67" Offs="10"/>
+    <Component Name="TIM_AutomaticOutput" TI="16840" Line="68" Offs="12"/>
    </type>
-   <type Family="typedef" Name="TIM_BDTRInitTypeDef" Line="69" ID="16787" toTI="16680"/>
-   <type Family="Pointer" TI="16912" toTI="16356"/>
+   <type Family="typedef" Name="TIM_BDTRInitTypeDef" Line="69" ID="16855" toTI="16748"/>
+   <type Family="Pointer" TI="16980" toTI="16424"/>
    <function Name="TIM_TimeBaseInit" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_tim.c" Line="199">
-    <parameter Name="TIMx" TI="16912" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_tim.c" Line="199" Addr="0x0" Param="Yes"/>
-   <type Family="Pointer" TI="17140" toTI="16447"/>
-    <parameter Name="TIM_TimeBaseInitStruct" TI="17140" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_tim.c" Line="199" Addr="0x1" Param="Yes"/>
+    <parameter Name="TIMx" TI="16980" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_tim.c" Line="199" Addr="0x0" Param="Yes"/>
+   <type Family="Pointer" TI="17208" toTI="16515"/>
+    <parameter Name="TIM_TimeBaseInitStruct" TI="17208" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_tim.c" Line="199" Addr="0x1" Param="Yes"/>
    </function >
-   <type Family="Pointer" TI="17245" toTI="16579"/>
+   <type Family="Pointer" TI="17313" toTI="16647"/>
    <function Name="TIM_OC3Init" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_tim.c" Line="421">
-    <parameter Name="TIMx" TI="16912" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_tim.c" Line="421" Addr="0x0" Param="Yes"/>
-    <parameter Name="TIM_OCInitStruct" TI="17245" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_tim.c" Line="421" Addr="0x1" Param="Yes"/>
-    <variable Name="tmpccmrx" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_tim.c" Line="423" Addr="0x0" TI="15609"/>
-    <variable Name="tmpccer" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_tim.c" Line="423" Addr="0x0" TI="15609"/>
-    <variable Name="tmpcr2" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_tim.c" Line="423" Addr="0x0" TI="15609"/>
+    <parameter Name="TIMx" TI="16980" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_tim.c" Line="421" Addr="0x0" Param="Yes"/>
+    <parameter Name="TIM_OCInitStruct" TI="17313" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_tim.c" Line="421" Addr="0x1" Param="Yes"/>
+    <variable Name="tmpccmrx" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_tim.c" Line="423" Addr="0x0" TI="15677"/>
+    <variable Name="tmpccer" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_tim.c" Line="423" Addr="0x0" TI="15677"/>
+    <variable Name="tmpcr2" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_tim.c" Line="423" Addr="0x0" TI="15677"/>
    </function >
-   <type Family="Pointer" TI="17616" toTI="16787"/>
-   <type Family="Pointer" TI="17742" toTI="16669"/>
+   <type Family="Pointer" TI="17684" toTI="16855"/>
+   <type Family="Pointer" TI="17810" toTI="16737"/>
    <function Name="TIM_Cmd" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_tim.c" Line="829">
-    <parameter Name="TIMx" TI="16912" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_tim.c" Line="829" Addr="0x0" Param="Yes"/>
-    <parameter Name="NewState" TI="15729" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_tim.c" Line="829" Addr="0x1" Param="Yes"/>
+    <parameter Name="TIMx" TI="16980" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_tim.c" Line="829" Addr="0x0" Param="Yes"/>
+    <parameter Name="NewState" TI="15797" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_tim.c" Line="829" Addr="0x1" Param="Yes"/>
    </function >
    <function Name="TIM_CtrlPWMOutputs" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_tim.c" Line="856">
-    <parameter Name="TIMx" TI="16912" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_tim.c" Line="856" Addr="0x0" Param="Yes"/>
-    <parameter Name="NewState" TI="15729" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_tim.c" Line="856" Addr="0x1" Param="Yes"/>
+    <parameter Name="TIMx" TI="16980" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_tim.c" Line="856" Addr="0x0" Param="Yes"/>
+    <parameter Name="NewState" TI="15797" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_tim.c" Line="856" Addr="0x1" Param="Yes"/>
    </function >
    <function Name="TIM_ITConfig" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_tim.c" Line="894">
-    <parameter Name="TIMx" TI="16912" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_tim.c" Line="894" Addr="0x0" Param="Yes"/>
-    <parameter Name="TIM_IT" TI="15609" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_tim.c" Line="894" Addr="0x1" Param="Yes"/>
-    <parameter Name="NewState" TI="15729" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_tim.c" Line="894" Addr="0x2" Param="Yes"/>
+    <parameter Name="TIMx" TI="16980" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_tim.c" Line="894" Addr="0x0" Param="Yes"/>
+    <parameter Name="TIM_IT" TI="15677" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_tim.c" Line="894" Addr="0x1" Param="Yes"/>
+    <parameter Name="NewState" TI="15797" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_tim.c" Line="894" Addr="0x2" Param="Yes"/>
    </function >
    <function Name="TIM_ARRPreloadConfig" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_tim.c" Line="1539">
-    <parameter Name="TIMx" TI="16912" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_tim.c" Line="1539" Addr="0x0" Param="Yes"/>
-    <parameter Name="NewState" TI="15729" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_tim.c" Line="1539" Addr="0x1" Param="Yes"/>
+    <parameter Name="TIMx" TI="16980" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_tim.c" Line="1539" Addr="0x0" Param="Yes"/>
+    <parameter Name="NewState" TI="15797" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_tim.c" Line="1539" Addr="0x1" Param="Yes"/>
    </function >
    <function Name="TIM_OC1PreloadConfig" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_tim.c" Line="1653">
-    <parameter Name="TIMx" TI="16912" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_tim.c" Line="1653" Addr="0x0" Param="Yes"/>
-    <parameter Name="TIM_OCPreload" TI="15609" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_tim.c" Line="1653" Addr="0x1" Param="Yes"/>
-    <variable Name="tmpccmr1" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_tim.c" Line="1655" Addr="0x0" TI="15609"/>
+    <parameter Name="TIMx" TI="16980" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_tim.c" Line="1653" Addr="0x0" Param="Yes"/>
+    <parameter Name="TIM_OCPreload" TI="15677" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_tim.c" Line="1653" Addr="0x1" Param="Yes"/>
+    <variable Name="tmpccmr1" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_tim.c" Line="1655" Addr="0x0" TI="15677"/>
    </function >
    <function Name="TIM_ClearITPendingBit" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_tim.c" Line="3022">
-    <parameter Name="TIMx" TI="16912" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_tim.c" Line="3022" Addr="0x0" Param="Yes"/>
-    <parameter Name="TIM_IT" TI="15609" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_tim.c" Line="3022" Addr="0x1" Param="Yes"/>
+    <parameter Name="TIMx" TI="16980" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_tim.c" Line="3022" Addr="0x0" Param="Yes"/>
+    <parameter Name="TIM_IT" TI="15677" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_tim.c" Line="3022" Addr="0x1" Param="Yes"/>
    </function >
   </module>
   <module Name="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_usart.c" >
-   <type Family="Base" Name="long int" ID="23135"/>
-   <type Family="Base" Name="short int" ID="23142"/>
-   <type Family="Base" Name="signed char" ID="23149"/>
-   <type Family="Base" Name="long unsigned int" ID="23167"/>
-   <type Family="typedef" Name="u32" Line="39" ID="23156" toTI="23167"/>
-   <type Family="Base" Name="short unsigned int" ID="23185"/>
-   <type Family="typedef" Name="u16" Line="40" ID="23174" toTI="23185"/>
-   <type Family="Base" Name="unsigned char" ID="23202"/>
-   <type Family="typedef" Name="u8" Line="41" ID="23192" toTI="23202"/>
-   <type Family="typedef" Name="vu32" Line="47" ID="23209" toTI="23220"/>
-   <type Family="typedef" Name="FlagStatus" Line="57" ID="23251" toTI="23230"/>
-   <type Family="typedef" Name="ITStatus" Line="57" ID="23262" toTI="23230"/>
-   <type Family="typedef" Name="FunctionalState" Line="59" ID="23294" toTI="23273"/>
-   <type Family="Base" Name="unsigned int" ID="23305"/>
-   <type Family="ComponentList" Line="568" ID="23312">
-    <Component Name="SR" TI="23321" Line="570" Offs="0"/>
-    <Component Name="RESERVED0" TI="23335" Line="571" Offs="2"/>
-    <Component Name="DR" TI="23350" Line="572" Offs="4"/>
-    <Component Name="RESERVED1" TI="23364" Line="573" Offs="6"/>
-    <Component Name="BRR" TI="23379" Line="574" Offs="8"/>
-    <Component Name="RESERVED2" TI="23394" Line="575" Offs="10"/>
-    <Component Name="CR1" TI="23409" Line="576" Offs="12"/>
-    <Component Name="RESERVED3" TI="23424" Line="577" Offs="14"/>
-    <Component Name="CR2" TI="23439" Line="578" Offs="16"/>
-    <Component Name="RESERVED4" TI="23454" Line="579" Offs="18"/>
-    <Component Name="CR3" TI="23469" Line="580" Offs="20"/>
-    <Component Name="RESERVED5" TI="23484" Line="581" Offs="22"/>
-    <Component Name="GTPR" TI="23499" Line="582" Offs="24"/>
-    <Component Name="RESERVED6" TI="23514" Line="583" Offs="26"/>
+   <type Family="Base" Name="long int" ID="23203"/>
+   <type Family="Base" Name="short int" ID="23210"/>
+   <type Family="Base" Name="signed char" ID="23217"/>
+   <type Family="Base" Name="long unsigned int" ID="23235"/>
+   <type Family="typedef" Name="u32" Line="39" ID="23224" toTI="23235"/>
+   <type Family="Base" Name="short unsigned int" ID="23253"/>
+   <type Family="typedef" Name="u16" Line="40" ID="23242" toTI="23253"/>
+   <type Family="Base" Name="unsigned char" ID="23270"/>
+   <type Family="typedef" Name="u8" Line="41" ID="23260" toTI="23270"/>
+   <type Family="typedef" Name="vu32" Line="47" ID="23277" toTI="23288"/>
+   <type Family="typedef" Name="FlagStatus" Line="57" ID="23319" toTI="23298"/>
+   <type Family="typedef" Name="ITStatus" Line="57" ID="23330" toTI="23298"/>
+   <type Family="typedef" Name="FunctionalState" Line="59" ID="23362" toTI="23341"/>
+   <type Family="Base" Name="unsigned int" ID="23373"/>
+   <type Family="ComponentList" Line="568" ID="23380">
+    <Component Name="SR" TI="23389" Line="570" Offs="0"/>
+    <Component Name="RESERVED0" TI="23403" Line="571" Offs="2"/>
+    <Component Name="DR" TI="23418" Line="572" Offs="4"/>
+    <Component Name="RESERVED1" TI="23432" Line="573" Offs="6"/>
+    <Component Name="BRR" TI="23447" Line="574" Offs="8"/>
+    <Component Name="RESERVED2" TI="23462" Line="575" Offs="10"/>
+    <Component Name="CR1" TI="23477" Line="576" Offs="12"/>
+    <Component Name="RESERVED3" TI="23492" Line="577" Offs="14"/>
+    <Component Name="CR2" TI="23507" Line="578" Offs="16"/>
+    <Component Name="RESERVED4" TI="23522" Line="579" Offs="18"/>
+    <Component Name="CR3" TI="23537" Line="580" Offs="20"/>
+    <Component Name="RESERVED5" TI="23552" Line="581" Offs="22"/>
+    <Component Name="GTPR" TI="23567" Line="582" Offs="24"/>
+    <Component Name="RESERVED6" TI="23582" Line="583" Offs="26"/>
    </type>
-   <type Family="typedef" Name="USART_TypeDef" Line="584" ID="23530" toTI="23312"/>
-   <type Family="ComponentList" Line="26" ID="23542">
-    <Component Name="USART_BaudRate" TI="23550" Line="28" Offs="0"/>
-    <Component Name="USART_WordLength" TI="23564" Line="29" Offs="4"/>
-    <Component Name="USART_StopBits" TI="23578" Line="30" Offs="6"/>
-    <Component Name="USART_Parity" TI="23592" Line="31" Offs="8"/>
-    <Component Name="USART_Mode" TI="23606" Line="32" Offs="10"/>
-    <Component Name="USART_HardwareFlowControl" TI="23620" Line="33" Offs="12"/>
+   <type Family="typedef" Name="USART_TypeDef" Line="584" ID="23598" toTI="23380"/>
+   <type Family="ComponentList" Line="26" ID="23610">
+    <Component Name="USART_BaudRate" TI="23618" Line="28" Offs="0"/>
+    <Component Name="USART_WordLength" TI="23632" Line="29" Offs="4"/>
+    <Component Name="USART_StopBits" TI="23646" Line="30" Offs="6"/>
+    <Component Name="USART_Parity" TI="23660" Line="31" Offs="8"/>
+    <Component Name="USART_Mode" TI="23674" Line="32" Offs="10"/>
+    <Component Name="USART_HardwareFlowControl" TI="23688" Line="33" Offs="12"/>
    </type>
-   <type Family="typedef" Name="USART_InitTypeDef" Line="34" ID="23635" toTI="23542"/>
-   <type Family="ComponentList" Line="37" ID="23646">
-    <Component Name="USART_Clock" TI="23654" Line="39" Offs="0"/>
-    <Component Name="USART_CPOL" TI="23668" Line="40" Offs="2"/>
-    <Component Name="USART_CPHA" TI="23682" Line="41" Offs="4"/>
-    <Component Name="USART_LastBit" TI="23696" Line="42" Offs="6"/>
+   <type Family="typedef" Name="USART_InitTypeDef" Line="34" ID="23703" toTI="23610"/>
+   <type Family="ComponentList" Line="37" ID="23714">
+    <Component Name="USART_Clock" TI="23722" Line="39" Offs="0"/>
+    <Component Name="USART_CPOL" TI="23736" Line="40" Offs="2"/>
+    <Component Name="USART_CPHA" TI="23750" Line="41" Offs="4"/>
+    <Component Name="USART_LastBit" TI="23764" Line="42" Offs="6"/>
    </type>
-   <type Family="typedef" Name="USART_ClockInitTypeDef" Line="43" ID="23711" toTI="23646"/>
-   <type Family="ComponentList" Line="25" ID="23722">
-    <Component Name="SYSCLK_Frequency" TI="23730" Line="27" Offs="0"/>
-    <Component Name="HCLK_Frequency" TI="23744" Line="28" Offs="4"/>
-    <Component Name="PCLK1_Frequency" TI="23758" Line="29" Offs="8"/>
-    <Component Name="PCLK2_Frequency" TI="23772" Line="30" Offs="12"/>
-    <Component Name="ADCCLK_Frequency" TI="23786" Line="31" Offs="16"/>
+   <type Family="typedef" Name="USART_ClockInitTypeDef" Line="43" ID="23779" toTI="23714"/>
+   <type Family="ComponentList" Line="25" ID="23790">
+    <Component Name="SYSCLK_Frequency" TI="23798" Line="27" Offs="0"/>
+    <Component Name="HCLK_Frequency" TI="23812" Line="28" Offs="4"/>
+    <Component Name="PCLK1_Frequency" TI="23826" Line="29" Offs="8"/>
+    <Component Name="PCLK2_Frequency" TI="23840" Line="30" Offs="12"/>
+    <Component Name="ADCCLK_Frequency" TI="23854" Line="31" Offs="16"/>
    </type>
-   <type Family="typedef" Name="RCC_ClocksTypeDef" Line="32" ID="23801" toTI="23722"/>
+   <type Family="typedef" Name="RCC_ClocksTypeDef" Line="32" ID="23869" toTI="23790"/>
    <function Name="USART_DeInit" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_usart.c" Line="90">
-   <type Family="Pointer" TI="23853" toTI="23530"/>
-    <parameter Name="USARTx" TI="23853" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_usart.c" Line="90" Addr="0x0" Param="Yes"/>
+   <type Family="Pointer" TI="23921" toTI="23598"/>
+    <parameter Name="USARTx" TI="23921" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_usart.c" Line="90" Addr="0x0" Param="Yes"/>
    </function >
    <function Name="USART_Init" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_usart.c" Line="140">
-    <parameter Name="USARTx" TI="23853" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_usart.c" Line="140" Addr="0x0" Param="Yes"/>
-   <type Family="Pointer" TI="24004" toTI="23635"/>
-    <parameter Name="USART_InitStruct" TI="24004" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_usart.c" Line="140" Addr="0x1" Param="Yes"/>
-    <variable Name="tmpreg" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_usart.c" Line="142" Addr="0x0" TI="23156"/>
-    <variable Name="apbclock" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_usart.c" Line="142" Addr="0x0" TI="23156"/>
-    <variable Name="integerdivider" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_usart.c" Line="143" Addr="0x0" TI="23156"/>
-    <variable Name="fractionaldivider" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_usart.c" Line="144" Addr="0x0" TI="23156"/>
-    <variable Name="usartxbase" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_usart.c" Line="145" Addr="0x0" TI="23156"/>
-    <variable Name="RCC_ClocksStatus" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_usart.c" Line="146" Addr="0x4000004" TI="23801"/>
+    <parameter Name="USARTx" TI="23921" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_usart.c" Line="140" Addr="0x0" Param="Yes"/>
+   <type Family="Pointer" TI="24072" toTI="23703"/>
+    <parameter Name="USART_InitStruct" TI="24072" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_usart.c" Line="140" Addr="0x1" Param="Yes"/>
+    <variable Name="tmpreg" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_usart.c" Line="142" Addr="0x0" TI="23224"/>
+    <variable Name="apbclock" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_usart.c" Line="142" Addr="0x0" TI="23224"/>
+    <variable Name="integerdivider" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_usart.c" Line="143" Addr="0x0" TI="23224"/>
+    <variable Name="fractionaldivider" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_usart.c" Line="144" Addr="0x0" TI="23224"/>
+    <variable Name="usartxbase" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_usart.c" Line="145" Addr="0x0" TI="23224"/>
+    <variable Name="RCC_ClocksStatus" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_usart.c" Line="146" Addr="0x4000004" TI="23869"/>
    </function >
-   <type Family="Pointer" TI="24118" toTI="23711"/>
+   <type Family="Pointer" TI="24186" toTI="23779"/>
    <function Name="USART_Cmd" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_usart.c" Line="311">
-    <parameter Name="USARTx" TI="23853" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_usart.c" Line="311" Addr="0x0" Param="Yes"/>
-    <parameter Name="NewState" TI="23294" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_usart.c" Line="311" Addr="0x1" Param="Yes"/>
+    <parameter Name="USARTx" TI="23921" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_usart.c" Line="311" Addr="0x0" Param="Yes"/>
+    <parameter Name="NewState" TI="23362" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_usart.c" Line="311" Addr="0x1" Param="Yes"/>
    </function >
    <function Name="USART_ITConfig" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_usart.c" Line="354">
-    <parameter Name="USARTx" TI="23853" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_usart.c" Line="354" Addr="0x0" Param="Yes"/>
-    <parameter Name="USART_IT" TI="23174" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_usart.c" Line="354" Addr="0x1" Param="Yes"/>
-    <parameter Name="NewState" TI="23294" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_usart.c" Line="354" Addr="0x2" Param="Yes"/>
-    <variable Name="usartreg" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_usart.c" Line="356" Addr="0x0" TI="23156"/>
-    <variable Name="itpos" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_usart.c" Line="356" Addr="0x0" TI="23156"/>
-    <variable Name="itmask" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_usart.c" Line="356" Addr="0x0" TI="23156"/>
-    <variable Name="usartxbase" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_usart.c" Line="357" Addr="0x0" TI="23156"/>
+    <parameter Name="USARTx" TI="23921" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_usart.c" Line="354" Addr="0x0" Param="Yes"/>
+    <parameter Name="USART_IT" TI="23242" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_usart.c" Line="354" Addr="0x1" Param="Yes"/>
+    <parameter Name="NewState" TI="23362" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_usart.c" Line="354" Addr="0x2" Param="Yes"/>
+    <variable Name="usartreg" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_usart.c" Line="356" Addr="0x0" TI="23224"/>
+    <variable Name="itpos" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_usart.c" Line="356" Addr="0x0" TI="23224"/>
+    <variable Name="itmask" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_usart.c" Line="356" Addr="0x0" TI="23224"/>
+    <variable Name="usartxbase" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_usart.c" Line="357" Addr="0x0" TI="23224"/>
    </function >
   </module>
  </modulelist>
