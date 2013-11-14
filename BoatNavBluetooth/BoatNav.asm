@@ -1024,6 +1024,55 @@ WinMain proc hInst:HINSTANCE,hPrevInst:HINSTANCE,CmdLine:LPSTR,CmdShow:DWORD
 
 WinMain endp
 
+GetChksum proc lpData:DWORD
+	
+	call GetCheckSum
+	ret
+
+CheckSum:
+	xor		eax,eax
+	.while byte ptr [edx]!='*'
+		xor		al,[edx]
+		.if byte ptr [edx]==0Dh
+			retn
+		.endif
+		inc		edx
+	.endw
+	PrintHex al
+;	push	eax
+;	shr		eax,4
+;	.if eax>=0ah
+;		add		eax,'A'-0Ah
+;	.else
+;		or		eax,30h
+;	.endif
+;	mov		[edx+1],al
+;	pop		eax
+;	and		eax,0Fh
+;	.if eax>=0ah
+;		add		eax,'A'-0Ah
+;	.else
+;		or		eax,30h
+;	.endif
+;	mov		[edx+2],al
+	retn
+
+
+GetCheckSum:
+	mov		edx,lpData
+	.while byte ptr [edx]
+		.while byte ptr [edx] && byte ptr [edx]!='$'
+			inc		edx
+		.endw
+		.if byte ptr [edx]
+			inc		edx
+			call	CheckSum
+		.endif
+	.endw
+	retn
+
+GetChksum endp
+
 start:
 	invoke GetModuleHandle,NULL
 	mov    hInstance,eax
@@ -1047,6 +1096,7 @@ start:
 	invoke GdiplusStartup,offset token,offset gdiplSTI,NULL
 	invoke WinMain,hInstance,NULL,CommandLine,SW_SHOWDEFAULT
 	invoke GdiplusShutdown,token
+invoke GetChksum,offset szGPSInitData
 	invoke ExitProcess,eax
 
 end start

@@ -7,7 +7,7 @@ It also includes the secondary/main linker script that is specified in the Ride 
 
 SEARCH_DIR(".")
 SEARCH_DIR("C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar")
-SEARCH_DIR("C:\Program Files\Raisonance\Ride\Lib\ARM")
+SEARCH_DIR("C:\Program Files (x86)\Raisonance\Ride\Lib\ARM")
 STARTUP("startup_stm32f10x_md.o")
 INPUT("C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.o")
 INPUT("C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.o")

@@ -90,6 +90,8 @@ static STM32_SonarDataTypeDef STM32_SonarData;
 vu8 BlueLED;                                    // Current state of the blue led
 vu16 Ping;                                      // Value to output to PA1 and PA2 pins
 vu8 Setup;                                      // Setup mode
+const u8 GPSBaud[]="$PSRF100,1,9600,8,1,0*0D\r\n";  // Set baudrate to 9600
+const u8 GPSInit[]="$PSRF103,04,00,01,00*20\r\n$PSRF103,03,00,05,00*23\r\n$PSRF103,00,00,05,00*20\r\n$PSRF103,02,00,05,00*22\r\n$PSRF103,01,00,00,00*24\r\n$PSRF103,05,00,00,00*20\r\n";
 
 /* Private function prototypes -----------------------------------------------*/
 void RCC_Configuration(void);
@@ -121,7 +123,7 @@ void GetEcho(void);
 int main(void)
 {
   u32 i;
-STM32_SonarData.Lenght = sizeof STM32_SonarData;
+  STM32_SonarData.Lenght = sizeof STM32_SonarData;
   /* System clocks configuration */
   RCC_Configuration();
   /* NVIC configuration */
@@ -151,6 +153,11 @@ STM32_SonarData.Lenght = sizeof STM32_SonarData;
   while (i++ < 20000000)
   {
   }
+  rs232_puts((char*) &GPSBaud);
+  /* Set USART1 baudrate to 9600 */
+  USART1_Configuration(9600);
+  rs232_puts((char*) &GPSInit);
+
   Setup = 0;
   if (GPIO_ReadInputDataBit(GPIOA,GPIO_Pin_0))
   {
@@ -230,13 +237,13 @@ STM32_SonarData.Lenght = sizeof STM32_SonarData;
     else if (STM32_Sonar.Start == 2)
     {
       /* Send initialization data to GPS */
-      rs232_puts((char*) (u32 *)STM32_Sonar.GainArray);
+      // rs232_puts((char*) (u32 *)STM32_Sonar.GainArray);
       STM32_Sonar.Start=0;
     }
     else if (STM32_Sonar.Start == 3)
     {
-      /* Set USART baudrate to 9600 */
-      USART1_Configuration(9600);
+      /* Set USART1 baudrate to 9600 */
+      // USART1_Configuration(9600);
       STM32_Sonar.Start=0;
     }
     else if (STM32_Sonar.Start == 4)
