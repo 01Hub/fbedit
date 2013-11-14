@@ -394,7 +394,7 @@ void DMA_Config(void)
 void USART_Config(uint32_t Baud)
 {
   /* USART1 configured as follow:
-        - BaudRate = 4800 baud  
+        - BaudRate = 9600 baud  
         - Word Length = 8 Bits
         - One Stop Bit
         - No parity

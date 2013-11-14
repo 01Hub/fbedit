@@ -45,21 +45,21 @@ typedef struct
 
 typedef struct
 {
-	u8 SatelliteID;								// Satelite ID
-	u8 Elevation;								// Elevation in degrees (0-90)
-	u16 Azimuth;								// Azimuth in degrees (0-359)
-	u8 SNR;									    // Signal strenght	(0-50, 0 not tracked) 
-	u8 Fixed;									// TRUE if used in fix
+	u8 SatelliteID;								                // Satelite ID
+	u8 Elevation;								                  // Elevation in degrees (0-90)
+	u16 Azimuth;								                  // Azimuth in degrees (0-359)
+	u8 SNR;									                      // Signal strenght	(0-50, 0 not tracked) 
+	u8 Fixed;									                    // TRUE if used in fix
 } STM32_SateliteTypeDef;
 
 typedef struct
 {
-	u8 fixquality;								// Fix quality
-	u8 nsat;									// Number of satelites tracked
-	u16 hdop;									// Horizontal dilution of position * 10
-	u16 vdop;									// Vertical dilution of position * 10
-	u16 pdop;									// Position dilution of position * 10
-	u16 alt;									// Altitude in meters
+	u8 fixquality;                                // Fix quality
+	u8 nsat;                                      // Number of satelites tracked
+	u16 hdop;									                    // Horizontal dilution of position * 10
+	u16 vdop;									                    // Vertical dilution of position * 10
+	u16 pdop;									                    // Position dilution of position * 10
+	u16 alt;									                    // Altitude in meters
 } STM32_AltitudeTypeDef;
 
 typedef struct
@@ -124,6 +124,7 @@ int main(void)
 {
   u32 i;
   STM32_SonarData.Lenght = sizeof STM32_SonarData;
+  STM32_SonarData.Version = 201;
   /* System clocks configuration */
   RCC_Configuration();
   /* NVIC configuration */
@@ -457,8 +458,8 @@ void TIM2_IRQHandler(void)
   asm("add    r2,r2,#0x1");
   asm("cmp    r2,#0x200");
   asm("ite    ne");
-  asm("strhne r2,[r1,#0x6]");                 /* STM32_Sonar.EchoIndex */
-  asm("strbeq r2,[r1,#0x0]");                 /* STM32_Sonar.Start */
+  asm("strhne r2,[r1,#0x6]");                 /* Update STM32_Sonar.EchoIndex */
+  asm("strbeq r2,[r1,#0x0]");                 /* Reset STM32_Sonar.Start */
 
   /* Update the DAC to output next gain level */
   asm("movw   r0,#0x7400");                   /* DAC1 */
@@ -775,13 +776,13 @@ void GPIO_Configuration(void)
   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_11;
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
   GPIO_Init(GPIOB, &GPIO_InitStructure);
-  /* Configure PB13 USART3 CTS as alternate function push-pull */
-  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_13;
+  /* Configure PB14 USART3 RTS as alternate function push-pull */
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_14;
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
   GPIO_Init(GPIOB, &GPIO_InitStructure);
-  /* Configure PB14 USART3 RTS as input floating */
-  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_14;
+  /* Configure PB13 USART3 CTS as input floating */
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_13;
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
   GPIO_Init(GPIOB, &GPIO_InitStructure);
@@ -812,18 +813,18 @@ void NVIC_Configuration(void)
   NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
   NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
   NVIC_Init(&NVIC_InitStructure);
-	/* Enable USART1 interrupt */
-	NVIC_InitStructure.NVIC_IRQChannel = USART1_IRQChannel;
-	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
+  /* Enable USART1 interrupt */
+  NVIC_InitStructure.NVIC_IRQChannel = USART1_IRQChannel;
+  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
   NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
-	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-	NVIC_Init(&NVIC_InitStructure);
-	/* Enable USART3 interrupt */
-	NVIC_InitStructure.NVIC_IRQChannel = USART3_IRQChannel;
-	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
+  NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+  NVIC_Init(&NVIC_InitStructure);
+  /* Enable USART3 interrupt */
+  NVIC_InitStructure.NVIC_IRQChannel = USART3_IRQChannel;
+  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
   NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
-	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-	NVIC_Init(&NVIC_InitStructure);
+  NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+  NVIC_Init(&NVIC_InitStructure);
 }
 
 /*******************************************************************************
@@ -969,7 +970,7 @@ void USART3_Configuration(u16 BaudRate)
   USART_InitStructure.USART_WordLength = USART_WordLength_8b;
   USART_InitStructure.USART_StopBits = USART_StopBits_1;
   USART_InitStructure.USART_Parity = USART_Parity_No ;
-  USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
+  USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_RTS_CTS;
   USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;
   USART_Init(USART1, &USART_InitStructure);
   /* Enable the USART Receive interrupt: this interrupt is generated when the 
