@@ -1096,7 +1096,7 @@ start:
 	invoke GdiplusStartup,offset token,offset gdiplSTI,NULL
 	invoke WinMain,hInstance,NULL,CommandLine,SW_SHOWDEFAULT
 	invoke GdiplusShutdown,token
-invoke GetChksum,offset szGPSInitData
+;invoke GetChksum,offset szGPSInitData
 	invoke ExitProcess,eax
 
 end start

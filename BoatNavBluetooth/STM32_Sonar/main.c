@@ -90,8 +90,8 @@ static STM32_SonarDataTypeDef STM32_SonarData;
 vu8 BlueLED;                                    // Current state of the blue led
 vu16 Ping;                                      // Value to output to PA1 and PA2 pins
 vu8 Setup;                                      // Setup mode
-const u8 GPSBaud[]="$PSRF100,1,9600,8,1,0*0D\r\n";  // Set baudrate to 9600
-const u8 GPSInit[]="$PSRF103,04,00,01,00*20\r\n$PSRF103,03,00,05,00*23\r\n$PSRF103,00,00,05,00*20\r\n$PSRF103,02,00,05,00*22\r\n$PSRF103,01,00,00,00*24\r\n$PSRF103,05,00,00,00*20\r\n";
+const u8 GPSBaud[]="$PSRF100,1,9600,8,1,0*0D\r\n\0";  // Set baudrate to 9600
+const u8 GPSInit[]="$PSRF103,04,00,01,00*20\r\n$PSRF103,03,00,05,00*23\r\n$PSRF103,00,00,05,00*20\r\n$PSRF103,02,00,05,00*22\r\n$PSRF103,01,00,00,00*24\r\n$PSRF103,05,00,00,00*20\r\n\0";
 
 /* Private function prototypes -----------------------------------------------*/
 void RCC_Configuration(void);
@@ -154,10 +154,18 @@ int main(void)
   while (i++ < 20000000)
   {
   }
-  USART1_puts((char*) &GPSBaud);
+  USART1_puts((char*) GPSBaud);
+  i = 0;
+  while (i++ < 20000000)
+  {
+  }
   /* Set USART1 baudrate to 9600 */
   USART1_Configuration(9600);
-  USART1_puts((char*) &GPSInit);
+  i = 0;
+  while (i++ < 20000000)
+  {
+  }
+  USART1_puts((char*) GPSInit);
 
   Setup = 0;
   if (GPIO_ReadInputDataBit(GPIOA,GPIO_Pin_0))
@@ -972,7 +980,7 @@ void USART3_Configuration(u16 BaudRate)
   USART_InitStructure.USART_Parity = USART_Parity_No ;
   USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_RTS_CTS;
   USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;
-  USART_Init(USART1, &USART_InitStructure);
+  USART_Init(USART3, &USART_InitStructure);
   /* Enable the USART Receive interrupt: this interrupt is generated when the 
      USART3 receive data register is not empty */
   USART_ITConfig(USART3, USART_IT_RXNE, ENABLE);

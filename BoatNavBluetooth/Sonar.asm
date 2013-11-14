@@ -1967,12 +1967,12 @@ STMThread proc uses ebx esi edi,Param:DWORD
 				.endif
 			.elseif sonardata.fSTLink && sonardata.fSTLink!=IDIGNORE
 				;Sonar mode
-				.if mapdata.GPSInit
-					mov		mapdata.GPSInit,2
-					.while mapdata.GPSInit
-						invoke DoSleep,100
-					.endw
-				.endif
+;				.if mapdata.GPSInit
+;					mov		mapdata.GPSInit,2
+;					.while mapdata.GPSInit
+;						invoke DoSleep,100
+;					.endw
+;				.endif
 				;Download Start status (first byte)
 				invoke STLinkRead,hSonar,STM32_Sonar,addr status,4
 				.if !eax || eax==IDABORT || eax==IDIGNORE

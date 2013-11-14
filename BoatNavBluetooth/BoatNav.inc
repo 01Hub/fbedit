@@ -5,7 +5,7 @@ include comdlg32.inc
 include comctl32.inc
 include gdi32.inc
 include gdiplus.inc
-include gdiplus_structs.inc
+;include gdiplus_structs.inc
 include ole32.inc
 include oleaut32.inc
 include winmm.inc
