@@ -27,34 +27,34 @@
  <type Header="STM32_SateliteTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" DeclLine="53" Pointer="No"/>
  <type Header="STM32_AltitudeTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" DeclLine="63" Pointer="No"/>
  <type Header="STM32_SonarDataTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" DeclLine="84" Pointer="No"/>
- <func Header="StrCmp" Icon="3" Type="func" Desc=":   unsigned char" DeclFile="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" DeclLine="322"/>
- <func Header="ParseSkip" Icon="3" Type="func" Desc=":   unsigned int" DeclFile="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" DeclLine="336"/>
- <func Header="ParseGetItem" Icon="3" Type="func" Desc=":   unsigned int" DeclFile="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" DeclLine="351"/>
- <func Header="ParseGPRMC" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" DeclLine="384"/>
- <func Header="ParseGPGSV" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" DeclLine="417"/>
- <func Header="ParseGPGGA" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" DeclLine="442"/>
- <func Header="ParseGPGSA" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" DeclLine="464"/>
- <func Header="ParseGPS" Icon="3" Type="func" Desc=":   unsigned long" DeclFile="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" DeclLine="470"/>
- <func Header="GetEcho" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" DeclLine="513"/>
- <func Header="GetADCValue" Icon="3" Type="func" Desc=":   unsigned int" DeclFile="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" DeclLine="542"/>
- <func Header="TrimOutput" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" DeclLine="296"/>
- <func Header="GainSetup" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" DeclLine="583"/>
- <func Header="TIM2_IRQHandler" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" DeclLine="665"/>
- <func Header="USART1_puts" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" DeclLine="695"/>
- <func Header="USART1_IRQHandler" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" DeclLine="737"/>
- <func Header="USART3_IRQHandler" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" DeclLine="775"/>
- <func Header="ADC_Startup" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" DeclLine="812"/>
- <func Header="ADC_Configuration" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" DeclLine="847"/>
- <func Header="RCC_Configuration" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" DeclLine="874"/>
- <func Header="GPIO_Configuration" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" DeclLine="947"/>
- <func Header="NVIC_Configuration" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" DeclLine="1015"/>
- <func Header="TIM1_Configuration" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" DeclLine="1053"/>
- <func Header="TIM2_Configuration" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" DeclLine="1079"/>
- <func Header="TIM1_UP_IRQHandler" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" DeclLine="623"/>
- <func Header="TIM3_Configuration" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" DeclLine="1100"/>
- <func Header="USART1_Configuration" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" DeclLine="1138"/>
- <func Header="USART3_Configuration" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" DeclLine="1172"/>
- <func Header="main" Icon="3" Type="func" Desc=":   long" DeclFile="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" DeclLine="137"/>
+ <func Header="StrCmp" Icon="3" Type="func" Desc=":   unsigned char" DeclFile="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" DeclLine="324"/>
+ <func Header="ParseSkip" Icon="3" Type="func" Desc=":   unsigned int" DeclFile="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" DeclLine="338"/>
+ <func Header="ParseGetItem" Icon="3" Type="func" Desc=":   unsigned int" DeclFile="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" DeclLine="353"/>
+ <func Header="ParseGPRMC" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" DeclLine="404"/>
+ <func Header="ParseGPGSV" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" DeclLine="453"/>
+ <func Header="ParseGPGGA" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" DeclLine="478"/>
+ <func Header="ParseGPGSA" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" DeclLine="500"/>
+ <func Header="ParseGPS" Icon="3" Type="func" Desc=":   unsigned long" DeclFile="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" DeclLine="506"/>
+ <func Header="GetEcho" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" DeclLine="549"/>
+ <func Header="GetADCValue" Icon="3" Type="func" Desc=":   unsigned int" DeclFile="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" DeclLine="578"/>
+ <func Header="TrimOutput" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" DeclLine="298"/>
+ <func Header="GainSetup" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" DeclLine="619"/>
+ <func Header="TIM2_IRQHandler" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" DeclLine="701"/>
+ <func Header="USART1_puts" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" DeclLine="731"/>
+ <func Header="USART1_IRQHandler" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" DeclLine="773"/>
+ <func Header="USART3_IRQHandler" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" DeclLine="811"/>
+ <func Header="ADC_Startup" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" DeclLine="848"/>
+ <func Header="ADC_Configuration" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" DeclLine="883"/>
+ <func Header="RCC_Configuration" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" DeclLine="910"/>
+ <func Header="GPIO_Configuration" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" DeclLine="983"/>
+ <func Header="NVIC_Configuration" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" DeclLine="1051"/>
+ <func Header="TIM1_Configuration" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" DeclLine="1089"/>
+ <func Header="TIM2_Configuration" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" DeclLine="1115"/>
+ <func Header="TIM1_UP_IRQHandler" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" DeclLine="659"/>
+ <func Header="TIM3_Configuration" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" DeclLine="1136"/>
+ <func Header="USART1_Configuration" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" DeclLine="1174"/>
+ <func Header="USART3_Configuration" Icon="3" Type="func" Desc=":   void" DeclFile="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" DeclLine="1208"/>
+ <func Header="main" Icon="3" Type="func" Desc=":   long" DeclFile="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" DeclLine="139"/>
  <variable Header="STM32_Sonar" Icon="2" Type="variable" Desc=":   struct " DeclFile="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" DeclLine="88" Pointer="No"/>
  <variable Header="STM32_SonarData" Icon="2" Type="variable" Desc=":   struct " DeclFile="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" DeclLine="89" Pointer="No"/>
  <variable Header="BlueLED" Icon="2" Type="variable" Desc=":   unsigned char" DeclFile="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" DeclLine="90" Pointer="No"/>

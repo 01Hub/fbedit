@@ -124,6 +124,8 @@ void ParseGPGGA(u16 GPSStart);
 void ParseGPGSA(u16 GPSStart);
 u16 ParseSkip(u16 GPSStart);
 u16 ParseGetItem(u16 GPSStart,u8 *item);
+u32 ParseLatLon(u8 *item);
+u32 ParseDecToBin(u8 *item);
 
 /* Private functions ---------------------------------------------------------*/
 
@@ -365,6 +367,24 @@ u16 ParseGetItem(u16 GPSStart,u8 *item)
   return GPSStart;
 }
 
+u32 ParseDecToBin(u8 *item)
+{
+  u8 c;
+  u32 val = 0;
+  while (c = *item++)
+  {
+    val = val * 10;
+    val = val + (c & 0x0F);
+  }
+  return val;
+}
+
+u32 ParseLatLon(u8 *item)
+{
+  u32 val = 0;
+  return val;
+}
+
 /*
 eg3. $GPRMC,220516,A,5133.82,N,00042.24,W,173.8,231.8,130694,004.2,W
               1    2    3    4    5     6    7    8      9     10  11
@@ -383,17 +403,33 @@ eg3. $GPRMC,220516,A,5133.82,N,00042.24,W,173.8,231.8,130694,004.2,W
 */
 void ParseGPRMC(u16 GPSStart)
 {
+  u8 itemtime[32];
   u8 item[32];
   GPSStart = ParseSkip(GPSStart);
-  GPSStart = ParseGetItem(GPSStart,(u8 *)&item); // Time Stamp
-  GPSStart = ParseGetItem(GPSStart,(u8 *)&item); // validity - A-ok, V-invalid
-  GPSStart = ParseGetItem(GPSStart,(u8 *)&item); // current Latitude
-  GPSStart = ParseGetItem(GPSStart,(u8 *)&item); // North/South
-  GPSStart = ParseGetItem(GPSStart,(u8 *)&item); // current Longitude
-  GPSStart = ParseGetItem(GPSStart,(u8 *)&item); // East/West
-  GPSStart = ParseGetItem(GPSStart,(u8 *)&item); // Speed in knots
-  GPSStart = ParseGetItem(GPSStart,(u8 *)&item); // True course
-  GPSStart = ParseGetItem(GPSStart,(u8 *)&item); // Date Stamp
+  GPSStart = ParseGetItem(GPSStart,(u8 *)&itemtime);  // Time Stamp
+  GPSStart = ParseGetItem(GPSStart,(u8 *)&item);      // validity - A-ok, V-invalid
+  if (item[0] == 0x41)
+  {
+    GPSStart = ParseGetItem(GPSStart,(u8 *)&item);      // current Latitude
+    GPSStart = ParseGetItem(GPSStart,(u8 *)&item);      // North/South
+    GPSStart = ParseGetItem(GPSStart,(u8 *)&item);      // current Longitude
+    GPSStart = ParseGetItem(GPSStart,(u8 *)&item);      // East/West
+    GPSStart = ParseGetItem(GPSStart,(u8 *)&item);      // Speed in knots
+    GPSStart = ParseGetItem(GPSStart,(u8 *)&item);      // True course
+  }
+  else
+  {
+    GPSStart = ParseGetItem(GPSStart,(u8 *)&item);      // current Latitude
+    GPSStart = ParseGetItem(GPSStart,(u8 *)&item);      // North/South
+    GPSStart = ParseGetItem(GPSStart,(u8 *)&item);      // current Longitude
+    GPSStart = ParseGetItem(GPSStart,(u8 *)&item);      // East/West
+    GPSStart = ParseGetItem(GPSStart,(u8 *)&item);      // Speed in knots
+    GPSStart = ParseGetItem(GPSStart,(u8 *)&item);      // True course
+  }
+  GPSStart = ParseGetItem(GPSStart,(u8 *)&item);      // Date Stamp
+	// YYYY YYYM MMMD DDDD HHHH HMMM MMMS SSSS
+	// 0010 0100 0000 0000 0000 0000 0001 1111
+
 }
 
 /*
