@@ -90,8 +90,14 @@ static STM32_SonarDataTypeDef STM32_SonarData;
 vu8 BlueLED;                                    // Current state of the blue led
 vu16 Ping;                                      // Value to output to PA1 and PA2 pins
 vu8 Setup;                                      // Setup mode
+vu16 GPSTail;
 const u8 GPSBaud[]="$PSRF100,1,9600,8,1,0*0D\r\n\0";  // Set baudrate to 9600
 const u8 GPSInit[]="$PSRF103,04,00,01,00*20\r\n$PSRF103,03,00,05,00*23\r\n$PSRF103,00,00,05,00*20\r\n$PSRF103,02,00,05,00*22\r\n$PSRF103,01,00,00,00*24\r\n$PSRF103,05,00,00,00*20\r\n\0";
+/* NMEA Messages */
+const u8 szGPRMC[]="$GPRMC\0";
+const u8 szGPGSV[]="$GPGSV\0";
+const u8 szGPGGA[]="$GPGGA\0";
+const u8 szGPGSA[]="$GPGSA\0";
 
 /* Private function prototypes -----------------------------------------------*/
 void RCC_Configuration(void);
@@ -110,6 +116,12 @@ void USART3_putdata(char *data,u16 lenght);
 void GainSetup(void);
 void TrimOutput(void);
 void GetEcho(void);
+u32 ParseGPS(void);
+u8 StrCmp(u8 *str,u8 *comp);
+void ParseGPRMC(u16 GPSStart);
+void ParseGPGSV(u16 GPSStart);
+void ParseGPGGA(u16 GPSStart);
+void ParseGPGSA(u16 GPSStart);
 
 /* Private functions ---------------------------------------------------------*/
 
@@ -156,13 +168,13 @@ int main(void)
   }
   USART1_puts((char*) GPSBaud);
   i = 0;
-  while (i++ < 20000000)
+  while (i++ < 2000000)
   {
   }
   /* Set USART1 baudrate to 9600 */
   USART1_Configuration(9600);
   i = 0;
-  while (i++ < 20000000)
+  while (i++ < 2000000)
   {
   }
   USART1_puts((char*) GPSInit);
@@ -217,6 +229,9 @@ int main(void)
       else
       {
         TrimOutput();
+      }
+      while (ParseGPS())
+      {
       }
       /* Enable ADC injected channel */
       ADC_AutoInjectedConvCmd(ADC1, ENABLE);
@@ -300,6 +315,80 @@ void TrimOutput(void)
     }
     TrimAdd = TrimAdd / 2;
   }
+}
+
+u8 StrCmp(u8 *str,u8 *comp)
+{
+  u8 c;
+  while ((c = *comp++))
+  {
+    c = c - *str;
+    if (c)
+    {
+      break;
+    }
+    *str++;
+  }
+  return c;
+}
+
+void ParseGPRMC(u16 GPSStart)
+{
+}
+
+void ParseGPGSV(u16 GPSStart)
+{
+}
+
+void ParseGPGGA(u16 GPSStart)
+{
+}
+
+void ParseGPGSA(u16 GPSStart)
+{
+}
+
+u32 ParseGPS(void)
+{
+  u16 GPSStart = -1;
+  u16 GPSEnd = -1;
+  u16 i = GPSTail;
+  while (i != STM32_Sonar.GPSHead)
+  {
+    if (STM32_Sonar.GPSArray[i] == 0x24 && GPSEnd == -1)
+    {
+      GPSStart = i;
+    }
+    if (STM32_Sonar.GPSArray[i] == 0x0D && GPSStart != -1)
+    {
+      GPSEnd = i;
+      break;
+    }
+    i++;
+    i = i & (MAXGPS - 1);
+  }
+  if (GPSStart != -1 && GPSEnd != -1)
+  {
+    GPSTail = GPSEnd;
+    if (StrCmp((u8*)&STM32_Sonar.GPSArray[GPSStart],(u8*)szGPRMC) == 0)
+    {
+      ParseGPRMC(GPSStart);
+    }
+    else if (StrCmp((u8*)&STM32_Sonar.GPSArray[GPSStart],(u8*)szGPGSV) == 0)
+    {
+      ParseGPGSV(GPSStart);
+    }
+    else if (StrCmp((u8*)&STM32_Sonar.GPSArray[GPSStart],(u8*)szGPGGA) == 0)
+    {
+      ParseGPGGA(GPSStart);
+    }
+    else if (StrCmp((u8*)&STM32_Sonar.GPSArray[GPSStart],(u8*)szGPGSA) == 0)
+    {
+      ParseGPGSA(GPSStart);
+    }
+    return 1;
+  }
+  return 0;
 }
 
 void GetEcho(void)
