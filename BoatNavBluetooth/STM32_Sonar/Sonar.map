@@ -20,14 +20,6 @@ Discarded input sections
  .bss           0x00000000        0x0 C:\Program Files (x86)\Raisonance\Ride\Lib\ARM\startup_stm32f10x_md.o
  .text          0x00000000        0x0 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.o
  .data          0x00000000        0x0 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.o
- .text.ParseGPRMC
-                0x00000000        0x4 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.o
- .text.ParseGPGSV
-                0x00000000        0x4 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.o
- .text.ParseGPGGA
-                0x00000000        0x4 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.o
- .text.ParseGPGSA
-                0x00000000        0x4 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.o
  .text.USART3_putdata
                 0x00000000       0x28 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.o
  .text          0x00000000        0x0 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.o
@@ -709,7 +701,7 @@ END GROUP
  *(.flashtext)
                 0x0800010c                . = ALIGN (0x4)
 
-.text           0x0800010c     0x19c8
+.text           0x0800010c     0x1b14
                 0x0800010c                . = ALIGN (0x4)
  *(.text)
  *(.text.*)
@@ -735,344 +727,362 @@ END GROUP
  *fill*         0x0800014e        0x2 00
  .text.StrCmp   0x08000150       0x24 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.o
                 0x08000150                StrCmp
+ .text.ParseSkip
+                0x08000174       0x60 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.o
+                0x08000174                ParseSkip
+ .text.ParseGetItem
+                0x080001d4       0x68 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.o
+                0x080001d4                ParseGetItem
+ .text.ParseGPRMC
+                0x0800023c       0x44 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.o
+                0x0800023c                ParseGPRMC
+ .text.ParseGPGSV
+                0x08000280        0x8 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.o
+                0x08000280                ParseGPGSV
+ .text.ParseGPGGA
+                0x08000288        0x8 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.o
+                0x08000288                ParseGPGGA
+ .text.ParseGPGSA
+                0x08000290        0x8 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.o
+                0x08000290                ParseGPGSA
  .text.ParseGPS
-                0x08000174       0xb0 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.o
-                0x08000174                ParseGPS
- .text.GetEcho  0x08000224       0x40 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.o
-                0x08000224                GetEcho
+                0x08000298       0xd8 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.o
+                0x08000298                ParseGPS
+ .text.GetEcho  0x08000370       0x40 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.o
+                0x08000370                GetEcho
  .text.GetADCValue
-                0x08000264       0xc4 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.o
-                0x08000264                GetADCValue
+                0x080003b0       0xc4 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.o
+                0x080003b0                GetADCValue
  .text.TrimOutput
-                0x08000328       0x54 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.o
-                0x08000328                TrimOutput
+                0x08000474       0x54 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.o
+                0x08000474                TrimOutput
  .text.GainSetup
-                0x0800037c       0xdc C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.o
-                0x0800037c                GainSetup
+                0x080004c8       0xdc C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.o
+                0x080004c8                GainSetup
  .text.TIM2_IRQHandler
-                0x08000458       0x30 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.o
-                0x08000458                TIM2_IRQHandler
+                0x080005a4       0x30 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.o
+                0x080005a4                TIM2_IRQHandler
  .text.USART1_puts
-                0x08000488       0x24 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.o
-                0x08000488                USART1_puts
+                0x080005d4       0x24 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.o
+                0x080005d4                USART1_puts
  .text.USART1_IRQHandler
-                0x080004ac       0x28 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.o
-                0x080004ac                USART1_IRQHandler
+                0x080005f8       0x28 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.o
+                0x080005f8                USART1_IRQHandler
  .text.USART3_IRQHandler
-                0x080004d4       0x2c C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.o
-                0x080004d4                USART3_IRQHandler
+                0x08000620       0x2c C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.o
+                0x08000620                USART3_IRQHandler
  .text.ADC_Startup
-                0x08000500       0x8c C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.o
-                0x08000500                ADC_Startup
+                0x0800064c       0x8c C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.o
+                0x0800064c                ADC_Startup
  .text.ADC_Configuration
-                0x0800058c       0x54 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.o
-                0x0800058c                ADC_Configuration
+                0x080006d8       0x54 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.o
+                0x080006d8                ADC_Configuration
  .text.RCC_Configuration
-                0x080005e0       0x98 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.o
-                0x080005e0                RCC_Configuration
+                0x0800072c       0x98 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.o
+                0x0800072c                RCC_Configuration
  .text.GPIO_Configuration
-                0x08000678      0x14c C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.o
-                0x08000678                GPIO_Configuration
+                0x080007c4      0x14c C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.o
+                0x080007c4                GPIO_Configuration
  .text.NVIC_Configuration
-                0x080007c4       0x84 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.o
-                0x080007c4                NVIC_Configuration
+                0x08000910       0x84 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.o
+                0x08000910                NVIC_Configuration
  .text.TIM1_Configuration
-                0x08000848       0x4c C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.o
-                0x08000848                TIM1_Configuration
+                0x08000994       0x4c C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.o
+                0x08000994                TIM1_Configuration
  .text.TIM2_Configuration
-                0x08000894       0x50 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.o
-                0x08000894                TIM2_Configuration
+                0x080009e0       0x50 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.o
+                0x080009e0                TIM2_Configuration
  .text.TIM1_UP_IRQHandler
-                0x080008e4       0xa8 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.o
-                0x080008e4                TIM1_UP_IRQHandler
+                0x08000a30       0xa8 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.o
+                0x08000a30                TIM1_UP_IRQHandler
  .text.TIM3_Configuration
-                0x0800098c       0x88 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.o
-                0x0800098c                TIM3_Configuration
+                0x08000ad8       0x88 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.o
+                0x08000ad8                TIM3_Configuration
  .text.USART1_Configuration
-                0x08000a14       0x58 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.o
-                0x08000a14                USART1_Configuration
+                0x08000b60       0x58 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.o
+                0x08000b60                USART1_Configuration
  .text.USART3_Configuration
-                0x08000a6c       0x5c C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.o
-                0x08000a6c                USART3_Configuration
- .text.main     0x08000ac8      0x2ac C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.o
-                0x08000ac8                main
+                0x08000bb8       0x5c C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.o
+                0x08000bb8                USART3_Configuration
+ .text.main     0x08000c14      0x2ac C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.o
+                0x08000c14                main
  .text.ADC_Init
-                0x08000d74       0x50 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.o
-                0x08000d74                ADC_Init
- .text.ADC_Cmd  0x08000dc4       0x18 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.o
-                0x08000dc4                ADC_Cmd
+                0x08000ec0       0x50 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.o
+                0x08000ec0                ADC_Init
+ .text.ADC_Cmd  0x08000f10       0x18 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.o
+                0x08000f10                ADC_Cmd
  .text.ADC_ResetCalibration
-                0x08000ddc        0xc C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.o
-                0x08000ddc                ADC_ResetCalibration
+                0x08000f28        0xc C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.o
+                0x08000f28                ADC_ResetCalibration
  .text.ADC_GetResetCalibrationStatus
-                0x08000de8        0x8 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.o
-                0x08000de8                ADC_GetResetCalibrationStatus
+                0x08000f34        0x8 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.o
+                0x08000f34                ADC_GetResetCalibrationStatus
  .text.ADC_StartCalibration
-                0x08000df0        0xc C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.o
-                0x08000df0                ADC_StartCalibration
+                0x08000f3c        0xc C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.o
+                0x08000f3c                ADC_StartCalibration
  .text.ADC_GetCalibrationStatus
-                0x08000dfc        0x8 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.o
-                0x08000dfc                ADC_GetCalibrationStatus
+                0x08000f48        0x8 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.o
+                0x08000f48                ADC_GetCalibrationStatus
  .text.ADC_SoftwareStartConvCmd
-                0x08000e04       0x18 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.o
-                0x08000e04                ADC_SoftwareStartConvCmd
+                0x08000f50       0x18 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.o
+                0x08000f50                ADC_SoftwareStartConvCmd
  .text.ADC_RegularChannelConfig
-                0x08000e1c       0xb4 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.o
-                0x08000e1c                ADC_RegularChannelConfig
+                0x08000f68       0xb4 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.o
+                0x08000f68                ADC_RegularChannelConfig
  .text.ADC_AutoInjectedConvCmd
-                0x08000ed0       0x18 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.o
-                0x08000ed0                ADC_AutoInjectedConvCmd
+                0x0800101c       0x18 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.o
+                0x0800101c                ADC_AutoInjectedConvCmd
  .text.ADC_InjectedChannelConfig
-                0x08000ee8       0x70 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.o
-                0x08000ee8                ADC_InjectedChannelConfig
+                0x08001034       0x70 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.o
+                0x08001034                ADC_InjectedChannelConfig
  .text.ADC_InjectedSequencerLengthConfig
-                0x08000f58       0x14 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.o
-                0x08000f58                ADC_InjectedSequencerLengthConfig
+                0x080010a4       0x14 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.o
+                0x080010a4                ADC_InjectedSequencerLengthConfig
  .text.ADC_GetFlagStatus
-                0x08000f6c        0xc C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.o
-                0x08000f6c                ADC_GetFlagStatus
+                0x080010b8        0xc C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.o
+                0x080010b8                ADC_GetFlagStatus
  .text.ADC_ClearFlag
-                0x08000f78        0x8 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.o
-                0x08000f78                ADC_ClearFlag
+                0x080010c4        0x8 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.o
+                0x080010c4                ADC_ClearFlag
  .text.FLASH_SetLatency
-                0x08000f80       0x1c C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_flash.o
-                0x08000f80                FLASH_SetLatency
+                0x080010cc       0x1c C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_flash.o
+                0x080010cc                FLASH_SetLatency
  .text.FLASH_PrefetchBufferCmd
-                0x08000f9c       0x1c C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_flash.o
-                0x08000f9c                FLASH_PrefetchBufferCmd
+                0x080010e8       0x1c C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_flash.o
+                0x080010e8                FLASH_PrefetchBufferCmd
  .text.GPIO_Init
-                0x08000fb8       0xc4 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_gpio.o
-                0x08000fb8                GPIO_Init
+                0x08001104       0xc4 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_gpio.o
+                0x08001104                GPIO_Init
  .text.GPIO_ReadInputDataBit
-                0x0800107c        0xc C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_gpio.o
-                0x0800107c                GPIO_ReadInputDataBit
+                0x080011c8        0xc C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_gpio.o
+                0x080011c8                GPIO_ReadInputDataBit
  .text.GPIO_WriteBit
-                0x08001088        0xc C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_gpio.o
-                0x08001088                GPIO_WriteBit
+                0x080011d4        0xc C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_gpio.o
+                0x080011d4                GPIO_WriteBit
  .text.WWDG_IRQHandler
-                0x08001094        0x4 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_it.o
-                0x08001094                WWDG_IRQHandler
+                0x080011e0        0x4 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_it.o
+                0x080011e0                WWDG_IRQHandler
  .text.PVD_IRQHandler
-                0x08001098        0x4 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_it.o
-                0x08001098                PVD_IRQHandler
+                0x080011e4        0x4 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_it.o
+                0x080011e4                PVD_IRQHandler
  .text.TAMPER_IRQHandler
-                0x0800109c        0x4 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_it.o
-                0x0800109c                TAMPER_IRQHandler
+                0x080011e8        0x4 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_it.o
+                0x080011e8                TAMPER_IRQHandler
  .text.RTC_IRQHandler
-                0x080010a0        0x4 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_it.o
-                0x080010a0                RTC_IRQHandler
+                0x080011ec        0x4 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_it.o
+                0x080011ec                RTC_IRQHandler
  .text.FLASH_IRQHandler
-                0x080010a4        0x4 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_it.o
-                0x080010a4                FLASH_IRQHandler
+                0x080011f0        0x4 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_it.o
+                0x080011f0                FLASH_IRQHandler
  .text.RCC_IRQHandler
-                0x080010a8        0x4 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_it.o
-                0x080010a8                RCC_IRQHandler
+                0x080011f4        0x4 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_it.o
+                0x080011f4                RCC_IRQHandler
  .text.EXTI0_IRQHandler
-                0x080010ac        0x4 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_it.o
-                0x080010ac                EXTI0_IRQHandler
+                0x080011f8        0x4 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_it.o
+                0x080011f8                EXTI0_IRQHandler
  .text.EXTI1_IRQHandler
-                0x080010b0        0x4 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_it.o
-                0x080010b0                EXTI1_IRQHandler
+                0x080011fc        0x4 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_it.o
+                0x080011fc                EXTI1_IRQHandler
  .text.EXTI2_IRQHandler
-                0x080010b4        0x4 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_it.o
-                0x080010b4                EXTI2_IRQHandler
+                0x08001200        0x4 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_it.o
+                0x08001200                EXTI2_IRQHandler
  .text.EXTI3_IRQHandler
-                0x080010b8        0x4 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_it.o
-                0x080010b8                EXTI3_IRQHandler
+                0x08001204        0x4 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_it.o
+                0x08001204                EXTI3_IRQHandler
  .text.EXTI4_IRQHandler
-                0x080010bc        0x4 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_it.o
-                0x080010bc                EXTI4_IRQHandler
+                0x08001208        0x4 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_it.o
+                0x08001208                EXTI4_IRQHandler
  .text.DMA1_Channel1_IRQHandler
-                0x080010c0        0x4 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_it.o
-                0x080010c0                DMA1_Channel1_IRQHandler
+                0x0800120c        0x4 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_it.o
+                0x0800120c                DMA1_Channel1_IRQHandler
  .text.DMA1_Channel2_IRQHandler
-                0x080010c4        0x4 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_it.o
-                0x080010c4                DMA1_Channel2_IRQHandler
+                0x08001210        0x4 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_it.o
+                0x08001210                DMA1_Channel2_IRQHandler
  .text.DMA1_Channel3_IRQHandler
-                0x080010c8        0x4 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_it.o
-                0x080010c8                DMA1_Channel3_IRQHandler
+                0x08001214        0x4 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_it.o
+                0x08001214                DMA1_Channel3_IRQHandler
  .text.DMA1_Channel4_IRQHandler
-                0x080010cc        0x4 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_it.o
-                0x080010cc                DMA1_Channel4_IRQHandler
+                0x08001218        0x4 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_it.o
+                0x08001218                DMA1_Channel4_IRQHandler
  .text.DMA1_Channel5_IRQHandler
-                0x080010d0        0x4 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_it.o
-                0x080010d0                DMA1_Channel5_IRQHandler
+                0x0800121c        0x4 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_it.o
+                0x0800121c                DMA1_Channel5_IRQHandler
  .text.DMA1_Channel6_IRQHandler
-                0x080010d4        0x4 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_it.o
-                0x080010d4                DMA1_Channel6_IRQHandler
+                0x08001220        0x4 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_it.o
+                0x08001220                DMA1_Channel6_IRQHandler
  .text.DMA1_Channel7_IRQHandler
-                0x080010d8        0x4 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_it.o
-                0x080010d8                DMA1_Channel7_IRQHandler
+                0x08001224        0x4 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_it.o
+                0x08001224                DMA1_Channel7_IRQHandler
  .text.ADC1_2_IRQHandler
-                0x080010dc        0x4 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_it.o
-                0x080010dc                ADC1_2_IRQHandler
+                0x08001228        0x4 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_it.o
+                0x08001228                ADC1_2_IRQHandler
  .text.EXTI9_5_IRQHandler
-                0x080010e0        0x4 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_it.o
-                0x080010e0                EXTI9_5_IRQHandler
+                0x0800122c        0x4 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_it.o
+                0x0800122c                EXTI9_5_IRQHandler
  .text.TIM1_BRK_IRQHandler
-                0x080010e4        0x4 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_it.o
-                0x080010e4                TIM1_BRK_IRQHandler
+                0x08001230        0x4 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_it.o
+                0x08001230                TIM1_BRK_IRQHandler
  .text.TIM1_TRG_COM_IRQHandler
-                0x080010e8        0x4 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_it.o
-                0x080010e8                TIM1_TRG_COM_IRQHandler
+                0x08001234        0x4 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_it.o
+                0x08001234                TIM1_TRG_COM_IRQHandler
  .text.TIM1_CC_IRQHandler
-                0x080010ec        0x4 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_it.o
-                0x080010ec                TIM1_CC_IRQHandler
+                0x08001238        0x4 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_it.o
+                0x08001238                TIM1_CC_IRQHandler
  .text.TIM3_IRQHandler
-                0x080010f0        0x4 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_it.o
-                0x080010f0                TIM3_IRQHandler
+                0x0800123c        0x4 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_it.o
+                0x0800123c                TIM3_IRQHandler
  .text.TIM4_IRQHandler
-                0x080010f4        0x4 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_it.o
-                0x080010f4                TIM4_IRQHandler
+                0x08001240        0x4 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_it.o
+                0x08001240                TIM4_IRQHandler
  .text.I2C1_EV_IRQHandler
-                0x080010f8        0x4 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_it.o
-                0x080010f8                I2C1_EV_IRQHandler
+                0x08001244        0x4 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_it.o
+                0x08001244                I2C1_EV_IRQHandler
  .text.I2C1_ER_IRQHandler
-                0x080010fc        0x4 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_it.o
-                0x080010fc                I2C1_ER_IRQHandler
+                0x08001248        0x4 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_it.o
+                0x08001248                I2C1_ER_IRQHandler
  .text.I2C2_EV_IRQHandler
-                0x08001100        0x4 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_it.o
-                0x08001100                I2C2_EV_IRQHandler
+                0x0800124c        0x4 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_it.o
+                0x0800124c                I2C2_EV_IRQHandler
  .text.I2C2_ER_IRQHandler
-                0x08001104        0x4 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_it.o
-                0x08001104                I2C2_ER_IRQHandler
+                0x08001250        0x4 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_it.o
+                0x08001250                I2C2_ER_IRQHandler
  .text.SPI1_IRQHandler
-                0x08001108        0x4 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_it.o
-                0x08001108                SPI1_IRQHandler
+                0x08001254        0x4 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_it.o
+                0x08001254                SPI1_IRQHandler
  .text.SPI2_IRQHandler
-                0x0800110c        0x4 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_it.o
-                0x0800110c                SPI2_IRQHandler
+                0x08001258        0x4 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_it.o
+                0x08001258                SPI2_IRQHandler
  .text.USART2_IRQHandler
-                0x08001110        0x4 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_it.o
-                0x08001110                USART2_IRQHandler
+                0x0800125c        0x4 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_it.o
+                0x0800125c                USART2_IRQHandler
  .text.EXTI15_10_IRQHandler
-                0x08001114        0x4 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_it.o
-                0x08001114                EXTI15_10_IRQHandler
+                0x08001260        0x4 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_it.o
+                0x08001260                EXTI15_10_IRQHandler
  .text.RTCAlarm_IRQHandler
-                0x08001118        0x4 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_it.o
-                0x08001118                RTCAlarm_IRQHandler
+                0x08001264        0x4 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_it.o
+                0x08001264                RTCAlarm_IRQHandler
  .text.USBWakeUp_IRQHandler
-                0x0800111c        0x4 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_it.o
-                0x0800111c                USBWakeUp_IRQHandler
+                0x08001268        0x4 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_it.o
+                0x08001268                USBWakeUp_IRQHandler
  .text.NVIC_Init
-                0x08001120       0xac C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_nvic.o
-                0x08001120                NVIC_Init
+                0x0800126c       0xac C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_nvic.o
+                0x0800126c                NVIC_Init
  .text.NVIC_SetVectorTable
-                0x080011cc       0x18 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_nvic.o
-                0x080011cc                NVIC_SetVectorTable
+                0x08001318       0x18 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_nvic.o
+                0x08001318                NVIC_SetVectorTable
  .text.RCC_DeInit
-                0x080011e4       0x44 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.o
-                0x080011e4                RCC_DeInit
+                0x08001330       0x44 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.o
+                0x08001330                RCC_DeInit
  .text.RCC_HSEConfig
-                0x08001228       0x4c C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.o
-                0x08001228                RCC_HSEConfig
+                0x08001374       0x4c C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.o
+                0x08001374                RCC_HSEConfig
  .text.RCC_PLLConfig
-                0x08001274       0x18 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.o
-                0x08001274                RCC_PLLConfig
+                0x080013c0       0x18 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.o
+                0x080013c0                RCC_PLLConfig
  .text.RCC_PLLCmd
-                0x0800128c        0xc C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.o
-                0x0800128c                RCC_PLLCmd
+                0x080013d8        0xc C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.o
+                0x080013d8                RCC_PLLCmd
  .text.RCC_SYSCLKConfig
-                0x08001298       0x18 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.o
-                0x08001298                RCC_SYSCLKConfig
+                0x080013e4       0x18 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.o
+                0x080013e4                RCC_SYSCLKConfig
  .text.RCC_GetSYSCLKSource
-                0x080012b0       0x10 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.o
-                0x080012b0                RCC_GetSYSCLKSource
+                0x080013fc       0x10 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.o
+                0x080013fc                RCC_GetSYSCLKSource
  .text.RCC_HCLKConfig
-                0x080012c0       0x18 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.o
-                0x080012c0                RCC_HCLKConfig
+                0x0800140c       0x18 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.o
+                0x0800140c                RCC_HCLKConfig
  .text.RCC_PCLK1Config
-                0x080012d8       0x18 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.o
-                0x080012d8                RCC_PCLK1Config
+                0x08001424       0x18 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.o
+                0x08001424                RCC_PCLK1Config
  .text.RCC_PCLK2Config
-                0x080012f0       0x18 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.o
-                0x080012f0                RCC_PCLK2Config
+                0x0800143c       0x18 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.o
+                0x0800143c                RCC_PCLK2Config
  .text.RCC_ADCCLKConfig
-                0x08001308       0x18 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.o
-                0x08001308                RCC_ADCCLKConfig
+                0x08001454       0x18 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.o
+                0x08001454                RCC_ADCCLKConfig
  .text.RCC_GetClocksFreq
-                0x08001320       0xe0 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.o
-                0x08001320                RCC_GetClocksFreq
+                0x0800146c       0xe0 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.o
+                0x0800146c                RCC_GetClocksFreq
  .text.RCC_APB2PeriphClockCmd
-                0x08001400       0x24 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.o
-                0x08001400                RCC_APB2PeriphClockCmd
+                0x0800154c       0x24 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.o
+                0x0800154c                RCC_APB2PeriphClockCmd
  .text.RCC_APB1PeriphClockCmd
-                0x08001424       0x24 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.o
-                0x08001424                RCC_APB1PeriphClockCmd
+                0x08001570       0x24 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.o
+                0x08001570                RCC_APB1PeriphClockCmd
  .text.RCC_APB2PeriphResetCmd
-                0x08001448       0x24 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.o
-                0x08001448                RCC_APB2PeriphResetCmd
+                0x08001594       0x24 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.o
+                0x08001594                RCC_APB2PeriphResetCmd
  .text.RCC_APB1PeriphResetCmd
-                0x0800146c       0x24 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.o
-                0x0800146c                RCC_APB1PeriphResetCmd
+                0x080015b8       0x24 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.o
+                0x080015b8                RCC_APB1PeriphResetCmd
  .text.RCC_GetFlagStatus
-                0x08001490       0x34 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.o
-                0x08001490                RCC_GetFlagStatus
+                0x080015dc       0x34 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.o
+                0x080015dc                RCC_GetFlagStatus
  .text.RCC_WaitForHSEStartUp
-                0x080014c4       0x38 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.o
-                0x080014c4                RCC_WaitForHSEStartUp
+                0x08001610       0x38 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.o
+                0x08001610                RCC_WaitForHSEStartUp
  .text.TIM_TimeBaseInit
-                0x080014fc       0x50 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_tim.o
-                0x080014fc                TIM_TimeBaseInit
+                0x08001648       0x50 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_tim.o
+                0x08001648                TIM_TimeBaseInit
  .text.TIM_OC3Init
-                0x0800154c       0xac C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_tim.o
-                0x0800154c                TIM_OC3Init
- .text.TIM_Cmd  0x080015f8       0x20 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_tim.o
-                0x080015f8                TIM_Cmd
+                0x08001698       0xac C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_tim.o
+                0x08001698                TIM_OC3Init
+ .text.TIM_Cmd  0x08001744       0x20 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_tim.o
+                0x08001744                TIM_Cmd
  .text.TIM_CtrlPWMOutputs
-                0x08001618       0x28 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_tim.o
-                0x08001618                TIM_CtrlPWMOutputs
+                0x08001764       0x28 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_tim.o
+                0x08001764                TIM_CtrlPWMOutputs
  .text.TIM_ITConfig
-                0x08001640       0x18 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_tim.o
-                0x08001640                TIM_ITConfig
+                0x0800178c       0x18 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_tim.o
+                0x0800178c                TIM_ITConfig
  .text.TIM_ARRPreloadConfig
-                0x08001658       0x20 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_tim.o
-                0x08001658                TIM_ARRPreloadConfig
+                0x080017a4       0x20 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_tim.o
+                0x080017a4                TIM_ARRPreloadConfig
  .text.TIM_OC1PreloadConfig
-                0x08001678       0x18 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_tim.o
-                0x08001678                TIM_OC1PreloadConfig
+                0x080017c4       0x18 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_tim.o
+                0x080017c4                TIM_OC1PreloadConfig
  .text.TIM_ClearITPendingBit
-                0x08001690        0xc C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_tim.o
-                0x08001690                TIM_ClearITPendingBit
+                0x080017dc        0xc C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_tim.o
+                0x080017dc                TIM_ClearITPendingBit
  .text.USART_DeInit
-                0x0800169c       0xd0 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_usart.o
-                0x0800169c                USART_DeInit
+                0x080017e8       0xd0 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_usart.o
+                0x080017e8                USART_DeInit
  .text.USART_Init
-                0x0800176c       0xb4 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_usart.o
-                0x0800176c                USART_Init
+                0x080018b8       0xb4 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_usart.o
+                0x080018b8                USART_Init
  .text.USART_Cmd
-                0x08001820       0x20 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_usart.o
-                0x08001820                USART_Cmd
+                0x0800196c       0x20 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_usart.o
+                0x0800196c                USART_Cmd
  .text.USART_ITConfig
-                0x08001840       0x3c C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_usart.o
-                0x08001840                USART_ITConfig
+                0x0800198c       0x3c C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_usart.o
+                0x0800198c                USART_ITConfig
  .text.__io_putchar
-                0x0800187c      0x16c C:\Program Files (x86)\Raisonance\Ride\Lib\ARM\STM32x_io_putchar_thumb.a(STM32F10X_io_putchar.o)
-                0x0800187c                __io_putchar
- .text._write   0x080019e8        0x4 C:\Program Files (x86)\Raisonance\Ride\Lib\ARM\std_sbrk_thumb.lib(write.o)
-                0x080019e8                _write
+                0x080019c8      0x16c C:\Program Files (x86)\Raisonance\Ride\Lib\ARM\STM32x_io_putchar_thumb.a(STM32F10X_io_putchar.o)
+                0x080019c8                __io_putchar
+ .text._write   0x08001b34        0x4 C:\Program Files (x86)\Raisonance\Ride\Lib\ARM\std_sbrk_thumb.lib(write.o)
+                0x08001b34                _write
  *(.rodata)
- .rodata        0x080019ec       0xd4 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.o
-                0x080019ec                szGPRMC
-                0x080019f4                szGPGSV
-                0x080019fc                szGPGGA
-                0x08001a04                szGPGSA
-                0x08001a0c                GPSBaud
-                0x08001a28                GPSInit
- .rodata        0x08001ac0       0x14 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.o
+ .rodata        0x08001b38       0xd4 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.o
+                0x08001b38                szGPRMC
+                0x08001b40                szGPGSV
+                0x08001b48                szGPGGA
+                0x08001b50                szGPGSA
+                0x08001b58                GPSBaud
+                0x08001b74                GPSInit
+ .rodata        0x08001c0c       0x14 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.o
  *(.rodata*)
  *(.glue_7)
  .glue_7        0x00000000        0x0 linker stubs
  *(.glue_7t)
  .glue_7t       0x00000000        0x0 linker stubs
-                0x08001ad4                . = ALIGN (0x4)
-                0x08001ad4                _etext = .
-                0x08001ad4                _sidata = _etext
+                0x08001c20                . = ALIGN (0x4)
+                0x08001c20                _etext = .
+                0x08001c20                _sidata = _etext
 
-.vfp11_veneer   0x08001ad4        0x0
+.vfp11_veneer   0x08001c20        0x0
  .vfp11_veneer  0x00000000        0x0 linker stubs
 
-.v4_bx          0x08001ad4        0x0
+.v4_bx          0x08001c20        0x0
  .v4_bx         0x00000000        0x0 linker stubs
 
 .flashpatch     0x00000000        0x0
@@ -1086,7 +1096,7 @@ END GROUP
                 0x00000000                . = ALIGN (0x4)
                 0x00000000                _e_endflash = .
 
-.data           0x20000000        0x0 load address 0x08001ad4
+.data           0x20000000        0x0 load address 0x08001c20
                 0x20000000                . = ALIGN (0x4)
                 0x20000000                _sdata = .
                 0x20000000                _data = .
@@ -1095,7 +1105,7 @@ END GROUP
  *(.RAMtext)
                 0x20000000                . = ALIGN (0x4)
                 0x20000000                _edata = .
-                0x08001ad4                _eidata = ((_sidata + _edata) - _sdata)
+                0x08001c20                _eidata = ((_sidata + _edata) - _sdata)
                 0x08010000                _lastdataromaddress = 0x8010000
                 0x00000000                toobig = (_eidata > _lastdataromaddress)?!!!!!!!!! FLASH IS FULL !!!!!!!!!:0x0
 
@@ -1232,132 +1242,132 @@ END GROUP
 .debug_sfnames
  *(.debug_sfnames)
 
-.debug_aranges  0x00000000      0xb08
+.debug_aranges  0x00000000      0xb18
  *(.debug_aranges)
  .debug_aranges
-                0x00000000       0xf0 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.o
+                0x00000000      0x100 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.o
  .debug_aranges
-                0x000000f0      0x138 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.o
+                0x00000100      0x138 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.o
  .debug_aranges
-                0x00000228       0x30 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_flash.o
+                0x00000238       0x30 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_flash.o
  .debug_aranges
-                0x00000258       0xa0 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_gpio.o
+                0x00000268       0xa0 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_gpio.o
  .debug_aranges
-                0x000002f8      0x220 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_it.o
+                0x00000308      0x220 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_it.o
  .debug_aranges
-                0x00000518      0x108 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_nvic.o
+                0x00000528      0x108 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_nvic.o
  .debug_aranges
-                0x00000620      0x118 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.o
+                0x00000630      0x118 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.o
  .debug_aranges
-                0x00000738      0x2e0 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_tim.o
+                0x00000748      0x2e0 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_tim.o
  .debug_aranges
-                0x00000a18       0xf0 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_usart.o
+                0x00000a28       0xf0 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_usart.o
 
 .debug_pubnames
-                0x00000000     0x1e6a
+                0x00000000     0x1e89
  *(.debug_pubnames)
  .debug_pubnames
-                0x00000000      0x276 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.o
+                0x00000000      0x295 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.o
  .debug_pubnames
-                0x00000276      0x401 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.o
+                0x00000295      0x401 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.o
  .debug_pubnames
-                0x00000677       0x60 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_flash.o
+                0x00000696       0x60 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_flash.o
  .debug_pubnames
-                0x000006d7      0x17b C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_gpio.o
+                0x000006f6      0x17b C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_gpio.o
  .debug_pubnames
-                0x00000852      0x5e5 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_it.o
+                0x00000871      0x5e5 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_it.o
  .debug_pubnames
-                0x00000e37      0x360 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_nvic.o
+                0x00000e56      0x360 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_nvic.o
  .debug_pubnames
-                0x00001197      0x2c4 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.o
+                0x000011b6      0x2c4 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.o
  .debug_pubnames
-                0x0000145b      0x7b0 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_tim.o
+                0x0000147a      0x7b0 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_tim.o
  .debug_pubnames
-                0x00001c0b      0x25f C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_usart.o
+                0x00001c2a      0x25f C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_usart.o
 
-.debug_info     0x00000000     0x662a
+.debug_info     0x00000000     0x66e6
  *(.debug_info .gnu.linkonce.wi.*)
- .debug_info    0x00000000     0x138b C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.o
- .debug_info    0x0000138b      0xb7a C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.o
- .debug_info    0x00001f05      0x16f C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_flash.o
- .debug_info    0x00002074      0x690 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_gpio.o
- .debug_info    0x00002704      0x599 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_it.o
- .debug_info    0x00002c9d       0x53 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_lib.o
- .debug_info    0x00002cf0      0x964 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_nvic.o
- .debug_info    0x00003654      0x8ac C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.o
- .debug_info    0x00003f00     0x1d8d C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_tim.o
- .debug_info    0x00005c8d      0x99d C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_usart.o
+ .debug_info    0x00000000     0x1447 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.o
+ .debug_info    0x00001447      0xb7a C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.o
+ .debug_info    0x00001fc1      0x16f C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_flash.o
+ .debug_info    0x00002130      0x690 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_gpio.o
+ .debug_info    0x000027c0      0x599 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_it.o
+ .debug_info    0x00002d59       0x53 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_lib.o
+ .debug_info    0x00002dac      0x964 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_nvic.o
+ .debug_info    0x00003710      0x8ac C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.o
+ .debug_info    0x00003fbc     0x1d8d C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_tim.o
+ .debug_info    0x00005d49      0x99d C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_usart.o
 
-.debug_abbrev   0x00000000      0xf36
+.debug_abbrev   0x00000000      0xf34
  *(.debug_abbrev)
- .debug_abbrev  0x00000000      0x26d C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.o
- .debug_abbrev  0x0000026d      0x19b C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.o
- .debug_abbrev  0x00000408       0xa6 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_flash.o
- .debug_abbrev  0x000004ae      0x1f5 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_gpio.o
- .debug_abbrev  0x000006a3       0x49 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_it.o
- .debug_abbrev  0x000006ec       0x1d C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_lib.o
- .debug_abbrev  0x00000709      0x22f C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_nvic.o
- .debug_abbrev  0x00000938      0x1f6 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.o
- .debug_abbrev  0x00000b2e      0x240 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_tim.o
- .debug_abbrev  0x00000d6e      0x1c8 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_usart.o
+ .debug_abbrev  0x00000000      0x26b C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.o
+ .debug_abbrev  0x0000026b      0x19b C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.o
+ .debug_abbrev  0x00000406       0xa6 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_flash.o
+ .debug_abbrev  0x000004ac      0x1f5 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_gpio.o
+ .debug_abbrev  0x000006a1       0x49 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_it.o
+ .debug_abbrev  0x000006ea       0x1d C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_lib.o
+ .debug_abbrev  0x00000707      0x22f C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_nvic.o
+ .debug_abbrev  0x00000936      0x1f6 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.o
+ .debug_abbrev  0x00000b2c      0x240 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_tim.o
+ .debug_abbrev  0x00000d6c      0x1c8 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_usart.o
 
-.debug_line     0x00000000     0x22b2
+.debug_line     0x00000000     0x22f6
  *(.debug_line)
- .debug_line    0x00000000      0x4c0 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.o
- .debug_line    0x000004c0      0x3db C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.o
- .debug_line    0x0000089b       0xde C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_flash.o
- .debug_line    0x00000979      0x25b C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_gpio.o
- .debug_line    0x00000bd4      0x4ba C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_it.o
- .debug_line    0x0000108e       0x1d C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_lib.o
- .debug_line    0x000010ab      0x33c C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_nvic.o
- .debug_line    0x000013e7      0x362 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.o
- .debug_line    0x00001749      0x856 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_tim.o
- .debug_line    0x00001f9f      0x313 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_usart.o
+ .debug_line    0x00000000      0x504 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.o
+ .debug_line    0x00000504      0x3db C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.o
+ .debug_line    0x000008df       0xde C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_flash.o
+ .debug_line    0x000009bd      0x25b C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_gpio.o
+ .debug_line    0x00000c18      0x4ba C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_it.o
+ .debug_line    0x000010d2       0x1d C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_lib.o
+ .debug_line    0x000010ef      0x33c C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_nvic.o
+ .debug_line    0x0000142b      0x362 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.o
+ .debug_line    0x0000178d      0x856 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_tim.o
+ .debug_line    0x00001fe3      0x313 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_usart.o
 
-.debug_frame    0x00000000     0x1784
+.debug_frame    0x00000000     0x17cc
  *(.debug_frame)
- .debug_frame   0x00000000      0x2b0 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.o
- .debug_frame   0x000002b0      0x278 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.o
- .debug_frame   0x00000528       0x40 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_flash.o
- .debug_frame   0x00000568      0x158 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_gpio.o
- .debug_frame   0x000006c0      0x420 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_it.o
- .debug_frame   0x00000ae0      0x238 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_nvic.o
- .debug_frame   0x00000d18      0x224 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.o
- .debug_frame   0x00000f3c      0x658 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_tim.o
- .debug_frame   0x00001594      0x1f0 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_usart.o
+ .debug_frame   0x00000000      0x2f8 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.o
+ .debug_frame   0x000002f8      0x278 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.o
+ .debug_frame   0x00000570       0x40 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_flash.o
+ .debug_frame   0x000005b0      0x158 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_gpio.o
+ .debug_frame   0x00000708      0x420 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_it.o
+ .debug_frame   0x00000b28      0x238 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_nvic.o
+ .debug_frame   0x00000d60      0x224 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.o
+ .debug_frame   0x00000f84      0x658 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_tim.o
+ .debug_frame   0x000015dc      0x1f0 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_usart.o
 
-.debug_str      0x00000000     0x2dfe
+.debug_str      0x00000000     0x2e1a
  *(.debug_str)
- .debug_str     0x00000000      0xa85 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.o
-                                0xad9 (size before relaxing)
- .debug_str     0x00000a85      0x4a2 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.o
+ .debug_str     0x00000000      0xaa1 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.o
+                                0xaf5 (size before relaxing)
+ .debug_str     0x00000aa1      0x4a2 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.o
                                 0x621 (size before relaxing)
- .debug_str     0x00000f27       0xf2 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_flash.o
+ .debug_str     0x00000f43       0xf2 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_flash.o
                                 0x162 (size before relaxing)
- .debug_str     0x00001019      0x221 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_gpio.o
+ .debug_str     0x00001035      0x221 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_gpio.o
                                 0x3f9 (size before relaxing)
- .debug_str     0x0000123a      0x51f C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_it.o
+ .debug_str     0x00001256      0x51f C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_it.o
                                 0x58a (size before relaxing)
- .debug_str     0x00001759       0x51 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_lib.o
+ .debug_str     0x00001775       0x51 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_lib.o
                                  0xbc (size before relaxing)
- .debug_str     0x000017aa      0x4a0 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_nvic.o
+ .debug_str     0x000017c6      0x4a0 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_nvic.o
                                 0x60b (size before relaxing)
- .debug_str     0x00001c4a      0x448 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.o
+ .debug_str     0x00001c66      0x448 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.o
                                 0x540 (size before relaxing)
- .debug_str     0x00002092      0x9e7 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_tim.o
+ .debug_str     0x000020ae      0x9e7 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_tim.o
                                 0xcfe (size before relaxing)
- .debug_str     0x00002a79      0x385 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_usart.o
+ .debug_str     0x00002a95      0x385 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_usart.o
                                 0x589 (size before relaxing)
 
-.debug_loc      0x00000000     0x3926
+.debug_loc      0x00000000     0x3aba
  *(.debug_loc)
- .debug_loc     0x00000000      0x676 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.o
- .debug_loc     0x00000676      0x8a2 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.o
- .debug_loc     0x00000f18      0x490 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_gpio.o
- .debug_loc     0x000013a8      0x83d C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_nvic.o
- .debug_loc     0x00001be5      0x4d5 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.o
- .debug_loc     0x000020ba     0x1382 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_tim.o
- .debug_loc     0x0000343c      0x4ea C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_usart.o
+ .debug_loc     0x00000000      0x80a C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.o
+ .debug_loc     0x0000080a      0x8a2 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.o
+ .debug_loc     0x000010ac      0x490 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_gpio.o
+ .debug_loc     0x0000153c      0x83d C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_nvic.o
+ .debug_loc     0x00001d79      0x4d5 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.o
+ .debug_loc     0x0000224e     0x1382 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_tim.o
+ .debug_loc     0x000035d0      0x4ea C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_usart.o
 
 .debug_macinfo
  *(.debug_macinfo)
@@ -1402,13 +1412,13 @@ OUTPUT(C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\Sonar.el
  .debug_pubtypes
                 0x0000053e       0xbb C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_usart.o
 
-.debug_ranges   0x00000000      0xa78
- .debug_ranges  0x00000000       0xe0 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.o
- .debug_ranges  0x000000e0      0x128 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.o
- .debug_ranges  0x00000208       0x20 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_flash.o
- .debug_ranges  0x00000228       0x90 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_gpio.o
- .debug_ranges  0x000002b8      0x210 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_it.o
- .debug_ranges  0x000004c8       0xf8 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_nvic.o
- .debug_ranges  0x000005c0      0x108 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.o
- .debug_ranges  0x000006c8      0x2d0 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_tim.o
- .debug_ranges  0x00000998       0xe0 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_usart.o
+.debug_ranges   0x00000000      0xa88
+ .debug_ranges  0x00000000       0xf0 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.o
+ .debug_ranges  0x000000f0      0x128 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.o
+ .debug_ranges  0x00000218       0x20 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_flash.o
+ .debug_ranges  0x00000238       0x90 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_gpio.o
+ .debug_ranges  0x000002c8      0x210 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_it.o
+ .debug_ranges  0x000004d8       0xf8 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_nvic.o
+ .debug_ranges  0x000005d0      0x108 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.o
+ .debug_ranges  0x000006d8      0x2d0 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_tim.o
+ .debug_ranges  0x000009a8       0xe0 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_usart.o

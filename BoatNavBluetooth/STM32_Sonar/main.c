@@ -122,6 +122,8 @@ void ParseGPRMC(u16 GPSStart);
 void ParseGPGSV(u16 GPSStart);
 void ParseGPGGA(u16 GPSStart);
 void ParseGPGSA(u16 GPSStart);
+u16 ParseSkip(u16 GPSStart);
+u16 ParseGetItem(u16 GPSStart,u8 *item);
 
 /* Private functions ---------------------------------------------------------*/
 
@@ -331,21 +333,138 @@ u8 StrCmp(u8 *str,u8 *comp)
   }
   return c;
 }
+u16 ParseSkip(u16 GPSStart)
+{
+  while (STM32_Sonar.GPSArray[GPSStart] != 0x2C && STM32_Sonar.GPSArray[GPSStart] != 0x0D)
+  {
+    GPSStart++;
+    GPSStart = GPSStart & (MAXGPS - 1);
+  }
+  if (STM32_Sonar.GPSArray[GPSStart] == 0x2C)
+  {
+    GPSStart++;
+    GPSStart = GPSStart & (MAXGPS - 1);
+  }
+  return GPSStart;
+}
 
+u16 ParseGetItem(u16 GPSStart,u8 *item)
+{
+  while (STM32_Sonar.GPSArray[GPSStart] != 0x2C && STM32_Sonar.GPSArray[GPSStart] != 0x0D)
+  {
+    *item = STM32_Sonar.GPSArray[GPSStart];
+    item++;
+    GPSStart++;
+    GPSStart = GPSStart & (MAXGPS - 1);
+  }
+  if (STM32_Sonar.GPSArray[GPSStart] == 0x2C)
+  {
+    GPSStart++;
+    GPSStart = GPSStart & (MAXGPS - 1);
+  }
+  return GPSStart;
+}
+
+/*
+eg3. $GPRMC,220516,A,5133.82,N,00042.24,W,173.8,231.8,130694,004.2,W
+              1    2    3    4    5     6    7    8      9     10  11
+
+      1   220516     Time Stamp
+      2   A          validity - A-ok, V-invalid
+      3   5133.82    current Latitude
+      4   N          North/South
+      5   00042.24   current Longitude
+      6   W          East/West
+      7   173.8      Speed in knots
+      8   231.8      True course
+      9   130694     Date Stamp
+      10  004.2      Variation
+      11  W          East/West
+*/
 void ParseGPRMC(u16 GPSStart)
 {
+  u8 item[32];
+  GPSStart = ParseSkip(GPSStart);
+  GPSStart = ParseGetItem(GPSStart,(u8 *)&item); // Time Stamp
+  GPSStart = ParseGetItem(GPSStart,(u8 *)&item); // validity - A-ok, V-invalid
+  GPSStart = ParseGetItem(GPSStart,(u8 *)&item); // current Latitude
+  GPSStart = ParseGetItem(GPSStart,(u8 *)&item); // North/South
+  GPSStart = ParseGetItem(GPSStart,(u8 *)&item); // current Longitude
+  GPSStart = ParseGetItem(GPSStart,(u8 *)&item); // East/West
+  GPSStart = ParseGetItem(GPSStart,(u8 *)&item); // Speed in knots
+  GPSStart = ParseGetItem(GPSStart,(u8 *)&item); // True course
+  GPSStart = ParseGetItem(GPSStart,(u8 *)&item); // Date Stamp
 }
 
+/*
+eg. $GPGSV,3,1,11,03,03,111,00,04,15,270,00,06,01,010,00,13,06,292,00
+    $GPGSV,3,2,11,14,25,170,00,16,57,208,39,18,67,296,40,19,40,246,00
+    $GPGSV,3,3,11,22,42,067,42,24,14,311,43,27,05,244,00,,,,
+
+    $GPGSV,1,1,13,02,02,213,,03,-3,000,,11,00,121,,14,13,172,05
+
+    1    = Total number of messages of this type in this cycle
+    2    = Message number
+    3    = Total number of SVs in view
+    4    = SV PRN number
+    5    = Elevation in degrees, 90 maximum
+    6    = Azimuth, degrees from true north, 000 to 359
+    7    = SNR, 00-99 dB (null when not tracking)
+    8-11 = Information about second SV, same as field 4-7
+    12-15= Information about third SV, same as field 4-7
+    16-19= Information about fourth SV, same as field 4-7
+*/
 void ParseGPGSV(u16 GPSStart)
 {
+  u8 item[32];
+  GPSStart = ParseSkip(GPSStart);
 }
 
+/*
+eg3. $GPGGA,hhmmss.ss,llll.ll,a,yyyyy.yy,a,x,xx,x.x,x.x,M,x.x,M,x.x,xxxx
+
+    1    = UTC of Position
+    2    = Latitude
+    3    = N or S
+    4    = Longitude
+    5    = E or W
+    6    = GPS quality indicator (0=invalid; 1=GPS fix; 2=Diff. GPS fix)
+    7    = Number of satellites in use [not those in view]
+    8    = Horizontal dilution of position
+    9    = Antenna altitude above/below mean sea level (geoid)
+    10   = Meters  (Antenna height unit)
+    11   = Geoidal separation (Diff. between WGS-84 earth ellipsoid and
+           mean sea level.  -=geoid is below WGS-84 ellipsoid)
+    12   = Meters  (Units of geoidal separation)
+    13   = Age in seconds since last update from diff. reference station
+    14   = Diff. reference station ID#
+*/
 void ParseGPGGA(u16 GPSStart)
 {
+  u8 item[32];
+  GPSStart = ParseSkip(GPSStart);
 }
 
+/*
+eg1. $GPGSA,A,3,,,,,,16,18,,22,24,,,3.6,2.1,2.2
+eg2. $GPGSA,A,3,19,28,14,18,27,22,31,39,,,,,1.7,1.0,1.3
+
+    1    = Mode:
+           M=Manual, forced to operate in 2D or 3D
+           A=Automatic, 3D/2D
+    2    = Mode:
+           1=Fix not available
+           2=2D
+           3=3D
+    3-14 = IDs of SVs used in position fix (null for unused fields)
+    15   = PDOP
+    16   = HDOP
+    17   = VDOP
+*/
 void ParseGPGSA(u16 GPSStart)
 {
+  u8 item[32];
+  GPSStart = ParseSkip(GPSStart);
 }
 
 u32 ParseGPS(void)
