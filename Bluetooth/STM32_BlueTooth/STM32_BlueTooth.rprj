@@ -1,0 +1,4 @@
+
+<Project Header="Project 'STM32_BlueTooth'" Path=".\STM32_BlueTooth.rprj" Project="Yes" AsyncBuild="" OutputFile="" sate="96" ActiveApp="STM32_BlueTooth" >
+	<ApplicationBuild Header="STM32_BlueTooth" Extern=".\STM32_BlueTooth.rapp" Path=".\STM32_BlueTooth.rapp" AsyncBuild="" OutputFile=".\STM32_BlueTooth.elf" sate="96" />
+</Project>

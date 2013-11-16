@@ -165,7 +165,8 @@ szDone							BYTE '*** Done sending file. ***',0
 
 wVersionRequested 				DWORD 202h
 ;szServerAddress					BYTE '00:1E:4C:DC:EF:36',0
-szServerAddress					BYTE '00:1B:B1:12:3E:7D',0
+;szServerAddress					BYTE '00:1B:B1:12:3E:7D',0
+szServerAddress					BYTE '00:18:B2:02:D2:AD',0
 szServerStart					BYTE 'Server started',0
 szServerConnect					BYTE 'Server connected',0
 szServerStop					BYTE 'Server stopped',0

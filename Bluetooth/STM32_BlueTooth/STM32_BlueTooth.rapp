@@ -1,0 +1,57 @@
+
+<ApplicationBuild Header="STM32_BlueTooth" Extern=".\STM32_BlueTooth.rapp" Path=".\STM32_BlueTooth.rapp" AsyncBuild="" OutputFile=".\STM32_BlueTooth.elf" sate="96" >
+	<Options>
+		<Config Header="Standard" >
+			<Set Header="ApplicationBuild" >
+				<Section Header="General" >
+					<Property Header="TargetFamily" Value="ARM" />
+																
+				</Section>
+				<Section Header="Directories" >
+					<Property Header="IncDir" Value="\STM32\Inc" Removable="1" />
+							
+				</Section>
+					
+			</Set>
+			<Set Header="Target" >
+				<Section Header="ProcessorARM" >
+					<Property Header="Processor" Value="STM32F100RB" />
+																
+				</Section>
+				<Section Header="ToolSetARM" >
+					<Property Header="BuildToolSetARM" Value="ARM\GNU.config" Removable="1" />
+																
+				</Section>
+				<Section Header="DebugARM" >
+					<Property Header="DebugTool_CORTEX" Value="SIM-ARM" Removable="1" />
+							
+				</Section>
+					
+			</Set>
+		</Config>
+	</Options>
+	<NodeText Path=".\readme.txt" Header="readme.txt" Marker="-1" AsyncBuild="" OutputFile="" sate="0" />
+	<NodeC Path=".\main.c" Header="main.c" Marker="-1" AsyncBuild="" OutputFile=".\main.o" sate="0" />
+	<NodeASM Path=".\startup_stm32f10x_hd.s" Header="startup_stm32f10x_hd.s" Marker="0" AsyncBuild="" OutputFile=".\startup_stm32f10x_hd.o" sate="0" >
+		<Options>
+			<Config Header="Standard" >
+				<Set Header="NodeASM" >
+					<Section Header="Build" >
+						<Property Header="Exclude" Value="Yes" Removable="1" />
+								
+					</Section>
+						
+				</Set>
+			</Config>
+		</Options>
+	</NodeASM>
+	<NodeC Path=".\stm32f10x_lib.c" Header="stm32f10x_lib.c" Marker="-1" AsyncBuild="" OutputFile=".\stm32f10x_lib.o" sate="0" />
+	<NodeC Path=".\stm32f10x_nvic.c" Header="stm32f10x_nvic.c" Marker="-1" AsyncBuild="" OutputFile=".\stm32f10x_nvic.o" sate="0" />
+	<NodeC Path=".\stm32f10x_rcc.c" Header="stm32f10x_rcc.c" Marker="-1" AsyncBuild="" OutputFile=".\stm32f10x_rcc.o" sate="0" />
+	<NodeC Path=".\stm32f10x_usart.c" Header="stm32f10x_usart.c" Marker="-1" AsyncBuild="" OutputFile=".\stm32f10x_usart.o" sate="0" />
+	<NodeH Path=".\stm32f10x_conf.h" Header="stm32f10x_conf.h" Marker="-1" AsyncBuild="" OutputFile="" sate="0" />
+	<NodeC Path=".\stm32f10x_flash.c" Header="stm32f10x_flash.c" Marker="-1" AsyncBuild="" OutputFile=".\stm32f10x_flash.o" sate="0" />
+	<NodeC Path=".\stm32f10x_gpio.c" Header="stm32f10x_gpio.c" Marker="-1" AsyncBuild="" OutputFile=".\stm32f10x_gpio.o" sate="0" />
+	<NodeC Path=".\stm32f10x_it.c" Header="stm32f10x_it.c" Marker="-1" AsyncBuild="" OutputFile=".\stm32f10x_it.o" sate="2" />
+	<NodeH Path=".\stm32f10x_it.h" Header="stm32f10x_it.h" Marker="-1" AsyncBuild="" OutputFile="" sate="0" />
+</ApplicationBuild>
