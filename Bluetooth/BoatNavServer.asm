@@ -222,8 +222,8 @@ BlueToothClient proc uses ebx esi edi,hWin:HWND
 			invoke RtlZeroMemory,offset serveraddress,sizeof SOCKADDR_BTH
 			mov		serveraddress.addressFamily,AF_BTH
 			invoke BtAddrFromString,offset serveraddress.btAddr,offset szServerAddress
-			;invoke RtlMoveMemory,offset serveraddress.serviceClassId,offset GUID_SPP,sizeof GUID
-			invoke RtlMoveMemory,offset serveraddress.serviceClassId,offset protocol,sizeof GUID
+			invoke RtlMoveMemory,offset serveraddress.serviceClassId,offset GUID_SPP,sizeof GUID
+			;invoke RtlMoveMemory,offset serveraddress.serviceClassId,offset protocol,sizeof GUID
 			invoke connect,client_socket,offset serveraddress,sizeof SOCKADDR_BTH
 			.if eax!=INVALID_SOCKET
 				xor		esi,esi
