@@ -2022,6 +2022,21 @@ STMThread proc uses ebx esi edi,Param:DWORD
 						jmp		STLinkErr
 					.endif
 					call	ShowEcho
+;invoke STLinkRead,hSonar,STM32_SonarData,addr status,4
+;mov eax,status
+;PrintDec ax
+;shr eax,16
+;PrintDec ax
+
+invoke STLinkRead,hSonar,STM32_SonarData+4,addr sonarreplay,sizeof SONARREPLAY
+mov		eax,sonarreplay.iLon
+PrintDec eax
+mov		eax,mapdata.iLon
+PrintDec eax
+mov		eax,sonarreplay.iLat
+PrintDec eax
+mov		eax,mapdata.iLat
+PrintDec eax
 				.else
 					;Data not ready yet
 					invoke Sleep,10

@@ -146,6 +146,8 @@ MAXNMEA					equ 20000							;Max number of NMEA items in NMEA list
 
 ;STM32 constants
 STM32_Sonar				equ 20000000h						;STM32 ram address
+STM32_SonarData			equ 20000A38h
+
 STM32_Clock				equ 40000000						;STM32 clock frequency
 STM32_PingTimer			equ (STM32_Clock/200000/2)-1		;Default ping timer
 

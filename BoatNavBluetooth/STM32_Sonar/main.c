@@ -86,7 +86,7 @@ typedef struct
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 static STM32_SonarTypeDef STM32_Sonar;          // 0x20000000
-static STM32_SonarDataTypeDef STM32_SonarData;
+static STM32_SonarDataTypeDef STM32_SonarData;  // 0x20000A36
 vu8 BlueLED;                                    // Current state of the blue led
 vu16 Ping;                                      // Value to output to PA1 and PA2 pins
 vu8 Setup;                                      // Setup mode
@@ -116,16 +116,17 @@ void USART3_putdata(char *data,u16 lenght);
 void GainSetup(void);
 void TrimOutput(void);
 void GetEcho(void);
-u32 ParseGPS(void);
+vu32 ParseGPS(void);
 u8 StrCmp(u8 *str,u8 *comp);
-void ParseGPRMC(u16 GPSStart);
-void ParseGPGSV(u16 GPSStart);
-void ParseGPGGA(u16 GPSStart);
-void ParseGPGSA(u16 GPSStart);
-u16 ParseSkip(u16 GPSStart);
-u16 ParseGetItem(u16 GPSStart,u8 *item);
-u32 ParseLatLon(u8 *item);
-u32 ParseDecToBin(u8 *item);
+void ParseGPRMC(vu16 GPSStart);
+void ParseGPGSV(vu16 GPSStart);
+void ParseGPGGA(vu16 GPSStart);
+void ParseGPGSA(vu16 GPSStart);
+vu16 ParseSkip(vu16 GPSStart);
+vu16 ParseGetItem(vu16 GPSStart,u8 *item);
+vu32 ParseLat(u8 *item);
+vu32 ParseLon(u8 *item);
+vu32 ParseDecToBin(u8 *item);
 
 /* Private functions ---------------------------------------------------------*/
 
@@ -139,7 +140,7 @@ u32 ParseDecToBin(u8 *item);
 int main(void)
 {
   u32 i;
-  STM32_SonarData.Lenght = sizeof STM32_SonarData;
+  STM32_SonarData.Lenght = sizeof STM32_SonarData - 4;
   STM32_SonarData.Version = 201;
   /* System clocks configuration */
   RCC_Configuration();
@@ -234,7 +235,8 @@ int main(void)
       {
         TrimOutput();
       }
-      while (ParseGPS())
+//      STM32_SonarData.Chksum = ParseGPS();
+      while (ParseGPS() != 0xFFFF)
       {
       }
       /* Enable ADC injected channel */
@@ -272,13 +274,13 @@ int main(void)
     {
       /* Send initialization data to GPS */
       // USART1_puts((char*) (u32 *)STM32_Sonar.GainArray);
-      STM32_Sonar.Start=0;
+      STM32_Sonar.Start = 0;
     }
     else if (STM32_Sonar.Start == 3)
     {
       /* Set USART1 baudrate to 9600 */
       // USART1_Configuration(9600);
-      STM32_Sonar.Start=0;
+      STM32_Sonar.Start = 0;
     }
     else if (STM32_Sonar.Start == 4)
     {
@@ -288,7 +290,7 @@ int main(void)
       STM32_Sonar.ADCWaterTemp = GetADCValue(ADC_Channel_6);
       /* Read air temprature */
       STM32_Sonar.ADCAirTemp = GetADCValue(ADC_Channel_7);
-      STM32_Sonar.Start=0;
+      STM32_Sonar.Start = 0;
     }
     i = 1000;
     while (i--);
@@ -311,11 +313,11 @@ void TrimOutput(void)
     while (i--);
     if (GetADCValue(ADC_Channel_3)>32)
     {
-      Trim = Trim + TrimAdd;
+      Trim += TrimAdd;
     }
     else
     {
-      Trim = Trim - TrimAdd;
+      Trim -= TrimAdd;
     }
     TrimAdd = TrimAdd / 2;
   }
@@ -335,54 +337,68 @@ u8 StrCmp(u8 *str,u8 *comp)
   }
   return c;
 }
-u16 ParseSkip(u16 GPSStart)
+
+vu16 ParseSkip(vu16 GPSStart)
 {
   while (STM32_Sonar.GPSArray[GPSStart] != 0x2C && STM32_Sonar.GPSArray[GPSStart] != 0x0D)
   {
     GPSStart++;
-    GPSStart = GPSStart & (MAXGPS - 1);
+    GPSStart &= (MAXGPS - 1);
   }
   if (STM32_Sonar.GPSArray[GPSStart] == 0x2C)
   {
     GPSStart++;
-    GPSStart = GPSStart & (MAXGPS - 1);
+    GPSStart &= (MAXGPS - 1);
   }
   return GPSStart;
 }
 
-u16 ParseGetItem(u16 GPSStart,u8 *item)
+vu16 ParseGetItem(vu16 GPSStart,u8 *item)
 {
   while (STM32_Sonar.GPSArray[GPSStart] != 0x2C && STM32_Sonar.GPSArray[GPSStart] != 0x0D)
   {
     *item = STM32_Sonar.GPSArray[GPSStart];
     item++;
     GPSStart++;
-    GPSStart = GPSStart & (MAXGPS - 1);
+    GPSStart &= (MAXGPS - 1);
   }
   if (STM32_Sonar.GPSArray[GPSStart] == 0x2C)
   {
     GPSStart++;
-    GPSStart = GPSStart & (MAXGPS - 1);
+    GPSStart &= (MAXGPS - 1);
   }
   return GPSStart;
 }
 
-u32 ParseDecToBin(u8 *item)
+vu32 ParseDecToBin(u8 *item)
 {
   u8 c;
-  u32 val = 0;
+  vu32 val = 0;
   while (c = *item++)
   {
-    val = val * 10;
-    val = val + (c & 0x0F);
+    if (c != 0x2E)
+    {
+      val *= 10;
+      val += (c & 0x0F);
+    }
   }
   return val;
 }
 
-u32 ParseLatLon(u8 *item)
+vu32 ParseLat(u8 *item)
 {
-  u32 val = 0;
-  return val;
+  vu32 val;
+  val = (ParseDecToBin((u8 *)&item[2]) * 100) / 60;
+  item[2] = 0;
+  return ParseDecToBin((u8 *)item) * 1000000 + val;
+}
+
+vu32 ParseLon(u8 *item)
+{
+  vu32 val;
+  val = (ParseDecToBin((u8 *)&item[3]) * 100) / 60;
+  item[3] = 0;
+  return ParseDecToBin((u8 *)item) * 1000000 + val;
 }
 
 /*
@@ -401,7 +417,7 @@ eg3. $GPRMC,220516,A,5133.82,N,00042.24,W,173.8,231.8,130694,004.2,W
       10  004.2      Variation
       11  W          East/West
 */
-void ParseGPRMC(u16 GPSStart)
+void ParseGPRMC(vu16 GPSStart)
 {
   u8 itemtime[32];
   u8 item[32];
@@ -411,11 +427,15 @@ void ParseGPRMC(u16 GPSStart)
   if (item[0] == 0x41)
   {
     GPSStart = ParseGetItem(GPSStart,(u8 *)&item);      // current Latitude
+    STM32_SonarData.iLat = ParseLat((u8 *)&item);
     GPSStart = ParseGetItem(GPSStart,(u8 *)&item);      // North/South
     GPSStart = ParseGetItem(GPSStart,(u8 *)&item);      // current Longitude
+    STM32_SonarData.iLon = ParseLon((u8 *)&item);
     GPSStart = ParseGetItem(GPSStart,(u8 *)&item);      // East/West
     GPSStart = ParseGetItem(GPSStart,(u8 *)&item);      // Speed in knots
+    STM32_SonarData.iSpeed = ParseDecToBin((u8 *)&item);
     GPSStart = ParseGetItem(GPSStart,(u8 *)&item);      // True course
+    STM32_SonarData.iBear = ParseDecToBin((u8 *)&item) / 10;
   }
   else
   {
@@ -427,9 +447,20 @@ void ParseGPRMC(u16 GPSStart)
     GPSStart = ParseGetItem(GPSStart,(u8 *)&item);      // True course
   }
   GPSStart = ParseGetItem(GPSStart,(u8 *)&item);      // Date Stamp
-	// YYYY YYYM MMMD DDDD HHHH HMMM MMMS SSSS
-	// 0010 0100 0000 0000 0000 0000 0001 1111
-
+	// YYYYYYYMMMMDDDDDHHHHHMMMMMMSSSSS
+	// 00100100000000000000000000011111
+  /* Date */
+  STM32_SonarData.iTime = ParseDecToBin((u8 *)&item[4]) << 25;
+  item[4] = 0;
+  STM32_SonarData.iTime |= ParseDecToBin((u8 *)&item[2]) << 21;
+  item[2] = 0;
+  STM32_SonarData.iTime |= ParseDecToBin((u8 *)&item) << 16;
+  /* Time */
+  STM32_SonarData.iTime |= ParseDecToBin((u8 *)&itemtime[4]) >> 1;
+  itemtime[4] = 0;
+  STM32_SonarData.iTime |= ParseDecToBin((u8 *)&itemtime[2]) << 5;
+  itemtime[2] = 0;
+  STM32_SonarData.iTime |= ParseDecToBin((u8 *)&itemtime[2]) << 10;
 }
 
 /*
@@ -450,7 +481,7 @@ eg. $GPGSV,3,1,11,03,03,111,00,04,15,270,00,06,01,010,00,13,06,292,00
     12-15= Information about third SV, same as field 4-7
     16-19= Information about fourth SV, same as field 4-7
 */
-void ParseGPGSV(u16 GPSStart)
+void ParseGPGSV(vu16 GPSStart)
 {
   u8 item[32];
   GPSStart = ParseSkip(GPSStart);
@@ -475,7 +506,7 @@ eg3. $GPGGA,hhmmss.ss,llll.ll,a,yyyyy.yy,a,x,xx,x.x,x.x,M,x.x,M,x.x,xxxx
     13   = Age in seconds since last update from diff. reference station
     14   = Diff. reference station ID#
 */
-void ParseGPGGA(u16 GPSStart)
+void ParseGPGGA(vu16 GPSStart)
 {
   u8 item[32];
   GPSStart = ParseSkip(GPSStart);
@@ -497,53 +528,59 @@ eg2. $GPGSA,A,3,19,28,14,18,27,22,31,39,,,,,1.7,1.0,1.3
     16   = HDOP
     17   = VDOP
 */
-void ParseGPGSA(u16 GPSStart)
+void ParseGPGSA(vu16 GPSStart)
 {
   u8 item[32];
   GPSStart = ParseSkip(GPSStart);
 }
 
-u32 ParseGPS(void)
+vu32 ParseGPS(void)
 {
-  u16 GPSStart = -1;
-  u16 GPSEnd = -1;
-  u16 i = GPSTail;
+  vu16 GPSStart = -1;
+  vu16 GPSEnd = -1;
+  vu16 i = GPSTail;
   while (i != STM32_Sonar.GPSHead)
   {
-    if (STM32_Sonar.GPSArray[i] == 0x24 && GPSEnd == -1)
-    {
-      GPSStart = i;
-    }
-    if (STM32_Sonar.GPSArray[i] == 0x0D && GPSStart != -1)
+    if (STM32_Sonar.GPSArray[i] == 0x0D)
     {
       GPSEnd = i;
+      i = GPSTail;
+      while (i != GPSEnd)
+      {
+        if (STM32_Sonar.GPSArray[i] == 0x24)
+        {
+          GPSStart = i;
+          if (StrCmp((u8*)&STM32_Sonar.GPSArray[GPSStart],(u8*)szGPRMC) == 0)
+          {
+            ParseGPRMC(GPSStart);
+            STM32_SonarData.Chksum++;
+          }
+          // else if (StrCmp((u8*)&STM32_Sonar.GPSArray[GPSStart],(u8*)szGPGSV) == 0)
+          // {
+            // ParseGPGSV(GPSStart);
+          // }
+          // else if (StrCmp((u8*)&STM32_Sonar.GPSArray[GPSStart],(u8*)szGPGGA) == 0)
+          // {
+            // ParseGPGGA(GPSStart);
+          // }
+          // else if (StrCmp((u8*)&STM32_Sonar.GPSArray[GPSStart],(u8*)szGPGSA) == 0)
+          // {
+            // ParseGPGSA(GPSStart);
+          // }
+          break;
+        }
+        i++;
+        i &= (MAXGPS - 1);
+      }
+      GPSEnd++;
+      GPSEnd &= (MAXGPS - 1);
+      GPSTail = GPSEnd;
       break;
     }
     i++;
-    i = i & (MAXGPS - 1);
+    i &= (MAXGPS - 1);
   }
-  if (GPSStart != -1 && GPSEnd != -1)
-  {
-    GPSTail = GPSEnd;
-    if (StrCmp((u8*)&STM32_Sonar.GPSArray[GPSStart],(u8*)szGPRMC) == 0)
-    {
-      ParseGPRMC(GPSStart);
-    }
-    else if (StrCmp((u8*)&STM32_Sonar.GPSArray[GPSStart],(u8*)szGPGSV) == 0)
-    {
-      ParseGPGSV(GPSStart);
-    }
-    else if (StrCmp((u8*)&STM32_Sonar.GPSArray[GPSStart],(u8*)szGPGGA) == 0)
-    {
-      ParseGPGGA(GPSStart);
-    }
-    else if (StrCmp((u8*)&STM32_Sonar.GPSArray[GPSStart],(u8*)szGPGSA) == 0)
-    {
-      ParseGPGSA(GPSStart);
-    }
-    return 1;
-  }
-  return 0;
+  return GPSStart;
 }
 
 void GetEcho(void)
