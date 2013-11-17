@@ -11,10 +11,10 @@
 
 /* Private define ------------------------------------------------------------*/
 // Uncomment the clock speed you will be using
-//#define STM32Clock24MHz
+#define STM32Clock24MHz
 //#define STM32Clock28MHz
 //#define STM32Clock32MHz
-#define STM32Clock40MHz
+//#define STM32Clock40MHz
 //#define STM32Clock48MHz
 //#define STM32Clock56MHz
 
@@ -24,7 +24,8 @@
 void RCC_Configuration(void);
 void GPIO_Configuration(void);
 void NVIC_Configuration(void);
-void USART3_Configuration(u16 Baud);
+void USART3_Configuration(u32 Baud);
+void SendData(vu16 Data);
 
 typedef struct
 {
@@ -42,7 +43,7 @@ typedef struct
 /* Private variables ---------------------------------------------------------*/
 STM32_BlueToothTypeDef BlueTooth;
 vu32 BlueLED;
-vu32 RedLED;
+vu32 GreenLED;
 
 /* Private functions ---------------------------------------------------------*/
 
@@ -67,24 +68,35 @@ int main(void)
     if (BlueTooth.BLUETOOTHFlag)
     {
       BlueTooth.BLUETOOTHFlag = 0;
-      /* Wait until transmit register empty */
-      while((USART3->SR & USART_FLAG_TXE) == 0);          
-      /* Transmit Data */
-      USART3->DR = BlueTooth.BLUETOOTHData;
-      BlueTooth.BLUETOOTHBytesSendt++;
-      /* Toggle blue led */
-      if (BlueLED)
+      if (BlueTooth.BLUETOOTHData == 0x0004)
       {
-        GPIO_WriteBit(GPIOC, GPIO_Pin_8, Bit_RESET);
-        BlueLED = 0;
+        SendData(0x0041);
+        SendData(0x002B);
+        SendData(0x002B);
+        SendData(0x002B);
+      }
+      else if (BlueTooth.BLUETOOTHData == 0x005E)
+      {
+        USART3_Configuration(115200);
       }
       else
       {
-        GPIO_WriteBit(GPIOC, GPIO_Pin_8, Bit_SET);
-        BlueLED = 1;
+        SendData(BlueTooth.BLUETOOTHData);
       }
+      /* Toggle blue led */
+      GPIO_WriteBit(GPIOC, GPIO_Pin_8, BlueLED);
+      BlueLED ^=1;
     }
   }
+}
+
+void SendData(vu16 Data)
+{
+  /* Wait until transmit register empty */
+  while((USART3->SR & USART_FLAG_TXE) == 0);          
+  /* Transmit Data */
+  USART3->DR = Data;
+  BlueTooth.BLUETOOTHBytesSendt++;
 }
 
 /*******************************************************************************
@@ -101,17 +113,9 @@ void USART3_IRQHandler(void)
   /* Limit BLUETOOTHHead to 512 bytes array*/
   BlueTooth.BLUETOOTHHead &= MAXBLUETOOTH-1;
   BlueTooth.BLUETOOTHBytesRecived++;
-  /* Toggle red led */
-  if (RedLED)
-  {
-    GPIO_WriteBit(GPIOC, GPIO_Pin_9, Bit_RESET);
-    RedLED = 0;
-  }
-  else
-  {
-    GPIO_WriteBit(GPIOC, GPIO_Pin_9, Bit_SET);
-    RedLED = 1;
-  }
+  /* Toggle green led */
+  GPIO_WriteBit(GPIOC, GPIO_Pin_9, GreenLED);
+  GreenLED ^=1;
 }
 
 /*******************************************************************************
@@ -251,7 +255,7 @@ void NVIC_Configuration(void)
 * Output         : None
 * Return         : None
 *******************************************************************************/
-void USART3_Configuration(u16 BaudRate)
+void USART3_Configuration(u32 BaudRate)
 {
   /* USART3 configured as follow:
         - BaudRate = 1200,2400,4800,9600,19200 or 38400 baud  

@@ -196,16 +196,17 @@ PrintDec eax
 SendData endp
 
 RecieveData proc uses ebx esi edi,hWin:HWND
-	LOCAL	buff[16]:BYTE
+	LOCAL	buff[4]:BYTE
 
 	.while !fExitBlueToothClientThread
 		invoke RtlZeroMemory,addr buff,sizeof buff
-		invoke recv,client_socket,addr buff,sizeof buff,0
+		invoke recv,client_socket,addr buff,1,0
 		.if eax!=SOCKET_ERROR && eax!=0
-			invoke SendDlgItemMessage,hWin,IDC_EDTLOG,EM_REPLACESEL,FALSE,addr buff
+			.if buff==0Dh
+				mov		buff[1],0Ah
+			.endif
+			invoke SendDlgItemMessage,hWin,IDC_EDTRECV,EM_REPLACESEL,FALSE,addr buff
 		.else
-;			invoke GetLastError
-;			invoke SendToLog,hWin,offset szError9,eax
 			.break
 		.endif
 	.endw
@@ -253,12 +254,6 @@ BlueToothClient proc uses ebx esi edi,hWin:HWND
 				mov		hBlueToothClientRecv,eax
 				.while !fExitBlueToothClientThread
 					invoke Sleep,50
-;					invoke send,client_socket,offset szOK,4,0
-;					.break .if eax==INVALID_SOCKET
-;					xor		eax,eax
-;					.while eax<100000000
-;						inc		eax
-;					.endw
 				.endw
 			.else
 				invoke GetLastError

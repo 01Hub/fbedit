@@ -12,7 +12,12 @@ EditProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	mov		eax,uMsg
 	.if eax==WM_CHAR
 		mov		eax,wParam
-		.if (eax>=20h && eax<=7Fh) || eax==0Dh
+		.if  eax==7Ch
+			; Enter command mode
+			mov		eax,04h
+		.endif
+		; Note: 5Eh switches STM32 from 9600 baud to 115200 baud
+		.if (eax>=20h && eax<=7Fh) || eax==0Dh || eax==04h
 			or		eax,00010000h
 			mov		data,eax
 			invoke STLinkWrite,hWnd,STM32_Data,addr data,4
