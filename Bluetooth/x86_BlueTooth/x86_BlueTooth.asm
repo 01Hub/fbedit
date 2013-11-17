@@ -16,9 +16,17 @@ EditProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			or		eax,00010000h
 			mov		data,eax
 			invoke STLinkWrite,hWnd,STM32_Data,addr data,4
+			.if !eax || eax==IDABORT || eax==IDIGNORE
+				jmp		STLinkErr
+			.endif
 		.endif
 	.endif
 	invoke CallWindowProc,lpOldEditProc,hWin,uMsg,wParam,lParam
+	ret
+
+STLinkErr:
+	invoke PostMessage,hWnd,WM_CLOSE,0,0
+	xor		eax,eax
 	ret
 
 EditProc endp
@@ -47,16 +55,28 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SetTimer,hWin,1000,50,NULL
 	.elseif eax==WM_TIMER
 		invoke STLinkRead,hWin,STM32_Data+4,addr status,4
+		.if !eax || eax==IDABORT || eax==IDIGNORE
+			jmp		STLinkErr
+		.endif
 		invoke SetDlgItemInt,hWin,IDC_STCBYTESSENDT,status,FALSE
 		invoke STLinkRead,hWin,STM32_Data+8,addr status,4
+		.if !eax || eax==IDABORT || eax==IDIGNORE
+			jmp		STLinkErr
+		.endif
 		invoke SetDlgItemInt,hWin,IDC_STCBYTESREC,status,FALSE
 		invoke STLinkRead,hWin,STM32_Data+16,addr head,4
+		.if !eax || eax==IDABORT || eax==IDIGNORE
+			jmp		STLinkErr
+		.endif
 		mov		ebx,tail
 		mov		edi,STM32_Data+20
 		.while ebx!=head
 			lea		esi,[edi+ebx]
 			and		esi,0FFFFFFFCh
 			invoke STLinkRead,hWin,esi,addr buffer,4
+			.if !eax || eax==IDABORT || eax==IDIGNORE
+				jmp		STLinkErr
+			.endif
 			mov		edx,ebx
 			and		edx,03h
 			movzx	eax,buffer[edx]
@@ -110,6 +130,11 @@ PrintHex eax
 		ret
 	.endif
 	xor    eax,eax
+	ret
+
+STLinkErr:
+	invoke PostMessage,hWnd,WM_CLOSE,0,0
+	xor		eax,eax
 	ret
 
 WndProc endp
