@@ -136,29 +136,12 @@ szErr5							BYTE 'Err: WSALookupServiceBegin #2',0Dh,0Ah,'%d ',0
 szErr6							BYTE 'Err: WSALookupServiceNext #2',0Dh,0Ah,'%d ',0
 
 szACC							BYTE 'Test Data...',0
-szData							BYTE '0123456789ABCDEF'
-								BYTE '0123456789ABCDEF'
-								BYTE '0123456789ABCDEF'
-								BYTE '0123456789ABCDEF'
-								BYTE '0123456789ABCDEF'
-								BYTE '0123456789ABCDEF'
-								BYTE '0123456789ABCDEF'
-								BYTE '0123456789ABCDEF'
-								BYTE '0123456789ABCDEF'
-								BYTE '0123456789ABCDEF'
-								BYTE '0123456789ABCDEF'
-								BYTE '0123456789ABCDEF'
-								BYTE '0123456789ABCDEF'
-								BYTE '0123456789ABCDEF'
-								BYTE '0123456789ABCDEF'
-								BYTE '0123456789ABCDEF',0Dh,0Ah,0
 
 szQuit							BYTE 'Quit',0
 szOK							BYTE 'OK',0Dh,0Ah,0
 szCRLF							BYTE 0Dh,0Ah,0
 
 szPUSH							BYTE 'Pushing data to PC',0
-szDev							BYTE 'LOCAL Bluetooth device is %04x%08x \nServer channel = %d\n',0
 
 szFileName						BYTE 'Sonar20130829_1857.snr',0
 szDone							BYTE '*** Done sending file. ***',0
@@ -170,6 +153,9 @@ szServerAddress					BYTE '00:18:B2:02:D2:AD',0
 szServerStart					BYTE 'Server started',0
 szServerConnect					BYTE 'Server connected',0
 szServerStop					BYTE 'Server stopped',0
+
+szClientStart					BYTE 'Client started',0
+szClientStop					BYTE 'Client stopped',0
 
 .data
 

@@ -214,6 +214,7 @@ RecieveData endp
 
 BlueToothClient proc uses ebx esi edi,hWin:HWND
  
+	invoke SendToLog,hWin,offset szClientStart,0
 	invoke WSAStartup,wVersionRequested, offset wsdata
 	.if !eax
 		invoke socket,AF_BTH,SOCK_STREAM,BTHPROTO_RFCOMM
@@ -222,8 +223,8 @@ BlueToothClient proc uses ebx esi edi,hWin:HWND
 			invoke RtlZeroMemory,offset serveraddress,sizeof SOCKADDR_BTH
 			mov		serveraddress.addressFamily,AF_BTH
 			invoke BtAddrFromString,offset serveraddress.btAddr,offset szServerAddress
-			invoke RtlMoveMemory,offset serveraddress.serviceClassId,offset GUID_SPP,sizeof GUID
-			;invoke RtlMoveMemory,offset serveraddress.serviceClassId,offset protocol,sizeof GUID
+			;invoke RtlMoveMemory,offset serveraddress.serviceClassId,offset GUID_SPP,sizeof GUID
+			invoke RtlMoveMemory,offset serveraddress.serviceClassId,offset protocol,sizeof GUID
 			invoke connect,client_socket,offset serveraddress,sizeof SOCKADDR_BTH
 			.if eax!=INVALID_SOCKET
 				xor		esi,esi
@@ -232,7 +233,7 @@ BlueToothClient proc uses ebx esi edi,hWin:HWND
 					invoke send,client_socket,offset szOK,4,0
 					.break .if eax==INVALID_SOCKET
 					xor		eax,eax
-					.while eax<1000000
+					.while eax<100000000
 						inc		eax
 					.endw
 ;					; Get length of block and checksum
@@ -298,6 +299,8 @@ BlueToothClient proc uses ebx esi edi,hWin:HWND
 	invoke WSACleanup
 	invoke CloseHandle,hBlueToothClient
 	mov		hBlueToothClient,0
+	invoke SendToLog,hWin,offset szClientStop,0
+	mov		fExitBlueToothClientThread,0
 	ret
  
 BlueToothClient endp
@@ -476,6 +479,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						invoke CloseHandle,hBlueToothServer
 						mov		hBlueToothServer,0
 					.endif
+					mov		fExitBlueToothClientThread,0
 				.else
 					invoke CreateThread,NULL,NULL,addr BlueToothClient,hWin,0,addr tid
 					mov		hBlueToothClient,eax
