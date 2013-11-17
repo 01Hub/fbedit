@@ -154,7 +154,7 @@ szData							BYTE '0123456789ABCDEF'
 								BYTE '0123456789ABCDEF',0Dh,0Ah,0
 
 szQuit							BYTE 'Quit',0
-szOK							BYTE 'OK',0
+szOK							BYTE 'OK',0Dh,0Ah,0
 szCRLF							BYTE 0Dh,0Ah,0
 
 szPUSH							BYTE 'Pushing data to PC',0

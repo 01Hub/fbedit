@@ -229,49 +229,53 @@ BlueToothClient proc uses ebx esi edi,hWin:HWND
 				xor		esi,esi
 				xor		edi,edi
 				.while !fExitBlueToothClientThread
-					invoke send,client_socket,offset szOK,3,0
+					invoke send,client_socket,offset szOK,4,0
 					.break .if eax==INVALID_SOCKET
-					; Get length of block and checksum
-					xor		ebx,ebx
-					.while ebx<4 && !fExitBlueToothClientThread
-						mov		eax,4
-						sub		eax,ebx
-						invoke recv,client_socket,addr serversenddata[ebx],eax,0
-						.break .if eax==INVALID_SOCKET || eax==0
-						add		ebx,eax
+					xor		eax,eax
+					.while eax<1000000
+						inc		eax
 					.endw
-					.break .if eax==INVALID_SOCKET || eax==0
-					inc		esi
-					xor		ebx,ebx
-					.while !fExitBlueToothClientThread
-						movzx	eax,serversenddata.wLenght
-						.break .if eax==ebx
-						sub		eax,ebx
-						invoke recv,client_socket,addr serversenddata.bData[ebx],eax,0
-						.break .if eax==INVALID_SOCKET || eax==0
-						add		ebx,eax
-					.endw
-					inc		esi
-PrintDec esi
-add		edi,ebx
-PrintDec edi
-					.break .if eax==INVALID_SOCKET || eax==0
-					invoke lstrcmp,offset serversenddata.bData,offset szQuit
-					.break .if !eax
-;					invoke SendDlgItemMessage,hWin,IDC_EDTLOG,EM_SETSEL,-1,-1
-;					invoke SendDlgItemMessage,hWin,IDC_EDTLOG,EM_REPLACESEL,FALSE,offset szOK
-;					invoke SendDlgItemMessage,hWin,IDC_EDTLOG,EM_REPLACESEL,FALSE,offset szCRLF
+;					; Get length of block and checksum
+;					xor		ebx,ebx
+;					.while ebx<4 && !fExitBlueToothClientThread
+;						mov		eax,4
+;						sub		eax,ebx
+;						invoke recv,client_socket,addr serversenddata[ebx],eax,0
+;						.break .if eax==INVALID_SOCKET || eax==0
+;						add		ebx,eax
+;					.endw
+;					.break .if eax==INVALID_SOCKET || eax==0
+;					inc		esi
+;					xor		ebx,ebx
+;					.while !fExitBlueToothClientThread
+;						movzx	eax,serversenddata.wLenght
+;						.break .if eax==ebx
+;						sub		eax,ebx
+;						invoke recv,client_socket,addr serversenddata.bData[ebx],eax,0
+;						.break .if eax==INVALID_SOCKET || eax==0
+;						add		ebx,eax
+;					.endw
+;					inc		esi
+;PrintDec esi
+;add		edi,ebx
+;PrintDec edi
+;					.break .if eax==INVALID_SOCKET || eax==0
+;					invoke lstrcmp,offset serversenddata.bData,offset szQuit
+;					.break .if !eax
+;;					invoke SendDlgItemMessage,hWin,IDC_EDTLOG,EM_SETSEL,-1,-1
+;;					invoke SendDlgItemMessage,hWin,IDC_EDTLOG,EM_REPLACESEL,FALSE,offset szOK
+;;					invoke SendDlgItemMessage,hWin,IDC_EDTLOG,EM_REPLACESEL,FALSE,offset szCRLF
 				.endw
-				.if eax!=INVALID_SOCKET
-					invoke closesocket,client_socket
-					invoke CloseHandle,client_socket
-					invoke SendToLog,hWin,offset szQuit,0
-				.else
-					invoke GetLastError
-					invoke SendToLog,hWin,offset szError3,eax
-					invoke closesocket,client_socket
-					invoke CloseHandle,client_socket
-				.endif
+;				.if eax!=INVALID_SOCKET
+;					invoke closesocket,client_socket
+;					invoke CloseHandle,client_socket
+;					invoke SendToLog,hWin,offset szQuit,0
+;				.else
+;					invoke GetLastError
+;					invoke SendToLog,hWin,offset szError3,eax
+;					invoke closesocket,client_socket
+;					invoke CloseHandle,client_socket
+;				.endif
 			.else
 				invoke GetLastError
 				invoke SendToLog,hWin,offset szError4,eax
@@ -286,7 +290,14 @@ PrintDec edi
 		invoke GetLastError
 		invoke SendToLog,hWin,offset szError1,eax
 	.endif
+	.if client_socket
+		invoke closesocket,client_socket
+		invoke CloseHandle,client_socket
+		mov		client_socket,0
+	.endif
 	invoke WSACleanup
+	invoke CloseHandle,hBlueToothClient
+	mov		hBlueToothClient,0
 	ret
  
 BlueToothClient endp
@@ -420,15 +431,28 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.if hBlueToothServer
 					; Terminate BlueToothServer Thread
 					mov		fExitBlueToothServerThread,TRUE
-;					invoke WaitForSingleObject,hBlueToothServer,3000
-;					.if eax==WAIT_TIMEOUT
-;						invoke TerminateThread,hBlueToothServer,0
-;					.endif
+					invoke WaitForSingleObject,hBlueToothServer,3000
+					.if eax==WAIT_TIMEOUT
+						invoke TerminateThread,hBlueToothServer,0
+					.endif
+					.if server_recsendsocket
+						invoke closesocket,server_recsendsocket
+						invoke CloseHandle,server_recsendsocket
+						mov		server_recsendsocket,0
+					.endif
+					.if server_socket
+						invoke closesocket,server_socket
+						invoke CloseHandle,server_socket
+						mov		server_socket,0
+					.endif
+					.if hfile
+						invoke CloseHandle,hfile
+						mov		hfile,0
+					.endif
 				.else
 					invoke CreateThread,NULL,NULL,addr BlueToothServer,hWin,0,addr tid
 					mov		hBlueToothServer,eax
 				.endif
-;				invoke BlueToothServer,hWin
 			.elseif eax==IDC_BTNDEVICES
 				invoke GetBluetoothDevices,hWin
 			.elseif eax==IDC_BTNCLIENT
@@ -439,12 +463,23 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					.if eax==WAIT_TIMEOUT
 						invoke TerminateThread,hBlueToothClient,0
 					.endif
-					mov		hBlueToothClient,0
+					.if client_socket
+						invoke closesocket,client_socket
+						invoke CloseHandle,client_socket
+						mov		client_socket,0
+					.endif
+					.if hBlueToothClient
+						invoke CloseHandle,hBlueToothClient
+						mov		hBlueToothClient,0
+					.endif
+					.if hBlueToothServer
+						invoke CloseHandle,hBlueToothServer
+						mov		hBlueToothServer,0
+					.endif
 				.else
 					invoke CreateThread,NULL,NULL,addr BlueToothClient,hWin,0,addr tid
 					mov		hBlueToothClient,eax
 				.endif
-;				invoke BlueToothClient,hWin
 			.endif
 		.endif
 	.elseif eax==WM_CLOSE
