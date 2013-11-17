@@ -22,8 +22,9 @@ includelib \RadASM30\masm\lib\debug.lib
 ;#########################################################################
 
 IDD_DIALOG						equ	1000
-IDC_EDTLOG						equ 1001
-IDC_LSTDEVICES					equ 1002
+IDC_EDTRECV						equ 1001
+IDC_EDTSEND						equ 1006
+IDC_EDTLOG						equ 1002
 IDC_BTNSERVER					equ 1003
 IDC_BTNDEVICES					equ 1004
 IDC_BTNCLIENT					equ 1005
@@ -204,3 +205,4 @@ serversenddata					SERVERDATA <>
 hBlueToothClient				HANDLE ?
 fExitBlueToothClientThread		DWORD ?
 hBlueToothClientRecv			HANDLE ?
+lpOldSendEditProc				DWORD ?

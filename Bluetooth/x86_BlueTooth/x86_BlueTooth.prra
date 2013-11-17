@@ -3,7 +3,7 @@ Version=3000
 [Project]
 Assembler=masm
 Group=2,-1,0,1,x86_BlueTooth,-2,-1,1,Assembly,-3,-1,1,Include,-4,-1,1,Misc,-5,-1,1,Resource
-F1=-2,2,1,22,22,600,400,18,x86_BlueTooth.asm
+F1=-2,2,1,22,22,600,400,51,x86_BlueTooth.asm
 F2=-3,0,1,44,44,600,400,56,x86_BlueTooth.inc
 F3=-5,2,4,66,66,600,400,0,x86_BlueTooth.rc
 Path=D:\RadASM30

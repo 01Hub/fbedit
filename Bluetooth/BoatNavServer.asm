@@ -202,10 +202,10 @@ RecieveData proc uses ebx esi edi,hWin:HWND
 		invoke RtlZeroMemory,addr buff,sizeof buff
 		invoke recv,client_socket,addr buff,sizeof buff,0
 		.if eax!=SOCKET_ERROR && eax!=0
-			invoke SendToLog,hWin,addr buff,0
+			invoke SendDlgItemMessage,hWin,IDC_EDTLOG,EM_REPLACESEL,FALSE,addr buff
 		.else
-			invoke GetLastError
-			invoke SendToLog,hWin,offset szError9,eax
+;			invoke GetLastError
+;			invoke SendToLog,hWin,offset szError9,eax
 			.break
 		.endif
 	.endw
@@ -214,6 +214,25 @@ RecieveData proc uses ebx esi edi,hWin:HWND
 	ret
 
 RecieveData endp
+
+SendEditProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+	LOCAL	data:DWORD
+
+	mov		eax,uMsg
+	.if eax==WM_CHAR
+		mov		eax,wParam
+		.if (eax>=20h && eax<=7Fh) || eax==0Dh
+			mov		data,eax
+			.if hBlueToothClient
+				invoke send,client_socket,addr data,1,0
+			.elseif hBlueToothServer
+			.endif
+		.endif
+	.endif
+	invoke CallWindowProc,lpOldSendEditProc,hWin,uMsg,wParam,lParam
+	ret
+
+SendEditProc endp
 
 BlueToothClient proc uses ebx esi edi,hWin:HWND
 	LOCAL	tid:DWORD
@@ -233,12 +252,13 @@ BlueToothClient proc uses ebx esi edi,hWin:HWND
 				invoke CreateThread,NULL,NULL,addr RecieveData,hWnd,0,addr tid
 				mov		hBlueToothClientRecv,eax
 				.while !fExitBlueToothClientThread
-					invoke send,client_socket,offset szOK,4,0
-					.break .if eax==INVALID_SOCKET
-					xor		eax,eax
-					.while eax<100000000
-						inc		eax
-					.endw
+					invoke Sleep,50
+;					invoke send,client_socket,offset szOK,4,0
+;					.break .if eax==INVALID_SOCKET
+;					xor		eax,eax
+;					.while eax<100000000
+;						inc		eax
+;					.endw
 				.endw
 			.else
 				invoke GetLastError
@@ -388,6 +408,9 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		eax,hWin
 		mov		hWnd,eax
 		invoke SendDlgItemMessage,hWin,IDC_EDTLOG,EM_LIMITTEXT,-1,0
+		invoke GetDlgItem,hWin,IDC_EDTSEND
+		invoke SetWindowLong,eax,GWL_WNDPROC,offset SendEditProc
+		mov		lpOldSendEditProc,eax
 	.elseif eax==WM_COMMAND
 		mov		edx,wParam
 		movzx	eax,dx
