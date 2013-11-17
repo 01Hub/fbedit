@@ -203,3 +203,4 @@ client_socket					SOCKET ?
 serversenddata					SERVERDATA <>
 hBlueToothClient				HANDLE ?
 fExitBlueToothClientThread		DWORD ?
+hBlueToothClientRecv			HANDLE ?
