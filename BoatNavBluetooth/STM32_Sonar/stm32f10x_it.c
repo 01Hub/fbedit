@@ -580,9 +580,9 @@ void USART2_IRQHandler(void)
 * Output         : None
 * Return         : None
 *******************************************************************************/
-// void USART3_IRQHandler(void)
-// {
-// }
+void USART3_IRQHandler(void)
+{
+}
 
 /*******************************************************************************
 * Function Name  : EXTI15_10_IRQHandler

@@ -1,8 +1,8 @@
 /*******************************************************************************
 * File Name          : main.c
 * Author             : KetilO
-* Version            : V1.1.0
-* Date               : 03/15/2012
+* Version            : V2.0.0
+* Date               : 11/18/2013
 * Description        : Main program body
 ********************************************************************************
 
@@ -25,22 +25,17 @@
 
 typedef struct
 {
-  vu8 Start;                                    // 0x20000000 0=Wait/Done, 1=Start, 2=In progress
+  vu8 Start;                                    // 0x20000000 0=Wait/Done, 1=Start, 99=In progress
   u8 PingPulses;                                // 0x20000001 Number of ping pulses (0-255)
   u8 PingTimer;                                 // 0x20000002 TIM1 auto reload value, ping frequency
   u8 RangeInx;                                  // 0x20000003 Current range index
   u16 PixelTimer;                               // 0x20000004 TIM2 auto reload value, sample rate
-  vu16 EchoIndex;                               // 0x20000006 Current index into EchoArray
-  u16 ADCBatt;                                  // 0x20000008 Battery
-  u16 ADCWaterTemp;                             // 0x2000000A Water temprature
-  u16 ADCAirTemp;                               // 0x2000000C Air temprature
-  vu16 GPSHead;                                 // 0x2000000E GPSArray head, index into GPSArray
-  u8 EchoArray[MAXECHO];                        // 0x20000010 Echo array
-  u16 GainArray[MAXECHO];                       // 0x20000210 Gain array
-  u16 GainInit[18];                             // 0x20000610 Gain setup array, first half word is initial gain
-  u8 GPSArray[MAXGPS];                          // 0x20000634 GPS array, received GPS NMEA 0183 messages
-  vu16 BLUETOOTHHead;                           // 0x20000834 BLUETOOTHArray head, index into BLUETOOTHArray
-  u8 BLUETOOTHArray[MAXBLUETOOTH];              // 0x20000836 Bluetooth array, received bluetooth messages
+  u16 GainInit[18];                             // 0x20000006 Gain setup array, first half word is initial gain
+  u16 GainArray[MAXECHO];                       // 0x2000004E Gain array
+  vu16 EchoIndex;                               // 0x2000044E Current index into EchoArray
+  vu16 GPSHead;                                 // 0x20000450 GPSArray head, index into GPSArray
+  vu16 GPSTail;                                 // 0x20000452 GPSArray tail, index into GPSArray
+  u8 GPSArray[MAXGPS];                          // 0x20000454 GPS array, received GPS NMEA 0183 messages
 }STM32_SonarTypeDef;
 
 typedef struct
@@ -64,8 +59,6 @@ typedef struct
 
 typedef struct
 {
-  u16 Lenght;                                   // 
-  u16 Chksum;                                   // 
   u8 Version;                                   // 201
   u8 PingPulses;                                // Number of pulses in a ping (0 to 128)
   u16 GainSet;                                  // Gain set level (0 to 4095)
@@ -108,11 +101,11 @@ void ADC_Configuration(void);
 void TIM1_Configuration(void);
 void TIM2_Configuration(void);
 void TIM3_Configuration(void);
-void USART1_Configuration(u16 Baud);
-void USART3_Configuration(u16 Baud);
+void USART1_Configuration(u32 Baud);
+void USART3_Configuration(u32 Baud);
 u16 GetADCValue(u8 Channel);
 void USART1_puts(char *str);
-void USART3_putdata(char *data,u16 lenght);
+void USART3_putdata(u8 *dat,u16 len);
 void GainSetup(void);
 void TrimOutput(void);
 void GetEcho(void);
@@ -140,7 +133,8 @@ vu32 ParseDecToBin(u8 *item);
 int main(void)
 {
   u32 i;
-  STM32_SonarData.Lenght = sizeof STM32_SonarData - 4;
+  u32 nrec;
+  u8 *ptr;
   STM32_SonarData.Version = 201;
   /* System clocks configuration */
   RCC_Configuration();
@@ -164,8 +158,8 @@ int main(void)
   DAC->DHR12R2 = (u16)0x400;
   /* Setup USART1 4800 baud */
   USART1_Configuration(4800);
-  /* Setup USART3 9600 baud */
-  USART3_Configuration(9600);
+  /* Setup USART3 115200 baud */
+  USART3_Configuration(115200);
   /* Wait until GPS module has started up */
   i = 0;
   while (i++ < 20000000)
@@ -193,39 +187,43 @@ int main(void)
   }
   while (1)
   {
-    if (STM32_Sonar.Start == 1)
+    nrec=0;
+    ptr = (u8 *)&STM32_Sonar;
+    while (nrec < 0x4E)
+    {
+      i = 0;
+      while((USART3->SR & USART_FLAG_RXNE) == 0 && i < 2000000)
+      {
+        i++;
+      }
+      if (i == 2000000)
+      {
+        break;
+      }
+      ptr[nrec] = (u8)USART3->DR;
+      nrec++;
+    }
+    if (STM32_Sonar.Start == 1 && nrec == 0x4E)
     {
       STM32_Sonar.Start = 99;
       /* Toggle blue led */
-      if (BlueLED)
-      {
-        GPIO_WriteBit(GPIOC, GPIO_Pin_8, Bit_RESET);
-        BlueLED = 0;
-      }
-      else
-      {
-        GPIO_WriteBit(GPIOC, GPIO_Pin_8, Bit_SET);
-        BlueLED = 1;
-      }
+      BlueLED ^= 1;
+      GPIO_WriteBit(GPIOC, GPIO_Pin_8, BlueLED);
       /* Setup gain array */
       GainSetup();
       /* Clear the echo array */
       i = 1;
       while (i < MAXECHO)
       {
-        STM32_Sonar.EchoArray[i] = 0;
         STM32_SonarData.EchoArray[i] = 0;
         i++;
       }
       /* Read battery */
-      STM32_Sonar.ADCBatt = GetADCValue(ADC_Channel_14);
-      STM32_SonarData.ADCBattery = STM32_Sonar.ADCBatt;
+      STM32_SonarData.ADCBattery = GetADCValue(ADC_Channel_14);
       /* Read water temprature */
-      STM32_Sonar.ADCWaterTemp = GetADCValue(ADC_Channel_6);
-      STM32_SonarData.ADCWaterTemp = STM32_Sonar.ADCWaterTemp;
+      STM32_SonarData.ADCWaterTemp = GetADCValue(ADC_Channel_6);
       /* Read air temprature */
-      STM32_Sonar.ADCAirTemp = GetADCValue(ADC_Channel_7);
-      STM32_SonarData.ADCAirTemp = STM32_Sonar.ADCAirTemp;
+      STM32_SonarData.ADCAirTemp = GetADCValue(ADC_Channel_7);
       if (Setup)
       {
         /* No ping in setup mode */
@@ -235,7 +233,6 @@ int main(void)
       {
         TrimOutput();
       }
-//      STM32_SonarData.Chksum = ParseGPS();
       while (ParseGPS() != 0xFFFF)
       {
       }
@@ -261,7 +258,6 @@ int main(void)
       /* Get the Echo array */
       GetEcho();
       /* Store the current range as the first byte in the echo array */
-      STM32_Sonar.EchoArray[0] = STM32_Sonar.RangeInx;
       STM32_SonarData.EchoArray[0] = STM32_Sonar.RangeInx;
       /* Done, Disable TIM2 */
       TIM2->CR1 = 0;
@@ -269,28 +265,6 @@ int main(void)
       ADC_AutoInjectedConvCmd(ADC1, DISABLE);
       /* Set the DAC to output lowest gain */
       DAC->DHR12R1 = (u16)0x0;
-    }
-    else if (STM32_Sonar.Start == 2)
-    {
-      /* Send initialization data to GPS */
-      // USART1_puts((char*) (u32 *)STM32_Sonar.GainArray);
-      STM32_Sonar.Start = 0;
-    }
-    else if (STM32_Sonar.Start == 3)
-    {
-      /* Set USART1 baudrate to 9600 */
-      // USART1_Configuration(9600);
-      STM32_Sonar.Start = 0;
-    }
-    else if (STM32_Sonar.Start == 4)
-    {
-      /* Read battery */
-      STM32_Sonar.ADCBatt = GetADCValue(ADC_Channel_14);
-      /* Read water temprature */
-      STM32_Sonar.ADCWaterTemp = GetADCValue(ADC_Channel_6);
-      /* Read air temprature */
-      STM32_Sonar.ADCAirTemp = GetADCValue(ADC_Channel_7);
-      STM32_Sonar.Start = 0;
     }
     i = 1000;
     while (i--);
@@ -424,14 +398,26 @@ void ParseGPRMC(vu16 GPSStart)
   GPSStart = ParseSkip(GPSStart);
   GPSStart = ParseGetItem(GPSStart,(u8 *)&itemtime);  // Time Stamp
   GPSStart = ParseGetItem(GPSStart,(u8 *)&item);      // validity - A-ok, V-invalid
-  if (item[0] == 0x41)
+  if (item[0] == 'A')
   {
+    if (STM32_SonarData.Altitude.fixquality == 0)
+    {
+      STM32_SonarData.Altitude.fixquality = 1;
+    }
     GPSStart = ParseGetItem(GPSStart,(u8 *)&item);      // current Latitude
     STM32_SonarData.iLat = ParseLat((u8 *)&item);
     GPSStart = ParseGetItem(GPSStart,(u8 *)&item);      // North/South
+    if (item[0] == 'S')
+    {
+      STM32_SonarData.iLat = -STM32_SonarData.iLat;
+    }
     GPSStart = ParseGetItem(GPSStart,(u8 *)&item);      // current Longitude
     STM32_SonarData.iLon = ParseLon((u8 *)&item);
     GPSStart = ParseGetItem(GPSStart,(u8 *)&item);      // East/West
+    if (item[0] == 'W')
+    {
+      STM32_SonarData.iLon = -STM32_SonarData.iLon;
+    }
     GPSStart = ParseGetItem(GPSStart,(u8 *)&item);      // Speed in knots
     STM32_SonarData.iSpeed = ParseDecToBin((u8 *)&item);
     GPSStart = ParseGetItem(GPSStart,(u8 *)&item);      // True course
@@ -439,6 +425,7 @@ void ParseGPRMC(vu16 GPSStart)
   }
   else
   {
+    STM32_SonarData.Altitude.fixquality = 0;
     GPSStart = ParseGetItem(GPSStart,(u8 *)&item);      // current Latitude
     GPSStart = ParseGetItem(GPSStart,(u8 *)&item);      // North/South
     GPSStart = ParseGetItem(GPSStart,(u8 *)&item);      // current Longitude
@@ -553,7 +540,6 @@ vu32 ParseGPS(void)
           if (StrCmp((u8*)&STM32_Sonar.GPSArray[GPSStart],(u8*)szGPRMC) == 0)
           {
             ParseGPRMC(GPSStart);
-            STM32_SonarData.Chksum++;
           }
           // else if (StrCmp((u8*)&STM32_Sonar.GPSArray[GPSStart],(u8*)szGPGSV) == 0)
           // {
@@ -597,9 +583,8 @@ void GetEcho(void)
     /* Get echo */
     Echo = ( (*(u32*) (((*(u32*)&ADC)))) >> 4);
     /* If echo larger than previous echo then update the echo array */
-    if (Echo > STM32_Sonar.EchoArray[STM32_Sonar.EchoIndex])
+    if (Echo > STM32_SonarData.EchoArray[STM32_Sonar.EchoIndex])
     {
-      STM32_Sonar.EchoArray[STM32_Sonar.EchoIndex] = Echo;
       STM32_SonarData.EchoArray[STM32_Sonar.EchoIndex] = Echo;
     }
   }
@@ -743,17 +728,17 @@ void TIM2_IRQHandler(void)
 
   /* Increment the echo array index */
   asm("mov    r1,#0x20000000");               /* STM32_Sonar */
-  asm("ldrh   r2,[r1,#0x6]");                 /* STM32_Sonar.EchoIndex */
+  asm("ldrh   r2,[r1,#0x44E]");               /* STM32_Sonar.EchoIndex */
   asm("add    r2,r2,#0x1");
   asm("cmp    r2,#0x200");
   asm("ite    ne");
-  asm("strhne r2,[r1,#0x6]");                 /* Update STM32_Sonar.EchoIndex */
+  asm("strhne r2,[r1,#0x44E]");               /* Update STM32_Sonar.EchoIndex */
   asm("strbeq r2,[r1,#0x0]");                 /* Reset STM32_Sonar.Start */
 
   /* Update the DAC to output next gain level */
   asm("movw   r0,#0x7400");                   /* DAC1 */
   asm("movt   r0,#0x4000");
-  asm("add    r2,r2,0x108");
+  asm("add    r2,r2,0x27");                   /* Offset gain array / 2 */
   asm("ldrh   r3,[r1,r2,lsl #0x1]");
   asm("strh   r3,[r0,#0x8]");                 /* DAC_DHR12R1 */
 }
@@ -772,7 +757,7 @@ void USART1_puts(char *str)
   while ((c = *str++))
   {
     /* Wait until transmit register empty */
-    while((USART1->SR & USART_FLAG_TXE) == 0);          
+    while((USART1->SR & USART_FLAG_TXE) == 0);
     /* Transmit Data */
     USART1->DR = (u16)c;
   }
@@ -781,21 +766,20 @@ void USART1_puts(char *str)
 /*******************************************************************************
 * Function Name  : USART3_putdata
 * Description    : This function transmits data
-* Input          : data, lenght
+* Input          : dat, len
 * Output         : None
 * Return         : None
 *******************************************************************************/
-void USART3_putdata(char *data,u16 lenght)
+void USART3_putdata(u8 *dat,u16 len)
 {
-  char c;
-  /* Characters are transmitted one at a time. */
-  while (lenght--)
+  /* Data are transmitted one at a time. */
+  while (len--)
   {
     /* Wait until transmit register empty */
     while((USART3->SR & USART_FLAG_TXE) == 0);          
     /* Transmit Data */
-    USART3->DR = (u16)c;
-    *data++;
+    USART3->DR = (u16)*dat;
+    *dat++;
   }
 }
 
@@ -809,70 +793,32 @@ void USART3_putdata(char *data,u16 lenght)
 *******************************************************************************/
 void USART1_IRQHandler(void)
 {
-  /* Get pointer to USART1->DR */
-  asm("movw   r0,#0x3800");
-  asm("movt   r0,#0x4001");
-  /* Get recieved halfword */
-  asm("ldrh   r3,[r0,#0x2*2]");
-  /* Get pointer to STM32_Sonar */
-  asm("mov    r0,#0x20000000");
-  /* Get GPSHead value */
-  asm("ldrh   r2,[r0,#0x7*2]");
-  /* Get offset to GPSArray */
-  asm("movw   r1,#0x634");
-  /* Get pointer to GPSArray */
-  asm("add    r1,r1,r0");
-  /* Store received byte at GPSArray[GPSHead] */
-  asm("strb   r3,[r1,r2]");
-  /* Increment GPSHead */
-  asm("add    r2,r2,#0x1");
-  /* Limit GPSHead to 512 bytes*/
-  asm("mov    r2,r2,lsl #23");
-  asm("mov    r2,r2,lsr #23");
-  /* Store GPSHead */
-  asm("strh   r2,[r0,#0x7*2]");
+  // /* Get pointer to USART1->DR */
+  // asm("movw   r0,#0x3800");
+  // asm("movt   r0,#0x4001");
+  // /* Get recieved halfword */
+  // asm("ldrh   r3,[r0,#0x2*2]");
+  // /* Get pointer to STM32_Sonar */
+  // asm("mov    r0,#0x20000000");
+  // /* Get GPSHead value */
+  // asm("ldrh   r2,[r0,#0x0x452]");
+  // /* Get offset to GPSArray */
+  // asm("movw   r1,#0x634");
+  // /* Get pointer to GPSArray */
+  // asm("add    r1,r1,r0");
+  // /* Store received byte at GPSArray[GPSHead] */
+  // asm("strb   r3,[r1,r2]");
+  // /* Increment GPSHead */
+  // asm("add    r2,r2,#0x1");
+  // /* Limit GPSHead to 512 bytes*/
+  // asm("mov    r2,r2,lsl #23");
+  // asm("mov    r2,r2,lsr #23");
+  // /* Store GPSHead */
+  // asm("strh   r2,[r0,#0x7*2]");
 
-  // STM32_Sonar.GPSArray[STM32_Sonar.GPSHead++]=USART1->DR;
-  // /* Limit GPSHead to 512 bytes array*/
-  // STM32_Sonar.GPSHead&=MAXGPS-1;
-}
-
-/*******************************************************************************
-* Function Name  : USART3_IRQHandler
-* Description    : This function handles USART3 global interrupt request.
-*                  An interrupt is generated when a character is recieved.
-* Input          : None
-* Output         : None
-* Return         : None
-*******************************************************************************/
-void USART3_IRQHandler(void)
-{
-  /* Get pointer to USART3->DR */
-  asm("movw   r0,#0x4800");
-  asm("movt   r0,#0x4000");
-  /* Get recieved halfword */
-  asm("ldrh   r3,[r0,#0x2*2]");
-  /* Get pointer to STM32_Sonar */
-  asm("mov    r0,#0x20000000");
-  /* Get BLUETOOTHHead value */
-  asm("ldrh   r2,[r0,#0x834]");
-  /* Get offset to BLUETOOTHArray */
-  asm("movw   r1,#0x836");
-  /* Get pointer to BLUETOOTHArray */
-  asm("add    r1,r1,r0");
-  /* Store received byte at GPSArray[GPSHead] */
-  asm("strb   r3,[r1,r2]");
-  /* Increment BLUETOOTHHead */
-  asm("add    r2,r2,#0x1");
-  /* Limit BLUETOOTHHead to 512 bytes*/
-  asm("mov    r2,r2,lsl #23");
-  asm("mov    r2,r2,lsr #23");
-  /* Store BLUETOOTHHead */
-  asm("strh   r2,[r0,#0x834]");
-
-  // STM32_Sonar.BLUETOOTHArray[STM32_Sonar.BLUETOOTHHead++]=USART3->DR;
-  // /* Limit BLUETOOTHHead to 512 bytes array*/
-  // STM32_Sonar.BLUETOOTHHead&=MAXBLUETOOTH-1;
+  STM32_Sonar.GPSArray[STM32_Sonar.GPSHead++]=USART1->DR;
+  /* Limit GPSHead to 512 bytes array*/
+  STM32_Sonar.GPSHead&=MAXGPS-1;
 }
 
 /*******************************************************************************
@@ -1108,12 +1054,6 @@ void NVIC_Configuration(void)
   NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
   NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
   NVIC_Init(&NVIC_InitStructure);
-  /* Enable USART3 interrupt */
-  NVIC_InitStructure.NVIC_IRQChannel = USART3_IRQChannel;
-  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
-  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
-  NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-  NVIC_Init(&NVIC_InitStructure);
 }
 
 /*******************************************************************************
@@ -1208,7 +1148,7 @@ void TIM3_Configuration(void)
 * Output         : None
 * Return         : None
 *******************************************************************************/
-void USART1_Configuration(u16 BaudRate)
+void USART1_Configuration(u32 BaudRate)
 {
   /* USART1 configured as follow:
         - BaudRate = 1200,2400,4800,9600,19200 or 38400 baud  
@@ -1242,7 +1182,7 @@ void USART1_Configuration(u16 BaudRate)
 * Output         : None
 * Return         : None
 *******************************************************************************/
-void USART3_Configuration(u16 BaudRate)
+void USART3_Configuration(u32 BaudRate)
 {
   /* USART3 configured as follow:
         - BaudRate = 1200,2400,4800,9600,19200 or 38400 baud  
