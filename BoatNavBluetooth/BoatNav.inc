@@ -559,7 +559,7 @@ AirTempArray		DWORD 537,500	;*
 					DWORD 2090,65
 					DWORD 2510,0
 
-Bluetooth			DWORD 0
+Bluetooth			DWORD 1
 
 .data?
 

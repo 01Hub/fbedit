@@ -1859,7 +1859,7 @@ STMThread proc uses ebx esi edi,Param:DWORD
 					mov		fdataready,FALSE
 					;Copy old echo
 					call	MoveEcho
-					mov		esi,offset serversenddata.bData
+					mov		esi,offset serversenddata
 					mov		edi,offset sonarreplay
 					mov		ecx,sizeof SONARREPLAY
 					rep movsb
@@ -1909,8 +1909,10 @@ STMThread proc uses ebx esi edi,Param:DWORD
 					push	eax
 					invoke wsprintf,addr mapdata.options.text[sizeof OPTIONS*4],offset szFmtTime
 					mov		eax,sonarreplay.iLon
+PrintDec eax
 					mov		mapdata.iLon,eax
 					mov		eax,sonarreplay.iLat
+PrintDec eax
 					mov		mapdata.iLat,eax
 					movzx	eax,sonarreplay.iSpeed
 					mov		mapdata.iSpeed,eax

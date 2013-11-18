@@ -31,11 +31,11 @@ typedef struct
   u8 RangeInx;                                  // 0x20000003 Current range index
   u16 PixelTimer;                               // 0x20000004 TIM2 auto reload value, sample rate
   u16 GainInit[18];                             // 0x20000006 Gain setup array, first half word is initial gain
-  u16 GainArray[MAXECHO];                       // 0x2000004E Gain array
-  vu16 EchoIndex;                               // 0x2000044E Current index into EchoArray
-  vu16 GPSHead;                                 // 0x20000450 GPSArray head, index into GPSArray
-  vu16 GPSTail;                                 // 0x20000452 GPSArray tail, index into GPSArray
-  u8 GPSArray[MAXGPS];                          // 0x20000454 GPS array, received GPS NMEA 0183 messages
+  u16 GainArray[MAXECHO];                       // 0x2000002A Gain array
+  vu16 EchoIndex;                               // 0x2000042A Current index into EchoArray
+  vu16 GPSHead;                                 // 0x2000042E GPSArray head, index into GPSArray
+  vu16 GPSTail;                                 // 0x20000430 GPSArray tail, index into GPSArray
+  u8 GPSArray[MAXGPS];                          // 0x20000432 GPS array, received GPS NMEA 0183 messages
 }STM32_SonarTypeDef;
 
 typedef struct
@@ -79,11 +79,10 @@ typedef struct
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 static STM32_SonarTypeDef STM32_Sonar;          // 0x20000000
-static STM32_SonarDataTypeDef STM32_SonarData;  // 0x20000A36
+static STM32_SonarDataTypeDef STM32_SonarData;
 vu8 BlueLED;                                    // Current state of the blue led
 vu16 Ping;                                      // Value to output to PA1 and PA2 pins
 vu8 Setup;                                      // Setup mode
-vu16 GPSTail;
 const u8 GPSBaud[]="$PSRF100,1,9600,8,1,0*0D\r\n\0";  // Set baudrate to 9600
 const u8 GPSInit[]="$PSRF103,04,00,01,00*20\r\n$PSRF103,03,00,05,00*23\r\n$PSRF103,00,00,05,00*20\r\n$PSRF103,02,00,05,00*22\r\n$PSRF103,01,00,00,00*24\r\n$PSRF103,05,00,00,00*20\r\n\0";
 /* NMEA Messages */
@@ -185,11 +184,13 @@ int main(void)
     TIM_Cmd(TIM3, ENABLE);
     Setup = 1;
   }
+  STM32_SonarData.iLat = 66317270;
+  STM32_SonarData.iLon = 14196690;
   while (1)
   {
     nrec=0;
     ptr = (u8 *)&STM32_Sonar;
-    while (nrec < 0x4E)
+    while (nrec < 0x2A)
     {
       i = 0;
       while((USART3->SR & USART_FLAG_RXNE) == 0 && i < 2000000)
@@ -203,7 +204,7 @@ int main(void)
       ptr[nrec] = (u8)USART3->DR;
       nrec++;
     }
-    if (STM32_Sonar.Start == 1 && nrec == 0x4E)
+    if (STM32_Sonar.Start == 1 && nrec == 0x2A)
     {
       STM32_Sonar.Start = 99;
       /* Toggle blue led */
@@ -265,6 +266,7 @@ int main(void)
       ADC_AutoInjectedConvCmd(ADC1, DISABLE);
       /* Set the DAC to output lowest gain */
       DAC->DHR12R1 = (u16)0x0;
+      USART3_putdata((u8 *)&STM32_SonarData,622);
     }
     i = 1000;
     while (i--);
@@ -336,6 +338,7 @@ vu16 ParseGetItem(vu16 GPSStart,u8 *item)
     GPSStart++;
     GPSStart &= (MAXGPS - 1);
   }
+  *item = 0;
   if (STM32_Sonar.GPSArray[GPSStart] == 0x2C)
   {
     GPSStart++;
@@ -443,11 +446,12 @@ void ParseGPRMC(vu16 GPSStart)
   item[2] = 0;
   STM32_SonarData.iTime |= ParseDecToBin((u8 *)&item) << 16;
   /* Time */
+  itemtime[6] = 0;
   STM32_SonarData.iTime |= ParseDecToBin((u8 *)&itemtime[4]) >> 1;
   itemtime[4] = 0;
   STM32_SonarData.iTime |= ParseDecToBin((u8 *)&itemtime[2]) << 5;
   itemtime[2] = 0;
-  STM32_SonarData.iTime |= ParseDecToBin((u8 *)&itemtime[2]) << 10;
+  STM32_SonarData.iTime |= ParseDecToBin((u8 *)&itemtime[0]) << 11;
 }
 
 /*
@@ -525,13 +529,13 @@ vu32 ParseGPS(void)
 {
   vu16 GPSStart = -1;
   vu16 GPSEnd = -1;
-  vu16 i = GPSTail;
+  vu16 i = STM32_Sonar.GPSTail;
   while (i != STM32_Sonar.GPSHead)
   {
     if (STM32_Sonar.GPSArray[i] == 0x0D)
     {
       GPSEnd = i;
-      i = GPSTail;
+      i = STM32_Sonar.GPSTail;
       while (i != GPSEnd)
       {
         if (STM32_Sonar.GPSArray[i] == 0x24)
@@ -560,7 +564,7 @@ vu32 ParseGPS(void)
       }
       GPSEnd++;
       GPSEnd &= (MAXGPS - 1);
-      GPSTail = GPSEnd;
+      STM32_Sonar.GPSTail = GPSEnd;
       break;
     }
     i++;
@@ -728,17 +732,17 @@ void TIM2_IRQHandler(void)
 
   /* Increment the echo array index */
   asm("mov    r1,#0x20000000");               /* STM32_Sonar */
-  asm("ldrh   r2,[r1,#0x44E]");               /* STM32_Sonar.EchoIndex */
+  asm("ldrh   r2,[r1,#0x42A]");               /* STM32_Sonar.EchoIndex */
   asm("add    r2,r2,#0x1");
   asm("cmp    r2,#0x200");
   asm("ite    ne");
-  asm("strhne r2,[r1,#0x44E]");               /* Update STM32_Sonar.EchoIndex */
+  asm("strhne r2,[r1,#0x42A]");               /* Update STM32_Sonar.EchoIndex */
   asm("strbeq r2,[r1,#0x0]");                 /* Reset STM32_Sonar.Start */
 
   /* Update the DAC to output next gain level */
   asm("movw   r0,#0x7400");                   /* DAC1 */
   asm("movt   r0,#0x4000");
-  asm("add    r2,r2,0x27");                   /* Offset gain array / 2 */
+  asm("add    r2,r2,0x15");                   /* Offset gain array / 2 */
   asm("ldrh   r3,[r1,r2,lsl #0x1]");
   asm("strh   r3,[r0,#0x8]");                 /* DAC_DHR12R1 */
 }
