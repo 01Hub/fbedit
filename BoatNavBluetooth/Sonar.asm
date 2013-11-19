@@ -1877,7 +1877,11 @@ STMThread proc uses ebx esi edi,Param:DWORD
 					mov		iLon,eax
 					mov		eax,mapdata.iLat
 					mov		iLat,eax
-					mov		mapdata.fcursor,2
+					.if mapdata.altitude.fixquality==1 && mapdata.fcursor==2
+						mov		mapdata.fcursor,0
+					.elseif mapdata.altitude.fixquality>1
+						mov		mapdata.fcursor,2
+					.endif
 					movzx	eax,sonarreplay.SoundSpeed
 					mov		sonardata.SoundSpeed,eax
 					mov		ax,sonarreplay.ADCBattery
@@ -1909,10 +1913,10 @@ STMThread proc uses ebx esi edi,Param:DWORD
 					push	eax
 					invoke wsprintf,addr mapdata.options.text[sizeof OPTIONS*4],offset szFmtTime
 					mov		eax,sonarreplay.iLon
-PrintDec eax
+;PrintDec eax
 					mov		mapdata.iLon,eax
 					mov		eax,sonarreplay.iLat
-PrintDec eax
+;PrintDec eax
 					mov		mapdata.iLat,eax
 					movzx	eax,sonarreplay.iSpeed
 					mov		mapdata.iSpeed,eax
@@ -1955,7 +1959,6 @@ PrintDec eax
 						.endif
 						inc		mapdata.ntrail
 						inc		mapdata.paintnow
-						invoke InvalidateRect,hGPS,NULL,TRUE
 					.endif
 					movzx	eax,STM32Echo
 					.if al!=STM32Echo[MAXYECHO]

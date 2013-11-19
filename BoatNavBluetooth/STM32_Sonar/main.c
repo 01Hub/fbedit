@@ -428,9 +428,9 @@ void ParseGPRMC(vu16 GPSStart)
       STM32_SonarData.iLon = -STM32_SonarData.iLon;
     }
     GPSStart = ParseGetItem(GPSStart,(u8 *)&item);      // Speed in knots
-    STM32_SonarData.iSpeed = ParseDecToBin((u8 *)&item);
+    STM32_SonarData.iSpeed = ParseDecToBin((u8 *)&item) / 10;
     GPSStart = ParseGetItem(GPSStart,(u8 *)&item);      // True course
-    STM32_SonarData.iBear = ParseDecToBin((u8 *)&item) / 10;
+    STM32_SonarData.iBear = ParseDecToBin((u8 *)&item) / 100;
   }
   else
   {
@@ -556,7 +556,7 @@ void ParseGPGGA(vu16 GPSStart)
   GPSStart = ParseSkip(GPSStart);
   /* Altitude */
   GPSStart = ParseGetItem(GPSStart,(u8 *)&item);
-  STM32_SonarData.Altitude.alt = ParseDecToBin((u8 *)&item);
+  STM32_SonarData.Altitude.alt = ParseDecToBin((u8 *)&item) / 10;
 }
 
 /*
