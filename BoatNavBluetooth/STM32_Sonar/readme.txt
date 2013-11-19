@@ -1,9 +1,9 @@
 /*******************************************************************************
 * File Name          : readme.txt
 * Author             : KetilO
-* Version            : V1.0.0
-* Date               : 05/13/2011
-* Description        : Description of the sonar project.
+* Version            : V2.0.0
+* Date               : 11/18/2013
+* Description        : Description of the sonar bluetooth project.
 *******************************************************************************/
 
 Description
@@ -77,6 +77,8 @@ Additional hardware
 o Transmitter capable of delivering at least 150 watts RMS to the swinger.
   For the swinger I am using, 1000 Vpp is needed.
 o Echo receiver with gain control, tuned at 200 KHz.
+o GPS module
+o Bluetooth module
 
 Port pins used
 ==============
@@ -85,7 +87,7 @@ PA2		Ping phase 1 out
 
 PA3		ADC Echo in, ADC_Channel_3
 PA4		DAC channel1 Gain control out
-PA5		DAC channel2 Output trim control out
+PA5		DAC channel2 Trim control out
 PA6		ADC Water temprature in, ADC_Channel_6
 PA7		ADC Air temprature in, ADC_Channel_7
 PC4		ADC Battery in, ADC_Channel_14
@@ -94,6 +96,11 @@ PB0   200KHz output in setup mode
 
 PA9   USART1 TX, GPS Configuration
 PA10  USART1 RX, GPS Data
+
+PB10  USART3 TX, Bluetooth transmit data
+PB11  USART3 RX, Bluetooth receive data
+PB13  USART3 CTS, Bluetooth flow control
+PB14  USART3 RTS, Bluetooth flow control
 
 Directory contents
 ==================
@@ -116,6 +123,7 @@ In order to make the program work, you must do the following:
   + stm32f10x_rcc.c
   + stm32f10x_nvic.c
   + stm32ff10x_flash.c
+  + stm32ff10x_usart.c
 
 - Link all compiled files and load your image into target memory
 - Run the example

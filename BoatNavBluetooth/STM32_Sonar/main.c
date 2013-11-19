@@ -40,7 +40,7 @@ typedef struct
 
 typedef struct
 {
-	u8 SatelliteID;								                // Satelite ID
+	u8 SateliteID;								                // Satelite ID
 	u8 Elevation;								                  // Elevation in degrees (0-90)
 	u16 Azimuth;								                  // Azimuth in degrees (0-359)
 	u8 SNR;									                      // Signal strenght	(0-50, 0 not tracked) 
@@ -204,69 +204,75 @@ int main(void)
       ptr[nrec] = (u8)USART3->DR;
       nrec++;
     }
-    if (STM32_Sonar.Start == 1 && nrec == 0x2A)
+    if (nrec == 0x2A)
     {
-      STM32_Sonar.Start = 99;
-      /* Toggle blue led */
-      BlueLED ^= 1;
-      GPIO_WriteBit(GPIOC, GPIO_Pin_8, BlueLED);
-      /* Setup gain array */
-      GainSetup();
-      /* Clear the echo array */
-      i = 1;
-      while (i < MAXECHO)
+      if (STM32_Sonar.Start == 1)
       {
-        STM32_SonarData.EchoArray[i] = 0;
-        i++;
+        /* Toggle blue led */
+        BlueLED ^= 1;
+        GPIO_WriteBit(GPIOC, GPIO_Pin_8, BlueLED);
+        /* Setup gain array */
+        GainSetup();
+        /* Clear the echo array */
+        i = 1;
+        while (i < MAXECHO)
+        {
+          STM32_SonarData.EchoArray[i] = 0;
+          i++;
+        }
+        /* Read battery */
+        STM32_SonarData.ADCBattery = GetADCValue(ADC_Channel_14);
+        /* Read water temprature */
+        STM32_SonarData.ADCWaterTemp = GetADCValue(ADC_Channel_6);
+        /* Read air temprature */
+        STM32_SonarData.ADCAirTemp = GetADCValue(ADC_Channel_7);
+        if (Setup)
+        {
+          /* No ping in setup mode */
+          STM32_Sonar.PingPulses = 0;
+        }
+        else
+        {
+          TrimOutput();
+        }
+        while (ParseGPS() != 0xFFFF)
+        {
+        }
+        /* Enable ADC injected channel */
+        ADC_AutoInjectedConvCmd(ADC1, ENABLE);
+        /* Set the TIM1 Autoreload value */
+        TIM1->ARR = STM32_Sonar.PingTimer;
+        /* Set the TIM3 Autoreload value */
+        TIM3->ARR = STM32_Sonar.PingTimer*2+1;
+        /* Reset TIM1 count */
+        TIM1->CNT = 0;
+        /* Set TIM1 repetirion counter */
+        TIM1->RCR = 0;
+        /* Reset echo index */
+        STM32_Sonar.EchoIndex = 0;
+        /* Init Ping */
+        Ping = 0x2;
+        /* Disable the USART1 Receive interrupt: this interrupt is generated when the 
+           USART1 receive data register is not empty */
+        USART_ITConfig(USART1, USART_IT_RXNE, DISABLE);
+        /* Enable TIM1 */
+        TIM_Cmd(TIM1, ENABLE);
+        /* Get the Echo array */
+        GetEcho();
+        /* Store the current range as the first byte in the echo array */
+        STM32_SonarData.EchoArray[0] = STM32_Sonar.RangeInx;
+        /* Done, Disable TIM2 */
+        TIM2->CR1 = 0;
+        /* Disable ADC injected channel */
+        ADC_AutoInjectedConvCmd(ADC1, DISABLE);
+        /* Set the DAC to output lowest gain */
+        DAC->DHR12R1 = (u16)0x0;
+        USART3_putdata((u8 *)&STM32_SonarData,622);
       }
-      /* Read battery */
-      STM32_SonarData.ADCBattery = GetADCValue(ADC_Channel_14);
-      /* Read water temprature */
-      STM32_SonarData.ADCWaterTemp = GetADCValue(ADC_Channel_6);
-      /* Read air temprature */
-      STM32_SonarData.ADCAirTemp = GetADCValue(ADC_Channel_7);
-      if (Setup)
+      else if (STM32_Sonar.Start == 2)
       {
-        /* No ping in setup mode */
-        STM32_Sonar.PingPulses = 0;
+        /* Send NMEA */
       }
-      else
-      {
-        TrimOutput();
-      }
-      while (ParseGPS() != 0xFFFF)
-      {
-      }
-      /* Enable ADC injected channel */
-      ADC_AutoInjectedConvCmd(ADC1, ENABLE);
-      /* Set the TIM1 Autoreload value */
-      TIM1->ARR = STM32_Sonar.PingTimer;
-      /* Set the TIM3 Autoreload value */
-      TIM3->ARR = STM32_Sonar.PingTimer*2+1;
-      /* Reset TIM1 count */
-      TIM1->CNT = 0;
-      /* Set TIM1 repetirion counter */
-      TIM1->RCR = 0;
-      /* Reset echo index */
-      STM32_Sonar.EchoIndex = 0;
-      /* Init Ping */
-      Ping = 0x2;
-      /* Disable the USART1 Receive interrupt: this interrupt is generated when the 
-         USART1 receive data register is not empty */
-      USART_ITConfig(USART1, USART_IT_RXNE, DISABLE);
-      /* Enable TIM1 */
-      TIM_Cmd(TIM1, ENABLE);
-      /* Get the Echo array */
-      GetEcho();
-      /* Store the current range as the first byte in the echo array */
-      STM32_SonarData.EchoArray[0] = STM32_Sonar.RangeInx;
-      /* Done, Disable TIM2 */
-      TIM2->CR1 = 0;
-      /* Disable ADC injected channel */
-      ADC_AutoInjectedConvCmd(ADC1, DISABLE);
-      /* Set the DAC to output lowest gain */
-      DAC->DHR12R1 = (u16)0x0;
-      USART3_putdata((u8 *)&STM32_SonarData,622);
     }
     i = 1000;
     while (i--);
@@ -429,12 +435,12 @@ void ParseGPRMC(vu16 GPSStart)
   else
   {
     STM32_SonarData.Altitude.fixquality = 0;
-    GPSStart = ParseGetItem(GPSStart,(u8 *)&item);      // current Latitude
-    GPSStart = ParseGetItem(GPSStart,(u8 *)&item);      // North/South
-    GPSStart = ParseGetItem(GPSStart,(u8 *)&item);      // current Longitude
-    GPSStart = ParseGetItem(GPSStart,(u8 *)&item);      // East/West
-    GPSStart = ParseGetItem(GPSStart,(u8 *)&item);      // Speed in knots
-    GPSStart = ParseGetItem(GPSStart,(u8 *)&item);      // True course
+    GPSStart = ParseSkip(GPSStart);                     // current Latitude
+    GPSStart = ParseSkip(GPSStart);                     // North/South
+    GPSStart = ParseSkip(GPSStart);                     // current Longitude
+    GPSStart = ParseSkip(GPSStart);                     // East/West
+    GPSStart = ParseSkip(GPSStart);                     // Speed in knots
+    GPSStart = ParseSkip(GPSStart);                     // True course
   }
   GPSStart = ParseGetItem(GPSStart,(u8 *)&item);      // Date Stamp
 	// YYYYYYYMMMMDDDDDHHHHHMMMMMMSSSSS
@@ -475,7 +481,39 @@ eg. $GPGSV,3,1,11,03,03,111,00,04,15,270,00,06,01,010,00,13,06,292,00
 void ParseGPGSV(vu16 GPSStart)
 {
   u8 item[32];
+  u16 i, n, nsv;
   GPSStart = ParseSkip(GPSStart);
+  /* Number of messages */
+  GPSStart = ParseSkip(GPSStart);
+  /* Message number */
+  GPSStart = ParseGetItem(GPSStart,(u8 *)&item);
+  n = ParseDecToBin((u8 *)&item);
+  /* Satellites in View */
+  GPSStart = ParseGetItem(GPSStart,(u8 *)&item);
+  nsv = ParseDecToBin((u8 *)&item);
+  while (nsv<12)
+  {
+    STM32_SonarData.Satelite[nsv].SateliteID = 0;
+    nsv++;
+  }
+  n = (n - 1) * 4;
+  i = 0;
+  while (i < 4)
+  {
+    /* SateliteID */
+    GPSStart = ParseGetItem(GPSStart,(u8 *)&item);
+    STM32_SonarData.Satelite[n + i].SateliteID = ParseDecToBin((u8 *)&item);
+    /* Elevation */
+    GPSStart = ParseGetItem(GPSStart,(u8 *)&item);
+    STM32_SonarData.Satelite[n + i].Elevation = ParseDecToBin((u8 *)&item);
+    /* Azimuth */
+    GPSStart = ParseGetItem(GPSStart,(u8 *)&item);
+    STM32_SonarData.Satelite[n + i].Azimuth = ParseDecToBin((u8 *)&item);
+    /* SNR */
+    GPSStart = ParseGetItem(GPSStart,(u8 *)&item);
+    STM32_SonarData.Satelite[n + i].SNR = ParseDecToBin((u8 *)&item);
+    i++;
+  }
 }
 
 /*
@@ -501,6 +539,24 @@ void ParseGPGGA(vu16 GPSStart)
 {
   u8 item[32];
   GPSStart = ParseSkip(GPSStart);
+  /* UTC Time */
+  GPSStart = ParseSkip(GPSStart);
+  /* Lat */
+  GPSStart = ParseSkip(GPSStart);
+  GPSStart = ParseSkip(GPSStart);
+  /* Lon */
+  GPSStart = ParseSkip(GPSStart);
+  GPSStart = ParseSkip(GPSStart);
+  /* Fix quality */
+  GPSStart = ParseSkip(GPSStart);
+  /* Number of satelites */
+  GPSStart = ParseGetItem(GPSStart,(u8 *)&item);
+  STM32_SonarData.Altitude.nsat = ParseDecToBin((u8 *)&item);
+  /* HDOP */
+  GPSStart = ParseSkip(GPSStart);
+  /* Altitude */
+  GPSStart = ParseGetItem(GPSStart,(u8 *)&item);
+  STM32_SonarData.Altitude.alt = ParseDecToBin((u8 *)&item);
 }
 
 /*
@@ -522,7 +578,50 @@ eg2. $GPGSA,A,3,19,28,14,18,27,22,31,39,,,,,1.7,1.0,1.3
 void ParseGPGSA(vu16 GPSStart)
 {
   u8 item[32];
+  u16 i, j;
+  u8 satid;
   GPSStart = ParseSkip(GPSStart);
+  /* Mode M or A */
+  GPSStart = ParseSkip(GPSStart);
+  /* Mode 1=No fix,2=2D or 3=3D */
+  GPSStart = ParseGetItem(GPSStart,(u8 *)&item);
+  STM32_SonarData.Altitude.fixquality = ParseDecToBin((u8 *)&item);
+  /* Fixed */
+  i = 0;
+  while (i < 12)
+  {
+    STM32_SonarData.Satelite[i].Fixed = 0;
+    i++;
+  }
+  i = 0;
+  while (i < 12)
+  {
+    GPSStart = ParseGetItem(GPSStart,(u8 *)&item);
+    satid = ParseDecToBin((u8 *)&item);
+    if (satid)
+    {
+      j = 0;
+      while (j < 12)
+      {
+        if (satid == STM32_SonarData.Satelite[j].SateliteID)
+        {
+          STM32_SonarData.Satelite[j].Fixed = 1;
+          break;
+        }
+        j++;
+      }
+    }
+    i++;
+  }
+  /* PDOP */
+  GPSStart = ParseGetItem(GPSStart,(u8 *)&item);
+  STM32_SonarData.Altitude.pdop = ParseDecToBin((u8 *)&item);
+  /* HDOP */
+  GPSStart = ParseGetItem(GPSStart,(u8 *)&item);
+  STM32_SonarData.Altitude.hdop = ParseDecToBin((u8 *)&item);
+  /* VDOP */
+  GPSStart = ParseGetItem(GPSStart,(u8 *)&item);
+  STM32_SonarData.Altitude.vdop = ParseDecToBin((u8 *)&item);
 }
 
 vu32 ParseGPS(void)
@@ -545,18 +644,18 @@ vu32 ParseGPS(void)
           {
             ParseGPRMC(GPSStart);
           }
-          // else if (StrCmp((u8*)&STM32_Sonar.GPSArray[GPSStart],(u8*)szGPGSV) == 0)
-          // {
-            // ParseGPGSV(GPSStart);
-          // }
-          // else if (StrCmp((u8*)&STM32_Sonar.GPSArray[GPSStart],(u8*)szGPGGA) == 0)
-          // {
-            // ParseGPGGA(GPSStart);
-          // }
-          // else if (StrCmp((u8*)&STM32_Sonar.GPSArray[GPSStart],(u8*)szGPGSA) == 0)
-          // {
-            // ParseGPGSA(GPSStart);
-          // }
+          else if (StrCmp((u8*)&STM32_Sonar.GPSArray[GPSStart],(u8*)szGPGSV) == 0)
+          {
+            ParseGPGSV(GPSStart);
+          }
+          else if (StrCmp((u8*)&STM32_Sonar.GPSArray[GPSStart],(u8*)szGPGGA) == 0)
+          {
+            ParseGPGGA(GPSStart);
+          }
+          else if (StrCmp((u8*)&STM32_Sonar.GPSArray[GPSStart],(u8*)szGPGSA) == 0)
+          {
+            ParseGPGSA(GPSStart);
+          }
           break;
         }
         i++;
@@ -1015,14 +1114,14 @@ void GPIO_Configuration(void)
   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_11;
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
   GPIO_Init(GPIOB, &GPIO_InitStructure);
-  /* Configure PB14 USART3 RTS as alternate function push-pull */
-  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_14;
-  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
-  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-  GPIO_Init(GPIOB, &GPIO_InitStructure);
   /* Configure PB13 USART3 CTS as input floating */
   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_13;
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+  GPIO_Init(GPIOB, &GPIO_InitStructure);
+  /* Configure PB14 USART3 RTS as alternate function push-pull */
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_14;
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
   GPIO_Init(GPIOB, &GPIO_InitStructure);
 }
@@ -1155,7 +1254,7 @@ void TIM3_Configuration(void)
 void USART1_Configuration(u32 BaudRate)
 {
   /* USART1 configured as follow:
-        - BaudRate = 1200,2400,4800,9600,19200 or 38400 baud  
+        - BaudRate = 4800 or 9600 baud  
         - Word Length = 8 Bits
         - One Stop Bit
         - No parity
@@ -1189,7 +1288,7 @@ void USART1_Configuration(u32 BaudRate)
 void USART3_Configuration(u32 BaudRate)
 {
   /* USART3 configured as follow:
-        - BaudRate = 1200,2400,4800,9600,19200 or 38400 baud  
+        - BaudRate = 9600 or 115200 baud  
         - Word Length = 8 Bits
         - One Stop Bit
         - No parity
