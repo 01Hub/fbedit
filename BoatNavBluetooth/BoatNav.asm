@@ -693,7 +693,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.endif
 		invoke EnableMenuItem,hMenu,IDM_FILE_SAVETRAIL,edx
 		mov		edx,MF_BYCOMMAND or MF_ENABLED
-		.if hFileLogWrite || !sonardata.fSTLink || sonardata.fSTLink==IDIGNORE
+		.if hFileLogWrite || !sonardata.fBluetooth
 			mov		edx,MF_BYCOMMAND or MF_GRAYED
 		.endif
 		invoke EnableMenuItem,hMenu,IDM_LOG_START,edx
@@ -839,7 +839,6 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke KillTimer,hSonar,1000
 		invoke KillTimer,hSonar,1001
 		mov		fExitMAPThread,TRUE
-;		mov		fExitGPSThread,TRUE
 		mov		fExitSTMThread,TRUE
 		mov		fExitBluetoothThread,TRUE
 		invoke RtlZeroMemory,addr msg,sizeof MSG
@@ -849,12 +848,6 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke TranslateMessage,addr msg
 			invoke DispatchMessage,addr msg
 		.endif
-;		; Terminate GPS Thread
-;		invoke WaitForSingleObject,hGPSThread,3000
-;		.if eax==WAIT_TIMEOUT
-;			invoke TerminateThread,hGPSThread,0
-;		.endif
-;		invoke CloseHandle,hGPSThread
 		; Terminate STM Thread
 		invoke WaitForSingleObject,hSTMThread,3000
 		.if eax==WAIT_TIMEOUT
@@ -873,10 +866,6 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke TerminateThread,hMAPThread,0
 		.endif
 		invoke CloseHandle,hMAPThread
-		.if sonardata.fSTLink && sonardata.fSTLink!=IDIGNORE
-			invoke STLinkDisconnect,hWnd
-			invoke STLinkDisconnect,hSonar
-		.endif
 		invoke GlobalFree,mapdata.hMemLon
 		invoke GlobalFree,mapdata.hMemLat
 		invoke DestroyWindow,hWin
@@ -996,20 +985,15 @@ WinMain proc hInst:HINSTANCE,hPrevInst:HINSTANCE,CmdLine:LPSTR,CmdShow:DWORD
 	.endif
 	invoke ShowWindow,hWnd,eax
 	invoke UpdateWindow,hWnd
-;	;Create thread that comunicates with the GPS
-;	invoke CreateThread,NULL,0,addr GPSThread,0,0,addr tid
-;	mov		hGPSThread,eax
 	;Create thread that paints the map
 	invoke CreateThread,NULL,0,addr MAPThread,0,0,addr tid
 	mov		hMAPThread,eax
 	;Create thread that comunicates with the STM
 	invoke CreateThread,NULL,NULL,addr STMThread,0,0,addr tid
 	mov		hSTMThread,eax
-	.if Bluetooth
-		;Create thread that comunicates with the STM using Bluetooth
-		invoke CreateThread,NULL,NULL,addr BlueToothClient,0,0,addr tid
-		mov		hBluetoothThread,eax
-	.endif
+	;Create thread that comunicates with the STM using Bluetooth
+	invoke CreateThread,NULL,NULL,addr BlueToothClient,0,0,addr tid
+	mov		hBluetoothThread,eax
 	invoke RtlZeroMemory,addr msg,sizeof MSG
 	.while TRUE
 		invoke GetMessage,addr msg,NULL,0,0

@@ -315,7 +315,7 @@ SonarUpdateProc proc uses ebx esi edi,nUpdate:DWORD
 		;Update range
 		movzx	eax,sonardata.EchoArray
 		mov		sonardata.RangeInx,al
-	.elseif sonardata.fSTLink
+	.else
 		call	Update
 	.endif
 	ret
@@ -1619,42 +1619,8 @@ Random proc uses ecx edx,range:DWORD
 
 Random endp
 
-;GainUpload proc uses ebx edi
-;
-;	;Setup gain array
-;	movzx	ebx,sonardata.RangeInx
-;	invoke GetRangePtr,ebx
-;	mov		ebx,eax
-;	;Initial gain
-;	mov		eax,sonardata.GainSet
-;	mov		sonardata.GainInit[0],ax
-;	xor		ecx,ecx
-;	xor		edi,edi
-;	.if sonardata.AutoGain
-;		;Time dependent gain
-;		.while ecx<17
-;			mov		eax,sonardata.sonarrange.gain[ebx+ecx*DWORD]
-;			lea		edi,[edi+1]
-;			mov		sonardata.GainInit[edi*WORD],ax
-;			lea		ecx,[ecx+1]
-;		.endw
-;	.else
-;		;Fixed gain
-;		xor		eax,eax
-;		.while ecx<17
-;			lea		edi,[edi+1]
-;			mov		sonardata.GainInit[edi*WORD],ax
-;			lea		ecx,[ecx+1]
-;		.endw
-;	.endif
-;	;Upload Gain array
-;	invoke STLinkWrite,hSonar,STM32_Sonar+16+sizeof SONAR.EchoArray+sizeof SONAR.GainArray,addr sonardata.GainInit,sizeof SONAR.GainInit
-;	ret
-;
-;GainUpload endp
-;
 STMThread proc uses ebx esi edi,Param:DWORD
-	LOCAL	status:DWORD
+;	LOCAL	status:DWORD
 	LOCAL	dwread:DWORD
 	LOCAL	dwwrite:DWORD
 	LOCAL	buffer[16]:BYTE
@@ -1686,42 +1652,7 @@ STMThread proc uses ebx esi edi,Param:DWORD
 	.while !fExitSTMThread
 		invoke IsDlgButtonChecked,hControls,IDC_CHKPAUSE
 		.if eax
-;			.if sonardata.fSTLink && sonardata.fSTLink!=IDIGNORE
-;				;Download Start status (first byte)
-;				invoke STLinkRead,hSonar,STM32_Sonar,addr status,4
-;				.if !eax || eax==IDABORT || eax==IDIGNORE
-;					jmp		STLinkErr
-;				.endif
-;				.if !(status & 255)
-;					;Download ADCBattery, ADCWaterTemp, ADCAirTemp and GPSHead
-;					invoke STLinkRead,hSonar,STM32_Sonar+8,addr sonardata.ADCBattery,8
-;					.if !eax || eax==IDABORT || eax==IDIGNORE
-;						jmp		STLinkErr
-;					.endif
-;				 	;Upload Start and PingPulses
-;					mov		eax,sonardata.PingInit
-;					.if sonardata.AutoPing
-;						add		eax,sonardata.sonarrange.pingadd[ebx]
-;						.if eax>MAXPING
-;							mov		eax,MAXPING
-;						.endif
-;					.endif
-;					mov		sonardata.PingPulses,al
-;					;Start the next reading
-;				 	mov		sonardata.Start,4
-;					invoke STLinkWrite,hSonar,STM32_Sonar,addr sonardata.Start,4
-;					.if !eax || eax==IDABORT || eax==IDIGNORE
-;						jmp		STLinkErr
-;					.endif
-;					invoke SonarUpdateProc,0
-;				.endif
-;			.endif
-;			invoke DoSleep,100
-;			.if sonardata.PaintNow
-;				mov		sonardata.PaintNow,0
-;				invoke InvalidateRect,hSonar,NULL,TRUE
-;				invoke UpdateWindow,hSonar
-;			.endif
+			invoke DoSleep,100
 		.else
 			.if sonardata.hReplay
 				;Replay mode
@@ -1742,8 +1673,8 @@ STMThread proc uses ebx esi edi,Param:DWORD
 						mov		eax,mapdata.iLat
 						mov		iLat,eax
 						mov		mapdata.fcursor,2
-						movzx	eax,sonarreplay.SoundSpeed
-						mov		sonardata.SoundSpeed,eax
+;						movzx	eax,sonarreplay.SoundSpeed
+;						mov		sonardata.SoundSpeed,eax
 						mov		ax,sonarreplay.ADCBattery
 						mov		sonardata.ADCBattery,ax
 						mov		ax,sonarreplay.ADCWaterTemp
@@ -1854,7 +1785,7 @@ STMThread proc uses ebx esi edi,Param:DWORD
 					invoke SetRange,eax
 					call	ShowEcho
 				.endif
-			.elseif Bluetooth
+			.elseif sonardata.fBluetooth
 				.if fdataready
 					mov		fdataready,FALSE
 					;Copy old echo
@@ -1882,8 +1813,6 @@ STMThread proc uses ebx esi edi,Param:DWORD
 					.elseif mapdata.altitude.fixquality>1
 						mov		mapdata.fcursor,2
 					.endif
-					movzx	eax,sonarreplay.SoundSpeed
-					mov		sonardata.SoundSpeed,eax
 					mov		ax,sonarreplay.ADCBattery
 					mov		sonardata.ADCBattery,ax
 					mov		ax,sonarreplay.ADCWaterTemp
@@ -1913,10 +1842,8 @@ STMThread proc uses ebx esi edi,Param:DWORD
 					push	eax
 					invoke wsprintf,addr mapdata.options.text[sizeof OPTIONS*4],offset szFmtTime
 					mov		eax,sonarreplay.iLon
-;PrintDec eax
 					mov		mapdata.iLon,eax
 					mov		eax,sonarreplay.iLat
-;PrintDec eax
 					mov		mapdata.iLat,eax
 					movzx	eax,sonarreplay.iSpeed
 					mov		mapdata.iSpeed,eax
@@ -1960,98 +1887,13 @@ STMThread proc uses ebx esi edi,Param:DWORD
 						inc		mapdata.ntrail
 						inc		mapdata.paintnow
 					.endif
-					movzx	eax,STM32Echo
-					.if al!=STM32Echo[MAXYECHO]
-						mov		sonardata.dptinx,0
-						mov		rngchanged,4
-					.endif
-					invoke SetRange,eax
+					invoke InvalidateRect,hGPS,NULL,TRUE
 					call	ShowEcho
+					invoke Sleep,30
 				.else
 					invoke Sleep,30
 				.endif
-;;			.elseif sonardata.fSTLink && sonardata.fSTLink!=IDIGNORE
-;;				;Sonar mode
-;;;				.if mapdata.GPSInit
-;;;					mov		mapdata.GPSInit,2
-;;;					.while mapdata.GPSInit
-;;;						invoke DoSleep,100
-;;;					.endw
-;;;				.endif
-;;				;Download Start status (first byte)
-;;				invoke STLinkRead,hSonar,STM32_Sonar,addr status,4
-;;				.if !eax || eax==IDABORT || eax==IDIGNORE
-;;					jmp		STLinkErr
-;;				.endif
-;;				.if !(status & 255)
-;;					;Download ADCBattery, ADCWaterTemp, ADCAirTemp and GPSHead
-;;					invoke STLinkRead,hSonar,STM32_Sonar+8,addr sonardata.ADCBattery,8
-;;					.if !eax || eax==IDABORT || eax==IDIGNORE
-;;						jmp		STLinkErr
-;;					.endif
-;;					;Copy old echo
-;;					call	MoveEcho
-;;					;Download sonar echo array
-;;					invoke STLinkRead,hSonar,STM32_Sonar+16,addr STM32Echo,MAXYECHO
-;;					.if !eax || eax==IDABORT || eax==IDIGNORE
-;;						jmp		STLinkErr
-;;					.endif
-;;					movzx	ebx,sonardata.RangeInx
-;;					invoke GetRangePtr,ebx
-;;					mov		ebx,eax
-;;					.if sonardata.fGainUpload
-;;						;Upload Gain array
-;;						dec		sonardata.fGainUpload
-;;						invoke GainUpload
-;;					.endif
-;;				 	;Upload Start, PingPulses, PingTimer, RangeInx, PixelTimer and PingWait to init the next reading
-;;					mov		eax,sonardata.PingInit
-;;					.if sonardata.AutoPing
-;;						add		eax,sonardata.sonarrange.pingadd[ebx]
-;;						.if eax>MAXPING
-;;							mov		eax,MAXPING
-;;						.endif
-;;					.endif
-;;					mov		sonardata.PingPulses,al
-;;					mov		sonardata.PingWait,6
-;;					mov		sonardata.PingWait,6
-;;				 	mov		sonardata.Start,0
-;;					invoke STLinkWrite,hSonar,STM32_Sonar,addr sonardata.Start,8
-;;					.if !eax || eax==IDABORT || eax==IDIGNORE
-;;						jmp		STLinkErr
-;;					.endif
-;;					;Start the next phase
-;;				 	mov		sonardata.Start,1
-;;					invoke STLinkWrite,hSonar,STM32_Sonar,addr sonardata.Start,4
-;;					.if !eax || eax==IDABORT || eax==IDIGNORE
-;;						jmp		STLinkErr
-;;					.endif
-;;					call	ShowEcho
-;;;invoke STLinkRead,hSonar,STM32_SonarData,addr status,4
-;;;mov eax,status
-;;;PrintDec ax
-;;;shr eax,16
-;;;PrintDec ax
-;;
-;;invoke STLinkRead,hSonar,STM32_SonarData+4,addr sonarreplay,sizeof SONARREPLAY
-;;mov		eax,sonarreplay.iLon
-;;PrintDec eax
-;;mov		eax,mapdata.iLon
-;;PrintDec eax
-;;mov		eax,sonarreplay.iLat
-;;PrintDec eax
-;;mov		eax,mapdata.iLat
-;;PrintDec eax
-;;				.else
-;;					;Data not ready yet
-;;					invoke Sleep,10
-;;					.if sonardata.PaintNow
-;;						mov		sonardata.PaintNow,0
-;;						invoke InvalidateRect,hSonar,NULL,TRUE
-;;						invoke UpdateWindow,hSonar
-;;					.endif
-;;				.endif
-			.elseif sonardata.fSTLink==IDIGNORE
+			.else
 				;Random demo mode
 				;Copy old echo
 				call	MoveEcho
@@ -2205,11 +2047,6 @@ STMThread proc uses ebx esi edi,Param:DWORD
 	xor		eax,eax
 	ret
 
-;STLinkErr:
-;	invoke PostMessage,hWnd,WM_CLOSE,0,0
-;	xor		eax,eax
-;	ret
-
 ShowEcho:
 	.if sonardata.hLog
 		;Write to log file
@@ -2263,7 +2100,7 @@ DrawEcho:
 	mov		sonardata.EchoArray,al
 	invoke GetRangePtr,eax
 	mov		eax,sonardata.sonarrange.interval[eax]
-	.if sonardata.hReplay!=0 || sonardata.fSTLink==IDIGNORE
+	.if sonardata.hReplay!=0 || sonardata.fBluetooth==0
 		mov		ecx,REPLAYSPEED
 		xor		edx,edx
 		div		ecx
@@ -3761,8 +3598,7 @@ SonarChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LP
 		mov		sonardata.sonarbmp.wt,0
 		mov		sonardata.sonarbmp.hBmp,0
 
-		invoke SetTimer,hWin,1000,800,NULL
-		invoke SetTimer,hWin,1001,500,NULL
+		invoke SetTimer,hWin,1000,500,NULL
 	.elseif eax==WM_PAINT
 		invoke GetClientRect,hWin,addr rect
 		invoke BeginPaint,hWin,addr ps
@@ -3825,32 +3661,6 @@ SonarChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LP
 		invoke EndPaint,hWin,addr ps
 	.elseif eax==WM_TIMER
 		.if wParam==1000
-;			.if  !Bluetooth
-;				.if !sonardata.fSTLink
-;					mov		sonardata.fSTLink,IDIGNORE
-;					mov		mapdata.fSTLink,IDIGNORE
-;					invoke STLinkConnect,hSonar
-;					.if eax==IDABORT
-;						invoke SendMessage,hWnd,WM_CLOSE,0,0
-;					.else
-;						mov		sonardata.fSTLink,eax
-;					.endif
-;					.if sonardata.fSTLink && sonardata.fSTLink!=IDIGNORE
-;						invoke STLinkReset,hSonar
-;						invoke STLinkConnect,hGPS
-;						.if eax==IDABORT
-;							invoke SendMessage,hWnd,WM_CLOSE,0,0
-;						.else
-;							mov		mapdata.fSTLink,eax
-;						.endif
-;						inc		sonardata.fGainUpload
-;					.endif
-;				.endif
-;			.else
-;				mov		sonardata.fSTLink,IDIGNORE
-;				mov		mapdata.fSTLink,IDIGNORE
-;			.endif
-		.elseif wParam==1001
 			xor		sonardata.ShowDepth,1
 			.if sonardata.ShowDepth<2
 				invoke GetSonarOptionRect,1,addr rect

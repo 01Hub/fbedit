@@ -32,7 +32,7 @@ szBaudRate			BYTE '4800',0
 ;szGPGGA				BYTE '$GPGGA',0
 ;szGPGSA				BYTE '$GPGSA',0
 
-szBinToDec			BYTE '%06d',0
+;szBinToDec			BYTE '%06d',0
 szFmtTime			BYTE '%02d%02d%02d %02d:%02d:%02d',0
 szColon				BYTE ': ',0
 
@@ -59,11 +59,7 @@ COMPort				BYTE 16 dup(?)
 BaudRate			BYTE 16 dup(?)
 COMActive			DWORD ?
 hCom				HANDLE ?
-dcb					DCB <>
-to					COMMTIMEOUTS <>
 combuff				BYTE 4096 dup(?)
-linebuff			BYTE 512 dup(?)
-logbuff				BYTE 1024 dup(?)
 
 .code
 

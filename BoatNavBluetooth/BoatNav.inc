@@ -5,7 +5,7 @@ include comdlg32.inc
 include comctl32.inc
 include gdi32.inc
 include gdiplus.inc
-include gdiplus_structs.inc
+;include gdiplus_structs.inc
 include ole32.inc
 include oleaut32.inc
 include winmm.inc
@@ -345,7 +345,7 @@ DEPTH struct
 DEPTH ends
 
 SONAR struct
-	fSTLink			DWORD ?									;If TRUE STLink connected
+	fBluetooth		DWORD ?									;If TRUE STLink connected
 	mDC				HDC ?									;The memory DC holds the echo bitmap, 512*512 pixels,
 	hBmp			HBITMAP ?								;Handle of the bitmap used in mDC to draw echo
 	hBmpOld			HBITMAP ?								;Handle of the original bitmap in mDC
@@ -525,24 +525,7 @@ szCelcius			BYTE 'C',0
 watertempoffset		DWORD 2500
 watertempconv		REAL8 5.25
 
-szGPSDemoData		BYTE '$GPRMC,193409,A,6619.0367,N,01411.8237,E,0.0,356.4,230710,2.0,E',0Dh,0Ah
-					BYTE '$GPGGA,193409,6619.0367,N,01411.8237,E,1,5,1.10,57,M,,,,',0Dh,0Ah
-					BYTE '$GPGSV,3,1,12,21,64,118,40,6,53,259,,16,52,213,,3,38,272,',0Dh,0Ah
-					BYTE '$GPGSV,3,2,12,18,29,140,36,24,27,216,40,7,24,329,38,26,13,59,38',0Dh,0Ah
-					BYTE '$GPGSV,3,3,12,5,13,27,,29,12,108,,19,10,275,,15,9,76,',0Dh,0Ah
-					BYTE '$GPGSA,A,3,21,,,,18,24,7,26,,,,,2.5,1.1,2.2',0Dh,0Ah,0
-
-szGPSInitData		BYTE '$PSRF103,04,00,01,00*XX',0Dh,0Ah	;Enable RMC message, rate 1 second
-					BYTE '$PSRF103,03,00,05,00*XX',0Dh,0Ah	;Enable GSV message, rate 5 seconds
-					BYTE '$PSRF103,00,00,05,00*XX',0Dh,0Ah	;Enable GGA message, rate 5 seconds
-					BYTE '$PSRF103,02,00,05,00*XX',0Dh,0Ah	;Enable GSA message, rate 5 seconds
-					BYTE '$PSRF103,01,00,00,00*XX',0Dh,0Ah	;Disable GLL message
-					BYTE '$PSRF103,05,00,00,00*XX',0Dh,0Ah	;Disable VTG message
-					BYTE 0
 szGPSReset			BYTE '$PSRF104,66.307350,14.135830,0,96000,237759,922,12,4*XX',0Dh,0Ah
-					BYTE 0
-
-szSetBaud			BYTE '$PSRF100,1,9600,8,1,0*XX',0Dh,0Ah	;Set baudrate to 9600
 					BYTE 0
 
 szDefSonarColors	BYTE '16777215,12632256,10658466,8421504,65535,61680,54741,52942,45824,42496,40704,38400,255,242,223,215,8388608,16039276',0
@@ -558,8 +541,6 @@ AirTempArray		DWORD 537,500	;*
 					DWORD 1846,105	;*
 					DWORD 2090,65
 					DWORD 2510,0
-
-Bluetooth			DWORD 1
 
 .data?
 
@@ -584,8 +565,6 @@ mousept					POINT <>								;Point where lbutton clicked
 mousemappt				POINT <>
 hMAPThread				HANDLE ?								;Map drawing thread
 fExitMAPThread			DWORD ?									;Flag to exit the map drawing thread
-;hGPSThread				HANDLE ?								;Thread to comunicate with GPS
-;fExitGPSThread			DWORD ?									;Flag to exit the GPSThread
 hSTMThread				HANDLE ?								;Thread to comunicate with STM32
 fExitSTMThread			DWORD ?									;Flag to exit the STMThread
 szbuff					BYTE 512 dup(?)							;Temporary buffer

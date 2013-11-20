@@ -103,8 +103,6 @@ SOCKADDR_BTH ends
 wVersionRequested 				DWORD 202h
 szServerAddress					BYTE '00:18:B2:02:D2:AD',0
 GUID_SPP						GUID <00001101h,0000h,1000h,<080h,000h,000h,080h,05Fh,09Bh,034h,0FBh>>
-szQuit							BYTE 'Quit',0
-szOK							BYTE 'OK',0
 
 .data?
 
@@ -163,6 +161,7 @@ BlueToothClient proc uses ebx esi edi,Param:DWORD
 			invoke RtlMoveMemory,offset serveraddress.serviceClassId,offset GUID_SPP,sizeof GUID
 			invoke connect,client_socket,offset serveraddress,sizeof SOCKADDR_BTH
 			.if eax!=INVALID_SOCKET
+				mov		sonardata.fBluetooth,TRUE
 				invoke Sleep,2000
 				xor		esi,esi
 				xor		edi,edi
@@ -170,13 +169,11 @@ BlueToothClient proc uses ebx esi edi,Param:DWORD
 					mov		clientsenddata.Start,1
 					mov		clientsenddata.PingPulses,32
 					mov		clientsenddata.PingTimer,(STM32_Clock/200000/2)-1
-					mov		clientsenddata.RangeInx,1
-					invoke RangeToTimer,1
+					movzx	ebx,sonardata.RangeInx
+					mov		clientsenddata.RangeInx,bl
+					invoke RangeToTimer,ebx
 					mov		clientsenddata.PixelTimer,ax
-					mov		clientsenddata.GainInit[0],16
-
 					;Setup gain array
-					movzx	ebx,clientsenddata.RangeInx
 					invoke GetRangePtr,ebx
 					mov		ebx,eax
 					;Initial gain
@@ -217,7 +214,6 @@ BlueToothClient proc uses ebx esi edi,Param:DWORD
 					.break .if eax==INVALID_SOCKET || eax==0
 					mov		fdataready,TRUE
 PrintDec esi
-					invoke InvalidateRect,hMap,NULL,TRUE
 				.endw
 				invoke closesocket,client_socket
 				invoke CloseHandle,client_socket
@@ -229,6 +225,7 @@ PrintDec esi
 	.endif
 	invoke WSACleanup
 	mov		fExitBluetoothThread,2
+	mov		sonardata.fBluetooth,FALSE
 	xor		eax,eax
 	ret
  
