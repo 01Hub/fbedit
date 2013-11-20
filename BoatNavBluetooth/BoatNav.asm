@@ -839,8 +839,9 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke KillTimer,hSonar,1000
 		invoke KillTimer,hSonar,1001
 		mov		fExitMAPThread,TRUE
-		mov		fExitGPSThread,TRUE
+;		mov		fExitGPSThread,TRUE
 		mov		fExitSTMThread,TRUE
+		mov		fExitBluetoothThread,TRUE
 		invoke RtlZeroMemory,addr msg,sizeof MSG
 		invoke GetMessage,addr msg,NULL,0,0
 		invoke TranslateAccelerator,hWnd,hAccel,addr msg
@@ -848,12 +849,12 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke TranslateMessage,addr msg
 			invoke DispatchMessage,addr msg
 		.endif
-		; Terminate GPS Thread
-		invoke WaitForSingleObject,hGPSThread,3000
-		.if eax==WAIT_TIMEOUT
-			invoke TerminateThread,hGPSThread,0
-		.endif
-		invoke CloseHandle,hGPSThread
+;		; Terminate GPS Thread
+;		invoke WaitForSingleObject,hGPSThread,3000
+;		.if eax==WAIT_TIMEOUT
+;			invoke TerminateThread,hGPSThread,0
+;		.endif
+;		invoke CloseHandle,hGPSThread
 		; Terminate STM Thread
 		invoke WaitForSingleObject,hSTMThread,3000
 		.if eax==WAIT_TIMEOUT
@@ -995,9 +996,9 @@ WinMain proc hInst:HINSTANCE,hPrevInst:HINSTANCE,CmdLine:LPSTR,CmdShow:DWORD
 	.endif
 	invoke ShowWindow,hWnd,eax
 	invoke UpdateWindow,hWnd
-	;Create thread that comunicates with the GPS
-	invoke CreateThread,NULL,0,addr GPSThread,0,0,addr tid
-	mov		hGPSThread,eax
+;	;Create thread that comunicates with the GPS
+;	invoke CreateThread,NULL,0,addr GPSThread,0,0,addr tid
+;	mov		hGPSThread,eax
 	;Create thread that paints the map
 	invoke CreateThread,NULL,0,addr MAPThread,0,0,addr tid
 	mov		hMAPThread,eax

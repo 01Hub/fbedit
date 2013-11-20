@@ -1591,7 +1591,7 @@ ButtonProc endp
 DoSleep proc uses ebx eax,time:DWORD
 
 	mov		ebx,time
-	.while sdword ptr ebx>0 && !fExitSTMThread && !fExitGPSThread
+	.while sdword ptr ebx>0 && !fExitSTMThread; && !fExitGPSThread
 		invoke Sleep,25
 		sub		ebx,25
 	.endw

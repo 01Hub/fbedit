@@ -5,7 +5,7 @@ include comdlg32.inc
 include comctl32.inc
 include gdi32.inc
 include gdiplus.inc
-;include gdiplus_structs.inc
+include gdiplus_structs.inc
 include ole32.inc
 include oleaut32.inc
 include winmm.inc
@@ -584,8 +584,8 @@ mousept					POINT <>								;Point where lbutton clicked
 mousemappt				POINT <>
 hMAPThread				HANDLE ?								;Map drawing thread
 fExitMAPThread			DWORD ?									;Flag to exit the map drawing thread
-hGPSThread				HANDLE ?								;Thread to comunicate with GPS
-fExitGPSThread			DWORD ?									;Flag to exit the GPSThread
+;hGPSThread				HANDLE ?								;Thread to comunicate with GPS
+;fExitGPSThread			DWORD ?									;Flag to exit the GPSThread
 hSTMThread				HANDLE ?								;Thread to comunicate with STM32
 fExitSTMThread			DWORD ?									;Flag to exit the STMThread
 szbuff					BYTE 512 dup(?)							;Temporary buffer

@@ -701,11 +701,11 @@ SaveNMEALog proc uses ebx,lpFileName:DWORD
 			invoke SendDlgItemMessage,hWnd,IDC_LSTNMEA,LB_GETTEXT,ebx,addr buffer
 		  .break .if eax==LB_ERR
 			invoke strcat,addr buffer,addr szCRLF
-			invoke strcmpn,addr buffer,addr szGPRMC,6
-			.if !eax
+;			invoke strcmpn,addr buffer,addr szGPRMC,6
+;			.if !eax
 				invoke WriteFile,hFile,addr szNULL,1,addr dwwrite,NULL
-			.else
-			.endif
+;			.else
+;			.endif
 			invoke strlen,addr buffer
 			mov		edx,eax
 			invoke WriteFile,hFile,addr buffer,edx,addr dwwrite,NULL
