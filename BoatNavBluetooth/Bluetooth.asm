@@ -149,7 +149,10 @@ GetNyb:
 BtAddrFromString endp
 
 BlueToothClient proc uses ebx esi edi,Param:DWORD
- 
+	LOCAL	gpsbuff[1024]:BYTE
+	LOCAL	GPSTail:DWORD
+
+	mov		GPSTail,0
 	invoke WSAStartup,wVersionRequested, offset wsdata
 	.if !eax
 		invoke socket,AF_BTH,SOCK_STREAM,BTHPROTO_RFCOMM
@@ -166,6 +169,13 @@ BlueToothClient proc uses ebx esi edi,Param:DWORD
 				xor		esi,esi
 				xor		edi,edi
 				.while !fExitBluetoothThread
+					.if mapdata.GPSReset
+						mov		mapdata.GPSReset,FALSE
+						mov		clientsenddata.Start,2
+						; Send data to STM
+						invoke send,client_socket,offset clientsenddata,sizeof CLIENTSENDDATA,0
+PrintHex eax
+					.endif
 					mov		clientsenddata.Start,1
 					mov		clientsenddata.PingPulses,32
 					mov		clientsenddata.PingTimer,(STM32_Clock/200000/2)-1
@@ -214,7 +224,52 @@ BlueToothClient proc uses ebx esi edi,Param:DWORD
 					.break .if eax==INVALID_SOCKET || eax==0
 					mov		fdataready,TRUE
 					inc		esi
-PrintDec esi
+;PrintDec esi
+					mov		clientsenddata.Start,3
+					; Send data to STM
+					invoke send,client_socket,offset clientsenddata,sizeof CLIENTSENDDATA,0
+					; Get data from STM
+					xor		ebx,ebx
+					.while TRUE
+						mov		eax,512+4
+						.break .if eax==ebx
+						sub		eax,ebx
+						invoke recv,client_socket,addr gpsbuff[ebx],eax,0
+						.break .if eax==INVALID_SOCKET || eax==0
+						add		ebx,eax
+					.endw
+					.break .if eax==INVALID_SOCKET || eax==0
+				  @@:
+					mov		edi,offset szbuff
+					mov		ecx,GPSTail
+					movzx	edx,word ptr gpsbuff
+					.while ecx!=edx && gpsbuff[ecx+4]!='$'
+						inc		ecx
+						and		ecx,511
+					.endw
+					.if gpsbuff[ecx+4]=='$'
+						.while ecx!=edx && gpsbuff[ecx+4]!=0Dh
+							mov		al,gpsbuff[ecx+4]
+							mov		[edi],al
+							inc		edi
+							inc		ecx
+							and		ecx,511
+						.endw
+						.if gpsbuff[ecx+4]==0Dh
+							mov		byte ptr [edi],0
+							mov		GPSTail,ecx
+							;Update NMEA logg
+							invoke SendDlgItemMessage,hWnd,IDC_LSTNMEA,LB_GETCOUNT,0,0
+							mov		ebx,eax
+							.if eax>MAXNMEA
+								invoke SendDlgItemMessage,hWnd,IDC_LSTNMEA,LB_DELETESTRING,0,0
+								dec		ebx
+							.endif
+							invoke SendDlgItemMessage,hWnd,IDC_LSTNMEA,LB_ADDSTRING,0,offset szbuff
+							invoke SendDlgItemMessage,hWnd,IDC_LSTNMEA,LB_SETTOPINDEX,ebx,0
+							jmp		@b
+						.endif
+					.endif
 				.endw
 			.endif
 			invoke closesocket,client_socket
