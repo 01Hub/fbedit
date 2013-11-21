@@ -85,6 +85,7 @@ vu16 Ping;                                      // Value to output to PA1 and PA
 vu8 Setup;                                      // Setup mode
 const u8 GPSBaud[]="$PSRF100,1,9600,8,1,0*0D\r\n\0";  // Set baudrate to 9600
 const u8 GPSInit[]="$PSRF103,04,00,01,00*20\r\n$PSRF103,03,00,05,00*23\r\n$PSRF103,00,00,05,00*20\r\n$PSRF103,02,00,05,00*22\r\n$PSRF103,01,00,00,00*24\r\n$PSRF103,05,00,00,00*20\r\n\0";
+const u8 GPSReset[]="$PSRF104,6619.0370,1411.7980,0,96000,237759,922,12,4*21\r\n\0";
 /* NMEA Messages */
 const u8 szGPRMC[]="$GPRMC\0";
 const u8 szGPGSV[]="$GPGSV\0";
@@ -160,21 +161,15 @@ int main(void)
   /* Setup USART3 115200 baud */
   USART3_Configuration(115200);
   /* Wait until GPS module has started up */
-  i = 0;
-  while (i++ < 20000000)
-  {
-  }
+  i = 20000000;
+  while (i--);
   USART1_puts((char*) GPSBaud);
-  i = 0;
-  while (i++ < 2000000)
-  {
-  }
+  i = 2000000;
+  while (i--);
   /* Set USART1 baudrate to 9600 */
   USART1_Configuration(9600);
-  i = 0;
-  while (i++ < 2000000)
-  {
-  }
+  i = 2000000;
+  while (i--);
   USART1_puts((char*) GPSInit);
 
   Setup = 0;
@@ -192,12 +187,9 @@ int main(void)
     ptr = (u8 *)&STM32_Sonar;
     while (nrec < 0x2A)
     {
-      i = 0;
-      while((USART3->SR & USART_FLAG_RXNE) == 0 && i < 2000000)
-      {
-        i++;
-      }
-      if (i == 2000000)
+      i = 2000000;
+      while((USART3->SR & USART_FLAG_RXNE) == 0 && i-- != 0);
+      if (i == 0)
       {
         break;
       }
@@ -271,7 +263,13 @@ int main(void)
       }
       else if (STM32_Sonar.Start == 2)
       {
-        /* Send NMEA */
+        /* Send NMEA Reset */
+        USART1_puts((char*) GPSReset);
+      }
+      else if (STM32_Sonar.Start == 3)
+      {
+        /* Send NMEA Buffer */
+        USART3_putdata((u8 *)&STM32_Sonar.GPSHead,MAXGPS + 4);
       }
     }
     i = 1000;

@@ -198,9 +198,10 @@ BlueToothClient proc uses ebx esi edi,Param:DWORD
 							lea		ecx,[ecx+1]
 						.endw
 					.endif
-
+					; Send data to STM
 					invoke send,client_socket,offset clientsenddata,sizeof CLIENTSENDDATA,0
 					.break .if eax==INVALID_SOCKET
+					; Get data from STM
 					xor		ebx,ebx
 					.while TRUE
 						mov		eax,FILEREPLAYSIZE
@@ -210,17 +211,14 @@ BlueToothClient proc uses ebx esi edi,Param:DWORD
 						.break .if eax==INVALID_SOCKET || eax==0
 						add		ebx,eax
 					.endw
-					inc		esi
 					.break .if eax==INVALID_SOCKET || eax==0
 					mov		fdataready,TRUE
+					inc		esi
 PrintDec esi
 				.endw
-				invoke closesocket,client_socket
-				invoke CloseHandle,client_socket
-			.else
-				invoke closesocket,client_socket
-				invoke CloseHandle,client_socket
 			.endif
+			invoke closesocket,client_socket
+			invoke CloseHandle,client_socket
 		.endif
 	.endif
 	invoke WSACleanup

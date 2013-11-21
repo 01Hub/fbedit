@@ -1620,7 +1620,6 @@ Random proc uses ecx edx,range:DWORD
 Random endp
 
 STMThread proc uses ebx esi edi,Param:DWORD
-;	LOCAL	status:DWORD
 	LOCAL	dwread:DWORD
 	LOCAL	dwwrite:DWORD
 	LOCAL	buffer[16]:BYTE
@@ -1673,8 +1672,6 @@ STMThread proc uses ebx esi edi,Param:DWORD
 						mov		eax,mapdata.iLat
 						mov		iLat,eax
 						mov		mapdata.fcursor,2
-;						movzx	eax,sonarreplay.SoundSpeed
-;						mov		sonardata.SoundSpeed,eax
 						mov		ax,sonarreplay.ADCBattery
 						mov		sonardata.ADCBattery,ax
 						mov		ax,sonarreplay.ADCWaterTemp

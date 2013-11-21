@@ -1354,7 +1354,7 @@ FindPoint proc uses ebx esi,x:DWORD,y:DWORD,lpLOG:DWORD,nCount:DWORD
 		inc		ebx
 	.endw
 	mov		eax,-1
-Ex:
+  Ex:
 	ret
 
 FindPoint endp
@@ -1591,7 +1591,7 @@ ButtonProc endp
 DoSleep proc uses ebx eax,time:DWORD
 
 	mov		ebx,time
-	.while sdword ptr ebx>0 && !fExitSTMThread; && !fExitGPSThread
+	.while sdword ptr ebx>0 && !fExitSTMThread
 		invoke Sleep,25
 		sub		ebx,25
 	.endw

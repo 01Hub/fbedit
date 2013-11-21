@@ -5,7 +5,7 @@ include comdlg32.inc
 include comctl32.inc
 include gdi32.inc
 include gdiplus.inc
-;include gdiplus_structs.inc
+include gdiplus_structs.inc
 include ole32.inc
 include oleaut32.inc
 include winmm.inc
@@ -525,8 +525,9 @@ szCelcius			BYTE 'C',0
 watertempoffset		DWORD 2500
 watertempconv		REAL8 5.25
 
-szGPSReset			BYTE '$PSRF104,66.307350,14.135830,0,96000,237759,922,12,4*XX',0Dh,0Ah
-					BYTE 0
+;N 66° 19.037', E 14° 11.798'
+;szGPSReset			BYTE '$PSRF104,6619.0370,1411.7980,0,96000,237759,922,12,4*21',0Dh,0Ah
+;					BYTE 0
 
 szDefSonarColors	BYTE '16777215,12632256,10658466,8421504,65535,61680,54741,52942,45824,42496,40704,38400,255,242,223,215,8388608,16039276',0
 

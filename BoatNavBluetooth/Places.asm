@@ -10,7 +10,7 @@ IDC_TRBZOOM             equ 1107
 
 .data?
 
-nPlace				DWORD ?
+nPlace					DWORD ?
 
 .code
 

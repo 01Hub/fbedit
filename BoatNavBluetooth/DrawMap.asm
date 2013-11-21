@@ -739,8 +739,6 @@ MAPThread proc uses esi edi,Param:DWORD
 			invoke ShowGpsCursor,topx,topy,curx,cury,zoomval
 			invoke ShowSpeedBattTempTimeScale
 			invoke BitBlt,mapdata.hDC,0,0,mapdata.mapwt,mapdata.mapht,mapdata.mDC2,0,0,SRCCOPY
-;			invoke InvalidateRect,hGPS,NULL,TRUE
-;			invoke UpdateWindow,hGPS
 		.else
 			invoke DoSleep,100
 		.endif

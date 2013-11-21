@@ -837,10 +837,15 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke ShowWindow,hWin,SW_HIDE
 		invoke KillTimer,hWin,1000
 		invoke KillTimer,hSonar,1000
-		invoke KillTimer,hSonar,1001
-		mov		fExitMAPThread,TRUE
-		mov		fExitSTMThread,TRUE
-		mov		fExitBluetoothThread,TRUE
+		.if !fExitMAPThread
+			mov		fExitMAPThread,TRUE
+		.endif
+		.if !fExitSTMThread
+			mov		fExitSTMThread,TRUE
+		.endif
+		.if !fExitBluetoothThread
+			mov		fExitBluetoothThread,TRUE
+		.endif
 		invoke RtlZeroMemory,addr msg,sizeof MSG
 		invoke GetMessage,addr msg,NULL,0,0
 		invoke TranslateAccelerator,hWnd,hAccel,addr msg
@@ -848,22 +853,29 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke TranslateMessage,addr msg
 			invoke DispatchMessage,addr msg
 		.endif
+		invoke Sleep,500
 		; Terminate STM Thread
-		invoke WaitForSingleObject,hSTMThread,3000
-		.if eax==WAIT_TIMEOUT
-			invoke TerminateThread,hSTMThread,0
+		.if fExitSTMThread!=2
+			invoke WaitForSingleObject,hSTMThread,3000
+			.if eax==WAIT_TIMEOUT
+				invoke TerminateThread,hSTMThread,0
+			.endif
 		.endif
 		invoke CloseHandle,hSTMThread
 		; Terminate Bluetooth Thread
-		invoke WaitForSingleObject,hBluetoothThread,3000
-		.if eax==WAIT_TIMEOUT
-			invoke TerminateThread,hBluetoothThread,0
+		.if fExitBluetoothThread!=2
+			invoke WaitForSingleObject,hBluetoothThread,3000
+			.if eax==WAIT_TIMEOUT
+				invoke TerminateThread,hBluetoothThread,0
+			.endif
 		.endif
 		invoke CloseHandle,hBluetoothThread
 		; Terminate MAP Thread
-		invoke WaitForSingleObject,hMAPThread,3000
-		.if eax==WAIT_TIMEOUT
-			invoke TerminateThread,hMAPThread,0
+		.if fExitMAPThread!=2
+			invoke WaitForSingleObject,hMAPThread,3000
+			.if eax==WAIT_TIMEOUT
+				invoke TerminateThread,hMAPThread,0
+			.endif
 		.endif
 		invoke CloseHandle,hMAPThread
 		invoke GlobalFree,mapdata.hMemLon
@@ -988,7 +1000,7 @@ WinMain proc hInst:HINSTANCE,hPrevInst:HINSTANCE,CmdLine:LPSTR,CmdShow:DWORD
 	;Create thread that paints the map
 	invoke CreateThread,NULL,0,addr MAPThread,0,0,addr tid
 	mov		hMAPThread,eax
-	;Create thread that comunicates with the STM
+	;Create thread that updates using data from STM
 	invoke CreateThread,NULL,NULL,addr STMThread,0,0,addr tid
 	mov		hSTMThread,eax
 	;Create thread that comunicates with the STM using Bluetooth
@@ -1081,7 +1093,7 @@ start:
 	invoke GdiplusStartup,offset token,offset gdiplSTI,NULL
 	invoke WinMain,hInstance,NULL,CommandLine,SW_SHOWDEFAULT
 	invoke GdiplusShutdown,token
-;invoke GetChksum,offset szGPSInitData
+;invoke GetChksum,offset szGPSReset
 	invoke ExitProcess,eax
 
 end start
