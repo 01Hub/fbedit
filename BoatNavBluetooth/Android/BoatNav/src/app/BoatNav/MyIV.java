@@ -110,6 +110,7 @@ public class MyIV extends ImageView {
 	public static boolean sonarfishicon = true;
 	public static int sonarrangeinx = 4;
 	public static int sonarrangechange = 0;
+	public static int sonarrangechangedir = 1;
 	public static boolean sonarautorange = true;
 
 	private static Rect srcrect = new Rect(0,0,0,0);
@@ -118,7 +119,8 @@ public class MyIV extends ImageView {
 	public static Bitmap sonarsignalbmp;
 	public static int[] sonarbmpwidth = new int[MAXSONARBMP];
 	public static int[] sonarbmprange = new int[MAXSONARBMP];
-	public static int cursonarrange = 2;// range[0].range;
+	public static int sonarofs = 0;
+	public static int cursonarrange = 2;
 	public static int echoarrayinx = 0;
 	public static int echoarraycount = 0;
 	public static int sonarcount = 0;
@@ -256,6 +258,10 @@ public class MyIV extends ImageView {
 			trail[i * 3] = sc.iLat;
 			trail[i * 3 + 1] = sc.iLon;
 			trail[i * 3 + 2] = sc.iBear;
+		}
+		if (locktogps == false)
+		{
+			sonarofs++;
 		}
 //		Log.d("MYTAG", "Trailpoints: " + trailpoints);
 	}
@@ -874,7 +880,7 @@ public class MyIV extends ImageView {
 		float fishdepth;
 		while (inx < MAXFISH) {
 			if (fisharray[0][inx] != 0) {
-				x = scrnwt - SONARRANGEBARWIDTH - fisharray[1][inx];
+				x = scrnwt - SONARRANGEBARWIDTH - fisharray[1][inx] + sonarofs;
 				fishdepth = (float)((float)fisharray[2][inx] / 512f * (float)range[fisharray[3][inx]].range);
 				y = (int)((fishdepth / (float)cursonarrange) * (float)scrnht);
 				// Draw fish icon
@@ -1001,8 +1007,14 @@ public class MyIV extends ImageView {
         dstrect.bottom = scrnht;
 		canvas.drawBitmap(sonarsignalbmp, srcrect, dstrect, null);
 		// Draw sonar data
+		if (mapwt != 0) {
+			canvas.clipRect(mapwt+1, 0, mapwt + sonarwt - SONARSIGNALGRAHWIDTH, scrnht, Region.Op.REPLACE);
+		}
+		else {
+			canvas.clipRect(0, 0, sonarwt - SONARSIGNALGRAHWIDTH, scrnht, Region.Op.REPLACE);
+		}
 		i = sonarbmpinx;
-		r = mapwt + sonarwt - SONARRANGEBARWIDTH;
+		r = mapwt + sonarwt - SONARRANGEBARWIDTH + sonarofs;
 		while (true) {
 			dstrect.right = r;
 	        r -= sonarbmpwidth[i];
@@ -1038,6 +1050,12 @@ public class MyIV extends ImageView {
 			}
 		}
         DrawSonarFish(canvas);
+		if (mapwt != 0) {
+			canvas.clipRect(mapwt+1, 0, mapwt + sonarwt, scrnht, Region.Op.REPLACE);
+		}
+		else {
+			canvas.clipRect(0, 0, sonarwt, scrnht, Region.Op.REPLACE);
+		}
         DrawSonarRangeBar(6, Color.WHITE,canvas);
         DrawSonarRangeBar(3, Color.BLACK,canvas);
 		// Draw sonar range

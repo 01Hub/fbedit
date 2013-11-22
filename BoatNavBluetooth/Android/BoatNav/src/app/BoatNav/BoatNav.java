@@ -57,7 +57,7 @@ import app.BoatNav.R;
 
 public class BoatNav extends Activity {
 	public static MyIV mIV;
-	private static float xd,yd,xs,ys;
+	private static float xd, yd, xs, ys, sxs;
 	public static Bitmap mGrayBitmap;
 	public static Bitmap mIcons;
 	public static BmpClass[] bmp = BmpClass.BmpClassSet(MyIV.MAPMAXBMP + MyIV.MAPMAXICON);
@@ -78,15 +78,15 @@ public class BoatNav extends Activity {
 	public static int blinkrate = 0;
 	private static int soundplaying = 0;
 	private static ArrayAdapter<String> btadapter;
-	private static ArrayList<String> btlistItems=new ArrayList<String>();
+	private static ArrayList<String> btlistItems = new ArrayList<String>();
     // Well known SPP UUID
     private static final UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
+    public static String sbtdeviceaddr = "00:18:B2:02:D2:AD";
 	private static BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
     private static BluetoothDevice mBluetoothDevice = null;
     private BluetoothSocket mBluetoothSocket = null;
     private OutputStream mOutputStream = null;
     private InputStream mInputStream = null;
-    public static String sbtdeviceaddr = "";
     public static java.text.DateFormat mdateFormat;
 
     @Override
@@ -138,7 +138,6 @@ public class BoatNav extends Activity {
 		mIV.invalidate();
 	}
 
-
 	private void TimerMethod()
 	{
 		this.runOnUiThread(Timer_Tick);
@@ -151,21 +150,79 @@ public class BoatNav extends Activity {
 		}
 	}
 
-
 	private void NormalMode() {
 		Boolean err = false;
-        String message = "OK\0";
-        byte[] msgBuffer = message.getBytes();
+        BTClass btSend = new BTClass();
+        byte[] msgBuffer = new byte[42];
+        double tmp;
+        int ri = MyIV.sonarrangeinx;
+        
+		if (MyIV.sonarautorange) {
+			// Check range change
+			if (MyIV.nodepth) {
+				if (MyIV.sonarrangechange > 5)
+				{
+					ri += MyIV.sonarrangechangedir;
+					if (ri == 0 || ri == MyIV.MAXSONARRANGE)
+					{
+						MyIV.sonarrangechangedir = -MyIV.sonarrangechangedir;
+					}
+					MyIV.sonarrangechange = 0;
+				}
+			}
+			else if (MyIV.sonarrangechange > 5)
+			{
+				float d = (float)MyIV.range[ri].range;
+				if (((float)MyIV.curdepth > (d - d / 5f)) && ri < 19) {
+					MyIV.rndpixdpt = (MyIV.rndpixdpt * MyIV.range[ri].range) / MyIV.range[ri + 1].range;
+					ri++;
+					MyIV.sonarrangechange = 0;
+				}
+				else if (((float)MyIV.curdepth < (d / 5f)) && ri > 0) {
+					MyIV.rndpixdpt = (MyIV.rndpixdpt * MyIV.range[ri].range) / MyIV.range[ri - 1].range;
+					ri--;
+					MyIV.sonarrangechange = 0;
+				}
+			}
+		}
+		MyIV.sonarrangechange++;
+
+        btSend.Start = 1;
+        btSend.PingPulses = (byte)(16 + MyIV.range[MyIV.sonarrangeinx].pingadd);
+        btSend.PingTimer = (40000000 / 200000 / 2)-1;
+        btSend.RangeInx = (byte)ri;
+        tmp = ((MyIV.range[MyIV.sonarrangeinx].range / MyIV.SONARTILEHEIGHT) / (1450 / 2)) * 40000000;
+        btSend.PixelTimer = (short)tmp;
+        btSend.GainInit[0] = 750;
+        int i = 0;
+        while (i < 17)
+        {
+        	btSend.GainInit[i + 1] = (short)MyIV.range[MyIV.sonarrangeinx].gain[i];
+        	i++;
+        }
+        msgBuffer[0] = btSend.Start;
+        msgBuffer[1] = btSend.PingPulses;
+        msgBuffer[2] = btSend.PingTimer;
+        msgBuffer[3] = btSend.RangeInx;
+        msgBuffer[4] = (byte)(btSend.PixelTimer & 0xFF);
+        msgBuffer[5] = (byte)(btSend.PixelTimer / 256);
+        i = 0;
+        while (i < 18)
+        {
+        	msgBuffer[i * 2 + 6] = (byte)(btSend.GainInit[i] & 0xFF);
+        	msgBuffer[i * 2 + 7] = (byte)(btSend.GainInit[i] >> 8);
+        	i++;
+        }
         try {
         	mOutputStream.write(msgBuffer);
             try {
             	int bytes = 0;
-                byte[] buffer = new byte[MyIV.SONARARRAYSIZE + 4];
+                byte[] buffer = new byte[MyIV.SONARARRAYSIZE];
                	bytes = mInputStream.read(buffer);
-               	if (bytes == MyIV.SONARARRAYSIZE + 4) {
+               	if (bytes == MyIV.SONARARRAYSIZE) {
                		bytes = 0;
                		while (bytes < MyIV.SONARARRAYSIZE) {
-               			MyIV.replayarray[bytes] = buffer[bytes + 4];
+               			MyIV.replayarray[bytes] = buffer[bytes];
                			bytes++;
                		}
                		MyIV.TraslateFromByteArray();
@@ -230,9 +287,18 @@ public class BoatNav extends Activity {
 		if (MyIV.sonarautorange) {
 			// Check range change
 			if (MyIV.nodepth) {
-				
+				if (MyIV.sonarrangechange > 5)
+				{
+					ri += MyIV.sonarrangechangedir;
+					if (ri == 0 || ri == MyIV.MAXSONARRANGE)
+					{
+						MyIV.sonarrangechangedir = -MyIV.sonarrangechangedir;
+					}
+					MyIV.sonarrangechange = 0;
+				}
 			}
-			else if (MyIV.sonarrangechange > 5) {
+			else if (MyIV.sonarrangechange > 5)
+			{
 				float d = (float)MyIV.range[ri].range;
 				if (((float)MyIV.curdepth > (d - d / 5f)) && ri < 19) {
 					MyIV.rndpixdpt = (MyIV.rndpixdpt * MyIV.range[ri].range) / MyIV.range[ri + 1].range;
@@ -309,9 +375,9 @@ public class BoatNav extends Activity {
 			i++;
 		}
 		// Random bottom weak echo
-		j += rnd.nextInt(x * 2);
+		j += rnd.nextInt(x * 2) + 12;
 		while (i < j && i < MyIV.SONARTILEHEIGHT) {
-			pix = rnd.nextInt(64);
+			pix = rnd.nextInt(64) + 64;
 			MyIV.sc.sonar[i] = (byte)pix;
 			i++;
 		}
@@ -534,7 +600,6 @@ public class BoatNav extends Activity {
 			@Override
 			public void onClick(View v) {
 		    	Boolean err = false;
-				sbtdeviceaddr = "00:1E:4C:DC:EF:36";
 		        try {
 		            // Set up a pointer to the remote node using it's address.
 		        	mBluetoothDevice = mBluetoothAdapter.getRemoteDevice(sbtdeviceaddr);
@@ -624,7 +689,7 @@ public class BoatNav extends Activity {
 		dialog.setContentView(R.layout.dialogreplay);
 		dialog.setTitle("Replay");
 
-	    ListView lv = (ListView) dialog.findViewById(R.id.lvFiles);//new ListView(this);
+	    ListView lv = (ListView) dialog.findViewById(R.id.lvFiles);
 
         adapter=new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, listItems);
         lv.setAdapter(adapter);
@@ -1096,6 +1161,15 @@ public class BoatNav extends Activity {
             switch (i) {
             case R.id.action_lock:
             	MyIV.locktogps = !MyIV.locktogps;
+            	if (MyIV.locktogps)
+            	{
+            		item.setIcon(R.drawable.lock);
+            		MyIV.sonarofs = 0;
+            	}
+            	else
+            	{
+            		item.setIcon(R.drawable.unlock);
+            	}
                 return true;
             case R.id.action_zoomin:
             	// Zoom In
@@ -1274,10 +1348,11 @@ public class BoatNav extends Activity {
 		case MotionEvent.ACTION_POINTER_UP:
 			return (true);
 		case MotionEvent.ACTION_DOWN:
-			xs=MyIV.xofs;
-			ys=MyIV.yofs;
-			xd=event.getAxisValue(0);
-			yd=event.getAxisValue(1);
+			xs = MyIV.xofs;
+			ys = MyIV.yofs;
+			sxs = MyIV.sonarofs;
+			xd = event.getAxisValue(0);
+			yd = event.getAxisValue(1);
 			MyIV.cpx = (int)xd;
 			MyIV.cpy = (int)yd - GetTopBarHeight();
 			mIV.invalidate();
@@ -1287,8 +1362,17 @@ public class BoatNav extends Activity {
 		case MotionEvent.ACTION_MOVE:
 			if (!MyIV.locktogps) {
 				if (xd < MyIV.mapwt) {
-					MyIV.xofs=xs-(xd-event.getAxisValue(0,event.getPointerCount()-1));
-					MyIV.yofs=ys-(yd-event.getAxisValue(1,event.getPointerCount()-1));
+					MyIV.xofs = xs - (xd - event.getAxisValue(0, event.getPointerCount() - 1));
+					MyIV.yofs = ys - (yd - event.getAxisValue(1, event.getPointerCount() - 1));
+					mIV.invalidate();
+				}
+				else if (xd > MyIV.mapwt)
+				{
+					MyIV.sonarofs = (int)(sxs - (xd - event.getAxisValue(0, event.getPointerCount() - 1)));
+					if (MyIV.sonarofs < 0)
+					{
+						MyIV.sonarofs = 0;
+					}
 					mIV.invalidate();
 				}
 			}
