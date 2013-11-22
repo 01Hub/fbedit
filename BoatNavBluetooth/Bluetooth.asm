@@ -173,8 +173,9 @@ BlueToothClient proc uses ebx esi edi,Param:DWORD
 						mov		mapdata.GPSReset,FALSE
 						mov		clientsenddata.Start,2
 						; Send data to STM
-						invoke send,client_socket,offset clientsenddata,sizeof CLIENTSENDDATA,0
-PrintHex eax
+						mov		esi,offset clientsenddata
+						mov		edi,sizeof CLIENTSENDDATA
+						call	BTPut
 					.endif
 					mov		clientsenddata.Start,1
 					mov		clientsenddata.PingPulses,32
@@ -209,35 +210,45 @@ PrintHex eax
 						.endw
 					.endif
 					; Send data to STM
-					invoke send,client_socket,offset clientsenddata,sizeof CLIENTSENDDATA,0
+					mov		esi,offset clientsenddata
+					mov		edi,sizeof CLIENTSENDDATA
+					call	BTPut
 					.break .if eax==INVALID_SOCKET
 					; Get data from STM
-					xor		ebx,ebx
-					.while TRUE
-						mov		eax,FILEREPLAYSIZE
-						.break .if eax==ebx
-						sub		eax,ebx
-						invoke recv,client_socket,addr serversenddata[ebx],eax,0
-						.break .if eax==INVALID_SOCKET || eax==0
-						add		ebx,eax
-					.endw
+					mov		esi,offset serversenddata
+					mov		edi,FILEREPLAYSIZE
+					call	BTGet
+;					xor		ebx,ebx
+;					.while TRUE
+;						mov		eax,FILEREPLAYSIZE
+;						.break .if eax==ebx
+;						sub		eax,ebx
+;						invoke recv,client_socket,addr serversenddata[ebx],eax,0
+;						.break .if eax==INVALID_SOCKET || eax==0
+;						add		ebx,eax
+;					.endw
 					.break .if eax==INVALID_SOCKET || eax==0
 					mov		fdataready,TRUE
-					inc		esi
+;inc		esi
 ;PrintDec esi
 					mov		clientsenddata.Start,3
 					; Send data to STM
-					invoke send,client_socket,offset clientsenddata,sizeof CLIENTSENDDATA,0
+					mov		esi,offset clientsenddata
+					mov		edi,sizeof CLIENTSENDDATA
+					call	BTPut
 					; Get data from STM
-					xor		ebx,ebx
-					.while TRUE
-						mov		eax,512+4
-						.break .if eax==ebx
-						sub		eax,ebx
-						invoke recv,client_socket,addr gpsbuff[ebx],eax,0
-						.break .if eax==INVALID_SOCKET || eax==0
-						add		ebx,eax
-					.endw
+					lea		esi,gpsbuff
+					mov		edi,512+4
+					call	BTGet
+;					xor		ebx,ebx
+;					.while TRUE
+;						mov		eax,512+4
+;						.break .if eax==ebx
+;						sub		eax,ebx
+;						invoke recv,client_socket,addr gpsbuff[ebx],eax,0
+;						.break .if eax==INVALID_SOCKET || eax==0
+;						add		ebx,eax
+;					.endw
 					.break .if eax==INVALID_SOCKET || eax==0
 				  @@:
 					mov		edi,offset szbuff
@@ -281,6 +292,30 @@ PrintHex eax
 	mov		sonardata.fBluetooth,FALSE
 	xor		eax,eax
 	ret
- 
+
+; Get data from STM
+BTGet:
+	xor		ebx,ebx
+	.while ebx<edi
+		mov		eax,edi
+		sub		eax,ebx
+		invoke recv,client_socket,addr [esi+ebx],eax,0
+		.break .if eax==INVALID_SOCKET || eax==0
+		add		ebx,eax
+	.endw
+	retn
+
+; Send data to STM
+BTPut:
+	xor		ebx,ebx
+	.while ebx<edi
+		mov		eax,edi
+		sub		eax,ebx
+		invoke send,client_socket,addr [esi+ebx],eax,0
+		.break .if eax==INVALID_SOCKET || eax==0
+		add		ebx,eax
+	.endw
+	retn
+
 BlueToothClient endp
  

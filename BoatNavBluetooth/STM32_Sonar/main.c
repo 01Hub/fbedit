@@ -83,8 +83,11 @@ static STM32_SonarDataTypeDef STM32_SonarData;
 vu8 BlueLED;                                    // Current state of the blue led
 vu16 Ping;                                      // Value to output to PA1 and PA2 pins
 vu8 Setup;                                      // Setup mode
-const u8 GPSBaud[]="$PSRF100,1,9600,8,1,0*0D\r\n\0";  // Set baudrate to 9600
+/* Set GPS baudrate to 9600 */
+const u8 GPSBaud[]="$PSRF100,1,9600,8,1,0*0D\r\n\0";
+/* GPS Initialization */
 const u8 GPSInit[]="$PSRF103,04,00,01,00*20\r\n$PSRF103,03,00,05,00*23\r\n$PSRF103,00,00,05,00*20\r\n$PSRF103,02,00,05,00*22\r\n$PSRF103,01,00,00,00*24\r\n$PSRF103,05,00,00,00*20\r\n\0";
+/* GPS Reset */
 const u8 GPSReset[]="$PSRF104,66.317270,14.196690,0,96000,237759,922,12,4*2A\r\n\0";
 /* NMEA Messages */
 const u8 szGPRMC[]="$GPRMC\0";
