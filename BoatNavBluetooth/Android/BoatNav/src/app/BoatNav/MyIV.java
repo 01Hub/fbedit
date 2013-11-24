@@ -36,8 +36,6 @@ public class MyIV extends ImageView {
 	public static float xofs = 0;
 	public static float yofs = 0;
 
-//	public static String sTextWrite = "";
-//	public static String sTextRead = "";
 	public static String sTextWait = "";
 	public static int mode = 1;
 	public static int viewmode = 2;
@@ -82,6 +80,7 @@ public class MyIV extends ImageView {
 	public static double distance = 0;
 	public static int curbearing = 0;
 	public static int curspeed = 0;
+	public static int curfix = 0;
 	public static float curbatt = 12.6f;
 	public static float curatemp = 17.2f;
 	public static String curtime = "29.10.2013 11:45:04";
@@ -147,6 +146,15 @@ public class MyIV extends ImageView {
 	public static byte[] replayarray = new byte[SONARARRAYSIZE];
 	public static SonarClass sc = new SonarClass();
 	public static RangeClass[] range = RangeClass.RangeClassSet(MAXSONARRANGE);
+
+	/*
+	range			Range in meters
+	mindepth		Index where to start depth search
+	interval		Update rate (ms)
+	pingadd			Number of pulses to add to initial ping pulses (0 to 127). Used when autoping is on
+	gain			Gain levels for every 32 pixels. Used when auto gain is on
+	scale			Text to draw on range bar
+	*/
 	public static String rangestr[] ={"2,60,150,2,0,2,4,6,8,10,13,15,17,19,21,23,25,27,29,31,33,0,8,0,,0.5,,1,,1.5,,2",
 								   	  "4,30,150,4,0,4,8,13,17,21,25,29,33,38,42,46,50,54,59,63,67,0,8,0,,1,,2,,3,,4",
 								      "6,25,150,6,0,6,13,19,25,31,38,44,50,56,63,69,75,82,88,94,100,0,12,0,,1,,2,,3,,4,,5,,6",
@@ -184,20 +192,20 @@ public class MyIV extends ImageView {
 //SONARREPLAY ends
 
 //SATELITE struct (6*12 bytes = 72 bytes)
-//	SatelliteID		BYTE ?									;Satellite ID
-//	Elevation		BYTE ?									;Elevation in degrees (0-90)
-//	Azimuth			WORD ?									;Azimuth in degrees (0-359)
-//	SNR				BYTE ?									;Signal strength	(0-50, 0 not tracked) 
-//	Fixed			BYTE ?									;TRUE if used in fix
+//	SatelliteID			BYTE ?								;Satellite ID
+//	Elevation			BYTE ?								;Elevation in degrees (0-90)
+//	Azimuth				WORD ?								;Azimuth in degrees (0-359)
+//	SNR					BYTE ?								;Signal strength	(0-50, 0 not tracked) 
+//	Fixed				BYTE ?								;TRUE if used in fix
 //SATELITE ends
 
 //ALTITUDE struct (10 bytes)
-//	fixquality		BYTE ?									;Fix quality
-//	nsat			BYTE ?									;Number of satellites tracked
-//	hdop			WORD ?									;Horizontal dilution of position * 10
-//	vdop			WORD ?									;Vertical dilution of position * 10
-//	pdop			WORD ?									;Position dilution of position * 10
-//	alt				WORD ?									;Altitude in meters
+//	fixquality			BYTE ?								;Fix quality
+//	nsat				BYTE ?								;Number of satellites tracked
+//	hdop				WORD ?								;Horizontal dilution of position * 10
+//	vdop				WORD ?								;Vertical dilution of position * 10
+//	pdop				WORD ?								;Position dilution of position * 10
+//	alt					WORD ?								;Altitude in meters
 //ALTITUDE ends
 
 	public static void TraslateFromByteArray() {
@@ -210,6 +218,7 @@ public class MyIV extends ImageView {
 		sc.iLat = (((int)replayarray[23] << 24) & 0xFF000000) | (((int)replayarray[22] << 16) & 0x00FF0000) | (((int)replayarray[21] << 8) & 0x0000FF00) | (((int)replayarray[20]) & 0x000000FF);
 		sc.iSpeed = (short)(((short)(replayarray[24]) & 0xFF) | ((short)(replayarray[25] << 8) & 0xFF00));
 		sc.iBear = (short)(((short)(replayarray[26]) & 0xFF) | ((short)(replayarray[27] << 8) & 0xFF00));
+		sc.fixquality = replayarray[28 + 72];
 		i = 0;
 		while (i < SONARTILEHEIGHT) {
 			sc.sonar[i] = replayarray[i + SONAROFFSET];
@@ -236,9 +245,14 @@ public class MyIV extends ImageView {
 			}
 			i += 2;
 		}
-		curatemp = ((float)(AirTempArray[i - 1]) - ((float)(AirTempArray[i - 1] - AirTempArray[i + 1]) / (float)(AirTempArray[i] - AirTempArray[i - 2])) * (float)(sc.ADCAirTemp - AirTempArray[i - 2])) / 10f;
+		if (i == 0) {
+			curatemp = 0;
+		} else {
+			curatemp = ((float)(AirTempArray[i - 1]) - ((float)(AirTempArray[i - 1] - AirTempArray[i + 1]) / (float)(AirTempArray[i] - AirTempArray[i - 2])) * (float)(sc.ADCAirTemp - AirTempArray[i - 2])) / 10f;
+		}
 		curbearing = sc.iBear;
 		curspeed = sc.iSpeed;
+		curfix = sc.fixquality;
 		GoTo((double)sc.iLat / 1000000d, (double)sc.iLon / 1000000d, locktogps);
 		UpdateSonarBitmap();
 		// Update trail
@@ -396,7 +410,7 @@ public class MyIV extends ImageView {
 	private static void FindDepth() {
 		int y, depthstartinx, depthinx, maxsum, sum;
 		if (echoarraycount >= 4) {
-			y = 16;
+			y = range[sonarrangeinx].mindepth;
 			while (y < 256) {
 				sum =((int)echoarray[0][y]) & 0xFF;
 				sum +=((int)echoarray[1][y]) & 0xFF;
@@ -950,8 +964,6 @@ public class MyIV extends ImageView {
 			index++;
 		}
 		DrawTrail(canvas);
-		// Draw speed
-		DrawText(10, 50, 50, String.format("%.1f",((float)curspeed/10)), canvas);
 		// Draw battery
 		DrawText(10, scrnht - 15, 25, String.format("%.1f",(curbatt)) + "V", canvas);
 		// Draw air temperature
@@ -962,12 +974,22 @@ public class MyIV extends ImageView {
 		// Draw distance
 		paint.setTextAlign(Paint.Align.CENTER);
 		DrawText(mapwt / 2, 15, 15, String.format("%.0f", distance) + "m", canvas);
-		// Draw cursor
+		// Cursor
 		index = (int)((double)curbearing / 22.5d) & 15;
 		GpsPosToMapPos(curlat, curlon);
 		MapPosToScrnPos();
 		ScrnPosToCurPos();
-		canvas.drawBitmap(BoatNav.bmp[MAPMAXBMP + index].bm, cpx-8, cpy-8, null);
+		paint.setTextAlign(Paint.Align.LEFT);
+		// Draw speed and cursor
+		if (curfix > 1) {
+			DrawText(10, 50, 50, String.format("%.1f",((float)curspeed/10)), canvas);
+			canvas.drawBitmap(BoatNav.bmp[MAPMAXBMP + index].bm, cpx-8, cpy-8, null);
+		} else {
+			if (blink) {
+				DrawText(10, 50, 50, String.format("%.1f",((float)curspeed/10)), canvas);
+				canvas.drawBitmap(BoatNav.bmp[MAPMAXBMP + index].bm, cpx-8, cpy-8, null);
+			}
+		}
 	}
 
 	private void DrawSonar(Canvas canvas) {

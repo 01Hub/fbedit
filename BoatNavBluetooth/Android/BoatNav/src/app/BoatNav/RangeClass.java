@@ -4,9 +4,9 @@ package app.BoatNav;
 //range			DWORD ?									;Range in meters
 //mindepth		DWORD ?									;Min index for depth search
 //interval		DWORD ?									;Update rate
-//pixeltimer		DWORD ?									;Pixel timer value
-//pingadd			DWORD ?									;Number of pulses to add to the initial ping (0 to 128). Used when autoping is on
-//nticks			DWORD ?									;Number of ticks on the range scale
+//pixeltimer	DWORD ?									;Pixel timer value
+//pingadd		DWORD ?									;Number of pulses to add to the initial ping (0 to 128). Used when autoping is on
+//nticks		DWORD ?									;Number of ticks on the range scale
 //scale			BYTE 64 dup(?)							;Zero terminated strings of depths on range scale
 //gain			DWORD 17 dup(?)							;Gain increment levels read from ini file
 //RANGE ends

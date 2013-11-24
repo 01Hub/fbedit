@@ -8,7 +8,7 @@ F2=-3,0,1,-6,7,901,534,376,BoatNav.inc
 F3=-5,2,4,-6,-25,1452,731,572,BoatNav.rc
 Open=11,1,2,3,12,5,6,7,8,9,10,13,19
 Api=
-F4=-4,0,2,-10,-32,1719,867,56,BoatNav.ini
+F4=-4,0,2,-6,-25,1181,592,93,BoatNav.ini
 Misc.asm
 GpsComm.asm
 Options.asm

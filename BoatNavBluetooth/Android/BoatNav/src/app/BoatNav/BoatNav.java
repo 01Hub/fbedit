@@ -50,7 +50,7 @@ import java.util.Random;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.UUID;
+//import java.util.UUID;
 
 import app.BoatNav.BmpClass;
 import app.BoatNav.MyIV;
@@ -82,7 +82,7 @@ public class BoatNav extends Activity {
 	private static ArrayList<String> btlistItems = new ArrayList<String>();
     public static java.text.DateFormat mdateFormat;
     // Well known SPP UUID
-    private static final UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
+    //private static final UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
     public static String sbtdeviceaddr = "00:18:B2:02:D2:AD";
     protected BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
     BluetoothDevice mBluetoothDevice = null;
@@ -94,7 +94,6 @@ public class BoatNav extends Activity {
     public static byte[] btreadbuffer = new byte[MyIV.SONARARRAYSIZE];
     public static boolean btstart = false;
     public static boolean btconnected = false;
-    public static int btwait;
 
     @Override
 	public void onCreate(Bundle icicle) {
@@ -148,8 +147,6 @@ public class BoatNav extends Activity {
         			        double tmp;
         			        int ri = MyIV.sonarrangeinx;
         			        
-//                			btwait++;
-//                			MyIV.sTextWait = "Wait: " + btwait;
         					if (MyIV.sonarautorange) {
         						// Check range change
         						if (MyIV.nodepth) {
@@ -220,7 +217,7 @@ public class BoatNav extends Activity {
         				               			MyIV.replayarray[bytes] = btreadbuffer[bytes];
         				               			bytes++;
         				               		}
-        				               		MyIV.TraslateFromByteArray();
+//        				               		MyIV.TraslateFromByteArray();
         				               		//MyIV.sc.ADCBattery = 2234;
         				               		//MyIV.sc.ADCWaterTemp = 1900;
         				               		//MyIV.sc.ADCAirTemp = 1500;
@@ -230,7 +227,7 @@ public class BoatNav extends Activity {
         				               		//MyIV.sc.iSpeed = 0;
         				               		//MyIV.sc.iBear = 0;
         				               		//MyIV.sc.sonar[0] = 4;
-        				               		MyIV.SonarShow();
+//        				               		MyIV.SonarShow();
         			               		}
         			               	}
         			            } 
@@ -296,9 +293,13 @@ public class BoatNav extends Activity {
 
 	private void NormalMode() {
 		if (btstart == false) {
-       		mIV.invalidate();
+       		if (((int)btreadbuffer[0] & 0xFF) == 201) {
+           		MyIV.TraslateFromByteArray();
+           		MyIV.SonarShow();
+       		}
 			btstart = true;
 		}
+   		mIV.invalidate();
 	}
 
 	private void DemoMode() {
@@ -1278,7 +1279,11 @@ public class BoatNav extends Activity {
             case R.id.item8:
             	try {
             		if (MyIV.mode == 2) {
-            			MyIV.mode = 1;
+        				if (BoatNav.btconnected) {
+        					MyIV.mode = 0;
+        				} else {
+        					MyIV.mode = 1;
+        				}
             			replayfile.close();
                     	MyIV.ClearTrail();
             		}
