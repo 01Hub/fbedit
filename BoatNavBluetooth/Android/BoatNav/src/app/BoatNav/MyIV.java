@@ -36,6 +36,9 @@ public class MyIV extends ImageView {
 	public static float xofs = 0;
 	public static float yofs = 0;
 
+//	public static String sTextWrite = "";
+//	public static String sTextRead = "";
+	public static String sTextWait = "";
 	public static int mode = 1;
 	public static int viewmode = 2;
 	public static boolean land = true;
@@ -253,14 +256,12 @@ public class MyIV extends ImageView {
 				trailtail &= MAPMAXTRAIL - 1;
 			}
 			trailpoints++;
-		}
-		else {
+		} else {
 			trail[i * 3] = sc.iLat;
 			trail[i * 3 + 1] = sc.iLon;
 			trail[i * 3 + 2] = sc.iBear;
 		}
-		if (locktogps == false)
-		{
+		if (locktogps == false) {
 			sonarofs++;
 		}
 //		Log.d("MYTAG", "Trailpoints: " + trailpoints);
@@ -273,21 +274,21 @@ public class MyIV extends ImageView {
 			if (nBytes == SONARARRAYSIZE) {
 				TraslateFromByteArray();
 				SonarShow();
-			}
-			else {
-				mode = 1;
+			} else {
+				if (BoatNav.btconnected) {
+					mode = 0;
+				} else {
+					mode = 1;
+				}
 				replayfile.close();
 	        	ClearTrail();
 			}
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			try {
 				mode = 1;
 				replayfile.close();
 	        	ClearTrail();
-			}
-			catch (Exception e1) {
-
+			} catch (Exception e1) {
 			}
 		}
 	}
@@ -354,8 +355,7 @@ public class MyIV extends ImageView {
 					sum +=((int)echoarray[3][y+2]) & 0xFF;
 					if (sum > BIGFISH * 3) {
 						AddFish(y, 2);
-					}
-					else if (sum > SMALLFISH * 3) {
+					} else if (sum > SMALLFISH * 3) {
 						AddFish(y, 1);
 					}
 			    	break;
@@ -371,8 +371,7 @@ public class MyIV extends ImageView {
 					sum +=((int)echoarray[3][y+1]) & 0xFF;
 					if (sum > BIGFISH * 2) {
 						AddFish(y, 2);
-					}
-					else if (sum > SMALLFISH * 2) {
+					} else if (sum > SMALLFISH * 2) {
 						AddFish(y, 1);
 					}
 			    	break;
@@ -384,8 +383,7 @@ public class MyIV extends ImageView {
 					sum +=((int)echoarray[3][y]) & 0xFF;
 					if (sum > BIGFISH * 1) {
 						AddFish(y, 2);
-					}
-					else if (sum > SMALLFISH * 1) {
+					} else if (sum > SMALLFISH * 1) {
 						AddFish(y, 1);
 					}
 			    	break;
@@ -466,8 +464,7 @@ public class MyIV extends ImageView {
 					// Find fish
 					FindFish(depthstartinx, depthinx);
 				}
-			}
-			else {
+			} else {
 				nodepth = true;
 			}
 		}
@@ -516,8 +513,7 @@ public class MyIV extends ImageView {
 		    	echoarray[1][y] = sc.sonar[y];
 		    	echoarray[2][y] = sc.sonar[y];
 		    	echoarray[3][y] = sc.sonar[y];
-	    	}
-	    	else {
+	    	} else {
 		    	echoarray[echoarrayinx][y] = sc.sonar[y];
 	    	}
 		    signal = ((int)sc.sonar[y]) & 0xFF;
@@ -667,8 +663,7 @@ public class MyIV extends ImageView {
 			if (zoomadd == 1) {
 				xofs = xofs * 2f - scrnwt / 2f;
 				yofs = yofs * 2f - scrnht / 2f;
-			}
-			else if (zoomadd == -1) {
+			} else if (zoomadd == -1) {
 				xofs = xofs / 2f + scrnwt / 4f;
 				yofs = yofs / 2f + scrnht / 4f;
 			}
@@ -682,8 +677,7 @@ public class MyIV extends ImageView {
 		if (tilex >= 0 && tilex < maxtilex[zoom] && tiley >= 0 && tiley < maxtiley[zoom]) {
 			if (land == true) {
 				filename = "LandX" + zoom + File.separator + "Land";
-			}
-			else {
+			} else {
 				filename = "SeaX" + zoom + File.separator + "Sea";
 			}
 			filename = path + filename + String.format("%02X", 0xFF & tiley) + String.format("%02X", 0xFF & tilex) + ".jpg";
@@ -734,8 +728,7 @@ public class MyIV extends ImageView {
 		if (i>=0) {
 			BoatNav.bmp[i].inuse = 1;
 			bm = BoatNav.bmp[i].bm;
-		}
-		else {
+		} else {
 			filename = GetFileName(tilex, tiley);
 			if (filename != "") {
 				bm = BitmapFactory.decodeFile(filename);
@@ -749,9 +742,7 @@ public class MyIV extends ImageView {
 					BoatNav.bmp[i].tiley = tiley;
 					BoatNav.bmp[i].bm = bm;
 				}
-			}
-			else
-			{
+			} else {
 				bm = BoatNav.mGrayBitmap;
 			}
 		}
@@ -821,13 +812,11 @@ public class MyIV extends ImageView {
 			if (x >= 0) {
 				item = rngticks.substring(0,x);
 				rngticks = rngticks.substring(x+1);
-			}
-			else {
+			} else {
 				item = rngticks;
 				rngticks = "";
 			}
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 	        Log.e("MYTAG", "Item error: " + e.toString());
 		}
 		return item;
@@ -856,8 +845,7 @@ public class MyIV extends ImageView {
                 DrawSonarRangeBarTick((int)(tickdist * (float)i), 12, canvas);
             	i++;
             }
-        }
-        else {
+        } else {
             DrawSonarRangeBarTick(1, 10, canvas);
             i = 0;
             while (i <= nticks) {
@@ -865,8 +853,7 @@ public class MyIV extends ImageView {
                 item = GetItem();
                 if (i == 0) {
                     DrawText(mapwt + sonarwt - SONARRANGEBARWIDTH + 3, 20, 15, item, canvas);
-                }
-                else {
+                } else {
                     DrawText(mapwt + sonarwt - SONARRANGEBARWIDTH + 3, (int)(tickdist * (float)i) - 8, 15, item, canvas);
                 }
             	i++;
@@ -911,8 +898,7 @@ public class MyIV extends ImageView {
 		}
 		if (sonarwt !=0) {
 			canvas.clipRect(0, 0, mapwt-1, scrnht);
-		}
-		else {
+		} else {
 			canvas.clipRect(0, 0, mapwt, scrnht);
 		}
 		ClearInUse(lefttile, toptile);
@@ -925,12 +911,10 @@ public class MyIV extends ImageView {
 			    try {
 			    	if (tilex < 0 || tiley < 0) {
 						canvas.drawBitmap(BoatNav.mGrayBitmap, x, y, null);
-			    	}
-			    	else {
+			    	} else {
 						canvas.drawBitmap(GetBitmap(tilex, tiley), x, y, null);
 			    	}
-			    }
-			    catch(Exception e) {
+			    } catch(Exception e) {
 			    	Log.e("MYTAG", "drawBitmap:");
 			    	Log.e("MYTAG", "lefttile: " + lefttile);
 			    	Log.e("MYTAG", "toptile: " + toptile);
@@ -992,8 +976,7 @@ public class MyIV extends ImageView {
 		// Draw sonar range bar
 		if (mapwt != 0) {
 			canvas.clipRect(mapwt+1, 0, mapwt + sonarwt, scrnht, Region.Op.REPLACE);
-		}
-		else {
+		} else {
 			canvas.clipRect(0, 0, sonarwt, scrnht, Region.Op.REPLACE);
 		}
 		// Draw sonar signal strength graph
@@ -1009,8 +992,7 @@ public class MyIV extends ImageView {
 		// Draw sonar data
 		if (mapwt != 0) {
 			canvas.clipRect(mapwt+1, 0, mapwt + sonarwt - SONARSIGNALGRAHWIDTH, scrnht, Region.Op.REPLACE);
-		}
-		else {
+		} else {
 			canvas.clipRect(0, 0, sonarwt - SONARSIGNALGRAHWIDTH, scrnht, Region.Op.REPLACE);
 		}
 		i = sonarbmpinx;
@@ -1027,8 +1009,7 @@ public class MyIV extends ImageView {
 		        dstrect.bottom = scrnht;
 		        srcrect.bottom = SONARTILEHEIGHT;
 				canvas.drawBitmap(sonarbmp[i], srcrect, dstrect, null);
-		    }
-		    else if (cursonarrange > sonarbmprange[i]) {
+		    } else if (cursonarrange > sonarbmprange[i]) {
 		        dstrect.bottom = scrnht * sonarbmprange[i] / cursonarrange;
 		        srcrect.bottom = SONARTILEHEIGHT;
 				canvas.drawBitmap(sonarbmp[i], srcrect, dstrect, null);
@@ -1037,8 +1018,7 @@ public class MyIV extends ImageView {
 		        paint.setColor(sonarColor);
 		        paint.setStyle(Style.FILL);
 		        canvas.drawRect(dstrect, paint);   
-		    }
-		    else if (cursonarrange < sonarbmprange[i]) {
+		    } else if (cursonarrange < sonarbmprange[i]) {
 		        dstrect.bottom = scrnht;
 		        srcrect.bottom = SONARTILEHEIGHT * cursonarrange / sonarbmprange[i];
 				canvas.drawBitmap(sonarbmp[i], srcrect, dstrect, null);
@@ -1052,8 +1032,7 @@ public class MyIV extends ImageView {
         DrawSonarFish(canvas);
 		if (mapwt != 0) {
 			canvas.clipRect(mapwt+1, 0, mapwt + sonarwt, scrnht, Region.Op.REPLACE);
-		}
-		else {
+		} else {
 			canvas.clipRect(0, 0, sonarwt, scrnht, Region.Op.REPLACE);
 		}
         DrawSonarRangeBar(6, Color.WHITE,canvas);
@@ -1066,17 +1045,14 @@ public class MyIV extends ImageView {
 			if (blink) {
 				if (curdepth >= 100) {
 					DrawText(mapwt + 10, 50, 50, String.format("%.0f",curdepth), canvas);
-				}
-				else {
+				} else {
 					DrawText(mapwt + 10, 50, 50, String.format("%.1f",curdepth), canvas);
 				}
 			}
-		}
-		else {
+		} else {
 			if (curdepth >= 100) {
 				DrawText(mapwt + 10, 50, 50, String.format("%.0f",curdepth), canvas);
-			}
-			else {
+			} else {
 				DrawText(mapwt + 10, 50, 50, String.format("%.1f",curdepth), canvas);
 			}
 		}
@@ -1118,11 +1094,13 @@ public class MyIV extends ImageView {
 		}
 
 // Debug
-		canvas.clipRect(0, 0, scrnwt, scrnht, Region.Op.REPLACE);
-		paint.setColor(Color.BLACK);
-		paint.setTextSize(20);
-//		String sText;
+//		canvas.clipRect(0, 0, scrnwt, scrnht, Region.Op.REPLACE);
+//		paint.setColor(Color.BLACK);
+//		paint.setTextSize(20);
 //		paint.setTextAlign(Paint.Align.LEFT);
+//		canvas.drawText(sTextWrite, 10, 145, paint);
+//		canvas.drawText(sTextRead, 10, 165, paint);
+//		canvas.drawText(sTextWait, 10, 185, paint);
 //		canvas.drawText(TutorialOnImages.sbtdeviceaddr, 10, 125, paint);
 //		sText="Latitude: " + String.format("%.6f",curlat);
 //		canvas.drawText(sText, 10, 125, paint);

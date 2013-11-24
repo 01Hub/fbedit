@@ -76,403 +76,404 @@
     <Component Name="BLUETOOTHArray" TI="1012" Line="38" Offs="20"/>
    </type>
    <type Family="typedef" Name="STM32_BlueToothTypeDef" Line="39" ID="1044" toTI="919"/>
-   <function Name="SendData" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\main.c" Line="93">
-    <parameter Name="Data" TI="116" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\main.c" Line="93" Addr="0x0" Param="Yes"/>
+   <function Name="SendData" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\main.c" Line="103">
+    <parameter Name="Data" TI="116" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\main.c" Line="103" Addr="0x0" Param="Yes"/>
    </function >
-   <function Name="USART3_IRQHandler" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\main.c" Line="110">
+   <function Name="USART3_IRQHandler" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\main.c" Line="120">
    </function >
-   <function Name="RCC_Configuration" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\main.c" Line="128">
-    <variable Name="HSEStartUpStatus" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\main.c" Line="130" Addr="0x0" TI="195"/>
+   <function Name="RCC_Configuration" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\main.c" Line="138">
+    <variable Name="HSEStartUpStatus" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\main.c" Line="140" Addr="0x0" TI="195"/>
    </function >
-   <function Name="GPIO_Configuration" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\main.c" Line="201">
-    <variable Name="GPIO_InitStructure" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\main.c" Line="203" Addr="0x34000004" TI="728"/>
+   <function Name="GPIO_Configuration" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\main.c" Line="211">
+    <variable Name="GPIO_InitStructure" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\main.c" Line="213" Addr="0x34000004" TI="728"/>
    </function >
-   <function Name="NVIC_Configuration" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\main.c" Line="238">
-    <variable Name="NVIC_InitStructure" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\main.c" Line="240" Addr="0x34000004" TI="804"/>
+   <function Name="NVIC_Configuration" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\main.c" Line="248">
+    <variable Name="NVIC_InitStructure" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\main.c" Line="250" Addr="0x34000004" TI="804"/>
    </function >
-   <function Name="USART3_Configuration" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\main.c" Line="258">
-    <parameter Name="BaudRate" TI="58" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\main.c" Line="258" Addr="0x0" Param="Yes"/>
-    <variable Name="USART_InitStructure" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\main.c" Line="268" Addr="0x34000000" TI="908"/>
+   <function Name="USART3_Configuration" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\main.c" Line="268">
+    <parameter Name="BaudRate" TI="58" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\main.c" Line="268" Addr="0x0" Param="Yes"/>
+    <variable Name="USART_InitStructure" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\main.c" Line="278" Addr="0x34000000" TI="908"/>
    </function >
    <type Family="Base" Name="int" ID="1319"/>
-   <function Name="main" TI="1319" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\main.c" Line="57">
+   <function Name="main" TI="1319" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\main.c" Line="58">
    </function >
    <variable Name="BlueTooth" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\main.c" Line="44" Addr="0x20000000" TI="1044"/>
    <variable Name="BlueLED" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\main.c" Line="45" Addr="0x20000218" TI="111"/>
    <variable Name="GreenLED" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\main.c" Line="46" Addr="0x20000214" TI="111"/>
+   <variable Name="Baud" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\main.c" Line="47" Addr="0x2000021C" TI="111"/>
   </module>
   <module Name="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_lib.c" >
-   <type Family="Base" Name="long int" ID="1453"/>
-   <type Family="Base" Name="short int" ID="1460"/>
-   <type Family="Base" Name="signed char" ID="1467"/>
-   <type Family="Base" Name="long unsigned int" ID="1474"/>
-   <type Family="Base" Name="short unsigned int" ID="1481"/>
-   <type Family="Base" Name="unsigned char" ID="1488"/>
-   <type Family="Base" Name="unsigned int" ID="1495"/>
+   <type Family="Base" Name="long int" ID="1484"/>
+   <type Family="Base" Name="short int" ID="1491"/>
+   <type Family="Base" Name="signed char" ID="1498"/>
+   <type Family="Base" Name="long unsigned int" ID="1505"/>
+   <type Family="Base" Name="short unsigned int" ID="1512"/>
+   <type Family="Base" Name="unsigned char" ID="1519"/>
+   <type Family="Base" Name="unsigned int" ID="1526"/>
   </module>
   <module Name="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_nvic.c" >
-   <type Family="Base" Name="long int" ID="1540"/>
-   <type Family="Base" Name="short int" ID="1547"/>
-   <type Family="Base" Name="signed char" ID="1554"/>
-   <type Family="Base" Name="long unsigned int" ID="1572"/>
-   <type Family="typedef" Name="u32" Line="39" ID="1561" toTI="1572"/>
-   <type Family="Base" Name="short unsigned int" ID="1590"/>
-   <type Family="typedef" Name="u16" Line="40" ID="1579" toTI="1590"/>
-   <type Family="Base" Name="unsigned char" ID="1607"/>
-   <type Family="typedef" Name="u8" Line="41" ID="1597" toTI="1607"/>
-   <type Family="typedef" Name="vu32" Line="47" ID="1614" toTI="1625"/>
-   <type Family="typedef" Name="ITStatus" Line="57" ID="1656" toTI="1635"/>
-   <type Family="typedef" Name="FunctionalState" Line="59" ID="1688" toTI="1667"/>
-   <type Family="Base" Name="unsigned int" ID="1699"/>
-   <type Family="ComponentList" Line="385" ID="1706">
-   <type Family="array" ID="1891" toTI="1572"/>
-    <Component Name="ISER" TI="1716" Line="387" Offs="0"/>
-   <type Family="array" ID="1912" toTI="1561"/>
-    <Component Name="RESERVED0" TI="1731" Line="388" Offs="8"/>
-    <Component Name="ICER" TI="1746" Line="389" Offs="128"/>
-    <Component Name="RSERVED1" TI="1762" Line="390" Offs="136"/>
-    <Component Name="ISPR" TI="1778" Line="391" Offs="256"/>
-    <Component Name="RESERVED2" TI="1794" Line="392" Offs="264"/>
-    <Component Name="ICPR" TI="1810" Line="393" Offs="384"/>
-    <Component Name="RESERVED3" TI="1826" Line="394" Offs="392"/>
-    <Component Name="IABR" TI="1842" Line="395" Offs="512"/>
-   <type Family="array" ID="1948" toTI="1561"/>
-    <Component Name="RESERVED4" TI="1858" Line="396" Offs="520"/>
-   <type Family="array" ID="1964" toTI="1572"/>
-    <Component Name="IPR" TI="1874" Line="397" Offs="768"/>
+   <type Family="Base" Name="long int" ID="1571"/>
+   <type Family="Base" Name="short int" ID="1578"/>
+   <type Family="Base" Name="signed char" ID="1585"/>
+   <type Family="Base" Name="long unsigned int" ID="1603"/>
+   <type Family="typedef" Name="u32" Line="39" ID="1592" toTI="1603"/>
+   <type Family="Base" Name="short unsigned int" ID="1621"/>
+   <type Family="typedef" Name="u16" Line="40" ID="1610" toTI="1621"/>
+   <type Family="Base" Name="unsigned char" ID="1638"/>
+   <type Family="typedef" Name="u8" Line="41" ID="1628" toTI="1638"/>
+   <type Family="typedef" Name="vu32" Line="47" ID="1645" toTI="1656"/>
+   <type Family="typedef" Name="ITStatus" Line="57" ID="1687" toTI="1666"/>
+   <type Family="typedef" Name="FunctionalState" Line="59" ID="1719" toTI="1698"/>
+   <type Family="Base" Name="unsigned int" ID="1730"/>
+   <type Family="ComponentList" Line="385" ID="1737">
+   <type Family="array" ID="1922" toTI="1603"/>
+    <Component Name="ISER" TI="1747" Line="387" Offs="0"/>
+   <type Family="array" ID="1943" toTI="1592"/>
+    <Component Name="RESERVED0" TI="1762" Line="388" Offs="8"/>
+    <Component Name="ICER" TI="1777" Line="389" Offs="128"/>
+    <Component Name="RSERVED1" TI="1793" Line="390" Offs="136"/>
+    <Component Name="ISPR" TI="1809" Line="391" Offs="256"/>
+    <Component Name="RESERVED2" TI="1825" Line="392" Offs="264"/>
+    <Component Name="ICPR" TI="1841" Line="393" Offs="384"/>
+    <Component Name="RESERVED3" TI="1857" Line="394" Offs="392"/>
+    <Component Name="IABR" TI="1873" Line="395" Offs="512"/>
+   <type Family="array" ID="1979" toTI="1592"/>
+    <Component Name="RESERVED4" TI="1889" Line="396" Offs="520"/>
+   <type Family="array" ID="1995" toTI="1603"/>
+    <Component Name="IPR" TI="1905" Line="397" Offs="768"/>
    </type>
-   <type Family="typedef" Name="NVIC_TypeDef" Line="398" ID="1985" toTI="1706"/>
-   <type Family="ComponentList" Line="400" ID="1997">
-    <Component Name="CPUID" TI="2006" Line="402" Offs="0"/>
-    <Component Name="ICSR" TI="2021" Line="403" Offs="4"/>
-    <Component Name="VTOR" TI="2036" Line="404" Offs="8"/>
-    <Component Name="AIRCR" TI="2051" Line="405" Offs="12"/>
-    <Component Name="SCR" TI="2066" Line="406" Offs="16"/>
-    <Component Name="CCR" TI="2081" Line="407" Offs="20"/>
-   <type Family="array" ID="2217" toTI="1572"/>
-    <Component Name="SHPR" TI="2096" Line="408" Offs="24"/>
-    <Component Name="SHCSR" TI="2111" Line="409" Offs="36"/>
-    <Component Name="CFSR" TI="2126" Line="410" Offs="40"/>
-    <Component Name="HFSR" TI="2141" Line="411" Offs="44"/>
-    <Component Name="DFSR" TI="2156" Line="412" Offs="48"/>
-    <Component Name="MMFAR" TI="2171" Line="413" Offs="52"/>
-    <Component Name="BFAR" TI="2186" Line="414" Offs="56"/>
-    <Component Name="AFSR" TI="2201" Line="415" Offs="60"/>
+   <type Family="typedef" Name="NVIC_TypeDef" Line="398" ID="2016" toTI="1737"/>
+   <type Family="ComponentList" Line="400" ID="2028">
+    <Component Name="CPUID" TI="2037" Line="402" Offs="0"/>
+    <Component Name="ICSR" TI="2052" Line="403" Offs="4"/>
+    <Component Name="VTOR" TI="2067" Line="404" Offs="8"/>
+    <Component Name="AIRCR" TI="2082" Line="405" Offs="12"/>
+    <Component Name="SCR" TI="2097" Line="406" Offs="16"/>
+    <Component Name="CCR" TI="2112" Line="407" Offs="20"/>
+   <type Family="array" ID="2248" toTI="1603"/>
+    <Component Name="SHPR" TI="2127" Line="408" Offs="24"/>
+    <Component Name="SHCSR" TI="2142" Line="409" Offs="36"/>
+    <Component Name="CFSR" TI="2157" Line="410" Offs="40"/>
+    <Component Name="HFSR" TI="2172" Line="411" Offs="44"/>
+    <Component Name="DFSR" TI="2187" Line="412" Offs="48"/>
+    <Component Name="MMFAR" TI="2202" Line="413" Offs="52"/>
+    <Component Name="BFAR" TI="2217" Line="414" Offs="56"/>
+    <Component Name="AFSR" TI="2232" Line="415" Offs="60"/>
    </type>
-   <type Family="typedef" Name="SCB_TypeDef" Line="416" ID="2238" toTI="1997"/>
-   <type Family="ComponentList" Line="26" ID="2250">
-    <Component Name="NVIC_IRQChannel" TI="2258" Line="28" Offs="0"/>
-    <Component Name="NVIC_IRQChannelPreemptionPriority" TI="2272" Line="29" Offs="1"/>
-    <Component Name="NVIC_IRQChannelSubPriority" TI="2286" Line="30" Offs="2"/>
-    <Component Name="NVIC_IRQChannelCmd" TI="2300" Line="31" Offs="3"/>
+   <type Family="typedef" Name="SCB_TypeDef" Line="416" ID="2269" toTI="2028"/>
+   <type Family="ComponentList" Line="26" ID="2281">
+    <Component Name="NVIC_IRQChannel" TI="2289" Line="28" Offs="0"/>
+    <Component Name="NVIC_IRQChannelPreemptionPriority" TI="2303" Line="29" Offs="1"/>
+    <Component Name="NVIC_IRQChannelSubPriority" TI="2317" Line="30" Offs="2"/>
+    <Component Name="NVIC_IRQChannelCmd" TI="2331" Line="31" Offs="3"/>
    </type>
-   <type Family="typedef" Name="NVIC_InitTypeDef" Line="32" ID="2315" toTI="2250"/>
+   <type Family="typedef" Name="NVIC_InitTypeDef" Line="32" ID="2346" toTI="2281"/>
    <function Name="NVIC_Init" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_nvic.c" Line="116">
-   <type Family="Pointer" TI="2562" toTI="2315"/>
-    <parameter Name="NVIC_InitStruct" TI="2562" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_nvic.c" Line="116" Addr="0x0" Param="Yes"/>
-    <variable Name="tmppriority" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_nvic.c" Line="118" Addr="0x0" TI="1561"/>
-    <variable Name="tmpreg" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_nvic.c" Line="118" Addr="0x0" TI="1561"/>
-    <variable Name="tmpmask" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_nvic.c" Line="118" Addr="0x0" TI="1561"/>
-    <variable Name="tmppre" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_nvic.c" Line="119" Addr="0x0" TI="1561"/>
-    <variable Name="tmpsub" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_nvic.c" Line="119" Addr="0x0" TI="1561"/>
+   <type Family="Pointer" TI="2593" toTI="2346"/>
+    <parameter Name="NVIC_InitStruct" TI="2593" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_nvic.c" Line="116" Addr="0x0" Param="Yes"/>
+    <variable Name="tmppriority" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_nvic.c" Line="118" Addr="0x0" TI="1592"/>
+    <variable Name="tmpreg" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_nvic.c" Line="118" Addr="0x0" TI="1592"/>
+    <variable Name="tmpmask" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_nvic.c" Line="118" Addr="0x0" TI="1592"/>
+    <variable Name="tmppre" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_nvic.c" Line="119" Addr="0x0" TI="1592"/>
+    <variable Name="tmpsub" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_nvic.c" Line="119" Addr="0x0" TI="1592"/>
    </function >
    <function Name="NVIC_SetVectorTable" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_nvic.c" Line="393">
-    <parameter Name="NVIC_VectTab" TI="1561" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_nvic.c" Line="393" Addr="0x0" Param="Yes"/>
-    <parameter Name="Offset" TI="1561" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_nvic.c" Line="393" Addr="0x1" Param="Yes"/>
+    <parameter Name="NVIC_VectTab" TI="1592" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_nvic.c" Line="393" Addr="0x0" Param="Yes"/>
+    <parameter Name="Offset" TI="1592" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_nvic.c" Line="393" Addr="0x1" Param="Yes"/>
    </function >
   </module>
   <module Name="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_rcc.c" >
-   <type Family="Base" Name="long int" ID="3944"/>
-   <type Family="Base" Name="short int" ID="3951"/>
-   <type Family="Base" Name="signed char" ID="3958"/>
-   <type Family="Base" Name="long unsigned int" ID="3976"/>
-   <type Family="typedef" Name="u32" Line="39" ID="3965" toTI="3976"/>
-   <type Family="Base" Name="short unsigned int" ID="3994"/>
-   <type Family="typedef" Name="u16" Line="40" ID="3983" toTI="3994"/>
-   <type Family="Base" Name="unsigned char" ID="4011"/>
-   <type Family="typedef" Name="u8" Line="41" ID="4001" toTI="4011"/>
-   <type Family="typedef" Name="vu32" Line="47" ID="4018" toTI="4029"/>
-   <type Family="typedef" Name="vu8" Line="49" ID="4034" toTI="4045"/>
-   <type Family="typedef" Name="FlagStatus" Line="57" ID="4071" toTI="4050"/>
-   <type Family="typedef" Name="ITStatus" Line="57" ID="4082" toTI="4050"/>
-   <type Family="typedef" Name="FunctionalState" Line="59" ID="4114" toTI="4093"/>
-   <type Family="typedef" Name="ErrorStatus" Line="62" ID="4146" toTI="4125"/>
-   <type Family="Base" Name="unsigned int" ID="4157"/>
-   <type Family="ComponentList" Line="426" ID="4164">
-    <Component Name="CR" TI="4173" Line="428" Offs="0"/>
-    <Component Name="CFGR" TI="4187" Line="429" Offs="4"/>
-    <Component Name="CIR" TI="4202" Line="430" Offs="8"/>
-    <Component Name="APB2RSTR" TI="4217" Line="431" Offs="12"/>
-    <Component Name="APB1RSTR" TI="4232" Line="432" Offs="16"/>
-    <Component Name="AHBENR" TI="4247" Line="433" Offs="20"/>
-    <Component Name="APB2ENR" TI="4262" Line="434" Offs="24"/>
-    <Component Name="APB1ENR" TI="4277" Line="435" Offs="28"/>
-    <Component Name="BDCR" TI="4292" Line="436" Offs="32"/>
-    <Component Name="CSR" TI="4307" Line="437" Offs="36"/>
+   <type Family="Base" Name="long int" ID="3975"/>
+   <type Family="Base" Name="short int" ID="3982"/>
+   <type Family="Base" Name="signed char" ID="3989"/>
+   <type Family="Base" Name="long unsigned int" ID="4007"/>
+   <type Family="typedef" Name="u32" Line="39" ID="3996" toTI="4007"/>
+   <type Family="Base" Name="short unsigned int" ID="4025"/>
+   <type Family="typedef" Name="u16" Line="40" ID="4014" toTI="4025"/>
+   <type Family="Base" Name="unsigned char" ID="4042"/>
+   <type Family="typedef" Name="u8" Line="41" ID="4032" toTI="4042"/>
+   <type Family="typedef" Name="vu32" Line="47" ID="4049" toTI="4060"/>
+   <type Family="typedef" Name="vu8" Line="49" ID="4065" toTI="4076"/>
+   <type Family="typedef" Name="FlagStatus" Line="57" ID="4102" toTI="4081"/>
+   <type Family="typedef" Name="ITStatus" Line="57" ID="4113" toTI="4081"/>
+   <type Family="typedef" Name="FunctionalState" Line="59" ID="4145" toTI="4124"/>
+   <type Family="typedef" Name="ErrorStatus" Line="62" ID="4177" toTI="4156"/>
+   <type Family="Base" Name="unsigned int" ID="4188"/>
+   <type Family="ComponentList" Line="426" ID="4195">
+    <Component Name="CR" TI="4204" Line="428" Offs="0"/>
+    <Component Name="CFGR" TI="4218" Line="429" Offs="4"/>
+    <Component Name="CIR" TI="4233" Line="430" Offs="8"/>
+    <Component Name="APB2RSTR" TI="4248" Line="431" Offs="12"/>
+    <Component Name="APB1RSTR" TI="4263" Line="432" Offs="16"/>
+    <Component Name="AHBENR" TI="4278" Line="433" Offs="20"/>
+    <Component Name="APB2ENR" TI="4293" Line="434" Offs="24"/>
+    <Component Name="APB1ENR" TI="4308" Line="435" Offs="28"/>
+    <Component Name="BDCR" TI="4323" Line="436" Offs="32"/>
+    <Component Name="CSR" TI="4338" Line="437" Offs="36"/>
    </type>
-   <type Family="typedef" Name="RCC_TypeDef" Line="438" ID="4323" toTI="4164"/>
-   <type Family="ComponentList" Line="25" ID="4335">
-    <Component Name="SYSCLK_Frequency" TI="4343" Line="27" Offs="0"/>
-    <Component Name="HCLK_Frequency" TI="4357" Line="28" Offs="4"/>
-    <Component Name="PCLK1_Frequency" TI="4371" Line="29" Offs="8"/>
-    <Component Name="PCLK2_Frequency" TI="4385" Line="30" Offs="12"/>
-    <Component Name="ADCCLK_Frequency" TI="4399" Line="31" Offs="16"/>
+   <type Family="typedef" Name="RCC_TypeDef" Line="438" ID="4354" toTI="4195"/>
+   <type Family="ComponentList" Line="25" ID="4366">
+    <Component Name="SYSCLK_Frequency" TI="4374" Line="27" Offs="0"/>
+    <Component Name="HCLK_Frequency" TI="4388" Line="28" Offs="4"/>
+    <Component Name="PCLK1_Frequency" TI="4402" Line="29" Offs="8"/>
+    <Component Name="PCLK2_Frequency" TI="4416" Line="30" Offs="12"/>
+    <Component Name="ADCCLK_Frequency" TI="4430" Line="31" Offs="16"/>
    </type>
-   <type Family="typedef" Name="RCC_ClocksTypeDef" Line="32" ID="4414" toTI="4335"/>
+   <type Family="typedef" Name="RCC_ClocksTypeDef" Line="32" ID="4445" toTI="4366"/>
    <function Name="RCC_DeInit" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_rcc.c" Line="124">
    </function >
    <function Name="RCC_HSEConfig" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_rcc.c" Line="159">
-    <parameter Name="RCC_HSE" TI="3965" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_rcc.c" Line="159" Addr="0x0" Param="Yes"/>
+    <parameter Name="RCC_HSE" TI="3996" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_rcc.c" Line="159" Addr="0x0" Param="Yes"/>
    </function >
    <function Name="RCC_PLLConfig" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_rcc.c" Line="287">
-    <parameter Name="RCC_PLLSource" TI="3965" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_rcc.c" Line="287" Addr="0x0" Param="Yes"/>
-    <parameter Name="RCC_PLLMul" TI="3965" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_rcc.c" Line="287" Addr="0x1" Param="Yes"/>
-    <variable Name="tmpreg" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_rcc.c" Line="289" Addr="0x0" TI="3965"/>
+    <parameter Name="RCC_PLLSource" TI="3996" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_rcc.c" Line="287" Addr="0x0" Param="Yes"/>
+    <parameter Name="RCC_PLLMul" TI="3996" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_rcc.c" Line="287" Addr="0x1" Param="Yes"/>
+    <variable Name="tmpreg" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_rcc.c" Line="289" Addr="0x0" TI="3996"/>
    </function >
    <function Name="RCC_PLLCmd" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_rcc.c" Line="316">
-    <parameter Name="NewState" TI="4114" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_rcc.c" Line="316" Addr="0x0" Param="Yes"/>
+    <parameter Name="NewState" TI="4145" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_rcc.c" Line="316" Addr="0x0" Param="Yes"/>
    </function >
    <function Name="RCC_SYSCLKConfig" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_rcc.c" Line="335">
-    <parameter Name="RCC_SYSCLKSource" TI="3965" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_rcc.c" Line="335" Addr="0x0" Param="Yes"/>
-    <variable Name="tmpreg" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_rcc.c" Line="337" Addr="0x0" TI="3965"/>
+    <parameter Name="RCC_SYSCLKSource" TI="3996" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_rcc.c" Line="335" Addr="0x0" Param="Yes"/>
+    <variable Name="tmpreg" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_rcc.c" Line="337" Addr="0x0" TI="3996"/>
    </function >
-   <function Name="RCC_GetSYSCLKSource" TI="4001" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_rcc.c" Line="365">
+   <function Name="RCC_GetSYSCLKSource" TI="4032" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_rcc.c" Line="365">
    </function >
    <function Name="RCC_HCLKConfig" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_rcc.c" Line="388">
-    <parameter Name="RCC_SYSCLK" TI="3965" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_rcc.c" Line="388" Addr="0x0" Param="Yes"/>
-    <variable Name="tmpreg" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_rcc.c" Line="390" Addr="0x0" TI="3965"/>
+    <parameter Name="RCC_SYSCLK" TI="3996" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_rcc.c" Line="388" Addr="0x0" Param="Yes"/>
+    <variable Name="tmpreg" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_rcc.c" Line="390" Addr="0x0" TI="3996"/>
    </function >
    <function Name="RCC_PCLK1Config" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_rcc.c" Line="421">
-    <parameter Name="RCC_HCLK" TI="3965" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_rcc.c" Line="421" Addr="0x0" Param="Yes"/>
-    <variable Name="tmpreg" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_rcc.c" Line="423" Addr="0x0" TI="3965"/>
+    <parameter Name="RCC_HCLK" TI="3996" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_rcc.c" Line="421" Addr="0x0" Param="Yes"/>
+    <variable Name="tmpreg" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_rcc.c" Line="423" Addr="0x0" TI="3996"/>
    </function >
    <function Name="RCC_PCLK2Config" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_rcc.c" Line="454">
-    <parameter Name="RCC_HCLK" TI="3965" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_rcc.c" Line="454" Addr="0x0" Param="Yes"/>
-    <variable Name="tmpreg" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_rcc.c" Line="456" Addr="0x0" TI="3965"/>
+    <parameter Name="RCC_HCLK" TI="3996" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_rcc.c" Line="454" Addr="0x0" Param="Yes"/>
+    <variable Name="tmpreg" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_rcc.c" Line="456" Addr="0x0" TI="3996"/>
    </function >
    <function Name="RCC_ADCCLKConfig" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_rcc.c" Line="541">
-    <parameter Name="RCC_PCLK2" TI="3965" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_rcc.c" Line="541" Addr="0x0" Param="Yes"/>
-    <variable Name="tmpreg" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_rcc.c" Line="543" Addr="0x0" TI="3965"/>
+    <parameter Name="RCC_PCLK2" TI="3996" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_rcc.c" Line="541" Addr="0x0" Param="Yes"/>
+    <variable Name="tmpreg" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_rcc.c" Line="543" Addr="0x0" TI="3996"/>
    </function >
    <function Name="RCC_GetClocksFreq" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_rcc.c" Line="668">
-   <type Family="Pointer" TI="5352" toTI="4414"/>
-    <parameter Name="RCC_Clocks" TI="5352" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_rcc.c" Line="668" Addr="0x0" Param="Yes"/>
-    <variable Name="tmp" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_rcc.c" Line="670" Addr="0x0" TI="3965"/>
-    <variable Name="pllmull" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_rcc.c" Line="670" Addr="0x0" TI="3965"/>
-    <variable Name="pllsource" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_rcc.c" Line="670" Addr="0x0" TI="3965"/>
-    <variable Name="presc" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_rcc.c" Line="670" Addr="0x0" TI="3965"/>
+   <type Family="Pointer" TI="5383" toTI="4445"/>
+    <parameter Name="RCC_Clocks" TI="5383" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_rcc.c" Line="668" Addr="0x0" Param="Yes"/>
+    <variable Name="tmp" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_rcc.c" Line="670" Addr="0x0" TI="3996"/>
+    <variable Name="pllmull" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_rcc.c" Line="670" Addr="0x0" TI="3996"/>
+    <variable Name="pllsource" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_rcc.c" Line="670" Addr="0x0" TI="3996"/>
+    <variable Name="presc" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_rcc.c" Line="670" Addr="0x0" TI="3996"/>
    </function >
    <function Name="RCC_APB2PeriphClockCmd" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_rcc.c" Line="801">
-    <parameter Name="RCC_APB2Periph" TI="3965" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_rcc.c" Line="801" Addr="0x0" Param="Yes"/>
-    <parameter Name="NewState" TI="4114" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_rcc.c" Line="801" Addr="0x1" Param="Yes"/>
+    <parameter Name="RCC_APB2Periph" TI="3996" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_rcc.c" Line="801" Addr="0x0" Param="Yes"/>
+    <parameter Name="NewState" TI="4145" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_rcc.c" Line="801" Addr="0x1" Param="Yes"/>
    </function >
    <function Name="RCC_APB1PeriphClockCmd" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_rcc.c" Line="835">
-    <parameter Name="RCC_APB1Periph" TI="3965" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_rcc.c" Line="835" Addr="0x0" Param="Yes"/>
-    <parameter Name="NewState" TI="4114" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_rcc.c" Line="835" Addr="0x1" Param="Yes"/>
+    <parameter Name="RCC_APB1Periph" TI="3996" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_rcc.c" Line="835" Addr="0x0" Param="Yes"/>
+    <parameter Name="NewState" TI="4145" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_rcc.c" Line="835" Addr="0x1" Param="Yes"/>
    </function >
    <function Name="RCC_APB2PeriphResetCmd" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_rcc.c" Line="867">
-    <parameter Name="RCC_APB2Periph" TI="3965" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_rcc.c" Line="867" Addr="0x0" Param="Yes"/>
-    <parameter Name="NewState" TI="4114" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_rcc.c" Line="867" Addr="0x1" Param="Yes"/>
+    <parameter Name="RCC_APB2Periph" TI="3996" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_rcc.c" Line="867" Addr="0x0" Param="Yes"/>
+    <parameter Name="NewState" TI="4145" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_rcc.c" Line="867" Addr="0x1" Param="Yes"/>
    </function >
    <function Name="RCC_APB1PeriphResetCmd" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_rcc.c" Line="900">
-    <parameter Name="RCC_APB1Periph" TI="3965" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_rcc.c" Line="900" Addr="0x0" Param="Yes"/>
-    <parameter Name="NewState" TI="4114" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_rcc.c" Line="900" Addr="0x1" Param="Yes"/>
+    <parameter Name="RCC_APB1Periph" TI="3996" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_rcc.c" Line="900" Addr="0x0" Param="Yes"/>
+    <parameter Name="NewState" TI="4145" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_rcc.c" Line="900" Addr="0x1" Param="Yes"/>
    </function >
-   <function Name="RCC_GetFlagStatus" TI="4071" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_rcc.c" Line="989">
-    <parameter Name="RCC_FLAG" TI="4001" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_rcc.c" Line="989" Addr="0x0" Param="Yes"/>
-    <variable Name="tmp" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_rcc.c" Line="991" Addr="0x0" TI="3965"/>
-    <variable Name="statusreg" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_rcc.c" Line="992" Addr="0x0" TI="3965"/>
-    <variable Name="bitstatus" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_rcc.c" Line="993" Addr="0x0" TI="4071"/>
+   <function Name="RCC_GetFlagStatus" TI="4102" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_rcc.c" Line="989">
+    <parameter Name="RCC_FLAG" TI="4032" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_rcc.c" Line="989" Addr="0x0" Param="Yes"/>
+    <variable Name="tmp" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_rcc.c" Line="991" Addr="0x0" TI="3996"/>
+    <variable Name="statusreg" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_rcc.c" Line="992" Addr="0x0" TI="3996"/>
+    <variable Name="bitstatus" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_rcc.c" Line="993" Addr="0x0" TI="4102"/>
    </function >
-   <function Name="RCC_WaitForHSEStartUp" TI="4146" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_rcc.c" Line="198">
-    <variable Name="StartUpCounter" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_rcc.c" Line="200" Addr="0x34000004" TI="4029"/>
-    <variable Name="status" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_rcc.c" Line="201" Addr="0x34000010" TI="4146"/>
-    <variable Name="HSEStatus" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_rcc.c" Line="202" Addr="0x10" TI="4071"/>
+   <function Name="RCC_WaitForHSEStartUp" TI="4177" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_rcc.c" Line="198">
+    <variable Name="StartUpCounter" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_rcc.c" Line="200" Addr="0x34000004" TI="4060"/>
+    <variable Name="status" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_rcc.c" Line="201" Addr="0x34000010" TI="4177"/>
+    <variable Name="HSEStatus" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_rcc.c" Line="202" Addr="0x10" TI="4102"/>
    </function >
-   <type Family="array" ID="6050" toTI="4011"/>
-   <variable Name="APBAHBPrescTable" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_rcc.c" Line="111" Addr="0x8000D14" TI="6083"/>
-   <type Family="array" ID="6088" toTI="4011"/>
-   <variable Name="ADCPrescTable" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_rcc.c" Line="112" Addr="0x8000D24" TI="6121"/>
+   <type Family="array" ID="6081" toTI="4042"/>
+   <variable Name="APBAHBPrescTable" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_rcc.c" Line="111" Addr="0x8000D48" TI="6114"/>
+   <type Family="array" ID="6119" toTI="4042"/>
+   <variable Name="ADCPrescTable" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_rcc.c" Line="112" Addr="0x8000D58" TI="6152"/>
   </module>
   <module Name="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_usart.c" >
-   <type Family="Base" Name="long int" ID="6164"/>
-   <type Family="Base" Name="short int" ID="6171"/>
-   <type Family="Base" Name="signed char" ID="6178"/>
-   <type Family="Base" Name="long unsigned int" ID="6196"/>
-   <type Family="typedef" Name="u32" Line="39" ID="6185" toTI="6196"/>
-   <type Family="Base" Name="short unsigned int" ID="6214"/>
-   <type Family="typedef" Name="u16" Line="40" ID="6203" toTI="6214"/>
-   <type Family="Base" Name="unsigned char" ID="6231"/>
-   <type Family="typedef" Name="u8" Line="41" ID="6221" toTI="6231"/>
-   <type Family="typedef" Name="vu32" Line="47" ID="6238" toTI="6249"/>
-   <type Family="typedef" Name="FlagStatus" Line="57" ID="6280" toTI="6259"/>
-   <type Family="typedef" Name="ITStatus" Line="57" ID="6291" toTI="6259"/>
-   <type Family="typedef" Name="FunctionalState" Line="59" ID="6323" toTI="6302"/>
-   <type Family="Base" Name="unsigned int" ID="6334"/>
-   <type Family="ComponentList" Line="568" ID="6341">
-    <Component Name="SR" TI="6350" Line="570" Offs="0"/>
-    <Component Name="RESERVED0" TI="6364" Line="571" Offs="2"/>
-    <Component Name="DR" TI="6379" Line="572" Offs="4"/>
-    <Component Name="RESERVED1" TI="6393" Line="573" Offs="6"/>
-    <Component Name="BRR" TI="6408" Line="574" Offs="8"/>
-    <Component Name="RESERVED2" TI="6423" Line="575" Offs="10"/>
-    <Component Name="CR1" TI="6438" Line="576" Offs="12"/>
-    <Component Name="RESERVED3" TI="6453" Line="577" Offs="14"/>
-    <Component Name="CR2" TI="6468" Line="578" Offs="16"/>
-    <Component Name="RESERVED4" TI="6483" Line="579" Offs="18"/>
-    <Component Name="CR3" TI="6498" Line="580" Offs="20"/>
-    <Component Name="RESERVED5" TI="6513" Line="581" Offs="22"/>
-    <Component Name="GTPR" TI="6528" Line="582" Offs="24"/>
-    <Component Name="RESERVED6" TI="6543" Line="583" Offs="26"/>
+   <type Family="Base" Name="long int" ID="6195"/>
+   <type Family="Base" Name="short int" ID="6202"/>
+   <type Family="Base" Name="signed char" ID="6209"/>
+   <type Family="Base" Name="long unsigned int" ID="6227"/>
+   <type Family="typedef" Name="u32" Line="39" ID="6216" toTI="6227"/>
+   <type Family="Base" Name="short unsigned int" ID="6245"/>
+   <type Family="typedef" Name="u16" Line="40" ID="6234" toTI="6245"/>
+   <type Family="Base" Name="unsigned char" ID="6262"/>
+   <type Family="typedef" Name="u8" Line="41" ID="6252" toTI="6262"/>
+   <type Family="typedef" Name="vu32" Line="47" ID="6269" toTI="6280"/>
+   <type Family="typedef" Name="FlagStatus" Line="57" ID="6311" toTI="6290"/>
+   <type Family="typedef" Name="ITStatus" Line="57" ID="6322" toTI="6290"/>
+   <type Family="typedef" Name="FunctionalState" Line="59" ID="6354" toTI="6333"/>
+   <type Family="Base" Name="unsigned int" ID="6365"/>
+   <type Family="ComponentList" Line="568" ID="6372">
+    <Component Name="SR" TI="6381" Line="570" Offs="0"/>
+    <Component Name="RESERVED0" TI="6395" Line="571" Offs="2"/>
+    <Component Name="DR" TI="6410" Line="572" Offs="4"/>
+    <Component Name="RESERVED1" TI="6424" Line="573" Offs="6"/>
+    <Component Name="BRR" TI="6439" Line="574" Offs="8"/>
+    <Component Name="RESERVED2" TI="6454" Line="575" Offs="10"/>
+    <Component Name="CR1" TI="6469" Line="576" Offs="12"/>
+    <Component Name="RESERVED3" TI="6484" Line="577" Offs="14"/>
+    <Component Name="CR2" TI="6499" Line="578" Offs="16"/>
+    <Component Name="RESERVED4" TI="6514" Line="579" Offs="18"/>
+    <Component Name="CR3" TI="6529" Line="580" Offs="20"/>
+    <Component Name="RESERVED5" TI="6544" Line="581" Offs="22"/>
+    <Component Name="GTPR" TI="6559" Line="582" Offs="24"/>
+    <Component Name="RESERVED6" TI="6574" Line="583" Offs="26"/>
    </type>
-   <type Family="typedef" Name="USART_TypeDef" Line="584" ID="6559" toTI="6341"/>
-   <type Family="ComponentList" Line="26" ID="6571">
-    <Component Name="USART_BaudRate" TI="6579" Line="28" Offs="0"/>
-    <Component Name="USART_WordLength" TI="6593" Line="29" Offs="4"/>
-    <Component Name="USART_StopBits" TI="6607" Line="30" Offs="6"/>
-    <Component Name="USART_Parity" TI="6621" Line="31" Offs="8"/>
-    <Component Name="USART_Mode" TI="6635" Line="32" Offs="10"/>
-    <Component Name="USART_HardwareFlowControl" TI="6649" Line="33" Offs="12"/>
+   <type Family="typedef" Name="USART_TypeDef" Line="584" ID="6590" toTI="6372"/>
+   <type Family="ComponentList" Line="26" ID="6602">
+    <Component Name="USART_BaudRate" TI="6610" Line="28" Offs="0"/>
+    <Component Name="USART_WordLength" TI="6624" Line="29" Offs="4"/>
+    <Component Name="USART_StopBits" TI="6638" Line="30" Offs="6"/>
+    <Component Name="USART_Parity" TI="6652" Line="31" Offs="8"/>
+    <Component Name="USART_Mode" TI="6666" Line="32" Offs="10"/>
+    <Component Name="USART_HardwareFlowControl" TI="6680" Line="33" Offs="12"/>
    </type>
-   <type Family="typedef" Name="USART_InitTypeDef" Line="34" ID="6664" toTI="6571"/>
-   <type Family="ComponentList" Line="37" ID="6675">
-    <Component Name="USART_Clock" TI="6683" Line="39" Offs="0"/>
-    <Component Name="USART_CPOL" TI="6697" Line="40" Offs="2"/>
-    <Component Name="USART_CPHA" TI="6711" Line="41" Offs="4"/>
-    <Component Name="USART_LastBit" TI="6725" Line="42" Offs="6"/>
+   <type Family="typedef" Name="USART_InitTypeDef" Line="34" ID="6695" toTI="6602"/>
+   <type Family="ComponentList" Line="37" ID="6706">
+    <Component Name="USART_Clock" TI="6714" Line="39" Offs="0"/>
+    <Component Name="USART_CPOL" TI="6728" Line="40" Offs="2"/>
+    <Component Name="USART_CPHA" TI="6742" Line="41" Offs="4"/>
+    <Component Name="USART_LastBit" TI="6756" Line="42" Offs="6"/>
    </type>
-   <type Family="typedef" Name="USART_ClockInitTypeDef" Line="43" ID="6740" toTI="6675"/>
-   <type Family="ComponentList" Line="25" ID="6751">
-    <Component Name="SYSCLK_Frequency" TI="6759" Line="27" Offs="0"/>
-    <Component Name="HCLK_Frequency" TI="6773" Line="28" Offs="4"/>
-    <Component Name="PCLK1_Frequency" TI="6787" Line="29" Offs="8"/>
-    <Component Name="PCLK2_Frequency" TI="6801" Line="30" Offs="12"/>
-    <Component Name="ADCCLK_Frequency" TI="6815" Line="31" Offs="16"/>
+   <type Family="typedef" Name="USART_ClockInitTypeDef" Line="43" ID="6771" toTI="6706"/>
+   <type Family="ComponentList" Line="25" ID="6782">
+    <Component Name="SYSCLK_Frequency" TI="6790" Line="27" Offs="0"/>
+    <Component Name="HCLK_Frequency" TI="6804" Line="28" Offs="4"/>
+    <Component Name="PCLK1_Frequency" TI="6818" Line="29" Offs="8"/>
+    <Component Name="PCLK2_Frequency" TI="6832" Line="30" Offs="12"/>
+    <Component Name="ADCCLK_Frequency" TI="6846" Line="31" Offs="16"/>
    </type>
-   <type Family="typedef" Name="RCC_ClocksTypeDef" Line="32" ID="6830" toTI="6751"/>
+   <type Family="typedef" Name="RCC_ClocksTypeDef" Line="32" ID="6861" toTI="6782"/>
    <function Name="USART_DeInit" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_usart.c" Line="90">
-   <type Family="Pointer" TI="6882" toTI="6559"/>
-    <parameter Name="USARTx" TI="6882" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_usart.c" Line="90" Addr="0x0" Param="Yes"/>
+   <type Family="Pointer" TI="6913" toTI="6590"/>
+    <parameter Name="USARTx" TI="6913" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_usart.c" Line="90" Addr="0x0" Param="Yes"/>
    </function >
    <function Name="USART_Init" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_usart.c" Line="140">
-    <parameter Name="USARTx" TI="6882" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_usart.c" Line="140" Addr="0x0" Param="Yes"/>
-   <type Family="Pointer" TI="7033" toTI="6664"/>
-    <parameter Name="USART_InitStruct" TI="7033" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_usart.c" Line="140" Addr="0x1" Param="Yes"/>
-    <variable Name="tmpreg" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_usart.c" Line="142" Addr="0x0" TI="6185"/>
-    <variable Name="apbclock" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_usart.c" Line="142" Addr="0x0" TI="6185"/>
-    <variable Name="integerdivider" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_usart.c" Line="143" Addr="0x0" TI="6185"/>
-    <variable Name="fractionaldivider" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_usart.c" Line="144" Addr="0x0" TI="6185"/>
-    <variable Name="usartxbase" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_usart.c" Line="145" Addr="0x0" TI="6185"/>
-    <variable Name="RCC_ClocksStatus" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_usart.c" Line="146" Addr="0x4000004" TI="6830"/>
+    <parameter Name="USARTx" TI="6913" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_usart.c" Line="140" Addr="0x0" Param="Yes"/>
+   <type Family="Pointer" TI="7064" toTI="6695"/>
+    <parameter Name="USART_InitStruct" TI="7064" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_usart.c" Line="140" Addr="0x1" Param="Yes"/>
+    <variable Name="tmpreg" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_usart.c" Line="142" Addr="0x0" TI="6216"/>
+    <variable Name="apbclock" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_usart.c" Line="142" Addr="0x0" TI="6216"/>
+    <variable Name="integerdivider" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_usart.c" Line="143" Addr="0x0" TI="6216"/>
+    <variable Name="fractionaldivider" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_usart.c" Line="144" Addr="0x0" TI="6216"/>
+    <variable Name="usartxbase" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_usart.c" Line="145" Addr="0x0" TI="6216"/>
+    <variable Name="RCC_ClocksStatus" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_usart.c" Line="146" Addr="0x4000004" TI="6861"/>
    </function >
-   <type Family="Pointer" TI="7147" toTI="6740"/>
+   <type Family="Pointer" TI="7178" toTI="6771"/>
    <function Name="USART_Cmd" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_usart.c" Line="311">
-    <parameter Name="USARTx" TI="6882" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_usart.c" Line="311" Addr="0x0" Param="Yes"/>
-    <parameter Name="NewState" TI="6323" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_usart.c" Line="311" Addr="0x1" Param="Yes"/>
+    <parameter Name="USARTx" TI="6913" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_usart.c" Line="311" Addr="0x0" Param="Yes"/>
+    <parameter Name="NewState" TI="6354" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_usart.c" Line="311" Addr="0x1" Param="Yes"/>
    </function >
    <function Name="USART_ITConfig" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_usart.c" Line="354">
-    <parameter Name="USARTx" TI="6882" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_usart.c" Line="354" Addr="0x0" Param="Yes"/>
-    <parameter Name="USART_IT" TI="6203" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_usart.c" Line="354" Addr="0x1" Param="Yes"/>
-    <parameter Name="NewState" TI="6323" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_usart.c" Line="354" Addr="0x2" Param="Yes"/>
-    <variable Name="usartreg" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_usart.c" Line="356" Addr="0x0" TI="6185"/>
-    <variable Name="itpos" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_usart.c" Line="356" Addr="0x0" TI="6185"/>
-    <variable Name="itmask" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_usart.c" Line="356" Addr="0x0" TI="6185"/>
-    <variable Name="usartxbase" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_usart.c" Line="357" Addr="0x0" TI="6185"/>
+    <parameter Name="USARTx" TI="6913" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_usart.c" Line="354" Addr="0x0" Param="Yes"/>
+    <parameter Name="USART_IT" TI="6234" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_usart.c" Line="354" Addr="0x1" Param="Yes"/>
+    <parameter Name="NewState" TI="6354" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_usart.c" Line="354" Addr="0x2" Param="Yes"/>
+    <variable Name="usartreg" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_usart.c" Line="356" Addr="0x0" TI="6216"/>
+    <variable Name="itpos" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_usart.c" Line="356" Addr="0x0" TI="6216"/>
+    <variable Name="itmask" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_usart.c" Line="356" Addr="0x0" TI="6216"/>
+    <variable Name="usartxbase" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_usart.c" Line="357" Addr="0x0" TI="6216"/>
    </function >
   </module>
   <module Name="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_flash.c" >
-   <type Family="Base" Name="long int" ID="8625"/>
-   <type Family="Base" Name="short int" ID="8632"/>
-   <type Family="Base" Name="signed char" ID="8639"/>
-   <type Family="Base" Name="long unsigned int" ID="8657"/>
-   <type Family="typedef" Name="u32" Line="39" ID="8646" toTI="8657"/>
-   <type Family="Base" Name="short unsigned int" ID="8664"/>
-   <type Family="Base" Name="unsigned char" ID="8671"/>
-   <type Family="Base" Name="unsigned int" ID="8683"/>
-   <type Family="ComponentList" Line="268" ID="8690">
-    <Component Name="ACR" TI="8699" Line="270" Offs="0"/>
-    <Component Name="KEYR" TI="8714" Line="271" Offs="4"/>
-    <Component Name="OPTKEYR" TI="8729" Line="272" Offs="8"/>
-    <Component Name="SR" TI="8744" Line="273" Offs="12"/>
-    <Component Name="CR" TI="8758" Line="274" Offs="16"/>
-    <Component Name="AR" TI="8772" Line="275" Offs="20"/>
-    <Component Name="RESERVED" TI="8786" Line="276" Offs="24"/>
-    <Component Name="OBR" TI="8801" Line="277" Offs="28"/>
-    <Component Name="WRPR" TI="8816" Line="278" Offs="32"/>
+   <type Family="Base" Name="long int" ID="8656"/>
+   <type Family="Base" Name="short int" ID="8663"/>
+   <type Family="Base" Name="signed char" ID="8670"/>
+   <type Family="Base" Name="long unsigned int" ID="8688"/>
+   <type Family="typedef" Name="u32" Line="39" ID="8677" toTI="8688"/>
+   <type Family="Base" Name="short unsigned int" ID="8695"/>
+   <type Family="Base" Name="unsigned char" ID="8702"/>
+   <type Family="Base" Name="unsigned int" ID="8714"/>
+   <type Family="ComponentList" Line="268" ID="8721">
+    <Component Name="ACR" TI="8730" Line="270" Offs="0"/>
+    <Component Name="KEYR" TI="8745" Line="271" Offs="4"/>
+    <Component Name="OPTKEYR" TI="8760" Line="272" Offs="8"/>
+    <Component Name="SR" TI="8775" Line="273" Offs="12"/>
+    <Component Name="CR" TI="8789" Line="274" Offs="16"/>
+    <Component Name="AR" TI="8803" Line="275" Offs="20"/>
+    <Component Name="RESERVED" TI="8817" Line="276" Offs="24"/>
+    <Component Name="OBR" TI="8832" Line="277" Offs="28"/>
+    <Component Name="WRPR" TI="8847" Line="278" Offs="32"/>
    </type>
-   <type Family="typedef" Name="FLASH_TypeDef" Line="279" ID="8832" toTI="8690"/>
+   <type Family="typedef" Name="FLASH_TypeDef" Line="279" ID="8863" toTI="8721"/>
    <function Name="FLASH_SetLatency" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_flash.c" Line="86">
-    <parameter Name="FLASH_Latency" TI="8646" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_flash.c" Line="86" Addr="0x0" Param="Yes"/>
+    <parameter Name="FLASH_Latency" TI="8677" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_flash.c" Line="86" Addr="0x0" Param="Yes"/>
    </function >
    <function Name="FLASH_PrefetchBufferCmd" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_flash.c" Line="126">
-    <parameter Name="FLASH_PrefetchBuffer" TI="8646" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_flash.c" Line="126" Addr="0x0" Param="Yes"/>
+    <parameter Name="FLASH_PrefetchBuffer" TI="8677" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_flash.c" Line="126" Addr="0x0" Param="Yes"/>
    </function >
   </module>
   <module Name="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_gpio.c" >
-   <type Family="Base" Name="long int" ID="8992"/>
-   <type Family="Base" Name="short int" ID="8999"/>
-   <type Family="Base" Name="signed char" ID="9006"/>
-   <type Family="Base" Name="long unsigned int" ID="9024"/>
-   <type Family="typedef" Name="u32" Line="39" ID="9013" toTI="9024"/>
-   <type Family="Base" Name="short unsigned int" ID="9042"/>
-   <type Family="typedef" Name="u16" Line="40" ID="9031" toTI="9042"/>
-   <type Family="Base" Name="unsigned char" ID="9059"/>
-   <type Family="typedef" Name="u8" Line="41" ID="9049" toTI="9059"/>
-   <type Family="typedef" Name="vu32" Line="47" ID="9066" toTI="9077"/>
-   <type Family="typedef" Name="FunctionalState" Line="59" ID="9103" toTI="9082"/>
-   <type Family="Base" Name="unsigned int" ID="9114"/>
-   <type Family="ComponentList" Line="334" ID="9121">
-    <Component Name="CRL" TI="9130" Line="336" Offs="0"/>
-    <Component Name="CRH" TI="9145" Line="337" Offs="4"/>
-    <Component Name="IDR" TI="9160" Line="338" Offs="8"/>
-    <Component Name="ODR" TI="9175" Line="339" Offs="12"/>
-    <Component Name="BSRR" TI="9190" Line="340" Offs="16"/>
-    <Component Name="BRR" TI="9205" Line="341" Offs="20"/>
-    <Component Name="LCKR" TI="9220" Line="342" Offs="24"/>
+   <type Family="Base" Name="long int" ID="9023"/>
+   <type Family="Base" Name="short int" ID="9030"/>
+   <type Family="Base" Name="signed char" ID="9037"/>
+   <type Family="Base" Name="long unsigned int" ID="9055"/>
+   <type Family="typedef" Name="u32" Line="39" ID="9044" toTI="9055"/>
+   <type Family="Base" Name="short unsigned int" ID="9073"/>
+   <type Family="typedef" Name="u16" Line="40" ID="9062" toTI="9073"/>
+   <type Family="Base" Name="unsigned char" ID="9090"/>
+   <type Family="typedef" Name="u8" Line="41" ID="9080" toTI="9090"/>
+   <type Family="typedef" Name="vu32" Line="47" ID="9097" toTI="9108"/>
+   <type Family="typedef" Name="FunctionalState" Line="59" ID="9134" toTI="9113"/>
+   <type Family="Base" Name="unsigned int" ID="9145"/>
+   <type Family="ComponentList" Line="334" ID="9152">
+    <Component Name="CRL" TI="9161" Line="336" Offs="0"/>
+    <Component Name="CRH" TI="9176" Line="337" Offs="4"/>
+    <Component Name="IDR" TI="9191" Line="338" Offs="8"/>
+    <Component Name="ODR" TI="9206" Line="339" Offs="12"/>
+    <Component Name="BSRR" TI="9221" Line="340" Offs="16"/>
+    <Component Name="BRR" TI="9236" Line="341" Offs="20"/>
+    <Component Name="LCKR" TI="9251" Line="342" Offs="24"/>
    </type>
-   <type Family="typedef" Name="GPIO_TypeDef" Line="343" ID="9236" toTI="9121"/>
-   <type Family="ComponentList" Line="345" ID="9248">
-    <Component Name="EVCR" TI="9257" Line="347" Offs="0"/>
-    <Component Name="MAPR" TI="9272" Line="348" Offs="4"/>
-   <type Family="array" ID="9303" toTI="9024"/>
-    <Component Name="EXTICR" TI="9287" Line="349" Offs="8"/>
+   <type Family="typedef" Name="GPIO_TypeDef" Line="343" ID="9267" toTI="9152"/>
+   <type Family="ComponentList" Line="345" ID="9279">
+    <Component Name="EVCR" TI="9288" Line="347" Offs="0"/>
+    <Component Name="MAPR" TI="9303" Line="348" Offs="4"/>
+   <type Family="array" ID="9334" toTI="9055"/>
+    <Component Name="EXTICR" TI="9318" Line="349" Offs="8"/>
    </type>
-   <type Family="typedef" Name="AFIO_TypeDef" Line="350" ID="9324" toTI="9248"/>
-   <type Family="typedef" Name="GPIOSpeed_TypeDef" Line="39" ID="9363" toTI="9336"/>
-   <type Family="typedef" Name="GPIOMode_TypeDef" Line="54" ID="9432" toTI="9374"/>
-   <type Family="ComponentList" Line="62" ID="9443">
-    <Component Name="GPIO_Pin" TI="9451" Line="64" Offs="0"/>
-    <Component Name="GPIO_Speed" TI="9465" Line="65" Offs="2"/>
-    <Component Name="GPIO_Mode" TI="9479" Line="66" Offs="3"/>
+   <type Family="typedef" Name="AFIO_TypeDef" Line="350" ID="9355" toTI="9279"/>
+   <type Family="typedef" Name="GPIOSpeed_TypeDef" Line="39" ID="9394" toTI="9367"/>
+   <type Family="typedef" Name="GPIOMode_TypeDef" Line="54" ID="9463" toTI="9405"/>
+   <type Family="ComponentList" Line="62" ID="9474">
+    <Component Name="GPIO_Pin" TI="9482" Line="64" Offs="0"/>
+    <Component Name="GPIO_Speed" TI="9496" Line="65" Offs="2"/>
+    <Component Name="GPIO_Mode" TI="9510" Line="66" Offs="3"/>
    </type>
-   <type Family="typedef" Name="GPIO_InitTypeDef" Line="67" ID="9494" toTI="9443"/>
-   <type Family="typedef" Name="BitAction" Line="73" ID="9526" toTI="9505"/>
-   <type Family="Pointer" TI="9578" toTI="9236"/>
+   <type Family="typedef" Name="GPIO_InitTypeDef" Line="67" ID="9525" toTI="9474"/>
+   <type Family="typedef" Name="BitAction" Line="73" ID="9557" toTI="9536"/>
+   <type Family="Pointer" TI="9609" toTI="9267"/>
    <function Name="GPIO_Init" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_gpio.c" Line="124">
-    <parameter Name="GPIOx" TI="9578" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_gpio.c" Line="124" Addr="0x0" Param="Yes"/>
-   <type Family="Pointer" TI="9747" toTI="9494"/>
-    <parameter Name="GPIO_InitStruct" TI="9747" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_gpio.c" Line="124" Addr="0x1" Param="Yes"/>
-    <variable Name="currentmode" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_gpio.c" Line="126" Addr="0x0" TI="9013"/>
-    <variable Name="currentpin" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_gpio.c" Line="126" Addr="0x0" TI="9013"/>
-    <variable Name="pinpos" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_gpio.c" Line="126" Addr="0x0" TI="9013"/>
-    <variable Name="pos" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_gpio.c" Line="126" Addr="0x0" TI="9013"/>
-    <variable Name="tmpreg" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_gpio.c" Line="127" Addr="0x0" TI="9013"/>
-    <variable Name="pinmask" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_gpio.c" Line="127" Addr="0x0" TI="9013"/>
+    <parameter Name="GPIOx" TI="9609" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_gpio.c" Line="124" Addr="0x0" Param="Yes"/>
+   <type Family="Pointer" TI="9778" toTI="9525"/>
+    <parameter Name="GPIO_InitStruct" TI="9778" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_gpio.c" Line="124" Addr="0x1" Param="Yes"/>
+    <variable Name="currentmode" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_gpio.c" Line="126" Addr="0x0" TI="9044"/>
+    <variable Name="currentpin" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_gpio.c" Line="126" Addr="0x0" TI="9044"/>
+    <variable Name="pinpos" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_gpio.c" Line="126" Addr="0x0" TI="9044"/>
+    <variable Name="pos" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_gpio.c" Line="126" Addr="0x0" TI="9044"/>
+    <variable Name="tmpreg" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_gpio.c" Line="127" Addr="0x0" TI="9044"/>
+    <variable Name="pinmask" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_gpio.c" Line="127" Addr="0x0" TI="9044"/>
    </function >
    <function Name="GPIO_WriteBit" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_gpio.c" Line="374">
-    <parameter Name="GPIOx" TI="9578" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_gpio.c" Line="374" Addr="0x0" Param="Yes"/>
-    <parameter Name="GPIO_Pin" TI="9031" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_gpio.c" Line="374" Addr="0x1" Param="Yes"/>
-    <parameter Name="BitVal" TI="9526" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_gpio.c" Line="374" Addr="0x2" Param="Yes"/>
+    <parameter Name="GPIOx" TI="9609" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_gpio.c" Line="374" Addr="0x0" Param="Yes"/>
+    <parameter Name="GPIO_Pin" TI="9062" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_gpio.c" Line="374" Addr="0x1" Param="Yes"/>
+    <parameter Name="BitVal" TI="9557" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_gpio.c" Line="374" Addr="0x2" Param="Yes"/>
    </function >
   </module>
   <module Name="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_it.c" >
-   <type Family="Base" Name="long int" ID="10672"/>
-   <type Family="Base" Name="short int" ID="10679"/>
-   <type Family="Base" Name="signed char" ID="10686"/>
-   <type Family="Base" Name="long unsigned int" ID="10693"/>
-   <type Family="Base" Name="short unsigned int" ID="10700"/>
-   <type Family="Base" Name="unsigned char" ID="10707"/>
-   <type Family="Base" Name="unsigned int" ID="10714"/>
+   <type Family="Base" Name="long int" ID="10703"/>
+   <type Family="Base" Name="short int" ID="10710"/>
+   <type Family="Base" Name="signed char" ID="10717"/>
+   <type Family="Base" Name="long unsigned int" ID="10724"/>
+   <type Family="Base" Name="short unsigned int" ID="10731"/>
+   <type Family="Base" Name="unsigned char" ID="10738"/>
+   <type Family="Base" Name="unsigned int" ID="10745"/>
    <function Name="WWDG_IRQHandler" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_it.c" Line="150">
    </function >
    <function Name="PVD_IRQHandler" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\Bluetooth\STM32_BlueTooth\stm32f10x_it.c" Line="161">

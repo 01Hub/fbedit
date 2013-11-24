@@ -33,6 +33,7 @@ IDC_EDTSEND			equ 1001
 IDC_EDTRECEIVE		equ 1002
 IDC_STCBYTESSENDT	equ 1003
 IDC_STCBYTESREC		equ 1004
+IDC_CHKHEX			equ 1005
 
 IDM_MENU			equ 10000
 IDM_FILE_EXIT		equ 10001
@@ -46,6 +47,7 @@ STM32_Data			equ 20000000h						;STM32 ram address
 ClassName			BYTE 'DLGCLASS',0
 AppName				BYTE 'Dialog as main',0
 AboutMsg			BYTE 'MASM32 RadASM Dialog as main',13,10,'Copyright © MASM32 2001',0
+szFmtHex			BYTE '%02X ',0
 
 .data?
 
@@ -55,3 +57,4 @@ hWnd				HWND ?
 fSTLink				DWORD ?
 lpOldEditProc		DWORD ?
 tail				DWORD ?
+hex					DWORD ?

@@ -1,5 +1,5 @@
 [Application]
-ApplicationPath=C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\Sonar.elf
+ApplicationPath=D:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\Sonar.elf
 CSX=0
 HighBankAddr=400000
 BootMode=0

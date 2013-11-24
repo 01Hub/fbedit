@@ -178,18 +178,25 @@ BlueToothClient proc uses ebx esi edi,Param:DWORD
 						call	BTPut
 					.endif
 					mov		clientsenddata.Start,1
-					mov		clientsenddata.PingPulses,32
 					mov		clientsenddata.PingTimer,(STM32_Clock/200000/2)-1
 					movzx	ebx,sonardata.RangeInx
 					mov		clientsenddata.RangeInx,bl
+					;Get pixel timer
 					invoke RangeToTimer,ebx
 					mov		clientsenddata.PixelTimer,ax
-					;Setup gain array
+					;Get range specific data
 					invoke GetRangePtr,ebx
 					mov		ebx,eax
+					;Ping pulses
+					mov		eax,sonardata.PingInit
+					.if sonardata.AutoPing
+						add		eax,sonardata.sonarrange.pingadd[ebx]
+					.endif
+					mov		clientsenddata.PingPulses,al
 					;Initial gain
 					mov		eax,sonardata.GainSet
 					mov		clientsenddata.GainInit[0],ax
+					;Setup gain array
 					xor		ecx,ecx
 					xor		edi,edi
 					.if sonardata.AutoGain
@@ -218,19 +225,8 @@ BlueToothClient proc uses ebx esi edi,Param:DWORD
 					mov		esi,offset serversenddata
 					mov		edi,FILEREPLAYSIZE
 					call	BTGet
-;					xor		ebx,ebx
-;					.while TRUE
-;						mov		eax,FILEREPLAYSIZE
-;						.break .if eax==ebx
-;						sub		eax,ebx
-;						invoke recv,client_socket,addr serversenddata[ebx],eax,0
-;						.break .if eax==INVALID_SOCKET || eax==0
-;						add		ebx,eax
-;					.endw
 					.break .if eax==INVALID_SOCKET || eax==0
 					mov		fdataready,TRUE
-;inc		esi
-;PrintDec esi
 					mov		clientsenddata.Start,3
 					; Send data to STM
 					mov		esi,offset clientsenddata
@@ -240,15 +236,6 @@ BlueToothClient proc uses ebx esi edi,Param:DWORD
 					lea		esi,gpsbuff
 					mov		edi,512+4
 					call	BTGet
-;					xor		ebx,ebx
-;					.while TRUE
-;						mov		eax,512+4
-;						.break .if eax==ebx
-;						sub		eax,ebx
-;						invoke recv,client_socket,addr gpsbuff[ebx],eax,0
-;						.break .if eax==INVALID_SOCKET || eax==0
-;						add		ebx,eax
-;					.endw
 					.break .if eax==INVALID_SOCKET || eax==0
 				  @@:
 					mov		edi,offset szbuff

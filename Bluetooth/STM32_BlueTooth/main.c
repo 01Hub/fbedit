@@ -44,6 +44,7 @@ typedef struct
 STM32_BlueToothTypeDef BlueTooth;
 vu32 BlueLED;
 vu32 GreenLED;
+vu32 Baud;
 
 /* Private functions ---------------------------------------------------------*/
 
@@ -77,7 +78,16 @@ int main(void)
       }
       else if (BlueTooth.BLUETOOTHData == 0x005E)
       {
-        USART3_Configuration(115200);
+        if (Baud)
+        {
+          USART3_Configuration(9600);
+          Baud = 0;
+        }
+        else
+        {
+          USART3_Configuration(115200);
+          Baud = 1;
+        }
       }
       else
       {

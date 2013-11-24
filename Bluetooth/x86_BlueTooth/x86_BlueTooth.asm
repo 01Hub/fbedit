@@ -85,10 +85,14 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			mov		edx,ebx
 			and		edx,03h
 			movzx	eax,buffer[edx]
-			.if eax==0Dh
-				mov		ah,0Ah
+			.if hex
+				invoke wsprintf,addr buffer,addr szFmtHex,eax
+			.else
+				.if eax==0Dh
+					mov		ah,0Ah
+				.endif
+				mov		dword ptr buffer,eax
 			.endif
-			mov		dword ptr buffer,eax
 			invoke SendDlgItemMessage,hWin,IDC_EDTRECEIVE,EM_REPLACESEL,FALSE,addr buffer
 			inc		ebx
 			and		ebx,01FFh
@@ -117,6 +121,8 @@ PrintHex eax
 invoke STLinkRead,hWin,STM32_Data+16,addr status,4
 mov eax,status
 PrintHex eax
+			.elseif eax==IDC_CHKHEX
+				xor		hex,1
 			.elseif eax==IDM_HELP_ABOUT
 				invoke ShellAbout,hWin,addr AppName,addr AboutMsg,NULL
 			.endif
@@ -138,7 +144,8 @@ PrintHex eax
 	ret
 
 STLinkErr:
-	invoke PostMessage,hWnd,WM_CLOSE,0,0
+	invoke KillTimer,hWin,1000
+	invoke SendMessage,hWin,WM_CLOSE,0,0
 	xor		eax,eax
 	ret
 

@@ -40,6 +40,7 @@ import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
+import java.lang.reflect.Method;
 //import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -79,15 +80,21 @@ public class BoatNav extends Activity {
 	private static int soundplaying = 0;
 	private static ArrayAdapter<String> btadapter;
 	private static ArrayList<String> btlistItems = new ArrayList<String>();
+    public static java.text.DateFormat mdateFormat;
     // Well known SPP UUID
     private static final UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
     public static String sbtdeviceaddr = "00:18:B2:02:D2:AD";
-	private static BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-    private static BluetoothDevice mBluetoothDevice = null;
-    private BluetoothSocket mBluetoothSocket = null;
+    protected BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+    BluetoothDevice mBluetoothDevice = null;
+    protected BluetoothSocket mBluetoothSocket = null;
     private OutputStream mOutputStream = null;
     private InputStream mInputStream = null;
-    public static java.text.DateFormat mdateFormat;
+    public static BTClass btSend = new BTClass();
+    public static byte[] btwritebuffer = new byte[42];
+    public static byte[] btreadbuffer = new byte[MyIV.SONARARRAYSIZE];
+    public static boolean btstart = false;
+    public static boolean btconnected = false;
+    public static int btwait;
 
     @Override
 	public void onCreate(Bundle icicle) {
@@ -131,7 +138,144 @@ public class BoatNav extends Activity {
 				public void run() {
 					TimerMethod();
 				}
-			}, 100, 100);
+			}, 1000, 100);
+
+	    	Runnable runnable = new Runnable() {
+		        public void run() {
+                	while (true) {
+                		if (btstart) {
+        					Boolean err = false;
+        			        double tmp;
+        			        int ri = MyIV.sonarrangeinx;
+        			        
+//                			btwait++;
+//                			MyIV.sTextWait = "Wait: " + btwait;
+        					if (MyIV.sonarautorange) {
+        						// Check range change
+        						if (MyIV.nodepth) {
+        							if (MyIV.sonarrangechange > 5)
+        							{
+        								ri += MyIV.sonarrangechangedir;
+        								if (ri == 0 || ri == MyIV.MAXSONARRANGE - 1)
+        								{
+        									MyIV.sonarrangechangedir = -MyIV.sonarrangechangedir;
+        								}
+        								MyIV.sonarrangechange = 0;
+        							}
+        						}
+        						else if (MyIV.sonarrangechange > 5)
+        						{
+        							float d = (float)MyIV.range[ri].range;
+        							if (((float)MyIV.curdepth > (d - d / 5f)) && ri < 19) {
+        								MyIV.rndpixdpt = (MyIV.rndpixdpt * MyIV.range[ri].range) / MyIV.range[ri + 1].range;
+        								ri++;
+        								MyIV.sonarrangechange = 0;
+        							}
+        							else if (((float)MyIV.curdepth < (d / 5f)) && ri > 0) {
+        								MyIV.rndpixdpt = (MyIV.rndpixdpt * MyIV.range[ri].range) / MyIV.range[ri - 1].range;
+        								ri--;
+        								MyIV.sonarrangechange = 0;
+        							}
+        						}
+        					}
+        					MyIV.sonarrangechange++;
+
+        			        btSend.Start = 1;
+        			        btSend.PingPulses = (byte)(16 + MyIV.range[MyIV.sonarrangeinx].pingadd);
+        			        btSend.PingTimer = (40000000 / 200000 / 2)-1;
+        			        btSend.RangeInx = (byte)ri;
+        			        tmp = (((double)MyIV.range[MyIV.sonarrangeinx].range / (double)MyIV.SONARTILEHEIGHT) / (1450d / 2d)) * 40000000d;
+        			        btSend.PixelTimer = (short)tmp;
+        			        btSend.GainInit[0] = 750;
+        			        int i = 0;
+        			        while (i < 17)
+        			        {
+        			        	btSend.GainInit[i + 1] = (short)MyIV.range[MyIV.sonarrangeinx].gain[i];
+        			        	i++;
+        			        }
+        			        btwritebuffer[0] = btSend.Start;
+        			        btwritebuffer[1] = btSend.PingPulses;
+        			        btwritebuffer[2] = btSend.PingTimer;
+        			        btwritebuffer[3] = btSend.RangeInx;
+        			        btwritebuffer[4] = (byte)(btSend.PixelTimer & 0xFF);
+        			        btwritebuffer[5] = (byte)(btSend.PixelTimer / 256);
+        			        i = 0;
+        			        while (i < 18)
+        			        {
+        			        	btwritebuffer[i * 2 + 6] = (byte)(btSend.GainInit[i] & 0xFF);
+        			        	btwritebuffer[i * 2 + 7] = (byte)(btSend.GainInit[i] >> 8);
+        			        	i++;
+        			        }
+        			        try {
+        			        	mOutputStream.write(btwritebuffer);
+        			            try {
+        			            	int bytes = 0;
+        			            	while (bytes < MyIV.SONARARRAYSIZE) {
+        				               	bytes += mInputStream.read(btreadbuffer,bytes,MyIV.SONARARRAYSIZE-bytes);
+        			            	}
+        			               	if (bytes == MyIV.SONARARRAYSIZE) {
+        			               		if (((int)btreadbuffer[0] & 0xFF) == 201) {
+        				               		bytes = 0;
+        				               		while (bytes < MyIV.SONARARRAYSIZE) {
+        				               			MyIV.replayarray[bytes] = btreadbuffer[bytes];
+        				               			bytes++;
+        				               		}
+        				               		MyIV.TraslateFromByteArray();
+        				               		//MyIV.sc.ADCBattery = 2234;
+        				               		//MyIV.sc.ADCWaterTemp = 1900;
+        				               		//MyIV.sc.ADCAirTemp = 1500;
+        				               		//MyIV.sc.iTime = 0;
+        				               		//MyIV.sc.iLon = 14196690;
+        				               		//MyIV.sc.iLat = 66317270;
+        				               		//MyIV.sc.iSpeed = 0;
+        				               		//MyIV.sc.iBear = 0;
+        				               		//MyIV.sc.sonar[0] = 4;
+        				               		MyIV.SonarShow();
+        			               		}
+        			               	}
+        			            } 
+        			            catch (IOException e) {
+        				        	err = true;
+        			            }
+        			        }
+        			        catch (IOException e) {
+        			        	err = true;
+        			    	}
+        			        if (err) {
+        			        	btconnected = false;
+        			        	try {
+        			        		mOutputStream.close();
+        			        		mOutputStream = null;
+        						}
+        			        	catch (IOException e1) {
+        						}
+        			        	try {
+        							mInputStream.close();
+        							mInputStream = null;
+        						}
+        			        	catch (IOException e1) {
+        						}
+        			        	try {
+        							mBluetoothSocket.close();
+        							mBluetoothSocket = null;
+        						}
+        			        	catch (IOException e) {
+        						}
+        			        	MyIV.ClearTrail();
+        			        	MyIV.mode = 1;
+                			}
+                			btstart = false;
+                		} else {
+                    		try {
+    							Thread.sleep(50);
+    						} catch (InterruptedException e) {
+    						}
+                		}
+                	}
+		        }
+	    	};
+	    	Thread mythread = new Thread(runnable);
+	    	mythread.start();
 		}
         mIV = new MyIV(this);
 		setContentView(mIV);
@@ -151,114 +295,10 @@ public class BoatNav extends Activity {
 	}
 
 	private void NormalMode() {
-		Boolean err = false;
-        BTClass btSend = new BTClass();
-        byte[] msgBuffer = new byte[42];
-        double tmp;
-        int ri = MyIV.sonarrangeinx;
-        
-		if (MyIV.sonarautorange) {
-			// Check range change
-			if (MyIV.nodepth) {
-				if (MyIV.sonarrangechange > 5)
-				{
-					ri += MyIV.sonarrangechangedir;
-					if (ri == 0 || ri == MyIV.MAXSONARRANGE)
-					{
-						MyIV.sonarrangechangedir = -MyIV.sonarrangechangedir;
-					}
-					MyIV.sonarrangechange = 0;
-				}
-			}
-			else if (MyIV.sonarrangechange > 5)
-			{
-				float d = (float)MyIV.range[ri].range;
-				if (((float)MyIV.curdepth > (d - d / 5f)) && ri < 19) {
-					MyIV.rndpixdpt = (MyIV.rndpixdpt * MyIV.range[ri].range) / MyIV.range[ri + 1].range;
-					ri++;
-					MyIV.sonarrangechange = 0;
-				}
-				else if (((float)MyIV.curdepth < (d / 5f)) && ri > 0) {
-					MyIV.rndpixdpt = (MyIV.rndpixdpt * MyIV.range[ri].range) / MyIV.range[ri - 1].range;
-					ri--;
-					MyIV.sonarrangechange = 0;
-				}
-			}
+		if (btstart == false) {
+       		mIV.invalidate();
+			btstart = true;
 		}
-		MyIV.sonarrangechange++;
-
-        btSend.Start = 1;
-        btSend.PingPulses = (byte)(16 + MyIV.range[MyIV.sonarrangeinx].pingadd);
-        btSend.PingTimer = (40000000 / 200000 / 2)-1;
-        btSend.RangeInx = (byte)ri;
-        tmp = ((MyIV.range[MyIV.sonarrangeinx].range / MyIV.SONARTILEHEIGHT) / (1450 / 2)) * 40000000;
-        btSend.PixelTimer = (short)tmp;
-        btSend.GainInit[0] = 750;
-        int i = 0;
-        while (i < 17)
-        {
-        	btSend.GainInit[i + 1] = (short)MyIV.range[MyIV.sonarrangeinx].gain[i];
-        	i++;
-        }
-        msgBuffer[0] = btSend.Start;
-        msgBuffer[1] = btSend.PingPulses;
-        msgBuffer[2] = btSend.PingTimer;
-        msgBuffer[3] = btSend.RangeInx;
-        msgBuffer[4] = (byte)(btSend.PixelTimer & 0xFF);
-        msgBuffer[5] = (byte)(btSend.PixelTimer / 256);
-        i = 0;
-        while (i < 18)
-        {
-        	msgBuffer[i * 2 + 6] = (byte)(btSend.GainInit[i] & 0xFF);
-        	msgBuffer[i * 2 + 7] = (byte)(btSend.GainInit[i] >> 8);
-        	i++;
-        }
-        try {
-        	mOutputStream.write(msgBuffer);
-            try {
-            	int bytes = 0;
-                byte[] buffer = new byte[MyIV.SONARARRAYSIZE];
-               	bytes = mInputStream.read(buffer);
-               	if (bytes == MyIV.SONARARRAYSIZE) {
-               		bytes = 0;
-               		while (bytes < MyIV.SONARARRAYSIZE) {
-               			MyIV.replayarray[bytes] = buffer[bytes];
-               			bytes++;
-               		}
-               		MyIV.TraslateFromByteArray();
-               		MyIV.SonarShow();
-               		mIV.invalidate();
-               	}
-            } 
-            catch (IOException e) {
-	        	err = true;
-            }
-        }
-        catch (IOException e) {
-        	err = true;
-    	}
-        if (err) {
-        	try {
-        		mOutputStream.close();
-        		mOutputStream = null;
-			}
-        	catch (IOException e1) {
-			}
-        	try {
-				mInputStream.close();
-				mInputStream = null;
-			}
-        	catch (IOException e1) {
-			}
-        	try {
-				mBluetoothSocket.close();
-				mBluetoothSocket = null;
-			}
-        	catch (IOException e) {
-			}
-        	MyIV.ClearTrail();
-        	MyIV.mode = 1;
-        }
 	}
 
 	private void DemoMode() {
@@ -290,7 +330,7 @@ public class BoatNav extends Activity {
 				if (MyIV.sonarrangechange > 5)
 				{
 					ri += MyIV.sonarrangechangedir;
-					if (ri == 0 || ri == MyIV.MAXSONARRANGE)
+					if (ri == 0 || ri == MyIV.MAXSONARRANGE - 1)
 					{
 						MyIV.sonarrangechangedir = -MyIV.sonarrangechangedir;
 					}
@@ -603,39 +643,42 @@ public class BoatNav extends Activity {
 		        try {
 		            // Set up a pointer to the remote node using it's address.
 		        	mBluetoothDevice = mBluetoothAdapter.getRemoteDevice(sbtdeviceaddr);
+	            	Method m = mBluetoothDevice.getClass().getMethod("createInsecureRfcommSocket", new Class[] { int.class }); 
+	            	mBluetoothSocket = (BluetoothSocket) m.invoke(mBluetoothDevice,Integer.valueOf(1));
+	            	
+		            // Discovery is resource intensive.  Make sure it isn't going on
+		            // when you attempt to connect and pass your message.
+		            mBluetoothAdapter.cancelDiscovery();
+		            // Establish the connection.  This will block until it connects.
 		            try {
-		            	mBluetoothSocket = mBluetoothDevice.createRfcommSocketToServiceRecord(MY_UUID);
-			            // Discovery is resource intensive.  Make sure it isn't going on
-			            // when you attempt to connect and pass your message.
-			            mBluetoothAdapter.cancelDiscovery();
-			            // Establish the connection.  This will block until it connects.
+		            	mBluetoothSocket.connect();
+			            // Create data streams so we can talk to server.
 			            try {
-			            	mBluetoothSocket.connect();
-				            // Create data streams so we can talk to server.
+			            	mOutputStream = mBluetoothSocket.getOutputStream();
 				            try {
-				            	mOutputStream = mBluetoothSocket.getOutputStream();
-					            try {
-					            	mInputStream = mBluetoothSocket.getInputStream();
-					            	// Done, set the mode
-				                	MyIV.mode = 0;
-					            }
-					            catch (IOException e) {
-						        	err = true;
-					            }
+				            	mInputStream = mBluetoothSocket.getInputStream();
+				            	// Done, set the mode
+								dialog.dismiss();
+			                	MyIV.mode = 0;
+			                	btconnected = true;
 				            }
 				            catch (IOException e) {
+					        	msgbox("BT", "getInputStream " + e.getMessage());
 					        	err = true;
 				            }
 			            }
 			            catch (IOException e) {
+				        	msgbox("BT", "getOutputStream " + e.getMessage());
 				        	err = true;
 			            }
 		            }
 		            catch (IOException e) {
+			        	msgbox("BT", "connect " + e.getMessage());
 			        	err = true;
 		            }
 				}
 		        catch (Exception e) {
+		        	msgbox("BT", "getRemoteDevice " + e.getMessage());
 		        	err = true;
 				}
 		        if (err == true) {
@@ -663,8 +706,8 @@ public class BoatNav extends Activity {
 			        	catch (IOException e) {
 						}
 			        }
+					dialog.dismiss();
 		        }
-				dialog.dismiss();
 			}
 		});
 
