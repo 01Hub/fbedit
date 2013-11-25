@@ -42,8 +42,7 @@ public class GPSClass {
 		bearing = Math.toDegrees(Math.atan2(dLon, dPhi));
 		if (bearing > 0d && bearing < 180d) {
 			bearing = bearing + 180;
-		}
-		else if (bearing < 0) {
+		} else if (bearing < 0) {
 			bearing = bearing + 180;
 		}
 		return bearing;

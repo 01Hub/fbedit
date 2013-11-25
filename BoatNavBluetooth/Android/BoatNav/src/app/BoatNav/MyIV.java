@@ -33,6 +33,7 @@ public class MyIV extends ImageView {
 	public static int scrnht;
 	public static int mapwt = 0;
 	public static int sonarwt = 0;
+	public static int satelitewt = 0;
 	public static float xofs = 0;
 	public static float yofs = 0;
 
@@ -104,16 +105,18 @@ public class MyIV extends ImageView {
 	public static final SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
 	public static int sonarColor;
 
+	public static int sonarpinginit = 16;
+	public static int sonargaininit = 750;
 	public static int sonarnoiselevel = 4;
 	public static int sonarnoisereject = 2;
 	public static int sonarfishdetect = 1;
 	public static boolean sonarfishsound = false;
 	public static boolean sonarfishdepth = true;
 	public static boolean sonarfishicon = true;
+	public static boolean sonarautorange = true;
 	public static int sonarrangeinx = 4;
 	public static int sonarrangechange = 0;
 	public static int sonarrangechangedir = 1;
-	public static boolean sonarautorange = true;
 
 	private static Rect srcrect = new Rect(0,0,0,0);
 	private static Rect dstrect =  new Rect(0,0,0,0);
@@ -121,6 +124,8 @@ public class MyIV extends ImageView {
 	public static Bitmap sonarsignalbmp;
 	public static int[] sonarbmpwidth = new int[MAXSONARBMP];
 	public static int[] sonarbmprange = new int[MAXSONARBMP];
+	public static int[] sonarbmplat = new int[MAXSONARBMP];
+	public static int[] sonarbmplon = new int[MAXSONARBMP];
 	public static int sonarofs = 0;
 	public static int cursonarrange = 2;
 	public static int echoarrayinx = 0;
@@ -141,6 +146,7 @@ public class MyIV extends ImageView {
 	public static boolean nodepth = true;
 	public static boolean blink = false;
 	private static int sonarbmpinx = 0;
+	private static int sonarcurbmpinx = 0;
 	private static String rngticks;
 	public static boolean playfishalarm;
 	public static byte[] replayarray = new byte[SONARARRAYSIZE];
@@ -219,6 +225,15 @@ public class MyIV extends ImageView {
 		sc.iSpeed = (short)(((short)(replayarray[24]) & 0xFF) | ((short)(replayarray[25] << 8) & 0xFF00));
 		sc.iBear = (short)(((short)(replayarray[26]) & 0xFF) | ((short)(replayarray[27] << 8) & 0xFF00));
 		sc.fixquality = replayarray[28 + 72];
+		i = 0;
+		while (i < 12) {
+			sc.sat[i].SatelliteID = replayarray[28 + i * 6];
+			sc.sat[i].Elevation = replayarray[28 + i * 6 + 1];
+			sc.sat[i].Azimuth = (short)(((short)(replayarray[28 + i * 6 + 2]) & 0xFF) | ((short)(replayarray[28 + i * 6 + 3] << 8) & 0xFF00));
+			sc.sat[i].SNR = replayarray[28 + i * 6 + 4];
+			sc.sat[i].Fixed = replayarray[28 + i * 6 + 5];
+			i++;
+		}
 		i = 0;
 		while (i < SONARTILEHEIGHT) {
 			sc.sonar[i] = replayarray[i + SONAROFFSET];
@@ -515,6 +530,8 @@ public class MyIV extends ImageView {
 	    	sonarbmpwidth[sonarbmpinx] = 0;
 	    	sonarbmprange[sonarbmpinx] = cursonarrange;
 	    }
+    	sonarbmplat[sonarbmpinx] = sc.iLat;
+    	sonarbmplon[sonarbmpinx] = sc.iLon;
 	    sonarbmp[sonarbmpinx].getPixels(bmparray,0,SONARTILEWIDTH,0,0,SONARTILEWIDTH,SONARTILEHEIGHT);
 	    x = sonarbmpwidth[sonarbmpinx];
 	    echoarrayinx++;
@@ -974,7 +991,17 @@ public class MyIV extends ImageView {
 		// Draw distance
 		paint.setTextAlign(Paint.Align.CENTER);
 		DrawText(mapwt / 2, 15, 15, String.format("%.0f", distance) + "m", canvas);
-		// Cursor
+		if (!locktogps) {
+			if (sonarcurbmpinx >= 0) {
+				if (sonarbmplat[sonarcurbmpinx] != 0) {
+					GpsPosToMapPos((double)sonarbmplat[sonarcurbmpinx] / 1000000d, (double)sonarbmplon[sonarcurbmpinx] / 1000000d);
+					MapPosToScrnPos();
+					ScrnPosToCurPos();
+					canvas.drawBitmap(BoatNav.bmp[MAPMAXBMP + 28].bm, cpx-8, cpy-8, null);
+				}
+			}
+		}
+		// Cursor index
 		index = (int)((double)curbearing / 22.5d) & 15;
 		GpsPosToMapPos(curlat, curlon);
 		MapPosToScrnPos();
@@ -1019,32 +1046,38 @@ public class MyIV extends ImageView {
 		}
 		i = sonarbmpinx;
 		r = mapwt + sonarwt - SONARRANGEBARWIDTH + sonarofs;
+		sonarcurbmpinx = -1;
 		while (true) {
 			dstrect.right = r;
 	        r -= sonarbmpwidth[i];
-	        dstrect.left = r;
-	        dstrect.top = 0;
-	        srcrect.left = 0;
-	        srcrect.top =0 ;
-	        srcrect.right = sonarbmpwidth[i];
-		    if (cursonarrange == sonarbmprange[i]) {
-		        dstrect.bottom = scrnht;
-		        srcrect.bottom = SONARTILEHEIGHT;
-				canvas.drawBitmap(sonarbmp[i], srcrect, dstrect, null);
-		    } else if (cursonarrange > sonarbmprange[i]) {
-		        dstrect.bottom = scrnht * sonarbmprange[i] / cursonarrange;
-		        srcrect.bottom = SONARTILEHEIGHT;
-				canvas.drawBitmap(sonarbmp[i], srcrect, dstrect, null);
-				dstrect.top = dstrect.bottom;
-				dstrect.bottom = scrnht;
-		        paint.setColor(sonarColor);
-		        paint.setStyle(Style.FILL);
-		        canvas.drawRect(dstrect, paint);   
-		    } else if (cursonarrange < sonarbmprange[i]) {
-		        dstrect.bottom = scrnht;
-		        srcrect.bottom = SONARTILEHEIGHT * cursonarrange / sonarbmprange[i];
-				canvas.drawBitmap(sonarbmp[i], srcrect, dstrect, null);
-		    }
+	        if (r < scrnwt - SONARRANGEBARWIDTH) {
+	        	if (sonarcurbmpinx == -1) {
+	        		sonarcurbmpinx = i;
+	        	}
+		        dstrect.left = r;
+		        dstrect.top = 0;
+		        srcrect.left = 0;
+		        srcrect.top =0 ;
+		        srcrect.right = sonarbmpwidth[i];
+			    if (cursonarrange == sonarbmprange[i]) {
+			        dstrect.bottom = scrnht;
+			        srcrect.bottom = SONARTILEHEIGHT;
+					canvas.drawBitmap(sonarbmp[i], srcrect, dstrect, null);
+			    } else if (cursonarrange > sonarbmprange[i]) {
+			        dstrect.bottom = scrnht * sonarbmprange[i] / cursonarrange;
+			        srcrect.bottom = SONARTILEHEIGHT;
+					canvas.drawBitmap(sonarbmp[i], srcrect, dstrect, null);
+					dstrect.top = dstrect.bottom;
+					dstrect.bottom = scrnht;
+			        paint.setColor(sonarColor);
+			        paint.setStyle(Style.FILL);
+			        canvas.drawRect(dstrect, paint);   
+			    } else if (cursonarrange < sonarbmprange[i]) {
+			        dstrect.bottom = scrnht;
+			        srcrect.bottom = SONARTILEHEIGHT * cursonarrange / sonarbmprange[i];
+					canvas.drawBitmap(sonarbmp[i], srcrect, dstrect, null);
+			    }
+	        }
 			i--;
 			i &= MAXSONARBMP - 1;
 			if (i == sonarbmpinx || r < mapwt) {
@@ -1082,6 +1115,56 @@ public class MyIV extends ImageView {
 		DrawText(mapwt + 15, 85, 25, String.format("%.1f",curwtemp) + "C", canvas);
 	}
 
+	private void DrawSatelite(Canvas canvas) {
+		Bitmap bm = Bitmap.createBitmap(8, 8, Bitmap.Config.ARGB_8888);
+		int cx, cy, r, nsat;
+		bm.eraseColor(MyIV.sonarColor);
+		canvas.clipRect(0, 0, satelitewt-1, scrnht);
+		srcrect.left = 0;
+        srcrect.top = 0 ;
+		srcrect.right = 8;
+        srcrect.bottom = 8;
+		dstrect.left = 0;
+        dstrect.top = 0 ;
+		dstrect.right = satelitewt-1;
+        dstrect.bottom = scrnht;
+		canvas.drawBitmap(bm, srcrect, dstrect, null);
+		cx = satelitewt / 2;
+		cy = satelitewt / 2 - 70;
+		r = satelitewt / 2 - 100;
+		 paint.setColor(Color.BLACK);
+		 paint.setStrokeWidth(1);
+		 paint.setStyle(Paint.Style.STROKE);
+		 canvas.drawCircle(cx, cy, r, paint);
+		 canvas.drawCircle(cx, cy, r / 2, paint);
+		canvas.drawBitmap(BoatNav.bmp[MAPMAXBMP + 28].bm, cx-8, cy-8, null);
+		paint.setColor(Color.BLACK);
+		paint.setTextSize(15);
+		nsat = 0;
+		while (nsat < 12) {
+			if (sc.sat[nsat].SatelliteID > 0) {
+				paint.setStrokeWidth(1);
+				paint.setStyle(Paint.Style.STROKE);
+				paint.setColor(Color.WHITE);
+				canvas.drawRect(10 + nsat * 25, scrnht - 102, 30 + nsat * 25, scrnht - 50, paint);
+				if (sc.sat[nsat].SNR > 0) {
+					paint.setStyle(Paint.Style.FILL);
+					if (sc.sat[nsat].Fixed == 1) {
+						paint.setColor(Color.GREEN);
+					} else {
+						paint.setColor(Color.BLUE);
+					}
+					canvas.drawRect(11 + nsat * 25, scrnht - 51 - sc.sat[nsat].SNR, 29 + nsat * 25, scrnht - 51, paint);
+				}
+				paint.setStyle(Paint.Style.FILL);
+				paint.setColor(Color.BLACK);
+				paint.setTextAlign(Paint.Align.CENTER);
+				canvas.drawText("" + sc.sat[nsat].SatelliteID, 15 + nsat * 25, scrnht - 30, paint);
+			}
+			nsat++;
+		}
+	}
+
 	public MyIV(Context c) {
 		super(c);                                     
 	}   
@@ -1090,26 +1173,38 @@ public class MyIV extends ImageView {
 	protected void onSizeChanged(int w, int h, int oldw, int oldh) {
 		scrnwt = w;
 		scrnht = h;
-		switch (viewmode) {
+    	switch (viewmode) {
 		case 0:
-			mapwt = w;
+			mapwt = scrnwt;
 			sonarwt = 0;
+			satelitewt = 0;
 			break;
 		case 1:
 			mapwt = 0;
-			sonarwt = w;
+			satelitewt = 0;
+			sonarwt = scrnwt;
 			break;
 		case 2:
-			mapwt = w / 2;
-			sonarwt = w / 2;
+			mapwt = scrnwt / 2;
+			satelitewt = 0;
+			sonarwt = scrnwt / 2;
 			break;
-		}
+		case 3:
+			satelitewt = scrnwt / 2;
+			mapwt = scrnwt / 2;
+			sonarwt = scrnwt / 2;
+			break;
+    	}
 	}                	      
 	
 	@Override
 	protected void onDraw(Canvas canvas) {
 		if (mapwt != 0) {
-			DrawMap(canvas);
+			if (satelitewt != 0){
+				DrawSatelite(canvas);
+			} else {
+				DrawMap(canvas);
+			}
 		}
 		if (sonarwt != 0) {
 			DrawSonar(canvas);

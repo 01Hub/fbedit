@@ -6,7 +6,7 @@
     <string name="GoTo">Goto</string>
     <string name="AddNewPlace">Add New Place</string><string name="EditPlace">Edit Place</string>
     <string name="action_lock">Lock</string>
-    <string name="Replay">Replay</string>
+    <string name="Replay">Replay / Record</string>
     <string name="action_zoomin">Zoom In</string>
     <string name="action_zoomout">Zoom Out</string>
     <string name="action_mode">Mode</string>
@@ -20,5 +20,7 @@
     <string name="Delete">Delete</string>
     <string name="Connect">Connect</string>
     <string name="ClearTrail">Clear Trail</string>
+    <string name="StartRecord">Start Recording</string>
+    <string name="StopRecord">Stop Recording</string>
     
 </resources>

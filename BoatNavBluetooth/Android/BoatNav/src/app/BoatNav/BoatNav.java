@@ -34,6 +34,7 @@ import android.view.MenuItem;
 //import android.widget.ImageView;
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -41,6 +42,7 @@ import java.io.RandomAccessFile;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.lang.reflect.Method;
+import java.text.SimpleDateFormat;
 //import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -76,6 +78,7 @@ public class BoatNav extends Activity {
 	private Timer tmr = new Timer();
 	private static Random rnd = new Random();
 	private static RandomAccessFile  replayfile;
+	private static boolean recording = false;
 	public static int blinkrate = 0;
 	private static int soundplaying = 0;
 	private static ArrayAdapter<String> btadapter;
@@ -150,25 +153,20 @@ public class BoatNav extends Activity {
         					if (MyIV.sonarautorange) {
         						// Check range change
         						if (MyIV.nodepth) {
-        							if (MyIV.sonarrangechange > 5)
-        							{
+        							if (MyIV.sonarrangechange > 5) {
         								ri += MyIV.sonarrangechangedir;
-        								if (ri == 0 || ri == MyIV.MAXSONARRANGE - 1)
-        								{
+        								if (ri == 0 || ri == MyIV.MAXSONARRANGE - 1) {
         									MyIV.sonarrangechangedir = -MyIV.sonarrangechangedir;
         								}
         								MyIV.sonarrangechange = 0;
         							}
-        						}
-        						else if (MyIV.sonarrangechange > 5)
-        						{
+        						} else if (MyIV.sonarrangechange > 5) {
         							float d = (float)MyIV.range[ri].range;
         							if (((float)MyIV.curdepth > (d - d / 5f)) && ri < 19) {
         								MyIV.rndpixdpt = (MyIV.rndpixdpt * MyIV.range[ri].range) / MyIV.range[ri + 1].range;
         								ri++;
         								MyIV.sonarrangechange = 0;
-        							}
-        							else if (((float)MyIV.curdepth < (d / 5f)) && ri > 0) {
+        							} else if (((float)MyIV.curdepth < (d / 5f)) && ri > 0) {
         								MyIV.rndpixdpt = (MyIV.rndpixdpt * MyIV.range[ri].range) / MyIV.range[ri - 1].range;
         								ri--;
         								MyIV.sonarrangechange = 0;
@@ -178,15 +176,14 @@ public class BoatNav extends Activity {
         					MyIV.sonarrangechange++;
 
         			        btSend.Start = 1;
-        			        btSend.PingPulses = (byte)(16 + MyIV.range[MyIV.sonarrangeinx].pingadd);
+        			        btSend.PingPulses = (byte)(MyIV.sonarpinginit + MyIV.range[MyIV.sonarrangeinx].pingadd);
         			        btSend.PingTimer = (40000000 / 200000 / 2)-1;
         			        btSend.RangeInx = (byte)ri;
         			        tmp = (((double)MyIV.range[MyIV.sonarrangeinx].range / (double)MyIV.SONARTILEHEIGHT) / (1450d / 2d)) * 40000000d;
         			        btSend.PixelTimer = (short)tmp;
-        			        btSend.GainInit[0] = 750;
+        			        btSend.GainInit[0] = (short)MyIV.sonargaininit;
         			        int i = 0;
-        			        while (i < 17)
-        			        {
+        			        while (i < 17) {
         			        	btSend.GainInit[i + 1] = (short)MyIV.range[MyIV.sonarrangeinx].gain[i];
         			        	i++;
         			        }
@@ -197,8 +194,7 @@ public class BoatNav extends Activity {
         			        btwritebuffer[4] = (byte)(btSend.PixelTimer & 0xFF);
         			        btwritebuffer[5] = (byte)(btSend.PixelTimer / 256);
         			        i = 0;
-        			        while (i < 18)
-        			        {
+        			        while (i < 18) {
         			        	btwritebuffer[i * 2 + 6] = (byte)(btSend.GainInit[i] & 0xFF);
         			        	btwritebuffer[i * 2 + 7] = (byte)(btSend.GainInit[i] >> 8);
         			        	i++;
@@ -212,30 +208,23 @@ public class BoatNav extends Activity {
         			            	}
         			               	if (bytes == MyIV.SONARARRAYSIZE) {
         			               		if (((int)btreadbuffer[0] & 0xFF) == 201) {
+        			               			if (recording == true) {
+        			               				try {
+            			               				replayfile.write(btreadbuffer);
+        			               				} catch (Exception e) {
+        			               				}
+        			               			}
         				               		bytes = 0;
         				               		while (bytes < MyIV.SONARARRAYSIZE) {
         				               			MyIV.replayarray[bytes] = btreadbuffer[bytes];
         				               			bytes++;
         				               		}
-//        				               		MyIV.TraslateFromByteArray();
-        				               		//MyIV.sc.ADCBattery = 2234;
-        				               		//MyIV.sc.ADCWaterTemp = 1900;
-        				               		//MyIV.sc.ADCAirTemp = 1500;
-        				               		//MyIV.sc.iTime = 0;
-        				               		//MyIV.sc.iLon = 14196690;
-        				               		//MyIV.sc.iLat = 66317270;
-        				               		//MyIV.sc.iSpeed = 0;
-        				               		//MyIV.sc.iBear = 0;
-        				               		//MyIV.sc.sonar[0] = 4;
-//        				               		MyIV.SonarShow();
         			               		}
         			               	}
-        			            } 
-        			            catch (IOException e) {
+        			            } catch (IOException e) {
         				        	err = true;
         			            }
-        			        }
-        			        catch (IOException e) {
+        			        } catch (IOException e) {
         			        	err = true;
         			    	}
         			        if (err) {
@@ -243,21 +232,25 @@ public class BoatNav extends Activity {
         			        	try {
         			        		mOutputStream.close();
         			        		mOutputStream = null;
-        						}
-        			        	catch (IOException e1) {
+        						} catch (IOException e1) {
         						}
         			        	try {
         							mInputStream.close();
         							mInputStream = null;
-        						}
-        			        	catch (IOException e1) {
+        						} catch (IOException e1) {
         						}
         			        	try {
         							mBluetoothSocket.close();
         							mBluetoothSocket = null;
+        						} catch (IOException e) {
         						}
-        			        	catch (IOException e) {
-        						}
+		               			if (recording == true) {
+		               				try {
+			               				replayfile.close();
+		               				} catch (Exception e) {
+		               				}
+		               				recording = false;
+		               			}
         			        	MyIV.ClearTrail();
         			        	MyIV.mode = 1;
                 			}
@@ -285,8 +278,7 @@ public class BoatNav extends Activity {
 		if (MyIV.sonarfishsound == true && MyIV.playfishalarm == true && soundplaying == 0) {
 			MyIV.playfishalarm = false;
 			playFishAlarm();
-		}
-		else if (soundplaying > 0) {
+		} else if (soundplaying > 0) {
 			soundplaying--;
 		}
 	}
@@ -328,25 +320,20 @@ public class BoatNav extends Activity {
 		if (MyIV.sonarautorange) {
 			// Check range change
 			if (MyIV.nodepth) {
-				if (MyIV.sonarrangechange > 5)
-				{
+				if (MyIV.sonarrangechange > 5) {
 					ri += MyIV.sonarrangechangedir;
-					if (ri == 0 || ri == MyIV.MAXSONARRANGE - 1)
-					{
+					if (ri == 0 || ri == MyIV.MAXSONARRANGE - 1) {
 						MyIV.sonarrangechangedir = -MyIV.sonarrangechangedir;
 					}
 					MyIV.sonarrangechange = 0;
 				}
-			}
-			else if (MyIV.sonarrangechange > 5)
-			{
+			} else if (MyIV.sonarrangechange > 5) {
 				float d = (float)MyIV.range[ri].range;
 				if (((float)MyIV.curdepth > (d - d / 5f)) && ri < 19) {
 					MyIV.rndpixdpt = (MyIV.rndpixdpt * MyIV.range[ri].range) / MyIV.range[ri + 1].range;
 					ri++;
 					MyIV.sonarrangechange = 0;
-				}
-				else if (((float)MyIV.curdepth < (d / 5f)) && ri > 0) {
+				} else if (((float)MyIV.curdepth < (d / 5f)) && ri > 0) {
 					MyIV.rndpixdpt = (MyIV.rndpixdpt * MyIV.range[ri].range) / MyIV.range[ri - 1].range;
 					ri--;
 					MyIV.sonarrangechange = 0;
@@ -391,8 +378,7 @@ public class BoatNav extends Activity {
 			// Up
 			MyIV.rndpixdpt -= MyIV.rndpixmov;
 			MyIV.rndfishcount = 0;
-		}
-		else if (MyIV.rndpixdir >= 3 && MyIV.rndpixdpt < 500) {
+		} else if (MyIV.rndpixdir >= 3 && MyIV.rndpixdpt < 500) {
 			// Down
 			MyIV.rndpixdpt += MyIV.rndpixmov;
 			MyIV.rndfishcount = 0;
@@ -431,8 +417,7 @@ public class BoatNav extends Activity {
 				}
 				MyIV.rndfishcount = 5;
 			}
-		}
-		else {
+		} else {
 			i = MyIV.rndfishdpt;
 			while (i < MyIV.rndfishdpt + 5 && i < MyIV.SONARTILEHEIGHT) {
 				pix = 50 + rnd.nextInt(200);
@@ -526,8 +511,7 @@ public class BoatNav extends Activity {
 			x = buffer.indexOf(0x0a);
 			line = buffer.substring(0,x-1);
 			buffer = buffer.substring(x+1);
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 	        Log.e("MYTAG", "Line error: " + e.toString());
 		}
 	}
@@ -540,20 +524,17 @@ public class BoatNav extends Activity {
 				x = line.indexOf(0x22,1);
 				item = line.substring(1,x);
 				line = line.substring(x+2);
-			}
-			else {
+			} else {
 				x = line.indexOf(0x2c);
 				if (x >= 0) {
 					item = line.substring(0,x);
 					line = line.substring(x+1);
-				}
-				else {
+				} else {
 					item = line;
 					line = "";
 				}
 			}
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 	        Log.e("MYTAG", "Item error: " + e.toString());
 		}
 		return item;
@@ -616,8 +597,7 @@ public class BoatNav extends Activity {
 		if (mBluetoothAdapter != null) {
 			if (!mBluetoothAdapter.isEnabled()) {
 				startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
-			}
-			else {
+			} else {
 	         	btlistItems.add(mBluetoothAdapter.getName() + "\n" + mBluetoothAdapter.getAddress());
 				Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
 				// If there are paired devices
@@ -630,8 +610,7 @@ public class BoatNav extends Activity {
 				}
 		        btadapter.notifyDataSetChanged();
 			}
-		}
-		else {
+		} else {
          	btlistItems.add("No bluetooth adapter found");
 	        btadapter.notifyDataSetChanged();
 		}
@@ -662,23 +641,19 @@ public class BoatNav extends Activity {
 								dialog.dismiss();
 			                	MyIV.mode = 0;
 			                	btconnected = true;
-				            }
-				            catch (IOException e) {
+				            } catch (IOException e) {
 					        	msgbox("BT", "getInputStream " + e.getMessage());
 					        	err = true;
 				            }
-			            }
-			            catch (IOException e) {
+			            } catch (IOException e) {
 				        	msgbox("BT", "getOutputStream " + e.getMessage());
 				        	err = true;
 			            }
-		            }
-		            catch (IOException e) {
+		            } catch (IOException e) {
 			        	msgbox("BT", "connect " + e.getMessage());
 			        	err = true;
 		            }
-				}
-		        catch (Exception e) {
+				} catch (Exception e) {
 		        	msgbox("BT", "getRemoteDevice " + e.getMessage());
 		        	err = true;
 				}
@@ -687,24 +662,21 @@ public class BoatNav extends Activity {
 			        	try {
 			        		mOutputStream.close();
 			        		mOutputStream = null;
-						}
-			        	catch (IOException e1) {
+						} catch (IOException e1) {
 						}
 			        }
 			        if (mInputStream != null) {
 			        	try {
 							mInputStream.close();
 							mInputStream = null;
-						}
-			        	catch (IOException e1) {
+						} catch (IOException e1) {
 						}
 			        }
 			        if (mBluetoothSocket != null) {
 			        	try {
 							mBluetoothSocket.close();
 							mBluetoothSocket = null;
-						}
-			        	catch (IOException e) {
+						} catch (IOException e) {
 						}
 			        }
 					dialog.dismiss();
@@ -743,7 +715,7 @@ public class BoatNav extends Activity {
         File[] files = f.listFiles();
 
         if (files.length != 0) {
-            Arrays.sort(files, new Comparator<File>(){
+            Arrays.sort(files, new Comparator<File>() {
             	public int compare(File f1, File f2) {
             		return f1.getName().compareTo(f2.getName());
                 }
@@ -771,14 +743,44 @@ public class BoatNav extends Activity {
                 	// Set replay mode
                 	MyIV.mode = 2;
     				dialog.dismiss();
-	        	}
-	        	catch (Exception e) {
-	        		
+	        	} catch (Exception e) {
 	        	}
 			}
         });
 
-        Button btnCancel = (Button) dialog.findViewById(R.id.btnCancel);
+        Button btnRecord = (Button) dialog.findViewById(R.id.btnRecord);
+        if (MyIV.mode != 0) {
+        	btnRecord.setVisibility(4);
+        }
+        if (recording) {
+        	btnRecord.setText("Stop Recording");
+        }
+		btnRecord.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				if (recording) {
+					recording = false;
+					try {
+						replayfile.close();
+					} catch (IOException e) {
+					}
+				} else {
+					SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmm");
+					Calendar c = Calendar.getInstance();
+					String s = "Sonar" + sdf.format(c.getTime()) + ".snr";
+            		String FileName = Environment.getExternalStorageDirectory() + File.separator + "Map" + File.separator + "Sonar" + File.separator + s;
+            		msgbox("Replay",FileName);
+                    try {
+						replayfile = new RandomAccessFile(FileName, "rw");
+						recording = true;
+					} catch (FileNotFoundException e) {
+					}
+				}
+				dialog.dismiss();
+			}
+		});
+
+		Button btnCancel = (Button) dialog.findViewById(R.id.btnCancel);
 		btnCancel.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -1031,8 +1033,7 @@ public class BoatNav extends Activity {
     	if (edit) {
 			dialog.setTitle("Edit Place");
 			SetAddEditPlaceDialog(dialog, mplaceinx);
-		}
-		else {
+		} else {
 			dialog.setTitle("Add Place");
 		}
 
@@ -1104,8 +1105,7 @@ public class BoatNav extends Activity {
         			mIV.invalidate();
     				dialog.dismiss();
     				SavePlaces();
-				}
-				catch (Exception e) {
+				} catch (Exception e) {
 					// Lat or Lon not valid
 					if (!medit) {
 						DeletePlace(i);
@@ -1113,6 +1113,7 @@ public class BoatNav extends Activity {
 				}
 			}
 		});
+
 		Button btnCancel = (Button) dialog.findViewById(R.id.btnCancel);
 		// if button is clicked, close the custom dialog
 		btnCancel.setOnClickListener(new OnClickListener() {
@@ -1121,6 +1122,7 @@ public class BoatNav extends Activity {
 				dialog.dismiss();
 			}
 		});
+
 		Button btnNext = (Button) dialog.findViewById(R.id.btnNext);
 		// if button is clicked, show the next place
 		btnNext.setOnClickListener(new OnClickListener() {
@@ -1133,6 +1135,7 @@ public class BoatNav extends Activity {
 				SetAddEditPlaceDialog(dialog, mplaceinx);
 			}
 		});
+
 		Button btnDelete = (Button) dialog.findViewById(R.id.btnDelete);
 		// if button is clicked, delete place and close the custom dialog
 		btnDelete.setOnClickListener(new OnClickListener() {
@@ -1193,25 +1196,20 @@ public class BoatNav extends Activity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
-//    	Log.e("MYTAG", "getItemId " + item.getItemId());
     	int i = item.getItemId();
     	if (i >= 0 && i < 16) {
         	// Goto place
         	MyIV.GoTo(placeLat[i], placeLon[i], true);
         	mIV.invalidate();
             return true;
-    	}
-    	else {
+    	} else {
             switch (i) {
             case R.id.action_lock:
             	MyIV.locktogps = !MyIV.locktogps;
-            	if (MyIV.locktogps)
-            	{
+            	if (MyIV.locktogps) {
             		item.setIcon(R.drawable.lock);
             		MyIV.sonarofs = 0;
-            	}
-            	else
-            	{
+            	} else {
             		item.setIcon(R.drawable.unlock);
             	}
                 return true;
@@ -1229,22 +1227,29 @@ public class BoatNav extends Activity {
                 return true;
             case R.id.action_mode:
             	// Switch mode
-            	if (MyIV.viewmode == 2) {
+            	if (MyIV.viewmode == 3) {
             		MyIV.viewmode = 0;
-            	}
-            	else {
+            	} else {
             		MyIV.viewmode++;
             	}
             	switch (MyIV.viewmode) {
         		case 0:
         			MyIV.mapwt = MyIV.scrnwt;
         			MyIV.sonarwt = 0;
+        			MyIV.satelitewt = 0;
         			break;
         		case 1:
         			MyIV.mapwt = 0;
+        			MyIV.satelitewt = 0;
         			MyIV.sonarwt = MyIV.scrnwt;
         			break;
         		case 2:
+        			MyIV.mapwt = MyIV.scrnwt / 2;
+        			MyIV.satelitewt = 0;
+        			MyIV.sonarwt = MyIV.scrnwt / 2;
+        			break;
+        		case 3:
+        			MyIV.satelitewt = MyIV.scrnwt / 2;
         			MyIV.mapwt = MyIV.scrnwt / 2;
         			MyIV.sonarwt = MyIV.scrnwt / 2;
         			break;
@@ -1286,14 +1291,11 @@ public class BoatNav extends Activity {
         				}
             			replayfile.close();
                     	MyIV.ClearTrail();
-            		}
-            		else {
+            		} else {
                     	ShowReplayDialog();
             		}
                 	return true;
-            	}
-            	catch (Exception e) {
-            		
+            	} catch (Exception e) {
             	}
             	return false;
             case R.id.item12:
@@ -1377,12 +1379,9 @@ public class BoatNav extends Activity {
 		}
         // Calculate ActionBar height
         TypedValue tv = new TypedValue();
-        if (getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true))
-        {
+        if (getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true)) {
             actionBarHeight = TypedValue.complexToDimensionPixelSize(tv.data,getResources().getDisplayMetrics());
         }
-//        Log.d("MYTAG", "sbarht: " + sbarHeight);
-//        Log.d("MYTAG", "acbarht: " + actionBarHeight);
         return actionBarHeight + sbarHeight;
 	}
 
@@ -1413,12 +1412,9 @@ public class BoatNav extends Activity {
 					MyIV.xofs = xs - (xd - event.getAxisValue(0, event.getPointerCount() - 1));
 					MyIV.yofs = ys - (yd - event.getAxisValue(1, event.getPointerCount() - 1));
 					mIV.invalidate();
-				}
-				else if (xd > MyIV.mapwt)
-				{
+				} else if (xd > MyIV.mapwt) {
 					MyIV.sonarofs = (int)(sxs - (xd - event.getAxisValue(0, event.getPointerCount() - 1)));
-					if (MyIV.sonarofs < 0)
-					{
+					if (MyIV.sonarofs < 0) {
 						MyIV.sonarofs = 0;
 					}
 					mIV.invalidate();
@@ -1459,8 +1455,7 @@ public class BoatNav extends Activity {
 			osw.flush();
 			osw.close();
 			return true;
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 	          Log.e("MYTAG", "File write err" + e.toString());
 		}
 		return false;
