@@ -1481,7 +1481,7 @@ public class BoatNav extends Activity {
 	    dlgAlert.setPositiveButton("OK",new DialogInterface.OnClickListener() {
 	        public void onClick(DialogInterface dialog, int whichButton) {
 	        }
-	   });
+	    });
 	    dlgAlert.setCancelable(true);
 	    dlgAlert.create().show();
 	}

@@ -28,7 +28,7 @@ public class MyIV extends ImageView {
 	public static final int MAPMAXZOOM = 5;
 	public static final int MAPTILESIZE = 512;
 	public static final int MAPMAXLATARR = 65;
-	public static final int MAPMAXTRAIL = 2048;
+	public static final int MAPMAXTRAIL = 4096;
 	public static int scrnwt;
 	public static int scrnht;
 	public static int mapwt = 0;
@@ -225,6 +225,11 @@ public class MyIV extends ImageView {
 		sc.iSpeed = (short)(((short)(replayarray[24]) & 0xFF) | ((short)(replayarray[25] << 8) & 0xFF00));
 		sc.iBear = (short)(((short)(replayarray[26]) & 0xFF) | ((short)(replayarray[27] << 8) & 0xFF00));
 		sc.fixquality = replayarray[28 + 72];
+		sc.nsat = replayarray[28 + 72 + 1];
+		sc.hdop = (short)(((short)(replayarray[28 + 72 + 2]) & 0xFF) | ((short)(replayarray[28 + 72 + 3] << 8) & 0xFF00));
+		sc.vdop = (short)(((short)(replayarray[28 + 72 + 4]) & 0xFF) | ((short)(replayarray[28 + 72 + 5] << 8) & 0xFF00));
+		sc.pdop = (short)(((short)(replayarray[28 + 72 + 6]) & 0xFF) | ((short)(replayarray[28 + 72 + 7] << 8) & 0xFF00));
+		sc.alt = (short)(((short)(replayarray[28 + 72 + 8]) & 0xFF) | ((short)(replayarray[28 + 72 + 9] << 8) & 0xFF00));
 		i = 0;
 		while (i < 12) {
 			sc.sat[i].SatelliteID = replayarray[28 + i * 6];
@@ -1117,7 +1122,8 @@ public class MyIV extends ImageView {
 
 	private void DrawSatelite(Canvas canvas) {
 		Bitmap bm = Bitmap.createBitmap(8, 8, Bitmap.Config.ARGB_8888);
-		int cx, cy, r, nsat;
+		int cx, cy, r, nsat, x, y, s, curindex;
+		double tmp1, tmp2;
 		bm.eraseColor(MyIV.sonarColor);
 		canvas.clipRect(0, 0, satelitewt-1, scrnht);
 		srcrect.left = 0;
@@ -1132,34 +1138,77 @@ public class MyIV extends ImageView {
 		cx = satelitewt / 2;
 		cy = satelitewt / 2 - 70;
 		r = satelitewt / 2 - 100;
-		 paint.setColor(Color.BLACK);
-		 paint.setStrokeWidth(1);
-		 paint.setStyle(Paint.Style.STROKE);
-		 canvas.drawCircle(cx, cy, r, paint);
-		 canvas.drawCircle(cx, cy, r / 2, paint);
-		canvas.drawBitmap(BoatNav.bmp[MAPMAXBMP + 28].bm, cx-8, cy-8, null);
 		paint.setColor(Color.BLACK);
+		paint.setStrokeWidth(1);
+		paint.setStyle(Paint.Style.STROKE);
+		canvas.drawCircle(cx, cy, r, paint);
+		canvas.drawCircle(cx, cy, r / 2, paint);
+		canvas.drawLine(cx - r, cy, cx + r, cy, paint);
+		canvas.drawLine(cx, cy - r, cx, cy + r, paint);
+		canvas.drawBitmap(BoatNav.bmp[MAPMAXBMP + 28].bm, cx-8, cy-8, null);
+		paint.setTextAlign(Paint.Align.LEFT);
+		paint.setStyle(Paint.Style.FILL);
+		// Cursor index
+		curindex = (int)((double)curbearing / 22.5d) & 15;
+		// Draw speed and cursor
+		if (curfix > 1) {
+			DrawText(10, 50, 50, String.format("%.1f",((float)curspeed/10)), canvas);
+			canvas.drawBitmap(BoatNav.bmp[MAPMAXBMP + curindex].bm, cx-8, cy-8, null);
+		} else {
+			if (blink) {
+				DrawText(10, 50, 50, String.format("%.1f",((float)curspeed/10)), canvas);
+				canvas.drawBitmap(BoatNav.bmp[MAPMAXBMP + curindex].bm, cx-8, cy-8, null);
+			}
+		}
 		paint.setTextSize(15);
+		y = scrnht - 150;
+		if (sc.fixquality == 2) {
+			canvas.drawText("Fix: 2D", 10, y, paint);
+		} else if (sc.fixquality == 3) {
+			canvas.drawText("Fix: 3D", 10, y, paint);
+		} else {
+			canvas.drawText("Fix: No fix", 10, y, paint);
+		}
+		canvas.drawText("Sat: " + sc.nsat, 10, y + 20, paint);
+		canvas.drawText("Alt: " + sc.alt, 10, y + 40, paint);
+		canvas.drawText("HDOP: " + String.format("%.1f",((float)sc.hdop/10)), 150, y, paint);
+		canvas.drawText("VDOP: " + String.format("%.1f",((float)sc.vdop/10)), 150, y + 20, paint);
+		canvas.drawText("PDOP: " + String.format("%.1f",((float)sc.pdop/10)), 150, y + 40, paint);
 		nsat = 0;
 		while (nsat < 12) {
 			if (sc.sat[nsat].SatelliteID > 0) {
+
 				paint.setStrokeWidth(1);
 				paint.setStyle(Paint.Style.STROKE);
 				paint.setColor(Color.WHITE);
-				canvas.drawRect(10 + nsat * 25, scrnht - 102, 30 + nsat * 25, scrnht - 50, paint);
+				canvas.drawRect(10 + nsat * 24, scrnht - 102, 30 + nsat * 24, scrnht - 50, paint);
+				paint.setStyle(Paint.Style.FILL);
+				s = 30; // Red
 				if (sc.sat[nsat].SNR > 0) {
-					paint.setStyle(Paint.Style.FILL);
 					if (sc.sat[nsat].Fixed == 1) {
-						paint.setColor(Color.GREEN);
+						s = 29; // Green
+						paint.setColor(0xFF008200);
 					} else {
+						s = 31; // Blue
 						paint.setColor(Color.BLUE);
 					}
-					canvas.drawRect(11 + nsat * 25, scrnht - 51 - sc.sat[nsat].SNR, 29 + nsat * 25, scrnht - 51, paint);
+					canvas.drawRect(11 + nsat * 24, scrnht - 51 - sc.sat[nsat].SNR, 30 + nsat * 24, scrnht - 51, paint);
 				}
-				paint.setStyle(Paint.Style.FILL);
 				paint.setColor(Color.BLACK);
 				paint.setTextAlign(Paint.Align.CENTER);
-				canvas.drawText("" + sc.sat[nsat].SatelliteID, 15 + nsat * 25, scrnht - 30, paint);
+				paint.setTextSize(15);
+				canvas.drawText("" + sc.sat[nsat].SatelliteID, 16 + nsat * 24, scrnht - 30, paint);
+
+				// Get point on circle
+				tmp1 = ((90d - (double)sc.sat[nsat].Elevation) * (double)r) / 90d;	// Radius
+				tmp2 = Math.toRadians((double)sc.sat[nsat].Azimuth - 90d);			// Angle
+				x = cx + (int)(Math.cos(tmp2) * tmp1);
+				y = cy + (int)(Math.sin(tmp2) * tmp1);
+				paint.setStyle(Paint.Style.FILL);
+				canvas.drawBitmap(BoatNav.bmp[MAPMAXBMP + s].bm, x - 8, y - 8, null);
+				paint.setColor(Color.WHITE);
+				paint.setTextSize(10);
+				canvas.drawText("" + sc.sat[nsat].SatelliteID, x, y + 4,paint);
 			}
 			nsat++;
 		}
