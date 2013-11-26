@@ -19,7 +19,6 @@ import java.text.SimpleDateFormat;
 import app.BoatNav.GPSClass;
 import app.BoatNav.RangeClass;
 import app.BoatNav.SonarClass;
-import app.BoatNav.BoatNav;;
 
 public class MyIV extends ImageView {
 
@@ -1124,6 +1123,7 @@ public class MyIV extends ImageView {
 		Bitmap bm = Bitmap.createBitmap(8, 8, Bitmap.Config.ARGB_8888);
 		int cx, cy, r, nsat, x, y, s, curindex;
 		double tmp1, tmp2;
+		// Set background
 		bm.eraseColor(MyIV.sonarColor);
 		canvas.clipRect(0, 0, satelitewt-1, scrnht);
 		srcrect.left = 0;
@@ -1135,9 +1135,16 @@ public class MyIV extends ImageView {
 		dstrect.right = satelitewt-1;
         dstrect.bottom = scrnht;
 		canvas.drawBitmap(bm, srcrect, dstrect, null);
+		// Calculate circle center and radius
 		cx = satelitewt / 2;
-		cy = satelitewt / 2 - 70;
-		r = satelitewt / 2 - 100;
+		if (scrnwt > scrnht) {
+			cy = cx - 70;
+			r = satelitewt / 2 - 100;
+		} else {
+			cy = cx + 30;
+			r = satelitewt / 2 - 10;
+		}
+		// Draw circles and cross hair
 		paint.setColor(Color.BLACK);
 		paint.setStrokeWidth(1);
 		paint.setStyle(Paint.Style.STROKE);
@@ -1146,11 +1153,11 @@ public class MyIV extends ImageView {
 		canvas.drawLine(cx - r, cy, cx + r, cy, paint);
 		canvas.drawLine(cx, cy - r, cx, cy + r, paint);
 		canvas.drawBitmap(BoatNav.bmp[MAPMAXBMP + 28].bm, cx-8, cy-8, null);
+		// Draw speed and cursor
 		paint.setTextAlign(Paint.Align.LEFT);
 		paint.setStyle(Paint.Style.FILL);
 		// Cursor index
 		curindex = (int)((double)curbearing / 22.5d) & 15;
-		// Draw speed and cursor
 		if (curfix > 1) {
 			DrawText(10, 50, 50, String.format("%.1f",((float)curspeed/10)), canvas);
 			canvas.drawBitmap(BoatNav.bmp[MAPMAXBMP + curindex].bm, cx-8, cy-8, null);
@@ -1160,8 +1167,9 @@ public class MyIV extends ImageView {
 				canvas.drawBitmap(BoatNav.bmp[MAPMAXBMP + curindex].bm, cx-8, cy-8, null);
 			}
 		}
+		// Draw some info
 		paint.setTextSize(15);
-		y = scrnht - 150;
+		y = scrnht - 140;
 		if (sc.fixquality == 2) {
 			canvas.drawText("Fix: 2D", 10, y, paint);
 		} else if (sc.fixquality == 3) {
@@ -1174,6 +1182,7 @@ public class MyIV extends ImageView {
 		canvas.drawText("HDOP: " + String.format("%.1f",((float)sc.hdop/10)), 150, y, paint);
 		canvas.drawText("VDOP: " + String.format("%.1f",((float)sc.vdop/10)), 150, y + 20, paint);
 		canvas.drawText("PDOP: " + String.format("%.1f",((float)sc.pdop/10)), 150, y + 40, paint);
+		// Draw satellite signal strength and position
 		nsat = 0;
 		while (nsat < 12) {
 			if (sc.sat[nsat].SatelliteID > 0) {
@@ -1181,7 +1190,7 @@ public class MyIV extends ImageView {
 				paint.setStrokeWidth(1);
 				paint.setStyle(Paint.Style.STROKE);
 				paint.setColor(Color.WHITE);
-				canvas.drawRect(10 + nsat * 24, scrnht - 102, 30 + nsat * 24, scrnht - 50, paint);
+				canvas.drawRect(10 + nsat * 24, scrnht - 92, 30 + nsat * 24, scrnht - 40, paint);
 				paint.setStyle(Paint.Style.FILL);
 				s = 30; // Red
 				if (sc.sat[nsat].SNR > 0) {
@@ -1192,12 +1201,12 @@ public class MyIV extends ImageView {
 						s = 31; // Blue
 						paint.setColor(Color.BLUE);
 					}
-					canvas.drawRect(11 + nsat * 24, scrnht - 51 - sc.sat[nsat].SNR, 30 + nsat * 24, scrnht - 51, paint);
+					canvas.drawRect(11 + nsat * 24, scrnht - 41 - sc.sat[nsat].SNR, 30 + nsat * 24, scrnht - 41, paint);
 				}
 				paint.setColor(Color.BLACK);
 				paint.setTextAlign(Paint.Align.CENTER);
 				paint.setTextSize(15);
-				canvas.drawText("" + sc.sat[nsat].SatelliteID, 16 + nsat * 24, scrnht - 30, paint);
+				canvas.drawText("" + sc.sat[nsat].SatelliteID, 16 + nsat * 24, scrnht - 20, paint);
 
 				// Get point on circle
 				tmp1 = ((90d - (double)sc.sat[nsat].Elevation) * (double)r) / 90d;	// Radius
