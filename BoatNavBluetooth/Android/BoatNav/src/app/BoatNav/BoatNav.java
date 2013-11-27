@@ -59,7 +59,7 @@ import app.BoatNav.MyIV;
 import app.BoatNav.R;
 
 public class BoatNav extends Activity {
-	public static MyIV mIV;
+	private static MyIV mIV;
 	private static float xd, yd, xs, ys, sxs;
 	public static Bitmap mGrayBitmap;
 	public static Bitmap mIcons;
@@ -83,19 +83,19 @@ public class BoatNav extends Activity {
 	private static int soundplaying = 0;
 	private static ArrayAdapter<String> btadapter;
 	private static ArrayList<String> btlistItems = new ArrayList<String>();
-    public static java.text.DateFormat mdateFormat;
+	private static java.text.DateFormat mdateFormat;
     // Well known SPP UUID
     //private static final UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
-    public static String sbtdeviceaddr = "00:18:B2:02:D2:AD";
+	private static String sbtdeviceaddr = "00:18:B2:02:D2:AD";
     protected BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
     BluetoothDevice mBluetoothDevice = null;
     protected BluetoothSocket mBluetoothSocket = null;
     private OutputStream mOutputStream = null;
     private InputStream mInputStream = null;
-    public static BTClass btSend = new BTClass();
-    public static byte[] btwritebuffer = new byte[42];
-    public static byte[] btreadbuffer = new byte[MyIV.SONARARRAYSIZE];
-    public static boolean btstart = false;
+    private static BTClass btSend = new BTClass();
+    private static byte[] btwritebuffer = new byte[42];
+    private static byte[] btreadbuffer = new byte[MyIV.SONARARRAYSIZE];
+    private static boolean btstart = false;
     public static boolean btconnected = false;
 
     @Override
@@ -118,22 +118,7 @@ public class BoatNav extends Activity {
 			MyIV.sonarColor = 0xFF000000 | 108 << 16 | 189 << 8 | 244;
 			MyIV.sonarsignalbmp = Bitmap.createBitmap(MyIV.SONARSIGNALGRAHWIDTH, MyIV.SONARTILEHEIGHT, Bitmap.Config.ARGB_8888);
 			MyIV.sonarsignalbmp.eraseColor(MyIV.sonarColor);
-			i=0;
-			while (i < MyIV.MAXSONARBMP) {
-				MyIV.sonarbmp[i] =  Bitmap.createBitmap(MyIV.SONARTILEWIDTH, MyIV.SONARTILEHEIGHT, Bitmap.Config.ARGB_8888);
-				MyIV.sonarbmp[i].eraseColor(MyIV.sonarColor);
-				MyIV.sonarbmpwidth[i] = MyIV.SONARTILEWIDTH;
-				MyIV.sonarbmprange[i] = 0;
-				i++;
-			}
-			i = 0;
-			while (i < MyIV.MAXFISH) {
-				MyIV.fisharray[0][i] = 0;
-				MyIV.fisharray[1][i] = 0;
-				MyIV.fisharray[2][i] = 0;
-				MyIV.fisharray[3][i] = 0;
-				i++;
-			}
+			SonarClear();
 			ParseRange();
 			tmr.schedule(new TimerTask() {
 				@Override
@@ -251,6 +236,7 @@ public class BoatNav extends Activity {
 		               				}
 		               				recording = false;
 		               			}
+		        				SonarClear();
         			        	MyIV.ClearTrail();
         			        	MyIV.mode = 1;
                 			}
@@ -272,7 +258,32 @@ public class BoatNav extends Activity {
 		mIV.invalidate();
 	}
 
-	private void TimerMethod()
+    private void SonarClear() {
+		int i=0;
+		while (i < MyIV.MAXSONARBMP) {
+			if (MyIV.sonarbmp[i] != null) {
+				MyIV.sonarbmp[i].recycle();
+				MyIV.sonarbmp[i] = null;
+			}
+			MyIV.sonarbmp[i] =  Bitmap.createBitmap(MyIV.SONARTILEWIDTH, MyIV.SONARTILEHEIGHT, Bitmap.Config.ARGB_8888);
+			MyIV.sonarbmp[i].eraseColor(MyIV.sonarColor);
+			MyIV.sonarbmpwidth[i] = MyIV.SONARTILEWIDTH;
+			MyIV.sonarbmprange[i] = 0;
+			MyIV.sonarbmplat[i] = 0;
+			MyIV.sonarbmplon[i] = 0;
+			i++;
+		}
+		i = 0;
+		while (i < MyIV.MAXFISH) {
+			MyIV.fisharray[0][i] = 0;
+			MyIV.fisharray[1][i] = 0;
+			MyIV.fisharray[2][i] = 0;
+			MyIV.fisharray[3][i] = 0;
+			i++;
+		}
+    }
+
+    private void TimerMethod()
 	{
 		this.runOnUiThread(Timer_Tick);
 		if (MyIV.sonarfishsound == true && MyIV.playfishalarm == true && soundplaying == 0) {
@@ -316,6 +327,9 @@ public class BoatNav extends Activity {
 		MyIV.sc.iSpeed = 0;
 		MyIV.sc.iBear = 0;
 
+		if (MyIV.sonarrangeinx >= MyIV.MAXSONARRANGE) {
+			MyIV.sonarrangeinx = MyIV.MAXSONARRANGE - 1;
+		}
 		ri = MyIV.sonarrangeinx;
 		if (MyIV.sonarautorange) {
 			// Check range change
@@ -639,6 +653,7 @@ public class BoatNav extends Activity {
 				            	mInputStream = mBluetoothSocket.getInputStream();
 				            	// Done, set the mode
 								dialog.dismiss();
+								SonarClear();
 			                	MyIV.mode = 0;
 			                	btconnected = true;
 				            } catch (IOException e) {
@@ -736,10 +751,8 @@ public class BoatNav extends Activity {
             		String FileName = Environment.getExternalStorageDirectory() + File.separator + "Map" + File.separator + "Sonar" + File.separator + s;
                 	replayfile = new RandomAccessFile(FileName,"r");
                 	// Clear trail and distance
-                	MyIV.trailpoints = 0;
-                	MyIV.trailhead = 0;
-                	MyIV.trailtail = 0;
-                	MyIV.distance = 0;
+                	MyIV.ClearTrail();
+    				SonarClear();
                 	// Set replay mode
                 	MyIV.mode = 2;
     				dialog.dismiss();
@@ -850,6 +863,37 @@ public class BoatNav extends Activity {
 		dialog.setContentView(R.layout.dialogsonarsetup);
 
 		dialog.setTitle("Sonar Setup");
+
+		SeekBar sbInitialPing;
+		sbInitialPing = (SeekBar) dialog.findViewById(R.id.sbInitialPing);
+		sbInitialPing.setProgress(MyIV.sonarpinginit);
+		sbInitialPing.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
+        	public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+        		MyIV.sonarpinginit = progress;
+        	}
+
+        	public void onStartTrackingTouch(SeekBar seekBar) {
+        	}
+
+        	public void onStopTrackingTouch(SeekBar seekBar) {
+        	}
+        });
+
+		SeekBar sbInitialGain;
+		sbInitialGain = (SeekBar) dialog.findViewById(R.id.sbInitialGain);
+		sbInitialGain.setProgress((MyIV.sonargaininit - 600) / 10);
+		sbInitialGain.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
+        	public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+        		MyIV.sonargaininit = 600 + progress * 10;
+        	}
+
+        	public void onStartTrackingTouch(SeekBar seekBar) {
+        	}
+
+        	public void onStopTrackingTouch(SeekBar seekBar) {
+        	}
+        });
+
 		SeekBar sbNoiseLevel;
 		sbNoiseLevel = (SeekBar) dialog.findViewById(R.id.sbNoiseLevel);
 		sbNoiseLevel.setProgress(MyIV.sonarnoiselevel);
@@ -951,6 +995,14 @@ public class BoatNav extends Activity {
 			}
 		});
 
+		Button btnClear = (Button) dialog.findViewById(R.id.btnClearSonar);
+		btnClear.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				SonarClear();
+			}
+		});
+
 		Button btnOK = (Button) dialog.findViewById(R.id.btnOK);
 		btnOK.setOnClickListener(new OnClickListener() {
 			@Override
@@ -1035,6 +1087,10 @@ public class BoatNav extends Activity {
 			SetAddEditPlaceDialog(dialog, mplaceinx);
 		} else {
 			dialog.setTitle("Add Place");
+			EditText mEditLat = (EditText)dialog.findViewById(R.id.editLat);
+			EditText mEditLon = (EditText)dialog.findViewById(R.id.editLon);
+			mEditLat.setText("" + MyIV.curlat);
+			mEditLon.setText("" + MyIV.curlon);
 		}
 
 		Button btnOK = (Button) dialog.findViewById(R.id.btnOK);

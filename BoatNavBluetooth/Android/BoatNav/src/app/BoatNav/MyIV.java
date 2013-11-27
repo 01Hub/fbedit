@@ -36,23 +36,22 @@ public class MyIV extends ImageView {
 	public static float xofs = 0;
 	public static float yofs = 0;
 
-	public static String sTextWait = "";
 	public static int mode = 1;
 	public static int viewmode = 2;
 	public static boolean land = true;
 	public static int zoom = 5;
 	public static boolean locktogps = true;
 	public static boolean showtrail = true;
-	public static int tracksmoothing = 5;
+	public static int tracksmoothing = 8;
 
 	public static String path = Environment.getExternalStorageDirectory() + File.separator + "Map" + File.separator;
-	public static int maxtilex[] = {0,5,10,20,40,80};
-	public static int maxtiley[] = {0,4,8,16,32,64};
+	private static int maxtilex[] = {0,5,10,20,40,80};
+	private static int maxtiley[] = {0,4,8,16,32,64};
 	private static Paint paint = new Paint(Paint.FAKE_BOLD_TEXT_FLAG);
 	//MapRect=12.912960,66.533650,14.670640,65.967385
-	public static final double left=12.912960d;
+	private static final double left=12.912960d;
 	private static final double top=66.533650d;
-	public static final double right=14.670640d;
+	private static final double right=14.670640d;
 	private static final double bottom=65.967385d;
 	private static final double latarray[]={66.533650d,66.524900d,66.516147d,66.507390d,66.498631d,
 											66.489868d,66.481102d,66.472333d,66.463561d,66.454786d,
@@ -75,20 +74,20 @@ public class MyIV extends ImageView {
 	public static int cpy=0;
 	public static double curlat = 66.317270d;
 	public static double curlon = 14.196690d;
-	public static double prvlat = 66.317270d;
-	public static double prvlon = 14.196690d;
-	public static double distance = 0;
-	public static int curbearing = 0;
-	public static int curspeed = 0;
-	public static int curfix = 0;
-	public static float curbatt = 12.6f;
-	public static float curatemp = 17.2f;
-	public static String curtime = "29.10.2013 11:45:04";
-	public static int trailpoints = 0;
-	public static int trailhead = 0;
-	public static int trailtail = 0;
-	public static int trail[] = new int[MAPMAXTRAIL * 3];
-	public static int AirTempArray[] = {537,500,630,450,737,400,865,350,1015,300,1190,250,1390,200,1600,150,1846,105,2090,65,2510,0};
+	private static double prvlat = 66.317270d;
+	private static double prvlon = 14.196690d;
+	private static double distance = 0;
+	private static int curbearing = 0;
+	private static int curspeed = 0;
+	private static int curfix = 0;
+	private static float curbatt = 12.6f;
+	private static float curatemp = 17.2f;
+	private static String curtime = "29.10.2013 11:45:04";
+	private static int trailpoints = 0;
+	private static int trailhead = 0;
+	private static int trailtail = 0;
+	private static int trail[] = new int[MAPMAXTRAIL * 3];
+	private static int AirTempArray[] = {537,500,630,450,737,400,865,350,1015,300,1190,250,1390,200,1600,150,1846,105,2090,65,2510,0};
 
 	public static final int MAXSONARBMP = 128;
 	public static final int SONARTILEWIDTH = 32;
@@ -97,10 +96,10 @@ public class MyIV extends ImageView {
 	public static final int SONARRANGEBARWIDTH = SONARSIGNALGRAHWIDTH + 6;
 	public static final int MAXSONARRANGE = 20;
 	public static final int MAXFISH = 64;
-	public static final int SMALLFISH = 96 * 4;
-	public static final int BIGFISH = (96 + 64) * 4;
+	private static final int SMALLFISH = 96 * 4;
+	private static final int BIGFISH = (96 + 64) * 4;
 	public static final int SONARARRAYSIZE = 28 + 6 * 12 + 10 + 512;
-	public static final int SONAROFFSET = 28 + 6 * 12 + 10;
+	private static final int SONAROFFSET = 28 + 6 * 12 + 10;
 	public static final SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
 	public static int sonarColor;
 
@@ -127,8 +126,8 @@ public class MyIV extends ImageView {
 	public static int[] sonarbmplon = new int[MAXSONARBMP];
 	public static int sonarofs = 0;
 	public static int cursonarrange = 2;
-	public static int echoarrayinx = 0;
-	public static int echoarraycount = 0;
+	private static int echoarrayinx = 0;
+	private static int echoarraycount = 0;
 	public static int sonarcount = 0;
 
 	public static int rndpixdir = 0;
@@ -137,11 +136,11 @@ public class MyIV extends ImageView {
 	public static int rndfishdpt = 0;
 	public static int rndfishcount = 0;
 	
-	public static Byte[][] echoarray = new Byte[4][SONARTILEHEIGHT];
-	public static int fisharrayinx = 0;
+	private static Byte[][] echoarray = new Byte[4][SONARTILEHEIGHT];
+	private static int fisharrayinx = 0;
 	public static int[][] fisharray = new int[4][MAXFISH];
 	public static float curdepth = 0;
-	public static float curwtemp = 12.3f;
+	private static float curwtemp = 12.3f;
 	public static boolean nodepth = true;
 	public static boolean blink = false;
 	private static int sonarbmpinx = 0;
@@ -220,7 +219,17 @@ public class MyIV extends ImageView {
 		sc.ADCAirTemp = (short)(((short)(replayarray[10]) & 0xFF) | ((short)(replayarray[11] << 8) & 0xFF00));
 		sc.iTime = (((int)replayarray[15] << 24) & 0xFF000000) | (((int)replayarray[14] << 16) & 0x00FF0000) | (((int)replayarray[13] << 8) & 0x0000FF00) | (((int)replayarray[12]) & 0x000000FF);
 		sc.iLon = (((int)replayarray[19] << 24) & 0xFF000000) | (((int)replayarray[18] << 16) & 0x00FF0000) | (((int)replayarray[17] << 8) & 0x0000FF00) | (((int)replayarray[16]) & 0x000000FF);
+		if (sc.iLon < 12912960) {
+			sc.iLon = 12912960;
+		} else if (sc.iLon > 14670640) {
+			sc.iLon = 14670640;
+		}
 		sc.iLat = (((int)replayarray[23] << 24) & 0xFF000000) | (((int)replayarray[22] << 16) & 0x00FF0000) | (((int)replayarray[21] << 8) & 0x0000FF00) | (((int)replayarray[20]) & 0x000000FF);
+		if (sc.iLat < 65967385) {
+			sc.iLat = 65967385;
+		} else if (sc.iLat > 66533650) {
+			sc.iLat = 66533650;
+		}
 		sc.iSpeed = (short)(((short)(replayarray[24]) & 0xFF) | ((short)(replayarray[25] << 8) & 0xFF00));
 		sc.iBear = (short)(((short)(replayarray[26]) & 0xFF) | ((short)(replayarray[27] << 8) & 0xFF00));
 		sc.fixquality = replayarray[28 + 72];
@@ -278,7 +287,7 @@ public class MyIV extends ImageView {
 		i = trailhead;
 		i--;
 		i &= MAPMAXTRAIL - 1;
-		if ((trail[i * 3 + 2] != sc.iBear && sc.iSpeed >= tracksmoothing) || trailpoints < 2) {
+		if ((trail[i * 3 + 2] != sc.iBear && sc.iSpeed > tracksmoothing) || trailpoints < 2) {
 			trail[trailhead * 3] = sc.iLat;
 			trail[trailhead * 3 + 1] = sc.iLon;
 			trail[trailhead * 3 + 2] = sc.iBear;
@@ -305,8 +314,10 @@ public class MyIV extends ImageView {
 		try {
 			nBytes = replayfile.read(replayarray);
 			if (nBytes == SONARARRAYSIZE) {
-				TraslateFromByteArray();
-				SonarShow();
+				if (replayarray[SONAROFFSET] >= 0 && replayarray[SONAROFFSET] < MAXSONARRANGE) {
+					TraslateFromByteArray();
+					SonarShow();
+				}
 			} else {
 				if (BoatNav.btconnected) {
 					mode = 0;
@@ -1273,8 +1284,8 @@ public class MyIV extends ImageView {
 //		paint.setColor(Color.BLACK);
 //		paint.setTextSize(20);
 //		paint.setTextAlign(Paint.Align.LEFT);
-//		canvas.drawText(sTextWrite, 10, 145, paint);
-//		canvas.drawText(sTextRead, 10, 165, paint);
+//		canvas.drawText("" + trailhead, 10, 145, paint);
+//		canvas.drawText("" + tracksmoothing, 10, 165, paint);
 //		canvas.drawText(sTextWait, 10, 185, paint);
 //		canvas.drawText(TutorialOnImages.sbtdeviceaddr, 10, 125, paint);
 //		sText="Latitude: " + String.format("%.6f",curlat);

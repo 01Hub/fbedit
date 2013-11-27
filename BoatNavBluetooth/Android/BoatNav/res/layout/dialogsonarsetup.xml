@@ -4,11 +4,47 @@
     android:layout_height="fill_parent" >
 
     <TextView
-        android:id="@+id/textView1"
+        android:id="@+id/textView5"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
+        android:layout_marginLeft="5dp"
+        android:text="Initial Ping:" />
+
+    <SeekBar
+        android:id="@+id/sbInitialPing"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/textView5"
+        android:layout_marginLeft="5dp"
+        android:max="32" />
+
+    <TextView
+        android:id="@+id/textView6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+       	android:layout_below="@+id/sbInitialPing"
+         android:layout_marginLeft="5dp"
+        android:text="Initial Gain:" />
+
+    <SeekBar
+        android:id="@+id/sbInitialGain"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/textView6"
+        android:layout_marginLeft="5dp"
+        android:max="32" />
+
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/sbInitialGain"
         android:layout_marginLeft="5dp"
         android:text="Noise Level:" />
 
@@ -28,7 +64,6 @@
         android:layout_alignParentLeft="true"
         android:layout_below="@+id/sbNoiseLevel"
         android:layout_marginLeft="5dp"
-        android:layout_marginTop="16dp"
         android:text="Noise Reject:" />
 
     <SeekBar
@@ -46,7 +81,6 @@
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/sbNoiseReject"
         android:layout_below="@+id/sbNoiseReject"
-        android:layout_marginTop="16dp"
         android:layout_marginLeft="5dp"
         android:text="Fish Detect:" />
     
@@ -65,7 +99,6 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_below="@+id/sbFishDetect"
-        android:layout_marginTop="14dp"
         android:layout_marginLeft="5dp"
         android:text="Fish Sound" />
 
@@ -113,12 +146,21 @@
         android:text="Auto Range" />
 
     <Button
+        android:id="@+id/btnClearSonar"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/chkAutoRange"
+        android:layout_marginTop="20dp"
+        android:text="@string/ClearSonar" />
+
+    <Button
         android:id="@+id/btnOK"
         android:layout_width="150dp"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_below="@+id/chkAutoRange"
-        android:layout_marginTop="29dp"
+        android:layout_marginTop="20dp"
         android:text="@string/OK" />
 
 </RelativeLayout>

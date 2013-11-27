@@ -19,7 +19,7 @@
         android:layout_alignParentLeft="true"
         android:layout_below="@+id/textView1"
         android:layout_marginLeft="5dp"
-        android:max="10" />
+        android:max="16" />
 
     <CheckBox
         android:id="@+id/chkShowTrail"

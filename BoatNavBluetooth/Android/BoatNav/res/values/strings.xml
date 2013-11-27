@@ -22,5 +22,6 @@
     <string name="ClearTrail">Clear Trail</string>
     <string name="StartRecord">Start Recording</string>
     <string name="StopRecord">Stop Recording</string>
+    <string name="ClearSonar">Clear Sonar</string>
     
 </resources>
