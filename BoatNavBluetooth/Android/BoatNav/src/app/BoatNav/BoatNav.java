@@ -66,6 +66,7 @@ public class BoatNav extends Activity {
 	public static BmpClass[] bmp = BmpClass.BmpClassSet(MyIV.MAPMAXBMP + MyIV.MAPMAXICON);
 	private static boolean rginuse = false;
 	
+	public static String config[] = new String[50];
 	public static int placeState[] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 	public static String placeTitle[] = {"","","","","","","","","","","","","","","",""};
 	public static int placeIcon[] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
@@ -86,7 +87,7 @@ public class BoatNav extends Activity {
 	private static java.text.DateFormat mdateFormat;
     // Well known SPP UUID
     //private static final UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
-	private static String sbtdeviceaddr = "00:18:B2:02:D2:AD";
+	private static String btdeviceaddr = "00:18:B2:02:D2:AD";
     protected BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
     BluetoothDevice mBluetoothDevice = null;
     protected BluetoothSocket mBluetoothSocket = null;
@@ -114,6 +115,7 @@ public class BoatNav extends Activity {
 			mIcons = BitmapFactory.decodeResource(getResources(), R.drawable.cur);
 			MakeTransparent();
 			MakeIcons();
+			GetConfig();
 			GetPlaces();
 			MyIV.sonarColor = 0xFF000000 | 108 << 16 | 189 << 8 | 244;
 			MyIV.sonarsignalbmp = Bitmap.createBitmap(MyIV.SONARSIGNALGRAHWIDTH, MyIV.SONARTILEHEIGHT, Bitmap.Config.ARGB_8888);
@@ -499,26 +501,6 @@ public class BoatNav extends Activity {
 		}
 	}
 
-	private void GetPlaces() {
-		int i = 0;
-		String item;
-		buffer = readFileAsString("places.txt");
-		while (i < 16 && buffer.length() != 0) {
-			GetLine();
-			item = GetItem();
-			placeState[i] = Integer.valueOf(item);
-			item = GetItem();
-			placeTitle[i] = item;
-			item = GetItem();
-			placeIcon[i] = Integer.valueOf(item);
-			item = GetItem();
-			placeLat[i] = Double.valueOf(item);
-			item = GetItem();
-			placeLon[i] = Double.valueOf(item);
-			i++;
-		}
-	}
-
 	private void GetLine() {
 		int x;
 		try {
@@ -554,6 +536,50 @@ public class BoatNav extends Activity {
 		return item;
 	}
 
+	private void AddItem(String item) {
+		if (line.length() != 0) {
+			line = line + ",";
+		}
+		line = line + item;
+	}
+
+	private void AddItemString(String item) {
+		if (line.length() != 0) {
+			line = line + ",";
+		}
+		line = line + Character.toString((char)0x22) + item + Character.toString((char)0x22);
+	}
+
+	private void GetConfig() {
+		buffer = readFileAsString("config.txt");
+		int i = 0;
+		while (buffer.length() != 0) {
+			GetLine();
+			config[i] = line;
+			i++;
+		}
+	}
+
+	private void GetPlaces() {
+		int i = 0;
+		String item;
+		buffer = readFileAsString("places.txt");
+		while (i < 16 && buffer.length() != 0) {
+			GetLine();
+			item = GetItem();
+			placeState[i] = Integer.valueOf(item);
+			item = GetItem();
+			placeTitle[i] = item;
+			item = GetItem();
+			placeIcon[i] = Integer.valueOf(item);
+			item = GetItem();
+			placeLat[i] = Double.valueOf(item);
+			item = GetItem();
+			placeLon[i] = Double.valueOf(item);
+			i++;
+		}
+	}
+
 	private void SavePlaces() {
 		int i = 0;
 		buffer = "";
@@ -572,20 +598,6 @@ public class BoatNav extends Activity {
 		writeStringToFile("places.txt", buffer);
 	}
 	
-	private void AddItem(String item) {
-		if (line.length() != 0) {
-			line = line + ",";
-		}
-		line = line + item;
-	}
-
-	private void AddItemString(String item) {
-		if (line.length() != 0) {
-			line = line + ",";
-		}
-		line = line + Character.toString((char)0x22) + item + Character.toString((char)0x22);
-	}
-
 	@Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
@@ -636,7 +648,7 @@ public class BoatNav extends Activity {
 		    	Boolean err = false;
 		        try {
 		            // Set up a pointer to the remote node using it's address.
-		        	mBluetoothDevice = mBluetoothAdapter.getRemoteDevice(sbtdeviceaddr);
+		        	mBluetoothDevice = mBluetoothAdapter.getRemoteDevice(btdeviceaddr);
 	            	Method m = mBluetoothDevice.getClass().getMethod("createInsecureRfcommSocket", new Class[] { int.class }); 
 	            	mBluetoothSocket = (BluetoothSocket) m.invoke(mBluetoothDevice,Integer.valueOf(1));
 	            	
