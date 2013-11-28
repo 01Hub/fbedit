@@ -5,7 +5,7 @@ include comdlg32.inc
 include comctl32.inc
 include gdi32.inc
 include gdiplus.inc
-;include gdiplus_structs.inc
+include gdiplus_structs.inc
 include ole32.inc
 include oleaut32.inc
 include winmm.inc
@@ -21,7 +21,6 @@ includelib gdiplus.lib
 includelib ole32.lib 
 includelib oleaut32.lib 
 includelib winmm.lib
-includelib STLinkLib.lib 
 includelib wsock32.lib
 includelib ws2_32.lib
 
@@ -35,11 +34,6 @@ includelib \RadASM30\masm\lib\debug.lib
 
 ;#########################################################################
 
-STLinkConnect			PROTO hWin:HWND
-STLinkDisconnect		PROTO hWin:HWND
-STLinkReset				PROTO hWin:HWND
-STLinkRead 				PROTO hWin:HWND,rdadr:DWORD,wradr:DWORD,nBytes:DWORD
-STLinkWrite				PROTO hWin:HWND,wradr:DWORD,rdadr:DWORD,nBytes:DWORD
 FpToAscii				PROTO :DWORD,:DWORD,:DWORD
 InitScroll				PROTO
 
