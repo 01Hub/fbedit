@@ -21,21 +21,12 @@
         android:layout_marginLeft="5dp"
         android:max="32" />
 
-    <CheckBox
-        android:id="@+id/chkAutoPing"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@+id/sbInitialPing"
-        android:layout_marginLeft="5dp"
-        android:text="Auto Ping" />
-
     <TextView
         android:id="@+id/textView6"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-       	android:layout_below="@+id/chkAutoPing"
+       	android:layout_below="@+id/sbInitialPing"
          android:layout_marginLeft="5dp"
         android:text="Initial Gain:" />
 
@@ -48,21 +39,12 @@
         android:layout_marginLeft="5dp"
         android:max="32" />
 
-    <CheckBox
-        android:id="@+id/chkAutoGain"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@+id/sbInitialGain"
-        android:layout_marginLeft="5dp"
-        android:text="Auto Gain" />
-
     <TextView
         android:id="@+id/textView1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:layout_below="@+id/chkAutoGain"
+        android:layout_below="@+id/sbInitialGain"
         android:layout_marginLeft="5dp"
         android:text="Noise Level:" />
 
@@ -162,6 +144,24 @@
         android:layout_below="@+id/sbRange"
         android:layout_marginLeft="5dp"
         android:text="Auto Range" />
+
+    <CheckBox
+        android:id="@+id/chkAutoPing"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/chkAutoRange"
+		android:layout_toRightOf="@+id/chkAutoRange"
+        android:layout_marginLeft="15dp"
+        android:text="Auto Ping" />
+
+    <CheckBox
+        android:id="@+id/chkAutoGain"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/chkAutoPing"
+		android:layout_toRightOf="@+id/chkAutoPing"
+        android:layout_marginLeft="15dp"
+        android:text="Auto Gain" />
 
     <Button
         android:id="@+id/btnClearSonar"

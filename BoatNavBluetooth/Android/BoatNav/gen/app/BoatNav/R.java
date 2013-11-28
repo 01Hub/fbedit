@@ -34,12 +34,12 @@ public final class R {
         public static final int btnOK=0x7f080013;
         public static final int btnRecord=0x7f08001d;
         public static final int chkAutoConnect=0x7f080017;
-        public static final int chkAutoGain=0x7f080023;
-        public static final int chkAutoPing=0x7f080020;
-        public static final int chkAutoRange=0x7f08002c;
-        public static final int chkFishDepth=0x7f080028;
-        public static final int chkFishIcon=0x7f080029;
-        public static final int chkFishSound=0x7f080027;
+        public static final int chkAutoGain=0x7f08002c;
+        public static final int chkAutoPing=0x7f08002b;
+        public static final int chkAutoRange=0x7f08002a;
+        public static final int chkFishDepth=0x7f080026;
+        public static final int chkFishIcon=0x7f080027;
+        public static final int chkFishSound=0x7f080025;
         public static final int chkMap=0x7f080011;
         public static final int chkMenu=0x7f080010;
         public static final int chkShowTrail=0x7f08001a;
@@ -67,19 +67,19 @@ public final class R {
         public static final int rbn8=0x7f080009;
         public static final int rgIcons1=0x7f080000;
         public static final int rgIcons2=0x7f080005;
-        public static final int sbFishDetect=0x7f080026;
-        public static final int sbInitialGain=0x7f080022;
+        public static final int sbFishDetect=0x7f080024;
+        public static final int sbInitialGain=0x7f080021;
         public static final int sbInitialPing=0x7f08001f;
-        public static final int sbNoiseLevel=0x7f080024;
-        public static final int sbNoiseReject=0x7f080025;
-        public static final int sbRange=0x7f08002b;
+        public static final int sbNoiseLevel=0x7f080022;
+        public static final int sbNoiseReject=0x7f080023;
+        public static final int sbRange=0x7f080029;
         public static final int sbTrackSmoothing=0x7f080019;
         public static final int textView1=0x7f08000a;
         public static final int textView2=0x7f08000c;
         public static final int textView3=0x7f08000e;
-        public static final int textView4=0x7f08002a;
+        public static final int textView4=0x7f080028;
         public static final int textView5=0x7f08001e;
-        public static final int textView6=0x7f080021;
+        public static final int textView6=0x7f080020;
     }
     public static final class layout {
         public static final int dialogaddplace=0x7f030000;

@@ -595,10 +595,10 @@ public class BoatNav extends Activity {
 		buffer = "";
 		FindConfig("#btaddress");
 		GetLine();
+		btdeviceaddr = line;
 		FindConfig("#btautoconnect");
 		GetLine();
 		btautoconnect = Integer.valueOf(GetItem()) == 1;
-		btdeviceaddr = line;
 		FindConfig("#maxtilex");
 		GetLine();
 		MyIV.maxtilex[0] = 0;
