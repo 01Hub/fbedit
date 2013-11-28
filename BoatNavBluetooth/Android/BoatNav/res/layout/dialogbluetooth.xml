@@ -11,21 +11,31 @@
         android:layout_alignParentTop="true" >
     </ListView>
 
+    <CheckBox
+        android:id="@+id/chkAutoConnect"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/lvPaired"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="5dp"
+        android:text="Auto Connect" />
+
     <Button
-        android:id="@+id/btnCancel"
+        android:id="@+id/btnOK"
         android:layout_width="150dp"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
-        android:layout_below="@+id/lvPaired"
-        android:layout_marginTop="29dp"
-        android:text="@string/Cancel" />
+        android:layout_below="@+id/chkAutoConnect"
+        android:layout_marginTop="20dp"
+        android:text="@string/OK" />
 
     <Button
         android:id="@+id/btnConnect"
         android:layout_width="150dp"
         android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/btnCancel"
-        android:layout_alignBottom="@+id/btnCancel"
+        android:layout_alignBaseline="@+id/btnOK"
+        android:layout_alignBottom="@+id/btnOK"
         android:layout_alignParentLeft="true"
         android:text="@string/Connect" />
 

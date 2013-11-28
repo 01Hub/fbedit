@@ -66,7 +66,7 @@ public class BoatNav extends Activity {
 	public static BmpClass[] bmp = BmpClass.BmpClassSet(MyIV.MAPMAXBMP + MyIV.MAPMAXICON);
 	private static boolean rginuse = false;
 	
-	public static String config[] = new String[50];
+	public static String config[][] = new String[50][2];
 	public static int placeState[] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 	public static String placeTitle[] = {"","","","","","","","","","","","","","","",""};
 	public static int placeIcon[] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
@@ -87,7 +87,8 @@ public class BoatNav extends Activity {
 	private static java.text.DateFormat mdateFormat;
     // Well known SPP UUID
     //private static final UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
-	private static String btdeviceaddr = "00:18:B2:02:D2:AD";
+	private static String btdeviceaddr;
+	private static boolean btautoconnect = false;
     protected BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
     BluetoothDevice mBluetoothDevice = null;
     protected BluetoothSocket mBluetoothSocket = null;
@@ -121,7 +122,9 @@ public class BoatNav extends Activity {
 			MyIV.sonarsignalbmp = Bitmap.createBitmap(MyIV.SONARSIGNALGRAHWIDTH, MyIV.SONARTILEHEIGHT, Bitmap.Config.ARGB_8888);
 			MyIV.sonarsignalbmp.eraseColor(MyIV.sonarColor);
 			SonarClear();
-			ParseRange();
+			if (btautoconnect) {
+				BTConnect();
+			}
 			tmr.schedule(new TimerTask() {
 				@Override
 				public void run() {
@@ -163,16 +166,27 @@ public class BoatNav extends Activity {
         					MyIV.sonarrangechange++;
 
         			        btSend.Start = 1;
-        			        btSend.PingPulses = (byte)(MyIV.sonarpinginit + MyIV.range[MyIV.sonarrangeinx].pingadd);
+        			        if (MyIV.sonarautoping) {
+            			        btSend.PingPulses = (byte)(MyIV.sonarpinginit + MyIV.range[ri].pingadd);
+        			        } else {
+            			        btSend.PingPulses = (byte)(MyIV.sonarpinginit);
+        			        }
         			        btSend.PingTimer = (40000000 / 200000 / 2)-1;
         			        btSend.RangeInx = (byte)ri;
         			        tmp = (((double)MyIV.range[MyIV.sonarrangeinx].range / (double)MyIV.SONARTILEHEIGHT) / (1450d / 2d)) * 40000000d;
         			        btSend.PixelTimer = (short)tmp;
         			        btSend.GainInit[0] = (short)MyIV.sonargaininit;
         			        int i = 0;
-        			        while (i < 17) {
-        			        	btSend.GainInit[i + 1] = (short)MyIV.range[MyIV.sonarrangeinx].gain[i];
-        			        	i++;
+        			        if (MyIV.sonarautogain) {
+            			        while (i < 17) {
+            			        	btSend.GainInit[i + 1] = (short)MyIV.range[ri].gain[i];
+            			        	i++;
+            			        }
+        			        } else {
+            			        while (i < 17) {
+            			        	btSend.GainInit[i + 1] = 0;
+            			        	i++;
+            			        }
         			        }
         			        btwritebuffer[0] = btSend.Start;
         			        btwritebuffer[1] = btSend.PingPulses;
@@ -215,22 +229,7 @@ public class BoatNav extends Activity {
         			        	err = true;
         			    	}
         			        if (err) {
-        			        	btconnected = false;
-        			        	try {
-        			        		mOutputStream.close();
-        			        		mOutputStream = null;
-        						} catch (IOException e1) {
-        						}
-        			        	try {
-        							mInputStream.close();
-        							mInputStream = null;
-        						} catch (IOException e1) {
-        						}
-        			        	try {
-        							mBluetoothSocket.close();
-        							mBluetoothSocket = null;
-        						} catch (IOException e) {
-        						}
+        			        	btconnected = BTDisConnect();
 		               			if (recording == true) {
 		               				try {
 			               				replayfile.close();
@@ -259,6 +258,13 @@ public class BoatNav extends Activity {
 		setContentView(mIV);
 		mIV.invalidate();
 	}
+
+    @Override
+    public void onDestroy()
+    {
+        super.onDestroy();
+        SaveConfig();
+    }
 
     private void SonarClear() {
 		int i=0;
@@ -472,36 +478,47 @@ public class BoatNav extends Activity {
 		}
 	};
 	
-	private void ParseRange() {
-		int i = 0;
+	/*
+	range			Range in meters
+	mindepth		Index where to start depth search
+	interval		Update rate (ms)
+	pingadd			Number of pulses to add to initial ping pulses (0 to 127). Used when autoping is on
+	gain			Gain levels for every 32 pixels. Used when auto gain is on
+	scale			Text to draw on range bar
+	*/
+	private void ParseRange(int i) {
 		int j = 0;
-		String item;
-		while (i < MyIV.MAXSONARRANGE) {
-			line = MyIV.rangestr[i];
-			item = GetItem();
-			MyIV.range[i].range = Integer.valueOf(item);
-			item = GetItem();
-			MyIV.range[i].mindepth = Integer.valueOf(item);
-			item = GetItem();
-			MyIV.range[i].interval = Integer.valueOf(item);
-			item = GetItem();
-			MyIV.range[i].pixeltimer = Integer.valueOf(item);
-			item = GetItem();
-			MyIV.range[i].pingadd = Integer.valueOf(item);
-			j = 0;
-			while (j<17) {
-				item = GetItem();
-				MyIV.range[i].gain[j] =  Integer.valueOf(item);
-				j++;
-			}
-			item = GetItem();
-			MyIV.range[i].nticks = Integer.valueOf(item);
-			MyIV.range[i].scale = line;
-			i++;
+		GetLine();
+		MyIV.range[i].range = Integer.valueOf(GetItem());
+		MyIV.range[i].mindepth = Integer.valueOf(GetItem());
+		MyIV.range[i].interval = Integer.valueOf(GetItem());
+		MyIV.range[i].pixeltimer = Integer.valueOf(GetItem());
+		MyIV.range[i].pingadd = Integer.valueOf(GetItem());
+		while (j<17) {
+			MyIV.range[i].gain[j] =  Integer.valueOf(GetItem());
+			j++;
 		}
+		MyIV.range[i].nticks = Integer.valueOf(GetItem());
+		MyIV.range[i].scale = line;
 	}
 
 	private void GetLine() {
+		int x;
+		try {
+			while (true) {
+				x = buffer.indexOf(0x0a);
+				line = buffer.substring(0,x-1);
+				buffer = buffer.substring(x+1);
+				if (!line.startsWith("//")) {
+					break;
+				}
+			}
+		} catch (Exception e) {
+	        Log.e("MYTAG", "Line error: " + e.toString());
+		}
+	}
+	
+	private void GetComment() {
 		int x;
 		try {
 			x = buffer.indexOf(0x0a);
@@ -550,14 +567,177 @@ public class BoatNav extends Activity {
 		line = line + Character.toString((char)0x22) + item + Character.toString((char)0x22);
 	}
 
-	private void GetConfig() {
-		buffer = readFileAsString("config.txt");
+	private int FindConfig(String section) {
 		int i = 0;
-		while (buffer.length() != 0) {
-			GetLine();
-			config[i] = line;
+		while (config[i][0].length() > 0 && config[i][0].contentEquals(section) == false) {
 			i++;
 		}
+		buffer = config[i][1];
+		return i;
+	}
+
+	private void GetConfig() {
+		buffer = readFileAsString("config.txt");
+		int i = -1;
+		while (buffer.length() != 0) {
+			GetLine();
+			if (line.startsWith("#")) {
+				i++;
+				config[i][0] = line;
+				config[i][1] = "";
+			} else {
+				config[i][1] += line + "\r\n";
+			}
+		}
+		i++;
+		config[i][0] = "";
+		config[i][1] = "";
+		buffer = "";
+		FindConfig("#btaddress");
+		GetLine();
+		FindConfig("#btautoconnect");
+		GetLine();
+		btautoconnect = Integer.valueOf(GetItem()) == 1;
+		btdeviceaddr = line;
+		FindConfig("#maxtilex");
+		GetLine();
+		MyIV.maxtilex[0] = 0;
+		i = 1;
+		while (line.length() > 0) {
+			MyIV.maxtilex[i] = Integer.valueOf(GetItem());
+			i++;
+		}
+		FindConfig("#maxtiley");
+		GetLine();
+		MyIV.maxtiley[0] = 0;
+		i = 1;
+		while (line.length() > 0) {
+			MyIV.maxtiley[i] = Integer.valueOf(GetItem());
+			i++;
+		}
+		FindConfig("#maprect");
+		GetLine();
+		MyIV.left = Double.valueOf(GetItem());
+		MyIV.top = Double.valueOf(GetItem());
+		MyIV.right = Double.valueOf(GetItem());
+		MyIV.bottom = Double.valueOf(GetItem());
+		FindConfig("#latarray");
+		GetLine();
+		i = 0;
+		while (i < 65) {
+			MyIV.latarray[i] = Double.valueOf(GetItem());
+			i++;
+		}
+		FindConfig("#curpos");
+		GetLine();
+		MyIV.curlat = Double.valueOf(GetItem());
+		MyIV.prvlat = MyIV.curlat;
+		MyIV.curlon = Double.valueOf(GetItem());
+		MyIV.prvlon = MyIV.curlon;
+		FindConfig("#map");
+		GetLine();
+		MyIV.viewmode = Integer.valueOf(GetItem());
+		MyIV.land = Integer.valueOf(GetItem()) == 1;
+		MyIV.zoom = Integer.valueOf(GetItem());
+		MyIV.locktogps = Integer.valueOf(GetItem()) == 1;
+		MyIV.showtrail = Integer.valueOf(GetItem()) == 1;
+		MyIV.tracksmoothing = Integer.valueOf(GetItem());
+		FindConfig("#sonar");
+		GetLine();
+		MyIV.sonarpinginit = Integer.valueOf(GetItem());
+		MyIV.sonarautoping = Integer.valueOf(GetItem()) == 1;
+		MyIV.sonargaininit = Integer.valueOf(GetItem());
+		MyIV.sonarautogain = Integer.valueOf(GetItem()) == 1;
+		MyIV.sonarnoiselevel = Integer.valueOf(GetItem());
+		MyIV.sonarnoisereject = Integer.valueOf(GetItem());
+		MyIV.sonarfishdetect = Integer.valueOf(GetItem());
+		MyIV.sonarfishsound = Integer.valueOf(GetItem()) == 1;
+		MyIV.sonarfishdepth = Integer.valueOf(GetItem()) == 1;
+		MyIV.sonarfishicon = Integer.valueOf(GetItem()) == 1;
+		MyIV.sonarautorange = Integer.valueOf(GetItem()) == 1;
+		FindConfig("#sonarrange");
+		i=0;
+		while (buffer.length() > 0) {
+			ParseRange(i);
+			i++;
+		}
+
+//    	Log.e("MYTAG", buffer);
+	}
+	
+	private int GetBoolean(boolean b) {
+		if (b) {
+			return 1;
+		} else {
+			return 0;
+		}
+	}
+
+	private void SaveConfig() {
+		int i;
+		i = FindConfig("#btautoconnect");
+		config[i][1] = "";
+		while (buffer.startsWith("//")) {
+			GetComment();
+			config[i][1] += line + "\r\n";
+		}
+		line = "";
+		AddItem(Integer.toString(GetBoolean(btautoconnect)));
+		config[i][1] += line + "\r\n";
+		i = FindConfig("#curpos");
+		config[i][1] = "";
+		while (buffer.startsWith("//")) {
+			GetComment();
+			config[i][1] += line + "\r\n";
+		}
+		// latitude,longitude
+		line = "";
+		AddItem(Double.toString(MyIV.curlat));
+		AddItem(Double.toString(MyIV.curlon));
+		config[i][1] += line + "\r\n";
+		i = FindConfig("#map");
+		config[i][1] = "";
+		while (buffer.startsWith("//")) {
+			GetComment();
+			config[i][1] += line + "\r\n";
+		}
+		// viewmode,land,zoom,locktogps,showtrail,tracksmoothing
+		line = "";
+		AddItem(Integer.toString(MyIV.viewmode));
+		AddItem(Integer.toString(GetBoolean(MyIV.land)));
+		AddItem(Integer.toString(MyIV.zoom));
+		AddItem(Integer.toString(GetBoolean(MyIV.locktogps)));
+		AddItem(Integer.toString(GetBoolean(MyIV.showtrail)));
+		AddItem(Integer.toString(MyIV.tracksmoothing));
+		config[i][1] += line + "\r\n";
+		i = FindConfig("#sonar");
+		config[i][1] = "";
+		while (buffer.startsWith("//")) {
+			GetComment();
+			config[i][1] += line + "\r\n";
+		}
+		// sonarpinginit,sonarautoping,sonargaininit,sonarautogain,sonarnoiselevel,sonarnoisereject,sonarfishdetect,sonarfishsound,sonarfishdepth,sonarfishicon,sonarautorange
+		line = "";
+		AddItem(Integer.toString(MyIV.sonarpinginit));
+		AddItem(Integer.toString(GetBoolean(MyIV.sonarautoping)));
+		AddItem(Integer.toString(MyIV.sonargaininit));
+		AddItem(Integer.toString(GetBoolean(MyIV.sonarautogain)));
+		AddItem(Integer.toString(MyIV.sonarnoiselevel));
+		AddItem(Integer.toString(MyIV.sonarnoisereject));
+		AddItem(Integer.toString(MyIV.sonarfishdetect));
+		AddItem(Integer.toString(GetBoolean(MyIV.sonarfishsound)));
+		AddItem(Integer.toString(GetBoolean(MyIV.sonarfishdepth)));
+		AddItem(Integer.toString(GetBoolean(MyIV.sonarfishicon)));
+		AddItem(Integer.toString(GetBoolean(MyIV.sonarautorange)));
+		config[i][1] += line + "\r\n";
+		buffer = "";
+		i = 0;
+		while (config[i][0].length() > 0) {
+			buffer += config[i][0] + "\r\n";
+			buffer += config[i][1];
+			i++;
+		}
+		writeStringToFile("config.txt", buffer);
 	}
 
 	private void GetPlaces() {
@@ -606,6 +786,76 @@ public class BoatNav extends Activity {
         inflater.inflate(R.menu.main, menu);
         return true;
     }
+	
+	private boolean BTDisConnect() {
+        if (mOutputStream != null) {
+        	try {
+        		mOutputStream.close();
+        		mOutputStream = null;
+			} catch (IOException e1) {
+			}
+        }
+        if (mInputStream != null) {
+        	try {
+				mInputStream.close();
+				mInputStream = null;
+			} catch (IOException e1) {
+			}
+        }
+        if (mBluetoothSocket != null) {
+        	try {
+				mBluetoothSocket.close();
+				mBluetoothSocket = null;
+			} catch (IOException e) {
+			}
+        }
+		return false;
+	}
+
+	private boolean BTConnect() {
+    	Boolean err = false;
+        try {
+            // Set up a pointer to the remote node using it's address.
+        	mBluetoothDevice = mBluetoothAdapter.getRemoteDevice(btdeviceaddr);
+        	Method m = mBluetoothDevice.getClass().getMethod("createInsecureRfcommSocket", new Class[] { int.class }); 
+        	mBluetoothSocket = (BluetoothSocket) m.invoke(mBluetoothDevice,Integer.valueOf(1));
+        	
+            // Discovery is resource intensive.  Make sure it isn't going on
+            // when you attempt to connect and pass your message.
+            mBluetoothAdapter.cancelDiscovery();
+            // Establish the connection.  This will block until it connects.
+            try {
+            	mBluetoothSocket.connect();
+	            // Create data streams so we can talk to server.
+	            try {
+	            	mOutputStream = mBluetoothSocket.getOutputStream();
+		            try {
+		            	mInputStream = mBluetoothSocket.getInputStream();
+		            	// Done, set the mode
+						SonarClear();
+	                	MyIV.mode = 0;
+	                	btconnected = true;
+		            } catch (IOException e) {
+			        	msgbox("BT", "getInputStream " + e.getMessage());
+			        	err = true;
+		            }
+	            } catch (IOException e) {
+		        	msgbox("BT", "getOutputStream " + e.getMessage());
+		        	err = true;
+	            }
+            } catch (IOException e) {
+	        	msgbox("BT", "connect " + e.getMessage());
+	        	err = true;
+            }
+		} catch (Exception e) {
+        	msgbox("BT", "getRemoteDevice " + e.getMessage());
+        	err = true;
+		}
+        if (err == true) {
+        	BTDisConnect();
+        }
+        return err;
+	}
 
 	private void ShowBluetoothDialog() {
  	   final Context context = this;
@@ -641,80 +891,44 @@ public class BoatNav extends Activity {
 	        btadapter.notifyDataSetChanged();
 		}
 
-		Button btnConnect = (Button) dialog.findViewById(R.id.btnConnect);
-        btnConnect.setOnClickListener(new OnClickListener() {
+		CheckBox chkAutoConnect;
+		chkAutoConnect = (CheckBox) dialog.findViewById(R.id.chkAutoConnect);
+		chkAutoConnect.setChecked(btautoconnect);
+		chkAutoConnect.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-		    	Boolean err = false;
-		        try {
-		            // Set up a pointer to the remote node using it's address.
-		        	mBluetoothDevice = mBluetoothAdapter.getRemoteDevice(btdeviceaddr);
-	            	Method m = mBluetoothDevice.getClass().getMethod("createInsecureRfcommSocket", new Class[] { int.class }); 
-	            	mBluetoothSocket = (BluetoothSocket) m.invoke(mBluetoothDevice,Integer.valueOf(1));
-	            	
-		            // Discovery is resource intensive.  Make sure it isn't going on
-		            // when you attempt to connect and pass your message.
-		            mBluetoothAdapter.cancelDiscovery();
-		            // Establish the connection.  This will block until it connects.
-		            try {
-		            	mBluetoothSocket.connect();
-			            // Create data streams so we can talk to server.
-			            try {
-			            	mOutputStream = mBluetoothSocket.getOutputStream();
-				            try {
-				            	mInputStream = mBluetoothSocket.getInputStream();
-				            	// Done, set the mode
-								dialog.dismiss();
-								SonarClear();
-			                	MyIV.mode = 0;
-			                	btconnected = true;
-				            } catch (IOException e) {
-					        	msgbox("BT", "getInputStream " + e.getMessage());
-					        	err = true;
-				            }
-			            } catch (IOException e) {
-				        	msgbox("BT", "getOutputStream " + e.getMessage());
-				        	err = true;
-			            }
-		            } catch (IOException e) {
-			        	msgbox("BT", "connect " + e.getMessage());
-			        	err = true;
-		            }
-				} catch (Exception e) {
-		        	msgbox("BT", "getRemoteDevice " + e.getMessage());
-		        	err = true;
-				}
-		        if (err == true) {
-			        if (mOutputStream != null) {
-			        	try {
-			        		mOutputStream.close();
-			        		mOutputStream = null;
-						} catch (IOException e1) {
-						}
-			        }
-			        if (mInputStream != null) {
-			        	try {
-							mInputStream.close();
-							mInputStream = null;
-						} catch (IOException e1) {
-						}
-			        }
-			        if (mBluetoothSocket != null) {
-			        	try {
-							mBluetoothSocket.close();
-							mBluetoothSocket = null;
-						} catch (IOException e) {
-						}
-			        }
-					dialog.dismiss();
-		        }
+				btautoconnect = ((CheckBox) v).isChecked();
 			}
 		});
 
-        Button btnCancel = (Button) dialog.findViewById(R.id.btnCancel);
-		btnCancel.setOnClickListener(new OnClickListener() {
+		Button btnConnect = (Button) dialog.findViewById(R.id.btnConnect);
+		if (btconnected) {
+			btnConnect.setText("Disconnect");
+		}
+        btnConnect.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
+		    	Boolean err;
+				if (btconnected) {
+					err = BTDisConnect();
+					btconnected = false;
+				} else {
+			    	err = BTConnect();
+				}
+		    	if (err) {
+		    		
+		    	} else {
+					SaveConfig();
+					dialog.dismiss();
+		    	}
+			}
+		});
+
+        Button btnOK = (Button) dialog.findViewById(R.id.btnOK);
+		btnOK.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				SaveConfig();
 				dialog.dismiss();
 			}
 		});
@@ -723,9 +937,9 @@ public class BoatNav extends Activity {
 	}
 
 	private void ShowReplayDialog() {
-    	int i;
- 	   ArrayList<String> listItems=new ArrayList<String>();
- 	   ArrayAdapter<String> adapter;
+		int i;
+		ArrayList<String> listItems=new ArrayList<String>();
+		ArrayAdapter<String> adapter;
 
     	final Context context = this;
 		final Dialog dialog = new Dialog(context);
@@ -853,6 +1067,7 @@ public class BoatNav extends Activity {
 		btnOK.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
+				SaveConfig();
 				dialog.dismiss();
 			}
 		});
@@ -891,6 +1106,16 @@ public class BoatNav extends Activity {
         	}
         });
 
+		CheckBox chkAutoPing;
+		chkAutoPing = (CheckBox) dialog.findViewById(R.id.chkAutoPing);
+		chkAutoPing.setChecked(MyIV.sonarautoping);
+		chkAutoPing.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				MyIV.sonarautoping = ((CheckBox) v).isChecked();
+			}
+		});
+
 		SeekBar sbInitialGain;
 		sbInitialGain = (SeekBar) dialog.findViewById(R.id.sbInitialGain);
 		sbInitialGain.setProgress((MyIV.sonargaininit - 600) / 10);
@@ -905,6 +1130,16 @@ public class BoatNav extends Activity {
         	public void onStopTrackingTouch(SeekBar seekBar) {
         	}
         });
+
+		CheckBox chkAutoGain;
+		chkAutoGain = (CheckBox) dialog.findViewById(R.id.chkAutoGain);
+		chkAutoGain.setChecked(MyIV.sonarautoping);
+		chkAutoGain.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				MyIV.sonarautogain = ((CheckBox) v).isChecked();
+			}
+		});
 
 		SeekBar sbNoiseLevel;
 		sbNoiseLevel = (SeekBar) dialog.findViewById(R.id.sbNoiseLevel);
@@ -1019,6 +1254,7 @@ public class BoatNav extends Activity {
 		btnOK.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
+				SaveConfig();
 				dialog.dismiss();
 			}
 		});

@@ -37,45 +37,33 @@ public class MyIV extends ImageView {
 	public static float yofs = 0;
 
 	public static int mode = 1;
-	public static int viewmode = 2;
-	public static boolean land = true;
-	public static int zoom = 5;
-	public static boolean locktogps = true;
-	public static boolean showtrail = true;
-	public static int tracksmoothing = 8;
+	public static int viewmode;
+	public static boolean land;
+	public static int zoom;
+	public static boolean locktogps;
+	public static boolean showtrail;
+	public static int tracksmoothing;
 
 	public static String path = Environment.getExternalStorageDirectory() + File.separator + "Map" + File.separator;
-	private static int maxtilex[] = {0,5,10,20,40,80};
-	private static int maxtiley[] = {0,4,8,16,32,64};
+	public static int maxtilex[] = new int[6];
+	public static int maxtiley[] = new int[6];
 	private static Paint paint = new Paint(Paint.FAKE_BOLD_TEXT_FLAG);
-	//MapRect=12.912960,66.533650,14.670640,65.967385
-	private static final double left=12.912960d;
-	private static final double top=66.533650d;
-	private static final double right=14.670640d;
-	private static final double bottom=65.967385d;
-	private static final double latarray[]={66.533650d,66.524900d,66.516147d,66.507390d,66.498631d,
-											66.489868d,66.481102d,66.472333d,66.463561d,66.454786d,
-											66.446008d,66.437227d,66.428443d,66.419656d,66.410865d,
-											66.402072d,66.393275d,66.384475d,66.375672d,66.366867d,
-											66.358058d,66.349245d,66.340430d,66.331612d,66.322791d,
-											66.313966d,66.305139d,66.296308d,66.287474d,66.278637d,
-											66.269797d,66.260954d,66.252108d,66.243259d,66.234406d,
-											66.225551d,66.216692d,66.207830d,66.198966d,66.190098d,
-											66.181227d,66.172352d,66.163475d,66.154595d,66.145711d,
-											66.136825d,66.127935d,66.119042d,66.110146d,66.101247d,
-											66.092345d,66.083439d,66.074531d,66.065619d,66.056705d,
-											66.047787d,66.038866d,66.029942d,66.021015d,66.012084d,
-											66.003151d,65.994214d,65.985274d,65.976331d,65.967385d};
+	// MapRect
+	public static double left;
+	public static double top;
+	public static double right;
+	public static double bottom;
+	public static double latarray[] = new double[65];
 	private static int mpx;
 	private static int mpy;
 	private static int spx;
 	private static int spy;
 	public static int cpx=0;
 	public static int cpy=0;
-	public static double curlat = 66.317270d;
-	public static double curlon = 14.196690d;
-	private static double prvlat = 66.317270d;
-	private static double prvlon = 14.196690d;
+	public static double curlat;
+	public static double curlon;
+	public static double prvlat;
+	public static double prvlon;
 	private static double distance = 0;
 	private static int curbearing = 0;
 	private static int curspeed = 0;
@@ -103,16 +91,18 @@ public class MyIV extends ImageView {
 	public static final SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
 	public static int sonarColor;
 
-	public static int sonarpinginit = 16;
-	public static int sonargaininit = 750;
-	public static int sonarnoiselevel = 4;
-	public static int sonarnoisereject = 2;
-	public static int sonarfishdetect = 1;
-	public static boolean sonarfishsound = false;
-	public static boolean sonarfishdepth = true;
-	public static boolean sonarfishicon = true;
-	public static boolean sonarautorange = true;
-	public static int sonarrangeinx = 4;
+	public static int sonarpinginit;
+	public static boolean sonarautoping;
+	public static int sonargaininit;
+	public static boolean sonarautogain;
+	public static int sonarnoiselevel;
+	public static int sonarnoisereject;
+	public static int sonarfishdetect;
+	public static boolean sonarfishsound;
+	public static boolean sonarfishdepth;
+	public static boolean sonarfishicon;
+	public static boolean sonarautorange;
+	public static int sonarrangeinx;
 	public static int sonarrangechange = 0;
 	public static int sonarrangechangedir = 1;
 
@@ -125,7 +115,7 @@ public class MyIV extends ImageView {
 	public static int[] sonarbmplat = new int[MAXSONARBMP];
 	public static int[] sonarbmplon = new int[MAXSONARBMP];
 	public static int sonarofs = 0;
-	public static int cursonarrange = 2;
+	public static int cursonarrange = 10;
 	private static int echoarrayinx = 0;
 	private static int echoarraycount = 0;
 	public static int sonarcount = 0;
@@ -150,35 +140,6 @@ public class MyIV extends ImageView {
 	public static byte[] replayarray = new byte[SONARARRAYSIZE];
 	public static SonarClass sc = new SonarClass();
 	public static RangeClass[] range = RangeClass.RangeClassSet(MAXSONARRANGE);
-
-	/*
-	range			Range in meters
-	mindepth		Index where to start depth search
-	interval		Update rate (ms)
-	pingadd			Number of pulses to add to initial ping pulses (0 to 127). Used when autoping is on
-	gain			Gain levels for every 32 pixels. Used when auto gain is on
-	scale			Text to draw on range bar
-	*/
-	public static String rangestr[] ={"2,60,150,2,0,2,4,6,8,10,13,15,17,19,21,23,25,27,29,31,33,0,8,0,,0.5,,1,,1.5,,2",
-								   	  "4,30,150,4,0,4,8,13,17,21,25,29,33,38,42,46,50,54,59,63,67,0,8,0,,1,,2,,3,,4",
-								      "6,25,150,6,0,6,13,19,25,31,38,44,50,56,63,69,75,82,88,94,100,0,12,0,,1,,2,,3,,4,,5,,6",
-								      "8,20,150,8,0,8,17,25,33,42,50,59,67,75,84,92,100,109,117,125,134,0,16,0,,1,,2,,3,,4,,5,,6,,7,,8",
-								      "10,16,150,10,0,10,21,31,42,52,63,73,84,94,105,115,125,136,146,157,167,0,10,0,,2,,4,,6,,8,,10",
-								      "14,16,150,14,0,15,29,44,59,73,88,102,117,132,146,161,176,190,205,220,234,0,14,0,,2,,4,,6,,8,,10,,12,,14",
-								      "20,16,150,16,0,21,42,63,84,105,125,146,167,188,209,230,251,272,293,314,334,0,8,0,,5,,10,,15,,20",
-								      "30,16,150,24,0,31,63,94,125,157,188,220,251,282,314,345,376,408,439,470,502,0,12,0,,5,,10,,15,,20,,25,,30",
-								      "40,16,150,32,0,42,84,125,167,209,251,293,334,376,418,460,502,544,585,627,669,0,8,0,,10,,20,,30,,40",
-								      "50,16,150,36,0,52,105,157,209,261,314,366,418,470,523,575,627,679,732,784,836,0,10,0,,10,,20,,30,,40,,50",
-								      "70,16,150,40,0,73,146,220,293,366,439,512,585,659,732,805,878,951,1024,1098,1171,0,14,0,,10,,20,,30,,40,,50,,60,,70",
-								      "100,8,175,48,0,105,209,314,418,523,627,732,836,941,1045,1150,1254,1359,1463,1568,1673,0,10,0,,20,,40,,60,,80,,100",
-								      "120,8,200,54,0,125,251,376,502,627,753,878,1004,1129,1254,1380,1505,1631,1756,1882,2007,0,12,0,,20,,40,,60,,80,,100,,120",
-								      "150,8,250,60,0,157,314,470,627,784,941,1098,1254,1411,1568,1725,1882,2038,2195,2352,2509,0,15,0,,,30,,,60,,,90,,,120,,,150",
-								      "200,8,300,64,0,209,418,627,836,1045,1254,1463,1673,1882,2091,2300,2509,2718,2927,3136,3345,0,10,0,20,40,60,80,100,120,140,160,180,200",
-								      "250,8,350,64,0,261,523,784,1045,1307,1568,1829,2091,2352,2613,2875,3136,3345,3345,3345,3345,0,10,0,25,50,75,100,125,150,175,200,225,250",
-								      "300,8,425,64,0,314,627,941,1254,1568,1882,2195,2509,2822,3136,3345,3345,3345,3345,3345,3345,0,12,0,,50,,100,,150,,200,,250,,300",
-								      "350,8,500,64,0,366,732,1098,1463,1829,2195,2561,2927,3293,3345,3345,3345,3345,3345,3345,3345,0,14,0,,50,,100,,150,,200,,250,,300,,350",
-								      "400,8,600,64,0,418,836,1254,1673,2091,2509,2927,3345,3345,3345,3345,3345,3345,3345,3345,3345,0,16,0,,50,,100,,150,,200,,250,,300,,350,,400",
-								      "500,8,700,64,0,523,1045,1568,2091,2613,3136,3345,3345,3345,3345,3345,3345,3345,3345,3345,3345,0,20,0,,50,,100,,150,,200,,250,,300,,350,,400,,450,,500"};
 
 //	SONARREPLAY struct (28 bytes)
 //0		Version			BYTE ?								;201
