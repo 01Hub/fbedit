@@ -3156,6 +3156,7 @@ LoadSonarFromIni proc uses ebx esi edi
 		xor		esi,esi
 		.while esi<17
 			invoke GetItemInt,addr buffer,0
+PrintDec eax
 			mov		sonardata.sonarrange.gain[edi+esi*DWORD],eax
 			inc		esi
 		.endw

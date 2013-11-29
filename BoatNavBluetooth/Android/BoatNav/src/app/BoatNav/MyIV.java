@@ -102,7 +102,8 @@ public class MyIV extends ImageView {
 	public static boolean sonarfishdepth;
 	public static boolean sonarfishicon;
 	public static boolean sonarautorange;
-	public static int sonarrangeinx;
+	public static int sonarrangeinx = 4;
+	public static int sonarrangeset = -1;
 	public static int sonarrangechange = 0;
 	public static int sonarrangechangedir = 1;
 
@@ -844,18 +845,18 @@ public class MyIV extends ImageView {
 
         rngticks = range[sonarrangeinx].scale;
         nticks= range[sonarrangeinx].nticks;
-        tickdist = (float)scrnht / (float)nticks;
+        tickdist = (float)scrnht / (float)(nticks - 1);
         if (color == Color.WHITE) {
             DrawSonarRangeBarTick(1, 12, canvas);
             i = 1;
-            while (i <= nticks) {
+            while (i < nticks) {
                 DrawSonarRangeBarTick((int)(tickdist * (float)i), 12, canvas);
             	i++;
             }
         } else {
             DrawSonarRangeBarTick(1, 10, canvas);
             i = 0;
-            while (i <= nticks) {
+            while (i < nticks) {
                 DrawSonarRangeBarTick((int)(tickdist * (float)i), 10, canvas);
                 item = GetItem();
                 if (i == 0) {
@@ -1245,8 +1246,8 @@ public class MyIV extends ImageView {
 //		paint.setColor(Color.BLACK);
 //		paint.setTextSize(20);
 //		paint.setTextAlign(Paint.Align.LEFT);
-//		canvas.drawText("" + trailhead, 10, 145, paint);
-//		canvas.drawText("" + tracksmoothing, 10, 165, paint);
+//		canvas.drawText("" + range[sonarrangeinx].pingadd, 10, 145, paint);
+//		canvas.drawText("" + sonarrangeinx, 10, 165, paint);
 //		canvas.drawText(sTextWait, 10, 185, paint);
 //		canvas.drawText(TutorialOnImages.sbtdeviceaddr, 10, 125, paint);
 //		sText="Latitude: " + String.format("%.6f",curlat);

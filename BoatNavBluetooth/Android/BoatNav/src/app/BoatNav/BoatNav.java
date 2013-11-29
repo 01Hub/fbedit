@@ -137,7 +137,7 @@ public class BoatNav extends Activity {
                 	while (true) {
                 		if (btstart) {
         					Boolean err = false;
-        			        double tmp;
+        			        //double tmp;
         			        int ri = MyIV.sonarrangeinx;
         			        
         					if (MyIV.sonarautorange) {
@@ -173,8 +173,8 @@ public class BoatNav extends Activity {
         			        }
         			        btSend.PingTimer = (40000000 / 200000 / 2)-1;
         			        btSend.RangeInx = (byte)ri;
-        			        tmp = (((double)MyIV.range[MyIV.sonarrangeinx].range / (double)MyIV.SONARTILEHEIGHT) / (1450d / 2d)) * 40000000d;
-        			        btSend.PixelTimer = (short)tmp;
+        			        //tmp = (((double)MyIV.range[MyIV.sonarrangeinx].range / (double)MyIV.SONARTILEHEIGHT) / (1450d / 2d)) * 40000000d;
+        			        btSend.PixelTimer = (short) MyIV.range[MyIV.sonarrangeinx].pixeltimer;//(short)tmp;
         			        btSend.GainInit[0] = (short)MyIV.sonargaininit;
         			        int i = 0;
         			        if (MyIV.sonarautogain) {
@@ -359,10 +359,17 @@ public class BoatNav extends Activity {
 					MyIV.rndpixdpt = (MyIV.rndpixdpt * MyIV.range[ri].range) / MyIV.range[ri - 1].range;
 					ri--;
 					MyIV.sonarrangechange = 0;
+				} else if (ri == 0 || ri == 19) {
+					MyIV.sonarrangechange = 0;
 				}
 			}
 		}
-		MyIV.sc.sonar[0] = (byte)(ri);
+		if (MyIV.sonarrangeset >= 0) {
+			MyIV.sc.sonar[0] = (byte)(MyIV.sonarrangeset);
+			MyIV.sonarrangeset = -1;
+		} else {
+			MyIV.sc.sonar[0] = (byte)(ri);
+		}
 		MyIV.sonarrangechange++;
 		// Clear echo
    		i = 1;
@@ -484,16 +491,19 @@ public class BoatNav extends Activity {
 	interval		Update rate (ms)
 	pingadd			Number of pulses to add to initial ping pulses (0 to 127). Used when autoping is on
 	gain			Gain levels for every 32 pixels. Used when auto gain is on
+	nticks			Number of ticks on rane bar
 	scale			Text to draw on range bar
 	*/
 	private void ParseRange(int i) {
 		int j = 0;
+//		double tmp;
 		GetLine();
 		MyIV.range[i].range = Integer.valueOf(GetItem());
 		MyIV.range[i].mindepth = Integer.valueOf(GetItem());
 		MyIV.range[i].interval = Integer.valueOf(GetItem());
-		MyIV.range[i].pixeltimer = Integer.valueOf(GetItem());
 		MyIV.range[i].pingadd = Integer.valueOf(GetItem());
+//        tmp = (((double)MyIV.range[i].range / (double)MyIV.SONARTILEHEIGHT) / (1450d / 2d)) * 40000000d;
+        MyIV.range[i].pixeltimer = (int)((((double)MyIV.range[i].range / (double)MyIV.SONARTILEHEIGHT) / (1450d / 2d)) * 40000000d);
 		while (j<17) {
 			MyIV.range[i].gain[j] =  Integer.valueOf(GetItem());
 			j++;
@@ -1221,8 +1231,8 @@ public class BoatNav extends Activity {
 		sbRange.setProgress(MyIV.sonarrangeinx);
 		sbRange.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
         	public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-        		MyIV.sonarrangeinx = progress;
-        		MyIV.cursonarrange = MyIV.range[MyIV.sonarrangeinx].range;
+        		MyIV.sonarrangeset = progress;
+        		//MyIV.cursonarrange = MyIV.range[MyIV.sonarrangeinx].range;
         	}
 
         	public void onStartTrackingTouch(SeekBar seekBar) {
