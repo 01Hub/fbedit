@@ -162,6 +162,9 @@ public class BoatNav extends Activity {
         								MyIV.sonarrangechange = 0;
         							}
         						}
+        					} else if (MyIV.sonarrangeset >= 0) {
+       							ri = MyIV.sonarrangeset;
+       							MyIV.sonarrangeset = -1;
         					}
         					MyIV.sonarrangechange++;
 
@@ -173,8 +176,7 @@ public class BoatNav extends Activity {
         			        }
         			        btSend.PingTimer = (40000000 / 200000 / 2)-1;
         			        btSend.RangeInx = (byte)ri;
-        			        //tmp = (((double)MyIV.range[MyIV.sonarrangeinx].range / (double)MyIV.SONARTILEHEIGHT) / (1450d / 2d)) * 40000000d;
-        			        btSend.PixelTimer = (short) MyIV.range[MyIV.sonarrangeinx].pixeltimer;//(short)tmp;
+        			        btSend.PixelTimer = (short) MyIV.range[MyIV.sonarrangeinx].pixeltimer;
         			        btSend.GainInit[0] = (short)MyIV.sonargaininit;
         			        int i = 0;
         			        if (MyIV.sonarautogain) {
@@ -363,13 +365,11 @@ public class BoatNav extends Activity {
 					MyIV.sonarrangechange = 0;
 				}
 			}
-		}
-		if (MyIV.sonarrangeset >= 0) {
-			MyIV.sc.sonar[0] = (byte)(MyIV.sonarrangeset);
+		} else if (MyIV.sonarrangeset >= 0) {
+			ri = MyIV.sonarrangeset;
 			MyIV.sonarrangeset = -1;
-		} else {
-			MyIV.sc.sonar[0] = (byte)(ri);
 		}
+		MyIV.sc.sonar[0] = (byte)(ri);
 		MyIV.sonarrangechange++;
 		// Clear echo
    		i = 1;
