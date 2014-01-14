@@ -85,8 +85,6 @@ public class BoatNav extends Activity {
 	private static ArrayAdapter<String> btadapter;
 	private static ArrayList<String> btlistItems = new ArrayList<String>();
 	private static java.text.DateFormat mdateFormat;
-    // Well known SPP UUID
-    //private static final UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
 	private static String btdeviceaddr;
 	private static boolean btautoconnect = false;
     protected BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -137,7 +135,6 @@ public class BoatNav extends Activity {
                 	while (true) {
                 		if (btstart) {
         					Boolean err = false;
-        			        //double tmp;
         			        int ri = MyIV.sonarrangeinx;
         			        
         					if (MyIV.sonarautorange) {
@@ -262,9 +259,28 @@ public class BoatNav extends Activity {
 	}
 
     @Override
+    public void onStop()
+    {
+        super.onStop();
+        //msgbox("Stop","Stop");
+        //SaveConfig();
+    }
+
+    @Override
     public void onDestroy()
     {
         super.onDestroy();
+		if (recording) {
+			recording = false;
+			try {
+				replayfile.close();
+			} catch (IOException e) {
+			}
+		}
+		if (btconnected) {
+			BTDisConnect();
+			btconnected = false;
+		}
         SaveConfig();
     }
 
@@ -496,13 +512,11 @@ public class BoatNav extends Activity {
 	*/
 	private void ParseRange(int i) {
 		int j = 0;
-//		double tmp;
 		GetLine();
 		MyIV.range[i].range = Integer.valueOf(GetItem());
 		MyIV.range[i].mindepth = Integer.valueOf(GetItem());
 		MyIV.range[i].interval = Integer.valueOf(GetItem());
 		MyIV.range[i].pingadd = Integer.valueOf(GetItem());
-//        tmp = (((double)MyIV.range[i].range / (double)MyIV.SONARTILEHEIGHT) / (1450d / 2d)) * 40000000d;
         MyIV.range[i].pixeltimer = (int)((((double)MyIV.range[i].range / (double)MyIV.SONARTILEHEIGHT) / (1450d / 2d)) * 40000000d);
 		while (j<17) {
 			MyIV.range[i].gain[j] =  Integer.valueOf(GetItem());
@@ -1101,12 +1115,16 @@ public class BoatNav extends Activity {
 
 		dialog.setTitle("Sonar Setup");
 
+		final TextView tvInitialPing;
+		tvInitialPing = (TextView) dialog.findViewById(R.id.textView5);
+		tvInitialPing.setText("Initial Ping: " + MyIV.sonarpinginit);
 		SeekBar sbInitialPing;
 		sbInitialPing = (SeekBar) dialog.findViewById(R.id.sbInitialPing);
 		sbInitialPing.setProgress(MyIV.sonarpinginit);
 		sbInitialPing.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
         	public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
         		MyIV.sonarpinginit = progress;
+        		tvInitialPing.setText("Initial Ping: " + MyIV.sonarpinginit);
         	}
 
         	public void onStartTrackingTouch(SeekBar seekBar) {
@@ -1126,12 +1144,16 @@ public class BoatNav extends Activity {
 			}
 		});
 
+		final TextView tvInitialGain;
+		tvInitialGain = (TextView) dialog.findViewById(R.id.textView6);
+		tvInitialGain.setText("Initial Gain: " + MyIV.sonargaininit);
 		SeekBar sbInitialGain;
 		sbInitialGain = (SeekBar) dialog.findViewById(R.id.sbInitialGain);
 		sbInitialGain.setProgress((MyIV.sonargaininit - 600) / 10);
 		sbInitialGain.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
         	public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
         		MyIV.sonargaininit = 600 + progress * 10;
+        		tvInitialGain.setText("Initial Gain: " + MyIV.sonargaininit);
         	}
 
         	public void onStartTrackingTouch(SeekBar seekBar) {
@@ -1151,12 +1173,16 @@ public class BoatNav extends Activity {
 			}
 		});
 
+		final TextView tvNoiseLevel;
+		tvNoiseLevel = (TextView) dialog.findViewById(R.id.textView1);
+		tvNoiseLevel.setText("Noise Level: " + MyIV.sonarnoiselevel);
 		SeekBar sbNoiseLevel;
 		sbNoiseLevel = (SeekBar) dialog.findViewById(R.id.sbNoiseLevel);
 		sbNoiseLevel.setProgress(MyIV.sonarnoiselevel);
 		sbNoiseLevel.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
         	public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
         		MyIV.sonarnoiselevel = progress;
+        		tvNoiseLevel.setText("Noise Level: " + MyIV.sonarnoiselevel);
         	}
 
         	public void onStartTrackingTouch(SeekBar seekBar) {
@@ -1166,12 +1192,16 @@ public class BoatNav extends Activity {
         	}
         });
 
+		final TextView tvNoiseReject;
+		tvNoiseReject = (TextView) dialog.findViewById(R.id.textView2);
+		tvNoiseReject.setText("Noise Reject: " + MyIV.sonarnoisereject);
 		SeekBar sbNoiseReject;
 		sbNoiseReject = (SeekBar) dialog.findViewById(R.id.sbNoiseReject);
 		sbNoiseReject.setProgress(MyIV.sonarnoisereject);
 		sbNoiseReject.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
         	public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
         		MyIV.sonarnoisereject = progress;
+        		tvNoiseReject.setText("Noise Reject: " + MyIV.sonarnoisereject);
         	}
 
         	public void onStartTrackingTouch(SeekBar seekBar) {
@@ -1181,12 +1211,16 @@ public class BoatNav extends Activity {
         	}
         });
 
+		final TextView tvFishDetect;
+		tvFishDetect = (TextView) dialog.findViewById(R.id.textView3);
+		tvFishDetect.setText("Fish Detect: " + MyIV.sonarfishdetect);
 		SeekBar sbFishDetect;
 		sbFishDetect = (SeekBar) dialog.findViewById(R.id.sbFishDetect);
 		sbFishDetect.setProgress(MyIV.sonarfishdetect);
 		sbFishDetect.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
         	public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
         		MyIV.sonarfishdetect = progress;
+        		tvFishDetect.setText("Fish Detect: " + MyIV.sonarfishdetect);
         	}
 
         	public void onStartTrackingTouch(SeekBar seekBar) {
@@ -1226,12 +1260,17 @@ public class BoatNav extends Activity {
 			}
 		});
 
+		final TextView tvRange;
+		tvRange = (TextView) dialog.findViewById(R.id.textView4);
+		//tvRange.setText("Range: " + MyIV.sonarrangeset);
+		tvRange.setText("Range: " + MyIV.range[MyIV.sonarrangeinx].range);
 		SeekBar sbRange;
 		sbRange = (SeekBar) dialog.findViewById(R.id.sbRange);
 		sbRange.setProgress(MyIV.sonarrangeinx);
 		sbRange.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
         	public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
         		MyIV.sonarrangeset = progress;
+        		tvRange.setText("Range: " + MyIV.range[MyIV.sonarrangeset].range);
         		//MyIV.cursonarrange = MyIV.range[MyIV.sonarrangeinx].range;
         	}
 
@@ -1429,7 +1468,6 @@ public class BoatNav extends Activity {
 		});
 
 		Button btnCancel = (Button) dialog.findViewById(R.id.btnCancel);
-		// if button is clicked, close the custom dialog
 		btnCancel.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -1438,7 +1476,6 @@ public class BoatNav extends Activity {
 		});
 
 		Button btnNext = (Button) dialog.findViewById(R.id.btnNext);
-		// if button is clicked, show the next place
 		btnNext.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -1451,7 +1488,6 @@ public class BoatNav extends Activity {
 		});
 
 		Button btnDelete = (Button) dialog.findViewById(R.id.btnDelete);
-		// if button is clicked, delete place and close the custom dialog
 		btnDelete.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {

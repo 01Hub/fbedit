@@ -9,12 +9,16 @@ import android.graphics.Paint;
 import android.graphics.Color;
 import android.graphics.Paint.Style;
 import android.graphics.Rect;
+import android.net.ParseException;
 import android.os.Environment;
 import android.widget.ImageView;
+import android.text.format.DateFormat;
 import android.util.*;
 import android.graphics.Region;
 import java.io.RandomAccessFile;
+import java.sql.Date;
 import java.text.SimpleDateFormat;
+import java.util.TimeZone;
 
 import app.BoatNav.GPSClass;
 import app.BoatNav.RangeClass;
@@ -77,7 +81,7 @@ public class MyIV extends ImageView {
 	private static int trail[] = new int[MAPMAXTRAIL * 3];
 	private static int AirTempArray[] = {537,500,630,450,737,400,865,350,1015,300,1190,250,1390,200,1600,150,1846,105,2090,65,2510,0};
 
-	public static final int MAXSONARBMP = 256;
+	public static final int MAXSONARBMP = 128;
 	public static final int SONARTILEWIDTH = 32;
 	public static final int SONARTILEHEIGHT = 512;
 	public static final int SONARSIGNALGRAHWIDTH = 32;
@@ -1242,11 +1246,13 @@ public class MyIV extends ImageView {
 		}
 
 // Debug
-//		canvas.clipRect(0, 0, scrnwt, scrnht, Region.Op.REPLACE);
-//		paint.setColor(Color.BLACK);
-//		paint.setTextSize(20);
-//		paint.setTextAlign(Paint.Align.LEFT);
-//		canvas.drawText("" + range[sonarrangeinx].pingadd, 10, 145, paint);
+		canvas.clipRect(0, 0, scrnwt, scrnht, Region.Op.REPLACE);
+		paint.setColor(Color.BLACK);
+		paint.setTextSize(20);
+		paint.setTextAlign(Paint.Align.LEFT);
+		int gmtOffset = TimeZone.getDefault().getRawOffset();
+		long now = System.currentTimeMillis() + gmtOffset;
+		canvas.drawText("" + gmtOffset, 10, 145, paint);
 //		canvas.drawText("" + sonarrangeinx, 10, 165, paint);
 //		canvas.drawText(sTextWait, 10, 185, paint);
 //		canvas.drawText(TutorialOnImages.sbtdeviceaddr, 10, 125, paint);
