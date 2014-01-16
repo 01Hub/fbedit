@@ -9,17 +9,13 @@ import android.graphics.Paint;
 import android.graphics.Color;
 import android.graphics.Paint.Style;
 import android.graphics.Rect;
-import android.net.ParseException;
 import android.os.Environment;
 import android.widget.ImageView;
-import android.text.format.DateFormat;
 import android.util.*;
 import android.graphics.Region;
 import java.io.RandomAccessFile;
-import java.sql.Date;
 import java.text.SimpleDateFormat;
 import java.util.TimeZone;
-
 import app.BoatNav.GPSClass;
 import app.BoatNav.RangeClass;
 import app.BoatNav.SonarClass;
@@ -31,7 +27,7 @@ public class MyIV extends ImageView {
 	public static final int MAPMAXZOOM = 5;
 	public static final int MAPTILESIZE = 512;
 	public static final int MAPMAXLATARR = 65;
-	public static final int MAPMAXTRAIL = 4096;
+	public static final int MAPMAXTRAIL = 8192;
 	public static int scrnwt;
 	public static int scrnht;
 	public static int mapwt = 0;
@@ -968,7 +964,14 @@ public class MyIV extends ImageView {
 		paint.setTextAlign(Paint.Align.RIGHT);
 		DrawText(mapwt - 10, 30, 25, String.format("%.1f",(curatemp)) + "C", canvas);
 		// Draw time
-		DrawText(mapwt - 10, scrnht - 15, 10, curtime, canvas);
+		try {
+			sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+		    java.util.Date date = sdf.parse(curtime);
+		    sdf.setTimeZone(TimeZone.getDefault());
+			DrawText(mapwt - 10, scrnht - 15, 15, sdf.format(date), canvas);
+		} catch (java.text.ParseException e) {
+			DrawText(mapwt - 10, scrnht - 15, 10, "ERR", canvas);
+		}
 		// Draw distance
 		paint.setTextAlign(Paint.Align.CENTER);
 		DrawText(mapwt / 2, 15, 15, String.format("%.0f", distance) + "m", canvas);
@@ -1246,13 +1249,10 @@ public class MyIV extends ImageView {
 		}
 
 // Debug
-		canvas.clipRect(0, 0, scrnwt, scrnht, Region.Op.REPLACE);
-		paint.setColor(Color.BLACK);
-		paint.setTextSize(20);
-		paint.setTextAlign(Paint.Align.LEFT);
-		int gmtOffset = TimeZone.getDefault().getRawOffset();
-		long now = System.currentTimeMillis() + gmtOffset;
-		canvas.drawText("" + gmtOffset, 10, 145, paint);
+//		canvas.clipRect(0, 0, scrnwt, scrnht, Region.Op.REPLACE);
+//		paint.setColor(Color.BLACK);
+//		paint.setTextSize(20);
+//		paint.setTextAlign(Paint.Align.LEFT);
 //		canvas.drawText("" + sonarrangeinx, 10, 165, paint);
 //		canvas.drawText(sTextWait, 10, 185, paint);
 //		canvas.drawText(TutorialOnImages.sbtdeviceaddr, 10, 125, paint);
@@ -1262,7 +1262,6 @@ public class MyIV extends ImageView {
 //		canvas.drawText(sText, 10, 145, paint);
 //		sText="Bearing: " + curbearing;
 //		canvas.drawText(sText, 10, 165, paint);
-
 //		sText="Distance " + GPSClass.Distance(66.317270d,14.196690d,66.268048d,13.724513d);
 //		canvas.drawText(sText, 10, 25, paint);
 //		sText="Bearing " + bearing;

@@ -13,12 +13,10 @@ import android.view.SubMenu;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-//import android.text.format.DateFormat;
 import android.util.*;
 import android.app.Dialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-//import android.bluetooth.BluetoothServerSocket;
 import android.bluetooth.BluetoothSocket;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -28,10 +26,8 @@ import android.view.View;
 import android.widget.*;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.SeekBar.OnSeekBarChangeListener;
-
 import java.io.File;
 import android.view.MenuItem;
-//import android.widget.ImageView;
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -43,17 +39,15 @@ import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
-//import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Random;
 import java.util.Set;
+import java.util.TimeZone;
 import java.util.Timer;
 import java.util.TimerTask;
-//import java.util.UUID;
-
 import app.BoatNav.BmpClass;
 import app.BoatNav.MyIV;
 import app.BoatNav.R;
@@ -84,7 +78,6 @@ public class BoatNav extends Activity {
 	private static int soundplaying = 0;
 	private static ArrayAdapter<String> btadapter;
 	private static ArrayList<String> btlistItems = new ArrayList<String>();
-	private static java.text.DateFormat mdateFormat;
 	private static String btdeviceaddr;
 	private static boolean btautoconnect = false;
     protected BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -109,7 +102,6 @@ public class BoatNav extends Activity {
 				MyIV.sc.sonar[i] = 0;
 				i++;
 			}
-			mdateFormat = android.text.format.DateFormat.getDateFormat(getApplicationContext());
 			mGrayBitmap = BitmapFactory.decodeFile(Environment.getExternalStorageDirectory() + File.separator + "Map" + File.separator + "Gray.jpg");
 			mIcons = BitmapFactory.decodeResource(getResources(), R.drawable.cur);
 			MakeTransparent();
@@ -338,6 +330,7 @@ public class BoatNav extends Activity {
 		MyIV.sc.ADCWaterTemp = 1900;
 		MyIV.sc.ADCAirTemp = 1500;
 		Calendar c = Calendar.getInstance();
+		MyIV.sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
 		datetime=MyIV.sdf.format(c.getTime());
 		// 29.10.2013 11:45:04
 		dd = Integer.valueOf(datetime.substring(0, 2));
@@ -1060,12 +1053,16 @@ public class BoatNav extends Activity {
 		dialog.setContentView(R.layout.dialoggpssetup);
     	
 		dialog.setTitle("GPS Setup");
+		final TextView tvTrackSmoothing;
+		tvTrackSmoothing = (TextView) dialog.findViewById(R.id.textView1);
+		tvTrackSmoothing.setText("Track Smoothing: " +  String.format("%.1f",((float)MyIV.tracksmoothing / 10)));
 		SeekBar sbTrackSmoothing;
 		sbTrackSmoothing = (SeekBar) dialog.findViewById(R.id.sbTrackSmoothing);
 		sbTrackSmoothing.setProgress(MyIV.tracksmoothing);
 		sbTrackSmoothing.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
         	public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
         		MyIV.tracksmoothing = progress;
+        		tvTrackSmoothing.setText("Track Smoothing: " +  String.format("%.1f",((float)MyIV.tracksmoothing / 10)));
         	}
 
         	public void onStartTrackingTouch(SeekBar seekBar) {
@@ -1391,7 +1388,6 @@ public class BoatNav extends Activity {
 		}
 
 		Button btnOK = (Button) dialog.findViewById(R.id.btnOK);
-		// if button is clicked, update place and close the custom dialog
 		btnOK.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -1523,7 +1519,7 @@ public class BoatNav extends Activity {
 	public boolean onPrepareOptionsMenu(Menu menu) {
 		MenuItem menuitem = menu.findItem(R.id.item5);
     	SubMenu submenu = menuitem.getSubMenu();
-    	// Remove submenu items
+    	// Remove sub menu items
 		int i=0;
 		while (i<16) {
 			menuitem = submenu.findItem(i);
