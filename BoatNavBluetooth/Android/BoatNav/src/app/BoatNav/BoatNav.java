@@ -262,18 +262,20 @@ public class BoatNav extends Activity {
     public void onDestroy()
     {
         super.onDestroy();
-		if (recording) {
-			recording = false;
-			try {
-				replayfile.close();
-			} catch (IOException e) {
-			}
-		}
-		if (btconnected) {
-			BTDisConnect();
-			btconnected = false;
-		}
         SaveConfig();
+        if (isFinishing()) {
+    		if (recording) {
+    			recording = false;
+    			try {
+    				replayfile.close();
+    			} catch (IOException e) {
+    			}
+    		}
+    		if (btconnected) {
+    			btconnected = BTDisConnect();
+    		}
+        } else { 
+        }
     }
 
     private void SonarClear() {
@@ -831,6 +833,7 @@ public class BoatNav extends Activity {
 
 	private boolean BTConnect() {
     	Boolean err = false;
+    	btconnected = BTDisConnect();
         try {
             // Set up a pointer to the remote node using it's address.
         	mBluetoothDevice = mBluetoothAdapter.getRemoteDevice(btdeviceaddr);
@@ -869,7 +872,7 @@ public class BoatNav extends Activity {
         	err = true;
 		}
         if (err == true) {
-        	BTDisConnect();
+        	btconnected = BTDisConnect();
         }
         return err;
 	}
@@ -925,10 +928,9 @@ public class BoatNav extends Activity {
         btnConnect.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-		    	Boolean err;
+		    	Boolean err = false;
 				if (btconnected) {
-					err = BTDisConnect();
-					btconnected = false;
+					btconnected = BTDisConnect();
 				} else {
 			    	err = BTConnect();
 				}
