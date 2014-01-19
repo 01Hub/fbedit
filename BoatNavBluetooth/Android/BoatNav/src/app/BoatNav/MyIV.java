@@ -1253,6 +1253,7 @@ public class MyIV extends ImageView {
 //		paint.setColor(Color.BLACK);
 //		paint.setTextSize(20);
 //		paint.setTextAlign(Paint.Align.LEFT);
+//		canvas.drawText("" + sonarautogain, 10, 165, paint);
 //		canvas.drawText("" + sonarrangeinx, 10, 165, paint);
 //		canvas.drawText(sTextWait, 10, 185, paint);
 //		canvas.drawText(TutorialOnImages.sbtdeviceaddr, 10, 125, paint);

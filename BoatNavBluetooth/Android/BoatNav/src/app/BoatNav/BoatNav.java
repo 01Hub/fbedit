@@ -133,10 +133,10 @@ public class BoatNav extends Activity {
         						// Check range change
         						if (MyIV.nodepth) {
         							if (MyIV.sonarrangechange > 5) {
-        								ri += MyIV.sonarrangechangedir;
-        								if (ri == 0 || ri == MyIV.MAXSONARRANGE - 1) {
+        								if ((ri == 0 && MyIV.sonarrangechangedir < 0) || (ri == MyIV.MAXSONARRANGE - 1 && MyIV.sonarrangechangedir > 0)) {
         									MyIV.sonarrangechangedir = -MyIV.sonarrangechangedir;
         								}
+        								ri += MyIV.sonarrangechangedir;
         								MyIV.sonarrangechange = 0;
         							}
         						} else if (MyIV.sonarrangechange > 5) {
@@ -168,7 +168,7 @@ public class BoatNav extends Activity {
         			        btSend.PixelTimer = (short) MyIV.range[MyIV.sonarrangeinx].pixeltimer;
         			        btSend.GainInit[0] = (short)MyIV.sonargaininit;
         			        int i = 0;
-        			        if (MyIV.sonarautogain) {
+        			        if (MyIV.sonarautogain == true) {
             			        while (i < 17) {
             			        	btSend.GainInit[i + 1] = (short)MyIV.range[ri].gain[i];
             			        	i++;
@@ -1164,7 +1164,7 @@ public class BoatNav extends Activity {
 
 		CheckBox chkAutoGain;
 		chkAutoGain = (CheckBox) dialog.findViewById(R.id.chkAutoGain);
-		chkAutoGain.setChecked(MyIV.sonarautoping);
+		chkAutoGain.setChecked(MyIV.sonarautogain);
 		chkAutoGain.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
