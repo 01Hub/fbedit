@@ -2,8 +2,10 @@ package app.BoatNav;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
+import android.media.SoundPool;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.Menu;
@@ -80,7 +82,7 @@ public class BoatNav extends Activity {
 	private static ArrayList<String> btlistItems = new ArrayList<String>();
 	private static String btdeviceaddr;
 	private static boolean btautoconnect = false;
-    protected BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+    protected BluetoothAdapter mBluetoothAdapter = null;//BluetoothAdapter.getDefaultAdapter();
     BluetoothDevice mBluetoothDevice = null;
     protected BluetoothSocket mBluetoothSocket = null;
     private OutputStream mOutputStream = null;
@@ -111,7 +113,7 @@ public class BoatNav extends Activity {
 			MyIV.sonarColor = 0xFF000000 | 108 << 16 | 189 << 8 | 244;
 			MyIV.sonarsignalbmp = Bitmap.createBitmap(MyIV.SONARSIGNALGRAHWIDTH, MyIV.SONARTILEHEIGHT, Bitmap.Config.ARGB_8888);
 			MyIV.sonarsignalbmp.eraseColor(MyIV.sonarColor);
-			SonarClear();
+			MyIV.SonarClear();
 			if (btautoconnect) {
 				BTConnect();
 			}
@@ -228,7 +230,7 @@ public class BoatNav extends Activity {
 		               				}
 		               				recording = false;
 		               			}
-		        				SonarClear();
+		               			MyIV.SonarClear();
         			        	MyIV.ClearTrail();
         			        	MyIV.mode = 1;
                 			}
@@ -276,31 +278,6 @@ public class BoatNav extends Activity {
     		}
         } else { 
         }
-    }
-
-    private void SonarClear() {
-		int i=0;
-		while (i < MyIV.MAXSONARBMP) {
-			if (MyIV.sonarbmp[i] != null) {
-				MyIV.sonarbmp[i].recycle();
-				MyIV.sonarbmp[i] = null;
-			}
-			MyIV.sonarbmp[i] =  Bitmap.createBitmap(MyIV.SONARTILEWIDTH, MyIV.SONARTILEHEIGHT, Bitmap.Config.ARGB_8888);
-			MyIV.sonarbmp[i].eraseColor(MyIV.sonarColor);
-			MyIV.sonarbmpwidth[i] = MyIV.SONARTILEWIDTH;
-			MyIV.sonarbmprange[i] = 0;
-			MyIV.sonarbmplat[i] = 0;
-			MyIV.sonarbmplon[i] = 0;
-			i++;
-		}
-		i = 0;
-		while (i < MyIV.MAXFISH) {
-			MyIV.fisharray[0][i] = 0;
-			MyIV.fisharray[1][i] = 0;
-			MyIV.fisharray[2][i] = 0;
-			MyIV.fisharray[3][i] = 0;
-			i++;
-		}
     }
 
     private void TimerMethod()
@@ -831,11 +808,25 @@ public class BoatNav extends Activity {
 		return false;
 	}
 
+	@Override 
+	 protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (requestCode == REQUEST_ENABLE_BT) {
+			if (resultCode == RESULT_OK){
+				Toast.makeText(getApplicationContext(), "BlueTooth is now Enabled", Toast.LENGTH_LONG).show();
+			}
+			if (resultCode == RESULT_CANCELED) {
+				Toast.makeText(getApplicationContext(), "Error occured while enabling.Leaving the application..", Toast.LENGTH_LONG).show();
+				///finish();
+			}
+		 }
+	 }//onActivityResult
+
 	private boolean BTConnect() {
     	Boolean err = false;
     	btconnected = BTDisConnect();
         try {
-            // Set up a pointer to the remote node using it's address.
+        	BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        	// Set up a pointer to the remote node using it's address.
         	mBluetoothDevice = mBluetoothAdapter.getRemoteDevice(btdeviceaddr);
         	Method m = mBluetoothDevice.getClass().getMethod("createInsecureRfcommSocket", new Class[] { int.class }); 
         	mBluetoothSocket = (BluetoothSocket) m.invoke(mBluetoothDevice,Integer.valueOf(1));
@@ -852,7 +843,7 @@ public class BoatNav extends Activity {
 		            try {
 		            	mInputStream = mBluetoothSocket.getInputStream();
 		            	// Done, set the mode
-						SonarClear();
+						MyIV.SonarClear();
 	                	MyIV.mode = 0;
 	                	btconnected = true;
 		            } catch (IOException e) {
@@ -883,6 +874,7 @@ public class BoatNav extends Activity {
  	   dialog.setContentView(R.layout.dialogbluetooth);
  	   dialog.setTitle("Bluetooth");
 
+ 	   	BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 		ListView lv = (ListView) dialog.findViewById(R.id.lvPaired);
 
 	    btadapter=new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, btlistItems);
@@ -997,7 +989,7 @@ public class BoatNav extends Activity {
                 	replayfile = new RandomAccessFile(FileName,"r");
                 	// Clear trail and distance
                 	MyIV.ClearTrail();
-    				SonarClear();
+                	MyIV.SonarClear();
                 	// Set replay mode
                 	MyIV.mode = 2;
     				dialog.dismiss();
@@ -1294,7 +1286,7 @@ public class BoatNav extends Activity {
 		btnClear.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				SonarClear();
+				MyIV.SonarClear();
 			}
 		});
 
@@ -1811,15 +1803,21 @@ public class BoatNav extends Activity {
 
 	private void playFishAlarm() {
 		soundplaying = 10;
-	    MediaPlayer mp = MediaPlayer.create(this, R.raw.fish);
-	    mp.start();
-	    mp.setOnCompletionListener(new OnCompletionListener() {
-	        @Override
-	        public void onCompletion(MediaPlayer mp) {
-	            mp.release();
-				soundplaying = 0;
-	        }
-	    });
+		SoundPool sp = new SoundPool(5, AudioManager.STREAM_MUSIC, 0);
+		int iTmp = sp.load(getBaseContext(), R.raw.fish, 1);
+		sp.play(iTmp, 1, 1, 0, 0, 1);
+		MediaPlayer mPlayer = MediaPlayer.create(getBaseContext(), R.raw.fish);
+		//mPlayer.prepare();
+		mPlayer.start();
+//	    MediaPlayer mp = MediaPlayer.create(this, R.raw.fish);
+//	    mp.start();
+//	    mp.setOnCompletionListener(new OnCompletionListener() {
+//	        @Override
+//	        public void onCompletion(MediaPlayer mp) {
+//	            mp.release();
+//				soundplaying = 0;
+//	        }
+//	    });
 	}
 
 	public void msgbox(String title,String message) {

@@ -77,7 +77,7 @@ public class MyIV extends ImageView {
 	private static int trail[] = new int[MAPMAXTRAIL * 3];
 	private static int AirTempArray[] = {537,500,630,450,737,400,865,350,1015,300,1190,250,1390,200,1600,150,1846,105,2090,65,2510,0};
 
-	public static final int MAXSONARBMP = 128;
+	public static final int MAXSONARBMP = 150;
 	public static final int SONARTILEWIDTH = 32;
 	public static final int SONARTILEHEIGHT = 512;
 	public static final int SONARSIGNALGRAHWIDTH = 32;
@@ -299,6 +299,31 @@ public class MyIV extends ImageView {
 		}
 	}
 
+	public static void SonarClear() {
+		int i=0;
+		while (i < MyIV.MAXSONARBMP) {
+			if (MyIV.sonarbmp[i] != null) {
+				MyIV.sonarbmp[i].recycle();
+				MyIV.sonarbmp[i] = null;
+			}
+			MyIV.sonarbmp[i] =  Bitmap.createBitmap(MyIV.SONARTILEWIDTH, MyIV.SONARTILEHEIGHT, Bitmap.Config.ARGB_8888);
+			MyIV.sonarbmp[i].eraseColor(MyIV.sonarColor);
+			MyIV.sonarbmpwidth[i] = MyIV.SONARTILEWIDTH;
+			MyIV.sonarbmprange[i] = 0;
+			MyIV.sonarbmplat[i] = 0;
+			MyIV.sonarbmplon[i] = 0;
+			i++;
+		}
+		i = 0;
+		while (i < MyIV.MAXFISH) {
+			MyIV.fisharray[0][i] = 0;
+			MyIV.fisharray[1][i] = 0;
+			MyIV.fisharray[2][i] = 0;
+			MyIV.fisharray[3][i] = 0;
+			i++;
+		}
+    }
+
 	private static void ScrollFish() {
 		int inx = 0;
 		while (inx < MAXFISH) {
@@ -503,7 +528,10 @@ public class MyIV extends ImageView {
 	    bmparray = new int[SONARTILEWIDTH*SONARTILEHEIGHT];
 	    if (sonarbmpwidth[sonarbmpinx] == SONARTILEWIDTH || cursonarrange != sonarbmprange[sonarbmpinx]) {
 	    	sonarbmpinx++;
-	    	sonarbmpinx &= MAXSONARBMP-1;
+	    	if (sonarbmpinx == MAXSONARBMP) {
+	    		sonarbmpinx = 0;
+	    	}
+	    	//sonarbmpinx &= MAXSONARBMP-1;
 	    	sonarbmpwidth[sonarbmpinx] = 0;
 	    	sonarbmprange[sonarbmpinx] = cursonarrange;
 	    }
@@ -1063,7 +1091,10 @@ public class MyIV extends ImageView {
 			    }
 	        }
 			i--;
-			i &= MAXSONARBMP - 1;
+			if (i < 0) {
+				i = MAXSONARBMP - 1;
+			}
+			//i &= MAXSONARBMP - 1;
 			if (i == sonarbmpinx || r < mapwt) {
 				break;
 			}
