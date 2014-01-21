@@ -92,6 +92,7 @@ public class BoatNav extends Activity {
     private static byte[] btreadbuffer = new byte[MyIV.SONARARRAYSIZE];
     private static boolean btstart = false;
     public static boolean btconnected = false;
+    public static String btlogg = "";
 
     @Override
 	public void onCreate(Bundle icicle) {
@@ -324,6 +325,7 @@ public class BoatNav extends Activity {
    		MyIV.sc.iLat = 66317270;
 		MyIV.sc.iSpeed = 0;
 		MyIV.sc.iBear = 0;
+		MyIV.sc.fixquality = 0;
 
 		if (MyIV.sonarrangeinx >= MyIV.MAXSONARRANGE) {
 			MyIV.sonarrangeinx = MyIV.MAXSONARRANGE - 1;
@@ -812,52 +814,55 @@ public class BoatNav extends Activity {
 	 protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (requestCode == REQUEST_ENABLE_BT) {
 			if (resultCode == RESULT_OK){
-				Toast.makeText(getApplicationContext(), "BlueTooth is now Enabled", Toast.LENGTH_LONG).show();
+				Toast.makeText(getApplicationContext(), "BlueTooth is now enabled", Toast.LENGTH_LONG).show();
+            	ShowBluetoothDialog();
 			}
 			if (resultCode == RESULT_CANCELED) {
-				Toast.makeText(getApplicationContext(), "Error occured while enabling.Leaving the application..", Toast.LENGTH_LONG).show();
-				///finish();
+				Toast.makeText(getApplicationContext(), "Error occured while enabling BlueTooth.", Toast.LENGTH_LONG).show();
 			}
 		 }
-	 }//onActivityResult
+	 }
 
 	private boolean BTConnect() {
     	Boolean err = false;
     	btconnected = BTDisConnect();
         try {
         	BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        	// Set up a pointer to the remote node using it's address.
-        	mBluetoothDevice = mBluetoothAdapter.getRemoteDevice(btdeviceaddr);
-        	Method m = mBluetoothDevice.getClass().getMethod("createInsecureRfcommSocket", new Class[] { int.class }); 
-        	mBluetoothSocket = (BluetoothSocket) m.invoke(mBluetoothDevice,Integer.valueOf(1));
-        	
-            // Discovery is resource intensive.  Make sure it isn't going on
-            // when you attempt to connect and pass your message.
-            mBluetoothAdapter.cancelDiscovery();
-            // Establish the connection.  This will block until it connects.
-            try {
-            	mBluetoothSocket.connect();
-	            // Create data streams so we can talk to server.
-	            try {
-	            	mOutputStream = mBluetoothSocket.getOutputStream();
-		            try {
-		            	mInputStream = mBluetoothSocket.getInputStream();
-		            	// Done, set the mode
-						MyIV.SonarClear();
-	                	MyIV.mode = 0;
-	                	btconnected = true;
-		            } catch (IOException e) {
-			        	msgbox("BT", "getInputStream " + e.getMessage());
-			        	err = true;
-		            }
-	            } catch (IOException e) {
-		        	msgbox("BT", "getOutputStream " + e.getMessage());
-		        	err = true;
-	            }
-            } catch (IOException e) {
-	        	msgbox("BT", "connect " + e.getMessage());
+        	if (mBluetoothAdapter == null) {
 	        	err = true;
-            }
+        	} else {
+            	// Set up a pointer to the remote node using it's address.
+            	mBluetoothDevice = mBluetoothAdapter.getRemoteDevice(btdeviceaddr);
+            	Method m = mBluetoothDevice.getClass().getMethod("createInsecureRfcommSocket", new Class[] { int.class }); 
+            	mBluetoothSocket = (BluetoothSocket) m.invoke(mBluetoothDevice,Integer.valueOf(1));
+                // Discovery is resource intensive.  Make sure it isn't going on
+                // when you attempt to connect and pass your message.
+                mBluetoothAdapter.cancelDiscovery();
+                // Establish the connection.  This will block until it connects.
+                try {
+                	mBluetoothSocket.connect();
+    	            // Create data streams so we can talk to server.
+    	            try {
+    	            	mOutputStream = mBluetoothSocket.getOutputStream();
+    		            try {
+    		            	mInputStream = mBluetoothSocket.getInputStream();
+    		            	// Done, set the mode
+    						MyIV.SonarClear();
+    	                	MyIV.mode = 0;
+    	                	btconnected = true;
+    		            } catch (IOException e) {
+    			        	msgbox("BT", "getInputStream " + e.getMessage());
+    			        	err = true;
+    		            }
+    	            } catch (IOException e) {
+    		        	msgbox("BT", "getOutputStream " + e.getMessage());
+    		        	err = true;
+    	            }
+                } catch (IOException e) {
+    	        	msgbox("BT", "connect " + e.getMessage());
+    	        	err = true;
+                }
+        	}
 		} catch (Exception e) {
         	msgbox("BT", "getRemoteDevice " + e.getMessage());
         	err = true;
@@ -885,6 +890,7 @@ public class BoatNav extends Activity {
 		if (mBluetoothAdapter != null) {
 			if (!mBluetoothAdapter.isEnabled()) {
 				startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+				dialog.dismiss();
 			} else {
 	         	btlistItems.add(mBluetoothAdapter.getName() + "\n" + mBluetoothAdapter.getAddress());
 				Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
@@ -1015,11 +1021,11 @@ public class BoatNav extends Activity {
 					} catch (IOException e) {
 					}
 				} else {
-					SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmm");
+					SimpleDateFormat msdf = new SimpleDateFormat("yyyyMMdd_HHmm");
 					Calendar c = Calendar.getInstance();
-					String s = "Sonar" + sdf.format(c.getTime()) + ".snr";
+					String s = "Sonar" + msdf.format(c.getTime()) + ".snr";
             		String FileName = Environment.getExternalStorageDirectory() + File.separator + "Map" + File.separator + "Sonar" + File.separator + s;
-            		msgbox("Replay",FileName);
+            		msgbox("Recording",FileName);
                     try {
 						replayfile = new RandomAccessFile(FileName, "rw");
 						recording = true;
@@ -1253,7 +1259,6 @@ public class BoatNav extends Activity {
 
 		final TextView tvRange;
 		tvRange = (TextView) dialog.findViewById(R.id.textView4);
-		//tvRange.setText("Range: " + MyIV.sonarrangeset);
 		tvRange.setText("Range: " + MyIV.range[MyIV.sonarrangeinx].range);
 		SeekBar sbRange;
 		sbRange = (SeekBar) dialog.findViewById(R.id.sbRange);
@@ -1262,7 +1267,6 @@ public class BoatNav extends Activity {
         	public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
         		MyIV.sonarrangeset = progress;
         		tvRange.setText("Range: " + MyIV.range[MyIV.sonarrangeset].range);
-        		//MyIV.cursonarrange = MyIV.range[MyIV.sonarrangeinx].range;
         	}
 
         	public void onStartTrackingTouch(SeekBar seekBar) {
@@ -1807,7 +1811,6 @@ public class BoatNav extends Activity {
 		int iTmp = sp.load(getBaseContext(), R.raw.fish, 1);
 		sp.play(iTmp, 1, 1, 0, 0, 1);
 		MediaPlayer mPlayer = MediaPlayer.create(getBaseContext(), R.raw.fish);
-		//mPlayer.prepare();
 		mPlayer.start();
 //	    MediaPlayer mp = MediaPlayer.create(this, R.raw.fish);
 //	    mp.start();
