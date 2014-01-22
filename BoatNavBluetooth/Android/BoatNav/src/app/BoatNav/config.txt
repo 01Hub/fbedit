@@ -16,6 +16,8 @@
 #map
 // viewmode,land,zoom,locktogps,showtrail,tracksmoothing
 2,1,5,1,1,8
+#airtemp
+537,500,630,450,737,400,865,350,1015,300,1190,250,1390,200,1600,150,1846,105,2090,65,2510,0
 #sonar
 // sonarpinginit,sonarautoping,sonargaininit,sonarautogain,sonarnoiselevel,sonarnoisereject,sonarfishdetect,sonarfishsound,sonarfishdepth,sonarfishicon,sonarautorange
 16,1,750,1,4,2,1,0,1,1,1

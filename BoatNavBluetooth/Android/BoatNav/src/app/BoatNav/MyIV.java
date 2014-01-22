@@ -75,8 +75,7 @@ public class MyIV extends ImageView {
 	private static int trailhead = 0;
 	private static int trailtail = 0;
 	private static int trail[] = new int[MAPMAXTRAIL * 3];
-	private static int AirTempArray[] = {537,500,630,450,737,400,865,350,1015,300,1190,250,1390,200,1600,150,1846,105,2090,65,2510,0};
-
+	public static int AirTempArray[] = new int[22];
 	public static final int MAXSONARBMP = 130;
 	public static final int SONARTILEWIDTH = 32;
 	public static final int SONARTILEHEIGHT = 512;
@@ -1285,7 +1284,8 @@ public class MyIV extends ImageView {
 		paint.setTextSize(20);
 		paint.setTextAlign(Paint.Align.LEFT);
 		canvas.drawText(BoatNav.btlogg, 10, 165, paint);
-//		canvas.drawText("" + sonarrangeinx, 10, 165, paint);
+		canvas.drawText("" + BoatNav.ms, 10, 185, paint);
+		canvas.drawText("" + range[sonarrangeinx].interval, 10, 205, paint);
 //		canvas.drawText(sTextWait, 10, 185, paint);
 //		canvas.drawText(TutorialOnImages.sbtdeviceaddr, 10, 125, paint);
 //		sText="Latitude: " + String.format("%.6f",curlat);

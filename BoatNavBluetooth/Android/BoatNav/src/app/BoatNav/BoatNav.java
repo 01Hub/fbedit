@@ -8,6 +8,7 @@ import android.media.MediaPlayer.OnCompletionListener;
 import android.media.SoundPool;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.SystemClock;
 import android.view.Menu;
 import android.view.MotionEvent;
 import android.view.MenuInflater;
@@ -63,11 +64,11 @@ public class BoatNav extends Activity {
 	private static boolean rginuse = false;
 	
 	public static String config[][] = new String[50][2];
-	public static int placeState[] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-	public static String placeTitle[] = {"","","","","","","","","","","","","","","",""};
-	public static int placeIcon[] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-	public static double placeLat[] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-	public static double placeLon[] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+	public static int placeState[] = new int[16];
+	public static String placeTitle[] = new String[16];
+	public static int placeIcon[] = new int[16];
+	public static double placeLat[] = new double[16];
+	public static double placeLon[] = new double[16];
 	private static int mplaceinx = 0;
 	private static String buffer;
 	private static String line;
@@ -82,7 +83,7 @@ public class BoatNav extends Activity {
 	private static ArrayList<String> btlistItems = new ArrayList<String>();
 	private static String btdeviceaddr;
 	private static boolean btautoconnect = false;
-    protected BluetoothAdapter mBluetoothAdapter = null;//BluetoothAdapter.getDefaultAdapter();
+    protected BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
     BluetoothDevice mBluetoothDevice = null;
     protected BluetoothSocket mBluetoothSocket = null;
     private OutputStream mOutputStream = null;
@@ -93,10 +94,12 @@ public class BoatNav extends Activity {
     private static boolean btstart = false;
     public static boolean btconnected = false;
     public static String btlogg = "";
+    public static long ms;
 
     @Override
 	public void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
+        btlogg += "onCreate ";
 		int i;
 
 		if (mGrayBitmap == null) {
@@ -132,6 +135,7 @@ public class BoatNav extends Activity {
         					Boolean err = false;
         			        int ri = MyIV.sonarrangeinx;
         			        
+			        		ms = SystemClock.uptimeMillis();
         					if (MyIV.sonarautorange) {
         						// Check range change
         						if (MyIV.nodepth) {
@@ -214,6 +218,13 @@ public class BoatNav extends Activity {
         				               			MyIV.replayarray[bytes] = btreadbuffer[bytes];
         				               			bytes++;
         				               		}
+        				            		ms = MyIV.range[MyIV.sonarrangeinx].interval - (SystemClock.uptimeMillis() - ms);
+        				            		if (ms > 0) {
+            				            		try {
+            				            			Thread.sleep(ms, 0);
+            				            		} catch (InterruptedException e) {
+            				            		}
+        				            		}
         			               		}
         			               	}
         			            } catch (IOException e) {
@@ -238,7 +249,7 @@ public class BoatNav extends Activity {
                 			btstart = false;
                 		} else {
                     		try {
-    							Thread.sleep(50);
+    							Thread.sleep(10);
     						} catch (InterruptedException e) {
     						}
                 		}
@@ -257,14 +268,37 @@ public class BoatNav extends Activity {
     public void onStop()
     {
         super.onStop();
+        btlogg += "onStop ";
         //msgbox("Stop","Stop");
         //SaveConfig();
+    }
+
+    @Override
+    public void onPause()
+    {
+        super.onPause();
+        btlogg += "onPause ";
+    }
+
+    @Override
+    public void onRestart()
+    {
+        super.onRestart();
+        btlogg += "onRestart ";
+    }
+
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+        btlogg += "onResume ";
     }
 
     @Override
     public void onDestroy()
     {
         super.onDestroy();
+        btlogg += "onDestroy ";
         SaveConfig();
         if (isFinishing()) {
     		if (recording) {
@@ -306,6 +340,7 @@ public class BoatNav extends Activity {
 	private void DemoMode() {
 		int i, j, x, pix, dd, mm, yy, hh, mn, ss, ri;
 		String datetime;
+		ms = SystemClock.uptimeMillis();
 		MyIV.sc.ADCBattery = 2234;
 		MyIV.sc.ADCWaterTemp = 1900;
 		MyIV.sc.ADCAirTemp = 1500;
@@ -447,6 +482,7 @@ public class BoatNav extends Activity {
 		}
 		MyIV.SonarShow();
 		mIV.invalidate();
+		ms = MyIV.range[MyIV.sonarrangeinx].interval - (SystemClock.uptimeMillis() - ms);
 	}
 
 	private void ReplayMode() {
@@ -659,6 +695,13 @@ public class BoatNav extends Activity {
 			ParseRange(i);
 			i++;
 		}
+		FindConfig("#airtemp");
+		GetLine();
+		i = 0;
+		while (line.length() > 0) {
+			MyIV.AirTempArray[i] = Integer.valueOf(GetItem());
+			i++;
+		}
 
 //    	Log.e("MYTAG", buffer);
 	}
@@ -741,6 +784,15 @@ public class BoatNav extends Activity {
 	private void GetPlaces() {
 		int i = 0;
 		String item;
+		while (i < 16) {
+			placeState[i] = 0;
+			placeTitle[i] = "";
+			placeIcon[i] = 0;
+			placeLat[i] = 0;
+			placeLon[i] = 0;
+			i++;
+		}
+		i = 0;
 		buffer = readFileAsString("places.txt");
 		while (i < 16 && buffer.length() != 0) {
 			GetLine();
@@ -827,41 +879,46 @@ public class BoatNav extends Activity {
     	Boolean err = false;
     	btconnected = BTDisConnect();
         try {
-        	BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         	if (mBluetoothAdapter == null) {
 	        	err = true;
+				Toast.makeText(getApplicationContext(), "Error occured no BT adapter found.", Toast.LENGTH_LONG).show();
         	} else {
-            	// Set up a pointer to the remote node using it's address.
-            	mBluetoothDevice = mBluetoothAdapter.getRemoteDevice(btdeviceaddr);
-            	Method m = mBluetoothDevice.getClass().getMethod("createInsecureRfcommSocket", new Class[] { int.class }); 
-            	mBluetoothSocket = (BluetoothSocket) m.invoke(mBluetoothDevice,Integer.valueOf(1));
-                // Discovery is resource intensive.  Make sure it isn't going on
-                // when you attempt to connect and pass your message.
-                mBluetoothAdapter.cancelDiscovery();
-                // Establish the connection.  This will block until it connects.
-                try {
-                	mBluetoothSocket.connect();
-    	            // Create data streams so we can talk to server.
-    	            try {
-    	            	mOutputStream = mBluetoothSocket.getOutputStream();
-    		            try {
-    		            	mInputStream = mBluetoothSocket.getInputStream();
-    		            	// Done, set the mode
-    						MyIV.SonarClear();
-    	                	MyIV.mode = 0;
-    	                	btconnected = true;
-    		            } catch (IOException e) {
-    			        	msgbox("BT", "getInputStream " + e.getMessage());
-    			        	err = true;
-    		            }
-    	            } catch (IOException e) {
-    		        	msgbox("BT", "getOutputStream " + e.getMessage());
-    		        	err = true;
-    	            }
-                } catch (IOException e) {
-    	        	msgbox("BT", "connect " + e.getMessage());
-    	        	err = true;
-                }
+    			Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+    			if (!mBluetoothAdapter.isEnabled()) {
+    				startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+    			} else {
+                	// Set up a pointer to the remote node using it's address.
+                	mBluetoothDevice = mBluetoothAdapter.getRemoteDevice(btdeviceaddr);
+                	Method m = mBluetoothDevice.getClass().getMethod("createInsecureRfcommSocket", new Class[] { int.class }); 
+                	mBluetoothSocket = (BluetoothSocket) m.invoke(mBluetoothDevice,Integer.valueOf(1));
+                    // Discovery is resource intensive.  Make sure it isn't going on
+                    // when you attempt to connect and pass your message.
+                    mBluetoothAdapter.cancelDiscovery();
+                    // Establish the connection.  This will block until it connects.
+                    try {
+                    	mBluetoothSocket.connect();
+        	            // Create data streams so we can talk to server.
+        	            try {
+        	            	mOutputStream = mBluetoothSocket.getOutputStream();
+        		            try {
+        		            	mInputStream = mBluetoothSocket.getInputStream();
+        		            	// Done, set the mode
+        						MyIV.SonarClear();
+        	                	MyIV.mode = 0;
+        	                	btconnected = true;
+        		            } catch (IOException e) {
+        			        	msgbox("BT", "getInputStream " + e.getMessage());
+        			        	err = true;
+        		            }
+        	            } catch (IOException e) {
+        		        	msgbox("BT", "getOutputStream " + e.getMessage());
+        		        	err = true;
+        	            }
+                    } catch (IOException e) {
+        	        	msgbox("BT", "connect " + e.getMessage());
+        	        	err = true;
+                    }
+    			}
         	}
 		} catch (Exception e) {
         	msgbox("BT", "getRemoteDevice " + e.getMessage());
@@ -879,36 +936,12 @@ public class BoatNav extends Activity {
  	   dialog.setContentView(R.layout.dialogbluetooth);
  	   dialog.setTitle("Bluetooth");
 
- 	   	BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 		ListView lv = (ListView) dialog.findViewById(R.id.lvPaired);
 
 	    btadapter=new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, btlistItems);
 	    btadapter.clear();
         lv.setAdapter(btadapter);
         lv.layout(0, 0, 400, 300);
-		Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-		if (mBluetoothAdapter != null) {
-			if (!mBluetoothAdapter.isEnabled()) {
-				startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
-				dialog.dismiss();
-			} else {
-	         	btlistItems.add(mBluetoothAdapter.getName() + "\n" + mBluetoothAdapter.getAddress());
-				Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
-				// If there are paired devices
-				if (pairedDevices.size() > 0) {
-					// Loop through paired devices
-					for (BluetoothDevice device : pairedDevices) {
-						// Add the name and address to the ListView
-			         	btlistItems.add(device.getName() + "\n" + device.getAddress());
-					}
-				}
-		        btadapter.notifyDataSetChanged();
-			}
-		} else {
-         	btlistItems.add("No bluetooth adapter found");
-	        btadapter.notifyDataSetChanged();
-		}
-
 		CheckBox chkAutoConnect;
 		chkAutoConnect = (CheckBox) dialog.findViewById(R.id.chkAutoConnect);
 		chkAutoConnect.setChecked(btautoconnect);
@@ -950,7 +983,32 @@ public class BoatNav extends Activity {
 			}
 		});
 
-		dialog.show();
+		if (mBluetoothAdapter != null) {
+			Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+			if (!mBluetoothAdapter.isEnabled()) {
+				startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+				dialog.dismiss();
+			} else {
+	         	btlistItems.add(mBluetoothAdapter.getName() + "\n" + mBluetoothAdapter.getAddress());
+				Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
+				// If there are paired devices
+				if (pairedDevices.size() > 0) {
+					// Loop through paired devices
+					for (BluetoothDevice device : pairedDevices) {
+						// Add the name and address to the ListView
+			         	btlistItems.add(device.getName() + "\n" + device.getAddress());
+					}
+				}
+		        btadapter.notifyDataSetChanged();
+				dialog.show();
+			}
+		} else {
+         	btlistItems.add("No bluetooth adapter found");
+	        btadapter.notifyDataSetChanged();
+	        btnConnect.setVisibility(View.INVISIBLE);
+			dialog.show();
+		}
+
 	}
 
 	private void ShowReplayDialog() {
