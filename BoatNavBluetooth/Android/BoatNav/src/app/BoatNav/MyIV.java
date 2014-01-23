@@ -1,6 +1,7 @@
 package app.BoatNav;
 
 import java.io.File;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -76,7 +77,7 @@ public class MyIV extends ImageView {
 	private static int trailtail = 0;
 	private static int trail[] = new int[MAPMAXTRAIL * 3];
 	public static int AirTempArray[] = new int[22];
-	public static final int MAXSONARBMP = 130;
+	public static final int MAXSONARBMP = 250;
 	public static final int SONARTILEWIDTH = 32;
 	public static final int SONARTILEHEIGHT = 512;
 	public static final int SONARSIGNALGRAHWIDTH = 32;
@@ -903,17 +904,21 @@ public class MyIV extends ImageView {
 		while (inx < MAXFISH) {
 			if (fisharray[0][inx] != 0) {
 				x = scrnwt - SONARRANGEBARWIDTH - fisharray[1][inx] + sonarofs;
-				fishdepth = (float)((float)fisharray[2][inx] / 512f * (float)range[fisharray[3][inx]].range);
-				y = (int)((fishdepth / (float)cursonarrange) * (float)scrnht);
-				// Draw fish icon
-				if (sonarfishicon) {
-					canvas.drawBitmap(BoatNav.bmp[MAPMAXBMP + 16 + 8 + fisharray[0][inx]].bm, x - 8, y - 8, null);
-					y -= 10;
-				}
-				if (sonarfishdepth) {
-					paint.setTextAlign(Paint.Align.CENTER);
-					DrawText(x, y, 10, String.format("%.0f",fishdepth), canvas);
-				}
+		    	if (x > mapwt -10) {
+					fishdepth = (float)((float)fisharray[2][inx] / 512f * (float)range[fisharray[3][inx]].range);
+					y = (int)((fishdepth / (float)cursonarrange) * (float)scrnht);
+			    	if (y < scrnht + 10) {
+						// Draw fish icon
+						if (sonarfishicon) {
+							canvas.drawBitmap(BoatNav.bmp[MAPMAXBMP + 16 + 8 + fisharray[0][inx]].bm, x - 8, y - 8, null);
+							y -= 10;
+						}
+						if (sonarfishdepth) {
+							paint.setTextAlign(Paint.Align.CENTER);
+							DrawText(x, y, 10, String.format("%.0f",fishdepth), canvas);
+						}
+			    	}
+		    	}
 			}
 			inx++;
 		}
@@ -1093,7 +1098,6 @@ public class MyIV extends ImageView {
 			if (i < 0) {
 				i = MAXSONARBMP - 1;
 			}
-			//i &= MAXSONARBMP - 1;
 			if (i == sonarbmpinx || r < mapwt) {
 				break;
 			}
@@ -1279,13 +1283,12 @@ public class MyIV extends ImageView {
 		}
 
 // Debug
-		canvas.clipRect(0, 0, scrnwt, scrnht, Region.Op.REPLACE);
-		paint.setColor(Color.BLACK);
-		paint.setTextSize(20);
-		paint.setTextAlign(Paint.Align.LEFT);
-		canvas.drawText(BoatNav.btlogg, 10, 165, paint);
-		canvas.drawText("" + BoatNav.ms, 10, 185, paint);
-		canvas.drawText("" + range[sonarrangeinx].interval, 10, 205, paint);
+//		canvas.clipRect(0, 0, scrnwt, scrnht, Region.Op.REPLACE);
+//		paint.setColor(Color.BLACK);
+//		paint.setTextSize(20);
+//		paint.setTextAlign(Paint.Align.LEFT);
+//		canvas.drawText("Total mem: " + BoatNav.mtot / 1024 + "Kb", 10, 165, paint);
+//		canvas.drawText("Free mem:  " + BoatNav.mfree / 1024 + "Kb", 10, 185, paint);
 //		canvas.drawText(sTextWait, 10, 185, paint);
 //		canvas.drawText(TutorialOnImages.sbtdeviceaddr, 10, 125, paint);
 //		sText="Latitude: " + String.format("%.6f",curlat);

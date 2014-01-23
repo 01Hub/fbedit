@@ -16,14 +16,14 @@ public class GPSClass {
 	public static double Distance(double lata, double lona, double latb, double lonb) {
 		double dist;
 		dist = Math.acos(Math.sin(Math.toRadians(lata)) * Math.sin(Math.toRadians(latb)) + Math.cos(Math.toRadians(lata)) * Math.cos(Math.toRadians(latb)) * Math.cos(Math.toRadians(lonb-lona)));
-		if (dist < 0) {
-			dist += Math.PI;
-		}
 		if (Double.isNaN(dist)) {
 	    	Log.d("MYTAG", "Dist: " + dist);
 	    	Log.d("MYTAG", "Distance lat: " + lata + " " + latb);
 	    	Log.d("MYTAG", "Distance lon: " + lona + " " + lonb);
 			dist = 0;
+		}
+		if (dist < 0) {
+			dist += Math.PI;
 		}
 		dist *= 6371200d;
 		return dist;

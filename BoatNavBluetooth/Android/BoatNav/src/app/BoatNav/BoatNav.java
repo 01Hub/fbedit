@@ -8,7 +8,6 @@ import android.media.MediaPlayer.OnCompletionListener;
 import android.media.SoundPool;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.SystemClock;
 import android.view.Menu;
 import android.view.MotionEvent;
 import android.view.MenuInflater;
@@ -94,7 +93,8 @@ public class BoatNav extends Activity {
     private static boolean btstart = false;
     public static boolean btconnected = false;
     public static String btlogg = "";
-    public static long ms;
+    public static long mtot;
+    public static long mfree;
 
     @Override
 	public void onCreate(Bundle icicle) {
@@ -134,8 +134,6 @@ public class BoatNav extends Activity {
                 		if (btstart) {
         					Boolean err = false;
         			        int ri = MyIV.sonarrangeinx;
-        			        
-			        		ms = SystemClock.uptimeMillis();
         					if (MyIV.sonarautorange) {
         						// Check range change
         						if (MyIV.nodepth) {
@@ -218,13 +216,6 @@ public class BoatNav extends Activity {
         				               			MyIV.replayarray[bytes] = btreadbuffer[bytes];
         				               			bytes++;
         				               		}
-        				            		ms = MyIV.range[MyIV.sonarrangeinx].interval - (SystemClock.uptimeMillis() - ms);
-        				            		if (ms > 0) {
-            				            		try {
-            				            			Thread.sleep(ms, 0);
-            				            		} catch (InterruptedException e) {
-            				            		}
-        				            		}
         			               		}
         			               	}
         			            } catch (IOException e) {
@@ -269,8 +260,6 @@ public class BoatNav extends Activity {
     {
         super.onStop();
         btlogg += "onStop ";
-        //msgbox("Stop","Stop");
-        //SaveConfig();
     }
 
     @Override
@@ -324,6 +313,8 @@ public class BoatNav extends Activity {
 		} else if (soundplaying > 0) {
 			soundplaying--;
 		}
+		mtot = Runtime.getRuntime().totalMemory();
+		mfree = Runtime.getRuntime().freeMemory();
 	}
 
 	private void NormalMode() {
@@ -340,7 +331,6 @@ public class BoatNav extends Activity {
 	private void DemoMode() {
 		int i, j, x, pix, dd, mm, yy, hh, mn, ss, ri;
 		String datetime;
-		ms = SystemClock.uptimeMillis();
 		MyIV.sc.ADCBattery = 2234;
 		MyIV.sc.ADCWaterTemp = 1900;
 		MyIV.sc.ADCAirTemp = 1500;
@@ -482,7 +472,6 @@ public class BoatNav extends Activity {
 		}
 		MyIV.SonarShow();
 		mIV.invalidate();
-		ms = MyIV.range[MyIV.sonarrangeinx].interval - (SystemClock.uptimeMillis() - ms);
 	}
 
 	private void ReplayMode() {
@@ -1019,7 +1008,7 @@ public class BoatNav extends Activity {
     	final Context context = this;
 		final Dialog dialog = new Dialog(context);
 		dialog.setContentView(R.layout.dialogreplay);
-		dialog.setTitle("Replay");
+		dialog.setTitle("Replay / Record");
 
 	    ListView lv = (ListView) dialog.findViewById(R.id.lvFiles);
 
@@ -1049,6 +1038,15 @@ public class BoatNav extends Activity {
 		    	String s;
 				s = (String) parent.getItemAtPosition(pos);
             	try {
+            		if (MyIV.mode == 2) {
+        				if (btconnected) {
+        					MyIV.mode = 0;
+        				} else {
+        					MyIV.mode = 1;
+        				}
+        				replayfile.close();
+        				MyIV.ClearTrail();
+            		}
             		String FileName = Environment.getExternalStorageDirectory() + File.separator + "Map" + File.separator + "Sonar" + File.separator + s;
                 	replayfile = new RandomAccessFile(FileName,"r");
                 	// Clear trail and distance
@@ -1063,22 +1061,37 @@ public class BoatNav extends Activity {
         });
 
         Button btnRecord = (Button) dialog.findViewById(R.id.btnRecord);
-        if (MyIV.mode != 0) {
-        	btnRecord.setVisibility(4);
-        }
         if (recording) {
         	btnRecord.setText("Stop Recording");
+        } else if (MyIV.mode == 2) {
+        	btnRecord.setText("Stop Replay");
+        } else if (MyIV.mode != 0) {
+        	btnRecord.setVisibility(View.INVISIBLE);
         }
 		btnRecord.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				if (recording) {
+					// Stop recording
 					recording = false;
 					try {
 						replayfile.close();
 					} catch (IOException e) {
 					}
+				} else if (MyIV.mode == 2) {
+					// Stop replay
+    				if (btconnected) {
+    					MyIV.mode = 0;
+    				} else {
+    					MyIV.mode = 1;
+    				}
+    				try {
+						replayfile.close();
+					} catch (IOException e) {
+					}
+    				MyIV.ClearTrail();
 				} else {
+					// Start recording
 					SimpleDateFormat msdf = new SimpleDateFormat("yyyyMMdd_HHmm");
 					Calendar c = Calendar.getInstance();
 					String s = "Sonar" + msdf.format(c.getTime()) + ".snr";
@@ -1684,15 +1697,10 @@ public class BoatNav extends Activity {
 				}
             	return false;
             case R.id.item8:
+            	// Replay / Record
             	try {
             		if (MyIV.mode == 2) {
-        				if (BoatNav.btconnected) {
-        					MyIV.mode = 0;
-        				} else {
-        					MyIV.mode = 1;
-        				}
-            			replayfile.close();
-                    	MyIV.ClearTrail();
+                    	ShowReplayDialog();
             		} else {
                     	ShowReplayDialog();
             		}
@@ -1870,15 +1878,13 @@ public class BoatNav extends Activity {
 		sp.play(iTmp, 1, 1, 0, 0, 1);
 		MediaPlayer mPlayer = MediaPlayer.create(getBaseContext(), R.raw.fish);
 		mPlayer.start();
-//	    MediaPlayer mp = MediaPlayer.create(this, R.raw.fish);
-//	    mp.start();
-//	    mp.setOnCompletionListener(new OnCompletionListener() {
-//	        @Override
-//	        public void onCompletion(MediaPlayer mp) {
-//	            mp.release();
-//				soundplaying = 0;
-//	        }
-//	    });
+		mPlayer.setOnCompletionListener(new OnCompletionListener() {
+			@Override
+			public void onCompletion(MediaPlayer mp) {
+				mp.release();
+				soundplaying = 0;
+			}
+		});
 	}
 
 	public void msgbox(String title,String message) {
