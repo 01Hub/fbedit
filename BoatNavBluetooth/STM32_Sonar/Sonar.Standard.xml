@@ -229,131 +229,131 @@
     <Component Name="EchoArray" TI="3035" Line="76" Offs="110"/>
    </type>
    <type Family="typedef" Name="STM32_SonarDataTypeDef" Line="77" ID="3066" toTI="2830"/>
-   <function Name="StrCmp" TI="94" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="312">
+   <function Name="StrCmp" TI="94" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="314">
    <type Family="Pointer" TI="3153" toTI="94"/>
-    <parameter Name="str" TI="3153" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="312" Addr="0x0" Param="Yes"/>
-    <parameter Name="comp" TI="3153" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="312" Addr="0x1" Param="Yes"/>
-    <variable Name="c" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="314" Addr="0x3" TI="94"/>
+    <parameter Name="str" TI="3153" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="314" Addr="0x0" Param="Yes"/>
+    <parameter Name="comp" TI="3153" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="314" Addr="0x1" Param="Yes"/>
+    <variable Name="c" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="316" Addr="0x3" TI="94"/>
    </function >
-   <function Name="ParseSkip" TI="116" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="327">
-    <parameter Name="GPSStart" TI="116" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="327" Addr="0x0" Param="Yes"/>
+   <function Name="ParseSkip" TI="116" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="329">
+    <parameter Name="GPSStart" TI="116" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="329" Addr="0x0" Param="Yes"/>
    </function >
-   <function Name="ParseGetItem" TI="116" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="342">
-    <parameter Name="GPSStart" TI="116" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="342" Addr="0x0" Param="Yes"/>
-    <parameter Name="item" TI="3153" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="342" Addr="0x1" Param="Yes"/>
+   <function Name="ParseGetItem" TI="116" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="344">
+    <parameter Name="GPSStart" TI="116" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="344" Addr="0x0" Param="Yes"/>
+    <parameter Name="item" TI="3153" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="344" Addr="0x1" Param="Yes"/>
    </function >
-   <function Name="ParseDecToBin" TI="111" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="360">
-    <parameter Name="item" TI="3153" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="360" Addr="0x0" Param="Yes"/>
-    <variable Name="c" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="362" Addr="0x3" TI="94"/>
-    <variable Name="val" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="363" Addr="0x34000004" TI="111"/>
+   <function Name="ParseDecToBin" TI="111" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="362">
+    <parameter Name="item" TI="3153" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="362" Addr="0x0" Param="Yes"/>
+    <variable Name="c" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="364" Addr="0x3" TI="94"/>
+    <variable Name="val" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="365" Addr="0x34000004" TI="111"/>
    </function >
-   <function Name="ParseLat" TI="111" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="375">
-    <parameter Name="item" TI="3153" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="375" Addr="0x0" Param="Yes"/>
-    <variable Name="val" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="377" Addr="0x2" TI="111"/>
+   <function Name="ParseLat" TI="111" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="377">
+    <parameter Name="item" TI="3153" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="377" Addr="0x0" Param="Yes"/>
+    <variable Name="val" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="379" Addr="0x2" TI="111"/>
    </function >
-   <function Name="ParseLon" TI="111" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="383">
-    <parameter Name="item" TI="3153" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="383" Addr="0x0" Param="Yes"/>
-    <variable Name="val" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="385" Addr="0x2" TI="111"/>
+   <function Name="ParseLon" TI="111" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="385">
+    <parameter Name="item" TI="3153" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="385" Addr="0x0" Param="Yes"/>
+    <variable Name="val" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="387" Addr="0x2" TI="111"/>
    </function >
-   <function Name="ParseGPRMC" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="407">
-    <parameter Name="GPSStart" TI="116" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="407" Addr="0x0" Param="Yes"/>
+   <function Name="ParseGPRMC" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="409">
+    <parameter Name="GPSStart" TI="116" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="409" Addr="0x0" Param="Yes"/>
    <type Family="array" ID="3546" toTI="94"/>
-    <variable Name="itemtime" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="409" Addr="0x34000028" TI="3546"/>
-    <variable Name="item" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="410" Addr="0x34000008" TI="3546"/>
+    <variable Name="itemtime" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="411" Addr="0x34000028" TI="3546"/>
+    <variable Name="item" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="412" Addr="0x34000008" TI="3546"/>
    </function >
-   <function Name="ParseGPGSV" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="485">
-    <parameter Name="GPSStart" TI="116" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="485" Addr="0x0" Param="Yes"/>
-    <variable Name="item" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="487" Addr="0x34000008" TI="3546"/>
-    <variable Name="i" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="488" Addr="0x34000038" TI="76"/>
-    <variable Name="n" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="488" Addr="0x4" TI="76"/>
-    <variable Name="nsv" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="488" Addr="0x0" TI="76"/>
+   <function Name="ParseGPGSV" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="487">
+    <parameter Name="GPSStart" TI="116" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="487" Addr="0x0" Param="Yes"/>
+    <variable Name="item" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="489" Addr="0x34000008" TI="3546"/>
+    <variable Name="i" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="490" Addr="0x34000038" TI="76"/>
+    <variable Name="n" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="490" Addr="0x4" TI="76"/>
+    <variable Name="nsv" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="490" Addr="0x0" TI="76"/>
    </function >
-   <function Name="ParseGPGGA" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="542">
-    <parameter Name="GPSStart" TI="116" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="542" Addr="0x0" Param="Yes"/>
-    <variable Name="item" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="544" Addr="0x34000008" TI="3546"/>
+   <function Name="ParseGPGGA" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="544">
+    <parameter Name="GPSStart" TI="116" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="544" Addr="0x0" Param="Yes"/>
+    <variable Name="item" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="546" Addr="0x34000008" TI="3546"/>
    </function >
-   <function Name="ParseGPGSA" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="582">
-    <parameter Name="GPSStart" TI="116" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="582" Addr="0x0" Param="Yes"/>
-    <variable Name="item" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="584" Addr="0x34000008" TI="3546"/>
-    <variable Name="i" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="585" Addr="0x34000040" TI="76"/>
-    <variable Name="j" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="585" Addr="0x34000040" TI="76"/>
-    <variable Name="satid" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="586" Addr="0x0" TI="94"/>
+   <function Name="ParseGPGSA" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="584">
+    <parameter Name="GPSStart" TI="116" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="584" Addr="0x0" Param="Yes"/>
+    <variable Name="item" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="586" Addr="0x34000008" TI="3546"/>
+    <variable Name="i" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="587" Addr="0x34000040" TI="76"/>
+    <variable Name="j" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="587" Addr="0x34000040" TI="76"/>
+    <variable Name="satid" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="588" Addr="0x0" TI="94"/>
    </function >
-   <function Name="ParseGPS" TI="111" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="631">
-    <variable Name="GPSStart" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="633" Addr="0x34000006" TI="116"/>
-    <variable Name="GPSEnd" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="634" Addr="0x34000004" TI="116"/>
-    <variable Name="i" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="635" Addr="0x2" TI="116"/>
+   <function Name="ParseGPS" TI="111" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="633">
+    <variable Name="GPSStart" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="635" Addr="0x34000006" TI="116"/>
+    <variable Name="GPSEnd" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="636" Addr="0x34000004" TI="116"/>
+    <variable Name="i" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="637" Addr="0x2" TI="116"/>
    </function >
-   <function Name="GetEcho" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="679">
+   <function Name="GetEcho" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="681">
    <type Family="Pointer" TI="3959" toTI="58"/>
-    <variable Name="Echo" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="682" Addr="0x2" TI="94"/>
+    <variable Name="Echo" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="684" Addr="0x2" TI="94"/>
    </function >
-   <function Name="GetADCValue" TI="76" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="707">
-    <parameter Name="Channel" TI="94" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="707" Addr="0x0" Param="Yes"/>
-    <variable Name="i" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="709" Addr="0x34000017" TI="121"/>
-    <variable Name="ADCValue" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="710" Addr="0x34000014" TI="116"/>
-    <variable Name="ADC_InitStructure" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="711" Addr="0x34000000" TI="1788"/>
+   <function Name="GetADCValue" TI="76" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="709">
+    <parameter Name="Channel" TI="94" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="709" Addr="0x0" Param="Yes"/>
+    <variable Name="i" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="711" Addr="0x34000017" TI="121"/>
+    <variable Name="ADCValue" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="712" Addr="0x34000014" TI="116"/>
+    <variable Name="ADC_InitStructure" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="713" Addr="0x34000000" TI="1788"/>
    </function >
-   <function Name="TrimOutput" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="286">
-    <variable Name="Trim" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="288" Addr="0x0" TI="76"/>
-    <variable Name="TrimAdd" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="289" Addr="0x0" TI="76"/>
-    <variable Name="i" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="290" Addr="0x34000004" TI="111"/>
+   <function Name="TrimOutput" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="288">
+    <variable Name="Trim" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="290" Addr="0x0" TI="76"/>
+    <variable Name="TrimAdd" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="291" Addr="0x0" TI="76"/>
+    <variable Name="i" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="292" Addr="0x34000004" TI="111"/>
    </function >
-   <function Name="GainSetup" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="748">
-    <variable Name="GainInitInx" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="750" Addr="0x34000014" TI="111"/>
-    <variable Name="i" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="751" Addr="0x34000010" TI="111"/>
-    <variable Name="GainInx" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="752" Addr="0x3400000C" TI="111"/>
-    <variable Name="GainInc" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="753" Addr="0x34000008" TI="111"/>
-    <variable Name="GainVal" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="754" Addr="0x34000004" TI="111"/>
+   <function Name="GainSetup" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="750">
+    <variable Name="GainInitInx" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="752" Addr="0x34000014" TI="111"/>
+    <variable Name="i" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="753" Addr="0x34000010" TI="111"/>
+    <variable Name="GainInx" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="754" Addr="0x3400000C" TI="111"/>
+    <variable Name="GainInc" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="755" Addr="0x34000008" TI="111"/>
+    <variable Name="GainVal" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="756" Addr="0x34000004" TI="111"/>
    </function >
-   <function Name="TIM2_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="830">
+   <function Name="TIM2_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="834">
    </function >
-   <function Name="USART1_puts" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="860">
+   <function Name="USART1_puts" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="864">
    <type Family="Base" Name="char" ID="4318"/>
    <type Family="Pointer" TI="4312" toTI="4318"/>
-    <parameter Name="str" TI="4312" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="860" Addr="0x0" Param="Yes"/>
-    <variable Name="c" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="862" Addr="0x1" TI="4318"/>
+    <parameter Name="str" TI="4312" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="864" Addr="0x0" Param="Yes"/>
+    <variable Name="c" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="866" Addr="0x1" TI="4318"/>
    </function >
-   <function Name="USART3_putdata" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="880">
-    <parameter Name="dat" TI="3153" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="880" Addr="0x0" Param="Yes"/>
-    <parameter Name="len" TI="76" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="880" Addr="0x40FFFFF" Param="Yes"/>
+   <function Name="USART3_putdata" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="884">
+    <parameter Name="dat" TI="3153" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="884" Addr="0x0" Param="Yes"/>
+    <parameter Name="len" TI="76" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="884" Addr="0x40FFFFF" Param="Yes"/>
    </function >
-   <function Name="USART1_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="901">
+   <function Name="USART1_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="906">
    </function >
-   <function Name="ADC_Startup" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="938">
-    <variable Name="ADC_InitStructure" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="940" Addr="0x34000004" TI="1788"/>
+   <function Name="ADC_Startup" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="943">
+    <variable Name="ADC_InitStructure" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="945" Addr="0x34000004" TI="1788"/>
    </function >
-   <function Name="ADC_Configuration" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="973">
-    <variable Name="ADC_InitStructure" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="975" Addr="0x34000004" TI="1788"/>
+   <function Name="ADC_Configuration" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="978">
+    <variable Name="ADC_InitStructure" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="980" Addr="0x34000004" TI="1788"/>
    </function >
-   <function Name="RCC_Configuration" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="1000">
-    <variable Name="HSEStartUpStatus" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="1002" Addr="0x0" TI="200"/>
+   <function Name="RCC_Configuration" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="1005">
+    <variable Name="HSEStartUpStatus" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="1007" Addr="0x0" TI="200"/>
    </function >
-   <function Name="GPIO_Configuration" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="1073">
-    <variable Name="GPIO_InitStructure" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="1075" Addr="0x34000004" TI="1973"/>
+   <function Name="GPIO_Configuration" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="1078">
+    <variable Name="GPIO_InitStructure" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="1080" Addr="0x34000004" TI="1973"/>
    </function >
-   <function Name="NVIC_Configuration" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="1141">
-    <variable Name="NVIC_InitStructure" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="1143" Addr="0x34000004" TI="2070"/>
+   <function Name="NVIC_Configuration" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="1146">
+    <variable Name="NVIC_InitStructure" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="1148" Addr="0x34000004" TI="2070"/>
    </function >
-   <function Name="TIM1_Configuration" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="1173">
-    <variable Name="TIM_TimeBaseStructure" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="1175" Addr="0x34000004" TI="2160"/>
+   <function Name="TIM1_Configuration" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="1178">
+    <variable Name="TIM_TimeBaseStructure" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="1180" Addr="0x34000004" TI="2160"/>
    </function >
-   <function Name="TIM2_Configuration" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="1199">
-    <variable Name="TIM_TimeBaseStructure" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="1201" Addr="0x34000004" TI="2160"/>
+   <function Name="TIM2_Configuration" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="1204">
+    <variable Name="TIM_TimeBaseStructure" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="1206" Addr="0x34000004" TI="2160"/>
    </function >
-   <function Name="TIM1_UP_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="788">
+   <function Name="TIM1_UP_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="791">
    </function >
-   <function Name="TIM3_Configuration" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="1220">
-    <variable Name="TIM_TimeBaseStructure" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="1222" Addr="0x34000014" TI="2160"/>
-    <variable Name="TIM_OCInitStructure" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="1223" Addr="0x34000004" TI="2292"/>
+   <function Name="TIM3_Configuration" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="1225">
+    <variable Name="TIM_TimeBaseStructure" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="1227" Addr="0x34000014" TI="2160"/>
+    <variable Name="TIM_OCInitStructure" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="1228" Addr="0x34000004" TI="2292"/>
    </function >
-   <function Name="USART1_Configuration" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="1258">
-    <parameter Name="BaudRate" TI="58" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="1258" Addr="0x0" Param="Yes"/>
-    <variable Name="USART_InitStructure" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="1268" Addr="0x34000000" TI="2396"/>
+   <function Name="USART1_Configuration" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="1263">
+    <parameter Name="BaudRate" TI="58" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="1263" Addr="0x0" Param="Yes"/>
+    <variable Name="USART_InitStructure" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="1273" Addr="0x34000000" TI="2396"/>
    </function >
-   <function Name="USART3_Configuration" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="1292">
-    <parameter Name="BaudRate" TI="58" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="1292" Addr="0x0" Param="Yes"/>
-    <variable Name="USART_InitStructure" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="1302" Addr="0x34000000" TI="2396"/>
+   <function Name="USART3_Configuration" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="1297">
+    <parameter Name="BaudRate" TI="58" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="1297" Addr="0x0" Param="Yes"/>
+    <variable Name="USART_InitStructure" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="1307" Addr="0x34000000" TI="2396"/>
    </function >
    <type Family="Base" Name="int" ID="4963"/>
    <function Name="main" TI="4963" FileName="C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.c" Line="136">

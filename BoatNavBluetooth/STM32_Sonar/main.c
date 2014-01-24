@@ -233,9 +233,6 @@ int main(void)
         {
           TrimOutput();
         }
-        while (ParseGPS() != 0xFFFF)
-        {
-        }
         /* Enable ADC injected channel */
         ADC_AutoInjectedConvCmd(ADC1, ENABLE);
         /* Set the TIM1 Autoreload value */
@@ -265,6 +262,11 @@ int main(void)
         ADC_AutoInjectedConvCmd(ADC1, DISABLE);
         /* Set the DAC to output lowest gain */
         DAC->DHR12R1 = (u16)0x0;
+        /* Parse the GPS NMEA data */
+        while (ParseGPS() != 0xFFFF)
+        {
+        }
+        /* Send the data to bluetooth module */
         USART3_putdata((u8 *)&STM32_SonarData,622);
       }
       else if (STM32_Sonar.Start == 2)
@@ -781,6 +783,7 @@ void GainSetup(void)
 /*******************************************************************************
 * Function Name  : TIM1_UP_IRQHandler
 * Description    : This function handles TIM1 global interrupt request.
+*                  It is used to generate the ping.
 * Input          : None
 * Output         : None
 * Return         : None
@@ -823,6 +826,7 @@ void TIM1_UP_IRQHandler(void)
 /*******************************************************************************
 * Function Name  : TIM2_IRQHandler
 * Description    : This function handles TIM2 global interrupt request.
+*                  It increments the echo array index.
 * Input          : None
 * Output         : None
 * Return         : None
@@ -894,6 +898,7 @@ void USART3_putdata(u8 *dat,u16 len)
 * Function Name  : USART1_IRQHandler
 * Description    : This function handles USART1 global interrupt request.
 *                  An interrupt is generated when a character is recieved.
+*                  It is used to get GPS data.
 * Input          : None
 * Output         : None
 * Return         : None

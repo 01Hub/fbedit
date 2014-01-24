@@ -1320,18 +1320,18 @@ END GROUP
  .debug_abbrev  0x00000b1f      0x240 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_tim.o
  .debug_abbrev  0x00000d5f      0x1c8 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_usart.o
 
-.debug_line     0x00000000     0x23cc
+.debug_line     0x00000000     0x23d0
  *(.debug_line)
- .debug_line    0x00000000      0x5c9 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.o
- .debug_line    0x000005c9      0x3db C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.o
- .debug_line    0x000009a4       0xde C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_flash.o
- .debug_line    0x00000a82      0x25b C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_gpio.o
- .debug_line    0x00000cdd      0x4cb C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_it.o
- .debug_line    0x000011a8       0x1d C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_lib.o
- .debug_line    0x000011c5      0x33c C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_nvic.o
- .debug_line    0x00001501      0x362 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.o
- .debug_line    0x00001863      0x856 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_tim.o
- .debug_line    0x000020b9      0x313 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_usart.o
+ .debug_line    0x00000000      0x5cd C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\main.o
+ .debug_line    0x000005cd      0x3db C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_adc.o
+ .debug_line    0x000009a8       0xde C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_flash.o
+ .debug_line    0x00000a86      0x25b C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_gpio.o
+ .debug_line    0x00000ce1      0x4cb C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_it.o
+ .debug_line    0x000011ac       0x1d C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_lib.o
+ .debug_line    0x000011c9      0x33c C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_nvic.o
+ .debug_line    0x00001505      0x362 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_rcc.o
+ .debug_line    0x00001867      0x856 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_tim.o
+ .debug_line    0x000020bd      0x313 C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth\STM32_Sonar\stm32f10x_usart.o
 
 .debug_frame    0x00000000     0x183c
  *(.debug_frame)
