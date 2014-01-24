@@ -95,6 +95,7 @@ public class BoatNav extends Activity {
     public static String btlogg = "";
     public static long mtot;
     public static long mfree;
+    private static int replayspeed = 1;
 
     @Override
 	public void onCreate(Bundle icicle) {
@@ -475,7 +476,11 @@ public class BoatNav extends Activity {
 	}
 
 	private void ReplayMode() {
-		MyIV.SonarReplay(replayfile);
+		int i = replayspeed;
+		while (i >= 0) {
+			MyIV.SonarReplay(replayfile);
+			i--;
+		}
 		mIV.invalidate();
 	}
 
@@ -1058,6 +1063,25 @@ public class BoatNav extends Activity {
 	        	} catch (Exception e) {
 	        	}
 			}
+        });
+
+		final TextView tvReplaySpeed;
+		tvReplaySpeed = (TextView) dialog.findViewById(R.id.textView1);
+		tvReplaySpeed.setText("Replay Speed: " +  (replayspeed + 1));
+		SeekBar sbReplaySpeed;
+		sbReplaySpeed = (SeekBar) dialog.findViewById(R.id.sbReplaySpeed);
+		sbReplaySpeed.setProgress(replayspeed);
+		sbReplaySpeed.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
+        	public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+        		replayspeed = progress;
+        		tvReplaySpeed.setText("Replay Speed: " +  (replayspeed + 1));
+        	}
+
+        	public void onStartTrackingTouch(SeekBar seekBar) {
+        	}
+
+        	public void onStopTrackingTouch(SeekBar seekBar) {
+        	}
         });
 
         Button btnRecord = (Button) dialog.findViewById(R.id.btnRecord);

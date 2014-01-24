@@ -531,7 +531,6 @@ public class MyIV extends ImageView {
 	    	if (sonarbmpinx == MAXSONARBMP) {
 	    		sonarbmpinx = 0;
 	    	}
-	    	//sonarbmpinx &= MAXSONARBMP-1;
 	    	sonarbmpwidth[sonarbmpinx] = 0;
 	    	sonarbmprange[sonarbmpinx] = cursonarrange;
 	    }

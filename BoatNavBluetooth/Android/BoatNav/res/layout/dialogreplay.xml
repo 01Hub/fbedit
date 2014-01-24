@@ -6,15 +6,34 @@
     <ListView
         android:id="@+id/lvFiles"
         android:layout_width="fill_parent"
-        android:layout_height="400dp"
+        android:layout_height="350dp"
         android:layout_alignParentLeft="true" />
     
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/lvFiles"
+        android:layout_marginLeft="5dp"
+        android:layout_marginTop="5dp"
+        android:text="Replay Speed" />
+    
+    <SeekBar
+        android:id="@+id/sbReplaySpeed"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/textView1"
+        android:layout_marginLeft="5dp"
+        android:max="15" />
+
     <Button
         android:id="@+id/btnRecord"
         android:layout_width="150dp"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:layout_below="@+id/lvFiles"
+        android:layout_below="@+id/sbReplaySpeed"
         android:text="@string/StartRecord" />
     
     <Button
@@ -22,7 +41,7 @@
         android:layout_width="150dp"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
-        android:layout_below="@+id/lvFiles"
+        android:layout_below="@+id/sbReplaySpeed"
         android:text="@string/Cancel" />
 
 </RelativeLayout>
