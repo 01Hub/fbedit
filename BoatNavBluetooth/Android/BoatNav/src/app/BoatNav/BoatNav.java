@@ -2,10 +2,8 @@ package app.BoatNav;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
-import android.media.SoundPool;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.Menu;
@@ -310,7 +308,18 @@ public class BoatNav extends Activity {
 		this.runOnUiThread(Timer_Tick);
 		if (MyIV.sonarfishsound == true && MyIV.playfishalarm == true && soundplaying == 0) {
 			MyIV.playfishalarm = false;
+			soundplaying = 20;
 			playFishAlarm();
+		} else if (MyIV.playshallowalarm == true && MyIV.shallowalarm == false && soundplaying == 0) {
+			MyIV.playshallowalarm = false;
+			MyIV.shallowalarm = true;
+			soundplaying = 20;
+			playShallowAlarm();
+		} else if (MyIV.sonardeep != 0 && MyIV.playdeepalarm == true && MyIV.deepalarm == false && soundplaying == 0) {
+			MyIV.playdeepalarm = false;
+			MyIV.deepalarm = true;
+			soundplaying = 20;
+			playDeepAlarm();
 		} else if (soundplaying > 0) {
 			soundplaying--;
 		}
@@ -479,9 +488,9 @@ public class BoatNav extends Activity {
 		int i = replayspeed;
 		while (i >= 0) {
 			MyIV.SonarReplay(replayfile);
+			mIV.invalidate();
 			i--;
 		}
-		mIV.invalidate();
 	}
 
 	private Runnable Timer_Tick = new Runnable() {
@@ -683,6 +692,8 @@ public class BoatNav extends Activity {
 		MyIV.sonarfishdepth = Integer.valueOf(GetItem()) == 1;
 		MyIV.sonarfishicon = Integer.valueOf(GetItem()) == 1;
 		MyIV.sonarautorange = Integer.valueOf(GetItem()) == 1;
+		MyIV.sonarshallow = Integer.valueOf(GetItem());
+		MyIV.sonardeep = Integer.valueOf(GetItem());
 		FindConfig("#sonarrange");
 		i=0;
 		while (buffer.length() > 0) {
@@ -751,7 +762,7 @@ public class BoatNav extends Activity {
 			GetComment();
 			config[i][1] += line + "\r\n";
 		}
-		// sonarpinginit,sonarautoping,sonargaininit,sonarautogain,sonarnoiselevel,sonarnoisereject,sonarfishdetect,sonarfishsound,sonarfishdepth,sonarfishicon,sonarautorange
+		// sonarpinginit,sonarautoping,sonargaininit,sonarautogain,sonarnoiselevel,sonarnoisereject,sonarfishdetect,sonarfishsound,sonarfishdepth,sonarfishicon,sonarautorange,shallow,deep
 		line = "";
 		AddItem(Integer.toString(MyIV.sonarpinginit));
 		AddItem(Integer.toString(GetBoolean(MyIV.sonarautoping)));
@@ -764,6 +775,8 @@ public class BoatNav extends Activity {
 		AddItem(Integer.toString(GetBoolean(MyIV.sonarfishdepth)));
 		AddItem(Integer.toString(GetBoolean(MyIV.sonarfishicon)));
 		AddItem(Integer.toString(GetBoolean(MyIV.sonarautorange)));
+		AddItem(Integer.toString(MyIV.sonarshallow));
+		AddItem(Integer.toString(MyIV.sonardeep));
 		config[i][1] += line + "\r\n";
 		buffer = "";
 		i = 0;
@@ -1400,6 +1413,63 @@ public class BoatNav extends Activity {
         dialog.show();
     }
 
+    private void ShowSonarAlarmDialog() {
+    	final Context context = this;
+		final Dialog dialog = new Dialog(context);
+		dialog.setContentView(R.layout.dialogsonaralarm);
+    	
+		dialog.setTitle("Alarm Setup");
+		final TextView tvItem1;
+		tvItem1 = (TextView) dialog.findViewById(R.id.textView1);
+		tvItem1.setText("Shallow: " +  String.format("%.1f",((float)MyIV.sonarshallow / 10)));
+		SeekBar sbShallow;
+		sbShallow = (SeekBar) dialog.findViewById(R.id.sbShallow);
+		sbShallow.setProgress(MyIV.sonarshallow);
+		sbShallow.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
+        	public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+        		MyIV.sonarshallow = progress;
+        		tvItem1.setText("Shallow: " +  String.format("%.1f",((float)MyIV.sonarshallow / 10)));
+        	}
+
+        	public void onStartTrackingTouch(SeekBar seekBar) {
+        	}
+
+        	public void onStopTrackingTouch(SeekBar seekBar) {
+        	}
+        });
+
+		final TextView tvItem2;
+		tvItem2 = (TextView) dialog.findViewById(R.id.textView2);
+		tvItem2.setText("Deep: " +  String.format("%.1f",((float)MyIV.sonardeep)));
+		SeekBar sbDeep;
+		sbDeep = (SeekBar) dialog.findViewById(R.id.sbDeep);
+		sbDeep.setProgress(MyIV.sonardeep);
+		sbDeep.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
+        	public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+        		MyIV.sonardeep = progress;
+        		tvItem2.setText("Deep: " +  String.format("%.1f",((float)MyIV.sonardeep)));
+        	}
+
+        	public void onStartTrackingTouch(SeekBar seekBar) {
+        	}
+
+        	public void onStopTrackingTouch(SeekBar seekBar) {
+        	}
+        });
+
+		Button btnOK = (Button) dialog.findViewById(R.id.btnOK);
+		// if button is clicked, close the custom dialog
+		btnOK.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				SaveConfig();
+				dialog.dismiss();
+			}
+		});
+
+		dialog.show();
+    }
+
     private void SetAddEditPlaceDialog(Dialog dialog, int placeinx) {
     	RadioGroup rg1 = (RadioGroup) dialog.findViewById(R.id.rgIcons1);
     	RadioGroup rg2 = (RadioGroup) dialog.findViewById(R.id.rgIcons2);
@@ -1741,6 +1811,9 @@ public class BoatNav extends Activity {
             case R.id.item11:
             	ShowSonarSetupDialog();
             	return true;
+            case R.id.item13:
+            	ShowSonarAlarmDialog();
+            	return true;
             }
     	}
         return super.onOptionsItemSelected(item);
@@ -1896,11 +1969,31 @@ public class BoatNav extends Activity {
 	}
 
 	private void playFishAlarm() {
-		soundplaying = 10;
-		SoundPool sp = new SoundPool(5, AudioManager.STREAM_MUSIC, 0);
-		int iTmp = sp.load(getBaseContext(), R.raw.fish, 1);
-		sp.play(iTmp, 1, 1, 0, 0, 1);
 		MediaPlayer mPlayer = MediaPlayer.create(getBaseContext(), R.raw.fish);
+		mPlayer.start();
+		mPlayer.setOnCompletionListener(new OnCompletionListener() {
+			@Override
+			public void onCompletion(MediaPlayer mp) {
+				mp.release();
+				soundplaying = 0;
+			}
+		});
+	}
+
+	private void playShallowAlarm() {
+		MediaPlayer mPlayer = MediaPlayer.create(getBaseContext(), R.raw.shallow);
+		mPlayer.start();
+		mPlayer.setOnCompletionListener(new OnCompletionListener() {
+			@Override
+			public void onCompletion(MediaPlayer mp) {
+				mp.release();
+				soundplaying = 0;
+			}
+		});
+	}
+
+	private void playDeepAlarm() {
+		MediaPlayer mPlayer = MediaPlayer.create(getBaseContext(), R.raw.deep);
 		mPlayer.start();
 		mPlayer.setOnCompletionListener(new OnCompletionListener() {
 			@Override

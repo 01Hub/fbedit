@@ -19,8 +19,8 @@
 #airtemp
 537,500,630,450,737,400,865,350,1015,300,1190,250,1390,200,1600,150,1846,105,2090,65,2510,0
 #sonar
-// sonarpinginit,sonarautoping,sonargaininit,sonarautogain,sonarnoiselevel,sonarnoisereject,sonarfishdetect,sonarfishsound,sonarfishdepth,sonarfishicon,sonarautorange
-16,1,750,1,4,2,1,0,1,1,1
+// sonarpinginit,sonarautoping,sonargaininit,sonarautogain,sonarnoiselevel,sonarnoisereject,sonarfishdetect,sonarfishsound,sonarfishdepth,sonarfishicon,sonarautorange,shallow,deep
+16,1,750,1,4,2,1,0,1,1,1,50,10
 #sonarrange
 // range,mindepth,interval,pingadd,gain[17],ntics,scale text
 2,60,150,2,0,2,4,6,8,10,13,15,17,19,21,23,25,27,29,31,33,9,0,,0.5,,1,,1.5,,2

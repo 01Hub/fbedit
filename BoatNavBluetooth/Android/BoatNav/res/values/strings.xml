@@ -23,5 +23,6 @@
     <string name="StartRecord">Start Recording</string>
     <string name="StopRecord">Stop Recording</string>
     <string name="ClearSonar">Clear Sonar</string>
+    <string name="SonarAlarm">Sonar Alarm</string>
     
 </resources>

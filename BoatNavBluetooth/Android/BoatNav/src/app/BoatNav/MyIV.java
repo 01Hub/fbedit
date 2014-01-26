@@ -102,6 +102,8 @@ public class MyIV extends ImageView {
 	public static boolean sonarfishdepth;
 	public static boolean sonarfishicon;
 	public static boolean sonarautorange;
+	public static int sonarshallow = 0;
+	public static int sonardeep = 0;
 	public static int sonarrangeinx = 4;
 	public static int sonarrangeset = -1;
 	public static int sonarrangechange = 0;
@@ -137,7 +139,11 @@ public class MyIV extends ImageView {
 	private static int sonarbmpinx = 0;
 	private static int sonarcurbmpinx = 0;
 	private static String rngticks;
-	public static boolean playfishalarm;
+	public static boolean playfishalarm = false;
+	public static boolean playshallowalarm = false;
+	public static boolean shallowalarm = false;
+	public static boolean playdeepalarm = false;
+	public static boolean deepalarm = false;
 	public static byte[] replayarray = new byte[SONARARRAYSIZE];
 	public static SonarClass sc = new SonarClass();
 	public static RangeClass[] range = RangeClass.RangeClassSet(MAXSONARRANGE);
@@ -494,6 +500,18 @@ public class MyIV extends ImageView {
 				if (sonarfishdetect != 0) {
 					// Find fish
 					FindFish(depthstartinx, depthinx);
+				}
+				if ((int)(curdepth * 10) <= sonarshallow) {
+					playshallowalarm = true;
+				} else {
+					playshallowalarm = false;
+					shallowalarm = false;
+				}
+				if ((int)(curdepth) >= sonardeep) {
+					playdeepalarm = true;
+				} else {
+					playdeepalarm = false;
+					deepalarm = false;
 				}
 			} else {
 				nodepth = true;
