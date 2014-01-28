@@ -98,7 +98,7 @@ public class MyIV extends ImageView {
 	public static int sonarnoiselevel;
 	public static int sonarnoisereject;
 	public static int sonarfishdetect;
-	public static boolean sonarfishsound;
+	public static boolean sonarfishalarm;
 	public static boolean sonarfishdepth;
 	public static boolean sonarfishicon;
 	public static boolean sonarautorange;

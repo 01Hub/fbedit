@@ -306,21 +306,20 @@ public class BoatNav extends Activity {
     private void TimerMethod()
 	{
 		this.runOnUiThread(Timer_Tick);
-		if (MyIV.sonarfishsound == true && MyIV.playfishalarm == true && soundplaying == 0) {
-			MyIV.playfishalarm = false;
-			soundplaying = 20;
-			playFishAlarm();
-		} else if (MyIV.playshallowalarm == true && MyIV.shallowalarm == false && soundplaying == 0) {
-			MyIV.playshallowalarm = false;
-			MyIV.shallowalarm = true;
-			soundplaying = 20;
-			playShallowAlarm();
-		} else if (MyIV.sonardeep != 0 && MyIV.playdeepalarm == true && MyIV.deepalarm == false && soundplaying == 0) {
-			MyIV.playdeepalarm = false;
-			MyIV.deepalarm = true;
-			soundplaying = 20;
-			playDeepAlarm();
-		} else if (soundplaying > 0) {
+		if (soundplaying == 0) {
+			if (MyIV.sonarfishalarm == true && MyIV.playfishalarm == true) {
+				MyIV.playfishalarm = false;
+				PlayAlarm(R.raw.fish);
+			} else if (MyIV.playshallowalarm == true && MyIV.shallowalarm == false) {
+				MyIV.playshallowalarm = false;
+				MyIV.shallowalarm = true;
+				PlayAlarm(R.raw.shallow);
+			} else if (MyIV.sonardeep != 0 && MyIV.playdeepalarm == true && MyIV.deepalarm == false) {
+				MyIV.playdeepalarm = false;
+				MyIV.deepalarm = true;
+				PlayAlarm(R.raw.deep);
+			}
+		} else {
 			soundplaying--;
 		}
 		mtot = Runtime.getRuntime().totalMemory();
@@ -688,7 +687,7 @@ public class BoatNav extends Activity {
 		MyIV.sonarnoiselevel = Integer.valueOf(GetItem());
 		MyIV.sonarnoisereject = Integer.valueOf(GetItem());
 		MyIV.sonarfishdetect = Integer.valueOf(GetItem());
-		MyIV.sonarfishsound = Integer.valueOf(GetItem()) == 1;
+		MyIV.sonarfishalarm = Integer.valueOf(GetItem()) == 1;
 		MyIV.sonarfishdepth = Integer.valueOf(GetItem()) == 1;
 		MyIV.sonarfishicon = Integer.valueOf(GetItem()) == 1;
 		MyIV.sonarautorange = Integer.valueOf(GetItem()) == 1;
@@ -771,7 +770,7 @@ public class BoatNav extends Activity {
 		AddItem(Integer.toString(MyIV.sonarnoiselevel));
 		AddItem(Integer.toString(MyIV.sonarnoisereject));
 		AddItem(Integer.toString(MyIV.sonarfishdetect));
-		AddItem(Integer.toString(GetBoolean(MyIV.sonarfishsound)));
+		AddItem(Integer.toString(GetBoolean(MyIV.sonarfishalarm)));
 		AddItem(Integer.toString(GetBoolean(MyIV.sonarfishdepth)));
 		AddItem(Integer.toString(GetBoolean(MyIV.sonarfishicon)));
 		AddItem(Integer.toString(GetBoolean(MyIV.sonarautorange)));
@@ -1316,55 +1315,6 @@ public class BoatNav extends Activity {
         	}
         });
 
-		final TextView tvFishDetect;
-		tvFishDetect = (TextView) dialog.findViewById(R.id.textView3);
-		tvFishDetect.setText("Fish Detect: " + MyIV.sonarfishdetect);
-		SeekBar sbFishDetect;
-		sbFishDetect = (SeekBar) dialog.findViewById(R.id.sbFishDetect);
-		sbFishDetect.setProgress(MyIV.sonarfishdetect);
-		sbFishDetect.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
-        	public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-        		MyIV.sonarfishdetect = progress;
-        		tvFishDetect.setText("Fish Detect: " + MyIV.sonarfishdetect);
-        	}
-
-        	public void onStartTrackingTouch(SeekBar seekBar) {
-        	}
-
-        	public void onStopTrackingTouch(SeekBar seekBar) {
-        	}
-        });
-
-		CheckBox chkFishSound;
-		chkFishSound = (CheckBox) dialog.findViewById(R.id.chkFishSound);
-		chkFishSound.setChecked(MyIV.sonarfishsound);
-		chkFishSound.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				MyIV.sonarfishsound = ((CheckBox) v).isChecked();
-			}
-		});
-
-		CheckBox chkFishDepth;
-		chkFishDepth = (CheckBox) dialog.findViewById(R.id.chkFishDepth);
-		chkFishDepth.setChecked(MyIV.sonarfishdepth);
-		chkFishDepth.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				MyIV.sonarfishdepth = ((CheckBox) v).isChecked();
-			}
-		});
-
-		CheckBox chkFishIcon;
-		chkFishIcon = (CheckBox) dialog.findViewById(R.id.chkFishIcon);
-		chkFishIcon.setChecked(MyIV.sonarfishicon);
-		chkFishIcon.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				MyIV.sonarfishicon = ((CheckBox) v).isChecked();
-			}
-		});
-
 		final TextView tvRange;
 		tvRange = (TextView) dialog.findViewById(R.id.textView4);
 		tvRange.setText("Range: " + MyIV.range[MyIV.sonarrangeinx].range);
@@ -1456,6 +1406,55 @@ public class BoatNav extends Activity {
         	public void onStopTrackingTouch(SeekBar seekBar) {
         	}
         });
+
+		final TextView tvFishDetect;
+		tvFishDetect = (TextView) dialog.findViewById(R.id.textView3);
+		tvFishDetect.setText("Fish Detect: " + MyIV.sonarfishdetect);
+		SeekBar sbFishDetect;
+		sbFishDetect = (SeekBar) dialog.findViewById(R.id.sbFishDetect);
+		sbFishDetect.setProgress(MyIV.sonarfishdetect);
+		sbFishDetect.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
+        	public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+        		MyIV.sonarfishdetect = progress;
+        		tvFishDetect.setText("Fish Detect: " + MyIV.sonarfishdetect);
+        	}
+
+        	public void onStartTrackingTouch(SeekBar seekBar) {
+        	}
+
+        	public void onStopTrackingTouch(SeekBar seekBar) {
+        	}
+        });
+
+		CheckBox chkFishAlarm;
+		chkFishAlarm = (CheckBox) dialog.findViewById(R.id.chkFishAlarm);
+		chkFishAlarm.setChecked(MyIV.sonarfishalarm);
+		chkFishAlarm.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				MyIV.sonarfishalarm = ((CheckBox) v).isChecked();
+			}
+		});
+
+		CheckBox chkFishDepth;
+		chkFishDepth = (CheckBox) dialog.findViewById(R.id.chkFishDepth);
+		chkFishDepth.setChecked(MyIV.sonarfishdepth);
+		chkFishDepth.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				MyIV.sonarfishdepth = ((CheckBox) v).isChecked();
+			}
+		});
+
+		CheckBox chkFishIcon;
+		chkFishIcon = (CheckBox) dialog.findViewById(R.id.chkFishIcon);
+		chkFishIcon.setChecked(MyIV.sonarfishicon);
+		chkFishIcon.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				MyIV.sonarfishicon = ((CheckBox) v).isChecked();
+			}
+		});
 
 		Button btnOK = (Button) dialog.findViewById(R.id.btnOK);
 		// if button is clicked, close the custom dialog
@@ -1968,40 +1967,22 @@ public class BoatNav extends Activity {
 		return false;
 	}
 
-	private void playFishAlarm() {
-		MediaPlayer mPlayer = MediaPlayer.create(getBaseContext(), R.raw.fish);
-		mPlayer.start();
-		mPlayer.setOnCompletionListener(new OnCompletionListener() {
-			@Override
-			public void onCompletion(MediaPlayer mp) {
-				mp.release();
-				soundplaying = 0;
-			}
-		});
-	}
-
-	private void playShallowAlarm() {
-		MediaPlayer mPlayer = MediaPlayer.create(getBaseContext(), R.raw.shallow);
-		mPlayer.start();
-		mPlayer.setOnCompletionListener(new OnCompletionListener() {
-			@Override
-			public void onCompletion(MediaPlayer mp) {
-				mp.release();
-				soundplaying = 0;
-			}
-		});
-	}
-
-	private void playDeepAlarm() {
-		MediaPlayer mPlayer = MediaPlayer.create(getBaseContext(), R.raw.deep);
-		mPlayer.start();
-		mPlayer.setOnCompletionListener(new OnCompletionListener() {
-			@Override
-			public void onCompletion(MediaPlayer mp) {
-				mp.release();
-				soundplaying = 0;
-			}
-		});
+	private void PlayAlarm(int alarm) {
+		soundplaying = 20;
+		try {
+			MediaPlayer mPlayer = MediaPlayer.create(getBaseContext(), alarm);
+			mPlayer.setOnCompletionListener(new OnCompletionListener() {
+				@Override
+				public void onCompletion(MediaPlayer mp) {
+					mp.release();
+					soundplaying = 0;
+					Toast.makeText(getApplicationContext(), "PlayAlarm done.", Toast.LENGTH_LONG).show();
+				}
+			});
+			mPlayer.start();
+		} catch (Exception e) {
+			Toast.makeText(getApplicationContext(), "PlayAlarm failed.", Toast.LENGTH_LONG).show();
+		}
 	}
 
 	public void msgbox(String title,String message) {
