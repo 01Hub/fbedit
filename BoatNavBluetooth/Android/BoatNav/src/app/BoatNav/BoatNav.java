@@ -306,22 +306,6 @@ public class BoatNav extends Activity {
     private void TimerMethod()
 	{
 		this.runOnUiThread(Timer_Tick);
-		if (soundplaying == 0) {
-			if (MyIV.sonarfishalarm == true && MyIV.playfishalarm == true) {
-				MyIV.playfishalarm = false;
-				PlayAlarm(R.raw.fish);
-			} else if (MyIV.playshallowalarm == true && MyIV.shallowalarm == false) {
-				MyIV.playshallowalarm = false;
-				MyIV.shallowalarm = true;
-				PlayAlarm(R.raw.shallow);
-			} else if (MyIV.sonardeep != 0 && MyIV.playdeepalarm == true && MyIV.deepalarm == false) {
-				MyIV.playdeepalarm = false;
-				MyIV.deepalarm = true;
-				PlayAlarm(R.raw.deep);
-			}
-		} else {
-			soundplaying--;
-		}
 		mtot = Runtime.getRuntime().totalMemory();
 		mfree = Runtime.getRuntime().freeMemory();
 	}
@@ -494,6 +478,22 @@ public class BoatNav extends Activity {
 
 	private Runnable Timer_Tick = new Runnable() {
 		public void run() {
+			if (soundplaying == 0) {
+				if (MyIV.sonarfishalarm == true && MyIV.playfishalarm == true) {
+					MyIV.playfishalarm = false;
+					PlayAlarm(R.raw.fish);
+				} else if (MyIV.playshallowalarm == true && MyIV.shallowalarm == false) {
+					MyIV.playshallowalarm = false;
+					MyIV.shallowalarm = true;
+					PlayAlarm(R.raw.shallow);
+				} else if (MyIV.sonardeep != 0 && MyIV.playdeepalarm == true && MyIV.deepalarm == false) {
+					MyIV.playdeepalarm = false;
+					MyIV.deepalarm = true;
+					PlayAlarm(R.raw.deep);
+				}
+			} else {
+				soundplaying--;
+			}
 			switch (MyIV.mode) {
 			case 0:
 				NormalMode();

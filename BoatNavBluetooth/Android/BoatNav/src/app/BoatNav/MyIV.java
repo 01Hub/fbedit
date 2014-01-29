@@ -77,7 +77,7 @@ public class MyIV extends ImageView {
 	private static int trailtail = 0;
 	private static int trail[] = new int[MAPMAXTRAIL * 3];
 	public static int AirTempArray[] = new int[22];
-	public static final int MAXSONARBMP = 250;
+	public static final int MAXSONARBMP = 500;
 	public static final int SONARTILEWIDTH = 32;
 	public static final int SONARTILEHEIGHT = 512;
 	public static final int SONARSIGNALGRAHWIDTH = 32;
@@ -1300,12 +1300,12 @@ public class MyIV extends ImageView {
 		}
 
 // Debug
-//		canvas.clipRect(0, 0, scrnwt, scrnht, Region.Op.REPLACE);
-//		paint.setColor(Color.BLACK);
-//		paint.setTextSize(20);
-//		paint.setTextAlign(Paint.Align.LEFT);
-//		canvas.drawText("Total mem: " + BoatNav.mtot / 1024 + "Kb", 10, 165, paint);
-//		canvas.drawText("Free mem:  " + BoatNav.mfree / 1024 + "Kb", 10, 185, paint);
+		canvas.clipRect(0, 0, scrnwt, scrnht, Region.Op.REPLACE);
+		paint.setColor(Color.BLACK);
+		paint.setTextSize(20);
+		paint.setTextAlign(Paint.Align.LEFT);
+		canvas.drawText("Total mem: " + BoatNav.mtot / 1024 + "Kb", 10, 165, paint);
+		canvas.drawText("Free mem:  " + BoatNav.mfree / 1024 + "Kb", 10, 185, paint);
 //		canvas.drawText(sTextWait, 10, 185, paint);
 //		canvas.drawText(TutorialOnImages.sbtdeviceaddr, 10, 125, paint);
 //		sText="Latitude: " + String.format("%.6f",curlat);
