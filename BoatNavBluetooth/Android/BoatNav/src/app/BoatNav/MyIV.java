@@ -1300,12 +1300,12 @@ public class MyIV extends ImageView {
 		}
 
 // Debug
-		canvas.clipRect(0, 0, scrnwt, scrnht, Region.Op.REPLACE);
-		paint.setColor(Color.BLACK);
-		paint.setTextSize(20);
-		paint.setTextAlign(Paint.Align.LEFT);
-		canvas.drawText("Total mem: " + BoatNav.mtot / 1024 + "Kb", 10, 165, paint);
-		canvas.drawText("Free mem:  " + BoatNav.mfree / 1024 + "Kb", 10, 185, paint);
+//		canvas.clipRect(0, 0, scrnwt, scrnht, Region.Op.REPLACE);
+//		paint.setColor(Color.BLACK);
+//		paint.setTextSize(20);
+//		paint.setTextAlign(Paint.Align.LEFT);
+//		canvas.drawText("Total mem: " + BoatNav.mtot / 1024 + "Kb", 10, 165, paint);
+//		canvas.drawText("Free mem:  " + BoatNav.mfree / 1024 + "Kb", 10, 185, paint);
 //		canvas.drawText(sTextWait, 10, 185, paint);
 //		canvas.drawText(TutorialOnImages.sbtdeviceaddr, 10, 125, paint);
 //		sText="Latitude: " + String.format("%.6f",curlat);
