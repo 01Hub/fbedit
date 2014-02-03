@@ -1,13 +1,14 @@
 package app.DDSWave;
 
 import android.app.Activity;
-import android.content.Context;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -22,8 +23,9 @@ public class DDSWave extends Activity {
 	private static Canvas canvas;
 	private int wt;
 	private int ht;
-	private final int WAVEGRID = 40;
-	private final int WAVEGRIDYOFS = 40;
+	private int WAVEGRID = 40;
+	private int WAVEGRIDXOFS = 0;
+	private int WAVEGRIDYOFS = 0;
 	private final short SinWave[] = {2048,2054,2061,2067,2073,2079,2086,2092,2098,2105,2111,2117,2123,2130,2136,2142,
 			2148,2155,2161,2167,2174,2180,2186,2192,2199,2205,2211,2217,2224,2230,2236,2242,
 			2249,2255,2261,2267,2274,2280,2286,2292,2299,2305,2311,2317,2323,2330,2336,2342,
@@ -160,26 +162,33 @@ public class DDSWave extends Activity {
 		setContentView(R.layout.main);
 		mIV=(ImageView) this.findViewById(R.id.ImageView1);
 
-		Button btnOK = (Button) this.findViewById(R.id.btnOK);
+		Button btnDDS = (Button) this.findViewById(R.id.btnDDS);
 		// if button is clicked, close the custom dialog
-		btnOK.setOnClickListener(new OnClickListener() {
+		btnDDS.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				DrawWave();
+				DrawDDSWave();
+				Log.d("MYTAG", "DrawDDSWave");
+			}
+		});
+		Button btnSCOPE = (Button) this.findViewById(R.id.btnSCOPE);
+		// if button is clicked, close the custom dialog
+		btnSCOPE.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				DrawScopeWave();
+				Log.d("MYTAG", "DrawScopeWave");
 			}
 		});
 
 	}
 
-	private void DrawWave() {
-		int WAVEGRIDXOFS = (wt - WAVEGRID*10) /2;
-		int xp, yp;
+	private void DrawGrid() {
 		int x=WAVEGRIDXOFS;
 		int y=WAVEGRIDYOFS;
 		int i=0;
 		bmpwave.eraseColor(Color.BLUE);
 		canvas = new Canvas(bmpwave);
-		canvas.drawText("TestItMore", 10, 10,paint);
 		paint.setStrokeWidth(1);
         paint.setColor(Color.DKGRAY);
 		while (i < 11) {
@@ -193,15 +202,43 @@ public class DDSWave extends Activity {
 	        x+=WAVEGRID;
 	        i++;
 		}
-		paint.setStrokeWidth(2);
+	}
+
+	private void DrawScopeWave() {
+		int xp, yp;
+		int x=WAVEGRIDXOFS;
+		int y=WAVEGRIDYOFS;
+		int i=0;
+		DrawGrid();
         paint.setColor(Color.YELLOW);
-		i = 0;
 		xp = ((i / 8) * WAVEGRID * 10) / 256;
-		yp = ((SinWave[i] / 16) * WAVEGRID * 10) / 256;
+		yp = (((4095 + 2048- SinWave[i]) / 16) * WAVEGRID * 10) / 512;
 		i++;
 		while (i < 2048) {
 			x = ((i / 8) * WAVEGRID * 10) / 256;
-			y = ((SinWave[i] / 16) * WAVEGRID * 10) / 256;
+			y = (((4095 + 2048 - SinWave[i]) / 16) * WAVEGRID * 10) / 512;
+	        canvas.drawLine(xp + WAVEGRIDXOFS, yp + WAVEGRIDYOFS, x + WAVEGRIDXOFS, y + WAVEGRIDYOFS, paint);
+			xp = x;
+			yp = y;
+			i++;
+		}
+		mIV.setImageDrawable(new BitmapDrawable(getResources(), bmpwave));
+	}
+
+	private void DrawDDSWave() {
+		int xp, yp;
+		int x=WAVEGRIDXOFS;
+		int y=WAVEGRIDYOFS;
+		int i=0;
+		DrawGrid();
+		paint.setStrokeWidth(2);
+        paint.setColor(Color.YELLOW);
+		xp = ((i / 8) * WAVEGRID * 10) / 256;
+		yp = (((4095- SinWave[i]) / 16) * WAVEGRID * 10) / 256;
+		i++;
+		while (i < 2048) {
+			x = ((i / 8) * WAVEGRID * 10) / 256;
+			y = (((4095 - SinWave[i]) / 16) * WAVEGRID * 10) / 256;
 	        canvas.drawLine(xp + WAVEGRIDXOFS, yp + WAVEGRIDYOFS, x + WAVEGRIDXOFS, y + WAVEGRIDYOFS, paint);
 			xp = x;
 			yp = y;
@@ -213,11 +250,28 @@ public class DDSWave extends Activity {
 	@Override
 	public void onWindowFocusChanged (boolean hasFocus)
 	{
-	     super.onWindowFocusChanged(hasFocus);
+	    super.onWindowFocusChanged(hasFocus);
         ImageView imageView = (ImageView) findViewById(R.id.ImageView1);
         wt = imageView.getWidth();
         ht = imageView.getHeight();
 		bmpwave = Bitmap.createBitmap(wt, ht, Bitmap.Config.ARGB_8888);
-//		DrawWave();
+		if (wt > ht) {
+			WAVEGRID = (ht - 10) / 10;
+		} else {
+			WAVEGRID = (wt - 10) / 10;
+		}
+		WAVEGRIDXOFS = (wt - WAVEGRID*10) / 2;
+		WAVEGRIDYOFS = (ht - WAVEGRID*10) / 2;
+		DrawDDSWave();
+	}
+
+	@Override
+	public void onConfigurationChanged(Configuration newConfig) {
+	    super.onConfigurationChanged(newConfig);
+	    // Checks the orientation of the screen
+	    if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+	    } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT){
+	    }
+		Log.d("MYTAG", "onConfigurationChanged");
 	}
 }
