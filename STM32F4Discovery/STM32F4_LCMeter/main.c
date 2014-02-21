@@ -26,6 +26,8 @@
   PD.00         Frequency counter select0
   PD.01         Frequency counter select1
   PD.02         Frequency counter select2
+  PD.06         LCMeter calibration
+  PD.07         LCMeter L/C selection, C = Low L = High
   ******************************************************************************
   */
 
@@ -35,22 +37,46 @@
 /* Private typedef -----------------------------------------------------------*/
 typedef struct
 {
-  uint32_t Frequency;                           // 0x20000014
-  uint32_t PreviousCount;
-  uint32_t ThisCount;
-  uint32_t TickCount;
-}STM32_FRQTypeDef;
+  uint32_t Frequency;                           // 0x20000018
+  uint32_t PreviousCount;                       // 0x2000001C
+  uint32_t ThisCount;                           // 0x20000020
+  uint32_t TickCount;                           // 0x20000024
+} STM32_FRQTypeDef;
+
+typedef struct
+{
+  uint32_t FrequencyCal0;                       // 0x20000028
+  uint32_t FrequencyCal1;                       // 0x2000002C
+} STM32_LCMTypeDef;
+
+typedef struct
+{
+  uint32_t Cmd;                                 // 0x20000014
+  STM32_FRQTypeDef STM32_FRQ;                   // 0x20000018
+  STM32_LCMTypeDef STM32_LCM;                   // 0x20000028
+} STM32_CMDTypeDef;
 
 /* Private define ------------------------------------------------------------*/
+/* DDS WaveType */
+#define CMD_DONE                                ((uint8_t)0)
+#define CMD_LCMCAL                              ((uint8_t)1)
+#define CMD_LCMCAP                              ((uint8_t)2)
+#define CMD_LCMIND                              ((uint8_t)3)
+#define CMD_FRQCH1                              ((uint8_t)4)
+#define CMD_FRQCH2                              ((uint8_t)5)
+#define CMD_FRQCH3                              ((uint8_t)6)
+
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
-static STM32_FRQTypeDef STM32_FRQ;              // 0x20000014
+__IO STM32_CMDTypeDef STM32_CMD;                // 0x20000014
 
 /* Private function prototypes -----------------------------------------------*/
 void RCC_Config(void);
 void NVIC_Config(void);
 void GPIO_Config(void);
 void TIM_Config(void);
+uint32_t GetFrequency(void);
+void LCM_Calibrate(void);
 
 /* Private functions ---------------------------------------------------------*/
 
@@ -76,7 +102,79 @@ int main(void)
   TIM_Config();
   /* NVIC Configuration */
   NVIC_Config();
-  while (1);
+  while (1)
+  {
+    switch (STM32_CMD.Cmd)
+    {
+      case CMD_LCMCAL:
+        LCM_Calibrate();
+        break;
+      case CMD_LCMCAP:
+        GPIO_ResetBits(GPIOD, GPIO_Pin_0 | GPIO_Pin_1 | GPIO_Pin_2 | GPIO_Pin_6 | GPIO_Pin_7);
+        break;
+      case CMD_LCMIND:
+        GPIO_ResetBits(GPIOD, GPIO_Pin_0 | GPIO_Pin_1 | GPIO_Pin_2 | GPIO_Pin_6);
+        GPIO_SetBits(GPIOD, GPIO_Pin_7);
+        break;
+      case CMD_FRQCH1:
+        GPIO_ResetBits(GPIOD, GPIO_Pin_1 | GPIO_Pin_2);
+        GPIO_SetBits(GPIOD, GPIO_Pin_0);
+        break;
+      case CMD_FRQCH2:
+        GPIO_ResetBits(GPIOD, GPIO_Pin_0 | GPIO_Pin_2);
+        GPIO_SetBits(GPIOD, GPIO_Pin_1);
+        break;
+      case CMD_FRQCH3:
+        GPIO_ResetBits(GPIOD, GPIO_Pin_2);
+        GPIO_SetBits(GPIOD, GPIO_Pin_0 | GPIO_Pin_1);
+        break;
+    }
+    STM32_CMD.Cmd = CMD_DONE;
+  }
+}
+
+/**
+  * @brief  Get frequency reading.
+  * @param  None
+  * @retval None
+  */
+uint32_t GetFrequency(void)
+{
+  uint32_t i;
+  i = STM32_CMD.STM32_FRQ.TickCount;
+  while (i == STM32_CMD.STM32_FRQ.TickCount);
+  return STM32_CMD.STM32_FRQ.Frequency;
+}
+
+/**
+  * @brief  Calibrate LC Meter.
+  * @param  None
+  * @retval None
+  */
+void LCM_Calibrate(void)
+{
+  uint32_t i;
+  GPIO_ResetBits(GPIOD, GPIO_Pin_0 | GPIO_Pin_1 | GPIO_Pin_2 | GPIO_Pin_6 | GPIO_Pin_7);
+  i = GetFrequency();
+  STM32_CMD.STM32_LCM.FrequencyCal0 = 0;
+  STM32_CMD.STM32_LCM.FrequencyCal1 = 0;
+  i = 0;
+  while (i < 4)
+  {
+    STM32_CMD.STM32_LCM.FrequencyCal0 += GetFrequency();
+    i++;
+  }
+  STM32_CMD.STM32_LCM.FrequencyCal0 /= 4;
+  GPIO_SetBits(GPIOD, GPIO_Pin_6);
+  i = GetFrequency();
+  i = 0;
+  while (i < 4)
+  {
+    STM32_CMD.STM32_LCM.FrequencyCal1 += GetFrequency();
+    i++;
+  }
+  STM32_CMD.STM32_LCM.FrequencyCal0 /= 4;
+  GPIO_ResetBits(GPIOD, GPIO_Pin_6);
 }
 
 /**
@@ -130,8 +228,8 @@ void GPIO_Config(void)
   /* Connect TIM2 pin to AF2 */
   GPIO_PinAFConfig(GPIOA, GPIO_PinSource1, GPIO_AF_TIM2);
   /* GPIOD */
-  GPIO_ResetBits(GPIOD, GPIO_Pin_0 | GPIO_Pin_1 | GPIO_Pin_2);
-  GPIO_InitStructure.GPIO_Pin   = GPIO_Pin_0 | GPIO_Pin_1 | GPIO_Pin_2;
+  GPIO_ResetBits(GPIOD, GPIO_Pin_0 | GPIO_Pin_1 | GPIO_Pin_2 | GPIO_Pin_6 | GPIO_Pin_7);
+  GPIO_InitStructure.GPIO_Pin   = GPIO_Pin_0 | GPIO_Pin_1 | GPIO_Pin_2 | GPIO_Pin_6 | GPIO_Pin_7;
   GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_OUT;
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
   GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
@@ -176,39 +274,12 @@ void TIM_Config(void)
   */
 void TIM3_IRQHandler(void)
 {
-  STM32_FRQ.ThisCount = TIM2->CNT;
-  STM32_FRQ.Frequency = STM32_FRQ.ThisCount - STM32_FRQ.PreviousCount;
-  STM32_FRQ.PreviousCount = STM32_FRQ.ThisCount;
-  STM32_FRQ.TickCount++;
+  STM32_CMD.STM32_FRQ.ThisCount = TIM2->CNT;
+  STM32_CMD.STM32_FRQ.Frequency = STM32_CMD.STM32_FRQ.ThisCount - STM32_CMD.STM32_FRQ.PreviousCount;
+  STM32_CMD.STM32_FRQ.PreviousCount = STM32_CMD.STM32_FRQ.ThisCount;
+  STM32_CMD.STM32_FRQ.TickCount++;
   TIM_ClearITPendingBit(TIM3, TIM_IT_Update);
   STM_EVAL_LEDToggle(LED3);
 }
 
-#ifdef  USE_FULL_ASSERT
-
-/**
-  * @brief  Reports the name of the source file and the source line number
-  *         where the assert_param error has occurred.
-  * @param  file: pointer to the source file name
-  * @param  line: assert_param error line source number
-  * @retval None
-  */
-void assert_failed(uint8_t* file, uint32_t line)
-{
-  /* User can add his own implementation to report the file name and line number,
-     ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
-
-  while (1)
-  {}
-}
-#endif
-
-/**
-  * @}
-  */ 
-
-/**
-  * @}
-  */ 
-
-/******************* (C) COPYRIGHT 2011 STMicroelectronics *****END OF FILE****/
+/*****END OF FILE****/

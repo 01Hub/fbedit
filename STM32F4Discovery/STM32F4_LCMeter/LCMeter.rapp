@@ -4,11 +4,11 @@
 	<NodeC Path=".\stm32f4xx_it.c" Header="stm32f4xx_it.c" Marker="-1" AsyncBuild="" OutputFile=".\stm32f4xx_it.o" sate="0" />
 	<NodeC Path=".\stm32f4xx_rcc.c" Header="stm32f4xx_rcc.c" Marker="-1" AsyncBuild="" OutputFile=".\stm32f4xx_rcc.o" sate="0" />
 	<NodeC Path=".\stm32f4xx_gpio.c" Header="stm32f4xx_gpio.c" Marker="-1" AsyncBuild="" OutputFile=".\stm32f4xx_gpio.o" sate="0" />
-	<NodeC Path=".\stm32f4xx_tim.c" Header="stm32f4xx_tim.c" Marker="-1" AsyncBuild="" OutputFile=".\stm32f4xx_tim.o" sate="0" />
+	<NodeC Path=".\stm32f4xx_tim.c" Header="stm32f4xx_tim.c" Marker="-1" AsyncBuild="" OutputFile=".\stm32f4xx_tim.o" sate="2" />
 	<NodeC Path=".\misc.c" Header="misc.c" Marker="-1" AsyncBuild="" OutputFile=".\misc.o" sate="0" />
 	<NodeC Path=".\system_stm32f4xx.c" Header="system_stm32f4xx.c" Marker="-1" AsyncBuild="" OutputFile=".\system_stm32f4xx.o" sate="0" />
 	<NodeC Path=".\stm32f4_discovery.c" Header="stm32f4_discovery.c" Marker="-1" AsyncBuild="" OutputFile=".\stm32f4_discovery.o" sate="0" />
-	<NodeASM Path=".\startup_stm32f4xx.s" Header="startup_stm32f4xx.s" Marker="0" AsyncBuild="" OutputFile=".\startup_stm32f4xx.o" sate="2" >
+	<NodeASM Path=".\startup_stm32f4xx.s" Header="startup_stm32f4xx.s" Marker="0" AsyncBuild="" OutputFile=".\startup_stm32f4xx.o" sate="0" >
 		<Options>
 			<Config Header="Standard" >
 				<Set Header="NodeASM" >
