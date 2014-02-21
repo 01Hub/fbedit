@@ -3,12 +3,12 @@
 	<NodeC Path=".\main.c" Header="main.c" Marker="-1" AsyncBuild="" OutputFile=".\main.o" sate="0" />
 	<NodeC Path=".\stm32f4xx_it.c" Header="stm32f4xx_it.c" Marker="-1" AsyncBuild="" OutputFile=".\stm32f4xx_it.o" sate="0" />
 	<NodeC Path=".\stm32f4xx_rcc.c" Header="stm32f4xx_rcc.c" Marker="-1" AsyncBuild="" OutputFile=".\stm32f4xx_rcc.o" sate="0" />
-	<NodeC Path=".\stm32f4xx_gpio.c" Header="stm32f4xx_gpio.c" Marker="-1" AsyncBuild="" OutputFile=".\stm32f4xx_gpio.o" sate="2" />
+	<NodeC Path=".\stm32f4xx_gpio.c" Header="stm32f4xx_gpio.c" Marker="-1" AsyncBuild="" OutputFile=".\stm32f4xx_gpio.o" sate="0" />
 	<NodeC Path=".\stm32f4xx_tim.c" Header="stm32f4xx_tim.c" Marker="-1" AsyncBuild="" OutputFile=".\stm32f4xx_tim.o" sate="0" />
 	<NodeC Path=".\misc.c" Header="misc.c" Marker="-1" AsyncBuild="" OutputFile=".\misc.o" sate="0" />
 	<NodeC Path=".\system_stm32f4xx.c" Header="system_stm32f4xx.c" Marker="-1" AsyncBuild="" OutputFile=".\system_stm32f4xx.o" sate="0" />
 	<NodeC Path=".\stm32f4_discovery.c" Header="stm32f4_discovery.c" Marker="-1" AsyncBuild="" OutputFile=".\stm32f4_discovery.o" sate="0" />
-	<NodeASM Path=".\startup_stm32f4xx.s" Header="startup_stm32f4xx.s" Marker="0" AsyncBuild="" OutputFile=".\startup_stm32f4xx.o" sate="0" >
+	<NodeASM Path=".\startup_stm32f4xx.s" Header="startup_stm32f4xx.s" Marker="0" AsyncBuild="" OutputFile=".\startup_stm32f4xx.o" sate="2" >
 		<Options>
 			<Config Header="Standard" >
 				<Set Header="NodeASM" >
@@ -21,51 +21,51 @@
 				</Set>
 			</Config>
 		</Options>
-																		
+																					
 	</NodeASM>
 	<Options>
 		<Config Header="Standard" >
 			<Set Header="ApplicationBuild" >
 				<Section Header="General" >
 					<Property Header="TargetFamily" Value="ARM" />
-																																																																						
+																																																																															
 				</Section>
 				<Section Header="Directories" >
 					<Property Header="IncDir" Value=".;\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc" Removable="1" />
-																									
+																																		
 				</Section>
-																			
+																										
 			</Set>
 			<Set Header="Target" >
 				<Section Header="ProcessorARM" >
 					<Property Header="Processor" Value="STM32F100RB" />
-																																		
+																																											
 				</Section>
 				<Section Header="ToolSetARM" >
 					<Property Header="BuildToolSetARM" Value="ARM\GNU.config" Removable="1" />
-																																																																						
+																																																																															
 				</Section>
 				<Section Header="DebugARM" >
 					<Property Header="DebugTool_CORTEX" Value="SIM-ARM" Removable="1" />
-																																																													
+																																																																						
 				</Section>
-																										
+																																	
 			</Set>
 			<Set Header="LD" >
 				<Section Header="Startup" >
 					<Property Header="DEFAULTSTARTUP" Value="No" Removable="1" />
 					<Property Header="File" Value=".\startup_stm32f4xx.o" Removable="1" />
-																									
+																																		
 				</Section>
 				<Section Header="Scripts" >
 					<Property Header="File" Value="" Removable="1" />
 					<Property Header="SCRIPTFILES" Value="Yes" Removable="1" />
-																									
+																																		
 				</Section>
-																			
+																										
 			</Set>
-										
+															
 		</Config>
-						
+									
 	</Options>
 </ApplicationBuild>
