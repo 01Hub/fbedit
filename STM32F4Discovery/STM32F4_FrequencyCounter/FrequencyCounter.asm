@@ -86,7 +86,7 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	.elseif	eax==WM_TIMER
 		;The frequency is a 32 bit variable stored at 20000014h in STM32F4 ram
 		;Read 4 bytes from STM32F100 ram and store it in frqres.
-		invoke STLinkRead,hWin,20000018h,addr frqres,4
+		invoke STLinkRead,hWin,20000014h,addr frqres,4
 		.if eax
 			mov		eax,frqres
 			.if eax<1000

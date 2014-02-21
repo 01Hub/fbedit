@@ -2,7 +2,7 @@
 Version=3000
 [Project]
 Assembler=Masm
-Path=C:\FbEdit\Projects\Applications\FbEdit\STM32F4Discovery\STM32F4_DDSWaveGen
+Path=D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_DDSWaveGen
 Group=2,-1,0,1,DDS Waveform Generator,-2,-1,1,Assembly,-3,-1,1,Include,-4,-1,1,Misc,-5,-1,1,Resource
 F1=-2,2,1,-10,-29,909,543,165,DDSWaveGen.asm
 F2=-3,0,1,40,40,608,409,885,DDSWaveGen.inc
