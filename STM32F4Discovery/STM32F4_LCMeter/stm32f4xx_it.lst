@@ -1,0 +1,130 @@
+
+D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_it.o:     file format elf32-littlearm
+D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_it.o
+
+
+Disassembly of section .text.NMI_Handler:
+
+00000000 <NMI_Handler>:
+NMI_Handler():
+D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter/stm32f4xx_it.c:57
+  * @param  None
+  * @retval None
+  */
+void NMI_Handler(void)
+{
+}
+   0:	4770      	bx	lr
+   2:	bf00      	nop
+
+Disassembly of section .text.HardFault_Handler:
+
+00000000 <HardFault_Handler>:
+HardFault_Handler():
+D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter/stm32f4xx_it.c:65
+  * @brief  This function handles Hard Fault exception.
+  * @param  None
+  * @retval None
+  */
+void HardFault_Handler(void)
+{
+   0:	e7fe      	b.n	0 <HardFault_Handler>
+   2:	bf00      	nop
+
+Disassembly of section .text.MemManage_Handler:
+
+00000000 <MemManage_Handler>:
+MemManage_Handler():
+D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter/stm32f4xx_it.c:77
+  * @brief  This function handles Memory Manage exception.
+  * @param  None
+  * @retval None
+  */
+void MemManage_Handler(void)
+{
+   0:	e7fe      	b.n	0 <MemManage_Handler>
+   2:	bf00      	nop
+
+Disassembly of section .text.BusFault_Handler:
+
+00000000 <BusFault_Handler>:
+BusFault_Handler():
+D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter/stm32f4xx_it.c:89
+  * @brief  This function handles Bus Fault exception.
+  * @param  None
+  * @retval None
+  */
+void BusFault_Handler(void)
+{
+   0:	e7fe      	b.n	0 <BusFault_Handler>
+   2:	bf00      	nop
+
+Disassembly of section .text.UsageFault_Handler:
+
+00000000 <UsageFault_Handler>:
+UsageFault_Handler():
+D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter/stm32f4xx_it.c:101
+  * @brief  This function handles Usage Fault exception.
+  * @param  None
+  * @retval None
+  */
+void UsageFault_Handler(void)
+{
+   0:	e7fe      	b.n	0 <UsageFault_Handler>
+   2:	bf00      	nop
+
+Disassembly of section .text.DebugMon_Handler:
+
+00000000 <DebugMon_Handler>:
+DebugMon_Handler():
+D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter/stm32f4xx_it.c:113
+  * @brief  This function handles Debug Monitor exception.
+  * @param  None
+  * @retval None
+  */
+void DebugMon_Handler(void)
+{}
+   0:	4770      	bx	lr
+   2:	bf00      	nop
+
+Disassembly of section .text.SVC_Handler:
+
+00000000 <SVC_Handler>:
+SVC_Handler():
+D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter/stm32f4xx_it.c:121
+  * @brief  This function handles SVCall exception.
+  * @param  None
+  * @retval None
+  */
+void SVC_Handler(void)
+{}
+   0:	4770      	bx	lr
+   2:	bf00      	nop
+
+Disassembly of section .text.PendSV_Handler:
+
+00000000 <PendSV_Handler>:
+PendSV_Handler():
+D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter/stm32f4xx_it.c:129
+  * @brief  This function handles PendSV_Handler exception.
+  * @param  None
+  * @retval None
+  */
+void PendSV_Handler(void)
+{}
+   0:	4770      	bx	lr
+   2:	bf00      	nop
+
+Disassembly of section .text.SysTick_Handler:
+
+00000000 <SysTick_Handler>:
+SysTick_Handler():
+D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter/stm32f4xx_it.c:137
+  * @brief  This function handles SysTick Handler.
+  * @param  None
+  * @retval None
+  */
+void SysTick_Handler(void)
+{}
+   0:	4770      	bx	lr
+   2:	bf00      	nop

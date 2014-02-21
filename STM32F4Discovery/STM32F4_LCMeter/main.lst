@@ -1,0 +1,336 @@
+
+D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.o:     file format elf32-littlearm
+D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.o
+
+
+Disassembly of section .text.RCC_Config:
+
+00000000 <RCC_Config>:
+RCC_Config():
+D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter/main.c:88
+  * @brief  Configure the RCC.
+  * @param  None
+  * @retval None
+  */
+void RCC_Config(void)
+{
+   0:	b508      	push	{r3, lr}
+D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter/main.c:90
+  /* TIM2 and TIM3 clock enable */
+  RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2 | RCC_APB1Periph_TIM3, ENABLE);
+   2:	f04f 0003 	mov.w	r0, #3
+   6:	f04f 0101 	mov.w	r1, #1
+   a:	f7ff fffe 	bl	0 <RCC_APB1PeriphClockCmd>
+D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter/main.c:92
+  /* GPIOA clock enable */
+  RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);
+   e:	f04f 0001 	mov.w	r0, #1
+  12:	4601      	mov	r1, r0
+  14:	f7ff fffe 	bl	0 <RCC_AHB1PeriphClockCmd>
+D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter/main.c:94
+  /* GPIOD clock enable */
+  RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOD, ENABLE);
+  18:	f04f 0008 	mov.w	r0, #8
+  1c:	f04f 0101 	mov.w	r1, #1
+  20:	f7ff fffe 	bl	0 <RCC_AHB1PeriphClockCmd>
+D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter/main.c:95
+}
+  24:	bd08      	pop	{r3, pc}
+  26:	bf00      	nop
+
+Disassembly of section .text.NVIC_Config:
+
+00000000 <NVIC_Config>:
+NVIC_Config():
+D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter/main.c:103
+  * @brief  Configure the NVIC.
+  * @param  None
+  * @retval None
+  */
+void NVIC_Config(void)
+{
+   0:	b500      	push	{lr}
+   2:	b083      	sub	sp, #12
+D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter/main.c:106
+  NVIC_InitTypeDef NVIC_InitStructure;
+  /* Enable the TIM3 gloabal Interrupt */
+  NVIC_InitStructure.NVIC_IRQChannel = TIM3_IRQn;
+   4:	f04f 031d 	mov.w	r3, #29
+   8:	f88d 3004 	strb.w	r3, [sp, #4]
+D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter/main.c:107
+  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
+   c:	f04f 0300 	mov.w	r3, #0
+  10:	f88d 3005 	strb.w	r3, [sp, #5]
+D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter/main.c:108
+  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
+  14:	f04f 0301 	mov.w	r3, #1
+  18:	f88d 3006 	strb.w	r3, [sp, #6]
+D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter/main.c:109
+  NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+  1c:	f88d 3007 	strb.w	r3, [sp, #7]
+D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter/main.c:110
+  NVIC_Init(&NVIC_InitStructure);
+  20:	a801      	add	r0, sp, #4
+  22:	f7ff fffe 	bl	0 <NVIC_Init>
+D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter/main.c:111
+}
+  26:	b003      	add	sp, #12
+  28:	bd00      	pop	{pc}
+  2a:	bf00      	nop
+
+Disassembly of section .text.GPIO_Config:
+
+00000000 <GPIO_Config>:
+GPIO_Config():
+D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter/main.c:119
+  * @brief  Configure the GPIO.
+  * @param  None
+  * @retval None
+  */
+void GPIO_Config(void)
+{
+   0:	b570      	push	{r4, r5, r6, lr}
+   2:	b082      	sub	sp, #8
+D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter/main.c:122
+  GPIO_InitTypeDef GPIO_InitStructure;
+  /* Initialize Leds mounted on STM32F4-Discovery board */
+  STM_EVAL_LEDInit(LED3);
+   4:	f04f 0001 	mov.w	r0, #1
+   8:	f7ff fffe 	bl	0 <STM_EVAL_LEDInit>
+D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter/main.c:124
+  /* TIM2 chennel2 configuration : PA.01 */
+  GPIO_InitStructure.GPIO_Pin   = GPIO_Pin_1;
+   c:	f04f 0302 	mov.w	r3, #2
+  10:	9300      	str	r3, [sp, #0]
+D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter/main.c:125
+  GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_AF;
+  12:	f88d 3004 	strb.w	r3, [sp, #4]
+D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter/main.c:126
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+  16:	f04f 0603 	mov.w	r6, #3
+  1a:	f88d 6005 	strb.w	r6, [sp, #5]
+D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter/main.c:127
+  GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+  1e:	f04f 0400 	mov.w	r4, #0
+  22:	f88d 4006 	strb.w	r4, [sp, #6]
+D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter/main.c:128
+  GPIO_InitStructure.GPIO_PuPd  = GPIO_PuPd_NOPULL;
+  26:	f88d 4007 	strb.w	r4, [sp, #7]
+D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter/main.c:129
+  GPIO_Init(GPIOA, &GPIO_InitStructure);
+  2a:	4625      	mov	r5, r4
+  2c:	f2c4 0502 	movt	r5, #16386	; 0x4002
+  30:	4628      	mov	r0, r5
+  32:	4669      	mov	r1, sp
+  34:	f7ff fffe 	bl	0 <GPIO_Init>
+D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter/main.c:131
+  /* Connect TIM2 pin to AF2 */
+  GPIO_PinAFConfig(GPIOA, GPIO_PinSource1, GPIO_AF_TIM2);
+  38:	4628      	mov	r0, r5
+  3a:	f04f 0101 	mov.w	r1, #1
+  3e:	460a      	mov	r2, r1
+  40:	f7ff fffe 	bl	0 <GPIO_PinAFConfig>
+D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter/main.c:133
+  /* GPIOD */
+  GPIO_ResetBits(GPIOD, GPIO_Pin_0 | GPIO_Pin_1 | GPIO_Pin_2);
+  44:	f44f 6540 	mov.w	r5, #3072	; 0xc00
+  48:	f2c4 0502 	movt	r5, #16386	; 0x4002
+  4c:	4628      	mov	r0, r5
+  4e:	f04f 0107 	mov.w	r1, #7
+  52:	f7ff fffe 	bl	0 <GPIO_ResetBits>
+D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter/main.c:134
+  GPIO_InitStructure.GPIO_Pin   = GPIO_Pin_0 | GPIO_Pin_1 | GPIO_Pin_2;
+  56:	f04f 0307 	mov.w	r3, #7
+  5a:	9300      	str	r3, [sp, #0]
+D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter/main.c:135
+  GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_OUT;
+  5c:	f04f 0301 	mov.w	r3, #1
+  60:	f88d 3004 	strb.w	r3, [sp, #4]
+D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter/main.c:136
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+  64:	f88d 6005 	strb.w	r6, [sp, #5]
+D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter/main.c:137
+  GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+  68:	f88d 4006 	strb.w	r4, [sp, #6]
+D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter/main.c:138
+  GPIO_InitStructure.GPIO_PuPd  = GPIO_PuPd_NOPULL;
+  6c:	f88d 4007 	strb.w	r4, [sp, #7]
+D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter/main.c:139
+  GPIO_Init(GPIOD, &GPIO_InitStructure);
+  70:	4628      	mov	r0, r5
+  72:	4669      	mov	r1, sp
+  74:	f7ff fffe 	bl	0 <GPIO_Init>
+D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter/main.c:140
+}
+  78:	b002      	add	sp, #8
+  7a:	bd70      	pop	{r4, r5, r6, pc}
+
+Disassembly of section .text.TIM_Config:
+
+00000000 <TIM_Config>:
+TIM_Config():
+D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter/main.c:148
+  * @brief  Configure the TIM IRQ Handler.
+  * @param  None
+  * @retval None
+  */
+void TIM_Config(void)
+{
+   0:	b530      	push	{r4, r5, lr}
+   2:	b085      	sub	sp, #20
+D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter/main.c:151
+  TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructure;
+  /* TIM2 Counter configuration */
+  TIM_TimeBaseStructure.TIM_Period = 0xffffffff;
+   4:	f04f 33ff 	mov.w	r3, #4294967295
+   8:	9302      	str	r3, [sp, #8]
+D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter/main.c:152
+  TIM_TimeBaseStructure.TIM_Prescaler = 0;
+   a:	f04f 0400 	mov.w	r4, #0
+   e:	f8ad 4004 	strh.w	r4, [sp, #4]
+D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter/main.c:153
+  TIM_TimeBaseStructure.TIM_ClockDivision = 0;
+  12:	f8ad 400c 	strh.w	r4, [sp, #12]
+D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter/main.c:154
+  TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
+  16:	f8ad 4006 	strh.w	r4, [sp, #6]
+D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter/main.c:155
+  TIM_TimeBaseInit(TIM2, &TIM_TimeBaseStructure);
+  1a:	f04f 4080 	mov.w	r0, #1073741824	; 0x40000000
+  1e:	a901      	add	r1, sp, #4
+  20:	f7ff fffe 	bl	0 <TIM_TimeBaseInit>
+D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter/main.c:156
+  TIM2->CCMR1 = 0x0100;     //CC2S=01
+  24:	f04f 4580 	mov.w	r5, #1073741824	; 0x40000000
+  28:	f44f 7380 	mov.w	r3, #256	; 0x100
+  2c:	832b      	strh	r3, [r5, #24]
+D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter/main.c:157
+  TIM2->SMCR = 0x0067;      //TS=110, SMS=111
+  2e:	f04f 0367 	mov.w	r3, #103	; 0x67
+  32:	812b      	strh	r3, [r5, #8]
+D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter/main.c:159
+  /* TIM3 1 second Time base configuration */
+  TIM_TimeBaseStructure.TIM_Period = 9999;
+  34:	f242 730f 	movw	r3, #9999	; 0x270f
+  38:	9302      	str	r3, [sp, #8]
+D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter/main.c:160
+  TIM_TimeBaseStructure.TIM_Prescaler = 8399;
+  3a:	f242 03cf 	movw	r3, #8399	; 0x20cf
+  3e:	f8ad 3004 	strh.w	r3, [sp, #4]
+D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter/main.c:161
+  TIM_TimeBaseStructure.TIM_ClockDivision = 0;
+  42:	f8ad 400c 	strh.w	r4, [sp, #12]
+D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter/main.c:162
+  TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
+  46:	f8ad 4006 	strh.w	r4, [sp, #6]
+D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter/main.c:163
+  TIM_TimeBaseInit(TIM3, &TIM_TimeBaseStructure);
+  4a:	f44f 6480 	mov.w	r4, #1024	; 0x400
+  4e:	f2c4 0400 	movt	r4, #16384	; 0x4000
+  52:	4620      	mov	r0, r4
+  54:	a901      	add	r1, sp, #4
+  56:	f7ff fffe 	bl	0 <TIM_TimeBaseInit>
+D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter/main.c:165
+  /* TIM Interrupts enable */
+  TIM_ITConfig(TIM3, TIM_IT_Update, ENABLE);
+  5a:	4620      	mov	r0, r4
+  5c:	f04f 0101 	mov.w	r1, #1
+  60:	460a      	mov	r2, r1
+  62:	f7ff fffe 	bl	0 <TIM_ITConfig>
+D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter/main.c:167
+  /* TIM2 enable counter */
+  TIM_Cmd(TIM2, ENABLE);
+  66:	4628      	mov	r0, r5
+  68:	f04f 0101 	mov.w	r1, #1
+  6c:	f7ff fffe 	bl	0 <TIM_Cmd>
+D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter/main.c:169
+  /* TIM3 enable counter */
+  TIM_Cmd(TIM3, ENABLE);
+  70:	4620      	mov	r0, r4
+  72:	f04f 0101 	mov.w	r1, #1
+  76:	f7ff fffe 	bl	0 <TIM_Cmd>
+D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter/main.c:170
+}
+  7a:	b005      	add	sp, #20
+  7c:	bd30      	pop	{r4, r5, pc}
+  7e:	bf00      	nop
+
+Disassembly of section .text.main:
+
+00000000 <main>:
+main():
+D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter/main.c:63
+  * @brief  Main program
+  * @param  None
+  * @retval None
+  */
+int main(void)
+{
+   0:	b508      	push	{r3, lr}
+D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter/main.c:72
+       To reconfigure the default setting of SystemInit() function, refer to
+       system_stm32f4xx.c file
+     */
+
+  /* RCC Configuration */
+  RCC_Config();
+   2:	f7ff fffe 	bl	0 <main>
+D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter/main.c:74
+  /* GPIO Configuration */
+  GPIO_Config();
+   6:	f7ff fffe 	bl	0 <main>
+D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter/main.c:76
+  /* TIM Configuration */
+  TIM_Config();
+   a:	f7ff fffe 	bl	0 <main>
+D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter/main.c:78
+  /* NVIC Configuration */
+  NVIC_Config();
+   e:	f7ff fffe 	bl	0 <main>
+  12:	e7fe      	b.n	12 <main+0x12>
+
+Disassembly of section .text.TIM3_IRQHandler:
+
+00000000 <TIM3_IRQHandler>:
+TIM3_IRQHandler():
+D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter/main.c:178
+  * @brief  This function handles TIM3 global interrupt request.
+  * @param  None
+  * @retval None
+  */
+void TIM3_IRQHandler(void)
+{
+   0:	b508      	push	{r3, lr}
+D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter/main.c:179
+  STM32_FRQ.ThisCount = TIM2->CNT;
+   2:	f04f 4380 	mov.w	r3, #1073741824	; 0x40000000
+   6:	6a5a      	ldr	r2, [r3, #36]	; 0x24
+   8:	f240 0300 	movw	r3, #0
+   c:	f2c0 0300 	movt	r3, #0
+  10:	609a      	str	r2, [r3, #8]
+D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter/main.c:180
+  STM32_FRQ.Frequency = STM32_FRQ.ThisCount - STM32_FRQ.PreviousCount;
+  12:	6859      	ldr	r1, [r3, #4]
+  14:	1a51      	subs	r1, r2, r1
+  16:	6019      	str	r1, [r3, #0]
+D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter/main.c:181
+  STM32_FRQ.PreviousCount = STM32_FRQ.ThisCount;
+  18:	605a      	str	r2, [r3, #4]
+D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter/main.c:182
+  STM32_FRQ.TickCount++;
+  1a:	68da      	ldr	r2, [r3, #12]
+  1c:	f102 0201 	add.w	r2, r2, #1
+  20:	60da      	str	r2, [r3, #12]
+D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter/main.c:183
+  TIM_ClearITPendingBit(TIM3, TIM_IT_Update);
+  22:	f44f 6080 	mov.w	r0, #1024	; 0x400
+  26:	f2c4 0000 	movt	r0, #16384	; 0x4000
+  2a:	f04f 0101 	mov.w	r1, #1
+  2e:	f7ff fffe 	bl	0 <TIM_ClearITPendingBit>
+D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter/main.c:184
+  STM_EVAL_LEDToggle(LED3);
+  32:	f04f 0001 	mov.w	r0, #1
+  36:	f7ff fffe 	bl	0 <STM_EVAL_LEDToggle>
+D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter/main.c:185
+}
+  3a:	bd08      	pop	{r3, pc}
