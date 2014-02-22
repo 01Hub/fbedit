@@ -1,0 +1,24 @@
+
+-------------------------------------------------------------------------------
+STM32F4 Discovery Frequency Counter demo project.
+-------------------------------------------------------------------------------
+
+IMPORTANT NOTICE!
+-----------------
+The use of the evaluation board is restricted:
+"This device is not, and may not be, offered for sale or lease, or sold or
+leased or otherwise distributed".
+
+For more info see this license agreement:
+http://www.st.com/internet/com/LEGAL_RESOURCES/LEGAL_AGREEMENT/
+LICENSE_AGREEMENT/EvaluationProductLicenseAgreement.pdf
+
+-------------------------------------------------------------------------------
+Features:
+-------------------------------------------------------------------------------
+
+-------------------------------------------------------------------------------
+Port pins used:
+-------------------------------------------------------------------------------
+PA.01				TIM2 Input for frequency counter.
+

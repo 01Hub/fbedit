@@ -26,8 +26,8 @@
   PD.00         Frequency counter select0
   PD.01         Frequency counter select1
   PD.02         Frequency counter select2
-  PD.06         LCMeter calibration
-  PD.07         LCMeter L/C selection, C = Low L = High
+  PD.06         LCMeter L/C selection, C = Low L = High
+  PD.07         LCMeter calibration
   ******************************************************************************
   */
 
@@ -102,6 +102,8 @@ int main(void)
   TIM_Config();
   /* NVIC Configuration */
   NVIC_Config();
+  /* Calibrate LC Meter */
+  LCM_Calibrate();
   while (1)
   {
     switch (STM32_CMD.Cmd)
@@ -113,8 +115,8 @@ int main(void)
         GPIO_ResetBits(GPIOD, GPIO_Pin_0 | GPIO_Pin_1 | GPIO_Pin_2 | GPIO_Pin_6 | GPIO_Pin_7);
         break;
       case CMD_LCMIND:
-        GPIO_ResetBits(GPIOD, GPIO_Pin_0 | GPIO_Pin_1 | GPIO_Pin_2 | GPIO_Pin_6);
-        GPIO_SetBits(GPIOD, GPIO_Pin_7);
+        GPIO_ResetBits(GPIOD, GPIO_Pin_0 | GPIO_Pin_1 | GPIO_Pin_2 | GPIO_Pin_7);
+        GPIO_SetBits(GPIOD, GPIO_Pin_6);
         break;
       case CMD_FRQCH1:
         GPIO_ResetBits(GPIOD, GPIO_Pin_1 | GPIO_Pin_2);
@@ -155,9 +157,9 @@ void LCM_Calibrate(void)
 {
   uint32_t i;
   GPIO_ResetBits(GPIOD, GPIO_Pin_0 | GPIO_Pin_1 | GPIO_Pin_2 | GPIO_Pin_6 | GPIO_Pin_7);
-  i = GetFrequency();
   STM32_CMD.STM32_LCM.FrequencyCal0 = 0;
   STM32_CMD.STM32_LCM.FrequencyCal1 = 0;
+  i = GetFrequency();
   i = 0;
   while (i < 4)
   {
@@ -165,7 +167,7 @@ void LCM_Calibrate(void)
     i++;
   }
   STM32_CMD.STM32_LCM.FrequencyCal0 /= 4;
-  GPIO_SetBits(GPIOD, GPIO_Pin_6);
+  GPIO_SetBits(GPIOD, GPIO_Pin_7);
   i = GetFrequency();
   i = 0;
   while (i < 4)
@@ -173,8 +175,8 @@ void LCM_Calibrate(void)
     STM32_CMD.STM32_LCM.FrequencyCal1 += GetFrequency();
     i++;
   }
-  STM32_CMD.STM32_LCM.FrequencyCal0 /= 4;
-  GPIO_ResetBits(GPIOD, GPIO_Pin_6);
+  STM32_CMD.STM32_LCM.FrequencyCal1 /= 4;
+  GPIO_ResetBits(GPIOD, GPIO_Pin_7);
 }
 
 /**
