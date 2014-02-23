@@ -23,6 +23,7 @@
   ******************************************************************************
   Port pins
   PA.01         Frequency counter input
+  PB.07         High Speed Clock
   PD.00         Frequency counter select0
   PD.01         Frequency counter select1
   PD.02         Frequency counter select2
@@ -37,23 +38,24 @@
 /* Private typedef -----------------------------------------------------------*/
 typedef struct
 {
-  uint32_t Frequency;                           // 0x20000018
-  uint32_t PreviousCount;                       // 0x2000001C
-  uint32_t ThisCount;                           // 0x20000020
-  uint32_t TickCount;                           // 0x20000024
+  uint32_t Frequency;                           // 0x2000001C
+  uint32_t PreviousCount;                       // 0x20000020
+  uint32_t ThisCount;                           // 0x20000024
+  uint32_t TickCount;                           // 0x20000028
 } STM32_FRQTypeDef;
 
 typedef struct
 {
-  uint32_t FrequencyCal0;                       // 0x20000028
-  uint32_t FrequencyCal1;                       // 0x2000002C
+  uint32_t FrequencyCal0;                       // 0x2000002C
+  uint32_t FrequencyCal1;                       // 0x20000030
 } STM32_LCMTypeDef;
 
 typedef struct
 {
   uint32_t Cmd;                                 // 0x20000014
-  STM32_FRQTypeDef STM32_FRQ;                   // 0x20000018
-  STM32_LCMTypeDef STM32_LCM;                   // 0x20000028
+  uint32_t HSCSet;                              // 0x20000018
+  STM32_FRQTypeDef STM32_FRQ;                   // 0x2000001C
+  STM32_LCMTypeDef STM32_LCM;                   // 0x2000002C
 } STM32_CMDTypeDef;
 
 /* Private define ------------------------------------------------------------*/
@@ -65,6 +67,7 @@ typedef struct
 #define CMD_FRQCH1                              ((uint8_t)4)
 #define CMD_FRQCH2                              ((uint8_t)5)
 #define CMD_FRQCH3                              ((uint8_t)6)
+#define CMD_HSCSET                              ((uint8_t)7)
 
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
@@ -110,28 +113,37 @@ int main(void)
     {
       case CMD_LCMCAL:
         LCM_Calibrate();
+        STM32_CMD.Cmd = CMD_DONE;
         break;
       case CMD_LCMCAP:
         GPIO_ResetBits(GPIOD, GPIO_Pin_0 | GPIO_Pin_1 | GPIO_Pin_2 | GPIO_Pin_6 | GPIO_Pin_7);
+        STM32_CMD.Cmd = CMD_DONE;
         break;
       case CMD_LCMIND:
         GPIO_ResetBits(GPIOD, GPIO_Pin_0 | GPIO_Pin_1 | GPIO_Pin_2 | GPIO_Pin_7);
         GPIO_SetBits(GPIOD, GPIO_Pin_6);
+        STM32_CMD.Cmd = CMD_DONE;
         break;
       case CMD_FRQCH1:
         GPIO_ResetBits(GPIOD, GPIO_Pin_1 | GPIO_Pin_2);
         GPIO_SetBits(GPIOD, GPIO_Pin_0);
+        STM32_CMD.Cmd = CMD_DONE;
         break;
       case CMD_FRQCH2:
         GPIO_ResetBits(GPIOD, GPIO_Pin_0 | GPIO_Pin_2);
         GPIO_SetBits(GPIOD, GPIO_Pin_1);
+        STM32_CMD.Cmd = CMD_DONE;
         break;
       case CMD_FRQCH3:
         GPIO_ResetBits(GPIOD, GPIO_Pin_2);
         GPIO_SetBits(GPIOD, GPIO_Pin_0 | GPIO_Pin_1);
+        STM32_CMD.Cmd = CMD_DONE;
+        break;
+      case CMD_HSCSET:
+        TIM4->PSC = STM32_CMD.HSCSet;
+        STM32_CMD.Cmd = CMD_DONE;
         break;
     }
-    STM32_CMD.Cmd = CMD_DONE;
   }
 }
 
@@ -187,9 +199,11 @@ void LCM_Calibrate(void)
 void RCC_Config(void)
 {
   /* TIM2 and TIM3 clock enable */
-  RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2 | RCC_APB1Periph_TIM3, ENABLE);
+  RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2 | RCC_APB1Periph_TIM4 | RCC_APB1Periph_TIM3, ENABLE);
   /* GPIOA clock enable */
   RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);
+  /* GPIOB clock enable */
+  RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE);
   /* GPIOD clock enable */
   RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOD, ENABLE);
 }
@@ -220,6 +234,7 @@ void GPIO_Config(void)
   GPIO_InitTypeDef GPIO_InitStructure;
   /* Initialize Leds mounted on STM32F4-Discovery board */
   STM_EVAL_LEDInit(LED3);
+
   /* TIM2 chennel2 configuration : PA.01 */
   GPIO_InitStructure.GPIO_Pin   = GPIO_Pin_1;
   GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_AF;
@@ -229,7 +244,18 @@ void GPIO_Config(void)
   GPIO_Init(GPIOA, &GPIO_InitStructure);
   /* Connect TIM2 pin to AF2 */
   GPIO_PinAFConfig(GPIOA, GPIO_PinSource1, GPIO_AF_TIM2);
-  /* GPIOD */
+
+  /* TIM4 chennel 2 configuration : PB7 */
+  GPIO_InitStructure.GPIO_Pin   = GPIO_Pin_7;
+  GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_AF;
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+  GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+  GPIO_InitStructure.GPIO_PuPd  = GPIO_PuPd_UP ;
+  GPIO_Init(GPIOB, &GPIO_InitStructure);
+  /* Connect TIM4 pin to AF2 */
+  GPIO_PinAFConfig(GPIOB, GPIO_PinSource7, GPIO_AF_TIM4);
+
+  /* GPIOD Outputs */
   GPIO_ResetBits(GPIOD, GPIO_Pin_0 | GPIO_Pin_1 | GPIO_Pin_2 | GPIO_Pin_6 | GPIO_Pin_7);
   GPIO_InitStructure.GPIO_Pin   = GPIO_Pin_0 | GPIO_Pin_1 | GPIO_Pin_2 | GPIO_Pin_6 | GPIO_Pin_7;
   GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_OUT;
@@ -247,6 +273,8 @@ void GPIO_Config(void)
 void TIM_Config(void)
 {
   TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructure;
+  TIM_OCInitTypeDef       TIM_OCInitStructure;
+  TIM_OCStructInit(&TIM_OCInitStructure);
   /* TIM2 Counter configuration */
   TIM_TimeBaseStructure.TIM_Period = 0xffffffff;
   TIM_TimeBaseStructure.TIM_Prescaler = 0;
@@ -255,6 +283,7 @@ void TIM_Config(void)
   TIM_TimeBaseInit(TIM2, &TIM_TimeBaseStructure);
   TIM2->CCMR1 = 0x0100;     //CC2S=01
   TIM2->SMCR = 0x0067;      //TS=110, SMS=111
+
   /* TIM3 1 second Time base configuration */
   TIM_TimeBaseStructure.TIM_Period = 9999;
   TIM_TimeBaseStructure.TIM_Prescaler = 8399;
@@ -267,6 +296,25 @@ void TIM_Config(void)
   TIM_Cmd(TIM2, ENABLE);
   /* TIM3 enable counter */
   TIM_Cmd(TIM3, ENABLE);
+
+  /* TIM4 HSC Time base configuration */
+  TIM_TimeBaseStructure.TIM_Period = 1;
+  TIM_TimeBaseStructure.TIM_Prescaler = 41;
+  TIM_TimeBaseStructure.TIM_ClockDivision = 0;
+  TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
+  TIM_TimeBaseStructure.TIM_RepetitionCounter = 0;
+  TIM_TimeBaseInit(TIM4, &TIM_TimeBaseStructure);
+  /* PWM1 Mode configuration: Channel2 */
+  TIM_OCInitStructure.TIM_OCMode = TIM_OCMode_PWM1;
+  TIM_OCInitStructure.TIM_OutputState = TIM_OutputState_Enable;
+  TIM_OCInitStructure.TIM_Pulse = 1;
+  TIM_OCInitStructure.TIM_OCPolarity = TIM_OCPolarity_High;
+  TIM_OC2Init(TIM4, &TIM_OCInitStructure);
+  TIM_OC2PreloadConfig(TIM4, TIM_OCPreload_Enable);
+  TIM_ARRPreloadConfig(TIM4, ENABLE);
+  /* TIM4 enable counter */
+  TIM_Cmd(TIM4, ENABLE);
+
 }
 
 /**

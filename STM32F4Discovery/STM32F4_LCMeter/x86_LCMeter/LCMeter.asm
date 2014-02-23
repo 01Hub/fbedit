@@ -11,7 +11,7 @@ include LCMeter.inc
 FpToAscii proc USES esi edi,lpFpin:DWORD,lpStr:DWORD,fSci:DWORD
 	LOCAL	iExp:DWORD
 	LOCAL	sztemp[32]:BYTE
-	LOCAL	temp:TBYTE
+	LOCAL	temp:REAL10
 
 	mov		esi,lpFpin
 	mov		edi,lpStr
@@ -27,7 +27,7 @@ FpToAscii proc USES esi edi,lpFpin:DWORD,lpStr:DWORD,fSci:DWORD
 		mov		byte ptr [edi],'-'		; store a minus sign
 		inc		edi
 	.endif
-	fld		TBYTE ptr [esi]
+	fld		REAL10 ptr [esi]
 	fld		st(0)
 	; Compute the closest power of 10 below the number.  We can't get an
 	; exact value because of rounding.  We could get close by adding in
@@ -247,17 +247,17 @@ PowerOf10:
 
 FpToAscii endp
 
-PrintFp proc lpfVal:DWORD
-	LOCAL	buffer[256]:BYTE
-
-	pushad
-	invoke FpToAscii,lpfVal,addr buffer,FALSE
-	lea		eax,buffer
-	PrintStringByAddr eax
-	popad
-	ret
-
-PrintFp endp
+;PrintFp proc lpfVal:DWORD
+;	LOCAL	buffer[256]:BYTE
+;
+;	pushad
+;	invoke FpToAscii,lpfVal,addr buffer,FALSE
+;	lea		eax,buffer
+;	PrintStringByAddr eax
+;	popad
+;	ret
+;
+;PrintFp endp
 
 FrequencyProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	buffer[32]:BYTE
@@ -312,13 +312,14 @@ FrequencyProc endp
 ;OUT:	Nothing
 ;------------------------------------------------------------------
 CalculateCapacitor proc uses esi,lpBuffer:PTR BYTE
-	LOCAL	tmp:REAL8
+	LOCAL	tmp:REAL10
 	LOCAL	iExp:DWORD
 
 	fild	STM32_Cmd.STM32_Lcm.FrequencyCal0
 	fild	STM32_Cmd.STM32_Frq.Frequency
 	fdivp	st(1),st
-	fst		REAL8 ptr [tmp]
+	fstp	REAL10 ptr [tmp]
+	fld		tmp
 	fld		tmp
 	fmulp	st(1),st
 	fld1
@@ -326,13 +327,14 @@ CalculateCapacitor proc uses esi,lpBuffer:PTR BYTE
 	fild	STM32_Cmd.STM32_Lcm.FrequencyCal0
 	fild	STM32_Cmd.STM32_Lcm.FrequencyCal1
 	fdivp	st(1),st
-	fst		REAL8 ptr [tmp]
+	fstp	REAL10 ptr [tmp]
+	fld		tmp
 	fld		tmp
 	fmulp	st(1),st
 	fld1
 	fsubp	st(1),st
 	fdivp	st(1),st
-	fld		REAL8 ptr [CCal]
+	fld		REAL10 ptr [CCal]
 	fmulp	st(1),st
 	fstp	REAL10 ptr [LCx]
 	fld		REAL10 ptr [LCx]
@@ -392,6 +394,151 @@ CalculateCapacitor proc uses esi,lpBuffer:PTR BYTE
 
 CalculateCapacitor endp
 
+;------------------------------------------------------------------
+;Induktance meter: Lx=(((F1/F3)^2)-1)*(((F1/F2)^2)-1)*(1/Ccal)*(1/(2*PI*F1))^2
+;IN:	Nothing
+;OUT:	Nothing
+;------------------------------------------------------------------
+CalculateInductor proc uses esi,lpBuffer:PTR BYTE
+	LOCAL	tmp:REAL10
+	LOCAL	tmpa:REAL10
+	LOCAL	tmpb:REAL10
+	LOCAL	tmpc:REAL10
+	LOCAL	tmpd:REAL10
+	LOCAL	iExp:DWORD
+
+	; (((F1/F3)^2)-1)
+	fild	STM32_Cmd.STM32_Lcm.FrequencyCal0
+	fild	STM32_Cmd.STM32_Frq.Frequency
+	fdivp	st(1),st
+	fstp	REAL10 ptr [tmp]
+	fld		REAL10 ptr [tmp]
+	fld		REAL10 ptr [tmp]
+	fmulp	st(1),st
+	fld1
+	fsubp	st(1),st
+	fstp	REAL10 ptr [tmpa]
+	; (((F1/F2)^2)-1)
+	fild	STM32_Cmd.STM32_Lcm.FrequencyCal0
+	fild	STM32_Cmd.STM32_Lcm.FrequencyCal1
+	fdivp	st(1),st
+	fstp	REAL10 ptr [tmp]
+	fld		REAL10 ptr [tmp]
+	fld		REAL10 ptr [tmp]
+	fmulp	st(1),st
+	fld1
+	fsubp	st(1),st
+	fstp	REAL10 ptr [tmpb]
+	; (1/Ccal)
+	fld1
+	fld		REAL10 ptr [CCal]
+	fdivp	st(1),st
+	fstp	REAL10 ptr [tmpc]
+	; (1/(2PI*F1))^2
+	fldpi
+	fld		REAL10 ptr [two]
+	fmulp	st(1),st
+	fild	STM32_Cmd.STM32_Lcm.FrequencyCal0
+	fmulp	st(1),st
+	fstp	REAL10 ptr [tmp]
+	fld1
+	fld		REAL10 ptr [tmp]
+	fdivp	st(1),st
+	fstp	REAL10 ptr [tmp]
+	fld		REAL10 ptr [tmp]
+	fld		REAL10 ptr [tmp]
+	fmulp	st(1),st
+	fstp	REAL10 ptr [tmpd]
+	fld		REAL10 ptr [tmpd]
+	fld		REAL10 ptr [tmpa]
+	fmulp	st(1),st
+	fstp	REAL10 ptr [tmp]
+	fld		REAL10 ptr [tmp]
+	fld		REAL10 ptr [tmpb]
+	fmulp	st(1),st
+	fld		REAL10 ptr [tmpc]
+	fmulp	st(1),st
+	fstp	REAL10 ptr [LCx]
+	fld		REAL10 ptr [LCx]
+	fxtract					; ST=> mantissa, exponent, [lpfpin]
+	fstp	st(0)			; drop the mantissa
+	fldlg2					; push log10(2)
+	fmulp	st(1),st		; ST = log10([lpfpin]), [lpfpin]
+	fistp 	iExp			; ST = [lpfpin]
+	.if  sdword ptr iExp<=-7
+		fld		REAL10 ptr [LCx]
+		fld		REAL10 ptr [ten_9]
+		fmulp	st(1),st
+		fstp	REAL10 ptr [LCx]
+		mov		esi,offset szNH
+	.elseif  sdword ptr iExp<=-3
+		fld		REAL10 ptr [LCx]
+		fld		REAL10 ptr [ten_6]
+		fmulp	st(1),st
+		fstp	REAL10 ptr [LCx]
+		mov		esi,offset szUH
+	.elseif  sdword ptr iExp<=-1
+		fld		REAL10 ptr [LCx]
+		fld		REAL10 ptr [ten_3]
+		fmulp	st(1),st
+		fstp	REAL10 ptr [LCx]
+		mov		esi,offset szMH
+	.else
+		mov		esi,offset szH
+	.endif
+	invoke FpToAscii,offset LCx,lpBuffer,FALSE
+	mov		edx,lpBuffer
+	xor		ecx,ecx
+	.if byte ptr [edx]=='-'
+		mov		word ptr [edx],'0'
+	.endif
+	.while byte ptr [edx]
+		.if byte ptr [edx]=='.'
+			mov		byte ptr [edx+4],0
+			inc		edx
+			.break
+		.elseif byte ptr [edx]!='0'
+			inc		ecx
+		.endif
+		inc		edx
+	.endw
+	.while byte ptr [edx]
+		.if byte ptr [edx]!='0'
+			inc		ecx
+			.break
+		.endif
+		inc		edx
+	.endw
+	.if !ecx
+		mov		edx,lpBuffer
+		mov		word ptr [edx],'0'
+	.endif
+	invoke lstrcat,lpBuffer,esi
+	ret
+
+CalculateInductor endp
+
+SetMode proc
+	LOCAL	buffer[64]:BYTE
+
+	invoke lstrcpy,addr buffer,offset szLCMeter
+	.if mode==CMD_LCMCAP
+		mov		eax,offset szCapacitance
+	.elseif mode==CMD_LCMIND
+		mov		eax,offset szInductance
+	.elseif mode==CMD_FRQCH1
+		mov		eax,offset szFerquencyCH1
+	.elseif mode==CMD_FRQCH2
+		mov		eax,offset szFerquencyCH2
+	.elseif mode==CMD_FRQCH3
+		mov		eax,offset szFerquencyCH3
+	.endif
+	invoke lstrcat,addr buffer,eax
+	invoke SetWindowText,hWnd,addr buffer
+	ret
+
+SetMode endp
+
 DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	buffer[32]:BYTE
 
@@ -401,6 +548,7 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		hWnd,eax
 		invoke CreateFontIndirect,addr Tahoma_36
 		mov		hFont,eax
+		mov		STM32_Cmd.HSCSet,41
 	.elseif	eax==WM_COMMAND
 		mov edx,wParam
 		movzx eax,dx
@@ -412,12 +560,46 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					invoke STLinkConnect,hWin
 					.if eax && eax!=IDIGNORE && eax!=IDABORT
 						mov		connected,eax
+						mov		mode,CMD_LCMCAP
+						invoke SetMode
+						invoke STLinkWrite,hWin,20000014h,addr mode,DWORD
 						;Create a timer. The event will read the frequency, format it and display the result
-						invoke SetTimer,hWin,1000,250,NULL
+						invoke SetTimer,hWin,1000,500,NULL
 					.endif
 				.endif
 			.elseif eax==IDCANCEL
 				invoke	SendMessage,hWin,WM_CLOSE,NULL,NULL
+			.elseif eax==IDC_BTNCALIBRATE
+				.if connected
+					mov		mode,CMD_LCMCAL
+					invoke STLinkWrite,hWin,20000014h,addr mode,DWORD
+					mov		mode,CMD_LCMCAP
+					invoke SetMode
+				.endif
+			.elseif eax==IDC_BTNMODE
+				.if mode==CMD_FRQCH3
+					mov		mode,CMD_LCMCAP
+				.else
+					inc		mode
+				.endif
+				.if connected
+					invoke STLinkWrite,hWin,20000014h,addr mode,DWORD
+					invoke SetMode
+				.endif
+			.elseif eax==IDC_BTNHSCDN
+				.if STM32_Cmd.HSCSet<65534
+					inc		STM32_Cmd.HSCSet
+					mov		STM32_Cmd.Cmd,CMD_HSCSET
+					invoke STLinkWrite,hWin,20000018h,addr STM32_Cmd.HSCSet,DWORD
+					invoke STLinkWrite,hWin,20000014h,addr STM32_Cmd.Cmd,DWORD
+				.endif
+			.elseif eax==IDC_BTNHSCUP
+				.if STM32_Cmd.HSCSet
+					dec		STM32_Cmd.HSCSet
+					mov		STM32_Cmd.Cmd,CMD_HSCSET
+					invoke STLinkWrite,hWin,20000018h,addr STM32_Cmd.HSCSet,DWORD
+					invoke STLinkWrite,hWin,20000014h,addr STM32_Cmd.Cmd,DWORD
+				.endif
 			.endif
 		.endif
 	.elseif	eax==WM_TIMER
@@ -440,7 +622,12 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				call	InsertDot
 			.endif
 			invoke SetDlgItemText,hWin,IDC_FREQUENCY,addr buffer
-			invoke CalculateCapacitor,addr buffer
+			mov		buffer,0
+			.if mode==CMD_LCMCAP
+				invoke CalculateCapacitor,addr buffer
+			.elseif mode==CMD_LCMIND
+				invoke CalculateInductor,addr buffer
+			.endif
 			invoke SetDlgItemText,hWin,IDC_LCMETER,addr buffer
 		.else
 			invoke KillTimer,hWin,1000
