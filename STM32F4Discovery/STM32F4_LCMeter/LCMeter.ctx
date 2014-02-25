@@ -9,12 +9,12 @@
 				<3>374</3>
 				<4>67</4>
 				<5>145</5>
-																																																																																																																																																																	
+																																																																																																																																																																															
 			</CodeReport>
-																																																																																																																			
+																																																																																																																													
 		</CodeView>
 		<MemoryView Focus="134218120" TopRow="0" NbPerLine="8" />
-																																																																					
+																																																																											
 	</FrequencyCounter>
 	<LCMeter>
 		<CodeView TopRow="134218338" Focus="4294967295" >
@@ -25,12 +25,12 @@
 				<3>310</3>
 				<4>56</4>
 				<5>118</5>
-																																										
+																																																								
 			</CodeReport>
-																														
+																																								
 		</CodeView>
 		<MemoryView Focus="134218120" TopRow="0" NbPerLine="8" />
-																		
+																								
 	</LCMeter>
 	<Flags>
 		<Report>
@@ -54,8 +54,9 @@
 			
 	</Flags>
 	<Views>
-		<View File="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" Line="63" Index="0" focus="1" />
-		<View File="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_tim.c" Line="314" Index="1" />
+		<View File="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" Line="251" Index="0" focus="1" />
+		<View File="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_tim.c" Line="313" Index="1" />
+		<View File="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_adc.h" Line="175" Index="2" />
 	</Views>
 	<Grep>
 		<GrepIncludeSub>yes</GrepIncludeSub>
@@ -89,6 +90,7 @@
 		</GrepReplaceWhat>
 	</Grep>
 	<FindStrings>
+		<Find>ADC_TwoSamplingDelay</Find>
 		<Find>_6</Find>
 		<Find>GPIO_OType_PP</Find>
 		<Find>GPIO_PuPd_UP</Find>

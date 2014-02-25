@@ -40,6 +40,9 @@ IDC_BTNMODE						equ 105
 IDC_BTNHSCDN					equ 106
 IDC_BTNHSCUP					equ 107
 
+IDD_DLGSCOPE					equ 2000
+IDC_UDCSCOPE					equ 2001
+
 CMD_DONE						equ 0
 CMD_LCMCAL						equ 1
 CMD_LCMCAP						equ 2
@@ -47,7 +50,11 @@ CMD_LCMIND						equ 3
 CMD_FRQCH1						equ 4
 CMD_FRQCH2						equ 5
 CMD_FRQCH3						equ 6
-CMD_HSCSET						equ 7
+CMD_SCPSET                      equ 7
+CMD_HSCSET						equ 8
+
+TEXTHIGHT						equ 30
+ADCMAX							equ 2047
 
 STM32_FRQ struct
 	Frequency					DWORD ?			;0x2000001C
@@ -61,11 +68,17 @@ STM32_LCM struct
 	FrequencyCal1				DWORD ?			;0x20000030
 STM32_LCM ends
 
+STM32_SCP struct
+	ADC_Prescaler				DWORD ?         ;0x20000034
+	ADC_TwoSamplingDelay		DWORD ?         ;0x20000038
+STM32_SCP ends
+
 STM32_CMD struct
 	Cmd							DWORD ?			;0x20000014
 	HSCSet						DWORD ?			;0x20000018
 	STM32_Frq 					STM32_FRQ <>	;0x2000001C
 	STM32_Lcm					STM32_LCM <>	;0x2000002C
+	STM32_Scp					STM32_SCP <>	;0x20000034
 STM32_CMD ends
 
 FP_EQUALTO						equ	40h
@@ -73,6 +86,7 @@ FP_EQUALTO						equ	40h
 .const
 
 szFREQUENCYCLASS				BYTE 'FREQUENCYCLASS',0
+szSCOPECLASS					BYTE 'SCOPECLASS',0
 Tahoma_36						LOGFONT <-36,0,0,0,400,0,0,0,0,3,2,1,34,"Tahoma">
 
 szLCMeter						BYTE 'LC Meter - ',0
@@ -81,6 +95,7 @@ szInductance					BYTE 'Inductance',0
 szFerquencyCH1					BYTE 'Ferquency CH1',0
 szFerquencyCH2					BYTE 'Ferquency CH2',0
 szFerquencyCH3					BYTE 'Ferquency CH3',0
+szScope							BYTE 'Scope',0
 
 szFmtHz							BYTE '%dHz',0
 szFmtKHz						BYTE '%dKHz',0
@@ -156,10 +171,12 @@ ten_256							REAL10 1.0e256
 hInstance						HINSTANCE ?
 wc								WNDCLASSEX <>
 hWnd							HWND ?
+hScp							HWND ?
 hFont							HFONT ?
 connected						DWORD ?
 STM32_Cmd						STM32_CMD <>
 mode							DWORD ?
 LCx								REAL10 ?
+ADC_Data						WORD 8000h dup(?)
 
 ;#########################################################################
