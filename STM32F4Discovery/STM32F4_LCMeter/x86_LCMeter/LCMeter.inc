@@ -54,6 +54,7 @@ CMD_SCPSET                      equ 7
 CMD_HSCSET						equ 8
 
 TEXTHIGHT						equ 30
+GRIDSIZE						equ 64
 ADCMAX							equ 2047
 
 STM32_FRQ struct
