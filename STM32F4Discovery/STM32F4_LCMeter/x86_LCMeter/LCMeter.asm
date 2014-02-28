@@ -3,249 +3,34 @@
 option casemap :none  ;case sensitive
 
 include LCMeter.inc
+include Misc.asm
 
 .code
 
 ;########################################################################
 
-FpToAscii proc USES esi edi,lpFpin:DWORD,lpStr:DWORD,fSci:DWORD
-	LOCAL	iExp:DWORD
-	LOCAL	sztemp[32]:BYTE
-	LOCAL	temp:REAL10
+SetMode proc
+	LOCAL	buffer[64]:BYTE
 
-	mov		esi,lpFpin
-	mov		edi,lpStr
-	.if	dword ptr [esi]== 0 && dword ptr [esi+4]==0
-		; Special case zero.  fxtract fails for zero.
-		mov		word ptr [edi], '0'
-		ret
+	invoke lstrcpy,addr buffer,offset szLCMeter
+	.if mode==CMD_LCMCAP
+		mov		eax,offset szCapacitance
+	.elseif mode==CMD_LCMIND
+		mov		eax,offset szInductance
+	.elseif mode==CMD_FRQCH1
+		mov		eax,offset szFerquencyCH1
+	.elseif mode==CMD_FRQCH2
+		mov		eax,offset szFerquencyCH2
+	.elseif mode==CMD_FRQCH3
+		mov		eax,offset szFerquencyCH3
+	.elseif mode==CMD_SCPSET
+		mov		eax,offset szScope
 	.endif
-	; Check for a negative number.
-	push	[esi+6]
-	.if	sdword ptr [esi+6]<0
-		and		byte ptr [esi+9],07fh	; change to positive
-		mov		byte ptr [edi],'-'		; store a minus sign
-		inc		edi
-	.endif
-	fld		REAL10 ptr [esi]
-	fld		st(0)
-	; Compute the closest power of 10 below the number.  We can't get an
-	; exact value because of rounding.  We could get close by adding in
-	; log10(mantissa), but it still wouldn't be exact.  Since we'll have to
-	; check the result anyway, it's silly to waste cycles worrying about
-	; the mantissa.
-	;
-	; The exponent is basically log2(lpfpin).  Those of you who remember
-	; algebra realize that log2(lpfpin) x log10(2) = log10(lpfpin), which is
-	; what we want.
-	fxtract					; ST=> mantissa, exponent, [lpfpin]
-	fstp	st(0)			; drop the mantissa
-	fldlg2					; push log10(2)
-	fmulp	st(1),st		; ST = log10([lpfpin]), [lpfpin]
-	fistp 	iExp			; ST = [lpfpin]
-	; A 10-byte double can carry 19.5 digits, but fbstp only stores 18.
-	.IF	iExp<18
-		fld		st(0)		; ST = lpfpin, lpfpin
-		frndint				; ST = int(lpfpin), lpfpin
-		fcomp	st(1)		; ST = lpfpin, status set
-		fstsw	ax
-		.IF ah&FP_EQUALTO && !fSci	; if EQUAL
-			; We have an integer!  Lucky day.  Go convert it into a temp buffer.
-			call FloatToBCD
-			mov		eax,17
-			mov		ecx,iExp
-			sub		eax,ecx
-			inc		ecx
-			lea		esi,[sztemp+eax]
-			; The off-by-one order of magnitude problem below can hit us here.  
-			; We just trim off the possible leading zero.
-			.IF byte ptr [esi]=='0'
-				inc esi
-				dec ecx
-			.ENDIF
-			; Copy the rest of the converted BCD value to our buffer.
-			rep movsb
-			jmp ftsExit
-		.ENDIF
-	.ENDIF
-	; Have fbstp round to 17 places.
-	mov		eax, 17			; experiment
-	sub		eax,iExp		; adjust exponent to 17
-	call PowerOf10
-	; Either we have exactly 17 digits, or we have exactly 16 digits.  We can
-	; detect that condition and adjust now.
-	fcom	ten16
-	; x0xxxx00 means top of stack > ten16
-	; x0xxxx01 means top of stack < ten16
-	; x1xxxx00 means top of stack = ten16
-	fstsw	ax
-	.IF ah & 1
-		fmul	ten
-		dec		iExp
-	.ENDIF
-	; Go convert to BCD.
-	call FloatToBCD
-	lea		esi,sztemp		; point to converted buffer
-	; If the exponent is between -15 and 16, we should express this as a number
-	; without scientific notation.
-	mov ecx, iExp
-	.IF SDWORD PTR ecx>=-15 && SDWORD PTR ecx<=16 && !fSci
-		; If the exponent is less than zero, we insert '0.', then -ecx
-		; leading zeros, then 16 digits of mantissa.  If the exponent is
-		; positive, we copy ecx+1 digits, then a decimal point (maybe), then 
-		; the remaining 16-ecx digits.
-		inc ecx
-		.IF SDWORD PTR ecx<=0
-			mov		word ptr [edi],'.0'
-			add		edi, 2
-			neg		ecx
-			mov		al,'0'
-			rep		stosb
-			mov		ecx,18
-		.ELSE
-			.if byte ptr [esi]=='0' && ecx>1
-				inc		esi
-				dec		ecx
-			.endif
-			rep		movsb
-			mov		byte ptr [edi],'.'
-			inc		edi
-			mov		ecx,17
-			sub		ecx,iExp
-		.ENDIF
-		rep movsb
-		; Trim off trailing zeros.
-		.WHILE byte ptr [edi-1]=='0'
-			dec		edi
-		.ENDW
-		; If we cleared out all the decimal digits, kill the decimal point, too.
-		.IF byte ptr [edi-1]=='.'
-			dec		edi
-		.ENDIF
-		; That's it.
-		jmp		ftsExit
-	.ENDIF
-	; Now convert this to a standard, usable format.  If needed, a minus
-	; sign is already present in the outgoing buffer, and edi already points
-	; past it.
-	mov		ecx,17
-	.if byte ptr [esi]=='0'
-		inc		esi
-		dec		iExp
-		dec		ecx
-	.endif
-	movsb						; copy the first digit
-	mov		byte ptr [edi],'.'	; plop in a decimal point
-	inc		edi
-	rep movsb
-	; The printf %g specified trims off trailing zeros here.  I dislike
-	; this, so I've disabled it.  Comment out the if 0 and endif if you
-	; want this.
-	.WHILE byte ptr [edi-1]=='0'
-		dec		edi
-	.ENDW
-	.if byte ptr [edi-1]=='.'
-		dec		edi
-	.endif
-	; Shove in the exponent.
-	mov		byte ptr [edi],'e'	; start the exponent
-	mov		eax,iExp
-	.IF sdword ptr eax<0		; plop in the exponent sign
-		mov		byte ptr [edi+1],'-'
-		neg		eax
-	.ELSE
-		mov		byte ptr [edi+1],'+'
-	.ENDIF
-	mov		ecx, 10
-	xor		edx,edx
-	div		ecx
-	add		dl,'0'
-	mov		[edi+5],dl		; shove in the ones exponent digit
-	xor		edx,edx
-	div		ecx
-	add		dl,'0'
-	mov		[edi+4],dl		; shove in the tens exponent digit
-	xor		edx,edx
-	div		ecx
-	add		dl,'0'
-	mov		[edi+3],dl		; shove in the hundreds exponent digit
-	xor		edx,edx
-	div		ecx
-	add		dl,'0'
-	mov		[edi+2],dl		; shove in the thousands exponent digit
-	add		edi,6			; point to terminator
-ftsExit:
-	; Clean up and go home.
-	mov		esi,lpFpin
-	pop		[esi+6]
-	mov		byte ptr [edi],0
-	fwait
+	invoke lstrcat,addr buffer,eax
+	invoke SetWindowText,hWnd,addr buffer
 	ret
 
-; Convert a floating point register to ASCII.
-; The result always has exactly 18 digits, with zero padding on the
-; left if required.
-;
-; Entry:	ST(0) = a number to convert, 0 <= ST(0) < 1E19.
-;			sztemp = an 18-character buffer.
-;
-; Exit:		sztemp = the converted result.
-FloatToBCD:
-	push	esi
-	push	edi
-    fbstp	temp
-	; Now we need to unpack the BCD to ASCII.
-    lea		esi,[temp]
-    lea		edi,[sztemp]
-    mov		ecx,8
-    .REPEAT
-		movzx	ax,byte ptr [esi+ecx]	; 0000 0000 AAAA BBBB
-		rol		ax,12					; BBBB 0000 0000 AAAA
-		shr		ah,4					; 0000 BBBB 0000 AAAA
-		add		ax,3030h				; 3B3A
-		stosw
-		dec		ecx
-    .UNTIL SIGN?
-	pop		edi
-	pop		esi
-    retn
-
-PowerOf10:
-    mov		ecx,eax
-    .IF	SDWORD PTR eax<0
-		neg		eax
-    .ENDIF
-    fld1
-    mov		dl,al
-    and		edx,0fh
-    .IF	!ZERO?
-		lea		edx,[edx+edx*4]
-		fld		ten_1[edx*2][-10]
-		fmulp	st(1),st
-    .ENDIF
-    mov		dl,al
-    shr		dl,4
-    and		edx,0fh
-    .IF !ZERO?
-		lea		edx,[edx+edx*4]
-		fld		ten_16[edx*2][-10]
-		fmulp	st(1),st
-    .ENDIF
-    mov		dl,ah
-    and		edx,1fh
-    .IF !ZERO?
-		lea		edx,[edx+edx*4]
-		fld		ten_256[edx*2][-10]
-		fmulp	st(1),st
-    .ENDIF
-    .IF SDWORD PTR ecx<0
-		fdivp	st(1),st
-    .ELSE
-		fmulp	st(1),st
-    .ENDIF
-    retn
-
-FpToAscii endp
+SetMode endp
 
 FrequencyProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	buffer[32]:BYTE
@@ -300,21 +85,66 @@ ScopeProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	scprect:RECT
 	LOCAL	mDC:HDC
 	LOCAL	pt:POINT
-	LOCAL	xsinf:SCROLLINFO
-	LOCAL	ysinf:SCROLLINFO
+	LOCAL	samplesize:DWORD
+	LOCAL	iTmp:DWORD
 	LOCAL	nMin:DWORD
 	LOCAL	nMax:DWORD
-	LOCAL	samplesize:DWORD
+	LOCAL	srms:REAL10
+	LOCAL	stns:REAL10
+	LOCAL	pixns:REAL10
+	LOCAL	npix:REAL10
+;	LOCAL	xsinf:SCROLLINFO
+;	LOCAL	ysinf:SCROLLINFO
 	LOCAL	buffer[128]:BYTE
-	LOCAL	buffer1[128]:BYTE
+;	LOCAL	buffer1[128]:BYTE
 
 	mov		eax,uMsg
 	.if eax==WM_PAINT
-PrintHex eax
-		mov		samplesize,8000h
+		;Get sample time in ns
+		mov		iTmp,STM32_CLOCK/2
+		fild	iTmp
+		mov		eax,STM32_Cmd.STM32_Scp.ADC_Prescaler
+		inc		eax
+		shl		eax,1
+		mov		iTmp,eax
+		fild	iTmp
+		fdivp	st(1),st
+		mov		eax,STM32_Cmd.STM32_Scp.ADC_TwoSamplingDelay
+		add		eax,5
+		mov		iTmp,eax
+		fild	iTmp
+		fdivp	st(1),st
+		fstp	srms
+		fld1
+		fld		srms
+		invoke FpToAscii,addr srms,addr buffer,FALSE
+		invoke lstrcat,addr buffer,offset szHz
+		invoke SetDlgItemText,hScpCld,IDC_STCADCSAMPLERATE,addr buffer
+		fdivp	st(1),st
+		fld		ten_9
+		fmulp	st(1),st
+		fstp	stns
+;		invoke PrintFp,addr stns
+		;Get time in ns for each pixel
+		mov		eax,STM32_Cmd.STM32_Scp.ScopeTimeDiv
+		mov		iTmp,eax
+		fild	iTmp
+		mov		iTmp,GRIDSIZE
+		fild	iTmp
+		fdivp	st(1),st
+		fstp	pixns
+;		invoke PrintFp,addr pixns
+		;Get number of pixels for each sample
+		fld		stns
+		fld		pixns
+		fdivp	st(1),st
+		fstp	npix
+;		invoke PrintFp,addr npix
+
+		mov		samplesize,ADCSAMPLESIZE
 		;Get Vmin, Vmax and Vpp
 		mov		esi,offset ADC_Data
-		mov		ecx,2047
+		mov		ecx,ADCMAX
 		mov		edx,0
 		xor		edi,edi
 		.while edi<samplesize
@@ -326,6 +156,8 @@ PrintHex eax
 			.endif
 			lea		edi,[edi+WORD]
 		.endw
+		mov		nMin,ecx
+		mov		nMax,edx
 		invoke GetClientRect,hWin,addr rect
 		invoke BeginPaint,hWin,addr ps
 		invoke CreateCompatibleDC,ps.hdc
@@ -342,21 +174,21 @@ PrintHex eax
 		push	eax
 		; Calculate the scope rect
 		mov		eax,rect.right
-		sub		eax,GRIDSIZE*10
+		sub		eax,SCOPEWT
 		shr		eax,1
 		mov		scprect.left,eax
-		add		eax,GRIDSIZE*10
+		add		eax,SCOPEWT
 		mov		scprect.right,eax
 		mov		eax,rect.bottom
-		sub		eax,GRIDSIZE*6
+		sub		eax,SCOPEHT
 		shr		eax,1
 		mov		scprect.top,eax
-		add		eax,GRIDSIZE*6
+		add		eax,SCOPEHT
 		mov		scprect.bottom,eax
 		;Draw horizontal lines
 		mov		edi,scprect.top
 		xor		ecx,ecx
-		.while ecx<7
+		.while ecx<GRIDY+1
 			push	ecx
 			invoke MoveToEx,mDC,scprect.left,edi,NULL
 			invoke LineTo,mDC,scprect.right,edi
@@ -367,7 +199,7 @@ PrintHex eax
 		;Draw vertical lines
 		mov		edi,scprect.left
 		xor		ecx,ecx
-		.while ecx<11
+		.while ecx<GRIDX+1
 			push	ecx
 			invoke MoveToEx,mDC,edi,scprect.top,NULL
 			invoke LineTo,mDC,edi,scprect.bottom
@@ -389,17 +221,34 @@ PrintHex eax
 		invoke SelectObject,mDC,eax
 		push	eax
 		mov		esi,offset ADC_Data
+		;Find trigger
 		xor		edi,edi
+		.while edi<samplesize
+			movzx	eax,word ptr [esi+edi]
+			movzx	edx,word ptr [esi+edi+WORD]
+			.break.if eax<STM32_Cmd.STM32_Scp.ScopeTriggerLevel && edx>=STM32_Cmd.STM32_Scp.ScopeTriggerLevel
+			lea		edi,[edi+WORD]
+		.endw
+		.if edi==samplesize
+			xor		edi,edi
+		.endif
+		xor		ebx,ebx
 		call	GetPoint
 		invoke MoveToEx,mDC,pt.x,pt.y,NULL
+		lea		edi,[edi+WORD]
+		lea		ebx,[ebx+1]
 		.while edi<samplesize
-			mov		edx,edi
 			call	GetPoint
 			invoke LineTo,mDC,pt.x,pt.y
 			mov		eax,pt.x
 			.break .if sdword ptr eax>scprect.right
 			lea		edi,[edi+WORD]
+			lea		ebx,[ebx+1]
 		.endw
+		pop		eax
+		invoke SelectObject,mDC,eax
+		invoke DeleteObject,eax
+
 		add		rect.bottom,TEXTHIGHT
 		invoke BitBlt,ps.hdc,0,0,rect.right,rect.bottom,mDC,0,0,SRCCOPY
 		pop		eax
@@ -415,29 +264,72 @@ PrintHex eax
 
 GetPoint:
 	;Get X position
-	mov		eax,edi
-	shr		eax,1
+	mov		iTmp,ebx
+	fild	iTmp
+	fld		npix
+	fmulp	st(1),st
+	fistp	iTmp
+	mov		eax,iTmp
 	add		eax,scprect.left
 	mov		pt.x,eax
+
 	;Get y position
-	mov		edx,edi
-	movzx	eax,word ptr [esi+edx]
-	sub		eax,ADCMAX
+	mov		iTmp,ADCMAXMV
+	fild	iTmp
+	mov		iTmp,GRIDSIZE
+	fild	iTmp
+	fmulp	st(1),st
+	mov		iTmp,ADCDIVMV
+	fild	iTmp
+	fdivp	st(1),st
+	mov		iTmp,ADCMAX
+	fild	iTmp
+	fdivp	st(1),st
+	movzx	eax,word ptr [esi+edi]
+	mov		edx,nMax
+	sub		edx,nMin
+	shr		edx,1
+	sub		eax,edx
 	neg		eax
-	shr eax,3
+	mov		iTmp,eax
+	fild	iTmp
+	fmulp	st(1),st
+	fistp	iTmp
+	mov		eax,iTmp
+	add		eax,SCOPEHT/2
+	add		eax,scprect.top
 	mov		pt.y,eax
 	retn
 
 ScopeProc endp
 
-ScopeChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
-	LOCAL	rect:RECT
-
+HscChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+	
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
-		invoke GetDlgItem,hWin,IDC_UDCSCOPE
-		mov		hScp,eax
-	.elseif	eax==WM_SIZE
+		invoke GetDlgItem,hWin,IDC_UDCHSC
+		mov		hHsc,eax
+	.elseif	eax==WM_COMMAND
+		mov edx,wParam
+		movzx eax,dx
+		shr edx,16
+		.if edx==BN_CLICKED
+			.if eax==IDC_BTNHSCDN
+				.if STM32_Cmd.HSCSet<65534
+					inc		STM32_Cmd.HSCSet
+					mov		STM32_Cmd.Cmd,CMD_HSCSET
+					invoke STLinkWrite,hWnd,20000018h,addr STM32_Cmd.HSCSet,DWORD
+					invoke STLinkWrite,hWnd,20000014h,addr STM32_Cmd.Cmd,DWORD
+				.endif
+			.elseif eax==IDC_BTNHSCUP
+				.if STM32_Cmd.HSCSet
+					dec		STM32_Cmd.HSCSet
+					mov		STM32_Cmd.Cmd,CMD_HSCSET
+					invoke STLinkWrite,hWnd,20000018h,addr STM32_Cmd.HSCSet,DWORD
+					invoke STLinkWrite,hWnd,20000014h,addr STM32_Cmd.Cmd,DWORD
+				.endif
+			.endif
+		.endif
 	.else
 		mov		eax,FALSE
 		ret
@@ -445,242 +337,113 @@ ScopeChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LP
 	mov		eax,TRUE
 	ret
 
-ScopeChildProc endp
+HscChildProc endp
 
-;------------------------------------------------------------------
-;Capacitance meter: Cx=((((F1/F3)^2)-1)/(((F1/F2)^2)-1))*Ccal
-;IN:	Nothing
-;OUT:	Nothing
-;------------------------------------------------------------------
-CalculateCapacitor proc uses esi,lpBuffer:PTR BYTE
-	LOCAL	tmp:REAL10
-	LOCAL	iExp:DWORD
+LcmChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
-	fild	STM32_Cmd.STM32_Lcm.FrequencyCal0
-	fild	STM32_Cmd.STM32_Frq.Frequency
-	fdivp	st(1),st
-	fstp	REAL10 ptr [tmp]
-	fld		tmp
-	fld		tmp
-	fmulp	st(1),st
-	fld1
-	fsubp	st(1),st
-	fild	STM32_Cmd.STM32_Lcm.FrequencyCal0
-	fild	STM32_Cmd.STM32_Lcm.FrequencyCal1
-	fdivp	st(1),st
-	fstp	REAL10 ptr [tmp]
-	fld		tmp
-	fld		tmp
-	fmulp	st(1),st
-	fld1
-	fsubp	st(1),st
-	fdivp	st(1),st
-	fld		REAL10 ptr [CCal]
-	fmulp	st(1),st
-	fstp	REAL10 ptr [LCx]
-	fld		REAL10 ptr [LCx]
-	fxtract					; ST=> mantissa, exponent, [lpfpin]
-	fstp	st(0)			; drop the mantissa
-	fldlg2					; push log10(2)
-	fmulp	st(1),st		; ST = log10([lpfpin]), [lpfpin]
-	fistp 	iExp			; ST = [lpfpin]
-	.if sdword ptr iExp<=-10
-		fld		REAL10 ptr [LCx]
-		fld		REAL10 ptr [ten_12]
-		fmulp	st(1),st
-		fstp	REAL10 ptr [LCx]
-		mov		esi,offset szPF
-	.elseif  sdword ptr iExp<=-7
-		fld		REAL10 ptr [LCx]
-		fld		REAL10 ptr [ten_9]
-		fmulp	st(1),st
-		fstp	REAL10 ptr [LCx]
-		mov		esi,offset szNF
+	mov		eax,uMsg
+	.if eax==WM_INITDIALOG
+		invoke GetDlgItem,hWin,IDC_UDCLCM
+		mov		hLcm,eax
+	.elseif	eax==WM_COMMAND
+		mov edx,wParam
+		movzx eax,dx
+		shr edx,16
+		.if edx==BN_CLICKED
+			.if eax==IDC_BTNLCMMODE
+				.if mode==CMD_LCMCAP
+					mov		mode,CMD_LCMIND
+				.elseif mode==CMD_LCMIND
+					mov		mode,CMD_LCMCAP
+				.endif
+				.if connected
+					invoke STLinkWrite,hWnd,20000014h,addr mode,DWORD
+					invoke SetMode
+				.endif
+			.elseif eax==IDC_BTNLCMCAL
+				mov		mode,CMD_LCMCAL
+				.if connected
+					invoke STLinkWrite,hWnd,20000014h,addr mode,DWORD
+					mov		mode,CMD_LCMCAP
+					invoke SetMode
+				.endif
+			.endif
+		.endif
 	.else
-		fld		REAL10 ptr [LCx]
-		fld		REAL10 ptr [ten_6]
-		fmulp	st(1),st
-		fstp	REAL10 ptr [LCx]
-		mov		esi,offset szUF
+		mov		eax,FALSE
+		ret
 	.endif
-	invoke FpToAscii,offset LCx,lpBuffer,FALSE
-	mov		edx,lpBuffer
-	xor		ecx,ecx
-	.if byte ptr [edx]=='-'
-		mov		word ptr [edx],'0'
-	.endif
-	.while byte ptr [edx]
-		.if byte ptr [edx]=='.'
-			mov		byte ptr [edx+4],0
-			inc		edx
-			.break
-		.elseif byte ptr [edx]!='0'
-			inc		ecx
-		.endif
-		inc		edx
-	.endw
-	.while byte ptr [edx]
-		.if byte ptr [edx]!='0'
-			inc		ecx
-			.break
-		.endif
-		inc		edx
-	.endw
-	.if !ecx
-		mov		edx,lpBuffer
-		mov		word ptr [edx],'0'
-	.endif
-	invoke lstrcat,lpBuffer,esi
+	mov		eax,TRUE
 	ret
 
-CalculateCapacitor endp
+LcmChildProc endp
 
-;------------------------------------------------------------------
-;Induktance meter: Lx=(((F1/F3)^2)-1)*(((F1/F2)^2)-1)*(1/Ccal)*(1/(2*PI*F1))^2
-;IN:	Nothing
-;OUT:	Nothing
-;------------------------------------------------------------------
-CalculateInductor proc uses esi,lpBuffer:PTR BYTE
-	LOCAL	tmp:REAL10
-	LOCAL	tmpa:REAL10
-	LOCAL	tmpb:REAL10
-	LOCAL	tmpc:REAL10
-	LOCAL	tmpd:REAL10
-	LOCAL	iExp:DWORD
+ScopeScrnChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
-	; (((F1/F3)^2)-1)
-	fild	STM32_Cmd.STM32_Lcm.FrequencyCal0
-	fild	STM32_Cmd.STM32_Frq.Frequency
-	fdivp	st(1),st
-	fstp	REAL10 ptr [tmp]
-	fld		REAL10 ptr [tmp]
-	fld		REAL10 ptr [tmp]
-	fmulp	st(1),st
-	fld1
-	fsubp	st(1),st
-	fstp	REAL10 ptr [tmpa]
-	; (((F1/F2)^2)-1)
-	fild	STM32_Cmd.STM32_Lcm.FrequencyCal0
-	fild	STM32_Cmd.STM32_Lcm.FrequencyCal1
-	fdivp	st(1),st
-	fstp	REAL10 ptr [tmp]
-	fld		REAL10 ptr [tmp]
-	fld		REAL10 ptr [tmp]
-	fmulp	st(1),st
-	fld1
-	fsubp	st(1),st
-	fstp	REAL10 ptr [tmpb]
-	; (1/Ccal)
-	fld1
-	fld		REAL10 ptr [CCal]
-	fdivp	st(1),st
-	fstp	REAL10 ptr [tmpc]
-	; (1/(2PI*F1))^2
-	fldpi
-	fld		REAL10 ptr [two]
-	fmulp	st(1),st
-	fild	STM32_Cmd.STM32_Lcm.FrequencyCal0
-	fmulp	st(1),st
-	fstp	REAL10 ptr [tmp]
-	fld1
-	fld		REAL10 ptr [tmp]
-	fdivp	st(1),st
-	fstp	REAL10 ptr [tmp]
-	fld		REAL10 ptr [tmp]
-	fld		REAL10 ptr [tmp]
-	fmulp	st(1),st
-	fstp	REAL10 ptr [tmpd]
-	fld		REAL10 ptr [tmpd]
-	fld		REAL10 ptr [tmpa]
-	fmulp	st(1),st
-	fstp	REAL10 ptr [tmp]
-	fld		REAL10 ptr [tmp]
-	fld		REAL10 ptr [tmpb]
-	fmulp	st(1),st
-	fld		REAL10 ptr [tmpc]
-	fmulp	st(1),st
-	fstp	REAL10 ptr [LCx]
-	fld		REAL10 ptr [LCx]
-	fxtract					; ST=> mantissa, exponent, [lpfpin]
-	fstp	st(0)			; drop the mantissa
-	fldlg2					; push log10(2)
-	fmulp	st(1),st		; ST = log10([lpfpin]), [lpfpin]
-	fistp 	iExp			; ST = [lpfpin]
-	.if  sdword ptr iExp<=-7
-		fld		REAL10 ptr [LCx]
-		fld		REAL10 ptr [ten_9]
-		fmulp	st(1),st
-		fstp	REAL10 ptr [LCx]
-		mov		esi,offset szNH
-	.elseif  sdword ptr iExp<=-3
-		fld		REAL10 ptr [LCx]
-		fld		REAL10 ptr [ten_6]
-		fmulp	st(1),st
-		fstp	REAL10 ptr [LCx]
-		mov		esi,offset szUH
-	.elseif  sdword ptr iExp<=-1
-		fld		REAL10 ptr [LCx]
-		fld		REAL10 ptr [ten_3]
-		fmulp	st(1),st
-		fstp	REAL10 ptr [LCx]
-		mov		esi,offset szMH
+	mov		eax,uMsg
+	.if eax==WM_INITDIALOG
+		invoke GetDlgItem,hWin,IDC_UDCSCPSCRN
+		mov		hScpScrn,eax
 	.else
-		mov		esi,offset szH
+		mov		eax,FALSE
+		ret
 	.endif
-	invoke FpToAscii,offset LCx,lpBuffer,FALSE
-	mov		edx,lpBuffer
-	xor		ecx,ecx
-	.if byte ptr [edx]=='-'
-		mov		word ptr [edx],'0'
-	.endif
-	.while byte ptr [edx]
-		.if byte ptr [edx]=='.'
-			mov		byte ptr [edx+4],0
-			inc		edx
-			.break
-		.elseif byte ptr [edx]!='0'
-			inc		ecx
-		.endif
-		inc		edx
-	.endw
-	.while byte ptr [edx]
-		.if byte ptr [edx]!='0'
-			inc		ecx
-			.break
-		.endif
-		inc		edx
-	.endw
-	.if !ecx
-		mov		edx,lpBuffer
-		mov		word ptr [edx],'0'
-	.endif
-	invoke lstrcat,lpBuffer,esi
+	mov		eax,TRUE
 	ret
 
-CalculateInductor endp
+ScopeScrnChildProc endp
 
-SetMode proc
-	LOCAL	buffer[64]:BYTE
+ScpChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+	
+	mov		eax,uMsg
+	.if eax==WM_INITDIALOG
+		invoke GetDlgItem,hWin,IDC_UDCSCP
+		mov		hScp,eax
+		invoke SendDlgItemMessage,hWin,IDC_TRBADCCLOCK,TBM_SETRANGE,FALSE,3 SHL 16
+		mov		eax,3
+		sub		eax,STM32_Cmd.STM32_Scp.ADC_Prescaler
+		invoke SendDlgItemMessage,hWin,IDC_TRBADCCLOCK,TBM_SETPOS,TRUE,eax
+		invoke SendDlgItemMessage,hWin,IDC_TRBADCDELAY,TBM_SETRANGE,FALSE,(20-5) SHL 16
+		mov		eax,20-5
+		sub		eax,STM32_Cmd.STM32_Scp.ADC_Prescaler
+		invoke SendDlgItemMessage,hWin,IDC_TRBADCDELAY,TBM_SETPOS,TRUE,eax
 
-	invoke lstrcpy,addr buffer,offset szLCMeter
-	.if mode==CMD_LCMCAP
-		mov		eax,offset szCapacitance
-	.elseif mode==CMD_LCMIND
-		mov		eax,offset szInductance
-	.elseif mode==CMD_FRQCH1
-		mov		eax,offset szFerquencyCH1
-	.elseif mode==CMD_FRQCH2
-		mov		eax,offset szFerquencyCH2
-	.elseif mode==CMD_FRQCH3
-		mov		eax,offset szFerquencyCH3
-	.elseif mode==CMD_SCPSET
-		mov		eax,offset szScope
+		invoke SendDlgItemMessage,hWin,IDC_TRBTIMEDIV,TBM_SETRANGE,FALSE,17 SHL 16
+		mov		eax,STM32_Cmd.STM32_Scp.ScopeTimeDiv
+		xor		edx,edx
+		.while edx<18
+			.break .if eax==ScopeTimeDiv[edx*DWORD]
+			lea		edx,[edx+1]
+		.endw
+		invoke SendDlgItemMessage,hWin,IDC_TRBTIMEDIV,TBM_SETPOS,TRUE,edx
+	.elseif eax==WM_HSCROLL
+		invoke GetDlgCtrlID,lParam
+		.if eax==IDC_TRBADCCLOCK
+			;ADC Clock Divider
+			invoke SendDlgItemMessage,hWin,IDC_TRBADCCLOCK,TBM_GETPOS,0,0
+			sub		eax,3
+			neg		eax
+			mov		STM32_Cmd.STM32_Scp.ADC_Prescaler,eax
+		.elseif eax==IDC_TRBADCDELAY
+			;ADC Sampling Delay
+			invoke SendDlgItemMessage,hWin,IDC_TRBADCDELAY,TBM_GETPOS,0,0
+			sub		eax,20-5
+			neg		eax
+			mov		STM32_Cmd.STM32_Scp.ADC_TwoSamplingDelay,eax
+		.elseif eax==IDC_TRBTIMEDIV
+			;Scope Time / Div
+			invoke SendDlgItemMessage,hWin,IDC_TRBTIMEDIV,TBM_GETPOS,0,0
+			mov		eax,ScopeTimeDiv[eax*DWORD]
+			mov		STM32_Cmd.STM32_Scp.ScopeTimeDiv,eax
+		.endif
+	.else
+		mov		eax,FALSE
+		ret
 	.endif
-	invoke lstrcat,addr buffer,eax
-	invoke SetWindowText,hWnd,addr buffer
+	mov		eax,TRUE
 	ret
 
-SetMode endp
+ScpChildProc endp
 
 DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	buffer[32]:BYTE
@@ -689,12 +452,26 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	.if	eax==WM_INITDIALOG
 		mov		eax,hWin
 		mov		hWnd,eax
+		mov		STM32_Cmd.HSCSet,65535;42000-1
+		mov		STM32_Cmd.STM32_Scp.ADC_Prescaler,0
+		mov		STM32_Cmd.STM32_Scp.ADC_TwoSamplingDelay,0
+		mov		STM32_Cmd.STM32_Scp.ScopeTrigger,1
+		mov		STM32_Cmd.STM32_Scp.ScopeTriggerLevel,2048
+		mov		STM32_Cmd.STM32_Scp.ScopeTimeDiv,100000
 		invoke CreateFontIndirect,addr Tahoma_36
 		mov		hFont,eax
-		mov		STM32_Cmd.HSCSet,41
-		;Create scope child dialogs
-		invoke CreateDialogParam,hInstance,IDD_DLGSCOPE,hWin,addr ScopeChildProc,0;offset scopedata.scopeCHAdata
-;		mov		childdialogs.hWndScopeCHA,eax
+		;Create FRQ child dialog
+		invoke CreateDialogParam,hInstance,IDD_DLGHSC,hWin,addr HscChildProc,0
+		mov		hHscCld,eax
+		;Create LCM child dialog
+		invoke CreateDialogParam,hInstance,IDD_DLGLCMETER,hWin,addr LcmChildProc,0
+		mov		hLcmCld,eax
+		;Create scope screen child dialog
+		invoke CreateDialogParam,hInstance,IDD_DLGSCPSCRNCLD,hWin,addr ScopeScrnChildProc,0
+		mov		hScpScrnCld,eax
+		;Create scope child dialog
+		invoke CreateDialogParam,hInstance,IDD_DLGSCP,hWin,addr ScpChildProc,0
+		mov		hScpCld,eax
 	.elseif	eax==WM_COMMAND
 		mov edx,wParam
 		movzx eax,dx
@@ -715,44 +492,38 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.endif
 			.elseif eax==IDCANCEL
 				invoke	SendMessage,hWin,WM_CLOSE,NULL,NULL
-			.elseif eax==IDC_BTNCALIBRATE
-				.if connected
-					mov		mode,CMD_LCMCAL
-					invoke STLinkWrite,hWin,20000014h,addr mode,DWORD
-					mov		mode,CMD_LCMCAP
-					invoke SetMode
-				.endif
 			.elseif eax==IDC_BTNMODE
-				.if mode==CMD_SCPSET
+				.if mode==CMD_LCMCAP || mode==CMD_LCMIND
+					invoke ShowWindow,hScpCld,SW_HIDE
+					invoke ShowWindow,hLcmCld,SW_HIDE
+					invoke ShowWindow,hHscCld,SW_SHOW
+					mov		mode,CMD_FRQCH1
+				.elseif mode==CMD_FRQCH1
+					invoke ShowWindow,hLcmCld,SW_HIDE
+					invoke ShowWindow,hHscCld,SW_HIDE
+					invoke ShowWindow,hScpCld,SW_SHOW
+					mov		mode,CMD_SCPSET
+				.elseif mode==CMD_SCPSET
+					invoke ShowWindow,hScpCld,SW_HIDE
+					invoke ShowWindow,hHscCld,SW_HIDE
+					invoke ShowWindow,hLcmCld,SW_SHOW
 					mov		mode,CMD_LCMCAP
-				.else
-					inc		mode
 				.endif
 				.if connected
 					invoke STLinkWrite,hWin,20000014h,addr mode,DWORD
 					invoke SetMode
-				.endif
-			.elseif eax==IDC_BTNHSCDN
-				.if STM32_Cmd.HSCSet<65534
-					inc		STM32_Cmd.HSCSet
-					mov		STM32_Cmd.Cmd,CMD_HSCSET
-					invoke STLinkWrite,hWin,20000018h,addr STM32_Cmd.HSCSet,DWORD
-					invoke STLinkWrite,hWin,20000014h,addr STM32_Cmd.Cmd,DWORD
-				.endif
-			.elseif eax==IDC_BTNHSCUP
-				.if STM32_Cmd.HSCSet
-					dec		STM32_Cmd.HSCSet
-					mov		STM32_Cmd.Cmd,CMD_HSCSET
-					invoke STLinkWrite,hWin,20000018h,addr STM32_Cmd.HSCSet,DWORD
-					invoke STLinkWrite,hWin,20000014h,addr STM32_Cmd.Cmd,DWORD
 				.endif
 			.endif
 		.endif
 	.elseif	eax==WM_TIMER
-		;Read 28 bytes from STM32F4xx ram and store it in STM32_Cmd.
-		invoke STLinkRead,hWin,20000014h,offset STM32_Cmd,7*DWORD
+		;Read 16 bytes from STM32F4xx ram and store it in STM32_Cmd.
+		invoke STLinkRead,hWin,2000001Ch,offset STM32_Cmd.STM32_Frq,4*DWORD
 		.if eax
-			mov		eax,STM32_Cmd.STM32_Frq.Frequency
+			.if mode==CMD_SCPSET
+				mov		eax,STM32_Cmd.STM32_Frq.FrequencySCP
+			.else
+				mov		eax,STM32_Cmd.STM32_Frq.Frequency
+			.endif
 			.if eax<1000
 				;Hz
 				invoke wsprintf,addr buffer,addr szFmtHz,eax
@@ -767,21 +538,25 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		ebx,9
 				call	InsertDot
 			.endif
-			invoke SetDlgItemText,hWin,IDC_FREQUENCY,addr buffer
+			invoke SetWindowText,hHsc,addr buffer
+			invoke SetWindowText,hScp,addr buffer
 			mov		buffer,0
 			.if mode==CMD_LCMCAP
 				invoke CalculateCapacitor,addr buffer
 			.elseif mode==CMD_LCMIND
 				invoke CalculateInductor,addr buffer
 			.endif
-			invoke SetDlgItemText,hWin,IDC_LCMETER,addr buffer
+			invoke SetWindowText,hLcm,addr buffer
 			.if mode==CMD_SCPSET
+				invoke Sleep,100
 				.while TRUE
 					invoke STLinkRead,hWin,20000014h,offset STM32_Cmd,DWORD
 					.break .if !STM32_Cmd.Cmd
 				.endw
-				invoke STLinkRead,hWin,20010000h,offset ADC_Data,8000h
-				invoke InvalidateRect,hScp,NULL,TRUE
+				invoke STLinkRead,hWin,20010000h,offset ADC_Data,ADCSAMPLESIZE
+				invoke InvalidateRect,hScpScrn,NULL,TRUE
+				invoke STLinkWrite,hWin,2000002Ch,offset STM32_Cmd.STM32_Scp,sizeof STM32_SCP
+				invoke STLinkWrite,hWin,20000014h,addr mode,DWORD
 			.endif
 		.else
 			invoke KillTimer,hWin,1000

@@ -1,5 +1,5 @@
 [Application]
-ApplicationPath=C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Scope\Scope\STM32F4_Scope.elf
+ApplicationPath=D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Scope\Scope\STM32F4_Scope.elf
 CSX=0
 HighBankAddr=400000
 BootMode=0

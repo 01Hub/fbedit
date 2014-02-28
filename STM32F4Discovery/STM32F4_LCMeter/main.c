@@ -22,7 +22,8 @@
 /**
   ******************************************************************************
   Port pins
-  PA.01         Frequency counter input
+  PA.00         Frequency counter input (TIM5)
+  PA.01         Frequency counter input (TIM2)
   PB.07         High Speed Clock
   PC.01         Scope ADC
   PD.00         Frequency counter select0
@@ -40,21 +41,22 @@
 typedef struct
 {
   uint32_t Frequency;                           // 0x2000001C
-  uint32_t PreviousCount;                       // 0x20000020
-  uint32_t ThisCount;                           // 0x20000024
-  uint32_t TickCount;                           // 0x20000028
+  uint32_t FrequencySCP;                        // 0x20000020
 } STM32_FRQTypeDef;
 
 typedef struct
 {
-  uint32_t FrequencyCal0;                       // 0x2000002C
-  uint32_t FrequencyCal1;                       // 0x20000030
+  uint32_t FrequencyCal0;                       // 0x20000024
+  uint32_t FrequencyCal1;                       // 0x20000028
 } STM32_LCMTypeDef;
 
 typedef struct
 {
   uint32_t ADC_Prescaler;                       // 0x2000002C
   uint32_t ADC_TwoSamplingDelay;                // 0x20000030
+  uint32_t ScopeTrigger;                        // 0x20000034
+  uint32_t ScopeTriggerLevel;                   // 0x20000038
+  uint32_t ScopeTimeDiv;                        // 0x2000003c
 } STM32_SCPTypeDef;
 
 typedef struct
@@ -62,8 +64,13 @@ typedef struct
   uint32_t Cmd;                                 // 0x20000014
   uint32_t HSCSet;                              // 0x20000018
   STM32_FRQTypeDef STM32_FRQ;                   // 0x2000001C
-  STM32_LCMTypeDef STM32_LCM;                   // 0x2000002C
-  STM32_SCPTypeDef STM32_SCP;                   // 0x20000034
+  STM32_LCMTypeDef STM32_LCM;                   // 0x20000024
+  STM32_SCPTypeDef STM32_SCP;                   // 0x2000002C
+  uint32_t TickCount;                           // 0x20000034
+  uint32_t PreviousCountTIM2;                   // 0x20000038
+  uint32_t ThisCountTIM2;                       // 0x2000003C
+  uint32_t PreviousCountTIM5;                   // 0x20000040
+  uint32_t ThisCountTIM5;                       // 0x20000044
 } STM32_CMDTypeDef;
 
 /* Private define ------------------------------------------------------------*/
@@ -80,8 +87,8 @@ typedef struct
 
 #define ADC_CDR_ADDRESS                         ((uint32_t)0x40012308)
 #define SCOPE_DATAPTR                           ((uint32_t)0x20010000)
-#define SCOPE_DATASIZE                          ((uint32_t)0x8000)
-
+#define SCOPE_DATASIZE                          ((uint32_t)65532)
+#define STM32_CLOCK                             ((uint32_t)200000000)
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 __IO STM32_CMDTypeDef STM32_CMD;                // 0x20000014
@@ -188,8 +195,8 @@ int main(void)
 uint32_t GetFrequency(void)
 {
   uint32_t i;
-  i = STM32_CMD.STM32_FRQ.TickCount;
-  while (i == STM32_CMD.STM32_FRQ.TickCount);
+  i = STM32_CMD.TickCount;
+  while (i == STM32_CMD.TickCount);
   return STM32_CMD.STM32_FRQ.Frequency;
 }
 
@@ -231,8 +238,8 @@ void LCM_Calibrate(void)
   */
 void RCC_Config(void)
 {
-  /* TIM2 and TIM3 clock enable */
-  RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2 | RCC_APB1Periph_TIM4 | RCC_APB1Periph_TIM3, ENABLE);
+  /* TIM2, TIM3, TIM4 and TIM5 clock enable */
+  RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2 | RCC_APB1Periph_TIM3 | RCC_APB1Periph_TIM4 | RCC_APB1Periph_TIM5, ENABLE);
   /* DMA2 clock enable */
   RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA2, ENABLE);
   /* GPIOA clock enable */
@@ -284,6 +291,16 @@ void GPIO_Config(void)
   /* Connect TIM2 pin to AF2 */
   GPIO_PinAFConfig(GPIOA, GPIO_PinSource1, GPIO_AF_TIM2);
 
+  /* TIM5 chennel1 configuration : PA.00 */
+  GPIO_InitStructure.GPIO_Pin   = GPIO_Pin_0;
+  GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_AF;
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+  GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+  GPIO_InitStructure.GPIO_PuPd  = GPIO_PuPd_NOPULL;
+  GPIO_Init(GPIOA, &GPIO_InitStructure);
+  /* Connect TIM5 pin to AF2 */
+  GPIO_PinAFConfig(GPIOA, GPIO_PinSource0, GPIO_AF_TIM5);
+
   /* TIM4 chennel 2 configuration : PB7 */
   GPIO_InitStructure.GPIO_Pin   = GPIO_Pin_7;
   GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_AF;
@@ -328,10 +345,17 @@ void TIM_Config(void)
   TIM_TimeBaseInit(TIM2, &TIM_TimeBaseStructure);
   TIM2->CCMR1 = 0x0100;     //CC2S=01
   TIM2->SMCR = 0x0067;      //TS=110, SMS=111
-
+  /* TIM5 Counter configuration */
+  TIM_TimeBaseStructure.TIM_Period = 0xffffffff;
+  TIM_TimeBaseStructure.TIM_Prescaler = 0;
+  TIM_TimeBaseStructure.TIM_ClockDivision = 0;
+  TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
+  TIM_TimeBaseInit(TIM5, &TIM_TimeBaseStructure);
+  TIM5->CCMR1 = 0x01;       //CC1S=01
+  TIM5->SMCR = 0x0057;      //TS=101, SMS=111
   /* TIM3 1 second Time base configuration */
-  TIM_TimeBaseStructure.TIM_Period = 9999;
-  TIM_TimeBaseStructure.TIM_Prescaler = 8399;
+  TIM_TimeBaseStructure.TIM_Period = 10000-1;
+  TIM_TimeBaseStructure.TIM_Prescaler = (STM32_CLOCK/2/10000)-1;
   TIM_TimeBaseStructure.TIM_ClockDivision = 0;
   TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
   TIM_TimeBaseInit(TIM3, &TIM_TimeBaseStructure);
@@ -339,12 +363,14 @@ void TIM_Config(void)
   TIM_ITConfig(TIM3, TIM_IT_Update, ENABLE);
   /* TIM2 enable counter */
   TIM_Cmd(TIM2, ENABLE);
+  /* TIM5 enable counter */
+  TIM_Cmd(TIM5, ENABLE);
   /* TIM3 enable counter */
   TIM_Cmd(TIM3, ENABLE);
-
   /* TIM4 HSC Time base configuration */
   TIM_TimeBaseStructure.TIM_Period = 1;
-  TIM_TimeBaseStructure.TIM_Prescaler = 41;
+  /* 1.0KHz */
+  TIM_TimeBaseStructure.TIM_Prescaler = 50000-1;
   TIM_TimeBaseStructure.TIM_ClockDivision = 0;
   TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
   TIM_TimeBaseStructure.TIM_RepetitionCounter = 0;
@@ -405,6 +431,14 @@ void ADC_TripleConfig(void)
   ADC_StructInit(&ADC_InitStructure);
   ADC_CommonStructInit(&ADC_CommonInitStructure);
 
+  // /* Diable ADC1 **************************************************************/
+  // ADC_Cmd(ADC1, DISABLE);
+  // /* Diable ADC2 **************************************************************/
+  // ADC_Cmd(ADC2, DISABLE);
+  // /* Diable ADC3 **************************************************************/
+  // ADC_Cmd(ADC3, DISABLE);
+  // /* Diable DMA request after last transfer (multi-ADC mode) ******************/
+  // ADC_MultiModeDMARequestAfterLastTransferCmd(DISABLE);
   /* ADC Common configuration *************************************************/
   ADC_CommonInitStructure.ADC_Mode = ADC_TripleMode_Interl;
   ADC_CommonInitStructure.ADC_TwoSamplingDelay = STM32_CMD.STM32_SCP.ADC_TwoSamplingDelay<<8;
@@ -449,10 +483,13 @@ void ADC_TripleConfig(void)
   */
 void TIM3_IRQHandler(void)
 {
-  STM32_CMD.STM32_FRQ.ThisCount = TIM2->CNT;
-  STM32_CMD.STM32_FRQ.Frequency = STM32_CMD.STM32_FRQ.ThisCount - STM32_CMD.STM32_FRQ.PreviousCount;
-  STM32_CMD.STM32_FRQ.PreviousCount = STM32_CMD.STM32_FRQ.ThisCount;
-  STM32_CMD.STM32_FRQ.TickCount++;
+  STM32_CMD.ThisCountTIM2 = TIM2->CNT;
+  STM32_CMD.ThisCountTIM5 = TIM5->CNT;
+  STM32_CMD.STM32_FRQ.Frequency = STM32_CMD.ThisCountTIM2 - STM32_CMD.PreviousCountTIM2;
+  STM32_CMD.PreviousCountTIM2 = STM32_CMD.ThisCountTIM2;
+  STM32_CMD.STM32_FRQ.FrequencySCP = STM32_CMD.ThisCountTIM5 - STM32_CMD.PreviousCountTIM5;
+  STM32_CMD.PreviousCountTIM5 = STM32_CMD.ThisCountTIM5;
+  STM32_CMD.TickCount++;
   TIM_ClearITPendingBit(TIM3, TIM_IT_Update);
   STM_EVAL_LEDToggle(LED3);
 }
