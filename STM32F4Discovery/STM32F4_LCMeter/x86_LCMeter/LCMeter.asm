@@ -407,7 +407,6 @@ ScpChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 		mov		eax,20-5
 		sub		eax,STM32_Cmd.STM32_Scp.ADC_Prescaler
 		invoke SendDlgItemMessage,hWin,IDC_TRBADCDELAY,TBM_SETPOS,TRUE,eax
-
 		invoke SendDlgItemMessage,hWin,IDC_TRBTIMEDIV,TBM_SETRANGE,FALSE,17 SHL 16
 		mov		eax,STM32_Cmd.STM32_Scp.ScopeTimeDiv
 		xor		edx,edx
@@ -416,6 +415,21 @@ ScpChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 			lea		edx,[edx+1]
 		.endw
 		invoke SendDlgItemMessage,hWin,IDC_TRBTIMEDIV,TBM_SETPOS,TRUE,edx
+		invoke SendDlgItemMessage,hWin,IDC_TRBVOLTSDIV,TBM_SETRANGE,FALSE,8 SHL 16
+		mov		eax,STM32_Cmd.STM32_Scp.ScopeVoltDiv
+		xor		edx,edx
+		.while edx<9
+			.break .if eax==ScopeVoltDiv[edx*DWORD]
+			lea		edx,[edx+1]
+		.endw
+		mov		eax,STM32_Cmd.STM32_Scp.ScopeTrigger
+		add		eax,IDC_RBNTRIGGERNONE
+		invoke SendDlgItemMessage,hWin,eax,BM_SETCHECK,BST_CHECKED,0
+		invoke SendDlgItemMessage,hWin,IDC_TRBVOLTSDIV,TBM_SETPOS,TRUE,edx
+		invoke SendDlgItemMessage,hWin,IDC_TRBTRIGGERLEVEL,TBM_SETRANGE,FALSE,255 SHL 16
+		mov		eax,STM32_Cmd.STM32_Scp.ScopeTriggerLevel
+		shr		eax,4
+		invoke SendDlgItemMessage,hWin,IDC_TRBTRIGGERLEVEL,TBM_SETPOS,TRUE,eax
 	.elseif eax==WM_HSCROLL
 		invoke GetDlgCtrlID,lParam
 		.if eax==IDC_TRBADCCLOCK
@@ -435,6 +449,16 @@ ScpChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 			invoke SendDlgItemMessage,hWin,IDC_TRBTIMEDIV,TBM_GETPOS,0,0
 			mov		eax,ScopeTimeDiv[eax*DWORD]
 			mov		STM32_Cmd.STM32_Scp.ScopeTimeDiv,eax
+		.elseif eax==IDC_TRBVOLTDIV
+			;Scope Volt / Div
+			invoke SendDlgItemMessage,hWin,IDC_TRBVOLTSDIV,TBM_GETPOS,0,0
+			mov		eax,ScopeVoltDiv[eax*DWORD]
+			mov		STM32_Cmd.STM32_Scp.ScopeVoltDiv,eax
+		.elseif eax==IDC_TRBTRIGGERLEVEL
+			;Scope Trigger Level
+			invoke SendDlgItemMessage,hWin,IDC_TRBTRIGGERLEVEL,TBM_GETPOS,0,0
+			shl		eax,4
+			mov		STM32_Cmd.STM32_Scp.ScopeTriggerLevel,eax
 		.endif
 	.else
 		mov		eax,FALSE
@@ -458,6 +482,7 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		STM32_Cmd.STM32_Scp.ScopeTrigger,1
 		mov		STM32_Cmd.STM32_Scp.ScopeTriggerLevel,2048
 		mov		STM32_Cmd.STM32_Scp.ScopeTimeDiv,100000
+		mov		STM32_Cmd.STM32_Scp.ScopeVoltDiv,500
 		invoke CreateFontIndirect,addr Tahoma_36
 		mov		hFont,eax
 		;Create FRQ child dialog
@@ -510,6 +535,7 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					mov		mode,CMD_LCMCAP
 				.endif
 				.if connected
+					invoke STLinkWrite,hWin,2000002Ch,offset STM32_Cmd.STM32_Scp,sizeof STM32_SCP
 					invoke STLinkWrite,hWin,20000014h,addr mode,DWORD
 					invoke SetMode
 				.endif
@@ -548,14 +574,13 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.endif
 			invoke SetWindowText,hLcm,addr buffer
 			.if mode==CMD_SCPSET
-				invoke Sleep,100
 				.while TRUE
+					invoke Sleep,100
 					invoke STLinkRead,hWin,20000014h,offset STM32_Cmd,DWORD
 					.break .if !STM32_Cmd.Cmd
 				.endw
 				invoke STLinkRead,hWin,20010000h,offset ADC_Data,ADCSAMPLESIZE
 				invoke InvalidateRect,hScpScrn,NULL,TRUE
-				invoke STLinkWrite,hWin,2000002Ch,offset STM32_Cmd.STM32_Scp,sizeof STM32_SCP
 				invoke STLinkWrite,hWin,20000014h,addr mode,DWORD
 			.endif
 		.else

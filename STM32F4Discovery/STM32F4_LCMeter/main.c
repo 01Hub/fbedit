@@ -40,6 +40,11 @@
 /* Private typedef -----------------------------------------------------------*/
 typedef struct
 {
+  uint32_t HSCSet;                              // 0x20000018
+} STM32_HSCTypeDef;
+
+typedef struct
+{
   uint32_t Frequency;                           // 0x2000001C
   uint32_t FrequencySCP;                        // 0x20000020
 } STM32_FRQTypeDef;
@@ -57,12 +62,13 @@ typedef struct
   uint32_t ScopeTrigger;                        // 0x20000034
   uint32_t ScopeTriggerLevel;                   // 0x20000038
   uint32_t ScopeTimeDiv;                        // 0x2000003c
+  uint32_t ScopeVoltDiv;                        // 0x20000040
 } STM32_SCPTypeDef;
 
 typedef struct
 {
   uint32_t Cmd;                                 // 0x20000014
-  uint32_t HSCSet;                              // 0x20000018
+  STM32_HSCTypeDef STM32_HSC;                   // 0x20000018
   STM32_FRQTypeDef STM32_FRQ;                   // 0x2000001C
   STM32_LCMTypeDef STM32_LCM;                   // 0x20000024
   STM32_SCPTypeDef STM32_SCP;                   // 0x2000002C
@@ -71,6 +77,7 @@ typedef struct
   uint32_t ThisCountTIM2;                       // 0x2000003C
   uint32_t PreviousCountTIM5;                   // 0x20000040
   uint32_t ThisCountTIM5;                       // 0x20000044
+  uint16_t scopebuff[2048];                     // 0x20000048
 } STM32_CMDTypeDef;
 
 /* Private define ------------------------------------------------------------*/
@@ -100,6 +107,7 @@ void GPIO_Config(void);
 void TIM_Config(void);
 void DMA_TripleConfig(void);
 void ADC_TripleConfig(void);
+void ScopeSubSampling(void);
 uint32_t GetFrequency(void);
 void LCM_Calibrate(void);
 
@@ -118,6 +126,8 @@ int main(void)
        To reconfigure the default setting of SystemInit() function, refer to
        system_stm32f4xx.c file
      */
+  uint32_t tmp;
+  uint32_t ticks;
 
   /* RCC Configuration */
   RCC_Config();
@@ -168,6 +178,38 @@ int main(void)
         DMA_TripleConfig();
         /* ADC Configuration */
         ADC_TripleConfig();
+        ticks = STM32_CMD.TickCount + 3;
+        switch (STM32_CMD.STM32_SCP.ScopeTrigger)
+        {
+          case 0:
+            break;
+          case 1:
+            /* Count on rising edge */
+            TIM5->CCER = 0x0000;
+            /* Wait until TIM5 increments */
+            tmp = TIM5->CNT;
+            while (tmp == TIM5->CNT)
+            {
+              if (ticks == STM32_CMD.TickCount)
+              {
+                break;
+              }
+            }
+            break;
+          case 2:
+            /* Count on falling edge */
+            TIM5->CCER = 0x0020;
+            /* Wait until TIM5 increments */
+            tmp = TIM5->CNT;
+            while (tmp == TIM5->CNT)
+            {
+              if (ticks == STM32_CMD.TickCount)
+              {
+                break;
+              }
+            }
+            break;
+        }
         /* Start ADC1 Software Conversion */
         ADC1->CR2 |= (uint32_t)ADC_CR2_SWSTART;
         while (DMA_GetFlagStatus(DMA2_Stream0,DMA_FLAG_TCIF0)==RESET);
@@ -180,10 +222,81 @@ int main(void)
       case CMD_HSCSET:
         GPIO_ResetBits(GPIOD, GPIO_Pin_1 | GPIO_Pin_2 | GPIO_Pin_6 | GPIO_Pin_7);
         GPIO_SetBits(GPIOD, GPIO_Pin_0);
-        TIM4->PSC = STM32_CMD.HSCSet;
+        TIM4->PSC = STM32_CMD.STM32_HSC.HSCSet;
         STM32_CMD.Cmd = CMD_DONE;
         break;
     }
+  }
+}
+
+/**
+  * @brief  Create a subsampling scope waveform.
+  * @param  None
+  * @retval None
+  */
+void ScopeSubSampling(void)
+{
+  uint32_t x1,x2;
+  uint16_t* ptr;
+  uint32_t t;
+  uint32_t sample[2048][2];
+  uint32_t nsample;
+  uint32_t rate = 5+STM32_CMD.STM32_SCP.ADC_TwoSamplingDelay;
+  uint32_t clk=STM32_CLOCK/2/((STM32_CMD.STM32_SCP.ADC_Prescaler+1)*2);
+  uint32_t adcsampletime=1000000000/rate;
+  uint32_t adcperiod=1000000000/STM32_CMD.STM32_FRQ.FrequencySCP;
+
+  x1=0;
+  while (x1<2048)
+  {
+    STM32_CMD.scopebuff[x1]=0;
+    sample[x1][0]=0;
+    sample[x1][1]=0;
+    x1++;
+  }
+  x2=0;
+  ptr=(uint16_t*)(SCOPE_DATAPTR);
+  nsample=1024;
+  if (STM32_CMD.STM32_FRQ.FrequencySCP<50)
+  {
+    nsample=16384;
+  }
+  else if (STM32_CMD.STM32_FRQ.FrequencySCP<100)
+  {
+    nsample=8192;
+  }
+  else if (STM32_CMD.STM32_FRQ.FrequencySCP<200)
+  {
+    nsample=4095;
+  }
+  else if (STM32_CMD.STM32_FRQ.FrequencySCP<500)
+  {
+    nsample=2048;
+  }
+  while (x2<nsample)
+  {
+    x1=(uint32_t)(((float)adcsampletime*(float)2048*(float)x2)/(float)adcperiod);
+    while (x1>2048)
+    {
+      x1-=2048;
+    }
+    sample[x1][0]+=ScopeConvert(*ptr);
+    sample[x1][1]++;
+    ptr+=1;
+    if ((uint32_t)ptr>=SCOPE_DATAPTR+SCOPE_DATASIZE)
+    {
+      break;
+    }
+    x2++;
+  }
+  x1=0;
+  while (x1<2048)
+  {
+    if (sample[x1][1])
+    {
+      STM32_CMD.scopebuff[x1]=sample[x1][0]/sample[x1][1];
+    }
+    x1++;
   }
 }
 
@@ -431,14 +544,6 @@ void ADC_TripleConfig(void)
   ADC_StructInit(&ADC_InitStructure);
   ADC_CommonStructInit(&ADC_CommonInitStructure);
 
-  // /* Diable ADC1 **************************************************************/
-  // ADC_Cmd(ADC1, DISABLE);
-  // /* Diable ADC2 **************************************************************/
-  // ADC_Cmd(ADC2, DISABLE);
-  // /* Diable ADC3 **************************************************************/
-  // ADC_Cmd(ADC3, DISABLE);
-  // /* Diable DMA request after last transfer (multi-ADC mode) ******************/
-  // ADC_MultiModeDMARequestAfterLastTransferCmd(DISABLE);
   /* ADC Common configuration *************************************************/
   ADC_CommonInitStructure.ADC_Mode = ADC_TripleMode_Interl;
   ADC_CommonInitStructure.ADC_TwoSamplingDelay = STM32_CMD.STM32_SCP.ADC_TwoSamplingDelay<<8;

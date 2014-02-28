@@ -16,9 +16,20 @@ LICENSE_AGREEMENT/EvaluationProductLicenseAgreement.pdf
 -------------------------------------------------------------------------------
 Features:
 -------------------------------------------------------------------------------
+LC Meter
+High speed clock
+Scope
 
 -------------------------------------------------------------------------------
 Port pins used:
 -------------------------------------------------------------------------------
-PA.01				TIM2 Input for frequency counter.
+PA.00         Frequency counter input (TIM5)
+PA.01         Frequency counter input (TIM2)
+PB.07         High Speed Clock
+PC.01         Scope ADC
+PD.00         Frequency counter select0
+PD.01         Frequency counter select1
+PD.02         Frequency counter select2
+PD.06         LCMeter L/C selection, C = Low L = High
+PD.07         LCMeter calibration
 

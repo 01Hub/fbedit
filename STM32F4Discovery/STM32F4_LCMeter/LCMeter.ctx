@@ -9,12 +9,12 @@
 				<3>374</3>
 				<4>67</4>
 				<5>145</5>
-																																																																																																																																																																																																											
+																																																																																																																																																																																																																									
 			</CodeReport>
-																																																																																																																																																	
+																																																																																																																																																											
 		</CodeView>
 		<MemoryView Focus="134218120" TopRow="0" NbPerLine="8" />
-																																																																																							
+																																																																																													
 	</FrequencyCounter>
 	<LCMeter>
 		<CodeView TopRow="134218338" Focus="4294967295" >
@@ -25,17 +25,17 @@
 				<3>310</3>
 				<4>56</4>
 				<5>118</5>
-																																																																																				
+																																																																																																		
 			</CodeReport>
-																																																												
+																																																																						
 		</CodeView>
 		<MemoryView Focus="134218120" TopRow="0" NbPerLine="8" />
-																																				
+																																										
 	</LCMeter>
 	<Flags>
 		<Report>
 			<Def Header="FlagReport" NbCol="9" >
-				<Col Type="PT_BOOL" Header="Check" sizeCache="18" AutoSize="0" Edit="1" Sortable="1" Icon="D:\Ride\Ride\Config\Resources\check.bmp" />
+				<Col Type="PT_BOOL" Header="Check" sizeCache="18" AutoSize="0" Edit="1" Sortable="1" Icon="C:\Program Files (x86)\Raisonance\Ride\Config\Resources\check.bmp" />
 				<Col Type="PT_STRING" Header="Kind" sizeCache="DDDDDDDDDDD" AutoSize="1" Edit="0" Sortable="1" />
 				<Col Type="PT_STRING" Header="KindID" sizeCache="DD" AutoSize="1" Edit="0" Sortable="1" Visible="0" />
 				<Col Type="PT_STRING" Header="Space" sizeCache="DDDDDD" AutoSize="1" Edit="0" Sortable="1" />
@@ -54,10 +54,7 @@
 			
 	</Flags>
 	<Views>
-		<View File="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" Line="357" Index="0" focus="1" />
-		<View File="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_adc.h" Line="173" Index="1" />
-		<View File="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_adc.c" Line="0" Index="2" />
-		<View File="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\misc.c" Line="0" Index="3" />
+		<View File="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" Line="248" Index="0" focus="1" />
 	</Views>
 	<Grep>
 		<GrepIncludeSub>yes</GrepIncludeSub>
