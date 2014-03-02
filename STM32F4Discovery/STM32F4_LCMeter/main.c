@@ -93,8 +93,8 @@ typedef struct
 #define CMD_HSCSET                              ((uint8_t)8)
 
 #define ADC_CDR_ADDRESS                         ((uint32_t)0x40012308)
-#define SCOPE_DATAPTR                           ((uint32_t)0x20010000)
-#define SCOPE_DATASIZE                          ((uint32_t)65532)
+#define SCOPE_DATAPTR                           ((uint32_t)0x20008000)
+#define SCOPE_DATASIZE                          ((uint32_t)0x10000)
 #define STM32_CLOCK                             ((uint32_t)200000000)
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
@@ -126,8 +126,8 @@ int main(void)
        To reconfigure the default setting of SystemInit() function, refer to
        system_stm32f4xx.c file
      */
-  uint32_t tmp;
-  uint32_t ticks;
+  __IO uint32_t tmp;
+  __IO uint32_t ticks;
 
   /* RCC Configuration */
   RCC_Config();
@@ -217,6 +217,7 @@ int main(void)
         ADC1->CR2=0;
         ADC2->CR2=0;
         ADC3->CR2=0;
+        //ScopeSubSampling();
         STM32_CMD.Cmd = CMD_DONE;
         break;
       case CMD_HSCSET:
@@ -236,15 +237,15 @@ int main(void)
   */
 void ScopeSubSampling(void)
 {
-  uint32_t x1,x2;
-  uint16_t* ptr;
-  uint32_t t;
-  uint32_t sample[2048][2];
-  uint32_t nsample;
-  uint32_t rate = 5+STM32_CMD.STM32_SCP.ADC_TwoSamplingDelay;
-  uint32_t clk=STM32_CLOCK/2/((STM32_CMD.STM32_SCP.ADC_Prescaler+1)*2);
-  uint32_t adcsampletime=1000000000/rate;
-  uint32_t adcperiod=1000000000/STM32_CMD.STM32_FRQ.FrequencySCP;
+  __IO uint32_t x1,x2;
+  __IO uint16_t* ptr;
+  __IO uint32_t t;
+  __IO uint32_t sample[2048][2];
+  __IO uint32_t nsample;
+  __IO uint32_t rate = 5+STM32_CMD.STM32_SCP.ADC_TwoSamplingDelay;
+  __IO uint32_t clk=STM32_CLOCK/2/((STM32_CMD.STM32_SCP.ADC_Prescaler+1)*2);
+  __IO uint32_t adcsampletime=1000000000/rate;
+  __IO uint32_t adcperiod=1000000000/STM32_CMD.STM32_FRQ.FrequencySCP;
 
   x1=0;
   while (x1<2048)
@@ -254,7 +255,6 @@ void ScopeSubSampling(void)
     sample[x1][1]=0;
     x1++;
   }
-  x2=0;
   ptr=(uint16_t*)(SCOPE_DATAPTR);
   nsample=1024;
   if (STM32_CMD.STM32_FRQ.FrequencySCP<50)
@@ -273,6 +273,7 @@ void ScopeSubSampling(void)
   {
     nsample=2048;
   }
+  x2=0;
   while (x2<nsample)
   {
     x1=(uint32_t)(((float)adcsampletime*(float)2048*(float)x2)/(float)adcperiod);
@@ -280,9 +281,12 @@ void ScopeSubSampling(void)
     {
       x1-=2048;
     }
-    sample[x1][0]+=ScopeConvert(*ptr);
-    sample[x1][1]++;
-    ptr+=1;
+    if (sample[x1][1] < 15)
+    {
+      sample[x1][0]+=*ptr;
+      sample[x1][1]++;
+    }
+    ptr+=2;
     if ((uint32_t)ptr>=SCOPE_DATAPTR+SCOPE_DATASIZE)
     {
       break;

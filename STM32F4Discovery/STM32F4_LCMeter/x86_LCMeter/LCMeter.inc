@@ -52,7 +52,7 @@ IDC_TRBADCCLOCK					equ 1202
 IDC_TRBADCDELAY					equ 1203
 IDC_STCADCSAMPLERATE			equ 1204
 IDC_TRBTIMEDIV					equ 1205
-IDC_TRBVOLTSDIV					equ 1206
+IDC_TRBVOLTDIV					equ 1206
 IDC_RBNTRIGGERNONE				equ 1207
 IDC_RBNTRIGGERRISING			equ 1208
 IDC_RBNTRIGGERFALLING			equ 1209
@@ -72,7 +72,7 @@ CMD_SCPSET                      equ 7
 CMD_HSCSET						equ 8
 
 STM32_CLOCK						equ 200000000
-ADCSAMPLESIZE					equ 65532
+ADCSAMPLESIZE					equ 10000h
 ADCMAX							equ 4096
 ADCMAXMV						equ 3000
 ADCDIVMV						equ 500
@@ -229,5 +229,7 @@ STM32_Cmd						STM32_CMD <>
 mode							DWORD ?
 LCx								REAL10 ?
 ADC_Data						WORD 8000h dup(?)
+hThread							HANDLE ?
+fThreadExit						DWORD ?
 
 ;#########################################################################

@@ -32,6 +32,41 @@ SetMode proc
 
 SetMode endp
 
+FormatFrequency proc uses ebx,frq:DWORD,lpBuffer:DWORD
+
+	mov		eax,frq
+	.if eax<1000
+		;Hz
+		invoke wsprintf,lpBuffer,addr szFmtHz,eax
+	.elseif eax<1000000
+		;KHz
+		invoke wsprintf,lpBuffer,addr szFmtKHz,eax
+		mov		ebx,6
+		call	InsertDot
+	.else
+		;MHz
+		invoke wsprintf,lpBuffer,addr szFmtMHz,eax
+		mov		ebx,9
+		call	InsertDot
+	.endif
+	ret
+
+InsertDot:
+	mov		esi,lpBuffer
+	invoke lstrlen,esi
+	mov		edx,eax
+	sub		ebx,edx
+	neg		ebx
+	mov		al,'.'
+	.while ebx<=edx
+		xchg	al,[esi+ebx]
+		inc		ebx
+	.endw
+	mov		[esi+ebx],al
+	retn
+
+FormatFrequency endp
+
 FrequencyProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	buffer[32]:BYTE
 	LOCAL	ps:PAINTSTRUCT
@@ -89,14 +124,13 @@ ScopeProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	iTmp:DWORD
 	LOCAL	nMin:DWORD
 	LOCAL	nMax:DWORD
+	LOCAL	nCenter:DWORD
 	LOCAL	srms:REAL10
 	LOCAL	stns:REAL10
 	LOCAL	pixns:REAL10
-	LOCAL	npix:REAL10
-;	LOCAL	xsinf:SCROLLINFO
-;	LOCAL	ysinf:SCROLLINFO
+	LOCAL	xmul:REAL10
+	LOCAL	ymul:REAL10
 	LOCAL	buffer[128]:BYTE
-;	LOCAL	buffer1[128]:BYTE
 
 	mov		eax,uMsg
 	.if eax==WM_PAINT
@@ -134,12 +168,25 @@ ScopeProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		fdivp	st(1),st
 		fstp	pixns
 ;		invoke PrintFp,addr pixns
-		;Get number of pixels for each sample
+		;Get x scale
 		fld		stns
 		fld		pixns
 		fdivp	st(1),st
-		fstp	npix
+		fstp	xmul
 ;		invoke PrintFp,addr npix
+		;Get y scale
+		mov		iTmp,ADCMAXMV
+		fild	iTmp
+		mov		iTmp,GRIDSIZE
+		fild	iTmp
+		fmulp	st(1),st
+		mov		iTmp,ADCDIVMV
+		fild	iTmp
+		fdivp	st(1),st
+		mov		iTmp,ADCMAX
+		fild	iTmp
+		fdivp	st(1),st
+		fstp	ymul
 
 		mov		samplesize,ADCSAMPLESIZE
 		;Get Vmin, Vmax and Vpp
@@ -158,6 +205,11 @@ ScopeProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.endw
 		mov		nMin,ecx
 		mov		nMax,edx
+		;Find Center
+		sub		edx,ecx
+		shr		edx,1
+		add		edx,ecx
+		mov		nCenter,edx
 		invoke GetClientRect,hWin,addr rect
 		invoke BeginPaint,hWin,addr ps
 		invoke CreateCompatibleDC,ps.hdc
@@ -222,16 +274,32 @@ ScopeProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		push	eax
 		mov		esi,offset ADC_Data
 		;Find trigger
+		mov		ecx,nMax
+		sub		ecx,nMin
+		shr		ecx,1
+		add		ecx,nMin
+		mov		eax,STM32_Cmd.STM32_Scp.ScopeTriggerLevel
+		sub		eax,2048
+		add		ecx,eax
 		xor		edi,edi
-		.while edi<samplesize
-			movzx	eax,word ptr [esi+edi]
-			movzx	edx,word ptr [esi+edi+WORD]
-			.break.if eax<STM32_Cmd.STM32_Scp.ScopeTriggerLevel && edx>=STM32_Cmd.STM32_Scp.ScopeTriggerLevel
-			lea		edi,[edi+WORD]
-		.endw
+		.if STM32_Cmd.STM32_Scp.ScopeTrigger==1
+			;Rising
+			.while edi<samplesize
+				.break.if word ptr [esi+edi]<cx && word ptr [esi+edi+WORD]>=cx
+				lea		edi,[edi+WORD]
+			.endw
+		.elseif STM32_Cmd.STM32_Scp.ScopeTrigger==2
+			;Falling
+			.while edi<samplesize
+				.break.if word ptr [esi+edi]>cx && word ptr [esi+edi+WORD]<=cx
+				lea		edi,[edi+WORD]
+			.endw
+		.endif
 		.if edi==samplesize
+			;No trigger found
 			xor		edi,edi
 		.endif
+
 		xor		ebx,ebx
 		call	GetPoint
 		invoke MoveToEx,mDC,pt.x,pt.y,NULL
@@ -264,32 +332,18 @@ ScopeProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
 GetPoint:
 	;Get X position
+	fld		xmul
 	mov		iTmp,ebx
 	fild	iTmp
-	fld		npix
 	fmulp	st(1),st
 	fistp	iTmp
 	mov		eax,iTmp
 	add		eax,scprect.left
 	mov		pt.x,eax
-
 	;Get y position
-	mov		iTmp,ADCMAXMV
-	fild	iTmp
-	mov		iTmp,GRIDSIZE
-	fild	iTmp
-	fmulp	st(1),st
-	mov		iTmp,ADCDIVMV
-	fild	iTmp
-	fdivp	st(1),st
-	mov		iTmp,ADCMAX
-	fild	iTmp
-	fdivp	st(1),st
+	fld		ymul
 	movzx	eax,word ptr [esi+edi]
-	mov		edx,nMax
-	sub		edx,nMin
-	shr		edx,1
-	sub		eax,edx
+	sub		eax,nCenter
 	neg		eax
 	mov		iTmp,eax
 	fild	iTmp
@@ -303,6 +357,16 @@ GetPoint:
 
 ScopeProc endp
 
+SampleThreadProc proc lParam:DWORD
+
+	.while !fThreadExit
+		
+	.endw
+	mov		fThreadExit,0
+	ret
+
+SampleThreadProc endp
+
 HscChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	
 	mov		eax,uMsg
@@ -315,17 +379,17 @@ HscChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 		shr edx,16
 		.if edx==BN_CLICKED
 			.if eax==IDC_BTNHSCDN
-				.if STM32_Cmd.HSCSet<65534
-					inc		STM32_Cmd.HSCSet
+				.if STM32_Cmd.STM32_Hsc.HSCSet<65534
+					inc		STM32_Cmd.STM32_Hsc.HSCSet
 					mov		STM32_Cmd.Cmd,CMD_HSCSET
-					invoke STLinkWrite,hWnd,20000018h,addr STM32_Cmd.HSCSet,DWORD
+					invoke STLinkWrite,hWnd,20000018h,addr STM32_Cmd.STM32_Hsc.HSCSet,DWORD
 					invoke STLinkWrite,hWnd,20000014h,addr STM32_Cmd.Cmd,DWORD
 				.endif
 			.elseif eax==IDC_BTNHSCUP
-				.if STM32_Cmd.HSCSet
-					dec		STM32_Cmd.HSCSet
+				.if STM32_Cmd.STM32_Hsc.HSCSet
+					dec		STM32_Cmd.STM32_Hsc.HSCSet
 					mov		STM32_Cmd.Cmd,CMD_HSCSET
-					invoke STLinkWrite,hWnd,20000018h,addr STM32_Cmd.HSCSet,DWORD
+					invoke STLinkWrite,hWnd,20000018h,addr STM32_Cmd.STM32_Hsc.HSCSet,DWORD
 					invoke STLinkWrite,hWnd,20000014h,addr STM32_Cmd.Cmd,DWORD
 				.endif
 			.endif
@@ -415,7 +479,7 @@ ScpChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 			lea		edx,[edx+1]
 		.endw
 		invoke SendDlgItemMessage,hWin,IDC_TRBTIMEDIV,TBM_SETPOS,TRUE,edx
-		invoke SendDlgItemMessage,hWin,IDC_TRBVOLTSDIV,TBM_SETRANGE,FALSE,8 SHL 16
+		invoke SendDlgItemMessage,hWin,IDC_TRBVOLTDIV,TBM_SETRANGE,FALSE,8 SHL 16
 		mov		eax,STM32_Cmd.STM32_Scp.ScopeVoltDiv
 		xor		edx,edx
 		.while edx<9
@@ -425,11 +489,21 @@ ScpChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 		mov		eax,STM32_Cmd.STM32_Scp.ScopeTrigger
 		add		eax,IDC_RBNTRIGGERNONE
 		invoke SendDlgItemMessage,hWin,eax,BM_SETCHECK,BST_CHECKED,0
-		invoke SendDlgItemMessage,hWin,IDC_TRBVOLTSDIV,TBM_SETPOS,TRUE,edx
+		invoke SendDlgItemMessage,hWin,IDC_TRBVOLTDIV,TBM_SETPOS,TRUE,edx
 		invoke SendDlgItemMessage,hWin,IDC_TRBTRIGGERLEVEL,TBM_SETRANGE,FALSE,255 SHL 16
 		mov		eax,STM32_Cmd.STM32_Scp.ScopeTriggerLevel
 		shr		eax,4
 		invoke SendDlgItemMessage,hWin,IDC_TRBTRIGGERLEVEL,TBM_SETPOS,TRUE,eax
+	.elseif	eax==WM_COMMAND
+		mov edx,wParam
+		movzx eax,dx
+		shr edx,16
+		.if edx==BN_CLICKED
+			.if eax>=IDC_RBNTRIGGERNONE && eax<=IDC_RBNTRIGGERFALLING
+				sub		eax,IDC_RBNTRIGGERNONE
+				mov		STM32_Cmd.STM32_Scp.ScopeTrigger,eax
+			.endif
+		.endif
 	.elseif eax==WM_HSCROLL
 		invoke GetDlgCtrlID,lParam
 		.if eax==IDC_TRBADCCLOCK
@@ -451,7 +525,7 @@ ScpChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 			mov		STM32_Cmd.STM32_Scp.ScopeTimeDiv,eax
 		.elseif eax==IDC_TRBVOLTDIV
 			;Scope Volt / Div
-			invoke SendDlgItemMessage,hWin,IDC_TRBVOLTSDIV,TBM_GETPOS,0,0
+			invoke SendDlgItemMessage,hWin,IDC_TRBVOLTDIV,TBM_GETPOS,0,0
 			mov		eax,ScopeVoltDiv[eax*DWORD]
 			mov		STM32_Cmd.STM32_Scp.ScopeVoltDiv,eax
 		.elseif eax==IDC_TRBTRIGGERLEVEL
@@ -471,17 +545,18 @@ ScpChildProc endp
 
 DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	buffer[32]:BYTE
+	LOCAL	tid:DWORD
 
 	mov		eax,uMsg
 	.if	eax==WM_INITDIALOG
 		mov		eax,hWin
 		mov		hWnd,eax
-		mov		STM32_Cmd.HSCSet,65535;42000-1
+		mov		STM32_Cmd.STM32_Hsc.HSCSet,50000-1
 		mov		STM32_Cmd.STM32_Scp.ADC_Prescaler,0
 		mov		STM32_Cmd.STM32_Scp.ADC_TwoSamplingDelay,0
 		mov		STM32_Cmd.STM32_Scp.ScopeTrigger,1
 		mov		STM32_Cmd.STM32_Scp.ScopeTriggerLevel,2048
-		mov		STM32_Cmd.STM32_Scp.ScopeTimeDiv,100000
+		mov		STM32_Cmd.STM32_Scp.ScopeTimeDiv,10000
 		mov		STM32_Cmd.STM32_Scp.ScopeVoltDiv,500
 		invoke CreateFontIndirect,addr Tahoma_36
 		mov		hFont,eax
@@ -497,6 +572,9 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		;Create scope child dialog
 		invoke CreateDialogParam,hInstance,IDD_DLGSCP,hWin,addr ScpChildProc,0
 		mov		hScpCld,eax
+		mov		STM32_Cmd.STM32_Scp.ScopeTrigger,1
+		invoke CreateThread,NULL,NULL,addr SampleThreadProc,hWin,0,addr tid
+		mov		hThread,eax
 	.elseif	eax==WM_COMMAND
 		mov edx,wParam
 		movzx eax,dx
@@ -523,6 +601,7 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					invoke ShowWindow,hLcmCld,SW_HIDE
 					invoke ShowWindow,hHscCld,SW_SHOW
 					mov		mode,CMD_FRQCH1
+					invoke STLinkWrite,hWin,20000014h,addr mode,DWORD
 				.elseif mode==CMD_FRQCH1
 					invoke ShowWindow,hLcmCld,SW_HIDE
 					invoke ShowWindow,hHscCld,SW_HIDE
@@ -533,12 +612,9 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					invoke ShowWindow,hHscCld,SW_HIDE
 					invoke ShowWindow,hLcmCld,SW_SHOW
 					mov		mode,CMD_LCMCAP
-				.endif
-				.if connected
-					invoke STLinkWrite,hWin,2000002Ch,offset STM32_Cmd.STM32_Scp,sizeof STM32_SCP
 					invoke STLinkWrite,hWin,20000014h,addr mode,DWORD
-					invoke SetMode
 				.endif
+				invoke SetMode
 			.endif
 		.endif
 	.elseif	eax==WM_TIMER
@@ -546,42 +622,28 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke STLinkRead,hWin,2000001Ch,offset STM32_Cmd.STM32_Frq,4*DWORD
 		.if eax
 			.if mode==CMD_SCPSET
-				mov		eax,STM32_Cmd.STM32_Frq.FrequencySCP
-			.else
-				mov		eax,STM32_Cmd.STM32_Frq.Frequency
-			.endif
-			.if eax<1000
-				;Hz
-				invoke wsprintf,addr buffer,addr szFmtHz,eax
-			.elseif eax<1000000
-				;KHz
-				invoke wsprintf,addr buffer,addr szFmtKHz,eax
-				mov		ebx,6
-				call	InsertDot
-			.else
-				;MHz
-				invoke wsprintf,addr buffer,addr szFmtMHz,eax
-				mov		ebx,9
-				call	InsertDot
-			.endif
-			invoke SetWindowText,hHsc,addr buffer
-			invoke SetWindowText,hScp,addr buffer
-			mov		buffer,0
-			.if mode==CMD_LCMCAP
-				invoke CalculateCapacitor,addr buffer
-			.elseif mode==CMD_LCMIND
-				invoke CalculateInductor,addr buffer
-			.endif
-			invoke SetWindowText,hLcm,addr buffer
-			.if mode==CMD_SCPSET
+				mov		edx,STM32_Cmd.STM32_Frq.FrequencySCP
+				invoke FormatFrequency,edx,addr buffer
+				invoke SetWindowText,hScp,addr buffer
+				invoke STLinkWrite,hWin,2000002Ch,offset STM32_Cmd.STM32_Scp,sizeof STM32_SCP
+				invoke STLinkWrite,hWin,20000014h,addr mode,DWORD
 				.while TRUE
 					invoke Sleep,100
 					invoke STLinkRead,hWin,20000014h,offset STM32_Cmd,DWORD
 					.break .if !STM32_Cmd.Cmd
 				.endw
-				invoke STLinkRead,hWin,20010000h,offset ADC_Data,ADCSAMPLESIZE
+				invoke STLinkRead,hWin,20008000h,offset ADC_Data,ADCSAMPLESIZE
 				invoke InvalidateRect,hScpScrn,NULL,TRUE
-				invoke STLinkWrite,hWin,20000014h,addr mode,DWORD
+			.elseif mode==CMD_FRQCH1
+				mov		edx,STM32_Cmd.STM32_Frq.Frequency
+				invoke FormatFrequency,edx,addr buffer
+				invoke SetWindowText,hHsc,addr buffer
+			.elseif mode==CMD_LCMCAP
+				invoke CalculateCapacitor,addr buffer
+				invoke SetWindowText,hLcm,addr buffer
+			.elseif mode==CMD_LCMIND
+				invoke CalculateInductor,addr buffer
+				invoke SetWindowText,hLcm,addr buffer
 			.endif
 		.else
 			invoke KillTimer,hWin,1000
@@ -589,6 +651,9 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.endif
 	.elseif	eax==WM_CLOSE
 		invoke KillTimer,hWin,1000
+		mov		fThreadExit,TRUE
+		invoke WaitForSingleObject,hThread,2000
+		invoke CloseHandle,hThread
 		invoke STLinkDisconnect,hWin
 		invoke DeleteObject,hFont
 		invoke EndDialog,hWin,0
@@ -598,20 +663,6 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	.endif
 	mov		eax,TRUE
 	ret
-
-InsertDot:
-	lea		esi,buffer
-	invoke lstrlen,esi
-	mov		edx,eax
-	sub		ebx,edx
-	neg		ebx
-	mov		al,'.'
-	.while ebx<=edx
-		xchg	al,[esi+ebx]
-		inc		ebx
-	.endw
-	mov		[esi+ebx],al
-	retn
 
 DlgProc endp
 
