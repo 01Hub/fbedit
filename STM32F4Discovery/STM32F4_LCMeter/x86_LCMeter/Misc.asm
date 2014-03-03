@@ -462,3 +462,33 @@ CalculateInductor proc uses esi,lpBuffer:PTR BYTE
 
 CalculateInductor endp
 
+FrequencyToClock proc uses ebx,frq:DWORD,clk:DWORD
+
+	mov		ebx,1
+	.while TRUE
+		mov		eax,clk
+		cdq
+		div		ebx
+		cdq
+		mov		ecx,frq
+		div		ecx
+		.if eax<=65535
+			mov		edx,ebx
+			.break
+		.endif
+		inc		ebx
+	.endw
+	ret
+
+FrequencyToClock endp
+
+ClockToFrequency proc count:DWORD,clk:DWORD
+
+	mov		eax,clk
+	cdq
+	mov		ecx,count
+	div		ecx
+	ret
+
+ClockToFrequency endp
+

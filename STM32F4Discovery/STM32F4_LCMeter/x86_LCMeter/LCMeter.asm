@@ -373,6 +373,10 @@ HscChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 	.if eax==WM_INITDIALOG
 		invoke GetDlgItem,hWin,IDC_UDCHSC
 		mov		hHsc,eax
+		mov		eax,STM32_Cmd.STM32_Hsc.HSCSet
+		inc		eax
+		invoke ClockToFrequency,eax,STM32_CLOCK/4
+		invoke SetDlgItemInt,hWin,IDC_EDTHSCFRQ,eax,FALSE
 	.elseif	eax==WM_COMMAND
 		mov edx,wParam
 		movzx eax,dx
@@ -381,14 +385,42 @@ HscChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 			.if eax==IDC_BTNHSCDN
 				.if STM32_Cmd.STM32_Hsc.HSCSet<65534
 					inc		STM32_Cmd.STM32_Hsc.HSCSet
+					mov		eax,STM32_Cmd.STM32_Hsc.HSCSet
+					inc		eax
+					invoke ClockToFrequency,eax,STM32_CLOCK/4
+					invoke SetDlgItemInt,hWin,IDC_EDTHSCFRQ,eax,FALSE
 					mov		STM32_Cmd.Cmd,CMD_HSCSET
-					invoke STLinkWrite,hWnd,20000018h,addr STM32_Cmd.STM32_Hsc.HSCSet,DWORD
-					invoke STLinkWrite,hWnd,20000014h,addr STM32_Cmd.Cmd,DWORD
+					.if connected
+						invoke STLinkWrite,hWnd,20000018h,addr STM32_Cmd.STM32_Hsc.HSCSet,DWORD
+						invoke STLinkWrite,hWnd,20000014h,addr STM32_Cmd.Cmd,DWORD
+					.endif
 				.endif
 			.elseif eax==IDC_BTNHSCUP
 				.if STM32_Cmd.STM32_Hsc.HSCSet
 					dec		STM32_Cmd.STM32_Hsc.HSCSet
+					mov		eax,STM32_Cmd.STM32_Hsc.HSCSet
+					inc		eax
+					invoke ClockToFrequency,eax,STM32_CLOCK/4
+					invoke SetDlgItemInt,hWin,IDC_EDTHSCFRQ,eax,FALSE
 					mov		STM32_Cmd.Cmd,CMD_HSCSET
+					.if connected
+						invoke STLinkWrite,hWnd,20000018h,addr STM32_Cmd.STM32_Hsc.HSCSet,DWORD
+						invoke STLinkWrite,hWnd,20000014h,addr STM32_Cmd.Cmd,DWORD
+					.endif
+				.endif
+			.endif
+		.elseif edx==EN_KILLFOCUS
+			.if eax==IDC_EDTHSCFRQ
+				invoke GetDlgItemInt,hWin,IDC_EDTHSCFRQ,NULL,FALSE
+				invoke FrequencyToClock,eax,STM32_CLOCK/4
+				push	eax
+				dec		eax
+				mov		STM32_Cmd.STM32_Hsc.HSCSet,eax
+				pop		eax
+				invoke ClockToFrequency,eax,STM32_CLOCK/4
+				invoke SetDlgItemInt,hWin,IDC_EDTHSCFRQ,eax,FALSE
+				mov		STM32_Cmd.Cmd,CMD_HSCSET
+				.if connected
 					invoke STLinkWrite,hWnd,20000018h,addr STM32_Cmd.STM32_Hsc.HSCSet,DWORD
 					invoke STLinkWrite,hWnd,20000014h,addr STM32_Cmd.Cmd,DWORD
 				.endif
@@ -575,6 +607,7 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		STM32_Cmd.STM32_Scp.ScopeTrigger,1
 		invoke CreateThread,NULL,NULL,addr SampleThreadProc,hWin,0,addr tid
 		mov		hThread,eax
+		mov		mode,CMD_LCMCAP
 	.elseif	eax==WM_COMMAND
 		mov edx,wParam
 		movzx eax,dx
@@ -601,7 +634,9 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					invoke ShowWindow,hLcmCld,SW_HIDE
 					invoke ShowWindow,hHscCld,SW_SHOW
 					mov		mode,CMD_FRQCH1
-					invoke STLinkWrite,hWin,20000014h,addr mode,DWORD
+					.if connected
+						invoke STLinkWrite,hWin,20000014h,addr mode,DWORD
+					.endif
 				.elseif mode==CMD_FRQCH1
 					invoke ShowWindow,hLcmCld,SW_HIDE
 					invoke ShowWindow,hHscCld,SW_HIDE
@@ -612,7 +647,9 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					invoke ShowWindow,hHscCld,SW_HIDE
 					invoke ShowWindow,hLcmCld,SW_SHOW
 					mov		mode,CMD_LCMCAP
-					invoke STLinkWrite,hWin,20000014h,addr mode,DWORD
+					.if connected
+						invoke STLinkWrite,hWin,20000014h,addr mode,DWORD
+					.endif
 				.endif
 				invoke SetMode
 			.endif
