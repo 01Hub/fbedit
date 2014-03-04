@@ -122,6 +122,7 @@ ScopeProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	pt:POINT
 	LOCAL	samplesize:DWORD
 	LOCAL	iTmp:DWORD
+	LOCAL	fTmp:REAL10
 	LOCAL	nMin:DWORD
 	LOCAL	nMax:DWORD
 	LOCAL	nCenter:DWORD
@@ -130,6 +131,7 @@ ScopeProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	pixns:REAL10
 	LOCAL	xmul:REAL10
 	LOCAL	ymul:REAL10
+	LOCAL	adcperiod:REAL10
 	LOCAL	buffer[128]:BYTE
 
 	mov		eax,uMsg
@@ -149,11 +151,11 @@ ScopeProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		fild	iTmp
 		fdivp	st(1),st
 		fstp	srms
-		fld1
-		fld		srms
 		invoke FpToAscii,addr srms,addr buffer,FALSE
 		invoke lstrcat,addr buffer,offset szHz
 		invoke SetDlgItemText,hScpCld,IDC_STCADCSAMPLERATE,addr buffer
+		fld1
+		fld		srms
 		fdivp	st(1),st
 		fld		ten_9
 		fmulp	st(1),st
@@ -173,7 +175,7 @@ ScopeProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		fld		pixns
 		fdivp	st(1),st
 		fstp	xmul
-;		invoke PrintFp,addr npix
+;		invoke PrintFp,addr xmul
 		;Get y scale
 		mov		iTmp,ADCMAXMV
 		fild	iTmp
@@ -272,47 +274,66 @@ ScopeProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke CreatePen,PS_SOLID,2,008000h
 		invoke SelectObject,mDC,eax
 		push	eax
-		mov		esi,offset ADC_Data
-		;Find trigger
-		mov		ecx,nMax
-		sub		ecx,nMin
-		shr		ecx,1
-		add		ecx,nMin
-		mov		eax,STM32_Cmd.STM32_Scp.ScopeTriggerLevel
-		sub		eax,2048
-		add		ecx,eax
-		xor		edi,edi
-		.if STM32_Cmd.STM32_Scp.ScopeTrigger==1
-			;Rising
+		.if fSubSampling
+			fld		ten_9
+			fild	STM32_Cmd.STM32_Frq.FrequencySCP
+			fdivp	st(1),st
+			fstp	adcperiod
+			xor		ebx,ebx
+			call	GetPointSubSample
+			invoke MoveToEx,mDC,pt.x,pt.y,NULL
+			lea		ebx,[ebx+1]
 			.while edi<samplesize
-				.break.if word ptr [esi+edi]<cx && word ptr [esi+edi+WORD]>=cx
-				lea		edi,[edi+WORD]
+				call	GetPointSubSample
+				.if pt.y
+					invoke LineTo,mDC,pt.x,pt.y
+				.endif
+				mov		eax,pt.x
+				.break .if sdword ptr eax>scprect.right
+				lea		ebx,[ebx+1]
 			.endw
-		.elseif STM32_Cmd.STM32_Scp.ScopeTrigger==2
-			;Falling
-			.while edi<samplesize
-				.break.if word ptr [esi+edi]>cx && word ptr [esi+edi+WORD]<=cx
-				lea		edi,[edi+WORD]
-			.endw
-		.endif
-		.if edi==samplesize
-			;No trigger found
+		.else
+			mov		esi,offset ADC_Data
+			;Find trigger
+			mov		ecx,nMax
+			sub		ecx,nMin
+			shr		ecx,1
+			add		ecx,nMin
+			mov		eax,STM32_Cmd.STM32_Scp.ScopeTriggerLevel
+			sub		eax,2048
+			add		ecx,eax
 			xor		edi,edi
-		.endif
-
-		xor		ebx,ebx
-		call	GetPoint
-		invoke MoveToEx,mDC,pt.x,pt.y,NULL
-		lea		edi,[edi+WORD]
-		lea		ebx,[ebx+1]
-		.while edi<samplesize
+			.if STM32_Cmd.STM32_Scp.ScopeTrigger==1
+				;Rising
+				.while edi<samplesize
+					.break.if word ptr [esi+edi]<cx && word ptr [esi+edi+WORD]>=cx
+					lea		edi,[edi+WORD]
+				.endw
+			.elseif STM32_Cmd.STM32_Scp.ScopeTrigger==2
+				;Falling
+				.while edi<samplesize
+					.break.if word ptr [esi+edi]>cx && word ptr [esi+edi+WORD]<=cx
+					lea		edi,[edi+WORD]
+				.endw
+			.endif
+			.if edi==samplesize
+				;No trigger found
+				xor		edi,edi
+			.endif
+			xor		ebx,ebx
 			call	GetPoint
-			invoke LineTo,mDC,pt.x,pt.y
-			mov		eax,pt.x
-			.break .if sdword ptr eax>scprect.right
+			invoke MoveToEx,mDC,pt.x,pt.y,NULL
 			lea		edi,[edi+WORD]
 			lea		ebx,[ebx+1]
-		.endw
+			.while edi<samplesize
+				call	GetPoint
+				invoke LineTo,mDC,pt.x,pt.y
+				mov		eax,pt.x
+				.break .if sdword ptr eax>scprect.right
+				lea		edi,[edi+WORD]
+				lea		ebx,[ebx+1]
+			.endw
+		.endif
 		pop		eax
 		invoke SelectObject,mDC,eax
 		invoke DeleteObject,eax
@@ -352,6 +373,41 @@ GetPoint:
 	mov		eax,iTmp
 	add		eax,SCOPEHT/2
 	add		eax,scprect.top
+	mov		pt.y,eax
+	retn
+
+GetPointSubSample:
+	;Get X position
+	fild	STM32_Cmd.STM32_Scp.ScopeTimeDiv
+	fld		adcperiod
+	fdivp	st(1),st
+	mov		iTmp,2048/64
+	fild	iTmp
+	fmulp	st(1),st
+	mov		iTmp,ebx
+	fild	iTmp
+	fdivrp	st(1),st
+	fistp	iTmp
+	mov		eax,iTmp
+	add		eax,scprect.left
+	mov		pt.x,eax
+
+	;Get y position
+	mov		eax,ebx
+	and		eax,2047
+	mov		eax,SubSample[eax*DWORD]
+	.if eax
+		sub		eax,nCenter
+		neg		eax
+		mov		iTmp,eax
+		fld		ymul
+		fild	iTmp
+		fmulp	st(1),st
+		fistp	iTmp
+		mov		eax,iTmp
+		add		eax,SCOPEHT/2
+		add		eax,scprect.top
+	.endif
 	mov		pt.y,eax
 	retn
 
@@ -534,6 +590,10 @@ ScpChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 			.if eax>=IDC_RBNTRIGGERNONE && eax<=IDC_RBNTRIGGERFALLING
 				sub		eax,IDC_RBNTRIGGERNONE
 				mov		STM32_Cmd.STM32_Scp.ScopeTrigger,eax
+			.elseif eax==IDC_CHKSUBSAMPLING
+				xor		fSubSampling,TRUE
+			.elseif eax==IDC_CHKHOLDSAMPLING
+				xor		fHoldSampling,TRUE
 			.endif
 		.endif
 	.elseif eax==WM_HSCROLL
@@ -659,18 +719,23 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke STLinkRead,hWin,2000001Ch,offset STM32_Cmd.STM32_Frq,4*DWORD
 		.if eax
 			.if mode==CMD_SCPSET
-				mov		edx,STM32_Cmd.STM32_Frq.FrequencySCP
-				invoke FormatFrequency,edx,addr buffer
-				invoke SetWindowText,hScp,addr buffer
-				invoke STLinkWrite,hWin,2000002Ch,offset STM32_Cmd.STM32_Scp,sizeof STM32_SCP
-				invoke STLinkWrite,hWin,20000014h,addr mode,DWORD
-				.while TRUE
-					invoke Sleep,100
-					invoke STLinkRead,hWin,20000014h,offset STM32_Cmd,DWORD
-					.break .if !STM32_Cmd.Cmd
-				.endw
-				invoke STLinkRead,hWin,20008000h,offset ADC_Data,ADCSAMPLESIZE
-				invoke InvalidateRect,hScpScrn,NULL,TRUE
+				.if !fHoldSampling
+					mov		edx,STM32_Cmd.STM32_Frq.FrequencySCP
+					invoke FormatFrequency,edx,addr buffer
+					invoke SetWindowText,hScp,addr buffer
+					invoke STLinkWrite,hWin,2000002Ch,offset STM32_Cmd.STM32_Scp,sizeof STM32_SCP
+					invoke STLinkWrite,hWin,20000014h,addr mode,DWORD
+					.while TRUE
+						invoke Sleep,100
+						invoke STLinkRead,hWin,20000014h,offset STM32_Cmd,DWORD
+						.break .if !STM32_Cmd.Cmd
+					.endw
+					invoke STLinkRead,hWin,20008000h,offset ADC_Data,ADCSAMPLESIZE
+					.if fSubSampling
+						invoke ScopeSubSampling
+					.endif
+					invoke InvalidateRect,hScpScrn,NULL,TRUE
+				.endif
 			.elseif mode==CMD_FRQCH1
 				mov		edx,STM32_Cmd.STM32_Frq.Frequency
 				invoke FormatFrequency,edx,addr buffer

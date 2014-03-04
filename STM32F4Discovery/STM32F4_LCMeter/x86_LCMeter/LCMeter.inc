@@ -57,6 +57,8 @@ IDC_RBNTRIGGERNONE				equ 1207
 IDC_RBNTRIGGERRISING			equ 1208
 IDC_RBNTRIGGERFALLING			equ 1209
 IDC_TRBTRIGGERLEVEL				equ 1210
+IDC_CHKSUBSAMPLING				equ 1211
+IDC_CHKHOLDSAMPLING				equ 1212
 
 IDD_DLGSCPSCRNCLD				equ 2000
 IDC_UDCSCPSCRN					equ 2001
@@ -226,10 +228,19 @@ hScp							HWND ?
 hFont							HFONT ?
 connected						DWORD ?
 STM32_Cmd						STM32_CMD <>
+
+;adcsampletime					REAL10 ?
+;adcperiod						REAL10 ?
+
+
 mode							DWORD ?
 LCx								REAL10 ?
-ADC_Data						WORD 8000h dup(?)
+ADC_Data						WORD ADCSAMPLESIZE dup(?)
 hThread							HANDLE ?
 fThreadExit						DWORD ?
+fHoldSampling					DWORD ?
+fSubSampling					DWORD ?
+SubSample						DWORD 2048 dup(?)
+SubSampleCount					WORD 2048 dup(?)
 
 ;#########################################################################

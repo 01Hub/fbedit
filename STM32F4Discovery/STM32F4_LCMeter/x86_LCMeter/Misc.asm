@@ -492,3 +492,169 @@ ClockToFrequency proc count:DWORD,clk:DWORD
 
 ClockToFrequency endp
 
+;void ScopeSubSampling(void)
+;{
+;  __IO uint32_t x1,x2;
+;  __IO uint16_t* ptr;
+;  __IO uint32_t t;
+;  __IO uint32_t sample[2048][2];
+;  __IO uint32_t nsample;
+;  __IO uint32_t clk=STM32_CLOCK/2/((STM32_CMD.STM32_SCP.ADC_Prescaler+1)*2);
+;  __IO uint32_t rate = clk/(5+STM32_CMD.STM32_SCP.ADC_TwoSamplingDelay);
+;  __IO uint32_t adcsampletime=1000000000/rate;
+;  __IO uint32_t adcperiod=1000000000/STM32_CMD.STM32_FRQ.FrequencySCP;
+;
+;  rate=clk/rate;
+;  x1=0;
+;  while (x1<2048)
+;  {
+;    STM32_CMD.scopebuff[x1]=0;
+;    sample[x1][0]=0;
+;    sample[x1][1]=0;
+;    x1++;
+;  }
+;  ptr=(uint16_t*)(SCOPE_DATAPTR);
+;  nsample=1024;
+;  if (STM32_CMD.STM32_FRQ.FrequencySCP<50)
+;  {
+;    nsample=16384;
+;  }
+;  else if (STM32_CMD.STM32_FRQ.FrequencySCP<100)
+;  {
+;    nsample=8192;
+;  }
+;  else if (STM32_CMD.STM32_FRQ.FrequencySCP<200)
+;  {
+;    nsample=4095;
+;  }
+;  else if (STM32_CMD.STM32_FRQ.FrequencySCP<500)
+;  {
+;    nsample=2048;
+;  }
+;  x2=0;
+;  while (x2<nsample)
+;  {
+;    x1=(uint32_t)(((float)adcsampletime*(float)2048*(float)x2)/(float)adcperiod);
+;    while (x1>2048)
+;    {
+;      x1-=2048;
+;    }
+;    if (sample[x1][1] < 15)
+;    {
+;      sample[x1][0]+=*ptr;
+;      sample[x1][1]++;
+;    }
+;    ptr+=2;
+;    if ((uint32_t)ptr>=SCOPE_DATAPTR+SCOPE_DATASIZE)
+;    {
+;      break;
+;    }
+;    x2++;
+;  }
+;  x1=0;
+;  while (x1<2048)
+;  {
+;    if (sample[x1][1])
+;    {
+;      STM32_CMD.scopebuff[x1]=sample[x1][0]/sample[x1][1];
+;    }
+;    x1++;
+;  }
+;}
+
+ScopeSubSampling proc uses ebx esi edi
+	LOCAL	nsample:DWORD
+	LOCAL	x1:DWORD
+	LOCAL	x2:DWORD
+	LOCAL	adcsampletime:REAL10
+	LOCAL	adcperiod:REAL10
+	LOCAL	iTmp:DWORD
+
+	;Get signals period in ns
+	fld		ten_9
+	fild	STM32_Cmd.STM32_Frq.FrequencySCP
+	fdivp	st(1),st
+	fstp	adcperiod
+
+;invoke PrintFp,addr adcperiod
+
+	;Get sample time in ns
+	mov		iTmp,STM32_CLOCK/2
+	fild	iTmp
+	mov		eax,STM32_Cmd.STM32_Scp.ADC_Prescaler
+	inc		eax
+	shl		eax,1
+	mov		iTmp,eax
+	fild	iTmp
+	fdivp	st(1),st
+	mov		eax,STM32_Cmd.STM32_Scp.ADC_TwoSamplingDelay
+	add		eax,5
+	mov		iTmp,eax
+	fild	iTmp
+	fdivp	st(1),st
+	fld1
+	fdivrp	st(1),st
+	fld		ten_9
+	fmulp	st(1),st
+	fstp	adcsampletime
+
+	xor		edi,edi
+	.while edi<2048
+		mov		SubSample[edi*DWORD],0
+		mov		SubSampleCount[edi*DWORD],0
+		inc		edi
+	.endw
+	mov		esi,offset ADC_Data
+		mov		nsample,32
+	mov		eax,STM32_Cmd.STM32_Frq.FrequencySCP
+	.if eax<50
+		mov		nsample,16384
+	.elseif eax<100
+		mov		nsample,8192
+	.elseif eax<200
+		mov		nsample,4096
+	.elseif eax<500
+		mov		nsample,2048
+	.endif
+	xor		ebx,ebx
+	.while ebx<nsample
+		fld		adcsampletime
+		mov		iTmp,2048
+		fild	iTmp
+		fmulp	st(1),st
+		mov		iTmp,ebx
+		fild	iTmp
+		fmulp	st(1),st
+		fld		adcperiod
+		fdivp	st(1),st
+		fistp	iTmp
+		mov		edi,iTmp
+		.while edi>=2048
+			sub		edi,2048
+		.endw
+		movzx	eax,ADC_Data[ebx*WORD]
+		add		SubSample[edi*DWORD],eax
+		inc		SubSampleCount[edi*DWORD]
+		inc		ebx
+	.endw
+	xor		ebx,ebx
+	xor		edi,edi
+	.while ebx<2048
+		movzx	ecx,SubSampleCount[ebx*DWORD]
+		.if ecx
+			mov		eax,SubSample[ebx*DWORD]
+			cdq
+			div		ecx
+			.if !eax
+				inc		eax
+			.endif
+			mov		SubSample[ebx*DWORD],eax
+			inc		edi
+		.endif
+		inc		ebx
+	.endw
+;PrintDec edi
+;invoke PrintFp,addr adcperiod
+	ret
+
+ScopeSubSampling endp
