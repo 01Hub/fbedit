@@ -414,11 +414,39 @@ GetPointSubSample:
 ScopeProc endp
 
 SampleThreadProc proc lParam:DWORD
+	LOCAL	buffer[32]:BYTE
 
-	.while !fThreadExit
-		
+	mov		edx,STM32_Cmd.STM32_Frq.FrequencySCP
+	invoke FormatFrequency,edx,addr buffer
+	invoke SetWindowText,hScp,addr buffer
+	invoke STLinkWrite,hWnd,2000002Ch,offset STM32_Cmd.STM32_Scp,sizeof STM32_SCP
+	.if !eax
+		jmp		Err
+	.endif
+	invoke STLinkWrite,hWnd,20000014h,addr mode,DWORD
+	.if !eax
+		jmp		Err
+	.endif
+	xor		ebx,ebx
+	.while ebx<50
+		invoke Sleep,100
+		invoke STLinkRead,hWnd,20000014h,offset STM32_Cmd,DWORD
+		.if !eax
+			jmp		Err
+		.endif
+		.break .if !STM32_Cmd.Cmd
+		inc		ebx
 	.endw
-	mov		fThreadExit,0
+	invoke STLinkRead,hWnd,20008000h,offset ADC_Data,ADCSAMPLESIZE
+	.if !eax
+		jmp		Err
+	.endif
+	.if fSubSampling
+		invoke ScopeSubSampling
+	.endif
+	invoke InvalidateRect,hScpScrn,NULL,TRUE
+	mov		fSampleDone,TRUE
+Err:
 	ret
 
 SampleThreadProc endp
@@ -582,6 +610,9 @@ ScpChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 		mov		eax,STM32_Cmd.STM32_Scp.ScopeTriggerLevel
 		shr		eax,4
 		invoke SendDlgItemMessage,hWin,IDC_TRBTRIGGERLEVEL,TBM_SETPOS,TRUE,eax
+		invoke SendDlgItemMessage,hWin,IDC_TRBVPOS,TBM_SETRANGE,FALSE,4095 SHL 16
+		mov		eax,STM32_Cmd.STM32_Scp.ScopeVPos
+		invoke SendDlgItemMessage,hWin,IDC_TRBVPOS,TBM_SETPOS,TRUE,eax
 	.elseif	eax==WM_COMMAND
 		mov edx,wParam
 		movzx eax,dx
@@ -625,6 +656,10 @@ ScpChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 			invoke SendDlgItemMessage,hWin,IDC_TRBTRIGGERLEVEL,TBM_GETPOS,0,0
 			shl		eax,4
 			mov		STM32_Cmd.STM32_Scp.ScopeTriggerLevel,eax
+		.elseif eax==IDC_TRBVPOS
+			;Scope V-Pos
+			invoke SendDlgItemMessage,hWin,IDC_TRBVPOS,TBM_GETPOS,0,0
+			mov		STM32_Cmd.STM32_Scp.ScopeVPos,eax
 		.endif
 	.else
 		mov		eax,FALSE
@@ -650,6 +685,7 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		STM32_Cmd.STM32_Scp.ScopeTriggerLevel,2048
 		mov		STM32_Cmd.STM32_Scp.ScopeTimeDiv,10000
 		mov		STM32_Cmd.STM32_Scp.ScopeVoltDiv,500
+		mov		STM32_Cmd.STM32_Scp.ScopeVPos,2048
 		invoke CreateFontIndirect,addr Tahoma_36
 		mov		hFont,eax
 		;Create FRQ child dialog
@@ -665,8 +701,6 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke CreateDialogParam,hInstance,IDD_DLGSCP,hWin,addr ScpChildProc,0
 		mov		hScpCld,eax
 		mov		STM32_Cmd.STM32_Scp.ScopeTrigger,1
-		invoke CreateThread,NULL,NULL,addr SampleThreadProc,hWin,0,addr tid
-		mov		hThread,eax
 		mov		mode,CMD_LCMCAP
 	.elseif	eax==WM_COMMAND
 		mov edx,wParam
@@ -690,51 +724,52 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke	SendMessage,hWin,WM_CLOSE,NULL,NULL
 			.elseif eax==IDC_BTNMODE
 				.if mode==CMD_LCMCAP || mode==CMD_LCMIND
+					;High Speed Clock
 					invoke ShowWindow,hScpCld,SW_HIDE
 					invoke ShowWindow,hLcmCld,SW_HIDE
 					invoke ShowWindow,hHscCld,SW_SHOW
 					mov		mode,CMD_FRQCH1
 					.if connected
 						invoke STLinkWrite,hWin,20000014h,addr mode,DWORD
+						.if !eax
+							invoke KillTimer,hWin,1000
+							jmp		Err
+						.endif
 					.endif
 				.elseif mode==CMD_FRQCH1
+					;Scope
 					invoke ShowWindow,hLcmCld,SW_HIDE
 					invoke ShowWindow,hHscCld,SW_HIDE
 					invoke ShowWindow,hScpCld,SW_SHOW
+					mov		fSampleDone,TRUE
 					mov		mode,CMD_SCPSET
 				.elseif mode==CMD_SCPSET
+					;LCMeter
 					invoke ShowWindow,hScpCld,SW_HIDE
 					invoke ShowWindow,hHscCld,SW_HIDE
 					invoke ShowWindow,hLcmCld,SW_SHOW
 					mov		mode,CMD_LCMCAP
 					.if connected
 						invoke STLinkWrite,hWin,20000014h,addr mode,DWORD
+						.if !eax
+							invoke KillTimer,hWin,1000
+							jmp		Err
+						.endif
 					.endif
 				.endif
 				invoke SetMode
 			.endif
 		.endif
 	.elseif	eax==WM_TIMER
+		invoke KillTimer,hWin,1000
 		;Read 16 bytes from STM32F4xx ram and store it in STM32_Cmd.
 		invoke STLinkRead,hWin,2000001Ch,offset STM32_Cmd.STM32_Frq,4*DWORD
 		.if eax
 			.if mode==CMD_SCPSET
-				.if !fHoldSampling
-					mov		edx,STM32_Cmd.STM32_Frq.FrequencySCP
-					invoke FormatFrequency,edx,addr buffer
-					invoke SetWindowText,hScp,addr buffer
-					invoke STLinkWrite,hWin,2000002Ch,offset STM32_Cmd.STM32_Scp,sizeof STM32_SCP
-					invoke STLinkWrite,hWin,20000014h,addr mode,DWORD
-					.while TRUE
-						invoke Sleep,100
-						invoke STLinkRead,hWin,20000014h,offset STM32_Cmd,DWORD
-						.break .if !STM32_Cmd.Cmd
-					.endw
-					invoke STLinkRead,hWin,20008000h,offset ADC_Data,ADCSAMPLESIZE
-					.if fSubSampling
-						invoke ScopeSubSampling
-					.endif
-					invoke InvalidateRect,hScpScrn,NULL,TRUE
+				.if !fHoldSampling && fSampleDone
+					mov		fSampleDone,FALSE
+					invoke CreateThread,NULL,NULL,addr SampleThreadProc,hWin,0,addr tid
+					invoke CloseHandle,eax
 				.endif
 			.elseif mode==CMD_FRQCH1
 				mov		edx,STM32_Cmd.STM32_Frq.Frequency
@@ -747,15 +782,13 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke CalculateInductor,addr buffer
 				invoke SetWindowText,hLcm,addr buffer
 			.endif
+			invoke SetTimer,hWin,1000,500,NULL
 		.else
-			invoke KillTimer,hWin,1000
+Err:
 			mov		connected,FALSE
 		.endif
 	.elseif	eax==WM_CLOSE
 		invoke KillTimer,hWin,1000
-		mov		fThreadExit,TRUE
-		invoke WaitForSingleObject,hThread,2000
-		invoke CloseHandle,hThread
 		invoke STLinkDisconnect,hWin
 		invoke DeleteObject,hFont
 		invoke EndDialog,hWin,0

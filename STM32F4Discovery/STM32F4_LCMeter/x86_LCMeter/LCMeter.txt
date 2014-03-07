@@ -25,6 +25,7 @@ Port pins used:
 -------------------------------------------------------------------------------
 PA.00         Frequency counter input (TIM5)
 PA.01         Frequency counter input (TIM2)
+PA.04         Scope V-Pos DAC1 output
 PB.07         High Speed Clock
 PC.01         Scope ADC
 PD.00         Frequency counter select0

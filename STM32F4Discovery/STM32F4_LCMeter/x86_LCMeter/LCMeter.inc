@@ -59,6 +59,7 @@ IDC_RBNTRIGGERFALLING			equ 1209
 IDC_TRBTRIGGERLEVEL				equ 1210
 IDC_CHKSUBSAMPLING				equ 1211
 IDC_CHKHOLDSAMPLING				equ 1212
+IDC_TRBVPOS						equ 1213
 
 IDD_DLGSCPSCRNCLD				equ 2000
 IDC_UDCSCPSCRN					equ 2001
@@ -106,6 +107,7 @@ STM32_SCP struct
 	ScopeTriggerLevel			DWORD ?			;0x20000038
 	ScopeTimeDiv				DWORD ?			;0x2000003C
 	ScopeVoltDiv				DWORD ?			;0x20000040
+	ScopeVPos					DWORD ?			;0x20000044
 STM32_SCP ends
 
 STM32_CMD struct
@@ -236,8 +238,7 @@ STM32_Cmd						STM32_CMD <>
 mode							DWORD ?
 LCx								REAL10 ?
 ADC_Data						WORD ADCSAMPLESIZE dup(?)
-hThread							HANDLE ?
-fThreadExit						DWORD ?
+fSampleDone						DWORD ?
 fHoldSampling					DWORD ?
 fSubSampling					DWORD ?
 SubSample						DWORD 2048 dup(?)

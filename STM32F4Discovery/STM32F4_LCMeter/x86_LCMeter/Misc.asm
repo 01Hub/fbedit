@@ -594,7 +594,7 @@ ScopeSubSampling proc uses ebx esi edi
 	fdivp	st(1),st
 	fld1
 	fdivrp	st(1),st
-	fld		ten_9 |
+	fld		ten_9
 	fmulp	st(1),st
 	fstp	adcsampletime
 

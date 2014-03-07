@@ -24,6 +24,7 @@
   Port pins
   PA.00         Frequency counter input (TIM5)
   PA.01         Frequency counter input (TIM2)
+  PA.04         Scope V-Pos DAC1 Output
   PB.07         High Speed Clock
   PC.01         Scope ADC
   PD.00         Frequency counter select0
@@ -63,6 +64,7 @@ typedef struct
   uint32_t ScopeTriggerLevel;                   // 0x20000038
   uint32_t ScopeTimeDiv;                        // 0x2000003c
   uint32_t ScopeVoltDiv;                        // 0x20000040
+  uint32_t ScopeVPos;                           // 0x20000044
 } STM32_SCPTypeDef;
 
 typedef struct
@@ -72,11 +74,11 @@ typedef struct
   STM32_FRQTypeDef STM32_FRQ;                   // 0x2000001C
   STM32_LCMTypeDef STM32_LCM;                   // 0x20000024
   STM32_SCPTypeDef STM32_SCP;                   // 0x2000002C
-  uint32_t TickCount;                           // 0x20000034
-  uint32_t PreviousCountTIM2;                   // 0x20000038
-  uint32_t ThisCountTIM2;                       // 0x2000003C
-  uint32_t PreviousCountTIM5;                   // 0x20000040
-  uint32_t ThisCountTIM5;                       // 0x20000044
+  uint32_t TickCount;
+  uint32_t PreviousCountTIM2;
+  uint32_t ThisCountTIM2;
+  uint32_t PreviousCountTIM5;
+  uint32_t ThisCountTIM5;
 } STM32_CMDTypeDef;
 
 /* Private define ------------------------------------------------------------*/
@@ -104,6 +106,7 @@ void RCC_Config(void);
 void NVIC_Config(void);
 void GPIO_Config(void);
 void TIM_Config(void);
+void DAC_Config(void);
 void DMA_TripleConfig(void);
 void ADC_TripleConfig(void);
 void ScopeSubSampling(void);
@@ -136,6 +139,8 @@ int main(void)
   TIM_Config();
   /* NVIC Configuration */
   NVIC_Config();
+  /* DAC Configuration */
+  DAC_Config();
   /* Calibrate LC Meter */
   LCM_Calibrate();
   while (1)
@@ -171,6 +176,8 @@ int main(void)
         STM32_CMD.Cmd = CMD_DONE;
         break;
       case CMD_SCPSET:
+        /* Set V-Pos */
+        DAC_SetChannel1Data(DAC_Align_12b_R, STM32_CMD.STM32_SCP.ScopeVPos);
         GPIO_ResetBits(GPIOD, GPIO_Pin_0 | GPIO_Pin_2 | GPIO_Pin_6 | GPIO_Pin_7);
         GPIO_SetBits(GPIOD, GPIO_Pin_1);
         /* DMA Configuration */
@@ -279,8 +286,8 @@ void LCM_Calibrate(void)
   */
 void RCC_Config(void)
 {
-  /* TIM2, TIM3, TIM4 and TIM5 clock enable */
-  RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2 | RCC_APB1Periph_TIM3 | RCC_APB1Periph_TIM4 | RCC_APB1Periph_TIM5, ENABLE);
+  /* DAC, TIM2, TIM3, TIM4 and TIM5 clock enable */
+  RCC_APB1PeriphClockCmd(RCC_APB1Periph_DAC | RCC_APB1Periph_TIM2 | RCC_APB1Periph_TIM3 | RCC_APB1Periph_TIM4 | RCC_APB1Periph_TIM5, ENABLE);
   /* DMA2 clock enable */
   RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA2, ENABLE);
   /* GPIOA clock enable */
@@ -358,6 +365,12 @@ void GPIO_Config(void)
   GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL ;
   GPIO_Init(GPIOC, &GPIO_InitStructure);
 
+  /* Configure DAC Channel1 pin as analog output (Scope V-Pos) */
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_4;
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AN;
+  GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL ;
+  GPIO_Init(GPIOA, &GPIO_InitStructure);
+
 /* GPIOD Outputs */
   GPIO_ResetBits(GPIOD, GPIO_Pin_0 | GPIO_Pin_1 | GPIO_Pin_2 | GPIO_Pin_6 | GPIO_Pin_7);
   GPIO_InitStructure.GPIO_Pin   = GPIO_Pin_0 | GPIO_Pin_1 | GPIO_Pin_2 | GPIO_Pin_6 | GPIO_Pin_7;
@@ -427,6 +440,20 @@ void TIM_Config(void)
   /* TIM4 enable counter */
   TIM_Cmd(TIM4, ENABLE);
 
+}
+
+void DAC_Config(void)
+{
+  DAC_InitTypeDef  DAC_InitStructure;
+
+  /* DAC channel1 Configuration */
+  DAC_StructInit(&DAC_InitStructure);
+  DAC_InitStructure.DAC_Trigger = DAC_Trigger_None;
+  DAC_InitStructure.DAC_WaveGeneration = DAC_WaveGeneration_None;
+  DAC_InitStructure.DAC_OutputBuffer = DAC_OutputBuffer_Enable;
+  DAC_Init(DAC_Channel_1, &DAC_InitStructure);
+  /* Enable DAC Channel1 */
+  DAC_Cmd(DAC_Channel_1, ENABLE);
 }
 
 /**
