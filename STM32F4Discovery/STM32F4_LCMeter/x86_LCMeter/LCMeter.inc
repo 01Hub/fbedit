@@ -75,7 +75,7 @@ CMD_SCPSET                      equ 7
 CMD_HSCSET						equ 8
 
 STM32_CLOCK						equ 200000000
-ADCSAMPLESIZE					equ 10000h
+ADCSAMPLESIZE					equ 10000h/8
 ADCMAX							equ 4096
 ADCMAXMV						equ 3000
 ADCDIVMV						equ 500
@@ -241,6 +241,7 @@ ADC_Data						WORD ADCSAMPLESIZE dup(?)
 fSampleDone						DWORD ?
 fHoldSampling					DWORD ?
 fSubSampling					DWORD ?
+fExitThread						DWORD ?
 SubSample						DWORD 2048 dup(?)
 SubSampleCount					WORD 2048 dup(?)
 

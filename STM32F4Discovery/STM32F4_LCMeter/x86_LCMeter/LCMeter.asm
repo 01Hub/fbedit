@@ -208,10 +208,11 @@ ScopeProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		nMin,ecx
 		mov		nMax,edx
 		;Find Center
-		sub		edx,ecx
-		shr		edx,1
-		add		edx,ecx
-		mov		nCenter,edx
+;		sub		edx,ecx
+;		shr		edx,1
+;		add		edx,ecx
+;		mov		nCenter,edx
+		mov		nCenter,2048
 		invoke GetClientRect,hWin,addr rect
 		invoke BeginPaint,hWin,addr ps
 		invoke CreateCompatibleDC,ps.hdc
@@ -364,6 +365,7 @@ GetPoint:
 	;Get y position
 	fld		ymul
 	movzx	eax,word ptr [esi+edi]
+;shl		eax,1
 	sub		eax,nCenter
 	neg		eax
 	mov		iTmp,eax
@@ -405,6 +407,7 @@ GetPointSubSample:
 		fmulp	st(1),st
 		fistp	iTmp
 		mov		eax,iTmp
+;shl		eax,1
 		add		eax,SCOPEHT/2
 		add		eax,scprect.top
 	.endif
@@ -416,37 +419,43 @@ ScopeProc endp
 SampleThreadProc proc lParam:DWORD
 	LOCAL	buffer[32]:BYTE
 
-	mov		edx,STM32_Cmd.STM32_Frq.FrequencySCP
-	invoke FormatFrequency,edx,addr buffer
-	invoke SetWindowText,hScp,addr buffer
-	invoke STLinkWrite,hWnd,2000002Ch,offset STM32_Cmd.STM32_Scp,sizeof STM32_SCP
-	.if !eax
-		jmp		Err
-	.endif
-	invoke STLinkWrite,hWnd,20000014h,addr mode,DWORD
-	.if !eax
-		jmp		Err
-	.endif
-	xor		ebx,ebx
-	.while ebx<50
-		invoke Sleep,100
-		invoke STLinkRead,hWnd,20000014h,offset STM32_Cmd,DWORD
+	.if connected
+		mov		edx,STM32_Cmd.STM32_Frq.FrequencySCP
+		invoke FormatFrequency,edx,addr buffer
+		invoke SetWindowText,hScp,addr buffer
+		invoke STLinkWrite,hWnd,2000002Ch,offset STM32_Cmd.STM32_Scp,sizeof STM32_SCP
 		.if !eax
 			jmp		Err
 		.endif
-		.break .if !STM32_Cmd.Cmd
-		inc		ebx
-	.endw
-	invoke STLinkRead,hWnd,20008000h,offset ADC_Data,ADCSAMPLESIZE
-	.if !eax
-		jmp		Err
+		invoke STLinkWrite,hWnd,20000014h,addr mode,DWORD
+		.if !eax
+			jmp		Err
+		.endif
+		xor		ebx,ebx
+		.while ebx<50 && !fExitThread
+			invoke Sleep,100
+			invoke STLinkRead,hWnd,20000014h,offset STM32_Cmd,DWORD
+			.if !eax
+				jmp		Err
+			.endif
+			.break .if !STM32_Cmd.Cmd
+			inc		ebx
+		.endw
+		.if !fExitThread
+			invoke STLinkRead,hWnd,20008000h,offset ADC_Data,ADCSAMPLESIZE
+			.if !eax
+				jmp		Err
+			.endif
+			.if fSubSampling
+				invoke ScopeSubSampling
+			.endif
+			invoke InvalidateRect,hScpScrn,NULL,TRUE
+			mov		fSampleDone,TRUE
+		.endif
 	.endif
-	.if fSubSampling
-		invoke ScopeSubSampling
-	.endif
-	invoke InvalidateRect,hScpScrn,NULL,TRUE
-	mov		fSampleDone,TRUE
+	ret
 Err:
+	mov		connected,FALSE
 	ret
 
 SampleThreadProc endp
@@ -717,7 +726,7 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						invoke SetMode
 						invoke STLinkWrite,hWin,20000014h,addr mode,DWORD
 						;Create a timer. The event will read the frequency, format it and display the result
-						invoke SetTimer,hWin,1000,500,NULL
+						invoke SetTimer,hWin,1000,100,NULL
 					.endif
 				.endif
 			.elseif eax==IDCANCEL
@@ -782,13 +791,15 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke CalculateInductor,addr buffer
 				invoke SetWindowText,hLcm,addr buffer
 			.endif
-			invoke SetTimer,hWin,1000,500,NULL
+			invoke SetTimer,hWin,1000,100,NULL
 		.else
 Err:
 			mov		connected,FALSE
 		.endif
 	.elseif	eax==WM_CLOSE
+		mov		fExitThread,TRUE
 		invoke KillTimer,hWin,1000
+		invoke Sleep,500
 		invoke STLinkDisconnect,hWin
 		invoke DeleteObject,hFont
 		invoke EndDialog,hWin,0

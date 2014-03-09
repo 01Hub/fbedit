@@ -454,6 +454,7 @@ void DAC_Config(void)
   DAC_Init(DAC_Channel_1, &DAC_InitStructure);
   /* Enable DAC Channel1 */
   DAC_Cmd(DAC_Channel_1, ENABLE);
+  DAC_SetChannel1Data(DAC_Align_12b_R, 2048);
 }
 
 /**

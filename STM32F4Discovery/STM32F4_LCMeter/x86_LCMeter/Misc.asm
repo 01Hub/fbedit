@@ -605,7 +605,7 @@ ScopeSubSampling proc uses ebx esi edi
 		inc		edi
 	.endw
 	mov		esi,offset ADC_Data
-		mov		nsample,32
+	mov		nsample,512
 	mov		eax,STM32_Cmd.STM32_Frq.FrequencySCP
 	.if eax<50
 		mov		nsample,16384
