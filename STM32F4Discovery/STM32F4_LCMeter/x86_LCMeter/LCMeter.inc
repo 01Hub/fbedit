@@ -108,6 +108,8 @@ STM32_SCP struct
 	ScopeTimeDiv				DWORD ?			;0x2000003C
 	ScopeVoltDiv				DWORD ?			;0x20000040
 	ScopeVPos					DWORD ?			;0x20000044
+	ADC_SingleMode              DWORD ?         ;0x20000048
+	ADC_SampleTime              DWORD ?         ;0x2000004C
 STM32_SCP ends
 
 STM32_CMD struct
