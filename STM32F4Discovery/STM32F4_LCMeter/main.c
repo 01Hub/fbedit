@@ -132,8 +132,8 @@ int main(void)
        To reconfigure the default setting of SystemInit() function, refer to
        system_stm32f4xx.c file
      */
-  __IO uint32_t tmp;
-  __IO uint32_t ticks;
+  // __IO uint32_t tmp;
+  // __IO uint32_t ticks;
 
   /* RCC Configuration */
   RCC_Config();
@@ -198,38 +198,38 @@ int main(void)
           /* ADC Configuration */
           ADC_TripleConfig();
         }
-        ticks = STM32_CMD.TickCount + 3;
-        switch (STM32_CMD.STM32_SCP.ScopeTrigger)
-        {
-          case 0:
-            break;
-          case 1:
-            /* Count on rising edge */
-            TIM5->CCER = 0x0000;
-            /* Wait until TIM5 increments */
-            tmp = TIM5->CNT;
-            while (tmp == TIM5->CNT)
-            {
-              if (ticks == STM32_CMD.TickCount)
-              {
-                break;
-              }
-            }
-            break;
-          case 2:
-            /* Count on falling edge */
-            TIM5->CCER = 0x0002;
-            /* Wait until TIM5 increments */
-            tmp = TIM5->CNT;
-            while (tmp == TIM5->CNT)
-            {
-              if (ticks == STM32_CMD.TickCount)
-              {
-                break;
-              }
-            }
-            break;
-        }
+        // ticks = STM32_CMD.TickCount + 3;
+        // switch (STM32_CMD.STM32_SCP.ScopeTrigger)
+        // {
+          // case 0:
+            // break;
+          // case 1:
+            // /* Count on rising edge */
+            // TIM5->CCER = 0x0000;
+            // /* Wait until TIM5 increments */
+            // tmp = TIM5->CNT;
+            // while (tmp == TIM5->CNT)
+            // {
+              // if (ticks == STM32_CMD.TickCount)
+              // {
+                // break;
+              // }
+            // }
+            // break;
+          // case 2:
+            // /* Count on falling edge */
+            // TIM5->CCER = 0x0002;
+            // /* Wait until TIM5 increments */
+            // tmp = TIM5->CNT;
+            // while (tmp == TIM5->CNT)
+            // {
+              // if (ticks == STM32_CMD.TickCount)
+              // {
+                // break;
+              // }
+            // }
+            // break;
+        // }
         /* Start ADC1 Software Conversion */
         ADC1->CR2 |= (uint32_t)ADC_CR2_SWSTART;
         while (DMA_GetFlagStatus(DMA2_Stream0,DMA_FLAG_TCIF0)==RESET);

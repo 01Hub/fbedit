@@ -75,16 +75,22 @@ CMD_SCPSET                      equ 7
 CMD_HSCSET						equ 8
 
 STM32_CLOCK						equ 200000000
-ADCSAMPLESIZE					equ 10000h/8
+ADCSAMPLESIZE					equ 10000h/4
 ADCMAX							equ 4096
 ADCMAXMV						equ 3000
 ADCDIVMV						equ 500
-TEXTHIGHT						equ 30
+TEXTHIGHT						equ 64
 GRIDSIZE						equ 64
 GRIDX							equ 10
 GRIDY							equ 8
 SCOPEWT							equ GRIDSIZE*GRIDX
 SCOPEHT							equ GRIDSIZE*GRIDY
+
+SCOPERANGE struct
+	ydiv						DWORD ?
+	ymag						DWORD ?
+	range						BYTE 32 dup(?)	
+SCOPERANGE ends
 
 STM32_HSC struct
 	HSCSet						DWORD ?			;0x20000018
@@ -212,7 +218,9 @@ ten_256							REAL10 1.0e256
 ScopeTimeDiv					DWORD 10,20,50,100,200,500,1000,2000,5000,10000,20000,50000
 								DWORD 100000,200000,500000,1000000,2000000,5000000
 
-ScopeVoltDiv					DWORD 10,20,50,100,200,500,1000,2000,5000
+ScopeRange						SCOPERANGE <15,0,'1mV/Div'>,<30,0,'2mV/Div'>,<76,0,'5mV/Div'>,<152,0,'10mV/Div'>,<305,0,'20mV/Div'>,<762,0,'50mV / Div'>,<1525,0,'100mV / Div'>,<3050,0,'200mV / Div'>,<7625,0,'500mV / Div'>
+szFmtVPP						BYTE 'Vpp: ',0
+szFmtPPV						BYTE '%.04uV',0
 
 ;#########################################################################
 
@@ -242,6 +250,7 @@ LCx								REAL10 ?
 ADC_Data						WORD ADCSAMPLESIZE dup(?)
 fSampleDone						DWORD ?
 fHoldSampling					DWORD ?
+fNoFrequency					DWORD ?
 fSubSampling					DWORD ?
 fExitThread						DWORD ?
 SubSample						DWORD 2048 dup(?)

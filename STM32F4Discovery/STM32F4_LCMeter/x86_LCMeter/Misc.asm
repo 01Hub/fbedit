@@ -569,92 +569,100 @@ ScopeSubSampling proc uses ebx esi edi
 	LOCAL	adcsampletime:REAL10
 	LOCAL	adcperiod:REAL10
 	LOCAL	iTmp:DWORD
+	LOCAL	frq:DWORD
 
-	;Get signals period in ns
-	fld		ten_9
-	fild	STM32_Cmd.STM32_Frq.FrequencySCP
-	fdivp	st(1),st
-	fstp	adcperiod
-
-;invoke PrintFp,addr adcperiod
-
-	;Get sample time in ns
-	mov		iTmp,STM32_CLOCK/2
-	fild	iTmp
-	mov		eax,STM32_Cmd.STM32_Scp.ADC_Prescaler
-	inc		eax
-	shl		eax,1
-	mov		iTmp,eax
-	fild	iTmp
-	fdivp	st(1),st
-	mov		eax,STM32_Cmd.STM32_Scp.ADC_TwoSamplingDelay
-	add		eax,5
-	mov		iTmp,eax
-	fild	iTmp
-	fdivp	st(1),st
-	fld1
-	fdivrp	st(1),st
-	fld		ten_9
-	fmulp	st(1),st
-	fstp	adcsampletime
-
-	xor		edi,edi
-	.while edi<2048
-		mov		SubSample[edi*DWORD],0
-		mov		SubSampleCount[edi*DWORD],0
-		inc		edi
-	.endw
-	mov		esi,offset ADC_Data
-	mov		nsample,512
+	mov		fNoFrequency,TRUE
 	mov		eax,STM32_Cmd.STM32_Frq.FrequencySCP
-	.if eax<50
-		mov		nsample,16384
-	.elseif eax<100
-		mov		nsample,8192
-	.elseif eax<200
-		mov		nsample,4096
-	.elseif eax<500
-		mov		nsample,2048
-	.endif
-	xor		ebx,ebx
-	.while ebx<nsample
-		fld		adcsampletime
-		mov		iTmp,2048
-		fild	iTmp
-		fmulp	st(1),st
-		mov		iTmp,ebx
-		fild	iTmp
-		fmulp	st(1),st
-		fld		adcperiod
+PrintDec eax
+	.if eax>10000
+		mov		fNoFrequency,FALSE
+		mov		frq,eax
+		;Get signals period in ns
+		fld		ten_9
+		fild	frq
 		fdivp	st(1),st
-		fistp	iTmp
-		mov		edi,iTmp
-		.while edi>=2048
-			sub		edi,2048
-		.endw
-		movzx	eax,ADC_Data[ebx*WORD]
-		add		SubSample[edi*DWORD],eax
-		inc		SubSampleCount[edi*DWORD]
-		inc		ebx
-	.endw
-	xor		ebx,ebx
-	xor		edi,edi
-	.while ebx<2048
-		movzx	ecx,SubSampleCount[ebx*DWORD]
-		.if ecx
-			mov		eax,SubSample[ebx*DWORD]
-			cdq
-			div		ecx
-			.if !eax
-				inc		eax
-			.endif
-			mov		SubSample[ebx*DWORD],eax
+		fstp	adcperiod
+	
+	;invoke PrintFp,addr adcperiod
+	
+		;Get sample time in ns
+		mov		iTmp,STM32_CLOCK/2
+		fild	iTmp
+		mov		eax,STM32_Cmd.STM32_Scp.ADC_Prescaler
+		inc		eax
+		shl		eax,1
+		mov		iTmp,eax
+		fild	iTmp
+		fdivp	st(1),st
+		mov		eax,STM32_Cmd.STM32_Scp.ADC_TwoSamplingDelay
+		add		eax,5
+		mov		iTmp,eax
+		fild	iTmp
+		fdivp	st(1),st
+		fld1
+		fdivrp	st(1),st
+		fld		ten_9
+		fmulp	st(1),st
+		fstp	adcsampletime
+	
+		xor		edi,edi
+		.while edi<2048
+			mov		SubSample[edi*DWORD],0
+			mov		SubSampleCount[edi*DWORD],0
 			inc		edi
+		.endw
+		mov		esi,offset ADC_Data
+		mov		nsample,128
+		mov		eax,frq
+		.if eax<50
+			mov		nsample,16384
+		.elseif eax<100
+			mov		nsample,8192
+		.elseif eax<200
+			mov		nsample,4096
+		.elseif eax<500
+			mov		nsample,2048
 		.endif
-		inc		ebx
-	.endw
-;PrintDec edi
-;invoke PrintFp,addr adcperiod
+		xor		ebx,ebx
+		.while ebx<nsample
+			fld		adcsampletime
+			mov		iTmp,2048
+			fild	iTmp
+			fmulp	st(1),st
+			mov		iTmp,ebx
+			fild	iTmp
+			fmulp	st(1),st
+			fld		adcperiod
+			fdivp	st(1),st
+			fistp	iTmp
+			mov		edi,iTmp
+			.while edi>=2048
+				sub		edi,2048
+			.endw
+			movzx	eax,ADC_Data[ebx*WORD]
+			add		SubSample[edi*DWORD],eax
+			inc		SubSampleCount[edi*DWORD]
+			inc		ebx
+		.endw
+		xor		ebx,ebx
+		xor		edi,edi
+		.while ebx<2048
+			movzx	ecx,SubSampleCount[ebx*DWORD]
+			.if ecx
+				mov		eax,SubSample[ebx*DWORD]
+				cdq
+				div		ecx
+				.if !eax
+					inc		eax
+				.endif
+				mov		SubSample[ebx*DWORD],eax
+				inc		edi
+			.endif
+			inc		ebx
+		.endw
+	;PrintDec edi
+	;invoke PrintFp,addr adcperiod
+	.endif
 	ret
 
 ScopeSubSampling endp
