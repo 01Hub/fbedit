@@ -92,6 +92,11 @@ SCOPERANGE struct
 	range						BYTE 32 dup(?)	
 SCOPERANGE ends
 
+SCOPETIME struct
+	time						DWORD ?
+	range						BYTE 32 dup(?)	
+SCOPETIME ends
+
 STM32_HSC struct
 	HSCSet						DWORD ?			;0x20000018
 STM32_HSC ends
@@ -215,9 +220,8 @@ ten_256							REAL10 1.0e256
 								REAL10 1.0e4608
 								REAL10 1.0e4864
 
-ScopeTimeDiv					DWORD 10,20,50,100,200,500,1000,2000,5000,10000,20000,50000
-								DWORD 100000,200000,500000,1000000,2000000,5000000
-
+ScopeTime						SCOPETIME <10,'10nS / Div'>,<20,'20nS / Div'>,<50,'50nS / Div'>,<100,'100nS / Div'>,<200,'200nS / Div'>,<500,'500nS / Div'>,<1000,'1uS / Div'>,<2000,'2uS / Div'>,<5000,'5uS / Div'>,<10000,'10uS / Div'>,<20000,'20uS / Div'>,<50000,'50uS / Div'>
+								SCOPETIME <100000,'100uS / Div'>,<200000,'200uS / Div'>,<500000,'500uS / Div'>,<1000000,'1mS / Div'>,<2000000,'2mS / Div'>,<5000000,'5mS / Div'>
 ScopeRange						SCOPERANGE <15,0,'1mV/Div'>,<30,0,'2mV/Div'>,<76,0,'5mV/Div'>,<152,0,'10mV/Div'>,<305,0,'20mV/Div'>,<762,0,'50mV / Div'>,<1525,0,'100mV / Div'>,<3050,0,'200mV / Div'>,<7625,0,'500mV / Div'>
 szFmtVPP						BYTE 'Vpp: ',0
 szFmtPPV						BYTE '%.04uV',0

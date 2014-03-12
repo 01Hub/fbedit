@@ -135,7 +135,8 @@ ScopeProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	adcperiod:REAL10
 	LOCAL	buffer[128]:BYTE
 	LOCAL	tpos:DWORD
-	local	tptx:DWORD
+	LOCAL	tptx:DWORD
+	LOCAL	tptxc:DWORD
 	LOCAL	prevptx:DWORD
 	LOCAL	prevpty:DWORD
 	LOCAL	xofs:DWORD
@@ -171,6 +172,9 @@ ScopeProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 ;		invoke PrintFp,addr stns
 		;Get time in ns for each pixel
 		mov		eax,STM32_Cmd.STM32_Scp.ScopeTimeDiv
+		mov		ecx,sizeof SCOPETIME
+		mul		ecx
+		mov		eax,ScopeTime.time[eax]
 		mov		iTmp,eax
 		fild	iTmp
 		mov		iTmp,GRIDSIZE
@@ -257,16 +261,16 @@ ScopeProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		pop		eax
 		invoke DeleteObject,eax
 
-		mov		tpos,-1
+		mov		tpos,0
 		mov		xofs,0
 		.if STM32_Cmd.STM32_Scp.ScopeTrigger
 			;Get trigger y position
-			fld		ymul
 			mov		eax,STM32_Cmd.STM32_Scp.ScopeTriggerLevel
 			sub		eax,nCenter
 			neg		eax
 			mov		iTmp,eax
 			fild	iTmp
+			fld		ymul
 			fmulp	st(1),st
 			fistp	iTmp
 			mov		eax,iTmp
@@ -274,19 +278,22 @@ ScopeProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			add		eax,scprect.top
 			mov		tpos,eax
 			mov		tptx,0
+			mov		tptxc,0
 
 			;Find trigger xofs
 			call	DrawCurve
-			mov		esi,tptx
-			mov		edi,tpos
-			.while esi<scprect.right
-				invoke GetPixel,mDC,esi,edi
-				.break .if eax
-				inc		esi
-			.endw
-			.if esi<scprect.right
-				sub		esi,scprect.left
-				mov		xofs,esi
+			.if tptx
+				mov		esi,tptx
+				mov		edi,tpos
+				.while esi<scprect.right
+					invoke GetPixel,mDC,esi,edi
+					.break .if eax
+					inc		esi
+				.endw
+				.if esi<scprect.right
+					sub		esi,scprect.left
+					mov		xofs,esi
+				.endif
 			.endif
 			invoke GetStockObject,BLACK_BRUSH
 			invoke FillRect,mDC,addr scprect,eax
@@ -319,7 +326,7 @@ DrawScpText:
 	mov		eax,rect.bottom
 	mov		pt.y,eax
 	call	TextDraw
-	mov		pt.x,100
+	mov		pt.x,200
 	mov		eax,nMax
 	sub		eax,nMin
 	mov		ecx,12500
@@ -341,6 +348,13 @@ DrawScpText:
 	invoke lstrcat,addr buffer,addr buffer[64]
 	lea		esi,buffer
 	call	TextDraw
+	mov		pt.x,10
+	add		pt.y,20
+	mov		eax,STM32_Cmd.STM32_Scp.ScopeTimeDiv
+	mov		ecx,sizeof SCOPETIME
+	mul		ecx
+	lea		esi,ScopeTime.range[eax]
+	call	TextDraw
 	retn
 
 TextDraw:
@@ -349,15 +363,17 @@ TextDraw:
 	retn
 
 DrawTrigger:
-	; Create trigger pen
-	invoke CreatePen,PS_SOLID,1,0000C0h
-	invoke SelectObject,mDC,eax
-	push	eax
-	invoke MoveToEx,mDC,scprect.left,tpos,NULL
-	invoke LineTo,mDC,scprect.right,tpos
-	pop		eax
-	invoke SelectObject,mDC,eax
-	invoke DeleteObject,eax
+	.if tpos
+		; Create trigger pen
+		invoke CreatePen,PS_SOLID,1,0000C0h
+		invoke SelectObject,mDC,eax
+		push	eax
+		invoke MoveToEx,mDC,scprect.left,tpos,NULL
+		invoke LineTo,mDC,scprect.right,tpos
+		pop		eax
+		invoke SelectObject,mDC,eax
+		invoke DeleteObject,eax
+	.endif
 	retn
 
 DrawGrid:
@@ -447,20 +463,40 @@ DrawCurve:
 	retn
 
 IsTrigger:
-	.if !tptx
+	.if !tptx || tptxc<=1
 		mov		ecx,pt.y
 		mov		edx,prevpty
 		.if STM32_Cmd.STM32_Scp.ScopeTrigger==1
 			;Rising
-			.if edx>=tpos && ecx<tpos
-				mov		ecx,prevptx
-				mov		tptx,ecx
+			.if !tptxc
+				.if edx>=tpos && ecx<tpos
+					mov		ecx,prevptx
+					mov		tptx,ecx
+					mov		tptxc,1
+				.endif
+			.else
+				.if edx<tpos && ecx<tpos
+					mov		tptxc,2
+				.else
+					mov		tptx,0
+					mov		tptxc,0
+				.endif
 			.endif
 		.elseif STM32_Cmd.STM32_Scp.ScopeTrigger==2
 			;Falling
-			.if edx<=tpos && ecx>tpos
-				mov		ecx,prevptx
-				mov		tptx,ecx
+			.if !tptxc
+				.if edx<=tpos && ecx>tpos
+					mov		ecx,prevptx
+					mov		tptx,ecx
+					mov		tptxc,1
+				.endif
+			.else
+				.if edx>tpos && ecx>tpos
+					mov		tptxc,2
+				.else
+					mov		tptx,0
+					mov		tptxc,0
+				.endif
 			.endif
 		.endif
 		mov		ecx,pt.x
@@ -504,7 +540,12 @@ GetPoint:
 
 GetPointSubSample:
 	;Get X position
-	fild	STM32_Cmd.STM32_Scp.ScopeTimeDiv
+	mov		eax,STM32_Cmd.STM32_Scp.ScopeTimeDiv
+	mov		ecx,sizeof SCOPETIME
+	mul		ecx
+	mov		eax,ScopeTime.time[eax]
+	mov		iTmp,eax
+	fild	iTmp
 	fld		adcperiod
 	fdivp	st(1),st
 	mov		iTmp,2048/64
@@ -728,12 +769,7 @@ ScpChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 		invoke SendDlgItemMessage,hWin,IDC_TRBADCDELAY,TBM_SETPOS,TRUE,eax
 		invoke SendDlgItemMessage,hWin,IDC_TRBTIMEDIV,TBM_SETRANGE,FALSE,17 SHL 16
 		mov		eax,STM32_Cmd.STM32_Scp.ScopeTimeDiv
-		xor		edx,edx
-		.while edx<18
-			.break .if eax==ScopeTimeDiv[edx*DWORD]
-			lea		edx,[edx+1]
-		.endw
-		invoke SendDlgItemMessage,hWin,IDC_TRBTIMEDIV,TBM_SETPOS,TRUE,edx
+		invoke SendDlgItemMessage,hWin,IDC_TRBTIMEDIV,TBM_SETPOS,TRUE,eax
 		invoke SendDlgItemMessage,hWin,IDC_TRBVOLTDIV,TBM_SETRANGE,FALSE,8 SHL 16
 		mov		eax,STM32_Cmd.STM32_Scp.ScopeVoltDiv
 		invoke SendDlgItemMessage,hWin,IDC_TRBVOLTDIV,TBM_SETPOS,TRUE,eax
@@ -755,6 +791,7 @@ ScpChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 			.if eax>=IDC_RBNTRIGGERNONE && eax<=IDC_RBNTRIGGERFALLING
 				sub		eax,IDC_RBNTRIGGERNONE
 				mov		STM32_Cmd.STM32_Scp.ScopeTrigger,eax
+				invoke InvalidateRect,hScpScrn,NULL,TRUE
 			.elseif eax==IDC_CHKSUBSAMPLING
 				xor		fSubSampling,TRUE
 			.elseif eax==IDC_CHKHOLDSAMPLING
@@ -778,7 +815,6 @@ ScpChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 		.elseif eax==IDC_TRBTIMEDIV
 			;Scope Time / Div
 			invoke SendDlgItemMessage,hWin,IDC_TRBTIMEDIV,TBM_GETPOS,0,0
-			mov		eax,ScopeTimeDiv[eax*DWORD]
 			mov		STM32_Cmd.STM32_Scp.ScopeTimeDiv,eax
 		.elseif eax==IDC_TRBVOLTDIV
 			;Scope Volt / Div
@@ -794,6 +830,7 @@ ScpChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 			invoke SendDlgItemMessage,hWin,IDC_TRBVPOS,TBM_GETPOS,0,0
 			mov		STM32_Cmd.STM32_Scp.ScopeVPos,eax
 		.endif
+		invoke InvalidateRect,hScpScrn,NULL,TRUE
 	.else
 		mov		eax,FALSE
 		ret
@@ -816,7 +853,7 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		STM32_Cmd.STM32_Scp.ADC_TwoSamplingDelay,0
 		mov		STM32_Cmd.STM32_Scp.ScopeTrigger,1
 		mov		STM32_Cmd.STM32_Scp.ScopeTriggerLevel,2048
-		mov		STM32_Cmd.STM32_Scp.ScopeTimeDiv,10000
+		mov		STM32_Cmd.STM32_Scp.ScopeTimeDiv,8
 		mov		STM32_Cmd.STM32_Scp.ScopeVoltDiv,8
 		mov		STM32_Cmd.STM32_Scp.ScopeVPos,2048
 		invoke CreateFontIndirect,addr Tahoma_36
