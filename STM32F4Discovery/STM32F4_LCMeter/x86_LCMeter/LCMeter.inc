@@ -245,10 +245,6 @@ hFont							HFONT ?
 connected						DWORD ?
 STM32_Cmd						STM32_CMD <>
 
-;adcsampletime					REAL10 ?
-;adcperiod						REAL10 ?
-
-
 mode							DWORD ?
 LCx								REAL10 ?
 ADC_Data						WORD ADCSAMPLESIZE dup(?)

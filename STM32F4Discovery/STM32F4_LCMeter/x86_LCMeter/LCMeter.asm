@@ -169,7 +169,6 @@ ScopeProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		fld		ten_9
 		fmulp	st(1),st
 		fstp	stns
-;		invoke PrintFp,addr stns
 		;Get time in ns for each pixel
 		mov		eax,STM32_Cmd.STM32_Scp.ScopeTimeDiv
 		mov		ecx,sizeof SCOPETIME
@@ -181,13 +180,11 @@ ScopeProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		fild	iTmp
 		fdivp	st(1),st
 		fstp	pixns
-;		invoke PrintFp,addr pixns
 		;Get x scale
 		fld		stns
 		fld		pixns
 		fdivp	st(1),st
 		fstp	xmul
-;		invoke PrintFp,addr xmul
 		;Get y scale
 		mov		iTmp,ADCMAXMV
 		fild	iTmp

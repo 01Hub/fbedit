@@ -492,76 +492,6 @@ ClockToFrequency proc count:DWORD,clk:DWORD
 
 ClockToFrequency endp
 
-;void ScopeSubSampling(void)
-;{
-;  __IO uint32_t x1,x2;
-;  __IO uint16_t* ptr;
-;  __IO uint32_t t;
-;  __IO uint32_t sample[2048][2];
-;  __IO uint32_t nsample;
-;  __IO uint32_t clk=STM32_CLOCK/2/((STM32_CMD.STM32_SCP.ADC_Prescaler+1)*2);
-;  __IO uint32_t rate = clk/(5+STM32_CMD.STM32_SCP.ADC_TwoSamplingDelay);
-;  __IO uint32_t adcsampletime=1000000000/rate;
-;  __IO uint32_t adcperiod=1000000000/STM32_CMD.STM32_FRQ.FrequencySCP;
-;
-;  rate=clk/rate;
-;  x1=0;
-;  while (x1<2048)
-;  {
-;    STM32_CMD.scopebuff[x1]=0;
-;    sample[x1][0]=0;
-;    sample[x1][1]=0;
-;    x1++;
-;  }
-;  ptr=(uint16_t*)(SCOPE_DATAPTR);
-;  nsample=1024;
-;  if (STM32_CMD.STM32_FRQ.FrequencySCP<50)
-;  {
-;    nsample=16384;
-;  }
-;  else if (STM32_CMD.STM32_FRQ.FrequencySCP<100)
-;  {
-;    nsample=8192;
-;  }
-;  else if (STM32_CMD.STM32_FRQ.FrequencySCP<200)
-;  {
-;    nsample=4095;
-;  }
-;  else if (STM32_CMD.STM32_FRQ.FrequencySCP<500)
-;  {
-;    nsample=2048;
-;  }
-;  x2=0;
-;  while (x2<nsample)
-;  {
-;    x1=(uint32_t)(((float)adcsampletime*(float)2048*(float)x2)/(float)adcperiod);
-;    while (x1>2048)
-;    {
-;      x1-=2048;
-;    }
-;    if (sample[x1][1] < 15)
-;    {
-;      sample[x1][0]+=*ptr;
-;      sample[x1][1]++;
-;    }
-;    ptr+=2;
-;    if ((uint32_t)ptr>=SCOPE_DATAPTR+SCOPE_DATASIZE)
-;    {
-;      break;
-;    }
-;    x2++;
-;  }
-;  x1=0;
-;  while (x1<2048)
-;  {
-;    if (sample[x1][1])
-;    {
-;      STM32_CMD.scopebuff[x1]=sample[x1][0]/sample[x1][1];
-;    }
-;    x1++;
-;  }
-;}
-
 ScopeSubSampling proc uses ebx esi edi
 	LOCAL	nsample:DWORD
 	LOCAL	x1:DWORD
@@ -573,7 +503,6 @@ ScopeSubSampling proc uses ebx esi edi
 
 	mov		fNoFrequency,TRUE
 	mov		eax,STM32_Cmd.STM32_Frq.FrequencySCP
-PrintDec eax
 	.if eax>10000
 		mov		fNoFrequency,FALSE
 		mov		frq,eax
