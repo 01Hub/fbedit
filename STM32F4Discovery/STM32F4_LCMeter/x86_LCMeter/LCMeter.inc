@@ -60,6 +60,20 @@ IDC_TRBTRIGGERLEVEL				equ 1210
 IDC_CHKSUBSAMPLING				equ 1211
 IDC_CHKHOLDSAMPLING				equ 1212
 IDC_TRBVPOS						equ 1213
+IDC_BTNSRD						equ 1214
+IDC_BTNSRU						equ 1215
+IDC_BTNADU						equ 1216
+IDC_BTNADD						equ 1217
+IDC_BTNTDU						equ 1218
+IDC_BTNTDD						equ 1219
+IDC_BTNVDU						equ 1220
+IDC_BTNVDD						equ 1221
+IDC_BTNVPU						equ 1222
+IDC_BTNVPD						equ 1223
+IDC_BTNTLU						equ 1224
+IDC_BTNTLD						equ 1225
+IDC_CHKTRIPLE					equ 1226
+IDC_BTNAUTO						equ 1227
 
 IDD_DLGSCPSCRNCLD				equ 2000
 IDC_UDCSCPSCRN					equ 2001
@@ -75,7 +89,8 @@ CMD_SCPSET                      equ 7
 CMD_HSCSET						equ 8
 
 STM32_CLOCK						equ 200000000
-ADCSAMPLESIZE					equ 10000h/4
+ADCSAMPLESIZE					equ 10000h
+ADCSAMPLESTART					equ 64
 ADCMAX							equ 4096
 ADCMAXMV						equ 3000
 ADCDIVMV						equ 500
@@ -85,6 +100,9 @@ GRIDX							equ 10
 GRIDY							equ 8
 SCOPEWT							equ GRIDSIZE*GRIDX
 SCOPEHT							equ GRIDSIZE*GRIDY
+
+MAXTIMEDIV						equ 21
+MAXVOLTDIV						equ 8
 
 SCOPERANGE struct
 	ydiv						DWORD ?
@@ -119,7 +137,7 @@ STM32_SCP struct
 	ScopeTimeDiv				DWORD ?			;0x2000003C
 	ScopeVoltDiv				DWORD ?			;0x20000040
 	ScopeVPos					DWORD ?			;0x20000044
-	ADC_SingleMode              DWORD ?         ;0x20000048
+	ADC_TripleMode              DWORD ?         ;0x20000048
 	ADC_SampleTime              DWORD ?         ;0x2000004C
 STM32_SCP ends
 
@@ -165,6 +183,10 @@ szNH							BYTE 'nH',0
 szUH							BYTE 'uH',0
 szMH							BYTE 'mH',0
 szH								BYTE 'H',0
+
+sznS							BYTE 'ns',0
+szuS							BYTE 'us',0
+szmS							BYTE 'ms',0
 
 CCal							REAL10 1.015e-9
 two								REAL10 2.0
@@ -221,10 +243,12 @@ ten_256							REAL10 1.0e256
 								REAL10 1.0e4864
 
 ScopeTime						SCOPETIME <10,'10nS / Div'>,<20,'20nS / Div'>,<50,'50nS / Div'>,<100,'100nS / Div'>,<200,'200nS / Div'>,<500,'500nS / Div'>,<1000,'1uS / Div'>,<2000,'2uS / Div'>,<5000,'5uS / Div'>,<10000,'10uS / Div'>,<20000,'20uS / Div'>,<50000,'50uS / Div'>
-								SCOPETIME <100000,'100uS / Div'>,<200000,'200uS / Div'>,<500000,'500uS / Div'>,<1000000,'1mS / Div'>,<2000000,'2mS / Div'>,<5000000,'5mS / Div'>
+								SCOPETIME <100000,'100uS / Div'>,<200000,'200uS / Div'>,<500000,'500uS / Div'>,<1000000,'1mS / Div'>,<2000000,'2mS / Div'>,<5000000,'5mS / Div'>,<10000000,'10mS / Div'>,<20000000,'20mS / Div'>,<50000000,'50mS / Div'>,<100000000,'100mS / Div'>
 ScopeRange						SCOPERANGE <15,0,'1mV/Div'>,<30,0,'2mV/Div'>,<76,0,'5mV/Div'>,<152,0,'10mV/Div'>,<305,0,'20mV/Div'>,<762,0,'50mV / Div'>,<1525,0,'100mV / Div'>,<3050,0,'200mV / Div'>,<7625,0,'500mV / Div'>
 szFmtVPP						BYTE 'Vpp: ',0
 szFmtPPV						BYTE '%.04uV',0
+szFmtPER						BYTE 'Per: ',0
+ADCSingle_SampleClocks			DWORD 3,15,28,56,84,112,144,480
 
 ;#########################################################################
 
@@ -233,6 +257,7 @@ szFmtPPV						BYTE '%.04uV',0
 hInstance						HINSTANCE ?
 wc								WNDCLASSEX <>
 hWnd							HWND ?
+msg								MSG <>
 hScpScrnCld						HWND ?
 hScpScrn						HWND ?
 hHscCld							HWND ?
@@ -242,17 +267,25 @@ hLcm							HWND ?
 hScpCld							HWND ?
 hScp							HWND ?
 hFont							HFONT ?
+hIml							HIMAGELIST ?
 connected						DWORD ?
-STM32_Cmd						STM32_CMD <>
 
 mode							DWORD ?
 LCx								REAL10 ?
-ADC_Data						WORD ADCSAMPLESIZE dup(?)
+lpOldButtonProc					DWORD ?
+nBtnCount						DWORD ?
 fSampleDone						DWORD ?
 fHoldSampling					DWORD ?
 fNoFrequency					DWORD ?
 fSubSampling					DWORD ?
 fExitThread						DWORD ?
+fThreadDone						DWORD ?
+SampleRate						REAL10 ?
+SampleTime						REAL10 ?
+SignalPeriod					DWORD ?
+STM32_Cmd						STM32_CMD <>
+STM32_Scp						STM32_SCP <>
+ADC_Data						WORD ADCSAMPLESIZE dup(?)
 SubSample						DWORD 2048 dup(?)
 SubSampleCount					WORD 2048 dup(?)
 

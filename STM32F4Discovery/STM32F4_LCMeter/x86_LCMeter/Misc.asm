@@ -492,11 +492,56 @@ ClockToFrequency proc count:DWORD,clk:DWORD
 
 ClockToFrequency endp
 
+GetSignalPeriod proc
+
+	;Get signals period in ns
+	fld		ten_9
+	fild	STM32_Cmd.STM32_Frq.FrequencySCP
+	fdivp	st(1),st
+	fistp	SignalPeriod
+	ret
+
+GetSignalPeriod endp
+
+GetSampleTime proc
+	LOCAL	iTmp:DWORD
+
+	;Get sample rate in Hz
+	mov		iTmp,STM32_CLOCK/2
+	fild	iTmp
+	mov		eax,STM32_Scp.ADC_Prescaler
+	inc		eax
+	shl		eax,1
+	mov		iTmp,eax
+	fild	iTmp
+	fdivp	st(1),st
+	.if STM32_Scp.ADC_TripleMode
+		mov		eax,STM32_Scp.ADC_TwoSamplingDelay
+		add		eax,5
+	.else
+		mov		eax,STM32_Scp.ADC_SampleTime
+		mov		eax,ADCSingle_SampleClocks[eax*DWORD]
+		add		eax,12
+	.endif
+	mov		iTmp,eax
+	fild	iTmp
+	fdivp	st(1),st
+	fstp	SampleRate
+	;Get sample time in ns
+	fld1
+	fld		SampleRate
+	fdivp	st(1),st
+	fld		ten_9
+	fmulp	st(1),st
+	fstp	SampleTime
+	ret
+
+GetSampleTime endp
+
 ScopeSubSampling proc uses ebx esi edi
 	LOCAL	nsample:DWORD
 	LOCAL	x1:DWORD
 	LOCAL	x2:DWORD
-	LOCAL	adcsampletime:REAL10
 	LOCAL	adcperiod:REAL10
 	LOCAL	iTmp:DWORD
 	LOCAL	frq:DWORD
@@ -511,37 +556,14 @@ ScopeSubSampling proc uses ebx esi edi
 		fild	frq
 		fdivp	st(1),st
 		fstp	adcperiod
-	
-	;invoke PrintFp,addr adcperiod
-	
-		;Get sample time in ns
-		mov		iTmp,STM32_CLOCK/2
-		fild	iTmp
-		mov		eax,STM32_Cmd.STM32_Scp.ADC_Prescaler
-		inc		eax
-		shl		eax,1
-		mov		iTmp,eax
-		fild	iTmp
-		fdivp	st(1),st
-		mov		eax,STM32_Cmd.STM32_Scp.ADC_TwoSamplingDelay
-		add		eax,5
-		mov		iTmp,eax
-		fild	iTmp
-		fdivp	st(1),st
-		fld1
-		fdivrp	st(1),st
-		fld		ten_9
-		fmulp	st(1),st
-		fstp	adcsampletime
-	
 		xor		edi,edi
 		.while edi<2048
 			mov		SubSample[edi*DWORD],0
-			mov		SubSampleCount[edi*DWORD],0
+			mov		SubSampleCount[edi*WORD],0
 			inc		edi
 		.endw
 		mov		esi,offset ADC_Data
-		mov		nsample,128
+		mov		nsample,256
 		mov		eax,frq
 		.if eax<50
 			mov		nsample,16384
@@ -552,9 +574,9 @@ ScopeSubSampling proc uses ebx esi edi
 		.elseif eax<500
 			mov		nsample,2048
 		.endif
-		xor		ebx,ebx
+		mov		ebx,ADCSAMPLESTART
 		.while ebx<nsample
-			fld		adcsampletime
+			fld		SampleTime
 			mov		iTmp,2048
 			fild	iTmp
 			fmulp	st(1),st
@@ -570,13 +592,12 @@ ScopeSubSampling proc uses ebx esi edi
 			.endw
 			movzx	eax,ADC_Data[ebx*WORD]
 			add		SubSample[edi*DWORD],eax
-			inc		SubSampleCount[edi*DWORD]
+			inc		SubSampleCount[edi*WORD]
 			inc		ebx
 		.endw
 		xor		ebx,ebx
-		xor		edi,edi
 		.while ebx<2048
-			movzx	ecx,SubSampleCount[ebx*DWORD]
+			movzx	ecx,SubSampleCount[ebx*WORD]
 			.if ecx
 				mov		eax,SubSample[ebx*DWORD]
 				cdq
@@ -585,12 +606,9 @@ ScopeSubSampling proc uses ebx esi edi
 					inc		eax
 				.endif
 				mov		SubSample[ebx*DWORD],eax
-				inc		edi
 			.endif
 			inc		ebx
 		.endw
-	;PrintDec edi
-	;invoke PrintFp,addr adcperiod
 	.endif
 	ret
 

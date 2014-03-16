@@ -210,7 +210,7 @@
     <Component Name="ScopeTimeDiv" TI="3317" Line="65" Offs="16"/>
     <Component Name="ScopeVoltDiv" TI="3331" Line="66" Offs="20"/>
     <Component Name="ScopeVPos" TI="3345" Line="67" Offs="24"/>
-    <Component Name="ADC_SingleMode" TI="3359" Line="68" Offs="28"/>
+    <Component Name="ADC_TripleMode" TI="3359" Line="68" Offs="28"/>
     <Component Name="ADC_SampleTime" TI="3373" Line="69" Offs="32"/>
    </type>
    <type Family="typedef" Name="STM32_SCPTypeDef" Line="70" ID="3388" toTI="3253"/>

@@ -65,7 +65,7 @@ typedef struct
   uint32_t ScopeTimeDiv;                        // 0x2000003c
   uint32_t ScopeVoltDiv;                        // 0x20000040
   uint32_t ScopeVPos;                           // 0x20000044
-  uint32_t ADC_SingleMode;                      // 0x20000048
+  uint32_t ADC_TripleMode;                      // 0x20000048
   uint32_t ADC_SampleTime;                      // 0x2000004C
 } STM32_SCPTypeDef;
 
@@ -184,19 +184,19 @@ int main(void)
         DAC_SetChannel1Data(DAC_Align_12b_R, STM32_CMD.STM32_SCP.ScopeVPos);
         GPIO_ResetBits(GPIOD, GPIO_Pin_0 | GPIO_Pin_2 | GPIO_Pin_6 | GPIO_Pin_7);
         GPIO_SetBits(GPIOD, GPIO_Pin_1);
-        if (STM32_CMD.STM32_SCP.ADC_SingleMode)
-        {
-          /* DMA Configuration */
-          DMA_SingleConfig();
-          /* ADC Configuration */
-          ADC_SingleConfig();
-        }
-        else
+        if (STM32_CMD.STM32_SCP.ADC_TripleMode)
         {
           /* DMA Configuration */
           DMA_TripleConfig();
           /* ADC Configuration */
           ADC_TripleConfig();
+        }
+        else
+        {
+          /* DMA Configuration */
+          DMA_SingleConfig();
+          /* ADC Configuration */
+          ADC_SingleConfig();
         }
         // ticks = STM32_CMD.TickCount + 3;
         // switch (STM32_CMD.STM32_SCP.ScopeTrigger)
