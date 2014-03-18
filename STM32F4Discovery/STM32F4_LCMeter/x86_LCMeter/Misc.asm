@@ -250,6 +250,8 @@ PrintFp proc lpFP:ptr REAL10
 
 PrintFp endp
 
+;**** LC Meter
+
 ;------------------------------------------------------------------
 ;Capacitance meter: Cx=((((F1/F3)^2)-1)/(((F1/F2)^2)-1))*Ccal
 ;IN:	Nothing
@@ -462,20 +464,19 @@ CalculateInductor proc uses esi,lpBuffer:PTR BYTE
 
 CalculateInductor endp
 
-FrequencyToClock proc uses ebx,frq:DWORD,clk:DWORD
+;**** High speed clock
+
+FrequencyToClock proc uses ebx,frq:DWORD,clkdiv:DWORD
 
 	mov		ebx,1
 	.while TRUE
-		mov		eax,clk
+		mov		eax,clkdiv
 		cdq
 		div		ebx
 		cdq
 		mov		ecx,frq
 		div		ecx
-		.if eax<=65535
-			mov		edx,ebx
-			.break
-		.endif
+		.break .if eax<=65536
 		inc		ebx
 	.endw
 	ret
@@ -492,6 +493,103 @@ ClockToFrequency proc count:DWORD,clk:DWORD
 
 ClockToFrequency endp
 
+GetHSCFrq proc uses ebx edi,frq:DWORD,lpRes:DWORD
+
+	mov		eax,frq
+	.if eax<3
+		mov		ebx,STM32_CLOCK/2048
+		mov		esi,1023
+	.elseif eax<6
+		mov		ebx,STM32_CLOCK/1024
+		mov		esi,511
+	.elseif eax<12
+		mov		ebx,STM32_CLOCK/512
+		mov		esi,255
+	.elseif eax<24
+		mov		ebx,STM32_CLOCK/256
+		mov		esi,127
+	.elseif eax<48
+		mov		ebx,STM32_CLOCK/128
+		mov		esi,63
+	.elseif eax<96
+		mov		ebx,STM32_CLOCK/64
+		mov		esi,31
+	.elseif eax<192
+		mov		ebx,STM32_CLOCK/32
+		mov		esi,15
+	.elseif eax<382
+		mov		ebx,STM32_CLOCK/16
+		mov		esi,7
+	.elseif eax<763
+		mov		ebx,STM32_CLOCK/8
+		mov		esi,3
+	.else
+		mov		ebx,STM32_CLOCK/4
+		mov		esi,1
+	.endif
+	invoke FrequencyToClock,eax,ebx
+	push	eax
+	invoke ClockToFrequency,eax,ebx
+	mov		edi,lpRes
+	mov		[edi],eax
+	pop		eax
+	ret
+
+GetHSCFrq endp
+
+SetHSC proc hWin:HWND,frq:DWORD
+	LOCAL	resfrq:DWORD
+
+	invoke GetHSCFrq,frq,addr resfrq
+	dec		eax
+	mov		STM32_Cmd.STM32_Hsc.HSCSet,esi
+	mov		STM32_Cmd.STM32_Hsc.HSCDiv,eax
+	invoke SetDlgItemInt,hWin,IDC_EDTHSCFRQ,resfrq,FALSE
+	mov		STM32_Cmd.Cmd,CMD_HSCSET
+	.if connected
+		invoke STLinkWrite,hWnd,20000018h,addr STM32_Cmd.STM32_Hsc,sizeof STM32_HSC
+		invoke STLinkWrite,hWnd,20000014h,addr STM32_Cmd.Cmd,DWORD
+	.endif
+	ret
+
+SetHSC endp
+
+;**** Scope
+
+GetSampleTime proc uses esi,lpSTM32_Scp:ptr STM32_SCP
+	LOCAL	iTmp:DWORD
+
+	;Get sample rate in Hz
+	mov		esi,lpSTM32_Scp
+	mov		iTmp,STM32_CLOCK/2
+	fild	iTmp
+	mov		eax,[esi].STM32_SCP.ADC_Prescaler
+	inc		eax
+	shl		eax,1
+	mov		iTmp,eax
+	fild	iTmp
+	fdivp	st(1),st
+	.if [esi].STM32_SCP.ADC_TripleMode
+		mov		eax,[esi].STM32_SCP.ADC_TwoSamplingDelay
+		add		eax,5
+	.else
+		mov		eax,[esi].STM32_SCP.ADC_SampleTime
+		mov		eax,ADCSingle_SampleClocks[eax*DWORD]
+		add		eax,12
+	.endif
+	mov		iTmp,eax
+	fild	iTmp
+	fdivp	st(1),st
+	fstp	SampleRate
+	;Get sample time in ns
+	fld		ten_9
+	fld		SampleRate
+	fdivp	st(1),st
+	fstp	SampleTime
+	ret
+
+GetSampleTime endp
+
 GetSignalPeriod proc
 
 	;Get signals period in ns
@@ -503,40 +601,119 @@ GetSignalPeriod proc
 
 GetSignalPeriod endp
 
-GetSampleTime proc
-	LOCAL	iTmp:DWORD
-
-	;Get sample rate in Hz
-	mov		iTmp,STM32_CLOCK/2
-	fild	iTmp
-	mov		eax,STM32_Scp.ADC_Prescaler
-	inc		eax
-	shl		eax,1
-	mov		iTmp,eax
-	fild	iTmp
+GetSamplesPrPeriod proc
+	
+	fild	SignalPeriod
+	fld		SampleTime
 	fdivp	st(1),st
-	.if STM32_Scp.ADC_TripleMode
-		mov		eax,STM32_Scp.ADC_TwoSamplingDelay
-		add		eax,5
-	.else
-		mov		eax,STM32_Scp.ADC_SampleTime
-		mov		eax,ADCSingle_SampleClocks[eax*DWORD]
-		add		eax,12
-	.endif
-	mov		iTmp,eax
-	fild	iTmp
-	fdivp	st(1),st
-	fstp	SampleRate
-	;Get sample time in ns
-	fld1
-	fld		SampleRate
-	fdivp	st(1),st
-	fld		ten_9
-	fmulp	st(1),st
-	fstp	SampleTime
+	fistp	SamplesPrPeriod
 	ret
 
-GetSampleTime endp
+GetSamplesPrPeriod endp
+
+GetTotalSamples proc uses esi,lpSTM32_Scp:ptr STM32_SCP
+	LOCAL	iTmp:DWORD
+
+	;Get time/div*GRIDX (10)
+	mov		esi,lpSTM32_Scp
+	mov		eax,[esi].STM32_SCP.ScopeTimeDiv
+	mov		ecx,sizeof SCOPETIME
+	mul		ecx
+	mov		eax,ScopeTime.time[eax]
+	mov		ecx,GRIDX
+	mul		ecx
+	;Add one signal period
+	add		eax,SignalPeriod
+	mov		iTmp,eax
+	fild	iTmp
+	fld		SampleTime
+	fdivp	st(1),st
+	fistp	iTmp
+	mov		eax,iTmp
+	.if fSubSampling
+		shl		eax,2
+	.endif
+	shr		eax,2
+	inc		eax
+	shl		eax,3
+	add		eax,ADCSAMPLESTART*2
+	.if eax>10000h
+		mov		eax,10000h
+	.endif
+;PrintDec eax
+	ret
+
+GetTotalSamples endp
+
+GetAuto proc hWin:HWND
+
+	;Set Time/Div
+	invoke GetSignalPeriod
+	mov		eax,SignalPeriod
+	shr		eax,2
+	xor		ebx,ebx
+	xor		esi,esi
+	.while ebx<=MAXTIMEDIV
+		.break .if eax<ScopeTime.time[esi]
+		inc		ebx
+		lea		esi,[esi+sizeof SCOPETIME]
+	.endw
+	mov		STM32_Cmd.STM32_Scp.ScopeTimeDiv,ebx
+	invoke SendDlgItemMessage,hWin,IDC_TRBTIMEDIV,TBM_SETPOS,TRUE,ebx
+	;Set Sample rate
+	mov		STM32_Cmd.STM32_Scp.ADC_TripleMode,FALSE
+	mov		STM32_Cmd.STM32_Scp.ADC_SampleTime,0
+	.while TRUE
+		mov		STM32_Cmd.STM32_Scp.ADC_Prescaler,3
+		.while TRUE
+			invoke GetSampleTime,offset STM32_Cmd.STM32_Scp
+			invoke GetSamplesPrPeriod
+			mov		eax,SamplesPrPeriod
+			.break .if eax>200 || !STM32_Cmd.STM32_Scp.ADC_Prescaler
+			dec		STM32_Cmd.STM32_Scp.ADC_Prescaler
+		.endw
+		.break .if eax<300 || STM32_Cmd.STM32_Scp.ADC_SampleTime==7
+		inc		STM32_Cmd.STM32_Scp.ADC_SampleTime
+	.endw
+	.if eax<200
+		mov		STM32_Cmd.STM32_Scp.ADC_TripleMode,TRUE
+		mov		STM32_Cmd.STM32_Scp.ADC_TwoSamplingDelay,0
+		.while TRUE
+			mov		STM32_Cmd.STM32_Scp.ADC_Prescaler,3
+			.while TRUE
+				invoke GetSampleTime,offset STM32_Cmd.STM32_Scp
+				invoke GetSamplesPrPeriod
+				mov		eax,SamplesPrPeriod
+				.break .if eax>200 || !STM32_Cmd.STM32_Scp.ADC_Prescaler
+				dec		STM32_Cmd.STM32_Scp.ADC_Prescaler
+			.endw
+			.break .if eax<300 || STM32_Cmd.STM32_Scp.ADC_TwoSamplingDelay==20-5
+			inc		STM32_Cmd.STM32_Scp.ADC_TwoSamplingDelay
+		.endw
+	.endif
+	mov		eax,BST_UNCHECKED
+	.if STM32_Cmd.STM32_Scp.ADC_TripleMode
+		mov		eax,BST_CHECKED
+	.endif
+	invoke SendDlgItemMessage,hWin,IDC_CHKTRIPLE,BM_SETCHECK,eax,0
+	mov		eax,STM32_Cmd.STM32_Scp.ADC_Prescaler
+	sub		eax,3
+	neg		eax
+	invoke SendDlgItemMessage,hWin,IDC_TRBADCCLOCK,TBM_SETPOS,TRUE,eax
+	.if STM32_Cmd.STM32_Scp.ADC_TripleMode
+		invoke SendDlgItemMessage,hWin,IDC_TRBADCDELAY,TBM_SETRANGE,FALSE,(20-5) SHL 16
+		mov		eax,20-5
+		sub		eax,STM32_Cmd.STM32_Scp.ADC_TwoSamplingDelay
+		invoke SendDlgItemMessage,hWin,IDC_TRBADCDELAY,TBM_SETPOS,TRUE,eax
+	.else
+		invoke SendDlgItemMessage,hWin,IDC_TRBADCDELAY,TBM_SETRANGE,FALSE,7 SHL 16
+		mov		eax,7
+		sub		eax,STM32_Cmd.STM32_Scp.ADC_SampleTime
+		invoke SendDlgItemMessage,hWin,IDC_TRBADCDELAY,TBM_SETPOS,TRUE,eax
+	.endif
+	ret
+
+GetAuto endp
 
 ScopeSubSampling proc uses ebx esi edi
 	LOCAL	nsample:DWORD
@@ -563,17 +740,10 @@ ScopeSubSampling proc uses ebx esi edi
 			inc		edi
 		.endw
 		mov		esi,offset ADC_Data
-		mov		nsample,256
-		mov		eax,frq
-		.if eax<50
-			mov		nsample,16384
-		.elseif eax<100
-			mov		nsample,8192
-		.elseif eax<200
-			mov		nsample,4096
-		.elseif eax<500
-			mov		nsample,2048
-		.endif
+		mov		eax,SamplesPrPeriod
+		shl		eax,3
+		add		eax,ADCSAMPLESTART
+		mov		nsample,eax
 		mov		ebx,ADCSAMPLESTART
 		.while ebx<nsample
 			fld		SampleTime
@@ -587,9 +757,7 @@ ScopeSubSampling proc uses ebx esi edi
 			fdivp	st(1),st
 			fistp	iTmp
 			mov		edi,iTmp
-			.while edi>=2048
-				sub		edi,2048
-			.endw
+			and		edi,2048-1
 			movzx	eax,ADC_Data[ebx*WORD]
 			add		SubSample[edi*DWORD],eax
 			inc		SubSampleCount[edi*WORD]

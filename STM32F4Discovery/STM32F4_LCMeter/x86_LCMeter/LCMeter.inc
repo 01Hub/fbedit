@@ -117,36 +117,38 @@ SCOPETIME ends
 
 STM32_HSC struct
 	HSCSet						DWORD ?			;0x20000018
+	HSCDiv						DWORD ?			;0x2000001C
 STM32_HSC ends
 
 STM32_FRQ struct
-	Frequency					DWORD ?			;0x2000001C
-	FrequencySCP				DWORD ?			;0x20000020
+	Frequency					DWORD ?			;0x20000020
+	FrequencySCP				DWORD ?			;0x20000024
 STM32_FRQ ends
 
 STM32_LCM struct
-	FrequencyCal0				DWORD ?			;0x20000024
-	FrequencyCal1				DWORD ?			;0x20000028
+	FrequencyCal0				DWORD ?			;0x20000028
+	FrequencyCal1				DWORD ?			;0x2000002C
 STM32_LCM ends
 
 STM32_SCP struct
-	ADC_Prescaler				DWORD ?         ;0x2000002C
-	ADC_TwoSamplingDelay		DWORD ?         ;0x20000030
-	ScopeTrigger				DWORD ?			;0x20000034
-	ScopeTriggerLevel			DWORD ?			;0x20000038
-	ScopeTimeDiv				DWORD ?			;0x2000003C
-	ScopeVoltDiv				DWORD ?			;0x20000040
-	ScopeVPos					DWORD ?			;0x20000044
-	ADC_TripleMode              DWORD ?         ;0x20000048
-	ADC_SampleTime              DWORD ?         ;0x2000004C
+	ADC_Prescaler				DWORD ?         ;0x20000030
+	ADC_TwoSamplingDelay		DWORD ?         ;0x20000034
+	ScopeTrigger				DWORD ?			;0x20000038
+	ScopeTriggerLevel			DWORD ?			;0x2000003C
+	ScopeTimeDiv				DWORD ?			;0x20000040
+	ScopeVoltDiv				DWORD ?			;0x20000044
+	ScopeVPos					DWORD ?			;0x20000048
+	ADC_TripleMode              DWORD ?         ;0x2000004C
+	ADC_SampleTime              DWORD ?         ;0x20000050
+	ADC_SampleSize				DWORD ?			;0x20000054
 STM32_SCP ends
 
 STM32_CMD struct
 	Cmd							DWORD ?			;0x20000014
 	STM32_Hsc					STM32_HSC <>	;0x20000018
-	STM32_Frq 					STM32_FRQ <>	;0x2000001C
-	STM32_Lcm					STM32_LCM <>	;0x2000002C
-	STM32_Scp					STM32_SCP <>	;0x20000034
+	STM32_Frq 					STM32_FRQ <>	;0x20000020
+	STM32_Lcm					STM32_LCM <>	;0x20000028
+	STM32_Scp					STM32_SCP <>	;0x20000030
 	TickCount					DWORD ?
 	PreviousCountTIM2			DWORD ?
 	ThisCountTIM2				DWORD ?
@@ -283,9 +285,10 @@ fThreadDone						DWORD ?
 SampleRate						REAL10 ?
 SampleTime						REAL10 ?
 SignalPeriod					DWORD ?
+SamplesPrPeriod					DWORD ?
 STM32_Cmd						STM32_CMD <>
 STM32_Scp						STM32_SCP <>
-ADC_Data						WORD ADCSAMPLESIZE dup(?)
+ADC_Data						WORD ADCSAMPLESIZE/2 dup(?)
 SubSample						DWORD 2048 dup(?)
 SubSampleCount					WORD 2048 dup(?)
 

@@ -162,8 +162,6 @@ ScopeProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	nMin:DWORD
 	LOCAL	nMax:DWORD
 	LOCAL	nCenter:DWORD
-;	LOCAL	srms:REAL10
-;	LOCAL	stns:REAL10
 	LOCAL	pixns:REAL10
 	LOCAL	xmul:REAL10
 	LOCAL	ymul:REAL10
@@ -638,16 +636,23 @@ SampleThreadProc proc lParam:DWORD
 	mov		fThreadDone,FALSE
 	.if connected && !fExitThread
 		;Read 16 bytes from STM32F4xx ram and store it in STM32_Cmd.
-		invoke STLinkRead,lParam,2000001Ch,offset STM32_Cmd.STM32_Frq,4*DWORD
+		invoke STLinkRead,lParam,20000020h,offset STM32_Cmd.STM32_Frq,4*DWORD
 		.if !eax
 			jmp		Err
 		.endif
 		mov		edx,STM32_Cmd.STM32_Frq.FrequencySCP
 		invoke FormatFrequency,edx,addr buffer
 		invoke SetWindowText,hScp,addr buffer
+		
+		invoke RtlZeroMemory,offset ADC_Data,sizeof ADC_Data
 		;Copy current scope settings
 		invoke RtlMoveMemory,offset STM32_Scp,offset STM32_Cmd.STM32_Scp,sizeof STM32_SCP
-		invoke STLinkWrite,lParam,2000002Ch,offset STM32_Cmd.STM32_Scp,sizeof STM32_SCP
+		invoke GetSampleTime,offset STM32_Scp
+		invoke GetSignalPeriod
+		invoke GetSamplesPrPeriod
+		invoke GetTotalSamples,offset STM32_Scp
+		mov		STM32_Scp.ADC_SampleSize,eax
+		invoke STLinkWrite,lParam,20000030h,offset STM32_Scp,sizeof STM32_SCP
 		.if !eax
 			jmp		Err
 		.endif
@@ -667,8 +672,7 @@ SampleThreadProc proc lParam:DWORD
 		.endw
 		.if !fExitThread
 			mov		fNoFrequency,TRUE
-			invoke GetSampleTime
-			invoke STLinkRead,lParam,20008000h,offset ADC_Data,ADCSAMPLESIZE
+			invoke STLinkRead,lParam,20008000h,offset ADC_Data,STM32_Scp.ADC_SampleSize
 			.if !eax
 				jmp		Err
 			.endif
@@ -690,12 +694,13 @@ Err:
 SampleThreadProc endp
 
 HscChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
-	
+	LOCAL	resfrq:DWORD
+
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
 		invoke GetDlgItem,hWin,IDC_UDCHSC
 		mov		hHsc,eax
-		mov		eax,STM32_Cmd.STM32_Hsc.HSCSet
+		mov		eax,STM32_Cmd.STM32_Hsc.HSCDiv
 		inc		eax
 		invoke ClockToFrequency,eax,STM32_CLOCK/4
 		invoke SetDlgItemInt,hWin,IDC_EDTHSCFRQ,eax,FALSE
@@ -720,47 +725,32 @@ HscChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 		shr		edx,16
 		.if edx==BN_CLICKED
 			.if eax==IDC_BTNHSCDN
-				.if STM32_Cmd.STM32_Hsc.HSCSet<65534
-					inc		STM32_Cmd.STM32_Hsc.HSCSet
-					mov		eax,STM32_Cmd.STM32_Hsc.HSCSet
+				invoke GetDlgItemInt,hWin,IDC_EDTHSCFRQ,NULL,FALSE
+				.if eax>1
+					dec		eax
+					mov		resfrq,eax
 					inc		eax
-					invoke ClockToFrequency,eax,STM32_CLOCK/4
-					invoke SetDlgItemInt,hWin,IDC_EDTHSCFRQ,eax,FALSE
-					mov		STM32_Cmd.Cmd,CMD_HSCSET
-					.if connected
-						invoke STLinkWrite,hWnd,20000018h,addr STM32_Cmd.STM32_Hsc.HSCSet,DWORD
-						invoke STLinkWrite,hWnd,20000014h,addr STM32_Cmd.Cmd,DWORD
-					.endif
+					.while eax!=resfrq
+						dec		eax
+						push	eax
+						mov		edx,eax
+						invoke GetHSCFrq,edx,addr resfrq
+						pop		eax
+					.endw
+					
+					invoke SetHSC,hWin,eax
 				.endif
 			.elseif eax==IDC_BTNHSCUP
-				.if STM32_Cmd.STM32_Hsc.HSCSet
-					dec		STM32_Cmd.STM32_Hsc.HSCSet
-					mov		eax,STM32_Cmd.STM32_Hsc.HSCSet
+				invoke GetDlgItemInt,hWin,IDC_EDTHSCFRQ,NULL,FALSE
+				.if eax<50000000
 					inc		eax
-					invoke ClockToFrequency,eax,STM32_CLOCK/4
-					invoke SetDlgItemInt,hWin,IDC_EDTHSCFRQ,eax,FALSE
-					mov		STM32_Cmd.Cmd,CMD_HSCSET
-					.if connected
-						invoke STLinkWrite,hWnd,20000018h,addr STM32_Cmd.STM32_Hsc.HSCSet,DWORD
-						invoke STLinkWrite,hWnd,20000014h,addr STM32_Cmd.Cmd,DWORD
-					.endif
+					invoke SetHSC,hWin,eax
 				.endif
 			.endif
 		.elseif edx==EN_KILLFOCUS
 			.if eax==IDC_EDTHSCFRQ
 				invoke GetDlgItemInt,hWin,IDC_EDTHSCFRQ,NULL,FALSE
-				invoke FrequencyToClock,eax,STM32_CLOCK/4
-				push	eax
-				dec		eax
-				mov		STM32_Cmd.STM32_Hsc.HSCSet,eax
-				pop		eax
-				invoke ClockToFrequency,eax,STM32_CLOCK/4
-				invoke SetDlgItemInt,hWin,IDC_EDTHSCFRQ,eax,FALSE
-				mov		STM32_Cmd.Cmd,CMD_HSCSET
-				.if connected
-					invoke STLinkWrite,hWnd,20000018h,addr STM32_Cmd.STM32_Hsc.HSCSet,DWORD
-					invoke STLinkWrite,hWnd,20000014h,addr STM32_Cmd.Cmd,DWORD
-				.endif
+				invoke SetHSC,hWin,eax
 			.endif
 		.endif
 	.else
@@ -891,7 +881,7 @@ ScpChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 			mov		lpOldButtonProc,eax
 			pop		eax
 		.endw
-		invoke GetSampleTime
+		invoke GetSampleTime,offset STM32_Cmd.STM32_Scp
 	.elseif	eax==WM_COMMAND
 		mov		edx,wParam
 		movzx	eax,dx
@@ -1041,18 +1031,7 @@ ScpChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 					invoke SendDlgItemMessage,hWin,IDC_TRBADCDELAY,TBM_SETPOS,TRUE,eax
 				.endif
 			.elseif eax==IDC_BTNAUTO
-				invoke GetSignalPeriod
-				mov		eax,SignalPeriod
-				shr		eax,2
-				xor		ebx,ebx
-				xor		esi,esi
-				.while ebx<=MAXTIMEDIV
-					.break .if eax<ScopeTime.time[esi]
-					inc		ebx
-					lea		esi,[esi+sizeof SCOPETIME]
-				.endw
-				mov		STM32_Cmd.STM32_Scp.ScopeTimeDiv,ebx
-				invoke SendDlgItemMessage,hWin,IDC_TRBTIMEDIV,TBM_SETPOS,TRUE,ebx
+				invoke GetAuto,hWin
 			.endif
 		.endif
 	.elseif eax==WM_HSCROLL
@@ -1113,7 +1092,8 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	.if	eax==WM_INITDIALOG
 		mov		eax,hWin
 		mov		hWnd,eax
-		mov		STM32_Cmd.STM32_Hsc.HSCSet,50000-1
+		mov		STM32_Cmd.STM32_Hsc.HSCDiv,50000-1
+		mov		STM32_Cmd.STM32_Hsc.HSCSet,1
 		mov		STM32_Cmd.STM32_Scp.ADC_Prescaler,0
 		mov		STM32_Cmd.STM32_Scp.ADC_TwoSamplingDelay,0
 		mov		STM32_Cmd.STM32_Scp.ScopeTrigger,1
@@ -1218,18 +1198,18 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.endif
 			.elseif mode==CMD_FRQCH1
 				;Read 16 bytes from STM32F4xx ram and store it in STM32_Cmd.
-				invoke STLinkRead,hWin,2000001Ch,offset STM32_Cmd.STM32_Frq,4*DWORD
+				invoke STLinkRead,hWin,20000020h,offset STM32_Cmd.STM32_Frq,4*DWORD
 				mov		edx,STM32_Cmd.STM32_Frq.Frequency
 				invoke FormatFrequency,edx,addr buffer
 				invoke SetWindowText,hHsc,addr buffer
 			.elseif mode==CMD_LCMCAP
 				;Read 16 bytes from STM32F4xx ram and store it in STM32_Cmd.
-				invoke STLinkRead,hWin,2000001Ch,offset STM32_Cmd.STM32_Frq,4*DWORD
+				invoke STLinkRead,hWin,20000020h,offset STM32_Cmd.STM32_Frq,4*DWORD
 				invoke CalculateCapacitor,addr buffer
 				invoke SetWindowText,hLcm,addr buffer
 			.elseif mode==CMD_LCMIND
 				;Read 16 bytes from STM32F4xx ram and store it in STM32_Cmd.
-				invoke STLinkRead,hWin,2000001Ch,offset STM32_Cmd.STM32_Frq,4*DWORD
+				invoke STLinkRead,hWin,20000020h,offset STM32_Cmd.STM32_Frq,4*DWORD
 				invoke CalculateInductor,addr buffer
 				invoke SetWindowText,hLcm,addr buffer
 			.endif

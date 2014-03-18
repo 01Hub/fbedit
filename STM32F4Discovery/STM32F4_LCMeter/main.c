@@ -42,40 +42,42 @@
 typedef struct
 {
   uint32_t HSCSet;                              // 0x20000018
+  uint32_t HSCDiv;                              // 0x2000001C
 } STM32_HSCTypeDef;
 
 typedef struct
 {
-  uint32_t Frequency;                           // 0x2000001C
-  uint32_t FrequencySCP;                        // 0x20000020
+  uint32_t Frequency;                           // 0x20000020
+  uint32_t FrequencySCP;                        // 0x20000024
 } STM32_FRQTypeDef;
 
 typedef struct
 {
-  uint32_t FrequencyCal0;                       // 0x20000024
-  uint32_t FrequencyCal1;                       // 0x20000028
+  uint32_t FrequencyCal0;                       // 0x20000028
+  uint32_t FrequencyCal1;                       // 0x2000002C
 } STM32_LCMTypeDef;
 
 typedef struct
 {
-  uint32_t ADC_Prescaler;                       // 0x2000002C
-  uint32_t ADC_TwoSamplingDelay;                // 0x20000030
-  uint32_t ScopeTrigger;                        // 0x20000034
-  uint32_t ScopeTriggerLevel;                   // 0x20000038
-  uint32_t ScopeTimeDiv;                        // 0x2000003c
-  uint32_t ScopeVoltDiv;                        // 0x20000040
-  uint32_t ScopeVPos;                           // 0x20000044
-  uint32_t ADC_TripleMode;                      // 0x20000048
-  uint32_t ADC_SampleTime;                      // 0x2000004C
+  uint32_t ADC_Prescaler;                       // 0x20000030
+  uint32_t ADC_TwoSamplingDelay;                // 0x20000034
+  uint32_t ScopeTrigger;                        // 0x20000038
+  uint32_t ScopeTriggerLevel;                   // 0x2000003C
+  uint32_t ScopeTimeDiv;                        // 0x20000040
+  uint32_t ScopeVoltDiv;                        // 0x20000044
+  uint32_t ScopeVPos;                           // 0x20000048
+  uint32_t ADC_TripleMode;                      // 0x2000004C
+  uint32_t ADC_SampleTime;                      // 0x20000050
+  uint32_t ADC_SampleSize;                      // 0x20000054
 } STM32_SCPTypeDef;
 
 typedef struct
 {
   uint32_t Cmd;                                 // 0x20000014
   STM32_HSCTypeDef STM32_HSC;                   // 0x20000018
-  STM32_FRQTypeDef STM32_FRQ;                   // 0x2000001C
-  STM32_LCMTypeDef STM32_LCM;                   // 0x20000024
-  STM32_SCPTypeDef STM32_SCP;                   // 0x2000002C
+  STM32_FRQTypeDef STM32_FRQ;                   // 0x20000020
+  STM32_LCMTypeDef STM32_LCM;                   // 0x20000028
+  STM32_SCPTypeDef STM32_SCP;                   // 0x20000030
   uint32_t TickCount;
   uint32_t PreviousCountTIM2;
   uint32_t ThisCountTIM2;
@@ -242,7 +244,9 @@ int main(void)
       case CMD_HSCSET:
         GPIO_ResetBits(GPIOD, GPIO_Pin_1 | GPIO_Pin_2 | GPIO_Pin_6 | GPIO_Pin_7);
         GPIO_SetBits(GPIOD, GPIO_Pin_0);
-        TIM4->PSC = STM32_CMD.STM32_HSC.HSCSet;
+        TIM4->ARR = STM32_CMD.STM32_HSC.HSCSet;
+        TIM4->CCR2 = (STM32_CMD.STM32_HSC.HSCSet+1) / 2;
+        TIM4->PSC = STM32_CMD.STM32_HSC.HSCDiv;
         STM32_CMD.Cmd = CMD_DONE;
         break;
     }
@@ -436,8 +440,8 @@ void TIM_Config(void)
   /* TIM3 enable counter */
   TIM_Cmd(TIM3, ENABLE);
   /* TIM4 HSC Time base configuration */
-  TIM_TimeBaseStructure.TIM_Period = 1;
   /* 1.0KHz */
+  TIM_TimeBaseStructure.TIM_Period = 1;
   TIM_TimeBaseStructure.TIM_Prescaler = 50000-1;
   TIM_TimeBaseStructure.TIM_ClockDivision = 0;
   TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
@@ -481,7 +485,7 @@ void DMA_SingleConfig(void)
   DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)&ADC1->DR;//ADC1_DR_ADDRESS;
   DMA_InitStructure.DMA_Memory0BaseAddr = (uint32_t)SCOPE_DATAPTR;
   DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralToMemory;
-  DMA_InitStructure.DMA_BufferSize = SCOPE_DATASIZE/2;
+  DMA_InitStructure.DMA_BufferSize = STM32_CMD.STM32_SCP.ADC_SampleSize/2;
   DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
   DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;
   DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_HalfWord;
@@ -547,7 +551,7 @@ void DMA_TripleConfig(void)
   DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)ADC_CDR_ADDRESS;
   DMA_InitStructure.DMA_Memory0BaseAddr = (uint32_t)SCOPE_DATAPTR;
   DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralToMemory;
-  DMA_InitStructure.DMA_BufferSize = SCOPE_DATASIZE/4;
+  DMA_InitStructure.DMA_BufferSize = STM32_CMD.STM32_SCP.ADC_SampleSize/4;
   DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
   DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;
   DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Word;

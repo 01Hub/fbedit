@@ -9,12 +9,12 @@
 				<3>374</3>
 				<4>67</4>
 				<5>145</5>
-																																																																																																																																																																																																																																																																																																																																																														
+																																																																																																																																																																																																																																																																																																																																																																												
 			</CodeReport>
-																																																																																																																																																																																																																																																										
+																																																																																																																																																																																																																																																																				
 		</CodeView>
 		<MemoryView Focus="134218120" TopRow="0" NbPerLine="8" />
-																																																																																																																																																						
+																																																																																																																																																												
 	</FrequencyCounter>
 	<LCMeter>
 		<MemoryView Focus="134218120" TopRow="0" NbPerLine="8" />
@@ -26,11 +26,11 @@
 				<3>310</3>
 				<4>56</4>
 				<5>118</5>
-																																																																																																																
+																																																																																																																														
 			</CodeReport>
-																																																																																
+																																																																																										
 		</CodeView>
-																																																
+																																																						
 	</LCMeter>
 	<Flags>
 		<Report>
@@ -54,10 +54,11 @@
 			
 	</Flags>
 	<Views>
-		<View File="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" Line="524" Index="0" focus="1" />
-		<View File="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_adc.c" Line="97" Index="1" />
-		<View File="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_adc.h" Line="352" Index="2" />
-		<View File="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx.h" Line="14" Index="3" />
+		<View File="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" Line="453" Index="0" focus="1" />
+		<View File="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_adc.c" Line="96" Index="1" />
+		<View File="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_adc.h" Line="351" Index="2" />
+		<View File="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx.h" Line="13" Index="3" />
+		<View File="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_tim.c" Line="314" Index="4" />
 	</Views>
 	<Grep>
 		<GrepIncludeSub>yes</GrepIncludeSub>
@@ -91,6 +92,7 @@
 		</GrepReplaceWhat>
 	</Grep>
 	<FindStrings>
+		<Find>TIM_OC2Init</Find>
 		<Find>ADC_SampleTime_3Cycles</Find>
 		<Find>ADC_SampleTime_3Cycles:</Find>
 		<Find>AHBPrescTable</Find>
