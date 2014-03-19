@@ -781,3 +781,99 @@ ScopeSubSampling proc uses ebx esi edi
 	ret
 
 ScopeSubSampling endp
+
+SetMode proc
+	LOCAL	buffer[64]:BYTE
+
+	invoke lstrcpy,addr buffer,offset szLCMeter
+	.if mode==CMD_LCMCAP
+		mov		eax,offset szCapacitance
+	.elseif mode==CMD_LCMIND
+		mov		eax,offset szInductance
+	.elseif mode==CMD_FRQCH1
+		mov		eax,offset szFerquencyCH1
+	.elseif mode==CMD_FRQCH2
+		mov		eax,offset szFerquencyCH2
+	.elseif mode==CMD_FRQCH3
+		mov		eax,offset szFerquencyCH3
+	.elseif mode==CMD_SCPSET
+		mov		eax,offset szScope
+	.elseif mode==CMD_DDSSET
+		mov		eax,offset szDDS
+	.endif
+	invoke lstrcat,addr buffer,eax
+	invoke SetWindowText,hWnd,addr buffer
+	ret
+
+SetMode endp
+
+FormatFrequency proc uses ebx,frq:DWORD,lpBuffer:DWORD
+
+	mov		eax,frq
+	.if eax<1000
+		;Hz
+		invoke wsprintf,lpBuffer,addr szFmtHz,eax
+	.elseif eax<1000000
+		;KHz
+		invoke wsprintf,lpBuffer,addr szFmtKHz,eax
+		mov		ebx,6
+		call	InsertDot
+	.else
+		;MHz
+		invoke wsprintf,lpBuffer,addr szFmtMHz,eax
+		mov		ebx,9
+		call	InsertDot
+	.endif
+	ret
+
+InsertDot:
+	mov		esi,lpBuffer
+	invoke lstrlen,esi
+	mov		edx,eax
+	sub		ebx,edx
+	neg		ebx
+	mov		al,'.'
+	.while ebx<=edx
+		xchg	al,[esi+ebx]
+		inc		ebx
+	.endw
+	mov		[esi+ebx],al
+	retn
+
+FormatFrequency endp
+
+ButtonProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+
+	mov		eax,uMsg
+	.if eax==WM_LBUTTONDOWN || eax==WM_LBUTTONDBLCLK
+		mov		nBtnCount,16
+		invoke SetTimer,hWin,1001,500,NULL
+	.elseif eax==WM_LBUTTONUP
+		invoke KillTimer,hWin,1001
+		mov		nBtnCount,16
+	.elseif eax==WM_TIMER
+		invoke GetWindowLong,hWin,GWL_ID
+		mov		ebx,eax
+		invoke GetParent,hWin
+		mov		esi,eax
+		invoke SendMessage,esi,WM_COMMAND,ebx,hWin
+		mov		edi,nBtnCount
+		shr		edi,4
+		.if edi>40
+			mov		edi,40
+		.endif
+		.while edi
+			invoke SendMessage,esi,WM_COMMAND,ebx,hWin
+			dec		edi
+		.endw
+		invoke KillTimer,hWin,1001
+		invoke SetTimer,hWin,1001,50,NULL
+		inc		nBtnCount
+		xor		eax,eax
+		ret
+	.endif
+	invoke CallWindowProc,lpOldButtonProc,hWin,uMsg,wParam,lParam
+	ret
+
+ButtonProc endp
+
