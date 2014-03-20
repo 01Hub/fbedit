@@ -83,6 +83,12 @@ IDC_UDCDDSFRQ					equ 1301
 IDC_BTNDDSWAVEUP        		equ 1307
 IDC_BTNDDSWAVEDN        		equ 1305
 IDC_STCDDSWAVE          		equ 1306
+IDC_BTNDDSAMPUP         		equ 1308
+IDC_BTNDDSAMPDN         		equ 1309
+IDC_TRBDDSAMP           		equ 1310
+IDC_BTNDDSOFSUP         		equ 1311
+IDC_TRBDDSOFS           		equ 1312
+IDC_BTNDDSOFSDN         		equ 1313
 
 IDD_DLGSCPSCRNCLD				equ 2000
 IDC_UDCSCPSCRN					equ 2001
@@ -117,7 +123,7 @@ SCOPEHT							equ GRIDSIZE*GRIDY
 MAXTIMEDIV						equ 21
 MAXVOLTDIV						equ 8
 
-DACMAX							equ 4095
+DACMAX							equ 255;1023
 
 ;DDS Waveforms
 DDS_ModeSinWave					equ 0
@@ -172,12 +178,21 @@ STM32_SCP struct
 	ADC_SampleSize				DWORD ?			;0x20000054
 STM32_SCP ends
 
+STM32_DDS struct
+	DDS_Cmd						WORD ?			;0x20000058
+	DDS_Wave					WORD ?			;0x2000005C
+	DDS__PhaseAdd				DWORD ?			;0x20000060
+	DDS_Amplitude				DWORD ?			;0x20000064
+	DDS_DCOffset				DWORD ?			;0x20000068
+STM32_DDS ends
+
 STM32_CMD struct
 	Cmd							DWORD ?			;0x20000014
 	STM32_Hsc					STM32_HSC <>	;0x20000018
 	STM32_Frq 					STM32_FRQ <>	;0x20000020
 	STM32_Lcm					STM32_LCM <>	;0x20000028
 	STM32_Scp					STM32_SCP <>	;0x20000030
+	STM32_Dds					STM32_DDS <>	;0x20000058
 	TickCount					DWORD ?
 	PreviousCountTIM2			DWORD ?
 	ThisCountTIM2				DWORD ?

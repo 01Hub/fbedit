@@ -67,21 +67,22 @@ DDSGenWave proc uses ebx esi edi
 	mov		edi,offset ddswavedata.DDS_WaveData
 	.while ebx<4098
 		movzx	eax,word ptr [edi+ebx*WORD]
+		shr		eax,4
 		mov		ecx,ddswavedata.DDS_Amplitude
 		mul		ecx
-		mov		ecx,4096
+		mov		ecx,DACMAX+1
 		div		ecx
 		mov		ecx,ddswavedata.DDS_Amplitude
 		shr		ecx,1
 		sub		ax,cx
-		add		ax,2048
+		add		ax,DACMAX+1
 		mov		ecx,ddswavedata.DDS_DCOffset
 		add		ax,cx
-		sub		ax,4096
+		sub		ax,DACMAX+1+(DACMAX+1)/2
 		.if CARRY?
 			xor		ax,ax
-		.elseif ax>4095
-			mov		ax,4095
+		.elseif ax>DACMAX
+			mov		ax,DACMAX
 		.endif
 		mov		[edi+ebx*WORD],ax
 		movzx	eax,ax
@@ -170,7 +171,8 @@ DDSScrnChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:
 DDSScrnChildProc endp
 
 DDSChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
-	
+	LOCAL	buffer[64]:BYTE
+
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
 		invoke GetDlgItem,hWin,IDC_UDCDDSFRQ
@@ -198,12 +200,70 @@ DDSChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 			mov		[edi+ebx*WORD],ax
 			inc		ebx
 		.endw
+		invoke SendDlgItemMessage,hWin,IDC_TRBDDSAMP,TBM_SETRANGE,FALSE,DACMAX SHL 16
+		invoke SendDlgItemMessage,hWin,IDC_TRBDDSAMP,TBM_SETPOS,TRUE,ddswavedata.DDS_Amplitude
+		invoke SendDlgItemMessage,hWin,IDC_TRBDDSOFS,TBM_SETRANGE,FALSE,(((DACMAX+1)*2-1) SHL 16)
+		invoke SendDlgItemMessage,hWin,IDC_TRBDDSOFS,TBM_SETPOS,TRUE,ddswavedata.DDS_DCOffset
+		invoke ImageList_GetIcon,hIml,0,ILD_NORMAL
+		mov		ebx,eax
+		push	0
+		push	IDC_BTNDDSWAVEDN
+		push	IDC_BTNDDSFRQDN
+		push	IDC_BTNDDSAMPDN
+		mov		eax,IDC_BTNDDSOFSDN
+		.while eax
+			invoke GetDlgItem,hWin,eax
+			mov		edi,eax
+			invoke SendMessage,edi,BM_SETIMAGE,IMAGE_ICON,ebx
+			invoke SetWindowLong,edi,GWL_WNDPROC,offset ButtonProc
+			mov		lpOldButtonProc,eax
+			pop		eax
+		.endw
+		invoke ImageList_GetIcon,hIml,1,ILD_NORMAL
+		mov		ebx,eax
+		push	0
+		push	IDC_BTNDDSWAVEUP
+		push	IDC_BTNDDSFRQUP
+		push	IDC_BTNDDSAMPUP
+		mov		eax,IDC_BTNDDSOFSUP
+		.while eax
+			invoke GetDlgItem,hWin,eax
+			mov		edi,eax
+			invoke SendMessage,edi,BM_SETIMAGE,IMAGE_ICON,ebx
+			invoke SetWindowLong,edi,GWL_WNDPROC,offset ButtonProc
+			mov		lpOldButtonProc,eax
+			pop		eax
+		.endw
+		mov		ddswavedata.DDS_Frequency,5000
+		invoke SetDlgItemInt,hWin,IDC_EDTDDSFRQ,ddswavedata.DDS_Frequency,FALSE
+		invoke DDSHzToPhaseAdd,eax
+		mov		ddswavedata.DDS_PhaseFrq,eax
+		invoke FormatFrequency,ddswavedata.DDS_Frequency,addr buffer
+		invoke SetWindowText,hDDS,addr buffer
 	.elseif	eax==WM_COMMAND
 		mov		edx,wParam
 		movzx	eax,dx
 		shr		edx,16
 		.if edx==BN_CLICKED
-			.if eax==IDC_BTNDDSWAVEDN
+			.if eax==IDC_BTNDDSFRQDN
+				.if ddswavedata.DDS_Frequency>1
+					dec		ddswavedata.DDS_Frequency
+					invoke SetDlgItemInt,hWin,IDC_EDTDDSFRQ,ddswavedata.DDS_Frequency,FALSE
+					invoke DDSHzToPhaseAdd,eax
+					mov		ddswavedata.DDS_PhaseFrq,eax
+					invoke FormatFrequency,ddswavedata.DDS_Frequency,addr buffer
+					invoke SetWindowText,hDDS,addr buffer
+				.endif
+			.elseif eax==IDC_BTNDDSFRQUP
+				.if ddswavedata.DDS_Frequency<5000000
+					inc		ddswavedata.DDS_Frequency
+					invoke SetDlgItemInt,hWin,IDC_EDTDDSFRQ,ddswavedata.DDS_Frequency,FALSE
+					invoke DDSHzToPhaseAdd,eax
+					mov		ddswavedata.DDS_PhaseFrq,eax
+					invoke FormatFrequency,ddswavedata.DDS_Frequency,addr buffer
+					invoke SetWindowText,hDDS,addr buffer
+				.endif
+			.elseif eax==IDC_BTNDDSWAVEDN
 				mov		eax,ddswavedata.DDS_WaveForm
 				.if eax
 					dec		ddswavedata.DDS_WaveForm
@@ -217,7 +277,52 @@ DDSChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 					invoke DDSGenWave
 					call	SetWave
 				.endif
+			.elseif eax==IDC_BTNDDSAMPDN
+				.if ddswavedata.DDS_Amplitude
+					dec		ddswavedata.DDS_Amplitude
+					invoke SendDlgItemMessage,hWin,IDC_TRBDDSAMP,TBM_SETPOS,TRUE,ddswavedata.DDS_Amplitude
+					invoke DDSGenWave
+				.endif
+			.elseif eax==IDC_BTNDDSAMPUP
+				.if ddswavedata.DDS_Amplitude<DACMAX
+					inc		ddswavedata.DDS_Amplitude
+					invoke SendDlgItemMessage,hWin,IDC_TRBDDSAMP,TBM_SETPOS,TRUE,ddswavedata.DDS_Amplitude
+					invoke DDSGenWave
+				.endif
+			.elseif eax==IDC_BTNDDSOFSDN
+				.if ddswavedata.DDS_DCOffset
+					dec		ddswavedata.DDS_DCOffset
+					invoke SendDlgItemMessage,hWin,IDC_TRBDDSOFS,TBM_SETPOS,TRUE,ddswavedata.DDS_DCOffset
+					invoke DDSGenWave
+				.endif
+			.elseif eax==IDC_BTNDDSOFSUP
+				mov		eax,(DACMAX+1)*2-1
+				.if ddswavedata.DDS_DCOffset<eax
+					inc		ddswavedata.DDS_DCOffset
+					invoke SendDlgItemMessage,hWin,IDC_TRBDDSOFS,TBM_SETPOS,TRUE,ddswavedata.DDS_DCOffset
+					invoke DDSGenWave
+				.endif
 			.endif
+		.elseif edx==EN_KILLFOCUS
+			.if eax==IDC_EDTDDSFRQ
+				invoke GetDlgItemInt,hWin,IDC_EDTDDSFRQ,NULL,FALSE
+				mov		ddswavedata.DDS_Frequency,eax
+				invoke DDSHzToPhaseAdd,eax
+				mov		ddswavedata.DDS_PhaseFrq,eax
+				invoke FormatFrequency,ddswavedata.DDS_Frequency,addr buffer
+				invoke SetWindowText,hDDS,addr buffer
+			.endif
+		.endif
+	.elseif eax==WM_HSCROLL
+		invoke GetDlgCtrlID,lParam
+		.if eax==IDC_TRBDDSAMP
+			invoke SendDlgItemMessage,hWin,IDC_TRBDDSAMP,TBM_GETPOS,0,0
+			mov		ddswavedata.DDS_Amplitude,eax
+			invoke DDSGenWave
+		.elseif eax==IDC_TRBDDSOFS
+			invoke SendDlgItemMessage,hWin,IDC_TRBDDSOFS,TBM_GETPOS,0,0
+			mov		ddswavedata.DDS_DCOffset,eax
+			invoke DDSGenWave
 		.endif
 	.else
 		mov		eax,FALSE

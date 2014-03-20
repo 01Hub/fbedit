@@ -26,6 +26,8 @@
   PA.01         Frequency counter input (TIM2)
   PA.04         Scope V-Pos DAC1 Output
   PB.07         High Speed Clock
+  PB.13         SPI SCK
+  PB.15         SPI MOSI
   PC.01         Scope ADC
   PD.00         Frequency counter select0
   PD.01         Frequency counter select1
@@ -73,11 +75,21 @@ typedef struct
 
 typedef struct
 {
+  uint16_t DDS_Cmd;                             // 0x20000058
+  uint16_t DDS_Wave;                            // 0x2000005C
+  uint32_t DDS__PhaseAdd;                       // 0x20000060
+  uint32_t DDS_Amplitude;                       // 0x20000064
+  uint32_t DDS_DCOffset;                        // 0x20000068
+} STM32_DDSTypeDef;
+
+typedef struct
+{
   uint32_t Cmd;                                 // 0x20000014
   STM32_HSCTypeDef STM32_HSC;                   // 0x20000018
   STM32_FRQTypeDef STM32_FRQ;                   // 0x20000020
   STM32_LCMTypeDef STM32_LCM;                   // 0x20000028
   STM32_SCPTypeDef STM32_SCP;                   // 0x20000030
+  STM32_DDSTypeDef STM32_DDS;                   // 0x20000058
   uint32_t TickCount;
   uint32_t PreviousCountTIM2;
   uint32_t ThisCountTIM2;
@@ -96,6 +108,7 @@ typedef struct
 #define CMD_FRQCH3                              ((uint8_t)6)
 #define CMD_SCPSET                              ((uint8_t)7)
 #define CMD_HSCSET                              ((uint8_t)8)
+#define CMD_DDSSET                              ((uint8_t)9)
 
 #define ADC_CDR_ADDRESS                         ((uint32_t)0x40012308)
 #define SCOPE_DATAPTR                           ((uint32_t)0x20008000)
@@ -115,6 +128,7 @@ void DMA_SingleConfig(void);
 void ADC_SingleConfig(void);
 void DMA_TripleConfig(void);
 void ADC_TripleConfig(void);
+void SPI_Config(void);
 void ScopeSubSampling(void);
 uint32_t GetFrequency(void);
 void LCM_Calibrate(void);
@@ -133,9 +147,7 @@ int main(void)
        file (startup_stm32f4xx.s) before to branch to application main.
        To reconfigure the default setting of SystemInit() function, refer to
        system_stm32f4xx.c file
-     */
-  // __IO uint32_t tmp;
-  // __IO uint32_t ticks;
+  */
 
   /* RCC Configuration */
   RCC_Config();
@@ -147,6 +159,8 @@ int main(void)
   NVIC_Config();
   /* DAC Configuration */
   DAC_Config();
+  /* SPI Configuration */
+  SPI_Config();
   /* Calibrate LC Meter */
   LCM_Calibrate();
   while (1)
@@ -249,6 +263,8 @@ int main(void)
         TIM4->PSC = STM32_CMD.STM32_HSC.HSCDiv;
         STM32_CMD.Cmd = CMD_DONE;
         break;
+      case CMD_DDSSET:
+        break;
     }
   }
 }
@@ -305,7 +321,7 @@ void LCM_Calibrate(void)
 void RCC_Config(void)
 {
   /* DAC, TIM2, TIM3, TIM4 and TIM5 clock enable */
-  RCC_APB1PeriphClockCmd(RCC_APB1Periph_DAC | RCC_APB1Periph_TIM2 | RCC_APB1Periph_TIM3 | RCC_APB1Periph_TIM4 | RCC_APB1Periph_TIM5, ENABLE);
+  RCC_APB1PeriphClockCmd(RCC_APB1Periph_SPI2 | RCC_APB1Periph_DAC | RCC_APB1Periph_TIM2 | RCC_APB1Periph_TIM3 | RCC_APB1Periph_TIM4 | RCC_APB1Periph_TIM5, ENABLE);
   /* DMA2 clock enable */
   RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA2, ENABLE);
   /* GPIOA clock enable */
@@ -389,7 +405,7 @@ void GPIO_Config(void)
   GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL ;
   GPIO_Init(GPIOA, &GPIO_InitStructure);
 
-/* GPIOD Outputs */
+  /* GPIOD Outputs */
   GPIO_ResetBits(GPIOD, GPIO_Pin_0 | GPIO_Pin_1 | GPIO_Pin_2 | GPIO_Pin_6 | GPIO_Pin_7);
   GPIO_InitStructure.GPIO_Pin   = GPIO_Pin_0 | GPIO_Pin_1 | GPIO_Pin_2 | GPIO_Pin_6 | GPIO_Pin_7;
   GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_OUT;
@@ -397,6 +413,21 @@ void GPIO_Config(void)
   GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
   GPIO_InitStructure.GPIO_PuPd  = GPIO_PuPd_NOPULL;
   GPIO_Init(GPIOD, &GPIO_InitStructure);
+
+  /* Configure SPI2 SCK and MOSI pins */
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
+  GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+  GPIO_InitStructure.GPIO_PuPd  = GPIO_PuPd_UP;
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_25MHz;
+  /* SPI SCK pin configuration */
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_13;
+  GPIO_Init(GPIOB, &GPIO_InitStructure);
+  /* Connect SPI2 pins to AF5 */  
+  GPIO_PinAFConfig(GPIOB, GPIO_PinSource13, GPIO_AF_SPI2);
+  /* SPI MOSI pin configuration */
+  GPIO_InitStructure.GPIO_Pin =  GPIO_Pin_15;
+  GPIO_Init(GPIOB, &GPIO_InitStructure);
+  GPIO_PinAFConfig(GPIOB, GPIO_PinSource15, GPIO_AF_SPI2);
 }
 
 /**
@@ -614,6 +645,31 @@ void ADC_TripleConfig(void)
   ADC_Cmd(ADC3, ENABLE);
   /* Enable DMA request after last transfer (multi-ADC mode) ******************/
   ADC_MultiModeDMARequestAfterLastTransferCmd(ENABLE);
+}
+
+/*******************************************************************************
+* Function Name  : SPI_Configuration
+* Description    : Configures SPI2 to output DDS configuration
+* Input          : None
+* Output         : None
+* Return         : None
+*******************************************************************************/
+void SPI_Config(void)
+{
+  SPI_InitTypeDef SPI_InitStructure;
+
+	/* Set up SPI2 port */
+	SPI_InitStructure.SPI_Direction = SPI_Direction_1Line_Tx;
+	SPI_InitStructure.SPI_Mode = SPI_Mode_Master;
+	SPI_InitStructure.SPI_DataSize = SPI_DataSize_16b;
+	SPI_InitStructure.SPI_CPOL = SPI_CPOL_Low;
+	SPI_InitStructure.SPI_CPHA = SPI_CPHA_2Edge;
+	SPI_InitStructure.SPI_NSS = SPI_NSS_Soft;
+	SPI_InitStructure.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_8;
+	SPI_InitStructure.SPI_FirstBit = SPI_FirstBit_LSB;
+  SPI_InitStructure.SPI_CRCPolynomial = 7;
+	SPI_Init(SPI2, &SPI_InitStructure);
+	SPI_Cmd(SPI2, ENABLE);
 }
 
 /**

@@ -653,9 +653,16 @@ IsTrigger:
 					mov		tptx,ecx
 					mov		tptxc,1
 				.endif
-			.else
+			.elseif tptxc==1
 				.if edx<tpos && ecx<tpos
 					mov		tptxc,2
+				.else
+					mov		tptx,0
+					mov		tptxc,0
+				.endif
+			.elseif tptxc==2
+				.if edx<tpos && ecx<tpos
+					mov		tptxc,3
 				.else
 					mov		tptx,0
 					mov		tptxc,0
@@ -669,9 +676,16 @@ IsTrigger:
 					mov		tptx,ecx
 					mov		tptxc,1
 				.endif
-			.else
+			.elseif tptxc==1
 				.if edx>tpos && ecx>tpos
 					mov		tptxc,2
+				.else
+					mov		tptx,0
+					mov		tptxc,0
+				.endif
+			.elseif tptxc==2
+				.if edx>tpos && ecx>tpos
+					mov		tptxc,3
 				.else
 					mov		tptx,0
 					mov		tptxc,0

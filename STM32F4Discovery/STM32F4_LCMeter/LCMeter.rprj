@@ -1,4 +1,4 @@
 
 <Project Header="Project 'LCMeter'" Path=".\LCMeter.rprj" Project="Yes" AsyncBuild="" OutputFile="" sate="96" ActiveApp="LCMeter" >
-	<ApplicationBuild Header="LCMeter" Extern=".\LCMeter.rapp" Path=".\LCMeter.rapp" AsyncBuild="" OutputFile=".\LCMeter.elf" sate="96" />
+	<ApplicationBuild Header="LCMeter" Extern=".\LCMeter.rapp" Path=".\LCMeter.rapp" AsyncBuild="" OutputFile=".\LCMeter.elf" sate="98" />
 </Project>
