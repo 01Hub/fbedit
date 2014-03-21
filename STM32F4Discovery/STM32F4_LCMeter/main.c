@@ -109,6 +109,8 @@ typedef struct
 #define CMD_SCPSET                              ((uint8_t)7)
 #define CMD_HSCSET                              ((uint8_t)8)
 #define CMD_DDSSET                              ((uint8_t)9)
+#define DDS_PHASESET                            ((uint8_t)1)
+#define DDS_WAVESET                             ((uint8_t)2)
 
 #define ADC_CDR_ADDRESS                         ((uint32_t)0x40012308)
 #define SCOPE_DATAPTR                           ((uint32_t)0x20008000)
@@ -132,6 +134,7 @@ void SPI_Config(void);
 void ScopeSubSampling(void);
 uint32_t GetFrequency(void);
 void LCM_Calibrate(void);
+void SPISendData(uint16_t tx);
 
 /* Private functions ---------------------------------------------------------*/
 
@@ -169,26 +172,21 @@ int main(void)
     {
       case CMD_LCMCAL:
         LCM_Calibrate();
-        STM32_CMD.Cmd = CMD_DONE;
         break;
       case CMD_LCMCAP:
         GPIO_ResetBits(GPIOD, GPIO_Pin_0 | GPIO_Pin_1 | GPIO_Pin_2 | GPIO_Pin_6 | GPIO_Pin_7);
-        STM32_CMD.Cmd = CMD_DONE;
         break;
       case CMD_LCMIND:
         GPIO_ResetBits(GPIOD, GPIO_Pin_0 | GPIO_Pin_1 | GPIO_Pin_2 | GPIO_Pin_7);
         GPIO_SetBits(GPIOD, GPIO_Pin_6);
-        STM32_CMD.Cmd = CMD_DONE;
         break;
       case CMD_FRQCH1:
         GPIO_ResetBits(GPIOD, GPIO_Pin_1 | GPIO_Pin_2 | GPIO_Pin_6 | GPIO_Pin_7);
         GPIO_SetBits(GPIOD, GPIO_Pin_0);
-        STM32_CMD.Cmd = CMD_DONE;
         break;
       case CMD_FRQCH2:
         GPIO_ResetBits(GPIOD, GPIO_Pin_0 | GPIO_Pin_2 | GPIO_Pin_6 | GPIO_Pin_7);
         GPIO_SetBits(GPIOD, GPIO_Pin_1);
-        STM32_CMD.Cmd = CMD_DONE;
         break;
       case CMD_FRQCH3:
         GPIO_ResetBits(GPIOD, GPIO_Pin_2 | GPIO_Pin_6 | GPIO_Pin_7);
@@ -214,38 +212,6 @@ int main(void)
           /* ADC Configuration */
           ADC_SingleConfig();
         }
-        // ticks = STM32_CMD.TickCount + 3;
-        // switch (STM32_CMD.STM32_SCP.ScopeTrigger)
-        // {
-          // case 0:
-            // break;
-          // case 1:
-            // /* Count on rising edge */
-            // TIM5->CCER = 0x0000;
-            // /* Wait until TIM5 increments */
-            // tmp = TIM5->CNT;
-            // while (tmp == TIM5->CNT)
-            // {
-              // if (ticks == STM32_CMD.TickCount)
-              // {
-                // break;
-              // }
-            // }
-            // break;
-          // case 2:
-            // /* Count on falling edge */
-            // TIM5->CCER = 0x0002;
-            // /* Wait until TIM5 increments */
-            // tmp = TIM5->CNT;
-            // while (tmp == TIM5->CNT)
-            // {
-              // if (ticks == STM32_CMD.TickCount)
-              // {
-                // break;
-              // }
-            // }
-            // break;
-        // }
         /* Start ADC1 Software Conversion */
         ADC1->CR2 |= (uint32_t)ADC_CR2_SWSTART;
         while (DMA_GetFlagStatus(DMA2_Stream0,DMA_FLAG_TCIF0)==RESET);
@@ -253,7 +219,6 @@ int main(void)
         ADC1->CR2=0;
         ADC2->CR2=0;
         ADC3->CR2=0;
-        STM32_CMD.Cmd = CMD_DONE;
         break;
       case CMD_HSCSET:
         GPIO_ResetBits(GPIOD, GPIO_Pin_1 | GPIO_Pin_2 | GPIO_Pin_6 | GPIO_Pin_7);
@@ -261,11 +226,24 @@ int main(void)
         TIM4->ARR = STM32_CMD.STM32_HSC.HSCSet;
         TIM4->CCR2 = (STM32_CMD.STM32_HSC.HSCSet+1) / 2;
         TIM4->PSC = STM32_CMD.STM32_HSC.HSCDiv;
-        STM32_CMD.Cmd = CMD_DONE;
         break;
       case CMD_DDSSET:
+        if (STM32_CMD.STM32_DDS.DDS_Cmd == DDS_PHASESET)
+        {
+          SPISendData(DDS_PHASESET);
+          SPISendData(STM32_CMD.STM32_DDS.DDS__PhaseAdd & 0xFFFF);
+          SPISendData(STM32_CMD.STM32_DDS.DDS__PhaseAdd >> 16);
+        }
+        else if (STM32_CMD.STM32_DDS.DDS_Cmd == DDS_WAVESET)
+        {
+          SPISendData(DDS_WAVESET);
+          SPISendData(STM32_CMD.STM32_DDS.DDS_Wave & 0xFFFF);
+          SPISendData(STM32_CMD.STM32_DDS.DDS_Amplitude & 0xFFFF);
+          SPISendData(STM32_CMD.STM32_DDS.DDS_DCOffset & 0xFFFF);
+        }
         break;
     }
+    STM32_CMD.Cmd = CMD_DONE;
   }
 }
 
@@ -311,6 +289,12 @@ void LCM_Calibrate(void)
   }
   STM32_CMD.STM32_LCM.FrequencyCal1 /= 4;
   GPIO_ResetBits(GPIOD, GPIO_Pin_7);
+}
+
+void SPISendData(uint16_t tx)
+{
+	SPI2->DR = tx;                            // write data to be transmitted to the SPI data register
+	while( !(SPI2->SR & SPI_I2S_FLAG_TXE) );  // wait until transmit complete
 }
 
 /**

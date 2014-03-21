@@ -1,7 +1,9 @@
 /*
   Port pins
   ------------------------------------
-  PA4       DDS wave output
+  PE15-PE4  DDS wave output
+  PB13      SPI SCK
+  PB15      SPI MOSI
   ------------------------------------
 */
 /* Includes ------------------------------------------------------------------*/
@@ -10,6 +12,18 @@
 #include "wave.h"
 
 /* Private typedef -----------------------------------------------------------*/
+typedef struct
+{
+  uint32_t DDS_PhaseFrq;                              // 0x20000014
+  uint16_t WaveType;                                  // 0x00000018
+  uint16_t Amplitude;                                 // 0x0000001A
+  int16_t DCOffset;                                   // 0x0000001C
+  uint16_t SPI_Cmnd;                                  // 0x0000001E
+  uint16_t SPI_Cnt;                                   // 0x00000020
+  uint16_t Dummy;                                     // 0x00000022
+  uint16_t Wave[2048];                                // 0x20000024
+}STM32_CMNDTypeDef;
+
 /* Private define ------------------------------------------------------------*/
 /* DDS WaveType */
 #define WAVE_Sine                 ((uint8_t)1)
@@ -18,17 +32,13 @@
 #define WAVE_SawTooth             ((uint8_t)4)
 #define WAVE_RevSawTooth          ((uint8_t)5)
 
-typedef struct
-{
-  uint32_t WaveType;                                  // 0x00000014
-  uint32_t Amplitude;                                 // 0x00000018
-  int32_t DCOffset;                                   // 0x0000001C
-  uint32_t DDS_PhaseFrq;                              // 0x20000020
-  uint16_t Wave[2048];                                // 0x20000024
-}STM32_CMNDTypeDef;
+#define SPI_PhaseSet              ((uint8_t)1)
+#define SPI_WaveSet               ((uint8_t)2)
+
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 static STM32_CMNDTypeDef STM32_Command;               // 0x20000014
+__IO uint16_t rx;
 
 void DDS_Config(void);
 void DDS_MakeWave(void);
@@ -150,7 +160,7 @@ void DDS_WaveGenerator(void)
   asm("movw   r2,#0x1014");
   asm("movt   r2,#0x4002");       /* GPIOE ODR */
   asm("mov    r3,#0x0");          /* DDSPhase pointer value */
-  asm("movw   r4,#0x0020");
+  asm("movw   r4,#0x0014");
   asm("movt   r4,#0x2000");       /* STM32_Command.DDSPhaseFrq = 0x20000020 */
   asm("ldr    r4,[r4,#0x0]");     /* DDSPhaseFrq value */
   DDS_WaveLoop();
@@ -159,15 +169,59 @@ void DDS_WaveGenerator(void)
 void SPI2_IRQHandler(void)
 {
   asm("push   {r4}");
-  uint16_t rx;
-  STM_EVAL_LEDToggle(LED3);                // NC
+  // STM_EVAL_LEDToggle(LED3);
   /* Check the interrupt source */
   /* RX */
   if (SPI_I2S_GetITStatus(SPI2, SPI_I2S_IT_RXNE) == SET)
   {
-    STM_EVAL_LEDToggle(LED4);                // NC
-    /* Store the I2S2 received data in the relative data table */
+    /* Get the SPI received data */
     rx = SPI_I2S_ReceiveData(SPI2);
+    if (STM32_Command.SPI_Cnt == 0)
+    {
+      STM32_Command.SPI_Cmnd = rx;
+      STM32_Command.SPI_Cnt = 1;
+      STM_EVAL_LEDToggle(LED4);
+    }
+    else if (STM32_Command.SPI_Cmnd == SPI_PhaseSet)
+    {
+      if (STM32_Command.SPI_Cnt == 1)
+      {
+        STM32_Command.DDS_PhaseFrq = rx;
+        STM32_Command.SPI_Cnt = 2;
+      }
+      else
+      {
+        STM32_Command.DDS_PhaseFrq |= rx<<16;
+        STM32_Command.SPI_Cnt = 0;
+        asm("pop    {r4}");
+        asm("movw   r4,#0x0014");
+        asm("movt   r4,#0x2000");       /* STM32_Command.DDSPhaseFrq = 0x20000020 */
+        asm("ldr    r4,[r4,#0x0]");     /* DDSPhaseFrq value */
+        asm("push   {r4}");
+      }
+    }
+    else if (STM32_Command.SPI_Cmnd == SPI_WaveSet)
+    {
+      if (STM32_Command.SPI_Cnt == 1)
+      {
+        STM32_Command.WaveType = rx;
+        STM32_Command.SPI_Cnt = 2;
+      }
+      else if (STM32_Command.SPI_Cnt == 2)
+      {
+        STM32_Command.Amplitude = rx;
+        STM32_Command.SPI_Cnt = 3;
+      }
+      else if (STM32_Command.SPI_Cnt == 3)
+      {
+        STM32_Command.DCOffset = rx;
+        STM32_Command.SPI_Cnt = 0;
+        DDS_MakeWave();
+        asm("pop    {r4}");
+        asm("mov    r4,#0x0");        /* DDSPhaseFrq value */
+        asm("push   {r4}");
+      }
+    }
   }
   asm("pop    {r4}");
 }

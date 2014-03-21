@@ -67,7 +67,11 @@ DDSGenWave proc uses ebx esi edi
 	mov		edi,offset ddswavedata.DDS_WaveData
 	.while ebx<4098
 		movzx	eax,word ptr [edi+ebx*WORD]
-		shr		eax,4
+		mov		ecx,DACMAX+1
+		mul		ecx
+		cdq
+		mov		ecx,4096
+		div		ecx
 		mov		ecx,ddswavedata.DDS_Amplitude
 		mul		ecx
 		mov		ecx,DACMAX+1
@@ -170,6 +174,26 @@ DDSScrnChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:
 
 DDSScrnChildProc endp
 
+DDSSetStruct proc cmnd:DWORD
+
+	mov		eax,cmnd
+	mov		STM32_Cmd.STM32_Dds.DDS_Cmd,ax
+	mov		eax,ddswavedata.DDS_WaveForm
+	mov		STM32_Cmd.STM32_Dds.DDS_Wave,ax
+	mov		eax,ddswavedata.DDS_Amplitude
+	mov		STM32_Cmd.STM32_Dds.DDS_Amplitude,eax
+	mov		eax,ddswavedata.DDS_DCOffset
+	mov		STM32_Cmd.STM32_Dds.DDS_DCOffset,eax
+	mov		eax,ddswavedata.DDS_PhaseFrq
+	mov		STM32_Cmd.STM32_Dds.DDS__PhaseAdd,eax
+	.if connected
+		invoke STLinkWrite,hWnd,20000058h,offset STM32_Cmd.STM32_Dds,sizeof STM32_DDS
+		invoke STLinkWrite,hWnd,20000014h,addr mode,DWORD
+	.endif
+	ret
+
+DDSSetStruct endp
+
 DDSChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	buffer[64]:BYTE
 
@@ -178,7 +202,6 @@ DDSChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 		invoke GetDlgItem,hWin,IDC_UDCDDSFRQ
 		mov		hDDS,eax
 		mov		ddswavedata.SWEEP_SubMode,SWEEP_SubModeOff
-		mov		ddswavedata.DDS_DacBuffer,TRUE
 		invoke DDSHzToPhaseAdd,5000	;5KHz
 		mov		ddswavedata.DDS_Frequency,eax
 		inc		eax
@@ -253,6 +276,7 @@ DDSChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 					mov		ddswavedata.DDS_PhaseFrq,eax
 					invoke FormatFrequency,ddswavedata.DDS_Frequency,addr buffer
 					invoke SetWindowText,hDDS,addr buffer
+					invoke DDSSetStruct,DDS_PHASESET
 				.endif
 			.elseif eax==IDC_BTNDDSFRQUP
 				.if ddswavedata.DDS_Frequency<5000000
@@ -262,6 +286,7 @@ DDSChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 					mov		ddswavedata.DDS_PhaseFrq,eax
 					invoke FormatFrequency,ddswavedata.DDS_Frequency,addr buffer
 					invoke SetWindowText,hDDS,addr buffer
+					invoke DDSSetStruct,DDS_PHASESET
 				.endif
 			.elseif eax==IDC_BTNDDSWAVEDN
 				mov		eax,ddswavedata.DDS_WaveForm
@@ -269,6 +294,7 @@ DDSChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 					dec		ddswavedata.DDS_WaveForm
 					invoke DDSGenWave
 					call	SetWave
+					invoke DDSSetStruct,DDS_WAVESET
 				.endif
 			.elseif eax==IDC_BTNDDSWAVEUP
 				mov		eax,ddswavedata.DDS_WaveForm
@@ -276,24 +302,28 @@ DDSChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 					inc		ddswavedata.DDS_WaveForm
 					invoke DDSGenWave
 					call	SetWave
+					invoke DDSSetStruct,DDS_WAVESET
 				.endif
 			.elseif eax==IDC_BTNDDSAMPDN
 				.if ddswavedata.DDS_Amplitude
 					dec		ddswavedata.DDS_Amplitude
 					invoke SendDlgItemMessage,hWin,IDC_TRBDDSAMP,TBM_SETPOS,TRUE,ddswavedata.DDS_Amplitude
 					invoke DDSGenWave
+					invoke DDSSetStruct,DDS_WAVESET
 				.endif
 			.elseif eax==IDC_BTNDDSAMPUP
 				.if ddswavedata.DDS_Amplitude<DACMAX
 					inc		ddswavedata.DDS_Amplitude
 					invoke SendDlgItemMessage,hWin,IDC_TRBDDSAMP,TBM_SETPOS,TRUE,ddswavedata.DDS_Amplitude
 					invoke DDSGenWave
+					invoke DDSSetStruct,DDS_WAVESET
 				.endif
 			.elseif eax==IDC_BTNDDSOFSDN
 				.if ddswavedata.DDS_DCOffset
 					dec		ddswavedata.DDS_DCOffset
 					invoke SendDlgItemMessage,hWin,IDC_TRBDDSOFS,TBM_SETPOS,TRUE,ddswavedata.DDS_DCOffset
 					invoke DDSGenWave
+					invoke DDSSetStruct,DDS_WAVESET
 				.endif
 			.elseif eax==IDC_BTNDDSOFSUP
 				mov		eax,(DACMAX+1)*2-1
@@ -301,6 +331,7 @@ DDSChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 					inc		ddswavedata.DDS_DCOffset
 					invoke SendDlgItemMessage,hWin,IDC_TRBDDSOFS,TBM_SETPOS,TRUE,ddswavedata.DDS_DCOffset
 					invoke DDSGenWave
+					invoke DDSSetStruct,DDS_WAVESET
 				.endif
 			.endif
 		.elseif edx==EN_KILLFOCUS
@@ -311,6 +342,7 @@ DDSChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 				mov		ddswavedata.DDS_PhaseFrq,eax
 				invoke FormatFrequency,ddswavedata.DDS_Frequency,addr buffer
 				invoke SetWindowText,hDDS,addr buffer
+				invoke DDSSetStruct,DDS_PHASESET
 			.endif
 		.endif
 	.elseif eax==WM_HSCROLL
@@ -319,10 +351,12 @@ DDSChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 			invoke SendDlgItemMessage,hWin,IDC_TRBDDSAMP,TBM_GETPOS,0,0
 			mov		ddswavedata.DDS_Amplitude,eax
 			invoke DDSGenWave
+			invoke DDSSetStruct,DDS_WAVESET
 		.elseif eax==IDC_TRBDDSOFS
 			invoke SendDlgItemMessage,hWin,IDC_TRBDDSOFS,TBM_GETPOS,0,0
 			mov		ddswavedata.DDS_DCOffset,eax
 			invoke DDSGenWave
+			invoke DDSSetStruct,DDS_WAVESET
 		.endif
 	.else
 		mov		eax,FALSE

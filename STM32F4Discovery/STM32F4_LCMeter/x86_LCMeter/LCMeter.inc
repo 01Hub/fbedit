@@ -123,7 +123,7 @@ SCOPEHT							equ GRIDSIZE*GRIDY
 MAXTIMEDIV						equ 21
 MAXVOLTDIV						equ 8
 
-DACMAX							equ 255;1023
+DACMAX							equ 4095
 
 ;DDS Waveforms
 DDS_ModeSinWave					equ 0
@@ -138,6 +138,9 @@ SWEEP_SubModeUp					equ 2
 SWEEP_SubModeDown				equ 3
 SWEEP_SubModeUpDown				equ 4
 SWEEP_SubModePeak				equ 5
+
+DDS_PHASESET					equ 1
+DDS_WAVESET						equ 2
 
 SCOPERANGE struct
 	ydiv						DWORD ?
@@ -208,9 +211,6 @@ DDSSWEEP struct
 DDSSWEEP ends
 
 DDSWAVEDATA struct
-	FRQ_Enable					DWORD ?
-	DDS_Enable					DWORD ?
-	DDS_DacBuffer				DWORD ?
 	DDS_WaveForm				DWORD ?
 	DDS_Amplitude				DWORD ?
 	DDS_DCOffset				DWORD ?
