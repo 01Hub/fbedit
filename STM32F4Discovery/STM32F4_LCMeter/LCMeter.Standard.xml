@@ -1,7 +1,7 @@
 <!-- DWF2XML 2.00.01 - Raisonance Dwarf information extractor -->
 <aoffile Filename="LCMeter" dwarf="1">
  <modulelist>
-  <module Name="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" >
+  <module Name="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" >
    <type Family="Base" Name="signed char" ID="608"/>
    <type Family="Base" Name="unsigned char" ID="626"/>
    <type Family="typedef" Name="uint8_t" Line="42" ID="615" toTI="626"/>
@@ -271,987 +271,987 @@
     <Component Name="ThisCountTIM5" TI="4101" Line="97" Offs="100"/>
    </type>
    <type Family="typedef" Name="STM32_CMDTypeDef" Line="98" ID="4116" toTI="3953"/>
-   <function Name="GetFrequency" TI="676" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" Line="255">
-    <variable Name="i" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" Line="257" Addr="0x1" TI="676"/>
+   <function Name="GetFrequency" TI="676" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" Line="261">
+    <variable Name="i" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" Line="263" Addr="0x1" TI="676"/>
    </function >
-   <function Name="LCM_Calibrate" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" Line="268">
-    <variable Name="i" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" Line="270" Addr="0x0" TI="676"/>
+   <function Name="LCM_Calibrate" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" Line="274">
+    <variable Name="i" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" Line="276" Addr="0x0" TI="676"/>
    </function >
-   <function Name="SPISendData" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" Line="294">
-    <parameter Name="tx" TI="640" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" Line="294" Addr="0x0" Param="Yes"/>
+   <function Name="SPISendData" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" Line="300">
+    <parameter Name="tx" TI="640" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" Line="300" Addr="0x0" Param="Yes"/>
    </function >
-   <function Name="RCC_Config" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" Line="305">
+   <function Name="RCC_Config" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" Line="312">
    </function >
-   <function Name="NVIC_Config" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" Line="328">
-    <variable Name="NVIC_InitStructure" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" Line="330" Addr="0x34000004" TI="3515"/>
+   <function Name="NVIC_Config" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" Line="335">
+    <variable Name="NVIC_InitStructure" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" Line="337" Addr="0x34000004" TI="3515"/>
    </function >
-   <function Name="GPIO_Config" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" Line="344">
-    <variable Name="GPIO_InitStructure" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" Line="346" Addr="0x34000000" TI="3071"/>
+   <function Name="GPIO_Config" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" Line="351">
+    <variable Name="GPIO_InitStructure" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" Line="353" Addr="0x34000000" TI="3071"/>
    </function >
-   <function Name="TIM_Config" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" Line="422">
-    <variable Name="TIM_TimeBaseStructure" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" Line="424" Addr="0x34000014" TI="3307"/>
-    <variable Name="TIM_OCInitStructure" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" Line="425" Addr="0x34000000" TI="3439"/>
+   <function Name="TIM_Config" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" Line="429">
+    <variable Name="TIM_TimeBaseStructure" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" Line="431" Addr="0x34000014" TI="3307"/>
+    <variable Name="TIM_OCInitStructure" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" Line="432" Addr="0x34000000" TI="3439"/>
    </function >
-   <function Name="DAC_Config" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" Line="478">
-    <variable Name="DAC_InitStructure" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" Line="480" Addr="0x34000000" TI="2593"/>
+   <function Name="DAC_Config" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" Line="485">
+    <variable Name="DAC_InitStructure" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" Line="487" Addr="0x34000000" TI="2593"/>
    </function >
-   <function Name="DMA_SingleConfig" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" Line="493">
-    <variable Name="DMA_InitStructure" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" Line="495" Addr="0x34000004" TI="2823"/>
+   <function Name="DMA_SingleConfig" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" Line="500">
+    <variable Name="DMA_InitStructure" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" Line="502" Addr="0x34000004" TI="2823"/>
    </function >
-   <function Name="ADC_SingleConfig" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" Line="519">
-    <variable Name="ADC_CommonInitStructure" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" Line="521" Addr="0x34000018" TI="2517"/>
-    <variable Name="ADC_InitStructure" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" Line="522" Addr="0x34000000" TI="2441"/>
+   <function Name="ADC_SingleConfig" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" Line="526">
+    <variable Name="ADC_CommonInitStructure" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" Line="528" Addr="0x34000018" TI="2517"/>
+    <variable Name="ADC_InitStructure" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" Line="529" Addr="0x34000000" TI="2441"/>
    </function >
-   <function Name="DMA_TripleConfig" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" Line="559">
-    <variable Name="DMA_InitStructure" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" Line="561" Addr="0x34000004" TI="2823"/>
+   <function Name="DMA_TripleConfig" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" Line="566">
+    <variable Name="DMA_InitStructure" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" Line="568" Addr="0x34000004" TI="2823"/>
    </function >
-   <function Name="ADC_TripleConfig" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" Line="590">
-    <variable Name="ADC_CommonInitStructure" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" Line="592" Addr="0x34000018" TI="2517"/>
-    <variable Name="ADC_InitStructure" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" Line="593" Addr="0x34000000" TI="2441"/>
+   <function Name="ADC_TripleConfig" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" Line="597">
+    <variable Name="ADC_CommonInitStructure" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" Line="599" Addr="0x34000018" TI="2517"/>
+    <variable Name="ADC_InitStructure" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" Line="600" Addr="0x34000000" TI="2441"/>
    </function >
-   <function Name="SPI_Config" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" Line="641">
-    <variable Name="SPI_InitStructure" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" Line="643" Addr="0x34000004" TI="3217"/>
+   <function Name="SPI_Config" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" Line="648">
+    <variable Name="SPI_InitStructure" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" Line="650" Addr="0x34000004" TI="3217"/>
    </function >
-   <function Name="main" TI="708" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" Line="146">
+   <function Name="main" TI="708" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" Line="146">
    </function >
-   <function Name="TIM3_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" Line="664">
+   <function Name="TIM3_IRQHandler" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" Line="671">
    </function >
-   <variable Name="STM32_CMD" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" Line="121" Addr="0x20000014" TI="4769"/>
+   <variable Name="STM32_CMD" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" Line="121" Addr="0x20000014" TI="4770"/>
   </module>
-  <module Name="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_it.c" >
-   <type Family="Base" Name="signed char" ID="4844"/>
-   <type Family="Base" Name="unsigned char" ID="4851"/>
-   <type Family="Base" Name="short int" ID="4858"/>
-   <type Family="Base" Name="short unsigned int" ID="4865"/>
-   <type Family="Base" Name="long int" ID="4883"/>
-   <type Family="typedef" Name="int32_t" Line="79" ID="4872" toTI="4883"/>
-   <type Family="Base" Name="long unsigned int" ID="4890"/>
-   <type Family="Base" Name="long long int" ID="4897"/>
-   <type Family="Base" Name="long long unsigned int" ID="4904"/>
-   <type Family="Base" Name="int" ID="4911"/>
-   <type Family="Base" Name="unsigned int" ID="4918"/>
-   <function Name="NMI_Handler" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_it.c" Line="55">
+  <module Name="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_it.c" >
+   <type Family="Base" Name="signed char" ID="4845"/>
+   <type Family="Base" Name="unsigned char" ID="4852"/>
+   <type Family="Base" Name="short int" ID="4859"/>
+   <type Family="Base" Name="short unsigned int" ID="4866"/>
+   <type Family="Base" Name="long int" ID="4884"/>
+   <type Family="typedef" Name="int32_t" Line="79" ID="4873" toTI="4884"/>
+   <type Family="Base" Name="long unsigned int" ID="4891"/>
+   <type Family="Base" Name="long long int" ID="4898"/>
+   <type Family="Base" Name="long long unsigned int" ID="4905"/>
+   <type Family="Base" Name="int" ID="4912"/>
+   <type Family="Base" Name="unsigned int" ID="4919"/>
+   <function Name="NMI_Handler" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_it.c" Line="55">
    </function >
-   <function Name="HardFault_Handler" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_it.c" Line="64">
+   <function Name="HardFault_Handler" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_it.c" Line="64">
    </function >
-   <function Name="MemManage_Handler" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_it.c" Line="76">
+   <function Name="MemManage_Handler" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_it.c" Line="76">
    </function >
-   <function Name="BusFault_Handler" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_it.c" Line="88">
+   <function Name="BusFault_Handler" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_it.c" Line="88">
    </function >
-   <function Name="UsageFault_Handler" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_it.c" Line="100">
+   <function Name="UsageFault_Handler" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_it.c" Line="100">
    </function >
-   <function Name="DebugMon_Handler" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_it.c" Line="112">
+   <function Name="DebugMon_Handler" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_it.c" Line="112">
    </function >
-   <function Name="SVC_Handler" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_it.c" Line="120">
+   <function Name="SVC_Handler" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_it.c" Line="120">
    </function >
-   <function Name="PendSV_Handler" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_it.c" Line="128">
+   <function Name="PendSV_Handler" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_it.c" Line="128">
    </function >
-   <function Name="SysTick_Handler" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_it.c" Line="136">
-   </function >
-  </module>
-  <module Name="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_rcc.c" >
-   <type Family="Base" Name="signed char" ID="5180"/>
-   <type Family="Base" Name="unsigned char" ID="5198"/>
-   <type Family="typedef" Name="uint8_t" Line="42" ID="5187" toTI="5198"/>
-   <type Family="Base" Name="short int" ID="5205"/>
-   <type Family="Base" Name="short unsigned int" ID="5223"/>
-   <type Family="typedef" Name="uint16_t" Line="54" ID="5212" toTI="5223"/>
-   <type Family="Base" Name="long int" ID="5241"/>
-   <type Family="typedef" Name="int32_t" Line="79" ID="5230" toTI="5241"/>
-   <type Family="Base" Name="long unsigned int" ID="5259"/>
-   <type Family="typedef" Name="uint32_t" Line="80" ID="5248" toTI="5259"/>
-   <type Family="Base" Name="long long int" ID="5266"/>
-   <type Family="Base" Name="long long unsigned int" ID="5273"/>
-   <type Family="Base" Name="int" ID="5280"/>
-   <type Family="Base" Name="unsigned int" ID="5287"/>
-   <type Family="array" ID="5299" toTI="5248"/>
-   <type Family="typedef" Name="FlagStatus" Line="285" ID="5342" toTI="5320"/>
-   <type Family="typedef" Name="ITStatus" Line="285" ID="5354" toTI="5320"/>
-   <type Family="typedef" Name="FunctionalState" Line="287" ID="5388" toTI="5366"/>
-   <type Family="typedef" Name="ErrorStatus" Line="290" ID="5422" toTI="5400"/>
-   <type Family="ComponentList" Line="733" ID="5434">
-    <Component Name="CR" TI="5443" Line="735" Offs="0"/>
-    <Component Name="PLLCFGR" TI="5457" Line="736" Offs="4"/>
-    <Component Name="CFGR" TI="5472" Line="737" Offs="8"/>
-    <Component Name="CIR" TI="5487" Line="738" Offs="12"/>
-    <Component Name="AHB1RSTR" TI="5502" Line="739" Offs="16"/>
-    <Component Name="AHB2RSTR" TI="5517" Line="740" Offs="20"/>
-    <Component Name="AHB3RSTR" TI="5532" Line="741" Offs="24"/>
-    <Component Name="RESERVED0" TI="5547" Line="742" Offs="28"/>
-    <Component Name="APB1RSTR" TI="5562" Line="743" Offs="32"/>
-    <Component Name="APB2RSTR" TI="5577" Line="744" Offs="36"/>
-    <Component Name="RESERVED1" TI="5592" Line="745" Offs="40"/>
-    <Component Name="AHB1ENR" TI="5607" Line="746" Offs="48"/>
-    <Component Name="AHB2ENR" TI="5622" Line="747" Offs="52"/>
-    <Component Name="AHB3ENR" TI="5637" Line="748" Offs="56"/>
-    <Component Name="RESERVED2" TI="5652" Line="749" Offs="60"/>
-    <Component Name="APB1ENR" TI="5667" Line="750" Offs="64"/>
-    <Component Name="APB2ENR" TI="5682" Line="751" Offs="68"/>
-    <Component Name="RESERVED3" TI="5697" Line="752" Offs="72"/>
-    <Component Name="AHB1LPENR" TI="5712" Line="753" Offs="80"/>
-    <Component Name="AHB2LPENR" TI="5727" Line="754" Offs="84"/>
-    <Component Name="AHB3LPENR" TI="5742" Line="755" Offs="88"/>
-    <Component Name="RESERVED4" TI="5757" Line="756" Offs="92"/>
-    <Component Name="APB1LPENR" TI="5772" Line="757" Offs="96"/>
-    <Component Name="APB2LPENR" TI="5787" Line="758" Offs="100"/>
-    <Component Name="RESERVED5" TI="5802" Line="759" Offs="104"/>
-    <Component Name="BDCR" TI="5817" Line="760" Offs="112"/>
-    <Component Name="CSR" TI="5832" Line="761" Offs="116"/>
-    <Component Name="RESERVED6" TI="5847" Line="762" Offs="120"/>
-    <Component Name="SSCGR" TI="5862" Line="763" Offs="128"/>
-    <Component Name="PLLI2SCFGR" TI="5878" Line="764" Offs="132"/>
-   </type>
-   <type Family="typedef" Name="RCC_TypeDef" Line="765" ID="5895" toTI="5434"/>
-   <type Family="ComponentList" Line="42" ID="5907">
-    <Component Name="SYSCLK_Frequency" TI="5915" Line="44" Offs="0"/>
-    <Component Name="HCLK_Frequency" TI="5929" Line="45" Offs="4"/>
-    <Component Name="PCLK1_Frequency" TI="5943" Line="46" Offs="8"/>
-    <Component Name="PCLK2_Frequency" TI="5957" Line="47" Offs="12"/>
-   </type>
-   <type Family="typedef" Name="RCC_ClocksTypeDef" Line="48" ID="5972" toTI="5907"/>
-   <type Family="Pointer" TI="7024" toTI="5972"/>
-   <function Name="RCC_AHB1PeriphClockCmd" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_rcc.c" Line="1085">
-    <parameter Name="RCC_AHB1Periph" TI="5248" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_rcc.c" Line="1085" Addr="0x0" Param="Yes"/>
-    <parameter Name="NewState" TI="5388" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_rcc.c" Line="1085" Addr="0x1" Param="Yes"/>
-   </function >
-   <function Name="RCC_APB1PeriphClockCmd" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_rcc.c" Line="1194">
-    <parameter Name="RCC_APB1Periph" TI="5248" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_rcc.c" Line="1194" Addr="0x0" Param="Yes"/>
-    <parameter Name="NewState" TI="5388" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_rcc.c" Line="1194" Addr="0x1" Param="Yes"/>
-   </function >
-   <function Name="RCC_APB2PeriphClockCmd" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_rcc.c" Line="1234">
-    <parameter Name="RCC_APB2Periph" TI="5248" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_rcc.c" Line="1234" Addr="0x0" Param="Yes"/>
-    <parameter Name="NewState" TI="5388" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_rcc.c" Line="1234" Addr="0x1" Param="Yes"/>
-   </function >
-   <type Family="array" ID="8414" toTI="5187"/>
-   <variable Name="APBAHBPrescTable" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_rcc.c" Line="127" Addr="0x0" TI="8447"/>
-  </module>
-  <module Name="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_gpio.c" >
-   <type Family="Base" Name="signed char" ID="8513"/>
-   <type Family="Base" Name="unsigned char" ID="8531"/>
-   <type Family="typedef" Name="uint8_t" Line="42" ID="8520" toTI="8531"/>
-   <type Family="Base" Name="short int" ID="8538"/>
-   <type Family="Base" Name="short unsigned int" ID="8556"/>
-   <type Family="typedef" Name="uint16_t" Line="54" ID="8545" toTI="8556"/>
-   <type Family="Base" Name="long int" ID="8574"/>
-   <type Family="typedef" Name="int32_t" Line="79" ID="8563" toTI="8574"/>
-   <type Family="Base" Name="long unsigned int" ID="8592"/>
-   <type Family="typedef" Name="uint32_t" Line="80" ID="8581" toTI="8592"/>
-   <type Family="Base" Name="long long int" ID="8599"/>
-   <type Family="Base" Name="long long unsigned int" ID="8606"/>
-   <type Family="Base" Name="int" ID="8613"/>
-   <type Family="Base" Name="unsigned int" ID="8620"/>
-   <type Family="array" ID="8632" toTI="8581"/>
-   <type Family="ComponentList" Line="654" ID="8680">
-    <Component Name="MODER" TI="8689" Line="656" Offs="0"/>
-    <Component Name="OTYPER" TI="8704" Line="657" Offs="4"/>
-    <Component Name="OSPEEDR" TI="8719" Line="658" Offs="8"/>
-    <Component Name="PUPDR" TI="8734" Line="659" Offs="12"/>
-    <Component Name="IDR" TI="8749" Line="660" Offs="16"/>
-    <Component Name="ODR" TI="8764" Line="661" Offs="20"/>
-    <Component Name="BSRRL" TI="8779" Line="662" Offs="24"/>
-    <Component Name="BSRRH" TI="8794" Line="663" Offs="26"/>
-    <Component Name="LCKR" TI="8809" Line="664" Offs="28"/>
-    <Component Name="AFR" TI="8824" Line="665" Offs="32"/>
-   </type>
-   <type Family="typedef" Name="GPIO_TypeDef" Line="666" ID="8845" toTI="8680"/>
-   <type Family="typedef" Name="GPIOMode_TypeDef" Line="63" ID="8890" toTI="8857"/>
-   <type Family="typedef" Name="GPIOOType_TypeDef" Line="74" ID="8922" toTI="8901"/>
-   <type Family="typedef" Name="GPIOSpeed_TypeDef" Line="87" ID="8966" toTI="8933"/>
-   <type Family="typedef" Name="GPIOPuPd_TypeDef" Line="99" ID="9004" toTI="8977"/>
-   <type Family="typedef" Name="BitAction" Line="110" ID="9036" toTI="9015"/>
-   <type Family="ComponentList" Line="117" ID="9047">
-    <Component Name="GPIO_Pin" TI="9055" Line="119" Offs="0"/>
-    <Component Name="GPIO_Mode" TI="9069" Line="122" Offs="4"/>
-    <Component Name="GPIO_Speed" TI="9083" Line="125" Offs="5"/>
-    <Component Name="GPIO_OType" TI="9097" Line="128" Offs="6"/>
-    <Component Name="GPIO_PuPd" TI="9111" Line="131" Offs="7"/>
-   </type>
-   <type Family="typedef" Name="GPIO_InitTypeDef" Line="133" ID="9126" toTI="9047"/>
-   <type Family="Pointer" TI="9178" toTI="8845"/>
-   <function Name="GPIO_Init" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_gpio.c" Line="182">
-    <parameter Name="GPIOx" TI="9178" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_gpio.c" Line="182" Addr="0x0" Param="Yes"/>
-   <type Family="Pointer" TI="9281" toTI="9126"/>
-    <parameter Name="GPIO_InitStruct" TI="9281" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_gpio.c" Line="182" Addr="0x1" Param="Yes"/>
-    <variable Name="pinpos" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_gpio.c" Line="184" Addr="0x0" TI="8581"/>
-    <variable Name="pos" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_gpio.c" Line="184" Addr="0x0" TI="8581"/>
-    <variable Name="currentpin" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_gpio.c" Line="184" Addr="0x0" TI="8581"/>
-   </function >
-   <function Name="GPIO_SetBits" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_gpio.c" Line="380">
-    <parameter Name="GPIOx" TI="9178" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_gpio.c" Line="380" Addr="0x0" Param="Yes"/>
-    <parameter Name="GPIO_Pin" TI="8545" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_gpio.c" Line="380" Addr="0x1" Param="Yes"/>
-   </function >
-   <function Name="GPIO_ResetBits" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_gpio.c" Line="399">
-    <parameter Name="GPIOx" TI="9178" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_gpio.c" Line="399" Addr="0x0" Param="Yes"/>
-    <parameter Name="GPIO_Pin" TI="8545" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_gpio.c" Line="399" Addr="0x1" Param="Yes"/>
-   </function >
-   <function Name="GPIO_PinAFConfig" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_gpio.c" Line="529">
-    <parameter Name="GPIOx" TI="9178" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_gpio.c" Line="529" Addr="0x0" Param="Yes"/>
-    <parameter Name="GPIO_PinSource" TI="8545" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_gpio.c" Line="529" Addr="0x1" Param="Yes"/>
-    <parameter Name="GPIO_AF" TI="8520" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_gpio.c" Line="529" Addr="0x2" Param="Yes"/>
-    <variable Name="temp" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_gpio.c" Line="531" Addr="0x0" TI="8581"/>
-    <variable Name="temp_2" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_gpio.c" Line="532" Addr="0x0" TI="8581"/>
+   <function Name="SysTick_Handler" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_it.c" Line="136">
    </function >
   </module>
-  <module Name="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_tim.c" >
-   <type Family="Base" Name="signed char" ID="10094"/>
-   <type Family="Base" Name="unsigned char" ID="10112"/>
-   <type Family="typedef" Name="uint8_t" Line="42" ID="10101" toTI="10112"/>
-   <type Family="Base" Name="short int" ID="10119"/>
-   <type Family="Base" Name="short unsigned int" ID="10137"/>
-   <type Family="typedef" Name="uint16_t" Line="54" ID="10126" toTI="10137"/>
-   <type Family="Base" Name="long int" ID="10155"/>
-   <type Family="typedef" Name="int32_t" Line="79" ID="10144" toTI="10155"/>
-   <type Family="Base" Name="long unsigned int" ID="10173"/>
-   <type Family="typedef" Name="uint32_t" Line="80" ID="10162" toTI="10173"/>
-   <type Family="Base" Name="long long int" ID="10180"/>
-   <type Family="Base" Name="long long unsigned int" ID="10187"/>
-   <type Family="Base" Name="int" ID="10194"/>
-   <type Family="Base" Name="unsigned int" ID="10201"/>
-   <type Family="typedef" Name="FlagStatus" Line="285" ID="10245" toTI="10223"/>
-   <type Family="typedef" Name="ITStatus" Line="285" ID="10257" toTI="10223"/>
-   <type Family="typedef" Name="FunctionalState" Line="287" ID="10291" toTI="10269"/>
-   <type Family="ComponentList" Line="873" ID="10303">
-    <Component Name="CR1" TI="10312" Line="875" Offs="0"/>
-    <Component Name="RESERVED0" TI="10327" Line="876" Offs="2"/>
-    <Component Name="CR2" TI="10342" Line="877" Offs="4"/>
-    <Component Name="RESERVED1" TI="10357" Line="878" Offs="6"/>
-    <Component Name="SMCR" TI="10372" Line="879" Offs="8"/>
-    <Component Name="RESERVED2" TI="10387" Line="880" Offs="10"/>
-    <Component Name="DIER" TI="10402" Line="881" Offs="12"/>
-    <Component Name="RESERVED3" TI="10417" Line="882" Offs="14"/>
-    <Component Name="SR" TI="10432" Line="883" Offs="16"/>
-    <Component Name="RESERVED4" TI="10446" Line="884" Offs="18"/>
-    <Component Name="EGR" TI="10461" Line="885" Offs="20"/>
-    <Component Name="RESERVED5" TI="10476" Line="886" Offs="22"/>
-    <Component Name="CCMR1" TI="10491" Line="887" Offs="24"/>
-    <Component Name="RESERVED6" TI="10506" Line="888" Offs="26"/>
-    <Component Name="CCMR2" TI="10521" Line="889" Offs="28"/>
-    <Component Name="RESERVED7" TI="10536" Line="890" Offs="30"/>
-    <Component Name="CCER" TI="10551" Line="891" Offs="32"/>
-    <Component Name="RESERVED8" TI="10566" Line="892" Offs="34"/>
-    <Component Name="CNT" TI="10581" Line="893" Offs="36"/>
-    <Component Name="PSC" TI="10596" Line="894" Offs="40"/>
-    <Component Name="RESERVED9" TI="10611" Line="895" Offs="42"/>
-    <Component Name="ARR" TI="10626" Line="896" Offs="44"/>
-    <Component Name="RCR" TI="10641" Line="897" Offs="48"/>
-    <Component Name="RESERVED10" TI="10656" Line="898" Offs="50"/>
-    <Component Name="CCR1" TI="10671" Line="899" Offs="52"/>
-    <Component Name="CCR2" TI="10686" Line="900" Offs="56"/>
-    <Component Name="CCR3" TI="10701" Line="901" Offs="60"/>
-    <Component Name="CCR4" TI="10716" Line="902" Offs="64"/>
-    <Component Name="BDTR" TI="10731" Line="903" Offs="68"/>
-    <Component Name="RESERVED11" TI="10746" Line="904" Offs="70"/>
-    <Component Name="DCR" TI="10761" Line="905" Offs="72"/>
-    <Component Name="RESERVED12" TI="10776" Line="906" Offs="74"/>
-    <Component Name="DMAR" TI="10791" Line="907" Offs="76"/>
-    <Component Name="RESERVED13" TI="10806" Line="908" Offs="78"/>
-    <Component Name="OR" TI="10821" Line="909" Offs="80"/>
-    <Component Name="RESERVED14" TI="10835" Line="910" Offs="82"/>
+  <module Name="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_rcc.c" >
+   <type Family="Base" Name="signed char" ID="5181"/>
+   <type Family="Base" Name="unsigned char" ID="5199"/>
+   <type Family="typedef" Name="uint8_t" Line="42" ID="5188" toTI="5199"/>
+   <type Family="Base" Name="short int" ID="5206"/>
+   <type Family="Base" Name="short unsigned int" ID="5224"/>
+   <type Family="typedef" Name="uint16_t" Line="54" ID="5213" toTI="5224"/>
+   <type Family="Base" Name="long int" ID="5242"/>
+   <type Family="typedef" Name="int32_t" Line="79" ID="5231" toTI="5242"/>
+   <type Family="Base" Name="long unsigned int" ID="5260"/>
+   <type Family="typedef" Name="uint32_t" Line="80" ID="5249" toTI="5260"/>
+   <type Family="Base" Name="long long int" ID="5267"/>
+   <type Family="Base" Name="long long unsigned int" ID="5274"/>
+   <type Family="Base" Name="int" ID="5281"/>
+   <type Family="Base" Name="unsigned int" ID="5288"/>
+   <type Family="array" ID="5300" toTI="5249"/>
+   <type Family="typedef" Name="FlagStatus" Line="285" ID="5343" toTI="5321"/>
+   <type Family="typedef" Name="ITStatus" Line="285" ID="5355" toTI="5321"/>
+   <type Family="typedef" Name="FunctionalState" Line="287" ID="5389" toTI="5367"/>
+   <type Family="typedef" Name="ErrorStatus" Line="290" ID="5423" toTI="5401"/>
+   <type Family="ComponentList" Line="733" ID="5435">
+    <Component Name="CR" TI="5444" Line="735" Offs="0"/>
+    <Component Name="PLLCFGR" TI="5458" Line="736" Offs="4"/>
+    <Component Name="CFGR" TI="5473" Line="737" Offs="8"/>
+    <Component Name="CIR" TI="5488" Line="738" Offs="12"/>
+    <Component Name="AHB1RSTR" TI="5503" Line="739" Offs="16"/>
+    <Component Name="AHB2RSTR" TI="5518" Line="740" Offs="20"/>
+    <Component Name="AHB3RSTR" TI="5533" Line="741" Offs="24"/>
+    <Component Name="RESERVED0" TI="5548" Line="742" Offs="28"/>
+    <Component Name="APB1RSTR" TI="5563" Line="743" Offs="32"/>
+    <Component Name="APB2RSTR" TI="5578" Line="744" Offs="36"/>
+    <Component Name="RESERVED1" TI="5593" Line="745" Offs="40"/>
+    <Component Name="AHB1ENR" TI="5608" Line="746" Offs="48"/>
+    <Component Name="AHB2ENR" TI="5623" Line="747" Offs="52"/>
+    <Component Name="AHB3ENR" TI="5638" Line="748" Offs="56"/>
+    <Component Name="RESERVED2" TI="5653" Line="749" Offs="60"/>
+    <Component Name="APB1ENR" TI="5668" Line="750" Offs="64"/>
+    <Component Name="APB2ENR" TI="5683" Line="751" Offs="68"/>
+    <Component Name="RESERVED3" TI="5698" Line="752" Offs="72"/>
+    <Component Name="AHB1LPENR" TI="5713" Line="753" Offs="80"/>
+    <Component Name="AHB2LPENR" TI="5728" Line="754" Offs="84"/>
+    <Component Name="AHB3LPENR" TI="5743" Line="755" Offs="88"/>
+    <Component Name="RESERVED4" TI="5758" Line="756" Offs="92"/>
+    <Component Name="APB1LPENR" TI="5773" Line="757" Offs="96"/>
+    <Component Name="APB2LPENR" TI="5788" Line="758" Offs="100"/>
+    <Component Name="RESERVED5" TI="5803" Line="759" Offs="104"/>
+    <Component Name="BDCR" TI="5818" Line="760" Offs="112"/>
+    <Component Name="CSR" TI="5833" Line="761" Offs="116"/>
+    <Component Name="RESERVED6" TI="5848" Line="762" Offs="120"/>
+    <Component Name="SSCGR" TI="5863" Line="763" Offs="128"/>
+    <Component Name="PLLI2SCFGR" TI="5879" Line="764" Offs="132"/>
    </type>
-   <type Family="typedef" Name="TIM_TypeDef" Line="911" ID="10851" toTI="10303"/>
-   <type Family="ComponentList" Line="49" ID="10863">
-    <Component Name="TIM_Prescaler" TI="10871" Line="51" Offs="0"/>
-    <Component Name="TIM_CounterMode" TI="10885" Line="54" Offs="2"/>
-    <Component Name="TIM_Period" TI="10899" Line="57" Offs="4"/>
-    <Component Name="TIM_ClockDivision" TI="10913" Line="61" Offs="8"/>
-    <Component Name="TIM_RepetitionCounter" TI="10927" Line="64" Offs="10"/>
+   <type Family="typedef" Name="RCC_TypeDef" Line="765" ID="5896" toTI="5435"/>
+   <type Family="ComponentList" Line="42" ID="5908">
+    <Component Name="SYSCLK_Frequency" TI="5916" Line="44" Offs="0"/>
+    <Component Name="HCLK_Frequency" TI="5930" Line="45" Offs="4"/>
+    <Component Name="PCLK1_Frequency" TI="5944" Line="46" Offs="8"/>
+    <Component Name="PCLK2_Frequency" TI="5958" Line="47" Offs="12"/>
    </type>
-   <type Family="typedef" Name="TIM_TimeBaseInitTypeDef" Line="72" ID="10942" toTI="10863"/>
-   <type Family="ComponentList" Line="78" ID="10953">
-    <Component Name="TIM_OCMode" TI="10961" Line="80" Offs="0"/>
-    <Component Name="TIM_OutputState" TI="10975" Line="83" Offs="2"/>
-    <Component Name="TIM_OutputNState" TI="10989" Line="86" Offs="4"/>
-    <Component Name="TIM_Pulse" TI="11003" Line="90" Offs="8"/>
-    <Component Name="TIM_OCPolarity" TI="11017" Line="93" Offs="12"/>
-    <Component Name="TIM_OCNPolarity" TI="11031" Line="96" Offs="14"/>
-    <Component Name="TIM_OCIdleState" TI="11045" Line="100" Offs="16"/>
-    <Component Name="TIM_OCNIdleState" TI="11059" Line="104" Offs="18"/>
+   <type Family="typedef" Name="RCC_ClocksTypeDef" Line="48" ID="5973" toTI="5908"/>
+   <type Family="Pointer" TI="7025" toTI="5973"/>
+   <function Name="RCC_AHB1PeriphClockCmd" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_rcc.c" Line="1085">
+    <parameter Name="RCC_AHB1Periph" TI="5249" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_rcc.c" Line="1085" Addr="0x0" Param="Yes"/>
+    <parameter Name="NewState" TI="5389" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_rcc.c" Line="1085" Addr="0x1" Param="Yes"/>
+   </function >
+   <function Name="RCC_APB1PeriphClockCmd" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_rcc.c" Line="1194">
+    <parameter Name="RCC_APB1Periph" TI="5249" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_rcc.c" Line="1194" Addr="0x0" Param="Yes"/>
+    <parameter Name="NewState" TI="5389" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_rcc.c" Line="1194" Addr="0x1" Param="Yes"/>
+   </function >
+   <function Name="RCC_APB2PeriphClockCmd" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_rcc.c" Line="1234">
+    <parameter Name="RCC_APB2Periph" TI="5249" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_rcc.c" Line="1234" Addr="0x0" Param="Yes"/>
+    <parameter Name="NewState" TI="5389" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_rcc.c" Line="1234" Addr="0x1" Param="Yes"/>
+   </function >
+   <type Family="array" ID="8415" toTI="5188"/>
+   <variable Name="APBAHBPrescTable" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_rcc.c" Line="127" Addr="0x0" TI="8448"/>
+  </module>
+  <module Name="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_gpio.c" >
+   <type Family="Base" Name="signed char" ID="8514"/>
+   <type Family="Base" Name="unsigned char" ID="8532"/>
+   <type Family="typedef" Name="uint8_t" Line="42" ID="8521" toTI="8532"/>
+   <type Family="Base" Name="short int" ID="8539"/>
+   <type Family="Base" Name="short unsigned int" ID="8557"/>
+   <type Family="typedef" Name="uint16_t" Line="54" ID="8546" toTI="8557"/>
+   <type Family="Base" Name="long int" ID="8575"/>
+   <type Family="typedef" Name="int32_t" Line="79" ID="8564" toTI="8575"/>
+   <type Family="Base" Name="long unsigned int" ID="8593"/>
+   <type Family="typedef" Name="uint32_t" Line="80" ID="8582" toTI="8593"/>
+   <type Family="Base" Name="long long int" ID="8600"/>
+   <type Family="Base" Name="long long unsigned int" ID="8607"/>
+   <type Family="Base" Name="int" ID="8614"/>
+   <type Family="Base" Name="unsigned int" ID="8621"/>
+   <type Family="array" ID="8633" toTI="8582"/>
+   <type Family="ComponentList" Line="654" ID="8681">
+    <Component Name="MODER" TI="8690" Line="656" Offs="0"/>
+    <Component Name="OTYPER" TI="8705" Line="657" Offs="4"/>
+    <Component Name="OSPEEDR" TI="8720" Line="658" Offs="8"/>
+    <Component Name="PUPDR" TI="8735" Line="659" Offs="12"/>
+    <Component Name="IDR" TI="8750" Line="660" Offs="16"/>
+    <Component Name="ODR" TI="8765" Line="661" Offs="20"/>
+    <Component Name="BSRRL" TI="8780" Line="662" Offs="24"/>
+    <Component Name="BSRRH" TI="8795" Line="663" Offs="26"/>
+    <Component Name="LCKR" TI="8810" Line="664" Offs="28"/>
+    <Component Name="AFR" TI="8825" Line="665" Offs="32"/>
    </type>
-   <type Family="typedef" Name="TIM_OCInitTypeDef" Line="107" ID="11074" toTI="10953"/>
-   <type Family="ComponentList" Line="113" ID="11085">
-    <Component Name="TIM_Channel" TI="11093" Line="116" Offs="0"/>
-    <Component Name="TIM_ICPolarity" TI="11107" Line="119" Offs="2"/>
-    <Component Name="TIM_ICSelection" TI="11121" Line="122" Offs="4"/>
-    <Component Name="TIM_ICPrescaler" TI="11135" Line="125" Offs="6"/>
-    <Component Name="TIM_ICFilter" TI="11149" Line="128" Offs="8"/>
+   <type Family="typedef" Name="GPIO_TypeDef" Line="666" ID="8846" toTI="8681"/>
+   <type Family="typedef" Name="GPIOMode_TypeDef" Line="63" ID="8891" toTI="8858"/>
+   <type Family="typedef" Name="GPIOOType_TypeDef" Line="74" ID="8923" toTI="8902"/>
+   <type Family="typedef" Name="GPIOSpeed_TypeDef" Line="87" ID="8967" toTI="8934"/>
+   <type Family="typedef" Name="GPIOPuPd_TypeDef" Line="99" ID="9005" toTI="8978"/>
+   <type Family="typedef" Name="BitAction" Line="110" ID="9037" toTI="9016"/>
+   <type Family="ComponentList" Line="117" ID="9048">
+    <Component Name="GPIO_Pin" TI="9056" Line="119" Offs="0"/>
+    <Component Name="GPIO_Mode" TI="9070" Line="122" Offs="4"/>
+    <Component Name="GPIO_Speed" TI="9084" Line="125" Offs="5"/>
+    <Component Name="GPIO_OType" TI="9098" Line="128" Offs="6"/>
+    <Component Name="GPIO_PuPd" TI="9112" Line="131" Offs="7"/>
    </type>
-   <type Family="typedef" Name="TIM_ICInitTypeDef" Line="130" ID="11164" toTI="11085"/>
-   <type Family="ComponentList" Line="137" ID="11175">
-    <Component Name="TIM_OSSRState" TI="11183" Line="140" Offs="0"/>
-    <Component Name="TIM_OSSIState" TI="11197" Line="143" Offs="2"/>
-    <Component Name="TIM_LOCKLevel" TI="11211" Line="146" Offs="4"/>
-    <Component Name="TIM_DeadTime" TI="11225" Line="149" Offs="6"/>
-    <Component Name="TIM_Break" TI="11239" Line="153" Offs="8"/>
-    <Component Name="TIM_BreakPolarity" TI="11253" Line="156" Offs="10"/>
-    <Component Name="TIM_AutomaticOutput" TI="11267" Line="159" Offs="12"/>
-   </type>
-   <type Family="typedef" Name="TIM_BDTRInitTypeDef" Line="161" ID="11282" toTI="11175"/>
-   <type Family="Pointer" TI="11407" toTI="10851"/>
-   <function Name="TIM_TimeBaseInit" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_tim.c" Line="282">
-    <parameter Name="TIMx" TI="11407" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_tim.c" Line="282" Addr="0x0" Param="Yes"/>
-   <type Family="Pointer" TI="11655" toTI="10942"/>
-    <parameter Name="TIM_TimeBaseInitStruct" TI="11655" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_tim.c" Line="282" Addr="0x1" Param="Yes"/>
-    <variable Name="tmpcr1" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_tim.c" Line="284" Addr="0x0" TI="10126"/>
+   <type Family="typedef" Name="GPIO_InitTypeDef" Line="133" ID="9127" toTI="9048"/>
+   <type Family="Pointer" TI="9179" toTI="8846"/>
+   <function Name="GPIO_Init" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_gpio.c" Line="182">
+    <parameter Name="GPIOx" TI="9179" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_gpio.c" Line="182" Addr="0x0" Param="Yes"/>
+   <type Family="Pointer" TI="9282" toTI="9127"/>
+    <parameter Name="GPIO_InitStruct" TI="9282" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_gpio.c" Line="182" Addr="0x1" Param="Yes"/>
+    <variable Name="pinpos" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_gpio.c" Line="184" Addr="0x0" TI="8582"/>
+    <variable Name="pos" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_gpio.c" Line="184" Addr="0x0" TI="8582"/>
+    <variable Name="currentpin" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_gpio.c" Line="184" Addr="0x0" TI="8582"/>
    </function >
-   <function Name="TIM_ARRPreloadConfig" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_tim.c" Line="516">
-    <parameter Name="TIMx" TI="11407" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_tim.c" Line="516" Addr="0x0" Param="Yes"/>
-    <parameter Name="NewState" TI="10291" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_tim.c" Line="516" Addr="0x1" Param="Yes"/>
+   <function Name="GPIO_SetBits" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_gpio.c" Line="380">
+    <parameter Name="GPIOx" TI="9179" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_gpio.c" Line="380" Addr="0x0" Param="Yes"/>
+    <parameter Name="GPIO_Pin" TI="8546" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_gpio.c" Line="380" Addr="0x1" Param="Yes"/>
    </function >
-   <function Name="TIM_Cmd" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_tim.c" Line="586">
-    <parameter Name="TIMx" TI="11407" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_tim.c" Line="586" Addr="0x0" Param="Yes"/>
-    <parameter Name="NewState" TI="10291" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_tim.c" Line="586" Addr="0x1" Param="Yes"/>
+   <function Name="GPIO_ResetBits" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_gpio.c" Line="399">
+    <parameter Name="GPIOx" TI="9179" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_gpio.c" Line="399" Addr="0x0" Param="Yes"/>
+    <parameter Name="GPIO_Pin" TI="8546" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_gpio.c" Line="399" Addr="0x1" Param="Yes"/>
    </function >
-   <type Family="Pointer" TI="12466" toTI="11074"/>
-   <function Name="TIM_OC2Init" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_tim.c" Line="746">
-    <parameter Name="TIMx" TI="11407" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_tim.c" Line="746" Addr="0x0" Param="Yes"/>
-    <parameter Name="TIM_OCInitStruct" TI="12466" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_tim.c" Line="746" Addr="0x1" Param="Yes"/>
-    <variable Name="tmpccmrx" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_tim.c" Line="748" Addr="0x0" TI="10126"/>
-    <variable Name="tmpccer" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_tim.c" Line="748" Addr="0x0" TI="10126"/>
-    <variable Name="tmpcr2" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_tim.c" Line="748" Addr="0x0" TI="10126"/>
-   </function >
-   <function Name="TIM_OCStructInit" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_tim.c" Line="970">
-    <parameter Name="TIM_OCInitStruct" TI="12466" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_tim.c" Line="970" Addr="0x0" Param="Yes"/>
-   </function >
-   <function Name="TIM_OC2PreloadConfig" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_tim.c" Line="1260">
-    <parameter Name="TIMx" TI="11407" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_tim.c" Line="1260" Addr="0x0" Param="Yes"/>
-    <parameter Name="TIM_OCPreload" TI="10126" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_tim.c" Line="1260" Addr="0x1" Param="Yes"/>
-    <variable Name="tmpccmr1" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_tim.c" Line="1262" Addr="0x0" TI="10126"/>
-   </function >
-   <type Family="Pointer" TI="14968" toTI="11164"/>
-   <type Family="Pointer" TI="15954" toTI="11282"/>
-   <function Name="TIM_ITConfig" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_tim.c" Line="2362">
-    <parameter Name="TIMx" TI="11407" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_tim.c" Line="2362" Addr="0x0" Param="Yes"/>
-    <parameter Name="TIM_IT" TI="10126" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_tim.c" Line="2362" Addr="0x1" Param="Yes"/>
-    <parameter Name="NewState" TI="10291" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_tim.c" Line="2362" Addr="0x2" Param="Yes"/>
-   </function >
-   <function Name="TIM_ClearITPendingBit" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_tim.c" Line="2544">
-    <parameter Name="TIMx" TI="11407" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_tim.c" Line="2544" Addr="0x0" Param="Yes"/>
-    <parameter Name="TIM_IT" TI="10126" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_tim.c" Line="2544" Addr="0x1" Param="Yes"/>
+   <function Name="GPIO_PinAFConfig" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_gpio.c" Line="529">
+    <parameter Name="GPIOx" TI="9179" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_gpio.c" Line="529" Addr="0x0" Param="Yes"/>
+    <parameter Name="GPIO_PinSource" TI="8546" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_gpio.c" Line="529" Addr="0x1" Param="Yes"/>
+    <parameter Name="GPIO_AF" TI="8521" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_gpio.c" Line="529" Addr="0x2" Param="Yes"/>
+    <variable Name="temp" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_gpio.c" Line="531" Addr="0x0" TI="8582"/>
+    <variable Name="temp_2" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_gpio.c" Line="532" Addr="0x0" TI="8582"/>
    </function >
   </module>
-  <module Name="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\misc.c" >
-   <type Family="Base" Name="signed char" ID="17806"/>
-   <type Family="Base" Name="unsigned char" ID="17824"/>
-   <type Family="typedef" Name="uint8_t" Line="42" ID="17813" toTI="17824"/>
-   <type Family="Base" Name="short int" ID="17831"/>
-   <type Family="Base" Name="short unsigned int" ID="17838"/>
-   <type Family="Base" Name="long int" ID="17856"/>
-   <type Family="typedef" Name="int32_t" Line="79" ID="17845" toTI="17856"/>
-   <type Family="Base" Name="long unsigned int" ID="17874"/>
-   <type Family="typedef" Name="uint32_t" Line="80" ID="17863" toTI="17874"/>
-   <type Family="Base" Name="long long int" ID="17881"/>
-   <type Family="Base" Name="long long unsigned int" ID="17888"/>
-   <type Family="Base" Name="int" ID="17895"/>
-   <type Family="Base" Name="unsigned int" ID="17902"/>
-   <type Family="ComponentList" Line="303" ID="17909">
-   <type Family="array" ID="18125" toTI="17863"/>
-    <Component Name="ISER" TI="17919" Line="305" Offs="0"/>
-   <type Family="array" ID="18146" toTI="17863"/>
-    <Component Name="RESERVED0" TI="17934" Line="306" Offs="32"/>
-    <Component Name="ICER" TI="17949" Line="307" Offs="128"/>
-    <Component Name="RSERVED1" TI="17965" Line="308" Offs="160"/>
-    <Component Name="ISPR" TI="17981" Line="309" Offs="256"/>
-    <Component Name="RESERVED2" TI="17997" Line="310" Offs="288"/>
-    <Component Name="ICPR" TI="18013" Line="311" Offs="384"/>
-    <Component Name="RESERVED3" TI="18029" Line="312" Offs="416"/>
-    <Component Name="IABR" TI="18045" Line="313" Offs="512"/>
-   <type Family="array" ID="18182" toTI="17863"/>
-    <Component Name="RESERVED4" TI="18061" Line="314" Offs="544"/>
-   <type Family="array" ID="18198" toTI="17813"/>
-    <Component Name="IP" TI="18077" Line="315" Offs="768"/>
-   <type Family="array" ID="18219" toTI="17863"/>
-    <Component Name="RESERVED5" TI="18092" Line="316" Offs="1008"/>
-    <Component Name="STIR" TI="18108" Line="317" Offs="3584"/>
+  <module Name="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_tim.c" >
+   <type Family="Base" Name="signed char" ID="10095"/>
+   <type Family="Base" Name="unsigned char" ID="10113"/>
+   <type Family="typedef" Name="uint8_t" Line="42" ID="10102" toTI="10113"/>
+   <type Family="Base" Name="short int" ID="10120"/>
+   <type Family="Base" Name="short unsigned int" ID="10138"/>
+   <type Family="typedef" Name="uint16_t" Line="54" ID="10127" toTI="10138"/>
+   <type Family="Base" Name="long int" ID="10156"/>
+   <type Family="typedef" Name="int32_t" Line="79" ID="10145" toTI="10156"/>
+   <type Family="Base" Name="long unsigned int" ID="10174"/>
+   <type Family="typedef" Name="uint32_t" Line="80" ID="10163" toTI="10174"/>
+   <type Family="Base" Name="long long int" ID="10181"/>
+   <type Family="Base" Name="long long unsigned int" ID="10188"/>
+   <type Family="Base" Name="int" ID="10195"/>
+   <type Family="Base" Name="unsigned int" ID="10202"/>
+   <type Family="typedef" Name="FlagStatus" Line="285" ID="10246" toTI="10224"/>
+   <type Family="typedef" Name="ITStatus" Line="285" ID="10258" toTI="10224"/>
+   <type Family="typedef" Name="FunctionalState" Line="287" ID="10292" toTI="10270"/>
+   <type Family="ComponentList" Line="873" ID="10304">
+    <Component Name="CR1" TI="10313" Line="875" Offs="0"/>
+    <Component Name="RESERVED0" TI="10328" Line="876" Offs="2"/>
+    <Component Name="CR2" TI="10343" Line="877" Offs="4"/>
+    <Component Name="RESERVED1" TI="10358" Line="878" Offs="6"/>
+    <Component Name="SMCR" TI="10373" Line="879" Offs="8"/>
+    <Component Name="RESERVED2" TI="10388" Line="880" Offs="10"/>
+    <Component Name="DIER" TI="10403" Line="881" Offs="12"/>
+    <Component Name="RESERVED3" TI="10418" Line="882" Offs="14"/>
+    <Component Name="SR" TI="10433" Line="883" Offs="16"/>
+    <Component Name="RESERVED4" TI="10447" Line="884" Offs="18"/>
+    <Component Name="EGR" TI="10462" Line="885" Offs="20"/>
+    <Component Name="RESERVED5" TI="10477" Line="886" Offs="22"/>
+    <Component Name="CCMR1" TI="10492" Line="887" Offs="24"/>
+    <Component Name="RESERVED6" TI="10507" Line="888" Offs="26"/>
+    <Component Name="CCMR2" TI="10522" Line="889" Offs="28"/>
+    <Component Name="RESERVED7" TI="10537" Line="890" Offs="30"/>
+    <Component Name="CCER" TI="10552" Line="891" Offs="32"/>
+    <Component Name="RESERVED8" TI="10567" Line="892" Offs="34"/>
+    <Component Name="CNT" TI="10582" Line="893" Offs="36"/>
+    <Component Name="PSC" TI="10597" Line="894" Offs="40"/>
+    <Component Name="RESERVED9" TI="10612" Line="895" Offs="42"/>
+    <Component Name="ARR" TI="10627" Line="896" Offs="44"/>
+    <Component Name="RCR" TI="10642" Line="897" Offs="48"/>
+    <Component Name="RESERVED10" TI="10657" Line="898" Offs="50"/>
+    <Component Name="CCR1" TI="10672" Line="899" Offs="52"/>
+    <Component Name="CCR2" TI="10687" Line="900" Offs="56"/>
+    <Component Name="CCR3" TI="10702" Line="901" Offs="60"/>
+    <Component Name="CCR4" TI="10717" Line="902" Offs="64"/>
+    <Component Name="BDTR" TI="10732" Line="903" Offs="68"/>
+    <Component Name="RESERVED11" TI="10747" Line="904" Offs="70"/>
+    <Component Name="DCR" TI="10762" Line="905" Offs="72"/>
+    <Component Name="RESERVED12" TI="10777" Line="906" Offs="74"/>
+    <Component Name="DMAR" TI="10792" Line="907" Offs="76"/>
+    <Component Name="RESERVED13" TI="10807" Line="908" Offs="78"/>
+    <Component Name="OR" TI="10822" Line="909" Offs="80"/>
+    <Component Name="RESERVED14" TI="10836" Line="910" Offs="82"/>
    </type>
-   <type Family="typedef" Name="NVIC_Type" Line="318" ID="18241" toTI="17909"/>
-   <type Family="ComponentList" Line="335" ID="18253">
-    <Component Name="CPUID" TI="18262" Line="337" Offs="0"/>
-    <Component Name="ICSR" TI="18277" Line="338" Offs="4"/>
-    <Component Name="VTOR" TI="18292" Line="339" Offs="8"/>
-    <Component Name="AIRCR" TI="18307" Line="340" Offs="12"/>
-    <Component Name="SCR" TI="18322" Line="341" Offs="16"/>
-    <Component Name="CCR" TI="18337" Line="342" Offs="20"/>
-   <type Family="array" ID="18584" toTI="17813"/>
-    <Component Name="SHP" TI="18352" Line="343" Offs="24"/>
-    <Component Name="SHCSR" TI="18367" Line="344" Offs="36"/>
-    <Component Name="CFSR" TI="18382" Line="345" Offs="40"/>
-    <Component Name="HFSR" TI="18397" Line="346" Offs="44"/>
-    <Component Name="DFSR" TI="18412" Line="347" Offs="48"/>
-    <Component Name="MMFAR" TI="18427" Line="348" Offs="52"/>
-    <Component Name="BFAR" TI="18442" Line="349" Offs="56"/>
-    <Component Name="AFSR" TI="18457" Line="350" Offs="60"/>
-   <type Family="array" ID="18605" toTI="17863"/>
-    <Component Name="PFR" TI="18472" Line="351" Offs="64"/>
-    <Component Name="DFR" TI="18487" Line="352" Offs="72"/>
-    <Component Name="ADR" TI="18502" Line="353" Offs="76"/>
-   <type Family="array" ID="18631" toTI="17863"/>
-    <Component Name="MMFR" TI="18517" Line="354" Offs="80"/>
-   <type Family="array" ID="18657" toTI="17863"/>
-    <Component Name="ISAR" TI="18532" Line="355" Offs="96"/>
-    <Component Name="RESERVED0" TI="18547" Line="356" Offs="116"/>
-    <Component Name="CPACR" TI="18562" Line="357" Offs="136"/>
+   <type Family="typedef" Name="TIM_TypeDef" Line="911" ID="10852" toTI="10304"/>
+   <type Family="ComponentList" Line="49" ID="10864">
+    <Component Name="TIM_Prescaler" TI="10872" Line="51" Offs="0"/>
+    <Component Name="TIM_CounterMode" TI="10886" Line="54" Offs="2"/>
+    <Component Name="TIM_Period" TI="10900" Line="57" Offs="4"/>
+    <Component Name="TIM_ClockDivision" TI="10914" Line="61" Offs="8"/>
+    <Component Name="TIM_RepetitionCounter" TI="10928" Line="64" Offs="10"/>
    </type>
-   <type Family="typedef" Name="SCB_Type" Line="358" ID="18683" toTI="18253"/>
-   <type Family="ComponentList" Line="590" ID="18695">
-    <Component Name="CTRL" TI="18704" Line="592" Offs="0"/>
-    <Component Name="LOAD" TI="18719" Line="593" Offs="4"/>
-    <Component Name="VAL" TI="18734" Line="594" Offs="8"/>
-    <Component Name="CALIB" TI="18749" Line="595" Offs="12"/>
+   <type Family="typedef" Name="TIM_TimeBaseInitTypeDef" Line="72" ID="10943" toTI="10864"/>
+   <type Family="ComponentList" Line="78" ID="10954">
+    <Component Name="TIM_OCMode" TI="10962" Line="80" Offs="0"/>
+    <Component Name="TIM_OutputState" TI="10976" Line="83" Offs="2"/>
+    <Component Name="TIM_OutputNState" TI="10990" Line="86" Offs="4"/>
+    <Component Name="TIM_Pulse" TI="11004" Line="90" Offs="8"/>
+    <Component Name="TIM_OCPolarity" TI="11018" Line="93" Offs="12"/>
+    <Component Name="TIM_OCNPolarity" TI="11032" Line="96" Offs="14"/>
+    <Component Name="TIM_OCIdleState" TI="11046" Line="100" Offs="16"/>
+    <Component Name="TIM_OCNIdleState" TI="11060" Line="104" Offs="18"/>
    </type>
-   <type Family="typedef" Name="SysTick_Type" Line="596" ID="18765" toTI="18695"/>
-   <type Family="typedef" Name="FunctionalState" Line="287" ID="18804" toTI="18782"/>
-   <type Family="ComponentList" Line="48" ID="18816">
-    <Component Name="NVIC_IRQChannel" TI="18824" Line="50" Offs="0"/>
-    <Component Name="NVIC_IRQChannelPreemptionPriority" TI="18838" Line="55" Offs="1"/>
-    <Component Name="NVIC_IRQChannelSubPriority" TI="18852" Line="60" Offs="2"/>
-    <Component Name="NVIC_IRQChannelCmd" TI="18866" Line="65" Offs="3"/>
+   <type Family="typedef" Name="TIM_OCInitTypeDef" Line="107" ID="11075" toTI="10954"/>
+   <type Family="ComponentList" Line="113" ID="11086">
+    <Component Name="TIM_Channel" TI="11094" Line="116" Offs="0"/>
+    <Component Name="TIM_ICPolarity" TI="11108" Line="119" Offs="2"/>
+    <Component Name="TIM_ICSelection" TI="11122" Line="122" Offs="4"/>
+    <Component Name="TIM_ICPrescaler" TI="11136" Line="125" Offs="6"/>
+    <Component Name="TIM_ICFilter" TI="11150" Line="128" Offs="8"/>
    </type>
-   <type Family="typedef" Name="NVIC_InitTypeDef" Line="68" ID="18881" toTI="18816"/>
-   <function Name="NVIC_Init" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\misc.c" Line="130">
-   <type Family="Pointer" TI="19018" toTI="18881"/>
-    <parameter Name="NVIC_InitStruct" TI="19018" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\misc.c" Line="130" Addr="0x0" Param="Yes"/>
-    <variable Name="tmppriority" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\misc.c" Line="132" Addr="0x0" TI="17813"/>
-    <variable Name="tmppre" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\misc.c" Line="132" Addr="0x0" TI="17813"/>
-    <variable Name="tmpsub" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\misc.c" Line="132" Addr="0x0" TI="17813"/>
+   <type Family="typedef" Name="TIM_ICInitTypeDef" Line="130" ID="11165" toTI="11086"/>
+   <type Family="ComponentList" Line="137" ID="11176">
+    <Component Name="TIM_OSSRState" TI="11184" Line="140" Offs="0"/>
+    <Component Name="TIM_OSSIState" TI="11198" Line="143" Offs="2"/>
+    <Component Name="TIM_LOCKLevel" TI="11212" Line="146" Offs="4"/>
+    <Component Name="TIM_DeadTime" TI="11226" Line="149" Offs="6"/>
+    <Component Name="TIM_Break" TI="11240" Line="153" Offs="8"/>
+    <Component Name="TIM_BreakPolarity" TI="11254" Line="156" Offs="10"/>
+    <Component Name="TIM_AutomaticOutput" TI="11268" Line="159" Offs="12"/>
+   </type>
+   <type Family="typedef" Name="TIM_BDTRInitTypeDef" Line="161" ID="11283" toTI="11176"/>
+   <type Family="Pointer" TI="11408" toTI="10852"/>
+   <function Name="TIM_TimeBaseInit" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_tim.c" Line="282">
+    <parameter Name="TIMx" TI="11408" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_tim.c" Line="282" Addr="0x0" Param="Yes"/>
+   <type Family="Pointer" TI="11656" toTI="10943"/>
+    <parameter Name="TIM_TimeBaseInitStruct" TI="11656" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_tim.c" Line="282" Addr="0x1" Param="Yes"/>
+    <variable Name="tmpcr1" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_tim.c" Line="284" Addr="0x0" TI="10127"/>
+   </function >
+   <function Name="TIM_ARRPreloadConfig" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_tim.c" Line="516">
+    <parameter Name="TIMx" TI="11408" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_tim.c" Line="516" Addr="0x0" Param="Yes"/>
+    <parameter Name="NewState" TI="10292" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_tim.c" Line="516" Addr="0x1" Param="Yes"/>
+   </function >
+   <function Name="TIM_Cmd" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_tim.c" Line="586">
+    <parameter Name="TIMx" TI="11408" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_tim.c" Line="586" Addr="0x0" Param="Yes"/>
+    <parameter Name="NewState" TI="10292" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_tim.c" Line="586" Addr="0x1" Param="Yes"/>
+   </function >
+   <type Family="Pointer" TI="12467" toTI="11075"/>
+   <function Name="TIM_OC2Init" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_tim.c" Line="746">
+    <parameter Name="TIMx" TI="11408" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_tim.c" Line="746" Addr="0x0" Param="Yes"/>
+    <parameter Name="TIM_OCInitStruct" TI="12467" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_tim.c" Line="746" Addr="0x1" Param="Yes"/>
+    <variable Name="tmpccmrx" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_tim.c" Line="748" Addr="0x0" TI="10127"/>
+    <variable Name="tmpccer" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_tim.c" Line="748" Addr="0x0" TI="10127"/>
+    <variable Name="tmpcr2" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_tim.c" Line="748" Addr="0x0" TI="10127"/>
+   </function >
+   <function Name="TIM_OCStructInit" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_tim.c" Line="970">
+    <parameter Name="TIM_OCInitStruct" TI="12467" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_tim.c" Line="970" Addr="0x0" Param="Yes"/>
+   </function >
+   <function Name="TIM_OC2PreloadConfig" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_tim.c" Line="1260">
+    <parameter Name="TIMx" TI="11408" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_tim.c" Line="1260" Addr="0x0" Param="Yes"/>
+    <parameter Name="TIM_OCPreload" TI="10127" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_tim.c" Line="1260" Addr="0x1" Param="Yes"/>
+    <variable Name="tmpccmr1" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_tim.c" Line="1262" Addr="0x0" TI="10127"/>
+   </function >
+   <type Family="Pointer" TI="14969" toTI="11165"/>
+   <type Family="Pointer" TI="15955" toTI="11283"/>
+   <function Name="TIM_ITConfig" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_tim.c" Line="2362">
+    <parameter Name="TIMx" TI="11408" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_tim.c" Line="2362" Addr="0x0" Param="Yes"/>
+    <parameter Name="TIM_IT" TI="10127" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_tim.c" Line="2362" Addr="0x1" Param="Yes"/>
+    <parameter Name="NewState" TI="10292" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_tim.c" Line="2362" Addr="0x2" Param="Yes"/>
+   </function >
+   <function Name="TIM_ClearITPendingBit" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_tim.c" Line="2544">
+    <parameter Name="TIMx" TI="11408" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_tim.c" Line="2544" Addr="0x0" Param="Yes"/>
+    <parameter Name="TIM_IT" TI="10127" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_tim.c" Line="2544" Addr="0x1" Param="Yes"/>
    </function >
   </module>
-  <module Name="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\system_stm32f4xx.c" >
-   <type Family="Base" Name="signed char" ID="19234"/>
-   <type Family="Base" Name="unsigned char" ID="19252"/>
-   <type Family="typedef" Name="uint8_t" Line="42" ID="19241" toTI="19252"/>
-   <type Family="Base" Name="short int" ID="19259"/>
-   <type Family="Base" Name="short unsigned int" ID="19277"/>
-   <type Family="typedef" Name="uint16_t" Line="54" ID="19266" toTI="19277"/>
-   <type Family="Base" Name="long int" ID="19295"/>
-   <type Family="typedef" Name="int32_t" Line="79" ID="19284" toTI="19295"/>
-   <type Family="Base" Name="long unsigned int" ID="19313"/>
-   <type Family="typedef" Name="uint32_t" Line="80" ID="19302" toTI="19313"/>
-   <type Family="Base" Name="long long int" ID="19320"/>
-   <type Family="Base" Name="long long unsigned int" ID="19327"/>
-   <type Family="Base" Name="int" ID="19334"/>
-   <type Family="Base" Name="unsigned int" ID="19341"/>
-   <type Family="ComponentList" Line="335" ID="19353">
-    <Component Name="CPUID" TI="19362" Line="337" Offs="0"/>
-    <Component Name="ICSR" TI="19377" Line="338" Offs="4"/>
-    <Component Name="VTOR" TI="19392" Line="339" Offs="8"/>
-    <Component Name="AIRCR" TI="19407" Line="340" Offs="12"/>
-    <Component Name="SCR" TI="19422" Line="341" Offs="16"/>
-    <Component Name="CCR" TI="19437" Line="342" Offs="20"/>
-   <type Family="array" ID="19684" toTI="19241"/>
-    <Component Name="SHP" TI="19452" Line="343" Offs="24"/>
-    <Component Name="SHCSR" TI="19467" Line="344" Offs="36"/>
-    <Component Name="CFSR" TI="19482" Line="345" Offs="40"/>
-    <Component Name="HFSR" TI="19497" Line="346" Offs="44"/>
-    <Component Name="DFSR" TI="19512" Line="347" Offs="48"/>
-    <Component Name="MMFAR" TI="19527" Line="348" Offs="52"/>
-    <Component Name="BFAR" TI="19542" Line="349" Offs="56"/>
-    <Component Name="AFSR" TI="19557" Line="350" Offs="60"/>
-   <type Family="array" ID="19705" toTI="19302"/>
-    <Component Name="PFR" TI="19572" Line="351" Offs="64"/>
-    <Component Name="DFR" TI="19587" Line="352" Offs="72"/>
-    <Component Name="ADR" TI="19602" Line="353" Offs="76"/>
-   <type Family="array" ID="19731" toTI="19302"/>
-    <Component Name="MMFR" TI="19617" Line="354" Offs="80"/>
-   <type Family="array" ID="19757" toTI="19302"/>
-    <Component Name="ISAR" TI="19632" Line="355" Offs="96"/>
-    <Component Name="RESERVED0" TI="19647" Line="356" Offs="116"/>
-    <Component Name="CPACR" TI="19662" Line="357" Offs="136"/>
+  <module Name="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\misc.c" >
+   <type Family="Base" Name="signed char" ID="17807"/>
+   <type Family="Base" Name="unsigned char" ID="17825"/>
+   <type Family="typedef" Name="uint8_t" Line="42" ID="17814" toTI="17825"/>
+   <type Family="Base" Name="short int" ID="17832"/>
+   <type Family="Base" Name="short unsigned int" ID="17839"/>
+   <type Family="Base" Name="long int" ID="17857"/>
+   <type Family="typedef" Name="int32_t" Line="79" ID="17846" toTI="17857"/>
+   <type Family="Base" Name="long unsigned int" ID="17875"/>
+   <type Family="typedef" Name="uint32_t" Line="80" ID="17864" toTI="17875"/>
+   <type Family="Base" Name="long long int" ID="17882"/>
+   <type Family="Base" Name="long long unsigned int" ID="17889"/>
+   <type Family="Base" Name="int" ID="17896"/>
+   <type Family="Base" Name="unsigned int" ID="17903"/>
+   <type Family="ComponentList" Line="303" ID="17910">
+   <type Family="array" ID="18126" toTI="17864"/>
+    <Component Name="ISER" TI="17920" Line="305" Offs="0"/>
+   <type Family="array" ID="18147" toTI="17864"/>
+    <Component Name="RESERVED0" TI="17935" Line="306" Offs="32"/>
+    <Component Name="ICER" TI="17950" Line="307" Offs="128"/>
+    <Component Name="RSERVED1" TI="17966" Line="308" Offs="160"/>
+    <Component Name="ISPR" TI="17982" Line="309" Offs="256"/>
+    <Component Name="RESERVED2" TI="17998" Line="310" Offs="288"/>
+    <Component Name="ICPR" TI="18014" Line="311" Offs="384"/>
+    <Component Name="RESERVED3" TI="18030" Line="312" Offs="416"/>
+    <Component Name="IABR" TI="18046" Line="313" Offs="512"/>
+   <type Family="array" ID="18183" toTI="17864"/>
+    <Component Name="RESERVED4" TI="18062" Line="314" Offs="544"/>
+   <type Family="array" ID="18199" toTI="17814"/>
+    <Component Name="IP" TI="18078" Line="315" Offs="768"/>
+   <type Family="array" ID="18220" toTI="17864"/>
+    <Component Name="RESERVED5" TI="18093" Line="316" Offs="1008"/>
+    <Component Name="STIR" TI="18109" Line="317" Offs="3584"/>
    </type>
-   <type Family="typedef" Name="SCB_Type" Line="358" ID="19783" toTI="19353"/>
-   <type Family="ComponentList" Line="581" ID="19822">
-    <Component Name="ACR" TI="19831" Line="583" Offs="0"/>
-    <Component Name="KEYR" TI="19846" Line="584" Offs="4"/>
-    <Component Name="OPTKEYR" TI="19861" Line="585" Offs="8"/>
-    <Component Name="SR" TI="19876" Line="586" Offs="12"/>
-    <Component Name="CR" TI="19890" Line="587" Offs="16"/>
-    <Component Name="OPTCR" TI="19904" Line="588" Offs="20"/>
+   <type Family="typedef" Name="NVIC_Type" Line="318" ID="18242" toTI="17910"/>
+   <type Family="ComponentList" Line="335" ID="18254">
+    <Component Name="CPUID" TI="18263" Line="337" Offs="0"/>
+    <Component Name="ICSR" TI="18278" Line="338" Offs="4"/>
+    <Component Name="VTOR" TI="18293" Line="339" Offs="8"/>
+    <Component Name="AIRCR" TI="18308" Line="340" Offs="12"/>
+    <Component Name="SCR" TI="18323" Line="341" Offs="16"/>
+    <Component Name="CCR" TI="18338" Line="342" Offs="20"/>
+   <type Family="array" ID="18585" toTI="17814"/>
+    <Component Name="SHP" TI="18353" Line="343" Offs="24"/>
+    <Component Name="SHCSR" TI="18368" Line="344" Offs="36"/>
+    <Component Name="CFSR" TI="18383" Line="345" Offs="40"/>
+    <Component Name="HFSR" TI="18398" Line="346" Offs="44"/>
+    <Component Name="DFSR" TI="18413" Line="347" Offs="48"/>
+    <Component Name="MMFAR" TI="18428" Line="348" Offs="52"/>
+    <Component Name="BFAR" TI="18443" Line="349" Offs="56"/>
+    <Component Name="AFSR" TI="18458" Line="350" Offs="60"/>
+   <type Family="array" ID="18606" toTI="17864"/>
+    <Component Name="PFR" TI="18473" Line="351" Offs="64"/>
+    <Component Name="DFR" TI="18488" Line="352" Offs="72"/>
+    <Component Name="ADR" TI="18503" Line="353" Offs="76"/>
+   <type Family="array" ID="18632" toTI="17864"/>
+    <Component Name="MMFR" TI="18518" Line="354" Offs="80"/>
+   <type Family="array" ID="18658" toTI="17864"/>
+    <Component Name="ISAR" TI="18533" Line="355" Offs="96"/>
+    <Component Name="RESERVED0" TI="18548" Line="356" Offs="116"/>
+    <Component Name="CPACR" TI="18563" Line="357" Offs="136"/>
    </type>
-   <type Family="typedef" Name="FLASH_TypeDef" Line="589" ID="19920" toTI="19822"/>
-   <type Family="ComponentList" Line="723" ID="19932">
-    <Component Name="CR" TI="19941" Line="725" Offs="0"/>
-    <Component Name="CSR" TI="19955" Line="726" Offs="4"/>
+   <type Family="typedef" Name="SCB_Type" Line="358" ID="18684" toTI="18254"/>
+   <type Family="ComponentList" Line="590" ID="18696">
+    <Component Name="CTRL" TI="18705" Line="592" Offs="0"/>
+    <Component Name="LOAD" TI="18720" Line="593" Offs="4"/>
+    <Component Name="VAL" TI="18735" Line="594" Offs="8"/>
+    <Component Name="CALIB" TI="18750" Line="595" Offs="12"/>
    </type>
-   <type Family="typedef" Name="PWR_TypeDef" Line="727" ID="19971" toTI="19932"/>
-   <type Family="ComponentList" Line="733" ID="19983">
-    <Component Name="CR" TI="19992" Line="735" Offs="0"/>
-    <Component Name="PLLCFGR" TI="20006" Line="736" Offs="4"/>
-    <Component Name="CFGR" TI="20021" Line="737" Offs="8"/>
-    <Component Name="CIR" TI="20036" Line="738" Offs="12"/>
-    <Component Name="AHB1RSTR" TI="20051" Line="739" Offs="16"/>
-    <Component Name="AHB2RSTR" TI="20066" Line="740" Offs="20"/>
-    <Component Name="AHB3RSTR" TI="20081" Line="741" Offs="24"/>
-    <Component Name="RESERVED0" TI="20096" Line="742" Offs="28"/>
-    <Component Name="APB1RSTR" TI="20111" Line="743" Offs="32"/>
-    <Component Name="APB2RSTR" TI="20126" Line="744" Offs="36"/>
-    <Component Name="RESERVED1" TI="20141" Line="745" Offs="40"/>
-    <Component Name="AHB1ENR" TI="20156" Line="746" Offs="48"/>
-    <Component Name="AHB2ENR" TI="20171" Line="747" Offs="52"/>
-    <Component Name="AHB3ENR" TI="20186" Line="748" Offs="56"/>
-    <Component Name="RESERVED2" TI="20201" Line="749" Offs="60"/>
-    <Component Name="APB1ENR" TI="20216" Line="750" Offs="64"/>
-    <Component Name="APB2ENR" TI="20231" Line="751" Offs="68"/>
-    <Component Name="RESERVED3" TI="20246" Line="752" Offs="72"/>
-    <Component Name="AHB1LPENR" TI="20261" Line="753" Offs="80"/>
-    <Component Name="AHB2LPENR" TI="20276" Line="754" Offs="84"/>
-    <Component Name="AHB3LPENR" TI="20291" Line="755" Offs="88"/>
-    <Component Name="RESERVED4" TI="20306" Line="756" Offs="92"/>
-    <Component Name="APB1LPENR" TI="20321" Line="757" Offs="96"/>
-    <Component Name="APB2LPENR" TI="20336" Line="758" Offs="100"/>
-    <Component Name="RESERVED5" TI="20351" Line="759" Offs="104"/>
-    <Component Name="BDCR" TI="20366" Line="760" Offs="112"/>
-    <Component Name="CSR" TI="20381" Line="761" Offs="116"/>
-    <Component Name="RESERVED6" TI="20396" Line="762" Offs="120"/>
-    <Component Name="SSCGR" TI="20411" Line="763" Offs="128"/>
-    <Component Name="PLLI2SCFGR" TI="20427" Line="764" Offs="132"/>
+   <type Family="typedef" Name="SysTick_Type" Line="596" ID="18766" toTI="18696"/>
+   <type Family="typedef" Name="FunctionalState" Line="287" ID="18805" toTI="18783"/>
+   <type Family="ComponentList" Line="48" ID="18817">
+    <Component Name="NVIC_IRQChannel" TI="18825" Line="50" Offs="0"/>
+    <Component Name="NVIC_IRQChannelPreemptionPriority" TI="18839" Line="55" Offs="1"/>
+    <Component Name="NVIC_IRQChannelSubPriority" TI="18853" Line="60" Offs="2"/>
+    <Component Name="NVIC_IRQChannelCmd" TI="18867" Line="65" Offs="3"/>
    </type>
-   <type Family="typedef" Name="RCC_TypeDef" Line="765" ID="20444" toTI="19983"/>
-   <function Name="SystemInit" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\system_stm32f4xx.c" Line="204">
-    <variable Name="StartUpCounter" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\system_stm32f4xx.c" Line="338" Addr="0x34000004" TI="0"/>
-    <variable Name="HSEStatus" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\system_stm32f4xx.c" Line="338" Addr="0x34000000" TI="0"/>
-   </function >
-   <type Family="array" ID="20696" toTI="19241"/>
-   <variable Name="SystemCoreClock" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\system_stm32f4xx.c" Line="172" Addr="0x0" TI="19302"/>
-   <variable Name="AHBPrescTable" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\system_stm32f4xx.c" Line="174" Addr="0x0" TI="20780"/>
-  </module>
-  <module Name="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4_discovery.c" >
-   <type Family="Base" Name="signed char" ID="21394"/>
-   <type Family="Base" Name="unsigned char" ID="21412"/>
-   <type Family="typedef" Name="uint8_t" Line="42" ID="21401" toTI="21412"/>
-   <type Family="Base" Name="short int" ID="21419"/>
-   <type Family="Base" Name="short unsigned int" ID="21437"/>
-   <type Family="typedef" Name="uint16_t" Line="54" ID="21426" toTI="21437"/>
-   <type Family="Base" Name="long int" ID="21455"/>
-   <type Family="typedef" Name="int32_t" Line="79" ID="21444" toTI="21455"/>
-   <type Family="Base" Name="long unsigned int" ID="21473"/>
-   <type Family="typedef" Name="uint32_t" Line="80" ID="21462" toTI="21473"/>
-   <type Family="Base" Name="long long int" ID="21480"/>
-   <type Family="Base" Name="long long unsigned int" ID="21487"/>
-   <type Family="Base" Name="int" ID="21494"/>
-   <type Family="Base" Name="unsigned int" ID="21501"/>
-   <type Family="array" ID="21513" toTI="21462"/>
-   <type Family="array" ID="21529" toTI="21462"/>
-   <type Family="array" ID="21545" toTI="21462"/>
-   <type Family="typedef" Name="FunctionalState" Line="287" ID="21593" toTI="21571"/>
-   <type Family="ComponentList" Line="654" ID="21605">
-    <Component Name="MODER" TI="21614" Line="656" Offs="0"/>
-    <Component Name="OTYPER" TI="21629" Line="657" Offs="4"/>
-    <Component Name="OSPEEDR" TI="21644" Line="658" Offs="8"/>
-    <Component Name="PUPDR" TI="21659" Line="659" Offs="12"/>
-    <Component Name="IDR" TI="21674" Line="660" Offs="16"/>
-    <Component Name="ODR" TI="21689" Line="661" Offs="20"/>
-    <Component Name="BSRRL" TI="21704" Line="662" Offs="24"/>
-    <Component Name="BSRRH" TI="21719" Line="663" Offs="26"/>
-    <Component Name="LCKR" TI="21734" Line="664" Offs="28"/>
-    <Component Name="AFR" TI="21749" Line="665" Offs="32"/>
-   </type>
-   <type Family="typedef" Name="GPIO_TypeDef" Line="666" ID="21770" toTI="21605"/>
-   <type Family="typedef" Name="EXTIMode_TypeDef" Line="52" ID="21803" toTI="21782"/>
-   <type Family="typedef" Name="EXTITrigger_TypeDef" Line="65" ID="21841" toTI="21814"/>
-   <type Family="ComponentList" Line="74" ID="21852">
-    <Component Name="EXTI_Line" TI="21860" Line="76" Offs="0"/>
-    <Component Name="EXTI_Mode" TI="21874" Line="79" Offs="4"/>
-    <Component Name="EXTI_Trigger" TI="21888" Line="82" Offs="5"/>
-    <Component Name="EXTI_LineCmd" TI="21902" Line="85" Offs="6"/>
-   </type>
-   <type Family="typedef" Name="EXTI_InitTypeDef" Line="87" ID="21917" toTI="21852"/>
-   <type Family="typedef" Name="GPIOMode_TypeDef" Line="63" ID="21961" toTI="21928"/>
-   <type Family="typedef" Name="GPIOOType_TypeDef" Line="74" ID="21993" toTI="21972"/>
-   <type Family="typedef" Name="GPIOSpeed_TypeDef" Line="87" ID="22037" toTI="22004"/>
-   <type Family="typedef" Name="GPIOPuPd_TypeDef" Line="99" ID="22075" toTI="22048"/>
-   <type Family="ComponentList" Line="117" ID="22086">
-    <Component Name="GPIO_Pin" TI="22094" Line="119" Offs="0"/>
-    <Component Name="GPIO_Mode" TI="22108" Line="122" Offs="4"/>
-    <Component Name="GPIO_Speed" TI="22122" Line="125" Offs="5"/>
-    <Component Name="GPIO_OType" TI="22136" Line="128" Offs="6"/>
-    <Component Name="GPIO_PuPd" TI="22150" Line="131" Offs="7"/>
-   </type>
-   <type Family="typedef" Name="GPIO_InitTypeDef" Line="133" ID="22165" toTI="22086"/>
-   <type Family="ComponentList" Line="48" ID="22176">
-    <Component Name="NVIC_IRQChannel" TI="22184" Line="50" Offs="0"/>
-    <Component Name="NVIC_IRQChannelPreemptionPriority" TI="22198" Line="55" Offs="1"/>
-    <Component Name="NVIC_IRQChannelSubPriority" TI="22212" Line="60" Offs="2"/>
-    <Component Name="NVIC_IRQChannelCmd" TI="22226" Line="65" Offs="3"/>
-   </type>
-   <type Family="typedef" Name="NVIC_InitTypeDef" Line="68" ID="22241" toTI="22176"/>
-   <type Family="typedef" Name="Led_TypeDef" Line="55" ID="22285" toTI="22252"/>
-   <type Family="typedef" Name="Button_TypeDef" Line="60" ID="22311" toTI="22296"/>
-   <type Family="typedef" Name="ButtonMode_TypeDef" Line="66" ID="22343" toTI="22322"/>
-   <function Name="STM_EVAL_LEDInit" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4_discovery.c" Line="116">
-    <parameter Name="Led" TI="22285" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4_discovery.c" Line="116" Addr="0x0" Param="Yes"/>
-    <variable Name="GPIO_InitStructure" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4_discovery.c" Line="118" Addr="0x34000000" TI="22165"/>
-   </function >
-   <function Name="STM_EVAL_LEDToggle" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4_discovery.c" Line="172">
-    <parameter Name="Led" TI="22285" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4_discovery.c" Line="172" Addr="0x0" Param="Yes"/>
-   </function >
-   <type Family="Pointer" TI="22696" toTI="21770"/>
-   <type Family="array" ID="22680" toTI="22696"/>
-   <type Family="array" ID="22715" toTI="21426"/>
-   <type Family="array" ID="22767" toTI="22696"/>
-   <type Family="array" ID="22796" toTI="21426"/>
-   <type Family="array" ID="22866" toTI="21401"/>
-   <variable Name="GPIO_PORT" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4_discovery.c" Line="67" Addr="0x20000000" TI="22680"/>
-   <variable Name="GPIO_PIN" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4_discovery.c" Line="69" Addr="0x80017D4" TI="22986"/>
-   <variable Name="GPIO_CLK" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4_discovery.c" Line="71" Addr="0x80017C4" TI="23009"/>
-   <variable Name="BUTTON_PORT" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4_discovery.c" Line="74" Addr="0x20000010" TI="22767"/>
-   <variable Name="BUTTON_PIN" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4_discovery.c" Line="76" Addr="0x80017E0" TI="23050"/>
-   <variable Name="BUTTON_CLK" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4_discovery.c" Line="78" Addr="0x80017DC" TI="23073"/>
-   <variable Name="BUTTON_EXTI_LINE" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4_discovery.c" Line="80" Addr="0x80017EC" TI="23096"/>
-   <variable Name="BUTTON_PORT_SOURCE" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4_discovery.c" Line="82" Addr="0x80017E4" TI="23119"/>
-   <variable Name="BUTTON_PIN_SOURCE" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4_discovery.c" Line="84" Addr="0x80017E8" TI="23142"/>
-   <variable Name="BUTTON_IRQn" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4_discovery.c" Line="85" Addr="0x80017F0" TI="23165"/>
-   <variable Name="NVIC_InitStructure" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4_discovery.c" Line="87" Addr="0x0" TI="22241"/>
-  </module>
-  <module Name="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_dma.c" >
-   <type Family="Base" Name="signed char" ID="23230"/>
-   <type Family="Base" Name="unsigned char" ID="23237"/>
-   <type Family="Base" Name="short int" ID="23244"/>
-   <type Family="Base" Name="short unsigned int" ID="23262"/>
-   <type Family="typedef" Name="uint16_t" Line="54" ID="23251" toTI="23262"/>
-   <type Family="Base" Name="long int" ID="23280"/>
-   <type Family="typedef" Name="int32_t" Line="79" ID="23269" toTI="23280"/>
-   <type Family="Base" Name="long unsigned int" ID="23298"/>
-   <type Family="typedef" Name="uint32_t" Line="80" ID="23287" toTI="23298"/>
-   <type Family="Base" Name="long long int" ID="23305"/>
-   <type Family="Base" Name="long long unsigned int" ID="23312"/>
-   <type Family="Base" Name="int" ID="23319"/>
-   <type Family="Base" Name="unsigned int" ID="23326"/>
-   <type Family="typedef" Name="FlagStatus" Line="285" ID="23365" toTI="23343"/>
-   <type Family="typedef" Name="ITStatus" Line="285" ID="23377" toTI="23343"/>
-   <type Family="typedef" Name="FunctionalState" Line="287" ID="23411" toTI="23389"/>
-   <type Family="ComponentList" Line="471" ID="23423">
-    <Component Name="CR" TI="23432" Line="473" Offs="0"/>
-    <Component Name="NDTR" TI="23446" Line="474" Offs="4"/>
-    <Component Name="PAR" TI="23461" Line="475" Offs="8"/>
-    <Component Name="M0AR" TI="23476" Line="476" Offs="12"/>
-    <Component Name="M1AR" TI="23491" Line="477" Offs="16"/>
-    <Component Name="FCR" TI="23506" Line="478" Offs="20"/>
-   </type>
-   <type Family="typedef" Name="DMA_Stream_TypeDef" Line="479" ID="23522" toTI="23423"/>
-   <type Family="ComponentList" Line="481" ID="23534">
-    <Component Name="LISR" TI="23543" Line="483" Offs="0"/>
-    <Component Name="HISR" TI="23558" Line="484" Offs="4"/>
-    <Component Name="LIFCR" TI="23573" Line="485" Offs="8"/>
-    <Component Name="HIFCR" TI="23588" Line="486" Offs="12"/>
-   </type>
-   <type Family="typedef" Name="DMA_TypeDef" Line="487" ID="23604" toTI="23534"/>
-   <type Family="ComponentList" Line="48" ID="23616">
-    <Component Name="DMA_Channel" TI="23624" Line="50" Offs="0"/>
-    <Component Name="DMA_PeripheralBaseAddr" TI="23638" Line="53" Offs="4"/>
-    <Component Name="DMA_Memory0BaseAddr" TI="23652" Line="55" Offs="8"/>
-    <Component Name="DMA_DIR" TI="23666" Line="59" Offs="12"/>
-    <Component Name="DMA_BufferSize" TI="23680" Line="63" Offs="16"/>
-    <Component Name="DMA_PeripheralInc" TI="23694" Line="67" Offs="20"/>
-    <Component Name="DMA_MemoryInc" TI="23708" Line="70" Offs="24"/>
-    <Component Name="DMA_PeripheralDataSize" TI="23722" Line="73" Offs="28"/>
-    <Component Name="DMA_MemoryDataSize" TI="23736" Line="76" Offs="32"/>
-    <Component Name="DMA_Mode" TI="23750" Line="79" Offs="36"/>
-    <Component Name="DMA_Priority" TI="23764" Line="84" Offs="40"/>
-    <Component Name="DMA_FIFOMode" TI="23778" Line="87" Offs="44"/>
-    <Component Name="DMA_FIFOThreshold" TI="23792" Line="92" Offs="48"/>
-    <Component Name="DMA_MemoryBurst" TI="23806" Line="95" Offs="52"/>
-    <Component Name="DMA_PeripheralBurst" TI="23820" Line="100" Offs="56"/>
-   </type>
-   <type Family="typedef" Name="DMA_InitTypeDef" Line="104" ID="23835" toTI="23616"/>
-   <function Name="DMA_DeInit" TI="0" FileName="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_dma.c" Line="188">
-   <type Family="Pointer" TI="23884" toTI="23522"/>
-    <parameter Name="DMAy_Streamx" TI="23884" FileName="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_dma.c" Line="188" Addr="0x0" Param="Yes"/>
-   </function >
-   <function Name="DMA_Init" TI="0" FileName="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_dma.c" Line="311">
-    <parameter Name="DMAy_Streamx" TI="23884" FileName="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_dma.c" Line="311" Addr="0x0" Param="Yes"/>
-   <type Family="Pointer" TI="23961" toTI="23835"/>
-    <parameter Name="DMA_InitStruct" TI="23961" FileName="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_dma.c" Line="311" Addr="0x1" Param="Yes"/>
-    <variable Name="tmpreg" FileName="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_dma.c" Line="313" Addr="0x0" TI="23287"/>
-   </function >
-   <function Name="DMA_StructInit" TI="0" FileName="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_dma.c" Line="395">
-    <parameter Name="DMA_InitStruct" TI="23961" FileName="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_dma.c" Line="395" Addr="0x0" Param="Yes"/>
-   </function >
-   <function Name="DMA_Cmd" TI="0" FileName="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_dma.c" Line="470">
-    <parameter Name="DMAy_Streamx" TI="23884" FileName="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_dma.c" Line="470" Addr="0x0" Param="Yes"/>
-    <parameter Name="NewState" TI="23411" FileName="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_dma.c" Line="470" Addr="0x1" Param="Yes"/>
-   </function >
-   <function Name="DMA_GetFlagStatus" TI="23365" FileName="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_dma.c" Line="986">
-    <parameter Name="DMAy_Streamx" TI="23884" FileName="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_dma.c" Line="986" Addr="0x0" Param="Yes"/>
-    <parameter Name="DMA_FLAG" TI="23287" FileName="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_dma.c" Line="986" Addr="0x1" Param="Yes"/>
-    <variable Name="bitstatus" FileName="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_dma.c" Line="988" Addr="0x0" TI="23365"/>
-   <type Family="Pointer" TI="24754" toTI="23604"/>
-    <variable Name="DMAy" FileName="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_dma.c" Line="989" Addr="0x0" TI="24754"/>
-    <variable Name="tmpreg" FileName="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_dma.c" Line="990" Addr="0x0" TI="23287"/>
+   <type Family="typedef" Name="NVIC_InitTypeDef" Line="68" ID="18882" toTI="18817"/>
+   <function Name="NVIC_Init" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\misc.c" Line="130">
+   <type Family="Pointer" TI="19019" toTI="18882"/>
+    <parameter Name="NVIC_InitStruct" TI="19019" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\misc.c" Line="130" Addr="0x0" Param="Yes"/>
+    <variable Name="tmppriority" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\misc.c" Line="132" Addr="0x0" TI="17814"/>
+    <variable Name="tmppre" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\misc.c" Line="132" Addr="0x0" TI="17814"/>
+    <variable Name="tmpsub" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\misc.c" Line="132" Addr="0x0" TI="17814"/>
    </function >
   </module>
-  <module Name="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_adc.c" >
-   <type Family="Base" Name="signed char" ID="25163"/>
-   <type Family="Base" Name="unsigned char" ID="25181"/>
-   <type Family="typedef" Name="uint8_t" Line="42" ID="25170" toTI="25181"/>
-   <type Family="Base" Name="short int" ID="25188"/>
-   <type Family="Base" Name="short unsigned int" ID="25206"/>
-   <type Family="typedef" Name="uint16_t" Line="54" ID="25195" toTI="25206"/>
-   <type Family="Base" Name="long int" ID="25224"/>
-   <type Family="typedef" Name="int32_t" Line="79" ID="25213" toTI="25224"/>
-   <type Family="Base" Name="long unsigned int" ID="25242"/>
-   <type Family="typedef" Name="uint32_t" Line="80" ID="25231" toTI="25242"/>
-   <type Family="Base" Name="long long int" ID="25249"/>
-   <type Family="Base" Name="long long unsigned int" ID="25256"/>
-   <type Family="Base" Name="int" ID="25263"/>
-   <type Family="Base" Name="unsigned int" ID="25270"/>
-   <type Family="typedef" Name="FlagStatus" Line="285" ID="25309" toTI="25287"/>
-   <type Family="typedef" Name="ITStatus" Line="285" ID="25321" toTI="25287"/>
-   <type Family="typedef" Name="FunctionalState" Line="287" ID="25355" toTI="25333"/>
-   <type Family="ComponentList" Line="304" ID="25367">
-    <Component Name="SR" TI="25376" Line="306" Offs="0"/>
-    <Component Name="CR1" TI="25390" Line="307" Offs="4"/>
-    <Component Name="CR2" TI="25405" Line="308" Offs="8"/>
-    <Component Name="SMPR1" TI="25420" Line="309" Offs="12"/>
-    <Component Name="SMPR2" TI="25435" Line="310" Offs="16"/>
-    <Component Name="JOFR1" TI="25450" Line="311" Offs="20"/>
-    <Component Name="JOFR2" TI="25465" Line="312" Offs="24"/>
-    <Component Name="JOFR3" TI="25480" Line="313" Offs="28"/>
-    <Component Name="JOFR4" TI="25495" Line="314" Offs="32"/>
-    <Component Name="HTR" TI="25510" Line="315" Offs="36"/>
-    <Component Name="LTR" TI="25525" Line="316" Offs="40"/>
-    <Component Name="SQR1" TI="25540" Line="317" Offs="44"/>
-    <Component Name="SQR2" TI="25555" Line="318" Offs="48"/>
-    <Component Name="SQR3" TI="25570" Line="319" Offs="52"/>
-    <Component Name="JSQR" TI="25585" Line="320" Offs="56"/>
-    <Component Name="JDR1" TI="25600" Line="321" Offs="60"/>
-    <Component Name="JDR2" TI="25615" Line="322" Offs="64"/>
-    <Component Name="JDR3" TI="25630" Line="323" Offs="68"/>
-    <Component Name="JDR4" TI="25645" Line="324" Offs="72"/>
-    <Component Name="DR" TI="25660" Line="325" Offs="76"/>
+  <module Name="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\system_stm32f4xx.c" >
+   <type Family="Base" Name="signed char" ID="19235"/>
+   <type Family="Base" Name="unsigned char" ID="19253"/>
+   <type Family="typedef" Name="uint8_t" Line="42" ID="19242" toTI="19253"/>
+   <type Family="Base" Name="short int" ID="19260"/>
+   <type Family="Base" Name="short unsigned int" ID="19278"/>
+   <type Family="typedef" Name="uint16_t" Line="54" ID="19267" toTI="19278"/>
+   <type Family="Base" Name="long int" ID="19296"/>
+   <type Family="typedef" Name="int32_t" Line="79" ID="19285" toTI="19296"/>
+   <type Family="Base" Name="long unsigned int" ID="19314"/>
+   <type Family="typedef" Name="uint32_t" Line="80" ID="19303" toTI="19314"/>
+   <type Family="Base" Name="long long int" ID="19321"/>
+   <type Family="Base" Name="long long unsigned int" ID="19328"/>
+   <type Family="Base" Name="int" ID="19335"/>
+   <type Family="Base" Name="unsigned int" ID="19342"/>
+   <type Family="ComponentList" Line="335" ID="19354">
+    <Component Name="CPUID" TI="19363" Line="337" Offs="0"/>
+    <Component Name="ICSR" TI="19378" Line="338" Offs="4"/>
+    <Component Name="VTOR" TI="19393" Line="339" Offs="8"/>
+    <Component Name="AIRCR" TI="19408" Line="340" Offs="12"/>
+    <Component Name="SCR" TI="19423" Line="341" Offs="16"/>
+    <Component Name="CCR" TI="19438" Line="342" Offs="20"/>
+   <type Family="array" ID="19685" toTI="19242"/>
+    <Component Name="SHP" TI="19453" Line="343" Offs="24"/>
+    <Component Name="SHCSR" TI="19468" Line="344" Offs="36"/>
+    <Component Name="CFSR" TI="19483" Line="345" Offs="40"/>
+    <Component Name="HFSR" TI="19498" Line="346" Offs="44"/>
+    <Component Name="DFSR" TI="19513" Line="347" Offs="48"/>
+    <Component Name="MMFAR" TI="19528" Line="348" Offs="52"/>
+    <Component Name="BFAR" TI="19543" Line="349" Offs="56"/>
+    <Component Name="AFSR" TI="19558" Line="350" Offs="60"/>
+   <type Family="array" ID="19706" toTI="19303"/>
+    <Component Name="PFR" TI="19573" Line="351" Offs="64"/>
+    <Component Name="DFR" TI="19588" Line="352" Offs="72"/>
+    <Component Name="ADR" TI="19603" Line="353" Offs="76"/>
+   <type Family="array" ID="19732" toTI="19303"/>
+    <Component Name="MMFR" TI="19618" Line="354" Offs="80"/>
+   <type Family="array" ID="19758" toTI="19303"/>
+    <Component Name="ISAR" TI="19633" Line="355" Offs="96"/>
+    <Component Name="RESERVED0" TI="19648" Line="356" Offs="116"/>
+    <Component Name="CPACR" TI="19663" Line="357" Offs="136"/>
    </type>
-   <type Family="typedef" Name="ADC_TypeDef" Line="326" ID="25675" toTI="25367"/>
-   <type Family="ComponentList" Line="328" ID="25687">
-    <Component Name="CSR" TI="25696" Line="330" Offs="0"/>
-    <Component Name="CCR" TI="25711" Line="331" Offs="4"/>
-    <Component Name="CDR" TI="25726" Line="332" Offs="8"/>
+   <type Family="typedef" Name="SCB_Type" Line="358" ID="19784" toTI="19354"/>
+   <type Family="ComponentList" Line="581" ID="19823">
+    <Component Name="ACR" TI="19832" Line="583" Offs="0"/>
+    <Component Name="KEYR" TI="19847" Line="584" Offs="4"/>
+    <Component Name="OPTKEYR" TI="19862" Line="585" Offs="8"/>
+    <Component Name="SR" TI="19877" Line="586" Offs="12"/>
+    <Component Name="CR" TI="19891" Line="587" Offs="16"/>
+    <Component Name="OPTCR" TI="19905" Line="588" Offs="20"/>
    </type>
-   <type Family="typedef" Name="ADC_Common_TypeDef" Line="334" ID="25742" toTI="25687"/>
-   <type Family="ComponentList" Line="47" ID="25754">
-    <Component Name="ADC_Resolution" TI="25762" Line="49" Offs="0"/>
-    <Component Name="ADC_ScanConvMode" TI="25776" Line="51" Offs="4"/>
-    <Component Name="ADC_ContinuousConvMode" TI="25790" Line="55" Offs="5"/>
-    <Component Name="ADC_ExternalTrigConvEdge" TI="25804" Line="58" Offs="8"/>
-    <Component Name="ADC_ExternalTrigConv" TI="25818" Line="62" Offs="12"/>
-    <Component Name="ADC_DataAlign" TI="25832" Line="66" Offs="16"/>
-    <Component Name="ADC_NbrOfConversion" TI="25846" Line="69" Offs="20"/>
+   <type Family="typedef" Name="FLASH_TypeDef" Line="589" ID="19921" toTI="19823"/>
+   <type Family="ComponentList" Line="723" ID="19933">
+    <Component Name="CR" TI="19942" Line="725" Offs="0"/>
+    <Component Name="CSR" TI="19956" Line="726" Offs="4"/>
    </type>
-   <type Family="typedef" Name="ADC_InitTypeDef" Line="73" ID="25861" toTI="25754"/>
-   <type Family="ComponentList" Line="78" ID="25872">
-    <Component Name="ADC_Mode" TI="25880" Line="80" Offs="0"/>
-    <Component Name="ADC_Prescaler" TI="25894" Line="83" Offs="4"/>
-    <Component Name="ADC_DMAAccessMode" TI="25908" Line="86" Offs="8"/>
-    <Component Name="ADC_TwoSamplingDelay" TI="25922" Line="90" Offs="12"/>
+   <type Family="typedef" Name="PWR_TypeDef" Line="727" ID="19972" toTI="19933"/>
+   <type Family="ComponentList" Line="733" ID="19984">
+    <Component Name="CR" TI="19993" Line="735" Offs="0"/>
+    <Component Name="PLLCFGR" TI="20007" Line="736" Offs="4"/>
+    <Component Name="CFGR" TI="20022" Line="737" Offs="8"/>
+    <Component Name="CIR" TI="20037" Line="738" Offs="12"/>
+    <Component Name="AHB1RSTR" TI="20052" Line="739" Offs="16"/>
+    <Component Name="AHB2RSTR" TI="20067" Line="740" Offs="20"/>
+    <Component Name="AHB3RSTR" TI="20082" Line="741" Offs="24"/>
+    <Component Name="RESERVED0" TI="20097" Line="742" Offs="28"/>
+    <Component Name="APB1RSTR" TI="20112" Line="743" Offs="32"/>
+    <Component Name="APB2RSTR" TI="20127" Line="744" Offs="36"/>
+    <Component Name="RESERVED1" TI="20142" Line="745" Offs="40"/>
+    <Component Name="AHB1ENR" TI="20157" Line="746" Offs="48"/>
+    <Component Name="AHB2ENR" TI="20172" Line="747" Offs="52"/>
+    <Component Name="AHB3ENR" TI="20187" Line="748" Offs="56"/>
+    <Component Name="RESERVED2" TI="20202" Line="749" Offs="60"/>
+    <Component Name="APB1ENR" TI="20217" Line="750" Offs="64"/>
+    <Component Name="APB2ENR" TI="20232" Line="751" Offs="68"/>
+    <Component Name="RESERVED3" TI="20247" Line="752" Offs="72"/>
+    <Component Name="AHB1LPENR" TI="20262" Line="753" Offs="80"/>
+    <Component Name="AHB2LPENR" TI="20277" Line="754" Offs="84"/>
+    <Component Name="AHB3LPENR" TI="20292" Line="755" Offs="88"/>
+    <Component Name="RESERVED4" TI="20307" Line="756" Offs="92"/>
+    <Component Name="APB1LPENR" TI="20322" Line="757" Offs="96"/>
+    <Component Name="APB2LPENR" TI="20337" Line="758" Offs="100"/>
+    <Component Name="RESERVED5" TI="20352" Line="759" Offs="104"/>
+    <Component Name="BDCR" TI="20367" Line="760" Offs="112"/>
+    <Component Name="CSR" TI="20382" Line="761" Offs="116"/>
+    <Component Name="RESERVED6" TI="20397" Line="762" Offs="120"/>
+    <Component Name="SSCGR" TI="20412" Line="763" Offs="128"/>
+    <Component Name="PLLI2SCFGR" TI="20428" Line="764" Offs="132"/>
    </type>
-   <type Family="typedef" Name="ADC_CommonInitTypeDef" Line="94" ID="25937" toTI="25872"/>
-   <function Name="ADC_Init" TI="0" FileName="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_adc.c" Line="228">
-   <type Family="Pointer" TI="26051" toTI="25675"/>
-    <parameter Name="ADCx" TI="26051" FileName="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_adc.c" Line="228" Addr="0x0" Param="Yes"/>
-   <type Family="Pointer" TI="26057" toTI="25861"/>
-    <parameter Name="ADC_InitStruct" TI="26057" FileName="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_adc.c" Line="228" Addr="0x1" Param="Yes"/>
-    <variable Name="tmpreg1" FileName="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_adc.c" Line="230" Addr="0x0" TI="25231"/>
-    <variable Name="tmpreg2" FileName="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_adc.c" Line="231" Addr="0x0" TI="25170"/>
+   <type Family="typedef" Name="RCC_TypeDef" Line="765" ID="20445" toTI="19984"/>
+   <function Name="SystemInit" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\system_stm32f4xx.c" Line="204">
+    <variable Name="StartUpCounter" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\system_stm32f4xx.c" Line="338" Addr="0x34000004" TI="0"/>
+    <variable Name="HSEStatus" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\system_stm32f4xx.c" Line="338" Addr="0x34000000" TI="0"/>
    </function >
-   <function Name="ADC_StructInit" TI="0" FileName="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_adc.c" Line="303">
-    <parameter Name="ADC_InitStruct" TI="26057" FileName="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_adc.c" Line="303" Addr="0x0" Param="Yes"/>
+   <type Family="array" ID="20697" toTI="19242"/>
+   <variable Name="SystemCoreClock" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\system_stm32f4xx.c" Line="172" Addr="0x0" TI="19303"/>
+   <variable Name="AHBPrescTable" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\system_stm32f4xx.c" Line="174" Addr="0x0" TI="20781"/>
+  </module>
+  <module Name="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4_discovery.c" >
+   <type Family="Base" Name="signed char" ID="21395"/>
+   <type Family="Base" Name="unsigned char" ID="21413"/>
+   <type Family="typedef" Name="uint8_t" Line="42" ID="21402" toTI="21413"/>
+   <type Family="Base" Name="short int" ID="21420"/>
+   <type Family="Base" Name="short unsigned int" ID="21438"/>
+   <type Family="typedef" Name="uint16_t" Line="54" ID="21427" toTI="21438"/>
+   <type Family="Base" Name="long int" ID="21456"/>
+   <type Family="typedef" Name="int32_t" Line="79" ID="21445" toTI="21456"/>
+   <type Family="Base" Name="long unsigned int" ID="21474"/>
+   <type Family="typedef" Name="uint32_t" Line="80" ID="21463" toTI="21474"/>
+   <type Family="Base" Name="long long int" ID="21481"/>
+   <type Family="Base" Name="long long unsigned int" ID="21488"/>
+   <type Family="Base" Name="int" ID="21495"/>
+   <type Family="Base" Name="unsigned int" ID="21502"/>
+   <type Family="array" ID="21514" toTI="21463"/>
+   <type Family="array" ID="21530" toTI="21463"/>
+   <type Family="array" ID="21546" toTI="21463"/>
+   <type Family="typedef" Name="FunctionalState" Line="287" ID="21594" toTI="21572"/>
+   <type Family="ComponentList" Line="654" ID="21606">
+    <Component Name="MODER" TI="21615" Line="656" Offs="0"/>
+    <Component Name="OTYPER" TI="21630" Line="657" Offs="4"/>
+    <Component Name="OSPEEDR" TI="21645" Line="658" Offs="8"/>
+    <Component Name="PUPDR" TI="21660" Line="659" Offs="12"/>
+    <Component Name="IDR" TI="21675" Line="660" Offs="16"/>
+    <Component Name="ODR" TI="21690" Line="661" Offs="20"/>
+    <Component Name="BSRRL" TI="21705" Line="662" Offs="24"/>
+    <Component Name="BSRRH" TI="21720" Line="663" Offs="26"/>
+    <Component Name="LCKR" TI="21735" Line="664" Offs="28"/>
+    <Component Name="AFR" TI="21750" Line="665" Offs="32"/>
+   </type>
+   <type Family="typedef" Name="GPIO_TypeDef" Line="666" ID="21771" toTI="21606"/>
+   <type Family="typedef" Name="EXTIMode_TypeDef" Line="52" ID="21804" toTI="21783"/>
+   <type Family="typedef" Name="EXTITrigger_TypeDef" Line="65" ID="21842" toTI="21815"/>
+   <type Family="ComponentList" Line="74" ID="21853">
+    <Component Name="EXTI_Line" TI="21861" Line="76" Offs="0"/>
+    <Component Name="EXTI_Mode" TI="21875" Line="79" Offs="4"/>
+    <Component Name="EXTI_Trigger" TI="21889" Line="82" Offs="5"/>
+    <Component Name="EXTI_LineCmd" TI="21903" Line="85" Offs="6"/>
+   </type>
+   <type Family="typedef" Name="EXTI_InitTypeDef" Line="87" ID="21918" toTI="21853"/>
+   <type Family="typedef" Name="GPIOMode_TypeDef" Line="63" ID="21962" toTI="21929"/>
+   <type Family="typedef" Name="GPIOOType_TypeDef" Line="74" ID="21994" toTI="21973"/>
+   <type Family="typedef" Name="GPIOSpeed_TypeDef" Line="87" ID="22038" toTI="22005"/>
+   <type Family="typedef" Name="GPIOPuPd_TypeDef" Line="99" ID="22076" toTI="22049"/>
+   <type Family="ComponentList" Line="117" ID="22087">
+    <Component Name="GPIO_Pin" TI="22095" Line="119" Offs="0"/>
+    <Component Name="GPIO_Mode" TI="22109" Line="122" Offs="4"/>
+    <Component Name="GPIO_Speed" TI="22123" Line="125" Offs="5"/>
+    <Component Name="GPIO_OType" TI="22137" Line="128" Offs="6"/>
+    <Component Name="GPIO_PuPd" TI="22151" Line="131" Offs="7"/>
+   </type>
+   <type Family="typedef" Name="GPIO_InitTypeDef" Line="133" ID="22166" toTI="22087"/>
+   <type Family="ComponentList" Line="48" ID="22177">
+    <Component Name="NVIC_IRQChannel" TI="22185" Line="50" Offs="0"/>
+    <Component Name="NVIC_IRQChannelPreemptionPriority" TI="22199" Line="55" Offs="1"/>
+    <Component Name="NVIC_IRQChannelSubPriority" TI="22213" Line="60" Offs="2"/>
+    <Component Name="NVIC_IRQChannelCmd" TI="22227" Line="65" Offs="3"/>
+   </type>
+   <type Family="typedef" Name="NVIC_InitTypeDef" Line="68" ID="22242" toTI="22177"/>
+   <type Family="typedef" Name="Led_TypeDef" Line="55" ID="22286" toTI="22253"/>
+   <type Family="typedef" Name="Button_TypeDef" Line="60" ID="22312" toTI="22297"/>
+   <type Family="typedef" Name="ButtonMode_TypeDef" Line="66" ID="22344" toTI="22323"/>
+   <function Name="STM_EVAL_LEDInit" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4_discovery.c" Line="116">
+    <parameter Name="Led" TI="22286" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4_discovery.c" Line="116" Addr="0x0" Param="Yes"/>
+    <variable Name="GPIO_InitStructure" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4_discovery.c" Line="118" Addr="0x34000000" TI="22166"/>
    </function >
-   <function Name="ADC_CommonInit" TI="0" FileName="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_adc.c" Line="334">
-   <type Family="Pointer" TI="26162" toTI="25937"/>
-    <parameter Name="ADC_CommonInitStruct" TI="26162" FileName="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_adc.c" Line="334" Addr="0x0" Param="Yes"/>
-    <variable Name="tmpreg1" FileName="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_adc.c" Line="336" Addr="0x0" TI="25231"/>
+   <function Name="STM_EVAL_LEDToggle" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4_discovery.c" Line="172">
+    <parameter Name="Led" TI="22286" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4_discovery.c" Line="172" Addr="0x0" Param="Yes"/>
    </function >
-   <function Name="ADC_CommonStructInit" TI="0" FileName="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_adc.c" Line="370">
-    <parameter Name="ADC_CommonInitStruct" TI="26162" FileName="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_adc.c" Line="370" Addr="0x0" Param="Yes"/>
+   <type Family="Pointer" TI="22697" toTI="21771"/>
+   <type Family="array" ID="22681" toTI="22697"/>
+   <type Family="array" ID="22716" toTI="21427"/>
+   <type Family="array" ID="22768" toTI="22697"/>
+   <type Family="array" ID="22797" toTI="21427"/>
+   <type Family="array" ID="22867" toTI="21402"/>
+   <variable Name="GPIO_PORT" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4_discovery.c" Line="67" Addr="0x20000000" TI="22681"/>
+   <variable Name="GPIO_PIN" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4_discovery.c" Line="69" Addr="0x8001800" TI="22987"/>
+   <variable Name="GPIO_CLK" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4_discovery.c" Line="71" Addr="0x80017F0" TI="23010"/>
+   <variable Name="BUTTON_PORT" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4_discovery.c" Line="74" Addr="0x20000010" TI="22768"/>
+   <variable Name="BUTTON_PIN" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4_discovery.c" Line="76" Addr="0x800180C" TI="23051"/>
+   <variable Name="BUTTON_CLK" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4_discovery.c" Line="78" Addr="0x8001808" TI="23074"/>
+   <variable Name="BUTTON_EXTI_LINE" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4_discovery.c" Line="80" Addr="0x8001818" TI="23097"/>
+   <variable Name="BUTTON_PORT_SOURCE" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4_discovery.c" Line="82" Addr="0x8001810" TI="23120"/>
+   <variable Name="BUTTON_PIN_SOURCE" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4_discovery.c" Line="84" Addr="0x8001814" TI="23143"/>
+   <variable Name="BUTTON_IRQn" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4_discovery.c" Line="85" Addr="0x800181C" TI="23166"/>
+   <variable Name="NVIC_InitStructure" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4_discovery.c" Line="87" Addr="0x0" TI="22242"/>
+  </module>
+  <module Name="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_dma.c" >
+   <type Family="Base" Name="signed char" ID="23231"/>
+   <type Family="Base" Name="unsigned char" ID="23238"/>
+   <type Family="Base" Name="short int" ID="23245"/>
+   <type Family="Base" Name="short unsigned int" ID="23263"/>
+   <type Family="typedef" Name="uint16_t" Line="54" ID="23252" toTI="23263"/>
+   <type Family="Base" Name="long int" ID="23281"/>
+   <type Family="typedef" Name="int32_t" Line="79" ID="23270" toTI="23281"/>
+   <type Family="Base" Name="long unsigned int" ID="23299"/>
+   <type Family="typedef" Name="uint32_t" Line="80" ID="23288" toTI="23299"/>
+   <type Family="Base" Name="long long int" ID="23306"/>
+   <type Family="Base" Name="long long unsigned int" ID="23313"/>
+   <type Family="Base" Name="int" ID="23320"/>
+   <type Family="Base" Name="unsigned int" ID="23327"/>
+   <type Family="typedef" Name="FlagStatus" Line="285" ID="23366" toTI="23344"/>
+   <type Family="typedef" Name="ITStatus" Line="285" ID="23378" toTI="23344"/>
+   <type Family="typedef" Name="FunctionalState" Line="287" ID="23412" toTI="23390"/>
+   <type Family="ComponentList" Line="471" ID="23424">
+    <Component Name="CR" TI="23433" Line="473" Offs="0"/>
+    <Component Name="NDTR" TI="23447" Line="474" Offs="4"/>
+    <Component Name="PAR" TI="23462" Line="475" Offs="8"/>
+    <Component Name="M0AR" TI="23477" Line="476" Offs="12"/>
+    <Component Name="M1AR" TI="23492" Line="477" Offs="16"/>
+    <Component Name="FCR" TI="23507" Line="478" Offs="20"/>
+   </type>
+   <type Family="typedef" Name="DMA_Stream_TypeDef" Line="479" ID="23523" toTI="23424"/>
+   <type Family="ComponentList" Line="481" ID="23535">
+    <Component Name="LISR" TI="23544" Line="483" Offs="0"/>
+    <Component Name="HISR" TI="23559" Line="484" Offs="4"/>
+    <Component Name="LIFCR" TI="23574" Line="485" Offs="8"/>
+    <Component Name="HIFCR" TI="23589" Line="486" Offs="12"/>
+   </type>
+   <type Family="typedef" Name="DMA_TypeDef" Line="487" ID="23605" toTI="23535"/>
+   <type Family="ComponentList" Line="48" ID="23617">
+    <Component Name="DMA_Channel" TI="23625" Line="50" Offs="0"/>
+    <Component Name="DMA_PeripheralBaseAddr" TI="23639" Line="53" Offs="4"/>
+    <Component Name="DMA_Memory0BaseAddr" TI="23653" Line="55" Offs="8"/>
+    <Component Name="DMA_DIR" TI="23667" Line="59" Offs="12"/>
+    <Component Name="DMA_BufferSize" TI="23681" Line="63" Offs="16"/>
+    <Component Name="DMA_PeripheralInc" TI="23695" Line="67" Offs="20"/>
+    <Component Name="DMA_MemoryInc" TI="23709" Line="70" Offs="24"/>
+    <Component Name="DMA_PeripheralDataSize" TI="23723" Line="73" Offs="28"/>
+    <Component Name="DMA_MemoryDataSize" TI="23737" Line="76" Offs="32"/>
+    <Component Name="DMA_Mode" TI="23751" Line="79" Offs="36"/>
+    <Component Name="DMA_Priority" TI="23765" Line="84" Offs="40"/>
+    <Component Name="DMA_FIFOMode" TI="23779" Line="87" Offs="44"/>
+    <Component Name="DMA_FIFOThreshold" TI="23793" Line="92" Offs="48"/>
+    <Component Name="DMA_MemoryBurst" TI="23807" Line="95" Offs="52"/>
+    <Component Name="DMA_PeripheralBurst" TI="23821" Line="100" Offs="56"/>
+   </type>
+   <type Family="typedef" Name="DMA_InitTypeDef" Line="104" ID="23836" toTI="23617"/>
+   <function Name="DMA_DeInit" TI="0" FileName="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_dma.c" Line="188">
+   <type Family="Pointer" TI="23885" toTI="23523"/>
+    <parameter Name="DMAy_Streamx" TI="23885" FileName="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_dma.c" Line="188" Addr="0x0" Param="Yes"/>
    </function >
-   <function Name="ADC_Cmd" TI="0" FileName="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_adc.c" Line="392">
-    <parameter Name="ADCx" TI="26051" FileName="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_adc.c" Line="392" Addr="0x0" Param="Yes"/>
-    <parameter Name="NewState" TI="25355" FileName="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_adc.c" Line="392" Addr="0x1" Param="Yes"/>
+   <function Name="DMA_Init" TI="0" FileName="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_dma.c" Line="311">
+    <parameter Name="DMAy_Streamx" TI="23885" FileName="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_dma.c" Line="311" Addr="0x0" Param="Yes"/>
+   <type Family="Pointer" TI="23962" toTI="23836"/>
+    <parameter Name="DMA_InitStruct" TI="23962" FileName="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_dma.c" Line="311" Addr="0x1" Param="Yes"/>
+    <variable Name="tmpreg" FileName="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_dma.c" Line="313" Addr="0x0" TI="23288"/>
    </function >
-   <function Name="ADC_RegularChannelConfig" TI="0" FileName="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_adc.c" Line="708">
-    <parameter Name="ADCx" TI="26051" FileName="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_adc.c" Line="708" Addr="0x0" Param="Yes"/>
-    <parameter Name="ADC_Channel" TI="25170" FileName="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_adc.c" Line="708" Addr="0x1" Param="Yes"/>
-    <parameter Name="Rank" TI="25170" FileName="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_adc.c" Line="708" Addr="0x2" Param="Yes"/>
-    <parameter Name="ADC_SampleTime" TI="25170" FileName="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_adc.c" Line="708" Addr="0x3" Param="Yes"/>
-    <variable Name="tmpreg1" FileName="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_adc.c" Line="710" Addr="0x0" TI="25231"/>
-    <variable Name="tmpreg2" FileName="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_adc.c" Line="710" Addr="0x0" TI="25231"/>
+   <function Name="DMA_StructInit" TI="0" FileName="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_dma.c" Line="395">
+    <parameter Name="DMA_InitStruct" TI="23962" FileName="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_dma.c" Line="395" Addr="0x0" Param="Yes"/>
    </function >
-   <function Name="ADC_DMACmd" TI="0" FileName="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_adc.c" Line="1048">
-    <parameter Name="ADCx" TI="26051" FileName="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_adc.c" Line="1048" Addr="0x0" Param="Yes"/>
-    <parameter Name="NewState" TI="25355" FileName="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_adc.c" Line="1048" Addr="0x1" Param="Yes"/>
+   <function Name="DMA_Cmd" TI="0" FileName="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_dma.c" Line="470">
+    <parameter Name="DMAy_Streamx" TI="23885" FileName="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_dma.c" Line="470" Addr="0x0" Param="Yes"/>
+    <parameter Name="NewState" TI="23412" FileName="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_dma.c" Line="470" Addr="0x1" Param="Yes"/>
    </function >
-   <function Name="ADC_DMARequestAfterLastTransferCmd" TI="0" FileName="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_adc.c" Line="1072">
-    <parameter Name="ADCx" TI="26051" FileName="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_adc.c" Line="1072" Addr="0x0" Param="Yes"/>
-    <parameter Name="NewState" TI="25355" FileName="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_adc.c" Line="1072" Addr="0x1" Param="Yes"/>
-   </function >
-   <function Name="ADC_MultiModeDMARequestAfterLastTransferCmd" TI="0" FileName="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_adc.c" Line="1099">
-    <parameter Name="NewState" TI="25355" FileName="C:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_adc.c" Line="1099" Addr="0x0" Param="Yes"/>
+   <function Name="DMA_GetFlagStatus" TI="23366" FileName="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_dma.c" Line="986">
+    <parameter Name="DMAy_Streamx" TI="23885" FileName="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_dma.c" Line="986" Addr="0x0" Param="Yes"/>
+    <parameter Name="DMA_FLAG" TI="23288" FileName="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_dma.c" Line="986" Addr="0x1" Param="Yes"/>
+    <variable Name="bitstatus" FileName="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_dma.c" Line="988" Addr="0x0" TI="23366"/>
+   <type Family="Pointer" TI="24755" toTI="23605"/>
+    <variable Name="DMAy" FileName="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_dma.c" Line="989" Addr="0x0" TI="24755"/>
+    <variable Name="tmpreg" FileName="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_dma.c" Line="990" Addr="0x0" TI="23288"/>
    </function >
   </module>
-  <module Name="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_dac.c" >
-   <type Family="Base" Name="signed char" ID="28441"/>
-   <type Family="Base" Name="unsigned char" ID="28459"/>
-   <type Family="typedef" Name="uint8_t" Line="42" ID="28448" toTI="28459"/>
-   <type Family="Base" Name="short int" ID="28466"/>
-   <type Family="Base" Name="short unsigned int" ID="28484"/>
-   <type Family="typedef" Name="uint16_t" Line="54" ID="28473" toTI="28484"/>
-   <type Family="Base" Name="long int" ID="28502"/>
-   <type Family="typedef" Name="int32_t" Line="79" ID="28491" toTI="28502"/>
-   <type Family="Base" Name="long unsigned int" ID="28520"/>
-   <type Family="typedef" Name="uint32_t" Line="80" ID="28509" toTI="28520"/>
-   <type Family="Base" Name="long long int" ID="28527"/>
-   <type Family="Base" Name="long long unsigned int" ID="28534"/>
-   <type Family="Base" Name="int" ID="28541"/>
-   <type Family="Base" Name="unsigned int" ID="28548"/>
-   <type Family="typedef" Name="FlagStatus" Line="285" ID="28587" toTI="28565"/>
-   <type Family="typedef" Name="ITStatus" Line="285" ID="28599" toTI="28565"/>
-   <type Family="typedef" Name="FunctionalState" Line="287" ID="28633" toTI="28611"/>
-   <type Family="ComponentList" Line="418" ID="28645">
-    <Component Name="CR" TI="28654" Line="420" Offs="0"/>
-    <Component Name="SWTRIGR" TI="28668" Line="421" Offs="4"/>
-    <Component Name="DHR12R1" TI="28683" Line="422" Offs="8"/>
-    <Component Name="DHR12L1" TI="28698" Line="423" Offs="12"/>
-    <Component Name="DHR8R1" TI="28713" Line="424" Offs="16"/>
-    <Component Name="DHR12R2" TI="28728" Line="425" Offs="20"/>
-    <Component Name="DHR12L2" TI="28743" Line="426" Offs="24"/>
-    <Component Name="DHR8R2" TI="28758" Line="427" Offs="28"/>
-    <Component Name="DHR12RD" TI="28773" Line="428" Offs="32"/>
-    <Component Name="DHR12LD" TI="28788" Line="429" Offs="36"/>
-    <Component Name="DHR8RD" TI="28803" Line="430" Offs="40"/>
-    <Component Name="DOR1" TI="28818" Line="431" Offs="44"/>
-    <Component Name="DOR2" TI="28833" Line="432" Offs="48"/>
-    <Component Name="SR" TI="28848" Line="433" Offs="52"/>
+  <module Name="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_adc.c" >
+   <type Family="Base" Name="signed char" ID="25164"/>
+   <type Family="Base" Name="unsigned char" ID="25182"/>
+   <type Family="typedef" Name="uint8_t" Line="42" ID="25171" toTI="25182"/>
+   <type Family="Base" Name="short int" ID="25189"/>
+   <type Family="Base" Name="short unsigned int" ID="25207"/>
+   <type Family="typedef" Name="uint16_t" Line="54" ID="25196" toTI="25207"/>
+   <type Family="Base" Name="long int" ID="25225"/>
+   <type Family="typedef" Name="int32_t" Line="79" ID="25214" toTI="25225"/>
+   <type Family="Base" Name="long unsigned int" ID="25243"/>
+   <type Family="typedef" Name="uint32_t" Line="80" ID="25232" toTI="25243"/>
+   <type Family="Base" Name="long long int" ID="25250"/>
+   <type Family="Base" Name="long long unsigned int" ID="25257"/>
+   <type Family="Base" Name="int" ID="25264"/>
+   <type Family="Base" Name="unsigned int" ID="25271"/>
+   <type Family="typedef" Name="FlagStatus" Line="285" ID="25310" toTI="25288"/>
+   <type Family="typedef" Name="ITStatus" Line="285" ID="25322" toTI="25288"/>
+   <type Family="typedef" Name="FunctionalState" Line="287" ID="25356" toTI="25334"/>
+   <type Family="ComponentList" Line="304" ID="25368">
+    <Component Name="SR" TI="25377" Line="306" Offs="0"/>
+    <Component Name="CR1" TI="25391" Line="307" Offs="4"/>
+    <Component Name="CR2" TI="25406" Line="308" Offs="8"/>
+    <Component Name="SMPR1" TI="25421" Line="309" Offs="12"/>
+    <Component Name="SMPR2" TI="25436" Line="310" Offs="16"/>
+    <Component Name="JOFR1" TI="25451" Line="311" Offs="20"/>
+    <Component Name="JOFR2" TI="25466" Line="312" Offs="24"/>
+    <Component Name="JOFR3" TI="25481" Line="313" Offs="28"/>
+    <Component Name="JOFR4" TI="25496" Line="314" Offs="32"/>
+    <Component Name="HTR" TI="25511" Line="315" Offs="36"/>
+    <Component Name="LTR" TI="25526" Line="316" Offs="40"/>
+    <Component Name="SQR1" TI="25541" Line="317" Offs="44"/>
+    <Component Name="SQR2" TI="25556" Line="318" Offs="48"/>
+    <Component Name="SQR3" TI="25571" Line="319" Offs="52"/>
+    <Component Name="JSQR" TI="25586" Line="320" Offs="56"/>
+    <Component Name="JDR1" TI="25601" Line="321" Offs="60"/>
+    <Component Name="JDR2" TI="25616" Line="322" Offs="64"/>
+    <Component Name="JDR3" TI="25631" Line="323" Offs="68"/>
+    <Component Name="JDR4" TI="25646" Line="324" Offs="72"/>
+    <Component Name="DR" TI="25661" Line="325" Offs="76"/>
    </type>
-   <type Family="typedef" Name="DAC_TypeDef" Line="434" ID="28863" toTI="28645"/>
-   <type Family="ComponentList" Line="48" ID="28875">
-    <Component Name="DAC_Trigger" TI="28883" Line="50" Offs="0"/>
-    <Component Name="DAC_WaveGeneration" TI="28897" Line="53" Offs="4"/>
-    <Component Name="DAC_LFSRUnmask_TriangleAmplitude" TI="28911" Line="57" Offs="8"/>
-    <Component Name="DAC_OutputBuffer" TI="28925" Line="61" Offs="12"/>
+   <type Family="typedef" Name="ADC_TypeDef" Line="326" ID="25676" toTI="25368"/>
+   <type Family="ComponentList" Line="328" ID="25688">
+    <Component Name="CSR" TI="25697" Line="330" Offs="0"/>
+    <Component Name="CCR" TI="25712" Line="331" Offs="4"/>
+    <Component Name="CDR" TI="25727" Line="332" Offs="8"/>
    </type>
-   <type Family="typedef" Name="DAC_InitTypeDef" Line="63" ID="28940" toTI="28875"/>
-   <function Name="DAC_Init" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_dac.c" Line="193">
-    <parameter Name="DAC_Channel" TI="28509" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_dac.c" Line="193" Addr="0x0" Param="Yes"/>
-   <type Family="Pointer" TI="29058" toTI="28940"/>
-    <parameter Name="DAC_InitStruct" TI="29058" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_dac.c" Line="193" Addr="0x1" Param="Yes"/>
-    <variable Name="tmpreg1" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_dac.c" Line="195" Addr="0x0" TI="28509"/>
-    <variable Name="tmpreg2" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_dac.c" Line="195" Addr="0x0" TI="28509"/>
+   <type Family="typedef" Name="ADC_Common_TypeDef" Line="334" ID="25743" toTI="25688"/>
+   <type Family="ComponentList" Line="47" ID="25755">
+    <Component Name="ADC_Resolution" TI="25763" Line="49" Offs="0"/>
+    <Component Name="ADC_ScanConvMode" TI="25777" Line="51" Offs="4"/>
+    <Component Name="ADC_ContinuousConvMode" TI="25791" Line="55" Offs="5"/>
+    <Component Name="ADC_ExternalTrigConvEdge" TI="25805" Line="58" Offs="8"/>
+    <Component Name="ADC_ExternalTrigConv" TI="25819" Line="62" Offs="12"/>
+    <Component Name="ADC_DataAlign" TI="25833" Line="66" Offs="16"/>
+    <Component Name="ADC_NbrOfConversion" TI="25847" Line="69" Offs="20"/>
+   </type>
+   <type Family="typedef" Name="ADC_InitTypeDef" Line="73" ID="25862" toTI="25755"/>
+   <type Family="ComponentList" Line="78" ID="25873">
+    <Component Name="ADC_Mode" TI="25881" Line="80" Offs="0"/>
+    <Component Name="ADC_Prescaler" TI="25895" Line="83" Offs="4"/>
+    <Component Name="ADC_DMAAccessMode" TI="25909" Line="86" Offs="8"/>
+    <Component Name="ADC_TwoSamplingDelay" TI="25923" Line="90" Offs="12"/>
+   </type>
+   <type Family="typedef" Name="ADC_CommonInitTypeDef" Line="94" ID="25938" toTI="25873"/>
+   <function Name="ADC_Init" TI="0" FileName="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_adc.c" Line="228">
+   <type Family="Pointer" TI="26052" toTI="25676"/>
+    <parameter Name="ADCx" TI="26052" FileName="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_adc.c" Line="228" Addr="0x0" Param="Yes"/>
+   <type Family="Pointer" TI="26058" toTI="25862"/>
+    <parameter Name="ADC_InitStruct" TI="26058" FileName="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_adc.c" Line="228" Addr="0x1" Param="Yes"/>
+    <variable Name="tmpreg1" FileName="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_adc.c" Line="230" Addr="0x0" TI="25232"/>
+    <variable Name="tmpreg2" FileName="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_adc.c" Line="231" Addr="0x0" TI="25171"/>
    </function >
-   <function Name="DAC_StructInit" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_dac.c" Line="229">
-    <parameter Name="DAC_InitStruct" TI="29058" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_dac.c" Line="229" Addr="0x0" Param="Yes"/>
+   <function Name="ADC_StructInit" TI="0" FileName="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_adc.c" Line="303">
+    <parameter Name="ADC_InitStruct" TI="26058" FileName="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_adc.c" Line="303" Addr="0x0" Param="Yes"/>
    </function >
-   <function Name="DAC_Cmd" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_dac.c" Line="253">
-    <parameter Name="DAC_Channel" TI="28509" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_dac.c" Line="253" Addr="0x0" Param="Yes"/>
-    <parameter Name="NewState" TI="28633" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_dac.c" Line="253" Addr="0x1" Param="Yes"/>
+   <function Name="ADC_CommonInit" TI="0" FileName="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_adc.c" Line="334">
+   <type Family="Pointer" TI="26163" toTI="25938"/>
+    <parameter Name="ADC_CommonInitStruct" TI="26163" FileName="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_adc.c" Line="334" Addr="0x0" Param="Yes"/>
+    <variable Name="tmpreg1" FileName="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_adc.c" Line="336" Addr="0x0" TI="25232"/>
    </function >
-   <function Name="DAC_SetChannel1Data" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_dac.c" Line="365">
-    <parameter Name="DAC_Align" TI="28509" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_dac.c" Line="365" Addr="0x0" Param="Yes"/>
-    <parameter Name="Data" TI="28473" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_dac.c" Line="365" Addr="0x1" Param="Yes"/>
-    <variable Name="tmp" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_dac.c" Line="367" Addr="0x34000004" TI="28555"/>
+   <function Name="ADC_CommonStructInit" TI="0" FileName="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_adc.c" Line="370">
+    <parameter Name="ADC_CommonInitStruct" TI="26163" FileName="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_adc.c" Line="370" Addr="0x0" Param="Yes"/>
+   </function >
+   <function Name="ADC_Cmd" TI="0" FileName="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_adc.c" Line="392">
+    <parameter Name="ADCx" TI="26052" FileName="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_adc.c" Line="392" Addr="0x0" Param="Yes"/>
+    <parameter Name="NewState" TI="25356" FileName="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_adc.c" Line="392" Addr="0x1" Param="Yes"/>
+   </function >
+   <function Name="ADC_RegularChannelConfig" TI="0" FileName="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_adc.c" Line="708">
+    <parameter Name="ADCx" TI="26052" FileName="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_adc.c" Line="708" Addr="0x0" Param="Yes"/>
+    <parameter Name="ADC_Channel" TI="25171" FileName="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_adc.c" Line="708" Addr="0x1" Param="Yes"/>
+    <parameter Name="Rank" TI="25171" FileName="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_adc.c" Line="708" Addr="0x2" Param="Yes"/>
+    <parameter Name="ADC_SampleTime" TI="25171" FileName="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_adc.c" Line="708" Addr="0x3" Param="Yes"/>
+    <variable Name="tmpreg1" FileName="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_adc.c" Line="710" Addr="0x0" TI="25232"/>
+    <variable Name="tmpreg2" FileName="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_adc.c" Line="710" Addr="0x0" TI="25232"/>
+   </function >
+   <function Name="ADC_DMACmd" TI="0" FileName="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_adc.c" Line="1048">
+    <parameter Name="ADCx" TI="26052" FileName="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_adc.c" Line="1048" Addr="0x0" Param="Yes"/>
+    <parameter Name="NewState" TI="25356" FileName="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_adc.c" Line="1048" Addr="0x1" Param="Yes"/>
+   </function >
+   <function Name="ADC_DMARequestAfterLastTransferCmd" TI="0" FileName="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_adc.c" Line="1072">
+    <parameter Name="ADCx" TI="26052" FileName="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_adc.c" Line="1072" Addr="0x0" Param="Yes"/>
+    <parameter Name="NewState" TI="25356" FileName="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_adc.c" Line="1072" Addr="0x1" Param="Yes"/>
+   </function >
+   <function Name="ADC_MultiModeDMARequestAfterLastTransferCmd" TI="0" FileName="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_adc.c" Line="1099">
+    <parameter Name="NewState" TI="25356" FileName="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_adc.c" Line="1099" Addr="0x0" Param="Yes"/>
    </function >
   </module>
-  <module Name="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_spi.c" >
-   <type Family="Base" Name="signed char" ID="30118"/>
-   <type Family="Base" Name="unsigned char" ID="30136"/>
-   <type Family="typedef" Name="uint8_t" Line="42" ID="30125" toTI="30136"/>
-   <type Family="Base" Name="short int" ID="30143"/>
-   <type Family="Base" Name="short unsigned int" ID="30161"/>
-   <type Family="typedef" Name="uint16_t" Line="54" ID="30150" toTI="30161"/>
-   <type Family="Base" Name="long int" ID="30179"/>
-   <type Family="typedef" Name="int32_t" Line="79" ID="30168" toTI="30179"/>
-   <type Family="Base" Name="long unsigned int" ID="30197"/>
-   <type Family="typedef" Name="uint32_t" Line="80" ID="30186" toTI="30197"/>
-   <type Family="Base" Name="long long int" ID="30204"/>
-   <type Family="Base" Name="long long unsigned int" ID="30211"/>
-   <type Family="Base" Name="int" ID="30218"/>
-   <type Family="Base" Name="unsigned int" ID="30225"/>
-   <type Family="array" ID="30237" toTI="30186"/>
-   <type Family="typedef" Name="FlagStatus" Line="285" ID="30285" toTI="30263"/>
-   <type Family="typedef" Name="ITStatus" Line="285" ID="30297" toTI="30263"/>
-   <type Family="typedef" Name="FunctionalState" Line="287" ID="30331" toTI="30309"/>
-   <type Family="ComponentList" Line="733" ID="30343">
-    <Component Name="CR" TI="30352" Line="735" Offs="0"/>
-    <Component Name="PLLCFGR" TI="30366" Line="736" Offs="4"/>
-    <Component Name="CFGR" TI="30381" Line="737" Offs="8"/>
-    <Component Name="CIR" TI="30396" Line="738" Offs="12"/>
-    <Component Name="AHB1RSTR" TI="30411" Line="739" Offs="16"/>
-    <Component Name="AHB2RSTR" TI="30426" Line="740" Offs="20"/>
-    <Component Name="AHB3RSTR" TI="30441" Line="741" Offs="24"/>
-    <Component Name="RESERVED0" TI="30456" Line="742" Offs="28"/>
-    <Component Name="APB1RSTR" TI="30471" Line="743" Offs="32"/>
-    <Component Name="APB2RSTR" TI="30486" Line="744" Offs="36"/>
-    <Component Name="RESERVED1" TI="30501" Line="745" Offs="40"/>
-    <Component Name="AHB1ENR" TI="30516" Line="746" Offs="48"/>
-    <Component Name="AHB2ENR" TI="30531" Line="747" Offs="52"/>
-    <Component Name="AHB3ENR" TI="30546" Line="748" Offs="56"/>
-    <Component Name="RESERVED2" TI="30561" Line="749" Offs="60"/>
-    <Component Name="APB1ENR" TI="30576" Line="750" Offs="64"/>
-    <Component Name="APB2ENR" TI="30591" Line="751" Offs="68"/>
-    <Component Name="RESERVED3" TI="30606" Line="752" Offs="72"/>
-    <Component Name="AHB1LPENR" TI="30621" Line="753" Offs="80"/>
-    <Component Name="AHB2LPENR" TI="30636" Line="754" Offs="84"/>
-    <Component Name="AHB3LPENR" TI="30651" Line="755" Offs="88"/>
-    <Component Name="RESERVED4" TI="30666" Line="756" Offs="92"/>
-    <Component Name="APB1LPENR" TI="30681" Line="757" Offs="96"/>
-    <Component Name="APB2LPENR" TI="30696" Line="758" Offs="100"/>
-    <Component Name="RESERVED5" TI="30711" Line="759" Offs="104"/>
-    <Component Name="BDCR" TI="30726" Line="760" Offs="112"/>
-    <Component Name="CSR" TI="30741" Line="761" Offs="116"/>
-    <Component Name="RESERVED6" TI="30756" Line="762" Offs="120"/>
-    <Component Name="SSCGR" TI="30771" Line="763" Offs="128"/>
-    <Component Name="PLLI2SCFGR" TI="30787" Line="764" Offs="132"/>
+  <module Name="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_dac.c" >
+   <type Family="Base" Name="signed char" ID="28442"/>
+   <type Family="Base" Name="unsigned char" ID="28460"/>
+   <type Family="typedef" Name="uint8_t" Line="42" ID="28449" toTI="28460"/>
+   <type Family="Base" Name="short int" ID="28467"/>
+   <type Family="Base" Name="short unsigned int" ID="28485"/>
+   <type Family="typedef" Name="uint16_t" Line="54" ID="28474" toTI="28485"/>
+   <type Family="Base" Name="long int" ID="28503"/>
+   <type Family="typedef" Name="int32_t" Line="79" ID="28492" toTI="28503"/>
+   <type Family="Base" Name="long unsigned int" ID="28521"/>
+   <type Family="typedef" Name="uint32_t" Line="80" ID="28510" toTI="28521"/>
+   <type Family="Base" Name="long long int" ID="28528"/>
+   <type Family="Base" Name="long long unsigned int" ID="28535"/>
+   <type Family="Base" Name="int" ID="28542"/>
+   <type Family="Base" Name="unsigned int" ID="28549"/>
+   <type Family="typedef" Name="FlagStatus" Line="285" ID="28588" toTI="28566"/>
+   <type Family="typedef" Name="ITStatus" Line="285" ID="28600" toTI="28566"/>
+   <type Family="typedef" Name="FunctionalState" Line="287" ID="28634" toTI="28612"/>
+   <type Family="ComponentList" Line="418" ID="28646">
+    <Component Name="CR" TI="28655" Line="420" Offs="0"/>
+    <Component Name="SWTRIGR" TI="28669" Line="421" Offs="4"/>
+    <Component Name="DHR12R1" TI="28684" Line="422" Offs="8"/>
+    <Component Name="DHR12L1" TI="28699" Line="423" Offs="12"/>
+    <Component Name="DHR8R1" TI="28714" Line="424" Offs="16"/>
+    <Component Name="DHR12R2" TI="28729" Line="425" Offs="20"/>
+    <Component Name="DHR12L2" TI="28744" Line="426" Offs="24"/>
+    <Component Name="DHR8R2" TI="28759" Line="427" Offs="28"/>
+    <Component Name="DHR12RD" TI="28774" Line="428" Offs="32"/>
+    <Component Name="DHR12LD" TI="28789" Line="429" Offs="36"/>
+    <Component Name="DHR8RD" TI="28804" Line="430" Offs="40"/>
+    <Component Name="DOR1" TI="28819" Line="431" Offs="44"/>
+    <Component Name="DOR2" TI="28834" Line="432" Offs="48"/>
+    <Component Name="SR" TI="28849" Line="433" Offs="52"/>
    </type>
-   <type Family="typedef" Name="RCC_TypeDef" Line="765" ID="30804" toTI="30343"/>
-   <type Family="ComponentList" Line="847" ID="30816">
-    <Component Name="CR1" TI="30825" Line="849" Offs="0"/>
-    <Component Name="RESERVED0" TI="30840" Line="850" Offs="2"/>
-    <Component Name="CR2" TI="30855" Line="851" Offs="4"/>
-    <Component Name="RESERVED1" TI="30870" Line="852" Offs="6"/>
-    <Component Name="SR" TI="30885" Line="853" Offs="8"/>
-    <Component Name="RESERVED2" TI="30899" Line="854" Offs="10"/>
-    <Component Name="DR" TI="30914" Line="855" Offs="12"/>
-    <Component Name="RESERVED3" TI="30928" Line="856" Offs="14"/>
-    <Component Name="CRCPR" TI="30943" Line="857" Offs="16"/>
-    <Component Name="RESERVED4" TI="30958" Line="858" Offs="18"/>
-    <Component Name="RXCRCR" TI="30973" Line="859" Offs="20"/>
-    <Component Name="RESERVED5" TI="30988" Line="860" Offs="22"/>
-    <Component Name="TXCRCR" TI="31003" Line="861" Offs="24"/>
-    <Component Name="RESERVED6" TI="31018" Line="862" Offs="26"/>
-    <Component Name="I2SCFGR" TI="31033" Line="863" Offs="28"/>
-    <Component Name="RESERVED7" TI="31048" Line="864" Offs="30"/>
-    <Component Name="I2SPR" TI="31063" Line="865" Offs="32"/>
-    <Component Name="RESERVED8" TI="31078" Line="866" Offs="34"/>
+   <type Family="typedef" Name="DAC_TypeDef" Line="434" ID="28864" toTI="28646"/>
+   <type Family="ComponentList" Line="48" ID="28876">
+    <Component Name="DAC_Trigger" TI="28884" Line="50" Offs="0"/>
+    <Component Name="DAC_WaveGeneration" TI="28898" Line="53" Offs="4"/>
+    <Component Name="DAC_LFSRUnmask_TriangleAmplitude" TI="28912" Line="57" Offs="8"/>
+    <Component Name="DAC_OutputBuffer" TI="28926" Line="61" Offs="12"/>
    </type>
-   <type Family="typedef" Name="SPI_TypeDef" Line="867" ID="31094" toTI="30816"/>
-   <type Family="ComponentList" Line="48" ID="31106">
-    <Component Name="SPI_Direction" TI="31114" Line="50" Offs="0"/>
-    <Component Name="SPI_Mode" TI="31128" Line="53" Offs="2"/>
-    <Component Name="SPI_DataSize" TI="31142" Line="56" Offs="4"/>
-    <Component Name="SPI_CPOL" TI="31156" Line="59" Offs="6"/>
-    <Component Name="SPI_CPHA" TI="31170" Line="62" Offs="8"/>
-    <Component Name="SPI_NSS" TI="31184" Line="65" Offs="10"/>
-    <Component Name="SPI_BaudRatePrescaler" TI="31198" Line="69" Offs="12"/>
-    <Component Name="SPI_FirstBit" TI="31212" Line="75" Offs="14"/>
-    <Component Name="SPI_CRCPolynomial" TI="31226" Line="78" Offs="16"/>
-   </type>
-   <type Family="typedef" Name="SPI_InitTypeDef" Line="79" ID="31241" toTI="31106"/>
-   <type Family="ComponentList" Line="85" ID="31252">
-    <Component Name="I2S_Mode" TI="31260" Line="88" Offs="0"/>
-    <Component Name="I2S_Standard" TI="31274" Line="91" Offs="2"/>
-    <Component Name="I2S_DataFormat" TI="31288" Line="94" Offs="4"/>
-    <Component Name="I2S_MCLKOutput" TI="31302" Line="97" Offs="6"/>
-    <Component Name="I2S_AudioFreq" TI="31316" Line="100" Offs="8"/>
-    <Component Name="I2S_CPOL" TI="31330" Line="103" Offs="12"/>
-   </type>
-   <type Family="typedef" Name="I2S_InitTypeDef" Line="105" ID="31345" toTI="31252"/>
-   <type Family="Pointer" TI="31397" toTI="31094"/>
-   <function Name="SPI_Init" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_spi.c" Line="257">
-    <parameter Name="SPIx" TI="31397" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_spi.c" Line="257" Addr="0x0" Param="Yes"/>
-   <type Family="Pointer" TI="31474" toTI="31241"/>
-    <parameter Name="SPI_InitStruct" TI="31474" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_spi.c" Line="257" Addr="0x1" Param="Yes"/>
-    <variable Name="tmpreg" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_spi.c" Line="259" Addr="0x0" TI="30150"/>
+   <type Family="typedef" Name="DAC_InitTypeDef" Line="63" ID="28941" toTI="28876"/>
+   <function Name="DAC_Init" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_dac.c" Line="193">
+    <parameter Name="DAC_Channel" TI="28510" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_dac.c" Line="193" Addr="0x0" Param="Yes"/>
+   <type Family="Pointer" TI="29059" toTI="28941"/>
+    <parameter Name="DAC_InitStruct" TI="29059" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_dac.c" Line="193" Addr="0x1" Param="Yes"/>
+    <variable Name="tmpreg1" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_dac.c" Line="195" Addr="0x0" TI="28510"/>
+    <variable Name="tmpreg2" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_dac.c" Line="195" Addr="0x0" TI="28510"/>
    </function >
-   <type Family="Pointer" TI="31679" toTI="31345"/>
-   <function Name="SPI_Cmd" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_spi.c" Line="510">
-    <parameter Name="SPIx" TI="31397" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_spi.c" Line="510" Addr="0x0" Param="Yes"/>
-    <parameter Name="NewState" TI="30331" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_spi.c" Line="510" Addr="0x1" Param="Yes"/>
+   <function Name="DAC_StructInit" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_dac.c" Line="229">
+    <parameter Name="DAC_InitStruct" TI="29059" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_dac.c" Line="229" Addr="0x0" Param="Yes"/>
+   </function >
+   <function Name="DAC_Cmd" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_dac.c" Line="253">
+    <parameter Name="DAC_Channel" TI="28510" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_dac.c" Line="253" Addr="0x0" Param="Yes"/>
+    <parameter Name="NewState" TI="28634" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_dac.c" Line="253" Addr="0x1" Param="Yes"/>
+   </function >
+   <function Name="DAC_SetChannel1Data" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_dac.c" Line="365">
+    <parameter Name="DAC_Align" TI="28510" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_dac.c" Line="365" Addr="0x0" Param="Yes"/>
+    <parameter Name="Data" TI="28474" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_dac.c" Line="365" Addr="0x1" Param="Yes"/>
+    <variable Name="tmp" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_dac.c" Line="367" Addr="0x34000004" TI="28556"/>
+   </function >
+  </module>
+  <module Name="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_spi.c" >
+   <type Family="Base" Name="signed char" ID="30119"/>
+   <type Family="Base" Name="unsigned char" ID="30137"/>
+   <type Family="typedef" Name="uint8_t" Line="42" ID="30126" toTI="30137"/>
+   <type Family="Base" Name="short int" ID="30144"/>
+   <type Family="Base" Name="short unsigned int" ID="30162"/>
+   <type Family="typedef" Name="uint16_t" Line="54" ID="30151" toTI="30162"/>
+   <type Family="Base" Name="long int" ID="30180"/>
+   <type Family="typedef" Name="int32_t" Line="79" ID="30169" toTI="30180"/>
+   <type Family="Base" Name="long unsigned int" ID="30198"/>
+   <type Family="typedef" Name="uint32_t" Line="80" ID="30187" toTI="30198"/>
+   <type Family="Base" Name="long long int" ID="30205"/>
+   <type Family="Base" Name="long long unsigned int" ID="30212"/>
+   <type Family="Base" Name="int" ID="30219"/>
+   <type Family="Base" Name="unsigned int" ID="30226"/>
+   <type Family="array" ID="30238" toTI="30187"/>
+   <type Family="typedef" Name="FlagStatus" Line="285" ID="30286" toTI="30264"/>
+   <type Family="typedef" Name="ITStatus" Line="285" ID="30298" toTI="30264"/>
+   <type Family="typedef" Name="FunctionalState" Line="287" ID="30332" toTI="30310"/>
+   <type Family="ComponentList" Line="733" ID="30344">
+    <Component Name="CR" TI="30353" Line="735" Offs="0"/>
+    <Component Name="PLLCFGR" TI="30367" Line="736" Offs="4"/>
+    <Component Name="CFGR" TI="30382" Line="737" Offs="8"/>
+    <Component Name="CIR" TI="30397" Line="738" Offs="12"/>
+    <Component Name="AHB1RSTR" TI="30412" Line="739" Offs="16"/>
+    <Component Name="AHB2RSTR" TI="30427" Line="740" Offs="20"/>
+    <Component Name="AHB3RSTR" TI="30442" Line="741" Offs="24"/>
+    <Component Name="RESERVED0" TI="30457" Line="742" Offs="28"/>
+    <Component Name="APB1RSTR" TI="30472" Line="743" Offs="32"/>
+    <Component Name="APB2RSTR" TI="30487" Line="744" Offs="36"/>
+    <Component Name="RESERVED1" TI="30502" Line="745" Offs="40"/>
+    <Component Name="AHB1ENR" TI="30517" Line="746" Offs="48"/>
+    <Component Name="AHB2ENR" TI="30532" Line="747" Offs="52"/>
+    <Component Name="AHB3ENR" TI="30547" Line="748" Offs="56"/>
+    <Component Name="RESERVED2" TI="30562" Line="749" Offs="60"/>
+    <Component Name="APB1ENR" TI="30577" Line="750" Offs="64"/>
+    <Component Name="APB2ENR" TI="30592" Line="751" Offs="68"/>
+    <Component Name="RESERVED3" TI="30607" Line="752" Offs="72"/>
+    <Component Name="AHB1LPENR" TI="30622" Line="753" Offs="80"/>
+    <Component Name="AHB2LPENR" TI="30637" Line="754" Offs="84"/>
+    <Component Name="AHB3LPENR" TI="30652" Line="755" Offs="88"/>
+    <Component Name="RESERVED4" TI="30667" Line="756" Offs="92"/>
+    <Component Name="APB1LPENR" TI="30682" Line="757" Offs="96"/>
+    <Component Name="APB2LPENR" TI="30697" Line="758" Offs="100"/>
+    <Component Name="RESERVED5" TI="30712" Line="759" Offs="104"/>
+    <Component Name="BDCR" TI="30727" Line="760" Offs="112"/>
+    <Component Name="CSR" TI="30742" Line="761" Offs="116"/>
+    <Component Name="RESERVED6" TI="30757" Line="762" Offs="120"/>
+    <Component Name="SSCGR" TI="30772" Line="763" Offs="128"/>
+    <Component Name="PLLI2SCFGR" TI="30788" Line="764" Offs="132"/>
+   </type>
+   <type Family="typedef" Name="RCC_TypeDef" Line="765" ID="30805" toTI="30344"/>
+   <type Family="ComponentList" Line="847" ID="30817">
+    <Component Name="CR1" TI="30826" Line="849" Offs="0"/>
+    <Component Name="RESERVED0" TI="30841" Line="850" Offs="2"/>
+    <Component Name="CR2" TI="30856" Line="851" Offs="4"/>
+    <Component Name="RESERVED1" TI="30871" Line="852" Offs="6"/>
+    <Component Name="SR" TI="30886" Line="853" Offs="8"/>
+    <Component Name="RESERVED2" TI="30900" Line="854" Offs="10"/>
+    <Component Name="DR" TI="30915" Line="855" Offs="12"/>
+    <Component Name="RESERVED3" TI="30929" Line="856" Offs="14"/>
+    <Component Name="CRCPR" TI="30944" Line="857" Offs="16"/>
+    <Component Name="RESERVED4" TI="30959" Line="858" Offs="18"/>
+    <Component Name="RXCRCR" TI="30974" Line="859" Offs="20"/>
+    <Component Name="RESERVED5" TI="30989" Line="860" Offs="22"/>
+    <Component Name="TXCRCR" TI="31004" Line="861" Offs="24"/>
+    <Component Name="RESERVED6" TI="31019" Line="862" Offs="26"/>
+    <Component Name="I2SCFGR" TI="31034" Line="863" Offs="28"/>
+    <Component Name="RESERVED7" TI="31049" Line="864" Offs="30"/>
+    <Component Name="I2SPR" TI="31064" Line="865" Offs="32"/>
+    <Component Name="RESERVED8" TI="31079" Line="866" Offs="34"/>
+   </type>
+   <type Family="typedef" Name="SPI_TypeDef" Line="867" ID="31095" toTI="30817"/>
+   <type Family="ComponentList" Line="48" ID="31107">
+    <Component Name="SPI_Direction" TI="31115" Line="50" Offs="0"/>
+    <Component Name="SPI_Mode" TI="31129" Line="53" Offs="2"/>
+    <Component Name="SPI_DataSize" TI="31143" Line="56" Offs="4"/>
+    <Component Name="SPI_CPOL" TI="31157" Line="59" Offs="6"/>
+    <Component Name="SPI_CPHA" TI="31171" Line="62" Offs="8"/>
+    <Component Name="SPI_NSS" TI="31185" Line="65" Offs="10"/>
+    <Component Name="SPI_BaudRatePrescaler" TI="31199" Line="69" Offs="12"/>
+    <Component Name="SPI_FirstBit" TI="31213" Line="75" Offs="14"/>
+    <Component Name="SPI_CRCPolynomial" TI="31227" Line="78" Offs="16"/>
+   </type>
+   <type Family="typedef" Name="SPI_InitTypeDef" Line="79" ID="31242" toTI="31107"/>
+   <type Family="ComponentList" Line="85" ID="31253">
+    <Component Name="I2S_Mode" TI="31261" Line="88" Offs="0"/>
+    <Component Name="I2S_Standard" TI="31275" Line="91" Offs="2"/>
+    <Component Name="I2S_DataFormat" TI="31289" Line="94" Offs="4"/>
+    <Component Name="I2S_MCLKOutput" TI="31303" Line="97" Offs="6"/>
+    <Component Name="I2S_AudioFreq" TI="31317" Line="100" Offs="8"/>
+    <Component Name="I2S_CPOL" TI="31331" Line="103" Offs="12"/>
+   </type>
+   <type Family="typedef" Name="I2S_InitTypeDef" Line="105" ID="31346" toTI="31253"/>
+   <type Family="Pointer" TI="31398" toTI="31095"/>
+   <function Name="SPI_Init" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_spi.c" Line="257">
+    <parameter Name="SPIx" TI="31398" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_spi.c" Line="257" Addr="0x0" Param="Yes"/>
+   <type Family="Pointer" TI="31475" toTI="31242"/>
+    <parameter Name="SPI_InitStruct" TI="31475" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_spi.c" Line="257" Addr="0x1" Param="Yes"/>
+    <variable Name="tmpreg" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_spi.c" Line="259" Addr="0x0" TI="30151"/>
+   </function >
+   <type Family="Pointer" TI="31680" toTI="31346"/>
+   <function Name="SPI_Cmd" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_spi.c" Line="510">
+    <parameter Name="SPIx" TI="31398" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_spi.c" Line="510" Addr="0x0" Param="Yes"/>
+    <parameter Name="NewState" TI="30332" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_spi.c" Line="510" Addr="0x1" Param="Yes"/>
    </function >
   </module>
  </modulelist>

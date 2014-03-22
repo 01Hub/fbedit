@@ -355,35 +355,30 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.endif
 	.elseif	eax==WM_TIMER
 		invoke KillTimer,hWin,1000
-		.if eax
-			.if mode==CMD_SCPSET
-				.if !fHoldSampling && fSampleDone
-					mov		fSampleDone,FALSE
-					invoke CreateThread,NULL,NULL,addr SampleThreadProc,hWin,0,addr tid
-					invoke CloseHandle,eax
-				.endif
-			.elseif mode==CMD_FRQCH1
-				;Read 16 bytes from STM32F4xx ram and store it in STM32_Cmd.
-				invoke STLinkRead,hWin,20000020h,offset STM32_Cmd.STM32_Frq,4*DWORD
-				mov		edx,STM32_Cmd.STM32_Frq.Frequency
-				invoke FormatFrequency,edx,addr buffer
-				invoke SetWindowText,hHsc,addr buffer
-			.elseif mode==CMD_LCMCAP
-				;Read 16 bytes from STM32F4xx ram and store it in STM32_Cmd.
-				invoke STLinkRead,hWin,20000020h,offset STM32_Cmd.STM32_Frq,4*DWORD
-				invoke CalculateCapacitor,addr buffer
-				invoke SetWindowText,hLcm,addr buffer
-			.elseif mode==CMD_LCMIND
-				;Read 16 bytes from STM32F4xx ram and store it in STM32_Cmd.
-				invoke STLinkRead,hWin,20000020h,offset STM32_Cmd.STM32_Frq,4*DWORD
-				invoke CalculateInductor,addr buffer
-				invoke SetWindowText,hLcm,addr buffer
+		.if mode==CMD_SCPSET
+			.if !fHoldSampling && fSampleDone
+				mov		fSampleDone,FALSE
+				invoke CreateThread,NULL,NULL,addr SampleThreadProc,hWin,0,addr tid
+				invoke CloseHandle,eax
 			.endif
-			invoke SetTimer,hWin,1000,100,NULL
-		.else
-Err:
-			mov		connected,FALSE
+		.elseif mode==CMD_FRQCH1
+			;Read 16 bytes from STM32F4xx ram and store it in STM32_Cmd.
+			invoke STLinkRead,hWin,20000020h,offset STM32_Cmd.STM32_Frq,4*DWORD
+			mov		edx,STM32_Cmd.STM32_Frq.Frequency
+			invoke FormatFrequency,edx,addr buffer
+			invoke SetWindowText,hHsc,addr buffer
+		.elseif mode==CMD_LCMCAP
+			;Read 16 bytes from STM32F4xx ram and store it in STM32_Cmd.
+			invoke STLinkRead,hWin,20000020h,offset STM32_Cmd.STM32_Frq,4*DWORD
+			invoke CalculateCapacitor,addr buffer
+			invoke SetWindowText,hLcm,addr buffer
+		.elseif mode==CMD_LCMIND
+			;Read 16 bytes from STM32F4xx ram and store it in STM32_Cmd.
+			invoke STLinkRead,hWin,20000020h,offset STM32_Cmd.STM32_Frq,4*DWORD
+			invoke CalculateInductor,addr buffer
+			invoke SetWindowText,hLcm,addr buffer
 		.endif
+		invoke SetTimer,hWin,1000,100,NULL
 	.elseif	eax==WM_CLOSE
 		mov		fExitThread,TRUE
 		invoke KillTimer,hWin,1000
@@ -410,6 +405,10 @@ Err:
 		mov		eax,FALSE
 		ret
 	.endif
+	mov		eax,TRUE
+	ret
+Err:
+	mov		connected,FALSE
 	mov		eax,TRUE
 	ret
 

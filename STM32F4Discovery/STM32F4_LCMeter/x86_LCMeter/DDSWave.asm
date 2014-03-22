@@ -272,7 +272,7 @@ DDSChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 				.if ddswavedata.DDS_Frequency>1
 					dec		ddswavedata.DDS_Frequency
 					invoke SetDlgItemInt,hWin,IDC_EDTDDSFRQ,ddswavedata.DDS_Frequency,FALSE
-					invoke DDSHzToPhaseAdd,eax
+					invoke DDSHzToPhaseAdd,ddswavedata.DDS_Frequency
 					mov		ddswavedata.DDS_PhaseFrq,eax
 					invoke FormatFrequency,ddswavedata.DDS_Frequency,addr buffer
 					invoke SetWindowText,hDDS,addr buffer
@@ -282,7 +282,7 @@ DDSChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 				.if ddswavedata.DDS_Frequency<5000000
 					inc		ddswavedata.DDS_Frequency
 					invoke SetDlgItemInt,hWin,IDC_EDTDDSFRQ,ddswavedata.DDS_Frequency,FALSE
-					invoke DDSHzToPhaseAdd,eax
+					invoke DDSHzToPhaseAdd,ddswavedata.DDS_Frequency
 					mov		ddswavedata.DDS_PhaseFrq,eax
 					invoke FormatFrequency,ddswavedata.DDS_Frequency,addr buffer
 					invoke SetWindowText,hDDS,addr buffer

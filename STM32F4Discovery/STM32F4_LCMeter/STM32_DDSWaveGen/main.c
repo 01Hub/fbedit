@@ -20,27 +20,27 @@ typedef struct
   int16_t DCOffset;                                   // 0x0000001C
   uint16_t SPI_Cmnd;                                  // 0x0000001E
   uint16_t SPI_Cnt;                                   // 0x00000020
-  uint16_t Dummy;                                     // 0x00000022
+  uint16_t rx;                                        // 0x00000022
   uint16_t Wave[2048];                                // 0x20000024
 }STM32_CMNDTypeDef;
 
 /* Private define ------------------------------------------------------------*/
 /* DDS WaveType */
-#define WAVE_Sine                 ((uint8_t)1)
-#define WAVE_Triangle             ((uint8_t)2)
-#define WAVE_Square               ((uint8_t)3)
-#define WAVE_SawTooth             ((uint8_t)4)
-#define WAVE_RevSawTooth          ((uint8_t)5)
+#define WAVE_Sine                 ((uint8_t)0)
+#define WAVE_Triangle             ((uint8_t)1)
+#define WAVE_Square               ((uint8_t)2)
+#define WAVE_SawTooth             ((uint8_t)3)
+#define WAVE_RevSawTooth          ((uint8_t)4)
 
-#define SPI_PhaseSet              ((uint8_t)1)
-#define SPI_WaveSet               ((uint8_t)2)
+#define SPI_PhaseSet              ((uint16_t)1)
+#define SPI_WaveSet               ((uint16_t)2)
 
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
-static STM32_CMNDTypeDef STM32_Command;               // 0x20000014
-__IO uint16_t rx;
+__IO STM32_CMNDTypeDef STM32_Command;               // 0x20000014
 
 void DDS_Config(void);
+void SPI_Config(void);
 void DDS_MakeWave(void);
 void DDS_WaveGenerator(void);
 void DDS_WaveLoop(void);
@@ -53,12 +53,13 @@ void DDS_WaveLoop(void);
   */
 int main(void)
 {
-  STM32_Command.WaveType = WAVE_Square;
+  STM32_Command.WaveType = WAVE_Sine;
   STM32_Command.Amplitude = 4095;
   STM32_Command.DCOffset = 4095;
-  STM32_Command.DDS_PhaseFrq = 171798692;//858994;
+  STM32_Command.DDS_PhaseFrq = 858994;
 
   DDS_Config();
+  SPI_Config();
   DDS_MakeWave();
   DDS_WaveGenerator();
 }
@@ -168,90 +169,54 @@ void DDS_WaveGenerator(void)
 
 void SPI2_IRQHandler(void)
 {
-  asm("push   {r4}");
-  // STM_EVAL_LEDToggle(LED3);
-  /* Check the interrupt source */
-  /* RX */
-  if (SPI_I2S_GetITStatus(SPI2, SPI_I2S_IT_RXNE) == SET)
+  /* Get the SPI received data */
+  STM32_Command.rx = SPI2->DR;
+  STM32_Command.SPI_Cnt++;
+  if (STM32_Command.SPI_Cnt == 1)
   {
-    /* Get the SPI received data */
-    rx = SPI_I2S_ReceiveData(SPI2);
-    if (STM32_Command.SPI_Cnt == 0)
+    STM32_Command.SPI_Cmnd = STM32_Command.rx;
+  }
+  else if (STM32_Command.SPI_Cmnd == SPI_PhaseSet)
+  {
+    if (STM32_Command.SPI_Cnt == 2)
     {
-      STM32_Command.SPI_Cmnd = rx;
-      STM32_Command.SPI_Cnt = 1;
-      STM_EVAL_LEDToggle(LED4);
+      STM32_Command.DDS_PhaseFrq = STM32_Command.rx;
     }
-    else if (STM32_Command.SPI_Cmnd == SPI_PhaseSet)
+    else if (STM32_Command.SPI_Cnt == 3)
     {
-      if (STM32_Command.SPI_Cnt == 1)
-      {
-        STM32_Command.DDS_PhaseFrq = rx;
-        STM32_Command.SPI_Cnt = 2;
-      }
-      else
-      {
-        STM32_Command.DDS_PhaseFrq |= rx<<16;
-        STM32_Command.SPI_Cnt = 0;
-        asm("pop    {r4}");
-        asm("movw   r4,#0x0014");
-        asm("movt   r4,#0x2000");       /* STM32_Command.DDSPhaseFrq = 0x20000020 */
-        asm("ldr    r4,[r4,#0x0]");     /* DDSPhaseFrq value */
-        asm("push   {r4}");
-      }
-    }
-    else if (STM32_Command.SPI_Cmnd == SPI_WaveSet)
-    {
-      if (STM32_Command.SPI_Cnt == 1)
-      {
-        STM32_Command.WaveType = rx;
-        STM32_Command.SPI_Cnt = 2;
-      }
-      else if (STM32_Command.SPI_Cnt == 2)
-      {
-        STM32_Command.Amplitude = rx;
-        STM32_Command.SPI_Cnt = 3;
-      }
-      else if (STM32_Command.SPI_Cnt == 3)
-      {
-        STM32_Command.DCOffset = rx;
-        STM32_Command.SPI_Cnt = 0;
-        DDS_MakeWave();
-        asm("pop    {r4}");
-        asm("mov    r4,#0x0");        /* DDSPhaseFrq value */
-        asm("push   {r4}");
-      }
+      STM32_Command.DDS_PhaseFrq |= ((uint32_t)STM32_Command.rx)<<16;
+      STM32_Command.SPI_Cnt = 0;
+      asm("movw   r4,#0x0014");
+      asm("movt   r4,#0x2000");       /* STM32_Command.DDSPhaseFrq = 0x20000020 */
+      asm("ldr    r4,[r4,#0x0]");     /* DDSPhaseFrq value */
     }
   }
-  asm("pop    {r4}");
+  else if (STM32_Command.SPI_Cmnd == SPI_WaveSet)
+  {
+    if (STM32_Command.SPI_Cnt == 2)
+    {
+      STM32_Command.WaveType = STM32_Command.rx;
+    }
+    else if (STM32_Command.SPI_Cnt == 3)
+    {
+      STM32_Command.Amplitude = STM32_Command.rx;
+    }
+    else if (STM32_Command.SPI_Cnt == 4)
+    {
+      STM32_Command.DCOffset = STM32_Command.rx;
+      STM32_Command.SPI_Cnt = 0;
+      DDS_MakeWave();
+    }
+  }
 }
 
 void DDS_Config(void)
 {
   GPIO_InitTypeDef GPIO_InitStructure;
-  SPI_InitTypeDef SPI_InitStructure;
-  NVIC_InitTypeDef NVIC_InitStructure;
-
-  /* GPIOB clock enable */
-  RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE);
-  /* Configure SPI2 SCK and MOSI pins */
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
-	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
-
-  /* SPI SCK pin configuration */
-  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_13;
-  GPIO_Init(GPIOB, &GPIO_InitStructure);
-  /* Connect SPI2 pins to AF5 */  
-  GPIO_PinAFConfig(GPIOB, GPIO_PinSource13, GPIO_AF_SPI2);
-  /* SPI MOSI pin configuration */
-  GPIO_InitStructure.GPIO_Pin =  GPIO_Pin_15;
-  GPIO_Init(GPIOB, &GPIO_InitStructure);
-  GPIO_PinAFConfig(GPIOB, GPIO_PinSource15, GPIO_AF_SPI2);
 
   /* GPIOE clock enable */
   RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOE, ENABLE);
+
   /* DAC port configuration */
   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_15 | GPIO_Pin_14 | GPIO_Pin_13 | GPIO_Pin_12 | GPIO_Pin_11 | GPIO_Pin_10 | GPIO_Pin_9 | GPIO_Pin_8 | GPIO_Pin_7 | GPIO_Pin_6 | GPIO_Pin_5 | GPIO_Pin_4;
   GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_OUT;
@@ -259,6 +224,29 @@ void DDS_Config(void)
   GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
   GPIO_InitStructure.GPIO_PuPd  = GPIO_PuPd_NOPULL;
   GPIO_Init(GPIOE, &GPIO_InitStructure);
+}
+
+void SPI_Config(void)
+{
+  GPIO_InitTypeDef GPIO_InitStructure;
+  SPI_InitTypeDef SPI_InitStructure;
+  NVIC_InitTypeDef NVIC_InitStructure;
+
+  /* GPIOB clock enable */
+  RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE);
+  /* SPI2 clock enable */
+  RCC_APB1PeriphClockCmd(RCC_APB1Periph_SPI2, ENABLE);
+
+  /* Configure SPI2 SCK and MOSI pins */
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_15 | GPIO_Pin_13;
+  GPIO_Init(GPIOB, &GPIO_InitStructure);
+  /* Connect SPI2 pins to AF5 */  
+  GPIO_PinAFConfig(GPIOB, GPIO_PinSource13, GPIO_AF_SPI2);
+  GPIO_PinAFConfig(GPIOB, GPIO_PinSource15, GPIO_AF_SPI2);
 
   /* Enable the SPI2 gloabal Interrupt */
   NVIC_InitStructure.NVIC_IRQChannel = SPI2_IRQn;
@@ -267,22 +255,17 @@ void DDS_Config(void)
   NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
   NVIC_Init(&NVIC_InitStructure);
 
-  /* SPI2 clock enable */
-  RCC_APB1PeriphClockCmd(RCC_APB1Periph_SPI2, ENABLE);
   /* SPI2 configuration */
-  SPI_InitStructure.SPI_Direction = SPI_Direction_1Line_Rx;
+  SPI_InitStructure.SPI_Direction = SPI_Direction_2Lines_FullDuplex;
   SPI_InitStructure.SPI_Mode = SPI_Mode_Slave;
 	SPI_InitStructure.SPI_DataSize = SPI_DataSize_16b;
 	SPI_InitStructure.SPI_CPOL = SPI_CPOL_Low;
-	SPI_InitStructure.SPI_CPHA = SPI_CPHA_2Edge;
+	SPI_InitStructure.SPI_CPHA = SPI_CPHA_1Edge;
 	SPI_InitStructure.SPI_NSS = SPI_NSS_Soft;
-	SPI_InitStructure.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_8;
-	SPI_InitStructure.SPI_FirstBit = SPI_FirstBit_LSB;
+	SPI_InitStructure.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_32;
+	SPI_InitStructure.SPI_FirstBit = SPI_FirstBit_MSB;
   SPI_InitStructure.SPI_CRCPolynomial = 7;
 	SPI_Init(SPI2, &SPI_InitStructure);
   SPI_I2S_ITConfig(SPI2, SPI_I2S_IT_RXNE, ENABLE);
   SPI_Cmd(SPI2, ENABLE);
-
-  STM_EVAL_LEDInit(LED3);
-  STM_EVAL_LEDInit(LED4);
 }

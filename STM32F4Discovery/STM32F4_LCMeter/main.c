@@ -172,13 +172,16 @@ int main(void)
     {
       case CMD_LCMCAL:
         LCM_Calibrate();
+        STM32_CMD.Cmd = CMD_DONE;
         break;
       case CMD_LCMCAP:
         GPIO_ResetBits(GPIOD, GPIO_Pin_0 | GPIO_Pin_1 | GPIO_Pin_2 | GPIO_Pin_6 | GPIO_Pin_7);
+        STM32_CMD.Cmd = CMD_DONE;
         break;
       case CMD_LCMIND:
         GPIO_ResetBits(GPIOD, GPIO_Pin_0 | GPIO_Pin_1 | GPIO_Pin_2 | GPIO_Pin_7);
         GPIO_SetBits(GPIOD, GPIO_Pin_6);
+        STM32_CMD.Cmd = CMD_DONE;
         break;
       case CMD_FRQCH1:
         GPIO_ResetBits(GPIOD, GPIO_Pin_1 | GPIO_Pin_2 | GPIO_Pin_6 | GPIO_Pin_7);
@@ -187,6 +190,7 @@ int main(void)
       case CMD_FRQCH2:
         GPIO_ResetBits(GPIOD, GPIO_Pin_0 | GPIO_Pin_2 | GPIO_Pin_6 | GPIO_Pin_7);
         GPIO_SetBits(GPIOD, GPIO_Pin_1);
+        STM32_CMD.Cmd = CMD_DONE;
         break;
       case CMD_FRQCH3:
         GPIO_ResetBits(GPIOD, GPIO_Pin_2 | GPIO_Pin_6 | GPIO_Pin_7);
@@ -219,6 +223,7 @@ int main(void)
         ADC1->CR2=0;
         ADC2->CR2=0;
         ADC3->CR2=0;
+        STM32_CMD.Cmd = CMD_DONE;
         break;
       case CMD_HSCSET:
         GPIO_ResetBits(GPIOD, GPIO_Pin_1 | GPIO_Pin_2 | GPIO_Pin_6 | GPIO_Pin_7);
@@ -226,6 +231,7 @@ int main(void)
         TIM4->ARR = STM32_CMD.STM32_HSC.HSCSet;
         TIM4->CCR2 = (STM32_CMD.STM32_HSC.HSCSet+1) / 2;
         TIM4->PSC = STM32_CMD.STM32_HSC.HSCDiv;
+        STM32_CMD.Cmd = CMD_DONE;
         break;
       case CMD_DDSSET:
         if (STM32_CMD.STM32_DDS.DDS_Cmd == DDS_PHASESET)
@@ -241,9 +247,9 @@ int main(void)
           SPISendData(STM32_CMD.STM32_DDS.DDS_Amplitude & 0xFFFF);
           SPISendData(STM32_CMD.STM32_DDS.DDS_DCOffset & 0xFFFF);
         }
+        STM32_CMD.Cmd = CMD_DONE;
         break;
     }
-    STM32_CMD.Cmd = CMD_DONE;
   }
 }
 
@@ -294,7 +300,8 @@ void LCM_Calibrate(void)
 void SPISendData(uint16_t tx)
 {
 	SPI2->DR = tx;                            // write data to be transmitted to the SPI data register
-	while( !(SPI2->SR & SPI_I2S_FLAG_TXE) );  // wait until transmit complete
+	while (!(SPI2->SR & SPI_I2S_FLAG_TXE));   // wait until transmit complete
+  while (SPI1->SR & SPI_I2S_FLAG_BSY);      // wait until SPI is not busy anymore
 }
 
 /**
@@ -401,8 +408,8 @@ void GPIO_Config(void)
   /* Configure SPI2 SCK and MOSI pins */
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
   GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-  GPIO_InitStructure.GPIO_PuPd  = GPIO_PuPd_UP;
-  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_25MHz;
+  GPIO_InitStructure.GPIO_PuPd  = GPIO_PuPd_NOPULL;
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
   /* SPI SCK pin configuration */
   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_13;
   GPIO_Init(GPIOB, &GPIO_InitStructure);
@@ -647,10 +654,10 @@ void SPI_Config(void)
 	SPI_InitStructure.SPI_Mode = SPI_Mode_Master;
 	SPI_InitStructure.SPI_DataSize = SPI_DataSize_16b;
 	SPI_InitStructure.SPI_CPOL = SPI_CPOL_Low;
-	SPI_InitStructure.SPI_CPHA = SPI_CPHA_2Edge;
+	SPI_InitStructure.SPI_CPHA = SPI_CPHA_1Edge;
 	SPI_InitStructure.SPI_NSS = SPI_NSS_Soft;
-	SPI_InitStructure.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_8;
-	SPI_InitStructure.SPI_FirstBit = SPI_FirstBit_LSB;
+	SPI_InitStructure.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_32;
+	SPI_InitStructure.SPI_FirstBit = SPI_FirstBit_MSB;
   SPI_InitStructure.SPI_CRCPolynomial = 7;
 	SPI_Init(SPI2, &SPI_InitStructure);
 	SPI_Cmd(SPI2, ENABLE);
