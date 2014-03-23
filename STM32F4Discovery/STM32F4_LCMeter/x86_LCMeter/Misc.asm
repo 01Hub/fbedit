@@ -630,8 +630,8 @@ GetTotalSamples proc uses esi,lpSTM32_Scp:ptr STM32_SCP
 	fdivp	st(1),st
 	fistp	iTmp
 	mov		eax,iTmp
-	.if fSubSampling
-		shl		eax,2
+	.if [esi].STM32_SCP.fSubSampling
+		shl		eax,3
 	.endif
 	shr		eax,2
 	inc		eax
@@ -717,8 +717,6 @@ GetAuto endp
 
 ScopeSubSampling proc uses ebx esi edi
 	LOCAL	nsample:DWORD
-	LOCAL	x1:DWORD
-	LOCAL	x2:DWORD
 	LOCAL	adcperiod:REAL10
 	LOCAL	iTmp:DWORD
 	LOCAL	frq:DWORD

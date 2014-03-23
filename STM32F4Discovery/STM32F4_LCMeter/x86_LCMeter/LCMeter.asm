@@ -104,7 +104,7 @@ SampleThreadProc proc lParam:DWORD
 			.if !eax
 				jmp		Err
 			.endif
-			.if fSubSampling
+			.if STM32_Scp.fSubSampling
 				invoke ScopeSubSampling
 			.endif
 			invoke InvalidateRect,hScpScrn,NULL,TRUE
@@ -283,6 +283,7 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			inc		ebx
 		.endw
 		mov		fThreadDone,TRUE
+		mov		STM32_Scp.ADC_SampleSize,10000h
 	.elseif	eax==WM_COMMAND
 		mov edx,wParam
 		movzx eax,dx

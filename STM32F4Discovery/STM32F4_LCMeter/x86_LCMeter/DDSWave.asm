@@ -6,12 +6,6 @@ DDSGenWave proc uses ebx esi edi
 	mov		ddswavedata.DDS_VMin,4095
 	mov		ddswavedata.DDS_VMax,0
 	mov		eax,ddswavedata.DDS_WaveForm
-	lea		edx,[eax+1]
-;	mov		command.WaveType,edx
-;	mov		edx,ddswavedata.DDS_Amplitude
-;	mov		command.Amplitude,edx
-;	mov		edx,ddswavedata.DDS_DCOffset
-;	mov		command.DCOffset,edx
 	.if !eax
 		mov		esi,offset DDS_SineWave
 		mov		edi,offset ddswavedata.DDS_WaveData
@@ -187,7 +181,7 @@ DDSSetStruct proc cmnd:DWORD
 	mov		eax,ddswavedata.DDS_PhaseFrq
 	mov		STM32_Cmd.STM32_Dds.DDS__PhaseAdd,eax
 	.if connected
-		invoke STLinkWrite,hWnd,20000058h,offset STM32_Cmd.STM32_Dds,sizeof STM32_DDS
+		invoke STLinkWrite,hWnd,2000005Ch,offset STM32_Cmd.STM32_Dds,sizeof STM32_DDS
 		invoke STLinkWrite,hWnd,20000014h,addr mode,DWORD
 	.endif
 	ret
@@ -384,6 +378,10 @@ DDSProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	mDC:HDC
 	LOCAL	hBmp:HBITMAP
 	LOCAL	pt:POINT
+	LOCAL	buffer[128]:BYTE
+	LOCAL	nMin:DWORD
+	LOCAL	nMax:DWORD
+	LOCAL	iTmp:DWORD
 
 	mov		eax,uMsg
 	.if eax==WM_PAINT
@@ -397,6 +395,7 @@ DDSProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		push	eax
 		invoke GetStockObject,BLACK_BRUSH
 		invoke FillRect,mDC,addr rect,eax
+		sub		rect.bottom,TEXTHIGHT
 		; Calculate the scope rect
 		mov		eax,rect.right
 		sub		eax,SCOPEWT
@@ -422,7 +421,10 @@ DDSProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		call	DrawGrid
 		;Draw wave
 		call	DrawWave
+		invoke SelectClipRgn,mDC,NULL
+		call	DrawDDSText
 
+		add		rect.bottom,TEXTHIGHT
 		invoke BitBlt,ps.hdc,0,0,rect.right,rect.bottom,mDC,0,0,SRCCOPY
 		pop		eax
 		invoke SelectObject,mDC,eax
@@ -435,10 +437,43 @@ DDSProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	.endif
 	ret
 
+DrawDDSText:
+	invoke SetBkMode,mDC,TRANSPARENT
+	invoke SetTextColor,mDC,0FFFFFFh
+	;Peak to Peak voltage
+	mov		pt.x,10
+	mov		eax,rect.bottom
+	mov		pt.y,eax
+	mov		eax,nMax
+	sub		eax,nMin
+	mov		ecx,ADCMAXMV
+	imul	ecx
+	mov		ecx,4095
+	idiv	ecx
+	mov		iTmp,eax
+	invoke wsprintf,addr buffer[64],offset szFmtPPV,iTmp
+	;Insert a'.' after the first digit
+	mov		eax,dword ptr buffer[64+1]
+	mov		buffer[64+1],'.'
+	mov		dword ptr buffer[64+2],eax
+	mov		dword ptr buffer[64+6],0
+	invoke lstrcpy,addr buffer,offset szFmtVPP
+	invoke lstrcat,addr buffer,addr buffer[64]
+	lea		esi,buffer
+	call	TextDraw
+	retn
+
+TextDraw:
+	invoke lstrlen,esi
+	invoke TextOut,mDC,pt.x,pt.y,esi,eax
+	retn
+
 DrawWave:
 	invoke CreatePen,PS_SOLID,2,008000h
 	invoke SelectObject,mDC,eax
 	push	eax
+	mov		nMin,4096
+	mov		nMax,0
 	mov		esi,offset ddswavedata.DDS_WaveData
 	xor		edi,edi
 	call	GetPoint
@@ -498,6 +533,12 @@ GetPoint:
 	mov		pt.x,eax
 	;Get y position
 	movzx	eax,word ptr [esi+edi]
+	.if eax<nMin
+		mov		nMin,eax
+	.endif
+	.if eax>nMax
+		mov		nMax,eax
+	.endif
 	sub		eax,DACMAX
 	neg		eax
 	mov		ecx,ddsrect.bottom

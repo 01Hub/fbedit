@@ -111,7 +111,7 @@ STM32_CLOCK						equ 200000000
 ADCSAMPLESIZE					equ 10000h
 ADCSAMPLESTART					equ 64
 ADCMAX							equ 4096
-ADCMAXMV						equ 3000
+ADCMAXMV						equ 2990
 ADCDIVMV						equ 500
 TEXTHIGHT						equ 64
 GRIDSIZE						equ 64
@@ -179,11 +179,12 @@ STM32_SCP struct
 	ADC_TripleMode              DWORD ?         ;0x2000004C
 	ADC_SampleTime              DWORD ?         ;0x20000050
 	ADC_SampleSize				DWORD ?			;0x20000054
+	fSubSampling				DWORD ?
 STM32_SCP ends
 
 STM32_DDS struct
-	DDS_Cmd						WORD ?			;0x20000058
-	DDS_Wave					WORD ?			;0x2000005C
+	DDS_Cmd						WORD ?			;0x2000005C
+	DDS_Wave					WORD ?			;0x2000005E
 	DDS__PhaseAdd				DWORD ?			;0x20000060
 	DDS_Amplitude				DWORD ?			;0x20000064
 	DDS_DCOffset				DWORD ?			;0x20000068
@@ -1015,7 +1016,6 @@ nBtnCount						DWORD ?
 fSampleDone						DWORD ?
 fHoldSampling					DWORD ?
 fNoFrequency					DWORD ?
-fSubSampling					DWORD ?
 fExitThread						DWORD ?
 fThreadDone						DWORD ?
 SampleRate						REAL10 ?
@@ -1024,7 +1024,7 @@ SignalPeriod					DWORD ?
 SamplesPrPeriod					DWORD ?
 STM32_Cmd						STM32_CMD <>
 STM32_Scp						STM32_SCP <>
-ADC_Data						WORD ADCSAMPLESIZE/2 dup(?)
+ADC_Data						WORD ADCSAMPLESIZE dup(?)
 SubSample						DWORD 2048 dup(?)
 SubSampleCount					WORD 2048 dup(?)
 ddswavedata						DDSWAVEDATA <>

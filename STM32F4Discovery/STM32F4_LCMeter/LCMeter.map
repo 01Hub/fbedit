@@ -8,7 +8,7 @@ D:\Ride\Ride\Lib\ARM\std_sbrk_thumb.lib(write.o)
 Allocating common symbols
 Common symbol       size              file
 
-STM32_CMD           0x68              D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.o
+STM32_CMD           0x6c              D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.o
 NVIC_InitStructure  0x4               D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4_discovery.o
 
 Discarded input sections
@@ -1050,26 +1050,26 @@ END GROUP
                 0x08010000                _lastdataromaddress = 0x8010000
                 0x00000000                toobig = (_eidata > _lastdataromaddress)?!!!!!!!!! FLASH IS FULL !!!!!!!!!:0x0
 
-.bss            0x20000014       0x68 load address 0x08001834
+.bss            0x20000014       0x6c load address 0x08001834
                 0x20000014                . = ALIGN (0x4)
                 0x20000014                _sbss = .
                 0x20000014                _bss = .
  *(.bss)
  *(COMMON)
- COMMON         0x20000014       0x68 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.o
+ COMMON         0x20000014       0x6c D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.o
                 0x20000014                STM32_CMD
-                0x2000007c                . = ALIGN (0x4)
-                0x2000007c                _ebss = .
-                0x2000007c                PROVIDE (end, _ebss)
-                0x2000007c                PROVIDE (_end, _ebss)
+                0x20000080                . = ALIGN (0x4)
+                0x20000080                _ebss = .
+                0x20000080                PROVIDE (end, _ebss)
+                0x20000080                PROVIDE (_end, _ebss)
 
-._usrstack      0x2000007c      0x100 load address 0x0800189c
-                0x2000007c                . = ALIGN (0x4)
-                0x2000007c                _susrstack = .
-                0x2000017c                . = (. + _Minimum_Stack_Size)
- *fill*         0x2000007c      0x100 00
-                0x2000017c                . = ALIGN (0x4)
-                0x2000017c                _eusrstack = .
+._usrstack      0x20000080      0x100 load address 0x080018a0
+                0x20000080                . = ALIGN (0x4)
+                0x20000080                _susrstack = .
+                0x20000180                . = (. + _Minimum_Stack_Size)
+ *fill*         0x20000080      0x100 00
+                0x20000180                . = ALIGN (0x4)
+                0x20000180                _eusrstack = .
 
 .b1text
  *(.b1text)
@@ -1095,8 +1095,8 @@ END GROUP
  *(.eb3text)
  *(.eb3rodata)
  *(.eb3rodata*)
-                0x2000017c                __exidx_start = .
-                0x2000017c                __exidx_end = .
+                0x20000180                __exidx_start = .
+                0x20000180                __exidx_end = .
 
 /DISCARD/
  libc.a(*)
@@ -1239,20 +1239,20 @@ END GROUP
  .debug_pubnames
                 0x000018b4      0x221 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_spi.o
 
-.debug_info     0x00000000     0x8133
+.debug_info     0x00000000     0x8141
  *(.debug_info .gnu.linkonce.wi.*)
- .debug_info    0x00000000     0x12c8 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.o
- .debug_info    0x000012c8      0x14c D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_it.o
- .debug_info    0x00001414      0xd05 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_rcc.o
- .debug_info    0x00002119      0x62d D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_gpio.o
- .debug_info    0x00002746     0x1e20 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_tim.o
- .debug_info    0x00004566      0x598 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\misc.o
- .debug_info    0x00004afe      0x635 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\system_stm32f4xx.o
- .debug_info    0x00005133      0x963 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4_discovery.o
- .debug_info    0x00005a96      0x78d D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_dma.o
- .debug_info    0x00006223      0xcce D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_adc.o
- .debug_info    0x00006ef1      0x68d D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_dac.o
- .debug_info    0x0000757e      0xbb5 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_spi.o
+ .debug_info    0x00000000     0x12d6 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.o
+ .debug_info    0x000012d6      0x14c D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_it.o
+ .debug_info    0x00001422      0xd05 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_rcc.o
+ .debug_info    0x00002127      0x62d D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_gpio.o
+ .debug_info    0x00002754     0x1e20 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_tim.o
+ .debug_info    0x00004574      0x598 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\misc.o
+ .debug_info    0x00004b0c      0x635 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\system_stm32f4xx.o
+ .debug_info    0x00005141      0x963 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4_discovery.o
+ .debug_info    0x00005aa4      0x78d D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_dma.o
+ .debug_info    0x00006231      0xcce D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_adc.o
+ .debug_info    0x00006eff      0x68d D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_dac.o
+ .debug_info    0x0000758c      0xbb5 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_spi.o
 
 .debug_abbrev   0x00000000     0x1355
  *(.debug_abbrev)
@@ -1299,31 +1299,31 @@ END GROUP
  .debug_frame   0x00001214      0x13c D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_dac.o
  .debug_frame   0x00001350      0x1cc D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_spi.o
 
-.debug_str      0x00000000     0x3577
+.debug_str      0x00000000     0x3583
  *(.debug_str)
- .debug_str     0x00000000     0x108a D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.o
-                               0x10e3 (size before relaxing)
- .debug_str     0x0000108a       0xe4 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_it.o
+ .debug_str     0x00000000     0x1096 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.o
+                               0x10ef (size before relaxing)
+ .debug_str     0x00001096       0xe4 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_it.o
                                 0x189 (size before relaxing)
- .debug_str     0x0000116e      0x6a0 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_rcc.o
+ .debug_str     0x0000117a      0x6a0 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_rcc.o
                                 0x7fe (size before relaxing)
- .debug_str     0x0000180e      0x1af D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_gpio.o
+ .debug_str     0x0000181a      0x1af D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_gpio.o
                                 0x451 (size before relaxing)
- .debug_str     0x000019bd      0xa0a D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_tim.o
+ .debug_str     0x000019c9      0xa0a D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_tim.o
                                 0xd7e (size before relaxing)
- .debug_str     0x000023c7      0x1ba D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\misc.o
+ .debug_str     0x000023d3      0x1ba D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\misc.o
                                 0x387 (size before relaxing)
- .debug_str     0x00002581       0xd6 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\system_stm32f4xx.o
+ .debug_str     0x0000258d       0xd6 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\system_stm32f4xx.o
                                 0x319 (size before relaxing)
- .debug_str     0x00002657      0x28f D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4_discovery.o
+ .debug_str     0x00002663      0x28f D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4_discovery.o
                                 0xa9f (size before relaxing)
- .debug_str     0x000028e6      0x283 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_dma.o
+ .debug_str     0x000028f2      0x283 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_dma.o
                                 0x4fd (size before relaxing)
- .debug_str     0x00002b69      0x4de D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_adc.o
+ .debug_str     0x00002b75      0x4de D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_adc.o
                                 0x7b5 (size before relaxing)
- .debug_str     0x00003047      0x22e D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_dac.o
+ .debug_str     0x00003053      0x22e D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_dac.o
                                 0x401 (size before relaxing)
- .debug_str     0x00003275      0x302 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_spi.o
+ .debug_str     0x00003281      0x302 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_spi.o
                                 0x638 (size before relaxing)
 
 .debug_loc      0x00000000     0x38a1

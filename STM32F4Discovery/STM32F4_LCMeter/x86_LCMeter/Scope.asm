@@ -92,7 +92,7 @@ ScpChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 				mov		STM32_Cmd.STM32_Scp.ScopeTrigger,eax
 				invoke InvalidateRect,hScpScrn,NULL,TRUE
 			.elseif eax==IDC_CHKSUBSAMPLING
-				xor		fSubSampling,TRUE
+				xor		STM32_Cmd.STM32_Scp.fSubSampling,TRUE
 			.elseif eax==IDC_CHKHOLDSAMPLING
 				xor		fHoldSampling,TRUE
 			.elseif eax==IDC_BTNSRD
@@ -291,7 +291,6 @@ ScopeProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	mDC:HDC
 	LOCAL	hBmp:HBITMAP
 	LOCAL	pt:POINT
-	LOCAL	samplesize:DWORD
 	LOCAL	iTmp:DWORD
 	LOCAL	fTmp:REAL10
 	LOCAL	nMin:DWORD
@@ -352,13 +351,12 @@ ScopeProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		eax,ScopeRange.ydiv[eax]
 		mov		ydiv,eax
 
-		mov		samplesize,ADCSAMPLESIZE
 		;Get nMin and nMax
 		mov		esi,offset ADC_Data
 		mov		ecx,ADCMAX
 		mov		edx,0
 		mov		edi,16
-		.while edi<samplesize
+		.while edi<STM32_Scp.ADC_SampleSize
 			movzx	eax,word ptr [esi+edi]
 			.if eax<ecx
 				mov		ecx,eax
@@ -464,12 +462,14 @@ ScopeProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 DrawScpText:
 	invoke SetBkMode,mDC,TRANSPARENT
 	invoke SetTextColor,mDC,0FFFFFFh
+	;Voltage / Div
 	mov		eax,vdofs
 	lea		esi,ScopeRange.range[eax]
 	mov		pt.x,10
 	mov		eax,rect.bottom
 	mov		pt.y,eax
 	call	TextDraw
+	;Peak to Peak voltage
 	mov		pt.x,200
 	mov		eax,nMax
 	sub		eax,nMin
@@ -492,6 +492,7 @@ DrawScpText:
 	invoke lstrcat,addr buffer,addr buffer[64]
 	lea		esi,buffer
 	call	TextDraw
+	;Time / Div
 	mov		pt.x,10
 	add		pt.y,20
 	mov		eax,STM32_Cmd.STM32_Scp.ScopeTimeDiv
@@ -499,6 +500,7 @@ DrawScpText:
 	mul		ecx
 	lea		esi,ScopeTime.range[eax]
 	call	TextDraw
+	;Signal period
 	mov		eax,STM32_Cmd.STM32_Frq.FrequencySCP
 	.if eax
 		mov		pt.x,200
@@ -591,7 +593,7 @@ DrawCurve:
 	invoke CreatePen,PS_SOLID,2,008000h
 	invoke SelectObject,mDC,eax
 	push	eax
-	.if fSubSampling && !fNoFrequency
+	.if STM32_Scp.fSubSampling && !fNoFrequency
 		fld		ten_9
 		fild	STM32_Cmd.STM32_Frq.FrequencySCP
 		fdivp	st(1),st
@@ -626,7 +628,7 @@ DrawCurve:
 		mov		prevpty,eax
 		lea		edi,[edi+WORD]
 		lea		ebx,[ebx+1]
-		.while edi<samplesize
+		.while edi<STM32_Scp.ADC_SampleSize
 			call	GetPoint
 			invoke LineTo,mDC,pt.x,pt.y
 			call	IsTrigger

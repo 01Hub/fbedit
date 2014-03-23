@@ -71,12 +71,13 @@ typedef struct
   uint32_t ADC_TripleMode;                      // 0x2000004C
   uint32_t ADC_SampleTime;                      // 0x20000050
   uint32_t ADC_SampleSize;                      // 0x20000054
+  uint32_t SubSampling;                         // 0x20000058
 } STM32_SCPTypeDef;
 
 typedef struct
 {
-  uint16_t DDS_Cmd;                             // 0x20000058
-  uint16_t DDS_Wave;                            // 0x2000005C
+  uint16_t DDS_Cmd;                             // 0x2000005C
+  uint16_t DDS_Wave;                            // 0x2000005E
   uint32_t DDS__PhaseAdd;                       // 0x20000060
   uint32_t DDS_Amplitude;                       // 0x20000064
   uint32_t DDS_DCOffset;                        // 0x20000068
@@ -89,7 +90,7 @@ typedef struct
   STM32_FRQTypeDef STM32_FRQ;                   // 0x20000020
   STM32_LCMTypeDef STM32_LCM;                   // 0x20000028
   STM32_SCPTypeDef STM32_SCP;                   // 0x20000030
-  STM32_DDSTypeDef STM32_DDS;                   // 0x20000058
+  STM32_DDSTypeDef STM32_DDS;                   // 0x2000005C
   uint32_t TickCount;
   uint32_t PreviousCountTIM2;
   uint32_t ThisCountTIM2;
