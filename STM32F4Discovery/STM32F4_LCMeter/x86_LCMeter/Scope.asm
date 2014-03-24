@@ -309,6 +309,8 @@ ScopeProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	xofs:DWORD
 	LOCAL	vdofs:DWORD
 	LOCAL	ydiv:DWORD
+	LOCAL	xsinf:SCROLLINFO
+	LOCAL	ysinf:SCROLLINFO
 
 	mov		eax,uMsg
 	.if eax==WM_PAINT
@@ -454,6 +456,124 @@ ScopeProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke DeleteDC,mDC
 		invoke EndPaint,hWin,addr ps
 		xor		eax,eax
+	.elseif eax==WM_HSCROLL
+		mov		xsinf.cbSize,sizeof SCROLLINFO
+		mov		xsinf.fMask,SIF_ALL
+		invoke GetScrollInfo,hWin,SB_HORZ,addr xsinf
+		mov		eax,wParam
+		movzx	eax,ax
+		.if eax==SB_THUMBPOSITION
+			mov		eax,xsinf.nTrackPos
+			mov		scopexofs,eax
+			invoke SetScrollPos,hWin,SB_HORZ,eax,TRUE
+			invoke InvalidateRect,hWin,NULL,TRUE
+		.elseif  eax==SB_THUMBTRACK
+			mov		eax,xsinf.nTrackPos
+			mov		scopexofs,eax
+			invoke SetScrollPos,hWin,SB_HORZ,eax,TRUE
+			invoke InvalidateRect,hWin,NULL,TRUE
+		.elseif  eax==SB_LINELEFT
+			mov		eax,xsinf.nPos
+			sub		eax,10
+			.if CARRY?
+				xor		eax,eax
+			.endif
+			mov		scopexofs,eax
+			invoke SetScrollPos,hWin,SB_HORZ,eax,TRUE
+			invoke InvalidateRect,hWin,NULL,TRUE
+		.elseif eax==SB_LINERIGHT
+			mov		eax,xsinf.nPos
+			add		eax,10
+			mov		scopexofs,eax
+			invoke SetScrollPos,hWin,SB_HORZ,eax,TRUE
+			invoke InvalidateRect,hWin,NULL,TRUE
+		.elseif eax==SB_PAGELEFT
+			mov		eax,xsinf.nPos
+			sub		eax,xsinf.nPage
+			.if CARRY?
+				xor		eax,eax
+			.endif
+			mov		scopexofs,eax
+			invoke SetScrollPos,hWin,SB_HORZ,eax,TRUE
+			invoke InvalidateRect,hWin,NULL,TRUE
+		.elseif eax==SB_PAGERIGHT
+			mov		eax,xsinf.nPos
+			add		eax,xsinf.nPage
+			mov		scopexofs,eax
+			invoke SetScrollPos,hWin,SB_HORZ,eax,TRUE
+			invoke InvalidateRect,hWin,NULL,TRUE
+		.endif
+		xor		eax,eax
+	.elseif eax==WM_VSCROLL
+		mov		ysinf.cbSize,sizeof SCROLLINFO
+		mov		ysinf.fMask,SIF_ALL
+		invoke GetScrollInfo,hWin,SB_VERT,addr ysinf
+		mov		eax,wParam
+		movzx	eax,ax
+		.if eax==SB_THUMBPOSITION
+			mov		eax,ysinf.nTrackPos
+			mov		scopeyofs,eax
+			invoke SetScrollPos,hWin,SB_VERT,eax,TRUE
+			invoke InvalidateRect,hWin,NULL,TRUE
+		.elseif  eax==SB_THUMBTRACK
+			mov		eax,ysinf.nTrackPos
+			mov		scopeyofs,eax
+			invoke SetScrollPos,hWin,SB_VERT,eax,TRUE
+			invoke InvalidateRect,hWin,NULL,TRUE
+		.elseif  eax==SB_LINELEFT
+			mov		eax,ysinf.nPos
+			sub		eax,10
+			.if CARRY?
+				xor		eax,eax
+			.endif
+			mov		scopeyofs,eax
+			invoke SetScrollPos,hWin,SB_VERT,eax,TRUE
+			invoke InvalidateRect,hWin,NULL,TRUE
+		.elseif eax==SB_LINERIGHT
+			mov		eax,ysinf.nPos
+			add		eax,10
+			mov		scopeyofs,eax
+			invoke SetScrollPos,hWin,SB_VERT,eax,TRUE
+			invoke InvalidateRect,hWin,NULL,TRUE
+		.elseif eax==SB_PAGELEFT
+			mov		eax,ysinf.nPos
+			sub		eax,ysinf.nPage
+			.if CARRY?
+				xor		eax,eax
+			.endif
+			mov		scopeyofs,eax
+			invoke SetScrollPos,hWin,SB_VERT,eax,TRUE
+			invoke InvalidateRect,hWin,NULL,TRUE
+		.elseif eax==SB_PAGERIGHT
+			mov		eax,ysinf.nPos
+			add		eax,ysinf.nPage
+			mov		scopeyofs,eax
+			invoke SetScrollPos,hWin,SB_VERT,eax,TRUE
+			invoke InvalidateRect,hWin,NULL,TRUE
+		.endif
+		xor		eax,eax
+	.elseif eax==WM_CREATE
+		;Init horizontal scrollbar
+		mov		xsinf.cbSize,sizeof SCROLLINFO
+		mov		xsinf.fMask,SIF_ALL
+		invoke GetScrollInfo,hWin,SB_HORZ,addr xsinf
+		mov		xsinf.nMin,0
+		mov		xsinf.nMax,SCOPEWT+GRIDSIZE-1
+		mov		xsinf.nPos,SCOPEWT/2
+		mov		xsinf.nPage,GRIDSIZE
+		invoke SetScrollInfo,hWin,SB_HORZ,addr xsinf,TRUE
+		mov		scopexofs,SCOPEWT/2
+		;Init vertical scrollbar
+		mov		ysinf.cbSize,sizeof SCROLLINFO
+		mov		ysinf.fMask,SIF_ALL
+		invoke GetScrollInfo,hWin,SB_VERT,addr ysinf
+		mov		ysinf.nMin,0
+		mov		ysinf.nMax,SCOPEHT+GRIDSIZE-1
+		mov		ysinf.nPos,SCOPEHT/2
+		mov		ysinf.nPage,GRIDSIZE
+		invoke SetScrollInfo,hWin,SB_VERT,addr ysinf,TRUE
+		mov		scopeyofs,SCOPEHT/2
+		xor		eax,eax
 	.else
 		invoke DefWindowProc,hWin,uMsg,wParam,lParam
 	.endif
@@ -549,8 +669,11 @@ DrawTrigger:
 		invoke CreatePen,PS_SOLID,1,0000C0h
 		invoke SelectObject,mDC,eax
 		push	eax
-		invoke MoveToEx,mDC,scprect.left,tpos,NULL
-		invoke LineTo,mDC,scprect.right,tpos
+		mov		ebx,scopeyofs
+		sub		ebx,SCOPEHT/2
+		add		ebx,tpos
+		invoke MoveToEx,mDC,scprect.left,ebx,NULL
+		invoke LineTo,mDC,scprect.right,ebx
 		pop		eax
 		invoke SelectObject,mDC,eax
 		invoke DeleteObject,eax
@@ -730,6 +853,8 @@ GetPoint:
 	mov		eax,iTmp
 	add		eax,SCOPEHT/2
 	add		eax,scprect.top
+	add		eax,scopeyofs
+	sub		eax,SCOPEHT/2
 	mov		pt.y,eax
 	retn
 
@@ -775,6 +900,8 @@ GetPointSubSample:
 		mov		eax,iTmp
 		add		eax,SCOPEHT/2
 		add		eax,scprect.top
+		add		eax,scopeyofs
+		sub		eax,SCOPEHT/2
 	.endif
 	mov		pt.y,eax
 	retn

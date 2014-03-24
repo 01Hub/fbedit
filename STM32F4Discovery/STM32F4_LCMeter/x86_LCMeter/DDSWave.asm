@@ -271,6 +271,7 @@ DDSChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 					invoke FormatFrequency,ddswavedata.DDS_Frequency,addr buffer
 					invoke SetWindowText,hDDS,addr buffer
 					invoke DDSSetStruct,DDS_PHASESET
+					invoke InvalidateRect,hDDSScrn,NULL,TRUE
 				.endif
 			.elseif eax==IDC_BTNDDSFRQUP
 				.if ddswavedata.DDS_Frequency<5000000
@@ -281,6 +282,7 @@ DDSChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 					invoke FormatFrequency,ddswavedata.DDS_Frequency,addr buffer
 					invoke SetWindowText,hDDS,addr buffer
 					invoke DDSSetStruct,DDS_PHASESET
+					invoke InvalidateRect,hDDSScrn,NULL,TRUE
 				.endif
 			.elseif eax==IDC_BTNDDSWAVEDN
 				mov		eax,ddswavedata.DDS_WaveForm
@@ -337,6 +339,7 @@ DDSChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 				invoke FormatFrequency,ddswavedata.DDS_Frequency,addr buffer
 				invoke SetWindowText,hDDS,addr buffer
 				invoke DDSSetStruct,DDS_PHASESET
+				invoke InvalidateRect,hDDSScrn,NULL,TRUE
 			.endif
 		.endif
 	.elseif eax==WM_HSCROLL
@@ -382,6 +385,7 @@ DDSProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	nMin:DWORD
 	LOCAL	nMax:DWORD
 	LOCAL	iTmp:DWORD
+	LOCAL	fTmp:REAL10
 
 	mov		eax,uMsg
 	.if eax==WM_PAINT
@@ -461,6 +465,42 @@ DrawDDSText:
 	invoke lstrcat,addr buffer,addr buffer[64]
 	lea		esi,buffer
 	call	TextDraw
+	;Signal period
+	mov		eax,ddswavedata.DDS_Frequency
+	.if eax
+		mov		pt.x,200
+		mov		iTmp,eax
+		.if eax>1000000
+			;Get signals period in ns
+			fld		ten_9
+			mov		ebx,offset sznS
+		.elseif eax>1000
+			;Get signals period in us
+			fld		ten_6
+			mov		ebx,offset szuS
+		.else
+			;Get signals period in ms
+			fld		ten_3
+			mov		ebx,offset szmS
+		.endif
+		fild	iTmp
+		fdivp	st(1),st
+		fstp	fTmp
+		invoke FpToAscii,addr fTmp,addr buffer[64],FALSE
+		mov		eax,64
+		.while buffer[eax]
+			.if buffer[eax]=='.'
+				mov		buffer[eax+4],0
+				.break
+			.endif
+			inc		eax
+		.endw
+		invoke lstrcpy,addr buffer,offset szFmtPER
+		invoke lstrcat,addr buffer,addr buffer[64]
+		invoke lstrcat,addr buffer,ebx
+		lea		esi,buffer
+		call	TextDraw
+	.endif
 	retn
 
 TextDraw:

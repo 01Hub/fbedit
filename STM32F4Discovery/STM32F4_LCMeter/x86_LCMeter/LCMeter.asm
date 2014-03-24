@@ -232,11 +232,25 @@ LcmChildProc endp
 DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	buffer[32]:BYTE
 	LOCAL	tid:DWORD
+	LOCAL	tci:TC_ITEM
 
 	mov		eax,uMsg
 	.if	eax==WM_INITDIALOG
 		mov		eax,hWin
 		mov		hWnd,eax
+		;Create the tabs
+		invoke GetDlgItem,hWin,IDC_TABFUNCTION
+		mov		ebx,eax
+		mov		tci.imask,TCIF_TEXT
+		mov		tci.pszText,offset szLCM
+		invoke SendMessage,ebx,TCM_INSERTITEM,0,addr tci
+		mov		tci.pszText,offset szFerquencyCH1
+		invoke SendMessage,ebx,TCM_INSERTITEM,1,addr tci
+		mov		tci.pszText,offset szScope
+		invoke SendMessage,ebx,TCM_INSERTITEM,2,addr tci
+		mov		tci.pszText,offset szDDS
+		invoke SendMessage,ebx,TCM_INSERTITEM,3,addr tci
+
 		mov		STM32_Cmd.STM32_Hsc.HSCDiv,50000-1
 		mov		STM32_Cmd.STM32_Hsc.HSCSet,1
 		mov		STM32_Cmd.STM32_Scp.ADC_Prescaler,0
@@ -284,6 +298,7 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.endw
 		mov		fThreadDone,TRUE
 		mov		STM32_Scp.ADC_SampleSize,10000h
+		invoke SetMode
 	.elseif	eax==WM_COMMAND
 		mov edx,wParam
 		movzx eax,dx
@@ -304,54 +319,6 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.endif
 			.elseif eax==IDCANCEL
 				invoke	SendMessage,hWin,WM_CLOSE,NULL,NULL
-			.elseif eax==IDC_BTNMODE
-				.if mode==CMD_LCMCAP || mode==CMD_LCMIND
-					;High Speed Clock
-					invoke ShowWindow,hScpCld,SW_HIDE
-					invoke ShowWindow,hLcmCld,SW_HIDE
-					invoke ShowWindow,hHscCld,SW_SHOW
-					mov		mode,CMD_FRQCH1
-					.if connected
-						invoke STLinkWrite,hWin,20000014h,addr mode,DWORD
-						.if !eax
-							invoke KillTimer,hWin,1000
-							jmp		Err
-						.endif
-					.endif
-				.elseif mode==CMD_FRQCH1
-					;Scope
-					invoke ShowWindow,hLcmCld,SW_HIDE
-					invoke ShowWindow,hHscCld,SW_HIDE
-					invoke ShowWindow,hScpCld,SW_SHOW
-					invoke ShowWindow,hScpScrnCld,SW_SHOW
-					invoke ShowWindow,hDDSScrnCld,SW_HIDE
-					mov		fSampleDone,TRUE
-					mov		mode,CMD_SCPSET
-				.elseif mode==CMD_SCPSET
-					;DDSWave
-					invoke ShowWindow,hScpCld,SW_HIDE
-					invoke ShowWindow,hHscCld,SW_HIDE
-					invoke ShowWindow,hLcmCld,SW_HIDE
-					invoke ShowWindow,hDDSCld,SW_SHOW
-					invoke ShowWindow,hDDSScrnCld,SW_SHOW
-					invoke ShowWindow,hScpScrnCld,SW_HIDE
-					mov		mode,CMD_DDSSET
-				.elseif mode==CMD_DDSSET
-					;LCMeter
-					invoke ShowWindow,hScpCld,SW_HIDE
-					invoke ShowWindow,hHscCld,SW_HIDE
-					invoke ShowWindow,hDDSCld,SW_HIDE
-					invoke ShowWindow,hLcmCld,SW_SHOW
-					mov		mode,CMD_LCMCAP
-					.if connected
-						invoke STLinkWrite,hWin,20000014h,addr mode,DWORD
-						.if !eax
-							invoke KillTimer,hWin,1000
-							jmp		Err
-						.endif
-					.endif
-				.endif
-				invoke SetMode
 			.endif
 		.endif
 	.elseif	eax==WM_TIMER
@@ -402,6 +369,60 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke STLinkDisconnect,hWin
 		invoke DeleteObject,hFont
 		invoke EndDialog,hWin,0
+	.elseif eax==WM_NOTIFY
+		mov		eax,lParam
+		mov		eax,[eax].NMHDR.code
+		.if eax==TCN_SELCHANGE
+			;Tab selection
+			invoke SendDlgItemMessage,hWin,IDC_TABFUNCTION,TCM_GETCURSEL,0,0
+			.if !eax
+				;LC Meter
+				invoke ShowWindow,hScpCld,SW_HIDE
+				invoke ShowWindow,hHscCld,SW_HIDE
+				invoke ShowWindow,hDDSCld,SW_HIDE
+				invoke ShowWindow,hLcmCld,SW_SHOW
+				mov		mode,CMD_LCMCAP
+				.if connected
+					invoke STLinkWrite,hWin,20000014h,addr mode,DWORD
+					.if !eax
+						invoke KillTimer,hWin,1000
+						jmp		Err
+					.endif
+				.endif
+			.elseif eax==1
+				;High Speed Clock
+				invoke ShowWindow,hScpCld,SW_HIDE
+				invoke ShowWindow,hLcmCld,SW_HIDE
+				invoke ShowWindow,hHscCld,SW_SHOW
+				mov		mode,CMD_FRQCH1
+				.if connected
+					invoke STLinkWrite,hWin,20000014h,addr mode,DWORD
+					.if !eax
+						invoke KillTimer,hWin,1000
+						jmp		Err
+					.endif
+				.endif
+			.elseif eax==2
+				;Scope
+				invoke ShowWindow,hLcmCld,SW_HIDE
+				invoke ShowWindow,hHscCld,SW_HIDE
+				invoke ShowWindow,hScpCld,SW_SHOW
+				invoke ShowWindow,hScpScrnCld,SW_SHOW
+				invoke ShowWindow,hDDSScrnCld,SW_HIDE
+				mov		fSampleDone,TRUE
+				mov		mode,CMD_SCPSET
+			.elseif eax==3
+				;DDSWave
+				invoke ShowWindow,hScpCld,SW_HIDE
+				invoke ShowWindow,hHscCld,SW_HIDE
+				invoke ShowWindow,hLcmCld,SW_HIDE
+				invoke ShowWindow,hDDSCld,SW_SHOW
+				invoke ShowWindow,hDDSScrnCld,SW_SHOW
+				invoke ShowWindow,hScpScrnCld,SW_HIDE
+				mov		mode,CMD_DDSSET
+			.endif
+			invoke SetMode
+		.endif
 	.else
 		mov		eax,FALSE
 		ret

@@ -33,7 +33,7 @@ includelib \RadASM30\masm\lib\debug.lib
 ;#########################################################################
 
 IDD_MAIN						equ 101
-IDC_BTNMODE						equ 105
+IDC_TABFUNCTION					equ 102
 
 IDD_DLGLCMETER					equ 1000
 IDC_UDCLCM						equ 1001
@@ -242,9 +242,10 @@ szDDSCLASS						BYTE 'DDSCLASS',0
 Tahoma_36						LOGFONT <-36,0,0,0,400,0,0,0,0,3,2,1,34,"Tahoma">
 
 szLCMeter						BYTE 'LC Meter - ',0
+szLCM							BYTE 'LC Meter',0
 szCapacitance					BYTE 'Capacitance',0
 szInductance					BYTE 'Inductance',0
-szFerquencyCH1					BYTE 'Ferquency CH1',0
+szFerquencyCH1					BYTE 'High speed clock',0
 szFerquencyCH2					BYTE 'Ferquency CH2',0
 szFerquencyCH3					BYTE 'Ferquency CH3',0
 szScope							BYTE 'Scope',0
@@ -1028,5 +1029,7 @@ ADC_Data						WORD ADCSAMPLESIZE dup(?)
 SubSample						DWORD 2048 dup(?)
 SubSampleCount					WORD 2048 dup(?)
 ddswavedata						DDSWAVEDATA <>
+scopexofs						DWORD ?
+scopeyofs						DWORD ?
 
 ;#########################################################################
