@@ -9,16 +9,15 @@
 				<3>374</3>
 				<4>67</4>
 				<5>145</5>
-																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																				
+																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																
 			</CodeReport>
-																																																																																																																																																																																																																																																																																																																																																																																												
+																																																																																																																																																																																																																																																																																																																																																																																																																
 		</CodeView>
 		<MemoryView Focus="134218120" TopRow="0" NbPerLine="8" />
-																																																																																																																																																																																																																																				
+																																																																																																																																																																																																																																																
 	</FrequencyCounter>
 	<LCMeter>
-		<MemoryView Focus="134218120" TopRow="0" NbPerLine="8" />
-		<CodeView TopRow="134220106" Focus="4294967295" >
+		<CodeView TopRow="134220194" Focus="4294967295" >
 			<CodeReport>
 				<0>93</0>
 				<1>102</1>
@@ -26,11 +25,12 @@
 				<3>310</3>
 				<4>56</4>
 				<5>118</5>
-																																																																																																																																																																																																																																																																																																						
+														
 			</CodeReport>
-																																																																																																																																																																																																																		
+										
 		</CodeView>
-																																																																																																																														
+		<MemoryView Focus="134218120" TopRow="0" NbPerLine="8" />
+						
 	</LCMeter>
 	<Flags>
 		<Report>
@@ -54,7 +54,7 @@
 			
 	</Flags>
 	<Views>
-		<View File="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" Line="83" Index="0" focus="1" />
+		<View File="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" Line="115" Index="0" focus="1" />
 	</Views>
 	<Grep>
 		<GrepIncludeSub>yes</GrepIncludeSub>
@@ -88,6 +88,9 @@
 		</GrepReplaceWhat>
 	</Grep>
 	<FindStrings>
+		<Find>= SystemCoreClock</Find>
+		<Find>PCLK2_Frequency</Find>
+		<Find>USART3</Find>
 		<Find>LED4</Find>
 		<Find>IS_SPI_I2S_CLEAR_IT</Find>
 		<Find>SPI_I2S_ClearITPendingBit</Find>

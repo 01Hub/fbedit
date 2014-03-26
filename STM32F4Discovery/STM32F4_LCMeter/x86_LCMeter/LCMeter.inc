@@ -4,26 +4,18 @@ include	kernel32.inc
 include	user32.inc
 include	comctl32.inc
 include gdi32.inc
+include wsock32.inc
+include ws2_32.inc
 
 includelib kernel32.lib
 includelib user32.lib
 includelib comctl32.lib
 includelib gdi32.lib
-
-includelib STLinkLib.lib
-
-STLinkConnect					PROTO hWin:HWND
-STLinkDisconnect				PROTO hWin:HWND
-STLinkRead 						PROTO hWin:HWND,rdadr:DWORD,wradr:DWORD,nBytes:DWORD
-STLinkWrite						PROTO hWin:HWND,wradr:DWORD,rdadr:DWORD,nBytes:DWORD
+includelib wsock32.lib
+includelib ws2_32.lib
 
 ;#########################################################################
 ;VKim's Debug
-
-;include masm32.inc
-;include Debug.Inc
-;includelib masm32.lib
-;includelib Debug.lib
 
 include masm32.inc
 include \RadASM30\masm\inc\debug.inc
@@ -243,6 +235,7 @@ Tahoma_36						LOGFONT <-36,0,0,0,400,0,0,0,0,3,2,1,34,"Tahoma">
 
 szLCMeter						BYTE 'LC Meter - ',0
 szLCM							BYTE 'LC Meter',0
+szCalibrate						BYTE 'Calibrate',0
 szCapacitance					BYTE 'Capacitance',0
 szInductance					BYTE 'Inductance',0
 szFerquencyCH1					BYTE 'High speed clock',0

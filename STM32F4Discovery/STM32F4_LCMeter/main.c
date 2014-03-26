@@ -34,6 +34,8 @@
   PD.02         Frequency counter select2
   PD.06         LCMeter L/C selection, C = Low L = High
   PD.07         LCMeter calibration
+  PD.08         USART3 TX
+  PD.09         USART3 RX
   ******************************************************************************
   */
 
@@ -96,6 +98,7 @@ typedef struct
   uint32_t ThisCountTIM2;
   uint32_t PreviousCountTIM5;
   uint32_t ThisCountTIM5;
+  char BTBuff[64];
 } STM32_CMDTypeDef;
 
 /* Private define ------------------------------------------------------------*/
@@ -132,10 +135,14 @@ void ADC_SingleConfig(void);
 void DMA_TripleConfig(void);
 void ADC_TripleConfig(void);
 void SPI_Config(void);
+void USART_Config(uint32_t Baud);
 void ScopeSubSampling(void);
 uint32_t GetFrequency(void);
 void LCM_Calibrate(void);
 void SPISendData(uint16_t tx);
+void USART3_putdata(uint8_t *dat,uint16_t len);
+void USART3_puts(char *str);
+void USART3_getdata(uint8_t *dat,uint16_t len);
 
 /* Private functions ---------------------------------------------------------*/
 
@@ -152,6 +159,7 @@ int main(void)
        To reconfigure the default setting of SystemInit() function, refer to
        system_stm32f4xx.c file
   */
+  __IO uint32_t i;
 
   /* RCC Configuration */
   RCC_Config();
@@ -165,44 +173,84 @@ int main(void)
   DAC_Config();
   /* SPI Configuration */
   SPI_Config();
+  /* USART Configuration */
+  USART_Config(115200);
   /* Calibrate LC Meter */
   LCM_Calibrate();
+
+  // /* Update baudrate */
+  // STM32_CMD.Cmd = STM32_CMD.TickCount;
+  // while (STM32_CMD.Cmd == STM32_CMD.TickCount);
+  // STM32_CMD.Cmd = STM32_CMD.TickCount;
+  // while (STM32_CMD.Cmd == STM32_CMD.TickCount);
+  // USART3_puts("AT\0");
+  // STM32_CMD.Cmd = STM32_CMD.TickCount;
+  // while (STM32_CMD.Cmd == STM32_CMD.TickCount)
+  // {
+    // if ((USART3->SR & USART_FLAG_RXNE) != 0)
+    // {
+      // STM32_CMD.BTBuff[i] = USART3->DR;
+      // i++;
+    // }
+  // }
+  // STM32_CMD.Cmd = STM32_CMD.TickCount;
+  // while (STM32_CMD.Cmd == STM32_CMD.TickCount);
+  // STM32_CMD.Cmd = STM32_CMD.TickCount;
+  // while (STM32_CMD.Cmd == STM32_CMD.TickCount);
+  // USART3_puts("AT+BAUD8\0");
+  // STM32_CMD.Cmd = STM32_CMD.TickCount;
+  // while (STM32_CMD.Cmd == STM32_CMD.TickCount)
+  // {
+    // if ((USART3->SR & USART_FLAG_RXNE) != 0)
+    // {
+      // STM32_CMD.BTBuff[i] = USART3->DR;
+      // i++;
+    // }
+  // }
+  // while (1)
+  // {
+  // }
+
   while (1)
   {
+    USART3_getdata((uint8_t *)&STM32_CMD.Cmd,4);
     switch (STM32_CMD.Cmd)
     {
       case CMD_LCMCAL:
         LCM_Calibrate();
-        STM32_CMD.Cmd = CMD_DONE;
+        USART3_putdata((uint8_t *)&STM32_CMD.STM32_LCM.FrequencyCal0,sizeof(STM32_LCMTypeDef));
         break;
       case CMD_LCMCAP:
         GPIO_ResetBits(GPIOD, GPIO_Pin_0 | GPIO_Pin_1 | GPIO_Pin_2 | GPIO_Pin_6 | GPIO_Pin_7);
-        STM32_CMD.Cmd = CMD_DONE;
+        USART3_putdata((uint8_t *)&STM32_CMD.STM32_FRQ.Frequency,sizeof(STM32_FRQTypeDef));
+        USART3_putdata((uint8_t *)&STM32_CMD.STM32_LCM.FrequencyCal0,sizeof(STM32_LCMTypeDef));
         break;
       case CMD_LCMIND:
         GPIO_ResetBits(GPIOD, GPIO_Pin_0 | GPIO_Pin_1 | GPIO_Pin_2 | GPIO_Pin_7);
         GPIO_SetBits(GPIOD, GPIO_Pin_6);
-        STM32_CMD.Cmd = CMD_DONE;
+        USART3_putdata((uint8_t *)&STM32_CMD.STM32_FRQ.Frequency,sizeof(STM32_FRQTypeDef));
+        USART3_putdata((uint8_t *)&STM32_CMD.STM32_LCM.FrequencyCal0,sizeof(STM32_LCMTypeDef));
         break;
       case CMD_FRQCH1:
         GPIO_ResetBits(GPIOD, GPIO_Pin_1 | GPIO_Pin_2 | GPIO_Pin_6 | GPIO_Pin_7);
         GPIO_SetBits(GPIOD, GPIO_Pin_0);
+        USART3_putdata((uint8_t *)&STM32_CMD.STM32_FRQ.Frequency,sizeof(STM32_FRQTypeDef));
         break;
       case CMD_FRQCH2:
         GPIO_ResetBits(GPIOD, GPIO_Pin_0 | GPIO_Pin_2 | GPIO_Pin_6 | GPIO_Pin_7);
         GPIO_SetBits(GPIOD, GPIO_Pin_1);
-        STM32_CMD.Cmd = CMD_DONE;
+        USART3_putdata((uint8_t *)&STM32_CMD.STM32_FRQ.Frequency,sizeof(STM32_FRQTypeDef));
         break;
       case CMD_FRQCH3:
         GPIO_ResetBits(GPIOD, GPIO_Pin_2 | GPIO_Pin_6 | GPIO_Pin_7);
         GPIO_SetBits(GPIOD, GPIO_Pin_0 | GPIO_Pin_1);
-        STM32_CMD.Cmd = CMD_DONE;
+        USART3_putdata((uint8_t *)&STM32_CMD.STM32_FRQ.Frequency,sizeof(STM32_FRQTypeDef));
         break;
       case CMD_SCPSET:
+        USART3_putdata((uint8_t *)&STM32_CMD.STM32_FRQ.Frequency,sizeof(STM32_FRQTypeDef));
+        USART3_getdata((uint8_t *)&STM32_CMD.STM32_SCP.ADC_Prescaler,sizeof(STM32_SCPTypeDef));
         /* Set V-Pos */
         DAC_SetChannel1Data(DAC_Align_12b_R, STM32_CMD.STM32_SCP.ScopeVPos);
-        GPIO_ResetBits(GPIOD, GPIO_Pin_0 | GPIO_Pin_2 | GPIO_Pin_6 | GPIO_Pin_7);
-        GPIO_SetBits(GPIOD, GPIO_Pin_1);
         if (STM32_CMD.STM32_SCP.ADC_TripleMode)
         {
           /* DMA Configuration */
@@ -224,17 +272,19 @@ int main(void)
         ADC1->CR2=0;
         ADC2->CR2=0;
         ADC3->CR2=0;
-        STM32_CMD.Cmd = CMD_DONE;
+        USART3_putdata((uint8_t *)SCOPE_DATAPTR,STM32_CMD.STM32_SCP.ADC_SampleSize);
         break;
       case CMD_HSCSET:
         GPIO_ResetBits(GPIOD, GPIO_Pin_1 | GPIO_Pin_2 | GPIO_Pin_6 | GPIO_Pin_7);
         GPIO_SetBits(GPIOD, GPIO_Pin_0);
+        USART3_getdata((uint8_t *)&STM32_CMD.STM32_HSC.HSCSet,sizeof(STM32_HSCTypeDef));
         TIM4->ARR = STM32_CMD.STM32_HSC.HSCSet;
         TIM4->CCR2 = (STM32_CMD.STM32_HSC.HSCSet+1) / 2;
         TIM4->PSC = STM32_CMD.STM32_HSC.HSCDiv;
-        STM32_CMD.Cmd = CMD_DONE;
+        USART3_putdata((uint8_t *)&STM32_CMD.STM32_FRQ.Frequency,sizeof(STM32_FRQTypeDef));
         break;
       case CMD_DDSSET:
+        USART3_getdata((uint8_t *)&STM32_CMD.STM32_DDS.DDS_Cmd,sizeof(STM32_DDSTypeDef));
         if (STM32_CMD.STM32_DDS.DDS_Cmd == DDS_PHASESET)
         {
           SPISendData(DDS_PHASESET);
@@ -248,7 +298,6 @@ int main(void)
           SPISendData(STM32_CMD.STM32_DDS.DDS_Amplitude & 0xFFFF);
           SPISendData(STM32_CMD.STM32_DDS.DDS_DCOffset & 0xFFFF);
         }
-        STM32_CMD.Cmd = CMD_DONE;
         break;
     }
   }
@@ -305,6 +354,67 @@ void SPISendData(uint16_t tx)
   while (SPI1->SR & SPI_I2S_FLAG_BSY);      // wait until SPI is not busy anymore
 }
 
+/*******************************************************************************
+* Function Name  : USART3_putdata
+* Description    : This function transmits data
+* Input          : *dat, len
+* Output         : None
+* Return         : None
+*******************************************************************************/
+void USART3_putdata(uint8_t *dat,uint16_t len)
+{
+  /* Data are transmitted one byte at a time. */
+  while (len--)
+  {
+    /* Wait until transmit register empty */
+    while((USART3->SR & USART_FLAG_TXE) == 0);          
+    /* Transmit Data */
+    USART3->DR = (uint16_t)*dat;
+    *dat++;
+  }
+}
+
+/*******************************************************************************
+* Function Name  : USART3_puts
+* Description    : This function transmits a zero terminated string
+* Input          : Zero terminated string
+* Output         : None
+* Return         : None
+*******************************************************************************/
+void USART3_puts(char *str)
+{
+  char c;
+  /* Characters are transmitted one at a time. */
+  while ((c = *str++))
+  {
+    /* Wait until transmit register empty */
+    while((USART3->SR & USART_FLAG_TXE) == 0);
+    /* Transmit Data */
+    USART3->DR = (uint16_t)c;
+  }
+}
+
+/*******************************************************************************
+* Function Name  : USART3_getdata
+* Description    : This function receives data
+* Input          : *dat, len
+* Output         : None
+* Return         : None
+*******************************************************************************/
+void USART3_getdata(uint8_t *dat,uint16_t len)
+{
+  /* Data are recieved one byte at a time. */
+  while (len--)
+  {
+    /* Wait until receive register not empty */
+    while((USART3->SR & USART_FLAG_RXNE) == 0);          
+    /* Receive Data */
+    *dat = (uint8_t)USART3->DR;
+    *dat++;
+  }
+  STM_EVAL_LEDToggle(LED4);
+}
+
 /**
   * @brief  Configure the RCC.
   * @param  None
@@ -324,6 +434,8 @@ void RCC_Config(void)
   RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC, ENABLE);
   /* GPIOD clock enable */
   RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOD, ENABLE);
+  /* USART3 clock enable */
+  RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART3, ENABLE); 
   /* Enable ADC1, ADC2, ADC3 clocks */
   RCC_APB2PeriphClockCmd(RCC_APB2Periph_ADC1 | RCC_APB2Periph_ADC2 | RCC_APB2Periph_ADC3, ENABLE);
 }
@@ -354,33 +466,34 @@ void GPIO_Config(void)
   GPIO_InitTypeDef GPIO_InitStructure;
   /* Initialize Leds mounted on STM32F4-Discovery board */
   STM_EVAL_LEDInit(LED3);
+  STM_EVAL_LEDInit(LED4);
 
   /* TIM2 chennel2 configuration : PA.01 */
-  GPIO_InitStructure.GPIO_Pin   = GPIO_Pin_1;
-  GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_AF;
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_1;
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
   GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-  GPIO_InitStructure.GPIO_PuPd  = GPIO_PuPd_NOPULL;
+  GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
   GPIO_Init(GPIOA, &GPIO_InitStructure);
   /* Connect TIM2 pin to AF2 */
   GPIO_PinAFConfig(GPIOA, GPIO_PinSource1, GPIO_AF_TIM2);
 
   /* TIM5 chennel1 configuration : PA.00 */
-  GPIO_InitStructure.GPIO_Pin   = GPIO_Pin_0;
-  GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_AF;
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0;
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
   GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-  GPIO_InitStructure.GPIO_PuPd  = GPIO_PuPd_NOPULL;
+  GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
   GPIO_Init(GPIOA, &GPIO_InitStructure);
   /* Connect TIM5 pin to AF2 */
   GPIO_PinAFConfig(GPIOA, GPIO_PinSource0, GPIO_AF_TIM5);
 
   /* TIM4 chennel 2 configuration : PB7 */
-  GPIO_InitStructure.GPIO_Pin   = GPIO_Pin_7;
-  GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_AF;
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_7;
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
   GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-  GPIO_InitStructure.GPIO_PuPd  = GPIO_PuPd_UP ;
+  GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP ;
   GPIO_Init(GPIOB, &GPIO_InitStructure);
   /* Connect TIM4 pin to AF2 */
   GPIO_PinAFConfig(GPIOB, GPIO_PinSource7, GPIO_AF_TIM4);
@@ -400,16 +513,16 @@ void GPIO_Config(void)
   /* GPIOD Outputs */
   GPIO_ResetBits(GPIOD, GPIO_Pin_0 | GPIO_Pin_1 | GPIO_Pin_2 | GPIO_Pin_6 | GPIO_Pin_7);
   GPIO_InitStructure.GPIO_Pin   = GPIO_Pin_0 | GPIO_Pin_1 | GPIO_Pin_2 | GPIO_Pin_6 | GPIO_Pin_7;
-  GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_OUT;
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
   GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-  GPIO_InitStructure.GPIO_PuPd  = GPIO_PuPd_NOPULL;
+  GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
   GPIO_Init(GPIOD, &GPIO_InitStructure);
 
   /* Configure SPI2 SCK and MOSI pins */
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
   GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-  GPIO_InitStructure.GPIO_PuPd  = GPIO_PuPd_NOPULL;
+  GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
   /* SPI SCK pin configuration */
   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_13;
@@ -420,6 +533,14 @@ void GPIO_Config(void)
   GPIO_InitStructure.GPIO_Pin =  GPIO_Pin_15;
   GPIO_Init(GPIOB, &GPIO_InitStructure);
   GPIO_PinAFConfig(GPIOB, GPIO_PinSource15, GPIO_AF_SPI2);
+
+  /* USART Tx and Rx pin configuration */
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_8 | GPIO_Pin_9;
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
+  GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+  GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+  GPIO_Init(GPIOD, &GPIO_InitStructure);
 }
 
 /**
@@ -662,6 +783,33 @@ void SPI_Config(void)
   SPI_InitStructure.SPI_CRCPolynomial = 7;
 	SPI_Init(SPI2, &SPI_InitStructure);
 	SPI_Cmd(SPI2, ENABLE);
+}
+
+/*******************************************************************************
+* Function Name  : USART_Configuration
+* Description    : Configures USART3 to to comunicate with Bluetooth module
+* Input          : None
+* Output         : None
+* Return         : None
+*******************************************************************************/
+void USART_Config(uint32_t Baud)
+{
+  USART_InitTypeDef USART_InitStructure;
+ 
+  USART_StructInit(&USART_InitStructure);
+  //USART_DeInit(USART3);
+  USART_InitStructure.USART_BaudRate = Baud;
+  USART_InitStructure.USART_WordLength = USART_WordLength_8b;
+  USART_InitStructure.USART_StopBits = USART_StopBits_1;
+  USART_InitStructure.USART_Parity = USART_Parity_No ;
+  USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
+  USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;
+  USART_Init(USART3, &USART_InitStructure);
+  /* Connect USART3 pins */  
+  GPIO_PinAFConfig(GPIOD, GPIO_PinSource8, GPIO_AF_USART3);
+  GPIO_PinAFConfig(GPIOD, GPIO_PinSource9, GPIO_AF_USART3);
+  /* Enable the USART3 */
+  USART_Cmd(USART3, ENABLE);
 }
 
 /**

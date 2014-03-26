@@ -3,6 +3,7 @@
 option casemap :none  ;case sensitive
 
 include LCMeter.inc
+include BlueTooth.asm
 include Misc.asm
 include Scope.asm
 include DDSWave.asm
@@ -63,13 +64,9 @@ SampleThreadProc proc lParam:DWORD
 
 	mov		fThreadDone,FALSE
 	.if connected && !fExitThread
-		;Read 16 bytes from STM32F4xx ram and store it in STM32_Cmd.
-		invoke STLinkRead,lParam,20000020h,offset STM32_Cmd.STM32_Frq,4*DWORD
-		.if !eax
-			jmp		Err
-		.endif
-		mov		edx,STM32_Cmd.STM32_Frq.FrequencySCP
-		invoke FormatFrequency,edx,addr buffer
+		invoke BTPut,offset mode,4
+		invoke BTGet,offset STM32_Cmd.STM32_Frq,8
+		invoke FormatFrequency,STM32_Cmd.STM32_Frq.FrequencySCP,addr buffer
 		invoke SetWindowText,hScp,addr buffer
 		
 		invoke RtlZeroMemory,offset ADC_Data,sizeof ADC_Data
@@ -79,31 +76,15 @@ SampleThreadProc proc lParam:DWORD
 		invoke GetSignalPeriod
 		invoke GetSamplesPrPeriod
 		invoke GetTotalSamples,offset STM32_Scp
+		.if eax>65000
+			mov		eax,65000
+		.endif
+PrintDec eax
 		mov		STM32_Scp.ADC_SampleSize,eax
-		invoke STLinkWrite,lParam,20000030h,offset STM32_Scp,sizeof STM32_SCP
-		.if !eax
-			jmp		Err
-		.endif
-		invoke STLinkWrite,lParam,20000014h,addr mode,DWORD
-		.if !eax
-			jmp		Err
-		.endif
-		xor		ebx,ebx
-		.while ebx<50 && !fExitThread
-			invoke Sleep,100
-			invoke STLinkRead,lParam,20000014h,offset STM32_Cmd,DWORD
-			.if !eax
-				jmp		Err
-			.endif
-			.break .if !STM32_Cmd.Cmd
-			inc		ebx
-		.endw
+		invoke BTPut,offset STM32_Scp,sizeof STM32_SCP
 		.if !fExitThread
 			mov		fNoFrequency,TRUE
-			invoke STLinkRead,lParam,20008000h,offset ADC_Data,STM32_Scp.ADC_SampleSize
-			.if !eax
-				jmp		Err
-			.endif
+			invoke BTGet,offset ADC_Data,STM32_Scp.ADC_SampleSize
 			.if STM32_Scp.fSubSampling
 				invoke ScopeSubSampling
 			.endif
@@ -112,10 +93,6 @@ SampleThreadProc proc lParam:DWORD
 			mov		fSampleDone,TRUE
 		.endif
 	.endif
-	mov		fThreadDone,TRUE
-	ret
-Err:
-	mov		connected,FALSE
 	mov		fThreadDone,TRUE
 	ret
 
@@ -202,20 +179,17 @@ LcmChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 		shr		edx,16
 		.if edx==BN_CLICKED
 			.if eax==IDC_BTNLCMMODE
-				.if mode==CMD_LCMCAP
-					mov		mode,CMD_LCMIND
-				.elseif mode==CMD_LCMIND
-					mov		mode,CMD_LCMCAP
-				.endif
 				.if connected
-					invoke STLinkWrite,hWnd,20000014h,addr mode,DWORD
+					.if mode==CMD_LCMCAP
+						mov		mode,CMD_LCMIND
+					.elseif mode==CMD_LCMIND
+						mov		mode,CMD_LCMCAP
+					.endif
 					invoke SetMode
 				.endif
 			.elseif eax==IDC_BTNLCMCAL
-				mov		mode,CMD_LCMCAL
 				.if connected
-					invoke STLinkWrite,hWnd,20000014h,addr mode,DWORD
-					mov		mode,CMD_LCMCAP
+					mov		mode,CMD_LCMCAL
 					invoke SetMode
 				.endif
 			.endif
@@ -306,13 +280,11 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.if edx==BN_CLICKED
 			.if eax==IDOK
 				.if !connected
-					;Connect to the STLink
-					invoke STLinkConnect,hWin
-					.if eax && eax!=IDIGNORE && eax!=IDABORT
-						mov		connected,eax
+					invoke BlueToothConnect
+					mov		connected,eax
+					.if eax
 						mov		mode,CMD_LCMCAP
 						invoke SetMode
-						invoke STLinkWrite,hWin,20000014h,addr mode,DWORD
 						;Create a timer. The event will read the frequency, format it and display the result
 						invoke SetTimer,hWin,1000,100,NULL
 					.endif
@@ -329,44 +301,72 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke CreateThread,NULL,NULL,addr SampleThreadProc,hWin,0,addr tid
 				invoke CloseHandle,eax
 			.endif
+		.elseif mode==CMD_HSCSET
+			.if fThreadDone
+				invoke BTPut,offset mode,4
+				invoke BTPut,offset STM32_Cmd.STM32_Hsc,8
+				invoke BTGet,offset STM32_Cmd.STM32_Frq,8
+				invoke FormatFrequency,STM32_Cmd.STM32_Frq.Frequency,addr buffer
+				invoke SetWindowText,hHsc,addr buffer
+				mov		mode,CMD_FRQCH1
+				invoke SetMode
+			.endif
 		.elseif mode==CMD_FRQCH1
-			;Read 16 bytes from STM32F4xx ram and store it in STM32_Cmd.
-			invoke STLinkRead,hWin,20000020h,offset STM32_Cmd.STM32_Frq,4*DWORD
-			mov		edx,STM32_Cmd.STM32_Frq.Frequency
-			invoke FormatFrequency,edx,addr buffer
-			invoke SetWindowText,hHsc,addr buffer
+			.if fThreadDone
+				invoke BTPut,offset mode,4
+				invoke BTGet,offset STM32_Cmd.STM32_Frq,8
+				invoke FormatFrequency,STM32_Cmd.STM32_Frq.Frequency,addr buffer
+				invoke SetWindowText,hHsc,addr buffer
+			.endif
+		.elseif mode==CMD_LCMCAL
+			.if fThreadDone
+				invoke BTPut,offset mode,4
+				invoke BTGet,offset STM32_Cmd.STM32_Lcm,8
+				mov		mode,CMD_LCMCAP
+				invoke SetMode
+			.endif
 		.elseif mode==CMD_LCMCAP
-			;Read 16 bytes from STM32F4xx ram and store it in STM32_Cmd.
-			invoke STLinkRead,hWin,20000020h,offset STM32_Cmd.STM32_Frq,4*DWORD
-			invoke CalculateCapacitor,addr buffer
-			invoke SetWindowText,hLcm,addr buffer
+			.if fThreadDone
+				invoke BTPut,offset mode,4
+				invoke BTGet,offset STM32_Cmd.STM32_Frq,8
+				invoke BTGet,offset STM32_Cmd.STM32_Lcm,8
+				invoke CalculateCapacitor,addr buffer
+				invoke SetWindowText,hLcm,addr buffer
+			.endif
 		.elseif mode==CMD_LCMIND
-			;Read 16 bytes from STM32F4xx ram and store it in STM32_Cmd.
-			invoke STLinkRead,hWin,20000020h,offset STM32_Cmd.STM32_Frq,4*DWORD
-			invoke CalculateInductor,addr buffer
-			invoke SetWindowText,hLcm,addr buffer
+			.if fThreadDone
+				invoke BTPut,offset mode,4
+				invoke BTGet,offset STM32_Cmd.STM32_Frq,8
+				invoke BTGet,offset STM32_Cmd.STM32_Lcm,8
+				invoke CalculateInductor,addr buffer
+				invoke SetWindowText,hLcm,addr buffer
+			.endif
+		.elseif mode==CMD_DDSSET
+			.if fThreadDone
+				invoke BTPut,offset mode,4
+				invoke BTPut,offset STM32_Cmd.STM32_Dds,sizeof STM32_DDS
+				mov		mode,CMD_DONE
+			.endif
 		.endif
 		invoke SetTimer,hWin,1000,100,NULL
 	.elseif	eax==WM_CLOSE
 		mov		fExitThread,TRUE
 		invoke KillTimer,hWin,1000
 		xor		ebx,ebx
-		.if mode==CMD_SCPSET
-			.while !fThreadDone && ebx<5
-				invoke GetMessage,addr msg,NULL,0,0
-			  	.if eax
-					invoke IsDialogMessage,hWnd,addr msg
-					.if !eax
-						invoke TranslateMessage,addr msg
-						invoke DispatchMessage,addr msg
-					.endif
-			  	.endif
-				invoke Sleep,100
-				inc		ebx
-			.endw
-		.endif
-		invoke Sleep,500
-		invoke STLinkDisconnect,hWin
+		.while !fThreadDone && ebx<5
+			invoke GetMessage,addr msg,NULL,0,0
+		  	.if eax
+				invoke IsDialogMessage,hWnd,addr msg
+				.if !eax
+					invoke TranslateMessage,addr msg
+					invoke DispatchMessage,addr msg
+				.endif
+		  	.endif
+			invoke Sleep,100
+			inc		ebx
+		.endw
+		invoke Sleep,100
+		invoke BlueToothDisconnect
 		invoke DeleteObject,hFont
 		invoke EndDialog,hWin,0
 	.elseif eax==WM_NOTIFY
@@ -382,30 +382,18 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke ShowWindow,hDDSCld,SW_HIDE
 				invoke ShowWindow,hLcmCld,SW_SHOW
 				mov		mode,CMD_LCMCAP
-				.if connected
-					invoke STLinkWrite,hWin,20000014h,addr mode,DWORD
-					.if !eax
-						invoke KillTimer,hWin,1000
-						jmp		Err
-					.endif
-				.endif
 			.elseif eax==1
 				;High Speed Clock
 				invoke ShowWindow,hScpCld,SW_HIDE
+				invoke ShowWindow,hDDSCld,SW_HIDE
 				invoke ShowWindow,hLcmCld,SW_HIDE
 				invoke ShowWindow,hHscCld,SW_SHOW
 				mov		mode,CMD_FRQCH1
-				.if connected
-					invoke STLinkWrite,hWin,20000014h,addr mode,DWORD
-					.if !eax
-						invoke KillTimer,hWin,1000
-						jmp		Err
-					.endif
-				.endif
 			.elseif eax==2
 				;Scope
 				invoke ShowWindow,hLcmCld,SW_HIDE
 				invoke ShowWindow,hHscCld,SW_HIDE
+				invoke ShowWindow,hDDSCld,SW_HIDE
 				invoke ShowWindow,hScpCld,SW_SHOW
 				invoke ShowWindow,hScpScrnCld,SW_SHOW
 				invoke ShowWindow,hDDSScrnCld,SW_HIDE
@@ -427,10 +415,6 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		eax,FALSE
 		ret
 	.endif
-	mov		eax,TRUE
-	ret
-Err:
-	mov		connected,FALSE
 	mov		eax,TRUE
 	ret
 

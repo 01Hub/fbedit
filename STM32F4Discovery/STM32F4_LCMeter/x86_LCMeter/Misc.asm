@@ -545,10 +545,8 @@ SetHSC proc hWin:HWND,frq:DWORD
 	mov		STM32_Cmd.STM32_Hsc.HSCSet,esi
 	mov		STM32_Cmd.STM32_Hsc.HSCDiv,eax
 	invoke SetDlgItemInt,hWin,IDC_EDTHSCFRQ,resfrq,FALSE
-	mov		STM32_Cmd.Cmd,CMD_HSCSET
 	.if connected
-		invoke STLinkWrite,hWnd,20000018h,addr STM32_Cmd.STM32_Hsc,sizeof STM32_HSC
-		invoke STLinkWrite,hWnd,20000014h,addr STM32_Cmd.Cmd,DWORD
+		mov		mode,CMD_HSCSET
 	.endif
 	ret
 
@@ -739,8 +737,11 @@ ScopeSubSampling proc uses ebx esi edi
 		.endw
 		mov		esi,offset ADC_Data
 		mov		eax,SamplesPrPeriod
-		shl		eax,3
+		shl		eax,4
 		add		eax,ADCSAMPLESTART
+		.if eax>STM32_Scp.ADC_SampleSize
+			mov		eax,STM32_Scp.ADC_SampleSize
+		.endif
 		mov		nsample,eax
 		mov		ebx,ADCSAMPLESTART
 		.while ebx<nsample
@@ -761,10 +762,12 @@ ScopeSubSampling proc uses ebx esi edi
 			inc		SubSampleCount[edi*WORD]
 			inc		ebx
 		.endw
+		xor		esi,esi
 		xor		ebx,ebx
 		.while ebx<2048
 			movzx	ecx,SubSampleCount[ebx*WORD]
 			.if ecx
+				inc		esi
 				mov		eax,SubSample[ebx*DWORD]
 				cdq
 				div		ecx
@@ -776,6 +779,7 @@ ScopeSubSampling proc uses ebx esi edi
 			inc		ebx
 		.endw
 	.endif
+PrintDec esi
 	ret
 
 ScopeSubSampling endp
@@ -784,7 +788,9 @@ SetMode proc
 	LOCAL	buffer[64]:BYTE
 
 	invoke lstrcpy,addr buffer,offset szLCMeter
-	.if mode==CMD_LCMCAP
+	.if mode==CMD_LCMCAL
+		mov		eax,offset szCalibrate
+	.elseif mode==CMD_LCMCAP
 		mov		eax,offset szCapacitance
 	.elseif mode==CMD_LCMIND
 		mov		eax,offset szInductance
@@ -798,6 +804,8 @@ SetMode proc
 		mov		eax,offset szScope
 	.elseif mode==CMD_DDSSET
 		mov		eax,offset szDDS
+	.else
+		mov		eax,offset szLCM
 	.endif
 	invoke lstrcat,addr buffer,eax
 	invoke SetWindowText,hWnd,addr buffer

@@ -180,9 +180,8 @@ DDSSetStruct proc cmnd:DWORD
 	mov		STM32_Cmd.STM32_Dds.DDS_DCOffset,eax
 	mov		eax,ddswavedata.DDS_PhaseFrq
 	mov		STM32_Cmd.STM32_Dds.DDS__PhaseAdd,eax
-	.if connected
-		invoke STLinkWrite,hWnd,2000005Ch,offset STM32_Cmd.STM32_Dds,sizeof STM32_DDS
-		invoke STLinkWrite,hWnd,20000014h,addr mode,DWORD
+	.if connected && fThreadDone
+		mov		mode,CMD_DDSSET
 	.endif
 	ret
 
