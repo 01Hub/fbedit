@@ -1,6 +1,45 @@
 
 .code
 
+ScopeSampleThreadProc proc lParam:DWORD
+	LOCAL	buffer[32]:BYTE
+
+	mov		fThreadDone,FALSE
+	.if connected && !fExitThread
+		invoke BTPut,offset mode,4
+		invoke BTGet,offset STM32_Cmd.STM32_Frq,8
+		invoke FormatFrequency,STM32_Cmd.STM32_Frq.FrequencySCP,addr buffer
+		invoke SetWindowText,hScp,addr buffer
+		
+		invoke RtlZeroMemory,offset ADC_Data,sizeof ADC_Data
+		;Copy current scope settings
+		invoke RtlMoveMemory,offset STM32_Scp,offset STM32_Cmd.STM32_Scp,sizeof STM32_SCP
+		invoke GetSampleTime,offset STM32_Scp
+		invoke GetSignalPeriod
+		invoke GetSamplesPrPeriod
+		invoke GetTotalSamples,offset STM32_Scp
+		.if eax>65000
+			mov		eax,65000
+		.endif
+PrintDec eax
+		mov		STM32_Scp.ADC_SampleSize,eax
+		invoke BTPut,offset STM32_Scp,sizeof STM32_SCP
+		.if !fExitThread
+			mov		fNoFrequency,TRUE
+			invoke BTGet,offset ADC_Data,STM32_Scp.ADC_SampleSize
+			.if STM32_Scp.fSubSampling
+				invoke ScopeSubSampling
+			.endif
+			invoke InvalidateRect,hScpScrn,NULL,TRUE
+			invoke UpdateWindow,hScpScrn
+			mov		fSampleDone,TRUE
+		.endif
+	.endif
+	mov		fThreadDone,TRUE
+	ret
+
+ScopeSampleThreadProc endp
+
 ScopeScrnChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
 	mov		eax,uMsg

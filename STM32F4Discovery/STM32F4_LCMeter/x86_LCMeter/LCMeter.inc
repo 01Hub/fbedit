@@ -82,11 +82,16 @@ IDC_BTNDDSOFSUP         		equ 1311
 IDC_TRBDDSOFS           		equ 1312
 IDC_BTNDDSOFSDN         		equ 1313
 
+IDD_DLGLGA						equ 1400
+
 IDD_DLGSCPSCRNCLD				equ 2000
 IDC_UDCSCPSCRN					equ 2001
 
 IDD_DLGDDSCLD					equ 3000
 IDC_UDCDDSSCRN					equ 3001
+
+IDD_DLGLGACLD					equ 4000
+IDC_UDCLGASCRN					equ 4001
 
 CMD_DONE						equ 0
 CMD_LCMCAL						equ 1
@@ -98,6 +103,7 @@ CMD_FRQCH3						equ 6
 CMD_SCPSET                      equ 7
 CMD_HSCSET						equ 8
 CMD_DDSSET						equ 9
+CMD_LGASET						equ 10
 
 STM32_CLOCK						equ 200000000
 ADCSAMPLESIZE					equ 10000h
@@ -231,6 +237,7 @@ FP_EQUALTO						equ	40h
 szFREQUENCYCLASS				BYTE 'FREQUENCYCLASS',0
 szSCOPECLASS					BYTE 'SCOPECLASS',0
 szDDSCLASS						BYTE 'DDSCLASS',0
+szLGACLASS						BYTE 'LGACLASS',0
 Tahoma_36						LOGFONT <-36,0,0,0,400,0,0,0,0,3,2,1,34,"Tahoma">
 
 szLCMeter						BYTE 'LC Meter - ',0
@@ -238,11 +245,12 @@ szLCM							BYTE 'LC Meter',0
 szCalibrate						BYTE 'Calibrate',0
 szCapacitance					BYTE 'Capacitance',0
 szInductance					BYTE 'Inductance',0
-szFerquencyCH1					BYTE 'High speed clock',0
+szFerquencyCH1					BYTE 'HS Clock',0
 szFerquencyCH2					BYTE 'Ferquency CH2',0
 szFerquencyCH3					BYTE 'Ferquency CH3',0
 szScope							BYTE 'Scope',0
 szDDS							BYTE 'DDS Wave',0
+szLGA							BYTE 'Logic Analyser',0
 
 szFmtHz							BYTE '%dHz',0
 szFmtKHz						BYTE '%dKHz',0
@@ -999,6 +1007,9 @@ hScpCld							HWND ?
 hScp							HWND ?
 hDDSCld							HWND ?
 hDDS							HWND ?
+hLGACld							HWND ?
+hLGAScrnCld						HWND ?
+hLGAScrn						HWND ?
 hFont							HFONT ?
 hIml							HIMAGELIST ?
 connected						DWORD ?

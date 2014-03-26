@@ -7,6 +7,8 @@ include BlueTooth.asm
 include Misc.asm
 include Scope.asm
 include DDSWave.asm
+include HSClock.asm
+include LogicAnalyser.asm
 
 .code
 
@@ -58,114 +60,6 @@ FrequencyProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPA
 	ret
 
 FrequencyProc endp
-
-SampleThreadProc proc lParam:DWORD
-	LOCAL	buffer[32]:BYTE
-
-	mov		fThreadDone,FALSE
-	.if connected && !fExitThread
-		invoke BTPut,offset mode,4
-		invoke BTGet,offset STM32_Cmd.STM32_Frq,8
-		invoke FormatFrequency,STM32_Cmd.STM32_Frq.FrequencySCP,addr buffer
-		invoke SetWindowText,hScp,addr buffer
-		
-		invoke RtlZeroMemory,offset ADC_Data,sizeof ADC_Data
-		;Copy current scope settings
-		invoke RtlMoveMemory,offset STM32_Scp,offset STM32_Cmd.STM32_Scp,sizeof STM32_SCP
-		invoke GetSampleTime,offset STM32_Scp
-		invoke GetSignalPeriod
-		invoke GetSamplesPrPeriod
-		invoke GetTotalSamples,offset STM32_Scp
-		.if eax>65000
-			mov		eax,65000
-		.endif
-PrintDec eax
-		mov		STM32_Scp.ADC_SampleSize,eax
-		invoke BTPut,offset STM32_Scp,sizeof STM32_SCP
-		.if !fExitThread
-			mov		fNoFrequency,TRUE
-			invoke BTGet,offset ADC_Data,STM32_Scp.ADC_SampleSize
-			.if STM32_Scp.fSubSampling
-				invoke ScopeSubSampling
-			.endif
-			invoke InvalidateRect,hScpScrn,NULL,TRUE
-			invoke UpdateWindow,hScpScrn
-			mov		fSampleDone,TRUE
-		.endif
-	.endif
-	mov		fThreadDone,TRUE
-	ret
-
-SampleThreadProc endp
-
-HscChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
-	LOCAL	resfrq:DWORD
-
-	mov		eax,uMsg
-	.if eax==WM_INITDIALOG
-		invoke GetDlgItem,hWin,IDC_UDCHSC
-		mov		hHsc,eax
-		mov		eax,STM32_Cmd.STM32_Hsc.HSCDiv
-		inc		eax
-		invoke ClockToFrequency,eax,STM32_CLOCK/4
-		invoke SetDlgItemInt,hWin,IDC_EDTHSCFRQ,eax,FALSE
-		invoke ImageList_GetIcon,hIml,0,ILD_NORMAL
-		mov		ebx,eax
-		invoke SendDlgItemMessage,hWin,IDC_BTNHSCDN,BM_SETIMAGE,IMAGE_ICON,ebx
-		invoke ImageList_GetIcon,hIml,1,ILD_NORMAL
-		mov		ebx,eax
-		invoke SendDlgItemMessage,hWin,IDC_BTNHSCUP,BM_SETIMAGE,IMAGE_ICON,ebx
-		push	0
-		push	IDC_BTNHSCDN
-		mov		eax,IDC_BTNHSCUP
-		.while eax
-			invoke GetDlgItem,hWin,eax
-			invoke SetWindowLong,eax,GWL_WNDPROC,offset ButtonProc
-			mov		lpOldButtonProc,eax
-			pop		eax
-		.endw
-	.elseif	eax==WM_COMMAND
-		mov		edx,wParam
-		movzx	eax,dx
-		shr		edx,16
-		.if edx==BN_CLICKED
-			.if eax==IDC_BTNHSCDN
-				invoke GetDlgItemInt,hWin,IDC_EDTHSCFRQ,NULL,FALSE
-				.if eax>1
-					dec		eax
-					mov		resfrq,eax
-					inc		eax
-					.while eax!=resfrq
-						dec		eax
-						push	eax
-						mov		edx,eax
-						invoke GetHSCFrq,edx,addr resfrq
-						pop		eax
-					.endw
-					
-					invoke SetHSC,hWin,eax
-				.endif
-			.elseif eax==IDC_BTNHSCUP
-				invoke GetDlgItemInt,hWin,IDC_EDTHSCFRQ,NULL,FALSE
-				.if eax<50000000
-					inc		eax
-					invoke SetHSC,hWin,eax
-				.endif
-			.endif
-		.elseif edx==EN_KILLFOCUS
-			.if eax==IDC_EDTHSCFRQ
-				invoke GetDlgItemInt,hWin,IDC_EDTHSCFRQ,NULL,FALSE
-				invoke SetHSC,hWin,eax
-			.endif
-		.endif
-	.else
-		mov		eax,FALSE
-		ret
-	.endif
-	mov		eax,TRUE
-	ret
-
-HscChildProc endp
 
 LcmChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
@@ -224,6 +118,8 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SendMessage,ebx,TCM_INSERTITEM,2,addr tci
 		mov		tci.pszText,offset szDDS
 		invoke SendMessage,ebx,TCM_INSERTITEM,3,addr tci
+		mov		tci.pszText,offset szLGA
+		invoke SendMessage,ebx,TCM_INSERTITEM,4,addr tci
 
 		mov		STM32_Cmd.STM32_Hsc.HSCDiv,50000-1
 		mov		STM32_Cmd.STM32_Hsc.HSCSet,1
@@ -255,6 +151,13 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		;Create scope child dialog
 		invoke CreateDialogParam,hInstance,IDD_DLGSCP,hWin,addr ScpChildProc,0
 		mov		hScpCld,eax
+
+		;Create LGA screen child dialog
+		invoke CreateDialogParam,hInstance,IDD_DLGLGACLD,hWin,addr LGAScrnChildProc,0
+		mov		hLGAScrnCld,eax
+		;Create LGA child dialog
+		invoke CreateDialogParam,hInstance,IDD_DLGLGA,hWin,addr LGAChildProc,0
+		mov		hLGACld,eax
 
 		;Create DDS screen child dialog
 		invoke CreateDialogParam,hInstance,IDD_DLGDDSCLD,hWin,addr DDSScrnChildProc,0
@@ -298,7 +201,7 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.if mode==CMD_SCPSET
 			.if !fHoldSampling && fSampleDone
 				mov		fSampleDone,FALSE
-				invoke CreateThread,NULL,NULL,addr SampleThreadProc,hWin,0,addr tid
+				invoke CreateThread,NULL,NULL,addr ScopeSampleThreadProc,hWin,0,addr tid
 				invoke CloseHandle,eax
 			.endif
 		.elseif mode==CMD_HSCSET
@@ -347,6 +250,12 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke BTPut,offset STM32_Cmd.STM32_Dds,sizeof STM32_DDS
 				mov		mode,CMD_DONE
 			.endif
+		.elseif mode==CMD_LGASET
+			.if fThreadDone
+				invoke BTPut,offset mode,4
+				;invoke BTPut,offset STM32_Cmd.STM32_Dds,sizeof STM32_DDS
+				mov		mode,CMD_DONE
+			.endif
 		.endif
 		invoke SetTimer,hWin,1000,100,NULL
 	.elseif	eax==WM_CLOSE
@@ -380,6 +289,7 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke ShowWindow,hScpCld,SW_HIDE
 				invoke ShowWindow,hHscCld,SW_HIDE
 				invoke ShowWindow,hDDSCld,SW_HIDE
+				invoke ShowWindow,hLGACld,SW_HIDE
 				invoke ShowWindow,hLcmCld,SW_SHOW
 				mov		mode,CMD_LCMCAP
 			.elseif eax==1
@@ -387,6 +297,7 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke ShowWindow,hScpCld,SW_HIDE
 				invoke ShowWindow,hDDSCld,SW_HIDE
 				invoke ShowWindow,hLcmCld,SW_HIDE
+				invoke ShowWindow,hLGACld,SW_HIDE
 				invoke ShowWindow,hHscCld,SW_SHOW
 				mov		mode,CMD_FRQCH1
 			.elseif eax==2
@@ -394,8 +305,10 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke ShowWindow,hLcmCld,SW_HIDE
 				invoke ShowWindow,hHscCld,SW_HIDE
 				invoke ShowWindow,hDDSCld,SW_HIDE
+				invoke ShowWindow,hLGACld,SW_HIDE
 				invoke ShowWindow,hScpCld,SW_SHOW
 				invoke ShowWindow,hScpScrnCld,SW_SHOW
+				invoke ShowWindow,hLGAScrnCld,SW_HIDE
 				invoke ShowWindow,hDDSScrnCld,SW_HIDE
 				mov		fSampleDone,TRUE
 				mov		mode,CMD_SCPSET
@@ -404,10 +317,23 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke ShowWindow,hScpCld,SW_HIDE
 				invoke ShowWindow,hHscCld,SW_HIDE
 				invoke ShowWindow,hLcmCld,SW_HIDE
+				invoke ShowWindow,hLGACld,SW_HIDE
 				invoke ShowWindow,hDDSCld,SW_SHOW
 				invoke ShowWindow,hDDSScrnCld,SW_SHOW
+				invoke ShowWindow,hLGAScrnCld,SW_HIDE
 				invoke ShowWindow,hScpScrnCld,SW_HIDE
 				mov		mode,CMD_DDSSET
+			.elseif eax==4
+				;LGA
+				invoke ShowWindow,hScpCld,SW_HIDE
+				invoke ShowWindow,hHscCld,SW_HIDE
+				invoke ShowWindow,hLcmCld,SW_HIDE
+				invoke ShowWindow,hDDSCld,SW_HIDE
+				invoke ShowWindow,hLGACld,SW_SHOW
+				invoke ShowWindow,hLGAScrnCld,SW_SHOW
+				invoke ShowWindow,hDDSScrnCld,SW_HIDE
+				invoke ShowWindow,hScpScrnCld,SW_HIDE
+				mov		mode,CMD_LGASET
 			.endif
 			invoke SetMode
 		.endif
@@ -449,6 +375,12 @@ start:
 	invoke LoadCursor,0,IDC_CROSS
 	mov		wc.hCursor,eax
 	mov		wc.lpszClassName,offset szDDSCLASS
+	invoke RegisterClassEx,addr wc
+
+	mov		wc.lpfnWndProc,offset LGAProc
+	invoke LoadCursor,0,IDC_CROSS
+	mov		wc.hCursor,eax
+	mov		wc.lpszClassName,offset szLGACLASS
 	invoke RegisterClassEx,addr wc
 
 	invoke	DialogBoxParam,hInstance,IDD_MAIN,NULL,addr DlgProc,NULL
