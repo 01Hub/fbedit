@@ -256,6 +256,8 @@ DDSChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 		mov		ddswavedata.DDS_PhaseFrq,eax
 		invoke FormatFrequency,ddswavedata.DDS_Frequency,addr buffer
 		invoke SetWindowText,hDDS,addr buffer
+		mov		eax,FALSE
+		ret
 	.elseif	eax==WM_COMMAND
 		mov		edx,wParam
 		movzx	eax,dx

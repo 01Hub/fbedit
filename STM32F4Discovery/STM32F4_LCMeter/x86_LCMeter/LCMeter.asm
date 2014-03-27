@@ -67,6 +67,8 @@ LcmChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 	.if eax==WM_INITDIALOG
 		invoke GetDlgItem,hWin,IDC_UDCLCM
 		mov		hLcm,eax
+		mov		eax,FALSE
+		ret
 	.elseif	eax==WM_COMMAND
 		mov		edx,wParam
 		movzx	eax,dx
@@ -101,6 +103,7 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	buffer[32]:BYTE
 	LOCAL	tid:DWORD
 	LOCAL	tci:TC_ITEM
+	LOCAL	xsinf:SCROLLINFO
 
 	mov		eax,uMsg
 	.if	eax==WM_INITDIALOG
@@ -129,7 +132,7 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		STM32_Cmd.STM32_Scp.ScopeTriggerLevel,2048
 		mov		STM32_Cmd.STM32_Scp.ScopeTimeDiv,8
 		mov		STM32_Cmd.STM32_Scp.ScopeVoltDiv,8
-		mov		STM32_Cmd.STM32_Scp.ScopeVPos,2245
+		mov		STM32_Cmd.STM32_Scp.ScopeVPos,2150
 		mov		STM32_Cmd.STM32_Scp.ADC_TripleMode,TRUE
 		invoke CreateFontIndirect,addr Tahoma_36
 		mov		hFont,eax
@@ -253,7 +256,25 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.elseif mode==CMD_LGASET
 			.if fThreadDone
 				invoke BTPut,offset mode,4
-				;invoke BTPut,offset STM32_Cmd.STM32_Dds,sizeof STM32_DDS
+				invoke BTPut,offset STM32_Cmd.STM32_Lga,sizeof STM32_LGA
+				movzx	eax,STM32_Cmd.STM32_Lga.DataBlocks
+				mov		ecx,1024
+				mul		ecx
+				push	eax
+				invoke BTGet,offset LGA_Data,eax
+				;Init horizontal scrollbar
+				mov		xsinf.cbSize,sizeof SCROLLINFO
+				mov		xsinf.fMask,SIF_ALL
+				invoke GetScrollInfo,hLGAScrn,SB_HORZ,addr xsinf
+				mov		xsinf.nMin,0
+				pop		eax
+				add		eax,23
+				mov		xsinf.nMax,eax
+				mov		xsinf.nPos,0
+				mov		xsinf.nPage,GRIDSIZE
+				invoke SetScrollInfo,hLGAScrn,SB_HORZ,addr xsinf,TRUE
+				invoke InvalidateRect,hLGAScrn,NULL,TRUE
+				invoke UpdateWindow,hLGAScrn
 				mov		mode,CMD_DONE
 			.endif
 		.endif

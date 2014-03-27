@@ -21,7 +21,6 @@ ScopeSampleThreadProc proc lParam:DWORD
 		.if eax>65000
 			mov		eax,65000
 		.endif
-PrintDec eax
 		mov		STM32_Scp.ADC_SampleSize,eax
 		invoke BTPut,offset STM32_Scp,sizeof STM32_SCP
 		.if !fExitThread
@@ -40,23 +39,8 @@ PrintDec eax
 
 ScopeSampleThreadProc endp
 
-ScopeScrnChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
-
-	mov		eax,uMsg
-	.if eax==WM_INITDIALOG
-		invoke GetDlgItem,hWin,IDC_UDCSCPSCRN
-		mov		hScpScrn,eax
-	.else
-		mov		eax,FALSE
-		ret
-	.endif
-	mov		eax,TRUE
-	ret
-
-ScopeScrnChildProc endp
-
 ScpChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
-	
+
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
 		invoke GetDlgItem,hWin,IDC_UDCSCP
@@ -70,10 +54,10 @@ ScpChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 		mov		eax,20-5
 		sub		eax,STM32_Cmd.STM32_Scp.ADC_TwoSamplingDelay
 		invoke SendDlgItemMessage,hWin,IDC_TRBADCDELAY,TBM_SETPOS,TRUE,eax
-		invoke SendDlgItemMessage,hWin,IDC_TRBTIMEDIV,TBM_SETRANGE,FALSE,MAXTIMEDIV SHL 16
+		invoke SendDlgItemMessage,hWin,IDC_TRBTIMEDIV,TBM_SETRANGE,FALSE,MAXSCPTIMEDIV SHL 16
 		mov		eax,STM32_Cmd.STM32_Scp.ScopeTimeDiv
 		invoke SendDlgItemMessage,hWin,IDC_TRBTIMEDIV,TBM_SETPOS,TRUE,eax
-		invoke SendDlgItemMessage,hWin,IDC_TRBVOLTDIV,TBM_SETRANGE,FALSE,MAXVOLTDIV SHL 16
+		invoke SendDlgItemMessage,hWin,IDC_TRBVOLTDIV,TBM_SETRANGE,FALSE,MAXSCPVOLTDIV SHL 16
 		mov		eax,STM32_Cmd.STM32_Scp.ScopeVoltDiv
 		invoke SendDlgItemMessage,hWin,IDC_TRBVOLTDIV,TBM_SETPOS,TRUE,eax
 		mov		eax,STM32_Cmd.STM32_Scp.ScopeTrigger
@@ -121,6 +105,8 @@ ScpChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 			pop		eax
 		.endw
 		invoke GetSampleTime,offset STM32_Cmd.STM32_Scp
+		mov		eax,FALSE
+		ret
 	.elseif	eax==WM_COMMAND
 		mov		edx,wParam
 		movzx	eax,dx
@@ -194,7 +180,7 @@ ScpChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 				.endif
 			.elseif eax==IDC_BTNTDU
 				mov		eax,STM32_Cmd.STM32_Scp.ScopeTimeDiv
-				.if eax<MAXTIMEDIV
+				.if eax<MAXSCPTIMEDIV
 					inc		eax
 					mov		STM32_Cmd.STM32_Scp.ScopeTimeDiv,eax
 					invoke SendDlgItemMessage,hWin,IDC_TRBTIMEDIV,TBM_SETPOS,TRUE,eax
@@ -208,7 +194,7 @@ ScpChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 				.endif
 			.elseif eax==IDC_BTNVDU
 				mov		eax,STM32_Cmd.STM32_Scp.ScopeVoltDiv
-				.if eax<MAXVOLTDIV
+				.if eax<MAXSCPVOLTDIV
 					inc		eax
 					mov		STM32_Cmd.STM32_Scp.ScopeVoltDiv,eax
 					invoke SendDlgItemMessage,hWin,IDC_TRBVOLTDIV,TBM_SETPOS,TRUE,eax
@@ -322,6 +308,21 @@ ScpChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 	ret
 
 ScpChildProc endp
+
+ScopeScrnChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+
+	mov		eax,uMsg
+	.if eax==WM_INITDIALOG
+		invoke GetDlgItem,hWin,IDC_UDCSCPSCRN
+		mov		hScpScrn,eax
+	.else
+		mov		eax,FALSE
+		ret
+	.endif
+	mov		eax,TRUE
+	ret
+
+ScopeScrnChildProc endp
 
 ScopeProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	ps:PAINTSTRUCT
@@ -459,6 +460,8 @@ ScopeProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			mov		eax,iTmp
 			add		eax,SCOPEHT/2
 			add		eax,scprect.top
+			add		eax,scopeyofs
+			sub		eax,SCOPEHT/2
 			mov		tpos,eax
 			mov		tptx,0
 			mov		tptxc,0
@@ -617,7 +620,7 @@ ScopeProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke DefWindowProc,hWin,uMsg,wParam,lParam
 	.endif
 	ret
-	
+
 DrawScpText:
 	invoke SetBkMode,mDC,TRANSPARENT
 	invoke SetTextColor,mDC,0FFFFFFh
@@ -708,11 +711,8 @@ DrawTrigger:
 		invoke CreatePen,PS_SOLID,1,0000C0h
 		invoke SelectObject,mDC,eax
 		push	eax
-		mov		ebx,scopeyofs
-		sub		ebx,SCOPEHT/2
-		add		ebx,tpos
-		invoke MoveToEx,mDC,scprect.left,ebx,NULL
-		invoke LineTo,mDC,scprect.right,ebx
+		invoke MoveToEx,mDC,scprect.left,tpos,NULL
+		invoke LineTo,mDC,scprect.right,tpos
 		pop		eax
 		invoke SelectObject,mDC,eax
 		invoke DeleteObject,eax
@@ -773,9 +773,9 @@ DrawCurve:
 			.if pt.y
 				invoke LineTo,mDC,pt.x,pt.y
 				call	IsTrigger
+				mov		eax,pt.x
+				.break .if sdword ptr eax>scprect.right
 			.endif
-			mov		eax,pt.x
-			.break .if sdword ptr eax>scprect.right
 			lea		ebx,[ebx+1]
 		.endw
 	.else

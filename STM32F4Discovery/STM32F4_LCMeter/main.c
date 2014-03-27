@@ -45,54 +45,65 @@
 /* Private typedef -----------------------------------------------------------*/
 typedef struct
 {
-  uint32_t HSCSet;                              // 0x20000018
-  uint32_t HSCDiv;                              // 0x2000001C
+  uint32_t HSCSet;
+  uint32_t HSCDiv;
 } STM32_HSCTypeDef;
 
 typedef struct
 {
-  uint32_t Frequency;                           // 0x20000020
-  uint32_t FrequencySCP;                        // 0x20000024
+  uint32_t Frequency;
+  uint32_t FrequencySCP;
 } STM32_FRQTypeDef;
 
 typedef struct
 {
-  uint32_t FrequencyCal0;                       // 0x20000028
-  uint32_t FrequencyCal1;                       // 0x2000002C
+  uint32_t FrequencyCal0;
+  uint32_t FrequencyCal1;
 } STM32_LCMTypeDef;
 
 typedef struct
 {
-  uint32_t ADC_Prescaler;                       // 0x20000030
-  uint32_t ADC_TwoSamplingDelay;                // 0x20000034
-  uint32_t ScopeTrigger;                        // 0x20000038
-  uint32_t ScopeTriggerLevel;                   // 0x2000003C
-  uint32_t ScopeTimeDiv;                        // 0x20000040
-  uint32_t ScopeVoltDiv;                        // 0x20000044
-  uint32_t ScopeVPos;                           // 0x20000048
-  uint32_t ADC_TripleMode;                      // 0x2000004C
-  uint32_t ADC_SampleTime;                      // 0x20000050
-  uint32_t ADC_SampleSize;                      // 0x20000054
-  uint32_t SubSampling;                         // 0x20000058
+  uint32_t ADC_Prescaler;
+  uint32_t ADC_TwoSamplingDelay;
+  uint32_t ScopeTrigger;
+  uint32_t ScopeTriggerLevel;
+  uint32_t ScopeTimeDiv;
+  uint32_t ScopeVoltDiv;
+  uint32_t ScopeVPos;
+  uint32_t ADC_TripleMode;
+  uint32_t ADC_SampleTime;
+  uint32_t ADC_SampleSize;
+  uint32_t SubSampling;
 } STM32_SCPTypeDef;
 
 typedef struct
 {
-  uint16_t DDS_Cmd;                             // 0x2000005C
-  uint16_t DDS_Wave;                            // 0x2000005E
-  uint32_t DDS__PhaseAdd;                       // 0x20000060
-  uint32_t DDS_Amplitude;                       // 0x20000064
-  uint32_t DDS_DCOffset;                        // 0x20000068
+  uint16_t DDS_Cmd;
+  uint16_t DDS_Wave;
+  uint32_t DDS__PhaseAdd;
+  uint32_t DDS_Amplitude;
+  uint32_t DDS_DCOffset;
 } STM32_DDSTypeDef;
 
 typedef struct
 {
-  uint32_t Cmd;                                 // 0x20000014
-  STM32_HSCTypeDef STM32_HSC;                   // 0x20000018
-  STM32_FRQTypeDef STM32_FRQ;                   // 0x20000020
-  STM32_LCMTypeDef STM32_LCM;                   // 0x20000028
-  STM32_SCPTypeDef STM32_SCP;                   // 0x20000030
-  STM32_DDSTypeDef STM32_DDS;                   // 0x2000005C
+  uint8_t DataBlocks;
+  uint8_t TriggerValue;
+  uint8_t TriggerMask;
+  uint8_t TriggerWait;
+  uint16_t LGASampleRate;
+} STM32_LGATypeDef;
+
+
+typedef struct
+{
+  uint32_t Cmd;
+  STM32_HSCTypeDef STM32_HSC;
+  STM32_FRQTypeDef STM32_FRQ;
+  STM32_LCMTypeDef STM32_LCM;
+  STM32_SCPTypeDef STM32_SCP;
+  STM32_DDSTypeDef STM32_DDS;
+  STM32_LGATypeDef STM32_LGA;
   uint32_t TickCount;
   uint32_t PreviousCountTIM2;
   uint32_t ThisCountTIM2;
@@ -113,11 +124,15 @@ typedef struct
 #define CMD_SCPSET                              ((uint8_t)7)
 #define CMD_HSCSET                              ((uint8_t)8)
 #define CMD_DDSSET                              ((uint8_t)9)
+#define CMD_LGASET                              ((uint8_t)10)
+
 #define DDS_PHASESET                            ((uint8_t)1)
 #define DDS_WAVESET                             ((uint8_t)2)
 
 #define ADC_CDR_ADDRESS                         ((uint32_t)0x40012308)
+#define PE_IDR_Address                          ((uint32_t)0x40021011)
 #define SCOPE_DATAPTR                           ((uint32_t)0x20008000)
+#define LGA_DATAPTR                             ((uint32_t)0x20008000)
 #define SCOPE_DATASIZE                          ((uint32_t)0x10000)
 #define STM32_CLOCK                             ((uint32_t)200000000)
 /* Private macro -------------------------------------------------------------*/
@@ -143,6 +158,7 @@ void SPISendData(uint16_t tx);
 void USART3_putdata(uint8_t *dat,uint16_t len);
 void USART3_puts(char *str);
 void USART3_getdata(uint8_t *dat,uint16_t len);
+void DMA_LGAConfig(void);
 
 /* Private functions ---------------------------------------------------------*/
 
@@ -267,12 +283,16 @@ int main(void)
         }
         /* Start ADC1 Software Conversion */
         ADC1->CR2 |= (uint32_t)ADC_CR2_SWSTART;
+        while (DMA_GetFlagStatus(DMA2_Stream0,DMA_FLAG_HTIF0)==RESET);
+        /* Half done */
+        USART3_putdata((uint8_t *)SCOPE_DATAPTR, STM32_CMD.STM32_SCP.ADC_SampleSize / 2);
         while (DMA_GetFlagStatus(DMA2_Stream0,DMA_FLAG_TCIF0)==RESET);
+        /* Done */
         ADC->CCR=0;
         ADC1->CR2=0;
         ADC2->CR2=0;
         ADC3->CR2=0;
-        USART3_putdata((uint8_t *)SCOPE_DATAPTR,STM32_CMD.STM32_SCP.ADC_SampleSize);
+        USART3_putdata((uint8_t *)(SCOPE_DATAPTR + STM32_CMD.STM32_SCP.ADC_SampleSize / 2), STM32_CMD.STM32_SCP.ADC_SampleSize - STM32_CMD.STM32_SCP.ADC_SampleSize / 2);
         break;
       case CMD_HSCSET:
         GPIO_ResetBits(GPIOD, GPIO_Pin_1 | GPIO_Pin_2 | GPIO_Pin_6 | GPIO_Pin_7);
@@ -298,6 +318,24 @@ int main(void)
           SPISendData(STM32_CMD.STM32_DDS.DDS_Amplitude & 0xFFFF);
           SPISendData(STM32_CMD.STM32_DDS.DDS_DCOffset & 0xFFFF);
         }
+        break;
+      case CMD_LGASET:
+        USART3_getdata((uint8_t *)&STM32_CMD.STM32_LGA.DataBlocks,sizeof(STM32_LGATypeDef));
+        TIM8->CNT = STM32_CMD.STM32_LGA.LGASampleRate-1;
+        TIM8->ARR = STM32_CMD.STM32_LGA.LGASampleRate;
+        DMA_LGAConfig();
+        TIM_DMACmd(TIM8, TIM_DMA_Update, ENABLE);
+        /* DMA2_Stream1 enable */
+        DMA_Cmd(DMA2_Stream1, ENABLE);
+        TIM8->CR1 |= TIM_CR1_CEN;
+        while (DMA_GetFlagStatus(DMA2_Stream1,DMA_FLAG_HTIF0)==RESET);
+        /* Half done */
+        USART3_putdata((uint8_t *)LGA_DATAPTR, STM32_CMD.STM32_LGA.DataBlocks * 1024 / 2);
+        while (DMA_GetFlagStatus(DMA2_Stream1,DMA_FLAG_TCIF0)==RESET);
+        /* Done */
+        USART3_putdata((uint8_t *)(LGA_DATAPTR + STM32_CMD.STM32_LGA.DataBlocks * 1024 / 2), STM32_CMD.STM32_LGA.DataBlocks * 1024 / 2);
+        DMA_DeInit(DMA2_Stream1);
+        TIM_Cmd(TIM8, DISABLE);
         break;
     }
   }
@@ -434,10 +472,12 @@ void RCC_Config(void)
   RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC, ENABLE);
   /* GPIOD clock enable */
   RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOD, ENABLE);
+  /* GPIOE clock enable */
+  RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOE, ENABLE);
   /* USART3 clock enable */
   RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART3, ENABLE); 
-  /* Enable ADC1, ADC2, ADC3 clocks */
-  RCC_APB2PeriphClockCmd(RCC_APB2Periph_ADC1 | RCC_APB2Periph_ADC2 | RCC_APB2Periph_ADC3, ENABLE);
+  /* Enable TIM8, ADC1, ADC2 and ADC3 clocks */
+  RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM8 | RCC_APB2Periph_ADC1 | RCC_APB2Periph_ADC2 | RCC_APB2Periph_ADC3, ENABLE);
 }
 
 /**
@@ -519,7 +559,15 @@ void GPIO_Config(void)
   GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
   GPIO_Init(GPIOD, &GPIO_InitStructure);
 
-  /* Configure SPI2 SCK and MOSI pins */
+  /* GPIOE Inputs */
+  GPIO_InitStructure.GPIO_Pin   = GPIO_Pin_8 | GPIO_Pin_9 | GPIO_Pin_10 | GPIO_Pin_11 | GPIO_Pin_12 | GPIO_Pin_13 | GPIO_Pin_14 | GPIO_Pin_15;
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+  GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+  GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
+  GPIO_Init(GPIOE, &GPIO_InitStructure);
+
+/* Configure SPI2 SCK and MOSI pins */
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
   GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
   GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
@@ -601,7 +649,13 @@ void TIM_Config(void)
   TIM_ARRPreloadConfig(TIM4, ENABLE);
   /* TIM4 enable counter */
   TIM_Cmd(TIM4, ENABLE);
-
+  /* Time base configuration */
+  TIM_TimeBaseStructure.TIM_Period = 200;
+  TIM_TimeBaseStructure.TIM_Prescaler = 0;
+  TIM_TimeBaseStructure.TIM_ClockDivision = 0;
+  TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
+  TIM_TimeBaseStructure.TIM_RepetitionCounter = 0;
+  TIM_TimeBaseInit(TIM8, &TIM_TimeBaseStructure);
 }
 
 void DAC_Config(void)
@@ -758,6 +812,30 @@ void ADC_TripleConfig(void)
   ADC_Cmd(ADC3, ENABLE);
   /* Enable DMA request after last transfer (multi-ADC mode) ******************/
   ADC_MultiModeDMARequestAfterLastTransferCmd(ENABLE);
+}
+
+void DMA_LGAConfig(void)
+{
+  DMA_InitTypeDef DMA_InitStructure;
+
+  DMA_DeInit(DMA2_Stream1);
+  /* DMA2 Stream1 channel7 configuration */
+  DMA_InitStructure.DMA_Channel = DMA_Channel_7;  
+  DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)PE_IDR_Address;
+  DMA_InitStructure.DMA_Memory0BaseAddr = (uint32_t)LGA_DATAPTR;
+  DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralToMemory;
+  DMA_InitStructure.DMA_BufferSize = (STM32_CMD.STM32_LGA.DataBlocks + 1) * 1024;
+  DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
+  DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;
+  DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Byte;
+  DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_Byte;
+  DMA_InitStructure.DMA_Mode = DMA_Mode_Normal;
+  DMA_InitStructure.DMA_Priority = DMA_Priority_High;
+  DMA_InitStructure.DMA_FIFOMode = DMA_FIFOMode_Disable;         
+  DMA_InitStructure.DMA_FIFOThreshold = DMA_FIFOThreshold_HalfFull;
+  DMA_InitStructure.DMA_MemoryBurst = DMA_MemoryBurst_Single;
+  DMA_InitStructure.DMA_PeripheralBurst = DMA_PeripheralBurst_Single;
+  DMA_Init(DMA2_Stream1, &DMA_InitStructure);
 }
 
 /*******************************************************************************

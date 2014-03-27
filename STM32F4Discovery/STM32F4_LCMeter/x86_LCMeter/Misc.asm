@@ -651,7 +651,7 @@ GetAuto proc hWin:HWND
 	shr		eax,2
 	xor		ebx,ebx
 	xor		esi,esi
-	.while ebx<=MAXTIMEDIV
+	.while ebx<=MAXSCPTIMEDIV
 		.break .if eax<ScopeTime.time[esi]
 		inc		ebx
 		lea		esi,[esi+sizeof SCOPETIME]
@@ -779,7 +779,7 @@ ScopeSubSampling proc uses ebx esi edi
 			inc		ebx
 		.endw
 	.endif
-PrintDec esi
+;PrintDec esi
 	ret
 
 ScopeSubSampling endp
@@ -804,6 +804,8 @@ SetMode proc
 		mov		eax,offset szScope
 	.elseif mode==CMD_DDSSET
 		mov		eax,offset szDDS
+	.elseif mode==CMD_LGASET
+		mov		eax,offset szLGA
 	.else
 		mov		eax,offset szLCM
 	.endif

@@ -83,6 +83,33 @@ IDC_TRBDDSOFS           		equ 1312
 IDC_BTNDDSOFSDN         		equ 1313
 
 IDD_DLGLGA						equ 1400
+IDC_BTNSRUP						equ 1401
+IDC_TRBSR						equ 1402
+IDC_BTNSRDN						equ 1403
+IDC_BTNBSUP						equ 1404
+IDC_STCSR						equ 1410
+IDC_TRBBS						equ 1405
+IDC_BTNBSDN						equ 1406
+IDC_STCBS						equ 1415
+IDC_CHKLGATRIGALL				equ 1429
+IDC_CHKLGATRIGD0				equ 1420
+IDC_CHKLGATRIGD1				equ 1421
+IDC_CHKLGATRIGD2				equ 1422
+IDC_CHKLGATRIGD3				equ 1423
+IDC_CHKLGATRIGD4				equ 1424
+IDC_CHKLGATRIGD5				equ 1425
+IDC_CHKLGATRIGD6				equ 1426
+IDC_CHKLGATRIGD7				equ 1427
+IDC_CHKLGAMASKALL				equ 1439
+IDC_CHKLGAMASKD0				equ 1430
+IDC_CHKLGAMASKD1				equ 1431
+IDC_CHKLGAMASKD2				equ 1432
+IDC_CHKLGAMASKD3				equ 1433
+IDC_CHKLGAMASKD4				equ 1434
+IDC_CHKLGAMASKD5				equ 1435
+IDC_CHKLGAMASKD6				equ 1436
+IDC_CHKLGAMASKD7				equ 1437
+IDC_BTNLGASAMPLE				equ 1407
 
 IDD_DLGSCPSCRNCLD				equ 2000
 IDC_UDCSCPSCRN					equ 2001
@@ -118,8 +145,12 @@ GRIDY							equ 8
 SCOPEWT							equ GRIDSIZE*GRIDX
 SCOPEHT							equ GRIDSIZE*GRIDY
 
-MAXTIMEDIV						equ 21
-MAXVOLTDIV						equ 8
+MAXSCPTIMEDIV					equ 21
+MAXSCPVOLTDIV					equ 8
+
+LGASAMPLESIZE					equ 32768
+MAXLGASAMPLE					equ 13
+MAXLGABUFFER					equ 32
 
 DACMAX							equ 4095
 
@@ -151,50 +182,64 @@ SCOPETIME struct
 	range						BYTE 32 dup(?)	
 SCOPETIME ends
 
+LGASAMPLE struct
+	clockdiv					DWORD ?
+	rate						BYTE 32 dup(?)
+LGASAMPLE ends
+
 STM32_HSC struct
-	HSCSet						DWORD ?			;0x20000018
-	HSCDiv						DWORD ?			;0x2000001C
+	HSCSet						DWORD ?
+	HSCDiv						DWORD ?
 STM32_HSC ends
 
 STM32_FRQ struct
-	Frequency					DWORD ?			;0x20000020
-	FrequencySCP				DWORD ?			;0x20000024
+	Frequency					DWORD ?
+	FrequencySCP				DWORD ?
 STM32_FRQ ends
 
 STM32_LCM struct
-	FrequencyCal0				DWORD ?			;0x20000028
-	FrequencyCal1				DWORD ?			;0x2000002C
+	FrequencyCal0				DWORD ?
+	FrequencyCal1				DWORD ?
 STM32_LCM ends
 
 STM32_SCP struct
-	ADC_Prescaler				DWORD ?         ;0x20000030
-	ADC_TwoSamplingDelay		DWORD ?         ;0x20000034
-	ScopeTrigger				DWORD ?			;0x20000038
-	ScopeTriggerLevel			DWORD ?			;0x2000003C
-	ScopeTimeDiv				DWORD ?			;0x20000040
-	ScopeVoltDiv				DWORD ?			;0x20000044
-	ScopeVPos					DWORD ?			;0x20000048
-	ADC_TripleMode              DWORD ?         ;0x2000004C
-	ADC_SampleTime              DWORD ?         ;0x20000050
-	ADC_SampleSize				DWORD ?			;0x20000054
+	ADC_Prescaler				DWORD ?
+	ADC_TwoSamplingDelay		DWORD ?
+	ScopeTrigger				DWORD ?
+	ScopeTriggerLevel			DWORD ?
+	ScopeTimeDiv				DWORD ?
+	ScopeVoltDiv				DWORD ?
+	ScopeVPos					DWORD ?
+	ADC_TripleMode              DWORD ?
+	ADC_SampleTime              DWORD ?
+	ADC_SampleSize				DWORD ?
 	fSubSampling				DWORD ?
 STM32_SCP ends
 
 STM32_DDS struct
-	DDS_Cmd						WORD ?			;0x2000005C
-	DDS_Wave					WORD ?			;0x2000005E
-	DDS__PhaseAdd				DWORD ?			;0x20000060
-	DDS_Amplitude				DWORD ?			;0x20000064
-	DDS_DCOffset				DWORD ?			;0x20000068
+	DDS_Cmd						WORD ?
+	DDS_Wave					WORD ?
+	DDS__PhaseAdd				DWORD ?
+	DDS_Amplitude				DWORD ?
+	DDS_DCOffset				DWORD ?
 STM32_DDS ends
 
+STM32_LGA struct
+	DataBlocks					BYTE ?
+	TriggerValue				BYTE ?
+	TriggerMask					BYTE ?
+	TriggerWait					BYTE ?
+	LGASampleRate				WORD ?
+STM32_LGA ends
+
 STM32_CMD struct
-	Cmd							DWORD ?			;0x20000014
-	STM32_Hsc					STM32_HSC <>	;0x20000018
-	STM32_Frq 					STM32_FRQ <>	;0x20000020
-	STM32_Lcm					STM32_LCM <>	;0x20000028
-	STM32_Scp					STM32_SCP <>	;0x20000030
-	STM32_Dds					STM32_DDS <>	;0x20000058
+	Cmd							DWORD ?
+	STM32_Hsc					STM32_HSC <>
+	STM32_Frq 					STM32_FRQ <>
+	STM32_Lcm					STM32_LCM <>
+	STM32_Scp					STM32_SCP <>
+	STM32_Dds					STM32_DDS <>
+	STM32_Lga					STM32_LGA <>
 	TickCount					DWORD ?
 	PreviousCountTIM2			DWORD ?
 	ThisCountTIM2				DWORD ?
@@ -251,6 +296,9 @@ szFerquencyCH3					BYTE 'Ferquency CH3',0
 szScope							BYTE 'Scope',0
 szDDS							BYTE 'DDS Wave',0
 szLGA							BYTE 'Logic Analyser',0
+
+szSampleRate					BYTE 'Sample Rate ',0
+szBufferSize					BYTE 'Buffer Size %dKb',0
 
 szFmtHz							BYTE '%dHz',0
 szFmtKHz						BYTE '%dKHz',0
@@ -981,6 +1029,8 @@ DDS_RevSawToothWave				WORD 2048,2046,2044,2042,2040,2038,2036,2034,2032,2030,20
 ScopeTime						SCOPETIME <10,'10nS / Div'>,<20,'20nS / Div'>,<50,'50nS / Div'>,<100,'100nS / Div'>,<200,'200nS / Div'>,<500,'500nS / Div'>,<1000,'1uS / Div'>,<2000,'2uS / Div'>,<5000,'5uS / Div'>,<10000,'10uS / Div'>,<20000,'20uS / Div'>,<50000,'50uS / Div'>
 								SCOPETIME <100000,'100uS / Div'>,<200000,'200uS / Div'>,<500000,'500uS / Div'>,<1000000,'1mS / Div'>,<2000000,'2mS / Div'>,<5000000,'5mS / Div'>,<10000000,'10mS / Div'>,<20000000,'20mS / Div'>,<50000000,'50mS / Div'>,<100000000,'100mS / Div'>
 ScopeRange						SCOPERANGE <15,0,'1mV/Div'>,<30,0,'2mV/Div'>,<76,0,'5mV/Div'>,<152,0,'10mV/Div'>,<305,0,'20mV/Div'>,<762,0,'50mV / Div'>,<1525,0,'100mV / Div'>,<3050,0,'200mV / Div'>,<7625,0,'500mV / Div'>
+LgaSample						LGASAMPLE <39999,'5KHz'>,<19999,'10KHz'>,<7999,'25KHz'>,<3999,'50KHz'>,<1999,'100KHz'>,<799,'250KHz'>,<399,'500KHz'>,<199,'1MHz'>,<79,'2.5MHz'>,<39,'5MHz'>,<19,'10MHz'>,<9,'20MHz'>,<4,'40MHz'>
+
 szFmtVPP						BYTE 'Vpp: ',0
 szFmtPPV						BYTE '%.04uV',0
 szFmtPER						BYTE 'Per: ',0
@@ -994,46 +1044,58 @@ hInstance						HINSTANCE ?
 wc								WNDCLASSEX <>
 hWnd							HWND ?
 msg								MSG <>
-hScpScrnCld						HWND ?
-hScpScrn						HWND ?
-hDDSScrnCld						HWND ?
-hDDSScrn						HWND ?
+
+hLcmCld							HWND ?
+hLcm							HWND ?
 
 hHscCld							HWND ?
 hHsc							HWND ?
-hLcmCld							HWND ?
-hLcm							HWND ?
+
+hScpScrnCld						HWND ?
+hScpScrn						HWND ?
 hScpCld							HWND ?
 hScp							HWND ?
+
+hDDSScrnCld						HWND ?
+hDDSScrn						HWND ?
 hDDSCld							HWND ?
 hDDS							HWND ?
+
 hLGACld							HWND ?
 hLGAScrnCld						HWND ?
 hLGAScrn						HWND ?
+
 hFont							HFONT ?
 hIml							HIMAGELIST ?
-connected						DWORD ?
 
-mode							DWORD ?
-LCx								REAL10 ?
-lpOldButtonProc					DWORD ?
-nBtnCount						DWORD ?
+connected						DWORD ?
 fSampleDone						DWORD ?
 fHoldSampling					DWORD ?
 fNoFrequency					DWORD ?
 fExitThread						DWORD ?
 fThreadDone						DWORD ?
+
+mode							DWORD ?
+LCx								REAL10 ?
+lpOldButtonProc					DWORD ?
+nBtnCount						DWORD ?
+
+STM32_Cmd						STM32_CMD <>
+
 SampleRate						REAL10 ?
 SampleTime						REAL10 ?
 SignalPeriod					DWORD ?
 SamplesPrPeriod					DWORD ?
-STM32_Cmd						STM32_CMD <>
 STM32_Scp						STM32_SCP <>
+scopexofs						DWORD ?
+scopeyofs						DWORD ?
 ADC_Data						WORD ADCSAMPLESIZE dup(?)
 SubSample						DWORD 2048 dup(?)
 SubSampleCount					WORD 2048 dup(?)
+
 ddswavedata						DDSWAVEDATA <>
-scopexofs						DWORD ?
-scopeyofs						DWORD ?
+
+LGA_Data						BYTE LGASAMPLESIZE dup(?)
+lgaxofs							DWORD ?
 
 ;#########################################################################
