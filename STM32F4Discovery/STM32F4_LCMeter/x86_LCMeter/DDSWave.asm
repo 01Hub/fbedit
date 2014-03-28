@@ -180,7 +180,7 @@ DDSSetStruct proc cmnd:DWORD
 	mov		STM32_Cmd.STM32_Dds.DDS_DCOffset,eax
 	mov		eax,ddswavedata.DDS_PhaseFrq
 	mov		STM32_Cmd.STM32_Dds.DDS__PhaseAdd,eax
-	.if connected && fThreadDone
+	.if fBluetooth && fThreadDone
 		mov		mode,CMD_DDSSET
 	.endif
 	ret

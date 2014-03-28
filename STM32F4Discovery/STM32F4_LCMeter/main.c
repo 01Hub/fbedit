@@ -321,21 +321,22 @@ int main(void)
         break;
       case CMD_LGASET:
         USART3_getdata((uint8_t *)&STM32_CMD.STM32_LGA.DataBlocks,sizeof(STM32_LGATypeDef));
-        TIM8->CNT = STM32_CMD.STM32_LGA.LGASampleRate-1;
+        TIM8->CNT =  STM32_CMD.STM32_LGA.LGASampleRate-1;
         TIM8->ARR = STM32_CMD.STM32_LGA.LGASampleRate;
         DMA_LGAConfig();
         TIM_DMACmd(TIM8, TIM_DMA_Update, ENABLE);
         /* DMA2_Stream1 enable */
         DMA_Cmd(DMA2_Stream1, ENABLE);
+        /* Enable timer */
         TIM8->CR1 |= TIM_CR1_CEN;
-        while (DMA_GetFlagStatus(DMA2_Stream1,DMA_FLAG_HTIF0)==RESET);
+        while (DMA_GetFlagStatus(DMA2_Stream1,DMA_FLAG_HTIF1) == RESET);
         /* Half done */
         USART3_putdata((uint8_t *)LGA_DATAPTR, STM32_CMD.STM32_LGA.DataBlocks * 1024 / 2);
-        while (DMA_GetFlagStatus(DMA2_Stream1,DMA_FLAG_TCIF0)==RESET);
+        while (DMA_GetFlagStatus(DMA2_Stream1,DMA_FLAG_TCIF1) == RESET);
         /* Done */
         USART3_putdata((uint8_t *)(LGA_DATAPTR + STM32_CMD.STM32_LGA.DataBlocks * 1024 / 2), STM32_CMD.STM32_LGA.DataBlocks * 1024 / 2);
-        DMA_DeInit(DMA2_Stream1);
         TIM_Cmd(TIM8, DISABLE);
+        DMA_DeInit(DMA2_Stream1);
         break;
     }
   }
@@ -819,12 +820,13 @@ void DMA_LGAConfig(void)
   DMA_InitTypeDef DMA_InitStructure;
 
   DMA_DeInit(DMA2_Stream1);
+  DMA_StructInit(&DMA_InitStructure);
   /* DMA2 Stream1 channel7 configuration */
   DMA_InitStructure.DMA_Channel = DMA_Channel_7;  
   DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)PE_IDR_Address;
   DMA_InitStructure.DMA_Memory0BaseAddr = (uint32_t)LGA_DATAPTR;
   DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralToMemory;
-  DMA_InitStructure.DMA_BufferSize = (STM32_CMD.STM32_LGA.DataBlocks + 1) * 1024;
+  DMA_InitStructure.DMA_BufferSize = STM32_CMD.STM32_LGA.DataBlocks * 1024;
   DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
   DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;
   DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Byte;

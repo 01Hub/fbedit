@@ -545,7 +545,7 @@ SetHSC proc hWin:HWND,frq:DWORD
 	mov		STM32_Cmd.STM32_Hsc.HSCSet,esi
 	mov		STM32_Cmd.STM32_Hsc.HSCDiv,eax
 	invoke SetDlgItemInt,hWin,IDC_EDTHSCFRQ,resfrq,FALSE
-	.if connected
+	.if fBluetooth
 		mov		mode,CMD_HSCSET
 	.endif
 	ret
@@ -628,6 +628,7 @@ GetTotalSamples proc uses esi,lpSTM32_Scp:ptr STM32_SCP
 	fdivp	st(1),st
 	fistp	iTmp
 	mov		eax,iTmp
+	shl		eax,1
 	.if [esi].STM32_SCP.fSubSampling
 		shl		eax,3
 	.endif

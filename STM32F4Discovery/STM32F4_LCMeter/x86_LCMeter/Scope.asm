@@ -5,7 +5,8 @@ ScopeSampleThreadProc proc lParam:DWORD
 	LOCAL	buffer[32]:BYTE
 
 	mov		fThreadDone,FALSE
-	.if connected && !fExitThread
+	.if fBluetooth && !fExitThread
+		invoke SendDlgItemMessage,hWnd,IDC_IMGCONNECTED,STM_SETICON,hRedIcon,0
 		invoke BTPut,offset mode,4
 		invoke BTGet,offset STM32_Cmd.STM32_Frq,8
 		invoke FormatFrequency,STM32_Cmd.STM32_Frq.FrequencySCP,addr buffer
@@ -31,6 +32,7 @@ ScopeSampleThreadProc proc lParam:DWORD
 			.endif
 			invoke InvalidateRect,hScpScrn,NULL,TRUE
 			invoke UpdateWindow,hScpScrn
+			invoke SendDlgItemMessage,hWnd,IDC_IMGCONNECTED,STM_SETICON,hGreenIcon,0
 			mov		fSampleDone,TRUE
 		.endif
 	.endif

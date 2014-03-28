@@ -26,6 +26,7 @@ includelib \RadASM30\masm\lib\debug.lib
 
 IDD_MAIN						equ 101
 IDC_TABFUNCTION					equ 102
+IDC_IMGCONNECTED				equ 103
 
 IDD_DLGLCMETER					equ 1000
 IDC_UDCLCM						equ 1001
@@ -110,6 +111,8 @@ IDC_CHKLGAMASKD5				equ 1435
 IDC_CHKLGAMASKD6				equ 1436
 IDC_CHKLGAMASKD7				equ 1437
 IDC_BTNLGASAMPLE				equ 1407
+IDC_BTNTRGPREVIOUS				equ 1409
+IDC_BTNTRGNEXT					equ 1408
 
 IDD_DLGSCPSCRNCLD				equ 2000
 IDC_UDCSCPSCRN					equ 2001
@@ -170,6 +173,15 @@ SWEEP_SubModePeak				equ 5
 
 DDS_PHASESET					equ 1
 DDS_WAVESET						equ 2
+
+BTH_ADDR						equ QWORD ?
+
+SOCKADDR_BTH struct
+	addressFamily				WORD ?
+	btAddr						BTH_ADDR
+	serviceClassId				GUID <>
+	port						DWORD ?
+SOCKADDR_BTH ends
 
 SCOPERANGE struct
 	ydiv						DWORD ?
@@ -304,6 +316,11 @@ szFmtHz							BYTE '%dHz',0
 szFmtKHz						BYTE '%dKHz',0
 szFmtMHz						BYTE '%dMHz',0
 szHz							BYTE 'Hz',0
+
+szFmtLGA						BYTE ' Hex: %02X  Bin: %s  Bytenbr: %u Transitions: %u Time: %s',0
+szFmtLGATimens					BYTE '%02uns',0
+szFmtLGATimeus					BYTE '%uus',0
+szFmtLGATimems					BYTE '%ums',0
 
 szPF							BYTE 'pF',0
 szNF							BYTE 'nF',0
@@ -1067,8 +1084,10 @@ hLGAScrn						HWND ?
 
 hFont							HFONT ?
 hIml							HIMAGELIST ?
+hGrayIcon						HICON ?
+hGreenIcon						HICON ?
+hRedIcon						HICON ?
 
-connected						DWORD ?
 fSampleDone						DWORD ?
 fHoldSampling					DWORD ?
 fNoFrequency					DWORD ?
@@ -1097,5 +1116,17 @@ ddswavedata						DDSWAVEDATA <>
 
 LGA_Data						BYTE LGASAMPLESIZE dup(?)
 lgaxofs							DWORD ?
+transcurpos						DWORD ?
+transstart						DWORD ?
+transend						DWORD ?
+LGA_Text						BYTE 128 dup(?)
+transbit						DWORD ?
+transrisingedge					DWORD ?
+transcount						DWORD ?
+
+wsdata							WSADATA <>
+serveraddress					SOCKADDR_BTH <>
+client_socket					SOCKET ?
+fBluetooth						DWORD ?
 
 ;#########################################################################

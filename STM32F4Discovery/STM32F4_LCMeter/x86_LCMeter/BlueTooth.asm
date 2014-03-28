@@ -5,8 +5,6 @@ BTHPROTO_RFCOMM					equ 3
 RNRSERVICE_REGISTER				equ 0
 RNRSERVICE_DELETE				equ 2
 
-BTH_ADDR						equ QWORD ?
-
 WSAQUERYSET struct
 	dwSize						DWORD ?
 	lpszServiceInstanceName		DWORD ?
@@ -65,25 +63,11 @@ WSAPROTOCOL_INFO struct
 	szProtocol					TCHAR WSAPROTOCOL_LEN+1 dup(?)
 WSAPROTOCOL_INFO ends
 
-SOCKADDR_BTH struct
-	addressFamily				WORD ?
-	btAddr						BTH_ADDR
-	serviceClassId				GUID <>
-	port						DWORD ?
-SOCKADDR_BTH ends
-
 .const
 
 wVersionRequested 				DWORD 202h
 szServerAddress					BYTE '98:D3:31:B2:0D:40',0
 GUID_SPP						GUID <00001101h,0000h,1000h,<080h,000h,000h,080h,05Fh,09Bh,034h,0FBh>>
-
-.data?
-
-wsdata							WSADATA <>
-serveraddress					SOCKADDR_BTH <>
-client_socket					SOCKET ?
-fBluetooth						DWORD ?
 
 .code
 
@@ -134,18 +118,17 @@ BlueToothConnect proc
 			invoke connect,client_socket,offset serveraddress,sizeof SOCKADDR_BTH
 			.if eax!=INVALID_SOCKET
 				mov		fBluetooth,TRUE
-				invoke Sleep,1000
+				mov		eax,TRUE
+			.else
+				invoke WSACleanup
+				mov		eax,FALSE
 			.endif
-PrintText "Connected"
-			mov		eax,TRUE
 		.else
 			invoke WSACleanup
-PrintText "Disconnected"
 			mov		eax,FALSE
 		.endif
 	.else
 		invoke WSACleanup
-PrintText "Disconnected"
 		mov		eax,FALSE
 	.endif
 	mov		fBluetooth,eax
@@ -159,7 +142,6 @@ BlueToothDisconnect proc
 		invoke closesocket,client_socket
 		invoke CloseHandle,client_socket
 		invoke WSACleanup
-PrintText "Disconnected"
 	.endif
 	ret
 
@@ -178,6 +160,10 @@ BTPut proc uses ebx esi edi,lpData:DWORD,len:DWORD
 		.break .if eax==INVALID_SOCKET || eax==0
 		add		ebx,eax
 	.endw
+	.if eax==INVALID_SOCKET
+		mov		fBluetooth,0
+		invoke SendDlgItemMessage,hWnd,IDC_IMGCONNECTED,STM_SETICON,hGrayIcon,0
+	.endif
 	ret
 
 BTPut endp
@@ -195,6 +181,10 @@ BTGet proc uses ebx esi edi,lpData:DWORD,len:DWORD
 		.break .if eax==INVALID_SOCKET || eax==0
 		add		ebx,eax
 	.endw
+	.if eax==INVALID_SOCKET
+		mov		fBluetooth,0
+		invoke SendDlgItemMessage,hWnd,IDC_IMGCONNECTED,STM_SETICON,hGrayIcon,0
+	.endif
 	ret
 
 BTGet endp

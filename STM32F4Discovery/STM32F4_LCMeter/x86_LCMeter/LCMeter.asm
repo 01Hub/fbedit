@@ -75,7 +75,7 @@ LcmChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 		shr		edx,16
 		.if edx==BN_CLICKED
 			.if eax==IDC_BTNLCMMODE
-				.if connected
+				.if fBluetooth
 					.if mode==CMD_LCMCAP
 						mov		mode,CMD_LCMIND
 					.elseif mode==CMD_LCMIND
@@ -84,7 +84,7 @@ LcmChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 					invoke SetMode
 				.endif
 			.elseif eax==IDC_BTNLCMCAL
-				.if connected
+				.if fBluetooth
 					mov		mode,CMD_LCMCAL
 					invoke SetMode
 				.endif
@@ -134,6 +134,10 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		STM32_Cmd.STM32_Scp.ScopeVoltDiv,8
 		mov		STM32_Cmd.STM32_Scp.ScopeVPos,2150
 		mov		STM32_Cmd.STM32_Scp.ADC_TripleMode,TRUE
+
+		mov		STM32_Cmd.STM32_Lga.LGASampleRate,39999
+		mov		STM32_Cmd.STM32_Lga.DataBlocks,1
+
 		invoke CreateFontIndirect,addr Tahoma_36
 		mov		hFont,eax
 		invoke ImageList_Create,16,16,ILC_COLOR24 or ILC_MASK,2,0
@@ -179,20 +183,33 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		fThreadDone,TRUE
 		mov		STM32_Scp.ADC_SampleSize,10000h
 		invoke SetMode
+		invoke ImageList_GetIcon,hIml,2,ILD_NORMAL
+		mov		hGrayIcon,eax
+		invoke ImageList_GetIcon,hIml,3,ILD_NORMAL
+		mov		hGreenIcon,eax
+		invoke ImageList_GetIcon,hIml,4,ILD_NORMAL
+		mov		hRedIcon,eax
+		invoke SendDlgItemMessage,hWin,IDC_IMGCONNECTED,STM_SETICON,hGrayIcon,0
 	.elseif	eax==WM_COMMAND
 		mov edx,wParam
 		movzx eax,dx
 		shr edx,16
 		.if edx==BN_CLICKED
 			.if eax==IDOK
-				.if !connected
+				.if !fBluetooth
+					invoke SendDlgItemMessage,hWin,IDC_IMGCONNECTED,STM_SETICON,hRedIcon,0
+					invoke DeleteObject,eax
 					invoke BlueToothConnect
-					mov		connected,eax
+					mov		fBluetooth,eax
 					.if eax
 						mov		mode,CMD_LCMCAP
 						invoke SetMode
 						;Create a timer. The event will read the frequency, format it and display the result
 						invoke SetTimer,hWin,1000,100,NULL
+						invoke SendDlgItemMessage,hWin,IDC_IMGCONNECTED,STM_SETICON,hGreenIcon,0
+						invoke DeleteObject,eax
+					.else
+						invoke SendDlgItemMessage,hWnd,IDC_IMGCONNECTED,STM_SETICON,hGrayIcon,0
 					.endif
 				.endif
 			.elseif eax==IDCANCEL
@@ -201,6 +218,7 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.endif
 	.elseif	eax==WM_TIMER
 		invoke KillTimer,hWin,1000
+		invoke SendDlgItemMessage,hWin,IDC_IMGCONNECTED,STM_SETICON,hRedIcon,0
 		.if mode==CMD_SCPSET
 			.if !fHoldSampling && fSampleDone
 				mov		fSampleDone,FALSE
@@ -278,7 +296,14 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		mode,CMD_DONE
 			.endif
 		.endif
-		invoke SetTimer,hWin,1000,100,NULL
+		.if fThreadDone && fBluetooth
+			invoke SendDlgItemMessage,hWin,IDC_IMGCONNECTED,STM_SETICON,hGreenIcon,0
+		.elseif ! fBluetooth
+			invoke SendDlgItemMessage,hWin,IDC_IMGCONNECTED,STM_SETICON,hGrayIcon,0
+		.endif
+		.if fBluetooth
+			invoke SetTimer,hWin,1000,100,NULL
+		.endif
 	.elseif	eax==WM_CLOSE
 		mov		fExitThread,TRUE
 		invoke KillTimer,hWin,1000
@@ -298,6 +323,10 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke Sleep,100
 		invoke BlueToothDisconnect
 		invoke DeleteObject,hFont
+		invoke DestroyIcon,hGrayIcon
+		invoke DestroyIcon,hGreenIcon
+		invoke DestroyIcon,hRedIcon
+		invoke ImageList_Destroy,hIml
 		invoke EndDialog,hWin,0
 	.elseif eax==WM_NOTIFY
 		mov		eax,lParam

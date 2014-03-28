@@ -6,13 +6,12 @@ LGAChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
-		mov		STM32_Cmd.STM32_Lga.LGASampleRate,39999
-		mov		STM32_Cmd.STM32_Lga.DataBlocks,1
 		invoke SendDlgItemMessage,hWin,IDC_TRBSR,TBM_SETRANGE,FALSE,(MAXLGASAMPLE-1) SHL 16
 		invoke SendDlgItemMessage,hWin,IDC_TRBBS,TBM_SETRANGE,FALSE,(MAXLGABUFFER SHL 16)+1
 		invoke ImageList_GetIcon,hIml,0,ILD_NORMAL
 		mov		ebx,eax
 		push	0
+		push	IDC_BTNTRGPREVIOUS
 		push	IDC_BTNSRDN
 		mov		eax,IDC_BTNBSDN
 		.while eax
@@ -26,6 +25,7 @@ LGAChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 		invoke ImageList_GetIcon,hIml,1,ILD_NORMAL
 		mov		ebx,eax
 		push	0
+		push	IDC_BTNTRGNEXT
 		push	IDC_BTNSRUP
 		mov		eax,IDC_BTNBSUP
 		.while eax
@@ -111,7 +111,14 @@ LGAChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 					invoke SendDlgItemMessage,hWin,IDC_TRBBS,TBM_SETPOS,TRUE,eax
 					call	Update
 				.endif
+			.elseif eax==IDC_BTNTRGPREVIOUS
+			.elseif eax==IDC_BTNTRGNEXT
 			.elseif eax==IDC_BTNLGASAMPLE
+				xor		eax,eax
+				mov		lgaxofs,eax
+				mov		transcurpos,eax
+				mov		transstart,eax
+				mov		transend,eax
 				mov		mode,CMD_LGASET
 			.else
 				call	Update
@@ -188,6 +195,26 @@ LGAScrnChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:
 
 LGAScrnChildProc endp
 
+ByteToBin proc uses edi,lpBuff:DWORD,nByte:DWORD
+
+	mov		edi,lpBuff
+	mov		eax,nByte
+	xor		ecx,ecx
+	.while ecx<8
+		shl		al,1
+		.if CARRY?
+			mov		ah,'1'
+		.else
+			mov		ah,'0'
+		.endif
+		mov		[edi+ecx],ah
+		inc		ecx
+	.endw
+	mov		byte ptr [edi+ecx],0
+	ret
+
+ByteToBin endp
+
 LGAProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	rect:RECT
 	LOCAL	lgarect:RECT
@@ -196,10 +223,13 @@ LGAProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	hBmp:HBITMAP
 	LOCAL	pt:POINT
 	LOCAL	buffer[128]:BYTE
+	LOCAL	buffer1[128]:BYTE
+	LOCAL	buffer2[128]:BYTE
 	LOCAL	lgaoldbit:BYTE
 	LOCAL	lgabit:BYTE
 	LOCAL	samplesize:DWORD
 	LOCAL	xsinf:SCROLLINFO
+	LOCAL	yinc:DWORD
 	
 	mov		eax,uMsg
 	.if eax==WM_PAINT
@@ -229,6 +259,18 @@ LGAProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		add		eax,SCOPEHT
 		inc		eax
 		mov		lgarect.bottom,eax
+		call	DrawLGABitText
+		call	SetLGAText
+		invoke lstrlen,addr LGA_Text
+		.if eax
+			push	eax
+			invoke SetBkMode,mDC,TRANSPARENT
+			invoke SetTextColor,mDC,00FF00h
+			pop		eax
+			mov		edx,rect.bottom
+			add		edx,8
+			invoke TextOut,mDC,0,edx,addr LGA_Text,eax
+		.endif
 		;Create a clip region
 		invoke CreateRectRgn,lgarect.left,lgarect.top,lgarect.right,lgarect.bottom
 		push	eax
@@ -239,7 +281,10 @@ LGAProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		call	DrawGrid
 
 		;Draw curve
-		mov		samplesize,1024
+		movzx	eax,STM32_Cmd.STM32_Lga.DataBlocks
+		mov		ecx,1024
+		mul		ecx
+		mov		samplesize,eax
 		mov		lgabit,01h
 		mov		eax,lgarect.top
 		add		eax,GRIDSIZE
@@ -266,8 +311,31 @@ LGAProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			inc		ecx
 		.endw
 
+		;Draw transition count lines
+		invoke CreatePen,PS_SOLID,0,00FFFFh
+		invoke SelectObject,mDC,eax
+		push	eax
+		mov		edi,transstart
+		call	GetXPos
+		invoke MoveToEx,mDC,pt.x,lgarect.top,NULL
+		invoke LineTo,mDC,pt.x,lgarect.bottom
+		pop		eax
+		invoke SelectObject,mDC,eax
+		invoke DeleteObject,eax
+		.if LGA_Text
+			invoke CreatePen,PS_DOT,0,00FFFFh
+			invoke SelectObject,mDC,eax
+			push	eax
+			mov		edi,transend
+			call	GetXPos
+			invoke MoveToEx,mDC,pt.x,lgarect.top,NULL
+			invoke LineTo,mDC,pt.x,lgarect.bottom
+			pop		eax
+			invoke SelectObject,mDC,eax
+			invoke DeleteObject,eax
+		.endif
+
 		invoke SelectClipRgn,mDC,NULL
-		call	DrawLGAText
 
 		add		rect.bottom,TEXTHIGHT
 		invoke BitBlt,ps.hdc,0,0,rect.right,rect.bottom,mDC,0,0,SRCCOPY
@@ -277,6 +345,35 @@ LGAProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke DeleteDC,mDC
 		invoke EndPaint,hWin,addr ps
 		xor		eax,eax
+	.elseif eax==WM_LBUTTONDOWN
+		.if LGA_Text
+			mov		eax,transcurpos
+			mov		transstart,eax
+			invoke InvalidateRect,hWin,0,TRUE
+		.endif
+	.elseif eax==WM_MOUSEMOVE
+		invoke GetCapture
+		.if eax==hWin
+			invoke GetCursorPos,addr pt
+			invoke WindowFromPoint,pt.x,pt.y
+			.if eax==hWin
+				invoke ScreenToClient,hWin,addr pt
+				invoke GetClientRect,hWin,addr rect
+				mov		eax,pt.x
+				mov		edx,pt.y
+				.if eax>rect.right || edx>rect.bottom
+					mov		LGA_Text,0
+					invoke ReleaseCapture
+				.endif
+			.else
+				mov		LGA_Text,0
+				invoke ReleaseCapture
+			.endif
+			invoke InvalidateRect,hWin,0,TRUE
+		.else
+			invoke SetCapture,hWin
+			invoke InvalidateRect,hWin,0,TRUE
+		.endif
 	.elseif eax==WM_HSCROLL
 		mov		xsinf.cbSize,sizeof SCROLLINFO
 		mov		xsinf.fMask,SIF_ALL
@@ -340,6 +437,40 @@ LGAProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	.endif
 	ret
 
+GetBitnbr:
+	invoke GetCursorPos,addr pt
+	invoke ScreenToClient,hWin,addr pt
+	invoke GetClientRect,hWin,addr rect
+	sub		rect.bottom,TEXTHIGHT
+	mov		eax,rect.bottom
+	sub		eax,GRIDSIZE
+	shr		eax,3
+	mov		yinc,eax
+	xor		edx,edx
+	.while eax<pt.y && edx<7
+		inc		edx
+		add		eax,yinc
+	.endw
+	mov		transbit,edx
+	retn
+
+GetBytenbr:
+	mov		ebx,pt.x
+	mov		edi,lgaxofs
+	call	GetXPos
+	.while edi<samplesize
+		push	pt.x
+		inc		edi
+		call	GetXPos
+		pop		edx
+		.if ebx>=edx && ebx<pt.x
+			dec		edi
+			retn
+		.endif
+	.endw
+	mov		edi,-1
+	retn
+
 DrawGrid:
 	; Create gridlines pen
 	invoke CreatePen,PS_SOLID,1,404040h
@@ -372,7 +503,7 @@ DrawGrid:
 	invoke DeleteObject,eax
 	retn
 
-DrawLGAText:
+DrawLGABitText:
 	mov		ebx,lgarect.top
 	add		ebx,GRIDSIZE-15
 	xor		edi,edi
@@ -390,6 +521,7 @@ DrawLGAText:
 GetXPos:
 	;Get X position
 	mov		eax,edi
+	sub		eax,lgaxofs
 	mov		ecx,GRIDSIZE/4
 	mul		ecx
 	add		eax,lgarect.left
@@ -398,8 +530,7 @@ GetXPos:
 
 DrawCurve:
 	mov		esi,offset LGA_Data
-	add		esi,lgaxofs
-	mov		edi,0
+	mov		edi,lgaxofs
 	call	GetXPos
 	invoke MoveToEx,mDC,lgarect.left,pt.y,NULL
 	mov		lgaoldbit,0
@@ -429,6 +560,118 @@ DrawCurve:
 		.break .if sdword ptr eax>lgarect.right
 		inc		ecx
 	.endw
+	retn
+
+GetTransitions:
+	mov		esi,transstart
+	mov		edi,transend
+	.if sdword ptr esi>edi
+		xchg	esi,edi
+	.endif
+	xor		ebx,ebx
+	mov		ecx,transbit
+	mov		edx,1
+	shl		edx,cl
+	mov		ecx,edx
+	.if transrisingedge
+		mov		edx,ecx
+		.while esi<=edi
+			movzx	eax,LGA_Data[esi]
+			and		eax,ecx
+			.if eax!=edx
+				.if eax && !edx
+					inc		ebx
+				.endif
+				mov		edx,eax
+			.endif
+			inc		esi
+		.endw
+	.else
+		xor		edx,edx
+		.while esi<=edi
+			movzx	eax,LGA_Data[esi]
+			and		eax,ecx
+			.if eax!=edx
+				.if !eax && edx
+					inc		ebx
+				.endif
+				mov		edx,eax
+			.endif
+			inc		esi
+		.endw
+	.endif
+	mov		transcount,ebx
+	retn
+
+SetLGAText:
+	invoke GetCursorPos,addr pt
+	invoke WindowFromPoint,pt.x,pt.y
+	push	eax
+	invoke ScreenToClient,hWin,addr pt
+	mov		eax,pt.x
+	mov		edx,pt.y
+	pop		ecx
+	.if eax>lgarect.right || eax<lgarect.left || edx>lgarect.bottom || edx<lgarect.top || ecx!=hWin
+		mov		LGA_Text,0
+	.else
+		call	GetBytenbr
+		.if sdword ptr edi>=0
+			mov		transcurpos,edi
+			mov		eax,transcurpos
+			mov		transend,eax
+			call	GetBitnbr
+			call	GetTransitions
+			mov		edi,transcurpos
+			movzx	eax,LGA_Data[edi]
+			push	eax
+			invoke ByteToBin,addr buffer1,eax
+			mov		eax,STM32_CLOCK/10
+			cdq
+			movzx	ecx,STM32_Cmd.STM32_Lga.LGASampleRate
+			inc		ecx
+			div		ecx
+			mov		ecx,eax
+			mov		eax,1000000000
+			cdq
+			div		ecx
+			mov		ecx,transend
+			sub		ecx,transstart
+			.if SIGN?
+				neg		ecx
+			.endif
+			mul		ecx
+			.if eax<10000
+				invoke wsprintf,addr buffer2,addr szFmtLGATimens,eax
+				invoke lstrlen,addr buffer2
+				mov		edx,dword ptr buffer2[eax-3]
+				mov		buffer2[eax-3],'.'
+				mov		dword ptr buffer2[eax-2],edx
+			.elseif eax<10000000
+				invoke wsprintf,addr buffer2,addr szFmtLGATimeus,eax
+				invoke lstrlen,addr buffer2
+				mov		edx,dword ptr buffer2[eax-6]
+				mov		ecx,dword ptr buffer2[eax-2]
+				mov		buffer2[eax-6],'.'
+				mov		dword ptr buffer2[eax-5],edx
+				mov		dword ptr buffer2[eax-1],ecx
+			.else
+				invoke wsprintf,addr buffer2,addr szFmtLGATimems,eax
+				invoke lstrlen,addr buffer2
+				mov		edx,dword ptr buffer2[eax-9]
+				mov		ecx,dword ptr buffer2[eax-5]
+				mov		ebx,dword ptr buffer2[eax-1]
+				mov		buffer2[eax-9],'.'
+				mov		dword ptr buffer2[eax-8],edx
+				mov		dword ptr buffer2[eax-4],ecx
+				mov		dword ptr buffer2[eax-0],ebx
+			.endif
+			pop		edx
+			invoke wsprintf,addr buffer,addr szFmtLGA,edx,addr buffer1,edi,transcount,addr buffer2
+			invoke lstrcpy,addr LGA_Text,addr buffer
+		.else
+			mov		LGA_Text,0
+		.endif
+	.endif
 	retn
 
 LGAProc endp
