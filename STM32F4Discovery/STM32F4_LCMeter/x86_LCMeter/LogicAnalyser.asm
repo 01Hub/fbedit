@@ -1,8 +1,72 @@
 
 .code
 
+FindNextTrigger proc uses ebx esi edi
+
+	.if STM32_Cmd.STM32_Lga.TriggerMask
+		mov		edi,transstart
+		movzx	eax,STM32_Cmd.STM32_Lga.DataBlocks
+		mov		esi,1024
+		mul		esi
+		mov		esi,eax
+		dec		esi
+		movzx	edx,STM32_Cmd.STM32_Lga.TriggerMask
+		movzx	ecx,STM32_Cmd.STM32_Lga.TriggerValue
+		and		ecx,edx
+		inc		edi
+		.while edi<esi
+			movzx	eax,LGA_Data[edi]
+			and		eax,edx
+			.if eax==ecx
+				mov		transstart,edi
+				sub		edi,GRIDX*4/2
+				.if CARRY?
+					xor		edi,edi
+				.endif
+				mov		lgaxofs,edi
+				invoke InvalidateRect,hLGAScrn,NULL,TRUE
+				invoke UpdateWindow,hLGAScrn
+				.break
+			.endif
+			inc		edi
+		.endw
+	.endif
+	ret
+
+FindNextTrigger endp
+
+FindPreviousTrigger proc uses ebx esi edi
+
+	.if STM32_Cmd.STM32_Lga.TriggerMask
+		mov		edi,transstart
+		movzx	edx,STM32_Cmd.STM32_Lga.TriggerMask
+		movzx	ecx,STM32_Cmd.STM32_Lga.TriggerValue
+		and		ecx,edx
+		dec		edi
+		.while sdword ptr edi>=0
+			movzx	eax,LGA_Data[edi]
+			and		eax,edx
+			.if eax==ecx
+				mov		transstart,edi
+				sub		edi,GRIDX*4/2
+				.if CARRY?
+					xor		edi,edi
+				.endif
+				mov		lgaxofs,edi
+				invoke InvalidateRect,hLGAScrn,NULL,TRUE
+				invoke UpdateWindow,hLGAScrn
+				.break
+			.endif
+			dec		edi
+		.endw
+	.endif
+	ret
+
+FindPreviousTrigger endp
+
 LGAChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	buffer[64]:BYTE
+	LOCAL	xsinf:SCROLLINFO
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
@@ -112,7 +176,23 @@ LGAChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 					call	Update
 				.endif
 			.elseif eax==IDC_BTNTRGPREVIOUS
+				; Find previous trigger
+				invoke FindPreviousTrigger
+				mov		xsinf.cbSize,sizeof SCROLLINFO
+				mov		xsinf.fMask,SIF_ALL
+				invoke GetScrollInfo,hLGAScrn,SB_HORZ,addr xsinf
+				mov		eax,lgaxofs
+				mov		xsinf.nTrackPos,eax
+				invoke SetScrollPos,hLGAScrn,SB_HORZ,eax,TRUE
 			.elseif eax==IDC_BTNTRGNEXT
+				;Find next trigger
+				invoke FindNextTrigger
+				mov		xsinf.cbSize,sizeof SCROLLINFO
+				mov		xsinf.fMask,SIF_ALL
+				invoke GetScrollInfo,hLGAScrn,SB_HORZ,addr xsinf
+				mov		eax,lgaxofs
+				mov		xsinf.nTrackPos,eax
+				invoke SetScrollPos,hLGAScrn,SB_HORZ,eax,TRUE
 			.elseif eax==IDC_BTNLGASAMPLE
 				xor		eax,eax
 				mov		lgaxofs,eax
