@@ -9,12 +9,12 @@
 				<3>374</3>
 				<4>67</4>
 				<5>145</5>
-																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																					
+																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																	
 			</CodeReport>
-																																																																																																																																																																																																																																																																																																																																																																																																																															
+																																																																																																																																																																																																																																																																																																																																																																																																																																																			
 		</CodeView>
 		<MemoryView Focus="134218120" TopRow="0" NbPerLine="8" />
-																																																																																																																																																																																																																																																									
+																																																																																																																																																																																																																																																																					
 	</FrequencyCounter>
 	<LCMeter>
 		<CodeView TopRow="134221362" Focus="4294967295" >
@@ -25,12 +25,12 @@
 				<3>310</3>
 				<4>56</4>
 				<5>118</5>
-														
+																																										
 			</CodeReport>
-										
+																														
 		</CodeView>
 		<MemoryView Focus="134218120" TopRow="0" NbPerLine="8" />
-						
+																		
 	</LCMeter>
 	<Flags>
 		<Report>
@@ -54,10 +54,10 @@
 			
 	</Flags>
 	<Views>
-		<View File="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" Line="192" Index="0" focus="1" />
-		<View File="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_dma.c" Line="978" Index="1" />
-		<View File="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_dma.h" Line="357" Index="2" />
-		<View File="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_tim.c" Line="1009" Index="3" />
+		<View File="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" Line="49" Index="0" focus="1" />
+		<View File="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_dma.c" Line="976" Index="1" />
+		<View File="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_dma.h" Line="355" Index="2" />
+		<View File="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_tim.c" Line="318" Index="3" />
 	</Views>
 	<Grep>
 		<GrepIncludeSub>yes</GrepIncludeSub>

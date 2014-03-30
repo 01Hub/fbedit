@@ -36,28 +36,28 @@
  <type Header="STM32_LCMTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" DeclLine="62" Pointer="No"/>
  <type Header="STM32_SCPTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" DeclLine="77" Pointer="No"/>
  <type Header="STM32_DDSTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" DeclLine="86" Pointer="No"/>
- <type Header="STM32_LGATypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" DeclLine="95" Pointer="No"/>
- <type Header="STM32_CMDTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" DeclLine="113" Pointer="No"/>
- <func Header="GetFrequency" Icon="3" Type="func" Desc=":   unsigned long" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" DeclLine="350"/>
- <func Header="LCM_Calibrate" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" DeclLine="363"/>
- <func Header="SPISendData" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" DeclLine="389"/>
- <func Header="USART3_putdata" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" DeclLine="403"/>
- <func Header="USART3_getdata" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" DeclLine="443"/>
- <func Header="RCC_Config" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" DeclLine="462"/>
- <func Header="NVIC_Config" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" DeclLine="489"/>
- <func Header="GPIO_Config" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" DeclLine="505"/>
- <func Header="TIM_Config" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" DeclLine="600"/>
- <func Header="DAC_Config" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" DeclLine="662"/>
- <func Header="DMA_SingleConfig" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" DeclLine="677"/>
- <func Header="ADC_SingleConfig" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" DeclLine="703"/>
- <func Header="DMA_TripleConfig" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" DeclLine="743"/>
- <func Header="ADC_TripleConfig" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" DeclLine="774"/>
- <func Header="DMA_LGAConfig" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" DeclLine="818"/>
- <func Header="SPI_Config" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" DeclLine="850"/>
- <func Header="USART_Config" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" DeclLine="875"/>
- <func Header="main" Icon="3" Type="func" Desc=":   long" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" DeclLine="170"/>
- <func Header="TIM3_IRQHandler" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" DeclLine="900"/>
- <variable Header="STM32_CMD" Icon="2" Type="variable" Desc=":   struct " DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" DeclLine="140" Pointer="No"/>
+ <type Header="STM32_LGATypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" DeclLine="96" Pointer="No"/>
+ <type Header="STM32_CMDTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" DeclLine="114" Pointer="No"/>
+ <func Header="GetFrequency" Icon="3" Type="func" Desc=":   unsigned long" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" DeclLine="354"/>
+ <func Header="LCM_Calibrate" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" DeclLine="367"/>
+ <func Header="SPISendData" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" DeclLine="393"/>
+ <func Header="USART3_putdata" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" DeclLine="407"/>
+ <func Header="USART3_getdata" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" DeclLine="447"/>
+ <func Header="RCC_Config" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" DeclLine="466"/>
+ <func Header="NVIC_Config" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" DeclLine="493"/>
+ <func Header="GPIO_Config" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" DeclLine="509"/>
+ <func Header="TIM_Config" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" DeclLine="604"/>
+ <func Header="DAC_Config" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" DeclLine="667"/>
+ <func Header="DMA_SingleConfig" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" DeclLine="682"/>
+ <func Header="ADC_SingleConfig" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" DeclLine="708"/>
+ <func Header="DMA_TripleConfig" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" DeclLine="748"/>
+ <func Header="ADC_TripleConfig" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" DeclLine="779"/>
+ <func Header="DMA_LGAConfig" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" DeclLine="823"/>
+ <func Header="SPI_Config" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" DeclLine="855"/>
+ <func Header="USART_Config" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" DeclLine="880"/>
+ <func Header="main" Icon="3" Type="func" Desc=":   long" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" DeclLine="171"/>
+ <func Header="TIM3_IRQHandler" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" DeclLine="905"/>
+ <variable Header="STM32_CMD" Icon="2" Type="variable" Desc=":   struct " DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\main.c" DeclLine="141" Pointer="No"/>
  <type Header="int32_t" Icon="1" Type="type" Desc=": long" DeclFile="d:\ride\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="79" Pointer="No"/>
  <func Header="NMI_Handler" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_it.c" DeclLine="55"/>
  <func Header="HardFault_Handler" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\stm32f4xx_it.c" DeclLine="64"/>

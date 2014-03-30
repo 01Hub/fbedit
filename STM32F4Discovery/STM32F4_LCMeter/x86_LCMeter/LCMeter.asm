@@ -135,7 +135,8 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		STM32_Cmd.STM32_Scp.ScopeVPos,2150
 		mov		STM32_Cmd.STM32_Scp.ADC_TripleMode,TRUE
 
-		mov		STM32_Cmd.STM32_Lga.LGASampleRate,39999
+		mov		STM32_Cmd.STM32_Lga.LGASampleRateDiv,3
+		mov		STM32_Cmd.STM32_Lga.LGASampleRate,49999
 		mov		STM32_Cmd.STM32_Lga.DataBlocks,1
 
 		invoke CreateFontIndirect,addr Tahoma_36

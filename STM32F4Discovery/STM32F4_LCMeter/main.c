@@ -91,6 +91,7 @@ typedef struct
   uint8_t TriggerValue;
   uint8_t TriggerMask;
   uint8_t TriggerWait;
+  uint16_t LGASampleRateDiv;
   uint16_t LGASampleRate;
 } STM32_LGATypeDef;
 
@@ -321,8 +322,11 @@ int main(void)
         break;
       case CMD_LGASET:
         USART3_getdata((uint8_t *)&STM32_CMD.STM32_LGA.DataBlocks,sizeof(STM32_LGATypeDef));
-        TIM8->CNT =  STM32_CMD.STM32_LGA.LGASampleRate-1;
+        /* Set the Prescaler value */
+        TIM8->PSC = STM32_CMD.STM32_LGA.LGASampleRateDiv;
+        /* Set the Autoreload value */
         TIM8->ARR = STM32_CMD.STM32_LGA.LGASampleRate;
+        TIM8->CNT =  STM32_CMD.STM32_LGA.LGASampleRate-1;
         DMA_LGAConfig();
         TIM_DMACmd(TIM8, TIM_DMA_Update, ENABLE);
         /* DMA2_Stream1 enable */
@@ -601,6 +605,7 @@ void TIM_Config(void)
 {
   TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructure;
   TIM_OCInitTypeDef       TIM_OCInitStructure;
+  TIM_TimeBaseStructure.TIM_RepetitionCounter=0;
   TIM_OCStructInit(&TIM_OCInitStructure);
   /* TIM2 Counter configuration */
   TIM_TimeBaseStructure.TIM_Period = 0xffffffff;

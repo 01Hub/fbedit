@@ -219,6 +219,15 @@ Update:
 	mov		ecx,sizeof LGASAMPLE
 	mul		ecx
 	mov		ecx,LgaSample.clockdiv[eax]
+	.if ecx==199999
+		shr	ecx,2
+		mov		STM32_Cmd.STM32_Lga.LGASampleRateDiv,3
+	.elseif ecx==99999
+		shr	ecx,1
+		mov		STM32_Cmd.STM32_Lga.LGASampleRateDiv,1
+	.else
+		mov		STM32_Cmd.STM32_Lga.LGASampleRateDiv,0
+	.endif
 	mov		STM32_Cmd.STM32_Lga.LGASampleRate,cx
 	invoke lstrcat,addr buffer,addr LgaSample.rate[eax]
 	invoke SetDlgItemText,hWin,IDC_STCSR,addr buffer
@@ -341,16 +350,22 @@ LGAProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		lgarect.bottom,eax
 		call	DrawLGABitText
 		call	SetLGAText
+		invoke SetBkMode,mDC,TRANSPARENT
+		invoke SetTextColor,mDC,00FF00h
 		invoke lstrlen,addr LGA_Text
 		.if eax
-			push	eax
-			invoke SetBkMode,mDC,TRANSPARENT
-			invoke SetTextColor,mDC,00FF00h
-			pop		eax
 			mov		edx,rect.bottom
 			add		edx,8
-			invoke TextOut,mDC,0,edx,addr LGA_Text,eax
+			invoke TextOut,mDC,10,edx,addr LGA_Text,eax
 		.endif
+		mov		eax,4
+		call	GetLGATime
+		invoke wsprintf,addr buffer,addr szFmtLGATimeDiv,addr buffer2
+		invoke lstrlen,addr buffer
+		mov		edx,rect.bottom
+		add		edx,24
+		invoke TextOut,mDC,10,edx,addr buffer,eax
+
 		;Create a clip region
 		invoke CreateRectRgn,lgarect.left,lgarect.top,lgarect.right,lgarect.bottom
 		push	eax
@@ -414,9 +429,7 @@ LGAProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke SelectObject,mDC,eax
 			invoke DeleteObject,eax
 		.endif
-
 		invoke SelectClipRgn,mDC,NULL
-
 		add		rect.bottom,TEXTHIGHT
 		invoke BitBlt,ps.hdc,0,0,rect.right,rect.bottom,mDC,0,0,SRCCOPY
 		pop		eax
@@ -683,6 +696,50 @@ GetTransitions:
 	mov		transcount,ebx
 	retn
 
+GetLGATime:
+	push	eax
+	mov		eax,STM32_CLOCK/10
+	cdq
+	movzx	ecx,STM32_Cmd.STM32_Lga.LGASampleRateDiv
+	inc		ecx
+	div		ecx
+	cdq
+	movzx	ecx,STM32_Cmd.STM32_Lga.LGASampleRate
+	inc		ecx
+	div		ecx
+	mov		ecx,eax
+	mov		eax,1000000000
+	cdq
+	div		ecx
+	pop		ecx
+	mul		ecx
+	.if eax<10000
+		invoke wsprintf,addr buffer2,addr szFmtLGATimens,eax
+		invoke lstrlen,addr buffer2
+		mov		edx,dword ptr buffer2[eax-3]
+		mov		buffer2[eax-3],'.'
+		mov		dword ptr buffer2[eax-2],edx
+	.elseif eax<10000000
+		invoke wsprintf,addr buffer2,addr szFmtLGATimeus,eax
+		invoke lstrlen,addr buffer2
+		mov		edx,dword ptr buffer2[eax-6]
+		mov		ecx,dword ptr buffer2[eax-2]
+		mov		buffer2[eax-6],'.'
+		mov		dword ptr buffer2[eax-5],edx
+		mov		dword ptr buffer2[eax-1],ecx
+	.else
+		invoke wsprintf,addr buffer2,addr szFmtLGATimems,eax
+		invoke lstrlen,addr buffer2
+		mov		edx,dword ptr buffer2[eax-9]
+		mov		ecx,dword ptr buffer2[eax-5]
+		mov		ebx,dword ptr buffer2[eax-1]
+		mov		buffer2[eax-9],'.'
+		mov		dword ptr buffer2[eax-8],edx
+		mov		dword ptr buffer2[eax-4],ecx
+		mov		dword ptr buffer2[eax-0],ebx
+	.endif
+	retn
+
 SetLGAText:
 	invoke GetCursorPos,addr pt
 	invoke WindowFromPoint,pt.x,pt.y
@@ -705,46 +762,12 @@ SetLGAText:
 			movzx	eax,LGA_Data[edi]
 			push	eax
 			invoke ByteToBin,addr buffer1,eax
-			mov		eax,STM32_CLOCK/10
-			cdq
-			movzx	ecx,STM32_Cmd.STM32_Lga.LGASampleRate
-			inc		ecx
-			div		ecx
-			mov		ecx,eax
-			mov		eax,1000000000
-			cdq
-			div		ecx
-			mov		ecx,transend
-			sub		ecx,transstart
+			mov		eax,transend
+			sub		eax,transstart
 			.if SIGN?
-				neg		ecx
+				neg		eax
 			.endif
-			mul		ecx
-			.if eax<10000
-				invoke wsprintf,addr buffer2,addr szFmtLGATimens,eax
-				invoke lstrlen,addr buffer2
-				mov		edx,dword ptr buffer2[eax-3]
-				mov		buffer2[eax-3],'.'
-				mov		dword ptr buffer2[eax-2],edx
-			.elseif eax<10000000
-				invoke wsprintf,addr buffer2,addr szFmtLGATimeus,eax
-				invoke lstrlen,addr buffer2
-				mov		edx,dword ptr buffer2[eax-6]
-				mov		ecx,dword ptr buffer2[eax-2]
-				mov		buffer2[eax-6],'.'
-				mov		dword ptr buffer2[eax-5],edx
-				mov		dword ptr buffer2[eax-1],ecx
-			.else
-				invoke wsprintf,addr buffer2,addr szFmtLGATimems,eax
-				invoke lstrlen,addr buffer2
-				mov		edx,dword ptr buffer2[eax-9]
-				mov		ecx,dword ptr buffer2[eax-5]
-				mov		ebx,dword ptr buffer2[eax-1]
-				mov		buffer2[eax-9],'.'
-				mov		dword ptr buffer2[eax-8],edx
-				mov		dword ptr buffer2[eax-4],ecx
-				mov		dword ptr buffer2[eax-0],ebx
-			.endif
+			call	GetLGATime
 			pop		edx
 			invoke wsprintf,addr buffer,addr szFmtLGA,edx,addr buffer1,edi,transcount,addr buffer2
 			invoke lstrcpy,addr LGA_Text,addr buffer
