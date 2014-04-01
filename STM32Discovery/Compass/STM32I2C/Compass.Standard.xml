@@ -1,0 +1,651 @@
+<!-- DWF2XML 2.00.01 - Raisonance Dwarf information extractor -->
+<aoffile Filename="Compass" dwarf="1">
+ <modulelist>
+  <module Name="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\main.c" >
+   <type Family="Base" Name="long int" ID="37"/>
+   <type Family="Base" Name="short int" ID="44"/>
+   <type Family="Base" Name="signed char" ID="51"/>
+   <type Family="Base" Name="long unsigned int" ID="69"/>
+   <type Family="typedef" Name="u32" Line="39" ID="58" toTI="69"/>
+   <type Family="Base" Name="short unsigned int" ID="87"/>
+   <type Family="typedef" Name="u16" Line="40" ID="76" toTI="87"/>
+   <type Family="Base" Name="unsigned char" ID="104"/>
+   <type Family="typedef" Name="u8" Line="41" ID="94" toTI="104"/>
+   <type Family="typedef" Name="ErrorStatus" Line="62" ID="184" toTI="163"/>
+   <type Family="Base" Name="unsigned int" ID="195"/>
+   <type Family="ComponentList" Line="334" ID="202">
+    <Component Name="CRL" TI="211" Line="336" Offs="0"/>
+    <Component Name="CRH" TI="226" Line="337" Offs="4"/>
+    <Component Name="IDR" TI="241" Line="338" Offs="8"/>
+    <Component Name="ODR" TI="256" Line="339" Offs="12"/>
+    <Component Name="BSRR" TI="271" Line="340" Offs="16"/>
+    <Component Name="BRR" TI="286" Line="341" Offs="20"/>
+    <Component Name="LCKR" TI="301" Line="342" Offs="24"/>
+   </type>
+   <type Family="typedef" Name="GPIO_TypeDef" Line="343" ID="317" toTI="202"/>
+   <type Family="ComponentList" Line="353" ID="329">
+    <Component Name="CR1" TI="338" Line="355" Offs="0"/>
+    <Component Name="RESERVED0" TI="353" Line="356" Offs="2"/>
+    <Component Name="CR2" TI="368" Line="357" Offs="4"/>
+    <Component Name="RESERVED1" TI="383" Line="358" Offs="6"/>
+    <Component Name="OAR1" TI="398" Line="359" Offs="8"/>
+    <Component Name="RESERVED2" TI="413" Line="360" Offs="10"/>
+    <Component Name="OAR2" TI="428" Line="361" Offs="12"/>
+    <Component Name="RESERVED3" TI="443" Line="362" Offs="14"/>
+    <Component Name="DR" TI="458" Line="363" Offs="16"/>
+    <Component Name="RESERVED4" TI="472" Line="364" Offs="18"/>
+    <Component Name="SR1" TI="487" Line="365" Offs="20"/>
+    <Component Name="RESERVED5" TI="502" Line="366" Offs="22"/>
+    <Component Name="SR2" TI="517" Line="367" Offs="24"/>
+    <Component Name="RESERVED6" TI="532" Line="368" Offs="26"/>
+    <Component Name="CCR" TI="547" Line="369" Offs="28"/>
+    <Component Name="RESERVED7" TI="562" Line="370" Offs="30"/>
+    <Component Name="TRISE" TI="577" Line="371" Offs="32"/>
+    <Component Name="RESERVED8" TI="592" Line="372" Offs="34"/>
+   </type>
+   <type Family="typedef" Name="I2C_TypeDef" Line="373" ID="608" toTI="329"/>
+   <type Family="typedef" Name="GPIOSpeed_TypeDef" Line="39" ID="647" toTI="620"/>
+   <type Family="typedef" Name="GPIOMode_TypeDef" Line="54" ID="716" toTI="658"/>
+   <type Family="ComponentList" Line="62" ID="727">
+    <Component Name="GPIO_Pin" TI="735" Line="64" Offs="0"/>
+    <Component Name="GPIO_Speed" TI="749" Line="65" Offs="2"/>
+    <Component Name="GPIO_Mode" TI="763" Line="66" Offs="3"/>
+   </type>
+   <type Family="typedef" Name="GPIO_InitTypeDef" Line="67" ID="778" toTI="727"/>
+   <type Family="ComponentList" Line="26" ID="789">
+    <Component Name="I2C_Mode" TI="797" Line="28" Offs="0"/>
+    <Component Name="I2C_DutyCycle" TI="811" Line="29" Offs="2"/>
+    <Component Name="I2C_OwnAddress1" TI="825" Line="30" Offs="4"/>
+    <Component Name="I2C_Ack" TI="839" Line="31" Offs="6"/>
+    <Component Name="I2C_AcknowledgedAddress" TI="853" Line="32" Offs="8"/>
+    <Component Name="I2C_ClockSpeed" TI="867" Line="33" Offs="12"/>
+   </type>
+   <type Family="typedef" Name="I2C_InitTypeDef" Line="34" ID="882" toTI="789"/>
+   <type Family="ComponentList" Line="20" ID="893">
+    <Component Name="x" TI="901" Line="22" Offs="0"/>
+    <Component Name="y" TI="913" Line="23" Offs="2"/>
+    <Component Name="z" TI="925" Line="24" Offs="4"/>
+    <Component Name="Flag" TI="937" Line="25" Offs="6"/>
+    <Component Name="Count" TI="951" Line="26" Offs="8"/>
+   </type>
+   <type Family="typedef" Name="STM32_COMPASSTypeDef" Line="27" ID="966" toTI="893"/>
+   <function Name="Init_Compass" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\main.c" Line="107">
+    <parameter Name="First" TI="94" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\main.c" Line="107" Addr="0x0" Param="Yes"/>
+    <parameter Name="Second" TI="94" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\main.c" Line="107" Addr="0x1" Param="Yes"/>
+   </function >
+   <function Name="GetCompassAxis" TI="76" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\main.c" Line="137">
+    <parameter Name="NACK" TI="94" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\main.c" Line="137" Addr="0x0" Param="Yes"/>
+    <variable Name="MSB" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\main.c" Line="139" Addr="0x0" TI="94"/>
+    <variable Name="LSB" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\main.c" Line="139" Addr="0x0" TI="94"/>
+   </function >
+   <function Name="Get_Compass" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\main.c" Line="160">
+   </function >
+   <function Name="ClockWait" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\main.c" Line="194">
+    <variable Name="wait" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\main.c" Line="196" Addr="0x34000004" TI="111"/>
+   </function >
+   <function Name="RCC_Configuration" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\main.c" Line="207">
+   </function >
+   <function Name="GPIO_Configuration" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\main.c" Line="258">
+    <variable Name="GPIO_InitStructure" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\main.c" Line="260" Addr="0x34000004" TI="778"/>
+   </function >
+   <function Name="I2C_Configuration" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\main.c" Line="280">
+    <variable Name="I2C_InitStructure" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\main.c" Line="282" Addr="0x34000000" TI="882"/>
+   </function >
+   <function Name="NVIC_Configuration" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\main.c" Line="302">
+   </function >
+   <type Family="Base" Name="int" ID="1339"/>
+   <function Name="main" TI="1339" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\main.c" Line="57">
+    <variable Name="i" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\main.c" Line="59" Addr="0x34000004" TI="111"/>
+   </function >
+   <variable Name="HSEStartUpStatus" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\main.c" Line="35" Addr="0x2000000C" TI="184"/>
+   <variable Name="STM32_Compass" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\main.c" Line="36" Addr="0x20000000" TI="1372"/>
+  </module>
+  <module Name="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_it.c" >
+   <type Family="Base" Name="long int" ID="1451"/>
+   <type Family="Base" Name="short int" ID="1458"/>
+   <type Family="Base" Name="signed char" ID="1465"/>
+   <type Family="Base" Name="long unsigned int" ID="1472"/>
+   <type Family="Base" Name="short unsigned int" ID="1479"/>
+   <type Family="Base" Name="unsigned char" ID="1486"/>
+   <type Family="Base" Name="unsigned int" ID="1493"/>
+   <function Name="WWDG_IRQHandler" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_it.c" Line="150">
+   </function >
+   <function Name="PVD_IRQHandler" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_it.c" Line="161">
+   </function >
+   <function Name="TAMPER_IRQHandler" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_it.c" Line="172">
+   </function >
+   <function Name="RTC_IRQHandler" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_it.c" Line="183">
+   </function >
+   <function Name="FLASH_IRQHandler" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_it.c" Line="194">
+   </function >
+   <function Name="RCC_IRQHandler" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_it.c" Line="205">
+   </function >
+   <function Name="EXTI0_IRQHandler" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_it.c" Line="216">
+   </function >
+   <function Name="EXTI1_IRQHandler" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_it.c" Line="227">
+   </function >
+   <function Name="EXTI2_IRQHandler" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_it.c" Line="238">
+   </function >
+   <function Name="EXTI3_IRQHandler" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_it.c" Line="249">
+   </function >
+   <function Name="EXTI4_IRQHandler" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_it.c" Line="260">
+   </function >
+   <function Name="DMA1_Channel1_IRQHandler" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_it.c" Line="271">
+   </function >
+   <function Name="DMA1_Channel2_IRQHandler" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_it.c" Line="282">
+   </function >
+   <function Name="DMA1_Channel3_IRQHandler" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_it.c" Line="293">
+   </function >
+   <function Name="DMA1_Channel4_IRQHandler" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_it.c" Line="304">
+   </function >
+   <function Name="DMA1_Channel5_IRQHandler" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_it.c" Line="315">
+   </function >
+   <function Name="DMA1_Channel6_IRQHandler" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_it.c" Line="326">
+   </function >
+   <function Name="DMA1_Channel7_IRQHandler" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_it.c" Line="337">
+   </function >
+   <function Name="ADC1_2_IRQHandler" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_it.c" Line="348">
+   </function >
+   <function Name="EXTI9_5_IRQHandler" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_it.c" Line="405">
+   </function >
+   <function Name="TIM1_BRK_IRQHandler" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_it.c" Line="416">
+   </function >
+   <function Name="TIM1_UP_IRQHandler" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_it.c" Line="428">
+   </function >
+   <function Name="TIM1_TRG_COM_IRQHandler" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_it.c" Line="440">
+   </function >
+   <function Name="TIM1_CC_IRQHandler" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_it.c" Line="451">
+   </function >
+   <function Name="TIM2_IRQHandler" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_it.c" Line="462">
+   </function >
+   <function Name="TIM3_IRQHandler" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_it.c" Line="473">
+   </function >
+   <function Name="TIM4_IRQHandler" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_it.c" Line="484">
+   </function >
+   <function Name="I2C1_EV_IRQHandler" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_it.c" Line="495">
+   </function >
+   <function Name="I2C1_ER_IRQHandler" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_it.c" Line="506">
+   </function >
+   <function Name="I2C2_EV_IRQHandler" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_it.c" Line="517">
+   </function >
+   <function Name="I2C2_ER_IRQHandler" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_it.c" Line="528">
+   </function >
+   <function Name="SPI1_IRQHandler" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_it.c" Line="539">
+   </function >
+   <function Name="SPI2_IRQHandler" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_it.c" Line="550">
+   </function >
+   <function Name="USART1_IRQHandler" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_it.c" Line="561">
+   </function >
+   <function Name="USART2_IRQHandler" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_it.c" Line="572">
+   </function >
+   <function Name="USART3_IRQHandler" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_it.c" Line="583">
+   </function >
+   <function Name="EXTI15_10_IRQHandler" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_it.c" Line="594">
+   </function >
+   <function Name="RTCAlarm_IRQHandler" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_it.c" Line="605">
+   </function >
+   <function Name="USBWakeUp_IRQHandler" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_it.c" Line="616">
+   </function >
+  </module>
+  <module Name="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_flash.c" >
+   <type Family="Base" Name="long int" ID="2968"/>
+   <type Family="Base" Name="short int" ID="2975"/>
+   <type Family="Base" Name="signed char" ID="2982"/>
+   <type Family="Base" Name="long unsigned int" ID="3000"/>
+   <type Family="typedef" Name="u32" Line="39" ID="2989" toTI="3000"/>
+   <type Family="Base" Name="short unsigned int" ID="3007"/>
+   <type Family="Base" Name="unsigned char" ID="3014"/>
+   <type Family="Base" Name="unsigned int" ID="3026"/>
+   <type Family="ComponentList" Line="268" ID="3033">
+    <Component Name="ACR" TI="3042" Line="270" Offs="0"/>
+    <Component Name="KEYR" TI="3057" Line="271" Offs="4"/>
+    <Component Name="OPTKEYR" TI="3072" Line="272" Offs="8"/>
+    <Component Name="SR" TI="3087" Line="273" Offs="12"/>
+    <Component Name="CR" TI="3101" Line="274" Offs="16"/>
+    <Component Name="AR" TI="3115" Line="275" Offs="20"/>
+    <Component Name="RESERVED" TI="3129" Line="276" Offs="24"/>
+    <Component Name="OBR" TI="3144" Line="277" Offs="28"/>
+    <Component Name="WRPR" TI="3159" Line="278" Offs="32"/>
+   </type>
+   <type Family="typedef" Name="FLASH_TypeDef" Line="279" ID="3175" toTI="3033"/>
+   <function Name="FLASH_SetLatency" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_flash.c" Line="86">
+    <parameter Name="FLASH_Latency" TI="2989" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_flash.c" Line="86" Addr="0x0" Param="Yes"/>
+   </function >
+   <function Name="FLASH_PrefetchBufferCmd" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_flash.c" Line="126">
+    <parameter Name="FLASH_PrefetchBuffer" TI="2989" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_flash.c" Line="126" Addr="0x0" Param="Yes"/>
+   </function >
+  </module>
+  <module Name="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_gpio.c" >
+   <type Family="Base" Name="long int" ID="3335"/>
+   <type Family="Base" Name="short int" ID="3342"/>
+   <type Family="Base" Name="signed char" ID="3349"/>
+   <type Family="Base" Name="long unsigned int" ID="3367"/>
+   <type Family="typedef" Name="u32" Line="39" ID="3356" toTI="3367"/>
+   <type Family="Base" Name="short unsigned int" ID="3385"/>
+   <type Family="typedef" Name="u16" Line="40" ID="3374" toTI="3385"/>
+   <type Family="Base" Name="unsigned char" ID="3402"/>
+   <type Family="typedef" Name="u8" Line="41" ID="3392" toTI="3402"/>
+   <type Family="typedef" Name="vu32" Line="47" ID="3409" toTI="3420"/>
+   <type Family="typedef" Name="FunctionalState" Line="59" ID="3446" toTI="3425"/>
+   <type Family="Base" Name="unsigned int" ID="3457"/>
+   <type Family="ComponentList" Line="334" ID="3464">
+    <Component Name="CRL" TI="3473" Line="336" Offs="0"/>
+    <Component Name="CRH" TI="3488" Line="337" Offs="4"/>
+    <Component Name="IDR" TI="3503" Line="338" Offs="8"/>
+    <Component Name="ODR" TI="3518" Line="339" Offs="12"/>
+    <Component Name="BSRR" TI="3533" Line="340" Offs="16"/>
+    <Component Name="BRR" TI="3548" Line="341" Offs="20"/>
+    <Component Name="LCKR" TI="3563" Line="342" Offs="24"/>
+   </type>
+   <type Family="typedef" Name="GPIO_TypeDef" Line="343" ID="3579" toTI="3464"/>
+   <type Family="ComponentList" Line="345" ID="3591">
+    <Component Name="EVCR" TI="3600" Line="347" Offs="0"/>
+    <Component Name="MAPR" TI="3615" Line="348" Offs="4"/>
+   <type Family="array" ID="3646" toTI="3367"/>
+    <Component Name="EXTICR" TI="3630" Line="349" Offs="8"/>
+   </type>
+   <type Family="typedef" Name="AFIO_TypeDef" Line="350" ID="3667" toTI="3591"/>
+   <type Family="typedef" Name="GPIOSpeed_TypeDef" Line="39" ID="3706" toTI="3679"/>
+   <type Family="typedef" Name="GPIOMode_TypeDef" Line="54" ID="3775" toTI="3717"/>
+   <type Family="ComponentList" Line="62" ID="3786">
+    <Component Name="GPIO_Pin" TI="3794" Line="64" Offs="0"/>
+    <Component Name="GPIO_Speed" TI="3808" Line="65" Offs="2"/>
+    <Component Name="GPIO_Mode" TI="3822" Line="66" Offs="3"/>
+   </type>
+   <type Family="typedef" Name="GPIO_InitTypeDef" Line="67" ID="3837" toTI="3786"/>
+   <type Family="typedef" Name="BitAction" Line="73" ID="3869" toTI="3848"/>
+   <type Family="Pointer" TI="3921" toTI="3579"/>
+   <function Name="GPIO_Init" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_gpio.c" Line="124">
+    <parameter Name="GPIOx" TI="3921" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_gpio.c" Line="124" Addr="0x0" Param="Yes"/>
+   <type Family="Pointer" TI="4090" toTI="3837"/>
+    <parameter Name="GPIO_InitStruct" TI="4090" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_gpio.c" Line="124" Addr="0x1" Param="Yes"/>
+    <variable Name="currentmode" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_gpio.c" Line="126" Addr="0x0" TI="3356"/>
+    <variable Name="currentpin" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_gpio.c" Line="126" Addr="0x0" TI="3356"/>
+    <variable Name="pinpos" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_gpio.c" Line="126" Addr="0x0" TI="3356"/>
+    <variable Name="pos" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_gpio.c" Line="126" Addr="0x0" TI="3356"/>
+    <variable Name="tmpreg" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_gpio.c" Line="127" Addr="0x0" TI="3356"/>
+    <variable Name="pinmask" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_gpio.c" Line="127" Addr="0x0" TI="3356"/>
+   </function >
+  </module>
+  <module Name="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_lib.c" >
+   <type Family="Base" Name="long int" ID="5011"/>
+   <type Family="Base" Name="short int" ID="5018"/>
+   <type Family="Base" Name="signed char" ID="5025"/>
+   <type Family="Base" Name="long unsigned int" ID="5032"/>
+   <type Family="Base" Name="short unsigned int" ID="5039"/>
+   <type Family="Base" Name="unsigned char" ID="5046"/>
+   <type Family="Base" Name="unsigned int" ID="5053"/>
+  </module>
+  <module Name="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_nvic.c" >
+   <type Family="Base" Name="long int" ID="5098"/>
+   <type Family="Base" Name="short int" ID="5105"/>
+   <type Family="Base" Name="signed char" ID="5112"/>
+   <type Family="Base" Name="long unsigned int" ID="5130"/>
+   <type Family="typedef" Name="u32" Line="39" ID="5119" toTI="5130"/>
+   <type Family="Base" Name="short unsigned int" ID="5148"/>
+   <type Family="typedef" Name="u16" Line="40" ID="5137" toTI="5148"/>
+   <type Family="Base" Name="unsigned char" ID="5165"/>
+   <type Family="typedef" Name="u8" Line="41" ID="5155" toTI="5165"/>
+   <type Family="typedef" Name="vu32" Line="47" ID="5172" toTI="5183"/>
+   <type Family="typedef" Name="ITStatus" Line="57" ID="5214" toTI="5193"/>
+   <type Family="typedef" Name="FunctionalState" Line="59" ID="5246" toTI="5225"/>
+   <type Family="Base" Name="unsigned int" ID="5257"/>
+   <type Family="ComponentList" Line="385" ID="5264">
+   <type Family="array" ID="5449" toTI="5130"/>
+    <Component Name="ISER" TI="5274" Line="387" Offs="0"/>
+   <type Family="array" ID="5470" toTI="5119"/>
+    <Component Name="RESERVED0" TI="5289" Line="388" Offs="8"/>
+    <Component Name="ICER" TI="5304" Line="389" Offs="128"/>
+    <Component Name="RSERVED1" TI="5320" Line="390" Offs="136"/>
+    <Component Name="ISPR" TI="5336" Line="391" Offs="256"/>
+    <Component Name="RESERVED2" TI="5352" Line="392" Offs="264"/>
+    <Component Name="ICPR" TI="5368" Line="393" Offs="384"/>
+    <Component Name="RESERVED3" TI="5384" Line="394" Offs="392"/>
+    <Component Name="IABR" TI="5400" Line="395" Offs="512"/>
+   <type Family="array" ID="5506" toTI="5119"/>
+    <Component Name="RESERVED4" TI="5416" Line="396" Offs="520"/>
+   <type Family="array" ID="5522" toTI="5130"/>
+    <Component Name="IPR" TI="5432" Line="397" Offs="768"/>
+   </type>
+   <type Family="typedef" Name="NVIC_TypeDef" Line="398" ID="5543" toTI="5264"/>
+   <type Family="ComponentList" Line="400" ID="5555">
+    <Component Name="CPUID" TI="5564" Line="402" Offs="0"/>
+    <Component Name="ICSR" TI="5579" Line="403" Offs="4"/>
+    <Component Name="VTOR" TI="5594" Line="404" Offs="8"/>
+    <Component Name="AIRCR" TI="5609" Line="405" Offs="12"/>
+    <Component Name="SCR" TI="5624" Line="406" Offs="16"/>
+    <Component Name="CCR" TI="5639" Line="407" Offs="20"/>
+   <type Family="array" ID="5775" toTI="5130"/>
+    <Component Name="SHPR" TI="5654" Line="408" Offs="24"/>
+    <Component Name="SHCSR" TI="5669" Line="409" Offs="36"/>
+    <Component Name="CFSR" TI="5684" Line="410" Offs="40"/>
+    <Component Name="HFSR" TI="5699" Line="411" Offs="44"/>
+    <Component Name="DFSR" TI="5714" Line="412" Offs="48"/>
+    <Component Name="MMFAR" TI="5729" Line="413" Offs="52"/>
+    <Component Name="BFAR" TI="5744" Line="414" Offs="56"/>
+    <Component Name="AFSR" TI="5759" Line="415" Offs="60"/>
+   </type>
+   <type Family="typedef" Name="SCB_TypeDef" Line="416" ID="5796" toTI="5555"/>
+   <type Family="ComponentList" Line="26" ID="5808">
+    <Component Name="NVIC_IRQChannel" TI="5816" Line="28" Offs="0"/>
+    <Component Name="NVIC_IRQChannelPreemptionPriority" TI="5830" Line="29" Offs="1"/>
+    <Component Name="NVIC_IRQChannelSubPriority" TI="5844" Line="30" Offs="2"/>
+    <Component Name="NVIC_IRQChannelCmd" TI="5858" Line="31" Offs="3"/>
+   </type>
+   <type Family="typedef" Name="NVIC_InitTypeDef" Line="32" ID="5873" toTI="5808"/>
+   <type Family="Pointer" TI="6120" toTI="5873"/>
+   <function Name="NVIC_SetVectorTable" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_nvic.c" Line="393">
+    <parameter Name="NVIC_VectTab" TI="5119" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_nvic.c" Line="393" Addr="0x0" Param="Yes"/>
+    <parameter Name="Offset" TI="5119" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_nvic.c" Line="393" Addr="0x1" Param="Yes"/>
+   </function >
+  </module>
+  <module Name="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_rcc.c" >
+   <type Family="Base" Name="long int" ID="7502"/>
+   <type Family="Base" Name="short int" ID="7509"/>
+   <type Family="Base" Name="signed char" ID="7516"/>
+   <type Family="Base" Name="long unsigned int" ID="7534"/>
+   <type Family="typedef" Name="u32" Line="39" ID="7523" toTI="7534"/>
+   <type Family="Base" Name="short unsigned int" ID="7552"/>
+   <type Family="typedef" Name="u16" Line="40" ID="7541" toTI="7552"/>
+   <type Family="Base" Name="unsigned char" ID="7569"/>
+   <type Family="typedef" Name="u8" Line="41" ID="7559" toTI="7569"/>
+   <type Family="typedef" Name="vu32" Line="47" ID="7576" toTI="7587"/>
+   <type Family="typedef" Name="vu8" Line="49" ID="7592" toTI="7603"/>
+   <type Family="typedef" Name="FlagStatus" Line="57" ID="7629" toTI="7608"/>
+   <type Family="typedef" Name="ITStatus" Line="57" ID="7640" toTI="7608"/>
+   <type Family="typedef" Name="FunctionalState" Line="59" ID="7672" toTI="7651"/>
+   <type Family="typedef" Name="ErrorStatus" Line="62" ID="7704" toTI="7683"/>
+   <type Family="Base" Name="unsigned int" ID="7715"/>
+   <type Family="ComponentList" Line="426" ID="7722">
+    <Component Name="CR" TI="7731" Line="428" Offs="0"/>
+    <Component Name="CFGR" TI="7745" Line="429" Offs="4"/>
+    <Component Name="CIR" TI="7760" Line="430" Offs="8"/>
+    <Component Name="APB2RSTR" TI="7775" Line="431" Offs="12"/>
+    <Component Name="APB1RSTR" TI="7790" Line="432" Offs="16"/>
+    <Component Name="AHBENR" TI="7805" Line="433" Offs="20"/>
+    <Component Name="APB2ENR" TI="7820" Line="434" Offs="24"/>
+    <Component Name="APB1ENR" TI="7835" Line="435" Offs="28"/>
+    <Component Name="BDCR" TI="7850" Line="436" Offs="32"/>
+    <Component Name="CSR" TI="7865" Line="437" Offs="36"/>
+   </type>
+   <type Family="typedef" Name="RCC_TypeDef" Line="438" ID="7881" toTI="7722"/>
+   <type Family="ComponentList" Line="25" ID="7893">
+    <Component Name="SYSCLK_Frequency" TI="7901" Line="27" Offs="0"/>
+    <Component Name="HCLK_Frequency" TI="7915" Line="28" Offs="4"/>
+    <Component Name="PCLK1_Frequency" TI="7929" Line="29" Offs="8"/>
+    <Component Name="PCLK2_Frequency" TI="7943" Line="30" Offs="12"/>
+    <Component Name="ADCCLK_Frequency" TI="7957" Line="31" Offs="16"/>
+   </type>
+   <type Family="typedef" Name="RCC_ClocksTypeDef" Line="32" ID="7972" toTI="7893"/>
+   <function Name="RCC_DeInit" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_rcc.c" Line="124">
+   </function >
+   <function Name="RCC_HSEConfig" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_rcc.c" Line="159">
+    <parameter Name="RCC_HSE" TI="7523" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_rcc.c" Line="159" Addr="0x0" Param="Yes"/>
+   </function >
+   <function Name="RCC_PLLConfig" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_rcc.c" Line="287">
+    <parameter Name="RCC_PLLSource" TI="7523" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_rcc.c" Line="287" Addr="0x0" Param="Yes"/>
+    <parameter Name="RCC_PLLMul" TI="7523" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_rcc.c" Line="287" Addr="0x1" Param="Yes"/>
+    <variable Name="tmpreg" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_rcc.c" Line="289" Addr="0x0" TI="7523"/>
+   </function >
+   <function Name="RCC_PLLCmd" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_rcc.c" Line="316">
+    <parameter Name="NewState" TI="7672" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_rcc.c" Line="316" Addr="0x0" Param="Yes"/>
+   </function >
+   <function Name="RCC_SYSCLKConfig" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_rcc.c" Line="335">
+    <parameter Name="RCC_SYSCLKSource" TI="7523" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_rcc.c" Line="335" Addr="0x0" Param="Yes"/>
+    <variable Name="tmpreg" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_rcc.c" Line="337" Addr="0x0" TI="7523"/>
+   </function >
+   <function Name="RCC_GetSYSCLKSource" TI="7559" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_rcc.c" Line="365">
+   </function >
+   <function Name="RCC_HCLKConfig" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_rcc.c" Line="388">
+    <parameter Name="RCC_SYSCLK" TI="7523" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_rcc.c" Line="388" Addr="0x0" Param="Yes"/>
+    <variable Name="tmpreg" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_rcc.c" Line="390" Addr="0x0" TI="7523"/>
+   </function >
+   <function Name="RCC_PCLK1Config" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_rcc.c" Line="421">
+    <parameter Name="RCC_HCLK" TI="7523" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_rcc.c" Line="421" Addr="0x0" Param="Yes"/>
+    <variable Name="tmpreg" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_rcc.c" Line="423" Addr="0x0" TI="7523"/>
+   </function >
+   <function Name="RCC_PCLK2Config" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_rcc.c" Line="454">
+    <parameter Name="RCC_HCLK" TI="7523" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_rcc.c" Line="454" Addr="0x0" Param="Yes"/>
+    <variable Name="tmpreg" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_rcc.c" Line="456" Addr="0x0" TI="7523"/>
+   </function >
+   <function Name="RCC_ADCCLKConfig" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_rcc.c" Line="541">
+    <parameter Name="RCC_PCLK2" TI="7523" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_rcc.c" Line="541" Addr="0x0" Param="Yes"/>
+    <variable Name="tmpreg" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_rcc.c" Line="543" Addr="0x0" TI="7523"/>
+   </function >
+   <function Name="RCC_GetClocksFreq" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_rcc.c" Line="668">
+   <type Family="Pointer" TI="8910" toTI="7972"/>
+    <parameter Name="RCC_Clocks" TI="8910" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_rcc.c" Line="668" Addr="0x0" Param="Yes"/>
+    <variable Name="tmp" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_rcc.c" Line="670" Addr="0x0" TI="7523"/>
+    <variable Name="pllmull" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_rcc.c" Line="670" Addr="0x0" TI="7523"/>
+    <variable Name="pllsource" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_rcc.c" Line="670" Addr="0x0" TI="7523"/>
+    <variable Name="presc" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_rcc.c" Line="670" Addr="0x0" TI="7523"/>
+   </function >
+   <function Name="RCC_APB2PeriphClockCmd" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_rcc.c" Line="801">
+    <parameter Name="RCC_APB2Periph" TI="7523" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_rcc.c" Line="801" Addr="0x0" Param="Yes"/>
+    <parameter Name="NewState" TI="7672" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_rcc.c" Line="801" Addr="0x1" Param="Yes"/>
+   </function >
+   <function Name="RCC_APB1PeriphClockCmd" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_rcc.c" Line="835">
+    <parameter Name="RCC_APB1Periph" TI="7523" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_rcc.c" Line="835" Addr="0x0" Param="Yes"/>
+    <parameter Name="NewState" TI="7672" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_rcc.c" Line="835" Addr="0x1" Param="Yes"/>
+   </function >
+   <function Name="RCC_GetFlagStatus" TI="7629" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_rcc.c" Line="989">
+    <parameter Name="RCC_FLAG" TI="7559" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_rcc.c" Line="989" Addr="0x0" Param="Yes"/>
+    <variable Name="tmp" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_rcc.c" Line="991" Addr="0x0" TI="7523"/>
+    <variable Name="statusreg" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_rcc.c" Line="992" Addr="0x0" TI="7523"/>
+    <variable Name="bitstatus" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_rcc.c" Line="993" Addr="0x0" TI="7629"/>
+   </function >
+   <function Name="RCC_WaitForHSEStartUp" TI="7704" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_rcc.c" Line="198">
+    <variable Name="StartUpCounter" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_rcc.c" Line="200" Addr="0x34000004" TI="7587"/>
+    <variable Name="status" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_rcc.c" Line="201" Addr="0x34000010" TI="7704"/>
+    <variable Name="HSEStatus" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_rcc.c" Line="202" Addr="0x10" TI="7629"/>
+   </function >
+   <type Family="array" ID="9608" toTI="7569"/>
+   <variable Name="APBAHBPrescTable" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_rcc.c" Line="111" Addr="0x8000E14" TI="9641"/>
+   <type Family="array" ID="9646" toTI="7569"/>
+   <variable Name="ADCPrescTable" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_rcc.c" Line="112" Addr="0x8000E24" TI="9679"/>
+  </module>
+  <module Name="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_adc.c" >
+   <type Family="Base" Name="long int" ID="9722"/>
+   <type Family="Base" Name="short int" ID="9729"/>
+   <type Family="Base" Name="signed char" ID="9736"/>
+   <type Family="Base" Name="long unsigned int" ID="9754"/>
+   <type Family="typedef" Name="u32" Line="39" ID="9743" toTI="9754"/>
+   <type Family="Base" Name="short unsigned int" ID="9772"/>
+   <type Family="typedef" Name="u16" Line="40" ID="9761" toTI="9772"/>
+   <type Family="Base" Name="unsigned char" ID="9789"/>
+   <type Family="typedef" Name="u8" Line="41" ID="9779" toTI="9789"/>
+   <type Family="typedef" Name="vu32" Line="47" ID="9796" toTI="9807"/>
+   <type Family="typedef" Name="FlagStatus" Line="57" ID="9833" toTI="9812"/>
+   <type Family="typedef" Name="ITStatus" Line="57" ID="9844" toTI="9812"/>
+   <type Family="typedef" Name="FunctionalState" Line="59" ID="9876" toTI="9855"/>
+   <type Family="ComponentList" Line="36" ID="9887">
+    <Component Name="SR" TI="9895" Line="38" Offs="0"/>
+    <Component Name="CR1" TI="9908" Line="39" Offs="4"/>
+    <Component Name="CR2" TI="9922" Line="40" Offs="8"/>
+    <Component Name="SMPR1" TI="9936" Line="41" Offs="12"/>
+    <Component Name="SMPR2" TI="9950" Line="42" Offs="16"/>
+    <Component Name="JOFR1" TI="9964" Line="43" Offs="20"/>
+    <Component Name="JOFR2" TI="9978" Line="44" Offs="24"/>
+    <Component Name="JOFR3" TI="9992" Line="45" Offs="28"/>
+    <Component Name="JOFR4" TI="10006" Line="46" Offs="32"/>
+    <Component Name="HTR" TI="10020" Line="47" Offs="36"/>
+    <Component Name="LTR" TI="10034" Line="48" Offs="40"/>
+    <Component Name="SQR1" TI="10048" Line="49" Offs="44"/>
+    <Component Name="SQR2" TI="10062" Line="50" Offs="48"/>
+    <Component Name="SQR3" TI="10076" Line="51" Offs="52"/>
+    <Component Name="JSQR" TI="10090" Line="52" Offs="56"/>
+    <Component Name="JDR1" TI="10104" Line="53" Offs="60"/>
+    <Component Name="JDR2" TI="10118" Line="54" Offs="64"/>
+    <Component Name="JDR3" TI="10132" Line="55" Offs="68"/>
+    <Component Name="JDR4" TI="10146" Line="56" Offs="72"/>
+    <Component Name="DR" TI="10160" Line="57" Offs="76"/>
+   </type>
+   <type Family="typedef" Name="ADC_TypeDef" Line="58" ID="10174" toTI="9887"/>
+   <type Family="Base" Name="unsigned int" ID="10185"/>
+   <type Family="ComponentList" Line="26" ID="10192">
+    <Component Name="ADC_Mode" TI="10200" Line="28" Offs="0"/>
+    <Component Name="ADC_ScanConvMode" TI="10214" Line="29" Offs="4"/>
+    <Component Name="ADC_ContinuousConvMode" TI="10228" Line="30" Offs="5"/>
+    <Component Name="ADC_ExternalTrigConv" TI="10242" Line="31" Offs="8"/>
+    <Component Name="ADC_DataAlign" TI="10256" Line="32" Offs="12"/>
+    <Component Name="ADC_NbrOfChannel" TI="10270" Line="33" Offs="16"/>
+   </type>
+   <type Family="typedef" Name="ADC_InitTypeDef" Line="34" ID="10285" toTI="10192"/>
+   <type Family="Pointer" TI="10337" toTI="10174"/>
+   <type Family="Pointer" TI="10425" toTI="10285"/>
+  </module>
+  <module Name="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_dma.c" >
+   <type Family="Base" Name="long int" ID="12660"/>
+   <type Family="Base" Name="short int" ID="12667"/>
+   <type Family="Base" Name="signed char" ID="12674"/>
+   <type Family="Base" Name="long unsigned int" ID="12692"/>
+   <type Family="typedef" Name="u32" Line="39" ID="12681" toTI="12692"/>
+   <type Family="Base" Name="short unsigned int" ID="12710"/>
+   <type Family="typedef" Name="u16" Line="40" ID="12699" toTI="12710"/>
+   <type Family="Base" Name="unsigned char" ID="12717"/>
+   <type Family="typedef" Name="FlagStatus" Line="57" ID="12750" toTI="12729"/>
+   <type Family="typedef" Name="ITStatus" Line="57" ID="12761" toTI="12729"/>
+   <type Family="typedef" Name="FunctionalState" Line="59" ID="12793" toTI="12772"/>
+   <type Family="Base" Name="unsigned int" ID="12804"/>
+   <type Family="ComponentList" Line="242" ID="12811">
+    <Component Name="CCR" TI="12819" Line="244" Offs="0"/>
+    <Component Name="CNDTR" TI="12833" Line="245" Offs="4"/>
+    <Component Name="CPAR" TI="12847" Line="246" Offs="8"/>
+    <Component Name="CMAR" TI="12861" Line="247" Offs="12"/>
+   </type>
+   <type Family="typedef" Name="DMA_Channel_TypeDef" Line="248" ID="12876" toTI="12811"/>
+   <type Family="ComponentList" Line="250" ID="12887">
+    <Component Name="ISR" TI="12895" Line="252" Offs="0"/>
+    <Component Name="IFCR" TI="12909" Line="253" Offs="4"/>
+   </type>
+   <type Family="typedef" Name="DMA_TypeDef" Line="254" ID="12924" toTI="12887"/>
+   <type Family="ComponentList" Line="26" ID="12935">
+    <Component Name="DMA_PeripheralBaseAddr" TI="12943" Line="28" Offs="0"/>
+    <Component Name="DMA_MemoryBaseAddr" TI="12957" Line="29" Offs="4"/>
+    <Component Name="DMA_DIR" TI="12971" Line="30" Offs="8"/>
+    <Component Name="DMA_BufferSize" TI="12985" Line="31" Offs="12"/>
+    <Component Name="DMA_PeripheralInc" TI="12999" Line="32" Offs="16"/>
+    <Component Name="DMA_MemoryInc" TI="13013" Line="33" Offs="20"/>
+    <Component Name="DMA_PeripheralDataSize" TI="13027" Line="34" Offs="24"/>
+    <Component Name="DMA_MemoryDataSize" TI="13041" Line="35" Offs="28"/>
+    <Component Name="DMA_Mode" TI="13055" Line="36" Offs="32"/>
+    <Component Name="DMA_Priority" TI="13069" Line="37" Offs="36"/>
+    <Component Name="DMA_M2M" TI="13083" Line="38" Offs="40"/>
+   </type>
+   <type Family="typedef" Name="DMA_InitTypeDef" Line="39" ID="13098" toTI="12935"/>
+   <type Family="Pointer" TI="13147" toTI="12876"/>
+   <type Family="Pointer" TI="13220" toTI="13098"/>
+  </module>
+  <module Name="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_i2c.c" >
+   <type Family="Base" Name="long int" ID="13704"/>
+   <type Family="Base" Name="short int" ID="13711"/>
+   <type Family="Base" Name="signed char" ID="13718"/>
+   <type Family="Base" Name="long unsigned int" ID="13736"/>
+   <type Family="typedef" Name="u32" Line="39" ID="13725" toTI="13736"/>
+   <type Family="Base" Name="short unsigned int" ID="13754"/>
+   <type Family="typedef" Name="u16" Line="40" ID="13743" toTI="13754"/>
+   <type Family="Base" Name="unsigned char" ID="13771"/>
+   <type Family="typedef" Name="u8" Line="41" ID="13761" toTI="13771"/>
+   <type Family="typedef" Name="vu32" Line="47" ID="13778" toTI="13789"/>
+   <type Family="typedef" Name="vu16" Line="48" ID="13794" toTI="13805"/>
+   <type Family="typedef" Name="FlagStatus" Line="57" ID="13831" toTI="13810"/>
+   <type Family="typedef" Name="ITStatus" Line="57" ID="13842" toTI="13810"/>
+   <type Family="typedef" Name="FunctionalState" Line="59" ID="13874" toTI="13853"/>
+   <type Family="typedef" Name="ErrorStatus" Line="62" ID="13906" toTI="13885"/>
+   <type Family="Base" Name="unsigned int" ID="13917"/>
+   <type Family="ComponentList" Line="353" ID="13924">
+    <Component Name="CR1" TI="13933" Line="355" Offs="0"/>
+    <Component Name="RESERVED0" TI="13948" Line="356" Offs="2"/>
+    <Component Name="CR2" TI="13963" Line="357" Offs="4"/>
+    <Component Name="RESERVED1" TI="13978" Line="358" Offs="6"/>
+    <Component Name="OAR1" TI="13993" Line="359" Offs="8"/>
+    <Component Name="RESERVED2" TI="14008" Line="360" Offs="10"/>
+    <Component Name="OAR2" TI="14023" Line="361" Offs="12"/>
+    <Component Name="RESERVED3" TI="14038" Line="362" Offs="14"/>
+    <Component Name="DR" TI="14053" Line="363" Offs="16"/>
+    <Component Name="RESERVED4" TI="14067" Line="364" Offs="18"/>
+    <Component Name="SR1" TI="14082" Line="365" Offs="20"/>
+    <Component Name="RESERVED5" TI="14097" Line="366" Offs="22"/>
+    <Component Name="SR2" TI="14112" Line="367" Offs="24"/>
+    <Component Name="RESERVED6" TI="14127" Line="368" Offs="26"/>
+    <Component Name="CCR" TI="14142" Line="369" Offs="28"/>
+    <Component Name="RESERVED7" TI="14157" Line="370" Offs="30"/>
+    <Component Name="TRISE" TI="14172" Line="371" Offs="32"/>
+    <Component Name="RESERVED8" TI="14187" Line="372" Offs="34"/>
+   </type>
+   <type Family="typedef" Name="I2C_TypeDef" Line="373" ID="14203" toTI="13924"/>
+   <type Family="ComponentList" Line="26" ID="14215">
+    <Component Name="I2C_Mode" TI="14223" Line="28" Offs="0"/>
+    <Component Name="I2C_DutyCycle" TI="14237" Line="29" Offs="2"/>
+    <Component Name="I2C_OwnAddress1" TI="14251" Line="30" Offs="4"/>
+    <Component Name="I2C_Ack" TI="14265" Line="31" Offs="6"/>
+    <Component Name="I2C_AcknowledgedAddress" TI="14279" Line="32" Offs="8"/>
+    <Component Name="I2C_ClockSpeed" TI="14293" Line="33" Offs="12"/>
+   </type>
+   <type Family="typedef" Name="I2C_InitTypeDef" Line="34" ID="14308" toTI="14215"/>
+   <type Family="ComponentList" Line="25" ID="14319">
+    <Component Name="SYSCLK_Frequency" TI="14327" Line="27" Offs="0"/>
+    <Component Name="HCLK_Frequency" TI="14341" Line="28" Offs="4"/>
+    <Component Name="PCLK1_Frequency" TI="14355" Line="29" Offs="8"/>
+    <Component Name="PCLK2_Frequency" TI="14369" Line="30" Offs="12"/>
+    <Component Name="ADCCLK_Frequency" TI="14383" Line="31" Offs="16"/>
+   </type>
+   <type Family="typedef" Name="RCC_ClocksTypeDef" Line="32" ID="14398" toTI="14319"/>
+   <type Family="Pointer" TI="14450" toTI="14203"/>
+   <function Name="I2C_Init" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_i2c.c" Line="149">
+    <parameter Name="I2Cx" TI="14450" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_i2c.c" Line="149" Addr="0x0" Param="Yes"/>
+   <type Family="Pointer" TI="14586" toTI="14308"/>
+    <parameter Name="I2C_InitStruct" TI="14586" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_i2c.c" Line="149" Addr="0x1" Param="Yes"/>
+    <variable Name="tmpreg" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_i2c.c" Line="151" Addr="0x0" TI="13743"/>
+    <variable Name="freqrange" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_i2c.c" Line="151" Addr="0x0" TI="13743"/>
+    <variable Name="result" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_i2c.c" Line="152" Addr="0x0" TI="13743"/>
+    <variable Name="pclk1" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_i2c.c" Line="153" Addr="0x0" TI="13725"/>
+    <variable Name="rcc_clocks" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_i2c.c" Line="154" Addr="0x34000004" TI="14398"/>
+   </function >
+   <function Name="I2C_Cmd" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_i2c.c" Line="291">
+    <parameter Name="I2Cx" TI="14450" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_i2c.c" Line="291" Addr="0x0" Param="Yes"/>
+    <parameter Name="NewState" TI="13874" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_i2c.c" Line="291" Addr="0x1" Param="Yes"/>
+   </function >
+   <function Name="I2C_GenerateSTART" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_i2c.c" Line="372">
+    <parameter Name="I2Cx" TI="14450" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_i2c.c" Line="372" Addr="0x0" Param="Yes"/>
+    <parameter Name="NewState" TI="13874" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_i2c.c" Line="372" Addr="0x1" Param="Yes"/>
+   </function >
+   <function Name="I2C_GenerateSTOP" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_i2c.c" Line="399">
+    <parameter Name="I2Cx" TI="14450" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_i2c.c" Line="399" Addr="0x0" Param="Yes"/>
+    <parameter Name="NewState" TI="13874" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_i2c.c" Line="399" Addr="0x1" Param="Yes"/>
+   </function >
+   <function Name="I2C_AcknowledgeConfig" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_i2c.c" Line="426">
+    <parameter Name="I2Cx" TI="14450" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_i2c.c" Line="426" Addr="0x0" Param="Yes"/>
+    <parameter Name="NewState" TI="13874" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_i2c.c" Line="426" Addr="0x1" Param="Yes"/>
+   </function >
+   <function Name="I2C_SendData" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_i2c.c" Line="565">
+    <parameter Name="I2Cx" TI="14450" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_i2c.c" Line="565" Addr="0x0" Param="Yes"/>
+    <parameter Name="Data" TI="13761" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_i2c.c" Line="565" Addr="0x1" Param="Yes"/>
+   </function >
+   <function Name="I2C_ReceiveData" TI="13761" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_i2c.c" Line="581">
+    <parameter Name="I2Cx" TI="14450" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_i2c.c" Line="581" Addr="0x0" Param="Yes"/>
+   </function >
+   <function Name="I2C_Send7bitAddress" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_i2c.c" Line="603">
+    <parameter Name="I2Cx" TI="14450" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_i2c.c" Line="603" Addr="0x0" Param="Yes"/>
+    <parameter Name="Address" TI="13761" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_i2c.c" Line="603" Addr="0x1" Param="Yes"/>
+    <parameter Name="I2C_Direction" TI="13761" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_i2c.c" Line="603" Addr="0x2" Param="Yes"/>
+   </function >
+   <function Name="I2C_CheckEvent" TI="13906" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_i2c.c" Line="941">
+    <parameter Name="I2Cx" TI="14450" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_i2c.c" Line="941" Addr="0x0" Param="Yes"/>
+    <parameter Name="I2C_EVENT" TI="13725" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_i2c.c" Line="941" Addr="0x1" Param="Yes"/>
+    <variable Name="lastevent" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_i2c.c" Line="943" Addr="0x0" TI="13725"/>
+    <variable Name="flag1" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_i2c.c" Line="944" Addr="0x0" TI="13725"/>
+    <variable Name="flag2" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_i2c.c" Line="944" Addr="0x0" TI="13725"/>
+    <variable Name="status" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_i2c.c" Line="945" Addr="0x0" TI="13906"/>
+   </function >
+   <function Name="I2C_GetFlagStatus" TI="13831" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_i2c.c" Line="1006">
+    <parameter Name="I2Cx" TI="14450" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_i2c.c" Line="1006" Addr="0x0" Param="Yes"/>
+    <parameter Name="I2C_FLAG" TI="13725" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_i2c.c" Line="1006" Addr="0x1" Param="Yes"/>
+    <variable Name="bitstatus" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_i2c.c" Line="1008" Addr="0x0" TI="13831"/>
+    <variable Name="i2creg" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_i2c.c" Line="1009" Addr="0x4000000" TI="13725"/>
+    <variable Name="i2cxbase" FileName="D:\FbEdit\Projects\Applications\fbe\STM32Discovery\Compass\STM32I2C\stm32f10x_i2c.c" Line="1009" Addr="0x0" TI="13725"/>
+   </function >
+  </module>
+ </modulelist>
+</aoffile>
+
