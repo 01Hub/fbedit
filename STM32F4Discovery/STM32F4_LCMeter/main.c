@@ -455,7 +455,7 @@ void USART3_getdata(uint8_t *dat,uint16_t len)
     *dat = (uint8_t)USART3->DR;
     *dat++;
   }
-  STM_EVAL_LEDToggle(LED4);
+  // STM_EVAL_LEDToggle(LED4);
 }
 
 /**
@@ -677,6 +677,8 @@ void DAC_Config(void)
   /* Enable DAC Channel1 */
   DAC_Cmd(DAC_Channel_1, ENABLE);
   DAC_SetChannel1Data(DAC_Align_12b_R, 2048);
+  /* Enable DAC Channel1 and output buffer */
+  DAC->CR = 0x1;
 }
 
 void DMA_SingleConfig(void)
