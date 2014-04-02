@@ -19,17 +19,22 @@
 /* Private typedef -----------------------------------------------------------*/
 typedef struct
 {
+  u16 flag;
   u16 x;
   u16 y;
   u16 z;
-  u16 Flag;
   u32 Count;
 } STM32_COMPASSTypeDef;
 
 /* Private define ------------------------------------------------------------*/
-#define I2C1_SLAVE_ADDRESS  0x3C  // Address for HMC5883L magnetometer
-#define I2C_SPEED 100000          //100Khz speed for I2C
+#define I2C1_SLAVE_ADDRESS        0x3C              // Address for HMC5883L magnetometer
+#define I2C_SPEED                 100000            //100Khz speed for I2C
 #define I2C_NACKPosition_Current  ((u16)0xF7FF)
+
+#define MODE_DONE                 0                 // Done
+#define MODE_NORMAL               1                 // Normal operation
+#define MODE_COMPENSATE           2                 // Get temprature compensation
+#define MODE_CALIBRATE            3                 // Get calibration
 
 /* Private macro -------------------------------------------------------------*/
 ErrorStatus HSEStartUpStatus;
@@ -70,7 +75,9 @@ int main(void)
   {
     ClockWait();
   }
-  Init_Compass(0x00, 0x70);
+  /* Normal measurement configuration. Average 8 samples */
+  Init_Compass(0x00, 0x60);
+  /* Set the device gain */
   Init_Compass(0x01, 0x00);
   i = 130000;
   while (i--)
@@ -79,23 +86,35 @@ int main(void)
   }
   while (1)
   {
-    Init_Compass(0x02, 0x01);
-    STM32_Compass.Count++;
-    i = 50000;
-    while (i--)
+    if (STM32_Compass.flag)
     {
-      ClockWait();
-    }
-    Get_Compass();
-    STM32_Compass.Count++;
-    i = 50000;
-    while (i--)
-    {
-      ClockWait();
+      switch (STM32_Compass.flag)
+      {
+        case MODE_NORMAL:
+          /* Get x, y and z */
+          Get_Compass();
+          break;
+        case MODE_COMPENSATE:
+          /* Positive bias configuration. Average 8 samples */
+          Init_Compass(0x00, 0x61);
+          /* Set the device gain */
+          Init_Compass(0x01, 0x60);
+          /* Get x, y and z */
+          Get_Compass();
+          /* Normal measurement configuration. Average 8 samples */
+          Init_Compass(0x00, 0x60);
+          /* Set the device gain */
+          Init_Compass(0x01, 0x00);
+          break;
+        case MODE_CALIBRATE:
+          /* Get x, y and z */
+          Get_Compass();
+          break;
+      }
+      STM32_Compass.flag = MODE_DONE;
     }
   }
 }
-
 
 /*******************************************************************************
 * Function Name  : Init_Compass
@@ -163,6 +182,10 @@ void Get_Compass()
   I2C_AcknowledgeConfig(I2C1, ENABLE);
   /* Test on BUSY Flag */
   while (I2C_GetFlagStatus(I2C1,I2C_FLAG_BUSY));
+  /* Single-Measurement Mode */
+  Init_Compass(0x02, 0x01);
+  /* Wait for DRDY to go high */
+  while ((((u16)GPIOB->IDR) & GPIO_Pin_5) == 0);
   /* Enable the I2C peripheral */
 /*======================================================*/
   I2C_GenerateSTART(I2C1, ENABLE);
@@ -189,6 +212,7 @@ void Get_Compass()
   STM32_Compass.x = GetCompassAxis(0);
   STM32_Compass.z = GetCompassAxis(0);
   STM32_Compass.y = GetCompassAxis(1);
+  STM32_Compass.Count++;
 }
 
 void ClockWait(void)

@@ -38,14 +38,32 @@ IDC_STC2						equ 103
 IDC_STC3						equ 104
 IDC_STC4						equ 106
 IDC_UDCCOMPASS					equ 105
+IDC_BTNCOMP						equ 107
+IDC_BTNCALIBRATE				equ 108
+
+MODE_NORMAL						equ 1	; Normal operation
+MODE_COMPENSATE					equ 2	; Get temprature compensation
+MODE_CALIBRATE					equ 3	; Get calibration
 
 COMPASS struct
+	flag	WORD ?
 	x		WORD ?
 	y		WORD ?
 	z		WORD ?
-	dmy		WORD ?
 	count	DWORD ?
+	ideg	DWORD ?
 COMPASS ends
+
+COMPENSATION struct
+	x		DWORD ?
+	y		DWORD ?
+	z		DWORD ?
+COMPENSATION ends
+
+CALIBRATION struct
+	x		WORD ?
+	y		WORD ?
+CALIBRATION ends
 
 .const
 
@@ -56,6 +74,7 @@ szCOMPASSCLASS					BYTE 'UDCOMPASS',0
 xAxis							BYTE 'X',0
 yAxis							BYTE 'Y',0
 zAxis							BYTE 'Z',0
+szNULL							BYTE 0
 
 szFmtAxis						BYTE '%s = %d',0
 rad2deg							REAL8 57.29577951308232088
@@ -71,7 +90,10 @@ hWnd							HWND ?
 hCompass						HWND ?
 hFont							HFONT ?
 connected						DWORD ?
+mode							DWORD ?
 compass							COMPASS <>
-ideg							DWORD ?
+calinx							DWORD ?
+calibration						CALIBRATION 1024 dup(<>)
+countdown						DWORD ?
 
 ;#########################################################################
