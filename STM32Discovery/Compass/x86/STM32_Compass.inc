@@ -52,6 +52,18 @@ COMPASS struct
 	z		WORD ?
 	count	DWORD ?
 	ideg	DWORD ?
+	tcxrt	DWORD ?
+	tcyrt	DWORD ?
+	tczrt	DWORD ?
+	tcxct	DWORD ?
+	tcyct	DWORD ?
+	tczct	DWORD ?
+	xmin	DWORD ?
+	xmax	DWORD ?
+	ymin	DWORD ?
+	ymax	DWORD ?
+	zmin	DWORD ?
+	zmax	DWORD ?
 COMPASS ends
 
 COMPENSATION struct
