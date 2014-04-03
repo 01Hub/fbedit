@@ -35,6 +35,7 @@ typedef struct
 #define MODE_NORMAL               1                 // Normal operation
 #define MODE_COMPENSATE           2                 // Get temprature compensation
 #define MODE_CALIBRATE            3                 // Get calibration
+#define MODE_COMPENSATEOFF        4                 // End temprature compensation
 
 /* Private macro -------------------------------------------------------------*/
 ErrorStatus HSEStartUpStatus;
@@ -101,13 +102,27 @@ int main(void)
           Init_Compass(0x01, 0x60);
           /* Get x, y and z */
           Get_Compass();
+          break;
+        case MODE_CALIBRATE:
+          /* Get x, y and z */
+          Get_Compass();
+          break;
+        case MODE_COMPENSATEOFF:
           /* Normal measurement configuration. Average 8 samples */
           Init_Compass(0x00, 0x60);
           /* Set the device gain */
           Init_Compass(0x01, 0x00);
-          break;
-        case MODE_CALIBRATE:
-          /* Get x, y and z */
+          i = 1000;
+          while (i--)
+          {
+            ClockWait();
+          }
+          Get_Compass();
+          i = 1000;
+          while (i--)
+          {
+            ClockWait();
+          }
           Get_Compass();
           break;
       }

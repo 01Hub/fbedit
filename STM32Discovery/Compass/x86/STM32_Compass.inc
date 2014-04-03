@@ -20,11 +20,6 @@ STLinkWrite						PROTO hWin:HWND,wradr:DWORD,rdadr:DWORD,nBytes:DWORD
 ;#########################################################################
 ;VKim's Debug
 
-;include masm32.inc
-;include Debug.Inc
-;includelib masm32.lib
-;includelib Debug.lib
-
 include masm32.inc
 include \RadASM30\masm\inc\debug.inc
 includelib masm32.lib
@@ -40,10 +35,12 @@ IDC_STC4						equ 106
 IDC_UDCCOMPASS					equ 105
 IDC_BTNCOMP						equ 107
 IDC_BTNCALIBRATE				equ 108
+IDC_EDTRESULT					equ 109
 
 MODE_NORMAL						equ 1	; Normal operation
 MODE_COMPENSATE					equ 2	; Get temprature compensation
 MODE_CALIBRATE					equ 3	; Get calibration
+MODE_COMPENSATEOFF				equ 4	; End temprature compensation
 
 COMPASS struct
 	flag	WORD ?
@@ -60,10 +57,10 @@ COMPASS struct
 	tczct	DWORD ?
 	xmin	DWORD ?
 	xmax	DWORD ?
+	xscale	DWORD ?
 	ymin	DWORD ?
 	ymax	DWORD ?
-	zmin	DWORD ?
-	zmax	DWORD ?
+	yscale	DWORD ?
 COMPASS ends
 
 COMPENSATION struct
@@ -83,12 +80,22 @@ Tahoma_72						LOGFONT <-30,0,0,0,400,0,0,0,0,3,2,1,34,"Tahoma">
 
 szCOMPASSCLASS					BYTE 'UDCOMPASS',0
 
+szNorth							BYTE 'N',0
+szSouth							BYTE 'S',0
+szEast							BYTE 'E',0
+szWest							BYTE 'W',0
 xAxis							BYTE 'X',0
 yAxis							BYTE 'Y',0
 zAxis							BYTE 'Z',0
-szNULL							BYTE 0
-
 szFmtAxis						BYTE '%s = %d',0
+szFmtCompensate					BYTE 'Temprature compensation:',0Dh,0Ah
+								BYTE 'X = %d',0Dh,0Ah
+								BYTE 'Y = %d',0Dh,0Ah
+								BYTE 'Z = %d',0Dh,0Ah,0
+szFmpCalibrate					BYTE 'Offset calibration',0Dh,0Ah
+								BYTE 'X-Min %d, X-Max %d, Scale %d',0Dh,0Ah
+								BYTE 'Y-Min %d, Y-Max %d, Scale %d',0Dh,0Ah,0
+
 rad2deg							REAL8 57.29577951308232088
 deg2rad							REAL8 0.017453292519943334
 
