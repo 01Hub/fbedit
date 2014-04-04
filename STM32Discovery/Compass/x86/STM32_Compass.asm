@@ -9,6 +9,133 @@ include STM32_Compass.inc
 
 ;########################################################################
 
+DecToBin proc uses ebx esi,lpStr:DWORD
+	LOCAL	fNeg:DWORD
+
+    mov     esi,lpStr
+    mov		fNeg,FALSE
+    mov		al,[esi]
+    .if al=='-'
+		inc		esi
+		mov		fNeg,TRUE
+    .endif
+    xor     eax,eax
+  @@:
+    cmp     byte ptr [esi],30h
+    jb      @f
+    cmp     byte ptr [esi],3Ah
+    jnb     @f
+    mov     ebx,eax
+    shl     eax,2
+    add     eax,ebx
+    shl     eax,1
+    xor     ebx,ebx
+    mov     bl,[esi]
+    sub     bl,30h
+    add     eax,ebx
+    inc     esi
+    jmp     @b
+  @@:
+	.if fNeg
+		neg		eax
+	.endif
+    ret
+
+DecToBin endp
+
+BinToDec proc dwVal:DWORD,lpAscii:DWORD
+	LOCAL	buffer[8]:BYTE
+
+	mov		dword ptr buffer,'d%'
+	invoke wsprintf,lpAscii,addr buffer,dwVal
+	ret
+
+BinToDec endp
+
+GetItemInt proc uses esi edi,lpBuff:DWORD,nDefVal:DWORD
+
+	mov		esi,lpBuff
+	.if byte ptr [esi]
+		mov		edi,esi
+		invoke DecToBin,edi
+		.while byte ptr [esi] && byte ptr [esi]!=','
+			inc		esi
+		.endw
+		.if byte ptr [esi]==','
+			inc		esi
+		.endif
+		push	eax
+		invoke lstrcpy,edi,esi
+		pop		eax
+	.else
+		mov		eax,nDefVal
+	.endif
+	ret
+
+GetItemInt endp
+
+PutItemInt proc uses esi edi,lpBuff:DWORD,nVal:DWORD
+
+	mov		esi,lpBuff
+	invoke lstrlen,esi
+	mov		byte ptr [esi+eax],','
+	invoke BinToDec,nVal,addr [esi+eax+1]
+	ret
+
+PutItemInt endp
+
+ReadFromIni proc
+	LOCAL	buffer[256]:BYTE
+
+	invoke GetPrivateProfileString,offset szIniCompass,offset szIniCompass,NULL,addr buffer,sizeof buffer,offset IniFile
+PrintDec eax
+	;Temprature compensation
+	invoke GetItemInt,addr buffer,763
+	mov		compass.tcxrt,eax
+	mov		compass.tcxct,eax
+	invoke GetItemInt,addr buffer,701
+	mov		compass.tcyrt,eax
+	mov		compass.tcyct,eax
+	invoke GetItemInt,addr buffer,712
+	mov		compass.tczrt,eax
+	mov		compass.tczct,eax
+	;Offset compensation
+	invoke GetItemInt,addr buffer,-254
+	mov		compass.xmin,eax
+	invoke GetItemInt,addr buffer,93
+	mov		compass.xmax,eax
+	invoke GetItemInt,addr buffer,347
+	mov		compass.xscale,eax
+	invoke GetItemInt,addr buffer,-373
+	mov		compass.ymin,eax
+	invoke GetItemInt,addr buffer,-20
+	mov		compass.ymax,eax
+	invoke GetItemInt,addr buffer,353
+	mov		compass.yscale,eax
+	ret
+
+ReadFromIni endp
+
+WriteToIni proc
+	LOCAL	buffer[256]:BYTE
+
+	mov		buffer,0
+	;Temprature compensation
+	invoke PutItemInt,addr buffer,compass.tcxrt
+	invoke PutItemInt,addr buffer,compass.tcyrt
+	invoke PutItemInt,addr buffer,compass.tczrt
+	;Offset compensation
+	invoke PutItemInt,addr buffer,compass.xmin
+	invoke PutItemInt,addr buffer,compass.xmax
+	invoke PutItemInt,addr buffer,compass.xscale
+	invoke PutItemInt,addr buffer,compass.ymin
+	invoke PutItemInt,addr buffer,compass.ymax
+	invoke PutItemInt,addr buffer,compass.yscale
+	invoke WritePrivateProfileString,offset szIniCompass,offset szIniCompass,addr buffer[1],offset IniFile
+	ret
+
+WriteToIni endp
+
 GetPointOnCircle proc uses edi,radius:DWORD,angle:DWORD,lpPoint:ptr POINT
 	LOCAL	r:QWORD
 
@@ -69,6 +196,26 @@ CompassProc proc uses ebx esi edi, hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 		mov		ptcenter.x,ebx
 		invoke MoveToEx,mDC,ebx,rect.top,NULL
 		invoke LineTo,mDC,ebx,rect.bottom
+		mov		ecx,rect.left
+		add		ecx,32
+		mov		edx,rect.top
+		add		edx,32
+		invoke MoveToEx,mDC,ecx,edx,NULL
+		mov		ecx,rect.right
+		sub		ecx,32
+		mov		edx,rect.bottom
+		sub		edx,32
+		invoke LineTo,mDC,ecx,edx
+		mov		ecx,rect.right
+		sub		ecx,32
+		mov		edx,rect.top
+		add		edx,32
+		invoke MoveToEx,mDC,ecx,edx,NULL
+		mov		ecx,rect.left
+		add		ecx,32
+		mov		edx,rect.bottom
+		sub		edx,32
+		invoke LineTo,mDC,ecx,edx
 		invoke SelectObject,mDC,hFont
 		push	eax
 		invoke SetBkMode,mDC,TRANSPARENT
@@ -155,20 +302,7 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SendDlgItemMessage,hWin,IDC_STC4,WM_SETFONT,hFont,FALSE
 		invoke GetDlgItem,hWin,IDC_UDCCOMPASS
 		mov		hCompass,eax
-		;Temprature compensation
-		mov		compass.tcxrt,763
-		mov		compass.tcyrt,701
-		mov		compass.tczrt,712
-		mov		compass.tcxct,763
-		mov		compass.tcyct,701
-		mov		compass.tczct,712
-		;Offset compensation
-		mov		compass.xmin,-254
-		mov		compass.xmax,93
-		mov		compass.xscale,347
-		mov		compass.ymin,-373
-		mov		compass.ymax,-20
-		mov		compass.yscale,353
+		invoke ReadFromIni
 	.elseif	eax==WM_COMMAND
 		mov edx,wParam
 		movzx eax,dx
@@ -199,6 +333,10 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					mov		countdown,1024+40
 					mov		mode,MODE_CALIBRATE
 				.endif
+			.elseif eax==IDC_BTNSAVE
+				invoke WriteToIni
+				invoke GetDlgItem,hWin,IDC_BTNSAVE
+				invoke EnableWindow,eax,FALSE
 			.elseif eax==IDCANCEL
 				invoke	SendMessage,hWin,WM_CLOSE,NULL,NULL
 			.endif
@@ -303,6 +441,8 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 									shr		compass.tczct,5
 									invoke wsprintf,addr buffer,addr szFmtCompensate,compass.tcxct,compass.tcyct,compass.tczct
 									invoke SetDlgItemText,hWin,IDC_EDTRESULT,addr buffer
+									invoke GetDlgItem,hWin,IDC_BTNSAVE
+									invoke EnableWindow,eax,TRUE
 									mov		mode,MODE_NORMAL
 								.else
 									mov		connected,FALSE
@@ -360,6 +500,8 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 								mov		compass.yscale,eax
 								invoke wsprintf,addr buffer,addr szFmpCalibrate,compass.xmin,compass.xmax,compass.xscale,compass.ymin,compass.ymax,compass.yscale
 								invoke SetDlgItemText,hWin,IDC_EDTRESULT,addr buffer
+								invoke GetDlgItem,hWin,IDC_BTNSAVE
+								invoke EnableWindow,eax,TRUE
 								mov		mode,MODE_NORMAL
 							.endif
 						.endif
@@ -443,8 +585,15 @@ DlgProc endp
 
 start:
 	invoke	GetModuleHandle,NULL
-	mov	hInstance,eax
+	mov		hInstance,eax
 	invoke	InitCommonControls
+	invoke GetModuleFileName,hInstance,offset IniFile,sizeof IniFile
+	invoke lstrlen,offset IniFile
+	.while IniFile[eax]!='\'
+		dec		eax
+	.endw
+	mov		IniFile[eax],0
+	invoke lstrcat,offset IniFile,offset szIniFile
 	mov		wc.cbSize,sizeof WNDCLASSEX
 	mov		wc.style,CS_HREDRAW or CS_VREDRAW
 	mov		wc.lpfnWndProc,offset CompassProc

@@ -36,6 +36,7 @@ IDC_UDCCOMPASS					equ 105
 IDC_BTNCOMP						equ 107
 IDC_BTNCALIBRATE				equ 108
 IDC_EDTRESULT					equ 109
+IDC_BTNSAVE						equ 110
 
 MODE_NORMAL						equ 1	; Normal operation
 MODE_COMPENSATE					equ 2	; Get temprature compensation
@@ -99,6 +100,9 @@ szFmpCalibrate					BYTE 'Offset calibration',0Dh,0Ah
 rad2deg							REAL8 57.29577951308232088
 deg2rad							REAL8 0.017453292519943334
 
+szIniFile						BYTE '\Compass.ini',0
+szIniCompass					BYTE 'Compass',0
+
 ;#########################################################################
 
 .data?
@@ -114,5 +118,6 @@ compass							COMPASS <>
 calinx							DWORD ?
 calibration						CALIBRATION 1024 dup(<>)
 countdown						DWORD ?
+IniFile							BYTE MAX_PATH dup(?)
 
 ;#########################################################################

@@ -22,20 +22,21 @@
 /**
   ******************************************************************************
   Port pins
-  PA.00         Frequency counter input (TIM5)
-  PA.01         Frequency counter input (TIM2)
-  PA.04         Scope V-Pos DAC1 Output
-  PB.07         High Speed Clock
-  PB.13         SPI SCK
-  PB.15         SPI MOSI
-  PC.01         Scope ADC
-  PD.00         Frequency counter select0
-  PD.01         Frequency counter select1
-  PD.02         Frequency counter select2
-  PD.06         LCMeter L/C selection, C = Low L = High
-  PD.07         LCMeter calibration
-  PD.08         USART3 TX
-  PD.09         USART3 RX
+  PA.00           Frequency counter input (TIM5)
+  PA.01           Frequency counter input (TIM2)
+  PA.04           Scope V-Pos DAC1 Output
+  PB.07           High Speed Clock
+  PB.13           SPI SCK
+  PB.15           SPI MOSI
+  PC.01           Scope ADC
+  PD.00           Frequency counter select0
+  PD.01           Frequency counter select1
+  PD.02           Frequency counter select2
+  PD.06           LCMeter L/C selection, C = Low L = High
+  PD.07           LCMeter calibration
+  PD.08           USART3 TX
+  PD.09           USART3 RX
+  PE.08 to PE.15  LGA Inputs
   ******************************************************************************
   */
 
