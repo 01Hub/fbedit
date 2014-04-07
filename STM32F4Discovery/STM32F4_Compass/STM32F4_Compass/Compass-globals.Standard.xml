@@ -1,0 +1,180 @@
+<!-- DWF2XML 2.00.01 - Raisonance Dwarf information extractor -->
+<aoffile Header="Compass" Path="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Compass\STM32F4_Compass\Compass.elf">
+ <Def>
+  <Col Header="DeclFile" Desc="File"/>
+  <Col Header="Type" Desc="Type"/>
+  <Col Header="Header" Desc="Name"/>
+ </Def>
+ <type Header="IRQn_Type" Icon="1" Type="type" Desc=": unsigned char" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Compass\STM32F4_Compass\stm32f4xx.h" DeclLine="239" Pointer="No"/>
+ <type Header="uint8_t" Icon="1" Type="type" Desc=": unsigned char" DeclFile="d:\ride\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="42" Pointer="No"/>
+ <type Header="uint16_t" Icon="1" Type="type" Desc=": unsigned int" DeclFile="d:\ride\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="54" Pointer="No"/>
+ <type Header="int32_t" Icon="1" Type="type" Desc=": long" DeclFile="d:\ride\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="79" Pointer="No"/>
+ <type Header="uint32_t" Icon="1" Type="type" Desc=": unsigned long" DeclFile="d:\ride\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="80" Pointer="No"/>
+ <type Header="NVIC_Type" Icon="1" Type="type" Desc=": struct " DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Compass\STM32F4_Compass\core_cm4.h" DeclLine="318" Pointer="No"/>
+ <type Header="SCB_Type" Icon="1" Type="type" Desc=": struct " DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Compass\STM32F4_Compass\core_cm4.h" DeclLine="358" Pointer="No"/>
+ <type Header="SysTick_Type" Icon="1" Type="type" Desc=": struct " DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Compass\STM32F4_Compass\core_cm4.h" DeclLine="596" Pointer="No"/>
+ <type Header="u16" Icon="1" Type="type" Desc=": unsigned int" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Compass\STM32F4_Compass\stm32f4xx.h" DeclLine="270" Pointer="No"/>
+ <type Header="GPIO_TypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Compass\STM32F4_Compass\stm32f4xx.h" DeclLine="666" Pointer="No"/>
+ <type Header="I2C_TypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Compass\STM32F4_Compass\stm32f4xx.h" DeclLine="705" Pointer="No"/>
+ <type Header="GPIOMode_TypeDef" Icon="1" Type="type" Desc=": unsigned char" DeclFile="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_gpio.h" DeclLine="63" Pointer="No"/>
+ <type Header="GPIOOType_TypeDef" Icon="1" Type="type" Desc=": unsigned char" DeclFile="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_gpio.h" DeclLine="74" Pointer="No"/>
+ <type Header="GPIOSpeed_TypeDef" Icon="1" Type="type" Desc=": unsigned char" DeclFile="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_gpio.h" DeclLine="87" Pointer="No"/>
+ <type Header="GPIOPuPd_TypeDef" Icon="1" Type="type" Desc=": unsigned char" DeclFile="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_gpio.h" DeclLine="99" Pointer="No"/>
+ <type Header="GPIO_InitTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_gpio.h" DeclLine="133" Pointer="No"/>
+ <type Header="I2C_InitTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_i2c.h" DeclLine="67" Pointer="No"/>
+ <type Header="LIS302DL_InitTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Compass\STM32F4_Compass\stm32f4_discovery_lis302dl.h" DeclLine="59" Pointer="No"/>
+ <type Header="COMPASSTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Compass\STM32F4_Compass\main.c" DeclLine="43" Pointer="No"/>
+ <func Header="Init_Compass" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Compass\STM32F4_Compass\main.c" DeclLine="134"/>
+ <func Header="GetCompassAxis" Icon="3" Type="func" Desc=":   unsigned int" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Compass\STM32F4_Compass\main.c" DeclLine="162"/>
+ <func Header="Get_Compass" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Compass\STM32F4_Compass\main.c" DeclLine="190"/>
+ <func Header="RCC_Config" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Compass\STM32F4_Compass\main.c" DeclLine="233"/>
+ <func Header="GPIO_Config" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Compass\STM32F4_Compass\main.c" DeclLine="246"/>
+ <func Header="I2C_Config" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Compass\STM32F4_Compass\main.c" DeclLine="276"/>
+ <func Header="Delay" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Compass\STM32F4_Compass\main.c" DeclLine="319"/>
+ <func Header="LIS302DL_Config" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Compass\STM32F4_Compass\main.c" DeclLine="297"/>
+ <func Header="main" Icon="3" Type="func" Desc=":   long" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Compass\STM32F4_Compass\main.c" DeclLine="74"/>
+ <func Header="TimingDelay_Decrement" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Compass\STM32F4_Compass\main.c" DeclLine="330"/>
+ <func Header="SysTick_Handler" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Compass\STM32F4_Compass\main.c" DeclLine="343"/>
+ <func Header="LIS302DL_TIMEOUT_UserCallback" Icon="3" Type="func" Desc=":   unsigned long" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Compass\STM32F4_Compass\main.c" DeclLine="356"/>
+ <variable Header="Compass" Icon="2" Type="variable" Desc=":   struct " DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Compass\STM32F4_Compass\main.c" DeclLine="55" Pointer="No"/>
+ <type Header="int32_t" Icon="1" Type="type" Desc=": long" DeclFile="d:\ride\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="79" Pointer="No"/>
+ <func Header="NMI_Handler" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Compass\STM32F4_Compass\stm32f4xx_it.c" DeclLine="51"/>
+ <func Header="HardFault_Handler" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Compass\STM32F4_Compass\stm32f4xx_it.c" DeclLine="60"/>
+ <func Header="MemManage_Handler" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Compass\STM32F4_Compass\stm32f4xx_it.c" DeclLine="73"/>
+ <func Header="BusFault_Handler" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Compass\STM32F4_Compass\stm32f4xx_it.c" DeclLine="86"/>
+ <func Header="UsageFault_Handler" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Compass\STM32F4_Compass\stm32f4xx_it.c" DeclLine="99"/>
+ <func Header="SVC_Handler" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Compass\STM32F4_Compass\stm32f4xx_it.c" DeclLine="112"/>
+ <func Header="DebugMon_Handler" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Compass\STM32F4_Compass\stm32f4xx_it.c" DeclLine="121"/>
+ <func Header="PendSV_Handler" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Compass\STM32F4_Compass\stm32f4xx_it.c" DeclLine="130"/>
+ <type Header="uint8_t" Icon="1" Type="type" Desc=": unsigned char" DeclFile="d:\ride\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="42" Pointer="No"/>
+ <type Header="uint16_t" Icon="1" Type="type" Desc=": unsigned int" DeclFile="d:\ride\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="54" Pointer="No"/>
+ <type Header="int32_t" Icon="1" Type="type" Desc=": long" DeclFile="d:\ride\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="79" Pointer="No"/>
+ <type Header="uint32_t" Icon="1" Type="type" Desc=": unsigned long" DeclFile="d:\ride\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="80" Pointer="No"/>
+ <type Header="SCB_Type" Icon="1" Type="type" Desc=": struct " DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Compass\STM32F4_Compass\core_cm4.h" DeclLine="358" Pointer="No"/>
+ <type Header="FLASH_TypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Compass\STM32F4_Compass\stm32f4xx.h" DeclLine="589" Pointer="No"/>
+ <type Header="PWR_TypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Compass\STM32F4_Compass\stm32f4xx.h" DeclLine="727" Pointer="No"/>
+ <type Header="RCC_TypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Compass\STM32F4_Compass\stm32f4xx.h" DeclLine="765" Pointer="No"/>
+ <variable Header="SystemCoreClock" Icon="2" Type="variable" Desc=":   unsigned long" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Compass\STM32F4_Compass\system_stm32f4xx.c" DeclLine="172" Pointer="No"/>
+ <variable Header="AHBPrescTable" Icon="2" Type="variable" Desc=":   unsigned char[16]" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Compass\STM32F4_Compass\system_stm32f4xx.c" DeclLine="174" Pointer="No"/>
+ <type Header="uint8_t" Icon="1" Type="type" Desc=": unsigned char" DeclFile="d:\ride\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="42" Pointer="No"/>
+ <type Header="uint16_t" Icon="1" Type="type" Desc=": unsigned int" DeclFile="d:\ride\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="54" Pointer="No"/>
+ <type Header="int32_t" Icon="1" Type="type" Desc=": long" DeclFile="d:\ride\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="79" Pointer="No"/>
+ <type Header="uint32_t" Icon="1" Type="type" Desc=": unsigned long" DeclFile="d:\ride\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="80" Pointer="No"/>
+ <type Header="FlagStatus" Icon="1" Type="type" Desc=": unsigned char" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Compass\STM32F4_Compass\stm32f4xx.h" DeclLine="285" Pointer="No"/>
+ <type Header="ITStatus" Icon="1" Type="type" Desc=": unsigned char" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Compass\STM32F4_Compass\stm32f4xx.h" DeclLine="285" Pointer="No"/>
+ <type Header="FunctionalState" Icon="1" Type="type" Desc=": unsigned char" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Compass\STM32F4_Compass\stm32f4xx.h" DeclLine="287" Pointer="No"/>
+ <type Header="ErrorStatus" Icon="1" Type="type" Desc=": unsigned char" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Compass\STM32F4_Compass\stm32f4xx.h" DeclLine="290" Pointer="No"/>
+ <type Header="RCC_TypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Compass\STM32F4_Compass\stm32f4xx.h" DeclLine="765" Pointer="No"/>
+ <type Header="RCC_ClocksTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_rcc.h" DeclLine="48" Pointer="No"/>
+ <func Header="RCC_GetClocksFreq" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Compass\STM32F4_Compass\stm32f4xx_rcc.c" DeclLine="855"/>
+ <func Header="RCC_AHB1PeriphClockCmd" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Compass\STM32F4_Compass\stm32f4xx_rcc.c" DeclLine="1085"/>
+ <func Header="RCC_APB1PeriphClockCmd" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Compass\STM32F4_Compass\stm32f4xx_rcc.c" DeclLine="1194"/>
+ <func Header="RCC_APB2PeriphClockCmd" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Compass\STM32F4_Compass\stm32f4xx_rcc.c" DeclLine="1234"/>
+ <func Header="RCC_APB1PeriphResetCmd" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Compass\STM32F4_Compass\stm32f4xx_rcc.c" DeclLine="1373"/>
+ <func Header="RCC_APB2PeriphResetCmd" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Compass\STM32F4_Compass\stm32f4xx_rcc.c" DeclLine="1409"/>
+ <variable Header="APBAHBPrescTable" Icon="2" Type="variable" Desc=":   unsigned char[16]" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Compass\STM32F4_Compass\stm32f4xx_rcc.c" DeclLine="127" Pointer="No"/>
+ <type Header="uint8_t" Icon="1" Type="type" Desc=": unsigned char" DeclFile="d:\ride\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="42" Pointer="No"/>
+ <type Header="uint16_t" Icon="1" Type="type" Desc=": unsigned int" DeclFile="d:\ride\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="54" Pointer="No"/>
+ <type Header="int32_t" Icon="1" Type="type" Desc=": long" DeclFile="d:\ride\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="79" Pointer="No"/>
+ <type Header="uint32_t" Icon="1" Type="type" Desc=": unsigned long" DeclFile="d:\ride\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="80" Pointer="No"/>
+ <type Header="FunctionalState" Icon="1" Type="type" Desc=": unsigned char" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Compass\STM32F4_Compass\stm32f4xx.h" DeclLine="287" Pointer="No"/>
+ <type Header="GPIO_TypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Compass\STM32F4_Compass\stm32f4xx.h" DeclLine="666" Pointer="No"/>
+ <type Header="EXTIMode_TypeDef" Icon="1" Type="type" Desc=": unsigned char" DeclFile="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_exti.h" DeclLine="52" Pointer="No"/>
+ <type Header="EXTITrigger_TypeDef" Icon="1" Type="type" Desc=": unsigned char" DeclFile="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_exti.h" DeclLine="65" Pointer="No"/>
+ <type Header="EXTI_InitTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_exti.h" DeclLine="87" Pointer="No"/>
+ <type Header="GPIOMode_TypeDef" Icon="1" Type="type" Desc=": unsigned char" DeclFile="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_gpio.h" DeclLine="63" Pointer="No"/>
+ <type Header="GPIOOType_TypeDef" Icon="1" Type="type" Desc=": unsigned char" DeclFile="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_gpio.h" DeclLine="74" Pointer="No"/>
+ <type Header="GPIOSpeed_TypeDef" Icon="1" Type="type" Desc=": unsigned char" DeclFile="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_gpio.h" DeclLine="87" Pointer="No"/>
+ <type Header="GPIOPuPd_TypeDef" Icon="1" Type="type" Desc=": unsigned char" DeclFile="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_gpio.h" DeclLine="99" Pointer="No"/>
+ <type Header="GPIO_InitTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_gpio.h" DeclLine="133" Pointer="No"/>
+ <type Header="NVIC_InitTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\misc.h" DeclLine="68" Pointer="No"/>
+ <type Header="Led_TypeDef" Icon="1" Type="type" Desc=": unsigned char" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Compass\STM32F4_Compass\stm32f4_discovery.h" DeclLine="55" Pointer="No"/>
+ <type Header="Button_TypeDef" Icon="1" Type="type" Desc=": unsigned char" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Compass\STM32F4_Compass\stm32f4_discovery.h" DeclLine="60" Pointer="No"/>
+ <type Header="ButtonMode_TypeDef" Icon="1" Type="type" Desc=": unsigned char" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Compass\STM32F4_Compass\stm32f4_discovery.h" DeclLine="66" Pointer="No"/>
+ <variable Header="GPIO_PORT" Icon="2" Type="variable" Desc=":   struct  CODE*[4]" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Compass\STM32F4_Compass\stm32f4_discovery.c" DeclLine="67" Pointer="No"/>
+ <variable Header="GPIO_PIN" Icon="2" Type="variable" Desc=":   unsigned int[4]" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Compass\STM32F4_Compass\stm32f4_discovery.c" DeclLine="69" Pointer="No"/>
+ <variable Header="GPIO_CLK" Icon="2" Type="variable" Desc=":   unsigned long[4]" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Compass\STM32F4_Compass\stm32f4_discovery.c" DeclLine="71" Pointer="No"/>
+ <variable Header="BUTTON_PORT" Icon="2" Type="variable" Desc=":   struct  CODE*[1]" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Compass\STM32F4_Compass\stm32f4_discovery.c" DeclLine="74" Pointer="No"/>
+ <variable Header="BUTTON_PIN" Icon="2" Type="variable" Desc=":   unsigned int[1]" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Compass\STM32F4_Compass\stm32f4_discovery.c" DeclLine="76" Pointer="No"/>
+ <variable Header="BUTTON_CLK" Icon="2" Type="variable" Desc=":   unsigned long[1]" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Compass\STM32F4_Compass\stm32f4_discovery.c" DeclLine="78" Pointer="No"/>
+ <variable Header="BUTTON_EXTI_LINE" Icon="2" Type="variable" Desc=":   unsigned int[1]" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Compass\STM32F4_Compass\stm32f4_discovery.c" DeclLine="80" Pointer="No"/>
+ <variable Header="BUTTON_PORT_SOURCE" Icon="2" Type="variable" Desc=":   unsigned char[1]" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Compass\STM32F4_Compass\stm32f4_discovery.c" DeclLine="82" Pointer="No"/>
+ <variable Header="BUTTON_PIN_SOURCE" Icon="2" Type="variable" Desc=":   unsigned char[1]" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Compass\STM32F4_Compass\stm32f4_discovery.c" DeclLine="84" Pointer="No"/>
+ <variable Header="BUTTON_IRQn" Icon="2" Type="variable" Desc=":   unsigned char[1]" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Compass\STM32F4_Compass\stm32f4_discovery.c" DeclLine="85" Pointer="No"/>
+ <variable Header="NVIC_InitStructure" Icon="2" Type="variable" Desc=":   struct " DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Compass\STM32F4_Compass\stm32f4_discovery.c" DeclLine="87" Pointer="No"/>
+ <type Header="uint8_t" Icon="1" Type="type" Desc=": unsigned char" DeclFile="d:\ride\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="42" Pointer="No"/>
+ <type Header="uint16_t" Icon="1" Type="type" Desc=": unsigned int" DeclFile="d:\ride\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="54" Pointer="No"/>
+ <type Header="int32_t" Icon="1" Type="type" Desc=": long" DeclFile="d:\ride\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="79" Pointer="No"/>
+ <type Header="uint32_t" Icon="1" Type="type" Desc=": unsigned long" DeclFile="d:\ride\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="80" Pointer="No"/>
+ <type Header="GPIO_TypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Compass\STM32F4_Compass\stm32f4xx.h" DeclLine="666" Pointer="No"/>
+ <type Header="GPIOMode_TypeDef" Icon="1" Type="type" Desc=": unsigned char" DeclFile="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_gpio.h" DeclLine="63" Pointer="No"/>
+ <type Header="GPIOOType_TypeDef" Icon="1" Type="type" Desc=": unsigned char" DeclFile="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_gpio.h" DeclLine="74" Pointer="No"/>
+ <type Header="GPIOSpeed_TypeDef" Icon="1" Type="type" Desc=": unsigned char" DeclFile="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_gpio.h" DeclLine="87" Pointer="No"/>
+ <type Header="GPIOPuPd_TypeDef" Icon="1" Type="type" Desc=": unsigned char" DeclFile="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_gpio.h" DeclLine="99" Pointer="No"/>
+ <type Header="BitAction" Icon="1" Type="type" Desc=": unsigned char" DeclFile="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_gpio.h" DeclLine="110" Pointer="No"/>
+ <type Header="GPIO_InitTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_gpio.h" DeclLine="133" Pointer="No"/>
+ <func Header="GPIO_Init" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Compass\STM32F4_Compass\stm32f4xx_gpio.c" DeclLine="182"/>
+ <func Header="GPIO_SetBits" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Compass\STM32F4_Compass\stm32f4xx_gpio.c" DeclLine="380"/>
+ <func Header="GPIO_ResetBits" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Compass\STM32F4_Compass\stm32f4xx_gpio.c" DeclLine="399"/>
+ <func Header="GPIO_PinAFConfig" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Compass\STM32F4_Compass\stm32f4xx_gpio.c" DeclLine="529"/>
+ <type Header="uint8_t" Icon="1" Type="type" Desc=": unsigned char" DeclFile="d:\ride\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="42" Pointer="No"/>
+ <type Header="uint16_t" Icon="1" Type="type" Desc=": unsigned int" DeclFile="d:\ride\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="54" Pointer="No"/>
+ <type Header="int32_t" Icon="1" Type="type" Desc=": long" DeclFile="d:\ride\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="79" Pointer="No"/>
+ <type Header="uint32_t" Icon="1" Type="type" Desc=": unsigned long" DeclFile="d:\ride\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="80" Pointer="No"/>
+ <type Header="FlagStatus" Icon="1" Type="type" Desc=": unsigned char" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Compass\STM32F4_Compass\stm32f4xx.h" DeclLine="285" Pointer="No"/>
+ <type Header="ITStatus" Icon="1" Type="type" Desc=": unsigned char" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Compass\STM32F4_Compass\stm32f4xx.h" DeclLine="285" Pointer="No"/>
+ <type Header="FunctionalState" Icon="1" Type="type" Desc=": unsigned char" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Compass\STM32F4_Compass\stm32f4xx.h" DeclLine="287" Pointer="No"/>
+ <type Header="ErrorStatus" Icon="1" Type="type" Desc=": unsigned char" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Compass\STM32F4_Compass\stm32f4xx.h" DeclLine="290" Pointer="No"/>
+ <type Header="I2C_TypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Compass\STM32F4_Compass\stm32f4xx.h" DeclLine="705" Pointer="No"/>
+ <type Header="RCC_ClocksTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_rcc.h" DeclLine="48" Pointer="No"/>
+ <type Header="I2C_InitTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_i2c.h" DeclLine="67" Pointer="No"/>
+ <func Header="I2C_Init" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Compass\STM32F4_Compass\stm32f4xx_i2c.c" DeclLine="175"/>
+ <func Header="I2C_Cmd" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Compass\STM32F4_Compass\stm32f4xx_i2c.c" DeclLine="308"/>
+ <func Header="I2C_GenerateSTART" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Compass\STM32F4_Compass\stm32f4xx_i2c.c" DeclLine="332"/>
+ <func Header="I2C_GenerateSTOP" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Compass\STM32F4_Compass\stm32f4xx_i2c.c" DeclLine="356"/>
+ <func Header="I2C_Send7bitAddress" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Compass\STM32F4_Compass\stm32f4xx_i2c.c" DeclLine="384"/>
+ <func Header="I2C_AcknowledgeConfig" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Compass\STM32F4_Compass\stm32f4xx_i2c.c" DeclLine="411"/>
+ <func Header="I2C_SendData" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Compass\STM32F4_Compass\stm32f4xx_i2c.c" DeclLine="689"/>
+ <func Header="I2C_ReceiveData" Icon="3" Type="func" Desc=":   unsigned char" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Compass\STM32F4_Compass\stm32f4xx_i2c.c" DeclLine="702"/>
+ <func Header="I2C_CheckEvent" Icon="3" Type="func" Desc=":   unsigned char" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Compass\STM32F4_Compass\stm32f4xx_i2c.c" DeclLine="1091"/>
+ <func Header="I2C_GetFlagStatus" Icon="3" Type="func" Desc=":   unsigned char" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Compass\STM32F4_Compass\stm32f4xx_i2c.c" DeclLine="1194"/>
+ <type Header="int8_t" Icon="1" Type="type" Desc=": signed char" DeclFile="d:\ride\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="41" Pointer="No"/>
+ <type Header="uint8_t" Icon="1" Type="type" Desc=": unsigned char" DeclFile="d:\ride\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="42" Pointer="No"/>
+ <type Header="uint16_t" Icon="1" Type="type" Desc=": unsigned int" DeclFile="d:\ride\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="54" Pointer="No"/>
+ <type Header="int32_t" Icon="1" Type="type" Desc=": long" DeclFile="d:\ride\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="79" Pointer="No"/>
+ <type Header="uint32_t" Icon="1" Type="type" Desc=": unsigned long" DeclFile="d:\ride\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="80" Pointer="No"/>
+ <type Header="GPIO_TypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Compass\STM32F4_Compass\stm32f4xx.h" DeclLine="666" Pointer="No"/>
+ <type Header="SPI_TypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Compass\STM32F4_Compass\stm32f4xx.h" DeclLine="867" Pointer="No"/>
+ <type Header="GPIOMode_TypeDef" Icon="1" Type="type" Desc=": unsigned char" DeclFile="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_gpio.h" DeclLine="63" Pointer="No"/>
+ <type Header="GPIOOType_TypeDef" Icon="1" Type="type" Desc=": unsigned char" DeclFile="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_gpio.h" DeclLine="74" Pointer="No"/>
+ <type Header="GPIOSpeed_TypeDef" Icon="1" Type="type" Desc=": unsigned char" DeclFile="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_gpio.h" DeclLine="87" Pointer="No"/>
+ <type Header="GPIOPuPd_TypeDef" Icon="1" Type="type" Desc=": unsigned char" DeclFile="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_gpio.h" DeclLine="99" Pointer="No"/>
+ <type Header="GPIO_InitTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_gpio.h" DeclLine="133" Pointer="No"/>
+ <type Header="SPI_InitTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_spi.h" DeclLine="79" Pointer="No"/>
+ <type Header="LIS302DL_InitTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Compass\STM32F4_Compass\stm32f4_discovery_lis302dl.h" DeclLine="59" Pointer="No"/>
+ <type Header="LIS302DL_FilterConfigTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Compass\STM32F4_Compass\stm32f4_discovery_lis302dl.h" DeclLine="67" Pointer="No"/>
+ <type Header="LIS302DL_InterruptConfigTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Compass\STM32F4_Compass\stm32f4_discovery_lis302dl.h" DeclLine="75" Pointer="No"/>
+ <func Header="LIS302DL_SendByte" Icon="3" Type="func" Desc=":   unsigned char" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Compass\STM32F4_Compass\stm32f4_discovery_lis302dl.c" DeclLine="447"/>
+ <func Header="LIS302DL_Write" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Compass\STM32F4_Compass\stm32f4_discovery_lis302dl.c" DeclLine="257"/>
+ <func Header="LIS302DL_Init" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Compass\STM32F4_Compass\stm32f4_discovery_lis302dl.c" DeclLine="99"/>
+ <func Header="LIS302DL_Read" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Compass\STM32F4_Compass\stm32f4_discovery_lis302dl.c" DeclLine="291"/>
+ <variable Header="LIS302DLTimeout" Icon="2" Type="variable" Desc=":   unsigned long" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Compass\STM32F4_Compass\stm32f4_discovery_lis302dl.c" DeclLine="50" Pointer="No"/>
+ <type Header="uint8_t" Icon="1" Type="type" Desc=": unsigned char" DeclFile="d:\ride\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="42" Pointer="No"/>
+ <type Header="uint16_t" Icon="1" Type="type" Desc=": unsigned int" DeclFile="d:\ride\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="54" Pointer="No"/>
+ <type Header="int32_t" Icon="1" Type="type" Desc=": long" DeclFile="d:\ride\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="79" Pointer="No"/>
+ <type Header="uint32_t" Icon="1" Type="type" Desc=": unsigned long" DeclFile="d:\ride\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="80" Pointer="No"/>
+ <type Header="FlagStatus" Icon="1" Type="type" Desc=": unsigned char" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Compass\STM32F4_Compass\stm32f4xx.h" DeclLine="285" Pointer="No"/>
+ <type Header="ITStatus" Icon="1" Type="type" Desc=": unsigned char" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Compass\STM32F4_Compass\stm32f4xx.h" DeclLine="285" Pointer="No"/>
+ <type Header="FunctionalState" Icon="1" Type="type" Desc=": unsigned char" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Compass\STM32F4_Compass\stm32f4xx.h" DeclLine="287" Pointer="No"/>
+ <type Header="RCC_TypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Compass\STM32F4_Compass\stm32f4xx.h" DeclLine="765" Pointer="No"/>
+ <type Header="SPI_TypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Compass\STM32F4_Compass\stm32f4xx.h" DeclLine="867" Pointer="No"/>
+ <type Header="SPI_InitTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_spi.h" DeclLine="79" Pointer="No"/>
+ <type Header="I2S_InitTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_spi.h" DeclLine="105" Pointer="No"/>
+ <func Header="SPI_I2S_DeInit" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Compass\STM32F4_Compass\stm32f4xx_spi.c" DeclLine="218"/>
+ <func Header="SPI_Init" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Compass\STM32F4_Compass\stm32f4xx_spi.c" DeclLine="257"/>
+ <func Header="SPI_Cmd" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Compass\STM32F4_Compass\stm32f4xx_spi.c" DeclLine="510"/>
+ <func Header="SPI_I2S_ReceiveData" Icon="3" Type="func" Desc=":   unsigned int" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Compass\STM32F4_Compass\stm32f4xx_spi.c" DeclLine="775"/>
+ <func Header="SPI_I2S_SendData" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Compass\STM32F4_Compass\stm32f4xx_spi.c" DeclLine="791"/>
+ <func Header="SPI_I2S_GetFlagStatus" Icon="3" Type="func" Desc=":   unsigned char" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_Compass\STM32F4_Compass\stm32f4xx_spi.c" DeclLine="1135"/>
+</aoffile>
+
