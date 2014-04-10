@@ -113,6 +113,20 @@ CALIBRATION struct
 	y		WORD ?
 CALIBRATION ends
 
+MAGREAD struct
+	x		WORD ?
+	y		WORD ?
+	z		WORD ?
+	dmy		WORD ?
+MAGREAD ends
+
+ACLREAD struct
+	x		WORD ?
+	y		WORD ?
+	z		WORD ?
+	dmy		WORD ?
+ACLREAD ends
+
 .const
 
 Tahoma_72						LOGFONT <-30,0,0,0,400,0,0,0,0,3,2,1,34,"Tahoma">
@@ -172,5 +186,8 @@ calibration						CALIBRATION 1024 dup(<>)
 countdown						DWORD ?
 IniFile							BYTE MAX_PATH dup(?)
 ShowMode						DWORD ?
+readinx							DWORD ?
+magread							MAGREAD 8 dup(<>)
+aclread							ACLREAD 8 dup(<>)
 
 ;#########################################################################

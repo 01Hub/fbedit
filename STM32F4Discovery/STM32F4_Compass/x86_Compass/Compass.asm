@@ -115,7 +115,7 @@ ReadFromIni proc
 	mov		compass.yscale,eax
 	invoke GetItemInt,addr buffer,-20
 	mov		compass.mminz,eax
-	invoke GetItemInt,addr buffer,-20
+	invoke GetItemInt,addr buffer,353
 	mov		compass.mmaxz,eax
 	invoke GetItemInt,addr buffer,353
 	mov		compass.zscale,eax
@@ -600,27 +600,37 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke STLinkRead,hWin,STM32_ADDRESS,offset compass,16
 				.if eax && eax!=IDIGNORE && eax!=IDABORT
 					.if !compass.flag
+						mov		ebx,readinx
 						movsx	eax,compass.x
+						mov		magread.x[ebx*(4*WORD)],ax
 						invoke wsprintf,addr buffer,addr szFmtAxis,offset magxAxis,eax
 						invoke SetDlgItemText,hWin,IDC_STC1,addr buffer
 						movsx	eax,compass.y
+						mov		magread.y[ebx*(4*WORD)],ax
 						invoke wsprintf,addr buffer,addr szFmtAxis,offset magyAxis,eax
 						invoke SetDlgItemText,hWin,IDC_STC2,addr buffer
 						movsx	eax,compass.z
+						mov		magread.z[ebx*(4*WORD)],ax
 						invoke wsprintf,addr buffer,addr szFmtAxis,offset magzAxis,eax
 						invoke SetDlgItemText,hWin,IDC_STC3,addr buffer
 
 						movsx	eax,compass.buffer[0]
+						mov		aclread.x[ebx*(4*WORD)],ax
 						invoke wsprintf,addr buffer,addr szFmtAxis,offset aclxAxis,eax
 						invoke SetDlgItemText,hWin,IDC_STC5,addr buffer
 						movsx	eax,compass.buffer[2]
+						mov		aclread.y[ebx*(4*WORD)],ax
 						invoke wsprintf,addr buffer,addr szFmtAxis,offset aclyAxis,eax
 						invoke SetDlgItemText,hWin,IDC_STC6,addr buffer
 						movsx	eax,compass.buffer[4]
+						mov		aclread.z[ebx*(4*WORD)],ax
 						invoke wsprintf,addr buffer,addr szFmtAxis,offset aclzAxis,eax
 						invoke SetDlgItemText,hWin,IDC_STC7,addr buffer
-
+						inc		ebx
+						and		ebx,0007h
+						mov		readinx,ebx
 						.if mode==MODE_NORMAL
+							call	ReadAverage
 							;Temprature compensation
 							call	TempComp
 							;X / Y Scale compensation
@@ -796,6 +806,48 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	.endif
 	mov		eax,TRUE
 	ret
+
+ReadAverage:
+	xor		esi,esi
+	xor		ebx,ebx
+	xor		ecx,ecx
+	xor		edx,edx
+	.while esi<8
+		movsx	eax,magread.x[esi*(4*WORD)]
+		add		ebx,eax
+		movsx	eax,magread.y[esi*(4*WORD)]
+		add		ecx,eax
+		movsx	eax,magread.z[esi*(4*WORD)]
+		add		edx,eax
+		inc		esi
+	.endw
+	sar		ebx,3
+	sar		ecx,3
+	sar		edx,3
+	mov		compass.x,bx
+	mov		compass.y,cx
+	mov		compass.z,dx
+
+	xor		esi,esi
+	xor		ebx,ebx
+	xor		ecx,ecx
+	xor		edx,edx
+	.while esi<8
+		movsx	eax,aclread.x[esi*(4*WORD)]
+		add		ebx,eax
+		movsx	eax,aclread.y[esi*(4*WORD)]
+		add		ecx,eax
+		movsx	eax,aclread.z[esi*(4*WORD)]
+		add		edx,eax
+		inc		esi
+	.endw
+	sar		ebx,3
+	sar		ecx,3
+	sar		edx,3
+	mov		compass.buffer[0],bl
+	mov		compass.buffer[2],cl
+	mov		compass.buffer[4],dl
+	retn
 
 TempComp:
 	;Temprature compensation
