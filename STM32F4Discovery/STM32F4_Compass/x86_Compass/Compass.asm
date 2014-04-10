@@ -89,14 +89,15 @@ ReadFromIni proc
 	LOCAL	buffer[256]:BYTE
 
 	invoke GetPrivateProfileString,offset szIniCompass,offset szIniCompass,NULL,addr buffer,sizeof buffer,offset IniFile
+	mov		buffer[eax],0
 	;Compass Temprature compensation
-	invoke GetItemInt,addr buffer,763
+	invoke GetItemInt,addr buffer,758
 	mov		compass.tcxrt,eax
 	mov		compass.tcxct,eax
-	invoke GetItemInt,addr buffer,701
+	invoke GetItemInt,addr buffer,702
 	mov		compass.tcyrt,eax
 	mov		compass.tcyct,eax
-	invoke GetItemInt,addr buffer,712
+	invoke GetItemInt,addr buffer,710
 	mov		compass.tczrt,eax
 	mov		compass.tczct,eax
 	;Compass Offset compensation
@@ -830,9 +831,9 @@ ScaleComp:
 	.if ebx<compass.yscale
 		mov		ebx,compass.yscale
 	.endif
-	.if ebx<compass.zscale
-		mov		ebx,compass.zscale
-	.endif
+;	.if ebx<compass.zscale
+;		mov		ebx,compass.zscale
+;	.endif
 	mov		ecx,compass.xscale
 	mov		eax,x
 	imul	ebx
