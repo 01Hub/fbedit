@@ -4,6 +4,8 @@ option casemap :none  ;case sensitive
 
 include Compass.inc
 include Math.asm
+include Magnetometer.asm
+include Accelerometer.asm
 
 ; HMC5883L Compass
 .code
@@ -467,9 +469,9 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SetDlgItemInt,hWin,IDC_EDTDEC,compass.declin,TRUE
 		invoke CheckDlgButton,hWin,IDC_RBN1,BST_CHECKED
 	.elseif	eax==WM_COMMAND
-		mov edx,wParam
-		movzx eax,dx
-		shr edx,16
+		mov		edx,wParam
+		movzx	eax,dx
+		shr 	edx,16
 		.if edx==BN_CLICKED
 			.if eax==IDOK
 				.if !connected
@@ -484,11 +486,17 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.endif
 			.elseif eax==IDC_BTNCOMP
 				.if connected && mode==MODE_NORMAL
-					mov		compass.tcxct,0
-					mov		compass.tcyct,0
-					mov		compass.tczct,0
-					mov		countdown,32+4
-					mov		mode,MODE_COMPENSATE
+invoke KillTimer,hWin,1000
+;invoke	DialogBoxParam,hInstance,IDD_DLGACCEL,NULL,addr AccelProc,NULL
+mov		mode,MODE_CALIBRATE
+invoke	DialogBoxParam,hInstance,IDD_DLGMAG,NULL,addr AccelProc,NULL
+mov		mode,MODE_NORMAL
+invoke SetTimer,hWin,1000,100,NULL
+;					mov		compass.tcxct,0
+;					mov		compass.tcyct,0
+;					mov		compass.tczct,0
+;					mov		countdown,32+4
+;					mov		mode,MODE_COMPENSATE
 				.endif
 			.elseif eax==IDC_BTNCALIBRATE
 				.if connected && mode==MODE_NORMAL
