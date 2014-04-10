@@ -945,6 +945,44 @@ GetHeading:
 		fmulp	st(1),st
 		fsubp	st(1),st
 		fistp	xh
+
+;		;xh = x*cos(pitch) + y*sin(roll)*sin(pitch) - z*cos(roll)*sin(pitch) 
+;		fild	x
+;		fld		compass.pitch
+;		fcos
+;		fmulp	st(1),st
+;
+;		fild	y
+;		fld		compass.roll
+;		fsin
+;		fmulp	st(1),st
+;		fld		compass.pitch
+;		fsin
+;		fmulp	st(1),st
+;		faddp	st(1),st
+;
+;		fild	z
+;		fld		compass.roll
+;		fcos
+;		fmulp	st(1),st
+;		fld		compass.pitch
+;		fsin
+;		fmulp	st(1),st
+;		fsubp	st(1),st
+;		fistp	xh
+
+		;yh = y*cos(roll) + z*sin(roll)
+;		fild	y
+;		fld		compass.roll
+;		fcos
+;		fmulp	st(1),st
+;		fild	z
+;		fld		compass.roll
+;		fsin
+;		fmulp	st(1),st
+;		faddp	st(1),st
+;		fistp	yh
+
 		;yh = y*cos(roll) + z*sin(roll)
 		fild	y
 		fld		compass.roll
@@ -998,6 +1036,7 @@ GetPitchRoll:
 	movsx	eax,compass.buffer[0]
 	sub		eax,ecx
 	mov		aclx,eax
+
 	mov		ecx,compass.amaxy
 	add		ecx,compass.aminy
 	sar		ecx,1
@@ -1006,12 +1045,14 @@ GetPitchRoll:
 	;Y axis points to left on accelerometer, right on magnetometer
 	neg		eax
 	mov		acly,eax
-	movsx	eax,compass.buffer[4]
+
 	mov		ecx,compass.amaxz
 	add		ecx,compass.aminz
 	sar		ecx,1
+	movsx	eax,compass.buffer[4]
 	sub		eax,ecx
 	mov		aclz,eax
+
 	;pitch = arctan(Ax / sqrt(Ay^2+Az^2))
 	fild	aclx
 	fild	acly
@@ -1029,6 +1070,7 @@ GetPitchRoll:
 	fld		rad2deg
 	fmulp	st(1),st
 	fistp	compass.ipitch
+
 	;roll  = arctan(Ay / sqrt(Ax^2+Az^2))
 	fild	acly
 	fild	aclx
