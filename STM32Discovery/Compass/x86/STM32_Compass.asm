@@ -88,7 +88,6 @@ ReadFromIni proc
 	LOCAL	buffer[256]:BYTE
 
 	invoke GetPrivateProfileString,offset szIniCompass,offset szIniCompass,NULL,addr buffer,sizeof buffer,offset IniFile
-PrintDec eax
 	;Temprature compensation
 	invoke GetItemInt,addr buffer,763
 	mov		compass.tcxrt,eax
@@ -112,6 +111,8 @@ PrintDec eax
 	mov		compass.ymax,eax
 	invoke GetItemInt,addr buffer,353
 	mov		compass.yscale,eax
+	invoke GetItemInt,addr buffer,0
+	mov		compass.declin,eax
 	ret
 
 ReadFromIni endp
@@ -131,6 +132,7 @@ WriteToIni proc
 	invoke PutItemInt,addr buffer,compass.ymin
 	invoke PutItemInt,addr buffer,compass.ymax
 	invoke PutItemInt,addr buffer,compass.yscale
+	invoke PutItemInt,addr buffer,compass.declin
 	invoke WritePrivateProfileString,offset szIniCompass,offset szIniCompass,addr buffer[1],offset IniFile
 	ret
 
@@ -156,12 +158,14 @@ GetPointOnCircle proc uses edi,radius:DWORD,angle:DWORD,lpPoint:ptr POINT
 
 GetPointOnCircle endp
 
-CompassProc proc uses ebx esi edi, hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+CompassProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	ps:PAINTSTRUCT
 	LOCAL	rect:RECT
 	LOCAL	radius:DWORD
 	LOCAL	mDC:HDC
 	LOCAL	pt:POINT
+	LOCAL	pt1:POINT
+	LOCAL	pt2:POINT
 	LOCAL	ptcenter:POINT
 
 	mov		eax,uMsg
@@ -232,7 +236,43 @@ CompassProc proc uses ebx esi edi, hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 		add		eax,5
 		invoke TextOut,mDC,eax,ebx,offset szEast,1
 		.if mode==MODE_NORMAL
-			invoke CreatePen,PS_SOLID,4,0000FFh
+			;Find points to draw an arrow
+			mov		edx,compass.ideg
+			sub		edx,180
+			invoke GetPointOnCircle,3,edx,addr pt1
+			mov		eax,ptcenter.x
+			add		pt1.x,eax
+			mov		eax,ptcenter.y
+			add		pt1.y,eax
+			mov		edx,compass.ideg
+			invoke GetPointOnCircle,3,edx,addr pt2
+			mov		eax,ptcenter.x
+			add		pt2.x,eax
+			mov		eax,ptcenter.y
+			add		pt2.y,eax
+			;Draw arrow opposite of heading
+			invoke CreatePen,PS_SOLID,3,0FF0000h
+			invoke SelectObject,mDC,eax
+			push	eax
+			; North is 0 deg, add 90 deg
+			mov		edx,compass.ideg
+			add		edx,90
+			invoke GetPointOnCircle,radius,edx,addr pt
+			mov		eax,ptcenter.x
+			add		pt.x,eax
+			mov		eax,ptcenter.y
+			add		pt.y,eax
+			invoke MoveToEx,mDC,pt1.x,pt1.y,NULL
+			invoke LineTo,mDC,pt.x,pt.y
+			invoke MoveToEx,mDC,ptcenter.x,ptcenter.y,NULL
+			invoke LineTo,mDC,pt.x,pt.y
+			invoke MoveToEx,mDC,pt2.x,pt2.y,NULL
+			invoke LineTo,mDC,pt.x,pt.y
+			pop		eax
+			invoke SelectObject,mDC,eax
+			invoke DeleteObject,eax
+			;Draw heading arrow
+			invoke CreatePen,PS_SOLID,3,0000FFh
 			invoke SelectObject,mDC,eax
 			push	eax
 			; North is 0 deg, sub 90 deg
@@ -243,7 +283,11 @@ CompassProc proc uses ebx esi edi, hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 			add		pt.x,eax
 			mov		eax,ptcenter.y
 			add		pt.y,eax
+			invoke MoveToEx,mDC,pt1.x,pt1.y,NULL
+			invoke LineTo,mDC,pt.x,pt.y
 			invoke MoveToEx,mDC,ptcenter.x,ptcenter.y,NULL
+			invoke LineTo,mDC,pt.x,pt.y
+			invoke MoveToEx,mDC,pt2.x,pt2.y,NULL
 			invoke LineTo,mDC,pt.x,pt.y
 			pop		eax
 			invoke SelectObject,mDC,eax
@@ -303,6 +347,7 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke GetDlgItem,hWin,IDC_UDCCOMPASS
 		mov		hCompass,eax
 		invoke ReadFromIni
+		invoke SetDlgItemInt,hWin,IDC_EDTDEC,compass.declin,TRUE
 	.elseif	eax==WM_COMMAND
 		mov edx,wParam
 		movzx eax,dx
@@ -340,6 +385,11 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.elseif eax==IDCANCEL
 				invoke	SendMessage,hWin,WM_CLOSE,NULL,NULL
 			.endif
+		.elseif edx==EN_KILLFOCUS
+			.if eax==IDC_EDTDEC
+				invoke GetDlgItemInt,hWin,IDC_EDTDEC,NULL,TRUE
+				mov		compass.declin,eax
+			.endif
 		.endif
 	.elseif	eax==WM_TIMER
 		invoke KillTimer,hWin,1000
@@ -348,7 +398,7 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		;Write 4  bytes to STM32F100 ram
 		invoke STLinkWrite,hWin,20000000h,offset compass,4
 		.if eax && eax!=IDIGNORE && eax!=IDABORT
-			invoke Sleep,50
+			invoke Sleep,10
 			.while TRUE
 				;Read 12 bytes from STM32F100 ram and store it in compass.
 				invoke STLinkRead,hWin,20000000h,offset compass,12
@@ -423,8 +473,13 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 								neg		compass.ideg
 								add		compass.ideg,180
 							.endif
-							.if compass.ideg>=360
+							;Magnetic declination
+							mov		eax,compass.declin
+							add		compass.ideg,eax
+							.if sdword ptr compass.ideg>=360
 								sub		compass.ideg,360
+							.elseif sdword ptr compass.ideg<0
+								add		compass.ideg,360
 							.endif
 							invoke SetDlgItemInt,hWin,IDC_STC4,compass.ideg,TRUE
 						.elseif mode==MODE_COMPENSATE

@@ -37,6 +37,7 @@ IDC_BTNCOMP						equ 107
 IDC_BTNCALIBRATE				equ 108
 IDC_EDTRESULT					equ 109
 IDC_BTNSAVE						equ 110
+IDC_EDTDEC						equ 111
 
 MODE_NORMAL						equ 1	; Normal operation
 MODE_COMPENSATE					equ 2	; Get temprature compensation
@@ -62,6 +63,7 @@ COMPASS struct
 	ymin	DWORD ?
 	ymax	DWORD ?
 	yscale	DWORD ?
+	declin	DWORD ?
 COMPASS ends
 
 COMPENSATION struct
