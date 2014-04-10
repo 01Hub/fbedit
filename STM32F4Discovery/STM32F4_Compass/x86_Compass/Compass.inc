@@ -41,11 +41,24 @@ IDC_EDTDEC						equ 111
 IDC_STC5						equ 112
 IDC_STC6						equ 113
 IDC_STC7						equ 114
+IDC_RBN1						equ 115
+IDC_RBN2						equ 116
+IDC_RBN3						equ 117
+IDC_RBN4						equ 118
+IDC_BTNMINMAXX					equ 119
+IDC_BTNMINMAXY					equ 120
+IDC_BTNMINMAXZ					equ 121
+IDC_CHKTILT						equ 122
+IDC_STCMAGMINMAX				equ 123
+IDC_STCACLMINMAX				equ 124
 
 MODE_NORMAL						equ 1	; Normal operation
-MODE_COMPENSATE					equ 2	; Get temprature compensation
-MODE_CALIBRATE					equ 3	; Get calibration
-MODE_COMPENSATEOFF				equ 4	; End temprature compensation
+MODE_COMPENSATE					equ 2	; Get compass temprature compensation
+MODE_CALIBRATE					equ 3	; Get compass calibration
+MODE_COMPENSATEOFF				equ 4	; End compass temprature compensation
+MODE_MINMAXX					equ 9
+MODE_MINMAXY					equ 17
+MODE_MINMAXZ					equ 33
 
 STM32_ADDRESS					equ 20000028h
 
@@ -57,19 +70,36 @@ COMPASS struct
 	buffer	BYTE 6 dup(?)
 	delay	WORD ?
 	ideg	DWORD ?
+
 	tcxrt	DWORD ?
 	tcyrt	DWORD ?
 	tczrt	DWORD ?
 	tcxct	DWORD ?
 	tcyct	DWORD ?
 	tczct	DWORD ?
-	xmin	DWORD ?
-	xmax	DWORD ?
+
+	mminx	DWORD ?
+	mmaxx	DWORD ?
 	xscale	DWORD ?
-	ymin	DWORD ?
-	ymax	DWORD ?
+	mminy	DWORD ?
+	mmaxy	DWORD ?
 	yscale	DWORD ?
+	mminz	DWORD ?
+	mmaxz	DWORD ?
+	zscale	DWORD ?
+
 	declin	DWORD ?
+	ftilt	DWORD ?
+	aminx	DWORD ?
+	amaxx	DWORD ?
+	aminy	DWORD ?
+	amaxy	DWORD ?
+	aminz	DWORD ?
+	amaxz	DWORD ?
+	pitch	REAL8 ?
+	roll	REAL8 ?
+	ipitch	DWORD ?
+	iroll	DWORD ?
 COMPASS ends
 
 COMPENSATION struct
@@ -107,8 +137,17 @@ szFmtCompensate					BYTE 'Temprature compensation:',0Dh,0Ah
 								BYTE 'Y = %d',0Dh,0Ah
 								BYTE 'Z = %d',0Dh,0Ah,0
 szFmpCalibrate					BYTE 'Offset calibration',0Dh,0Ah
-								BYTE 'X-Min %d, X-Max %d, Scale %d',0Dh,0Ah
-								BYTE 'Y-Min %d, Y-Max %d, Scale %d',0Dh,0Ah,0
+								BYTE 'mX-Min %d, mX-Max %d, mScale %d',0Dh,0Ah
+								BYTE 'mY-Min %d, mY-Max %d, mScale %d',0Dh,0Ah,0
+
+szFmtaXCalibrate				BYTE 'Accelerometer calibration',0Dh,0Ah
+								BYTE 'aX-Min %d, aX-Max %d',0Dh,0Ah,0
+szFmtaYCalibrate				BYTE 'Accelerometer calibration',0Dh,0Ah
+								BYTE 'aY-Min %d, aY-Max %d',0Dh,0Ah,0
+szFmtaZCalibrate				BYTE 'Accelerometer calibration',0Dh,0Ah
+								BYTE 'aZ-Min %d, aZ-Max %d',0Dh,0Ah,0
+
+szFmtMinMax						BYTE '%d / %d',0
 
 rad2deg							REAL8 57.29577951308232088
 deg2rad							REAL8 0.017453292519943334
@@ -132,5 +171,6 @@ calinx							DWORD ?
 calibration						CALIBRATION 1024 dup(<>)
 countdown						DWORD ?
 IniFile							BYTE MAX_PATH dup(?)
+ShowMode						DWORD ?
 
 ;#########################################################################

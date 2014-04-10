@@ -42,5 +42,44 @@
 	4. GND
 	5. +5V
 
+	Heading = (180 * (atan2(-1 * y, x) / pi) + 180
+
+	STM32F4 Discovery Accelerometer LIS302DL
+	---------------------------------------------------------
+
+	 ------------------------
+	|                         |
+	|   o                     |
+	|             X           |
+	|             |           |
+	|             |           |
+	|             |           |
+	|             |           |
+	|     Y ------o           |
+	|              Z          |
+	|                         |
+	|                         |
+	|                         |
+	|                         |
+	|                         |
+	|                         |
+	|                         |
+	|                         |
+	 ------------------------
+
+	Pitch (O-) = arctan(Ax / sqrt(Ay^2+Az^2))
+	Roll (O|)  = arctan(Ay / sqrt(Ax^2+Az^2))
+
+	From :
+	http://diy.powet.eu/2011/03/19/tilt-compensation-azimuth-pitch-le-roll/?lang=en
+
+	Horizontal vector :
+	xh = x*cos(theta) + y*sin(phi) - z*cos(theta)*sin(theta)
+
+	Vertical vector :
+	yh = y*cos(phi) + z*sin(phi)
+
+	Heading :
+	arctan(-yh / xh)
+
 KetilO
- 
