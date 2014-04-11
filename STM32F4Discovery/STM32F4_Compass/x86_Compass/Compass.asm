@@ -489,7 +489,7 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 invoke KillTimer,hWin,1000
 ;invoke	DialogBoxParam,hInstance,IDD_DLGACCEL,NULL,addr AccelProc,NULL
 mov		mode,MODE_CALIBRATE
-invoke	DialogBoxParam,hInstance,IDD_DLGMAG,NULL,addr AccelProc,NULL
+invoke	DialogBoxParam,hInstance,IDD_DLGMAG,NULL,addr MagnProc,NULL
 mov		mode,MODE_NORMAL
 invoke SetTimer,hWin,1000,100,NULL
 ;					mov		compass.tcxct,0
@@ -604,7 +604,7 @@ invoke SetTimer,hWin,1000,100,NULL
 		.if eax && eax!=IDIGNORE && eax!=IDABORT
 			invoke Sleep,10
 			.while TRUE
-				;Read 16 bytes from STM32F100 ram and store it in compass.
+				;Read 16 bytes from STM32F4 ram and store it in compass.
 				invoke STLinkRead,hWin,STM32_ADDRESS,offset compass,16
 				.if eax && eax!=IDIGNORE && eax!=IDABORT
 					.if !compass.flag

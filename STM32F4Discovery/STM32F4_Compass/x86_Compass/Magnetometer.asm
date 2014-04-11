@@ -5,14 +5,15 @@ IDC_STC13		equ 1105
 IDC_STC12		equ 1104
 IDC_STC11		equ 1103
 IDC_UDCMAGCAL	equ 1107
+IDC_STC14		equ 1101
 
 .code
 
-AccelProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+MagnProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	buffer[256]:BYTE
-	LOCAL	aclx:DWORD
-	LOCAL	acly:DWORD
-	LOCAL	aclz:DWORD
+	LOCAL	x:DWORD
+	LOCAL	y:DWORD
+	LOCAL	z:DWORD
 
 	mov		eax,uMsg
 	.if	eax==WM_INITDIALOG
@@ -42,7 +43,7 @@ AccelProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.if eax && eax!=IDIGNORE && eax!=IDABORT
 			.while TRUE
 				invoke Sleep,10
-				;Read 16 bytes from STM32F100 ram and store it in compass.
+				;Read 16 bytes from STM32F4 ram and store it in compass.
 				invoke STLinkRead,hWnd,STM32_ADDRESS,offset compass,16
 				.if eax && eax!=IDIGNORE && eax!=IDABORT
 					movsx	eax,compass.x
@@ -54,7 +55,56 @@ AccelProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					movsx	eax,compass.z
 					invoke wsprintf,addr buffer,addr szFmtAxis,offset magzAxis,eax
 					invoke SetDlgItemText,hWin,IDC_STC11,addr buffer
-					invoke SetTimer,hWin,1000,100,NULL
+
+					invoke SetDlgItemInt,hWin,IDC_STC14,countdown,FALSE
+					mov		ebx,calinx
+					.if ebx<1024
+						call	TempComp
+						mov		eax,x
+						mov		calibration.x[ebx*(2*WORD)],ax
+						mov		eax,y
+						mov		calibration.y[ebx*(2*WORD)],ax
+						inc		calinx
+					.endif
+					dec		countdown
+					.if ZERO?
+						;Get min and max x and y
+						mov		compass.mminx,2048
+						mov		compass.mmaxx,-2048
+						mov		compass.mminy,2048
+						mov		compass.mmaxy,-2048
+						xor		ebx,ebx
+						.while ebx<1024
+							movsx	eax,calibration.x[ebx*(2*WORD)]
+							.if sdword ptr eax<compass.mminx
+								mov		compass.mminx,eax
+							.endif
+							.if sdword ptr eax>compass.mmaxx
+								mov		compass.mmaxx,eax
+							.endif
+							movsx	eax,calibration.y[ebx*(2*WORD)]
+							.if sdword ptr eax<compass.mminy
+								mov		compass.mminy,eax
+							.endif
+							.if sdword ptr eax>compass.mmaxy
+								mov		compass.mmaxy,eax
+							.endif
+							inc		ebx
+						.endw
+						mov		eax,compass.mmaxx
+						sub		eax,compass.mminx
+						mov		compass.xscale,eax
+						mov		eax,compass.mmaxy
+						sub		eax,compass.mminy
+						mov		compass.yscale,eax
+						invoke wsprintf,addr buffer,addr szFmpCalibrate,compass.mminx,compass.mmaxx,compass.xscale,compass.mminy,compass.mmaxy,compass.yscale
+						invoke SetDlgItemText,hWin,IDC_EDTRESULT,addr buffer
+						invoke GetDlgItem,hWin,IDC_BTNSAVE
+						invoke EnableWindow,eax,TRUE
+						mov		mode,MODE_NORMAL
+					.else
+						invoke SetTimer,hWin,1000,100,NULL
+					.endif
 					.break
 				.else
 					mov		connected,FALSE
@@ -74,5 +124,33 @@ AccelProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	mov		eax,TRUE
 	ret
 
-AccelProc endp
+TempComp:
+	;Temprature compensation
+	movsx	eax,compass.x
+	cdq
+	mov		ecx,compass.tcxrt
+	imul	ecx
+	cdq
+	mov		ecx,compass.tcxct
+	idiv	ecx
+	mov		x,eax
+	movsx	eax,compass.y
+	cdq
+	mov		ecx,compass.tcyrt
+	imul	ecx
+	cdq
+	mov		ecx,compass.tcyct
+	idiv	ecx
+	mov		y,eax
+	movsx	eax,compass.z
+	cdq
+	mov		ecx,compass.tczrt
+	imul	ecx
+	cdq
+	mov		ecx,compass.tczct
+	idiv	ecx
+	mov		z,eax
+	retn
+
+MagnProc endp
 

@@ -8,7 +8,7 @@ IDC_STC8		equ 1001
 
 .code
 
-MagnProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+AccelProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	buffer[256]:BYTE
 	LOCAL	aclx:DWORD
 	LOCAL	acly:DWORD
@@ -39,7 +39,7 @@ MagnProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.if eax && eax!=IDIGNORE && eax!=IDABORT
 			.while TRUE
 				invoke Sleep,10
-				;Read 16 bytes from STM32F100 ram and store it in compass.
+				;Read 16 bytes from STM32F4 ram and store it in compass.
 				invoke STLinkRead,hWnd,STM32_ADDRESS,offset compass,16
 				.if eax && eax!=IDIGNORE && eax!=IDABORT
 					movsx	eax,compass.buffer[0]
@@ -71,5 +71,5 @@ MagnProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	mov		eax,TRUE
 	ret
 
-MagnProc endp
+AccelProc endp
 
