@@ -1,10 +1,25 @@
 
-IDD_DLGACCEL	equ 1000
-IDC_BTNACLXY	equ 1004
-IDC_BTNACLZ		equ 1005
-IDC_STC10		equ 1003
-IDC_STC9		equ 1002
-IDC_STC8		equ 1001
+IDD_DLGACCEL		equ 1000
+IDC_BTNACLMIN		equ 1004
+IDC_BTNACLMAX		equ 1005
+IDC_BTNACLUPDATE	equ 1009
+IDC_STC10			equ 1003
+IDC_STC9			equ 1002
+IDC_STC8			equ 1001
+
+IDC_RBNACLX			equ 1006
+IDC_RBNACLY			equ 1007
+IDC_RBNACLZ			equ 1008
+
+.data?
+
+aclsel				DWORD ?
+aclxmin				DWORD ?
+aclxmax				DWORD ?
+aclymin				DWORD ?
+aclymax				DWORD ?
+aclzmin				DWORD ?
+aclzmax				DWORD ?
 
 .code
 
@@ -19,6 +34,8 @@ AccelProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SendDlgItemMessage,hWin,IDC_STC10,WM_SETFONT,hFont,FALSE
 		invoke SendDlgItemMessage,hWin,IDC_STC9,WM_SETFONT,hFont,FALSE
 		invoke SendDlgItemMessage,hWin,IDC_STC8,WM_SETFONT,hFont,FALSE
+		invoke CheckDlgButton,hWin,IDC_RBNACLX,BST_CHECKED
+		mov		aclsel,0
 		;Create a timer. The event will read the accelerometer axis
 		invoke SetTimer,hWin,1000,100,NULL
 	.elseif	eax==WM_COMMAND
@@ -26,10 +43,67 @@ AccelProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		movzx	eax,dx
 		shr		edx,16
 		.if edx==BN_CLICKED
-			.if eax==IDC_BTNACLXY
-			.elseif eax==IDC_BTNACLZ
+			.if eax==IDC_BTNACLMIN
+				mov		ecx,aclsel
+				.if ecx==0
+					movsx	eax,compass.buffer[0]
+					mov		aclxmin,eax
+				.elseif	ecx==1
+					movsx	eax,compass.buffer[2]
+					mov		aclymin,eax
+				.elseif ecx==2
+					movsx	eax,compass.buffer[4]
+					mov		aclzmin,eax
+				.endif
+			.elseif eax==IDC_BTNACLMAX
+				mov		ecx,aclsel
+				.if ecx==0
+					movsx	eax,compass.buffer[0]
+					mov		aclxmax,eax
+				.elseif	ecx==1
+					movsx	eax,compass.buffer[2]
+					mov		aclymax,eax
+				.elseif ecx==2
+					movsx	eax,compass.buffer[4]
+					mov		aclzmax,eax
+				.endif
+			.elseif eax==IDC_BTNACLUPDATE
+				;Get axis offset
+				mov		eax,aclxmax
+				add		eax,aclxmin
+				sar		eax,1
+				mov		compass.aclxofs,eax
+				mov		eax,aclymax
+				add		eax,aclymin
+				sar		eax,1
+				mov		compass.aclyofs,eax
+				mov		eax,aclzmax
+				add		eax,aclzmin
+				sar		eax,1
+				mov		compass.aclzofs,eax
+				;Get axis scale
+				mov		eax,aclxmax
+				sub		eax,aclxmin
+				mov		compass.aclxscale,eax
+				mov		eax,aclymax
+				sub		eax,aclymin
+				mov		compass.aclyscale,eax
+				mov		eax,aclzmax
+				sub		eax,aclzmin
+				mov		compass.aclzscale,eax
+				invoke GetDlgItem,hWnd,IDC_BTNSAVE
+				invoke EnableWindow,eax,TRUE
+PrintDec aclxmin
+PrintDec aclxmax
+PrintDec aclymin
+PrintDec aclymax
+PrintDec aclzmin
+PrintDec aclzmax
 			.elseif eax==IDCANCEL
 				invoke	SendMessage,hWin,WM_CLOSE,NULL,NULL
+			.elseif eax>=IDC_RBNACLX && eax<=IDC_RBNACLZ
+				sub		eax,IDC_RBNACLX
+				mov		aclsel,eax
 			.endif
 		.endif
 	.elseif	eax==WM_TIMER

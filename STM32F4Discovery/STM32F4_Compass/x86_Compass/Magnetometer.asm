@@ -1,11 +1,23 @@
 
-IDD_DLGMAG		equ 1100
-IDC_BTNMAGXY	equ 1102
-IDC_STC13		equ 1105
-IDC_STC12		equ 1104
-IDC_STC11		equ 1103
-IDC_UDCMAGCAL	equ 1107
-IDC_STC14		equ 1101
+IDD_DLGMAG			equ 1100
+IDC_BTNMAGXY		equ 1102
+IDC_STC13			equ 1105
+IDC_STC12			equ 1104
+IDC_STC11			equ 1103
+IDC_UDCMAGCAL		equ 1107
+IDC_STC14			equ 1101
+IDC_BTNMAGZMIN		equ 1106
+IDC_BTNMAGZMAX		equ 1108
+IDC_BTNMAGUPDATE	equ 1109
+
+.data?
+
+magxmin				DWORD ?
+magxmax				DWORD ?
+magymin				DWORD ?
+magymax				DWORD ?
+magzmin				DWORD ?
+magzmax				DWORD ?
 
 .code
 
@@ -14,25 +26,103 @@ MagnProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	x:DWORD
 	LOCAL	y:DWORD
 	LOCAL	z:DWORD
+	LOCAL	rect:RECT
 
 	mov		eax,uMsg
 	.if	eax==WM_INITDIALOG
 		invoke SendDlgItemMessage,hWin,IDC_STC13,WM_SETFONT,hFont,FALSE
 		invoke SendDlgItemMessage,hWin,IDC_STC12,WM_SETFONT,hFont,FALSE
 		invoke SendDlgItemMessage,hWin,IDC_STC11,WM_SETFONT,hFont,FALSE
-		mov		calinx,0
-		mov		countdown,1024+40
+		invoke SendDlgItemMessage,hWin,IDC_STC14,WM_SETFONT,hFont,FALSE
+		invoke GetDlgItem,hWin,IDC_UDCMAGCAL
+		mov		ebx,eax
+		invoke GetClientRect,ebx,addr rect
+		invoke SetWindowPos,ebx,NULL,0,0,rect.right,rect.right,SWP_NOMOVE or SWP_NOZORDER
+		xor		eax,eax
+		mov		calinx,eax
+		mov		magxmin,eax
+		mov		magxmax,eax
+		mov		magymin,eax
+		mov		magymax,eax
+		mov		magzmin,eax
+		mov		magzmax,eax
+		mov		countdown,1024
 		mov		mode,MODE_CALIBRATE
-		;Create a timer. The event will read the accelerometer axis
+		;Create a timer. The event will read the magnetometer axis
 		invoke SetTimer,hWin,1000,100,NULL
 	.elseif	eax==WM_COMMAND
 		mov		edx,wParam
 		movzx	eax,dx
 		shr		edx,16
 		.if edx==BN_CLICKED
-			.if eax==IDC_BTNACLXY
-			.elseif eax==IDC_BTNACLZ
+			.if eax==IDC_BTNMAGXY
+				;Get min and max x and y
+				mov		magxmin,2048
+				mov		magxmax,-2048
+				mov		magymin,2048
+				mov		magymax,-2048
+				xor		ebx,ebx
+				.while ebx<1024
+					movsx	eax,calibration.x[ebx*(2*WORD)]
+					.if sdword ptr eax<magxmin
+						mov		magxmin,eax
+					.endif
+					.if sdword ptr eax>magxmax
+						mov		magxmax,eax
+					.endif
+					movsx	eax,calibration.y[ebx*(2*WORD)]
+					.if sdword ptr eax<magymin
+						mov		magymin,eax
+					.endif
+					.if sdword ptr eax>magymax
+						mov		magymax,eax
+					.endif
+					inc		ebx
+				.endw
+			.elseif eax==IDC_BTNMAGZMIN
+				movsx	eax,compass.z
+				mov		magzmin,eax
+			.elseif eax==IDC_BTNMAGZMAX
+				movsx	eax,compass.z
+				mov		magzmax,eax
+			.elseif eax==IDC_BTNMAGUPDATE
+				;Get axis offset
+				mov		eax,magxmax
+				add		eax,magxmin
+				sar		eax,1
+				mov		compass.magxofs,eax
+				mov		eax,magymax
+				add		eax,magymin
+				sar		eax,1
+				mov		compass.magyofs,eax
+				mov		eax,magzmax
+				.if eax
+					add		eax,magzmin
+					sar		eax,1
+					mov		compass.magzofs,eax
+				.endif
+				;Get axis scale
+				mov		eax,magxmax
+				sub		eax,magxmin
+				mov		compass.magxscale,eax
+				mov		eax,magymax
+				sub		eax,magymin
+				mov		compass.magyscale,eax
+				mov		eax,magzmax
+				.if eax
+					sub		eax,magzmin
+					mov		compass.magzscale,eax
+				.endif
+				invoke GetDlgItem,hWnd,IDC_BTNSAVE
+				invoke EnableWindow,eax,TRUE
+PrintDec magxmin
+PrintDec magxmax
+PrintDec magymin
+PrintDec magymax
+PrintDec magzmin
+PrintDec magzmax
 			.elseif eax==IDCANCEL
+				mov		mode,MODE_NORMAL
 				invoke	SendMessage,hWin,WM_CLOSE,NULL,NULL
 			.endif
 		.endif
@@ -55,8 +145,6 @@ MagnProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					movsx	eax,compass.z
 					invoke wsprintf,addr buffer,addr szFmtAxis,offset magzAxis,eax
 					invoke SetDlgItemText,hWin,IDC_STC11,addr buffer
-
-					invoke SetDlgItemInt,hWin,IDC_STC14,countdown,FALSE
 					mov		ebx,calinx
 					.if ebx<1024
 						call	TempComp
@@ -65,46 +153,12 @@ MagnProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						mov		eax,y
 						mov		calibration.y[ebx*(2*WORD)],ax
 						inc		calinx
+						invoke GetDlgItem,hWin,IDC_UDCMAGCAL
+						invoke InvalidateRect,eax,NULL,TRUE
+						dec		countdown
+						invoke SetDlgItemInt,hWin,IDC_STC14,countdown,FALSE
 					.endif
-					dec		countdown
-					.if ZERO?
-						;Get min and max x and y
-						mov		compass.mminx,2048
-						mov		compass.mmaxx,-2048
-						mov		compass.mminy,2048
-						mov		compass.mmaxy,-2048
-						xor		ebx,ebx
-						.while ebx<1024
-							movsx	eax,calibration.x[ebx*(2*WORD)]
-							.if sdword ptr eax<compass.mminx
-								mov		compass.mminx,eax
-							.endif
-							.if sdword ptr eax>compass.mmaxx
-								mov		compass.mmaxx,eax
-							.endif
-							movsx	eax,calibration.y[ebx*(2*WORD)]
-							.if sdword ptr eax<compass.mminy
-								mov		compass.mminy,eax
-							.endif
-							.if sdword ptr eax>compass.mmaxy
-								mov		compass.mmaxy,eax
-							.endif
-							inc		ebx
-						.endw
-						mov		eax,compass.mmaxx
-						sub		eax,compass.mminx
-						mov		compass.xscale,eax
-						mov		eax,compass.mmaxy
-						sub		eax,compass.mminy
-						mov		compass.yscale,eax
-						invoke wsprintf,addr buffer,addr szFmpCalibrate,compass.mminx,compass.mmaxx,compass.xscale,compass.mminy,compass.mmaxy,compass.yscale
-						invoke SetDlgItemText,hWin,IDC_EDTRESULT,addr buffer
-						invoke GetDlgItem,hWin,IDC_BTNSAVE
-						invoke EnableWindow,eax,TRUE
-						mov		mode,MODE_NORMAL
-					.else
-						invoke SetTimer,hWin,1000,100,NULL
-					.endif
+					invoke SetTimer,hWin,1000,100,NULL
 					.break
 				.else
 					mov		connected,FALSE

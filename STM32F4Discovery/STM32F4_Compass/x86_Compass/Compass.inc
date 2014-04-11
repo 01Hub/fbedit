@@ -34,7 +34,7 @@ IDC_STC3						equ 104
 IDC_STC4						equ 106
 IDC_UDCCOMPASS					equ 105
 IDC_BTNCOMP						equ 107
-IDC_BTNCALIBRATE				equ 108
+IDC_BTNCALACL					equ 108
 IDC_EDTRESULT					equ 109
 IDC_BTNSAVE						equ 110
 IDC_EDTDEC						equ 111
@@ -45,61 +45,53 @@ IDC_RBN1						equ 115
 IDC_RBN2						equ 116
 IDC_RBN3						equ 117
 IDC_RBN4						equ 118
-IDC_BTNMINMAXX					equ 119
-IDC_BTNMINMAXY					equ 120
-IDC_BTNMINMAXZ					equ 121
+IDC_BTNMAGACL					equ 119
 IDC_CHKTILT						equ 122
-IDC_STCMAGMINMAX				equ 123
-IDC_STCACLMINMAX				equ 124
 
 MODE_NORMAL						equ 1	; Normal operation
 MODE_COMPENSATE					equ 2	; Get compass temprature compensation
 MODE_CALIBRATE					equ 3	; Get compass calibration
 MODE_COMPENSATEOFF				equ 4	; End compass temprature compensation
-MODE_MINMAXX					equ 9
-MODE_MINMAXY					equ 17
-MODE_MINMAXZ					equ 33
 
 STM32_ADDRESS					equ 20000028h
 
 COMPASS struct
-	flag	WORD ?
-	x		WORD ?
-	y		WORD ?
-	z		WORD ?
-	buffer	BYTE 6 dup(?)
-	delay	WORD ?
-	ideg	DWORD ?
+	flag		WORD ?
+	x			WORD ?
+	y			WORD ?
+	z			WORD ?
+	buffer		BYTE 6 dup(?)
+	delay		WORD ?
+	ideg		DWORD ?
 
-	tcxrt	DWORD ?
-	tcyrt	DWORD ?
-	tczrt	DWORD ?
-	tcxct	DWORD ?
-	tcyct	DWORD ?
-	tczct	DWORD ?
+	tcxrt		DWORD ?
+	tcyrt		DWORD ?
+	tczrt		DWORD ?
+	tcxct		DWORD ?
+	tcyct		DWORD ?
+	tczct		DWORD ?
 
-	mminx	DWORD ?
-	mmaxx	DWORD ?
-	xscale	DWORD ?
-	mminy	DWORD ?
-	mmaxy	DWORD ?
-	yscale	DWORD ?
-	mminz	DWORD ?
-	mmaxz	DWORD ?
-	zscale	DWORD ?
+	declin		DWORD ?
+	ftilt		DWORD ?
 
-	declin	DWORD ?
-	ftilt	DWORD ?
-	aminx	DWORD ?
-	amaxx	DWORD ?
-	aminy	DWORD ?
-	amaxy	DWORD ?
-	aminz	DWORD ?
-	amaxz	DWORD ?
-	pitch	REAL8 ?
-	roll	REAL8 ?
-	ipitch	DWORD ?
-	iroll	DWORD ?
+	magxofs		DWORD ?
+	magxscale	DWORD ?
+	magyofs		DWORD ?
+	magyscale	DWORD ?
+	magzofs		DWORD ?
+	magzscale	DWORD ?
+
+	aclxofs		DWORD ?
+	aclxscale	DWORD ?
+	aclyofs		DWORD ?
+	aclyscale	DWORD ?
+	aclzofs		DWORD ?
+	aclzscale	DWORD ?
+
+	pitch		REAL8 ?
+	roll		REAL8 ?
+	ipitch		DWORD ?
+	iroll		DWORD ?
 COMPASS ends
 
 COMPENSATION struct

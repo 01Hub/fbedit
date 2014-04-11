@@ -104,38 +104,33 @@ ReadFromIni proc
 	mov		compass.tczct,eax
 	;Compass Offset compensation
 	invoke GetItemInt,addr buffer,-254
-	mov		compass.mminx,eax
-	invoke GetItemInt,addr buffer,93
-	mov		compass.mmaxx,eax
+	mov		compass.magxofs,eax
 	invoke GetItemInt,addr buffer,347
-	mov		compass.xscale,eax
+	mov		compass.magxscale,eax
 	invoke GetItemInt,addr buffer,-373
-	mov		compass.mminy,eax
+	mov		compass.magyofs,eax
+	invoke GetItemInt,addr buffer,353
+	mov		compass.magyscale,eax
 	invoke GetItemInt,addr buffer,-20
-	mov		compass.mmaxy,eax
+	mov		compass.magzofs,eax
 	invoke GetItemInt,addr buffer,353
-	mov		compass.yscale,eax
-	invoke GetItemInt,addr buffer,-20
-	mov		compass.mminz,eax
-	invoke GetItemInt,addr buffer,353
-	mov		compass.mmaxz,eax
-	invoke GetItemInt,addr buffer,353
-	mov		compass.zscale,eax
+	mov		compass.magzscale,eax
+	;Magnetic declination
 	invoke GetItemInt,addr buffer,0
 	mov		compass.declin,eax
 	;Accelerometer min / max
 	invoke GetItemInt,addr buffer,-56
-	mov		compass.aminx,eax
+	mov		compass.aclxofs,eax
 	invoke GetItemInt,addr buffer,56
-	mov		compass.amaxx,eax
+	mov		compass.aclxscale,eax
 	invoke GetItemInt,addr buffer,-56
-	mov		compass.aminy,eax
+	mov		compass.aclyofs,eax
 	invoke GetItemInt,addr buffer,56
-	mov		compass.amaxy,eax
+	mov		compass.aclyscale,eax
 	invoke GetItemInt,addr buffer,-56
-	mov		compass.aminz,eax
+	mov		compass.aclzofs,eax
 	invoke GetItemInt,addr buffer,56
-	mov		compass.amaxz,eax
+	mov		compass.aclzscale,eax
 	ret
 
 ReadFromIni endp
@@ -143,38 +138,26 @@ ReadFromIni endp
 WriteToIni proc
 	LOCAL	buffer[256]:BYTE
 
-	mov		eax,compass.mmaxx
-	sub		eax,compass.mminx
-	mov		compass.xscale,eax
-	mov		eax,compass.mmaxy
-	sub		eax,compass.mminy
-	mov		compass.yscale,eax
-	mov		eax,compass.mmaxz
-	sub		eax,compass.mminz
-	mov		compass.zscale,eax
 	mov		buffer,0
-	;Compass Temprature compensation
+	;Magnetometer Temprature compensation
 	invoke PutItemInt,addr buffer,compass.tcxrt
 	invoke PutItemInt,addr buffer,compass.tcyrt
 	invoke PutItemInt,addr buffer,compass.tczrt
-	;Compass Offset compensation
-	invoke PutItemInt,addr buffer,compass.mminx
-	invoke PutItemInt,addr buffer,compass.mmaxx
-	invoke PutItemInt,addr buffer,compass.xscale
-	invoke PutItemInt,addr buffer,compass.mminy
-	invoke PutItemInt,addr buffer,compass.mmaxy
-	invoke PutItemInt,addr buffer,compass.yscale
-	invoke PutItemInt,addr buffer,compass.mminz
-	invoke PutItemInt,addr buffer,compass.mmaxz
-	invoke PutItemInt,addr buffer,compass.zscale
+	;Magnetometer Offset and Scale compensation
+	invoke PutItemInt,addr buffer,compass.magxofs
+	invoke PutItemInt,addr buffer,compass.magxscale
+	invoke PutItemInt,addr buffer,compass.magyofs
+	invoke PutItemInt,addr buffer,compass.magyscale
+	invoke PutItemInt,addr buffer,compass.magzofs
+	invoke PutItemInt,addr buffer,compass.magzscale
 	invoke PutItemInt,addr buffer,compass.declin
-	;Accelerometer min / max
-	invoke PutItemInt,addr buffer,compass.aminx
-	invoke PutItemInt,addr buffer,compass.amaxx
-	invoke PutItemInt,addr buffer,compass.aminy
-	invoke PutItemInt,addr buffer,compass.amaxy
-	invoke PutItemInt,addr buffer,compass.aminz
-	invoke PutItemInt,addr buffer,compass.amaxz
+	;Accelerometer Offset and Scale compensation
+	invoke PutItemInt,addr buffer,compass.aclxofs
+	invoke PutItemInt,addr buffer,compass.aclxscale
+	invoke PutItemInt,addr buffer,compass.aclyofs
+	invoke PutItemInt,addr buffer,compass.aclyscale
+	invoke PutItemInt,addr buffer,compass.aclzofs
+	invoke PutItemInt,addr buffer,compass.aclzscale
 	invoke WritePrivateProfileString,offset szIniCompass,offset szIniCompass,addr buffer[1],offset IniFile
 	ret
 
@@ -338,25 +321,29 @@ CompassProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 			pop		eax
 			invoke SelectObject,mDC,eax
 			invoke DeleteObject,eax
+			call	DrawPitch
+			call	DrawRoll
 		.elseif mode==MODE_CALIBRATE
 			xor		ebx,ebx
 			.while ebx<calinx
 				movsx	eax,calibration.x[ebx*(2*WORD)]
+				neg		eax
 				cdq
-				mov		ecx,5
+				mov		ecx,2
 				idiv	ecx
 				add		eax,ptcenter.x
 				mov		esi,eax
 				movsx	eax,calibration.y[ebx*(2*WORD)]
+				neg		eax
 				cdq
-				mov		ecx,5
+				mov		ecx,2
 				idiv	ecx
 				add		eax,ptcenter.y
 				mov		edi,eax
 				invoke SetPixel,mDC,esi,edi,0FF0000h
 				inc		ebx
 			.endw
-		.elseif mode==MODE_MINMAXX || ShowMode==1
+		.elseif ShowMode==1
 			invoke CreatePen,PS_SOLID,5,0FF0000h
 			invoke SelectObject,mDC,eax
 			push	eax
@@ -374,7 +361,7 @@ CompassProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 			pop		eax
 			invoke SelectObject,mDC,eax
 			invoke DeleteObject,eax
-		.elseif mode==MODE_MINMAXY || ShowMode==2
+		.elseif ShowMode==2
 			invoke CreatePen,PS_SOLID,5,0000FFh
 			invoke SelectObject,mDC,eax
 			push	eax
@@ -392,7 +379,7 @@ CompassProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 			pop		eax
 			invoke SelectObject,mDC,eax
 			invoke DeleteObject,eax
-		.elseif mode==MODE_MINMAXZ || ShowMode==3
+		.elseif ShowMode==3
 			invoke CreatePen,PS_SOLID,5,0FF0000h
 			invoke SelectObject,mDC,eax
 			push	eax
@@ -433,6 +420,46 @@ CompassProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 		invoke DefWindowProc,hWin,uMsg,wParam,lParam
 	.endif
 	ret
+
+DrawPitch:
+	invoke CreatePen,PS_SOLID,5,0FF0000h
+	invoke SelectObject,mDC,eax
+	push	eax
+
+	mov		edx,compass.ipitch
+	sub		edx,90
+	invoke GetPointOnCircle,radius,edx,addr pt
+	mov		eax,ptcenter.x
+	add		pt.x,eax
+	mov		eax,ptcenter.y
+	add		pt.y,eax
+	invoke MoveToEx,mDC,ptcenter.x,ptcenter.y,NULL
+	invoke LineTo,mDC,pt.x,pt.y
+
+	pop		eax
+	invoke SelectObject,mDC,eax
+	invoke DeleteObject,eax
+	retn
+
+DrawRoll:
+	invoke CreatePen,PS_SOLID,5,0000FFh
+	invoke SelectObject,mDC,eax
+	push	eax
+
+	mov		edx,compass.iroll
+	sub		edx,90
+	invoke GetPointOnCircle,radius,edx,addr pt
+	mov		eax,ptcenter.x
+	add		pt.x,eax
+	mov		eax,ptcenter.y
+	add		pt.y,eax
+	invoke MoveToEx,mDC,ptcenter.x,ptcenter.y,NULL
+	invoke LineTo,mDC,pt.x,pt.y
+
+	pop		eax
+	invoke SelectObject,mDC,eax
+	invoke DeleteObject,eax
+	retn
 
 CompassProc endp
 
@@ -486,23 +513,25 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.endif
 			.elseif eax==IDC_BTNCOMP
 				.if connected && mode==MODE_NORMAL
-invoke KillTimer,hWin,1000
-;invoke	DialogBoxParam,hInstance,IDD_DLGACCEL,NULL,addr AccelProc,NULL
-mov		mode,MODE_CALIBRATE
-invoke	DialogBoxParam,hInstance,IDD_DLGMAG,NULL,addr MagnProc,NULL
-mov		mode,MODE_NORMAL
-invoke SetTimer,hWin,1000,100,NULL
-;					mov		compass.tcxct,0
-;					mov		compass.tcyct,0
-;					mov		compass.tczct,0
-;					mov		countdown,32+4
-;					mov		mode,MODE_COMPENSATE
+					mov		compass.tcxct,0
+					mov		compass.tcyct,0
+					mov		compass.tczct,0
+					mov		countdown,32+4
+					mov		mode,MODE_COMPENSATE
 				.endif
-			.elseif eax==IDC_BTNCALIBRATE
+			.elseif eax==IDC_BTNCALACL
 				.if connected && mode==MODE_NORMAL
-					mov		calinx,0
-					mov		countdown,1024+40
+					invoke KillTimer,hWin,1000
+					invoke	DialogBoxParam,hInstance,IDD_DLGACCEL,NULL,addr AccelProc,NULL
+					invoke SetTimer,hWin,1000,100,NULL
+				.endif
+			.elseif eax==IDC_BTNMAGACL
+				.if connected && mode==MODE_NORMAL
+					invoke KillTimer,hWin,1000
 					mov		mode,MODE_CALIBRATE
+					invoke	DialogBoxParam,hInstance,IDD_DLGMAG,NULL,addr MagnProc,NULL
+					mov		mode,MODE_NORMAL
+					invoke SetTimer,hWin,1000,100,NULL
 				.endif
 			.elseif eax==IDC_BTNSAVE
 				invoke WriteToIni
@@ -511,78 +540,6 @@ invoke SetTimer,hWin,1000,100,NULL
 			.elseif eax>=IDC_RBN1 && eax<=IDC_RBN4
 				sub		eax,IDC_RBN1
 				mov		ShowMode,eax
-			.elseif eax==IDC_BTNMINMAXX
-				.if mode!=MODE_MINMAXX
-					invoke CheckDlgButton,hWin,IDC_RBN2,BST_CHECKED
-					invoke CheckDlgButton,hWin,IDC_RBN1,BST_UNCHECKED
-					invoke CheckDlgButton,hWin,IDC_RBN3,BST_UNCHECKED
-					invoke CheckDlgButton,hWin,IDC_RBN4,BST_UNCHECKED
-					mov		ShowMode,1
-					mov		mode,MODE_MINMAXX
-					mov		compass.mminx,2048
-					mov		compass.mmaxx,-2048
-					mov		compass.aminx,2048
-					mov		compass.amaxx,-2048
-				.else
-					invoke CheckDlgButton,hWin,IDC_RBN1,BST_CHECKED
-					invoke CheckDlgButton,hWin,IDC_RBN2,BST_UNCHECKED
-					invoke CheckDlgButton,hWin,IDC_RBN3,BST_UNCHECKED
-					invoke CheckDlgButton,hWin,IDC_RBN4,BST_UNCHECKED
-					mov		ShowMode,0
-					mov		mode,MODE_NORMAL
-					invoke wsprintf,addr buffer,addr szFmtaXCalibrate,compass.aminx,compass.amaxx
-					invoke SetDlgItemText,hWin,IDC_EDTRESULT,addr buffer
-					invoke GetDlgItem,hWin,IDC_BTNSAVE
-					invoke EnableWindow,eax,TRUE
-				.endif
-			.elseif eax==IDC_BTNMINMAXY
-				.if mode!=MODE_MINMAXY
-					invoke CheckDlgButton,hWin,IDC_RBN3,BST_CHECKED
-					invoke CheckDlgButton,hWin,IDC_RBN1,BST_UNCHECKED
-					invoke CheckDlgButton,hWin,IDC_RBN2,BST_UNCHECKED
-					invoke CheckDlgButton,hWin,IDC_RBN4,BST_UNCHECKED
-					mov		ShowMode,2
-					mov		mode,MODE_MINMAXY
-					mov		compass.mminy,2048
-					mov		compass.mmaxy,-2048
-					mov		compass.aminy,2048
-					mov		compass.amaxy,-2048
-				.else
-					invoke CheckDlgButton,hWin,IDC_RBN1,BST_CHECKED
-					invoke CheckDlgButton,hWin,IDC_RBN2,BST_UNCHECKED
-					invoke CheckDlgButton,hWin,IDC_RBN3,BST_UNCHECKED
-					invoke CheckDlgButton,hWin,IDC_RBN4,BST_UNCHECKED
-					mov		ShowMode,0
-					mov		mode,MODE_NORMAL
-					invoke wsprintf,addr buffer,addr szFmtaYCalibrate,compass.aminy,compass.amaxy
-					invoke SetDlgItemText,hWin,IDC_EDTRESULT,addr buffer
-					invoke GetDlgItem,hWin,IDC_BTNSAVE
-					invoke EnableWindow,eax,TRUE
-				.endif
-			.elseif eax==IDC_BTNMINMAXZ
-				.if mode!=MODE_MINMAXZ
-					invoke CheckDlgButton,hWin,IDC_RBN4,BST_CHECKED
-					invoke CheckDlgButton,hWin,IDC_RBN1,BST_UNCHECKED
-					invoke CheckDlgButton,hWin,IDC_RBN2,BST_UNCHECKED
-					invoke CheckDlgButton,hWin,IDC_RBN3,BST_UNCHECKED
-					mov		ShowMode,3
-					mov		mode,MODE_MINMAXZ
-					mov		compass.mminz,2048
-					mov		compass.mmaxz,-2048
-					mov		compass.aminz,2048
-					mov		compass.amaxz,-2048
-				.else
-					invoke CheckDlgButton,hWin,IDC_RBN1,BST_CHECKED
-					invoke CheckDlgButton,hWin,IDC_RBN2,BST_UNCHECKED
-					invoke CheckDlgButton,hWin,IDC_RBN3,BST_UNCHECKED
-					invoke CheckDlgButton,hWin,IDC_RBN4,BST_UNCHECKED
-					mov		ShowMode,0
-					mov		mode,MODE_NORMAL
-					invoke wsprintf,addr buffer,addr szFmtaZCalibrate,compass.aminz,compass.amaxz
-					invoke SetDlgItemText,hWin,IDC_EDTRESULT,addr buffer
-					invoke GetDlgItem,hWin,IDC_BTNSAVE
-					invoke EnableWindow,eax,TRUE
-				.endif
 			.elseif eax==IDC_CHKTILT
 				xor		compass.ftilt,1
 			.elseif eax==IDCANCEL
@@ -641,10 +598,10 @@ invoke SetTimer,hWin,1000,100,NULL
 							call	ReadAverage
 							;Temprature compensation
 							call	TempComp
-							;X / Y Scale compensation
-							call	ScaleComp
 							;Offset compensation
 							call	OffsetComp
+							;X / Y Scale compensation
+							call	ScaleComp
 							;Get accelerometer pitch and roll
 							call	GetPitchRoll
 							;Get heading
@@ -656,7 +613,7 @@ invoke SetTimer,hWin,1000,100,NULL
 							.if ZERO?
 								;Get temprature compensation for x, y and z
 								mov		compass.flag,MODE_COMPENSATEOFF
-								;Write 4  bytes to STM32F100 ram
+								;Write 4  bytes to STM32F4 ram
 								invoke STLinkWrite,hWin,STM32_ADDRESS,offset compass,4
 								.if eax && eax!=IDIGNORE && eax!=IDABORT
 									shr		compass.tcxct,5
@@ -679,114 +636,6 @@ invoke SetTimer,hWin,1000,100,NULL
 								movsx	eax,compass.z
 								add		compass.tczct,eax
 							.endif
-						.elseif mode==MODE_CALIBRATE
-							invoke SetDlgItemInt,hWin,IDC_STC4,countdown,FALSE
-							mov		ebx,calinx
-							.if ebx<1024
-								call	TempComp
-								mov		eax,x
-								mov		calibration.x[ebx*(2*WORD)],ax
-								mov		eax,y
-								mov		calibration.y[ebx*(2*WORD)],ax
-								inc		calinx
-							.endif
-							dec		countdown
-							.if ZERO?
-								;Get min and max x and y
-								mov		compass.mminx,2048
-								mov		compass.mmaxx,-2048
-								mov		compass.mminy,2048
-								mov		compass.mmaxy,-2048
-								xor		ebx,ebx
-								.while ebx<1024
-									movsx	eax,calibration.x[ebx*(2*WORD)]
-									.if sdword ptr eax<compass.mminx
-										mov		compass.mminx,eax
-									.endif
-									.if sdword ptr eax>compass.mmaxx
-										mov		compass.mmaxx,eax
-									.endif
-									movsx	eax,calibration.y[ebx*(2*WORD)]
-									.if sdword ptr eax<compass.mminy
-										mov		compass.mminy,eax
-									.endif
-									.if sdword ptr eax>compass.mmaxy
-										mov		compass.mmaxy,eax
-									.endif
-									inc		ebx
-								.endw
-								mov		eax,compass.mmaxx
-								sub		eax,compass.mminx
-								mov		compass.xscale,eax
-								mov		eax,compass.mmaxy
-								sub		eax,compass.mminy
-								mov		compass.yscale,eax
-								invoke wsprintf,addr buffer,addr szFmpCalibrate,compass.mminx,compass.mmaxx,compass.xscale,compass.mminy,compass.mmaxy,compass.yscale
-								invoke SetDlgItemText,hWin,IDC_EDTRESULT,addr buffer
-								invoke GetDlgItem,hWin,IDC_BTNSAVE
-								invoke EnableWindow,eax,TRUE
-								mov		mode,MODE_NORMAL
-							.endif
-						.elseif mode==MODE_MINMAXX
-							movsx	eax,compass.x
-							.if sdword ptr eax<compass.mminx
-								mov		compass.mminx,eax
-							.endif
-							.if sdword ptr eax>compass.mmaxx
-								mov		compass.mmaxx,eax
-							.endif
-							movsx	eax,compass.buffer[0]
-							.if sdword ptr eax<compass.aminx
-								mov		compass.aminx,eax
-							.endif
-							.if sdword ptr eax>compass.amaxx
-								mov		compass.amaxx,eax
-							.endif
-							call	GetPitchRoll
-							invoke wsprintf,addr buffer,offset szFmtMinMax,compass.mminx,compass.mmaxx
-							invoke SetDlgItemText,hWin,IDC_STCMAGMINMAX,addr buffer
-							invoke wsprintf,addr buffer,offset szFmtMinMax,compass.aminx,compass.amaxx
-							invoke SetDlgItemText,hWin,IDC_STCACLMINMAX,addr buffer
-						.elseif mode==MODE_MINMAXY
-							movsx	eax,compass.y
-							.if sdword ptr eax<compass.mminy
-								mov		compass.mminy,eax
-							.endif
-							.if sdword ptr eax>compass.mmaxy
-								mov		compass.mmaxy,eax
-							.endif
-							movsx	eax,compass.buffer[2]
-							.if sdword ptr eax<compass.aminy
-								mov		compass.aminy,eax
-							.endif
-							.if sdword ptr eax>compass.amaxy
-								mov		compass.amaxy,eax
-							.endif
-							call	GetPitchRoll
-							invoke wsprintf,addr buffer,offset szFmtMinMax,compass.mminy,compass.mmaxy
-							invoke SetDlgItemText,hWin,IDC_STCMAGMINMAX,addr buffer
-							invoke wsprintf,addr buffer,offset szFmtMinMax,compass.aminy,compass.amaxy
-							invoke SetDlgItemText,hWin,IDC_STCACLMINMAX,addr buffer
-						.elseif mode==MODE_MINMAXZ
-							movsx	eax,compass.z
-							.if sdword ptr eax<compass.mminz
-								mov		compass.mminz,eax
-							.endif
-							.if sdword ptr eax>compass.mmaxz
-								mov		compass.mmaxz,eax
-							.endif
-							movsx	eax,compass.buffer[4]
-							.if sdword ptr eax<compass.aminz
-								mov		compass.aminz,eax
-							.endif
-							.if sdword ptr eax>compass.amaxz
-								mov		compass.amaxz,eax
-							.endif
-							call	GetPitchRoll
-							invoke wsprintf,addr buffer,offset szFmtMinMax,compass.mminz,compass.mmaxz
-							invoke SetDlgItemText,hWin,IDC_STCMAGMINMAX,addr buffer
-							invoke wsprintf,addr buffer,offset szFmtMinMax,compass.aminz,compass.amaxz
-							invoke SetDlgItemText,hWin,IDC_STCACLMINMAX,addr buffer
 						.endif
 						invoke InvalidateRect,hCompass,NULL,TRUE
 						invoke SetTimer,hWin,1000,50,NULL
@@ -860,26 +709,20 @@ ReadAverage:
 TempComp:
 	;Temprature compensation
 	movsx	eax,compass.x
-	cdq
 	mov		ecx,compass.tcxrt
 	imul	ecx
-	cdq
 	mov		ecx,compass.tcxct
 	idiv	ecx
 	mov		x,eax
 	movsx	eax,compass.y
-	cdq
 	mov		ecx,compass.tcyrt
 	imul	ecx
-	cdq
 	mov		ecx,compass.tcyct
 	idiv	ecx
 	mov		y,eax
 	movsx	eax,compass.z
-	cdq
 	mov		ecx,compass.tczrt
 	imul	ecx
-	cdq
 	mov		ecx,compass.tczct
 	idiv	ecx
 	mov		z,eax
@@ -887,24 +730,24 @@ TempComp:
 
 ScaleComp:
 	;Select largest
-	mov		ebx,compass.xscale
-	.if ebx<compass.yscale
-		mov		ebx,compass.yscale
+	mov		ebx,compass.magxscale
+	.if ebx<compass.magyscale
+		mov		ebx,compass.magyscale
 	.endif
 ;	.if ebx<compass.zscale
 ;		mov		ebx,compass.zscale
 ;	.endif
-	mov		ecx,compass.xscale
+	mov		ecx,compass.magxscale
 	mov		eax,x
 	imul	ebx
 	idiv	ecx
 	mov		x,eax
-	mov		ecx,compass.yscale
+	mov		ecx,compass.magyscale
 	mov		eax,y
 	imul	ebx
 	idiv	ecx
 	mov		y,eax
-	mov		ecx,compass.zscale
+	mov		ecx,compass.magzscale
 	mov		eax,z
 	imul	ebx
 	idiv	ecx
@@ -913,46 +756,50 @@ ScaleComp:
 
 OffsetComp:
 	mov		eax,x
-	mov		ecx,compass.mminx
-	add		ecx,compass.mmaxx
-	sar		ecx,1
-	sub		eax,ecx
+	sub		eax,compass.magxofs
 	mov		x,eax
 	mov		eax,y
-	mov		ecx,compass.mminy
-	add		ecx,compass.mmaxy
-	sar		ecx,1
-	sub		eax,ecx
+	sub		eax,compass.magyofs
 	mov		y,eax
 	mov		eax,z
-	mov		ecx,compass.mminz
-	add		ecx,compass.mmaxz
-	sar		ecx,1
-	sub		eax,ecx
+	sub		eax,compass.magzofs
 	mov		z,eax
 	retn
 
 GetHeading:
 	.if compass.ftilt
-		;xh = x*cos(pitch) + y*sin(roll) - z*cos(pitch)*sin(pitch)
+;float xh = magValue[X] * cos(pitch) + magValue[Z] * sin(pitch);
 		fild	x
 		fld		compass.pitch
 		fcos
 		fmulp	st(1),st
-		fild	y
-		fld		compass.roll
+		fild	z
+		fld		compass.pitch
 		fsin
 		fmulp	st(1),st
 		faddp	st(1),st
-		fild	z
-		fld		compass.pitch
-		fcos
-		fmulp	st(1),st
-		fld		compass.pitch
-		fsin
-		fmulp	st(1),st
-		fsubp	st(1),st
 		fistp	xh
+
+
+;		;xh = x*cos(pitch) + y*sin(roll) - z*cos(pitch)*sin(pitch)
+;		fild	x
+;		fld		compass.pitch
+;		fcos
+;		fmulp	st(1),st
+;		fild	y
+;		fld		compass.roll
+;		fsin
+;		fmulp	st(1),st
+;		faddp	st(1),st
+;		fild	z
+;		fld		compass.pitch
+;		fcos
+;		fmulp	st(1),st
+;		fld		compass.pitch
+;		fsin
+;		fmulp	st(1),st
+;		fsubp	st(1),st
+;		fistp	xh
 
 ;		;xh = x*cos(pitch) + y*sin(roll)*sin(pitch) - z*cos(roll)*sin(pitch) 
 ;		fild	x
@@ -991,23 +838,50 @@ GetHeading:
 ;		faddp	st(1),st
 ;		fistp	yh
 
-		;yh = y*cos(roll) + z*sin(roll)
+;float yh = magValue[X] * sin(roll) * sin(pitch) + magValue[Y] * cos(roll) - magValue[Z] * sin(roll) * cos(pitch);
+		fild	x
+		fld		compass.roll
+		fsin
+		fmulp	st(1),st
+		fld		compass.pitch
+		fsin
+		fmulp	st(1),st
+
 		fild	y
 		fld		compass.roll
 		fcos
 		fmulp	st(1),st
+		faddp	st(1),st
+
 		fild	z
 		fld		compass.roll
 		fsin
 		fmulp	st(1),st
-		faddp	st(1),st
+		fld		compass.pitch
+		fcos
+		fmulp	st(1),st
+		fsubp	st(1),st
 		fistp	yh
+
+;		;yh = y*cos(roll) + z*sin(roll)
+;		fild	y
+;		fld		compass.roll
+;		fcos
+;		fmulp	st(1),st
+;		fild	z
+;		fld		compass.roll
+;		fsin
+;		fmulp	st(1),st
+;		faddp	st(1),st
+;		fistp	yh
 	.else
 		mov		eax,x
 		mov		xh,eax
 		mov		eax,y
 		mov		yh,eax
 	.endif
+;PrintDec xh
+;PrintDec yh
 	;Find the angle. North is 0 deg
 	fild	yh
 	.if xh
@@ -1038,27 +912,18 @@ GetHeading:
 
 GetPitchRoll:
 	;Offset adjust axis
-	mov		ecx,compass.amaxx
-	add		ecx,compass.aminx
-	sar		ecx,1
 	movsx	eax,compass.buffer[0]
-	sub		eax,ecx
+	sub		eax,compass.aclxofs
+	neg		eax
 	mov		aclx,eax
-
-	mov		ecx,compass.amaxy
-	add		ecx,compass.aminy
-	sar		ecx,1
 	movsx	eax,compass.buffer[2]
-	sub		eax,ecx
+	sub		eax,compass.aclyofs
 	;Y axis points to left on accelerometer, right on magnetometer
 	neg		eax
 	mov		acly,eax
-
-	mov		ecx,compass.amaxz
-	add		ecx,compass.aminz
-	sar		ecx,1
 	movsx	eax,compass.buffer[4]
-	sub		eax,ecx
+	sub		eax,compass.aclzofs
+	neg		eax
 	mov		aclz,eax
 
 	;pitch = arctan(Ax / sqrt(Ay^2+Az^2))
