@@ -734,9 +734,9 @@ ScaleComp:
 	.if ebx<compass.magyscale
 		mov		ebx,compass.magyscale
 	.endif
-;	.if ebx<compass.zscale
-;		mov		ebx,compass.zscale
-;	.endif
+	.if ebx<compass.magzscale
+		mov		ebx,compass.magzscale
+	.endif
 	mov		ecx,compass.magxscale
 	mov		eax,x
 	imul	ebx
@@ -746,6 +746,7 @@ ScaleComp:
 	mov		eax,y
 	imul	ebx
 	idiv	ecx
+;	neg		eax
 	mov		y,eax
 	mov		ecx,compass.magzscale
 	mov		eax,z
@@ -861,6 +862,7 @@ GetHeading:
 		fcos
 		fmulp	st(1),st
 		fsubp	st(1),st
+;		faddp	st(1),st
 		fistp	yh
 
 ;		;yh = y*cos(roll) + z*sin(roll)
@@ -914,16 +916,13 @@ GetPitchRoll:
 	;Offset adjust axis
 	movsx	eax,compass.buffer[0]
 	sub		eax,compass.aclxofs
-	neg		eax
 	mov		aclx,eax
 	movsx	eax,compass.buffer[2]
 	sub		eax,compass.aclyofs
 	;Y axis points to left on accelerometer, right on magnetometer
-	neg		eax
 	mov		acly,eax
 	movsx	eax,compass.buffer[4]
 	sub		eax,compass.aclzofs
-	neg		eax
 	mov		aclz,eax
 
 	;pitch = arctan(Ax / sqrt(Ay^2+Az^2))
