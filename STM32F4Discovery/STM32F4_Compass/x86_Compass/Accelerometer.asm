@@ -69,28 +69,21 @@ AccelProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.endif
 			.elseif eax==IDC_BTNACLUPDATE
 				;Get axis offset
+				mov		eax,aclxmin
+				mov		compass.aclxmin,eax
 				mov		eax,aclxmax
-				add		eax,aclxmin
-				sar		eax,1
-				mov		compass.aclxofs,eax
+				mov		compass.aclxmax,eax
+
+				mov		eax,aclymin
+				mov		compass.aclymin,eax
 				mov		eax,aclymax
-				add		eax,aclymin
-				sar		eax,1
-				mov		compass.aclyofs,eax
+				mov		compass.aclymax,eax
+
+				mov		eax,aclzmin
+				mov		compass.aclzmin,eax
 				mov		eax,aclzmax
-				add		eax,aclzmin
-				sar		eax,1
-				mov		compass.aclzofs,eax
-				;Get axis scale
-				mov		eax,aclxmax
-				sub		eax,aclxmin
-				mov		compass.aclxscale,eax
-				mov		eax,aclymax
-				sub		eax,aclymin
-				mov		compass.aclyscale,eax
-				mov		eax,aclzmax
-				sub		eax,aclzmin
-				mov		compass.aclzscale,eax
+				mov		compass.aclzmax,eax
+
 				invoke GetDlgItem,hWnd,IDC_BTNSAVE
 				invoke EnableWindow,eax,TRUE
 PrintDec aclxmin

@@ -87,34 +87,21 @@ MagnProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		magzmax,eax
 			.elseif eax==IDC_BTNMAGUPDATE
 				;Get axis offset
+				mov		eax,magxmin
+				mov		compass.magxmin,eax
 				mov		eax,magxmax
-				add		eax,magxmin
-				sar		eax,1
-				mov		compass.magxofs,eax
+				mov		compass.magxmax,eax
+
+				mov		eax,magymin
+				mov		compass.magymin,eax
 				mov		eax,magymax
-				add		eax,magymin
-				sar		eax,1
-				mov		compass.magyofs,eax
+				mov		compass.magymax,eax
+
+				mov		eax,magzmin
+				mov		compass.magzmin,eax
 				mov		eax,magzmax
-				.if eax
-					add		eax,magzmin
-					sar		eax,1
-					mov		compass.magzofs,eax
-				.endif
-				;Get axis scale
-				mov		eax,magxmax
-				sub		eax,magxmin
-				mov		compass.magxscale,eax
-				mov		eax,magymax
-				sub		eax,magymin
-				mov		compass.magyscale,eax
-				mov		eax,magzmax
-				.if eax
-					sub		eax,magzmin
-					mov		compass.magzscale,eax
-				.endif
-				invoke GetDlgItem,hWnd,IDC_BTNSAVE
-				invoke EnableWindow,eax,TRUE
+				mov		compass.magzmax,eax
+
 PrintDec magxmin
 PrintDec magxmax
 PrintDec magymin

@@ -74,19 +74,19 @@ COMPASS struct
 	declin		DWORD ?
 	ftilt		DWORD ?
 
-	magxofs		DWORD ?
-	magxscale	DWORD ?
-	magyofs		DWORD ?
-	magyscale	DWORD ?
-	magzofs		DWORD ?
-	magzscale	DWORD ?
+	magxmin		DWORD ?
+	magxmax		DWORD ?
+	magymin		DWORD ?
+	magymax		DWORD ?
+	magzmin		DWORD ?
+	magzmax		DWORD ?
 
-	aclxofs		DWORD ?
-	aclxscale	DWORD ?
-	aclyofs		DWORD ?
-	aclyscale	DWORD ?
-	aclzofs		DWORD ?
-	aclzscale	DWORD ?
+	aclxmin		DWORD ?
+	aclxmax		DWORD ?
+	aclymin		DWORD ?
+	aclymax		DWORD ?
+	aclzmin		DWORD ?
+	aclzmax		DWORD ?
 
 	pitch		REAL8 ?
 	roll		REAL8 ?
