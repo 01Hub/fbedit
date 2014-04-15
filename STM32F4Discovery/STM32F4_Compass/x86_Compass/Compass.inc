@@ -157,7 +157,6 @@ szFmtMinMax						BYTE '%d / %d',0
 
 rad2deg							REAL8 57.29577951308232088
 deg2rad							REAL8 0.017453292519943334
-
 szIniFile						BYTE '\Compass.ini',0
 szIniCompass					BYTE 'Compass',0
 

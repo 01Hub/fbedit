@@ -321,8 +321,8 @@ CompassProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 			pop		eax
 			invoke SelectObject,mDC,eax
 			invoke DeleteObject,eax
-			call	DrawPitch
-			call	DrawRoll
+;			call	DrawPitch
+;			call	DrawRoll
 		.elseif mode==MODE_CALIBRATE
 			xor		ebx,ebx
 			.while ebx<calinx
@@ -497,6 +497,16 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	.if	eax==WM_INITDIALOG
 		mov		eax,hWin
 		mov		hWnd,eax
+;mov		magx,-100
+;fild	magx
+;mov		magx,-10
+;fild	magx
+;fpatan
+;fld		rad2deg
+;fmulp	st(1),st
+;fistp	magx
+;PrintDec magx
+
 		invoke CreateFontIndirect,addr Tahoma_72
 		mov		hFont,eax
 		invoke SendDlgItemMessage,hWin,IDC_STC1,WM_SETFONT,hFont,FALSE
@@ -587,19 +597,23 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						invoke wsprintf,addr buffer,addr szFmtAxis,offset magxAxis,eax
 						invoke SetDlgItemText,hWin,IDC_STC1,addr buffer
 						movsx	eax,compass.y
+neg		eax
 						mov		magread.y[ebx*(4*WORD)],ax
 						invoke wsprintf,addr buffer,addr szFmtAxis,offset magyAxis,eax
 						invoke SetDlgItemText,hWin,IDC_STC2,addr buffer
 						movsx	eax,compass.z
+neg		eax
 						mov		magread.z[ebx*(4*WORD)],ax
 						invoke wsprintf,addr buffer,addr szFmtAxis,offset magzAxis,eax
 						invoke SetDlgItemText,hWin,IDC_STC3,addr buffer
 
-						movsx	eax,compass.buffer[0]
+;						movsx	eax,compass.buffer[0]
+movsx	eax,compass.buffer[2]
 						mov		aclread.x[ebx*(4*WORD)],ax
 						invoke wsprintf,addr buffer,addr szFmtAxis,offset aclxAxis,eax
 						invoke SetDlgItemText,hWin,IDC_STC5,addr buffer
-						movsx	eax,compass.buffer[2]
+;						movsx	eax,compass.buffer[2]
+movsx	eax,compass.buffer[0]
 						mov		aclread.y[ebx*(4*WORD)],ax
 						invoke wsprintf,addr buffer,addr szFmtAxis,offset aclyAxis,eax
 						invoke SetDlgItemText,hWin,IDC_STC6,addr buffer
@@ -618,7 +632,7 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 							call	MagOffsetComp
 							call	AclOffsetComp
 							;X / Y Scale compensation
-							call	MagScaleComp
+;							call	MagScaleComp
 							call	AclScaleComp
 							;Get accelerometer pitch and roll
 							call	GetPitchRoll
@@ -699,9 +713,9 @@ ReadAverage:
 	sar		ebx,3
 	sar		ecx,3
 	sar		edx,3
-	mov		compass.x,bx
-	mov		compass.y,cx
-	mov		compass.z,dx
+	mov		magx,ebx
+	mov		magy,ecx
+	mov		magz,edx
 
 	xor		esi,esi
 	xor		ebx,ebx
@@ -719,26 +733,26 @@ ReadAverage:
 	sar		ebx,3
 	sar		ecx,3
 	sar		edx,3
-	mov		compass.buffer[0],bl
-	mov		compass.buffer[2],cl
-	mov		compass.buffer[4],dl
+	mov		aclx,ebx
+	mov		acly,ecx
+	mov		aclz,edx
 	retn
 
 MagTempComp:
 	;Temprature compensation
-	movsx	eax,compass.x
+	mov		eax,magx
 	mov		ecx,compass.tcxrt
 	imul	ecx
 	mov		ecx,compass.tcxct
 	idiv	ecx
 	mov		magx,eax
-	movsx	eax,compass.y
+	mov		eax,magy
 	mov		ecx,compass.tcyrt
 	imul	ecx
 	mov		ecx,compass.tcyct
 	idiv	ecx
 	mov		magy,eax
-	movsx	eax,compass.z
+	mov		eax,magz
 	mov		ecx,compass.tczrt
 	imul	ecx
 	mov		ecx,compass.tczct
@@ -894,139 +908,56 @@ AclScaleComp:
 
 GetHeading:
 	.if compass.ftilt
-;float xh = magValue[X] * cos(pitch) + magValue[Z] * sin(pitch);
+		;xh = x*cos(pitch) + y*sin(roll) - z*cos(pitch)*sin(pitch)
 		fild	magx
+
 		fld		compass.pitch
 		fcos
 		fmulp	st(1),st
-		fild	magz
-		fld		compass.pitch
-		fsin
-		fmulp	st(1),st
-		faddp	st(1),st
-		fistp	xh
-
-
-;		;xh = x*cos(pitch) + y*sin(roll) - z*cos(pitch)*sin(pitch)
-;		fild	x
-;		fld		compass.pitch
-;		fcos
-;		fmulp	st(1),st
-;		fild	y
-;		fld		compass.roll
-;		fsin
-;		fmulp	st(1),st
-;		faddp	st(1),st
-;		fild	z
-;		fld		compass.pitch
-;		fcos
-;		fmulp	st(1),st
-;		fld		compass.pitch
-;		fsin
-;		fmulp	st(1),st
-;		fsubp	st(1),st
-;		fistp	xh
-
-;		;xh = x*cos(pitch) + y*sin(roll)*sin(pitch) - z*cos(roll)*sin(pitch) 
-;		fild	x
-;		fld		compass.pitch
-;		fcos
-;		fmulp	st(1),st
-;
-;		fild	y
-;		fld		compass.roll
-;		fsin
-;		fmulp	st(1),st
-;		fld		compass.pitch
-;		fsin
-;		fmulp	st(1),st
-;		faddp	st(1),st
-;
-;		fild	z
-;		fld		compass.roll
-;		fcos
-;		fmulp	st(1),st
-;		fld		compass.pitch
-;		fsin
-;		fmulp	st(1),st
-;		fsubp	st(1),st
-;		fistp	xh
-
-		;yh = y*cos(roll) + z*sin(roll)
-;		fild	y
-;		fld		compass.roll
-;		fcos
-;		fmulp	st(1),st
-;		fild	z
-;		fld		compass.roll
-;		fsin
-;		fmulp	st(1),st
-;		faddp	st(1),st
-;		fistp	yh
-
-;float yh = magValue[X] * sin(roll) * sin(pitch) + magValue[Y] * cos(roll) - magValue[Z] * sin(roll) * cos(pitch);
-		fild	magx
-		fld		compass.roll
-		fsin
-		fmulp	st(1),st
-		fld		compass.pitch
-		fsin
-		fmulp	st(1),st
-
 		fild	magy
-		fld		compass.roll
-		fcos
-		fmulp	st(1),st
-		faddp	st(1),st
 
-		fild	magz
 		fld		compass.roll
 		fsin
 		fmulp	st(1),st
+		faddp	st(1),st
+		fild	magz
+
 		fld		compass.pitch
 		fcos
+		fmulp	st(1),st
+		fld		compass.pitch
+		fsin
 		fmulp	st(1),st
 		fsubp	st(1),st
-;		faddp	st(1),st
-		fistp	yh
+		fistp	xh
 
-;		;yh = y*cos(roll) + z*sin(roll)
-;		fild	y
-;		fld		compass.roll
-;		fcos
-;		fmulp	st(1),st
-;		fild	z
-;		fld		compass.roll
-;		fsin
-;		fmulp	st(1),st
-;		faddp	st(1),st
-;		fistp	yh
+		;yh = y*cos(roll) + z*sin(roll)
+		fild	magy
+
+		fld		compass.roll
+		fcos
+		fmulp	st(1),st
+		fild	magz
+
+		fld		compass.roll
+		fsin
+		fmulp	st(1),st
+		faddp	st(1),st
+		fistp	yh
 	.else
 		mov		eax,magx
 		mov		xh,eax
 		mov		eax,magy
 		mov		yh,eax
 	.endif
-;PrintDec xh
-;PrintDec yh
 	;Find the angle. North is 0 deg
+	fild	xh
 	fild	yh
-	.if xh
-		fild	xh
-		fdivp	st(1),st
-	.endif
-	fld1
 	fpatan
 	fld		REAL8 ptr [rad2deg]
 	fmulp	st(1),st
 	fistp	compass.ideg
-	mov		eax,xh
-	mov		ecx,yh
-	.if sdword ptr eax<0 && sdword ptr ecx>=0
-		sub		compass.ideg,180
-	.elseif sdword ptr eax<0 && sdword ptr ecx<0
-		add		compass.ideg,180
-	.endif
+	add		compass.ideg,180
 	;Magnetic declination
 	mov		eax,compass.declin
 	add		compass.ideg,eax
@@ -1038,18 +969,6 @@ GetHeading:
 	retn
 
 GetPitchRoll:
-;	;Offset adjust axis
-;	movsx	eax,compass.buffer[0]
-;	sub		eax,compass.aclxofs
-;	mov		aclx,eax
-;	movsx	eax,compass.buffer[2]
-;	sub		eax,compass.aclyofs
-;	;Y axis points to left on accelerometer, right on magnetometer
-;	mov		acly,eax
-;	movsx	eax,compass.buffer[4]
-;	sub		eax,compass.aclzofs
-;	mov		aclz,eax
-
 	;pitch = arctan(Ax / sqrt(Ay^2+Az^2))
 	fild	aclx
 	fild	acly
