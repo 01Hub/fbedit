@@ -23,9 +23,6 @@ magzmax				DWORD ?
 
 MagnProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	buffer[256]:BYTE
-	LOCAL	x:DWORD
-	LOCAL	y:DWORD
-	LOCAL	z:DWORD
 	LOCAL	rect:RECT
 
 	mov		eax,uMsg
@@ -138,10 +135,8 @@ PrintDec magzmax
 					mov		ebx,calinx
 					.if ebx<1024
 ;						call	TempComp
-;						mov		eax,x
 						movsx	eax,compass.x
 						mov		calibration.x[ebx*(2*WORD)],ax
-;						mov		eax,y
 						movsx	eax,compass.y
 						mov		calibration.y[ebx*(2*WORD)],ax
 						inc		calinx
@@ -173,29 +168,23 @@ PrintDec magzmax
 TempComp:
 	;Temprature compensation
 	movsx	eax,compass.x
-	cdq
 	mov		ecx,compass.tcxrt
 	imul	ecx
-	cdq
 	mov		ecx,compass.tcxct
 	idiv	ecx
-	mov		x,eax
+	mov		compass.x,ax
 	movsx	eax,compass.y
-	cdq
 	mov		ecx,compass.tcyrt
 	imul	ecx
-	cdq
 	mov		ecx,compass.tcyct
 	idiv	ecx
-	mov		y,eax
+	mov		compass.y,ax
 	movsx	eax,compass.z
-	cdq
 	mov		ecx,compass.tczrt
 	imul	ecx
-	cdq
 	mov		ecx,compass.tczct
 	idiv	ecx
-	mov		z,eax
+	mov		compass.z,ax
 	retn
 
 MagnProc endp

@@ -415,12 +415,6 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	acly:DWORD
 	LOCAL	aclz:DWORD
 
-	LOCAL	xh:DWORD
-	LOCAL	yh:DWORD
-	LOCAL	wmx:DWORD
-	LOCAL	wmy:DWORD
-	LOCAL	wmz:DWORD
-
 	mov		eax,uMsg
 	.if	eax==WM_INITDIALOG
 		mov		eax,hWin
@@ -584,7 +578,7 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						.if mode==MODE_NORMAL
 							call	ReadAverage
 							;Temprature compensation
-;							call	MagTempComp
+							call	MagTempComp
 							;Offset compensation
 							call	MagOffsetComp
 							call	AclOffsetComp
@@ -824,10 +818,6 @@ AxisCorrection:
 	neg		magx
 ;	neg		magy
 	neg		magz
-
-;mov		eax,aclx
-;xchg	eax,acly
-;mov		aclx,eax
 	neg		aclx
 	neg		acly
 ;	neg		aclz
@@ -835,51 +825,54 @@ AxisCorrection:
 
 GetHeading:
 	.if compass.ftilt
+;		fild	magx
+;		fld		mag2utesla
+;		fdivp	st(1),st
+;		fstp	fBx
+;		fild	magy
+;		fld		mag2utesla
+;		fdivp	st(1),st
+;		fstp	fBy
+;		fild	magz
+;		fld		mag2utesla
+;		fdivp	st(1),st
+;		fstp	fBz
+
 		fild	magx
-		fld		mag2utesla
-		fdivp	st(1),st
 		fstp	fBx
 		fild	magy
-		fld		mag2utesla
-		fdivp	st(1),st
 		fstp	fBy
 		fild	magz
-		fld		mag2utesla
-		fdivp	st(1),st
 		fstp	fBz
 
+;		fild	aclx
+;		fld		acl2G
+;		fmulp	st(1),st
+;		fstp	fGx
+;		fild	acly
+;		fld		acl2G
+;		fmulp	st(1),st
+;		fstp	fGy
+;		fild	aclz
+;		fld		acl2G
+;		fmulp	st(1),st
+;		fstp	fGz
+
 		fild	aclx
-		fld		acl2G
-		fmulp	st(1),st
 		fstp	fGx
 		fild	acly
-		fld		acl2G
-		fmulp	st(1),st
 		fstp	fGy
 		fild	aclz
-		fld		acl2G
-		fmulp	st(1),st
 		fstp	fGz
 
-
-;invoke CalcHeading
-invoke GetYaw
-
-		fld		compass.roll
-		fld		rad2deg
-		fmulp	st(1),st
-		fistp	compass.iroll
-
-		fld		compass.pitch
-		fld		rad2deg
-		fmulp	st(1),st
-		fistp	compass.ipitch
+		invoke GetPitch
+		invoke GetRoll
+		invoke GetYaw
 
 	.else
 		;Find the angle. North is 0 deg
-		fldz
 		fild	magy
-		fsubp	st(1),st
+		fchs
 		fild	magx
 		fpatan
 		fld		REAL8 ptr [rad2deg]

@@ -14,11 +14,15 @@ GetPitch proc
 	faddp	st(1),st
 	fsqrt
 	fpatan
-	fstp	compass.pitch
+	fst		compass.pitch
+	;Convert from radians to degrees
+	fld		rad2deg
+	fmulp	st(1),st
+	fistp	compass.ipitch
+
 	ret
 
 GetPitch endp
-
 
 ;  Roll = atan2(yAccel, sqrt(sq(xAccel)+sq(zAccel)));
 GetRoll proc
@@ -33,24 +37,26 @@ GetRoll proc
 	faddp	st(1),st
 	fsqrt
 	fpatan
-	fstp	compass.roll
+	fst		compass.roll
+	;Convert from radians to degrees
+	fld		rad2deg
+	fmulp	st(1),st
+	fistp	compass.iroll
+
 	ret
 
 GetRoll endp
 
-; Yaw=atan2((-yMagnetMap*cos(Roll) + zMagnetMap*sin(Roll) ) ,
+; Yaw=atan2(
+;			(-yMagnetMap*cos(Roll) + zMagnetMap*sin(Roll)),
 ; 			xMagnetMap*cos(Pitch) +
-;			zMagnetMap*sin(Pitch)*sin(Roll)+
+;			zMagnetMap*sin(Pitch)*sin(Roll) +
 ;			zMagnetMap*sin(Pitch)*cos(Roll));
 
 GetYaw proc
-
-	invoke GetPitch
-	invoke GetRoll
-
-	fldz
+	;-yMagnetMap*cos(Roll) + zMagnetMap*sin(Roll)
 	fld		fBy
-	fsubp	st(1),st
+	fchs
 	fld		compass.roll
 	fcos
 	fmulp	st(1),st
@@ -60,11 +66,13 @@ GetYaw proc
 	fmulp	st(1),st
 	faddp	st(1),st
 
+	;xMagnetMap*cos(Pitch)
 	fld		fBx
 	fld		compass.pitch
 	fcos
 	fmulp	st(1),st
 
+	;zMagnetMap*sin(Pitch)*sin(Roll)
 	fld		fBz
 	fld		compass.pitch
 	fsin
@@ -75,6 +83,7 @@ GetYaw proc
 
 	faddp	st(1),st
 
+	;zMagnetMap*sin(Pitch)*cos(Roll)
 	fld		fBz
 	fld		compass.pitch
 	fsin
@@ -84,8 +93,11 @@ GetYaw proc
 	fmulp	st(1),st
 
 	faddp	st(1),st
+
+	;Yaw=atan2(
 	fpatan
 
+	;Convert from radians to degrees
 	fld		REAL8 ptr [rad2deg]
 	fmulp	st(1),st
 	fistp	compass.ideg
@@ -94,97 +106,3 @@ GetYaw proc
 
 GetYaw endp
 
-CalcHeading proc
-
-	;/* calculate roll angle Phi (-180deg, 180deg) and si, cos */
-	;Phi = atan2(Gy, Gz) * RadToDeg;			/* Equation 2*/
-	fld		fGy
-	fld		fGz
-	fpatan
-	fstp	compass.roll
-
-	fld		compass.roll
-	fsin
-	fistp	sinAngle
-	fld		compass.roll
-	fcos
-	fstp	cosAngle
-
-	;/* de-rotate by roll angle Phi */
-	;Bfy = By * cosAngle - Bz * sinAngle;	/* Equation 5 y component*/
-	fld		fBy
-	fld		cosAngle
-	fmulp	st(1),st
-	fld		fBz
-	fld		sinAngle
-	fmulp	st(1),st
-	fsubp	st(1),st
-	fstp	Bfy
-
-	;/* Bz=(By-Vy)**sin(Phi)+(Bz-Vz)*cos(Phi) */
-	;Bz = By * sinAngle + Bz * cosAngle;
-	fld		fBy
-	fld		sinAngle
-	fmulp	st(1),st
-	fld		fBz
-	fld		cosAngle
-	fmulp	st(1),st
-	faddp	st(1),st
-	fstp	fBz
-
-	;/* Gz=Gy*sin(Phi)+Gz*cos(Phi) */
-	;Gz = Gy * sinAngle + Gz * cosAngle;
-	fld		fGy
-	fld		sinAngle
-	fmulp	st(1),st
-	fld		fGz
-	fld		cosAngle
-	fmulp	st(1),st
-	faddp	st(1),st
-	fstp	fGz
-
-	;/* calculate pitch angle Theta (-90deg, 90deg) and sin, cos */
-	;The = atan(-Gx / Gz) * RadToDeg;		/* Equation 3 */
-	fldz
-	fld		fGx
-	fsubp	st(1),st
-	fld		fGz
-;	fabs
-	fpatan
-	fstp	compass.pitch
-
-	fld		compass.pitch
-	fsin
-	fstp	sinAngle
-	fld		compass.pitch
-	fcos
-	fstp	cosAngle
-
-	;/* de-rotate by pitch angle Theta */
-	;Bfx = Bx * cosAngle + Bz * sinAngle;	/* Equation 5 x component */
-	fld		fBx
-	fld		cosAngle
-	fmulp	st(1),st
-	fld		fBz
-	fld		sinAngle
-	fmulp	st(1),st
-	faddp	st(1),st
-	fstp	Bfx
-
-	;Bfz = -Bx * sinAngle + Bz * cosAngle;	/* Equation 5 z component */
-
-	;/* calculate yaw = ecompass angle psi (-180deg, 180deg) */
-	;Psi = atan2(-Bfy, Bfx) * RadToDeg:		/* Equation 7 */
-	fldz
-	fld		Bfy
-	fsubp	st(1),st
-	fld		Bfx
-	fpatan
-
-	fld		REAL8 ptr [rad2deg]
-	fmulp	st(1),st
-	fistp	compass.ideg
-	add		compass.ideg,180
-	ret
-
-CalcHeading endp

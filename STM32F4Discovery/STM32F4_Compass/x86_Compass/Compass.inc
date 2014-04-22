@@ -142,23 +142,9 @@ szFmtCompensate					BYTE 'Temprature compensation:',0Dh,0Ah
 								BYTE 'X = %d',0Dh,0Ah
 								BYTE 'Y = %d',0Dh,0Ah
 								BYTE 'Z = %d',0Dh,0Ah,0
-szFmpCalibrate					BYTE 'Offset calibration',0Dh,0Ah
-								BYTE 'mX-Min %d, mX-Max %d, mScale %d',0Dh,0Ah
-								BYTE 'mY-Min %d, mY-Max %d, mScale %d',0Dh,0Ah,0
-
-szFmtaXCalibrate				BYTE 'Accelerometer calibration',0Dh,0Ah
-								BYTE 'aX-Min %d, aX-Max %d',0Dh,0Ah,0
-szFmtaYCalibrate				BYTE 'Accelerometer calibration',0Dh,0Ah
-								BYTE 'aY-Min %d, aY-Max %d',0Dh,0Ah,0
-szFmtaZCalibrate				BYTE 'Accelerometer calibration',0Dh,0Ah
-								BYTE 'aZ-Min %d, aZ-Max %d',0Dh,0Ah,0
-
-szFmtMinMax						BYTE '%d / %d',0
 
 rad2deg							REAL8 57.29577951308232088
 deg2rad							REAL8 0.017453292519943334
-mag2utesla						REAL8 13.7
-acl2G							REAL8 0.01796875
 szIniFile						BYTE '\Compass.ini',0
 szIniCompass					BYTE 'Compass',0
 
@@ -203,10 +189,5 @@ fBz								REAL8 ?
 fGx								REAL8 ?
 fGy								REAL8 ?
 fGz								REAL8 ?
-
-sinAngle						REAL8 ?
-cosAngle						REAL8 ?
-Bfx								REAL8 ?
-Bfy								REAL8 ?
 
 ;#########################################################################

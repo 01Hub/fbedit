@@ -25,9 +25,6 @@ aclzmax				DWORD ?
 
 AccelProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	buffer[256]:BYTE
-	LOCAL	aclx:DWORD
-	LOCAL	acly:DWORD
-	LOCAL	aclz:DWORD
 
 	mov		eax,uMsg
 	.if	eax==WM_INITDIALOG
