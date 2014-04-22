@@ -157,6 +157,8 @@ szFmtMinMax						BYTE '%d / %d',0
 
 rad2deg							REAL8 57.29577951308232088
 deg2rad							REAL8 0.017453292519943334
+mag2utesla						REAL8 13.7
+acl2G							REAL8 0.01796875
 szIniFile						BYTE '\Compass.ini',0
 szIniCompass					BYTE 'Compass',0
 
@@ -180,5 +182,31 @@ ShowMode						DWORD ?
 readinx							DWORD ?
 magread							MAGREAD 8 dup(<>)
 aclread							ACLREAD 8 dup(<>)
+
+magxofs							DWORD ?
+magyofs							DWORD ?
+magzofs							DWORD ?
+magxscale						DWORD ?
+magyscale						DWORD ?
+magzscale						DWORD ?
+
+aclxofs							DWORD ?
+aclyofs							DWORD ?
+aclzofs							DWORD ?
+aclxscale						DWORD ?
+aclyscale						DWORD ?
+aclzscale						DWORD ?
+
+fBx								REAL8 ?
+fBy								REAL8 ?
+fBz								REAL8 ?
+fGx								REAL8 ?
+fGy								REAL8 ?
+fGz								REAL8 ?
+
+sinAngle						REAL8 ?
+cosAngle						REAL8 ?
+Bfx								REAL8 ?
+Bfy								REAL8 ?
 
 ;#########################################################################

@@ -102,6 +102,9 @@ MagnProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		eax,magzmax
 				mov		compass.magzmax,eax
 
+				invoke GetDlgItem,hWnd,IDC_BTNSAVE
+				invoke EnableWindow,eax,TRUE
+
 PrintDec magxmin
 PrintDec magxmax
 PrintDec magymin
@@ -134,10 +137,12 @@ PrintDec magzmax
 					invoke SetDlgItemText,hWin,IDC_STC11,addr buffer
 					mov		ebx,calinx
 					.if ebx<1024
-						call	TempComp
-						mov		eax,x
+;						call	TempComp
+;						mov		eax,x
+						movsx	eax,compass.x
 						mov		calibration.x[ebx*(2*WORD)],ax
-						mov		eax,y
+;						mov		eax,y
+						movsx	eax,compass.y
 						mov		calibration.y[ebx*(2*WORD)],ax
 						inc		calinx
 						invoke GetDlgItem,hWin,IDC_UDCMAGCAL
