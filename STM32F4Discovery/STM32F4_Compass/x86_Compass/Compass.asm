@@ -821,14 +821,14 @@ AclScaleComp:
 	retn
 
 AxisCorrection:
-;	neg		magx
+	neg		magx
 ;	neg		magy
 	neg		magz
 
 ;mov		eax,aclx
 ;xchg	eax,acly
 ;mov		aclx,eax
-;	neg		aclx
+	neg		aclx
 	neg		acly
 ;	neg		aclz
 	retn
