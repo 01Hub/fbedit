@@ -363,7 +363,7 @@ CompassProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 	ret
 
 DrawPitch:
-	invoke CreatePen,PS_SOLID,3,0808000h
+	invoke CreatePen,PS_SOLID,3,0FF8000h
 	invoke SelectObject,mDC,eax
 	push	eax
 
@@ -383,7 +383,7 @@ DrawPitch:
 	retn
 
 DrawRoll:
-	invoke CreatePen,PS_SOLID,3,008080h
+	invoke CreatePen,PS_SOLID,3,0080FFh
 	invoke SelectObject,mDC,eax
 	push	eax
 
@@ -488,6 +488,7 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
 		invoke SetDlgItemInt,hWin,IDC_EDTDEC,compass.declin,TRUE
 		invoke CheckDlgButton,hWin,IDC_RBN1,BST_CHECKED
+		mov		mode,MODE_NORMAL
 	.elseif	eax==WM_COMMAND
 		mov		edx,wParam
 		movzx	eax,dx
@@ -533,6 +534,7 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.elseif eax>=IDC_RBN1 && eax<=IDC_RBN4
 				sub		eax,IDC_RBN1
 				mov		ShowMode,eax
+				invoke InvalidateRect,hCompass,NULL,TRUE
 			.elseif eax==IDC_CHKTILT
 				xor		compass.ftilt,1
 			.elseif eax==IDCANCEL
