@@ -55,6 +55,8 @@ MODE_COMPENSATEOFF				equ 4	; End compass temprature compensation
 
 STM32_ADDRESS					equ 20000028h
 
+MAXAVG							equ 16
+
 COMPASS struct
 	flag		WORD ?
 	x			WORD ?
@@ -166,8 +168,8 @@ countdown						DWORD ?
 IniFile							BYTE MAX_PATH dup(?)
 ShowMode						DWORD ?
 readinx							DWORD ?
-magread							MAGREAD 8 dup(<>)
-aclread							ACLREAD 8 dup(<>)
+magread							MAGREAD MAXAVG dup(<>)
+aclread							ACLREAD MAXAVG dup(<>)
 
 magxofs							DWORD ?
 magyofs							DWORD ?

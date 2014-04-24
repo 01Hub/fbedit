@@ -36,6 +36,9 @@
   PD.07           LCMeter calibration
   PD.08           USART3 TX
   PD.09           USART3 RX
+  PE.03			      Scope X10 Output OD
+  PE.04			      Scope X5 Output OD
+  PE.05			      Scope X10 Output OD
   PE.08 to PE.15  LGA Inputs
   ******************************************************************************
   */
@@ -564,6 +567,15 @@ void GPIO_Config(void)
   GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
   GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
   GPIO_Init(GPIOD, &GPIO_InitStructure);
+
+  /* GPIOE Outputs */
+  GPIO_SetBits(GPIOE, GPIO_Pin_3 | GPIO_Pin_4 | GPIO_Pin_5);
+  GPIO_InitStructure.GPIO_Pin   = GPIO_Pin_3 | GPIO_Pin_4 | GPIO_Pin_5;
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+  GPIO_InitStructure.GPIO_OType = GPIO_OType_OD;
+  GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
+  GPIO_Init(GPIOE, &GPIO_InitStructure);
 
   /* GPIOE Inputs */
   GPIO_InitStructure.GPIO_Pin   = GPIO_Pin_8 | GPIO_Pin_9 | GPIO_Pin_10 | GPIO_Pin_11 | GPIO_Pin_12 | GPIO_Pin_13 | GPIO_Pin_14 | GPIO_Pin_15;

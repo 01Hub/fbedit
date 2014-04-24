@@ -93,43 +93,43 @@ ReadFromIni proc
 	invoke GetPrivateProfileString,offset szIniCompass,offset szIniCompass,NULL,addr buffer,sizeof buffer,offset IniFile
 	mov		buffer[eax],0
 	;Compass Temprature compensation
-	invoke GetItemInt,addr buffer,758
+	invoke GetItemInt,addr buffer,763
 	mov		compass.tcxrt,eax
 	mov		compass.tcxct,eax
-	invoke GetItemInt,addr buffer,702
+	invoke GetItemInt,addr buffer,701
 	mov		compass.tcyrt,eax
 	mov		compass.tcyct,eax
-	invoke GetItemInt,addr buffer,710
+	invoke GetItemInt,addr buffer,712
 	mov		compass.tczrt,eax
 	mov		compass.tczct,eax
-	;Compass Offset compensation
-	invoke GetItemInt,addr buffer,-254
+	;Compass min / max
+	invoke GetItemInt,addr buffer,-179
 	mov		compass.magxmin,eax
-	invoke GetItemInt,addr buffer,347
+	invoke GetItemInt,addr buffer,173
 	mov		compass.magxmax,eax
-	invoke GetItemInt,addr buffer,-373
+	invoke GetItemInt,addr buffer,-210
 	mov		compass.magymin,eax
-	invoke GetItemInt,addr buffer,353
+	invoke GetItemInt,addr buffer,138
 	mov		compass.magymax,eax
-	invoke GetItemInt,addr buffer,-20
+	invoke GetItemInt,addr buffer,-687
 	mov		compass.magzmin,eax
-	invoke GetItemInt,addr buffer,353
+	invoke GetItemInt,addr buffer,618
 	mov		compass.magzmax,eax
 	;Magnetic declination
 	invoke GetItemInt,addr buffer,0
 	mov		compass.declin,eax
 	;Accelerometer min / max
-	invoke GetItemInt,addr buffer,-56
+	invoke GetItemInt,addr buffer,-52
 	mov		compass.aclxmin,eax
-	invoke GetItemInt,addr buffer,56
+	invoke GetItemInt,addr buffer,57
 	mov		compass.aclxmax,eax
-	invoke GetItemInt,addr buffer,-56
+	invoke GetItemInt,addr buffer,-54
 	mov		compass.aclymin,eax
-	invoke GetItemInt,addr buffer,56
+	invoke GetItemInt,addr buffer,59
 	mov		compass.aclymax,eax
-	invoke GetItemInt,addr buffer,-56
+	invoke GetItemInt,addr buffer,-62
 	mov		compass.aclzmin,eax
-	invoke GetItemInt,addr buffer,56
+	invoke GetItemInt,addr buffer,53
 	mov		compass.aclzmax,eax
 	ret
 
@@ -143,15 +143,16 @@ WriteToIni proc
 	invoke PutItemInt,addr buffer,compass.tcxrt
 	invoke PutItemInt,addr buffer,compass.tcyrt
 	invoke PutItemInt,addr buffer,compass.tczrt
-	;Magnetometer Offset and Scale compensation
+	;Magnetometer min / max
 	invoke PutItemInt,addr buffer,compass.magxmin
 	invoke PutItemInt,addr buffer,compass.magxmax
 	invoke PutItemInt,addr buffer,compass.magymin
 	invoke PutItemInt,addr buffer,compass.magymax
 	invoke PutItemInt,addr buffer,compass.magzmin
 	invoke PutItemInt,addr buffer,compass.magzmax
+	;Magnetic declination
 	invoke PutItemInt,addr buffer,compass.declin
-	;Accelerometer Offset and Scale compensation
+	;Accelerometer min / max
 	invoke PutItemInt,addr buffer,compass.aclxmin
 	invoke PutItemInt,addr buffer,compass.aclxmax
 	invoke PutItemInt,addr buffer,compass.aclymin
@@ -246,7 +247,6 @@ CompassProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 		sub		edx,32
 		invoke LineTo,mDC,ecx,edx
 		.if mode==MODE_NORMAL && ShowMode==0
-
 			invoke SelectObject,mDC,hFont
 			push	eax
 			invoke SetBkMode,mDC,TRANSPARENT
@@ -264,7 +264,6 @@ CompassProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 			invoke TextOut,mDC,eax,ebx,offset szEast,1
 			pop		eax
 			invoke SelectObject,mDC,eax
-
 			;Find points to draw an arrow
 			mov		edx,compass.ideg
 			sub		edx,180
@@ -366,7 +365,6 @@ DrawPitch:
 	invoke CreatePen,PS_SOLID,3,0FF8000h
 	invoke SelectObject,mDC,eax
 	push	eax
-
 	mov		edx,compass.ipitch
 	sub		edx,90
 	invoke GetPointOnCircle,radius,edx,addr pt
@@ -376,7 +374,6 @@ DrawPitch:
 	add		pt.y,eax
 	invoke MoveToEx,mDC,ptcenter.x,ptcenter.y,NULL
 	invoke LineTo,mDC,pt.x,pt.y
-
 	pop		eax
 	invoke SelectObject,mDC,eax
 	invoke DeleteObject,eax
@@ -386,7 +383,6 @@ DrawRoll:
 	invoke CreatePen,PS_SOLID,3,0080FFh
 	invoke SelectObject,mDC,eax
 	push	eax
-
 	mov		edx,compass.iroll
 	sub		edx,90
 	invoke GetPointOnCircle,radius,edx,addr pt
@@ -396,7 +392,6 @@ DrawRoll:
 	add		pt.y,eax
 	invoke MoveToEx,mDC,ptcenter.x,ptcenter.y,NULL
 	invoke LineTo,mDC,pt.x,pt.y
-
 	pop		eax
 	invoke SelectObject,mDC,eax
 	invoke DeleteObject,eax
@@ -406,11 +401,9 @@ CompassProc endp
 
 DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	buffer[256]:BYTE
-
 	LOCAL	magx:DWORD
 	LOCAL	magy:DWORD
 	LOCAL	magz:DWORD
-
 	LOCAL	aclx:DWORD
 	LOCAL	acly:DWORD
 	LOCAL	aclz:DWORD
@@ -431,7 +424,6 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke GetDlgItem,hWin,IDC_UDCCOMPASS
 		mov		hCompass,eax
 		invoke ReadFromIni
-
 		;Calculate the offset for each axis (hard iron compensation)
 		mov		eax,compass.magxmax
 		sub		eax,compass.magxmin
@@ -458,7 +450,6 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		eax,compass.magzmax
 		sub		eax,compass.magzmin
 		mov		magzscale,eax
-
 		;Calculate the offset for each axis
 		mov		eax,compass.aclxmax
 		sub		eax,compass.aclxmin
@@ -485,7 +476,6 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		eax,compass.aclzmax
 		sub		eax,compass.aclzmin
 		mov		aclzscale,eax
-
 		invoke SetDlgItemInt,hWin,IDC_EDTDEC,compass.declin,TRUE
 		invoke CheckDlgButton,hWin,IDC_RBN1,BST_CHECKED
 		mov		mode,MODE_NORMAL
@@ -560,57 +550,86 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke STLinkRead,hWin,STM32_ADDRESS,offset compass,16
 				.if eax && eax!=IDIGNORE && eax!=IDABORT
 					.if !compass.flag
+						mov		esi,magxscale
+						.if esi<magyscale
+							mov		esi,magyscale
+						.endif
 						mov		ebx,readinx
 						movsx	eax,compass.x
+						mov		ecx,compass.tcxrt
+						imul	ecx
+						mov		ecx,compass.tcxct
+						idiv	ecx
+						add		eax,magxofs
+						mov		ecx,magxscale
+						imul	esi
+						idiv	ecx
 						mov		magread.x[ebx*(4*WORD)],ax
 						movsx	eax,compass.y
+						mov		ecx,compass.tcyrt
+						imul	ecx
+						mov		ecx,compass.tcyct
+						idiv	ecx
+						add		eax,magyofs
+						mov		ecx,magyscale
+						imul	esi
+						idiv	ecx
 						mov		magread.y[ebx*(4*WORD)],ax
 						movsx	eax,compass.z
+						mov		ecx,compass.tczrt
+						imul	ecx
+						mov		ecx,compass.tczct
+						idiv	ecx
+						add		eax,magzofs
 						mov		magread.z[ebx*(4*WORD)],ax
-
+						;Select largest scale
+						mov		esi,aclxscale
+						.if esi<aclyscale
+							mov		esi,aclyscale
+						.endif
+						.if esi<aclzscale
+							mov		esi,aclzscale
+						.endif
 						movsx	eax,compass.buffer[0]
+						add		eax,aclxofs
+						mov		ecx,aclxscale
+						imul	esi
+						idiv	ecx
 						mov		aclread.x[ebx*(4*WORD)],ax
 						movsx	eax,compass.buffer[2]
+						add		eax,aclyofs
+						mov		ecx,aclyscale
+						imul	esi
+						idiv	ecx
 						mov		aclread.y[ebx*(4*WORD)],ax
 						movsx	eax,compass.buffer[4]
+						add		eax,aclzofs
+						mov		ecx,aclzscale
+						imul	esi
+						idiv	ecx
 						mov		aclread.z[ebx*(4*WORD)],ax
 						inc		ebx
-						and		ebx,0007h
+						and		ebx,MAXAVG - 1
 						mov		readinx,ebx
 						.if mode==MODE_NORMAL
-							call	ReadAverage
-							;Temprature compensation
-							call	MagTempComp
-							;Offset compensation
-							call	MagOffsetComp
-							call	AclOffsetComp
-							;X / Y Scale compensation
-							call	MagScaleComp
-							call	AclScaleComp
+							call	SumReadings
 							;Correct the axis
 							call	AxisCorrection
 							;Get heading (yaw)
 							call	GetHeading
 							invoke SetDlgItemInt,hWin,IDC_STC4,compass.ideg,TRUE
-
 							invoke wsprintf,addr buffer,addr szFmtAxis,offset magxAxis,magx
 							invoke SetDlgItemText,hWin,IDC_STC1,addr buffer
-
 							invoke wsprintf,addr buffer,addr szFmtAxis,offset magyAxis,magy
 							invoke SetDlgItemText,hWin,IDC_STC2,addr buffer
-
 							invoke wsprintf,addr buffer,addr szFmtAxis,offset magzAxis,magz
 							invoke SetDlgItemText,hWin,IDC_STC3,addr buffer
-
 							invoke wsprintf,addr buffer,addr szFmtAxis,offset aclxAxis,aclx
 							invoke SetDlgItemText,hWin,IDC_STC5,addr buffer
-
 							invoke wsprintf,addr buffer,addr szFmtAxis,offset aclyAxis,acly
 							invoke SetDlgItemText,hWin,IDC_STC6,addr buffer
-
 							invoke wsprintf,addr buffer,addr szFmtAxis,offset aclzAxis,aclz
 							invoke SetDlgItemText,hWin,IDC_STC7,addr buffer
-
 						.elseif mode==MODE_COMPENSATE
 							invoke SetDlgItemInt,hWin,IDC_STC4,countdown,FALSE
 							dec		countdown
@@ -668,12 +687,12 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	mov		eax,TRUE
 	ret
 
-ReadAverage:
+SumReadings:
 	xor		esi,esi
 	xor		ebx,ebx
 	xor		ecx,ecx
 	xor		edx,edx
-	.while esi<8
+	.while esi<MAXAVG
 		movsx	eax,magread.x[esi*(4*WORD)]
 		add		ebx,eax
 		movsx	eax,magread.y[esi*(4*WORD)]
@@ -682,9 +701,6 @@ ReadAverage:
 		add		edx,eax
 		inc		esi
 	.endw
-	sar		ebx,3
-	sar		ecx,3
-	sar		edx,3
 	mov		magx,ebx
 	mov		magy,ecx
 	mov		magz,edx
@@ -693,7 +709,7 @@ ReadAverage:
 	xor		ebx,ebx
 	xor		ecx,ecx
 	xor		edx,edx
-	.while esi<8
+	.while esi<MAXAVG
 		movsx	eax,aclread.x[esi*(4*WORD)]
 		add		ebx,eax
 		movsx	eax,aclread.y[esi*(4*WORD)]
@@ -702,123 +718,14 @@ ReadAverage:
 		add		edx,eax
 		inc		esi
 	.endw
-	sar		ebx,3
-	sar		ecx,3
-	sar		edx,3
 	mov		aclx,ebx
 	mov		acly,ecx
 	mov		aclz,edx
 	retn
 
-MagTempComp:
-	;Temprature compensation
-	mov		eax,magx
-	mov		ecx,compass.tcxrt
-	imul	ecx
-	mov		ecx,compass.tcxct
-	idiv	ecx
-	mov		magx,eax
-	mov		eax,magy
-	mov		ecx,compass.tcyrt
-	imul	ecx
-	mov		ecx,compass.tcyct
-	idiv	ecx
-	mov		magy,eax
-	mov		eax,magz
-	mov		ecx,compass.tczrt
-	imul	ecx
-	mov		ecx,compass.tczct
-	idiv	ecx
-	mov		magz,eax
-	retn
-
-MagOffsetComp:
-	mov		eax,magx
-	add		eax,magxofs
-	mov		magx,eax
-	mov		eax,magy
-	add		eax,magyofs
-	mov		magy,eax
-	mov		eax,magz
-	add		eax,magzofs
-	mov		magz,eax
-	retn
-
-AclOffsetComp:
-	mov		eax,aclx
-	add		eax,aclxofs
-	mov		aclx,eax
-	mov		eax,acly
-	add		eax,aclyofs
-	mov		acly,eax
-	mov		eax,aclz
-	add		eax,aclzofs
-	mov		aclz,eax
-	retn
-
-MagScaleComp:
-	;Select largest
-	mov		ebx,magxscale
-	.if ebx<magyscale
-		mov		ebx,magyscale
-	.endif
-;	.if ebx<magzscale
-;		mov		ebx,magzscale
-;	.endif
-
-	;Compensate each axis for scale differences
-	mov		ecx,magxscale
-	mov		eax,magx
-	imul	ebx
-	idiv	ecx
-	mov		magx,eax
-
-	mov		ecx,magyscale
-	mov		eax,magy
-	imul	ebx
-	idiv	ecx
-	mov		magy,eax
-
-;	mov		ecx,magzscale
-;	mov		eax,magz
-;	imul	ebx
-;	idiv	ecx
-;	mov		magz,eax
-	retn
-
-AclScaleComp:
-	;Select largest scale
-	mov		ebx,aclxscale
-	.if ebx<aclyscale
-		mov		ebx,aclyscale
-	.endif
-	.if ebx<aclzscale
-		mov		ebx,aclzscale
-	.endif
-
-	;Compensate each axis for scale differences
-	mov		ecx,aclxscale
-	mov		eax,aclx
-	imul	ebx
-	idiv	ecx
-	mov		aclx,eax
-
-	mov		ecx,aclyscale
-	mov		eax,acly
-	imul	ebx
-	idiv	ecx
-	mov		acly,eax
-
-	mov		ecx,aclzscale
-	mov		eax,aclz
-	imul	ebx
-	idiv	ecx
-	mov		aclz,eax
-	retn
-
 AxisCorrection:
 	neg		magx
-;	neg		magy
+	neg		magy
 	neg		magz
 	neg		aclx
 	neg		acly
@@ -827,54 +734,25 @@ AxisCorrection:
 
 GetHeading:
 	.if compass.ftilt
-;		fild	magx
-;		fld		mag2utesla
-;		fdivp	st(1),st
-;		fstp	fBx
-;		fild	magy
-;		fld		mag2utesla
-;		fdivp	st(1),st
-;		fstp	fBy
-;		fild	magz
-;		fld		mag2utesla
-;		fdivp	st(1),st
-;		fstp	fBz
-
+		;Find the tilt compensated angle. North is 0 deg
 		fild	magx
 		fstp	fBx
 		fild	magy
 		fstp	fBy
 		fild	magz
 		fstp	fBz
-
-;		fild	aclx
-;		fld		acl2G
-;		fmulp	st(1),st
-;		fstp	fGx
-;		fild	acly
-;		fld		acl2G
-;		fmulp	st(1),st
-;		fstp	fGy
-;		fild	aclz
-;		fld		acl2G
-;		fmulp	st(1),st
-;		fstp	fGz
-
 		fild	aclx
 		fstp	fGx
 		fild	acly
 		fstp	fGy
 		fild	aclz
 		fstp	fGz
-
 		invoke GetPitch
 		invoke GetRoll
 		invoke GetYaw
-
 	.else
 		;Find the angle. North is 0 deg
 		fild	magy
-		fchs
 		fild	magx
 		fpatan
 		fld		REAL8 ptr [rad2deg]

@@ -39,7 +39,7 @@ PD.06         	LCMeter L/C selection Output, C = Low L = High
 PD.07         	LCMeter calibration Output
 PD.08         	USART3 TX Output
 PD.09         	USART3 RX Input
-PE.03			Scope X5 Output OD
-PE.04			Scope X10 Output OD
+PE.03			Scope X10 Output OD
+PE.04			Scope X5 Output OD
 PE.05			Scope X10 Output OD
 PE.08 to PE.15	LGA Inputs
