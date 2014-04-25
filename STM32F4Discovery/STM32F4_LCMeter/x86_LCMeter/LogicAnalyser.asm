@@ -533,12 +533,11 @@ LGAProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 GetBitnbr:
 	invoke GetCursorPos,addr pt
 	invoke ScreenToClient,hWin,addr pt
-	invoke GetClientRect,hWin,addr rect
-	sub		rect.bottom,TEXTHIGHT
-	mov		eax,rect.bottom
-	sub		eax,GRIDSIZE
+	mov		eax,lgarect.bottom
+	sub		eax,lgarect.top
 	shr		eax,3
 	mov		yinc,eax
+	add		eax,lgarect.top
 	xor		edx,edx
 	.while eax<pt.y && edx<7
 		inc		edx

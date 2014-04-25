@@ -1,23 +1,12 @@
 /**
   ******************************************************************************
   * @file    LCMeter/main.c 
-  * @author  MCD Application Team / KO
+  * @author  KO
   * @version V1.0.0
   * @date    20-February-2014
   * @brief   Main program body
   ******************************************************************************
-  * @attention
-  *
-  * THE PRESENT FIRMWARE WHICH IS FOR GUIDANCE ONLY AIMS AT PROVIDING CUSTOMERS
-  * WITH CODING INFORMATION REGARDING THEIR PRODUCTS IN ORDER FOR THEM TO SAVE
-  * TIME. AS A RESULT, STMICROELECTRONICS SHALL NOT BE HELD LIABLE FOR ANY
-  * DIRECT, INDIRECT OR CONSEQUENTIAL DAMAGES WITH RESPECT TO ANY CLAIMS ARISING
-  * FROM THE CONTENT OF SUCH FIRMWARE AND/OR THE USE MADE BY CUSTOMERS OF THE
-  * CODING INFORMATION CONTAINED HEREIN IN CONNECTION WITH THEIR PRODUCTS.
-  *
-  * <h2><center>&copy; COPYRIGHT 2011 STMicroelectronics</center></h2>
-  ******************************************************************************
-  */ 
+  */
 
 /**
   ******************************************************************************
@@ -174,12 +163,6 @@ void DMA_LGAConfig(void);
   */
 int main(void)
 {
-  /*!< At this stage the microcontroller clock setting is already configured, 
-       this is done through SystemInit() function which is called from startup
-       file (startup_stm32f4xx.s) before to branch to application main.
-       To reconfigure the default setting of SystemInit() function, refer to
-       system_stm32f4xx.c file
-  */
   __IO uint32_t i;
 
   /* RCC Configuration */
@@ -394,6 +377,11 @@ void LCM_Calibrate(void)
   GPIO_ResetBits(GPIOD, GPIO_Pin_7);
 }
 
+/**
+  * @brief  SPI Send data.
+  * @param  tx
+  * @retval None
+  */
 void SPISendData(uint16_t tx)
 {
 	SPI2->DR = tx;                            // write data to be transmitted to the SPI data register
@@ -677,6 +665,11 @@ void TIM_Config(void)
   TIM_TimeBaseInit(TIM8, &TIM_TimeBaseStructure);
 }
 
+/**
+  * @brief  Configure the DAC Channel 1.
+  * @param  None
+  * @retval None
+  */
 void DAC_Config(void)
 {
   DAC_InitTypeDef  DAC_InitStructure;
@@ -694,6 +687,11 @@ void DAC_Config(void)
   DAC->CR = 0x1;
 }
 
+/**
+  * @brief  Configure the DMA.
+  * @param  None
+  * @retval None
+  */
 void DMA_SingleConfig(void)
 {
   DMA_InitTypeDef DMA_InitStructure;
@@ -720,6 +718,11 @@ void DMA_SingleConfig(void)
   DMA_Cmd(DMA2_Stream0, ENABLE);
 }
 
+/**
+  * @brief  Configure the ADC.
+  * @param  None
+  * @retval None
+  */
 void ADC_SingleConfig(void)
 {
   ADC_CommonInitTypeDef ADC_CommonInitStructure;
@@ -835,6 +838,11 @@ void ADC_TripleConfig(void)
   ADC_MultiModeDMARequestAfterLastTransferCmd(ENABLE);
 }
 
+/**
+  * @brief  Configure the DMA.
+  * @param  None
+  * @retval None
+  */
 void DMA_LGAConfig(void)
 {
   DMA_InitTypeDef DMA_InitStructure;
@@ -860,13 +868,11 @@ void DMA_LGAConfig(void)
   DMA_Init(DMA2_Stream1, &DMA_InitStructure);
 }
 
-/*******************************************************************************
-* Function Name  : SPI_Configuration
-* Description    : Configures SPI2 to output DDS configuration
-* Input          : None
-* Output         : None
-* Return         : None
-*******************************************************************************/
+/**
+  * @brief  Configure the SPI2.
+  * @param  None
+  * @retval None
+  */
 void SPI_Config(void)
 {
   SPI_InitTypeDef SPI_InitStructure;
@@ -885,13 +891,11 @@ void SPI_Config(void)
 	SPI_Cmd(SPI2, ENABLE);
 }
 
-/*******************************************************************************
-* Function Name  : USART_Configuration
-* Description    : Configures USART3 to to comunicate with Bluetooth module
-* Input          : None
-* Output         : None
-* Return         : None
-*******************************************************************************/
+/**
+  * @brief  Configure the USART3.
+  * @param  Baud
+  * @retval None
+  */
 void USART_Config(uint32_t Baud)
 {
   USART_InitTypeDef USART_InitStructure;

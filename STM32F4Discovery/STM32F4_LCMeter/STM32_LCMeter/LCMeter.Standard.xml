@@ -1,7 +1,7 @@
 <!-- DWF2XML 2.00.01 - Raisonance Dwarf information extractor -->
 <aoffile Filename="LCMeter" dwarf="1">
  <modulelist>
-  <module Name="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\main.c" >
+  <module Name="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\main.c" >
    <type Family="Base" Name="signed char" ID="608"/>
    <type Family="Base" Name="unsigned char" ID="626"/>
    <type Family="typedef" Name="uint8_t" Line="42" ID="615" toTI="626"/>
@@ -264,135 +264,135 @@
     <Component Name="NVIC_IRQChannelCmd" TI="4064" Line="65" Offs="3"/>
    </type>
    <type Family="typedef" Name="NVIC_InitTypeDef" Line="68" ID="4079" toTI="4014"/>
-   <type Family="ComponentList" Line="50" ID="4123">
-    <Component Name="HSCSet" TI="4131" Line="52" Offs="0"/>
-    <Component Name="HSCDiv" TI="4145" Line="53" Offs="4"/>
+   <type Family="ComponentList" Line="39" ID="4123">
+    <Component Name="HSCSet" TI="4131" Line="41" Offs="0"/>
+    <Component Name="HSCDiv" TI="4145" Line="42" Offs="4"/>
    </type>
-   <type Family="typedef" Name="STM32_HSCTypeDef" Line="54" ID="4160" toTI="4123"/>
-   <type Family="ComponentList" Line="56" ID="4171">
-    <Component Name="Frequency" TI="4179" Line="58" Offs="0"/>
-    <Component Name="FrequencySCP" TI="4193" Line="59" Offs="4"/>
+   <type Family="typedef" Name="STM32_HSCTypeDef" Line="43" ID="4160" toTI="4123"/>
+   <type Family="ComponentList" Line="45" ID="4171">
+    <Component Name="Frequency" TI="4179" Line="47" Offs="0"/>
+    <Component Name="FrequencySCP" TI="4193" Line="48" Offs="4"/>
    </type>
-   <type Family="typedef" Name="STM32_FRQTypeDef" Line="60" ID="4208" toTI="4171"/>
-   <type Family="ComponentList" Line="62" ID="4219">
-    <Component Name="FrequencyCal0" TI="4227" Line="64" Offs="0"/>
-    <Component Name="FrequencyCal1" TI="4241" Line="65" Offs="4"/>
+   <type Family="typedef" Name="STM32_FRQTypeDef" Line="49" ID="4208" toTI="4171"/>
+   <type Family="ComponentList" Line="51" ID="4219">
+    <Component Name="FrequencyCal0" TI="4227" Line="53" Offs="0"/>
+    <Component Name="FrequencyCal1" TI="4241" Line="54" Offs="4"/>
    </type>
-   <type Family="typedef" Name="STM32_LCMTypeDef" Line="66" ID="4256" toTI="4219"/>
-   <type Family="ComponentList" Line="68" ID="4267">
-    <Component Name="ADC_Prescaler" TI="4275" Line="70" Offs="0"/>
-    <Component Name="ADC_TwoSamplingDelay" TI="4289" Line="71" Offs="4"/>
-    <Component Name="ScopeTrigger" TI="4303" Line="72" Offs="8"/>
-    <Component Name="ScopeTriggerLevel" TI="4317" Line="73" Offs="12"/>
-    <Component Name="ScopeTimeDiv" TI="4331" Line="74" Offs="16"/>
-    <Component Name="ScopeVoltDiv" TI="4345" Line="75" Offs="20"/>
-    <Component Name="ScopeVPos" TI="4359" Line="76" Offs="24"/>
-    <Component Name="ADC_TripleMode" TI="4373" Line="77" Offs="28"/>
-    <Component Name="ADC_SampleTime" TI="4387" Line="78" Offs="32"/>
-    <Component Name="ADC_SampleSize" TI="4401" Line="79" Offs="36"/>
-    <Component Name="SubSampling" TI="4415" Line="80" Offs="40"/>
+   <type Family="typedef" Name="STM32_LCMTypeDef" Line="55" ID="4256" toTI="4219"/>
+   <type Family="ComponentList" Line="57" ID="4267">
+    <Component Name="ADC_Prescaler" TI="4275" Line="59" Offs="0"/>
+    <Component Name="ADC_TwoSamplingDelay" TI="4289" Line="60" Offs="4"/>
+    <Component Name="ScopeTrigger" TI="4303" Line="61" Offs="8"/>
+    <Component Name="ScopeTriggerLevel" TI="4317" Line="62" Offs="12"/>
+    <Component Name="ScopeTimeDiv" TI="4331" Line="63" Offs="16"/>
+    <Component Name="ScopeVoltDiv" TI="4345" Line="64" Offs="20"/>
+    <Component Name="ScopeVPos" TI="4359" Line="65" Offs="24"/>
+    <Component Name="ADC_TripleMode" TI="4373" Line="66" Offs="28"/>
+    <Component Name="ADC_SampleTime" TI="4387" Line="67" Offs="32"/>
+    <Component Name="ADC_SampleSize" TI="4401" Line="68" Offs="36"/>
+    <Component Name="SubSampling" TI="4415" Line="69" Offs="40"/>
    </type>
-   <type Family="typedef" Name="STM32_SCPTypeDef" Line="81" ID="4430" toTI="4267"/>
-   <type Family="ComponentList" Line="83" ID="4441">
-    <Component Name="DDS_Cmd" TI="4449" Line="85" Offs="0"/>
-    <Component Name="DDS_Wave" TI="4463" Line="86" Offs="2"/>
-    <Component Name="DDS__PhaseAdd" TI="4477" Line="87" Offs="4"/>
-    <Component Name="DDS_Amplitude" TI="4491" Line="88" Offs="8"/>
-    <Component Name="DDS_DCOffset" TI="4505" Line="89" Offs="12"/>
+   <type Family="typedef" Name="STM32_SCPTypeDef" Line="70" ID="4430" toTI="4267"/>
+   <type Family="ComponentList" Line="72" ID="4441">
+    <Component Name="DDS_Cmd" TI="4449" Line="74" Offs="0"/>
+    <Component Name="DDS_Wave" TI="4463" Line="75" Offs="2"/>
+    <Component Name="DDS__PhaseAdd" TI="4477" Line="76" Offs="4"/>
+    <Component Name="DDS_Amplitude" TI="4491" Line="77" Offs="8"/>
+    <Component Name="DDS_DCOffset" TI="4505" Line="78" Offs="12"/>
    </type>
-   <type Family="typedef" Name="STM32_DDSTypeDef" Line="90" ID="4520" toTI="4441"/>
-   <type Family="ComponentList" Line="92" ID="4531">
-    <Component Name="DataBlocks" TI="4539" Line="94" Offs="0"/>
-    <Component Name="TriggerValue" TI="4553" Line="95" Offs="1"/>
-    <Component Name="TriggerMask" TI="4567" Line="96" Offs="2"/>
-    <Component Name="TriggerWait" TI="4581" Line="97" Offs="3"/>
-    <Component Name="LGASampleRateDiv" TI="4595" Line="98" Offs="4"/>
-    <Component Name="LGASampleRate" TI="4609" Line="99" Offs="6"/>
+   <type Family="typedef" Name="STM32_DDSTypeDef" Line="79" ID="4520" toTI="4441"/>
+   <type Family="ComponentList" Line="81" ID="4531">
+    <Component Name="DataBlocks" TI="4539" Line="83" Offs="0"/>
+    <Component Name="TriggerValue" TI="4553" Line="84" Offs="1"/>
+    <Component Name="TriggerMask" TI="4567" Line="85" Offs="2"/>
+    <Component Name="TriggerWait" TI="4581" Line="86" Offs="3"/>
+    <Component Name="LGASampleRateDiv" TI="4595" Line="87" Offs="4"/>
+    <Component Name="LGASampleRate" TI="4609" Line="88" Offs="6"/>
    </type>
-   <type Family="typedef" Name="STM32_LGATypeDef" Line="100" ID="4624" toTI="4531"/>
-   <type Family="ComponentList" Line="103" ID="4635">
-    <Component Name="Cmd" TI="4643" Line="105" Offs="0"/>
-    <Component Name="STM32_HSC" TI="4657" Line="106" Offs="4"/>
-    <Component Name="STM32_FRQ" TI="4671" Line="107" Offs="12"/>
-    <Component Name="STM32_LCM" TI="4685" Line="108" Offs="20"/>
-    <Component Name="STM32_SCP" TI="4699" Line="109" Offs="28"/>
-    <Component Name="STM32_DDS" TI="4713" Line="110" Offs="72"/>
-    <Component Name="STM32_LGA" TI="4727" Line="111" Offs="88"/>
-    <Component Name="TickCount" TI="4741" Line="112" Offs="96"/>
-    <Component Name="PreviousCountTIM2" TI="4755" Line="113" Offs="100"/>
-    <Component Name="ThisCountTIM2" TI="4769" Line="114" Offs="104"/>
-    <Component Name="PreviousCountTIM5" TI="4783" Line="115" Offs="108"/>
-    <Component Name="ThisCountTIM5" TI="4797" Line="116" Offs="112"/>
+   <type Family="typedef" Name="STM32_LGATypeDef" Line="89" ID="4624" toTI="4531"/>
+   <type Family="ComponentList" Line="92" ID="4635">
+    <Component Name="Cmd" TI="4643" Line="94" Offs="0"/>
+    <Component Name="STM32_HSC" TI="4657" Line="95" Offs="4"/>
+    <Component Name="STM32_FRQ" TI="4671" Line="96" Offs="12"/>
+    <Component Name="STM32_LCM" TI="4685" Line="97" Offs="20"/>
+    <Component Name="STM32_SCP" TI="4699" Line="98" Offs="28"/>
+    <Component Name="STM32_DDS" TI="4713" Line="99" Offs="72"/>
+    <Component Name="STM32_LGA" TI="4727" Line="100" Offs="88"/>
+    <Component Name="TickCount" TI="4741" Line="101" Offs="96"/>
+    <Component Name="PreviousCountTIM2" TI="4755" Line="102" Offs="100"/>
+    <Component Name="ThisCountTIM2" TI="4769" Line="103" Offs="104"/>
+    <Component Name="PreviousCountTIM5" TI="4783" Line="104" Offs="108"/>
+    <Component Name="ThisCountTIM5" TI="4797" Line="105" Offs="112"/>
    <type Family="Base" Name="char" ID="4842"/>
    <type Family="array" ID="4826" toTI="4842"/>
-    <Component Name="BTBuff" TI="4811" Line="117" Offs="116"/>
+    <Component Name="BTBuff" TI="4811" Line="106" Offs="116"/>
    </type>
-   <type Family="typedef" Name="STM32_CMDTypeDef" Line="118" ID="4849" toTI="4635"/>
-   <function Name="GetFrequency" TI="676" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\main.c" Line="358">
-    <variable Name="i" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\main.c" Line="360" Addr="0x1" TI="676"/>
+   <type Family="typedef" Name="STM32_CMDTypeDef" Line="107" ID="4849" toTI="4635"/>
+   <function Name="GetFrequency" TI="676" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\main.c" Line="341">
+    <variable Name="i" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\main.c" Line="343" Addr="0x1" TI="676"/>
    </function >
-   <function Name="LCM_Calibrate" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\main.c" Line="371">
-    <variable Name="i" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\main.c" Line="373" Addr="0x0" TI="676"/>
+   <function Name="LCM_Calibrate" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\main.c" Line="354">
+    <variable Name="i" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\main.c" Line="356" Addr="0x0" TI="676"/>
    </function >
-   <function Name="SPISendData" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\main.c" Line="397">
-    <parameter Name="tx" TI="640" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\main.c" Line="397" Addr="0x0" Param="Yes"/>
+   <function Name="SPISendData" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\main.c" Line="385">
+    <parameter Name="tx" TI="640" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\main.c" Line="385" Addr="0x0" Param="Yes"/>
    </function >
-   <function Name="USART3_putdata" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\main.c" Line="411">
+   <function Name="USART3_putdata" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\main.c" Line="399">
    <type Family="Pointer" TI="5040" toTI="615"/>
-    <parameter Name="dat" TI="5040" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\main.c" Line="411" Addr="0x0" Param="Yes"/>
-    <parameter Name="len" TI="640" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\main.c" Line="411" Addr="0x40FFFFF" Param="Yes"/>
+    <parameter Name="dat" TI="5040" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\main.c" Line="399" Addr="0x0" Param="Yes"/>
+    <parameter Name="len" TI="640" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\main.c" Line="399" Addr="0x40FFFFF" Param="Yes"/>
    </function >
    <type Family="Pointer" TI="5102" toTI="4842"/>
-   <function Name="USART3_getdata" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\main.c" Line="451">
-    <parameter Name="dat" TI="5040" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\main.c" Line="451" Addr="0x0" Param="Yes"/>
-    <parameter Name="len" TI="640" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\main.c" Line="451" Addr="0x40FFFFF" Param="Yes"/>
+   <function Name="USART3_getdata" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\main.c" Line="439">
+    <parameter Name="dat" TI="5040" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\main.c" Line="439" Addr="0x0" Param="Yes"/>
+    <parameter Name="len" TI="640" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\main.c" Line="439" Addr="0x40FFFFF" Param="Yes"/>
    </function >
-   <function Name="RCC_Config" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\main.c" Line="470">
+   <function Name="RCC_Config" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\main.c" Line="458">
    </function >
-   <function Name="NVIC_Config" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\main.c" Line="497">
-    <variable Name="NVIC_InitStructure" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\main.c" Line="499" Addr="0x34000004" TI="4079"/>
+   <function Name="NVIC_Config" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\main.c" Line="485">
+    <variable Name="NVIC_InitStructure" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\main.c" Line="487" Addr="0x34000004" TI="4079"/>
    </function >
-   <function Name="GPIO_Config" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\main.c" Line="513">
-    <variable Name="GPIO_InitStructure" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\main.c" Line="515" Addr="0x34000000" TI="3531"/>
+   <function Name="GPIO_Config" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\main.c" Line="501">
+    <variable Name="GPIO_InitStructure" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\main.c" Line="503" Addr="0x34000000" TI="3531"/>
    </function >
-   <function Name="TIM_Config" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\main.c" Line="617">
-    <variable Name="TIM_TimeBaseStructure" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\main.c" Line="619" Addr="0x34000014" TI="3767"/>
-    <variable Name="TIM_OCInitStructure" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\main.c" Line="620" Addr="0x34000000" TI="3899"/>
+   <function Name="TIM_Config" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\main.c" Line="605">
+    <variable Name="TIM_TimeBaseStructure" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\main.c" Line="607" Addr="0x34000014" TI="3767"/>
+    <variable Name="TIM_OCInitStructure" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\main.c" Line="608" Addr="0x34000000" TI="3899"/>
    </function >
-   <function Name="DAC_Config" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\main.c" Line="680">
-    <variable Name="DAC_InitStructure" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\main.c" Line="682" Addr="0x34000000" TI="3053"/>
+   <function Name="DAC_Config" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\main.c" Line="673">
+    <variable Name="DAC_InitStructure" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\main.c" Line="675" Addr="0x34000000" TI="3053"/>
    </function >
-   <function Name="DMA_SingleConfig" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\main.c" Line="697">
-    <variable Name="DMA_InitStructure" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\main.c" Line="699" Addr="0x34000004" TI="3283"/>
+   <function Name="DMA_SingleConfig" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\main.c" Line="695">
+    <variable Name="DMA_InitStructure" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\main.c" Line="697" Addr="0x34000004" TI="3283"/>
    </function >
-   <function Name="ADC_SingleConfig" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\main.c" Line="723">
-    <variable Name="ADC_CommonInitStructure" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\main.c" Line="725" Addr="0x34000018" TI="2977"/>
-    <variable Name="ADC_InitStructure" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\main.c" Line="726" Addr="0x34000000" TI="2901"/>
+   <function Name="ADC_SingleConfig" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\main.c" Line="726">
+    <variable Name="ADC_CommonInitStructure" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\main.c" Line="728" Addr="0x34000018" TI="2977"/>
+    <variable Name="ADC_InitStructure" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\main.c" Line="729" Addr="0x34000000" TI="2901"/>
    </function >
-   <function Name="DMA_TripleConfig" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\main.c" Line="763">
-    <variable Name="DMA_InitStructure" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\main.c" Line="765" Addr="0x34000004" TI="3283"/>
+   <function Name="DMA_TripleConfig" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\main.c" Line="766">
+    <variable Name="DMA_InitStructure" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\main.c" Line="768" Addr="0x34000004" TI="3283"/>
    </function >
-   <function Name="ADC_TripleConfig" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\main.c" Line="794">
-    <variable Name="ADC_CommonInitStructure" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\main.c" Line="796" Addr="0x34000018" TI="2977"/>
-    <variable Name="ADC_InitStructure" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\main.c" Line="797" Addr="0x34000000" TI="2901"/>
+   <function Name="ADC_TripleConfig" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\main.c" Line="797">
+    <variable Name="ADC_CommonInitStructure" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\main.c" Line="799" Addr="0x34000018" TI="2977"/>
+    <variable Name="ADC_InitStructure" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\main.c" Line="800" Addr="0x34000000" TI="2901"/>
    </function >
-   <function Name="DMA_LGAConfig" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\main.c" Line="838">
-    <variable Name="DMA_InitStructure" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\main.c" Line="840" Addr="0x34000004" TI="3283"/>
+   <function Name="DMA_LGAConfig" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\main.c" Line="846">
+    <variable Name="DMA_InitStructure" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\main.c" Line="848" Addr="0x34000004" TI="3283"/>
    </function >
-   <function Name="SPI_Config" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\main.c" Line="870">
-    <variable Name="SPI_InitStructure" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\main.c" Line="872" Addr="0x34000004" TI="3677"/>
+   <function Name="SPI_Config" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\main.c" Line="876">
+    <variable Name="SPI_InitStructure" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\main.c" Line="878" Addr="0x34000004" TI="3677"/>
    </function >
-   <function Name="USART_Config" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\main.c" Line="895">
-    <parameter Name="Baud" TI="676" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\main.c" Line="895" Addr="0x0" Param="Yes"/>
-    <variable Name="USART_InitStructure" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\main.c" Line="897" Addr="0x34000000" TI="4003"/>
+   <function Name="USART_Config" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\main.c" Line="899">
+    <parameter Name="Baud" TI="676" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\main.c" Line="899" Addr="0x0" Param="Yes"/>
+    <variable Name="USART_InitStructure" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\main.c" Line="901" Addr="0x34000000" TI="4003"/>
    </function >
-   <function Name="main" TI="708" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\main.c" Line="175">
+   <function Name="main" TI="708" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\main.c" Line="164">
    </function >
-   <function Name="TIM3_IRQHandler" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\main.c" Line="920">
+   <function Name="TIM3_IRQHandler" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\main.c" Line="924">
    </function >
-   <variable Name="STM32_CMD" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\main.c" Line="145" Addr="0x20000024" TI="5802"/>
+   <variable Name="STM32_CMD" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\main.c" Line="134" Addr="0x20000024" TI="5802"/>
   </module>
-  <module Name="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_it.c" >
+  <module Name="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_it.c" >
    <type Family="Base" Name="signed char" ID="5877"/>
    <type Family="Base" Name="unsigned char" ID="5884"/>
    <type Family="Base" Name="short int" ID="5891"/>
@@ -404,26 +404,26 @@
    <type Family="Base" Name="long long unsigned int" ID="5937"/>
    <type Family="Base" Name="int" ID="5944"/>
    <type Family="Base" Name="unsigned int" ID="5951"/>
-   <function Name="NMI_Handler" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_it.c" Line="55">
+   <function Name="NMI_Handler" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_it.c" Line="55">
    </function >
-   <function Name="HardFault_Handler" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_it.c" Line="64">
+   <function Name="HardFault_Handler" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_it.c" Line="64">
    </function >
-   <function Name="MemManage_Handler" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_it.c" Line="76">
+   <function Name="MemManage_Handler" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_it.c" Line="76">
    </function >
-   <function Name="BusFault_Handler" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_it.c" Line="88">
+   <function Name="BusFault_Handler" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_it.c" Line="88">
    </function >
-   <function Name="UsageFault_Handler" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_it.c" Line="100">
+   <function Name="UsageFault_Handler" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_it.c" Line="100">
    </function >
-   <function Name="DebugMon_Handler" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_it.c" Line="112">
+   <function Name="DebugMon_Handler" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_it.c" Line="112">
    </function >
-   <function Name="SVC_Handler" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_it.c" Line="120">
+   <function Name="SVC_Handler" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_it.c" Line="120">
    </function >
-   <function Name="PendSV_Handler" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_it.c" Line="128">
+   <function Name="PendSV_Handler" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_it.c" Line="128">
    </function >
-   <function Name="SysTick_Handler" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_it.c" Line="136">
+   <function Name="SysTick_Handler" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_it.c" Line="136">
    </function >
   </module>
-  <module Name="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_rcc.c" >
+  <module Name="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_rcc.c" >
    <type Family="Base" Name="signed char" ID="6213"/>
    <type Family="Base" Name="unsigned char" ID="6231"/>
    <type Family="typedef" Name="uint8_t" Line="42" ID="6220" toTI="6231"/>
@@ -483,32 +483,32 @@
     <Component Name="PCLK2_Frequency" TI="6990" Line="47" Offs="12"/>
    </type>
    <type Family="typedef" Name="RCC_ClocksTypeDef" Line="48" ID="7005" toTI="6940"/>
-   <function Name="RCC_GetClocksFreq" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_rcc.c" Line="855">
+   <function Name="RCC_GetClocksFreq" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_rcc.c" Line="855">
    <type Family="Pointer" TI="8057" toTI="7005"/>
-    <parameter Name="RCC_Clocks" TI="8057" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_rcc.c" Line="855" Addr="0x0" Param="Yes"/>
-    <variable Name="tmp" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_rcc.c" Line="857" Addr="0x0" TI="6281"/>
-    <variable Name="presc" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_rcc.c" Line="857" Addr="0x0" TI="6281"/>
-    <variable Name="pllvco" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_rcc.c" Line="857" Addr="0x0" TI="6281"/>
-    <variable Name="pllp" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_rcc.c" Line="857" Addr="0x0" TI="6281"/>
-    <variable Name="pllsource" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_rcc.c" Line="857" Addr="0x0" TI="6281"/>
-    <variable Name="pllm" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_rcc.c" Line="857" Addr="0x0" TI="6281"/>
+    <parameter Name="RCC_Clocks" TI="8057" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_rcc.c" Line="855" Addr="0x0" Param="Yes"/>
+    <variable Name="tmp" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_rcc.c" Line="857" Addr="0x0" TI="6281"/>
+    <variable Name="presc" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_rcc.c" Line="857" Addr="0x0" TI="6281"/>
+    <variable Name="pllvco" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_rcc.c" Line="857" Addr="0x0" TI="6281"/>
+    <variable Name="pllp" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_rcc.c" Line="857" Addr="0x0" TI="6281"/>
+    <variable Name="pllsource" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_rcc.c" Line="857" Addr="0x0" TI="6281"/>
+    <variable Name="pllm" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_rcc.c" Line="857" Addr="0x0" TI="6281"/>
    </function >
-   <function Name="RCC_AHB1PeriphClockCmd" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_rcc.c" Line="1085">
-    <parameter Name="RCC_AHB1Periph" TI="6281" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_rcc.c" Line="1085" Addr="0x0" Param="Yes"/>
-    <parameter Name="NewState" TI="6421" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_rcc.c" Line="1085" Addr="0x1" Param="Yes"/>
+   <function Name="RCC_AHB1PeriphClockCmd" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_rcc.c" Line="1085">
+    <parameter Name="RCC_AHB1Periph" TI="6281" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_rcc.c" Line="1085" Addr="0x0" Param="Yes"/>
+    <parameter Name="NewState" TI="6421" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_rcc.c" Line="1085" Addr="0x1" Param="Yes"/>
    </function >
-   <function Name="RCC_APB1PeriphClockCmd" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_rcc.c" Line="1194">
-    <parameter Name="RCC_APB1Periph" TI="6281" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_rcc.c" Line="1194" Addr="0x0" Param="Yes"/>
-    <parameter Name="NewState" TI="6421" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_rcc.c" Line="1194" Addr="0x1" Param="Yes"/>
+   <function Name="RCC_APB1PeriphClockCmd" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_rcc.c" Line="1194">
+    <parameter Name="RCC_APB1Periph" TI="6281" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_rcc.c" Line="1194" Addr="0x0" Param="Yes"/>
+    <parameter Name="NewState" TI="6421" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_rcc.c" Line="1194" Addr="0x1" Param="Yes"/>
    </function >
-   <function Name="RCC_APB2PeriphClockCmd" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_rcc.c" Line="1234">
-    <parameter Name="RCC_APB2Periph" TI="6281" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_rcc.c" Line="1234" Addr="0x0" Param="Yes"/>
-    <parameter Name="NewState" TI="6421" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_rcc.c" Line="1234" Addr="0x1" Param="Yes"/>
+   <function Name="RCC_APB2PeriphClockCmd" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_rcc.c" Line="1234">
+    <parameter Name="RCC_APB2Periph" TI="6281" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_rcc.c" Line="1234" Addr="0x0" Param="Yes"/>
+    <parameter Name="NewState" TI="6421" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_rcc.c" Line="1234" Addr="0x1" Param="Yes"/>
    </function >
    <type Family="array" ID="9447" toTI="6220"/>
-   <variable Name="APBAHBPrescTable" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_rcc.c" Line="127" Addr="0x20000000" TI="9480"/>
+   <variable Name="APBAHBPrescTable" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_rcc.c" Line="127" Addr="0x20000000" TI="9480"/>
   </module>
-  <module Name="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_gpio.c" >
+  <module Name="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_gpio.c" >
    <type Family="Base" Name="signed char" ID="9546"/>
    <type Family="Base" Name="unsigned char" ID="9564"/>
    <type Family="typedef" Name="uint8_t" Line="42" ID="9553" toTI="9564"/>
@@ -551,31 +551,31 @@
    </type>
    <type Family="typedef" Name="GPIO_InitTypeDef" Line="133" ID="10159" toTI="10080"/>
    <type Family="Pointer" TI="10211" toTI="9878"/>
-   <function Name="GPIO_Init" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_gpio.c" Line="182">
-    <parameter Name="GPIOx" TI="10211" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_gpio.c" Line="182" Addr="0x0" Param="Yes"/>
+   <function Name="GPIO_Init" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_gpio.c" Line="182">
+    <parameter Name="GPIOx" TI="10211" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_gpio.c" Line="182" Addr="0x0" Param="Yes"/>
    <type Family="Pointer" TI="10314" toTI="10159"/>
-    <parameter Name="GPIO_InitStruct" TI="10314" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_gpio.c" Line="182" Addr="0x1" Param="Yes"/>
-    <variable Name="pinpos" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_gpio.c" Line="184" Addr="0x0" TI="9614"/>
-    <variable Name="pos" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_gpio.c" Line="184" Addr="0x0" TI="9614"/>
-    <variable Name="currentpin" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_gpio.c" Line="184" Addr="0x0" TI="9614"/>
+    <parameter Name="GPIO_InitStruct" TI="10314" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_gpio.c" Line="182" Addr="0x1" Param="Yes"/>
+    <variable Name="pinpos" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_gpio.c" Line="184" Addr="0x0" TI="9614"/>
+    <variable Name="pos" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_gpio.c" Line="184" Addr="0x0" TI="9614"/>
+    <variable Name="currentpin" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_gpio.c" Line="184" Addr="0x0" TI="9614"/>
    </function >
-   <function Name="GPIO_SetBits" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_gpio.c" Line="380">
-    <parameter Name="GPIOx" TI="10211" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_gpio.c" Line="380" Addr="0x0" Param="Yes"/>
-    <parameter Name="GPIO_Pin" TI="9578" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_gpio.c" Line="380" Addr="0x1" Param="Yes"/>
+   <function Name="GPIO_SetBits" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_gpio.c" Line="380">
+    <parameter Name="GPIOx" TI="10211" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_gpio.c" Line="380" Addr="0x0" Param="Yes"/>
+    <parameter Name="GPIO_Pin" TI="9578" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_gpio.c" Line="380" Addr="0x1" Param="Yes"/>
    </function >
-   <function Name="GPIO_ResetBits" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_gpio.c" Line="399">
-    <parameter Name="GPIOx" TI="10211" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_gpio.c" Line="399" Addr="0x0" Param="Yes"/>
-    <parameter Name="GPIO_Pin" TI="9578" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_gpio.c" Line="399" Addr="0x1" Param="Yes"/>
+   <function Name="GPIO_ResetBits" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_gpio.c" Line="399">
+    <parameter Name="GPIOx" TI="10211" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_gpio.c" Line="399" Addr="0x0" Param="Yes"/>
+    <parameter Name="GPIO_Pin" TI="9578" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_gpio.c" Line="399" Addr="0x1" Param="Yes"/>
    </function >
-   <function Name="GPIO_PinAFConfig" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_gpio.c" Line="529">
-    <parameter Name="GPIOx" TI="10211" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_gpio.c" Line="529" Addr="0x0" Param="Yes"/>
-    <parameter Name="GPIO_PinSource" TI="9578" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_gpio.c" Line="529" Addr="0x1" Param="Yes"/>
-    <parameter Name="GPIO_AF" TI="9553" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_gpio.c" Line="529" Addr="0x2" Param="Yes"/>
-    <variable Name="temp" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_gpio.c" Line="531" Addr="0x0" TI="9614"/>
-    <variable Name="temp_2" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_gpio.c" Line="532" Addr="0x0" TI="9614"/>
+   <function Name="GPIO_PinAFConfig" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_gpio.c" Line="529">
+    <parameter Name="GPIOx" TI="10211" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_gpio.c" Line="529" Addr="0x0" Param="Yes"/>
+    <parameter Name="GPIO_PinSource" TI="9578" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_gpio.c" Line="529" Addr="0x1" Param="Yes"/>
+    <parameter Name="GPIO_AF" TI="9553" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_gpio.c" Line="529" Addr="0x2" Param="Yes"/>
+    <variable Name="temp" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_gpio.c" Line="531" Addr="0x0" TI="9614"/>
+    <variable Name="temp_2" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_gpio.c" Line="532" Addr="0x0" TI="9614"/>
    </function >
   </module>
-  <module Name="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_tim.c" >
+  <module Name="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_tim.c" >
    <type Family="Base" Name="signed char" ID="11127"/>
    <type Family="Base" Name="unsigned char" ID="11145"/>
    <type Family="typedef" Name="uint8_t" Line="42" ID="11134" toTI="11145"/>
@@ -670,54 +670,54 @@
    </type>
    <type Family="typedef" Name="TIM_BDTRInitTypeDef" Line="161" ID="12315" toTI="12208"/>
    <type Family="Pointer" TI="12440" toTI="11884"/>
-   <function Name="TIM_TimeBaseInit" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_tim.c" Line="282">
-    <parameter Name="TIMx" TI="12440" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_tim.c" Line="282" Addr="0x0" Param="Yes"/>
+   <function Name="TIM_TimeBaseInit" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_tim.c" Line="282">
+    <parameter Name="TIMx" TI="12440" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_tim.c" Line="282" Addr="0x0" Param="Yes"/>
    <type Family="Pointer" TI="12688" toTI="11975"/>
-    <parameter Name="TIM_TimeBaseInitStruct" TI="12688" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_tim.c" Line="282" Addr="0x1" Param="Yes"/>
-    <variable Name="tmpcr1" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_tim.c" Line="284" Addr="0x0" TI="11159"/>
+    <parameter Name="TIM_TimeBaseInitStruct" TI="12688" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_tim.c" Line="282" Addr="0x1" Param="Yes"/>
+    <variable Name="tmpcr1" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_tim.c" Line="284" Addr="0x0" TI="11159"/>
    </function >
-   <function Name="TIM_ARRPreloadConfig" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_tim.c" Line="516">
-    <parameter Name="TIMx" TI="12440" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_tim.c" Line="516" Addr="0x0" Param="Yes"/>
-    <parameter Name="NewState" TI="11324" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_tim.c" Line="516" Addr="0x1" Param="Yes"/>
+   <function Name="TIM_ARRPreloadConfig" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_tim.c" Line="516">
+    <parameter Name="TIMx" TI="12440" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_tim.c" Line="516" Addr="0x0" Param="Yes"/>
+    <parameter Name="NewState" TI="11324" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_tim.c" Line="516" Addr="0x1" Param="Yes"/>
    </function >
-   <function Name="TIM_Cmd" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_tim.c" Line="586">
-    <parameter Name="TIMx" TI="12440" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_tim.c" Line="586" Addr="0x0" Param="Yes"/>
-    <parameter Name="NewState" TI="11324" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_tim.c" Line="586" Addr="0x1" Param="Yes"/>
+   <function Name="TIM_Cmd" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_tim.c" Line="586">
+    <parameter Name="TIMx" TI="12440" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_tim.c" Line="586" Addr="0x0" Param="Yes"/>
+    <parameter Name="NewState" TI="11324" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_tim.c" Line="586" Addr="0x1" Param="Yes"/>
    </function >
    <type Family="Pointer" TI="13499" toTI="12107"/>
-   <function Name="TIM_OC2Init" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_tim.c" Line="746">
-    <parameter Name="TIMx" TI="12440" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_tim.c" Line="746" Addr="0x0" Param="Yes"/>
-    <parameter Name="TIM_OCInitStruct" TI="13499" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_tim.c" Line="746" Addr="0x1" Param="Yes"/>
-    <variable Name="tmpccmrx" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_tim.c" Line="748" Addr="0x0" TI="11159"/>
-    <variable Name="tmpccer" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_tim.c" Line="748" Addr="0x0" TI="11159"/>
-    <variable Name="tmpcr2" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_tim.c" Line="748" Addr="0x0" TI="11159"/>
+   <function Name="TIM_OC2Init" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_tim.c" Line="746">
+    <parameter Name="TIMx" TI="12440" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_tim.c" Line="746" Addr="0x0" Param="Yes"/>
+    <parameter Name="TIM_OCInitStruct" TI="13499" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_tim.c" Line="746" Addr="0x1" Param="Yes"/>
+    <variable Name="tmpccmrx" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_tim.c" Line="748" Addr="0x0" TI="11159"/>
+    <variable Name="tmpccer" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_tim.c" Line="748" Addr="0x0" TI="11159"/>
+    <variable Name="tmpcr2" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_tim.c" Line="748" Addr="0x0" TI="11159"/>
    </function >
-   <function Name="TIM_OCStructInit" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_tim.c" Line="970">
-    <parameter Name="TIM_OCInitStruct" TI="13499" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_tim.c" Line="970" Addr="0x0" Param="Yes"/>
+   <function Name="TIM_OCStructInit" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_tim.c" Line="970">
+    <parameter Name="TIM_OCInitStruct" TI="13499" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_tim.c" Line="970" Addr="0x0" Param="Yes"/>
    </function >
-   <function Name="TIM_OC2PreloadConfig" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_tim.c" Line="1260">
-    <parameter Name="TIMx" TI="12440" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_tim.c" Line="1260" Addr="0x0" Param="Yes"/>
-    <parameter Name="TIM_OCPreload" TI="11159" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_tim.c" Line="1260" Addr="0x1" Param="Yes"/>
-    <variable Name="tmpccmr1" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_tim.c" Line="1262" Addr="0x0" TI="11159"/>
+   <function Name="TIM_OC2PreloadConfig" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_tim.c" Line="1260">
+    <parameter Name="TIMx" TI="12440" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_tim.c" Line="1260" Addr="0x0" Param="Yes"/>
+    <parameter Name="TIM_OCPreload" TI="11159" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_tim.c" Line="1260" Addr="0x1" Param="Yes"/>
+    <variable Name="tmpccmr1" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_tim.c" Line="1262" Addr="0x0" TI="11159"/>
    </function >
    <type Family="Pointer" TI="16001" toTI="12197"/>
    <type Family="Pointer" TI="16987" toTI="12315"/>
-   <function Name="TIM_ITConfig" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_tim.c" Line="2362">
-    <parameter Name="TIMx" TI="12440" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_tim.c" Line="2362" Addr="0x0" Param="Yes"/>
-    <parameter Name="TIM_IT" TI="11159" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_tim.c" Line="2362" Addr="0x1" Param="Yes"/>
-    <parameter Name="NewState" TI="11324" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_tim.c" Line="2362" Addr="0x2" Param="Yes"/>
+   <function Name="TIM_ITConfig" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_tim.c" Line="2362">
+    <parameter Name="TIMx" TI="12440" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_tim.c" Line="2362" Addr="0x0" Param="Yes"/>
+    <parameter Name="TIM_IT" TI="11159" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_tim.c" Line="2362" Addr="0x1" Param="Yes"/>
+    <parameter Name="NewState" TI="11324" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_tim.c" Line="2362" Addr="0x2" Param="Yes"/>
    </function >
-   <function Name="TIM_ClearITPendingBit" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_tim.c" Line="2544">
-    <parameter Name="TIMx" TI="12440" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_tim.c" Line="2544" Addr="0x0" Param="Yes"/>
-    <parameter Name="TIM_IT" TI="11159" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_tim.c" Line="2544" Addr="0x1" Param="Yes"/>
+   <function Name="TIM_ClearITPendingBit" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_tim.c" Line="2544">
+    <parameter Name="TIMx" TI="12440" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_tim.c" Line="2544" Addr="0x0" Param="Yes"/>
+    <parameter Name="TIM_IT" TI="11159" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_tim.c" Line="2544" Addr="0x1" Param="Yes"/>
    </function >
-   <function Name="TIM_DMACmd" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_tim.c" Line="2608">
-    <parameter Name="TIMx" TI="12440" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_tim.c" Line="2608" Addr="0x0" Param="Yes"/>
-    <parameter Name="TIM_DMASource" TI="11159" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_tim.c" Line="2608" Addr="0x1" Param="Yes"/>
-    <parameter Name="NewState" TI="11324" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_tim.c" Line="2608" Addr="0x2" Param="Yes"/>
+   <function Name="TIM_DMACmd" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_tim.c" Line="2608">
+    <parameter Name="TIMx" TI="12440" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_tim.c" Line="2608" Addr="0x0" Param="Yes"/>
+    <parameter Name="TIM_DMASource" TI="11159" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_tim.c" Line="2608" Addr="0x1" Param="Yes"/>
+    <parameter Name="NewState" TI="11324" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_tim.c" Line="2608" Addr="0x2" Param="Yes"/>
    </function >
   </module>
-  <module Name="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\misc.c" >
+  <module Name="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\misc.c" >
    <type Family="Base" Name="signed char" ID="18839"/>
    <type Family="Base" Name="unsigned char" ID="18857"/>
    <type Family="typedef" Name="uint8_t" Line="42" ID="18846" toTI="18857"/>
@@ -795,15 +795,15 @@
     <Component Name="NVIC_IRQChannelCmd" TI="19899" Line="65" Offs="3"/>
    </type>
    <type Family="typedef" Name="NVIC_InitTypeDef" Line="68" ID="19914" toTI="19849"/>
-   <function Name="NVIC_Init" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\misc.c" Line="130">
+   <function Name="NVIC_Init" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\misc.c" Line="130">
    <type Family="Pointer" TI="20051" toTI="19914"/>
-    <parameter Name="NVIC_InitStruct" TI="20051" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\misc.c" Line="130" Addr="0x0" Param="Yes"/>
-    <variable Name="tmppriority" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\misc.c" Line="132" Addr="0x0" TI="18846"/>
-    <variable Name="tmppre" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\misc.c" Line="132" Addr="0x0" TI="18846"/>
-    <variable Name="tmpsub" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\misc.c" Line="132" Addr="0x0" TI="18846"/>
+    <parameter Name="NVIC_InitStruct" TI="20051" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\misc.c" Line="130" Addr="0x0" Param="Yes"/>
+    <variable Name="tmppriority" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\misc.c" Line="132" Addr="0x0" TI="18846"/>
+    <variable Name="tmppre" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\misc.c" Line="132" Addr="0x0" TI="18846"/>
+    <variable Name="tmpsub" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\misc.c" Line="132" Addr="0x0" TI="18846"/>
    </function >
   </module>
-  <module Name="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\system_stm32f4xx.c" >
+  <module Name="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\system_stm32f4xx.c" >
    <type Family="Base" Name="signed char" ID="20267"/>
    <type Family="Base" Name="unsigned char" ID="20285"/>
    <type Family="typedef" Name="uint8_t" Line="42" ID="20274" toTI="20285"/>
@@ -893,15 +893,15 @@
     <Component Name="PLLI2SCFGR" TI="21460" Line="764" Offs="132"/>
    </type>
    <type Family="typedef" Name="RCC_TypeDef" Line="765" ID="21477" toTI="21016"/>
-   <function Name="SystemInit" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\system_stm32f4xx.c" Line="204">
-    <variable Name="StartUpCounter" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\system_stm32f4xx.c" Line="338" Addr="0x34000004" TI="0"/>
-    <variable Name="HSEStatus" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\system_stm32f4xx.c" Line="338" Addr="0x34000000" TI="0"/>
+   <function Name="SystemInit" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\system_stm32f4xx.c" Line="204">
+    <variable Name="StartUpCounter" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\system_stm32f4xx.c" Line="338" Addr="0x34000004" TI="0"/>
+    <variable Name="HSEStatus" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\system_stm32f4xx.c" Line="338" Addr="0x34000000" TI="0"/>
    </function >
    <type Family="array" ID="21729" toTI="20274"/>
-   <variable Name="SystemCoreClock" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\system_stm32f4xx.c" Line="172" Addr="0x0" TI="20335"/>
-   <variable Name="AHBPrescTable" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\system_stm32f4xx.c" Line="174" Addr="0x0" TI="21813"/>
+   <variable Name="SystemCoreClock" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\system_stm32f4xx.c" Line="172" Addr="0x0" TI="20335"/>
+   <variable Name="AHBPrescTable" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\system_stm32f4xx.c" Line="174" Addr="0x0" TI="21813"/>
   </module>
-  <module Name="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4_discovery.c" >
+  <module Name="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4_discovery.c" >
    <type Family="Base" Name="signed char" ID="22427"/>
    <type Family="Base" Name="unsigned char" ID="22445"/>
    <type Family="typedef" Name="uint8_t" Line="42" ID="22434" toTI="22445"/>
@@ -964,12 +964,12 @@
    <type Family="typedef" Name="Led_TypeDef" Line="55" ID="23318" toTI="23285"/>
    <type Family="typedef" Name="Button_TypeDef" Line="60" ID="23344" toTI="23329"/>
    <type Family="typedef" Name="ButtonMode_TypeDef" Line="66" ID="23376" toTI="23355"/>
-   <function Name="STM_EVAL_LEDInit" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4_discovery.c" Line="116">
-    <parameter Name="Led" TI="23318" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4_discovery.c" Line="116" Addr="0x0" Param="Yes"/>
-    <variable Name="GPIO_InitStructure" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4_discovery.c" Line="118" Addr="0x34000000" TI="23198"/>
+   <function Name="STM_EVAL_LEDInit" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4_discovery.c" Line="116">
+    <parameter Name="Led" TI="23318" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4_discovery.c" Line="116" Addr="0x0" Param="Yes"/>
+    <variable Name="GPIO_InitStructure" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4_discovery.c" Line="118" Addr="0x34000000" TI="23198"/>
    </function >
-   <function Name="STM_EVAL_LEDToggle" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4_discovery.c" Line="172">
-    <parameter Name="Led" TI="23318" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4_discovery.c" Line="172" Addr="0x0" Param="Yes"/>
+   <function Name="STM_EVAL_LEDToggle" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4_discovery.c" Line="172">
+    <parameter Name="Led" TI="23318" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4_discovery.c" Line="172" Addr="0x0" Param="Yes"/>
    </function >
    <type Family="Pointer" TI="23729" toTI="22803"/>
    <type Family="array" ID="23713" toTI="23729"/>
@@ -977,19 +977,19 @@
    <type Family="array" ID="23800" toTI="23729"/>
    <type Family="array" ID="23829" toTI="22459"/>
    <type Family="array" ID="23899" toTI="22434"/>
-   <variable Name="GPIO_PORT" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4_discovery.c" Line="67" Addr="0x20000010" TI="23713"/>
-   <variable Name="GPIO_PIN" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4_discovery.c" Line="69" Addr="0x8001E00" TI="24019"/>
-   <variable Name="GPIO_CLK" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4_discovery.c" Line="71" Addr="0x8001DF0" TI="24042"/>
-   <variable Name="BUTTON_PORT" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4_discovery.c" Line="74" Addr="0x20000020" TI="23800"/>
-   <variable Name="BUTTON_PIN" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4_discovery.c" Line="76" Addr="0x8001E0C" TI="24083"/>
-   <variable Name="BUTTON_CLK" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4_discovery.c" Line="78" Addr="0x8001E08" TI="24106"/>
-   <variable Name="BUTTON_EXTI_LINE" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4_discovery.c" Line="80" Addr="0x8001E18" TI="24129"/>
-   <variable Name="BUTTON_PORT_SOURCE" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4_discovery.c" Line="82" Addr="0x8001E10" TI="24152"/>
-   <variable Name="BUTTON_PIN_SOURCE" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4_discovery.c" Line="84" Addr="0x8001E14" TI="24175"/>
-   <variable Name="BUTTON_IRQn" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4_discovery.c" Line="85" Addr="0x8001E1C" TI="24198"/>
-   <variable Name="NVIC_InitStructure" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4_discovery.c" Line="87" Addr="0x0" TI="23274"/>
+   <variable Name="GPIO_PORT" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4_discovery.c" Line="67" Addr="0x20000010" TI="23713"/>
+   <variable Name="GPIO_PIN" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4_discovery.c" Line="69" Addr="0x8001E00" TI="24019"/>
+   <variable Name="GPIO_CLK" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4_discovery.c" Line="71" Addr="0x8001DF0" TI="24042"/>
+   <variable Name="BUTTON_PORT" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4_discovery.c" Line="74" Addr="0x20000020" TI="23800"/>
+   <variable Name="BUTTON_PIN" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4_discovery.c" Line="76" Addr="0x8001E0C" TI="24083"/>
+   <variable Name="BUTTON_CLK" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4_discovery.c" Line="78" Addr="0x8001E08" TI="24106"/>
+   <variable Name="BUTTON_EXTI_LINE" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4_discovery.c" Line="80" Addr="0x8001E18" TI="24129"/>
+   <variable Name="BUTTON_PORT_SOURCE" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4_discovery.c" Line="82" Addr="0x8001E10" TI="24152"/>
+   <variable Name="BUTTON_PIN_SOURCE" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4_discovery.c" Line="84" Addr="0x8001E14" TI="24175"/>
+   <variable Name="BUTTON_IRQn" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4_discovery.c" Line="85" Addr="0x8001E1C" TI="24198"/>
+   <variable Name="NVIC_InitStructure" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4_discovery.c" Line="87" Addr="0x0" TI="23274"/>
   </module>
-  <module Name="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_dac.c" >
+  <module Name="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_dac.c" >
    <type Family="Base" Name="signed char" ID="24263"/>
    <type Family="Base" Name="unsigned char" ID="24281"/>
    <type Family="typedef" Name="uint8_t" Line="42" ID="24270" toTI="24281"/>
@@ -1031,27 +1031,27 @@
     <Component Name="DAC_OutputBuffer" TI="24747" Line="61" Offs="12"/>
    </type>
    <type Family="typedef" Name="DAC_InitTypeDef" Line="63" ID="24762" toTI="24697"/>
-   <function Name="DAC_Init" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_dac.c" Line="193">
-    <parameter Name="DAC_Channel" TI="24331" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_dac.c" Line="193" Addr="0x0" Param="Yes"/>
+   <function Name="DAC_Init" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_dac.c" Line="193">
+    <parameter Name="DAC_Channel" TI="24331" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_dac.c" Line="193" Addr="0x0" Param="Yes"/>
    <type Family="Pointer" TI="24880" toTI="24762"/>
-    <parameter Name="DAC_InitStruct" TI="24880" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_dac.c" Line="193" Addr="0x1" Param="Yes"/>
-    <variable Name="tmpreg1" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_dac.c" Line="195" Addr="0x0" TI="24331"/>
-    <variable Name="tmpreg2" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_dac.c" Line="195" Addr="0x0" TI="24331"/>
+    <parameter Name="DAC_InitStruct" TI="24880" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_dac.c" Line="193" Addr="0x1" Param="Yes"/>
+    <variable Name="tmpreg1" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_dac.c" Line="195" Addr="0x0" TI="24331"/>
+    <variable Name="tmpreg2" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_dac.c" Line="195" Addr="0x0" TI="24331"/>
    </function >
-   <function Name="DAC_StructInit" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_dac.c" Line="229">
-    <parameter Name="DAC_InitStruct" TI="24880" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_dac.c" Line="229" Addr="0x0" Param="Yes"/>
+   <function Name="DAC_StructInit" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_dac.c" Line="229">
+    <parameter Name="DAC_InitStruct" TI="24880" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_dac.c" Line="229" Addr="0x0" Param="Yes"/>
    </function >
-   <function Name="DAC_Cmd" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_dac.c" Line="253">
-    <parameter Name="DAC_Channel" TI="24331" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_dac.c" Line="253" Addr="0x0" Param="Yes"/>
-    <parameter Name="NewState" TI="24455" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_dac.c" Line="253" Addr="0x1" Param="Yes"/>
+   <function Name="DAC_Cmd" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_dac.c" Line="253">
+    <parameter Name="DAC_Channel" TI="24331" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_dac.c" Line="253" Addr="0x0" Param="Yes"/>
+    <parameter Name="NewState" TI="24455" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_dac.c" Line="253" Addr="0x1" Param="Yes"/>
    </function >
-   <function Name="DAC_SetChannel1Data" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_dac.c" Line="365">
-    <parameter Name="DAC_Align" TI="24331" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_dac.c" Line="365" Addr="0x0" Param="Yes"/>
-    <parameter Name="Data" TI="24295" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_dac.c" Line="365" Addr="0x1" Param="Yes"/>
-    <variable Name="tmp" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_dac.c" Line="367" Addr="0x34000004" TI="24377"/>
+   <function Name="DAC_SetChannel1Data" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_dac.c" Line="365">
+    <parameter Name="DAC_Align" TI="24331" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_dac.c" Line="365" Addr="0x0" Param="Yes"/>
+    <parameter Name="Data" TI="24295" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_dac.c" Line="365" Addr="0x1" Param="Yes"/>
+    <variable Name="tmp" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_dac.c" Line="367" Addr="0x34000004" TI="24377"/>
    </function >
   </module>
-  <module Name="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_spi.c" >
+  <module Name="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_spi.c" >
    <type Family="Base" Name="signed char" ID="25940"/>
    <type Family="Base" Name="unsigned char" ID="25958"/>
    <type Family="typedef" Name="uint8_t" Line="42" ID="25947" toTI="25958"/>
@@ -1146,19 +1146,19 @@
    </type>
    <type Family="typedef" Name="I2S_InitTypeDef" Line="105" ID="27167" toTI="27074"/>
    <type Family="Pointer" TI="27219" toTI="26916"/>
-   <function Name="SPI_Init" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_spi.c" Line="257">
-    <parameter Name="SPIx" TI="27219" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_spi.c" Line="257" Addr="0x0" Param="Yes"/>
+   <function Name="SPI_Init" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_spi.c" Line="257">
+    <parameter Name="SPIx" TI="27219" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_spi.c" Line="257" Addr="0x0" Param="Yes"/>
    <type Family="Pointer" TI="27296" toTI="27063"/>
-    <parameter Name="SPI_InitStruct" TI="27296" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_spi.c" Line="257" Addr="0x1" Param="Yes"/>
-    <variable Name="tmpreg" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_spi.c" Line="259" Addr="0x0" TI="25972"/>
+    <parameter Name="SPI_InitStruct" TI="27296" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_spi.c" Line="257" Addr="0x1" Param="Yes"/>
+    <variable Name="tmpreg" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_spi.c" Line="259" Addr="0x0" TI="25972"/>
    </function >
    <type Family="Pointer" TI="27501" toTI="27167"/>
-   <function Name="SPI_Cmd" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_spi.c" Line="510">
-    <parameter Name="SPIx" TI="27219" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_spi.c" Line="510" Addr="0x0" Param="Yes"/>
-    <parameter Name="NewState" TI="26153" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_spi.c" Line="510" Addr="0x1" Param="Yes"/>
+   <function Name="SPI_Cmd" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_spi.c" Line="510">
+    <parameter Name="SPIx" TI="27219" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_spi.c" Line="510" Addr="0x0" Param="Yes"/>
+    <parameter Name="NewState" TI="26153" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_spi.c" Line="510" Addr="0x1" Param="Yes"/>
    </function >
   </module>
-  <module Name="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_usart.c" >
+  <module Name="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_usart.c" >
    <type Family="Base" Name="signed char" ID="28937"/>
    <type Family="Base" Name="unsigned char" ID="28955"/>
    <type Family="typedef" Name="uint8_t" Line="42" ID="28944" toTI="28955"/>
@@ -1217,26 +1217,26 @@
    </type>
    <type Family="typedef" Name="USART_ClockInitTypeDef" Line="96" ID="29616" toTI="29551"/>
    <type Family="Pointer" TI="29668" toTI="29359"/>
-   <function Name="USART_Init" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_usart.c" Line="227">
-    <parameter Name="USARTx" TI="29668" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_usart.c" Line="227" Addr="0x0" Param="Yes"/>
+   <function Name="USART_Init" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_usart.c" Line="227">
+    <parameter Name="USARTx" TI="29668" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_usart.c" Line="227" Addr="0x0" Param="Yes"/>
    <type Family="Pointer" TI="29804" toTI="29540"/>
-    <parameter Name="USART_InitStruct" TI="29804" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_usart.c" Line="227" Addr="0x1" Param="Yes"/>
-    <variable Name="tmpreg" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_usart.c" Line="229" Addr="0x0" TI="29005"/>
-    <variable Name="apbclock" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_usart.c" Line="229" Addr="0x0" TI="29005"/>
-    <variable Name="integerdivider" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_usart.c" Line="230" Addr="0x0" TI="29005"/>
-    <variable Name="fractionaldivider" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_usart.c" Line="231" Addr="0x0" TI="29005"/>
-    <variable Name="RCC_ClocksStatus" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_usart.c" Line="232" Addr="0xC000000" TI="29436"/>
+    <parameter Name="USART_InitStruct" TI="29804" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_usart.c" Line="227" Addr="0x1" Param="Yes"/>
+    <variable Name="tmpreg" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_usart.c" Line="229" Addr="0x0" TI="29005"/>
+    <variable Name="apbclock" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_usart.c" Line="229" Addr="0x0" TI="29005"/>
+    <variable Name="integerdivider" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_usart.c" Line="230" Addr="0x0" TI="29005"/>
+    <variable Name="fractionaldivider" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_usart.c" Line="231" Addr="0x0" TI="29005"/>
+    <variable Name="RCC_ClocksStatus" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_usart.c" Line="232" Addr="0xC000000" TI="29436"/>
    </function >
-   <function Name="USART_StructInit" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_usart.c" Line="340">
-    <parameter Name="USART_InitStruct" TI="29804" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_usart.c" Line="340" Addr="0x0" Param="Yes"/>
+   <function Name="USART_StructInit" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_usart.c" Line="340">
+    <parameter Name="USART_InitStruct" TI="29804" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_usart.c" Line="340" Addr="0x0" Param="Yes"/>
    </function >
    <type Family="Pointer" TI="29923" toTI="29616"/>
-   <function Name="USART_Cmd" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_usart.c" Line="408">
-    <parameter Name="USARTx" TI="29668" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_usart.c" Line="408" Addr="0x0" Param="Yes"/>
-    <parameter Name="NewState" TI="29129" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_usart.c" Line="408" Addr="0x1" Param="Yes"/>
+   <function Name="USART_Cmd" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_usart.c" Line="408">
+    <parameter Name="USARTx" TI="29668" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_usart.c" Line="408" Addr="0x0" Param="Yes"/>
+    <parameter Name="NewState" TI="29129" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_usart.c" Line="408" Addr="0x1" Param="Yes"/>
    </function >
   </module>
-  <module Name="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_adc.c" >
+  <module Name="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_adc.c" >
    <type Family="Base" Name="signed char" ID="31545"/>
    <type Family="Base" Name="unsigned char" ID="31563"/>
    <type Family="typedef" Name="uint8_t" Line="42" ID="31552" toTI="31563"/>
@@ -1300,50 +1300,50 @@
     <Component Name="ADC_TwoSamplingDelay" TI="32304" Line="90" Offs="12"/>
    </type>
    <type Family="typedef" Name="ADC_CommonInitTypeDef" Line="94" ID="32319" toTI="32254"/>
-   <function Name="ADC_Init" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_adc.c" Line="228">
+   <function Name="ADC_Init" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_adc.c" Line="228">
    <type Family="Pointer" TI="32433" toTI="32057"/>
-    <parameter Name="ADCx" TI="32433" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_adc.c" Line="228" Addr="0x0" Param="Yes"/>
+    <parameter Name="ADCx" TI="32433" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_adc.c" Line="228" Addr="0x0" Param="Yes"/>
    <type Family="Pointer" TI="32439" toTI="32243"/>
-    <parameter Name="ADC_InitStruct" TI="32439" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_adc.c" Line="228" Addr="0x1" Param="Yes"/>
-    <variable Name="tmpreg1" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_adc.c" Line="230" Addr="0x0" TI="31613"/>
-    <variable Name="tmpreg2" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_adc.c" Line="231" Addr="0x0" TI="31552"/>
+    <parameter Name="ADC_InitStruct" TI="32439" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_adc.c" Line="228" Addr="0x1" Param="Yes"/>
+    <variable Name="tmpreg1" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_adc.c" Line="230" Addr="0x0" TI="31613"/>
+    <variable Name="tmpreg2" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_adc.c" Line="231" Addr="0x0" TI="31552"/>
    </function >
-   <function Name="ADC_StructInit" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_adc.c" Line="303">
-    <parameter Name="ADC_InitStruct" TI="32439" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_adc.c" Line="303" Addr="0x0" Param="Yes"/>
+   <function Name="ADC_StructInit" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_adc.c" Line="303">
+    <parameter Name="ADC_InitStruct" TI="32439" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_adc.c" Line="303" Addr="0x0" Param="Yes"/>
    </function >
-   <function Name="ADC_CommonInit" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_adc.c" Line="334">
+   <function Name="ADC_CommonInit" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_adc.c" Line="334">
    <type Family="Pointer" TI="32544" toTI="32319"/>
-    <parameter Name="ADC_CommonInitStruct" TI="32544" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_adc.c" Line="334" Addr="0x0" Param="Yes"/>
-    <variable Name="tmpreg1" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_adc.c" Line="336" Addr="0x0" TI="31613"/>
+    <parameter Name="ADC_CommonInitStruct" TI="32544" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_adc.c" Line="334" Addr="0x0" Param="Yes"/>
+    <variable Name="tmpreg1" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_adc.c" Line="336" Addr="0x0" TI="31613"/>
    </function >
-   <function Name="ADC_CommonStructInit" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_adc.c" Line="370">
-    <parameter Name="ADC_CommonInitStruct" TI="32544" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_adc.c" Line="370" Addr="0x0" Param="Yes"/>
+   <function Name="ADC_CommonStructInit" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_adc.c" Line="370">
+    <parameter Name="ADC_CommonInitStruct" TI="32544" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_adc.c" Line="370" Addr="0x0" Param="Yes"/>
    </function >
-   <function Name="ADC_Cmd" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_adc.c" Line="392">
-    <parameter Name="ADCx" TI="32433" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_adc.c" Line="392" Addr="0x0" Param="Yes"/>
-    <parameter Name="NewState" TI="31737" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_adc.c" Line="392" Addr="0x1" Param="Yes"/>
+   <function Name="ADC_Cmd" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_adc.c" Line="392">
+    <parameter Name="ADCx" TI="32433" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_adc.c" Line="392" Addr="0x0" Param="Yes"/>
+    <parameter Name="NewState" TI="31737" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_adc.c" Line="392" Addr="0x1" Param="Yes"/>
    </function >
-   <function Name="ADC_RegularChannelConfig" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_adc.c" Line="708">
-    <parameter Name="ADCx" TI="32433" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_adc.c" Line="708" Addr="0x0" Param="Yes"/>
-    <parameter Name="ADC_Channel" TI="31552" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_adc.c" Line="708" Addr="0x1" Param="Yes"/>
-    <parameter Name="Rank" TI="31552" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_adc.c" Line="708" Addr="0x2" Param="Yes"/>
-    <parameter Name="ADC_SampleTime" TI="31552" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_adc.c" Line="708" Addr="0x3" Param="Yes"/>
-    <variable Name="tmpreg1" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_adc.c" Line="710" Addr="0x0" TI="31613"/>
-    <variable Name="tmpreg2" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_adc.c" Line="710" Addr="0x0" TI="31613"/>
+   <function Name="ADC_RegularChannelConfig" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_adc.c" Line="708">
+    <parameter Name="ADCx" TI="32433" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_adc.c" Line="708" Addr="0x0" Param="Yes"/>
+    <parameter Name="ADC_Channel" TI="31552" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_adc.c" Line="708" Addr="0x1" Param="Yes"/>
+    <parameter Name="Rank" TI="31552" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_adc.c" Line="708" Addr="0x2" Param="Yes"/>
+    <parameter Name="ADC_SampleTime" TI="31552" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_adc.c" Line="708" Addr="0x3" Param="Yes"/>
+    <variable Name="tmpreg1" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_adc.c" Line="710" Addr="0x0" TI="31613"/>
+    <variable Name="tmpreg2" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_adc.c" Line="710" Addr="0x0" TI="31613"/>
    </function >
-   <function Name="ADC_DMACmd" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_adc.c" Line="1048">
-    <parameter Name="ADCx" TI="32433" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_adc.c" Line="1048" Addr="0x0" Param="Yes"/>
-    <parameter Name="NewState" TI="31737" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_adc.c" Line="1048" Addr="0x1" Param="Yes"/>
+   <function Name="ADC_DMACmd" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_adc.c" Line="1048">
+    <parameter Name="ADCx" TI="32433" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_adc.c" Line="1048" Addr="0x0" Param="Yes"/>
+    <parameter Name="NewState" TI="31737" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_adc.c" Line="1048" Addr="0x1" Param="Yes"/>
    </function >
-   <function Name="ADC_DMARequestAfterLastTransferCmd" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_adc.c" Line="1072">
-    <parameter Name="ADCx" TI="32433" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_adc.c" Line="1072" Addr="0x0" Param="Yes"/>
-    <parameter Name="NewState" TI="31737" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_adc.c" Line="1072" Addr="0x1" Param="Yes"/>
+   <function Name="ADC_DMARequestAfterLastTransferCmd" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_adc.c" Line="1072">
+    <parameter Name="ADCx" TI="32433" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_adc.c" Line="1072" Addr="0x0" Param="Yes"/>
+    <parameter Name="NewState" TI="31737" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_adc.c" Line="1072" Addr="0x1" Param="Yes"/>
    </function >
-   <function Name="ADC_MultiModeDMARequestAfterLastTransferCmd" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_adc.c" Line="1099">
-    <parameter Name="NewState" TI="31737" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_adc.c" Line="1099" Addr="0x0" Param="Yes"/>
+   <function Name="ADC_MultiModeDMARequestAfterLastTransferCmd" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_adc.c" Line="1099">
+    <parameter Name="NewState" TI="31737" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_adc.c" Line="1099" Addr="0x0" Param="Yes"/>
    </function >
   </module>
-  <module Name="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_dma.c" >
+  <module Name="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_dma.c" >
    <type Family="Base" Name="signed char" ID="34823"/>
    <type Family="Base" Name="unsigned char" ID="34830"/>
    <type Family="Base" Name="short int" ID="34837"/>
@@ -1394,30 +1394,30 @@
     <Component Name="DMA_PeripheralBurst" TI="35413" Line="100" Offs="56"/>
    </type>
    <type Family="typedef" Name="DMA_InitTypeDef" Line="104" ID="35428" toTI="35209"/>
-   <function Name="DMA_DeInit" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_dma.c" Line="188">
+   <function Name="DMA_DeInit" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_dma.c" Line="188">
    <type Family="Pointer" TI="35477" toTI="35115"/>
-    <parameter Name="DMAy_Streamx" TI="35477" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_dma.c" Line="188" Addr="0x0" Param="Yes"/>
+    <parameter Name="DMAy_Streamx" TI="35477" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_dma.c" Line="188" Addr="0x0" Param="Yes"/>
    </function >
-   <function Name="DMA_Init" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_dma.c" Line="311">
-    <parameter Name="DMAy_Streamx" TI="35477" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_dma.c" Line="311" Addr="0x0" Param="Yes"/>
+   <function Name="DMA_Init" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_dma.c" Line="311">
+    <parameter Name="DMAy_Streamx" TI="35477" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_dma.c" Line="311" Addr="0x0" Param="Yes"/>
    <type Family="Pointer" TI="35554" toTI="35428"/>
-    <parameter Name="DMA_InitStruct" TI="35554" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_dma.c" Line="311" Addr="0x1" Param="Yes"/>
-    <variable Name="tmpreg" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_dma.c" Line="313" Addr="0x0" TI="34880"/>
+    <parameter Name="DMA_InitStruct" TI="35554" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_dma.c" Line="311" Addr="0x1" Param="Yes"/>
+    <variable Name="tmpreg" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_dma.c" Line="313" Addr="0x0" TI="34880"/>
    </function >
-   <function Name="DMA_StructInit" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_dma.c" Line="395">
-    <parameter Name="DMA_InitStruct" TI="35554" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_dma.c" Line="395" Addr="0x0" Param="Yes"/>
+   <function Name="DMA_StructInit" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_dma.c" Line="395">
+    <parameter Name="DMA_InitStruct" TI="35554" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_dma.c" Line="395" Addr="0x0" Param="Yes"/>
    </function >
-   <function Name="DMA_Cmd" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_dma.c" Line="470">
-    <parameter Name="DMAy_Streamx" TI="35477" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_dma.c" Line="470" Addr="0x0" Param="Yes"/>
-    <parameter Name="NewState" TI="35004" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_dma.c" Line="470" Addr="0x1" Param="Yes"/>
+   <function Name="DMA_Cmd" TI="0" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_dma.c" Line="470">
+    <parameter Name="DMAy_Streamx" TI="35477" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_dma.c" Line="470" Addr="0x0" Param="Yes"/>
+    <parameter Name="NewState" TI="35004" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_dma.c" Line="470" Addr="0x1" Param="Yes"/>
    </function >
-   <function Name="DMA_GetFlagStatus" TI="34958" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_dma.c" Line="986">
-    <parameter Name="DMAy_Streamx" TI="35477" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_dma.c" Line="986" Addr="0x0" Param="Yes"/>
-    <parameter Name="DMA_FLAG" TI="34880" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_dma.c" Line="986" Addr="0x1" Param="Yes"/>
-    <variable Name="bitstatus" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_dma.c" Line="988" Addr="0x0" TI="34958"/>
+   <function Name="DMA_GetFlagStatus" TI="34958" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_dma.c" Line="986">
+    <parameter Name="DMAy_Streamx" TI="35477" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_dma.c" Line="986" Addr="0x0" Param="Yes"/>
+    <parameter Name="DMA_FLAG" TI="34880" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_dma.c" Line="986" Addr="0x1" Param="Yes"/>
+    <variable Name="bitstatus" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_dma.c" Line="988" Addr="0x0" TI="34958"/>
    <type Family="Pointer" TI="36347" toTI="35197"/>
-    <variable Name="DMAy" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_dma.c" Line="989" Addr="0x0" TI="36347"/>
-    <variable Name="tmpreg" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_dma.c" Line="990" Addr="0x0" TI="34880"/>
+    <variable Name="DMAy" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_dma.c" Line="989" Addr="0x0" TI="36347"/>
+    <variable Name="tmpreg" FileName="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_dma.c" Line="990" Addr="0x0" TI="34880"/>
    </function >
   </module>
  </modulelist>
