@@ -220,7 +220,8 @@ STM32_SCP struct
 	ScopeTrigger				DWORD ?
 	ScopeTriggerLevel			DWORD ?
 	ScopeTimeDiv				DWORD ?
-	ScopeVoltDiv				DWORD ?
+	ScopeVoltDiv				WORD ?
+	ScopeMag					WORD ?
 	ScopeVPos					DWORD ?
 	ADC_TripleMode              DWORD ?
 	ADC_SampleTime              DWORD ?

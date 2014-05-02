@@ -61,7 +61,8 @@ typedef struct
   uint32_t ScopeTrigger;
   uint32_t ScopeTriggerLevel;
   uint32_t ScopeTimeDiv;
-  uint32_t ScopeVoltDiv;
+  uint16_t ScopeVoltDiv;
+  uint16_t ScopeMag;
   uint32_t ScopeVPos;
   uint32_t ADC_TripleMode;
   uint32_t ADC_SampleTime;
@@ -163,7 +164,7 @@ void DMA_LGAConfig(void);
   */
 int main(void)
 {
-  __IO uint32_t i;
+  __IO uint16_t i;
 
   /* RCC Configuration */
   RCC_Config();
@@ -253,6 +254,10 @@ int main(void)
       case CMD_SCPSET:
         USART3_putdata((uint8_t *)&STM32_CMD.STM32_FRQ.Frequency,sizeof(STM32_FRQTypeDef));
         USART3_getdata((uint8_t *)&STM32_CMD.STM32_SCP.ADC_Prescaler,sizeof(STM32_SCPTypeDef));
+        /* Scope magnify */
+        i = (STM32_CMD.STM32_SCP.ScopeMag & 0x07) << 3;
+        GPIO_SetBits(GPIOE,(i ^ 0x38));
+        GPIO_ResetBits(GPIOE,i);
         /* Set V-Pos */
         DAC_SetChannel1Data(DAC_Align_12b_R, STM32_CMD.STM32_SCP.ScopeVPos);
         if (STM32_CMD.STM32_SCP.ADC_TripleMode)

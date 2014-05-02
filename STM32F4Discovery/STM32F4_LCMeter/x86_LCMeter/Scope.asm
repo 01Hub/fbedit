@@ -60,7 +60,7 @@ ScpChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 		mov		eax,STM32_Cmd.STM32_Scp.ScopeTimeDiv
 		invoke SendDlgItemMessage,hWin,IDC_TRBTIMEDIV,TBM_SETPOS,TRUE,eax
 		invoke SendDlgItemMessage,hWin,IDC_TRBVOLTDIV,TBM_SETRANGE,FALSE,MAXSCPVOLTDIV SHL 16
-		mov		eax,STM32_Cmd.STM32_Scp.ScopeVoltDiv
+		movzx	eax,STM32_Cmd.STM32_Scp.ScopeVoltDiv
 		invoke SendDlgItemMessage,hWin,IDC_TRBVOLTDIV,TBM_SETPOS,TRUE,eax
 		mov		eax,STM32_Cmd.STM32_Scp.ScopeTrigger
 		add		eax,IDC_RBNTRIGGERNONE
@@ -195,17 +195,17 @@ ScpChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 					invoke SendDlgItemMessage,hWin,IDC_TRBTIMEDIV,TBM_SETPOS,TRUE,eax
 				.endif
 			.elseif eax==IDC_BTNVDU
-				mov		eax,STM32_Cmd.STM32_Scp.ScopeVoltDiv
+				movzx	eax,STM32_Cmd.STM32_Scp.ScopeVoltDiv
 				.if eax<MAXSCPVOLTDIV
 					inc		eax
-					mov		STM32_Cmd.STM32_Scp.ScopeVoltDiv,eax
+					mov		STM32_Cmd.STM32_Scp.ScopeVoltDiv,ax
 					invoke SendDlgItemMessage,hWin,IDC_TRBVOLTDIV,TBM_SETPOS,TRUE,eax
 				.endif
 			.elseif eax==IDC_BTNVDD
-				mov		eax,STM32_Cmd.STM32_Scp.ScopeVoltDiv
+				movzx	eax,STM32_Cmd.STM32_Scp.ScopeVoltDiv
 				.if eax
 					dec		eax
-					mov		STM32_Cmd.STM32_Scp.ScopeVoltDiv,eax
+					mov		STM32_Cmd.STM32_Scp.ScopeVoltDiv,ax
 					invoke SendDlgItemMessage,hWin,IDC_TRBVOLTDIV,TBM_SETPOS,TRUE,eax
 				.endif
 			.elseif eax==IDC_BTNVPU
@@ -290,7 +290,7 @@ ScpChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 		.elseif eax==IDC_TRBVOLTDIV
 			;Scope Volt / Div
 			invoke SendDlgItemMessage,hWin,IDC_TRBVOLTDIV,TBM_GETPOS,0,0
-			mov		STM32_Cmd.STM32_Scp.ScopeVoltDiv,eax
+			mov		STM32_Cmd.STM32_Scp.ScopeVoltDiv,ax
 		.elseif eax==IDC_TRBTRIGGERLEVEL
 			;Scope Trigger Level
 			invoke SendDlgItemMessage,hWin,IDC_TRBTRIGGERLEVEL,TBM_GETPOS,0,0
@@ -388,7 +388,7 @@ ScopeProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		fild	iTmp
 		fdivp	st(1),st
 		fstp	ymul
-		mov		eax,STM32_Cmd.STM32_Scp.ScopeVoltDiv
+		movzx	eax,STM32_Cmd.STM32_Scp.ScopeVoltDiv
 		mov		ecx,sizeof SCOPERANGE
 		mul		ecx
 		mov		vdofs,eax
