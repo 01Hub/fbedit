@@ -77,7 +77,7 @@ public class MyIV extends ImageView {
 	private static int trailtail = 0;
 	private static int trail[] = new int[MAPMAXTRAIL * 3];
 	public static int AirTempArray[] = new int[22];
-	public static final int MAXSONARBMP = 500;
+	public static final int MAXSONARBMP = 100;
 	public static final int SONARTILEWIDTH = 32;
 	public static final int SONARTILEHEIGHT = 512;
 	public static final int SONARSIGNALGRAHWIDTH = 32;
@@ -90,6 +90,7 @@ public class MyIV extends ImageView {
 	private static final int SONAROFFSET = 28 + 6 * 12 + 10;
 	public static final SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
 	public static int sonarColor;
+	public static int sonarColorArray[]=new int[256];
 
 	public static int sonarpinginit;
 	public static boolean sonarautoping;
@@ -533,7 +534,7 @@ public class MyIV extends ImageView {
         	z = 0;
         	while (z < 4) {
         		y = 0;
-        		while (y < 512) {
+        		while (y < SONARTILEHEIGHT) {
         			echoarray[z][y] = 0;
         			y++;
         		}
@@ -609,7 +610,7 @@ public class MyIV extends ImageView {
 			    }
 		    }
 		    if (signal > sonarnoiselevel) {
-		    	col = 0xFF000000 | (signal << 16) | (signal << 8) | signal;
+		    	col = sonarColorArray[signal];
 		    }
 		    z = (y * SONARTILEWIDTH) + x;
 	    	bmparray[z] = col;

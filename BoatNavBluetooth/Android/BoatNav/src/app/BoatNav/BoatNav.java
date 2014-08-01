@@ -99,12 +99,20 @@ public class BoatNav extends Activity {
 	public void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
         btlogg += "onCreate ";
-		int i;
+		int i, col;
 
 		if (mGrayBitmap == null) {
 			i = 0;
 			while (i < MyIV.SONARTILEHEIGHT) {
 				MyIV.sc.sonar[i] = 0;
+				i++;
+			}
+			// Create an array of sonar echo colors
+			i = 0;
+			col = 0;
+			while (i < 256) {
+				MyIV.sonarColorArray[i] = 0xFF000000 + col;
+				col += 0x010101;
 				i++;
 			}
 			mGrayBitmap = BitmapFactory.decodeFile(Environment.getExternalStorageDirectory() + File.separator + "Map" + File.separator + "Gray.jpg");
@@ -144,16 +152,7 @@ public class BoatNav extends Activity {
         								MyIV.sonarrangechange = 0;
         							}
         						} else if (MyIV.sonarrangechange > 5) {
-        							float d = (float)MyIV.range[ri].range;
-        							if (((float)MyIV.curdepth > (d - d / 5f)) && ri < 19) {
-        								MyIV.rndpixdpt = (MyIV.rndpixdpt * MyIV.range[ri].range) / MyIV.range[ri + 1].range;
-        								ri++;
-        								MyIV.sonarrangechange = 0;
-        							} else if (((float)MyIV.curdepth < (d / 5f)) && ri > 0) {
-        								MyIV.rndpixdpt = (MyIV.rndpixdpt * MyIV.range[ri].range) / MyIV.range[ri - 1].range;
-        								ri--;
-        								MyIV.sonarrangechange = 0;
-        							}
+        							ri = SonarRangeChange(ri);
         						}
         					} else if (MyIV.sonarrangeset >= 0) {
        							ri = MyIV.sonarrangeset;
@@ -302,6 +301,23 @@ public class BoatNav extends Activity {
         } else { 
         }
     }
+    
+    private int SonarRangeChange(int ri)
+    {
+		float d = (float)MyIV.range[ri].range;
+		if (((float)MyIV.curdepth > (d - d / 8f)) && ri < 19) {
+			// Range up
+			MyIV.rndpixdpt = (MyIV.rndpixdpt * MyIV.range[ri].range) / MyIV.range[ri + 1].range;
+			ri++;
+			MyIV.sonarrangechange = 0;
+		} else if (((float)MyIV.curdepth < ((float)MyIV.range[ri - 1].range) * 0.8f) && ri > 0) {
+			// Range down
+			MyIV.rndpixdpt = (MyIV.rndpixdpt * MyIV.range[ri].range) / MyIV.range[ri - 1].range;
+			ri--;
+			MyIV.sonarrangechange = 0;
+		}
+		return ri;
+    }
 
     private void TimerMethod()
 	{
@@ -368,26 +384,15 @@ public class BoatNav extends Activity {
 		if (MyIV.sonarautorange) {
 			// Check range change
 			if (MyIV.nodepth) {
-				if (MyIV.sonarrangechange > 5) {
+				if (MyIV.sonarrangechange > 10) {
 					ri += MyIV.sonarrangechangedir;
 					if (ri == 0 || ri == MyIV.MAXSONARRANGE - 1) {
 						MyIV.sonarrangechangedir = -MyIV.sonarrangechangedir;
 					}
 					MyIV.sonarrangechange = 0;
 				}
-			} else if (MyIV.sonarrangechange > 5) {
-				float d = (float)MyIV.range[ri].range;
-				if (((float)MyIV.curdepth > (d - d / 5f)) && ri < 19) {
-					MyIV.rndpixdpt = (MyIV.rndpixdpt * MyIV.range[ri].range) / MyIV.range[ri + 1].range;
-					ri++;
-					MyIV.sonarrangechange = 0;
-				} else if (((float)MyIV.curdepth < (d / 5f)) && ri > 0) {
-					MyIV.rndpixdpt = (MyIV.rndpixdpt * MyIV.range[ri].range) / MyIV.range[ri - 1].range;
-					ri--;
-					MyIV.sonarrangechange = 0;
-				} else if (ri == 0 || ri == 19) {
-					MyIV.sonarrangechange = 0;
-				}
+			} else if (MyIV.sonarrangechange > 10) {
+				ri = SonarRangeChange(ri);
 			}
 		} else if (MyIV.sonarrangeset >= 0) {
 			ri = MyIV.sonarrangeset;
@@ -1842,7 +1847,7 @@ public class BoatNav extends Activity {
 		int x=0, i;
 		for (i = 0; i < MyIV.MAPMAXICON; i++) {
 			bmp[i + MyIV.MAPMAXBMP].bm = Bitmap.createBitmap(mIcons, x, 0, 16, 16);
-			x = x + 16;
+			x += 16;
 		}
 	}
 
