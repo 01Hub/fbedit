@@ -304,18 +304,19 @@ public class BoatNav extends Activity {
     
     private int SonarRangeChange(int ri)
     {
-		float d = (float)MyIV.range[ri].range;
-		if (((float)MyIV.curdepth > (d - d / 8f)) && ri < 19) {
-			// Range up
-			MyIV.rndpixdpt = (MyIV.rndpixdpt * MyIV.range[ri].range) / MyIV.range[ri + 1].range;
-			ri++;
-			MyIV.sonarrangechange = 0;
-		} else if (((float)MyIV.curdepth < ((float)MyIV.range[ri - 1].range) * 0.8f) && ri > 0) {
-			// Range down
-			MyIV.rndpixdpt = (MyIV.rndpixdpt * MyIV.range[ri].range) / MyIV.range[ri - 1].range;
-			ri--;
-			MyIV.sonarrangechange = 0;
-		}
+    	if (ri != 0 && ri !=19) {
+    		if ((float)MyIV.curdepth > ((float)MyIV.range[ri].range) * 0.9f) {
+    			// Range up
+    			MyIV.rndpixdpt = (MyIV.rndpixdpt * MyIV.range[ri].range) / MyIV.range[ri + 1].range;
+    			ri++;
+    			MyIV.sonarrangechange = 0;
+    		} else if ((float)MyIV.curdepth < ((float)MyIV.range[ri - 1].range) * 0.8f) {
+    			// Range down
+    			MyIV.rndpixdpt = (MyIV.rndpixdpt * MyIV.range[ri].range) / MyIV.range[ri - 1].range;
+    			ri--;
+    			MyIV.sonarrangechange = 0;
+    		}
+    	}
 		return ri;
     }
 
@@ -698,6 +699,7 @@ public class BoatNav extends Activity {
 		MyIV.sonarautorange = Integer.valueOf(GetItem()) == 1;
 		MyIV.sonarshallow = Integer.valueOf(GetItem());
 		MyIV.sonardeep = Integer.valueOf(GetItem());
+		replayspeed = Integer.valueOf(GetItem());
 		FindConfig("#sonarrange");
 		i=0;
 		while (buffer.length() > 0) {
@@ -766,7 +768,7 @@ public class BoatNav extends Activity {
 			GetComment();
 			config[i][1] += line + "\r\n";
 		}
-		// sonarpinginit,sonarautoping,sonargaininit,sonarautogain,sonarnoiselevel,sonarnoisereject,sonarfishdetect,sonarfishsound,sonarfishdepth,sonarfishicon,sonarautorange,shallow,deep
+		// sonarpinginit,sonarautoping,sonargaininit,sonarautogain,sonarnoiselevel,sonarnoisereject,sonarfishdetect,sonarfishsound,sonarfishdepth,sonarfishicon,sonarautorange,shallow,deep,replyspeed
 		line = "";
 		AddItem(Integer.toString(MyIV.sonarpinginit));
 		AddItem(Integer.toString(GetBoolean(MyIV.sonarautoping)));
@@ -781,6 +783,7 @@ public class BoatNav extends Activity {
 		AddItem(Integer.toString(GetBoolean(MyIV.sonarautorange)));
 		AddItem(Integer.toString(MyIV.sonarshallow));
 		AddItem(Integer.toString(MyIV.sonardeep));
+		AddItem(Integer.toString(replayspeed));
 		config[i][1] += line + "\r\n";
 		buffer = "";
 		i = 0;
@@ -1076,6 +1079,7 @@ public class BoatNav extends Activity {
                 	MyIV.SonarClear();
                 	// Set replay mode
                 	MyIV.mode = 2;
+    		    	SaveConfig();
     				dialog.dismiss();
 	        	} catch (Exception e) {
 	        	}
@@ -1144,6 +1148,7 @@ public class BoatNav extends Activity {
 					} catch (FileNotFoundException e) {
 					}
 				}
+		    	SaveConfig();
 				dialog.dismiss();
 			}
 		});
@@ -1152,6 +1157,7 @@ public class BoatNav extends Activity {
 		btnCancel.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
+		    	SaveConfig();
 				dialog.dismiss();
 			}
 		});

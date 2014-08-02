@@ -77,7 +77,7 @@ public class MyIV extends ImageView {
 	private static int trailtail = 0;
 	private static int trail[] = new int[MAPMAXTRAIL * 3];
 	public static int AirTempArray[] = new int[22];
-	public static final int MAXSONARBMP = 100;
+	public static final int MAXSONARBMP = 500;
 	public static final int SONARTILEWIDTH = 32;
 	public static final int SONARTILEHEIGHT = 512;
 	public static final int SONARSIGNALGRAHWIDTH = 32;
