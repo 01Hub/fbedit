@@ -58,7 +58,9 @@ public class BoatNav extends Activity {
 	public static Bitmap mGrayBitmap;
 	public static Bitmap mIcons;
 	public static BmpClass[] bmp = BmpClass.BmpClassSet(MyIV.MAPMAXBMP + MyIV.MAPMAXICON);
+	public static Bitmap bmppause;
 	private static boolean rginuse = false;
+	
 	
 	public static String config[][] = new String[50][2];
 	public static int placeState[] = new int[16];
@@ -117,6 +119,7 @@ public class BoatNav extends Activity {
 			}
 			mGrayBitmap = BitmapFactory.decodeFile(Environment.getExternalStorageDirectory() + File.separator + "Map" + File.separator + "Gray.jpg");
 			mIcons = BitmapFactory.decodeResource(getResources(), R.drawable.cur);
+			bmppause = BitmapFactory.decodeResource(getResources(), R.drawable.lock);
 			MakeTransparent();
 			MakeIcons();
 			GetConfig();
@@ -491,10 +494,12 @@ public class BoatNav extends Activity {
 
 	private void ReplayMode() {
 		int i = replayspeed;
-		while (i >= 0) {
-			MyIV.SonarReplay(replayfile);
-			mIV.invalidate();
-			i--;
+		if (MyIV.sonarpause == false) {
+			while (i >= 0) {
+				MyIV.SonarReplay(replayfile);
+				mIV.invalidate();
+				i--;
+			}
 		}
 	}
 
@@ -1080,6 +1085,7 @@ public class BoatNav extends Activity {
                 	// Set replay mode
                 	MyIV.mode = 2;
     		    	SaveConfig();
+    		    	MyIV.sonarpause = false;
     				dialog.dismiss();
 	        	} catch (Exception e) {
 	        	}
@@ -1106,12 +1112,14 @@ public class BoatNav extends Activity {
         });
 
         Button btnRecord = (Button) dialog.findViewById(R.id.btnRecord);
+        Button btnPause = (Button) dialog.findViewById(R.id.btnPause);
         if (recording) {
         	btnRecord.setText("Stop Recording");
         } else if (MyIV.mode == 2) {
         	btnRecord.setText("Stop Replay");
         } else if (MyIV.mode != 0) {
         	btnRecord.setVisibility(View.INVISIBLE);
+        	btnPause.setVisibility(View.INVISIBLE);
         }
 		btnRecord.setOnClickListener(new OnClickListener() {
 			@Override
@@ -1150,6 +1158,15 @@ public class BoatNav extends Activity {
 				}
 		    	SaveConfig();
 				dialog.dismiss();
+			}
+		});
+
+		btnPause.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				MyIV.sonarpause = !MyIV.sonarpause;
+				dialog.dismiss();
+				mIV.invalidate();
 			}
 		});
 

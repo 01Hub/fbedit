@@ -24,5 +24,7 @@
     <string name="StopRecord">Stop Recording</string>
     <string name="ClearSonar">Clear Sonar</string>
     <string name="SonarAlarm">Sonar Alarm</string>
+    <string name="Pause">Pause</string>
+    <string name="ReplaySpeed">Replay Speed</string>
     
 </resources>

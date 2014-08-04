@@ -77,7 +77,7 @@ public class MyIV extends ImageView {
 	private static int trailtail = 0;
 	private static int trail[] = new int[MAPMAXTRAIL * 3];
 	public static int AirTempArray[] = new int[22];
-	public static final int MAXSONARBMP = 500;
+	public static final int MAXSONARBMP = 50;
 	public static final int SONARTILEWIDTH = 32;
 	public static final int SONARTILEHEIGHT = 512;
 	public static final int SONARSIGNALGRAHWIDTH = 32;
@@ -109,6 +109,7 @@ public class MyIV extends ImageView {
 	public static int sonarrangeset = -1;
 	public static int sonarrangechange = 0;
 	public static int sonarrangechangedir = 1;
+	public static boolean sonarpause = false;
 
 	private static Rect srcrect = new Rect(0,0,0,0);
 	private static Rect dstrect =  new Rect(0,0,0,0);
@@ -1298,6 +1299,10 @@ public class MyIV extends ImageView {
 		}
 		if (sonarwt != 0) {
 			DrawSonar(canvas);
+		}
+		if (sonarpause) {
+			canvas.clipRect(0, 0, scrnwt, scrnht, Region.Op.REPLACE);
+			canvas.drawBitmap(BoatNav.bmppause, scrnwt / 2 - 24, scrnht / 2 - 24, paint);
 		}
 
 // Debug
