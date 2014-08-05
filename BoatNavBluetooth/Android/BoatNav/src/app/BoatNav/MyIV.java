@@ -1301,8 +1301,14 @@ public class MyIV extends ImageView {
 			DrawSonar(canvas);
 		}
 		if (sonarpause) {
+			// Pause
 			canvas.clipRect(0, 0, scrnwt, scrnht, Region.Op.REPLACE);
 			canvas.drawBitmap(BoatNav.bmppause, scrnwt / 2 - 24, scrnht / 2 - 24, paint);
+		}
+		if (BoatNav.recording && blink) {
+			// Recording
+			canvas.clipRect(0, 0, scrnwt, scrnht, Region.Op.REPLACE);
+			canvas.drawBitmap(BoatNav.bmp[MAPMAXBMP + 28].bm, scrnwt - 24, scrnht - 24, paint);
 		}
 
 // Debug

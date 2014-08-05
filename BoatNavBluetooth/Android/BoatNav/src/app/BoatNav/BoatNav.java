@@ -61,7 +61,6 @@ public class BoatNav extends Activity {
 	public static Bitmap bmppause;
 	private static boolean rginuse = false;
 	
-	
 	public static String config[][] = new String[50][2];
 	public static int placeState[] = new int[16];
 	public static String placeTitle[] = new String[16];
@@ -75,7 +74,7 @@ public class BoatNav extends Activity {
 	private Timer tmr = new Timer();
 	private static Random rnd = new Random();
 	private static RandomAccessFile  replayfile;
-	private static boolean recording = false;
+	public static boolean recording = false;
 	public static int blinkrate = 0;
 	private static int soundplaying = 0;
 	private static ArrayAdapter<String> btadapter;
@@ -140,29 +139,11 @@ public class BoatNav extends Activity {
 
 	    	Runnable runnable = new Runnable() {
 		        public void run() {
+		        	int ri;
                 	while (true) {
                 		if (btstart) {
         					Boolean err = false;
-        			        int ri = MyIV.sonarrangeinx;
-        					if (MyIV.sonarautorange) {
-        						// Check range change
-        						if (MyIV.nodepth) {
-        							if (MyIV.sonarrangechange > 5) {
-        								if ((ri == 0 && MyIV.sonarrangechangedir < 0) || (ri == MyIV.MAXSONARRANGE - 1 && MyIV.sonarrangechangedir > 0)) {
-        									MyIV.sonarrangechangedir = -MyIV.sonarrangechangedir;
-        								}
-        								ri += MyIV.sonarrangechangedir;
-        								MyIV.sonarrangechange = 0;
-        							}
-        						} else if (MyIV.sonarrangechange > 5) {
-        							ri = SonarRangeChange(ri);
-        						}
-        					} else if (MyIV.sonarrangeset >= 0) {
-       							ri = MyIV.sonarrangeset;
-       							MyIV.sonarrangeset = -1;
-        					}
-        					MyIV.sonarrangechange++;
-
+							ri = SonarRangeChange(MyIV.sonarrangeinx);
         			        btSend.Start = 1;
         			        if (MyIV.sonarautoping) {
             			        btSend.PingPulses = (byte)(MyIV.sonarpinginit + MyIV.range[ri].pingadd);
@@ -307,19 +288,44 @@ public class BoatNav extends Activity {
     
     private int SonarRangeChange(int ri)
     {
-    	if (ri != 0 && ri !=19) {
-    		if ((float)MyIV.curdepth > ((float)MyIV.range[ri].range) * 0.9f) {
-    			// Range up
-    			MyIV.rndpixdpt = (MyIV.rndpixdpt * MyIV.range[ri].range) / MyIV.range[ri + 1].range;
-    			ri++;
-    			MyIV.sonarrangechange = 0;
-    		} else if ((float)MyIV.curdepth < ((float)MyIV.range[ri - 1].range) * 0.8f) {
-    			// Range down
-    			MyIV.rndpixdpt = (MyIV.rndpixdpt * MyIV.range[ri].range) / MyIV.range[ri - 1].range;
-    			ri--;
-    			MyIV.sonarrangechange = 0;
-    		}
-    	}
+		if (MyIV.sonarrangechange > 10) {
+	    	if (MyIV.sonarautorange) {
+	    		// Check range change
+	    		if (MyIV.nodepth) {
+	    			if (ri == 0) {
+    					MyIV.sonarrangechangedir = 1;
+	    			} else if (ri == MyIV.MAXSONARRANGE - 1) {
+    					MyIV.sonarrangechangedir = -1;
+	    			}
+   	    			MyIV.rndpixdpt = (MyIV.rndpixdpt * MyIV.range[ri].range) / MyIV.range[ri + MyIV.sonarrangechangedir].range;
+    				// Range deeper or shallower
+    				ri += MyIV.sonarrangechangedir;
+    				if (ri == 0 || ri == MyIV.MAXSONARRANGE - 1) {
+    					// Change direction
+    					MyIV.sonarrangechangedir = -MyIV.sonarrangechangedir;
+    				}
+	    		} else {
+	    	    	if ((float)MyIV.curdepth > ((float)MyIV.range[ri].range) * 0.9f && ri != MyIV.MAXSONARRANGE - 1) {
+	    				// Range deeper
+	    				MyIV.rndpixdpt = (MyIV.rndpixdpt * MyIV.range[ri].range) / MyIV.range[ri + 1].range;
+	    				ri++;
+	    			} else if (ri > 0) {
+	    				if ((float)MyIV.curdepth < ((float)MyIV.range[ri - 1].range) * 0.8f) {
+		    				// Range shallower
+		    				MyIV.rndpixdpt = (MyIV.rndpixdpt * MyIV.range[ri].range) / MyIV.range[ri - 1].range;
+	    					MyIV.sonarrangechangedir = -1;
+		    				ri--;
+	    				}
+	    			}
+	    		}
+	    	} else if (MyIV.sonarrangeset >= 0) {
+	    		// Range manually changed
+	    		ri = MyIV.sonarrangeset;
+	    		MyIV.sonarrangeset = -1;
+	    	}
+			MyIV.sonarrangechange = 0;
+		}
+		MyIV.sonarrangechange++;
 		return ri;
     }
 
@@ -381,29 +387,8 @@ public class BoatNav extends Activity {
 		MyIV.sc.iBear = 0;
 		MyIV.sc.fixquality = 0;
 
-		if (MyIV.sonarrangeinx >= MyIV.MAXSONARRANGE) {
-			MyIV.sonarrangeinx = MyIV.MAXSONARRANGE - 1;
-		}
-		ri = MyIV.sonarrangeinx;
-		if (MyIV.sonarautorange) {
-			// Check range change
-			if (MyIV.nodepth) {
-				if (MyIV.sonarrangechange > 10) {
-					ri += MyIV.sonarrangechangedir;
-					if (ri == 0 || ri == MyIV.MAXSONARRANGE - 1) {
-						MyIV.sonarrangechangedir = -MyIV.sonarrangechangedir;
-					}
-					MyIV.sonarrangechange = 0;
-				}
-			} else if (MyIV.sonarrangechange > 10) {
-				ri = SonarRangeChange(ri);
-			}
-		} else if (MyIV.sonarrangeset >= 0) {
-			ri = MyIV.sonarrangeset;
-			MyIV.sonarrangeset = -1;
-		}
-		MyIV.sc.sonar[0] = (byte)(ri);
-		MyIV.sonarrangechange++;
+		ri = SonarRangeChange(MyIV.sonarrangeinx);
+
 		// Clear echo
    		i = 1;
    		while (i < MyIV.SONARTILEHEIGHT) {
@@ -436,14 +421,12 @@ public class BoatNav extends Activity {
 		if ((MyIV.sonarcount & 7) == 0) {
 			MyIV.rndpixmov = rnd.nextInt(3);
 		}
-		if (MyIV.rndpixdir <= 1 && MyIV.rndpixdpt > 50) {
-			// Up
+		if (MyIV.rndpixdir <= 2 && MyIV.rndpixdpt > 50) {
+			// Shallower
 			MyIV.rndpixdpt -= MyIV.rndpixmov;
-			MyIV.rndfishcount = 0;
-		} else if (MyIV.rndpixdir >= 3 && MyIV.rndpixdpt < 500) {
-			// Down
+		} else if (MyIV.rndpixdir >= 4 && MyIV.rndpixdpt < 500) {
+			// Deeper
 			MyIV.rndpixdpt += MyIV.rndpixmov;
-			MyIV.rndfishcount = 0;
 		}
 		// Random bottom vegetation
 		i = MyIV.rndpixdpt - rnd.nextInt(x / 2);
@@ -470,24 +453,27 @@ public class BoatNav extends Activity {
 			MyIV.sc.sonar[i] = (byte)pix;
 			i++;
 		}
-		// Random fish
-		if (MyIV.rndfishcount == 0) {
-			if (rnd.nextInt(100) > 95) {
-				MyIV.rndfishdpt = rnd.nextInt(MyIV.rndpixdpt - 5);
-				if (MyIV.rndfishdpt < 10) {
-					MyIV.rndfishdpt = 10;
+		if (MyIV.rndpixdpt > 10) {
+			// Random fish
+			if (MyIV.rndfishcount == 0) {
+				if (rnd.nextInt(100) > 95) {
+					MyIV.rndfishdpt = rnd.nextInt(MyIV.rndpixdpt - 5);
+					if (MyIV.rndfishdpt < 20) {
+						MyIV.rndfishdpt = 20;
+					}
+					MyIV.rndfishcount = 5;
 				}
-				MyIV.rndfishcount = 5;
+			} else {
+				i = MyIV.rndfishdpt;
+				while (i < MyIV.rndfishdpt + 5 && i < MyIV.SONARTILEHEIGHT) {
+					pix = 50 + rnd.nextInt(200);
+					MyIV.sc.sonar[i] = (byte)pix;
+					i++;
+				}
+				MyIV.rndfishcount--;
 			}
-		} else {
-			i = MyIV.rndfishdpt;
-			while (i < MyIV.rndfishdpt + 5 && i < MyIV.SONARTILEHEIGHT) {
-				pix = 50 + rnd.nextInt(200);
-				MyIV.sc.sonar[i] = (byte)pix;
-				i++;
-			}
-			MyIV.rndfishcount--;
 		}
+		MyIV.sc.sonar[0] = (byte)(ri);
 		MyIV.SonarShow();
 		mIV.invalidate();
 	}
@@ -519,8 +505,10 @@ public class BoatNav extends Activity {
 			blinkrate++;
 			if ((blinkrate & 3) == 0) {
 				MyIV.blink = !MyIV.blink;
+				if (MyIV.sonarpause) {
+					mIV.invalidate();
+				}
 			}
-			
 		}
 	};
 	
