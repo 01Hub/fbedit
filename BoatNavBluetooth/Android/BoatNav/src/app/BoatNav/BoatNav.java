@@ -74,6 +74,8 @@ public class BoatNav extends Activity {
 	private Timer tmr = new Timer();
 	private static Random rnd = new Random();
 	private static RandomAccessFile  replayfile;
+	public static long replayfilesize;
+	public static long replayfilepos;
 	public static boolean recording = false;
 	public static int blinkrate = 0;
 	private static int soundplaying = 0;
@@ -1067,6 +1069,8 @@ public class BoatNav extends Activity {
             		}
             		String FileName = Environment.getExternalStorageDirectory() + File.separator + "Map" + File.separator + "Sonar" + File.separator + s;
                 	replayfile = new RandomAccessFile(FileName,"r");
+                	replayfilesize = replayfile.length();
+                	replayfilepos = 0;
                 	// Clear trail and distance
                 	MyIV.ClearTrail();
                 	MyIV.SonarClear();

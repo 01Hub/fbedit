@@ -77,7 +77,7 @@ public class MyIV extends ImageView {
 	private static int trailtail = 0;
 	private static int trail[] = new int[MAPMAXTRAIL * 3];
 	public static int AirTempArray[] = new int[22];
-	public static final int MAXSONARBMP = 50;
+	public static final int MAXSONARBMP = 20;
 	public static final int SONARTILEWIDTH = 32;
 	public static final int SONARTILEHEIGHT = 512;
 	public static final int SONARSIGNALGRAHWIDTH = 32;
@@ -288,6 +288,7 @@ public class MyIV extends ImageView {
 					TraslateFromByteArray();
 					SonarShow();
 				}
+				BoatNav.replayfilepos += nBytes;
 			} else {
 				if (BoatNav.btconnected) {
 					mode = 0;
@@ -1150,6 +1151,16 @@ public class MyIV extends ImageView {
 		}
 		// Draw water temperature
 		DrawText(mapwt + 15, 85, 25, String.format("%.1f",curwtemp) + "C", canvas);
+		if (mode == 2)
+		{
+			// Draw replay progress bar
+			i = (int)((float)sonarwt * ((float)BoatNav.replayfilepos / (float)BoatNav.replayfilesize));
+			paint.setStrokeWidth(5);
+			paint.setColor(Color.WHITE);
+	        canvas.drawLine(mapwt, scrnht - 3, scrnwt, scrnht - 3, paint);
+			paint.setColor(Color.RED);
+	        canvas.drawLine(mapwt, scrnht - 3, mapwt + i, scrnht - 3, paint);
+		}
 	}
 
 	private void DrawSatelite(Canvas canvas) {
@@ -1200,9 +1211,13 @@ public class MyIV extends ImageView {
 				canvas.drawBitmap(BoatNav.bmp[MAPMAXBMP + curindex].bm, cx-8, cy-8, null);
 			}
 		}
+		// Draw air temperature
+		paint.setTextAlign(Paint.Align.RIGHT);
+		DrawText(mapwt - 10, 30, 25, String.format("%.1f",(curatemp)) + "C", canvas);
 		// Draw some info
+		paint.setTextAlign(Paint.Align.LEFT);
 		paint.setTextSize(15);
-		y = scrnht - 140;
+		y = scrnht - 115;
 		if (sc.fixquality == 2) {
 			canvas.drawText("Fix: 2D", 10, y, paint);
 		} else if (sc.fixquality == 3) {
@@ -1210,11 +1225,12 @@ public class MyIV extends ImageView {
 		} else {
 			canvas.drawText("Fix: No fix", 10, y, paint);
 		}
-		canvas.drawText("Sat: " + sc.nsat, 10, y + 20, paint);
-		canvas.drawText("Alt: " + sc.alt, 10, y + 40, paint);
-		canvas.drawText("HDOP: " + String.format("%.1f",((float)sc.hdop/10)), 150, y, paint);
-		canvas.drawText("VDOP: " + String.format("%.1f",((float)sc.vdop/10)), 150, y + 20, paint);
-		canvas.drawText("PDOP: " + String.format("%.1f",((float)sc.pdop/10)), 150, y + 40, paint);
+		canvas.drawText("Sat: " + sc.nsat, 10, y + 17, paint);
+
+		canvas.drawText("HDOP: " + String.format("%.1f",((float)sc.hdop/10)), 90, y, paint);
+		canvas.drawText("VDOP: " + String.format("%.1f",((float)sc.vdop/10)), 90, y + 17, paint);
+		canvas.drawText("PDOP: " + String.format("%.1f",((float)sc.pdop/10)), 180, y, paint);
+		canvas.drawText("Alt: " + sc.alt, 180, y + 17, paint);
 		// Draw satellite signal strength and position
 		nsat = 0;
 		while (nsat < 12) {
