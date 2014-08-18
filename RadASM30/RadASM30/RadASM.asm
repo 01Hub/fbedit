@@ -3445,7 +3445,7 @@ start:
 	invoke InstallProjectBrowser,ha.hInstance,FALSE
 	invoke InstallRAProperty,ha.hInstance,FALSE
 	invoke InstallRATools,ha.hInstance,FALSE
-	invoke InstallRAEdit,ha.hInstance,FALSE
+	invoke InstallRAEdit,ha.hInstance,TRUE
 	invoke RAHexEdInstall,ha.hInstance,FALSE
 	invoke GridInstall,ha.hInstance,FALSE
 	invoke ResEdInstall,ha.hInstance,FALSE

@@ -1,0 +1,4 @@
+LIBRARY RAEdirAddin.dll
+EXPORTS
+	InstallAddin
+	AddinProc
