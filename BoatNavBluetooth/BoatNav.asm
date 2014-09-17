@@ -22,7 +22,7 @@ include Places.asm
 include Options.asm
 include TripLog.asm
 include DrawMap.asm
-include Sonar.asm
+include Sonar2.asm
 include Bluetooth.asm
 
 .code
