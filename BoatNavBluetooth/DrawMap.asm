@@ -42,12 +42,12 @@ LoadDib proc uses ebx esi edi,mapinx:DWORD,dibx:DWORD,diby:DWORD
 	mov		edx,diby
 	xor		eax,eax
 	.while ebx<MAXBMP
-		.if edi==[esi].BMP.mapinx && ecx==[esi].BMP.nx && edx==[esi].BMP.ny && [esi].BMP.hBmp
+		.if edi==[esi].MAPBMP.mapinx && ecx==[esi].MAPBMP.nx && edx==[esi].MAPBMP.ny && [esi].MAPBMP.hBmp
 			;The tile is loaded
-			mov		eax,[esi].BMP.hBmp
+			mov		eax,[esi].MAPBMP.hBmp
 			.break
 		.endif
-		lea		esi,[esi+sizeof BMP]
+		lea		esi,[esi+sizeof MAPBMP]
 		inc		ebx
 	.endw
 	.if !eax
@@ -65,31 +65,31 @@ LoadDib proc uses ebx esi edi,mapinx:DWORD,dibx:DWORD,diby:DWORD
 			xor		edi,edi
 			mov		esi,offset mapdata.bmpcache
 			.while ebx<MAXBMP-1
-				.if ![esi].BMP.inuse
+				.if ![esi].MAPBMP.inuse
 					mov		edi,esi
-					.break .if ![esi].BMP.hBmp
+					.break .if ![esi].MAPBMP.hBmp
 				.endif
-				lea		esi,[esi+sizeof BMP]
+				lea		esi,[esi+sizeof MAPBMP]
 				inc		ebx
 			.endw
 			.if edi
 				;Found free or unused tile
 				mov		esi,edi
 			.endif
-			.if [esi].BMP.hBmp
+			.if [esi].MAPBMP.hBmp
 				;The tile has a bitmap, delete it
-				invoke DeleteObject,[esi].BMP.hBmp
+				invoke DeleteObject,[esi].MAPBMP.hBmp
 			.endif
 			;Update the tile
 			mov		eax,mapinx
-			mov		[esi].BMP.mapinx,eax
+			mov		[esi].MAPBMP.mapinx,eax
 			mov		eax,dibx
-			mov		[esi].BMP.nx,eax
+			mov		[esi].MAPBMP.nx,eax
 			mov		eax,diby
-			mov		[esi].BMP.ny,eax
-			mov		[esi].BMP.inuse,TRUE
+			mov		[esi].MAPBMP.ny,eax
+			mov		[esi].MAPBMP.inuse,TRUE
 			pop		eax
-			mov		[esi].BMP.hBmp,eax
+			mov		[esi].MAPBMP.hBmp,eax
 		.endif
 	.endif
 	ret
@@ -124,17 +124,17 @@ SetMapUsed proc uses ebx esi edi,topx:DWORD,topy:DWORD,zoomval:DWORD
 	xor		ebx,ebx
 	mov		esi,offset mapdata.bmpcache
 	.while ebx<MAXBMP
-		mov		[esi].BMP.inuse,0
-		.if [esi].BMP.hBmp
-			mov		eax,[esi].BMP.mapinx
-			mov		ecx,[esi].BMP.nx
-			mov		edx,[esi].BMP.ny
+		mov		[esi].MAPBMP.inuse,0
+		.if [esi].MAPBMP.hBmp
+			mov		eax,[esi].MAPBMP.mapinx
+			mov		ecx,[esi].MAPBMP.nx
+			mov		edx,[esi].MAPBMP.ny
 			.if eax==mapdata.mapinx && ecx>=stx && ecx<=enx && edx>=sty && edx<=eny
 				;The tile is needed
-				mov		[esi].BMP.inuse,TRUE
+				mov		[esi].MAPBMP.inuse,TRUE
 			.endif
 		.endif
-		lea		esi,[esi+sizeof BMP]
+		lea		esi,[esi+sizeof MAPBMP]
 		inc		ebx
 	.endw
 	ret
@@ -292,6 +292,27 @@ ShowGpsCursor proc uses ebx esi edi,topx:DWORD,topy:DWORD,curx:DWORD,cury:DWORD,
 		sub		eax,8
 		mov		pt.y,eax
 		invoke ImageList_Draw,hIml,mapdata.ncursor,mapdata.mDC2,pt.x,pt.y,ILD_TRANSPARENT
+		.if mapdata.fUnLocked
+			mov		eax,sonardata.cursonarbmpinx
+			mov		edx,sizeof SONARBMP
+			mul		edx
+			mov		esi,eax
+			invoke GpsPosToMapPos,sonardata.sonarbmp.iLon[esi],sonardata.sonarbmp.iLat[esi],addr pt.x,addr pt.y
+			invoke MapPosToScrnPos,pt.x,pt.y,addr pt.x,addr pt.y
+			mov		eax,pt.x
+			sub		eax,topx
+			imul	dd256
+			idiv	zoomval
+			sub		eax,8
+			mov		pt.x,eax
+			mov		eax,pt.y
+			sub		eax,topy
+			imul	dd256
+			idiv	zoomval
+			sub		eax,8
+			mov		pt.y,eax
+			invoke ImageList_Draw,hIml,30,mapdata.mDC2,pt.x,pt.y,ILD_TRANSPARENT
+		.endif
 	.endif
 	ret
 
@@ -1319,10 +1340,10 @@ MapChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 		xor		ebx,ebx
 		mov		esi,offset mapdata.bmpcache
 		.while ebx<MAXBMP
-			.if [esi].BMP.hBmp
-				invoke DeleteObject,[esi].BMP.hBmp
+			.if [esi].MAPBMP.hBmp
+				invoke DeleteObject,[esi].MAPBMP.hBmp
 			.endif
-			lea		esi,[esi+sizeof BMP]
+			lea		esi,[esi+sizeof MAPBMP]
 			inc		ebx
 		.endw
 		xor		ebx,ebx

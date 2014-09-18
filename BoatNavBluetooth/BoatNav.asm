@@ -110,7 +110,6 @@ ControlsChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam
 	.if eax==WM_INITDIALOG
 		mov		ebx,hWin
 		mov		hControls,ebx
-		invoke CheckDlgButton,hWin,IDC_CHKLOCKTOGPS,BST_CHECKED
 		mov		mapdata.gpslock,TRUE
 		invoke CheckDlgButton,hWin,IDC_CHKSHOWTRAIL,BST_CHECKED
 		mov		mapdata.gpstrail,TRUE
@@ -169,20 +168,20 @@ ControlsChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam
 				xor		ebx,ebx
 				mov		esi,offset mapdata.bmpcache
 				.while ebx<MAXBMP
-					.if [esi].BMP.hBmp
-						invoke DeleteObject,[esi].BMP.hBmp
-						mov		[esi].BMP.hBmp,0
-						mov		[esi].BMP.inuse,0
+					.if [esi].MAPBMP.hBmp
+						invoke DeleteObject,[esi].MAPBMP.hBmp
+						mov		[esi].MAPBMP.hBmp,0
+						mov		[esi].MAPBMP.inuse,0
 					.endif
-					lea		esi,[esi+sizeof BMP]
+					lea		esi,[esi+sizeof MAPBMP]
 					inc		ebx
 				.endw
-				.if fSeaMap
+				.if mapdata.fSeaMap
 					invoke strcpy,addr szFileName,addr szLandFileName
-					mov		fSeaMap,FALSE
+					mov		mapdata.fSeaMap,FALSE
 				.else
 					invoke strcpy,addr szFileName,addr szSeaFileName
-					mov		fSeaMap,TRUE
+					mov		mapdata.fSeaMap,TRUE
 				.endif
 				inc		mapdata.paintnow
 			.elseif eax==IDC_CHKPAUSEGPS
@@ -193,10 +192,6 @@ ControlsChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam
 					mov		edx,MF_BYCOMMAND or MF_CHECKED
 				.endif
 				invoke CheckMenuItem,hContext,IDM_GPS_PAUSE,edx
-			.elseif eax==IDC_CHKLOCKTOGPS
-				invoke IsDlgButtonChecked,hWin,IDC_CHKLOCKTOGPS
-				mov		mapdata.gpslock,eax
-				inc		mapdata.paintnow
 			.elseif eax==IDC_CHKSHOWTRAIL
 				invoke IsDlgButtonChecked,hWin,IDC_CHKSHOWTRAIL
 				mov		mapdata.gpstrail,eax
@@ -251,6 +246,12 @@ ControlsChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam
 					movzx	eax,sonardata.RangeInx
 					invoke SetRange,eax
 					inc		sonardata.fGainUpload
+				.endif
+			.elseif eax==IDC_CHKLOCK
+				xor		mapdata.fUnLocked,1
+				xor		mapdata.gpslock,1
+				.if !mapdata.fUnLocked
+					mov		sonardata.sonarofs,0
 				.endif
 			.endif
 		.endif
@@ -767,7 +768,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.endif
 	.elseif eax==WM_MOUSEMOVE
 		invoke GetClientRect,hWin,addr rect
-		mov		ebx,MAXXECHO+RANGESCALE+SCROLLWT+4
+		mov		ebx,MAXXECHO+RANGESCALEWT+SCROLLWT+4
 		add		ebx,sonardata.SignalBarWt
 		mov		eax,rect.right
 		sub		eax,4

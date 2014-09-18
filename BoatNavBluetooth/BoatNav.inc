@@ -45,7 +45,6 @@ IDC_BTNZOOMIN           equ 2201
 IDC_BTNZOOMOUT          equ 2202
 IDC_BTNMAP              equ 2203
 IDC_CHKPAUSEGPS         equ 2204
-IDC_CHKLOCKTOGPS        equ 2205
 IDC_CHKSHOWTRAIL        equ 2206
 IDC_CHKSHOWGRID         equ 2207
 IDC_CHKSHOWSAT          equ 2208
@@ -61,6 +60,7 @@ IDC_CHKZOOM             equ 2217
 IDC_CHKDEPTHCURSOR      equ 2218
 IDC_BTNDEPTHDOWN        equ 2219
 IDC_BTNDEPTHUP          equ 2220
+IDC_CHKLOCK				equ 2221
 
 ;Main dialog
 IDD_DIALOG              equ 1000
@@ -148,12 +148,13 @@ STM32_PingTimer			equ (STM32_Clock/200000/2)-1			;Default ping timer
 ;Sonar constants
 MAXXECHO				equ 1024								;Max number of sonar X-echos
 MAXYECHO				equ 512									;Max number of sonar Y-echos
-RANGESCALE				equ 5									;Width of range scale
+RANGESCALEWT			equ 5									;Width of range scale
 SCROLLWT				equ 18									;Width / height of scrollbar
 MAXRANGE				equ 32									;Max number of depth ranges that can be read from ini
 REPLAYSPEED				equ 5									;At replay, the ping interval is divided by REPLAYSPEED
 MAXFISH					equ 64									;Prevents showing repeated fish symbols and repeated fish alarms
-MAXSONARBMP				equ 64									;Max number of bitmap tiles, for each range change a tile is created
+MAXSONARBMPWT			equ 32									;Max width of sonar bitmap tile
+MAXSONARBMP				equ 256									;Max number of bitmap tiles, for each range change a tile is created
 SOUNDSPEEDMIN			equ 1400								;Minimum speed of sound in water
 SOUNDSPEEDMAX			equ 1550								;Maximum speed of sound in water
 SMALLFISHECHO			equ 96									;Minimum echo to detect small fish
@@ -173,13 +174,13 @@ LATPOINT struct
 	iypos			DWORD ?										;Map y position
 LATPOINT ends
 
-BMP struct
+MAPBMP struct
 	inuse			DWORD ?										;The tile is still needed
 	mapinx			DWORD ?										;Used in folder name to jpegs
 	nx				DWORD ?										;Number x, used in filename
 	ny				DWORD ?										;Number y, used in filename
 	hBmp			HBITMAP ?									;Bitmap handle
-BMP ends
+MAPBMP ends
 
 PLACE struct
 	font			DWORD ?										;Index of font, 0 (no font) or 1 to 6
@@ -303,16 +304,19 @@ MAP struct
 	GPSReset		DWORD ?										;If TRUE GPS initialization icludes factory reset command
 	ShowCtrl		DWORD ?										;1 Show,2 Hide,0 Do nothing
 	CtrlWt			DWORD ?										;Width of controls window
-	bmpcache		BMP MAXBMP dup(<>)							;Cached bitmaps
+	bmpcache		MAPBMP MAXBMP dup(<>)						;Cached bitmaps
 	altitude		ALTITUDE <>									;GGA message info
 	satelites		SATELITE 12 dup(<>)							;Data for 12 satelites
+	fSeaMap			DWORD ?										;If TRUE sea map is shown
+	fUnLocked		DWORD ?
 MAP ends
 
 SONARBMP struct
 	hBmp			HBITMAP ?									;Bitmap handle
 	RangeInx		DWORD ?										;Range index
-	xpos			DWORD ?										;X-Position
 	wt				DWORD ?										;Width
+	iLon			DWORD ?										;Longitude
+	iLat			DWORD ?										;Lattitude
 SONARBMP ends
 
 FISH struct
@@ -383,6 +387,7 @@ SONAR struct
 	szFishSound		BYTE MAX_PATH dup(?)						;Path & filename of fish.wav file
 	szDepthSound	BYTE MAX_PATH dup(?)						;Path & filename of depth.wav file
 	fGainUpload		DWORD ?										;If TRUE gain levels must be uploaded
+	sonarbmpinx		DWORD ?
 	sonarbmp		SONARBMP MAXSONARBMP dup(<>)				;Array of bitmap tiles
 	gainofs			DWORD ?										;Initial gain for gain calculations
 	gainmax			DWORD ?										;Max gain for gain calculations
@@ -422,6 +427,9 @@ SONAR struct
 	depth			DWORD ?										;Depth now
 	prevdepth		DWORD ?										;Previous depth
 	fDepthSound		DWORD ?										;Countdown to avoid repeated depth alarm sounds
+	sonarofs		DWORD ?
+	cursonarofs		DWORD ?
+	cursonarbmpinx	DWORD ?
 SONAR ends
 
 SONARREPLAY struct
@@ -558,7 +566,6 @@ szAppPath				BYTE MAX_PATH dup(?)					;Application path
 szFileName				BYTE MAX_PATH dup(?)					;Format string to get map tile path & filename
 szIniFileName			BYTE MAX_PATH dup(?)					;Path and filename of ini file
 
-fSeaMap					DWORD ?									;If TRUE sea map is shown
 mapdata					MAP <>									;Map data
 mousept					POINT <>								;Point where lbutton clicked
 mousemappt				POINT <>

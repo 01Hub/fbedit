@@ -228,7 +228,7 @@ Resize_Image proc uses ebx esi edi,hBmp:HBITMAP,wt:DWORD,ht:DWORD
 	invoke GdipCreateBitmapFromScan0,wt,ht,0,lFormat,0,addr image2
 	invoke GdipGetImageGraphicsContext,image2,addr gfx
 	invoke GdipSetInterpolationMode,gfx,InterpolationModeNearestNeighbor
-	invoke GdipDrawImageRectI,gfx,image1,0,0,wt,ht
+	invoke GdipDrawImageRectI,gfx,image1,0,0,iwt,ht
 	invoke GdipDisposeImage,image1
 	invoke GdipCreateHBITMAPFromBitmap,image2,addr hBmpRet,0
 	invoke GdipDisposeImage,image2
@@ -243,6 +243,7 @@ UpdateBitmap proc uses ebx esi edi,NewRange:DWORD
 	LOCAL	hDC:HDC
 	LOCAL	mDC:HDC
 	LOCAL	wt:DWORD
+	LOCAL	fset:DWORD
 
 	invoke GetDC,hSonar
 	mov		hDC,eax
@@ -254,49 +255,57 @@ UpdateBitmap proc uses ebx esi edi,NewRange:DWORD
 	mov		rect.right,MAXXECHO
 	mov		rect.bottom,MAXYECHO
 	invoke FillRect,sonardata.mDC,addr rect,sonardata.hBrBack
-	mov		esi,offset sonardata.sonarbmp
-	xor		ebx,ebx
-	.while ebx<MAXSONARBMP
-		.if [esi].SONARBMP.hBmp
-			mov		eax,[esi].SONARBMP.xpos
-			add		eax,[esi].SONARBMP.wt
-			.if sdword ptr eax>0 && [esi].SONARBMP.wt
-				invoke GetRangePtr,[esi].SONARBMP.RangeInx
-				mov		ecx,sonardata.sonarrange.range[eax]
-				mov		eax,MAXYECHO
-				mul		ecx
-				mov		ecx,NewRange
-				div		ecx
-				mov		edx,[esi].SONARBMP.wt
-				invoke Resize_Image,[esi].SONARBMP.hBmp,edx,eax
-				invoke SelectObject,mDC,eax
-				push	eax
-				invoke GetRangePtr,[esi].SONARBMP.RangeInx
-				mov		ecx,sonardata.sonarrange.range[eax]
-				mov		eax,MAXYECHO
-				mul		ecx
-				mov		ecx,NewRange
-				div		ecx
-				mov		edx,[esi].SONARBMP.wt
-				mov		ecx,[esi].SONARBMP.xpos
-				xor		edi,edi
-				.if sdword ptr ecx<0
-					neg		ecx
-					mov		edi,ecx
-					sub		edx,ecx
-					xor		ecx,ecx
-				.endif
-				invoke BitBlt,sonardata.mDC,ecx,0,edx,eax,mDC,edi,0,SRCCOPY
-				pop		eax
-				invoke SelectObject,mDC,eax
-				invoke DeleteObject,eax
-			.else
-				invoke DeleteObject,[esi].SONARBMP.hBmp
-				mov		[esi].SONARBMP.hBmp,0
+	mov		fset,FALSE
+	mov		ebx,MAXXECHO
+	add		ebx,sonardata.sonarofs
+	mov		edi,sonardata.sonarbmpinx
+	.while sdword ptr ebx>=0
+		mov		eax,edi
+		mov		edx,sizeof SONARBMP
+		mul		edx
+		mov		esi,eax
+		.break .if !sonardata.sonarbmp.hBmp[esi]
+		sub		ebx,sonardata.sonarbmp.wt[esi]
+		.if sdword ptr ebx<=MAXXECHO
+			.if !fset
+				mov		sonardata.cursonarbmpinx,edi
+				mov		fset,TRUE
 			.endif
+			invoke GetRangePtr,sonardata.sonarbmp.RangeInx[esi]
+			mov		ecx,sonardata.sonarrange.range[eax]
+			mov		eax,MAXYECHO
+			mul		ecx
+			mov		ecx,NewRange
+			div		ecx
+			mov		edx,sonardata.sonarbmp.wt[esi]
+			invoke Resize_Image,sonardata.sonarbmp.hBmp[esi],edx,eax
+			invoke SelectObject,mDC,eax
+			push	eax
+			invoke GetRangePtr,sonardata.sonarbmp.RangeInx[esi]
+			mov		ecx,sonardata.sonarrange.range[eax]
+			mov		eax,MAXYECHO
+			mul		ecx
+			mov		ecx,NewRange
+			div		ecx
+			mov		edx,sonardata.sonarbmp.wt[esi]
+			mov		ecx,ebx
+			push	edi
+			xor		edi,edi
+			.if sdword ptr ecx<0
+				neg		ecx
+				mov		edi,ecx
+				sub		edx,ecx
+				xor		ecx,ecx
+			.endif
+			invoke BitBlt,sonardata.mDC,ecx,0,edx,eax,mDC,edi,0,SRCCOPY
+			pop		edi
+			pop		eax
+			invoke SelectObject,mDC,eax
+			invoke DeleteObject,eax
 		.endif
-		lea		esi,[esi+sizeof SONARBMP]
-		inc		ebx
+		dec		edi
+		and		edi,MAXSONARBMP-1
+		.break .if edi==sonardata.sonarbmpinx
 	.endw
 	invoke DeleteDC,mDC
 	ret
@@ -409,66 +418,11 @@ SetATemp:
 	.endif
 	retn
 
-GetBitmap:
-	invoke GetDC,hSonar
-	mov		hDC,eax
-	invoke CreateCompatibleDC,hDC
-	mov		mDC,eax
-	invoke CreateCompatibleBitmap,hDC,sonardata.sonarbmp.wt,MAXYECHO
-	invoke SelectObject,mDC,eax
-	push	eax
-	invoke ReleaseDC,hSonar,hDC
-	mov		eax,MAXXECHO
-	sub		eax,sonardata.sonarbmp.wt
-	invoke BitBlt,mDC,0,0,sonardata.sonarbmp.wt,MAXYECHO,sonardata.mDC,eax,0,SRCCOPY
-	pop		eax
-	invoke SelectObject,mDC,eax
-	mov		sonardata.sonarbmp.hBmp,eax
-	invoke DeleteDC,mDC
-	retn
-
-ScrollBitmapArray:
-	lea		edi,sonardata.sonarbmp[sizeof SONARBMP*(MAXSONARBMP-1)]
-	.if [edi].SONARBMP.hBmp
-		invoke DeleteObject,[edi].SONARBMP.hBmp
-	.endif
-	mov		ebx,MAXSONARBMP-1
-	.while ebx
-		lea		esi,[edi-sizeof SONARBMP]
-		invoke RtlMoveMemory,edi,esi,sizeof SONARBMP
-		lea		edi,[edi-sizeof SONARBMP]
-		dec		ebx
-	.endw
-	movzx	eax,sonardata.EchoArray
-	mov		sonardata.sonarbmp.RangeInx,eax
-	mov		sonardata.sonarbmp.xpos,MAXXECHO
-	mov		sonardata.sonarbmp.wt,0
-	mov		sonardata.sonarbmp.hBmp,0
-	retn
-
-UpdateBitmapArray:
-	lea		edi,sonardata.sonarbmp[sizeof SONARBMP*(MAXSONARBMP-1)]
-	mov		edx,MAXSONARBMP-1
-	.while edx
-		.if [edi].SONARBMP.hBmp
-			dec		[edi].SONARBMP.xpos
-			mov		eax,[edi].SONARBMP.xpos
-			add		eax,[edi].SONARBMP.wt
-			.if sdword ptr eax<=0
-				;Delete the bitmap, it is no longer needed
-				push	edx
-				invoke DeleteObject,[edi].SONARBMP.hBmp
-				pop		edx
-				mov		[edi].SONARBMP.hBmp,0
-			.endif
-		.endif
-		lea		edi,[edi-sizeof SONARBMP]
-		dec		edx
-	.endw
-	.if [edi].SONARBMP.wt<MAXXECHO
-		inc		[edi].SONARBMP.wt
-		dec		[edi].SONARBMP.xpos
-	.endif
+GetBmpPtr:
+	mov		eax,sonardata.sonarbmpinx
+	mov		edx,sizeof SONARBMP
+	mul		edx
+	mov		esi,eax
 	retn
 
 Update:
@@ -482,29 +436,42 @@ Update:
 	movzx	eax,sonardata.ADCAirTemp
 	call	SetATemp
 	.if nUpdate==1
-		;Check if range is still the same
+		call	GetBmpPtr
+		invoke GetDC,hSonar
+		mov		hDC,eax
+		invoke CreateCompatibleDC,hDC
+		mov		mDC,eax
 		movzx	eax,sonardata.STM32Echo
-		.if eax!=sonardata.sonarbmp.RangeInx
-			;Get bitmap
-			call	GetBitmap
-			call	ScrollBitmapArray
-			invoke GetRangePtr,sonardata.sonarbmp.RangeInx
-			invoke UpdateBitmap,sonardata.sonarrange.range[eax]
+		.if sonardata.sonarbmp.wt[esi]==MAXSONARBMPWT || eax!=sonardata.sonarbmp.RangeInx[esi]
+			inc		sonardata.sonarbmpinx
+			and		sonardata.sonarbmpinx,MAXSONARBMP-1
+			call	GetBmpPtr
+			movzx	eax,sonardata.STM32Echo
+			mov		sonardata.sonarbmp.RangeInx[esi],eax
+			mov		sonardata.sonarbmp.wt[esi],1
 			invoke wsprintf,addr sonardata.options.text,addr szFmtDec,sonardata.RangeVal
+		.else
+			inc		sonardata.sonarbmp.wt[esi]
 		.endif
-		call	UpdateBitmapArray
-		mov		rect.left,0
-		mov		rect.top,0
-		mov		rect.right,MAXXECHO
-		mov		rect.bottom,MAXYECHO
-		invoke ScrollDC,sonardata.mDC,-1,0,addr rect,addr rect,NULL,NULL
-		mov		rect.left,MAXXECHO-1
-		mov		rect.top,0
-		mov		rect.right,MAXXECHO
-		mov		rect.bottom,MAXYECHO
-		invoke FillRect,sonardata.mDC,addr rect,sonardata.hBrBack
+		.if !sonardata.sonarbmp.hBmp[esi]
+			invoke CreateCompatibleBitmap,hDC,MAXSONARBMPWT,MAXYECHO
+			mov		sonardata.sonarbmp.hBmp[esi],eax
+		.endif
+		mov		eax,mapdata.iLon
+		mov		sonardata.sonarbmp.iLon[esi],eax
+		mov		eax,mapdata.iLat
+		mov		sonardata.sonarbmp.iLat[esi],eax
 		;Draw echo
+		invoke SelectObject,mDC,sonardata.sonarbmp.hBmp[esi]
+		push	eax
 		mov		ebx,1
+		mov		edi,sonardata.sonarbmp.wt[esi]
+		mov		rect.right,edi
+		dec		edi
+		mov		rect.left,edi
+		mov		rect.top,0
+		mov		rect.bottom,MAXYECHO
+		invoke FillRect,mDC,addr rect,sonardata.hBrBack
 		.while ebx<MAXYECHO
 			movzx	eax,sonardata.EchoArray[ebx]
 			.if eax
@@ -518,25 +485,22 @@ Update:
 					shr		eax,4
 					mov		eax,sonardata.sonarcolor[eax*DWORD]
 				.endif
-				invoke SetPixel,sonardata.mDC,MAXXECHO-1,ebx,eax
+				invoke SetPixel,mDC,edi,ebx,eax
 			.endif
 			lea		ebx,[ebx+1]
 		.endw
-		.if sonardata.fShowBottom && sonardata.bottom.x==MAXXECHO-1 && sonardata.prevbottom.x>MAXXECHO-50
-			invoke CreatePen,PS_SOLID,5,0
-			invoke SelectObject,sonardata.mDC,eax
-			push	eax
-			mov		eax,sonardata.prevbottom.y
-			mov		ecx,sonardata.prevbottom.range
-			mul		ecx
-			mov		ecx,sonardata.bottom.range
-			div		ecx
-			invoke MoveToEx,sonardata.mDC,sonardata.prevbottom.x,eax,NULL
-			invoke LineTo,sonardata.mDC,sonardata.bottom.x,sonardata.bottom.y
-			pop		eax
-			invoke SelectObject,sonardata.mDC,eax
-			invoke DeleteObject,eax
+
+		pop		eax
+		invoke SelectObject,mDC,eax
+		invoke DeleteDC,mDC
+		invoke ReleaseDC,hSonar,hDC
+
+		.if mapdata.fUnLocked
+			inc		sonardata.sonarofs
 		.endif
+
+		invoke GetRangePtr,sonardata.sonarbmp.RangeInx[esi]
+		invoke UpdateBitmap,sonardata.sonarrange.range[eax]
 	.endif
 	.if nUpdate
 		mov		ebx,sonardata.SignalBarWt
@@ -3156,7 +3120,6 @@ LoadSonarFromIni proc uses ebx esi edi
 		xor		esi,esi
 		.while esi<17
 			invoke GetItemInt,addr buffer,0
-;PrintDec eax
 			mov		sonardata.sonarrange.gain[edi+esi*DWORD],eax
 			inc		esi
 		.endw
@@ -3216,13 +3179,14 @@ SonarClear proc uses ebx esi
 		.if [esi].SONARBMP.hBmp
 			invoke DeleteObject,[esi].SONARBMP.hBmp
 			mov		[esi].SONARBMP.hBmp,0
+			mov		[esi].SONARBMP.RangeInx,0
+			mov		[esi].SONARBMP.wt,0
 		.endif
 		lea		esi,[esi+sizeof SONARBMP]
 		dec		ebx
 	.endw
 	movzx	eax,sonardata.RangeInx
 	mov		sonardata.sonarbmp.RangeInx,eax
-	mov		sonardata.sonarbmp.xpos,MAXXECHO
 	mov		sonardata.sonarbmp.wt,0
 	mov		sonardata.sonarbmp.hBmp,0
 	inc		sonardata.PaintNow
@@ -3367,11 +3331,13 @@ ShowFish:
 			add		edx,rect.right
 			push	eax
 			push	edx
+			add		edx,sonardata.sonarofs
 			invoke ImageList_Draw,hIml,[esi].FISH.fishtype,hDC,addr [edx-8],eax,ILD_TRANSPARENT
 			pop		edx
 			pop		eax
 			.if sonardata.FishDepth
 				sub		edx,16
+				add		edx,sonardata.sonarofs
 				sub		eax,13
 				mov		rctext.left,edx
 				mov		rctext.top,eax
@@ -3497,7 +3463,7 @@ ShowScale:
 	mov		eax,rect.right
 	sub		eax,sonardata.SignalBarWt
 	mov		rect.right,eax
-	sub		eax,RANGESCALE
+	sub		eax,RANGESCALEWT
 	mov		rect.left,eax
 	add		rect.top,6
 	sub		rect.bottom,5
@@ -3592,7 +3558,6 @@ SonarChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LP
 
 		movzx	eax,sonardata.RangeInx
 		mov		sonardata.sonarbmp.RangeInx,eax
-		mov		sonardata.sonarbmp.xpos,MAXXECHO
 		mov		sonardata.sonarbmp.wt,0
 		mov		sonardata.sonarbmp.hBmp,0
 
@@ -3608,7 +3573,7 @@ SonarChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LP
 		invoke SetStretchBltMode,mDC,COLORONCOLOR
 		invoke FillRect,mDC,addr rect,sonardata.hBrBack
 		;Draw echo
-		mov		eax,RANGESCALE
+		mov		eax,RANGESCALEWT
 		add		eax,sonardata.SignalBarWt
 		sub		rect.right,eax
 		sub		rect.bottom,12
@@ -3639,7 +3604,7 @@ SonarChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LP
 			invoke StretchBlt,mDC,0,6,rect.right,rect.bottom,sonardata.mDC,ecx,0,rect.right,MAXYECHO,SRCCOPY
 		.endif
 		;Draw signal bar
-		add		rect.right,RANGESCALE
+		add		rect.right,RANGESCALEWT
 		.if sonardata.zoom
 			mov		eax,sonardata.zoomofs
 			mov		edx,MAXYECHO/2
@@ -3675,6 +3640,45 @@ SonarChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LP
 				invoke GetMapOptionRect,0,addr rect
 				invoke InvalidateRect,hMap,addr rect,TRUE
 			.endif
+		.endif
+	.elseif eax==WM_LBUTTONDOWN
+		.if mapdata.fUnLocked
+			invoke SetCapture,hWin
+			invoke LoadCursor,0,IDC_SIZEALL
+			invoke SetCursor,eax
+			mov		edx,lParam
+			movsx	eax,dx
+			mov		mousept.x,eax
+			shr		edx,16
+			movsx	edx,dx
+			mov		mousept.y,edx
+			mov		eax,sonardata.sonarofs
+			mov		sonardata.cursonarofs,eax
+		.endif
+	.elseif eax==WM_LBUTTONUP
+		.if mapdata.fUnLocked
+			invoke GetCapture
+			.if eax==hWin
+				invoke ReleaseCapture
+				invoke LoadCursor,0,IDC_ARROW
+				invoke SetCursor,eax
+			.endif
+		.endif
+	.elseif eax==WM_MOUSEMOVE
+		invoke GetCapture
+		.if eax==hWin
+			mov		edx,lParam
+			movsx	eax,dx
+			shr		edx,16
+			movsx	edx,dx
+			mov		pt.x,eax
+			mov		pt.y,edx
+			sub		eax,mousept.x
+			add		eax,sonardata.cursonarofs
+			.if sdword ptr eax<0
+				xor		eax,eax
+			.endif
+			mov		sonardata.sonarofs,eax
 		.endif
 	.elseif eax==WM_CONTEXTMENU
 		mov		eax,lParam
