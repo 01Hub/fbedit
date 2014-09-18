@@ -3,10 +3,10 @@ Version=3000
 [Project]
 Assembler=masm
 Group=2,-1,0,1,ShowMap,-2,-1,1,Assembly,-3,-1,1,Include,-4,-1,1,Misc,-5,-1,1,Resource
-F1=-2,2,1,0,591,160,38,172,BoatNav.asm
-F2=-3,0,1,-6,7,901,534,314,BoatNav.inc
+F1=-2,2,1,0,591,160,38,194,BoatNav.asm
+F2=-3,0,1,-6,7,901,534,148,BoatNav.inc
 F3=-5,2,4,-6,-25,1452,731,572,BoatNav.rc
-Open=1,1,2,3,20,5,6,7,8,9,10,13,19
+Open=5,1,2,3,20,5,6,7,8,9,10,13,19
 Api=
 F4=-4,0,2,-10,-32,1142,623,100,BoatNav.ini
 Misc.asm
@@ -25,7 +25,7 @@ SonarTransmitter.cad
 F18=-5,0,3,-6,-25,1457,731,0,Res\SplitV.cur
 Path=C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth
 F5=-2,0,1,154,154,1014,416,0,Distance.asm
-F6=-2,0,1,176,176,1014,416,127,DrawMap.asm
+F6=-2,0,1,176,176,1014,416,313,DrawMap.asm
 F7=-2,0,1,0,0,1014,416,282,GpsComm.asm
 F8=-2,0,1,22,22,1014,416,1356,Misc.asm
 F9=-2,0,1,44,44,1014,416,0,Options.asm
@@ -86,7 +86,7 @@ F19=-2,0,1,44,44,1041,412,145,Bluetooth.asm
 C19=0
 B19=
 M19=
-F20=-2,0,1,0,0,1424,550,3545,Sonar2.asm
+F20=-2,0,1,0,0,1424,550,272,Sonar2.asm
 C20=0,0,0,0,0,0,0,0,0,0,0,0
 B20=
 M20=
