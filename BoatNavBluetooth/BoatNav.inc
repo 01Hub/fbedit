@@ -154,7 +154,7 @@ MAXRANGE				equ 32									;Max number of depth ranges that can be read from ini
 REPLAYSPEED				equ 5									;At replay, the ping interval is divided by REPLAYSPEED
 MAXFISH					equ 64									;Prevents showing repeated fish symbols and repeated fish alarms
 MAXSONARBMPWT			equ 32									;Max width of sonar bitmap tile
-MAXSONARBMP				equ 256									;Max number of bitmap tiles, for each range change a tile is created
+MAXSONARBMP				equ 512									;Max number of bitmap tiles, for each range change a tile is created
 SOUNDSPEEDMIN			equ 1400								;Minimum speed of sound in water
 SOUNDSPEEDMAX			equ 1550								;Maximum speed of sound in water
 SMALLFISHECHO			equ 96									;Minimum echo to detect small fish
@@ -162,6 +162,7 @@ LARGEFISHECHO			equ SMALLFISHECHO+64					;Minimum echo to detect large fish
 MAXDEPTHJUMP			equ 10									;Max number of pixels to jump on depth detection
 MAXPING					equ 200									;Max number of ping pulses
 ZOOMHYSTERESIS			equ 7									;To avoid constant jumping while zoom is on
+RANGEHYSTERESIS			equ 5									;To avoid rapid range changes
 DEPTHHYSTERESIS			equ 256									;Difference from previous sum of 4x16 must be larger
 
 LONPOINT struct

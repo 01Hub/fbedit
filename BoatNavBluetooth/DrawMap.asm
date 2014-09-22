@@ -311,7 +311,7 @@ ShowGpsCursor proc uses ebx esi edi,topx:DWORD,topy:DWORD,curx:DWORD,cury:DWORD,
 			idiv	zoomval
 			sub		eax,8
 			mov		pt.y,eax
-			invoke ImageList_Draw,hIml,30,mapdata.mDC2,pt.x,pt.y,ILD_TRANSPARENT
+			invoke ImageList_Draw,hIml,28,mapdata.mDC2,pt.x,pt.y,ILD_TRANSPARENT
 		.endif
 	.endif
 	ret

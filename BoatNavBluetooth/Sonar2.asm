@@ -2415,10 +2415,28 @@ FindFish:
 
 TestRangeChange:
 	.if sonardata.AutoRange && !sonardata.hReplay
+		;Current depth
+		mov		ebx,sonardata.dptinx
+		;Current range index
 		movzx	eax,sonardata.STM32Echo
+		.if eax
+			;Calculate 0.8*Previous Range
+			invoke GetRangePtr,eax
+			mov		ecx,sonardata.sonarrange.range[eax]
+			sub		eax,sizeof RANGE
+			mov		edx,sonardata.sonarrange.range[eax]
+			mov		eax,MAXYECHO
+			mul		edx
+			div		ecx
+			mov		edx,8
+			mul		edx
+			mov		ecx,10
+			div		ecx
+			mov		ecx,eax
+			movzx	eax,sonardata.STM32Echo
+		.endif
 		mov		edx,sonardata.MaxRange
 		dec		edx
-		mov		ebx,sonardata.dptinx
 		.if sonardata.nodptinx
 			;Bottom not found
 			.if sonardata.nodptinx>=10
@@ -2428,7 +2446,7 @@ TestRangeChange:
 						;Range decrement
 						dec		eax
 						invoke SetRange,eax
-						mov		rngchanged,8
+						mov		rngchanged,RANGEHYSTERESIS
 						mov		sonardata.dptinx,0
 						inc		sonardata.fGainUpload
 					.else
@@ -2439,7 +2457,7 @@ TestRangeChange:
 						;Range increment
 						inc		eax
 						invoke SetRange,eax
-						mov		rngchanged,8
+						mov		rngchanged,RANGEHYSTERESIS
 						mov		sonardata.dptinx,0
 						inc		sonardata.fGainUpload
 					.else
@@ -2450,18 +2468,18 @@ TestRangeChange:
 		.else
 			mov		rngdecrement,FALSE
 			;Check if range should be changed
-			.if eax && ebx<MAXYECHO/3
+			.if eax && ebx<ecx
 				;Range decrement
 				dec		eax
 				invoke SetRange,eax
-				mov		rngchanged,10
+				mov		rngchanged,RANGEHYSTERESIS
 				mov		sonardata.dptinx,0
 				inc		sonardata.fGainUpload
-			.elseif eax<edx && ebx>(MAXYECHO-MAXYECHO/5)
+			.elseif eax<edx && ebx>MAXYECHO*9/10
 				;Range increment
 				inc		eax
 				invoke SetRange,eax
-				mov		rngchanged,10
+				mov		rngchanged,RANGEHYSTERESIS
 				mov		sonardata.dptinx,0
 				inc		sonardata.fGainUpload
 			.endif
@@ -3316,7 +3334,9 @@ ShowFish:
 	mov		esi,offset sonardata.fishdata
 	.while ecx
 		push	ecx
-		.if [esi].FISH.fishtype && sdword ptr [esi].FISH.xpos>=-10 && [esi].FISH.depth<=ebx
+		mov		eax,[esi].FISH.xpos
+		add		eax,sonardata.sonarofs
+		.if [esi].FISH.fishtype && sdword ptr eax>=-10 && [esi].FISH.depth<=ebx
 			mov		eax,[esi].FISH.depth
 			mov		ecx,rect.bottom
 			sub		ecx,rect.top
