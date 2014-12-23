@@ -6,6 +6,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Color;
 import android.graphics.Paint.Style;
@@ -931,7 +932,7 @@ public class MyIV extends ImageView {
 			    	if (y < scrnht + 10) {
 						// Draw fish icon
 						if (sonarfishicon) {
-							canvas.drawBitmap(BoatNav.bmp[MAPMAXBMP + 16 + 8 + fisharray[0][inx]].bm, x - 8, y - 8, null);
+							canvas.drawBitmap(BoatNav.bmp[MAPMAXBMP + 1 + 8 + fisharray[0][inx]].bm, x - 8, y - 8, null);
 							y -= 10;
 						}
 						if (sonarfishdepth) {
@@ -943,6 +944,13 @@ public class MyIV extends ImageView {
 			}
 			inx++;
 		}
+	}
+
+	private void DrawCursor(Canvas canvas, int x, int y, int angle) {
+		Matrix matrix = new Matrix();
+		matrix.postRotate(angle);
+		Bitmap rotated = Bitmap.createBitmap(BoatNav.bmp[MAPMAXBMP].bm,0,0,16,16,matrix,true);
+		canvas.drawBitmap(rotated, x-(rotated.getWidth()/2), y-(rotated.getHeight()/2), null);
 	}
 
 	private void DrawMap(Canvas canvas) {
@@ -1000,7 +1008,7 @@ public class MyIV extends ImageView {
 				ScrnPosToCurPos();
 				if (BoatNav.placeIcon[index] != 0) {
 					// Draw icon
-					canvas.drawBitmap(BoatNav.bmp[MAPMAXBMP + BoatNav.placeIcon[index]].bm, cpx - 8, cpy - 8, null);
+					canvas.drawBitmap(BoatNav.bmp[MAPMAXBMP + BoatNav.placeIcon[index] - 15].bm, cpx - 8, cpy - 8, null);
 					cpx += 10;
 				}
 				if (((BoatNav.placeState[index]) & 2) != 0 && BoatNav.placeTitle[index] != "") {
@@ -1034,25 +1042,19 @@ public class MyIV extends ImageView {
 					GpsPosToMapPos((double)sonarbmplat[sonarcurbmpinx] / 1000000d, (double)sonarbmplon[sonarcurbmpinx] / 1000000d);
 					MapPosToScrnPos();
 					ScrnPosToCurPos();
-					canvas.drawBitmap(BoatNav.bmp[MAPMAXBMP + 28].bm, cpx-8, cpy-8, null);
+					canvas.drawBitmap(BoatNav.bmp[MAPMAXBMP + 13].bm, cpx-8, cpy-8, null);
 				}
 			}
 		}
-		// Cursor index
-		index = (int)((double)curbearing / 22.5d) & 15;
-		GpsPosToMapPos(curlat, curlon);
-		MapPosToScrnPos();
-		ScrnPosToCurPos();
-		paint.setTextAlign(Paint.Align.LEFT);
 		// Draw speed and cursor
-		if (curfix > 1) {
+		if (blink || curfix > 1) {
+			GpsPosToMapPos(curlat, curlon);
+			MapPosToScrnPos();
+			ScrnPosToCurPos();
+			paint.setTextAlign(Paint.Align.LEFT);
+			// Draw speed and cursor
 			DrawText(10, 50, 50, String.format("%.1f",((float)curspeed/10)), canvas);
-			canvas.drawBitmap(BoatNav.bmp[MAPMAXBMP + index].bm, cpx-8, cpy-8, null);
-		} else {
-			if (blink) {
-				DrawText(10, 50, 50, String.format("%.1f",((float)curspeed/10)), canvas);
-				canvas.drawBitmap(BoatNav.bmp[MAPMAXBMP + index].bm, cpx-8, cpy-8, null);
-			}
+			DrawCursor(canvas,cpx,cpy,curbearing);
 		}
 	}
 
@@ -1166,7 +1168,7 @@ public class MyIV extends ImageView {
 
 	private void DrawSatelite(Canvas canvas) {
 		Bitmap bm = Bitmap.createBitmap(8, 8, Bitmap.Config.ARGB_8888);
-		int cx, cy, r, nsat, x, y, s, curindex;
+		int cx, cy, r, nsat, x, y, s;
 		double tmp1, tmp2;
 		// Set background
 		bm.eraseColor(MyIV.sonarColor);
@@ -1197,20 +1199,14 @@ public class MyIV extends ImageView {
 		canvas.drawCircle(cx, cy, r / 2, paint);
 		canvas.drawLine(cx - r, cy, cx + r, cy, paint);
 		canvas.drawLine(cx, cy - r, cx, cy + r, paint);
-		canvas.drawBitmap(BoatNav.bmp[MAPMAXBMP + 28].bm, cx-8, cy-8, null);
+		canvas.drawBitmap(BoatNav.bmp[MAPMAXBMP + 13].bm, cx-8, cy-8, null);
 		// Draw speed and cursor
 		paint.setTextAlign(Paint.Align.LEFT);
 		paint.setStyle(Paint.Style.FILL);
-		// Cursor index
-		curindex = (int)((double)curbearing / 22.5d) & 15;
-		if (curfix > 1) {
+		if (blink || curfix > 1) {
+			// Draw speed and cursor
 			DrawText(10, 50, 50, String.format("%.1f",((float)curspeed/10)), canvas);
-			canvas.drawBitmap(BoatNav.bmp[MAPMAXBMP + curindex].bm, cx-8, cy-8, null);
-		} else {
-			if (blink) {
-				DrawText(10, 50, 50, String.format("%.1f",((float)curspeed/10)), canvas);
-				canvas.drawBitmap(BoatNav.bmp[MAPMAXBMP + curindex].bm, cx-8, cy-8, null);
-			}
+			DrawCursor(canvas,cx,cy,curbearing);
 		}
 		// Draw air temperature
 		paint.setTextAlign(Paint.Align.RIGHT);
@@ -1242,13 +1238,13 @@ public class MyIV extends ImageView {
 				paint.setColor(Color.WHITE);
 				canvas.drawRect(10 + nsat * 24, scrnht - 92, 30 + nsat * 24, scrnht - 40, paint);
 				paint.setStyle(Paint.Style.FILL);
-				s = 30; // Red
+				s = 15; // Red
 				if (sc.sat[nsat].SNR > 0) {
 					if (sc.sat[nsat].Fixed == 1) {
-						s = 29; // Green
+						s = 14; // Green
 						paint.setColor(0xFF008200);
 					} else {
-						s = 31; // Blue
+						s = 16; // Blue
 						paint.setColor(Color.BLUE);
 					}
 					canvas.drawRect(11 + nsat * 24, scrnht - 41 - sc.sat[nsat].SNR, 30 + nsat * 24, scrnht - 41, paint);
@@ -1270,6 +1266,16 @@ public class MyIV extends ImageView {
 				canvas.drawText("" + sc.sat[nsat].SatelliteID, x, y + 4,paint);
 			}
 			nsat++;
+		}
+		// Draw time
+		try {
+			paint.setTextAlign(Paint.Align.RIGHT);
+			sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+		    java.util.Date date = sdf.parse(curtime);
+		    sdf.setTimeZone(TimeZone.getDefault());
+			DrawText(mapwt - 10, scrnht - 15, 15, sdf.format(date), canvas);
+		} catch (java.text.ParseException e) {
+			DrawText(mapwt - 10, scrnht - 15, 10, "ERR", canvas);
 		}
 	}
 
@@ -1325,7 +1331,7 @@ public class MyIV extends ImageView {
 		if (BoatNav.recording && blink) {
 			// Recording
 			canvas.clipRect(0, 0, scrnwt, scrnht, Region.Op.REPLACE);
-			canvas.drawBitmap(BoatNav.bmp[MAPMAXBMP + 28].bm, scrnwt - 24, scrnht - 24, paint);
+			canvas.drawBitmap(BoatNav.bmp[MAPMAXBMP + 13].bm, scrnwt - 24, scrnht - 24, paint);
 		}
 
 // Debug
