@@ -1514,33 +1514,33 @@ public class BoatNav extends Activity {
         	// None R.id.rbn1
         	rg1.check(R.id.rbn1);
         	break;
-        case 22:
+        case 7:
         	// Building R.id.rbn2
         	rg1.check(R.id.rbn2);
         	break;
-        case 21:
+        case 6:
         	// House R.id.rbn3
         	rg1.check(R.id.rbn3);
         	break;
-        case 24:
+        case 9:
         	// Shallow R.id.rbn4
         	rg1.check(R.id.rbn4);
         	break;
         }
         switch (placeIcon[placeinx]) {
-        case 26:
+        case 11:
         	// Big fish
         	rg2.check(R.id.rbn5);
         	break;
-        case 25:
+        case 10:
         	// Small fish
         	rg2.check(R.id.rbn6);
         	break;
-        case 19:
+        case 4:
         	// Cross
         	rg2.check(R.id.rbn7);
         	break;
-        case 20:
+        case 5:
         	// City
         	rg2.check(R.id.rbn8);
         	break;
@@ -1599,33 +1599,33 @@ public class BoatNav extends Activity {
 	            	break;
 	            case R.id.rbn2:
 	            	// Building
-					placeIcon[i] = 22;
+					placeIcon[i] = 7;
 	            	break;
 	            case R.id.rbn3:
 	            	// House
-					placeIcon[i] = 21;
+					placeIcon[i] = 6;
 	            	break;
 	            case R.id.rbn4:
 	            	// Shallow
-					placeIcon[i] = 24;
+					placeIcon[i] = 9;
 	            	break;
 	            }
 	            switch (rbnsel2) {
 	            case R.id.rbn5:
 	            	// Big fish
-					placeIcon[i] = 26;
+					placeIcon[i] = 11;
 	            	break;
 	            case R.id.rbn6:
 	            	// Small fish
-					placeIcon[i] = 25;
+					placeIcon[i] = 10;
 	            	break;
 	            case R.id.rbn7:
 	            	// Cross
-					placeIcon[i] = 19;
+					placeIcon[i] = 4;
 	            	break;
 	            case R.id.rbn8:
 	            	// City
-					placeIcon[i] = 20;
+					placeIcon[i] = 5;
 	            	break;
 	            }
 	        	

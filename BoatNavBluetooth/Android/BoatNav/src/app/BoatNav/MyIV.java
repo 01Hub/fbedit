@@ -1008,7 +1008,7 @@ public class MyIV extends ImageView {
 				ScrnPosToCurPos();
 				if (BoatNav.placeIcon[index] != 0) {
 					// Draw icon
-					canvas.drawBitmap(BoatNav.bmp[MAPMAXBMP + BoatNav.placeIcon[index] - 15].bm, cpx - 8, cpy - 8, null);
+					canvas.drawBitmap(BoatNav.bmp[MAPMAXBMP + BoatNav.placeIcon[index]].bm, cpx - 8, cpy - 8, null);
 					cpx += 10;
 				}
 				if (((BoatNav.placeState[index]) & 2) != 0 && BoatNav.placeTitle[index] != "") {
