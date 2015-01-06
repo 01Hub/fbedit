@@ -1168,7 +1168,7 @@ public class MyIV extends ImageView {
 
 	private void DrawSatelite(Canvas canvas) {
 		Bitmap bm = Bitmap.createBitmap(8, 8, Bitmap.Config.ARGB_8888);
-		int cx, cy, r, nsat, x, y, s;
+		int cx, cy, r, nsat, x, y, z, s;
 		double tmp1, tmp2;
 		// Set background
 		bm.eraseColor(MyIV.sonarColor);
@@ -1187,9 +1187,11 @@ public class MyIV extends ImageView {
 		if (scrnwt > scrnht) {
 			cy = cx - 70;
 			r = satelitewt / 2 - 100;
+			z = 0;
 		} else {
 			cy = cx + 30;
 			r = satelitewt / 2 - 10;
+			z = 40;
 		}
 		// Draw circles and cross hair
 		paint.setColor(Color.BLACK);
@@ -1211,10 +1213,13 @@ public class MyIV extends ImageView {
 		// Draw air temperature
 		paint.setTextAlign(Paint.Align.RIGHT);
 		DrawText(mapwt - 10, 30, 25, String.format("%.1f",(curatemp)) + "C", canvas);
+		// Draw distance
+		paint.setTextAlign(Paint.Align.CENTER);
+		DrawText(mapwt / 2, 15, 15, String.format("%.0f", distance) + "m", canvas);
 		// Draw some info
 		paint.setTextAlign(Paint.Align.LEFT);
 		paint.setTextSize(15);
-		y = scrnht - 115;
+		y = scrnht - 115 - z;
 		if (sc.fixquality == 2) {
 			canvas.drawText("Fix: 2D", 10, y, paint);
 		} else if (sc.fixquality == 3) {
@@ -1236,7 +1241,7 @@ public class MyIV extends ImageView {
 				paint.setStrokeWidth(1);
 				paint.setStyle(Paint.Style.STROKE);
 				paint.setColor(Color.WHITE);
-				canvas.drawRect(10 + nsat * 24, scrnht - 92, 30 + nsat * 24, scrnht - 40, paint);
+				canvas.drawRect(10 + nsat * 24, scrnht - 92 -z, 30 + nsat * 24, scrnht - 40 - z, paint);
 				paint.setStyle(Paint.Style.FILL);
 				s = 15; // Red
 				if (sc.sat[nsat].SNR > 0) {
@@ -1247,12 +1252,12 @@ public class MyIV extends ImageView {
 						s = 16; // Blue
 						paint.setColor(Color.BLUE);
 					}
-					canvas.drawRect(11 + nsat * 24, scrnht - 41 - sc.sat[nsat].SNR, 30 + nsat * 24, scrnht - 41, paint);
+					canvas.drawRect(11 + nsat * 24, scrnht - 41 - sc.sat[nsat].SNR - z, 30 + nsat * 24, scrnht - 41 - z, paint);
 				}
 				paint.setColor(Color.BLACK);
 				paint.setTextAlign(Paint.Align.CENTER);
 				paint.setTextSize(15);
-				canvas.drawText("" + sc.sat[nsat].SatelliteID, 16 + nsat * 24, scrnht - 20, paint);
+				canvas.drawText("" + sc.sat[nsat].SatelliteID, 16 + nsat * 24, scrnht - 20 - z, paint);
 
 				// Get point on circle
 				tmp1 = ((90d - (double)sc.sat[nsat].Elevation) * (double)r) / 90d;	// Radius
