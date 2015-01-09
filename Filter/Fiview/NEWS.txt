@@ -1,0 +1,102 @@
+0.9.10 (2008-05-08)
+
+Update to version 0.9.10 of fidlib.  Update of fidlib and fiview
+source to compile with GCC 4.
+
+---
+
+0.9.8 (2004-09-06)
+
+Fidlib correction to auto-adjust to -3.01dB (70.71%) not 50% when '=' used.
+Fidlib window-function low-pass filters now give correct widths at -3.01dB
+Filter response analysis now performed at half-power and quarter-power points,
+  i.e. 70.71% (sqrt 0.5) and 50% (-3.01dB and -6.02dB), instead of just at 50%
+Ruler 'm' display now showing 70.71% and 50% points instead of just 50% points
+Fidlib added fid_list_filters_buf() function
+No longer uses strstream (no more "dev_null.txt" on Windows)
+
+---
+
+0.9.7 (2004-08-20)
+
+Added window functions (Bartlet, Hann, Hamming, Blackman).
+
+---
+
+0.9.6 (2004-03-16)
+
+Fixed up some non-ANSI code that newer GCC complained about.
+
+---
+
+0.9.5 (2003-08-22)
+
+Fixed false internal error report from pair_filters() on Windows due
+  to error detection not allowing leeway for slight calculation errors.
+
+---
+
+0.9.4 (2003-06-14)
+
+Updates to fidlib source to support fidlib compilation with MSVC.
+
+---
+
+0.9.3 (2003-06-11)
+
+Changed from using -a option to the '=' prefix to indicate
+  auto-adjustment of frequencies.  For example: "BpBe4/=1000-1500" or
+  "-f =250" or whatever.
+Auto-adjustment now fully implemented
+Added a demo set of filters to allow a quick startup of fiview:
+  fiview -D
+Permit up to 10 filters to be switched with the keyboard
+Added 'unmaintained' #error to JIT code in fidlib
+Fidlib contains some fixes to aid compilation on MSVC (MSVC handling
+  could be improved, though)
+BpBq and BsBq now expect a single centre frequency instead of the
+  incorrect frequency range required previously.
+Filter parsing is now performed in Fidlib
+Some other fixes
+
+---
+
+0.9.2 (2003-01-27)
+
+Min/max/50% rulers and labelling on freq-display ('m' key)
+Log-scale freq-display views ('l' key)
+Sweep and wavelet testing modes on frequency display ('f' key)
+Windows file-loading weirdness dealt with
+New 'fiview.coef' output file giving IIR/FIR coefficients in 
+  reloadable format
+Sampling rate may now appear before any of the other options
+Auto-adjust feature added for Lp and Hp filters (-a option)
+Better zoom mode for time-display ('z' key)
+Better zoom/expand mode for freq-display ('z' + 'x')
+Direct fidlib-calling code also included in examples
+Option to just analyse and quit instead of entering GUI
+Dropped 'h', 'i', 'f' and 't' keys for switching between displays;
+  only F1-F4 keys available now.  (Alt-? or Ctrl-? could be used 
+  instead if people need this feature)
+Fixed small display adjust bug for frequency display upper bound
+Added experimental lowpass Butterworth-Bessel cross filter (LpBuBe)
+Added Blackman window (LpBl)
+Updated helptext
+
+---
+
+0.9.1
+
+Added more example code to fiview.log output, including a
+compiler-optimised version, and also example code to generate other
+filters in the same class at run-time.  Most of the other changes were
+internal code reorganization and clean-up to support these additions,
+plus code in fidlib to generate the required coefficients at run-time.
+Also now displays better filters that go on forever (for example
+oscillators like BpRe/0/0.01).
+
+---
+
+0.9.0
+
+Initial release

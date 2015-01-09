@@ -1,0 +1,69 @@
+#!/usr/bin/perl -w
+
+# Take fiview.log, build it and test it to see if all the different
+# generated filters agree.  Usage:
+#
+#   ./test-fiview-log | more
+#
+
+die "Can't create tmp.c" 
+    unless open OUT, ">tmp-test.c";
+
+print OUT <<END;
+#include <stdio.h>
+#include <string.h>
+
+extern double fid_design_coef(double *coef, int n_coef, char *spec, double rate,
+                              double freq0, double freq1, int adj);
+END
+
+die "Can't open fiview.log" 
+    unless open IN, "<fiview.log";
+
+@pexec= ();
+
+$p_cnt= 0;
+$s_cnt= 0;
+while (<IN>) {
+    if (/^process/) {
+	s/process/process_$p_cnt/;
+	if (/coef/) {
+	    push @pexec, "process_$p_cnt(coef, buf, val)";
+	} else {
+	    push @pexec, "process_$p_cnt(val)";
+	}
+	$p_cnt++;
+    }
+    if (/^setup/) {
+	s/setup/setup_$s_cnt/;
+	$s_cnt++;
+    }
+    print OUT $_;
+}
+
+die unless close IN;
+
+print OUT "\n";
+print OUT "int \n";
+print OUT "main(int ac, char **av) {\n";
+print OUT "   double val;\n";
+
+for (0..($s_cnt-1)) {
+    print OUT "   setup_$_(coef);\n";
+}
+print OUT "   val= 1.0;\n";
+print OUT "   printf(\"%20.10g\", $_);\n" for (@pexec);
+print OUT "   printf(\"\\n\");\n";
+print OUT "   val= 0.0;\n";
+print OUT "   while (1) {\n";
+print OUT "      printf(\"%20.10g\", $_);\n" for (@pexec);
+print OUT "      printf(\"\\n\");\n";
+print OUT "   }\n";
+print OUT "   return 0;\n";
+print OUT "}\n";
+
+die unless close OUT;
+
+system("gcc -lm -o tmp-test tmp-test.c src/fidlib.o && ./tmp-test");
+
+exit 0;
