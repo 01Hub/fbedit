@@ -463,7 +463,7 @@ void USART3_getdata(uint8_t *dat,uint16_t len)
 void RCC_Config(void)
 {
   /* DAC, TIM2, TIM3, TIM4 and TIM5 clock enable */
-  RCC_APB1PeriphClockCmd(RCC_APB1Periph_SPI2 | RCC_APB1Periph_DAC | RCC_APB1Periph_TIM2 | RCC_APB1Periph_TIM3 | RCC_APB1Periph_TIM4 | RCC_APB1Periph_TIM5, ENABLE);
+  RCC_APB1PeriphClockCmd(RCC_APB1Periph_SPI2 | RCC_APB1Periph_DAC | RCC_APB1Periph_TIM2 | RCC_APB1Periph_TIM3 | RCC_APB1Periph_TIM4 | RCC_APB1Periph_TIM5 | RCC_APB1Periph_TIM7, ENABLE);
   /* DMA2 clock enable */
   RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA2, ENABLE);
   /* GPIOA clock enable */
@@ -494,6 +494,12 @@ void NVIC_Config(void)
   NVIC_InitStructure.NVIC_IRQChannel = TIM3_IRQn;
   NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
   NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
+  NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+  NVIC_Init(&NVIC_InitStructure);
+  /* Enable the TIM7 gloabal Interrupt */
+  NVIC_InitStructure.NVIC_IRQChannel = TIM7_IRQn;
+  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
+  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 2;
   NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
   NVIC_Init(&NVIC_InitStructure);
 }
@@ -661,6 +667,14 @@ void TIM_Config(void)
   TIM_ARRPreloadConfig(TIM4, ENABLE);
   /* TIM4 enable counter */
   TIM_Cmd(TIM4, ENABLE);
+  /* Time base configuration */
+  TIM_TimeBaseStructure.TIM_Period = 10000-1;
+  TIM_TimeBaseStructure.TIM_Prescaler = (STM32_CLOCK/2/10000)-1;
+  TIM_TimeBaseStructure.TIM_ClockDivision = 0;
+  TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
+  TIM_TimeBaseStructure.TIM_RepetitionCounter = 0;
+  TIM_TimeBaseInit(TIM7, &TIM_TimeBaseStructure);
+  TIM_Cmd(TIM7, ENABLE);
   /* Time base configuration */
   TIM_TimeBaseStructure.TIM_Period = 200;
   TIM_TimeBaseStructure.TIM_Prescaler = 0;
@@ -937,6 +951,12 @@ void TIM3_IRQHandler(void)
   STM32_CMD.TickCount++;
   TIM_ClearITPendingBit(TIM3, TIM_IT_Update);
   STM_EVAL_LEDToggle(LED3);
+}
+
+void TIM7_IRQHandler(void)
+{
+  TIM_ClearITPendingBit(TIM7, TIM_IT_Update);
+  STM_EVAL_LEDToggle(LED4);
 }
 
 /*****END OF FILE****/

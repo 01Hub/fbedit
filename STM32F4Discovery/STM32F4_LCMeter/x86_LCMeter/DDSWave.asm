@@ -986,6 +986,10 @@ DDSChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 					invoke DDSGenWave
 					invoke DDSSetStruct,DDS_WAVESET
 				.endif
+			.elseif eax==IDC_RBNSWEEPOFF
+			.elseif eax==IDC_RBNSWEEPUP
+			.elseif eax==IDC_RBNSWEEPDOWN
+			.elseif eax==IDC_RBNSWEEPUPDOWN
 			.endif
 		.elseif edx==EN_KILLFOCUS
 			.if eax==IDC_EDTDDSFRQ

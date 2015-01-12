@@ -82,6 +82,16 @@ IDC_TRBDDSAMP           		equ 1310
 IDC_BTNDDSOFSUP         		equ 1311
 IDC_TRBDDSOFS           		equ 1312
 IDC_BTNDDSOFSDN         		equ 1313
+IDC_RBNSWEEPOFF					equ 1315
+IDC_RBNSWEEPUP					equ 1316
+IDC_RBNSWEEPDOWN				equ 1317
+IDC_RBNSWEEPUPDOWN				equ 1318
+IDC_BTNDDSSWEEPUP				equ 1319
+IDC_EDTDDSSWEEP					equ 1320
+IDC_BTNDDSSWEEPDN				equ 1321
+IDC_BTNSWEEPRNGUP				equ 1322
+IDC_EDTSWEEPRANGE				equ 1323
+IDC_BTNSWEEPRNGDN				equ 1324
 
 IDD_DLGLGA						equ 1400
 IDC_BTNSRUP						equ 1401
@@ -173,6 +183,7 @@ SWEEP_SubModePeak				equ 5
 
 DDS_PHASESET					equ 1
 DDS_WAVESET						equ 2
+DDS_SWWPSET						equ 3
 
 BTH_ADDR						equ QWORD ?
 
@@ -235,6 +246,12 @@ STM32_DDS struct
 	DDS__PhaseAdd				DWORD ?
 	DDS_Amplitude				DWORD ?
 	DDS_DCOffset				DWORD ?
+;	DDS_SweepMode				DWORD ?
+;	DDS_SweepFrq				DWORD ?
+;	DDS_SweepPhseAdd			DWORD ?
+;	DDS_SweepMin				DWORD ?
+;	DDS_SweepMax				DWORD ?
+;	DDS_SweepTmr				DWORD ?
 STM32_DDS ends
 
 STM32_LGA struct
