@@ -22,6 +22,11 @@ typedef struct
   uint16_t SPI_Cnt;                                   // 0x00000020
   uint16_t rx;                                        // 0x00000022
   uint16_t Wave[2048];                                // 0x20000024
+  uint16_t SweepMode;                                 // 0x00000026
+  uint16_t SweepTime;                                 // 0x00000028
+  uint32_t SweepMin;                                  // 0x2000002A
+  uint32_t SweepMax;                                  // 0x2000002E
+  uint32_t SweepAdd;                                  // 0x20000032
 }STM32_CMNDTypeDef;
 
 /* Private define ------------------------------------------------------------*/
@@ -34,6 +39,8 @@ typedef struct
 
 #define SPI_PhaseSet              ((uint16_t)1)
 #define SPI_WaveSet               ((uint16_t)2)
+#define SPI_SweepSet              ((uint16_t)3)
+
 
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/

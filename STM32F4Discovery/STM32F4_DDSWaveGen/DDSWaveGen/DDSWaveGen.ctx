@@ -9,12 +9,12 @@
 				<3>372</3>
 				<4>67</4>
 				<5>142</5>
-																																																																																																																																																																								
+																																																																																																																																																																																																				
 			</CodeReport>
-																																																																																																																								
+																																																																																																																																												
 		</CodeView>
 		<MemoryView Focus="134218120" TopRow="0" NbPerLine="8" />
-																																																																								
+																																																																																				
 	</DDSWaveGen>
 	<Flags>
 		<Report>
@@ -38,8 +38,8 @@
 			
 	</Flags>
 	<Views>
-		<View File="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\main.c" Line="64" Index="0" focus="1" />
-		<View File="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\misc.c" Line="68" Index="1" />
+		<View File="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\main.c" Line="524" Index="0" focus="1" />
+		<View File="C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_DDSWaveGen\DDSWaveGen\misc.c" Line="66" Index="1" />
 	</Views>
 	<Grep>
 		<GrepIncludeSub>yes</GrepIncludeSub>
