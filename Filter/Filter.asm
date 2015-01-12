@@ -181,50 +181,15 @@ Filter2 endp
 ;//  optimised for cleaner compilation to efficient machine code)
 ;double
 ;process(register double val) {
-;   static double buf[16];
+;   static double buf[2];
 ;   register double tmp, fir, iir;
-;   tmp= buf[0]; memmove(buf, buf+1, 15*sizeof(double));
-;   // use 1.187762813747436e-007 below for unity gain at 100% level
-;   iir= val * 1.187762813747532e-007;
-;   iir -= 0.8716668814893267*tmp; fir= tmp;
-;   iir -= 0.2914719502507858*buf[0]; fir += -buf[0]-buf[0];
+;   tmp= buf[0]; memmove(buf, buf+1, 1*sizeof(double));
+;   // use 0.07295965726826664 below for unity gain at 100% level
+;   iir= val * 0.07295965726827532;
+;   iir -= 0.8540806854634667*tmp; fir= -tmp;
+;   iir -= -1.013642496376809e-016*buf[0];
 ;   fir += iir;
-;   tmp= buf[1]; buf[1]= iir; val= fir;
-;   iir= val;
-;   iir -= 0.8716668814893267*tmp; fir= tmp;
-;   iir -= -0.2914719502507859*buf[2]; fir += -buf[2]-buf[2];
-;   fir += iir;
-;   tmp= buf[3]; buf[3]= iir; val= fir;
-;   iir= val;
-;   iir -= 0.8069569133336105*tmp; fir= tmp;
-;   iir -= 0.1974007336168805*buf[4]; fir += -buf[4]-buf[4];
-;   fir += iir;
-;   tmp= buf[5]; buf[5]= iir; val= fir;
-;   iir= val;
-;   iir -= 0.8069569133336102*tmp; fir= tmp;
-;   iir -= -0.19740073361688*buf[6]; fir += -buf[6]-buf[6];
-;   fir += iir;
-;   tmp= buf[7]; buf[7]= iir; val= fir;
-;   iir= val;
-;   iir -= 0.7726049819407979*tmp; fir= tmp;
-;   iir -= 0.1155002465382225*buf[8]; fir += buf[8]+buf[8];
-;   fir += iir;
-;   tmp= buf[9]; buf[9]= iir; val= fir;
-;   iir= val;
-;   iir -= 0.7726049819407979*tmp; fir= tmp;
-;   iir -= -0.1155002465382225*buf[10]; fir += buf[10]+buf[10];
-;   fir += iir;
-;   tmp= buf[11]; buf[11]= iir; val= fir;
-;   iir= val;
-;   iir -= 0.7570893527850519*tmp; fir= tmp;
-;   iir -= 0.03809080303384055*buf[12]; fir += buf[12]+buf[12];
-;   fir += iir;
-;   tmp= buf[13]; buf[13]= iir; val= fir;
-;   iir= val;
-;   iir -= 0.757089352785052*tmp; fir= tmp;
-;   iir -= -0.03809080303384059*buf[14]; fir += buf[14]+buf[14];
-;   fir += iir;
-;   buf[15]= iir; val= fir;
+;   buf[1]= iir; val= fir;
 ;   return val;
 ;}
 ;
@@ -236,12 +201,40 @@ Filter3 proc uses ebx esi edi,val:REAL4
 
 	;tmp = buf[0]
 	fld		buf[0]
-	fst		tmp
+	fstp	tmp
 	;memmove(buf, buf+1, 15*sizeof(double))
-	invoke RtlMoveMemory,addr buf[0],addr buf[4],15*sizeof REAL4
-	;iir= val * 1.187762813747532e-007
+	invoke RtlMoveMemory,addr buf[0],addr buf[4],sizeof REAL4
+	;iir= val * 0.07295965726827532
 	fld		val
 	fmul	iir1c
+	fstp	iir
+	;iir -= 0.8540806854634667 * tmp
+	fld		iir
+	fld		tmp
+	fmul	iir2c
+	fsubp	st(1),st
+	fstp	iir
+	;fir = -tmp
+	fld		tmp
+	fchs
+	fstp	fir
+	;iir -= -1.013642496376809e-016 * buf[0]
+	fld		iir
+	fld		buf[0]
+	fmul	iir3c
+	fsubp	st(1),st
+	fstp	iir
+	;fir += iir
+	fld		fir
+	fadd	iir
+	fstp	fir
+	;buf[1] = iir;
+	fld		iir
+	fstp	buf[4]
+	;val = fir
+	fld		fir
+	fistp	val
+	mov		eax,val
 	ret
 
 Filter3 endp
@@ -406,12 +399,12 @@ MainDlgProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 		xor		ebx,ebx
 		.while ebx<4096
 			mov		eax,ebx
-			and		eax,0007h
+			and		eax,0003h
 			movzx	eax,TestWave[eax*WORD]
 			mov		ival,eax
 			fild	ival
 			fstp	val
-			invoke Filter2,val
+			invoke Filter3,val
 ;			PrintDec eax
 			add		eax,2048
 			mov		wave[ebx*WORD],ax

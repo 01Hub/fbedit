@@ -495,7 +495,7 @@ DDSWaveProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 		xor		edi,edi
 		call	GetPoint
 		invoke MoveToEx,mDC,pt.x,pt.y,NULL
-		.while edi<256*WORD
+		.while edi<128*WORD
 			call	GetPoint
 			invoke LineTo,mDC,pt.x,pt.y
 			inc		edi
@@ -525,7 +525,7 @@ GetPoint:
 	mul		ecx
 	mov		ecx,4097*2
 
-	mov		ecx,512
+	mov		ecx,256
 	div		ecx
 	mov		pt.x,eax
 	;Get y position
