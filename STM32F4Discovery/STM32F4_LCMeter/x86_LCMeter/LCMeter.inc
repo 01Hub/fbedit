@@ -147,6 +147,7 @@ CMD_SCPSET                      equ 7
 CMD_HSCSET						equ 8
 CMD_DDSSET						equ 9
 CMD_LGASET						equ 10
+CMD_STARTUP						equ 99
 
 STM32_CLOCK						equ 200000000
 ADCSAMPLESIZE					equ 10000h
@@ -274,26 +275,19 @@ STM32_CMD struct
 	ThisCountTIM5				DWORD ?
 STM32_CMD ends
 
-DDSSWEEP struct
-	SWEEP_UpDovn				DWORD ?
-	SWEEP_Min					DWORD ?
-	SWEEP_Max					DWORD ?
-	SWEEP_Add					DWORD ?
-DDSSWEEP ends
-
 DDSWAVEDATA struct
 	DDS_WaveForm				DWORD ?
+	DDS_Frequency				DWORD ?
 	DDS_Amplitude				DWORD ?
 	DDS_DCOffset				DWORD ?
-	DDS_Frequency				DWORD ?
-	DDS_PhaseFrq				DWORD ?
-	SWEEP_Mode					DWORD ?
-	SWEEP_StepSize				DWORD ?
-	SWEEP_StepCount				DWORD ?
-	SWEEP_StepTime				DWORD ?
 	DDS_VMin					DWORD ?
 	DDS_VMax					DWORD ?
-	DDS_Sweep					DDSSWEEP <>
+	SWEEP_Mode					DWORD ?
+	SWEEP_StepSize				DWORD ?
+	SWEEP_Range					DWORD ?
+	SWEEP_StepTime				DWORD ?
+	SWEEP_FrqMin				DWORD ?
+	SWEEP_FrqMax				DWORD ?
 	DDS_WaveData				WORD 4098 dup(?)
 	DDS_SweepMinWaveData		WORD 4098 dup(?)
 	DDS_SweepMaxWaveData		WORD 4098 dup(?)

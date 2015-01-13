@@ -198,6 +198,12 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.if edx==BN_CLICKED
 			.if eax==IDOK
 				.if !fBluetooth
+					;LC Meter
+					invoke ShowWindow,hScpCld,SW_HIDE
+					invoke ShowWindow,hHscCld,SW_HIDE
+					invoke ShowWindow,hDDSCld,SW_HIDE
+					invoke ShowWindow,hLGACld,SW_HIDE
+					invoke ShowWindow,hLcmCld,SW_SHOW
 					invoke SendDlgItemMessage,hWin,IDC_IMGCONNECTED,STM_SETICON,hRedIcon,0
 					invoke DeleteObject,eax
 					invoke BlueToothConnect
@@ -205,7 +211,8 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					.if eax
 						mov		mode,CMD_LCMCAP
 						invoke SetMode
-						;Create a timer. The event will read the frequency, format it and display the result
+						mov		mode,CMD_STARTUP
+						;Create a timer.
 						invoke SetTimer,hWin,1000,100,NULL
 						invoke SendDlgItemMessage,hWin,IDC_IMGCONNECTED,STM_SETICON,hGreenIcon,0
 						invoke DeleteObject,eax
@@ -295,6 +302,21 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke InvalidateRect,hLGAScrn,NULL,TRUE
 				invoke UpdateWindow,hLGAScrn
 				mov		mode,CMD_DONE
+			.endif
+		.elseif mode==CMD_STARTUP
+			.if fThreadDone
+				mov		mode,CMD_DDSSET
+				invoke DDSSetStruct,DDS_WAVESET
+				invoke BTPut,offset mode,4
+				invoke BTPut,offset STM32_Cmd.STM32_Dds,sizeof STM32_DDS
+				invoke DDSSetStruct,DDS_PHASESET
+				invoke BTPut,offset mode,4
+				invoke BTPut,offset STM32_Cmd.STM32_Dds,sizeof STM32_DDS
+				mov		mode,CMD_HSCSET
+				invoke BTPut,offset mode,4
+				invoke BTPut,offset STM32_Cmd.STM32_Hsc,8
+				invoke BTGet,offset STM32_Cmd.STM32_Frq,8
+				mov		mode,CMD_LCMCAP
 			.endif
 		.endif
 		.if fThreadDone && fBluetooth
