@@ -92,6 +92,9 @@ IDC_BTNDDSSWEEPDN				equ 1321
 IDC_BTNSWEEPRNGUP				equ 1322
 IDC_EDTSWEEPRANGE				equ 1323
 IDC_BTNSWEEPRNGDN				equ 1324
+IDC_BTNSWEEPTIMEDN				equ 1326
+IDC_EDTSWEEPSTEPTIME			equ 1327
+IDC_BTNSWEEPTIMEUP				equ 1325
 
 IDD_DLGLGA						equ 1400
 IDC_BTNSRUP						equ 1401
@@ -174,12 +177,11 @@ DDS_ModeSqrWave					equ 2
 DDS_ModeSawWave					equ 3
 DDS_ModeRevSawWave				equ 4
 
-;DDS SWEEP SubModes
-SWEEP_SubModeOff				equ 1
-SWEEP_SubModeUp					equ 2
-SWEEP_SubModeDown				equ 3
-SWEEP_SubModeUpDown				equ 4
-SWEEP_SubModePeak				equ 5
+;DDS SWEEP Modes
+SWEEP_ModeOff					equ 0
+SWEEP_ModeUp					equ 1
+SWEEP_ModeDown					equ 2
+SWEEP_ModeUpDown				equ 3
 
 DDS_PHASESET					equ 1
 DDS_WAVESET						equ 2
@@ -246,12 +248,6 @@ STM32_DDS struct
 	DDS__PhaseAdd				DWORD ?
 	DDS_Amplitude				DWORD ?
 	DDS_DCOffset				DWORD ?
-;	DDS_SweepMode				DWORD ?
-;	DDS_SweepFrq				DWORD ?
-;	DDS_SweepPhseAdd			DWORD ?
-;	DDS_SweepMin				DWORD ?
-;	DDS_SweepMax				DWORD ?
-;	DDS_SweepTmr				DWORD ?
 STM32_DDS ends
 
 STM32_LGA struct
@@ -291,19 +287,16 @@ DDSWAVEDATA struct
 	DDS_DCOffset				DWORD ?
 	DDS_Frequency				DWORD ?
 	DDS_PhaseFrq				DWORD ?
-	SWEEP_SubMode				DWORD ?
-	SWEEP_StepCount				DWORD ?
+	SWEEP_Mode					DWORD ?
 	SWEEP_StepSize				DWORD ?
+	SWEEP_StepCount				DWORD ?
 	SWEEP_StepTime				DWORD ?
 	DDS_VMin					DWORD ?
 	DDS_VMax					DWORD ?
 	DDS_Sweep					DDSSWEEP <>
 	DDS_WaveData				WORD 4098 dup(?)
-	DDS_PeakFMin				DWORD ?
-	DDS_PeakFMax				DWORD ?
-	DDS_PeakVMin				DWORD ?
-	DDS_PeakVMax				DWORD ?
-	DDS_PeakData				WORD 1536 dup(?)
+	DDS_SweepMinWaveData		WORD 4098 dup(?)
+	DDS_SweepMaxWaveData		WORD 4098 dup(?)
 DDSWAVEDATA ends
 
 FP_EQUALTO						equ	40h

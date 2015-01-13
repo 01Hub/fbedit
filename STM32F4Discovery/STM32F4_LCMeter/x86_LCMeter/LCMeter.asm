@@ -173,7 +173,6 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		hDDSScrnCld,eax
 		;Create DDS child dialog
 		invoke CreateDialogParam,hInstance,IDD_DLGDDS,hWin,addr DDSChildProc,0
-		mov		hDDSCld,eax
 
 		mov		STM32_Cmd.STM32_Scp.ScopeTrigger,1
 		mov		mode,CMD_LCMCAP
