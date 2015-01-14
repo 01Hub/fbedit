@@ -249,6 +249,10 @@ STM32_DDS struct
 	DDS__PhaseAdd				DWORD ?
 	DDS_Amplitude				DWORD ?
 	DDS_DCOffset				DWORD ?
+	SWEEP_UpDown				DWORD ?
+	SWEEP_Min					DWORD ?
+	SWEEP_Max					DWORD ?
+	SWEEP_Time					DWORD ?
 STM32_DDS ends
 
 STM32_LGA struct
