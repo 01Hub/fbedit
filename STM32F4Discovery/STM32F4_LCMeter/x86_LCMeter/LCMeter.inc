@@ -186,7 +186,7 @@ SWEEP_ModeUpDown				equ 3
 
 DDS_PHASESET					equ 1
 DDS_WAVESET						equ 2
-DDS_SWWPSET						equ 3
+DDS_SWEEPSET					equ 3
 
 BTH_ADDR						equ QWORD ?
 
@@ -249,10 +249,11 @@ STM32_DDS struct
 	DDS__PhaseAdd				DWORD ?
 	DDS_Amplitude				DWORD ?
 	DDS_DCOffset				DWORD ?
-	SWEEP_UpDown				DWORD ?
+	SWEEP_Mode					WORD ?
+	SWEEP_Time					WORD ?
+	SWEEP_Step					DWORD ?
 	SWEEP_Min					DWORD ?
 	SWEEP_Max					DWORD ?
-	SWEEP_Time					DWORD ?
 STM32_DDS ends
 
 STM32_LGA struct

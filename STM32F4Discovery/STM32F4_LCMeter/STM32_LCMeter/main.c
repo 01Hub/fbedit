@@ -77,10 +77,11 @@ typedef struct
   uint32_t DDS__PhaseAdd;
   uint32_t DDS_Amplitude;
   uint32_t DDS_DCOffset;
-	uint32_t SWEEP_UpDown;
+	uint16_t SWEEP_Mode;
+	uint16_t SWEEP_Time;
+	uint32_t SWEEP_Step;
 	uint32_t SWEEP_Min;
 	uint32_t SWEEP_Max;
-	uint32_t SWEEP_Time;
 } STM32_DDSTypeDef;
 
 typedef struct
@@ -129,6 +130,11 @@ typedef struct
 #define DDS_WAVESET                             ((uint8_t)2)
 #define DDS_SWEEPSET                            ((uint8_t)3)
 
+#define SWEEP_ModeOff                           ((uint8_t)0)
+#define SWEEP_ModeUp                            ((uint8_t)1)
+#define SWEEP_ModeDown                          ((uint8_t)2)
+#define SWEEP_ModeUpDown                        ((uint8_t)3)
+
 #define ADC_CDR_ADDRESS                         ((uint32_t)0x40012308)
 #define PE_IDR_Address                          ((uint32_t)0x40021011)
 #define SCOPE_DATAPTR                           ((uint32_t)0x20008000)
@@ -154,6 +160,7 @@ void USART_Config(uint32_t Baud);
 void ScopeSubSampling(void);
 uint32_t GetFrequency(void);
 void LCM_Calibrate(void);
+void SPISendData32(uint32_t tx);
 void SPISendData(uint16_t tx);
 void USART3_putdata(uint8_t *dat,uint16_t len);
 void USART3_puts(char *str);
@@ -306,15 +313,23 @@ int main(void)
         if (STM32_CMD.STM32_DDS.DDS_Cmd == DDS_PHASESET)
         {
           SPISendData(DDS_PHASESET);
-          SPISendData(STM32_CMD.STM32_DDS.DDS__PhaseAdd & 0xFFFF);
-          SPISendData(STM32_CMD.STM32_DDS.DDS__PhaseAdd >> 16);
+          SPISendData32(STM32_CMD.STM32_DDS.DDS__PhaseAdd);
         }
         else if (STM32_CMD.STM32_DDS.DDS_Cmd == DDS_WAVESET)
         {
           SPISendData(DDS_WAVESET);
-          SPISendData(STM32_CMD.STM32_DDS.DDS_Wave & 0xFFFF);
-          SPISendData(STM32_CMD.STM32_DDS.DDS_Amplitude & 0xFFFF);
-          SPISendData(STM32_CMD.STM32_DDS.DDS_DCOffset & 0xFFFF);
+          SPISendData(STM32_CMD.STM32_DDS.DDS_Wave);
+          SPISendData(STM32_CMD.STM32_DDS.DDS_Amplitude);
+          SPISendData(STM32_CMD.STM32_DDS.DDS_DCOffset);
+        }
+        else if (STM32_CMD.STM32_DDS.DDS_Cmd == DDS_SWEEPSET)
+        {
+          SPISendData(DDS_SWEEPSET);
+          SPISendData(STM32_CMD.STM32_DDS.SWEEP_Mode);
+          SPISendData(STM32_CMD.STM32_DDS.SWEEP_Time);
+          SPISendData32(STM32_CMD.STM32_DDS.SWEEP_Step);
+          SPISendData32(STM32_CMD.STM32_DDS.SWEEP_Min);
+          SPISendData32(STM32_CMD.STM32_DDS.SWEEP_Max);
         }
         break;
       case CMD_LGASET:
@@ -388,7 +403,18 @@ void LCM_Calibrate(void)
 }
 
 /**
-  * @brief  SPI Send data.
+  * @brief  SPI Send 32 bit data.
+  * @param  tx
+  * @retval None
+  */
+void SPISendData32(uint32_t tx)
+{
+  SPISendData(tx);
+  SPISendData(tx >> 16);
+}
+
+/**
+  * @brief  SPI Send 16 bit data.
   * @param  tx
   * @retval None
   */
@@ -396,7 +422,7 @@ void SPISendData(uint16_t tx)
 {
 	SPI2->DR = tx;                            // write data to be transmitted to the SPI data register
 	while (!(SPI2->SR & SPI_I2S_FLAG_TXE));   // wait until transmit complete
-  while (SPI1->SR & SPI_I2S_FLAG_BSY);      // wait until SPI is not busy anymore
+  while (SPI2->SR & SPI_I2S_FLAG_BSY);      // wait until SPI is not busy anymore
 }
 
 /*******************************************************************************
@@ -467,7 +493,7 @@ void USART3_getdata(uint8_t *dat,uint16_t len)
   */
 void RCC_Config(void)
 {
-  /* DAC, TIM2, TIM3, TIM4 and TIM5 clock enable */
+  /* SPI2, DAC, TIM2, TIM3, TIM4 and TIM5 clock enable */
   RCC_APB1PeriphClockCmd(RCC_APB1Periph_SPI2 | RCC_APB1Periph_DAC | RCC_APB1Periph_TIM2 | RCC_APB1Periph_TIM3 | RCC_APB1Periph_TIM4 | RCC_APB1Periph_TIM5, ENABLE);
   /* DMA2 clock enable */
   RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA2, ENABLE);

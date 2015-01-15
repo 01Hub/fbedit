@@ -13,27 +13,31 @@
  <type Header="FunctionalState" Icon="1" Type="type" Desc=": unsigned char" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx.h" DeclLine="287" Pointer="No"/>
  <type Header="GPIO_TypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx.h" DeclLine="666" Pointer="No"/>
  <type Header="SPI_TypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx.h" DeclLine="867" Pointer="No"/>
+ <type Header="TIM_TypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx.h" DeclLine="911" Pointer="No"/>
  <type Header="GPIOMode_TypeDef" Icon="1" Type="type" Desc=": unsigned char" DeclFile="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_gpio.h" DeclLine="63" Pointer="No"/>
  <type Header="GPIOOType_TypeDef" Icon="1" Type="type" Desc=": unsigned char" DeclFile="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_gpio.h" DeclLine="74" Pointer="No"/>
  <type Header="GPIOSpeed_TypeDef" Icon="1" Type="type" Desc=": unsigned char" DeclFile="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_gpio.h" DeclLine="87" Pointer="No"/>
  <type Header="GPIOPuPd_TypeDef" Icon="1" Type="type" Desc=": unsigned char" DeclFile="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_gpio.h" DeclLine="99" Pointer="No"/>
  <type Header="GPIO_InitTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_gpio.h" DeclLine="133" Pointer="No"/>
  <type Header="SPI_InitTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_spi.h" DeclLine="79" Pointer="No"/>
+ <type Header="TIM_TimeBaseInitTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_tim.h" DeclLine="72" Pointer="No"/>
  <type Header="NVIC_InitTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\misc.h" DeclLine="68" Pointer="No"/>
- <type Header="STM32_CMNDTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\main.c" DeclLine="25" Pointer="No"/>
- <func Header="DDS_MakeWave" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\main.c" DeclLine="67"/>
- <func Header="DDS_WaveLoop" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\main.c" DeclLine="139"/>
- <func Header="DDS_WaveGenerator" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\main.c" DeclLine="157"/>
- <func Header="SPI2_IRQHandler" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\main.c" DeclLine="170"/>
- <func Header="DDS_Config" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\main.c" DeclLine="213"/>
- <func Header="SPI_Config" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\main.c" DeclLine="229"/>
- <func Header="main" Icon="3" Type="func" Desc=":   long" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\main.c" DeclLine="54"/>
+ <type Header="STM32_CMNDTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\main.c" DeclLine="31" Pointer="No"/>
+ <func Header="DDS_MakeWave" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\main.c" DeclLine="87"/>
+ <func Header="DDS_WaveLoop" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\main.c" DeclLine="159"/>
+ <func Header="DDS_WaveGenerator" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\main.c" DeclLine="177"/>
+ <func Header="SPI2_IRQHandler" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\main.c" DeclLine="190"/>
+ <func Header="DDS_Config" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\main.c" DeclLine="279"/>
+ <func Header="SPI_Config" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\main.c" DeclLine="294"/>
+ <func Header="TIM_Config" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\main.c" DeclLine="338"/>
+ <func Header="main" Icon="3" Type="func" Desc=":   long" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\main.c" DeclLine="68"/>
+ <func Header="TIM6_DAC_IRQHandler" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\main.c" DeclLine="370"/>
  <variable Header="SineWave" Icon="2" Type="variable" Desc=":   unsigned int[2048]" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\wave.h" DeclLine="2" Pointer="No"/>
  <variable Header="TriangleWave" Icon="2" Type="variable" Desc=":   unsigned int[2848]" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\wave.h" DeclLine="134" Pointer="No"/>
  <variable Header="SquareWave" Icon="2" Type="variable" Desc=":   unsigned int[2048]" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\wave.h" DeclLine="266" Pointer="No"/>
  <variable Header="SawToothWave" Icon="2" Type="variable" Desc=":   unsigned int[2048]" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\wave.h" DeclLine="398" Pointer="No"/>
  <variable Header="RevSawToothWave" Icon="2" Type="variable" Desc=":   unsigned int[2048]" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\wave.h" DeclLine="530" Pointer="No"/>
- <variable Header="STM32_Command" Icon="2" Type="variable" Desc=":   struct " DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\main.c" DeclLine="40" Pointer="No"/>
+ <variable Header="STM32_Command" Icon="2" Type="variable" Desc=":   struct " DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\main.c" DeclLine="53" Pointer="No"/>
  <type Header="uint8_t" Icon="1" Type="type" Desc=": unsigned char" DeclFile="d:\ride\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="42" Pointer="No"/>
  <type Header="uint16_t" Icon="1" Type="type" Desc=": unsigned int" DeclFile="d:\ride\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="54" Pointer="No"/>
  <type Header="int32_t" Icon="1" Type="type" Desc=": long" DeclFile="d:\ride\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="79" Pointer="No"/>
@@ -142,6 +146,10 @@
  <type Header="TIM_OCInitTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_tim.h" DeclLine="107" Pointer="No"/>
  <type Header="TIM_ICInitTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_tim.h" DeclLine="130" Pointer="No"/>
  <type Header="TIM_BDTRInitTypeDef" Icon="1" Type="type" Desc=": struct " DeclFile="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_tim.h" DeclLine="161" Pointer="No"/>
+ <func Header="TIM_TimeBaseInit" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.c" DeclLine="282"/>
+ <func Header="TIM_Cmd" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.c" DeclLine="586"/>
+ <func Header="TIM_ITConfig" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.c" DeclLine="2362"/>
+ <func Header="TIM_ClearITPendingBit" Icon="3" Type="func" Desc=":   void" DeclFile="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.c" DeclLine="2544"/>
  <type Header="uint8_t" Icon="1" Type="type" Desc=": unsigned char" DeclFile="d:\ride\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="42" Pointer="No"/>
  <type Header="int32_t" Icon="1" Type="type" Desc=": long" DeclFile="d:\ride\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="79" Pointer="No"/>
  <type Header="uint32_t" Icon="1" Type="type" Desc=": unsigned long" DeclFile="d:\ride\ride\arm-gcc\arm-none-eabi\include\stdint.h" DeclLine="80" Pointer="No"/>

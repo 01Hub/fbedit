@@ -891,7 +891,7 @@ DDSScrnChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:
 
 DDSScrnChildProc endp
 
-DDSSetStruct proc cmnd:DWORD
+DDSSetStruct proc uses ebx,cmnd:DWORD
 
 	mov		eax,cmnd
 	mov		STM32_Cmd.STM32_Dds.DDS_Cmd,ax
@@ -903,6 +903,33 @@ DDSSetStruct proc cmnd:DWORD
 	mov		STM32_Cmd.STM32_Dds.DDS_DCOffset,eax
 	invoke DDSHzToPhaseAdd,ddswavedata.DDS_Frequency
 	mov		STM32_Cmd.STM32_Dds.DDS__PhaseAdd,eax
+
+	mov		eax,ddswavedata.SWEEP_Mode
+	mov		STM32_Cmd.STM32_Dds.SWEEP_Mode,ax
+	invoke DDSHzToPhaseAdd,ddswavedata.SWEEP_StepSize
+	mov		STM32_Cmd.STM32_Dds.SWEEP_Step,eax
+	mov		eax,ddswavedata.DDS_Frequency
+	sub		eax,ddswavedata.SWEEP_Range
+	invoke DDSHzToPhaseAdd,eax
+	mov		STM32_Cmd.STM32_Dds.SWEEP_Min,eax
+	mov		eax,ddswavedata.DDS_Frequency
+	add		eax,ddswavedata.SWEEP_Range
+	invoke DDSHzToPhaseAdd,eax
+	mov		STM32_Cmd.STM32_Dds.SWEEP_Max,eax
+
+PrintDec STM32_Cmd.STM32_Dds.SWEEP_Mode
+PrintDec STM32_Cmd.STM32_Dds.SWEEP_Step
+PrintDec STM32_Cmd.STM32_Dds.DDS__PhaseAdd
+PrintDec STM32_Cmd.STM32_Dds.SWEEP_Min
+PrintDec STM32_Cmd.STM32_Dds.SWEEP_Max
+
+	;TIM3 16 bit timer clocked at STM32_CLOCK/2
+	;TIM3 Prescaler set to: 100us = ((STM32_CLOCK/2)/10000)-1
+	mov		eax,10
+	mov		ecx,ddswavedata.SWEEP_StepTime
+	mul		ecx
+	dec		eax
+	mov		STM32_Cmd.STM32_Dds.SWEEP_Time,ax
 	.if fBluetooth && fThreadDone
 		mov		mode,CMD_DDSSET
 	.endif
@@ -1054,17 +1081,29 @@ DDSChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 			.elseif eax==IDC_RBNSWEEPOFF
 				mov		ddswavedata.SWEEP_Mode,SWEEP_ModeOff
 				invoke DDSGenWave
+				invoke DDSSetStruct,DDS_SWEEPSET
+				mov		edi,TRUE
+				call	EnableDisable
 			.elseif eax==IDC_RBNSWEEPUP
 				mov		ddswavedata.SWEEP_Mode,SWEEP_ModeUp
 				invoke DDSGenWave
+				invoke DDSSetStruct,DDS_SWEEPSET
+				mov		edi,FALSE
+				call	EnableDisable
 			.elseif eax==IDC_RBNSWEEPDOWN
 				mov		ddswavedata.SWEEP_Mode,SWEEP_ModeDown
 				invoke DDSGenWave
+				invoke DDSSetStruct,DDS_SWEEPSET
+				mov		edi,FALSE
+				call	EnableDisable
 			.elseif eax==IDC_RBNSWEEPUPDOWN
 				mov		ddswavedata.SWEEP_Mode,SWEEP_ModeUpDown
 				invoke DDSGenWave
+				invoke DDSSetStruct,DDS_SWEEPSET
+				mov		edi,FALSE
+				call	EnableDisable
 			.elseif eax==IDC_BTNDDSSWEEPDN
-				invoke GetDlgItemInt,hWin,IDC_EDTDDSSWEEP,NULL,FALSE
+				mov		eax,ddswavedata.SWEEP_StepSize
 				.if eax>1
 					dec		eax
 					mov		ddswavedata.SWEEP_StepSize,eax
@@ -1072,7 +1111,7 @@ DDSChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 					invoke DDSGenWave
 				.endif
 			.elseif eax==IDC_BTNDDSSWEEPUP
-				invoke GetDlgItemInt,hWin,IDC_EDTDDSSWEEP,NULL,FALSE
+				mov		eax,ddswavedata.SWEEP_StepSize
 				.if eax<100000
 					inc		eax
 					mov		ddswavedata.SWEEP_StepSize,eax
@@ -1080,27 +1119,40 @@ DDSChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 					invoke DDSGenWave
 				.endif
 			.elseif eax==IDC_BTNSWEEPRNGDN
-				invoke GetDlgItemInt,hWin,IDC_EDTDDSSWEEP,NULL,FALSE
-				mov		ebx,eax
-				invoke GetDlgItemInt,hWin,IDC_EDTSWEEPRANGE,NULL,FALSE
-				sub		eax,ebx
-				.if sdword ptr eax<ebx
-					mov		eax,ebx
+				mov		eax,ddswavedata.SWEEP_Range
+				mov		edx,ddswavedata.SWEEP_StepSize
+				sub		eax,edx
+				.if sdword ptr eax<edx
+					mov		eax,edx
 				.endif
+				mov		ddswavedata.SWEEP_Range,eax
 				invoke SetDlgItemInt,hWin,IDC_EDTSWEEPRANGE,eax,FALSE
 				call	SetSweepMinMax
 				invoke DDSGenWave
 			.elseif eax==IDC_BTNSWEEPRNGUP
-				invoke GetDlgItemInt,hWin,IDC_EDTDDSSWEEP,NULL,FALSE
-				mov		ebx,eax
-				invoke GetDlgItemInt,hWin,IDC_EDTSWEEPRANGE,NULL,FALSE
-				add		eax,ebx
+				mov		eax,ddswavedata.SWEEP_Range
+				add		eax,ddswavedata.SWEEP_StepSize
 				.if eax>100000
 					mov		eax,100000
 				.endif
+				mov		ddswavedata.SWEEP_Range,eax
 				invoke SetDlgItemInt,hWin,IDC_EDTSWEEPRANGE,eax,FALSE
 				call	SetSweepMinMax
 				invoke DDSGenWave
+			.elseif eax==IDC_BTNSWEEPTIMEDN
+				mov		eax,ddswavedata.SWEEP_StepTime
+				.if eax
+					dec		eax
+					mov		ddswavedata.SWEEP_StepTime,eax
+					invoke SetDlgItemInt,hWin,IDC_EDTSWEEPSTEPTIME,eax,FALSE
+				.endif
+			.elseif eax==IDC_BTNSWEEPTIMEUP
+				mov		eax,ddswavedata.SWEEP_StepTime
+				.if eax<1000
+					inc		eax
+					mov		ddswavedata.SWEEP_StepTime,eax
+					invoke SetDlgItemInt,hWin,IDC_EDTSWEEPSTEPTIME,eax,FALSE
+				.endif
 			.endif
 		.elseif edx==EN_KILLFOCUS
 			.if eax==IDC_EDTDDSFRQ
@@ -1134,6 +1186,15 @@ DDSChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 				invoke SetDlgItemInt,hWin,IDC_EDTSWEEPRANGE,eax,FALSE
 				call	SetSweepMinMax
 				invoke DDSGenWave
+			.elseif eax==IDC_EDTSWEEPSTEPTIME
+				invoke GetDlgItemInt,hWin,IDC_EDTSWEEPSTEPTIME,NULL,FALSE
+				.if eax<1
+					mov		eax,1
+				.elseif eax>1000
+					mov		eax,1000
+				.endif
+				mov		ddswavedata.SWEEP_StepTime,eax
+				invoke SetDlgItemInt,hWin,IDC_EDTSWEEPSTEPTIME,eax,FALSE
 			.endif
 		.endif
 	.elseif eax==WM_HSCROLL
@@ -1154,6 +1215,37 @@ DDSChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 		ret
 	.endif
 	ret
+
+EnableDisable:
+	push	0
+	push	IDC_BTNDDSFRQUP
+	push	IDC_BTNDDSFRQDN
+	push	IDC_EDTDDSFRQ
+	push	IDC_UDCDDSFRQ
+	push	IDC_BTNDDSWAVEUP
+	push	IDC_BTNDDSWAVEDN
+	push	IDC_STCDDSWAVE
+	push	IDC_BTNDDSAMPUP
+	push	IDC_BTNDDSAMPDN
+	push	IDC_TRBDDSAMP
+	push	IDC_BTNDDSOFSUP
+	push	IDC_TRBDDSOFS
+	push	IDC_BTNDDSOFSDN
+	push	IDC_BTNDDSSWEEPUP
+	push	IDC_EDTDDSSWEEP
+	push	IDC_BTNDDSSWEEPDN
+	push	IDC_BTNSWEEPRNGUP
+	push	IDC_EDTSWEEPRANGE
+	push	IDC_BTNSWEEPRNGDN
+	push	IDC_BTNSWEEPTIMEDN
+	push	IDC_EDTSWEEPSTEPTIME
+	mov		ebx,IDC_BTNSWEEPTIMEUP
+	.while ebx
+		invoke GetDlgItem,hWin,ebx
+		invoke EnableWindow,eax,edi
+		pop		ebx
+	.endw
+	retn
 
 SetSweepMinMax:
 	mov		ebx,ddswavedata.DDS_Frequency

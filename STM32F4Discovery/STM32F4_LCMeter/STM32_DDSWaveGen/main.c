@@ -14,19 +14,20 @@
 /* Private typedef -----------------------------------------------------------*/
 typedef struct
 {
-  uint32_t DDS_PhaseFrq;                              // 0x20000014
-  uint16_t WaveType;                                  // 0x00000018
-  uint16_t Amplitude;                                 // 0x0000001A
-  int16_t DCOffset;                                   // 0x0000001C
-  uint16_t SPI_Cmnd;                                  // 0x0000001E
-  uint16_t SPI_Cnt;                                   // 0x00000020
-  uint16_t rx;                                        // 0x00000022
-  uint16_t Wave[2048];                                // 0x20000024
-  uint16_t SweepMode;                                 // 0x00000026
-  uint16_t SweepTime;                                 // 0x00000028
-  uint32_t SweepMin;                                  // 0x2000002A
-  uint32_t SweepMax;                                  // 0x2000002E
-  uint32_t SweepAdd;                                  // 0x20000032
+  uint32_t DDS_PhaseFrq;                              // 0x20000000
+  uint16_t WaveType;                                  // 0x00000004
+  uint16_t Amplitude;                                 // 0x00000006
+  int16_t DCOffset;                                   // 0x00000008
+  uint16_t SPI_Cmnd;                                  // 0x0000000A
+  uint16_t SPI_Cnt;                                   // 0x0000000C
+  uint16_t rx;                                        // 0x0000000E
+  uint16_t Wave[2048];                                // 0x20000010
+  uint16_t SweepMode;                                 // 0x00001010
+  uint16_t SweepTime;                                 // 0x00001012
+  int32_t SweepStep;                                  // 0x20001014
+  uint32_t SweepMin;                                  // 0x20001018
+  uint32_t SweepMax;                                  // 0x2000101C
+  uint32_t tmp;                                       // 0x20001020
 }STM32_CMNDTypeDef;
 
 /* Private define ------------------------------------------------------------*/
@@ -36,6 +37,11 @@ typedef struct
 #define WAVE_Square               ((uint8_t)2)
 #define WAVE_SawTooth             ((uint8_t)3)
 #define WAVE_RevSawTooth          ((uint8_t)4)
+
+#define Sweep_Off                 ((uint8_t)0)
+#define Sweep_Up                  ((uint8_t)1)
+#define Sweep_Down                ((uint8_t)2)
+#define Sweep_UpDown              ((uint8_t)3)
 
 #define SPI_PhaseSet              ((uint16_t)1)
 #define SPI_WaveSet               ((uint16_t)2)
@@ -48,6 +54,7 @@ __IO STM32_CMNDTypeDef STM32_Command;               // 0x20000014
 
 void DDS_Config(void);
 void SPI_Config(void);
+void TIM_Config(void);
 void DDS_MakeWave(void);
 void DDS_WaveGenerator(void);
 void DDS_WaveLoop(void);
@@ -64,9 +71,15 @@ int main(void)
   STM32_Command.Amplitude = 4095;
   STM32_Command.DCOffset = 4095;
   STM32_Command.DDS_PhaseFrq = 858994;
+  STM32_Command.SweepMode = Sweep_Off;
+  STM32_Command.SweepTime = 9;
+  STM32_Command.SweepStep = 1718;
+  STM32_Command.SweepMin = 687195;
+  STM32_Command.SweepMax = 1030792;
 
   DDS_Config();
   SPI_Config();
+  TIM_Config();
   DDS_MakeWave();
   DDS_WaveGenerator();
 }
@@ -147,10 +160,10 @@ void DDS_WaveLoop(void)
 {
   while (1)
   {
-    asm("mov    r5,r3,lsr #21");
-    asm("ldrh   r5,[r1,r5,lsl #1]");
-    asm("strh   r5,[r2,#0x0]");
-    asm("add    r3,r3,r4");
+    asm("mov    r4,r3,lsr #21");      /* Get offset into wave */
+    asm("ldrh   r4,[r1,r4,lsl #1]");  /* Get wave data */
+    asm("strh   r4,[r2,#0x0]");       /* Output wave data to dac */
+    asm("add    r3,r3,r5");           /* Update phase */
   }
 }
 
@@ -163,14 +176,14 @@ void DDS_WaveLoop(void)
 *******************************************************************************/
 void DDS_WaveGenerator(void)
 {
-  asm("movw   r1,#0x0024");
-  asm("movt   r1,#0x2000");       /* STM32_Command.Wave[0] = 0x20000024 */
+  asm("movw   r1,#0x0010");
+  asm("movt   r1,#0x2000");       /* STM32_Command.Wave[0] = 0x20000010 */
   asm("movw   r2,#0x1014");
   asm("movt   r2,#0x4002");       /* GPIOE ODR */
   asm("mov    r3,#0x0");          /* DDSPhase pointer value */
-  asm("movw   r4,#0x0014");
-  asm("movt   r4,#0x2000");       /* STM32_Command.DDSPhaseFrq = 0x20000020 */
-  asm("ldr    r4,[r4,#0x0]");     /* DDSPhaseFrq value */
+  asm("movw   r5,#0x0000");
+  asm("movt   r5,#0x2000");       /* STM32_Command.DDSPhaseFrq = 0x20000000 */
+  asm("ldr    r5,[r5,#0x0]");     /* DDSPhaseFrq value */
   DDS_WaveLoop();
 }
 
@@ -185,35 +198,81 @@ void SPI2_IRQHandler(void)
   }
   else if (STM32_Command.SPI_Cmnd == SPI_PhaseSet)
   {
-    if (STM32_Command.SPI_Cnt == 2)
+    switch (STM32_Command.SPI_Cnt)
     {
+      case 2:
       STM32_Command.DDS_PhaseFrq = STM32_Command.rx;
-    }
-    else if (STM32_Command.SPI_Cnt == 3)
-    {
-      STM32_Command.DDS_PhaseFrq |= ((uint32_t)STM32_Command.rx)<<16;
-      STM32_Command.SPI_Cnt = 0;
-      asm("movw   r4,#0x0014");
-      asm("movt   r4,#0x2000");       /* STM32_Command.DDSPhaseFrq = 0x20000020 */
-      asm("ldr    r4,[r4,#0x0]");     /* DDSPhaseFrq value */
+        break;
+      case 3:
+        STM32_Command.DDS_PhaseFrq |= ((uint32_t)STM32_Command.rx)<<16;
+        STM32_Command.SPI_Cnt = 0;
+        asm("movw   r5,#0x0000");
+        asm("movt   r5,#0x2000");       /* STM32_Command.DDSPhaseFrq = 0x20000000 */
+        asm("ldr    r5,[r5,#0x0]");     /* DDSPhaseFrq value */
+        break;
     }
   }
   else if (STM32_Command.SPI_Cmnd == SPI_WaveSet)
   {
-    if (STM32_Command.SPI_Cnt == 2)
+    switch (STM32_Command.SPI_Cnt)
     {
-      STM32_Command.WaveType = STM32_Command.rx;
+      case 2:
+        STM32_Command.WaveType = STM32_Command.rx;
+        break;
+      case 3:
+        STM32_Command.Amplitude = STM32_Command.rx;
+        break;
+      case 4:
+        STM32_Command.DCOffset = STM32_Command.rx;
+        STM32_Command.SPI_Cnt = 0;
+        DDS_MakeWave();
+        break;
     }
-    else if (STM32_Command.SPI_Cnt == 3)
+  }
+  else if (STM32_Command.SPI_Cmnd == SPI_SweepSet)
+  {
+    TIM_Cmd(TIM6, DISABLE);
+    TIM_ITConfig(TIM6, TIM_IT_Update, DISABLE);
+    TIM6->CNT =  0;
+    switch (STM32_Command.SPI_Cnt)
     {
-      STM32_Command.Amplitude = STM32_Command.rx;
+      case 2:
+        STM32_Command.SweepMode = STM32_Command.rx;
+        break;
+      case 3:
+        STM32_Command.SweepTime = STM32_Command.rx;
+        break;
+      case 4:
+        break;
+        STM32_Command.SweepStep = STM32_Command.rx;
+      case 5:
+        STM32_Command.SweepStep |= ((uint32_t)STM32_Command.rx)<<16;
+        break;
+      case 6:
+        STM32_Command.SweepMin = STM32_Command.rx;
+        break;
+      case 7:
+        STM32_Command.SweepMin |= ((uint32_t)STM32_Command.rx)<<16;
+        break;
+      case 8:
+        STM32_Command.SweepMax = STM32_Command.rx;
+        break;
+      case 9:
+        STM32_Command.SPI_Cnt = 0;
+        STM32_Command.SweepMax |= ((uint32_t)STM32_Command.rx)<<16;
+        STM32_Command.tmp = STM32_Command.SweepMin;
+        if (STM32_Command.SweepMode != Sweep_Off)
+        {
+          TIM6->ARR = STM32_Command.SweepTime;
+          TIM_ClearITPendingBit(TIM6,TIM_IT_Update);
+          TIM_ITConfig(TIM6, TIM_IT_Update, ENABLE);
+          TIM_Cmd(TIM6, ENABLE);
+        }
+        break;
     }
-    else if (STM32_Command.SPI_Cnt == 4)
-    {
-      STM32_Command.DCOffset = STM32_Command.rx;
-      STM32_Command.SPI_Cnt = 0;
-      DDS_MakeWave();
-    }
+    asm("movw   r5,#0x0000");
+    asm("movt   r5,#0x2000");                 /* STM32_Command.DDSPhaseFrq = 0x20000000 */
+    asm("ldr    r5,[r5,#0x0]");               /* DDSPhaseFrq value */
   }
 }
 
@@ -223,7 +282,6 @@ void DDS_Config(void)
 
   /* GPIOE clock enable */
   RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOE, ENABLE);
-
   /* DAC port configuration */
   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_15 | GPIO_Pin_14 | GPIO_Pin_13 | GPIO_Pin_12 | GPIO_Pin_11 | GPIO_Pin_10 | GPIO_Pin_9 | GPIO_Pin_8 | GPIO_Pin_7 | GPIO_Pin_6 | GPIO_Pin_5 | GPIO_Pin_4;
   GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_OUT;
@@ -275,4 +333,106 @@ void SPI_Config(void)
 	SPI_Init(SPI2, &SPI_InitStructure);
   SPI_I2S_ITConfig(SPI2, SPI_I2S_IT_RXNE, ENABLE);
   SPI_Cmd(SPI2, ENABLE);
+}
+
+void TIM_Config(void)
+{
+  TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructure;
+  NVIC_InitTypeDef NVIC_InitStructure;
+
+  /* TIM6 clock enable */
+  RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM6, ENABLE);
+
+  /* TIM6 Counter configuration */
+  TIM_TimeBaseStructure.TIM_Period = 9999;
+  TIM_TimeBaseStructure.TIM_Prescaler = 9999;
+  TIM_TimeBaseStructure.TIM_ClockDivision = 0;
+  TIM_TimeBaseStructure.TIM_RepetitionCounter=0;
+  TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
+  TIM_TimeBaseInit(TIM6, &TIM_TimeBaseStructure);
+
+  /* Enable the TIM6 gloabal Interrupt */
+  NVIC_InitStructure.NVIC_IRQChannel = TIM6_DAC_IRQn;
+  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
+  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 2;
+  NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+  NVIC_Init(&NVIC_InitStructure);
+}
+
+/*******************************************************************************
+* Function Name  : TIM6_DAC_IRQHandler
+* Description    : This function handles TIM6 global interrupt request.
+*                  It is used by dds sweep
+* Input          : None
+* Output         : None
+* Return         : None
+*******************************************************************************/
+void TIM6_DAC_IRQHandler(void)
+{
+  TIM_ClearITPendingBit(TIM6,TIM_IT_Update);
+  switch (STM32_Command.SweepMode)
+  {
+    case Sweep_Up:
+      STM32_Command.tmp += STM32_Command.SweepStep;
+      if (STM32_Command.tmp > STM32_Command.SweepMax)
+      {
+        STM32_Command.tmp = STM32_Command.SweepMin;
+      }
+      break;
+    case Sweep_Down:
+      STM32_Command.tmp -= STM32_Command.SweepStep;
+      if (STM32_Command.tmp < STM32_Command.SweepMin)
+      {
+        STM32_Command.tmp = STM32_Command.SweepMax;
+      }
+      break;
+    case Sweep_UpDown:
+      if (STM32_Command.SweepStep > 0)
+      {
+        STM32_Command.tmp += STM32_Command.SweepStep;
+        if (STM32_Command.tmp > STM32_Command.SweepMax)
+        {
+          STM32_Command.tmp = STM32_Command.SweepMax;
+          STM32_Command.SweepStep = -STM32_Command.SweepStep;
+        }
+      }
+      else
+      {
+        STM32_Command.tmp += STM32_Command.SweepStep;
+        if (STM32_Command.tmp < STM32_Command.SweepMin)
+        {
+          STM32_Command.tmp = STM32_Command.SweepMin;
+          STM32_Command.SweepStep = -STM32_Command.SweepStep;
+        }
+      }
+      break;
+  }
+  asm("movw   r5,#0x1020");
+  asm("movt   r5,#0x2000");           /* STM32_Command.tmp = 0x20001020 */
+  asm("ldr    r5,[r5,#0x0]");         /* STM32_Command.tmp */
+
+  // /* Clear TIM6 Update interrupt pending bit */
+  // asm("mov    r12,#0x0");
+  // asm("strh   r12,[r10,#0x8 *2]");
+
+  // asm("mov    r0,r9");
+  // asm("cbnz   r0,lblupdown");
+  // /* Up or Down*/
+  // asm("add    r5,r8");            /* SWEEP_Add */
+  // asm("cmp    r5,r7");            /* SWEEP_Max */
+  // asm("it    eq");                /* Make the next instruction conditional */
+  // asm("moveq  r5,r6");            /* Conditional load SWEEP_Min */
+  // asm("bx     lr");               /* Return */
+
+  // /* Up & Down */
+  // asm("lblupdown:");
+  // asm("add    r5,r8");            /* SWEEP_Add */
+  // asm("cmp    r5,r7");            /* SWEEP_Max */
+  // asm("it     ne");               /* Make the next instruction conditional */
+  // asm("bxne   lr");               /* Conditional return */
+  // /* Change direction */
+  // asm("mov    r11,r6");           /* tmp = SWEEP_Min */
+  // asm("mov    r6,r7");            /* SWEEP_Min = SWEEP_Max */
+  // asm("mov    r7,r11");           /* SWEEP_Max = tmp */
+  // asm("neg    r8,r8");            /* Negate SWEEP_Add */
 }
