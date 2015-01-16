@@ -233,8 +233,8 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke CreateThread,NULL,NULL,addr ScopeSampleThreadProc,hWin,0,addr tid
 				invoke CloseHandle,eax
 			.endif
-		.elseif mode==CMD_HSCSET
-			.if fThreadDone
+		.elseif fThreadDone
+			.if mode==CMD_HSCSET
 				invoke BTPut,offset mode,4
 				invoke BTPut,offset STM32_Cmd.STM32_Hsc,8
 				invoke BTGet,offset STM32_Cmd.STM32_Frq,8
@@ -242,45 +242,33 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke SetWindowText,hHsc,addr buffer
 				mov		mode,CMD_FRQCH1
 				invoke SetMode
-			.endif
-		.elseif mode==CMD_FRQCH1
-			.if fThreadDone
+			.elseif mode==CMD_FRQCH1
 				invoke BTPut,offset mode,4
 				invoke BTGet,offset STM32_Cmd.STM32_Frq,8
 				invoke FormatFrequency,STM32_Cmd.STM32_Frq.Frequency,addr buffer
 				invoke SetWindowText,hHsc,addr buffer
-			.endif
-		.elseif mode==CMD_LCMCAL
-			.if fThreadDone
+			.elseif mode==CMD_LCMCAL
 				invoke BTPut,offset mode,4
 				invoke BTGet,offset STM32_Cmd.STM32_Lcm,8
 				mov		mode,CMD_LCMCAP
 				invoke SetMode
-			.endif
-		.elseif mode==CMD_LCMCAP
-			.if fThreadDone
+			.elseif mode==CMD_LCMCAP
 				invoke BTPut,offset mode,4
 				invoke BTGet,offset STM32_Cmd.STM32_Frq,8
 				invoke BTGet,offset STM32_Cmd.STM32_Lcm,8
 				invoke CalculateCapacitor,addr buffer
 				invoke SetWindowText,hLcm,addr buffer
-			.endif
-		.elseif mode==CMD_LCMIND
-			.if fThreadDone
+			.elseif mode==CMD_LCMIND
 				invoke BTPut,offset mode,4
 				invoke BTGet,offset STM32_Cmd.STM32_Frq,8
 				invoke BTGet,offset STM32_Cmd.STM32_Lcm,8
 				invoke CalculateInductor,addr buffer
 				invoke SetWindowText,hLcm,addr buffer
-			.endif
-		.elseif mode==CMD_DDSSET
-			.if fThreadDone
+			.elseif mode==CMD_DDSSET
 				invoke BTPut,offset mode,4
 				invoke BTPut,offset STM32_Cmd.STM32_Dds,sizeof STM32_DDS
 				mov		mode,CMD_DONE
-			.endif
-		.elseif mode==CMD_LGASET
-			.if fThreadDone
+			.elseif mode==CMD_LGASET
 				invoke BTPut,offset mode,4
 				invoke BTPut,offset STM32_Cmd.STM32_Lga,sizeof STM32_LGA
 				movzx	eax,STM32_Cmd.STM32_Lga.DataBlocks
@@ -302,9 +290,7 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke InvalidateRect,hLGAScrn,NULL,TRUE
 				invoke UpdateWindow,hLGAScrn
 				mov		mode,CMD_DONE
-			.endif
-		.elseif mode==CMD_STARTUP
-			.if fThreadDone
+			.elseif mode==CMD_STARTUP
 				mov		mode,CMD_DDSSET
 				invoke DDSSetStruct,DDS_WAVESET
 				invoke BTPut,offset mode,4
@@ -321,7 +307,7 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.endif
 		.if fThreadDone && fBluetooth
 			invoke SendDlgItemMessage,hWin,IDC_IMGCONNECTED,STM_SETICON,hGreenIcon,0
-		.elseif ! fBluetooth
+		.elseif !fBluetooth
 			invoke SendDlgItemMessage,hWin,IDC_IMGCONNECTED,STM_SETICON,hGrayIcon,0
 		.endif
 		.if fBluetooth

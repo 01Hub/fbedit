@@ -677,9 +677,9 @@ DDSHzToPhaseAdd endp
 DDSPhaseAddToHz proc phadd:DWORD
 	LOCAL	iTmp:DWORD
 
-	mov		iTmp,1000;00029F17h		;1000Hz
+	mov		iTmp,1000		;1000Hz
 	fild	iTmp
-	mov		iTmp,00029F17h;1000
+	mov		iTmp,00029F17h
 	fild	iTmp
 	fdivp	st(1),st
 	fild	phadd
@@ -903,25 +903,31 @@ DDSSetStruct proc uses ebx,cmnd:DWORD
 	mov		STM32_Cmd.STM32_Dds.DDS_DCOffset,eax
 	invoke DDSHzToPhaseAdd,ddswavedata.DDS_Frequency
 	mov		STM32_Cmd.STM32_Dds.DDS__PhaseAdd,eax
-
+	mov		ebx,eax
 	mov		eax,ddswavedata.SWEEP_Mode
 	mov		STM32_Cmd.STM32_Dds.SWEEP_Mode,ax
 	invoke DDSHzToPhaseAdd,ddswavedata.SWEEP_StepSize
 	mov		STM32_Cmd.STM32_Dds.SWEEP_Step,eax
-	mov		eax,ddswavedata.DDS_Frequency
-	sub		eax,ddswavedata.SWEEP_Range
-	invoke DDSHzToPhaseAdd,eax
-	mov		STM32_Cmd.STM32_Dds.SWEEP_Min,eax
-	mov		eax,ddswavedata.DDS_Frequency
-	add		eax,ddswavedata.SWEEP_Range
-	invoke DDSHzToPhaseAdd,eax
-	mov		STM32_Cmd.STM32_Dds.SWEEP_Max,eax
+	mov		edi,eax
+	;Find number of steps
+	mov		eax,ddswavedata.SWEEP_Range
+	cdq
+	div		ddswavedata.SWEEP_StepSize
+	;Find phase offset
+	mul		edi
+	;Find min and max phase values
+	mov		edx,ebx
+	sub		edx,eax
+	mov		STM32_Cmd.STM32_Dds.SWEEP_Min,edx
+	mov		edx,ebx
+	add		edx,eax
+	mov		STM32_Cmd.STM32_Dds.SWEEP_Max,edx
 
-PrintDec STM32_Cmd.STM32_Dds.SWEEP_Mode
-PrintDec STM32_Cmd.STM32_Dds.SWEEP_Step
-PrintDec STM32_Cmd.STM32_Dds.DDS__PhaseAdd
-PrintDec STM32_Cmd.STM32_Dds.SWEEP_Min
-PrintDec STM32_Cmd.STM32_Dds.SWEEP_Max
+;PrintDec STM32_Cmd.STM32_Dds.SWEEP_Mode
+;PrintDec STM32_Cmd.STM32_Dds.SWEEP_Step
+;PrintDec STM32_Cmd.STM32_Dds.DDS__PhaseAdd
+;PrintDec STM32_Cmd.STM32_Dds.SWEEP_Min
+;PrintDec STM32_Cmd.STM32_Dds.SWEEP_Max
 
 	;TIM3 16 bit timer clocked at STM32_CLOCK/2
 	;TIM3 Prescaler set to: 100us = ((STM32_CLOCK/2)/10000)-1
@@ -929,6 +935,7 @@ PrintDec STM32_Cmd.STM32_Dds.SWEEP_Max
 	mov		ecx,ddswavedata.SWEEP_StepTime
 	mul		ecx
 	dec		eax
+PrintDec eax
 	mov		STM32_Cmd.STM32_Dds.SWEEP_Time,ax
 	.if fBluetooth && fThreadDone
 		mov		mode,CMD_DDSSET
@@ -1141,14 +1148,14 @@ DDSChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 				invoke DDSGenWave
 			.elseif eax==IDC_BTNSWEEPTIMEDN
 				mov		eax,ddswavedata.SWEEP_StepTime
-				.if eax
+				.if eax>1
 					dec		eax
 					mov		ddswavedata.SWEEP_StepTime,eax
 					invoke SetDlgItemInt,hWin,IDC_EDTSWEEPSTEPTIME,eax,FALSE
 				.endif
 			.elseif eax==IDC_BTNSWEEPTIMEUP
 				mov		eax,ddswavedata.SWEEP_StepTime
-				.if eax<1000
+				.if eax<5000
 					inc		eax
 					mov		ddswavedata.SWEEP_StepTime,eax
 					invoke SetDlgItemInt,hWin,IDC_EDTSWEEPSTEPTIME,eax,FALSE
@@ -1157,7 +1164,13 @@ DDSChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 		.elseif edx==EN_KILLFOCUS
 			.if eax==IDC_EDTDDSFRQ
 				invoke GetDlgItemInt,hWin,IDC_EDTDDSFRQ,NULL,FALSE
+				.if eax<1
+					mov		eax,1
+				.elseif eax>5000000
+					mov		eax,5000000
+				.endif
 				mov		ddswavedata.DDS_Frequency,eax
+				invoke SetDlgItemInt,hWin,IDC_EDTDDSFRQ,eax,FALSE
 				invoke FormatFrequency,ddswavedata.DDS_Frequency,addr buffer
 				invoke SetWindowText,hDDS,addr buffer
 				call	SetSweepMinMax
@@ -1190,8 +1203,8 @@ DDSChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 				invoke GetDlgItemInt,hWin,IDC_EDTSWEEPSTEPTIME,NULL,FALSE
 				.if eax<1
 					mov		eax,1
-				.elseif eax>1000
-					mov		eax,1000
+				.elseif eax>5000
+					mov		eax,5000
 				.endif
 				mov		ddswavedata.SWEEP_StepTime,eax
 				invoke SetDlgItemInt,hWin,IDC_EDTSWEEPSTEPTIME,eax,FALSE

@@ -177,6 +177,8 @@ void DMA_LGAConfig(void);
 int main(void)
 {
   __IO uint16_t i;
+  // __IO float fval;
+
 
   /* RCC Configuration */
   RCC_Config();
@@ -195,6 +197,8 @@ int main(void)
   /* Calibrate LC Meter */
   LCM_Calibrate();
 
+// fval=123.45;
+// fval=fval*1.2;
   // /* Update baudrate */
   // STM32_CMD.Cmd = STM32_CMD.TickCount;
   // while (STM32_CMD.Cmd == STM32_CMD.TickCount);

@@ -1,6 +1,13 @@
 
 .code
 
+;	With a 10MHz sampling rate each sample takes 100ns
+;	To sample one period of a 1KHz signal, 10000 samples are needed 
+;	The scope screen has a grid 8*64pix vertical by 10*64pix horizontal, ie 512 by 640 pixels
+;	Bluetooth is slow resulting in a sluggish update rate of the scope screen.
+;	To update the screen only 640 words of data is needed, or if compressed 640 * 9bits / 16bits = 360 words
+;	This should be implemented!
+
 ScopeSampleThreadProc proc lParam:DWORD
 	LOCAL	buffer[32]:BYTE
 

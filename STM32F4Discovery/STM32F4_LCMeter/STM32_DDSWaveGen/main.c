@@ -270,8 +270,31 @@ void SPI2_IRQHandler(void)
         }
         break;
     }
+    if (STM32_Command.SweepMode == Sweep_Down)
+    {
+      /* Change Step sign and swap Min / Max */
+      STM32_Command.SweepStep = -STM32_Command.SweepStep;
+      STM32_Command.tmp = STM32_Command.SweepMin;
+      STM32_Command.SweepMin = STM32_Command.SweepMax;
+      STM32_Command.SweepMax = STM32_Command.tmp;
+    }
+    asm("mov    r9,#0x0");                    /* Up or Down */
+    if (STM32_Command.SweepMode == Sweep_UpDown)
+    {
+      asm("mov    r9,#0x1");                  /* Up and Down */
+    }
+    /* Used by Clear TIM6 Update interrupt pending bit */
+    asm("movw   r10,#0x1000");
+    asm("movt   r10,#0x4000");
+    /* Get Step, Min and Max */
+    asm("movw   r8,#0x1014");
+    asm("movt   r8,#0x2000");                 /* STM32_Command.SweepStep = 0x20001014 */
+    asm("ldr    r6,[r8,#0x4]");               /* STM32_Command.SweepMin = 0x20001018 */
+    asm("ldr    r7,[r8,#0x8]");               /* STM32_Command.SweepMax = 0x2000101C */
+    asm("ldr    r8,[r8,#0x0]");               /* STM32_Command.SweepStep = 0x20001014 */
+
     asm("movw   r5,#0x0000");
-    asm("movt   r5,#0x2000");                 /* STM32_Command.DDSPhaseFrq = 0x20000000 */
+    asm("movt   r5,#0x2000");                 /* STM32_Command.DDS_PhaseFrq = 0x20000000 */
     asm("ldr    r5,[r5,#0x0]");               /* DDSPhaseFrq value */
   }
 }
@@ -369,70 +392,28 @@ void TIM_Config(void)
 *******************************************************************************/
 void TIM6_DAC_IRQHandler(void)
 {
-  TIM_ClearITPendingBit(TIM6,TIM_IT_Update);
-  switch (STM32_Command.SweepMode)
-  {
-    case Sweep_Up:
-      STM32_Command.tmp += STM32_Command.SweepStep;
-      if (STM32_Command.tmp > STM32_Command.SweepMax)
-      {
-        STM32_Command.tmp = STM32_Command.SweepMin;
-      }
-      break;
-    case Sweep_Down:
-      STM32_Command.tmp -= STM32_Command.SweepStep;
-      if (STM32_Command.tmp < STM32_Command.SweepMin)
-      {
-        STM32_Command.tmp = STM32_Command.SweepMax;
-      }
-      break;
-    case Sweep_UpDown:
-      if (STM32_Command.SweepStep > 0)
-      {
-        STM32_Command.tmp += STM32_Command.SweepStep;
-        if (STM32_Command.tmp > STM32_Command.SweepMax)
-        {
-          STM32_Command.tmp = STM32_Command.SweepMax;
-          STM32_Command.SweepStep = -STM32_Command.SweepStep;
-        }
-      }
-      else
-      {
-        STM32_Command.tmp += STM32_Command.SweepStep;
-        if (STM32_Command.tmp < STM32_Command.SweepMin)
-        {
-          STM32_Command.tmp = STM32_Command.SweepMin;
-          STM32_Command.SweepStep = -STM32_Command.SweepStep;
-        }
-      }
-      break;
-  }
-  asm("movw   r5,#0x1020");
-  asm("movt   r5,#0x2000");           /* STM32_Command.tmp = 0x20001020 */
-  asm("ldr    r5,[r5,#0x0]");         /* STM32_Command.tmp */
+  /* Clear TIM6 Update interrupt pending bit */
+  asm("mov    r12,#0x0");
+  asm("strh   r12,[r10,#0x8 *2]");
 
-  // /* Clear TIM6 Update interrupt pending bit */
-  // asm("mov    r12,#0x0");
-  // asm("strh   r12,[r10,#0x8 *2]");
+  asm("mov    r0,r9");
+  asm("cbnz   r0,lblupdown");
+  /* Up or Down */
+  asm("add    r5,r8");            /* SWEEP_Add */
+  asm("cmp    r5,r7");            /* SWEEP_Max */
+  asm("it     eq");               /* Make the next instruction conditional */
+  asm("moveq  r5,r6");            /* Conditional load SWEEP_Min */
+  asm("bx     lr");               /* Return */
 
-  // asm("mov    r0,r9");
-  // asm("cbnz   r0,lblupdown");
-  // /* Up or Down*/
-  // asm("add    r5,r8");            /* SWEEP_Add */
-  // asm("cmp    r5,r7");            /* SWEEP_Max */
-  // asm("it    eq");                /* Make the next instruction conditional */
-  // asm("moveq  r5,r6");            /* Conditional load SWEEP_Min */
-  // asm("bx     lr");               /* Return */
-
-  // /* Up & Down */
-  // asm("lblupdown:");
-  // asm("add    r5,r8");            /* SWEEP_Add */
-  // asm("cmp    r5,r7");            /* SWEEP_Max */
-  // asm("it     ne");               /* Make the next instruction conditional */
-  // asm("bxne   lr");               /* Conditional return */
-  // /* Change direction */
-  // asm("mov    r11,r6");           /* tmp = SWEEP_Min */
-  // asm("mov    r6,r7");            /* SWEEP_Min = SWEEP_Max */
-  // asm("mov    r7,r11");           /* SWEEP_Max = tmp */
-  // asm("neg    r8,r8");            /* Negate SWEEP_Add */
+  /* Up & Down */
+  asm("lblupdown:");
+  asm("add    r5,r8");            /* SWEEP_Add */
+  asm("cmp    r5,r7");            /* SWEEP_Max */
+  asm("it     ne");               /* Make the next instruction conditional */
+  asm("bxne   lr");               /* Conditional return */
+  /* Change direction */
+  asm("mov    r11,r6");           /* tmp = SWEEP_Min */
+  asm("mov    r6,r7");            /* SWEEP_Min = SWEEP_Max */
+  asm("mov    r7,r11");           /* SWEEP_Max = tmp */
+  asm("neg    r8,r8");            /* Negate SWEEP_Add */
 }
