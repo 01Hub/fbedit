@@ -131,7 +131,7 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		STM32_Cmd.STM32_Scp.ScopeTrigger,1
 		mov		STM32_Cmd.STM32_Scp.ScopeTriggerLevel,2048
 		mov		STM32_Cmd.STM32_Scp.ScopeTimeDiv,8
-		mov		STM32_Cmd.STM32_Scp.ScopeMag,1
+		mov		STM32_Cmd.STM32_Scp.ScopeMag,0
 		mov		STM32_Cmd.STM32_Scp.ScopeVoltDiv,8
 		mov		STM32_Cmd.STM32_Scp.ScopeVPos,2150
 		mov		STM32_Cmd.STM32_Scp.ADC_TripleMode,TRUE
@@ -233,6 +233,9 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke CreateThread,NULL,NULL,addr ScopeSampleThreadProc,hWin,0,addr tid
 				invoke CloseHandle,eax
 			.endif
+			invoke SetTimer,hWin,1000,20,NULL
+			mov		eax,TRUE
+			ret
 		.elseif fThreadDone
 			.if mode==CMD_HSCSET
 				invoke BTPut,offset mode,4

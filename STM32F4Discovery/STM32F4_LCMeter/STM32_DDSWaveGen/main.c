@@ -70,12 +70,12 @@ int main(void)
   STM32_Command.WaveType = WAVE_Sine;
   STM32_Command.Amplitude = 4095;
   STM32_Command.DCOffset = 4095;
-  STM32_Command.DDS_PhaseFrq = 858994;
+  STM32_Command.DDS_PhaseFrq = 858993;
   STM32_Command.SweepMode = Sweep_Off;
   STM32_Command.SweepTime = 9;
   STM32_Command.SweepStep = 1718;
-  STM32_Command.SweepMin = 687195;
-  STM32_Command.SweepMax = 1030792;
+  STM32_Command.SweepMin = 687193;
+  STM32_Command.SweepMax = 1030793;
 
   DDS_Config();
   SPI_Config();
@@ -187,6 +187,92 @@ void DDS_WaveGenerator(void)
   DDS_WaveLoop();
 }
 
+void DDS_Config(void)
+{
+  GPIO_InitTypeDef GPIO_InitStructure;
+
+  /* GPIOE clock enable */
+  RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOE, ENABLE);
+  /* DAC port configuration */
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_15 | GPIO_Pin_14 | GPIO_Pin_13 | GPIO_Pin_12 | GPIO_Pin_11 | GPIO_Pin_10 | GPIO_Pin_9 | GPIO_Pin_8 | GPIO_Pin_7 | GPIO_Pin_6 | GPIO_Pin_5 | GPIO_Pin_4;
+  GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_OUT;
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+  GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+  GPIO_InitStructure.GPIO_PuPd  = GPIO_PuPd_NOPULL;
+  GPIO_Init(GPIOE, &GPIO_InitStructure);
+}
+
+void SPI_Config(void)
+{
+  GPIO_InitTypeDef GPIO_InitStructure;
+  SPI_InitTypeDef SPI_InitStructure;
+  NVIC_InitTypeDef NVIC_InitStructure;
+
+  /* GPIOB clock enable */
+  RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE);
+  /* SPI2 clock enable */
+  RCC_APB1PeriphClockCmd(RCC_APB1Periph_SPI2, ENABLE);
+
+  /* Configure SPI2 SCK and MOSI pins */
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_15 | GPIO_Pin_13;
+  GPIO_Init(GPIOB, &GPIO_InitStructure);
+  /* Connect SPI2 pins to AF5 */  
+  GPIO_PinAFConfig(GPIOB, GPIO_PinSource13, GPIO_AF_SPI2);
+  GPIO_PinAFConfig(GPIOB, GPIO_PinSource15, GPIO_AF_SPI2);
+
+  /* Enable the SPI2 gloabal Interrupt */
+  NVIC_InitStructure.NVIC_IRQChannel = SPI2_IRQn;
+  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
+  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 2;
+  NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+  NVIC_Init(&NVIC_InitStructure);
+
+  /* SPI2 configuration */
+  SPI_InitStructure.SPI_Direction = SPI_Direction_2Lines_FullDuplex;
+  SPI_InitStructure.SPI_Mode = SPI_Mode_Slave;
+	SPI_InitStructure.SPI_DataSize = SPI_DataSize_16b;
+	SPI_InitStructure.SPI_CPOL = SPI_CPOL_Low;
+	SPI_InitStructure.SPI_CPHA = SPI_CPHA_1Edge;
+	SPI_InitStructure.SPI_NSS = SPI_NSS_Soft;
+	SPI_InitStructure.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_32;
+	SPI_InitStructure.SPI_FirstBit = SPI_FirstBit_MSB;
+  SPI_InitStructure.SPI_CRCPolynomial = 7;
+	SPI_Init(SPI2, &SPI_InitStructure);
+  SPI_I2S_ITConfig(SPI2, SPI_I2S_IT_RXNE, ENABLE);
+  SPI_Cmd(SPI2, ENABLE);
+}
+
+void TIM_Config(void)
+{
+  TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructure;
+  NVIC_InitTypeDef NVIC_InitStructure;
+
+  /* TIM6 clock enable */
+  RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM6, ENABLE);
+
+  /* TIM6 Counter configuration */
+  TIM_TimeBaseStructure.TIM_Period = 9;
+  TIM_TimeBaseStructure.TIM_Prescaler = 9999;
+  TIM_TimeBaseStructure.TIM_ClockDivision = 0;
+  TIM_TimeBaseStructure.TIM_RepetitionCounter=0;
+  TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
+  TIM_TimeBaseInit(TIM6, &TIM_TimeBaseStructure);
+  /* Clear the IT pending Bit */
+  TIM6->SR = (uint16_t)~TIM_IT_Update;
+  /* Enable TIM6 Update interrupt */
+  TIM_ITConfig(TIM6, TIM_IT_Update, ENABLE);
+  /* Enable the TIM6 gloabal Interrupt */
+  NVIC_InitStructure.NVIC_IRQChannel = TIM6_DAC_IRQn;
+  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
+  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
+  NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+  NVIC_Init(&NVIC_InitStructure);
+}
+
 void SPI2_IRQHandler(void)
 {
   /* Get the SPI received data */
@@ -231,20 +317,21 @@ void SPI2_IRQHandler(void)
   }
   else if (STM32_Command.SPI_Cmnd == SPI_SweepSet)
   {
-    TIM_Cmd(TIM6, DISABLE);
-    TIM_ITConfig(TIM6, TIM_IT_Update, DISABLE);
-    TIM6->CNT =  0;
     switch (STM32_Command.SPI_Cnt)
     {
       case 2:
         STM32_Command.SweepMode = STM32_Command.rx;
+        /* Disable the TIM Counter */
+        TIM6->CR1 &= (uint16_t)~TIM_CR1_CEN;
+        /* Reset the TIM6 Counter */
+        TIM6->CNT = 0;
         break;
       case 3:
         STM32_Command.SweepTime = STM32_Command.rx;
         break;
       case 4:
-        break;
         STM32_Command.SweepStep = STM32_Command.rx;
+        break;
       case 5:
         STM32_Command.SweepStep |= ((uint32_t)STM32_Command.rx)<<16;
         break;
@@ -258,128 +345,43 @@ void SPI2_IRQHandler(void)
         STM32_Command.SweepMax = STM32_Command.rx;
         break;
       case 9:
-        STM32_Command.SPI_Cnt = 0;
         STM32_Command.SweepMax |= ((uint32_t)STM32_Command.rx)<<16;
-        STM32_Command.tmp = STM32_Command.SweepMin;
+        STM32_Command.SPI_Cnt = 0;
         if (STM32_Command.SweepMode != Sweep_Off)
         {
+          /* Set the TIM6 Autoreload value */
           TIM6->ARR = STM32_Command.SweepTime;
-          TIM_ClearITPendingBit(TIM6,TIM_IT_Update);
-          TIM_ITConfig(TIM6, TIM_IT_Update, ENABLE);
-          TIM_Cmd(TIM6, ENABLE);
+          asm("mov    r9,#0x0");                    /* Up or Down */
+          if (STM32_Command.SweepMode == Sweep_UpDown)
+          {
+            asm("mov    r9,#0x1");                  /* Up and Down */
+          }
+          /* Used by Clear TIM6 Update interrupt pending bit */
+          asm("movw   r10,#0x1000");
+          asm("movt   r10,#0x4000");
+          /* Get SweepStep, SweepMin and SweepMax */
+          asm("movw   r8,#0x1014");
+          asm("movt   r8,#0x2000");                 /* STM32_Command.SweepStep = 0x20001014 */
+          asm("ldr    r6,[r8,#0x4]");               /* STM32_Command.SweepMin = 0x20001018 */
+          asm("ldr    r7,[r8,#0x8]");               /* STM32_Command.SweepMax = 0x2000101C */
+          asm("ldr    r8,[r8,#0x0]");               /* STM32_Command.SweepStep = 0x20001014 */
+          if (STM32_Command.SweepMode == Sweep_Down)
+          {
+            /* Change direction by changing SweepStep sign and swapping SweepMin / SweepMax */
+            asm("neg    r8,r8");            /* Negate SweepStep */
+            asm("mov    r11,r6");           /* tmp = SweepMin */
+            asm("mov    r6,r7");            /* SweepMin = SweepMax */
+            asm("mov    r7,r11");           /* SweepMax = tmp */
+          }
+          /* Enable the TIM Counter */
+          TIM6->CR1 |= TIM_CR1_CEN;
         }
+        asm("movw   r5,#0x0000");
+        asm("movt   r5,#0x2000");                 /* STM32_Command.DDS_PhaseFrq = 0x20000000 */
+        asm("ldr    r5,[r5,#0x0]");               /* DDSPhaseFrq value */
         break;
     }
-    if (STM32_Command.SweepMode == Sweep_Down)
-    {
-      /* Change Step sign and swap Min / Max */
-      STM32_Command.SweepStep = -STM32_Command.SweepStep;
-      STM32_Command.tmp = STM32_Command.SweepMin;
-      STM32_Command.SweepMin = STM32_Command.SweepMax;
-      STM32_Command.SweepMax = STM32_Command.tmp;
-    }
-    asm("mov    r9,#0x0");                    /* Up or Down */
-    if (STM32_Command.SweepMode == Sweep_UpDown)
-    {
-      asm("mov    r9,#0x1");                  /* Up and Down */
-    }
-    /* Used by Clear TIM6 Update interrupt pending bit */
-    asm("movw   r10,#0x1000");
-    asm("movt   r10,#0x4000");
-    /* Get Step, Min and Max */
-    asm("movw   r8,#0x1014");
-    asm("movt   r8,#0x2000");                 /* STM32_Command.SweepStep = 0x20001014 */
-    asm("ldr    r6,[r8,#0x4]");               /* STM32_Command.SweepMin = 0x20001018 */
-    asm("ldr    r7,[r8,#0x8]");               /* STM32_Command.SweepMax = 0x2000101C */
-    asm("ldr    r8,[r8,#0x0]");               /* STM32_Command.SweepStep = 0x20001014 */
-
-    asm("movw   r5,#0x0000");
-    asm("movt   r5,#0x2000");                 /* STM32_Command.DDS_PhaseFrq = 0x20000000 */
-    asm("ldr    r5,[r5,#0x0]");               /* DDSPhaseFrq value */
   }
-}
-
-void DDS_Config(void)
-{
-  GPIO_InitTypeDef GPIO_InitStructure;
-
-  /* GPIOE clock enable */
-  RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOE, ENABLE);
-  /* DAC port configuration */
-  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_15 | GPIO_Pin_14 | GPIO_Pin_13 | GPIO_Pin_12 | GPIO_Pin_11 | GPIO_Pin_10 | GPIO_Pin_9 | GPIO_Pin_8 | GPIO_Pin_7 | GPIO_Pin_6 | GPIO_Pin_5 | GPIO_Pin_4;
-  GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_OUT;
-  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
-  GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-  GPIO_InitStructure.GPIO_PuPd  = GPIO_PuPd_NOPULL;
-  GPIO_Init(GPIOE, &GPIO_InitStructure);
-}
-
-void SPI_Config(void)
-{
-  GPIO_InitTypeDef GPIO_InitStructure;
-  SPI_InitTypeDef SPI_InitStructure;
-  NVIC_InitTypeDef NVIC_InitStructure;
-
-  /* GPIOB clock enable */
-  RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE);
-  /* SPI2 clock enable */
-  RCC_APB1PeriphClockCmd(RCC_APB1Periph_SPI2, ENABLE);
-
-  /* Configure SPI2 SCK and MOSI pins */
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
-	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
-  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_15 | GPIO_Pin_13;
-  GPIO_Init(GPIOB, &GPIO_InitStructure);
-  /* Connect SPI2 pins to AF5 */  
-  GPIO_PinAFConfig(GPIOB, GPIO_PinSource13, GPIO_AF_SPI2);
-  GPIO_PinAFConfig(GPIOB, GPIO_PinSource15, GPIO_AF_SPI2);
-
-  /* Enable the SPI2 gloabal Interrupt */
-  NVIC_InitStructure.NVIC_IRQChannel = SPI2_IRQn;
-  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
-  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
-  NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-  NVIC_Init(&NVIC_InitStructure);
-
-  /* SPI2 configuration */
-  SPI_InitStructure.SPI_Direction = SPI_Direction_2Lines_FullDuplex;
-  SPI_InitStructure.SPI_Mode = SPI_Mode_Slave;
-	SPI_InitStructure.SPI_DataSize = SPI_DataSize_16b;
-	SPI_InitStructure.SPI_CPOL = SPI_CPOL_Low;
-	SPI_InitStructure.SPI_CPHA = SPI_CPHA_1Edge;
-	SPI_InitStructure.SPI_NSS = SPI_NSS_Soft;
-	SPI_InitStructure.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_32;
-	SPI_InitStructure.SPI_FirstBit = SPI_FirstBit_MSB;
-  SPI_InitStructure.SPI_CRCPolynomial = 7;
-	SPI_Init(SPI2, &SPI_InitStructure);
-  SPI_I2S_ITConfig(SPI2, SPI_I2S_IT_RXNE, ENABLE);
-  SPI_Cmd(SPI2, ENABLE);
-}
-
-void TIM_Config(void)
-{
-  TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructure;
-  NVIC_InitTypeDef NVIC_InitStructure;
-
-  /* TIM6 clock enable */
-  RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM6, ENABLE);
-
-  /* TIM6 Counter configuration */
-  TIM_TimeBaseStructure.TIM_Period = 9999;
-  TIM_TimeBaseStructure.TIM_Prescaler = 9999;
-  TIM_TimeBaseStructure.TIM_ClockDivision = 0;
-  TIM_TimeBaseStructure.TIM_RepetitionCounter=0;
-  TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
-  TIM_TimeBaseInit(TIM6, &TIM_TimeBaseStructure);
-
-  /* Enable the TIM6 gloabal Interrupt */
-  NVIC_InitStructure.NVIC_IRQChannel = TIM6_DAC_IRQn;
-  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
-  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 2;
-  NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-  NVIC_Init(&NVIC_InitStructure);
 }
 
 /*******************************************************************************
@@ -411,9 +413,9 @@ void TIM6_DAC_IRQHandler(void)
   asm("cmp    r5,r7");            /* SWEEP_Max */
   asm("it     ne");               /* Make the next instruction conditional */
   asm("bxne   lr");               /* Conditional return */
-  /* Change direction */
-  asm("mov    r11,r6");           /* tmp = SWEEP_Min */
-  asm("mov    r6,r7");            /* SWEEP_Min = SWEEP_Max */
-  asm("mov    r7,r11");           /* SWEEP_Max = tmp */
-  asm("neg    r8,r8");            /* Negate SWEEP_Add */
+  /* Change direction by changing SweepStep sign and swapping SweepMin / SweepMax */
+  asm("neg    r8,r8");            /* Negate SweepStep */
+  asm("mov    r11,r6");           /* tmp = SweepMin */
+  asm("mov    r6,r7");            /* SweepMin = SweepMax */
+  asm("mov    r7,r11");           /* SweepMax = tmp */
 }

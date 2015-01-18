@@ -166,6 +166,7 @@ void USART3_putdata(uint8_t *dat,uint16_t len);
 void USART3_puts(char *str);
 void USART3_getdata(uint8_t *dat,uint16_t len);
 void DMA_LGAConfig(void);
+void SendCompressedBuffer(uint32_t *in,uint16_t len);
 
 /* Private functions ---------------------------------------------------------*/
 
@@ -292,16 +293,13 @@ int main(void)
         }
         /* Start ADC1 Software Conversion */
         ADC1->CR2 |= (uint32_t)ADC_CR2_SWSTART;
-        while (DMA_GetFlagStatus(DMA2_Stream0,DMA_FLAG_HTIF0)==RESET);
-        /* Half done */
-        USART3_putdata((uint8_t *)SCOPE_DATAPTR, STM32_CMD.STM32_SCP.ADC_SampleSize / 2);
-        while (DMA_GetFlagStatus(DMA2_Stream0,DMA_FLAG_TCIF0)==RESET);
+        /* Since BlueTooth is slower than sampling therev is no need to wait */
+        SendCompressedBuffer((uint32_t *)SCOPE_DATAPTR, STM32_CMD.STM32_SCP.ADC_SampleSize / 4);
         /* Done */
         ADC->CCR=0;
         ADC1->CR2=0;
         ADC2->CR2=0;
         ADC3->CR2=0;
-        USART3_putdata((uint8_t *)(SCOPE_DATAPTR + STM32_CMD.STM32_SCP.ADC_SampleSize / 2), STM32_CMD.STM32_SCP.ADC_SampleSize - STM32_CMD.STM32_SCP.ADC_SampleSize / 2);
         break;
       case CMD_HSCSET:
         GPIO_ResetBits(GPIOD, GPIO_Pin_1 | GPIO_Pin_2 | GPIO_Pin_6 | GPIO_Pin_7);
@@ -359,6 +357,42 @@ int main(void)
         DMA_DeInit(DMA2_Stream1);
         break;
     }
+  }
+}
+
+/**
+  * @brief  ADC data is 12bits so 2halfwords is compressed into 3bytes.
+  * @param  Pointer to buffer, buffer size
+  * @retval None
+  */
+void SendCompressedBuffer(uint32_t *in,uint16_t len)
+{
+  __IO uint32_t dat32;
+  __IO uint8_t dat8;
+  while  (len--)
+  {
+    dat32 = *in;
+    dat32 = ((dat32 >> 4) & 0x00fff000) | (dat32 & 0xfff);
+
+    /* Wait until transmit register empty */
+    while((USART3->SR & USART_FLAG_TXE) == 0);
+    /* Transmit Data */
+    dat8 = dat32;
+    USART3->DR = (uint16_t)dat8;
+
+    /* Wait until transmit register empty */
+    while((USART3->SR & USART_FLAG_TXE) == 0);
+    /* Transmit Data */
+    dat8 = dat32 >> 8;
+    USART3->DR = (uint16_t)dat8;
+
+    /* Wait until transmit register empty */
+    while((USART3->SR & USART_FLAG_TXE) == 0);
+    /* Transmit Data */
+    dat8 = dat32 >> 16;
+    USART3->DR = (uint16_t)dat8;
+
+    *in++;
   }
 }
 

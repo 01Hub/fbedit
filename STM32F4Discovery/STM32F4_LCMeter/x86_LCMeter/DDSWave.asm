@@ -935,7 +935,7 @@ DDSSetStruct proc uses ebx,cmnd:DWORD
 	mov		ecx,ddswavedata.SWEEP_StepTime
 	mul		ecx
 	dec		eax
-PrintDec eax
+;PrintDec eax
 	mov		STM32_Cmd.STM32_Dds.SWEEP_Time,ax
 	.if fBluetooth && fThreadDone
 		mov		mode,CMD_DDSSET
@@ -955,7 +955,7 @@ DDSChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 		mov		hDDS,eax
 		mov		ddswavedata.DDS_WaveForm,DDS_ModeSinWave
 		mov		ddswavedata.DDS_Frequency,5000
-		mov		ddswavedata.DDS_Amplitude,DACMAX
+		mov		ddswavedata.DDS_Amplitude,DACMAX/2
 		mov		ddswavedata.DDS_DCOffset,DACMAX
 		mov		ddswavedata.SWEEP_Mode,SWEEP_ModeOff
 		mov		ddswavedata.SWEEP_StepSize,10

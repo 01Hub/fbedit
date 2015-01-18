@@ -1,14 +1,7 @@
 
 .code
 
-;	With a 10MHz sampling rate each sample takes 100ns
-;	To sample one period of a 1KHz signal, 10000 samples are needed 
-;	The scope screen has a grid 8*64pix vertical by 10*64pix horizontal, ie 512 by 640 pixels
-;	Bluetooth is slow resulting in a sluggish update rate of the scope screen.
-;	To update the screen only 640 words of data is needed, or if compressed 640 * 9bits / 16bits = 360 words
-;	This should be implemented!
-
-ScopeSampleThreadProc proc lParam:DWORD
+ScopeSampleThreadProc proc uses ebx esi edi,lParam:DWORD
 	LOCAL	buffer[32]:BYTE
 
 	mov		fThreadDone,FALSE
@@ -18,7 +11,6 @@ ScopeSampleThreadProc proc lParam:DWORD
 		invoke BTGet,offset STM32_Cmd.STM32_Frq,8
 		invoke FormatFrequency,STM32_Cmd.STM32_Frq.FrequencySCP,addr buffer
 		invoke SetWindowText,hScp,addr buffer
-		
 		invoke RtlZeroMemory,offset ADC_Data,sizeof ADC_Data
 		;Copy current scope settings
 		invoke RtlMoveMemory,offset STM32_Scp,offset STM32_Cmd.STM32_Scp,sizeof STM32_SCP
@@ -33,7 +25,27 @@ ScopeSampleThreadProc proc lParam:DWORD
 		invoke BTPut,offset STM32_Scp,sizeof STM32_SCP
 		.if !fExitThread
 			mov		fNoFrequency,TRUE
-			invoke BTGet,offset ADC_Data,STM32_Scp.ADC_SampleSize
+			mov		eax,STM32_Scp.ADC_SampleSize
+			mov		edx,eax
+			shl		eax,1
+			add		eax,edx
+			shr		eax,2
+			mov		ebx,eax
+			invoke BTGet,offset ADC_Tmp,eax
+			mov		esi,offset ADC_Tmp
+			mov		edi,offset ADC_Data
+			.while ebx
+				mov		eax,[esi]
+				mov		edx,eax
+				and		eax,0FFFh
+				mov		[edi],ax
+				shr		edx,12
+				and		edx,0FFFh
+				mov		[edi+2],dx
+				lea		esi,[esi+3]
+				lea		edi,[edi+4]
+				dec		ebx
+			.endw
 			.if STM32_Scp.fSubSampling
 				invoke ScopeSubSampling
 			.endif
@@ -366,6 +378,7 @@ ScopeProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke FpToAscii,addr SampleRate,addr buffer,FALSE
 		invoke lstrcat,addr buffer,offset szHz
 		invoke SetDlgItemText,hScpCld,IDC_STCADCSAMPLERATE,addr buffer
+		invoke SetDlgItemInt,hScpCld,IDC_STCSAMPLESIZE,STM32_Scp.ADC_SampleSize,FALSE
 		;Get time in ns for each pixel
 		mov		eax,STM32_Cmd.STM32_Scp.ScopeTimeDiv
 		mov		ecx,sizeof SCOPETIME

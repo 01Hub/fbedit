@@ -67,6 +67,7 @@ IDC_BTNTLU						equ 1224
 IDC_BTNTLD						equ 1225
 IDC_CHKTRIPLE					equ 1226
 IDC_BTNAUTO						equ 1227
+IDC_STCSAMPLESIZE				equ 1228
 
 IDD_DLGDDS						equ 1300
 IDC_BTNDDSFRQUP					equ 1304
@@ -468,6 +469,7 @@ STM32_Scp						STM32_SCP <>
 scopexofs						DWORD ?
 scopeyofs						DWORD ?
 ADC_Data						WORD ADCSAMPLESIZE dup(?)
+ADC_Tmp							WORD ADCSAMPLESIZE dup(?)
 SubSample						DWORD 2048 dup(?)
 SubSampleCount					WORD 2048 dup(?)
 
