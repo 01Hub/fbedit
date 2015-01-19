@@ -128,6 +128,32 @@ IDC_BTNLGASAMPLE				equ 1407
 IDC_BTNTRGPREVIOUS				equ 1409
 IDC_BTNTRGNEXT					equ 1408
 
+IDD_DLGMAKEWAVE         		equ 1500
+IDC_RBNMAIN             		equ 1501
+IDC_RBNHARMONIC         		equ 1502
+IDC_RBNNOISE            		equ 1503
+IDC_RBNRESULT           		equ 1504
+
+IDC_BTNMADN             		equ 1506
+IDC_TRBMA               		equ 1507
+IDC_BTNMAUP             		equ 1508
+
+IDC_BTN2HADN            		equ 1509
+IDC_TRB2HA              		equ 1510
+IDC_BTN2HAUP            		equ 1511
+
+IDC_BTN3HADN            		equ 1513
+IDC_TRB3HA              		equ 1514
+IDC_BTN3HAUP            		equ 1515
+
+IDC_BTN4HADN            		equ 1517
+IDC_TRB4HA              		equ 1518
+IDC_BTN4HAUP            		equ 1519
+
+IDC_BTNNADN             		equ 1521
+IDC_TRBNA               		equ 1522
+IDC_BTNNAUP             		equ 1523
+
 IDD_DLGSCPSCRNCLD				equ 2000
 IDC_UDCSCPSCRN					equ 2001
 
@@ -136,6 +162,9 @@ IDC_UDCDDSSCRN					equ 3001
 
 IDD_DLGLGACLD					equ 4000
 IDC_UDCLGASCRN					equ 4001
+
+IDD_DLGMAKEWAVECLD				equ 5000
+IDC_UDCMAKEWAVE					equ 5001
 
 CMD_DONE						equ 0
 CMD_LCMCAL						equ 1
@@ -299,6 +328,22 @@ DDSWAVEDATA struct
 	DDS_SweepMaxWaveData		WORD 4098 dup(?)
 DDSWAVEDATA ends
 
+MAKEWAVEDATA struct
+	ShowWave					DWORD ?
+	MainAmp						DWORD ?
+	SecondHarmonicAmp			DWORD ?
+	ThirdHarmonicAmp			DWORD ?
+	FourthHarmonicAmp			DWORD ?
+	NoiseAmp					DWORD ?
+	MW_MainData					WORD 4098 dup(?)
+	MW_SecondHarmonicData		WORD 4098 dup(?)
+	MW_ThirdHarmonicData		WORD 4098 dup(?)
+	MW_FourthHarmonicData		WORD 4098 dup(?)
+	MW_SumHarmonicData			WORD 4098 dup(?)
+	MW_NoiseData				WORD 4098 dup(?)
+	MW_ResultData				WORD 4098 dup(?)
+MAKEWAVEDATA ends
+
 FP_EQUALTO						equ	40h
 
 .const
@@ -307,6 +352,8 @@ szFREQUENCYCLASS				BYTE 'FREQUENCYCLASS',0
 szSCOPECLASS					BYTE 'SCOPECLASS',0
 szDDSCLASS						BYTE 'DDSCLASS',0
 szLGACLASS						BYTE 'LGACLASS',0
+szMWCLASS						BYTE 'MWCLASS',0
+
 Tahoma_36						LOGFONT <-36,0,0,0,400,0,0,0,0,3,2,1,34,"Tahoma">
 
 szLCMeter						BYTE 'LC Meter - ',0
@@ -320,6 +367,7 @@ szFerquencyCH3					BYTE 'Ferquency CH3',0
 szScope							BYTE 'Scope',0
 szDDS							BYTE 'DDS Wave',0
 szLGA							BYTE 'Logic Analyser',0
+szMakeWave						BYTE 'Make Wave',0
 
 szSampleRate					BYTE 'Sample Rate ',0
 szBufferSize					BYTE 'Buffer Size %dKb',0
@@ -401,6 +449,10 @@ ten_256							REAL10 1.0e256
 								REAL10 1.0e4352
 								REAL10 1.0e4608
 								REAL10 1.0e4864
+float2							REAL8 2.0
+float4							REAL8 4.0
+float6							REAL8 6.0
+float8							REAL8 8.0
 
 ScopeTime						SCOPETIME <10,'10nS / Div'>,<20,'20nS / Div'>,<50,'50nS / Div'>,<100,'100nS / Div'>,<200,'200nS / Div'>,<500,'500nS / Div'>,<1000,'1uS / Div'>,<2000,'2uS / Div'>,<5000,'5uS / Div'>,<10000,'10uS / Div'>,<20000,'20uS / Div'>,<50000,'50uS / Div'>
 								SCOPETIME <100000,'100uS / Div'>,<200000,'200uS / Div'>,<500000,'500uS / Div'>,<1000000,'1mS / Div'>,<2000000,'2mS / Div'>,<5000000,'5mS / Div'>,<10000000,'10mS / Div'>,<20000000,'20mS / Div'>,<50000000,'50mS / Div'>,<100000000,'100mS / Div'>
@@ -441,6 +493,9 @@ hDDS							HWND ?
 hLGACld							HWND ?
 hLGAScrnCld						HWND ?
 hLGAScrn						HWND ?
+hMakeWaveScrnCld				HWND ?
+hMakeWaveScrn					HWND ?
+hMakeWaveCld					HWND ?
 
 hFont							HFONT ?
 hIml							HIMAGELIST ?
@@ -474,6 +529,7 @@ SubSample						DWORD 2048 dup(?)
 SubSampleCount					WORD 2048 dup(?)
 
 ddswavedata						DDSWAVEDATA <>
+makewavedata					MAKEWAVEDATA <>
 
 LGA_Data						BYTE LGASAMPLESIZE dup(?)
 lgaxofs							DWORD ?

@@ -9,6 +9,7 @@ include Scope.asm
 include DDSWave.asm
 include HSClock.asm
 include LogicAnalyser.asm
+include MakeWave.asm
 
 .code
 
@@ -123,6 +124,8 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SendMessage,ebx,TCM_INSERTITEM,3,addr tci
 		mov		tci.pszText,offset szLGA
 		invoke SendMessage,ebx,TCM_INSERTITEM,4,addr tci
+		mov		tci.pszText,offset szMakeWave
+		invoke SendMessage,ebx,TCM_INSERTITEM,5,addr tci
 
 		mov		STM32_Cmd.STM32_Hsc.HSCDiv,50000-1
 		mov		STM32_Cmd.STM32_Hsc.HSCSet,1
@@ -173,6 +176,12 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		hDDSScrnCld,eax
 		;Create DDS child dialog
 		invoke CreateDialogParam,hInstance,IDD_DLGDDS,hWin,addr DDSChildProc,0
+
+		;Create MakeWave screen child dialog
+		invoke CreateDialogParam,hInstance,IDD_DLGMAKEWAVECLD,hWin,addr MakeWaveScrnChildProc,0
+		mov		hMakeWaveScrnCld,eax
+		;Create MakeWave child dialog
+		invoke CreateDialogParam,hInstance,IDD_DLGMAKEWAVE,hWin,addr MakeWaveChildProc,0
 
 		mov		STM32_Cmd.STM32_Scp.ScopeTrigger,1
 		mov		mode,CMD_LCMCAP
@@ -353,6 +362,7 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke ShowWindow,hDDSCld,SW_HIDE
 				invoke ShowWindow,hLGACld,SW_HIDE
 				invoke ShowWindow,hLcmCld,SW_SHOW
+				invoke ShowWindow,hMakeWaveCld,SW_HIDE
 				mov		mode,CMD_LCMCAP
 			.elseif eax==1
 				;High Speed Clock
@@ -361,6 +371,8 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke ShowWindow,hLcmCld,SW_HIDE
 				invoke ShowWindow,hLGACld,SW_HIDE
 				invoke ShowWindow,hHscCld,SW_SHOW
+				invoke ShowWindow,hMakeWaveCld,SW_HIDE
+				invoke ShowWindow,hMakeWaveScrnCld,SW_HIDE
 				mov		mode,CMD_FRQCH1
 			.elseif eax==2
 				;Scope
@@ -372,6 +384,8 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke ShowWindow,hScpScrnCld,SW_SHOW
 				invoke ShowWindow,hLGAScrnCld,SW_HIDE
 				invoke ShowWindow,hDDSScrnCld,SW_HIDE
+				invoke ShowWindow,hMakeWaveCld,SW_HIDE
+				invoke ShowWindow,hMakeWaveScrnCld,SW_HIDE
 				mov		fSampleDone,TRUE
 				mov		mode,CMD_SCPSET
 			.elseif eax==3
@@ -384,6 +398,8 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke ShowWindow,hDDSScrnCld,SW_SHOW
 				invoke ShowWindow,hLGAScrnCld,SW_HIDE
 				invoke ShowWindow,hScpScrnCld,SW_HIDE
+				invoke ShowWindow,hMakeWaveCld,SW_HIDE
+				invoke ShowWindow,hMakeWaveScrnCld,SW_HIDE
 				mov		mode,CMD_DDSSET
 			.elseif eax==4
 				;LGA
@@ -395,7 +411,22 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke ShowWindow,hLGAScrnCld,SW_SHOW
 				invoke ShowWindow,hDDSScrnCld,SW_HIDE
 				invoke ShowWindow,hScpScrnCld,SW_HIDE
+				invoke ShowWindow,hMakeWaveCld,SW_HIDE
+				invoke ShowWindow,hMakeWaveScrnCld,SW_HIDE
 				mov		mode,CMD_LGASET
+			.elseif eax==5
+				;MakeWave
+				invoke ShowWindow,hScpCld,SW_HIDE
+				invoke ShowWindow,hHscCld,SW_HIDE
+				invoke ShowWindow,hLcmCld,SW_HIDE
+				invoke ShowWindow,hDDSCld,SW_HIDE
+				invoke ShowWindow,hLGACld,SW_HIDE
+				invoke ShowWindow,hLGAScrnCld,SW_HIDE
+				invoke ShowWindow,hDDSScrnCld,SW_HIDE
+				invoke ShowWindow,hScpScrnCld,SW_HIDE
+				invoke ShowWindow,hMakeWaveCld,SW_SHOW
+				invoke ShowWindow,hMakeWaveScrnCld,SW_SHOW
+				mov		mode,CMD_DONE
 			.endif
 			invoke SetMode
 		.endif
@@ -443,6 +474,12 @@ start:
 	invoke LoadCursor,0,IDC_CROSS
 	mov		wc.hCursor,eax
 	mov		wc.lpszClassName,offset szLGACLASS
+	invoke RegisterClassEx,addr wc
+
+	mov		wc.lpfnWndProc,offset MakeWaveProc
+	invoke LoadCursor,0,IDC_CROSS
+	mov		wc.hCursor,eax
+	mov		wc.lpszClassName,offset szMWCLASS
 	invoke RegisterClassEx,addr wc
 
 	invoke	DialogBoxParam,hInstance,IDD_MAIN,NULL,addr DlgProc,NULL

@@ -1227,6 +1227,7 @@ DDSChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 		mov		eax,FALSE
 		ret
 	.endif
+	mov		eax,TRUE
 	ret
 
 EnableDisable:
