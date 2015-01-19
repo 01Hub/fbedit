@@ -376,6 +376,8 @@ szFmtHz							BYTE '%dHz',0
 szFmtKHz						BYTE '%dKHz',0
 szFmtMHz						BYTE '%dMHz',0
 szHz							BYTE 'Hz',0
+szKHz							BYTE 'KHz',0
+szMHz							BYTE 'MHz',0
 
 szFmtLGA						BYTE ' Hex: %02X  Bin: %s  Bytenbr: %u Transitions: %u Time: %s',0
 szFmtLGATimens					BYTE '%02uns',0
@@ -453,6 +455,9 @@ float2							REAL8 2.0
 float4							REAL8 4.0
 float6							REAL8 6.0
 float8							REAL8 8.0
+
+ten_e3							REAL8 1.0e3
+ten_e6							REAL8 1.0e6
 
 ScopeTime						SCOPETIME <10,'10nS / Div'>,<20,'20nS / Div'>,<50,'50nS / Div'>,<100,'100nS / Div'>,<200,'200nS / Div'>,<500,'500nS / Div'>,<1000,'1uS / Div'>,<2000,'2uS / Div'>,<5000,'5uS / Div'>,<10000,'10uS / Div'>,<20000,'20uS / Div'>,<50000,'50uS / Div'>
 								SCOPETIME <100000,'100uS / Div'>,<200000,'200uS / Div'>,<500000,'500uS / Div'>,<1000000,'1mS / Div'>,<2000000,'2mS / Div'>,<5000000,'5mS / Div'>,<10000000,'10mS / Div'>,<20000000,'20mS / Div'>,<50000000,'50mS / Div'>,<100000000,'100mS / Div'>

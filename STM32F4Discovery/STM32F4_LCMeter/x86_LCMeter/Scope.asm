@@ -375,8 +375,50 @@ ScopeProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
 	mov		eax,uMsg
 	.if eax==WM_PAINT
-		invoke FpToAscii,addr SampleRate,addr buffer,FALSE
-		invoke lstrcat,addr buffer,offset szHz
+		fld		SampleRate
+		fld		ten_6;float_e6
+		fcomip	st(0),st(1)
+		.if CARRY?
+			fld		SampleRate
+			fdiv	ten_e6
+			fstp	fTmp
+			invoke FpToAscii,addr fTmp,addr buffer,FALSE
+			lea		esi,buffer
+			xor		ecx,ecx
+			xor		edx,edx
+			.while byte ptr [esi]
+				add		ecx,edx
+				.if byte ptr [esi]=='.'
+					mov		edx,1
+				.endif
+				inc		esi
+				.if ecx==6
+					mov		byte ptr [esi],0
+					.break
+				.endif
+			.endw
+			invoke lstrcat,addr buffer,offset szMHz
+		.else
+			fld		SampleRate
+			fdiv	ten_e3
+			fstp	fTmp
+			invoke FpToAscii,addr fTmp,addr buffer,FALSE
+			lea		esi,buffer
+			xor		ecx,ecx
+			xor		edx,edx
+			.while byte ptr [esi]
+				add		ecx,edx
+				.if byte ptr [esi]=='.'
+					mov		edx,1
+				.endif
+				inc		esi
+				.if ecx==3
+					mov		byte ptr [esi],0
+					.break
+				.endif
+			.endw
+			invoke lstrcat,addr buffer,offset szKHz
+		.endif
 		invoke SetDlgItemText,hScpCld,IDC_STCADCSAMPLERATE,addr buffer
 		invoke SetDlgItemInt,hScpCld,IDC_STCSAMPLESIZE,STM32_Scp.ADC_SampleSize,FALSE
 		;Get time in ns for each pixel

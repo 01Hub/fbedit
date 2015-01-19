@@ -1,4 +1,4 @@
-.386
+.686
 .model flat, stdcall  ;32 bit memory model
 option casemap :none  ;case sensitive
 
@@ -9,7 +9,7 @@ include Scope.asm
 include DDSWave.asm
 include HSClock.asm
 include LogicAnalyser.asm
-include MakeWave.asm
+;include MakeWave.asm
 
 .code
 
@@ -177,11 +177,11 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		;Create DDS child dialog
 		invoke CreateDialogParam,hInstance,IDD_DLGDDS,hWin,addr DDSChildProc,0
 
-		;Create MakeWave screen child dialog
-		invoke CreateDialogParam,hInstance,IDD_DLGMAKEWAVECLD,hWin,addr MakeWaveScrnChildProc,0
-		mov		hMakeWaveScrnCld,eax
-		;Create MakeWave child dialog
-		invoke CreateDialogParam,hInstance,IDD_DLGMAKEWAVE,hWin,addr MakeWaveChildProc,0
+;		;Create MakeWave screen child dialog
+;		invoke CreateDialogParam,hInstance,IDD_DLGMAKEWAVECLD,hWin,addr MakeWaveScrnChildProc,0
+;		mov		hMakeWaveScrnCld,eax
+;		;Create MakeWave child dialog
+;		invoke CreateDialogParam,hInstance,IDD_DLGMAKEWAVE,hWin,addr MakeWaveChildProc,0
 
 		mov		STM32_Cmd.STM32_Scp.ScopeTrigger,1
 		mov		mode,CMD_LCMCAP
@@ -476,11 +476,11 @@ start:
 	mov		wc.lpszClassName,offset szLGACLASS
 	invoke RegisterClassEx,addr wc
 
-	mov		wc.lpfnWndProc,offset MakeWaveProc
-	invoke LoadCursor,0,IDC_CROSS
-	mov		wc.hCursor,eax
-	mov		wc.lpszClassName,offset szMWCLASS
-	invoke RegisterClassEx,addr wc
+;	mov		wc.lpfnWndProc,offset MakeWaveProc
+;	invoke LoadCursor,0,IDC_CROSS
+;	mov		wc.hCursor,eax
+;	mov		wc.lpszClassName,offset szMWCLASS
+;	invoke RegisterClassEx,addr wc
 
 	invoke	DialogBoxParam,hInstance,IDD_MAIN,NULL,addr DlgProc,NULL
 	invoke	ExitProcess,0
