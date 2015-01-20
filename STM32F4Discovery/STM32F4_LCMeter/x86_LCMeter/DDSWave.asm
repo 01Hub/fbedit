@@ -8,7 +8,8 @@ szDDS_Waves						BYTE 'Sine Wave',0
 								BYTE 'Triangle Wave',0
 								BYTE 'Square Wave',0
 								BYTE 'Sawtooth Wave',0
-								BYTE 'Reverse Sawtooth Wave',0,0
+								BYTE 'Reverse Sawtooth Wave',0
+								BYTE 'Make Wave',0,0
 
 DDS_SineWave					WORD 2048,2054,2061,2067,2073,2079,2086,2092,2098,2105,2111,2117,2123,2130,2136,2142
 								WORD 2148,2155,2161,2167,2174,2180,2186,2192,2199,2205,2211,2217,2224,2230,2236,2242
@@ -749,6 +750,24 @@ DDSGenWave proc uses ebx esi edi
 		rep		movsw
 		mov		esi,offset DDS_RevSawToothWave
 		movsw
+	.elseif eax==DDS_ModeMakeWave
+		mov		esi,offset makewavedata.MW_ResultData
+		mov		edi,offset ddswavedata.DDS_WaveData
+		mov		ecx,2048
+		rep		movsw
+		mov		esi,offset makewavedata.MW_ResultData
+		mov		ecx,2048
+		rep		movsw
+		mov		esi,offset makewavedata.MW_ResultData
+		movsw
+		mov		edi,offset ddswavedata.DDS_WaveData
+		xor		ecx,ecx
+		.while ecx<4097
+			movsx	eax,word ptr [edi+ecx*WORD]
+			add		eax,2048
+			mov		word ptr [edi+ecx*WORD],ax
+			inc		ecx
+		.endw
 	.endif
 	xor		ebx,ebx
 	mov		edi,offset ddswavedata.DDS_WaveData
@@ -840,38 +859,6 @@ DDSGenWave proc uses ebx esi edi
 	.endif
 	invoke InvalidateRect,hDDSScrn,NULL,TRUE
 	invoke UpdateWindow,hDDSScrn
-;	mov		eax,ddswavedata.SWEEP_StepSize
-;	mov		ecx,ddswavedata.SWEEP_StepCount
-;	shr		ecx,1
-;	mul		ecx
-;	mov		ebx,ddswavedata.DDS_PhaseFrq
-;	sub		ebx,eax
-;	mov		eax,ddswavedata.SWEEP_StepSize
-;	mov		ecx,ddswavedata.SWEEP_StepCount
-;	mul		ecx
-;	mov		edx,ebx
-;	add		edx,eax
-;	mov		eax,ddswavedata.SWEEP_Mode
-;	.if eax==SWEEP_ModeUp
-;		mov		ddswavedata.DDS_Sweep.SWEEP_UpDovn,FALSE
-;		mov		ddswavedata.DDS_Sweep.SWEEP_Min,ebx
-;		mov		ddswavedata.DDS_Sweep.SWEEP_Max,edx
-;		mov		eax,ddswavedata.SWEEP_StepSize
-;		mov		ddswavedata.DDS_Sweep.SWEEP_Add,eax
-;	.elseif eax==SWEEP_ModeDown
-;		mov		ddswavedata.DDS_Sweep.SWEEP_UpDovn,FALSE
-;		mov		ddswavedata.DDS_Sweep.SWEEP_Max,ebx
-;		mov		ddswavedata.DDS_Sweep.SWEEP_Min,edx
-;		mov		eax,ddswavedata.SWEEP_StepSize
-;		neg		eax
-;		mov		ddswavedata.DDS_Sweep.SWEEP_Add,eax
-;	.elseif eax==SWEEP_ModeUpDown
-;		mov		ddswavedata.DDS_Sweep.SWEEP_UpDovn,TRUE
-;		mov		ddswavedata.DDS_Sweep.SWEEP_Min,ebx
-;		mov		ddswavedata.DDS_Sweep.SWEEP_Max,edx
-;		mov		eax,ddswavedata.SWEEP_StepSize
-;		mov		ddswavedata.DDS_Sweep.SWEEP_Add,eax
-;	.endif
 	ret
 
 DDSGenWave endp
@@ -1021,16 +1008,14 @@ DDSChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 		shr		edx,16
 		.if edx==BN_CLICKED
 			.if eax==IDC_BTNDDSWAVEDN
-				mov		eax,ddswavedata.DDS_WaveForm
-				.if eax
+				.if ddswavedata.DDS_WaveForm
 					dec		ddswavedata.DDS_WaveForm
 					invoke DDSGenWave
 					call	SetWaveTypeText
 					invoke DDSSetStruct,DDS_WAVESET
 				.endif
 			.elseif eax==IDC_BTNDDSWAVEUP
-				mov		eax,ddswavedata.DDS_WaveForm
-				.if eax<DDS_ModeRevSawWave
+				.if ddswavedata.DDS_WaveForm<DDS_ModeMakeWave
 					inc		ddswavedata.DDS_WaveForm
 					invoke DDSGenWave
 					call	SetWaveTypeText

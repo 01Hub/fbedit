@@ -46,6 +46,7 @@ typedef struct
 #define SPI_PhaseSet              ((uint16_t)1)
 #define SPI_WaveSet               ((uint16_t)2)
 #define SPI_SweepSet              ((uint16_t)3)
+#define SPI_WaveUpload            ((uint16_t)4)
 
 
 /* Private macro -------------------------------------------------------------*/
@@ -287,7 +288,7 @@ void SPI2_IRQHandler(void)
     switch (STM32_Command.SPI_Cnt)
     {
       case 2:
-      STM32_Command.DDS_PhaseFrq = STM32_Command.rx;
+        STM32_Command.DDS_PhaseFrq = STM32_Command.rx;
         break;
       case 3:
         STM32_Command.DDS_PhaseFrq |= ((uint32_t)STM32_Command.rx)<<16;
@@ -313,6 +314,18 @@ void SPI2_IRQHandler(void)
         STM32_Command.SPI_Cnt = 0;
         DDS_MakeWave();
         break;
+    }
+  }
+  else if (STM32_Command.SPI_Cmnd == SPI_WaveUpload)
+  {
+    if (STM32_Command.SPI_Cnt == 2048 + 2)
+    {
+      STM32_Command.SPI_Cnt = 0;
+      DDS_MakeWave();
+    }
+    else
+    {
+      STM32_Command.Wave[STM32_Command.SPI_Cnt - 2] = STM32_Command.rx;;
     }
   }
   else if (STM32_Command.SPI_Cmnd == SPI_SweepSet)

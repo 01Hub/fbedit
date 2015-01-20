@@ -154,6 +154,10 @@ IDC_BTNNADN             		equ 1521
 IDC_TRBNA               		equ 1522
 IDC_BTNNAUP             		equ 1523
 
+IDC_BTNNFDN             		equ 1512
+IDC_TRBNF               		equ 1516
+IDC_BTNNFUP             		equ 1520
+
 IDD_DLGSCPSCRNCLD				equ 2000
 IDC_UDCSCPSCRN					equ 2001
 
@@ -177,6 +181,7 @@ CMD_SCPSET                      equ 7
 CMD_HSCSET						equ 8
 CMD_DDSSET						equ 9
 CMD_LGASET						equ 10
+CMD_WAVEUPLOAD					equ 11
 CMD_STARTUP						equ 99
 
 STM32_CLOCK						equ 200000000
@@ -207,6 +212,7 @@ DDS_ModeTriWave					equ 1
 DDS_ModeSqrWave					equ 2
 DDS_ModeSawWave					equ 3
 DDS_ModeRevSawWave				equ 4
+DDS_ModeMakeWave				equ 5
 
 ;DDS SWEEP Modes
 SWEEP_ModeOff					equ 0
@@ -335,13 +341,15 @@ MAKEWAVEDATA struct
 	ThirdHarmonicAmp			DWORD ?
 	FourthHarmonicAmp			DWORD ?
 	NoiseAmp					DWORD ?
-	MW_MainData					WORD 4098 dup(?)
-	MW_SecondHarmonicData		WORD 4098 dup(?)
-	MW_ThirdHarmonicData		WORD 4098 dup(?)
-	MW_FourthHarmonicData		WORD 4098 dup(?)
-	MW_SumHarmonicData			WORD 4098 dup(?)
-	MW_NoiseData				WORD 4098 dup(?)
-	MW_ResultData				WORD 4098 dup(?)
+	NoiseFrequency				DWORD ?
+	MW_MainData					WORD 2048 dup(?)
+	MW_SecondHarmonicData		WORD 2048 dup(?)
+	MW_ThirdHarmonicData		WORD 2048 dup(?)
+	MW_FourthHarmonicData		WORD 2048 dup(?)
+	MW_SumHarmonicData			WORD 2048 dup(?)
+	MW_RndNoiseData				WORD 2048 dup(?)
+	MW_NoiseData				WORD 2048+256 dup(?)
+	MW_ResultData				WORD 2048 dup(?)
 MAKEWAVEDATA ends
 
 FP_EQUALTO						equ	40h

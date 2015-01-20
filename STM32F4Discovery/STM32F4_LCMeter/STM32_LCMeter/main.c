@@ -125,10 +125,12 @@ typedef struct
 #define CMD_HSCSET                              ((uint8_t)8)
 #define CMD_DDSSET                              ((uint8_t)9)
 #define CMD_LGASET                              ((uint8_t)10)
+#define CMD_WAVEUPLOAD                          ((uint8_t)11)
 
 #define DDS_PHASESET                            ((uint8_t)1)
 #define DDS_WAVESET                             ((uint8_t)2)
 #define DDS_SWEEPSET                            ((uint8_t)3)
+#define DDS_WAVEUPLOAD                          ((uint8_t)4)
 
 #define SWEEP_ModeOff                           ((uint8_t)0)
 #define SWEEP_ModeUp                            ((uint8_t)1)
@@ -138,8 +140,9 @@ typedef struct
 #define ADC_CDR_ADDRESS                         ((uint32_t)0x40012308)
 #define PE_IDR_Address                          ((uint32_t)0x40021011)
 #define SCOPE_DATAPTR                           ((uint32_t)0x20008000)
-#define LGA_DATAPTR                             ((uint32_t)0x20008000)
 #define SCOPE_DATASIZE                          ((uint32_t)0x10000)
+#define LGA_DATAPTR                             ((uint32_t)0x20008000)
+#define WAVE_DATAPTR                            ((uint32_t)0x20008000)
 #define STM32_CLOCK                             ((uint32_t)200000000)
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
@@ -178,7 +181,7 @@ void SendCompressedBuffer(uint32_t *in,uint16_t len);
 int main(void)
 {
   __IO uint16_t i;
-  // __IO float fval;
+  __IO uint16_t *ptr;
 
 
   /* RCC Configuration */
@@ -198,8 +201,6 @@ int main(void)
   /* Calibrate LC Meter */
   LCM_Calibrate();
 
-// fval=123.45;
-// fval=fval*1.2;
   // /* Update baudrate */
   // STM32_CMD.Cmd = STM32_CMD.TickCount;
   // while (STM32_CMD.Cmd == STM32_CMD.TickCount);
@@ -355,6 +356,17 @@ int main(void)
         USART3_putdata((uint8_t *)(LGA_DATAPTR + STM32_CMD.STM32_LGA.DataBlocks * 1024 / 2), STM32_CMD.STM32_LGA.DataBlocks * 1024 / 2);
         TIM_Cmd(TIM8, DISABLE);
         DMA_DeInit(DMA2_Stream1);
+        break;
+      case CMD_WAVEUPLOAD:
+        USART3_getdata((uint8_t *)WAVE_DATAPTR,4096);
+        SPISendData(DDS_WAVEUPLOAD);
+        ptr = (uint16_t *)WAVE_DATAPTR;
+        i = 4098;
+        while (i--)
+        {
+          SPISendData(*ptr);
+          ptr++;
+        }
         break;
     }
   }
