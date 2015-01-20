@@ -1,529 +1,529 @@
 Archive member included because of file (symbol)
 
-C:\Program Files (x86)\Raisonance\Ride\Lib\ARM\STM32x_io_putchar_thumb.a(STM32F10X_io_putchar.o)
+D:\Ride\Ride\Lib\ARM\STM32x_io_putchar_thumb.a(STM32F10X_io_putchar.o)
                               (__io_putchar)
-C:\Program Files (x86)\Raisonance\Ride\Lib\ARM\std_sbrk_thumb.lib(write.o)
+D:\Ride\Ride\Lib\ARM\std_sbrk_thumb.lib(write.o)
                               (_write)
 
 Allocating common symbols
 Common symbol       size              file
 
-STM32_Command       0x1024            C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\main.o
-NVIC_InitStructure  0x4               C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4_discovery.o
+STM32_Command       0x2024            D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\main.o
+NVIC_InitStructure  0x4               D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4_discovery.o
 
 Discarded input sections
 
  .text          0x00000000       0x14 .\startup_stm32f4xx.o
  .data          0x00000000        0x0 .\startup_stm32f4xx.o
  .bss           0x00000000        0x0 .\startup_stm32f4xx.o
- .text          0x00000000        0x0 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\main.o
- .data          0x00000000        0x0 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\main.o
- .bss           0x00000000        0x0 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\main.o
- .text          0x00000000        0x0 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4_discovery.o
- .data          0x00000000       0x14 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4_discovery.o
- .bss           0x00000000        0x0 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4_discovery.o
+ .text          0x00000000        0x0 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\main.o
+ .data          0x00000000        0x0 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\main.o
+ .bss           0x00000000        0x0 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\main.o
+ .text          0x00000000        0x0 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4_discovery.o
+ .data          0x00000000       0x14 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4_discovery.o
+ .bss           0x00000000        0x0 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4_discovery.o
  .text.STM_EVAL_LEDInit
-                0x00000000       0x54 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4_discovery.o
+                0x00000000       0x54 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4_discovery.o
  .text.STM_EVAL_LEDOn
-                0x00000000       0x20 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4_discovery.o
+                0x00000000       0x20 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4_discovery.o
  .text.STM_EVAL_LEDOff
-                0x00000000       0x20 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4_discovery.o
+                0x00000000       0x20 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4_discovery.o
  .text.STM_EVAL_LEDToggle
-                0x00000000       0x24 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4_discovery.o
+                0x00000000       0x24 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4_discovery.o
  .text.STM_EVAL_PBInit
-                0x00000000       0xb8 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4_discovery.o
+                0x00000000       0xb8 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4_discovery.o
  .text.STM_EVAL_PBGetState
-                0x00000000       0x24 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4_discovery.o
- .rodata        0x00000000       0x30 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4_discovery.o
- COMMON         0x00000000        0x4 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4_discovery.o
- .text          0x00000000        0x0 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\system_stm32f4xx.o
- .data          0x00000000       0x14 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\system_stm32f4xx.o
- .bss           0x00000000        0x0 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\system_stm32f4xx.o
+                0x00000000       0x24 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4_discovery.o
+ .rodata        0x00000000       0x30 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4_discovery.o
+ COMMON         0x00000000        0x4 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4_discovery.o
+ .text          0x00000000        0x0 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\system_stm32f4xx.o
+ .data          0x00000000       0x14 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\system_stm32f4xx.o
+ .bss           0x00000000        0x0 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\system_stm32f4xx.o
  .text.SystemCoreClockUpdate
-                0x00000000       0xdc C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\system_stm32f4xx.o
- .text          0x00000000        0x0 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
- .data          0x00000000        0x0 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
- .bss           0x00000000        0x0 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
+                0x00000000       0xdc D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\system_stm32f4xx.o
+ .text          0x00000000        0x0 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
+ .data          0x00000000        0x0 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
+ .bss           0x00000000        0x0 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
  .text.ADC_DeInit
-                0x00000000       0x1c C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
+                0x00000000       0x1c D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
  .text.ADC_Init
-                0x00000000       0x54 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
+                0x00000000       0x54 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
  .text.ADC_StructInit
-                0x00000000       0x18 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
+                0x00000000       0x18 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
  .text.ADC_CommonInit
-                0x00000000       0x34 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
+                0x00000000       0x34 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
  .text.ADC_CommonStructInit
-                0x00000000       0x10 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
- .text.ADC_Cmd  0x00000000       0x18 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
+                0x00000000       0x10 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
+ .text.ADC_Cmd  0x00000000       0x18 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
  .text.ADC_AnalogWatchdogCmd
-                0x00000000       0x14 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
+                0x00000000       0x14 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
  .text.ADC_AnalogWatchdogThresholdsConfig
-                0x00000000        0x8 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
+                0x00000000        0x8 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
  .text.ADC_AnalogWatchdogSingleChannelConfig
-                0x00000000       0x10 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
+                0x00000000       0x10 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
  .text.ADC_TempSensorVrefintCmd
-                0x00000000       0x28 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
+                0x00000000       0x28 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
  .text.ADC_VBATCmd
-                0x00000000       0x28 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
+                0x00000000       0x28 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
  .text.ADC_RegularChannelConfig
-                0x00000000       0xb4 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
+                0x00000000       0xb4 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
  .text.ADC_SoftwareStartConv
-                0x00000000        0xc C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
+                0x00000000        0xc D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
  .text.ADC_GetSoftwareStartConvStatus
-                0x00000000        0x8 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
+                0x00000000        0x8 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
  .text.ADC_EOCOnEachRegularChannelCmd
-                0x00000000       0x18 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
+                0x00000000       0x18 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
  .text.ADC_ContinuousModeCmd
-                0x00000000       0x18 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
+                0x00000000       0x18 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
  .text.ADC_DiscModeChannelCountConfig
-                0x00000000       0x14 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
+                0x00000000       0x14 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
  .text.ADC_DiscModeCmd
-                0x00000000       0x18 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
+                0x00000000       0x18 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
  .text.ADC_GetConversionValue
-                0x00000000        0x8 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
+                0x00000000        0x8 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
  .text.ADC_GetMultiModeConversionValue
-                0x00000000        0xc C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
+                0x00000000        0xc D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
  .text.ADC_DMACmd
-                0x00000000       0x18 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
+                0x00000000       0x18 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
  .text.ADC_DMARequestAfterLastTransferCmd
-                0x00000000       0x18 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
+                0x00000000       0x18 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
  .text.ADC_MultiModeDMARequestAfterLastTransferCmd
-                0x00000000       0x28 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
+                0x00000000       0x28 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
  .text.ADC_InjectedChannelConfig
-                0x00000000       0x70 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
+                0x00000000       0x70 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
  .text.ADC_InjectedSequencerLengthConfig
-                0x00000000       0x14 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
+                0x00000000       0x14 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
  .text.ADC_SetInjectedOffset
-                0x00000000       0x18 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
+                0x00000000       0x18 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
  .text.ADC_ExternalTrigInjectedConvConfig
-                0x00000000       0x10 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
+                0x00000000       0x10 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
  .text.ADC_ExternalTrigInjectedConvEdgeConfig
-                0x00000000       0x10 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
+                0x00000000       0x10 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
  .text.ADC_SoftwareStartInjectedConv
-                0x00000000        0xc C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
+                0x00000000        0xc D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
  .text.ADC_GetSoftwareStartInjectedConvCmdStatus
-                0x00000000        0x8 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
+                0x00000000        0x8 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
  .text.ADC_AutoInjectedConvCmd
-                0x00000000       0x18 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
+                0x00000000       0x18 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
  .text.ADC_InjectedDiscModeCmd
-                0x00000000       0x18 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
+                0x00000000       0x18 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
  .text.ADC_GetInjectedConversionValue
-                0x00000000       0x20 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
+                0x00000000       0x20 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
  .text.ADC_ITConfig
-                0x00000000       0x20 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
+                0x00000000       0x20 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
  .text.ADC_GetFlagStatus
-                0x00000000        0xc C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
+                0x00000000        0xc D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
  .text.ADC_ClearFlag
-                0x00000000        0x8 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
+                0x00000000        0x8 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
  .text.ADC_GetITStatus
-                0x00000000       0x24 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
+                0x00000000       0x24 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
  .text.ADC_ClearITPendingBit
-                0x00000000        0x8 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
- .text          0x00000000        0x0 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_dac.o
- .data          0x00000000        0x0 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_dac.o
- .bss           0x00000000        0x0 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_dac.o
+                0x00000000        0x8 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
+ .text          0x00000000        0x0 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_dac.o
+ .data          0x00000000        0x0 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_dac.o
+ .bss           0x00000000        0x0 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_dac.o
  .text.DAC_DeInit
-                0x00000000       0x1c C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_dac.o
+                0x00000000       0x1c D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_dac.o
  .text.DAC_Init
-                0x00000000       0x38 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_dac.o
+                0x00000000       0x38 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_dac.o
  .text.DAC_StructInit
-                0x00000000       0x10 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_dac.o
- .text.DAC_Cmd  0x00000000       0x34 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_dac.o
+                0x00000000       0x10 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_dac.o
+ .text.DAC_Cmd  0x00000000       0x34 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_dac.o
  .text.DAC_SoftwareTriggerCmd
-                0x00000000       0x3c C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_dac.o
+                0x00000000       0x3c D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_dac.o
  .text.DAC_DualSoftwareTriggerCmd
-                0x00000000       0x28 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_dac.o
+                0x00000000       0x28 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_dac.o
  .text.DAC_WaveGenerationCmd
-                0x00000000       0x2c C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_dac.o
+                0x00000000       0x2c D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_dac.o
  .text.DAC_SetChannel1Data
-                0x00000000       0x24 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_dac.o
+                0x00000000       0x24 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_dac.o
  .text.DAC_SetChannel2Data
-                0x00000000       0x24 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_dac.o
+                0x00000000       0x24 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_dac.o
  .text.DAC_SetDualChannelData
-                0x00000000       0x18 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_dac.o
+                0x00000000       0x18 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_dac.o
  .text.DAC_GetDataOutputValue
-                0x00000000       0x28 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_dac.o
+                0x00000000       0x28 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_dac.o
  .text.DAC_DMACmd
-                0x00000000       0x34 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_dac.o
+                0x00000000       0x34 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_dac.o
  .text.DAC_ITConfig
-                0x00000000       0x2c C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_dac.o
+                0x00000000       0x2c D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_dac.o
  .text.DAC_GetFlagStatus
-                0x00000000       0x18 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_dac.o
+                0x00000000       0x18 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_dac.o
  .text.DAC_ClearFlag
-                0x00000000       0x10 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_dac.o
+                0x00000000       0x10 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_dac.o
  .text.DAC_GetITStatus
-                0x00000000       0x24 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_dac.o
+                0x00000000       0x24 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_dac.o
  .text.DAC_ClearITPendingBit
-                0x00000000       0x10 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_dac.o
- .text          0x00000000        0x0 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_gpio.o
- .data          0x00000000        0x0 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_gpio.o
- .bss           0x00000000        0x0 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_gpio.o
+                0x00000000       0x10 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_dac.o
+ .text          0x00000000        0x0 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_gpio.o
+ .data          0x00000000        0x0 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_gpio.o
+ .bss           0x00000000        0x0 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_gpio.o
  .text.GPIO_DeInit
-                0x00000000      0x158 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_gpio.o
+                0x00000000      0x158 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_gpio.o
  .text.GPIO_StructInit
-                0x00000000       0x14 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_gpio.o
+                0x00000000       0x14 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_gpio.o
  .text.GPIO_PinLockConfig
-                0x00000000       0x28 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_gpio.o
+                0x00000000       0x28 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_gpio.o
  .text.GPIO_ReadInputDataBit
-                0x00000000        0xc C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_gpio.o
+                0x00000000        0xc D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_gpio.o
  .text.GPIO_ReadInputData
-                0x00000000        0x8 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_gpio.o
+                0x00000000        0x8 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_gpio.o
  .text.GPIO_ReadOutputDataBit
-                0x00000000        0xc C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_gpio.o
+                0x00000000        0xc D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_gpio.o
  .text.GPIO_ReadOutputData
-                0x00000000        0x8 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_gpio.o
+                0x00000000        0x8 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_gpio.o
  .text.GPIO_SetBits
-                0x00000000        0x4 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_gpio.o
+                0x00000000        0x4 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_gpio.o
  .text.GPIO_ResetBits
-                0x00000000        0x4 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_gpio.o
+                0x00000000        0x4 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_gpio.o
  .text.GPIO_WriteBit
-                0x00000000        0xc C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_gpio.o
+                0x00000000        0xc D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_gpio.o
  .text.GPIO_Write
-                0x00000000        0x4 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_gpio.o
+                0x00000000        0x4 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_gpio.o
  .text.GPIO_ToggleBits
-                0x00000000        0xc C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_gpio.o
- .text          0x00000000        0x0 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_it.o
- .data          0x00000000        0x0 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_it.o
- .bss           0x00000000        0x0 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_it.o
- .text          0x00000000        0x0 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
- .data          0x00000000       0x10 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
- .bss           0x00000000        0x0 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
+                0x00000000        0xc D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_gpio.o
+ .text          0x00000000        0x0 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_it.o
+ .data          0x00000000        0x0 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_it.o
+ .bss           0x00000000        0x0 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_it.o
+ .text          0x00000000        0x0 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
+ .data          0x00000000       0x10 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
+ .bss           0x00000000        0x0 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
  .text.RCC_DeInit
-                0x00000000       0x38 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
+                0x00000000       0x38 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
  .text.RCC_HSEConfig
-                0x00000000       0x14 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
+                0x00000000       0x14 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
  .text.RCC_AdjustHSICalibrationValue
-                0x00000000       0x18 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
+                0x00000000       0x18 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
  .text.RCC_HSICmd
-                0x00000000        0xc C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
+                0x00000000        0xc D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
  .text.RCC_LSEConfig
-                0x00000000       0x3c C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
+                0x00000000       0x3c D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
  .text.RCC_LSICmd
-                0x00000000        0xc C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
+                0x00000000        0xc D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
  .text.RCC_PLLConfig
-                0x00000000       0x24 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
+                0x00000000       0x24 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
  .text.RCC_PLLCmd
-                0x00000000        0xc C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
+                0x00000000        0xc D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
  .text.RCC_PLLI2SConfig
-                0x00000000       0x18 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
+                0x00000000       0x18 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
  .text.RCC_PLLI2SCmd
-                0x00000000        0xc C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
+                0x00000000        0xc D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
  .text.RCC_ClockSecuritySystemCmd
-                0x00000000        0xc C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
+                0x00000000        0xc D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
  .text.RCC_MCO1Config
-                0x00000000       0x18 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
+                0x00000000       0x18 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
  .text.RCC_MCO2Config
-                0x00000000       0x18 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
+                0x00000000       0x18 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
  .text.RCC_SYSCLKConfig
-                0x00000000       0x18 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
+                0x00000000       0x18 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
  .text.RCC_GetSYSCLKSource
-                0x00000000       0x10 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
+                0x00000000       0x10 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
  .text.RCC_HCLKConfig
-                0x00000000       0x18 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
+                0x00000000       0x18 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
  .text.RCC_PCLK1Config
-                0x00000000       0x18 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
+                0x00000000       0x18 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
  .text.RCC_PCLK2Config
-                0x00000000       0x18 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
+                0x00000000       0x18 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
  .text.RCC_GetClocksFreq
-                0x00000000       0xd8 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
+                0x00000000       0xd8 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
  .text.RCC_RTCCLKConfig
-                0x00000000       0x3c C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
+                0x00000000       0x3c D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
  .text.RCC_RTCCLKCmd
-                0x00000000        0xc C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
+                0x00000000        0xc D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
  .text.RCC_BackupResetCmd
-                0x00000000        0xc C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
+                0x00000000        0xc D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
  .text.RCC_I2SCLKConfig
-                0x00000000        0xc C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
+                0x00000000        0xc D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
  .text.RCC_AHB2PeriphClockCmd
-                0x00000000       0x24 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
+                0x00000000       0x24 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
  .text.RCC_AHB3PeriphClockCmd
-                0x00000000       0x24 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
+                0x00000000       0x24 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
  .text.RCC_APB2PeriphClockCmd
-                0x00000000       0x24 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
+                0x00000000       0x24 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
  .text.RCC_AHB1PeriphResetCmd
-                0x00000000       0x24 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
+                0x00000000       0x24 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
  .text.RCC_AHB2PeriphResetCmd
-                0x00000000       0x24 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
+                0x00000000       0x24 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
  .text.RCC_AHB3PeriphResetCmd
-                0x00000000       0x24 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
+                0x00000000       0x24 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
  .text.RCC_APB1PeriphResetCmd
-                0x00000000       0x24 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
+                0x00000000       0x24 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
  .text.RCC_APB2PeriphResetCmd
-                0x00000000       0x24 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
+                0x00000000       0x24 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
  .text.RCC_AHB1PeriphClockLPModeCmd
-                0x00000000       0x24 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
+                0x00000000       0x24 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
  .text.RCC_AHB2PeriphClockLPModeCmd
-                0x00000000       0x24 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
+                0x00000000       0x24 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
  .text.RCC_AHB3PeriphClockLPModeCmd
-                0x00000000       0x24 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
+                0x00000000       0x24 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
  .text.RCC_APB1PeriphClockLPModeCmd
-                0x00000000       0x24 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
+                0x00000000       0x24 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
  .text.RCC_APB2PeriphClockLPModeCmd
-                0x00000000       0x24 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
+                0x00000000       0x24 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
  .text.RCC_ITConfig
-                0x00000000       0x24 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
+                0x00000000       0x24 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
  .text.RCC_GetFlagStatus
-                0x00000000       0x34 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
+                0x00000000       0x34 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
  .text.RCC_WaitForHSEStartUp
-                0x00000000       0x3c C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
+                0x00000000       0x3c D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
  .text.RCC_ClearFlag
-                0x00000000       0x14 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
+                0x00000000       0x14 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
  .text.RCC_GetITStatus
-                0x00000000       0x14 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
+                0x00000000       0x14 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
  .text.RCC_ClearITPendingBit
-                0x00000000        0xc C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
- .text          0x00000000        0x0 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
- .data          0x00000000        0x0 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
- .bss           0x00000000        0x0 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+                0x00000000        0xc D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
+ .text          0x00000000        0x0 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+ .data          0x00000000        0x0 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+ .bss           0x00000000        0x0 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
  .text.TI1_Config
-                0x00000000       0x48 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+                0x00000000       0x48 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
  .text.TI2_Config
-                0x00000000       0x4c C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+                0x00000000       0x4c D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
  .text.TIM_DeInit
-                0x00000000      0x20c C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+                0x00000000      0x20c D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
  .text.TIM_TimeBaseStructInit
-                0x00000000       0x14 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+                0x00000000       0x14 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
  .text.TIM_PrescalerConfig
-                0x00000000        0x8 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+                0x00000000        0x8 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
  .text.TIM_CounterModeConfig
-                0x00000000       0x18 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+                0x00000000       0x18 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
  .text.TIM_SetCounter
-                0x00000000        0x4 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+                0x00000000        0x4 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
  .text.TIM_SetAutoreload
-                0x00000000        0x4 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+                0x00000000        0x4 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
  .text.TIM_GetCounter
-                0x00000000        0x4 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+                0x00000000        0x4 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
  .text.TIM_GetPrescaler
-                0x00000000        0x8 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+                0x00000000        0x8 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
  .text.TIM_UpdateDisableConfig
-                0x00000000       0x20 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+                0x00000000       0x20 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
  .text.TIM_UpdateRequestConfig
-                0x00000000       0x20 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+                0x00000000       0x20 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
  .text.TIM_ARRPreloadConfig
-                0x00000000       0x20 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+                0x00000000       0x20 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
  .text.TIM_SelectOnePulseMode
-                0x00000000       0x1c C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+                0x00000000       0x1c D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
  .text.TIM_SetClockDivision
-                0x00000000       0x1c C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
- .text.TIM_Cmd  0x00000000       0x20 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+                0x00000000       0x1c D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+ .text.TIM_Cmd  0x00000000       0x20 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
  .text.TIM_OC1Init
-                0x00000000       0xa4 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+                0x00000000       0xa4 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
  .text.TIM_OC2Init
-                0x00000000       0xb0 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+                0x00000000       0xb0 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
  .text.TIM_OC3Init
-                0x00000000       0xac C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+                0x00000000       0xac D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
  .text.TIM_OC4Init
-                0x00000000       0x8c C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+                0x00000000       0x8c D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
  .text.TIM_OCStructInit
-                0x00000000       0x18 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+                0x00000000       0x18 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
  .text.TIM_SelectOCxM
-                0x00000000       0x6c C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+                0x00000000       0x6c D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
  .text.TIM_SetCompare1
-                0x00000000        0x4 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+                0x00000000        0x4 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
  .text.TIM_SetCompare2
-                0x00000000        0x4 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+                0x00000000        0x4 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
  .text.TIM_SetCompare3
-                0x00000000        0x4 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+                0x00000000        0x4 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
  .text.TIM_SetCompare4
-                0x00000000        0x4 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+                0x00000000        0x4 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
  .text.TIM_ForcedOC1Config
-                0x00000000       0x18 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+                0x00000000       0x18 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
  .text.TIM_ForcedOC2Config
-                0x00000000       0x18 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+                0x00000000       0x18 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
  .text.TIM_ForcedOC3Config
-                0x00000000       0x18 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+                0x00000000       0x18 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
  .text.TIM_ForcedOC4Config
-                0x00000000       0x18 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+                0x00000000       0x18 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
  .text.TIM_OC1PreloadConfig
-                0x00000000       0x18 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+                0x00000000       0x18 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
  .text.TIM_OC2PreloadConfig
-                0x00000000       0x18 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+                0x00000000       0x18 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
  .text.TIM_OC3PreloadConfig
-                0x00000000       0x18 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+                0x00000000       0x18 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
  .text.TIM_OC4PreloadConfig
-                0x00000000       0x18 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+                0x00000000       0x18 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
  .text.TIM_OC1FastConfig
-                0x00000000       0x18 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+                0x00000000       0x18 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
  .text.TIM_OC2FastConfig
-                0x00000000       0x18 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+                0x00000000       0x18 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
  .text.TIM_OC3FastConfig
-                0x00000000       0x18 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+                0x00000000       0x18 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
  .text.TIM_OC4FastConfig
-                0x00000000       0x18 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+                0x00000000       0x18 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
  .text.TIM_ClearOC1Ref
-                0x00000000       0x18 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+                0x00000000       0x18 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
  .text.TIM_ClearOC2Ref
-                0x00000000       0x14 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+                0x00000000       0x14 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
  .text.TIM_ClearOC3Ref
-                0x00000000       0x18 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+                0x00000000       0x18 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
  .text.TIM_ClearOC4Ref
-                0x00000000       0x14 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+                0x00000000       0x14 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
  .text.TIM_OC1PolarityConfig
-                0x00000000       0x18 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+                0x00000000       0x18 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
  .text.TIM_OC1NPolarityConfig
-                0x00000000       0x18 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+                0x00000000       0x18 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
  .text.TIM_OC2PolarityConfig
-                0x00000000       0x18 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+                0x00000000       0x18 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
  .text.TIM_OC2NPolarityConfig
-                0x00000000       0x18 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+                0x00000000       0x18 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
  .text.TIM_OC3PolarityConfig
-                0x00000000       0x18 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+                0x00000000       0x18 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
  .text.TIM_OC3NPolarityConfig
-                0x00000000       0x18 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+                0x00000000       0x18 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
  .text.TIM_OC4PolarityConfig
-                0x00000000       0x18 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+                0x00000000       0x18 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
  .text.TIM_CCxCmd
-                0x00000000       0x28 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+                0x00000000       0x28 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
  .text.TIM_CCxNCmd
-                0x00000000       0x28 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+                0x00000000       0x28 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
  .text.TIM_ICStructInit
-                0x00000000       0x14 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+                0x00000000       0x14 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
  .text.TIM_GetCapture1
-                0x00000000        0x4 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+                0x00000000        0x4 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
  .text.TIM_GetCapture2
-                0x00000000        0x4 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+                0x00000000        0x4 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
  .text.TIM_GetCapture3
-                0x00000000        0x4 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+                0x00000000        0x4 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
  .text.TIM_GetCapture4
-                0x00000000        0x4 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+                0x00000000        0x4 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
  .text.TIM_SetIC1Prescaler
-                0x00000000       0x1c C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+                0x00000000       0x1c D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
  .text.TIM_SetIC2Prescaler
-                0x00000000       0x20 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+                0x00000000       0x20 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
  .text.TIM_PWMIConfig
-                0x00000000       0x68 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+                0x00000000       0x68 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
  .text.TIM_SetIC3Prescaler
-                0x00000000       0x1c C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+                0x00000000       0x1c D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
  .text.TIM_SetIC4Prescaler
-                0x00000000       0x20 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+                0x00000000       0x20 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
  .text.TIM_ICInit
-                0x00000000       0xe0 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+                0x00000000       0xe0 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
  .text.TIM_BDTRConfig
-                0x00000000       0x24 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+                0x00000000       0x24 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
  .text.TIM_BDTRStructInit
-                0x00000000       0x14 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+                0x00000000       0x14 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
  .text.TIM_CtrlPWMOutputs
-                0x00000000       0x28 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+                0x00000000       0x28 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
  .text.TIM_SelectCOM
-                0x00000000       0x20 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+                0x00000000       0x20 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
  .text.TIM_CCPreloadControl
-                0x00000000       0x20 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+                0x00000000       0x20 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
  .text.TIM_GenerateEvent
-                0x00000000        0x4 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+                0x00000000        0x4 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
  .text.TIM_GetFlagStatus
-                0x00000000        0xc C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+                0x00000000        0xc D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
  .text.TIM_ClearFlag
-                0x00000000        0xc C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+                0x00000000        0xc D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
  .text.TIM_GetITStatus
-                0x00000000       0x18 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+                0x00000000       0x18 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
  .text.TIM_ClearITPendingBit
-                0x00000000        0xc C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+                0x00000000        0xc D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
  .text.TIM_DMAConfig
-                0x00000000        0x8 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+                0x00000000        0x8 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
  .text.TIM_DMACmd
-                0x00000000       0x18 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+                0x00000000       0x18 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
  .text.TIM_SelectCCDMA
-                0x00000000       0x20 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+                0x00000000       0x20 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
  .text.TIM_InternalClockConfig
-                0x00000000       0x14 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+                0x00000000       0x14 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
  .text.TIM_SelectInputTrigger
-                0x00000000       0x18 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+                0x00000000       0x18 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
  .text.TIM_TIxExternalClockConfig
-                0x00000000       0x34 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+                0x00000000       0x34 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
  .text.TIM_ITRxExternalClockConfig
-                0x00000000       0x14 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+                0x00000000       0x14 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
  .text.TIM_SelectOutputTrigger
-                0x00000000       0x1c C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+                0x00000000       0x1c D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
  .text.TIM_SelectSlaveMode
-                0x00000000       0x1c C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+                0x00000000       0x1c D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
  .text.TIM_SelectMasterSlaveMode
-                0x00000000       0x1c C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+                0x00000000       0x1c D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
  .text.TIM_ETRConfig
-                0x00000000       0x1c C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+                0x00000000       0x1c D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
  .text.TIM_ETRClockMode2Config
-                0x00000000       0x14 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+                0x00000000       0x14 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
  .text.TIM_ETRClockMode1Config
-                0x00000000       0x20 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+                0x00000000       0x20 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
  .text.TIM_EncoderInterfaceConfig
-                0x00000000       0x50 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+                0x00000000       0x50 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
  .text.TIM_SelectHallSensor
-                0x00000000       0x20 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+                0x00000000       0x20 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
  .text.TIM_RemapConfig
-                0x00000000        0x8 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
- .text          0x00000000        0x0 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\misc.o
- .data          0x00000000        0x0 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\misc.o
- .bss           0x00000000        0x0 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\misc.o
+                0x00000000        0x8 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+ .text          0x00000000        0x0 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\misc.o
+ .data          0x00000000        0x0 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\misc.o
+ .bss           0x00000000        0x0 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\misc.o
  .text.NVIC_PriorityGroupConfig
-                0x00000000       0x14 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\misc.o
+                0x00000000       0x14 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\misc.o
  .text.NVIC_SetVectorTable
-                0x00000000       0x18 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\misc.o
+                0x00000000       0x18 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\misc.o
  .text.NVIC_SystemLPConfig
-                0x00000000       0x24 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\misc.o
+                0x00000000       0x24 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\misc.o
  .text.SysTick_CLKSourceConfig
-                0x00000000       0x1c C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\misc.o
- .text          0x00000000        0x0 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_spi.o
- .data          0x00000000        0x0 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_spi.o
- .bss           0x00000000        0x0 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_spi.o
+                0x00000000       0x1c D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\misc.o
+ .text          0x00000000        0x0 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_spi.o
+ .data          0x00000000        0x0 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_spi.o
+ .bss           0x00000000        0x0 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_spi.o
  .text.SPI_I2S_DeInit
-                0x00000000       0x74 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_spi.o
+                0x00000000       0x74 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_spi.o
  .text.I2S_Init
-                0x00000000      0x100 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_spi.o
+                0x00000000      0x100 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_spi.o
  .text.SPI_StructInit
-                0x00000000       0x1c C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_spi.o
+                0x00000000       0x1c D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_spi.o
  .text.I2S_StructInit
-                0x00000000       0x18 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_spi.o
- .text.I2S_Cmd  0x00000000       0x20 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_spi.o
+                0x00000000       0x18 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_spi.o
+ .text.I2S_Cmd  0x00000000       0x20 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_spi.o
  .text.SPI_DataSizeConfig
-                0x00000000       0x1c C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_spi.o
+                0x00000000       0x1c D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_spi.o
  .text.SPI_BiDirectionalLineConfig
-                0x00000000       0x1c C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_spi.o
+                0x00000000       0x1c D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_spi.o
  .text.SPI_NSSInternalSoftwareConfig
-                0x00000000       0x20 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_spi.o
+                0x00000000       0x20 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_spi.o
  .text.SPI_SSOutputCmd
-                0x00000000       0x20 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_spi.o
+                0x00000000       0x20 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_spi.o
  .text.SPI_TIModeCmd
-                0x00000000       0x20 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_spi.o
+                0x00000000       0x20 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_spi.o
  .text.I2S_FullDuplexConfig
-                0x00000000       0x54 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_spi.o
+                0x00000000       0x54 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_spi.o
  .text.SPI_I2S_ReceiveData
-                0x00000000        0x8 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_spi.o
+                0x00000000        0x8 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_spi.o
  .text.SPI_I2S_SendData
-                0x00000000        0x4 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_spi.o
+                0x00000000        0x4 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_spi.o
  .text.SPI_CalculateCRC
-                0x00000000       0x20 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_spi.o
+                0x00000000       0x20 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_spi.o
  .text.SPI_TransmitCRC
-                0x00000000        0xc C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_spi.o
+                0x00000000        0xc D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_spi.o
  .text.SPI_GetCRC
-                0x00000000       0x10 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_spi.o
+                0x00000000       0x10 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_spi.o
  .text.SPI_GetCRCPolynomial
-                0x00000000        0x8 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_spi.o
+                0x00000000        0x8 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_spi.o
  .text.SPI_I2S_DMACmd
-                0x00000000       0x18 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_spi.o
+                0x00000000       0x18 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_spi.o
  .text.SPI_I2S_GetFlagStatus
-                0x00000000        0xc C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_spi.o
+                0x00000000        0xc D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_spi.o
  .text.SPI_I2S_ClearFlag
-                0x00000000        0xc C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_spi.o
+                0x00000000        0xc D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_spi.o
  .text.SPI_I2S_GetITStatus
-                0x00000000       0x34 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_spi.o
+                0x00000000       0x34 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_spi.o
  .text.SPI_I2S_ClearITPendingBit
-                0x00000000       0x18 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_spi.o
- .text          0x00000000        0x0 C:\Program Files (x86)\Raisonance\Ride\Lib\ARM\STM32x_io_putchar_thumb.a(STM32F10X_io_putchar.o)
- .data          0x00000000        0x0 C:\Program Files (x86)\Raisonance\Ride\Lib\ARM\STM32x_io_putchar_thumb.a(STM32F10X_io_putchar.o)
- .bss           0x00000000        0x0 C:\Program Files (x86)\Raisonance\Ride\Lib\ARM\STM32x_io_putchar_thumb.a(STM32F10X_io_putchar.o)
+                0x00000000       0x18 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_spi.o
+ .text          0x00000000        0x0 D:\Ride\Ride\Lib\ARM\STM32x_io_putchar_thumb.a(STM32F10X_io_putchar.o)
+ .data          0x00000000        0x0 D:\Ride\Ride\Lib\ARM\STM32x_io_putchar_thumb.a(STM32F10X_io_putchar.o)
+ .bss           0x00000000        0x0 D:\Ride\Ride\Lib\ARM\STM32x_io_putchar_thumb.a(STM32F10X_io_putchar.o)
  .text.__io_init
-                0x00000000       0x94 C:\Program Files (x86)\Raisonance\Ride\Lib\ARM\STM32x_io_putchar_thumb.a(STM32F10X_io_putchar.o)
+                0x00000000       0x94 D:\Ride\Ride\Lib\ARM\STM32x_io_putchar_thumb.a(STM32F10X_io_putchar.o)
  .text.__io_getchar
-                0x00000000       0xb4 C:\Program Files (x86)\Raisonance\Ride\Lib\ARM\STM32x_io_putchar_thumb.a(STM32F10X_io_putchar.o)
- .text.getchar  0x00000000       0xb4 C:\Program Files (x86)\Raisonance\Ride\Lib\ARM\STM32x_io_putchar_thumb.a(STM32F10X_io_putchar.o)
- .text.putchar  0x00000000       0xd4 C:\Program Files (x86)\Raisonance\Ride\Lib\ARM\STM32x_io_putchar_thumb.a(STM32F10X_io_putchar.o)
- .text          0x00000000        0x0 C:\Program Files (x86)\Raisonance\Ride\Lib\ARM\std_sbrk_thumb.lib(write.o)
- .data          0x00000000        0x0 C:\Program Files (x86)\Raisonance\Ride\Lib\ARM\std_sbrk_thumb.lib(write.o)
- .bss           0x00000000        0x0 C:\Program Files (x86)\Raisonance\Ride\Lib\ARM\std_sbrk_thumb.lib(write.o)
+                0x00000000       0xb4 D:\Ride\Ride\Lib\ARM\STM32x_io_putchar_thumb.a(STM32F10X_io_putchar.o)
+ .text.getchar  0x00000000       0xb4 D:\Ride\Ride\Lib\ARM\STM32x_io_putchar_thumb.a(STM32F10X_io_putchar.o)
+ .text.putchar  0x00000000       0xd4 D:\Ride\Ride\Lib\ARM\STM32x_io_putchar_thumb.a(STM32F10X_io_putchar.o)
+ .text          0x00000000        0x0 D:\Ride\Ride\Lib\ARM\std_sbrk_thumb.lib(write.o)
+ .data          0x00000000        0x0 D:\Ride\Ride\Lib\ARM\std_sbrk_thumb.lib(write.o)
+ .bss           0x00000000        0x0 D:\Ride\Ride\Lib\ARM\std_sbrk_thumb.lib(write.o)
 
 Memory Configuration
 
 Name             Origin             Length             Attributes
-RAM              0x20000000         0x00002000         xrw
+RAM              0x20000000         0x00008000         xrw
 FLASH            0x08000000         0x00010000         xr
 STARTFLASH       0x00000000         0x00000000         xr
 CRPPATCH         0x00000000         0x00000000         r
@@ -539,28 +539,28 @@ EXTMEMB3         0x00000000         0x00000000         xr
 Linker script and memory map
 
 LOAD .\startup_stm32f4xx.o
-LOAD C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\main.o
-LOAD C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4_discovery.o
-LOAD C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\system_stm32f4xx.o
-LOAD C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
-LOAD C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_dac.o
-LOAD C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_gpio.o
-LOAD C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_it.o
-LOAD C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
-LOAD C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
-LOAD C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\misc.o
-LOAD C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_spi.o
+LOAD D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\main.o
+LOAD D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4_discovery.o
+LOAD D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\system_stm32f4xx.o
+LOAD D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
+LOAD D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_dac.o
+LOAD D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_gpio.o
+LOAD D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_it.o
+LOAD D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
+LOAD D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+LOAD D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\misc.o
+LOAD D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_spi.o
 START GROUP
-LOAD C:\Program Files (x86)\Raisonance\Ride\Lib\ARM\STM32x_io_putchar_thumb.a
-LOAD C:\Program Files (x86)\Raisonance\Ride\Lib\ARM\std_sbrk_thumb.lib
-LOAD C:\Program Files (x86)\Raisonance\Ride\Lib\ARM\smallprintf_thumb.a
-LOAD c:/program files (x86)/raisonance/ride/arm-gcc/bin/../lib/gcc/arm-none-eabi/4.5.1/../../../../arm-none-eabi/lib/thumb2\libc.a
-LOAD c:/program files (x86)/raisonance/ride/arm-gcc/bin/../lib/gcc/arm-none-eabi/4.5.1/../../../../arm-none-eabi/lib/thumb2\libm.a
+LOAD D:\Ride\Ride\Lib\ARM\STM32x_io_putchar_thumb.a
+LOAD D:\Ride\Ride\Lib\ARM\std_sbrk_thumb.lib
+LOAD D:\Ride\Ride\Lib\ARM\smallprintf_thumb.a
+LOAD d:/ride/ride/arm-gcc/bin/../lib/gcc/arm-none-eabi/4.5.1/../../../../arm-none-eabi/lib/thumb2\libc.a
+LOAD d:/ride/ride/arm-gcc/bin/../lib/gcc/arm-none-eabi/4.5.1/../../../../arm-none-eabi/lib/thumb2\libm.a
 END GROUP
                 0x00000400                __Stack_Size = 0x400
                 0x00000400                PROVIDE (_Stack_Size, __Stack_Size)
-                0x20001c00                __Stack_Init = (_estack - __Stack_Size)
-                0x20001c00                PROVIDE (_Stack_Init, __Stack_Init)
+                0x20007c00                __Stack_Init = (_estack - __Stack_Size)
+                0x20007c00                PROVIDE (_Stack_Init, __Stack_Init)
                 0x00000100                _Minimum_Stack_Size = 0x100
                 0x00000000                PROVIDE (Undefined_Handler, 0x0)
                 0x00000000                PROVIDE (SWI_Handler, 0x0)
@@ -706,7 +706,7 @@ END GROUP
                 0xe000e010                PROVIDE (SysTick, (SCS_BASE + 0x10))
                 0xe000e100                PROVIDE (NVIC, (SCS_BASE + 0x100))
                 0xe000ed00                PROVIDE (SCB, (SCS_BASE + 0xd00))
-                0x20002000                _estack = 0x20002000
+                0x20008000                _estack = 0x20008000
 
 .isr_vector     0x08000000      0x188
                 0x08000000                . = ALIGN (0x4)
@@ -731,7 +731,7 @@ END GROUP
  *(.flashtext)
                 0x08000188                . = ALIGN (0x4)
 
-.text           0x08000188     0x62f8
+.text           0x08000188     0x636c
                 0x08000188                . = ALIGN (0x4)
  *(.text)
  *(.text.*)
@@ -823,115 +823,115 @@ END GROUP
                 0x080001cc                DMA1_Stream3_IRQHandler
  *fill*         0x080001ce        0x2 00
  .text.DDS_MakeWave
-                0x080001d0      0x15c C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\main.o
+                0x080001d0      0x18c D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\main.o
                 0x080001d0                DDS_MakeWave
  .text.DDS_WaveLoop
-                0x0800032c       0x10 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\main.o
-                0x0800032c                DDS_WaveLoop
+                0x0800035c       0x10 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\main.o
+                0x0800035c                DDS_WaveLoop
  .text.DDS_WaveGenerator
-                0x0800033c       0x28 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\main.o
-                0x0800033c                DDS_WaveGenerator
+                0x0800036c       0x28 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\main.o
+                0x0800036c                DDS_WaveGenerator
  .text.DDS_Config
-                0x08000364       0x44 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\main.o
-                0x08000364                DDS_Config
+                0x08000394       0x6c D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\main.o
+                0x08000394                DDS_Config
  .text.SPI_Config
-                0x080003a8       0xe8 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\main.o
-                0x080003a8                SPI_Config
+                0x08000400       0xe8 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\main.o
+                0x08000400                SPI_Config
  .text.TIM_Config
-                0x08000490       0x74 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\main.o
-                0x08000490                TIM_Config
- .text.main     0x08000504       0x60 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\main.o
-                0x08000504                main
+                0x080004e8       0x74 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\main.o
+                0x080004e8                TIM_Config
+ .text.main     0x0800055c       0x60 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\main.o
+                0x0800055c                main
  .text.SPI2_IRQHandler
-                0x08000564      0x2c8 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\main.o
-                0x08000564                SPI2_IRQHandler
+                0x080005bc      0x2e4 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\main.o
+                0x080005bc                SPI2_IRQHandler
  .text.TIM6_DAC_IRQHandler
-                0x0800082c       0x2c C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\main.o
-                0x0800082c                TIM6_DAC_IRQHandler
+                0x080008a0       0x2c D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\main.o
+                0x080008a0                TIM6_DAC_IRQHandler
  .text.SystemInit
-                0x08000858      0x124 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\system_stm32f4xx.o
-                0x08000858                SystemInit
+                0x080008cc      0x124 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\system_stm32f4xx.o
+                0x080008cc                SystemInit
  .text.GPIO_Init
-                0x0800097c       0xbc C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_gpio.o
-                0x0800097c                GPIO_Init
+                0x080009f0       0xbc D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_gpio.o
+                0x080009f0                GPIO_Init
  .text.GPIO_PinAFConfig
-                0x08000a38       0x3c C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_gpio.o
-                0x08000a38                GPIO_PinAFConfig
+                0x08000aac       0x3c D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_gpio.o
+                0x08000aac                GPIO_PinAFConfig
  .text.NMI_Handler
-                0x08000a74        0x4 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_it.o
-                0x08000a74                NMI_Handler
+                0x08000ae8        0x4 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_it.o
+                0x08000ae8                NMI_Handler
  .text.HardFault_Handler
-                0x08000a78        0x4 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_it.o
-                0x08000a78                HardFault_Handler
+                0x08000aec        0x4 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_it.o
+                0x08000aec                HardFault_Handler
  .text.MemManage_Handler
-                0x08000a7c        0x4 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_it.o
-                0x08000a7c                MemManage_Handler
+                0x08000af0        0x4 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_it.o
+                0x08000af0                MemManage_Handler
  .text.BusFault_Handler
-                0x08000a80        0x4 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_it.o
-                0x08000a80                BusFault_Handler
+                0x08000af4        0x4 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_it.o
+                0x08000af4                BusFault_Handler
  .text.UsageFault_Handler
-                0x08000a84        0x4 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_it.o
-                0x08000a84                UsageFault_Handler
+                0x08000af8        0x4 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_it.o
+                0x08000af8                UsageFault_Handler
  .text.SVC_Handler
-                0x08000a88        0x4 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_it.o
-                0x08000a88                SVC_Handler
+                0x08000afc        0x4 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_it.o
+                0x08000afc                SVC_Handler
  .text.DebugMon_Handler
-                0x08000a8c        0x4 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_it.o
-                0x08000a8c                DebugMon_Handler
+                0x08000b00        0x4 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_it.o
+                0x08000b00                DebugMon_Handler
  .text.PendSV_Handler
-                0x08000a90        0x4 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_it.o
-                0x08000a90                PendSV_Handler
+                0x08000b04        0x4 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_it.o
+                0x08000b04                PendSV_Handler
  .text.SysTick_Handler
-                0x08000a94        0x4 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_it.o
-                0x08000a94                SysTick_Handler
+                0x08000b08        0x4 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_it.o
+                0x08000b08                SysTick_Handler
  .text.RCC_AHB1PeriphClockCmd
-                0x08000a98       0x24 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
-                0x08000a98                RCC_AHB1PeriphClockCmd
+                0x08000b0c       0x24 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
+                0x08000b0c                RCC_AHB1PeriphClockCmd
  .text.RCC_APB1PeriphClockCmd
-                0x08000abc       0x24 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
-                0x08000abc                RCC_APB1PeriphClockCmd
+                0x08000b30       0x24 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
+                0x08000b30                RCC_APB1PeriphClockCmd
  .text.TIM_TimeBaseInit
-                0x08000ae0       0xc0 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
-                0x08000ae0                TIM_TimeBaseInit
+                0x08000b54       0xc0 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+                0x08000b54                TIM_TimeBaseInit
  .text.TIM_ITConfig
-                0x08000ba0       0x18 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
-                0x08000ba0                TIM_ITConfig
+                0x08000c14       0x18 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+                0x08000c14                TIM_ITConfig
  .text.NVIC_Init
-                0x08000bb8       0x88 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\misc.o
-                0x08000bb8                NVIC_Init
+                0x08000c2c       0x88 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\misc.o
+                0x08000c2c                NVIC_Init
  .text.SPI_Init
-                0x08000c40       0x48 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_spi.o
-                0x08000c40                SPI_Init
- .text.SPI_Cmd  0x08000c88       0x20 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_spi.o
-                0x08000c88                SPI_Cmd
+                0x08000cb4       0x48 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_spi.o
+                0x08000cb4                SPI_Init
+ .text.SPI_Cmd  0x08000cfc       0x20 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_spi.o
+                0x08000cfc                SPI_Cmd
  .text.SPI_I2S_ITConfig
-                0x08000ca8       0x28 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_spi.o
-                0x08000ca8                SPI_I2S_ITConfig
+                0x08000d1c       0x28 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_spi.o
+                0x08000d1c                SPI_I2S_ITConfig
  .text.__io_putchar
-                0x08000cd0      0x16c C:\Program Files (x86)\Raisonance\Ride\Lib\ARM\STM32x_io_putchar_thumb.a(STM32F10X_io_putchar.o)
-                0x08000cd0                __io_putchar
- .text._write   0x08000e3c        0x4 C:\Program Files (x86)\Raisonance\Ride\Lib\ARM\std_sbrk_thumb.lib(write.o)
-                0x08000e3c                _write
+                0x08000d44      0x16c D:\Ride\Ride\Lib\ARM\STM32x_io_putchar_thumb.a(STM32F10X_io_putchar.o)
+                0x08000d44                __io_putchar
+ .text._write   0x08000eb0        0x4 D:\Ride\Ride\Lib\ARM\std_sbrk_thumb.lib(write.o)
+                0x08000eb0                _write
  *(.rodata)
- .rodata        0x08000e40     0x5640 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\main.o
-                0x08000e40                SineWave
-                0x08001e40                TriangleWave
-                0x08003480                SquareWave
-                0x08004480                SawToothWave
-                0x08005480                RevSawToothWave
+ .rodata        0x08000eb4     0x5640 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\main.o
+                0x08000eb4                SineWave
+                0x08001eb4                TriangleWave
+                0x080034f4                SquareWave
+                0x080044f4                SawToothWave
+                0x080054f4                RevSawToothWave
  *(.rodata*)
  *(.glue_7)
  .glue_7        0x00000000        0x0 linker stubs
  *(.glue_7t)
  .glue_7t       0x00000000        0x0 linker stubs
-                0x08006480                . = ALIGN (0x4)
-                0x08006480                _etext = .
-                0x08006480                _sidata = _etext
+                0x080064f4                . = ALIGN (0x4)
+                0x080064f4                _etext = .
+                0x080064f4                _sidata = _etext
 
-.vfp11_veneer   0x08006480        0x0
+.vfp11_veneer   0x080064f4        0x0
  .vfp11_veneer  0x00000000        0x0 linker stubs
 
-.v4_bx          0x08006480        0x0
+.v4_bx          0x080064f4        0x0
  .v4_bx         0x00000000        0x0 linker stubs
 
 .flashpatch     0x00000000        0x0
@@ -945,7 +945,7 @@ END GROUP
                 0x00000000                . = ALIGN (0x4)
                 0x00000000                _e_endflash = .
 
-.data           0x20000000        0x0 load address 0x08006480
+.data           0x20000000        0x0 load address 0x080064f4
                 0x20000000                . = ALIGN (0x4)
                 0x20000000                _sdata = .
                 0x20000000                _data = .
@@ -954,30 +954,30 @@ END GROUP
  *(.RAMtext)
                 0x20000000                . = ALIGN (0x4)
                 0x20000000                _edata = .
-                0x08006480                _eidata = ((_sidata + _edata) - _sdata)
+                0x080064f4                _eidata = ((_sidata + _edata) - _sdata)
                 0x08010000                _lastdataromaddress = 0x8010000
                 0x00000000                toobig = (_eidata > _lastdataromaddress)?!!!!!!!!! FLASH IS FULL !!!!!!!!!:0x0
 
-.bss            0x20000000     0x1024
+.bss            0x20000000     0x2024
                 0x20000000                . = ALIGN (0x4)
                 0x20000000                _sbss = .
                 0x20000000                _bss = .
  *(.bss)
  *(COMMON)
- COMMON         0x20000000     0x1024 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\main.o
+ COMMON         0x20000000     0x2024 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\main.o
                 0x20000000                STM32_Command
-                0x20001024                . = ALIGN (0x4)
-                0x20001024                _ebss = .
-                0x20001024                PROVIDE (end, _ebss)
-                0x20001024                PROVIDE (_end, _ebss)
+                0x20002024                . = ALIGN (0x4)
+                0x20002024                _ebss = .
+                0x20002024                PROVIDE (end, _ebss)
+                0x20002024                PROVIDE (_end, _ebss)
 
-._usrstack      0x20001024      0x100
-                0x20001024                . = ALIGN (0x4)
-                0x20001024                _susrstack = .
-                0x20001124                . = (. + _Minimum_Stack_Size)
- *fill*         0x20001024      0x100 00
-                0x20001124                . = ALIGN (0x4)
-                0x20001124                _eusrstack = .
+._usrstack      0x20002024      0x100
+                0x20002024                . = ALIGN (0x4)
+                0x20002024                _susrstack = .
+                0x20002124                . = (. + _Minimum_Stack_Size)
+ *fill*         0x20002024      0x100 00
+                0x20002124                . = ALIGN (0x4)
+                0x20002124                _eusrstack = .
 
 .b1text
  *(.b1text)
@@ -1003,8 +1003,8 @@ END GROUP
  *(.eb3text)
  *(.eb3rodata)
  *(.eb3rodata*)
-                0x20001124                __exidx_start = .
-                0x20001124                __exidx_end = .
+                0x20002124                __exidx_start = .
+                0x20002124                __exidx_end = .
 
 /DISCARD/
  libc.a(*)
@@ -1034,48 +1034,48 @@ END GROUP
  .ARM.attributes
                 0x00000000       0x21 .\startup_stm32f4xx.o
  .ARM.attributes
-                0x00000021       0x31 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\main.o
+                0x00000021       0x31 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\main.o
  .ARM.attributes
-                0x00000052       0x31 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4_discovery.o
+                0x00000052       0x31 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4_discovery.o
  .ARM.attributes
-                0x00000083       0x31 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\system_stm32f4xx.o
+                0x00000083       0x31 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\system_stm32f4xx.o
  .ARM.attributes
-                0x000000b4       0x31 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
+                0x000000b4       0x31 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
  .ARM.attributes
-                0x000000e5       0x31 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_dac.o
+                0x000000e5       0x31 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_dac.o
  .ARM.attributes
-                0x00000116       0x31 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_gpio.o
+                0x00000116       0x31 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_gpio.o
  .ARM.attributes
-                0x00000147       0x31 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_it.o
+                0x00000147       0x31 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_it.o
  .ARM.attributes
-                0x00000178       0x31 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
+                0x00000178       0x31 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
  .ARM.attributes
-                0x000001a9       0x31 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+                0x000001a9       0x31 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
  .ARM.attributes
-                0x000001da       0x31 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\misc.o
+                0x000001da       0x31 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\misc.o
  .ARM.attributes
-                0x0000020b       0x31 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_spi.o
+                0x0000020b       0x31 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_spi.o
  .ARM.attributes
-                0x0000023c       0x31 C:\Program Files (x86)\Raisonance\Ride\Lib\ARM\STM32x_io_putchar_thumb.a(STM32F10X_io_putchar.o)
+                0x0000023c       0x31 D:\Ride\Ride\Lib\ARM\STM32x_io_putchar_thumb.a(STM32F10X_io_putchar.o)
  .ARM.attributes
-                0x0000026d       0x2e C:\Program Files (x86)\Raisonance\Ride\Lib\ARM\std_sbrk_thumb.lib(write.o)
+                0x0000026d       0x2e D:\Ride\Ride\Lib\ARM\std_sbrk_thumb.lib(write.o)
 
 .comment        0x00000000       0x7f
  *(.comment)
- .comment       0x00000000       0x2a C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\main.o
+ .comment       0x00000000       0x2a D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\main.o
                                  0x2b (size before relaxing)
- .comment       0x00000000       0x2b C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4_discovery.o
- .comment       0x00000000       0x2b C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\system_stm32f4xx.o
- .comment       0x00000000       0x2b C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
- .comment       0x00000000       0x2b C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_dac.o
- .comment       0x00000000       0x2b C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_gpio.o
- .comment       0x00000000       0x2b C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_it.o
- .comment       0x00000000       0x2b C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
- .comment       0x00000000       0x2b C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
- .comment       0x00000000       0x2b C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\misc.o
- .comment       0x00000000       0x2b C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_spi.o
- .comment       0x0000002a       0x2b C:\Program Files (x86)\Raisonance\Ride\Lib\ARM\STM32x_io_putchar_thumb.a(STM32F10X_io_putchar.o)
- .comment       0x00000055       0x2a C:\Program Files (x86)\Raisonance\Ride\Lib\ARM\std_sbrk_thumb.lib(write.o)
+ .comment       0x00000000       0x2b D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4_discovery.o
+ .comment       0x00000000       0x2b D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\system_stm32f4xx.o
+ .comment       0x00000000       0x2b D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
+ .comment       0x00000000       0x2b D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_dac.o
+ .comment       0x00000000       0x2b D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_gpio.o
+ .comment       0x00000000       0x2b D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_it.o
+ .comment       0x00000000       0x2b D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
+ .comment       0x00000000       0x2b D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+ .comment       0x00000000       0x2b D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\misc.o
+ .comment       0x00000000       0x2b D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_spi.o
+ .comment       0x0000002a       0x2b D:\Ride\Ride\Lib\ARM\STM32x_io_putchar_thumb.a(STM32F10X_io_putchar.o)
+ .comment       0x00000055       0x2a D:\Ride\Ride\Lib\ARM\std_sbrk_thumb.lib(write.o)
 
 .debug
  *(.debug)
@@ -1092,147 +1092,147 @@ END GROUP
 .debug_aranges  0x00000000      0x920
  *(.debug_aranges)
  .debug_aranges
-                0x00000000       0x60 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\main.o
+                0x00000000       0x60 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\main.o
  .debug_aranges
-                0x00000060       0x48 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4_discovery.o
+                0x00000060       0x48 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4_discovery.o
  .debug_aranges
-                0x000000a8       0x28 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\system_stm32f4xx.o
+                0x000000a8       0x28 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\system_stm32f4xx.o
  .debug_aranges
-                0x000000d0      0x148 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
+                0x000000d0      0x148 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
  .debug_aranges
-                0x00000218       0xa0 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_dac.o
+                0x00000218       0xa0 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_dac.o
  .debug_aranges
-                0x000002b8       0x88 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_gpio.o
+                0x000002b8       0x88 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_gpio.o
  .debug_aranges
-                0x00000340       0x60 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_it.o
+                0x00000340       0x60 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_it.o
  .debug_aranges
-                0x000003a0      0x178 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
+                0x000003a0      0x178 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
  .debug_aranges
-                0x00000518      0x2e8 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+                0x00000518      0x2e8 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
  .debug_aranges
-                0x00000800       0x40 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\misc.o
+                0x00000800       0x40 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\misc.o
  .debug_aranges
-                0x00000840       0xe0 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_spi.o
+                0x00000840       0xe0 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_spi.o
 
 .debug_pubnames
                 0x00000000     0x18fc
  *(.debug_pubnames)
  .debug_pubnames
-                0x00000000      0x110 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\main.o
+                0x00000000      0x110 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\main.o
  .debug_pubnames
-                0x00000110      0x150 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4_discovery.o
+                0x00000110      0x150 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4_discovery.o
  .debug_pubnames
-                0x00000260       0x61 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\system_stm32f4xx.o
+                0x00000260       0x61 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\system_stm32f4xx.o
  .debug_pubnames
-                0x000002c1      0x446 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
+                0x000002c1      0x446 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
  .debug_pubnames
-                0x00000707      0x17d C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_dac.o
+                0x00000707      0x17d D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_dac.o
  .debug_pubnames
-                0x00000884      0x12d C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_gpio.o
+                0x00000884      0x12d D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_gpio.o
  .debug_pubnames
-                0x000009b1       0xc6 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_it.o
+                0x000009b1       0xc6 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_it.o
  .debug_pubnames
-                0x00000a77      0x417 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
+                0x00000a77      0x417 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
  .debug_pubnames
-                0x00000e8e      0x7c4 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+                0x00000e8e      0x7c4 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
  .debug_pubnames
-                0x00001652       0x89 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\misc.o
+                0x00001652       0x89 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\misc.o
  .debug_pubnames
-                0x000016db      0x221 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_spi.o
+                0x000016db      0x221 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_spi.o
 
-.debug_info     0x00000000     0x739d
+.debug_info     0x00000000     0x73af
  *(.debug_info .gnu.linkonce.wi.*)
- .debug_info    0x00000000      0xcb5 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\main.o
- .debug_info    0x00000cb5      0x963 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4_discovery.o
- .debug_info    0x00001618      0x63f C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\system_stm32f4xx.o
- .debug_info    0x00001c57      0xcce C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
- .debug_info    0x00002925      0x68d C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_dac.o
- .debug_info    0x00002fb2      0x62d C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_gpio.o
- .debug_info    0x000035df      0x14c C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_it.o
- .debug_info    0x0000372b      0xd05 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
- .debug_info    0x00004430     0x1e20 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
- .debug_info    0x00006250      0x598 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\misc.o
- .debug_info    0x000067e8      0xbb5 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_spi.o
+ .debug_info    0x00000000      0xcc7 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\main.o
+ .debug_info    0x00000cc7      0x963 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4_discovery.o
+ .debug_info    0x0000162a      0x63f D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\system_stm32f4xx.o
+ .debug_info    0x00001c69      0xcce D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
+ .debug_info    0x00002937      0x68d D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_dac.o
+ .debug_info    0x00002fc4      0x62d D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_gpio.o
+ .debug_info    0x000035f1      0x14c D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_it.o
+ .debug_info    0x0000373d      0xd05 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
+ .debug_info    0x00004442     0x1e20 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+ .debug_info    0x00006262      0x598 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\misc.o
+ .debug_info    0x000067fa      0xbb5 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_spi.o
 
-.debug_abbrev   0x00000000     0x11cf
+.debug_abbrev   0x00000000     0x11f5
  *(.debug_abbrev)
- .debug_abbrev  0x00000000      0x1e8 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\main.o
- .debug_abbrev  0x000001e8      0x19c C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4_discovery.o
- .debug_abbrev  0x00000384      0x16c C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\system_stm32f4xx.o
- .debug_abbrev  0x000004f0      0x1d7 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
- .debug_abbrev  0x000006c7      0x1d9 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_dac.o
- .debug_abbrev  0x000008a0      0x1d0 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_gpio.o
- .debug_abbrev  0x00000a70       0x64 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_it.o
- .debug_abbrev  0x00000ad4      0x1f8 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
- .debug_abbrev  0x00000ccc      0x207 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
- .debug_abbrev  0x00000ed3      0x14e C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\misc.o
- .debug_abbrev  0x00001021      0x1ae C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_spi.o
+ .debug_abbrev  0x00000000      0x20e D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\main.o
+ .debug_abbrev  0x0000020e      0x19c D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4_discovery.o
+ .debug_abbrev  0x000003aa      0x16c D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\system_stm32f4xx.o
+ .debug_abbrev  0x00000516      0x1d7 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
+ .debug_abbrev  0x000006ed      0x1d9 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_dac.o
+ .debug_abbrev  0x000008c6      0x1d0 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_gpio.o
+ .debug_abbrev  0x00000a96       0x64 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_it.o
+ .debug_abbrev  0x00000afa      0x1f8 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
+ .debug_abbrev  0x00000cf2      0x207 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+ .debug_abbrev  0x00000ef9      0x14e D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\misc.o
+ .debug_abbrev  0x00001047      0x1ae D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_spi.o
 
-.debug_line     0x00000000     0x2881
+.debug_line     0x00000000     0x2773
  *(.debug_line)
- .debug_line    0x00000000      0x388 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\main.o
- .debug_line    0x00000388      0x290 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4_discovery.o
- .debug_line    0x00000618      0x1ea C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\system_stm32f4xx.o
- .debug_line    0x00000802      0x4d1 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
- .debug_line    0x00000cd3      0x2e6 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_dac.o
- .debug_line    0x00000fb9      0x2c4 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_gpio.o
- .debug_line    0x0000127d      0x1fd C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_it.o
- .debug_line    0x0000147a      0x50c C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
- .debug_line    0x00001986      0x959 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
- .debug_line    0x000022df      0x1d8 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\misc.o
- .debug_line    0x000024b7      0x3ca C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_spi.o
+ .debug_line    0x00000000      0x37e D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\main.o
+ .debug_line    0x0000037e      0x276 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4_discovery.o
+ .debug_line    0x000005f4      0x1d0 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\system_stm32f4xx.o
+ .debug_line    0x000007c4      0x4b7 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
+ .debug_line    0x00000c7b      0x2cc D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_dac.o
+ .debug_line    0x00000f47      0x2aa D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_gpio.o
+ .debug_line    0x000011f1      0x1e3 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_it.o
+ .debug_line    0x000013d4      0x4f2 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
+ .debug_line    0x000018c6      0x93f D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+ .debug_line    0x00002205      0x1be D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\misc.o
+ .debug_line    0x000023c3      0x3b0 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_spi.o
 
-.debug_frame    0x00000000     0x12e4
+.debug_frame    0x00000000     0x12e8
  *(.debug_frame)
- .debug_frame   0x00000000       0xf0 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\main.o
- .debug_frame   0x000000f0       0x9c C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4_discovery.o
- .debug_frame   0x0000018c       0x34 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\system_stm32f4xx.o
- .debug_frame   0x000001c0      0x2a8 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
- .debug_frame   0x00000468      0x13c C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_dac.o
- .debug_frame   0x000005a4      0x118 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_gpio.o
- .debug_frame   0x000006bc       0xa0 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_it.o
- .debug_frame   0x0000075c      0x2e4 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
- .debug_frame   0x00000a40      0x670 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
- .debug_frame   0x000010b0       0x68 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\misc.o
- .debug_frame   0x00001118      0x1cc C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_spi.o
+ .debug_frame   0x00000000       0xf4 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\main.o
+ .debug_frame   0x000000f4       0x9c D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4_discovery.o
+ .debug_frame   0x00000190       0x34 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\system_stm32f4xx.o
+ .debug_frame   0x000001c4      0x2a8 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
+ .debug_frame   0x0000046c      0x13c D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_dac.o
+ .debug_frame   0x000005a8      0x118 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_gpio.o
+ .debug_frame   0x000006c0       0xa0 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_it.o
+ .debug_frame   0x00000760      0x2e4 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
+ .debug_frame   0x00000a44      0x670 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+ .debug_frame   0x000010b4       0x68 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\misc.o
+ .debug_frame   0x0000111c      0x1cc D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_spi.o
 
-.debug_str      0x00000000     0x30ea
+.debug_str      0x00000000     0x30f5
  *(.debug_str)
- .debug_str     0x00000000      0xbaf C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\main.o
-                                0xc21 (size before relaxing)
- .debug_str     0x00000baf      0x2b4 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4_discovery.o
+ .debug_str     0x00000000      0xbba D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\main.o
+                                0xc2c (size before relaxing)
+ .debug_str     0x00000bba      0x2b4 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4_discovery.o
                                 0xab0 (size before relaxing)
- .debug_str     0x00000e63      0x207 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\system_stm32f4xx.o
+ .debug_str     0x00000e6e      0x207 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\system_stm32f4xx.o
                                 0x32a (size before relaxing)
- .debug_str     0x0000106a      0x678 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
+ .debug_str     0x00001075      0x678 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
                                 0x7d4 (size before relaxing)
- .debug_str     0x000016e2      0x2a0 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_dac.o
+ .debug_str     0x000016ed      0x2a0 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_dac.o
                                 0x423 (size before relaxing)
- .debug_str     0x00001982      0x1c0 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_gpio.o
+ .debug_str     0x0000198d      0x1c0 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_gpio.o
                                 0x473 (size before relaxing)
- .debug_str     0x00001b42       0xf5 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_it.o
+ .debug_str     0x00001b4d       0xf5 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_it.o
                                 0x19a (size before relaxing)
- .debug_str     0x00001c37      0x586 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
+ .debug_str     0x00001c42      0x586 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
                                 0x820 (size before relaxing)
- .debug_str     0x000021bd      0xaa3 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+ .debug_str     0x000021c8      0xaa3 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
                                 0xda0 (size before relaxing)
- .debug_str     0x00002c60      0x177 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\misc.o
+ .debug_str     0x00002c6b      0x177 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\misc.o
                                 0x3a9 (size before relaxing)
- .debug_str     0x00002dd7      0x313 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_spi.o
+ .debug_str     0x00002de2      0x313 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_spi.o
                                 0x65a (size before relaxing)
 
-.debug_loc      0x00000000     0x34da
+.debug_loc      0x00000000     0x34f1
  *(.debug_loc)
- .debug_loc     0x00000000      0x1b7 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\main.o
- .debug_loc     0x000001b7       0xc4 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4_discovery.o
- .debug_loc     0x0000027b      0x133 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\system_stm32f4xx.o
- .debug_loc     0x000003ae      0x94c C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
- .debug_loc     0x00000cfa      0x425 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_dac.o
- .debug_loc     0x0000111f      0x26d C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_gpio.o
- .debug_loc     0x0000138c      0x6ed C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
- .debug_loc     0x00001a79     0x14bc C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
- .debug_loc     0x00002f35      0x11d C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\misc.o
- .debug_loc     0x00003052      0x488 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_spi.o
+ .debug_loc     0x00000000      0x1ce D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\main.o
+ .debug_loc     0x000001ce       0xc4 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4_discovery.o
+ .debug_loc     0x00000292      0x133 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\system_stm32f4xx.o
+ .debug_loc     0x000003c5      0x94c D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
+ .debug_loc     0x00000d11      0x425 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_dac.o
+ .debug_loc     0x00001136      0x26d D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_gpio.o
+ .debug_loc     0x000013a3      0x6ed D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
+ .debug_loc     0x00001a90     0x14bc D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+ .debug_loc     0x00002f4c      0x11d D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\misc.o
+ .debug_loc     0x00003069      0x488 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_spi.o
 
 .debug_macinfo
  *(.debug_macinfo)
@@ -1249,45 +1249,45 @@ END GROUP
 .debug_varnames
  *(.debug_varnames)
 START GROUP
-LOAD c:/program files (x86)/raisonance/ride/arm-gcc/bin/../lib/gcc/arm-none-eabi/4.5.1/thumb2\libgcc.a
-LOAD c:/program files (x86)/raisonance/ride/arm-gcc/bin/../lib/gcc/arm-none-eabi/4.5.1/../../../../arm-none-eabi/lib/thumb2\libc.a
+LOAD d:/ride/ride/arm-gcc/bin/../lib/gcc/arm-none-eabi/4.5.1/thumb2\libgcc.a
+LOAD d:/ride/ride/arm-gcc/bin/../lib/gcc/arm-none-eabi/4.5.1/../../../../arm-none-eabi/lib/thumb2\libc.a
 END GROUP
-OUTPUT(C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\DDSWaveGen.elf elf32-littlearm)
+OUTPUT(D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\DDSWaveGen.elf elf32-littlearm)
 
 .debug_pubtypes
                 0x00000000      0x878
  .debug_pubtypes
-                0x00000000      0x164 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\main.o
+                0x00000000      0x164 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\main.o
  .debug_pubtypes
-                0x00000164      0x16e C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4_discovery.o
+                0x00000164      0x16e D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4_discovery.o
  .debug_pubtypes
-                0x000002d2       0x83 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\system_stm32f4xx.o
+                0x000002d2       0x83 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\system_stm32f4xx.o
  .debug_pubtypes
-                0x00000355       0xc9 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
+                0x00000355       0xc9 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
  .debug_pubtypes
-                0x0000041e       0x98 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_dac.o
+                0x0000041e       0x98 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_dac.o
  .debug_pubtypes
-                0x000004b6       0xce C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_gpio.o
+                0x000004b6       0xce D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_gpio.o
  .debug_pubtypes
-                0x00000584       0x1e C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_it.o
+                0x00000584       0x1e D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_it.o
  .debug_pubtypes
-                0x000005a2       0xaa C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
+                0x000005a2       0xaa D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
  .debug_pubtypes
-                0x0000064c       0xe4 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+                0x0000064c       0xe4 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
  .debug_pubtypes
-                0x00000730       0x8c C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\misc.o
+                0x00000730       0x8c D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\misc.o
  .debug_pubtypes
-                0x000007bc       0xbc C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_spi.o
+                0x000007bc       0xbc D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_spi.o
 
 .debug_ranges   0x00000000      0x870
- .debug_ranges  0x00000000       0x50 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\main.o
- .debug_ranges  0x00000050       0x38 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4_discovery.o
- .debug_ranges  0x00000088       0x18 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\system_stm32f4xx.o
- .debug_ranges  0x000000a0      0x138 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
- .debug_ranges  0x000001d8       0x90 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_dac.o
- .debug_ranges  0x00000268       0x78 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_gpio.o
- .debug_ranges  0x000002e0       0x50 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_it.o
- .debug_ranges  0x00000330      0x168 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
- .debug_ranges  0x00000498      0x2d8 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
- .debug_ranges  0x00000770       0x30 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\misc.o
- .debug_ranges  0x000007a0       0xd0 C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_spi.o
+ .debug_ranges  0x00000000       0x50 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\main.o
+ .debug_ranges  0x00000050       0x38 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4_discovery.o
+ .debug_ranges  0x00000088       0x18 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\system_stm32f4xx.o
+ .debug_ranges  0x000000a0      0x138 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_adc.o
+ .debug_ranges  0x000001d8       0x90 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_dac.o
+ .debug_ranges  0x00000268       0x78 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_gpio.o
+ .debug_ranges  0x000002e0       0x50 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_it.o
+ .debug_ranges  0x00000330      0x168 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
+ .debug_ranges  0x00000498      0x2d8 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+ .debug_ranges  0x00000770       0x30 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\misc.o
+ .debug_ranges  0x000007a0       0xd0 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_spi.o

@@ -28,6 +28,7 @@ typedef struct
   uint32_t SweepMin;                                  // 0x20001018
   uint32_t SweepMax;                                  // 0x2000101C
   uint32_t tmp;                                       // 0x20001020
+  uint16_t WaveUpload[2048];                          // 0x20001024
 }STM32_CMNDTypeDef;
 
 /* Private define ------------------------------------------------------------*/
@@ -37,6 +38,7 @@ typedef struct
 #define WAVE_Square               ((uint8_t)2)
 #define WAVE_SawTooth             ((uint8_t)3)
 #define WAVE_RevSawTooth          ((uint8_t)4)
+#define WAVE_Upload               ((uint8_t)5)
 
 #define Sweep_Off                 ((uint8_t)0)
 #define Sweep_Up                  ((uint8_t)1)
@@ -128,6 +130,13 @@ void DDS_MakeWave(void)
         i++;
       }
       break;
+    case WAVE_Upload:
+      while (i<2048)
+      {
+        STM32_Command.Wave[i] = STM32_Command.WaveUpload[i] + 2048;
+        i++;
+      }
+      break;
   }
   i=0;
   while (i<2048)
@@ -193,7 +202,7 @@ void DDS_Config(void)
   GPIO_InitTypeDef GPIO_InitStructure;
 
   /* GPIOE clock enable */
-  RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOE, ENABLE);
+  RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOD | RCC_AHB1Periph_GPIOE, ENABLE);
   /* DAC port configuration */
   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_15 | GPIO_Pin_14 | GPIO_Pin_13 | GPIO_Pin_12 | GPIO_Pin_11 | GPIO_Pin_10 | GPIO_Pin_9 | GPIO_Pin_8 | GPIO_Pin_7 | GPIO_Pin_6 | GPIO_Pin_5 | GPIO_Pin_4;
   GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_OUT;
@@ -201,6 +210,15 @@ void DDS_Config(void)
   GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
   GPIO_InitStructure.GPIO_PuPd  = GPIO_PuPd_NOPULL;
   GPIO_Init(GPIOE, &GPIO_InitStructure);
+
+  // STM_EVAL_LEDInit(LED4);
+  /* Configure the GPIOD_LED4 pin */
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_12;
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
+  GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+  GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+  GPIO_Init(GPIOD, &GPIO_InitStructure);
 }
 
 void SPI_Config(void)
@@ -318,14 +336,17 @@ void SPI2_IRQHandler(void)
   }
   else if (STM32_Command.SPI_Cmnd == SPI_WaveUpload)
   {
-    if (STM32_Command.SPI_Cnt == 2048 + 2)
+    if (STM32_Command.SPI_Cnt == 2048 + 1)
     {
       STM32_Command.SPI_Cnt = 0;
+      STM32_Command.WaveType = WAVE_Upload;
       DDS_MakeWave();
+      //STM_EVAL_LEDToggle(LED4);
+      GPIOD->ODR ^= GPIO_Pin_12;
     }
     else
     {
-      STM32_Command.Wave[STM32_Command.SPI_Cnt - 2] = STM32_Command.rx;;
+      STM32_Command.WaveUpload[STM32_Command.SPI_Cnt - 2] = STM32_Command.rx;;
     }
   }
   else if (STM32_Command.SPI_Cmnd == SPI_SweepSet)

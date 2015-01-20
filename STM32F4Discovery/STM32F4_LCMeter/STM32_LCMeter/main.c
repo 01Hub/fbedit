@@ -361,12 +361,13 @@ int main(void)
         USART3_getdata((uint8_t *)WAVE_DATAPTR,4096);
         SPISendData(DDS_WAVEUPLOAD);
         ptr = (uint16_t *)WAVE_DATAPTR;
-        i = 4098;
+        i = 2048;
         while (i--)
         {
           SPISendData(*ptr);
           ptr++;
         }
+        STM_EVAL_LEDToggle(LED4);
         break;
     }
   }

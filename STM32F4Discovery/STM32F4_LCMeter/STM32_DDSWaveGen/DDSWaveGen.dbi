@@ -1,5 +1,5 @@
 [Application]
-ApplicationPath=C:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\DDSWaveGen.elf
+ApplicationPath=D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\DDSWaveGen.elf
 CSX=0
 HighBankAddr=400000
 BootMode=0
@@ -10,7 +10,7 @@ Target=ARM
 DebugTool=SIM-ARM
 ApplicationComponents=
 [Device]
-Name=STM32F100RB
+Name=STM32F100RC
 [ARMSigDrv options]
 CXS=0
 [Debug]
@@ -25,4 +25,4 @@ Crystal=8.000
 [General]
 FreqXTal=8.000
 [SimFile]
-path=C:\Program Files (x86)\Raisonance\Ride\sim\ARM\STM32F100RB.sim
+path=D:\Ride\Ride\sim\ARM\STM32F100ZE.sim

@@ -1,5 +1,5 @@
 
-<ApplicationBuild Header="DDSWaveGen" Extern=".\DDSWaveGen.rapp" Path=".\DDSWaveGen.rapp" AsyncBuild="" OutputFile=".\DDSWaveGen.elf" sate="96" >
+<ApplicationBuild Header="DDSWaveGen" Extern=".\DDSWaveGen.rapp" Path=".\DDSWaveGen.rapp" AsyncBuild="" OutputFile=".\DDSWaveGen.elf" sate="98" >
 	<NodeText Path=".\readme.txt" Header="readme.txt" Marker="-1" AsyncBuild="" OutputFile="" sate="0" />
 	<NodeC Path=".\main.c" Header="main.c" Marker="-1" AsyncBuild="" OutputFile=".\main.o" sate="0" />
 	<NodeC Path=".\stm32f4_discovery.c" Header="stm32f4_discovery.c" Marker="-1" AsyncBuild="" OutputFile=".\stm32f4_discovery.o" sate="0" />
@@ -11,68 +11,68 @@
 	<NodeC Path=".\stm32f4xx_rcc.c" Header="stm32f4xx_rcc.c" Marker="-1" AsyncBuild="" OutputFile=".\stm32f4xx_rcc.o" sate="0" />
 	<NodeC Path=".\stm32f4xx_tim.c" Header="stm32f4xx_tim.c" Marker="-1" AsyncBuild="" OutputFile=".\stm32f4xx_tim.o" sate="0" />
 	<NodeC Path=".\misc.c" Header="misc.c" Marker="-1" AsyncBuild="" OutputFile=".\misc.o" sate="0" />
-	<NodeASM Path=".\startup_stm32f4xx.s" Header="startup_stm32f4xx.s" Marker="0" AsyncBuild="" OutputFile=".\startup_stm32f4xx.o" sate="2" >
+	<NodeASM Path=".\startup_stm32f4xx.s" Header="startup_stm32f4xx.s" Marker="0" AsyncBuild="" OutputFile=".\startup_stm32f4xx.o" sate="0" >
 		<Options>
 			<Config Header="Standard" >
 				<Set Header="NodeASM" >
 					<Section Header="Build" >
 						<Property Header="Exclude" Value="Yes" Removable="1" />
 						<Property Header="LinkExclude" Value="Yes" Removable="1" />
-								
+																			
 					</Section>
-						
+															
 				</Set>
+							
 			</Config>
+					
 		</Options>
-																								
+																											
 	</NodeASM>
 	<NodeH Path=".\Wave.h" Header="Wave.h" Marker="-1" AsyncBuild="" OutputFile="" sate="0" />
+	<NodeC Path=".\stm32f4xx_spi.c" Header="stm32f4xx_spi.c" Marker="-1" AsyncBuild="" OutputFile=".\stm32f4xx_spi.o" sate="0" />
 	<Options>
 		<Config Header="Standard" >
 			<Set Header="ApplicationBuild" >
 				<Section Header="General" >
 					<Property Header="TargetFamily" Value="ARM" />
-																																																																																								
+																																																																																																	
 				</Section>
 				<Section Header="Directories" >
 					<Property Header="IncDir" Value=".;\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc" Removable="1" />
-																																																																															
+																																																																																								
 				</Section>
-																																																													
+																																																																				
 			</Set>
 			<Set Header="Target" >
 				<Section Header="ProcessorARM" >
-					<Property Header="Processor" Value="STM32F100RB" />
-																																																																																								
+					<Property Header="Processor" Value="STM32F100RC" />
+							
 				</Section>
 				<Section Header="ToolSetARM" >
 					<Property Header="BuildToolSetARM" Value="ARM\GNU.config" Removable="1" />
-																																																																																								
+																																																																																																	
 				</Section>
 				<Section Header="DebugARM" >
 					<Property Header="DebugTool_CORTEX" Value="SIM-ARM" Removable="1" />
-																																																				
+																																																													
 				</Section>
-																																								
+					
 			</Set>
 			<Set Header="LD" >
 				<Section Header="Startup" >
 					<Property Header="DEFAULTSTARTUP" Value="No" Removable="1" />
 					<Property Header="File" Value=".\startup_stm32f4xx.o" Removable="1" />
-																																																																															
+																																																																																								
 				</Section>
-																																																													
+																																																																				
 			</Set>
 			<Set Header="GCC" >
 				<Section Header="OPTIMIZE" >
 					<Property Header="Optimize" Value="-O1" Removable="1" />
-																																		
+																																											
 				</Section>
-																										
+																																	
 			</Set>
-															
 		</Config>
-									
 	</Options>
-	<NodeC Path=".\stm32f4xx_spi.c" Header="stm32f4xx_spi.c" Marker="-1" AsyncBuild="" OutputFile=".\stm32f4xx_spi.o" sate="0" />
 </ApplicationBuild>

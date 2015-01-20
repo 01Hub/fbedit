@@ -303,8 +303,11 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke UpdateWindow,hLGAScrn
 				mov		mode,CMD_DONE
 			.elseif mode==CMD_WAVEUPLOAD
-				invoke BTPut,offset STM32_Cmd.STM32_Dds,sizeof STM32_DDS
+				invoke BTPut,offset mode,4
+PrintHex eax
+;				invoke BTPut,offset STM32_Cmd.STM32_Dds,sizeof STM32_DDS
 				invoke BTPut,offset makewavedata.MW_ResultData,4096
+PrintHex eax
 				mov		mode,CMD_DONE
 			.elseif mode==CMD_STARTUP
 				mov		mode,CMD_DDSSET

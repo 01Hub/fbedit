@@ -1019,7 +1019,11 @@ DDSChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 					inc		ddswavedata.DDS_WaveForm
 					invoke DDSGenWave
 					call	SetWaveTypeText
-					invoke DDSSetStruct,DDS_WAVESET
+					.if ddswavedata.DDS_WaveForm==DDS_ModeMakeWave
+						mov		mode,CMD_WAVEUPLOAD
+					.else
+						invoke DDSSetStruct,DDS_WAVESET
+					.endif
 				.endif
 			.elseif eax==IDC_BTNDDSFRQDN
 				.if ddswavedata.DDS_Frequency>1
