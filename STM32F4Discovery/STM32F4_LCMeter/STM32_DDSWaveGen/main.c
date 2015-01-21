@@ -53,7 +53,7 @@ typedef struct
 
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
-__IO STM32_CMNDTypeDef STM32_Command;               // 0x20000014
+__IO STM32_CMNDTypeDef STM32_Command;               // 0x20000000
 
 void DDS_Config(void);
 void SPI_Config(void);
@@ -71,7 +71,7 @@ void DDS_WaveLoop(void);
 int main(void)
 {
   STM32_Command.WaveType = WAVE_Sine;
-  STM32_Command.Amplitude = 4095;
+  STM32_Command.Amplitude = 2048;
   STM32_Command.DCOffset = 4095;
   STM32_Command.DDS_PhaseFrq = 858993;
   STM32_Command.SweepMode = Sweep_Off;

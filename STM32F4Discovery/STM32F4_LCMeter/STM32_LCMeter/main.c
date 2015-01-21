@@ -374,7 +374,7 @@ int main(void)
 }
 
 /**
-  * @brief  ADC data is 12bits so 2halfwords is compressed into 3bytes.
+  * @brief  ADC data is 12 bits so 2 halfwords (4 bytes) is compressed into 3 bytes.
   * @param  Pointer to buffer, buffer size
   * @retval None
   */

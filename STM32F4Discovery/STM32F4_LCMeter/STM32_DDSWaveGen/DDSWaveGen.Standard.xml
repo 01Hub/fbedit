@@ -178,11 +178,11 @@
    <function Name="TIM6_DAC_IRQHandler" TI="0" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\main.c" Line="429">
    </function >
    <type Family="array" ID="3010" toTI="655"/>
-   <variable Name="SineWave" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\wave.h" Line="2" Addr="0x8000EB4" TI="3152"/>
-   <variable Name="TriangleWave" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\wave.h" Line="134" Addr="0x8001EB4" TI="3175"/>
-   <variable Name="SquareWave" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\wave.h" Line="266" Addr="0x80034F4" TI="3199"/>
-   <variable Name="SawToothWave" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\wave.h" Line="398" Addr="0x80044F4" TI="3223"/>
-   <variable Name="RevSawToothWave" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\wave.h" Line="530" Addr="0x80054F4" TI="3247"/>
+   <variable Name="SineWave" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\wave.h" Line="2" Addr="0x8000EB8" TI="3152"/>
+   <variable Name="TriangleWave" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\wave.h" Line="134" Addr="0x8001EB8" TI="3175"/>
+   <variable Name="SquareWave" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\wave.h" Line="266" Addr="0x80034F8" TI="3199"/>
+   <variable Name="SawToothWave" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\wave.h" Line="398" Addr="0x80044F8" TI="3223"/>
+   <variable Name="RevSawToothWave" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\wave.h" Line="530" Addr="0x80054F8" TI="3247"/>
    <variable Name="STM32_Command" FileName="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\main.c" Line="56" Addr="0x20000000" TI="3115"/>
   </module>
   <module Name="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4_discovery.c" >

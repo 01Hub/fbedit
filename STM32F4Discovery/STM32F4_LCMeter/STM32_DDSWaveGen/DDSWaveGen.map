@@ -731,7 +731,7 @@ END GROUP
  *(.flashtext)
                 0x08000188                . = ALIGN (0x4)
 
-.text           0x08000188     0x636c
+.text           0x08000188     0x6370
                 0x08000188                . = ALIGN (0x4)
  *(.text)
  *(.text.*)
@@ -840,98 +840,98 @@ END GROUP
  .text.TIM_Config
                 0x080004e8       0x74 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\main.o
                 0x080004e8                TIM_Config
- .text.main     0x0800055c       0x60 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\main.o
+ .text.main     0x0800055c       0x64 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\main.o
                 0x0800055c                main
  .text.SPI2_IRQHandler
-                0x080005bc      0x2e4 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\main.o
-                0x080005bc                SPI2_IRQHandler
+                0x080005c0      0x2e4 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\main.o
+                0x080005c0                SPI2_IRQHandler
  .text.TIM6_DAC_IRQHandler
-                0x080008a0       0x2c D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\main.o
-                0x080008a0                TIM6_DAC_IRQHandler
+                0x080008a4       0x2c D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\main.o
+                0x080008a4                TIM6_DAC_IRQHandler
  .text.SystemInit
-                0x080008cc      0x124 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\system_stm32f4xx.o
-                0x080008cc                SystemInit
+                0x080008d0      0x124 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\system_stm32f4xx.o
+                0x080008d0                SystemInit
  .text.GPIO_Init
-                0x080009f0       0xbc D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_gpio.o
-                0x080009f0                GPIO_Init
+                0x080009f4       0xbc D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_gpio.o
+                0x080009f4                GPIO_Init
  .text.GPIO_PinAFConfig
-                0x08000aac       0x3c D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_gpio.o
-                0x08000aac                GPIO_PinAFConfig
+                0x08000ab0       0x3c D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_gpio.o
+                0x08000ab0                GPIO_PinAFConfig
  .text.NMI_Handler
-                0x08000ae8        0x4 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_it.o
-                0x08000ae8                NMI_Handler
- .text.HardFault_Handler
                 0x08000aec        0x4 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_it.o
-                0x08000aec                HardFault_Handler
- .text.MemManage_Handler
+                0x08000aec                NMI_Handler
+ .text.HardFault_Handler
                 0x08000af0        0x4 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_it.o
-                0x08000af0                MemManage_Handler
- .text.BusFault_Handler
+                0x08000af0                HardFault_Handler
+ .text.MemManage_Handler
                 0x08000af4        0x4 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_it.o
-                0x08000af4                BusFault_Handler
- .text.UsageFault_Handler
+                0x08000af4                MemManage_Handler
+ .text.BusFault_Handler
                 0x08000af8        0x4 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_it.o
-                0x08000af8                UsageFault_Handler
- .text.SVC_Handler
+                0x08000af8                BusFault_Handler
+ .text.UsageFault_Handler
                 0x08000afc        0x4 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_it.o
-                0x08000afc                SVC_Handler
- .text.DebugMon_Handler
+                0x08000afc                UsageFault_Handler
+ .text.SVC_Handler
                 0x08000b00        0x4 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_it.o
-                0x08000b00                DebugMon_Handler
- .text.PendSV_Handler
+                0x08000b00                SVC_Handler
+ .text.DebugMon_Handler
                 0x08000b04        0x4 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_it.o
-                0x08000b04                PendSV_Handler
- .text.SysTick_Handler
+                0x08000b04                DebugMon_Handler
+ .text.PendSV_Handler
                 0x08000b08        0x4 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_it.o
-                0x08000b08                SysTick_Handler
+                0x08000b08                PendSV_Handler
+ .text.SysTick_Handler
+                0x08000b0c        0x4 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_it.o
+                0x08000b0c                SysTick_Handler
  .text.RCC_AHB1PeriphClockCmd
-                0x08000b0c       0x24 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
-                0x08000b0c                RCC_AHB1PeriphClockCmd
+                0x08000b10       0x24 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
+                0x08000b10                RCC_AHB1PeriphClockCmd
  .text.RCC_APB1PeriphClockCmd
-                0x08000b30       0x24 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
-                0x08000b30                RCC_APB1PeriphClockCmd
+                0x08000b34       0x24 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_rcc.o
+                0x08000b34                RCC_APB1PeriphClockCmd
  .text.TIM_TimeBaseInit
-                0x08000b54       0xc0 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
-                0x08000b54                TIM_TimeBaseInit
+                0x08000b58       0xc0 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+                0x08000b58                TIM_TimeBaseInit
  .text.TIM_ITConfig
-                0x08000c14       0x18 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
-                0x08000c14                TIM_ITConfig
+                0x08000c18       0x18 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_tim.o
+                0x08000c18                TIM_ITConfig
  .text.NVIC_Init
-                0x08000c2c       0x88 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\misc.o
-                0x08000c2c                NVIC_Init
+                0x08000c30       0x88 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\misc.o
+                0x08000c30                NVIC_Init
  .text.SPI_Init
-                0x08000cb4       0x48 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_spi.o
-                0x08000cb4                SPI_Init
- .text.SPI_Cmd  0x08000cfc       0x20 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_spi.o
-                0x08000cfc                SPI_Cmd
+                0x08000cb8       0x48 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_spi.o
+                0x08000cb8                SPI_Init
+ .text.SPI_Cmd  0x08000d00       0x20 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_spi.o
+                0x08000d00                SPI_Cmd
  .text.SPI_I2S_ITConfig
-                0x08000d1c       0x28 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_spi.o
-                0x08000d1c                SPI_I2S_ITConfig
+                0x08000d20       0x28 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\stm32f4xx_spi.o
+                0x08000d20                SPI_I2S_ITConfig
  .text.__io_putchar
-                0x08000d44      0x16c D:\Ride\Ride\Lib\ARM\STM32x_io_putchar_thumb.a(STM32F10X_io_putchar.o)
-                0x08000d44                __io_putchar
- .text._write   0x08000eb0        0x4 D:\Ride\Ride\Lib\ARM\std_sbrk_thumb.lib(write.o)
-                0x08000eb0                _write
+                0x08000d48      0x16c D:\Ride\Ride\Lib\ARM\STM32x_io_putchar_thumb.a(STM32F10X_io_putchar.o)
+                0x08000d48                __io_putchar
+ .text._write   0x08000eb4        0x4 D:\Ride\Ride\Lib\ARM\std_sbrk_thumb.lib(write.o)
+                0x08000eb4                _write
  *(.rodata)
- .rodata        0x08000eb4     0x5640 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\main.o
-                0x08000eb4                SineWave
-                0x08001eb4                TriangleWave
-                0x080034f4                SquareWave
-                0x080044f4                SawToothWave
-                0x080054f4                RevSawToothWave
+ .rodata        0x08000eb8     0x5640 D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_DDSWaveGen\main.o
+                0x08000eb8                SineWave
+                0x08001eb8                TriangleWave
+                0x080034f8                SquareWave
+                0x080044f8                SawToothWave
+                0x080054f8                RevSawToothWave
  *(.rodata*)
  *(.glue_7)
  .glue_7        0x00000000        0x0 linker stubs
  *(.glue_7t)
  .glue_7t       0x00000000        0x0 linker stubs
-                0x080064f4                . = ALIGN (0x4)
-                0x080064f4                _etext = .
-                0x080064f4                _sidata = _etext
+                0x080064f8                . = ALIGN (0x4)
+                0x080064f8                _etext = .
+                0x080064f8                _sidata = _etext
 
-.vfp11_veneer   0x080064f4        0x0
+.vfp11_veneer   0x080064f8        0x0
  .vfp11_veneer  0x00000000        0x0 linker stubs
 
-.v4_bx          0x080064f4        0x0
+.v4_bx          0x080064f8        0x0
  .v4_bx         0x00000000        0x0 linker stubs
 
 .flashpatch     0x00000000        0x0
@@ -945,7 +945,7 @@ END GROUP
                 0x00000000                . = ALIGN (0x4)
                 0x00000000                _e_endflash = .
 
-.data           0x20000000        0x0 load address 0x080064f4
+.data           0x20000000        0x0 load address 0x080064f8
                 0x20000000                . = ALIGN (0x4)
                 0x20000000                _sdata = .
                 0x20000000                _data = .
@@ -954,7 +954,7 @@ END GROUP
  *(.RAMtext)
                 0x20000000                . = ALIGN (0x4)
                 0x20000000                _edata = .
-                0x080064f4                _eidata = ((_sidata + _edata) - _sdata)
+                0x080064f8                _eidata = ((_sidata + _edata) - _sdata)
                 0x08010000                _lastdataromaddress = 0x8010000
                 0x00000000                toobig = (_eidata > _lastdataromaddress)?!!!!!!!!! FLASH IS FULL !!!!!!!!!:0x0
 
