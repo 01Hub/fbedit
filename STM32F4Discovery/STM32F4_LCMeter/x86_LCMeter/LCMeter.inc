@@ -516,13 +516,13 @@ hGrayIcon						HICON ?
 hGreenIcon						HICON ?
 hRedIcon						HICON ?
 
-fSampleDone						DWORD ?
 fHoldSampling					DWORD ?
 fNoFrequency					DWORD ?
 fExitThread						DWORD ?
 fThreadDone						DWORD ?
 
 mode							DWORD ?
+lcmmode							DWORD ?
 LCx								REAL10 ?
 lpOldButtonProc					DWORD ?
 nBtnCount						DWORD ?

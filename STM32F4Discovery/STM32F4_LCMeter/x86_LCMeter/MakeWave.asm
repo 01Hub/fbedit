@@ -41,6 +41,61 @@ SineGenerator proc uses ebx esi edi,buf:DWORD,amp:DWORD,harmonic:DWORD
 
 SineGenerator endp
 
+TriangleGenerator proc uses ebx esi edi,buf:DWORD,amp:DWORD,harmonic:DWORD
+	LOCAL	buffer[256]:BYTE
+
+	xor		ebx,ebx
+	mov		esi,4
+	mov		edi,2048
+	mov		edx,buf
+	.while ebx<2048
+;		mov		eax,ebx
+;		and		eax,0Fh
+;		.if !eax
+;			invoke SendDlgItemMessage,hWin,IDC_EDTDDSWAVEDATA,EM_REPLACESEL,FALSE,addr szCRLF
+;		.else
+;			invoke SendDlgItemMessage,hWin,IDC_EDTDDSWAVEDATA,EM_REPLACESEL,FALSE,addr szCOMMA
+;		.endif
+;		invoke wsprintf,addr buffer,addr szFmtDec,edi
+;		invoke SendDlgItemMessage,hWin,IDC_EDTDDSWAVEDATA,EM_REPLACESEL,FALSE,addr buffer
+		mov		eax,edi
+		sub		eax,2048
+		mov		[edx+ebx*WORD],ax
+		add		edi,esi
+		.if edi>4095
+			neg		esi
+			add		edi,esi
+		.endif
+		inc		ebx
+	.endw
+	ret
+
+TriangleGenerator endp
+
+;SquuareGenerator proc uses ebx esi edi,hWin:HWND
+;	LOCAL	buffer[256]:BYTE
+;
+;	xor		ebx,ebx
+;	mov		edi,4095
+;	.while ebx<2048
+;		mov		eax,ebx
+;		and		eax,0Fh
+;		.if !eax
+;			invoke SendDlgItemMessage,hWin,IDC_EDTDDSWAVEDATA,EM_REPLACESEL,FALSE,addr szCRLF
+;		.else
+;			invoke SendDlgItemMessage,hWin,IDC_EDTDDSWAVEDATA,EM_REPLACESEL,FALSE,addr szCOMMA
+;		.endif
+;		invoke wsprintf,addr buffer,addr szFmtDec,edi
+;		invoke SendDlgItemMessage,hWin,IDC_EDTDDSWAVEDATA,EM_REPLACESEL,FALSE,addr buffer
+;		.if ebx==1023
+;			xor		edi,edi
+;		.endif
+;		inc		ebx
+;	.endw
+;	ret
+;
+;SquuareGenerator endp
+
 SumHarmonicData proc uses ebx esi edi
 	
 	mov		edi,offset makewavedata.MW_SumHarmonicData
@@ -256,7 +311,8 @@ MakeWaveChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam
 				.if makewavedata.MainAmp<100
 					inc		makewavedata.MainAmp
 					invoke SendDlgItemMessage,hWin,IDC_TRBMA,TBM_SETPOS,TRUE,makewavedata.MainAmp
-					invoke SineGenerator,offset makewavedata.MW_MainData,makewavedata.MainAmp,0
+;					invoke SineGenerator,offset makewavedata.MW_MainData,makewavedata.MainAmp,0
+					invoke TriangleGenerator,offset makewavedata.MW_MainData,makewavedata.MainAmp,0
 					invoke SumAllWaves
 					invoke InvalidateRect,hMakeWaveScrn,NULL,TRUE
 				.endif

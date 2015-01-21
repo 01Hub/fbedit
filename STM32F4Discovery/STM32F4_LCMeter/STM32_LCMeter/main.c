@@ -11,7 +11,7 @@
 /**
   ******************************************************************************
   Port pins
-  PA.00           Frequency counter input (TIM5)
+  PA.00           Frequency counter scope input (TIM5)
   PA.01           Frequency counter input (TIM2)
   PA.04           Scope V-Pos DAC1 Output
   PB.07           High Speed Clock
@@ -182,6 +182,8 @@ int main(void)
 {
   __IO uint16_t i;
   __IO uint16_t *ptr;
+  __IO uint32_t scpcnt;
+  __IO uint32_t scpwait;
 
 
   /* RCC Configuration */
@@ -291,6 +293,15 @@ int main(void)
           DMA_SingleConfig();
           /* ADC Configuration */
           ADC_SingleConfig();
+        }
+        if (STM32_CMD.STM32_SCP.ScopeTrigger)
+        {
+          /* Wait for trigger */
+          scpcnt = TIM5->CNT;
+          scpwait = STM32_CMD.TickCount + 2;
+          while (scpcnt == TIM5->CNT && scpwait != STM32_CMD.TickCount)
+          {
+          }
         }
         /* Start ADC1 Software Conversion */
         ADC1->CR2 |= (uint32_t)ADC_CR2_SWSTART;

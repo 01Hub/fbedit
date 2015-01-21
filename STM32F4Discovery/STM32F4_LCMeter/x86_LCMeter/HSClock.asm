@@ -36,7 +36,7 @@ HscChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 		.if edx==BN_CLICKED
 			.if eax==IDC_BTNHSCDN
 				invoke GetDlgItemInt,hWin,IDC_EDTHSCFRQ,NULL,FALSE
-				.if eax>1
+				.if eax>2
 					dec		eax
 					mov		resfrq,eax
 					inc		eax

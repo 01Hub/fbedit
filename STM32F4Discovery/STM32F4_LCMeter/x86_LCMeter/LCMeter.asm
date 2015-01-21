@@ -79,8 +79,10 @@ LcmChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 				.if fBluetooth
 					.if mode==CMD_LCMCAP
 						mov		mode,CMD_LCMIND
+						mov		lcmmode,CMD_LCMIND
 					.elseif mode==CMD_LCMIND
 						mov		mode,CMD_LCMCAP
+						mov		lcmmode,CMD_LCMCAP
 					.endif
 					invoke SetMode
 				.endif
@@ -185,6 +187,8 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
 		mov		STM32_Cmd.STM32_Scp.ScopeTrigger,1
 		mov		mode,CMD_LCMCAP
+		mov		lcmmode,CMD_LCMCAP
+		invoke SetMode
 		xor		ebx,ebx
 		.while ebx<ADCSAMPLESIZE/2
 			mov		ADC_Data[ebx*WORD],2048
@@ -192,7 +196,6 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.endw
 		mov		fThreadDone,TRUE
 		mov		STM32_Scp.ADC_SampleSize,10000h
-		invoke SetMode
 		invoke ImageList_GetIcon,hIml,2,ILD_NORMAL
 		mov		hGrayIcon,eax
 		invoke ImageList_GetIcon,hIml,3,ILD_NORMAL
@@ -236,17 +239,16 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	.elseif	eax==WM_TIMER
 		invoke KillTimer,hWin,1000
 		invoke SendDlgItemMessage,hWin,IDC_IMGCONNECTED,STM_SETICON,hRedIcon,0
-		.if mode==CMD_SCPSET
-			.if !fHoldSampling && fSampleDone
-				mov		fSampleDone,FALSE
-				invoke CreateThread,NULL,NULL,addr ScopeSampleThreadProc,hWin,0,addr tid
-				invoke CloseHandle,eax
-			.endif
-			invoke SetTimer,hWin,1000,20,NULL
-			mov		eax,TRUE
-			ret
-		.elseif fThreadDone
-			.if mode==CMD_HSCSET
+		.if fThreadDone && fBluetooth
+			.if mode==CMD_SCPSET
+				.if !fHoldSampling && fThreadDone
+					invoke CreateThread,NULL,NULL,addr ScopeSampleThreadProc,hWin,0,addr tid
+					invoke CloseHandle,eax
+				.endif
+				invoke SetTimer,hWin,1000,20,NULL
+				mov		eax,TRUE
+				ret
+			.elseif mode==CMD_HSCSET
 				invoke BTPut,offset mode,4
 				invoke BTPut,offset STM32_Cmd.STM32_Hsc,8
 				invoke BTGet,offset STM32_Cmd.STM32_Frq,8
@@ -265,12 +267,14 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		mode,CMD_LCMCAP
 				invoke SetMode
 			.elseif mode==CMD_LCMCAP
+				mov		lcmmode,CMD_LCMCAP
 				invoke BTPut,offset mode,4
 				invoke BTGet,offset STM32_Cmd.STM32_Frq,8
 				invoke BTGet,offset STM32_Cmd.STM32_Lcm,8
 				invoke CalculateCapacitor,addr buffer
 				invoke SetWindowText,hLcm,addr buffer
 			.elseif mode==CMD_LCMIND
+				mov		lcmmode,CMD_LCMIND
 				invoke BTPut,offset mode,4
 				invoke BTGet,offset STM32_Cmd.STM32_Frq,8
 				invoke BTGet,offset STM32_Cmd.STM32_Lcm,8
@@ -304,10 +308,7 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		mode,CMD_DONE
 			.elseif mode==CMD_WAVEUPLOAD
 				invoke BTPut,offset mode,4
-PrintHex eax
-;				invoke BTPut,offset STM32_Cmd.STM32_Dds,sizeof STM32_DDS
 				invoke BTPut,offset makewavedata.MW_ResultData,4096
-PrintHex eax
 				mov		mode,CMD_DONE
 			.elseif mode==CMD_STARTUP
 				mov		mode,CMD_DDSSET
@@ -370,7 +371,8 @@ PrintHex eax
 				invoke ShowWindow,hDDSCld,SW_HIDE
 				invoke ShowWindow,hLGACld,SW_HIDE
 				invoke ShowWindow,hMakeWaveCld,SW_HIDE
-				mov		mode,CMD_LCMCAP
+				mov		eax,lcmmode
+				mov		mode,eax
 			.elseif eax==1
 				;High Speed Clock
 				invoke ShowWindow,hHscCld,SW_SHOW
@@ -392,7 +394,6 @@ PrintHex eax
 				invoke ShowWindow,hDDSScrnCld,SW_HIDE
 				invoke ShowWindow,hMakeWaveCld,SW_HIDE
 				invoke ShowWindow,hMakeWaveScrnCld,SW_HIDE
-				mov		fSampleDone,TRUE
 				mov		mode,CMD_SCPSET
 			.elseif eax==3
 				;DDSWave
@@ -406,7 +407,8 @@ PrintHex eax
 				invoke ShowWindow,hScpScrnCld,SW_HIDE
 				invoke ShowWindow,hMakeWaveCld,SW_HIDE
 				invoke ShowWindow,hMakeWaveScrnCld,SW_HIDE
-				mov		mode,CMD_DDSSET
+;				mov		mode,CMD_DDSSET
+				mov		mode,CMD_DONE
 			.elseif eax==4
 				;LGA
 				invoke ShowWindow,hLGACld,SW_SHOW
@@ -419,7 +421,8 @@ PrintHex eax
 				invoke ShowWindow,hScpScrnCld,SW_HIDE
 				invoke ShowWindow,hMakeWaveCld,SW_HIDE
 				invoke ShowWindow,hMakeWaveScrnCld,SW_HIDE
-				mov		mode,CMD_LGASET
+;				mov		mode,CMD_LGASET
+				mov		mode,CMD_DONE
 			.elseif eax==5
 				;MakeWave
 				invoke ShowWindow,hMakeWaveCld,SW_SHOW

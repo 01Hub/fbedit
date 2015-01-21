@@ -52,7 +52,6 @@ ScopeSampleThreadProc proc uses ebx esi edi,lParam:DWORD
 			invoke InvalidateRect,hScpScrn,NULL,TRUE
 			invoke UpdateWindow,hScpScrn
 			invoke SendDlgItemMessage,hWnd,IDC_IMGCONNECTED,STM_SETICON,hGreenIcon,0
-			mov		fSampleDone,TRUE
 		.endif
 	.endif
 	mov		fThreadDone,TRUE
