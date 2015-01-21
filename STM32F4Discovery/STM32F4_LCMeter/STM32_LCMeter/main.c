@@ -182,8 +182,8 @@ int main(void)
 {
   __IO uint16_t i;
   __IO uint16_t *ptr;
-  __IO uint32_t scpcnt;
-  __IO uint32_t scpwait;
+  uint32_t scpcnt;
+  uint32_t scpwait;
 
 
   /* RCC Configuration */

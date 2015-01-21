@@ -842,7 +842,7 @@ DrawCurve:
 			lea		ebx,[ebx+1]
 		.endw
 	.else
-		mov		edi,16
+		mov		edi,0;16
 		mov		esi,offset ADC_Data
 		xor		ebx,ebx
 		call	GetPoint

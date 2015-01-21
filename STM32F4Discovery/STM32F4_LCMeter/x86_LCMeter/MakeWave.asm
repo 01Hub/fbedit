@@ -311,8 +311,8 @@ MakeWaveChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam
 				.if makewavedata.MainAmp<100
 					inc		makewavedata.MainAmp
 					invoke SendDlgItemMessage,hWin,IDC_TRBMA,TBM_SETPOS,TRUE,makewavedata.MainAmp
-;					invoke SineGenerator,offset makewavedata.MW_MainData,makewavedata.MainAmp,0
-					invoke TriangleGenerator,offset makewavedata.MW_MainData,makewavedata.MainAmp,0
+					invoke SineGenerator,offset makewavedata.MW_MainData,makewavedata.MainAmp,0
+;					invoke TriangleGenerator,offset makewavedata.MW_MainData,makewavedata.MainAmp,0
 					invoke SumAllWaves
 					invoke InvalidateRect,hMakeWaveScrn,NULL,TRUE
 				.endif
