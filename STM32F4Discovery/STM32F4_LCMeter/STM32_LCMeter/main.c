@@ -183,8 +183,8 @@ int main(void)
 {
   __IO uint16_t i;
   __IO uint16_t *ptr;
-  uint32_t scpcnt;
-  uint32_t scpwait;
+  // uint32_t scpcnt;
+  // uint32_t scpwait;
 
 
   /* RCC Configuration */
@@ -297,38 +297,41 @@ int main(void)
           /* ADC Configuration */
           ADC_SingleConfig();
         }
-        if (STM32_CMD.STM32_SCP.ScopeTrigger)
-        {
-          /* Wait for trigger */
-          scpcnt = TIM5->CNT;
-          scpwait = STM32_CMD.TickCount + 1;
-          while (scpcnt == TIM5->CNT && scpwait != STM32_CMD.TickCount)
-          {
-          }
-        }
+        // if (STM32_CMD.STM32_SCP.ScopeTrigger)
+        // {
+          // /* Wait for trigger */
+          // scpcnt = TIM5->CNT;
+          // scpwait = STM32_CMD.TickCount + 1;
+          // while (scpcnt == TIM5->CNT && scpwait != STM32_CMD.TickCount)
+          // {
+          // }
+        // }
         /* Start ADC1 Software Conversion */
         ADC1->CR2 |= (uint32_t)ADC_CR2_SWSTART;
-        i = 0;
-        if (STM32_CMD.STM32_SCP.ScopeTrigger)
-        {
-          /* Find the byte position of the first trigger */
-          scpcnt = TIM5->CNT;
-          scpwait = STM32_CMD.TickCount + 2;
-          while (scpcnt == TIM5->CNT && scpwait != STM32_CMD.TickCount)
-          {
-          }
-          i = ((uint16_t)(DMA2_Stream0->NDTR));
-          if (STM32_CMD.STM32_SCP.ADC_TripleMode)
-          {
-            i = (STM32_CMD.STM32_SCP.ADC_SampleSize / 4) * 4;
-          }
-          else
-          {
-            i = (STM32_CMD.STM32_SCP.ADC_SampleSize / 2) * 2;
-          }
-        }
+        // i = 0;
+        // if (STM32_CMD.STM32_SCP.ScopeTrigger)
+        // {
+          // /* Find the byte position of the first trigger */
+          // scpcnt = TIM5->CNT;
+          // scpwait = STM32_CMD.TickCount + 2;
+          // while (scpcnt == TIM5->CNT && scpwait != STM32_CMD.TickCount)
+          // {
+          // }
+          // i = ((uint16_t)(DMA2_Stream0->NDTR));
+          // if (STM32_CMD.STM32_SCP.ADC_TripleMode)
+          // {
+            // i = ((STM32_CMD.STM32_SCP.ADC_SampleSize / 4) - i) * 4;
+          // }
+          // else
+          // {
+            // i = ((STM32_CMD.STM32_SCP.ADC_SampleSize / 2) - i) * 2;
+          // }
+        // }
         /* Since BlueTooth is slower than the lowest sampling rate there is no need to wait */
-        SendCompressedBuffer((uint32_t *)SCOPE_DATAPTR + (uint32_t) i, STM32_CMD.STM32_SCP.ADC_SampleSize / 4);
+        i = 1000;
+        while (i--);
+        // SendCompressedBuffer((uint32_t *)SCOPE_DATAPTR + (uint32_t) i, STM32_CMD.STM32_SCP.ADC_SampleSize / 4);
+        SendCompressedBuffer((uint32_t *)SCOPE_DATAPTR, STM32_CMD.STM32_SCP.ADC_SampleSize / 4);
         /* Done */
         ADC->CCR=0;
         ADC1->CR2=0;

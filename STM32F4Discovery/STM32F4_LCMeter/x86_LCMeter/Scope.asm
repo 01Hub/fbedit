@@ -11,7 +11,7 @@ ScopeSampleThreadProc proc uses ebx esi edi,lParam:DWORD
 		invoke BTGet,offset STM32_Cmd.STM32_Frq,8
 		invoke FormatFrequency,STM32_Cmd.STM32_Frq.FrequencySCP,addr buffer
 		invoke SetWindowText,hScp,addr buffer
-		invoke RtlZeroMemory,offset ADC_Data,sizeof ADC_Data
+		;invoke RtlZeroMemory,offset ADC_Data,sizeof ADC_Data
 		;Copy current scope settings
 		invoke RtlMoveMemory,offset STM32_Scp,offset STM32_Cmd.STM32_Scp,sizeof STM32_SCP
 		invoke GetSampleTime,offset STM32_Scp
@@ -86,7 +86,6 @@ ScpChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 
 		invoke SendDlgItemMessage,hWin,IDC_TRBTRIGGERLEVEL,TBM_SETRANGE,FALSE,4095 SHL 16
 		mov		eax,STM32_Cmd.STM32_Scp.ScopeTriggerLevel
-;		shr		eax,4
 		invoke SendDlgItemMessage,hWin,IDC_TRBTRIGGERLEVEL,TBM_SETPOS,TRUE,eax
 
 		invoke SendDlgItemMessage,hWin,IDC_TRBVPOS,TBM_SETRANGE,FALSE,4095 SHL 16

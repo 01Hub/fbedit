@@ -77,17 +77,24 @@ SquuareGenerator proc uses ebx esi edi,buf:DWORD,amp:DWORD,harmonic:DWORD
 
 	xor		ebx,ebx
 	mov		edi,2048
-	mov		edx,buf
 	.while ebx<2048
-		push	edx
 		mov		eax,edi
 		mov		ecx,amp
 		imul	ecx
 		mov		ecx,100
 		idiv	ecx
-		pop		edx
+		mov		edx,buf
 		mov		[edx+ebx*WORD],ax
-		.if ebx==1023
+		mov		eax,1024
+		cdq
+		mov		ecx,harmonic
+		inc		ecx
+		div		ecx
+		mov		ecx,eax
+		mov		eax,ebx
+		cdq
+		div		ecx
+		.if edx==0
 			neg		edi
 		.endif
 		inc		ebx
@@ -269,7 +276,7 @@ MakeWaveChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam
 		invoke SendDlgItemMessage,hWin,IDC_TRB4HA,TBM_SETRANGE,FALSE,100 SHL 16
 		invoke SendDlgItemMessage,hWin,IDC_TRBNA,TBM_SETRANGE,FALSE,100 SHL 16
 		invoke SendDlgItemMessage,hWin,IDC_TRBNF,TBM_SETRANGE,FALSE,100 SHL 16
-		invoke MakeWave,offset makewavedata.MW_MainData,makewavedata.MainAmp,0,1
+		invoke MakeWave,offset makewavedata.MW_MainData,makewavedata.MainAmp,0,0
 
 		invoke RandomNoise
 		invoke NoiseGenerator
@@ -348,6 +355,7 @@ MakeWaveChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam
 					invoke MakeWave,offset makewavedata.MW_ThirdHarmonicData,makewavedata.ThirdHarmonicAmp,2,makewavedata.HarmonicType
 					invoke MakeWave,offset makewavedata.MW_FourthHarmonicData,makewavedata.FourthHarmonicAmp,3,makewavedata.HarmonicType
 					invoke SumHarmonicData
+					invoke SumAllWaves
 					invoke InvalidateRect,hMakeWaveScrn,NULL,TRUE
 				.else
 					pop		eax

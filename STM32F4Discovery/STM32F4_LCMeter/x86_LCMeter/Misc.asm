@@ -644,7 +644,7 @@ GetTotalSamples proc uses esi,lpSTM32_Scp:ptr STM32_SCP
 
 GetTotalSamples endp
 
-GetAuto proc hWin:HWND
+GetAuto proc uses ebx esi edi,hWin:HWND
 
 	;Set Time/Div
 	invoke GetSignalPeriod
@@ -816,7 +816,7 @@ SetMode proc
 
 SetMode endp
 
-FormatFrequency proc uses ebx,frq:DWORD,lpBuffer:DWORD
+FormatFrequency proc uses ebx esi edi,frq:DWORD,lpBuffer:DWORD
 
 	mov		eax,frq
 	.if eax<1000
