@@ -83,13 +83,16 @@ ScpChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 		mov		eax,STM32_Cmd.STM32_Scp.ScopeTrigger
 		add		eax,IDC_RBNTRIGGERNONE
 		invoke SendDlgItemMessage,hWin,eax,BM_SETCHECK,BST_CHECKED,0
-		invoke SendDlgItemMessage,hWin,IDC_TRBTRIGGERLEVEL,TBM_SETRANGE,FALSE,255 SHL 16
+
+		invoke SendDlgItemMessage,hWin,IDC_TRBTRIGGERLEVEL,TBM_SETRANGE,FALSE,4095 SHL 16
 		mov		eax,STM32_Cmd.STM32_Scp.ScopeTriggerLevel
-		shr		eax,4
+;		shr		eax,4
 		invoke SendDlgItemMessage,hWin,IDC_TRBTRIGGERLEVEL,TBM_SETPOS,TRUE,eax
+
 		invoke SendDlgItemMessage,hWin,IDC_TRBVPOS,TBM_SETRANGE,FALSE,4095 SHL 16
 		mov		eax,STM32_Cmd.STM32_Scp.ScopeVPos
 		invoke SendDlgItemMessage,hWin,IDC_TRBVPOS,TBM_SETPOS,TRUE,eax
+
 		invoke ImageList_GetIcon,hIml,0,ILD_NORMAL
 		mov		ebx,eax
 		push	0
@@ -242,25 +245,23 @@ ScpChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 				.endif
 			.elseif eax==IDC_BTNTLU
 				mov		eax,STM32_Cmd.STM32_Scp.ScopeTriggerLevel
-				shr		eax,4
-				.if eax<255
+				.if eax<4095
 					inc		eax
 					push	eax
 					invoke SendDlgItemMessage,hWin,IDC_TRBTRIGGERLEVEL,TBM_SETPOS,TRUE,eax
 					pop		eax
-					shl		eax,4
 					mov		STM32_Cmd.STM32_Scp.ScopeTriggerLevel,eax
+					invoke InvalidateRect,hScpScrn,NULL,TRUE
 				.endif
 			.elseif eax==IDC_BTNTLD
 				mov		eax,STM32_Cmd.STM32_Scp.ScopeTriggerLevel
-				shr		eax,4
 				.if eax
 					dec		eax
 					push	eax
 					invoke SendDlgItemMessage,hWin,IDC_TRBTRIGGERLEVEL,TBM_SETPOS,TRUE,eax
 					pop		eax
-					shl		eax,4
 					mov		STM32_Cmd.STM32_Scp.ScopeTriggerLevel,eax
+					invoke InvalidateRect,hScpScrn,NULL,TRUE
 				.endif
 			.elseif eax==IDC_CHKTRIPLE
 				xor		STM32_Cmd.STM32_Scp.ADC_TripleMode,TRUE
@@ -312,7 +313,6 @@ ScpChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 		.elseif eax==IDC_TRBTRIGGERLEVEL
 			;Scope Trigger Level
 			invoke SendDlgItemMessage,hWin,IDC_TRBTRIGGERLEVEL,TBM_GETPOS,0,0
-			shl		eax,4
 			mov		STM32_Cmd.STM32_Scp.ScopeTriggerLevel,eax
 		.elseif eax==IDC_TRBVPOS
 			;Scope V-Pos

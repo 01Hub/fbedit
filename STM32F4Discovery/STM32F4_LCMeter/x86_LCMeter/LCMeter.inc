@@ -158,6 +158,13 @@ IDC_BTNNFDN             		equ 1512
 IDC_TRBNF               		equ 1516
 IDC_BTNNFUP             		equ 1520
 
+IDC_RBNMAINSINE         		equ 1524
+IDC_RBNMAINTRIANGLE     		equ 1525
+IDC_RBNMAINSQUARE       		equ 1526
+IDC_RBNHARMONICSINE     		equ 1527
+IDC_RBNHARMONICTRIANGLE 		equ 1528
+IDC_RBNHARMONICSQUARE   		equ 1529
+
 IDD_DLGSCPSCRNCLD				equ 2000
 IDC_UDCSCPSCRN					equ 2001
 
@@ -336,7 +343,9 @@ DDSWAVEDATA ends
 
 MAKEWAVEDATA struct
 	ShowWave					DWORD ?
+	MainType					DWORD ?
 	MainAmp						DWORD ?
+	HarmonicType				DWORD ?
 	SecondHarmonicAmp			DWORD ?
 	ThirdHarmonicAmp			DWORD ?
 	FourthHarmonicAmp			DWORD ?

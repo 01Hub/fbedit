@@ -493,7 +493,7 @@ ClockToFrequency proc count:DWORD,clk:DWORD
 
 ClockToFrequency endp
 
-GetHSCFrq proc uses ebx edi,frq:DWORD,lpRes:DWORD
+GetHSCFrq proc uses ebx esi edi,frq:DWORD,lpRes:DWORD
 
 	mov		eax,frq
 	.if eax<3

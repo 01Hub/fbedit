@@ -14,6 +14,7 @@
   PA.00           Frequency counter scope input (TIM5)
   PA.01           Frequency counter input (TIM2)
   PA.04           Scope V-Pos DAC1 Output
+  PA.05           Scope trigger position  DAC2 Output
   PB.07           High Speed Clock
   PB.13           SPI SCK
   PB.15           SPI MOSI
@@ -280,6 +281,8 @@ int main(void)
         GPIO_ResetBits(GPIOE,i);
         /* Set V-Pos */
         DAC_SetChannel1Data(DAC_Align_12b_R, STM32_CMD.STM32_SCP.ScopeVPos);
+        /* Set Trigger level */
+        DAC_SetChannel2Data(DAC_Align_12b_R, STM32_CMD.STM32_SCP.ScopeTriggerLevel);
         if (STM32_CMD.STM32_SCP.ADC_TripleMode)
         {
           /* DMA Configuration */
@@ -298,15 +301,34 @@ int main(void)
         {
           /* Wait for trigger */
           scpcnt = TIM5->CNT;
-          scpwait = STM32_CMD.TickCount + 2;
+          scpwait = STM32_CMD.TickCount + 1;
           while (scpcnt == TIM5->CNT && scpwait != STM32_CMD.TickCount)
           {
           }
         }
         /* Start ADC1 Software Conversion */
         ADC1->CR2 |= (uint32_t)ADC_CR2_SWSTART;
-        /* Since BlueTooth is slower than sampling therev is no need to wait */
-        SendCompressedBuffer((uint32_t *)SCOPE_DATAPTR, STM32_CMD.STM32_SCP.ADC_SampleSize / 4);
+        i = 0;
+        if (STM32_CMD.STM32_SCP.ScopeTrigger)
+        {
+          /* Find the byte position of the first trigger */
+          scpcnt = TIM5->CNT;
+          scpwait = STM32_CMD.TickCount + 2;
+          while (scpcnt == TIM5->CNT && scpwait != STM32_CMD.TickCount)
+          {
+          }
+          i = ((uint16_t)(DMA2_Stream0->NDTR));
+          if (STM32_CMD.STM32_SCP.ADC_TripleMode)
+          {
+            i = (STM32_CMD.STM32_SCP.ADC_SampleSize / 4) * 4;
+          }
+          else
+          {
+            i = (STM32_CMD.STM32_SCP.ADC_SampleSize / 2) * 2;
+          }
+        }
+        /* Since BlueTooth is slower than the lowest sampling rate there is no need to wait */
+        SendCompressedBuffer((uint32_t *)SCOPE_DATAPTR + (uint32_t) i, STM32_CMD.STM32_SCP.ADC_SampleSize / 4);
         /* Done */
         ADC->CCR=0;
         ADC1->CR2=0;
@@ -645,6 +667,12 @@ void GPIO_Config(void)
   GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL ;
   GPIO_Init(GPIOA, &GPIO_InitStructure);
 
+  /* Configure DAC Channel2 pin as analog output (Scope Trigger Pos) */
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5;
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AN;
+  GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL ;
+  GPIO_Init(GPIOA, &GPIO_InitStructure);
+
   /* GPIOD Outputs */
   GPIO_ResetBits(GPIOD, GPIO_Pin_0 | GPIO_Pin_1 | GPIO_Pin_2 | GPIO_Pin_6 | GPIO_Pin_7);
   GPIO_InitStructure.GPIO_Pin   = GPIO_Pin_0 | GPIO_Pin_1 | GPIO_Pin_2 | GPIO_Pin_6 | GPIO_Pin_7;
@@ -781,8 +809,17 @@ void DAC_Config(void)
   /* Enable DAC Channel1 */
   DAC_Cmd(DAC_Channel_1, ENABLE);
   DAC_SetChannel1Data(DAC_Align_12b_R, 2048);
-  /* Enable DAC Channel1 and output buffer */
-  DAC->CR = 0x1;
+  /* DAC channel2 Configuration */
+  DAC_StructInit(&DAC_InitStructure);
+  DAC_InitStructure.DAC_Trigger = DAC_Trigger_None;
+  DAC_InitStructure.DAC_WaveGeneration = DAC_WaveGeneration_None;
+  DAC_InitStructure.DAC_OutputBuffer = DAC_OutputBuffer_Enable;
+  DAC_Init(DAC_Channel_2, &DAC_InitStructure);
+  /* Enable DAC Channel1 */
+  DAC_Cmd(DAC_Channel_2, ENABLE);
+  DAC_SetChannel2Data(DAC_Align_12b_R, 2048);
+  /* Enable DAC Channels and output buffers */
+  DAC->CR = 0x00010001;
 }
 
 /**

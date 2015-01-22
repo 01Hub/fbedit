@@ -45,21 +45,21 @@ TriangleGenerator proc uses ebx esi edi,buf:DWORD,amp:DWORD,harmonic:DWORD
 	LOCAL	buffer[256]:BYTE
 
 	xor		ebx,ebx
-	mov		esi,4
+	mov		eax,harmonic
+	inc		eax
+	shl		eax,2
+	mov		esi,eax
 	mov		edi,2048
 	mov		edx,buf
 	.while ebx<2048
-;		mov		eax,ebx
-;		and		eax,0Fh
-;		.if !eax
-;			invoke SendDlgItemMessage,hWin,IDC_EDTDDSWAVEDATA,EM_REPLACESEL,FALSE,addr szCRLF
-;		.else
-;			invoke SendDlgItemMessage,hWin,IDC_EDTDDSWAVEDATA,EM_REPLACESEL,FALSE,addr szCOMMA
-;		.endif
-;		invoke wsprintf,addr buffer,addr szFmtDec,edi
-;		invoke SendDlgItemMessage,hWin,IDC_EDTDDSWAVEDATA,EM_REPLACESEL,FALSE,addr buffer
+		push	edx
 		mov		eax,edi
 		sub		eax,2048
+		mov		ecx,amp
+		imul	ecx
+		mov		ecx,100
+		idiv	ecx
+		pop		edx
 		mov		[edx+ebx*WORD],ax
 		add		edi,esi
 		.if edi>4095
@@ -72,29 +72,29 @@ TriangleGenerator proc uses ebx esi edi,buf:DWORD,amp:DWORD,harmonic:DWORD
 
 TriangleGenerator endp
 
-;SquuareGenerator proc uses ebx esi edi,hWin:HWND
-;	LOCAL	buffer[256]:BYTE
-;
-;	xor		ebx,ebx
-;	mov		edi,4095
-;	.while ebx<2048
-;		mov		eax,ebx
-;		and		eax,0Fh
-;		.if !eax
-;			invoke SendDlgItemMessage,hWin,IDC_EDTDDSWAVEDATA,EM_REPLACESEL,FALSE,addr szCRLF
-;		.else
-;			invoke SendDlgItemMessage,hWin,IDC_EDTDDSWAVEDATA,EM_REPLACESEL,FALSE,addr szCOMMA
-;		.endif
-;		invoke wsprintf,addr buffer,addr szFmtDec,edi
-;		invoke SendDlgItemMessage,hWin,IDC_EDTDDSWAVEDATA,EM_REPLACESEL,FALSE,addr buffer
-;		.if ebx==1023
-;			xor		edi,edi
-;		.endif
-;		inc		ebx
-;	.endw
-;	ret
-;
-;SquuareGenerator endp
+SquuareGenerator proc uses ebx esi edi,buf:DWORD,amp:DWORD,harmonic:DWORD
+	LOCAL	buffer[256]:BYTE
+
+	xor		ebx,ebx
+	mov		edi,2048
+	mov		edx,buf
+	.while ebx<2048
+		push	edx
+		mov		eax,edi
+		mov		ecx,amp
+		imul	ecx
+		mov		ecx,100
+		idiv	ecx
+		pop		edx
+		mov		[edx+ebx*WORD],ax
+		.if ebx==1023
+			neg		edi
+		.endif
+		inc		ebx
+	.endw
+	ret
+
+SquuareGenerator endp
 
 SumHarmonicData proc uses ebx esi edi
 	
@@ -229,6 +229,20 @@ RandomNoise proc uses ebx esi edi
 
 RandomNoise endp
 
+MakeWave proc buf:DWORD,amp:DWORD,harmonic:DWORD,wavetype:DWORD
+
+	mov		eax,wavetype
+	.if eax==0
+		invoke SineGenerator,buf,amp,harmonic
+	.elseif eax==1
+		invoke TriangleGenerator,buf,amp,harmonic
+	.elseif eax==2
+		invoke SquuareGenerator,buf,amp,harmonic
+	.endif
+	ret
+
+MakeWave endp
+
 MakeWaveChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	buffer[64]:BYTE
 
@@ -236,23 +250,27 @@ MakeWaveChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam
 	.if eax==WM_INITDIALOG
 		mov		eax,hWin
 		mov		hMakeWaveCld,eax
-		mov		makewavedata.ShowWave,0
 		mov		makewavedata.MainAmp,50
 		mov		makewavedata.SecondHarmonicAmp,0
 		mov		makewavedata.ThirdHarmonicAmp,0
 		mov		makewavedata.FourthHarmonicAmp,0
 		mov		makewavedata.NoiseAmp,0
-		invoke CheckDlgButton,hWin,IDC_RBNMAIN,BST_CHECKED
+		invoke CheckDlgButton,hWin,IDC_RBNRESULT,BST_CHECKED
+		mov		makewavedata.ShowWave,3
+		mov		makewavedata.MainType,0
+		invoke CheckDlgButton,hWin,IDC_RBNMAINSINE,BST_CHECKED
+		mov		makewavedata.HarmonicType,0
+		invoke CheckDlgButton,hWin,IDC_RBNHARMONICSINE,BST_CHECKED
+
 		invoke SendDlgItemMessage,hWin,IDC_TRBMA,TBM_SETRANGE,FALSE,100 SHL 16
 		invoke SendDlgItemMessage,hWin,IDC_TRBMA,TBM_SETPOS,TRUE,makewavedata.MainAmp
-
 		invoke SendDlgItemMessage,hWin,IDC_TRB2HA,TBM_SETRANGE,FALSE,100 SHL 16
 		invoke SendDlgItemMessage,hWin,IDC_TRB3HA,TBM_SETRANGE,FALSE,100 SHL 16
 		invoke SendDlgItemMessage,hWin,IDC_TRB4HA,TBM_SETRANGE,FALSE,100 SHL 16
 		invoke SendDlgItemMessage,hWin,IDC_TRBNA,TBM_SETRANGE,FALSE,100 SHL 16
 		invoke SendDlgItemMessage,hWin,IDC_TRBNF,TBM_SETRANGE,FALSE,100 SHL 16
+		invoke MakeWave,offset makewavedata.MW_MainData,makewavedata.MainAmp,0,1
 
-		invoke SineGenerator,offset makewavedata.MW_MainData,makewavedata.MainAmp,0
 		invoke RandomNoise
 		invoke NoiseGenerator
 		invoke SumAllWaves
@@ -296,14 +314,49 @@ MakeWaveChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam
 		shr		edx,16
 		.if edx==BN_CLICKED
 			.if eax>=IDC_RBNMAIN && eax<=IDC_RBNRESULT
-				sub		eax,IDC_RBNMAIN
-				mov		makewavedata.ShowWave,eax
-				invoke InvalidateRect,hMakeWaveScrn,NULL,TRUE
+				push	eax
+				invoke IsDlgButtonChecked,hWin,eax
+				.if eax
+					pop		eax
+					sub		eax,IDC_RBNMAIN
+					mov		makewavedata.ShowWave,eax
+					invoke InvalidateRect,hMakeWaveScrn,NULL,TRUE
+				.else
+					pop		eax
+				.endif
+			.elseif eax>=IDC_RBNMAINSINE && eax<=IDC_RBNMAINSQUARE
+				push	eax
+				invoke IsDlgButtonChecked,hWin,eax
+				.if eax
+					pop		eax
+					sub		eax,IDC_RBNMAINSINE
+					mov		makewavedata.MainType,eax
+					invoke MakeWave,offset makewavedata.MW_MainData,makewavedata.MainAmp,0,makewavedata.MainType
+					invoke SumAllWaves
+					invoke InvalidateRect,hMakeWaveScrn,NULL,TRUE
+				.else
+					pop		eax
+				.endif
+			.elseif eax>=IDC_RBNHARMONICSINE && eax<=IDC_RBNHARMONICSQUARE
+				push	eax
+				invoke IsDlgButtonChecked,hWin,eax
+				.if eax
+					pop		eax
+					sub		eax,IDC_RBNHARMONICSINE
+					mov		makewavedata.HarmonicType,eax
+					invoke MakeWave,offset makewavedata.MW_SecondHarmonicData,makewavedata.SecondHarmonicAmp,1,makewavedata.HarmonicType
+					invoke MakeWave,offset makewavedata.MW_ThirdHarmonicData,makewavedata.ThirdHarmonicAmp,2,makewavedata.HarmonicType
+					invoke MakeWave,offset makewavedata.MW_FourthHarmonicData,makewavedata.FourthHarmonicAmp,3,makewavedata.HarmonicType
+					invoke SumHarmonicData
+					invoke InvalidateRect,hMakeWaveScrn,NULL,TRUE
+				.else
+					pop		eax
+				.endif
 			.elseif eax==IDC_BTNMADN
 				.if makewavedata.MainAmp
 					dec		makewavedata.MainAmp
 					invoke SendDlgItemMessage,hWin,IDC_TRBMA,TBM_SETPOS,TRUE,makewavedata.MainAmp
-					invoke SineGenerator,offset makewavedata.MW_MainData,makewavedata.MainAmp,0
+					invoke MakeWave,offset makewavedata.MW_MainData,makewavedata.MainAmp,0,makewavedata.MainType
 					invoke SumAllWaves
 					invoke InvalidateRect,hMakeWaveScrn,NULL,TRUE
 				.endif
@@ -311,8 +364,7 @@ MakeWaveChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam
 				.if makewavedata.MainAmp<100
 					inc		makewavedata.MainAmp
 					invoke SendDlgItemMessage,hWin,IDC_TRBMA,TBM_SETPOS,TRUE,makewavedata.MainAmp
-					invoke SineGenerator,offset makewavedata.MW_MainData,makewavedata.MainAmp,0
-;					invoke TriangleGenerator,offset makewavedata.MW_MainData,makewavedata.MainAmp,0
+					invoke MakeWave,offset makewavedata.MW_MainData,makewavedata.MainAmp,0,makewavedata.MainType
 					invoke SumAllWaves
 					invoke InvalidateRect,hMakeWaveScrn,NULL,TRUE
 				.endif
@@ -320,7 +372,7 @@ MakeWaveChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam
 				.if makewavedata.SecondHarmonicAmp
 					dec		makewavedata.SecondHarmonicAmp
 					invoke SendDlgItemMessage,hWin,IDC_TRB2HA,TBM_SETPOS,TRUE,makewavedata.SecondHarmonicAmp
-					invoke SineGenerator,offset makewavedata.MW_SecondHarmonicData,makewavedata.SecondHarmonicAmp,1
+					invoke MakeWave,offset makewavedata.MW_SecondHarmonicData,makewavedata.SecondHarmonicAmp,1,makewavedata.HarmonicType
 					invoke SumHarmonicData
 					invoke SumAllWaves
 					invoke InvalidateRect,hMakeWaveScrn,NULL,TRUE
@@ -329,7 +381,7 @@ MakeWaveChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam
 				.if makewavedata.SecondHarmonicAmp<100
 					inc		makewavedata.SecondHarmonicAmp
 					invoke SendDlgItemMessage,hWin,IDC_TRB2HA,TBM_SETPOS,TRUE,makewavedata.SecondHarmonicAmp
-					invoke SineGenerator,offset makewavedata.MW_SecondHarmonicData,makewavedata.SecondHarmonicAmp,1
+					invoke MakeWave,offset makewavedata.MW_SecondHarmonicData,makewavedata.SecondHarmonicAmp,1,makewavedata.HarmonicType
 					invoke SumHarmonicData
 					invoke SumAllWaves
 					invoke InvalidateRect,hMakeWaveScrn,NULL,TRUE
@@ -338,7 +390,7 @@ MakeWaveChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam
 				.if makewavedata.ThirdHarmonicAmp
 					dec		makewavedata.ThirdHarmonicAmp
 					invoke SendDlgItemMessage,hWin,IDC_TRB3HA,TBM_SETPOS,TRUE,makewavedata.ThirdHarmonicAmp
-					invoke SineGenerator,offset makewavedata.MW_ThirdHarmonicData,makewavedata.ThirdHarmonicAmp,2
+					invoke MakeWave,offset makewavedata.MW_ThirdHarmonicData,makewavedata.ThirdHarmonicAmp,2,makewavedata.HarmonicType
 					invoke SumHarmonicData
 					invoke SumAllWaves
 					invoke InvalidateRect,hMakeWaveScrn,NULL,TRUE
@@ -347,7 +399,7 @@ MakeWaveChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam
 				.if makewavedata.ThirdHarmonicAmp<100
 					inc		makewavedata.ThirdHarmonicAmp
 					invoke SendDlgItemMessage,hWin,IDC_TRB3HA,TBM_SETPOS,TRUE,makewavedata.ThirdHarmonicAmp
-					invoke SineGenerator,offset makewavedata.MW_ThirdHarmonicData,makewavedata.ThirdHarmonicAmp,2
+					invoke MakeWave,offset makewavedata.MW_ThirdHarmonicData,makewavedata.ThirdHarmonicAmp,2,makewavedata.HarmonicType
 					invoke SumHarmonicData
 					invoke SumAllWaves
 					invoke InvalidateRect,hMakeWaveScrn,NULL,TRUE
@@ -356,7 +408,7 @@ MakeWaveChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam
 				.if makewavedata.FourthHarmonicAmp
 					dec		makewavedata.FourthHarmonicAmp
 					invoke SendDlgItemMessage,hWin,IDC_TRB4HA,TBM_SETPOS,TRUE,makewavedata.FourthHarmonicAmp
-					invoke SineGenerator,offset makewavedata.MW_FourthHarmonicData,makewavedata.FourthHarmonicAmp,3
+					invoke MakeWave,offset makewavedata.MW_FourthHarmonicData,makewavedata.FourthHarmonicAmp,3,makewavedata.HarmonicType
 					invoke SumHarmonicData
 					invoke SumAllWaves
 					invoke InvalidateRect,hMakeWaveScrn,NULL,TRUE
@@ -365,7 +417,7 @@ MakeWaveChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam
 				.if makewavedata.FourthHarmonicAmp<100
 					inc		makewavedata.FourthHarmonicAmp
 					invoke SendDlgItemMessage,hWin,IDC_TRB4HA,TBM_SETPOS,TRUE,makewavedata.FourthHarmonicAmp
-					invoke SineGenerator,offset makewavedata.MW_FourthHarmonicData,makewavedata.FourthHarmonicAmp,3
+					invoke MakeWave,offset makewavedata.MW_FourthHarmonicData,makewavedata.FourthHarmonicAmp,3,makewavedata.HarmonicType
 					invoke SumHarmonicData
 					invoke SumAllWaves
 					invoke InvalidateRect,hMakeWaveScrn,NULL,TRUE
@@ -409,27 +461,27 @@ MakeWaveChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam
 		.if eax==IDC_TRBMA
 			invoke SendDlgItemMessage,hWin,IDC_TRBMA,TBM_GETPOS,0,0
 			mov		makewavedata.MainAmp,eax
-			invoke SineGenerator,offset makewavedata.MW_MainData,makewavedata.MainAmp,0
+			invoke MakeWave,offset makewavedata.MW_MainData,makewavedata.MainAmp,0,makewavedata.MainType
 			invoke SumAllWaves
 			invoke InvalidateRect,hMakeWaveScrn,NULL,TRUE
 		.elseif eax==IDC_TRB2HA
 			invoke SendDlgItemMessage,hWin,IDC_TRB2HA,TBM_GETPOS,0,0
 			mov		makewavedata.SecondHarmonicAmp,eax
-			invoke SineGenerator,offset makewavedata.MW_SecondHarmonicData,makewavedata.SecondHarmonicAmp,1
+			invoke MakeWave,offset makewavedata.MW_SecondHarmonicData,makewavedata.SecondHarmonicAmp,1,makewavedata.HarmonicType
 			invoke SumHarmonicData
 			invoke SumAllWaves
 			invoke InvalidateRect,hMakeWaveScrn,NULL,TRUE
 		.elseif eax==IDC_TRB3HA
 			invoke SendDlgItemMessage,hWin,IDC_TRB3HA,TBM_GETPOS,0,0
 			mov		makewavedata.ThirdHarmonicAmp,eax
-			invoke SineGenerator,offset makewavedata.MW_ThirdHarmonicData,makewavedata.ThirdHarmonicAmp,2
+			invoke MakeWave,offset makewavedata.MW_ThirdHarmonicData,makewavedata.ThirdHarmonicAmp,2,makewavedata.HarmonicType
 			invoke SumHarmonicData
 			invoke SumAllWaves
 			invoke InvalidateRect,hMakeWaveScrn,NULL,TRUE
 		.elseif eax==IDC_TRB4HA
 			invoke SendDlgItemMessage,hWin,IDC_TRB4HA,TBM_GETPOS,0,0
 			mov		makewavedata.FourthHarmonicAmp,eax
-			invoke SineGenerator,offset makewavedata.MW_FourthHarmonicData,makewavedata.FourthHarmonicAmp,3
+			invoke MakeWave,offset makewavedata.MW_FourthHarmonicData,makewavedata.FourthHarmonicAmp,3,makewavedata.HarmonicType
 			invoke SumHarmonicData
 			invoke SumAllWaves
 			invoke InvalidateRect,hMakeWaveScrn,NULL,TRUE
@@ -530,7 +582,6 @@ MakeWaveProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 		.endif
 		mov		eax,008000h
 		call	DrawWave
-
 		invoke SelectClipRgn,mDC,NULL
 		add		rect.bottom,TEXTHIGHT
 		invoke BitBlt,ps.hdc,0,0,rect.right,rect.bottom,mDC,0,0,SRCCOPY
