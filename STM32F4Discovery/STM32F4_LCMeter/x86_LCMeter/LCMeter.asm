@@ -241,7 +241,7 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SendDlgItemMessage,hWin,IDC_IMGCONNECTED,STM_SETICON,hRedIcon,0
 		.if fThreadDone && fBluetooth
 			.if mode==CMD_SCPSET
-				.if !fHoldSampling && fThreadDone
+				.if !fHoldSampling
 					invoke CreateThread,NULL,NULL,addr ScopeSampleThreadProc,hWin,0,addr tid
 					invoke CloseHandle,eax
 				.endif

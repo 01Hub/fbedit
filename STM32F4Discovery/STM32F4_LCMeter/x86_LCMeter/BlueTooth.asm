@@ -117,7 +117,6 @@ BlueToothConnect proc
 			invoke RtlMoveMemory,offset serveraddress.serviceClassId,offset GUID_SPP,sizeof GUID
 			invoke connect,client_socket,offset serveraddress,sizeof SOCKADDR_BTH
 			.if eax!=INVALID_SOCKET
-				mov		fBluetooth,TRUE
 				mov		eax,TRUE
 			.else
 				invoke WSACleanup
@@ -142,6 +141,7 @@ BlueToothDisconnect proc
 		invoke closesocket,client_socket
 		invoke CloseHandle,client_socket
 		invoke WSACleanup
+		mov		fBluetooth,0
 	.endif
 	ret
 

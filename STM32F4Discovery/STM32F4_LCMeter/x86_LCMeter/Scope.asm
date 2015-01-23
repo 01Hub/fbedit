@@ -7,8 +7,12 @@ ScopeSampleThreadProc proc uses ebx esi edi,lParam:DWORD
 	mov		fThreadDone,FALSE
 	.if fBluetooth && !fExitThread
 		invoke SendDlgItemMessage,hWnd,IDC_IMGCONNECTED,STM_SETICON,hRedIcon,0
+PrintText "PC"
 		invoke BTPut,offset mode,4
+PrintText "OK"
+PrintText "GF"
 		invoke BTGet,offset STM32_Cmd.STM32_Frq,8
+PrintText "OK"
 		invoke FormatFrequency,STM32_Cmd.STM32_Frq.FrequencySCP,addr buffer
 		invoke SetWindowText,hScp,addr buffer
 		;invoke RtlZeroMemory,offset ADC_Data,sizeof ADC_Data
@@ -22,7 +26,9 @@ ScopeSampleThreadProc proc uses ebx esi edi,lParam:DWORD
 			mov		eax,65000
 		.endif
 		mov		STM32_Scp.ADC_SampleSize,eax
+PrintText "PS"
 		invoke BTPut,offset STM32_Scp,sizeof STM32_SCP
+PrintText "OK"
 		.if !fExitThread
 			mov		fNoFrequency,TRUE
 			mov		eax,STM32_Scp.ADC_SampleSize
@@ -31,7 +37,9 @@ ScopeSampleThreadProc proc uses ebx esi edi,lParam:DWORD
 			add		eax,edx
 			shr		eax,2
 			mov		ebx,eax
+PrintText "GS"
 			invoke BTGet,offset ADC_Tmp,eax
+PrintText "OK"
 			mov		esi,offset ADC_Tmp
 			mov		edi,offset ADC_Data
 			.while ebx
@@ -374,10 +382,9 @@ ScopeProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	mov		eax,uMsg
 	.if eax==WM_PAINT
 		fld		SampleRate
-		fld		ten_6;float_e6
+		fld		ten_6
 		fcomip	st(0),st(1)
 		.if CARRY?
-			fld		SampleRate
 			fdiv	ten_e6
 			fstp	fTmp
 			invoke FpToAscii,addr fTmp,addr buffer,FALSE
@@ -397,7 +404,6 @@ ScopeProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.endw
 			invoke lstrcat,addr buffer,offset szMHz
 		.else
-			fld		SampleRate
 			fdiv	ten_e3
 			fstp	fTmp
 			invoke FpToAscii,addr fTmp,addr buffer,FALSE
