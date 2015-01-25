@@ -183,8 +183,10 @@ int main(void)
 {
   __IO uint16_t i;
   __IO uint16_t *ptr;
-  // uint32_t scpcnt;
-  // uint32_t scpwait;
+  __IO uint16_t tmp1;
+  __IO uint16_t tmp2;
+  uint32_t scpcnt;
+  uint32_t scpwait;
 
 
   /* RCC Configuration */
@@ -297,40 +299,26 @@ int main(void)
           /* ADC Configuration */
           ADC_SingleConfig();
         }
-        // if (STM32_CMD.STM32_SCP.ScopeTrigger)
-        // {
-          // /* Wait for trigger */
-          // scpcnt = TIM5->CNT;
-          // scpwait = STM32_CMD.TickCount + 1;
-          // while (scpcnt == TIM5->CNT && scpwait != STM32_CMD.TickCount)
-          // {
-          // }
-        // }
+        if (STM32_CMD.STM32_SCP.ScopeTrigger == 2)
+        {
+          /* Falling edge */
+          TIM5->CCER |= 0x2;
+        }
+        else
+        {
+          /* Rising edge */
+          TIM5->CCER &= ~0x2;
+        }
+        if (STM32_CMD.STM32_SCP.ScopeTrigger)
+        {
+          /* Wait for trigger */
+          scpcnt = TIM5->CNT;
+          scpwait = STM32_CMD.TickCount + 2;
+          while (scpcnt == TIM5->CNT && scpwait != STM32_CMD.TickCount);
+        }
         /* Start ADC1 Software Conversion */
         ADC1->CR2 |= (uint32_t)ADC_CR2_SWSTART;
-        // i = 0;
-        // if (STM32_CMD.STM32_SCP.ScopeTrigger)
-        // {
-          // /* Find the byte position of the first trigger */
-          // scpcnt = TIM5->CNT;
-          // scpwait = STM32_CMD.TickCount + 2;
-          // while (scpcnt == TIM5->CNT && scpwait != STM32_CMD.TickCount)
-          // {
-          // }
-          // i = ((uint16_t)(DMA2_Stream0->NDTR));
-          // if (STM32_CMD.STM32_SCP.ADC_TripleMode)
-          // {
-            // i = ((STM32_CMD.STM32_SCP.ADC_SampleSize / 4) - i) * 4;
-          // }
-          // else
-          // {
-            // i = ((STM32_CMD.STM32_SCP.ADC_SampleSize / 2) - i) * 2;
-          // }
-        // }
         /* Since BlueTooth is slower than the lowest sampling rate there is no need to wait */
-        i = 1000;
-        while (i--);
-        // SendCompressedBuffer((uint32_t *)SCOPE_DATAPTR + (uint32_t) i, STM32_CMD.STM32_SCP.ADC_SampleSize / 4);
         SendCompressedBuffer((uint32_t *)SCOPE_DATAPTR, STM32_CMD.STM32_SCP.ADC_SampleSize / 4);
         /* Done */
         ADC->CCR=0;
@@ -512,13 +500,11 @@ void SPISendData(uint16_t tx)
   while (SPI2->SR & SPI_I2S_FLAG_BSY);      // wait until SPI is not busy anymore
 }
 
-/*******************************************************************************
-* Function Name  : USART3_putdata
-* Description    : This function transmits data
-* Input          : *dat, len
-* Output         : None
-* Return         : None
-*******************************************************************************/
+/**
+  * @brief  USART3 send byte array.
+  * @param  pointer to array, lenght
+  * @retval None
+  */
 void USART3_putdata(uint8_t *dat,uint16_t len)
 {
   /* Data are transmitted one byte at a time. */
@@ -532,13 +518,11 @@ void USART3_putdata(uint8_t *dat,uint16_t len)
   }
 }
 
-/*******************************************************************************
-* Function Name  : USART3_puts
-* Description    : This function transmits a zero terminated string
-* Input          : Zero terminated string
-* Output         : None
-* Return         : None
-*******************************************************************************/
+/**
+  * @brief  USART3 send string.
+  * @param  Zero terminated string
+  * @retval None
+  */
 void USART3_puts(char *str)
 {
   char c;
@@ -552,13 +536,11 @@ void USART3_puts(char *str)
   }
 }
 
-/*******************************************************************************
-* Function Name  : USART3_getdata
-* Description    : This function receives data
-* Input          : *dat, len
-* Output         : None
-* Return         : None
-*******************************************************************************/
+/**
+  * @brief  USART3 receives byte array.
+  * @param  pointer to array, lenght
+  * @retval None
+  */
 void USART3_getdata(uint8_t *dat,uint16_t len)
 {
   /* Data are recieved one byte at a time. */
@@ -795,7 +777,7 @@ void TIM_Config(void)
 }
 
 /**
-  * @brief  Configure the DAC Channel 1.
+  * @brief  Configure the DAC Channel 1 and 2.
   * @param  None
   * @retval None
   */
@@ -837,7 +819,7 @@ void DMA_SingleConfig(void)
   DMA_DeInit(DMA2_Stream0);
   /* DMA2 Stream0 channel0 configuration **************************************/
   DMA_InitStructure.DMA_Channel = DMA_Channel_0;  
-  DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)&ADC1->DR;//ADC1_DR_ADDRESS;
+  DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)&ADC1->DR;
   DMA_InitStructure.DMA_Memory0BaseAddr = (uint32_t)SCOPE_DATAPTR;
   DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralToMemory;
   DMA_InitStructure.DMA_BufferSize = STM32_CMD.STM32_SCP.ADC_SampleSize/2;

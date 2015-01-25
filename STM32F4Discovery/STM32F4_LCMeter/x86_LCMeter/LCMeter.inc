@@ -567,5 +567,8 @@ wsdata							WSADATA <>
 serveraddress					SOCKADDR_BTH <>
 client_socket					SOCKET ?
 fBluetooth						DWORD ?
+tc								DWORD ?
+tcadd							DWORD ?
+tccount							DWORD ?
 
 ;#########################################################################

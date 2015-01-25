@@ -242,12 +242,10 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.if fThreadDone && fBluetooth
 			.if mode==CMD_SCPSET
 				.if !fHoldSampling
+					mov		fThreadDone,FALSE
 					invoke CreateThread,NULL,NULL,addr ScopeSampleThreadProc,hWin,0,addr tid
 					invoke CloseHandle,eax
 				.endif
-				invoke SetTimer,hWin,1000,20,NULL
-				mov		eax,TRUE
-				ret
 			.elseif mode==CMD_HSCSET
 				invoke BTPut,offset mode,4
 				invoke BTPut,offset STM32_Cmd.STM32_Hsc,8

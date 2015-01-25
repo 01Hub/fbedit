@@ -3,6 +3,7 @@
 
 HscChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	resfrq:DWORD
+	LOCAL	timarr:DWORD
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
@@ -44,10 +45,9 @@ HscChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 						dec		eax
 						push	eax
 						mov		edx,eax
-						invoke GetHSCFrq,edx,addr resfrq
+						invoke GetHSCFrq,edx,addr resfrq,addr timarr
 						pop		eax
 					.endw
-					
 					invoke SetHSC,hWin,eax
 				.endif
 			.elseif eax==IDC_BTNHSCUP

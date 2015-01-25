@@ -493,7 +493,7 @@ ClockToFrequency proc count:DWORD,clk:DWORD
 
 ClockToFrequency endp
 
-GetHSCFrq proc uses ebx esi edi,frq:DWORD,lpRes:DWORD
+GetHSCFrq proc uses ebx esi edi,frq:DWORD,lpRes:DWORD,lpTIMARR:DWORD
 
 	mov		eax,frq
 	.if eax<3
@@ -532,6 +532,8 @@ GetHSCFrq proc uses ebx esi edi,frq:DWORD,lpRes:DWORD
 	invoke ClockToFrequency,eax,ebx
 	mov		edi,lpRes
 	mov		[edi],eax
+	mov		edi,lpTIMARR
+	mov		[edi],esi
 	pop		eax
 	ret
 
@@ -539,11 +541,13 @@ GetHSCFrq endp
 
 SetHSC proc hWin:HWND,frq:DWORD
 	LOCAL	resfrq:DWORD
+	LOCAL	timarr:DWORD
 
-	invoke GetHSCFrq,frq,addr resfrq
+	invoke GetHSCFrq,frq,addr resfrq,addr timarr
 	dec		eax
-	mov		STM32_Cmd.STM32_Hsc.HSCSet,esi
 	mov		STM32_Cmd.STM32_Hsc.HSCDiv,eax
+	mov		eax,timarr
+	mov		STM32_Cmd.STM32_Hsc.HSCSet,eax
 	invoke SetDlgItemInt,hWin,IDC_EDTHSCFRQ,resfrq,FALSE
 	.if fBluetooth
 		mov		mode,CMD_HSCSET
@@ -584,6 +588,7 @@ GetSampleTime proc uses esi,lpSTM32_Scp:ptr STM32_SCP
 	fld		SampleRate
 	fdivp	st(1),st
 	fstp	SampleTime
+;invoke PrintFp,addr SampleTime
 	ret
 
 GetSampleTime endp
@@ -620,8 +625,6 @@ GetTotalSamples proc uses esi,lpSTM32_Scp:ptr STM32_SCP
 	mov		eax,ScopeTime.time[eax]
 	mov		ecx,GRIDX
 	mul		ecx
-	;Add one signal period
-	add		eax,SignalPeriod
 	mov		iTmp,eax
 	fild	iTmp
 	fld		SampleTime
@@ -634,12 +637,10 @@ GetTotalSamples proc uses esi,lpSTM32_Scp:ptr STM32_SCP
 	.endif
 	shr		eax,2
 	inc		eax
-	shl		eax,3
-	add		eax,ADCSAMPLESTART*2
+	shl		eax,2
 	.if eax>10000h
 		mov		eax,10000h
 	.endif
-;PrintDec eax
 	ret
 
 GetTotalSamples endp

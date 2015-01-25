@@ -4,18 +4,17 @@
 ScopeSampleThreadProc proc uses ebx esi edi,lParam:DWORD
 	LOCAL	buffer[32]:BYTE
 
-	mov		fThreadDone,FALSE
-	.if fBluetooth && !fExitThread
-		invoke SendDlgItemMessage,hWnd,IDC_IMGCONNECTED,STM_SETICON,hRedIcon,0
-PrintText "PC"
+	.while fBluetooth && !fExitThread && mode==CMD_SCPSET && !fHoldSampling
+invoke GetTickCount
+mov		tc,eax
+;PrintText "PC"
 		invoke BTPut,offset mode,4
-PrintText "OK"
-PrintText "GF"
+;PrintText "OK"
+;PrintText "GF"
 		invoke BTGet,offset STM32_Cmd.STM32_Frq,8
-PrintText "OK"
+;PrintText "OK"
 		invoke FormatFrequency,STM32_Cmd.STM32_Frq.FrequencySCP,addr buffer
 		invoke SetWindowText,hScp,addr buffer
-		;invoke RtlZeroMemory,offset ADC_Data,sizeof ADC_Data
 		;Copy current scope settings
 		invoke RtlMoveMemory,offset STM32_Scp,offset STM32_Cmd.STM32_Scp,sizeof STM32_SCP
 		invoke GetSampleTime,offset STM32_Scp
@@ -25,43 +24,53 @@ PrintText "OK"
 		.if eax>65000
 			mov		eax,65000
 		.endif
+;mov eax,640*3
 		mov		STM32_Scp.ADC_SampleSize,eax
-PrintText "PS"
+;PrintText "PS"
 		invoke BTPut,offset STM32_Scp,sizeof STM32_SCP
-PrintText "OK"
-		.if !fExitThread
-			mov		fNoFrequency,TRUE
-			mov		eax,STM32_Scp.ADC_SampleSize
+;PrintText "OK"
+		mov		fNoFrequency,TRUE
+		mov		eax,STM32_Scp.ADC_SampleSize
+		;SampleSize * 3 / 4
+		mov		edx,eax
+		shl		eax,1
+		add		eax,edx
+		shr		eax,2
+		mov		ebx,eax
+;PrintText "GS"
+		invoke BTGet,offset ADC_Tmp,eax
+;PrintText "OK"
+		mov		esi,offset ADC_Tmp
+		mov		edi,offset ADC_Data
+		.while ebx
+			mov		eax,[esi]
 			mov		edx,eax
-			shl		eax,1
-			add		eax,edx
-			shr		eax,2
-			mov		ebx,eax
-PrintText "GS"
-			invoke BTGet,offset ADC_Tmp,eax
-PrintText "OK"
-			mov		esi,offset ADC_Tmp
-			mov		edi,offset ADC_Data
-			.while ebx
-				mov		eax,[esi]
-				mov		edx,eax
-				and		eax,0FFFh
-				mov		[edi],ax
-				shr		edx,12
-				and		edx,0FFFh
-				mov		[edi+2],dx
-				lea		esi,[esi+3]
-				lea		edi,[edi+4]
-				dec		ebx
-			.endw
-			.if STM32_Scp.fSubSampling
-				invoke ScopeSubSampling
-			.endif
-			invoke InvalidateRect,hScpScrn,NULL,TRUE
-			invoke UpdateWindow,hScpScrn
-			invoke SendDlgItemMessage,hWnd,IDC_IMGCONNECTED,STM_SETICON,hGreenIcon,0
+			and		eax,0FFFh
+			mov		[edi],ax
+			shr		edx,12
+			and		edx,0FFFh
+			mov		[edi+2],dx
+			lea		esi,[esi+3]
+			lea		edi,[edi+4]
+			dec		ebx
+		.endw
+		.if STM32_Scp.fSubSampling
+			invoke ScopeSubSampling
 		.endif
-	.endif
+		invoke InvalidateRect,hScpScrn,NULL,TRUE
+		invoke UpdateWindow,hScpScrn
+		invoke SendDlgItemMessage,hWnd,IDC_IMGCONNECTED,STM_SETICON,hGreenIcon,0
+		invoke GetTickCount
+invoke GetTickCount
+sub		eax,tc
+add		tcadd,eax
+mov		eax,tcadd
+cdq
+inc		tccount
+mov		ecx,tccount
+div		ecx
+PrintDec eax
+	.endw
 	mov		fThreadDone,TRUE
 	ret
 
@@ -286,6 +295,7 @@ ScpChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 			.elseif eax==IDC_BTNAUTO
 				invoke GetAuto,hWin
 			.endif
+			call	ResetTime
 		.endif
 	.elseif eax==WM_HSCROLL
 		invoke GetDlgCtrlID,lParam
@@ -333,6 +343,12 @@ ScpChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 	.endif
 	mov		eax,TRUE
 	ret
+
+ResetTime:
+	xor		eax,eax
+	mov		tcadd,eax
+	mov		tccount,eax
+	retn
 
 ScpChildProc endp
 
@@ -941,6 +957,7 @@ GetPoint:
 	mov		eax,iTmp
 	add		eax,scprect.left
 	sub		eax,xofs
+	add eax,2
 	mov		pt.x,eax
 	;Get y position
 	fld		ymul
