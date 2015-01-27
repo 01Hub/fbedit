@@ -879,10 +879,14 @@ DrawCurve:
 			invoke LineTo,mDC,pt.x,pt.y
 			call	IsTrigger
 			mov		eax,pt.x
+;			.break .if sdword ptr eax>scprect.right
 			.break .if sdword ptr eax>scprect.right
 			lea		edi,[edi+WORD]
 			lea		ebx,[ebx+1]
 		.endw
+		.if edi==STM32_Scp.ADC_SampleSize
+			
+		.endif
 	.endif
 	pop		eax
 	invoke SelectObject,mDC,eax

@@ -301,13 +301,13 @@ int main(void)
         }
         if (STM32_CMD.STM32_SCP.ScopeTrigger == 2)
         {
-          /* Falling edge */
-          TIM5->CCER |= 0x2;
+          /* Rising edge */
+          TIM5->CCER &= ~0x2;
         }
         else
         {
-          /* Rising edge */
-          TIM5->CCER &= ~0x2;
+          /* Falling edge */
+          TIM5->CCER |= 0x2;
         }
         if (STM32_CMD.STM32_SCP.ScopeTrigger)
         {

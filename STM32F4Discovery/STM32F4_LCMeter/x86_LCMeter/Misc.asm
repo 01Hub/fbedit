@@ -638,6 +638,10 @@ GetTotalSamples proc uses esi,lpSTM32_Scp:ptr STM32_SCP
 	shr		eax,2
 	inc		eax
 	shl		eax,2
+	mov		edx,eax
+	shr		edx,2
+	and		edx,0FFFFFFFCh
+	add		eax,edx
 	.if eax>10000h
 		mov		eax,10000h
 	.endif
