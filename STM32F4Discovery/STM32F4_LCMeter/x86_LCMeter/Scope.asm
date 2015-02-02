@@ -29,6 +29,7 @@ mov		tc,eax
 ;PrintText "PS"
 		invoke BTPut,offset STM32_Scp,sizeof STM32_SCP
 ;PrintText "OK"
+		invoke RtlZeroMemory,offset ADC_Tmp,sizeof ADC_Tmp
 		mov		fNoFrequency,TRUE
 		mov		eax,STM32_Scp.ADC_SampleSize
 		;SampleSize * 3 / 4
@@ -53,6 +54,15 @@ mov		tc,eax
 			lea		esi,[esi+3]
 			lea		edi,[edi+4]
 			dec		ebx
+		.endw
+		mov		ebx,STM32_Scp.ADC_SampleSize
+		shr		ebx,2
+;PrintDec ebx
+		xor		eax,eax
+		.while ebx<16384
+			mov		[edi],eax
+			lea		edi,[edi+DWORD]
+			inc		ebx
 		.endw
 		.if STM32_Scp.fSubSampling
 			invoke ScopeSubSampling
