@@ -478,7 +478,8 @@ ten_e6							REAL8 1.0e6
 
 ScopeTime						SCOPETIME <10,'10nS / Div'>,<20,'20nS / Div'>,<50,'50nS / Div'>,<100,'100nS / Div'>,<200,'200nS / Div'>,<500,'500nS / Div'>,<1000,'1uS / Div'>,<2000,'2uS / Div'>,<5000,'5uS / Div'>,<10000,'10uS / Div'>,<20000,'20uS / Div'>,<50000,'50uS / Div'>
 								SCOPETIME <100000,'100uS / Div'>,<200000,'200uS / Div'>,<500000,'500uS / Div'>,<1000000,'1mS / Div'>,<2000000,'2mS / Div'>,<5000000,'5mS / Div'>,<10000000,'10mS / Div'>,<20000000,'20mS / Div'>,<50000000,'50mS / Div'>,<100000000,'100mS / Div'>
-ScopeRange						SCOPERANGE <15,0,'1mV/Div'>,<30,0,'2mV/Div'>,<76,0,'5mV/Div'>,<152,0,'10mV/Div'>,<305,0,'20mV/Div'>,<762,0,'50mV / Div'>,<1525,0,'100mV / Div'>,<3050,0,'200mV / Div'>,<7625,0,'500mV / Div'>
+;ScopeRange						SCOPERANGE <15,0,'1mV/Div'>,<30,0,'2mV/Div'>,<76,0,'5mV/Div'>,<152,0,'10mV/Div'>,<305,0,'20mV/Div'>,<762,0,'50mV / Div'>,<1525,0,'100mV / Div'>,<3050,0,'200mV / Div'>,<7625,0,'500mV / Div'>
+ScopeRange						SCOPERANGE <160,1,'1mV/Div'>,<320,1,'2mV/Div'>,<800,1,'5mV/Div'>,<1600,1,'10mV/Div'>,<3200,1,'20mV/Div'>,<8000,1,'50mV / Div'>,<1525,0,'100mV / Div'>,<3050,0,'200mV / Div'>,<7625,0,'500mV / Div'>
 
 LgaSample						LGASAMPLE <199999,'1KHz'>,<99999,'2KHz'>,<39999,'5KHz'>,<19999,'10KHz'>,<9999,'20KHz'>,<3999,'50KHz'>,<1999,'100KHz'>,<999,'200KHz'>,<399,'500KHz'>,<199,'1MHz'>,<99,'2MHz'>,<39,'5MHz'>,<19,'10MHz'>,<9,'20MHz'>,<4,'40MHz'>
 

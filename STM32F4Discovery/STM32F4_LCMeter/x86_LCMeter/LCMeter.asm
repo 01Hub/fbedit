@@ -136,7 +136,7 @@ DlgProc	proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		STM32_Cmd.STM32_Scp.ScopeTrigger,1
 		mov		STM32_Cmd.STM32_Scp.ScopeTriggerLevel,2048
 		mov		STM32_Cmd.STM32_Scp.ScopeTimeDiv,8
-		mov		STM32_Cmd.STM32_Scp.ScopeMag,1
+		mov		STM32_Cmd.STM32_Scp.ScopeMag,0;1
 		mov		STM32_Cmd.STM32_Scp.ScopeVoltDiv,8
 		mov		STM32_Cmd.STM32_Scp.ScopeVPos,2150
 		mov		STM32_Cmd.STM32_Scp.ADC_TripleMode,TRUE

@@ -15,6 +15,13 @@ mov		tc,eax
 ;PrintText "OK"
 		invoke FormatFrequency,STM32_Cmd.STM32_Frq.FrequencySCP,addr buffer
 		invoke SetWindowText,hScp,addr buffer
+
+		movzx	eax,STM32_Cmd.STM32_Scp.ScopeVoltDiv
+		mov		ecx,sizeof SCOPERANGE
+		mul		ecx
+		mov		edx,ScopeRange.ymag[eax]
+		mov		STM32_Cmd.STM32_Scp.ScopeMag,dx
+
 		;Copy current scope settings
 		invoke RtlMoveMemory,offset STM32_Scp,offset STM32_Cmd.STM32_Scp,sizeof STM32_SCP
 		invoke GetSampleTime,offset STM32_Scp
@@ -402,6 +409,7 @@ ScopeProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	xofs:DWORD
 	LOCAL	vdofs:DWORD
 	LOCAL	ydiv:DWORD
+	LOCAL	ymag:DWORD
 	LOCAL	xsinf:SCROLLINFO
 	LOCAL	ysinf:SCROLLINFO
 
@@ -484,8 +492,15 @@ ScopeProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		ecx,sizeof SCOPERANGE
 		mul		ecx
 		mov		vdofs,eax
-		mov		eax,ScopeRange.ydiv[eax]
-		mov		ydiv,eax
+		mov		edx,ScopeRange.ydiv[eax]
+		mov		ydiv,edx
+		mov		edx,ScopeRange.ymag[eax]
+		.if edx==0
+			mov		edx,1
+		.elseif edx==1
+			mov		edx,10
+		.endif
+		mov		ymag,edx
 
 		;Get nMin and nMax
 		mov		esi,offset ADC_Data
@@ -732,6 +747,10 @@ DrawScpText:
 	mov		ecx,12500
 	imul	ecx
 	mov		ecx,3050
+	mov		ecx,3160
+	idiv	ecx
+	cdq
+	mov		ecx,ymag
 	idiv	ecx
 	mov		iTmp,eax
 	fld		ymul
