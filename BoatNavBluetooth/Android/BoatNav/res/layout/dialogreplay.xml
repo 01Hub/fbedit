@@ -17,7 +17,7 @@
         android:layout_below="@+id/lvFiles"
         android:layout_marginLeft="5dp"
         android:layout_marginTop="5dp"
-        android:text="@string/ReplaySpeed" />
+        android:text="Replay Speed" />
     
     <SeekBar
         android:id="@+id/sbReplaySpeed"
@@ -41,8 +41,8 @@
         android:layout_width="150dp"
         android:layout_height="wrap_content"
         android:layout_marginLeft="5dp"
-        android:layout_toRightOf="@+id/btnRecord"
         android:layout_below="@+id/sbReplaySpeed"
+        android:layout_toRightOf="@+id/btnRecord"
         android:text="@string/Pause" />
     
     <Button

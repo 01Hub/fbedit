@@ -110,7 +110,7 @@ public class BoatNav extends Activity {
 				MyIV.sc.sonar[i] = 0;
 				i++;
 			}
-			// Create an array of sonar echo colors
+			/* Create an array of sonar echo colors */
 			i = 0;
 			col = 0;
 			while (i < 256) {
@@ -154,7 +154,7 @@ public class BoatNav extends Activity {
         			        }
         			        btSend.PingTimer = (40000000 / 200000 / 2)-1;
         			        btSend.RangeInx = (byte)ri;
-        			        btSend.PixelTimer = (short) MyIV.range[MyIV.sonarrangeinx].pixeltimer;
+        			        btSend.PixelTimer = (short) MyIV.range[ri].pixeltimer;
         			        btSend.GainInit[0] = (short)MyIV.sonargaininit;
         			        int i = 0;
         			        if (MyIV.sonarautogain == true) {
@@ -292,7 +292,7 @@ public class BoatNav extends Activity {
     {
 		if (MyIV.sonarrangechange > 10) {
 	    	if (MyIV.sonarautorange) {
-	    		// Check range change
+	    		/* Check range change */
 	    		if (MyIV.nodepth) {
 	    			if (ri == 0) {
     					MyIV.sonarrangechangedir = 1;
@@ -300,20 +300,20 @@ public class BoatNav extends Activity {
     					MyIV.sonarrangechangedir = -1;
 	    			}
    	    			MyIV.rndpixdpt = (MyIV.rndpixdpt * MyIV.range[ri].range) / MyIV.range[ri + MyIV.sonarrangechangedir].range;
-    				// Range deeper or shallower
+    				/* Range deeper or shallower */
     				ri += MyIV.sonarrangechangedir;
     				if (ri == 0 || ri == MyIV.MAXSONARRANGE - 1) {
-    					// Change direction
+    					/* Change direction */
     					MyIV.sonarrangechangedir = -MyIV.sonarrangechangedir;
     				}
 	    		} else {
 	    	    	if ((float)MyIV.curdepth > ((float)MyIV.range[ri].range) * 0.9f && ri != MyIV.MAXSONARRANGE - 1) {
-	    				// Range deeper
+	    				/* Range deeper */
 	    				MyIV.rndpixdpt = (MyIV.rndpixdpt * MyIV.range[ri].range) / MyIV.range[ri + 1].range;
 	    				ri++;
 	    			} else if (ri > 0) {
 	    				if ((float)MyIV.curdepth < ((float)MyIV.range[ri - 1].range) * 0.8f) {
-		    				// Range shallower
+		    				/* Range shallower */
 		    				MyIV.rndpixdpt = (MyIV.rndpixdpt * MyIV.range[ri].range) / MyIV.range[ri - 1].range;
 	    					MyIV.sonarrangechangedir = -1;
 		    				ri--;
@@ -321,7 +321,7 @@ public class BoatNav extends Activity {
 	    			}
 	    		}
 	    	} else if (MyIV.sonarrangeset >= 0) {
-	    		// Range manually changed
+	    		/* Range manually changed */
 	    		ri = MyIV.sonarrangeset;
 	    		MyIV.sonarrangeset = -1;
 	    	}
@@ -1996,7 +1996,7 @@ public class BoatNav extends Activity {
 				public void onCompletion(MediaPlayer mp) {
 					mp.release();
 					soundplaying = 0;
-					//Toast.makeText(getApplicationContext(), "PlayAlarm done.", Toast.LENGTH_LONG).show();
+//					Toast.makeText(getApplicationContext(), "PlayAlarm done.", Toast.LENGTH_LONG).show();
 				}
 			});
 			mPlayer.start();

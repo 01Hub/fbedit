@@ -133,6 +133,7 @@ public class MyIV extends ImageView {
 	public static int rndfishcount = 0;
 	
 	private static Byte[][] echoarray = new Byte[4][SONARTILEHEIGHT];
+	private static Byte[][] tmparray = new Byte[4][SONARTILEHEIGHT];
 	private static int fisharrayinx = 0;
 	public static int[][] fisharray = new int[4][MAXFISH];
 	public static float curdepth = 0;
@@ -254,7 +255,7 @@ public class MyIV extends ImageView {
 		curfix = sc.fixquality;
 		GoTo((double)sc.iLat / 1000000d, (double)sc.iLon / 1000000d, locktogps);
 		UpdateSonarBitmap();
-		// Update trail
+		/* Update trail */
 		i = trailhead;
 		i--;
 		i &= MAPMAXTRAIL - 1;
@@ -525,30 +526,32 @@ public class MyIV extends ImageView {
 
 	private static void UpdateSonarBitmap() {
 		int x, y, z, col, signal;
-		int[] bmparray;
-
+		int[] bmparray = new int[SONARTILEWIDTH*SONARTILEHEIGHT];
+		float mulfactor;
+		if (echoarray[0][0] == null) {
+			y = 0;
+    	    while (y < SONARTILEHEIGHT) {
+		    	echoarray[0][y] = 0;
+		    	echoarray[1][y] = 0;
+		    	echoarray[2][y] = 0;
+		    	echoarray[3][y] = 0;
+    	    	y++;
+    	    }
+		}
+		mulfactor = (float)range[sc.sonar[0]].range / (float)range[sonarrangeinx].range;
 		sonarsignalbmp.eraseColor(sonarColor);
         Canvas canvas = new Canvas(sonarsignalbmp);
         paint.setColor(0xFF000080);
         paint.setStrokeWidth(1);
         canvas.drawBitmap(sonarsignalbmp, 0, 0, paint);
+        /* Has range changed? */
         if (sonarrangeinx != (int)sc.sonar[0]) {
-        	// Clear echo array
-        	z = 0;
-        	while (z < 4) {
-        		y = 0;
-        		while (y < SONARTILEHEIGHT) {
-        			echoarray[z][y] = 0;
-        			y++;
-        		}
-        		z++;
-        	}
         	echoarraycount = 0;
+            sonarrangeinx = (int)sc.sonar[0];
+    		cursonarrange = range[sonarrangeinx].range;
         }
-        sonarrangeinx = (int)sc.sonar[0];
-		cursonarrange = range[sonarrangeinx].range;
-	    bmparray = new int[SONARTILEWIDTH*SONARTILEHEIGHT];
 	    if (sonarbmpwidth[sonarbmpinx] == SONARTILEWIDTH || cursonarrange != sonarbmprange[sonarbmpinx]) {
+	    	/* Use next bitmap */
 	    	sonarbmpinx++;
 	    	if (sonarbmpinx == MAXSONARBMP) {
 	    		sonarbmpinx = 0;
@@ -558,21 +561,52 @@ public class MyIV extends ImageView {
 	    }
     	sonarbmplat[sonarbmpinx] = sc.iLat;
     	sonarbmplon[sonarbmpinx] = sc.iLon;
-	    sonarbmp[sonarbmpinx].getPixels(bmparray,0,SONARTILEWIDTH,0,0,SONARTILEWIDTH,SONARTILEHEIGHT);
+	    sonarbmp[sonarbmpinx].getPixels(bmparray,0,SONARTILEWIDTH,0,0,sonarbmpwidth[sonarbmpinx],SONARTILEHEIGHT);
 	    x = sonarbmpwidth[sonarbmpinx];
 	    echoarrayinx++;
 	    echoarrayinx &= 3;
 	    echoarraycount++;
-	    y = 0;
+
+    	if (echoarraycount == 1) {
+        	y = 0;
+    	    while (y < SONARTILEHEIGHT) {
+    	    	tmparray[0][y] = echoarray[0][y];
+    	    	tmparray[1][y] = echoarray[1][y];
+    	    	tmparray[2][y] = echoarray[2][y];
+    	    	tmparray[3][y] = echoarray[3][y];
+		    	echoarray[0][y] = 0;
+		    	echoarray[1][y] = 0;
+		    	echoarray[2][y] = 0;
+		    	echoarray[3][y] = 0;
+    	    	y++;
+    	    }
+
+    	    y = 0;
+    	    while (y < SONARTILEHEIGHT) {
+    	    	z = (int)((float)y * mulfactor);
+    	    	if (z >= SONARTILEHEIGHT) {
+    	    		break;
+    	    	}
+//    	        Log.e("MYTAG", "tmparray[3][z]: " + tmparray[3][z]);
+    	    	echoarray[0][y] = tmparray[0][z];
+    	    	echoarray[1][y] = tmparray[1][z];
+    	    	echoarray[2][y] = tmparray[2][z];
+    	    	echoarray[3][y] = tmparray[3][z];
+    	    	y++;
+    	    }
+    	}
+
+    	y = 0;
 	    while (y < SONARTILEHEIGHT) {
-	    	if (echoarraycount == 1) {
-		    	echoarray[0][y] = sc.sonar[y];
-		    	echoarray[1][y] = sc.sonar[y];
-		    	echoarray[2][y] = sc.sonar[y];
-		    	echoarray[3][y] = sc.sonar[y];
-	    	} else {
-		    	echoarray[echoarrayinx][y] = sc.sonar[y];
-	    	}
+//	    	if (echoarraycount == 1) {
+//		    	echoarray[0][y] = sc.sonar[y];
+//		    	echoarray[1][y] = sc.sonar[y];
+//		    	echoarray[2][y] = sc.sonar[y];
+//		    	echoarray[3][y] = sc.sonar[y];
+//	    	} else {
+//		    	echoarray[echoarrayinx][y] = sc.sonar[y];
+//	    	}
+	    	echoarray[echoarrayinx][y] = sc.sonar[y];
 		    signal = ((int)sc.sonar[y]) & 0xFF;
 		    if (signal >= 8) {
 		    	/* Signal bar */
@@ -580,6 +614,7 @@ public class MyIV extends ImageView {
 		    }
 		    col = sonarColor;
 		    if (y > 3) {
+		    	/* Noise reject */
 			    switch (sonarnoisereject) {
 			    case 1:
 			    	z = (echoarrayinx - 1) & 3;
@@ -620,18 +655,18 @@ public class MyIV extends ImageView {
 	    	bmparray[z] = col;
 	    	y++;
 	    }
-	    sonarbmp[sonarbmpinx].setPixels(bmparray, 0, SONARTILEWIDTH, 0, 0, SONARTILEWIDTH, SONARTILEHEIGHT);
 	    sonarbmpwidth[sonarbmpinx]++;
+	    sonarbmp[sonarbmpinx].setPixels(bmparray, 0, SONARTILEWIDTH, 0, 0, sonarbmpwidth[sonarbmpinx], SONARTILEHEIGHT);
 	    ScrollFish();
 	    FindDepth();
 	    sonarcount++;
 	}
 
-	// Convert latitude and longitude to a position on the max zoomed map
+	/* Convert latitude and longitude to a position on the max zoomed map */
 	public static void GpsPosToMapPos(double lat, double lon) {
 		double fmpx, fmpy;
 		int i;
-		// Get the map y position
+		/* Get the map y position */
 		fmpy=0;
 		i=0;
 		while (lat<=latarray[i] && i < MAPTILESIZE) {
@@ -640,18 +675,18 @@ public class MyIV extends ImageView {
 		}
 		fmpy = (latarray[i-1] - lat)  * MAPTILESIZE / (latarray[i-1] - latarray[i]) + fmpy - MAPTILESIZE;
 		mpy = (int)fmpy;
-		// Get the map x position
+		/* Get the map x position */
 		fmpx = ((maxtilex[MAPMAXZOOM] * MAPTILESIZE) / (right - left))*(lon - left);
 		mpx = (int)fmpx;
 	}
 	
-	// Converts map pos to screen pos using current zoom
+	/* Converts map pos to screen pos using current zoom */
 	public static void MapPosToScrnPos() {
 		spy = mpy / (int)Math.pow(2, MAPMAXZOOM-zoom);
 		spx = mpx / (int)Math.pow(2, MAPMAXZOOM-zoom);
 	}
 
-	// Converts screen pos to cursor pos using current offset
+	/* Converts screen pos to cursor pos using current offset */
 	public static void ScrnPosToCurPos() {
 		cpx = (int)(spx + xofs);
 		cpy = (int)(spy + yofs);
@@ -1344,6 +1379,7 @@ public class MyIV extends ImageView {
 //		paint.setColor(Color.BLACK);
 //		paint.setTextSize(20);
 //		paint.setTextAlign(Paint.Align.LEFT);
+//		canvas.drawText("sonarbmpinx: " + sonarbmpinx, 10, 165, paint);
 //		canvas.drawText("Total mem: " + BoatNav.mtot / 1024 + "Kb", 10, 165, paint);
 //		canvas.drawText("Free mem:  " + BoatNav.mfree / 1024 + "Kb", 10, 185, paint);
 //		canvas.drawText(sTextWait, 10, 185, paint);

@@ -118,7 +118,6 @@ public final class R {
         public static final int OK=0x7f050010;
         public static final int Pause=0x7f05001a;
         public static final int Replay=0x7f050008;
-        public static final int ReplaySpeed=0x7f05001b;
         public static final int Setup=0x7f05000c;
         public static final int Sonar=0x7f05000e;
         public static final int SonarAlarm=0x7f050019;
