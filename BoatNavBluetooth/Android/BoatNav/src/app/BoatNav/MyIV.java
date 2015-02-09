@@ -566,8 +566,8 @@ public class MyIV extends ImageView {
 	    echoarrayinx++;
 	    echoarrayinx &= 3;
 	    echoarraycount++;
-
     	if (echoarraycount == 1) {
+    		/* Scale the echo array */
         	y = 0;
     	    while (y < SONARTILEHEIGHT) {
     	    	tmparray[0][y] = echoarray[0][y];
@@ -580,14 +580,12 @@ public class MyIV extends ImageView {
 		    	echoarray[3][y] = 0;
     	    	y++;
     	    }
-
     	    y = 0;
     	    while (y < SONARTILEHEIGHT) {
     	    	z = (int)((float)y * mulfactor);
     	    	if (z >= SONARTILEHEIGHT) {
     	    		break;
     	    	}
-//    	        Log.e("MYTAG", "tmparray[3][z]: " + tmparray[3][z]);
     	    	echoarray[0][y] = tmparray[0][z];
     	    	echoarray[1][y] = tmparray[1][z];
     	    	echoarray[2][y] = tmparray[2][z];
@@ -595,17 +593,8 @@ public class MyIV extends ImageView {
     	    	y++;
     	    }
     	}
-
     	y = 0;
 	    while (y < SONARTILEHEIGHT) {
-//	    	if (echoarraycount == 1) {
-//		    	echoarray[0][y] = sc.sonar[y];
-//		    	echoarray[1][y] = sc.sonar[y];
-//		    	echoarray[2][y] = sc.sonar[y];
-//		    	echoarray[3][y] = sc.sonar[y];
-//	    	} else {
-//		    	echoarray[echoarrayinx][y] = sc.sonar[y];
-//	    	}
 	    	echoarray[echoarrayinx][y] = sc.sonar[y];
 		    signal = ((int)sc.sonar[y]) & 0xFF;
 		    if (signal >= 8) {

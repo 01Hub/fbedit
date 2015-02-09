@@ -53,6 +53,7 @@ import app.BoatNav.MyIV;
 import app.BoatNav.R;
 
 public class BoatNav extends Activity {
+	private static MediaPlayer mPlayer;
 	private static MyIV mIV;
 	private static float xd, yd, xs, ys, sxs;
 	public static Bitmap mGrayBitmap;
@@ -1988,19 +1989,19 @@ public class BoatNav extends Activity {
 	}
 
 	private void PlayAlarm(int alarm) {
-		soundplaying = 20;
+		soundplaying = 50;
 		try {
-			MediaPlayer mPlayer = MediaPlayer.create(getBaseContext(), alarm);
+			mPlayer = MediaPlayer.create(getBaseContext(), alarm);
 			mPlayer.setOnCompletionListener(new OnCompletionListener() {
 				@Override
 				public void onCompletion(MediaPlayer mp) {
-					mp.release();
+					mPlayer.release();
 					soundplaying = 0;
 //					Toast.makeText(getApplicationContext(), "PlayAlarm done.", Toast.LENGTH_LONG).show();
 				}
 			});
 			mPlayer.start();
-		} catch (Exception e) {
+		} catch (IllegalStateException e) {
 			Toast.makeText(getApplicationContext(), "PlayAlarm failed.", Toast.LENGTH_LONG).show();
 		}
 	}
