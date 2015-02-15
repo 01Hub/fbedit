@@ -29,23 +29,12 @@ includelib \RadASM30\masm\lib\debug.lib
 
 ;#########################################################################
 
-;STLinkConnect				PROTO hWin:HWND
-;STLinkDisconnect			PROTO hWin:HWND
-;STLinkReset					PROTO hWin:HWND
-;STLinkRead 					PROTO hWin:HWND,rdadr:DWORD,wradr:DWORD,nBytes:DWORD
-;STLinkWrite					PROTO hWin:HWND,wradr:DWORD,rdadr:DWORD,nBytes:DWORD
-
 IDM_MAINMENU				equ 10000
 IDM_FILE					equ 10001
 IDM_FILE_EXIT				equ 10002
 
 IDD_MAIN					equ 1000
 IDC_MAINTAB					equ 1001
-
-IDD_FREQUENCY				equ 1100
-IDC_UDCFREQUENCY			equ 1101
-IDC_UDCVOLTSDVM				equ 1102
-IDC_CHKFRQCOUNT				equ 1103
 
 IDD_DDSWAVE					equ 1200
 IDC_UDCWAVE					equ 1201
@@ -70,16 +59,6 @@ IDC_EDTSWEEPSIZE			equ 1415
 IDC_EDTSWEEPTIME			equ 1416
 IDC_EDTSWEEPCOUNT			equ 1417
 IDC_BTNSWEEPSET				equ 1418
-
-IDD_HSCLOCK					equ 1300
-IDC_UDCHSCLOCK				equ 1301
-
-IDD_HSCLOCKSETUP			equ 1500
-IDC_CHKHSCLOCKENABLE		equ 1501
-IDC_TRBHSCLOCKDIV			equ 1502
-IDC_TRBHSCLOCKH				equ 1503
-IDC_TRBHSCLOCKL				equ 1504
-IDC_TRBHSCLOCKDUTY			equ 1505
 
 ;#########################################################################
 
@@ -145,14 +124,10 @@ COMMAND ends
 
 CHILDDIALOGS struct
 	hWndMainTab				HWND ?
-	hWndFrequency			HWND ?
 	hWndDDSWaveDialog		HWND ?
 	hWndDDSWaveSetup		HWND ?
 	hWndDDSWave				HWND ?
 	hWndDDSPeak				HWND ?
-	hWndHSClockDialog		HWND ?
-	hWndHSClockSetup		HWND ?
-	hWndHSClock				HWND ?
 CHILDDIALOGS ends
 
 ;#########################################################################
@@ -190,26 +165,12 @@ DDSWAVEDATA ends
 
 ;#########################################################################
 
-HSCLOCKCHDATA struct
-	hsclockenable			DWORD ?
-	hsclockdivisor			DWORD ?
-	hsclockfrequency		DWORD ?
-	hsclockdutycycle		DWORD ?
-	hsclockccr				DWORD ?
-	HSC_Data				BYTE HSCMAX dup(?)
-HSCLOCKCHDATA ends
-
-;#########################################################################
-
 .const
 
-szTEXTCLASS					BYTE 'TEXTCLASS',0
 szDDSWAVECLASS				BYTE 'DDSWAVECLASS',0
 szDDSPEAKCLASS				BYTE 'DDSPEAKCLASS',0
-szHSCLOCKCLASS				BYTE 'HSCLOCKCLASS',0
 
 szTabTitleDDS				BYTE 'DDS Waveform Generator',0
-szTabTitleHSC				BYTE 'High Speed Clock',0
 
 Tahoma						LOGFONT <-20,0,0,0,400,0,0,0,0,3,2,1,34,"Tahoma">
 
@@ -911,14 +872,14 @@ hInstance					HINSTANCE ?
 wc							WNDCLASSEX <>
 hWnd						HWND ?
 hFont						HFONT ?
-fConnected					DWORD ?
-fThread						DWORD ?
-nDVMCount					DWORD ?
-DVMSum						DWORD ?
-fCommand					DWORD ?
+;fConnected					DWORD ?
+;fThread						DWORD ?
+;nDVMCount					DWORD ?
+;DVMSum						DWORD ?
+;fCommand					DWORD ?
 childdialogs				CHILDDIALOGS <>
 ddswavedata					DDSWAVEDATA <>
-hsclockdata					HSCLOCKCHDATA <>
+;hsclockdata					HSCLOCKCHDATA <>
 command						COMMAND <>
 buf							REAL4 2 dup(?)
 wave						WORD 4097 dup(?)

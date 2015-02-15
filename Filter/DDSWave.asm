@@ -241,12 +241,10 @@ DDSWaveSetupProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:
 				invoke IsDlgButtonChecked,hWin,IDC_CHKDDSENABLE
 				mov		ddswavedata.DDS_Enable,eax
 				invoke DDSGenWave
-				inc		fCommand
 			.elseif eax==IDC_CHKDDSBUFFERED
 				invoke IsDlgButtonChecked,hWin,IDC_CHKDDSBUFFERED
 				mov		ddswavedata.DDS_DacBuffer,eax
 				invoke DDSGenWave
-				inc		fCommand
 			.elseif eax==IDC_BTNDDSSET
 				invoke GetDlgItemInt,hWin,IDC_EDTDDSFREQUENCY,NULL,FALSE
 				.if eax
@@ -264,7 +262,6 @@ DDSWaveSetupProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:
 					and		eax,DDSMAX
 					invoke SendDlgItemMessage,hWin,IDC_TRBDDSFRQL,TBM_SETPOS,TRUE,eax
 					invoke DDSGenWave
-					inc		fCommand
 					invoke GetDlgItem,hWin,IDC_BTNDDSSET
 					invoke EnableWindow,eax,FALSE
 				.endif
@@ -272,27 +269,22 @@ DDSWaveSetupProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:
 				mov		ddswavedata.SWEEP_SubMode,SWEEP_SubModeOff
 				invoke SendMessage,childdialogs.hWndDDSWaveDialog,WM_SIZE,0,0
 				invoke DDSGenWave
-				inc		fCommand
 			.elseif eax==IDC_RBNSWEEPUP
 				mov		ddswavedata.SWEEP_SubMode,SWEEP_SubModeUp
 				invoke SendMessage,childdialogs.hWndDDSWaveDialog,WM_SIZE,0,0
 				invoke DDSGenWave
-				inc		fCommand
 			.elseif eax==IDC_RBNSWEEPDOWN
 				mov		ddswavedata.SWEEP_SubMode,SWEEP_SubModeDown
 				invoke SendMessage,childdialogs.hWndDDSWaveDialog,WM_SIZE,0,0
 				invoke DDSGenWave
-				inc		fCommand
 			.elseif eax==IDC_RBNSWEEPUPDOWN
 				mov		ddswavedata.SWEEP_SubMode,SWEEP_SubModeUpDown
 				invoke SendMessage,childdialogs.hWndDDSWaveDialog,WM_SIZE,0,0
 				invoke DDSGenWave
-				inc		fCommand
 			.elseif eax==IDC_RBNSWEEPPEAK
 				mov		ddswavedata.SWEEP_SubMode,SWEEP_SubModePeak
 				invoke SendMessage,childdialogs.hWndDDSWaveDialog,WM_SIZE,0,0
 				invoke DDSGenWave
-				inc		fCommand
 			.elseif eax==IDC_BTNSWEEPSET
 				invoke GetDlgItemInt,hWin,IDC_EDTSWEEPSIZE,NULL,FALSE
 				invoke DDSHzToPhaseAdd,eax
@@ -314,7 +306,6 @@ DDSWaveSetupProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:
 				inc		eax
 				mov		ddswavedata.SWEEP_StepCount,eax
 				invoke DDSGenWave
-				inc		fCommand
 				invoke GetDlgItem,hWin,IDC_BTNSWEEPSET
 				invoke EnableWindow,eax,FALSE
 				invoke InvalidateRect,childdialogs.hWndDDSPeak,NULL,TRUE
@@ -331,7 +322,6 @@ DDSWaveSetupProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:
 			invoke SendDlgItemMessage,hWin,IDC_CBODDSWAVE,CB_GETCURSEL,0,0
 			mov		ddswavedata.DDS_WaveForm,eax
 			invoke DDSGenWave
-			inc		fCommand
 		.endif
 	.elseif eax==WM_HSCROLL
 		invoke GetDlgCtrlID,lParam
@@ -339,12 +329,10 @@ DDSWaveSetupProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:
 			invoke SendDlgItemMessage,hWin,IDC_TRBDDSAMP,TBM_GETPOS,0,0
 			mov		ddswavedata.DDS_Amplitude,eax
 			invoke DDSGenWave
-			inc		fCommand
 		.elseif eax==IDC_TRBDDSDCOFS
 			invoke SendDlgItemMessage,hWin,IDC_TRBDDSDCOFS,TBM_GETPOS,0,0
 			mov		ddswavedata.DDS_DCOffset,eax
 			invoke DDSGenWave
-			inc		fCommand
 		.elseif eax==IDC_TRBDDSFRQH || eax==IDC_TRBDDSFRQL
 			invoke SendDlgItemMessage,hWin,IDC_TRBDDSFRQH,TBM_GETPOS,0,0
 			mov		edx,ddswavedata.DDS_Frequency
@@ -360,7 +348,6 @@ DDSWaveSetupProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:
 			inc		eax
 			mov		ddswavedata.DDS_PhaseFrq,eax
 			invoke DDSGenWave
-			inc		fCommand
 		.endif
 	.else
 		mov		eax,FALSE
@@ -399,45 +386,6 @@ DDSWaveProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 		sub		rect.bottom,TEXTHIGHT
 		invoke SetTextColor,mDC,00FF00h
 		invoke SetBkMode,mDC,TRANSPARENT
-		fild	STM32Clock
-		fild	dds64
-		fdivp	st(1),st
-		fild	ddscycles
-		fdivp	st(1),st
-		fild	ddswavedata.DDS_PhaseFrq
-		fmulp	st(1),st
-		fild	dds100
-		fmulp	st(1),st
-		fistp	tmp
-		invoke FormatFrequencyX100,addr buffer,addr szFmtFrq,tmp
-		mov		eax,ddswavedata.DDS_VMin
-		mov		ecx,WAVEVMAX
-		mul		ecx
-		mov		ecx,4095
-		div		ecx
-		add		eax,WAVEVMIN
-		invoke FormatVoltage,addr buffer1,addr szFmtDDSVmin,eax
-		invoke lstrcat,addr buffer,addr buffer1
-		mov		eax,ddswavedata.DDS_VMax
-		mov		ecx,WAVEVMAX
-		mul		ecx
-		mov		ecx,4095
-		div		ecx
-		add		eax,WAVEVMIN
-		invoke FormatVoltage,addr buffer1,addr szFmtDDSVmax,eax
-		invoke lstrcat,addr buffer,addr buffer1
-		mov		eax,ddswavedata.DDS_VMax
-		sub		eax,ddswavedata.DDS_VMin
-		mov		ecx,WAVEVMAX
-		mul		ecx
-		mov		ecx,4095
-		div		ecx
-		invoke FormatVoltage,addr buffer1,addr szFmtDDSVpp,eax
-		invoke lstrcat,addr buffer,addr buffer1
-		invoke lstrlen,addr buffer
-		mov		edx,rect.bottom
-		add		edx,8
-		invoke TextOut,mDC,0,edx,addr buffer,eax
 		;Draw horizontal lines
 		invoke CreatePen,PS_SOLID,1,0303030h
 		invoke SelectObject,mDC,eax
@@ -573,46 +521,6 @@ DDSPeakProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 		sub		rect.bottom,TEXTHIGHT
 		invoke SetTextColor,mDC,00FF00h
 		invoke SetBkMode,mDC,TRANSPARENT
-		fild	STM32Clock
-		fild	dds64
-		fdivp	st(1),st
-		fild	ddscycles
-		fdivp	st(1),st
-		fild	ddswavedata.DDS_Sweep.SWEEP_Min
-		fmulp	st(1),st
-		fistp	tmp
-		invoke FormatFrequency,addr buffer,addr szFmtFrqMin,tmp
-		fild	STM32Clock
-		fild	dds64
-		fdivp	st(1),st
-		fild	ddscycles
-		fdivp	st(1),st
-		mov		eax,ddswavedata.DDS_Sweep.SWEEP_Max
-		sub		eax,ddswavedata.DDS_Sweep.SWEEP_Add
-		mov		tmp,eax
-		fild	tmp
-		fmulp	st(1),st
-		fistp	tmp
-		invoke FormatFrequency,addr buffer1,addr szFmtFrqMax,tmp
-		invoke lstrcat,addr buffer,addr buffer1
-		mov		eax,ddswavedata.DDS_PeakVMin
-		mov		ecx,3000
-		mul		ecx
-		mov		ecx,4095
-		div		ecx
-		invoke FormatVoltage,addr buffer1,addr szFmtDDSVmin,eax
-		invoke lstrcat,addr buffer,addr buffer1
-		mov		eax,ddswavedata.DDS_PeakVMax
-		mov		ecx,3000
-		mul		ecx
-		mov		ecx,4095
-		div		ecx
-		invoke FormatVoltage,addr buffer1,addr szFmtDDSVmax,eax
-		invoke lstrcat,addr buffer,addr buffer1
-		invoke lstrlen,addr buffer
-		mov		edx,rect.bottom
-		add		edx,8
-		invoke TextOut,mDC,0,edx,addr buffer,eax
 		;Draw horizontal lines
 		invoke CreatePen,PS_SOLID,1,0303030h
 		invoke SelectObject,mDC,eax
@@ -765,7 +673,6 @@ DDSWaveChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:
 		.endif
 		sub		rect.bottom,70
 		invoke MoveWindow,childdialogs.hWndDDSWaveSetup,rect.right,0,312,rect.bottom,TRUE
-		invoke MoveWindow,childdialogs.hWndFrequency,rect.right,rect.bottom,310,75,TRUE
 	.elseif eax==WM_CLOSE
 		invoke DestroyWindow,hWin
 	.else
