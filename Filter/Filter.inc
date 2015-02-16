@@ -4,15 +4,11 @@ include kernel32.inc
 include user32.inc
 include gdi32.inc
 include comctl32.inc
-;include comdlg32.inc
 
 includelib kernel32.lib
 includelib user32.lib
 includelib gdi32.lib
 includelib Comctl32.lib
-;includelib comdlg32.lib
-
-;includelib STLinkLib.lib
 
 ;#########################################################################
 ;VKim's Debug
@@ -85,19 +81,6 @@ SWEEP_SubModeUp				equ 2
 SWEEP_SubModeDown			equ 3
 SWEEP_SubModeUpDown			equ 4
 SWEEP_SubModePeak			equ 5
-
-STM32_Start					equ 20000014h
-STM32_Frequency				equ STM32_Start+0000h
-STM32_Command				equ STM32_Start+0010h
-STM32_Wave					equ STM32_Start+0040h
-STM32_Peak					equ STM32_Start+1040h
-STM32_DVM					equ 4001204Ch
-
-STM32_CMNDWait				equ 0
-STM32_CMNDStart				equ 1
-STM32_CMNDFrqEnable			equ 2
-STM32_CMNDSetWave			equ 3
-
 
 ;#########################################################################
 
@@ -173,24 +156,6 @@ szDDSPEAKCLASS				BYTE 'DDSPEAKCLASS',0
 szTabTitleDDS				BYTE 'DDS Waveform Generator',0
 
 Tahoma						LOGFONT <-20,0,0,0,400,0,0,0,0,3,2,1,34,"Tahoma">
-
-szFrequency					BYTE 'Frequency',0
-szVoltsDVM					BYTE 'Volts',0
-
-szFmtVolts					BYTE '%04uV',0
-szFmtFrq					BYTE ' Frequency: ',0
-szFmtFrqMin					BYTE ' Fmin: ',0
-szFmtFrqMax					BYTE '  Fmax: ',0
-szFmtFrqHz					BYTE '%s%uHz',0
-szFmtFrqHzX100				BYTE '%s%03uHz',0
-szFmtFrqKHz					BYTE '%s%uKHz',0
-szFmtFrqMHz					BYTE '%s%uMHz',0
-szFmtDDSVmin				BYTE '  Vmin: %04uV',0
-szFmtDDSVmax				BYTE '  Vmax: %04uV',0
-szFmtDDSVpp					BYTE '  Vpp: %04uV',0
-szFmtDuty					BYTE '  Pulse Width: %u%%',0
-szNULL						BYTE 0
-szZERO						BYTE '0',0
 
 szDDS_Waves					BYTE 'Sine Wave',0
 							BYTE 'Triangle Wave',0
@@ -849,8 +814,6 @@ STM32Clock					DWORD 168000000
 
 dds64						QWORD 100000000h
 ddscycles					DWORD 8
-dds100						DWORD 100
-float100					QWORD 100.0
 
 iir1a						REAL4 0.001255059246835381
 iir2a						REAL4 0.75
