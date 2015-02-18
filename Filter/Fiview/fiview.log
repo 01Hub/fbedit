@@ -8,42 +8,54 @@
 //   Peak gain: 1
 //   Guessed 100% gain: 1
 //   Regions between half-power points (70.71% response or -3.01dB):
-//     190000Hz -> 210000Hz  (width 19999.9Hz, midpoint 200000Hz)
+//     199084Hz -> 200920Hz  (width 1835.94Hz, midpoint 200002Hz)
 //   Regions between quarter-power points (50% response or -6.02dB):
-//     182750Hz -> 217250Hz  (width 34499.8Hz, midpoint 200000Hz)
+//     198624Hz -> 201384Hz  (width 2760.16Hz, midpoint 200004Hz)
 //
 // Time-response:
-//   Sampling rate is 800000Hz
-//   50% complete after 8 samples (1e-005s)
-//   90% complete after 30 samples (3.75e-005s)
-//   95% complete after 38 samples (4.75e-005s)
-//   99% complete after 58 samples (7.25e-005s)
-//   99.9% complete after 88 samples (0.00011s)
-//   99.99% complete after 116 samples (0.000145s)
-//   Impulse response max deviation is at 2 samples (2.5e-006s)
-//   Impulse response ranges between -0.135273 and 0.115534
+//   Sampling rate is 1.6e+006Hz
+//   50% complete after 379 samples (0.000236875s)
+//   90% complete after 753 samples (0.000470625s)
+//   95% complete after 891 samples (0.000556875s)
+//   99% complete after 1189 samples (0.000743125s)
+//   99.9% complete after 1589 samples (0.000993125s)
+//   99.99% complete after 1972 samples (0.0012325s)
+//   Impulse response max deviation is at 284 samples (0.0001775s)
+//   Impulse response ranges between -0.00382767 and 0.00382734
 //
 // Original filter:
-//   x 0.0729596572682753
-//   / 1 -1.01364249637681e-016 0.854080685463467
-//   x 1 -0 -1 (BpBe1/190000-210000)
+//   / 1.00707106781187 -1.4142135623731 0.992928932188134
+//   x 1 0 -1
+//   x 0.00707106781186547
+//   / 1.00707106781187 -1.4142135623731 0.992928932188134
+//   x 1 0 -1
+//   x 0.00707106781186547
+//   / 1.00707106781187 -1.4142135623731 0.992928932188134
+//   x 1 0 -1
+//   x 0.00707106781186547 (BpBq3/50/200000)
 //
 // Filter descriptions:
-//   BpBe1/190000-210000 == Bandpass Bessel filter, order 1, -3.01dB
-//     frequencies 190000-210000
+//   BpBq3/50/200000 == Bandpass biquad filter, order 3, Q=50, centre
+//     frequency 200000
 //
 
 // Example code (readable version)
 double
 process(register double val) {
-   static double buf[2];
+   static double buf[6];
    register double tmp, fir, iir;
-   tmp= buf[0]; memmove(buf, buf+1, 1*sizeof(double));
-   // use 0.07295965726826664 below for unity gain at 100% level
-   val *= 0.07295965726827532;
-   iir= val+1.013642496376809e-016*buf[0]-0.8540806854634667*tmp;
+   tmp= buf[0]; memmove(buf, buf+1, 5*sizeof(double));
+   // use 3.461582197386876e-007 below for unity gain at 100% level
+   val *= 3.4615821973868e-007;
+   iir= val+1.404283776561923*buf[0]-0.9859571622343808*tmp;
    fir= iir-tmp;
-   buf[1]= iir; val= fir;
+   tmp= buf[1]; buf[1]= iir; val= fir;
+   iir= val+1.404283776561923*buf[2]-0.9859571622343808*tmp;
+   fir= iir-tmp;
+   tmp= buf[3]; buf[3]= iir; val= fir;
+   iir= val+1.404283776561923*buf[4]-0.9859571622343808*tmp;
+   fir= iir-tmp;
+   buf[5]= iir; val= fir;
    return val;
 }
 
@@ -51,34 +63,54 @@ process(register double val) {
 //  optimised for cleaner compilation to efficient machine code)
 double
 process(register double val) {
-   static double buf[2];
+   static double buf[6];
    register double tmp, fir, iir;
-   tmp= buf[0]; memmove(buf, buf+1, 1*sizeof(double));
-   // use 0.07295965726826664 below for unity gain at 100% level
-   iir= val * 0.07295965726827532;
-   iir -= 0.8540806854634667*tmp; fir= -tmp;
-   iir -= -1.013642496376809e-016*buf[0];
+   tmp= buf[0]; memmove(buf, buf+1, 5*sizeof(double));
+   // use 3.461582197386876e-007 below for unity gain at 100% level
+   iir= val * 3.4615821973868e-007;
+   iir -= 0.9859571622343808*tmp; fir= -tmp;
+   iir -= -1.404283776561923*buf[0];
    fir += iir;
-   buf[1]= iir; val= fir;
+   tmp= buf[1]; buf[1]= iir; val= fir;
+   iir= val;
+   iir -= 0.9859571622343808*tmp; fir= -tmp;
+   iir -= -1.404283776561923*buf[2];
+   fir += iir;
+   tmp= buf[3]; buf[3]= iir; val= fir;
+   iir= val;
+   iir -= 0.9859571622343808*tmp; fir= -tmp;
+   iir -= -1.404283776561923*buf[4];
+   fir += iir;
+   buf[5]= iir; val= fir;
    return val;
 }
 
 // Example code for generating any of this class of filters at run-time
-double coef[3], buf[2];
+double coef[7], buf[6];
 void
 setup(double *coef) {
    coef[0]= 1 *
-     fid_design_coef(coef+1, 2, "BpBe1", 800000, 190000, 210000, 0);
+     fid_design_coef(coef+1, 6, "BpBq3/50", 1.6e+006, 200000, 0, 0);
 }
 double
 process(double *coef, double *buf, register double val) {
    register double tmp, fir, iir;
-   tmp= buf[0]; memmove(buf, buf+1, 1*sizeof(double));
+   tmp= buf[0]; memmove(buf, buf+1, 5*sizeof(double));
    iir= val * coef[0];
    iir -= coef[1]*tmp; fir= -tmp;
    iir -= coef[2]*buf[0];
    fir += iir;
-   buf[1]= iir; val= fir;
+   tmp= buf[1]; buf[1]= iir; val= fir;
+   iir= val;
+   iir -= coef[3]*tmp; fir= -tmp;
+   iir -= coef[4]*buf[2];
+   fir += iir;
+   tmp= buf[3]; buf[3]= iir; val= fir;
+   iir= val;
+   iir -= coef[5]*tmp; fir= -tmp;
+   iir -= coef[6]*buf[4];
+   fir += iir;
+   buf[5]= iir; val= fir;
    return val;
 }
 
@@ -87,7 +119,7 @@ process(double *coef, double *buf, register double val) {
 #include "fidlib/fidlib.h"    // May need adjusting
 FidFilter *
 setup() {
-   FidFilter *filt0= fid_design("BpBe1", 800000, 190000, 210000, 0, 0);
+   FidFilter *filt0= fid_design("BpBq3/50", 1.6e+006, 200000, 0, 0, 0);
    return filt0;
 }
 //
@@ -116,14 +148,17 @@ setup() {
 //   less accurate, and can also be unstable for high-order filters.
 double
 process(register double val) {
-   static double buf[2];
+   static double buf[6];
    register double tmp, fir, iir;
-   tmp= buf[0]; memmove(buf, buf+1, 1*sizeof(double));
-   // use 0.9999999999998812 below for unity gain at 100% level
+   tmp= buf[0]; memmove(buf, buf+1, 5*sizeof(double));
+   // use 1.000000000000022 below for unity gain at 100% level
    val *= 1;
-   iir= val+1.013642496376809e-016*buf[0]-0.8540806854634667*tmp;
-   fir= 0.07295965726827532*iir-0.07295965726827532*tmp;
-   buf[1]= iir; val= fir;
+   iir= val+4.212851329685769*buf[4]-8.873910262048195*buf[3]
+     +11.07664764177408*buf[2]-8.749295379891587*buf[1]
+     +4.095361333906241*buf[0]-0.9584603213149187*tmp;
+   fir= 3.4615821973868e-007*iir-1.03847465921604e-006*buf[3]
+     +1.03847465921604e-006*buf[1]-3.4615821973868e-007*tmp;
+   buf[5]= iir; val= fir;
    return val;
 }
 

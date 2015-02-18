@@ -4,8 +4,11 @@
 SineGenerator proc uses ebx esi edi,ncount:DWORD
 	LOCAL	tmp:DWORD
 
+	push	ddswavedata.DDS_Amplitude
 	xor		ebx,ebx
-	.while ebx<ncount
+	mov		edi,ncount
+	shl		edi,4
+	.while ebx<edi
 		fld		float2
 		fldpi
 		fmulp	st(1),st
@@ -40,9 +43,15 @@ SineGenerator proc uses ebx esi edi,ncount:DWORD
 			mov		ax,4095
 		.endif
 		mov		TestWave[ebx*WORD],ax
+		sub		ddswavedata.DDS_Amplitude,32
+		.if sdword ptr ddswavedata.DDS_Amplitude<0
+			mov		ddswavedata.DDS_Amplitude,0
+		.endif
+
 ;PrintDec tmp
 		inc		ebx
 	.endw
+	pop		ddswavedata.DDS_Amplitude
 	ret
 
 SineGenerator endp
@@ -230,10 +239,13 @@ Filter3 proc uses ebx esi edi,val:REAL4
 	;memmove(buf, buf+1, 15*sizeof(double))
 	invoke RtlMoveMemory,addr buf[0],addr buf[4],sizeof REAL4
 	;iir= val * 0.07295965726827532
+	;iir= val * 0.03780475417091263;
+
 	fld		val
 	fmul	iir1c
 	fstp	iir
 	;iir -= 0.8540806854634667 * tmp
+   	;iir -= 0.9243904916582072*tmp;
 	fld		iir
 	fld		tmp
 	fmul	iir2c
@@ -244,6 +256,7 @@ Filter3 proc uses ebx esi edi,val:REAL4
 	fchs
 	fstp	fir
 	;iir -= -1.013642496376809e-016 * buf[0]
+	;iir -= -1.361799464336839*buf[0];
 	fld		iir
 	fld		buf[0]
 	fmul	iir3c
@@ -268,10 +281,11 @@ DDSGenWave proc uses ebx esi edi
 	LOCAL	val:REAL4
 	LOCAL	ival:DWORD
 
-	mov		WavePoints,4
+	mov		WavePoints,8
 	invoke SineGenerator,WavePoints
 	xor		ebx,ebx
 	xor		edi,edi
+	shl		WavePoints,4
 	.while ebx<4096
 		.if edi==WavePoints
 			xor		edi,edi
@@ -287,6 +301,7 @@ DDSGenWave proc uses ebx esi edi
 		inc		ebx
 		inc		edi
 	.endw
+	shr		WavePoints,4
 	invoke InvalidateRect,childdialogs.hWndDDSWave,NULL,TRUE
 	invoke UpdateWindow,childdialogs.hWndDDSWave
 
@@ -620,6 +635,7 @@ DDSWaveProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 		xor		ebx,ebx
 		call	GetPoint
 		invoke MoveToEx,mDC,pt.x,pt.y,NULL
+		shl		WavePoints,4
 		.while ebx<64
 			.if edi==WavePoints
 				xor		edi,edi
@@ -629,6 +645,7 @@ DDSWaveProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 			lea		edi,[edi+1]
 			lea		ebx,[ebx+1]
 		.endw
+		shr		WavePoints,4
 		pop		eax
 		invoke SelectObject,mDC,eax
 		invoke DeleteObject,eax
