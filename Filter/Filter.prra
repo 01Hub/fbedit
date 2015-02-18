@@ -4,7 +4,7 @@ Version=3000
 Assembler=Masm
 Group=2,-1,0,1,DDS Waveform Generator,-2,-1,1,Assembly,-3,-1,1,Include,-4,-1,1,Misc,-5,-1,1,Resource
 F1=-2,2,1,-10,-29,909,543,23,Filter.asm
-F2=-3,0,1,40,40,608,409,39,Filter.inc
+F2=-3,0,1,40,40,608,409,819,Filter.inc
 F3=-5,2,4,-10,-29,909,543,36,Filter.rc
 F4=-4,0,2,88,88,600,400,47,Filter.txt
 Frequency.asm
@@ -13,7 +13,7 @@ DDSWave.asm
 Open=4,1,2,3,4,5
 Api=
 Path=C:\FbEdit\Projects\Applications\fbe\Filter
-F5=-2,0,1,100,100,1449,539,270,DDSWave.asm
+F5=-2,0,1,100,100,1449,539,45,DDSWave.asm
 F6=
 F7=
 C7=
