@@ -8,7 +8,7 @@ SineGenerator proc uses ebx esi edi,ncount:DWORD
 	xor		ebx,ebx
 	mov		edi,ncount
 	shl		edi,4
-	.while ebx<edi
+	.while ebx<=edi
 		fld		float2
 		fldpi
 		fmulp	st(1),st
@@ -43,9 +43,15 @@ SineGenerator proc uses ebx esi edi,ncount:DWORD
 			mov		ax,4095
 		.endif
 		mov		TestWave[ebx*WORD],ax
-		sub		ddswavedata.DDS_Amplitude,32
-		.if sdword ptr ddswavedata.DDS_Amplitude<0
-			mov		ddswavedata.DDS_Amplitude,0
+		mov		eax,ebx
+		cdq
+		mov		ecx,ncount
+		div		ecx
+		.if !edx
+			sub		ddswavedata.DDS_Amplitude,256
+			.if sdword ptr ddswavedata.DDS_Amplitude<0
+				mov		ddswavedata.DDS_Amplitude,0
+			.endif
 		.endif
 
 ;PrintDec tmp
@@ -636,7 +642,7 @@ DDSWaveProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 		call	GetPoint
 		invoke MoveToEx,mDC,pt.x,pt.y,NULL
 		shl		WavePoints,4
-		.while ebx<64
+		.while ebx<65
 			.if edi==WavePoints
 				xor		edi,edi
 			.endif
@@ -658,7 +664,7 @@ DDSWaveProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 		xor		ebx,ebx
 		call	GetPoint
 		invoke MoveToEx,mDC,pt.x,pt.y,NULL
-		.while ebx<64
+		.while ebx<65
 			call	GetPoint
 			invoke LineTo,mDC,pt.x,pt.y
 			lea		edi,[edi+1]
