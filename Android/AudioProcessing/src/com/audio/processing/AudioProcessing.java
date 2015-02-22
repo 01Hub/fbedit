@@ -18,7 +18,7 @@ import android.widget.ImageView;
 import ca.uol.aig.fftpack.RealDoubleFFT;
 
 public class AudioProcessing extends Activity implements OnClickListener{
-    int frequency = 8000;
+	int frequency = 8000;
     int channelConfiguration = AudioFormat.CHANNEL_IN_MONO;
     int audioEncoding = AudioFormat.ENCODING_PCM_16BIT;
     private RealDoubleFFT transformer;
@@ -39,7 +39,7 @@ public class AudioProcessing extends Activity implements OnClickListener{
         startStopButton.setOnClickListener(this);
         transformer = new RealDoubleFFT(blockSize);
         imageView = (ImageView) this.findViewById(R.id.ImageView01);
-        bitmap = Bitmap.createBitmap((int)256,(int)100,Bitmap.Config.ARGB_8888);
+        bitmap = Bitmap.createBitmap((int)256,(int)200,Bitmap.Config.ARGB_8888);
         canvas = new Canvas(bitmap);
         paint = new Paint();
         paint.setColor(Color.GREEN);
@@ -57,6 +57,7 @@ public class AudioProcessing extends Activity implements OnClickListener{
                 audioRecord.startRecording();
                 while (started) {
                 	int bufferReadResult = audioRecord.read(buffer, 0, blockSize);
+ //                   Log.e("AudioRecord", "Recording: " + bufferReadResult);
                 	for (int i = 0; i < blockSize && i < bufferReadResult; i++) {
                 		toTransform[i] = (double) buffer[i] / 32768.0; // signed 16 bit
                 	}
@@ -69,17 +70,20 @@ public class AudioProcessing extends Activity implements OnClickListener{
             }
             return null;
         }
-    }
 
-    protected void onProgressUpdate(double[]... toTransform) {
-        canvas.drawColor(Color.BLACK);
-        for (int i = 0; i < toTransform[0].length; i++) {
-        	int x = i;
-        	int downy = (int) (100 - (toTransform[0][i] * 10));
-        	int upy = 100;
-        	canvas.drawLine(x, downy, x, upy, paint);
-        }
-        imageView.invalidate();
+	    @Override
+	    protected void onProgressUpdate(double[]... toTransform) {
+	    	int x = 0;
+	    	int downy = 0;
+	        canvas.drawColor(Color.BLACK);
+	        for (int i = 0; i < toTransform[0].length; i++) {
+	        	x = i;
+	        	downy = (int) (100 - (toTransform[0][i] * 100));
+	        	int upy = 100;
+	        	canvas.drawLine(x, downy, x, upy, paint);
+	        }
+	        imageView.invalidate();
+	    }
     }
 
     public void onClick(View v) {
