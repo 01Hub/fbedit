@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import ca.uol.aig.fftpack.RealDoubleFFT;
 
@@ -46,7 +47,7 @@ public class AudioProcessing extends Activity implements OnClickListener{
         downButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-            	frq += 1;
+            	frq -= 5;
             	Log.e("AudioRecord", "downButton " + frq);
 			}
 		});
@@ -55,7 +56,7 @@ public class AudioProcessing extends Activity implements OnClickListener{
         upButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-            	frq -= 1;
+            	frq += 5;
             	Log.e("AudioRecord", "upButton " + frq);
 			}
 		});
@@ -89,9 +90,11 @@ public class AudioProcessing extends Activity implements OnClickListener{
                 		toTransform[i] = ((float) Math.sin( (float)i * ((float)(2*Math.PI) * frq / 8000)))/15.0 + ((float) Math.sin( (float)i * ((float)(2*Math.PI) * frq*2 / 8000)))/30.0 + ((float) Math.sin( (float)i * ((float)(2*Math.PI) * frq*3 / 8000)))/30.0;    //the part that makes this a sine wave.... 
                 				//0.001D*(i & 7);//(double) buffer[i] / 32768.0; // signed 16 bit
                 	}
+
                 	transformer.ft(toTransform);
                 	publishProgress(toTransform);
 
+                	
                 	for (int i = 0; i < 1000000; i++) {
                 	}
                 	
@@ -109,10 +112,11 @@ public class AudioProcessing extends Activity implements OnClickListener{
 	    	int x = 0;
 	    	int downy = 0;
 	        canvas.drawColor(Color.BLACK);
+
 	        for (int i = 0; i < toTransform[0].length; i++) {
 	        	x = i;
-	        	downy = (int) (100 - (Math.abs(toTransform[0][i]*10D)));
-	        	int upy = 100;
+	        	downy = (int) (199 - (Math.abs(toTransform[0][i]*20D)));
+	        	int upy = 199;
 	        	canvas.drawLine(x, downy, x, upy, paint);
 	        }
 	        imageView.invalidate();
