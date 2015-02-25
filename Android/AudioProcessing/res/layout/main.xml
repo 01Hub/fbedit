@@ -1,34 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
 android:orientation="vertical"
 android:layout_width="fill_parent"
 android:layout_height="fill_parent"
 >
 
-<TextView
-    android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    android:text="@string/hello_world" />
+<ImageView android:id="@+id/ImageView01"
+	android:layout_width="wrap_content"
+	android:layout_height="150dp"></ImageView>
 
-<ImageView android:id="@+id/ImageView01" android:layout_width="wrap_content"
-android:layout_height="wrap_content"></ImageView>
+<ImageView android:id="@+id/ImageView02"
+    android:layout_width="wrap_content"
+	android:layout_below="@+id/ImageView01"
+	android:layout_height="150dp"></ImageView>
 
 <Button
     android:id="@+id/StartStopButton"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+	android:layout_below="@+id/ImageView02"
     android:text="Start" />
 
 <Button
     android:id="@+id/button2"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    android:layout_toRightOf="@+id/StartStopButton"
+	android:layout_below="@+id/ImageView02"
     android:text="&lt;&lt;&lt;" />
 
 <Button
     android:id="@+id/button1"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    android:layout_toRightOf="@+id/button2"
+	android:layout_below="@+id/ImageView02"
     android:text=">>>" />
 
-</LinearLayout>
+</RelativeLayout>

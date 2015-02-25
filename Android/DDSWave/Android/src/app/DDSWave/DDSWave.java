@@ -23,7 +23,7 @@ public class DDSWave extends Activity {
 	private static Canvas canvas;
 	private int wt;
 	private int ht;
-	private int WAVEGRID = 40;
+	private int WAVEGRID = 64;
 	private int WAVEGRIDXOFS = 0;
 	private int WAVEGRIDYOFS = 0;
 	private final short SinWave[] = {2048,2054,2061,2067,2073,2079,2086,2092,2098,2105,2111,2117,2123,2130,2136,2142,
@@ -191,14 +191,14 @@ public class DDSWave extends Activity {
 		canvas = new Canvas(bmpwave);
 		paint.setStrokeWidth(1);
         paint.setColor(Color.DKGRAY);
-		while (i < 11) {
+		while (i < 9) {
 	        canvas.drawLine(WAVEGRIDXOFS, y, WAVEGRID*10+WAVEGRIDXOFS, y, paint);
 	        y+=WAVEGRID;
 	        i++;
 		}
 		i=0;
 		while (i < 11) {
-	        canvas.drawLine(x, WAVEGRIDYOFS, x, WAVEGRID*10+WAVEGRIDYOFS, paint);
+	        canvas.drawLine(x, WAVEGRIDYOFS, x, WAVEGRID*8+WAVEGRIDYOFS, paint);
 	        x+=WAVEGRID;
 	        i++;
 		}
@@ -212,11 +212,11 @@ public class DDSWave extends Activity {
 		DrawGrid();
         paint.setColor(Color.YELLOW);
 		xp = ((i / 8) * WAVEGRID * 10) / 256;
-		yp = (((4095 + 2048- SinWave[i]) / 16) * WAVEGRID * 10) / 512;
+		yp = (((4095 + 2048- SinWave[i]) / 16) * WAVEGRID * 8) / 512;
 		i++;
 		while (i < 2048) {
 			x = ((i / 8) * WAVEGRID * 10) / 256;
-			y = (((4095 + 2048 - SinWave[i]) / 16) * WAVEGRID * 10) / 512;
+			y = (((4095 + 2048 - SinWave[i]) / 16) * WAVEGRID * 8) / 512;
 	        canvas.drawLine(xp + WAVEGRIDXOFS, yp + WAVEGRIDYOFS, x + WAVEGRIDXOFS, y + WAVEGRIDYOFS, paint);
 			xp = x;
 			yp = y;
@@ -234,11 +234,11 @@ public class DDSWave extends Activity {
 		paint.setStrokeWidth(2);
         paint.setColor(Color.YELLOW);
 		xp = ((i / 8) * WAVEGRID * 10) / 256;
-		yp = (((4095- SinWave[i]) / 16) * WAVEGRID * 10) / 256;
+		yp = (((4095- SinWave[i]) / 16) * WAVEGRID * 8) / 256;
 		i++;
 		while (i < 2048) {
 			x = ((i / 8) * WAVEGRID * 10) / 256;
-			y = (((4095 - SinWave[i]) / 16) * WAVEGRID * 10) / 256;
+			y = (((4095 - SinWave[i]) / 16) * WAVEGRID * 8) / 256;
 	        canvas.drawLine(xp + WAVEGRIDXOFS, yp + WAVEGRIDYOFS, x + WAVEGRIDXOFS, y + WAVEGRIDYOFS, paint);
 			xp = x;
 			yp = y;
