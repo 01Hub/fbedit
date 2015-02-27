@@ -1,6 +1,8 @@
 package app.DDSWave;
 
 import android.app.Activity;
+import android.app.Dialog;
+import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -9,10 +11,18 @@ import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.WindowManager.LayoutParams;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.ImageView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.SeekBar;
+import android.widget.TextView;
+import android.widget.SeekBar.OnSeekBarChangeListener;
 import app.DDSWave.R;
 
 public class DDSWave extends Activity {
@@ -23,138 +33,18 @@ public class DDSWave extends Activity {
 	private static Canvas canvas;
 	private int wt;
 	private int ht;
+	private int mode = 0;
 	private int WAVEGRID = 64;
 	private int WAVEGRIDXOFS = 0;
 	private int WAVEGRIDYOFS = 0;
-	private final short SinWave[] = {2048,2054,2061,2067,2073,2079,2086,2092,2098,2105,2111,2117,2123,2130,2136,2142,
-			2148,2155,2161,2167,2174,2180,2186,2192,2199,2205,2211,2217,2224,2230,2236,2242,
-			2249,2255,2261,2267,2274,2280,2286,2292,2299,2305,2311,2317,2323,2330,2336,2342,
-			2348,2355,2361,2367,2373,2379,2386,2392,2398,2404,2410,2417,2423,2429,2435,2441,
-			2447,2454,2460,2466,2472,2478,2484,2490,2497,2503,2509,2515,2521,2527,2533,2539,
-			2545,2551,2558,2564,2570,2576,2582,2588,2594,2600,2606,2612,2618,2624,2630,2636,
-			2642,2648,2654,2660,2666,2672,2678,2684,2690,2696,2702,2708,2714,2720,2726,2732,
-			2738,2744,2749,2755,2761,2767,2773,2779,2785,2791,2796,2802,2808,2814,2820,2826,
-			2831,2837,2843,2849,2855,2860,2866,2872,2878,2883,2889,2895,2900,2906,2912,2918,
-			2923,2929,2935,2940,2946,2951,2957,2963,2968,2974,2980,2985,2991,2996,3002,3007,
-			3013,3018,3024,3030,3035,3041,3046,3051,3057,3062,3068,3073,3079,3084,3090,3095,
-			3100,3106,3111,3116,3122,3127,3133,3138,3143,3148,3154,3159,3164,3170,3175,3180,
-			3185,3190,3196,3201,3206,3211,3216,3222,3227,3232,3237,3242,3247,3252,3257,3262,
-			3267,3272,3277,3282,3287,3292,3297,3302,3307,3312,3317,3322,3327,3332,3337,3342,
-			3347,3351,3356,3361,3366,3371,3376,3380,3385,3390,3395,3399,3404,3409,3413,3418,
-			3423,3427,3432,3437,3441,3446,3450,3455,3459,3464,3469,3473,3478,3482,3487,3491,
-			3495,3500,3504,3509,3513,3517,3522,3526,3531,3535,3539,3543,3548,3552,3556,3561,
-			3565,3569,3573,3577,3581,3586,3590,3594,3598,3602,3606,3610,3614,3618,3622,3626,
-			3630,3634,3638,3642,3646,3650,3654,3658,3662,3666,3669,3673,3677,3681,3685,3688,
-			3692,3696,3700,3703,3707,3711,3714,3718,3722,3725,3729,3732,3736,3739,3743,3747,
-			3750,3753,3757,3760,3764,3767,3771,3774,3777,3781,3784,3787,3791,3794,3797,3801,
-			3804,3807,3810,3813,3817,3820,3823,3826,3829,3832,3835,3838,3841,3844,3847,3850,
-			3853,3856,3859,3862,3865,3868,3871,3874,3876,3879,3882,3885,3888,3890,3893,3896,
-			3898,3901,3904,3906,3909,3912,3914,3917,3919,3922,3924,3927,3929,3932,3934,3937,
-			3939,3942,3944,3946,3949,3951,3953,3956,3958,3960,3962,3965,3967,3969,3971,3973,
-			3975,3977,3980,3982,3984,3986,3988,3990,3992,3994,3996,3998,3999,4001,4003,4005,
-			4007,4009,4010,4012,4014,4016,4017,4019,4021,4023,4024,4026,4027,4029,4031,4032,
-			4034,4035,4037,4038,4040,4041,4042,4044,4045,4047,4048,4049,4051,4052,4053,4054,
-			4056,4057,4058,4059,4060,4062,4063,4064,4065,4066,4067,4068,4069,4070,4071,4072,
-			4073,4074,4075,4076,4076,4077,4078,4079,4080,4080,4081,4082,4083,4083,4084,4085,
-			4085,4086,4086,4087,4087,4088,4088,4089,4089,4090,4090,4091,4091,4092,4092,4092,
-			4093,4093,4093,4093,4094,4094,4094,4094,4094,4095,4095,4095,4095,4095,4095,4095,
-			4095,4095,4095,4095,4095,4095,4095,4095,4094,4094,4094,4094,4094,4093,4093,4093,
-			4093,4092,4092,4092,4091,4091,4090,4090,4089,4089,4088,4088,4087,4087,4086,4086,
-			4085,4085,4084,4083,4083,4082,4081,4080,4080,4079,4078,4077,4076,4076,4075,4074,
-			4073,4072,4071,4070,4069,4068,4067,4066,4065,4064,4063,4062,4060,4059,4058,4057,
-			4056,4054,4053,4052,4051,4049,4048,4047,4045,4044,4042,4041,4040,4038,4037,4035,
-			4034,4032,4031,4029,4027,4026,4024,4023,4021,4019,4017,4016,4014,4012,4010,4009,
-			4007,4005,4003,4001,3999,3998,3996,3994,3992,3990,3988,3986,3984,3982,3980,3977,
-			3975,3973,3971,3969,3967,3965,3962,3960,3958,3956,3953,3951,3949,3946,3944,3942,
-			3939,3937,3934,3932,3929,3927,3924,3922,3919,3917,3914,3912,3909,3906,3904,3901,
-			3898,3896,3893,3890,3888,3885,3882,3879,3876,3874,3871,3868,3865,3862,3859,3856,
-			3853,3850,3847,3844,3841,3838,3835,3832,3829,3826,3823,3820,3817,3813,3810,3807,
-			3804,3801,3797,3794,3791,3787,3784,3781,3777,3774,3771,3767,3764,3760,3757,3753,
-			3750,3747,3743,3739,3736,3732,3729,3725,3722,3718,3714,3711,3707,3703,3700,3696,
-			3692,3688,3685,3681,3677,3673,3669,3666,3662,3658,3654,3650,3646,3642,3638,3634,
-			3630,3626,3622,3618,3614,3610,3606,3602,3598,3594,3590,3586,3581,3577,3573,3569,
-			3565,3561,3556,3552,3548,3543,3539,3535,3531,3526,3522,3517,3513,3509,3504,3500,
-			3495,3491,3487,3482,3478,3473,3469,3464,3459,3455,3450,3446,3441,3437,3432,3427,
-			3423,3418,3413,3409,3404,3399,3395,3390,3385,3380,3376,3371,3366,3361,3356,3351,
-			3347,3342,3337,3332,3327,3322,3317,3312,3307,3302,3297,3292,3287,3282,3277,3272,
-			3267,3262,3257,3252,3247,3242,3237,3232,3227,3222,3216,3211,3206,3201,3196,3190,
-			3185,3180,3175,3170,3164,3159,3154,3148,3143,3138,3133,3127,3122,3116,3111,3106,
-			3100,3095,3090,3084,3079,3073,3068,3062,3057,3051,3046,3041,3035,3030,3024,3018,
-			3013,3007,3002,2996,2991,2985,2980,2974,2968,2963,2957,2951,2946,2940,2935,2929,
-			2923,2918,2912,2906,2900,2895,2889,2883,2878,2872,2866,2860,2855,2849,2843,2837,
-			2831,2826,2820,2814,2808,2802,2796,2791,2785,2779,2773,2767,2761,2755,2749,2744,
-			2738,2732,2726,2720,2714,2708,2702,2696,2690,2684,2678,2672,2666,2660,2654,2648,
-			2642,2636,2630,2624,2618,2612,2606,2600,2594,2588,2582,2576,2570,2564,2558,2551,
-			2545,2539,2533,2527,2521,2515,2509,2503,2497,2490,2484,2478,2472,2466,2460,2454,
-			2447,2441,2435,2429,2423,2417,2410,2404,2398,2392,2386,2379,2373,2367,2361,2355,
-			2348,2342,2336,2330,2323,2317,2311,2305,2299,2292,2286,2280,2274,2267,2261,2255,
-			2249,2242,2236,2230,2224,2217,2211,2205,2199,2192,2186,2180,2174,2167,2161,2155,
-			2148,2142,2136,2130,2123,2117,2111,2105,2098,2092,2086,2079,2073,2067,2061,2054,
-			2048,2042,2035,2029,2023,2017,2010,2004,1998,1991,1985,1979,1973,1966,1960,1954,
-			1948,1941,1935,1929,1922,1916,1910,1904,1897,1891,1885,1879,1872,1866,1860,1854,
-			1847,1841,1835,1829,1822,1816,1810,1804,1797,1791,1785,1779,1773,1766,1760,1754,
-			1748,1741,1735,1729,1723,1717,1710,1704,1698,1692,1686,1679,1673,1667,1661,1655,
-			1649,1642,1636,1630,1624,1618,1612,1606,1599,1593,1587,1581,1575,1569,1563,1557,
-			1551,1545,1538,1532,1526,1520,1514,1508,1502,1496,1490,1484,1478,1472,1466,1460,
-			1454,1448,1442,1436,1430,1424,1418,1412,1406,1400,1394,1388,1382,1376,1370,1364,
-			1358,1352,1347,1341,1335,1329,1323,1317,1311,1305,1300,1294,1288,1282,1276,1270,
-			1265,1259,1253,1247,1241,1236,1230,1224,1218,1213,1207,1201,1196,1190,1184,1178,
-			1173,1167,1161,1156,1150,1145,1139,1133,1128,1122,1116,1111,1105,1100,1094,1089,
-			1083,1078,1072,1066,1061,1055,1050,1045,1039,1034,1028,1023,1017,1012,1006,1001,
-			996,990,985,980,974,969,963,958,953,948,942,937,932,926,921,916,
-			911,906,900,895,890,885,880,874,869,864,859,854,849,844,839,834,
-			829,824,819,814,809,804,799,794,789,784,779,774,769,764,759,754,
-			749,745,740,735,730,725,720,716,711,706,701,697,692,687,683,678,
-			673,669,664,659,655,650,646,641,637,632,627,623,618,614,609,605,
-			601,596,592,587,583,579,574,570,565,561,557,553,548,544,540,535,
-			531,527,523,519,515,510,506,502,498,494,490,486,482,478,474,470,
-			466,462,458,454,450,446,442,438,434,430,427,423,419,415,411,408,
-			404,400,396,393,389,385,382,378,374,371,367,364,360,357,353,349,
-			346,343,339,336,332,329,325,322,319,315,312,309,305,302,299,295,
-			292,289,286,283,279,276,273,270,267,264,261,258,255,252,249,246,
-			243,240,237,234,231,228,225,222,220,217,214,211,208,206,203,200,
-			198,195,192,190,187,184,182,179,177,174,172,169,167,164,162,159,
-			157,154,152,150,147,145,143,140,138,136,134,131,129,127,125,123,
-			121,119,116,114,112,110,108,106,104,102,100,98,97,95,93,91,
-			89,87,86,84,82,80,79,77,75,73,72,70,69,67,65,64,
-			62,61,59,58,56,55,54,52,51,49,48,47,45,44,43,42,
-			40,39,38,37,36,34,33,32,31,30,29,28,27,26,25,24,
-			23,22,21,20,20,19,18,17,16,16,15,14,13,13,12,11,
-			11,10,10,9,9,8,8,7,7,6,6,5,5,4,4,4,
-			3,3,3,3,2,2,2,2,2,1,1,1,1,1,1,1,
-			1,1,1,1,1,1,1,1,2,2,2,2,2,3,3,3,
-			3,4,4,4,5,5,6,6,7,7,8,8,9,9,10,10,
-			11,11,12,13,13,14,15,16,16,17,18,19,20,20,21,22,
-			23,24,25,26,27,28,29,30,31,32,33,34,36,37,38,39,
-			40,42,43,44,45,47,48,49,51,52,54,55,56,58,59,61,
-			62,64,65,67,69,70,72,73,75,77,79,80,82,84,86,87,
-			89,91,93,95,97,98,100,102,104,106,108,110,112,114,116,119,
-			121,123,125,127,129,131,134,136,138,140,143,145,147,150,152,154,
-			157,159,162,164,167,169,172,174,177,179,182,184,187,190,192,195,
-			198,200,203,206,208,211,214,217,220,222,225,228,231,234,237,240,
-			243,246,249,252,255,258,261,264,267,270,273,276,279,283,286,289,
-			292,295,299,302,305,309,312,315,319,322,325,329,332,336,339,343,
-			346,349,353,357,360,364,367,371,374,378,382,385,389,393,396,400,
-			404,408,411,415,419,423,427,430,434,438,442,446,450,454,458,462,
-			466,470,474,478,482,486,490,494,498,502,506,510,515,519,523,527,
-			531,535,540,544,548,553,557,561,565,570,574,579,583,587,592,596,
-			601,605,609,614,618,623,627,632,637,641,646,650,655,659,664,669,
-			673,678,683,687,692,697,701,706,711,716,720,725,730,735,740,745,
-			749,754,759,764,769,774,779,784,789,794,799,804,809,814,819,824,
-			829,834,839,844,849,854,859,864,869,874,880,885,890,895,900,906,
-			911,916,921,926,932,937,942,948,953,958,963,969,974,980,985,990,
-			996,1001,1006,1012,1017,1023,1028,1034,1039,1045,1050,1055,1061,1066,1072,1078,
-			1083,1089,1094,1100,1105,1111,1116,1122,1128,1133,1139,1145,1150,1156,1161,1167,
-			1173,1178,1184,1190,1196,1201,1207,1213,1218,1224,1230,1236,1241,1247,1253,1259,
-			1265,1270,1276,1282,1288,1294,1300,1305,1311,1317,1323,1329,1335,1341,1347,1352,
-			1358,1364,1370,1376,1382,1388,1394,1400,1406,1412,1418,1424,1430,1436,1442,1448,
-			1454,1460,1466,1472,1478,1484,1490,1496,1502,1508,1514,1520,1526,1532,1538,1545,
-			1551,1557,1563,1569,1575,1581,1587,1593,1599,1606,1612,1618,1624,1630,1636,1642,
-			1649,1655,1661,1667,1673,1679,1686,1692,1698,1704,1710,1717,1723,1729,1735,1741,
-			1748,1754,1760,1766,1773,1779,1785,1791,1797,1804,1810,1816,1822,1829,1835,1841,
-			1847,1854,1860,1866,1872,1879,1885,1891,1897,1904,1910,1916,1922,1929,1935,1941,
-			1948,1954,1960,1966,1973,1979,1985,1991,1998,2004,2010,2017,2023,2029,2035,2042};
-	
+	private short Wave[] = new short[2048];
+	private byte LGAData[] = new byte[2048];
+	private int ddsfrqhz = 100;
+	private int ddsfrqkhz = 0;
+	private boolean ddsfrqhzsel = true;
+	private int ddsamp = 100;
+	private int ddswave=0;
+
 	@Override
 	public void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
@@ -162,25 +52,100 @@ public class DDSWave extends Activity {
 		setContentView(R.layout.main);
 		mIV=(ImageView) this.findViewById(R.id.ImageView1);
 
-		Button btnDDS = (Button) this.findViewById(R.id.btnDDS);
-		// if button is clicked, close the custom dialog
+		final Button btnDDS = (Button) this.findViewById(R.id.btnDDS);
+		final Button btnSCOPE = (Button) this.findViewById(R.id.btnSCOPE);
+		final Button btnLGA = (Button) this.findViewById(R.id.btnLGA);
+		final Button btnSETUP = (Button) this.findViewById(R.id.btnSETUP);
+		btnDDS.setBackgroundColor(Color.GRAY);
+		GenSineWave();
+		for (int i = 0;i<2048;i++) {
+			LGAData[i] = (byte)(i & 255);
+		}
 		btnDDS.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
+				mode = 0;
+				btnDDS.setBackgroundColor(Color.GRAY);
+				btnSCOPE.setBackgroundColor(Color.DKGRAY);
+				btnLGA.setBackgroundColor(Color.DKGRAY);
 				DrawDDSWave();
 				Log.d("MYTAG", "DrawDDSWave");
 			}
 		});
-		Button btnSCOPE = (Button) this.findViewById(R.id.btnSCOPE);
-		// if button is clicked, close the custom dialog
 		btnSCOPE.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
+				mode = 1;
+				btnDDS.setBackgroundColor(Color.DKGRAY);
+				btnSCOPE.setBackgroundColor(Color.GRAY);
+				btnLGA.setBackgroundColor(Color.DKGRAY);
 				DrawScopeWave();
 				Log.d("MYTAG", "DrawScopeWave");
 			}
 		});
+		btnLGA.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				mode = 2;
+				btnDDS.setBackgroundColor(Color.DKGRAY);
+				btnSCOPE.setBackgroundColor(Color.DKGRAY);
+				btnLGA.setBackgroundColor(Color.GRAY);
+				DrawLGAWave();
+				Log.d("MYTAG", "DrawLGAWave");
+			}
+		});
+		btnSETUP.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Log.d("MYTAG", "Setup");
+				if (mode == 0) {
+					ShowDDSSetupDialog();
+				} else if (mode == 1) {
+					
+				} else if (mode == 2) {
+				
+				}
+			}
+		});
 
+	}
+	
+	private void GenSineWave() {
+		double y;
+		for (int x = 0;x < 2048;x++) {
+			y=(float)Math.sin((float)(2*Math.PI) * (float)x / 2048.0D) * 2048.0;
+			Wave[x] = (short)(2048 - (int)y);
+		}
+		
+	}
+
+	private void GenTriangleWave() {
+		short y = 2048;
+		short dir=4;
+		for (int x = 0;x < 2048;x++) {
+			Wave[x] = y;
+			y+=dir;
+			if (y>4095) {
+				dir = -4;
+				y+=dir;
+			} else if (y<0) {
+				dir=4;
+				y+=dir;
+			}
+		}
+		
+	}
+	private void GenSquareWave() {
+		short y = 4095;
+		Wave[0] = 2048;
+		Wave[2047] = 2048;
+		for (int x = 1;x < 2047;x++) {
+			if (x == 1024) {
+				y=0;
+			}
+			Wave[x] = y;
+		}
+		
 	}
 
 	private void DrawGrid() {
@@ -212,11 +177,11 @@ public class DDSWave extends Activity {
 		DrawGrid();
         paint.setColor(Color.YELLOW);
 		xp = ((i / 8) * WAVEGRID * 10) / 256;
-		yp = (((4095 + 2048- SinWave[i]) / 16) * WAVEGRID * 8) / 512;
+		yp = (((4095 + 2048- Wave[i]) / 16) * WAVEGRID * 8) / 512;
 		i++;
 		while (i < 2048) {
 			x = ((i / 8) * WAVEGRID * 10) / 256;
-			y = (((4095 + 2048 - SinWave[i]) / 16) * WAVEGRID * 8) / 512;
+			y = (((4095 + 2048 - Wave[i]) / 16) * WAVEGRID * 8) / 512;
 	        canvas.drawLine(xp + WAVEGRIDXOFS, yp + WAVEGRIDYOFS, x + WAVEGRIDXOFS, y + WAVEGRIDYOFS, paint);
 			xp = x;
 			yp = y;
@@ -227,22 +192,69 @@ public class DDSWave extends Activity {
 
 	private void DrawDDSWave() {
 		int xp, yp;
-		int x=WAVEGRIDXOFS;
-		int y=WAVEGRIDYOFS;
-		int i=0;
+		int x = WAVEGRIDXOFS;
+		int y = WAVEGRIDYOFS;
+		int i = 0;
 		DrawGrid();
 		paint.setStrokeWidth(2);
         paint.setColor(Color.YELLOW);
 		xp = ((i / 8) * WAVEGRID * 10) / 256;
-		yp = (((4095- SinWave[i]) / 16) * WAVEGRID * 8) / 256;
+		yp = (((2048 - Wave[i]) / 16) * WAVEGRID * 6) / 256;
+		yp = WAVEGRID * 4  + ((yp * ddsamp) / 300);
 		i++;
 		while (i < 2048) {
 			x = ((i / 8) * WAVEGRID * 10) / 256;
-			y = (((4095 - SinWave[i]) / 16) * WAVEGRID * 8) / 256;
+			y = (((2048 - Wave[i]) / 16) * WAVEGRID * 6) / 256;
+			y = WAVEGRID * 4 + ((y * ddsamp) / 300);
 	        canvas.drawLine(xp + WAVEGRIDXOFS, yp + WAVEGRIDYOFS, x + WAVEGRIDXOFS, y + WAVEGRIDYOFS, paint);
 			xp = x;
 			yp = y;
 			i++;
+		}
+		mIV.setImageDrawable(new BitmapDrawable(getResources(), bmpwave));
+	}
+
+	private void DrawLGAWave() {
+		int x;
+		int y = WAVEGRIDYOFS + WAVEGRID;
+		int i = 0;
+		byte bit,prv;
+		DrawGrid();
+		paint.setTextSize(15);
+		paint.setColor(Color.WHITE);
+		while (i < 8) {
+			canvas.drawText("D" + i, 5, y, paint);
+			y += WAVEGRID;
+			i++;
+		}
+		y = WAVEGRIDYOFS + WAVEGRID;
+		bit = 1;
+		while (bit != 0) {
+			i = 0;
+			x = WAVEGRIDXOFS;
+			prv = LGAData[0];
+			while (true) {
+				/* Draw L or H */
+				if ((LGAData[i] & bit) == 0) {
+					/* Low */
+			        canvas.drawLine(x, y, x + WAVEGRID / 4, y, paint);
+				} else {
+					/* High */
+			        canvas.drawLine(x, y - WAVEGRID / 2, x + WAVEGRID / 4, y - WAVEGRID / 2, paint);
+				}
+				if ((prv & bit) != (LGAData[i] & bit)) {
+					/* Draw transition */
+			        canvas.drawLine(x, y, x, y - WAVEGRID / 2, paint);
+				}
+				x += WAVEGRID / 4;
+				if (x - WAVEGRIDXOFS > WAVEGRID * 10) {
+					break;
+				}
+				prv = LGAData[i];
+				i++;
+			}
+			bit <<=1;
+			y += WAVEGRID;
 		}
 		mIV.setImageDrawable(new BitmapDrawable(getResources(), bmpwave));
 	}
@@ -274,4 +286,192 @@ public class DDSWave extends Activity {
 	    }
 		Log.d("MYTAG", "onConfigurationChanged");
 	}
+
+    private void ShowDDSSetupDialog() {
+    	final Context context = this;
+		final Dialog dialog = new Dialog(context);
+		dialog.setContentView(R.layout.dlgdds);
+		dialog.getWindow().setGravity(Gravity.RIGHT | Gravity.TOP);
+		LayoutParams params = dialog.getWindow().getAttributes();
+		params.width = 512;
+		params.y=100;
+		dialog.getWindow().setAttributes(params);
+		RadioButton rbn;
+    	final RadioGroup rgwave = (RadioGroup) dialog.findViewById(R.id.rgwave);
+		if (ddswave == 0) {
+			rbn=(RadioButton) dialog.findViewById(R.id.rbnsine);
+			rbn.setChecked(true);
+		} else if (ddswave == 1) {
+			rbn=(RadioButton) dialog.findViewById(R.id.rbntriangle);
+			rbn.setChecked(true);
+		} else if (ddswave == 2) {
+			rbn=(RadioButton) dialog.findViewById(R.id.rbnsquare);
+			rbn.setChecked(true);
+		}
+
+
+		final TextView tvfrequency = (TextView) dialog.findViewById(R.id.tvddsfrq);
+    	final RadioGroup rgdds = (RadioGroup) dialog.findViewById(R.id.rgfrq);
+		Button btnddsfrqdn = (Button) dialog.findViewById(R.id.btnddsfrqdn);
+		final SeekBar sbfrequency = (SeekBar) dialog.findViewById(R.id.sbfrequency);
+		Button btnddsfrqup = (Button) dialog.findViewById(R.id.btnddsfrqup);
+
+		final TextView tvamplitude = (TextView) dialog.findViewById(R.id.tvddsamp);
+		Button btnddsampdn = (Button) dialog.findViewById(R.id.btnddsampdn);
+		final SeekBar sbamplitude = (SeekBar) dialog.findViewById(R.id.sbamplitude);
+		Button btnddsampup = (Button) dialog.findViewById(R.id.btnddsampup);
+		
+		dialog.setTitle("DDS Setup");
+		ddsfrqhzsel = true;
+		tvfrequency.setText("Frequncy: " +  String.format("%.1f",((float)ddsfrqkhz * 1000 + ddsfrqhz)) + "Hz");
+		sbfrequency.setProgress(ddsfrqhz);
+
+        rgwave.setOnCheckedChangeListener(new  RadioGroup.OnCheckedChangeListener() {
+	        public void onCheckedChanged(RadioGroup group,int checkedId) {
+	        	if(checkedId == R.id.rbnsine) {
+	        		GenSineWave();
+	        		ddswave=0;
+	        		DrawDDSWave();
+	        	} else if (checkedId == R.id.rbntriangle) {
+	        		GenTriangleWave();
+	        		ddswave=1;
+	        		DrawDDSWave();
+	        	} else if (checkedId == R.id.rbnsquare) {
+	        		GenSquareWave();
+	        		ddswave=2;
+	        		DrawDDSWave();
+	        	}
+
+	        }
+       	});
+
+        rgdds.setOnCheckedChangeListener(new  RadioGroup.OnCheckedChangeListener() {
+	        public void onCheckedChanged(RadioGroup group,int checkedId) {
+	        	if(checkedId == R.id.rbnhz) {
+	        		ddsfrqhzsel = true;
+	        		sbfrequency.setProgress(ddsfrqhz);
+	        	} else {
+	        		ddsfrqhzsel = false;
+	        		sbfrequency.setProgress(ddsfrqkhz);
+	        	}
+	        }
+       	});
+
+        btnddsfrqdn.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				if (ddsfrqhzsel) {
+					if (ddsfrqhz > 0) {
+						ddsfrqhz--;
+						sbfrequency.setProgress(ddsfrqhz);
+					}
+				} else {
+					if (ddsfrqkhz > 0) {
+						ddsfrqkhz--;
+						sbfrequency.setProgress(ddsfrqkhz);
+					}
+				}
+				tvfrequency.setText("Frequncy: " +  String.format("%.1f",((float)ddsfrqkhz * 1000 + ddsfrqhz)) + "Hz");
+			}
+		});
+		
+		sbfrequency.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
+        	public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+				if (ddsfrqhzsel) {
+	        		ddsfrqhz = progress;
+				} else {
+	        		ddsfrqkhz = progress;
+				}
+				tvfrequency.setText("Frequncy: " +  String.format("%.1f",((float)ddsfrqkhz * 1000 + ddsfrqhz)) + "Hz");
+        	}
+
+        	public void onStartTrackingTouch(SeekBar seekBar) {
+        	}
+
+        	public void onStopTrackingTouch(SeekBar seekBar) {
+        	}
+        });
+
+		btnddsfrqup.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				if (ddsfrqhzsel) {
+					if (ddsfrqhz < 999) {
+						ddsfrqhz++;
+						sbfrequency.setProgress(ddsfrqhz);
+					}
+				} else {
+					if (ddsfrqkhz < 999) {
+						ddsfrqkhz++;
+						sbfrequency.setProgress(ddsfrqkhz);
+					}
+				}
+				tvfrequency.setText("Frequncy: " +  String.format("%.1f",((float)ddsfrqkhz * 1000 + ddsfrqhz)) + "Hz");
+			}
+		});
+
+		tvamplitude.setText("Amplitude: " +  String.format("%.1f",((float)ddsamp * 10)) + "mV");
+		sbamplitude.setProgress(ddsamp);
+		
+        btnddsampdn.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				if (ddsamp > 0) {
+					ddsamp--;
+					sbamplitude.setProgress(ddsamp);
+					tvamplitude.setText("Amplitude: " +  String.format("%.1f",((float)ddsamp * 10)) + "mV");
+	        		DrawDDSWave();
+				}
+			}
+		});
+		
+		sbamplitude.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
+        	public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+        		ddsamp = progress;
+        		tvamplitude.setText("Amplitude: " +  String.format("%.1f",((float)ddsamp * 10)) + "mV");
+        		DrawDDSWave();
+        	}
+
+        	public void onStartTrackingTouch(SeekBar seekBar) {
+        	}
+
+        	public void onStopTrackingTouch(SeekBar seekBar) {
+        	}
+        });
+
+        btnddsampup.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				if (ddsamp < 299) {
+					ddsamp++;
+					sbamplitude.setProgress(ddsamp);
+					tvamplitude.setText("Amplitude: " +  String.format("%.1f",((float)ddsamp * 10)) + "mV");
+	        		DrawDDSWave();
+				}
+			}
+		});
+		
+//		CheckBox chkShowTrail;
+//		chkShowTrail = (CheckBox) dialog.findViewById(R.id.chkShowTrail);
+//		chkShowTrail.setChecked(MyIV.showtrail);
+//		chkShowTrail.setOnClickListener(new OnClickListener() {
+//			
+//			@Override
+//			public void onClick(View v) {
+//				MyIV.showtrail = ((CheckBox) v).isChecked();
+//			}
+//		});
+//
+		Button btnddsok = (Button) dialog.findViewById(R.id.btnddsok);
+		// if button is clicked, close the custom dialog
+		btnddsok.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				dialog.dismiss();
+			}
+		});
+
+		dialog.show();
+    }
+
 }
