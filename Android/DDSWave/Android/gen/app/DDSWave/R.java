@@ -14,16 +14,37 @@ public final class R {
         public static final int icon=0x7f020000;
     }
     public static final class id {
-        public static final int ImageView1=0x7f060010;
-        public static final int btnDDS=0x7f060011;
-        public static final int btnLGA=0x7f060013;
-        public static final int btnSCOPE=0x7f060012;
-        public static final int btnSETUP=0x7f060014;
+        public static final int ImageView1=0x7f06002b;
+        public static final int btnDDS=0x7f06002c;
+        public static final int btnLGA=0x7f06002e;
+        public static final int btnSCOPE=0x7f06002d;
+        public static final int btnSETUP=0x7f06002f;
         public static final int btnddsampdn=0x7f06000c;
         public static final int btnddsampup=0x7f06000e;
         public static final int btnddsfrqdn=0x7f060008;
         public static final int btnddsfrqup=0x7f06000a;
         public static final int btnddsok=0x7f06000f;
+        public static final int btnlgabuffdn=0x7f060015;
+        public static final int btnlgabuffup=0x7f060017;
+        public static final int btnlgasample=0x7f06002a;
+        public static final int btnlgasrdn=0x7f060011;
+        public static final int btnlgasrup=0x7f060013;
+        public static final int chklgamaskd0=0x7f060022;
+        public static final int chklgamaskd1=0x7f060023;
+        public static final int chklgamaskdd2=0x7f060024;
+        public static final int chklgamaskdd3=0x7f060025;
+        public static final int chklgamaskdd4=0x7f060026;
+        public static final int chklgamaskdd5=0x7f060027;
+        public static final int chklgamaskdd6=0x7f060028;
+        public static final int chklgamaskdd7=0x7f060029;
+        public static final int chklgatrgd0=0x7f060019;
+        public static final int chklgatrgd1=0x7f06001a;
+        public static final int chklgatrgd2=0x7f06001b;
+        public static final int chklgatrgd3=0x7f06001c;
+        public static final int chklgatrgd4=0x7f06001d;
+        public static final int chklgatrgd5=0x7f06001e;
+        public static final int chklgatrgd6=0x7f06001f;
+        public static final int chklgatrgd7=0x7f060020;
         public static final int khz=0x7f060007;
         public static final int rbnhz=0x7f060006;
         public static final int rbnsine=0x7f060001;
@@ -33,12 +54,19 @@ public final class R {
         public static final int rgwave=0x7f060000;
         public static final int sbamplitude=0x7f06000d;
         public static final int sbfrequency=0x7f060009;
+        public static final int sblgabuff=0x7f060016;
+        public static final int sblgasr=0x7f060012;
         public static final int tvddsamp=0x7f06000b;
         public static final int tvddsfrq=0x7f060004;
+        public static final int tvlgabuff=0x7f060014;
+        public static final int tvlgamask=0x7f060021;
+        public static final int tvlgasr=0x7f060010;
+        public static final int tvlgatrg=0x7f060018;
     }
     public static final class layout {
         public static final int dlgdds=0x7f030000;
-        public static final int main=0x7f030001;
+        public static final int dlglga=0x7f030001;
+        public static final int main=0x7f030002;
     }
     public static final class string {
         public static final int app_name=0x7f040000;

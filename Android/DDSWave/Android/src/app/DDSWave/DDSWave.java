@@ -12,6 +12,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.WindowManager.LayoutParams;
@@ -33,17 +34,25 @@ public class DDSWave extends Activity {
 	private static Canvas canvas;
 	private int wt;
 	private int ht;
+	private static final int DDSSIZE = 2048;
+	private static final int LGASIZE = 1024;
 	private int mode = 0;
 	private int WAVEGRID = 64;
 	private int WAVEGRIDXOFS = 0;
 	private int WAVEGRIDYOFS = 0;
-	private short Wave[] = new short[2048];
-	private byte LGAData[] = new byte[2048];
+	private short Wave[] = new short[DDSSIZE];
 	private int ddsfrqhz = 100;
 	private int ddsfrqkhz = 0;
 	private boolean ddsfrqhzsel = true;
 	private int ddsamp = 100;
 	private int ddswave=0;
+	private float xd,xs,xofs;
+
+	private byte LGAData[] = new byte[LGASIZE];
+	private int lgasr  = 0;
+	private String lgasrstr[] = {"1KHz","2KHz","5KHz","10KHz","20KHz","50KHz","100KHz","200KHz","500KHz","1MHz","2MHz","5MHz","10MHz","20MHz","40MHz"};
+	private int lgasize  = 0;
+	private boolean StartUp = true;
 
 	@Override
 	public void onCreate(Bundle icicle) {
@@ -58,7 +67,7 @@ public class DDSWave extends Activity {
 		final Button btnSETUP = (Button) this.findViewById(R.id.btnSETUP);
 		btnDDS.setBackgroundColor(Color.GRAY);
 		GenSineWave();
-		for (int i = 0;i<2048;i++) {
+		for (int i = 0;i<LGASIZE;i++) {
 			LGAData[i] = (byte)(i & 255);
 		}
 		btnDDS.setOnClickListener(new OnClickListener() {
@@ -101,9 +110,9 @@ public class DDSWave extends Activity {
 				if (mode == 0) {
 					ShowDDSSetupDialog();
 				} else if (mode == 1) {
-					
+					ShowDDSSetupDialog();
 				} else if (mode == 2) {
-				
+					ShowLGASetupDialog();
 				}
 			}
 		});
@@ -112,7 +121,7 @@ public class DDSWave extends Activity {
 	
 	private void GenSineWave() {
 		double y;
-		for (int x = 0;x < 2048;x++) {
+		for (int x = 0;x < DDSSIZE;x++) {
 			y=(float)Math.sin((float)(2*Math.PI) * (float)x / 2048.0D) * 2048.0;
 			Wave[x] = (short)(2048 - (int)y);
 		}
@@ -122,7 +131,7 @@ public class DDSWave extends Activity {
 	private void GenTriangleWave() {
 		short y = 2048;
 		short dir=4;
-		for (int x = 0;x < 2048;x++) {
+		for (int x = 0;x < DDSSIZE;x++) {
 			Wave[x] = y;
 			y+=dir;
 			if (y>4095) {
@@ -139,7 +148,7 @@ public class DDSWave extends Activity {
 		short y = 4095;
 		Wave[0] = 2048;
 		Wave[2047] = 2048;
-		for (int x = 1;x < 2047;x++) {
+		for (int x = 1;x < DDSSIZE - 1;x++) {
 			if (x == 1024) {
 				y=0;
 			}
@@ -202,7 +211,7 @@ public class DDSWave extends Activity {
 		yp = (((2048 - Wave[i]) / 16) * WAVEGRID * 6) / 256;
 		yp = WAVEGRID * 4  + ((yp * ddsamp) / 300);
 		i++;
-		while (i < 2048) {
+		while (i < DDSSIZE) {
 			x = ((i / 8) * WAVEGRID * 10) / 256;
 			y = (((2048 - Wave[i]) / 16) * WAVEGRID * 6) / 256;
 			y = WAVEGRID * 4 + ((y * ddsamp) / 300);
@@ -230,10 +239,10 @@ public class DDSWave extends Activity {
 		y = WAVEGRIDYOFS + WAVEGRID;
 		bit = 1;
 		while (bit != 0) {
-			i = 0;
+			i = (int)xofs / 4;
 			x = WAVEGRIDXOFS;
-			prv = LGAData[0];
-			while (true) {
+			prv = LGAData[i];
+			while (i < LGASIZE) {
 				/* Draw L or H */
 				if ((LGAData[i] & bit) == 0) {
 					/* Low */
@@ -247,7 +256,7 @@ public class DDSWave extends Activity {
 			        canvas.drawLine(x, y, x, y - WAVEGRID / 2, paint);
 				}
 				x += WAVEGRID / 4;
-				if (x - WAVEGRIDXOFS > WAVEGRID * 10) {
+				if (x - WAVEGRIDXOFS >= WAVEGRID * 10) {
 					break;
 				}
 				prv = LGAData[i];
@@ -262,19 +271,22 @@ public class DDSWave extends Activity {
 	@Override
 	public void onWindowFocusChanged (boolean hasFocus)
 	{
-	    super.onWindowFocusChanged(hasFocus);
-        ImageView imageView = (ImageView) findViewById(R.id.ImageView1);
-        wt = imageView.getWidth();
-        ht = imageView.getHeight();
-		bmpwave = Bitmap.createBitmap(wt, ht, Bitmap.Config.ARGB_8888);
-		if (wt > ht) {
-			WAVEGRID = (ht - 10) / 10;
-		} else {
-			WAVEGRID = (wt - 10) / 10;
+		if (StartUp) {
+		    super.onWindowFocusChanged(hasFocus);
+	        ImageView imageView = (ImageView) findViewById(R.id.ImageView1);
+	        wt = imageView.getWidth();
+	        ht = imageView.getHeight();
+			bmpwave = Bitmap.createBitmap(wt, ht, Bitmap.Config.ARGB_8888);
+			if (wt > ht) {
+				WAVEGRID = ((ht - 10) / 10) & 254;
+			} else {
+				WAVEGRID = ((wt - 10) / 10) & 254;
+			}
+			WAVEGRIDXOFS = (wt - WAVEGRID*10) / 2;
+			WAVEGRIDYOFS = (ht - WAVEGRID*10) / 2;
+			DrawDDSWave();
+			StartUp = false;
 		}
-		WAVEGRIDXOFS = (wt - WAVEGRID*10) / 2;
-		WAVEGRIDYOFS = (ht - WAVEGRID*10) / 2;
-		DrawDDSWave();
 	}
 
 	@Override
@@ -474,4 +486,98 @@ public class DDSWave extends Activity {
 		dialog.show();
     }
 
+    private void ShowLGASetupDialog() {
+    	final Context context = this;
+		final Dialog dialog = new Dialog(context);
+		dialog.setContentView(R.layout.dlglga);
+		dialog.getWindow().setGravity(Gravity.RIGHT | Gravity.TOP);
+		LayoutParams params = dialog.getWindow().getAttributes();
+		params.width = 512;
+		params.y=100;
+		dialog.getWindow().setAttributes(params);
+		dialog.setTitle("LGA Setup");
+
+		final TextView tvlgasr = (TextView) dialog.findViewById(R.id.tvlgasr);
+		Button btnlgasrdn = (Button) dialog.findViewById(R.id.btnlgasrdn);
+		final SeekBar sblgasr = (SeekBar) dialog.findViewById(R.id.sblgasr);
+		Button btnlgasrup = (Button) dialog.findViewById(R.id.btnlgasrup);
+
+		tvlgasr.setText("Sample rate: " +  lgasrstr[lgasr]);
+		sblgasr.setProgress(lgasr);
+
+        btnlgasrdn.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				if (lgasr > 0) {
+					lgasr--;
+					sblgasr.setProgress(lgasr);
+					tvlgasr.setText("Sample rate: " +  lgasrstr[lgasr]);
+				}
+			}
+		});
+		
+		sblgasr.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
+        	public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+        		lgasr = progress;
+				tvlgasr.setText("Sample rate: " +  lgasrstr[lgasr]);
+        	}
+
+        	public void onStartTrackingTouch(SeekBar seekBar) {
+        	}
+
+        	public void onStopTrackingTouch(SeekBar seekBar) {
+        	}
+        });
+
+		btnlgasrup.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				if (lgasr < 14) {
+					lgasr++;
+					sblgasr.setProgress(lgasr);
+					tvlgasr.setText("Sample rate: " +  lgasrstr[lgasr]);
+				}
+			}
+		});
+
+		Button btnlgasample = (Button) dialog.findViewById(R.id.btnlgasample);
+		// if button is clicked, close the custom dialog
+		btnlgasample.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				dialog.dismiss();
+			}
+		});
+
+		dialog.show();
+    }
+
+    @Override
+	public boolean onTouchEvent(MotionEvent event) {
+		switch (event.getAction()) {
+		case MotionEvent.ACTION_UP:
+			return (true);
+		case MotionEvent.ACTION_POINTER_UP:
+			return (true);
+		case MotionEvent.ACTION_DOWN:
+			xs = xofs;
+			if (mode == 2) {
+				xd = event.getAxisValue(0);
+				Log.d("MYTAG", "ACTION_DOWN xd " + xd + " xs " +xs);
+			}
+			return (true);
+		case MotionEvent.ACTION_POINTER_DOWN:
+			return (true);
+		case MotionEvent.ACTION_MOVE:
+			if (mode == 2) {
+				xofs = xs + (xd - event.getAxisValue(0, event.getPointerCount() - 1)) / 4;
+				if (xofs<0) xofs=0;
+				if (xofs >= LGASIZE * 4 - 4) xofs = LGASIZE * 4 - 4;
+	    		DrawLGAWave();
+				Log.d("MYTAG", "ACTION_MOVE " + xofs + " WAVEGRID " + WAVEGRID);
+			}
+			return (true);
+		}
+		return super.onTouchEvent(event);
+	}
 }
