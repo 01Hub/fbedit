@@ -14,11 +14,11 @@ public final class R {
         public static final int icon=0x7f020000;
     }
     public static final class id {
-        public static final int ImageView1=0x7f06002b;
-        public static final int btnDDS=0x7f06002c;
-        public static final int btnLGA=0x7f06002e;
-        public static final int btnSCOPE=0x7f06002d;
-        public static final int btnSETUP=0x7f06002f;
+        public static final int ImageView1=0x7f06002e;
+        public static final int btnDDS=0x7f06002f;
+        public static final int btnLGA=0x7f060031;
+        public static final int btnSCOPE=0x7f060030;
+        public static final int btnSETUP=0x7f060032;
         public static final int btnddsampdn=0x7f06000c;
         public static final int btnddsampup=0x7f06000e;
         public static final int btnddsfrqdn=0x7f060008;
@@ -26,7 +26,9 @@ public final class R {
         public static final int btnddsok=0x7f06000f;
         public static final int btnlgabuffdn=0x7f060015;
         public static final int btnlgabuffup=0x7f060017;
-        public static final int btnlgasample=0x7f06002a;
+        public static final int btnlgafinddn=0x7f06002b;
+        public static final int btnlgafindup=0x7f06002c;
+        public static final int btnlgasample=0x7f06002d;
         public static final int btnlgasrdn=0x7f060011;
         public static final int btnlgasrup=0x7f060013;
         public static final int chklgamaskd0=0x7f060022;
@@ -59,6 +61,7 @@ public final class R {
         public static final int tvddsamp=0x7f06000b;
         public static final int tvddsfrq=0x7f060004;
         public static final int tvlgabuff=0x7f060014;
+        public static final int tvlgafindtrg=0x7f06002a;
         public static final int tvlgamask=0x7f060021;
         public static final int tvlgasr=0x7f060010;
         public static final int tvlgatrg=0x7f060018;

@@ -229,6 +229,34 @@
         android:layout_toRightOf="@+id/chklgatrgd6"
         android:text="D7" />
 
+    <TextView
+        android:id="@+id/tvlgafindtrg"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/chklgamaskd0"
+        android:layout_marginTop="1dp"
+        android:layout_marginLeft="5dp"
+        android:text="Find trigger" />
+
+    <Button
+        android:id="@+id/btnlgafinddn"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvlgafindtrg"
+        android:layout_alignParentLeft="true"
+        android:layout_marginTop="5dp"
+        android:text="&lt;" />
+    
+    <Button
+        android:id="@+id/btnlgafindup"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvlgafindtrg"
+        android:layout_toRightOf="@+id/btnlgafinddn"
+        android:layout_marginTop="5dp"
+        android:text="&gt;" />
+    
     <Button
         android:id="@+id/btnlgasample"
         android:layout_width="150dp"

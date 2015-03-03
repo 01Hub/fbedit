@@ -51,7 +51,10 @@ public class DDSWave extends Activity {
 	private byte LGAData[] = new byte[LGASIZE];
 	private int lgasr  = 0;
 	private String lgasrstr[] = {"1KHz","2KHz","5KHz","10KHz","20KHz","50KHz","100KHz","200KHz","500KHz","1MHz","2MHz","5MHz","10MHz","20MHz","40MHz"};
-	private int lgasize  = 0;
+	private int lgabuff  = 0;
+	private byte lgatrg = (byte)0x00;
+	private byte lgamask = (byte)0x00;
+
 	private boolean StartUp = true;
 
 	@Override
@@ -485,6 +488,20 @@ public class DDSWave extends Activity {
 
 		dialog.show();
     }
+    private byte GetLGATrigger(Dialog dialog ,int id) {
+    	byte val = 0, i;
+		CheckBox chk;
+		i = 1;
+		while (i != 0) {
+			chk=(CheckBox) dialog.findViewById(id);
+			if (chk.isChecked()) {
+				val |= i;
+			}
+			i <<= 1;
+			id++;
+		}
+    	return val;
+    }
 
     private void ShowLGASetupDialog() {
     	final Context context = this;
@@ -495,17 +512,47 @@ public class DDSWave extends Activity {
 		params.width = 512;
 		params.y=100;
 		dialog.getWindow().setAttributes(params);
-		dialog.setTitle("LGA Setup");
 
 		final TextView tvlgasr = (TextView) dialog.findViewById(R.id.tvlgasr);
 		Button btnlgasrdn = (Button) dialog.findViewById(R.id.btnlgasrdn);
 		final SeekBar sblgasr = (SeekBar) dialog.findViewById(R.id.sblgasr);
 		Button btnlgasrup = (Button) dialog.findViewById(R.id.btnlgasrup);
 
+		final TextView tvlgabuff = (TextView) dialog.findViewById(R.id.tvlgabuff);
+		Button btnlgabuffdn = (Button) dialog.findViewById(R.id.btnlgabuffdn);
+		final SeekBar sblgabuff = (SeekBar) dialog.findViewById(R.id.sblgabuff);
+		Button btnlgabuffup = (Button) dialog.findViewById(R.id.btnlgabuffup);
+
+		Button btnlgafinddn = (Button) dialog.findViewById(R.id.btnlgafinddn);
+		Button btnlgafindup = (Button) dialog.findViewById(R.id.btnlgafindup);
+
+		dialog.setTitle("LGA Setup");
 		tvlgasr.setText("Sample rate: " +  lgasrstr[lgasr]);
 		sblgasr.setProgress(lgasr);
+		tvlgabuff.setText("Buffer size: " +  (lgabuff + 1) + "kb");
+		sblgabuff.setProgress(lgabuff);
 
-        btnlgasrdn.setOnClickListener(new OnClickListener() {
+		/* Set trigger */
+		CheckBox chk;
+		byte i = 1;
+		int id = 0x7f060019;
+		while (i != 0) {
+			chk=(CheckBox) dialog.findViewById(id);
+			chk.setChecked((lgatrg & i) != 0);
+			i <<= 1;
+			id++;
+		}
+		/* Set mask */
+		i = 1;
+		id = 0x7f060022;
+		while (i != 0) {
+			chk=(CheckBox) dialog.findViewById(id);
+			chk.setChecked((lgamask & i) != 0);
+			i <<= 1;
+			id++;
+		}
+
+		btnlgasrdn.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				if (lgasr > 0) {
@@ -540,11 +587,91 @@ public class DDSWave extends Activity {
 			}
 		});
 
+        btnlgabuffdn.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				if (lgabuff > 0) {
+					lgabuff--;
+					sblgabuff.setProgress(lgabuff);
+					tvlgabuff.setText("Buffer size: " +  (lgabuff + 1) + "kb");
+				}
+			}
+		});
+		
+		sblgabuff.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
+        	public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+        		lgabuff = progress;
+				tvlgabuff.setText("Buffer size: " +  (lgabuff + 1) + "kb");
+        	}
+
+        	public void onStartTrackingTouch(SeekBar seekBar) {
+        	}
+
+        	public void onStopTrackingTouch(SeekBar seekBar) {
+        	}
+        });
+
+		btnlgabuffup.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				if (lgabuff < 31) {
+					lgabuff++;
+					sblgabuff.setProgress(lgabuff);
+					tvlgabuff.setText("Buffer size: " +  (lgabuff + 1) + "kb");
+				}
+			}
+		});
+
+        btnlgafinddn.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				if (xofs >= 4) {
+					lgatrg = GetLGATrigger(dialog, 0x7f060019);
+					lgamask = GetLGATrigger(dialog, 0x7f060022);
+					byte val = (byte)((int)lgatrg & (int)lgamask);
+					int inx = (int)(xofs / 4);
+					inx--;
+					while (inx >= 0) {
+						if ((LGAData[inx] & lgamask) == val){
+							xofs = inx * 4;
+				    		DrawLGAWave();
+							break;
+						}
+						inx--;
+					}
+		    		DrawLGAWave();
+				}
+			}
+		});
+		
+        btnlgafindup.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				if (xofs / 4 < (lgabuff + 1) * 1024) {
+					lgatrg = GetLGATrigger(dialog, 0x7f060019);
+					lgamask = GetLGATrigger(dialog, 0x7f060022);
+					byte val = (byte)((int)lgatrg & (int)lgamask);
+					int inx = (int)(xofs / 4);
+					inx++;
+					while (inx < (lgabuff + 1) * 1024) {
+						if ((LGAData[inx] & lgamask) == val){
+							xofs = inx * 4;
+				    		DrawLGAWave();
+							break;
+						}
+						inx++;
+					}
+				}
+			}
+		});
+		
 		Button btnlgasample = (Button) dialog.findViewById(R.id.btnlgasample);
 		// if button is clicked, close the custom dialog
 		btnlgasample.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
+				lgatrg = GetLGATrigger(dialog, 0x7f060019);
+				lgamask = GetLGATrigger(dialog, 0x7f060022);
 				dialog.dismiss();
 			}
 		});
