@@ -1,14 +1,41 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
     android:background="#000000"
-    tools:context=".MainActivity" >
- 
-    <VideoView
-        android:id="@+id/myVideo"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:layout_centerInParent="true" />
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+    
+    <Button
+        android:id="@+id/btn0"
+        android:layout_width="115dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:layout_marginTop="5dp"
+        android:text="Start 0" />
+
+    <Button
+        android:id="@+id/btn1"
+        android:layout_width="115dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:layout_below="@+id/btn0"
+        android:layout_marginTop="5dp"
+        android:text="Start 1" />
+
+    <Button
+        android:id="@+id/btn2"
+        android:layout_width="115dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:layout_below="@+id/btn1"
+        android:layout_marginTop="5dp"
+        android:text="Start 2" />
+
+    <Button
+        android:id="@+id/btn3"
+        android:layout_width="115dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:layout_below="@+id/btn2"
+        android:layout_marginTop="5dp"
+        android:text="Start 3" />
 
 </RelativeLayout>
