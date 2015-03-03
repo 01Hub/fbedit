@@ -14,6 +14,8 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.view.View.OnClickListener;
 import android.view.WindowManager.LayoutParams;
 import android.widget.Button;
@@ -35,9 +37,10 @@ public class DDSWave extends Activity {
 	private int wt;
 	private int ht;
 	private static final int DDSSIZE = 2048;
-	private static final int LGASIZE = 1024;
+	private static final int LGASIZE = 32 * 1024;
+	private static final int LGAWIDTH = 8;
 	private int mode = 0;
-	private int WAVEGRID = 64;
+	private int WAVEGRID = 48;
 	private int WAVEGRIDXOFS = 0;
 	private int WAVEGRIDYOFS = 0;
 	private short Wave[] = new short[DDSSIZE];
@@ -61,6 +64,11 @@ public class DDSWave extends Activity {
 	public void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
     	
+		requestWindowFeature(Window.FEATURE_NO_TITLE);
+		requestWindowFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
+		getWindow().setFlags(
+		WindowManager.LayoutParams.FLAG_FULLSCREEN,  
+		WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		setContentView(R.layout.main);
 		mIV=(ImageView) this.findViewById(R.id.ImageView1);
 
@@ -228,7 +236,7 @@ public class DDSWave extends Activity {
 
 	private void DrawLGAWave() {
 		int x;
-		int y = WAVEGRIDYOFS + WAVEGRID;
+		int y = WAVEGRIDYOFS + WAVEGRID / 3;
 		int i = 0;
 		byte bit,prv;
 		DrawGrid();
@@ -249,16 +257,16 @@ public class DDSWave extends Activity {
 				/* Draw L or H */
 				if ((LGAData[i] & bit) == 0) {
 					/* Low */
-			        canvas.drawLine(x, y, x + WAVEGRID / 4, y, paint);
+			        canvas.drawLine(x, y, x + WAVEGRID / LGAWIDTH, y, paint);
 				} else {
 					/* High */
-			        canvas.drawLine(x, y - WAVEGRID / 2, x + WAVEGRID / 4, y - WAVEGRID / 2, paint);
+			        canvas.drawLine(x, y - WAVEGRID / 2, x + WAVEGRID / LGAWIDTH, y - WAVEGRID / 2, paint);
 				}
 				if ((prv & bit) != (LGAData[i] & bit)) {
 					/* Draw transition */
 			        canvas.drawLine(x, y, x, y - WAVEGRID / 2, paint);
 				}
-				x += WAVEGRID / 4;
+				x += WAVEGRID / LGAWIDTH;
 				if (x - WAVEGRIDXOFS >= WAVEGRID * 10) {
 					break;
 				}
@@ -280,11 +288,11 @@ public class DDSWave extends Activity {
 	        wt = imageView.getWidth();
 	        ht = imageView.getHeight();
 			bmpwave = Bitmap.createBitmap(wt, ht, Bitmap.Config.ARGB_8888);
-			if (wt > ht) {
-				WAVEGRID = ((ht - 10) / 10) & 254;
-			} else {
-				WAVEGRID = ((wt - 10) / 10) & 254;
-			}
+//			if (wt > ht) {
+//				WAVEGRID = ((ht - 10) / 10) & 254;
+//			} else {
+//				WAVEGRID = ((wt - 10) / 10) & 254;
+//			}
 			WAVEGRIDXOFS = (wt - WAVEGRID*10) / 2;
 			WAVEGRIDYOFS = (ht - WAVEGRID*10) / 2;
 			DrawDDSWave();
@@ -309,7 +317,7 @@ public class DDSWave extends Activity {
 		dialog.getWindow().setGravity(Gravity.RIGHT | Gravity.TOP);
 		LayoutParams params = dialog.getWindow().getAttributes();
 		params.width = 512;
-		params.y=100;
+		params.y=0;
 		dialog.getWindow().setAttributes(params);
 		RadioButton rbn;
     	final RadioGroup rgwave = (RadioGroup) dialog.findViewById(R.id.rgwave);
@@ -510,7 +518,7 @@ public class DDSWave extends Activity {
 		dialog.getWindow().setGravity(Gravity.RIGHT | Gravity.TOP);
 		LayoutParams params = dialog.getWindow().getAttributes();
 		params.width = 512;
-		params.y=100;
+		params.y=0;
 		dialog.getWindow().setAttributes(params);
 
 		final TextView tvlgasr = (TextView) dialog.findViewById(R.id.tvlgasr);
@@ -690,16 +698,16 @@ public class DDSWave extends Activity {
 			xs = xofs;
 			if (mode == 2) {
 				xd = event.getAxisValue(0);
-				Log.d("MYTAG", "ACTION_DOWN xd " + xd + " xs " +xs);
+				Log.d("MYTAG", "ACTION_DOWN xd " + xd + " xs " + xs);
 			}
 			return (true);
 		case MotionEvent.ACTION_POINTER_DOWN:
 			return (true);
 		case MotionEvent.ACTION_MOVE:
 			if (mode == 2) {
-				xofs = xs + (xd - event.getAxisValue(0, event.getPointerCount() - 1)) / 4;
+				xofs = xs + (xd - event.getAxisValue(0, event.getPointerCount() - 1));// / 2;//LGAWIDTH;
 				if (xofs<0) xofs=0;
-				if (xofs >= LGASIZE * 4 - 4) xofs = LGASIZE * 4 - 4;
+				if (xofs >= LGASIZE * LGAWIDTH - LGAWIDTH) xofs = LGASIZE * LGAWIDTH - LGAWIDTH;
 	    		DrawLGAWave();
 				Log.d("MYTAG", "ACTION_MOVE " + xofs + " WAVEGRID " + WAVEGRID);
 			}
