@@ -21,7 +21,6 @@ import android.widget.VideoView;
 
 public class MainActivity extends Activity {
 
-	private int rseed;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -95,16 +94,5 @@ public class MainActivity extends Activity {
 			}
 	    });
 		vidView.start();
-	}
-	
-	private int Random() {
-		int lsb;
-		int rnd = rseed * 23 + 7;
-		lsb = (rnd & 1) << 31;
-		rnd >>>= 1;
-		rnd |= lsb;
-		rnd ^= rseed;
-		rseed = rnd;
-		return rnd;
 	}
 }
