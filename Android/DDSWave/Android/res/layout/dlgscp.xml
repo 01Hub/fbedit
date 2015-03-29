@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
+    
+    <TextView
+        android:id="@+id/tvscpsr"
+        android:layout_width="350dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+         android:layout_alignParentTop="true"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="5dp"
+        android:text="Sample rate" />
+
+    <Button
+        android:id="@+id/btnscpsrdn"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvscpsr"
+        android:layout_alignParentLeft="true"
+        android:layout_marginTop="5dp"
+        android:text="&lt;" />
+    
+    <SeekBar
+        android:id="@+id/sbscpsr"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/btnscpsrdn"
+        android:layout_marginTop="15dp"
+        android:layout_below="@+id/tvscpsr"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="55dp"
+        android:max="15" />
+
+    <Button
+        android:id="@+id/btnscpsrup"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvscpsr"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="5dp"
+        android:text=">" />
+    
+    <TextView
+        android:id="@+id/tvscptd"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/sbscpsr"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="5dp"
+        android:text="Time / Div" />
+
+    <Button
+        android:id="@+id/btnscptddn"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvscptd"
+        android:layout_alignParentLeft="true"
+        android:layout_marginTop="5dp"
+        android:text="&lt;" />
+    
+    <SeekBar
+        android:id="@+id/sbscptd"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/btnscptddn"
+        android:layout_marginTop="15dp"
+        android:layout_below="@+id/tvscptd"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="55dp"
+        android:max="18" />
+
+    <Button
+        android:id="@+id/btnscptdup"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvscptd"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="5dp"
+        android:text=">" />
+    
+    <TextView
+        android:id="@+id/tvscpvd"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/sbscptd"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="5dp"
+        android:text="Volt / Div" />
+
+    <Button
+        android:id="@+id/btnscpvddn"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvscpvd"
+        android:layout_alignParentLeft="true"
+        android:layout_marginTop="5dp"
+        android:text="&lt;" />
+    
+    <SeekBar
+        android:id="@+id/sbscpvd"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/btnscpvddn"
+        android:layout_marginTop="15dp"
+        android:layout_below="@+id/tvscpvd"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="55dp"
+        android:max="8" />
+
+    <Button
+        android:id="@+id/btnscpvdup"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvscpvd"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="5dp"
+        android:text=">" />
+    
+    <TextView
+        android:id="@+id/tvscpvp"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/sbscpvd"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="5dp"
+        android:text="V-Pos" />
+
+    <Button
+        android:id="@+id/btnscpvpdn"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvscpvp"
+        android:layout_alignParentLeft="true"
+        android:layout_marginTop="5dp"
+        android:text="&lt;" />
+    
+    <SeekBar
+        android:id="@+id/sbscpvp"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/btnscpvpdn"
+        android:layout_marginTop="15dp"
+        android:layout_below="@+id/tvscpvp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="55dp"
+        android:max="300" />
+
+    <Button
+        android:id="@+id/btnscpvpup"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvscpvp"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="5dp"
+        android:text=">" />
+    
+    <TextView
+        android:id="@+id/tvscptl"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/sbscpvp"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="5dp"
+        android:text="Trigger level" />
+
+    <Button
+        android:id="@+id/btnscptldn"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvscptl"
+        android:layout_alignParentLeft="true"
+        android:layout_marginTop="5dp"
+        android:text="&lt;" />
+    
+    <SeekBar
+        android:id="@+id/sbscptl"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/btnscptldn"
+        android:layout_marginTop="15dp"
+        android:layout_below="@+id/tvscptl"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="55dp"
+        android:max="299" />
+
+    <Button
+        android:id="@+id/btnscptlup"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvscptl"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="5dp"
+        android:text=">" />
+    
+    <RadioGroup
+        android:id="@+id/rgtrig"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:layout_below="@+id/sbscptl"
+		android:orientation="horizontal" >
+        
+        <RadioButton
+			android:id="@+id/rbnscptrgr"
+        	android:layout_width="100dp"
+        	android:layout_height="wrap_content"
+        	android:layout_marginRight="5dp"
+        	android:text="Rising" />
+    
+    	<RadioButton
+	        android:id="@+id/rbnscptrgf"
+	        android:layout_width="100dp"
+	        android:layout_height="wrap_content"
+	        android:layout_marginRight="5dp"
+	        android:text="Falling" />
+    
+    	<RadioButton
+	        android:id="@+id/rbnscptrgn"
+	        android:layout_width="100dp"
+	        android:layout_height="wrap_content"
+	        android:layout_marginRight="5dp"
+	        android:text="None" />
+    
+	</RadioGroup>
+    
+    <Button
+        android:id="@+id/btnscpok"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/rgtrig"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="5dp"
+        android:text="OK" />
+    
+</RelativeLayout>

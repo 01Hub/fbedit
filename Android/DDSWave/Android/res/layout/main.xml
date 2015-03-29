@@ -22,7 +22,8 @@
     <LinearLayout
         android:layout_height="match_parent"
         android:layout_width="match_parent"
-        android:layout_weight="1" >
+        android:layout_weight="1"
+        android:orientation="vertical" >
     <Button
         android:id="@+id/btnDDS"
         android:layout_width="115dp"
@@ -45,11 +46,44 @@
         android:layout_marginTop="5dp"
         android:text="LGA" />
     <Button
+        android:id="@+id/btnHSC"
+        android:layout_width="115dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:layout_marginTop="5dp"
+        android:text="HSC" />
+    <Button
+        android:id="@+id/btnLCM_C"
+        android:layout_width="115dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:layout_marginTop="5dp"
+        android:text="Capacitor" />
+    <Button
+        android:id="@+id/btnLCM_L"
+        android:layout_width="115dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:layout_marginTop="5dp"
+        android:text="Inductor" />
+    <Button
         android:id="@+id/btnSETUP"
         android:layout_width="115dp"
         android:layout_height="wrap_content"
         android:layout_marginLeft="5dp"
         android:layout_marginTop="5dp"
         android:text="Setup" />
+    <TextView
+        android:id="@+id/tvText"
+        android:layout_width="500dp"
+        android:layout_height="165dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="5dp"
+        android:textSize="75sp"  
+		android:gravity="center"
+        android:background="#C0C080"
+        android:textColor="#000000"
+        android:text="150pF" />
+
     </LinearLayout>
 </LinearLayout>
