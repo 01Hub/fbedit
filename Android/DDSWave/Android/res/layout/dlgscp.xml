@@ -187,7 +187,7 @@
         android:layout_below="@+id/tvscptl"
         android:layout_marginLeft="5dp"
         android:layout_marginRight="55dp"
-        android:max="299" />
+        android:max="300" />
 
     <Button
         android:id="@+id/btnscptlup"

@@ -56,6 +56,56 @@ public class DDSWave extends Activity {
 	private static final int SCPSIZE = WAVEGRID * WAVEGRIDX;
 	private short scpWave[] = new short[SCPSIZE];
 	private int scpsr = 15;
+
+//	10000000
+//	8333333
+//	7142857
+//	6250000
+//	5555555
+//	5000000
+//	4545454
+//	4166666
+//	3846153
+//	3571428
+//	3333333
+//	3125000
+//	2941176
+//	2777777
+//	2631578
+//	2500000
+//
+//	2272727
+//	2083333
+//	1923076
+//	1785714
+//	1666666
+//	1562500
+//	1470588
+//	1388888
+//	1315789
+//	1250000
+//
+//	2380952
+//	1851851
+//	1515151
+//	1282051
+//	1190476
+//	1111111
+//	1041666
+//	980392
+//	925925
+//	877192
+//	833333
+//
+//	1136363
+//	961538
+//	892857
+//	781250
+//	735294
+//	694444
+//	657894
+//	625000
+
 	private String scpsrstr[] = {"2.5","2.631579","2.777778","2.941176","3.125","3.333333","3.571429","3.846154","4.166667","4.545455","5.0","5.555556","6.25","7.142857","8.333333","10.0"};
 	private int scptd = 10;
 	private String scptdstr[] = {"100ns","200ns","500ns","1us","5us","10us","50us","100us","200us","500us","1ms","2ms","5ms","10ms","20ms","50ms","100ms","200ms","500ms"};
@@ -654,6 +704,11 @@ public class DDSWave extends Activity {
 		final SeekBar sbscpvp = (SeekBar) dialog.findViewById(R.id.sbscpvp);
 		Button btnscpvpup = (Button) dialog.findViewById(R.id.btnscpvpup);
 
+		final TextView tvscptl = (TextView) dialog.findViewById(R.id.tvscptl);
+		Button btnscptldn = (Button) dialog.findViewById(R.id.btnscptldn);
+		final SeekBar sbscptl = (SeekBar) dialog.findViewById(R.id.sbscptl);
+		Button btnscptlup = (Button) dialog.findViewById(R.id.btnscptlup);
+
 		dialog.setTitle("SCOPE Setup");
 		tvscpsr.setText("Sample rate: " + scpsrstr[scpsr] + "MHz");
 		sbscpsr.setProgress(scpsr);
@@ -666,6 +721,9 @@ public class DDSWave extends Activity {
 
 		tvscpvp.setText("V-Pos: " + (scpvp - 150));
 		sbscpvp.setProgress(scpvp);
+
+		tvscptl.setText("Trigger level: " + (scptl - 150));
+		sbscptl.setProgress(scptl);
 
 		/* Trigger */
 		RadioButton rbn;
@@ -823,8 +881,55 @@ public class DDSWave extends Activity {
 				}
 			}
 		});
+		/* Trigger level */
+        btnscptldn.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				if (scptl > 0) {
+					scptl--;
+					tvscptl.setText("Trigger level: " + (scptl - 150));
+					sbscptl.setProgress(scptl);
+				}
+			}
+		});
 		
-		Button btnscpok = (Button) dialog.findViewById(R.id.btnscpok);
+		sbscptl.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
+        	public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+        		scptl = progress;
+				tvscptl.setText("Trigger level: " + (scptl - 150));
+        	}
+
+        	public void onStartTrackingTouch(SeekBar seekBar) {
+        	}
+
+        	public void onStopTrackingTouch(SeekBar seekBar) {
+        	}
+        });
+
+		btnscptlup.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				if (scptl < 300) {
+					scptl++;
+					tvscptl.setText("Trigger level: " + (scptl - 150));
+					sbscptl.setProgress(scptl);
+				}
+			}
+		});
+		/* Trigger */
+        rgtrg.setOnCheckedChangeListener(new  RadioGroup.OnCheckedChangeListener() {
+	        public void onCheckedChanged(RadioGroup group,int checkedId) {
+	        	if(checkedId == R.id.rbnscptrgr) {
+	        		scptr = 0;
+	        	} else if (checkedId == R.id.rbnscptrgf) {
+	        		scptr = 1;
+	        	} else if (checkedId == R.id.rbnscptrgn) {
+	        		scptr = 2;
+	        	}
+	        }
+       	});
+        /* OK */
+        Button btnscpok = (Button) dialog.findViewById(R.id.btnscpok);
 		// if button is clicked, close the custom dialog
 		btnscpok.setOnClickListener(new OnClickListener() {
 			@Override
