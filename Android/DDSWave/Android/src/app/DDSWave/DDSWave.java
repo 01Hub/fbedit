@@ -49,13 +49,16 @@ public class DDSWave extends Activity {
 	private int ddsfrqhz = 100;
 	private int ddsfrqkhz = 0;
 	private boolean ddsfrqhzsel = true;
-	private int ddsamp = 100;
 	private int ddswave=0;
+	private int ddsamp = 100;
+	private int ddsofs = 150;
 	private float xd,xs,xofs;
 
 	private static final int SCPSIZE = WAVEGRID * WAVEGRIDX;
 	private short scpWave[] = new short[SCPSIZE];
 	private int scpsr = 15;
+	
+	private int  hscfrq = 100;
 
 //	10000000
 //	8333333
@@ -113,7 +116,7 @@ public class DDSWave extends Activity {
 	private String scpvdstr[] = {"1mV","2mV","5mV","10mV","20mV","50mV","100mV","200mV","500mV"};
 	private int scpvp = 150;
 	private int scptl = 150;
-	private int scptr = 0;
+	private int scptr = 1;
 
 	private static final int LGASIZE = 32 * 1024;
 	private static final int LGAWIDTH = 8;
@@ -255,6 +258,8 @@ public class DDSWave extends Activity {
 					ShowSCPSetupDialog();
 				} else if (mode == 2) {
 					ShowLGASetupDialog();
+				} else if (mode == 3) {
+					ShowHSCSetupDialog();
 				}
 			}
 		});
@@ -388,7 +393,7 @@ public class DDSWave extends Activity {
 	}
 
 	private void DrawLGAWave() {
-		int x;
+		int n,x;
 		int y = WAVEGRIDYOFS + WAVEGRID / 3;
 		int i = 0;
 		byte bit,prv;
@@ -402,7 +407,14 @@ public class DDSWave extends Activity {
 		}
 		y = WAVEGRIDYOFS + WAVEGRID;
 		bit = 1;
+		n = 0;
 		while (bit != 0) {
+			if ((n & 1) > 0) {
+				paint.setColor(Color.YELLOW);
+			} else {
+				paint.setColor(Color.GREEN);
+			}
+			n++;
 			i = (int)xofs / 4;
 			x = WAVEGRIDXOFS;
 			prv = LGAData[i];
@@ -513,19 +525,30 @@ public class DDSWave extends Activity {
 		final TextView tvfrequency = (TextView) dialog.findViewById(R.id.tvddsfrq);
     	final RadioGroup rgdds = (RadioGroup) dialog.findViewById(R.id.rgfrq);
 		Button btnddsfrqdn = (Button) dialog.findViewById(R.id.btnddsfrqdn);
-		final SeekBar sbfrequency = (SeekBar) dialog.findViewById(R.id.sbfrequency);
+		final SeekBar sbfrequency = (SeekBar) dialog.findViewById(R.id.sbddsfrq);
 		Button btnddsfrqup = (Button) dialog.findViewById(R.id.btnddsfrqup);
 
-		final TextView tvamplitude = (TextView) dialog.findViewById(R.id.tvddsamp);
+		final TextView tvddsamp = (TextView) dialog.findViewById(R.id.tvddsamp);
 		Button btnddsampdn = (Button) dialog.findViewById(R.id.btnddsampdn);
-		final SeekBar sbamplitude = (SeekBar) dialog.findViewById(R.id.sbamplitude);
+		final SeekBar sbddsamp = (SeekBar) dialog.findViewById(R.id.sbddsamp);
 		Button btnddsampup = (Button) dialog.findViewById(R.id.btnddsampup);
+		
+		final TextView tvddsofs = (TextView) dialog.findViewById(R.id.tvddsofs);
+		Button btnddsofsdn = (Button) dialog.findViewById(R.id.btnddsofsdn);
+		final SeekBar sbddsofs = (SeekBar) dialog.findViewById(R.id.sbddsofs);
+		Button btnddsofsup = (Button) dialog.findViewById(R.id.btnddsofsup);
 		
 		dialog.setTitle("DDS Setup");
 		ddsfrqhzsel = true;
 		tvfrequency.setText("Frequncy: " +  String.format("%.1f",((float)ddsfrqkhz * 1000 + ddsfrqhz)) + "Hz");
 		sbfrequency.setProgress(ddsfrqhz);
 
+		tvddsamp.setText("Amplitude: " +  String.format("%.1f",((float)ddsamp * 10)) + "mV");
+		sbddsamp.setProgress(ddsamp);
+		
+		tvddsofs.setText("DC Offset: " +  String.format("%.1f",((float)(ddsofs - 150) * 10)) + "mV");
+		sbddsofs.setProgress(ddsofs);
+		
         rgwave.setOnCheckedChangeListener(new  RadioGroup.OnCheckedChangeListener() {
 	        public void onCheckedChanged(RadioGroup group,int checkedId) {
 	        	if(checkedId == R.id.rbnsine) {
@@ -610,25 +633,22 @@ public class DDSWave extends Activity {
 			}
 		});
 
-		tvamplitude.setText("Amplitude: " +  String.format("%.1f",((float)ddsamp * 10)) + "mV");
-		sbamplitude.setProgress(ddsamp);
-		
         btnddsampdn.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				if (ddsamp > 0) {
 					ddsamp--;
-					sbamplitude.setProgress(ddsamp);
-					tvamplitude.setText("Amplitude: " +  String.format("%.1f",((float)ddsamp * 10)) + "mV");
+					sbddsamp.setProgress(ddsamp);
+					tvddsamp.setText("Amplitude: " +  String.format("%.1f",((float)ddsamp * 10)) + "mV");
 	        		DrawDDSWave();
 				}
 			}
 		});
 		
-		sbamplitude.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
+		sbddsamp.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
         	public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
         		ddsamp = progress;
-        		tvamplitude.setText("Amplitude: " +  String.format("%.1f",((float)ddsamp * 10)) + "mV");
+				tvddsamp.setText("Amplitude: " +  String.format("%.1f",((float)ddsamp * 10)) + "mV");
         		DrawDDSWave();
         	}
 
@@ -644,8 +664,46 @@ public class DDSWave extends Activity {
 			public void onClick(View v) {
 				if (ddsamp < 299) {
 					ddsamp++;
-					sbamplitude.setProgress(ddsamp);
-					tvamplitude.setText("Amplitude: " +  String.format("%.1f",((float)ddsamp * 10)) + "mV");
+					sbddsamp.setProgress(ddsamp);
+					tvddsamp.setText("Amplitude: " +  String.format("%.1f",((float)ddsamp * 10)) + "mV");
+	        		DrawDDSWave();
+				}
+			}
+		});
+		
+        btnddsofsdn.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				if (ddsofs > 0) {
+					ddsofs--;
+					tvddsofs.setText("DC Offset: " +  String.format("%.1f",((float)(ddsofs - 150) * 10)) + "mV");
+					sbddsofs.setProgress(ddsofs);
+	        		DrawDDSWave();
+				}
+			}
+		});
+		
+		sbddsofs.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
+        	public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+        		ddsofs = progress;
+				tvddsofs.setText("DC Offset: " +  String.format("%.1f",((float)(ddsofs - 150) * 10)) + "mV");
+        		DrawDDSWave();
+        	}
+
+        	public void onStartTrackingTouch(SeekBar seekBar) {
+        	}
+
+        	public void onStopTrackingTouch(SeekBar seekBar) {
+        	}
+        });
+
+        btnddsofsup.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				if (ddsofs < 300) {
+					ddsofs++;
+					tvddsofs.setText("DC Offset: " +  String.format("%.1f",((float)(ddsofs - 150) * 10)) + "mV");
+					sbddsofs.setProgress(ddsofs);
 	        		DrawDDSWave();
 				}
 			}
@@ -728,13 +786,13 @@ public class DDSWave extends Activity {
 		/* Trigger */
 		RadioButton rbn;
     	final RadioGroup rgtrg = (RadioGroup) dialog.findViewById(R.id.rgtrig);
-		if (scptr == 0) {
+		if (scptr == 1) {
 			rbn=(RadioButton) dialog.findViewById(R.id.rbnscptrgr);
 			rbn.setChecked(true);
-		} else if (scptr == 1) {
+		} else if (scptr == 2) {
 			rbn=(RadioButton) dialog.findViewById(R.id.rbnscptrgf);
 			rbn.setChecked(true);
-		} else if (scptr == 2) {
+		} else if (scptr == 0) {
 			rbn=(RadioButton) dialog.findViewById(R.id.rbnscptrgn);
 			rbn.setChecked(true);
 		}
@@ -920,11 +978,14 @@ public class DDSWave extends Activity {
         rgtrg.setOnCheckedChangeListener(new  RadioGroup.OnCheckedChangeListener() {
 	        public void onCheckedChanged(RadioGroup group,int checkedId) {
 	        	if(checkedId == R.id.rbnscptrgr) {
-	        		scptr = 0;
-	        	} else if (checkedId == R.id.rbnscptrgf) {
+	        		/* Rising */
 	        		scptr = 1;
-	        	} else if (checkedId == R.id.rbnscptrgn) {
+	        	} else if (checkedId == R.id.rbnscptrgf) {
+	        		/* Falling */
 	        		scptr = 2;
+	        	} else if (checkedId == R.id.rbnscptrgn) {
+	        		/* None */
+	        		scptr = 0;
 	        	}
 	        }
        	});
@@ -965,6 +1026,9 @@ public class DDSWave extends Activity {
 		params.width = 512;
 		params.y=0;
 		dialog.getWindow().setAttributes(params);
+		
+		final int idchktrg = R.id.chklgatrgd0;
+		final int idchkmsk = R.id.chklgamaskd0;;
 
 		final TextView tvlgasr = (TextView) dialog.findViewById(R.id.tvlgasr);
 		Button btnlgasrdn = (Button) dialog.findViewById(R.id.btnlgasrdn);
@@ -988,7 +1052,7 @@ public class DDSWave extends Activity {
 		/* Set trigger */
 		CheckBox chk;
 		byte i = 1;
-		int id = 0x7f060019;
+		int id = idchktrg;
 		while (i != 0) {
 			chk=(CheckBox) dialog.findViewById(id);
 			chk.setChecked((lgatrg & i) != 0);
@@ -997,7 +1061,7 @@ public class DDSWave extends Activity {
 		}
 		/* Set mask */
 		i = 1;
-		id = 0x7f060022;
+		id = idchkmsk;
 		while (i != 0) {
 			chk=(CheckBox) dialog.findViewById(id);
 			chk.setChecked((lgamask & i) != 0);
@@ -1079,8 +1143,8 @@ public class DDSWave extends Activity {
 			@Override
 			public void onClick(View v) {
 				if (xofs >= 4) {
-					lgatrg = GetLGATrigger(dialog, 0x7f060019);
-					lgamask = GetLGATrigger(dialog, 0x7f060022);
+					lgatrg = GetLGATrigger(dialog, idchktrg);
+					lgamask = GetLGATrigger(dialog, idchkmsk);
 					byte val = (byte)((int)lgatrg & (int)lgamask);
 					int inx = (int)(xofs / 4);
 					inx--;
@@ -1101,8 +1165,8 @@ public class DDSWave extends Activity {
 			@Override
 			public void onClick(View v) {
 				if (xofs / 4 < (lgabuff + 1) * 1024) {
-					lgatrg = GetLGATrigger(dialog, 0x7f060019);
-					lgamask = GetLGATrigger(dialog, 0x7f060022);
+					lgatrg = GetLGATrigger(dialog, idchktrg);
+					lgamask = GetLGATrigger(dialog, idchkmsk);
 					byte val = (byte)((int)lgatrg & (int)lgamask);
 					int inx = (int)(xofs / 4);
 					inx++;
@@ -1123,8 +1187,64 @@ public class DDSWave extends Activity {
 		btnlgasample.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				lgatrg = GetLGATrigger(dialog, 0x7f060019);
-				lgamask = GetLGATrigger(dialog, 0x7f060022);
+				lgatrg = GetLGATrigger(dialog, idchktrg);
+				lgamask = GetLGATrigger(dialog, idchkmsk);
+				dialog.dismiss();
+			}
+		});
+
+		dialog.show();
+    }
+
+    private void ShowHSCSetupDialog() {
+    	final Context context = this;
+		final Dialog dialog = new Dialog(context);
+		dialog.setContentView(R.layout.dlghsc);
+		dialog.getWindow().setGravity(Gravity.RIGHT | Gravity.TOP);
+		LayoutParams params = dialog.getWindow().getAttributes();
+		params.width = 512;
+		params.y=0;
+		dialog.getWindow().setAttributes(params);
+
+		final TextView tvhscfrq = (TextView) dialog.findViewById(R.id.tvhscfrq);
+		Button btnhscfrqdn = (Button) dialog.findViewById(R.id.btnhscfrqdn);
+		final SeekBar sbhscfrq = (SeekBar) dialog.findViewById(R.id.sbhscfrq);
+		Button btnhscfrqup = (Button) dialog.findViewById(R.id.btnhscfrqup);
+
+		dialog.setTitle("HSC Setup");
+		tvhscfrq.setText("Freqency: " + scpsrstr[scpsr] + "MHz");
+		sbhscfrq.setProgress(hscfrq);
+
+//		sbscpsr.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
+//        	public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+//        		scpsr = progress;
+//				tvscpsr.setText("Sample rate: " + scpsrstr[scpsr] + "MHz");
+//        	}
+//
+//        	public void onStartTrackingTouch(SeekBar seekBar) {
+//        	}
+//
+//        	public void onStopTrackingTouch(SeekBar seekBar) {
+//        	}
+//        });
+//
+//		btnscpsrup.setOnClickListener(new OnClickListener() {
+//			@Override
+//			public void onClick(View v) {
+//				if (scpsr < 15) {
+//					scpsr++;
+//					sbscpsr.setProgress(scpsr);
+//					tvscpsr.setText("Sample rate: " + scpsrstr[scpsr] + "MHz");
+//				}
+//			}
+//		});
+		
+        /* OK */
+        Button btnhscok = (Button) dialog.findViewById(R.id.btnhscok);
+		// if button is clicked, close the custom dialog
+		btnhscok.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
 				dialog.dismiss();
 			}
 		});

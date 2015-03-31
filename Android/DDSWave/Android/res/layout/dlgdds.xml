@@ -78,7 +78,7 @@
         android:text="&lt;" />
     
     <SeekBar
-        android:id="@+id/sbfrequency"
+        android:id="@+id/sbddsfrq"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@+id/btnddsfrqdn"
@@ -102,7 +102,7 @@
         android:layout_width="150dp"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:layout_below="@+id/sbfrequency"
+        android:layout_below="@+id/sbddsfrq"
         android:layout_marginTop="10dp"
         android:layout_marginLeft="5dp"
         android:text="Amplitude" />
@@ -117,7 +117,7 @@
         android:text="&lt;" />
     
     <SeekBar
-        android:id="@+id/sbamplitude"
+        android:id="@+id/sbddsamp"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@+id/btnddsfrqdn"
@@ -132,6 +132,45 @@
         android:layout_width="50dp"
         android:layout_height="wrap_content"
         android:layout_below="@+id/tvddsamp"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="5dp"
+        android:text=">" />
+    
+    <TextView
+        android:id="@+id/tvddsofs"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/sbddsamp"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="5dp"
+        android:text="DC Offset" />
+
+    <Button
+        android:id="@+id/btnddsofsdn"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvddsofs"
+        android:layout_alignParentLeft="true"
+        android:layout_marginTop="5dp"
+        android:text="&lt;" />
+    
+    <SeekBar
+        android:id="@+id/sbddsofs"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/btnddsfrqdn"
+        android:layout_marginTop="15dp"
+        android:layout_below="@+id/tvddsofs"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="55dp"
+        android:max="300" />
+
+    <Button
+        android:id="@+id/btnddsofsup"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvddsofs"
         android:layout_alignParentRight="true"
         android:layout_marginTop="5dp"
         android:text=">" />
@@ -156,7 +195,7 @@
         android:id="@+id/btnddsok"
         android:layout_width="150dp"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/sbamplitude"
+        android:layout_below="@+id/sbddsofs"
         android:layout_alignParentRight="true"
         android:layout_marginTop="25dp"
         android:text="OK" />
