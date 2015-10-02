@@ -1,8 +1,21 @@
 package app.DDSWave;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.lang.reflect.Method;
+import java.util.Timer;
+import java.util.TimerTask;
+
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Dialog;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothSocket;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -12,31 +25,38 @@ import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.View.OnClickListener;
 import android.view.WindowManager.LayoutParams;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.TextView.OnEditorActionListener;
+import android.widget.Toast;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import app.DDSWave.R;
 
 public class DDSWave extends Activity {
 	
+	private static final int STM32_CLOCK = 200000000;
 	private static ImageView mIV;
 	private static Bitmap bmpwave;
 	private static Paint paint = new Paint(Paint.FAKE_BOLD_TEXT_FLAG);
 	private static Canvas canvas;
 	private int wt;
 	private int ht;
-	private int mode = 0;
+	public static int mode = 4;
+	public static int tmpmode;
 	private static final int WAVEGRID = 50;
 	private static final int WAVEGRIDX = 10;
 	private static final int WAVEGRIDY = 8;
@@ -44,70 +64,24 @@ public class DDSWave extends Activity {
 	private int WAVEGRIDXOFS = 0;
 	private int WAVEGRIDYOFS = 0;
 
+	private static final short DDS_PHASESET = 1;
+	private static final short DDS_WAVESET = 2;
+	private static final short DDS_SWEEPSET = 3;
+    private static STM32_DDS dds = new STM32_DDS();
+    private static boolean ddssend = false;
 	private static final int DDSSIZE = 2048;
 	private short ddsWave[] = new short[DDSSIZE];
 	private int ddsfrqhz = 100;
 	private int ddsfrqkhz = 0;
 	private boolean ddsfrqhzsel = true;
-	private int ddswave=0;
 	private int ddsamp = 100;
-	private int ddsofs = 150;
+	private int ddsdcofs = 299;
+	private int ddswave=0;
 	private float xd,xs,xofs;
 
 	private static final int SCPSIZE = WAVEGRID * WAVEGRIDX;
 	private short scpWave[] = new short[SCPSIZE];
 	private int scpsr = 15;
-	
-	private int  hscfrq = 100;
-
-//	10000000
-//	8333333
-//	7142857
-//	6250000
-//	5555555
-//	5000000
-//	4545454
-//	4166666
-//	3846153
-//	3571428
-//	3333333
-//	3125000
-//	2941176
-//	2777777
-//	2631578
-//	2500000
-//
-//	2272727
-//	2083333
-//	1923076
-//	1785714
-//	1666666
-//	1562500
-//	1470588
-//	1388888
-//	1315789
-//	1250000
-//
-//	2380952
-//	1851851
-//	1515151
-//	1282051
-//	1190476
-//	1111111
-//	1041666
-//	980392
-//	925925
-//	877192
-//	833333
-//
-//	1136363
-//	961538
-//	892857
-//	781250
-//	735294
-//	694444
-//	657894
-//	625000
 
 	private String scpsrstr[] = {"2.5","2.631579","2.777778","2.941176","3.125","3.333333","3.571429","3.846154","4.166667","4.545455","5.0","5.555556","6.25","7.142857","8.333333","10.0"};
 	private int scptd = 10;
@@ -116,21 +90,39 @@ public class DDSWave extends Activity {
 	private String scpvdstr[] = {"1mV","2mV","5mV","10mV","20mV","50mV","100mV","200mV","500mV"};
 	private int scpvp = 150;
 	private int scptl = 150;
-	private int scptr = 1;
+	private int scptr = 0;
 
-	private static final int LGASIZE = 32 * 1024;
+	public static final int LGASIZE = 32 * 1024;
 	private static final int LGAWIDTH = 8;
-	private byte LGAData[] = new byte[LGASIZE];
 	private int lgasr  = 0;
 	private String lgasrstr[] = {"1KHz","2KHz","5KHz","10KHz","20KHz","50KHz","100KHz","200KHz","500KHz","1MHz","2MHz","5MHz","10MHz","20MHz","40MHz"};
+	private int lgasrint[] = {199999,99999,39999,19999,9999,3999,1999,999,399,199,99,39,19,9,4};
 	private int lgabuff  = 0;
 	private byte lgatrg = (byte)0x00;
 	private byte lgamask = (byte)0x00;
+    private static STM32_LGA lga = new STM32_LGA();
 
 	private static final int HSCSIZE = 2048;
 	private short HSCWave[] = new short[HSCSIZE];
+	private int hscfrq = 1000;
+	private int hscarr;
+	private int hscclk;
+	private int hscres;
+	private int hscset = 2;
+	private static boolean hscsend = false;
 
 	private boolean StartUp = true;
+
+	private final static int REQUEST_ENABLE_BT = 1;
+    protected BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+    BluetoothDevice mBluetoothDevice = null;
+    protected BluetoothSocket mBluetoothSocket = null;
+	private static String btdeviceaddr = "98:D3:31:B2:0D:40";
+    public static OutputStream mOutputStream = null;
+    public static InputStream mInputStream = null;
+    public static boolean btconnected = false;
+
+	private Timer tmr = new Timer();
 
 	@Override
 	public void onCreate(Bundle icicle) {
@@ -151,23 +143,25 @@ public class DDSWave extends Activity {
 		final Button btnLCM_C = (Button) this.findViewById(R.id.btnLCM_C);
 		final Button btnLCM_L = (Button) this.findViewById(R.id.btnLCM_L);
 		final Button btnSETUP = (Button) this.findViewById(R.id.btnSETUP);
+		final TextView tvText = (TextView) this.findViewById(R.id.tvText);
 
-		btnDDS.setBackgroundColor(Color.GRAY);
+		btnDDS.setBackgroundColor(Color.DKGRAY);
 		btnSCOPE.setBackgroundColor(Color.DKGRAY);
 		btnLGA.setBackgroundColor(Color.DKGRAY);
 		btnHSC.setBackgroundColor(Color.DKGRAY);
-		btnLCM_C.setBackgroundColor(Color.DKGRAY);
+		btnLCM_C.setBackgroundColor(Color.GRAY);
 		btnLCM_L.setBackgroundColor(Color.DKGRAY);
 		btnSETUP.setBackgroundColor(Color.DKGRAY);
 		ddsSineWave();
 		GenSCPWave();
 		GenHSCWave();
 		for (int i = 0;i<LGASIZE;i++) {
-			LGAData[i] = (byte)(i & 255);
+			lga.LGAData[i] = (byte)(i & 255);
 		}
 		btnDDS.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
+				btnSETUP.setText("Setup");
 				mode = 0;
 				btnSCOPE.setBackgroundColor(Color.DKGRAY);
 				btnLGA.setBackgroundColor(Color.DKGRAY);
@@ -176,12 +170,12 @@ public class DDSWave extends Activity {
 				btnLCM_L.setBackgroundColor(Color.DKGRAY);
 				btnDDS.setBackgroundColor(Color.GRAY);
 				DrawDDSWave();
-				Log.d("MYTAG", "DrawDDSWave");
 			}
 		});
 		btnSCOPE.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
+				btnSETUP.setText("Setup");
 				mode = 1;
 				btnDDS.setBackgroundColor(Color.DKGRAY);
 				btnHSC.setBackgroundColor(Color.DKGRAY);
@@ -190,12 +184,12 @@ public class DDSWave extends Activity {
 				btnLCM_L.setBackgroundColor(Color.DKGRAY);
 				btnSCOPE.setBackgroundColor(Color.GRAY);
 				DrawScopeWave();
-				Log.d("MYTAG", "DrawScopeWave");
 			}
 		});
 		btnLGA.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
+				btnSETUP.setText("Setup");
 				mode = 2;
 				btnDDS.setBackgroundColor(Color.DKGRAY);
 				btnSCOPE.setBackgroundColor(Color.DKGRAY);
@@ -204,12 +198,12 @@ public class DDSWave extends Activity {
 				btnLCM_L.setBackgroundColor(Color.DKGRAY);
 				btnLGA.setBackgroundColor(Color.GRAY);
 				DrawLGAWave();
-				Log.d("MYTAG", "DrawLGAWave");
 			}
 		});
 		btnHSC.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
+				btnSETUP.setText("Setup");
 				mode = 3;
 				btnDDS.setBackgroundColor(Color.DKGRAY);
 				btnSCOPE.setBackgroundColor(Color.DKGRAY);
@@ -218,12 +212,12 @@ public class DDSWave extends Activity {
 				btnLCM_L.setBackgroundColor(Color.DKGRAY);
 				btnHSC.setBackgroundColor(Color.GRAY);
 				DrawHSCWave();
-				Log.d("MYTAG", "DrawLGAWave");
 			}
 		});
 		btnLCM_C.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
+				btnSETUP.setText("Calibrate");
 				mode = 4;
 				btnDDS.setBackgroundColor(Color.DKGRAY);
 				btnSCOPE.setBackgroundColor(Color.DKGRAY);
@@ -231,48 +225,114 @@ public class DDSWave extends Activity {
 				btnHSC.setBackgroundColor(Color.DKGRAY);
 				btnLCM_L.setBackgroundColor(Color.DKGRAY);
 				btnLCM_C.setBackgroundColor(Color.GRAY);
-				Log.d("MYTAG", "DrawLGAWave");
 			}
 		});
 		btnLCM_L.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				mode = 4;
+				btnSETUP.setText("Calibrate");
+				mode = 5;
 				btnDDS.setBackgroundColor(Color.DKGRAY);
 				btnSCOPE.setBackgroundColor(Color.DKGRAY);
 				btnLGA.setBackgroundColor(Color.DKGRAY);
 				btnHSC.setBackgroundColor(Color.DKGRAY);
 				btnLCM_C.setBackgroundColor(Color.DKGRAY);
 				btnLCM_L.setBackgroundColor(Color.GRAY);
-				Log.d("MYTAG", "DrawLGAWave");
 			}
 		});
-
 		btnSETUP.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				Log.d("MYTAG", "Setup");
-				if (mode == 0) {
-					ShowDDSSetupDialog();
-				} else if (mode == 1) {
-					ShowSCPSetupDialog();
-				} else if (mode == 2) {
-					ShowLGASetupDialog();
-				} else if (mode == 3) {
-					ShowHSCSetupDialog();
+				if (btconnected) {
+					Log.d("MYTAG", "Setup");
+					if (mode == 0) {
+						ShowDDSSetupDialog();
+					} else if (mode == 1) {
+						ShowSCPSetupDialog();
+					} else if (mode == 2) {
+						ShowLGASetupDialog();
+					} else if (mode == 3) {
+						ShowHSCSetupDialog();
+					} else if (mode == 4 || mode == 5) {
+						tmpmode = mode;
+						mode = 6;
+	    				tvText.setText("Calibrate");
+					}
+				} else {
+    				tvText.setText("Connecting");
+					BTConnect();
+					btnSETUP.setText("Calibrate");
 				}
 			}
 		});
 
+		tmr.schedule(new TimerTask() {
+			@Override
+			public void run() {
+				TimerMethod(tvText);
+			}
+		}, 1000, 100);
+
 	}
 	
-	private void ddsSineWave() {
+    private void TimerMethod(final TextView tvText)
+	{
+    	runOnUiThread(new Runnable() {
+    	    public void run() {
+				if (btconnected == true && BlueTooth.btmode == BlueTooth.CMD_DONE) {
+	    			String s;
+	    			switch (mode) {
+	    			case 0:
+	    				// DDS Wave
+	    				if (ddssend) {
+	    					ddssend = false;
+	    					dds.SendDDS();
+	    					//Toast.makeText(getApplicationContext(), "DDS Updated", Toast.LENGTH_LONG).show();
+	    				}
+	    				break;
+	    			case 1:
+	    				// Scope
+	    				break;
+	    			case 2:
+	    				// LGA
+	    				break;
+	    			case 3:
+	    				// HSC
+	    				if (hscsend) {
+	    					hscsend = false;
+	    					BlueTooth.BTHscSet(hscarr, hscclk);
+	    					//Toast.makeText(getApplicationContext(), "HSC Updated arr: " + hscarr + " div: " + hscclk, Toast.LENGTH_LONG).show();
+	    				} else {
+	    					s = BlueTooth.BTHscGet();
+		    				tvText.setText(s);
+	    				}
+	    				break;
+	    			case 4:
+	    				// Capacitor
+	    				s = BlueTooth.BTLcmCap();
+	    				tvText.setText(s);
+	    				break;
+	    			case 5:
+	    				// Inductor
+	    				s = BlueTooth.BTLcmInd();
+	    				tvText.setText(s);
+	    				break;
+	    			case 6:
+	    				// Calibrate LCM
+	    				BlueTooth.BTLcmCal();
+	    				break;
+	    			}
+				}
+    	    }
+    	});
+	}
+
+    private void ddsSineWave() {
 		double y;
 		for (int x = 0;x < DDSSIZE;x++) {
 			y=(float)Math.sin((float)(2*Math.PI) * (float)x / 2048.0D) * 2047.0;
 			ddsWave[x] = (short)(2048 - (int)y);
 		}
-		
 	}
 
 	private void ddsTriangleWave() {
@@ -289,8 +349,8 @@ public class DDSWave extends Activity {
 				y+=dir;
 			}
 		}
-		
 	}
+
 	private void ddsSquareWave() {
 		short y = 4095;
 		ddsWave[0] = 2048;
@@ -301,7 +361,6 @@ public class DDSWave extends Activity {
 			}
 			ddsWave[x] = y;
 		}
-		
 	}
 
 	private void GenSCPWave() {
@@ -322,7 +381,6 @@ public class DDSWave extends Activity {
 			}
 			HSCWave[x] = y;
 		}
-		
 	}
 
 	private void DrawGrid() {
@@ -333,17 +391,18 @@ public class DDSWave extends Activity {
 		canvas = new Canvas(bmpwave);
 		paint.setStrokeWidth(1);
         paint.setColor(Color.DKGRAY);
-		while (i < 9) {
+		while (i <= WAVEGRIDY) {
 	        canvas.drawLine(WAVEGRIDXOFS, y, WAVEGRID*10+WAVEGRIDXOFS, y, paint);
 	        y+=WAVEGRID;
 	        i++;
 		}
 		i=0;
-		while (i < 11) {
+		while (i <= WAVEGRIDX) {
 	        canvas.drawLine(x, WAVEGRIDYOFS, x, WAVEGRID*8+WAVEGRIDYOFS, paint);
 	        x+=WAVEGRID;
 	        i++;
 		}
+		canvas.clipRect(WAVEGRIDXOFS,WAVEGRIDYOFS,WAVEGRID*10+WAVEGRIDXOFS+1,WAVEGRID*8+WAVEGRIDYOFS+1);
 	}
 
 	private void DrawDDSWave() {
@@ -356,12 +415,12 @@ public class DDSWave extends Activity {
         paint.setColor(Color.YELLOW);
 		xp = ((i / 8) * WAVEGRID * 10) / 256;
 		yp = (((2048 - ddsWave[i]) / 16) * WAVEGRID * 6) / 256;
-		yp = WAVEGRID * 4  + ((yp * ddsamp) / 300);
+		yp = WAVEGRID * 4  + ((yp * ddsamp) / 300 - (ddsdcofs - 299));
 		i++;
 		while (i < DDSSIZE) {
 			x = ((i / 8) * WAVEGRID * 10) / 256;
 			y = (((2048 - ddsWave[i]) / 16) * WAVEGRID * 6) / 256;
-			y = WAVEGRID * 4 + ((y * ddsamp) / 300);
+			y = WAVEGRID * 4 + ((y * ddsamp) / 300 - (ddsdcofs - 299)) / 2;
 	        canvas.drawLine(xp + WAVEGRIDXOFS, yp + WAVEGRIDYOFS, x + WAVEGRIDXOFS, y + WAVEGRIDYOFS, paint);
 			xp = x;
 			yp = y;
@@ -393,7 +452,7 @@ public class DDSWave extends Activity {
 	}
 
 	private void DrawLGAWave() {
-		int n,x;
+		int x;
 		int y = WAVEGRIDYOFS + WAVEGRID / 3;
 		int i = 0;
 		byte bit,prv;
@@ -407,27 +466,20 @@ public class DDSWave extends Activity {
 		}
 		y = WAVEGRIDYOFS + WAVEGRID;
 		bit = 1;
-		n = 0;
 		while (bit != 0) {
-			if ((n & 1) > 0) {
-				paint.setColor(Color.YELLOW);
-			} else {
-				paint.setColor(Color.GREEN);
-			}
-			n++;
 			i = (int)xofs / 4;
 			x = WAVEGRIDXOFS;
-			prv = LGAData[i];
+			prv = lga.LGAData[i];
 			while (i < LGASIZE) {
 				/* Draw L or H */
-				if ((LGAData[i] & bit) == 0) {
+				if ((lga.LGAData[i] & bit) == 0) {
 					/* Low */
 			        canvas.drawLine(x, y, x + WAVEGRID / LGAWIDTH, y, paint);
 				} else {
 					/* High */
 			        canvas.drawLine(x, y - WAVEGRID / 2, x + WAVEGRID / LGAWIDTH, y - WAVEGRID / 2, paint);
 				}
-				if ((prv & bit) != (LGAData[i] & bit)) {
+				if ((prv & bit) != (lga.LGAData[i] & bit)) {
 					/* Draw transition */
 			        canvas.drawLine(x, y, x, y - WAVEGRID / 2, paint);
 				}
@@ -435,7 +487,7 @@ public class DDSWave extends Activity {
 				if (x - WAVEGRIDXOFS >= WAVEGRID * 10) {
 					break;
 				}
-				prv = LGAData[i];
+				prv = lga.LGAData[i];
 				i++;
 			}
 			bit <<=1;
@@ -499,7 +551,18 @@ public class DDSWave extends Activity {
 		Log.d("MYTAG", "onConfigurationChanged");
 	}
 
-    private void ShowDDSSetupDialog() {
+	private void SetSTM32_DDS(short cmd) {
+		double pa;
+		dds.DDS_Cmd = cmd;
+		dds.DDS_Wave = (short) ddswave;
+		pa = ((double)(ddsfrqkhz * 1000 + ddsfrqhz) * (double)0x1000000 * (double)0x100 * 8.0) / (double)STM32_CLOCK;
+		dds.DDS__PhaseAdd = (int)pa;
+		dds.DDS_Amplitude = (int)((float)ddsamp * 13.69);
+		dds.DDS_DCOffset = (int)((float)ddsdcofs * 13.69);
+		ddssend = true;
+	}
+
+	private void ShowDDSSetupDialog() {
     	final Context context = this;
 		final Dialog dialog = new Dialog(context);
 		dialog.setContentView(R.layout.dlgdds);
@@ -521,48 +584,44 @@ public class DDSWave extends Activity {
 			rbn.setChecked(true);
 		}
 
-
 		final TextView tvfrequency = (TextView) dialog.findViewById(R.id.tvddsfrq);
     	final RadioGroup rgdds = (RadioGroup) dialog.findViewById(R.id.rgfrq);
 		Button btnddsfrqdn = (Button) dialog.findViewById(R.id.btnddsfrqdn);
-		final SeekBar sbfrequency = (SeekBar) dialog.findViewById(R.id.sbddsfrq);
+		final SeekBar sbfrequency = (SeekBar) dialog.findViewById(R.id.sbfrequency);
 		Button btnddsfrqup = (Button) dialog.findViewById(R.id.btnddsfrqup);
 
-		final TextView tvddsamp = (TextView) dialog.findViewById(R.id.tvddsamp);
+		final TextView tvamplitude = (TextView) dialog.findViewById(R.id.tvddsamp);
 		Button btnddsampdn = (Button) dialog.findViewById(R.id.btnddsampdn);
-		final SeekBar sbddsamp = (SeekBar) dialog.findViewById(R.id.sbddsamp);
+		final SeekBar sbamplitude = (SeekBar) dialog.findViewById(R.id.sbamplitude);
 		Button btnddsampup = (Button) dialog.findViewById(R.id.btnddsampup);
 		
-		final TextView tvddsofs = (TextView) dialog.findViewById(R.id.tvddsofs);
-		Button btnddsofsdn = (Button) dialog.findViewById(R.id.btnddsofsdn);
-		final SeekBar sbddsofs = (SeekBar) dialog.findViewById(R.id.sbddsofs);
-		Button btnddsofsup = (Button) dialog.findViewById(R.id.btnddsofsup);
+		final TextView tvddsdcofs = (TextView) dialog.findViewById(R.id.tvddsdcofs);
+		Button btnddsdcofsdn = (Button) dialog.findViewById(R.id.btnddsdcofsdn);
+		final SeekBar sbdcoffset = (SeekBar) dialog.findViewById(R.id.sbdcoffset);
+		Button btnddsdcofsup = (Button) dialog.findViewById(R.id.btnddsdcofsup);
 		
 		dialog.setTitle("DDS Setup");
 		ddsfrqhzsel = true;
 		tvfrequency.setText("Frequncy: " +  String.format("%.1f",((float)ddsfrqkhz * 1000 + ddsfrqhz)) + "Hz");
 		sbfrequency.setProgress(ddsfrqhz);
 
-		tvddsamp.setText("Amplitude: " +  String.format("%.1f",((float)ddsamp * 10)) + "mV");
-		sbddsamp.setProgress(ddsamp);
-		
-		tvddsofs.setText("DC Offset: " +  String.format("%.1f",((float)(ddsofs - 150) * 10)) + "mV");
-		sbddsofs.setProgress(ddsofs);
-		
         rgwave.setOnCheckedChangeListener(new  RadioGroup.OnCheckedChangeListener() {
 	        public void onCheckedChanged(RadioGroup group,int checkedId) {
 	        	if(checkedId == R.id.rbnsine) {
 	        		ddsSineWave();
 	        		ddswave=0;
 	        		DrawDDSWave();
+	        		SetSTM32_DDS(DDS_WAVESET);
 	        	} else if (checkedId == R.id.rbntriangle) {
 	        		ddsTriangleWave();
 	        		ddswave=1;
 	        		DrawDDSWave();
+	        		SetSTM32_DDS(DDS_WAVESET);
 	        	} else if (checkedId == R.id.rbnsquare) {
 	        		ddsSquareWave();
 	        		ddswave=2;
 	        		DrawDDSWave();
+	        		SetSTM32_DDS(DDS_WAVESET);
 	        	}
 
 	        }
@@ -595,6 +654,7 @@ public class DDSWave extends Activity {
 					}
 				}
 				tvfrequency.setText("Frequncy: " +  String.format("%.1f",((float)ddsfrqkhz * 1000 + ddsfrqhz)) + "Hz");
+        		SetSTM32_DDS(DDS_PHASESET);
 			}
 		});
 		
@@ -606,6 +666,7 @@ public class DDSWave extends Activity {
 	        		ddsfrqkhz = progress;
 				}
 				tvfrequency.setText("Frequncy: " +  String.format("%.1f",((float)ddsfrqkhz * 1000 + ddsfrqhz)) + "Hz");
+        		SetSTM32_DDS(DDS_PHASESET);
         	}
 
         	public void onStartTrackingTouch(SeekBar seekBar) {
@@ -630,26 +691,32 @@ public class DDSWave extends Activity {
 					}
 				}
 				tvfrequency.setText("Frequncy: " +  String.format("%.1f",((float)ddsfrqkhz * 1000 + ddsfrqhz)) + "Hz");
+        		SetSTM32_DDS(DDS_PHASESET);
 			}
 		});
+
+		tvamplitude.setText("Amplitude: " +  String.format("%.1f",((float)ddsamp * 10)) + "mV");
+		sbamplitude.setProgress(ddsamp);
 
         btnddsampdn.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				if (ddsamp > 0) {
 					ddsamp--;
-					sbddsamp.setProgress(ddsamp);
-					tvddsamp.setText("Amplitude: " +  String.format("%.1f",((float)ddsamp * 10)) + "mV");
+					sbamplitude.setProgress(ddsamp);
+					tvamplitude.setText("Amplitude: " +  String.format("%.1f",((float)ddsamp * 10)) + "mV");
 	        		DrawDDSWave();
+	        		SetSTM32_DDS(DDS_WAVESET);
 				}
 			}
 		});
 		
-		sbddsamp.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
+		sbamplitude.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
         	public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
         		ddsamp = progress;
-				tvddsamp.setText("Amplitude: " +  String.format("%.1f",((float)ddsamp * 10)) + "mV");
+        		tvamplitude.setText("Amplitude: " +  String.format("%.1f",((float)ddsamp * 10)) + "mV");
         		DrawDDSWave();
+        		SetSTM32_DDS(DDS_WAVESET);
         	}
 
         	public void onStartTrackingTouch(SeekBar seekBar) {
@@ -664,30 +731,36 @@ public class DDSWave extends Activity {
 			public void onClick(View v) {
 				if (ddsamp < 299) {
 					ddsamp++;
-					sbddsamp.setProgress(ddsamp);
-					tvddsamp.setText("Amplitude: " +  String.format("%.1f",((float)ddsamp * 10)) + "mV");
+					sbamplitude.setProgress(ddsamp);
+					tvamplitude.setText("Amplitude: " +  String.format("%.1f",((float)ddsamp * 10)) + "mV");
 	        		DrawDDSWave();
+	        		SetSTM32_DDS(DDS_WAVESET);
 				}
 			}
 		});
 		
-        btnddsofsdn.setOnClickListener(new OnClickListener() {
+		tvddsdcofs.setText("DC Offset: " +  String.format("%.1f",((float)(ddsdcofs - 299) * 10)) + "mV");
+		sbdcoffset.setProgress(ddsdcofs);
+		
+        btnddsdcofsdn.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				if (ddsofs > 0) {
-					ddsofs--;
-					tvddsofs.setText("DC Offset: " +  String.format("%.1f",((float)(ddsofs - 150) * 10)) + "mV");
-					sbddsofs.setProgress(ddsofs);
+				if (ddsdcofs > 0) {
+					ddsdcofs--;
+					sbdcoffset.setProgress(ddsdcofs);
+					tvddsdcofs.setText("DC Offset: " +  String.format("%.1f",((float)(ddsdcofs - 299) * 10)) + "mV");
 	        		DrawDDSWave();
+	        		SetSTM32_DDS(DDS_WAVESET);
 				}
 			}
 		});
 		
-		sbddsofs.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
+        sbdcoffset.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
         	public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-        		ddsofs = progress;
-				tvddsofs.setText("DC Offset: " +  String.format("%.1f",((float)(ddsofs - 150) * 10)) + "mV");
+        		ddsdcofs = progress;
+				tvddsdcofs.setText("DC Offset: " +  String.format("%.1f",((float)(ddsdcofs - 299) * 10)) + "mV");
         		DrawDDSWave();
+        		SetSTM32_DDS(DDS_WAVESET);
         	}
 
         	public void onStartTrackingTouch(SeekBar seekBar) {
@@ -697,29 +770,19 @@ public class DDSWave extends Activity {
         	}
         });
 
-        btnddsofsup.setOnClickListener(new OnClickListener() {
+        btnddsdcofsup.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				if (ddsofs < 300) {
-					ddsofs++;
-					tvddsofs.setText("DC Offset: " +  String.format("%.1f",((float)(ddsofs - 150) * 10)) + "mV");
-					sbddsofs.setProgress(ddsofs);
+				if (ddsamp < 598) {
+					ddsdcofs++;
+					sbdcoffset.setProgress(ddsdcofs);
+					tvddsdcofs.setText("DC Offset: " +  String.format("%.1f",((float)(ddsdcofs - 299) * 10)) + "mV");
 	        		DrawDDSWave();
+	        		SetSTM32_DDS(DDS_WAVESET);
 				}
 			}
 		});
 		
-//		CheckBox chkShowTrail;
-//		chkShowTrail = (CheckBox) dialog.findViewById(R.id.chkShowTrail);
-//		chkShowTrail.setChecked(MyIV.showtrail);
-//		chkShowTrail.setOnClickListener(new OnClickListener() {
-//			
-//			@Override
-//			public void onClick(View v) {
-//				MyIV.showtrail = ((CheckBox) v).isChecked();
-//			}
-//		});
-//
 		Button btnddsok = (Button) dialog.findViewById(R.id.btnddsok);
 		// if button is clicked, close the custom dialog
 		btnddsok.setOnClickListener(new OnClickListener() {
@@ -786,13 +849,13 @@ public class DDSWave extends Activity {
 		/* Trigger */
 		RadioButton rbn;
     	final RadioGroup rgtrg = (RadioGroup) dialog.findViewById(R.id.rgtrig);
-		if (scptr == 1) {
+		if (scptr == 0) {
 			rbn=(RadioButton) dialog.findViewById(R.id.rbnscptrgr);
 			rbn.setChecked(true);
-		} else if (scptr == 2) {
+		} else if (scptr == 1) {
 			rbn=(RadioButton) dialog.findViewById(R.id.rbnscptrgf);
 			rbn.setChecked(true);
-		} else if (scptr == 0) {
+		} else if (scptr == 2) {
 			rbn=(RadioButton) dialog.findViewById(R.id.rbnscptrgn);
 			rbn.setChecked(true);
 		}
@@ -978,14 +1041,11 @@ public class DDSWave extends Activity {
         rgtrg.setOnCheckedChangeListener(new  RadioGroup.OnCheckedChangeListener() {
 	        public void onCheckedChanged(RadioGroup group,int checkedId) {
 	        	if(checkedId == R.id.rbnscptrgr) {
-	        		/* Rising */
-	        		scptr = 1;
-	        	} else if (checkedId == R.id.rbnscptrgf) {
-	        		/* Falling */
-	        		scptr = 2;
-	        	} else if (checkedId == R.id.rbnscptrgn) {
-	        		/* None */
 	        		scptr = 0;
+	        	} else if (checkedId == R.id.rbnscptrgf) {
+	        		scptr = 1;
+	        	} else if (checkedId == R.id.rbnscptrgn) {
+	        		scptr = 2;
 	        	}
 	        }
        	});
@@ -1026,9 +1086,6 @@ public class DDSWave extends Activity {
 		params.width = 512;
 		params.y=0;
 		dialog.getWindow().setAttributes(params);
-		
-		final int idchktrg = R.id.chklgatrgd0;
-		final int idchkmsk = R.id.chklgamaskd0;;
 
 		final TextView tvlgasr = (TextView) dialog.findViewById(R.id.tvlgasr);
 		Button btnlgasrdn = (Button) dialog.findViewById(R.id.btnlgasrdn);
@@ -1052,7 +1109,7 @@ public class DDSWave extends Activity {
 		/* Set trigger */
 		CheckBox chk;
 		byte i = 1;
-		int id = idchktrg;
+		int id = R.id.chklgatrgd0;
 		while (i != 0) {
 			chk=(CheckBox) dialog.findViewById(id);
 			chk.setChecked((lgatrg & i) != 0);
@@ -1061,7 +1118,7 @@ public class DDSWave extends Activity {
 		}
 		/* Set mask */
 		i = 1;
-		id = idchkmsk;
+		id = R.id.chklgamaskd0;
 		while (i != 0) {
 			chk=(CheckBox) dialog.findViewById(id);
 			chk.setChecked((lgamask & i) != 0);
@@ -1143,13 +1200,13 @@ public class DDSWave extends Activity {
 			@Override
 			public void onClick(View v) {
 				if (xofs >= 4) {
-					lgatrg = GetLGATrigger(dialog, idchktrg);
-					lgamask = GetLGATrigger(dialog, idchkmsk);
+					lgatrg = GetLGATrigger(dialog, R.id.chklgatrgd0);
+					lgamask = GetLGATrigger(dialog, R.id.chklgamaskd0);
 					byte val = (byte)((int)lgatrg & (int)lgamask);
 					int inx = (int)(xofs / 4);
 					inx--;
 					while (inx >= 0) {
-						if ((LGAData[inx] & lgamask) == val){
+						if ((lga.LGAData[inx] & lgamask) == val){
 							xofs = inx * 4;
 				    		DrawLGAWave();
 							break;
@@ -1165,13 +1222,13 @@ public class DDSWave extends Activity {
 			@Override
 			public void onClick(View v) {
 				if (xofs / 4 < (lgabuff + 1) * 1024) {
-					lgatrg = GetLGATrigger(dialog, idchktrg);
-					lgamask = GetLGATrigger(dialog, idchkmsk);
+					lgatrg = GetLGATrigger(dialog, R.id.chklgatrgd0);
+					lgamask = GetLGATrigger(dialog, R.id.chklgamaskd0);
 					byte val = (byte)((int)lgatrg & (int)lgamask);
 					int inx = (int)(xofs / 4);
 					inx++;
 					while (inx < (lgabuff + 1) * 1024) {
-						if ((LGAData[inx] & lgamask) == val){
+						if ((lga.LGAData[inx] & lgamask) == val){
 							xofs = inx * 4;
 				    		DrawLGAWave();
 							break;
@@ -1187,15 +1244,91 @@ public class DDSWave extends Activity {
 		btnlgasample.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				lgatrg = GetLGATrigger(dialog, idchktrg);
-				lgamask = GetLGATrigger(dialog, idchkmsk);
+				int sr ;
+				lgatrg = GetLGATrigger(dialog, R.id.chklgatrgd0);
+				lgamask = GetLGATrigger(dialog, R.id.chklgamaskd0);
+				lga.DataBlocks = (byte) (lgabuff + 1);
+				lga.TriggerValue = lgatrg;
+				lga.TriggerMask = lgamask;
+				lga.TriggerWait = 0;
+				sr=lgasrint[lgasr];
+				if (sr == 199999) {
+					lga.LGASampleRateDiv = 3;
+					lga.LGASampleRate = (short)(sr >> 2);
+				} else if (sr == 199999) {
+					lga.LGASampleRateDiv = 1;
+					lga.LGASampleRate = (short)(sr >> 1);
+				} else {
+					lga.LGASampleRateDiv = 0;
+					lga.LGASampleRate = (short)sr;
+				}
+				lga.SendLGA();
+				xofs = 0;
+	    		DrawLGAWave();
 				dialog.dismiss();
 			}
 		});
 
 		dialog.show();
     }
+    
+    private int FrqToClk(int frq, int clkdiv) {
+    	int c = 0;
+    	int d = 1;
+    	while (true) {
+    		c = clkdiv / d / frq;
+    		if (c < 65536) {
+    			break;
+    		}
+    		
+    	}
+    	return c;
+    }
+    
+    private int ClkToFrq(int cnt, int clk) {
+    	int f = 0;
+    	f = clk / cnt;
+    	return f;
+    }
 
+    private int GetHscFrq(int frq) {
+    	int c = 0;
+    	if (frq < 3) {
+    		hscclk = STM32_CLOCK / 2048;
+    		hscarr = 1023;
+    	} else if (frq < 6) {
+    		hscclk = STM32_CLOCK / 1024;
+    		hscarr = 511;
+    	} else if (frq < 12) {
+    		hscclk = STM32_CLOCK / 512;
+    		hscarr = 255;
+    	} else if (frq < 24) {
+    		hscclk = STM32_CLOCK / 256;
+    		hscarr = 127;
+    	} else if (frq < 48) {
+    		hscclk = STM32_CLOCK / 128;
+    		hscarr = 63;
+    	} else if (frq < 96) {
+    		hscclk = STM32_CLOCK / 64;
+    		hscarr = 31;
+    	} else if (frq < 192) {
+    		hscclk = STM32_CLOCK / 32;
+    		hscarr = 15;
+    	} else if (frq < 382) {
+    		hscclk = STM32_CLOCK / 16;
+    		hscarr = 7;
+    	} else if (frq < 763) {
+    		hscclk = STM32_CLOCK / 8;
+    		hscarr = 3;
+    	} else {
+    		hscclk = STM32_CLOCK / 4;
+    		hscarr = 1;
+    	}
+    	c = FrqToClk(frq, hscclk);
+    	hscres = ClkToFrq(c, hscclk);
+    	return c;
+    }
+    
     private void ShowHSCSetupDialog() {
     	final Context context = this;
 		final Dialog dialog = new Dialog(context);
@@ -1206,42 +1339,130 @@ public class DDSWave extends Activity {
 		params.y=0;
 		dialog.getWindow().setAttributes(params);
 
-		final TextView tvhscfrq = (TextView) dialog.findViewById(R.id.tvhscfrq);
+    	final RadioGroup rghscfrq = (RadioGroup) dialog.findViewById(R.id.rghscfrq);
+		RadioButton rbn;
+		if (hscset == 0) {
+			rbn=(RadioButton) dialog.findViewById(R.id.rbnhscmhz);
+			rbn.setChecked(true);
+		} else if (hscset == 1) {
+			rbn=(RadioButton) dialog.findViewById(R.id.rbnhsckhz);
+			rbn.setChecked(true);
+		} else if (hscset == 2) {
+			rbn=(RadioButton) dialog.findViewById(R.id.rbnhschz);
+			rbn.setChecked(true);
+		}
+
 		Button btnhscfrqdn = (Button) dialog.findViewById(R.id.btnhscfrqdn);
-		final SeekBar sbhscfrq = (SeekBar) dialog.findViewById(R.id.sbhscfrq);
+		final EditText ethscfrqset = (EditText) dialog.findViewById(R.id.ethscfrqset);
+		ethscfrqset.setText("" + hscfrq);
 		Button btnhscfrqup = (Button) dialog.findViewById(R.id.btnhscfrqup);
+		Button btnhscok = (Button) dialog.findViewById(R.id.btnhscok);
 
 		dialog.setTitle("HSC Setup");
-		tvhscfrq.setText("Freqency: " + scpsrstr[scpsr] + "MHz");
-		sbhscfrq.setProgress(hscfrq);
 
-//		sbscpsr.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
-//        	public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-//        		scpsr = progress;
-//				tvscpsr.setText("Sample rate: " + scpsrstr[scpsr] + "MHz");
-//        	}
-//
-//        	public void onStartTrackingTouch(SeekBar seekBar) {
-//        	}
-//
-//        	public void onStopTrackingTouch(SeekBar seekBar) {
-//        	}
-//        });
-//
-//		btnscpsrup.setOnClickListener(new OnClickListener() {
-//			@Override
-//			public void onClick(View v) {
-//				if (scpsr < 15) {
-//					scpsr++;
-//					sbscpsr.setProgress(scpsr);
-//					tvscpsr.setText("Sample rate: " + scpsrstr[scpsr] + "MHz");
-//				}
-//			}
-//		});
+		rghscfrq.setOnCheckedChangeListener(new  RadioGroup.OnCheckedChangeListener() {
+	        public void onCheckedChanged(RadioGroup group,int checkedId) {
+	        	if(checkedId == R.id.rbnhscmhz) {
+	        		hscset = 0;
+	        	} else if (checkedId == R.id.rbnhsckhz) {
+	        		hscset = 1;
+	        	} else if (checkedId == R.id.rbnhschz) {
+	        		hscset = 2;
+	        	}
+
+	        }
+       	});
+
+		btnhscfrqdn.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+		    	int t;
+				if (hscfrq > 2) {
+					switch (hscset) {
+					case 0:
+						hscfrq -=1000000;
+						if (hscfrq < 2) {
+							hscfrq = 2;
+						}
+						break;
+					case 1:
+						hscfrq -=1000;
+						if (hscfrq < 2) {
+							hscfrq = 2;
+						}
+						break;
+					case 2:
+						hscfrq--;
+						break;
+					}
+					hscres = hscfrq - 1;
+					t = GetHscFrq(hscfrq);
+					while (hscfrq != hscres) {
+						hscfrq--;
+						t = GetHscFrq(hscfrq);
+					}
+					hscclk = t - 1;
+					ethscfrqset.setText("" + hscfrq);
+					hscsend = true;
+				}
+			}
+		});
 		
-        /* OK */
-        Button btnhscok = (Button) dialog.findViewById(R.id.btnhscok);
-		// if button is clicked, close the custom dialog
+		ethscfrqset.setOnEditorActionListener(new OnEditorActionListener() {
+		    @Override
+		    public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+		        boolean handled = false;
+		    	int t;
+		        if (actionId == EditorInfo.IME_ACTION_SEND) {
+		            //sendMessage();
+		        	hscfrq = Integer.parseInt(ethscfrqset.getText().toString());
+		        	if (hscfrq < 2) {
+		        		hscfrq = 2;
+		        	} else if (hscfrq > 50000000) {
+		        		hscfrq = 50000000;
+		        	}
+					t = GetHscFrq(hscfrq);
+					hscfrq = hscres;
+					hscclk = t - 1;
+					ethscfrqset.setText("" + hscfrq);
+					hscsend = true;
+					handled = true;
+		        }
+		        return handled;
+		    }
+		});
+
+		btnhscfrqup.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+		    	int t;
+				if (hscfrq < 50000000) {
+					switch (hscset) {
+					case 0:
+						hscfrq += 1000000;
+						if (hscfrq > 50000000) {
+							hscfrq = 50000000;
+						}
+						break;
+					case 1:
+						hscfrq += 1000;
+						if (hscfrq > 50000000) {
+							hscfrq = 50000000;
+						}
+						break;
+					case 2:
+						hscfrq++;
+						break;
+					}
+					t = GetHscFrq(hscfrq);
+					hscfrq = hscres;
+					hscclk = t - 1;
+					ethscfrqset.setText("" + hscfrq);
+					hscsend = true;
+				}
+			}
+		});
+
 		btnhscok.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -1280,4 +1501,96 @@ public class DDSWave extends Activity {
 		}
 		return super.onTouchEvent(event);
 	}
+
+    private boolean BTDisConnect() {
+        if (mOutputStream != null) {
+        	try {
+        		mOutputStream.close();
+        		mOutputStream = null;
+			} catch (IOException e1) {
+			}
+        }
+        if (mInputStream != null) {
+        	try {
+				mInputStream.close();
+				mInputStream = null;
+			} catch (IOException e1) {
+			}
+        }
+        if (mBluetoothSocket != null) {
+        	try {
+				mBluetoothSocket.close();
+				mBluetoothSocket = null;
+			} catch (IOException e) {
+			}
+        }
+		return false;
+	}
+
+	private boolean BTConnect() {
+    	Boolean err = false;
+    	btconnected = BTDisConnect();
+        try {
+        	if (mBluetoothAdapter == null) {
+	        	err = true;
+				Toast.makeText(getApplicationContext(), "Error occured no BT adapter found.", Toast.LENGTH_LONG).show();
+        	} else {
+    			Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+    			if (!mBluetoothAdapter.isEnabled()) {
+    				startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+    			} else {
+                	// Set up a pointer to the remote node using it's address.
+                	mBluetoothDevice = mBluetoothAdapter.getRemoteDevice(btdeviceaddr);
+                	Method m = mBluetoothDevice.getClass().getMethod("createInsecureRfcommSocket", new Class[] { int.class }); 
+                	mBluetoothSocket = (BluetoothSocket) m.invoke(mBluetoothDevice,Integer.valueOf(1));
+                    // Discovery is resource intensive.  Make sure it isn't going on
+                    // when you attempt to connect and pass your message.
+                    mBluetoothAdapter.cancelDiscovery();
+                    // Establish the connection.  This will block until it connects.
+                    try {
+        				Toast.makeText(getApplicationContext(), "Attempting connect.", Toast.LENGTH_LONG).show();
+                    	mBluetoothSocket.connect();
+        	            // Create data streams so we can talk to server.
+        	            try {
+        	            	mOutputStream = mBluetoothSocket.getOutputStream();
+        		            try {
+        		            	mInputStream = mBluetoothSocket.getInputStream();
+        		            	// Done, set the mode
+        	                	btconnected = true;
+        		            } catch (IOException e) {
+        			        	msgbox("BT", "getInputStream " + e.getMessage());
+        			        	err = true;
+        		            }
+        	            } catch (IOException e) {
+        		        	msgbox("BT", "getOutputStream " + e.getMessage());
+        		        	err = true;
+        	            }
+                    } catch (IOException e) {
+        	        	msgbox("BT", "connect " + e.getMessage());
+        	        	err = true;
+                    }
+    			}
+        	}
+		} catch (Exception e) {
+        	msgbox("BT", "getRemoteDevice " + e.getMessage());
+        	err = true;
+		}
+        if (err == true) {
+        	btconnected = BTDisConnect();
+        }
+        return err;
+	}
+
+	public void msgbox(String title,String message) {
+	    AlertDialog.Builder dlgAlert  = new AlertDialog.Builder(this);                      
+	    dlgAlert.setTitle(title); 
+	    dlgAlert.setMessage(message); 
+	    dlgAlert.setPositiveButton("OK",new DialogInterface.OnClickListener() {
+	        public void onClick(DialogInterface dialog, int whichButton) {
+	        }
+	    });
+	    dlgAlert.setCancelable(true);
+	    dlgAlert.create().show();
+	}
+
 }

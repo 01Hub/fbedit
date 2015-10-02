@@ -78,7 +78,7 @@
         android:text="&lt;" />
     
     <SeekBar
-        android:id="@+id/sbddsfrq"
+        android:id="@+id/sbfrequency"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@+id/btnddsfrqdn"
@@ -102,7 +102,7 @@
         android:layout_width="150dp"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:layout_below="@+id/sbddsfrq"
+        android:layout_below="@+id/sbfrequency"
         android:layout_marginTop="10dp"
         android:layout_marginLeft="5dp"
         android:text="Amplitude" />
@@ -117,7 +117,7 @@
         android:text="&lt;" />
     
     <SeekBar
-        android:id="@+id/sbddsamp"
+        android:id="@+id/sbamplitude"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@+id/btnddsfrqdn"
@@ -137,65 +137,49 @@
         android:text=">" />
     
     <TextView
-        android:id="@+id/tvddsofs"
+        android:id="@+id/tvddsdcofs"
         android:layout_width="150dp"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:layout_below="@+id/sbddsamp"
+        android:layout_below="@+id/sbamplitude"
         android:layout_marginTop="10dp"
         android:layout_marginLeft="5dp"
         android:text="DC Offset" />
 
     <Button
-        android:id="@+id/btnddsofsdn"
+        android:id="@+id/btnddsdcofsdn"
         android:layout_width="50dp"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/tvddsofs"
+        android:layout_below="@+id/tvddsdcofs"
         android:layout_alignParentLeft="true"
         android:layout_marginTop="5dp"
         android:text="&lt;" />
     
     <SeekBar
-        android:id="@+id/sbddsofs"
+        android:id="@+id/sbdcoffset"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_toRightOf="@+id/btnddsfrqdn"
+        android:layout_toRightOf="@+id/btnddsdcofsdn"
         android:layout_marginTop="15dp"
-        android:layout_below="@+id/tvddsofs"
+        android:layout_below="@+id/tvddsdcofs"
         android:layout_marginLeft="5dp"
         android:layout_marginRight="55dp"
-        android:max="300" />
+        android:max="598" />
 
     <Button
-        android:id="@+id/btnddsofsup"
+        android:id="@+id/btnddsdcofsup"
         android:layout_width="50dp"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/tvddsofs"
+        android:layout_below="@+id/tvddsdcofs"
         android:layout_alignParentRight="true"
         android:layout_marginTop="5dp"
         android:text=">" />
-    
-<!--     <CheckBox -->
-<!--         android:id="@+id/chkddshz" -->
-<!--         android:layout_width="100dp" -->
-<!--         android:layout_height="wrap_content" -->
-<!--         android:layout_alignParentTop="true" -->
-<!--         android:layout_toRightOf="@+id/textView1" -->
-<!--         android:text="Hz" /> -->
-
-<!--     <CheckBox -->
-<!--         android:id="@+id/chkddskhz" -->
-<!--         android:layout_width="100dp" -->
-<!--         android:layout_height="wrap_content" -->
-<!--         android:layout_alignParentTop="true" -->
-<!--         android:layout_toRightOf="@+id/chkddshz" -->
-<!--         android:text="KHz" /> -->
 
     <Button
         android:id="@+id/btnddsok"
         android:layout_width="150dp"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/sbddsofs"
+        android:layout_below="@+id/sbdcoffset"
         android:layout_alignParentRight="true"
         android:layout_marginTop="25dp"
         android:text="OK" />

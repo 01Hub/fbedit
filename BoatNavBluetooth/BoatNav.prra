@@ -23,7 +23,7 @@ cur.bmp
 F16=-5,0,0,0,0,0,0,0,Res\cur.bmp
 SonarTransmitter.cad
 F18=-5,0,3,-6,-25,1457,731,0,Res\SplitV.cur
-Path=C:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth
+Path=D:\FbEdit\Projects\Applications\fbe\BoatNavBluetooth
 F5=-2,0,1,154,154,1014,416,0,Distance.asm
 F6=-2,0,1,176,176,1014,416,532,DrawMap.asm
 F7=-2,0,1,0,0,1014,416,282,GpsComm.asm
