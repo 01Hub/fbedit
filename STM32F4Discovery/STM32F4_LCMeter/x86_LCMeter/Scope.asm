@@ -86,7 +86,7 @@ cdq
 inc		tccount
 mov		ecx,tccount
 div		ecx
-PrintDec eax
+;PrintDec eax
 	.endw
 	mov		fThreadDone,TRUE
 	ret
@@ -458,6 +458,8 @@ ScopeProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke lstrcat,addr buffer,offset szKHz
 		.endif
 		invoke SetDlgItemText,hScpCld,IDC_STCADCSAMPLERATE,addr buffer
+;lea eax,buffer
+;PrintStringByAddr eax
 		invoke SetDlgItemInt,hScpCld,IDC_STCSAMPLESIZE,STM32_Scp.ADC_SampleSize,FALSE
 		;Get time in ns for each pixel
 		mov		eax,STM32_Cmd.STM32_Scp.ScopeTimeDiv

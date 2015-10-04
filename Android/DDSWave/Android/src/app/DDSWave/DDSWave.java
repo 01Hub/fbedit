@@ -57,7 +57,7 @@ public class DDSWave extends Activity {
 	private int ht;
 	public static int mode = 4;
 	public static int tmpmode;
-	private static final int WAVEGRID = 50;
+	private static final int WAVEGRID = 48;
 	private static final int WAVEGRIDX = 10;
 	private static final int WAVEGRIDY = 8;
 
@@ -81,11 +81,21 @@ public class DDSWave extends Activity {
 
 	private static final int SCPSIZE = WAVEGRID * WAVEGRIDX;
 	private short scpWave[] = new short[SCPSIZE];
-	private int scpsr = 15;
+	private int scpsr = 44;
 
-	private String scpsrstr[] = {"2.5","2.631579","2.777778","2.941176","3.125","3.333333","3.571429","3.846154","4.166667","4.545455","5.0","5.555556","6.25","7.142857","8.333333","10.0"};
-	private int scptd = 10;
+	private boolean scpsend = false;
+	private String scpsrstr[] = {"625K",     "657.894K", "694.444K", "735.294K", "781.25K",
+								 "833.333K", "877.192K", "892.857K", "925.925K", "961.538K",
+								 "980.392K", "1.041666M","1.111111M","1.136363M","1.190476M",
+								 "1.25M",    "1.282051M","1.315789M","1.388888M","1.470588M",
+								 "1.515151M","1.5625M",  "1.666667M","1.785714M","1.851851M",
+								 "1.923076M","2.083333M","2.272727M","2.380952M","2.5M",
+								 "2.631579M","2.777778M","2.941176M","3.125M",   "3.333333M",
+								 "3.571429M","3.846154M","4.166667M","4.545455M","5.0M",
+								 "5.555556M","6.25M",    "7.142857M","8.333333M","10.0M"};
+	private int scptd = 15;
 	private String scptdstr[] = {"100ns","200ns","500ns","1us","5us","10us","50us","100us","200us","500us","1ms","2ms","5ms","10ms","20ms","50ms","100ms","200ms","500ms"};
+	private int scptdint[] = {100,200,500,1000,2000,5000,10000,20000,50000,100000,200000,500000,1000000,5000000,10000000,20000000,50000000,100000000,200000000,500000000};
 	private int scpvd = 8;
 	private String scpvdstr[] = {"1mV","2mV","5mV","10mV","20mV","50mV","100mV","200mV","500mV"};
 	private int scpvp = 150;
@@ -102,14 +112,14 @@ public class DDSWave extends Activity {
 	private byte lgamask = (byte)0x00;
     private static STM32_LGA lga = new STM32_LGA();
 
+	private static boolean hscsend = false;
+	private int hscset = 2;
 	private static final int HSCSIZE = 2048;
 	private short HSCWave[] = new short[HSCSIZE];
 	private int hscfrq = 1000;
 	private int hscarr;
 	private int hscclk;
 	private int hscres;
-	private int hscset = 2;
-	private static boolean hscsend = false;
 
 	private boolean StartUp = true;
 
@@ -292,6 +302,11 @@ public class DDSWave extends Activity {
 	    				break;
 	    			case 1:
 	    				// Scope
+	    				if (scpsend) {
+	    					scpsend = false;
+	    				} else {
+	    					
+	    				}
 	    				break;
 	    			case 2:
 	    				// LGA
@@ -413,12 +428,12 @@ public class DDSWave extends Activity {
 		DrawGrid();
 		paint.setStrokeWidth(2);
         paint.setColor(Color.YELLOW);
-		xp = ((i / 8) * WAVEGRID * 10) / 256;
+		xp = ((i / 8) * WAVEGRID * WAVEGRIDX) / 256;
 		yp = (((2048 - ddsWave[i]) / 16) * WAVEGRID * 6) / 256;
 		yp = WAVEGRID * 4  + ((yp * ddsamp) / 300 - (ddsdcofs - 299));
 		i++;
 		while (i < DDSSIZE) {
-			x = ((i / 8) * WAVEGRID * 10) / 256;
+			x = ((i / 8) * WAVEGRID * WAVEGRIDX) / 256;
 			y = (((2048 - ddsWave[i]) / 16) * WAVEGRID * 6) / 256;
 			y = WAVEGRID * 4 + ((y * ddsamp) / 300 - (ddsdcofs - 299)) / 2;
 	        canvas.drawLine(xp + WAVEGRIDXOFS, yp + WAVEGRIDYOFS, x + WAVEGRIDXOFS, y + WAVEGRIDYOFS, paint);
@@ -454,19 +469,27 @@ public class DDSWave extends Activity {
 	private void DrawLGAWave() {
 		int x;
 		int y = WAVEGRIDYOFS + WAVEGRID / 3;
+		int z;
 		int i = 0;
 		byte bit,prv;
 		DrawGrid();
 		paint.setTextSize(15);
 		paint.setColor(Color.WHITE);
 		while (i < 8) {
-			canvas.drawText("D" + i, 5, y, paint);
+			canvas.drawText("D" + i, 15, y, paint);
 			y += WAVEGRID;
 			i++;
 		}
 		y = WAVEGRIDYOFS + WAVEGRID;
 		bit = 1;
+		z = 0;
+		paint.setStrokeWidth(2);
 		while (bit != 0) {
+			if ((z & 1) != 0) {
+		        paint.setColor(Color.YELLOW);
+			} else {
+		        paint.setColor(Color.WHITE);
+			}
 			i = (int)xofs / 4;
 			x = WAVEGRIDXOFS;
 			prv = lga.LGAData[i];
@@ -484,7 +507,7 @@ public class DDSWave extends Activity {
 			        canvas.drawLine(x, y, x, y - WAVEGRID / 2, paint);
 				}
 				x += WAVEGRID / LGAWIDTH;
-				if (x - WAVEGRIDXOFS >= WAVEGRID * 10) {
+				if (x - WAVEGRIDXOFS >= WAVEGRID * WAVEGRIDX) {
 					break;
 				}
 				prv = lga.LGAData[i];
@@ -492,6 +515,7 @@ public class DDSWave extends Activity {
 			}
 			bit <<=1;
 			y += WAVEGRID;
+			z++;
 		}
 		mIV.setImageDrawable(new BitmapDrawable(getResources(), bmpwave));
 	}
@@ -504,12 +528,12 @@ public class DDSWave extends Activity {
 		DrawGrid();
 		paint.setStrokeWidth(2);
         paint.setColor(Color.YELLOW);
-		xp = ((i / 8) * WAVEGRID * 10) / 256;
+		xp = ((i / 8) * WAVEGRID * WAVEGRIDX) / 256;
 		yp = (((2048 - HSCWave[i]) / 16) * WAVEGRID * 6) / 256;
 		yp = WAVEGRID * 4  + yp;
 		i++;
 		while (i < DDSSIZE) {
-			x = ((i / 8) * WAVEGRID * 10) / 256;
+			x = ((i / 8) * WAVEGRID * WAVEGRIDX) / 256;
 			y = (((2048 - HSCWave[i]) / 16) * WAVEGRID * 6) / 256;
 			y = WAVEGRID * 4 + y;
 	        canvas.drawLine(xp + WAVEGRIDXOFS, yp + WAVEGRIDYOFS, x + WAVEGRIDXOFS, y + WAVEGRIDYOFS, paint);
@@ -529,13 +553,8 @@ public class DDSWave extends Activity {
 	        wt = imageView.getWidth();
 	        ht = imageView.getHeight();
 			bmpwave = Bitmap.createBitmap(wt, ht, Bitmap.Config.ARGB_8888);
-//			if (wt > ht) {
-//				WAVEGRID = ((ht - 10) / 10) & 254;
-//			} else {
-//				WAVEGRID = ((wt - 10) / 10) & 254;
-//			}
-			WAVEGRIDXOFS = (wt - WAVEGRID*10) / 2;
-			WAVEGRIDYOFS = (ht - WAVEGRID*10) / 2;
+			WAVEGRIDXOFS = (wt - WAVEGRID * WAVEGRIDX) / 2;
+			WAVEGRIDYOFS = (ht - WAVEGRID * WAVEGRIDX) / 2;
 			DrawDDSWave();
 			StartUp = false;
 		}
@@ -831,7 +850,7 @@ public class DDSWave extends Activity {
 		Button btnscptlup = (Button) dialog.findViewById(R.id.btnscptlup);
 
 		dialog.setTitle("SCOPE Setup");
-		tvscpsr.setText("Sample rate: " + scpsrstr[scpsr] + "MHz");
+		tvscpsr.setText("Sample rate: " + scpsrstr[scpsr] + "Hz");
 		sbscpsr.setProgress(scpsr);
 
 		tvscptd.setText("Time / Div: " + scptdstr[scptd]);
@@ -846,7 +865,7 @@ public class DDSWave extends Activity {
 		tvscptl.setText("Trigger level: " + (scptl - 150));
 		sbscptl.setProgress(scptl);
 
-		/* Trigger */
+		/* Trigger select */
 		RadioButton rbn;
     	final RadioGroup rgtrg = (RadioGroup) dialog.findViewById(R.id.rgtrig);
 		if (scptr == 0) {
@@ -859,7 +878,6 @@ public class DDSWave extends Activity {
 			rbn=(RadioButton) dialog.findViewById(R.id.rbnscptrgn);
 			rbn.setChecked(true);
 		}
-
 		/* Sample rate */
         btnscpsrdn.setOnClickListener(new OnClickListener() {
 			@Override
@@ -867,15 +885,14 @@ public class DDSWave extends Activity {
 				if (scpsr > 0) {
 					scpsr--;
 					sbscpsr.setProgress(scpsr);
-					tvscpsr.setText("Sample rate: " + scpsrstr[scpsr] + "MHz");
+					tvscpsr.setText("Sample rate: " + scpsrstr[scpsr] + "Hz");
 				}
 			}
 		});
-		
 		sbscpsr.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
         	public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
         		scpsr = progress;
-				tvscpsr.setText("Sample rate: " + scpsrstr[scpsr] + "MHz");
+				tvscpsr.setText("Sample rate: " + scpsrstr[scpsr] + "Hz");
         	}
 
         	public void onStartTrackingTouch(SeekBar seekBar) {
@@ -884,18 +901,16 @@ public class DDSWave extends Activity {
         	public void onStopTrackingTouch(SeekBar seekBar) {
         	}
         });
-
 		btnscpsrup.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				if (scpsr < 15) {
+				if (scpsr < 44) {
 					scpsr++;
 					sbscpsr.setProgress(scpsr);
-					tvscpsr.setText("Sample rate: " + scpsrstr[scpsr] + "MHz");
+					tvscpsr.setText("Sample rate: " + scpsrstr[scpsr] + "Hz");
 				}
 			}
 		});
-		
 		/* Time / Div */
         btnscptddn.setOnClickListener(new OnClickListener() {
 			@Override
@@ -907,7 +922,6 @@ public class DDSWave extends Activity {
 				}
 			}
 		});
-		
 		sbscptd.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
         	public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
         		scptd = progress;
@@ -920,7 +934,6 @@ public class DDSWave extends Activity {
         	public void onStopTrackingTouch(SeekBar seekBar) {
         	}
         });
-
 		btnscptdup.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -942,7 +955,6 @@ public class DDSWave extends Activity {
 				}
 			}
 		});
-		
 		sbscpvd.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
         	public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
         		scpvd = progress;
@@ -955,7 +967,6 @@ public class DDSWave extends Activity {
         	public void onStopTrackingTouch(SeekBar seekBar) {
         	}
         });
-
 		btnscpvdup.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -966,8 +977,7 @@ public class DDSWave extends Activity {
 				}
 			}
 		});
-
-		/* V-Pos */
+		/* V-Position */
         btnscpvpdn.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -978,7 +988,6 @@ public class DDSWave extends Activity {
 				}
 			}
 		});
-		
 		sbscpvp.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
         	public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
         		scpvp = progress;
@@ -991,7 +1000,6 @@ public class DDSWave extends Activity {
         	public void onStopTrackingTouch(SeekBar seekBar) {
         	}
         });
-
 		btnscpvpup.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -1013,7 +1021,6 @@ public class DDSWave extends Activity {
 				}
 			}
 		});
-		
 		sbscptl.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
         	public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
         		scptl = progress;
@@ -1026,7 +1033,6 @@ public class DDSWave extends Activity {
         	public void onStopTrackingTouch(SeekBar seekBar) {
         	}
         });
-
 		btnscptlup.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -1037,7 +1043,7 @@ public class DDSWave extends Activity {
 				}
 			}
 		});
-		/* Trigger */
+		/* Trigger select */
         rgtrg.setOnCheckedChangeListener(new  RadioGroup.OnCheckedChangeListener() {
 	        public void onCheckedChanged(RadioGroup group,int checkedId) {
 	        	if(checkedId == R.id.rbnscptrgr) {
@@ -1049,6 +1055,22 @@ public class DDSWave extends Activity {
 	        	}
 	        }
        	});
+        /* Auto */
+        Button btnscpauto = (Button) dialog.findViewById(R.id.btnscpauto);
+		// if button is clicked, auto configure
+		btnscpauto.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+			}
+		});
+        /* Hold */
+        Button btnscphold = (Button) dialog.findViewById(R.id.btnscphold);
+		// if button is clicked, hold sampling
+		btnscphold.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+			}
+		});
         /* OK */
         Button btnscpok = (Button) dialog.findViewById(R.id.btnscpok);
 		// if button is clicked, close the custom dialog

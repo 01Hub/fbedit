@@ -14,14 +14,14 @@ public final class R {
         public static final int icon=0x7f020000;
     }
     public static final class id {
-        public static final int ImageView1=0x7f060054;
-        public static final int btnDDS=0x7f060055;
-        public static final int btnHSC=0x7f060058;
-        public static final int btnLCM_C=0x7f060059;
-        public static final int btnLCM_L=0x7f06005a;
-        public static final int btnLGA=0x7f060057;
-        public static final int btnSCOPE=0x7f060056;
-        public static final int btnSETUP=0x7f06005b;
+        public static final int ImageView1=0x7f060056;
+        public static final int btnDDS=0x7f060057;
+        public static final int btnHSC=0x7f06005a;
+        public static final int btnLCM_C=0x7f06005b;
+        public static final int btnLCM_L=0x7f06005c;
+        public static final int btnLGA=0x7f060059;
+        public static final int btnSCOPE=0x7f060058;
+        public static final int btnSETUP=0x7f06005d;
         public static final int btnddsampdn=0x7f06000c;
         public static final int btnddsampup=0x7f06000e;
         public static final int btnddsdcofsdn=0x7f060010;
@@ -39,7 +39,9 @@ public final class R {
         public static final int btnlgasample=0x7f06003a;
         public static final int btnlgasrdn=0x7f06001e;
         public static final int btnlgasrup=0x7f060020;
-        public static final int btnscpok=0x7f060053;
+        public static final int btnscpauto=0x7f060053;
+        public static final int btnscphold=0x7f060054;
+        public static final int btnscpok=0x7f060055;
         public static final int btnscpsrdn=0x7f06003c;
         public static final int btnscpsrup=0x7f06003e;
         public static final int btnscptddn=0x7f060040;
@@ -92,7 +94,7 @@ public final class R {
         public static final int sbscptl=0x7f06004d;
         public static final int sbscpvd=0x7f060045;
         public static final int sbscpvp=0x7f060049;
-        public static final int tvText=0x7f06005c;
+        public static final int tvText=0x7f06005e;
         public static final int tvddsamp=0x7f06000b;
         public static final int tvddsdcofs=0x7f06000f;
         public static final int tvddsfrq=0x7f060004;

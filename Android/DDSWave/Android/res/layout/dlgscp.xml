@@ -31,7 +31,7 @@
         android:layout_below="@+id/tvscpsr"
         android:layout_marginLeft="5dp"
         android:layout_marginRight="55dp"
-        android:max="15" />
+        android:max="44" />
 
     <Button
         android:id="@+id/btnscpsrup"
@@ -228,6 +228,24 @@
 	        android:text="None" />
     
 	</RadioGroup>
+    
+    <Button
+        android:id="@+id/btnscpauto"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/rgtrig"
+        android:layout_alignParentLeft="true"
+        android:layout_marginTop="5dp"
+        android:text="Auto" />
+    
+    <Button
+        android:id="@+id/btnscphold"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/rgtrig"
+        android:layout_toRightOf="@+id/btnscpauto"
+        android:layout_marginTop="5dp"
+        android:text="Hold" />
     
     <Button
         android:id="@+id/btnscpok"
