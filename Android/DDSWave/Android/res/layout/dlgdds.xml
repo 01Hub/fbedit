@@ -125,7 +125,7 @@
         android:layout_below="@+id/tvddsamp"
         android:layout_marginLeft="5dp"
         android:layout_marginRight="55dp"
-        android:max="299" />
+        android:max="300" />
 
     <Button
         android:id="@+id/btnddsampup"
@@ -164,7 +164,7 @@
         android:layout_below="@+id/tvddsdcofs"
         android:layout_marginLeft="5dp"
         android:layout_marginRight="55dp"
-        android:max="598" />
+        android:max="600" />
 
     <Button
         android:id="@+id/btnddsdcofsup"

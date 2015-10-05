@@ -57,12 +57,14 @@ public class DDSWave extends Activity {
 	private int ht;
 	public static int mode = 4;
 	public static int tmpmode;
-	private static final int WAVEGRID = 48;
+	private static final int WAVEGRID = 50;
 	private static final int WAVEGRIDX = 10;
 	private static final int WAVEGRIDY = 8;
 
 	private int WAVEGRIDXOFS = 0;
 	private int WAVEGRIDYOFS = 0;
+	
+	private String wavestr[] = new String[9];
 
 	private static final short DDS_PHASESET = 1;
 	private static final short DDS_WAVESET = 2;
@@ -75,7 +77,7 @@ public class DDSWave extends Activity {
 	private int ddsfrqkhz = 0;
 	private boolean ddsfrqhzsel = true;
 	private int ddsamp = 100;
-	private int ddsdcofs = 299;
+	private int ddsdcofs = 300;
 	private int ddswave=0;
 	private float xd,xs,xofs;
 
@@ -103,7 +105,7 @@ public class DDSWave extends Activity {
 	private int scptr = 0;
 
 	public static final int LGASIZE = 32 * 1024;
-	private static final int LGAWIDTH = 8;
+	private static final int LGAWIDTH = 10;
 	private int lgasr  = 0;
 	private String lgasrstr[] = {"1KHz","2KHz","5KHz","10KHz","20KHz","50KHz","100KHz","200KHz","500KHz","1MHz","2MHz","5MHz","10MHz","20MHz","40MHz"};
 	private int lgasrint[] = {199999,99999,39999,19999,9999,3999,1999,999,399,199,99,39,19,9,4};
@@ -114,11 +116,9 @@ public class DDSWave extends Activity {
 
 	private static boolean hscsend = false;
 	private int hscset = 2;
-	private static final int HSCSIZE = 2048;
-	private short HSCWave[] = new short[HSCSIZE];
 	private int hscfrq = 1000;
-	private int hscarr;
-	private int hscclk;
+	private int hscarr = 1;
+	private int hscclk = 49999;
 	private int hscres;
 
 	private boolean StartUp = true;
@@ -131,13 +131,15 @@ public class DDSWave extends Activity {
     public static OutputStream mOutputStream = null;
     public static InputStream mInputStream = null;
     public static boolean btconnected = false;
+    public static boolean nobt = false;
 
 	private Timer tmr = new Timer();
 
 	@Override
 	public void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
-    	
+
+		int i;
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		requestWindowFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
 		getWindow().setFlags(
@@ -162,10 +164,12 @@ public class DDSWave extends Activity {
 		btnLCM_C.setBackgroundColor(Color.GRAY);
 		btnLCM_L.setBackgroundColor(Color.DKGRAY);
 		btnSETUP.setBackgroundColor(Color.DKGRAY);
+		for (i = 0;i<9;i++) {
+			wavestr[i] = "";//"Test 12345";
+		}
 		ddsSineWave();
 		GenSCPWave();
-		GenHSCWave();
-		for (int i = 0;i<LGASIZE;i++) {
+		for (i = 0;i<LGASIZE;i++) {
 			lga.LGAData[i] = (byte)(i & 255);
 		}
 		btnDDS.setOnClickListener(new OnClickListener() {
@@ -253,7 +257,7 @@ public class DDSWave extends Activity {
 		btnSETUP.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				if (btconnected) {
+				if (btconnected || nobt) {
 					Log.d("MYTAG", "Setup");
 					if (mode == 0) {
 						ShowDDSSetupDialog();
@@ -289,53 +293,55 @@ public class DDSWave extends Activity {
 	{
     	runOnUiThread(new Runnable() {
     	    public void run() {
-				if (btconnected == true && BlueTooth.btmode == BlueTooth.CMD_DONE) {
+				if ((btconnected == true || nobt == true) && BlueTooth.btmode == BlueTooth.CMD_DONE) {
 	    			String s;
-	    			switch (mode) {
-	    			case 0:
-	    				// DDS Wave
-	    				if (ddssend) {
-	    					ddssend = false;
-	    					dds.SendDDS();
-	    					//Toast.makeText(getApplicationContext(), "DDS Updated", Toast.LENGTH_LONG).show();
-	    				}
-	    				break;
-	    			case 1:
-	    				// Scope
-	    				if (scpsend) {
-	    					scpsend = false;
-	    				} else {
-	    					
-	    				}
-	    				break;
-	    			case 2:
-	    				// LGA
-	    				break;
-	    			case 3:
-	    				// HSC
-	    				if (hscsend) {
-	    					hscsend = false;
-	    					BlueTooth.BTHscSet(hscarr, hscclk);
-	    					//Toast.makeText(getApplicationContext(), "HSC Updated arr: " + hscarr + " div: " + hscclk, Toast.LENGTH_LONG).show();
-	    				} else {
-	    					s = BlueTooth.BTHscGet();
+	    			if (nobt == false) {
+		    			switch (mode) {
+		    			case 0:
+		    				// DDS Wave
+		    				if (ddssend) {
+		    					ddssend = false;
+		    					dds.SendDDS();
+		    					//Toast.makeText(getApplicationContext(), "DDS Updated", Toast.LENGTH_LONG).show();
+		    				}
+		    				break;
+		    			case 1:
+		    				// Scope
+		    				if (scpsend) {
+		    					scpsend = false;
+		    				} else {
+		    					
+		    				}
+		    				break;
+		    			case 2:
+		    				// LGA
+		    				break;
+		    			case 3:
+		    				// HSC
+		    				if (hscsend) {
+		    					hscsend = false;
+		    					BlueTooth.BTHscSet(hscarr, hscclk);
+		    					//Toast.makeText(getApplicationContext(), "HSC Updated arr: " + hscarr + " div: " + hscclk, Toast.LENGTH_LONG).show();
+		    				} else {
+		    					s = BlueTooth.BTHscGet();
+			    				tvText.setText(s);
+		    				}
+		    				break;
+		    			case 4:
+		    				// Capacitor
+		    				s = BlueTooth.BTLcmCap();
 		    				tvText.setText(s);
-	    				}
-	    				break;
-	    			case 4:
-	    				// Capacitor
-	    				s = BlueTooth.BTLcmCap();
-	    				tvText.setText(s);
-	    				break;
-	    			case 5:
-	    				// Inductor
-	    				s = BlueTooth.BTLcmInd();
-	    				tvText.setText(s);
-	    				break;
-	    			case 6:
-	    				// Calibrate LCM
-	    				BlueTooth.BTLcmCal();
-	    				break;
+		    				break;
+		    			case 5:
+		    				// Inductor
+		    				s = BlueTooth.BTLcmInd();
+		    				tvText.setText(s);
+		    				break;
+		    			case 6:
+		    				// Calibrate LCM
+		    				BlueTooth.BTLcmCal();
+		    				break;
+		    			}
 	    			}
 				}
     	    }
@@ -386,18 +392,6 @@ public class DDSWave extends Activity {
 		}
 	}
 
-	private void GenHSCWave() {
-		short y = 4095;
-		HSCWave[0] = 2048;
-		HSCWave[2047] = 2048;
-		for (int x = 1;x < DDSSIZE - 1;x++) {
-			if (x == 1024) {
-				y=0;
-			}
-			HSCWave[x] = y;
-		}
-	}
-
 	private void DrawGrid() {
 		int x=WAVEGRIDXOFS;
 		int y=WAVEGRIDYOFS;
@@ -408,34 +402,61 @@ public class DDSWave extends Activity {
         paint.setColor(Color.DKGRAY);
 		while (i <= WAVEGRIDY) {
 	        canvas.drawLine(WAVEGRIDXOFS, y, WAVEGRID*10+WAVEGRIDXOFS, y, paint);
-	        y+=WAVEGRID;
+	        y += WAVEGRID;
 	        i++;
 		}
 		i=0;
 		while (i <= WAVEGRIDX) {
-	        canvas.drawLine(x, WAVEGRIDYOFS, x, WAVEGRID*8+WAVEGRIDYOFS, paint);
+	        canvas.drawLine(x, WAVEGRIDYOFS, x, WAVEGRID*WAVEGRIDY+WAVEGRIDYOFS, paint);
 	        x+=WAVEGRID;
 	        i++;
 		}
+		paint.setTextSize(18);
+        paint.setColor(Color.WHITE);
+		canvas.drawText(wavestr[0], WAVEGRIDYOFS, y, paint);
+		canvas.drawText(wavestr[1], WAVEGRIDYOFS + 166, y, paint);
+		canvas.drawText(wavestr[2], WAVEGRIDYOFS + 332, y, paint);
+        y += WAVEGRID / 2;
+		canvas.drawText(wavestr[3], WAVEGRIDYOFS, y, paint);
+		canvas.drawText(wavestr[4], WAVEGRIDYOFS + 166, y, paint);
+		canvas.drawText(wavestr[5], WAVEGRIDYOFS + 332, y, paint);
+        y += WAVEGRID / 2;
+		canvas.drawText(wavestr[6], WAVEGRIDYOFS, y, paint);
+		canvas.drawText(wavestr[7], WAVEGRIDYOFS + 166, y, paint);
+		canvas.drawText(wavestr[8], WAVEGRIDYOFS + 332, y, paint);
+
 		canvas.clipRect(WAVEGRIDXOFS,WAVEGRIDYOFS,WAVEGRID*10+WAVEGRIDXOFS+1,WAVEGRID*8+WAVEGRIDYOFS+1);
 	}
 
 	private void DrawDDSWave() {
-		int xp, yp;
+		int frq, xp, yp;
 		int x = WAVEGRIDXOFS;
 		int y = WAVEGRIDYOFS;
-		int i = 0;
+		int i;
+		double per;
+		
+		for (i = 0;i<9;i++) {
+			wavestr[i] = "";
+		}
+		frq = ddsfrqkhz * 1000 + ddsfrqhz;
+		wavestr[0] = "Frq: " + frq + "Hz";
+		per = 1000000000.0 / (double)frq;
+		wavestr[1] = "Per: " + String.format("%.1f",per) + "ns";
+		wavestr[3] = "Vpp: " + ddsamp * 10 + "mV";
+		wavestr[4] = "Vmin: " + (((ddsdcofs - 300) * 10) - ddsamp * 5) + "mV";
+		wavestr[5] = "Vmax: " + (((ddsdcofs - 300) * 10) + ddsamp * 5) + "mV";
 		DrawGrid();
 		paint.setStrokeWidth(2);
         paint.setColor(Color.YELLOW);
+        i = 0;
 		xp = ((i / 8) * WAVEGRID * WAVEGRIDX) / 256;
 		yp = (((2048 - ddsWave[i]) / 16) * WAVEGRID * 6) / 256;
-		yp = WAVEGRID * 4  + ((yp * ddsamp) / 300 - (ddsdcofs - 299));
+		yp = WAVEGRID * 4  + ((yp * ddsamp) / 300 - (ddsdcofs - 300)) / 2;
 		i++;
 		while (i < DDSSIZE) {
 			x = ((i / 8) * WAVEGRID * WAVEGRIDX) / 256;
 			y = (((2048 - ddsWave[i]) / 16) * WAVEGRID * 6) / 256;
-			y = WAVEGRID * 4 + ((y * ddsamp) / 300 - (ddsdcofs - 299)) / 2;
+			y = WAVEGRID * 4 + ((y * ddsamp) / 300 - (ddsdcofs - 300)) / 2;
 	        canvas.drawLine(xp + WAVEGRIDXOFS, yp + WAVEGRIDYOFS, x + WAVEGRIDXOFS, y + WAVEGRIDYOFS, paint);
 			xp = x;
 			yp = y;
@@ -448,11 +469,15 @@ public class DDSWave extends Activity {
 		int xp, yp;
 		int x=WAVEGRIDXOFS;
 		int y=WAVEGRIDYOFS;
-		int i=0;
+		int i;
+		for (i = 0;i<9;i++) {
+			wavestr[i] = "";
+		}
 		DrawGrid();
 		paint.setStrokeWidth(2);
         paint.setColor(Color.YELLOW);
 		xp = 0;
+		i = 0;
 		yp = (((4095 + 2048- scpWave[i]) / 16) * WAVEGRID * 8) / 512;
 		i++;
 		while (i < SCPSIZE) {
@@ -463,6 +488,14 @@ public class DDSWave extends Activity {
 			yp = y;
 			i++;
 		}
+		if (scptr != 2) {
+			
+		}
+		paint.setStrokeWidth(1);
+        paint.setColor(Color.RED);
+        yp = WAVEGRID * (WAVEGRIDY / 2);
+        yp += 150 - scptl;
+        canvas.drawLine(WAVEGRIDXOFS, WAVEGRIDYOFS + yp, WAVEGRIDXOFS + WAVEGRID * WAVEGRIDX, WAVEGRIDYOFS + yp, paint);
 		mIV.setImageDrawable(new BitmapDrawable(getResources(), bmpwave));
 	}
 
@@ -470,12 +503,21 @@ public class DDSWave extends Activity {
 		int x;
 		int y = WAVEGRIDYOFS + WAVEGRID / 3;
 		int z;
-		int i = 0;
+		int i;
 		byte bit,prv;
+		for (i = 0;i<9;i++) {
+			wavestr[i] = "";
+		}
 		DrawGrid();
 		paint.setTextSize(15);
 		paint.setColor(Color.WHITE);
+		i = 0;
 		while (i < 8) {
+			if ((i & 1) != 0) {
+		        paint.setColor(Color.YELLOW);
+			} else {
+		        paint.setColor(Color.WHITE);
+			}
 			canvas.drawText("D" + i, 15, y, paint);
 			y += WAVEGRID;
 			i++;
@@ -521,26 +563,43 @@ public class DDSWave extends Activity {
 	}
 
 	private void DrawHSCWave() {
-		int xp, yp;
+		int i, lh, xp, yp;
 		int x = WAVEGRIDXOFS;
 		int y = WAVEGRIDYOFS;
-		int i = 0;
+		double dut, per;
+		for (i = 0;i<9;i++) {
+			wavestr[i] = "";
+		}
+		wavestr[0] = "Frq: " + hscfrq + "Hz";
+		per = 1000000000.0 / (double)hscfrq;
+		wavestr[1] = "Per: " + String.format("%.1f",per) + "ns";
+		dut = ((double)((hscarr + 1) >> 1) / ((double)hscarr + 1.0));
+		wavestr[2] = "Dut: " + String.format("%.1f",100.0 * dut) + "%";
 		DrawGrid();
 		paint.setStrokeWidth(2);
         paint.setColor(Color.YELLOW);
-		xp = ((i / 8) * WAVEGRID * WAVEGRIDX) / 256;
-		yp = (((2048 - HSCWave[i]) / 16) * WAVEGRID * 6) / 256;
-		yp = WAVEGRID * 4  + yp;
-		i++;
-		while (i < DDSSIZE) {
-			x = ((i / 8) * WAVEGRID * WAVEGRIDX) / 256;
-			y = (((2048 - HSCWave[i]) / 16) * WAVEGRID * 6) / 256;
-			y = WAVEGRID * 4 + y;
-	        canvas.drawLine(xp + WAVEGRIDXOFS, yp + WAVEGRIDYOFS, x + WAVEGRIDXOFS, y + WAVEGRIDYOFS, paint);
-			xp = x;
-			yp = y;
-			i++;
-		}
+        // Draw l to h
+        x = 1;
+        xp = 1;
+        y = WAVEGRID * 7;
+        yp = WAVEGRID * 1;
+        canvas.drawLine(xp + WAVEGRIDXOFS, yp + WAVEGRIDYOFS, x + WAVEGRIDXOFS, y + WAVEGRIDYOFS, paint);
+        // Draw h
+        xp = (int)(WAVEGRID * WAVEGRIDX * dut);
+        y = yp;
+        canvas.drawLine(xp + WAVEGRIDXOFS, yp + WAVEGRIDYOFS, x + WAVEGRIDXOFS, y + WAVEGRIDYOFS, paint);
+        //Draw h to l
+        x = xp;
+        y = WAVEGRID * 7;
+        canvas.drawLine(xp + WAVEGRIDXOFS, yp + WAVEGRIDYOFS, x + WAVEGRIDXOFS, y + WAVEGRIDYOFS, paint);
+        // Draw l
+        yp = y;
+        xp = WAVEGRID * 10 - 0;
+        canvas.drawLine(xp + WAVEGRIDXOFS, yp + WAVEGRIDYOFS, x + WAVEGRIDXOFS, y + WAVEGRIDYOFS, paint);
+        // Draw l to h
+        x = xp;
+        yp = WAVEGRID * 1;
+        canvas.drawLine(xp + WAVEGRIDXOFS, yp + WAVEGRIDYOFS, x + WAVEGRIDXOFS, y + WAVEGRIDYOFS, paint);
 		mIV.setImageDrawable(new BitmapDrawable(getResources(), bmpwave));
 	}
 
@@ -673,6 +732,7 @@ public class DDSWave extends Activity {
 					}
 				}
 				tvfrequency.setText("Frequncy: " +  String.format("%.1f",((float)ddsfrqkhz * 1000 + ddsfrqhz)) + "Hz");
+        		DrawDDSWave();
         		SetSTM32_DDS(DDS_PHASESET);
 			}
 		});
@@ -685,6 +745,7 @@ public class DDSWave extends Activity {
 	        		ddsfrqkhz = progress;
 				}
 				tvfrequency.setText("Frequncy: " +  String.format("%.1f",((float)ddsfrqkhz * 1000 + ddsfrqhz)) + "Hz");
+        		DrawDDSWave();
         		SetSTM32_DDS(DDS_PHASESET);
         	}
 
@@ -710,6 +771,7 @@ public class DDSWave extends Activity {
 					}
 				}
 				tvfrequency.setText("Frequncy: " +  String.format("%.1f",((float)ddsfrqkhz * 1000 + ddsfrqhz)) + "Hz");
+        		DrawDDSWave();
         		SetSTM32_DDS(DDS_PHASESET);
 			}
 		});
@@ -748,7 +810,7 @@ public class DDSWave extends Activity {
         btnddsampup.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				if (ddsamp < 299) {
+				if (ddsamp < 300) {
 					ddsamp++;
 					sbamplitude.setProgress(ddsamp);
 					tvamplitude.setText("Amplitude: " +  String.format("%.1f",((float)ddsamp * 10)) + "mV");
@@ -792,7 +854,7 @@ public class DDSWave extends Activity {
         btnddsdcofsup.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				if (ddsamp < 598) {
+				if (ddsamp < 600) {
 					ddsdcofs++;
 					sbdcoffset.setProgress(ddsdcofs);
 					tvddsdcofs.setText("DC Offset: " +  String.format("%.1f",((float)(ddsdcofs - 299) * 10)) + "mV");
@@ -1018,6 +1080,7 @@ public class DDSWave extends Activity {
 					scptl--;
 					tvscptl.setText("Trigger level: " + (scptl - 150));
 					sbscptl.setProgress(scptl);
+					DrawScopeWave();
 				}
 			}
 		});
@@ -1025,6 +1088,7 @@ public class DDSWave extends Activity {
         	public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
         		scptl = progress;
 				tvscptl.setText("Trigger level: " + (scptl - 150));
+				DrawScopeWave();
         	}
 
         	public void onStartTrackingTouch(SeekBar seekBar) {
@@ -1040,6 +1104,7 @@ public class DDSWave extends Activity {
 					scptl++;
 					tvscptl.setText("Trigger level: " + (scptl - 150));
 					sbscptl.setProgress(scptl);
+					DrawScopeWave();
 				}
 			}
 		});
@@ -1425,6 +1490,7 @@ public class DDSWave extends Activity {
 					}
 					hscclk = t - 1;
 					ethscfrqset.setText("" + hscfrq);
+					DrawHSCWave();
 					hscsend = true;
 				}
 			}
@@ -1447,6 +1513,7 @@ public class DDSWave extends Activity {
 					hscfrq = hscres;
 					hscclk = t - 1;
 					ethscfrqset.setText("" + hscfrq);
+					DrawHSCWave();
 					hscsend = true;
 					handled = true;
 		        }
@@ -1480,6 +1547,7 @@ public class DDSWave extends Activity {
 					hscfrq = hscres;
 					hscclk = t - 1;
 					ethscfrqset.setText("" + hscfrq);
+					DrawHSCWave();
 					hscsend = true;
 				}
 			}
@@ -1556,6 +1624,7 @@ public class DDSWave extends Activity {
         	if (mBluetoothAdapter == null) {
 	        	err = true;
 				Toast.makeText(getApplicationContext(), "Error occured no BT adapter found.", Toast.LENGTH_LONG).show();
+				nobt = true;
         	} else {
     			Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
     			if (!mBluetoothAdapter.isEnabled()) {
