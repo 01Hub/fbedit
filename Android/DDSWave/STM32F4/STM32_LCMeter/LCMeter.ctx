@@ -1,0 +1,91 @@
+
+<Debug>
+	<LCMeter>
+		<CodeView TopRow="134221162" Focus="4294967295" >
+			<CodeReport>
+				<0>93</0>
+				<1>190</1>
+				<2>46</2>
+				<3>259</3>
+				<4>46</4>
+				<5>100</5>
+																																																																																																																																																																								
+			</CodeReport>
+																																																																																																																								
+		</CodeView>
+		<MemoryView Focus="134218120" TopRow="0" NbPerLine="8" />
+																																																																								
+	</LCMeter>
+	<Flags>
+		<Report>
+			<Def Header="FlagReport" NbCol="9" >
+				<Col Type="PT_BOOL" Header="Check" sizeCache="18" AutoSize="0" Edit="1" Sortable="1" Icon="D:\Ride\Ride\Config\Resources\check.bmp" />
+				<Col Type="PT_STRING" Header="Kind" sizeCache="DDDDDDDDDDD" AutoSize="1" Edit="0" Sortable="1" />
+				<Col Type="PT_STRING" Header="KindID" sizeCache="DD" AutoSize="1" Edit="0" Sortable="1" Visible="0" />
+				<Col Type="PT_STRING" Header="Space" sizeCache="DDDDDD" AutoSize="1" Edit="0" Sortable="1" />
+				<Col Type="PT_STRING" Header="SpaceID" sizeCache="DD" AutoSize="0" Edit="0" Sortable="0" Visible="0" />
+				<Col Type="PT_STRING" Header="Line" sizeCache="DDDDDDDDD" AutoSize="1" Edit="0" Sortable="1" Visible="1" />
+				<Col Type="PT_STRING" Header="File" sizeCache="DDDDDDDDDDDDDDDDDDDD" AutoSize="1" Edit="0" Sortable="1" Visible="1" />
+				<Col Type="PT_STRING" Header="Path" sizeCache="DDDDDDDDDDDDDDDDDDDD" AutoSize="1" Edit="0" Sortable="0" Visible="0" />
+				<Col Type="PT_STRING" Header="Condition" sizeCache="DDDDDDDDDDDDDDDDDDDDDDDD" AutoSize="1" Edit="0" Sortable="0" />
+				<Col Type="PT_STRING" Header="Condexpr" sizeCache="DD" AutoSize="1" Edit="0" Sortable="0" Visible="0" />
+				<Col Type="PT_STRING" Header="Condcount" sizeCache="DD" AutoSize="1" Edit="0" Sortable="0" Visible="0" />
+							
+			</Def>
+			<Rows/>
+					
+		</Report>
+			
+	</Flags>
+	<Views>
+		<View File="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\main.c" Line="387" Index="0" focus="1" />
+		<View File="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_tim.c" Line="81" Index="1" />
+		<View File="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_adc.c" Line="96" Index="2" />
+		<View File="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_adc.h" Line="0" Index="3" />
+		<View File="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx.h" Line="1299" Index="4" />
+		<View File="D:\FbEdit\Projects\Applications\fbe\Android\DDSWave\STM32F4\STM32_LCMeter\stm32f4xx_dma.c" Line="977" Index="5" />
+	</Views>
+	<Grep>
+		<GrepIncludeSub>yes</GrepIncludeSub>
+		<GrepMatchCase>no</GrepMatchCase>
+		<GrepMatchWhole>no</GrepMatchWhole>
+		<GrepRegExp>no</GrepRegExp>
+		<GrepReplaceMode>no</GrepReplaceMode>
+		<GrepFileTypes>
+			<GrepFileTypesValue>*.c;*.h</GrepFileTypesValue>
+			<GrepFileType>*.c;*.h</GrepFileType>
+		</GrepFileTypes>
+		<GrepFindWhat>
+			<GrepFindWhatValue/>
+		</GrepFindWhat>
+		<GrepFindWhere>
+			<GrepFindWhereValue/>
+			<GrepPathStr>Application Files</GrepPathStr>
+			<GrepPathStr>Application Path</GrepPathStr>
+		</GrepFindWhere>
+		<GrepReplaceWhat>
+			<GrepReplaceWhatValue/>
+		</GrepReplaceWhat>
+	</Grep>
+	<FindStrings>
+		<Find>ADC_CR2_SWSTART</Find>
+		<Find>ADC_ExternalTrigConv_T2_TRGO</Find>
+		<Find>ADC_extrenal_trigger_sources_for_regular_channels_conversion</Find>
+		<Find>ADC_ExternalTrigConv</Find>
+		<Find>BTBuff</Find>
+		<Find>LED4</Find>
+		<Find>LED3</Find>
+		<Find>SPISendData32</Find>
+		<Find>TIM8</Find>
+		<Find>STM_EVAL_LEDToggle</Find>
+		<Find>tim5</Find>
+		<Find>TIM3_IRQn</Find>
+		<Find>TIM6</Find>
+		<Find>TIM3</Find>
+		<Find>TIM2</Find>
+		<Find>TIM7</Find>
+		<Find>TIM9</Find>
+		<Find>i</Find>
+	</FindStrings>
+	<ReplaceStrings/>
+</Debug>

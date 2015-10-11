@@ -74,9 +74,9 @@ public final class R {
         public static final int rbnhsckhz=0x7f060016;
         public static final int rbnhscmhz=0x7f060015;
         public static final int rbnhz=0x7f060006;
-        public static final int rbnscptrgf=0x7f060051;
-        public static final int rbnscptrgn=0x7f060052;
-        public static final int rbnscptrgr=0x7f060050;
+        public static final int rbnscptrgf=0x7f060052;
+        public static final int rbnscptrgn=0x7f060050;
+        public static final int rbnscptrgr=0x7f060051;
         public static final int rbnsine=0x7f060001;
         public static final int rbnsquare=0x7f060003;
         public static final int rbntriangle=0x7f060002;

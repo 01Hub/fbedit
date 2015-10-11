@@ -31,7 +31,7 @@
         android:layout_below="@+id/tvscpsr"
         android:layout_marginLeft="5dp"
         android:layout_marginRight="55dp"
-        android:max="44" />
+        android:max="67" />
 
     <Button
         android:id="@+id/btnscpsrup"
@@ -207,11 +207,18 @@
 		android:orientation="horizontal" >
         
         <RadioButton
-			android:id="@+id/rbnscptrgr"
+			android:id="@+id/rbnscptrgn"
         	android:layout_width="100dp"
         	android:layout_height="wrap_content"
         	android:layout_marginRight="5dp"
-        	android:text="Rising" />
+        	android:text="None" />
+    
+    	<RadioButton
+	        android:id="@+id/rbnscptrgr"
+	        android:layout_width="100dp"
+	        android:layout_height="wrap_content"
+	        android:layout_marginRight="5dp"
+	        android:text="Rising" />
     
     	<RadioButton
 	        android:id="@+id/rbnscptrgf"
@@ -219,13 +226,6 @@
 	        android:layout_height="wrap_content"
 	        android:layout_marginRight="5dp"
 	        android:text="Falling" />
-    
-    	<RadioButton
-	        android:id="@+id/rbnscptrgn"
-	        android:layout_width="100dp"
-	        android:layout_height="wrap_content"
-	        android:layout_marginRight="5dp"
-	        android:text="None" />
     
 	</RadioGroup>
     

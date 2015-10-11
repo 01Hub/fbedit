@@ -45,6 +45,13 @@ mov		tc,eax
 		add		eax,edx
 		shr		eax,2
 		mov		ebx,eax
+
+mov 	edx,STM32_Scp.ADC_Prescaler
+PrintDec edx
+
+mov 	edx,STM32_Scp.ADC_TwoSamplingDelay
+PrintDec edx
+
 ;PrintText "GS"
 		invoke BTGet,offset ADC_Tmp,eax
 ;PrintText "OK"

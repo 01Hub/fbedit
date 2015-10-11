@@ -18,14 +18,18 @@ public class BlueTooth {
 	public static final int CMD_WAVEUPLOAD = 11;
 	public static final int CMD_STARTUP = 99;
 
-    //private static byte[] btwritebuffer = new byte[512];
-    private static byte[] btreadbuffer = new byte[512];
+	public static byte[] btreadbuffer = new byte[64 * 1024];
 
     public static int btmode = CMD_DONE;
+    public static boolean btbusy = false;
     private static double CCal = 1.015e-9;
 
-    private static int BTToInt(int i) {
-    	return (btreadbuffer[i+3] & 0xFF) << 24 | (btreadbuffer[i+2] & 0xFF) << 16 | (btreadbuffer[i+1] & 0xFF) << 8 | (btreadbuffer[+00] & 0xFF);
+    public static short BTToShort(int i) {
+    	return (short)((btreadbuffer[i+1] & 0xFF) << 8 | (btreadbuffer[+0] & 0xFF));
+    }
+
+    public static int BTToInt(int i) {
+    	return (btreadbuffer[i+3] & 0xFF) << 24 | (btreadbuffer[i+2] & 0xFF) << 16 | (btreadbuffer[i+1] & 0xFF) << 8 | (btreadbuffer[i+0] & 0xFF);
     }
 
     public static boolean BTPutByte(Byte b) {
@@ -65,10 +69,12 @@ public class BlueTooth {
 
 	public static boolean BTGetBytes(int n) {
         try {
+        	btbusy = true;
         	int bytes = 0;
         	while (bytes < n) {
                	bytes += DDSWave.mInputStream.read(btreadbuffer,bytes,n-bytes);
         	}
+        	btbusy = false;
         	return true;
         } catch (IOException e) {
         	return false;
@@ -173,9 +179,9 @@ public class BlueTooth {
 			if (BTGetBytes(8)) {
 				f = BTToInt(0);
 				if (f >= 1000000) {
-					return String.format("%.3f",((float)(f / 1000000.0))) + "MHz";
+					return String.format("%.3f",((double)(f / 1000000.0))) + "MHz";
 				} else if (f >= 1000) {
-					return String.format("%.3f",((float)(f / 1000.0))) + "KHz";
+					return String.format("%.3f",((double)(f / 1000.0))) + "KHz";
 				} else {
 					return "" + f + "Hz";
 				}

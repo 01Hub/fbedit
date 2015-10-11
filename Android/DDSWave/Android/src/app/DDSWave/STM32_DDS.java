@@ -15,6 +15,7 @@ public class STM32_DDS {
 	public boolean SendDDS() {
 		boolean err;
 		try {
+			BlueTooth.btbusy = true;
 			err = !BlueTooth.BTPutInt(BlueTooth.CMD_DDSSET);
 			err |= !BlueTooth.BTPutShort(DDS_Cmd);
 			err |= !BlueTooth.BTPutShort(DDS_Wave);
@@ -26,6 +27,7 @@ public class STM32_DDS {
 			err |= !BlueTooth.BTPutInt(SWEEP_Step);
 			err |= !BlueTooth.BTPutInt(SWEEP_Min);
 			err |= !BlueTooth.BTPutInt(SWEEP_Max);
+			BlueTooth.btbusy = false;
 			return !err;
 		} catch (Exception e) {
 			return false;

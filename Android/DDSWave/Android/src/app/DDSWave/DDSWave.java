@@ -21,6 +21,7 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Canvas;
+import android.graphics.Region.Op;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.util.Log;
@@ -53,6 +54,18 @@ public class DDSWave extends Activity {
 	private static Bitmap bmpwave;
 	private static Paint paint = new Paint(Paint.FAKE_BOLD_TEXT_FLAG);
 	private static Canvas canvas;
+	private boolean StartUp = true;
+	private final static int REQUEST_ENABLE_BT = 1;
+    protected BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+    BluetoothDevice mBluetoothDevice = null;
+    protected BluetoothSocket mBluetoothSocket = null;
+	private static String btdeviceaddr = "98:D3:31:B2:0D:40";
+    public static OutputStream mOutputStream = null;
+    public static InputStream mInputStream = null;
+    public static boolean btconnected = false;
+    public static boolean nobt = false;
+	private Timer tmr = new Timer();
+	private int tmrcnt = 0;
 	private int wt;
 	private int ht;
 	public static int mode = 4;
@@ -60,12 +73,11 @@ public class DDSWave extends Activity {
 	private static final int WAVEGRID = 50;
 	private static final int WAVEGRIDX = 10;
 	private static final int WAVEGRIDY = 8;
-
 	private int WAVEGRIDXOFS = 0;
 	private int WAVEGRIDYOFS = 0;
-	
 	private String wavestr[] = new String[9];
 
+	// DDS
 	private static final short DDS_PHASESET = 1;
 	private static final short DDS_WAVESET = 2;
 	private static final short DDS_SWEEPSET = 3;
@@ -73,37 +85,33 @@ public class DDSWave extends Activity {
     private static boolean ddssend = false;
 	private static final int DDSSIZE = 2048;
 	private short ddsWave[] = new short[DDSSIZE];
-	private int ddsfrqhz = 100;
-	private int ddsfrqkhz = 0;
-	private boolean ddsfrqhzsel = true;
+	private int ddsfrqhz = 0;
+	private int ddsfrqkhz = 5;
+	private boolean ddsfrqhzsel = false;
 	private int ddsamp = 100;
 	private int ddsdcofs = 300;
 	private int ddswave=0;
 	private float xd,xs,xofs;
 
-	private static final int SCPSIZE = WAVEGRID * WAVEGRIDX;
-	private short scpWave[] = new short[SCPSIZE];
-	private int scpsr = 44;
-
-	private boolean scpsend = false;
-	private String scpsrstr[] = {"625K",     "657.894K", "694.444K", "735.294K", "781.25K",
-								 "833.333K", "877.192K", "892.857K", "925.925K", "961.538K",
-								 "980.392K", "1.041666M","1.111111M","1.136363M","1.190476M",
-								 "1.25M",    "1.282051M","1.315789M","1.388888M","1.470588M",
-								 "1.515151M","1.5625M",  "1.666667M","1.785714M","1.851851M",
-								 "1.923076M","2.083333M","2.272727M","2.380952M","2.5M",
-								 "2.631579M","2.777778M","2.941176M","3.125M",   "3.333333M",
-								 "3.571429M","3.846154M","4.166667M","4.545455M","5.0M",
-								 "5.555556M","6.25M",    "7.142857M","8.333333M","10.0M"};
+	// Scope
+	public static final int SCPXSIZE = (WAVEGRID * WAVEGRIDX);
+	public static final int SCPYSIZE = (WAVEGRID * WAVEGRIDY);
+    private static STM32_SCP scp = new STM32_SCP();
+    public static short scpWave[] = new short[SCPXSIZE];
+	private int scpsr = 67;
 	private int scptd = 15;
 	private String scptdstr[] = {"100ns","200ns","500ns","1us","5us","10us","50us","100us","200us","500us","1ms","2ms","5ms","10ms","20ms","50ms","100ms","200ms","500ms"};
 	private int scptdint[] = {100,200,500,1000,2000,5000,10000,20000,50000,100000,200000,500000,1000000,5000000,10000000,20000000,50000000,100000000,200000000,500000000};
 	private int scpvd = 8;
-	private String scpvdstr[] = {"1mV","2mV","5mV","10mV","20mV","50mV","100mV","200mV","500mV"};
-	private int scpvp = 150;
+	private int scpvp = (150 + 13);
 	private int scptl = 150;
-	private int scptr = 0;
+	private int scptr = 1;
+	private String scpfrq = "";
+	private boolean scpsample = false;
+	private boolean scpsampledone = false;
+	private boolean scphold = false;
 
+	// LGA
 	public static final int LGASIZE = 32 * 1024;
 	private static final int LGAWIDTH = 10;
 	private int lgasr  = 0;
@@ -114,26 +122,13 @@ public class DDSWave extends Activity {
 	private byte lgamask = (byte)0x00;
     private static STM32_LGA lga = new STM32_LGA();
 
-	private static boolean hscsend = false;
+    // HSC
+    private static boolean hscsend = false;
 	private int hscset = 2;
 	private int hscfrq = 1000;
 	private int hscarr = 1;
 	private int hscclk = 49999;
 	private int hscres;
-
-	private boolean StartUp = true;
-
-	private final static int REQUEST_ENABLE_BT = 1;
-    protected BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-    BluetoothDevice mBluetoothDevice = null;
-    protected BluetoothSocket mBluetoothSocket = null;
-	private static String btdeviceaddr = "98:D3:31:B2:0D:40";
-    public static OutputStream mOutputStream = null;
-    public static InputStream mInputStream = null;
-    public static boolean btconnected = false;
-    public static boolean nobt = false;
-
-	private Timer tmr = new Timer();
 
 	@Override
 	public void onCreate(Bundle icicle) {
@@ -170,7 +165,7 @@ public class DDSWave extends Activity {
 		ddsSineWave();
 		GenSCPWave();
 		for (i = 0;i<LGASIZE;i++) {
-			lga.LGAData[i] = (byte)(i & 255);
+			BlueTooth.btreadbuffer[i] = (byte)(i & 255);
 		}
 		btnDDS.setOnClickListener(new OnClickListener() {
 			@Override
@@ -258,7 +253,7 @@ public class DDSWave extends Activity {
 			@Override
 			public void onClick(View v) {
 				if (btconnected || nobt) {
-					Log.d("MYTAG", "Setup");
+					//Log.d("MYTAG", "Setup");
 					if (mode == 0) {
 						ShowDDSSetupDialog();
 					} else if (mode == 1) {
@@ -285,15 +280,34 @@ public class DDSWave extends Activity {
 			public void run() {
 				TimerMethod(tvText);
 			}
-		}, 1000, 100);
+		}, 1000, 10);
 
+    	Runnable runnable = new Runnable() {
+	        public void run() {
+	        	while (true) {
+	    			if (nobt == false) {
+	    				if (mode == 1) {
+	    					if (scphold == false && scpsample == false) {
+	    						scpsample = true;
+	    						scpsampledone = false;
+			    				scpfrq = scp.SendSCP();
+	    						scpsampledone = true;
+	    					}
+	    				}
+	    			}
+	        	}
+	        }
+    	};
+    	Thread mythread = new Thread(runnable);
+    	mythread.start();
 	}
 	
     private void TimerMethod(final TextView tvText)
 	{
     	runOnUiThread(new Runnable() {
     	    public void run() {
-				if ((btconnected == true || nobt == true) && BlueTooth.btmode == BlueTooth.CMD_DONE) {
+    			DrawBTStatus();
+				if ((btconnected == true || nobt == true) && BlueTooth.btmode == BlueTooth.CMD_DONE && (tmrcnt & 31) == 0 && BlueTooth.btbusy == false) {
 	    			String s;
 	    			if (nobt == false) {
 		    			switch (mode) {
@@ -307,10 +321,15 @@ public class DDSWave extends Activity {
 		    				break;
 		    			case 1:
 		    				// Scope
-		    				if (scpsend) {
-		    					scpsend = false;
-		    				} else {
-		    					
+		    				if (scphold == false) {
+		    					if (scpsampledone == true) {
+				    				tvText.setText(scpfrq);
+				    				DrawScopeWave();
+		    						scpsample = false;
+		    						scpsampledone = false;
+		    					} else {
+		    						
+		    					}
 		    				}
 		    				break;
 		    			case 2:
@@ -344,6 +363,7 @@ public class DDSWave extends Activity {
 		    			}
 	    			}
 				}
+				tmrcnt++;
     	    }
     	});
 	}
@@ -386,10 +406,24 @@ public class DDSWave extends Activity {
 
 	private void GenSCPWave() {
 		double y;
-		for (int x = 0;x < SCPSIZE;x++) {
-			y=(float)Math.sin((float)(2*Math.PI) * (float)x / (float)SCPSIZE) * 2047.0;
+		for (int x = 0;x < SCPXSIZE;x++) {
+			y=(float)Math.sin((float)(2*Math.PI) * (float)x / (float)SCPYSIZE) * 2047.0;
 			scpWave[x] = (short)(2048 - (int)y);
 		}
+	}
+
+	private void DrawBTStatus() {
+		if (btconnected == true) {
+			if (BlueTooth.btbusy) {
+		        paint.setColor(Color.RED);
+			} else {
+		        paint.setColor(Color.GREEN);
+			}
+		} else {
+	        paint.setColor(Color.GRAY);
+		}
+		canvas.drawCircle(500, 10, 8, paint);
+		mIV.setImageDrawable(new BitmapDrawable(getResources(), bmpwave));
 	}
 
 	private void DrawGrid() {
@@ -397,7 +431,6 @@ public class DDSWave extends Activity {
 		int y=WAVEGRIDYOFS;
 		int i=0;
 		bmpwave.eraseColor(Color.BLUE);
-		canvas = new Canvas(bmpwave);
 		paint.setStrokeWidth(1);
         paint.setColor(Color.DKGRAY);
 		while (i <= WAVEGRIDY) {
@@ -424,8 +457,7 @@ public class DDSWave extends Activity {
 		canvas.drawText(wavestr[6], WAVEGRIDYOFS, y, paint);
 		canvas.drawText(wavestr[7], WAVEGRIDYOFS + 166, y, paint);
 		canvas.drawText(wavestr[8], WAVEGRIDYOFS + 332, y, paint);
-
-		canvas.clipRect(WAVEGRIDXOFS,WAVEGRIDYOFS,WAVEGRID*10+WAVEGRIDXOFS+1,WAVEGRID*8+WAVEGRIDYOFS+1);
+		DrawBTStatus();
 	}
 
 	private void DrawDDSWave() {
@@ -446,6 +478,7 @@ public class DDSWave extends Activity {
 		wavestr[4] = "Vmin: " + (((ddsdcofs - 300) * 10) - ddsamp * 5) + "mV";
 		wavestr[5] = "Vmax: " + (((ddsdcofs - 300) * 10) + ddsamp * 5) + "mV";
 		DrawGrid();
+		canvas.clipRect(WAVEGRIDXOFS,WAVEGRIDYOFS,WAVEGRID * WAVEGRIDX + WAVEGRIDXOFS + 1,WAVEGRID * WAVEGRIDY + WAVEGRIDYOFS + 1, Op.REPLACE);
 		paint.setStrokeWidth(2);
         paint.setColor(Color.YELLOW);
         i = 0;
@@ -463,6 +496,7 @@ public class DDSWave extends Activity {
 			i++;
 		}
 		mIV.setImageDrawable(new BitmapDrawable(getResources(), bmpwave));
+		canvas.clipRect(0,0,wt,ht, Op.REPLACE);
 	}
 
 	private void DrawScopeWave() {
@@ -474,15 +508,22 @@ public class DDSWave extends Activity {
 			wavestr[i] = "";
 		}
 		DrawGrid();
+		canvas.clipRect(WAVEGRIDXOFS,WAVEGRIDYOFS,WAVEGRID * WAVEGRIDX + WAVEGRIDXOFS + 1,WAVEGRID * WAVEGRIDY + WAVEGRIDYOFS + 1, Op.REPLACE);
 		paint.setStrokeWidth(2);
         paint.setColor(Color.YELLOW);
 		xp = 0;
 		i = 0;
-		yp = (((4095 + 2048- scpWave[i]) / 16) * WAVEGRID * 8) / 512;
+		// Invert
+		yp = 4095 - scpWave[i];
+		// Scale to grid
+		yp = (yp * SCPYSIZE) / 4095;
 		i++;
-		while (i < SCPSIZE) {
+		while (i < SCPXSIZE) {
 			x = i;
-			y = (((4095 + 2048 - scpWave[i]) / 16) * WAVEGRID * 8) / 512;
+			// Invert
+			y = 4095 - scpWave[i];
+			// Scale to grid
+			y = (y * SCPYSIZE) / 4095;
 	        canvas.drawLine(xp + WAVEGRIDXOFS, yp + WAVEGRIDYOFS, x + WAVEGRIDXOFS, y + WAVEGRIDYOFS, paint);
 			xp = x;
 			yp = y;
@@ -497,6 +538,7 @@ public class DDSWave extends Activity {
         yp += 150 - scptl;
         canvas.drawLine(WAVEGRIDXOFS, WAVEGRIDYOFS + yp, WAVEGRIDXOFS + WAVEGRID * WAVEGRIDX, WAVEGRIDYOFS + yp, paint);
 		mIV.setImageDrawable(new BitmapDrawable(getResources(), bmpwave));
+		canvas.clipRect(0,0,wt,ht, Op.REPLACE);
 	}
 
 	private void DrawLGAWave() {
@@ -509,6 +551,7 @@ public class DDSWave extends Activity {
 			wavestr[i] = "";
 		}
 		DrawGrid();
+		canvas.clipRect(WAVEGRIDXOFS,WAVEGRIDYOFS,WAVEGRID * WAVEGRIDX + WAVEGRIDXOFS + 1,WAVEGRID * WAVEGRIDY + WAVEGRIDYOFS + 1, Op.REPLACE);
 		paint.setTextSize(15);
 		paint.setColor(Color.WHITE);
 		i = 0;
@@ -518,7 +561,7 @@ public class DDSWave extends Activity {
 			} else {
 		        paint.setColor(Color.WHITE);
 			}
-			canvas.drawText("D" + i, 15, y, paint);
+			canvas.drawText("D" + i, WAVEGRIDXOFS + 2, y, paint);
 			y += WAVEGRID;
 			i++;
 		}
@@ -534,17 +577,17 @@ public class DDSWave extends Activity {
 			}
 			i = (int)xofs / 4;
 			x = WAVEGRIDXOFS;
-			prv = lga.LGAData[i];
+			prv = BlueTooth.btreadbuffer[i];
 			while (i < LGASIZE) {
 				/* Draw L or H */
-				if ((lga.LGAData[i] & bit) == 0) {
+				if ((BlueTooth.btreadbuffer[i] & bit) == 0) {
 					/* Low */
 			        canvas.drawLine(x, y, x + WAVEGRID / LGAWIDTH, y, paint);
 				} else {
 					/* High */
 			        canvas.drawLine(x, y - WAVEGRID / 2, x + WAVEGRID / LGAWIDTH, y - WAVEGRID / 2, paint);
 				}
-				if ((prv & bit) != (lga.LGAData[i] & bit)) {
+				if ((prv & bit) != (BlueTooth.btreadbuffer[i] & bit)) {
 					/* Draw transition */
 			        canvas.drawLine(x, y, x, y - WAVEGRID / 2, paint);
 				}
@@ -552,7 +595,7 @@ public class DDSWave extends Activity {
 				if (x - WAVEGRIDXOFS >= WAVEGRID * WAVEGRIDX) {
 					break;
 				}
-				prv = lga.LGAData[i];
+				prv = BlueTooth.btreadbuffer[i];
 				i++;
 			}
 			bit <<=1;
@@ -560,10 +603,11 @@ public class DDSWave extends Activity {
 			z++;
 		}
 		mIV.setImageDrawable(new BitmapDrawable(getResources(), bmpwave));
+		canvas.clipRect(0,0,wt,ht, Op.REPLACE);
 	}
 
 	private void DrawHSCWave() {
-		int i, lh, xp, yp;
+		int i, xp, yp;
 		int x = WAVEGRIDXOFS;
 		int y = WAVEGRIDYOFS;
 		double dut, per;
@@ -576,6 +620,7 @@ public class DDSWave extends Activity {
 		dut = ((double)((hscarr + 1) >> 1) / ((double)hscarr + 1.0));
 		wavestr[2] = "Dut: " + String.format("%.1f",100.0 * dut) + "%";
 		DrawGrid();
+		canvas.clipRect(WAVEGRIDXOFS,WAVEGRIDYOFS,WAVEGRID * WAVEGRIDX + WAVEGRIDXOFS + 1,WAVEGRID * WAVEGRIDY + WAVEGRIDYOFS + 1, Op.REPLACE);
 		paint.setStrokeWidth(2);
         paint.setColor(Color.YELLOW);
         // Draw l to h
@@ -601,6 +646,7 @@ public class DDSWave extends Activity {
         yp = WAVEGRID * 1;
         canvas.drawLine(xp + WAVEGRIDXOFS, yp + WAVEGRIDYOFS, x + WAVEGRIDXOFS, y + WAVEGRIDYOFS, paint);
 		mIV.setImageDrawable(new BitmapDrawable(getResources(), bmpwave));
+		canvas.clipRect(0,0,wt,ht, Op.REPLACE);
 	}
 
 	@Override
@@ -612,6 +658,7 @@ public class DDSWave extends Activity {
 	        wt = imageView.getWidth();
 	        ht = imageView.getHeight();
 			bmpwave = Bitmap.createBitmap(wt, ht, Bitmap.Config.ARGB_8888);
+			canvas = new Canvas(bmpwave);
 			WAVEGRIDXOFS = (wt - WAVEGRID * WAVEGRIDX) / 2;
 			WAVEGRIDYOFS = (ht - WAVEGRID * WAVEGRIDX) / 2;
 			DrawDDSWave();
@@ -876,7 +923,69 @@ public class DDSWave extends Activity {
 		dialog.show();
     }
 
-    private void ShowSCPSetupDialog() {
+	private void SetSTM32_SCP() {
+		int sr = (int)scp.srset[scpsr];
+		int clkdiv;
+		int delay;
+
+		if (sr < 64) {
+			clkdiv = sr >> 4;
+			delay = sr & 0xF;
+			scp.ADC_TwoSamplingDelay = delay;
+			scp.ADC_TripleMode = 1;
+		} else {
+			sr &=0x1F;
+			clkdiv = sr >> 3;
+			delay = sr & 0x7;
+			scp.ADC_SampleTime = delay;
+			scp.ADC_TripleMode = 0;
+		}
+		scp.ADC_Prescaler = clkdiv;
+		scp.ScopeTrigger = scptr;
+		scp.ScopeTriggerLevel = (int)(13.65 * (double)scptl);
+		scp.ScopeTimeDiv = 15;
+		scp.ScopeVoltDiv = 8;
+		scp.ScopeMag = 0;
+		scp.ScopeVPos = (int)(13.65 * (double)scpvp);
+	}
+
+	private String SampleRateTriple(int psr) {
+		int clkdiv;
+		int delay;
+		int f;
+		clkdiv = psr >> 4;
+		clkdiv++;
+		clkdiv *= 2;
+		delay = psr & 0xF;
+		delay += 5;
+		f = STM32_CLOCK / 2 / clkdiv / delay;
+		String s = "" + f;
+		return s + "Hz";
+	}
+
+	private String SampleRateSingle(int psr) {
+		int clkdiv;
+		int delay;
+		int f;
+		clkdiv = (psr >> 3) & 0x3;
+		clkdiv++;
+		clkdiv *= 2;
+		delay = scp.stset[psr & 0x7] + 12;
+		f = STM32_CLOCK / 2 / clkdiv / delay;
+		String s = "" + f;
+		return s + "Hz";
+	}
+
+	private String SampleRate(int psr) {
+		int sr = (int)scp.srset[psr];
+		if (sr < 64) {
+			return SampleRateTriple(sr);
+		} else {
+			return SampleRateSingle(sr);
+		}
+	}
+
+	private void ShowSCPSetupDialog() {
     	final Context context = this;
 		final Dialog dialog = new Dialog(context);
 		dialog.setContentView(R.layout.dlgscp);
@@ -912,13 +1021,13 @@ public class DDSWave extends Activity {
 		Button btnscptlup = (Button) dialog.findViewById(R.id.btnscptlup);
 
 		dialog.setTitle("SCOPE Setup");
-		tvscpsr.setText("Sample rate: " + scpsrstr[scpsr] + "Hz");
+		tvscpsr.setText("Sample rate: " + SampleRate(scpsr));
 		sbscpsr.setProgress(scpsr);
 
 		tvscptd.setText("Time / Div: " + scptdstr[scptd]);
 		sbscptd.setProgress(scptd);
 
-		tvscpvd.setText("Volt / Div: " + scpvdstr[scpvd]);
+		tvscpvd.setText("Volt / Div: " + scp.scpvdstr[scpvd]);
 		sbscpvd.setProgress(scpvd);
 
 		tvscpvp.setText("V-Pos: " + (scpvp - 150));
@@ -931,13 +1040,13 @@ public class DDSWave extends Activity {
 		RadioButton rbn;
     	final RadioGroup rgtrg = (RadioGroup) dialog.findViewById(R.id.rgtrig);
 		if (scptr == 0) {
-			rbn=(RadioButton) dialog.findViewById(R.id.rbnscptrgr);
+			rbn=(RadioButton) dialog.findViewById(R.id.rbnscptrgn);
 			rbn.setChecked(true);
 		} else if (scptr == 1) {
-			rbn=(RadioButton) dialog.findViewById(R.id.rbnscptrgf);
+			rbn=(RadioButton) dialog.findViewById(R.id.rbnscptrgr);
 			rbn.setChecked(true);
 		} else if (scptr == 2) {
-			rbn=(RadioButton) dialog.findViewById(R.id.rbnscptrgn);
+			rbn=(RadioButton) dialog.findViewById(R.id.rbnscptrgf);
 			rbn.setChecked(true);
 		}
 		/* Sample rate */
@@ -947,14 +1056,16 @@ public class DDSWave extends Activity {
 				if (scpsr > 0) {
 					scpsr--;
 					sbscpsr.setProgress(scpsr);
-					tvscpsr.setText("Sample rate: " + scpsrstr[scpsr] + "Hz");
+					tvscpsr.setText("Sample rate: " + SampleRate(scpsr));
+					SetSTM32_SCP();
 				}
 			}
 		});
 		sbscpsr.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
         	public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
         		scpsr = progress;
-				tvscpsr.setText("Sample rate: " + scpsrstr[scpsr] + "Hz");
+				tvscpsr.setText("Sample rate: " + SampleRate(scpsr));
+				SetSTM32_SCP();
         	}
 
         	public void onStartTrackingTouch(SeekBar seekBar) {
@@ -966,10 +1077,11 @@ public class DDSWave extends Activity {
 		btnscpsrup.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				if (scpsr < 44) {
+				if (scpsr < 67) {
 					scpsr++;
 					sbscpsr.setProgress(scpsr);
-					tvscpsr.setText("Sample rate: " + scpsrstr[scpsr] + "Hz");
+					tvscpsr.setText("Sample rate: " + SampleRate(scpsr));
+					SetSTM32_SCP();
 				}
 			}
 		});
@@ -979,8 +1091,9 @@ public class DDSWave extends Activity {
 			public void onClick(View v) {
 				if (scptd > 0) {
 					scptd--;
-					tvscptd.setText("Time / Div: " + scptdstr[scptd]);
 					sbscptd.setProgress(scptd);
+					tvscptd.setText("Time / Div: " + scptdstr[scptd]);
+					SetSTM32_SCP();
 				}
 			}
 		});
@@ -988,6 +1101,7 @@ public class DDSWave extends Activity {
         	public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
         		scptd = progress;
         		tvscptd.setText("Time / Div: " + scptdstr[scptd]);
+				SetSTM32_SCP();
         	}
 
         	public void onStartTrackingTouch(SeekBar seekBar) {
@@ -1001,8 +1115,9 @@ public class DDSWave extends Activity {
 			public void onClick(View v) {
 				if (scptd < 18) {
 					scptd++;
-					tvscptd.setText("Time / Div: " + scptdstr[scptd]);
 					sbscptd.setProgress(scptd);
+					tvscptd.setText("Time / Div: " + scptdstr[scptd]);
+					SetSTM32_SCP();
 				}
 			}
 		});
@@ -1012,15 +1127,17 @@ public class DDSWave extends Activity {
 			public void onClick(View v) {
 				if (scpvd > 0) {
 					scpvd--;
-					tvscpvd.setText("Volt / Div: " + scpvdstr[scpvd]);
+					tvscpvd.setText("Volt / Div: " + scp.scpvdstr[scpvd]);
 					sbscpvd.setProgress(scpvd);
+					SetSTM32_SCP();
 				}
 			}
 		});
 		sbscpvd.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
         	public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
         		scpvd = progress;
-				tvscpvd.setText("Volt / Div: " + scpvdstr[scpvd]);
+				tvscpvd.setText("Volt / Div: " + scp.scpvdstr[scpvd]);
+				SetSTM32_SCP();
         	}
 
         	public void onStartTrackingTouch(SeekBar seekBar) {
@@ -1034,8 +1151,9 @@ public class DDSWave extends Activity {
 			public void onClick(View v) {
 				if (scpvd < 8) {
 					scpvd++;
-					tvscpvd.setText("Volt / Div: " + scpvdstr[scpvd]);
 					sbscpvd.setProgress(scpvd);
+					tvscpvd.setText("Volt / Div: " + scp.scpvdstr[scpvd]);
+					SetSTM32_SCP();
 				}
 			}
 		});
@@ -1047,6 +1165,7 @@ public class DDSWave extends Activity {
 					scpvp--;
 					tvscpvp.setText("V-Pos: " + (scpvp - 150));
 					sbscpvp.setProgress(scpvp);
+					SetSTM32_SCP();
 				}
 			}
 		});
@@ -1054,6 +1173,7 @@ public class DDSWave extends Activity {
         	public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
         		scpvp = progress;
 				tvscpvp.setText("V-Pos: " + (scpvp - 150));
+				SetSTM32_SCP();
         	}
 
         	public void onStartTrackingTouch(SeekBar seekBar) {
@@ -1067,8 +1187,9 @@ public class DDSWave extends Activity {
 			public void onClick(View v) {
 				if (scpvp < 300) {
 					scpvp++;
-					tvscpvp.setText("V-Pos: " + (scpvp - 150));
 					sbscpvp.setProgress(scpvp);
+					tvscpvp.setText("V-Pos: " + (scpvp - 150));
+					SetSTM32_SCP();
 				}
 			}
 		});
@@ -1078,9 +1199,9 @@ public class DDSWave extends Activity {
 			public void onClick(View v) {
 				if (scptl > 0) {
 					scptl--;
-					tvscptl.setText("Trigger level: " + (scptl - 150));
 					sbscptl.setProgress(scptl);
-					DrawScopeWave();
+					tvscptl.setText("Trigger level: " + (scptl - 150));
+					SetSTM32_SCP();
 				}
 			}
 		});
@@ -1088,7 +1209,7 @@ public class DDSWave extends Activity {
         	public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
         		scptl = progress;
 				tvscptl.setText("Trigger level: " + (scptl - 150));
-				DrawScopeWave();
+				SetSTM32_SCP();
         	}
 
         	public void onStartTrackingTouch(SeekBar seekBar) {
@@ -1102,22 +1223,23 @@ public class DDSWave extends Activity {
 			public void onClick(View v) {
 				if (scptl < 300) {
 					scptl++;
-					tvscptl.setText("Trigger level: " + (scptl - 150));
 					sbscptl.setProgress(scptl);
-					DrawScopeWave();
+					tvscptl.setText("Trigger level: " + (scptl - 150));
+					SetSTM32_SCP();
 				}
 			}
 		});
 		/* Trigger select */
         rgtrg.setOnCheckedChangeListener(new  RadioGroup.OnCheckedChangeListener() {
 	        public void onCheckedChanged(RadioGroup group,int checkedId) {
-	        	if(checkedId == R.id.rbnscptrgr) {
+	        	if(checkedId == R.id.rbnscptrgn) {
 	        		scptr = 0;
-	        	} else if (checkedId == R.id.rbnscptrgf) {
+	        	} else if (checkedId == R.id.rbnscptrgr) {
 	        		scptr = 1;
-	        	} else if (checkedId == R.id.rbnscptrgn) {
+	        	} else if (checkedId == R.id.rbnscptrgf) {
 	        		scptr = 2;
 	        	}
+				SetSTM32_SCP();
 	        }
        	});
         /* Auto */
@@ -1134,6 +1256,7 @@ public class DDSWave extends Activity {
 		btnscphold.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
+				scphold = !scphold;
 			}
 		});
         /* OK */
@@ -1293,7 +1416,7 @@ public class DDSWave extends Activity {
 					int inx = (int)(xofs / 4);
 					inx--;
 					while (inx >= 0) {
-						if ((lga.LGAData[inx] & lgamask) == val){
+						if ((BlueTooth.btreadbuffer[inx] & lgamask) == val){
 							xofs = inx * 4;
 				    		DrawLGAWave();
 							break;
@@ -1315,7 +1438,7 @@ public class DDSWave extends Activity {
 					int inx = (int)(xofs / 4);
 					inx++;
 					while (inx < (lgabuff + 1) * 1024) {
-						if ((lga.LGAData[inx] & lgamask) == val){
+						if ((BlueTooth.btreadbuffer[inx] & lgamask) == val){
 							xofs = inx * 4;
 				    		DrawLGAWave();
 							break;

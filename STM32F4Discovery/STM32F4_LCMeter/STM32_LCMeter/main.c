@@ -73,6 +73,19 @@ typedef struct
 
 typedef struct
 {
+  uint8_t SampleRate;
+  uint8_t PixDiv;
+  uint8_t nDiv;
+  uint8_t Mag;
+  uint8_t SubSampling;
+  uint8_t Trigger;
+  uint16_t TriggerLevel;
+  uint32_t TimeDiv;
+  uint16_t VPos;
+} STM32_SCP2TypeDef;
+
+typedef struct
+{
   uint16_t DDS_Cmd;
   uint16_t DDS_Wave;
   uint32_t DDS__PhaseAdd;
@@ -105,6 +118,7 @@ typedef struct
   STM32_SCPTypeDef STM32_SCP;
   STM32_DDSTypeDef STM32_DDS;
   STM32_LGATypeDef STM32_LGA;
+  STM32_SCP2TypeDef STM32_SCP2;
   uint32_t TickCount;
   uint32_t PreviousCountTIM2;
   uint32_t ThisCountTIM2;
@@ -127,6 +141,7 @@ typedef struct
 #define CMD_DDSSET                              ((uint8_t)9)
 #define CMD_LGASET                              ((uint8_t)10)
 #define CMD_WAVEUPLOAD                          ((uint8_t)11)
+#define CMD_SCP2SET                             ((uint8_t)12)
 
 #define DDS_PHASESET                            ((uint8_t)1)
 #define DDS_WAVESET                             ((uint8_t)2)
@@ -155,10 +170,10 @@ void NVIC_Config(void);
 void GPIO_Config(void);
 void TIM_Config(void);
 void DAC_Config(void);
-void DMA_SingleConfig(void);
+void DMA_SingleConfig(uint32_t SampleSize);
 void ADC_SingleConfig(void);
-void DMA_TripleConfig(void);
-void ADC_TripleConfig(void);
+void DMA_TripleConfig(uint32_t SampleSize);
+void ADC_TripleConfig(uint32_t Prescaler);
 void SPI_Config(void);
 void USART_Config(uint32_t Baud);
 void ScopeSubSampling(void);
@@ -288,14 +303,14 @@ int main(void)
         if (STM32_CMD.STM32_SCP.ADC_TripleMode)
         {
           /* DMA Configuration */
-          DMA_TripleConfig();
+          DMA_TripleConfig(STM32_CMD.STM32_SCP.ADC_SampleSize);
           /* ADC Configuration */
-          ADC_TripleConfig();
+          ADC_TripleConfig(STM32_CMD.STM32_SCP.ADC_Prescaler);
         }
         else
         {
           /* DMA Configuration */
-          DMA_SingleConfig();
+          DMA_SingleConfig(STM32_CMD.STM32_SCP.ADC_SampleSize);
           /* ADC Configuration */
           ADC_SingleConfig();
         }
@@ -318,6 +333,11 @@ int main(void)
         }
         /* Start ADC1 Software Conversion */
         ADC1->CR2 |= (uint32_t)ADC_CR2_SWSTART;
+        i = 0;
+        while (i < 30000)
+        {
+          i++;
+        }
         /* Since BlueTooth is slower than the lowest sampling rate there is no need to wait */
         SendCompressedBuffer((uint32_t *)SCOPE_DATAPTR, STM32_CMD.STM32_SCP.ADC_SampleSize / 4);
         /* Done */
@@ -325,6 +345,42 @@ int main(void)
         ADC1->CR2=0;
         ADC2->CR2=0;
         ADC3->CR2=0;
+        break;
+      case CMD_SCP2SET:
+        USART3_putdata((uint8_t *)&STM32_CMD.STM32_FRQ.Frequency,sizeof(STM32_FRQTypeDef));
+        USART3_getdata((uint8_t *)&STM32_CMD.STM32_SCP2.SampleRate,sizeof(STM32_SCP2TypeDef));
+        /* Scope magnify */
+        i = ((uint32_t)STM32_CMD.STM32_SCP2.Mag & 0x07) << 3;
+        GPIO_SetBits(GPIOE,(i ^ 0x38));
+        GPIO_ResetBits(GPIOE,i);
+        /* Set V-Pos */
+        DAC_SetChannel1Data(DAC_Align_12b_R, STM32_CMD.STM32_SCP2.VPos);
+        /* Set Trigger level */
+        DAC_SetChannel2Data(DAC_Align_12b_R, STM32_CMD.STM32_SCP2.TriggerLevel);
+        if (STM32_CMD.STM32_SCP2.SampleRate < 64)
+        {
+          /* DMA Configuration */
+          DMA_TripleConfig(32768);
+          /* ADC Configuration */
+          ADC_TripleConfig((uint32_t)STM32_CMD.STM32_SCP2.SampleRate >> 4,(uint32_t)STM32_CMD.STM32_SCP2.SampleRate & 0xF);
+        }
+        else
+        {
+          /* DMA Configuration */
+          DMA_SingleConfig(32768);
+          /* ADC Configuration */
+          ADC_SingleConfig(((uint32_t)STM32_CMD.STM32_SCP2.SampleRate >> 3) & 0x3,(uint32_t)STM32_CMD.STM32_SCP2.SampleRate & 0x7);
+        }
+        /* Start ADC1 Software Conversion */
+        ADC1->CR2 |= (uint32_t)ADC_CR2_SWSTART;
+        /* Wait until DMA transfer complete */
+        while (DMA_GetFlagStatus(DMA2_Stream0, DMA_FLAG_TCIF0);
+        /* Done */
+        ADC->CCR=0;
+        ADC1->CR2=0;
+        ADC2->CR2=0;
+        ADC3->CR2=0;
+        SendCompressedBuffer((uint32_t *)SCOPE_DATAPTR, 500 / 4);
         break;
       case CMD_HSCSET:
         GPIO_ResetBits(GPIOD, GPIO_Pin_1 | GPIO_Pin_2 | GPIO_Pin_6 | GPIO_Pin_7);
@@ -812,7 +868,7 @@ void DAC_Config(void)
   * @param  None
   * @retval None
   */
-void DMA_SingleConfig(void)
+void DMA_SingleConfig(uint32_t SampleSize)
 {
   DMA_InitTypeDef DMA_InitStructure;
   DMA_StructInit(&DMA_InitStructure);
@@ -822,7 +878,7 @@ void DMA_SingleConfig(void)
   DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)&ADC1->DR;
   DMA_InitStructure.DMA_Memory0BaseAddr = (uint32_t)SCOPE_DATAPTR;
   DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralToMemory;
-  DMA_InitStructure.DMA_BufferSize = STM32_CMD.STM32_SCP.ADC_SampleSize/2;
+  DMA_InitStructure.DMA_BufferSize = SampleSize/2;
   DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
   DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;
   DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_HalfWord;
@@ -843,7 +899,7 @@ void DMA_SingleConfig(void)
   * @param  None
   * @retval None
   */
-void ADC_SingleConfig(void)
+void ADC_SingleConfig(uint32_t Prescaler, uint32_t SampleTime)
 {
   ADC_CommonInitTypeDef ADC_CommonInitStructure;
   ADC_InitTypeDef ADC_InitStructure;
@@ -852,7 +908,7 @@ void ADC_SingleConfig(void)
 
   /* ADC Common Init **********************************************************/
   ADC_CommonInitStructure.ADC_Mode = ADC_Mode_Independent;
-  ADC_CommonInitStructure.ADC_Prescaler = (uint32_t)STM32_CMD.STM32_SCP.ADC_Prescaler<<16;
+  ADC_CommonInitStructure.ADC_Prescaler = Prescaler<<16;
   ADC_CommonInitStructure.ADC_DMAAccessMode = ADC_DMAAccessMode_Disabled;
   ADC_CommonInitStructure.ADC_TwoSamplingDelay = ADC_TwoSamplingDelay_5Cycles;
   ADC_CommonInit(&ADC_CommonInitStructure);
@@ -868,7 +924,7 @@ void ADC_SingleConfig(void)
   ADC_Init(ADC1, &ADC_InitStructure);
 
   /* ADC1 regular channel11 configuration *************************************/
-  ADC_RegularChannelConfig(ADC1, ADC_Channel_11, 1, STM32_CMD.STM32_SCP.ADC_SampleTime);
+  ADC_RegularChannelConfig(ADC1, ADC_Channel_11, 1, SampleTime);
   /* Enable DMA request after last transfer (Single-ADC mode) */
   ADC_DMARequestAfterLastTransferCmd(ADC1, ENABLE);
   /* Enable ADC1 DMA */
@@ -883,7 +939,7 @@ void ADC_SingleConfig(void)
   * @param  None
   * @retval None
   */
-void DMA_TripleConfig(void)
+void DMA_TripleConfig(uint32_t SampleSize)
 {
   DMA_InitTypeDef DMA_InitStructure;
   DMA_StructInit(&DMA_InitStructure);
@@ -893,7 +949,7 @@ void DMA_TripleConfig(void)
   DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)ADC_CDR_ADDRESS;
   DMA_InitStructure.DMA_Memory0BaseAddr = (uint32_t)SCOPE_DATAPTR;
   DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralToMemory;
-  DMA_InitStructure.DMA_BufferSize = STM32_CMD.STM32_SCP.ADC_SampleSize/4;
+  DMA_InitStructure.DMA_BufferSize = SampleSize/4;
   DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
   DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;
   DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Word;
@@ -914,7 +970,7 @@ void DMA_TripleConfig(void)
   * @param  None
   * @retval None
   */
-void ADC_TripleConfig(void)
+void ADC_TripleConfig(uint32_t Prescaler, uint32_t TwoSamplingDelay)
 {
   ADC_CommonInitTypeDef ADC_CommonInitStructure;
   ADC_InitTypeDef ADC_InitStructure;
@@ -925,7 +981,7 @@ void ADC_TripleConfig(void)
   ADC_CommonInitStructure.ADC_Mode = ADC_TripleMode_Interl;
   ADC_CommonInitStructure.ADC_TwoSamplingDelay = STM32_CMD.STM32_SCP.ADC_TwoSamplingDelay<<8;
   ADC_CommonInitStructure.ADC_DMAAccessMode = ADC_DMAAccessMode_2;  
-  ADC_CommonInitStructure.ADC_Prescaler = (uint32_t)STM32_CMD.STM32_SCP.ADC_Prescaler<<16; 
+  ADC_CommonInitStructure.ADC_Prescaler = (uint32_t)Prescaler<<16; 
   ADC_CommonInit(&ADC_CommonInitStructure);
 
   ADC_InitStructure.ADC_Resolution = ADC_Resolution_12b;
