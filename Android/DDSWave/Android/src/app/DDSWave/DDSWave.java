@@ -924,7 +924,6 @@ public class DDSWave extends Activity {
 	private void SetSTM32_SCP() {
 		byte sr = scp.srset[scpsr];
 
-		scp.SampleRateSet = sr;
 		scp.Mag = 0;
 		scp.SubSampling = 0;
 		scp.Trigger = scptr;
@@ -943,6 +942,8 @@ public class DDSWave extends Activity {
 		delay = psr & 0xF;
 		delay += 5;
 		f = STM32_CLOCK / 2 / clkdiv / delay;
+		scp.SampleRateSet = (byte)psr;
+		scp.Triple = 1;
 		scp.SampleRate = f;
 		String s = "" + f;
 		return s + "Hz";
@@ -957,6 +958,8 @@ public class DDSWave extends Activity {
 		clkdiv *= 2;
 		delay = scp.stset[psr & 0x7] + 12;
 		f = STM32_CLOCK / 2 / clkdiv / delay;
+		scp.SampleRateSet = (byte)psr;
+		scp.Triple = 0;
 		scp.SampleRate = f;
 		String s = "" + f;
 		return s + "Hz";

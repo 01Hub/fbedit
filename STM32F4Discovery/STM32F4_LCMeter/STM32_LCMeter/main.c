@@ -80,9 +80,10 @@ typedef struct
   uint8_t SubSampling;
   uint8_t Trigger;
   uint16_t TriggerLevel;
+  uint16_t VPos;
+  uint16_t Triple;
   uint32_t TimeDiv;
   uint32_t SampleRate;
-  uint16_t VPos;
 } STM32_SCP2TypeDef;
 
 typedef struct
@@ -337,6 +338,7 @@ int main(void) {
         ADC3->CR2=0;
         break;
       case CMD_SCP2SET:
+        STM_EVAL_LEDToggle(LED4);
         USART3_putdata((uint8_t *)&STM32_CMD.STM32_FRQ.Frequency,sizeof(STM32_FRQTypeDef));
         USART3_getdata((uint8_t *)&STM32_CMD.STM32_SCP2.SampleRateSet,sizeof(STM32_SCP2TypeDef));
         /* Scope magnify */
@@ -347,7 +349,7 @@ int main(void) {
         DAC_SetChannel1Data(DAC_Align_12b_R, STM32_CMD.STM32_SCP2.VPos);
         /* Set Trigger level */
         DAC_SetChannel2Data(DAC_Align_12b_R, STM32_CMD.STM32_SCP2.TriggerLevel);
-        if (STM32_CMD.STM32_SCP2.SampleRateSet < 64) {
+        if (STM32_CMD.STM32_SCP2.Triple) {
           /* DMA Configuration */
           DMA_TripleConfig(32768);
           /* ADC Configuration */
@@ -358,16 +360,30 @@ int main(void) {
           /* ADC Configuration */
           ADC_SingleConfig(((uint32_t)STM32_CMD.STM32_SCP2.SampleRateSet >> 3) & 0x3,(uint32_t)STM32_CMD.STM32_SCP2.SampleRateSet & 0x7);
         }
+        if (STM32_CMD.STM32_SCP2.Trigger == 2) {
+          /* Rising edge */
+          TIM5->CCER &= ~0x2;
+        } else {
+          /* Falling edge */
+          TIM5->CCER |= 0x2;
+        }
+        if (STM32_CMD.STM32_SCP2.Trigger) {
+          /* Wait for trigger */
+          scpcnt = TIM5->CNT;
+          scpwait = STM32_CMD.TickCount + 2;
+          while (scpcnt == TIM5->CNT && scpwait != STM32_CMD.TickCount);
+        }
         /* Start ADC1 Software Conversion */
         ADC1->CR2 |= (uint32_t)ADC_CR2_SWSTART;
         /* Wait until DMA transfer complete */
-        while (DMA_GetFlagStatus(DMA2_Stream0, DMA_FLAG_TCIF0));
+        while (DMA_GetFlagStatus(DMA2_Stream0, DMA_FLAG_TCIF0) == RESET);
+        SendCompressedBuffer((uint32_t *)SCOPE_DATAPTR, (uint32_t)STM32_CMD.STM32_SCP2.PixDiv * (uint32_t)STM32_CMD.STM32_SCP2.nDiv * 2 / 4);
         /* Done */
         ADC->CCR=0;
         ADC1->CR2=0;
         ADC2->CR2=0;
         ADC3->CR2=0;
-        SendCompressedBuffer((uint32_t *)SCOPE_DATAPTR, (uint32_t)STM32_CMD.STM32_SCP2.PixDiv * (uint32_t)STM32_CMD.STM32_SCP2.nDiv * 2 / 4);
+        STM_EVAL_LEDToggle(LED4);
         break;
       case CMD_HSCSET:
         GPIO_ResetBits(GPIOD, GPIO_Pin_1 | GPIO_Pin_2 | GPIO_Pin_6 | GPIO_Pin_7);
@@ -939,7 +955,7 @@ void ADC_TripleConfig(uint32_t Prescaler, uint32_t TwoSamplingDelay) {
 
   /* ADC Common configuration *************************************************/
   ADC_CommonInitStructure.ADC_Mode = ADC_TripleMode_Interl;
-  ADC_CommonInitStructure.ADC_TwoSamplingDelay = STM32_CMD.STM32_SCP.ADC_TwoSamplingDelay<<8;
+  ADC_CommonInitStructure.ADC_TwoSamplingDelay = TwoSamplingDelay<<8;
   ADC_CommonInitStructure.ADC_DMAAccessMode = ADC_DMAAccessMode_2;  
   ADC_CommonInitStructure.ADC_Prescaler = (uint32_t)Prescaler<<16; 
   ADC_CommonInit(&ADC_CommonInitStructure);
