@@ -73,7 +73,7 @@ typedef struct
 
 typedef struct
 {
-  uint8_t SampleRate;
+  uint8_t SampleRateSet;
   uint8_t PixDiv;
   uint8_t nDiv;
   uint8_t Mag;
@@ -81,6 +81,7 @@ typedef struct
   uint8_t Trigger;
   uint16_t TriggerLevel;
   uint32_t TimeDiv;
+  uint32_t SampleRate;
   uint16_t VPos;
 } STM32_SCP2TypeDef;
 
@@ -171,9 +172,9 @@ void GPIO_Config(void);
 void TIM_Config(void);
 void DAC_Config(void);
 void DMA_SingleConfig(uint32_t SampleSize);
-void ADC_SingleConfig(void);
+void ADC_SingleConfig(uint32_t Prescaler, uint32_t SampleTime);
 void DMA_TripleConfig(uint32_t SampleSize);
-void ADC_TripleConfig(uint32_t Prescaler);
+void ADC_TripleConfig(uint32_t Prescaler, uint32_t TwoSamplingDelay);
 void SPI_Config(void);
 void USART_Config(uint32_t Baud);
 void ScopeSubSampling(void);
@@ -194,15 +195,13 @@ void SendCompressedBuffer(uint32_t *in,uint16_t len);
   * @param  None
   * @retval None
   */
-int main(void)
-{
+int main(void) {
   __IO uint16_t i;
   __IO uint16_t *ptr;
   __IO uint16_t tmp1;
   __IO uint16_t tmp2;
   uint32_t scpcnt;
   uint32_t scpwait;
-
 
   /* RCC Configuration */
   RCC_Config();
@@ -254,8 +253,7 @@ int main(void)
   // {
   // }
 
-  while (1)
-  {
+  while (1) {
     USART3_getdata((uint8_t *)&STM32_CMD.Cmd,4);
     switch (STM32_CMD.Cmd)
     {
@@ -300,32 +298,25 @@ int main(void)
         DAC_SetChannel1Data(DAC_Align_12b_R, STM32_CMD.STM32_SCP.ScopeVPos);
         /* Set Trigger level */
         DAC_SetChannel2Data(DAC_Align_12b_R, STM32_CMD.STM32_SCP.ScopeTriggerLevel);
-        if (STM32_CMD.STM32_SCP.ADC_TripleMode)
-        {
+        if (STM32_CMD.STM32_SCP.ADC_TripleMode) {
           /* DMA Configuration */
           DMA_TripleConfig(STM32_CMD.STM32_SCP.ADC_SampleSize);
           /* ADC Configuration */
-          ADC_TripleConfig(STM32_CMD.STM32_SCP.ADC_Prescaler);
-        }
-        else
-        {
+          ADC_TripleConfig(STM32_CMD.STM32_SCP.ADC_Prescaler, STM32_CMD.STM32_SCP.ADC_TwoSamplingDelay);
+        } else {
           /* DMA Configuration */
           DMA_SingleConfig(STM32_CMD.STM32_SCP.ADC_SampleSize);
           /* ADC Configuration */
-          ADC_SingleConfig();
+          ADC_SingleConfig(STM32_CMD.STM32_SCP.ADC_Prescaler,STM32_CMD.STM32_SCP.ADC_SampleTime);
         }
-        if (STM32_CMD.STM32_SCP.ScopeTrigger == 2)
-        {
+        if (STM32_CMD.STM32_SCP.ScopeTrigger == 2) {
           /* Rising edge */
           TIM5->CCER &= ~0x2;
-        }
-        else
-        {
+        } else {
           /* Falling edge */
           TIM5->CCER |= 0x2;
         }
-        if (STM32_CMD.STM32_SCP.ScopeTrigger)
-        {
+        if (STM32_CMD.STM32_SCP.ScopeTrigger) {
           /* Wait for trigger */
           scpcnt = TIM5->CNT;
           scpwait = STM32_CMD.TickCount + 2;
@@ -334,8 +325,7 @@ int main(void)
         /* Start ADC1 Software Conversion */
         ADC1->CR2 |= (uint32_t)ADC_CR2_SWSTART;
         i = 0;
-        while (i < 30000)
-        {
+        while (i < 30000) {
           i++;
         }
         /* Since BlueTooth is slower than the lowest sampling rate there is no need to wait */
@@ -348,7 +338,7 @@ int main(void)
         break;
       case CMD_SCP2SET:
         USART3_putdata((uint8_t *)&STM32_CMD.STM32_FRQ.Frequency,sizeof(STM32_FRQTypeDef));
-        USART3_getdata((uint8_t *)&STM32_CMD.STM32_SCP2.SampleRate,sizeof(STM32_SCP2TypeDef));
+        USART3_getdata((uint8_t *)&STM32_CMD.STM32_SCP2.SampleRateSet,sizeof(STM32_SCP2TypeDef));
         /* Scope magnify */
         i = ((uint32_t)STM32_CMD.STM32_SCP2.Mag & 0x07) << 3;
         GPIO_SetBits(GPIOE,(i ^ 0x38));
@@ -357,30 +347,27 @@ int main(void)
         DAC_SetChannel1Data(DAC_Align_12b_R, STM32_CMD.STM32_SCP2.VPos);
         /* Set Trigger level */
         DAC_SetChannel2Data(DAC_Align_12b_R, STM32_CMD.STM32_SCP2.TriggerLevel);
-        if (STM32_CMD.STM32_SCP2.SampleRate < 64)
-        {
+        if (STM32_CMD.STM32_SCP2.SampleRateSet < 64) {
           /* DMA Configuration */
           DMA_TripleConfig(32768);
           /* ADC Configuration */
-          ADC_TripleConfig((uint32_t)STM32_CMD.STM32_SCP2.SampleRate >> 4,(uint32_t)STM32_CMD.STM32_SCP2.SampleRate & 0xF);
-        }
-        else
-        {
+          ADC_TripleConfig((uint32_t)STM32_CMD.STM32_SCP2.SampleRateSet >> 4,(uint32_t)STM32_CMD.STM32_SCP2.SampleRateSet & 0xF);
+        } else {
           /* DMA Configuration */
           DMA_SingleConfig(32768);
           /* ADC Configuration */
-          ADC_SingleConfig(((uint32_t)STM32_CMD.STM32_SCP2.SampleRate >> 3) & 0x3,(uint32_t)STM32_CMD.STM32_SCP2.SampleRate & 0x7);
+          ADC_SingleConfig(((uint32_t)STM32_CMD.STM32_SCP2.SampleRateSet >> 3) & 0x3,(uint32_t)STM32_CMD.STM32_SCP2.SampleRateSet & 0x7);
         }
         /* Start ADC1 Software Conversion */
         ADC1->CR2 |= (uint32_t)ADC_CR2_SWSTART;
         /* Wait until DMA transfer complete */
-        while (DMA_GetFlagStatus(DMA2_Stream0, DMA_FLAG_TCIF0);
+        while (DMA_GetFlagStatus(DMA2_Stream0, DMA_FLAG_TCIF0));
         /* Done */
         ADC->CCR=0;
         ADC1->CR2=0;
         ADC2->CR2=0;
         ADC3->CR2=0;
-        SendCompressedBuffer((uint32_t *)SCOPE_DATAPTR, 500 / 4);
+        SendCompressedBuffer((uint32_t *)SCOPE_DATAPTR, (uint32_t)STM32_CMD.STM32_SCP2.PixDiv * (uint32_t)STM32_CMD.STM32_SCP2.nDiv * 2 / 4);
         break;
       case CMD_HSCSET:
         GPIO_ResetBits(GPIOD, GPIO_Pin_1 | GPIO_Pin_2 | GPIO_Pin_6 | GPIO_Pin_7);
@@ -393,20 +380,16 @@ int main(void)
         break;
       case CMD_DDSSET:
         USART3_getdata((uint8_t *)&STM32_CMD.STM32_DDS.DDS_Cmd,sizeof(STM32_DDSTypeDef));
-        if (STM32_CMD.STM32_DDS.DDS_Cmd == DDS_PHASESET)
-        {
+        if (STM32_CMD.STM32_DDS.DDS_Cmd == DDS_PHASESET) {
           SPISendData(DDS_PHASESET);
           SPISendData32(STM32_CMD.STM32_DDS.DDS__PhaseAdd);
         }
-        else if (STM32_CMD.STM32_DDS.DDS_Cmd == DDS_WAVESET)
-        {
+        else if (STM32_CMD.STM32_DDS.DDS_Cmd == DDS_WAVESET) {
           SPISendData(DDS_WAVESET);
           SPISendData(STM32_CMD.STM32_DDS.DDS_Wave);
           SPISendData(STM32_CMD.STM32_DDS.DDS_Amplitude);
           SPISendData(STM32_CMD.STM32_DDS.DDS_DCOffset);
-        }
-        else if (STM32_CMD.STM32_DDS.DDS_Cmd == DDS_SWEEPSET)
-        {
+        } else if (STM32_CMD.STM32_DDS.DDS_Cmd == DDS_SWEEPSET) {
           SPISendData(DDS_SWEEPSET);
           SPISendData(STM32_CMD.STM32_DDS.SWEEP_Mode);
           SPISendData(STM32_CMD.STM32_DDS.SWEEP_Time);
@@ -442,8 +425,7 @@ int main(void)
         SPISendData(DDS_WAVEUPLOAD);
         ptr = (uint16_t *)WAVE_DATAPTR;
         i = 2048;
-        while (i--)
-        {
+        while (i--) {
           SPISendData(*ptr);
           ptr++;
         }
@@ -458,8 +440,7 @@ int main(void)
   * @param  Pointer to buffer, buffer size
   * @retval None
   */
-void SendCompressedBuffer(uint32_t *in,uint16_t len)
-{
+void SendCompressedBuffer(uint32_t *in,uint16_t len) {
   __IO uint32_t dat32;
   __IO uint8_t dat8;
   while  (len--)
@@ -494,8 +475,7 @@ void SendCompressedBuffer(uint32_t *in,uint16_t len)
   * @param  None
   * @retval None
   */
-uint32_t GetFrequency(void)
-{
+uint32_t GetFrequency(void) {
   uint32_t i;
   i = STM32_CMD.TickCount;
   while (i == STM32_CMD.TickCount);
@@ -507,16 +487,14 @@ uint32_t GetFrequency(void)
   * @param  None
   * @retval None
   */
-void LCM_Calibrate(void)
-{
+void LCM_Calibrate(void) {
   uint32_t i;
   GPIO_ResetBits(GPIOD, GPIO_Pin_0 | GPIO_Pin_1 | GPIO_Pin_2 | GPIO_Pin_6 | GPIO_Pin_7);
   STM32_CMD.STM32_LCM.FrequencyCal0 = 0;
   STM32_CMD.STM32_LCM.FrequencyCal1 = 0;
   i = GetFrequency();
   i = 0;
-  while (i < 4)
-  {
+  while (i < 4) {
     STM32_CMD.STM32_LCM.FrequencyCal0 += GetFrequency();
     i++;
   }
@@ -524,8 +502,7 @@ void LCM_Calibrate(void)
   GPIO_SetBits(GPIOD, GPIO_Pin_7);
   i = GetFrequency();
   i = 0;
-  while (i < 4)
-  {
+  while (i < 4) {
     STM32_CMD.STM32_LCM.FrequencyCal1 += GetFrequency();
     i++;
   }
@@ -538,8 +515,7 @@ void LCM_Calibrate(void)
   * @param  tx
   * @retval None
   */
-void SPISendData32(uint32_t tx)
-{
+void SPISendData32(uint32_t tx) {
   SPISendData(tx);
   SPISendData(tx >> 16);
 }
@@ -549,8 +525,7 @@ void SPISendData32(uint32_t tx)
   * @param  tx
   * @retval None
   */
-void SPISendData(uint16_t tx)
-{
+void SPISendData(uint16_t tx) {
 	SPI2->DR = tx;                            // write data to be transmitted to the SPI data register
 	while (!(SPI2->SR & SPI_I2S_FLAG_TXE));   // wait until transmit complete
   while (SPI2->SR & SPI_I2S_FLAG_BSY);      // wait until SPI is not busy anymore
@@ -561,11 +536,9 @@ void SPISendData(uint16_t tx)
   * @param  pointer to array, lenght
   * @retval None
   */
-void USART3_putdata(uint8_t *dat,uint16_t len)
-{
+void USART3_putdata(uint8_t *dat,uint16_t len) {
   /* Data are transmitted one byte at a time. */
-  while (len--)
-  {
+  while (len--) {
     /* Wait until transmit register empty */
     while((USART3->SR & USART_FLAG_TXE) == 0);          
     /* Transmit Data */
@@ -579,12 +552,10 @@ void USART3_putdata(uint8_t *dat,uint16_t len)
   * @param  Zero terminated string
   * @retval None
   */
-void USART3_puts(char *str)
-{
+void USART3_puts(char *str) {
   char c;
   /* Characters are transmitted one at a time. */
-  while ((c = *str++))
-  {
+  while ((c = *str++)) {
     /* Wait until transmit register empty */
     while((USART3->SR & USART_FLAG_TXE) == 0);
     /* Transmit Data */
@@ -597,11 +568,9 @@ void USART3_puts(char *str)
   * @param  pointer to array, lenght
   * @retval None
   */
-void USART3_getdata(uint8_t *dat,uint16_t len)
-{
+void USART3_getdata(uint8_t *dat,uint16_t len) {
   /* Data are recieved one byte at a time. */
-  while (len--)
-  {
+  while (len--) {
     /* Wait until receive register not empty */
     while((USART3->SR & USART_FLAG_RXNE) == 0);          
     /* Receive Data */
@@ -616,8 +585,7 @@ void USART3_getdata(uint8_t *dat,uint16_t len)
   * @param  None
   * @retval None
   */
-void RCC_Config(void)
-{
+void RCC_Config(void) {
   /* SPI2, DAC, TIM2, TIM3, TIM4 and TIM5 clock enable */
   RCC_APB1PeriphClockCmd(RCC_APB1Periph_SPI2 | RCC_APB1Periph_DAC | RCC_APB1Periph_TIM2 | RCC_APB1Periph_TIM3 | RCC_APB1Periph_TIM4 | RCC_APB1Periph_TIM5, ENABLE);
   /* DMA2 clock enable */
@@ -643,8 +611,7 @@ void RCC_Config(void)
   * @param  None
   * @retval None
   */
-void NVIC_Config(void)
-{
+void NVIC_Config(void) {
   NVIC_InitTypeDef NVIC_InitStructure;
   /* Enable the TIM3 gloabal Interrupt */
   NVIC_InitStructure.NVIC_IRQChannel = TIM3_IRQn;
@@ -659,8 +626,7 @@ void NVIC_Config(void)
   * @param  None
   * @retval None
   */
-void GPIO_Config(void)
-{
+void GPIO_Config(void) {
   GPIO_InitTypeDef GPIO_InitStructure;
   /* Initialize Leds mounted on STM32F4-Discovery board */
   STM_EVAL_LEDInit(LED3);
@@ -769,8 +735,7 @@ void GPIO_Config(void)
   * @param  None
   * @retval None
   */
-void TIM_Config(void)
-{
+void TIM_Config(void) {
   TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructure;
   TIM_OCInitTypeDef       TIM_OCInitStructure;
   TIM_TimeBaseStructure.TIM_RepetitionCounter=0;
@@ -837,8 +802,7 @@ void TIM_Config(void)
   * @param  None
   * @retval None
   */
-void DAC_Config(void)
-{
+void DAC_Config(void) {
   DAC_InitTypeDef  DAC_InitStructure;
 
   /* DAC channel1 Configuration */
@@ -868,8 +832,7 @@ void DAC_Config(void)
   * @param  None
   * @retval None
   */
-void DMA_SingleConfig(uint32_t SampleSize)
-{
+void DMA_SingleConfig(uint32_t SampleSize) {
   DMA_InitTypeDef DMA_InitStructure;
   DMA_StructInit(&DMA_InitStructure);
   DMA_DeInit(DMA2_Stream0);
@@ -899,8 +862,7 @@ void DMA_SingleConfig(uint32_t SampleSize)
   * @param  None
   * @retval None
   */
-void ADC_SingleConfig(uint32_t Prescaler, uint32_t SampleTime)
-{
+void ADC_SingleConfig(uint32_t Prescaler, uint32_t SampleTime) {
   ADC_CommonInitTypeDef ADC_CommonInitStructure;
   ADC_InitTypeDef ADC_InitStructure;
   ADC_StructInit(&ADC_InitStructure);
@@ -939,8 +901,7 @@ void ADC_SingleConfig(uint32_t Prescaler, uint32_t SampleTime)
   * @param  None
   * @retval None
   */
-void DMA_TripleConfig(uint32_t SampleSize)
-{
+void DMA_TripleConfig(uint32_t SampleSize) {
   DMA_InitTypeDef DMA_InitStructure;
   DMA_StructInit(&DMA_InitStructure);
   DMA_DeInit(DMA2_Stream0);
@@ -970,8 +931,7 @@ void DMA_TripleConfig(uint32_t SampleSize)
   * @param  None
   * @retval None
   */
-void ADC_TripleConfig(uint32_t Prescaler, uint32_t TwoSamplingDelay)
-{
+void ADC_TripleConfig(uint32_t Prescaler, uint32_t TwoSamplingDelay) {
   ADC_CommonInitTypeDef ADC_CommonInitStructure;
   ADC_InitTypeDef ADC_InitStructure;
   ADC_StructInit(&ADC_InitStructure);
@@ -1019,8 +979,7 @@ void ADC_TripleConfig(uint32_t Prescaler, uint32_t TwoSamplingDelay)
   * @param  None
   * @retval None
   */
-void DMA_LGAConfig(void)
-{
+void DMA_LGAConfig(void) {
   DMA_InitTypeDef DMA_InitStructure;
 
   DMA_DeInit(DMA2_Stream1);
@@ -1049,8 +1008,7 @@ void DMA_LGAConfig(void)
   * @param  None
   * @retval None
   */
-void SPI_Config(void)
-{
+void SPI_Config(void) {
   SPI_InitTypeDef SPI_InitStructure;
 
 	/* Set up SPI2 port */
@@ -1072,8 +1030,7 @@ void SPI_Config(void)
   * @param  Baud
   * @retval None
   */
-void USART_Config(uint32_t Baud)
-{
+void USART_Config(uint32_t Baud) {
   USART_InitTypeDef USART_InitStructure;
  
   USART_StructInit(&USART_InitStructure);
@@ -1097,8 +1054,7 @@ void USART_Config(uint32_t Baud)
   * @param  None
   * @retval None
   */
-void TIM3_IRQHandler(void)
-{
+void TIM3_IRQHandler(void) {
   STM32_CMD.ThisCountTIM2 = TIM2->CNT;
   STM32_CMD.ThisCountTIM5 = TIM5->CNT;
   STM32_CMD.STM32_FRQ.Frequency = STM32_CMD.ThisCountTIM2 - STM32_CMD.PreviousCountTIM2;

@@ -70,8 +70,8 @@ public class DDSWave extends Activity {
 	private int ht;
 	public static int mode = 4;
 	public static int tmpmode;
-	private static final int WAVEGRID = 50;
-	private static final int WAVEGRIDX = 10;
+	public static final int WAVEGRID = 50;
+	public static final int WAVEGRIDX = 10;
 	private static final int WAVEGRIDY = 8;
 	private int WAVEGRIDXOFS = 0;
 	private int WAVEGRIDYOFS = 0;
@@ -99,13 +99,11 @@ public class DDSWave extends Activity {
     private static STM32_SCP scp = new STM32_SCP();
     public static short scpWave[] = new short[SCPXSIZE];
 	private int scpsr = 67;
-	private int scptd = 15;
-	private String scptdstr[] = {"100ns","200ns","500ns","1us","5us","10us","50us","100us","200us","500us","1ms","2ms","5ms","10ms","20ms","50ms","100ms","200ms","500ms"};
-	private int scptdint[] = {100,200,500,1000,2000,5000,10000,20000,50000,100000,200000,500000,1000000,5000000,10000000,20000000,50000000,100000000,200000000,500000000};
+	private int scptd = 10;
 	private int scpvd = 8;
 	private int scpvp = (150 + 13);
 	private int scptl = 150;
-	private int scptr = 1;
+	private byte scptr = 1;
 	private String scpfrq = "";
 	private boolean scpsample = false;
 	private boolean scpsampledone = false;
@@ -924,29 +922,15 @@ public class DDSWave extends Activity {
     }
 
 	private void SetSTM32_SCP() {
-		int sr = (int)scp.srset[scpsr];
-		int clkdiv;
-		int delay;
+		byte sr = scp.srset[scpsr];
 
-		if (sr < 64) {
-			clkdiv = sr >> 4;
-			delay = sr & 0xF;
-			scp.ADC_TwoSamplingDelay = delay;
-			scp.ADC_TripleMode = 1;
-		} else {
-			sr &=0x1F;
-			clkdiv = sr >> 3;
-			delay = sr & 0x7;
-			scp.ADC_SampleTime = delay;
-			scp.ADC_TripleMode = 0;
-		}
-		scp.ADC_Prescaler = clkdiv;
-		scp.ScopeTrigger = scptr;
-		scp.ScopeTriggerLevel = (int)(13.65 * (double)scptl);
-		scp.ScopeTimeDiv = 15;
-		scp.ScopeVoltDiv = 8;
-		scp.ScopeMag = 0;
-		scp.ScopeVPos = (int)(13.65 * (double)scpvp);
+		scp.SampleRateSet = sr;
+		scp.Mag = 0;
+		scp.SubSampling = 0;
+		scp.Trigger = scptr;
+		scp.TriggerLevel = (short)(13.65 * (double)scptl);
+		scp.TimeDiv = scp.scptdint[scptd];
+		scp.VPos = (short)(13.65 * (double)scpvp);
 	}
 
 	private String SampleRateTriple(int psr) {
@@ -959,6 +943,7 @@ public class DDSWave extends Activity {
 		delay = psr & 0xF;
 		delay += 5;
 		f = STM32_CLOCK / 2 / clkdiv / delay;
+		scp.SampleRate = f;
 		String s = "" + f;
 		return s + "Hz";
 	}
@@ -972,6 +957,7 @@ public class DDSWave extends Activity {
 		clkdiv *= 2;
 		delay = scp.stset[psr & 0x7] + 12;
 		f = STM32_CLOCK / 2 / clkdiv / delay;
+		scp.SampleRate = f;
 		String s = "" + f;
 		return s + "Hz";
 	}
@@ -1024,7 +1010,7 @@ public class DDSWave extends Activity {
 		tvscpsr.setText("Sample rate: " + SampleRate(scpsr));
 		sbscpsr.setProgress(scpsr);
 
-		tvscptd.setText("Time / Div: " + scptdstr[scptd]);
+		tvscptd.setText("Time / Div: " + scp.scptdstr[scptd]);
 		sbscptd.setProgress(scptd);
 
 		tvscpvd.setText("Volt / Div: " + scp.scpvdstr[scpvd]);
@@ -1092,7 +1078,7 @@ public class DDSWave extends Activity {
 				if (scptd > 0) {
 					scptd--;
 					sbscptd.setProgress(scptd);
-					tvscptd.setText("Time / Div: " + scptdstr[scptd]);
+					tvscptd.setText("Time / Div: " + scp.scptdstr[scptd]);
 					SetSTM32_SCP();
 				}
 			}
@@ -1100,7 +1086,7 @@ public class DDSWave extends Activity {
 		sbscptd.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
         	public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
         		scptd = progress;
-        		tvscptd.setText("Time / Div: " + scptdstr[scptd]);
+        		tvscptd.setText("Time / Div: " + scp.scptdstr[scptd]);
 				SetSTM32_SCP();
         	}
 
@@ -1113,10 +1099,10 @@ public class DDSWave extends Activity {
 		btnscptdup.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				if (scptd < 18) {
+				if (scptd < 20) {
 					scptd++;
 					sbscptd.setProgress(scptd);
-					tvscptd.setText("Time / Div: " + scptdstr[scptd]);
+					tvscptd.setText("Time / Div: " + scp.scptdstr[scptd]);
 					SetSTM32_SCP();
 				}
 			}

@@ -70,7 +70,7 @@
         android:layout_below="@+id/tvscptd"
         android:layout_marginLeft="5dp"
         android:layout_marginRight="55dp"
-        android:max="18" />
+        android:max="20" />
 
     <Button
         android:id="@+id/btnscptdup"

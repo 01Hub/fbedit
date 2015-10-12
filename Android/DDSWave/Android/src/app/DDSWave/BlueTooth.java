@@ -16,6 +16,7 @@ public class BlueTooth {
 	public static final int CMD_DDSSET = 9;
 	public static final int CMD_LGASET = 10;
 	public static final int CMD_WAVEUPLOAD = 11;
+	public static final int CMD_SCP2SET = 12;
 	public static final int CMD_STARTUP = 99;
 
 	public static byte[] btreadbuffer = new byte[64 * 1024];
