@@ -194,7 +194,8 @@ void SendCompressedBuffer(uint32_t *in,uint16_t len);
 uint32_t GetScopeSampleSize(void);
 void ScopeResetWave(uint32_t *ptr,uint32_t len);
 void ScopeSetWaveData(uint32_t *ptrwave,uint32_t *ptrcount,uint16_t *ptrsample);
-void LineTo(int16_t X1, int16_t Y1, int16_t X2, int16_t Y2, uint16_t *ptrsample);
+void ScopeLineTo(int16_t X1, int16_t Y1, int16_t X2, int16_t Y2, uint16_t *ptrsample);
+uint32_t ScopeFindTrigger(uint16_t *ptrsample);
 /* Private functions ---------------------------------------------------------*/
 
 /**
@@ -209,6 +210,7 @@ int main(void) {
   __IO uint16_t tmp2;
   uint32_t scpcnt;
   uint32_t scpwait;
+  uint32_t scptpos;
   /* RCC Configuration */
   RCC_Config();
   /* GPIO Configuration */
@@ -393,8 +395,12 @@ int main(void) {
         ADC2->CR2=0;
         ADC3->CR2=0;
         ScopeSetWaveData((uint32_t *)SCOPE_WAVEPTR, (uint32_t *)SCOPE_COUNTPTR, (uint16_t *)SCOPE_DATAPTR);
+        scptpos =  0;
+        if (STM32_CMD.STM32_SCP2.Trigger) {
+          scptpos = ScopeFindTrigger((uint16_t *)SCOPE_DATAPTR);
+        }
         /* Send wave data */
-        SendCompressedBuffer((uint32_t *)SCOPE_DATAPTR, (uint32_t)STM32_CMD.STM32_SCP2.PixDiv * (uint32_t)STM32_CMD.STM32_SCP2.nDiv * 2 / 4);
+        SendCompressedBuffer((uint32_t *)(SCOPE_DATAPTR + scptpos * 2), (uint32_t)STM32_CMD.STM32_SCP2.PixDiv * (uint32_t)STM32_CMD.STM32_SCP2.nDiv * 2 / 4);
         STM_EVAL_LEDToggle(LED4);
         break;
       case CMD_HSCSET:
@@ -475,15 +481,13 @@ uint32_t GetScopeSampleSize(void) {
   uint32_t Samples;
   /* Get sample time in ns */
   SampleTime = 1000000000 / STM32_CMD.STM32_SCP2.SampleRate;
-  WaveTime = STM32_CMD.STM32_SCP2.TimeDiv * (uint32_t)STM32_CMD.STM32_SCP2.nDiv * 2;
-  Samples = WaveTime / SampleTime;
+  WaveTime = STM32_CMD.STM32_SCP2.TimeDiv * (uint32_t)STM32_CMD.STM32_SCP2.nDiv;
+  Samples = WaveTime * 4 / SampleTime;
   /* Make it 32bit aligned */
   Samples = ((Samples >> 2) + 1) << 2;
-  /* Check min / max */
+  /* Check max */
   if (Samples > SCOPE_MAXSAMPLESIZE) {
     Samples = SCOPE_MAXSAMPLESIZE;
-  } else if (Samples < 4) {
-    Samples = 4;
   }
   return Samples;
 }
@@ -495,9 +499,11 @@ uint32_t GetScopeSampleSize(void) {
   */
 
 void ScopeResetWave(uint32_t *ptr,uint32_t len) {
-  while  (len--) {
-    *ptr = 0;
-    ptr++;
+  uint32_t i;
+  i = 0;
+  while  (i < len) {
+    ptr[i] = 0;
+    i++;
   }
 }
 
@@ -515,11 +521,11 @@ void ScopeSetWaveData(uint32_t *ptrwave, uint32_t *ptrcount, uint16_t *ptrsample
   /* Get time between two pixels */
   pt = (double)STM32_CMD.STM32_SCP2.TimeDiv / (double)STM32_CMD.STM32_SCP2.PixDiv;
   /* Get the number of pixels to move for each sample */
-  xm = pt / st;
+  xm = st / pt;
   i = 0;
   x = 0;
   xp = 0;
-  while (i < SampleSize && x < 2048) {
+  while (i < SampleSize / 2 && x < 2048) {
     ptrwave[x] += (uint32_t)ptrsample[i];
     ptrcount[x]++;
     i++;
@@ -534,6 +540,12 @@ void ScopeSetWaveData(uint32_t *ptrwave, uint32_t *ptrcount, uint16_t *ptrsample
     }
     x++;
   }
+  /* Reset sample data */
+  x = 0;
+  while (x < 2048) {
+    ptrsample[x] = 0xFFFF;
+    x++;
+  }
   /* Draw the wave */
   x = 0;
   xto = 0;
@@ -542,10 +554,10 @@ void ScopeSetWaveData(uint32_t *ptrwave, uint32_t *ptrcount, uint16_t *ptrsample
   while (xto < 2048) {
     if (ptrcount[xto]) {
       yto = ptrwave[xto];
-      LineTo((int16_t)x, (int16_t)y, (int16_t)xto, (int16_t)yto, ptrsample);
+      ScopeLineTo((int16_t)x, (int16_t)y, (int16_t)xto, (int16_t)yto, ptrsample);
+      x = xto;
+      y = yto;
     }
-    x = xto;
-    y = yto;
     xto++;
   }
 }
@@ -555,7 +567,7 @@ void ScopeSetWaveData(uint32_t *ptrwave, uint32_t *ptrcount, uint16_t *ptrsample
   * @param  x1, y1, x2, y2, c
   * @retval None
   */
-void LineTo(int16_t X1, int16_t Y1, int16_t X2, int16_t Y2, uint16_t *ptrsample) {
+void ScopeLineTo(int16_t X1, int16_t Y1, int16_t X2, int16_t Y2, uint16_t *ptrsample) {
   int16_t CurrentX, CurrentY, Xinc, Yinc, 
           Dx, Dy, TwoDx, TwoDy, 
           TwoDxAccumulatedError, TwoDyAccumulatedError;
@@ -613,6 +625,23 @@ void LineTo(int16_t X1, int16_t Y1, int16_t X2, int16_t Y2, uint16_t *ptrsample)
       } while (CurrentY != Y2);
     }
   }
+}
+
+/**
+  * @brief  Find reigger position.
+  * @param  None
+  * @retval Trigger position
+  */
+uint32_t ScopeFindTrigger(uint16_t *ptrsample) {
+  __IO uint32_t tpos;
+  tpos = 250;
+  while (tpos < 2048 - 250) {
+    if (ptrsample[tpos] == STM32_CMD.STM32_SCP2.TriggerLevel) {
+      return tpos - 250;
+    }
+    tpos++;
+  }
+  return 0;
 }
 
 /**
