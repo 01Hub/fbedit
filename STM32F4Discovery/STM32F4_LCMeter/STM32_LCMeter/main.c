@@ -158,13 +158,16 @@ typedef struct
 #define ADC_CDR_ADDRESS                         ((uint32_t)0x40012308)
 #define PE_IDR_Address                          ((uint32_t)0x40021011)
 #define SCOPE_DATAPTR                           ((uint32_t)0x20008000)
-#define SCOPE_DATASIZE                          ((uint32_t)0x10000)
+#define SCOPE_WAVEPTR                           ((uint32_t)0x20018000)
+#define SCOPE_COUNTPTR                           ((uint32_t)0x2001A000)
+#define SCOPE_MAXSAMPLESIZE                     ((uint32_t)0xFFFC)
 #define LGA_DATAPTR                             ((uint32_t)0x20008000)
 #define WAVE_DATAPTR                            ((uint32_t)0x20008000)
 #define STM32_CLOCK                             ((uint32_t)200000000)
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 __IO STM32_CMDTypeDef STM32_CMD;                // 0x20000014
+__IO uint32_t SampleSize;
 
 /* Private function prototypes -----------------------------------------------*/
 void RCC_Config(void);
@@ -188,7 +191,10 @@ void USART3_puts(char *str);
 void USART3_getdata(uint8_t *dat,uint16_t len);
 void DMA_LGAConfig(void);
 void SendCompressedBuffer(uint32_t *in,uint16_t len);
-
+uint32_t GetScopeSampleSize(void);
+void ScopeResetWave(uint32_t *ptr,uint32_t len);
+void ScopeSetWaveData(uint32_t *ptrwave,uint32_t *ptrcount,uint16_t *ptrsample);
+void LineTo(int16_t X1, int16_t Y1, int16_t X2, int16_t Y2, uint16_t *ptrsample);
 /* Private functions ---------------------------------------------------------*/
 
 /**
@@ -203,7 +209,6 @@ int main(void) {
   __IO uint16_t tmp2;
   uint32_t scpcnt;
   uint32_t scpwait;
-
   /* RCC Configuration */
   RCC_Config();
   /* GPIO Configuration */
@@ -349,14 +354,16 @@ int main(void) {
         DAC_SetChannel1Data(DAC_Align_12b_R, STM32_CMD.STM32_SCP2.VPos);
         /* Set Trigger level */
         DAC_SetChannel2Data(DAC_Align_12b_R, STM32_CMD.STM32_SCP2.TriggerLevel);
+        /* Get number of samples needed */
+        SampleSize = GetScopeSampleSize();
         if (STM32_CMD.STM32_SCP2.Triple) {
           /* DMA Configuration */
-          DMA_TripleConfig(32768);
+          DMA_TripleConfig(SampleSize);
           /* ADC Configuration */
           ADC_TripleConfig((uint32_t)STM32_CMD.STM32_SCP2.SampleRateSet >> 4,(uint32_t)STM32_CMD.STM32_SCP2.SampleRateSet & 0xF);
         } else {
           /* DMA Configuration */
-          DMA_SingleConfig(32768);
+          DMA_SingleConfig(SampleSize);
           /* ADC Configuration */
           ADC_SingleConfig(((uint32_t)STM32_CMD.STM32_SCP2.SampleRateSet >> 3) & 0x3,(uint32_t)STM32_CMD.STM32_SCP2.SampleRateSet & 0x7);
         }
@@ -375,14 +382,19 @@ int main(void) {
         }
         /* Start ADC1 Software Conversion */
         ADC1->CR2 |= (uint32_t)ADC_CR2_SWSTART;
+        /* Reset wavedata */
+        ScopeResetWave((uint32_t *)SCOPE_WAVEPTR,2048);
+        ScopeResetWave((uint32_t *)SCOPE_COUNTPTR,2048);
         /* Wait until DMA transfer complete */
         while (DMA_GetFlagStatus(DMA2_Stream0, DMA_FLAG_TCIF0) == RESET);
-        SendCompressedBuffer((uint32_t *)SCOPE_DATAPTR, (uint32_t)STM32_CMD.STM32_SCP2.PixDiv * (uint32_t)STM32_CMD.STM32_SCP2.nDiv * 2 / 4);
-        /* Done */
+        /* Done sampling */
         ADC->CCR=0;
         ADC1->CR2=0;
         ADC2->CR2=0;
         ADC3->CR2=0;
+        ScopeSetWaveData((uint32_t *)SCOPE_WAVEPTR, (uint32_t *)SCOPE_COUNTPTR, (uint16_t *)SCOPE_DATAPTR);
+        /* Send wave data */
+        SendCompressedBuffer((uint32_t *)SCOPE_DATAPTR, (uint32_t)STM32_CMD.STM32_SCP2.PixDiv * (uint32_t)STM32_CMD.STM32_SCP2.nDiv * 2 / 4);
         STM_EVAL_LEDToggle(LED4);
         break;
       case CMD_HSCSET:
@@ -452,6 +464,158 @@ int main(void) {
 }
 
 /**
+  * @brief  Get scope sample size in bytes.
+  * @param  None
+  * @retval Sample size
+  */
+
+uint32_t GetScopeSampleSize(void) {
+  uint32_t SampleTime;
+  uint32_t WaveTime;
+  uint32_t Samples;
+  /* Get sample time in ns */
+  SampleTime = 1000000000 / STM32_CMD.STM32_SCP2.SampleRate;
+  WaveTime = STM32_CMD.STM32_SCP2.TimeDiv * (uint32_t)STM32_CMD.STM32_SCP2.nDiv * 2;
+  Samples = WaveTime / SampleTime;
+  /* Make it 32bit aligned */
+  Samples = ((Samples >> 2) + 1) << 2;
+  /* Check min / max */
+  if (Samples > SCOPE_MAXSAMPLESIZE) {
+    Samples = SCOPE_MAXSAMPLESIZE;
+  } else if (Samples < 4) {
+    Samples = 4;
+  }
+  return Samples;
+}
+
+/**
+  * @brief  Reset scope wave data.
+  * @param  None
+  * @retval None
+  */
+
+void ScopeResetWave(uint32_t *ptr,uint32_t len) {
+  while  (len--) {
+    *ptr = 0;
+    ptr++;
+  }
+}
+
+/**
+  * @brief  Calculate scope wave data.
+  * @param  None
+  * @retval None
+  */
+
+void ScopeSetWaveData(uint32_t *ptrwave, uint32_t *ptrcount, uint16_t *ptrsample) {
+  uint32_t i, x, xto, y , yto;
+  double xm, xp, st, pt;
+  /* Get time between two samples */
+  st = (double)1000000000 / (double)STM32_CMD.STM32_SCP2.SampleRate;
+  /* Get time between two pixels */
+  pt = (double)STM32_CMD.STM32_SCP2.TimeDiv / (double)STM32_CMD.STM32_SCP2.PixDiv;
+  /* Get the number of pixels to move for each sample */
+  xm = pt / st;
+  i = 0;
+  x = 0;
+  xp = 0;
+  while (i < SampleSize && x < 2048) {
+    ptrwave[x] += (uint32_t)ptrsample[i];
+    ptrcount[x]++;
+    i++;
+    xp += xm;
+    x = (uint32_t)xp;
+  }
+  /* Average sum of samples */
+  x = 0;
+  while (x < 2048) {
+    if (ptrcount[x] > 1) {
+      ptrwave[x] /= ptrcount[x];
+    }
+    x++;
+  }
+  /* Draw the wave */
+  x = 0;
+  xto = 0;
+  y = ptrwave[x];
+  xto++;
+  while (xto < 2048) {
+    if (ptrcount[xto]) {
+      yto = ptrwave[xto];
+      LineTo((int16_t)x, (int16_t)y, (int16_t)xto, (int16_t)yto, ptrsample);
+    }
+    x = xto;
+    y = yto;
+    xto++;
+  }
+}
+
+/**
+  * @brief  This function draw an imaginary line from x1, y1 to x2,y2.
+  * @param  x1, y1, x2, y2, c
+  * @retval None
+  */
+void LineTo(int16_t X1, int16_t Y1, int16_t X2, int16_t Y2, uint16_t *ptrsample) {
+  int16_t CurrentX, CurrentY, Xinc, Yinc, 
+          Dx, Dy, TwoDx, TwoDy, 
+          TwoDxAccumulatedError, TwoDyAccumulatedError;
+
+  Dx = (X2-X1);
+  Dy = (Y2-Y1);
+
+  TwoDx = Dx + Dx;
+  TwoDy = Dy + Dy;
+
+  CurrentX = X1;
+  CurrentY = Y1;
+
+  Xinc = 1;
+  Yinc = 1;
+
+  if(Dx < 0) {
+    Xinc = -1;
+    Dx = -Dx;
+    TwoDx = -TwoDx;
+  }
+
+  if (Dy < 0) {
+    Yinc = -1;
+    Dy = -Dy;
+    TwoDy = -TwoDy;
+  }
+  //SetPixel(X1,Y1, c);
+  ptrsample[X1] = Y1;
+
+  if ((Dx != 0) || (Dy != 0)) {
+    if (Dy <= Dx) { 
+      TwoDxAccumulatedError = 0;
+      do {
+        CurrentX += Xinc;
+        TwoDxAccumulatedError += TwoDy;
+        if(TwoDxAccumulatedError > Dx) {
+          CurrentY += Yinc;
+          TwoDxAccumulatedError -= TwoDx;
+        }
+        //SetPixel(CurrentX,CurrentY, c);
+        ptrsample[CurrentX] = CurrentY;
+      } while (CurrentX != X2);
+    } else {
+      TwoDyAccumulatedError = 0; 
+      do {
+        CurrentY += Yinc; 
+        TwoDyAccumulatedError += TwoDx;
+        if(TwoDyAccumulatedError>Dy) {
+          CurrentX += Xinc;
+          TwoDyAccumulatedError -= TwoDy;
+        }
+        //SetPixel(CurrentX,CurrentY, c);
+        ptrsample[CurrentX] = CurrentY;
+      } while (CurrentY != Y2);
+    }
+  }
+}
+
+/**
   * @brief  ADC data is 12 bits so 2 halfwords (4 bytes) is compressed into 3 bytes.
   * @param  Pointer to buffer, buffer size
   * @retval None
@@ -459,8 +623,7 @@ int main(void) {
 void SendCompressedBuffer(uint32_t *in,uint16_t len) {
   __IO uint32_t dat32;
   __IO uint8_t dat8;
-  while  (len--)
-  {
+  while  (len--) {
     dat32 = *in;
     dat32 = ((dat32 >> 4) & 0x00fff000) | (dat32 & 0xfff);
 
