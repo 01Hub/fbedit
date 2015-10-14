@@ -79,9 +79,10 @@ typedef struct
   uint8_t Mag;
   uint8_t SubSampling;
   uint8_t Trigger;
+  uint8_t Triple;
+  uint8_t Auto;
   uint16_t TriggerLevel;
   uint16_t VPos;
-  uint16_t Triple;
   uint32_t TimeDiv;
   uint32_t SampleRate;
 } STM32_SCP2TypeDef;
@@ -369,13 +370,13 @@ int main(void) {
           /* ADC Configuration */
           ADC_SingleConfig(((uint32_t)STM32_CMD.STM32_SCP2.SampleRateSet >> 3) & 0x3,(uint32_t)STM32_CMD.STM32_SCP2.SampleRateSet & 0x7);
         }
-        if (STM32_CMD.STM32_SCP2.Trigger == 2) {
-          /* Rising edge */
-          TIM5->CCER &= ~0x2;
-        } else {
-          /* Falling edge */
-          TIM5->CCER |= 0x2;
-        }
+        // if (STM32_CMD.STM32_SCP2.Trigger == 2) {
+          // /* Rising edge */
+          // TIM5->CCER &= ~0x2;
+        // } else {
+          // /* Falling edge */
+          // TIM5->CCER |= 0x2;
+        // }
         if (STM32_CMD.STM32_SCP2.Trigger) {
           /* Wait for trigger */
           scpcnt = TIM5->CNT;
@@ -628,19 +629,31 @@ void ScopeLineTo(int16_t X1, int16_t Y1, int16_t X2, int16_t Y2, uint16_t *ptrsa
 }
 
 /**
-  * @brief  Find reigger position.
-  * @param  None
+  * @brief  Find rrigger position.
+  * @param  Pointer to samples
   * @retval Trigger position
   */
 uint32_t ScopeFindTrigger(uint16_t *ptrsample) {
   __IO uint32_t tpos;
   tpos = 250;
-  while (tpos < 2048 - 250) {
-    if (ptrsample[tpos] == STM32_CMD.STM32_SCP2.TriggerLevel) {
-      return tpos - 250;
+  if (STM32_CMD.STM32_SCP2.Trigger == 1) {
+    /* Rising */
+    while (tpos < 2048 - 250) {
+      if (ptrsample[tpos] <= STM32_CMD.STM32_SCP2.TriggerLevel && ptrsample[tpos + 1] >= STM32_CMD.STM32_SCP2.TriggerLevel) {
+        return tpos - 250;
+      }
+      tpos++;
     }
-    tpos++;
+  } else {
+    /* falling */
+    while (tpos < 2048 - 250) {
+      if (ptrsample[tpos] >= STM32_CMD.STM32_SCP2.TriggerLevel && ptrsample[tpos + 1] <= STM32_CMD.STM32_SCP2.TriggerLevel) {
+        return tpos - 250;
+      }
+      tpos++;
+    }
   }
+  /* Trigger not found */
   return 0;
 }
 

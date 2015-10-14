@@ -8,9 +8,10 @@ public class STM32_SCP {
 	public byte Mag = 0;
 	public byte SubSampling = 0;
 	public byte Trigger = 1;
+	public byte Triple = 1;
+	public byte Auto = 0;
 	public short TriggerLevel = (short)(13.65 * 150.0);
 	public short VPos = (short)(13.65 * (150.0 + 13.0));
-	public short Triple = 1;
 	public int TimeDiv = 1000000;
 	public int SampleRate = 10000000;
 
@@ -21,10 +22,6 @@ public class STM32_SCP {
 
 	public String scptdstr[] = {"100ns","200ns","500ns","1us","2us","5us","10us","20us","50us","100us","200us","500us","1ms","2ms","5ms","10ms","20ms","50ms","100ms","200ms","500ms"};
 	public int scptdint[] = {100,200,500,				1000,2000,5000,10000,20000,50000,100000,200000,500000,1000000,2000000,5000000,10000000,20000000,50000000,100000000,200000000,500000000};
-
-//	public static short ADC_Tmp[] = new short[32 * 1024];
-//	public static short SubSample[] = new short[2048];
-//	public static short SubSampleCount[] = new short[2048];
 
     private static int BTToInt(int i) {
     	return (BlueTooth.btreadbuffer[i+2] & 0xFF) << 16 | (BlueTooth.btreadbuffer[i+1] & 0xFF) << 8 | (BlueTooth.btreadbuffer[i+0] & 0xFF);
