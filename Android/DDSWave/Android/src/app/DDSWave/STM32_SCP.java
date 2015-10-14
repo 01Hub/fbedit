@@ -21,9 +21,11 @@ public class STM32_SCP {
 	public String scpvdstr[] = {"1mV","2mV","5mV","10mV","20mV","50mV","100mV","200mV","500mV"};
 
 	public String scptdstr[] = {"100ns","200ns","500ns","1us","2us","5us","10us","20us","50us","100us","200us","500us","1ms","2ms","5ms","10ms","20ms","50ms","100ms","200ms","500ms"};
-	public int scptdint[] = {100,200,500,				1000,2000,5000,10000,20000,50000,100000,200000,500000,1000000,2000000,5000000,10000000,20000000,50000000,100000000,200000000,500000000};
+	public int scptdint[] = {100,200,500,1000,2000,5000,10000,20000,50000,100000,200000,500000,1000000,2000000,5000000,10000000,20000000,50000000,100000000,200000000,500000000};
 
-    private static int BTToInt(int i) {
+	public int scpfrq = 5000;
+
+	private static int BTToInt(int i) {
     	return (BlueTooth.btreadbuffer[i+2] & 0xFF) << 16 | (BlueTooth.btreadbuffer[i+1] & 0xFF) << 8 | (BlueTooth.btreadbuffer[i+0] & 0xFF);
     }
 
@@ -35,13 +37,13 @@ public class STM32_SCP {
 			BlueTooth.btbusy = true;
 			err = !BlueTooth.BTPutInt(BlueTooth.CMD_SCP2SET);
 			if (BlueTooth.BTGetBytes(8)) {
-				f = BlueTooth.BTToInt(4);
-				if (f >= 1000000) {
-					s = String.format("%.3f",((double)(f / 1000000.0))) + "MHz";
-				} else if (f >= 1000) {
-					s = String.format("%.3f",((double)(f / 1000.0))) + "KHz";
+				scpfrq = BlueTooth.BTToInt(4);
+				if (scpfrq >= 1000000) {
+					s = String.format("%.3f",((double)(scpfrq / 1000000.0))) + "MHz";
+				} else if (scpfrq >= 1000) {
+					s = String.format("%.3f",((double)(scpfrq / 1000.0))) + "KHz";
 				} else {
-					s = "" + f + "Hz";
+					s = "" + scpfrq + "Hz";
 				}
 			}
 			BlueTooth.btbusy = true;
