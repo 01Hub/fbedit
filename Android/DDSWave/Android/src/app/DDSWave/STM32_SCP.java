@@ -53,9 +53,10 @@ public class STM32_SCP {
 			err = !BlueTooth.BTPutByte(Mag);
 			err = !BlueTooth.BTPutByte(SubSampling);
 			err = !BlueTooth.BTPutByte(Trigger);
+			err = !BlueTooth.BTPutByte(Triple);
+			err = !BlueTooth.BTPutByte(Auto);
 			err = !BlueTooth.BTPutShort(TriggerLevel);
 			err = !BlueTooth.BTPutShort(VPos);
-			err = !BlueTooth.BTPutShort(Triple);
 			err = !BlueTooth.BTPutInt(TimeDiv);
 			err = !BlueTooth.BTPutInt(SampleRate);
 
