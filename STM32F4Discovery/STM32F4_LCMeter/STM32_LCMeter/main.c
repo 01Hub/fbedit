@@ -161,11 +161,11 @@ typedef struct
 /* Misc */
 #define ADC_CDR_ADDRESS                         ((uint32_t)0x40012308)
 #define PE_IDR_Address                          ((uint32_t)0x40021011)
-#define SCOPE_DATAPTR                           ((uint32_t)0x20008000)
 #define SCOPE_MAXSAMPLESIZE                     ((uint32_t)0xFFFC)
-#define SCOPE_WAVEPTR                           ((uint32_t)0x20018000)
-#define SCOPE_COUNTPTR                          ((uint32_t)0x2001C000)
+#define SCOPE_DATAPTR                           ((uint32_t)0x20008000)
 #define SCOPE_MAXWAVESIZE                       ((uint32_t)0x1000)
+#define SCOPE_WAVEPTR                           ((uint32_t)0x20018000)
+#define SCOPE_COUNTPTR                          ((uint32_t)(SCOPE_WAVEPTR + SCOPE_MAXWAVESIZE * 4))
 #define LGA_DATAPTR                             ((uint32_t)0x20008000)
 #define WAVE_DATAPTR                            ((uint32_t)0x20008000)
 #define STM32_CLOCK                             ((uint32_t)200000000)
@@ -487,7 +487,7 @@ uint32_t GetScopeSampleSize(void) {
   /* Get sample time in ns */
   SampleTime = 1000000000 / STM32_CMD.STM32_SCP2.SampleRate;
   WaveTime = STM32_CMD.STM32_SCP2.TimeDiv * (uint32_t)STM32_CMD.STM32_SCP2.nDiv;
-  Samples = WaveTime * 8 / SampleTime;
+  Samples = (WaveTime * 16) / SampleTime;
   /* Make it 32bit aligned */
   Samples = ((Samples >> 2) + 1) << 2;
   /* Check max */

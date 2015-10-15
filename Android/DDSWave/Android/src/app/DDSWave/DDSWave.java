@@ -377,7 +377,7 @@ public class DDSWave extends Activity {
 			s = (new BigDecimal(Double.toString(((double)(frq / 1000.0)))).stripTrailingZeros().toPlainString()) + "KHz";
     	} else {
     		/* Hz */
-        	s = "" + frq + "Hz";
+			s = (new BigDecimal(Double.toString(((double)(frq)))).stripTrailingZeros().toPlainString()) + "Hz";
     	}
     	return s;
     }
@@ -497,14 +497,16 @@ public class DDSWave extends Activity {
 		int x = WAVEGRIDXOFS;
 		int y = WAVEGRIDYOFS;
 		int i;
-		double per;
+		double per = 0;
 		
 		for (i = 0;i<9;i++) {
 			wavestr[i] = "";
 		}
 		frq = ddsfrqkhz * 1000 + ddsfrqhz;
 		wavestr[0] = "Frq: " + FormatFrequency(frq);
-		per = 1000000000.0 / (double)frq;
+		if (frq > 0) {
+			per = 1000000000.0 / (double)frq;
+		}
 		wavestr[1] = "Per: " + FormatTime(per);
 		wavestr[3] = "Vpp: " + ddsamp * 10 + "mV";
 		wavestr[4] = "Vmin: " + (((ddsdcofs - 299) * 10) - ddsamp * 5) + "mV";
@@ -536,12 +538,14 @@ public class DDSWave extends Activity {
 		int x=WAVEGRIDXOFS;
 		int y=WAVEGRIDYOFS;
 		int i;
-		double per;
+		double per = 0;
 		for (i = 0;i<9;i++) {
 			wavestr[i] = "";
 		}
 		wavestr[0] = "Frq: " + FormatFrequency(scp.scpfrq);
-		per = 1000000000.0 / (double)scp.scpfrq;
+		if (scp.scpfrq > 0) {
+			per = 1000000000.0 / (double)scp.scpfrq;
+		}
 		wavestr[1] = "Per: " + FormatTime(per);
 		wavestr[3] = scp.scptdstr[scptd] + " / Div";
 		wavestr[6] = scp.scpvdstr[scpvd] + " / Div";
@@ -656,12 +660,14 @@ public class DDSWave extends Activity {
 		int i, xp, yp;
 		int x = WAVEGRIDXOFS;
 		int y = WAVEGRIDYOFS;
-		double dut, per;
+		double dut, per = 0;
 		for (i = 0;i<9;i++) {
 			wavestr[i] = "";
 		}
 		wavestr[0] = "Frq: " + FormatFrequency(hscfrq);
-		per = 1000000000.0 / (double)hscfrq;
+		if (hscfrq > 0) {
+			per = 1000000000.0 / (double)hscfrq;
+		}
 		wavestr[1] = "Per: " + FormatTime(per);
 		dut = ((double)((hscarr + 1) >> 1) / ((double)hscarr + 1.0));
 		wavestr[3] = "Dut: " + String.format("%.1f",100.0 * dut) + "%";
