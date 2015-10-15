@@ -13,21 +13,23 @@ public class STM32_DDS {
 	public int SWEEP_Max = 0;
 
 	public boolean SendDDS() {
-		boolean err;
+		boolean err = false;
 		try {
-			BlueTooth.btbusy = true;
-			err = !BlueTooth.BTPutInt(BlueTooth.CMD_DDSSET);
-			err |= !BlueTooth.BTPutShort(DDS_Cmd);
-			err |= !BlueTooth.BTPutShort(DDS_Wave);
-			err |= !BlueTooth.BTPutInt(DDS__PhaseAdd);
-			err |= !BlueTooth.BTPutInt(DDS_Amplitude);
-			err |= !BlueTooth.BTPutInt(DDS_DCOffset);
-			err |= !BlueTooth.BTPutShort(SWEEP_Mode);
-			err |= !BlueTooth.BTPutShort(SWEEP_Time);
-			err |= !BlueTooth.BTPutInt(SWEEP_Step);
-			err |= !BlueTooth.BTPutInt(SWEEP_Min);
-			err |= !BlueTooth.BTPutInt(SWEEP_Max);
-			BlueTooth.btbusy = false;
+			if (BlueTooth.btconnected) {
+				BlueTooth.btbusy = true;
+				err = !BlueTooth.BTPutInt(BlueTooth.CMD_DDSSET);
+				err |= !BlueTooth.BTPutShort(DDS_Cmd);
+				err |= !BlueTooth.BTPutShort(DDS_Wave);
+				err |= !BlueTooth.BTPutInt(DDS__PhaseAdd);
+				err |= !BlueTooth.BTPutInt(DDS_Amplitude);
+				err |= !BlueTooth.BTPutInt(DDS_DCOffset);
+				err |= !BlueTooth.BTPutShort(SWEEP_Mode);
+				err |= !BlueTooth.BTPutShort(SWEEP_Time);
+				err |= !BlueTooth.BTPutInt(SWEEP_Step);
+				err |= !BlueTooth.BTPutInt(SWEEP_Min);
+				err |= !BlueTooth.BTPutInt(SWEEP_Max);
+				BlueTooth.btbusy = false;
+			}
 			return !err;
 		} catch (Exception e) {
 			return false;

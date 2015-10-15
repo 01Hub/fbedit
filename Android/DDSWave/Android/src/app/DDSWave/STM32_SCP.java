@@ -34,48 +34,44 @@ public class STM32_SCP {
 		int f, g, i, j, n;
 		String s = "";
 		try {
-			BlueTooth.btbusy = true;
-			err = !BlueTooth.BTPutInt(BlueTooth.CMD_SCP2SET);
-			if (BlueTooth.BTGetBytes(8)) {
-				scpfrq = BlueTooth.BTToInt(4);
-				if (scpfrq >= 1000000) {
-					s = String.format("%.3f",((double)(scpfrq / 1000000.0))) + "MHz";
-				} else if (scpfrq >= 1000) {
-					s = String.format("%.3f",((double)(scpfrq / 1000.0))) + "KHz";
-				} else {
-					s = "" + scpfrq + "Hz";
+			if (BlueTooth.btconnected) {
+				BlueTooth.btbusy = true;
+				err = !BlueTooth.BTPutInt(BlueTooth.CMD_SCP2SET);
+				if (BlueTooth.BTGetBytes(8)) {
+					scpfrq = BlueTooth.BTToInt(4);
+					s = DDSWave.FormatFrequency(scpfrq);
 				}
-			}
-			BlueTooth.btbusy = true;
-			err = !BlueTooth.BTPutByte(SampleRateSet);
-			err = !BlueTooth.BTPutByte(PixDiv);
-			err = !BlueTooth.BTPutByte(nDiv);
-			err = !BlueTooth.BTPutByte(Mag);
-			err = !BlueTooth.BTPutByte(SubSampling);
-			err = !BlueTooth.BTPutByte(Trigger);
-			err = !BlueTooth.BTPutByte(Triple);
-			err = !BlueTooth.BTPutByte(Auto);
-			err = !BlueTooth.BTPutShort(TriggerLevel);
-			err = !BlueTooth.BTPutShort(VPos);
-			err = !BlueTooth.BTPutInt(TimeDiv);
-			err = !BlueTooth.BTPutInt(SampleRate);
+				BlueTooth.btbusy = true;
+				err = !BlueTooth.BTPutByte(SampleRateSet);
+				err |= !BlueTooth.BTPutByte(PixDiv);
+				err |= !BlueTooth.BTPutByte(nDiv);
+				err |= !BlueTooth.BTPutByte(Mag);
+				err |= !BlueTooth.BTPutByte(SubSampling);
+				err |= !BlueTooth.BTPutByte(Trigger);
+				err |= !BlueTooth.BTPutByte(Triple);
+				err |= !BlueTooth.BTPutByte(Auto);
+				err |= !BlueTooth.BTPutShort(TriggerLevel);
+				err |= !BlueTooth.BTPutShort(VPos);
+				err |= !BlueTooth.BTPutInt(TimeDiv);
+				err |= !BlueTooth.BTPutInt(SampleRate);
 
-			n = (DDSWave.SCPXSIZE * 2 * 3) / 4;
-			if (BlueTooth.BTGetBytes(n)) {
-				i = 0;
-				j = 0;
-				while (i < DDSWave.SCPXSIZE) {
-					f = BTToInt(j) & 0xFFFFFF;
-					g = (f >> 12) & 0xFFF;
-					f &= 0xFFF;
-					DDSWave.scpWave[i] = (short)f;
-					i++;
-					DDSWave.scpWave[i] = (short)g;
-					i++;
-					j += 3;
+				n = (DDSWave.WAVEXSIZE * 2 * 3) / 4;
+				if (BlueTooth.BTGetBytes(n)) {
+					i = 0;
+					j = 0;
+					while (i < DDSWave.WAVEXSIZE) {
+						f = BTToInt(j) & 0xFFFFFF;
+						g = (f >> 12) & 0xFFF;
+						f &= 0xFFF;
+						DDSWave.scpWave[i] = (short)f;
+						i++;
+						DDSWave.scpWave[i] = (short)g;
+						i++;
+						j += 3;
+					}
 				}
+				BlueTooth.btbusy = false;
 			}
-			BlueTooth.btbusy = false;
 			return s;
 		} catch (Exception e) {
 			return "err";

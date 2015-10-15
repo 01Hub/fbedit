@@ -9,17 +9,19 @@ public class STM32_LGA {
 	public short LGASampleRate;
 
 	public boolean SendLGA() {
-		boolean err;
+		boolean err = false;
 		try {
-			BlueTooth.btbusy = true;
-			err = !BlueTooth.BTPutInt(BlueTooth.CMD_LGASET);
-			err |= !BlueTooth.BTPutByte(DataBlocks);
-			err |= !BlueTooth.BTPutByte(TriggerValue);
-			err |= !BlueTooth.BTPutByte(TriggerMask);
-			err |= !BlueTooth.BTPutByte(TriggerWait);
-			err |= !BlueTooth.BTPutShort(LGASampleRateDiv);
-			err |= !BlueTooth.BTPutShort(LGASampleRate);
-			err |= !BlueTooth.BTGetBytes(DataBlocks * 1024);
+			if (BlueTooth.btconnected) {
+				BlueTooth.btbusy = true;
+				err = !BlueTooth.BTPutInt(BlueTooth.CMD_LGASET);
+				err |= !BlueTooth.BTPutByte(DataBlocks);
+				err |= !BlueTooth.BTPutByte(TriggerValue);
+				err |= !BlueTooth.BTPutByte(TriggerMask);
+				err |= !BlueTooth.BTPutByte(TriggerWait);
+				err |= !BlueTooth.BTPutShort(LGASampleRateDiv);
+				err |= !BlueTooth.BTPutShort(LGASampleRate);
+				err |= !BlueTooth.BTGetBytes(DataBlocks * 1024);
+			}
 			return !err;
 		} catch (Exception e) {
 			return false;

@@ -23,6 +23,7 @@ public class BlueTooth {
 
     public static int btmode = CMD_DONE;
     public static boolean btbusy = false;
+    public static boolean btconnected = false;
     private static double CCal = 1.015e-9;
 
     public static short BTToShort(int i) {

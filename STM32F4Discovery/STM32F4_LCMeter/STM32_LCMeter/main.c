@@ -131,7 +131,7 @@ typedef struct
 } STM32_CMDTypeDef;
 
 /* Private define ------------------------------------------------------------*/
-/* DDS WaveType */
+/* Main commands */
 #define CMD_DONE                                ((uint8_t)0)
 #define CMD_LCMCAL                              ((uint8_t)1)
 #define CMD_LCMCAP                              ((uint8_t)2)
@@ -146,22 +146,26 @@ typedef struct
 #define CMD_WAVEUPLOAD                          ((uint8_t)11)
 #define CMD_SCP2SET                             ((uint8_t)12)
 
+/* DDS sub commands */
 #define DDS_PHASESET                            ((uint8_t)1)
 #define DDS_WAVESET                             ((uint8_t)2)
 #define DDS_SWEEPSET                            ((uint8_t)3)
 #define DDS_WAVEUPLOAD                          ((uint8_t)4)
 
+/* DDS sweep modes */
 #define SWEEP_ModeOff                           ((uint8_t)0)
 #define SWEEP_ModeUp                            ((uint8_t)1)
 #define SWEEP_ModeDown                          ((uint8_t)2)
 #define SWEEP_ModeUpDown                        ((uint8_t)3)
 
+/* Misc */
 #define ADC_CDR_ADDRESS                         ((uint32_t)0x40012308)
 #define PE_IDR_Address                          ((uint32_t)0x40021011)
 #define SCOPE_DATAPTR                           ((uint32_t)0x20008000)
-#define SCOPE_WAVEPTR                           ((uint32_t)0x20018000)
-#define SCOPE_COUNTPTR                           ((uint32_t)0x2001A000)
 #define SCOPE_MAXSAMPLESIZE                     ((uint32_t)0xFFFC)
+#define SCOPE_WAVEPTR                           ((uint32_t)0x20018000)
+#define SCOPE_COUNTPTR                          ((uint32_t)0x2001C000)
+#define SCOPE_MAXWAVESIZE                       ((uint32_t)0x1000)
 #define LGA_DATAPTR                             ((uint32_t)0x20008000)
 #define WAVE_DATAPTR                            ((uint32_t)0x20008000)
 #define STM32_CLOCK                             ((uint32_t)200000000)
@@ -229,7 +233,7 @@ int main(void) {
   /* Calibrate LC Meter */
   LCM_Calibrate();
 
-  // /* Update baudrate */
+  // /* Update bluetooth baudrate */
   // STM32_CMD.Cmd = STM32_CMD.TickCount;
   // while (STM32_CMD.Cmd == STM32_CMD.TickCount);
   // STM32_CMD.Cmd = STM32_CMD.TickCount;
@@ -370,6 +374,7 @@ int main(void) {
           /* ADC Configuration */
           ADC_SingleConfig(((uint32_t)STM32_CMD.STM32_SCP2.SampleRateSet >> 3) & 0x3,(uint32_t)STM32_CMD.STM32_SCP2.SampleRateSet & 0x7);
         }
+        /* Trigger configuration */
         // if (STM32_CMD.STM32_SCP2.Trigger == 2) {
           // /* Rising edge */
           // TIM5->CCER &= ~0x2;
@@ -377,17 +382,17 @@ int main(void) {
           // /* Falling edge */
           // TIM5->CCER |= 0x2;
         // }
-        if (STM32_CMD.STM32_SCP2.Trigger) {
-          /* Wait for trigger */
-          scpcnt = TIM5->CNT;
-          scpwait = STM32_CMD.TickCount + 2;
-          while (scpcnt == TIM5->CNT && scpwait != STM32_CMD.TickCount);
-        }
+        // if (STM32_CMD.STM32_SCP2.Trigger) {
+          // /* Wait for trigger */
+          // scpcnt = TIM5->CNT;
+          // scpwait = STM32_CMD.TickCount + 2;
+          // while (scpcnt == TIM5->CNT && scpwait != STM32_CMD.TickCount);
+        // }
         /* Start ADC1 Software Conversion */
         ADC1->CR2 |= (uint32_t)ADC_CR2_SWSTART;
         /* Reset wavedata */
-        ScopeResetWave((uint32_t *)SCOPE_WAVEPTR,2048);
-        ScopeResetWave((uint32_t *)SCOPE_COUNTPTR,2048);
+        ScopeResetWave((uint32_t *)SCOPE_WAVEPTR,SCOPE_MAXWAVESIZE);
+        ScopeResetWave((uint32_t *)SCOPE_COUNTPTR,SCOPE_MAXWAVESIZE);
         /* Wait until DMA transfer complete */
         while (DMA_GetFlagStatus(DMA2_Stream0, DMA_FLAG_TCIF0) == RESET);
         /* Done sampling */
@@ -475,7 +480,6 @@ int main(void) {
   * @param  None
   * @retval Sample size
   */
-
 uint32_t GetScopeSampleSize(void) {
   uint32_t SampleTime;
   uint32_t WaveTime;
@@ -483,7 +487,7 @@ uint32_t GetScopeSampleSize(void) {
   /* Get sample time in ns */
   SampleTime = 1000000000 / STM32_CMD.STM32_SCP2.SampleRate;
   WaveTime = STM32_CMD.STM32_SCP2.TimeDiv * (uint32_t)STM32_CMD.STM32_SCP2.nDiv;
-  Samples = WaveTime * 4 / SampleTime;
+  Samples = WaveTime * 8 / SampleTime;
   /* Make it 32bit aligned */
   Samples = ((Samples >> 2) + 1) << 2;
   /* Check max */
@@ -498,7 +502,6 @@ uint32_t GetScopeSampleSize(void) {
   * @param  None
   * @retval None
   */
-
 void ScopeResetWave(uint32_t *ptr,uint32_t len) {
   uint32_t i;
   i = 0;
@@ -513,7 +516,6 @@ void ScopeResetWave(uint32_t *ptr,uint32_t len) {
   * @param  None
   * @retval None
   */
-
 void ScopeSetWaveData(uint32_t *ptrwave, uint32_t *ptrcount, uint16_t *ptrsample) {
   uint32_t i, x, xto, y , yto;
   double xm, xp, st, pt;
@@ -526,7 +528,7 @@ void ScopeSetWaveData(uint32_t *ptrwave, uint32_t *ptrcount, uint16_t *ptrsample
   i = 0;
   x = 0;
   xp = 0;
-  while (i < SampleSize / 2 && x < 2048) {
+  while (i < SampleSize / 2 && x < SCOPE_MAXWAVESIZE) {
     ptrwave[x] += (uint32_t)ptrsample[i];
     ptrcount[x]++;
     i++;
@@ -535,7 +537,7 @@ void ScopeSetWaveData(uint32_t *ptrwave, uint32_t *ptrcount, uint16_t *ptrsample
   }
   /* Average sum of samples */
   x = 0;
-  while (x < 2048) {
+  while (x < SCOPE_MAXWAVESIZE) {
     if (ptrcount[x] > 1) {
       ptrwave[x] /= ptrcount[x];
     }
@@ -543,8 +545,8 @@ void ScopeSetWaveData(uint32_t *ptrwave, uint32_t *ptrcount, uint16_t *ptrsample
   }
   /* Reset sample data */
   x = 0;
-  while (x < 2048) {
-    ptrsample[x] = 0xFFFF;
+  while (x < SCOPE_MAXWAVESIZE) {
+    ptrsample[x] = 0x07FF;
     x++;
   }
   /* Draw the wave */
@@ -552,7 +554,7 @@ void ScopeSetWaveData(uint32_t *ptrwave, uint32_t *ptrcount, uint16_t *ptrsample
   xto = 0;
   y = ptrwave[x];
   xto++;
-  while (xto < 2048) {
+  while (xto < SCOPE_MAXWAVESIZE) {
     if (ptrcount[xto]) {
       yto = ptrwave[xto];
       ScopeLineTo((int16_t)x, (int16_t)y, (int16_t)xto, (int16_t)yto, ptrsample);
@@ -638,7 +640,7 @@ uint32_t ScopeFindTrigger(uint16_t *ptrsample) {
   tpos = 250;
   if (STM32_CMD.STM32_SCP2.Trigger == 1) {
     /* Rising */
-    while (tpos < 2048 - 250) {
+    while (tpos < SCOPE_MAXWAVESIZE - 250) {
       if (ptrsample[tpos] <= STM32_CMD.STM32_SCP2.TriggerLevel && ptrsample[tpos + 1] >= STM32_CMD.STM32_SCP2.TriggerLevel) {
         return tpos - 250;
       }
@@ -646,7 +648,7 @@ uint32_t ScopeFindTrigger(uint16_t *ptrsample) {
     }
   } else {
     /* falling */
-    while (tpos < 2048 - 250) {
+    while (tpos < SCOPE_MAXWAVESIZE - 250) {
       if (ptrsample[tpos] >= STM32_CMD.STM32_SCP2.TriggerLevel && ptrsample[tpos + 1] <= STM32_CMD.STM32_SCP2.TriggerLevel) {
         return tpos - 250;
       }
@@ -1062,6 +1064,7 @@ void DMA_SingleConfig(uint32_t SampleSize) {
   DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)&ADC1->DR;
   DMA_InitStructure.DMA_Memory0BaseAddr = (uint32_t)SCOPE_DATAPTR;
   DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralToMemory;
+  /* Number of halfwords (16 bit) */
   DMA_InitStructure.DMA_BufferSize = SampleSize/2;
   DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
   DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;
@@ -1131,6 +1134,7 @@ void DMA_TripleConfig(uint32_t SampleSize) {
   DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)ADC_CDR_ADDRESS;
   DMA_InitStructure.DMA_Memory0BaseAddr = (uint32_t)SCOPE_DATAPTR;
   DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralToMemory;
+  /* Number of words (32 bit) */
   DMA_InitStructure.DMA_BufferSize = SampleSize/4;
   DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
   DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;
