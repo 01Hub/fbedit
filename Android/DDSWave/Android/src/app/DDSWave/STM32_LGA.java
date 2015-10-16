@@ -8,6 +8,9 @@ public class STM32_LGA {
 	public short LGASampleRateDiv;
 	public short LGASampleRate;
 
+	public String lgasrstr[] = {"1KHz","2KHz","5KHz","10KHz","20KHz","50KHz","100KHz","200KHz","500KHz","1MHz","2MHz","5MHz","10MHz","20MHz","40MHz"};
+	public int lgasrint[] = {199999,99999,39999,19999,9999,3999,1999,999,399,199,99,39,19,9,4};
+	public int lgatimediv[] = {10000000,5000000,2000000,1000000,500000,200000,100000,50000,20000,10000,5000,2000,1000,500,250};
 	public boolean SendLGA() {
 		boolean err = false;
 		try {

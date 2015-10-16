@@ -164,7 +164,7 @@
         android:layout_below="@+id/tvddsdcofs"
         android:layout_marginLeft="5dp"
         android:layout_marginRight="55dp"
-        android:max="600" />
+        android:max="599" />
 
     <Button
         android:id="@+id/btnddsdcofsup"

@@ -83,7 +83,6 @@ public class DDSWave extends Activity {
 	private static final short DDS_PHASESET = 1;
 	private static final short DDS_WAVESET = 2;
 	private static final short DDS_SWEEPSET = 3;
-    private static STM32_DDS dds = new STM32_DDS();
     private static boolean ddssend = false;
 	private static final int DDSSIZE = 2048;
 	private short ddsWave[] = new short[DDSSIZE];
@@ -93,9 +92,9 @@ public class DDSWave extends Activity {
 	private boolean ddsfrqhzsel = false;
 	private int ddsamp = 100;
 	private int ddsdcofs = 299;
+    private static STM32_DDS dds = new STM32_DDS();
 
 	// Scope
-    private static STM32_SCP scp = new STM32_SCP();
     public static short scpWave[] = new short[WAVEXSIZE];
 	private int scpsr = 67;
 	private int scptd = 10;
@@ -107,19 +106,19 @@ public class DDSWave extends Activity {
 	private boolean scpsample = false;
 	private boolean scpsampledone = false;
 	private boolean scphold = false;
+    private static STM32_SCP scp = new STM32_SCP();
 
 	// LGA
 	public static final int LGASIZE = 32 * 1024;
 	private static final int LGAWIDTH = 10;
 	private int lgasr  = 0;
-	private String lgasrstr[] = {"1KHz","2KHz","5KHz","10KHz","20KHz","50KHz","100KHz","200KHz","500KHz","1MHz","2MHz","5MHz","10MHz","20MHz","40MHz"};
-	private int lgasrint[] = {199999,99999,39999,19999,9999,3999,1999,999,399,199,99,39,19,9,4};
 	private int lgabuff  = 0;
 	private byte lgatrg = (byte)0x00;
 	private byte lgamask = (byte)0x00;
-    private static STM32_LGA lga = new STM32_LGA();
-	private float xd,xs, lgaxofs;
+	private float xd, yd, xs, lgaxofs;
 	private int lgatrgpos = 0;
+	private int lgatstpos = 0;
+    private static STM32_LGA lga = new STM32_LGA();
 
     // HSC
     private static boolean hscsend = false;
@@ -156,10 +155,9 @@ public class DDSWave extends Activity {
 		btnLGA.setBackgroundColor(Color.DKGRAY);
 		btnHSC.setBackgroundColor(Color.DKGRAY);
 		btnLCM_C.setBackgroundColor(Color.GRAY);
-//		btnLCM_L.setBackgroundColor(Color.DKGRAY);
-		//btnSETUP.setBackgroundColor(Color.DKGRAY);
+		btnLCM_L.setBackgroundColor(Color.DKGRAY);
 		for (i = 0;i<9;i++) {
-			wavestr[i] = "";//"Test 12345";
+			wavestr[i] = "";
 		}
 		ddsSineWave();
 		GenSCPWave();
@@ -461,7 +459,7 @@ public class DDSWave extends Activity {
 	private void DrawGrid() {
 		int x=WAVEGRIDXOFS;
 		int y=WAVEGRIDYOFS;
-		int i=0;
+		int i = 0, xm;
 		bmpwave.eraseColor(Color.BLUE);
 		paint.setStrokeWidth(1);
         paint.setColor(Color.DKGRAY);
@@ -476,19 +474,21 @@ public class DDSWave extends Activity {
 	        x+=WAVEGRID;
 	        i++;
 		}
+        y -= WAVEGRID / 3;
+        xm = WAVEXSIZE / 3;
 		paint.setTextSize(18);
         paint.setColor(Color.WHITE);
-		canvas.drawText(wavestr[0], WAVEGRIDYOFS, y, paint);
-		canvas.drawText(wavestr[1], WAVEGRIDYOFS + 166, y, paint);
-		canvas.drawText(wavestr[2], WAVEGRIDYOFS + 332, y, paint);
+		canvas.drawText(wavestr[0], WAVEGRIDXOFS, y, paint);
+		canvas.drawText(wavestr[1], WAVEGRIDXOFS + xm, y, paint);
+		canvas.drawText(wavestr[2], WAVEGRIDXOFS + xm * 2, y, paint);
         y += WAVEGRID / 2;
-		canvas.drawText(wavestr[3], WAVEGRIDYOFS, y, paint);
-		canvas.drawText(wavestr[4], WAVEGRIDYOFS + 166, y, paint);
-		canvas.drawText(wavestr[5], WAVEGRIDYOFS + 332, y, paint);
+		canvas.drawText(wavestr[3], WAVEGRIDXOFS, y, paint);
+		canvas.drawText(wavestr[4], WAVEGRIDXOFS + xm, y, paint);
+		canvas.drawText(wavestr[5], WAVEGRIDXOFS + 332, y, paint);
         y += WAVEGRID / 2;
-		canvas.drawText(wavestr[6], WAVEGRIDYOFS, y, paint);
-		canvas.drawText(wavestr[7], WAVEGRIDYOFS + 166, y, paint);
-		canvas.drawText(wavestr[8], WAVEGRIDYOFS + 332, y, paint);
+		canvas.drawText(wavestr[6], WAVEGRIDXOFS, y, paint);
+		canvas.drawText(wavestr[7], WAVEGRIDXOFS + xm, y, paint);
+		canvas.drawText(wavestr[8], WAVEGRIDXOFS + xm * 2, y, paint);
 		DrawBTStatus();
 	}
 
@@ -509,21 +509,24 @@ public class DDSWave extends Activity {
 		}
 		wavestr[1] = "Per: " + FormatTime(per);
 		wavestr[3] = "Vpp: " + ddsamp * 10 + "mV";
-		wavestr[4] = "Vmin: " + (((ddsdcofs - 299) * 10) - ddsamp * 5) + "mV";
-		wavestr[5] = "Vmax: " + (((ddsdcofs - 299) * 10) + ddsamp * 5) + "mV";
+		wavestr[4] = "Vmin: " + (((ddsdcofs - 299) * 10) - ddsamp * 10) + "mV";
+		wavestr[5] = "Vmax: " + (((ddsdcofs - 299) * 10) + ddsamp * 10) + "mV";
 		DrawGrid();
 		canvas.clipRect(WAVEGRIDXOFS,WAVEGRIDYOFS,WAVEXSIZE + WAVEGRIDXOFS + 1,WAVEYSIZE + WAVEGRIDYOFS + 1, Op.REPLACE);
 		paint.setStrokeWidth(2);
+        paint.setColor(Color.RED);
+        y = (WAVEYSIZE / 2) + (((ddsdcofs - 299) * (WAVEYSIZE - 2 * WAVEGRID)) / 600);
+        canvas.drawLine(WAVEGRIDXOFS, y + WAVEGRIDYOFS, WAVEGRIDXOFS + WAVEXSIZE, y + WAVEGRIDYOFS, paint);
         paint.setColor(Color.YELLOW);
         i = 0;
 		xp = ((i / 8) * WAVEXSIZE) / 256;
 		yp = (((2048 - ddsWave[i]) / 16) * WAVEGRID * 6) / 256;
-		yp = WAVEGRID * 4  + ((yp * ddsamp) / 300 - (ddsdcofs - 300)) / 2;
+		yp = WAVEGRID * 4  + ((yp * ddsamp) / 300);
 		i++;
 		while (i < DDSSIZE) {
 			x = ((i / 8) * WAVEXSIZE) / 256;
 			y = (((2048 - ddsWave[i]) / 16) * WAVEGRID * 6) / 256;
-			y = WAVEGRID * 4 + ((y * ddsamp) / 300 - (ddsdcofs - 300)) / 2;
+			y = WAVEGRID * 4 + ((y * ddsamp) / 300);
 	        canvas.drawLine(xp + WAVEGRIDXOFS, yp + WAVEGRIDYOFS, x + WAVEGRIDXOFS, y + WAVEGRIDYOFS, paint);
 			xp = x;
 			yp = y;
@@ -590,18 +593,24 @@ public class DDSWave extends Activity {
 		for (i = 0;i<9;i++) {
 			wavestr[i] = "";
 		}
-		wavestr[0] = "Byte pos: " + lgatrgpos;
-		wavestr[3] = "Byte Dec: " + BlueTooth.btreadbuffer[lgatrgpos];
-		wavestr[4] = "Hex: " + String.format("%02x", BlueTooth.btreadbuffer[lgatrgpos] & 0xff).toUpperCase();
-		wavestr[5] = "Bin: " + String.format("%8s", Integer.toBinaryString(BlueTooth.btreadbuffer[lgatrgpos] & 0xFF)).replace(' ', '0');
+		wavestr[0] = FormatTime((double)lga.lgatimediv[lgasr]) + " / Div";
+		wavestr[3] = "Byte: " + lgatrgpos + "/" + lgatstpos;
+		wavestr[4] = "Time: " + lgatstpos;
+		wavestr[6] = "Byte Dec: " + BlueTooth.btreadbuffer[lgatrgpos];
+		wavestr[7] = "Hex: " + String.format("%02x", BlueTooth.btreadbuffer[lgatrgpos] & 0xff).toUpperCase();
+		wavestr[8] = "Bin: " + String.format("%8s", Integer.toBinaryString(BlueTooth.btreadbuffer[lgatrgpos] & 0xFF)).replace(' ', '0');
 		DrawGrid();
 		canvas.clipRect(WAVEGRIDXOFS,WAVEGRIDYOFS,WAVEXSIZE + WAVEGRIDXOFS + 1,WAVEYSIZE + WAVEGRIDYOFS + 1, Op.REPLACE);
 		paint.setStrokeWidth(2);
 		ofs = (int)lgaxofs / (WAVEGRID / LGAWIDTH);
 		//Log.d("MYTAG", "ofs " + ofs + " lgatrgpos " + lgatrgpos);
+		if (lgatstpos >= ofs && lgatstpos <= (ofs + WAVEXSIZE / (WAVEGRID / LGAWIDTH))) {
+			paint.setColor(Color.GREEN);
+	        canvas.drawLine(WAVEGRIDXOFS - ofs * (WAVEGRID / LGAWIDTH) + lgatstpos * 5 + 1, WAVEGRIDYOFS, WAVEGRIDXOFS - ofs * (WAVEGRID / LGAWIDTH) + lgatstpos * 5 + 1, WAVEGRIDYOFS + WAVEXSIZE, paint);
+		}
 		if (lgatrgpos >= ofs && lgatrgpos <= (ofs + WAVEXSIZE / (WAVEGRID / LGAWIDTH))) {
 			paint.setColor(Color.RED);
-	        canvas.drawLine(WAVEGRIDXOFS - ofs * (WAVEGRID / LGAWIDTH) + lgatrgpos*5, WAVEGRIDYOFS, WAVEGRIDXOFS - ofs * (WAVEGRID / LGAWIDTH) + lgatrgpos*5, WAVEGRIDYOFS + WAVEXSIZE, paint);
+	        canvas.drawLine(WAVEGRIDXOFS - ofs * (WAVEGRID / LGAWIDTH) + lgatrgpos * 5, WAVEGRIDYOFS, WAVEGRIDXOFS - ofs * (WAVEGRID / LGAWIDTH) + lgatrgpos * 5, WAVEGRIDYOFS + WAVEXSIZE, paint);
 		}
 		paint.setTextSize(15);
 		paint.setColor(Color.WHITE);
@@ -712,7 +721,7 @@ public class DDSWave extends Activity {
 			bmpwave = Bitmap.createBitmap(wt, ht, Bitmap.Config.ARGB_8888);
 			canvas = new Canvas(bmpwave);
 			WAVEGRIDXOFS = (wt - WAVEXSIZE) / 2;
-			WAVEGRIDYOFS = (ht - WAVEXSIZE) / 2;
+			WAVEGRIDYOFS = 50;
 			DrawDDSWave();
 			StartUp = false;
 		}
@@ -953,7 +962,7 @@ public class DDSWave extends Activity {
         btnddsdcofsup.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				if (ddsamp < 600) {
+				if (ddsdcofs < 599) {
 					ddsdcofs++;
 					sbdcoffset.setProgress(ddsdcofs);
 					tvddsdcofs.setText("DC Offset: " +  String.format("%.1f",((float)(ddsdcofs - 299) * 10)) + "mV");
@@ -1353,7 +1362,7 @@ public class DDSWave extends Activity {
 		Button btnlgafindup = (Button) dialog.findViewById(R.id.btnlgafindup);
 
 		dialog.setTitle("LGA Setup");
-		tvlgasr.setText("Sample rate: " +  lgasrstr[lgasr]);
+		tvlgasr.setText("Sample rate: " +  lga.lgasrstr[lgasr]);
 		sblgasr.setProgress(lgasr);
 		tvlgabuff.setText("Buffer size: " +  (lgabuff + 1) + "kb");
 		sblgabuff.setProgress(lgabuff);
@@ -1384,7 +1393,7 @@ public class DDSWave extends Activity {
 				if (lgasr > 0) {
 					lgasr--;
 					sblgasr.setProgress(lgasr);
-					tvlgasr.setText("Sample rate: " +  lgasrstr[lgasr]);
+					tvlgasr.setText("Sample rate: " +  lga.lgasrstr[lgasr]);
 				}
 			}
 		});
@@ -1392,7 +1401,7 @@ public class DDSWave extends Activity {
 		sblgasr.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
         	public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
         		lgasr = progress;
-				tvlgasr.setText("Sample rate: " +  lgasrstr[lgasr]);
+				tvlgasr.setText("Sample rate: " +  lga.lgasrstr[lgasr]);
         	}
 
         	public void onStartTrackingTouch(SeekBar seekBar) {
@@ -1408,7 +1417,7 @@ public class DDSWave extends Activity {
 				if (lgasr < 14) {
 					lgasr++;
 					sblgasr.setProgress(lgasr);
-					tvlgasr.setText("Sample rate: " +  lgasrstr[lgasr]);
+					tvlgasr.setText("Sample rate: " +  lga.lgasrstr[lgasr]);
 				}
 			}
 		});
@@ -1515,7 +1524,7 @@ public class DDSWave extends Activity {
 				lga.TriggerValue = lgatrg;
 				lga.TriggerMask = lgamask;
 				lga.TriggerWait = 0;
-				sr=lgasrint[lgasr];
+				sr=lga.lgasrint[lgasr];
 				if (sr == 199999) {
 					lga.LGASampleRateDiv = 3;
 					lga.LGASampleRate = (short)(sr >> 2);
@@ -1530,7 +1539,7 @@ public class DDSWave extends Activity {
 				lgaxofs = 0;
 				lgatrgpos = 0;
 	    		DrawLGAWave();
-				dialog.dismiss();
+				//dialog.dismiss();
 			}
 		});
 
@@ -1745,17 +1754,29 @@ public class DDSWave extends Activity {
 	public boolean onTouchEvent(MotionEvent event) {
 		switch (event.getAction()) {
 		case MotionEvent.ACTION_UP:
+			if (mode == 2) {
+				//Log.d("MYTAG", "ACTION_UP xd " + (int)xd + " yd " + (int)yd + " ofs " + lgaxofs);
+				if (Math.abs(xd - event.getX()) < 5 && Math.abs(yd - event.getY()) < 5 && yd < WAVEGRIDYOFS) {
+					if (yd > WAVEGRIDYOFS / 2) {
+						lgatstpos = (int)lgaxofs / 5 + ((int)(xd - 2.5)) / 5;
+					} else {
+						lgatrgpos = (int)lgaxofs / 5 + ((int)(xd - 2.5)) / 5;
+					}
+		    		DrawLGAWave();
+				}
+			}
 			return (true);
 		case MotionEvent.ACTION_POINTER_UP:
+			Log.d("MYTAG", "ACTION_POINTER_UP");
 			return (true);
 		case MotionEvent.ACTION_DOWN:
 			xs = lgaxofs;
-			if (mode == 2) {
-				xd = event.getAxisValue(0);
-				//Log.d("MYTAG", "ACTION_DOWN xd " + xd + " xs " + xs);
-			}
+			xd = event.getX();
+			yd = event.getY();
+			//Log.d("MYTAG", "ACTION_DOWN xd " + xd + " xs " + xs);
 			return (true);
 		case MotionEvent.ACTION_POINTER_DOWN:
+			Log.d("MYTAG", "ACTION_POINTER_DOWN");
 			return (true);
 		case MotionEvent.ACTION_MOVE:
 			if (mode == 2) {
