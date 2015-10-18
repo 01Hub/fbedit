@@ -231,7 +231,7 @@
 
     <TextView
         android:id="@+id/tvlgafindtrg"
-        android:layout_width="150dp"
+        android:layout_width="105dp"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_below="@+id/chklgamaskd0"
@@ -254,6 +254,64 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/tvlgafindtrg"
         android:layout_toRightOf="@+id/btnlgafinddn"
+        android:layout_marginTop="5dp"
+        android:text="&gt;" />
+    
+    <TextView
+        android:id="@+id/tvlgamovetrg"
+        android:layout_width="105dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/chklgamaskd0"
+        android:layout_toRightOf="@+id/tvlgafindtrg"
+        android:layout_marginTop="1dp"
+        android:layout_marginLeft="5dp"
+        android:text="Move trigger" />
+
+    <Button
+        android:id="@+id/btnlgamovetrgdn"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvlgafindtrg"
+        android:layout_toRightOf="@+id/btnlgafindup"
+        android:layout_marginLeft="7dp"
+        android:layout_marginTop="5dp"
+        android:text="&lt;" />
+    
+    <Button
+        android:id="@+id/btnlgamovetrgup"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvlgafindtrg"
+        android:layout_toRightOf="@+id/btnlgamovetrgdn"
+        android:layout_marginTop="5dp"
+        android:text="&gt;" />
+    
+    <TextView
+        android:id="@+id/tvlgamovetst"
+        android:layout_width="105dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/chklgamaskd0"
+        android:layout_toRightOf="@+id/tvlgamovetrg"
+        android:layout_marginTop="1dp"
+        android:layout_marginLeft="5dp"
+        android:text="Move test" />
+
+    <Button
+        android:id="@+id/btnlgamovetstdn"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvlgafindtrg"
+        android:layout_toRightOf="@+id/btnlgamovetrgup"
+        android:layout_marginLeft="7dp"
+        android:layout_marginTop="5dp"
+        android:text="&lt;" />
+    
+    <Button
+        android:id="@+id/btnlgamovetstup"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvlgafindtrg"
+        android:layout_toRightOf="@+id/btnlgamovetstdn"
         android:layout_marginTop="5dp"
         android:text="&gt;" />
     

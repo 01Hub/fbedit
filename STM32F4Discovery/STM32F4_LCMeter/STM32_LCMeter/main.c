@@ -375,19 +375,19 @@ int main(void) {
           ADC_SingleConfig(((uint32_t)STM32_CMD.STM32_SCP2.SampleRateSet >> 3) & 0x3,(uint32_t)STM32_CMD.STM32_SCP2.SampleRateSet & 0x7);
         }
         /* Trigger configuration */
-        // if (STM32_CMD.STM32_SCP2.Trigger == 2) {
-          // /* Rising edge */
-          // TIM5->CCER &= ~0x2;
-        // } else {
-          // /* Falling edge */
-          // TIM5->CCER |= 0x2;
-        // }
-        // if (STM32_CMD.STM32_SCP2.Trigger) {
-          // /* Wait for trigger */
-          // scpcnt = TIM5->CNT;
-          // scpwait = STM32_CMD.TickCount + 2;
-          // while (scpcnt == TIM5->CNT && scpwait != STM32_CMD.TickCount);
-        // }
+        if (STM32_CMD.STM32_SCP2.Trigger == 2) {
+          /* Rising edge */
+          TIM5->CCER &= ~0x2;
+        } else {
+          /* Falling edge */
+          TIM5->CCER |= 0x2;
+        }
+        if (STM32_CMD.STM32_SCP2.Trigger) {
+          /* Wait for trigger */
+          scpcnt = TIM5->CNT;
+          scpwait = STM32_CMD.TickCount + 2;
+          while (scpcnt == TIM5->CNT && scpwait != STM32_CMD.TickCount);
+        }
         /* Start ADC1 Software Conversion */
         ADC1->CR2 |= (uint32_t)ADC_CR2_SWSTART;
         /* Reset wavedata */
@@ -525,6 +525,7 @@ void ScopeSetWaveData(uint32_t *ptrwave, uint32_t *ptrcount, uint16_t *ptrsample
   pt = (double)STM32_CMD.STM32_SCP2.TimeDiv / (double)STM32_CMD.STM32_SCP2.PixDiv;
   /* Get the number of pixels to move for each sample */
   xm = st / pt;
+  /* Sum up the samples and store them in its proper position */
   i = 0;
   x = 0;
   xp = 0;

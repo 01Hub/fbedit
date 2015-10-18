@@ -12,7 +12,7 @@ public class STM32_SCP {
 	public byte Auto = 0;
 	public short TriggerLevel = (short)(13.65 * 150.0);
 	public short VPos = (short)(13.65 * (150.0 + 13.0));
-	public int TimeDiv = 1000000;
+	public int TimeDiv = 50000;
 	public int SampleRate = 10000000;
 
 
