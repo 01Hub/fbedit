@@ -1729,14 +1729,17 @@ public class DDSWave extends Activity {
 					if (hscfrq > 25000000) {
 						hscfrq = 25000000;
 						t = GetHscFrq(hscfrq);
-					} else if (hscfrq > 16666666){
+					} else if (hscfrq > 16666666) {
 						hscfrq = 16666666;
 						t = GetHscFrq(hscfrq);
-					} else if (hscfrq > 12500000){
+					} else if (hscfrq > 12500000) {
 						hscfrq = 12500000;
 						t = GetHscFrq(hscfrq);
-					} else if (hscfrq > 10000000){
+					} else if (hscfrq > 10000000) {
 						hscfrq = 10000000;
+						t = GetHscFrq(hscfrq);
+					} else if (hscfrq > 8333333) {
+						hscfrq = 8333333;
 						t = GetHscFrq(hscfrq);
 					} else {
 						t = GetHscFrq(hscfrq);
