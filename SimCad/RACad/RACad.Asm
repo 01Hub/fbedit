@@ -59,6 +59,8 @@ rpsize				dd ?
 ncadbox				dd ?
 hClip				dd ?
 szText				db 1024 dup(?)
+scrollschema		POINT <?>
+scrollpcb			POINT <?>
 
 .code
 
@@ -3584,9 +3586,32 @@ CadProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	.elseif eax==CM_SETLAYER
 		invoke GetWindowLong,hWin,0
 		mov		ebx,eax
+		mov		eax,[ebx].CADMEM.layer
+		.if !eax
+			mov		eax,[ebx].CADMEM.scroll.x
+			mov		scrollschema.x,eax
+			mov		eax,[ebx].CADMEM.scroll.y
+			mov		scrollschema.y,eax
+		.else
+			mov		eax,[ebx].CADMEM.scroll.x
+			mov		scrollpcb.x,eax
+			mov		eax,[ebx].CADMEM.scroll.y
+			mov		scrollpcb.y,eax
+		.endif
 		invoke CadSelectAll,hWin,FALSE
 		mov		eax,wParam
 		mov		[ebx].CADMEM.layer,eax
+		.if !eax
+			mov		eax,scrollschema.x
+			mov		[ebx].CADMEM.scroll.x,eax
+			mov		eax,scrollschema.y
+			mov		[ebx].CADMEM.scroll.y,eax
+		.else
+			mov		eax,scrollpcb.x
+			mov		[ebx].CADMEM.scroll.x,eax
+			mov		eax,scrollpcb.y
+			mov		[ebx].CADMEM.scroll.y,eax
+		.endif
 		invoke InvalidateRect,hWin,NULL,TRUE
 		xor		eax,eax
 		jmp		Ex

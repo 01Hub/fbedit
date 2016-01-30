@@ -2,10 +2,10 @@
 Version=3000
 [Project]
 Assembler=masm
-Path=D:\SimCadRA3\SimCad\RACad
+Path=D:\FbEdit\Projects\Applications\fbe\SimCad\RACad
 Group=2,-1,0,1,Cad custom control,-2,-1,1,Assembly,-3,-1,1,Include,-4,-1,1,Misc,-5,-1,1,Resource
-F1=-2,2,1,22,22,600,400,0,RACad.Asm
-F2=-3,0,1,22,22,600,400,112,..\RACad.Inc
+F1=-2,2,1,22,22,600,400,3609,RACad.Asm
+F2=-3,0,1,22,22,600,400,100,..\RACad.Inc
 F3=-4,0,2,22,22,600,400,0,RACad.Def
 F4=-5,2,4,22,22,600,400,0,RACad.rc
 F5=-4,0,3,22,22,600,400,0,Res\Button.bmp

@@ -2,7 +2,7 @@
 Version=3000
 [Project]
 Assembler=masm
-Path=D:\SimCadRA3\SimCad\SimCad
+Path=D:\FbEdit\Projects\Applications\fbe\SimCad\SimCad
 Group=2,-1,0,1,Simple Cad Application,-2,-1,1,Assembly,-3,-1,1,Include,-4,-1,1,Misc,-5,-1,1,Resource
 F1=-2,2,1,22,22,600,400,643,SimCad.Asm
 F2=-3,0,1,22,22,600,400,181,SimCad.Inc
