@@ -49,7 +49,6 @@ import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 import android.widget.Toast;
 import android.widget.SeekBar.OnSeekBarChangeListener;
-//import app.DDSWave.R;
 
 public class ScopeMain  extends Activity {
     private static final int STM32_CLOCK = 200000000;
