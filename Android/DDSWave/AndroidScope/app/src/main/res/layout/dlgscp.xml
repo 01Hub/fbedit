@@ -229,6 +229,15 @@
 
     </RadioGroup>
 
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="AC"
+        android:id="@+id/chkAC"
+        android:layout_marginTop="5dp"
+        android:layout_below="@+id/sbscptl"
+        android:layout_toRightOf="@+id/rgtrig" />
+
     <Button
         android:id="@+id/btnscpauto"
         android:layout_width="150dp"
