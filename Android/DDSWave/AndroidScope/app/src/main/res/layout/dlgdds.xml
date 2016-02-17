@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
+
+    <RadioGroup
+        android:id="@+id/rgwave"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:orientation="horizontal" >
+
+        <RadioButton
+            android:id="@+id/rbnsine"
+            android:layout_width="140dp"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="5dp"
+            android:text="Sine" />
+
+        <RadioButton
+            android:id="@+id/rbntriangle"
+            android:layout_width="140dp"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="5dp"
+            android:text="Triangle" />
+
+        <RadioButton
+            android:id="@+id/rbnsquare"
+            android:layout_width="140dp"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="5dp"
+            android:text="Square" />
+
+    </RadioGroup>
+
+    <TextView
+        android:id="@+id/tvddsfrq"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/rgwave"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="5dp"
+        android:text="Frequency" />
+
+    <RadioGroup
+        android:id="@+id/rgfrq"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/rgwave"
+        android:layout_toRightOf="@+id/tvddsfrq"
+        android:orientation="horizontal" >
+
+        <RadioButton
+            android:id="@+id/rbnhz"
+            android:layout_width="140dp"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="5dp"
+            android:checked="true"
+            android:text="Hz" />
+
+        <RadioButton
+            android:id="@+id/khz"
+            android:layout_width="140dp"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="5dp"
+            android:text="KHz" />
+
+    </RadioGroup>
+
+    <Button
+        android:id="@+id/btnddsfrqdn"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvddsfrq"
+        android:layout_alignParentLeft="true"
+        android:layout_marginTop="5dp"
+        android:text="&lt;" />
+
+    <SeekBar
+        android:id="@+id/sbfrequency"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/btnddsfrqdn"
+        android:layout_marginTop="15dp"
+        android:layout_below="@+id/tvddsfrq"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="55dp"
+        android:max="999" />
+
+    <Button
+        android:id="@+id/btnddsfrqup"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvddsfrq"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="5dp"
+        android:text=">" />
+
+    <TextView
+        android:id="@+id/tvddsamp"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/sbfrequency"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="5dp"
+        android:text="Amplitude" />
+
+    <Button
+        android:id="@+id/btnddsampdn"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvddsamp"
+        android:layout_alignParentLeft="true"
+        android:layout_marginTop="5dp"
+        android:text="&lt;" />
+
+    <SeekBar
+        android:id="@+id/sbamplitude"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/btnddsfrqdn"
+        android:layout_marginTop="15dp"
+        android:layout_below="@+id/tvddsamp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="55dp"
+        android:max="300" />
+
+    <Button
+        android:id="@+id/btnddsampup"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvddsamp"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="5dp"
+        android:text=">" />
+
+    <TextView
+        android:id="@+id/tvddsdcofs"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/sbamplitude"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="5dp"
+        android:text="DC Offset" />
+
+    <Button
+        android:id="@+id/btnddsdcofsdn"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvddsdcofs"
+        android:layout_alignParentLeft="true"
+        android:layout_marginTop="5dp"
+        android:text="&lt;" />
+
+    <SeekBar
+        android:id="@+id/sbdcoffset"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/btnddsdcofsdn"
+        android:layout_marginTop="15dp"
+        android:layout_below="@+id/tvddsdcofs"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="55dp"
+        android:max="599" />
+
+    <Button
+        android:id="@+id/btnddsdcofsup"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvddsdcofs"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="5dp"
+        android:text=">" />
+
+    <Button
+        android:id="@+id/btnddsok"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/sbdcoffset"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="25dp"
+        android:text="OK" />
+
+</RelativeLayout>

@@ -1,0 +1,328 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
+
+    <TextView
+        android:id="@+id/tvlgasr"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="5dp"
+        android:text="Sample rate" />
+
+    <Button
+        android:id="@+id/btnlgasrdn"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvlgasr"
+        android:layout_alignParentLeft="true"
+        android:layout_marginTop="5dp"
+        android:text="&lt;" />
+
+    <SeekBar
+        android:id="@+id/sblgasr"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/btnlgasrdn"
+        android:layout_marginTop="15dp"
+        android:layout_below="@+id/tvlgasr"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="55dp"
+        android:max="14" />
+
+    <Button
+        android:id="@+id/btnlgasrup"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvlgasr"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="5dp"
+        android:text="&gt;" />
+
+    <TextView
+        android:id="@+id/tvlgabuff"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/sblgasr"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="5dp"
+        android:text="Buffer size" />
+
+    <Button
+        android:id="@+id/btnlgabuffdn"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvlgabuff"
+        android:layout_alignParentLeft="true"
+        android:layout_marginTop="5dp"
+        android:text="&lt;" />
+
+    <SeekBar
+        android:id="@+id/sblgabuff"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/btnlgabuffdn"
+        android:layout_marginTop="15dp"
+        android:layout_below="@+id/tvlgabuff"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="55dp"
+        android:max="31" />
+
+    <Button
+        android:id="@+id/btnlgabuffup"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvlgabuff"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="5dp"
+        android:text="&gt;" />
+
+    <TextView
+        android:id="@+id/tvlgatrg"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/sblgabuff"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="5dp"
+        android:text="Trigger" />
+
+    <CheckBox
+        android:id="@+id/chklgatrgd0"
+        android:layout_width="60dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvlgatrg"
+        android:layout_alignParentLeft="true"
+        android:text="D0" />
+
+    <CheckBox
+        android:id="@+id/chklgatrgd1"
+        android:layout_width="60dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvlgatrg"
+        android:layout_toRightOf="@+id/chklgatrgd0"
+        android:text="D1" />
+
+    <CheckBox
+        android:id="@+id/chklgatrgd2"
+        android:layout_width="60dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvlgatrg"
+        android:layout_toRightOf="@+id/chklgatrgd1"
+        android:text="D2" />
+
+    <CheckBox
+        android:id="@+id/chklgatrgd3"
+        android:layout_width="60dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvlgatrg"
+        android:layout_toRightOf="@+id/chklgatrgd2"
+        android:text="D3" />
+
+    <CheckBox
+        android:id="@+id/chklgatrgd4"
+        android:layout_width="60dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvlgatrg"
+        android:layout_toRightOf="@+id/chklgatrgd3"
+        android:text="D4" />
+
+    <CheckBox
+        android:id="@+id/chklgatrgd5"
+        android:layout_width="60dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvlgatrg"
+        android:layout_toRightOf="@+id/chklgatrgd4"
+        android:text="D5" />
+
+    <CheckBox
+        android:id="@+id/chklgatrgd6"
+        android:layout_width="60dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvlgatrg"
+        android:layout_toRightOf="@+id/chklgatrgd5"
+        android:text="D6" />
+
+    <CheckBox
+        android:id="@+id/chklgatrgd7"
+        android:layout_width="60dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvlgatrg"
+        android:layout_toRightOf="@+id/chklgatrgd6"
+        android:text="D7" />
+
+    <TextView
+        android:id="@+id/tvlgamask"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/chklgatrgd0"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="5dp"
+        android:text="Trigger mask" />
+
+    <CheckBox
+        android:id="@+id/chklgamaskd0"
+        android:layout_width="60dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvlgamask"
+        android:layout_alignParentLeft="true"
+        android:text="D0" />
+
+    <CheckBox
+        android:id="@+id/chklgamaskd1"
+        android:layout_width="60dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvlgamask"
+        android:layout_toRightOf="@+id/chklgatrgd0"
+        android:text="D1" />
+
+    <CheckBox
+        android:id="@+id/chklgamaskdd2"
+        android:layout_width="60dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvlgamask"
+        android:layout_toRightOf="@+id/chklgatrgd1"
+        android:text="D2" />
+
+    <CheckBox
+        android:id="@+id/chklgamaskdd3"
+        android:layout_width="60dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvlgamask"
+        android:layout_toRightOf="@+id/chklgatrgd2"
+        android:text="D3" />
+
+    <CheckBox
+        android:id="@+id/chklgamaskdd4"
+        android:layout_width="60dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvlgamask"
+        android:layout_toRightOf="@+id/chklgatrgd3"
+        android:text="D4" />
+
+    <CheckBox
+        android:id="@+id/chklgamaskdd5"
+        android:layout_width="60dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvlgamask"
+        android:layout_toRightOf="@+id/chklgatrgd4"
+        android:text="D5" />
+
+    <CheckBox
+        android:id="@+id/chklgamaskdd6"
+        android:layout_width="60dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvlgamask"
+        android:layout_toRightOf="@+id/chklgatrgd5"
+        android:text="D6" />
+
+    <CheckBox
+        android:id="@+id/chklgamaskdd7"
+        android:layout_width="60dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvlgamask"
+        android:layout_toRightOf="@+id/chklgatrgd6"
+        android:text="D7" />
+
+    <TextView
+        android:id="@+id/tvlgafindtrg"
+        android:layout_width="105dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/chklgamaskd0"
+        android:layout_marginTop="1dp"
+        android:layout_marginLeft="5dp"
+        android:text="Find trigger" />
+
+    <Button
+        android:id="@+id/btnlgafinddn"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvlgafindtrg"
+        android:layout_alignParentLeft="true"
+        android:layout_marginTop="5dp"
+        android:text="&lt;" />
+
+    <Button
+        android:id="@+id/btnlgafindup"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvlgafindtrg"
+        android:layout_toRightOf="@+id/btnlgafinddn"
+        android:layout_marginTop="5dp"
+        android:text="&gt;" />
+
+    <TextView
+        android:id="@+id/tvlgamovetrg"
+        android:layout_width="105dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/chklgamaskd0"
+        android:layout_toRightOf="@+id/tvlgafindtrg"
+        android:layout_marginTop="1dp"
+        android:layout_marginLeft="5dp"
+        android:text="Move trigger" />
+
+    <Button
+        android:id="@+id/btnlgamovetrgdn"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvlgafindtrg"
+        android:layout_toRightOf="@+id/btnlgafindup"
+        android:layout_marginLeft="7dp"
+        android:layout_marginTop="5dp"
+        android:text="&lt;" />
+
+    <Button
+        android:id="@+id/btnlgamovetrgup"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvlgafindtrg"
+        android:layout_toRightOf="@+id/btnlgamovetrgdn"
+        android:layout_marginTop="5dp"
+        android:text="&gt;" />
+
+    <TextView
+        android:id="@+id/tvlgamovetst"
+        android:layout_width="105dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/chklgamaskd0"
+        android:layout_toRightOf="@+id/tvlgamovetrg"
+        android:layout_marginTop="1dp"
+        android:layout_marginLeft="5dp"
+        android:text="Move test" />
+
+    <Button
+        android:id="@+id/btnlgamovetstdn"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvlgafindtrg"
+        android:layout_toRightOf="@+id/btnlgamovetrgup"
+        android:layout_marginLeft="7dp"
+        android:layout_marginTop="5dp"
+        android:text="&lt;" />
+
+    <Button
+        android:id="@+id/btnlgamovetstup"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvlgafindtrg"
+        android:layout_toRightOf="@+id/btnlgamovetstdn"
+        android:layout_marginTop="5dp"
+        android:text="&gt;" />
+
+    <Button
+        android:id="@+id/btnlgasample"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/chklgamaskd0"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="25dp"
+        android:text="Sample" />
+
+</RelativeLayout>
+<!-- From: file:/C:/Android/Workspace/Scope/app/src/main/res/layout/dlglga.xml -->

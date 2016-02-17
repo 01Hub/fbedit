@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <RadioGroup
+        android:id="@+id/rghscfrq"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:orientation="horizontal" >
+
+        <RadioButton
+            android:id="@+id/rbnhscmhz"
+            android:layout_width="140dp"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="5dp"
+            android:text="MHz" />
+
+        <RadioButton
+            android:id="@+id/rbnhsckhz"
+            android:layout_width="140dp"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="5dp"
+            android:text="KHz" />
+
+        <RadioButton
+            android:id="@+id/rbnhschz"
+            android:layout_width="140dp"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="5dp"
+            android:text="Hz" />
+
+    </RadioGroup>
+
+    <TextView
+        android:id="@+id/tvhscfrq"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/rghscfrq"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="5dp"
+        android:text="Frequency" />
+
+    <Button
+        android:id="@+id/btnhscfrqdn"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvhscfrq"
+        android:layout_alignParentLeft="true"
+        android:layout_marginTop="5dp"
+        android:text="&lt;" />
+
+    <EditText
+        android:id="@+id/ethscfrqset"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_toRightOf="@+id/btnhscfrqdn"
+        android:layout_below="@+id/tvhscfrq"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="55dp"
+        android:inputType="number"
+        android:maxLength="8"
+        android:imeOptions="actionSend"
+        android:text="1000" />
+
+    <Button
+        android:id="@+id/btnhscfrqup"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvhscfrq"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="5dp"
+        android:text=">" />
+
+    <Button
+        android:id="@+id/btnhscok"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/ethscfrqset"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="25dp"
+        android:text="OK" />
+
+</RelativeLayout>

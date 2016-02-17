@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:background="#FFFFFF"
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        android:layout_weight="1" >
+        <ImageView
+            android:id="@+id/ImageView1"
+            android:background="#0000FF"
+            android:layout_marginLeft="1dp"
+            android:layout_marginTop="1dp"
+            android:layout_marginRight="1dp"
+            android:layout_marginBottom="1dp"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        android:layout_weight="1"
+        android:orientation="vertical" >
+        <Button
+            android:id="@+id/btnDDS"
+            android:layout_width="115dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="5dp"
+            android:text="DDS Wave" />
+        <Button
+            android:id="@+id/btnSCOPE"
+            android:layout_width="115dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="5dp"
+            android:text="Scope" />
+        <Button
+            android:id="@+id/btnLGA"
+            android:layout_width="115dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="5dp"
+            android:text="LGA" />
+        <Button
+            android:id="@+id/btnHSC"
+            android:layout_width="115dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="5dp"
+            android:text="HSC" />
+        <Button
+            android:id="@+id/btnLCM_C"
+            android:layout_width="115dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="5dp"
+            android:text="Capacitor" />
+        <Button
+            android:id="@+id/btnLCM_L"
+            android:layout_width="115dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="5dp"
+            android:text="Inductor" />
+        <Button
+            android:id="@+id/btnSETUP"
+            android:layout_width="115dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="5dp"
+            android:text="Connect" />
+        <TextView
+            android:id="@+id/tvText"
+            android:layout_width="500dp"
+            android:layout_height="165dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="5dp"
+            android:textSize="70sp"
+            android:gravity="center"
+            android:background="#C0C080"
+            android:textColor="#000000"
+            android:text="" />
+
+    </LinearLayout>
+</LinearLayout>
+<!-- From: file:/C:/Android/Workspace/Scope/app/src/main/res/layout/content_main.xml -->
