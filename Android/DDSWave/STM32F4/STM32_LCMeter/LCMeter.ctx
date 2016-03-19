@@ -9,12 +9,12 @@
 				<3>259</3>
 				<4>46</4>
 				<5>100</5>
-																																																																																																																																																																								
+																																																																																																																																																																																																				
 			</CodeReport>
-																																																																																																																								
+																																																																																																																																												
 		</CodeView>
 		<MemoryView Focus="134218120" TopRow="0" NbPerLine="8" />
-																																																																								
+																																																																																				
 	</LCMeter>
 	<Flags>
 		<Report>
@@ -38,12 +38,12 @@
 			
 	</Flags>
 	<Views>
-		<View File="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\main.c" Line="387" Index="0" focus="1" />
-		<View File="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_tim.c" Line="81" Index="1" />
-		<View File="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_adc.c" Line="96" Index="2" />
+		<View File="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\main.c" Line="0" Index="0" focus="1" />
+		<View File="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_tim.c" Line="79" Index="1" />
+		<View File="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx_adc.c" Line="94" Index="2" />
 		<View File="D:\STM32F4\stm32f4discovery_fw\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_adc.h" Line="0" Index="3" />
-		<View File="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx.h" Line="1299" Index="4" />
-		<View File="D:\FbEdit\Projects\Applications\fbe\Android\DDSWave\STM32F4\STM32_LCMeter\stm32f4xx_dma.c" Line="977" Index="5" />
+		<View File="D:\FbEdit\Projects\Applications\fbe\STM32F4Discovery\STM32F4_LCMeter\STM32_LCMeter\stm32f4xx.h" Line="1297" Index="4" />
+		<View File="D:\FbEdit\Projects\Applications\fbe\Android\DDSWave\STM32F4\STM32_LCMeter\stm32f4xx_dma.c" Line="975" Index="5" />
 	</Views>
 	<Grep>
 		<GrepIncludeSub>yes</GrepIncludeSub>
@@ -68,6 +68,10 @@
 		</GrepReplaceWhat>
 	</Grep>
 	<FindStrings>
+		<Find>GPIOD</Find>
+		<Find>GPIOE</Find>
+		<Find>CMD_SCP2SET</Find>
+		<Find>ScopeMag</Find>
 		<Find>ADC_CR2_SWSTART</Find>
 		<Find>ADC_ExternalTrigConv_T2_TRGO</Find>
 		<Find>ADC_extrenal_trigger_sources_for_regular_channels_conversion</Find>
