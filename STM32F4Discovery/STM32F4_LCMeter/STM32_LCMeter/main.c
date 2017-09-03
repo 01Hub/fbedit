@@ -25,7 +25,7 @@
   PD.06           LCMeter L/C selection, C = Low L = High
   PD.07           LCMeter calibration
   PD.08           USART3 TX
-  PD.09           USART3 RX
+  PD.09  0,0,         USART3 RX
   PE.03			      Scope X10 Output OD
   PE.04			      Scope X5 Output OD
   PE.05			      Scope X10 Output OD
